@@ -3,6 +3,11 @@
 <!-- AspectJ v1.6.0 Parameter Annotation Matching Tests -->
 <suite>
 
+
+   <ajc-test dir="features160/parameterAnnotationMatching" title="no xlint for wrong target">
+     <compile options="-1.5" files="NonNullAssertionForcer.java"/>
+   </ajc-test>
+
    <ajc-test dir="features160/parameterAnnotationMatching" title="various combinations">
      <compile options="-1.5 -showWeaveInfo" files="TestMatching.aj Anno1.java Anno2.java AnnotatedWithAnno1.java AnnotatedWithAnno2.java">
        <message kind="weave" text="'TestMatching' (TestMatching.aj:4) advised by before advice from 'TestMatching' (TestMatching.aj:3)"/>

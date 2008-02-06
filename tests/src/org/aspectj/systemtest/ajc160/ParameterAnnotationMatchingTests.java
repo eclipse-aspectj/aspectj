@@ -76,6 +76,7 @@ import junit.framework.Test;
  */
 public class ParameterAnnotationMatchingTests extends XMLBasedAjcTestCase {
 	
+	public void testNoWarningForWrongType() { runTest("no xlint for wrong target");}
 	public void testVariousCombinations() { runTest("various combinations"); }
 	public void testVariousCombinationsCtors() { runTest("various combinations - ctors"); }
 	public void testHasMethod() { runTest("hasmethod"); }
