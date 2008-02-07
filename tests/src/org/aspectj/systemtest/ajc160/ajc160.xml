@@ -3,6 +3,12 @@
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
 
+   <ajc-test dir="bugs160/pr218167" title="dec field problem">
+     <compile options="-1.5" files="Test.java">
+       <message kind="warning" text="already has an annotation of type A, cannot add a second instance"/>
+     </compile>
+   </ajc-test>
+
    <ajc-test dir="bugs160/pr206911" title="generics super itd">
      <compile options="-1.5" files="VerifyError.java"/>
      <run class="bugs.VerifyError"/>
