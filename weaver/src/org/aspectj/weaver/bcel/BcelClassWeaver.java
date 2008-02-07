@@ -1012,7 +1012,7 @@ class BcelClassWeaver implements IClassWeaver {
 		    while (!worthRetrying.isEmpty() && modificationOccured) {
 				modificationOccured = false;
                 List forRemoval = new ArrayList();
-                for (Iterator iter2 = worthRetrying.iterator(); iter.hasNext();) {
+                for (Iterator iter2 = worthRetrying.iterator(); iter2.hasNext();) {
 				  DeclareAnnotation decaF = (DeclareAnnotation) iter2.next();
 				  if (decaF.matches(itdIsActually,world)) {
 					LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz,fieldMunger);
