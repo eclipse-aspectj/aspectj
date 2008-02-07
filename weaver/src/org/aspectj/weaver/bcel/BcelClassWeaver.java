@@ -1065,7 +1065,7 @@ class BcelClassWeaver implements IClassWeaver {
 		    while (!worthRetrying.isEmpty() && modificationOccured) {
 				modificationOccured = false;
                 List forRemoval = new ArrayList();
-                for (Iterator iter2 = worthRetrying.iterator(); iter.hasNext();) {
+                for (Iterator iter2 = worthRetrying.iterator(); iter2.hasNext();) {
 				  DeclareAnnotation decaMC = (DeclareAnnotation) iter2.next();
 				  if (decaMC.matches(unMangledInterMethod,world)) {
 					LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz,methodctorMunger);
@@ -1311,7 +1311,7 @@ class BcelClassWeaver implements IClassWeaver {
 					  reportedProblems.add(uniqueID);
 					  reportedProblems.add(new Integer(itdfieldsig.hashCode()*deca.hashCode()));
 					  world.getLint().elementAlreadyAnnotated.signal(
-						new String[]{rm.toString(),deca.getAnnotationTypeX().toString()},
+						new String[]{itdfieldsig.toString(),deca.getAnnotationTypeX().toString()},
 						rm.getSourceLocation(),new ISourceLocation[]{deca.getSourceLocation()});
 				  }
 			  }
