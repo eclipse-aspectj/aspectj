@@ -920,7 +920,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	// comparison.
 	private void appendSigWithTypeVarBoundsRemoved(UnresolvedType aType, StringBuffer toBuffer) {
 		if (aType.isTypeVariableReference()) {
-			toBuffer.append("T;");
+			// pr204505
+			appendSigWithTypeVarBoundsRemoved(aType.getUpperBound(),toBuffer);
+//			toBuffer.append("T;");
 		} else if (aType.isParameterizedType()) {
 			toBuffer.append(aType.getRawType().getSignature());
 			toBuffer.append("<");
