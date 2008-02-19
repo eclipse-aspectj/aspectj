@@ -106,7 +106,11 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 			org.aspectj.apache.bcel.classfile.annotation.Annotation[] anns = new org.aspectj.apache.bcel.classfile.annotation.Annotation[0];
 			if (onMember instanceof Method) {
 				org.aspectj.apache.bcel.classfile.Method bcelMethod = jc.getMethod((Method)onMember);
-				anns = bcelMethod.getAnnotations();
+				if (bcelMethod == null) {
+					System.err.println("Unexpected problem in Java15AnnotationFinder: cannot retrieve annotations on method '"+onMember.getName()+"' in class '"+jc.getClassName()+"'");
+				} else {
+					anns = bcelMethod.getAnnotations();
+				}
 			} else if (onMember instanceof Constructor) {
 				org.aspectj.apache.bcel.classfile.Method bcelCons = jc.getMethod((Constructor)onMember);
 				anns = bcelCons.getAnnotations();
