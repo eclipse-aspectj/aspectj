@@ -3,6 +3,18 @@
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
 
+   <ajc-test dir="bugs160/pr204505" title="generics method matching - 1">
+     <compile options="-1.5 -showWeaveInfo" files="Bug.java">
+       <message kind="weave" text="execution(void C.save(java.lang.Object))"/>
+       <message kind="weave" text="execution(void C.saveAll(java.util.Collection))"/>
+     </compile>
+   </ajc-test>
+
+   <ajc-test dir="bugs160/pr204505" title="generics method matching - 2">
+     <compile options="-1.5" files="GenericInterfaceWithGenericArgumentPointcutBug.java"/>
+     <run class="mypackage.GenericInterfaceWithGenericArgumentPointcutBug"/>
+   </ajc-test>  
+   
    <ajc-test dir="bugs160/pr219298" title="bounds check failure">
      <compile options="-1.5" files="TestMarkers.java">
        <message kind="error" line="11" text="Bound mismatch: The type TestMarkers.SubGenericsType is not a valid substitute for the bounded"/>
