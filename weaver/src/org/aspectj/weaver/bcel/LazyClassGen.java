@@ -1238,7 +1238,8 @@ public final class LazyClassGen {
 	
 	private void makeSyntheticAndTransientIfNeeded(Field field) {
 		if (field.getName().startsWith(NameMangler.PREFIX) &&
-			!field.getName().startsWith("ajc$interField$")) {
+			!field.getName().startsWith("ajc$interField$") &&
+			!field.getName().startsWith("ajc$instance$")) {
 			// it's an aj added field
 			// first do transient
 			if (!field.isStatic()) {

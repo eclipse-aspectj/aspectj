@@ -104,7 +104,7 @@ public class NameMangler {
 	}
 	
     public static String itdAtDeclareParentsField(UnresolvedType aspectType, UnresolvedType itdType) {
-        return makeName(aspectType.getNameAsIdentifier(), itdType.getNameAsIdentifier());
+        return makeName("instance",aspectType.getNameAsIdentifier(), itdType.getNameAsIdentifier());
     }
 
 	public static String privilegedAccessMethodForMethod(String name, UnresolvedType objectType, UnresolvedType aspectType) {
