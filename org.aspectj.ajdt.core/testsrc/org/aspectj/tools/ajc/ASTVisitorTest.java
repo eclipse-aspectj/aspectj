@@ -11,9 +11,11 @@
 package org.aspectj.tools.ajc;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.aspectj.org.eclipse.jdt.core.JavaCore;
 import org.aspectj.org.eclipse.jdt.core.dom.AST;
 import org.aspectj.org.eclipse.jdt.core.dom.ASTParser;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterAdviceDeclaration;
@@ -62,8 +64,21 @@ import org.aspectj.org.eclipse.jdt.core.dom.StringLiteral;
 import org.aspectj.org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.aspectj.org.eclipse.jdt.core.dom.EnumDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 public class ASTVisitorTest extends TestCase {
+	
+	public void testEnum_pr211201() {
+		check("public enum BasicEnum {"+
+	        "A = 1, B = 2, C = 3;"+
+	        "public int getNumberOfEnumerators(){"+
+	        "       return 3;"+
+	        "}"+
+	        "}","(compilationUnit(enum(simpleName)(simpleName)(simpleName)(simpleName)(method(primitiveType)(simpleName)(block(numberLiteral)))))");
+		
+	}
 	
     // from bug 110465 - will currently break because of casts
 	public void testAspectWithITD() {
@@ -321,8 +336,10 @@ public class ASTVisitorTest extends TestCase {
 	}
 	
 	private void check(String source, String expectedOutput){
-		ASTParser parser = ASTParser.newParser(AST.JLS2); // ajh02: need to use 2 for returnType - in 3 it has "returnType2"
-		parser.setCompilerOptions(new HashMap());//JavaCore.getOptions());
+		ASTParser parser = ASTParser.newParser(AST.JLS3);//JLS2); // ajh02: need to use 2 for returnType - in 3 it has "returnType2"
+		Map options = new HashMap();
+		options.put(CompilerOptions.OPTION_Source, "1.5");
+		parser.setCompilerOptions(options);//JavaCore.getOptions());
 		parser.setSource(source.toCharArray());
 		CompilationUnit cu2 = (CompilationUnit) parser.createAST(null);
 		TestVisitor visitor = new TestVisitor();
@@ -417,6 +434,7 @@ class TestVisitor extends AjASTVisitor {
 		}
 		return isVisitingChildren();
 	}
+
 	public void endVisit(TypeDeclaration node) {
 		if (((AjTypeDeclaration)node).isAspect()) 
 			if (((AspectDeclaration) node).isPrivileged() 
@@ -425,6 +443,16 @@ class TestVisitor extends AjASTVisitor {
 			}
 		b.append(")"); //$NON-NLS-1$
 	}
+	
+	public boolean visit(EnumDeclaration node) {
+		b.append("(enum");
+		return isVisitingChildren();
+	}
+
+	public void endVisit(EnumDeclaration node) {
+		b.append(")");
+	}
+	
 	public boolean visit(PointcutDeclaration node) {
 		b.append("(pointcut"); //$NON-NLS-1$
 		return isVisitingChildren();
