@@ -1446,8 +1446,8 @@ public class BcelWeaver implements IWeaver {
 			boolean typeChanged = applyDeclareParents(decp,onType);
 			if (typeChanged) {
 				aParentChangeOccurred = true;
-			} else { // Perhaps it would have matched if a 'dec @type' had modified the type
-				if (!decp.getChild().isStarAnnotation()) decpToRepeat.add(decp);
+			} else {
+				decpToRepeat.add(decp);
 			}
 		}
 
