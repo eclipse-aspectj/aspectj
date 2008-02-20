@@ -28,7 +28,10 @@ public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testGenericsSuperITD_pr206911() { runTest("generics super itd"); }
 	public void testGenericsSuperITD_pr206911_2() { runTest("generics super itd - 2"); }
 	public void testSerializationAnnotationStyle_pr216311() { runTest("serialization and annotation style");}
-
+	public void testDecpRepetition_pr214559() { runTest("decp repetition problem");} // all code in one file
+	public void testDecpRepetition_pr214559_2() { runTest("decp repetition problem - 2");} // all code in one file, default package
+	public void testDecpRepetition_pr214559_3() { runTest("decp repetition problem - 3");} // across multiple files
+	
   /////////////////////////////////////////
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc160Tests.class);

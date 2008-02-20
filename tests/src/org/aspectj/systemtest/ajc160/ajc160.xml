@@ -45,5 +45,20 @@
      <compile options="-1.5" files="PersistabilityTest.java,IPersistable.java,Persistability.java"/>
      <run class="PersistabilityTest"/>
    </ajc-test>
+
+   <ajc-test dir="bugs160/pr214559" title="decp repetition problem">
+     <compile files="X.java"/>
+     <run class="test.X"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs160/pr214559" title="decp repetition problem - 2">
+     <compile files="Y.java"/>
+     <run class="Y"/>
+   </ajc-test>
+
+   <ajc-test dir="bugs160/pr214559" title="decp repetition problem - 3">
+     <compile files="TestClass.java Interface1.java Interface1TestClass.java DeclareParentsPrecedenceTest.java TestAspect.java"/>
+     <run class="DeclareParentsPrecedenceTest"/>
+   </ajc-test>
    
 </suite>
