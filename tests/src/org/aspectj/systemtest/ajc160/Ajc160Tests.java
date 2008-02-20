@@ -27,6 +27,7 @@ public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testDecFieldProblem_pr218167() { runTest("dec field problem");}
 	public void testGenericsSuperITD_pr206911() { runTest("generics super itd"); }
 	public void testGenericsSuperITD_pr206911_2() { runTest("generics super itd - 2"); }
+	public void testSerializationAnnotationStyle_pr216311() { runTest("serialization and annotation style");}
 
   /////////////////////////////////////////
   public static Test suite() {

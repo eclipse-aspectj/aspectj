@@ -41,4 +41,9 @@
      <run class="bugs.VerifyError2"/>
    </ajc-test>
    
+   <ajc-test dir="bugs160/pr216311" title="serialization and annotation style">
+     <compile options="-1.5" files="PersistabilityTest.java,IPersistable.java,Persistability.java"/>
+     <run class="PersistabilityTest"/>
+   </ajc-test>
+   
 </suite>
