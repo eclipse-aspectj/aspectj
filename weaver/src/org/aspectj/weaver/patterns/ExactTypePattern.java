@@ -134,6 +134,7 @@ public class ExactTypePattern extends TypePattern {
 	// true if (matchType instanceof this.type)
 	public FuzzyBoolean matchesInstanceof(ResolvedType matchType) {
 		// in our world, Object is assignable from anything
+		annotationPattern.resolve(matchType.getWorld());
 		if (type.equals(ResolvedType.OBJECT)) 
 		    return FuzzyBoolean.YES.and(annotationPattern.matches(matchType));
 		
