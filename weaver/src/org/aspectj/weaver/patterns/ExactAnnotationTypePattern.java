@@ -256,7 +256,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 			ret = new ExactAnnotationTypePattern(UnresolvedType.read(s));			
 		}
 		ret.readLocation(context,s);
-		if (s.getMajorVersion()>=WeaverVersionInfo.WEAVER_VERSION_MINOR_AJ160) {
+		if (s.getMajorVersion()>=WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ160) {
 			if (s.readBoolean()) ret.setForParameterAnnotationMatch();
 		}
 		return ret;
