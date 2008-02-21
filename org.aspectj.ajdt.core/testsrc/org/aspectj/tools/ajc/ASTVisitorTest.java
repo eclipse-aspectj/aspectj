@@ -267,7 +267,7 @@ public class ASTVisitorTest extends TestCase {
 	}
 	public void testConstructorBeingCalled(){
 		check("class A {A(){}void b(){A();}}",
-				"(compilationUnit(class(simpleName)(constructor(primitiveType)(simpleName)(block))(method(primitiveType)(simpleName)(block(expressionStatement(methodInvocation(simpleName)))))))");
+				"(compilationUnit(class(simpleName)(constructor(simpleName)(block))(method(primitiveType)(simpleName)(block(expressionStatement(methodInvocation(simpleName)))))))");
 	}
 	public void testMethodITDBeingCalled(){
 		check("class A {void b(){a();}}aspect B {void A.a(){}}",
