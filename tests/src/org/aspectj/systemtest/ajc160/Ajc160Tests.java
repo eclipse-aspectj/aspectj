@@ -31,6 +31,8 @@ public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testDecpRepetition_pr214559() { runTest("decp repetition problem");} // all code in one file
 	public void testDecpRepetition_pr214559_2() { runTest("decp repetition problem - 2");} // all code in one file, default package
 	public void testDecpRepetition_pr214559_3() { runTest("decp repetition problem - 3");} // across multiple files
+	public void testISEAnnotations_pr209831() { runTest("illegal state exception with annotations");}
+	public void testISEAnnotations_pr209831_2() { runTest("illegal state exception with annotations - 2");}
 	
   /////////////////////////////////////////
   public static Test suite() {

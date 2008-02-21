@@ -60,5 +60,17 @@
      <compile files="TestClass.java Interface1.java Interface1TestClass.java DeclareParentsPrecedenceTest.java TestAspect.java"/>
      <run class="DeclareParentsPrecedenceTest"/>
    </ajc-test>
+
+   <ajc-test dir="bugs160/pr209831" title="illegal state exception with annotations">
+     <compile options="-1.5 -showWeaveInfo" files="Test.java">
+       <message kind="weave" text="Join point 'exception-handler(void Test.&lt;catch&gt;(java.lang.Throwable))' in Type 'Test' (Test.java:34) advised by before advice from 'ExactAnnotationTypePatternBug' (Test.java:5)"/>
+     </compile>
+     <run class="Test"/>
+   </ajc-test>
+
+   <ajc-test dir="bugs160/pr209831" title="illegal state exception with annotations - 2">
+     <compile options="-Xlint:ignore -1.5 -showWeaveInfo" files="Test2.java"/>
+     <run class="Test2"/>
+   </ajc-test>
    
 </suite>
