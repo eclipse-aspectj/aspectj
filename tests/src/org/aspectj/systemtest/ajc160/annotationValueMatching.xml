@@ -1,0 +1,46 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.6.0 Annotation Value Matching Tests -->
+<suite>
+
+   <ajc-test dir="features160/annotationValueMatching" title="enum references - 1">
+     <compile options="-1.5 -showWeaveInfo" files="Color.java,TrafficLight.java,Fruit.java,Fruity.java,EnumTest1.java"> 
+       <message kind="weave" text="Join point 'method-execution(void a.EnumTest1.m())' in Type 'a.EnumTest1' (EnumTest1.java:9) advised by before advice from 'a.EnumTest1' (EnumTest1.java:13)"/>
+       <message kind="weave" text="Join point 'method-execution(void a.EnumTest1.o())' in Type 'a.EnumTest1' (EnumTest1.java:11) advised by before advice from 'a.EnumTest1' (EnumTest1.java:13)"/>
+     </compile>
+     <run class="a.EnumTest1"/>
+   </ajc-test>
+
+   <ajc-test dir="features160/annotationValueMatching" title="enum references - 2">
+     <compile options="-1.5 -showWeaveInfo" files="Color.java,TrafficLight.java,Fruit.java,Fruity.java,EnumTest2.java"> 
+       <message kind="weave" text="Join point 'method-execution(void a.EnumTest2.m())' in Type 'a.EnumTest2' (EnumTest2.java:9) advised by before advice from 'a.EnumTest2' (EnumTest2.java:13)"/>
+       <message kind="weave" text="Join point 'method-execution(void a.EnumTest2.o())' in Type 'a.EnumTest2' (EnumTest2.java:11) advised by before advice from 'a.EnumTest2' (EnumTest2.java:13)"/>
+     </compile>
+     <run class="a.EnumTest2"/>
+   </ajc-test>
+
+   <ajc-test dir="features160/annotationValueMatching" title="enum references - 3">
+     <compile options="-1.5 -showWeaveInfo" files="Color.java,TrafficLight.java,Fruit.java,Fruity.java,EnumTest3.java"> 
+       <message kind="weave" text="Join point 'method-execution(void a.EnumTest3.m())' in Type 'a.EnumTest3' (EnumTest3.java:9) advised by before advice from 'a.EnumTest3' (EnumTest3.java:13)"/>
+     </compile>
+     <run class="a.EnumTest3"/>
+   </ajc-test>
+
+   <ajc-test dir="features160/annotationValueMatching" title="broken - 1">
+     <compile options="-1.5 -showWeaveInfo" files="Broken1.java"> 
+       <message kind="error" line="28" text="Invalid annotation value 'a', expected enum value"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features160/annotationValueMatching" title="parsing">
+     <compile options="-1.5 -showWeaveInfo Parsing.java"/>
+   </ajc-test>
+      
+   <ajc-test dir="features160/annotationValueMatching" title="simple">
+     <compile options="-1.5 -showWeaveInfo Simple.java">
+       <message kind="weave" text="Join point 'method-execution(void Marked.b())' in Type 'Marked' (Simple.java:18) advised by before advice from 'X' (Simple.java:28)"/>
+       <message kind="weave" text="Join point 'method-execution(void Marked.c())' in Type 'Marked' (Simple.java:21) advised by before advice from 'X' (Simple.java:28)"/>
+     </compile>       
+   </ajc-test>
+   
+</suite>
