@@ -15,7 +15,6 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.aspectj.org.eclipse.jdt.core.JavaCore;
 import org.aspectj.org.eclipse.jdt.core.dom.AST;
 import org.aspectj.org.eclipse.jdt.core.dom.ASTParser;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterAdviceDeclaration;
@@ -41,6 +40,7 @@ import org.aspectj.org.eclipse.jdt.core.dom.DeclarePrecedenceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareSoftDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareWarningDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DefaultTypePattern;
+import org.aspectj.org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.aspectj.org.eclipse.jdt.core.dom.FieldAccess;
 import org.aspectj.org.eclipse.jdt.core.dom.FieldDeclaration;
@@ -64,8 +64,6 @@ import org.aspectj.org.eclipse.jdt.core.dom.StringLiteral;
 import org.aspectj.org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.VariableDeclarationStatement;
-import org.aspectj.org.eclipse.jdt.core.dom.EnumDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 public class ASTVisitorTest extends TestCase {
