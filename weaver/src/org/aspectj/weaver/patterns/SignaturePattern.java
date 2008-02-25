@@ -229,7 +229,7 @@ public class SignaturePattern extends PatternNode {
     	}
     	
     	public Object visit(ExactTypePattern node, Object data) {
-    		ExactAnnotationTypePattern eatp =  new ExactAnnotationTypePattern(node.getExactType().resolve(scope.getWorld()));
+    		ExactAnnotationTypePattern eatp =  new ExactAnnotationTypePattern(node.getExactType().resolve(scope.getWorld()),null);
     		eatp.accept(this,data);		
     		return data;
     	}
