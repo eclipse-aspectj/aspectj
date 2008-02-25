@@ -17,8 +17,10 @@ package org.aspectj.weaver.patterns;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.weaver.ISourceContext;
@@ -737,8 +739,10 @@ public class PatternParser {
 		return ret;
 	}
 
+	// PVAL cope with annotation values at other places in this code
 	public AnnotationTypePattern maybeParseSingleAnnotationPattern() {
 		AnnotationTypePattern ret = null;
+		Map values = null;
 		// LALR(2) - fix by making "!@" a single token
 		int startIndex = tokenSource.getIndex();
 		if (maybeEat("!")) {
@@ -750,7 +754,13 @@ public class PatternParser {
 					return ret;
 				} else {
 					TypePattern p = parseSingleTypePattern();
-					ret = new NotAnnotationTypePattern(new WildAnnotationTypePattern(p));
+					if (maybeEatAdjacent("(")) {
+						values = parseAnnotationValues();
+						eat(")");
+						ret = new NotAnnotationTypePattern(new WildAnnotationTypePattern(p,values));
+					} else {
+						ret = new NotAnnotationTypePattern(new WildAnnotationTypePattern(p));						
+					}
 					return ret;
 				}
 			} else {
@@ -766,13 +776,48 @@ public class PatternParser {
 				return ret;
 			} else {
 				TypePattern p = parseSingleTypePattern();
-				ret = new WildAnnotationTypePattern(p);
+				if (maybeEatAdjacent("(")) {
+					values = parseAnnotationValues();
+					eat(")");
+					ret = new WildAnnotationTypePattern(p,values);
+				} else {
+					ret = new WildAnnotationTypePattern(p);
+				}
 				return ret;
 			}
 		} else {
 			tokenSource.setIndex(startIndex); // not for us!
 			return ret;
 		}		
+	}
+	
+	// Parse annotation values.  In an expression in @A(a=b,c=d) this method will be 
+	// parsing the a=b,c=d.)
+	public Map/*String,String*/ parseAnnotationValues() {
+		Map values = new HashMap();
+		boolean seenDefaultValue = false;
+		do {
+			String possibleKeyString = parseAnnotationNameValuePattern();
+			if (possibleKeyString==null) {
+				throw new ParserException("expecting simple literal ",tokenSource.peek(-1));
+			}
+			// did they specify just a single entry 'v'  or a keyvalue pair 'k=v'
+			if (maybeEat("=")) { 
+				// it was a key!
+				String valueString = parseAnnotationNameValuePattern();
+				if (valueString==null) {
+					throw new ParserException("expecting simple literal ",tokenSource.peek(-1));
+				}
+				values.put(possibleKeyString,valueString);
+			} else {
+				if (seenDefaultValue) {
+					throw new ParserException("cannot specify two default values",tokenSource.peek(-1));
+				}
+				seenDefaultValue = true;
+				values.put("value",possibleKeyString);
+			}
+		} while (maybeEat(",")); // keep going whilst there are ','
+		return values;
 	}
 	
 	public TypePattern parseSingleTypePattern() {
@@ -910,7 +955,7 @@ public class PatternParser {
 			annotationName.append(parseIdentifier());
 		}
 		UnresolvedType type = UnresolvedType.forName(annotationName.toString());
-		p = new ExactAnnotationTypePattern(type);
+		p = new ExactAnnotationTypePattern(type,null);
 		return p;
 	}
 
@@ -1025,6 +1070,36 @@ public class PatternParser {
 		return names;
 	}
 	
+	// supported form 'a.b.c.d' or just 'a'
+	public String parseAnnotationNameValuePattern() {
+		StringBuffer buf = new StringBuffer();
+		IToken tok;
+		int startPos = tokenSource.peek().getStart();
+		boolean dotOK = false;
+		int depth = 0;
+		while (true) {
+			tok = tokenSource.peek();
+			// keep going until we hit ')' or '=' or ','
+			if (tok.getString()==")" && depth==0) break;
+			if (tok.getString()=="=" && depth==0) break;
+			if (tok.getString()=="," && depth==0) break;
+			
+			// keep track of nested brackets
+			if (tok.getString()=="(") depth++;
+			if (tok.getString()==")") depth--;
+			if (tok.getString()=="{") depth++;
+			if (tok.getString()=="}") depth--;
+
+			if (tok.getString()=="." && !dotOK) {
+				throw new ParserException("dot not expected",tok);
+			}
+			buf.append(tok.getString());
+			tokenSource.next();
+			dotOK=true;
+		}
+		if (buf.length()==0) return null;
+		else                 return buf.toString();
+	}
 	
 	
 	public NamePattern parseNamePattern() {
@@ -1437,6 +1512,17 @@ public class PatternParser {
 		} else {
 			return tokenSource.next();
 		}
+	}
+	
+	public boolean maybeEatAdjacent(String token) {
+		IToken next = tokenSource.peek();
+		if (next.getString() == token) {
+			if (isAdjacent(tokenSource.peek(-1),next)) {
+				tokenSource.next();
+				return true;
+			}
+		}		
+		return false;
 	}
 	
 	public boolean maybeEat(String token) {
