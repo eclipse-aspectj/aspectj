@@ -1,7 +1,7 @@
 enum Color { RED, GREEN, AMBER }
 
 @interface TrafficLight {
-	Color value() default Color.RED;
+	Color value() default Color.RED; Color a() default Color.GREEN; Color c() default Color.GREEN; Color e() default Color.GREEN;
 }
 
 public class Parsing {
