@@ -80,6 +80,8 @@ public interface Member {
 	public AnnotationX[][] getParameterAnnotations();
 	public ResolvedType[][] getParameterAnnotationTypes();
 	
+	public String getAnnotationDefaultValue();
+	
 	/**
 	 * Return full signature, including return type, e.g. "()LFastCar;" for a signature without the return type,
 	 * use getParameterSignature() - it is importnant to choose the right one in the face of covariance.
