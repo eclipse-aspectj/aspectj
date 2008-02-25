@@ -744,7 +744,29 @@ public abstract class Shadow {
     }
     
     public String toResolvedString(World world) {
-    	return getKind() + "(" + world.resolve(getSignature()).toGenericString() + ")";
+    	StringBuffer sb = new StringBuffer();
+    	sb.append(getKind());
+    	sb.append("(");
+    	Member m = getSignature();
+    	if (m==null) {
+    		sb.append("<<missing signature>>");
+    	} else {
+    		ResolvedMember rm = world.resolve(m);
+    		if (rm==null) {
+    			sb.append("<<unresolvableMember:").append(m).append(">>");
+    		} else {
+    			String genString = rm.toGenericString();
+    			if (genString==null) {
+    				sb.append("<<unableToGetGenericStringFor:").append(rm).append(">>");
+    			} else {
+    				sb.append(genString);
+    			}
+    			
+    		}
+    	}
+    	sb.append(")");
+    	return sb.toString();
+    	// was: return getKind() + "(" + world.resolve(getSignature()).toGenericString() + ")";
     }
 
     /**
