@@ -30,6 +30,7 @@ import org.aspectj.apache.bcel.classfile.annotation.Annotation;
 import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.EnumElementValue;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.AbstractReferenceTypeDelegate;
 import org.aspectj.weaver.AjAttribute;
@@ -567,8 +568,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		                List values = ax.getBcelAnnotation().getValues();
 		                for (Iterator it = values.iterator(); it.hasNext();) {
 	                        ElementNameValuePair element = (ElementNameValuePair) it.next();
-	                        ElementValue v = element.getValue();
-	                        retentionPolicy = v.stringifyValue();
+	                        EnumElementValue v = (EnumElementValue)element.getValue();
+	                        retentionPolicy = v.getEnumValueString();
 	                        return retentionPolicy;
 	                    }
 					}
@@ -603,7 +604,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	            	ElementValue[] evs = arrayValue.getElementValuesArray();
 	            	if (evs!=null) {
 	            		for (int j = 0; j < evs.length; j++) {
-							String targetKind = evs[j].stringifyValue();
+							String targetKind = ((EnumElementValue)evs[j]).getEnumValueString();
 							if (targetKind.equals("ANNOTATION_TYPE")) {       targetKinds.add(AnnotationTargetKind.ANNOTATION_TYPE);
 							} else if (targetKind.equals("CONSTRUCTOR")) {    targetKinds.add(AnnotationTargetKind.CONSTRUCTOR);
 							} else if (targetKind.equals("FIELD")) {          targetKinds.add(AnnotationTargetKind.FIELD);

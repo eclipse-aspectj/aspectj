@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.aspectj.apache.bcel.classfile.AnnotationDefault;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ExceptionTable;
 import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
@@ -221,6 +222,18 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		return null;
 	}
 	
+	public String getAnnotationDefaultValue() {
+		Attribute[] attrs = method.getAttributes();
+		for (int i = 0; i < attrs.length; i++) {
+			Attribute attribute = attrs[i];			
+			if (attribute.getName().equals("AnnotationDefault")) {
+				AnnotationDefault def = (AnnotationDefault)attribute;
+				return def.getElementValue().stringifyValue();
+			}
+		}
+		return null;
+	}
+	
 	// for testing - use with the method above
 	public String[] getAttributeNames(boolean onlyIncludeAjOnes) {
 		Attribute[] as = method.getAttributes();
@@ -287,7 +300,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	}
 	
 	public boolean hasAnnotation(UnresolvedType ofType) {
-		ensureAnnotationTypesRetrieved();
+		ensureAnnotationsRetrieved();
 		for (Iterator iter = annotationTypes.iterator(); iter.hasNext();) {
 			ResolvedType aType = (ResolvedType) iter.next();
 			if (aType.equals(ofType)) return true;		
@@ -296,19 +309,28 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	}
 	
 	public AnnotationX[] getAnnotations() {
-		ensureAnnotationTypesRetrieved();
+		ensureAnnotationsRetrieved();
 		return annotations;
 	}
 	
 	 public ResolvedType[] getAnnotationTypes() {
-	    ensureAnnotationTypesRetrieved();
+	    ensureAnnotationsRetrieved();
 	    ResolvedType[] ret = new ResolvedType[annotationTypes.size()];
 	    annotationTypes.toArray(ret);
 	    return ret;
      }
 	 
+
+	 public AnnotationX getAnnotationOfType(UnresolvedType ofType) {
+		 ensureAnnotationsRetrieved();
+		 for (int i=0; i<annotations.length; i++) {
+			 if (annotations[i].getTypeName().equals(ofType.getName())) return annotations[i];
+		 }
+		 return null;
+	 }
+	 
 	 public void addAnnotation(AnnotationX annotation) {
-	    ensureAnnotationTypesRetrieved();	
+	    ensureAnnotationsRetrieved();	
 		// Add it to the set of annotations
 		int len = annotations.length;
 		AnnotationX[] ret = new AnnotationX[len+1];
@@ -323,7 +345,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		method.addAnnotation(annotation.getBcelAnnotation());
 	 }
 	 
-	 private void ensureAnnotationTypesRetrieved() {
+	 private void ensureAnnotationsRetrieved() {
 		if (method == null) return; // must be ok, we have evicted it
 		if (annotationTypes == null || method.getAnnotations().length!=annotations.length) { // sometimes the list changes underneath us!
     		Annotation annos[] = method.getAnnotations();
@@ -474,7 +496,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		 if (method != null) {
 			 unpackGenericSignature();
 			 unpackJavaAttributes();
-			 ensureAnnotationTypesRetrieved();
+			 ensureAnnotationsRetrieved();
 			 ensureParameterAnnotationsRetrieved();
 			 determineParameterNames();
 // 			 this.sourceContext = SourceContextImpl.UNKNOWN_SOURCE_CONTEXT;
