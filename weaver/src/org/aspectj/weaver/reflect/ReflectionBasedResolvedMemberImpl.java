@@ -12,11 +12,14 @@
 package org.aspectj.weaver.reflect;
 
 import java.lang.reflect.Member;
+import java.util.Iterator;
 
+import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
+
 
 /**
  * Subtype of ResolvedMemberImpl used in reflection world.
@@ -168,8 +171,25 @@ public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 		unpackAnnotations();
 		return super.getAnnotationTypes();
 	}
+	
+	public AnnotationX getAnnotationOfType(UnresolvedType ofType) {
+		unpackAnnotations();
+		if (annotationFinder==null) return null;
+		for (Iterator iterator = annotationTypes.iterator(); iterator.hasNext();) {
+			ResolvedType type = (ResolvedType) iterator.next();
+			if (type.getSignature().equals(ofType.getSignature())) {
+				return annotationFinder.getAnnotationOfType(ofType, reflectMember);
+			}
+		}
+		return null;
+	}
 
-    public ResolvedType[][] getParameterAnnotationTypes() {
+	public String getAnnotationDefaultValue() {
+		if (annotationFinder==null) return null;
+		return annotationFinder.getAnnotationDefaultValue(reflectMember);
+	}
+
+	public ResolvedType[][] getParameterAnnotationTypes() {
     	if (parameterAnnotationTypes==null && annotationFinder!=null) {
     		parameterAnnotationTypes = annotationFinder.getParameterAnnotationTypes(reflectMember);
     	}
