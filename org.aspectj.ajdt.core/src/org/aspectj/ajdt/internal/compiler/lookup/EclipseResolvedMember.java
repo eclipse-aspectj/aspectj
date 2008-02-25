@@ -13,8 +13,11 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
@@ -71,6 +74,31 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 		// TODO errr missing in action - we need to implement this! Probably using something like EclipseAnnotationConvertor - itself not finished ;)
 		throw new RuntimeException("not yet implemented - please raise an AJ bug");
 //		return super.getAnnotations();
+	}
+	
+	public String getAnnotationDefaultValue() {
+		if (realBinding instanceof MethodBinding) {
+			AbstractMethodDeclaration methodDecl = getTypeDeclaration().declarationOf((MethodBinding)realBinding);
+			if (methodDecl instanceof AnnotationMethodDeclaration) {
+				AnnotationMethodDeclaration annoMethodDecl = (AnnotationMethodDeclaration)methodDecl;
+				Expression e = annoMethodDecl.defaultValue;
+				if (e.resolvedType==null)
+				e.resolve(methodDecl.scope);
+				// TODO does not cope with many cases...
+				if (e instanceof QualifiedNameReference) {
+					
+					QualifiedNameReference qnr = (QualifiedNameReference)e;
+					if (qnr.binding instanceof FieldBinding) {
+						FieldBinding fb = (FieldBinding)qnr.binding;
+						StringBuffer sb = new StringBuffer();
+						sb.append(fb.declaringClass.signature());
+						sb.append(fb.name);
+						return sb.toString();
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	public ResolvedType[] getAnnotationTypes() {
