@@ -13,6 +13,13 @@
 
 package org.aspectj.weaver.patterns;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import junit.framework.TestCase;
 
 import org.aspectj.weaver.BcweaverTests;
@@ -674,6 +681,99 @@ public class ParserTestCase extends TestCase {
 			assertEquals("(",pEx.getMessage());
 		}		
 	}
+	
+	public void testIntAnnotationVal() {
+		PatternParser parser = new PatternParser("execution(@ComplexAnnotation(ival=5) * *(..))");
+		Pointcut pc = parser.parsePointcut();
+		assertEquals("Expected annotation value not found","ival=5",getValueString(pc));
+	}
+	
+	private String getValueString(Pointcut pc) {
+		if (!(pc instanceof KindedPointcut)) fail("Expected KindedPointcut but was "+pc.getClass());
+		KindedPointcut kpc = (KindedPointcut)pc;
+		AnnotationTypePattern atp = kpc.getSignature().getAnnotationPattern();
+		if (!(atp instanceof WildAnnotationTypePattern)) fail("Expected WildAnnotationTypePattern but was "+atp.getClass());
+		WildAnnotationTypePattern watp = (WildAnnotationTypePattern)atp;
+		Map m = watp.annotationValues;
+		Set keys = m.keySet();
+		List orderedKeys = new ArrayList();
+		orderedKeys.addAll(keys);
+		Collections.sort(orderedKeys);
+		StringBuffer sb = new StringBuffer();
+		for (Iterator iterator = orderedKeys.iterator(); iterator.hasNext();) {
+			String object = (String) iterator.next();
+			sb.append(object).append("=").append(m.get(object));
+			if (iterator.hasNext()) sb.append(",");
+		}
+		return sb.toString();
+	}
+
+	public void testByteAnnotationVal() {
+		PatternParser parser = new PatternParser("execution(@ComplexAnnotation(bval=5) * *(..))");
+		Pointcut pc = parser.parsePointcut();
+		assertEquals("Expected annotation value not found","bval=5",getValueString(pc));
+	}
+
+	public void testCharAnnotationVal() {
+		PatternParser parser = new PatternParser("execution(@ComplexAnnotation(cval='5') * *(..))");
+		Pointcut pc = parser.parsePointcut();
+		assertEquals("Expected annotation value not found","cval='5'",getValueString(pc));
+	}
+	
+	public void testLongAnnotationVal() {
+		PatternParser parser = new PatternParser("execution(@ComplexAnnotation(jval=123123) * *(..))");
+		Pointcut pc = parser.parsePointcut();		
+		assertEquals("Expected annotation value not found","jval=123123",getValueString(pc));
+	}
+
+	public void testDoubleAnnotationVal() {
+		PatternParser parser = new PatternParser("execution(@ComplexAnnotation(dval=123.3) * *(..))");
+		Pointcut pc = parser.parsePointcut();
+		assertEquals("Expected annotation value not found","dval=123.3",getValueString(pc));
+	}
+
+	public void testBooleanAnnotationVal() {
+		PatternParser parser = new PatternParser("execution(@ComplexAnnotation(zval=true) * *(..))");
+		Pointcut pc = parser.parsePointcut();
+		assertEquals("Expected annotation value not found","zval=true",getValueString(pc));
+	}
+
+	public void testShortAnnotationVal() {
+		PatternParser parser = new PatternParser("execution(@ComplexAnnotation(sval=43) * *(..))");
+		Pointcut pc = parser.parsePointcut();
+		assertEquals("Expected annotation value not found","sval=43",getValueString(pc));
+	}
+	
+	public void testEnumAnnotationVal() {
+		PatternParser parser = new PatternParser("execution(@ComplexAnnotation(enumval=Color.GREEN) * *(..))");
+		Pointcut pc = parser.parsePointcut();
+		assertEquals("Expected annotation value not found","enumval=Color.GREEN",getValueString(pc));
+	}
+
+	public void testStringAnnotationVal() {
+		PatternParser parser = new PatternParser("execution(@ComplexAnnotation(strval=\"abc\") * *(..))");
+		Pointcut pc = parser.parsePointcut();
+		// notice quotes stripped...
+		assertEquals("Expected annotation value not found","strval=abc",getValueString(pc));
+	}
+
+	public void testClassAnnotationVal() {
+		PatternParser parser = new PatternParser("execution(@ComplexAnnotation(classval=String.class) * *(..))");
+		Pointcut pc = parser.parsePointcut();
+		assertEquals("Expected annotation value not found","classval=String.class",getValueString(pc));
+	}
+
+	// failing as {1 is treated as a single token and so we don't realise the , is within the curlies
+//	public void testArrayAnnotationVal() {
+//		PatternParser parser = new PatternParser("execution(@ComplexAnnotation(arrayval={1,2,3}) * *(..))");
+//		Pointcut pc = parser.parsePointcut();
+//		assertEquals("Expected annotation value not found","arrayval={1,2,3}",getValueString(pc));
+//	}
+
+	
+	
+	
+	// ---
 
 	
 	public TestScope makeSimpleScope() {
