@@ -12,6 +12,7 @@ package org.aspectj.weaver.patterns;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.AnnotatedElement;
+import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.BcweaverTests;
 import org.aspectj.weaver.UnresolvedType;
@@ -86,7 +87,7 @@ public class AnnotationPatternTestCase extends TestCase {
 		AndAnnotationTypePattern atp = (AndAnnotationTypePattern) ap;
 		NotAnnotationTypePattern notBoo = (NotAnnotationTypePattern) atp.getRight();
 		ExactAnnotationTypePattern boo = (ExactAnnotationTypePattern) notBoo.getNegatedPattern();
-		WildAnnotationTypePattern fooOrGoo = (WildAnnotationTypePattern) atp.getLeft();
+		AnnotationTypePattern fooOrGoo = (AnnotationTypePattern) atp.getLeft();
 		assertEquals("@((Foo || Goo)) !@Boo",ap.toString());
 	}
 	
@@ -351,6 +352,11 @@ public class AnnotationPatternTestCase extends TestCase {
 		 * @see org.aspectj.weaver.AnnotatedElement#getAnnotationTypes()
 		 */
 		public ResolvedType[] getAnnotationTypes() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public AnnotationX getAnnotationOfType(UnresolvedType ofType) {
 			// TODO Auto-generated method stub
 			return null;
 		}
