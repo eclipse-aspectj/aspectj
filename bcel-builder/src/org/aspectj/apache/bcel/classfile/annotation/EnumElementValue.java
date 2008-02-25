@@ -40,9 +40,16 @@ public class EnumElementValue extends ElementValue {
 		dos.writeShort(valueIdx); // u2
     }
     
+    /**
+     * return signature and value, something like Lp/Color;RED
+     */
     public String stringifyValue() {
-    	ConstantUtf8 cu8 = (ConstantUtf8)cpool.getConstant(valueIdx,Constants.CONSTANT_Utf8);
-		return cu8.getBytes();
+    	StringBuffer sb = new StringBuffer();
+    	ConstantUtf8 cu8 = (ConstantUtf8)cpool.getConstant(typeIdx,Constants.CONSTANT_Utf8);
+    	sb.append(cu8.getBytes());
+    	cu8 = (ConstantUtf8)cpool.getConstant(valueIdx,Constants.CONSTANT_Utf8);
+    	sb.append(cu8.getBytes());
+    	return sb.toString();
     }
     
     public String getEnumTypeString() {

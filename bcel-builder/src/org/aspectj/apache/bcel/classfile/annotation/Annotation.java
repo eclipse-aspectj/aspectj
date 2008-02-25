@@ -30,6 +30,7 @@ import org.aspectj.apache.bcel.classfile.Utility;
  */
 public class Annotation {
 	private int typeIndex;
+	// OPTIMIZE don't need a new list instance for every annotation instance!
 	private List /* ElementNameValuePair */ evs = new ArrayList();
 	private ConstantPool cpool;
 	private boolean isRuntimeVisible;
@@ -126,5 +127,29 @@ public class Annotation {
 			result.append(")");
 		}
 		return result.toString();
+	}
+
+	/**
+     * Return true if the annotation has a value with the specified name (n) and value (v)
+     */
+	public boolean hasNameValuePair(String n, String v) {
+		for (int i=0;i<evs.size();i++) {
+			ElementNameValuePair pair = (ElementNameValuePair)evs.get(i);
+			if (pair.getNameString().equals(n)) {
+				if (pair.getValue().stringifyValue().equals(v)) return true;
+			}
+		}
+		return false;
+	}
+
+    /**
+     * Return true if the annotation has a value with the specified name (n)
+     */
+	public boolean hasNamedValue(String n) {
+		for (int i=0;i<evs.size();i++) {
+			ElementNameValuePair pair = (ElementNameValuePair)evs.get(i);
+			if (pair.getNameString().equals(n)) return true;
+		}
+		return false;
 	}
 }
