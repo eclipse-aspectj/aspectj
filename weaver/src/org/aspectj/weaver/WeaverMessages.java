@@ -146,6 +146,10 @@ public class WeaverMessages {
 	public static final String INCORRECT_TARGET_FOR_DECLARE_ANNOTATION = "incorrectTargetForDeclareAnnotation";
 	public static final String NO_MATCH_BECAUSE_SOURCE_RETENTION = "noMatchBecauseSourceRetention";
 	
+	// Annotation Value messages
+	public static final String INVALID_ANNOTATION_VALUE = "invalidAnnotationValue";
+	public static final String UNKNOWN_ANNOTATION_VALUE = "unknownAnnotationValue";
+	
 	// < Java5 messages
 	public static final String ATANNOTATION_ONLY_SUPPORTED_AT_JAVA5_LEVEL = "atannotationNeedsJava5";
 	public static final String ATWITHIN_ONLY_SUPPORTED_AT_JAVA5_LEVEL = "atwithinNeedsJava5";

@@ -16,5 +16,6 @@ public interface AnnotatedElement {
 	boolean hasAnnotation(UnresolvedType ofType);
 	
 	ResolvedType[] getAnnotationTypes();
-	// SomeType getAnnotation(UnresolvedType ofType);
+	
+	AnnotationX getAnnotationOfType(UnresolvedType ofType);
 }

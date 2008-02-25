@@ -116,6 +116,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     	return EMPTY_RESOLVED_TYPE_ARRAY;
     }
     
+    public AnnotationX getAnnotationOfType(UnresolvedType ofType) { 
+    	return null;
+    }
+    
     public final UnresolvedType getSuperclass(World world) {
         return getSuperclass();
     }

@@ -91,6 +91,10 @@ public class JoinPointSignature implements ResolvedMember {
 	public ResolvedType[] getAnnotationTypes() {
 		return realMember.getAnnotationTypes();
 	}
+	
+	public AnnotationX getAnnotationOfType(UnresolvedType ofType) {
+		return realMember.getAnnotationOfType(ofType);
+	}
 
 	public void setAnnotationTypes(UnresolvedType[] annotationtypes) {
 		realMember.setAnnotationTypes(annotationtypes);
@@ -418,5 +422,9 @@ public class JoinPointSignature implements ResolvedMember {
 
 	public ResolvedMember parameterizedWith(Map m, World w) {
 		return realMember.parameterizedWith(m,w);
+	}
+
+	public String getAnnotationDefaultValue() {
+		return realMember.getAnnotationDefaultValue();
 	}
 }

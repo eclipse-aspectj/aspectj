@@ -206,4 +206,14 @@ public class AnnotationX {
 	  else	               sb.append(theRealASMAnnotation.stringify());
   }
 
+  public boolean hasNameValuePair(String n, String v) {
+	  if (mode==MODE_BCEL) return theRealBcelAnnotation.hasNameValuePair(n,v);
+	  else	               throw new RuntimeException("Cannot be anything else");
+  }
+
+  public boolean hasNamedValue(String n) {
+	  if (mode==MODE_BCEL) return theRealBcelAnnotation.hasNamedValue(n);
+	  else	               throw new RuntimeException("Cannot be anything else");
+  }
+
 }
