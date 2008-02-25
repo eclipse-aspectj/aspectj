@@ -20,6 +20,7 @@ public class AllTestsAspectJ160 {
 		TestSuite suite = new TestSuite("AspectJ 1.6.0 tests");
 		//$JUnit-BEGIN$
 		suite.addTest(ParameterAnnotationMatchingTests.suite());
+		suite.addTest(AnnotationValueMatchingTests.suite());
 		suite.addTest(SanityTests.suite());
 		suite.addTest(NewFeatures.suite());
 		suite.addTest(Ajc160Tests.suite());
