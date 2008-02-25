@@ -100,6 +100,47 @@ public class Java15PointcutExpressionTest extends TestCase {
 		
 	}
 	
+	public void testMatchingAnnotationValueExpressions() throws SecurityException, NoSuchMethodException {
+		PointcutParser p = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
+		PointcutExpression pexpr = null;
+		ShadowMatch match = null;
+
+		Method n = test.AnnoValues.class.getMethod("none",null);          
+		Method r = test.AnnoValues.class.getMethod("redMethod",null);           
+		Method g = test.AnnoValues.class.getMethod("greenMethod",null);     
+		Method b = test.AnnoValues.class.getMethod("blueMethod",null);
+		Method d = test.AnnoValues.class.getMethod("defaultMethod",null);
+
+		pexpr = p.parsePointcutExpression("execution(@test.A3(test.Color.RED) public void *(..))");
+		assertTrue("Should match", pexpr.matchesMethodExecution(n).neverMatches()); // default value RED
+		assertTrue("Should match", pexpr.matchesMethodExecution(r).alwaysMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(g).neverMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(b).neverMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(d).alwaysMatches());
+		
+		pexpr = p.parsePointcutExpression("execution(@test.A3(test.Color.GREEN) public void *(..))");
+		assertTrue("Should not match", pexpr.matchesMethodExecution(n).neverMatches()); // default value RED
+		assertTrue("Should not match", pexpr.matchesMethodExecution(r).neverMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(g).alwaysMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(b).neverMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(d).neverMatches());
+		
+		pexpr = p.parsePointcutExpression("execution(@test.A3(test.Color.BLUE) public void *(..))");
+		assertTrue("Should not match", pexpr.matchesMethodExecution(n).neverMatches()); // default value RED
+		assertTrue("Should not match", pexpr.matchesMethodExecution(r).neverMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(g).neverMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(b).alwaysMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(d).neverMatches());
+
+		pexpr = p.parsePointcutExpression("execution(@test.A3 public void *(..))");
+		assertTrue("Should match", pexpr.matchesMethodExecution(n).neverMatches()); // default value RED
+		assertTrue("Should match", pexpr.matchesMethodExecution(r).alwaysMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(g).alwaysMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(b).alwaysMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(d).alwaysMatches());
+
+	}
+	
 
 	/**
 	 * Test matching of pointcuts against expressions.  A reflection world is being used on the backend here (not a Bcel one).

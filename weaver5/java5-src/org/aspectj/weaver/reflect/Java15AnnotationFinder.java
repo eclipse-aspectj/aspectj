@@ -21,11 +21,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.aspectj.apache.bcel.classfile.AnnotationDefault;
+import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.util.NonCachingClassLoaderRepository;
 import org.aspectj.apache.bcel.util.Repository;
+import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
@@ -93,6 +96,71 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 		} catch (ClassNotFoundException ex) {
 			// just return null
 		}
+		return null;
+	}
+	
+	public AnnotationX getAnnotationOfType(UnresolvedType ofType,Member onMember) {
+		if (!(onMember instanceof AccessibleObject)) return null;
+		// here we really want both the runtime visible AND the class visible annotations
+		// so we bail out to Bcel and then chuck away the JavaClass so that we don't hog
+		// memory.
+		try {
+			JavaClass jc = bcelRepository.loadClass(onMember.getDeclaringClass());
+			org.aspectj.apache.bcel.classfile.annotation.Annotation[] anns = new org.aspectj.apache.bcel.classfile.annotation.Annotation[0];
+			if (onMember instanceof Method) {
+				org.aspectj.apache.bcel.classfile.Method bcelMethod = jc.getMethod((Method)onMember);
+				if (bcelMethod == null) {
+					System.err.println("Unexpected problem in Java15AnnotationFinder: cannot retrieve annotations on method '"+onMember.getName()+"' in class '"+jc.getClassName()+"'");
+				} else {
+					anns = bcelMethod.getAnnotations();
+				}
+			} else if (onMember instanceof Constructor) {
+				org.aspectj.apache.bcel.classfile.Method bcelCons = jc.getMethod((Constructor)onMember);
+				anns = bcelCons.getAnnotations();
+			} else if (onMember instanceof Field) {
+				org.aspectj.apache.bcel.classfile.Field bcelField = jc.getField((Field)onMember);
+				anns = bcelField.getAnnotations();
+			}
+			// the answer is cached and we don't want to hold on to memory
+			bcelRepository.clear();
+			if (anns == null) anns = new org.aspectj.apache.bcel.classfile.annotation.Annotation[0];
+			// convert to our Annotation type
+			for (int i=0;i<anns.length;i++) {
+				if (anns[i].getTypeSignature().equals(ofType.getSignature())) {
+					return new AnnotationX(anns[i],world);
+				}
+			}
+			return null;
+		} catch (ClassNotFoundException cnfEx) {
+			// just use reflection then
+		}
+		
+		return null;
+	}
+	
+	public String getAnnotationDefaultValue(Member onMember) {
+		try {
+			JavaClass jc = bcelRepository.loadClass(onMember.getDeclaringClass());
+			if (onMember instanceof Method) {
+				org.aspectj.apache.bcel.classfile.Method bcelMethod = jc.getMethod((Method)onMember);
+				if (bcelMethod == null) {
+					System.err.println("Unexpected problem in Java15AnnotationFinder: cannot retrieve annotations on method '"+onMember.getName()+"' in class '"+jc.getClassName()+"'");
+				} else {
+					Attribute[] attrs = bcelMethod.getAttributes();
+					for (int i = 0; i < attrs.length; i++) {
+						Attribute attribute = attrs[i];			
+						if (attribute.getName().equals("AnnotationDefault")) {
+							AnnotationDefault def = (AnnotationDefault)attribute;
+							return def.getElementValue().stringifyValue();
+						}
+					}
+					return null;
+				}
+			}
+		} catch (ClassNotFoundException cnfEx) {
+			// just use reflection then
+		}
+	
 		return null;
 	}
 	
