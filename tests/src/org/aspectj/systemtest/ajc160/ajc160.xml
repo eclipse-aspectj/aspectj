@@ -3,6 +3,15 @@
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
 
+   <ajc-test dir="bugs160/various" title="hasmethod semantics">
+     <compile options="-1.5 -XhasMember -Xlint:ignore" files="HasMethodSemantics.java"/>
+     <run class="HasMethodSemantics">
+       <stdout>
+         <line text="Implements Marker? no"/>
+       </stdout>
+     </run>
+   </ajc-test>
+
    <ajc-test dir="bugs160/pr204505" title="generics method matching - 1">
      <compile options="-1.5 -showWeaveInfo" files="Bug.java">
        <message kind="weave" text="execution(void C.save(java.lang.Object))"/>
@@ -71,6 +80,11 @@
    <ajc-test dir="bugs160/pr209831" title="illegal state exception with annotations - 2">
      <compile options="-Xlint:ignore -1.5 -showWeaveInfo" files="Test2.java"/>
      <run class="Test2"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs160/pr211146" title="itd lost generic signature">
+     <compile options=" -1.5" files="StringAspect.aj,StringClass.java" outjar="foo.jar"/>
+     <compile options=" -1.5" files="DemoUsage.java" classpath="foo.jar"/>
    </ajc-test>
    
 </suite>

@@ -20,6 +20,7 @@ import junit.framework.Test;
  */
 public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
+//	public void testHasMethodSemantics() { runTest("hasmethod semantics"); }
 	public void testBoundsCheckShouldFail_pr219298() { runTest("bounds check failure");}
 	public void testBoundsCheckShouldFail_pr219298_2() { runTest("bounds check failure - 2");}
 	public void testGenericMethodMatching_pr204505_1() { runTest("generics method matching - 1");}
@@ -33,8 +34,10 @@ public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testDecpRepetition_pr214559_3() { runTest("decp repetition problem - 3");} // across multiple files
 	public void testISEAnnotations_pr209831() { runTest("illegal state exception with annotations");}
 	public void testISEAnnotations_pr209831_2() { runTest("illegal state exception with annotations - 2");}
-	
-  /////////////////////////////////////////
+//	public void testITDLostGenerics_pr211146() { runTest("itd lost generic signature");}
+//	public void testITDLostGenerics_pr211146_2() { runTest("itd lost generic signature - field");}
+
+	/////////////////////////////////////////
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc160Tests.class);
   }
