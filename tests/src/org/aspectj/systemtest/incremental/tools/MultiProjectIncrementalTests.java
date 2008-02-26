@@ -665,6 +665,18 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("PR115251");
 		checkWasFullBuild();  // back to the source
 	}
+	
+
+	public void testPr220255_InfiniteBuildHasMember() {
+		AjdeInteractionTestbed.VERBOSE=true;
+		initialiseProject("pr220255");
+		configureNonStandardCompileOptions("pr220255","-XhasMember");
+		build("pr220255");
+		checkWasFullBuild();
+		alter("pr220255","inc1");
+		build("pr220255");
+		checkWasntFullBuild(); 
+	}
 
 	public void testPr157054() {
 		initialiseProject("PR157054");
