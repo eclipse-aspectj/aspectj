@@ -61,7 +61,7 @@ public class AjdeCoreBuildManager {
 		// this static information needs to be set to ensure 
 		// incremental compilation works correctly
 		IncrementalStateManager.recordIncrementalStates=true;
-		IncrementalStateManager.debugIncrementalStates=true;
+		IncrementalStateManager.debugIncrementalStates=false;
 		AsmManager.attemptIncrementalModelRepairs = true;
 	}
 	
