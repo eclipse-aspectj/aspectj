@@ -108,8 +108,8 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 					} else if (t.isPrimitiveType()) {
 						if (t.getSignature()=="I") {
 						   try {
-							   Integer value = Integer.parseInt(v);
-							   annotationValues.put(k,value.toString());
+							   int value = Integer.parseInt(v);
+							   annotationValues.put(k,Integer.toString(value));
 						   } catch (NumberFormatException nfe) {
 							   IMessage m = MessageUtil.error(
 										WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE,v,"int"),
@@ -118,8 +118,8 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 						   }
 						} else if (t.getSignature()=="F") {
 							   try {
-								   Float value = Float.parseFloat(v);
-								   annotationValues.put(k,value.toString());
+								   float value = Float.parseFloat(v);
+								   annotationValues.put(k,Float.toString(value));
 							   } catch (NumberFormatException nfe) {
 								   IMessage m = MessageUtil.error(
 											WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE,v,"float"),
@@ -138,8 +138,8 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 						   }	
 						} else if (t.getSignature()=="S") {
 								   try {
-									   Short value = Short.parseShort(v);
-									   annotationValues.put(k,value.toString());
+									   short value = Short.parseShort(v);
+									   annotationValues.put(k,Short.toString(value));
 								   } catch (NumberFormatException nfe) {
 									   IMessage m = MessageUtil.error(
 												WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE,v,"short"),
@@ -148,8 +148,8 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 								   }
 						} else if (t.getSignature()=="J") {
 							   try {
-								   Long value = Long.parseLong(v);
-								   annotationValues.put(k,value.toString());
+								   long value = Long.parseLong(v);
+								   annotationValues.put(k,Long.toString(value));
 							   } catch (NumberFormatException nfe) {
 								   IMessage m = MessageUtil.error(
 											WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE,v,"long"),
@@ -158,8 +158,8 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 							   }
 						} else if (t.getSignature()=="D") {
 							   try {
-								   Double value = Double.parseDouble(v);
-								   annotationValues.put(k,value.toString());
+								   double value = Double.parseDouble(v);
+								   annotationValues.put(k,Double.toString(value));
 							   } catch (NumberFormatException nfe) {
 								   IMessage m = MessageUtil.error(
 											WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE,v,"double"),
@@ -168,8 +168,8 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 							   }
 						} else if (t.getSignature()=="B") {
 							   try {
-								   Byte value = Byte.parseByte(v);
-								   annotationValues.put(k,value.toString());
+								   byte value = Byte.parseByte(v);
+								   annotationValues.put(k,Byte.toString(value));
 							   } catch (NumberFormatException nfe) {
 								   IMessage m = MessageUtil.error(
 											WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE,v,"byte"),
