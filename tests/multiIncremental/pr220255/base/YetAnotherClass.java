@@ -1,0 +1,8 @@
+
+
+
+@NeedsXYZ
+public class YetAnotherClass
+{
+    
+}
