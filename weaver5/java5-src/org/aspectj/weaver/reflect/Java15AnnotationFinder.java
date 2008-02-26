@@ -110,7 +110,8 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 			if (onMember instanceof Method) {
 				org.aspectj.apache.bcel.classfile.Method bcelMethod = jc.getMethod((Method)onMember);
 				if (bcelMethod == null) {
-					System.err.println("Unexpected problem in Java15AnnotationFinder: cannot retrieve annotations on method '"+onMember.getName()+"' in class '"+jc.getClassName()+"'");
+					// pr220430
+					//System.err.println("Unexpected problem in Java15AnnotationFinder: cannot retrieve annotations on method '"+onMember.getName()+"' in class '"+jc.getClassName()+"'");
 				} else {
 					anns = bcelMethod.getAnnotations();
 				}
@@ -143,8 +144,10 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 			JavaClass jc = bcelRepository.loadClass(onMember.getDeclaringClass());
 			if (onMember instanceof Method) {
 				org.aspectj.apache.bcel.classfile.Method bcelMethod = jc.getMethod((Method)onMember);
+
 				if (bcelMethod == null) {
-					System.err.println("Unexpected problem in Java15AnnotationFinder: cannot retrieve annotations on method '"+onMember.getName()+"' in class '"+jc.getClassName()+"'");
+					// pr220430
+//					System.err.println("Unexpected problem in Java15AnnotationFinder: cannot retrieve annotations on method '"+onMember.getName()+"' in class '"+jc.getClassName()+"'");
 				} else {
 					Attribute[] attrs = bcelMethod.getAttributes();
 					for (int i = 0; i < attrs.length; i++) {
@@ -175,7 +178,8 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 			if (onMember instanceof Method) {
 				org.aspectj.apache.bcel.classfile.Method bcelMethod = jc.getMethod((Method)onMember);
 				if (bcelMethod == null) {
-					System.err.println("Unexpected problem in Java15AnnotationFinder: cannot retrieve annotations on method '"+onMember.getName()+"' in class '"+jc.getClassName()+"'");
+					// fallback on reflection - see pr220430
+//					System.err.println("Unexpected problem in Java15AnnotationFinder: cannot retrieve annotations on method '"+onMember.getName()+"' in class '"+jc.getClassName()+"'");
 				} else {
 					anns = bcelMethod.getAnnotations();
 				}
@@ -284,7 +288,12 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 			org.aspectj.apache.bcel.classfile.annotation.Annotation[][] anns = null;
 			if (onMember instanceof Method) {
 				org.aspectj.apache.bcel.classfile.Method bcelMethod = jc.getMethod((Method)onMember);
-				anns = bcelMethod.getParameterAnnotations();
+				if (bcelMethod == null) {
+					// pr220430
+					//System.err.println("Unexpected problem in Java15AnnotationFinder: cannot retrieve annotations on method '"+onMember.getName()+"' in class '"+jc.getClassName()+"'");
+				} else {
+					anns = bcelMethod.getParameterAnnotations();
+				}
 			} else if (onMember instanceof Constructor) {
 				org.aspectj.apache.bcel.classfile.Method bcelCons = jc.getMethod((Constructor)onMember);
 				anns = bcelCons.getParameterAnnotations();
@@ -332,4 +341,5 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 		}
 		return result;
 	}
+	
 }
