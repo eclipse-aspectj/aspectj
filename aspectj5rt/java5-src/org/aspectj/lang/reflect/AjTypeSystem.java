@@ -34,8 +34,8 @@ public class AjTypeSystem {
 		 * AspectJ-awareness on top.
 		 */
 		public static <T> AjType<T> getAjType(Class<T> fromClass) {
-			if (ajTypes.containsKey(fromClass)) {
-				WeakReference<AjType> weakRefToAjType =  ajTypes.get(fromClass);
+			WeakReference<AjType> weakRefToAjType =  ajTypes.get(fromClass);
+			if (weakRefToAjType!=null) {
 				AjType<T> theAjType = weakRefToAjType.get();
 				if (theAjType != null) {
 					return theAjType;
