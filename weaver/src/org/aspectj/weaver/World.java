@@ -18,6 +18,7 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -856,7 +857,7 @@ public abstract class World implements Dump.INode {
 		private Map /* String -> ResolvedType */ tMap = new HashMap();
 		
 		// Map of types that may be ejected from the cache if we need space
-		private Map expendableMap = new WeakHashMap();
+		private Map expendableMap = Collections.synchronizedMap(new WeakHashMap());
 		
 		private World w;
 
