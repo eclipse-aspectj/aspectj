@@ -528,7 +528,7 @@ public class EclipseFactory {
 			fromBinding(binding.returnType),
 			new String(binding.selector),
 			fromBindings(binding.parameters),
-			fromBindings(binding.thrownExceptions)
+			fromBindings(binding.thrownExceptions),this
 			);
 		if (binding.isVarargs()) {
 			ret.setVarargsMethod();

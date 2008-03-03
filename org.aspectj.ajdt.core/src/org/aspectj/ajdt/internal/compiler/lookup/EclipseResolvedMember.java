@@ -43,10 +43,12 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 	private String[] argumentNames;
 	private World w;
 	private ResolvedType[] cachedAnnotationTypes;
+	private EclipseFactory eclipseFactory;
 	
-	public EclipseResolvedMember(MethodBinding binding, Kind memberKind, ResolvedType realDeclaringType, int modifiers, UnresolvedType type, String string, UnresolvedType[] types, UnresolvedType[] types2) {
+	public EclipseResolvedMember(MethodBinding binding, Kind memberKind, ResolvedType realDeclaringType, int modifiers, UnresolvedType type, String string, UnresolvedType[] types, UnresolvedType[] types2, EclipseFactory eclipseFactory) {
 		super(memberKind,realDeclaringType,modifiers,type,string,types,types2);
 		this.realBinding = binding;
+		this.eclipseFactory = eclipseFactory;
 		this.w = realDeclaringType.getWorld();
 	}
 
@@ -74,6 +76,22 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 		// TODO errr missing in action - we need to implement this! Probably using something like EclipseAnnotationConvertor - itself not finished ;)
 		throw new RuntimeException("not yet implemented - please raise an AJ bug");
 //		return super.getAnnotations();
+	}
+	
+
+	public AnnotationX getAnnotationOfType(UnresolvedType ofType) {
+		long abits = realBinding.getAnnotationTagBits(); // ensure resolved
+		Annotation[] annos = getEclipseAnnotations();
+		if (annos==null) return null;
+		for (int i = 0; i < annos.length; i++) {
+			Annotation anno = annos[i];
+			UnresolvedType ut = UnresolvedType.forSignature(new String(anno.resolvedType.signature()));
+			if (w.resolve(ut).equals(ofType)) {
+				// Found the one
+				return EclipseAnnotationConvertor.convertEclipseAnnotation(anno,w,eclipseFactory);
+			}
+		}
+		return null;
 	}
 	
 	public String getAnnotationDefaultValue() {
