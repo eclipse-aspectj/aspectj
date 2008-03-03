@@ -20,6 +20,11 @@ import junit.framework.Test;
  */
 public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
+	// AspectH1.6.0rc1
+	public void testHasMethodAnnoValueInt_various() { runTest("hasmethod anno value - I");}
+	public void testHasMethodAnnoValueBoolean_various() { runTest("hasmethod anno value - Z");}
+	
+	// AspectJ1.6.0m2 and earlier
 	public void testBoundsCheckShouldFail_pr219298() { runTest("bounds check failure");}
 	public void testBoundsCheckShouldFail_pr219298_2() { runTest("bounds check failure - 2");}
 	public void testGenericMethodMatching_pr204505_1() { runTest("generics method matching - 1");}
