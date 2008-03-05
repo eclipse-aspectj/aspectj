@@ -226,19 +226,36 @@ public class AjProblemReporter extends ProblemReporter {
 			// so we don't have to worry about interfaces, just the superclass.
 		    onTypeX = factory.fromEclipse(type.superclass()); //abstractMethod.declaringClass);
 		}
+		
+		if (onTypeX.isRawType()) onTypeX = onTypeX.getGenericType();
+
 		for (Iterator i = onTypeX.getInterTypeMungersIncludingSupers().iterator(); i.hasNext(); ) {
 			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
 			ResolvedMember sig = m.getSignature();
             if (!Modifier.isAbstract(sig.getModifiers())) {
-				if (ResolvedType
-					.matches(
-						AjcMemberMaker.interMethod(
-							sig,
-							m.getAspectType(),
-							sig.getDeclaringType().resolve(factory.getWorld()).isInterface()),
-						factory.makeResolvedMember(abstractMethod))) {
-					return;
-				}
+    			ResolvedMember abstractMember = factory.makeResolvedMember(abstractMethod);
+    			if (abstractMember.getName().startsWith("ajc$interMethodDispatch")) {			
+	  				if (ResolvedType
+						.matches(
+							AjcMemberMaker.interMethod(
+								sig,
+								m.getAspectType(),
+								sig.getDeclaringType().resolve(factory.getWorld()).isInterface()),
+								abstractMember
+							)) {
+						return;
+					}
+    			} else {
+    				// In this case we have something like:
+    				//  interface I {}
+    				//  abstract class C implements I { abstract void foo();}
+    				//  class D extends C {}
+    				//  ITD: public void I.foo() {...}
+    				// The ITD is providing the implementation of foo in the class D but when checking for whether the abstract
+    				// method is overridden, we won't be looking at whether the ITD overrides ajc$interMethodDispath$...foo but
+    				// whether it overrides the foo method from class C
+                	if (ResolvedType.matches(sig,factory.makeResolvedMember(abstractMethod))) return;
+    			}
 			}
 		}
 
