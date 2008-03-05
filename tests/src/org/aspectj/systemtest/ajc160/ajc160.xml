@@ -3,6 +3,11 @@
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
 
+
+   <ajc-test dir="bugs160/various" title="incorrect itd error with generics">
+     <compile options="-1.5 -showWeaveInfo" files="IncorrectMessage.java"/>
+   </ajc-test>
+   
    <ajc-test dir="bugs160/various" title="hasmethod anno value - I">
      <compile options="-1.5 -XhasMember -showWeaveInfo" files="A.java">
        <message kind="weave" text="Extending interface set for type 'B' (A.java) to include 'java.io.Serializable' (A.java)"/>

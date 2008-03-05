@@ -21,6 +21,7 @@ import junit.framework.Test;
 public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectH1.6.0rc1
+	public void testBadMessage() { runTest("incorrect itd error with generics");}
 	public void testHasMethodAnnoValueInt_various() { runTest("hasmethod anno value - I");}
 	public void testHasMethodAnnoValueBoolean_various() { runTest("hasmethod anno value - Z");}
 	
