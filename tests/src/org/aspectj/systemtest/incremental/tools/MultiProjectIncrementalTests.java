@@ -969,6 +969,64 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		                       // aspect hasn't changed
 	}
 	
+	// Case001: renaming a private field in a type
+/*	public void testPrReducingDependentBuilds_001_221427() {
+		AjdeInteractionTestbed.VERBOSE=true;
+		IncrementalStateManager.debugIncrementalStates=true;
+		initialiseProject("P221427_1");
+		initialiseProject("P221427_2");
+		configureNewProjectDependency("P221427_2","P221427_1");
+		
+		build("P221427_1");
+		build("P221427_2"); 
+		alter("P221427_1","inc1"); // rename private class in super project
+		MyStateListener.reset();
+		build("P221427_1");
+		build("P221427_2");
+
+		AjState ajs = IncrementalStateManager.findStateManagingOutputLocation(new File(getFile("P221427_1","bin")));
+		assertTrue("There should be state for project P221427_1",ajs!=null);
+		//System.out.println(MyStateListener.getInstance().getDecisions());
+		checkWasntFullBuild();
+		assertTrue("Should be one structural change but there were "+
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild(),
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild()==1);
+		
+	}
+	
+	// Case002: changing a class to final that is extended in a dependent project
+	public void testPrReducingDependentBuilds_002_221427() {
+		AjdeInteractionTestbed.VERBOSE=true;
+		IncrementalStateManager.debugIncrementalStates=true;
+		initialiseProject("P221427_3");
+		initialiseProject("P221427_4");
+		configureNewProjectDependency("P221427_4","P221427_3");
+		
+		build("P221427_3");
+		build("P221427_4"); // build OK, type in super project is non-final
+		alter("P221427_3","inc1"); // change class declaration in super-project to final
+		MyStateListener.reset();
+		build("P221427_3");
+		build("P221427_4"); // build FAIL, type in super project is now final
+
+		AjState ajs = IncrementalStateManager.findStateManagingOutputLocation(new File(getFile("P221427_3","bin")));
+		assertTrue("There should be state for project P221427_3",ajs!=null);
+		System.out.println(MyStateListener.getInstance().getDecisions());
+
+		List errors = getErrorMessages("P221427_4");
+		if (errors.size()!=1) {
+			if (errors.size()==0) fail("Expected error about not being able to extend final class");
+			for (Iterator iterator = errors.iterator(); iterator.hasNext();) {
+				Object object = (Object) iterator.next();
+				System.out.println(object);
+			}
+			fail("Expected 1 error but got "+errors.size());
+		}
+//		assertTrue("Shouldn't be one structural change but there were "+
+//				ajs.getNumberOfStructuralChangesSinceLastFullBuild(),
+//				ajs.getNumberOfStructuralChangesSinceLastFullBuild()==1);
+		
+	}*/
 	// test for comment #6 - simulates AJDT core builder test testBug99133a -
 	// changing the contents of a method within a class shouldn't force a 
 	// full build of a dependant project. To force this to behave like AJDT
