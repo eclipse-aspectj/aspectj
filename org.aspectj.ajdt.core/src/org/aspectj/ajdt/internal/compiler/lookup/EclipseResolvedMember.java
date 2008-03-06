@@ -34,7 +34,7 @@ import org.aspectj.weaver.World;
  * In some cases this means the weaver will want to ask questions of eclipse types and this
  * subtype of ResolvedMemberImpl is here to answer some of those questions - it is backed by 
  * the real eclipse MethodBinding object and can translate from Eclipse -> Weaver information.
- */
+ */ 
 public class EclipseResolvedMember extends ResolvedMemberImpl {
 	
 	private static String[] NO_ARGS = new String[]{};
