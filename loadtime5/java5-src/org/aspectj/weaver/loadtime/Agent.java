@@ -20,7 +20,7 @@ import java.lang.instrument.ClassFileTransformer;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class Agent {
+public class Agent { 
 
     /**
      * The instrumentation instance
