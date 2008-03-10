@@ -859,9 +859,7 @@ public class BcelWeaver implements IWeaver {
 	 */
 	private void raiseUnboundFormalError(String name, Pointcut userPointcut) {
 		world.showMessage(IMessage.ERROR,
-				WeaverMessages.format(WeaverMessages.UNBOUND_FORMAL,
-										name),
-				userPointcut.getSourceContext().makeSourceLocation(userPointcut),null);
+				WeaverMessages.format(WeaverMessages.UNBOUND_FORMAL,name),userPointcut.getSourceLocation(),null);
 	}
 
 
