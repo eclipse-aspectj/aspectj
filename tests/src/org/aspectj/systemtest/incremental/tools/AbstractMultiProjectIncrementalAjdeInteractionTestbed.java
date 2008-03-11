@@ -115,6 +115,8 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends
 		File projectSrc =new File(testdataSrcDir+File.separatorChar+projectName+
 				                  File.separatorChar+overlayDirectory);
 		File destination=new File(getWorkingDir(),projectName);
+
+		if (AjdeInteractionTestbed.VERBOSE) System.out.println("Altering project "+projectName);
 		copy(projectSrc,destination);
 	}
 	
