@@ -273,7 +273,7 @@ public class AjdeInteractionTestbed extends TestCase {
 	 * Summary report on what happened in the most recent build
 	 */
 	public void printBuildReport(String projectName) {
-		System.out.println("\n============== BUILD REPORT =================");
+		System.out.println("\n====== BUILD REPORT (Project "+projectName+") ===========");
 		System.out.println("Build took: "+getTimeTakenForBuild(projectName)+"ms");
 		List compiled=getCompiledFiles(projectName);
 		System.out.println("Compiled: "+compiled.size()+" files");
@@ -369,7 +369,9 @@ public class AjdeInteractionTestbed extends TestCase {
   	    public boolean pathChange = false;
 		public void pathChangeDetected() {pathChange = true;}
 		public void aboutToCompareClasspaths(List oldClasspath, List newClasspath) {}
-		public void detectedClassChangeInThisDir(File f) {}
+		public void detectedClassChangeInThisDir(File f) {
+			recordDecision("Detected class change in this directory: "+f.toString());
+		}
 		
 		public void detectedAspectDeleted(File f) {
 			detectedDeletions.add(f.toString());
