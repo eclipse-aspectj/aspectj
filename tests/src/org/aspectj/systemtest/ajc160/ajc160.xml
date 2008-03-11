@@ -4,6 +4,12 @@
 <suite>
 
 
+	<ajc-test dir="bugs160/pr201748" title="itd with array">
+     <compile files="Foo.java">
+       <message kind="error" text="Type mismatch: cannot convert from Factory[] to Factory"/>
+     </compile>
+   </ajc-test>
+   
    <ajc-test dir="bugs160/various" title="incorrect itd error with generics">
      <compile options="-1.5 -showWeaveInfo" files="IncorrectMessage.java">
        <message kind="weave" text="Type 'Foo' (IncorrectMessage.java) has intertyped method from 'AspectDoWhatEver' (IncorrectMessage.java:'void Marker.doWhatEver()')"/>
