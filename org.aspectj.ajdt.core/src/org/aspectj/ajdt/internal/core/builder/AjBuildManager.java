@@ -461,7 +461,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 				String filename = entry.getName();
 //				System.out.println("? copyResourcesFromJarFile() filename='" + filename +"'");
 	
-				if (!entry.isDirectory() && acceptResource(filename)) {
+				if (!entry.isDirectory() && acceptResource(filename,false)) {
 					byte[] bytes = FileUtil.readAsByteArray(inStream);
 					writeResource(filename,bytes,jarFile);
 				}
@@ -494,7 +494,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	}
 	
 	private void copyResourcesFromFile(File f,String filename,File src) throws IOException {
-		if (!acceptResource(filename)) return;
+		if (!acceptResource(filename,true)) return;
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(f);
@@ -572,7 +572,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		}
 	}
 
-	private boolean acceptResource(String resourceName) {
+	private boolean acceptResource(String resourceName,boolean fromFile) {
 		if (  
 				(resourceName.startsWith("CVS/")) ||
 				(resourceName.indexOf("/CVS/") != -1) ||
@@ -581,7 +581,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 				(resourceName.startsWith(".svn/")) || 
 				(resourceName.indexOf("/.svn/")!=-1) ||
 				(resourceName.endsWith("/.svn")) ||
-				(resourceName.toUpperCase().equals(MANIFEST_NAME))
+				// Do not copy manifests if either they are coming from a jar or we are writing to a jar
+				(resourceName.toUpperCase().equals(MANIFEST_NAME) && (!fromFile || zos!=null))
 		    )
 		{
 			return false;
