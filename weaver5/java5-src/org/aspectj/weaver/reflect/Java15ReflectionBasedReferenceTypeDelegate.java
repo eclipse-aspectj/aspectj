@@ -17,6 +17,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.AjType;
@@ -31,6 +33,7 @@ import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.TypeVariableReferenceType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.tools.PointcutDesignatorHandler;
 import org.aspectj.weaver.tools.PointcutParameter;
 
 /**
@@ -251,6 +254,11 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 			} else {
 				parser = new InternalUseOnlyPointcutParser(classLoader);
 			}
+			Set additionalPointcutHandlers = world.getRegisteredPointcutHandlers();
+            for (Iterator handlerIterator = additionalPointcutHandlers.iterator(); handlerIterator.hasNext();) {
+                PointcutDesignatorHandler handler = (PointcutDesignatorHandler) handlerIterator.next();
+                parser.registerPointcutDesignatorHandler(handler);
+            }
 						
 			// phase 1, create legitimate entries in pointcuts[] before we attempt to resolve *any* of the pointcuts
 			// resolution can sometimes cause us to recurse, and this two stage process allows us to cope with that
