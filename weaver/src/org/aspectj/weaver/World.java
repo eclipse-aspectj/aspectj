@@ -20,10 +20,12 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.aspectj.asm.IHierarchy;
@@ -39,6 +41,7 @@ import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.reflect.ReflectionBasedReferenceTypeDelegate;
+import org.aspectj.weaver.tools.PointcutDesignatorHandler;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 
@@ -57,6 +60,9 @@ public abstract class World implements Dump.INode {
 	
 	/** The heart of the world, a map from type signatures to resolved types */
     protected TypeMap typeMap = new TypeMap(this); // Signature to ResolvedType
+
+    /** New pointcut designators this world supports */
+    private Set pointcutDesignators;
 
     // see pr145963
     /** Should we create the hierarchy for binary classes and aspects*/
@@ -1277,4 +1283,20 @@ public abstract class World implements Dump.INode {
 			return typeMap.getAllTypes();
 		}
 
+        /**
+         * Register a new pointcut designator handler with the world - this can be used by any pointcut parsers attached
+         * to the world.
+         * 
+         * @param designatorHandler handler for the new pointcut
+         */
+        public void registerPointcutHandler(PointcutDesignatorHandler designatorHandler) {
+            if (pointcutDesignators == null) pointcutDesignators = new HashSet();
+            pointcutDesignators.add(designatorHandler);
+        }
+        
+        public Set getRegisteredPointcutHandlers() {
+            if (pointcutDesignators == null) return Collections.EMPTY_SET;
+            return pointcutDesignators;
+        }
+        
 }
