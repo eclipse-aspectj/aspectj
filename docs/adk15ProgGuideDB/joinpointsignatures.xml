@@ -220,7 +220,7 @@
         <para>
             Then the signature <literal>R(T) T.m(parameter_types)</literal> is a signature
             of the call join point, where <literal>R(T)</literal> is the return
-            type of <literal>id</literal> in <literal>T</literal>, and 
+            type of <literal>m</literal> in <literal>T</literal>, and 
             <literal>parameter_types</literal> are the parameter types of
             <literal>m</literal>. If <literal>T</literal> itself does not
             declare a definition of <literal>m(parameter_types)</literal>, then 
