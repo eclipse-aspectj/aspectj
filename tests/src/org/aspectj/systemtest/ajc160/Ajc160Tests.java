@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM 
+ * Copyright (c) 2007-2008 Contributors 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,15 +12,19 @@ package org.aspectj.systemtest.ajc160;
 
 import java.io.File;
 
-import org.aspectj.testing.XMLBasedAjcTestCase;
 import junit.framework.Test;
+
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
  * These are tests for AspectJ1.6.0
  */
 public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
-	// AspectH1.6.0rc1
+	// AspectJ1.6.0rc1
+    public void testClassCastOnArrayType_pr180264() {
+        runTest("classcastexception on array type");
+    }
 	//public void testITDWithArray_pr201748() { runTest("itd with array");}
 	public void testBadMessage() { runTest("incorrect itd error with generics");}
 	public void testBadMessage2() { runTest("incorrect itd error with generics - 2");}
