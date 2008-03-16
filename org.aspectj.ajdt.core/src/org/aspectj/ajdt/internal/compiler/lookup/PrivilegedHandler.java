@@ -21,6 +21,12 @@ import java.util.Map;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.AstUtil;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.IPrivilegedHandler;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedMethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.Member;
@@ -29,12 +35,6 @@ import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.IPrivilegedHandler;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedMethodBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 
 
 
