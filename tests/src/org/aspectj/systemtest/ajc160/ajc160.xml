@@ -3,11 +3,20 @@
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
 
+   <ajc-test dir="bugs160/pr167197" title="generic type parameterized with array type">
+     <compile options="-1.5" files="AspectBreaker.java"/>
+   </ajc-test>
+   
    <ajc-test dir="bugs160/pr180264" title="classcastexception on array type">
      <compile options="-warn:+uselessTypeCheck" files="Foo.java,Main.java"/>
    </ajc-test>
 
-   <ajc-test dir="bugs160/pr201748" title="itd with array">
+   <ajc-test dir="bugs160/pr167197" title="generic type parameterized with array type - 2">
+     <compile options="-1.5" files="Breaker2.java"/>
+     <run class="Breaker2"/>
+   </ajc-test>
+   
+	<ajc-test dir="bugs160/pr201748" title="itd with array">
      <compile files="Foo.java">
        <message kind="error" text="Type mismatch: cannot convert from Factory[] to Factory"/>
      </compile>
