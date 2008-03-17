@@ -281,10 +281,6 @@
      <compile options="-1.5" files="AspectJBugTestCase.java"/>
    </ajc-test>
    
-   <ajc-test dir="bugs154/pr167197" title="generic type parameterized with array type">
-     <compile options="-1.5" files="AspectBreaker.java"/>
-   </ajc-test>
-   
    <ajc-test dir="bugs154/pr186673" title="jars and zips with non-standard suffix">
      <compile options="-1.5" files="Apple.java" outjar="apple.jar.0"/>
      <compile options="-1.5" files="Orange.java" outjar="orange.zipfoo"/>
