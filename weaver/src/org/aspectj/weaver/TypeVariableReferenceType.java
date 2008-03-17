@@ -70,7 +70,7 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 
 	public UnresolvedType parameterize(Map typeBindings) {
 		UnresolvedType ut = (UnresolvedType) typeBindings.get(getName());
-		if (ut!=null) return ut;
+		if (ut!=null) return world.resolve(ut);
 		return this;
 	}
 	

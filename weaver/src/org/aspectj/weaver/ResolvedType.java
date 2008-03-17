@@ -848,7 +848,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     // ---- types
     public static ResolvedType makeArray(ResolvedType type, int dim) {
     	if (dim == 0) return type;
-    	ResolvedType array = new Array("[" + type.getSignature(),"["+type.getErasureSignature(),type.getWorld(),type);
+    	ResolvedType array = new ArrayReferenceType("[" + type.getSignature(),"["+type.getErasureSignature(),type.getWorld(),type);
     	return makeArray(array,dim-1);
     }
     

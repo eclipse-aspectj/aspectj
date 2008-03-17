@@ -271,7 +271,7 @@ public abstract class World implements Dump.INode {
         if (ty.isArray()) {
         	ResolvedType componentType = resolve(ty.getComponentType(),allowMissing);
         	//String brackets = signature.substring(0,signature.lastIndexOf("[")+1);
-            ret = new ResolvedType.Array(signature, "["+componentType.getErasureSignature(),
+            ret = new ArrayReferenceType(signature, "["+componentType.getErasureSignature(),
             		                     this, 
             		                     componentType);
         } else {
