@@ -128,11 +128,11 @@ public class ReferenceType extends ResolvedType {
 		typeKind=TypeKind.GENERIC;
 	}
         
-    public final boolean isClass() {
+    public boolean isClass() {
     	return delegate.isClass();
     }
     
-    public final boolean isGenericType() {
+    public boolean isGenericType() {
     	return !isParameterizedType() && !isRawType() && delegate.isGeneric();
     }
 
@@ -201,7 +201,7 @@ public class ReferenceType extends ResolvedType {
     }
       
     // true iff the statement "this = (ThisType) other" would compile
-    public final boolean isCoerceableFrom(ResolvedType o) {
+    public boolean isCoerceableFrom(ResolvedType o) {
         ResolvedType other = o.resolve(world);
 
         if (this.isAssignableFrom(other) || other.isAssignableFrom(this)) {
@@ -273,12 +273,12 @@ public class ReferenceType extends ResolvedType {
     	return false;
     }
     
-    public final boolean isAssignableFrom(ResolvedType other) {
+    public boolean isAssignableFrom(ResolvedType other) {
     	return isAssignableFrom(other,false);
     }
     
     // true iff the statement "this = other" would compile.
-    public final boolean isAssignableFrom(ResolvedType other,boolean allowMissing) {
+    public boolean isAssignableFrom(ResolvedType other,boolean allowMissing) {
        	if (other.isPrimitiveType()) {
     		if (!world.isInJava5Mode()) return false;
     		if (ResolvedType.validBoxing.contains(this.getSignature()+other.getSignature())) return true;
