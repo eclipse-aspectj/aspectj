@@ -12,9 +12,8 @@ package org.aspectj.systemtest.ajc160;
 
 import java.io.File;
 
-import junit.framework.Test;
-
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import junit.framework.Test;
 
 /**
  * These are tests for AspectJ1.6.0
@@ -30,6 +29,9 @@ public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testBadMessage2() { runTest("incorrect itd error with generics - 2");}
 	public void testHasMethodAnnoValueInt_various() { runTest("hasmethod anno value - I");}
 	public void testHasMethodAnnoValueBoolean_various() { runTest("hasmethod anno value - Z");}
+	public void testGenericTypeParameterizedWithArrayType_pr167197() { runTest("generic type parameterized with array type");}
+	public void testGenericTypeParameterizedWithArrayType_pr167197_2() { runTest("generic type parameterized with array type - 2");}
+
 	
 	// AspectJ1.6.0m2 and earlier
 	public void testBoundsCheckShouldFail_pr219298() { runTest("bounds check failure");}
