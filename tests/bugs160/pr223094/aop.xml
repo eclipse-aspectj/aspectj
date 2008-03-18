@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<aspectj>
+
+	
+	<weaver options="-verbose -showWeaveInfo">
+	</weaver>
+	
+	<aspects>
+  	<aspect name="p.B"/>
+	</aspects>
+
+</aspectj>
+
