@@ -12,8 +12,9 @@ package org.aspectj.systemtest.ajc160;
 
 import java.io.File;
 
-import org.aspectj.testing.XMLBasedAjcTestCase;
 import junit.framework.Test;
+
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
  * These are tests for AspectJ1.6.0
@@ -21,6 +22,9 @@ import junit.framework.Test;
 public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.0rc1
+  //  public void testBrokenIfArgsCflowAtAj_pr145018() {
+    //    runTest("ataj crashing with cflow, if and args");
+   // }
     public void testClassCastOnArrayType_pr180264() {
         runTest("classcastexception on array type");
     }

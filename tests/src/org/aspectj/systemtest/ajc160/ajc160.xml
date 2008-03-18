@@ -7,15 +7,21 @@
      <compile options="-1.5" files="AspectBreaker.java"/>
    </ajc-test>
    
-   <ajc-test dir="bugs160/pr180264" title="classcastexception on array type">
-     <compile options="-warn:+uselessTypeCheck" files="Foo.java,Main.java"/>
-   </ajc-test>
-
    <ajc-test dir="bugs160/pr167197" title="generic type parameterized with array type - 2">
      <compile options="-1.5" files="Breaker2.java"/>
      <run class="Breaker2"/>
    </ajc-test>
    
+   <ajc-test dir="bugs160/pr180264" title="classcastexception on array type">
+     <compile options="-warn:+uselessTypeCheck" files="Foo.java,Main.java"/>
+   </ajc-test>
+   
+	<ajc-test dir="bugs160/pr145018" title="ataj crashing with cflow, if and args">
+     <compile files="Broken.aj" options="-1.5"/>
+     <run class="Broken">
+     </run>
+    </ajc-test> 
+    
 	<ajc-test dir="bugs160/pr201748" title="itd with array">
      <compile files="Foo.java">
        <message kind="error" text="Type mismatch: cannot convert from Factory[] to Factory"/>

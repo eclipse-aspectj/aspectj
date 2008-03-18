@@ -369,15 +369,6 @@
       </run>
     </ajc-test>   
         
-	<ajc-test dir="bugs153/pr145018" title="ataj crashing with cflow, if and args">
-     <compile files="Broken.aj" options="-1.5"/>
-     <run class="Broken">
-       <stderr>
-         <line text="ahhh"/>
-       </stderr>
-     </run>
-    </ajc-test> 
-    
 	<ajc-test dir="bugs153/pr150095" title="generics, inheritance and decp">
      <compile files="Foo.java" options="-1.5"/>
     </ajc-test> 
