@@ -71,8 +71,8 @@ import org.aspectj.weaver.IWeaver;
 import org.aspectj.weaver.NewParentTypeMunger;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
-import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
@@ -201,6 +201,14 @@ public class BcelWeaver implements IWeaver {
             //=> mainly for nothing for LTW - pbly for something in incremental build...
 			xcutSet.addOrReplaceAspect(type);
 	    	if (trace.isTraceEnabled()) trace.exit("addLibraryAspect",type);
+            if (type.getSuperclass().isAspect()) {
+                // If the supertype includes ITDs and the user has not included that aspect in the aop.xml, they will
+                // not get picked up, which can give unusual behaviour! See bug 223094
+                // This change causes us to pick up the super aspect regardless of what was said in the aop.xml - giving
+                // predictable behaviour. If the user also supplied it, there will be no problem other than the second
+                // addition overriding the first
+                addLibraryAspect(type.getSuperclass().getName());
+            }
             return type;
         } else {
             // FIXME AV - better warning upon no such aspect from aop.xml
