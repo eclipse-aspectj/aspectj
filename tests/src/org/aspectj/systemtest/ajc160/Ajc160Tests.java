@@ -22,6 +22,9 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.0rc1
+    public void testLTWITDs_pr223094() {
+        runTest("ltw inherited itds");
+    }
   //  public void testBrokenIfArgsCflowAtAj_pr145018() {
     //    runTest("ataj crashing with cflow, if and args");
    // }

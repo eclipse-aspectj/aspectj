@@ -3,6 +3,16 @@
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
 
+    <ajc-test dir="bugs160/pr223094" title="ltw inherited itds">
+      <compile files="B.java" outjar="foo.jar"/>
+      <compile files="A.java" classpath="$sandbox/foo.jar"/>
+      <run class="p.A" classpath="$sandbox/foo.jar" ltw="aop.xml">
+        <stdout>
+          <line text="ok"/>
+ 	    </stdout>
+      </run>
+    </ajc-test>
+
    <ajc-test dir="bugs160/pr167197" title="generic type parameterized with array type">
      <compile options="-1.5" files="AspectBreaker.java"/>
    </ajc-test>
