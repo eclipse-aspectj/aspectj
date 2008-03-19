@@ -3,6 +3,14 @@
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
 
+	<ajc-test dir="bugs160/pr173602" title="duplicate itd npe">
+		<compile files="X.java">
+		  <message kind="error" line="2" text="intertype declaration from "/>
+		  <message kind="error" line="3" text="intertype declaration from "/>
+		  <message kind="error" line="6" text="intertype declaration from "/>
+		</compile>
+	</ajc-test>
+	
     <ajc-test dir="bugs160/pr223094" title="ltw inherited itds">
       <compile files="B.java" outjar="foo.jar"/>
       <compile files="A.java" classpath="$sandbox/foo.jar"/>
