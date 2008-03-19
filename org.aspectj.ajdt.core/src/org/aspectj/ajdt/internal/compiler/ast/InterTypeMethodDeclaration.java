@@ -83,6 +83,8 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 	
 	public void resolve(ClassScope upperScope) {
 		if (munger == null) ignoreFurtherInvestigation = true;
+		if (binding == null)
+            ignoreFurtherInvestigation = true;
 		if (ignoreFurtherInvestigation) return;
 		
 		if (!Modifier.isStatic(declaredModifiers)) {

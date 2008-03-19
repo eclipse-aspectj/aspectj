@@ -580,4 +580,14 @@ public class AjProblemReporter extends ProblemReporter {
 		public void setSupplementaryMessageInfo(String msg) { delegate.setSupplementaryMessageInfo(msg);}
 		public String getSupplementaryMessageInfo() { return delegate.getSupplementaryMessageInfo();}
     }
+
+    public void duplicateMethodInType(SourceTypeBinding type, AbstractMethodDeclaration methodDecl) {
+        if (new String(methodDecl.selector).startsWith("ajc$interMethod")) {
+            // this is an ITD clash and will be reported in another way by AspectJ (173602)
+            return;
+        }
+        super.duplicateMethodInType(type, methodDecl);
+    }
+
+
 }
