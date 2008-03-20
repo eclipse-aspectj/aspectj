@@ -10,7 +10,9 @@
 package org.aspectj.systemtest.java14;
 
 import java.io.File;
+
 import junit.framework.Test;
+
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.util.LangUtil;
 
@@ -111,9 +113,9 @@ public class Java14Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
     runTest("XLint warning for call PCD's using subtype of defining type (-1.4 -Xlint:ignore)");
   }
 
-  public void test020(){
-    runTest("XLint warning for call PCD's using subtype of defining type (-1.4)");
-  }
+    // public void test020(){
+    // runTest("XLint warning for call PCD's using subtype of defining type (-1.4)");
+    // }
   
   public void test021(){
 	if (!LangUtil.is14VMOrGreater()) { System.err.println("Skipping test 021 not >=1.4");return;}
