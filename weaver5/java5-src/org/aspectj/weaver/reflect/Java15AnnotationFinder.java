@@ -265,6 +265,8 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 	}
 	
 	private String[] getParameterNamesFromLVT(LocalVariableTable lvt, int numVars) {
+	    if (lvt == null)
+            return null;// pr222987 - prevent NPE
 		LocalVariable[] vars = lvt.getLocalVariableTable();
 		if (vars.length < numVars) {
 			// basic error, we can't get the names...
