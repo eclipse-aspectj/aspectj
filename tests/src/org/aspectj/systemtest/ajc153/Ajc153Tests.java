@@ -179,6 +179,27 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
   public void testNoNPEWithThrownExceptionWarningAndAtAspectj_pr161217() {runTest("NPE with thrown exception warning and at aspectj");}
   
+  public void testJavadocCommentsAreSetIfHaveNormalComments_pr164340() {
+	  runTest("javadoc comments are set if have normal comments");
+	  IHierarchy top = AsmManager.getDefault().getHierarchy();
+	  
+	  IProgramElement ipe = top.findElementForLabel(top.getRoot(),
+			  IProgramElement.Kind.METHOD,"foo()");
+	  assertNotNull("expected formal comment to be non null but" +
+	  		" found that it was null",ipe.getFormalComment());
+	  
+	  ipe = top.findElementForLabel(top.getRoot(),
+			  IProgramElement.Kind.METHOD,"bar()");
+	  assertNotNull("expected formal comment to be non null but" +
+	  		" found that it was null",ipe.getFormalComment());
+	  
+	  ipe = top.findElementForLabel(top.getRoot(),
+			  IProgramElement.Kind.METHOD,"goo()");
+	  assertNull("expected formal comment to be null but" +
+	  		" found that it was " + ipe.getFormalComment(),ipe.getFormalComment());
+
+  }
+  
   public void testBinaryWeavingIntoJava6Library_pr164384() {runTest("binary weaving into java 6 library");}
   public void testCompilanceJava6ThrowsUsageError_pr164384() {runTest("compliance java 6 throws usage error");}
   public void testSourceLevelJava6ThrowsUsageError_pr164384() {runTest("source level java 6 throws usage error");}

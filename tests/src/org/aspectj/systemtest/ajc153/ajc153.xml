@@ -804,6 +804,10 @@
 	 </compile>
     </ajc-test> 
 
+    <ajc-test dir="bugs153/pr164356" title="javadoc comments are set if have normal comments">
+      <compile files="C.java" options="-emacssym -XjavadocsInModel"/>
+    </ajc-test>
+    
    <ajc-test dir="bugs153/pr164384" title="compliance java 6 throws usage error">
       <compile files="MainClass.java,Hello.java,MyAnnotation.java" options="-1.6">
  	  <!--        
