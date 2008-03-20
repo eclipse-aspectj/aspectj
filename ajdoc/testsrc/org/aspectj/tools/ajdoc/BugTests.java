@@ -130,4 +130,30 @@ public class BugTests extends AjdocTestCase {
 		assertTrue("expected build of project to abort",Main.hasAborted());		
 	}
 	
+	/**
+	 * javadoc comments should still appear even if preceded by 
+	 * 'normal' comments
+	 */
+	public void testPr164356() throws Exception {
+		initialiseProject("pr164356");
+		File[] files = {new File(getAbsoluteProjectDir() + "/C.java")};
+		runAjdoc(files);
+	    File htmlFile = new File(getAbsolutePathOutdir() + "/C.html");
+		if (htmlFile == null || !htmlFile.exists()) {
+			fail("couldn't find " + htmlFile.getAbsolutePath() + 
+					" (ajc aborted: " + Main.hasAborted() + ")");
+		}
+		String foo = "description of foo";
+		String bar = "description of bar";
+		String goo = "description of goo";
+		assertTrue("expected method description 'description of foo' to appear" +
+				" in ajdoc output but it did not", 
+				AjdocOutputChecker.containsString(htmlFile, foo));
+		assertTrue("expected method description 'description of bar' to " +
+				"appear in ajdoc output but it did not", 
+				AjdocOutputChecker.containsString(htmlFile, bar));
+		assertFalse("didn't expect method description 'description of goo' to " +
+				"appear in ajdoc output but it did not", 
+				AjdocOutputChecker.containsString(htmlFile, goo));
+	}
 }
