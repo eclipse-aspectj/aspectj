@@ -5,7 +5,7 @@ aspect C {
     before() : runB() { } 
     pointcut runB(): call(void B.run());  // CW 6 XLint, for each shadow (12, 14) 
     before() : call(int B.run()) {} // pointcut not matched
-}
+} 
 public class DeclaringTypeWarning {
     public static void main(String[] args) {
         // ok with -1.4; otherwise, becomes A.run in bytecode
