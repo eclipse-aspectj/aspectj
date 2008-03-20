@@ -58,6 +58,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.util.Util;
+import org.aspectj.util.CharOperation;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
@@ -667,8 +668,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	protected String generateJavadocComment(ASTNode astNode) {
 		if (buildConfig != null && !buildConfig.isGenerateJavadocsInModelMode()) return null;
 		
-		StringBuffer sb = new StringBuffer(); // !!! specify length?
-		boolean completed = false;
+
+        // StringBuffer sb = new StringBuffer(); // !!! specify length?
+        // boolean completed = false;
 		int startIndex = -1;
 		if (astNode instanceof MethodDeclaration) {
 			startIndex = ((MethodDeclaration)astNode).declarationSourceStart;
@@ -680,20 +682,29 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		
 		if (startIndex == -1) {
 			return null;
-		} else if (currCompilationResult.compilationUnit.getContents()[startIndex] == '/'  // look for /**
-			&& currCompilationResult.compilationUnit.getContents()[startIndex+1] == '*'
-			&& currCompilationResult.compilationUnit.getContents()[startIndex+2] == '*') {
-			
-			for (int i = startIndex; i < astNode.sourceStart && !completed; i++) {
-				char curr = currCompilationResult.compilationUnit.getContents()[i];
-				if (curr == '/' && sb.length() > 2 && sb.charAt(sb.length()-1) == '*') completed = true; // found */
-				sb.append(currCompilationResult.compilationUnit.getContents()[i]);
-			} 
-			return sb.toString();
-		} else {
-			return null;
+		} else if (currCompilationResult.compilationUnit.getContents()[startIndex] == '/') {
+            char[] comment = CharOperation.subarray(currCompilationResult.compilationUnit.getContents(), startIndex, astNode.sourceStart);
+            while (comment.length > 2) {
+                int star = CharOperation.indexOf('*', comment);
+                if (star == -1)
+                    return null;
+                // looking for '/**' and not '//' or '//*'
+                if (star != 0 && (comment[star - 1] == '/') && (comment[star + 1] == '*') && (star - 2 < 0 || comment[star - 2] != '/')) {
+                    boolean completed = false;
+                    StringBuffer sb = new StringBuffer();
+                    for (int i = 0; i < comment.length && !completed; i++) {
+                        char curr = comment[i];
+                        if (curr == '/' && sb.length() > 2 && sb.charAt(sb.length() - 1) == '*') {
+                            completed = true; // found */
+                        }
+                        sb.append(comment[i]);
+                    }
+                    return sb.toString();
+                }
+                comment = CharOperation.subarray(comment, star + 1, comment.length);
+            }
 		}
-		
+		return null;
 	}
 	
 	/**
