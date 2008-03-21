@@ -800,7 +800,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				// BUG BUG BUG - We dont test these abits are correct, in fact we'll be very lucky if they are.
 				// What does that mean?  It means on an incremental compile you might get away with an
 				// annotation that isn't allowed on a type being put on a type.
-				abits = toAdd[0].resolvedType.getAnnotationTagBits(); 
+				if (toAdd[0].resolvedType != null) // pr184447
+				    abits = toAdd[0].resolvedType.getAnnotationTagBits(); 
 			}		
 		} else {
 			// much nicer, its a real SourceTypeBinding so we can stay in eclipse land
