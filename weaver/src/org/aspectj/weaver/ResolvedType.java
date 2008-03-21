@@ -1205,6 +1205,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     protected void collectInterTypeMungers(List collector) {
         for (Iterator iter = getDirectSupertypes(); iter.hasNext();) {
 			ResolvedType superType = (ResolvedType) iter.next();
+			if (superType == null) {
+			    throw new BCException("UnexpectedProblem: a supertype in the hierarchy for " + this.getName() + " is null");
+            }
             superType.collectInterTypeMungers(collector);
 		}
         
