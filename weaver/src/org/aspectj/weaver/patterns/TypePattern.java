@@ -158,7 +158,11 @@ public abstract class TypePattern extends PatternNode {
 		if (type.isTypeVariableReference()) {
 			typesIterator = ((TypeVariableReference)type).getTypeVariable().getFirstBound().resolve(type.getWorld()).getDirectSupertypes();
 		} else {
-			typesIterator = type.getDirectSupertypes();
+            // pr223605
+            if (type.isRawType()) {
+                type = type.getGenericType();
+            }
+            typesIterator = type.getDirectSupertypes();
 		}
 		
 		// FuzzyBoolean ret = FuzzyBoolean.NO; // ??? -eh
