@@ -845,6 +845,9 @@ public class EclipseFactory {
 		if (aliases!=null && aliases.size()!=0) {
 			int i=0;
 			ReferenceBinding aliasTarget = (ReferenceBinding)makeTypeBinding(aliasTargetType);
+			if (aliasTarget.isRawType()) {
+			    aliasTarget = ((RawTypeBinding) aliasTarget).genericType();
+            }
 			for (Iterator iter = aliases.iterator(); iter.hasNext();) {
 				String element = (String) iter.next();
 				typeVariableToTypeBinding.put(element,aliasTarget.typeVariables()[i++]);
