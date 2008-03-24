@@ -3,6 +3,12 @@
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
 
+	<ajc-test dir="bugs160/pr223605" title="generic decp ltw">
+		<compile files="GenericConfigurableBugTest.java" options="-1.5"><!-- -showWeaveInfo"-->
+		</compile>
+		<run class="test.GenericConfigurableBugTest"/>
+	</ajc-test>
+
 	<ajc-test dir="bugs160/pr173602" title="duplicate itd npe">
 		<compile files="X.java">
 		  <message kind="error" line="2" text="intertype declaration from "/>
