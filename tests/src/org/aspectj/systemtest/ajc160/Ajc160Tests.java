@@ -37,10 +37,10 @@ public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   //  public void testBrokenIfArgsCflowAtAj_pr145018() {
     //    runTest("ataj crashing with cflow, if and args");
    // }
-    public void testClassCastOnArrayType_pr180264() {
-        runTest("classcastexception on array type");
-    }
-	//public void testITDWithArray_pr201748() { runTest("itd with array");}
+    // public void testClassCastOnArrayType_pr180264() {
+    // runTest("classcastexception on array type");
+    // }
+    //public void testITDWithArray_pr201748() { runTest("itd with array");}
 	public void testBadMessage() { runTest("incorrect itd error with generics");}
 	public void testBadMessage2() { runTest("incorrect itd error with generics - 2");}
 	public void testHasMethodAnnoValueInt_various() { runTest("hasmethod anno value - I");}
