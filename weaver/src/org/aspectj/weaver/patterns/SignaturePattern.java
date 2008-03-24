@@ -32,6 +32,7 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.AnnotationTargetKind;
+import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.Constants;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.JoinPointSignature;
@@ -43,7 +44,6 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.bcel.BcelTypeMunger;
 
 
 public class SignaturePattern extends PatternNode {
@@ -499,7 +499,7 @@ public class SignaturePattern extends PatternNode {
 	    ResolvedMember [] mems = member.getDeclaringType().resolve(world).getDeclaredFields(); // FIXME asc should include supers with getInterTypeMungersIncludingSupers?
 	    List mungers = member.getDeclaringType().resolve(world).getInterTypeMungers(); 
 		for (Iterator iter = mungers.iterator(); iter.hasNext();) {
-	        BcelTypeMunger typeMunger = (BcelTypeMunger) iter.next();
+	        ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) iter.next();
 			if (typeMunger.getMunger() instanceof NewFieldTypeMunger) {
 			  ResolvedMember fakerm = typeMunger.getSignature();
 			  ResolvedMember ajcMethod = AjcMemberMaker.interFieldInitializer(fakerm,typeMunger.getAspectType());
