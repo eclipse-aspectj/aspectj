@@ -22,6 +22,9 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.0rc1
+    public void testGenericITDs_pr214994() { 
+        runTest("generic itd");
+    }
     public void testGenericDecpLtw_pr223605() {
         runTest("generic decp ltw");
     }

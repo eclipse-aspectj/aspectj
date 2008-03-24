@@ -3,6 +3,11 @@
 <!-- AspectJ v1.6.0 Tests -->
 <suite>
 
+
+	<ajc-test dir="bugs160/pr214994" title="generic itd">
+		<compile files="Broke.java" options="-1.5"/>
+	</ajc-test>
+
 	<ajc-test dir="bugs160/pr223605" title="generic decp ltw">
 		<compile files="GenericConfigurableBugTest.java" options="-1.5"><!-- -showWeaveInfo"-->
 		</compile>
