@@ -395,6 +395,7 @@ public class AjdeInteractionTestbed extends TestCase {
 //		public void recordInformation(String s) { decisions.append(s).append("\n");}
 		public void recordDecision(String s) {
 			decisions.append(s).append("\n");
+			log(s);
 		}
 	};
 }

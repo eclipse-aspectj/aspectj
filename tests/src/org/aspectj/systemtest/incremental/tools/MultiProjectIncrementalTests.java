@@ -520,8 +520,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkWasntFullBuild();
 		alter("P1","inc3"); // structurally changes one of the classes
 		build("P1");
-		build("P2"); // build notices the structural change
-		checkWasFullBuild();
+		build("P2"); // build notices the structural change, but is incremental of I and J as they depend on C
+		checkWasntFullBuild();
 		alter("P1","inc4");
 		build("P1");
 		build("P2"); // build sees a change but works out its not structural
@@ -968,6 +968,57 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkWasntFullBuild(); // shouldn't be a full build because the 
 		                       // aspect hasn't changed
 	}
+	
+	public void testIncrementalIntelligence_Scenario01() {
+	    AjdeInteractionTestbed.VERBOSE=true;
+	    initialiseProject("Project1");
+        initialiseProject("Project2");
+        configureNewProjectDependency("Project2", "Project1");
+        build("Project1");
+        build("Project2");
+        
+        alter("Project1", "inc1"); // white space change to ClassA - no impact
+        build("Project1");
+        build("Project2");
+        checkWasntFullBuild(); // not a structural change so ignored
+
+        alter("Project1", "inc2"); // structural change to ClassB - new method!
+        build("Project1");
+        build("Project2");
+        checkWasntFullBuild(); // not a type that Project2 depends on so ignored
+        
+        alter("Project1", "inc3"); // structural change to ClassA
+        build("Project1");
+        build("Project2");
+        checkWasntFullBuild(); // Just need to recompile ClassAExtender
+        checkCompileWeaveCount("Project2", 1, 1);
+        checkCompiled("Project2", "ClassAExtender");
+        
+        alter("Project2", "inc1"); // New type that depends on ClassAExtender
+        build("Project1");
+        build("Project2");
+        checkWasntFullBuild(); // Just build ClassAExtenderExtender
+        
+        alter("Project1", "inc4"); // another structural change to ClassA
+        build("Project1");
+        build("Project2");
+        checkWasntFullBuild(); // Should rebuild ClassAExtender and ClassAExtenderExtender
+        checkCompileWeaveCount("Project2", 2, 2);
+        checkCompiled("Project2", "ClassAExtenderExtender");
+        
+        
+	}
+	
+	private void checkCompiled(String projectName, String typeNameSubstring) {
+        List files = getCompiledFiles(projectName);
+        boolean found = false;
+        for (Iterator iterator = files.iterator(); iterator.hasNext();) {
+            String object = (String) iterator.next();
+            if (object.indexOf(typeNameSubstring) != -1)
+                found = true;
+        }
+        assertTrue("Did not find '" + typeNameSubstring + "' in list of compiled files", found);
+    }
 	
 	// Case001: renaming a private field in a type
 /*	public void testPrReducingDependentBuilds_001_221427() {
