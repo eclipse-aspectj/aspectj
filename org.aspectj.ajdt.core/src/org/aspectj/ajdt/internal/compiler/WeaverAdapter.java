@@ -139,7 +139,7 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 		
 		// progress reporting logic
 		fromPercent = 50.0; // Assume weaving takes 50% of the progress bar...
-	    recordProgress("processing reweavable state");
+	    // recordProgress("processing reweavable state");
 	}
 	
 	public void addingTypeMungers() {
@@ -148,7 +148,7 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 		// At this point we have completed one iteration through all the classes/aspects 
 		// we'll be dealing with, so let us remember this max value for localIteratorCounter
 		// (for accurate progress reporting)
-		recordProgress("adding type mungers");
+		// recordProgress("adding type mungers");
 		progressMaxTypes = localIteratorCounter;
 	}
 	
@@ -185,7 +185,9 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 										   result.getBytes());
 		lastReturnedResult.result().record(ajcf.fileName(),ajcf);
 		//System.err.println(progressPhasePrefix+result.getClassName()+" (from "+nowProcessing.fileName()+")");
-		weaverMessageHandler.handleMessage(MessageUtil.info(progressPhasePrefix+result.getClassName()+" (from "+nowProcessing.fileName()+")"));
+        StringBuffer msg = new StringBuffer();
+        msg.append(progressPhasePrefix).append(result.getClassName()).append(" (from ").append(nowProcessing.fileName()).append(")");
+        weaverMessageHandler.handleMessage(MessageUtil.info(msg.toString()));
 		if (progressListener != null) {
 			progressCompletionCount++;
 			
@@ -193,7 +195,8 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 			recordProgress(
 			  fromPercent
 			  +((progressCompletionCount/(double)progressMaxTypes)*(toPercent-fromPercent)),
-			  progressPhasePrefix+result.getClassName()+" (from "+nowProcessing.fileName()+")");
+			  msg.toString());
+            // progressPhasePrefix+result.getClassName()+" (from "+nowProcessing.fileName()+")");
 
 			if (progressListener.isCancelledRequested()) {
 		      throw new AbortCompilation(true,new OperationCanceledException("Weaving cancelled as requested"));

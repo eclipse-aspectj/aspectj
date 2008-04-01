@@ -280,7 +280,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 //                }
                 // System.err.println("XXXX start inc ");
                 binarySourcesForTheNextCompile = state.getBinaryFilesToCompile(true);
-                List files = state.getFilesToCompile(true);
+                Set files = state.getFilesToCompile(true);
 				if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode())
 				if (AsmManager.attemptIncrementalModelRepairs)
 				    AsmManager.getDefault().processDelta(files,state.getAddedFiles(),state.getDeletedFiles());
@@ -944,7 +944,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	}
     
     
-	public void performCompilation(List files) {
+	public void performCompilation(Collection files) {
 		if (progressListener != null) {
 			compiledCount=0;
 			sourceFileCount = files.size();
@@ -954,9 +954,11 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		String[] filenames = new String[files.size()];
 		String[] encodings = new String[files.size()];
 		//System.err.println("filename: " + this.filenames);
-		for (int i=0; i < files.size(); i++) {
-			filenames[i] = ((File)files.get(i)).getPath();
-		}
+		int ii = 0;
+        for (Iterator fIterator = files.iterator(); fIterator.hasNext();) {
+            File f = (File) fIterator.next();
+            filenames[ii++] = f.getPath();
+        }
 		
 		List cps = buildConfig.getFullClasspath();
 		Dump.saveFullClasspath(cps);

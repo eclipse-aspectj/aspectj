@@ -17,6 +17,9 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -54,18 +57,34 @@ import org.aspectj.weaver.bcel.UnwovenClassFile;
 
 
 /**
- * Holds state needed for incremental compilation
+ * Maintains state needed for incremental compilation
+ * 
+ * tests: two ajdt projects, aspect is changed in dependent, does dependee do a full build? (could just do it if on
+ * aspect path but lets just do it for all now)
+ * 
  */
 public class AjState {
-	private AjBuildManager buildManager;
+    
+    // SECRETAPI static so beware of multi-threading bugs...
+    public static IStateListener stateListener = null;
+
+    public static boolean FORCE_INCREMENTAL_DURING_TESTING = false;
+
+    // if set to true we will not do a full build if we see a type changed on our classpath
+    // but no type in this state instance references it
+    public static boolean IGNORE_NON_REFERENCED_TYPES = true;
+
+    private AjBuildManager buildManager;
 	private boolean couldBeSubsequentIncrementalBuild = false;
 	
-	// SECRETAPI static so beware of multi-threading bugs...
-	public static IStateListener stateListener = null;
-	public static boolean FORCE_INCREMENTAL_DURING_TESTING = false;
-
 	private IHierarchy structureModel;
 	private IRelationshipMap relmap;
+	
+	/**
+     * When looking at changes on the classpath, this set accumulates files in our state instance that affected by those
+     * changes. Then if we can do an incremental build - these must be compiled.
+     */
+    private Set affectedFiles = new HashSet();
 	
 	private long lastSuccessfulFullBuildTime = -1;
 	private Hashtable /* File, long */ structuralChangesSinceLastFullBuild = new Hashtable();
@@ -165,14 +184,15 @@ public class AjState {
 	 */
 	private Map /*<String, char[]>*/ aspectsFromFileNames;
 	
-	private List/*File*/ compiledSourceFiles = new ArrayList();
+	private Set/* File */compiledSourceFiles = new HashSet();
 	private List/*String*/ resources = new ArrayList();
 	
 	// these are references created on a particular compile run - when looping round in 
 	// addAffectedSourceFiles(), if some have been created then we look at which source files
 	// touch upon those and get them recompiled.
-	private ArrayList/*<String>*/ qualifiedStrings;
-	private ArrayList/*<String>*/ simpleStrings;
+	private StringSet qualifiedStrings = new StringSet(3);
+
+    private StringSet simpleStrings = new StringSet(3);
 	
 	private Set addedFiles;
 	private Set deletedFiles;
@@ -227,6 +247,8 @@ public class AjState {
 			return false;
 		}
 		
+        affectedFiles.clear();
+        
 		// we can't do an incremental build if one of our paths
 		// has changed, or a jar on a path has been modified
 		if (pathChange(buildConfig,newBuildConfig)) {
@@ -242,8 +264,14 @@ public class AjState {
 		    return false;
 		}
 		
-		simpleStrings = new ArrayList();
-		qualifiedStrings = new ArrayList();
+		if (simpleStrings.elementSize > 20)
+            simpleStrings = new StringSet(3);
+        else
+            simpleStrings.clear();
+        if (qualifiedStrings.elementSize > 20)
+            qualifiedStrings = new StringSet(3);
+        else
+            qualifiedStrings.clear();
 		
 		Set oldFiles = new HashSet(buildConfig.getFiles());
 		Set newFiles = new HashSet(newBuildConfig.getFiles());
@@ -303,7 +331,7 @@ public class AjState {
 	}
 
 	Collection getModifiedFiles(long lastBuildTime) {
-		List ret = new ArrayList();
+		Set ret = new HashSet();
 		//not our job to account for new and deleted files
 		for (Iterator i = buildConfig.getFiles().iterator(); i.hasNext(); ) {
 			File file = (File)i.next();
@@ -316,6 +344,7 @@ public class AjState {
 				ret.add(file);
 			} 
 		}
+		ret.addAll(affectedFiles);
 		return ret;
 	}
 
@@ -341,9 +370,32 @@ public class AjState {
 		return ret;
 	}
 	
-	private boolean classFileChangedInDirSinceLastBuild(File dir) {
-		// Is another process building into that directory?
+	
+	private static int CLASS_FILE_NO_CHANGES = 0;
+
+    private static int CLASS_FILE_CHANGED_THAT_NEEDS_INCREMENTAL_BUILD = 1;
+
+    private static int CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD = 2;
+
+    private static int MAX_AFFECTED_FILES_BEFORE_FULL_BUILD = 30;
+	
+	/**
+     * Analyse .class files in the directory specified, if they have changed since the last successful build then see if
+     * we can determine which source files in our project depend on the change. If we can then we can still do an
+     * incremental build, if we can't then we have to do a full build.
+     * 
+     */
+	private int classFileChangedInDirSinceLastBuildRequiringFullBuild(File dir) {
+	    int defaultReply = (IGNORE_NON_REFERENCED_TYPES ? CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD : CLASS_FILE_CHANGED_THAT_NEEDS_INCREMENTAL_BUILD);
+		// Is another AspectJ project building into that directory?
 		AjState state = IncrementalStateManager.findStateManagingOutputLocation(dir);
+		if (listenerDefined()) {
+            if (state != null) {
+                getListener().recordDecision("Found state instance managing output location : " + dir);
+            } else {
+                getListener().recordDecision("Failed to find a state instance managing output location : " + dir);
+            }
+        }
 
 		File[] classFiles = FileUtil.listFiles(dir, new FileFilter() {
 			public boolean accept(File pathname) {
@@ -356,28 +408,239 @@ public class AjState {
 			if ((modTime+1000)>=lastSuccessfulBuildTime) {
 				// so the class on disk has changed since our last successful build
 				
+			    
 				// To work out if it is a real change we should ask any state
 				// object managing this output location whether the file has
 				// structurally changed or not
 				if (state!=null) {
-					boolean realChange = state.hasStructuralChangedSince(classFiles[i],lastSuccessfulBuildTime);
-					if (realChange) return true;
-				} else {
-					// FIXME asc you should ask Eclipse project state here...
-					return true; // no state object to ask so it must have changed
-				}
+				    if (state.isAspect(classFiles[i])) {
+                        return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
+                    }
+				    if (state.hasStructuralChangedSince(classFiles[i], lastSuccessfulBuildTime)) {
+				        if (listenerDefined())
+                            getListener().recordDecision("Structural change detected in : " + classFiles[i]);
+
+                        if (!IGNORE_NON_REFERENCED_TYPES || isTypeWeReferTo(classFiles[i])) {
+                            if (affectedFiles.size() > MAX_AFFECTED_FILES_BEFORE_FULL_BUILD)
+                                return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
+                        }
+                    } else {
+                        if (listenerDefined())
+                            getListener().recordDecision("Change detected in " + classFiles[i] + " but it is not structural");
+                    }
+				    // Is the change in a type that any of our source files care about? and if it is, is it
+				    // a structural change?
+                    // if (!IGNORE_NON_REFERENCED_TYPES || isTypeWeReferTo(classFiles[i])) {
+                    // if (affectedFiles.size() > MAX_AFFECTED_FILES_BEFORE_FULL_BUILD)
+                    // return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
+                    // if (state.hasStructuralChangedSince(classFiles[i], lastSuccessfulBuildTime))
+                    // return defaultReply;
+                    // }
+                } else {
+                    // No state object to ask, so it only matters if we know which type depends on this file
+                    if (!IGNORE_NON_REFERENCED_TYPES) {
+                        return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
+                    } else {
+                        if (isTypeWeReferTo(classFiles[i])) {
+                            if (affectedFiles.size() > MAX_AFFECTED_FILES_BEFORE_FULL_BUILD)
+                                return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
+                            return CLASS_FILE_CHANGED_THAT_NEEDS_INCREMENTAL_BUILD;
+                        } else {
+                            return CLASS_FILE_NO_CHANGES;
+                        }
+                    }
+                }
 			}
 		}
-		return false;
+		return CLASS_FILE_NO_CHANGES;
 	}
 	
+	private boolean isAspect(File file) {
+	    if (aspectsFromFileNames == null)
+            return false;
+	    return aspectsFromFileNames.containsKey(file);
+    }
+
+    public static class SoftHashMap extends AbstractMap {
+
+        private Map map;
+
+        private ReferenceQueue rq = new ReferenceQueue();
+
+        public SoftHashMap(Map map) {
+            this.map = map;
+        }
+
+        public SoftHashMap() {
+            this(new HashMap());
+        }
+
+        public SoftHashMap(Map map, boolean b) {
+            this(map);
+        }
+
+        class SoftReferenceKnownKey extends SoftReference {
+
+            private final Object key;
+
+            SoftReferenceKnownKey(Object k, Object v) {
+                super(v, rq);
+                this.key = k;
+            }
+        }
+
+        private void processQueue() {
+            SoftReferenceKnownKey sv = null;
+            while ((sv = (SoftReferenceKnownKey) rq.poll()) != null) {
+                map.remove(sv.key);
+            }
+        }
+
+        public Object get(Object key) {
+            SoftReferenceKnownKey value = (SoftReferenceKnownKey) map.get(key);
+            if (value == null)
+                return null;
+            if (value.get() == null) {
+                // it got GC'd
+                map.remove(value.key);
+                return null;
+            } else {
+                return value.get();
+            }
+        }
+
+        public Object put(Object k, Object v) {
+            processQueue();
+            return map.put(k, new SoftReferenceKnownKey(k, v));
+        }
+
+        public Set entrySet() {
+            return map.entrySet();
+        }
+
+        public void clear() {
+            processQueue();
+            map.clear();
+        }
+
+        public int size() {
+            processQueue();
+            return map.size();
+        }
+
+        public Object remove(Object k) {
+            processQueue();
+            SoftReferenceKnownKey value = (SoftReferenceKnownKey) map.remove(k);
+            if (value == null)
+                return null;
+            if (value.get() != null) {
+                return value.get();
+            }
+            return null;
+        }
+    }
+	
+	SoftHashMap/* <baseDir,SoftHashMap<theFile,className>> */fileToClassNameMap = new SoftHashMap();
+
 	/**
-	 * Determine if a file has changed since a given time, using the local information
-	 * recorded in the structural changes data structure.
-	 * 
-	 * file is the file we are wondering about
-	 * lastSBT is the last build time for the state asking the question
-	 */
+     * If a class file has changed in a path on our classpath, it may not be for a type that any of our source files
+     * care about. This method checks if any of our source files have a dependency on the class in question and if not,
+     * we don't consider it an interesting change.
+     */
+	private boolean isTypeWeReferTo(File file) {
+	    String fpath = file.getAbsolutePath();
+	    int finalSeparator = fpath.lastIndexOf(File.separator);
+        String baseDir = fpath.substring(0, finalSeparator);
+        String theFile = fpath.substring(finalSeparator + 1);
+        SoftHashMap classNames = (SoftHashMap) fileToClassNameMap.get(baseDir);
+        if (classNames == null) {
+            classNames = new SoftHashMap();
+            fileToClassNameMap.put(baseDir, classNames);
+        }
+        char[] className = (char[]) classNames.get(theFile);
+        if (className == null) {
+//            if (listenerDefined())
+//                getListener().recordDecision("Cache miss, looking up classname for : " + fpath);
+
+            ClassFileReader cfr;
+            try {
+                cfr = ClassFileReader.read(file);
+            } catch (ClassFormatException e) {
+                return true;
+            } catch (IOException e) {
+                return true;
+            }
+            className = cfr.getName();
+            classNames.put(theFile, className);
+//       } else {
+//           if (listenerDefined())
+//               getListener().recordDecision("Cache hit, looking up classname for : " + fpath);
+        }
+        
+        char[][][] qualifiedNames = null;
+        char[][] simpleNames = null;
+        if (CharOperation.indexOf('/', className) != -1) {
+            qualifiedNames = new char[1][][];
+            qualifiedNames[0] = CharOperation.splitOn('/', className);
+            qualifiedNames = ReferenceCollection.internQualifiedNames(qualifiedNames);
+        } else {
+            simpleNames = new char[1][];
+            simpleNames[0] = className;
+            simpleNames = ReferenceCollection.internSimpleNames(simpleNames, true);
+        }
+
+        for (Iterator i = references.entrySet().iterator(); i.hasNext();) {
+            Map.Entry entry = (Map.Entry) i.next();
+            ReferenceCollection refs = (ReferenceCollection) entry.getValue();
+            if (refs != null && refs.includes(qualifiedNames, simpleNames)) {
+                if (listenerDefined()) {
+                    getListener().recordDecision(
+                        toString() + ": type " + new String(className) + " is depended upon by '" + entry.getKey() + "'");
+                }
+                affectedFiles.add(entry.getKey());
+                if (affectedFiles.size() > MAX_AFFECTED_FILES_BEFORE_FULL_BUILD)
+                    return true;
+               // return true;
+            }
+        }
+        if (affectedFiles.size() > 0)
+            return true;
+        if (listenerDefined())
+            getListener().recordDecision(
+                toString() + ": type " + new String(className) + " is not depended upon by this state");
+
+        return false;
+    }
+	
+	/**
+     * For a given class file, determine which source file it came from. This will only succeed if the class file is
+     * from a source file within this project.
+     */
+	private File getSourceFileForClassFile(File classfile) {
+	    Set sourceFiles = fullyQualifiedTypeNamesResultingFromCompilationUnit.keySet();
+	    for (Iterator sourceFileIterator = sourceFiles.iterator(); sourceFileIterator.hasNext();) {
+	        File sourceFile = (File) sourceFileIterator.next();
+            List/* ClassFile */ classesFromSourceFile = (List/* ClassFile */) fullyQualifiedTypeNamesResultingFromCompilationUnit.get(sourceFile);
+            for (int i=0;i<classesFromSourceFile.size();i++) {
+                if (((ClassFile)classesFromSourceFile.get(i)).locationOnDisk.equals(classfile)) return  sourceFile;
+            }
+        }
+	    return null;
+	}
+	
+	public String toString() {
+        StringBuffer sb = new StringBuffer();
+        // null config means failed build i think as it is only set on successful full build?
+        sb.append("AjState(").append((buildConfig == null ? "NULLCONFIG" : buildConfig.getConfigFile())).append(")");
+        return sb.toString();
+    }
+
+    /**
+     * Determine if a file has changed since a given time, using the local information recorded in the structural
+     * changes data structure.
+     * 
+     * file is the file we are wondering about lastSBT is the last build time for the state asking the question
+     */
 	private boolean hasStructuralChangedSince(File file,long lastSuccessfulBuildTime) {
 		//long lastModTime = file.lastModified();
 		Long l = (Long)structuralChangesSinceLastFullBuild.get(file.getAbsolutePath());
@@ -397,16 +660,16 @@ public class AjState {
 		List oldClasspath = oldConfig.getClasspath();
 		List newClasspath = newConfig.getClasspath();
 		if (stateListener!=null) stateListener.aboutToCompareClasspaths(oldClasspath,newClasspath);
-		if (changed(oldClasspath,newClasspath,true,oldOutputLocs)) return true;
+		if (changedAndNeedsFullBuild(oldClasspath,newClasspath,true,oldOutputLocs)) return true;
 		List oldAspectpath = oldConfig.getAspectpath();
 		List newAspectpath = newConfig.getAspectpath();
-		if (changed(oldAspectpath,newAspectpath,true,oldOutputLocs)) return true;
+		if (changedAndNeedsFullBuild(oldAspectpath,newAspectpath,true,oldOutputLocs)) return true;
 		List oldInJars = oldConfig.getInJars();
 		List newInJars = newConfig.getInJars();
-		if (changed(oldInJars,newInJars,false,oldOutputLocs)) return true;
+		if (changedAndNeedsFullBuild(oldInJars,newInJars,false,oldOutputLocs)) return true;
 		List oldInPath = oldConfig.getInpath();
 		List newInPath = newConfig.getInpath();
-		if (changed(oldInPath, newInPath,false,oldOutputLocs)) return true;
+		if (changedAndNeedsFullBuild(oldInPath, newInPath,false,oldOutputLocs)) return true;
 		return changed;
 	}
 	
@@ -432,7 +695,7 @@ public class AjState {
 		return outputLocs;
 	}
 	
-	private boolean changed(List oldPath, List newPath, boolean checkClassFiles, List outputLocs) {	
+	private boolean changedAndNeedsFullBuild(List oldPath, List newPath, boolean checkClassFiles, List outputLocs) {	
 		if (oldPath == null) oldPath = new ArrayList();
 		if (newPath == null) newPath = new ArrayList();
 		if (oldPath.size() != newPath.size()) {
@@ -462,19 +725,20 @@ public class AjState {
 					}
 				}
 				if (!foundMatch) {
-					boolean b= classFileChangedInDirSinceLastBuild(f);
-					if (b && stateListener!=null) stateListener.detectedClassChangeInThisDir(f);
-					if (b) return true;					
+				    int classFileChanges = classFileChangedInDirSinceLastBuildRequiringFullBuild(f);
+                    if (classFileChanges == CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD)
+                        return true;
+                    // if (b && stateListener!=null) stateListener.detectedClassChangeInThisDir(f);
 				}
 			}
 		}
 		return false;
 	}
 
-	public List getFilesToCompile(boolean firstPass) {
-		List thisTime = new ArrayList();
+	public Set getFilesToCompile(boolean firstPass) {
+		Set thisTime = new HashSet();
 		if (firstPass) {
-			compiledSourceFiles = new ArrayList();
+			compiledSourceFiles = new HashSet();
 			Collection modifiedFiles = getModifiedFiles();
 			//System.out.println("modified: " + modifiedFiles);
 			thisTime.addAll(modifiedFiles);
@@ -485,15 +749,19 @@ public class AjState {
 	//		}
 			
 			if(addedFiles != null) {
-				thisTime.addAll(addedFiles);					
-			}
+			    for (Iterator fIter = addedFiles.iterator(); fIter.hasNext();) {
+                    Object o = (Object) fIter.next();
+                    if (!thisTime.contains(o))
+                        thisTime.add(o);
+                }
+                // thisTime.addAll(addedFiles);
+            }
 			
 			deleteClassFiles();
 			deleteResources();
 			
 			addAffectedSourceFiles(thisTime,thisTime);
 		} else {
-			
 			addAffectedSourceFiles(thisTime,compiledSourceFiles);
 		}
 		compiledSourceFiles = thisTime;
@@ -520,7 +788,7 @@ public class AjState {
 				if (ucf == null) continue;
 				List ucfs = new ArrayList();
 				ucfs.add(ucf);
-				addDependentsOf(ucf.getClassName());
+				recordTypeChanged(ucf.getClassName());
 				binarySourceFiles.put(bsf.binSrc.getPath(),ucfs);
 				List cfs = new ArrayList(1);
 				cfs.add(getClassFileFor(ucf));
@@ -873,7 +1141,7 @@ public class AjState {
 		}
 		
 		if (lastTime == null) {
-			addDependentsOf(thisTime.getClassName());
+			recordTypeChanged(thisTime.getClassName());
 			return;
 		}
 
@@ -890,11 +1158,11 @@ public class AjState {
 					if (world.forDEBUG_structuralChangesCode) 
 						System.err.println("Detected a structural change in "+thisTime.getFilename());
 					structuralChangesSinceLastFullBuild.put(thisTime.getFilename(),new Long(currentBuildTime));
-					addDependentsOf(new String(reader.getName()).replace('/','.'));
+					recordTypeChanged(new String(reader.getName()).replace('/','.'));
 				}
 			}
 		} catch (ClassFormatException e) {
-			addDependentsOf(thisTime.getClassName());
+			recordTypeChanged(thisTime.getClassName());
 		}							
 	}
 	
@@ -1091,7 +1359,7 @@ public class AjState {
 	}
 		
 
-    private String stringifyList(List l) {
+    private String stringifyList(Set l) {
     	  StringBuffer sb = new StringBuffer();
     	  sb.append("{");
     	  for (Iterator iter = l.iterator(); iter.hasNext();) {
@@ -1103,18 +1371,20 @@ public class AjState {
     	  return sb.toString();
     }
 	
-	protected void addAffectedSourceFiles(List addTo, List lastTimeSources) {
-		if (qualifiedStrings == null || simpleStrings == null ||
-				(qualifiedStrings.isEmpty() && simpleStrings.isEmpty())) return;
-		if (listenerDefined()) getListener().recordDecision("Examining whether any other files now need compilation based just compiling: '"+stringifyList(lastTimeSources)+"'");
+	protected void addAffectedSourceFiles(Set addTo, Set lastTimeSources) {
+	    if (qualifiedStrings.elementSize == 0 && simpleStrings.elementSize == 0)
+            return;
+		if (listenerDefined())
+            getListener().recordDecision(
+                "Examining whether any other files now need compilation based on just compiling: '" + stringifyList(lastTimeSources) + "'");
 		// the qualifiedStrings are of the form 'p1/p2' & the simpleStrings are just 'X'
-		char[][][] qualifiedNames = ReferenceCollection.internQualifiedNames(makeStringSet(qualifiedStrings));
+		char[][][] qualifiedNames = ReferenceCollection.internQualifiedNames(qualifiedStrings);
 		// if a well known qualified name was found then we can skip over these
-		if (qualifiedNames.length < qualifiedStrings.size())
+		if (qualifiedNames.length < qualifiedStrings.elementSize)
 			qualifiedNames = null;
-		char[][] simpleNames = ReferenceCollection.internSimpleNames(makeStringSet(simpleStrings));
+		char[][] simpleNames = ReferenceCollection.internSimpleNames(simpleStrings);
 		// if a well known name was found then we can skip over these
-		if (simpleNames.length < simpleStrings.size())
+		if (simpleNames.length < simpleStrings.elementSize)
 			simpleNames = null;
 
 		//System.err.println("simple: " + simpleStrings);
@@ -1138,40 +1408,43 @@ public class AjState {
 		// add in the things we compiled previously - I know that seems crap but otherwise we may pull woven
 		// stuff off disk (since we no longer have UnwovenClassFile objects) in order to satisfy references
 		// in the new files we are about to compile (see pr133532)
-		// XXX Promote addTo to a Set - then we don't need this rubbish? but does it need to be ordered?
-		if (addTo.size()>0) {
-			for (Iterator iter = lastTimeSources.iterator(); iter.hasNext();) {
-				Object element = (Object) iter.next();
-				if (!addTo.contains(element)) addTo.add(element);
-			}
-		}
-		
-		qualifiedStrings.clear();
+		if (addTo.size() > 0)
+            addTo.addAll(lastTimeSources);
+        // // XXX Promote addTo to a Set - then we don't need this rubbish? but does it need to be ordered?
+        // if (addTo.size()>0) {
+        // for (Iterator iter = lastTimeSources.iterator(); iter.hasNext();) {
+        // Object element = (Object) iter.next();
+        // if (!addTo.contains(element)) addTo.add(element);
+        // }
+        // }
+
+        qualifiedStrings.clear();
 		simpleStrings.clear();
 	}
 
-	protected void addDependentsOf(String qualifiedTypeName) {
-		int lastDot = qualifiedTypeName.lastIndexOf('.');
+	/**
+     * Record that a particular type has been touched during a compilation run. Information is used to ensure any types
+     * depending upon this one are also recompiled.
+     * 
+     * @param typename (possibly qualified) type name
+     */
+    protected void recordTypeChanged(String typename) {
+        int lastDot = typename.lastIndexOf('.');
 		String typeName;
 		if (lastDot != -1) {
-			String packageName = qualifiedTypeName.substring(0,lastDot).replace('.', '/');
-			if (!qualifiedStrings.contains(packageName)) { //??? O(n**2)
-				qualifiedStrings.add(packageName);
-			}
-			typeName = qualifiedTypeName.substring(lastDot+1);
+            String packageName = typename.substring(0, lastDot).replace('.', '/');
+			qualifiedStrings.add(packageName);
+            typeName = typename.substring(lastDot+1);
 		} else {
 			qualifiedStrings.add("");
-			typeName = qualifiedTypeName;
+            typeName = typename;
 		}
 
 			
 		int memberIndex = typeName.indexOf('$');
 		if (memberIndex > 0)
 			typeName = typeName.substring(0, memberIndex);
-		if (!simpleStrings.contains(typeName)) {  //??? O(n**2)
-			simpleStrings.add(typeName);
-		}		
-		//System.err.println("adding: " + qualifiedTypeName);
+		simpleStrings.add(typeName);
 	}
 
 	protected void addDependentsOf(File sourceFile) {
@@ -1180,7 +1453,7 @@ public class AjState {
 		if (cfs != null) {
 			for (Iterator iter = cfs.iterator(); iter.hasNext();) {
 				ClassFile cf = (ClassFile) iter.next();
-				addDependentsOf(cf.fullyQualifiedTypeName);
+				recordTypeChanged(cf.fullyQualifiedTypeName);
 			}
 		}
 
