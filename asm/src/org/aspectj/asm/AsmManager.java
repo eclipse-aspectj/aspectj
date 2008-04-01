@@ -14,10 +14,32 @@
 
 package org.aspectj.asm;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedWriter;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
-import org.aspectj.asm.internal.*;
+import org.aspectj.asm.internal.AspectJElementHierarchy;
+import org.aspectj.asm.internal.JDTLikeHandleProvider;
+import org.aspectj.asm.internal.RelationshipMap;
 import org.aspectj.bridge.ISourceLocation;
 
 /**
@@ -592,7 +614,7 @@ public class AsmManager {
 	}
 	
 	
-	public void processDelta(List files_tobecompiled,Set files_added,Set files_deleted) {
+	public void processDelta(Collection files_tobecompiled, Set files_added, Set files_deleted) {
 
 		try {
 			Writer fw = null;
