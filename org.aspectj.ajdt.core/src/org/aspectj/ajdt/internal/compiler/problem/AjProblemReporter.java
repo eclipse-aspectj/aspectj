@@ -235,12 +235,13 @@ public class AjProblemReporter extends ProblemReporter {
             if (!Modifier.isAbstract(sig.getModifiers())) {
     			ResolvedMember abstractMember = factory.makeResolvedMember(abstractMethod);
     			if (abstractMember.getName().startsWith("ajc$interMethodDispatch")) {			
+    				ResolvedType dType = factory.getWorld().resolve(sig.getDeclaringType(),false);    				
 	  				if (ResolvedType
 						.matches(
 							AjcMemberMaker.interMethod(
 								sig,
 								m.getAspectType(),
-								sig.getDeclaringType().resolve(factory.getWorld()).isInterface()),
+								dType.isInterface()),
 								abstractMember
 							)) {
 						return;
