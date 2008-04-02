@@ -596,9 +596,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		annotationTargetKinds = null; // null means we have no idea or the @Target annotation hasn't been used
 		List targetKinds = new ArrayList();
 		if (isAnnotation()) {
-	        Annotation[] annotationsOnThisType = javaClass.getAnnotations();
+	        AnnotationX[] annotationsOnThisType = getAnnotations();
 	        for (int i = 0; i < annotationsOnThisType.length; i++) {
-	            Annotation a = annotationsOnThisType[i];
+	            Annotation a = annotationsOnThisType[i].getBcelAnnotation();
 	            if (a.getTypeName().equals(UnresolvedType.AT_TARGET.getName())) {
 	            	ArrayElementValue arrayValue = (ArrayElementValue)((ElementNameValuePair)a.getValues().get(0)).getValue();
 	            	ElementValue[] evs = arrayValue.getElementValuesArray();
