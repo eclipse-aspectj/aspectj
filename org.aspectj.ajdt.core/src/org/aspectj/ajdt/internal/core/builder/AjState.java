@@ -631,7 +631,7 @@ public class AjState {
 	public String toString() {
         StringBuffer sb = new StringBuffer();
         // null config means failed build i think as it is only set on successful full build?
-        sb.append("AjState(").append((buildConfig == null ? "NULLCONFIG" : buildConfig.getConfigFile())).append(")");
+        sb.append("AjState(").append((buildConfig == null ? "NULLCONFIG" : buildConfig.getConfigFile().toString())).append(")");
         return sb.toString();
     }
 
