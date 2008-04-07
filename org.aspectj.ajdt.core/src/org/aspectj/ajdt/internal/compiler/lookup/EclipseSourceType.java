@@ -132,7 +132,9 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	}
 	
 	public boolean isAnonymous() {
-		return ((declaration.modifiers & (ASTNode.IsAnonymousType | ASTNode.IsLocalType)) != 0);
+         if (declaration.binding != null)
+            return declaration.binding.isAnonymousType();
+        return ((declaration.modifiers & (ASTNode.IsAnonymousType | ASTNode.IsLocalType)) != 0);
 	}
 	
 	public boolean isNested() {
