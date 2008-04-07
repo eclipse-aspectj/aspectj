@@ -4,6 +4,12 @@
 <suite>
 
 
+	<ajc-test dir="bugs160/pr225916" title="pipeline compilation and anonymous type">
+		<compile files="Test.java TestMBean.java TestAspect.java" options="-showWeaveInfo">
+		 <message kind="weave" text="Join point 'method-execution(java.lang.String test.jmx.Test.test())' in Type"/>
+		</compile>
+	</ajc-test>
+
 	<ajc-test dir="bugs160/pr214994" title="generic itd">
 		<compile files="Broke.java" options="-1.5"/>
 	</ajc-test>
