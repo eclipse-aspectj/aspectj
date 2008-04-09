@@ -894,7 +894,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		StringBuffer sig = new StringBuffer();
 		UnresolvedType[] myParameterTypes = getGenericParameterTypes();
 		for (int i = 0; i < myParameterTypes.length; i++) {
-			appendSigWithTypeVarBoundsRemoved(myParameterTypes[i], sig);
+			appendSigWithTypeVarBoundsRemoved(myParameterTypes[i], sig, new HashSet());
 		}
 		myParameterSignatureWithBoundsRemoved = sig.toString();
 		return myParameterSignatureWithBoundsRemoved;
@@ -918,16 +918,21 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	
 	// does NOT produce a meaningful java signature, but does give a unique string suitable for
 	// comparison.
-	private void appendSigWithTypeVarBoundsRemoved(UnresolvedType aType, StringBuffer toBuffer) {
+	public static void appendSigWithTypeVarBoundsRemoved(UnresolvedType aType, StringBuffer toBuffer, Set alreadyUsedTypeVars) {
 		if (aType.isTypeVariableReference()) {
 			// pr204505
-			appendSigWithTypeVarBoundsRemoved(aType.getUpperBound(),toBuffer);
+		    if (alreadyUsedTypeVars.contains(aType)) {
+                toBuffer.append("...");
+            } else {
+                alreadyUsedTypeVars.add(aType);
+                appendSigWithTypeVarBoundsRemoved(aType.getUpperBound(), toBuffer, alreadyUsedTypeVars);
+            }
 //			toBuffer.append("T;");
 		} else if (aType.isParameterizedType()) {
 			toBuffer.append(aType.getRawType().getSignature());
 			toBuffer.append("<");
 			for (int i = 0; i < aType.getTypeParameters().length; i++) {
-				appendSigWithTypeVarBoundsRemoved(aType.getTypeParameters()[i], toBuffer);
+				appendSigWithTypeVarBoundsRemoved(aType.getTypeParameters()[i], toBuffer, alreadyUsedTypeVars);
 			}
 			toBuffer.append(">;");
 		} else {
