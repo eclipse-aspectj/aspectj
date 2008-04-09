@@ -701,6 +701,7 @@ public class AjState {
 		if (oldPath.size() != newPath.size()) {
 			return true;
 		}
+		Set analysedPaths = new HashSet();
 		for (int i = 0; i < oldPath.size(); i++) {
 			if (!oldPath.get(i).equals(newPath.get(i))) {
 				return true;
@@ -725,10 +726,13 @@ public class AjState {
 					}
 				}
 				if (!foundMatch) {
-				    int classFileChanges = classFileChangedInDirSinceLastBuildRequiringFullBuild(f);
-                    if (classFileChanges == CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD)
-                        return true;
-                    // if (b && stateListener!=null) stateListener.detectedClassChangeInThisDir(f);
+				    if (!analysedPaths.contains(f.getAbsolutePath())) { // Do not check paths more than once
+                        analysedPaths.add(f.getAbsolutePath());
+                        int classFileChanges = classFileChangedInDirSinceLastBuildRequiringFullBuild(f);
+                        if (classFileChanges == CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD)
+                            return true;
+                        // if (b && stateListener!=null) stateListener.detectedClassChangeInThisDir(f);
+                    }
 				}
 			}
 		}
