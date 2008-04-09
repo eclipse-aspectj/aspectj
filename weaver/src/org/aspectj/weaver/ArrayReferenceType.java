@@ -107,7 +107,7 @@ public class ArrayReferenceType extends ReferenceType {
     // Methods overridden from ReferenceType follow
 
     public TypeVariable[] getTypeVariables() {
-        if (this.typeVariables == null) {
+        if (this.typeVariables == null && componentType.getTypeVariables() != null) {
             this.typeVariables = componentType.getTypeVariables();
             for (int i = 0; i < this.typeVariables.length; i++) {
                 this.typeVariables[i].resolve(world);
