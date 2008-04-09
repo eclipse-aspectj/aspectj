@@ -856,7 +856,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	}
 	
 	public UnresolvedType[] getTypeParameters() {
-		return typeParameters == null ? new UnresolvedType[0] : typeParameters;
+		return typeParameters == null ? UnresolvedType.NONE : typeParameters;
 	}
 	
 	/**
