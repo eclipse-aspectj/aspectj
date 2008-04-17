@@ -232,7 +232,10 @@ public class AjProblemReporter extends ProblemReporter {
 		for (Iterator i = onTypeX.getInterTypeMungersIncludingSupers().iterator(); i.hasNext(); ) {
 			ConcreteTypeMunger m = (ConcreteTypeMunger)i.next();
 			ResolvedMember sig = m.getSignature();
-            if (!Modifier.isAbstract(sig.getModifiers())) {
+			if (sig == null) {
+                System.err.println("227540: Null signature for munger: " + m);
+            }
+            if (sig != null && !Modifier.isAbstract(sig.getModifiers())) {
     			ResolvedMember abstractMember = factory.makeResolvedMember(abstractMethod);
     			if (abstractMember.getName().startsWith("ajc$interMethodDispatch")) {			
     				ResolvedType dType = factory.getWorld().resolve(sig.getDeclaringType(),false);    				
