@@ -105,10 +105,11 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 	public ResolvedMember[] getDeclaredFields() {
 		if (fields == null) {
 			Field[] reflectFields = this.myType.getDeclaredFields();
-			this.fields = new ResolvedMember[reflectFields.length];
+			ResolvedMember[] rFields = new ResolvedMember[reflectFields.length];
 			for (int i = 0; i < reflectFields.length; i++) {
-				this.fields[i] = createGenericFieldMember(reflectFields[i]);
+				rFields[i] = createGenericFieldMember(reflectFields[i]);
 			}
+			this.fields = rFields;
 		}
 		return fields;
 	}
