@@ -215,11 +215,12 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	public ResolvedMember[] getDeclaredFields() {
 		if (fields == null) {
 			Field[] reflectFields = this.myClass.getDeclaredFields();
-			this.fields = new ResolvedMember[reflectFields.length];
+			ResolvedMember[] rFields = new ResolvedMember[reflectFields.length];
 			for (int i = 0; i < reflectFields.length; i++) {
-				this.fields[i] = 
+				rFields[i] = 
 					ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(reflectFields[i], world);
 			}
+			this.fields = rFields;
 		}
 		return fields;
 	}
@@ -230,11 +231,12 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	public ResolvedType[] getDeclaredInterfaces() {
 		if (interfaces == null) {
 			Class[] reflectInterfaces = this.myClass.getInterfaces();
-			this.interfaces = new ResolvedType[reflectInterfaces.length];
+			ResolvedType[] rInterfaces = new ResolvedType[reflectInterfaces.length];
 			for (int i = 0; i < reflectInterfaces.length; i++) {
-				this.interfaces[i] = ReflectionBasedReferenceTypeDelegateFactory
+				rInterfaces[i] = ReflectionBasedReferenceTypeDelegateFactory
 					.resolveTypeInWorld(reflectInterfaces[i],world);
 			}
+			this.interfaces = rInterfaces;
 		}
 		return interfaces;
 	}
@@ -246,15 +248,16 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 		if (methods == null) {
 			Method[] reflectMethods = this.myClass.getDeclaredMethods();
 			Constructor[] reflectCons = this.myClass.getDeclaredConstructors();
-			this.methods = new ResolvedMember[reflectMethods.length + reflectCons.length];
+			ResolvedMember[] rMethods = new ResolvedMember[reflectMethods.length + reflectCons.length];
 			for (int i = 0; i < reflectMethods.length; i++) {
-				this.methods[i] = 
+				rMethods[i] = 
 					ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(reflectMethods[i], world);
 			}
 			for (int i = 0; i < reflectCons.length; i++) {
-				this.methods[i + reflectMethods.length] = 
+				rMethods[i + reflectMethods.length] = 
 					ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(reflectCons[i], world);
 			}
+			this.methods = rMethods;
 		}
 		return methods;
 	}
