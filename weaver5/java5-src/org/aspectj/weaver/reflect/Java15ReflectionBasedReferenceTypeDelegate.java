@@ -146,24 +146,25 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 		}
 		if (this.typeVariables == null) {
 			java.lang.reflect.TypeVariable[] tVars = this.getBaseClass().getTypeParameters();
-			this.typeVariables = new TypeVariable[tVars.length];
+			TypeVariable[] rTypeVariables = new TypeVariable[tVars.length];
 			// basic initialization
 			for (int i = 0; i < tVars.length; i++) {
-				typeVariables[i] = new TypeVariable(tVars[i].getName());
+			    rTypeVariables[i] = new TypeVariable(tVars[i].getName());
 			}
 			// stash it
-			this.getResolvedTypeX().getWorld().recordTypeVariablesCurrentlyBeingProcessed(getBaseClass(),typeVariables);
+			this.getResolvedTypeX().getWorld().recordTypeVariablesCurrentlyBeingProcessed(getBaseClass(), rTypeVariables);
 			// now fill in the details...
 			for (int i = 0; i < tVars.length; i++) {
 				TypeVariableReferenceType tvrt = ((TypeVariableReferenceType) typeConverter.fromType(tVars[i]));
 				TypeVariable tv = tvrt.getTypeVariable();
-				typeVariables[i].setUpperBound(tv.getUpperBound());
-				typeVariables[i].setAdditionalInterfaceBounds(tv.getAdditionalInterfaceBounds());
-				typeVariables[i].setDeclaringElement(tv.getDeclaringElement());
-				typeVariables[i].setDeclaringElementKind(tv.getDeclaringElementKind());
-				typeVariables[i].setRank(tv.getRank());
-				typeVariables[i].setLowerBound(tv.getLowerBound());
+				rTypeVariables[i].setUpperBound(tv.getUpperBound());
+                rTypeVariables[i].setAdditionalInterfaceBounds(tv.getAdditionalInterfaceBounds());
+                rTypeVariables[i].setDeclaringElement(tv.getDeclaringElement());
+                rTypeVariables[i].setDeclaringElementKind(tv.getDeclaringElementKind());
+                rTypeVariables[i].setRank(tv.getRank());
+                rTypeVariables[i].setLowerBound(tv.getLowerBound());
 			}
+			this.typeVariables = rTypeVariables;
 			this.getResolvedTypeX().getWorld().forgetTypeVariablesCurrentlyBeingProcessed(getBaseClass());
 		}		
 		return this.typeVariables;
@@ -175,14 +176,15 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 		if (methods == null) {
 			Method[] reflectMethods = this.myType.getDeclaredMethods();
 			Constructor[] reflectCons = this.myType.getDeclaredConstructors();
-			this.methods = new ResolvedMember[reflectMethods.length + reflectCons.length];
+			ResolvedMember[] rMethods = new ResolvedMember[reflectMethods.length + reflectCons.length];
 			for (int i = 0; i < reflectMethods.length; i++) {
-				this.methods[i] = createGenericMethodMember(reflectMethods[i]); 					
+				rMethods[i] = createGenericMethodMember(reflectMethods[i]); 					
 			}
 			for (int i = 0; i < reflectCons.length; i++) {
-				this.methods[i + reflectMethods.length] = 
+			    rMethods[i + reflectMethods.length] = 
 					createGenericConstructorMember(reflectCons[i]);
 			}
+			this.methods = rMethods;
 		}
 		return methods;
 	}
@@ -247,7 +249,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 	public ResolvedMember[] getDeclaredPointcuts() {
 		if (pointcuts == null) {
 			Pointcut[] pcs = this.myType.getDeclaredPointcuts();
-			pointcuts = new ResolvedMember[pcs.length];
+			ResolvedMember[] rPointcuts = new ResolvedMember[pcs.length];
 			InternalUseOnlyPointcutParser parser = null;
 			World world = getWorld();
 			if (world instanceof ReflectionWorld) {
@@ -269,7 +271,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 				for (int j = 0; j < weaverPTypes.length; j++) {
 					weaverPTypes[j] = this.typeConverter.fromType(ptypes[j].getJavaClass()) ;
 				}
-				pointcuts[i] = new DeferredResolvedPointcutDefinition(getResolvedTypeX(),pcs[i].getModifiers(),pcs[i].getName(),weaverPTypes);				
+				rPointcuts[i] = new DeferredResolvedPointcutDefinition(getResolvedTypeX(), pcs[i].getModifiers(), pcs[i].getName(), weaverPTypes);				
 			}
 			// phase 2, now go back round and resolve in-place all of the pointcuts
 			PointcutParameter[][] parameters = new PointcutParameter[pcs.length][];
@@ -287,14 +289,15 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 					parameters[i][j] = parser.createPointcutParameter(pnames[j],ptypes[j].getJavaClass());
 				}				String pcExpr = pcs[i].getPointcutExpression().toString();
 				org.aspectj.weaver.patterns.Pointcut pc = parser.resolvePointcutExpression(pcExpr,getBaseClass(),parameters[i]);
-				((ResolvedPointcutDefinition)pointcuts[i]).setParameterNames(pnames);
-				((ResolvedPointcutDefinition)pointcuts[i]).setPointcut(pc);
+				((ResolvedPointcutDefinition) rPointcuts[i]).setParameterNames(pnames);
+                ((ResolvedPointcutDefinition) rPointcuts[i]).setPointcut(pc);
 			}
 			// phase 3, now concretize them all
-			for (int i = 0; i < pointcuts.length; i++) {
-				ResolvedPointcutDefinition rpd = (ResolvedPointcutDefinition) pointcuts[i];
+			for (int i = 0; i < rPointcuts.length; i++) {
+                ResolvedPointcutDefinition rpd = (ResolvedPointcutDefinition) rPointcuts[i];
 				rpd.setPointcut(parser.concretizePointcutExpression(rpd.getPointcut(), getBaseClass(), parameters[i]));
 			}
+			this.pointcuts = rPointcuts;
 		}
 		return pointcuts;
 	}
