@@ -249,7 +249,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 	public ResolvedMember[] getDeclaredPointcuts() {
 		if (pointcuts == null) {
 			Pointcut[] pcs = this.myType.getDeclaredPointcuts();
-			ResolvedMember[] rPointcuts = new ResolvedMember[pcs.length];
+			pointcuts = new ResolvedMember[pcs.length];
 			InternalUseOnlyPointcutParser parser = null;
 			World world = getWorld();
 			if (world instanceof ReflectionWorld) {
@@ -271,7 +271,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 				for (int j = 0; j < weaverPTypes.length; j++) {
 					weaverPTypes[j] = this.typeConverter.fromType(ptypes[j].getJavaClass()) ;
 				}
-				rPointcuts[i] = new DeferredResolvedPointcutDefinition(getResolvedTypeX(), pcs[i].getModifiers(), pcs[i].getName(), weaverPTypes);				
+				pointcuts[i] = new DeferredResolvedPointcutDefinition(getResolvedTypeX(),pcs[i].getModifiers(),pcs[i].getName(),weaverPTypes);				
 			}
 			// phase 2, now go back round and resolve in-place all of the pointcuts
 			PointcutParameter[][] parameters = new PointcutParameter[pcs.length][];
@@ -289,15 +289,14 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 					parameters[i][j] = parser.createPointcutParameter(pnames[j],ptypes[j].getJavaClass());
 				}				String pcExpr = pcs[i].getPointcutExpression().toString();
 				org.aspectj.weaver.patterns.Pointcut pc = parser.resolvePointcutExpression(pcExpr,getBaseClass(),parameters[i]);
-				((ResolvedPointcutDefinition) rPointcuts[i]).setParameterNames(pnames);
-                ((ResolvedPointcutDefinition) rPointcuts[i]).setPointcut(pc);
+				((ResolvedPointcutDefinition)pointcuts[i]).setParameterNames(pnames);
+				((ResolvedPointcutDefinition)pointcuts[i]).setPointcut(pc);
 			}
 			// phase 3, now concretize them all
-			for (int i = 0; i < rPointcuts.length; i++) {
-                ResolvedPointcutDefinition rpd = (ResolvedPointcutDefinition) rPointcuts[i];
+			for (int i = 0; i < pointcuts.length; i++) {
+				ResolvedPointcutDefinition rpd = (ResolvedPointcutDefinition) pointcuts[i];
 				rpd.setPointcut(parser.concretizePointcutExpression(rpd.getPointcut(), getBaseClass(), parameters[i]));
 			}
-			this.pointcuts = rPointcuts;
 		}
 		return pointcuts;
 	}
