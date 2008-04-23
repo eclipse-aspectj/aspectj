@@ -20,31 +20,24 @@ All rights reserved.
 
 <h1>AspectJ v1.6.0 Readme</h1>
 
-<h3>AspectJ v1.6.0rc1- 16 Apr 2008</h3>
-<p>This release candidate fixes a number of issues raised against M2 and earlier versions of AspectJ.  The full list of fixes
-is accessible here:
-<a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&short_desc=&product=AspectJ&target_milestone=1.6.0+RC1&long_desc_type=allwordssubstr&long_desc=&bug_file_loc_type=allwordssubstr&bug_file_loc=&status_whiteboard_type=allwordssubstr&status_whiteboard=&keywords_type=allwords&keywords=&bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&emailtype1=substring&email1=&emailtype2=substring&email2=&bugidtype=include&bug_id=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&cmdtype=doit&order=Reuse+same+sort+as+last+time&field0-0-0=noop&type0-0-0=noop&value0-0-0=">1.6.0rc1 fixes</a>.
+<h3>AspectJ v1.6.0 - 23 Apr 2008</h3>
 
-<p>It also includes some enhancements to incremental compilation support which enable AJDT to do incremental builds
-more often than previously in a multi-project eclipse configuration.  
-These enhancements are described in <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=221427">bug 221427</a>.
-And some performance numbers are in <a href="http://dev.eclipse.org/mhonarc/lists/aspectj-users/msg09002.html">this mailing list</a> post.
+<p>For the complete list of every issue addressed since the last full release, see
+<a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&short_desc=&product=AspectJ&target_milestone=1.6.0+M1&target_milestone=1.6.0+M2&target_milestone=1.6.0+RC1&target_milestone=1.6.0&long_desc_type=allwordssubstr&long_desc=&bug_file_loc_type=allwordssubstr&bug_file_loc=&status_whiteboard_type=allwordssubstr&status_whiteboard=&keywords_type=allwords&keywords=&bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&emailtype1=substring&email1=&emailtype2=substring&email2=&bugidtype=include&bug_id=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&cmdtype=doit&order=Reuse+same+sort+as+last+time&field0-0-0=noop&type0-0-0=noop&value0-0-0=">this bugzilla link</a>.
 
-<hr>
+<p>Some of the highlights of 1.6.0 are:
 
+<h4>Upgrade to a Java 1.6 compiler</h4>
+<p>AspectJ1.6.0 upgrades the internal Eclipse compiler level to version 785_R33x - a Java 1.6 level compiler</p>
 
-<h3>AspectJ v1.6.0M2 - 26 Feb 2008</h3>
-<p>This milestone fixes a number of issues raised against M1 and earlier versions of AspectJ.  The full list of fixes
-is accessible here:
-<a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&short_desc=&product=AspectJ&target_milestone=1.6.0+M2&long_desc_type=allwordssubstr&long_desc=&bug_file_loc_type=allwordssubstr&bug_file_loc=&status_whiteboard_type=allwordssubstr&status_whiteboard=&keywords_type=allwords&keywords=&bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&emailtype1=substring&email1=&emailtype2=substring&email2=&bugidtype=include&bug_id=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&cmdtype=doit&order=Reuse+same+sort+as+last+time&field0-0-0=noop&type0-0-0=noop&value0-0-0=">1.6.0m2 fixes</a>.
+<h4>Better incremental compilation support in the IDE</h4>
+<p>Changes under <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=221427">bug 221427</a> mean that the compiler 
+is better able to maintain incremental state for projects in Eclipse and determine whether full builds or incremental
+builds are required when project dependencies change.  The result is that the compiler will more frequently do
+an incremental build rather than falling back to doing a full build.  Some basic performance findings can be seen in
+<a href="http://dev.eclipse.org/mhonarc/lists/aspectj-users/msg09002.html">this mailing list post</a>.
 
-<p>1.6.0m2 includes two new features:
-<ul>
-<li>Parameter annotation matching</li>
-<li>Annotation value matching</li>
-</ul>
-<p></p>
-<h4>Parameter Annotation Matching</h4>
+<h4>Parameter annotation matching</h4>
 <p>Parameter matching is possible for constructors and methods.  The use
 of parentheses around the parameter types in a method signature
 determine whether the annotations relate to the type of the parameter
@@ -151,36 +144,16 @@ public class ExampleOne {
 
 }
 </pre></code>
-Matching is currently allowed on all annotation value types *except* class and array. Also it is
+<p>Matching is currently allowed on all annotation value types *except* class and array. Also it is
 not currently supported for parameter annotation values.
 
-<hr>
-<h3>AspectJ v1.6.0M1 - 16 Jan 2008</h3>
-<p>This is the first milestone release of AspectJ 6.  AspectJ 6 is a Java 6 compiler,
-the underlying Eclipse JDT compiler version upon which it is based is 785_R33x - a recent 3.3 version.</p>
-<p>The compiler had changed a lot since version 574_R31x when we last merged! 
-This milestone passes the 3615 automated tests we have defined for AspectJ - but that does not mean it will work perfectly for you, if it does not then
-please <a href="https://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ">raise a bug in bugzilla</a>.
+<h4>Changes since release candidate</h4>
+<p>The only fix 1.6.0 final includes beyond the release candidate is a multi-threading problem in the weaver - <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=227029">bug 227029</a>.
 
-<p>Issues:</p>
-<ul>
-<li>Open bugs targeted for fix by 1.6.0 final are <a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&short_desc=&product=AspectJ&target_milestone=1.6.0&long_desc_type=allwordssubstr&long_desc=&bug_file_loc_type=allwordssubstr&bug_file_loc=&status_whiteboard_type=allwordssubstr&status_whiteboard=&keywords_type=allwords&keywords=&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&emailtype1=substring&email1=&emailtype2=substring&email2=&bugidtype=include&bug_id=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&cmdtype=doit&order=Importance&field0-0-0=noop&type0-0-0=noop&value0-0-0=">listed here</a>.
-<li>Bugs that have been opened upon this milestone are <a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&short_desc=&product=AspectJ&version=1.6.0M1&long_desc_type=allwordssubstr&long_desc=&bug_file_loc_type=allwordssubstr&bug_file_loc=&status_whiteboard_type=allwordssubstr&status_whiteboard=&keywords_type=allwords&keywords=&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&emailtype1=substring&email1=&emailtype2=substring&email2=&bugidtype=include&bug_id=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&cmdtype=doit&order=Reuse+same+sort+as+last+time&field0-0-0=noop&type0-0-0=noop&value0-0-0=">listed here</a>.
-<li>Bugs that have been FIXED throughout 1.6.0 are <a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&short_desc=&product=AspectJ&target_milestone=1.6.0+M1&target_milestone=1.6.0+M2&target_milestone=1.6.0&long_desc_type=allwordssubstr&long_desc=&bug_file_loc_type=allwordssubstr&bug_file_loc=&status_whiteboard_type=allwordssubstr&status_whiteboard=&keywords_type=allwords&keywords=&bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&emailtype1=substring&email1=&emailtype2=substring&email2=&bugidtype=include&bug_id=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&cmdtype=doit&order=Reuse+same+sort+as+last+time&field0-0-0=noop&type0-0-0=noop&value0-0-0=">listed here</a>.  The latest dev builds will include these fixes (the fixes may not be in the most recent milestone).
-</ul>
-<p>Known issues with this milestone:</p>
-<ul>
-<li>StackMapTable attributes not produced for all members, where they would normally be required.
-<li>Distribution may currently contain some 'dead code' that we can remove, dependencies from compiler classes that are never actually used.
-<li>No performance testing done
-<li>No memory usage testing done
-<li>Limited actual Java6 testing done, as I am on a Mac ;)
-<li>Does not default to Java6 compilation (use -1.6 or -source 1.6)
-</ul>
-</p>
-<p>Please test it and open any bugs you find!</p>
-<br>
-
+<h4>Releases leading up to AspectJ 1.6.0
+<p>AspectJ v1.6.0rc1- 16 Apr 2008</p>
+<p>AspectJ v1.6.0M2 - 26 Feb 2008</p>
+<p>AspectJ v1.6.0M1 - 16 Jan 2008</p>
 <hr>
 
 </body> 
