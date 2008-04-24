@@ -409,6 +409,9 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		 return genericParameterTypes;
 	 }
 	 
+	 /**
+      * Return the parameterized/generic return type or the normal return type if the method is not generic.
+      */
 	 public UnresolvedType getGenericReturnType() {
 		 unpackGenericSignature();
 		 return genericReturnType;

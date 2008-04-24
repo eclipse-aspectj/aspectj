@@ -887,6 +887,14 @@ public final class LazyMethodGen implements Traceable {
         return name;
     }
 
+    public String getGenericReturnTypeSignature() {
+        if (memberView == null) {
+            return getReturnType().getSignature();
+        } else {
+            return memberView.getGenericReturnType().getSignature();
+        }
+    }
+    
     public Type getReturnType() {
     	initialize();
         return returnType;

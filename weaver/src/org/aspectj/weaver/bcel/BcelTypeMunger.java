@@ -333,25 +333,24 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
      */
     private boolean enforceDecpRule4_compatibleReturnTypes(BcelClassWeaver weaver, ResolvedMember superMethod, LazyMethodGen subMethod) {
         boolean cont = true;
-        String superReturnTypeSig = superMethod.getReturnType().getSignature();
-          String subReturnTypeSig   = subMethod.getReturnType().getSignature();
-          superReturnTypeSig = superReturnTypeSig.replace('.','/');
-          subReturnTypeSig = subReturnTypeSig.replace('.','/');
-          if (!superReturnTypeSig.equals(subReturnTypeSig)) {
-            // Allow for covariance - wish I could test this (need Java5...)
+        String superReturnTypeSig = superMethod.getGenericReturnType().getSignature(); // eg. Pjava/util/Collection<LFoo;>
+        String subReturnTypeSig = subMethod.getGenericReturnTypeSignature();
+        superReturnTypeSig = superReturnTypeSig.replace('.', '/');
+        subReturnTypeSig = subReturnTypeSig.replace('.', '/');
+        if (!superReturnTypeSig.equals(subReturnTypeSig)) {
+            // Check for covariance
             ResolvedType subType   = weaver.getWorld().resolve(subMethod.getReturnType());
             ResolvedType superType = weaver.getWorld().resolve(superMethod.getReturnType());
             if (!superType.isAssignableFrom(subType)) {
-                ISourceLocation sloc = subMethod.getSourceLocation();
                 weaver.getWorld().getMessageHandler().handleMessage(MessageUtil.error(
-                        "The return type is incompatible with "+superMethod.getDeclaringType()+"."+superMethod.getName()+superMethod.getParameterSignature(),
-                        subMethod.getSourceLocation()));
+                        "The return type is incompatible with " + superMethod.getDeclaringType() + "." + superMethod.getName()
+                        + superMethod.getParameterSignature(), subMethod.getSourceLocation()));
 // this just might be a better error message...                      
 //                        "The return type '"+subReturnTypeSig+"' is incompatible with the overridden method "+superMethod.getDeclaringType()+"."+
 //                        superMethod.getName()+superMethod.getParameterSignature()+" which returns '"+superReturnTypeSig+"'",
                  cont=false;
             }
-          }
+        }
         return cont;
     }
     
@@ -380,11 +379,14 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
     }
    
 
+    /**
+     * Search the specified type for a particular method - do not use the return value in the comparison as it is not
+     * considered for overriding.
+     */
 	private LazyMethodGen findMatchingMethod(LazyClassGen newParentTarget, ResolvedMember m) {
         LazyMethodGen found = null;
-		// Search the type for methods overriding super methods (methods that come from the new parent)
-		// Don't use the return value in the comparison as overriding doesnt
-		for (Iterator i = newParentTarget.getMethodGens().iterator(); i.hasNext() && found==null;) {
+        List methodGens = newParentTarget.getMethodGens();
+        for (Iterator i = methodGens.iterator(); i.hasNext() && found == null;) {
 		    LazyMethodGen gen = (LazyMethodGen) i.next();
 		    if (gen.getName().equals(m.getName()) && 
 		        gen.getParameterSignature().equals(m.getParameterSignature())) {
