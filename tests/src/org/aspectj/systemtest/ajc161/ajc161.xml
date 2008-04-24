@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.6.1 Tests -->
+<suite>
+
+    <ajc-test dir="bugs161/pr226567" title="pipeline compilation and generic return type">
+        <compile files="BarAspect.aj Foo.java Bar.java" options="-1.5"/>
+        <compile files="BarAspect.aj Bar.java Foo.java" options="-1.5"/>
+    </ajc-test>
+
+</suite>

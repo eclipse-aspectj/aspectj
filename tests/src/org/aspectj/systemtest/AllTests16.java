@@ -7,6 +7,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.aspectj.systemtest.ajc160.AllTestsAspectJ160;
+import org.aspectj.systemtest.ajc161.AllTestsAspectJ161;
 
 public class AllTests16 {
 
@@ -14,6 +15,7 @@ public class AllTests16 {
 		TestSuite suite = new TestSuite("AspectJ System Test Suite - JDK 1.6");
 		//$JUnit-BEGIN$
 		suite.addTest(AllTestsAspectJ160.suite()); // dont require a 1.6 JRE to run but checks 1.6 compiler behaviour
+        suite.addTest(AllTestsAspectJ161.suite()); // dont require a 1.6 JRE to run but checks 1.6 compiler behaviour
 		suite.addTest(AllTests15.suite());
 		//$JUnit-END$
 		return suite;

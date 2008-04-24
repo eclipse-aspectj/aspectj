@@ -22,6 +22,9 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc160Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.0rc1
+   // public void testPipelineCompilationGenericReturnType_pr226567() {
+     //   runTest("pipeline compilation and generic return type");
+    //}
     public void testPipelineCompilationAnonymous_pr225916() {
         runTest("pipeline compilation and anonymous type");
     }
