@@ -63,7 +63,10 @@ public class AjASTMatcher extends ASTMatcher {
 	}
 	
 	public boolean match(DefaultPointcut node, Object other) {
-		return (other instanceof DefaultPointcut);
+	    if (!(other instanceof DefaultPointcut)) {
+	        return false;
+	      }
+	    return node.getDetail().equals(((DefaultPointcut) other).getDetail());
 	}
 	
 	public boolean match(ReferencePointcut node, Object other) {
@@ -250,10 +253,16 @@ public class AjASTMatcher extends ASTMatcher {
 	}
 	
 	public boolean match(DefaultTypePattern node, Object other) {
-		return (other instanceof DefaultTypePattern);
+	  if (!(other instanceof DefaultTypePattern)) {
+	    return false;
+	  }
+	  return node.getDetail().equals(((DefaultTypePattern) other).getDetail());
 	}
 	
 	public boolean match(SignaturePattern node, Object other) {
-		return (other instanceof SignaturePattern);
+	    if (!(other instanceof SignaturePattern)) {
+	        return false;
+	    }
+	    return node.getDetail().equals(((SignaturePattern) other).getDetail());
 	}
 }
