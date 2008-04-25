@@ -62,7 +62,7 @@ import  java.io.*;
  * purposes. This attribute is used by the <em>Code</em> attribute. It
  * contains pairs of PCs and line numbers.
  *
- * @version $Id: LineNumberTable.java,v 1.3.6.1 2007/02/12 09:34:02 aclement Exp $
+ * @version $Id: LineNumberTable.java,v 1.3.6.2 2008/04/25 17:55:36 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Code
  *

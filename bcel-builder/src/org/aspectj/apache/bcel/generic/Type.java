@@ -65,7 +65,7 @@ import org.aspectj.apache.bcel.classfile.Utility;
  * Abstract super class for all possible java types, namely basic types
  * such as int, object types like String and array types, e.g. int[]
  *
- * @version $Id: Type.java,v 1.7.4.1 2007/02/12 09:34:03 aclement Exp $
+ * @version $Id: Type.java,v 1.7.4.2 2008/04/25 17:55:34 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  * modified:

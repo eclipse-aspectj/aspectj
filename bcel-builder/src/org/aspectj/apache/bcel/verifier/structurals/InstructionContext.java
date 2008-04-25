@@ -63,7 +63,7 @@ import org.aspectj.apache.bcel.generic.InstructionHandle;
  * to information like control flow successors and
  * such.
  *
- * @version $Id: InstructionContext.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: InstructionContext.java,v 1.4.10.1 2008/04/25 17:55:37 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public interface InstructionContext{

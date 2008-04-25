@@ -76,7 +76,7 @@ import java.util.ArrayList;
  * A list is finally dumped to a byte code array with <a
  * href="#getByteCode()">getByteCode</a>.
  *
- * @version $Id: InstructionList.java,v 1.4.6.1 2007/02/12 09:34:07 aclement Exp $
+ * @version $Id: InstructionList.java,v 1.4.6.2 2008/04/25 17:55:33 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Instruction
  * @see     InstructionHandle
@@ -114,6 +114,9 @@ public class InstructionList implements Serializable {
    */
   public boolean isEmpty() { return start == null; } // && end == null
 
+  public static InstructionHandle findHandle(InstructionHandle[] ihs,int[] pos,int count,int target) {
+	  return findHandle(ihs,pos,count,target,false);
+  }
   /**
    * Find the target instruction (handle) that corresponds to the given target
    * position (byte code offset).
@@ -124,7 +127,8 @@ public class InstructionList implements Serializable {
    * @param target target position to search for
    * @return target position's instruction handle if available
    */
-  public static InstructionHandle findHandle(InstructionHandle[] ihs, int[] pos, int count, int target) {
+  public static InstructionHandle findHandle(InstructionHandle[] ihs,
+					     int[] pos, int count,int target,boolean returnClosestIfNoExactMatch) {
     int l=0, r = count - 1;
     // Do a binary search since the pos array is ordered
     int i,j;
@@ -135,6 +139,11 @@ public class InstructionList implements Serializable {
       else if (target < j)  r=i-1; // else constrain search area
       else                  l=i+1; // target > j
     } while (l <= r);
+
+    if (returnClosestIfNoExactMatch) {
+    	i = (l+r)/2; if (i<0) i=0;
+    	return ihs[i];
+    }
     return null;
   }
 
@@ -157,6 +166,10 @@ public class InstructionList implements Serializable {
   
   public InstructionHandle findHandle(int pos,InstructionHandle[] instructionArray) {
 	  return findHandle(instructionArray,byte_positions,length,pos);
+  }
+
+  public InstructionHandle findHandle(int pos,InstructionHandle[] instructionArray,boolean useClosestApproximationIfNoExactFound) {
+	  return findHandle(instructionArray,byte_positions,length,pos,useClosestApproximationIfNoExactFound);
   }
 
   /**

@@ -60,7 +60,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  * Utility class implementing a (typesafe) collection of JavaClass
  * objects. Contains the most important methods of a Vector.
  *
- * @version $Id: ClassVector.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: ClassVector.java,v 1.2.10.1 2008/04/25 17:55:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A> 
  * @see ClassQueue
 */

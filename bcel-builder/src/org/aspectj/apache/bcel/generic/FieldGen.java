@@ -73,7 +73,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
  * one can do is to add a constant value attribute to a field (which must of
  * course be compatible with to the declared type).
  *
- * @version $Id: FieldGen.java,v 1.4.8.1 2007/02/12 09:34:04 aclement Exp $
+ * @version $Id: FieldGen.java,v 1.4.8.2 2008/04/25 17:55:34 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Field
  */

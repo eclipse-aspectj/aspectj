@@ -83,7 +83,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
  * existing java class (file).
  *
  * @see JavaClass
- * @version $Id: ClassGen.java,v 1.8.4.1 2007/02/12 09:34:06 aclement Exp $
+ * @version $Id: ClassGen.java,v 1.8.4.2 2008/04/25 17:55:34 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  *
  * Upgraded, Andy Clement 9th Mar 06 - calculates SUID

@@ -86,7 +86,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeParameterAnnotations;
  * use the `removeNOPs' method to get rid off them.
  * The resulting method object can be obtained via the `getMethod()' method.
  *
- * @version $Id: MethodGen.java,v 1.7.6.1 2007/02/12 09:34:06 aclement Exp $
+ * @version $Id: MethodGen.java,v 1.7.6.2 2008/04/25 17:55:34 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author  <A HREF="http://www.vmeng.com/beard">Patrick C. Beard</A> [setMaxStack()]
  * @see     InstructionList
@@ -275,12 +275,12 @@ public class MethodGen extends FieldGenOrMethodGen {
 							int lnum = l.getLineNumber();
 							if (lnum>highestLineNumber) highestLineNumber=lnum;
 							LineNumberTag lt = new LineNumberTag(lnum);
-							il.findHandle(l.getStartPC(),arrayOfInstructions).addTargeter(lt);
+							il.findHandle(l.getStartPC(),arrayOfInstructions,true).addTargeter(lt);
 						}
 					} else {
 						for (int k = 0; k < ln.length; k++) {
 							LineNumber l = ln[k];
-							addLineNumber(il.findHandle(l.getStartPC(),arrayOfInstructions),
+							addLineNumber(il.findHandle(l.getStartPC(),arrayOfInstructions,true),
 									l.getLineNumber());
 						}
 					}
@@ -294,7 +294,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 							LocalVariable l = lv[k];
 							Type t = Type.getType(l.getSignature());
 							LocalVariableTag lvt = new LocalVariableTag(t,l.getSignature(),l.getName(),l.getIndex(),l.getStartPC());
-							InstructionHandle start = il.findHandle(l.getStartPC(), arrayOfInstructions);
+							InstructionHandle start = il.findHandle(l.getStartPC(), arrayOfInstructions,true);
 							byte b = t.getType();
 							if (b!= Constants.T_ADDRESS) {
 								int increment = t.getSize();
@@ -949,9 +949,6 @@ public class MethodGen extends FieldGenOrMethodGen {
     	
     int               stackDepth = 0, maxStackDepth = 0;
     InstructionHandle ih         = il.getStart();
-    if (ih.toString().toUpperCase().indexOf("GETSTATIC")!=-1) {
-    	int stop = 1;
-    }
     while(ih != null) {
       Instruction instruction = ih.getInstruction();
       short opcode = instruction.opcode;

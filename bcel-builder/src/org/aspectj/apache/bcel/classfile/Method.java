@@ -61,25 +61,30 @@ import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
 import org.aspectj.apache.bcel.generic.Type;
+import java.io.*;
+import java.util.*;
 
 /**
  * This class represents the method info structure, i.e., the representation 
  * for a method in the class. See JVM specification for details.
  * A method has access flags, a name, a signature and a number of attributes.
  *
- * @version $Id: Method.java,v 1.2.10.1 2007/02/12 09:34:02 aclement Exp $
+ * @version $Id: Method.java,v 1.2.10.2 2008/04/25 17:55:37 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class Method extends FieldOrMethod {
+  
+  public static final AnnotationGen[][] NO_PARAMETER_ANNOTATIONS = new AnnotationGen[][]{};
+  public static final AnnotationGen[] NO_ANNOTATIONS = new AnnotationGen[]{};
 	
   public static final Method[] NoMethods = new Method[0];
   
-  // annotations on parameters of this method
   private boolean parameterAnnotationsOutOfDate = true;
-  private RuntimeVisibleParameterAnnotations parameterAnnotationsVis; 
-  private RuntimeInvisibleParameterAnnotations parameterAnnotationsInvis;
+  private AnnotationGen[][] unpackedParameterAnnotations;
 
-  private Method() { }
+  private Method() {   
+    parameterAnnotationsOutOfDate = true;
+  }
 
   /**
    * Initialize from another object. Note that both objects use the same
@@ -87,6 +92,7 @@ public final class Method extends FieldOrMethod {
    */
   public Method(Method c) {
     super(c);
+    parameterAnnotationsOutOfDate = true;
   }
 
   Method(DataInputStream file, ConstantPool constant_pool) throws IOException {
@@ -95,12 +101,22 @@ public final class Method extends FieldOrMethod {
 
   public Method(int access_flags, int name_index, int signature_index, Attribute[] attributes, ConstantPool constant_pool) {
     super(access_flags, name_index, signature_index, attributes, constant_pool);
+    parameterAnnotationsOutOfDate = true;
   }
 
   public void accept(Visitor v) {
     v.visitMethod(this);
   }
   
+  // CUSTARD mutable or not?
+  public void setAttributes(Attribute[] attributes) { 
+    parameterAnnotationsOutOfDate = true;
+    super.setAttributes(attributes);
+  }
+
+  /**
+   * @return Code attribute of method, if any
+   */   
   public final Code getCode() {
 	return AttributeUtils.getCodeAttribute(attributes);
   }
@@ -189,33 +205,74 @@ public final class Method extends FieldOrMethod {
   }
   
   private void ensureParameterAnnotationsUnpacked() {
-  	if (parameterAnnotationsOutOfDate) { 
+  	if (!parameterAnnotationsOutOfDate) return;
+	parameterAnnotationsOutOfDate = false;
+
+	int parameterCount = getArgumentTypes().length;
+	if (parameterCount == 0) {
+		unpackedParameterAnnotations = NO_PARAMETER_ANNOTATIONS;
+		return;
+	}
+
+	RuntimeVisibleParameterAnnotations parameterAnnotationsVis = null;
+    RuntimeInvisibleParameterAnnotations parameterAnnotationsInvis = null;
+
   		// Find attributes that contain annotation data
+	Attribute[] attrs = getAttributes();
+	List accumulatedAnnotations = new ArrayList();
   		
-  		for (int i = 0; i < attributes.length; i++) {
-			Attribute attribute = attributes[i];
+	for (int i = 0; i < attrs.length; i++) {
+		Attribute attribute = attrs[i];
 			if (attribute instanceof RuntimeVisibleParameterAnnotations) {				
 				parameterAnnotationsVis = (RuntimeVisibleParameterAnnotations)attribute;
-			}
-			if (attribute instanceof RuntimeInvisibleParameterAnnotations) {				
+		} else if (attribute instanceof RuntimeInvisibleParameterAnnotations) {				
 				parameterAnnotationsInvis = (RuntimeInvisibleParameterAnnotations)attribute;
 			}
 		}
-  		parameterAnnotationsOutOfDate = false;
+	
+	// Build a list of annotation arrays, one per argument
+	List annotationsForEachParameter = new ArrayList();
+	AnnotationGen[] visibleOnes = null;
+	AnnotationGen[] invisibleOnes = null;
+	boolean foundSome = false;
+	for (int i=0; i<parameterCount; i++) {
+		int count = 0;
+		visibleOnes = new AnnotationGen[0];
+		invisibleOnes = new AnnotationGen[0];
+	  	if (parameterAnnotationsVis!=null) {
+	  		visibleOnes = parameterAnnotationsVis.getAnnotationsOnParameter(i);
+	  		count+=visibleOnes.length;
   	}
+	  	if (parameterAnnotationsInvis!=null){
+	  		invisibleOnes = parameterAnnotationsInvis.getAnnotationsOnParameter(i);
+	  		count+=invisibleOnes.length;
   }
 
-  public AnnotationGen[] getAnnotationsOnParameter(int i) {
-  	ensureParameterAnnotationsUnpacked();
-  	
-  	AnnotationGen[] visibleOnes = AnnotationGen.NO_ANNOTATIONS;
-  	if (parameterAnnotationsVis!=null) visibleOnes = parameterAnnotationsVis.getAnnotationsOnParameter(i);
-  	AnnotationGen[] invisibleOnes = AnnotationGen.NO_ANNOTATIONS;
-  	if (parameterAnnotationsInvis!=null) invisibleOnes = parameterAnnotationsInvis.getAnnotationsOnParameter(i);
-  	AnnotationGen[] complete = new AnnotationGen[visibleOnes.length+invisibleOnes.length];
+	  	AnnotationGen[] complete = NO_ANNOTATIONS;
+	  	if (count!=0) {
+	  		complete = new AnnotationGen[visibleOnes.length+invisibleOnes.length];
   	System.arraycopy(visibleOnes,0,complete,0,visibleOnes.length);
   	System.arraycopy(invisibleOnes,0,complete,visibleOnes.length,invisibleOnes.length);
-    return complete;
+	  		foundSome = true;
+	  	}
+  		annotationsForEachParameter.add(complete);
+	}
+	if (foundSome) {
+		unpackedParameterAnnotations = (AnnotationGen[][])annotationsForEachParameter.toArray(new AnnotationGen[][]{});
+	} else {
+		unpackedParameterAnnotations=NO_PARAMETER_ANNOTATIONS;
+	}
+  }
+  
+  public AnnotationGen[] getAnnotationsOnParameter(int i) {
+	  ensureParameterAnnotationsUnpacked();
+	  if (unpackedParameterAnnotations==NO_PARAMETER_ANNOTATIONS) return NO_ANNOTATIONS;
+	  return unpackedParameterAnnotations[i];
+  }
+    
+  public AnnotationGen[][] getParameterAnnotations() {
+	  ensureParameterAnnotationsUnpacked();
+	  return unpackedParameterAnnotations;
   }
     
 }

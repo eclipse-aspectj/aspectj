@@ -61,7 +61,7 @@ package org.aspectj.apache.bcel.verifier.exc;
  * 2nd edition, 4.8.1, pages 133-137. The static constraints checking part of pass 3
  * is called pass 3a in JustIce.
  *
- * @version $Id: StaticCodeConstraintException.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: StaticCodeConstraintException.java,v 1.2.10.1 2008/04/25 17:55:38 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public abstract class StaticCodeConstraintException extends CodeConstraintException{

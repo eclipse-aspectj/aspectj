@@ -61,7 +61,7 @@ import  java.io.*;
  * This class represents collection of local variables in a
  * method. This attribute is contained in the <em>Code</em> attribute.
  *
- * @version $Id: LocalVariableTable.java,v 1.3.6.1 2007/02/12 09:34:02 aclement Exp $
+ * @version $Id: LocalVariableTable.java,v 1.3.6.2 2008/04/25 17:55:37 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Code
  * @see LocalVariable

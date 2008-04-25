@@ -60,7 +60,7 @@ import org.aspectj.apache.bcel.Constants;
 /**
  * IINC - Increment local variable by constant
  *
- * @version $Id: IINC.java,v 1.3.8.1 2007/02/12 09:34:08 aclement Exp $
+ * @version $Id: IINC.java,v 1.3.8.2 2008/04/25 17:55:33 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class IINC extends InstructionLV {

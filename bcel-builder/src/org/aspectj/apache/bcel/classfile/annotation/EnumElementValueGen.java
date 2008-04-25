@@ -15,6 +15,7 @@ package org.aspectj.apache.bcel.classfile.annotation;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.generic.ObjectType;
@@ -69,12 +70,18 @@ public class EnumElementValueGen extends ElementValueGen {
 		dos.writeShort(valueIdx); // u2
     }
     
+    /**
+     * return signature and value, something like Lp/Color;RED
+     */
     public String stringifyValue() {
-    	ConstantUtf8 cu8 = (ConstantUtf8)getConstantPool().getConstant(valueIdx);
-		return cu8.getBytes();
-//    	ConstantString cu8 = (ConstantString)getConstantPool().getConstant(valueIdx);
-//    	return ((ConstantUtf8)getConstantPool().getConstant(cu8.getStringIndex())).getBytes();
+    	StringBuffer sb = new StringBuffer();
+    	ConstantUtf8 cu8 = (ConstantUtf8)cpGen.getConstant(typeIdx,Constants.CONSTANT_Utf8);
+    	sb.append(cu8.getBytes());
+    	cu8 = (ConstantUtf8)cpGen.getConstant(valueIdx,Constants.CONSTANT_Utf8);
+    	sb.append(cu8.getBytes());
+    	return sb.toString();
     }
+
     
     
     // BCELBUG: Should we need to call utility.signatureToString() on the output here?

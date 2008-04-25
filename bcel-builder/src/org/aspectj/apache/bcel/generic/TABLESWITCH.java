@@ -61,7 +61,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 /** 
  * TABLESWITCH - Switch within given range of values, i.e., low..high
  *
- * @version $Id: TABLESWITCH.java,v 1.3.8.1 2007/02/12 09:34:05 aclement Exp $
+ * @version $Id: TABLESWITCH.java,v 1.3.8.2 2008/04/25 17:55:34 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see SWITCH
  */

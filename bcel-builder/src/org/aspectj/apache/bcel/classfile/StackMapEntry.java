@@ -63,7 +63,7 @@ import java.io.IOException;
  * local variables and the the of stack items at a given byte code offset.
  * See CLDC specification §5.3.1.2
  *
- * @version $Id: StackMapEntry.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: StackMapEntry.java,v 1.4.10.1 2008/04/25 17:55:37 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     StackMap
  * @see     StackMapType

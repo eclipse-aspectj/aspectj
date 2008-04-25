@@ -76,7 +76,7 @@ import org.aspectj.apache.bcel.generic.Type;
  * are done with BCEL. It does not cover all features of BCEL,
  * but tries to mimic hand-written code as close as possible.
  *
- * @version $Id: BCELifier.java,v 1.3.10.1 2007/02/12 09:34:10 aclement Exp $
+ * @version $Id: BCELifier.java,v 1.3.10.2 2008/04/25 17:55:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A> 
  */
 public class BCELifier extends org.aspectj.apache.bcel.classfile.EmptyVisitor {

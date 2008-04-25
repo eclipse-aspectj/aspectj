@@ -59,7 +59,7 @@ package org.aspectj.apache.bcel.verifier.structurals;
  * This class represents a JVM execution frame; that means,
  * a local variable array and an operand stack.
  *
- * @version $Id: Frame.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: Frame.java,v 1.4.10.1 2008/04/25 17:55:37 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
  

@@ -51,7 +51,7 @@ public class RuntimeVisibleParameterAnnotationAttributeTest extends BcelTestCase
 
 				AnnotationGen[] secondParamAnnotations = paramAnns.getAnnotationsOnParameter(1);
 				checkAnnotation(secondParamAnnotations[0],"SimpleAnnotation","id","3");
-				checkAnnotation(secondParamAnnotations[1],"AnnotationEnumElement","enumval","Red");
+				checkAnnotation(secondParamAnnotations[1],"AnnotationEnumElement","enumval","LSimpleEnum;Red");
 				
 			}
 			if (m.getName().equals("main")) {
@@ -103,7 +103,7 @@ public class RuntimeVisibleParameterAnnotationAttributeTest extends BcelTestCase
 
 				AnnotationGen[] secondParamAnnotations = m.getAnnotationsOnParameter(1);
 				checkAnnotation(secondParamAnnotations[0],"SimpleAnnotation","id","3");
-				checkAnnotation(secondParamAnnotations[1],"AnnotationEnumElement","enumval","Red");
+				checkAnnotation(secondParamAnnotations[1],"AnnotationEnumElement","enumval","LSimpleEnum;Red");
 				
 			}
 		}

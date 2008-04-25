@@ -66,7 +66,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnot
  * By courtesy of David Spencer.
  *
  * @see DescendingVisitor
- * @version $Id: EmptyVisitor.java,v 1.3 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: EmptyVisitor.java,v 1.3.10.1 2008/04/25 17:55:36 aclement Exp $
  * 
  */
 public class EmptyVisitor implements Visitor {

@@ -61,7 +61,7 @@ import  java.io.*;
  * This class represents the type of a local variable or item on stack
  * used in the StackMap entries.
  *
- * @version $Id: StackMapType.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: StackMapType.java,v 1.2.10.1 2008/04/25 17:55:37 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     StackMapEntry
  * @see     StackMap

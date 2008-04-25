@@ -68,7 +68,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  * class in your application.
  * [This class was created using VisualAge for Java,
  * but it does not work under VAJ itself (Version 3.02 JDK 1.2)]
- * @version $Id: VerifyDialog.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: VerifyDialog.java,v 1.4.10.1 2008/04/25 17:55:36 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #main(String[])
  * @see #VerifyDialog(String)

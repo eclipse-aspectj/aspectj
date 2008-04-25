@@ -62,7 +62,7 @@ import  java.io.*;
  * <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class 
  * and represents a reference to a String object.
  *
- * @version $Id: ConstantString.java,v 1.2.10.1 2007/02/12 09:34:02 aclement Exp $
+ * @version $Id: ConstantString.java,v 1.2.10.2 2008/04/25 17:55:37 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Constant
  */

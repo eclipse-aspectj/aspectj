@@ -67,7 +67,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnot
  * Implemented by wish of 
  * <A HREF="http://www.inf.fu-berlin.de/~bokowski">Boris Bokowski</A>.
  *
- * @version $Id: Visitor.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: Visitor.java,v 1.2.10.1 2008/04/25 17:55:36 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface Visitor {

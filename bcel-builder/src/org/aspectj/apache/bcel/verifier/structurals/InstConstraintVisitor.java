@@ -80,7 +80,7 @@ import org.aspectj.apache.bcel.verifier.exc.*;
  * TODO: Currently, the JVM's behaviour concerning monitors (MONITORENTER,
  * MONITOREXIT) is not modeled in JustIce.
  *
- * @version $Id: InstConstraintVisitor.java,v 1.4.8.1 2007/02/12 09:34:12 aclement Exp $
+ * @version $Id: InstConstraintVisitor.java,v 1.4.8.2 2008/04/25 17:55:37 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see org.aspectj.apache.bcel.verifier.exc.StructuralCodeConstraintException
  * @see org.aspectj.apache.bcel.verifier.exc.LinkingConstraintException

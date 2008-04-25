@@ -64,13 +64,15 @@ import java.util.List;
 /** 
  * Abstract super class for fields and methods.
  *
- * @version $Id: FieldOrMethod.java,v 1.5.8.1 2007/02/12 09:34:02 aclement Exp $
+ * @version $Id: FieldOrMethod.java,v 1.5.8.2 2008/04/25 17:55:37 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldOrMethod extends AccessFlags implements Cloneable, Node {
   protected int           nameIndex;      
   protected int           signatureIndex;
   protected Attribute[] attributes;
+   protected int          attributes_count;// No. of attributes
+  
   protected ConstantPool  cpool;
   private String  name; // lazily initialized
   private String  signature; // lazily initialized
@@ -104,6 +106,14 @@ public abstract class FieldOrMethod extends AccessFlags implements Cloneable, No
   }
 
   
+    /**
+   * @param attributes Collection of object attributes.
+   */
+  public void setAttributes(Attribute[] attributes) {
+    this.attributes  = attributes;
+    attributes_count = (attributes == null)? 0 : attributes.length;
+  }
+
   
   
   public final void dump(DataOutputStream file) throws IOException {

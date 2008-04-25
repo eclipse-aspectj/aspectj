@@ -60,7 +60,7 @@ package org.aspectj.apache.bcel.generic;
  * instructions with the properly typed methods just by calling the accept()
  * method.
  *
- * @version $Id: Visitor.java,v 1.2.10.1 2007/02/12 09:34:03 aclement Exp $
+ * @version $Id: Visitor.java,v 1.2.10.2 2008/04/25 17:55:34 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface Visitor {

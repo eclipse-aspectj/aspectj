@@ -77,7 +77,7 @@ import  java.util.StringTokenizer;
  * class file.  Those interested in programatically generating classes
  * should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
 
- * @version $Id: JavaClass.java,v 1.9.8.1 2007/02/12 09:34:02 aclement Exp $
+ * @version $Id: JavaClass.java,v 1.9.8.2 2008/04/25 17:55:36 aclement Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */

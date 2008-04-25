@@ -58,7 +58,7 @@ package org.aspectj.apache.bcel.verifier.exc;
  * Instances of this class should never be thrown. When such an instance is thrown,
  * this is due to an INTERNAL ERROR of BCEL's class file verifier &quot;JustIce&quot;.
  *
- * @version $Id: AssertionViolatedException.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: AssertionViolatedException.java,v 1.2.10.1 2008/04/25 17:55:37 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public final class AssertionViolatedException extends RuntimeException{

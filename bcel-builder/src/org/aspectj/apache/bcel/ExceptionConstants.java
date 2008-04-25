@@ -57,7 +57,7 @@ package org.aspectj.apache.bcel;
 /**
  * Exception constants.
  *
- * @version $Id: ExceptionConstants.java,v 1.2.10.1 2007/02/12 09:34:11 aclement Exp $
+ * @version $Id: ExceptionConstants.java,v 1.2.10.2 2008/04/25 17:55:37 aclement Exp $
  * @author  <A HREF="http://www.inf.fu-berlin.de/~ehaase">E. Haase</A>
  */
 public interface ExceptionConstants {

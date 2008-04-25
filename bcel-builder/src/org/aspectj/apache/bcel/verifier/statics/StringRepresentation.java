@@ -107,7 +107,7 @@ import org.aspectj.apache.bcel.verifier.exc.AssertionViolatedException;
  * Note that this class also serves as a placeholder for more sophisticated message
  * handling in future versions of JustIce.
  * 
- * @version $Id: StringRepresentation.java,v 1.4 2006/07/04 16:57:42 aclement Exp $
+ * @version $Id: StringRepresentation.java,v 1.4.4.1 2008/04/25 17:55:38 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class StringRepresentation extends org.aspectj.apache.bcel.classfile.EmptyVisitor implements Visitor{

@@ -58,7 +58,7 @@ import javax.swing.event.ListDataEvent;
  * This class implements an adapter; it implements both a Swing ListModel and
  * a VerifierFactoryObserver.
  *
- * @version $Id: VerifierFactoryListModel.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: VerifierFactoryListModel.java,v 1.4.10.1 2008/04/25 17:55:36 aclement Exp $
  * @author Enver Haase
  */
 public class VerifierFactoryListModel implements org.aspectj.apache.bcel.verifier.VerifierFactoryObserver, javax.swing.ListModel{

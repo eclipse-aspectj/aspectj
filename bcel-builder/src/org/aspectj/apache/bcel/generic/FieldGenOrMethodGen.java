@@ -66,7 +66,7 @@ import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
  * Super class for FieldGen and MethodGen objects, since they have
  * some methods in common!
  *
- * @version $Id: FieldGenOrMethodGen.java,v 1.3.10.1 2007/02/12 09:34:06 aclement Exp $
+ * @version $Id: FieldGenOrMethodGen.java,v 1.3.10.2 2008/04/25 17:55:34 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldGenOrMethodGen extends AccessFlags

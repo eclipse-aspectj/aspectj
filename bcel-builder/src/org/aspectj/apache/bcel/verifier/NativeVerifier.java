@@ -61,7 +61,7 @@ package org.aspectj.apache.bcel.verifier;
  * This can be used for comparison runs between the JVM-internal verifier
  * and JustIce.
  *
- * @version $Id: NativeVerifier.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: NativeVerifier.java,v 1.2.10.1 2008/04/25 17:55:36 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public abstract class NativeVerifier{

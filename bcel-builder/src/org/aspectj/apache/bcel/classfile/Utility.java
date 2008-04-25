@@ -84,7 +84,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 /**
  * Utility functions that do not really belong to any class in particular.
  *
- * @version $Id: Utility.java,v 1.5.4.1 2007/02/12 09:34:02 aclement Exp $
+ * @version $Id: Utility.java,v 1.5.4.2 2008/04/25 17:55:36 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  * modified: Andy Clement  2-mar-05  Removed unnecessary static and optimized

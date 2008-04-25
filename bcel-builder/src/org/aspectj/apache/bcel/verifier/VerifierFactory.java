@@ -64,7 +64,7 @@ import java.util.Vector;
  * operate on. That means, for every class (represented by a unique fully qualified
  * class name) there is exactly one Verifier.
  *
- * @version $Id: VerifierFactory.java,v 1.4 2005/02/02 09:11:39 aclement Exp $
+ * @version $Id: VerifierFactory.java,v 1.4.8.1 2008/04/25 17:55:36 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see org.aspectj.apache.bcel.verifier.Verifier
  */

@@ -64,7 +64,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
  * with getLocalVariable which needs the instruction list and the constant
  * pool as parameters.
  *
- * @version $Id: LocalVariableGen.java,v 1.5.8.1 2007/02/12 09:34:07 aclement Exp $
+ * @version $Id: LocalVariableGen.java,v 1.5.8.2 2008/04/25 17:55:33 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     LocalVariable
  * @see     MethodGen

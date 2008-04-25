@@ -63,7 +63,7 @@ package org.aspectj.apache.bcel.verifier.exc;
  * These are the constraints where data-flow analysis is needed to verify if they hold.
  * The data flow analysis of pass 3 is called pass 3b in JustIce.
  *
- * @version $Id: StructuralCodeConstraintException.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: StructuralCodeConstraintException.java,v 1.2.10.1 2008/04/25 17:55:38 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class StructuralCodeConstraintException extends CodeConstraintException{

@@ -59,7 +59,7 @@ import org.aspectj.apache.bcel.generic.Type;
 
 /**
  * This class represents the upper half of a DOUBLE variable.
- * @version $Id: DOUBLE_Upper.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: DOUBLE_Upper.java,v 1.2.10.1 2008/04/25 17:55:38 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public final class DOUBLE_Upper extends Type{

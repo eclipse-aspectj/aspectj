@@ -57,7 +57,7 @@ package org.aspectj.apache.bcel.verifier.exc;
  * Instances of this class are thrown by BCEL's class file verifier "JustIce"
  * when the verification of a method is requested that does not exist.
  *
- * @version $Id: InvalidMethodException.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: InvalidMethodException.java,v 1.2.10.1 2008/04/25 17:55:37 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class InvalidMethodException extends RuntimeException{

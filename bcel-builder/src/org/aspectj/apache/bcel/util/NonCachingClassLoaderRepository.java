@@ -78,7 +78,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  *
  * @see org.aspectj.apache.bcel.Repository
  *
- * @version $Id: NonCachingClassLoaderRepository.java,v 1.1.4.1 2007/02/12 09:34:09 aclement Exp $
+ * @version $Id: NonCachingClassLoaderRepository.java,v 1.1.4.2 2008/04/25 17:55:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  * 
@@ -137,7 +137,6 @@ public class NonCachingClassLoaderRepository
 		  }
 		
 		  public void clear() {
-			  System.out.println("Clearing the map for NonCachingClassLoaderRepository");
 			processQueue();
 			Set keys = map.keySet();
 			for (Iterator iterator = keys.iterator(); iterator.hasNext();) {

@@ -65,7 +65,7 @@ import org.aspectj.apache.bcel.generic.Type;
 /**
  * A graphical user interface application demonstrating JustIce.
  *
- * @version $Id: GraphicalVerifier.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: GraphicalVerifier.java,v 1.4.10.1 2008/04/25 17:55:36 aclement Exp $
  * @author Enver Haase
  */
 public class GraphicalVerifier {

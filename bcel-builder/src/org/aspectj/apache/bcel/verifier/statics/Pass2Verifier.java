@@ -112,7 +112,7 @@ import org.aspectj.apache.bcel.verifier.exc.LocalVariableInfoInconsistentExcepti
  * More detailed information is to be found at the do_verify()
  * method's documentation.
  *
- * @version $Id: Pass2Verifier.java,v 1.3 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: Pass2Verifier.java,v 1.3.10.1 2008/04/25 17:55:38 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #do_verify()
  */

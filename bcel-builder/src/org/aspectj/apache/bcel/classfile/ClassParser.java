@@ -70,7 +70,7 @@ import  java.util.zip.*;
  * JVM specification 1.0</a>. See this paper for
  * further details about the structure of a bytecode file.
  *
- * @version $Id: ClassParser.java,v 1.4.8.1 2007/02/12 09:34:02 aclement Exp $
+ * @version $Id: ClassParser.java,v 1.4.8.2 2008/04/25 17:55:37 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A> 
  */
 public final class ClassParser {
@@ -131,11 +131,9 @@ public final class ClassParser {
     // Get compiler version
     readVersion();
 
-	long stime=System.nanoTime();
     /****************** Read constant pool and related **************/
     // Read constant pool entries
     readConstantPool();
-    count+=(System.nanoTime()-stime);
 
     // Get class information
     readClassInfo();
@@ -256,5 +254,4 @@ public final class ClassParser {
     major = file.readUnsignedShort();
   }    
   
-  public static long count = 0;
 }

@@ -83,7 +83,7 @@ public class AnnotationGen {
 	
 	public AnnotationGen(ObjectType type,List /*ElementNameValuePairGen*/ elements,boolean vis,ConstantPool cpool) {
 		this.cpool = cpool;
-		this.typeIndex = cpool.addUtf8(type.getSignature());
+		if (type!=null)  this.typeIndex = cpool.addUtf8(type.getSignature()); // Only null for funky *temporary* FakeAnnotation objects
 		evs = elements;
 		isRuntimeVisible = vis;
 	}
@@ -165,5 +165,29 @@ public class AnnotationGen {
 	
 	public boolean isRuntimeVisible() {
 		return isRuntimeVisible;
+	}
+	
+	/**
+     * Return true if the annotation has a value with the specified name (n) and value (v)
+     */
+	public boolean hasNameValuePair(String n, String v) {
+		for (int i=0;i<evs.size();i++) {
+			ElementNameValuePairGen pair = (ElementNameValuePairGen)evs.get(i);
+			if (pair.getNameString().equals(n)) {
+				if (pair.getValue().stringifyValue().equals(v)) return true;
+			}
+		}
+		return false;
+	}
+
+    /**
+     * Return true if the annotation has a value with the specified name (n)
+     */
+	public boolean hasNamedValue(String n) {
+		for (int i=0;i<evs.size();i++) {
+			ElementNameValuePairGen pair = (ElementNameValuePairGen)evs.get(i);
+			if (pair.getNameString().equals(n)) return true;
+		}
+		return false;
 	}
 }

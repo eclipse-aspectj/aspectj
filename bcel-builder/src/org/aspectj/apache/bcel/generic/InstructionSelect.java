@@ -59,7 +59,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 /** 
  * Select - Abstract super class for LOOKUPSWITCH and TABLESWITCH instructions.
  *
- * @version $Id: InstructionSelect.java,v 1.1.2.1 2007/02/12 09:34:04 aclement Exp $
+ * @version $Id: InstructionSelect.java,v 1.1.2.2 2008/04/25 17:55:32 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see LOOKUPSWITCH
  * @see TABLESWITCH

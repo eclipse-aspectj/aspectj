@@ -61,7 +61,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
  * byte code generating backend of a compiler. You can subclass it to
  * add your own create methods.
  *
- * @version $Id: InstructionFactory.java,v 1.3.10.1 2007/02/12 09:34:08 aclement Exp $
+ * @version $Id: InstructionFactory.java,v 1.3.10.2 2008/04/25 17:55:35 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Constants
  */

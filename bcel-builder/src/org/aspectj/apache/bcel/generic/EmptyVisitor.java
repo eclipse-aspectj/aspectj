@@ -58,7 +58,7 @@ package org.aspectj.apache.bcel.generic;
 /**
  * Supplies empty method bodies to be overridden by subclasses.
  *
- * @version $Id: EmptyVisitor.java,v 1.2.10.1 2007/02/12 09:34:03 aclement Exp $
+ * @version $Id: EmptyVisitor.java,v 1.2.10.2 2008/04/25 17:55:32 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class EmptyVisitor implements Visitor {

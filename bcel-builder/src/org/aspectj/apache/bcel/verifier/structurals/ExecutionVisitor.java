@@ -87,7 +87,7 @@ import org.aspectj.apache.bcel.generic.*;
  * If a two-slot type is stored into a local variable, the next variable
  * is given the type Type.UNKNOWN.
  *
- * @version $Id: ExecutionVisitor.java,v 1.5.8.1 2007/02/12 09:34:12 aclement Exp $
+ * @version $Id: ExecutionVisitor.java,v 1.5.8.2 2008/04/25 17:55:37 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #visitDSTORE(DSTORE o)
  * @see InstConstraintVisitor

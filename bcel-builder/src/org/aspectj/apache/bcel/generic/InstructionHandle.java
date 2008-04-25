@@ -71,7 +71,7 @@ import java.util.HashMap;
  * can traverse the list via an Enumeration returned by
  * InstructionList.elements().
  *
- * @version $Id: InstructionHandle.java,v 1.2.10.1 2007/02/12 09:34:07 aclement Exp $
+ * @version $Id: InstructionHandle.java,v 1.2.10.2 2008/04/25 17:55:35 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Instruction
  * @see BranchHandle
@@ -120,22 +120,12 @@ public class InstructionHandle implements java.io.Serializable {
     setInstruction(i);
   }
 
-  private static InstructionHandle ih_list = null; // List of reusable handles
 
   /** Factory method.
    */
   static final InstructionHandle getInstructionHandle(Instruction i) {
-    if(ih_list == null)
       return new InstructionHandle(i);
-    else {
-      InstructionHandle ih = ih_list;
-      ih_list = ih.next;
-
-      ih.setInstruction(i);
-
-      return ih;
     }
-  }
 
   /**
    * Called by InstructionList.setPositions when setting the position for every
@@ -163,12 +153,6 @@ public class InstructionHandle implements java.io.Serializable {
    */
   void setPosition(int pos) { i_position = pos; }
 
-  /** Overridden in BranchHandle
-   */
-  protected void addHandle() {
-    next    = ih_list;
-    ih_list = this;
-  }
 
   /**
    * Delete contents, i.e., remove user access and make handle reusable.
@@ -180,7 +164,6 @@ public class InstructionHandle implements java.io.Serializable {
     i_position = -1;
     attributes = null;
     removeAllTargeters();
-    addHandle();
   }
 
   /** Remove all targeters, if any.

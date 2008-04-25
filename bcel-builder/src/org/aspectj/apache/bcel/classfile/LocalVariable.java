@@ -61,7 +61,7 @@ import  java.io.*;
  * This class represents a local variable within a method. It contains its
  * scope, name, signature and index on the method's frame.
  *
- * @version $Id: LocalVariable.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: LocalVariable.java,v 1.2.10.1 2008/04/25 17:55:36 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     LocalVariableTable
  */

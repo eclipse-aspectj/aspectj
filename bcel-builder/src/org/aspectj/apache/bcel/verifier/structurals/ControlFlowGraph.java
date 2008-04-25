@@ -71,7 +71,7 @@ import org.aspectj.apache.bcel.verifier.exc.StructuralCodeConstraintException;
 /**
  * This class represents a control flow graph of a method.
  *
- * @version $Id: ControlFlowGraph.java,v 1.4.10.1 2007/02/12 09:34:12 aclement Exp $
+ * @version $Id: ControlFlowGraph.java,v 1.4.10.2 2008/04/25 17:55:37 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class ControlFlowGraph{

@@ -61,7 +61,7 @@ import org.aspectj.apache.bcel.generic.*;
  * representing a subclass of java.lang.Throwable and the instruction
  * the handler starts off (represented by an InstructionContext).
  * 
- * @version $Id: ExceptionHandler.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: ExceptionHandler.java,v 1.2.10.1 2008/04/25 17:55:37 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class ExceptionHandler{

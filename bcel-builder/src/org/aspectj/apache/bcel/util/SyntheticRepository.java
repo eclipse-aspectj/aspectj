@@ -79,7 +79,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  *
  * @see org.aspectj.apache.bcel.Repository
  *
- * @version $Id: SyntheticRepository.java,v 1.6 2006/07/19 12:06:16 aclement Exp $
+ * @version $Id: SyntheticRepository.java,v 1.6.4.1 2008/04/25 17:55:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  */

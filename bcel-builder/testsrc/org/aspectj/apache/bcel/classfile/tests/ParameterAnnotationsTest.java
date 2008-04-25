@@ -176,7 +176,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		String expectedString = "[@SimpleAnnotation(id=2),@SimpleStringAnnotation(fruit=Banana)]";
 		assertTrue("Expected formatted short string of '"+expectedString+"' but it was '"+dumpAnnotations(p1annotations)+"'",
 				dumpAnnotations(p1annotations).equals(expectedString));
-		expectedString = "[@SimpleAnnotation(id=3),@AnnotationEnumElement(enumval=Red)]";
+		expectedString = "[@SimpleAnnotation(id=3),@AnnotationEnumElement(enumval=LSimpleEnum;Red)]";
 		assertTrue("Expected formatted short string of '"+expectedString+"' but it was '"+dumpAnnotations(p2annotations)+"'",
 				dumpAnnotations(p2annotations).equals(expectedString));
 		
@@ -247,7 +247,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		String expectedString = "[@SimpleAnnotation(id=2),@SimpleStringAnnotation(fruit=Banana)]";
 		assertTrue("Expected formatted short string of '"+expectedString+"' but it was '"+dumpAnnotations(p1annotations)+"'",
 				dumpAnnotations(p1annotations).equals(expectedString));
-		expectedString = "[@SimpleAnnotation(id=3),@AnnotationEnumElement(enumval=Red)]";
+		expectedString = "[@SimpleAnnotation(id=3),@AnnotationEnumElement(enumval=LSimpleEnum;Red)]";
 		assertTrue("Expected formatted short string of '"+expectedString+"' but it was '"+dumpAnnotations(p2annotations)+"'",
 				dumpAnnotations(p2annotations).equals(expectedString));
 		
