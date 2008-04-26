@@ -106,7 +106,12 @@ public class ExactTypePattern extends TypePattern {
 			typeMatch = matchesTypeVariable((TypeVariableReferenceType)matchType);
 		}
 		annotationPattern.resolve(matchType.getWorld());
-		boolean annMatch = this.annotationPattern.matches(matchType).alwaysTrue();
+		boolean annMatch = false;
+        if (matchType.temporaryAnnotationTypes!=null) {
+            annMatch = annotationPattern.matches(matchType,matchType.temporaryAnnotationTypes).alwaysTrue();
+        } else {
+            annMatch = annotationPattern.matches(matchType).alwaysTrue();
+        }
 		return (typeMatch && annMatch);
 	}
 	
@@ -125,7 +130,12 @@ public class ExactTypePattern extends TypePattern {
 			typeMatch = matchesTypeVariable((TypeVariableReferenceType)matchType);
 		}
 		annotationPattern.resolve(matchType.getWorld());
-		boolean annMatch = this.annotationPattern.matches(annotatedType).alwaysTrue();
+        boolean annMatch = false;
+        if (annotatedType.temporaryAnnotationTypes!=null) {
+            annMatch = annotationPattern.matches(annotatedType,annotatedType.temporaryAnnotationTypes).alwaysTrue();
+        } else {
+            annMatch = annotationPattern.matches(annotatedType).alwaysTrue();
+        }
 		return (typeMatch && annMatch);		
 	}
 	

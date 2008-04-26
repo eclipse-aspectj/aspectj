@@ -402,7 +402,7 @@ public class SignaturePattern extends PatternNode {
 		if (parameterAnnotationTypes==null || parameterAnnotationTypes.length==0) parameterAnnotationTypes=null;
 		if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC,parameterAnnotationTypes).alwaysTrue()) {
 			// It could still be a match based on the generic sig parameter types of a parameterized type
-			if (!parameterTypes.matches(world.resolve(aMethod.getGenericParameterTypes()),TypePattern.STATIC).alwaysTrue()) {
+			if (!parameterTypes.matches(world.resolve(aMethod.getGenericParameterTypes()),TypePattern.STATIC,parameterAnnotationTypes).alwaysTrue()) {
 				return FuzzyBoolean.MAYBE;
 				// It could STILL be a match based on the erasure of the parameter types??
 				// to be determined via test cases...
