@@ -14,9 +14,9 @@ package org.aspectj.systemtest.ajc160;
  
 import java.io.File;
 
-import org.aspectj.testing.XMLBasedAjcTestCase;
-
 import junit.framework.Test;
+
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
  * Parameter annotation matching
@@ -76,6 +76,7 @@ import junit.framework.Test;
  */
 public class ParameterAnnotationMatchingTests extends XMLBasedAjcTestCase {
 	
+    public void testDeow() { runTest("deow"); }
 	public void testNoWarningForWrongType() { runTest("no xlint for wrong target");}
 	public void testVariousCombinations() { runTest("various combinations"); }
 	public void testVariousCombinationsCtors() { runTest("various combinations - ctors"); }

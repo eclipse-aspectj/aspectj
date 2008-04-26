@@ -4,6 +4,27 @@
 <suite>
 
 
+   <ajc-test dir="features160/parameterAnnotationMatching" title="deow">
+     <compile options="-1.5" files="Test.java">
+       <message kind="warning" line="43" text="mOne"/>
+       <message kind="warning" line="45" text="mOne"/>
+       <message kind="warning" line="43" text="mThree"/> 
+       <message kind="warning" line="47" text="mFour"/> 
+       <message kind="warning" line="49" text="mFour"/> 
+       <message kind="warning" line="47" text="mFive"/> 
+       <message kind="warning" line="47" text="mSix"/> 
+       <message kind="warning" line="45" text="mNine"/> 
+       <message kind="warning" line="49" text="mEleven"/> 
+       <message kind="warning" line="49" text="mTwelve"/>
+       <message kind="warning" line="49" text="mTen"/> 
+       <message kind="warning" line="45" text="mEight"/>  
+       <!--
+       <message kind="warning" line="43" text="mTwo"/>
+       <message kind="warning" line="45" text="mSeven"/>
+       -->
+     </compile>
+   </ajc-test>
+   
    <ajc-test dir="features160/parameterAnnotationMatching" title="no xlint for wrong target">
      <compile options="-1.5" files="NonNullAssertionForcer.java"/>
    </ajc-test>
