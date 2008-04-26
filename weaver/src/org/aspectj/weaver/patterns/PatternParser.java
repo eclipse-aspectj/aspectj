@@ -687,13 +687,31 @@ public class PatternParser {
 		if (maybeEat("!")) {
 			//int startPos = tokenSource.peek(-1).getStart();
 			//??? we lose source location for true start of !type
-			TypePattern p = new NotTypePattern(parseAtomicTypePattern(insideTypeParameters,parameterAnnotationsPossible));
-			p = setAnnotationPatternForTypePattern(p,ap,false);
+			
+			// An annotation, if processed, is outside of the Not - so here we have to build
+			// an And pattern containing the annotation and the not as left and right children
+			// *unless* the annotation pattern was just 'Any' then we can skip building the 
+			// And and just return the Not directly (pr228980)
+		    TypePattern p = null;
+            TypePattern tp = parseAtomicTypePattern(insideTypeParameters,parameterAnnotationsPossible);
+		    if (!(ap instanceof AnyAnnotationTypePattern)) {
+    			p = new NotTypePattern(tp);
+    			p = new AndTypePattern(setAnnotationPatternForTypePattern(TypePattern.ANY,ap,false),p);
+		    } else {
+		        p = new NotTypePattern(tp);
+		    }
 			return p;			
 		}
 		if (maybeEat("(")) {
 			TypePattern p = parseTypePattern(insideTypeParameters,false);
-			p = setAnnotationPatternForTypePattern(p,ap,parameterAnnotationsPossible);
+			if ((p instanceof NotTypePattern) && !(ap instanceof AnyAnnotationTypePattern)) {
+			    // dont set the annotation on it, we don't want the annotation to be 
+			    // considered as part of the not, it is outside the not (pr228980)
+			    TypePattern tp = setAnnotationPatternForTypePattern(TypePattern.ANY, ap, parameterAnnotationsPossible);
+			    p = new AndTypePattern(tp,p);
+			} else {
+			    p = setAnnotationPatternForTypePattern(p,ap,parameterAnnotationsPossible);
+			}
 			eat(")");
 			boolean isVarArgs = maybeEat("...");
 			if (isVarArgs) p.setIsVarArgs(isVarArgs);
