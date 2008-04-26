@@ -8,7 +8,7 @@ public aspect Test {
     declare warning : execution(* *(!(Object+), ..)) : "mOne: value parameter";
    
     // Wrong (matches f1 and f2, should match only f1):  a Not type pattern containing @A and negatedPattern Object+ is built
-//broke    declare warning : execution(* *(@A (!(Object+)), ..)) : "mTwo: @A annotated value parameter";
+    declare warning : execution(* *(@A (!(Object+)), ..)) : "mTwo: @A annotated value parameter";
    
     // OK (matches f1):
     declare warning : execution(* *(@A (*), ..)) && execution(* *(!(Object+), ..)): "mThree: @A annotated value parameter.";
@@ -23,7 +23,7 @@ public aspect Test {
     declare warning : execution(* *(@A (*), ..)) && execution(* *(Object+, ..)): "mSix: @A annotated reference parameter.";
    
     // Wrong (matches f1 and f2, should match only f2):
-//broke     declare warning : execution(* *(!@A (!(Object+)), ..)) : "mSeven: Non-@A annotated value parameter!";
+     declare warning : execution(* *(!@A (!(Object+)), ..)) : "mSeven: Non-@A annotated value parameter!";
    
     // Wrong (matches f1 and f2, should match only f2):
     declare warning : execution(* *(!@A (*), ..)) && execution(* *(!(Object+), ..)): "mEight: Non-@A annotated value parameter.";

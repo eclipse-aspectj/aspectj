@@ -77,6 +77,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class ParameterAnnotationMatchingTests extends XMLBasedAjcTestCase {
 	
     public void testDeow() { runTest("deow"); }
+    public void testDeow2() { runTest("deow2"); }
 	public void testNoWarningForWrongType() { runTest("no xlint for wrong target");}
 	public void testVariousCombinations() { runTest("various combinations"); }
 	public void testVariousCombinationsCtors() { runTest("various combinations - ctors"); }
