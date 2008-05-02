@@ -3460,12 +3460,12 @@ public class BcelShadow extends Shadow {
         if (targetVar != null && targetVar != thisVar) {
             UnresolvedType targetType = getTargetType();
             targetType = ensureTargetTypeIsCorrect(targetType);
-            // see pr109728 - this fixes the case when the declaring class is sometype 'X' but the getfield
+            // see pr109728,pr229910 - this fixes the case when the declaring class is sometype 'X' but the (gs)etfield
             // in the bytecode refers to a subtype of 'X'.  This makes sure we use the type originally
             // mentioned in the fieldget instruction as the method parameter and *not* the type upon which the
             // field is declared because when the instructions are extracted into the new around body,
             // they will still refer to the subtype.
-            if (getKind()==FieldGet && getActualTargetType()!=null && 
+            if ((getKind()==FieldGet || getKind()==FieldSet) && getActualTargetType()!=null && 
             	!getActualTargetType().equals(targetType.getName())) {
         		targetType =  UnresolvedType.forName(getActualTargetType()).resolve(world);
         	}
