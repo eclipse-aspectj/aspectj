@@ -18,7 +18,8 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
-	// AspectJ1.6.0rc1
+	// AspectJ1.6.1
+    public void testAroundAdviceOnFieldSet_pr229910() { runTest("around advice on field set"); }
     public void testPipelineCompilationGenericReturnType_pr226567() { runTest("pipeline compilation and generic return type"); }
 
     public static Test suite() {
