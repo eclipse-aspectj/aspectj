@@ -14,6 +14,7 @@ package org.aspectj.weaver.loadtime;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
@@ -89,6 +90,8 @@ public class Aj implements ClassPreProcessor {
             // would make sense at least in test f.e. see TestHelper.handleMessage()
     		if (trace.isTraceEnabled()) trace.exit("preProcess",th);
             return bytes;
+        } finally {
+            CompilationAndWeavingContext.resetForThread(); // recording the thread will anchor the classloader
         }
     }
 
