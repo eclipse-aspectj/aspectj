@@ -191,6 +191,14 @@ public class CompilationAndWeavingContext {
 		}
 	}
 	
+	/**
+	 * Forget about the context for the current thread
+	 */
+	public static void resetForThread() {
+		if (!multiThreaded) return;
+		contextMap.remove(Thread.currentThread());
+	}
+	
 	private static Stack getContextStack() {
 		if (!multiThreaded) {
 			return contextStack;
