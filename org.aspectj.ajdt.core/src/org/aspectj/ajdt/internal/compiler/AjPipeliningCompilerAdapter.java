@@ -504,7 +504,6 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		try {
 		  weaver.weave(new WeaverAdapter(this,weaverMessageHandler,progressListener));
 		} finally {
-			CflowPointcut.clearCaches();
 			weaver.tidyUp();
 			IMessageHandler imh = weaver.getWorld().getMessageHandler();
 			if (imh instanceof WeaverMessageHandler)
@@ -516,7 +515,6 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	private void postWeave() {
 		if (debugPipeline)System.err.println("> postWeave()");
 		IMessageHandler imh = weaver.getWorld().getMessageHandler();
-		CflowPointcut.clearCaches();
 		if (imh instanceof WeaverMessageHandler)
 			  ((WeaverMessageHandler)imh).setCurrentResult(null);
 		if (!droppingBackToFullBuild) weaver.allWeavingComplete();

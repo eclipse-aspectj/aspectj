@@ -321,7 +321,6 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 		  weaver.weave(new WeaverAdapter(this,weaverMessageHandler,progressListener));
 		} finally {
 			// ???: is this the right point for this? After weaving has finished clear the caches.
-			CflowPointcut.clearCaches();
 			if (weaverMessageHandler instanceof WeaverMessageHandler)
 				  ((WeaverMessageHandler)weaverMessageHandler).setCurrentResult(null);
 			weaver.allWeavingComplete();
