@@ -91,7 +91,7 @@ public class Aj implements ClassPreProcessor {
     		if (trace.isTraceEnabled()) trace.exit("preProcess",th);
             return bytes;
         } finally {
-            CompilationAndWeavingContext.resetForThread(); // recording the thread will anchor the classloader
+            CompilationAndWeavingContext.resetForThread();
         }
     }
 
