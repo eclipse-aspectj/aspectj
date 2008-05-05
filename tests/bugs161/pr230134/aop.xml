@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<aspectj>
+	<weaver options="-verbose -showWeaveInfo"/>
+	
+	<aspects>
+  	<aspect name="demo.hello.tracing.HelloWorldTracing"/>
+	</aspects>
+</aspectj>
+
