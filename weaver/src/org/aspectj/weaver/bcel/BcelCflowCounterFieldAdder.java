@@ -88,5 +88,9 @@ public class BcelCflowCounterFieldAdder extends BcelTypeMunger {
 	public boolean existsToSupportShadowMunging() {
 		return true;
 	}
+	
+	public String toString() {
+		return "(BcelTypeMunger: CflowField "+cflowCounterField.getDeclaringType().getName()+" "+cflowCounterField.getName()+")";
+	}
 
 }

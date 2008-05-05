@@ -470,8 +470,6 @@ public class BcelWeaver implements IWeaver {
     public void prepareForWeave() {
     	if (trace.isTraceEnabled()) trace.enter("prepareForWeave",this);
     	needToReweaveWorld = xcutSet.hasChangedSinceLastReset();
-
-    	CflowPointcut.clearCaches();
     	
     	// update mungers
     	for (Iterator i = addedClasses.iterator(); i.hasNext(); ) { 
