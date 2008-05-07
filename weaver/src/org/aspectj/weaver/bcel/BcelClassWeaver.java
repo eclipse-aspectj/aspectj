@@ -62,6 +62,7 @@ import org.aspectj.apache.bcel.generic.PUTSTATIC;
 import org.aspectj.apache.bcel.generic.RET;
 import org.aspectj.apache.bcel.generic.ReturnInstruction;
 import org.aspectj.apache.bcel.generic.Select;
+import org.aspectj.apache.bcel.generic.StoreInstruction;
 import org.aspectj.apache.bcel.generic.Tag;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
@@ -2454,7 +2455,53 @@ class BcelClassWeaver implements IClassWeaver {
 		BcelShadow enclosingShadow,
 		List shadowAccumulator) 
 	{
-		Instruction i = ih.getInstruction();
+	    Instruction i = ih.getInstruction();
+        
+        // Exception handlers (pr230817)
+        if (canMatch(Shadow.ExceptionHandler) && !Range.isRangeHandle(ih)) {
+            InstructionTargeter[] targeters = ih.getTargeters();
+            if (targeters != null) {
+                for (int j = 0; j < targeters.length; j++) {
+                    InstructionTargeter t = targeters[j];
+                    if (t instanceof ExceptionRange) {
+                        // assert t.getHandler() == ih
+                        ExceptionRange er = (ExceptionRange) t;
+                        if (er.getCatchType() == null) continue;
+                        if (isInitFailureHandler(ih)) return;
+                        
+                        if (!(ih.getInstruction() instanceof StoreInstruction) && ih.getInstruction().getOpcode()!=Constants.NOP) {
+                            // If using cobertura, the catch block stats with INVOKESTATIC rather than ASTORE, in order that the ranges 
+                            // for the methodcall and exceptionhandler shadows that occur at this same 
+                            // line, we need to modify the instruction list to split them - adding a 
+                            // NOP before the invokestatic that gets all the targeters
+                            // that were aimed at the INVOKESTATIC
+                            mg.getBody().insert(ih,InstructionConstants.NOP);
+                            InstructionHandle newNOP = ih.getPrev();
+                            // what about a try..catch that starts at the start of the exception handler? need to only include certain targeters really.
+                            er.updateTarget(ih, newNOP,mg.getBody());
+                            for (int ii=0;ii<targeters.length;ii++) {
+                                newNOP.addTargeter(targeters[ii]);
+                            }
+                            ih.removeAllTargeters();
+                            match(
+                                BcelShadow.makeExceptionHandler(
+                                    world, 
+                                    er,
+                                    mg, newNOP, enclosingShadow),
+                                shadowAccumulator);
+                        } else {                    
+                            match(
+                                BcelShadow.makeExceptionHandler(
+                                    world, 
+                                    er,
+                                    mg, ih, enclosingShadow),
+                                shadowAccumulator);
+                        }
+                    }
+                }
+            }
+        }
+        
 		if ((i instanceof FieldInstruction) && 
 			(canMatch(Shadow.FieldGet) || canMatch(Shadow.FieldSet))
 		) {
@@ -2550,30 +2597,7 @@ class BcelClassWeaver implements IClassWeaver {
 			  }
 			// }
 		}
-		// performance optimization... we only actually care about ASTORE instructions, 
-		// since that's what every javac type thing ever uses to start a handler, but for
-		// now we'll do this for everybody.
-		if (!canMatch(Shadow.ExceptionHandler)) return;
-		if (Range.isRangeHandle(ih)) return;
-		InstructionTargeter[] targeters = ih.getTargeters();
-		if (targeters != null) {
-			for (int j = 0; j < targeters.length; j++) {
-				InstructionTargeter t = targeters[j];
-				if (t instanceof ExceptionRange) {
-					// assert t.getHandler() == ih
-					ExceptionRange er = (ExceptionRange) t;
-					if (er.getCatchType() == null) continue;
-					if (isInitFailureHandler(ih)) return;
-					
-					match(
-						BcelShadow.makeExceptionHandler(
-							world, 
-							er,
-							mg, ih, enclosingShadow),
-						shadowAccumulator);
-				}
-			}
-		}
+		
 	}
 
 	private boolean isInitFailureHandler(InstructionHandle ih) {
@@ -2769,10 +2793,11 @@ class BcelClassWeaver implements IClassWeaver {
 							effectiveSig.getShadowKind(), rm), shadowAccumulator);
 			}
 		} else {
-			if (canMatch(Shadow.MethodCall))
+			if (canMatch(Shadow.MethodCall)) {
 				match(
 						BcelShadow.makeMethodCall(world, mg, ih, enclosingShadow),
 						shadowAccumulator);
+			}
 		}
 	}
 	
