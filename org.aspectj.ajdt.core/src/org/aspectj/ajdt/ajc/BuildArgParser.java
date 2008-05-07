@@ -14,18 +14,37 @@
 
 package org.aspectj.ajdt.ajc;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.StringTokenizer;
 
-import org.aspectj.ajdt.internal.core.builder.*;
-import org.aspectj.bridge.*;
-import org.aspectj.util.*;
-import org.aspectj.weaver.Constants;
-import org.aspectj.weaver.Dump;
-import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
+import org.aspectj.bridge.CountingMessageHandler;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageUtil;
+import org.aspectj.bridge.SourceLocation;
+import org.aspectj.bridge.Version;
 import org.aspectj.org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.Main;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.aspectj.util.ConfigParser;
+import org.aspectj.util.FileUtil;
+import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.Constants;
+import org.aspectj.weaver.Dump;
+import org.aspectj.weaver.WeaverMessages;
 
 public class BuildArgParser extends Main {
 
@@ -659,6 +678,8 @@ public class BuildArgParser extends Main {
         		} else {
         			showError("-Xajruntimetarget:<level> only supports a target level of 1.2 or 1.5");
         		}
+            } else if (arg.equals("-timers")) {
+                // swallow - it is dealt with in Main.runMain()
             } else if (arg.equals("-1.5")) {
             	buildConfig.setBehaveInJava5Way(true);
             	unparsedArgs.add("-1.5");
