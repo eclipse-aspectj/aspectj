@@ -131,11 +131,19 @@ public class EclipseAdapterUtils {
     public static IMessage makeMessage(ICompilationUnit unit, IProblem problem, World world) { 
         ISourceLocation sourceLocation = makeSourceLocation(unit, problem);
         IProblem[] seeAlso = problem.seeAlso();
-        ISourceLocation[] seeAlsoLocations = new ISourceLocation[seeAlso.length];
+        // If the user has turned off classfile line number gen, then we may not be able to tell them
+        // about all secondary locations (pr209372)
+        int validPlaces = 0;
+        for (int ii=0;ii<seeAlso.length;ii++) {
+            if (seeAlso[ii].getSourceLineNumber()>=0) validPlaces++;
+        }
+        ISourceLocation[] seeAlsoLocations = new ISourceLocation[validPlaces];
+        int pos = 0;
         for (int i = 0; i < seeAlso.length; i++) {
-        	seeAlsoLocations[i] = new SourceLocation(new File(new String(seeAlso[i].getOriginatingFileName())),
-        											 seeAlso[i].getSourceLineNumber());
-													 
+            if (seeAlso[i].getSourceLineNumber()>=0) {
+                seeAlsoLocations[pos++] = new SourceLocation(new File(new String(seeAlso[i].getOriginatingFileName())),
+        											 seeAlso[i].getSourceLineNumber());	
+            }
 		}
 		// We transform messages from AJ types to eclipse IProblems
 		// and back to AJ types.  During their time as eclipse problems,
