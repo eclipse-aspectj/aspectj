@@ -20,7 +20,8 @@ public class AllTestsAspectJ154 {
 		TestSuite suite = new TestSuite("AspectJ 1.5.4 tests");
 		//$JUnit-BEGIN$
 		suite.addTest(Ajc154Tests.suite());
-		suite.addTestSuite(CustomMungerExtensionTest.class);
+		// removed for now - it keeps creating unwanted directories in the source tree rather than building into the sandbox
+//		suite.addTestSuite(CustomMungerExtensionTest.class);
         //$JUnit-END$
 		return suite;
 	}
