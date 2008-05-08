@@ -78,7 +78,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  *
  * @see org.aspectj.apache.bcel.Repository
  *
- * @version $Id: NonCachingClassLoaderRepository.java,v 1.1.4.2 2008/04/25 17:55:36 aclement Exp $
+ * @version $Id: NonCachingClassLoaderRepository.java,v 1.1.4.3 2008/05/08 19:26:46 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  * 

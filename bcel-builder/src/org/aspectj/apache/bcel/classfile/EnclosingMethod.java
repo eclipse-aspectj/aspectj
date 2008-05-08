@@ -49,7 +49,7 @@ public class EnclosingMethod extends Attribute {
 	    methodIndex = methodIdx;
 	}
 
-	public void accept(Visitor v) {
+	public void accept(ClassVisitor v) {
 	  v.visitEnclosingMethod(this);
 	}
 

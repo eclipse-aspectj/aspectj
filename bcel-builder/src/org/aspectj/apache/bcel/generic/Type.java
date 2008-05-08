@@ -65,7 +65,7 @@ import org.aspectj.apache.bcel.classfile.Utility;
  * Abstract super class for all possible java types, namely basic types
  * such as int, object types like String and array types, e.g. int[]
  *
- * @version $Id: Type.java,v 1.7.4.2 2008/04/25 17:55:34 aclement Exp $
+ * @version $Id: Type.java,v 1.7.4.3 2008/05/08 19:26:44 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  * modified:
@@ -141,12 +141,11 @@ public abstract class Type implements java.io.Serializable {
   public static String getMethodSignature(Type return_type, Type[] arg_types) {
     StringBuffer buf = new StringBuffer("(");
     int length = (arg_types == null)? 0 : arg_types.length;
-
-    for(int i=0; i < length; i++)
+    for(int i=0; i < length; i++) {
       buf.append(arg_types[i].getSignature());
+    }
     buf.append(')');
     buf.append(return_type.getSignature());
-    
     return buf.toString();
   }
   
@@ -222,6 +221,7 @@ public abstract class Type implements java.io.Serializable {
    * @param signature signature string such as (Ljava/lang/String;)V
    * @return array of argument types
    */
+  // OPTIMIZE crap impl
   public static Type[] getArgumentTypes(String signature) {
     ArrayList vec = new ArrayList();
     int       index;

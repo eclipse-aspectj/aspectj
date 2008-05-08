@@ -52,8 +52,6 @@ public final class LocalVariableTag extends Tag {
     
     public boolean isRemapped() { return this.remapped; }
     
-    // ---- from Object
-    
     public String toString() {
         return "local " + slot + ": " + signature + " " + name;
     }

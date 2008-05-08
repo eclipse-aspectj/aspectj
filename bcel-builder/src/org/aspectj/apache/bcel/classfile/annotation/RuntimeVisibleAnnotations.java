@@ -7,7 +7,7 @@ import java.io.IOException;
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
-import org.aspectj.apache.bcel.classfile.Visitor;
+import org.aspectj.apache.bcel.classfile.ClassVisitor;
 
 public class RuntimeVisibleAnnotations extends RuntimeAnnotations {
 	
@@ -25,7 +25,7 @@ public class RuntimeVisibleAnnotations extends RuntimeAnnotations {
 		super(Constants.ATTR_RUNTIME_VISIBLE_ANNOTATIONS,true,nameIndex,len,rvaData,cpool);
 	}
 
-	public void accept(Visitor v) {
+	public void accept(ClassVisitor v) {
 	  	v.visitRuntimeVisibleAnnotations(this);
 	  }
 

@@ -66,7 +66,7 @@ import java.io.*;
  * @see org.aspectj.apache.bcel.util.Repository
  * @see org.aspectj.apache.bcel.util.SyntheticRepository
  *
- * @version $Id: Repository.java,v 1.3.10.2 2008/04/25 17:55:37 aclement Exp $
+ * @version $Id: Repository.java,v 1.3.10.3 2008/05/08 19:26:47 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class Repository {

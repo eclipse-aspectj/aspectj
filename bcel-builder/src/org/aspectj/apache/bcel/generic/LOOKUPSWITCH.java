@@ -61,7 +61,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 /** 
  * LOOKUPSWITCH - Switch with unordered set of values
  *
- * @version $Id: LOOKUPSWITCH.java,v 1.2.10.2 2008/04/25 17:55:34 aclement Exp $
+ * @version $Id: LOOKUPSWITCH.java,v 1.2.10.3 2008/05/08 19:26:45 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see SWITCH
  */
@@ -72,9 +72,9 @@ public class LOOKUPSWITCH extends InstructionSelect {
 		      InstructionHandle target) {
     super(org.aspectj.apache.bcel.Constants.LOOKUPSWITCH, match, targets, target);
     
-    length = (short)(9 + match_length * 8); /* alignment remainder assumed
+    length = (short)(9 + matchLength * 8); /* alignment remainder assumed
 					     * 0 here, until dump time. */
-    fixed_length = length;
+    fixedLength = length;
   }
 
   /**
@@ -83,9 +83,9 @@ public class LOOKUPSWITCH extends InstructionSelect {
    */
   public void dump(DataOutputStream out) throws IOException {
     super.dump(out);
-    out.writeInt(match_length);       // npairs
+    out.writeInt(matchLength);       // npairs
 
-    for(int i=0; i < match_length; i++) {
+    for(int i=0; i < matchLength; i++) {
       out.writeInt(match[i]);         // match-offset pairs
       out.writeInt(indices[i] = getTargetOffset(targets[i]));
     }
@@ -98,15 +98,15 @@ public class LOOKUPSWITCH extends InstructionSelect {
   {
     super(Constants.LOOKUPSWITCH,bytes); // reads padding
 
-    match_length = bytes.readInt();
-    fixed_length = (short)(9 + match_length * 8);
-    length       = (short)(fixed_length + padding);
+    matchLength = bytes.readInt();
+    fixedLength = (short)(9 + matchLength * 8);
+    length       = (short)(fixedLength + padding);
 	  
-    match   = new int[match_length];
-    indices = new int[match_length];
-    targets = new InstructionHandle[match_length];
+    match   = new int[matchLength];
+    indices = new int[matchLength];
+    targets = new InstructionHandle[matchLength];
 
-    for(int i=0; i < match_length; i++) {
+    for(int i=0; i < matchLength; i++) {
       match[i]   = bytes.readInt();
       indices[i] = bytes.readInt();
     }

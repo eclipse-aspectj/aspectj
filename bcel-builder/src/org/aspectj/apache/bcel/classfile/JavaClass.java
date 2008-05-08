@@ -77,11 +77,11 @@ import  java.util.StringTokenizer;
  * class file.  Those interested in programatically generating classes
  * should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
 
- * @version $Id: JavaClass.java,v 1.9.8.2 2008/04/25 17:55:36 aclement Exp $
+ * @version $Id: JavaClass.java,v 1.9.8.3 2008/05/08 19:26:46 aclement Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
-public class JavaClass extends AccessFlags implements Cloneable, Node {
+public class JavaClass extends Modifiers implements Cloneable, Node {
   private String       file_name;
   private String       package_name;
   private String       source_file_name;
@@ -97,7 +97,6 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
   private Method[]     methods;       // methods defined in the class
   private Attribute[]  attributes;    // attributes defined in the class
   private AnnotationGen[] annotations;   // annotations defined on the class
-  private byte         source = HEAP; // Generated in memory
   private boolean     isGeneric = false;
   private boolean 		isAnonymous = false;
   private boolean 		isNested = false;
@@ -154,8 +153,7 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
 		   int[]      interfaces,
 		   Field[]      fields,
 		   Method[]     methods,
-		   Attribute[]  attributes,
-		   byte          source)
+		   Attribute[]  attributes)
   {
     if(interfaces == null) // Allowed for backward compatibility
       interfaces = new int[0];
@@ -170,14 +168,13 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
     this.file_name             = file_name;
     this.major                 = major;
     this.minor                 = minor;
-    this.accessflags          = access_flags;
+    this.modifiers          = access_flags;
     this.constant_pool         = constant_pool;
     this.interfaces            = interfaces;
     this.fields                = fields;
     this.methods               = methods;
     this.attributes            = attributes;
     annotationsOutOfDate       = true;
-    this.source                = source;
 
     // Get source file name if available
     SourceFile sfAttribute = AttributeUtils.getSourceFileAttribute(attributes);
@@ -212,36 +209,6 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
     }
   }
 
-  /**
-   * Constructor gets all contents as arguments.
-   *
-   * @param class_name_index Class name
-   * @param superclass_name_index Superclass name
-   * @param file_name File name
-   * @param major Major compiler version
-   * @param minor Minor compiler version
-   * @param access_flags Access rights defined by bit flags
-   * @param constant_pool Array of constants
-   * @param interfaces Implemented interfaces
-   * @param fields Class fields
-   * @param methods Class methods
-   * @param attributes Class attributes
-   */
-  public JavaClass(int        class_name_index,
-		   int        superclass_name_index,
-		   String     file_name,
-		   int        major,
-		   int        minor,
-		   int        access_flags,
-		   ConstantPool constant_pool,
-		   int[]      interfaces,
-		   Field[]      fields,
-		   Method[]     methods,
-		   Attribute[]  attributes) {
-    this(class_name_index, superclass_name_index, file_name, major, minor, access_flags,
-	 constant_pool, interfaces, fields, methods, attributes, HEAP);
-  }
-
       
   /**
    * Called by objects that are traversing the nodes of the tree implicitely
@@ -250,7 +217,7 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
    *
    * @param v Visitor object
    */
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitJavaClass(this);
   }
 
@@ -334,7 +301,7 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
 
     constant_pool.dump(file);
 	
-    file.writeShort(accessflags);
+    file.writeShort(modifiers);
     file.writeShort(class_name_index);
     file.writeShort(superclass_name_index);
 
@@ -606,11 +573,11 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
    * @return String representing class contents.
    */
   public String toString() {
-    String access = Utility.accessToString(accessflags, true);
+    String access = Utility.accessToString(modifiers, true);
     access = access.equals("")? "" : (access + " ");
 
     StringBuffer buf = new StringBuffer(access +
-					Utility.classOrInterface(accessflags) + 
+					Utility.classOrInterface(modifiers) + 
 					" " +
 					class_name + " extends " +
 					Utility.compactClassName(superclass_name,
@@ -632,7 +599,7 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
     buf.append("filename\t\t" + file_name + '\n');
     buf.append("compiled from\t\t" + source_file_name + '\n');
     buf.append("compiler version\t" + major + "." + minor + '\n');
-    buf.append("access flags\t\t" + accessflags + '\n');
+    buf.append("access flags\t\t" + modifiers + '\n');
     buf.append("constant pool\t\t" + constant_pool.getLength() + " entries\n");
     buf.append("ACC_SUPER flag\t\t" + isSuper() + "\n");
 
@@ -704,11 +671,11 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
   }
 
   public final boolean isSuper() {
-    return (accessflags & Constants.ACC_SUPER) != 0;
+    return (modifiers & Constants.ACC_SUPER) != 0;
   }
 
   public final boolean isClass() {
-    return (accessflags & Constants.ACC_INTERFACE) == 0;
+    return (modifiers & Constants.ACC_INTERFACE) == 0;
   }
   
   public final boolean isAnonymous() {
@@ -753,20 +720,14 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
    * 'public @interface blahblah' declaration
    */
   public final boolean isAnnotation() {
-  	return (accessflags & Constants.ACC_ANNOTATION) != 0;
+  	return (modifiers & Constants.ACC_ANNOTATION) != 0;
   }
   
   /**
    * Returns true if this class represents an enum type
    */
   public final boolean isEnum() {
-  	return (accessflags & Constants.ACC_ENUM) != 0;
-  }
-
-  /** @return returns either HEAP (generated), FILE, or ZIP
-   */
-  public final byte getSource() {
-    return source;
+  	return (modifiers & Constants.ACC_ENUM) != 0;
   }
 
   /********************* New repository functionality *********************/
@@ -890,6 +851,7 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
   /**
    * Get all interfaces implemented by this JavaClass (transitively).
    */
+  // OPTIMIZE get rid of ClassQueue and ClassVector
   public JavaClass[] getAllInterfaces() {
     ClassQueue  queue = new ClassQueue();
     ClassVector vec   = new ClassVector();
@@ -903,11 +865,11 @@ public class JavaClass extends AccessFlags implements Cloneable, Node {
       JavaClass[] interfaces = clazz.getInterfaces();
       
       if(clazz.isInterface()) {
-	vec.addElement(clazz);
-      } else {
-	if(souper != null) {
-	  queue.enqueue(souper);
-	}
+		vec.addElement(clazz);
+	      } else {
+		if(souper != null) {
+		  queue.enqueue(souper);
+		}
       }
       
       for(int i = 0; i < interfaces.length; i++) {

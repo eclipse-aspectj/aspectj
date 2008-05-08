@@ -66,7 +66,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 /** 
  * Abstract super class for all Java byte codes.
  *
- * @version $Id: Instruction.java,v 1.4.10.2 2008/04/25 17:55:33 aclement Exp $
+ * @version $Id: Instruction.java,v 1.4.10.3 2008/05/08 19:26:45 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public  class Instruction implements Cloneable, Serializable, Constants {
@@ -108,19 +108,18 @@ public  class Instruction implements Cloneable, Serializable, Constants {
    * @see BranchInstruction
    * @return (shallow) copy of an instruction
    */
-  public Instruction copy() {
-    Instruction i = null;
-    // "Constant" instruction, no need to duplicate
-    if (InstructionConstants.INSTRUCTIONS[opcode] != null) {
-      i = this;
+  final public Instruction copy() {
+    if (InstructionConstants.INSTRUCTIONS[opcode] != null) { // immutable instructions do not need copying
+      return this;
     } else {
-      try {
+      Instruction i = null; 
+      try {//OPTIMIZE is clone the right thing to do here? it is horrible
     	  i = (Instruction)clone();
       } catch(CloneNotSupportedException e) {
     	  System.err.println(e);
       }
+      return i;
     }
-    return i;
   }
   
 
@@ -351,7 +350,7 @@ public  class Instruction implements Cloneable, Serializable, Constants {
    *
    * @param v Visitor object
    */
-  public void accept(Visitor v) {
+  public void accept(InstVisitor v) {
 	  switch (opcode) {
 	  case IMPDEP1:v.visitIMPDEP1(this);break;
 	  case IMPDEP2:v.visitIMPDEP2(this);break;

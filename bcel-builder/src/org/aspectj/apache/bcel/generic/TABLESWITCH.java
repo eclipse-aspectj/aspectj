@@ -61,7 +61,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 /** 
  * TABLESWITCH - Switch within given range of values, i.e., low..high
  *
- * @version $Id: TABLESWITCH.java,v 1.3.8.2 2008/04/25 17:55:34 aclement Exp $
+ * @version $Id: TABLESWITCH.java,v 1.3.8.3 2008/05/08 19:26:44 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see SWITCH
  */
@@ -82,9 +82,9 @@ public class TABLESWITCH extends InstructionSelect {
 //    	throw new RuntimeException("A tableswitch with no targets should be represented as a LOOKUPSWITCH");
 //    }
     
-    length = (short)(13 + match_length * 4); /* Alignment remainder assumed
+    length = (short)(13 + matchLength * 4); /* Alignment remainder assumed
 					      * 0 here, until dump time */
-    fixed_length = length;
+    fixedLength = length;
   }
 
   /**
@@ -94,16 +94,16 @@ public class TABLESWITCH extends InstructionSelect {
   public void dump(DataOutputStream out) throws IOException {
     super.dump(out);
 
-    int low = (match_length > 0)? match[0] : 0;
+    int low = (matchLength > 0)? match[0] : 0;
     out.writeInt(low);
 
-    int high = (match_length > 0)? match[match_length - 1] : 0;
+    int high = (matchLength > 0)? match[matchLength - 1] : 0;
     out.writeInt(high);
 
 //  See aj bug pr104720
 //    if (match_length==0) out.writeInt(0); // following the switch you need to supply "HIGH-LOW+1" entries
     
-    for(int i=0; i < match_length; i++)     // jump offsets
+    for(int i=0; i < matchLength; i++)     // jump offsets
       out.writeInt(indices[i] = getTargetOffset(targets[i]));
   }
 
@@ -117,18 +117,18 @@ public class TABLESWITCH extends InstructionSelect {
     int low    = bytes.readInt();
     int high   = bytes.readInt();
 
-    match_length = high - low + 1;
-    fixed_length = (short)(13 + match_length * 4);
-    length       = (short)(fixed_length + padding);
+    matchLength = high - low + 1;
+    fixedLength = (short)(13 + matchLength * 4);
+    length       = (short)(fixedLength + padding);
 
-    match   = new int[match_length];
-    indices = new int[match_length];
-    targets = new InstructionHandle[match_length];
+    match   = new int[matchLength];
+    indices = new int[matchLength];
+    targets = new InstructionHandle[matchLength];
 
     for(int i=low; i <= high; i++)
       match[i - low] = i;
 
-    for(int i=0; i < match_length; i++) {
+    for(int i=0; i < matchLength; i++) {
       indices[i] = bytes.readInt();
     }
   }

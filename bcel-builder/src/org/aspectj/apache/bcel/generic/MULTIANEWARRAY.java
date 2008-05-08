@@ -62,7 +62,7 @@ import org.aspectj.apache.bcel.ExceptionConstants;
  * MULTIANEWARRAY - Create new mutidimensional array of references
  * <PRE>Stack: ..., count1, [count2, ...] -&gt; ..., arrayref</PRE>
  *
- * @version $Id: MULTIANEWARRAY.java,v 1.2.10.2 2008/04/25 17:55:33 aclement Exp $
+ * @version $Id: MULTIANEWARRAY.java,v 1.2.10.3 2008/05/08 19:26:44 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class MULTIANEWARRAY extends InstructionCP {

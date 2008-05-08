@@ -64,10 +64,10 @@ import java.util.List;
 /** 
  * Abstract super class for fields and methods.
  *
- * @version $Id: FieldOrMethod.java,v 1.5.8.2 2008/04/25 17:55:37 aclement Exp $
+ * @version $Id: FieldOrMethod.java,v 1.5.8.3 2008/05/08 19:26:46 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
-public abstract class FieldOrMethod extends AccessFlags implements Cloneable, Node {
+public abstract class FieldOrMethod extends Modifiers implements Cloneable, Node {
   protected int           nameIndex;      
   protected int           signatureIndex;
   protected Attribute[] attributes;
@@ -89,7 +89,7 @@ public abstract class FieldOrMethod extends AccessFlags implements Cloneable, No
    * references (shallow copy). Use clone() for a physical copy.
    */
   protected FieldOrMethod(FieldOrMethod c) {
-    this(c.getAccessFlags(), c.getNameIndex(), c.getSignatureIndex(),c.getAttributes(), c.getConstantPool());
+    this(c.getModifiers(), c.getNameIndex(), c.getSignatureIndex(),c.getAttributes(), c.getConstantPool());
   }
 
   protected FieldOrMethod(DataInputStream file, ConstantPool cpool) throws IOException {
@@ -98,7 +98,7 @@ public abstract class FieldOrMethod extends AccessFlags implements Cloneable, No
   }
 
   protected FieldOrMethod(int accessFlags, int nameIndex, int signatureIndex, Attribute[] attributes, ConstantPool cpool) {
-    this.accessflags     = accessFlags;
+    this.modifiers     = accessFlags;
     this.nameIndex       = nameIndex;
     this.signatureIndex  = signatureIndex;
     this.cpool           = cpool;
@@ -117,7 +117,7 @@ public abstract class FieldOrMethod extends AccessFlags implements Cloneable, No
   
   
   public final void dump(DataOutputStream file) throws IOException {
-    file.writeShort(accessflags);
+    file.writeShort(modifiers);
     file.writeShort(nameIndex);
     file.writeShort(signatureIndex);
     AttributeUtils.writeAttributes(attributes,file);

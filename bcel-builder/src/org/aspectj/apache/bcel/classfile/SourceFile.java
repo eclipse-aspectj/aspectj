@@ -63,7 +63,7 @@ import  java.io.*;
  * should appear per classfile.  The intention of this class is that it is
  * instantiated from the <em>Attribute.readAttribute()</em> method.
  *
- * @version $Id: SourceFile.java,v 1.2.10.2 2008/04/25 17:55:37 aclement Exp $
+ * @version $Id: SourceFile.java,v 1.2.10.3 2008/05/08 19:26:46 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Attribute
  */
@@ -120,7 +120,7 @@ public final class SourceFile extends Attribute {
    *
    * @param v Visitor object
    */
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitSourceFile(this);
   }
 

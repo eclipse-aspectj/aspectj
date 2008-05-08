@@ -63,7 +63,7 @@ import  java.io.*;
  * and represents a reference to the name and signature
  * of a field or method.
  *
- * @version $Id: ConstantNameAndType.java,v 1.2.10.2 2008/04/25 17:55:36 aclement Exp $
+ * @version $Id: ConstantNameAndType.java,v 1.2.10.3 2008/05/08 19:26:46 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Constant
  */
@@ -108,7 +108,7 @@ public final class ConstantNameAndType extends Constant {
    *
    * @param v Visitor object
    */
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitConstantNameAndType(this);
   }
 

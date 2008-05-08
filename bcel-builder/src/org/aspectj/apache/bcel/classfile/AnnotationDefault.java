@@ -49,7 +49,7 @@ public class AnnotationDefault extends Attribute {
 	    value.dump(dos);
     }    
 
-	public void accept(Visitor v) {
+	public void accept(ClassVisitor v) {
 	  v.visitAnnotationDefault(this);
 	}
 }

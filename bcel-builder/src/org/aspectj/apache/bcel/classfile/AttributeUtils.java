@@ -69,7 +69,7 @@ public class AttributeUtils {
 		return null;
 	}
 
-	public static void accept(Attribute[] attributes,Visitor visitor) {
+	public static void accept(Attribute[] attributes,ClassVisitor visitor) {
 		for(int i=0; i < attributes.length; i++)
 			attributes[i].accept(visitor);
 	}

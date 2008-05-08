@@ -64,7 +64,7 @@ import java.io.Serializable;
  * the source that corresponds to a relative address in the byte code. This
  * is used for debugging purposes.
  *
- * @version $Id: LineNumber.java,v 1.3.10.1 2008/04/25 17:55:36 aclement Exp $
+ * @version $Id: LineNumber.java,v 1.3.10.2 2008/05/08 19:26:46 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     LineNumberTable
  */
@@ -106,7 +106,7 @@ public final class LineNumber implements Cloneable, Node, Serializable {
    *
    * @param v Visitor object
    */
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitLineNumber(this);
   }    
 

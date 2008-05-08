@@ -66,7 +66,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.classfile.AccessFlags;
+import org.aspectj.apache.bcel.classfile.Modifiers;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.Field;
@@ -83,24 +83,22 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
  * existing java class (file).
  *
  * @see JavaClass
- * @version $Id: ClassGen.java,v 1.8.4.2 2008/04/25 17:55:34 aclement Exp $
+ * @version $Id: ClassGen.java,v 1.8.4.3 2008/05/08 19:26:45 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  *
  * Upgraded, Andy Clement 9th Mar 06 - calculates SUID
  */
-public class ClassGen extends AccessFlags implements Cloneable {
-  /* Corresponds to the fields found in a JavaClass object.
-   */
+public class ClassGen extends Modifiers implements Cloneable {
+
   private String   class_name, super_class_name, file_name;
   private int      class_name_index = -1, superclass_name_index = -1;
   private int      major = Constants.MAJOR_1_1, minor = Constants.MINOR_1_1;
 
-  private ConstantPool cp; // Template for building up constant pool
+  private ConstantPool cp;
 
-  // ArrayLists instead of arrays to gather fields, methods, etc.
   private ArrayList   field_vec     = new ArrayList();
   private ArrayList   method_vec    = new ArrayList();
-  private ArrayList   attribute_vec = new ArrayList();
+  private ArrayList   attributesList = new ArrayList();
   private ArrayList   interface_vec = new ArrayList();
   private ArrayList   annotation_vec= new ArrayList();
   private boolean     unpackedAnnotations = false; 
@@ -119,20 +117,21 @@ public class ClassGen extends AccessFlags implements Cloneable {
     this.class_name       = class_name;
     this.super_class_name = super_class_name;
     this.file_name        = file_name;
-    this.accessflags     = access_flags;
+    this.modifiers     = access_flags;
     this.cp               = cp;
 
     // Put everything needed by default into the constant pool and the vectors
-    if(file_name != null)
-      addAttribute(new SourceFile(cp.addUtf8("SourceFile"), 2,
-				  cp.addUtf8(file_name), cp));
+    if (file_name != null) {
+      addAttribute(new SourceFile(cp.addUtf8("SourceFile"), 2, cp.addUtf8(file_name), cp));
+    }
 
     class_name_index      = cp.addClass(class_name);
     superclass_name_index = cp.addClass(super_class_name);
 
-    if(interfaces != null)
+    if (interfaces != null) {
       for(int i=0; i < interfaces.length; i++)
-	addInterface(interfaces[i]);
+    	  addInterface(interfaces[i]);
+    }
   }
 
   /** Convenience constructor to set up some important values initially.
@@ -159,7 +158,7 @@ public class ClassGen extends AccessFlags implements Cloneable {
     class_name            = clazz.getClassName();
     super_class_name      = clazz.getSuperclassName();
     file_name             = clazz.getSourceFileName();
-    accessflags          = clazz.getAccessFlags();
+    modifiers             = clazz.getModifiers();
     cp                    = clazz.getConstantPool().copy();
     major                 = clazz.getMajor();
     minor                 = clazz.getMinor();
@@ -230,22 +229,23 @@ public class ClassGen extends AccessFlags implements Cloneable {
     Field[]      fields     = getFields();
     Method[]     methods    = getMethods();
     
+    // OPTIMIZE sort out this mangling of arrays and collections
     Attribute[] attributes = null;
     if (annotation_vec.size()==0) {
     	attributes = getAttributes();
     } else {
     	// TODO: Sometime later, trash any attributes called 'RuntimeVisibleAnnotations' or 'RuntimeInvisibleAnnotations'
         Attribute[] annAttributes  = Utility.getAnnotationAttributes(cp,annotation_vec);
-        attributes = new Attribute[attribute_vec.size()+annAttributes.length];
-        attribute_vec.toArray(attributes);
-        System.arraycopy(annAttributes,0,attributes,attribute_vec.size(),annAttributes.length);
+        attributes = new Attribute[attributesList.size()+annAttributes.length];
+        attributesList.toArray(attributes);
+        System.arraycopy(annAttributes,0,attributes,attributesList.size(),annAttributes.length);
     }
 
     // Must be last since the above calls may still add something to it
     ConstantPool cp         = this.cp.getFinalConstantPool();
     
     return new JavaClass(class_name_index, superclass_name_index,
-			 file_name, major, minor, accessflags,
+			 file_name, major, minor, modifiers,
 			 cp, interfaces, fields, methods, attributes);
   }
 
@@ -293,7 +293,7 @@ public class ClassGen extends AccessFlags implements Cloneable {
    * Add an attribute to this class.
    * @param a attribute to add
    */
-  public void addAttribute(Attribute a)    { attribute_vec.add(a); }
+  public void addAttribute(Attribute a)    { attributesList.add(a); }
 
   public void addAnnotation(AnnotationGen a) { annotation_vec.add(a); }
   /**
@@ -357,7 +357,7 @@ public class ClassGen extends AccessFlags implements Cloneable {
    * Remove an attribute from this class.
    * @param a attribute to remove
    */
-  public void removeAttribute(Attribute a) { attribute_vec.remove(a); }
+  public void removeAttribute(Attribute a) { attributesList.remove(a); }
   public void removeAnnotation(AnnotationGen a) {annotation_vec.remove(a);}
 
   /**
@@ -375,7 +375,7 @@ public class ClassGen extends AccessFlags implements Cloneable {
 
     int i = method_vec.indexOf(old);
 
-    if(i < 0)
+    if (i < 0)
       method_vec.add(new_);
     else
       method_vec.set(i, new_);
@@ -467,8 +467,8 @@ public class ClassGen extends AccessFlags implements Cloneable {
   }
 
   public Attribute[] getAttributes() {
-    Attribute[] attributes = new Attribute[attribute_vec.size()];
-    attribute_vec.toArray(attributes);
+    Attribute[] attributes = new Attribute[attributesList.size()];
+    attributesList.toArray(attributes);
     return attributes;
   }
   
@@ -500,34 +500,6 @@ public class ClassGen extends AccessFlags implements Cloneable {
 
   public int getClassNameIndex()   { return class_name_index; }
 
-//  private ArrayList observers;
-
-//  /** Add observer for this object.
-//   */
-//  public void addObserver(ClassObserver o) {
-//    if(observers == null)
-//      observers = new ArrayList();
-//
-//    observers.add(o);
-//  }
-//
-//  /** Remove observer for this object.
-//   */
-//  public void removeObserver(ClassObserver o) {
-//    if(observers != null)
-//      observers.remove(o);
-//  }
-//
-//  /** Call notify() method on all observers. This method is not called
-//   * automatically whenever the state has changed, but has to be
-//   * called by the user after he has finished editing the object.
-//   */
-//  public void update() {
-//    if(observers != null)
-//      for(Iterator e = observers.iterator(); e.hasNext(); )
-//	((ClassObserver)e.next()).notify(this);
-//  }
-
   public Object clone() {
     try {
       return super.clone();
@@ -543,14 +515,14 @@ public class ClassGen extends AccessFlags implements Cloneable {
    * Returns true if this class represents an annotation type 
    */
   public final boolean isAnnotation() {
-  	return (accessflags & Constants.ACC_ANNOTATION) != 0;
+  	return (modifiers & Constants.ACC_ANNOTATION) != 0;
   }
   
   /**
    * Returns true if this class represents an enum type
    */
   public final boolean isEnum() {
-  	return (accessflags & Constants.ACC_ENUM) != 0;
+  	return (modifiers & Constants.ACC_ENUM) != 0;
   }
   
   /**
@@ -708,5 +680,21 @@ public class ClassGen extends AccessFlags implements Cloneable {
 			if (result!=0) return result;
 			return m1.getSignature().compareTo(m2.getSignature());
 		}
+  }
+  
+  public boolean hasAttribute(String attributeName) {
+	  for (Iterator iter = attributesList.iterator(); iter.hasNext();) {
+		Attribute attr = (Attribute) iter.next();
+		if (attr.getName().equals(attributeName)) return true;
+	}        
+	return false;
+  }
+
+  public Attribute getAttribute(String attributeName) {
+	  for (Iterator iter = attributesList.iterator(); iter.hasNext();) {
+			Attribute attr = (Attribute) iter.next();
+			if (attr.getName().equals(attributeName)) return attr;
+		}        
+		return null;
   }
 }

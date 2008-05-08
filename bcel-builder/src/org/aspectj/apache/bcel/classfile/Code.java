@@ -69,7 +69,7 @@ import  java.io.*;
  * is used for debugging purposes and <em>LocalVariableTable</em> which 
  * contains information about the local variables.
  *
- * @version $Id: Code.java,v 1.3.4.2 2008/04/25 17:55:36 aclement Exp $
+ * @version $Id: Code.java,v 1.3.4.3 2008/05/08 19:26:46 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Attribute
  * @see     CodeException
@@ -157,7 +157,7 @@ public final class Code extends Attribute {
    *
    * @param v Visitor object
    */
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitCode(this);
   }
 

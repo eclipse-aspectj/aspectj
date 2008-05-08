@@ -55,6 +55,7 @@ package org.aspectj.apache.bcel.classfile;
  */
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.List;
 
 import org.aspectj.apache.bcel.generic.Type;
 
@@ -62,7 +63,7 @@ import org.aspectj.apache.bcel.generic.Type;
  * This class represents the field info structure, i.e., the representation 
  * for a variable in the class. See JVM specification for details.
  *
- * @version $Id: Field.java,v 1.2.10.2 2008/04/25 17:55:36 aclement Exp $
+ * @version $Id: Field.java,v 1.2.10.3 2008/05/08 19:26:47 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class Field extends FieldOrMethod {
@@ -89,7 +90,7 @@ public final class Field extends FieldOrMethod {
     super(accessflags, nameIndex, signatureIndex, attributes, constant_pool);
   }
 
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitField(this);
   }
 
@@ -108,7 +109,7 @@ public final class Field extends FieldOrMethod {
     String name, signature, access; // Short cuts to constant pool
 
     // Get names from constant pool
-    access    = Utility.accessToString(accessflags);
+    access    = Utility.accessToString(modifiers);
     access    = access.equals("")? "" : (access + " ");
     signature = Utility.signatureToString(getSignature());
     name      = getName();

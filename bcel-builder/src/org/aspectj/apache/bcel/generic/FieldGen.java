@@ -71,9 +71,9 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
 /** 
  * Template class for building up a field.  The only extraordinary thing
  * one can do is to add a constant value attribute to a field (which must of
- * course be compatible with to the declared type).
+ * course be compatible with the declared type).
  *
- * @version $Id: FieldGen.java,v 1.4.8.2 2008/04/25 17:55:34 aclement Exp $
+ * @version $Id: FieldGen.java,v 1.4.8.3 2008/05/08 19:26:45 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Field
  */
@@ -91,7 +91,7 @@ public class FieldGen extends FieldGenOrMethodGen {
    * @param cp constant pool
    */
   public FieldGen(int access_flags, Type type, String name, ConstantPool cp) {
-    setAccessFlags(access_flags);
+    setModifiers(access_flags);
     setType(type);
     setName(name);
     setConstantPool(cp);
@@ -104,7 +104,7 @@ public class FieldGen extends FieldGenOrMethodGen {
    * @param cp constant pool (must contain the same entries as the field's constant pool)
    */
   public FieldGen(Field field, ConstantPool cp) {
-    this(field.getAccessFlags(), Type.getType(field.getSignature()), field.getName(), cp);
+    this(field.getModifiers(), Type.getType(field.getSignature()), field.getName(), cp);
 
     Attribute[] attrs = field.getAttributes();
 
@@ -130,76 +130,8 @@ public class FieldGen extends FieldGenOrMethodGen {
     value = ((ConstantObject)c).getConstantValue(cp);
   }
 
-  /**
-   * Set (optional) initial value of field, otherwise it will be set to null/0/false
-   * by the JVM automatically.
-   */
-  public void setInitValue(String str) {
-    checkType(new ObjectType("java.lang.String"));
 
-    if(str != null)
-      value = str;
-  }
-
-  public void setInitValue(long l) {
-    checkType(Type.LONG);
-
-    if(l != 0L)
-      value = new Long(l);
-  }
-
-  public void setInitValue(int i) {
-    checkType(Type.INT);
-
-    if(i != 0)
-      value = new Integer(i);
-  }
-
-  public void setInitValue(short s) {
-    checkType(Type.SHORT);
-
-    if(s != 0)
-      value = new Integer(s);
-  }
-
-  public void setInitValue(char c) {
-    checkType(Type.CHAR);
-
-    if(c != 0)
-      value = new Integer(c);
-  }
-
-  public void setInitValue(byte b) {
-    checkType(Type.BYTE);
-
-    if(b != 0)
-      value = new Integer(b);
-  }
-
-  public void setInitValue(boolean b) {
-    checkType(Type.BOOLEAN);
-
-    if(b)
-      value = new Integer(1);
-  }
-
-  public void setInitValue(float f) {
-    checkType(Type.FLOAT);
-
-    if(f != 0.0)
-      value = new Float(f);
-  }
-
-  public void setInitValue(double d) {
-    checkType(Type.DOUBLE);
-
-    if(d != 0.0)
-      value = new Double(d);
-  }
-
-  /** Remove any initial value.
-   */
-  public void cancelInitValue() {
+  public void wipeValue() {
     value = null;
   }
 
@@ -231,17 +163,7 @@ public class FieldGen extends FieldGenOrMethodGen {
     
      addAnnotationsAsAttribute(cp);
 
-    return new Field(accessflags, name_index, signature_index,getAttributes(),
-		     cp);
-  }
-  
-  private void addAnnotationsAsAttribute(ConstantPool cp) {
-  	Attribute[] attrs = Utility.getAnnotationAttributes(cp,annotation_vec);
-  	if (attrs!=null) {
-      for (int i = 0; i < attrs.length; i++) {
-		  addAttribute(attrs[i]);
-	  }
-  	}
+    return new Field(modifiers, name_index, signature_index, getAttributesImmutable(), cp);
   }
 
   private int addConstant() {
@@ -270,7 +192,7 @@ public class FieldGen extends FieldGenOrMethodGen {
   public String  getSignature()  { return type.getSignature(); }
 
 
-  public String getInitValue() {
+  public String getInitialValue() {
     if(value != null) {
       return value.toString();
     } else
@@ -286,19 +208,19 @@ public class FieldGen extends FieldGenOrMethodGen {
   public final String toString() {
     String name, signature, access; // Short cuts to constant pool
 
-    access    = Utility.accessToString(accessflags);
+    access    = Utility.accessToString(modifiers);
     access    = access.equals("")? "" : (access + " ");
     signature = type.toString();
     name      = getName();
 
     StringBuffer buf = new StringBuffer(access + signature + " " + name);
-    String value = getInitValue();
+    String value = getInitialValue();
 
     if(value != null)
       buf.append(" = " + value);
     
     
-    // J5TODO: Add attributes and annotations to the string
+    // TODO: Add attributes and annotations to the string
 
     return buf.toString();
   }

@@ -62,7 +62,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 /**
  * Super class for the INVOKExxx family of instructions.
  *
- * @version $Id: InvokeInstruction.java,v 1.4.4.2 2008/04/25 17:55:32 aclement Exp $
+ * @version $Id: InvokeInstruction.java,v 1.4.4.3 2008/05/08 19:26:45 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class InvokeInstruction extends FieldOrMethod {

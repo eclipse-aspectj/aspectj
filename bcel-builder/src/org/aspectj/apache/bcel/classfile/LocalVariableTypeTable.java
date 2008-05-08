@@ -71,7 +71,7 @@ public class LocalVariableTypeTable extends Attribute {
       local_variable_type_table[i] = new LocalVariable(dis, cpool);
   }
 
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitLocalVariableTypeTable(this);
   }
 

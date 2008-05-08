@@ -63,7 +63,7 @@ package org.aspectj.apache.bcel.generic;
  * @see InstructionHandle
  * @see Instruction
  * @see InstructionList
- * @version $Id: BranchHandle.java,v 1.2.10.2 2008/04/25 17:55:33 aclement Exp $
+ * @version $Id: BranchHandle.java,v 1.2.10.3 2008/05/08 19:26:46 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class BranchHandle extends InstructionHandle {
@@ -74,28 +74,8 @@ public final class BranchHandle extends InstructionHandle {
     bi = i;
   }
 
-  /** Factory methods.
-   */
-  private static BranchHandle bh_list = null; // List of reusable handles
-
   static final BranchHandle getBranchHandle(InstructionBranch i) {
-    if(bh_list == null)
       return new BranchHandle(i);
-    else {
-      BranchHandle bh = bh_list;
-      bh_list = (BranchHandle)bh.next;
-
-      bh.setInstruction(i);
-
-      return bh;
-    }
-  }
-  
-  /** Handle adds itself to the list of resuable handles.
-   */
-  protected void addHandle() {
-    next    = bh_list;
-    bh_list = this;
   }
 
   /* Override InstructionHandle methods: delegate to branch instruction.

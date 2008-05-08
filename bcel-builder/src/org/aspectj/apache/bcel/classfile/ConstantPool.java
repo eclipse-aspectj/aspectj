@@ -9,9 +9,7 @@ import  java.io.*;
  * This class represents the constant pool, i.e., a table of constants, of
  * a parsed classfile. It may contain null references, due to the JVM
  * specification that skips an entry after an 8-byte constant (double,
- * long) entry.  Those interested in generating constant pools
- * programatically should see <a href="../generic/ConstantPoolGen.html">
- * ConstantPoolGen</a>.
+ * long) entry.
  */
 public class ConstantPool implements Node {
 	private Constant[] pool;
@@ -92,6 +90,7 @@ public class ConstantPool implements Node {
 	    * we could have solved these more elegantly by using the same
 	    * variable name or by subclassing.
 	    */
+      // OPTIMIZE remove the difference - use the an interface and same index methods for string ref id
 	  switch(tag) {
 		   case Constants.CONSTANT_Class:  i = ((ConstantClass)c).getNameIndex();    break;
 		   case Constants.CONSTANT_String: i = ((ConstantString)c).getStringIndex(); break;
@@ -175,7 +174,7 @@ public class ConstantPool implements Node {
 		return constantToString(c);
 	}
 	
-    public void accept(Visitor v) {
+    public void accept(ClassVisitor v) {
       v.visitConstantPool(this);
     }    
     

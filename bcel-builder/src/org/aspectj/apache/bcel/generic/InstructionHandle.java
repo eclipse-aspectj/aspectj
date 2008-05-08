@@ -71,7 +71,7 @@ import java.util.HashMap;
  * can traverse the list via an Enumeration returned by
  * InstructionList.elements().
  *
- * @version $Id: InstructionHandle.java,v 1.2.10.2 2008/04/25 17:55:35 aclement Exp $
+ * @version $Id: InstructionHandle.java,v 1.2.10.3 2008/05/08 19:26:45 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Instruction
  * @see BranchHandle
@@ -82,7 +82,6 @@ public class InstructionHandle implements java.io.Serializable {
   Instruction       instruction;
   protected int     i_position = -1; // byte code offset of instruction
   private HashSet   targeters;
-  private HashMap   attributes;
 
   public final InstructionHandle getNext()        { return next; }
   public final InstructionHandle getPrev()        { return prev; }
@@ -93,11 +92,11 @@ public class InstructionHandle implements java.io.Serializable {
    * Old instruction is disposed using Instruction.dispose().
    */
   public void setInstruction(Instruction i) { // Overridden in BranchHandle
-    if(i == null)
-      throw new ClassGenException("Assigning null to handle");
-
-    if((this.getClass() != BranchHandle.class) && (i instanceof InstructionBranch))
-      throw new ClassGenException("Assigning branch instruction " + i + " to plain handle");
+//    if(i == null)
+//      throw new ClassGenException("Assigning null to handle");
+//
+//    if((this.getClass() != BranchHandle.class) && (i instanceof InstructionBranch))
+//      throw new ClassGenException("Assigning branch instruction " + i + " to plain handle");
 
     if(instruction != null)
       instruction.dispose();
@@ -121,7 +120,8 @@ public class InstructionHandle implements java.io.Serializable {
   }
 
 
-  /** Factory method.
+  /** 
+   * Factory method.
    */
   static final InstructionHandle getInstructionHandle(Instruction i) {
       return new InstructionHandle(i);
@@ -157,12 +157,12 @@ public class InstructionHandle implements java.io.Serializable {
   /**
    * Delete contents, i.e., remove user access and make handle reusable.
    */
+  // OPTIMIZE get rid of this? why do we need it
   void dispose() {
     next = prev = null;
     instruction.dispose();
     instruction = null;
     i_position = -1;
-    attributes = null;
     removeAllTargeters();
   }
 
@@ -219,49 +219,11 @@ public class InstructionHandle implements java.io.Serializable {
     return toString(true);
   }
 
-  /** Add an attribute to an instruction handle.
-   *
-   * @param key the key object to store/retrieve the attribute
-   * @param attr the attribute to associate with this handle
-   */
-  public void addAttribute(Object key, Object attr) {
-    if(attributes == null)
-      attributes = new HashMap(3);
-    
-    attributes.put(key, attr);
-  }
-
-  /** Delete an attribute of an instruction handle.
-   *
-   * @param key the key object to retrieve the attribute
-   */
-  public void removeAttribute(Object key) {
-    if(attributes != null)
-      attributes.remove(key);
-  }
-
-  /** Get attribute of an instruction handle.
-   *
-   * @param key the key object to store/retrieve the attribute
-   */
-  public Object getAttribute(Object key) {
-    if(attributes != null)
-      return attributes.get(key);
-
-    return null;
-  }
-
-  /** @return all attributes associated with this handle
-   */
-  public Collection getAttributes() {
-    return attributes.values();
-  }
-  
   /** Convenience method, simply calls accept() on the contained instruction.
    *
    * @param v Visitor object
    */
-  public void accept(Visitor v) {
+  public void accept(InstVisitor v) {
     instruction.accept(v);
   }
 }

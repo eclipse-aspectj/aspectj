@@ -60,7 +60,7 @@ import java.io.*;
 /** 
  * This class represents a constant pool reference to a field.
  *
- * @version $Id: ConstantFieldref.java,v 1.2.10.1 2008/04/25 17:55:36 aclement Exp $
+ * @version $Id: ConstantFieldref.java,v 1.2.10.2 2008/05/08 19:26:46 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class ConstantFieldref extends ConstantCP {
@@ -98,7 +98,7 @@ public final class ConstantFieldref extends ConstantCP {
    *
    * @param v Visitor object
    */
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitConstantFieldref(this);
   }    
 }

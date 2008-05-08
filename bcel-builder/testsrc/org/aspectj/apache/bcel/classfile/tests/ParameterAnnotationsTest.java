@@ -260,12 +260,12 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		//    attributes vanish !
 		clg = new ClassGen(jc2);
 		mg = new MethodGen(m,clg.getClassName(),clg.getConstantPool());
-		Attribute[] as = mg.getAttributes();
-		assertTrue("Should be 2 (RIPA and RVPA) but there are "+mg.getAttributes().length,mg.getAttributes().length==2);
+		List as = mg.getAttributes();
+		assertTrue("Should be 2 (RIPA and RVPA) but there are "+mg.getAttributes().size(),mg.getAttributes().size()==2);
 		List l = mg.getAnnotationsOnParameter(0);
 		assertTrue("Should be 2 annotations on first parameter but there is only "+l.size()+":"+l.toString(),
 				l.size()==2);
-		assertTrue("Should be 0 but there are "+mg.getAttributes().length,mg.getAttributes().length==0);		
+		assertTrue("Should be 0 but there are "+mg.getAttributes().size(),mg.getAttributes().size()==0);		
 	}
 
 	

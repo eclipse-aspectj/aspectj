@@ -11,11 +11,11 @@
  *   Andy Clement   pushed down into bcel module
  * ******************************************************************/
 
-
 package org.aspectj.apache.bcel.generic;
 
-
-/** A tag is an instruction-targeter that doesn't bother remembering its target(s) */
+/**
+ *  A tag is an instruction-targeter that does not remember its target 
+ */
 public abstract class Tag implements InstructionTargeter, Cloneable {
 
     public Tag() {
@@ -26,10 +26,11 @@ public abstract class Tag implements InstructionTargeter, Cloneable {
         return false;
     }
 
-    public void updateTarget(InstructionHandle old_ih, InstructionHandle new_ih) {
-        old_ih.removeTargeter(this);
-        if (new_ih != null)
-            new_ih.addTargeter(this);
+    public void updateTarget(InstructionHandle oldHandle, InstructionHandle newHandle) {
+        oldHandle.removeTargeter(this);
+        if (newHandle != null) {
+            newHandle.addTargeter(this);
+        }
     }
     
     public Tag copy() {

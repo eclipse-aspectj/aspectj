@@ -65,7 +65,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
  * LOOKUPSWITCH and TABLESWITCH.
  *
  * @see InstructionList
- * @version $Id: InstructionBranch.java,v 1.1.2.2 2008/04/25 17:55:34 aclement Exp $
+ * @version $Id: InstructionBranch.java,v 1.1.2.3 2008/05/08 19:26:45 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 /**
@@ -274,26 +274,27 @@ public class InstructionBranch extends Instruction implements InstructionTargete
     positionOfThisInstruction=-1;
   }
   
-  public InstructionBranch negate() {
-	  if ((Constants.instFlags[opcode]&Constants.NEGATABLE)==0) throw new IllegalStateException("Operation is not negatable");
-	  switch (opcode) {
-	  case IFGT: return copy(Constants.IFNE);
-	  case IFLE: return copy(Constants.IFGT);
-		default:
-			throw new IllegalStateException("Dunno:"+opcode);
-	  }
-  }
-  
-  private InstructionBranch copy(short opcode) {
-	  InstructionBranch ib = null;
-	  if (targetInstruction!=null) {
-		  ib = new InstructionBranch(opcode,targetInstruction);
-	  } else {
-		  ib = new InstructionBranch(opcode,targetIndex);
-	  }
-	  ib.positionOfThisInstruction = positionOfThisInstruction;
-	  return ib;
-  }
+  // OPTIMIZE why bother with this?
+//  public InstructionBranch negate() {
+//	  if ((Constants.instFlags[opcode]&Constants.NEGATABLE)==0) throw new IllegalStateException("Operation is not negatable");
+//	  switch (opcode) {
+//	  case IFGT: return copy(Constants.IFNE);
+//	  case IFLE: return copy(Constants.IFGT);
+//		default:
+//			throw new IllegalStateException("Dunno:"+opcode);
+//	  }
+//  }
+//  
+//  private InstructionBranch copy(short opcode) {
+//	  InstructionBranch ib = null;
+//	  if (targetInstruction!=null) {
+//		  ib = new InstructionBranch(opcode,targetInstruction);
+//	  } else {
+//		  ib = new InstructionBranch(opcode,targetIndex);
+//	  }
+//	  ib.positionOfThisInstruction = positionOfThisInstruction;
+//	  return ib;
+//  }
   public Type getType(ConstantPool cp) {
 	  if ((Constants.instFlags[opcode]&Constants.JSR_INSTRUCTION)!=0) return new ReturnaddressType(physicalSuccessor());
 	  return super.getType(cp);

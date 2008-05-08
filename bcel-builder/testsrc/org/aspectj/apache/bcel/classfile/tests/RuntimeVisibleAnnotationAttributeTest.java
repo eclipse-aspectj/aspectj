@@ -14,6 +14,7 @@ package org.aspectj.apache.bcel.classfile.tests;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -185,7 +186,7 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		List l = ann.getValues();
 		assertTrue("Should be eight values for annotation 'ComplexAnnotation' but found "+l.size(),
 				l.size()==8);
-		List names = Utility.getListOfAnnotationNames(ann);
+		List names = RuntimeVisibleAnnotationAttributeTest.getListOfAnnotationNames(ann);
 		assertTrue("Cant find expected element ",names.contains("ival"));
 		assertTrue("Cant find expected element ",names.contains("dval"));
 		assertTrue("Cant find expected element ",names.contains("zval"));
@@ -380,5 +381,15 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
+
+	public static List getListOfAnnotationNames(AnnotationGen a) {
+	  	List l = a.getValues();
+	    List names = new ArrayList();
+	    for (Iterator i = l.iterator(); i.hasNext();) {
+			ElementNameValuePairGen element = (ElementNameValuePairGen) i.next();
+			names.add(element.getNameString());
+		}
+	    return names;
+	  }
 	
 }

@@ -68,7 +68,7 @@ import java.io.*;
  * org.aspectj.apache.bcel.classfile.AttributeReader)">Attribute.addAttributeReader</a>.
 
  *
- * @version $Id: Unknown.java,v 1.3.6.2 2008/04/25 17:55:36 aclement Exp $
+ * @version $Id: Unknown.java,v 1.3.6.3 2008/05/08 19:26:46 aclement Exp $
  * @see org.aspectj.apache.bcel.classfile.Attribute
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -146,7 +146,7 @@ public final class Unknown extends Attribute {
    *
    * @param v Visitor object
    */
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitUnknown(this);
   }    
   /**

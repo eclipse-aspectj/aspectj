@@ -70,7 +70,7 @@ import java.io.*;
  * <em>Synthetic</em> attributes are supported. The
  * <em>Unknown</em> attribute stands for non-standard-attributes.
  *
- * @version $Id: Attribute.java,v 1.2.10.2 2008/04/25 17:55:37 aclement Exp $
+ * @version $Id: Attribute.java,v 1.2.10.3 2008/05/08 19:26:47 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     ConstantValue
  * @see     SourceFile
@@ -190,6 +190,6 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
     return Constants.ATTRIBUTE_NAMES[tag];
   }
 
-  public abstract void accept(Visitor v);    
+  public abstract void accept(ClassVisitor v);    
 
 }

@@ -59,7 +59,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 /** 
  * Select - Abstract super class for LOOKUPSWITCH and TABLESWITCH instructions.
  *
- * @version $Id: InstructionSelect.java,v 1.1.2.2 2008/04/25 17:55:32 aclement Exp $
+ * @version $Id: InstructionSelect.java,v 1.1.2.3 2008/05/08 19:26:44 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see LOOKUPSWITCH
  * @see TABLESWITCH
@@ -69,8 +69,8 @@ public abstract class InstructionSelect extends InstructionBranch {
   protected int[]               match;        // matches, i.e., case 1: ...
   protected int[]               indices;      // target offsets
   protected InstructionHandle[] targets;      // target objects in instruction list
-  protected int                 fixed_length; // fixed length defined by subclasses
-  protected int                 match_length; // number of cases
+  protected int                 fixedLength; // fixed length defined by subclasses
+  protected int                 matchLength; // number of cases
   protected int                 padding = 0;  // number of pad bytes for alignment
   
   protected short length;
@@ -93,10 +93,10 @@ public abstract class InstructionSelect extends InstructionBranch {
 
     this.match = match;
 
-    if((match_length = match.length) != targets.length)
+    if((matchLength = match.length) != targets.length)
       throw new ClassGenException("Match and target array have not the same length");
 
-    indices = new int[match_length];
+    indices = new int[matchLength];
   }
   
   protected int getTargetOffset(InstructionHandle target) {
@@ -133,7 +133,7 @@ public abstract class InstructionSelect extends InstructionBranch {
     /* Alignment on 4-byte-boundary, + 1, because of tag byte.
      */
     padding = (4 - ((positionOfThisInstruction + 1) % 4)) % 4;
-    length  = (short)(fixed_length + padding); // Update length
+    length  = (short)(fixedLength + padding); // Update length
 
     return length - old_length;
   }
@@ -186,7 +186,7 @@ public abstract class InstructionSelect extends InstructionBranch {
     StringBuffer buf = new StringBuffer(super.toString(verbose));
 
     if(verbose) {
-      for(int i=0; i < match_length; i++) {
+      for(int i=0; i < matchLength; i++) {
 	String s = "null";
 	
 	if(targets[i] != null)

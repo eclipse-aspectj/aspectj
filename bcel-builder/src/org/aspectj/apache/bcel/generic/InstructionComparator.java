@@ -66,7 +66,7 @@ import org.aspectj.apache.bcel.Constants;
  * instructions must have the same target.
  *
  * @see Instruction
- * @version $Id: InstructionComparator.java,v 1.3.8.2 2008/04/25 17:55:33 aclement Exp $
+ * @version $Id: InstructionComparator.java,v 1.3.8.3 2008/05/08 19:26:44 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface InstructionComparator {

@@ -60,7 +60,7 @@ import java.io.*;
 /** 
  * This class represents a constant pool reference to a method.
  *
- * @version $Id: ConstantMethodref.java,v 1.2.10.1 2008/04/25 17:55:37 aclement Exp $
+ * @version $Id: ConstantMethodref.java,v 1.2.10.2 2008/05/08 19:26:47 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class ConstantMethodref extends ConstantCP {
@@ -98,7 +98,7 @@ public final class ConstantMethodref extends ConstantCP {
    *
    * @param v Visitor object
    */
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitConstantMethodref(this);
   }    
 }

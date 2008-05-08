@@ -55,19 +55,18 @@ package org.aspectj.apache.bcel.generic;
  */
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
+
 /** 
  * Instances of this class may be used, e.g., to generate typed
  * versions of instructions. Its main purpose is to be used as the
  * byte code generating backend of a compiler. You can subclass it to
  * add your own create methods.
  *
- * @version $Id: InstructionFactory.java,v 1.3.10.2 2008/04/25 17:55:35 aclement Exp $
+ * @version $Id: InstructionFactory.java,v 1.3.10.3 2008/05/08 19:26:45 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Constants
  */
-public class InstructionFactory
-  implements InstructionConstants, java.io.Serializable
-{
+public class InstructionFactory implements InstructionConstants, java.io.Serializable {
   protected ClassGen        cg;
   protected ConstantPool cp;
 
@@ -76,20 +75,15 @@ public class InstructionFactory
     this.cp = cp;
   }
 
-  /** Initialize with ClassGen object
-   */
   public InstructionFactory(ClassGen cg) {
     this(cg, cg.getConstantPool());
   }
 
-  /** Initialize just with ConstantPool object
-   */
   public InstructionFactory(ConstantPool cp) {
     this(null, cp);
   }
 
   /** Create an invoke instruction.
-   *
    * @param class_name name of the called class
    * @param name name of the called method
    * @param ret_type return type of method
@@ -100,14 +94,11 @@ public class InstructionFactory
    */
   public InvokeInstruction createInvoke(String class_name, String name, Type ret_type,
 					Type[] arg_types, short kind) {
-    int    index;
-    int    nargs      = 0;
+    
     String signature  = Type.getMethodSignature(ret_type, arg_types);
-
-    for(int i=0; i < arg_types.length; i++) // Count size of arguments
-      nargs += arg_types[i].getSize();
-
-    if(kind == Constants.INVOKEINTERFACE)
+    
+    int    index;
+    if (kind == Constants.INVOKEINTERFACE)
       index = cp.addInterfaceMethodref(class_name, name, signature);
     else
       index = cp.addMethodref(class_name, name, signature);
@@ -116,57 +107,59 @@ public class InstructionFactory
     case Constants.INVOKESPECIAL:   return new InvokeInstruction(Constants.INVOKESPECIAL,index);
     case Constants.INVOKEVIRTUAL:   return new InvokeInstruction(Constants.INVOKEVIRTUAL,index);
     case Constants.INVOKESTATIC:    return new InvokeInstruction(Constants.INVOKESTATIC,index);
-    case Constants.INVOKEINTERFACE: return new INVOKEINTERFACE(index, nargs + 1,0);
+    case Constants.INVOKEINTERFACE: 
+    	int    nargs      = 0;
+        for(int i=0; i < arg_types.length; i++) // Count size of arguments
+          nargs += arg_types[i].getSize();
+    	return new INVOKEINTERFACE(index, nargs + 1,0);
     default:
       throw new RuntimeException("Oops: Unknown invoke kind:" + kind);
+    }
+  }
+
+  public InvokeInstruction createInvoke(String class_name, String name, String signature, short kind) {
+    int    index;
+    if(kind == Constants.INVOKEINTERFACE) {
+      index = cp.addInterfaceMethodref(class_name, name, signature);
+    } else {
+      index = cp.addMethodref(class_name, name, signature);
+    }
+    
+    switch(kind) {
+    	case Constants.INVOKESPECIAL:   return new InvokeInstruction(Constants.INVOKESPECIAL,index);
+	    case Constants.INVOKEVIRTUAL:   return new InvokeInstruction(Constants.INVOKEVIRTUAL,index);
+	    case Constants.INVOKESTATIC:    return new InvokeInstruction(Constants.INVOKESTATIC,index);
+	    case Constants.INVOKEINTERFACE:
+	        Type[] argumentTypes = Type.getArgumentTypes(signature);
+	        int nargs      = 0;
+	        for(int i=0; i < argumentTypes.length; i++) {// Count size of arguments
+	          nargs += argumentTypes[i].getSize();
+	        }
+	    	return new INVOKEINTERFACE(index, nargs + 1,0);
+	    default:
+	      throw new RuntimeException("Oops: Unknown invoke kind:" + kind);
     }
   }
   
   public static Instruction createALOAD(int n) {
 	  if (n<4) {
-		  switch (n) {
-			  case 0:  new InstructionLV(Constants.ALOAD_0); 
-			  case 1:  new InstructionLV(Constants.ALOAD_0); 
-			  case 2:  new InstructionLV(Constants.ALOAD_0); 
-			  case 3:  new InstructionLV(Constants.ALOAD_0); 
-		  }
+		  return new InstructionLV((short)(Constants.ALOAD_0+n));
 	  }
 	  return new InstructionLV(Constants.ALOAD,n);
   }
   
   public static Instruction createASTORE(int n) {
 	  if (n<4) {
-		  switch (n) {
-			  case 0:  new InstructionLV(Constants.ASTORE_0); 
-			  case 1:  new InstructionLV(Constants.ASTORE_0); 
-			  case 2:  new InstructionLV(Constants.ASTORE_0); 
-			  case 3:  new InstructionLV(Constants.ASTORE_0); 
-		  }
+		  return new InstructionLV((short)(Constants.ASTORE_0+n));
 	  }
 	  return new InstructionLV(Constants.ASTORE,n);
   }
 
-  /** Create a call to the most popular System.out.println() method.
-   *
-   * @param s the string to print
-   */
-  public InstructionList createPrintln(String s) {
-    InstructionList il      = new InstructionList();
-    int             out     = cp.addFieldref("java.lang.System", "out",
-					     "Ljava/io/PrintStream;");
-    int             println = cp.addMethodref("java.io.PrintStream", "println",
-					      "(Ljava/lang/String;)V");
-
-    il.append(new FieldInstruction(Constants.GETSTATIC,out));
-    il.append(InstructionFactory.PUSH(cp, s));
-    il.append(new InvokeInstruction(Constants.INVOKEVIRTUAL,println));
-
-    return il;
-  }
 
   /** Uses PUSH to push a constant value onto the stack.
    * @param value must be of type Number, Boolean, Character or String
    */
+  // OPTIMIZE callers should use the PUSH methods where possible if they know the types
   public Instruction createConstant(Object value) {
     Instruction instruction;
 
@@ -207,58 +200,6 @@ public class InstructionFactory
     return createInvoke(m.class_name, m.name, m.result_type, m.arg_types, kind);
   }
 
-  private static MethodObject[] append_mos = {
-    new MethodObject("java.lang.StringBuffer", "append", Type.STRINGBUFFER,
-		     new Type[] { Type.STRING }, Constants.ACC_PUBLIC),
-    new MethodObject("java.lang.StringBuffer", "append", Type.STRINGBUFFER,
-		     new Type[] { Type.OBJECT }, Constants.ACC_PUBLIC),
-    null, null, // indices 2, 3
-    new MethodObject("java.lang.StringBuffer", "append", Type.STRINGBUFFER,
-		     new Type[] { Type.BOOLEAN }, Constants.ACC_PUBLIC),
-    new MethodObject("java.lang.StringBuffer", "append", Type.STRINGBUFFER,
-		     new Type[] { Type.CHAR }, Constants.ACC_PUBLIC),
-    new MethodObject("java.lang.StringBuffer", "append", Type.STRINGBUFFER,
-		     new Type[] { Type.FLOAT }, Constants.ACC_PUBLIC),
-    new MethodObject("java.lang.StringBuffer", "append", Type.STRINGBUFFER,
-		     new Type[] { Type.DOUBLE }, Constants.ACC_PUBLIC),
-    new MethodObject("java.lang.StringBuffer", "append", Type.STRINGBUFFER,
-		     new Type[] { Type.INT }, Constants.ACC_PUBLIC),
-    new MethodObject("java.lang.StringBuffer", "append", Type.STRINGBUFFER, // No append(byte)
-		     new Type[] { Type.INT }, Constants.ACC_PUBLIC),
-    new MethodObject("java.lang.StringBuffer", "append", Type.STRINGBUFFER, // No append(short)
-		     new Type[] { Type.INT }, Constants.ACC_PUBLIC),
-    new MethodObject("java.lang.StringBuffer", "append", Type.STRINGBUFFER,
-		     new Type[] { Type.LONG }, Constants.ACC_PUBLIC)    
-  };
-
-  private static final boolean isString(Type type) {
-    return ((type instanceof ObjectType) && 
-            ((ObjectType)type).getClassName().equals("java.lang.String"));
-  }
-
-  public Instruction createAppend(Type type) {
-    byte t = type.getType();
-
-    if(isString(type))
-      return createInvoke(append_mos[0], Constants.INVOKEVIRTUAL);
-
-    switch(t) {
-    case Constants.T_BOOLEAN:
-    case Constants.T_CHAR: 
-    case Constants.T_FLOAT:
-    case Constants.T_DOUBLE:
-    case Constants.T_BYTE:
-    case Constants.T_SHORT:
-    case Constants.T_INT:
-    case Constants.T_LONG
-      :   return createInvoke(append_mos[t], Constants.INVOKEVIRTUAL);
-    case Constants.T_ARRAY:
-    case Constants.T_OBJECT:
-      return createInvoke(append_mos[1], Constants.INVOKEVIRTUAL);
-    default:
-      throw new RuntimeException("Oops: No append for this type? " + type);
-    }
-  }
 
   /** Create a field instruction.
    *
@@ -312,78 +253,6 @@ public class InstructionFactory
     }
   }
   
-  private static final Instruction createBinaryIntOp(char first, String op) {
-    switch(first) {
-    case '-' : return InstructionConstants.ISUB;
-    case '+' : return InstructionConstants.IADD;
-    case '%' : return InstructionConstants.IREM;
-    case '*' : return InstructionConstants.IMUL;
-    case '/' : return InstructionConstants.IDIV;
-    case '&' : return InstructionConstants.IAND;
-    case '|' : return InstructionConstants.IOR;
-    case '^' : return InstructionConstants.IXOR;
-    case '<' : return InstructionConstants.ISHL;
-    case '>' : return op.equals(">>>")? InstructionConstants.IUSHR : InstructionConstants.ISHR;
-    default: throw new RuntimeException("Invalid operand " + op);
-    }
-  }
-
-  private static final Instruction createBinaryLongOp(char first, String op) {
-    switch(first) {
-    case '-' : return InstructionConstants.LSUB;
-    case '+' : return InstructionConstants.LADD;
-    case '%' : return InstructionConstants.LREM;
-    case '*' : return InstructionConstants.LMUL;
-    case '/' : return InstructionConstants.LDIV;
-    case '&' : return InstructionConstants.LAND;
-    case '|' : return InstructionConstants.LOR;
-    case '^' : return InstructionConstants.LXOR;
-    case '<' : return InstructionConstants.LSHL;
-    case '>' : return op.equals(">>>")? InstructionConstants.LUSHR : InstructionConstants.LSHR;
-    default: throw new RuntimeException("Invalid operand " + op);
-    }
-  }
-
-  private static final Instruction createBinaryFloatOp(char op) {
-    switch(op) {
-    case '-' : return InstructionConstants.FSUB;
-    case '+' : return InstructionConstants.FADD;
-    case '*' : return InstructionConstants.FMUL;
-    case '/' : return FDIV;
-    default: throw new RuntimeException("Invalid operand " + op);
-    }
-  }
-
-  private static final Instruction createBinaryDoubleOp(char op) {
-    switch(op) {
-    case '-' : return DSUB;
-    case '+' : return DADD;
-    case '*' : return DMUL;
-    case '/' : return DDIV;
-    default: throw new RuntimeException("Invalid operand " + op);
-    }
-  }
-
-  /**
-   * Create binary operation for simple basic types, such as int and float.
-   *
-   * @param op operation, such as "+", "*", "<<", etc.
-   */
-  public static Instruction createBinaryOperation(String op, Type type) {
-    char first = op.toCharArray()[0];
-
-    switch(type.getType()) {
-    case Constants.T_BYTE:
-    case Constants.T_SHORT:
-    case Constants.T_INT:
-    case Constants.T_CHAR:    return createBinaryIntOp(first, op);
-    case Constants.T_LONG:    return createBinaryLongOp(first, op);
-    case Constants.T_FLOAT:   return createBinaryFloatOp(first);
-    case Constants.T_DOUBLE:  return createBinaryDoubleOp(first);
-    default:        throw new RuntimeException("Invalid type " + type);
-    }
-  }
-
   /**
    * @param size size of operand, either 1 (int, e.g.) or 2 (double)
    */
@@ -674,9 +543,9 @@ public class InstructionFactory
    */
   public static Instruction PUSH(ConstantPool cp, int value) {
 	Instruction instruction = null;
-    if((value >= -1) && (value <= 5)) // Use ICONST_n
-      instruction = INSTRUCTIONS[Constants.ICONST_0 + value];
-    else if((value >= -128) && (value <= 127)) // Use BIPUSH
+    if ((value >= -1) && (value <= 5)) {
+    	return INSTRUCTIONS[Constants.ICONST_0 + value];
+    } else if ((value >= -128) && (value <= 127)) // Use BIPUSH
       instruction = new InstructionByte(Constants.BIPUSH,(byte)value);
     else if((value >= -32768) && (value <= 32767)) // Use SIPUSH
       instruction = new InstructionShort(Constants.SIPUSH,(short)value);
@@ -703,7 +572,7 @@ public class InstructionFactory
   public static Instruction PUSH(ConstantPool cp, float value) {
 	Instruction instruction = null;
     if(value == 0.0)
-      instruction = FCONST_0;
+    	instruction = FCONST_0;
     else if(value == 1.0)
       instruction = FCONST_1;
     else if(value == 2.0)

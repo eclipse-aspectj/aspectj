@@ -70,12 +70,11 @@ import  java.util.zip.*;
  * JVM specification 1.0</a>. See this paper for
  * further details about the structure of a bytecode file.
  *
- * @version $Id: ClassParser.java,v 1.4.8.2 2008/04/25 17:55:37 aclement Exp $
+ * @version $Id: ClassParser.java,v 1.4.8.3 2008/05/08 19:26:46 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A> 
  */
 public final class ClassParser {
   private DataInputStream file;
-  private ZipFile         zip;
   private String          filename;
   private int             classnameIndex;
   private int             superclassnameIndex;
@@ -86,34 +85,25 @@ public final class ClassParser {
   private Field[]         fields;
   private Method[]        methods;
   private Attribute[]     attributes;
-  private boolean         isZip;
 
-  private static final int BUFSIZE = 16384;
+  private static final int BUFSIZE = 8192;
 
   /** Parse class from the given stream */
   public ClassParser(InputStream file, String filename) {
     this.filename = filename;
-    String clazz = file.getClass().getName(); // Not a very clean solution ...
-    isZip = clazz.startsWith("java.util.zip.") || clazz.startsWith("java.util.jar.");
-
     if (file instanceof DataInputStream) this.file = (DataInputStream)file;
     else                                 this.file = new DataInputStream(new BufferedInputStream(file,BUFSIZE));
   }
 
-  /** Parse class from given .class file */
-  public ClassParser(String file_name) throws IOException {    
-    isZip = false;
-    this.filename = file_name;
-    file = new DataInputStream(new BufferedInputStream(new FileInputStream(file_name),BUFSIZE));
+  public ClassParser(ByteArrayInputStream baos, String filename) {
+	    this.filename = filename;
+	    this.file = new DataInputStream(baos);
   }
 
-  /** Parse class from given .class file in a ZIP-archive */
-  public ClassParser(String zip_file, String file_name) throws IOException {    
-    isZip = true;
-    zip = new ZipFile(zip_file);
-    ZipEntry entry = zip.getEntry(file_name);
+  /** Parse class from given .class file */
+  public ClassParser(String file_name) throws IOException {    
     this.filename = file_name;
-    file = new DataInputStream(new BufferedInputStream(zip.getInputStream(entry),BUFSIZE));
+    file = new DataInputStream(new BufferedInputStream(new FileInputStream(file_name),BUFSIZE));
   }
 
   /**
@@ -153,16 +143,14 @@ public final class ClassParser {
 
     // Read everything of interest, so close the file
     file.close();
-    if(zip != null) zip.close();
 
     // Return the information we have gathered in a new object
     JavaClass jc= new JavaClass(classnameIndex, superclassnameIndex, 
 			 filename, major, minor, accessflags,
 			 cpool, interfaceIndices, fields,
-			 methods, attributes, isZip? JavaClass.ZIP : JavaClass.FILE);
+			 methods, attributes);
     return jc;
   }
-
   
   /** Read information about the attributes of the class */
   private final void readAttributes() {
