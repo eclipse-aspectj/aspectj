@@ -23,6 +23,7 @@ import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.ValidateAtAspectJAnnotationsVisitor;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.core.builder.AjState;
+import org.aspectj.asm.internal.CharOperation;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IProgressListener;
@@ -33,10 +34,9 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.Compiler;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
-import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
-import org.aspectj.util.CharOperation;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.patterns.CflowPointcut;
@@ -190,8 +190,8 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		this.inJava5Mode = false;
 		this.noAtAspectJAnnotationProcessing = noAtAspectJProcessing;
 		this.incrementalCompilationState = incrementalCompilationState;
-		
-		if (compiler.options.complianceLevel == CompilerOptions.JDK1_5) inJava5Mode = true;
+
+		if (compiler.options.complianceLevel >= ClassFileConstants.JDK1_5) inJava5Mode = true;
 		IMessageHandler msgHandler = world.getMessageHandler();
 		// Do we need to reset the message handler or create a new one? (This saves a ton of memory lost on incremental compiles...)
 		if (msgHandler instanceof WeaverMessageHandler) {
@@ -443,7 +443,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	
 	/** Return true if we've decided to drop back to a full build (too much has changed) */
 	private boolean weaveQueuedEntries() throws IOException {
-		if (debugPipeline)System.err.println(">.weaveQueuedEntries()");
+		if (debugPipeline) System.err.println(">.weaveQueuedEntries()");
 		for (Iterator iter = resultsPendingWeave.iterator(); iter.hasNext();) {
 			InterimCompilationResult iresult = (InterimCompilationResult) iter.next();
 			for (int i = 0; i < iresult.unwovenClassFiles().length; i++) {
@@ -504,7 +504,6 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		try {
 		  weaver.weave(new WeaverAdapter(this,weaverMessageHandler,progressListener));
 		} finally {
-			CflowPointcut.clearCaches();
 			weaver.tidyUp();
 			IMessageHandler imh = weaver.getWorld().getMessageHandler();
 			if (imh instanceof WeaverMessageHandler)
@@ -516,7 +515,6 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	private void postWeave() {
 		if (debugPipeline)System.err.println("> postWeave()");
 		IMessageHandler imh = weaver.getWorld().getMessageHandler();
-		CflowPointcut.clearCaches();
 		if (imh instanceof WeaverMessageHandler)
 			  ((WeaverMessageHandler)imh).setCurrentResult(null);
 		if (!droppingBackToFullBuild) weaver.allWeavingComplete();

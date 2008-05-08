@@ -11,6 +11,7 @@
  * ******************************************************************/
 package org.aspectj.ajdt.internal.compiler.lookup;
 
+import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
@@ -19,7 +20,9 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.BooleanConstant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.IntConstant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
@@ -31,6 +34,7 @@ import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.ArrayAnnotationValue;
 import org.aspectj.weaver.EnumAnnotationValue;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.SimpleAnnotationValue;
 import org.aspectj.weaver.World;
 
 // not yet used...
@@ -119,6 +123,10 @@ public class EclipseAnnotationConvertor {
 				}
 			} else {
 				if (constant != null && constant != Constant.NotAConstant) {
+					if (constant instanceof IntConstant || constant instanceof BooleanConstant) {
+						AnnotationValue av = generateElementValueForConstantExpression(defaultValue, defaultValueBinding);
+						return av;
+					}
 					throw new MissingImplementationException(
 						    "Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value ["+defaultValue+"]");
 //	   				generateElementValue(attributeOffset, defaultValue, constant, memberValuePairReturnType.leafComponentType());
@@ -128,6 +136,20 @@ public class EclipseAnnotationConvertor {
 				}
 			}
 		}
+	}
+	
+	private static AnnotationValue generateElementValueForConstantExpression(Expression defaultValue, TypeBinding defaultValueBinding) {
+		if (defaultValueBinding != null) {
+			Constant c = defaultValue.constant;
+			if (c instanceof IntConstant) {
+				IntConstant iConstant = (IntConstant)c;
+				return new SimpleAnnotationValue(ElementValueGen.PRIMITIVE_INT,new Integer(iConstant.intValue()));
+			} else if (c instanceof BooleanConstant) {
+				BooleanConstant iConstant = (BooleanConstant)c;
+				return new SimpleAnnotationValue(ElementValueGen.PRIMITIVE_BOOLEAN,new Boolean(iConstant.booleanValue()));
+			}
+		}
+		return null;
 	}
 	
 	private static AnnotationValue generateElementValueForNonConstantExpression(Expression defaultValue, TypeBinding defaultValueBinding) {

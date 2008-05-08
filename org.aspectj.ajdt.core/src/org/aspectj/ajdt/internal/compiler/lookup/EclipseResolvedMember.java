@@ -13,14 +13,18 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.weaver.AnnotationX;
+import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
@@ -31,7 +35,7 @@ import org.aspectj.weaver.World;
  * In some cases this means the weaver will want to ask questions of eclipse types and this
  * subtype of ResolvedMemberImpl is here to answer some of those questions - it is backed by 
  * the real eclipse MethodBinding object and can translate from Eclipse -> Weaver information.
- */
+ */ 
 public class EclipseResolvedMember extends ResolvedMemberImpl {
 	
 	private static String[] NO_ARGS = new String[]{};
@@ -40,14 +44,16 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 	private String[] argumentNames;
 	private World w;
 	private ResolvedType[] cachedAnnotationTypes;
+	private EclipseFactory eclipseFactory;
 	
-	public EclipseResolvedMember(MethodBinding binding, Kind memberKind, ResolvedType realDeclaringType, int modifiers, UnresolvedType type, String string, UnresolvedType[] types, UnresolvedType[] types2) {
+	public EclipseResolvedMember(MethodBinding binding, MemberKind memberKind, ResolvedType realDeclaringType, int modifiers, UnresolvedType type, String string, UnresolvedType[] types, UnresolvedType[] types2, EclipseFactory eclipseFactory) {
 		super(memberKind,realDeclaringType,modifiers,type,string,types,types2);
 		this.realBinding = binding;
+		this.eclipseFactory = eclipseFactory;
 		this.w = realDeclaringType.getWorld();
 	}
 
-	public EclipseResolvedMember(FieldBinding binding, Kind field, ResolvedType realDeclaringType, int modifiers, ResolvedType type, String string, UnresolvedType[] none) {
+	public EclipseResolvedMember(FieldBinding binding, MemberKind field, ResolvedType realDeclaringType, int modifiers, ResolvedType type, String string, UnresolvedType[] none) {
 		super(field,realDeclaringType,modifiers,type,string,none);
 		this.realBinding = binding;
 		this.w = realDeclaringType.getWorld();
@@ -71,6 +77,47 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 		// TODO errr missing in action - we need to implement this! Probably using something like EclipseAnnotationConvertor - itself not finished ;)
 		throw new RuntimeException("not yet implemented - please raise an AJ bug");
 //		return super.getAnnotations();
+	}
+	
+
+	public AnnotationX getAnnotationOfType(UnresolvedType ofType) {
+		long abits = realBinding.getAnnotationTagBits(); // ensure resolved
+		Annotation[] annos = getEclipseAnnotations();
+		if (annos==null) return null;
+		for (int i = 0; i < annos.length; i++) {
+			Annotation anno = annos[i];
+			UnresolvedType ut = UnresolvedType.forSignature(new String(anno.resolvedType.signature()));
+			if (w.resolve(ut).equals(ofType)) {
+				// Found the one
+				return EclipseAnnotationConvertor.convertEclipseAnnotation(anno,w,eclipseFactory);
+			}
+		}
+		return null;
+	}
+	
+	public String getAnnotationDefaultValue() {
+		if (realBinding instanceof MethodBinding) {
+			AbstractMethodDeclaration methodDecl = getTypeDeclaration().declarationOf((MethodBinding)realBinding);
+			if (methodDecl instanceof AnnotationMethodDeclaration) {
+				AnnotationMethodDeclaration annoMethodDecl = (AnnotationMethodDeclaration)methodDecl;
+				Expression e = annoMethodDecl.defaultValue;
+				if (e.resolvedType==null)
+				e.resolve(methodDecl.scope);
+				// TODO does not cope with many cases...
+				if (e instanceof QualifiedNameReference) {
+					
+					QualifiedNameReference qnr = (QualifiedNameReference)e;
+					if (qnr.binding instanceof FieldBinding) {
+						FieldBinding fb = (FieldBinding)qnr.binding;
+						StringBuffer sb = new StringBuffer();
+						sb.append(fb.declaringClass.signature());
+						sb.append(fb.name);
+						return sb.toString();
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	public ResolvedType[] getAnnotationTypes() {

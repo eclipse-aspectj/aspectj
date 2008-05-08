@@ -19,14 +19,13 @@ import java.io.PrintWriter;
 
 import junit.framework.TestCase;
 
+import org.aspectj.ajdt.StreamPrintWriter;
 import org.aspectj.ajdt.ajc.*;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageWriter;
 import org.aspectj.tools.ajc.Ajc;
-import org.aspectj.util.StreamPrintWriter;
-//import org.eclipse.core.runtime.CoreException;
 
 public class AjBuildManagerTest extends TestCase {
 

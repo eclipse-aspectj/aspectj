@@ -13,6 +13,8 @@ package org.aspectj.ajdt.internal.compiler;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.aspectj.asm.internal.CharOperation;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IProgressListener;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
@@ -139,7 +141,7 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 		
 		// progress reporting logic
 		fromPercent = 50.0; // Assume weaving takes 50% of the progress bar...
-	    recordProgress("processing reweavable state");
+	    // recordProgress("processing reweavable state");
 	}
 	
 	public void addingTypeMungers() {
@@ -148,7 +150,7 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 		// At this point we have completed one iteration through all the classes/aspects 
 		// we'll be dealing with, so let us remember this max value for localIteratorCounter
 		// (for accurate progress reporting)
-		recordProgress("adding type mungers");
+		// recordProgress("adding type mungers");
 		progressMaxTypes = localIteratorCounter;
 	}
 	
@@ -170,6 +172,7 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 		if ((lastReturnedResult != null) && (!lastReturnedResult.result().hasBeenAccepted)) {
 			finishedWith(lastReturnedResult);
 		}
+		lastReturnedResult=null;
 	}
 	
 
@@ -178,27 +181,29 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 	 * @see org.aspectj.weaver.IWeaveRequestor#acceptResult(org.aspectj.weaver.bcel.UnwovenClassFile)
 	 */
 	public void acceptResult(UnwovenClassFile result) {
-		char[] key = result.getClassName().replace('.','/').toCharArray();
-		removeFromMap(lastReturnedResult.result().compiledTypes,key);
-		String className = result.getClassName().replace('.', '/');
-		AjClassFile ajcf = new AjClassFile(className.toCharArray(),
-										   result.getBytes());
+		char[] key = result.getClassNameAsChars();
+		removeFromMap(lastReturnedResult.result().compiledTypes, key);
+		AjClassFile ajcf = new AjClassFile(key, result.getBytes());
 		lastReturnedResult.result().record(ajcf.fileName(),ajcf);
-		//System.err.println(progressPhasePrefix+result.getClassName()+" (from "+nowProcessing.fileName()+")");
-		weaverMessageHandler.handleMessage(MessageUtil.info(progressPhasePrefix+result.getClassName()+" (from "+nowProcessing.fileName()+")"));
-		if (progressListener != null) {
-			progressCompletionCount++;
-			
-			// Smoothly take progress from 'fromPercent' to 'toPercent'
-			recordProgress(
-			  fromPercent
-			  +((progressCompletionCount/(double)progressMaxTypes)*(toPercent-fromPercent)),
-			  progressPhasePrefix+result.getClassName()+" (from "+nowProcessing.fileName()+")");
-
-			if (progressListener.isCancelledRequested()) {
-		      throw new AbortCompilation(true,new OperationCanceledException("Weaving cancelled as requested"));
+        if (!weaverMessageHandler.isIgnoring(IMessage.INFO) || progressListener!=null) {
+        	StringBuffer msg = new StringBuffer();
+        	msg.append(progressPhasePrefix).append(result.getClassName()).append(" (from ").append(nowProcessing.fileName()).append(")");
+	        weaverMessageHandler.handleMessage(MessageUtil.info(msg.toString()));
+			if (progressListener != null) {
+				progressCompletionCount++;
+				
+				// Smoothly take progress from 'fromPercent' to 'toPercent'
+				recordProgress(
+				  fromPercent
+				  +((progressCompletionCount/(double)progressMaxTypes)*(toPercent-fromPercent)),
+				  msg.toString());
+	            // progressPhasePrefix+result.getClassName()+" (from "+nowProcessing.fileName()+")");
+	
+				if (progressListener.isCancelledRequested()) {
+			      throw new AbortCompilation(true,new OperationCanceledException("Weaving cancelled as requested"));
+				}
 			}
-		}
+        }
 	}
 
 	// helpers...
@@ -208,21 +213,28 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 		compilerAdapter.acceptResult(result.result());
 	}
 	
-	private void removeFromMap(Map aMap, char[] key) {
+	private boolean removeFromMap(Map aMap, char[] key) {
 		// jdt uses char[] as a key in the hashtable, which is not very useful as equality is based on being
 		// the same array, not having the same content.
-		String skey = new String(key);
+//		String skey = new String(key);
+		// OPTIMIZE what is this code for?
+		if (aMap.remove(key)!=null) {
+			return true;
+		}
 		char[] victim = null;
 		for (Iterator iter = aMap.keySet().iterator(); iter.hasNext();) {
 			char[] thisKey = (char[]) iter.next();
-			if (skey.equals(new String(thisKey))) {
+			if (CharOperation.equals(thisKey,key)) {
+//			if (skey.equals(new String(thisKey))) {
 				victim = thisKey;
 				break;
 			}
 		}
 		if (victim != null) {
 			aMap.remove(victim);
+			return true;
 		}
+		return false;
 	}
 	
 	private void recordProgress(String message) {

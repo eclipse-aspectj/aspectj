@@ -14,6 +14,7 @@
 package org.aspectj.ajdt.ajc;
 
 //import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
+import org.aspectj.ajdt.StreamPrintWriter;
 import org.aspectj.bridge.*;
 import org.aspectj.util.*;
 import org.aspectj.org.eclipse.jdt.core.compiler.InvalidInputException;
@@ -184,13 +185,17 @@ public class AjdtCommandTestCase extends TestCase {
 			text.indexOf("Usage") != -1);			
 	}
 	
-	public void testVersionOutput() throws InvalidInputException {
+	public void  q() throws InvalidInputException {
 		String[] args = new String[] { "-version" };
 		
-		PrintStream saveOut = System.err;
+		PrintStream saveOut = System.out;
+		PrintStream saveErr = System.err;
 		ByteArrayOutputStream byteArrayOut = new ByteArrayOutputStream();
+		ByteArrayOutputStream byteArrayErr = new ByteArrayOutputStream();
 		PrintStream newOut = new PrintStream(byteArrayOut);
-		System.setErr(newOut);
+		PrintStream newErr = new PrintStream(byteArrayErr);
+		System.setOut(newOut);
+		System.setErr(newErr);
 		
 		try {
 			try {
@@ -200,13 +205,14 @@ public class AjdtCommandTestCase extends TestCase {
 					counter);
 			} catch (AbortException  ae) { }
 		} finally {
-			System.setErr(saveOut);
+			System.setOut(saveOut);
+			System.setErr(saveErr);
 		}
 		
 		String text = byteArrayOut.toString();
-
+		String text2 = byteArrayErr.toString();
 		assertTrue(
-			"version output",
+			"version output does not include 'AspectJ Compiler', output was:\n'"+text+"'",
 			text.indexOf("AspectJ Compiler") != -1);		
 	}
 	

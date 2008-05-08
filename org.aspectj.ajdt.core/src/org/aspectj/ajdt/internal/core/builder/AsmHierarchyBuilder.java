@@ -17,24 +17,58 @@ package org.aspectj.ajdt.internal.core.builder;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Stack;
+import java.util.StringTokenizer;
 
-import org.aspectj.ajdt.internal.compiler.ast.*;
+import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.InterTypeDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
-import org.aspectj.asm.*;
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationship;
+import org.aspectj.asm.internal.CharOperation;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.*;
-import org.aspectj.org.eclipse.jdt.internal.compiler.env.IGenericType;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
-import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemHandler;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExtendedStringLiteral;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ImportReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Initializer;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.util.Util;
 import org.aspectj.util.LangUtil;
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.patterns.*;
+import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.patterns.AndPointcut;
+import org.aspectj.weaver.patterns.OrPointcut;
+import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.ReferencePointcut;
 
 /**
  * At each iteration of <CODE>processCompilationUnit</CODE> the declarations for a 
@@ -211,9 +245,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		String name = new String(typeDeclaration.name);
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
 		if (typeDeclaration instanceof AspectDeclaration) kind = IProgramElement.Kind.ASPECT;
-		else if (typeDeclaration.kind() == IGenericType.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
-		else if (typeDeclaration.kind() == IGenericType.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
-		else if (typeDeclaration.kind() == IGenericType.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
+		else if (TypeDeclaration.kind(typeDeclaration.modifiers) == TypeDeclaration.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
+		else if (TypeDeclaration.kind(typeDeclaration.modifiers) == TypeDeclaration.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
+		else if (TypeDeclaration.kind(typeDeclaration.modifiers) == TypeDeclaration.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
 
         //@AJ support
         if (typeDeclaration.annotations != null) {
@@ -252,10 +286,11 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		String name = new String(memberTypeDeclaration.name);
 		
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
+		int typeDeclarationKind = TypeDeclaration.kind(memberTypeDeclaration.modifiers);
 		if (memberTypeDeclaration instanceof AspectDeclaration) kind = IProgramElement.Kind.ASPECT;
-		else if (memberTypeDeclaration.kind() == IGenericType.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
-		else if (memberTypeDeclaration.kind() == IGenericType.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
-		else if (memberTypeDeclaration.kind() == IGenericType.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
+		else if (typeDeclarationKind == TypeDeclaration.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
+		else if (typeDeclarationKind == TypeDeclaration.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
+		else if (typeDeclarationKind == TypeDeclaration.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
 
         //@AJ support
         if (memberTypeDeclaration.annotations != null) {
@@ -305,9 +340,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		}
 
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
-		if (memberTypeDeclaration.kind() == IGenericType.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
-		else if (memberTypeDeclaration.kind() == IGenericType.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
-		else if (memberTypeDeclaration.kind() == IGenericType.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
+		if (TypeDeclaration.kind(memberTypeDeclaration.modifiers) == TypeDeclaration.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
+		else if (TypeDeclaration.kind(memberTypeDeclaration.modifiers) == TypeDeclaration.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
+		else if (TypeDeclaration.kind(memberTypeDeclaration.modifiers) == TypeDeclaration.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
 
         //@AJ support
         if (memberTypeDeclaration.annotations != null) {
@@ -633,8 +668,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	protected String generateJavadocComment(ASTNode astNode) {
 		if (buildConfig != null && !buildConfig.isGenerateJavadocsInModelMode()) return null;
 		
-		StringBuffer sb = new StringBuffer(); // !!! specify length?
-		boolean completed = false;
+
+        // StringBuffer sb = new StringBuffer(); // !!! specify length?
+        // boolean completed = false;
 		int startIndex = -1;
 		if (astNode instanceof MethodDeclaration) {
 			startIndex = ((MethodDeclaration)astNode).declarationSourceStart;
@@ -646,20 +682,29 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		
 		if (startIndex == -1) {
 			return null;
-		} else if (currCompilationResult.compilationUnit.getContents()[startIndex] == '/'  // look for /**
-			&& currCompilationResult.compilationUnit.getContents()[startIndex+1] == '*'
-			&& currCompilationResult.compilationUnit.getContents()[startIndex+2] == '*') {
-			
-			for (int i = startIndex; i < astNode.sourceStart && !completed; i++) {
-				char curr = currCompilationResult.compilationUnit.getContents()[i];
-				if (curr == '/' && sb.length() > 2 && sb.charAt(sb.length()-1) == '*') completed = true; // found */
-				sb.append(currCompilationResult.compilationUnit.getContents()[i]);
-			} 
-			return sb.toString();
-		} else {
-			return null;
+		} else if (currCompilationResult.compilationUnit.getContents()[startIndex] == '/') {
+            char[] comment = CharOperation.subarray(currCompilationResult.compilationUnit.getContents(), startIndex, astNode.sourceStart);
+            while (comment.length > 2) {
+                int star = CharOperation.indexOf('*', comment);
+                if (star == -1)
+                    return null;
+                // looking for '/**' and not '//' or '//*'
+                if (star != 0 && (comment[star - 1] == '/') && (comment[star + 1] == '*') && (star - 2 < 0 || comment[star - 2] != '/')) {
+                    boolean completed = false;
+                    StringBuffer sb = new StringBuffer();
+                    for (int i = 0; i < comment.length && !completed; i++) {
+                        char curr = comment[i];
+                        if (curr == '/' && sb.length() > 2 && sb.charAt(sb.length() - 1) == '*') {
+                            completed = true; // found */
+                        }
+                        sb.append(comment[i]);
+                    }
+                    return sb.toString();
+                }
+                comment = CharOperation.subarray(comment, star + 1, comment.length);
+            }
 		}
-		
+		return null;
 	}
 	
 	/**
@@ -728,8 +773,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 //	}
 
 	public boolean visit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {
-		if (constructorDeclaration.isDefaultConstructor) {
-			stack.push(null); // a little wierd but does the job
+		if ((constructorDeclaration.bits & ASTNode.IsDefaultConstructor)!=0) {
+			stack.push(null); // a little weird but does the job
 			return true;	
 		}
 		StringBuffer argumentsSignature = new StringBuffer();
@@ -865,9 +910,10 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 //		if (  n instanceof AbstractVariableDeclaration ) return getStartLine( (AbstractVariableDeclaration)n);
 //		if (  n instanceof AbstractMethodDeclaration ) return getStartLine( (AbstractMethodDeclaration)n);
 //		if (  n instanceof TypeDeclaration ) return getStartLine( (TypeDeclaration)n);
-		return ProblemHandler.searchLineNumber(lineseps,
+		return Util.getLineNumber(n.sourceStart,lineseps,0,lineseps.length-1);
+//		return ProblemHandler.searchLineNumber(lineseps,
 //			currCompilationResult.lineSeparatorPositions,
-			n.sourceStart);		
+//			n.sourceStart);		
 	}
 	
 	// AMC - overloaded set of methods to get start and end lines for
@@ -877,9 +923,10 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		if (  n instanceof AbstractVariableDeclaration ) return getEndLine( (AbstractVariableDeclaration)n);
 		if (  n instanceof AbstractMethodDeclaration ) return getEndLine( (AbstractMethodDeclaration)n);
 		if (  n instanceof TypeDeclaration ) return getEndLine( (TypeDeclaration)n);	
-		return ProblemHandler.searchLineNumber(lineseps,
+		return Util.getLineNumber(n.sourceEnd,lineseps,0,lineseps.length-1);
+//		return ProblemHandler.searchLineNumber(lineseps,
 //			currCompilationResult.lineSeparatorPositions,
-			n.sourceEnd);
+//			n.sourceEnd);
 	}
 	
 	// AMC - overloaded set of methods to get start and end lines for
@@ -895,9 +942,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// various ASTNode types. They have no common ancestor in the
 	// hierarchy!!
 	private int getEndLine( AbstractVariableDeclaration avd ){
-		return ProblemHandler.searchLineNumber(lineseps,
-//			currCompilationResult.lineSeparatorPositions,
-			avd.declarationSourceEnd);		
+		return Util.getLineNumber(avd.declarationSourceEnd,lineseps,0,lineseps.length-1);
 	}
 	
 	// AMC - overloaded set of methods to get start and end lines for
@@ -913,9 +958,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// various ASTNode types. They have no common ancestor in the
 	// hierarchy!!
 	private int getEndLine( AbstractMethodDeclaration amd) {
-		return ProblemHandler.searchLineNumber(lineseps,
-//			currCompilationResult.lineSeparatorPositions,
-			amd.declarationSourceEnd);
+		return Util.getLineNumber(amd.declarationSourceEnd,lineseps,0,lineseps.length-1);
 	}
 	
 	// AMC - overloaded set of methods to get start and end lines for
@@ -931,9 +974,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// various ASTNode types. They have no common ancestor in the
 	// hierarchy!!
 	private int getEndLine( TypeDeclaration td){
-		return ProblemHandler.searchLineNumber(lineseps,
-//			currCompilationResult.lineSeparatorPositions,
-			td.declarationSourceEnd);
+		return Util.getLineNumber(td.declarationSourceEnd,lineseps,0,lineseps.length-1);
 	}
 
 

@@ -230,6 +230,7 @@ public class Main {
         // Urk - default no check for AJDT, enabled here for Ant, command-line
         AjBuildManager.enableRuntimeVersionCheck(this);
         final boolean verbose = flagInArgs("-verbose", args);
+        final boolean timers = flagInArgs("-timers", args);
         if (null == this.clientHolder) {
         	this.clientHolder = checkForCustomMessageHolder(args);
         }
@@ -252,6 +253,9 @@ public class Main {
 //        	try {Thread.sleep(5000); }catch(Exception e) {}
         	run(args, holder);
         	long etime = System.currentTimeMillis();
+        	if (timers) {
+        		System.out.println("Compiler took "+(etime-stime)+"ms");
+        	}
         	holder.handleMessage(MessageUtil.info("Compiler took "+(etime-stime)+"ms"));
         	// uncomment next line to pause at end (keeps jconsole alive!)
 //        	try { System.in.read(); } catch (Exception e) {}
