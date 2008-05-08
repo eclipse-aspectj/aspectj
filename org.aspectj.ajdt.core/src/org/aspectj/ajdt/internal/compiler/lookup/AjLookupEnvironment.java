@@ -142,7 +142,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.BUILDING_FIELDS_AND_METHODS, units[i].compilationResult.fileName);
-			units[i].scope.checkParameterizedTypes();
+//			units[i].scope.checkParameterizedTypes(); do this check a little later, after ITDs applied to stbs
 			units[i].scope.buildFieldsAndMethods();
 			CompilationAndWeavingContext.leavingPhase(tok);
 		}
@@ -224,7 +224,11 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				weaveInterTypeDeclarations(units[i].scope, typeMungers, declareParents,declareAnnotationOnTypes);
 			}
 		}
-		
+
+        for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
+            units[i].scope.checkParameterizedTypes();
+        }
+        
 		for (int i = lastCompletedUnitIndex +1; i<=lastUnitIndex; i++) {
 			SourceTypeBinding[] b = units[i].scope.topLevelTypes;
             for (int j = 0; j < b.length; j++) {
