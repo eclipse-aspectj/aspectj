@@ -3,6 +3,21 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+    <ajc-test dir="bugs161/pr231187" title="generics bounds decp">
+        <compile files="Cement.java ConcreteClass.java SuperClass.java SuperClassAspect.aj WetCement.java Main.java" options="-1.5"/>
+        <run class="concrete.Main">
+          <stdout>
+            <line text="ran!"/>
+          </stdout>
+        </run>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs161/pr231187" title="generics bounds decp - 2">
+        <compile files="Cement.java ConcreteClass.java SuperClass.java WetCement.java" options="-1.5">
+          <message kind="error" text="The type WetCement is not a valid substitute for the bounded parameter"/>
+        </compile>
+    </ajc-test> 
+    
     <ajc-test dir="bugs161/pr230134" title="ltw inherited cflow">
       <compile files="HW.java"/>
       <compile files="SimpleTracing.java Tracing.java HelloWorldTracing.java" outjar="foo.jar"/>
