@@ -151,6 +151,7 @@ public class BridgeUtil {
          * 
          * Use only for sorts, not to maintain maps.
          */
+        // OPTIMIZEE only used for testing...
         public static final Comparator WEAK_File = new Comparator() {
             public int compare(Object o1, Object o2) {
                 if ((o1 == o2) 
