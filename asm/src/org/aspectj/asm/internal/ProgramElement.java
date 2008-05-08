@@ -25,8 +25,6 @@ import org.aspectj.asm.HierarchyWalker;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.util.CharOperation;
-import org.aspectj.util.NameConvertor;
 
 
 /**
