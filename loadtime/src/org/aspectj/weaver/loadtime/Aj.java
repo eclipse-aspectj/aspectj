@@ -14,6 +14,7 @@ package org.aspectj.weaver.loadtime;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
@@ -75,7 +76,7 @@ public class Aj implements ClassPreProcessor {
             		if (trace.isTraceEnabled()) trace.exit("preProcess");
                 	return bytes;
                 }
-                byte[] newBytes = weavingAdaptor.weaveClass(className, bytes);
+                byte[] newBytes = weavingAdaptor.weaveClass(className, bytes,false);
                 Dump.dumpOnExit(weavingAdaptor.getMessageHolder(), true);
         		if (trace.isTraceEnabled()) trace.exit("preProcess",newBytes);
                 return newBytes;
@@ -89,6 +90,8 @@ public class Aj implements ClassPreProcessor {
             // would make sense at least in test f.e. see TestHelper.handleMessage()
     		if (trace.isTraceEnabled()) trace.exit("preProcess",th);
             return bytes;
+        } finally {
+            CompilationAndWeavingContext.resetForThread();
         }
     }
 
@@ -98,7 +101,7 @@ public class Aj implements ClassPreProcessor {
      */
     static class WeaverContainer {
 
-        private static Map weavingAdaptors = new WeakHashMap();
+        private final static Map weavingAdaptors = new WeakHashMap();
 
         static WeavingAdaptor getWeaver(ClassLoader loader, IWeavingContext weavingContext) {
             ExplicitlyInitializedClassLoaderWeavingAdaptor adaptor = null;

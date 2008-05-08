@@ -125,7 +125,7 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 			}
 			
 			try {
-				b = adaptor.weaveClass(name,b);
+				b = adaptor.weaveClass(name,b,false);
 			}
 			catch (AbortException ex) {
 	    		trace.error("defineClass",ex);

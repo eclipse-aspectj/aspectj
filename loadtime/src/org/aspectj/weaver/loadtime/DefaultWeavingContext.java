@@ -14,6 +14,11 @@ package org.aspectj.weaver.loadtime;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.List;
+
+import org.aspectj.weaver.tools.Trace;
+import org.aspectj.weaver.tools.TraceFactory;
+import org.aspectj.weaver.tools.WeavingAdaptor;
 
 /**
  * Use in non-OSGi environment
@@ -21,10 +26,11 @@ import java.util.Enumeration;
  * @author David Knibb
  */
 public class DefaultWeavingContext implements IWeavingContext {
-	
+
 	protected ClassLoader loader;
-	
 	private String shortName;
+
+	private static Trace trace = TraceFactory.getTraceFactory().getTrace(DefaultWeavingContext.class);
 
 	/**
 	 * Construct a new WeavingContext to use the specifed ClassLoader
@@ -32,6 +38,7 @@ public class DefaultWeavingContext implements IWeavingContext {
 	 * @param loader
 	 */
 	public DefaultWeavingContext(ClassLoader loader) {
+		super();
 		this.loader = loader;
 	}
 
@@ -93,4 +100,19 @@ public class DefaultWeavingContext implements IWeavingContext {
         } 
         return isLocallyDefined;
 	}
+
+	/**
+	 * Simply call weaving adaptor back to parse aop.xml
+	 *
+	 * @param weaver
+	 * @param loader
+	 */
+	public List getDefinitions(final ClassLoader loader, final WeavingAdaptor adaptor) {
+	        if (trace.isTraceEnabled()) trace.enter("getDefinitions",this,new Object[] { loader, adaptor });
+	
+	        List definitions = ((ClassLoaderWeavingAdaptor)adaptor).parseDefinitions(loader);
+	        
+	        if (trace.isTraceEnabled()) trace.exit("getDefinitions",definitions);
+			return definitions;
+	    }
 }

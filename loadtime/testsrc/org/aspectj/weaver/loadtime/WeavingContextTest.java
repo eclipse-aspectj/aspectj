@@ -15,8 +15,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
+import java.util.List;
 
 import junit.framework.TestCase;
+
+import org.aspectj.weaver.tools.WeavingAdaptor;
 
 public class WeavingContextTest extends TestCase {
 
@@ -115,6 +118,24 @@ public class WeavingContextTest extends TestCase {
 		assertTrue("IWeavingContext not called",called);
 	}
 
+	public void testGetDefinitions () throws Exception {
+		File file = new File("../loadtime/testdata");
+		URL fileURL = file.getCanonicalFile().toURL();
+		URLClassLoader loader = new URLClassLoader(new URL[] { fileURL },null);
+		IWeavingContext context = new TestWeavingContext(loader) {
+
+			public List getDefinitions(ClassLoader loader, WeavingAdaptor adaptor) {
+				called = true;
+		        return super.getDefinitions(loader,adaptor);
+			}
+			
+		};
+		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
+		adaptor.initialize(loader,context);
+		
+		assertTrue("getDefinitions not called",called);
+	}
+	
 	private static class TestWeavingContext implements IWeavingContext {
 
 		private ClassLoader loader;
@@ -156,6 +177,10 @@ public class WeavingContextTest extends TestCase {
 	            if (localURL.equals(parentURL)) isLocallyDefined =  false;
 	        } 
 	        return isLocallyDefined;
+		}
+
+		public List getDefinitions(ClassLoader loader, WeavingAdaptor adaptor) {
+	        return ((ClassLoaderWeavingAdaptor)adaptor).parseDefinitions(loader);
 		}
 	}
 

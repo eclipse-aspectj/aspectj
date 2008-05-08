@@ -31,6 +31,7 @@ import java.util.StringTokenizer;
 import org.aspectj.asm.IRelationship;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.Constants;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.ICrossReferenceHandler;
@@ -130,7 +131,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
             }
         };
 
-        List definitions = parseDefinitions(classLoader);
+        List definitions = weavingContext.getDefinitions(classLoader,this);
         if (definitions.isEmpty()) {
         	disable(); // TODO maw Needed to ensure messages are flushed
         	if (trace.isTraceEnabled()) trace.exit("initialize",definitions);
@@ -139,12 +140,13 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         
         bcelWorld = new LTWWorld(
         		classLoader, weavingContext, // TODO when the world works in terms of the context, we can remove the loader...
-        		getMessageHandler(), new ICrossReferenceHandler() {
-                    public void addCrossReference(ISourceLocation from, ISourceLocation to, IRelationship.Kind kind, boolean runtimeTest) {
-                        ;// for tools only
-                    }
-                }
-        );
+        		getMessageHandler(), null);
+//        new ICrossReferenceHandler() {
+//                    public void addCrossReference(ISourceLocation from, ISourceLocation to, IRelationship.Kind kind, boolean runtimeTest) {
+//                        ;// for tools only
+//                    }
+//                }
+//        );
 
         weaver = new BcelWeaver(bcelWorld);
 
@@ -178,19 +180,19 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
      * @param weaver
      * @param loader
      */
-    private List parseDefinitions(final ClassLoader loader) {
+    List parseDefinitions(final ClassLoader loader) {
         if (trace.isTraceEnabled()) trace.enter("parseDefinitions",this,loader);
 
         List definitions = new ArrayList();
     	try {
-            info("register classloader " + getClassLoaderName(loader));
-            //TODO av underoptimized: we will parse each XML once per CL that see it
+    		info("register classloader " + getClassLoaderName(loader));
+    		//TODO av underoptimized: we will parse each XML once per CL that see it
 
             //TODO av dev mode needed ? TBD -Daj5.def=...
             if (loader.equals(ClassLoader.getSystemClassLoader())) {
                 String file = System.getProperty("aj5.def", null);
                 if (file != null) {
-                    info("using (-Daj5.def) " + file);
+                	info("using (-Daj5.def) " + file);
                     definitions.add(DocumentParser.parse((new File(file)).toURL()));
                 }
             }
@@ -213,16 +215,16 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         			    seenBefore.add(xml);
     			    }
     			    else {
-    			    	warn("ignoring duplicate definition: " + xml);
+   			    		warn("ignoring duplicate definition: " + xml);
     			    }
     			}
     		}
     		if (definitions.isEmpty()) {
-        		info("no configuration found. Disabling weaver for class loader " + getClassLoaderName(loader));
+    			info("no configuration found. Disabling weaver for class loader " + getClassLoaderName(loader));
     		}
         } catch (Exception e) {
         	definitions.clear();
-            warn("parse definitions failed",e);
+    		warn("parse definitions failed",e);
         }
         
         if (trace.isTraceEnabled()) trace.exit("parseDefinitions",definitions);
@@ -243,7 +245,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         } catch (Exception ex) {
             trace.error("register definition failed",ex);
             success = false;
-            warn("register definition failed",(ex instanceof AbortException)?null:ex);
+    		warn("register definition failed",(ex instanceof AbortException)?null:ex);
         }
         
         if (trace.isTraceEnabled()) trace.exit("registerDefinitions",success);
@@ -308,7 +310,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                     }
                 }
                 if (failure != null || resource == null) {
-                	warn("Cannot access resource for -Xlintfile:"+weaverOption.lintFile,failure);
+		    		warn("Cannot access resource for -Xlintfile:"+weaverOption.lintFile,failure);
 //                    world.getMessageHandler().handleMessage(new Message(
 //                            "Cannot access resource for -Xlintfile:"+weaverOption.lintFile,
 //                            IMessage.WARNING,
@@ -422,7 +424,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                 	info("define aspect " + concreteAspect.name);
                     ConcreteAspectCodeGen gen = new ConcreteAspectCodeGen(concreteAspect, weaver.getWorld());
                     if (!gen.validate()) {
-                        error("Concrete-aspect '"+concreteAspect.name+"' could not be registered");
+   			    		error("Concrete-aspect '"+concreteAspect.name+"' could not be registered");
                         success = false;
                         break;
                     }
@@ -451,7 +453,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         /* We didn't register any aspects so disable the adaptor */
         else if (namespace == null) {
         	success = false;
-    		info("no aspects registered. Disabling weaver for class loader " + getClassLoaderName(loader));
+        	info("no aspects registered. Disabling weaver for class loader " + getClassLoaderName(loader));
         }
 
         if (trace.isTraceEnabled()) trace.exit("registerAspects",success);
@@ -468,12 +470,12 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
         	byte[] bytes = gen.getBytes();
 
         	try {
-        		byte[] newBytes = weaveClass(name, bytes);
+        		byte[] newBytes = weaveClass(name, bytes,true);
                 this.generatedClassHandler.acceptClass(name,newBytes);
         	}
         	catch (IOException ex) {
         		trace.error("weaveAndDefineConceteAspects",ex);
-				error("exception weaving aspect '" + name + "'",ex);
+		    	error("exception weaving aspect '" + name + "'",ex);
         	}
         }
         
@@ -734,7 +736,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	private void defineClass(ClassLoader loader, String name, byte[] bytes) {
     	if (trace.isTraceEnabled()) trace.enter("defineClass",this,new Object[] {loader,name,bytes});
     	Object clazz = null;
-		debug("generating class '" + name + "'");
+    	debug("generating class '" + name + "'");
 		
 		try {
 			//TODO av protection domain, and optimize
@@ -746,14 +748,14 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 					new Integer(0), new Integer(bytes.length) });
 		} catch (InvocationTargetException e) {
 			if (e.getTargetException() instanceof LinkageError) {
-				warn("define generated class failed",e.getTargetException());
+	    		warn("define generated class failed",e.getTargetException());
 				//is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
 				// TODO maw I don't think this is OK and
 			} else {
-				warn("define generated class failed",e.getTargetException());
+	    		warn("define generated class failed",e.getTargetException());
 			}
 		} catch (Exception e) {
-			warn("define generated class failed",e);
+    		warn("define generated class failed",e);
 		}
 
 		if (trace.isTraceEnabled()) trace.exit("defineClass",clazz);
