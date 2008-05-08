@@ -24,6 +24,7 @@ import org.aspectj.ajde.core.IOutputLocationManager;
 import org.aspectj.ajde.core.JavaOptions;
 import org.aspectj.ajdt.ajc.AjdtCommand;
 import org.aspectj.ajdt.ajc.BuildArgParser;
+import org.aspectj.ajdt.ajc.ConfigParser;
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
 import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
 import org.aspectj.ajdt.internal.core.builder.AjState;
@@ -38,7 +39,6 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
-import org.aspectj.util.ConfigParser;
 import org.aspectj.util.LangUtil;
 
 /**
@@ -61,8 +61,17 @@ public class AjdeCoreBuildManager {
 		// this static information needs to be set to ensure 
 		// incremental compilation works correctly
 		IncrementalStateManager.recordIncrementalStates=true;
-		IncrementalStateManager.debugIncrementalStates=true;
+		IncrementalStateManager.debugIncrementalStates=false;
 		AsmManager.attemptIncrementalModelRepairs = true;
+	}
+	
+	// XXX hideous, should not be Object
+	public void setCustomMungerFactory(Object o) {
+		ajBuildManager.setCustomMungerFactory(o);
+	}
+	
+	public Object getCustomMungerFactory() {
+		return ajBuildManager.getCustomMungerFactory();
 	}
 	
 	/**
@@ -264,7 +273,6 @@ public class AjdeCoreBuildManager {
 	 * @param config
 	 */
 	private void configureCompilerOptions(AjBuildConfig config) {
-		checkNotAskedForJava6Compliance();
 		
         String propcp = compiler.getCompilerConfiguration().getClasspath();
         if (!LangUtil.isEmpty(propcp)) {
@@ -309,7 +317,7 @@ public class AjdeCoreBuildManager {
 		Map jom = compiler.getCompilerConfiguration().getJavaOptionsMap();
 		if (jom!=null) {
 			String version = (String)jom.get(CompilerOptions.OPTION_Compliance);
-			if (version!=null && version.equals(CompilerOptions.VERSION_1_5)) {
+			if (version!=null && ( version.equals(CompilerOptions.VERSION_1_5) || version.equals(CompilerOptions.VERSION_1_6))) {
 				config.setBehaveInJava5Way(true);
 			}
 			config.getOptions().set(jom);
