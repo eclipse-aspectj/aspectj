@@ -27,10 +27,10 @@ import java.util.List;
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.ui.BuildConfigModel;
 import org.aspectj.ajde.ui.BuildConfigNode;
+import org.aspectj.ajdt.ajc.ConfigParser;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.SourceLocation;
-import org.aspectj.util.ConfigParser;
 import org.aspectj.util.FileUtil;
 
 /**
