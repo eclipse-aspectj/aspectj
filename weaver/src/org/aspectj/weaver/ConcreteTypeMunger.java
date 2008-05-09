@@ -13,6 +13,8 @@
 
 package org.aspectj.weaver;
 
+import java.util.Map;
+
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.PartialOrder;
 
@@ -123,4 +125,6 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
 		if (munger==null) return false;
 		return munger.isLateMunger();
 	}
+
+	public abstract ConcreteTypeMunger parameterizeWith(Map parameterizationMap, World world);
 }

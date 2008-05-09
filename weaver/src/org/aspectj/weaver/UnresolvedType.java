@@ -26,7 +26,7 @@ import org.aspectj.weaver.tools.Traceable;
 
 /**
  * A UnresolvedType represents a type to the weaver. It has a basic signature that knows 
- * nothing about type variables, type parameters, etc.. TypeXs are resolved in some World
+ * nothing about type variables, type parameters, etc.. UnresolvedTypes are resolved in some World
  * (a repository of types). When a UnresolvedType is resolved it turns into a 
  * ResolvedType which may be a primitive type, an array type or a ReferenceType. 
  * ReferenceTypes may refer to simple, generic, parameterized or type-variable
@@ -121,8 +121,8 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
     // this doesn't belong here and will get moved to ResolvedType later in the refactoring
 	public static final String MISSING_NAME = "@missing@";
 
-    
-
+	// OPTIMIZE I dont think you can ask something unresolved what kind of type it is, how can it always know?  Push down into resolvedtype
+	// that will force references to resolvedtypes to be correct rather than relying on unresolvedtypes to answer questions
     protected TypeKind typeKind = TypeKind.SIMPLE; // what kind of type am I?
 
 	/**
@@ -217,6 +217,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
      * that are type variable references are replaced by their matching type variable
      * binding.
      */
+    // OPTIMIZE methods like this just allow callers to be lazy and not ensure they are working with the right (resolved) subtype
     public UnresolvedType parameterize(Map typeBindings) {
     	throw new UnsupportedOperationException("unable to parameterize unresolved type: " + signature);
     }
@@ -308,6 +309,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
      * @param      name   the java language type name in question.
      * @return     a type object representing that java language type.
      */
+    // OPTIMIZE change users of this to use forSignature, especially for simple cases
     public static UnresolvedType forName(String name) {
         return forSignature(nameToSignature(name));
     }
@@ -464,7 +466,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
     /**
      * Returns the name of this type in java language form (e.g. java.lang.Thread or boolean[]).
-     * This produces a more esthetically pleasing string than {@link java.lang.Class#getName()}.
+     * This produces a more aesthetically pleasing string than {@link java.lang.Class#getName()}.
      *
      * @return  the java language name of this type.
      */
@@ -664,7 +666,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
     // ---- helpers
     
-    public static String signatureToName(String signature) {
+    private static String signatureToName(String signature) {
         switch (signature.charAt(0)) {
             case 'B': return "byte";
             case 'C': return "char";
@@ -856,7 +858,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	}
 	
 	public UnresolvedType[] getTypeParameters() {
-		return typeParameters == null ? new UnresolvedType[0] : typeParameters;
+		return typeParameters == null ? UnresolvedType.NONE : typeParameters;
 	}
 	
 	/**
@@ -905,6 +907,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	 * from a generic method/ctor rather than a type variable from a generic type.  
 	 * Only subclasses know the answer...
 	 */
+	// OPTIMIZE don't allow this to be called, the caller must have a resolved entity
 	public boolean isParameterizedWithAMemberTypeVariable() {
 		throw new RuntimeException("I dont know - you should ask a resolved version of me: "+this);
 	}

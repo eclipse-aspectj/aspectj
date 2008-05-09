@@ -1,0 +1,87 @@
+Rewritten...
+
+[bcel] hundreds of classes removed, one class now represents groups of instructions rather than one class per instruction
+[bcel] verifier packaged separately purely for use by AspectJ tests, not delivered in aspectj packages now
+[weaver] optimized KindedAnnotationAccessVar - renamed to AnnotationAccessVar
+[weaver] simplified member/resolvedmember hierarchy - still more to do, trying to remove need for casts, we should *know* what we
+         are dealing with at each point
+
+todo:
+
+[weaver] 
+[bcel] remove notion of Gens entirely (LineNumberGen/LocalVariableGen) and switch fully to lighter way tags
+[weaver] activate 'assertGoodBody()' code through command line option to catch bugs in the field
+[weaver] is reweavable turned off when LTW?
+
+measure performance - lot of hash table things used to keep types lightweight unless they need the extra data - might be a better way?
+OPTIMIZE task tag marks places noticed on the way through where we could do better
+
+hierarchies to attack:
+ASTNode
+UnresolvedType (messy...)
+Member
+
+
+28th April
+Looking at LazyMethodGen.pack()  - 12% of the cpu usage for what we are testing.  pack() is quite tricky to make better, wonder if we 
+can differentiate amongst targeters to speed things up?  Also instructionHandle has 'attributes' - for no good reason that I can see
+
+Removed static in BranchHandle...
+
+
+Performance analysis, following: http://java.sun.com/developer/technicalArticles/Programming/perfanal/
+
+
+Reveals of 	5415 ticks (weaving rt.jar), we spend 25% of the time in WeaverAdapter.removeFromMap() !
+- changed that code to a CharOpt comparison
+- further changed to null 'lastReturnedResult' when it is finished with, should reduce ongoing calls
+- want to removeFromMap() quickly if we can.  we can't usually because we have rebuilt the char array because
+  post weave we build a new UnwovenClassFile() - I've changed the code to copy across the charname which
+  means we can do remove() rather than searching all keys because the char array is the same one as what was
+  used for the key when it was put in.
+  
+  knocks 25seconds (was 1 minute, now 35s) off the weave time
+
+--- Deliverable sizes: aspectjweaver.jar
+
+1.6.0 = 1,907,848 bytes:1094 classes
+26Apr = 1,718,083:893
+26Apr = 1,618,024:849 (verifier removed from delivered package)
+27Apr = 1,612,996:848
+
+
+----------------
+Finally have a loadtime weaving test
+
+see - d:\e312\eclipse\plugins
+ltwToolsProto.bat
+
+of the 20seconds it takes for 1925 classes, 1.81% is:
+
+org.aspectj.weaver.tools.WeavingAdaptor.weaveClass: 57.5% (1142 inclusive / 0 exclusive)
+org.aspectj.weaver.tools.WeavingAdaptor.getWovenBytes: 49.14% (976 inclusive / 0 exclusive)
+org.aspectj.weaver.bcel.BcelWeaver.weave: 48.94% (972 inclusive / 11 exclusive)
+org.aspectj.weaver.bcel.BcelWeaver.weaveAndNotify: 45.37% (901 inclusive / 0 exclusive)
+org.aspectj.weaver.bcel.BcelWeaver.getClassFilesFor: 22% (437 inclusive / 0 exclusive)
+org.aspectj.weaver.bcel.LazyClassGen.getJavaClassBytesIncludingReweavable: 22% (437 inclusive / 0 exclusive)
+org.aspectj.weaver.bcel.LazyClassGen.writeBack: 17.88% (355 inclusive / 4 exclusive)
+org.aspectj.weaver.bcel.LazyMethodGen.getMethod: 17.42% (346 inclusive / 0 exclusive)
+org.aspectj.weaver.bcel.LazyMethodGen.pack: 13.09% (260 inclusive / 3 exclusive)
+org.aspectj.weaver.bcel.LazyMethodGen.newPackBody: 8.36% (166 inclusive / 81 exclusive)
+org.aspectj.apache.bcel.generic.InstructionList.delete: 1.31% (26 inclusive / 1 exclusive)
+
+
+29Apr
+now the extra bytecode parse in UnwovenClassFile - can we get rid of it by using the ctor that supplies a classname?
+
+
+2may
+looked at the analysis and getSourceLocation() was being called a lot - wasn't sure why given I didn't use tjp in the advice - turns
+out a dummy xrefhandler is added in LTWWorld, and so all the guards to avoid doing anything if there is no xrefhandler are worthless.
+fixed.
+
+ noticed ClassParser ctor messing about remembering if the source is a zip and wrapping a baos in a bufferedinputstream - added new
+ ctor to avoid that and removed the zip nonsense
+ 
+2May = 1,588,317:841 but fails tests, buggerit
+

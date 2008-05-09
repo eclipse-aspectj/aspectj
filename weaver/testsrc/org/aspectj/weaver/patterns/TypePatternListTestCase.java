@@ -99,7 +99,7 @@ public class TypePatternListTestCase extends TestCase {
 	}
 
 	private TypePatternList makeArgumentsPattern(String pattern) {
-		return new PatternParser(pattern).parseArgumentsPattern();
+		return new PatternParser(pattern).parseArgumentsPattern(false);
 	}
 
 	private void checkStaticMatch(String pattern, String[] names, 
@@ -121,7 +121,7 @@ public class TypePatternListTestCase extends TestCase {
 	}
 	
 	private TestScope makeTestScope() {
-		TestScope scope = new TestScope(CollectionUtil.NO_STRINGS, CollectionUtil.NO_STRINGS, world);
+		TestScope scope = new TestScope(LangUtil.NO_STRINGS, LangUtil.NO_STRINGS, world);
 		return scope;
 	}
 	    

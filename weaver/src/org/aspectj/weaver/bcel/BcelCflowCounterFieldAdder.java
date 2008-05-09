@@ -88,4 +88,8 @@ public class BcelCflowCounterFieldAdder extends BcelTypeMunger {
 		return true;
 	}
 
+	public String toString() {
+		return "(BcelTypeMunger: CflowField "+cflowCounterField.getDeclaringType().getName()+" "+cflowCounterField.getName()+")";
+	}
+
 }

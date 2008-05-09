@@ -584,7 +584,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
             methodGen.makeSynthetic();
         }
         methodGen.addAttribute(
-                BcelAttributes.bcelAttribute(
+                Utility.bcelAttribute(
                         new AjAttribute.AjSynthetic(),
                         methodGen.getEnclosingClass().getConstantPool()
                 )

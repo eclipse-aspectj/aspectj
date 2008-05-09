@@ -21,19 +21,26 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class MemberImpl implements Comparable, AnnotatedElement,Member {
-    
-    protected Kind kind;
-    protected int modifiers; 
-    protected UnresolvedType declaringType;
+public class MemberImpl implements Comparable, Member {
+
+    protected MemberKind kind;
     protected String name;
+
+    protected UnresolvedType declaringType;
+    protected int modifiers; 
     protected UnresolvedType returnType;
     protected UnresolvedType[] parameterTypes;
     private final String signature;
     private String paramSignature;
+    
+    // OPTIMIZE move out of the member!
     private boolean reportedCantFindDeclaringType = false;
     private boolean reportedUnresolvableMember = false;
 
+
+    public AnnotationX[] getAnnotations() {
+    	throw new IllegalStateException("Cannot answer getAnnotations() for MemberImpl "+this.toString());
+    }
     
     /**
      * All the signatures that a join point with this member as its signature has.
@@ -43,7 +50,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     private JoinPointSignatureIterator joinPointSignatures = null;
 
     public MemberImpl(
-        Kind kind, 
+        MemberKind kind, 
         UnresolvedType declaringType,
         int modifiers,
         String name,
@@ -53,6 +60,9 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
         this.declaringType = declaringType;
         this.modifiers = modifiers;
         this.name = name;
+        if (kind!=STATIC_INITIALIZATION && name!=null && name.equals("<clinit>")) {
+        	throw new RuntimeException("!");
+        }
         this.signature = signature;
         if (kind == FIELD) {
             this.returnType = UnresolvedType.forSignature(signature);
@@ -68,7 +78,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     }
 
     public  MemberImpl(
-        Kind kind, 
+        MemberKind kind, 
         UnresolvedType declaringType, 
         int modifiers,
         UnresolvedType returnType, 
@@ -78,7 +88,11 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
         super();
         this.kind = kind;
         this.declaringType = declaringType;
-        this.modifiers = modifiers;
+        this.modifiers = modifiers;      
+        if (name!=null && name.equals("<clinit>") && kind!=STATIC_INITIALIZATION) {
+        	throw new RuntimeException("!");
+        	}
+
         this.returnType = returnType;
         this.name = name;
         this.parameterTypes = parameterTypes;
@@ -232,13 +246,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 
 
     private static MemberImpl field(String declaring, int mods, UnresolvedType ty, String name) {
-        return new MemberImpl(
-            FIELD,
-            UnresolvedType.forName(declaring),
-            mods,
-            ty,
-            name,
-            UnresolvedType.NONE);
+        return new MemberImpl(FIELD, UnresolvedType.forName(declaring), mods, ty, name, UnresolvedType.NONE);
     }
     
     public static MemberImpl method(UnresolvedType declTy, int mods, UnresolvedType rTy, String name, UnresolvedType[] paramTys) {
@@ -270,107 +278,6 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 			"(" + catchType.getSignature() + ")V");
 	}
     
-    // ---- parsing methods
-    
-    /** Takes a string in this form:
-     * 
-     * <blockquote><pre>
-     * static? TypeName TypeName.Id
-     * </pre></blockquote>
-     * Pretty much just for testing, and as such should perhaps be moved.
-     */
-    
-    public static MemberImpl fieldFromString(String str) {
-        str = str.trim();
-        final int len = str.length();
-        int i = 0;
-        int mods = 0;
-        if (str.startsWith("static", i)) {
-            mods = Modifier.STATIC;
-            i += 6;
-            while (Character.isWhitespace(str.charAt(i))) i++;
-        }
-        int start = i;
-        while (! Character.isWhitespace(str.charAt(i))) i++;
-        UnresolvedType retTy = UnresolvedType.forName(str.substring(start, i));
-
-        start = i;
-        i = str.lastIndexOf('.');
-        UnresolvedType declaringTy = UnresolvedType.forName(str.substring(start, i).trim());
-        start = ++i;
-        String name = str.substring(start, len).trim();
-        return new MemberImpl(
-            FIELD,
-            declaringTy,
-            mods,
-            retTy,
-            name,
-            UnresolvedType.NONE);
-    }
-
-    /** Takes a string in this form:
-     * 
-     * <blockquote><pre>
-     * (static|interface|private)? TypeName TypeName . Id ( TypeName , ...)
-     * </pre></blockquote>
-     * Pretty much just for testing, and as such should perhaps be moved.
-     */
-    
-    public static Member methodFromString(String str) {
-        str = str.trim();
-        // final int len = str.length();
-        int i = 0;
-
-        int mods = 0;
-        if (str.startsWith("static", i)) {
-            mods = Modifier.STATIC;
-            i += 6;
-        } else if (str.startsWith("interface", i)) {
-            mods = Modifier.INTERFACE;
-            i += 9;
-        } else if (str.startsWith("private", i)) {
-            mods = Modifier.PRIVATE;
-            i += 7;
-        }            
-        while (Character.isWhitespace(str.charAt(i))) i++;
-        
-        int start = i;
-        while (! Character.isWhitespace(str.charAt(i))) i++;
-        UnresolvedType returnTy = UnresolvedType.forName(str.substring(start, i));
-
-        start = i;
-        i = str.indexOf('(', i);
-        i = str.lastIndexOf('.', i);
-        UnresolvedType declaringTy = UnresolvedType.forName(str.substring(start, i).trim());
-        
-        start = ++i;
-        i = str.indexOf('(', i);
-        String name = str.substring(start, i).trim();
-        start = ++i;
-        i = str.indexOf(')', i);
-    
-        String[] paramTypeNames = parseIds(str.substring(start, i).trim());
-
-        return method(declaringTy, mods, returnTy, name, UnresolvedType.forNames(paramTypeNames));
-    }
-
-    private static String[] parseIds(String str) {
-        if (str.length() == 0) return ZERO_STRINGS;
-        List l = new ArrayList();
-        int start = 0;
-        while (true) {
-            int i = str.indexOf(',', start);
-            if (i == -1) {
-                l.add(str.substring(start).trim());
-                break;
-            }
-            l.add(str.substring(start, i).trim());
-            start = i+1;
-        }
-        return (String[]) l.toArray(new String[l.size()]);
-    }
-
-    private static final String[] ZERO_STRINGS = new String[0];
 
     // ---- things we know without resolution
     
@@ -433,62 +340,32 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     	return buf.toString();
     }
     
+    // Overridden by subclasses - a method can be advice
+    public MemberKind getKind() { 
+    	return kind; 
+    }
     
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#toLongString()
-	 */
-    public String toLongString() {
-        StringBuffer buf = new StringBuffer();
-        buf.append(kind);
-        buf.append(' ');
-        if (modifiers != 0) {
-            buf.append(Modifier.toString(modifiers));
-            buf.append(' ');
-        }
-        buf.append(toString());
-        buf.append(" <");
-        buf.append(signature);
-        buf.append(" >");
-        return buf.toString();
-    }        
-
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getKind()
-	 */
-    public Kind getKind() { return kind; }
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getDeclaringType()
-	 */
     public UnresolvedType getDeclaringType() { return declaringType; }
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getReturnType()
-	 */
+    
     public UnresolvedType getReturnType() { return returnType; }
     
     public UnresolvedType getGenericReturnType() { return getReturnType(); }
     public UnresolvedType[] getGenericParameterTypes() { return getParameterTypes(); }
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getType()
-	 */
-    public UnresolvedType getType() { return returnType; }
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getName()
-	 */
-    public String getName() { return name; }
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getParameterTypes()
-	 */
+
+    public UnresolvedType getType() { 
+    	return returnType; 
+    }
+    
+    public String getName() { 
+    	return name; 
+    }
+
     public UnresolvedType[]  getParameterTypes() { return parameterTypes; }
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getSignature()
-	 */
+    
     public String getSignature() { return signature; }
 	
     public int getArity() { return parameterTypes.length; }
   
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getParameterSignature()
-	 */
     public String getParameterSignature() {
     	if (paramSignature != null) return paramSignature;
     	StringBuffer sb = new StringBuffer();
@@ -535,9 +412,6 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 		return resolved.getModifiers();
     }
     
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getExceptions(org.aspectj.weaver.World)
-	 */
     public UnresolvedType[] getExceptions(World world) {
     	ResolvedMember resolved = resolve(world);
     	if (resolved == null) {
@@ -546,57 +420,23 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 		}
 		return resolved.getExceptions();
     }
-    
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#isProtected(org.aspectj.weaver.World)
-	 */
-    public final boolean isProtected(World world) {
-        return Modifier.isProtected(resolve(world).getModifiers());
-    }
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#isStatic(org.aspectj.weaver.World)
-	 */
-    public final boolean isStatic(World world) {
-        return Modifier.isStatic(resolve(world).getModifiers());
-    }
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#isStrict(org.aspectj.weaver.World)
-	 */
-    public final boolean isStrict(World world) {
-        return Modifier.isStrict(resolve(world).getModifiers());
-    }
-    
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#isStatic()
-	 */
+        
     public final boolean isStatic() {
         return Modifier.isStatic(modifiers);
     }    
     
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#isInterface()
-	 */
     public final boolean isInterface() {
-        return Modifier.isInterface(modifiers);  // this is kinda weird
+        return Modifier.isInterface(modifiers);
     }    
     
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#isPrivate()
-	 */
     public final boolean isPrivate() {
         return Modifier.isPrivate(modifiers);
     }    
     
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#canBeParameterized()
-	 */
     public boolean canBeParameterized() {
     	return false;
     }
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getCallsiteModifiers()
-	 */
 	public final int getCallsiteModifiers() {
 		return modifiers & ~ Modifier.INTERFACE;
 	}
@@ -605,46 +445,19 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 		return modifiers;
 	}
 
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getExtractableName()
-	 */
     public final String getExtractableName() {
-    	if (name.equals("<init>")) return "init$";
-    	else if (name.equals("<clinit>")) return "clinit$";
+    	if (kind==CONSTRUCTOR/*name.equals("<init>")*/) return "init$";
+    	else if (kind==STATIC_INITIALIZATION/*name.equals("<clinit>")*/) return "clinit$";
     	else return name;
     }
-
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#hasAnnotation(org.aspectj.weaver.UnresolvedType)
-	 */
-	public boolean hasAnnotation(UnresolvedType ofType) {
-		throw new UnsupportedOperationException("You should resolve this member and call hasAnnotation() on the result...");
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.AnnotatedElement#getAnnotationTypes()
-	 */
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getAnnotationTypes()
-	 */
-	public ResolvedType[] getAnnotationTypes() {
-		throw new UnsupportedOperationException("You should resolve this member and call hasAnnotation() on the result...");
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getAnnotations()
-	 */
-	public AnnotationX[] getAnnotations() {
-		throw new UnsupportedOperationException("You should resolve this member '"+this+"' and call getAnnotations() on the result...");
-	}
+    
+//	public AnnotationX[] getAnnotations() {
+//		throw new UnsupportedOperationException("You should resolve this member '"+this+"' and call getAnnotations() on the result...");
+//	}
 
 	// ---- fields 'n' stuff
 
 
-    
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getDeclaringTypes(org.aspectj.weaver.World)
-	 */
 	public Collection/*ResolvedType*/ getDeclaringTypes(World world) {
 		ResolvedType myType = getDeclaringType().resolve(world);
 		Collection ret = new HashSet();
@@ -701,9 +514,9 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 	 * @see org.aspectj.weaver.Member#getSignatureMakerName()
 	 */
     public String getSignatureMakerName() {
-    	if (getName().equals("<clinit>")) return "makeInitializerSig";
+//    	if (getName().equals("<clinit>")) return "makeInitializerSig";
     	
-    	Kind kind = getKind();
+    	MemberKind kind = getKind();
     	if (kind == METHOD) {
     		return "makeMethodSig";
     	} else if (kind == CONSTRUCTOR) {
@@ -732,8 +545,8 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 	 * @see org.aspectj.weaver.Member#getSignatureType()
 	 */
 	public String getSignatureType() {
-    	Kind kind = getKind();
-    	if (getName().equals("<clinit>")) return "org.aspectj.lang.reflect.InitializerSignature";
+    	MemberKind kind = getKind();
+//    	if (getName().equals("<clinit>")) return "org.aspectj.lang.reflect.InitializerSignature";
     	
     	if (kind == METHOD) {
     		return "org.aspectj.lang.reflect.MethodSignature";
@@ -761,8 +574,8 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 	 */
 	public String getSignatureString(World world) {
 		if (getName().equals("<clinit>")) return getStaticInitializationSignatureString(world);
-		
-    	Kind kind = getKind();
+//		
+    	MemberKind kind = getKind();
     	if (kind == METHOD) {
     		return getMethodSignatureString(world);
     	} else if (kind == CONSTRUCTOR) {
@@ -902,7 +715,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     }
 
 	protected String makeString(int i) {
-		return Integer.toString(i, 16);  //??? expensive
+		return Integer.toString(i, 16);
 	}
 
 
@@ -981,10 +794,6 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 	       	reportedUnresolvableMember = true;						
 		}
     }
-
-	public Member slimline() {
-		return this;
-	}
 
 }
    

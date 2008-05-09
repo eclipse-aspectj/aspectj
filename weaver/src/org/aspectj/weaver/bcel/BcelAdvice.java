@@ -67,20 +67,9 @@ public class BcelAdvice extends Advice {
 		Member signature,
 		ResolvedType concreteAspect) 
 	{
-		super(attribute, pointcut, (signature==null?null:signature.slimline()));
+		super(attribute, pointcut,shrink(attribute.getKind(),concreteAspect,signature));// (signature==null?null:signature.slimline()));
 		this.concreteAspect = concreteAspect;
 	}
-
-	// !!! must only be used for testing
-	public BcelAdvice(AdviceKind kind, Pointcut pointcut, Member signature,
-		int extraArgumentFlags,
-        int start, int end, ISourceContext sourceContext, ResolvedType concreteAspect)
-    {
-		this(new AjAttribute.AdviceAttribute(kind, pointcut, extraArgumentFlags, start, end, sourceContext), 
-			pointcut, (signature==null?null:signature.slimline()), concreteAspect);
-		thrownExceptions = Collections.EMPTY_LIST;  //!!! interaction with unit tests
-	}
-	
 	/**
 	 * We don't always need to represent the signature with a heavyweight BcelMethod object - only if its around advice
 	 * and inlining is active
@@ -104,6 +93,15 @@ public class BcelAdvice extends Advice {
 			}
 		}
 		return m;
+	}
+	// !!! must only be used for testing
+	public BcelAdvice(AdviceKind kind, Pointcut pointcut, Member signature,
+		int extraArgumentFlags,
+        int start, int end, ISourceContext sourceContext, ResolvedType concreteAspect)
+    {
+		this(new AjAttribute.AdviceAttribute(kind, pointcut, extraArgumentFlags, start, end, sourceContext), 
+			pointcut, signature, concreteAspect);
+		thrownExceptions = Collections.EMPTY_LIST;  //!!! interaction with unit tests
 	}
 
     // ---- implementations of ShadowMunger's methods
@@ -211,7 +209,6 @@ public class BcelAdvice extends Advice {
 
 		if (concreteAspect.getWorld().isXnoInline()) return false;
     	//System.err.println("isWoven? " + ((BcelObjectType)concreteAspect).getLazyClassGen().getWeaverState());
-	//	if (BcelWorld.getBcelObjectType(concreteAspect).getJavaClass()==null) return true; // been evicted... CUSTARD
     	return BcelWorld.getBcelObjectType(concreteAspect).getLazyClassGen().isWoven();
     }
 
@@ -721,7 +718,7 @@ public class BcelAdvice extends Advice {
 	protected void suppressLintWarnings(World inWorld) {
 		if (suppressedLintKinds == null) {
     		if (signature instanceof BcelMethod) {
-    			this.suppressedLintKinds = Utility.getSuppressedWarnings(signature.getAnnotations(), inWorld.getLint());
+    			this.suppressedLintKinds = Utility.getSuppressedWarnings(((BcelMethod)signature).getAnnotations(), inWorld.getLint());
     		} else {
     			this.suppressedLintKinds = Collections.EMPTY_LIST;
     		}

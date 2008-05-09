@@ -78,13 +78,10 @@ public class CrosscuttingMembersSet {
 		if (xcut == null) {
 			members.put(aspectType, aspectType.collectCrosscuttingMembers(inWeavingPhase));
 			clearCaches();
-			CflowPointcut.clearCaches(aspectType);
 			change = true;
 		} else {
 			if (xcut.replaceWith(aspectType.collectCrosscuttingMembers(inWeavingPhase),inWeavingPhase)) {
 				clearCaches();
-
-				CflowPointcut.clearCaches(aspectType);
 				change = true;
 			} else {
 				if (!AsmManager.getDefault().getHandleProvider().dependsOnLocation()

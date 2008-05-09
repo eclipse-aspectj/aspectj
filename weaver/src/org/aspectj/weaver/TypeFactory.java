@@ -102,8 +102,8 @@ public class TypeFactory {
 			// (see pr122458) It is possible for a parameterized type to have *no* type parameters visible in its signature.
 			// This happens for an inner type of a parameterized type which simply inherits the type parameters
 			// of its parent.  In this case it is parameterized but theres no < in the signature.
-			
 			int startOfParams = signature.indexOf('<');
+			
 			if (startOfParams==-1) {
 				// Should be an inner type of a parameterized type - could assert there is a '$' in the signature....
 				String signatureErasure = "L" + signature.substring(1);
@@ -123,7 +123,7 @@ public class TypeFactory {
 				// the type parameters of interest are only those that apply to the 'last type' in the signature
 				// if the signature is 'PMyInterface<String>$MyOtherType;' then there are none...
 				String lastType = null;
-				int nestedTypePosition = signature.indexOf("$");
+				int nestedTypePosition = signature.indexOf("$", endOfParams); // don't look for $ INSIDE the parameters
 				if (nestedTypePosition!=-1) lastType = signature.substring(nestedTypePosition+1);
 				else                        lastType = new String(signature);
 				startOfParams = lastType.indexOf("<");
@@ -132,7 +132,6 @@ public class TypeFactory {
 				if (startOfParams!=-1) {
 				  typeParams = createTypeParams(lastType.substring(startOfParams +1, endOfParams));
 				}
-				
 				return new UnresolvedType(signature,signatureErasure,typeParams);
 			}
 			// can't replace above with convertSigToType - leads to stackoverflow

@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
@@ -74,9 +75,7 @@ import org.aspectj.weaver.patterns.SimpleScope;
 import org.aspectj.weaver.patterns.TypePattern;
 
 /**
- * Annotation defined aspect reader.
- * <p/>
- * It reads the Java 5 annotations and turns them into AjAttributes
+ * Annotation defined aspect reader. Reads the Java 5 annotations and turns them into AjAttributes
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
@@ -85,6 +84,7 @@ public class AtAjAttributes {
     private final static List EMPTY_LIST = new ArrayList();
     private final static String[] EMPTY_STRINGS = new String[0];
     private final static String VALUE = "value";
+    private final static String ARGNAMES = "argNames";
     private final static String POINTCUT = "pointcut";
     private final static String THROWING = "throwing";
     private final static String RETURNING = "returning";
@@ -92,8 +92,6 @@ public class AtAjAttributes {
 
     /**
      * A struct that allows to add extra arguments without always breaking the API
-     *
-     * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
      */
     private static class AjAttributeStruct {
 
@@ -124,11 +122,9 @@ public class AtAjAttributes {
      */
     private static class AjAttributeMethodStruct extends AjAttributeStruct {
 
-        /**
-         * Argument names as they appear in the SOURCE code, ordered, and lazyly populated
-         * Used to do formal binding
-         */
+    	// argument names used for formal binding
         private String[] m_argumentNamesLazy = null;
+        public String unparsedArgumentNames = null; // Set only if discovered as argNames attribute of annotation
 
         final Method method;
         final BcelMethod bMethod;
@@ -141,7 +137,7 @@ public class AtAjAttributes {
 
         public String[] getArgumentNames() {
             if (m_argumentNamesLazy == null) {
-                m_argumentNamesLazy = getMethodArgumentNamesAsInSource(method);
+                m_argumentNamesLazy = getMethodArgumentNames(method,unparsedArgumentNames,this);
             }
             return m_argumentNamesLazy;
         }
@@ -149,8 +145,6 @@ public class AtAjAttributes {
 
     /**
      * A struct when we read @AJ on field
-     *
-     * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
      */
     private static class AjAttributeFieldStruct extends AjAttributeStruct {
 
@@ -184,15 +178,19 @@ public class AtAjAttributes {
      * @return list of AjAttributes
      */
     public static List readAj5ClassAttributes(JavaClass javaClass, ReferenceType type, ISourceContext context, IMessageHandler msgHandler, boolean isCodeStyleAspect) {
-        //FIXME AV - 1.5 feature limitation, kick after implemented
-        try {
-            Constant[] cpool = javaClass.getConstantPool().getConstantPool();
-            for (int i = 0; i < cpool.length; i++) {
-                Constant constant = cpool[i];
-                if (constant != null && constant.getTag() == Constants.CONSTANT_Utf8) {
-                    if (!javaClass.getClassName().startsWith("org.aspectj.lang.annotation")) {
-                        ConstantUtf8 constantUtf8 = (ConstantUtf8) constant;
-                        if ("Lorg/aspectj/lang/annotation/DeclareAnnotation;".equals(constantUtf8.getBytes())) {
+    	boolean ignoreThisClass = javaClass.getClassName().charAt(0)=='o' && javaClass.getClassName().startsWith("org.aspectj.lang.annotation");
+    	if (ignoreThisClass) return EMPTY_LIST;
+    	boolean containsPointcut = false;
+		boolean containsAnnotationClassReference = false;
+        Constant[] cpool = javaClass.getConstantPool().getConstantPool();
+        for (int i = 0; i < cpool.length; i++) {
+            Constant constant = cpool[i];
+            if (constant != null && constant.getTag() == Constants.CONSTANT_Utf8) {
+                String constantValue = ((ConstantUtf8)constant).getBytes();
+                if (constantValue.length()>28 && constantValue.charAt(1)=='o') {
+                	if (constantValue.startsWith("Lorg/aspectj/lang/annotation")) {
+                		containsAnnotationClassReference=true;
+                		if ("Lorg/aspectj/lang/annotation/DeclareAnnotation;".equals(constantValue)) {
                             msgHandler.handleMessage(
                                     new Message(
                                             "Found @DeclareAnnotation while current release does not support it (see '" + type.getName() + "')",
@@ -202,13 +200,14 @@ public class AtAjAttributes {
                                     )
                             );
                         }
-                    }
+                        if ("Lorg/aspectj/lang/annotation/Pointcut;".equals(constantValue)) {
+                        	containsPointcut=true;
+                        }
+                	}
                 }
             }
-        } catch (Throwable t) {
-            ;
         }
-
+        if (!containsAnnotationClassReference) return EMPTY_LIST;
 
         AjAttributeStruct struct = new AjAttributeStruct(type, context, msgHandler);
         Attribute[] attributes = javaClass.getAttributes();
@@ -219,7 +218,7 @@ public class AtAjAttributes {
             Attribute attribute = attributes[i];
             if (acceptAttribute(attribute)) {
                 RuntimeAnnotations rvs = (RuntimeAnnotations) attribute;
-                // we don't need to look for several attribute occurence since it cannot happen as per JSR175
+                // we don't need to look for several attribute occurrences since it cannot happen as per JSR175
                 if (!isCodeStyleAspect && !javaClass.isInterface()) {
                     hasAtAspectAnnotation = handleAspectAnnotation(rvs, struct);
                     //TODO AV - if put outside the if isCodeStyleAspect then we would enable mix style
@@ -245,10 +244,9 @@ public class AtAjAttributes {
         }
 
         // the following block will not detect @Pointcut in non @Aspect types for optimization purpose
-        if (!hasAtAspectAnnotation) {
+        if (!hasAtAspectAnnotation && !containsPointcut) {
             return EMPTY_LIST;
         }
-
 
         //FIXME AV - turn on when ajcMightHaveAspect
 //        if (hasAtAspectAnnotation && type.isInterface()) {
@@ -282,31 +280,35 @@ public class AtAjAttributes {
         // we need to gather the @AJ pointcut right now and not at method level annotation extraction time
         // in order to be able to resolve the pointcut references later on
         // we don't need to look in super class, the pointcut reference in the grammar will do it
+        
         for (int i = 0; i < javaClass.getMethods().length; i++) {
             Method method = javaClass.getMethods()[i];
             if (method.getName().startsWith(NameMangler.PREFIX)) continue;  // already dealt with by ajc...
             //FIXME alex optimize, this method struct will gets recreated for advice extraction
-            AjAttributeMethodStruct mstruct = new AjAttributeMethodStruct(method, null, type, context, msgHandler);//FIXME AVASM
+            AjAttributeMethodStruct mstruct = null;
+            boolean processedPointcut = false;
             Attribute[] mattributes = method.getAttributes();
-
             for (int j = 0; j < mattributes.length; j++) {
                 Attribute mattribute = mattributes[j];
                 if (acceptAttribute(mattribute)) {
-                    RuntimeAnnotations mrvs = (RuntimeAnnotations) mattribute;
-                    handlePointcutAnnotation(mrvs, mstruct);
+                	if (mstruct==null) mstruct = new AjAttributeMethodStruct(method, null, type, context, msgHandler);//FIXME AVASM
+                    processedPointcut = handlePointcutAnnotation((RuntimeAnnotations) mattribute, mstruct);
                     // there can only be one RuntimeVisible bytecode attribute
                     break;
                 }
             }
-            // FIXME asc should check we aren't adding multiple versions... will do once I get the tests passing again...
-            struct.ajAttributes.add(new AjAttribute.WeaverVersionInfo());
-            struct.ajAttributes.addAll(mstruct.ajAttributes);
+            if (processedPointcut) {
+	            // FIXME asc should check we aren't adding multiple versions... will do once I get the tests passing again...
+	            struct.ajAttributes.add(new AjAttribute.WeaverVersionInfo());
+	            struct.ajAttributes.addAll(mstruct.ajAttributes);
+            }
         }
 
 
         // code style declare error / warning / implements / parents are field attributes
-        for (int i = 0; i < javaClass.getFields().length; i++) {
-            Field field = javaClass.getFields()[i];
+        Field[] fs = javaClass.getFields();
+        for (int i = 0; i < fs.length; i++) {
+            Field field = fs[i];
             if (field.getName().startsWith(NameMangler.PREFIX)) continue;  // already dealt with by ajc...
             //FIXME alex optimize, this method struct will gets recreated for advice extraction
             AjAttributeFieldStruct fstruct = new AjAttributeFieldStruct(field, null, type, context, msgHandler);
@@ -742,28 +744,27 @@ public class AtAjAttributes {
                     for (int i = 0; i < methods.length; i++) {
                         ResolvedMember method = (ResolvedMember)methods[i];
                         if (method.isAbstract()) {
-                            if (defaultImplClassName == null) {
-                                // non marker interface with no default impl provided
-                                reportError("@DeclareParents: used with a non marker interface and no defaultImpl=\"...\" provided", struct);
-                                return false;
-                            }
+                        // moved to be detected at weave time if the target doesnt implement the methods
+//                            if (defaultImplClassName == null) {
+//                                // non marker interface with no default impl provided
+//                                reportError("@DeclareParents: used with a non marker interface and no defaultImpl=\"...\" provided", struct);
+//                                return false;
+//                            }
                             hasAtLeastOneMethod = true;
-
-                            struct.ajAttributes.add(
-                                    new AjAttribute.TypeMunger(
-                                            new MethodDelegateTypeMunger(
-                                                method,
-                                                struct.enclosingType,
-                                                defaultImplClassName,
-                                                typePattern
-                                            )
-                                    )
-                            );
+                            MethodDelegateTypeMunger mdtm = 
+                                new MethodDelegateTypeMunger(
+                                    method,
+                                    struct.enclosingType,
+                                    defaultImplClassName,
+                                    typePattern
+                                );
+                            mdtm.setSourceLocation(struct.enclosingType.getSourceLocation());
+                            struct.ajAttributes.add(new AjAttribute.TypeMunger(mdtm));
                         }
                     }
                     // successfull so far, we thus need a bcel type munger to have
                     // a field hosting the mixin in the target type
-                    if (hasAtLeastOneMethod) {
+                    if (hasAtLeastOneMethod && defaultImplClassName!=null) {
                         struct.ajAttributes.add(
                                 new AjAttribute.TypeMunger(
                                         new MethodDelegateTypeMunger.FieldHostTypeMunger(
@@ -802,6 +803,10 @@ public class AtAjAttributes {
             ElementNameValuePairGen beforeAdvice = getAnnotationElement(before, VALUE);
             if (beforeAdvice != null) {
                 // this/target/args binding
+            	String argumentNames = getArgNamesValue(before);
+                if (argumentNames!=null) {
+                	struct.unparsedArgumentNames = argumentNames;
+                }
                 FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
                 try {
                     bindings = extractBindings(struct);
@@ -859,6 +864,10 @@ public class AtAjAttributes {
             if (afterAdvice != null) {
                 // this/target/args binding
                 FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+                String argumentNames = getArgNamesValue(after);
+                if (argumentNames!=null) {
+                	struct.unparsedArgumentNames = argumentNames;
+                }
                 try {
                     bindings = extractBindings(struct);
                 } catch (UnreadableDebugInfoException unreadableDebugInfoException) {
@@ -948,7 +957,10 @@ public class AtAjAttributes {
                     }
                 }
             }
-
+            String argumentNames = getArgNamesValue(after);
+            if (argumentNames!=null) {
+            	struct.unparsedArgumentNames = argumentNames;
+            }
             // this/target/args binding
             // exclude the return binding from the pointcut binding since it is an extraArg binding
             FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
@@ -1045,7 +1057,10 @@ public class AtAjAttributes {
                     }
                 }
             }
-
+            String argumentNames = getArgNamesValue(after);
+            if (argumentNames!=null) {
+            	struct.unparsedArgumentNames = argumentNames;
+            }
             // this/target/args binding
             // exclude the throwned binding from the pointcut binding since it is an extraArg binding
             FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
@@ -1106,7 +1121,11 @@ public class AtAjAttributes {
         if (around != null) {
             ElementNameValuePairGen aroundAdvice = getAnnotationElement(around, VALUE);
             if (aroundAdvice != null) {
-                // this/target/args binding
+                // this/target/args binding 
+            	String argumentNames = getArgNamesValue(around);
+                if (argumentNames!=null) {
+                	struct.unparsedArgumentNames = argumentNames;
+                }
                 FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
                 try {
                     bindings = extractBindings(struct);
@@ -1154,83 +1173,93 @@ public class AtAjAttributes {
      *
      * @param runtimeAnnotations
      * @param struct
+     * @return true if a pointcut was handled
      */
-    private static void handlePointcutAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct) {
+    private static boolean handlePointcutAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct) {
         AnnotationGen pointcut = getAnnotation(runtimeAnnotations, AjcMemberMaker.POINTCUT_ANNOTATION);
-        if (pointcut != null) {
-            ElementNameValuePairGen pointcutExpr = getAnnotationElement(pointcut, VALUE);
+        if (pointcut==null) return false;
+        ElementNameValuePairGen pointcutExpr = getAnnotationElement(pointcut, VALUE);
 
-            // semantic check: the method must return void, or be "public static boolean" for if() support
-            if (!(Type.VOID.equals(struct.method.getReturnType())
-                  || (Type.BOOLEAN.equals(struct.method.getReturnType()) && struct.method.isStatic() && struct.method.isPublic()))) {
-                reportWarning("Found @Pointcut on a method not returning 'void' or not 'public static boolean'", struct);
-                ;//no need to stop
-            }
-
-            // semantic check: the method must not throw anything
-            if (struct.method.getExceptionTable() != null) {
-                reportWarning("Found @Pointcut on a method throwing exception", struct);
-                ;// no need to stop
-            }
-
-            // this/target/args binding
-            final IScope binding;
-            try {
-                binding = new BindingScope(
-                        struct.enclosingType,
-                        struct.context,
-                        extractBindings(struct)
-                );
-            } catch (UnreadableDebugInfoException e) {
-                return;
-            }
-
-            UnresolvedType[] argumentTypes = new UnresolvedType[struct.method.getArgumentTypes().length];
-            for (int i = 0; i < argumentTypes.length; i++) {
-                argumentTypes[i] = UnresolvedType.forSignature(struct.method.getArgumentTypes()[i].getSignature());
-            }
-
-            Pointcut pc = null;
-            if (struct.method.isAbstract()) {
-                if ((pointcutExpr != null && isNullOrEmpty(pointcutExpr.getValue().stringifyValue()))
-                    || pointcutExpr == null) {
-                    // abstract pointcut
-                    // leave pc = null
-                } else {
-                    reportError("Found defined @Pointcut on an abstract method", struct);
-                    return;//stop
-                }
-            } else {
-            	if (pointcutExpr==null || (pointcutExpr != null && isNullOrEmpty(pointcutExpr.getValue().stringifyValue()))) {
-            		// the matches nothing pointcut (125475/125480) - perhaps not as cleanly supported as it could be.
-            	} else {
-                  if (pointcutExpr != null) {
-                    // use a LazyResolvedPointcutDefinition so that the pointcut is resolved lazily
-                    // since for it to be resolved, we will need other pointcuts to be registered as well
-                    pc = parsePointcut(pointcutExpr.getValue().stringifyValue(), struct, true);
-                    if (pc == null) return;//parse error
-                    pc.setLocation(struct.context, -1, -1);//FIXME AVASM !! bMethod is null here..
-                  } else {
-                    reportError("Found undefined @Pointcut on a non-abstract method", struct);
-                    return;
-                  }
-            	}
-            }
-            // do not resolve binding now but lazily
-            struct.ajAttributes.add(
-                    new AjAttribute.PointcutDeclarationAttribute(
-                            new LazyResolvedPointcutDefinition(
-                                    struct.enclosingType,
-                                    struct.method.getModifiers(),
-                                    struct.method.getName(),
-                                    argumentTypes,
-                                    UnresolvedType.forSignature(struct.method.getReturnType().getSignature()),
-                                    pc,//can be null for abstract pointcut
-                                    binding
-                            )
-                    )
-            );
+        
+        // semantic check: the method must return void, or be "public static boolean" for if() support
+        if (!(Type.VOID.equals(struct.method.getReturnType())
+              || (Type.BOOLEAN.equals(struct.method.getReturnType()) && struct.method.isStatic() && struct.method.isPublic()))) {
+            reportWarning("Found @Pointcut on a method not returning 'void' or not 'public static boolean'", struct);
+            ;//no need to stop
         }
+
+        // semantic check: the method must not throw anything
+        if (struct.method.getExceptionTable() != null) {
+            reportWarning("Found @Pointcut on a method throwing exception", struct);
+            ;// no need to stop
+        }
+
+        String argumentNames = getArgNamesValue(pointcut);
+        if (argumentNames!=null) {
+        	struct.unparsedArgumentNames = argumentNames;
+        }
+        // this/target/args binding
+        final IScope binding;
+        try {
+        	if (struct.method.isAbstract()) {
+        	    binding = null;
+        	} else {
+                binding = new BindingScope(
+                    struct.enclosingType,
+                    struct.context,
+                    extractBindings(struct)
+                );
+        	}
+        } catch (UnreadableDebugInfoException e) {
+            return false;
+        }
+
+        UnresolvedType[] argumentTypes = new UnresolvedType[struct.method.getArgumentTypes().length];
+        for (int i = 0; i < argumentTypes.length; i++) {
+            argumentTypes[i] = UnresolvedType.forSignature(struct.method.getArgumentTypes()[i].getSignature());
+        }
+
+        Pointcut pc = null;
+        if (struct.method.isAbstract()) {
+            if ((pointcutExpr != null && isNullOrEmpty(pointcutExpr.getValue().stringifyValue()))
+                || pointcutExpr == null) {
+                // abstract pointcut
+                // leave pc = null
+            } else {
+                reportError("Found defined @Pointcut on an abstract method", struct);
+                return false;//stop
+            }
+        } else {
+        	if (pointcutExpr==null || (pointcutExpr != null && isNullOrEmpty(pointcutExpr.getValue().stringifyValue()))) {
+        		// the matches nothing pointcut (125475/125480) - perhaps not as cleanly supported as it could be.
+        	} else {
+              if (pointcutExpr != null) {
+                // use a LazyResolvedPointcutDefinition so that the pointcut is resolved lazily
+                // since for it to be resolved, we will need other pointcuts to be registered as well
+                pc = parsePointcut(pointcutExpr.getValue().stringifyValue(), struct, true);
+                if (pc == null) return false;//parse error
+                pc.setLocation(struct.context, -1, -1);//FIXME AVASM !! bMethod is null here..
+              } else {
+                reportError("Found undefined @Pointcut on a non-abstract method", struct);
+                return false;
+              }
+        	}
+        }
+        // do not resolve binding now but lazily
+        struct.ajAttributes.add(
+                new AjAttribute.PointcutDeclarationAttribute(
+                        new LazyResolvedPointcutDefinition(
+                                struct.enclosingType,
+                                struct.method.getModifiers(),
+                                struct.method.getName(),
+                                argumentTypes,
+                                UnresolvedType.forSignature(struct.method.getReturnType().getSignature()),
+                                pc,//can be null for abstract pointcut
+                                binding // can be null for abstract pointcut
+                        )
+                )
+        );
+        return true;
     }
 
     /**
@@ -1492,15 +1521,37 @@ public class AtAjAttributes {
         }
         return null;
     }
+    
+    /**
+     * Return the argNames set for an annotation or null if it is not specified.
+     */
+    private static String getArgNamesValue(AnnotationGen anno) {
+    	 for (Iterator iterator1 = anno.getValues().iterator(); iterator1.hasNext();) {
+    		 ElementNameValuePairGen element = (ElementNameValuePairGen) iterator1.next();
+             if (ARGNAMES.equals(element.getNameString())) {
+                 return element.getValue().stringifyValue();
+             }
+         }
+         return null;
+    }
+    
+    private static String lastbit(String fqname) {
+    	int i = fqname.lastIndexOf(".");
+    	if (i==-1) return fqname; else return fqname.substring(i+1);
+    }
 
     /**
-     * Extract the method argument names as in source from debug info
-     * returns an empty array upon inconsistency
+     * Extract the method argument names.  First we try the debug info attached
+     * to the method (the LocalVariableTable) - if we cannot find that we look
+     * to use the argNames value that may have been supplied on the associated
+     * annotation.  If that fails we just don't know and return an empty string.
      *
      * @param method
-     * @return method arg names as in source
+     * @param argNamesFromAnnotation 
+     * @param methodStruct 
+     * @return method argument names
      */
-    private static String[] getMethodArgumentNamesAsInSource(Method method) {
+    private static String[] getMethodArgumentNames(Method method, String argNamesFromAnnotation, AjAttributeMethodStruct methodStruct) {
         if (method.getArgumentTypes().length == 0) {
             return EMPTY_STRINGS;
         }
@@ -1517,6 +1568,28 @@ public class AtAjAttributes {
                     }
                 }
             }
+        } else {
+        	// No debug info, do we have an annotation value we can rely on?
+        	if (argNamesFromAnnotation!=null) {
+        		StringTokenizer st = new StringTokenizer(argNamesFromAnnotation," ,");
+        		List args = new ArrayList();
+        		while (st.hasMoreTokens()) { args.add(st.nextToken());}
+        		if (args.size()!=method.getArgumentTypes().length) {
+        			StringBuffer shortString = new StringBuffer().append(lastbit(method.getReturnType().toString())).append(" ").append(method.getName());
+        			if (method.getArgumentTypes().length>0) {
+        				shortString.append("(");
+        				for (int i =0; i<method.getArgumentTypes().length;i++) {
+        					shortString.append(lastbit(method.getArgumentTypes()[i].toString()));
+        					if ((i+1)<method.getArgumentTypes().length) shortString.append(",");
+        					
+        				}
+        				shortString.append(")");
+        		    }
+        			reportError("argNames annotation value does not specify the right number of argument names for the method '"+shortString.toString()+"'",methodStruct);
+                    return EMPTY_STRINGS;
+        		}
+        		return (String[])args.toArray(new String[]{});
+        	}
         }
 
         if (arguments.size() != method.getArgumentTypes().length) {
@@ -1619,7 +1692,7 @@ public class AtAjAttributes {
 
         private Pointcut m_lazyPointcut = null;
 
-        public LazyResolvedPointcutDefinition(ResolvedType declaringType, int modifiers, String name,
+        public LazyResolvedPointcutDefinition(UnresolvedType declaringType, int modifiers, String name,
                                               UnresolvedType[] parameterTypes, UnresolvedType returnType,
                                               Pointcut pointcut, IScope binding) {
             super(declaringType, modifiers, name, parameterTypes, returnType, null);

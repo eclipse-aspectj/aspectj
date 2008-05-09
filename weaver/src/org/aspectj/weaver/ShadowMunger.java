@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver;
 
 import java.io.File;
@@ -42,10 +41,9 @@ import org.aspectj.weaver.patterns.Pointcut;
  *     which may modify state.  
  * Then implement is called. 
  */
-
 public abstract class ShadowMunger implements PartialOrder.PartialComparable, IHasPosition {
-	protected Pointcut pointcut;
-	
+
+	protected Pointcut pointcut;	
 	// these three fields hold the source location of this munger
 	protected int start, end;
 	protected ISourceContext sourceContext;
@@ -62,6 +60,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		this.end = end;
 		this.sourceContext = sourceContext;
 	}
+
 	
 	public abstract ShadowMunger concretize(ResolvedType fromType, World world, PerClause clause);	
 

@@ -53,7 +53,7 @@ import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
-import org.aspectj.util.CollectionUtil;
+import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
@@ -481,17 +481,12 @@ public final class LazyClassGen {
         }
         
         // Add a weaver version attribute to the file being produced (if necessary...)
-        boolean hasVersionAttribute = false;        
-        Attribute[] attrs = myGen.getAttributes();
-        for (int i = 0; i < attrs.length && !hasVersionAttribute; i++) {
-			Attribute attribute = attrs[i];
-			if (attribute.getName().equals("org.aspectj.weaver.WeaverVersion")) hasVersionAttribute=true;
-		}        
-        if (!hasVersionAttribute)
-        	myGen.addAttribute(BcelAttributes.bcelAttribute(new AjAttribute.WeaverVersionInfo(),getConstantPool()));
+        if (!myGen.hasAttribute("org.aspectj.weaver.WeaverVersion")) {
+        	myGen.addAttribute(Utility.bcelAttribute(new AjAttribute.WeaverVersionInfo(),getConstantPool()));
+        }
 
         if (myType != null && myType.getWeaverState() != null) {
-			myGen.addAttribute(BcelAttributes.bcelAttribute(
+			myGen.addAttribute(Utility.bcelAttribute(
 				new AjAttribute.WeaverState(myType.getWeaverState()), 
 				getConstantPool()));
     	}
@@ -505,7 +500,13 @@ public final class LazyClassGen {
 
     	addAjcInitializers();
 
-        calculateSourceDebugExtensionOffsets();
+		// 17Feb05 - ASC - Skip this for now - it crashes IBM 1.4.2 jvms (pr80430).  Will be revisited when contents
+		// of attribute are confirmed to be correct.
+    	boolean sourceDebugExtensionSupportSwitchedOn = false;
+    	
+    	if (sourceDebugExtensionSupportSwitchedOn) {
+    		calculateSourceDebugExtensionOffsets();
+    	}
         
         int len = methodGens.size();
         myGen.setMethods(Method.NoMethods);
@@ -515,25 +516,26 @@ public final class LazyClassGen {
             if (isEmptyClinit(gen)) continue;
             myGen.addMethod(gen.getMethod());
         }
+        
         len = fields.size();
         myGen.setFields(Field.NoFields);
         for (int i = 0; i < len; i++) {
             BcelField gen = (BcelField) fields.get(i);
             myGen.addField(gen.getField(this.constantPoolGen));
         }
-        
-		if (inlinedFiles.size() != 0) {
-			if (hasSourceDebugExtensionAttribute(myGen)) {
-				world.showMessage(
-					IMessage.WARNING,
-					WeaverMessages.format(WeaverMessages.OVERWRITE_JSR45,getFileName()),
-					null,
-					null);
+
+    	if (sourceDebugExtensionSupportSwitchedOn) {
+			if (inlinedFiles.size() != 0) {
+				if (hasSourceDebugExtensionAttribute(myGen)) {
+					world.showMessage(
+						IMessage.WARNING,
+						WeaverMessages.format(WeaverMessages.OVERWRITE_JSR45,getFileName()),
+						null,
+						null);
+				}
+				// myGen.addAttribute(getSourceDebugExtensionAttribute());
 			}
-			// 17Feb05 - ASC - Skip this for now - it crashes IBM 1.4.2 jvms (pr80430).  Will be revisited when contents
-			// of attribute are confirmed to be correct.
-			// myGen.addAttribute(getSourceDebugExtensionAttribute());
-		}
+    	}
 		
 		fixupGenericSignatureAttribute();
     }
@@ -560,11 +562,7 @@ public final class LazyClassGen {
 		// 2. Find the old attribute
 		Signature sigAttr = null;
 		if (myType!=null) { // if null, this is a type built from scratch, it won't already have a sig attribute
-			Attribute[] as = myGen.getAttributes();
-			for (int i = 0; i < as.length; i++) {
-				Attribute attribute = as[i];
-				if (attribute.getName().equals("Signature")) sigAttr = (Signature)attribute;
-			}
+			sigAttr = (Signature) myGen.getAttribute("Signature");
 		}
 		
 		// 3. Do we need an attribute?
@@ -632,7 +630,7 @@ public final class LazyClassGen {
 		// create an empty myGen so that we can give back a return value that doesn't upset the
 		// rest of the process.
 		myGen = new ClassGen(myGen.getClassName(), myGen.getSuperclassName(), 
-		        myGen.getFileName(), myGen.getAccessFlags(), myGen.getInterfaceNames());
+		        myGen.getFileName(), myGen.getModifiers(), myGen.getInterfaceNames());
 		// raise an error against this compilation unit.
 		getWorld().showMessage(
 				IMessage.ERROR, 
@@ -643,15 +641,16 @@ public final class LazyClassGen {
 	}
 
 	private static boolean hasSourceDebugExtensionAttribute(ClassGen gen) {
-		ConstantPool pool = gen.getConstantPool();
-		Attribute[] attrs = gen.getAttributes();
-		for (int i = 0; i < attrs.length; i++) {
-			if ("SourceDebugExtension"
-				.equals(((ConstantUtf8) pool.getConstant(attrs[i].getNameIndex())).getBytes())) {
-				return true;
-			}
-		}
-		return false;
+		return gen.hasAttribute("SourceDebugExtension");
+//		ConstantPool pool = gen.getConstantPool();
+//		Attribute[] attrs = gen.getAttributes();
+//		for (int i = 0; i < attrs.length; i++) {
+//			if ("SourceDebugExtension"
+//				.equals(((ConstantUtf8) pool.getConstant(attrs[i].getNameIndex())).getBytes())) {
+//				return true;
+//			}
+//		}
+//		return false;
 	}
 
     public JavaClass getJavaClass(BcelWorld world) {
@@ -734,10 +733,10 @@ public final class LazyClassGen {
 
     public String toShortString() {
         String s =
-            org.aspectj.apache.bcel.classfile.Utility.accessToString(myGen.getAccessFlags(), true);
+            org.aspectj.apache.bcel.classfile.Utility.accessToString(myGen.getModifiers(), true);
         if (s != "")
             s += " ";
-        s += org.aspectj.apache.bcel.classfile.Utility.classOrInterface(myGen.getAccessFlags());
+        s += org.aspectj.apache.bcel.classfile.Utility.classOrInterface(myGen.getModifiers());
         s += " ";
         s += myGen.getClassName();
         return s;
@@ -861,7 +860,7 @@ public final class LazyClassGen {
         	Type.VOID,
         	"<clinit>",
         	new Type[0],
-        	CollectionUtil.NO_STRINGS,
+        	LangUtil.NO_STRINGS,
         	this);
        	clinit.getBody().insert(InstructionConstants.RETURN);
         methodGens.add(clinit);
@@ -878,7 +877,7 @@ public final class LazyClassGen {
         	Type.VOID,
         	NameMangler.AJC_PRE_CLINIT_NAME,
         	new Type[0],
-        	CollectionUtil.NO_STRINGS,
+        	LangUtil.NO_STRINGS,
         	this);
        	ajcClinit.getBody().insert(InstructionConstants.RETURN);
         methodGens.add(ajcClinit);
@@ -1258,7 +1257,8 @@ public final class LazyClassGen {
 	
 	private void makeSyntheticAndTransientIfNeeded(FieldGen field) {
 		if (field.getName().startsWith(NameMangler.PREFIX) &&
-			!field.getName().startsWith("ajc$interField$")) {
+			!field.getName().startsWith("ajc$interField$") &&
+			!field.getName().startsWith("ajc$instance$")) {
 			// it's an aj added field
 			// first do transient
 			if (!field.isStatic()) {
@@ -1284,9 +1284,9 @@ public final class LazyClassGen {
 		}
 	}
 	
-		private boolean hasSyntheticAttribute(Attribute[] attributes) {
-		for (int i = 0; i < attributes.length; i++) {
-			if (attributes[i].getName().equals("Synthetic")) {
+		private boolean hasSyntheticAttribute(List attributes) {
+		for (int i = 0; i < attributes.size(); i++) {
+			if (((Attribute)attributes.get(i)).getName().equals("Synthetic")) {
 				return true;
 			}
 		}
@@ -1338,7 +1338,7 @@ public final class LazyClassGen {
 	
 	
 	public void forcePublic() {
-		myGen.setAccessFlags(Utility.makePublic(myGen.getAccessFlags()));
+		myGen.setModifiers(Utility.makePublic(myGen.getModifiers()));
 	}
 
 	

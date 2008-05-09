@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute.EffectiveSignatureAttribute;
@@ -89,6 +90,10 @@ public class JoinPointSignature implements ResolvedMember {
 
 	public ResolvedType[] getAnnotationTypes() {
 		return realMember.getAnnotationTypes();
+	}
+	
+	public AnnotationX getAnnotationOfType(UnresolvedType ofType) {
+		return realMember.getAnnotationOfType(ofType);
 	}
 
 	public void setAnnotationTypes(UnresolvedType[] annotationtypes) {
@@ -235,15 +240,7 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.resolve(world);
 	}
 
-	public int compareTo(Object other) {
-		return realMember.compareTo(other);
-	}
-
-	public String toLongString() {
-		return realMember.toLongString();
-	}
-
-	public Kind getKind() {
+	public MemberKind getKind() {
 		return realMember.getKind();
 	}
 
@@ -262,6 +259,14 @@ public class JoinPointSignature implements ResolvedMember {
 	public UnresolvedType[] getParameterTypes() {
 		return realMember.getParameterTypes();
 	}
+	
+	public AnnotationX[][] getParameterAnnotations() {
+		return realMember.getParameterAnnotations();
+	}
+	
+	public ResolvedType[][] getParameterAnnotationTypes() {
+		return realMember.getParameterAnnotationTypes();
+	}
 
 	public String getSignature() {
 		return realMember.getSignature();
@@ -277,18 +282,6 @@ public class JoinPointSignature implements ResolvedMember {
 
 	public boolean isCompatibleWith(Member am) {
 		return realMember.isCompatibleWith(am);
-	}
-
-	public boolean isProtected(World world) {
-		return realMember.isProtected(world);
-	}
-
-	public boolean isStatic(World world) {
-		return realMember.isStatic(world);
-	}
-
-	public boolean isStrict(World world) {
-		return realMember.isStrict(world);
 	}
 
 	public boolean isStatic() {
@@ -373,7 +366,7 @@ public class JoinPointSignature implements ResolvedMember {
 	   realMember.resetName(newName);
    }	
 
-	public void resetKind(Kind newKind) {
+	public void resetKind(MemberKind newKind) {
 		realMember.resetKind(newKind);
 	}
 	
@@ -407,7 +400,11 @@ public class JoinPointSignature implements ResolvedMember {
 
 	public void evictWeavingState() { realMember.evictWeavingState(); }
 
-	public Member slimline() {
-		return this;
+	public ResolvedMember parameterizedWith(Map m, World w) {
+		return realMember.parameterizedWith(m,w);
+	}
+
+	public String getAnnotationDefaultValue() {
+		return realMember.getAnnotationDefaultValue();
 	}
 }

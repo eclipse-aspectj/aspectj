@@ -32,9 +32,11 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.AnnotationTargetKind;
+import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.Constants;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.JoinPointSignature;
+import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewFieldTypeMunger;
@@ -43,11 +45,10 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.bcel.BcelTypeMunger;
 
 
 public class SignaturePattern extends PatternNode {
-	private Member.Kind kind;
+	private MemberKind kind;
 	private ModifiersPattern modifiers;
 	private TypePattern returnType;
     private TypePattern declaringType;
@@ -57,7 +58,7 @@ public class SignaturePattern extends PatternNode {
     private AnnotationTypePattern annotationPattern;
     private transient int hashcode = -1;
     	
-	public SignaturePattern(Member.Kind kind, ModifiersPattern modifiers,
+	public SignaturePattern(MemberKind kind, ModifiersPattern modifiers,
 	                         TypePattern returnType, TypePattern declaringType,
 	                         NamePattern name, TypePatternList parameterTypes,
 	                         ThrowsPattern throwsPattern,
@@ -84,7 +85,7 @@ public class SignaturePattern extends PatternNode {
 		}
 		if (parameterTypes != null) {
 			parameterTypes = parameterTypes.resolveBindings(scope, bindings, false, false);
-			checkForIncorrectTargetKind(parameterTypes,scope,false);
+			checkForIncorrectTargetKind(parameterTypes,scope,false,true);
 		}
 		if (throwsPattern != null) {
 			throwsPattern = throwsPattern.resolveBindings(scope, bindings);
@@ -100,11 +101,15 @@ public class SignaturePattern extends PatternNode {
 		hashcode =-1;
     	return this;
     }
+    private void checkForIncorrectTargetKind(PatternNode patternNode, IScope scope, boolean targetsOtherThanTypeAllowed) {
+    	checkForIncorrectTargetKind(patternNode, scope, targetsOtherThanTypeAllowed, false);
+    	
+    }
     
     // bug 115252 - adding an xlint warning if the annnotation target type is 
     // wrong. This logic, or similar, may have to be applied elsewhere in the case
     // of pointcuts which don't go through SignaturePattern.resolveBindings(..)
-    private void checkForIncorrectTargetKind(PatternNode patternNode, IScope scope, boolean targetsOtherThanTypeAllowed) {
+    private void checkForIncorrectTargetKind(PatternNode patternNode, IScope scope, boolean targetsOtherThanTypeAllowed, boolean parameterTargettingAnnotationsAllowed) {
     	// return if we're not in java5 mode, if the unmatchedTargetKind Xlint
     	// warning has been turned off, or if the patternNode is *
     	if (!scope.getWorld().isInJava5Mode()
@@ -125,7 +130,7 @@ public class SignaturePattern extends PatternNode {
 				reportUnmatchedTargetKindMessage(targetKinds,patternNode,scope,false);
 			}
 		} else {
-			TypePatternVisitor visitor = new TypePatternVisitor(scope,targetsOtherThanTypeAllowed);
+			TypePatternVisitor visitor = new TypePatternVisitor(scope,targetsOtherThanTypeAllowed,parameterTargettingAnnotationsAllowed);
 			patternNode.traverse(visitor,null);
 			if (visitor.containedIncorrectTargetKind()) {
 				Set keys = visitor.getIncorrectTargetKinds().keySet();				
@@ -171,14 +176,17 @@ public class SignaturePattern extends PatternNode {
     	private IScope scope;
     	private Map incorrectTargetKinds /* PatternNode -> AnnotationTargetKind[] */ = new HashMap();
     	private boolean targetsOtherThanTypeAllowed;
+		private boolean parameterTargettingAnnotationsAllowed;
 
     	/**
     	 * @param requiredTarget - the signature pattern Kind
     	 * @param scope
+    	 * @param parameterTargettingAnnotationsAllowed 
     	 */
-    	public TypePatternVisitor(IScope scope, boolean targetsOtherThanTypeAllowed) {
+    	public TypePatternVisitor(IScope scope, boolean targetsOtherThanTypeAllowed, boolean parameterTargettingAnnotationsAllowed) {
     		this.scope = scope;
     		this.targetsOtherThanTypeAllowed = targetsOtherThanTypeAllowed;
+    		this.parameterTargettingAnnotationsAllowed = parameterTargettingAnnotationsAllowed;
     	}
     	
     	public Object visit(WildAnnotationTypePattern node, Object data) {
@@ -196,7 +204,9 @@ public class SignaturePattern extends PatternNode {
 				if (targetKinds == null) return data;
 				List incorrectTargets = new ArrayList();
 				for (int i = 0; i < targetKinds.length; i++) {
-					if (targetKinds[i].getName().equals(kind.getName())) {
+					if (targetKinds[i].getName().equals(kind.getName()) ||
+							(targetKinds[i].getName().equals("PARAMETER") && node.isForParameterAnnotationMatch())
+							) {
 						return data;
 					}
 					incorrectTargets.add(targetKinds[i]);
@@ -207,13 +217,20 @@ public class SignaturePattern extends PatternNode {
 			} else if (!targetsOtherThanTypeAllowed && !resolvedType.canAnnotationTargetType()) {
 				AnnotationTargetKind[] targetKinds = resolvedType.getAnnotationTargetKinds();
 				if (targetKinds == null) return data;
+				// exception here is if parameter annotations are allowed
+				if (parameterTargettingAnnotationsAllowed) {
+					for (int i = 0; i < targetKinds.length; i++) {
+						AnnotationTargetKind annotationTargetKind = targetKinds[i];
+						if (annotationTargetKind.getName().equals("PARAMETER")  && node.isForParameterAnnotationMatch()) return data;
+					}
+				}
 				incorrectTargetKinds.put(node,targetKinds);
 			}
     		return data;
     	}
     	
     	public Object visit(ExactTypePattern node, Object data) {
-    		ExactAnnotationTypePattern eatp =  new ExactAnnotationTypePattern(node.getExactType().resolve(scope.getWorld()));
+    		ExactAnnotationTypePattern eatp =  new ExactAnnotationTypePattern(node.getExactType().resolve(scope.getWorld()),null);
     		eatp.accept(this,data);		
     		return data;
     	}
@@ -382,9 +399,11 @@ public class SignaturePattern extends PatternNode {
 		}
 		if (!parameterTypes.canMatchSignatureWithNParameters(aMethod.getParameterTypes().length)) return FuzzyBoolean.NO;
 		ResolvedType[] resolvedParameters = world.resolve(aMethod.getParameterTypes());
-		if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC).alwaysTrue()) {
+		ResolvedType[][] parameterAnnotationTypes = aMethod.getParameterAnnotationTypes();
+		if (parameterAnnotationTypes==null || parameterAnnotationTypes.length==0) parameterAnnotationTypes=null;
+		if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC,parameterAnnotationTypes).alwaysTrue()) {
 			// It could still be a match based on the generic sig parameter types of a parameterized type
-			if (!parameterTypes.matches(world.resolve(aMethod.getGenericParameterTypes()),TypePattern.STATIC).alwaysTrue()) {
+			if (!parameterTypes.matches(world.resolve(aMethod.getGenericParameterTypes()),TypePattern.STATIC,parameterAnnotationTypes).alwaysTrue()) {
 				return FuzzyBoolean.MAYBE;
 				// It could STILL be a match based on the erasure of the parameter types??
 				// to be determined via test cases...
@@ -398,6 +417,8 @@ public class SignaturePattern extends PatternNode {
 		return FuzzyBoolean.YES;
 	}
 	
+
+
 	/**
 	 * match on declaring type, parameter types, throws types
 	 */
@@ -406,7 +427,12 @@ public class SignaturePattern extends PatternNode {
 
 		if (!parameterTypes.canMatchSignatureWithNParameters(aConstructor.getParameterTypes().length)) return FuzzyBoolean.NO;
 		ResolvedType[] resolvedParameters = world.resolve(aConstructor.getParameterTypes());
-		if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC).alwaysTrue()) {
+		
+		ResolvedType[][] parameterAnnotationTypes = aConstructor.getParameterAnnotationTypes();
+
+		if (parameterAnnotationTypes==null || parameterAnnotationTypes.length==0) parameterAnnotationTypes=null;
+
+		if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC,parameterAnnotationTypes).alwaysTrue()) {
 			// It could still be a match based on the generic sig parameter types of a parameterized type
 			if (!parameterTypes.matches(world.resolve(aConstructor.getGenericParameterTypes()),TypePattern.STATIC).alwaysTrue()) {
 				return FuzzyBoolean.MAYBE;
@@ -474,7 +500,7 @@ public class SignaturePattern extends PatternNode {
 	    ResolvedMember [] mems = member.getDeclaringType().resolve(world).getDeclaredFields(); // FIXME asc should include supers with getInterTypeMungersIncludingSupers?
 	    List mungers = member.getDeclaringType().resolve(world).getInterTypeMungers(); 
 		for (Iterator iter = mungers.iterator(); iter.hasNext();) {
-	        BcelTypeMunger typeMunger = (BcelTypeMunger) iter.next();
+	        ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) iter.next();
 			if (typeMunger.getMunger() instanceof NewFieldTypeMunger) {
 			  ResolvedMember fakerm = typeMunger.getSignature();
 			  ResolvedMember ajcMethod = AjcMemberMaker.interFieldInitializer(fakerm,typeMunger.getAspectType());
@@ -571,7 +597,7 @@ public class SignaturePattern extends PatternNode {
     public NamePattern getName() { return name; }
     public TypePattern getDeclaringType() { return declaringType; }
     
-    public Member.Kind getKind() {
+    public MemberKind getKind() {
     	return kind;
     }
     
@@ -657,7 +683,7 @@ public class SignaturePattern extends PatternNode {
 	}
 
 	public static SignaturePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
-		Member.Kind kind = Member.Kind.read(s);
+		MemberKind kind = MemberKind.read(s);
 		ModifiersPattern modifiers = ModifiersPattern.read(s);
 		TypePattern returnType = TypePattern.read(s, context);
 		TypePattern declaringType = TypePattern.read(s, context);

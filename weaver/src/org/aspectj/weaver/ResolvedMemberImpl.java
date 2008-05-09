@@ -40,7 +40,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	public static boolean showParameterNames = true;
 
     private String[] parameterNames = null;
-    protected UnresolvedType[] checkedExceptions = UnresolvedType.NONE;
+    protected UnresolvedType[] checkedExceptions = UnresolvedType.NONE; // OPTIMIZE unpack on demand
 //	private boolean isAjSynthetic = false;    
 	protected int start, end;
 	protected ISourceContext sourceContext = null;
@@ -67,6 +67,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
   //   protected ResolvedMember backingGenericMember = null;
         
     protected Set annotationTypes = null;
+    protected ResolvedType[][] parameterAnnotationTypes = null;
+    
 	// Some members are 'created' to represent other things (for example ITDs).  These
 	// members have their annotations stored elsewhere, and this flag indicates that is
 	// the case.  It is up to the caller to work out where that is!
@@ -89,7 +91,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     
     //XXX deprecate this in favor of the constructor below
 	public ResolvedMemberImpl(
-		Kind kind,
+		MemberKind kind,
 		UnresolvedType declaringType,
 		int modifiers,
 		UnresolvedType returnType,
@@ -102,7 +104,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     
     
 	public ResolvedMemberImpl(
-		Kind kind,
+		MemberKind kind,
 		UnresolvedType declaringType,
 		int modifiers,
 		UnresolvedType returnType,
@@ -115,7 +117,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	}
     
 	public ResolvedMemberImpl(
-			Kind kind,
+			MemberKind kind,
 			UnresolvedType declaringType,
 			int modifiers,
 			UnresolvedType returnType,
@@ -133,7 +135,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		}
 	
 	public ResolvedMemberImpl(
-		Kind kind,
+		MemberKind kind,
 		UnresolvedType declaringType,
 		int modifiers,
 		String name,
@@ -339,11 +341,16 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     	if (annotationTypes == null) return null;
 		return (ResolvedType[])annotationTypes.toArray(new ResolvedType[]{});
     }
+
+    public AnnotationX getAnnotationOfType(UnresolvedType ofType) { 
+		throw new UnsupportedOperationException("You should resolve this member and call getAnnotationOfType() on the result...");
+    }
     
     public AnnotationX[] getAnnotations() {
     	if ((bits&HAS_BACKING_GENERIC_MEMBER)!=0 && metaInfo.backingGenericMember!=null) return metaInfo.backingGenericMember.getAnnotations();
 //    	if (backingGenericMember != null) return backingGenericMember.getAnnotations();
-    	return super.getAnnotations();
+//    	return super.getAnnotations();
+    	throw new IllegalStateException("Unable to answer getAnnotations() for "+this.toString());
     }
     
 	public void setAnnotationTypes(UnresolvedType[] annotationtypes) {
@@ -353,6 +360,16 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			annotationTypes.add(typeX);
 		}
 	}
+	
+    public ResolvedType[][] getParameterAnnotationTypes() {
+    	if (parameterAnnotationTypes == null) return null;
+		return parameterAnnotationTypes;
+    }
+    
+    public AnnotationX[][] getParameterAnnotations() {
+    	if (hasBackingGenericMember()) return getBackingGenericMember().getParameterAnnotations();
+    	throw new IllegalStateException("Only a resolvedmember with backing generic member can answer this.  Member="+toString());
+    }
 	
 	public void addAnnotation(AnnotationX annotation) {
    	    // FIXME asc only allows for annotation types, not instances - should it?
@@ -441,7 +458,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     
     public static ResolvedMemberImpl readResolvedMember(VersionedDataInputStream s, ISourceContext sourceContext) throws IOException {
     	
-    	ResolvedMemberImpl m = new ResolvedMemberImpl(Kind.read(s), UnresolvedType.read(s), s.readInt(), 
+    	ResolvedMemberImpl m = new ResolvedMemberImpl(MemberKind.read(s), UnresolvedType.read(s), s.readInt(), 
     			s.readUTF(), s.readUTF());
 		m.checkedExceptions = UnresolvedType.readArray(s);
 		
@@ -704,6 +721,68 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		return ret;
 	}
 		
+
+	/**
+	 * Replace occurrences of type variables in the signature with values contained in the map.  The map is of the form A=String,B=Integer and
+	 * so a signature List<A> Foo.m(B i) {} would become List<String> Foo.m(Integer i) {}
+	 */
+	public ResolvedMember parameterizedWith(Map m, World w) {
+//		if (//isParameterized &&  <-- might need this bit...
+//				!getDeclaringType().isGenericType()) {
+//			throw new IllegalStateException("Can't ask to parameterize a member of non-generic type: "+getDeclaringType()+"  kind("+getDeclaringType().typeKind+")");
+//		}
+        declaringType = declaringType.resolve(w);
+        if (declaringType.isRawType()) declaringType = ((ResolvedType)declaringType).getGenericType();
+		TypeVariable[] typeVariables = getDeclaringType().getTypeVariables();
+//		if (isParameterized && (typeVariables.length != typeParameters.length)) {
+//			throw new IllegalStateException("Wrong number of type parameters supplied");
+//		}
+//		Map typeMap = new HashMap();
+//		boolean typeParametersSupplied = typeParameters!=null && typeParameters.length>0;
+//		if (typeVariables!=null) {
+//			// If no 'replacements' were supplied in the typeParameters array then collapse
+//			// type variables to their first bound.
+//			for (int i = 0; i < typeVariables.length; i++) {
+//				UnresolvedType ut = (!typeParametersSupplied?typeVariables[i].getFirstBound():typeParameters[i]);
+//				typeMap.put(typeVariables[i].getName(),ut);
+//			}
+//		}
+//		// For ITDs on generic types that use type variables from the target type, the aliases
+//		// record the alternative names used throughout the ITD expression that must map to
+//		// the same value as the type variables real name.
+//		if (aliases!=null) {
+//			int posn = 0;
+//			for (Iterator iter = aliases.iterator(); iter.hasNext();) {
+//				String typeVariableAlias = (String) iter.next();
+//				typeMap.put(typeVariableAlias,(!typeParametersSupplied?typeVariables[posn].getFirstBound():typeParameters[posn]));
+//				posn++;
+//			}
+//		}
+		
+		UnresolvedType parameterizedReturnType = parameterize(getGenericReturnType(),m,true,w);
+		UnresolvedType[] parameterizedParameterTypes = new UnresolvedType[getGenericParameterTypes().length];		
+		UnresolvedType[] genericParameterTypes = getGenericParameterTypes(); 
+		for (int i = 0; i < parameterizedParameterTypes.length; i++) {
+			parameterizedParameterTypes[i] = 
+				parameterize(genericParameterTypes[i], m,true,w);
+		}
+		ResolvedMemberImpl ret = new ResolvedMemberImpl(
+					getKind(),
+					declaringType,
+					getModifiers(),
+					parameterizedReturnType,
+					getName(),
+					parameterizedParameterTypes,
+					getExceptions(),
+					this
+				);
+		ret.setTypeVariables(getTypeVariables());
+		ret.setSourceContext(getSourceContext());
+		ret.setPosition(getStart(),getEnd());
+		ret.setParameterNames(getParameterNames());
+		return ret;
+	}
+		
 	public void setTypeVariables(TypeVariable[] tvars) {
 		typeVariables = tvars;
 	}
@@ -713,6 +792,10 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	}
 	
 	protected UnresolvedType parameterize(UnresolvedType aType, Map typeVariableMap, boolean inParameterizedType) {
+		return parameterize(aType,typeVariableMap,inParameterizedType,null);
+	}
+	
+	protected UnresolvedType parameterize(UnresolvedType aType, Map typeVariableMap, boolean inParameterizedType,World w) {
 		if (aType instanceof TypeVariableReference) {
 			String variableName = ((TypeVariableReference)aType).getTypeVariable().getName();
 			if (!typeVariableMap.containsKey(variableName)) {
@@ -721,7 +804,15 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			return (UnresolvedType) typeVariableMap.get(variableName);
 		} else if (aType.isParameterizedType()) {
 			if (inParameterizedType) {
-				if (aType instanceof UnresolvedType) aType= aType.resolve(((ResolvedType)getDeclaringType()).getWorld());
+//				if (!(getDeclaringType() instanceof ResolvedType)) {
+//					int stop = 1;
+//				}
+				if (aType instanceof UnresolvedType) {
+					if (w!=null) aType = aType.resolve(w);
+					else {
+						aType= aType.resolve(((ResolvedType)getDeclaringType()).getWorld());
+					}
+				}
 				return aType.parameterize(typeVariableMap);
 			} else {
 				return aType.getRawType();
@@ -806,7 +897,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
       * using this method - this is safe.
       */
 	public void resetName(String newName) {this.name = newName;}
-	public void resetKind(Kind newKind)   {this.kind=newKind;  }
+	public void resetKind(MemberKind newKind)   {this.kind=newKind;  }
     public void resetModifiers(int newModifiers) {this.modifiers=newModifiers;}
 
 	public void resetReturnTypeToObjectArray() {
@@ -854,7 +945,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		StringBuffer sig = new StringBuffer();
 		UnresolvedType[] myParameterTypes = getGenericParameterTypes();
 		for (int i = 0; i < myParameterTypes.length; i++) {
-			appendSigWithTypeVarBoundsRemoved(myParameterTypes[i], sig);
+			appendSigWithTypeVarBoundsRemoved(myParameterTypes[i], sig, new HashSet());
 		}
 		myParameterSignatureWithBoundsRemoved = sig.toString();
 		return myParameterSignatureWithBoundsRemoved;
@@ -878,14 +969,21 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	
 	// does NOT produce a meaningful java signature, but does give a unique string suitable for
 	// comparison.
-	private void appendSigWithTypeVarBoundsRemoved(UnresolvedType aType, StringBuffer toBuffer) {
+	public static void appendSigWithTypeVarBoundsRemoved(UnresolvedType aType, StringBuffer toBuffer, Set alreadyUsedTypeVars) {
 		if (aType.isTypeVariableReference()) {
-			toBuffer.append("T;");
+			// pr204505
+		    if (alreadyUsedTypeVars.contains(aType)) {
+                toBuffer.append("...");
+            } else {
+                alreadyUsedTypeVars.add(aType);
+                appendSigWithTypeVarBoundsRemoved(aType.getUpperBound(), toBuffer, alreadyUsedTypeVars);
+            }
+//			toBuffer.append("T;");
 		} else if (aType.isParameterizedType()) {
 			toBuffer.append(aType.getRawType().getSignature());
 			toBuffer.append("<");
 			for (int i = 0; i < aType.getTypeParameters().length; i++) {
-				appendSigWithTypeVarBoundsRemoved(aType.getTypeParameters()[i], toBuffer);
+				appendSigWithTypeVarBoundsRemoved(aType.getTypeParameters()[i], toBuffer, alreadyUsedTypeVars);
 			}
 			toBuffer.append(">;");
 		} else {
@@ -982,5 +1080,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	}
 
 	public void evictWeavingState() { }
+
+    public String getAnnotationDefaultValue() { 
+		throw new UnsupportedOperationException("You should resolve this member and call getAnnotationDefaultValue() on the result...");
+    }
 }
    

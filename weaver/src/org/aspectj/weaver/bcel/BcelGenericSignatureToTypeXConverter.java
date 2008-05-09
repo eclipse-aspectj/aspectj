@@ -255,11 +255,13 @@ public class BcelGenericSignatureToTypeXConverter {
 		
 		ReferenceType rt = (ReferenceType) aTypeX;
 		TypeVariable[] typeVars = rt.getTypeVariables();
-		for (int i = 0; i < typeVars.length; i++) {
-			if (typeVars[i].getUpperBound() instanceof FTPHolder) {
-				Signature.FormalTypeParameter key = ((FTPHolder) typeVars[i].getUpperBound()).ftpToBeSubstituted;
-				typeVars[i].setUpperBound((UnresolvedType)typeVariableResolutions.get(key));
-			}
+		if (typeVars != null) {
+            for (int i = 0; i < typeVars.length; i++) {
+                if (typeVars[i].getUpperBound() instanceof FTPHolder) {
+                    Signature.FormalTypeParameter key = ((FTPHolder) typeVars[i].getUpperBound()).ftpToBeSubstituted;
+                    typeVars[i].setUpperBound((UnresolvedType) typeVariableResolutions.get(key));
+                }
+            }
 		}
 	}
 	

@@ -19,6 +19,7 @@ import java.util.Arrays;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.MemberImpl;
+import org.aspectj.weaver.TestUtils;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 
@@ -46,7 +47,7 @@ public class TjpWeaveTestCase extends WeaveTestCase {
     	BcelAdvice munger = new BcelAdvice(
     		AdviceKind.stringToKind("before"),
     		makePointcutAll(), 
-      		MemberImpl.methodFromString("static void Aspect.ajc_before(org.aspectj.lang.JoinPoint$StaticPart)"),
+    		TestUtils.methodFromString("static void Aspect.ajc_before(org.aspectj.lang.JoinPoint$StaticPart)"),
     		Advice.ThisJoinPointStaticPart, -1, -1, null, null);
     	
         weaveTest("HelloWorld", "StaticTjpBeforeHelloWorld", munger);
@@ -57,7 +58,7 @@ public class TjpWeaveTestCase extends WeaveTestCase {
     	BcelAdvice munger = new BcelAdvice(
     		AdviceKind.stringToKind("before"),
     		makePointcutAll(), 
-      		MemberImpl.methodFromString("static void Aspect.ajc_before(org.aspectj.lang.JoinPoint$StaticPart)"),
+    		TestUtils.methodFromString("static void Aspect.ajc_before(org.aspectj.lang.JoinPoint$StaticPart)"),
     		Advice.ThisEnclosingJoinPointStaticPart, -1, -1, null, null);
     	
         weaveTest("HelloWorld", "StaticEnclosingTjpBeforeHelloWorld", munger);
@@ -68,7 +69,7 @@ public class TjpWeaveTestCase extends WeaveTestCase {
     	BcelAdvice munger = new BcelAdvice(
     		AdviceKind.stringToKind("before"),
     		makePointcutAll(), 
-      		MemberImpl.methodFromString("static void Aspect.ajc_before(org.aspectj.lang.JoinPoint)"),
+    		TestUtils.methodFromString("static void Aspect.ajc_before(org.aspectj.lang.JoinPoint)"),
     		Advice.ThisJoinPoint, -1, -1, null, null);
     	
         weaveTest("HelloWorld", "TjpBeforeHelloWorld", munger);
@@ -78,7 +79,7 @@ public class TjpWeaveTestCase extends WeaveTestCase {
     	BcelAdvice munger = new BcelAdvice(
     		AdviceKind.stringToKind("around"),
     		makePointcutAll(), 
-      		MemberImpl.methodFromString("static java.lang.Object Aspect.ajc_around(org.aspectj.runtime.internal.AroundClosure, org.aspectj.lang.JoinPoint)"),
+    		TestUtils.methodFromString("static java.lang.Object Aspect.ajc_around(org.aspectj.runtime.internal.AroundClosure, org.aspectj.lang.JoinPoint)"),
     		Advice.ThisJoinPoint | Advice.ExtraArgument, -1, -1, null, null);
     	
         weaveTest("HelloWorld", "TjpAroundHelloWorld", munger);
@@ -90,14 +91,14 @@ public class TjpWeaveTestCase extends WeaveTestCase {
     	BcelAdvice munger1 = new BcelAdvice(
     		AdviceKind.stringToKind("around"),
     		makePointcutAll(), 
-      		MemberImpl.methodFromString("static java.lang.Object Aspect.ajc_around(org.aspectj.runtime.internal.AroundClosure, org.aspectj.lang.JoinPoint)"),
+    		TestUtils.methodFromString("static java.lang.Object Aspect.ajc_around(org.aspectj.runtime.internal.AroundClosure, org.aspectj.lang.JoinPoint)"),
     		Advice.ThisJoinPoint | Advice.ExtraArgument, -1, -1, null, 
     		rtx);
     	
     	BcelAdvice munger2 = new BcelAdvice(
     		AdviceKind.stringToKind("around"),
     		makePointcutAll(), 
-      		MemberImpl.methodFromString("static java.lang.Object Aspect.ajc_around(org.aspectj.runtime.internal.AroundClosure, org.aspectj.lang.JoinPoint)"),
+    		TestUtils.methodFromString("static java.lang.Object Aspect.ajc_around(org.aspectj.runtime.internal.AroundClosure, org.aspectj.lang.JoinPoint)"),
     		Advice.ThisJoinPoint | Advice.ExtraArgument, -1, -1, null, 
     		rtx);
     	

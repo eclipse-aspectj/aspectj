@@ -128,6 +128,9 @@ public class Lint {
 	public final Kind advisingSynchronizedMethods = new Kind("advisingSynchronizedMethods",
 			"advice matching the synchronized method shadow ''{0}'' will be executed outside the lock rather than inside (compiler limitation)");
 
+	public final Kind mustWeaveXmlDefinedAspects = new Kind("mustWeaveXmlDefinedAspects",
+			"XML Defined aspects must be woven in cases where cflow pointcuts are involved. Currently the include/exclude patterns exclude ''{0}''");
+	
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(Lint.class);
 	
     public Lint(World world) {

@@ -252,9 +252,7 @@ public class AjcMemberMaker {
 
 	
 	public static ResolvedMember perSingletonAspectOfMethod(UnresolvedType declaringType) {
-		return new ResolvedMemberImpl(Member.METHOD,
-			declaringType, PUBLIC_STATIC, "aspectOf", 
-			"()" + declaringType.getSignature());		
+		return new ResolvedMemberImpl(Member.METHOD, declaringType, PUBLIC_STATIC, "aspectOf", "()" + declaringType.getSignature());
 	}
 	
 	public static ResolvedMember perSingletonHasAspectMethod(UnresolvedType declaringType) {

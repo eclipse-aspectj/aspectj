@@ -39,6 +39,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public static final ResolvedType[] EMPTY_RESOLVED_TYPE_ARRAY  = new ResolvedType[0];
 	public static final String PARAMETERIZED_TYPE_IDENTIFIER = "P";
 	
+	// Set during a type pattern match call - this currently used to hold the annotations
+	// that may be attached to a type when it used as a parameter
+	public ResolvedType[] temporaryAnnotationTypes;
 	private ResolvedType[] resolvedTypeParams;
 	private String binaryPath;
 	
@@ -111,6 +114,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     
     public ResolvedType[] getAnnotationTypes() {
     	return EMPTY_RESOLVED_TYPE_ARRAY;
+    }
+    
+    public AnnotationX getAnnotationOfType(UnresolvedType ofType) { 
+    	return null;
     }
     
     public final UnresolvedType getSuperclass(World world) {
@@ -286,7 +293,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
             boolean shouldSkip = false;
             for (int j = 0; j < rtx.interTypeMungers.size(); j++) {
                 ConcreteTypeMunger munger = (ConcreteTypeMunger) rtx.interTypeMungers.get(j);
-                if (munger.getMunger()!=null && munger.getMunger().getKind() == ResolvedTypeMunger.Parent) {
+                if (munger.getMunger()!=null && munger.getMunger().getKind() == ResolvedTypeMunger.Parent 
+                		&& ((NewParentTypeMunger)munger.getMunger()).getNewParent().equals(iface) // pr171953
+                		) {
                     shouldSkip = true;
                     break;
                 }
@@ -506,7 +515,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		crosscuttingMembers = new CrosscuttingMembers(this,shouldConcretizeIfNeeded);
 		crosscuttingMembers.setPerClause(getPerClause());
 		crosscuttingMembers.addShadowMungers(collectShadowMungers());
-		crosscuttingMembers.addTypeMungers(getTypeMungers());
+		// GENERICITDFIX
+//		crosscuttingMembers.addTypeMungers(collectTypeMungers());
+        crosscuttingMembers.addTypeMungers(getTypeMungers());
         //FIXME AV - skip but needed ?? or  ?? crosscuttingMembers.addLateTypeMungers(getLateTypeMungers());
 		crosscuttingMembers.addDeclares(collectDeclares(!this.doesNotExposeShadowMungers()));
 		crosscuttingMembers.addPrivilegedAccesses(getPrivilegedAccesses());
@@ -515,6 +526,41 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		//System.err.println("collected cc members: " + this + ", " + collectDeclares());
 		return crosscuttingMembers;
 	}
+	
+	public final Collection collectTypeMungers() {
+		if (! this.isAspect() ) return Collections.EMPTY_LIST;
+		
+		ArrayList ret = new ArrayList();
+		//if (this.isAbstract()) {
+//		for (Iterator i = getDeclares().iterator(); i.hasNext();) {
+//			Declare dec = (Declare) i.next();
+//			if (!dec.isAdviceLike()) ret.add(dec);
+//		}
+//        
+//        if (!includeAdviceLike) return ret;
+        
+		if (!this.isAbstract()) {
+			final Iterators.Filter dupFilter = Iterators.dupFilter();
+	        Iterators.Getter typeGetter = new Iterators.Getter() {
+	            public Iterator get(Object o) {
+	                return 
+	                    dupFilter.filter(
+	                        ((ResolvedType)o).getDirectSupertypes());
+	            }
+	        };
+	        Iterator typeIterator = Iterators.recur(this, typeGetter);
+	
+	        while (typeIterator.hasNext()) {
+	        	ResolvedType ty = (ResolvedType) typeIterator.next();
+	        	for (Iterator i = ty.getTypeMungers().iterator(); i.hasNext();) {
+	        		ConcreteTypeMunger dec = (ConcreteTypeMunger) i.next();
+					ret.add(dec);
+				}
+	        }
+		}
+		
+		return ret;
+    }
 	
 	public final Collection collectDeclares(boolean includeAdviceLike) {
 		if (! this.isAspect() ) return Collections.EMPTY_LIST;
@@ -802,7 +848,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     // ---- types
     public static ResolvedType makeArray(ResolvedType type, int dim) {
     	if (dim == 0) return type;
-    	ResolvedType array = new Array("[" + type.getSignature(),"["+type.getErasureSignature(),type.getWorld(),type);
+    	ResolvedType array = new ArrayReferenceType("[" + type.getSignature(),"["+type.getErasureSignature(),type.getWorld(),type);
     	return makeArray(array,dim-1);
     }
     
@@ -1159,6 +1205,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     protected void collectInterTypeMungers(List collector) {
         for (Iterator iter = getDirectSupertypes(); iter.hasNext();) {
 			ResolvedType superType = (ResolvedType) iter.next();
+			if (superType == null) {
+			    throw new BCException("UnexpectedProblem: a supertype in the hierarchy for " + this.getName() + " is null");
+            }
             superType.collectInterTypeMungers(collector);
 		}
         
@@ -1478,6 +1527,22 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	//??? returning too soon
 	private boolean compareToExistingMembers(ConcreteTypeMunger munger, Iterator existingMembers) {
 		ResolvedMember sig = munger.getSignature();
+		
+		ResolvedType declaringAspectType = munger.getAspectType();
+//		if (declaringAspectType.isRawType()) declaringAspectType = declaringAspectType.getGenericType();
+//		if (declaringAspectType.isGenericType()) {
+//
+//		       ResolvedType genericOnType =		getWorld().resolve(sig.getDeclaringType()).getGenericType();
+//		       ConcreteTypeMunger ctm =		munger.parameterizedFor(discoverActualOccurrenceOfTypeInHierarchy(genericOnType));
+//		       sig = ctm.getSignature(); // possible sig change when type
+//		}
+//		   if (munger.getMunger().hasTypeVariableAliases()) {
+//		       ResolvedType genericOnType =
+//		getWorld().resolve(sig.getDeclaringType()).getGenericType();
+//		       ConcreteTypeMunger ctm =
+//		munger.parameterizedFor(discoverActualOccurrenceOfTypeInHierarchy(genericOnType));
+//		       sig = ctm.getSignature(); // possible sig change when type parameters filled in
+//		       }
 		while (existingMembers.hasNext()) {
 			
 			ResolvedMember existingMember = (ResolvedMember)existingMembers.next();
@@ -1506,12 +1571,34 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 					  // FIXME this whole method seems very hokey - unaware of covariance/varargs/bridging - it
 					  // could do with a rewrite !
 					  boolean sameReturnTypes = (existingMember.getReturnType().equals(sig.getReturnType()));
-					  if (sameReturnTypes)
-						  getWorld().getMessageHandler().handleMessage(
-							MessageUtil.error(WeaverMessages.format(WeaverMessages.ITD_MEMBER_CONFLICT,munger.getAspectType().getName(),
-									existingMember),
-							munger.getSourceLocation())
-						  );
+					  if (sameReturnTypes) {
+						  // pr206732 - if the existingMember is due to a previous application of this same ITD (which can
+						  // happen if this is a binary type being brought in from the aspectpath).  The 'better' fix is
+						  // to recognize it is from the aspectpath at a higher level and dont do this, but that is rather
+						  // more work.
+						  boolean isDuplicateOfPreviousITD = false;
+						  ResolvedType declaringRt = existingMember.getDeclaringType().resolve(world);
+						  WeaverStateInfo wsi = declaringRt.getWeaverState();
+						  if (wsi!=null) {
+							  List mungersAffectingThisType =  wsi.getTypeMungers(declaringRt);
+							  if (mungersAffectingThisType!=null) {
+								  for (Iterator iterator = mungersAffectingThisType.iterator(); iterator.hasNext() && !isDuplicateOfPreviousITD;) {
+									ConcreteTypeMunger ctMunger = (ConcreteTypeMunger) iterator.next();
+									// relatively crude check - is the ITD for the same as the existingmember and does it come from the same aspect
+									if (ctMunger.getSignature().equals(existingMember) &&  ctMunger.aspectType.equals(munger.getAspectType())) {
+										isDuplicateOfPreviousITD=true;
+									}
+								  }
+							  }
+						  }
+						  if (!isDuplicateOfPreviousITD) {
+							  getWorld().getMessageHandler().handleMessage(
+								MessageUtil.error(WeaverMessages.format(WeaverMessages.ITD_MEMBER_CONFLICT,munger.getAspectType().getName(),
+										existingMember),
+								munger.getSourceLocation())
+							  );
+						  }
+					  }
 					}
 				} else if (isDuplicateMemberWithinTargetType(existingMember,this,sig)) {
 				    	getWorld().getMessageHandler().handleMessage(
@@ -2042,7 +2129,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			}
 			
 			for (int i = 0; i < typeParameters.length; i++) {
-				UnresolvedType aType = (ResolvedType)typeParameters[i];
+				ResolvedType aType = (ResolvedType)typeParameters[i];
 				if (aType.isTypeVariableReference()  && 
 				// assume the worst - if its definetly not a type declared one, it could be anything
 						((TypeVariableReference)aType).getTypeVariable().getDeclaringElementKind()!=TypeVariable.TYPE) {

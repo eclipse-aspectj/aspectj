@@ -24,7 +24,7 @@ import org.aspectj.apache.bcel.classfile.annotation.EnumElementValueGen;
 
 /**
  * AnnotationX instances are holders for an annotation from either Bcel or
- * ASM.  We have this holder so that types about the bcel weaver package 
+ * eclipse.  We have this holder so that types about the bcel weaver package 
  * can work with something not bytecode toolkit specific.
  */
 public class AnnotationX {
@@ -32,9 +32,9 @@ public class AnnotationX {
   public static final AnnotationX[] NONE = new AnnotationX[0];
   
   private AnnotationGen theRealBcelAnnotation;
-  private AnnotationAJ theRealASMAnnotation;
+  private AnnotationAJ theRealEclipseAnnotation; // OPTIMIZE push out into compiler, not ever used if purely binary weaving ?
   private int mode = -1;
-  private final static int MODE_ASM = 1;
+  private final static int MODE_ECLIPSE = 1;
   private final static int  MODE_BCEL = 2;
   
   private ResolvedType signature = null;
@@ -51,9 +51,9 @@ public class AnnotationX {
   }
   
   public AnnotationX(AnnotationAJ a,World world) {
-	  	theRealASMAnnotation = a;
-	  	signature = UnresolvedType.forSignature(theRealASMAnnotation.getTypeSignature()).resolve(world);
-	  	mode= MODE_ASM;
+	  	theRealEclipseAnnotation = a;
+	  	signature = UnresolvedType.forSignature(theRealEclipseAnnotation.getTypeSignature()).resolve(world);
+	  	mode= MODE_ECLIPSE;
   }
 
   public AnnotationGen getBcelAnnotation() {
@@ -66,18 +66,18 @@ public class AnnotationX {
   
   public String toString() {
 	  if (mode==MODE_BCEL) return theRealBcelAnnotation.toString();
-	  else 				   return theRealASMAnnotation.toString();
+	  else 				   return theRealEclipseAnnotation.toString();
   }
 
 
   public String getTypeName() {
 	if (mode==MODE_BCEL) return theRealBcelAnnotation.getTypeName();
-	else				 return Utility.signatureToString(theRealASMAnnotation.getTypeSignature());
+	else				 return Utility.signatureToString(theRealEclipseAnnotation.getTypeSignature());
   }
 
   public String getTypeSignature() {
 	  if (mode==MODE_BCEL) return theRealBcelAnnotation.getTypeSignature();
-		else				 return theRealASMAnnotation.getTypeSignature();
+		else				 return theRealEclipseAnnotation.getTypeSignature();
   }
 
   
@@ -176,7 +176,7 @@ public class AnnotationX {
 			supportedTargets.add(ev.getEnumValueString());
 		}
 	  } else {
-		  List values = theRealASMAnnotation.getNameValuePairs();
+		  List values = theRealEclipseAnnotation.getNameValuePairs();
 		  AnnotationNameValuePair nvp = (AnnotationNameValuePair)values.get(0);
 		  ArrayAnnotationValue aav = (ArrayAnnotationValue)nvp.getValue();
 		  AnnotationValue[] avs = aav.getValues();
@@ -203,7 +203,17 @@ public class AnnotationX {
 
   public void print(StringBuffer sb) {
 	  if (mode==MODE_BCEL) sb.append(theRealBcelAnnotation.toString());
-	  else	               sb.append(theRealASMAnnotation.stringify());
+	  else	               sb.append(theRealEclipseAnnotation.stringify());
+  }
+
+  public boolean hasNameValuePair(String n, String v) {
+	  if (mode==MODE_BCEL) return theRealBcelAnnotation.hasNameValuePair(n,v);
+	  else	               return theRealEclipseAnnotation.hasNameValuePair(n,v);
+  }
+
+  public boolean hasNamedValue(String n) {
+	  if (mode==MODE_BCEL) return theRealBcelAnnotation.hasNamedValue(n);
+	  else	               return theRealEclipseAnnotation.hasNamedValue(n);
   }
 
 }

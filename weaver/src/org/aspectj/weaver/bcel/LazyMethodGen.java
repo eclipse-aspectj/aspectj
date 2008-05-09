@@ -39,6 +39,7 @@ import org.aspectj.apache.bcel.generic.ClassGenException;
 import org.aspectj.apache.bcel.generic.CodeExceptionGen;
 import org.aspectj.apache.bcel.generic.Instruction;
 import org.aspectj.apache.bcel.generic.InstructionBranch;
+import org.aspectj.apache.bcel.generic.InstructionComparator;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.InstructionSelect;
@@ -50,6 +51,7 @@ import org.aspectj.apache.bcel.generic.LocalVariableTag;
 import org.aspectj.apache.bcel.generic.MethodGen;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.Tag;
+import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
@@ -69,6 +71,7 @@ import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.tools.Traceable;
 
 
+
 /** 
  * A LazyMethodGen should be treated as a MethodGen.  It's our way of abstracting over the 
  * low-level Method objects.  It converts through {@link MethodGen} to create
@@ -86,22 +89,25 @@ import org.aspectj.weaver.tools.Traceable;
 public final class LazyMethodGen implements Traceable {
 	private static final int ACC_SYNTHETIC    = 0x1000;
 	
-    private        int             accessFlags;
-    private  Type            returnType;
-    private final String          name;
+    private int              accessFlags;
+    private Type             returnType;
+    private final String     name;
     private  Type[]          argumentTypes;
     //private final String[]        argumentNames;
     private  String[]        declaredExceptions;
     private  InstructionList body; // leaving null for abstracts
-    private  Attribute[]     attributes;
+    private  List    attributes;
     private List  newAnnotations;
     private final LazyClassGen enclosingClass;   
     private BcelMethod memberView;
     private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
     int highestLineNumber = 0;
+    boolean wasNewPacked = false;
     
 
     /*
+     * We use LineNumberTags and not Gens.
+     * 
      * This option specifies whether we let the BCEL classes create LineNumberGens and LocalVariableGens
      * or if we make it create LineNumberTags and LocalVariableTags.  Up until 1.5.1 we always created
      * Gens - then on return from the MethodGen ctor we took them apart, reprocessed them all and 
@@ -114,12 +120,7 @@ public final class LazyMethodGen implements Traceable {
      * instructions it targets, it relies on the instructions targetting *it* - this reduces the amount
      * of targeter manipulation we have to do.
      * 
-     * Because this *could* go wrong - it passes all our tests, but you never know, the option:
-     * -Xset:optimizeWithTags=false
-     * will turn it *OFF*
      */
-	public static boolean avoidUseOfBcelGenObjects = true;
-	public static boolean checkedXsetOption = false;
 
 	/** This is nonnull if this method is the result of an "inlining".  We currently
 	 * copy methods into other classes for around advice.  We add this field so
@@ -167,7 +168,7 @@ public final class LazyMethodGen implements Traceable {
         } else {
             body = null;
         }
-        this.attributes = new Attribute[0];
+        this.attributes = new ArrayList();
         this.enclosingClass = enclosingClass;
         assertGoodBody();
 
@@ -207,7 +208,7 @@ public final class LazyMethodGen implements Traceable {
         }
 		this.memberView = new BcelMethod(enclosingClass.getBcelObjectType(), m);
         
-		this.accessFlags = m.getAccessFlags();
+		this.accessFlags = m.getModifiers();
 		this.name = m.getName();
 
         // @AJ advice are not inlined by default since requires further analysis
@@ -233,7 +234,7 @@ public final class LazyMethodGen implements Traceable {
         }
 		//this.memberView = new BcelMethod(enclosingClass.getBcelObjectType(), m);
         this.memberView = m;
-		this.accessFlags = savedMethod.getAccessFlags();
+		this.accessFlags = savedMethod.getModifiers();
 		this.name = m.getName();
 
         // @AJ advice are not inlined by default since requires further analysis
@@ -301,22 +302,15 @@ public final class LazyMethodGen implements Traceable {
     private void initialize() {
     	if (returnType != null) return; 
     	
-    	// Check whether we need to configure the optimization
-    	if (!checkedXsetOption) {
-        	Properties p = enclosingClass.getWorld().getExtraConfiguration();
-        	if (p!=null) {
-        		String s = p.getProperty("optimizeWithTags","true");
-        		avoidUseOfBcelGenObjects = s.equalsIgnoreCase("true");
-        		if (!avoidUseOfBcelGenObjects) 
-        			enclosingClass.getWorld().getMessageHandler().handleMessage(MessageUtil.info("[optimizeWithTags=false] Disabling optimization to use Tags rather than Gens"));
-        	}
-        	checkedXsetOption=true;
-        }
-    	
     	//System.err.println("initializing: " + getName() + ", " + enclosingClass.getName() + ", " + returnType + ", " + savedMethod);
     	
-		MethodGen gen = new MethodGen(savedMethod, enclosingClass.getName(), enclosingClass.getConstantPool(),avoidUseOfBcelGenObjects);
-        
+		MethodGen gen = null;
+		try {
+		gen = new MethodGen(savedMethod, enclosingClass.getName(), enclosingClass.getConstantPool(),true);
+		} catch (RuntimeException t) {
+			System.err.println(getName());
+			throw t;
+		}
 		this.returnType = gen.getReturnType();
 		this.argumentTypes = gen.getArgumentTypes();
 
@@ -341,13 +335,9 @@ public final class LazyMethodGen implements Traceable {
 
             unpackHandlers(gen);
             
-			if (avoidUseOfBcelGenObjects) {
-				ensureAllLineNumberSetup(gen);
-			    highestLineNumber = gen.getHighestlinenumber();
-			} else {
-				unpackLineNumbers(gen);
-			    unpackLocals(gen);
-			}
+			ensureAllLineNumberSetup(gen);
+		    highestLineNumber = gen.getHighestlinenumber();
+		    
         }
         assertGoodBody();
         
@@ -411,29 +401,6 @@ public final class LazyMethodGen implements Traceable {
 		}
 	}
 
-    private void unpackLineNumbers(MethodGen gen) {
-        LineNumberTag lr = null;
-        for (InstructionHandle ih = body.getStart(); ih != null; ih = ih.getNext()) {
-            InstructionTargeter[] targeters = ih.getTargeters();
-            if (targeters != null) {
-                for (int i = targeters.length - 1; i >= 0; i--) {
-                    InstructionTargeter targeter = targeters[i];
-                    if (targeter instanceof LineNumberGen) {
-                        LineNumberGen lng = (LineNumberGen) targeter;
-                        lng.updateTarget(ih, null);
-                        int lineNumber = lng.getSourceLine();
-                        if (highestLineNumber < lineNumber) highestLineNumber = lineNumber;
-                        lr = new LineNumberTag(lineNumber);
-                    }
-                }
-            }
-            if (lr != null) {
-                ih.addTargeter(lr);
-            }
-        }
-        gen.removeLineNumbers();
-    }
-
     /**
      * On entry to this method we have a method whose instruction stream contains a few instructions 
      * that have line numbers assigned to them (LineNumberTags).  The aim is to ensure every instruction
@@ -460,33 +427,6 @@ public final class LazyMethodGen implements Traceable {
             }
         }
     }
-
-    private void unpackLocals(MethodGen gen) {
-        Set locals = new HashSet();
-        for (InstructionHandle ih = body.getStart(); ih != null; ih = ih.getNext()) {
-            InstructionTargeter[] targeters = ih.getTargeters();
-            List ends = new ArrayList(0);
-            if (targeters != null) {
-                for (int i = targeters.length - 1; i >= 0; i--) {
-                    InstructionTargeter targeter = targeters[i];
-                    if (targeter instanceof LocalVariableGen) {
-                        LocalVariableGen lng = (LocalVariableGen) targeter;
-                        LocalVariableTag lr = new LocalVariableTag(lng.getType().getSignature()/*BcelWorld.fromBcel(lng.getType())*/, lng.getName(), lng.getIndex(), lng.getStart().getPosition());
-                        if (lng.getStart() == ih) {
-                            locals.add(lr);
-                        } else {
-                            ends.add(lr);
-                        }
-                    }
-                }
-            }
-            for (Iterator i = locals.iterator(); i.hasNext(); ) {
-                ih.addTargeter((LocalVariableTag) i.next());
-            }
-            locals.removeAll(ends);
-        }
-        gen.removeLocalVariables();
-    }
            
     // ===============
     
@@ -505,7 +445,8 @@ public final class LazyMethodGen implements Traceable {
     	
     	try {
 			MethodGen gen = pack();
-			return gen.getMethod();
+			savedMethod = gen.getMethod();
+			return savedMethod;
     	} catch (ClassGenException e) {
     		enclosingClass.getBcelObjectType().getResolvedTypeX().getWorld().showMessage(
     			IMessage.ERROR, 
@@ -522,6 +463,9 @@ public final class LazyMethodGen implements Traceable {
     }
     
     public void markAsChanged() {
+    	if (wasNewPacked) {
+    		throw new RuntimeException("Already packed method is being re-modified: "+getClassName()+" "+toShortString());
+    	}
     	initialize();
     	savedMethod = null;
     }
@@ -529,7 +473,8 @@ public final class LazyMethodGen implements Traceable {
     // =============================
 
 	public String toString() {
-		WeaverVersionInfo weaverVersion = enclosingClass.getBcelObjectType().getWeaverVersionAttribute();
+		BcelObjectType bot = enclosingClass.getBcelObjectType();
+		WeaverVersionInfo weaverVersion = (bot==null?WeaverVersionInfo.CURRENT:bot.getWeaverVersionAttribute());
 		return toLongString(weaverVersion);
 	}
 
@@ -611,7 +556,7 @@ public final class LazyMethodGen implements Traceable {
 		if (enclosingClass != null && enclosingClass.getType() != null) {
 			context = enclosingClass.getType().getSourceContext();
 		}
-		List as = BcelAttributes.readAjAttributes(getClassName(),attributes, context,null,weaverVersion);
+		List as = BcelAttributes.readAjAttributes(getClassName(), (Attribute[])attributes.toArray(new Attribute[]{}), context,null,weaverVersion);
 		if (! as.isEmpty()) {
 			out.println("    " + as.get(0)); // XXX assuming exactly one attribute, munger...
 		}
@@ -909,6 +854,14 @@ public final class LazyMethodGen implements Traceable {
         return name;
     }
 
+    public String getGenericReturnTypeSignature() {
+        if (memberView == null) {
+            return getReturnType().getSignature();
+        } else {
+            return memberView.getGenericReturnType().getSignature();
+        }
+    }
+    
     public Type getReturnType() {
     	initialize();
         return returnType;
@@ -928,7 +881,7 @@ public final class LazyMethodGen implements Traceable {
     	return body != null;
     }
 
-    public Attribute[] getAttributes() {
+    public List/*Attribute*/ getAttributes() {
         return attributes;
     }
 
@@ -966,8 +919,8 @@ public final class LazyMethodGen implements Traceable {
             gen.addException(declaredExceptions[i]);
         }
         
-        for (int i = 0, len = attributes.length; i < len; i++) {
-            gen.addAttribute(attributes[i]);
+        for (int i = 0, len = attributes.size(); i < len; i++) {
+            gen.addAttribute((Attribute)attributes.get(i));
         }
         
         if (newAnnotations!=null) { 
@@ -996,7 +949,16 @@ public final class LazyMethodGen implements Traceable {
         }
         
         if (hasBody()) {
-            packBody(gen);
+        	if (this.enclosingClass.getWorld().shouldGoForIt()) {
+	            if (isAdviceMethod() || getName().equals("<clinit>")) {
+	        		packBody(gen);
+	        	} else {
+	        		newPackBody(gen); 
+	        	}
+        	} else {
+        		packBody(gen);
+        	}
+        	// FINISH OFF CASE/SWITCH !
             gen.setMaxLocals();
             gen.setMaxStack();
         } else {
@@ -1109,6 +1071,108 @@ public final class LazyMethodGen implements Traceable {
         }
     }
     
+
+    /*
+     * Andys version
+     */
+    public void newPackBody(MethodGen gen) {
+    	InstructionList theBody = getBody();
+        InstructionHandle iHandle = theBody.getStart();
+
+        int currLine = -1;
+		int lineNumberOffset = (fromFilename == null) ? 0: getEnclosingClass().getSourceDebugExtensionOffset(fromFilename);
+        Map localVariables = new HashMap();
+        LinkedList exceptionList = new LinkedList();   
+        Set forDeletion = new HashSet();
+        Set branchInstructions = new HashSet();
+        // OPTIMIZE sort out in here: getRange()/insertHandler() and type of exceptionList
+        while (iHandle != null) {
+        	Instruction inst = iHandle.getInstruction();
+        	InstructionHandle nextInst = iHandle.getNext();
+        	// OPTIMIZE remove this instructionhandle as it now points to nowhere?
+        	if (inst == Range.RANGEINSTRUCTION) {
+        		Range r = Range.getRange(iHandle);
+	    		if (r instanceof ExceptionRange) {
+	    		    ExceptionRange er = (ExceptionRange) r;
+	    		    if (er.getStart() == iHandle) {
+	    		    	if (!er.isEmpty()){
+	    		        	// order is important, insert handlers in order of start
+	    		        	insertHandler(er, exceptionList);	    	      
+	    		    	}
+	    		    }
+	    		} 
+    			forDeletion.add(iHandle);
+    		} else {
+    			if (inst instanceof InstructionBranch) {
+    				branchInstructions.add(iHandle);
+    			}
+
+              InstructionTargeter[] targeters = iHandle.getTargeters();
+              if (targeters != null) {
+                  for (int k = targeters.length - 1; k >= 0; k--) {
+                      InstructionTargeter targeter = targeters[k];
+                      if (targeter instanceof LineNumberTag) {
+                          int line = ((LineNumberTag)targeter).getLineNumber();
+                          if (line != currLine) {
+                              gen.addLineNumber(iHandle, line + lineNumberOffset);
+                              currLine = line;
+                          }
+                      } else if (targeter instanceof LocalVariableTag) {
+                          LocalVariableTag lvt = (LocalVariableTag) targeter;
+                          LVPosition p = (LVPosition)localVariables.get(lvt);
+                          // If we don't know about it, create a new position and store
+                          // If we do know about it - update its end position
+                          if (p==null) {
+                          	LVPosition newp = new LVPosition();
+                          	newp.start=newp.end=iHandle;
+                          	localVariables.put(lvt,newp);
+                          } else {
+                          	p.end = iHandle;
+                          }
+                      }
+                  }
+              }
+    		}
+        	iHandle = iHandle.getNext();
+        }
+        for (Iterator iterator = branchInstructions.iterator(); iterator.hasNext();) {
+			BranchHandle iBranch = (BranchHandle) iterator.next();
+			handleBranchInstruction(iBranch,forDeletion);
+		}
+    	// now add exception handlers
+        for (Iterator iter = exceptionList.iterator(); iter.hasNext();) {
+            ExceptionRange r = (ExceptionRange) iter.next();
+            if (r.isEmpty()) continue;
+            gen.addExceptionHandler(
+                jumpForward(r.getRealStart(),forDeletion), 
+                jumpForward(r.getRealEnd(),forDeletion),
+                jumpForward(r.getHandler(),forDeletion),
+                (r.getCatchType() == null)
+                ? null 
+                : (ObjectType) BcelWorld.makeBcelType(r.getCatchType()));
+        }
+        
+        for (Iterator iterator = forDeletion.iterator(); iterator.hasNext();) {
+        	try {
+				theBody.delete((InstructionHandle)iterator.next());
+			} catch (TargetLostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+        gen.setInstructionList(theBody);
+        addLocalVariables(gen,localVariables);
+        
+        // JAVAC adds line number tables (with just one entry) to generated accessor methods - this
+        // keeps some tools that rely on finding at least some form of linenumbertable happy.
+        // Let's check if we have one - if we don't then let's add one.
+        // TODO Could be made conditional on whether line debug info is being produced
+        if (gen.getLineNumbers().length==0) { 
+        	gen.addLineNumber(gen.getInstructionList().getStart(),1);
+        }
+        wasNewPacked = true;
+    }
+    
     private void addLocalVariables(MethodGen gen, Map localVariables) {
 		// now add local variables
         gen.removeLocalVariables();
@@ -1166,25 +1230,56 @@ public final class LazyMethodGen implements Traceable {
 		InstructionBranch newBranchInstruction = (InstructionBranch) newInstruction;
 	    InstructionHandle oldTarget = oldBranchInstruction.getTarget(); // old target
    
-//    				try {
 	    // New target is in hash map
 	    newBranchInstruction.setTarget(remap(oldTarget, map));
-//    				} catch (NullPointerException e) {
-//    					print();
-//    					System.out.println("Was trying to remap " + bi);
-//    					System.out.println("who's target was supposedly " + itarget);
-//    					throw e;
-//    				}
    
-		    if (oldBranchInstruction instanceof InstructionSelect) { 
-		        // Either LOOKUPSWITCH or TABLESWITCH
-		        InstructionHandle[] oldTargets = ((InstructionSelect) oldBranchInstruction).getTargets();
-		        InstructionHandle[] newTargets = ((InstructionSelect) newBranchInstruction).getTargets();
+	    if (oldBranchInstruction instanceof InstructionSelect) { 
+	        // Either LOOKUPSWITCH or TABLESWITCH
+	        InstructionHandle[] oldTargets = ((InstructionSelect) oldBranchInstruction).getTargets();
+	        InstructionHandle[] newTargets = ((InstructionSelect) newBranchInstruction).getTargets();
    
-		        for (int k = oldTargets.length - 1; k >= 0; k--) { 
-		            // Update all targets
+	        for (int k = oldTargets.length - 1; k >= 0; k--) { 
+	            // Update all targets
 	            newTargets[k] = remap(oldTargets[k], map);
 	            newTargets[k].addTargeter(newBranchInstruction);
+	        }
+	    }
+	}
+	
+	private InstructionHandle jumpForward(InstructionHandle t,Set handlesForDeletion) {
+		
+		InstructionHandle target = t;
+		  if (handlesForDeletion.contains(target)) {
+		    	do {
+		    		target = target.getNext();
+		    	} while (handlesForDeletion.contains(target));
+		    }
+		  return target;
+	}
+	
+	private void handleBranchInstruction(BranchHandle branchHandle, Set handlesForDeletion) {
+		InstructionBranch branchInstruction = (InstructionBranch) branchHandle.getInstruction();
+	    InstructionHandle target = branchInstruction.getTarget(); // old target
+   
+	    if (handlesForDeletion.contains(target)) {
+	    	do {
+	    		target = target.getNext();
+	    	} while (handlesForDeletion.contains(target));
+	    	branchInstruction.setTarget(target);
+	    }
+   
+	    if (branchInstruction instanceof InstructionSelect) { 
+	        // Either LOOKUPSWITCH or TABLESWITCH
+	        InstructionHandle[] targets = ((InstructionSelect)branchInstruction).getTargets();
+	        for (int k = targets.length - 1; k >= 0; k--) { 
+	        	InstructionHandle oneTarget = targets[k];
+	        	if (handlesForDeletion.contains(oneTarget)) {
+	    	    	do {
+	    	    		oneTarget = oneTarget.getNext();
+	    	    	} while (handlesForDeletion.contains(oneTarget));
+	    	    	branchInstruction.setTarget(oneTarget);
+	    	    	oneTarget.addTargeter(branchInstruction);
+	    	    }
 	        }
 	    }
 	}
@@ -1251,6 +1346,13 @@ public final class LazyMethodGen implements Traceable {
 //			curr = next;
 //    	}
 //	}
+   
+   private static InstructionHandle fNext(InstructionHandle ih) {
+	   while (true) {
+		   if (ih.getInstruction()==Range.RANGEINSTRUCTION) ih = ih.getNext();
+		   else return ih;
+	   }
+   }
 
     private static InstructionHandle remap(InstructionHandle ih, Map map) {
         while (true) {
@@ -1513,6 +1615,7 @@ public final class LazyMethodGen implements Traceable {
     // ----
     
     boolean isAdviceMethod() {
+    	if (memberView==null) return false;
     	return memberView.getAssociatedShadowMunger() != null;
     }
     
@@ -1576,10 +1679,11 @@ public final class LazyMethodGen implements Traceable {
      * @param attr
      */
     public void addAttribute(Attribute attr) {
-        Attribute[] newAttributes = new Attribute[attributes.length + 1];
-        System.arraycopy(attributes, 0, newAttributes, 0, attributes.length);
-        newAttributes[attributes.length] = attr;
-        attributes = newAttributes;
+    	attributes.add(attr);
+//        Attribute[] newAttributes = new Attribute[attributes.length + 1];
+//        System.arraycopy(attributes, 0, newAttributes, 0, attributes.length);
+//        newAttributes[attributes.length] = attr;
+//        attributes = newAttributes;
     }
 
 	public String toTraceString() {

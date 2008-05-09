@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver.bcel;
 
 import java.lang.reflect.Modifier;
@@ -19,6 +18,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import org.aspectj.apache.bcel.classfile.AnnotationDefault;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ExceptionTable;
 import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
@@ -31,13 +31,14 @@ import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.Signature.TypeVariableSignature;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.Member;
+import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
@@ -52,15 +53,14 @@ public final class BcelMethod extends ResolvedMemberImpl {
 
 	private Method method;
 //	private AjAttribute.MethodDeclarationLineNumberAttribute declarationLineNumber;
-//	private World world;
 	private BcelObjectType bcelObjectType;
 
-	public Member slimline() {
-		if (!bcelObjectType.getWorld().isXnoInline()) return this;
-		ResolvedMemberImpl mi = new ResolvedMemberImpl(kind,declaringType,modifiers,returnType,name,parameterTypes);
-		mi.setParameterNames(getParameterNames());
-		return mi;
-	}
+//	public Member slimline() {
+//		if (!bcelObjectType.getWorld().isXnoInline()) return this;
+//		ResolvedMemberImpl mi = new ResolvedMemberImpl(kind,declaringType,modifiers,returnType,name,parameterTypes);
+//		mi.setParameterNames(getParameterNames());
+//		return mi;
+//	}
 
 //    private AnnotationX[] annotations = null;
 //	private UnresolvedType genericReturnType = null;
@@ -75,6 +75,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	private static final String MAPKEY_GENERIC_PARAM_TYPES     ="genericParameterTypes";
 	private static final String MAPKEY_ANNOTATIONS             ="annotations";
 	private static final String MAPKEY_MD_LINE_NUMBER_ATTRIBUTE="mdLineNumberAttribute";
+    private AnnotationX[][] parameterAnnotations = null;
 
 //	private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
 //	private ShadowMunger associatedShadowMunger;
@@ -109,13 +110,12 @@ public final class BcelMethod extends ResolvedMemberImpl {
 				(method.getName().equals("<clinit>") ? STATIC_INITIALIZATION : METHOD), 
 			declaringType.getResolvedTypeX(),
 			declaringType.isInterface() 
-				? method.getAccessFlags() | Modifier.INTERFACE
-				: method.getAccessFlags(),
-			method.getName(), 
+				? method.getModifiers() | Modifier.INTERFACE
+				: method.getModifiers(),
+			method.getName(),
 			method.getSignature());
 		this.method = method;
 		this.sourceContext = declaringType.getResolvedTypeX().getSourceContext();
-		//this.world = declaringType.getResolvedTypeX().getWorld();
 		this.bcelObjectType = declaringType;
 		unpackJavaAttributes();
 		unpackAjAttributes(bcelObjectType.getWorld());
@@ -152,6 +152,41 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		LocalVariableTable varTable = method.getLocalVariableTable();
 		int len = getArity();
 		if (varTable == null) {
+			// do we have an annotation with the argNames value specified...
+			if (hasAnnotations()) {
+				AnnotationX[] axs = getAnnotations();
+			    for (int i = 0; i < axs.length; i++) {
+					AnnotationX annotationX = axs[i];
+					String typename = annotationX.getTypeName();
+					if (typename.equals("org.aspectj.lang.annotation.Pointcut") ||
+						typename.equals("org.aspectj.lang.annotation.Before") ||
+						typename.equals("org.aspectj.lang.annotation.Around") ||
+						typename.startsWith("org.aspectj.lang.annotation.After")) {
+						AnnotationGen a = annotationX.getBcelAnnotation();
+						if (a!=null) {
+							List values = a.getValues();
+							for (Iterator iterator = values.iterator(); iterator
+									.hasNext();) {
+								ElementNameValuePairGen nvPair = (ElementNameValuePairGen) iterator.next();
+								if (nvPair.getNameString().equals("argNames")) {
+									String argNames = nvPair.getValue().stringifyValue();
+									StringTokenizer argNameTokenizer = new StringTokenizer(argNames," ,");
+									List argsList = new ArrayList();
+									while (argNameTokenizer.hasMoreTokens()) {
+										argsList.add(argNameTokenizer.nextToken());
+									}
+									int requiredCount = getParameterTypes().length;
+									while (argsList.size()<requiredCount) {
+										argsList.add("arg"+argsList.size());
+									}
+									setParameterNames((String[])argsList.toArray(new String[]{}));
+									return;
+								}
+							}
+						}
+					}
+				}
+			} 
 			setParameterNames(Utility.makeArgNames(len));
 		} else {
 			UnresolvedType[] paramTypes = getParameterTypes();
@@ -224,6 +259,18 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		}
 		if (results.size()>0) {
 			return (AjAttribute[])results.toArray(new AjAttribute[]{});
+		}
+		return null;
+	}
+	
+	public String getAnnotationDefaultValue() {
+		Attribute[] attrs = method.getAttributes();
+		for (int i = 0; i < attrs.length; i++) {
+			Attribute attribute = attrs[i];			
+			if (attribute.getName().equals("AnnotationDefault")) {
+				AnnotationDefault def = (AnnotationDefault)attribute;
+				return def.getElementValue().stringifyValue();
+			}
 		}
 		return null;
 	}
@@ -304,7 +351,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
       return ret;
     }
 	
-	public Kind getKind() {
+	public MemberKind getKind() {
 		if ((bitflags&HAS_ASSOCIATED_SHADOWMUNGER)!=0) {
 			return ADVICE;
 		} else {
@@ -313,7 +360,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	}
 	
 	public boolean hasAnnotation(UnresolvedType ofType) {
-		ensureAnnotationTypesRetrieved();
+		ensureAnnotationsRetrieved();
 		for (Iterator iter = annotationTypes.iterator(); iter.hasNext();) {
 			ResolvedType aType = (ResolvedType) iter.next();
 			if (aType.equals(ofType)) return true;		
@@ -322,7 +369,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	}
 	
 	public AnnotationX[] getAnnotations() {
-		ensureAnnotationTypesRetrieved();
+		ensureAnnotationsRetrieved();
 		if ((bitflags&HAS_ANNOTATIONS)!=0) {
 			return (AnnotationX[])metaData.get(MAPKEY_ANNOTATIONS);
 		} else {
@@ -332,14 +379,24 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	}
 	
 	 public ResolvedType[] getAnnotationTypes() {
-	    ensureAnnotationTypesRetrieved();
+	    ensureAnnotationsRetrieved();
 	    ResolvedType[] ret = new ResolvedType[annotationTypes.size()];
 	    annotationTypes.toArray(ret);
 	    return ret;
      }
 	 
+	 public AnnotationX getAnnotationOfType(UnresolvedType ofType) {
+		 ensureAnnotationsRetrieved();
+		 if ((bitflags&HAS_ANNOTATIONS)==0) return null;
+		 AnnotationX[] annos = (AnnotationX[])metaData.get(MAPKEY_ANNOTATIONS);
+		 for (int i=0; i<annos.length; i++) {
+			 if (annos[i].getTypeName().equals(ofType.getName())) return annos[i];
+		 }
+		 return null;
+	 }
+	 
 	 public void addAnnotation(AnnotationX annotation) {
-	    ensureAnnotationTypesRetrieved();	
+	    ensureAnnotationsRetrieved();	
 	    if ((bitflags&HAS_ANNOTATIONS)==0) {
 			AnnotationX[] ret = new AnnotationX[1];
 			ret[0]=annotation;
@@ -365,7 +422,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		// FIXME CUSTARD
 	 }
 	 
-	 private void ensureAnnotationTypesRetrieved() {
+	 private void ensureAnnotationsRetrieved() {
 		if (method == null) return; // must be ok, we have evicted it
 		if ((bitflags&HAVE_DETERMINED_ANNOTATIONS)!=0) return;
 		bitflags|=HAVE_DETERMINED_ANNOTATIONS;
@@ -387,6 +444,39 @@ public final class BcelMethod extends ResolvedMemberImpl {
 //    		}
 	}
 	 
+ 	private void ensureParameterAnnotationsRetrieved() {
+		if (method == null) return; // must be ok, we have evicted it
+		AnnotationGen[][] pAnns = method.getParameterAnnotations();
+		if (parameterAnnotationTypes==null || pAnns.length!=parameterAnnotationTypes.length) {
+			if (pAnns == Method.NO_PARAMETER_ANNOTATIONS) {
+				parameterAnnotationTypes = BcelMethod.NO_PARAMETER_ANNOTATION_TYPES;
+				parameterAnnotations     = BcelMethod.NO_PARAMETER_ANNOTATIONXS;
+			} else {
+				AnnotationGen annos[][] = method.getParameterAnnotations();
+				parameterAnnotations = new AnnotationX[annos.length][];
+				parameterAnnotationTypes = new ResolvedType[annos.length][];
+				for (int i=0;i<annos.length;i++) {
+					parameterAnnotations[i] = new AnnotationX[annos[i].length];
+					parameterAnnotationTypes[i] = new ResolvedType[annos[i].length];
+					for (int j=0;j<annos[i].length;j++) {
+						parameterAnnotations[i][j] = new AnnotationX(annos[i][j],bcelObjectType.getWorld());
+						parameterAnnotationTypes[i][j] = bcelObjectType.getWorld().resolve(UnresolvedType.forSignature(annos[i][j].getTypeSignature()));
+					}
+				}
+			}
+		}
+	}
+
+	public AnnotationX[][] getParameterAnnotations() { 
+		ensureParameterAnnotationsRetrieved();
+		return parameterAnnotations;
+	}
+	
+	public ResolvedType[][] getParameterAnnotationTypes() { 
+		ensureParameterAnnotationsRetrieved();
+		return parameterAnnotationTypes;
+	}
+	 
 
 	 /**
 	  * A method can be parameterized if it has one or more generic
@@ -406,6 +496,9 @@ public final class BcelMethod extends ResolvedMemberImpl {
 //		 return genericParameterTypes;
 	 }
 	 
+	 /**
+      * Return the parameterized/generic return type or the normal return type if the method is not generic.
+      */
 	 public UnresolvedType getGenericReturnType() {
 		 unpackGenericSignature();
 		 if ((bitflags&HAS_GENERIC_RETPARAM_TYPES)==0) return getReturnType();
@@ -507,7 +600,8 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		 if (method != null) {
 			 unpackGenericSignature();
 			 unpackJavaAttributes();
-			 ensureAnnotationTypesRetrieved();
+			 ensureAnnotationsRetrieved();
+			 ensureParameterAnnotationsRetrieved();
 			 determineParameterNames();
 // 			 this.sourceContext = SourceContextImpl.UNKNOWN_SOURCE_CONTEXT;
 			 method = null;

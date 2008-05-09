@@ -15,21 +15,20 @@ package org.aspectj.weaver.ast;
 
 import org.aspectj.weaver.ResolvedType;
 
-
 public class Var extends Expr {
-	ResolvedType type;
+	ResolvedType variableType;
 
-	public Var(ResolvedType type) {
+	public Var(ResolvedType variableType) {
 		super();
-		this.type = type;		
+		this.variableType = variableType;		
 	}
     
 	public ResolvedType getType() {
-		return type;
+		return variableType;
 	}
 
 	public String toString() {
-		return "(Var " + type + ")";
+		return "(Var " + variableType + ")";
 	}
     
     public void accept(IExprVisitor v) {

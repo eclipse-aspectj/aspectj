@@ -189,7 +189,7 @@ public abstract class WeaveTestCase extends TestCase {
 
     protected ShadowMunger makeConcreteAdvice(String mungerString, int extraArgFlag, PerClause perClause) {
         Advice myMunger = 
-            world.shadowMunger(mungerString, extraArgFlag);
+        	TestUtils.shadowMunger(world,mungerString, extraArgFlag);
             
 //        PerSingleton s = new PerSingleton();
 //        s.concretize(world.resolve("Aspect"));

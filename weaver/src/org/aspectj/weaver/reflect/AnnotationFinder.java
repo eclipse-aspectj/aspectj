@@ -14,7 +14,9 @@ package org.aspectj.weaver.reflect;
 import java.lang.reflect.Member;
 import java.util.Set;
 
+import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
 /**
@@ -30,8 +32,13 @@ public interface AnnotationFinder {
 	Object getAnnotation(ResolvedType annotationType, Object onObject);
 	
 	Object getAnnotationFromMember(ResolvedType annotationType, Member aMember);
+	public AnnotationX getAnnotationOfType(UnresolvedType ofType,Member onMember);
 	
+	public String getAnnotationDefaultValue(Member onMember);
+		
 	Object getAnnotationFromClass(ResolvedType annotationType, Class aClass);
 	
 	Set/*ResolvedType*/ getAnnotations(Member onMember);
+	
+	ResolvedType[][] getParameterAnnotationTypes(Member onMember);
 }

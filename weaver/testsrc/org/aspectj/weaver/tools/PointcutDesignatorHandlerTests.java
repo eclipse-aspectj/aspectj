@@ -11,13 +11,13 @@
  * ******************************************************************/
 package org.aspectj.weaver.tools;
 
-import org.aspectj.util.LangUtil;
-
 import junit.framework.TestCase;
 
+import org.aspectj.util.LangUtil;
+
 /**
- * @author Adrian
- *
+ * @author Adrian Colyer
+ * 
  */
 public class PointcutDesignatorHandlerTests extends TestCase {
 
@@ -60,9 +60,64 @@ public class PointcutDesignatorHandlerTests extends TestCase {
 		assertEquals("service.*",beanHandler.getExpressionLastAskedToParse());
 	}
 	
-	public void testParseWithHandlerAndMultipleSegments() { 
-		if (needToSkip) return;
-		PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();
+    
+	/*
+     * Bug 205907 - the registered pointcut designator does not also get registered with the
+     * InternalUseOnlyPointcutParser inside the Java15ReflectionBasedReferenceTypeDelegate code. First test checks
+     * parsing is OK
+     */
+    public void testParsingBeanInReferencePointcut01() throws Exception {
+        if (needToSkip) return;
+        PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();
+        BeanDesignatorHandler beanHandler = new BeanDesignatorHandler();
+        parser.registerPointcutDesignatorHandler(beanHandler);
+        // The pointcut in CounterAspect look as follows:
+        //
+        // @Pointcut("execution(* setAge(..)) && bean(testBean1)")
+        // public void testBean1SetAge() { }
+
+        // This should be found and resolved
+        PointcutExpression pc = parser.parsePointcutExpression("CounterAspect.testBean1SetAge()");
+
+    }
+
+    /*
+     * Bug 205907 - the registered pointcut designator does not also get registered with the
+     * InternalUseOnlyPointcutParser inside the Java15ReflectionBasedReferenceTypeDelegate code. This test checks the
+     * actual matching.
+     */
+    public void testParsingBeanInReferencePointcut02() throws Exception {
+        if (needToSkip) return;
+        PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();
+        BeanDesignatorHandler beanHandler = new BeanDesignatorHandler();
+        parser.registerPointcutDesignatorHandler(beanHandler);
+        // The pointcut in CounterAspect look as follows:
+        //
+        // @Pointcut("execution(* toString(..)) && bean(testBean1)")
+        // public void testBean1toString() { }
+        
+        // This should be found and resolved
+        PointcutExpression pc = parser.parsePointcutExpression("CounterAspect.testBean1toString()");
+
+        DefaultMatchingContext context = new DefaultMatchingContext();
+        context.addContextBinding("beanName", "testBean1");
+        pc.setMatchingContext(context);
+        ShadowMatch sm = pc.matchesMethodExecution(Object.class.getMethod("toString", new Class[0]));
+        assertTrue(sm.alwaysMatches());
+        
+        sm = pc.matchesMethodExecution(Object.class.getMethod("hashCode", new Class[0]));
+        assertTrue(sm.neverMatches());
+        
+        context = new DefaultMatchingContext();
+        context.addContextBinding("beanName", "testBean2");
+        pc.setMatchingContext(context);
+        sm = pc.matchesMethodExecution(Object.class.getMethod("toString", new Class[0]));
+        assertTrue(sm.neverMatches());
+    }
+
+    public void testParseWithHandlerAndMultipleSegments() {
+        if (needToSkip) return;
+        PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();
 		BeanDesignatorHandler beanHandler = new BeanDesignatorHandler();
 		parser.registerPointcutDesignatorHandler(beanHandler);
 		parser.parsePointcutExpression("bean(org.xyz.someapp..*)");

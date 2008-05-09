@@ -44,7 +44,7 @@ import org.aspectj.weaver.bcel.BcelAdvice;
 public abstract class Shadow {
 
 	// every Shadow has a unique id, doesn't matter if it wraps...
-	private static int nextShadowID = 100;  // easier to spot than zero.
+	private static int nextShadowID = 100;  // easier to spot than zero. // OPTIMIZE is this a bug? static?
 	
 	private final Kind kind; 
     private final Member signature;
@@ -186,6 +186,18 @@ public abstract class Shadow {
     	if (getKind() == FieldSet) return 1;
         return getSignature()
             .getParameterTypes().length;
+    }
+    
+    /**
+     * Return name of the argument at position 'i' at this shadow.  This does not
+     * make sense for all shadows - but can be useful in the case of, for example,
+     * method-execution.
+     * @return null if it cannot be determined
+     */
+    public String getArgName(int i,World w) {
+    	String [] names = getSignature().getParameterNames(w);
+    	if (names==null || i>=names.length) return null;
+    	return names[i];
     }
     	
 	public abstract UnresolvedType getEnclosingType();	
@@ -732,7 +744,29 @@ public abstract class Shadow {
     }
     
     public String toResolvedString(World world) {
-    	return getKind() + "(" + world.resolve(getSignature()).toGenericString() + ")";
+    	StringBuffer sb = new StringBuffer();
+    	sb.append(getKind());
+    	sb.append("(");
+    	Member m = getSignature();
+    	if (m==null) {
+    		sb.append("<<missing signature>>");
+    	} else {
+    		ResolvedMember rm = world.resolve(m);
+    		if (rm==null) {
+    			sb.append("<<unresolvableMember:").append(m).append(">>");
+    		} else {
+    			String genString = rm.toGenericString();
+    			if (genString==null) {
+    				sb.append("<<unableToGetGenericStringFor:").append(rm).append(">>");
+    			} else {
+    				sb.append(genString);
+    			}
+    			
+    		}
+    	}
+    	sb.append(")");
+    	return sb.toString();
+    	// was: return getKind() + "(" + world.resolve(getSignature()).toGenericString() + ")";
     }
 
     /**

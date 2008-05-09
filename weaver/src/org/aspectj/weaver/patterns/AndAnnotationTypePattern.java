@@ -18,7 +18,8 @@ import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
-
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
+import org.aspectj.weaver.ResolvedType;
 /**
  * @author colyer
  *
@@ -38,6 +39,10 @@ public class AndAnnotationTypePattern extends AnnotationTypePattern {
 
 	public FuzzyBoolean matches(AnnotatedElement annotated) {
 		return left.matches(annotated).and(right.matches(annotated));
+	}
+	
+	public FuzzyBoolean matches(AnnotatedElement annotated, ResolvedType[] parameterAnnotations ) {
+		return left.matches(annotated,parameterAnnotations).and(right.matches(annotated,parameterAnnotations));
 	}
 
 	public void resolve(World world) {
@@ -60,6 +65,7 @@ public class AndAnnotationTypePattern extends AnnotationTypePattern {
 		AnnotationTypePattern newRight = right.parameterizeWith(typeVariableMap,w);
 		AndAnnotationTypePattern ret = new AndAnnotationTypePattern(newLeft,newRight);
 		ret.copyLocationFrom(this);
+		if (this.isForParameterAnnotationMatch()) ret.setForParameterAnnotationMatch();
 		return ret;
 	}
 	
@@ -68,6 +74,9 @@ public class AndAnnotationTypePattern extends AnnotationTypePattern {
 				AnnotationTypePattern.read(s,context),
 				AnnotationTypePattern.read(s,context));
 		p.readLocation(context,s);
+		if (s.getMajorVersion()>=WeaverVersionInfo.WEAVER_VERSION_MINOR_AJ160) {
+			if (s.readBoolean()) p.setForParameterAnnotationMatch();			
+		}
 		return p;		
 	}
 	
@@ -76,18 +85,20 @@ public class AndAnnotationTypePattern extends AnnotationTypePattern {
 		left.write(s);
 		right.write(s);
 		writeLocation(s);
+		s.writeBoolean(isForParameterAnnotationMatch());
 	}
 	
 	public boolean equals(Object obj) {
 		if (!(obj instanceof AndAnnotationTypePattern)) return false;
 		AndAnnotationTypePattern other = (AndAnnotationTypePattern) obj;
-		return (left.equals(other.left) && right.equals(other.right));
+		return (left.equals(other.left) && right.equals(other.right) && left.isForParameterAnnotationMatch()==right.isForParameterAnnotationMatch());
 	}
 	
 	public int hashCode() {
 		int result = 17;
 		result = result*37 + left.hashCode();
 		result = result*37 + right.hashCode();
+		result = result*37 + (isForParameterAnnotationMatch()?0:1);
 		return result;		
 	}
 	
@@ -107,5 +118,10 @@ public class AndAnnotationTypePattern extends AnnotationTypePattern {
 		left.traverse(visitor,ret);
 		right.traverse(visitor,ret);
 		return ret;
+	}
+
+	public void setForParameterAnnotationMatch() {
+		left.setForParameterAnnotationMatch();
+		right.setForParameterAnnotationMatch();
 	}
 }

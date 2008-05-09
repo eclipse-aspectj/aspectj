@@ -16,8 +16,10 @@ import java.util.Map;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 public class NotAnnotationTypePattern extends AnnotationTypePattern {
 
@@ -35,6 +37,9 @@ public class NotAnnotationTypePattern extends AnnotationTypePattern {
 		return negatedPattern.matches(annotated).not();
 	}
 	
+	public FuzzyBoolean matches(AnnotatedElement annotated,ResolvedType[] parameterAnnotations) {
+		return negatedPattern.matches(annotated,parameterAnnotations).not();
+	}
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.patterns.AnnotationTypePattern#resolve(org.aspectj.weaver.World)
 	 */
@@ -56,6 +61,7 @@ public class NotAnnotationTypePattern extends AnnotationTypePattern {
 		AnnotationTypePattern newNegatedPattern = negatedPattern.parameterizeWith(typeVariableMap,w);
 		NotAnnotationTypePattern ret = new NotAnnotationTypePattern(newNegatedPattern);
 		ret.copyLocationFrom(this);
+		if (this.isForParameterAnnotationMatch()) ret.setForParameterAnnotationMatch();
 		return ret;
 	}
 	
@@ -66,22 +72,27 @@ public class NotAnnotationTypePattern extends AnnotationTypePattern {
 		s.writeByte(AnnotationTypePattern.NOT);
 		negatedPattern.write(s);
 		writeLocation(s);
+		s.writeBoolean(isForParameterAnnotationMatch());
 	}
 
 	public static AnnotationTypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		AnnotationTypePattern ret = new NotAnnotationTypePattern(AnnotationTypePattern.read(s,context));
 		ret.readLocation(context,s);
+		if (s.getMajorVersion()>=WeaverVersionInfo.WEAVER_VERSION_MINOR_AJ160) {
+			if (s.readBoolean()) ret.setForParameterAnnotationMatch();
+		}
 		return ret;
 	}
 	
 	public boolean equals(Object obj) {
 		if (!(obj instanceof NotAnnotationTypePattern)) return false;
 		NotAnnotationTypePattern other = (NotAnnotationTypePattern) obj;
-		return other.negatedPattern.equals(negatedPattern);
+		return other.negatedPattern.equals(negatedPattern) && other.isForParameterAnnotationMatch()==isForParameterAnnotationMatch();
 	}
 
 	public int hashCode() {
 		int result = 17 + 37*negatedPattern.hashCode();
+		result = 37*result +(isForParameterAnnotationMatch()?0:1);
 		return result;
 	}
 	
@@ -101,5 +112,9 @@ public class NotAnnotationTypePattern extends AnnotationTypePattern {
 		Object ret = accept(visitor,data);
 		negatedPattern.traverse(visitor,ret);
 		return ret;
+	}
+
+	public void setForParameterAnnotationMatch() {
+		negatedPattern.setForParameterAnnotationMatch();
 	}
 }

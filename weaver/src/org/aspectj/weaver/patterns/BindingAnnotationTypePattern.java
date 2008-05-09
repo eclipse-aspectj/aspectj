@@ -33,7 +33,7 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 	 * @param annotationType
 	 */
 	public BindingAnnotationTypePattern(UnresolvedType annotationType, int index) {
-		super(annotationType);
+		super(annotationType,null);
 		this.formalIndex = index;
 	}
 		
@@ -105,7 +105,7 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 	
 	public AnnotationTypePattern remapAdviceFormals(IntMap bindings) {			
 		if (!bindings.hasKey(formalIndex)) {
-			return new ExactAnnotationTypePattern(annotationType);
+			return new ExactAnnotationTypePattern(annotationType,null);
 		} else {
 			int newFormalIndex = bindings.get(formalIndex);
 			return new BindingAnnotationTypePattern(annotationType, newFormalIndex);

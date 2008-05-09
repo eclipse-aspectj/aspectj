@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver;
 
 import java.io.IOException;
@@ -18,15 +17,17 @@ import java.io.IOException;
 import org.aspectj.util.TypeSafeEnum;
 
 /**
- * The 5 kinds of advice in AspectJ.
+ * The five kinds of advice in AspectJ.
  * 
  * @author Erik Hilsdale
  * @author Jim Hugunin
  */
 public class AdviceKind extends TypeSafeEnum {
+	
 	private int precedence;
 	private boolean isAfter;
 	private boolean isCflow;
+	
     public AdviceKind(String name, int key, int precedence, boolean isAfter, boolean isCflow) {
     	super(name, key);
     	this.precedence = precedence;

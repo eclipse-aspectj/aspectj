@@ -12,11 +12,15 @@
 package org.aspectj.weaver.reflect;
 
 import java.lang.reflect.Member;
+import java.util.Iterator;
 
+import org.aspectj.weaver.AnnotationX;
+import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
+
 
 /**
  * Subtype of ResolvedMemberImpl used in reflection world.
@@ -39,7 +43,7 @@ public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 	 * @param name
 	 * @param parameterTypes
 	 */
-	public ReflectionBasedResolvedMemberImpl(Kind kind,
+	public ReflectionBasedResolvedMemberImpl(MemberKind kind,
 			UnresolvedType declaringType, int modifiers,
 			UnresolvedType returnType, String name,
 			UnresolvedType[] parameterTypes,
@@ -57,7 +61,7 @@ public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 	 * @param parameterTypes
 	 * @param checkedExceptions
 	 */
-	public ReflectionBasedResolvedMemberImpl(Kind kind,
+	public ReflectionBasedResolvedMemberImpl(MemberKind kind,
 			UnresolvedType declaringType, int modifiers,
 			UnresolvedType returnType, String name,
 			UnresolvedType[] parameterTypes, UnresolvedType[] checkedExceptions,
@@ -77,7 +81,7 @@ public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 	 * @param checkedExceptions
 	 * @param backingGenericMember
 	 */
-	public ReflectionBasedResolvedMemberImpl(Kind kind,
+	public ReflectionBasedResolvedMemberImpl(MemberKind kind,
 			UnresolvedType declaringType, int modifiers,
 			UnresolvedType returnType, String name,
 			UnresolvedType[] parameterTypes,
@@ -96,7 +100,7 @@ public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 	 * @param name
 	 * @param signature
 	 */
-	public ReflectionBasedResolvedMemberImpl(Kind kind,
+	public ReflectionBasedResolvedMemberImpl(MemberKind kind,
 			UnresolvedType declaringType, int modifiers, String name,
 			String signature, Member reflectMember) {
 		super(kind, declaringType, modifiers, name, signature);
@@ -168,6 +172,30 @@ public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 		unpackAnnotations();
 		return super.getAnnotationTypes();
 	}
+	
+	public AnnotationX getAnnotationOfType(UnresolvedType ofType) {
+		unpackAnnotations();
+		if (annotationFinder==null) return null;
+		for (Iterator iterator = annotationTypes.iterator(); iterator.hasNext();) {
+			ResolvedType type = (ResolvedType) iterator.next();
+			if (type.getSignature().equals(ofType.getSignature())) {
+				return annotationFinder.getAnnotationOfType(ofType, reflectMember);
+			}
+		}
+		return null;
+	}
+
+	public String getAnnotationDefaultValue() {
+		if (annotationFinder==null) return null;
+		return annotationFinder.getAnnotationDefaultValue(reflectMember);
+	}
+
+	public ResolvedType[][] getParameterAnnotationTypes() {
+    	if (parameterAnnotationTypes==null && annotationFinder!=null) {
+    		parameterAnnotationTypes = annotationFinder.getParameterAnnotationTypes(reflectMember);
+    	}
+    	return parameterAnnotationTypes;
+    }
 	
 	private void unpackAnnotations() {
 		if (annotationTypes == null && annotationFinder != null) {

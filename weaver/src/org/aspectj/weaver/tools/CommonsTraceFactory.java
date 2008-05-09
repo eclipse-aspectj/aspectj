@@ -11,7 +11,7 @@
 package org.aspectj.weaver.tools;
 
 import org.apache.commons.logging.LogFactory;
-
+//OPTIMIZE move out of main weaver for now?
 public class CommonsTraceFactory extends TraceFactory {
 
 	private LogFactory logFactory = LogFactory.getFactory();

@@ -17,6 +17,7 @@ package org.aspectj.weaver.bcel;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.apache.bcel.Constants;
@@ -332,25 +333,24 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
      */
     private boolean enforceDecpRule4_compatibleReturnTypes(BcelClassWeaver weaver, ResolvedMember superMethod, LazyMethodGen subMethod) {
         boolean cont = true;
-        String superReturnTypeSig = superMethod.getReturnType().getSignature();
-          String subReturnTypeSig   = subMethod.getReturnType().getSignature();
-          superReturnTypeSig = superReturnTypeSig.replace('.','/');
-          subReturnTypeSig = subReturnTypeSig.replace('.','/');
-          if (!superReturnTypeSig.equals(subReturnTypeSig)) {
-            // Allow for covariance - wish I could test this (need Java5...)
+        String superReturnTypeSig = superMethod.getGenericReturnType().getSignature(); // eg. Pjava/util/Collection<LFoo;>
+        String subReturnTypeSig = subMethod.getGenericReturnTypeSignature();
+        superReturnTypeSig = superReturnTypeSig.replace('.', '/');
+        subReturnTypeSig = subReturnTypeSig.replace('.', '/');
+        if (!superReturnTypeSig.equals(subReturnTypeSig)) {
+            // Check for covariance
             ResolvedType subType   = weaver.getWorld().resolve(subMethod.getReturnType());
             ResolvedType superType = weaver.getWorld().resolve(superMethod.getReturnType());
             if (!superType.isAssignableFrom(subType)) {
-                ISourceLocation sloc = subMethod.getSourceLocation();
                 weaver.getWorld().getMessageHandler().handleMessage(MessageUtil.error(
-                        "The return type is incompatible with "+superMethod.getDeclaringType()+"."+superMethod.getName()+superMethod.getParameterSignature(),
-                        subMethod.getSourceLocation()));
+                        "The return type is incompatible with " + superMethod.getDeclaringType() + "." + superMethod.getName()
+                        + superMethod.getParameterSignature(), subMethod.getSourceLocation()));
 // this just might be a better error message...                      
 //                        "The return type '"+subReturnTypeSig+"' is incompatible with the overridden method "+superMethod.getDeclaringType()+"."+
 //                        superMethod.getName()+superMethod.getParameterSignature()+" which returns '"+superReturnTypeSig+"'",
                  cont=false;
             }
-          }
+        }
         return cont;
     }
     
@@ -379,11 +379,14 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
     }
    
 
+    /**
+     * Search the specified type for a particular method - do not use the return value in the comparison as it is not
+     * considered for overriding.
+     */
 	private LazyMethodGen findMatchingMethod(LazyClassGen newParentTarget, ResolvedMember m) {
         LazyMethodGen found = null;
-		// Search the type for methods overriding super methods (methods that come from the new parent)
-		// Don't use the return value in the comparison as overriding doesnt
-		for (Iterator i = newParentTarget.getMethodGens().iterator(); i.hasNext() && found==null;) {
+        List methodGens = newParentTarget.getMethodGens();
+        for (Iterator i = methodGens.iterator(); i.hasNext() && found == null;) {
 		    LazyMethodGen gen = (LazyMethodGen) i.next();
 		    if (gen.getName().equals(m.getName()) && 
 		        gen.getParameterSignature().equals(m.getParameterSignature())) {
@@ -1088,6 +1091,27 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		clazz.addMethodGen(bridgeMethod);
 	}
 	
+	// Unlike toString() on a member, this does not include the declaring type
+	private String stringifyMember(ResolvedMember member) {
+		StringBuffer buf = new StringBuffer();
+    	buf.append(member.getReturnType().getName());
+    	buf.append(' ');
+   		buf.append(member.getName());
+    	if (member.getKind() != Member.FIELD) {
+    		buf.append("(");
+    		UnresolvedType[] params = member.getParameterTypes();
+            if (params.length != 0) {
+                buf.append(params[0]);
+        		for (int i=1, len = params.length; i < len; i++) {
+                    buf.append(", ");
+        		    buf.append(params[i].getName());
+        		}
+            }
+    		buf.append(")");
+    	}
+    	return buf.toString();
+	}
+	
     private boolean mungeMethodDelegate(BcelClassWeaver weaver, MethodDelegateTypeMunger munger) {
         ResolvedMember introduced = munger.getSignature();
 
@@ -1103,6 +1127,34 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
         boolean shouldApply = munger.matches(weaver.getLazyClassGen().getType(), aspectType);
         if (shouldApply) {
+        	
+        	// If no implementation class was specified, the intention was that the types matching the pattern
+        	// already implemented the interface, let's check that now!
+        	if (munger.getImplClassName()==null) {
+        		boolean isOK = false;
+        		List/*LazyMethodGen*/ existingMethods = gen.getMethodGens();
+        		for (Iterator i = existingMethods.iterator(); i.hasNext() && !isOK;) {
+        		    LazyMethodGen m = (LazyMethodGen) i.next();
+        		    if (m.getName().equals(introduced.getName()) &&  
+        		        m.getParameterSignature().equals(introduced.getParameterSignature()) &&
+        		        m.getReturnType().equals(introduced.getReturnType())) {
+        		    	isOK = true;
+        		    }
+        		}        
+        		if (!isOK) {
+        			// the class does not implement this method, they needed to supply a default impl class
+        			IMessage msg = new Message("@DeclareParents: No defaultImpl was specified but the type '"+gen.getName()+
+        					"' does not implement the method '"+stringifyMember(introduced)+"' defined on the interface '"+introduced.getDeclaringType()+"'",
+        					weaver.getLazyClassGen().getType().getSourceLocation(),true,new ISourceLocation[]{munger.getSourceLocation()});
+        			weaver.getWorld().getMessageHandler().handleMessage(msg);
+        			return false;
+        		}
+        		
+        		return true;
+        	}
+        	
+        	
+        	
             LazyMethodGen mg = new LazyMethodGen(
                     introduced.getModifiers() - Modifier.ABSTRACT,
                     BcelWorld.makeBcelType(introduced.getReturnType()),
@@ -1664,6 +1716,10 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	
 	public ConcreteTypeMunger parameterizedFor(ResolvedType target) {
 		return new BcelTypeMunger(munger.parameterizedFor(target),aspectType);
+	}
+	
+	public ConcreteTypeMunger parameterizeWith(Map m, World w) {
+		return new BcelTypeMunger(munger.parameterizeWith(m,w),aspectType);
 	}
 	
 	/**

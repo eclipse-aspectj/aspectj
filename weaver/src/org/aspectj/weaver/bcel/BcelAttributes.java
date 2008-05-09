@@ -18,7 +18,6 @@ import java.util.List;
 
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Unknown;
-import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
@@ -28,16 +27,50 @@ import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 // this is a class o' static methods for reading attributes.  It's pretty much a bridge from 
 // bcel to AjAttribute.
+// OPTIMIZE move the contents of this class to bcel Utility
 class BcelAttributes {
 
 	/**
 	 * Process an array of Bcel attributes - looking for those with the name prefix org.aspectj.weaver.  The returned 
 	 * list contains the AspectJ attributes identified and unpacked to 'AjAttribute' objects.
 	 */
-	public static List readAjAttributes(String classname,Attribute[] as, ISourceContext context,
-			                              World w,AjAttribute.WeaverVersionInfo version) {
+//	public static List readAjAttributes(String classname,List as, ISourceContext context,
+//			                              World w, AjAttribute.WeaverVersionInfo version) {
+//		List l = new ArrayList();
+//		
+//		// first pass, look for version
+//		List forSecondPass = new ArrayList();
+//		for (int i = as.size() - 1; i >= 0; i--) {
+//			Attribute a = (Attribute)as.get(i);
+//			if (a instanceof Unknown) {
+//				Unknown u = (Unknown) a;
+//				String name = u.getName();
+//				if (name.charAt(0)=='o') { // 'o'rg.aspectj
+//					if (name.startsWith(AjAttribute.AttributePrefix)) {
+//						if (name.endsWith(WeaverVersionInfo.AttributeName)) {
+//							version = (AjAttribute.WeaverVersionInfo)AjAttribute.read(version,name,u.getBytes(),context,w);
+//							if (version.getMajorVersion() > WeaverVersionInfo.getCurrentWeaverMajorVersion()) {
+//								throw new BCException("Unable to continue, this version of AspectJ supports classes built with weaver version "+
+//										WeaverVersionInfo.toCurrentVersionString()+" but the class "+classname+" is version "+version.toString());
+//							}
+//	                    }
+//						forSecondPass.add(a);
+//					}
+//				}
+//			}
+//		}
+				
+//		for (int i = forSecondPass.size()-1; i >= 0; i--) {
+//			Unknown a = (Unknown)forSecondPass.get(i);
+//			String name = a.getName();
+//			AjAttribute attr = AjAttribute.read(version,name,a.getBytes(),context,w); 
+//			if (attr!=null) l.add(attr);
+//		}
+//		return l;
+//	}
+	public static List readAjAttributes(String classname, Attribute[] as, ISourceContext context, World w, AjAttribute.WeaverVersionInfo version) {
 		List l = new ArrayList();
-		
+
 		// first pass, look for version
 		List forSecondPass = new ArrayList();
 		for (int i = as.length - 1; i >= 0; i--) {
@@ -45,37 +78,34 @@ class BcelAttributes {
 			if (a instanceof Unknown) {
 				Unknown u = (Unknown) a;
 				String name = u.getName();
-				if (name.charAt(0)=='o') { // 'o'rg.aspectj
+				if (name.charAt(0) == 'o') { // 'o'rg.aspectj
 					if (name.startsWith(AjAttribute.AttributePrefix)) {
 						if (name.endsWith(WeaverVersionInfo.AttributeName)) {
-							version = (AjAttribute.WeaverVersionInfo)AjAttribute.read(version,name,u.getBytes(),context,w);
-							if (version.getMajorVersion() > WeaverVersionInfo.getCurrentWeaverMajorVersion()) {
-								throw new BCException("Unable to continue, this version of AspectJ supports classes built with weaver version "+
-										WeaverVersionInfo.toCurrentVersionString()+" but the class "+classname+" is version "+version.toString());
+							version = (AjAttribute.WeaverVersionInfo) AjAttribute.read(version, name, u.getBytes(), context, w);
+							if (version.getMajorVersion() > WeaverVersionInfo
+									.getCurrentWeaverMajorVersion()) {
+								throw new BCException(
+										"Unable to continue, this version of AspectJ supports classes built with weaver version "
+												+ WeaverVersionInfo
+														.toCurrentVersionString()
+												+ " but the class "
+												+ classname
+												+ " is version "
+												+ version.toString());
 							}
-	                    }
+						}
 						forSecondPass.add(a);
 					}
 				}
 			}
 		}
-				
-		for (int i = forSecondPass.size()-1; i >= 0; i--) {
-			Unknown a = (Unknown)forSecondPass.get(i);
+
+		for (int i = forSecondPass.size() - 1; i >= 0; i--) {
+			Unknown a = (Unknown) forSecondPass.get(i);
 			String name = a.getName();
-			AjAttribute attr = AjAttribute.read(version,name,a.getBytes(),context,w); 
-			if (attr!=null) l.add(attr);
+			AjAttribute attr = AjAttribute.read(version, name, a.getBytes(), context, w);
+			if (attr != null) l.add(attr);
 		}
 		return l;
 	}
-
-	public static Attribute bcelAttribute(AjAttribute a, ConstantPool pool) {
-		int nameIndex = pool.addUtf8(a.getNameString());
-		byte[] bytes = a.getBytes();
-		int length = bytes.length;
-
-		return new Unknown(nameIndex, length, bytes, pool);
-
-	}
-
 }

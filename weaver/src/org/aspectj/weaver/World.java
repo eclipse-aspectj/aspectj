@@ -17,13 +17,17 @@ package org.aspectj.weaver;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.bridge.IMessageHandler;
@@ -38,9 +42,9 @@ import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.reflect.ReflectionBasedReferenceTypeDelegate;
+import org.aspectj.weaver.tools.PointcutDesignatorHandler;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
-import java.util.*;
 
 /**
  * A World is a collection of known types and crosscutting members.
@@ -57,6 +61,9 @@ public abstract class World implements Dump.INode {
 	
 	/** The heart of the world, a map from type signatures to resolved types */
     protected TypeMap typeMap = new TypeMap(this); // Signature to ResolvedType
+
+    /** New pointcut designators this world supports */
+    private Set pointcutDesignators;
 
     // see pr145963
     /** Should we create the hierarchy for binary classes and aspects*/
@@ -111,6 +118,7 @@ public abstract class World implements Dump.INode {
 	private boolean runMinimalMemory = false;
 	private boolean shouldPipelineCompilation = true;
 	protected boolean bcelRepositoryCaching = xsetBCEL_REPOSITORY_CACHING_DEFAULT.equalsIgnoreCase("true");
+	private boolean goforit = false; // TODO better name
 	private boolean completeBinaryTypes = false;
 	public boolean forDEBUG_structuralChangesCode = false;
 	public boolean forDEBUG_bridgingCode = false;
@@ -265,7 +273,7 @@ public abstract class World implements Dump.INode {
         if (ty.isArray()) {
         	ResolvedType componentType = resolve(ty.getComponentType(),allowMissing);
         	//String brackets = signature.substring(0,signature.lastIndexOf("[")+1);
-            ret = new ResolvedType.Array(signature, "["+componentType.getErasureSignature(),
+            ret = new ArrayReferenceType(signature, "["+componentType.getErasureSignature(),
             		                     this, 
             		                     componentType);
         } else {
@@ -788,6 +796,8 @@ public abstract class World implements Dump.INode {
 	public Properties getExtraConfiguration() {
 		return extraConfiguration;
 	}
+    public final static String xsetWEAVE_JAVA_PACKAGES = "weaveJavaPackages"; // default false - controls LTW
+    public final static String xsetWEAVE_JAVAX_PACKAGES = "weaveJavaxPackages"; // default false - controls LTW
 	public final static String xsetCAPTURE_ALL_CONTEXT = "captureAllContext"; // default false
 	public final static String xsetACTIVATE_LIGHTWEIGHT_DELEGATES = "activateLightweightDelegates"; // default true
 	public final static String xsetRUN_MINIMAL_MEMORY ="runMinimalMemory"; // default true
@@ -799,6 +809,7 @@ public abstract class World implements Dump.INode {
 	public final static String xsetCOMPLETE_BINARY_TYPES = "completeBinaryTypes";
 	public final static String xsetCOMPLETE_BINARY_TYPES_DEFAULT = "false"; 
 	public final static String xsetBCEL_REPOSITORY_CACHING_DEFAULT = "true"; 
+	public final static String xsetGO_FOR_IT = "goforit"; 
 	
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;
@@ -817,7 +828,6 @@ public abstract class World implements Dump.INode {
 	public boolean isJoinpointArrayConstructionEnabled() {
 		return optionalJoinpoint_ArrayConstruction;
 	}
-
 	public boolean isJoinpointSynchronizationEnabled() {
 		return optionalJoinpoint_Synchronization;
 	}
@@ -856,7 +866,7 @@ public abstract class World implements Dump.INode {
 		private Map /* String -> ResolvedType */ tMap = new HashMap();
 		
 		// Map of types that may be ejected from the cache if we need space
-		private Map expendableMap = new SoftHashMap();
+		private Map expendableMap = Collections.synchronizedMap(new WeakHashMap());//new SoftHashMap();
 		
 		public static class SoftHashMap extends AbstractMap {
 			  private Map map;
@@ -1020,16 +1030,32 @@ public abstract class World implements Dump.INode {
 				String key = (String) iter.next();
 				ResolvedType type = (ResolvedType)tMap.get(key);
 				if (type==null) continue;//throw new RuntimeException("Unexpected!! "+key);
-				if (type.isAspect() ) continue;
+				if (type.isAspect() || (type.getSuperclass()!=null && type.getSuperclass().isAspect())) continue;
 				if (type.equals(UnresolvedType.OBJECT)) continue;
 				if (type.isPrimitiveType()) continue;
 				List typeMungers = type.getInterTypeMungers();
 				if (typeMungers==null || typeMungers.size()==0) {
 					// demote - we can recover this
 					tMap.remove(key);
+					
+					// didnt achieve anything...
+//					// force the data out of memory - this may not happen if a bcel object type was loaded for
+//					// something not necessarily being woven as that will never go through the lifecycle states
+//					ReferenceTypeDelegate delly = ((ReferenceType)type).getDelegate();
+//					if (delly instanceof BcelObjectType) {
+//						((BcelObjectType)delly).weavingCompleted();
+//						// that shouldnt be weavingCompleted, but it will do for now...
+//					}
 					// extreme demotion if you dont use these next two lines!
-//					if (memoryProfiling) expendableMap.put(key,new SoftReference(type,rq));
-//					else                 expendableMap.put(key,new SoftReference(type));
+					if (policy==USE_WEAK_REFS) {
+					    if (memoryProfiling) expendableMap.put(key,new WeakReference(type,rq));
+					    else                 expendableMap.put(key,new WeakReference(type));
+					} else if (policy==USE_SOFT_REFS) {
+						if (memoryProfiling) expendableMap.put(key,new SoftReference(type,rq));
+						else                 expendableMap.put(key,new SoftReference(type));
+					} else {
+					  expendableMap.put(key,type);
+					}
 					count++;
 				}
 			}
@@ -1140,11 +1166,11 @@ public abstract class World implements Dump.INode {
 	    public int hardSize() {
 	    	return tMap.size();
 	    }
-	}	
-	
+		}
+
 	public void demote() {
 		typeMap.demote();
-	}
+	}	
 	
 	/** Reference types we don't intend to weave may be ejected from
 	 * the cache if we need the space.
@@ -1157,7 +1183,6 @@ public abstract class World implements Dump.INode {
 				  (!type.isPrimitiveType())
 				);
 	}
-	
 
 	/**
 	 * This class is used to compute and store precedence relationships between
@@ -1290,6 +1315,10 @@ public abstract class World implements Dump.INode {
 				if (!bcelRepositoryCaching) {
 					getMessageHandler().handleMessage(MessageUtil.info("[bcelRepositoryCaching=false] AspectJ will not use a bcel cache for class information"));
 				}
+
+				s = p.getProperty(xsetGO_FOR_IT,"false");
+				goforit = s.equalsIgnoreCase("true");
+				
 				
 				s = p.getProperty(xsetPIPELINE_COMPILATION,xsetPIPELINE_COMPILATION_DEFAULT);
 				shouldPipelineCompilation = s.equalsIgnoreCase("true");
@@ -1320,6 +1349,11 @@ public abstract class World implements Dump.INode {
 	    public boolean isRunMinimalMemory() {
 	      ensureAdvancedConfigurationProcessed();
 	    	  return runMinimalMemory;
+	    }
+
+	    public boolean shouldGoForIt() {
+	      ensureAdvancedConfigurationProcessed();
+	    	  return goforit;
 	    }
 	    
 	    public boolean shouldPipelineCompilation() {
@@ -1353,4 +1387,25 @@ public abstract class World implements Dump.INode {
 	    public boolean isASMAround() { 
 	    	return isASMAround;
 	    }
+//	    
+//		public ResolvedType[] getAllTypes() {
+//			return typeMap.getAllTypes();
+//		}
+
+        /**
+         * Register a new pointcut designator handler with the world - this can be used by any pointcut parsers attached
+         * to the world.
+         * 
+         * @param designatorHandler handler for the new pointcut
+         */
+        public void registerPointcutHandler(PointcutDesignatorHandler designatorHandler) {
+            if (pointcutDesignators == null) pointcutDesignators = new HashSet();
+            pointcutDesignators.add(designatorHandler);
+        }
+        
+        public Set getRegisteredPointcutHandlers() {
+            if (pointcutDesignators == null) return Collections.EMPTY_SET;
+            return pointcutDesignators;
+        }
+        
 }

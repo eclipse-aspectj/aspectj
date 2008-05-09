@@ -260,6 +260,7 @@ public class PointcutParser {
      */
     public void registerPointcutDesignatorHandler(PointcutDesignatorHandler designatorHandler) {
     	this.pointcutDesignators.add(designatorHandler);
+    	if (world != null) world.registerPointcutHandler(designatorHandler);
     }
     
     /**

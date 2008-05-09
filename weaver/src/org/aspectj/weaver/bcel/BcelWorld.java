@@ -45,13 +45,13 @@ import org.aspectj.apache.bcel.util.NonCachingClassLoaderRepository;
 import org.aspectj.apache.bcel.util.Repository;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.Advice;
-import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationOnTypeMunger;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ICrossReferenceHandler;
+import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberImpl;
 import org.aspectj.weaver.NewParentTypeMunger;
@@ -104,8 +104,6 @@ public class BcelWorld extends World implements Repository {
 		
 	}
 	
-
-    	
 	private static List getPathEntries(String s) {
 		List ret = new ArrayList();
 		StringTokenizer tok = new StringTokenizer(s, File.pathSeparator);
@@ -170,61 +168,6 @@ public class BcelWorld extends World implements Repository {
 		classPath.addPath(name, this.getMessageHandler());
 	}
 
-    /**
-     * Parse a string into advice.
-     * 
-     * <blockquote><pre>
-     * Kind ( Id , ... ) : Pointcut -> MethodSignature
-     * </pre></blockquote>
-     */
-    public Advice shadowMunger(String str, int extraFlag) {
-        str = str.trim();
-        int start = 0;
-        int i = str.indexOf('(');
-        AdviceKind kind = 
-            AdviceKind.stringToKind(str.substring(start, i));
-        start = ++i;
-        i = str.indexOf(')', i);
-        String[] ids = parseIds(str.substring(start, i).trim());
-        //start = ++i;
-        
-        
-        
-        i = str.indexOf(':', i);        
-        start = ++i;        
-        i = str.indexOf("->", i);
-        Pointcut pointcut = Pointcut.fromString(str.substring(start, i).trim());
-        Member m = MemberImpl.methodFromString(str.substring(i+2, str.length()).trim());
-
-        // now, we resolve
-        UnresolvedType[] types = m.getParameterTypes();
-        FormalBinding[] bindings = new FormalBinding[ids.length];
-        for (int j = 0, len = ids.length; j < len; j++) {
-            bindings[j] = new FormalBinding(types[j], ids[j], j, 0, 0, "fromString");
-        }
-
-        Pointcut p =
-        	pointcut.resolve(new SimpleScope(this, bindings));
-
-        return new BcelAdvice(kind, p, m, extraFlag, 0, 0, null, null);
-    }
-    
-    private String[] parseIds(String str) {
-        if (str.length() == 0) return ZERO_STRINGS;
-        List l = new ArrayList();
-        int start = 0;
-        while (true) {
-            int i = str.indexOf(',', start);
-            if (i == -1) {
-                l.add(str.substring(start).trim());
-                break;
-            }
-            l.add(str.substring(start, i).trim());
-            start = i+1;
-        }
-        return (String[]) l.toArray(new String[l.size()]);
-    }
-    
     // ---- various interactions with bcel
 
     public static Type makeBcelType(UnresolvedType type) {
@@ -452,7 +395,7 @@ public class BcelWorld extends World implements Repository {
 	}
 
 	
-	public Member makeJoinPointSignatureFromMethod(LazyMethodGen mg, MemberImpl.Kind kind) {
+	public Member makeJoinPointSignatureFromMethod(LazyMethodGen mg, MemberKind kind) {
 		Member ret = mg.getMemberView();
 		if (ret == null) {
 	        int mods = mg.getAccessFlags();
@@ -460,7 +403,8 @@ public class BcelWorld extends World implements Repository {
 	            mods |= Modifier.INTERFACE;
 	        }
 	        if (kind == null) {
-		        if (mg.getName().equals("<init>")) {
+	        	//OPTIMIZE surely we can pass the kind in and not resort to string compares?
+	        	if (mg.getName().equals("<init>")) {
 		        	kind = Member.CONSTRUCTOR;
 		        } else if (mg.getName().equals("<clinit>")) {
 		        	kind = Member.STATIC_INITIALIZATION;
@@ -482,12 +426,10 @@ public class BcelWorld extends World implements Repository {
     }
 	
 	public Member makeJoinPointSignatureForMonitorEnter(LazyClassGen cg,InstructionHandle h) {
-		Instruction i = h.getInstruction();
 		return MemberImpl.monitorEnter();
 	}
 
 	public Member makeJoinPointSignatureForMonitorExit(LazyClassGen cg,InstructionHandle h) {
-		Instruction i = h.getInstruction();
 		return MemberImpl.monitorExit();
 	}
 	

@@ -80,7 +80,6 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
-import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
@@ -88,9 +87,6 @@ import org.aspectj.weaver.patterns.ExactTypePattern;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 
-import com.sun.org.apache.bcel.internal.generic.BranchInstruction;
-import com.sun.org.apache.bcel.internal.generic.GOTO;
-import com.sun.org.apache.bcel.internal.generic.GOTO_W;
 
 class BcelClassWeaver implements IClassWeaver {
 
@@ -821,8 +817,9 @@ class BcelClassWeaver implements IClassWeaver {
             				
             				if (annotationsToAdd==null) annotationsToAdd = new ArrayList();
                 			AnnotationGen a = decaM.getAnnotationX().getBcelAnnotation();
-                			AnnotationGen ag = new AnnotationGen(a,clazz.getConstantPool(),true);
-                			annotationsToAdd.add(ag);
+                			//CUSTARD superfluous?
+                			//AnnotationGen ag = new AnnotationGen(a,clazz.getConstantPool(),true);
+                			annotationsToAdd.add(a);
                 			
             				mg.addAnnotation(decaM.getAnnotationX());
             				AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaM.getSourceLocation(),clazz.getName(),mg.getMethod());
@@ -1002,7 +999,7 @@ class BcelClassWeaver implements IClassWeaver {
 		    while (!worthRetrying.isEmpty() && modificationOccured) {
 				modificationOccured = false;
                 List forRemoval = new ArrayList();
-                for (Iterator iter2 = worthRetrying.iterator(); iter.hasNext();) {
+                for (Iterator iter2 = worthRetrying.iterator(); iter2.hasNext();) {
 				  DeclareAnnotation decaF = (DeclareAnnotation) iter2.next();
 				  if (decaF.matches(itdIsActually,world)) {
 					LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz,fieldMunger);
@@ -1055,7 +1052,7 @@ class BcelClassWeaver implements IClassWeaver {
 		    while (!worthRetrying.isEmpty() && modificationOccured) {
 				modificationOccured = false;
                 List forRemoval = new ArrayList();
-                for (Iterator iter2 = worthRetrying.iterator(); iter.hasNext();) {
+                for (Iterator iter2 = worthRetrying.iterator(); iter2.hasNext();) {
 				  DeclareAnnotation decaMC = (DeclareAnnotation) iter2.next();
 				  if (decaMC.matches(unMangledInterMethod,world)) {
 					LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz,methodctorMunger);
@@ -1074,7 +1071,7 @@ class BcelClassWeaver implements IClassWeaver {
 	      return isChanged;
 	}
 	
-	private boolean dontAddTwice(DeclareAnnotation decaF, AnnotationX[] dontAddMeTwice){
+	private boolean dontAddTwice(DeclareAnnotation decaF, AnnotationX [] dontAddMeTwice){
 		for (int i = 0; i < dontAddMeTwice.length; i++){
 			AnnotationX ann = dontAddMeTwice[i];
 			if (ann != null && decaF.getAnnotationX().getTypeName().equals(ann.getTypeName())){
@@ -1162,7 +1159,7 @@ class BcelClassWeaver implements IClassWeaver {
 						}
 					}
 					
-					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),aBcelField.getName());
+					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),aBcelField.getFieldAsIs());
 					reportFieldAnnotationWeavingMessage(clazz, fields, fieldCounter, decaF);		
 					isChanged = true;
 					modificationOccured = true;
@@ -1190,7 +1187,7 @@ class BcelClassWeaver implements IClassWeaver {
 						continue; // skip this one...
 					}
 					aBcelField.addAnnotation(decaF.getAnnotationX());
-					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),aBcelField.getName());
+					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),clazz.getName(),aBcelField.getFieldAsIs());
 					isChanged = true;
 					modificationOccured = true;
 					forRemoval.add(decaF);
@@ -1301,7 +1298,7 @@ class BcelClassWeaver implements IClassWeaver {
 					  reportedProblems.add(uniqueID);
 					  reportedProblems.add(new Integer(itdfieldsig.hashCode()*deca.hashCode()));
 					  world.getLint().elementAlreadyAnnotated.signal(
-						new String[]{rm.toString(),deca.getAnnotationTypeX().toString()},
+						new String[]{itdfieldsig.toString(),deca.getAnnotationTypeX().toString()},
 						rm.getSourceLocation(),new ISourceLocation[]{deca.getSourceLocation()});
 				  }
 			  }
@@ -1537,10 +1534,10 @@ class BcelClassWeaver implements IClassWeaver {
 									// ignore
 								} else if (targeter instanceof LineNumberTag) {
 									// ignore
-								} else if (targeter instanceof InstructionBranch && ((InstructionBranch)targeter).isGoto()) {
-									// move it...
-									targeter.updateTarget(element, monitorExitBlockStart);	
-								} else if (targeter instanceof BranchInstruction) {
+//								} else if (targeter instanceof InstructionBranch && ((InstructionBranch)targeter).isGoto()) {
+//									// move it...
+//									targeter.updateTarget(element, monitorExitBlockStart);	
+								} else if (targeter instanceof InstructionBranch) {
 									// move it
 									targeter.updateTarget(element, monitorExitBlockStart);
 								} else {
@@ -1717,10 +1714,10 @@ class BcelClassWeaver implements IClassWeaver {
 								// ignore
 							} else if (targeter instanceof LineNumberTag) {
 								// ignore
-							} else if (targeter instanceof GOTO || targeter instanceof GOTO_W) {
-								// move it...
-								targeter.updateTarget(element, monitorExitBlockStart);
-							} else if (targeter instanceof BranchInstruction) {
+//							} else if (targeter instanceof GOTO || targeter instanceof GOTO_W) {
+//								// move it...
+//								targeter.updateTarget(element, monitorExitBlockStart);
+							} else if (targeter instanceof InstructionBranch) {
 								// move it
 								targeter.updateTarget(element, monitorExitBlockStart);
 							} else {
@@ -1825,9 +1822,9 @@ class BcelClassWeaver implements IClassWeaver {
 								// ignore
 							} else if (targeter instanceof LineNumberTag) {
 								// ignore
-							} else if (targeter instanceof InstructionBranch && ((InstructionBranch)targeter).isGoto()) {
-								// move it...
-								targeter.updateTarget(element, monitorExitBlockStart);
+//							} else if (targeter instanceof GOTO || targeter instanceof GOTO_W) {
+//								// move it...
+//								targeter.updateTarget(element, monitorExitBlockStart);
 							} else if (targeter instanceof InstructionBranch) {
 								// move it
 								targeter.updateTarget(element, monitorExitBlockStart);
@@ -1900,6 +1897,8 @@ class BcelClassWeaver implements IClassWeaver {
 		{
 			Instruction fresh = Utility.copyInstruction(src.getInstruction());
 			InstructionHandle dest;
+			
+			// OPTIMIZE optimize this stuff?
 			if (fresh.isConstantPoolInstruction()) {
 				// need to reset index to go to new constant pool.  This is totally
 				// a computation leak... we're testing this LOTS of times.  Sigh.
@@ -2605,9 +2604,14 @@ class BcelClassWeaver implements IClassWeaver {
 			// sets of synthetics aren't join points in 1.1
 			return;
 		} else {
-			match(
-				BcelShadow.makeFieldSet(world, mg, ih, enclosingShadow),
-				shadowAccumulator);
+			// Fix for bug 172107 (similar the "get" fix for bug 109728)
+			BcelShadow bs=
+				BcelShadow.makeFieldSet(world, resolvedField, mg, ih, enclosingShadow);
+			String cname = fi.getClassName(cpg);
+			if (!resolvedField.getDeclaringType().getName().equals(cname)) {
+				bs.setActualTargetType(cname);
+			}
+			match(bs, shadowAccumulator);
 		}
 	}
 
@@ -2774,14 +2778,11 @@ class BcelClassWeaver implements IClassWeaver {
 	            ShadowMunger munger = (ShadowMunger)i.next();
 	            ContextToken mungerMatchToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.MATCHING_POINTCUT, munger.getPointcut());
 	            if (munger.match(shadow, world)) {
-					WeaverMetrics.recordMatchResult(true);// Could pass: munger
 	                shadow.addMunger(munger);
 	                isMatched = true;
 				    if (shadow.getKind() == Shadow.StaticInitialization) {
 					  clazz.warnOnAddedStaticInitializer(shadow,munger.getSourceLocation());
 				    }
-	            } else {
-	            	WeaverMetrics.recordMatchResult(false); // Could pass: munger
 	        	}
 	            CompilationAndWeavingContext.leavingPhase(mungerMatchToken);
 	        }       

@@ -139,7 +139,7 @@ public class WeaverStateInfo {
 			    readAnyReweavableData(wsi,s);
 				return wsi;
 		} 
-		throw new RuntimeException("bad WeaverState.Kind: " + b);
+		throw new RuntimeException("bad WeaverState.Kind: " + b+".  File was :"+(context==null?"unknown":context.makeSourceLocation(0,0).toString()));
 	}
 	
 	

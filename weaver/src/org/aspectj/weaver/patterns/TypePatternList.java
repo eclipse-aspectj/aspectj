@@ -87,6 +87,9 @@ public class TypePatternList extends PatternNode {
     		return (size() -ellipsisCount) <= numParams;
     	}
     }
+    public FuzzyBoolean matches(ResolvedType[] types, TypePattern.MatchKind kind) {
+    	return matches(types,kind,null);
+    }
     
     //XXX shares much code with WildTypePattern and with NamePattern
     /**
@@ -99,7 +102,7 @@ public class TypePatternList extends PatternNode {
      * 
      * This method will never return FuzzyBoolean.NEVER
      */ 
-    public FuzzyBoolean matches(ResolvedType[] types, TypePattern.MatchKind kind) {
+    public FuzzyBoolean matches(ResolvedType[] types, TypePattern.MatchKind kind, ResolvedType[][] parameterAnnotations) {
     	int nameLength = types.length;
 		int patternLength = typePatterns.length;
 		
@@ -110,7 +113,16 @@ public class TypePatternList extends PatternNode {
 			if (nameLength != patternLength) return FuzzyBoolean.NO;
 			FuzzyBoolean finalReturn = FuzzyBoolean.YES;
 			while (patternIndex < patternLength) {
-				FuzzyBoolean ret = typePatterns[patternIndex++].matches(types[nameIndex++], kind);
+				ResolvedType t = types[nameIndex];
+				FuzzyBoolean ret = null;
+				try {
+				  if (parameterAnnotations!=null) t.temporaryAnnotationTypes = parameterAnnotations[nameIndex];
+			      ret = typePatterns[patternIndex].matches(t,kind);
+				} finally {
+					t.temporaryAnnotationTypes=null;
+				}
+				patternIndex++;
+				nameIndex++;
 				if (ret == FuzzyBoolean.NO) return ret;
 				if (ret == FuzzyBoolean.MAYBE) finalReturn = ret;
 			}
@@ -123,7 +135,15 @@ public class TypePatternList extends PatternNode {
 				if (p == TypePattern.ELLIPSIS) {
 					nameIndex = nameLength - (patternLength-patternIndex);
 				} else {
-					FuzzyBoolean ret = p.matches(types[nameIndex++], kind);
+					ResolvedType t = types[nameIndex];
+					FuzzyBoolean ret = null;
+					try {
+						if (parameterAnnotations!=null) t.temporaryAnnotationTypes = parameterAnnotations[nameIndex];
+					    ret = p.matches(t, kind);
+					} finally {
+						t.temporaryAnnotationTypes=null;
+					}
+					nameIndex++;
 				    if (ret == FuzzyBoolean.NO) return ret;
 				    if (ret == FuzzyBoolean.MAYBE) finalReturn = ret;
 				}

@@ -14,8 +14,10 @@ package org.aspectj.weaver;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.weaver.bcel.BcelAdvice;
@@ -70,6 +72,10 @@ public class CrosscuttingMembers {
 		this.world = inAspect.getWorld();
 		this.shouldConcretizeIfNeeded = shouldConcretizeIfNeeded;
 	}
+	
+
+	private Hashtable cflowFields = new Hashtable();
+	private Hashtable cflowBelowFields = new Hashtable();
 	
 //	public void addConcreteShadowMungers(Collection c) {
 //		shadowMungers.addAll(c);
@@ -500,6 +506,19 @@ public class CrosscuttingMembers {
      */
 	public List getDeclareAnnotationOnMethods() {
 		return declareAnnotationsOnMethods;
+	}
+
+	public Map getCflowBelowFields() {
+		return cflowBelowFields;
+	}
+
+	public Map getCflowFields() {
+		return cflowFields;
+	}
+	
+	public void clearCaches() {
+		cflowFields.clear();
+		cflowBelowFields.clear();
 	}
 
 }

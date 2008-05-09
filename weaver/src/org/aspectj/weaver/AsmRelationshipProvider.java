@@ -16,6 +16,7 @@ package org.aspectj.weaver;
 import java.util.Iterator;
 import java.util.List;
 
+import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.apache.bcel.generic.Type;
@@ -430,7 +431,7 @@ public class AsmRelationshipProvider {
      * the fields' type in order to locate it.  Currently just fails silently if any of the lookup code
      * doesn't find anything...
      */
-	public void addDeclareAnnotationRelationship(ISourceLocation sourceLocation, String typename,String fieldName) {
+	public void addDeclareAnnotationRelationship(ISourceLocation sourceLocation, String typename,Field field) {
 	    if (!AsmManager.isCreatingModel()) return;
 	    
   	    String pkg  = null;
@@ -444,7 +445,7 @@ public class AsmRelationshipProvider {
         IProgramElement typeElem = AsmManager.getDefault().getHierarchy().findElementForType(pkg,type);
         if (typeElem == null) return;
         
-        IProgramElement fieldElem = AsmManager.getDefault().getHierarchy().findElementForSignature(typeElem,IProgramElement.Kind.FIELD,fieldName);
+        IProgramElement fieldElem = AsmManager.getDefault().getHierarchy().findElementForSignature(typeElem,IProgramElement.Kind.FIELD,field.getName());
         if (fieldElem== null) return;
 
 		String targetHandle = fieldElem.getHandleIdentifier();

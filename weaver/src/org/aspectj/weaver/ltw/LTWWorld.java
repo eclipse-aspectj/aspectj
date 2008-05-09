@@ -258,6 +258,8 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 		visitor.visitObject(loader.getParent());
 		super.accept(visitor);
 	}
-
+	 public boolean shouldGoForIt() {
+		 return true; // Zooooooooooom
+	 }
     
 }

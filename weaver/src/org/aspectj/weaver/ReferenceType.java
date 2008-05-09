@@ -65,6 +65,7 @@ public class ReferenceType extends ResolvedType {
 	ResolvedMember[] parameterizedPointcuts = null;
 	ResolvedType[] parameterizedInterfaces = null;
 	Collection parameterizedDeclares = null;
+	Collection parameterizedTypeMungers = null;
 	
 	//??? should set delegate before any use
     public ReferenceType(String signature, World world) {
@@ -127,11 +128,11 @@ public class ReferenceType extends ResolvedType {
 		typeKind=TypeKind.GENERIC;
 	}
         
-    public final boolean isClass() {
+    public boolean isClass() {
     	return delegate.isClass();
     }
     
-    public final boolean isGenericType() {
+    public boolean isGenericType() {
     	return !isParameterizedType() && !isRawType() && delegate.isGeneric();
     }
 
@@ -147,6 +148,7 @@ public class ReferenceType extends ResolvedType {
     public void addAnnotation(AnnotationX annotationX) {
     	delegate.addAnnotation(annotationX);
     }
+    
     public boolean hasAnnotation(UnresolvedType ofType) {
     	return delegate.hasAnnotation(ofType);
     }
@@ -200,7 +202,7 @@ public class ReferenceType extends ResolvedType {
     }
       
     // true iff the statement "this = (ThisType) other" would compile
-    public final boolean isCoerceableFrom(ResolvedType o) {
+    public boolean isCoerceableFrom(ResolvedType o) {
         ResolvedType other = o.resolve(world);
 
         if (this.isAssignableFrom(other) || other.isAssignableFrom(this)) {
@@ -272,12 +274,12 @@ public class ReferenceType extends ResolvedType {
     	return false;
     }
     
-    public final boolean isAssignableFrom(ResolvedType other) {
+    public boolean isAssignableFrom(ResolvedType other) {
     	return isAssignableFrom(other,false);
     }
     
     // true iff the statement "this = other" would compile.
-    public final boolean isAssignableFrom(ResolvedType other,boolean allowMissing) {
+    public boolean isAssignableFrom(ResolvedType other,boolean allowMissing) {
        	if (other.isPrimitiveType()) {
     		if (!world.isInJava5Mode()) return false;
     		if (ResolvedType.validBoxing.contains(this.getSignature()+other.getSignature())) return true;
@@ -596,7 +598,28 @@ public class ReferenceType extends ResolvedType {
 		return declares;
 	}
 	
-	protected Collection getTypeMungers() { return delegate.getTypeMungers(); }
+	protected Collection getTypeMungers() { 
+		return delegate.getTypeMungers();
+	}
+		// GENERICITDFIX
+////		Map parameterizationMap = getAjMemberParameterizationMap();
+//		
+//	//	if (parameterizedTypeMungers != null) return parameterizedTypeMungers;
+//		Collection ret = null;
+//		if (ajMembersNeedParameterization()) {
+//			Collection genericDeclares = delegate.getTypeMungers(); 
+//			parameterizedTypeMungers = new ArrayList();
+//			Map parameterizationMap = getAjMemberParameterizationMap();
+//			for (Iterator iter = genericDeclares.iterator(); iter.hasNext();) {
+//				ConcreteTypeMunger munger = (ConcreteTypeMunger)iter.next();
+//				parameterizedTypeMungers.add(munger.parameterizeWith(parameterizationMap,world));
+//			}
+//			ret = parameterizedTypeMungers;
+//		} else {
+//			ret = delegate.getTypeMungers(); 
+//		}
+//		return ret;
+//	}
 	
 	protected Collection getPrivilegedAccesses() { return delegate.getPrivilegedAccesses(); }
 

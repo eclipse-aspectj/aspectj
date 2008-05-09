@@ -15,11 +15,11 @@ package org.aspectj.weaver.ast;
 
 
 public class Not extends Test {
-	Test body;
+	Test test;
 
-	public Not(Test left) {
+	public Not(Test test) {
 		super();
-		this.body = left;
+		this.test = test;
 	}
 
 	public void accept(ITestVisitor v) {
@@ -27,17 +27,17 @@ public class Not extends Test {
 	}
 	
 	public Test getBody() {
-		return body;
+		return test;
 	}
 	
 	public String toString() {
-		return "!" + body;
+		return "!" + test;
 	}
 
 	public boolean equals(Object other) {
 		if (other instanceof Not) {
 			Not o = (Not) other;
-			return o.body.equals(body);
+			return o.test.equals(test);
 		} else {
 			return false;
 		}

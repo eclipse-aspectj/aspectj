@@ -158,7 +158,11 @@ public abstract class TypePattern extends PatternNode {
 		if (type.isTypeVariableReference()) {
 			typesIterator = ((TypeVariableReference)type).getTypeVariable().getFirstBound().resolve(type.getWorld()).getDirectSupertypes();
 		} else {
-			typesIterator = type.getDirectSupertypes();
+            // pr223605
+            if (type.isRawType()) {
+                type = type.getGenericType();
+            }
+            typesIterator = type.getDirectSupertypes();
 		}
 		
 		// FuzzyBoolean ret = FuzzyBoolean.NO; // ??? -eh
@@ -467,8 +471,15 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 
 	protected boolean matchesExactly(ResolvedType type) {
 		annotationPattern.resolve(type.getWorld());
-		return annotationPattern.matches(type).alwaysTrue();
+		boolean b = false;
+		if (type.temporaryAnnotationTypes!=null) {
+			b = annotationPattern.matches(type,type.temporaryAnnotationTypes).alwaysTrue();
+		} else {
+			b = annotationPattern.matches(type).alwaysTrue();
+		}
+		return b;
 	}
+	
 	
 	protected boolean matchesExactly(ResolvedType type, ResolvedType annotatedType) {
 		annotationPattern.resolve(type.getWorld());

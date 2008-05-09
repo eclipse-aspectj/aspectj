@@ -104,7 +104,7 @@ public class NameMangler {
 	}
 	
     public static String itdAtDeclareParentsField(UnresolvedType aspectType, UnresolvedType itdType) {
-        return makeName(aspectType.getNameAsIdentifier(), itdType.getNameAsIdentifier());
+        return makeName("instance",aspectType.getNameAsIdentifier(), itdType.getNameAsIdentifier());
     }
 
 	public static String privilegedAccessMethodForMethod(String name, UnresolvedType objectType, UnresolvedType aspectType) {
@@ -358,15 +358,14 @@ public class NameMangler {
 			return enclosingType.getName() + "$AjcClosure"  + index;
 	}
 
-	public static String aroundCallbackMethodName(
-		Member shadowSig,
-		LazyClassGen enclosingType) 
-	{
-		String ret =
-			shadowSig.getExtractableName()
-				+ "_aroundBody"
-				+ enclosingType.getNewGeneratedNameTag();
-		return ret;
+	public static String aroundCallbackMethodName(Member shadowSig, LazyClassGen enclosingType) {
+		StringBuffer ret = new StringBuffer();
+		ret.append(shadowSig.getExtractableName()).append("_aroundBody").append(enclosingType.getNewGeneratedNameTag());
+//		String ret =
+//			shadowSig.getExtractableName()
+//				+ "_aroundBody"
+//				+ enclosingType.getNewGeneratedNameTag();
+		return ret.toString();
 	}
 
 	public static String proceedMethodName(String adviceMethodName) {

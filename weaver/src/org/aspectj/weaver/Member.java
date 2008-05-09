@@ -13,71 +13,46 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
-import java.io.DataInputStream;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.aspectj.util.TypeSafeEnum;
 
 public interface Member {
 
-    public static class Kind extends TypeSafeEnum {
-        public Kind(String name, int key) { super(name, key); }
-        
-        public static Kind read(DataInputStream s) throws IOException {
-            int key = s.readByte();
-            switch(key) {
-                case 1: return METHOD;
-                case 2: return FIELD;
-                case 3: return CONSTRUCTOR;
-                case 4: return STATIC_INITIALIZATION;
-                case 5: return POINTCUT;
-                case 6: return ADVICE;
-                case 7: return HANDLER;
-                case 8: return MONITORENTER;
-                case 9: return MONITOREXIT;
-            }
-            throw new BCException("weird kind " + key);
-        }
-    }
+    public static final Member[]   NONE                  = new Member[0];
+	public static final MemberKind METHOD                = new MemberKind("METHOD", 1);
+	public static final MemberKind FIELD                 = new MemberKind("FIELD", 2);
+	public static final MemberKind CONSTRUCTOR           = new MemberKind("CONSTRUCTOR", 3);
+	public static final MemberKind STATIC_INITIALIZATION = new MemberKind("STATIC_INITIALIZATION", 4);
+	public static final MemberKind POINTCUT              = new MemberKind("POINTCUT", 5);
+	public static final MemberKind ADVICE                = new MemberKind("ADVICE", 6);
+	public static final MemberKind HANDLER               = new MemberKind("HANDLER", 7);
+	public static final MemberKind MONITORENTER          = new MemberKind("MONITORENTER", 8);
+	public static final MemberKind MONITOREXIT           = new MemberKind("MONITOREXIT", 9);
 
-	public static final Member[] NONE = new Member[0];
-	public static final Kind METHOD = new Kind("METHOD", 1);
-	public static final Kind FIELD = new Kind("FIELD", 2);
-	public static final Kind CONSTRUCTOR = new Kind("CONSTRUCTOR", 3);
-	public static final Kind STATIC_INITIALIZATION = new Kind("STATIC_INITIALIZATION", 4);
-	public static final Kind POINTCUT = new Kind("POINTCUT", 5);
-	public static final Kind ADVICE = new Kind("ADVICE", 6);
-	public static final Kind HANDLER = new Kind("HANDLER", 7);
-	public static final Kind MONITORENTER = new Kind("MONITORENTER", 8);
-	public static final Kind MONITOREXIT = new Kind("MONITOREXIT", 9);
+	public static final AnnotationX[][] NO_PARAMETER_ANNOTATIONXS = new AnnotationX[][]{};
+	public static final ResolvedType[][] NO_PARAMETER_ANNOTATION_TYPES = new ResolvedType[][]{};
 
-
-	public ResolvedMember resolve(World world);
-
-	public int compareTo(Object other);
-
-	public String toLongString();
-
-	public Kind getKind();
-
-	public UnresolvedType getDeclaringType();
-
-	public UnresolvedType getReturnType();
+	public MemberKind getKind();
 	
-	public UnresolvedType getGenericReturnType();
-	public UnresolvedType[] getGenericParameterTypes();
-
-	public UnresolvedType getType();
+	public ResolvedMember resolve(World world);
 
 	public String getName();
 
-	public UnresolvedType[] getParameterTypes();
+	public UnresolvedType getDeclaringType();
 
+    public AnnotationX[] getAnnotations();
+	public UnresolvedType getReturnType();	
+	public UnresolvedType getType(); 
+	public UnresolvedType getGenericReturnType();
+
+	public String[] getParameterNames(World world);
+	public UnresolvedType[] getParameterTypes();
+	public UnresolvedType[] getGenericParameterTypes();
+	
 	/**
 	 * Return full signature, including return type, e.g. "()LFastCar;" for a signature without the return type,
-	 * use getParameterSignature() - it is importnant to choose the right one in the face of covariance.
+	 * use getParameterSignature() - it is important to choose the right one in the face of covariance.
 	 */
 	public String getSignature();
 	
@@ -102,52 +77,25 @@ public interface Member {
 
 	public UnresolvedType[] getExceptions(World world);
 
-	public boolean isProtected(World world);
-
-	public boolean isStatic(World world);
-
-	public boolean isStrict(World world);
-
 	public boolean isStatic();
 
 	public boolean isInterface();
 
 	public boolean isPrivate();
 
-	/**
-	 * Returns true iff the member is generic (NOT parameterized)
-	 * For example, a method declared in a generic type
-	 */
-	public boolean canBeParameterized();
-
 	public int getCallsiteModifiers();
 
 	public String getExtractableName();
 
-	/**
-	 * If you want a sensible answer, resolve the member and call
-	 * hasAnnotation() on the ResolvedMember.
-	 */
-	public boolean hasAnnotation(UnresolvedType ofType);
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.AnnotatedElement#getAnnotationTypes()
-	 */
-	public ResolvedType[] getAnnotationTypes();
-
-	public AnnotationX[] getAnnotations();
+//	public AnnotationX[] getAnnotations();
 
 	public Collection/*ResolvedType*/getDeclaringTypes(World world);
 
-	// ---- reflective thisJoinPoint stuff
+	// ---- reflective thisJoinPoint related methods
 	public String getSignatureMakerName();
 
 	public String getSignatureType();
 
 	public String getSignatureString(World world);
-
-	public String[] getParameterNames(World world);
-
-	public Member slimline();
 
 }

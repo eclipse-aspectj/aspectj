@@ -43,7 +43,9 @@ import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -51,6 +53,7 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberImpl;
+import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.aspectj.weaver.NewFieldTypeMunger;
@@ -127,7 +130,6 @@ public class BcelShadow extends Shadow {
     private ShadowRange range;    
     private final BcelWorld world;  
     private final LazyMethodGen enclosingMethod;
-//	private boolean fallsThrough;  //XXX not used anymore
 	
 	// SECRETAPI - for testing, this will tell us if the optimization succeeded *on the last shadow processed*
 	public static boolean appliedLazyTjpOptimization;
@@ -136,24 +138,15 @@ public class BcelShadow extends Shadow {
     // from the signature (pr109728) (1.4 declaring type issue)
 	private String actualInstructionTargetType; 
 
-	// ---- initialization
-	
 	/**
-	 *  This generates an unassociated shadow, rooted in a particular method but not rooted
+	 * This generates an unassociated shadow, rooted in a particular method but not rooted
 	 * to any particular point in the code.  It should be given to a rooted ShadowRange
 	 * in the {@link ShadowRange#associateWithShadow(BcelShadow)} method.
 	 */
-	public BcelShadow(
-		BcelWorld world,
-		Kind kind,
-		Member signature,
-		LazyMethodGen enclosingMethod,
-		BcelShadow enclosingShadow) 
-	{
+	public BcelShadow(BcelWorld world, Kind kind, Member signature, LazyMethodGen enclosingMethod, BcelShadow enclosingShadow) {
 		super(kind, signature, enclosingShadow);
 		this.world = world;
 		this.enclosingMethod = enclosingMethod;
-//		fallsThrough = kind.argsOnStack();
 	}
 
 	// ---- copies all state, including Shadow's mungers...
@@ -177,8 +170,6 @@ public class BcelShadow extends Shadow {
 	public World getIWorld() {
 		return world;
 	}
-
-
 
 	private void deleteNewAndDup() {
 		final ConstantPool cpg = getEnclosingClass().getConstantPool();
@@ -976,6 +967,7 @@ public class BcelShadow extends Shadow {
     
     public static BcelShadow makeFieldSet(
             BcelWorld world,
+            ResolvedMember field,
             LazyMethodGen enclosingMethod,
             InstructionHandle setHandle,
             BcelShadow enclosingShadow) 
@@ -985,9 +977,10 @@ public class BcelShadow extends Shadow {
             new BcelShadow(
                 world,
                 FieldSet,
-                BcelWorld.makeFieldJoinPointSignature(
-                    enclosingMethod.getEnclosingClass(),
-                    (FieldInstruction) setHandle.getInstruction()),
+                field,
+//                BcelWorld.makeFieldJoinPointSignature(
+//                    enclosingMethod.getEnclosingClass(),
+//                    (FieldInstruction) setHandle.getInstruction()),
                 enclosingMethod,
                 enclosingShadow);
         ShadowRange r = new ShadowRange(body);
@@ -1529,7 +1522,7 @@ public class BcelShadow extends Shadow {
 		}
     }
     
-    protected Member getRelevantMember(Member foundMember, Member relevantMember, ResolvedType relevantType){
+    protected ResolvedMember getRelevantMember(ResolvedMember foundMember, Member relevantMember, ResolvedType relevantType){
     	if (foundMember != null){
     		return foundMember;
     	}
@@ -1567,7 +1560,7 @@ public class BcelShadow extends Shadow {
     	return foundMember;
     }
     
-    protected ResolvedType [] getAnnotations(Member foundMember, Member relevantMember, ResolvedType relevantType){
+    protected ResolvedType [] getAnnotations(ResolvedMember foundMember, Member relevantMember, ResolvedType relevantType){
     	if (foundMember == null){
     		// check the ITD'd dooberries
     		List mungers = relevantType.resolve(world).getInterTypeMungers();
@@ -1606,27 +1599,30 @@ public class BcelShadow extends Shadow {
     	// by determining what "kind" of shadow we are, we can find out the
     	// annotations on the appropriate element (method, field, constructor, type).
     	// Then create one BcelVar entry in the map for each annotation, keyed by
-    	// annotation type (UnresolvedType).
+    	// annotation type.
     	
     	// FIXME asc Refactor this code, there is duplication
     	ResolvedType[] annotations = null;
-    	Member relevantMember = getSignature();
-    	ResolvedType  relevantType   = relevantMember.getDeclaringType().resolve(world);
-	if (relevantType.isRawType() || relevantType.isParameterizedType()) relevantType = relevantType.getGenericType();
+//    	Member relevantMember = getSignature();
+    	Member shadowSignature = getSignature();
+    	Member annotationHolder = getSignature();
+    	ResolvedType  relevantType   = shadowSignature.getDeclaringType().resolve(world);
+    	
+    	if (relevantType.isRawType() || relevantType.isParameterizedType()) relevantType = relevantType.getGenericType();
 
 	if (getKind() == Shadow.StaticInitialization) {
     		annotations  = relevantType.resolve(world).getAnnotationTypes();
     		
     	} else if (getKind() == Shadow.MethodCall  || getKind() == Shadow.ConstructorCall) {
-            Member foundMember = findMethod2(relevantType.resolve(world).getDeclaredMethods(),getSignature());            
-            annotations = getAnnotations(foundMember, relevantMember, relevantType);
-            relevantMember = getRelevantMember(foundMember,relevantMember,relevantType);
-            relevantType = relevantMember.getDeclaringType().resolve(world);
+            ResolvedMember foundMember = findMethod2(relevantType.resolve(world).getDeclaredMethods(),getSignature());            
+            annotations = getAnnotations(foundMember, shadowSignature, relevantType);
+            annotationHolder = getRelevantMember(foundMember,shadowSignature,relevantType);
+            relevantType = annotationHolder.getDeclaringType().resolve(world);
     		
     	} else if (getKind() == Shadow.FieldSet || getKind() == Shadow.FieldGet) {
-    		relevantMember = findField(relevantType.getDeclaredFields(),getSignature());
+    		annotationHolder = findField(relevantType.getDeclaredFields(),getSignature());
     		
-			if (relevantMember==null) {
+			if (annotationHolder==null) {
               // check the ITD'd dooberries
 				List mungers = relevantType.resolve(world).getInterTypeMungers();
 				for (Iterator iter = mungers.iterator(); iter.hasNext();) {
@@ -1638,21 +1634,21 @@ public class BcelShadow extends Shadow {
 				  	  ResolvedMember rmm       = findMethod(typeMunger.getAspectType(),ajcMethod);
 					  if (fakerm.equals(getSignature())) {
 						relevantType = typeMunger.getAspectType();
-						relevantMember = rmm;
+						annotationHolder = rmm;
 					  }
 					}
 				}	
 			}
-    		annotations = relevantMember.getAnnotationTypes();
+    		annotations = ((ResolvedMember)annotationHolder).getAnnotationTypes();
     		
     	} else if (getKind() == Shadow.MethodExecution || getKind() == Shadow.ConstructorExecution || 
     		        getKind() == Shadow.AdviceExecution) {
     		//ResolvedMember rm[] = relevantType.getDeclaredMethods();
-    		Member foundMember = findMethod2(relevantType.getDeclaredMethods(),getSignature());
+    		ResolvedMember foundMember = findMethod2(relevantType.getDeclaredMethods(),getSignature());
     		
-    		annotations = getAnnotations(foundMember, relevantMember, relevantType);
-    		relevantMember = foundMember;
-            relevantMember = getRelevantMember(foundMember, relevantMember,relevantType);
+    		annotations = getAnnotations(foundMember, shadowSignature, relevantType);
+    		annotationHolder = foundMember;
+    		annotationHolder = getRelevantMember(foundMember, annotationHolder,relevantType);
             
     	} else if (getKind() == Shadow.ExceptionHandler) {
     		relevantType = getSignature().getParameterTypes()[0].resolve(world);
@@ -1670,7 +1666,7 @@ public class BcelShadow extends Shadow {
     	
 		for (int i = 0; i < annotations.length; i++) {
 			ResolvedType aTX = annotations[i];
-			KindedAnnotationAccessVar kaav =  new KindedAnnotationAccessVar(getKind(),aTX.resolve(world),relevantType,relevantMember);
+			AnnotationAccessVar kaav =  new AnnotationAccessVar(getKind(),aTX.resolve(world),relevantType,annotationHolder);
     		kindedAnnotationVars.put(aTX,kaav);
 		}
     }
@@ -1718,7 +1714,7 @@ public class BcelShadow extends Shadow {
 		for (int i = 0; i < annotations.length; i++) {
 			ResolvedType ann = annotations[i];
 			Kind k = Shadow.StaticInitialization;
-			withinAnnotationVars.put(ann,new KindedAnnotationAccessVar(k,ann,getEnclosingType(),null));
+			withinAnnotationVars.put(ann,new AnnotationAccessVar(k,ann,getEnclosingType(),null));
 		}
     }
     
@@ -1733,7 +1729,7 @@ public class BcelShadow extends Shadow {
 			Kind k = (getEnclosingMethod().getMemberView().getKind()==Member.CONSTRUCTOR?
 					  Shadow.ConstructorExecution:Shadow.MethodExecution);
 			withincodeAnnotationVars.put(ann,
-					new KindedAnnotationAccessVar(k,ann,getEnclosingType(),getEnclosingCodeSignature()));
+					new AnnotationAccessVar(k,ann,getEnclosingType(),getEnclosingCodeSignature()));
 		}
     }
     
@@ -1767,36 +1763,49 @@ public class BcelShadow extends Shadow {
 	 * advice specified one.
 	 */
     public void weaveAfterReturning(BcelAdvice munger) {
-        List returns = findReturnInstructions();
-        boolean hasReturnInstructions = !returns.isEmpty();
-        
-        // list of instructions that handle the actual return from the join point
-        InstructionList retList = new InstructionList();
-                
-        // variable that holds the return value
-        BcelVar returnValueVar = null;
-        
-        if (hasReturnInstructions) {
-        	returnValueVar = generateReturnInstructions(returns,retList);
-        } else  {
-        	// we need at least one instruction, as the target for jumps
-            retList.append(InstructionConstants.NOP);            
-        }
-
-        // list of instructions for dispatching to the advice itself
-        InstructionList advice = getAfterReturningAdviceDispatchInstructions(
-        		munger, retList.getStart());            
-        
-        if (hasReturnInstructions) {
-            InstructionHandle gotoTarget = advice.getStart();           
-			for (Iterator i = returns.iterator(); i.hasNext();) {
-				InstructionHandle ih = (InstructionHandle) i.next();
-				retargetReturnInstruction(munger.hasExtraParameter(), returnValueVar, gotoTarget, ih);
-			}
-        }            
-         
-        range.append(advice);
-        range.append(retList);
+    	try {
+	        List returns = findReturnInstructions();
+	        boolean hasReturnInstructions = !returns.isEmpty();
+	        
+	        // list of instructions that handle the actual return from the join point
+	        InstructionList retList = new InstructionList();
+	                
+	        // variable that holds the return value
+	        BcelVar returnValueVar = null;
+	        
+	        if (hasReturnInstructions) {
+	        	returnValueVar = generateReturnInstructions(returns,retList);
+	        } else  {
+	        	// we need at least one instruction, as the target for jumps
+	            retList.append(InstructionConstants.NOP);            
+	        }
+	
+	        // list of instructions for dispatching to the advice itself
+	        InstructionList advice = getAfterReturningAdviceDispatchInstructions(
+	        		munger, retList.getStart());            
+	        
+	        if (hasReturnInstructions) {
+	            InstructionHandle gotoTarget = advice.getStart();           
+				for (Iterator i = returns.iterator(); i.hasNext();) {
+					InstructionHandle ih = (InstructionHandle) i.next();
+					retargetReturnInstruction(munger.hasExtraParameter(), returnValueVar, gotoTarget, ih);
+				}
+	        }            
+	         
+	        range.append(advice);
+	        range.append(retList);
+    	} catch (RuntimeException e) {
+    		StringBuffer sb = new StringBuffer();
+    		sb.append("Unexpected runtime exception occurred in BcelShadow.weaveAfterReturning()\n");
+    		sb.append("shadow is '"+toString()+"'\n");
+    		sb.append("method is '"+enclosingMethod+"'\n");
+    		sb.append("enclosing shadow is '"+enclosingShadow+"'\n");
+    		sb.append("range is '"+range+"'\n");
+    		sb.append("munger is '"+munger+"'\n");
+    		IMessage m = MessageUtil.abort(sb.toString(), e);
+    		world.getMessageHandler().handleMessage(m);
+    		throw e;
+    	}
     }
 
 	/**
@@ -2366,7 +2375,17 @@ public class BcelShadow extends Shadow {
 			extraParamOffset += thisJoinPointVar.getType().getSize();
 		}
         
-        Type[] adviceParameterTypes = adviceMethod.getArgumentTypes();
+		// We use the munger signature here because it allows for any parameterization of the mungers pointcut that
+		// may have occurred ie. if the pointcut is p(T t) in the super aspect and that has become p(Foo t) in the sub aspect
+		// then here the munger signature will have 'Foo' as an argument in it whilst the adviceMethod argument type will be 'Object' - since
+		// it represents the advice method in the superaspect which uses the erasure of the type variable p(Object t) - see pr174449.
+		
+        Type[] adviceParameterTypes = 
+          BcelWorld.makeBcelTypes(munger.getSignature().getParameterTypes());
+//        adviceMethod.getArgumentTypes();
+        adviceMethod.getArgumentTypes(); // forces initialization ... dont like this but seems to be required for some tests to pass, I think that means 
+                                         // there is a LazyMethodGen method that is not correctly setup to call initialize() when it is invoked - but I dont have
+                                         // time right now to discover which
         Type[] extractedMethodParameterTypes = extractedMethod.getArgumentTypes();
 		Type[] parameterTypes =
 			new Type[extractedMethodParameterTypes.length
@@ -2500,7 +2519,7 @@ public class BcelShadow extends Shadow {
         // call to the extracted method.
 
         // inlining support for code style aspects
-        if (!munger.getConcreteAspect().isAnnotationStyleAspect()) {
+        if (!munger.getDeclaringType().isAnnotationStyleAspect()) {
             String proceedName =
                 NameMangler.proceedMethodName(munger.getSignature().getName());
 
@@ -3057,7 +3076,7 @@ public class BcelShadow extends Shadow {
         if (munger.getConcreteAspect()!=null && munger.getConcreteAspect().isAnnotationStyleAspect() 
            && munger.getDeclaringAspect()!=null && munger.getDeclaringAspect().resolve(world).isAnnotationStyleAspect()) {
         	// stick the bitflags on the stack and call the variant of linkClosureAndJoinPoint that takes an int
-        	closureInstantiation.append(fact.createConstant(new Integer(bitflags)));
+        	closureInstantiation.append(fact.createConstant(Integer.valueOf(bitflags)));
             closureInstantiation.append(Utility.createInvoke(
                     getFactory(),
                     getWorld(),
@@ -3428,12 +3447,12 @@ public class BcelShadow extends Shadow {
         if (targetVar != null && targetVar != thisVar) {
             UnresolvedType targetType = getTargetType();
             targetType = ensureTargetTypeIsCorrect(targetType);
-            // see pr109728 - this fixes the case when the declaring class is sometype 'X' but the getfield
+            // see pr109728,pr229910 - this fixes the case when the declaring class is sometype 'X' but the (gs)etfield
             // in the bytecode refers to a subtype of 'X'.  This makes sure we use the type originally
             // mentioned in the fieldget instruction as the method parameter and *not* the type upon which the
             // field is declared because when the instructions are extracted into the new around body,
             // they will still refer to the subtype.
-            if (getKind()==FieldGet && getActualTargetType()!=null && 
+            if ((getKind()==FieldGet || getKind()==FieldSet) && getActualTargetType()!=null && 
             	!getActualTargetType().equals(targetType.getName())) {
         		targetType =  UnresolvedType.forName(getActualTargetType()).resolve(world);
         	}

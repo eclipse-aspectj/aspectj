@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
@@ -68,6 +69,17 @@ public abstract class ResolvedTypeMunger {
 			if (declaringType.isRawType()) throw new IllegalStateException("Use generic type, not raw type");
 			if (declaringType.isParameterizedType()) throw new IllegalStateException("Use generic type, not parameterized type");
 		}
+//		boolean aChangeOccurred = false;
+//		
+//		UnresolvedType rt = signature.getReturnType();
+//		if (rt.isParameterizedType() || rt.isGenericType()) {rt = rt.getRawType();aChangeOccurred=true;}
+//		UnresolvedType[] pt = signature.getParameterTypes();
+//		for (int i = 0; i < pt.length; i++) {
+//			if (pt[i].isParameterizedType() || pt[i].isGenericType()) { pt[i] = pt[i].getRawType();aChangeOccurred=true;}
+//		}
+//		if (aChangeOccurred) {
+//			this.signature = new ResolvedMemberImpl(signature.getKind(),signature.getDeclaringType(),signature.getModifiers(),rt,signature.getName(),pt,signature.getExceptions());
+//		}
 	}
 	
 	public void setSourceLocation(ISourceLocation isl) {
@@ -423,6 +435,10 @@ public abstract class ResolvedTypeMunger {
 	 */
 	public boolean existsToSupportShadowMunging() {
 		return false;
+	}
+
+	public ResolvedTypeMunger parameterizeWith(Map m, World w) {
+		throw new BCException("Dont call parameterizeWith() on a type munger of this kind: "+this.getClass());
 	}
 	
 }

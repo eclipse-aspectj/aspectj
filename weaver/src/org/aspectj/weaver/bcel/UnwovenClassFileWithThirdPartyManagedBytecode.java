@@ -29,9 +29,11 @@ public class UnwovenClassFileWithThirdPartyManagedBytecode
 		byte[] getBytes();
 	}
 	
-	public UnwovenClassFileWithThirdPartyManagedBytecode(String filename,
+	// OPTIMIZE make classname an input char[]
+	public UnwovenClassFileWithThirdPartyManagedBytecode(String filename,String classname,
 			IByteCodeProvider provider) {
-		super(filename,null);
+		// APR29
+		super(filename,classname,null);
 		this.provider = provider;
 	}
 	

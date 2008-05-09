@@ -18,6 +18,7 @@ import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 
@@ -25,6 +26,8 @@ public abstract class AnnotationTypePattern extends PatternNode {
 
 	public static final AnnotationTypePattern ANY = new AnyAnnotationTypePattern();
 	public static final AnnotationTypePattern ELLIPSIS = new EllipsisAnnotationTypePattern();
+	public static final AnnotationTypePattern[] NONE = new AnnotationTypePattern[0];
+	private boolean isForParameterAnnotationMatch;
 	
 	/**
 	 * TODO: write, read, equals & hashcode both in annotation hierarachy and
@@ -35,6 +38,7 @@ public abstract class AnnotationTypePattern extends PatternNode {
 	}
 	
 	public abstract FuzzyBoolean matches(AnnotatedElement annotated);
+	public abstract FuzzyBoolean matches(AnnotatedElement annotated,ResolvedType[] parameterAnnotations);
 	
 	public FuzzyBoolean fastMatches(AnnotatedElement annotated) {
 		return FuzzyBoolean.MAYBE;
@@ -84,41 +88,19 @@ public abstract class AnnotationTypePattern extends PatternNode {
 		throw new BCException("unknown TypePattern kind: " + key);
 	}
 
+	public void setForParameterAnnotationMatch() { isForParameterAnnotationMatch = true; }
+	public boolean isForParameterAnnotationMatch() { return isForParameterAnnotationMatch; }
+
 }
 
-class AnyAnnotationTypePattern extends AnnotationTypePattern {
-
-    public FuzzyBoolean fastMatches(AnnotatedElement annotated) {
-        return FuzzyBoolean.YES;
-    }
-    
-	public FuzzyBoolean matches(AnnotatedElement annotated) {
-		return FuzzyBoolean.YES;
-	}
-
-	public void write(DataOutputStream s) throws IOException {
-		s.writeByte(AnnotationTypePattern.ANY_KEY);
-	}
-	
-	public void resolve(World world) {
-	}
-	
-	public String toString() { return "@ANY"; }
-
-    public Object accept(PatternNodeVisitor visitor, Object data) {
-        return visitor.visit(this, data);
-    }
-    
-    public boolean isAny() { return true; }
-    
-    public AnnotationTypePattern parameterizeWith(Map arg0,World w) {
-    	return this;
-    }
-}
 
 class EllipsisAnnotationTypePattern extends AnnotationTypePattern {
 
 	public FuzzyBoolean matches(AnnotatedElement annotated) {
+		return FuzzyBoolean.NO;
+	}
+
+	public FuzzyBoolean matches(AnnotatedElement annotated,ResolvedType[] parameterAnnotations) {
 		return FuzzyBoolean.NO;
 	}
 

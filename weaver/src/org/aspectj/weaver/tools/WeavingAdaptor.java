@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -46,12 +47,14 @@ import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.aspectj.weaver.bcel.Utility;
 
+// OPTIMIZE add guards for all the debug/info/etc
 /**
  * This adaptor allows the AspectJ compiler to be embedded in an existing
  * system to facilitate load-time weaving. It provides an interface for a
@@ -86,6 +89,12 @@ public class WeavingAdaptor implements IMessageContext {
 	protected Map generatedClasses = new HashMap(); /* String -> UnwovenClassFile */
 	protected BcelObjectType delegateForCurrentClass; // lazily initialized, should be used to prevent parsing bytecode multiple times
 
+	private int weavingSpecialTypes = 0;
+	private static final int INITIALIZED       = 0x1;
+	private static final int WEAVE_JAVA_PACKAGE = 0x2;
+	private static final int WEAVE_JAVAX_PACKAGE= 0x4;
+	
+	
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(WeavingAdaptor.class);
 
 	protected WeavingAdaptor () {
@@ -128,7 +137,7 @@ public class WeavingAdaptor implements IMessageContext {
 				URL[] urls = ((URLClassLoader)loader).getURLs();
 				list.addAll(0,FileUtil.makeClasspath(urls));
 			}
-			else {
+			else {    	
 				warn("cannot determine classpath"); 
 			}
 		}
@@ -157,7 +166,6 @@ public class WeavingAdaptor implements IMessageContext {
 	private void init(List classPath, List aspectPath) {
 		abortOnError = true;
 		createMessageHandler();
-		
 		info("using classpath: " + classPath); 
 		info("using aspectpath: " + aspectPath); 
 		
@@ -227,7 +235,7 @@ public class WeavingAdaptor implements IMessageContext {
 			weaver.addLibraryJarFile(libFile);
 		}
 		catch (IOException ex) {
-			warn("bad library: '" + libFile + "'");
+    		warn("bad library: '" + libFile + "'");
 		}
 	}
 
@@ -235,10 +243,11 @@ public class WeavingAdaptor implements IMessageContext {
 	 * Weave a class using aspects previously supplied to the adaptor.
 	 * @param name the name of the class
 	 * @param bytes the class bytes
+	 * @param mustWeave if true then this class *must* get woven (used for concrete aspects generated from XML)
 	 * @return the woven bytes
      * @exception IOException weave failed
 	 */
-	public byte[] weaveClass (String name, byte[] bytes) throws IOException {
+	public byte[] weaveClass (String name, byte[] bytes,boolean mustWeave) throws IOException {
 		if (trace.isTraceEnabled()) trace.enter("weaveClass",this,new Object[] {name, bytes});
 
 		if (!enabled) {
@@ -259,6 +268,11 @@ public class WeavingAdaptor implements IMessageContext {
 					debug("weaving '" + name + "'");
 					bytes = getWovenBytes(name, bytes);
 				} else if (shouldWeaveAnnotationStyleAspect(name, bytes)) {
+					if (mustWeave) {
+						if (bcelWorld.getLint().mustWeaveXmlDefinedAspects.isEnabled()) {
+							bcelWorld.getLint().mustWeaveXmlDefinedAspects.signal(name,null);
+						}
+					}
 		            // an @AspectJ aspect needs to be at least munged by the aspectOf munger
 		            debug("weaving '" + name + "'");
 		            bytes = getAtAspectJAspectBytes(name, bytes);
@@ -294,10 +308,25 @@ public class WeavingAdaptor implements IMessageContext {
     }
 
 	private boolean shouldWeaveName (String name) {
+		if ((weavingSpecialTypes&INITIALIZED)==0) {
+			weavingSpecialTypes|=INITIALIZED;
+			// initialize it
+			Properties p = weaver.getWorld().getExtraConfiguration();
+			if (p!=null) {
+				boolean b = p.getProperty(World.xsetWEAVE_JAVA_PACKAGES,"false").equalsIgnoreCase("true");
+				if (b) {
+					weavingSpecialTypes|=WEAVE_JAVA_PACKAGE;
+				}
+				b = p.getProperty(World.xsetWEAVE_JAVAX_PACKAGES,"false").equalsIgnoreCase("true");
+				if (b) {
+					weavingSpecialTypes|=WEAVE_JAVAX_PACKAGE;
+				}
+			}
+		}
 		boolean should =
-		       !((name.startsWith("org.aspectj.")
-                || name.startsWith("java.")
-                || name.startsWith("javax."))
+		       !(name.startsWith("org.aspectj.")
+                || (name.startsWith("java.") && (weavingSpecialTypes&WEAVE_JAVA_PACKAGE)==0)
+                || (name.startsWith("javax.") && (weavingSpecialTypes&WEAVE_JAVAX_PACKAGE)==0)
                 //|| name.startsWith("$Proxy")//JDK proxies//FIXME AV is that 1.3 proxy ? fe. ataspect.$Proxy0 is a java5 proxy...
                 || name.startsWith("sun.reflect."));//JDK reflect
 		return should;
@@ -319,25 +348,9 @@ public class WeavingAdaptor implements IMessageContext {
     	}
 		return (delegateForCurrentClass.isAnnotationStyleAspect());
 	}
-
-//	private boolean asmCheckAnnotationStyleAspect(byte[] bytes) {
-//		IsAtAspectAnnotationVisitor detector = new IsAtAspectAnnotationVisitor();
-//
-//		ClassReader cr = new ClassReader(bytes);
-//	    try {
-//	    	cr.accept(detector, true);//, ClassReader.SKIP_DEBUG | ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES);
-//	    } catch (Exception spe) {
-//	    	// if anything goes wrong, e.g., an NPE, then assume it's NOT an @AspectJ aspect...
-//	    	System.err.println("Unexpected problem parsing bytes to discover @Aspect annotation");
-//	    	spe.printStackTrace();
-//	    	return false;
-//	    }
-//	    
-//	    return detector.isAspect();
-//	}
 	
     protected void ensureDelegateInitialized(String name,byte[] bytes) {
-    	if (delegateForCurrentClass==null)
+    	if (delegateForCurrentClass==null) // OPTIMIZE better job here?
     	  delegateForCurrentClass =  ((BcelWorld)weaver.getWorld()).addSourceObjectType(Utility.makeJavaClass(name, bytes));
 	}
 
@@ -396,10 +409,10 @@ public class WeavingAdaptor implements IMessageContext {
 				info("adding aspect library: '" + aspectLibrary + "'");
 				weaver.addLibraryJarFile(aspectLibrary);
 			} catch (IOException ex) {
-				error("exception adding aspect library: '" + ex + "'");
+	    		error("exception adding aspect library: '" + ex + "'");
 			}
 		} else {
-			error("bad aspect library: '" + aspectLibrary + "'");
+    		error("bad aspect library: '" + aspectLibrary + "'");
 		}
 	}
 	
@@ -470,7 +483,7 @@ public class WeavingAdaptor implements IMessageContext {
 		    os.close();
 	    }
 	    catch (IOException ex) {
-	    	warn("unable to dump class " + name + " in directory " + dirName,ex);
+    		warn("unable to dump class " + name + " in directory " + dirName,ex);
 	    }
 	}
 
@@ -649,7 +662,7 @@ public class WeavingAdaptor implements IMessageContext {
 	private class WeavingClassFileProvider implements IClassFileProvider {
 
 		private UnwovenClassFile unwovenClass;
-		private List unwovenClasses = new ArrayList(); /* List<UnovenClassFile> */
+		private List unwovenClasses = new ArrayList(); /* List<UnwovenClassFile> */
 		private UnwovenClassFile wovenClass;
         private boolean isApplyAtAspectJMungersOnly = false;
 

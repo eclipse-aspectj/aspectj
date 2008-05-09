@@ -16,6 +16,7 @@ package org.aspectj.weaver;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.bridge.ISourceLocation;
 
@@ -33,6 +34,19 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 
 	public ShadowMunger getAssociatedShadowMunger();
 
+	public AnnotationX[][] getParameterAnnotations();
+	public ResolvedType[][] getParameterAnnotationTypes();
+	
+	public String getAnnotationDefaultValue();
+	
+	public AnnotationX[] getAnnotations();
+	
+	/**
+	 * Returns true iff the member is generic (NOT parameterized)
+	 * For example, a method declared in a generic type
+	 */
+	public boolean canBeParameterized();
+	
 	// ??? true or false?
 	public boolean isAjSynthetic();
 
@@ -154,9 +168,11 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	public boolean matches(ResolvedMember aCandidateMatch);
 	
 	public void resetName(String newName);
-	public void resetKind(Kind newKind);
+	public void resetKind(MemberKind newKind);
     public void resetModifiers(int newModifiers);
     public void resetReturnTypeToObjectArray();
     
 	public void evictWeavingState();
+
+	public ResolvedMember parameterizedWith(Map m, World w);
 }

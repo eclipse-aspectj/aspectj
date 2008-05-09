@@ -95,4 +95,27 @@ public class AnnotationAJ {
 		sb.append("]");
 		return sb.toString();
 	}
+
+	public boolean hasNamedValue(String n) {
+		if (nvPairs==null) return false;
+		for (int i=0;i<nvPairs.size();i++) {
+			AnnotationNameValuePair pair = (AnnotationNameValuePair)nvPairs.get(i);
+			if (pair.getName().equals(n)) return true;
+		}
+		return false;
+	}
+
+	/**
+     * Return true if the annotation has a value with the specified name (n) and value (v)
+     */
+	public boolean hasNameValuePair(String n, String v) {
+		if (nvPairs==null) return false;
+		for (int i=0;i<nvPairs.size();i++) {
+			AnnotationNameValuePair pair = (AnnotationNameValuePair)nvPairs.get(i);
+			if (pair.getName().equals(n)) {
+				if (pair.getValue().stringify().equals(v)) return true;
+			}
+		}
+		return false;
+	}
 }

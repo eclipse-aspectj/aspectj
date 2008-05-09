@@ -24,9 +24,12 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ClassParser;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValueGen;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
@@ -52,6 +55,7 @@ import org.aspectj.apache.bcel.generic.SwitchBuilder;
 import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Lint;
@@ -205,12 +209,8 @@ public class Utility {
             kind = Constants.INVOKEVIRTUAL;
         }
 
-        return fact.createInvoke(
-            declaringClass.getClassName(),
-            newMethod.getName(),
-            Type.getReturnType(newMethod.getSignature()),
-            Type.getArgumentTypes(newMethod.getSignature()),
-            kind);
+        String sig = newMethod.getSignature();
+        return fact.createInvoke(declaringClass.getClassName(),newMethod.getName(),sig,kind);
 	}
 	
 	public static byte[] stringToUTF(String s) {
@@ -541,37 +541,6 @@ public class Utility {
 		}		
 	}
 	
-    public static String arrayToString(int[] a) {
-        int len = a.length;
-        if (len == 0) return "[]";
-        StringBuffer buf = new StringBuffer("[");
-        buf.append(a[0]);
-        for (int i = 1; i < len; i++) {
-            buf.append(", ");
-            buf.append(a[i]);
-        }
-        buf.append("]");
-        return buf.toString();
-    }
-
-	/**
-	 * replace an instruction handle with another instruction, in this case, a branch instruction.
-	 * 
-	 * @param ih the instruction handle to replace.
-	 * @param branchInstruction the branch instruction to replace ih with
-	 * @param enclosingMethod where to find ih's instruction list.
-	 */
-    public static void replaceInstruction(
-        InstructionHandle ih,
-        InstructionBranch branchInstruction,
-        LazyMethodGen enclosingMethod) 
-    {
-        
-        InstructionList il = enclosingMethod.getBody();
-        InstructionHandle fresh = il.append(ih, branchInstruction);
-		deleteInstruction(ih, fresh, enclosingMethod);
-    }
-    
     public static void replaceInstruction(
     	InstructionHandle ih,
     	InstructionList replacementInstructions,
@@ -704,15 +673,14 @@ public class Utility {
 	
 	// assumes that there is no already extant source line tag.  Otherwise we'll have to be better.
 	public static void setSourceLine(InstructionHandle ih, int lineNumber) {
+		// OPTIMIZE LineNumberTag instances for the same line could be shared throughout a method...
 		ih.addTargeter(new LineNumberTag(lineNumber));
 	}
 
 	public static int makePublic(int i) {
 		return i & ~(Modifier.PROTECTED | Modifier.PRIVATE) | Modifier.PUBLIC;
 	}
-	public static int makePrivate(int i) {
-		return i & ~(Modifier.PROTECTED | Modifier.PUBLIC) | Modifier.PRIVATE;
-	}
+
 	public static BcelVar[] pushAndReturnArrayOfVars(
 		ResolvedType[] proceedParamTypes,
 		InstructionList il,
@@ -806,25 +774,33 @@ public class Utility {
      }
     
      // not yet used...
-	 public static boolean isSimple(Method method) {
-		if (method.getCode()==null) return true;
-		if (method.getCode().getCode().length>10) return false;
-		InstructionList instrucs = new InstructionList(method.getCode().getCode()); // expensive!
-		InstructionHandle InstrHandle = instrucs.getStart();
-		while (InstrHandle != null) {                  
-		  Instruction Instr = InstrHandle.getInstruction();
-		  int opCode = Instr.opcode;
-		  // if current instruction is a branch instruction, see if it's a backward branch.
-		  // if it is return immediately (can't be trivial)
-		  if (Instr instanceof InstructionBranch) {
-			//  InstructionBranch BI = (InstructionBranch) Instr;
-		      if (Instr.getIndex() < 0) return false;
-		  } else if (Instr instanceof InvokeInstruction) {
-			  // if current instruction is an invocation, indicate that it can't be trivial
-		      return false;
-		  }
-		  InstrHandle = InstrHandle.getNext();
-		}
-		return true;
-	 }
+//	 public static boolean isSimple(Method method) {
+//		if (method.getCode()==null) return true;
+//		if (method.getCode().getCode().length>10) return false;
+//		InstructionList instrucs = new InstructionList(method.getCode().getCode()); // expensive!
+//		InstructionHandle InstrHandle = instrucs.getStart();
+//		while (InstrHandle != null) {                  
+//		  Instruction Instr = InstrHandle.getInstruction();
+//		  int opCode = Instr.opcode;
+//		  // if current instruction is a branch instruction, see if it's a backward branch.
+//		  // if it is return immediately (can't be trivial)
+//		  if (Instr instanceof InstructionBranch) {
+//			//  InstructionBranch BI = (InstructionBranch) Instr;
+//		      if (Instr.getIndex() < 0) return false;
+//		  } else if (Instr instanceof InvokeInstruction) {
+//			  // if current instruction is an invocation, indicate that it can't be trivial
+//		      return false;
+//		  }
+//		  InstrHandle = InstrHandle.getNext();
+//		}
+//		return true;
+//	 }
+
+	public static Attribute bcelAttribute(AjAttribute a, ConstantPool pool) {
+		int nameIndex = pool.addUtf8(a.getNameString());
+		byte[] bytes = a.getBytes();
+		int length = bytes.length;
+	
+		return new Unknown(nameIndex, length, bytes, pool);
+	}
 }

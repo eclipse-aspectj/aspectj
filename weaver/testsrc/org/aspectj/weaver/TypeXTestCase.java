@@ -122,6 +122,29 @@ public class TypeXTestCase extends TestCase {
 		}
 	}
 	
+	public void testTypeFactoryForParameterizedTypes() {
+		if (LangUtil.is15VMOrGreater()) { // no funny types pre 1.5		
+			UnresolvedType enumOfSimpleType = 
+				TypeFactory.createTypeFromSignature("Pjava/lang/Enum<Ljava/lang/String;>;"); 
+			assertEquals(1, enumOfSimpleType.getTypeParameters().length);
+			
+			UnresolvedType enumOfNestedType = 
+				TypeFactory.createTypeFromSignature("Pjava/lang/Enum<Ljavax/jws/soap/SOAPBinding$ParameterStyle;>;"); 
+			assertEquals(1, enumOfNestedType.getTypeParameters().length);
+
+			// is this signature right?
+			UnresolvedType nestedTypeOfParameterized = 
+				TypeFactory.createTypeFromSignature("PMyInterface<Ljava/lang/String;>$MyOtherType;"); 
+			assertEquals(0, nestedTypeOfParameterized.getTypeParameters().length);
+			
+			// how about this one? is this valid?
+			UnresolvedType doublyNestedTypeSignatures = 
+				TypeFactory.createTypeFromSignature("PMyInterface<Ljava/lang/String;Ljava/lang/String;>$MyOtherType<Ljava/lang/Object;>;"); 
+			assertEquals(1, doublyNestedTypeSignatures.getTypeParameters().length);
+			
+		}
+	}
+	
 	private void checkTX(UnresolvedType tx,boolean shouldBeParameterized,int numberOfTypeParameters) {
 		assertTrue("Expected parameterization flag to be "+shouldBeParameterized,tx.isParameterizedType()==shouldBeParameterized);
 		if (numberOfTypeParameters==0) {

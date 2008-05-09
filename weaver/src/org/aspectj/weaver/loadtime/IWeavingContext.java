@@ -14,6 +14,9 @@ package org.aspectj.weaver.loadtime;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.List;
+
+import org.aspectj.weaver.tools.WeavingAdaptor;
 
 /**
  * This class adds support to AspectJ for an OSGi environment
@@ -72,5 +75,15 @@ public interface IWeavingContext {
 	 * @return true if the associated classloader will define the class
 	 */
 	public boolean isLocallyDefined(String classname);
+
+	/**
+	 * Allow custom parsing of aop.xml or alternative mechanism for providing 
+	 * Definitions
+	 * 
+	 * @param loader
+	 * @param adaptor
+	 * @return List containing 0 or more Definition instances
+	 */
+    public List getDefinitions(final ClassLoader loader, WeavingAdaptor adaptor);
 
 }

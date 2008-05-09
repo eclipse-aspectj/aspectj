@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver.bcel;
 
 import java.util.Collections;
@@ -36,7 +35,6 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSignatureFormatException;
 
-
 final class BcelField extends ResolvedMemberImpl {
 
 	private static int AccSynthetic = 0x1000;
@@ -56,7 +54,7 @@ final class BcelField extends ResolvedMemberImpl {
 		super(
 			FIELD, 
 			declaringType.getResolvedTypeX(),
-			field.getAccessFlags(),
+			field.getModifiers(),
 			field.getName(), 
 			field.getSignature());
 		this.field = field;
@@ -72,7 +70,7 @@ final class BcelField extends ResolvedMemberImpl {
 	 * constructed at runtime (so there is no .class file to retrieve).  
 	 */
 	BcelField(String declaringTypeName, Field field,World world) {
-		super(FIELD,UnresolvedType.forName(declaringTypeName),field.getAccessFlags(),field.getName(),field.getSignature());
+		super(FIELD,UnresolvedType.forName(declaringTypeName),field.getModifiers(),field.getName(),field.getSignature());
 		this.field = field;
 		this.world = world;
 		this.bcelObjectType = null;

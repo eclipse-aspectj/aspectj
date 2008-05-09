@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.MemberImpl;
+import org.aspectj.weaver.TestUtils;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TestShadow;
 import org.aspectj.weaver.UnresolvedType;
@@ -41,7 +42,7 @@ public class WithinTestCase extends TestCase {
 	public void testMatch() throws IOException {
 		Shadow getOutFromArrayList = new TestShadow(
 			Shadow.FieldGet, 
-			MemberImpl.fieldFromString("java.io.PrintStream java.lang.System.out"),
+			TestUtils.fieldFromString("java.io.PrintStream java.lang.System.out"),
 			UnresolvedType.forName("java.util.ArrayList"),
 			world);
 
@@ -57,7 +58,7 @@ public class WithinTestCase extends TestCase {
 		
 		Shadow getOutFromEntry = new TestShadow(
 			Shadow.FieldGet, 
-			MemberImpl.fieldFromString("java.io.PrintStream java.lang.System.out"),
+			TestUtils.fieldFromString("java.io.PrintStream java.lang.System.out"),
 			UnresolvedType.forName("java.util.Map$Entry"),
 			world);
 			
