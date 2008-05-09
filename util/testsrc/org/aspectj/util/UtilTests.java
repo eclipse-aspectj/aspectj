@@ -23,7 +23,6 @@ public class UtilTests extends TestCase {
         //$JUnit-BEGIN$
         suite.addTestSuite(FileUtilTest.class); 
         suite.addTestSuite(LangUtilTest.class); 
-        suite.addTestSuite(NameConvertorTest.class);
         //$JUnit-END$
         return suite;
     }

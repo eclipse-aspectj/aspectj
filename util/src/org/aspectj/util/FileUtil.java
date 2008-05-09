@@ -1188,6 +1188,7 @@ public class FileUtil {
 	 * @return List of String of the form file:line for each found entry
      *          (never null, might be empty)
 	 */
+	// OPTIMIZE only used by tests? move it out
 	public static List lineSeek(String sought, List sources, boolean listAll,
         PrintStream errorSink) {
         if (LangUtil.isEmpty(sought) || LangUtil.isEmpty(sources)) {
