@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry sourcepath="JRE_SRC" kind="var" path="JRE_LIB"/>
+	<classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
 	<classpathentry kind="src" path="/testing-drivers"/>
-	<classpathentry sourcepath="/lib/junit/junit-src.jar" kind="lib" path="/lib/junit/junit.jar"/>
+	<classpathentry kind="lib" path="/lib/junit/junit.jar" sourcepath="/lib/junit/junit-src.jar"/>
 	<classpathentry kind="src" path="/testing"/>
 	<classpathentry kind="src" path="/org.aspectj.ajdt.core"/>
 	<classpathentry kind="src" path="/util"/>
 	<classpathentry kind="src" path="/bridge"/>
 	<classpathentry kind="src" path="/ajde.core"/>
 	<classpathentry kind="src" path="/asm"/>
-	<classpathentry sourcepath="/lib/bcel/bcel-src.zip" kind="lib" path="/lib/bcel/bcel.jar"/>
+	<classpathentry kind="lib" path="/lib/bcel/bcel.jar" sourcepath="/lib/bcel/bcel-src.zip"/>
 	<classpathentry kind="lib" path="/lib/ant/lib/ant-launcher.jar"/>
 	<classpathentry kind="src" path="testsrc"/>
 	<classpathentry kind="var" path="JAVA_HOME/lib/tools.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/weaver"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/testing-util"/>
+	<classpathentry kind="lib" path="/lib/bcel/bcel-verifier.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

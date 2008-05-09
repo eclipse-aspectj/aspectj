@@ -85,18 +85,18 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testCpathNoTypeCflowField_pr145693_3()           { runTest("cpathNoTypeCflowField"); }
   // public void testAdviceNotWovenAspectPath_pr147841()          { runTest("advice not woven on aspectpath");}
   public void testGenericSignatures_pr148409()                 { runTest("generic signature problem"); }
-//  public void testBrokenIfArgsCflowAtAj_pr145018() { runTest("ataj crashing with cflow, if and args");}
   public void testCantFindType_pr149322_01() {runTest("can't find type on interface call 1");}
   public void testCantFindType_pr149322_02() {runTest("can't find type on interface call 2");}
   public void testCantFindType_pr149322_03() {runTest("can't find type on interface call 3");}
   public void testParsingBytecodeLess_pr152871() { 
 	  Utility.testingParseCounter=0;
 	  runTest("parsing bytecode less"); 
-	  assertTrue("Should have called parse 5 times, not "+Utility.testingParseCounter+" times",Utility.testingParseCounter==5);
+	  assertTrue("Should have called parse 2 times, not "+Utility.testingParseCounter+" times",Utility.testingParseCounter==2);
 	  // 5 means:   
 	  // (1)=registerAspect   
 	  // (2,3)=checkingIfShouldWeave,AcceptingResult for class
 	  // (4,5)=checkingIfShouldWeave,AcceptingResult for aspect
+	  // was 5 until I changed UnwovenClassFile ctor to be called with the classname more often, now it is 2 times
   }
   public void testMatchVolatileField_pr150671() {runTest("match volatile field");};
   public void testDuplicateJVMTIAgents_pr151938() {runTest("Duplicate JVMTI agents");};
@@ -149,9 +149,9 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 					expected, ipe.getSourceSignature());
   }
 
-  public void testNPEWithCustomAgent_pr158005() {
-	  runTest("NPE with custom agent");
-  }
+//  public void testNPEWithCustomAgent_pr158205() {
+//	  runTest("NPE with custom agent");
+//  }
 
   public void testWeaveConcreteSubaspectWithAdvice_pr132080() {
 	  runTest("Weave concrete sub-aspect with advice");
@@ -179,6 +179,27 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testNoInvalidAbsoluteTypeNameWarning_pr156904_4() {runTest("ensure no invalidAbsoluteTypeName when do match - 4");}
 
   public void testNoNPEWithThrownExceptionWarningAndAtAspectj_pr161217() {runTest("NPE with thrown exception warning and at aspectj");}
+  
+  public void testJavadocCommentsAreSetIfHaveNormalComments_pr164340() {
+	  runTest("javadoc comments are set if have normal comments");
+	  IHierarchy top = AsmManager.getDefault().getHierarchy();
+	  
+	  IProgramElement ipe = top.findElementForLabel(top.getRoot(),
+			  IProgramElement.Kind.METHOD,"foo()");
+	  assertNotNull("expected formal comment to be non null but" +
+	  		" found that it was null",ipe.getFormalComment());
+	  
+	  ipe = top.findElementForLabel(top.getRoot(),
+			  IProgramElement.Kind.METHOD,"bar()");
+	  assertNotNull("expected formal comment to be non null but" +
+	  		" found that it was null",ipe.getFormalComment());
+	  
+	  ipe = top.findElementForLabel(top.getRoot(),
+			  IProgramElement.Kind.METHOD,"goo()");
+	  assertNull("expected formal comment to be null but" +
+	  		" found that it was " + ipe.getFormalComment(),ipe.getFormalComment());
+
+  }
   
   public void testBinaryWeavingIntoJava6Library_pr164384() {runTest("binary weaving into java 6 library");}
   public void testCompilanceJava6ThrowsUsageError_pr164384() {runTest("compliance java 6 throws usage error");}

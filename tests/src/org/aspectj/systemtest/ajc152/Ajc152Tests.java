@@ -18,8 +18,8 @@ import junit.framework.Test;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.internal.CharOperation;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.util.CharOperation;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
