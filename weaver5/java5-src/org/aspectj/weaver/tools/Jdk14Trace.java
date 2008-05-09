@@ -14,6 +14,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+// OPTIMIZE move out for now? check what doc says about using these variants on trace (commons/14)
 public class Jdk14Trace extends AbstractTrace {
 
 	private Logger logger;

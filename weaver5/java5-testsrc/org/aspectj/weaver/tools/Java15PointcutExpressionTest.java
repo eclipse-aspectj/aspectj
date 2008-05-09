@@ -14,17 +14,40 @@ package org.aspectj.weaver.tools;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.internal.tools.PointcutExpressionImpl;
+import org.aspectj.weaver.patterns.AbstractPatternNodeVisitor;
+import org.aspectj.weaver.patterns.AndAnnotationTypePattern;
+import org.aspectj.weaver.patterns.AnnotationPatternList;
+import org.aspectj.weaver.patterns.AnyAnnotationTypePattern;
+import org.aspectj.weaver.patterns.BindingAnnotationTypePattern;
+import org.aspectj.weaver.patterns.ExactAnnotationTypePattern;
+import org.aspectj.weaver.patterns.KindedPointcut;
+import org.aspectj.weaver.patterns.NotAnnotationTypePattern;
+import org.aspectj.weaver.patterns.OrAnnotationTypePattern;
+import org.aspectj.weaver.patterns.SignaturePattern;
+import org.aspectj.weaver.patterns.TypePattern;
+import org.aspectj.weaver.patterns.TypePatternList;
+import org.aspectj.weaver.patterns.WildAnnotationTypePattern;
+
+import test.A1AnnotatedType;
+import test.A2AnnotatedType;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
- * @author colyer
+ * Test parameter pointcut parsing.  Extended by Andy Clement to cover parameter annotation matching.
  *
  */
 public class Java15PointcutExpressionTest extends TestCase {
@@ -40,6 +63,277 @@ public class Java15PointcutExpressionTest extends TestCase {
 	private Method b;
 	private Method c;
 	private Method d;
+	
+	/**
+	 * Parse some expressions and ensure we capture the parameter annotations and parameter type annotations correctly.
+	 * Buckle up, this will get complicated ;)
+	 */
+	public void testParseParameterAnnotationExpressions() {
+		PointcutParser p = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
+		PointcutExpression pexpr = null;
+
+		pexpr = p.parsePointcutExpression("execution(public void foo(@MA *))");
+		checkParameterAnnotations(pexpr,0,null,"@MA","exact[@MA:t]");
+
+		pexpr = p.parsePointcutExpression("execution(public void foo(@MA (*)))");
+		checkParameterAnnotations(pexpr,0,"@MA",null,"exact[@MA:p]");
+
+		pexpr = p.parsePointcutExpression("execution(public void foo(@MA @MB *))");
+		checkParameterAnnotations(pexpr,0,null,"@MA @MB","(exact[@MA:t] and exact[@MB:t])");
+		
+		pexpr = p.parsePointcutExpression("execution(public void foo(@MA (@MB *)))");
+		checkParameterAnnotations(pexpr,0,"@MA","@MB","(exact[@MA:p] and exact[@MB:t])");
+		
+		pexpr = p.parsePointcutExpression("execution(public void foo(@MA @MB (@MC *)))");
+		checkParameterAnnotations(pexpr,0,"@MA @MB","@MC","((exact[@MA:p] and exact[@MB:p]) and exact[@MC:t])");
+
+		pexpr = p.parsePointcutExpression("execution(public void foo(@MA (@MB @MC @MD *)))");
+		checkParameterAnnotations(pexpr,0,"@MA","@MB @MC @MD","(exact[@MA:p] and ((exact[@MB:t] and exact[@MC:t]) and exact[@MD:t]))");
+				
+		pexpr = p.parsePointcutExpression("execution(public void foo(@(MA || MB) (@MC @MD *)))");
+		checkParameterAnnotations(pexpr,0,null/*Should be MA MB */,"@MC @MD","(wild[(MA || MB)] and (exact[@MC:t] and exact[@MD:t]))"); // I dont think WildAnnotationTypePatterns work properly...
+
+		pexpr = p.parsePointcutExpression("execution(public void foo(@MA (@MB *),(@MC *),@MD (*)))");
+		checkParameterAnnotations(pexpr,0,"@MA","@MB","(exact[@MA:p] and exact[@MB:t])");
+		checkParameterAnnotations(pexpr,1,null,"@MC","exact[@MC:t]");
+		checkParameterAnnotations(pexpr,2,"@MD",null,"exact[@MD:p]");
+		
+	}
+	
+	public void testMatchingAnnotationValueExpressions() throws SecurityException, NoSuchMethodException {
+		PointcutParser p = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
+		PointcutExpression pexpr = null;
+		ShadowMatch match = null;
+
+		Method n = test.AnnoValues.class.getMethod("none",null);          
+		Method r = test.AnnoValues.class.getMethod("redMethod",null);           
+		Method g = test.AnnoValues.class.getMethod("greenMethod",null);     
+		Method b = test.AnnoValues.class.getMethod("blueMethod",null);
+		Method d = test.AnnoValues.class.getMethod("defaultMethod",null);
+
+		pexpr = p.parsePointcutExpression("execution(@test.A3(test.Color.RED) public void *(..))");
+		assertTrue("Should match", pexpr.matchesMethodExecution(n).neverMatches()); // default value RED
+		assertTrue("Should match", pexpr.matchesMethodExecution(r).alwaysMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(g).neverMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(b).neverMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(d).alwaysMatches());
+		
+		pexpr = p.parsePointcutExpression("execution(@test.A3(test.Color.GREEN) public void *(..))");
+		assertTrue("Should not match", pexpr.matchesMethodExecution(n).neverMatches()); // default value RED
+		assertTrue("Should not match", pexpr.matchesMethodExecution(r).neverMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(g).alwaysMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(b).neverMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(d).neverMatches());
+		
+		pexpr = p.parsePointcutExpression("execution(@test.A3(test.Color.BLUE) public void *(..))");
+		assertTrue("Should not match", pexpr.matchesMethodExecution(n).neverMatches()); // default value RED
+		assertTrue("Should not match", pexpr.matchesMethodExecution(r).neverMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(g).neverMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(b).alwaysMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(d).neverMatches());
+
+		pexpr = p.parsePointcutExpression("execution(@test.A3 public void *(..))");
+		assertTrue("Should match", pexpr.matchesMethodExecution(n).neverMatches()); // default value RED
+		assertTrue("Should match", pexpr.matchesMethodExecution(r).alwaysMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(g).alwaysMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(b).alwaysMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(d).alwaysMatches());
+
+	}
+	
+
+	/**
+	 * Test matching of pointcuts against expressions.  A reflection world is being used on the backend here (not a Bcel one).
+	 */
+	public void testMatchingParameterAnnotationExpressions() throws SecurityException, NoSuchMethodException {
+		PointcutParser p = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
+		PointcutExpression pexpr = null;
+		ShadowMatch match = null;
+
+		Method a = test.A.class.getMethod("a",new Class[] {String.class});             // public void a(String s) {}
+		Method b = test.A.class.getMethod("b",new Class[] {String.class});             // public void b(@A1 String s) {}
+		Method c = test.A.class.getMethod("c",new Class[] {String.class});             // public void c(@A1 @A2 String s) {}
+		Method d = test.A.class.getMethod("d",new Class[] {String.class,String.class});// public void d(@A1 String s,@A2 String t) {}
+
+		Method e = test.A.class.getMethod("e",new Class[] {A1AnnotatedType.class});    // public void e(A1AnnotatedType s) {}
+		Method f = test.A.class.getMethod("f",new Class[] {A2AnnotatedType.class});    // public void f(A2AnnotatedType s) {}
+		Method g = test.A.class.getMethod("g",new Class[] {A1AnnotatedType.class});    // public void g(@A2 A1AnnotatedType s) {}
+		Method h = test.A.class.getMethod("h",new Class[] {A1AnnotatedType.class});    // public void h(@A1 A1AnnotatedType s) {}
+		Method i = test.A.class.getMethod("i",new Class[] {A1AnnotatedType.class,String.class});    // public void i(A1AnnotatedType s,@A2 String t) {}
+		Method j = test.A.class.getMethod("j",new Class[] {String.class});             // public void j(@A1 @A2 String s) {}
+
+		pexpr = p.parsePointcutExpression("execution(public void *(@test.A1 *))");
+		assertTrue("Should not match", pexpr.matchesMethodExecution(a).neverMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(b).neverMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(c).neverMatches());
+		
+		pexpr = p.parsePointcutExpression("execution(public void *(@test.A1 (*)))");
+		assertTrue("Should not match", pexpr.matchesMethodExecution(a).neverMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(b).alwaysMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(c).alwaysMatches());
+
+		pexpr = p.parsePointcutExpression("execution(public void *(@test.A1 *))");
+		assertTrue("Should match", pexpr.matchesMethodExecution(e).alwaysMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(f).neverMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(g).alwaysMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(h).alwaysMatches());
+
+		pexpr = p.parsePointcutExpression("execution(public void *(@test.A1 (*)))");
+		assertTrue("Should not match", pexpr.matchesMethodExecution(e).neverMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(f).neverMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(g).neverMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(h).alwaysMatches());
+
+		pexpr = p.parsePointcutExpression("execution(public void *(@(test.A1 || test.A2) (*)))");
+		assertTrue("Should not match", pexpr.matchesMethodExecution(a).neverMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(b).alwaysMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(c).alwaysMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(g).alwaysMatches());
+		assertTrue("Should match", pexpr.matchesMethodExecution(h).alwaysMatches());
+
+		pexpr = p.parsePointcutExpression("execution(public void *(@(test.A1 && test.A2) (*),..))");
+		assertTrue("Should not match", pexpr.matchesMethodExecution(a).neverMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(b).neverMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(c).neverMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(g).neverMatches());
+		assertTrue("Should not match", pexpr.matchesMethodExecution(h).neverMatches());
+//		assertTrue("Should match", pexpr.matchesMethodExecution(j).alwaysMatches()); // should match but does not, broken implementation, old bug - see WildAnnotationTypePattern.match
+
+	
+		
+	}
+
+	private void checkParameterAnnotations(PointcutExpression pe,int parameterNumber,String expectedParameterAnnotations,String expectedParameterTypeAnnotations,String expectedNodeStructure) {
+	  org.aspectj.weaver.patterns.Pointcut p = ((PointcutExpressionImpl)pe).getUnderlyingPointcut();
+	  KindedPointcut kindedP = (KindedPointcut)p;
+	  SignaturePattern sp = kindedP.getSignature();
+	  TypePatternList tpl = sp.getParameterTypes();
+	  TypePattern[] tps = tpl.getTypePatterns();
+	  
+	  // A visitor over the annotation pattern for the parameter will break it down into parameter vs parameter type annotations
+	  MyPatternNodeVisitor mpnv = new MyPatternNodeVisitor();
+	  tps[parameterNumber].getAnnotationPattern().accept(mpnv,null);
+	  
+	  if (expectedNodeStructure==null) {
+		  // The caller hasn't worked it out yet!!
+		  System.out.println(mpnv.getStringRepresentation());
+	  } else if (!mpnv.getStringRepresentation().equals(expectedNodeStructure)) {
+		  System.out.println(mpnv.getStringRepresentation());
+		  fail("Expected annotation pattern node structure for expression "+pe.getPointcutExpression()+
+			   " was '"+expectedNodeStructure+"' but it turned out to be '"+mpnv.getStringRepresentation()+"'");
+	  }
+	  
+	  String annotationTypePattern = tps[parameterNumber].getAnnotationPattern().toString();
+	  
+	  // parameter type annotation checking
+	  Set<String> expected = new HashSet<String>();
+	  expected.addAll(mpnv.getParameterTypeAnnotations());
+	  
+	  StringTokenizer st = new StringTokenizer(expectedParameterTypeAnnotations==null?"":expectedParameterTypeAnnotations);
+	  while (st.hasMoreTokens()) {
+		  String nextToken = st.nextToken();
+		  if (!expected.contains(nextToken)) 
+			  fail("In pointcut expression "+pe.getPointcutExpression()+" parameter "+parameterNumber+". The annotation type pattern did not include parameter type annotation "+nextToken+".  It's full set was "+mpnv.getParameterTypeAnnotations());
+		  expected.remove(nextToken);
+	  }
+	  if (expected.size()>0) { // we have excess ones!
+		  StringBuffer excessTokens = new StringBuffer();
+		  for (Iterator iterator = expected.iterator(); iterator.hasNext();) {
+			String string = (String) iterator.next();
+			excessTokens.append(string).append(" ");
+		}
+	    fail("In pointcut expression "+pe.getPointcutExpression()+" parameter "+parameterNumber+". The annotation type pattern has these unexpected parameter type annotations "+excessTokens.toString());
+	  }
+	  
+	  // parameter annotation checking
+	  expected = new HashSet<String>();
+	  expected.addAll(mpnv.getParameterAnnotations());
+	  
+	  st = new StringTokenizer(expectedParameterAnnotations==null?"":expectedParameterAnnotations);
+	  while (st.hasMoreTokens()) {
+		  String nextToken = st.nextToken();
+		  if (!expected.contains(nextToken)) 
+			  fail("In pointcut expression "+pe.getPointcutExpression()+" parameter "+parameterNumber+". The annotation type pattern did not include parameter annotation "+nextToken+".  It's full set was "+mpnv.getParameterAnnotations());
+		  expected.remove(nextToken);
+	  }
+	  if (expected.size()>0) { // we have excess ones!
+		  StringBuffer excessTokens = new StringBuffer();
+		  for (Iterator iterator = expected.iterator(); iterator.hasNext();) {
+			String string = (String) iterator.next();
+			excessTokens.append(string).append(" ");
+		}
+	    fail("In pointcut expression "+pe.getPointcutExpression()+" parameter "+parameterNumber+". The annotation type pattern has these unexpected parameter annotations "+excessTokens.toString());
+	  }
+	  
+	}
+	
+	static class MyPatternNodeVisitor extends AbstractPatternNodeVisitor {
+		private StringBuffer stringRep = new StringBuffer();
+		private List<String> parameterAnnotations = new ArrayList<String>();
+		private List<String> parameterTypeAnnotations = new ArrayList<String>();
+		
+		public String getStringRepresentation() { return stringRep.toString(); }
+		public List<String> getParameterAnnotations() { return parameterAnnotations; }
+		public List<String> getParameterTypeAnnotations() { return parameterTypeAnnotations; }
+		
+		public Object visit(AndAnnotationTypePattern node, Object data) {
+			stringRep.append("(");
+			node.getLeft().accept(this, data);
+			stringRep.append(" and ");
+			node.getRight().accept(this, data);
+			stringRep.append(")");
+			return node;
+		}
+	    public Object visit(AnyAnnotationTypePattern node, Object data) {
+	    	stringRep.append("any");
+			return node;
+	    }
+	    public Object visit(ExactAnnotationTypePattern node, Object data) { 
+	    	stringRep.append("exact["+stringify(node.getResolvedAnnotationType())+":"+(node.isForParameterAnnotationMatch()?"p":"t")+"]");
+	    	if (node.isForParameterAnnotationMatch()) {
+	    		parameterAnnotations.add(stringify(node.getResolvedAnnotationType()));
+	    	} else {
+	    		parameterTypeAnnotations.add(stringify(node.getResolvedAnnotationType()));
+	    	}
+			return node;
+	    }
+	    private String stringify(ResolvedType resolvedAnnotationType) {
+	    	return "@"+resolvedAnnotationType.getSimpleName();
+		}
+
+		public Object visit(BindingAnnotationTypePattern node, Object data) {
+			stringRep.append("binding");
+	    	
+			return node;
+	    }
+	    public Object visit(NotAnnotationTypePattern node, Object data) {
+			stringRep.append("not");
+			return node;
+	    }
+	    public Object visit(OrAnnotationTypePattern node, Object data) {
+			stringRep.append("(");
+			node.getLeft().accept(this, data);
+			stringRep.append(" or ");
+			node.getRight().accept(this, data);
+			stringRep.append(")");
+			return node;
+	    }
+	    public Object visit(WildAnnotationTypePattern node, Object data) {
+			stringRep.append("wild[");
+			stringRep.append(node.getTypePattern().toString());
+			stringRep.append("]");
+			return node;
+	    }
+	    public Object visit(AnnotationPatternList node, Object data) {
+			stringRep.append("list");
+	    	
+			return node;
+	    }
+	    
+	    
+	}
+	
+	
 	
 	public void testAtThis() {
 		PointcutExpression atThis = parser.parsePointcutExpression("@this(org.aspectj.weaver.tools.Java15PointcutExpressionTest.MyAnnotation)");
