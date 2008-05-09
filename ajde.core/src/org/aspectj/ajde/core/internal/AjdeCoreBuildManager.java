@@ -24,6 +24,7 @@ import org.aspectj.ajde.core.IOutputLocationManager;
 import org.aspectj.ajde.core.JavaOptions;
 import org.aspectj.ajdt.ajc.AjdtCommand;
 import org.aspectj.ajdt.ajc.BuildArgParser;
+import org.aspectj.ajdt.ajc.ConfigParser;
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
 import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
 import org.aspectj.ajdt.internal.core.builder.AjState;
@@ -38,7 +39,6 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
-import org.aspectj.util.ConfigParser;
 import org.aspectj.util.LangUtil;
 
 /**
