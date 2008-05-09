@@ -29,9 +29,9 @@ import java.util.TreeSet;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.ui.BuildConfigNode;
+import org.aspectj.ajdt.ajc.ConfigParser;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
-import org.aspectj.util.ConfigParser;
 
 /**
  * Used for reading and writing build configuration (".lst") files.

@@ -18,7 +18,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aspectj.util.ConfigParser;
+import org.aspectj.ajdt.ajc.ConfigParser;
 
 /**
  * @author Mik Kersten
