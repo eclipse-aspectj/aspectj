@@ -22,10 +22,6 @@ import org.aspectj.util.LangUtil;
  * Immutable source location.
  * This guarantees that the source file is not null
  * and that the numeric values are positive and line <= endLine.
- * @see org.aspectj.lang.reflect.SourceLocation
- * @see org.aspectj.compiler.base.parser.SourceInfo
- * @see org.aspectj.tools.ide.SourceLine
- * @see org.aspectj.testing.harness.ErrorLine
  */
 public class SourceLocation implements ISourceLocation, java.io.Serializable {
     
