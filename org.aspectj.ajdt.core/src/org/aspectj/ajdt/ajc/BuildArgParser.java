@@ -39,7 +39,6 @@ import org.aspectj.bridge.Version;
 import org.aspectj.org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.Main;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
-import org.aspectj.util.ConfigParser;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.Constants;
