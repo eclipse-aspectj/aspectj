@@ -3,6 +3,22 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+
+    <ajc-test dir="bugs161/pr227993" title="field jp anno value">
+        <compile files="FieldJP.java" options="-1.5"/>
+        <run class="FieldJP">
+          <stderr>
+            <line text="get of YES field"/>
+            <line text="fone=0"/>
+            <line text="get of NO field"/>
+            <line text="ftwo=0"/>
+            <line text="fthr=0"/>
+            <line text="set of YES field"/>
+            <line text="set of NO field"/>
+          </stderr>
+        </run>
+    </ajc-test> 
+
     <ajc-test dir="bugs161/pr231187x" title="generics bounds decp">
         <compile files="Cement.java ConcreteClass.java SuperClass.java SuperClassAspect.aj WetCement.java Main.java" options="-1.5"/>
         <run class="concrete.Main">
