@@ -30,7 +30,7 @@ public interface EditorAdapter {
     public void showSourceLine(String filePath, int lineNumber, boolean highlight);
 
 	/**
-	 * Seek the editor to a {@link SourceLocation} and highlight if specified.
+	 * Seek the editor to a SourceLocation and highlight if specified.
 	 */
     public void showSourceLine(ISourceLocation sourceLocation, boolean highlight);
 
