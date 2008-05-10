@@ -344,14 +344,16 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 	public boolean equals(Object obj) {
 		if (!(obj instanceof WildAnnotationTypePattern)) return false;
 		WildAnnotationTypePattern other = (WildAnnotationTypePattern) obj;
-		return other.typePattern.equals(typePattern) && this.isForParameterAnnotationMatch()==other.isForParameterAnnotationMatch();
+		return other.typePattern.equals(typePattern) && 
+		    this.isForParameterAnnotationMatch()==other.isForParameterAnnotationMatch() &&
+		    (annotationValues==null?other.annotationValues==null:annotationValues.equals(other.annotationValues));
 	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		return (17 + 37*typePattern.hashCode())*37+(isForParameterAnnotationMatch()?0:1);
+		return (((17 + 37*typePattern.hashCode())*37+(isForParameterAnnotationMatch()?0:1))*37)+(annotationValues==null?0:annotationValues.hashCode());
 	}
 	
 	/* (non-Javadoc)

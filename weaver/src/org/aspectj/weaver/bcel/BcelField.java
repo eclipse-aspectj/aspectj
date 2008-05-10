@@ -119,7 +119,15 @@ final class BcelField extends ResolvedMemberImpl {
 		ensureAnnotationTypesRetrieved();
 		return annotations;
 	}
-    
+	
+	public AnnotationX getAnnotationOfType(UnresolvedType ofType) {
+        ensureAnnotationTypesRetrieved();
+        for (int i=0; i<annotations.length; i++) {
+            if (annotations[i].getTypeName().equals(ofType.getName())) return annotations[i];
+        }
+        return null;
+    }    
+	
 	private void ensureAnnotationTypesRetrieved() {
 		if (annotationTypes == null) {
     		Annotation annos[] = field.getAnnotations();
