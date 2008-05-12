@@ -18,8 +18,6 @@ import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IElementHandleProvider;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.util.CharOperation;
-import org.aspectj.util.NameConvertor;
 
 /**
  * Creates JDT-like handles, for example

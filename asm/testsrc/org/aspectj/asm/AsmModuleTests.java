@@ -15,6 +15,8 @@ package org.aspectj.asm;
 
 // default package
 
+import org.aspectj.asm.NameConvertorTest;
+
 import junit.framework.*;
 
 public class AsmModuleTests extends TestCase {
@@ -22,6 +24,7 @@ public class AsmModuleTests extends TestCase {
     public static TestSuite suite() { 
         TestSuite suite = new TestSuite(AsmModuleTests.class.getName());
         suite.addTestSuite(AsmModuleTests.class); 
+        suite.addTestSuite(NameConvertorTest.class);
         return suite;
     }
 
