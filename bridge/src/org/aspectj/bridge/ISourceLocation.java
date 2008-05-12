@@ -19,6 +19,11 @@ import java.io.File;
 /**
  * Represent source location as a starting line/column and ending
  * line in a source file.
+ * Implementations should be immutable. XXX why?
+ * @see org.aspectj.lang.reflect.SourceLocation
+ * @see org.aspectj.compiler.base.parser.SourceInfo
+ * @see org.aspectj.tools.ide.SourceLine
+ * @see org.aspectj.testing.harness.ErrorLine
  */
 public interface ISourceLocation  {
     static final int MAX_LINE = Integer.MAX_VALUE / 2;
