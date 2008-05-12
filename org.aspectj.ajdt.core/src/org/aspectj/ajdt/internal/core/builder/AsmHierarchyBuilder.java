@@ -35,6 +35,7 @@ import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
+import org.aspectj.asm.internal.CharOperation;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
@@ -58,7 +59,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.util.Util;
-import org.aspectj.util.CharOperation;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
@@ -285,12 +285,12 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	public boolean visit(TypeDeclaration memberTypeDeclaration, ClassScope scope) {
 		String name = new String(memberTypeDeclaration.name);
 		
-        // OPTIMIZE dont call kind 3 times
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
+		int typeDeclarationKind = TypeDeclaration.kind(memberTypeDeclaration.modifiers);
 		if (memberTypeDeclaration instanceof AspectDeclaration) kind = IProgramElement.Kind.ASPECT;
-		else if (TypeDeclaration.kind(memberTypeDeclaration.modifiers) == TypeDeclaration.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
-		else if (TypeDeclaration.kind(memberTypeDeclaration.modifiers)  == TypeDeclaration.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
-		else if (TypeDeclaration.kind(memberTypeDeclaration.modifiers)  == TypeDeclaration.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
+		else if (typeDeclarationKind == TypeDeclaration.INTERFACE_DECL) kind = IProgramElement.Kind.INTERFACE;
+		else if (typeDeclarationKind == TypeDeclaration.ENUM_DECL) kind = IProgramElement.Kind.ENUM;
+		else if (typeDeclarationKind == TypeDeclaration.ANNOTATION_TYPE_DECL) kind = IProgramElement.Kind.ANNOTATION;
 
         //@AJ support
         if (memberTypeDeclaration.annotations != null) {

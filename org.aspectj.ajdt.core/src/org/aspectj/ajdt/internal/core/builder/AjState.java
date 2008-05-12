@@ -999,27 +999,6 @@ public class AjState {
 	}
 
 	/**
-	 * Currently unused, if we ditch classesFromName, we might need this.... (in noteResult)
-	 * @param file
-	 * @return
-	 */
-	private UnwovenClassFile maybeGetExistingClassFileFor(UnwovenClassFile classFile) {
-		File existing = new File(classFile.getFilename());
-		if (!existing.exists()) {
-			return null;
-		} 
-		else {
-			try {
-				return new UnwovenClassFile(classFile.getFilename(),FileUtil.readAsByteArray(existing));
-			} 
-			catch (IOException ex) {
-				throw new IllegalStateException("Unable to read contents of '" + classFile.getFilename() + "' " +
-						"from last compile cycle");
-			}
-		}
-	}
-
-	/**
 	 * @param sourceFile
 	 * @param unwovenClassFiles
 	 */

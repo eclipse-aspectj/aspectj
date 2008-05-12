@@ -23,6 +23,7 @@ import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.ValidateAtAspectJAnnotationsVisitor;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.core.builder.AjState;
+import org.aspectj.asm.internal.CharOperation;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IProgressListener;
@@ -36,7 +37,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
-import org.aspectj.util.CharOperation;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.patterns.CflowPointcut;
@@ -443,7 +443,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	
 	/** Return true if we've decided to drop back to a full build (too much has changed) */
 	private boolean weaveQueuedEntries() throws IOException {
-		if (debugPipeline)System.err.println(">.weaveQueuedEntries()");
+		if (debugPipeline) System.err.println(">.weaveQueuedEntries()");
 		for (Iterator iter = resultsPendingWeave.iterator(); iter.hasNext();) {
 			InterimCompilationResult iresult = (InterimCompilationResult) iter.next();
 			for (int i = 0; i < iresult.unwovenClassFiles().length; i++) {
