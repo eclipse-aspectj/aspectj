@@ -56,7 +56,6 @@ import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
-import org.aspectj.util.CollectionUtil;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
@@ -83,6 +82,8 @@ public final class LazyClassGen {
 	
 	private static final int ACC_SYNTHETIC    = 0x1000;
 	
+    private static final String[] NO_STRINGS = new String[0];
+
 	int highestLineNumber = 0; // ---- JSR 45 info
 	
 	private SortedMap /* <String, InlinedSourceFileInfo> */ inlinedFiles = new TreeMap();
@@ -850,7 +851,7 @@ public final class LazyClassGen {
         	Type.VOID,
         	"<clinit>",
         	new Type[0],
-        	CollectionUtil.NO_STRINGS,
+        	NO_STRINGS,
         	this);
        	clinit.getBody().insert(InstructionConstants.RETURN);
         methodGens.add(clinit);
@@ -867,7 +868,7 @@ public final class LazyClassGen {
         	Type.VOID,
         	NameMangler.AJC_PRE_CLINIT_NAME,
         	new Type[0],
-        	CollectionUtil.NO_STRINGS,
+        	NO_STRINGS,
         	this);
        	ajcClinit.getBody().insert(InstructionConstants.RETURN);
         methodGens.add(ajcClinit);
