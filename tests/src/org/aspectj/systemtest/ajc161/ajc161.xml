@@ -1,0 +1,60 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.6.1 Tests -->
+<suite>
+
+    <ajc-test dir="bugs161/pr231478" title="generic abstract aspects">
+        <compile files="Base.java Sub.java AbstractComponent.java AbstractWindow.java" options="-1.5"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs161/pr227993" title="field jp anno value">
+        <compile files="FieldJP.java" options="-1.5"/>
+        <run class="FieldJP">
+          <stderr>
+            <line text="get of YES field"/>
+            <line text="fone=0"/>
+            <line text="get of NO field"/>
+            <line text="ftwo=0"/>
+            <line text="fthr=0"/>
+            <line text="set of YES field"/>
+            <line text="set of NO field"/>
+          </stderr>
+        </run>
+    </ajc-test> 
+
+    <ajc-test dir="bugs161/pr231187x" title="generics bounds decp">
+        <compile files="Cement.java ConcreteClass.java SuperClass.java SuperClassAspect.aj WetCement.java Main.java" options="-1.5"/>
+        <run class="concrete.Main">
+          <stdout>
+            <line text="ran!"/>
+          </stdout>
+        </run>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs161/pr231187x" title="generics bounds decp - 2">
+        <compile files="Cement.java ConcreteClass.java SuperClass.java WetCement.java" options="-1.5">
+          <message kind="error" text="The type WetCement is not a valid substitute for the bounded parameter"/>
+        </compile>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs161/pr230134" title="ltw inherited cflow">
+      <compile files="HW.java"/>
+      <compile files="SimpleTracing.java Tracing.java HelloWorldTracing.java" outjar="foo.jar"/>
+      <run class="hello.HW" classpath="$sandbox/foo.jar" ltw="aop.xml">
+        <stdout>
+          <line text="Hello World"/>
+ 	    </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs161/pr229910" title="around advice on field set">
+        <compile files="Test.java" options="-1.5"/>
+        <run class="Test"/>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs161/pr226567" title="pipeline compilation and generic return type">
+        <compile files="BarAspect.aj Foo.java Bar.java" options="-1.5"/>
+        <compile files="BarAspect.aj Bar.java Foo.java" options="-1.5"/>
+    </ajc-test> 
+
+</suite>
