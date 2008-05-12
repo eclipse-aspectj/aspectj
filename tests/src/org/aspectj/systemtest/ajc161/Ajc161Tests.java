@@ -19,6 +19,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.1
+	public void testGenericAbstractAspects_pr231478() { runTest("generic abstract aspects"); }
     public void testFieldJoinpointsAndAnnotationValues_pr227993() { runTest("field jp anno value"); }
     public void testGenericsBoundsDecp_pr231187() { runTest("generics bounds decp"); }
     public void testGenericsBoundsDecp_pr231187_2() { runTest("generics bounds decp - 2"); }

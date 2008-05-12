@@ -3,6 +3,9 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+    <ajc-test dir="bugs161/pr231478" title="generic abstract aspects">
+        <compile files="Base.java Sub.java AbstractComponent.java AbstractWindow.java" options="-1.5"/>
+    </ajc-test>
 
     <ajc-test dir="bugs161/pr227993" title="field jp anno value">
         <compile files="FieldJP.java" options="-1.5"/>
