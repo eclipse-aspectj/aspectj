@@ -37,6 +37,7 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType implemen
 	public void setTypeVariable(TypeVariable aTypeVariable) {
 		this.signature = "T" + aTypeVariable.getName() + ";"; //aTypeVariable.getUpperBound().getSignature();
 		this.typeVariable = aTypeVariable;
+		this.typeKind=TypeKind.TYPE_VARIABLE;
 	}
 	
 	public ResolvedType resolve(World world) {
