@@ -15,8 +15,13 @@
 
 package org.aspectj.ajdt.ajc;
 
-import java.util.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ConfigParser {
     Location location;

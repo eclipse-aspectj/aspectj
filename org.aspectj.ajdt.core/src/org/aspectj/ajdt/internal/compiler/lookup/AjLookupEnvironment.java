@@ -62,6 +62,7 @@ import org.aspectj.weaver.AsmRelationshipProvider;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.FakeAnnotation;
 import org.aspectj.weaver.ReferenceType;
+import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.TypeVariable;
@@ -69,6 +70,7 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.bcel.LazyClassGen;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
@@ -140,6 +142,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.BUILDING_FIELDS_AND_METHODS, units[i].compilationResult.fileName);
+//			units[i].scope.checkParameterizedTypes(); do this check a little later, after ITDs applied to stbs
 			units[i].scope.buildFieldsAndMethods();
 			CompilationAndWeavingContext.leavingPhase(tok);
 		}
@@ -221,7 +224,11 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				weaveInterTypeDeclarations(units[i].scope, typeMungers, declareParents,declareAnnotationOnTypes);
 			}
 		}
-		
+
+        for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
+            units[i].scope.checkParameterizedTypes();
+        }
+        
 		for (int i = lastCompletedUnitIndex +1; i<=lastUnitIndex; i++) {
 			SourceTypeBinding[] b = units[i].scope.topLevelTypes;
             for (int j = 0; j < b.length; j++) {
@@ -699,7 +706,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	
 	private boolean doDeclareParents(DeclareParents declareParents, SourceTypeBinding sourceType) {
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_DECLARE_PARENTS, sourceType.sourceName);
-		List newParents = declareParents.findMatchingNewParents(factory.fromEclipse(sourceType),false);
+		ResolvedType resolvedSourceType = factory.fromEclipse(sourceType);
+		List newParents = declareParents.findMatchingNewParents(resolvedSourceType,false);
 		if (!newParents.isEmpty()) {
 			for (Iterator i = newParents.iterator(); i.hasNext(); ) {
 				ResolvedType parent = (ResolvedType)i.next();
@@ -712,6 +720,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				if (Modifier.isFinal(parent.getModifiers())) {
 					factory.showMessage(IMessage.ERROR,"cannot extend final class " + parent.getClassName(),declareParents.getSourceLocation(),null);
 				} else {
+				    // do not actually do it if the type isn't exposed - this will correctly reported as a problem elsewhere
+					if (!resolvedSourceType.isExposedToWeaver()) return false;
 					AsmRelationshipProvider.getDefault().addDeclareParentsRelationship(declareParents.getSourceLocation(),factory.fromEclipse(sourceType), newParents);
 					addParent(sourceType, parent);
 				}
@@ -794,7 +804,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				// BUG BUG BUG - We dont test these abits are correct, in fact we'll be very lucky if they are.
 				// What does that mean?  It means on an incremental compile you might get away with an
 				// annotation that isn't allowed on a type being put on a type.
-				abits = toAdd[0].resolvedType.getAnnotationTagBits(); 
+				if (toAdd[0].resolvedType != null) // pr184447
+				    abits = toAdd[0].resolvedType.getAnnotationTagBits(); 
 			}		
 		} else {
 			// much nicer, its a real SourceTypeBinding so we can stay in eclipse land
@@ -803,6 +814,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			TypeDeclaration typeDecl = ((SourceTypeBinding)mbs[0].declaringClass).scope.referenceContext;
 			AbstractMethodDeclaration methodDecl = typeDecl.declarationOf(mbs[0]);
 			toAdd = methodDecl.annotations; // this is what to add
+			toAdd[0] = createAnnotationCopy(toAdd[0]);
 			if (toAdd[0].resolvedType!=null) // pr148536
 			  abits = toAdd[0].resolvedType.getAnnotationTagBits();
 		}
@@ -812,9 +824,10 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			// on the weaver type temporarily
 			ResolvedType theTargetType = factory.fromEclipse(sourceType);
 			TypeBinding theAnnotationType = toAdd[0].resolvedType;
-			String name = new String(theAnnotationType.qualifiedPackageName())+"."+new String(theAnnotationType.sourceName());
 			String sig = new String(theAnnotationType.signature());
-			if (theTargetType.hasAnnotation(UnresolvedType.forSignature(sig))) {
+			UnresolvedType bcelAnnotationType = UnresolvedType.forSignature(sig);
+			String name = bcelAnnotationType.getName();
+			if (theTargetType.hasAnnotation(bcelAnnotationType)) {
 				CompilationAndWeavingContext.leavingPhase(tok);
 				return false;
 			}
@@ -940,6 +953,32 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 //		ann.memberValuePairs = mvps;
 		return ann;
 	}
+	
+	/** Create a copy of an annotation, not deep but deep enough so we don't copy across fields that will get us into trouble like 'recipient' */
+	private static Annotation createAnnotationCopy(Annotation ann) {
+		NormalAnnotation ann2 = new NormalAnnotation(ann.type,ann.sourceStart);
+		ann2.memberValuePairs = ann.memberValuePairs();
+		ann2.resolvedType = ann.resolvedType;
+		ann2.bits = ann.bits;
+		return ann2;
+//		String name = annX.getTypeName();
+//		TypeBinding tb = factory.makeTypeBinding(annX.getSignature());
+//		String theName = annX.getSignature().getBaseName();
+//		char[][] typeName = CharOperation.splitOn('.',name.replace('$','.').toCharArray()); //pr149293 - not bulletproof...
+//		long[] positions = new long[typeName.length];
+//		for (int i = 0; i < positions.length; i++) positions[i]=pos;
+//		TypeReference annType = new QualifiedTypeReference(typeName,positions);
+//		NormalAnnotation ann = new NormalAnnotation(annType,pos);
+//		ann.resolvedType=tb; // yuck - is this OK in all cases?
+//		// We don't need membervalues...
+////		Expression pcExpr = new StringLiteral(pointcutExpression.toCharArray(),pos,pos);
+////		MemberValuePair[] mvps = new MemberValuePair[2];
+////		mvps[0] = new MemberValuePair("value".toCharArray(),pos,pos,pcExpr);
+////		Expression argNamesExpr = new StringLiteral(argNames.toCharArray(),pos,pos);
+////		mvps[1] = new MemberValuePair("argNames".toCharArray(),pos,pos,argNamesExpr);
+////		ann.memberValuePairs = mvps;
+//		return ann;
+	}
 
 	private boolean isAnnotationTargettingSomethingOtherThanAnnotationOrNormal(long abits) {
 		return (abits & (TagBits.AnnotationForAnnotationType | TagBits.AnnotationForType))==0;
@@ -1006,7 +1045,17 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	        // reportDeclareParentsMessage(WeaveMessage.WEAVEMESSAGE_DECLAREPARENTSIMPLEMENTS,sourceType,parent);
 			
 		}
-		
+        
+        // also add it to the bcel delegate if there is one
+        if (sourceType instanceof BinaryTypeBinding) {
+	        ResolvedType onType = factory.fromEclipse(sourceType);
+	        ReferenceType rt = (ReferenceType)onType;
+	        ReferenceTypeDelegate rtd = rt.getDelegate();
+	        if (rtd instanceof BcelObjectType) {
+		        ((BcelObjectType)rtd).addParent(parent);
+		    }
+        }
+        
 	}
 
 	public void warnOnAddedInterface (ResolvedType type, ResolvedType parent) {

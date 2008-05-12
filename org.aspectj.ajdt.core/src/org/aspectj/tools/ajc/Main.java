@@ -19,8 +19,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
 
 import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
 import org.aspectj.bridge.AbortException;
@@ -254,7 +254,7 @@ public class Main {
         	run(args, holder);
         	long etime = System.currentTimeMillis();
         	if (timers) {
-        		System.out.println("Compiler took "+(etime-stime)+"ms");
+        	    System.out.println("Compiler took "+(etime-stime)+"ms");
         	}
         	holder.handleMessage(MessageUtil.info("Compiler took "+(etime-stime)+"ms"));
         	// uncomment next line to pause at end (keeps jconsole alive!)
