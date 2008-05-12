@@ -356,6 +356,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 
 	private boolean isReallyAMethod(Method method) {
 		if (method.getName().startsWith(ajcMagic)) return false;
+		if (method.getAnnotations().length==0) return true;
 		if (method.isAnnotationPresent(org.aspectj.lang.annotation.Pointcut.class)) return false;
 		if (method.isAnnotationPresent(Before.class)) return false;
 		if (method.isAnnotationPresent(After.class)) return false;
