@@ -215,7 +215,20 @@ public class TypeVariable {
 	// can match any type in the range of the type variable...
 	// XXX what about interfaces?
 	private boolean matchingBounds(TypeVariableReferenceType tvrt) {
-		if (tvrt.getUpperBound() != getUpperBound()) return false;
+		if (tvrt.getUpperBound() != getUpperBound()) {
+			UnresolvedType unresolvedCandidateUpperBound = tvrt.getUpperBound();
+			UnresolvedType unresolvedThisUpperBound = getUpperBound();
+			if (unresolvedCandidateUpperBound instanceof ResolvedType && unresolvedThisUpperBound instanceof ResolvedType) {
+				ResolvedType candidateUpperBound = (ResolvedType)unresolvedCandidateUpperBound;
+				ResolvedType thisUpperBound = (ResolvedType)unresolvedThisUpperBound;
+				if (!thisUpperBound.isAssignableFrom(candidateUpperBound)) {
+					return false;
+				}
+			} else {
+				// not right, they shouldnt have been unresolved...
+				return false;
+			}
+		}
 		if (tvrt.hasLowerBound() != (getLowerBound() != null)) return false;
 		if (tvrt.hasLowerBound() && tvrt.getLowerBound() != getLowerBound()) return false;
 		// either we both have bounds, or neither of us have bounds
@@ -379,6 +392,7 @@ public class TypeVariable {
 
 	public String getGenericSignature() {
 		return "T"+name+";";
+//		return "T"+getSignature();
 	}
 	public String getErasureSignature() {
 		return getFirstBound().getErasureSignature();

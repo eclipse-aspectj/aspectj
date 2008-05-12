@@ -380,14 +380,15 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	public boolean equals(Object obj) {
 		if (!(obj instanceof ExactAnnotationTypePattern)) return false;
 		ExactAnnotationTypePattern other = (ExactAnnotationTypePattern) obj;
-		return (other.annotationType.equals(annotationType)) && isForParameterAnnotationMatch()==other.isForParameterAnnotationMatch();
+		return (other.annotationType.equals(annotationType)) && isForParameterAnnotationMatch()==other.isForParameterAnnotationMatch() &&
+        (annotationValues==null?other.annotationValues==null:annotationValues.equals(other.annotationValues));
 	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		return annotationType.hashCode()*37+(isForParameterAnnotationMatch()?0:1);
+        return (((annotationType.hashCode())*37+(isForParameterAnnotationMatch()?0:1))*37)+(annotationValues==null?0:annotationValues.hashCode());
 	}
 	
 	public String toString() {
