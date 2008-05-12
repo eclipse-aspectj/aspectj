@@ -23,7 +23,7 @@ import java.util.Map;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.FuzzyBoolean;
-import org.aspectj.weaver.BetaException;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedType;
@@ -293,7 +293,7 @@ public class ArgsPointcut extends NameBindingPointcut {
 			}
 			return findResidueNoEllipsis(shadow, state, patternsWithoutEllipsis);
 		} else {
-			throw new BetaException("unimplemented");
+			throw new BCException("unimplemented");
 		}
 	}
 	
