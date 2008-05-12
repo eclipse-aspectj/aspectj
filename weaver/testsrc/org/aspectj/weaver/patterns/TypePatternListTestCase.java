@@ -13,14 +13,19 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 
-import org.aspectj.weaver.bcel.*;
-import org.aspectj.util.*;
-
 import junit.framework.TestCase;
-import org.aspectj.weaver.*;
+
+import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.BcelWorld;
 
 /**
  * @author hugunin
@@ -119,9 +124,11 @@ public class TypePatternListTestCase extends TestCase {
 		String msg = "matches statically " + pattern + " to " + Arrays.asList(types);
         assertEquals(msg, shouldMatchStatically, result);       
 	}
-	
+
+    public static final String[] NO_STRINGS = new String[0];
+    
 	private TestScope makeTestScope() {
-		TestScope scope = new TestScope(CollectionUtil.NO_STRINGS, CollectionUtil.NO_STRINGS, world);
+		TestScope scope = new TestScope(NO_STRINGS, NO_STRINGS, world);
 		return scope;
 	}
 	    
