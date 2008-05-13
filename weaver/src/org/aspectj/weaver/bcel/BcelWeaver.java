@@ -77,7 +77,6 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
-import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.AndPointcut;
@@ -114,7 +113,6 @@ public class BcelWeaver implements IWeaver {
     public BcelWeaver(BcelWorld world) {
         super();
         if (trace.isTraceEnabled()) trace.enter("<init>",this,world);
-        WeaverMetrics.reset();
         this.world = world;
         this.xcutSet = world.getCrosscuttingMembersSet();
         if (trace.isTraceEnabled()) trace.exit("<init>");
@@ -1386,6 +1384,11 @@ public class BcelWeaver implements IWeaver {
 		//clazz is null if the classfile was unchanged by weaving...
 		if (clazz != null) {
 			UnwovenClassFile[] newClasses = getClassFilesFor(clazz);
+			// OPTIMIZE can we avoid using the string name at all in UnwovenClassFile instances?
+			// Copy the char[] across as it means the WeaverAdapter.removeFromMap() can be fast!
+			if (newClasses[0].getClassName().equals(classFile.getClassName())) {
+				newClasses[0].setClassNameAsChars(classFile.getClassNameAsChars());
+			}
 			for (int i = 0; i < newClasses.length; i++) {
 				requestor.acceptResult(newClasses[i]);
 			}
@@ -1759,7 +1762,6 @@ public class BcelWeaver implements IWeaver {
 		while (iter.hasNext()) {
 			ShadowMunger munger = (ShadowMunger)iter.next();
 			FuzzyBoolean fb = munger.getPointcut().fastMatch(info);
-			WeaverMetrics.recordFastMatchTypeResult(fb); // Could pass: munger.getPointcut().toString(),info
 			if (fb.maybeTrue()) {
 				result.add(munger);
 			}

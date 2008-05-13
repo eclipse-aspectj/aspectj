@@ -27,6 +27,7 @@ import org.aspectj.util.FileUtil;
 
 public class UnwovenClassFile {
 	protected String filename;
+	protected char[] charfilename;
 	protected byte[] bytes;
 //	protected JavaClass javaClass = null;
 	//protected byte[] writtenBytes = null;
@@ -149,9 +150,15 @@ public class UnwovenClassFile {
 		return true;
 	}
 
+	public char[] getClassNameAsChars() {
+		if (charfilename==null) {
+			charfilename = getClassName().replace('.', '/').toCharArray();
+		}
+		return charfilename;
+	}
 	
 	public String getClassName() {
-		if (className == null) className = getJavaClass().getClassName();
+		if (className == null) className = getJavaClass().getClassName(); // OPTIMIZE quicker way to determine name??? surely?
 		return className;
 	}
 	
@@ -184,6 +191,7 @@ public class UnwovenClassFile {
 	}
 
 	// record
+	// OPTIMIZE why is the 'short name' used here (the bit after the dollar) - seems we mess about a lot trimming it off only to put it back on!
 	public static class ChildClass {
 		public final String name;
 		public final byte[] bytes;
@@ -205,6 +213,10 @@ public class UnwovenClassFile {
 		public String toString() {
 			return "(ChildClass " + name + ")";
 		}
+	}
+
+	public void setClassNameAsChars(char[] classNameAsChars) {
+		this.charfilename = classNameAsChars;
 	}
 }
 

@@ -95,7 +95,6 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
-import org.aspectj.weaver.WeaverMetrics;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
@@ -2814,15 +2813,12 @@ class BcelClassWeaver implements IClassWeaver {
 	            ShadowMunger munger = (ShadowMunger)i.next();
 	            ContextToken mungerMatchToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.MATCHING_POINTCUT, munger.getPointcut());
 	            if (munger.match(shadow, world)) {
-					WeaverMetrics.recordMatchResult(true);// Could pass: munger
 	                shadow.addMunger(munger);
 	                isMatched = true;
 				    if (shadow.getKind() == Shadow.StaticInitialization) {
 					  clazz.warnOnAddedStaticInitializer(shadow,munger.getSourceLocation());
 				    }
-	            } else {
-	            	WeaverMetrics.recordMatchResult(false); // Could pass: munger
-	        	}
+	            }
 	            CompilationAndWeavingContext.leavingPhase(mungerMatchToken);
 	        }       
 	
