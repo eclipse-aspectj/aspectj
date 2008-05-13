@@ -223,17 +223,30 @@ public class TypeFactory {
 		while(!remainingToProcess.equals("")) {
 			int endOfSig = 0;
 			int anglies = 0;
-			boolean sigFound = false;
+			boolean sigFound = false; // OPTIMIZE can this be done better?
 			for (endOfSig = 0; (endOfSig < remainingToProcess.length()) && !sigFound; endOfSig++) {
 				char thisChar = remainingToProcess.charAt(endOfSig);
 				switch(thisChar) {
-				case '<' : anglies++; break;
-				case '>' : anglies--; break;
-				case ';' : 
-					if (anglies == 0) {
-						sigFound = true;
+					case '<' : anglies++; break;
+					case '>' : anglies--; break;
+					case '[' : 
+						if (anglies == 0) {
+							// the next char might be a [ or a primitive type ref (BCDFIJSZ)
+							int nextChar = endOfSig+1;
+							while (remainingToProcess.charAt(nextChar)=='[') { nextChar++; }
+							if ("BCDFIJSZ".indexOf(remainingToProcess.charAt(nextChar))!=-1) {
+								// it is something like [I or [[S
+								sigFound = true;
+								endOfSig = nextChar;
+								break;
+							}
+						}
 						break;
-					}
+					case ';' : 
+						if (anglies == 0) {
+							sigFound = true;
+							break;
+						}
 				}
 			}
 			types.add(createTypeFromSignature(remainingToProcess.substring(0,endOfSig)));
