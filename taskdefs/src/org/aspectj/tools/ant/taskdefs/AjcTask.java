@@ -544,6 +544,10 @@ public class AjcTask extends MatchingTask {
     public void setXJoinpoints(String optionalJoinpoints) {
       	cmd.addFlag("-Xjoinpoints:"+optionalJoinpoints,true);
     }
+
+    public void setCheckRuntimeVersion(boolean b) {
+      	cmd.addFlag("-checkRuntimeVersion:"+b,true);
+    }
     
     public void setXNoWeave(boolean b) {
     	if (logger!=null) logger.warning("the noweave option is no longer required and is being ignored");
