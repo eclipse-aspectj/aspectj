@@ -40,7 +40,7 @@ public class InterimCompilationResult {
 		for (int i=0; i < ucfList.size(); i++) {
 			UnwovenClassFile element = (UnwovenClassFile) ucfList.get(i);
 			unwovenClassFiles[i] = element;
-			AjClassFile ajcf = new AjClassFile(element.getClassName().replace('.', '/').toCharArray(),
+			AjClassFile ajcf = new AjClassFile(element.getClassNameAsChars(),
 											   element.getBytes());
 			result.record(ajcf.fileName(),ajcf); 
 		}	  	
