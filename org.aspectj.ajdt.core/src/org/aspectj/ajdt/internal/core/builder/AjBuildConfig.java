@@ -355,6 +355,11 @@ public class AjBuildConfig {
         if (!incrementalMode && global.incrementalMode) {
             incrementalMode = true;
         }
+        
+        if (isCheckRuntimeVersion() && !global.isCheckRuntimeVersion()) {
+        	setCheckRuntimeVersion(false);
+        }
+        
         join(inJars, global.inJars);
         join(inPath, global.inPath);
         if ((null == lintMode) 
@@ -562,6 +567,14 @@ public class AjBuildConfig {
 
 	public void setGenerateCrossRefsMode(boolean on) {
 		options.generateCrossRefs = on;
+	}
+
+	public boolean isCheckRuntimeVersion() {
+		return options.checkRuntimeVersion;
+	}
+	
+	public void setCheckRuntimeVersion(boolean on) {
+		options.checkRuntimeVersion = on;
 	}
 	
 	public boolean isEmacsSymMode() {

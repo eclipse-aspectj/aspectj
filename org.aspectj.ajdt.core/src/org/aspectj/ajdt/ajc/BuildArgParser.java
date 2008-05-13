@@ -545,6 +545,15 @@ public class BuildArgParser extends Main {
 			} else if (arg.equals("-crossrefs")) {
 				buildConfig.setGenerateCrossRefsMode(true);
 				buildConfig.setGenerateModelMode(true);
+			} else if (arg.startsWith("-checkRuntimeVersion:")) {
+				String lcArg = arg.toLowerCase();
+				if (lcArg.endsWith(":false")) {
+					buildConfig.setCheckRuntimeVersion(false);
+				} else if (lcArg.endsWith(":true")) {
+					buildConfig.setCheckRuntimeVersion(true);
+				} else {
+					showError("bad value for -checkRuntimeVersion option, must be true or false");
+				}
 			} else if (arg.equals("-emacssym")) {
 				buildConfig.setEmacsSymMode(true);
 				buildConfig.setGenerateModelMode(true);

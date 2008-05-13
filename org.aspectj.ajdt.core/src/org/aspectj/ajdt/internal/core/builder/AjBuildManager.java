@@ -218,18 +218,20 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
             this.handler = 
                 CountingMessageHandler.makeCountingMessageHandler(baseHandler);
 
-            if (DO_RUNTIME_VERSION_CHECK) {
-                String check = checkRtJar(buildConfig);
-                if (check != null) {
-                    if (FAIL_IF_RUNTIME_NOT_FOUND) {
-                        MessageUtil.error(handler, check);
-                        CompilationAndWeavingContext.leavingPhase(ct);
-                        return false;
-                    } else {
-                        MessageUtil.warn(handler, check);
-                    }
-                }
-            }
+    		if (buildConfig==null || buildConfig.isCheckRuntimeVersion()) {
+	            if (DO_RUNTIME_VERSION_CHECK) {
+	                String check = checkRtJar(buildConfig);
+	                if (check != null) {
+	                    if (FAIL_IF_RUNTIME_NOT_FOUND) {
+	                        MessageUtil.error(handler, check);
+	                        CompilationAndWeavingContext.leavingPhase(ct);
+	                        return false;
+	                    } else {
+	                        MessageUtil.warn(handler, check);
+	                    }
+	                }
+	            }
+    		}
 
             // if (batch) {
                 setBuildConfig(buildConfig);
@@ -1189,7 +1191,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			return null;
 		}
 		
+		
 		if (buildConfig == null || buildConfig.getFullClasspath() == null) return "no classpath specified";
+		
 		
 		String ret = null;
 		for (Iterator it = buildConfig.getFullClasspath().iterator(); it.hasNext(); ) {
