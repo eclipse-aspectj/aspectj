@@ -279,11 +279,11 @@ public class AjcTask extends MatchingTask {
         = AjcTask.class.getName() + ".COMMAND_EDITOR";
 
     static final String[] TARGET_INPUTS = new String [] 
-    { "1.1", "1.2", "1.3", "1.4", "1.5" };
+    { "1.1", "1.2", "1.3", "1.4", "1.5", "1.6" };
     static final String[] SOURCE_INPUTS = new String [] 
-    { "1.3", "1.4", "1.5" };
+    { "1.3", "1.4", "1.5", "1.6" };
     static final String[] COMPLIANCE_INPUTS = new String [] 
-    { "-1.3", "-1.4", "-1.5" };
+    { "-1.3", "-1.4", "-1.5", "-1.6" };
 
     private static final ICommandEditor COMMAND_EDITOR;
             
@@ -543,6 +543,10 @@ public class AjcTask extends MatchingTask {
 
     public void setXJoinpoints(String optionalJoinpoints) {
       	cmd.addFlag("-Xjoinpoints:"+optionalJoinpoints,true);
+    }
+
+    public void setCheckRuntimeVersion(boolean b) {
+      	cmd.addFlag("-checkRuntimeVersion:"+b,true);
     }
     
     public void setXNoWeave(boolean b) {
