@@ -14,6 +14,7 @@
 package org.aspectj.ajdt.ajc;
 
 //import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
+import org.aspectj.ajdt.StreamPrintWriter;
 import org.aspectj.bridge.*;
 import org.aspectj.util.*;
 import org.aspectj.org.eclipse.jdt.core.compiler.InvalidInputException;
