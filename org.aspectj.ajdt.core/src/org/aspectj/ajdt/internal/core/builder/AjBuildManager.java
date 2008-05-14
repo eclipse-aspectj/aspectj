@@ -73,7 +73,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerRequestor;
 import org.aspectj.org.eclipse.jdt.internal.compiler.IProblemFactory;
-import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathDirectory;
+import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathLocation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
@@ -84,6 +84,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 import org.aspectj.tools.ajc.Main;
 import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.CustomMungerFactory;
 import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.World;
@@ -156,6 +157,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	public BcelWorld getBcelWorld() { return state.getBcelWorld();}
 	
 	public CountingMessageHandler handler;
+	private CustomMungerFactory customMungerFactory;
 
 	public AjBuildManager(IMessageHandler holder) {
 		super();
@@ -216,18 +218,20 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
             this.handler = 
                 CountingMessageHandler.makeCountingMessageHandler(baseHandler);
 
-            if (DO_RUNTIME_VERSION_CHECK) {
-                String check = checkRtJar(buildConfig);
-                if (check != null) {
-                    if (FAIL_IF_RUNTIME_NOT_FOUND) {
-                        MessageUtil.error(handler, check);
-                        CompilationAndWeavingContext.leavingPhase(ct);
-                        return false;
-                    } else {
-                        MessageUtil.warn(handler, check);
-                    }
-                }
-            }
+    		if (buildConfig==null || buildConfig.isCheckRuntimeVersion()) {
+	            if (DO_RUNTIME_VERSION_CHECK) {
+	                String check = checkRtJar(buildConfig);
+	                if (check != null) {
+	                    if (FAIL_IF_RUNTIME_NOT_FOUND) {
+	                        MessageUtil.error(handler, check);
+	                        CompilationAndWeavingContext.leavingPhase(ct);
+	                        return false;
+	                    } else {
+	                        MessageUtil.warn(handler, check);
+	                    }
+	                }
+	            }
+    		}
 
             // if (batch) {
                 setBuildConfig(buildConfig);
@@ -278,7 +282,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 //                }
                 // System.err.println("XXXX start inc ");
                 binarySourcesForTheNextCompile = state.getBinaryFilesToCompile(true);
-                List files = state.getFilesToCompile(true);
+                Set files = state.getFilesToCompile(true);
 				if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode())
 				if (AsmManager.attemptIncrementalModelRepairs)
 				    AsmManager.getDefault().processDelta(files,state.getAddedFiles(),state.getDeletedFiles());
@@ -459,7 +463,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 				String filename = entry.getName();
 //				System.out.println("? copyResourcesFromJarFile() filename='" + filename +"'");
 	
-				if (!entry.isDirectory() && acceptResource(filename)) {
+				if (!entry.isDirectory() && acceptResource(filename,false)) {
 					byte[] bytes = FileUtil.readAsByteArray(inStream);
 					writeResource(filename,bytes,jarFile);
 				}
@@ -492,7 +496,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	}
 	
 	private void copyResourcesFromFile(File f,String filename,File src) throws IOException {
-		if (!acceptResource(filename)) return;
+		if (!acceptResource(filename,true)) return;
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(f);
@@ -570,7 +574,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		}
 	}
 
-	private boolean acceptResource(String resourceName) {
+	private boolean acceptResource(String resourceName,boolean fromFile) {
 		if (  
 				(resourceName.startsWith("CVS/")) ||
 				(resourceName.indexOf("/CVS/") != -1) ||
@@ -579,7 +583,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 				(resourceName.startsWith(".svn/")) || 
 				(resourceName.indexOf("/.svn/")!=-1) ||
 				(resourceName.endsWith("/.svn")) ||
-				(resourceName.toUpperCase().equals(MANIFEST_NAME))
+				// Do not copy manifests if either they are coming from a jar or we are writing to a jar
+				(resourceName.toUpperCase().equals(MANIFEST_NAME) && (!fromFile || zos!=null))
 		    )
 		{
 			return false;
@@ -749,6 +754,16 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 //    	}
 //    }
     
+    //LTODO delegate to BcelWeaver?
+     // XXX hideous, should not be Object
+    public void setCustomMungerFactory(Object o) {
+		customMungerFactory = (CustomMungerFactory)o;
+    }
+    
+	public Object getCustomMungerFactory() {
+		return customMungerFactory;
+	}
+
     /** init only on initial batch compile? no file-specific options */
 	private void initBcelWorld(IMessageHandler handler) throws IOException {
 		List cp = 
@@ -767,6 +782,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		bcelWorld.setPinpointMode(buildConfig.isXdevPinpoint());
 		bcelWorld.setErrorAndWarningThreshold(buildConfig.getOptions().errorThreshold,buildConfig.getOptions().warningThreshold);
 		BcelWeaver bcelWeaver = new BcelWeaver(bcelWorld);
+		bcelWeaver.setCustomMungerFactory(customMungerFactory);
 		state.setWorld(bcelWorld);
 		state.setWeaver(bcelWeaver);
 		state.clearBinarySourceFiles();
@@ -886,9 +902,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		// element of the classpath is likely to be a directory.  If we ensure every element of the array is set to
 		// only look for BINARY, then we make sure that for any classpath element that is a directory, we won't build
 		// a classpathDirectory object that will attempt to look for source when it can't find binary.
-		int[] classpathModes = new int[classpaths.length];
-		for (int i =0 ;i<classpaths.length;i++) classpathModes[i]=ClasspathDirectory.BINARY;
-		return new FileSystem(classpaths, filenames, defaultEncoding,classpathModes);
+//		int[] classpathModes = new int[classpaths.length];
+//		for (int i =0 ;i<classpaths.length;i++) classpathModes[i]=ClasspathDirectory.BINARY;
+		return new FileSystem(classpaths, filenames, defaultEncoding,ClasspathLocation.BINARY);
 	}
 	
 	public IProblemFactory getProblemFactory() {
@@ -930,7 +946,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 	}
     
     
-	public void performCompilation(List files) {
+	public void performCompilation(Collection files) {
 		if (progressListener != null) {
 			compiledCount=0;
 			sourceFileCount = files.size();
@@ -940,9 +956,11 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		String[] filenames = new String[files.size()];
 		String[] encodings = new String[files.size()];
 		//System.err.println("filename: " + this.filenames);
-		for (int i=0; i < files.size(); i++) {
-			filenames[i] = ((File)files.get(i)).getPath();
-		}
+		int ii = 0;
+        for (Iterator fIterator = files.iterator(); fIterator.hasNext();) {
+            File f = (File) fIterator.next();
+            filenames[ii++] = f.getPath();
+        }
 		
 		List cps = buildConfig.getFullClasspath();
 		Dump.saveFullClasspath(cps);
@@ -1173,7 +1191,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			return null;
 		}
 		
+		
 		if (buildConfig == null || buildConfig.getFullClasspath() == null) return "no classpath specified";
+		
 		
 		String ret = null;
 		for (Iterator it = buildConfig.getFullClasspath().iterator(); it.hasNext(); ) {

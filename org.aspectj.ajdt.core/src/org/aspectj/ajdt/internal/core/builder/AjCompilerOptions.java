@@ -94,6 +94,9 @@ public class AjCompilerOptions extends CompilerOptions {
 	 */
 	public boolean generateCrossRefs = false;
 	
+	// Check aspectjrt*.jar exists and within it the version number is right (see AjBuildManager.checkRtJar())
+	public boolean checkRuntimeVersion = true;
+	
 	public boolean proceedOnError = false;
 
 	
