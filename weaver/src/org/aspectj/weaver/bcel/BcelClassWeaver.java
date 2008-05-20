@@ -398,7 +398,9 @@ class BcelClassWeaver implements IClassWeaver {
 				whatToBridgeToMethodGen.getSignature());
 		}
 		LazyMethodGen bridgeMethod = makeBridgeMethod(clazz,theBridgeMethod); // The bridge method in this type will have the same signature as the one in the supertype
-		bridgeMethod.setAccessFlags(bridgeMethod.getAccessFlags() | 0x00000040 /*BRIDGE    = 0x00000040*/ );
+		int newflags = bridgeMethod.getAccessFlags() | 0x00000040;/*BRIDGE    = 0x00000040*/
+		if ((newflags & 0x00000100) !=0) newflags = newflags - 0x100;/* NATIVE = 0x00000100 - need to clear it */
+		bridgeMethod.setAccessFlags(newflags );
 		Type returnType   = BcelWorld.makeBcelType(theBridgeMethod.getReturnType());
 		Type[] paramTypes = BcelWorld.makeBcelTypes(theBridgeMethod.getParameterTypes());
 		Type[] newParamTypes=whatToBridgeToMethodGen.getArgumentTypes();
