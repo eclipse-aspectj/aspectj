@@ -3,6 +3,23 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+    <ajc-test dir="bugs161/pr227401" title="getfield problem with generics">
+        <compile files="Instrumentation.java Fails.java" options="-1.5"/>
+        <run class="Fails">
+          <stdout>
+            <line text="getField(* protS)  getField()='protected java.lang.String Fails$A.protS'  getDeclaringType()='class Fails$A'"/>
+            <line text="getField(* prot)  getField()='protected int Fails$A.prot'  getDeclaringType()='class Fails$A'"/>
+            <line text="22"/>
+            <line text="getField(* defS)  getField()='java.lang.String Fails$A.defS'  getDeclaringType()='class Fails$A'"/>
+            <line text="getField(* def)  getField()='int Fails$A.def'  getDeclaringType()='class Fails$A'"/>
+            <line text="11"/>
+            <line text="getField(* defS)  getField()='java.lang.String Fails$A.defS'  getDeclaringType()='class Fails$A'"/>
+            <line text="getField(* def)  getField()='int Fails$A.def'  getDeclaringType()='class Fails$A'"/>
+            <line text="22"/>
+          </stdout>
+        </run>
+    </ajc-test> 
+    
     <ajc-test dir="bugs161/pr231478" title="generic abstract aspects">
         <compile files="Base.java Sub.java AbstractComponent.java AbstractWindow.java" options="-1.5"/>
     </ajc-test>
