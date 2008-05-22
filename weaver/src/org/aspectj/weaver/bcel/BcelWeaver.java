@@ -277,19 +277,26 @@ public class BcelWeaver implements IWeaver {
 		for (int i = 0; i < classFiles.length; i++) {
 			FileInputStream fis = new FileInputStream(classFiles[i]);
 			byte[] bytes = FileUtil.readAsByteArray(fis);
-			addIfAspect(bytes,classFiles[i].getAbsolutePath(),addedAspects);
+			addIfAspect(bytes,classFiles[i].getAbsolutePath(),addedAspects,dir);
 			fis.close();
 		}
 		return addedAspects;
 	}
 	
-	private void addIfAspect(byte[] bytes, String name, List toList) throws IOException {
+	private void addIfAspect(byte[] bytes, String name, List toList, File dir) throws IOException {
 		ClassParser parser = new ClassParser(new ByteArrayInputStream(bytes),name);
 		JavaClass jc = parser.parse();
 		ResolvedType type = world.addSourceObjectType(jc).getResolvedTypeX();
 		String typeName = type.getName().replace('.', File.separatorChar);
 		int end = name.indexOf(typeName);
-		String binaryPath = name.substring(0,end-1);
+		String binaryPath = null;
+		// if end is -1 then something wierd happened, the class file is not in the correct place, something like
+		// bin/A.class when the declaration for A specifies it is in a package.
+		if (end==-1) {
+			binaryPath = dir.getAbsolutePath();
+		} else {
+			binaryPath = name.substring(0,end-1);
+		}
 		type.setBinaryPath(binaryPath);
 		if (type.isAspect()) {
 			toList.add(type);
