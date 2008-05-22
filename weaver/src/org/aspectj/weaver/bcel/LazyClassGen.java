@@ -69,6 +69,7 @@ import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
+import org.aspectj.weaver.UnresolvedType.TypeKind;
 
 
 /**
@@ -1113,7 +1114,13 @@ public final class LazyClassGen {
     		BcelWorld w = shadow.getWorld();
     		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getModifiers(w))));
     		list.append(new PUSH(getConstantPoolGen(),sig.getName()));
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
+    		// see pr227401
+    		UnresolvedType dType = sig.getDeclaringType();
+    		if (dType.getTypekind()==TypeKind.PARAMETERIZED || 
+    			dType.getTypekind()==TypeKind.GENERIC) {
+        		dType = sig.getDeclaringType().resolve(world).getGenericType();
+    		}
+    		list.append(new PUSH(getConstantPoolGen(),makeString(dType)));    		
     		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getReturnType())));
     		list.append(fact.createInvoke(factoryType.getClassName(),
     				sig.getSignatureMakerName(),
