@@ -11,8 +11,13 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.Set;
 
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.weaver.Dump;
@@ -29,7 +34,14 @@ import org.aspectj.weaver.tools.WeavingAdaptor;
 public class Aj implements ClassPreProcessor {
 
 	private IWeavingContext weavingContext;
-	
+
+    /**
+     * References are added to this queue when their associated classloader is removed, and once on here that indicates
+     * that we should tidy up the adaptor map and remove the adaptor (weaver) from the map we are maintaining from
+     * adaptorkey > adaptor (weaver)
+     */
+    private static ReferenceQueue adaptorQueue = new ReferenceQueue();
+
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(Aj.class);
 	
 	public Aj(){
@@ -96,19 +108,127 @@ public class Aj implements ClassPreProcessor {
     }
 
     /**
+     * An AdaptorKey is a WeakReference wrapping a classloader reference that will enqueue to a specified queue when the
+     * classloader is GC'd. Since the AdaptorKey is used as a key into a hashmap we need to give it a non-varying
+     * hashcode/equals implementation, and we need that hashcode not to vary even when the internal referent has been
+     * GC'd. The hashcode is calculated on creation of the AdaptorKey based on the loader instance that it is wrapping.
+     * This means even when the referent is gone we can still use the AdaptorKey and it will 'point' to the same place
+     * as it always did.
+     */
+    private static class AdaptorKey extends WeakReference {
+
+        private int hashcode = -1;
+
+        public AdaptorKey(ClassLoader loader) {
+            super(loader, adaptorQueue);
+            hashcode = loader.hashCode() * 37;
+        }
+
+        public ClassLoader getClassLoader() {
+            ClassLoader instance = (ClassLoader) get();
+            // Assert instance!=null - shouldn't be asked for after a GC of the referent has occurred !
+            return instance;
+        }
+
+        public boolean equals(Object obj) {
+            if (!(obj instanceof AdaptorKey)) return false;
+            AdaptorKey other = (AdaptorKey) obj;
+            return other.hashcode == hashcode;
+        }
+            
+        public int hashCode() {
+            return hashcode;
+        }
+
+    }
+
+    /**
+     * The reference queue is only processed when a request is made for a weaver adaptor. This means there can be one or
+     * two stale weavers left around. If the user knows they have finished all their weaving, they might wish to call
+     * removeStaleAdaptors which will process anything left on the reference queue containing adaptorKeys for garbage
+     * collected classloaders.
+     * 
+     * @param displayProgress produce System.err info on the tidying up process
+     * @return number of stale weavers removed
+     */
+    public static int removeStaleAdaptors(boolean displayProgress) {
+        int removed = 0;
+        synchronized (WeaverContainer.weavingAdaptors) {
+            if (displayProgress) {
+                System.err.println("Weaver adaptors before queue processing:");
+                Map m = WeaverContainer.weavingAdaptors;
+                Set keys = m.keySet();
+                for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+                    Object object = (Object) iterator.next();
+                    System.err.println(object + " = " + WeaverContainer.weavingAdaptors.get(object));
+                }
+            }
+            Object o = adaptorQueue.poll();
+            while (o != null) {
+                if (displayProgress) System.err.println("Processing referencequeue entry " + o);
+                AdaptorKey wo = (AdaptorKey) o;
+                boolean didit = WeaverContainer.weavingAdaptors.remove(wo) != null;
+                if (didit) {
+                    removed++;
+                } else {
+                    throw new RuntimeException("Eh?? key="+wo);
+                }
+                if (displayProgress) System.err.println("Removed? "+didit);
+                o = adaptorQueue.poll();
+            }
+            if (displayProgress) {
+                System.err.println("Weaver adaptors after queue processing:");
+                Map m = WeaverContainer.weavingAdaptors;
+                Set keys = m.keySet();
+                for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+                    Object object = (Object) iterator.next();
+                    System.err.println(object + " = " + WeaverContainer.weavingAdaptors.get(object));
+                }
+            }
+        }
+        return removed;
+    }
+    
+    /**
+     * @return the number of entries still in the weavingAdaptors map
+     */
+    public static int getActiveAdaptorCount() {
+        return WeaverContainer.weavingAdaptors.size();
+    }
+
+    /**
+     * Process the reference queue that contains stale AdaptorKeys - the keys are put on the queue when their
+     * classloader referent is garbage collected and so the associated adaptor (weaver) should be removed from the map
+     */
+    public static void checkQ() {
+        synchronized (adaptorQueue) {
+            Object o = adaptorQueue.poll();
+            while (o != null) {
+                AdaptorKey wo = (AdaptorKey) o;
+                boolean removed = WeaverContainer.weavingAdaptors.remove(wo) != null;
+                // DBG System.err.println("Evicting key " + wo + " = " + didit);
+                o = adaptorQueue.poll();
+            }
+        }
+    }
+
+    /**
      * Cache of weaver
      * There is one weaver per classloader
      */
     static class WeaverContainer {
 
-        private final static Map weavingAdaptors = new WeakHashMap();
+        final static Map weavingAdaptors = Collections.synchronizedMap(new HashMap());
 
         static WeavingAdaptor getWeaver(ClassLoader loader, IWeavingContext weavingContext) {
             ExplicitlyInitializedClassLoaderWeavingAdaptor adaptor = null;
-            synchronized(weavingAdaptors) {
-                adaptor = (ExplicitlyInitializedClassLoaderWeavingAdaptor) weavingAdaptors.get(loader);
+            AdaptorKey adaptorKey = new AdaptorKey(loader);
+
+            synchronized (weavingAdaptors) {
+                checkQ();
+                adaptor = (ExplicitlyInitializedClassLoaderWeavingAdaptor) weavingAdaptors.get(adaptorKey);
                 if (adaptor == null) {
-                	String loaderClassName = loader.getClass().getName(); 
+                    String loaderClassName = loader.getClass().getName(); 
                 	if (loaderClassName.equals("sun.reflect.DelegatingClassLoader")) {
                 		// we don't weave reflection generated types at all! 
                 		return null;
@@ -117,25 +237,13 @@ public class Aj implements ClassPreProcessor {
 	                    // within the synchronized block
 	                    ClassLoaderWeavingAdaptor weavingAdaptor = new ClassLoaderWeavingAdaptor();
 	                    adaptor = new ExplicitlyInitializedClassLoaderWeavingAdaptor(weavingAdaptor);
-	                    weavingAdaptors.put(loader, adaptor);
-                	}
+                        weavingAdaptors.put(adaptorKey, adaptor);
+                    }
                 }
             }
             // perform the initialization
             return adaptor.getWeavingAdaptor(loader, weavingContext);
 
-
-            // old version
-//            synchronized(loader) {//FIXME AV - temp fix for #99861
-//                synchronized (weavingAdaptors) {
-//                    WeavingAdaptor weavingAdaptor = (WeavingAdaptor) weavingAdaptors.get(loader);
-//                    if (weavingAdaptor == null) {
-//                        weavingAdaptor = new ClassLoaderWeavingAdaptor(loader, weavingContext);
-//                        weavingAdaptors.put(loader, weavingAdaptor);
-//                    }
-//                    return weavingAdaptor;
-//                }
-//            }
         }
     }
 
