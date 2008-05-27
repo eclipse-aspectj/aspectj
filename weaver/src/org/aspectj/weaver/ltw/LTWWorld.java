@@ -11,8 +11,6 @@
  * ******************************************************************/
 package org.aspectj.weaver.ltw;
 
-import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,26 +49,39 @@ import org.aspectj.weaver.reflect.ReflectionWorld;
 public class LTWWorld extends BcelWorld implements IReflectionWorld {
 	
 	private AnnotationFinder annotationFinder;
-    private ClassLoader loader; // weavingContext?
     private IWeavingContext weavingContext;
+    private String classLoaderString;
+
+    private String classLoaderParentString;
     
-    protected final static Class concurrentMapClass = makeConcurrentMapClass();
-    protected static Map/*<String, WeakReference<ReflectionBasedReferenceTypeDelegate>>*/ bootstrapTypes = makeConcurrentMap();
+    protected final static Class concurrentMapClass; 
+
+    private static final boolean ShareBootstrapTypes = false;
+    protected static Map/* <String, WeakReference<ReflectionBasedReferenceTypeDelegate>> */bootstrapTypes;
+
+    static {
+        if (ShareBootstrapTypes) {
+            concurrentMapClass = makeConcurrentMapClass();
+            bootstrapTypes = makeConcurrentMap();
+        } else {
+            concurrentMapClass = null;
+        }
+    }
     
     /**
      * Build a World from a ClassLoader, for LTW support
      */
     public LTWWorld(ClassLoader loader, IWeavingContext weavingContext, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
         super(loader, handler, xrefHandler);
-        this.loader = loader;
         this.weavingContext = weavingContext;
-        
+        classLoaderString = loader.toString();
+        classLoaderParentString = (loader.getParent() == null ? "<NullParent>" : loader.getParent().toString());
         setBehaveInJava5Way(LangUtil.is15VMOrGreater());
         annotationFinder = ReflectionWorld.makeAnnotationFinderIfAny(loader, this);
     }
     
 	public ClassLoader getClassLoader() {
-        return this.loader;
+        return weavingContext.getClassLoader();
     }
     
     //TEST
@@ -99,33 +110,36 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 
     protected ReferenceTypeDelegate resolveIfBootstrapDelegate(ReferenceType ty) {
         // first check for anything available in the bootstrap loader: these types are just defined from that without allowing nondelegation
-    	String name = ty.getName();
-        Reference bootRef = (Reference)bootstrapTypes.get(name);
-        if (bootRef != null) {        	
-        	ReferenceTypeDelegate rtd = (ReferenceTypeDelegate)bootRef.get();
-        	if (rtd != null) {
-        		return rtd;
-        	}
-        }
-
-        char fc = name.charAt(0);
-        if (fc=='j' || fc=='c' || fc=='o' || fc=='s') { // cheaper than imminent string startsWith tests
-	        if (name.startsWith("java") || name.startsWith("com.sun.") || name.startsWith("org.w3c") || 
-	        	name.startsWith("sun.") || name.startsWith("org.omg")) {
-		        ReferenceTypeDelegate bootstrapLoaderDelegate = resolveReflectionTypeDelegate(ty, null);
-		        if (bootstrapLoaderDelegate != null) {
-		            // it's always fine to load these bytes: there's no weaving into them
-		            // and since the class isn't initialized, all we are doing at this point is loading the bytes
-		            //processedRefTypes.put(ty, this); // has no effect - and probably too aggressive if we did store these in the type map            
-		        	// should we share these, like we do the BCEL delegates?
-		        	bootstrapTypes.put(ty.getName(), new WeakReference(bootstrapLoaderDelegate));
-		        }    	
-		        return bootstrapLoaderDelegate;
-	        }
-        }
+// if (!ShareBootstrapTypes) return null;
+// String name = ty.getName();
+        // Reference bootRef = (Reference) bootstrapTypes.get(name);
+        // if (bootRef != null) {
+        // ReferenceTypeDelegate rtd = (ReferenceTypeDelegate) bootRef.get();
+        // if (rtd != null) {
+        // return rtd;
+        // }
+        // }
+        //
+        // char fc = name.charAt(0);
+        // if (fc == 'j' || fc == 'c' || fc == 'o' || fc == 's') { // cheaper than imminent string startsWith tests
+        // if (name.startsWith("java") || name.startsWith("com.sun.") || name.startsWith("org.w3c") ||
+        // name.startsWith("sun.") || name.startsWith("org.omg")) {
+        // ReferenceTypeDelegate bootstrapLoaderDelegate = resolveReflectionTypeDelegate(ty, null);
+        // if (bootstrapLoaderDelegate != null) {
+        // // it's always fine to load these bytes: there's no weaving into them
+        // // and since the class isn't initialized, all we are doing at this point is loading the bytes
+        // // processedRefTypes.put(ty, this); // has no effect - and probably too aggressive if we did store
+        // // these in the type map
+        //
+        // // should we share these, like we do the BCEL delegates?
+        // bootstrapTypes.put(ty.getName(), new WeakReference(bootstrapLoaderDelegate));
+        // }
+        // return bootstrapLoaderDelegate;
+        // }
+        // }
         return null;
     }
-    
+
     /**
      * Helper method to resolve the delegate from the reflection delegate factory.
      */
@@ -241,7 +255,7 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 		if (ret.isParameterizedType() || ret.isGenericType()) {
 			toResolve = toResolve.getGenericType();
 		}
-		ReferenceTypeDelegate rtd = resolveReflectionTypeDelegate((ReferenceType)toResolve,loader);
+		ReferenceTypeDelegate rtd = resolveReflectionTypeDelegate((ReferenceType)toResolve,getClassLoader());
 		((ReferenceType)ret).setDelegate(rtd);
 		return ret;
 	}
@@ -253,9 +267,9 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 
 	public void accept(IVisitor visitor) {
 		visitor.visitObject("Class loader:");
-		visitor.visitObject(loader);
+		visitor.visitObject(classLoaderString);
 		visitor.visitObject("Class loader parent:");
-		visitor.visitObject(loader.getParent());
+		visitor.visitObject(classLoaderParentString);
 		super.accept(visitor);
 	}
 
