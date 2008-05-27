@@ -30,7 +30,6 @@
         <compile files="MultiInheritCF.java">
 <!-- the error is:       error at java\lang\Object.java::0 can't override int I2.toString() with java.lang.String java.lang.Object.toString() return types don't match-->
 			<message kind="error" line="0"/>
-			<message kind="error" line="10" text="The method fromIRoot1() is ambiguous for the type C"/>
 			<message kind="error" line="17"/>
 			<message kind="error" line="18"/>
             <message kind="error" line="21"/>
