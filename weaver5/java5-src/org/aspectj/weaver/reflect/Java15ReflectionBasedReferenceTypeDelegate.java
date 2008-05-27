@@ -66,7 +66,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 		myType = AjTypeSystem.getAjType(aClass);
 		annotationFinder = new Java15AnnotationFinder();
 		argNameFinder = annotationFinder;
-		annotationFinder.setClassLoader(this.classLoader);
+		annotationFinder.setClassLoader(this.classLoaderReference.getClassLoader());
 		annotationFinder.setWorld(aWorld);
 		this.typeConverter = new JavaLangTypeToResolvedTypeConverter(aWorld);
 	}
@@ -253,9 +253,9 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends
 			InternalUseOnlyPointcutParser parser = null;
 			World world = getWorld();
 			if (world instanceof ReflectionWorld) {
-				parser = new InternalUseOnlyPointcutParser(classLoader,(ReflectionWorld)getWorld());
+				parser = new InternalUseOnlyPointcutParser(classLoaderReference.getClassLoader(), (ReflectionWorld) getWorld());
 			} else {
-				parser = new InternalUseOnlyPointcutParser(classLoader);
+				parser = new InternalUseOnlyPointcutParser(classLoaderReference.getClassLoader());
 			}
 			Set additionalPointcutHandlers = world.getRegisteredPointcutHandlers();
             for (Iterator handlerIterator = additionalPointcutHandlers.iterator(); handlerIterator.hasNext();) {
