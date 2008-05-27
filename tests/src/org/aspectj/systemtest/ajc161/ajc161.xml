@@ -3,6 +3,25 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+    <ajc-test dir="bugs161/pr233838" title="itd precedence - 1">
+        <compile files="Z.java" options="-1.5"/>
+        <run class="Z">
+          <stdout>
+            <line text="X.test()"/>
+          </stdout>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="bugs161/pr233838" title="itd precedence - 2">
+        <compile files="Z2.java" options="-1.5"/>
+        <run class="Z2">
+          <stdout>
+            <line text="Y.test()"/>
+          </stdout>
+        </run>
+    </ajc-test>
+    
+
     <ajc-test dir="bugs161/pr227401" title="getfield problem with generics">
         <compile files="Instrumentation.java Fails.java" options="-1.5"/>
         <run class="Fails">
