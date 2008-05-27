@@ -566,6 +566,11 @@ public class AjcTestCase extends TestCase {
 	 * the sandbox.
 	 */
 	public RunResult run(String className, String[] args, final String classpath, boolean useLTW)  {
+	    if (args != null) {
+            for (int i = 0; i < args.length; i++) {
+                args[i] = substituteSandbox(args[i]);
+            }
+        }
 		lastRunResult = null;
 		StringBuffer cp = new StringBuffer();
 		if (classpath != null) {
