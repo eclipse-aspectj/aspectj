@@ -16,6 +16,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.aspectj.weaver.WeakClassLoaderReference;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 import org.aspectj.weaver.tools.WeavingAdaptor;
@@ -27,26 +28,26 @@ import org.aspectj.weaver.tools.WeavingAdaptor;
  */
 public class DefaultWeavingContext implements IWeavingContext {
 
-	protected ClassLoader loader;
+	protected WeakClassLoaderReference loaderRef;
 	private String shortName;
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(DefaultWeavingContext.class);
 
 	/**
-	 * Construct a new WeavingContext to use the specifed ClassLoader
+	 * Construct a new WeavingContext to use the specified ClassLoader
 	 * This is the constructor which should be used.
 	 * @param loader
 	 */
 	public DefaultWeavingContext(ClassLoader loader) {
 		super();
-		this.loader = loader;
+		this.loaderRef = new WeakClassLoaderReference(loader);
 	}
 
 	/**
 	 * Same as ClassLoader.getResources()
 	 */
 	public Enumeration getResources(String name) throws IOException {
-		return loader.getResources(name);
+		return getClassLoader().getResources(name);
 	}
 
 	/**
@@ -60,7 +61,13 @@ public class DefaultWeavingContext implements IWeavingContext {
 	 * @return classname@hashcode
 	 */
 	public String getClassLoaderName() {
+		ClassLoader loader = getClassLoader();
     	return ((loader!=null)?loader.getClass().getName()+"@"+Integer.toHexString(System.identityHashCode(loader)):"null");
+	}
+	
+
+	public ClassLoader getClassLoader() { 
+		return loaderRef.getClassLoader();
 	}
 
 	/**
@@ -88,11 +95,12 @@ public class DefaultWeavingContext implements IWeavingContext {
 
 	public boolean isLocallyDefined(String classname) {
         String asResource = classname.replace('.', '/').concat(".class");
-
+        ClassLoader loader = getClassLoader();
         URL localURL = loader.getResource(asResource);
         if (localURL == null) return false;
 
 		boolean isLocallyDefined = true;
+		
         ClassLoader parent = loader.getParent();
         if (parent != null) {
             URL parentURL = parent.getResource(asResource);
@@ -108,7 +116,7 @@ public class DefaultWeavingContext implements IWeavingContext {
 	 * @param loader
 	 */
 	public List getDefinitions(final ClassLoader loader, final WeavingAdaptor adaptor) {
-	        if (trace.isTraceEnabled()) trace.enter("getDefinitions",this,new Object[] { loader, adaptor });
+	        if (trace.isTraceEnabled()) trace.enter("getDefinitions", this, new Object[] { "goo", adaptor });
 	
 	        List definitions = ((ClassLoaderWeavingAdaptor)adaptor).parseDefinitions(loader);
 	        
