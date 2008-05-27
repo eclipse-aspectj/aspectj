@@ -136,12 +136,17 @@ public class CompilationAndWeavingContext {
 	private CompilationAndWeavingContext() {
 	}
 	
-	// for testing...
 	public static void reset() {
-		contextMap = new HashMap();
-		contextStack = new Stack();
-		formatterMap = new HashMap();
-		nextTokenId = 1;
+        if (!multiThreaded) {
+            contextMap = new HashMap();
+            contextStack = new Stack();
+            formatterMap = new HashMap();
+            nextTokenId = 1;
+        } else {
+            contextMap.remove(Thread.currentThread());
+            // TODO what about formatterMap?
+            // TODO what about nextTokenId?
+        }
 	}
 	
 	public static void setMultiThreaded(boolean mt) { multiThreaded = mt; }
@@ -204,13 +209,12 @@ public class CompilationAndWeavingContext {
 			return contextStack;
 		}
 		else {
-			if (contextMap.containsKey(Thread.currentThread())) {
-				return (Stack) contextMap.get(Thread.currentThread());
-			} else {
-				Stack contextStack = new Stack();
+		    Stack contextStack = (Stack) contextMap.get(Thread.currentThread());
+            if (contextStack == null) {
+				contextStack = new Stack();
 				contextMap.put(Thread.currentThread(),contextStack);
-				return contextStack;
 			}
+            return contextStack;
 		}
 	}
 	
