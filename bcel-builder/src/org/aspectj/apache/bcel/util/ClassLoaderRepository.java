@@ -80,13 +80,13 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  *
  * @see org.aspectj.apache.bcel.Repository
  *
- * @version $Id: ClassLoaderRepository.java,v 1.9 2006/10/12 19:58:18 aclement Exp $
+ * @version $Id: ClassLoaderRepository.java,v 1.10 2008/05/27 18:46:34 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  */
 public class ClassLoaderRepository implements Repository {
   private static java.lang.ClassLoader bootClassLoader = null;
-  private java.lang.ClassLoader loader;
+  private ClassLoaderReference loaderRef;
   
   // Choice of cache...
   private         WeakHashMap /*<URL,SoftRef(JavaClass)>*/localCache = new WeakHashMap(); 
@@ -107,9 +107,13 @@ public class ClassLoaderRepository implements Repository {
   private int  cacheHitsLocal     = 0;
   private int  missLocalEvicted   = 0; // Misses in local cache access due to reference GC
 
-  public ClassLoaderRepository( java.lang.ClassLoader loader ) {
-      this.loader = (loader != null) ? loader : getBootClassLoader();
-  }
+    public ClassLoaderRepository(java.lang.ClassLoader loader) {
+        this.loaderRef = new DefaultClassLoaderReference((loader != null) ? loader : getBootClassLoader());
+    }
+
+    public ClassLoaderRepository(ClassLoaderReference loaderRef) {
+        this.loaderRef = loaderRef;
+    }
   
   private static synchronized java.lang.ClassLoader getBootClassLoader() {
 	  if (bootClassLoader == null) {
@@ -246,7 +250,7 @@ public class ClassLoaderRepository implements Repository {
 	  URL url = (URL)nameMap.get(className);
 	  if (url==null) {
 		  String classFile = className.replace('.', '/');
-	      url = loader.getResource( classFile + ".class" );
+	      url = loaderRef.getClassLoader().getResource(classFile + ".class");
 	      nameMap.put(className, url);
 	  }
       return url;
@@ -280,7 +284,7 @@ public class ClassLoaderRepository implements Repository {
     try {    	
     	// Load it
 	    String classFile = className.replace('.', '/');
-		InputStream is = (useSharedCache?url.openStream():loader.getResourceAsStream( classFile + ".class" ));
+		InputStream is = (useSharedCache ? url.openStream() : loaderRef.getClassLoader().getResourceAsStream(classFile + ".class"));
 	    if (is == null) { 
 		  throw new ClassNotFoundException(className + " not found "+(url==null?"":"- using url "+url));
 	    }
@@ -298,10 +302,9 @@ public class ClassLoaderRepository implements Repository {
     }
   }
   
-
   /**
-   * Produce a report on cache usage.
-   */
+     * Produce a report on cache usage.
+     */
   public String report() {
 	  StringBuffer sb = new StringBuffer();
 	  sb.append("BCEL repository report.");
