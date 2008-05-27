@@ -145,6 +145,7 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 
 			/* Ensures consistent LTW messages for testing */
 			public String getClassLoaderName() {
+				ClassLoader loader = getClassLoader();
 				return loader.getClass().getName();
 			}
 			
