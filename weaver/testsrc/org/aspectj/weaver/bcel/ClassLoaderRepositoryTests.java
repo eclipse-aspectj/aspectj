@@ -44,7 +44,7 @@ public class ClassLoaderRepositoryTests extends TestCase {
 	}
 	
 	public void tearDown() {
-		 new ClassLoaderRepository(null).reset();
+		 new ClassLoaderRepository((ClassLoader) null).reset();
 	}
 	
 	private ClassLoaderRepository setupRepository() throws Exception {
