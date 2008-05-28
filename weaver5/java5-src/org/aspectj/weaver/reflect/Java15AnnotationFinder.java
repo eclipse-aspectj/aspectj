@@ -112,7 +112,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 		// memory.
 		try {
 			JavaClass jc = bcelRepository.loadClass(onMember.getDeclaringClass());
-			org.aspectj.apache.bcel.classfile.annotation.Annotation[] anns = new org.aspectj.apache.bcel.classfile.annotation.Annotation[0];
+			org.aspectj.apache.bcel.classfile.annotation.AnnotationGen[] anns = new org.aspectj.apache.bcel.classfile.annotation.AnnotationGen[0];
 			if (onMember instanceof Method) {
 				org.aspectj.apache.bcel.classfile.Method bcelMethod = jc.getMethod((Method)onMember);
 				if (bcelMethod == null) {
@@ -130,7 +130,8 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 			}
 			// the answer is cached and we don't want to hold on to memory
 			bcelRepository.clear();
-			if (anns == null) anns = new org.aspectj.apache.bcel.classfile.annotation.Annotation[0];
+			// OPTIMIZE make constant 0 size array for sharing
+			if (anns == null) anns = new org.aspectj.apache.bcel.classfile.annotation.AnnotationGen[0];
 			// convert to our Annotation type
 			for (int i=0;i<anns.length;i++) {
 				if (anns[i].getTypeSignature().equals(ofType.getSignature())) {
@@ -180,7 +181,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 		// memory.
 		try {
 			JavaClass jc = bcelRepository.loadClass(onMember.getDeclaringClass());
-			org.aspectj.apache.bcel.classfile.annotation.Annotation[] anns = new org.aspectj.apache.bcel.classfile.annotation.Annotation[0];
+			org.aspectj.apache.bcel.classfile.annotation.AnnotationGen[] anns = new org.aspectj.apache.bcel.classfile.annotation.AnnotationGen[0];
 			if (onMember instanceof Method) {
 				org.aspectj.apache.bcel.classfile.Method bcelMethod = jc.getMethod((Method)onMember);
 				if (bcelMethod == null) {
@@ -198,7 +199,8 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 			}
 			// the answer is cached and we don't want to hold on to memory
 			bcelRepository.clear();
-			if (anns == null) anns = new org.aspectj.apache.bcel.classfile.annotation.Annotation[0];
+			// OPTIMIZE make this a constant 0 size array
+			if (anns == null) anns = new org.aspectj.apache.bcel.classfile.annotation.AnnotationGen[0];
 			// convert to our Annotation type
 			Set<ResolvedType> annSet = new HashSet<ResolvedType>();
 			for (int i = 0; i < anns.length; i++) {
@@ -225,7 +227,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 		// memory.
 		try {
 			JavaClass jc = bcelRepository.loadClass(forClass);
-			org.aspectj.apache.bcel.classfile.annotation.Annotation[] anns =jc.getAnnotations();
+			org.aspectj.apache.bcel.classfile.annotation.AnnotationGen[] anns =jc.getAnnotations();
 			bcelRepository.clear();
 			if (anns == null) return new ResolvedType[0];
 			ResolvedType[] ret = new ResolvedType[anns.length];
@@ -293,7 +295,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 		// memory.
 		try {
 			JavaClass jc = bcelRepository.loadClass(onMember.getDeclaringClass());
-			org.aspectj.apache.bcel.classfile.annotation.Annotation[][] anns = null;
+			org.aspectj.apache.bcel.classfile.annotation.AnnotationGen[][] anns = null;
 			if (onMember instanceof Method) {
 				org.aspectj.apache.bcel.classfile.Method bcelMethod = jc.getMethod((Method)onMember);
 				if (bcelMethod == null) {
