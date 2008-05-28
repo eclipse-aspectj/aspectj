@@ -16,7 +16,6 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.LineNumberTable;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 import org.aspectj.apache.bcel.generic.MethodGen;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
@@ -157,14 +156,14 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	     */
 	    
 	    ConstantPool cp = oneWeWant.getConstantPool();
-	    ConstantPoolGen cpg = new ConstantPoolGen(cp);
+	   // ConstantPool cpg = new ConstantPool(cp);
 	    
 	    // Damage the line number table, entry 2 (Line7:5) so it points to an invalid (not on an instruction boundary) position of 6
 	    oneWeWant.getLineNumberTable().getLineNumberTable()[2].setStartPC(6);
 
 	    // Should be 'rounded down' when transforming it into a MethodGen, new position will be '5'
 //	    System.out.println("BEFORE\n"+oneWeWant.getLineNumberTable().toString());
-	    MethodGen toTransform = new MethodGen(oneWeWant,"A",cpg,false);
+	    MethodGen toTransform = new MethodGen(oneWeWant,"A",cp,false);
 	    LineNumberTable lnt = toTransform.getMethod().getLineNumberTable();
 	    assertTrue("Should have been 'rounded down' to position 5 but is "+lnt.getLineNumberTable()[2].getStartPC(), lnt.getLineNumberTable()[2].getStartPC()==5);
 //	    System.out.println("AFTER\n"+lnt.toString());    
@@ -186,14 +185,14 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	    // see previous test for dump of main method
 	    
 	    ConstantPool cp = oneWeWant.getConstantPool();
-	    ConstantPoolGen cpg = new ConstantPoolGen(cp);
+//	    ConstantPoolGen cpg = new ConstantPoolGen(cp);
 	    
 	    // Damage the local variable table, entry 2 (" 2      22      1    i       I") so it points to an invalid start pc of 3
 	    oneWeWant.getLocalVariableTable().getLocalVariable(1).setStartPC(3);
 
 	    // Should be 'rounded down' when transforming it into a MethodGen, new position will be '2'		    
 	    // This next line will go BANG with an NPE if we don't correctly round the start pc down to 2
-	    MethodGen toTransform = new MethodGen(oneWeWant,"A",cpg,true);
+	    MethodGen toTransform = new MethodGen(oneWeWant,"A",cp,true);
 	 }
 	  
 

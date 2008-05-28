@@ -47,7 +47,7 @@
 	</path>
 
 	<!-- the source files used for AJDT project-based compilation -->
-	<target name="copy.source.files" depends="init">
+	<!--<target name="copy.source.files" depends="init">
 		<echo message="copying source files to ${todir}"/>
 		<copy todir="${todir}">
 			<fileset dir="${spring.install.dir}/src"
@@ -57,6 +57,6 @@
 			<fileset dir="${test.aspects.src.dir}"
 				     includes="**/*.java,**/*.aj"/>
 		</copy>
-	</target>
+	</target>-->
 	
 </project>
