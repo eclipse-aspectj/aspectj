@@ -38,6 +38,7 @@ import org.aspectj.weaver.ICrossReferenceHandler;
 import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.WeakClassLoaderReference;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.Lint.Kind;
 import org.aspectj.weaver.bcel.BcelWeaver;
@@ -98,25 +99,15 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
     	if (trace.isTraceEnabled()) trace.exit("<init>");
     }
 
-    protected void initialize (final ClassLoader classLoader, IWeavingContext context) {
-    	if (initialized) return;
-
-    	boolean success = true;
-    	if (trace.isTraceEnabled()) trace.enter("initialize",this,new Object[] { classLoader, context });
-
-    	this.weavingContext = context;
-        if (weavingContext == null) {
-        	weavingContext = new DefaultWeavingContext(classLoader);
+   class SimpleGeneratedClassHandler implements GeneratedClassHandler {
+    	private WeakClassLoaderReference loaderRef;
+    	SimpleGeneratedClassHandler(ClassLoader loader) {
+    		loaderRef = new WeakClassLoaderReference(loader);
         }
 
-        createMessageHandler();
-    	
-        this.generatedClassHandler = new GeneratedClassHandler() {
             /**
              * Callback when we need to define a Closure in the JVM
              *
-             * @param name
-             * @param bytes
              */
             public void acceptClass(String name, byte[] bytes) {
                 try {
@@ -127,9 +118,25 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
                     throwable.printStackTrace();
                 }
 
-                defineClass(classLoader, name, bytes);// could be done lazily using the hook
+            defineClass(loaderRef.getClassLoader(), name, bytes); // could be done lazily using the hook
             }
         };
+
+    protected void initialize (final ClassLoader classLoader, IWeavingContext context) {
+    	if (initialized) return;
+
+    	boolean success = true;
+        //    	if (trace.isTraceEnabled()) trace.enter("initialize",this,new Object[] { classLoader, context });
+
+    	this.weavingContext = context;
+        if (weavingContext == null) {
+        	weavingContext = new DefaultWeavingContext(classLoader);
+        }
+
+        createMessageHandler();
+    	
+        this.generatedClassHandler = 
+        	new SimpleGeneratedClassHandler(classLoader);
 
         List definitions = weavingContext.getDefinitions(classLoader,this);
         if (definitions.isEmpty()) {
@@ -174,7 +181,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
      * @param loader
      */
     List parseDefinitions(final ClassLoader loader) {
-        if (trace.isTraceEnabled()) trace.enter("parseDefinitions",this,loader);
+        if (trace.isTraceEnabled()) trace.enter("parseDefinitions", this);
 
         List definitions = new ArrayList();
     	try {

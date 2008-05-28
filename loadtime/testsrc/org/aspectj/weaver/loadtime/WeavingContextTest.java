@@ -152,6 +152,8 @@ public class WeavingContextTest extends TestCase {
 			return "ClassLoaderName";
 		}
 
+		public ClassLoader getClassLoader() { return this.loader;}
+
 		public String getFile(URL url) {
 			return "File";
 		}
