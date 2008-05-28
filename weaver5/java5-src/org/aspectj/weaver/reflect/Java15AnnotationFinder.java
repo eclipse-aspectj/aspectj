@@ -31,6 +31,7 @@ import org.aspectj.apache.bcel.util.Repository;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.WeakClassLoaderReference;
 import org.aspectj.weaver.World;
 
 /**
@@ -40,7 +41,7 @@ import org.aspectj.weaver.World;
 public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 	
 	private Repository bcelRepository;
-	private ClassLoader classLoader;
+	private WeakClassLoaderReference classLoaderRef;
 	private World world;
 	
 	// must have no-arg constructor for reflective construction
@@ -50,8 +51,8 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 	public void setClassLoader(ClassLoader aLoader) {
 		// TODO: No easy way to ask the world factory for the right kind of repository so
 		// default to the safe one! (pr160674)
-		this.bcelRepository = new NonCachingClassLoaderRepository(aLoader);
-		this.classLoader = aLoader;		
+        this.classLoaderRef = new WeakClassLoaderReference(aLoader);
+        this.bcelRepository = new NonCachingClassLoaderRepository(classLoaderRef);
 	}
 
 	public void setWorld(World aWorld) {
@@ -63,7 +64,8 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 	 */
 	public Object getAnnotation(ResolvedType annotationType, Object onObject) {
 		try {
-			Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) Class.forName(annotationType.getName(),false,classLoader);
+			Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) Class.forName(annotationType.getName(), false,
+                getClassLoader());
 			if (onObject.getClass().isAnnotationPresent(annotationClass)) {
 				return onObject.getClass().getAnnotation(annotationClass);
 			}
@@ -75,7 +77,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 
 	public Object getAnnotationFromClass(ResolvedType annotationType, Class aClass) {
 		try {
-			Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) Class.forName(annotationType.getName(),false,classLoader);
+			Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) Class.forName(annotationType.getName(),false,getClassLoader());
 			if (aClass.isAnnotationPresent(annotationClass)) {
 				return aClass.getAnnotation(annotationClass);
 			}
@@ -89,7 +91,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 		if (!(aMember instanceof AccessibleObject)) return null;
 		AccessibleObject ao = (AccessibleObject) aMember;
 		try {
-			Class annotationClass = Class.forName(annotationType.getName(),false,classLoader);
+			Class annotationClass = Class.forName(annotationType.getName(),false,getClassLoader());
 			if (ao.isAnnotationPresent(annotationClass)) {
 				return ao.getAnnotation(annotationClass);
 			}
@@ -99,6 +101,10 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 		return null;
 	}
 	
+	private ClassLoader getClassLoader() {
+		return classLoaderRef.getClassLoader();
+	}
+
 	public AnnotationX getAnnotationOfType(UnresolvedType ofType,Member onMember) {
 		if (!(onMember instanceof AccessibleObject)) return null;
 		// here we really want both the runtime visible AND the class visible annotations
