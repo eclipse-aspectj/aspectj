@@ -16,10 +16,6 @@ package org.aspectj.util;
 
 //import java.awt.event.InvocationEvent;
 import java.io.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.security.PrivilegedActionException;
