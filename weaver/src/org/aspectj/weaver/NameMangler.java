@@ -358,15 +358,10 @@ public class NameMangler {
 			return enclosingType.getName() + "$AjcClosure"  + index;
 	}
 
-	public static String aroundCallbackMethodName(
-		Member shadowSig,
-		LazyClassGen enclosingType) 
-	{
-		String ret =
-			shadowSig.getExtractableName()
-				+ "_aroundBody"
-				+ enclosingType.getNewGeneratedNameTag();
-		return ret;
+	public static String aroundCallbackMethodName(Member shadowSig, LazyClassGen enclosingType) {
+		StringBuffer ret = new StringBuffer();
+		ret.append(shadowSig.getExtractableName()).append("_aroundBody").append(enclosingType.getNewGeneratedNameTag());
+		return ret.toString();
 	}
 
 	public static String proceedMethodName(String adviceMethodName) {
