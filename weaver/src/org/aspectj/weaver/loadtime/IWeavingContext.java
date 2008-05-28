@@ -53,6 +53,8 @@ public interface IWeavingContext {
 	 */
 	public String getClassLoaderName ();
 
+    public ClassLoader getClassLoader();
+
 	/**
 	 * Format a URL
 	 * @return filename

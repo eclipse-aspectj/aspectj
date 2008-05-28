@@ -39,6 +39,7 @@ import org.aspectj.apache.bcel.generic.InvokeInstruction;
 import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.apache.bcel.util.ClassLoaderReference;
 import org.aspectj.apache.bcel.util.ClassLoaderRepository;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.NonCachingClassLoaderRepository;
@@ -62,6 +63,7 @@ import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.WeakClassLoaderReference;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.AjAttribute.Aspect;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
@@ -77,7 +79,7 @@ public class BcelWorld extends World implements Repository {
 	private ClassPathManager classPath;
 
     protected Repository delegate;
-    private ClassLoader loader;
+    private WeakClassLoaderReference loaderRef;
     
     
 	//private ClassPathManager aspectPath = null;
@@ -143,7 +145,7 @@ public class BcelWorld extends World implements Repository {
      */
     public BcelWorld(ClassLoader loader, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
         this.classPath = null;
-        this.loader = loader;
+        this.loaderRef = new WeakClassLoaderReference(loader);
         setMessageHandler(handler);
         setCrossReferenceHandler(xrefHandler);
         // Tell BCEL to use us for resolving any classes
@@ -152,11 +154,15 @@ public class BcelWorld extends World implements Repository {
     
     public void ensureRepositorySetup() {
     	if (delegate==null) {
-    		delegate = getClassLoaderRepositoryFor(loader);
+    		delegate = getClassLoaderRepositoryFor(loaderRef);
     	}
     }
     
-	public Repository getClassLoaderRepositoryFor(ClassLoader loader) {
+    private ClassLoader getClassLoader() {
+        return loaderRef.getClassLoader();
+    } 
+    
+    public Repository getClassLoaderRepositoryFor(ClassLoaderReference loader) {
     	if (bcelRepositoryCaching) {
     		return new ClassLoaderRepository(loader);
     	} else {

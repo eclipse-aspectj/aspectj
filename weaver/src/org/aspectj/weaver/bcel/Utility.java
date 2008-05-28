@@ -278,6 +278,7 @@ public class Utility {
     public static String[] makeArgNames(int n) {
         String[] ret = new String[n];
         for (int i=0; i<n; i++) {
+        	// OPTIMIZE fix this occurrence and others to use constants (share)
             ret[i] = "arg" + i;
         }
         return ret;

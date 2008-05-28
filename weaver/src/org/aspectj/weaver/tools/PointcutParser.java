@@ -28,6 +28,7 @@ import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.WeakClassLoaderReference;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.AtAjAttributes;
 import org.aspectj.weaver.internal.tools.PointcutExpressionImpl;
@@ -56,7 +57,7 @@ import org.aspectj.weaver.reflect.ReflectionWorld;
 public class PointcutParser {
     
 	private ReflectionWorld world;
-	private ClassLoader classLoader;
+	private WeakClassLoaderReference classLoaderReference;
     private Set supportedPrimitives; 
     private Set pointcutDesignators = new HashSet();
     
@@ -224,8 +225,8 @@ public class PointcutParser {
      * @param aLoader
      */
     protected void setClassLoader(ClassLoader aLoader) {
-    	this.classLoader = aLoader;
-    	world = new ReflectionWorld(this.classLoader);
+    	this.classLoaderReference = new WeakClassLoaderReference(aLoader);
+    	world = new ReflectionWorld(this.classLoaderReference.getClassLoader());
     }
 
     /**
@@ -235,7 +236,7 @@ public class PointcutParser {
      * lint properties
      */
     public void setLintProperties(String resourcePath)throws IOException {
-    	URL url = this.classLoader.getResource(resourcePath);
+    	URL url = this.classLoaderReference.getClassLoader().getResource(resourcePath);
     	InputStream is = url.openStream();
     	Properties p = new Properties();
 		p.load(is);

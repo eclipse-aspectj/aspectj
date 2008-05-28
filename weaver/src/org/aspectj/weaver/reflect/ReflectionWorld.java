@@ -25,6 +25,7 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.WeakClassLoaderReference;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.AjAttribute.AdviceAttribute;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -38,23 +39,23 @@ import org.aspectj.weaver.patterns.PerClause.Kind;
  */
 public class ReflectionWorld extends World implements IReflectionWorld {
 
-	private ClassLoader classLoader;
+	private WeakClassLoaderReference classLoaderReference;
 	private AnnotationFinder annotationFinder;
 	
 	private ReflectionWorld() {
 		super();
 		this.setMessageHandler(new ExceptionBasedMessageHandler());
 		setBehaveInJava5Way(LangUtil.is15VMOrGreater());
-		this.classLoader = ReflectionWorld.class.getClassLoader();
-		this.annotationFinder = makeAnnotationFinderIfAny(classLoader, this);
+		this.classLoaderReference = new WeakClassLoaderReference(ReflectionWorld.class.getClassLoader());
+		this.annotationFinder = makeAnnotationFinderIfAny(classLoaderReference.getClassLoader(), this);
 	}
 	
 	public ReflectionWorld(ClassLoader aClassLoader) {
 		super();
 		this.setMessageHandler(new ExceptionBasedMessageHandler());
 		setBehaveInJava5Way(LangUtil.is15VMOrGreater());
-		this.classLoader = aClassLoader;
-		this.annotationFinder = makeAnnotationFinderIfAny(classLoader, this);
+		this.classLoaderReference = new WeakClassLoaderReference(aClassLoader);
+		this.annotationFinder = makeAnnotationFinderIfAny(classLoaderReference.getClassLoader(), this);
 	}
 
 	public static AnnotationFinder makeAnnotationFinderIfAny(ClassLoader loader, World world) {
@@ -78,7 +79,7 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 	}
 	
 	public ClassLoader getClassLoader() {
-		return this.classLoader;
+		return this.classLoaderReference.getClassLoader();
 	}
 	
 	public AnnotationFinder getAnnotationFinder() {
@@ -107,7 +108,7 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 	 * @see org.aspectj.weaver.World#resolveDelegate(org.aspectj.weaver.ReferenceType)
 	 */
 	protected ReferenceTypeDelegate resolveDelegate(ReferenceType ty) {
-		return ReflectionBasedReferenceTypeDelegateFactory.createDelegate(ty, this, this.classLoader);
+		return ReflectionBasedReferenceTypeDelegateFactory.createDelegate(ty, this, this.classLoaderReference.getClassLoader());
 	}
 
 	/* (non-Javadoc)

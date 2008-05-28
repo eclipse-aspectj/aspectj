@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.asm.AsmManager;
-import org.aspectj.weaver.patterns.CflowPointcut;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.IVerificationRequired;
 import org.aspectj.weaver.tools.Trace;

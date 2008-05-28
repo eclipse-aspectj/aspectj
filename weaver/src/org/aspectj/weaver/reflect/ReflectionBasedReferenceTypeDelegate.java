@@ -30,6 +30,7 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.SourceContextImpl;
 import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.WeakClassLoaderReference;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.PerClause;
@@ -42,10 +43,10 @@ import org.aspectj.weaver.patterns.PerClause;
  */
 public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelegate {
 
-	private static final ClassLoader BootClassLoader = new URLClassLoader(new URL[0]);
+	private static final ClassLoader BootClassLoader = new URLClassLoader(new URL[0]);// ReflectionBasedReferenceTypeDelegate.class.getClassLoader();
 	
 	protected Class myClass = null;
-	protected ClassLoader classLoader = null;
+	protected WeakClassLoaderReference classLoaderReference = null;
 	private World world;
 	private ReferenceType resolvedType;
 	private ResolvedMember[] fields = null;
@@ -63,7 +64,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 		this.myClass = aClass;
 		this.resolvedType = aType;
 		this.world = aWorld;
-		this.classLoader = (aClassLoader != null) ? aClassLoader : BootClassLoader;
+		this.classLoaderReference = new WeakClassLoaderReference((aClassLoader != null) ? aClassLoader : BootClassLoader);
 	}
 	
 	protected Class getBaseClass() { 
