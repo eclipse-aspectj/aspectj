@@ -78,7 +78,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  *
  * @see org.aspectj.apache.bcel.Repository
  *
- * @version $Id: NonCachingClassLoaderRepository.java,v 1.1.4.3 2008/05/08 19:26:46 aclement Exp $
+ * @version $Id: NonCachingClassLoaderRepository.java,v 1.1.4.4 2008/05/28 00:02:49 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  * 
@@ -88,7 +88,7 @@ public class NonCachingClassLoaderRepository
 {  
   private static java.lang.ClassLoader bootClassLoader = null;
 
-  private java.lang.ClassLoader loader;
+  private ClassLoaderReference loaderRef;
   private Map loadedClasses =
     new SoftHashMap(); // CLASSNAME X JAVACLASS
   
@@ -160,9 +160,14 @@ public class NonCachingClassLoaderRepository
 			return null;
 		  }
 	  }
-  public NonCachingClassLoaderRepository( java.lang.ClassLoader loader ) {
-	    this.loader = (loader != null) ? loader : getBootClassLoader();
-  }
+
+    public NonCachingClassLoaderRepository(java.lang.ClassLoader loader) {
+        this.loaderRef = new DefaultClassLoaderReference((loader != null) ? loader : getBootClassLoader());
+    }
+
+    public NonCachingClassLoaderRepository(ClassLoaderReference loaderRef) {
+        this.loaderRef = loaderRef;
+    }
 
   private static synchronized java.lang.ClassLoader getBootClassLoader() {
 	  if (bootClassLoader == null) {
@@ -211,7 +216,7 @@ public class NonCachingClassLoaderRepository
 
     try {
       InputStream is = 
-	loader.getResourceAsStream( classFile + ".class" );
+          loaderRef.getClassLoader().getResourceAsStream(classFile + ".class");
 	    
       if(is == null) {
 	throw new ClassNotFoundException(className + " not found.");
