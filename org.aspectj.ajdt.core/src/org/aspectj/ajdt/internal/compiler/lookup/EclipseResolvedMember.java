@@ -24,6 +24,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.weaver.AnnotationX;
+import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
@@ -45,14 +46,14 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 	private ResolvedType[] cachedAnnotationTypes;
 	private EclipseFactory eclipseFactory;
 	
-	public EclipseResolvedMember(MethodBinding binding, Kind memberKind, ResolvedType realDeclaringType, int modifiers, UnresolvedType type, String string, UnresolvedType[] types, UnresolvedType[] types2, EclipseFactory eclipseFactory) {
+	public EclipseResolvedMember(MethodBinding binding, MemberKind memberKind, ResolvedType realDeclaringType, int modifiers, UnresolvedType type, String string, UnresolvedType[] types, UnresolvedType[] types2, EclipseFactory eclipseFactory) {
 		super(memberKind,realDeclaringType,modifiers,type,string,types,types2);
 		this.realBinding = binding;
 		this.eclipseFactory = eclipseFactory;
 		this.w = realDeclaringType.getWorld();
 	}
 
-	public EclipseResolvedMember(FieldBinding binding, Kind field, ResolvedType realDeclaringType, int modifiers, ResolvedType type, String string, UnresolvedType[] none) {
+	public EclipseResolvedMember(FieldBinding binding, MemberKind field, ResolvedType realDeclaringType, int modifiers, ResolvedType type, String string, UnresolvedType[] none) {
 		super(field,realDeclaringType,modifiers,type,string,none);
 		this.realBinding = binding;
 		this.w = realDeclaringType.getWorld();

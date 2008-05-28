@@ -56,6 +56,7 @@ import org.aspectj.weaver.BoundedReferenceType;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.IHasPosition;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.NewMethodTypeMunger;
@@ -460,7 +461,7 @@ public class EclipseFactory {
 	}
 
 	public ResolvedMember makeResolvedMember(MethodBinding binding, Shadow.Kind shadowKind) {
-		Member.Kind memberKind = binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD;
+		MemberKind memberKind = binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD;
 		if (shadowKind == Shadow.AdviceExecution) memberKind = Member.ADVICE;
 		return makeResolvedMember(binding,binding.declaringClass,memberKind);
 	}
@@ -503,7 +504,7 @@ public class EclipseFactory {
 				binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD);
 	}
 
-	public ResolvedMember makeResolvedMember(MethodBinding binding, TypeBinding declaringType, Member.Kind memberKind) {
+	public ResolvedMember makeResolvedMember(MethodBinding binding, TypeBinding declaringType, MemberKind memberKind) {
 		//System.err.println("member for: " + binding + ", " + new String(binding.declaringClass.sourceName));
 
         // Convert the type variables and store them
