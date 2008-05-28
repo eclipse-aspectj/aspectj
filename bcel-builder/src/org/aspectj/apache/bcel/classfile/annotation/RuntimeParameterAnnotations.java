@@ -50,9 +50,9 @@ public abstract class RuntimeParameterAnnotations extends Attribute {
 		return parameterAnnotations;
 	}
 	
-	public Annotation[] getAnnotationsOnParameter(int parameterIndex) {
+	public AnnotationGen[] getAnnotationsOnParameter(int parameterIndex) {
 		if (!inflated) inflate();
-		return (Annotation[])parameterAnnotations.get(parameterIndex);
+		return (AnnotationGen[])parameterAnnotations.get(parameterIndex);
 	}
 	
 	public boolean areVisible() {
@@ -70,9 +70,9 @@ public abstract class RuntimeParameterAnnotations extends Attribute {
 			int numParameters = dis.readUnsignedByte();
 			for (int i=0; i<numParameters; i++) {
 				int numAnnotations = dis.readUnsignedShort();
-				Annotation[] annotations = new Annotation[numAnnotations];
+				AnnotationGen[] annotations = new AnnotationGen[numAnnotations];
 				for (int j=0; j<numAnnotations; j++) {
-					annotations[j] = Annotation.read(dis,getConstantPool(),visible);
+					annotations[j] = AnnotationGen.read(dis,getConstantPool(),visible);
 				}
 				parameterAnnotations.add(annotations);
 			}
@@ -89,7 +89,7 @@ public abstract class RuntimeParameterAnnotations extends Attribute {
 		} else {
 			dos.writeByte(parameterAnnotations.size());
 			for (int i=0; i<parameterAnnotations.size(); i++) {
-				Annotation[] annotations = (Annotation[])parameterAnnotations.get(i);
+				AnnotationGen[] annotations = (AnnotationGen[])parameterAnnotations.get(i);
 				dos.writeShort(annotations.length);
 				for (int j=0; j<annotations.length;j++) {
 					annotations[j].dump(dos);

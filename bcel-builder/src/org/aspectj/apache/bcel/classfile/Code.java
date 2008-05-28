@@ -69,23 +69,19 @@ import  java.io.*;
  * is used for debugging purposes and <em>LocalVariableTable</em> which 
  * contains information about the local variables.
  *
- * @version $Id: Code.java,v 1.3 2006/09/22 10:50:17 aclement Exp $
+ * @version $Id: Code.java,v 1.4 2008/05/28 23:53:02 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Attribute
  * @see     CodeException
  * @see     LineNumberTable
- * @see LocalVariableTable
+ * @see     LocalVariableTable
  */
 public final class Code extends Attribute {
-  private int             max_stack;   // Maximum size of stack used by this method
-  private int             max_locals;  // Number of local variables
-  private int             code_length; // Length of code in bytes
-  private byte[]          code;        // Actual byte code
-
-  private int             exception_table_length;
-  private CodeException[] exception_table;  // Table of handled exceptions
-  private int             attributes_count; // Attributes of code: LineNumber
-  private Attribute[]     attributes;       // or LocalVariable
+  private int             maxStack;       // Maximum size of stack used by this method
+  private int             maxLocals;      // Number of local variables
+  private byte[]          code;           // Actual byte code
+  private CodeException[] exceptionTable;  
+  private Attribute[]     attributes;
 
   /**
    * Initialize from another object. Note that both objects use the same
@@ -97,41 +93,28 @@ public final class Code extends Attribute {
 	 c.getConstantPool());
   }
 
-  /**
-   * @param name_index Index pointing to the name <em>Code</em>
-   * @param length Content length in bytes
-   * @param file Input stream
-   * @param constant_pool Array of constants
-   */
-  Code(int name_index, int length, DataInputStream file,
-       ConstantPool constant_pool) throws IOException
-  {
+
+  Code(int name_index, int length, DataInputStream file, ConstantPool constant_pool) throws IOException {
     // Initialize with some default values which will be overwritten later
     this(name_index, length,
 	 file.readUnsignedShort(), file.readUnsignedShort(),
 	 (byte[])null, (CodeException[])null, (Attribute[])null,
 	 constant_pool);
 
-    code_length = file.readInt();
-    code = new byte[code_length]; // Read byte code
+    int len = file.readInt();
+    code = new byte[len]; // Read byte code
     file.readFully(code);
 
     /* Read exception table that contains all regions where an exception
      * handler is active, i.e., a try { ... } catch() block.
      */
-    exception_table_length = file.readUnsignedShort();
-    exception_table        = new CodeException[exception_table_length];
+    len = file.readUnsignedShort();
+    exceptionTable        = new CodeException[len];
+    for(int i=0; i < len; i++)
+      exceptionTable[i] = new CodeException(file);
 
-    for(int i=0; i < exception_table_length; i++)
-      exception_table[i] = new CodeException(file);
-
-    /* Read all attributes, currently `LineNumberTable' and
-     * `LocalVariableTable'
-     */
-    attributes_count = file.readUnsignedShort();
-    attributes = new Attribute[attributes_count];
-    for(int i=0; i < attributes_count; i++)
-      attributes[i] = Attribute.readAttribute(file, constant_pool);
+    // Read all attributes, eg: LineNumberTable, LocalVariableTable
+    attributes = AttributeUtils.readAttributes(file,constant_pool);
 
     /* Adjust length, because of setAttributes in this(), s.b.  length
      * is incorrect, because it didn't take the internal attributes
@@ -159,8 +142,8 @@ public final class Code extends Attribute {
   {
     super(Constants.ATTR_CODE, name_index, length, constant_pool);
 
-    this.max_stack         = max_stack;
-    this.max_locals        = max_locals;
+    this.maxStack         = max_stack;
+    this.maxLocals        = max_locals;
 
     setCode(code);
     setExceptionTable(exception_table);
@@ -174,7 +157,7 @@ public final class Code extends Attribute {
    *
    * @param v Visitor object
    */
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitCode(this);
   }
 
@@ -188,17 +171,20 @@ public final class Code extends Attribute {
   {
     super.dump(file);
 
-    file.writeShort(max_stack);
-    file.writeShort(max_locals);
-    file.writeInt(code_length);
-    file.write(code, 0, code_length);
+    file.writeShort(maxStack);
+    if (maxStack==3) {
+    	int stop = 1; // fixme
+    }
+    file.writeShort(maxLocals);
+    file.writeInt(code.length);
+    file.write(code, 0, code.length);
 
-    file.writeShort(exception_table_length);
-    for(int i=0; i < exception_table_length; i++)
-      exception_table[i].dump(file);
+    file.writeShort(exceptionTable.length);
+    for(int i=0; i < exceptionTable.length; i++)
+      exceptionTable[i].dump(file);
 	
-    file.writeShort(attributes_count);
-    for(int i=0; i < attributes_count; i++)
+    file.writeShort(attributes.length);
+    for(int i=0; i < attributes.length; i++)
       attributes[i].dump(file);
   }
 
@@ -212,10 +198,8 @@ public final class Code extends Attribute {
    * @return LineNumberTable of Code, if it has one
    */
   public LineNumberTable getLineNumberTable() {
-    for(int i=0; i < attributes_count; i++)
-      if(attributes[i] instanceof LineNumberTable)
-	return (LineNumberTable)attributes[i];
-
+    for (int i=0; i < attributes.length; i++)
+      if (attributes[i].tag==Constants.ATTR_LINE_NUMBER_TABLE) return (LineNumberTable)attributes[i];
     return null;
   }
 
@@ -223,10 +207,8 @@ public final class Code extends Attribute {
    * @return LocalVariableTable of Code, if it has one
    */
   public LocalVariableTable getLocalVariableTable() {
-    for(int i=0; i < attributes_count; i++)
-      if(attributes[i] instanceof LocalVariableTable)
-	return (LocalVariableTable)attributes[i];
-
+    for(int i=0; i < attributes.length; i++)
+      if (attributes[i].tag==Constants.ATTR_LOCAL_VARIABLE_TABLE) return (LocalVariableTable)attributes[i];
     return null;
   }
 
@@ -239,18 +221,18 @@ public final class Code extends Attribute {
    * @return Table of handled exceptions.
    * @see CodeException
    */  
-  public final CodeException[] getExceptionTable() { return exception_table; }
+  public final CodeException[] getExceptionTable() { return exceptionTable; }
 
   /**
    * @return Number of local variables.
    */  
-  public final int  getMaxLocals() { return max_locals; }
+  public final int  getMaxLocals() { return maxLocals; }
 
   /**
    * @return Maximum size of stack used by this method.
    */
 
-  public final int  getMaxStack()  { return max_stack; }    
+  public final int  getMaxStack()  { return maxStack; }    
 
   /**
    * @return the internal length of this code attribute (minus the first 6 bytes) 
@@ -258,9 +240,9 @@ public final class Code extends Attribute {
    */
   private final int getInternalLength() {
     return 2 /*max_stack*/ + 2 /*max_locals*/ + 4 /*code length*/ 
-      + code_length /*byte-code*/
+      + (code==null?0:code.length) /*byte-code*/
       + 2 /*exception-table length*/ 
-      + 8 * exception_table_length /* exception table */
+      + 8 * (exceptionTable==null?0:exceptionTable.length) /* exception table */
       + 2 /* attributes count */;
   }
 
@@ -270,10 +252,10 @@ public final class Code extends Attribute {
    */
   private final int calculateLength() {
     int len = 0;
-
-    for(int i=0; i < attributes_count; i++)
-      len += attributes[i].length + 6 /*attribute header size*/;
-
+    if (attributes!=null) {
+	    for(int i=0; i < attributes.length; i++)
+	      len += attributes[i].length + 6 /*attribute header size*/;
+    }
     return len + getInternalLength();
   }
 
@@ -282,7 +264,6 @@ public final class Code extends Attribute {
    */
   public final void setAttributes(Attribute[] attributes) {
     this.attributes  = attributes;
-    attributes_count = (attributes == null)? 0 : attributes.length;
     length = calculateLength(); // Adjust length
   }
 
@@ -291,30 +272,27 @@ public final class Code extends Attribute {
    */
   public final void setCode(byte[] code) {
     this.code   = code;
-    code_length = (code == null)? 0 : code.length;
   }    
 
   /**
    * @param exception_table exception table
    */
   public final void setExceptionTable(CodeException[] exception_table) {
-    this.exception_table   = exception_table;
-    exception_table_length = (exception_table == null)? 0 :
-      exception_table.length;
+    this.exceptionTable   = exception_table;
   }
 
   /**
    * @param max_locals maximum number of local variables
    */
   public final void setMaxLocals(int max_locals) {
-    this.max_locals = max_locals;
+    this.maxLocals = max_locals;
   }
 
   /**
    * @param max_stack maximum stack size
    */
   public final void setMaxStack(int max_stack) {
-    this.max_stack = max_stack;
+    this.maxStack = max_stack;
   }
 
   /**
@@ -323,22 +301,22 @@ public final class Code extends Attribute {
   public final String toString(boolean verbose) {
     StringBuffer buf;
 
-    buf = new StringBuffer("Code(max_stack = " + max_stack +
-			   ", max_locals = " + max_locals +
-			   ", code_length = " + code_length + ")\n" +
-			   Utility.codeToString(code, constant_pool, 0, -1, verbose));
+    buf = new StringBuffer("Code(max_stack = " + maxStack +
+			   ", max_locals = " + maxLocals +
+			   ", code_length = " + code.length + ")\n" +
+			   Utility.codeToString(code, constantPool, 0, -1, verbose));
 
-    if(exception_table_length > 0) {
+    if(exceptionTable.length > 0) {
       buf.append("\nException handler(s) = \n" + "From\tTo\tHandler\tType\n");
 
-      for(int i=0; i < exception_table_length; i++)
-	buf.append(exception_table[i].toString(constant_pool, verbose) + "\n");
+      for(int i=0; i < exceptionTable.length; i++)
+	buf.append(exceptionTable[i].toString(constantPool, verbose) + "\n");
     }
 
-    if(attributes_count > 0) {
+    if(attributes.length > 0) {
       buf.append("\nAttribute(s) = \n");
 
-      for(int i=0; i < attributes_count; i++)
+      for(int i=0; i < attributes.length; i++)
 	buf.append(attributes[i].toString() + "\n");
     }
 
@@ -358,14 +336,14 @@ public final class Code extends Attribute {
   public Attribute copy(ConstantPool constant_pool) {
     Code c = (Code)clone();
     c.code          = (byte[])code.clone();
-    c.constant_pool = constant_pool;
+    c.constantPool = constant_pool;
   
-    c.exception_table = new CodeException[exception_table_length];
-    for(int i=0; i < exception_table_length; i++)
-      c.exception_table[i] = exception_table[i].copy();
+    c.exceptionTable = new CodeException[exceptionTable.length];
+    for(int i=0; i < exceptionTable.length; i++)
+      c.exceptionTable[i] = exceptionTable[i].copy();
 
-    c.attributes = new Attribute[attributes_count];
-    for(int i=0; i < attributes_count; i++)
+    c.attributes = new Attribute[attributes.length];
+    for(int i=0; i < attributes.length; i++)
       c.attributes[i] = attributes[i].copy(constant_pool);
 
     return c;
@@ -378,17 +356,17 @@ public final class Code extends Attribute {
    */
   public String getCodeString() {
 	  StringBuffer codeString = new StringBuffer();
-	  codeString.append("Code(max_stack = ").append(max_stack);
-	  codeString.append(", max_locals = ").append(max_locals);
-	  codeString.append(", code_length = ").append(code_length).append(")\n");
-	  codeString.append(Utility.codeToString(code, constant_pool, 0, -1,true));
-	  if (exception_table_length>0) {
-		  codeString.append("\n").append("Exception entries =  ").append(exception_table_length).append("\n");
-		  for (int i = 0; i < exception_table_length; i++) {
-			CodeException exc = exception_table[i];
+	  codeString.append("Code(max_stack = ").append(maxStack);
+	  codeString.append(", max_locals = ").append(maxLocals);
+	  codeString.append(", code_length = ").append(code.length).append(")\n");
+	  codeString.append(Utility.codeToString(code, constantPool, 0, -1,true));
+	  if (exceptionTable.length>0) {
+		  codeString.append("\n").append("Exception entries =  ").append(exceptionTable.length).append("\n");
+		  for (int i = 0; i < exceptionTable.length; i++) {
+			CodeException exc = exceptionTable[i];
 			int type = exc.getCatchType();
 			String name = "finally";
-			if (type!=0) name = this.constant_pool.getConstantString(type,Constants.CONSTANT_Class);
+			if (type!=0) name = this.constantPool.getConstantString(type,Constants.CONSTANT_Class);
 			codeString.append(name).append("[");
 			codeString.append(exc.getStartPC()).append(">").append(exc.getEndPC()).append("]\n");
 		  }

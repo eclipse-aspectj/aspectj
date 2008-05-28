@@ -60,7 +60,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 /** 
  * Denotes reference such as java.lang.String.
  *
- * @version $Id: ObjectType.java,v 1.3 2006/07/19 12:06:16 aclement Exp $
+ * @version $Id: ObjectType.java,v 1.4 2008/05/28 23:52:55 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class ObjectType extends ReferenceType {

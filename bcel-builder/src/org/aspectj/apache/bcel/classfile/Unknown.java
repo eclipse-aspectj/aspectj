@@ -68,9 +68,8 @@ import java.io.*;
  * org.aspectj.apache.bcel.classfile.AttributeReader)">Attribute.addAttributeReader</a>.
 
  *
- * @version $Id: Unknown.java,v 1.3 2006/03/04 10:43:17 aclement Exp $
+ * @version $Id: Unknown.java,v 1.4 2008/05/28 23:53:01 aclement Exp $
  * @see org.aspectj.apache.bcel.classfile.Attribute
- * @see org.aspectj.apache.bcel.classfile.AttributeReader
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class Unknown extends Attribute {
@@ -147,7 +146,7 @@ public final class Unknown extends Attribute {
    *
    * @param v Visitor object
    */
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitUnknown(this);
   }    
   /**
@@ -207,7 +206,7 @@ public final class Unknown extends Attribute {
     if(bytes != null)
       c.bytes = (byte[])bytes.clone();
 
-    c.constant_pool = constant_pool;
+    c.constantPool = constant_pool;
     return c;
   }
 }

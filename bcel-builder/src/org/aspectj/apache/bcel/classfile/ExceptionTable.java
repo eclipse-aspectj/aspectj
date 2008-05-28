@@ -65,7 +65,7 @@ import  java.io.*;
  * attribute using the name <em>Exceptions</em> (which is inconsistent
  * with the other classes).
  *
- * @version $Id: ExceptionTable.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: ExceptionTable.java,v 1.3 2008/05/28 23:53:02 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Code
  */
@@ -123,7 +123,7 @@ public final class ExceptionTable extends Attribute {
    *
    * @param v Visitor object
    */
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitExceptionTable(this);
   }
 
@@ -156,7 +156,7 @@ public final class ExceptionTable extends Attribute {
   public final String[] getExceptionNames() {
     String[] names = new String[number_of_exceptions];
     for(int i=0; i < number_of_exceptions; i++)
-      names[i] = constant_pool.getConstantString(exception_index_table[i],
+      names[i] = constantPool.getConstantString(exception_index_table[i],
 						 Constants.CONSTANT_Class).
 	replace('/', '.');
     return names;
@@ -179,7 +179,7 @@ public final class ExceptionTable extends Attribute {
     String       str;
 
     for(int i=0; i < number_of_exceptions; i++) {
-      str = constant_pool.getConstantString(exception_index_table[i],
+      str = constantPool.getConstantString(exception_index_table[i],
 					    Constants.CONSTANT_Class);
       buf.append(Utility.compactClassName(str, false));
 
@@ -196,7 +196,7 @@ public final class ExceptionTable extends Attribute {
   public Attribute copy(ConstantPool constant_pool) {
     ExceptionTable c = (ExceptionTable)clone();
     c.exception_index_table = (int[])exception_index_table.clone();
-    c.constant_pool = constant_pool;
+    c.constantPool = constant_pool;
     return c;
   }
 }

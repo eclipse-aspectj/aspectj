@@ -54,108 +54,53 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 import java.io.*;
-import org.aspectj.apache.bcel.util.ByteSequence;
+
+import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 
 /** 
  * RET - Return from subroutine
  *
  * <PRE>Stack: ..., -&gt; ..., address</PRE>
  *
- * @version $Id: RET.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: RET.java,v 1.3 2008/05/28 23:53:00 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
-public class RET extends Instruction implements IndexedInstruction, TypedInstruction {
+public class RET extends Instruction {
   private boolean wide;
   private int     index; // index to local variable containg the return address
 
-  /**
-   * Empty constructor needed for the Class.newInstance() statement in
-   * Instruction.readInstruction(). Not to be used otherwise.
-   */
-  RET() {}
 
-  public RET(int index) {
-    super(org.aspectj.apache.bcel.Constants.RET, (short)2);
-    setIndex(index);   // May set wide as side effect
-  }
-
-  /**
-   * Dump instruction as byte code to stream out.
-   * @param out Output stream
-   */
-  public void dump(DataOutputStream out) throws IOException {
-    if(wide)
-      out.writeByte(org.aspectj.apache.bcel.Constants.WIDE);
-
-    out.writeByte(opcode);
-
-    if(wide)
-      out.writeShort(index);
-    else
-      out.writeByte(index);
-  }
-
-  private final void setWide() {
-    if(wide = index > org.aspectj.apache.bcel.Constants.MAX_BYTE)
-      length = 4; // Including the wide byte  
-    else
-      length = 2;
-  }
-
-  /**
-   * Read needed data (e.g. index) from file.
-   */
-  protected void initFromFile(ByteSequence bytes, boolean wide) throws IOException
-  {
+  public RET(int index,boolean wide) {
+    super(Constants.RET);
+    this.index = index;
     this.wide = wide;
-
-    if(wide) {
-      index  = bytes.readUnsignedShort();
-      length = 4;
-    } else {
-      index = bytes.readUnsignedByte();
-      length = 2;
-    }
+    //this.wide = index > org.aspectj.apache.bcel.Constants.MAX_BYTE;
   }
 
-  /**
-   * @return index of local variable containg the return address
-   */
+  public void dump(DataOutputStream out) throws IOException {
+    if (wide) out.writeByte(org.aspectj.apache.bcel.Constants.WIDE);
+    out.writeByte(opcode);
+    if(wide) out.writeShort(index);
+    else out.writeByte(index);
+  }
+
+  public int getLength() {
+    if (wide) return 4; else return 2;
+  }
+
   public final int getIndex() { return index; }
-
-  /**
-   * Set index of local variable containg the return address
-   */
-  public final void setIndex(int n) { 
-    if(n < 0)
-      throw new ClassGenException("Negative index value: " + n);
-
-    index = n;
-    setWide();
+  public final void setIndex(int index) { 
+	  this.index = index;
+	  this.wide = index > org.aspectj.apache.bcel.Constants.MAX_BYTE; 
   }
 
-  /**
-   * @return mnemonic for instruction
-   */
   public String toString(boolean verbose) {
     return super.toString(verbose) + " " + index;
   }  
 
-  /** @return return address type
-   */
-  public Type getType(ConstantPoolGen cp) {
+  public Type getType(ConstantPool cp) {
       return ReturnaddressType.NO_TARGET;
   }
 
-  /**
-   * Call corresponding visitor method(s). The order is:
-   * Call visitor methods of implemented interfaces first, then
-   * call methods according to the class hierarchy in descending order,
-   * i.e., the most specific visitXXX() call comes last.
-   *
-   * @param v Visitor object
-   */
-  public void accept(Visitor v) {
-    v.visitRET(this);
-  }
 }

@@ -62,21 +62,15 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 /**
  * Super class for the INVOKExxx family of instructions.
  *
- * @version $Id: InvokeInstruction.java,v 1.4 2006/07/19 12:06:17 aclement Exp $
+ * @version $Id: InvokeInstruction.java,v 1.5 2008/05/28 23:52:54 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
-public abstract class InvokeInstruction extends FieldOrMethod
-  implements ExceptionThrower, TypedInstruction, StackConsumer, StackProducer {
-  /**
-   * Empty constructor needed for the Class.newInstance() statement in
-   * Instruction.readInstruction(). Not to be used otherwise.
-   */
-  InvokeInstruction() {}
+public class InvokeInstruction extends FieldOrMethod {
 
   /**
    * @param index to constant pool
    */
-  protected InvokeInstruction(short opcode, int index) {
+  public InvokeInstruction(short opcode, int index) {
     super(opcode, index);
   }
 
@@ -96,7 +90,7 @@ public abstract class InvokeInstruction extends FieldOrMethod
    * constant pool entry they reference.
    * @return Number of words consumed from stack by this instruction
    */
-  public int consumeStack(ConstantPoolGen cpg) {
+  public int consumeStack(ConstantPool cpg) {
       String signature = getSignature(cpg);
       int sum = Type.getArgumentSizes(signature);
       if (opcode!=Constants.INVOKESTATIC) sum+=1;
@@ -108,31 +102,31 @@ public abstract class InvokeInstruction extends FieldOrMethod
    * constant pool entry they reference.
    * @return Number of words produced onto stack by this instruction
    */
-  public int produceStack(ConstantPoolGen cpg) {
+  public int produceStack(ConstantPool cpg) {
     return getReturnType(cpg).getSize();
   }
 
   /** @return return type of referenced method.
    */
-  public Type getType(ConstantPoolGen cpg) {
+  public Type getType(ConstantPool cpg) {
     return getReturnType(cpg);
   }
 
   /** @return name of referenced method.
    */
-  public String getMethodName(ConstantPoolGen cpg) {
+  public String getMethodName(ConstantPool cpg) {
     return getName(cpg);
   }
 
   /** @return return type of referenced method.
    */
-  public Type getReturnType(ConstantPoolGen cpg) {
+  public Type getReturnType(ConstantPool cpg) {
     return Type.getReturnType(getSignature(cpg));
   }
 
   /** @return argument types of referenced method.
    */
-  public Type[] getArgumentTypes(ConstantPoolGen cpg) {
+  public Type[] getArgumentTypes(ConstantPool cpg) {
     return Type.getArgumentTypes(getSignature(cpg));
   }
 }

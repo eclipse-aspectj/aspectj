@@ -60,7 +60,7 @@ import org.aspectj.apache.bcel.classfile.LineNumber;
  * This class represents a line number within a method, i.e., give an instruction
  * a line number corresponding to the source code line.
  *
- * @version $Id: LineNumberGen.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: LineNumberGen.java,v 1.5 2008/05/28 23:53:00 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     LineNumber
  * @see     MethodGen
@@ -110,7 +110,7 @@ public class LineNumberGen
   }
 
   public void setInstruction(InstructionHandle ih) {
-    BranchInstruction.notifyTarget(this.ih, ih, this);
+	  InstructionBranch.notifyTarget(this.ih, ih, this);
 
     this.ih = ih;
   }

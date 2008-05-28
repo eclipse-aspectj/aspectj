@@ -66,7 +66,7 @@ import java.io.*;
  * @see org.aspectj.apache.bcel.util.Repository
  * @see org.aspectj.apache.bcel.util.SyntheticRepository
  *
- * @version $Id: Repository.java,v 1.3 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: Repository.java,v 1.4 2008/05/28 23:53:04 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class Repository {
@@ -95,11 +95,9 @@ public abstract class Repository {
     try {
       JavaClass clazz = getRepository().findClass(class_name);
 
-      if(clazz == null) {
-	return getRepository().loadClass(class_name);
-      } else {
-	return clazz;
-      }
+      if(clazz != null) return clazz;
+
+      return getRepository().loadClass(class_name);
     } catch(ClassNotFoundException ex) { return null; }
   }
 

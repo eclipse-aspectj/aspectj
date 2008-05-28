@@ -18,11 +18,10 @@ import java.util.Iterator;
 
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
-import org.aspectj.apache.bcel.classfile.annotation.Annotation;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
 import org.aspectj.apache.bcel.generic.ClassGen;
 import org.aspectj.apache.bcel.generic.FieldGen;
-import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 
 
@@ -105,7 +104,7 @@ public class FieldAnnotationsTest extends BcelTestCase {
 
 		for (int i = 0; i < fields.length; i++) {
 			Field f = fields[i];
-			Annotation[] fieldAnnotations = f.getAnnotations();
+			AnnotationGen[] fieldAnnotations = f.getAnnotations();
 			if (f.getName().equals(fieldname)) {
 				checkAnnotation(fieldAnnotations[0],annotationName,annotationElementName,annotationElementValue);
 				
@@ -113,11 +112,11 @@ public class FieldAnnotationsTest extends BcelTestCase {
 		}
 	}
 	
-	private void checkAnnotation(Annotation a,String name,String elementname,String elementvalue) {
+	private void checkAnnotation(AnnotationGen a,String name,String elementname,String elementvalue) {
 		assertTrue("Expected annotation to have name "+name+" but it had name "+a.getTypeName(),
 				a.getTypeName().equals(name));
 		assertTrue("Expected annotation to have one element but it had "+a.getValues().size(),a.getValues().size()==1);
-		ElementNameValuePair envp = (ElementNameValuePair)a.getValues().get(0);
+		ElementNameValuePairGen envp = (ElementNameValuePairGen)a.getValues().get(0);
 		assertTrue("Expected element name "+elementname+" but was "+envp.getNameString(),
 				elementname.equals(envp.getNameString()));
 		assertTrue("Expected element value "+elementvalue+" but was "+envp.getValue().stringifyValue(),
@@ -127,9 +126,9 @@ public class FieldAnnotationsTest extends BcelTestCase {
 
 	// helper methods
 	
-	public void checkValue(Annotation a,String name,String tostring) {
+	public void checkValue(AnnotationGen a,String name,String tostring) {
 		for (Iterator i = a.getValues().iterator(); i.hasNext();) {
-			ElementNameValuePair element = (ElementNameValuePair) i.next();
+			ElementNameValuePairGen element = (ElementNameValuePairGen) i.next();
 			if (element.getNameString().equals(name)) {
 				if (!element.getValue().stringifyValue().equals(tostring)) {
 					fail("Expected element "+name+" to have value "+tostring+" but it had value "+element.getValue().stringifyValue());

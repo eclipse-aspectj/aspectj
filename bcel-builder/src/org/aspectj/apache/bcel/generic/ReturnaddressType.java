@@ -60,7 +60,7 @@ import org.aspectj.apache.bcel.generic.InstructionHandle;
  * Returnaddress, the type JSR or JSR_W instructions push upon the stack.
  *
  * see vmspec2 §3.3.3
- * @version $Id: ReturnaddressType.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: ReturnaddressType.java,v 1.3 2008/05/28 23:52:56 aclement Exp $
  * @author  <A HREF="http://www.inf.fu-berlin.de/~ehaase">Enver Haase</A>
  */
 public class ReturnaddressType extends Type {

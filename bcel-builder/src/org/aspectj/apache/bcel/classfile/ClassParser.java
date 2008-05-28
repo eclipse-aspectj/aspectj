@@ -70,71 +70,40 @@ import  java.util.zip.*;
  * JVM specification 1.0</a>. See this paper for
  * further details about the structure of a bytecode file.
  *
- * @version $Id: ClassParser.java,v 1.4 2005/10/14 08:39:32 aclement Exp $
+ * @version $Id: ClassParser.java,v 1.5 2008/05/28 23:53:01 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A> 
  */
 public final class ClassParser {
   private DataInputStream file;
-  private ZipFile         zip;
-  private String          file_name;
-  private int             class_name_index, superclass_name_index;
-  private int             major, minor; // Compiler version
-  private int             access_flags; // Access rights of parsed class
-  private int[]           interfaces; // Names of implemented interfaces
-  private ConstantPool    constant_pool; // collection of constants
-  private Field[]         fields; // class fields, i.e., its variables
-  private Method[]        methods; // methods defined in the class
-  private Attribute[]     attributes; // attributes defined in the class
-  private boolean         is_zip; // Loaded from zip file
+  private String          filename;
+  private int             classnameIndex;
+  private int             superclassnameIndex;
+  private int             major, minor; 
+  private int             accessflags;
+  private int[]           interfaceIndices;
+  private ConstantPool    cpool;
+  private Field[]         fields;
+  private Method[]        methods;
+  private Attribute[]     attributes;
 
   private static final int BUFSIZE = 8192;
 
-  /**
-   * Parse class from the given stream.
-   *
-   * @param file Input stream
-   * @param file_name File name
-   */
-  public ClassParser(InputStream file, String file_name) {
-    this.file_name = file_name;
-
-    String clazz = file.getClass().getName(); // Not a very clean solution ...
-    is_zip = clazz.startsWith("java.util.zip.") || clazz.startsWith("java.util.jar.");
-
-    if(file instanceof DataInputStream) // Is already a data stream
-      this.file = (DataInputStream)file;
-    else
-      this.file = new DataInputStream(new BufferedInputStream(file, BUFSIZE));
+  /** Parse class from the given stream */
+  public ClassParser(InputStream file, String filename) {
+    this.filename = filename;
+    if (file instanceof DataInputStream) this.file = (DataInputStream)file;
+    else                                 this.file = new DataInputStream(new BufferedInputStream(file,BUFSIZE));
   }
 
-  /** Parse class from given .class file.
-   *
-   * @param file_name file name
-   * @throws IOException
-   */
-  public ClassParser(String file_name) throws IOException
-  {    
-    is_zip = false;
-    this.file_name = file_name;
-    file = new DataInputStream(new BufferedInputStream
-			       (new FileInputStream(file_name), BUFSIZE));
+  public ClassParser(ByteArrayInputStream baos, String filename) {
+	    this.filename = filename;
+	    this.file = new DataInputStream(baos);
   }
 
-  /** Parse class from given .class file in a ZIP-archive
-   *
-   * @param file_name file name
-   * @throws IOException
-   */
-  public ClassParser(String zip_file, String file_name) throws IOException
-  {    
-    is_zip = true;
-    zip = new ZipFile(zip_file);
-    ZipEntry entry = zip.getEntry(file_name);
-  		   
-    this.file_name = file_name;
-
-    file = new DataInputStream(new BufferedInputStream(zip.getInputStream(entry),
-						       BUFSIZE));
+  /** Parse class from given .class file */
+  public ClassParser(String file_name) throws IOException {    
+    this.filename = file_name;
+    file = new DataInputStream(new BufferedInputStream(new FileInputStream(file_name),BUFSIZE));
   }
 
   /**
@@ -143,13 +112,8 @@ public final class ClassParser {
    * A <em>ClassFormatException</em> is raised, if the file is not a valid
    * .class file. (This does not include verification of the byte code as it
    * is performed by the java interpreter).
-   *
-   * @return Class object representing the parsed class file
-   * @throws  IOException
-   * @throws  ClassFormatException
-   */  
-  public JavaClass parse() throws IOException, ClassFormatException
-  {
+   */    
+  public JavaClass parse() throws IOException, ClassFormatException {
     /****************** Read headers ********************************/
     // Check magic tag of class file
     readID();
@@ -160,7 +124,7 @@ public final class ClassParser {
     /****************** Read constant pool and related **************/
     // Read constant pool entries
     readConstantPool();
-	
+
     // Get class information
     readClassInfo();
 
@@ -177,162 +141,105 @@ public final class ClassParser {
     // Read class attributes
     readAttributes();
 
-    // Check for unknown variables
-    //Unknown[] u = Unknown.getUnknownAttributes();
-    //for(int i=0; i < u.length; i++)
-    //  System.err.println("WARNING: " + u[i]);
-
-    // Everything should have been read now
-    //      if(file.available() > 0) {
-    //        int bytes = file.available();
-    //        byte[] buf = new byte[bytes];
-    //        file.read(buf);
-    
-    //        if(!(is_zip && (buf.length == 1))) {
-    //  	System.err.println("WARNING: Trailing garbage at end of " + file_name);
-    //  	System.err.println(bytes + " extra bytes: " + Utility.toHexString(buf));
-    //        }
-    //      }
-
     // Read everything of interest, so close the file
     file.close();
-    if(zip != null)
-      zip.close();
 
     // Return the information we have gathered in a new object
-    return new JavaClass(class_name_index, superclass_name_index, 
-			 file_name, major, minor, access_flags,
-			 constant_pool, interfaces, fields,
-			 methods, attributes, is_zip? JavaClass.ZIP : JavaClass.FILE);
+    JavaClass jc= new JavaClass(classnameIndex, superclassnameIndex, 
+			 filename, major, minor, accessflags,
+			 cpool, interfaceIndices, fields,
+			 methods, attributes);
+    return jc;
+  }
+  
+  /** Read information about the attributes of the class */
+  private final void readAttributes() {
+	  attributes = AttributeUtils.readAttributes(file,cpool);
   }
 
-  /**
-   * Read information about the attributes of the class.
-   * @throws  IOException
-   * @throws  ClassFormatException
-   */
-  private final void readAttributes() throws IOException, ClassFormatException
-  {
-    int attributes_count;
-
-    attributes_count = file.readUnsignedShort();
-    attributes       = new Attribute[attributes_count];
-
-    for(int i=0; i < attributes_count; i++)
-      attributes[i] = Attribute.readAttribute(file, constant_pool);
-  }
-
-  /**
-   * Read information about the class and its super class.
-   * @throws  IOException
-   * @throws  ClassFormatException
-   */
-  private final void readClassInfo() throws IOException, ClassFormatException
-  {
-    access_flags = file.readUnsignedShort();
+  /** Read information about the class and its super class */
+  private final void readClassInfo() throws IOException {
+    accessflags = file.readUnsignedShort();
 
     /* Interfaces are implicitely abstract, the flag should be set
-     * according to the JVM specification.
-     */
-    if((access_flags & Constants.ACC_INTERFACE) != 0)
-      access_flags |= Constants.ACC_ABSTRACT;
+     * according to the JVM specification */
+    if((accessflags & Constants.ACC_INTERFACE) != 0)
+      accessflags |= Constants.ACC_ABSTRACT;
 
     // don't police it like this... leave higher level verification code to check it.
 //    if(((access_flags & Constants.ACC_ABSTRACT) != 0) && 
 //       ((access_flags & Constants.ACC_FINAL)    != 0 ))
 //      throw new ClassFormatException("Class can't be both final and abstract");
 
-    class_name_index      = file.readUnsignedShort();
-    superclass_name_index = file.readUnsignedShort();
-  }    
-  /**
-   * Read constant pool entries.
-   * @throws  IOException
-   * @throws  ClassFormatException
-   */
-  private final void readConstantPool() throws IOException, ClassFormatException
-  {
+    classnameIndex      = file.readUnsignedShort();
+    superclassnameIndex = file.readUnsignedShort();
+  }
+  
+  /** Read constant pool entries */
+  private final void readConstantPool() throws IOException {
     try {
-		constant_pool = new ConstantPool(file);
+		cpool = new ConstantPool(file);
 	} catch (ClassFormatException cfe) {
 		// add some context if we can
-		if (file_name!=null) {
-			String newmessage = "File: '"+file_name+"': "+cfe.getMessage();
+		cfe.printStackTrace();
+		if (filename!=null) {
+			String newmessage = "File: '"+filename+"': "+cfe.getMessage();
 			throw new ClassFormatException(newmessage); // this loses the old stack trace but I dont think that matters!
 		}
 		throw cfe;
 	}
   }    
 
-  /**
-   * Read information about the fields of the class, i.e., its variables.
-   * @throws  IOException
-   * @throws  ClassFormatException
-   */
-  private final void readFields() throws IOException, ClassFormatException
-  {
-    int fields_count;
-
-    fields_count = file.readUnsignedShort();
-    fields       = new Field[fields_count];
-
-    for(int i=0; i < fields_count; i++)
-      fields[i] = new Field(file, constant_pool);
+  /** Read information about the fields of the class */
+  private final void readFields() throws IOException, ClassFormatException {
+    int fieldCount = file.readUnsignedShort();
+    if (fieldCount == 0) {
+    	fields = Field.NoFields;
+    } else {
+    	fields = new Field[fieldCount];
+    	for(int i=0; i < fieldCount; i++)
+    		fields[i] = new Field(file, cpool);
+    }
   }    
 
-  /******************** Private utility methods **********************/
-
-  /**
-   * Check whether the header of the file is ok.
-   * Of course, this has to be the first action on successive file reads.
-   * @throws  IOException
-   * @throws  ClassFormatException
-   */
-  private final void readID() throws IOException, ClassFormatException
-  {
+  /** Check whether the header of the file is ok. Of course, this has 
+   *  to be the first action on successive file reads */
+  private final void readID() throws IOException {
     int magic = 0xCAFEBABE;
+    if (file.readInt() != magic) 
+      throw new ClassFormatException(filename + " is not a Java .class file");
+  }   
+  
+  private static final int[] NO_INTERFACES = new int[0];
 
-    if(file.readInt() != magic)
-      throw new ClassFormatException(file_name + " is not a Java .class file");
-  }    
-  /**
-   * Read information about the interfaces implemented by this class.
-   * @throws  IOException
-   * @throws  ClassFormatException
-   */
-  private final void readInterfaces() throws IOException, ClassFormatException
-  {
-    int interfaces_count;
-
-    interfaces_count = file.readUnsignedShort();
-    interfaces       = new int[interfaces_count];
-
-    for(int i=0; i < interfaces_count; i++)
-      interfaces[i] = file.readUnsignedShort();
+  /** Read information about the interfaces implemented by this class */
+  private final void readInterfaces() throws IOException {
+    int interfacesCount = file.readUnsignedShort();
+    if (interfacesCount==0) {
+    	interfaceIndices = NO_INTERFACES;
+    } else {
+	    interfaceIndices = new int[interfacesCount];
+	    for(int i=0; i < interfacesCount; i++)
+	      interfaceIndices[i] = file.readUnsignedShort();
+    }
   }     
-  /**
-   * Read information about the methods of the class.
-   * @throws  IOException
-   * @throws  ClassFormatException
-   */
-  private final void readMethods() throws IOException, ClassFormatException
-  {
-    int methods_count;
-
-    methods_count = file.readUnsignedShort();
-    methods       = new Method[methods_count];
-
-    for(int i=0; i < methods_count; i++)
-      methods[i] = new Method(file, constant_pool);
+  
+  /** Read information about the methods of the class */
+  private final void readMethods() throws IOException {
+    int methodsCount = file.readUnsignedShort();
+    if (methodsCount==0) {
+    	methods = Method.NoMethods;
+    } else {
+	    methods = new Method[methodsCount];
+	    for(int i=0; i < methodsCount; i++)
+	      methods[i] = new Method(file, cpool);
+    }
   }      
-  /**
-   * Read major and minor version of compiler which created the file.
-   * @throws  IOException
-   * @throws  ClassFormatException
-   */
-  private final void readVersion() throws IOException, ClassFormatException
-  {
+  
+  /** Read major and minor version of compiler which created the file */
+  private final void readVersion() throws IOException {
     minor = file.readUnsignedShort();
     major = file.readUnsignedShort();
   }    
+  
 }

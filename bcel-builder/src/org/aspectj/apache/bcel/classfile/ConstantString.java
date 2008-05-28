@@ -62,7 +62,7 @@ import  java.io.*;
  * <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class 
  * and represents a reference to a String object.
  *
- * @version $Id: ConstantString.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: ConstantString.java,v 1.3 2008/05/28 23:53:02 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Constant
  */
@@ -83,7 +83,7 @@ public final class ConstantString extends Constant implements ConstantObject {
    */
   ConstantString(DataInputStream file) throws IOException
   {    
-    this((int)file.readUnsignedShort());
+    this(file.readUnsignedShort());
   }    
   /**
    * @param string_index Index of Constant_Utf8 in constant pool
@@ -100,7 +100,7 @@ public final class ConstantString extends Constant implements ConstantObject {
    *
    * @param v Visitor object
    */
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitConstantString(this);
   }    
   /**

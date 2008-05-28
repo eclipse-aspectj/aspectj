@@ -65,7 +65,7 @@ import org.aspectj.apache.bcel.classfile.Utility;
  * Abstract super class for all possible java types, namely basic types
  * such as int, object types like String and array types, e.g. int[]
  *
- * @version $Id: Type.java,v 1.7 2006/07/19 12:06:17 aclement Exp $
+ * @version $Id: Type.java,v 1.8 2008/05/28 23:52:56 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  * modified:
@@ -113,10 +113,12 @@ public abstract class Type implements java.io.Serializable {
    */
   public int getSize() {
     switch(type) {
-      case Constants.T_DOUBLE:
-      case Constants.T_LONG: return 2;
-      case Constants.T_VOID: return 0;
-      default:               return 1;
+      case Constants.T_DOUBLE: case Constants.T_LONG: 
+    	  return 2;
+      case Constants.T_VOID:                           
+    	  return 0;
+      default:               
+    	  return 1;
     }
   }
 
@@ -139,23 +141,18 @@ public abstract class Type implements java.io.Serializable {
   public static String getMethodSignature(Type return_type, Type[] arg_types) {
     StringBuffer buf = new StringBuffer("(");
     int length = (arg_types == null)? 0 : arg_types.length;
-
-    for(int i=0; i < length; i++)
+    for(int i=0; i < length; i++) {
       buf.append(arg_types[i].getSignature());
+    }
     buf.append(')');
     buf.append(return_type.getSignature());
-    
     return buf.toString();
   }
-
-  // private static int consumed_chars=0; // Remember position in string, see getArgumentTypes
-
   
   public static final Type getType(String signature) {
   	TypeHolder th = getTypeInternal(signature);
   	return th.getType();
   }
-  
   
   /**
    * Convert signature to a Type object.
@@ -224,6 +221,7 @@ public abstract class Type implements java.io.Serializable {
    * @param signature signature string such as (Ljava/lang/String;)V
    * @return array of argument types
    */
+  // OPTIMIZE crap impl
   public static Type[] getArgumentTypes(String signature) {
     ArrayList vec = new ArrayList();
     int       index;

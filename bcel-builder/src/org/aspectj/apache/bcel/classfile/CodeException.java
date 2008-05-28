@@ -62,77 +62,44 @@ import  java.io.*;
  * attribute and is used only there. It contains a range in which a
  * particular exception handler is active.
  *
- * @version $Id: CodeException.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: CodeException.java,v 1.3 2008/05/28 23:53:02 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Code
  */
-public final class CodeException
-  implements Cloneable, Constants, Node, Serializable
-{
+public final class CodeException implements Cloneable, Constants, Node, Serializable {
   private int start_pc;   // Range in the code the exception handler is
   private int end_pc;     // active. start_pc is inclusive, end_pc exclusive
   private int handler_pc; /* Starting address of exception handler, i.e.,
-			   * an offset from start of code.
-			   */
+			               * an offset from start of code.
+			               */
   private int catch_type; /* If this is zero the handler catches any
 			   * exception, otherwise it points to the
 			   * exception class which is to be caught.
 			   */
-  /**
-   * Initialize from another object.
-   */
+
   public CodeException(CodeException c) {
     this(c.getStartPC(), c.getEndPC(), c.getHandlerPC(), c.getCatchType());
   }
 
-  /**
-   * Construct object from file stream.
-   * @param file Input stream
-   * @throws IOException
-   */  
-  CodeException(DataInputStream file) throws IOException
-  {
-    this(file.readUnsignedShort(), file.readUnsignedShort(),
-	 file.readUnsignedShort(), file.readUnsignedShort());
+  CodeException(DataInputStream file) throws IOException {
+    start_pc   = file.readUnsignedShort();
+    end_pc     = file.readUnsignedShort();
+    handler_pc = file.readUnsignedShort();
+    catch_type = file.readUnsignedShort();
   }
 
-  /**
-   * @param start_pc Range in the code the exception handler is active,
-   * start_pc is inclusive while
-   * @param end_pc is exclusive
-   * @param handler_pc Starting address of exception handler, i.e.,
-   * an offset from start of code.
-   * @param catch_type If zero the handler catches any 
-   * exception, otherwise it points to the exception class which is 
-   * to be caught.
-   */
-  public CodeException(int start_pc, int end_pc, int handler_pc,
-		       int catch_type)
-  {
+  public CodeException(int start_pc, int end_pc, int handler_pc, int catch_type) {
     this.start_pc   = start_pc;
     this.end_pc     = end_pc;
     this.handler_pc = handler_pc;
     this.catch_type = catch_type;
   }
 
-  /**
-   * Called by objects that are traversing the nodes of the tree implicitely
-   * defined by the contents of a Java class. I.e., the hierarchy of methods,
-   * fields, attributes, etc. spawns a tree of objects.
-   *
-   * @param v Visitor object
-   */
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitCodeException(this);
   }    
-  /**
-   * Dump code exception to file stream in binary format.
-   *
-   * @param file Output file stream
-   * @throws IOException
-   */ 
-  public final void dump(DataOutputStream file) throws IOException
-  {
+
+  public final void dump(DataOutputStream file) throws IOException {
     file.writeShort(start_pc);
     file.writeShort(end_pc);
     file.writeShort(handler_pc);

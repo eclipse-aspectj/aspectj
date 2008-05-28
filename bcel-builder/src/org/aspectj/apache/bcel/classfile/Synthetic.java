@@ -55,6 +55,7 @@ package org.aspectj.apache.bcel.classfile;
  */
 
 import  org.aspectj.apache.bcel.Constants;
+
 import  java.io.*;
 
 /**
@@ -66,7 +67,7 @@ import  java.io.*;
  * is intended to be instantiated from the
  * <em>Attribute.readAttribute()</em> method.
  *
- * @version $Id: Synthetic.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: Synthetic.java,v 1.3 2008/05/28 23:53:02 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Attribute
  */
@@ -80,6 +81,13 @@ public final class Synthetic extends Attribute {
   public Synthetic(Synthetic c) {
     this(c.getNameIndex(), c.getLength(), c.getBytes(), c.getConstantPool());
   }
+//  
+//  public Synthetic(ConstantPoolGen cpool) {
+//	  super(Constants.ATTR_SYNTHETIC, cpool.addUtf8("Synthetic"), 0, cpool);
+//	  ConstantPoolGen cpg = myGen.getConstantPool();
+//	  int index = ;
+//	  Attribute synthetic  = new Synthetic(index, 0, new byte[0], cpg.getConstantPool());
+//  }
 
   /**
    * @param name_index Index in constant pool to CONSTANT_Utf8, which
@@ -122,7 +130,7 @@ public final class Synthetic extends Attribute {
    *
    * @param v Visitor object
    */
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitSynthetic(this);
   }    
   /**
@@ -170,7 +178,7 @@ public final class Synthetic extends Attribute {
     if(bytes != null)
       c.bytes = (byte[])bytes.clone();
 
-    c.constant_pool = constant_pool;
+    c.constantPool = constant_pool;
     return c;
   }
 }

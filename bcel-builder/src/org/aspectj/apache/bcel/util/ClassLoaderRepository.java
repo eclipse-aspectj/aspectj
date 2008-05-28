@@ -80,7 +80,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  *
  * @see org.aspectj.apache.bcel.Repository
  *
- * @version $Id: ClassLoaderRepository.java,v 1.10 2008/05/27 18:46:34 aclement Exp $
+ * @version $Id: ClassLoaderRepository.java,v 1.11 2008/05/28 23:52:53 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  */

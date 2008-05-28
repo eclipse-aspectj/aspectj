@@ -59,27 +59,15 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 /**
  * Super class for the GET/PUTxxx family of instructions.
  *
- * @version $Id: FieldInstruction.java,v 1.5 2006/07/19 12:06:16 aclement Exp $
+ * @version $Id: FieldInstruction.java,v 1.6 2008/05/28 23:52:56 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
-public abstract class FieldInstruction extends FieldOrMethod
-  implements TypedInstruction {
-  /**
-   * Empty constructor needed for the Class.newInstance() statement in
-   * Instruction.readInstruction(). Not to be used otherwise.
-   */
-  FieldInstruction() {}
+public class FieldInstruction extends FieldOrMethod {
 
-  /**
-   * @param index to constant pool
-   */
-  protected FieldInstruction(short opcode, int index) {
+  public FieldInstruction(short opcode, int index) {
     super(opcode, index);
   }
 
-  /**
-   * @return mnemonic for instruction with symbolic references resolved
-   */
   public String toString(ConstantPool cp) {
     return org.aspectj.apache.bcel.Constants.OPCODE_NAMES[opcode] + " " +
       cp.constantToString(index, org.aspectj.apache.bcel.Constants.CONSTANT_Fieldref);
@@ -87,26 +75,33 @@ public abstract class FieldInstruction extends FieldOrMethod
   
   /** @return size of field (1 or 2)
    */
-  protected int getFieldSize(ConstantPoolGen cpg) {
+  protected int getFieldSize(ConstantPool cpg) {
     return Type.getTypeSize(getSignature(cpg));
   }
 
-  /** @return return type of referenced field
-   */
-  public Type getType(ConstantPoolGen cpg) {
+  public Type getType(ConstantPool cpg) {
     return getFieldType(cpg);
   }
 
-  /** @return type of field
-   */
-  public Type getFieldType(ConstantPoolGen cpg) {
+  public Type getFieldType(ConstantPool cpg) {
     return Type.getType(getSignature(cpg));
   }
 
-  /** @return name of referenced field.
-   */
-  public String getFieldName(ConstantPoolGen cpg) {
+
+  public String getFieldName(ConstantPool cpg) {
     return getName(cpg);
+  }
+  
+  public int produceStack(ConstantPool cpg) {
+      if (!isStackProducer()) return 0;
+	  
+	  return getFieldSize(cpg); // SAME FOR GETFIELD/GETSTATIC
+  }
+  
+  public int consumeStack(ConstantPool cpg) {
+	  if (!isStackConsumer()) return 0;
+	  if (opcode==GETFIELD) return 1;
+	  return getFieldSize(cpg)+(opcode==PUTFIELD?1:0);
   }
 }
 

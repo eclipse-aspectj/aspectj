@@ -59,7 +59,7 @@ package org.aspectj.apache.bcel.classfile;
  * that the file is malformed or otherwise cannot be interpreted as a
  * class file.
  *
- * @version $Id: ClassFormatException.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: ClassFormatException.java,v 1.3 2008/05/28 23:53:02 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class ClassFormatException extends RuntimeException {

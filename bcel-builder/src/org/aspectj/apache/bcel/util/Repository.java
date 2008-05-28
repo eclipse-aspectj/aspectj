@@ -62,7 +62,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  * Repository.setRepository method.
  *
  * @see org.aspectj.apache.bcel.Repository
- * @version $Id: Repository.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: Repository.java,v 1.3 2008/05/28 23:52:53 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  */

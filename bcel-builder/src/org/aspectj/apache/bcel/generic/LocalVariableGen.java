@@ -56,6 +56,7 @@ package org.aspectj.apache.bcel.generic;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 
 /** 
  * This class represents a local variable within a method. It contains its
@@ -63,13 +64,13 @@ import org.aspectj.apache.bcel.classfile.LocalVariable;
  * with getLocalVariable which needs the instruction list and the constant
  * pool as parameters.
  *
- * @version $Id: LocalVariableGen.java,v 1.5 2005/09/28 06:07:20 acolyer Exp $
+ * @version $Id: LocalVariableGen.java,v 1.6 2008/05/28 23:52:54 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     LocalVariable
  * @see     MethodGen
  */
 public class LocalVariableGen
-  implements InstructionTargeter, NamedAndTyped, Cloneable,
+  implements InstructionTargeter, /*NamedAndTyped,*/ Cloneable,
 	     java.io.Serializable
 {
   private int         index;
@@ -114,7 +115,7 @@ public class LocalVariableGen
    * @param il instruction list (byte code) which this variable belongs to
    * @param cp constant pool
    */
-  public LocalVariable getLocalVariable(ConstantPoolGen cp) {
+  public LocalVariable getLocalVariable(ConstantPool cp) {
     int start_pc        = start.getPosition();
     int length          = end.getPosition() - start_pc;
 
@@ -126,7 +127,7 @@ public class LocalVariableGen
     int signature_index = cp.addUtf8(type.getSignature());
 
     return new LocalVariable(start_pc, length, name_index,
-			     signature_index, index, cp.getConstantPool());
+			     signature_index, index, cp);
   }
 
   public void        setIndex(int index)           { this.index = index; }
@@ -140,12 +141,12 @@ public class LocalVariableGen
   public InstructionHandle getEnd()                    { return end; }
 
   public void setStart(InstructionHandle start) {
-    BranchInstruction.notifyTarget(this.start, start, this);
+	  InstructionBranch.notifyTarget(this.start, start, this);
     this.start = start;
   }
 
   public void setEnd(InstructionHandle end) {
-    BranchInstruction.notifyTarget(this.end, end, this);
+	  InstructionBranch.notifyTarget(this.end, end, this);
     this.end = end;
   }
 

@@ -12,6 +12,7 @@
 
 package org.aspectj.apache.bcel.classfile.tests;
 
+import org.aspectj.apache.bcel.classfile.ClassFormatException;
 import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.apache.bcel.generic.Type;
 
@@ -24,7 +25,7 @@ public class UtilTests extends TestCase {
 	}
 	
 	public void testUtilityClassSignatureManipulation1() {
-	  String[] ss = Utility.methodSignatureArgumentTypes("(Ljava/lang/String;I[Ljava/lang/Integer;)");
+	  String[] ss = UtilTests.methodSignatureArgumentTypes("(Ljava/lang/String;I[Ljava/lang/Integer;)");
 	  assertTrue("should be 3 not "+ss.length,ss.length==3);
 	  
       assertTrue("first should be 'String', not "+ss[0],ss[0].equals("String"));
@@ -53,6 +54,15 @@ public class UtilTests extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
+
+	/**
+	   * @param  signature    Method signature
+	   * @return Array of argument types
+	   * @throws  ClassFormatException  
+	   */
+	  public static final String[] methodSignatureArgumentTypes(String signature) throws ClassFormatException {
+	    return GenericSignatureParsingTest.methodSignatureArgumentTypes(signature, true);
+	  }
 	
 
 }

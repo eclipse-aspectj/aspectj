@@ -1,10 +1,5 @@
 <project name="bcel-builder" default="packageAndPush" basedir=".">
 
-    <!-- *********************************************************************** -->
-    <!-- compliance for Alex build -->
-    <!-- *********************************************************************** -->
-    <!--<import file="../build/build-common.xml"/>-->
-
     <path id="bcel-builder.test.src.path">
         <fileset dir="${basedir}/../lib">
             <include name="junit/*.jar"/>
@@ -21,7 +16,6 @@
     <target name="cleanall" depends="clean">
         <delete dir="bin"/>
         <delete dir="bintest"/>
-        <!-- FIXME: not consistent with Alex policy -->
         <mkdir dir="bin"/>
     </target>
 
@@ -63,14 +57,20 @@
   
   <target name="push">
     <copy file="bcel.jar" todir="../lib/bcel" />
+    <copy file="bcel-verifier.jar" todir="../lib/bcel" />
     <copy file="bcel-src.zip" todir="../lib/bcel" />
+    <copy file="bcel-verifier-src.zip" todir="../lib/bcel" />
   	<delete file="bcel.jar"/>
+  	<delete file="bcel-verifier.jar"/>
   	<delete file="bcel-src.zip"/>
+  	<delete file="bcel-verifier-src.zip"/>
   </target>
 	
   <target name="buildTheJars">
-  	<zip file="bcel.jar" basedir="bin" includes="**/*" excludes="**/tests/*.class"/>
-  	<zip file="bcel-src.zip" basedir="src" includes="**/*"/>
+  	<zip file="bcel.jar" basedir="bin" includes="**/*" excludes="**/tests/*,**/verifier/**/*,**/tests"/>
+  	<zip file="bcel-verifier.jar" basedir="bin" includes="**/verifier/**/*" excludes="**/tests,**/tests/*"/>
+  	<zip file="bcel-src.zip" basedir="src" includes="**/*" excludes="**/tests/*.java,**/verifier/**/*"/>
+  	<zip file="bcel-verifier-src.zip" basedir="verifier-src" includes="**/verifier/**/*" excludes="**/tests,**/tests/*"/>
   </target>
   
   <target name="diff" depends="transformFromAJ,pack">

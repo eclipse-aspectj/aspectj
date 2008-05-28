@@ -54,29 +54,27 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 import java.io.*;
+
+import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.util.ByteSequence;
 
 /** 
  * LOOKUPSWITCH - Switch with unordered set of values
  *
- * @version $Id: LOOKUPSWITCH.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: LOOKUPSWITCH.java,v 1.3 2008/05/28 23:52:57 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see SWITCH
  */
-public class LOOKUPSWITCH extends Select {
-  /**
-   * Empty constructor needed for the Class.newInstance() statement in
-   * Instruction.readInstruction(). Not to be used otherwise.
-   */
-  LOOKUPSWITCH() {}
+public class LOOKUPSWITCH extends InstructionSelect {
+
 
   public LOOKUPSWITCH(int[] match, InstructionHandle[] targets,
 		      InstructionHandle target) {
     super(org.aspectj.apache.bcel.Constants.LOOKUPSWITCH, match, targets, target);
     
-    length = (short)(9 + match_length * 8); /* alignment remainder assumed
+    length = (short)(9 + matchLength * 8); /* alignment remainder assumed
 					     * 0 here, until dump time. */
-    fixed_length = length;
+    fixedLength = length;
   }
 
   /**
@@ -85,9 +83,9 @@ public class LOOKUPSWITCH extends Select {
    */
   public void dump(DataOutputStream out) throws IOException {
     super.dump(out);
-    out.writeInt(match_length);       // npairs
+    out.writeInt(matchLength);       // npairs
 
-    for(int i=0; i < match_length; i++) {
+    for(int i=0; i < matchLength; i++) {
       out.writeInt(match[i]);         // match-offset pairs
       out.writeInt(indices[i] = getTargetOffset(targets[i]));
     }
@@ -96,38 +94,22 @@ public class LOOKUPSWITCH extends Select {
   /**
    * Read needed data (e.g. index) from file.
    */
-  protected void initFromFile(ByteSequence bytes, boolean wide) throws IOException
+  public LOOKUPSWITCH(ByteSequence bytes) throws IOException
   {
-    super.initFromFile(bytes, wide); // reads padding
+    super(Constants.LOOKUPSWITCH,bytes); // reads padding
 
-    match_length = bytes.readInt();
-    fixed_length = (short)(9 + match_length * 8);
-    length       = (short)(fixed_length + padding);
+    matchLength = bytes.readInt();
+    fixedLength = (short)(9 + matchLength * 8);
+    length       = (short)(fixedLength + padding);
 	  
-    match   = new int[match_length];
-    indices = new int[match_length];
-    targets = new InstructionHandle[match_length];
+    match   = new int[matchLength];
+    indices = new int[matchLength];
+    targets = new InstructionHandle[matchLength];
 
-    for(int i=0; i < match_length; i++) {
+    for(int i=0; i < matchLength; i++) {
       match[i]   = bytes.readInt();
       indices[i] = bytes.readInt();
     }
   }
 
-
-  /**
-   * Call corresponding visitor method(s). The order is:
-   * Call visitor methods of implemented interfaces first, then
-   * call methods according to the class hierarchy in descending order,
-   * i.e., the most specific visitXXX() call comes last.
-   *
-   * @param v Visitor object
-   */
-  public void accept(Visitor v) {
-    v.visitVariableLengthInstruction(this);
-    v.visitStackProducer(this);
-    v.visitBranchInstruction(this);
-    v.visitSelect(this);
-    v.visitLOOKUPSWITCH(this);
-  }
 }

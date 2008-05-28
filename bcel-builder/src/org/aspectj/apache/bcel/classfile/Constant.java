@@ -62,7 +62,7 @@ import  java.io.*;
  * in the constant pool of a class file. The classes keep closely to
  * the JVM specification.
  *
- * @version $Id: Constant.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: Constant.java,v 1.3 2008/05/28 23:53:01 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class Constant implements Cloneable, Node, Serializable {
@@ -85,7 +85,7 @@ public abstract class Constant implements Cloneable, Node, Serializable {
    *
    * @param v Visitor object
    */
-  public abstract void accept(Visitor v);    
+  public abstract void accept(ClassVisitor v);    
 
   public abstract void dump(DataOutputStream file) throws IOException;    
 
@@ -117,32 +117,22 @@ public abstract class Constant implements Cloneable, Node, Serializable {
     return super.clone();
   }
 
-  /**
-   * Read one constant from the given file, the type depends on a tag byte.
-   *
-   * @param file Input stream
-   * @return Constant object
-   */
-  static final Constant readConstant(DataInputStream file)
-    throws IOException, ClassFormatException
-  {
-    byte b = file.readByte(); // Read tag byte
-
+  static final Constant readConstant(DataInputStream file) throws IOException, ClassFormatException {
+    byte b = file.readByte();
     switch(b) {
-    case Constants.CONSTANT_Class:              return new ConstantClass(file);
-    case Constants.CONSTANT_Fieldref:           return new ConstantFieldref(file);
-    case Constants.CONSTANT_Methodref:          return new ConstantMethodref(file);
-    case Constants.CONSTANT_InterfaceMethodref: return new 
-					ConstantInterfaceMethodref(file);
-    case Constants.CONSTANT_String:             return new ConstantString(file);
-    case Constants.CONSTANT_Integer:            return new ConstantInteger(file);
-    case Constants.CONSTANT_Float:              return new ConstantFloat(file);
-    case Constants.CONSTANT_Long:               return new ConstantLong(file);
-    case Constants.CONSTANT_Double:             return new ConstantDouble(file);
-    case Constants.CONSTANT_NameAndType:        return new ConstantNameAndType(file);
-    case Constants.CONSTANT_Utf8:               return new ConstantUtf8(file);
-    default:                          
-      throw new ClassFormatException("Invalid byte tag in constant pool: " + b);
+	    case Constants.CONSTANT_Class:              return new ConstantClass(file);
+	    case Constants.CONSTANT_NameAndType:        return new ConstantNameAndType(file);
+	    case Constants.CONSTANT_Utf8:               return new ConstantUtf8(file);
+	    case Constants.CONSTANT_Fieldref:           return new ConstantFieldref(file);
+	    case Constants.CONSTANT_Methodref:          return new ConstantMethodref(file);
+	    case Constants.CONSTANT_InterfaceMethodref: return new ConstantInterfaceMethodref(file);
+	    case Constants.CONSTANT_String:             return new ConstantString(file);
+	    case Constants.CONSTANT_Integer:            return new ConstantInteger(file);
+	    case Constants.CONSTANT_Float:              return new ConstantFloat(file);
+	    case Constants.CONSTANT_Long:               return new ConstantLong(file);
+	    case Constants.CONSTANT_Double:             return new ConstantDouble(file);
+	    default:                          
+	      throw new ClassFormatException("Invalid byte tag in constant pool: " + b);
     }
   }    
 }

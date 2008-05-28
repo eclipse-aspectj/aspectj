@@ -59,7 +59,7 @@ import  org.aspectj.apache.bcel.Constants;
 /** 
  * Abstract super class for Fieldref and Methodref constants.
  *
- * @version $Id: ConstantCP.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: ConstantCP.java,v 1.3 2008/05/28 23:53:02 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     ConstantFieldref
  * @see     ConstantMethodref

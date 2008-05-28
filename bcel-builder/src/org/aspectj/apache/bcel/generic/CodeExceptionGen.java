@@ -55,6 +55,7 @@ package org.aspectj.apache.bcel.generic;
  */
 
 import org.aspectj.apache.bcel.classfile.CodeException;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 
 /** 
  * This class represents an exception handler, i.e., specifies the  region where
@@ -65,7 +66,7 @@ import org.aspectj.apache.bcel.classfile.CodeException;
  * The end of the region is automatically mapped to be exclusive when calling
  * getCodeException(), i.e., there is no difference semantically.
  *
- * @version $Id: CodeExceptionGen.java,v 1.4 2004/11/22 08:31:27 aclement Exp $
+ * @version $Id: CodeExceptionGen.java,v 1.5 2008/05/28 23:52:56 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     MethodGen
  * @see     CodeException
@@ -104,7 +105,7 @@ public final class CodeExceptionGen
    *
    * @param cp constant pool
    */
-  public CodeException getCodeException(ConstantPoolGen cp) {
+  public CodeException getCodeException(ConstantPool cp) {
     return new CodeException(start_pc.getPosition(),
 			     end_pc.getPosition() + end_pc.getInstruction().getLength(),
 			     handler_pc.getPosition(),
@@ -115,7 +116,7 @@ public final class CodeExceptionGen
    * @param start_pc Start of handled region (inclusive)
    */
   public void setStartPC(InstructionHandle start_pc) {
-    BranchInstruction.notifyTarget(this.start_pc, start_pc, this);
+	  InstructionBranch.notifyTarget(this.start_pc, start_pc, this);
     this.start_pc = start_pc; 
   }
 
@@ -123,7 +124,7 @@ public final class CodeExceptionGen
    * @param end_pc End of handled region (inclusive)
    */
   public void setEndPC(InstructionHandle end_pc) {
-    BranchInstruction.notifyTarget(this.end_pc, end_pc, this);
+	  InstructionBranch.notifyTarget(this.end_pc, end_pc, this);
     this.end_pc = end_pc;
   }
 
@@ -131,7 +132,7 @@ public final class CodeExceptionGen
    * @param handler_pc Start of handler
    */
   public void setHandlerPC(InstructionHandle handler_pc) {
-    BranchInstruction.notifyTarget(this.handler_pc, handler_pc, this);
+	  InstructionBranch.notifyTarget(this.handler_pc, handler_pc, this);
     this.handler_pc = handler_pc;
   }
 

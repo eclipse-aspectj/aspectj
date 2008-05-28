@@ -21,16 +21,16 @@ import java.util.Vector;
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.apache.bcel.classfile.Attribute;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValueGen;
 import org.aspectj.apache.bcel.generic.ClassGen;
-import org.aspectj.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.generic.ObjectType;
-import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.generic.annotation.ElementNameValuePairGen;
-import org.aspectj.apache.bcel.generic.annotation.ElementValueGen;
-import org.aspectj.apache.bcel.generic.annotation.SimpleElementValueGen;
 
 public class AnnotationGenTest extends BcelTestCase {
 
@@ -50,7 +50,7 @@ public class AnnotationGenTest extends BcelTestCase {
 		
 		// Create the containing class
 		ClassGen cg = createClassGen("HelloWorld");
-		ConstantPoolGen cp = cg.getConstantPool();
+		ConstantPool cp = cg.getConstantPool();
 		
 		// Create the simple primitive value '4' of type 'int'
 		SimpleElementValueGen evg = 
@@ -81,7 +81,7 @@ public class AnnotationGenTest extends BcelTestCase {
 
         // Create the containing class
         ClassGen cg = createClassGen("HelloWorld");
-        ConstantPoolGen cp = cg.getConstantPool();
+        ConstantPool cp = cg.getConstantPool();
 
         // Create the simple primitive value '4' of type 'int'
         SimpleElementValueGen evg =
@@ -138,7 +138,7 @@ public class AnnotationGenTest extends BcelTestCase {
 	////
 	// Helper methods
 	
-	private void checkSerialize(AnnotationGen a,ConstantPoolGen cpg) {
+	private void checkSerialize(AnnotationGen a,ConstantPool cpg) {
 		try {
 		  String beforeName = a.getTypeName();
 		  List beforeValues = a.getValues();

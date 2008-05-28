@@ -62,7 +62,7 @@ import java.io.*;
  * Responsible for loading (class) files from the CLASSPATH. Inspired by
  * sun.tools.ClassPath.
  *
- * @version $Id: ClassPath.java,v 1.3 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: ClassPath.java,v 1.4 2008/05/28 23:52:53 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class ClassPath implements Serializable {

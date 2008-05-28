@@ -27,12 +27,6 @@ This module includes a modified form of BCEL - with some fixes in *and* support 
 	<li>The LocalVariableTypeTable attribute is supported (used for generics to tell you the original variable signature)</li>
 </ul>
 <p>All this is implemented without using any Java 5 APIs.</p>
-<p>There are a number of new TODO type tags in the code that may prove useful:</p>
-<ul>
-	<li>J5SUPPORT: Marks places where BCEL has been changed for 1.5 (might have missed a couple...)</li>
-	<li>BCELBUG: Marks things that might be BCEL problems that I came across</li>
-	<li>J5TODO: Marks either a missing bit of implementation (hopefully corner case) or an optimization we could make</li>
-</ul>
 <hr>
 <p> The contents of this directory are:
 </p>
@@ -40,6 +34,8 @@ This module includes a modified form of BCEL - with some fixes in *and* support 
 <ul>
   <li>This file</li>
   <li>src -- contains the source for BCEL, a modified variant of BCEL 5.1 that includes bug fixes and Java 5 support</li>
+  <li>verifier-src -- contains the source for the bcel verifier package, something used by tests but not packaged
+      and distributed (at the moment).
   <li>testsrc -- JUnit test cases for the Java 5 support</li>
   <li>testdata -- Java5 testcode that can be built using the build.xml script in the testdata directory (see note on this below)</li>
   <li>build.xml -- an ant script for manipulating the src folder, possibly useful if ever merging a base BCEL version</li>
@@ -66,83 +62,5 @@ then used by the testcases - so if you do change the testdata code then you shou
 to rebuild testcode.jar.
 
 <hr>
-<h3>The old stuff...</h3>
-Before the Java 5 support was added we maintained this module as basically a patch to apply against
-a particular download of BCEL.  Changes to BCEL are occurring more frequently than we integrate
-a new version of BCEL so it made sense to make the patching process easier, so we have checked in
-the modified source for BCEL.
-The original instructions for patching BCEL in the old way are below...
-
-<p> And pretty much nothing else.  Well, then, what do you do with
-this directory?  Well, the whole point is to generate bcel/bcel.jar in
-the lib package.  To do so, first stick
-<strong>bcel-5.1-src.zip</strong> in this directory, then run ant.
-(at one point, this was available at
-<a href="http://archive.apache.org/dist/jakarta/bcel/source/bcel-5.1-src.zip">
-http://archive.apache.org/dist/jakarta/bcel/source/bcel-5.1-src.zip</a>)
-After much unzipping, patching, and compiling, you should get an
-appropriate bcel.jar file.  Now put it in the appropriate place. </p>
-
-<p> If there's something <em>wrong</em> with the bcel.jar in the lib
-project, well, then you've got some development to do.  You'll need
-to know some more ant targets.  But before anything, get that
-<strong>bcel-5.1-src.zip</strong> and stick it in this directory.
-<b>NOTE: You should be working on BCEL when the package names are org.aspectj.apache.bcel,
-and *not* when the package names are org.apache.bcel.  If you run the extractAndPatch task
-below, you will be left with a src folder in the correct state for further development.</b>
-</p>
-
-<p> There are five top-level ant targets apart from the usual "clean":</p>
-
-<ul>
-  <li>ant extractAndPatchAndJar -- this is just the composition of the extract,
-  jar and srcjar targets, and is the default.  It extracts the source from bcel-5.1-src.zip, 
-  patches it, renames the files to start org.aspectj.apache rather than org.apache then
-  compiles the patched version into a jar and drops the new archives:
-  bcel.jar and bcel-src.zip, into the project root.  This is the default task, mainly used
-  to sanity check the building and make sure we're generating something.
-  The bcel.jar and bcel-src.zip generated should be the same as that in ..\lib\bcel\. 
-  </li>
-  
-  <li>ant extractAndPatch -- this extracts the source from bcel-5.1-src.zip,
-  patches it, renames the files to start org.aspectj.apache rather than org.apache then
-  copies the patched source into the project src directory, 
-  there to be visible by eclipse for people to do development on it.
-  For the patch file to be applied you need to have a patch.exe on your path,
-  this bcel building process was tested with the version from cygwin.
-  </li>
-  
-  <li>ant jar -- this copies the edited source from the project source
-  directory and jars it up into bcel.jar, there to be tested.
-  </li>
-  
-  <li>ant srcjar -- this copies the edited source from the project source
-  directory and jars up the source code into bcel-src.zip.
-  </li>
-  
-  <li>ant push -- this pushes the new bcel.jar and bcel-src.zip into ..\lib\bcel\. 
-  - ready to be used by the greater compiler.</li>
-  
-  <li>ant diff -- this creates the patch.txt file, composed of the differences
-  between the project src directory and the original bcel-5.1 source. 
-  In order to create the patch, we transform the packages back to org.apache from 
-  org.aspectj.apache.  To continue working on BCEL once you have done this, you might
-  need to run the transformToAJ task to switch the packages back to the AJ prefix.
-  For the patch file to be built successfully you need to have a diff.exe on your path,
-  this bcel building process was tested with the version from cygwin.
-  </li>
-
-  <li>ant transformToAJ - this changes the packages for the BCEL classes to
-  org.aspectj.apache from org.apache.  This is used by the extractAndPatch task above.
-  </li>
-
-  <li>ant transformFromAJ - this changes the packages for the BCEL classes to
-  org.apache from org.aspectj.apache.  This is used by the diff task.
-  </li>
-</ul>
-
-<p> All of the tasks are destructive, so don't do "ant extract", for example,
-if you have anything in the project source directory you care about.
-</p>
 
 </body> </html>

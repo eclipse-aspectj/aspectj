@@ -6,7 +6,7 @@ import java.io.IOException;
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
-import org.aspectj.apache.bcel.classfile.Visitor;
+import org.aspectj.apache.bcel.classfile.ClassVisitor;
 
 public class RuntimeInvisibleParameterAnnotations extends RuntimeParameterAnnotations {
 	  
@@ -24,7 +24,7 @@ public class RuntimeInvisibleParameterAnnotations extends RuntimeParameterAnnota
 		super(Constants.ATTR_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS,false,nameIndex,len,rvaData,cpool);
 	  }
 
-	  public void accept(Visitor v) {
+	  public void accept(ClassVisitor v) {
 	  	v.visitRuntimeInvisibleParameterAnnotations(this);
 	  }
 

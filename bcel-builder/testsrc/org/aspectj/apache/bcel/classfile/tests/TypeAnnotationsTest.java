@@ -13,8 +13,8 @@
 package org.aspectj.apache.bcel.classfile.tests;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.generic.ClassGen;
-import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 
 
 public class TypeAnnotationsTest extends BcelTestCase {

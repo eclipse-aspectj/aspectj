@@ -62,7 +62,7 @@ import  java.io.*;
  * value, i.e., a default value for initializing a class field.
  * This class is instantiated by the <em>Attribute.readAttribute()</em> method.
  *
- * @version $Id: ConstantValue.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: ConstantValue.java,v 1.3 2008/05/28 23:53:02 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Attribute
  */
@@ -89,7 +89,7 @@ public final class ConstantValue extends Attribute {
   ConstantValue(int name_index, int length, DataInputStream file,
 		ConstantPool constant_pool) throws IOException
   {
-    this(name_index, length, (int)file.readUnsignedShort(), constant_pool);
+    this(name_index, length, file.readUnsignedShort(), constant_pool);
   }    
 
   /**
@@ -113,7 +113,7 @@ public final class ConstantValue extends Attribute {
    *
    * @param v Visitor object
    */
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitConstantValue(this);
   }    
   /**
@@ -143,7 +143,7 @@ public final class ConstantValue extends Attribute {
    * @return String representation of constant value.
    */ 
   public final String toString() {
-    Constant c = constant_pool.getConstant(constantvalue_index);
+    Constant c = constantPool.getConstant(constantvalue_index);
 	
     String   buf;
     int    i;
@@ -156,7 +156,7 @@ public final class ConstantValue extends Attribute {
     case Constants.CONSTANT_Integer: buf = "" + ((ConstantInteger)c).getBytes(); break;
     case Constants.CONSTANT_String:  
       i   = ((ConstantString)c).getStringIndex();
-      c   = constant_pool.getConstant(i, Constants.CONSTANT_Utf8);
+      c   = constantPool.getConstant(i, Constants.CONSTANT_Utf8);
       buf = "\"" + Utility.convertString(((ConstantUtf8)c).getBytes()) + "\"";
       break;
 
@@ -172,7 +172,7 @@ public final class ConstantValue extends Attribute {
    */
   public Attribute copy(ConstantPool constant_pool) {
     ConstantValue c = (ConstantValue)clone();
-    c.constant_pool = constant_pool;
+    c.constantPool = constant_pool;
     return c;
   }
 }

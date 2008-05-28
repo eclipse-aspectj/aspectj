@@ -63,21 +63,18 @@ package org.aspectj.apache.bcel.generic;
  * @see InstructionHandle
  * @see Instruction
  * @see InstructionList
- * @version $Id: BranchHandle.java,v 1.3 2007/05/22 09:11:40 aclement Exp $
+ * @version $Id: BranchHandle.java,v 1.4 2008/05/28 23:52:55 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class BranchHandle extends InstructionHandle {
-  private BranchInstruction bi; // An alias in fact, but saves lots of casts
+  private InstructionBranch bi; // An alias in fact, but saves lots of casts
 
-  private BranchHandle(BranchInstruction i) {
+  private BranchHandle(InstructionBranch i) {
     super(i);
     bi = i;
   }
 
-  /** Factory methods.
-   */
-
-  static final BranchHandle getBranchHandle(BranchInstruction i) {
+  static final BranchHandle getBranchHandle(InstructionBranch i) {
       return new BranchHandle(i);
   }
 
@@ -85,15 +82,15 @@ public final class BranchHandle extends InstructionHandle {
    * Through this overriding all access to the private i_position field should
    * be prevented.
    */
-  public int getPosition() { return bi.position; }
+  public int getPosition() { return bi.positionOfThisInstruction; }
 
   void setPosition(int pos) {
-    i_position = bi.position = pos;
+    i_position = bi.positionOfThisInstruction = pos;
   }
 
   protected int updatePosition(int offset, int max_offset) {
     int x = bi.updatePosition(offset, max_offset);
-    i_position = bi.position;
+    i_position = bi.positionOfThisInstruction;
     return x;
   }
 
@@ -124,11 +121,11 @@ public final class BranchHandle extends InstructionHandle {
   public void setInstruction(Instruction i) {
     super.setInstruction(i);
 
-    if(!(i instanceof BranchInstruction))
+    if(!(i instanceof InstructionBranch))
       throw new ClassGenException("Assigning " + i +
 				  " to branch handle which is not a branch instruction");
 
-    bi = (BranchInstruction)i;
+    bi = (InstructionBranch)i;
   }
 }
 

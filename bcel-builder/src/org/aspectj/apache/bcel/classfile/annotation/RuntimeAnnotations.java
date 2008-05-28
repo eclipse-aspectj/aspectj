@@ -11,6 +11,7 @@ import java.util.List;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 
+
 public abstract class RuntimeAnnotations extends Attribute {
 
 	private List /*Annotation*/ annotations;
@@ -48,20 +49,6 @@ public abstract class RuntimeAnnotations extends Attribute {
 		annotation_data = new byte[length];
 		dis.read(annotation_data,0,length);
 	}
-
-	private void inflate() {
-		try {
-			DataInputStream dis = new DataInputStream(new ByteArrayInputStream(annotation_data));
-			int numberOfAnnotations = dis.readUnsignedShort();		
-			for (int i = 0 ;i<numberOfAnnotations;i++) {
-				annotations.add(Annotation.read(dis,getConstantPool(),visible));
-			}
-			dis.close();
-			inflated = true;
-		} catch (IOException ioe) {
-			throw new RuntimeException("Unabled to inflate annotation data, badly formed? ");
-		}
-	}
 	
 	protected void writeAnnotations(DataOutputStream dos) throws IOException {
 		if (!inflated) {
@@ -69,9 +56,23 @@ public abstract class RuntimeAnnotations extends Attribute {
 		} else {
 			dos.writeShort(annotations.size());
 			for (Iterator i = annotations.iterator(); i.hasNext();) {
-				Annotation ann = (Annotation) i.next();
+				AnnotationGen ann = (AnnotationGen) i.next();
 				ann.dump(dos);
 			}
+		}
+	}
+
+	private void inflate() {
+		try {
+			DataInputStream dis = new DataInputStream(new ByteArrayInputStream(annotation_data));
+			int numberOfAnnotations = dis.readUnsignedShort();		
+			for (int i = 0 ;i<numberOfAnnotations;i++) {
+				annotations.add(AnnotationGen.read(dis,getConstantPool(),visible));
+			}
+			dis.close();
+			inflated = true;
+		} catch (IOException ioe) {
+			throw new RuntimeException("Unabled to inflate annotation data, badly formed? ");
 		}
 	}
 	

@@ -1,5 +1,7 @@
 package org.aspectj.apache.bcel;
 
+import org.aspectj.apache.bcel.generic.Type;
+
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -57,12 +59,11 @@ package org.aspectj.apache.bcel;
 /**
  * Constants for the project, mostly defined in the JVM specification.
  *
- * @version $Id: Constants.java,v 1.3 2006/05/04 11:28:26 aclement Exp $
+ * @version $Id: Constants.java,v 1.4 2008/05/28 23:53:04 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface Constants {
-  /** Major and minor version of the code.
-   */
+  // Major and minor version of the code
   public final static short MAJOR_1_1 = 45;
   public final static short MINOR_1_1 = 3;
   public final static short MAJOR_1_2 = 46;
@@ -75,19 +76,17 @@ public interface Constants {
   public final static short MINOR_1_5 = 0;
   public final static short MAJOR_1_6 = 50;
   public final static short MINOR_1_6 = 0;
-  public final static short MAJOR     = MAJOR_1_1; // Defaults
+  // Defaults
+  public final static short MAJOR     = MAJOR_1_1;
   public final static short MINOR     = MINOR_1_1;
 
-  /** Maximum value for an unsigned short.
-   */
+  /** Maximum value for an unsigned short */
   public final static int MAX_SHORT = 65535; // 2^16 - 1
 
-  /** Maximum value for an unsigned byte.
-   */
+  /** Maximum value for an unsigned byte */
   public final static int MAX_BYTE  = 255; // 2^8 - 1
 
-  /** Access flags for classes, fields and methods.
-   */
+  /** Access flags for classes, fields and methods */
   public final static short ACC_PUBLIC       = 0x0001;
   public final static short ACC_PRIVATE      = 0x0002;
   public final static short ACC_PROTECTED    = 0x0004;
@@ -103,7 +102,6 @@ public interface Constants {
   public final static short ACC_ABSTRACT     = 0x0400;
   public final static short ACC_STRICT       = 0x0800;
   
-  // J5SUPPORT:
   public final static short ACC_ANNOTATION   = 0x2000;
   public final static short ACC_ENUM         = 0x4000;
   public final static short ACC_BRIDGE       = 0x0040;
@@ -119,8 +117,7 @@ public interface Constants {
     "volatile", "transient", "native", "interface", "abstract", "strictfp"
   };
 
-  /** Tags in constant pool to denote type of constant.
-   */
+  /** Tags in constant pool to denote type of constant */
   public final static byte CONSTANT_Utf8               = 1;
   public final static byte CONSTANT_Integer            = 3;
   public final static byte CONSTANT_Float              = 4;
@@ -410,8 +407,8 @@ public interface Constants {
   /**
    * Illegal codes
    */
-  public static final short  UNDEFINED      = -1;
-  public static final short  UNPREDICTABLE  = -2;
+  public static final short  UNDEFINED      = '/'-'0'; //-1;
+  public static final short  UNPREDICTABLE  = '.'-'0';//-2;
   public static final short  RESERVED       = -3;
   public static final String ILLEGAL_OPCODE = "<illegal opcode>";
   public static final String ILLEGAL_TYPE   = "<illegal type>";
@@ -460,72 +457,246 @@ public interface Constants {
     "Z", "C", "F", "D", "B", "S", "I", "J",
     "V", ILLEGAL_TYPE, ILLEGAL_TYPE, ILLEGAL_TYPE
   };
+  
+  public static int PUSH_INST         = 0x0001;
+  public static int CONSTANT_INST     = 0x0002;
+  public static long LOADCLASS_INST =       0x0004;
+  public static int CP_INST                  = 0x0008;
+  public static int INDEXED                  = 0x0010;
+  public static int LOAD_INST                = 0x0020; // load instruction
+  public static int LV_INST                  = 0x0040; // local variable instruction
+  public static int POP_INST                 = 0x0080;
+  public static int STORE_INST               = 0x0100;
+  public static long STACK_INST               =0x0200;
+  public static long BRANCH_INSTRUCTION       =0x0400;
+  public static long TARGETER_INSTRUCTION     =0x0800;
+  public static long NEGATABLE               =0x1000;
+  public static long IF_INST               =0x2000;
+  public static long JSR_INSTRUCTION               =0x4000;
+  public static long RET_INST               =0x8000;
+  public static long EXCEPTION_THROWER      =0x10000;
 
-  /**
-   * Number of byte code operands, i.e., number of bytes after the tag byte
-   * itself.
-   */
-  public static final short[] NO_OF_OPERANDS = {
-    0/*nop*/, 0/*aconst_null*/, 0/*iconst_m1*/, 0/*iconst_0*/,
-    0/*iconst_1*/, 0/*iconst_2*/, 0/*iconst_3*/, 0/*iconst_4*/,
-    0/*iconst_5*/, 0/*lconst_0*/, 0/*lconst_1*/, 0/*fconst_0*/,
-    0/*fconst_1*/, 0/*fconst_2*/, 0/*dconst_0*/, 0/*dconst_1*/,
-    1/*bipush*/, 2/*sipush*/, 1/*ldc*/, 2/*ldc_w*/, 2/*ldc2_w*/,
-    1/*iload*/, 1/*lload*/, 1/*fload*/, 1/*dload*/, 1/*aload*/,
-    0/*iload_0*/, 0/*iload_1*/, 0/*iload_2*/, 0/*iload_3*/,
-    0/*lload_0*/, 0/*lload_1*/, 0/*lload_2*/, 0/*lload_3*/,
-    0/*fload_0*/, 0/*fload_1*/, 0/*fload_2*/, 0/*fload_3*/,
-    0/*dload_0*/, 0/*dload_1*/, 0/*dload_2*/, 0/*dload_3*/,
-    0/*aload_0*/, 0/*aload_1*/, 0/*aload_2*/, 0/*aload_3*/,
-    0/*iaload*/, 0/*laload*/, 0/*faload*/, 0/*daload*/,
-    0/*aaload*/, 0/*baload*/, 0/*caload*/, 0/*saload*/,
-    1/*istore*/, 1/*lstore*/, 1/*fstore*/, 1/*dstore*/,
-    1/*astore*/, 0/*istore_0*/, 0/*istore_1*/, 0/*istore_2*/,
-    0/*istore_3*/, 0/*lstore_0*/, 0/*lstore_1*/, 0/*lstore_2*/,
-    0/*lstore_3*/, 0/*fstore_0*/, 0/*fstore_1*/, 0/*fstore_2*/,
-    0/*fstore_3*/, 0/*dstore_0*/, 0/*dstore_1*/, 0/*dstore_2*/,
-    0/*dstore_3*/, 0/*astore_0*/, 0/*astore_1*/, 0/*astore_2*/,
-    0/*astore_3*/, 0/*iastore*/, 0/*lastore*/, 0/*fastore*/,
-    0/*dastore*/, 0/*aastore*/, 0/*bastore*/, 0/*castore*/,
-    0/*sastore*/, 0/*pop*/, 0/*pop2*/, 0/*dup*/, 0/*dup_x1*/,
-    0/*dup_x2*/, 0/*dup2*/, 0/*dup2_x1*/, 0/*dup2_x2*/, 0/*swap*/,
-    0/*iadd*/, 0/*ladd*/, 0/*fadd*/, 0/*dadd*/, 0/*isub*/,
-    0/*lsub*/, 0/*fsub*/, 0/*dsub*/, 0/*imul*/, 0/*lmul*/,
-    0/*fmul*/, 0/*dmul*/, 0/*idiv*/, 0/*ldiv*/, 0/*fdiv*/,
-    0/*ddiv*/, 0/*irem*/, 0/*lrem*/, 0/*frem*/, 0/*drem*/,
-    0/*ineg*/, 0/*lneg*/, 0/*fneg*/, 0/*dneg*/, 0/*ishl*/,
-    0/*lshl*/, 0/*ishr*/, 0/*lshr*/, 0/*iushr*/, 0/*lushr*/,
-    0/*iand*/, 0/*land*/, 0/*ior*/, 0/*lor*/, 0/*ixor*/, 0/*lxor*/,
-    2/*iinc*/, 0/*i2l*/, 0/*i2f*/, 0/*i2d*/, 0/*l2i*/, 0/*l2f*/,
-    0/*l2d*/, 0/*f2i*/, 0/*f2l*/, 0/*f2d*/, 0/*d2i*/, 0/*d2l*/,
-    0/*d2f*/, 0/*i2b*/, 0/*i2c*/, 0/*i2s*/, 0/*lcmp*/, 0/*fcmpl*/,
-    0/*fcmpg*/, 0/*dcmpl*/, 0/*dcmpg*/, 2/*ifeq*/, 2/*ifne*/,
-    2/*iflt*/, 2/*ifge*/, 2/*ifgt*/, 2/*ifle*/, 2/*if_icmpeq*/,
-    2/*if_icmpne*/, 2/*if_icmplt*/, 2/*if_icmpge*/, 2/*if_icmpgt*/,
-    2/*if_icmple*/, 2/*if_acmpeq*/, 2/*if_acmpne*/, 2/*goto*/,
-    2/*jsr*/, 1/*ret*/, UNPREDICTABLE/*tableswitch*/, UNPREDICTABLE/*lookupswitch*/,
-    0/*ireturn*/, 0/*lreturn*/, 0/*freturn*/,
-    0/*dreturn*/, 0/*areturn*/, 0/*return*/,
-    2/*getstatic*/, 2/*putstatic*/, 2/*getfield*/,
-    2/*putfield*/, 2/*invokevirtual*/, 2/*invokespecial*/, 2/*invokestatic*/,
-    4/*invokeinterface*/, UNDEFINED, 2/*new*/,
-    1/*newarray*/, 2/*anewarray*/,
-    0/*arraylength*/, 0/*athrow*/, 2/*checkcast*/,
-    2/*instanceof*/, 0/*monitorenter*/,
-    0/*monitorexit*/, UNPREDICTABLE/*wide*/, 3/*multianewarray*/,
-    2/*ifnull*/, 2/*ifnonnull*/, 4/*goto_w*/,
-    4/*jsr_w*/, 0/*breakpoint*/, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, RESERVED/*impdep1*/, RESERVED/*impdep2*/
-  };
+  public static final byte[] iLen      = new byte[256];
+  public static final byte UNDEFINED_LENGTH = 'X'-'0';
+  public static final byte VARIABLE_LENGTH = 'V'-'0';
+  public static final byte[] stackEntriesProduced = new byte[256];
+  public static final Type[] types     = new Type[256];
+  public static final long[] instFlags = new long[256];
+  
+  public static final Class[][] instExcs = new Class[256][];
+  
+  static final Clinit _unused = new Clinit();
+  static class Clinit {
+	  
+  static {
+		  types[ILOAD]  =Type.INT;types[ISTORE]=Type.INT;types[ILOAD_0]=Type.INT;types[ISTORE_0]=Type.INT;
+		  types[ILOAD_1]=Type.INT;types[ISTORE_1]=Type.INT;types[ILOAD_2]=Type.INT;types[ISTORE_2]=Type.INT;
+		  types[ILOAD_3]=Type.INT;types[ISTORE_3]=Type.INT;
+		  types[LLOAD]  =Type.LONG;types[LSTORE]=Type.LONG;types[LLOAD_0]=Type.LONG;types[LSTORE_0]=Type.LONG;
+		  types[LLOAD_1]=Type.LONG;types[LSTORE_1]=Type.LONG;types[LLOAD_2]=Type.LONG;types[LSTORE_2]=Type.LONG;
+		  types[LLOAD_3]=Type.LONG;types[LSTORE_3]=Type.LONG;
+		  types[DLOAD]  =Type.DOUBLE;types[DSTORE]=Type.DOUBLE;types[DLOAD_0]=Type.DOUBLE;types[DSTORE_0]=Type.DOUBLE;
+		  types[DLOAD_1]=Type.DOUBLE;types[DSTORE_1]=Type.DOUBLE;types[DLOAD_2]=Type.DOUBLE;types[DSTORE_2]=Type.DOUBLE;
+		  types[DLOAD_3]=Type.DOUBLE;types[DSTORE_3]=Type.DOUBLE;
+		  types[FLOAD]  =Type.FLOAT;types[FSTORE]=Type.FLOAT;types[FLOAD_0]=Type.FLOAT;types[FSTORE_0]=Type.FLOAT;
+		  types[FLOAD_1]=Type.FLOAT;types[FSTORE_1]=Type.FLOAT;types[FLOAD_2]=Type.FLOAT;types[FSTORE_2]=Type.FLOAT;
+		  types[FLOAD_3]=Type.FLOAT;types[FSTORE_3]=Type.FLOAT;
+		  types[ALOAD]  =Type.OBJECT;types[ASTORE]=Type.OBJECT;types[ALOAD_0]=Type.OBJECT;types[ASTORE_0]=Type.OBJECT;
+		  types[ALOAD_1]=Type.OBJECT;types[ASTORE_1]=Type.OBJECT;types[ALOAD_2]=Type.OBJECT;types[ASTORE_2]=Type.OBJECT;
+		  types[ALOAD_3]=Type.OBJECT;types[ASTORE_3]=Type.OBJECT;
 
+
+		  // INSTRUCTION_FLAGS - set for all
+		  instFlags[NOP] = 0; 
+		  instFlags[ACONST_NULL]=PUSH_INST;
+		  instFlags[ICONST_M1]=PUSH_INST|CONSTANT_INST;
+		  instFlags[ICONST_0]=PUSH_INST|CONSTANT_INST;
+		  instFlags[ICONST_1]=PUSH_INST|CONSTANT_INST;
+		  instFlags[ICONST_2]=PUSH_INST|CONSTANT_INST; 
+		  instFlags[ICONST_3]=PUSH_INST|CONSTANT_INST;
+		  instFlags[ICONST_4]=PUSH_INST|CONSTANT_INST;
+		  instFlags[ICONST_5]=PUSH_INST|CONSTANT_INST;
+		  instFlags[LCONST_0]=PUSH_INST|CONSTANT_INST;
+		  instFlags[LCONST_1]=PUSH_INST|CONSTANT_INST;
+		  instFlags[FCONST_0]=PUSH_INST|CONSTANT_INST;
+		  instFlags[FCONST_1]=PUSH_INST|CONSTANT_INST;
+		  instFlags[FCONST_2]=PUSH_INST|CONSTANT_INST;
+		  instFlags[DCONST_0]=PUSH_INST|CONSTANT_INST;
+		  instFlags[DCONST_1]=PUSH_INST|CONSTANT_INST;
+		  
+		  instFlags[BIPUSH]=PUSH_INST|CONSTANT_INST;
+		  instFlags[SIPUSH]=PUSH_INST|CONSTANT_INST;
+
+		  instFlags[LDC]=EXCEPTION_THROWER|PUSH_INST|CP_INST|INDEXED;
+		  
+		  instFlags[LDC_W]=EXCEPTION_THROWER|PUSH_INST|CP_INST|INDEXED;
+		  
+		  instFlags[LDC2_W]=EXCEPTION_THROWER|PUSH_INST|CP_INST|INDEXED;
+		  
+		  // the next five could be 'wide' prefixed and so have longer lengths
+		  instFlags[ILOAD]=INDEXED|LOAD_INST|PUSH_INST|LV_INST;
+		  instFlags[LLOAD]=INDEXED|LOAD_INST|PUSH_INST|LV_INST;
+		  instFlags[FLOAD]=INDEXED|LOAD_INST|PUSH_INST|LV_INST;
+		  instFlags[DLOAD]=INDEXED|LOAD_INST|PUSH_INST|LV_INST;
+		  instFlags[ALOAD]=INDEXED|LOAD_INST|PUSH_INST|LV_INST;
+		  for (int ii=ILOAD_0;ii<=ALOAD_3;ii++) {
+			  instFlags[ii]=INDEXED|LOAD_INST|PUSH_INST|LV_INST;
+		  }
+		  
+
+		  // the next five could be 'wide' prefixed and so have longer lengths
+		  instFlags[ISTORE]=INDEXED|STORE_INST|POP_INST|LV_INST;
+		  instFlags[LSTORE]=INDEXED|STORE_INST|POP_INST|LV_INST;
+		  instFlags[FSTORE]=INDEXED|STORE_INST|POP_INST|LV_INST;
+		  instFlags[DSTORE]=INDEXED|STORE_INST|POP_INST|LV_INST;
+		  instFlags[ASTORE]=INDEXED|STORE_INST|POP_INST|LV_INST;	  
+		  for (int ii=ISTORE_0;ii<=ASTORE_3;ii++) {
+			  instFlags[ii]=INDEXED|STORE_INST|POP_INST|LV_INST;
+		  }
+		  
+		  instFlags[IDIV]=EXCEPTION_THROWER;
+		  instExcs[IDIV] = new Class[]{org.aspectj.apache.bcel.ExceptionConstants.ARITHMETIC_EXCEPTION};
+		  instFlags[IREM]=EXCEPTION_THROWER;
+		  instExcs[IREM] = new Class[]{org.aspectj.apache.bcel.ExceptionConstants.ARITHMETIC_EXCEPTION};
+		  instFlags[LDIV]=EXCEPTION_THROWER;instExcs[LDIV] = new Class[]{ org.aspectj.apache.bcel.ExceptionConstants.ARITHMETIC_EXCEPTION};
+		  instFlags[LREM]=EXCEPTION_THROWER;instExcs[LREM] = new Class[]{org.aspectj.apache.bcel.ExceptionConstants.ARITHMETIC_EXCEPTION};
+		  
+		  
+		  instFlags[ARRAYLENGTH]=EXCEPTION_THROWER; instExcs[ARRAYLENGTH]=new Class[]{org.aspectj.apache.bcel.ExceptionConstants.NULL_POINTER_EXCEPTION};
+		  instFlags[ATHROW]=EXCEPTION_THROWER;instExcs[ATHROW]=new Class[]{org.aspectj.apache.bcel.ExceptionConstants.THROWABLE};
+		  
+		  instFlags[AALOAD]=EXCEPTION_THROWER;instExcs[AALOAD]=org.aspectj.apache.bcel.ExceptionConstants.EXCS_ARRAY_EXCEPTION;
+		  instFlags[IALOAD]=EXCEPTION_THROWER;instExcs[IALOAD]=org.aspectj.apache.bcel.ExceptionConstants.EXCS_ARRAY_EXCEPTION;
+		  instFlags[BALOAD]=EXCEPTION_THROWER;instExcs[BALOAD]=org.aspectj.apache.bcel.ExceptionConstants.EXCS_ARRAY_EXCEPTION;
+		  instFlags[FALOAD]=EXCEPTION_THROWER;instExcs[FALOAD]=org.aspectj.apache.bcel.ExceptionConstants.EXCS_ARRAY_EXCEPTION;
+		  instFlags[DALOAD]=EXCEPTION_THROWER;instExcs[DALOAD]=org.aspectj.apache.bcel.ExceptionConstants.EXCS_ARRAY_EXCEPTION;
+		  instFlags[CALOAD]=EXCEPTION_THROWER;instExcs[CALOAD]=org.aspectj.apache.bcel.ExceptionConstants.EXCS_ARRAY_EXCEPTION;
+		  instFlags[LALOAD]=EXCEPTION_THROWER;instExcs[LALOAD]=org.aspectj.apache.bcel.ExceptionConstants.EXCS_ARRAY_EXCEPTION;
+		  instFlags[SALOAD]=EXCEPTION_THROWER;instExcs[SALOAD]=org.aspectj.apache.bcel.ExceptionConstants.EXCS_ARRAY_EXCEPTION;
+
+		  instFlags[AASTORE]=EXCEPTION_THROWER;instExcs[AASTORE]=org.aspectj.apache.bcel.ExceptionConstants.EXCS_ARRAY_EXCEPTION;
+		  instFlags[IASTORE]=EXCEPTION_THROWER;instExcs[IASTORE]=org.aspectj.apache.bcel.ExceptionConstants.EXCS_ARRAY_EXCEPTION;
+		  instFlags[BASTORE]=EXCEPTION_THROWER;instExcs[BASTORE]=org.aspectj.apache.bcel.ExceptionConstants.EXCS_ARRAY_EXCEPTION;
+		  instFlags[FASTORE]=EXCEPTION_THROWER;instExcs[FASTORE]=org.aspectj.apache.bcel.ExceptionConstants.EXCS_ARRAY_EXCEPTION;
+		  instFlags[DASTORE]=EXCEPTION_THROWER;instExcs[DASTORE]=org.aspectj.apache.bcel.ExceptionConstants.EXCS_ARRAY_EXCEPTION;
+		  instFlags[CASTORE]=EXCEPTION_THROWER;instExcs[CASTORE]=org.aspectj.apache.bcel.ExceptionConstants.EXCS_ARRAY_EXCEPTION;
+		  instFlags[LASTORE]=EXCEPTION_THROWER;instExcs[LASTORE]=org.aspectj.apache.bcel.ExceptionConstants.EXCS_ARRAY_EXCEPTION;
+		  instFlags[SASTORE]=EXCEPTION_THROWER;instExcs[SASTORE]=org.aspectj.apache.bcel.ExceptionConstants.EXCS_ARRAY_EXCEPTION;
+
+		  // stack instructions
+		  instFlags[DUP]=PUSH_INST|STACK_INST;
+		  instFlags[DUP_X1]=STACK_INST; // TODO fixme - aren't these two push/stack producers? (although peculiar ones...)
+		  instFlags[DUP_X2]=STACK_INST;
+		  instFlags[DUP2]=PUSH_INST|STACK_INST;
+		  instFlags[DUP2_X1]=STACK_INST; // TODO fixme - aren't these two push/stack producers? (although peculiar ones...)
+		  instFlags[DUP2_X2]=STACK_INST;
+		  instFlags[POP]=STACK_INST|POP_INST;
+		  instFlags[POP2]=STACK_INST|POP_INST;
+		  instFlags[SWAP]=STACK_INST;
+		  
+		  instFlags[MONITORENTER]=EXCEPTION_THROWER;instExcs[MONITORENTER]=new Class[] { org.aspectj.apache.bcel.ExceptionConstants.NULL_POINTER_EXCEPTION };
+		  instFlags[MONITOREXIT]=EXCEPTION_THROWER;instExcs[MONITOREXIT]=new Class[] { org.aspectj.apache.bcel.ExceptionConstants.NULL_POINTER_EXCEPTION };
+
+		  
+		  // branching instructions
+		  instFlags[GOTO]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION;
+		  instFlags[GOTO_W]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION;
+		  instFlags[JSR]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION|JSR_INSTRUCTION;
+		  instFlags[JSR_W]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION|JSR_INSTRUCTION;
+		  
+		  instFlags[IFGT]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION|NEGATABLE|IF_INST;
+		  instFlags[IFLE]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION|NEGATABLE|IF_INST;
+		  instFlags[IFNE]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION|NEGATABLE|IF_INST;
+		  instFlags[IFEQ]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION|NEGATABLE|IF_INST;
+		  instFlags[IFGE]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION|NEGATABLE|IF_INST;
+		  instFlags[IFLT]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION|NEGATABLE|IF_INST;
+		  instFlags[IFNULL]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION|NEGATABLE|IF_INST;
+		  instFlags[IFNONNULL]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION|NEGATABLE|IF_INST;
+		  instFlags[IF_ACMPEQ]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION|NEGATABLE|IF_INST;
+		  instFlags[IF_ACMPNE]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION|NEGATABLE|IF_INST;
+		  instFlags[IF_ICMPEQ]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION|NEGATABLE|IF_INST;
+		  instFlags[IF_ICMPGE]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION|NEGATABLE|IF_INST;
+		  instFlags[IF_ICMPGT]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION|NEGATABLE|IF_INST;
+		  instFlags[IF_ICMPLE]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION|NEGATABLE|IF_INST;
+		  instFlags[IF_ICMPLT]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION|NEGATABLE|IF_INST;
+		  instFlags[IF_ICMPNE]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION|NEGATABLE|IF_INST;
+		  
+		  instFlags[LOOKUPSWITCH]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION;
+		  instFlags[TABLESWITCH]=BRANCH_INSTRUCTION|TARGETER_INSTRUCTION;
+		  
+		  // fixme these class arrays should be constants
+		  instFlags[ARETURN]=RET_INST|EXCEPTION_THROWER;instExcs[ARETURN]=new Class[] { ExceptionConstants.ILLEGAL_MONITOR_STATE };
+		  instFlags[DRETURN]=RET_INST|EXCEPTION_THROWER;instExcs[DRETURN]=new Class[] { ExceptionConstants.ILLEGAL_MONITOR_STATE };
+		  instFlags[FRETURN]=RET_INST|EXCEPTION_THROWER;instExcs[FRETURN]=new Class[] { ExceptionConstants.ILLEGAL_MONITOR_STATE };
+		  instFlags[IRETURN]=RET_INST|EXCEPTION_THROWER;instExcs[IRETURN]=new Class[] { ExceptionConstants.ILLEGAL_MONITOR_STATE };
+		  instFlags[LRETURN]=RET_INST|EXCEPTION_THROWER;instExcs[LRETURN]=new Class[] { ExceptionConstants.ILLEGAL_MONITOR_STATE };
+		  instFlags[RETURN]=RET_INST|EXCEPTION_THROWER;instExcs[RETURN]=new Class[] { ExceptionConstants.ILLEGAL_MONITOR_STATE };
+		  
+		  
+		  instFlags[NEW]=LOADCLASS_INST|EXCEPTION_THROWER|CP_INST|INDEXED;instExcs[NEW]=ExceptionConstants.EXCS_CLASS_AND_INTERFACE_RESOLUTION_FOR_ALLOCATIONS;
+		  instFlags[NEWARRAY]=EXCEPTION_THROWER;instExcs[NEWARRAY]=new Class[] { org.aspectj.apache.bcel.ExceptionConstants.NEGATIVE_ARRAY_SIZE_EXCEPTION };
+
+		  types[IINC]=Type.INT;instFlags[IINC]=LV_INST|INDEXED;
+		  instFlags[RET]=INDEXED;
+		  
+		  
+		  instFlags[ANEWARRAY]=CP_INST|LOADCLASS_INST|EXCEPTION_THROWER|INDEXED;instExcs[ANEWARRAY]=ExceptionConstants.EXCS_CLASS_AND_INTERFACE_RESOLUTION_ANEWARRAY;
+		  instFlags[CHECKCAST]=CP_INST|LOADCLASS_INST|EXCEPTION_THROWER|INDEXED;instExcs[CHECKCAST]=ExceptionConstants.EXCS_CLASS_AND_INTERFACE_RESOLUTION_CHECKCAST;
+		  instFlags[INSTANCEOF]=CP_INST|LOADCLASS_INST|EXCEPTION_THROWER|INDEXED;instExcs[INSTANCEOF]=ExceptionConstants.EXCS_CLASS_AND_INTERFACE_RESOLUTION;
+		  instFlags[MULTIANEWARRAY]=CP_INST|LOADCLASS_INST|EXCEPTION_THROWER|INDEXED;instExcs[MULTIANEWARRAY]=ExceptionConstants.EXCS_CLASS_AND_INTERFACE_RESOLUTION_ANEWARRAY; // fixme i think this is a stackproducer, old bcel says no...
+		  
+		  instFlags[GETFIELD]=EXCEPTION_THROWER|CP_INST|LOADCLASS_INST|INDEXED;instExcs[GETFIELD]=ExceptionConstants.EXCS_FIELD_AND_METHOD_RESOLUTION_GETFIELD_PUTFIELD;
+		  instFlags[GETSTATIC]=PUSH_INST|EXCEPTION_THROWER|LOADCLASS_INST|CP_INST|INDEXED;instExcs[GETSTATIC]=ExceptionConstants.EXCS_FIELD_AND_METHOD_RESOLUTION_GETSTATIC_PUTSTATIC;
+		  instFlags[PUTFIELD]=POP_INST|EXCEPTION_THROWER|LOADCLASS_INST|CP_INST|INDEXED;instExcs[PUTFIELD]=ExceptionConstants.EXCS_FIELD_AND_METHOD_RESOLUTION_GETFIELD_PUTFIELD;
+		  instFlags[PUTSTATIC]=EXCEPTION_THROWER|POP_INST|CP_INST|LOADCLASS_INST|INDEXED;instExcs[PUTSTATIC]=ExceptionConstants.EXCS_FIELD_AND_METHOD_RESOLUTION_GETSTATIC_PUTSTATIC;
+		  
+		  instFlags[INVOKEINTERFACE]=EXCEPTION_THROWER|CP_INST|LOADCLASS_INST|INDEXED;instExcs[INVOKEINTERFACE]=ExceptionConstants.EXCS_INTERFACE_METHOD_RESOLUTION_INVOKEINTERFACE;
+		  instFlags[INVOKESPECIAL]=EXCEPTION_THROWER|CP_INST|LOADCLASS_INST|INDEXED;instExcs[INVOKESPECIAL]=ExceptionConstants.EXCS_INTERFACE_METHOD_RESOLUTION_INVOKESPECIAL_INVOKEVIRTUAL;
+		  instFlags[INVOKESTATIC]=EXCEPTION_THROWER|CP_INST|LOADCLASS_INST|INDEXED;instExcs[INVOKESTATIC]=ExceptionConstants.EXCS_INTERFACE_METHOD_RESOLUTION_INVOKESTATIC;
+		  instFlags[INVOKEVIRTUAL]=EXCEPTION_THROWER|CP_INST|LOADCLASS_INST|INDEXED;instExcs[INVOKEVIRTUAL]=ExceptionConstants.EXCS_INTERFACE_METHOD_RESOLUTION_INVOKESPECIAL_INVOKEVIRTUAL;
+		  
+		  char[] lengths =  // . = varies in length,   / = undefined
+			  ("1111111111111111"+ // nop       > dconst_1
+			   "2323322222111111"+ // bipush    > lload_1
+			   "1111111111111111"+ // lload_2   > laload
+			   "1111112222211111"+ // faload    > lstore_0
+			   "1111111111111111"+ // lstore_1  > iastore
+			   "1111111111111111"+ // lastore   > swap
+			   "1111111111111111"+ // iadd      > ddiv
+			   "1111111111111111"+ // irem      > land
+			   "1111311111111111"+ // ior       > d2l
+			   "1111111113333333"+ // d2f       > if_icmpeq
+			   "3333333332..1111"+ // if_icmpne > dreturn
+			   "1133333335/32311"+ // areturn   > athrow
+			   "3311.433551/////").toCharArray(); // checkcast > 	
+		  int count=0;
+		  for (;count<lengths.length;count++) iLen[count] = (byte)(lengths[count]-48);
+		  while (count<256) { iLen[count]=UNDEFINED;count++;}
+		  iLen[BREAKPOINT]=1;
+		  iLen[IMPDEP1]=1;
+		  iLen[IMPDEP2]=1;
+		  
+		  char[] producesOnStack = 
+		  	 ("0111111112211122"+ // nop > dconst_1
+		     "1111212121111122"+ // bipush > lload_1
+		     "2211112222111112"+ // lload_2 > laload
+		     "1211110000000000"+ // faload > lstore_0
+		     "0000000000000000"+ // lstore_1 > iastore
+		     "0000000002344562"+ // lastore > swap
+		     "1212121212121212"+ // iadd > ddiv
+		     "1212121212121212"+ // irem > land
+		     "1212021211212212"+ // ior > d2l
+		     "1111111110000000"+ // d2f > if_icmpeq
+		     "0000000010000000"+ // if_icmpne > dreturn
+		     "00.0.0..../11111"+ // areturn > athrow
+		     "11000100010/").toCharArray(); // checkcast > 
+		  count=0;
+		  for (;count<producesOnStack.length;count++) stackEntriesProduced[count] = (byte)(producesOnStack[count]-48);
+		  while (count<256) { iLen[count]=UNDEFINED;count++;}
+		  
+	  }
+  }
+  
   /**
    * How the byte code operands are to be interpreted.
    */
@@ -699,62 +870,8 @@ public interface Constants {
     UNDEFINED, UNPREDICTABLE/*impdep1*/, UNPREDICTABLE/*impdep2*/
   };
 
-  /**
-   * Number of words produced onto operand stack by instructions.
-   */ 
-  public static final int[] PRODUCE_STACK = {
-    0/*nop*/, 1/*aconst_null*/, 1/*iconst_m1*/, 1/*iconst_0*/, 1/*iconst_1*/,
-    1/*iconst_2*/, 1/*iconst_3*/, 1/*iconst_4*/, 1/*iconst_5*/, 2/*lconst_0*/,
-    2/*lconst_1*/, 1/*fconst_0*/, 1/*fconst_1*/, 1/*fconst_2*/, 2/*dconst_0*/,
-    2/*dconst_1*/, 1/*bipush*/, 1/*sipush*/, 1/*ldc*/, 1/*ldc_w*/, 2/*ldc2_w*/, 1/*iload*/,
-    2/*lload*/, 1/*fload*/, 2/*dload*/, 1/*aload*/, 1/*iload_0*/, 1/*iload_1*/, 1/*iload_2*/,
-    1/*iload_3*/, 2/*lload_0*/, 2/*lload_1*/, 2/*lload_2*/, 2/*lload_3*/, 1/*fload_0*/,
-    1/*fload_1*/, 1/*fload_2*/, 1/*fload_3*/, 2/*dload_0*/, 2/*dload_1*/, 2/*dload_2*/,
-    2/*dload_3*/, 1/*aload_0*/, 1/*aload_1*/, 1/*aload_2*/, 1/*aload_3*/, 1/*iaload*/,
-    2/*laload*/, 1/*faload*/, 2/*daload*/, 1/*aaload*/, 1/*baload*/, 1/*caload*/, 1/*saload*/,
-    0/*istore*/, 0/*lstore*/, 0/*fstore*/, 0/*dstore*/, 0/*astore*/, 0/*istore_0*/,
-    0/*istore_1*/, 0/*istore_2*/, 0/*istore_3*/, 0/*lstore_0*/, 0/*lstore_1*/,
-    0/*lstore_2*/, 0/*lstore_3*/, 0/*fstore_0*/, 0/*fstore_1*/, 0/*fstore_2*/,
-    0/*fstore_3*/, 0/*dstore_0*/, 0/*dstore_1*/, 0/*dstore_2*/, 0/*dstore_3*/,
-    0/*astore_0*/, 0/*astore_1*/, 0/*astore_2*/, 0/*astore_3*/, 0/*iastore*/, 0/*lastore*/,
-    0/*fastore*/, 0/*dastore*/, 0/*aastore*/, 0/*bastore*/, 0/*castore*/, 0/*sastore*/,
-    0/*pop*/, 0/*pop2*/, 2/*dup*/, 3/*dup_x1*/, 4/*dup_x2*/, 4/*dup2*/, 5/*dup2_x1*/,
-    6/*dup2_x2*/, 2/*swap*/, 1/*iadd*/, 2/*ladd*/, 1/*fadd*/, 2/*dadd*/, 1/*isub*/, 2/*lsub*/,
-    1/*fsub*/, 2/*dsub*/, 1/*imul*/, 2/*lmul*/, 1/*fmul*/, 2/*dmul*/, 1/*idiv*/, 2/*ldiv*/,
-    1/*fdiv*/, 2/*ddiv*/, 1/*irem*/, 2/*lrem*/, 1/*frem*/, 2/*drem*/, 1/*ineg*/, 2/*lneg*/,
-    1/*fneg*/, 2/*dneg*/, 1/*ishl*/, 2/*lshl*/, 1/*ishr*/, 2/*lshr*/, 1/*iushr*/, 2/*lushr*/,
-    1/*iand*/, 2/*land*/, 1/*ior*/, 2/*lor*/, 1/*ixor*/, 2/*lxor*/,
-    0/*iinc*/, 2/*i2l*/, 1/*i2f*/, 2/*i2d*/, 1/*l2i*/, 1/*l2f*/, 2/*l2d*/, 1/*f2i*/,
-    2/*f2l*/, 2/*f2d*/, 1/*d2i*/, 2/*d2l*/, 1/*d2f*/,
-    1/*i2b*/, 1/*i2c*/, 1/*i2s*/, 1/*lcmp*/, 1/*fcmpl*/, 1/*fcmpg*/,
-    1/*dcmpl*/, 1/*dcmpg*/, 0/*ifeq*/, 0/*ifne*/, 0/*iflt*/, 0/*ifge*/, 0/*ifgt*/, 0/*ifle*/,
-    0/*if_icmpeq*/, 0/*if_icmpne*/, 0/*if_icmplt*/, 0/*if_icmpge*/, 0/*if_icmpgt*/,
-    0/*if_icmple*/, 0/*if_acmpeq*/, 0/*if_acmpne*/, 0/*goto*/, 1/*jsr*/, 0/*ret*/,
-    0/*tableswitch*/, 0/*lookupswitch*/, 0/*ireturn*/, 0/*lreturn*/, 0/*freturn*/,
-    0/*dreturn*/, 0/*areturn*/, 0/*return*/, UNPREDICTABLE/*getstatic*/, 0/*putstatic*/,
-    UNPREDICTABLE/*getfield*/, 0/*putfield*/, UNPREDICTABLE/*invokevirtual*/,
-    UNPREDICTABLE/*invokespecial*/, UNPREDICTABLE/*invokestatic*/,
-    UNPREDICTABLE/*invokeinterface*/, UNDEFINED, 1/*new*/, 1/*newarray*/, 1/*anewarray*/,
-    1/*arraylength*/, 1/*athrow*/, 1/*checkcast*/, 1/*instanceof*/, 0/*monitorenter*/,
-    0/*monitorexit*/, 0/*wide*/, 1/*multianewarray*/, 0/*ifnull*/, 0/*ifnonnull*/,
-    0/*goto_w*/, 1/*jsr_w*/, 0/*breakpoint*/, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNDEFINED, UNDEFINED, UNDEFINED,
-    UNDEFINED, UNPREDICTABLE/*impdep1*/, UNPREDICTABLE/*impdep2*/
-  };
 
-  /** Attributes and their corresponding names.
-   */
+  // Attributes and their corresponding names.
   public static final byte ATTR_UNKNOWN              = -1;
   public static final byte ATTR_SOURCE_FILE          = 0;
   public static final byte ATTR_CONSTANT_VALUE       = 1;
@@ -766,10 +883,8 @@ public interface Constants {
   public static final byte ATTR_SYNTHETIC            = 7;
   public static final byte ATTR_DEPRECATED           = 8;
   public static final byte ATTR_PMG                  = 9;
-  public static final byte ATTR_SIGNATURE            = 10; //J5TODO: Is this the same as a Java5 signature attribute?
+  public static final byte ATTR_SIGNATURE            = 10;
   public static final byte ATTR_STACK_MAP            = 11;
-  
-  // J5SUPPORT:
   public static final byte ATTR_RUNTIME_VISIBLE_ANNOTATIONS             = 12;
   public static final byte ATTR_RUNTIME_INVISIBLE_ANNOTATIONS           = 13;
   public static final byte ATTR_RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS   = 14;
@@ -785,7 +900,6 @@ public interface Constants {
     "LineNumberTable", "LocalVariableTable",
     "InnerClasses", "Synthetic", "Deprecated",
     "PMGClass", "Signature", "StackMap",
-	// J5SUPPORT:
 	"RuntimeVisibleAnnotations","RuntimeInvisibleAnnotations",
 	"RuntimeVisibleParameterAnnotations","RuntimeInvisibleParameterAnnotations",
 	"LocalVariableTypeTable","EnclosingMethod","AnnotationDefault"

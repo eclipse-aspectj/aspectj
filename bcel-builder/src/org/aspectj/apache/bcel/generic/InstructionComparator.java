@@ -1,5 +1,7 @@
 package org.aspectj.apache.bcel.generic;
 
+import org.aspectj.apache.bcel.Constants;
+
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -64,16 +66,16 @@ package org.aspectj.apache.bcel.generic;
  * instructions must have the same target.
  *
  * @see Instruction
- * @version $Id: InstructionComparator.java,v 1.3 2005/09/21 16:28:36 acolyer Exp $
+ * @version $Id: InstructionComparator.java,v 1.4 2008/05/28 23:52:56 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface InstructionComparator {
 	public static final InstructionComparator DEFAULT = new InstructionComparator() {
 		public boolean equals(Instruction i1, Instruction i2) {
 			if (i1.opcode == i2.opcode) {
-				if (i1 instanceof Select) {
-					InstructionHandle[] t1 = ((Select) i1).getTargets();
-					InstructionHandle[] t2 = ((Select) i2).getTargets();
+				if (i1 instanceof InstructionSelect) {
+					InstructionHandle[] t1 = ((InstructionSelect) i1).getTargets();
+					InstructionHandle[] t2 = ((InstructionSelect) i2).getTargets();
 
 					// See AspectJ bug 104957
 					if (t1 == null && t2 == null) return true;
@@ -88,16 +90,14 @@ public interface InstructionComparator {
 
 						return true;
 					}
-				} else if (i1 instanceof BranchInstruction) {
-					return ((BranchInstruction) i1).target == ((BranchInstruction) i2).target;
-				} else if (i1 instanceof ConstantPushInstruction) {
-					return ((ConstantPushInstruction) i1).getValue().equals(
-							((ConstantPushInstruction) i2).getValue());
-				} else if (i1 instanceof IndexedInstruction) {
-					return ((IndexedInstruction) i1).getIndex() == ((IndexedInstruction) i2)
-							.getIndex();
-				} else if (i1 instanceof NEWARRAY) {
-					return ((NEWARRAY) i1).getTypecode() == ((NEWARRAY) i2)
+				} else if (i1 instanceof InstructionBranch) {
+					return ((InstructionBranch) i1).targetInstruction == ((InstructionBranch) i2).targetInstruction;
+				} else if (i1.isConstantInstruction()) {
+					return i1.getValue().equals(i2.getValue());
+				} else if (i1.isIndexedInstruction()) {
+					return i1.getIndex() == i2.getIndex();
+				} else if (i1.opcode==Constants.NEWARRAY) {
+					return ((InstructionByte) i1).getTypecode() == ((InstructionByte) i2)
 							.getTypecode();
 				} else {
 					return true;

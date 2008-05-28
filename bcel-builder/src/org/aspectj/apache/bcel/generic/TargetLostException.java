@@ -82,9 +82,10 @@ package org.aspectj.apache.bcel.generic;
  * @see InstructionHandle
  * @see InstructionList
  * @see InstructionTargeter
- * @version $Id: TargetLostException.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: TargetLostException.java,v 1.3 2008/05/28 23:52:55 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
+// OPTIMIZE make unchecked, or get rid of it!
 public final class TargetLostException extends Exception {
   private InstructionHandle[] targets;
 

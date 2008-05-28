@@ -62,7 +62,7 @@ import  java.io.*;
  * <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class 
  * and represents a reference to a Utf8 encoded string.
  *
- * @version $Id: ConstantUtf8.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: ConstantUtf8.java,v 1.3 2008/05/28 23:53:01 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Constant
  */
@@ -85,20 +85,15 @@ public final class ConstantUtf8 extends Constant {
   ConstantUtf8(DataInputStream file) throws IOException
   {    
     super(Constants.CONSTANT_Utf8);
-
-    bytes = file.readUTF();
+    bytes=file.readUTF();
   }    
 
-  /**
-   * @param bytes Data
-   */
   public ConstantUtf8(String bytes)
   {
     super(Constants.CONSTANT_Utf8);
 
     if(bytes == null)
       throw new IllegalArgumentException("bytes must not be null!");
-
     this.bytes  = bytes;
   }    
 
@@ -109,7 +104,7 @@ public final class ConstantUtf8 extends Constant {
    *
    * @param v Visitor object
    */
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitConstantUtf8(this);
   }
 
@@ -128,7 +123,9 @@ public final class ConstantUtf8 extends Constant {
   /**
    * @return Data converted to string.
    */  
-  public final String getBytes() { return bytes; }    
+  public final String getBytes() {
+	  return bytes; 
+  }    
 
   /**
    * @param bytes.

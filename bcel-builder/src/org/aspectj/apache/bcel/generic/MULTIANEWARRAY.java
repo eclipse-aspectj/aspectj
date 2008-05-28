@@ -54,34 +54,23 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 import java.io.*;
-import org.aspectj.apache.bcel.util.ByteSequence;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.ExceptionConstants;
 
 /** 
  * MULTIANEWARRAY - Create new mutidimensional array of references
  * <PRE>Stack: ..., count1, [count2, ...] -&gt; ..., arrayref</PRE>
  *
- * @version $Id: MULTIANEWARRAY.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: MULTIANEWARRAY.java,v 1.3 2008/05/28 23:52:59 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
-public class MULTIANEWARRAY extends CPInstruction implements LoadClass, AllocationInstruction, ExceptionThrower {
+public class MULTIANEWARRAY extends InstructionCP {
   private short dimensions;
 
-  /**
-   * Empty constructor needed for the Class.newInstance() statement in
-   * Instruction.readInstruction(). Not to be used otherwise.
-   */
-  MULTIANEWARRAY() {}
-
   public MULTIANEWARRAY(int index, short dimensions) {
-    super(org.aspectj.apache.bcel.Constants.MULTIANEWARRAY, index);
-
-    if(dimensions < 1)
-      throw new ClassGenException("Invalid dimensions value: " + dimensions);
-
+    super(Constants.MULTIANEWARRAY, index);
     this.dimensions = dimensions;
-    length = 4;
   }
 
   /**
@@ -97,13 +86,13 @@ public class MULTIANEWARRAY extends CPInstruction implements LoadClass, Allocati
   /**
    * Read needed data (i.e., no. dimension) from file.
    */
-  protected void initFromFile(ByteSequence bytes, boolean wide)
-       throws IOException
-  {
-    super.initFromFile(bytes, wide);
-    dimensions = bytes.readByte();
-    length     = 4;
-  }
+//  protected void initFromFile(ByteSequence bytes, boolean wide)
+//       throws IOException
+//  {
+//    super.initFromFile(bytes, wide);
+//    dimensions = bytes.readByte();
+////    length     = 4;
+//  }
 
   /**
    * @return number of dimensions to be created
@@ -129,7 +118,7 @@ public class MULTIANEWARRAY extends CPInstruction implements LoadClass, Allocati
    * constant pool entry they reference.
    * @return Number of words consumed from stack by this instruction
    */
-  public int consumeStack(ConstantPoolGen cpg) { return dimensions; }
+  public int consumeStack(ConstantPool cpg) { return dimensions; }
 
   public Class[] getExceptions() {
     Class[] cs = new Class[2 + ExceptionConstants.EXCS_CLASS_AND_INTERFACE_RESOLUTION.length];
@@ -143,7 +132,7 @@ public class MULTIANEWARRAY extends CPInstruction implements LoadClass, Allocati
     return cs;
   }
 
-  public ObjectType getLoadClassType(ConstantPoolGen cpg) {
+  public ObjectType getLoadClassType(ConstantPool cpg) {
     Type t = getType(cpg);
     
     if (t instanceof ArrayType){
@@ -153,20 +142,20 @@ public class MULTIANEWARRAY extends CPInstruction implements LoadClass, Allocati
     return (t instanceof ObjectType)? (ObjectType) t : null;
   }
 
-  /**
-   * Call corresponding visitor method(s). The order is:
-   * Call visitor methods of implemented interfaces first, then
-   * call methods according to the class hierarchy in descending order,
-   * i.e., the most specific visitXXX() call comes last.
-   *
-   * @param v Visitor object
-   */
-  public void accept(Visitor v) {
-    v.visitLoadClass(this);
-    v.visitAllocationInstruction(this);
-    v.visitExceptionThrower(this);
-    v.visitTypedInstruction(this);
-    v.visitCPInstruction(this);
-    v.visitMULTIANEWARRAY(this);
-  }
+//  /**
+//   * Call corresponding visitor method(s). The order is:
+//   * Call visitor methods of implemented interfaces first, then
+//   * call methods according to the class hierarchy in descending order,
+//   * i.e., the most specific visitXXX() call comes last.
+//   *
+//   * @param v Visitor object
+//   */
+//  public void accept(Visitor v) {
+//    v.visitLoadClass(this);
+//    v.visitAllocationInstruction(this);
+//    v.visitExceptionThrower(this);
+//    v.visitTypedInstruction(this);
+//    v.visitCPInstruction(this);
+//    v.visitMULTIANEWARRAY(this);
+//  }
 }

@@ -54,21 +54,19 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 import java.io.*;
+
+import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.util.ByteSequence;
 
 /** 
  * TABLESWITCH - Switch within given range of values, i.e., low..high
  *
- * @version $Id: TABLESWITCH.java,v 1.3 2005/08/25 11:35:49 aclement Exp $
+ * @version $Id: TABLESWITCH.java,v 1.4 2008/05/28 23:52:54 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see SWITCH
  */
-public class TABLESWITCH extends Select {
-  /**
-   * Empty constructor needed for the Class.newInstance() statement in
-   * Instruction.readInstruction(). Not to be used otherwise.
-   */
-  TABLESWITCH() {}
+public class TABLESWITCH extends InstructionSelect {
+
 
   /**
    * @param match sorted array of match values, match[0] must be low value, 
@@ -84,9 +82,9 @@ public class TABLESWITCH extends Select {
 //    	throw new RuntimeException("A tableswitch with no targets should be represented as a LOOKUPSWITCH");
 //    }
     
-    length = (short)(13 + match_length * 4); /* Alignment remainder assumed
+    length = (short)(13 + matchLength * 4); /* Alignment remainder assumed
 					      * 0 here, until dump time */
-    fixed_length = length;
+    fixedLength = length;
   }
 
   /**
@@ -96,59 +94,43 @@ public class TABLESWITCH extends Select {
   public void dump(DataOutputStream out) throws IOException {
     super.dump(out);
 
-    int low = (match_length > 0)? match[0] : 0;
+    int low = (matchLength > 0)? match[0] : 0;
     out.writeInt(low);
 
-    int high = (match_length > 0)? match[match_length - 1] : 0;
+    int high = (matchLength > 0)? match[matchLength - 1] : 0;
     out.writeInt(high);
 
 //  See aj bug pr104720
 //    if (match_length==0) out.writeInt(0); // following the switch you need to supply "HIGH-LOW+1" entries
     
-    for(int i=0; i < match_length; i++)     // jump offsets
+    for(int i=0; i < matchLength; i++)     // jump offsets
       out.writeInt(indices[i] = getTargetOffset(targets[i]));
   }
 
   /**
    * Read needed data (e.g. index) from file.
    */
-  protected void initFromFile(ByteSequence bytes, boolean wide) throws IOException
+  public TABLESWITCH(ByteSequence bytes) throws IOException
   {
-    super.initFromFile(bytes, wide);
+    super(Constants.TABLESWITCH,bytes);
 
     int low    = bytes.readInt();
     int high   = bytes.readInt();
 
-    match_length = high - low + 1;
-    fixed_length = (short)(13 + match_length * 4);
-    length       = (short)(fixed_length + padding);
+    matchLength = high - low + 1;
+    fixedLength = (short)(13 + matchLength * 4);
+    length       = (short)(fixedLength + padding);
 
-    match   = new int[match_length];
-    indices = new int[match_length];
-    targets = new InstructionHandle[match_length];
+    match   = new int[matchLength];
+    indices = new int[matchLength];
+    targets = new InstructionHandle[matchLength];
 
     for(int i=low; i <= high; i++)
       match[i - low] = i;
 
-    for(int i=0; i < match_length; i++) {
+    for(int i=0; i < matchLength; i++) {
       indices[i] = bytes.readInt();
     }
   }
 
-
-  /**
-   * Call corresponding visitor method(s). The order is:
-   * Call visitor methods of implemented interfaces first, then
-   * call methods according to the class hierarchy in descending order,
-   * i.e., the most specific visitXXX() call comes last.
-   *
-   * @param v Visitor object
-   */
-  public void accept(Visitor v) {
-    v.visitVariableLengthInstruction(this);
-    v.visitStackProducer(this);
-    v.visitBranchInstruction(this);
-    v.visitSelect(this);
-    v.visitTABLESWITCH(this);
-  }
 }

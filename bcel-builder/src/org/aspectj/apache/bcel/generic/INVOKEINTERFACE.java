@@ -55,30 +55,22 @@ package org.aspectj.apache.bcel.generic;
  */
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.ExceptionConstants;
 
 import java.io.*;
-import org.aspectj.apache.bcel.util.ByteSequence;
 
 /** 
  * INVOKEINTERFACE - Invoke interface method
  * <PRE>Stack: ..., objectref, [arg1, [arg2 ...]] -&gt; ...</PRE>
  *
- * @version $Id: INVOKEINTERFACE.java,v 1.2 2004/11/19 16:45:19 aclement Exp $
+ * @version $Id: INVOKEINTERFACE.java,v 1.3 2008/05/28 23:52:58 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class INVOKEINTERFACE extends InvokeInstruction {
   private int nargs; // Number of arguments on stack (number of stack slots), called "count" in vmspec2
 
-  /**
-   * Empty constructor needed for the Class.newInstance() statement in
-   * Instruction.readInstruction(). Not to be used otherwise.
-   */
-  INVOKEINTERFACE() {}
 
-  public INVOKEINTERFACE(int index, int nargs) {
+  public INVOKEINTERFACE(int index, int nargs,int zerobyte) {
     super(Constants.INVOKEINTERFACE, index);
-    length = 5;
 
     if(nargs < 1)
       throw new ClassGenException("Number of arguments must be > 0 " + nargs);
@@ -103,18 +95,6 @@ public final class INVOKEINTERFACE extends InvokeInstruction {
    */
   public int getCount() { return nargs; }
 
-  /**
-   * Read needed data (i.e., index) from file.
-   */
-  protected void initFromFile(ByteSequence bytes, boolean wide)
-       throws IOException
-  {
-    super.initFromFile(bytes, wide);
-
-    length = 5;
-    nargs = bytes.readUnsignedByte();
-    bytes.readByte(); // Skip 0 byte
-  }
 
   /**
    * @return mnemonic for instruction with symbolic references resolved
@@ -123,41 +103,8 @@ public final class INVOKEINTERFACE extends InvokeInstruction {
     return super.toString(cp) + " " + nargs;
   }
 
-  public int consumeStack(ConstantPoolGen cpg) { // nargs is given in byte-code
+  public int consumeStack(ConstantPool cpg) { // nargs is given in byte-code
     return nargs;  // nargs includes this reference
   }
 
-  public Class[] getExceptions() {
-    Class[] cs = new Class[4 + ExceptionConstants.EXCS_INTERFACE_METHOD_RESOLUTION.length];
-
-    System.arraycopy(ExceptionConstants.EXCS_INTERFACE_METHOD_RESOLUTION, 0,
-		     cs, 0, ExceptionConstants.EXCS_INTERFACE_METHOD_RESOLUTION.length);
-
-    cs[ExceptionConstants.EXCS_INTERFACE_METHOD_RESOLUTION.length+3] = ExceptionConstants.INCOMPATIBLE_CLASS_CHANGE_ERROR;
-    cs[ExceptionConstants.EXCS_INTERFACE_METHOD_RESOLUTION.length+2] = ExceptionConstants.ILLEGAL_ACCESS_ERROR;
-    cs[ExceptionConstants.EXCS_INTERFACE_METHOD_RESOLUTION.length+1] = ExceptionConstants.ABSTRACT_METHOD_ERROR;
-    cs[ExceptionConstants.EXCS_INTERFACE_METHOD_RESOLUTION.length]   = ExceptionConstants.UNSATISFIED_LINK_ERROR;
-
-    return cs;
-  }
-
-  /**
-   * Call corresponding visitor method(s). The order is:
-   * Call visitor methods of implemented interfaces first, then
-   * call methods according to the class hierarchy in descending order,
-   * i.e., the most specific visitXXX() call comes last.
-   *
-   * @param v Visitor object
-   */
-  public void accept(Visitor v) {
-    v.visitExceptionThrower(this);
-    v.visitTypedInstruction(this);
-    v.visitStackConsumer(this);
-    v.visitStackProducer(this);
-    v.visitLoadClass(this);
-    v.visitCPInstruction(this);
-    v.visitFieldOrMethod(this);
-    v.visitInvokeInstruction(this);
-    v.visitINVOKEINTERFACE(this);
-  }
 }

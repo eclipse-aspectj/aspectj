@@ -53,18 +53,27 @@ package org.aspectj.apache.bcel.classfile;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-import  org.aspectj.apache.bcel.Constants;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.util.List;
+
 import org.aspectj.apache.bcel.generic.Type;
-import java.io.*;
 
 /**
  * This class represents the field info structure, i.e., the representation 
  * for a variable in the class. See JVM specification for details.
  *
- * @version $Id: Field.java,v 1.2 2004/11/19 16:45:18 aclement Exp $
+ * @version $Id: Field.java,v 1.3 2008/05/28 23:53:01 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class Field extends FieldOrMethod {
+	
+  public static final Field[] NoFields = new Field[0];
+  
+  private Type fieldType = null; // lazily initialized
+
+  private Field() {}
+  
   /**
    * Initialize from another object. Note that both objects use the same
    * references (shallow copy). Use clone() for a physical copy.
@@ -73,37 +82,15 @@ public final class Field extends FieldOrMethod {
     super(c);
   }
 
-  /**
-   * Construct object from file stream.
-   * @param file Input stream
-   */
-  Field(DataInputStream file, ConstantPool constant_pool)
-       throws IOException, ClassFormatException
-  {
+  Field(DataInputStream file, ConstantPool constant_pool) throws IOException {
     super(file, constant_pool);
   }
 
-  /**
-   * @param access_flags Access rights of field
-   * @param name_index Points to field name in constant pool
-   * @param signature_index Points to encoded signature
-   * @param attributes Collection of attributes
-   * @param constant_pool Array of constants
-   */
-  public Field(int access_flags, int name_index, int signature_index,
-	       Attribute[] attributes, ConstantPool constant_pool)
-  {
-    super(access_flags, name_index, signature_index, attributes, constant_pool);
+  public Field(int accessflags, int nameIndex, int signatureIndex,Attribute[] attributes, ConstantPool constant_pool) {
+    super(accessflags, nameIndex, signatureIndex, attributes, constant_pool);
   }
 
-  /**
-   * Called by objects that are traversing the nodes of the tree implicitely
-   * defined by the contents of a Java class. I.e., the hierarchy of methods,
-   * fields, attributes, etc. spawns a tree of objects.
-   *
-   * @param v Visitor object
-   */
-  public void accept(Visitor v) {
+  public void accept(ClassVisitor v) {
     v.visitField(this);
   }
 
@@ -111,55 +98,47 @@ public final class Field extends FieldOrMethod {
    * @return constant value associated with this field (may be null)
    */
   public final ConstantValue getConstantValue() {
-    for(int i=0; i < attributes_count; i++)
-      if(attributes[i].getTag() == Constants.ATTR_CONSTANT_VALUE)
-	return (ConstantValue)attributes[i];
-
-    return null;
+	  return AttributeUtils.getConstantValueAttribute(attributes);
   }
 
   /**
-   * Return string representation close to declaration format,
-   * `public static final short MAX = 100', e.g..
-   *
-   * @return String representation of field, including the signature.
+   * Return string representation close to declaration format, eg:
+   * 'public static final short MAX = 100'
    */
   public final String toString() {
     String name, signature, access; // Short cuts to constant pool
 
     // Get names from constant pool
-    access    = Utility.accessToString(access_flags);
+    access    = Utility.accessToString(modifiers);
     access    = access.equals("")? "" : (access + " ");
     signature = Utility.signatureToString(getSignature());
     name      = getName();
 
-    StringBuffer  buf = new StringBuffer(access + signature + " " + name);
+    StringBuffer  buf = new StringBuffer(access);
+    buf.append(signature).append(" ").append(name);
     ConstantValue cv  = getConstantValue();
 
-    if(cv != null)
-      buf.append(" = " + cv);
+    if (cv != null) buf.append(" = ").append(cv);
 
-    for(int i=0; i < attributes_count; i++) {
+    // append all attributes that are *not* "ConstantValue"
+    for(int i=0; i < attributes.length; i++) {
       Attribute a = attributes[i];
-
-      if(!(a instanceof ConstantValue))
-	buf.append(" [" + a.toString() + "]");
+      if(!(a instanceof ConstantValue)) buf.append(" [").append(a.toString()).append("]");
     }
 
     return buf.toString();
   }
 
-  /**
-   * @return deep copy of this field
-   */
+  /** deep copy of this field */
   public final Field copy(ConstantPool constant_pool) {
     return (Field)copy_(constant_pool);
   }
 
-  /**
-   * @return type of field
-   */
+  /** return the type of the field */
   public Type getType() {
-    return Type.getReturnType(getSignature());
+	if (fieldType==null) {
+		fieldType = Type.getReturnType(getSignature());
+	}
+	return fieldType;
   }
 }
