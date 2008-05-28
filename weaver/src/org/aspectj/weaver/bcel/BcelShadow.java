@@ -24,40 +24,28 @@ import java.util.Map;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Field;
-import org.aspectj.apache.bcel.generic.ACONST_NULL;
-import org.aspectj.apache.bcel.generic.ALOAD;
-import org.aspectj.apache.bcel.generic.ANEWARRAY;
 import org.aspectj.apache.bcel.generic.ArrayType;
-import org.aspectj.apache.bcel.generic.BranchInstruction;
-import org.aspectj.apache.bcel.generic.ConstantPoolGen;
-import org.aspectj.apache.bcel.generic.DUP;
-import org.aspectj.apache.bcel.generic.DUP_X1;
-import org.aspectj.apache.bcel.generic.DUP_X2;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.generic.FieldInstruction;
 import org.aspectj.apache.bcel.generic.INVOKEINTERFACE;
-import org.aspectj.apache.bcel.generic.INVOKESPECIAL;
-import org.aspectj.apache.bcel.generic.INVOKESTATIC;
 import org.aspectj.apache.bcel.generic.Instruction;
+import org.aspectj.apache.bcel.generic.InstructionBranch;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
+import org.aspectj.apache.bcel.generic.InstructionLV;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
 import org.aspectj.apache.bcel.generic.InvokeInstruction;
 import org.aspectj.apache.bcel.generic.LineNumberTag;
-import org.aspectj.apache.bcel.generic.LoadInstruction;
 import org.aspectj.apache.bcel.generic.LocalVariableTag;
 import org.aspectj.apache.bcel.generic.MULTIANEWARRAY;
-import org.aspectj.apache.bcel.generic.NEW;
 import org.aspectj.apache.bcel.generic.ObjectType;
-import org.aspectj.apache.bcel.generic.PUSH;
-import org.aspectj.apache.bcel.generic.RETURN;
-import org.aspectj.apache.bcel.generic.ReturnInstruction;
-import org.aspectj.apache.bcel.generic.SWAP;
-import org.aspectj.apache.bcel.generic.StoreInstruction;
 import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -141,7 +129,6 @@ public class BcelShadow extends Shadow {
     private ShadowRange range;    
     private final BcelWorld world;  
     private final LazyMethodGen enclosingMethod;
-//	private boolean fallsThrough;  //XXX not used anymore
 	
 	// SECRETAPI - for testing, this will tell us if the optimization succeeded *on the last shadow processed*
 	public static boolean appliedLazyTjpOptimization;
@@ -150,24 +137,15 @@ public class BcelShadow extends Shadow {
     // from the signature (pr109728) (1.4 declaring type issue)
 	private String actualInstructionTargetType; 
 
-	// ---- initialization
-	
 	/**
-	 *  This generates an unassociated shadow, rooted in a particular method but not rooted
+	 * This generates an unassociated shadow, rooted in a particular method but not rooted
 	 * to any particular point in the code.  It should be given to a rooted ShadowRange
 	 * in the {@link ShadowRange#associateWithShadow(BcelShadow)} method.
 	 */
-	public BcelShadow(
-		BcelWorld world,
-		Kind kind,
-		Member signature,
-		LazyMethodGen enclosingMethod,
-		BcelShadow enclosingShadow) 
-	{
+	public BcelShadow(BcelWorld world, Kind kind, Member signature, LazyMethodGen enclosingMethod, BcelShadow enclosingShadow) {
 		super(kind, signature, enclosingShadow);
 		this.world = world;
 		this.enclosingMethod = enclosingMethod;
-//		fallsThrough = kind.argsOnStack();
 	}
 
 	// ---- copies all state, including Shadow's mungers...
@@ -192,23 +170,21 @@ public class BcelShadow extends Shadow {
 		return world;
 	}
 
-
-
 	private void deleteNewAndDup() {
-		final ConstantPoolGen cpg = getEnclosingClass().getConstantPoolGen();
+		final ConstantPool cpg = getEnclosingClass().getConstantPool();
 		int depth = 1;
 		InstructionHandle ih = range.getStart();
 
 		// Go back from where we are looking for 'NEW' that takes us to a stack depth of 0.   INVOKESPECIAL <init> 
 		while (true) {
 			Instruction inst = ih.getInstruction();
-			if (inst instanceof INVOKESPECIAL
-				&& ((INVOKESPECIAL) inst).getName(cpg).equals("<init>")) {
+			if (inst.opcode==Constants.INVOKESPECIAL
+				&& ((InvokeInstruction) inst).getName(cpg).equals("<init>")) {
 				depth++;
-			} else if (inst instanceof NEW) {
+			} else if (inst.opcode==Constants.NEW) {
 				depth--;
 				if (depth == 0) break;
-			} else if (inst instanceof DUP_X2) {
+			} else if (inst.opcode==Constants.DUP_X2) {
 				// This code seen in the wild (by Brad):
 //				40:  new     #12; //class java/lang/StringBuffer
 //				STACK: STRINGBUFFER
@@ -243,7 +219,6 @@ public class BcelShadow extends Shadow {
 				// bytecode sequence has only been seen once in the wild.
 				ih.setInstruction(InstructionConstants.DUP);
 			}
-			
 			ih = ih.getPrev();
 		}
 		// now IH points to the NEW.  We're followed by the DUP, and that is followed
@@ -251,17 +226,15 @@ public class BcelShadow extends Shadow {
 		InstructionHandle newHandle = ih;
 		InstructionHandle endHandle = newHandle.getNext();
 		InstructionHandle nextHandle;
-		//
-		
-		if (endHandle.getInstruction() instanceof DUP) {
+		if (endHandle.getInstruction().opcode==Constants.DUP) {
 			nextHandle = endHandle.getNext();			
 			retargetFrom(newHandle, nextHandle);
 			retargetFrom(endHandle, nextHandle);
-		} else if (endHandle.getInstruction() instanceof DUP_X1) {
+		} else if (endHandle.getInstruction().opcode==Constants.DUP_X1) {
 			InstructionHandle dupHandle = endHandle;
 			endHandle = endHandle.getNext();
 			nextHandle = endHandle.getNext();
-			if (endHandle.getInstruction() instanceof SWAP) {}
+			if (endHandle.getInstruction().opcode==Constants.SWAP) {}
 			else {
 				// XXX see next XXX comment
 				throw new RuntimeException("Unhandled kind of new " + endHandle);
@@ -532,7 +505,7 @@ public class BcelShadow extends Shadow {
         if (clinitStart.getInstruction() instanceof InvokeInstruction) {
         	InvokeInstruction ii = (InvokeInstruction)clinitStart.getInstruction();
 			if (ii
-				.getName(enclosingMethod.getEnclosingClass().getConstantPoolGen())
+				.getName(enclosingMethod.getEnclosingClass().getConstantPool())
 				.equals(NameMangler.AJC_PRE_CLINIT_NAME)) {
 				clinitStart = clinitStart.getNext();
 			}
@@ -543,7 +516,7 @@ public class BcelShadow extends Shadow {
         //XXX should move the end before the postClinit, but the return is then tricky...
 //        if (clinitEnd.getInstruction() instanceof InvokeInstruction) {
 //        	InvokeInstruction ii = (InvokeInstruction)clinitEnd.getInstruction();
-//        	if (ii.getName(enclosingMethod.getEnclosingClass().getConstantPoolGen()).equals(NameMangler.AJC_POST_CLINIT_NAME)) {
+//        	if (ii.getName(enclosingMethod.getEnclosingClass().getConstantPool()).equals(NameMangler.AJC_POST_CLINIT_NAME)) {
 //        		clinitEnd = clinitEnd.getPrev();
 //        	}
 //        }
@@ -602,10 +575,10 @@ public class BcelShadow extends Shadow {
 	}
 	
 	private static String findHandlerParamName(InstructionHandle startOfHandler) {		
-		if (startOfHandler.getInstruction() instanceof StoreInstruction &&
+		if (startOfHandler.getInstruction().isStoreInstruction() &&
 			startOfHandler.getNext() != null)
 		{
-			int slot = ((StoreInstruction)startOfHandler.getInstruction()).getIndex();
+			int slot = startOfHandler.getInstruction().getIndex();
 			//System.out.println("got store: " + startOfHandler.getInstruction() + ", " + index);
 			InstructionTargeter[] targeters = startOfHandler.getNext().getTargeters();
 			if (targeters!=null) {
@@ -1024,7 +997,7 @@ public class BcelShadow extends Shadow {
 		if (sources != null) {
 			for (int i = sources.length - 1; i >= 0; i--) {
 				InstructionTargeter source = sources[i];
-				if (source instanceof BranchInstruction) {
+				if (source instanceof InstructionBranch) {
 					source.updateTarget(from, to);
 				}
 			}
@@ -1259,12 +1232,12 @@ public class BcelShadow extends Shadow {
 		if (hasThis()) {
 			((BcelVar)getThisVar()).appendLoad(il, fact);
 		} else {
-			il.append(new ACONST_NULL());
+			il.append(InstructionConstants.ACONST_NULL);
 		}
 		if (hasTarget()) {
 			((BcelVar)getTargetVar()).appendLoad(il, fact);
 		} else {
-			il.append(new ACONST_NULL());
+			il.append(InstructionConstants.ACONST_NULL);
 		}
 		
 		switch(getArgCount()) {
@@ -1437,34 +1410,32 @@ public class BcelShadow extends Shadow {
     		// Lets go back through the code from the start of the shadow
             InstructionHandle searchPtr = range.getStart().getPrev();
             while (Range.isRangeHandle(searchPtr) || 
-            	   searchPtr.getInstruction() instanceof StoreInstruction) { // ignore this instruction - it doesnt give us the info we want
+            	   searchPtr.getInstruction().isStoreInstruction()) { // ignore this instruction - it doesnt give us the info we want
             	searchPtr = searchPtr.getPrev();  
             }
             
             // A load instruction may tell us the real type of what the clone() call is on
-            if (searchPtr.getInstruction() instanceof LoadInstruction) {
-            	LoadInstruction li = (LoadInstruction)searchPtr.getInstruction();
-            	li.getIndex();
-            	LocalVariableTag lvt = LazyMethodGen.getLocalVariableTag(searchPtr,li.getIndex());
+            if (searchPtr.getInstruction().isLoadInstruction()) { 
+            	LocalVariableTag lvt = LazyMethodGen.getLocalVariableTag(searchPtr,searchPtr.getInstruction().getIndex());
             	if (lvt!=null) 	return UnresolvedType.forSignature(lvt.getType());
             }
             // A field access instruction may tell us the real type of what the clone() call is on
             if (searchPtr.getInstruction() instanceof FieldInstruction) {
             	FieldInstruction si = (FieldInstruction)searchPtr.getInstruction();
-            	Type t = si.getFieldType(getEnclosingClass().getConstantPoolGen());
+            	Type t = si.getFieldType(getEnclosingClass().getConstantPool());
             	return BcelWorld.fromBcel(t);
             } 
             // A new array instruction obviously tells us it is an array type !
-            if (searchPtr.getInstruction() instanceof ANEWARRAY) {
+            if (searchPtr.getInstruction().opcode==Constants.ANEWARRAY) {
             	//ANEWARRAY ana = (ANEWARRAY)searchPoint.getInstruction();
-            	//Type t = ana.getType(getEnclosingClass().getConstantPoolGen());
+//            	Type t = ana.getType(getEnclosingClass().getConstantPool());
             	// Just use a standard java.lang.object array - that will work fine
             	return BcelWorld.fromBcel(new ArrayType(Type.OBJECT,1));
             }
             // A multi new array instruction obviously tells us it is an array type !
             if (searchPtr.getInstruction() instanceof MULTIANEWARRAY) {
             	MULTIANEWARRAY ana = (MULTIANEWARRAY)searchPtr.getInstruction();
-                // Type t = ana.getType(getEnclosingClass().getConstantPoolGen());
+                // Type t = ana.getType(getEnclosingClass().getConstantPool());
             	// t = new ArrayType(t,ana.getDimensions());
             	// Just use a standard java.lang.object array - that will work fine
             	return BcelWorld.fromBcel(new ArrayType(Type.OBJECT,ana.getDimensions()));
@@ -1628,7 +1599,7 @@ public class BcelShadow extends Shadow {
     	// by determining what "kind" of shadow we are, we can find out the
     	// annotations on the appropriate element (method, field, constructor, type).
     	// Then create one BcelVar entry in the map for each annotation, keyed by
-    	// annotation type (UnresolvedType).
+    	// annotation type.
     	
     	// FIXME asc Refactor this code, there is duplication
     	ResolvedType[] annotations = null;
@@ -1827,7 +1798,7 @@ public class BcelShadow extends Shadow {
 	private List findReturnInstructions() {
 		List returns = new ArrayList();
         for (InstructionHandle ih = range.getStart(); ih != range.getEnd(); ih = ih.getNext()) {
-            if (ih.getInstruction() instanceof ReturnInstruction) {
+            if (ih.getInstruction().isReturnInstruction()) {
                 returns.add(ih);
             }
         }
@@ -1861,7 +1832,7 @@ public class BcelShadow extends Shadow {
     		int i=returns.size()-1;
     		while (newReturnInstruction == null && i>=0) {
     			InstructionHandle ih = (InstructionHandle)returns.get(i);
-    			if (!(ih.getInstruction() instanceof RETURN)) {
+    			if (ih.getInstruction().opcode!=Constants.RETURN) {
     				newReturnInstruction = Utility.copyInstruction(ih.getInstruction());
     			}
     			i--;
@@ -1984,7 +1955,7 @@ public class BcelShadow extends Shadow {
         	InstructionList ih = new InstructionList(InstructionConstants.NOP);
         	handler.append(exceptionVar.createLoad(fact));
         	handler.append(fact.createInstanceOf(eiieBcelType));
-        	BranchInstruction bi = 
+        	InstructionBranch bi = 
                 InstructionFactory.createBranchInstruction(Constants.IFEQ,ih.getStart());
         	handler.append(bi);
         	handler.append(exceptionVar.createLoad(fact));
@@ -2105,7 +2076,7 @@ public class BcelShadow extends Shadow {
 		String aspectname = munger.getConcreteAspect().getName();
 		
 		String ptwField = NameMangler.perTypeWithinFieldForTarget(munger.getConcreteAspect());
-		entrySuccessInstructions.append(new PUSH(fact.getConstantPool(),t.getName()));
+		entrySuccessInstructions.append(InstructionFactory.PUSH(fact.getConstantPool(),t.getName()));
 		
 		entrySuccessInstructions.append(fact.createInvoke(aspectname,"ajc$createAspectInstance",new ObjectType(aspectname),
 				new Type[]{new ObjectType("java.lang.String")},Constants.INVOKESTATIC));
@@ -2315,7 +2286,7 @@ public class BcelShadow extends Shadow {
             boolean canSeeProceedPassedToOther = false;
             InstructionHandle curr = adviceMethod.getBody().getStart();
             InstructionHandle end = adviceMethod.getBody().getEnd();
-            ConstantPoolGen cpg = adviceMethod.getEnclosingClass().getConstantPoolGen();
+            ConstantPool cpg = adviceMethod.getEnclosingClass().getConstantPool();
             while (curr != end) {
                 InstructionHandle next = curr.getNext();
                 Instruction inst = curr.getInstruction();
@@ -2538,12 +2509,12 @@ public class BcelShadow extends Shadow {
 
             InstructionHandle curr = localAdviceMethod.getBody().getStart();
             InstructionHandle end = localAdviceMethod.getBody().getEnd();
-            ConstantPoolGen cpg = localAdviceMethod.getEnclosingClass().getConstantPoolGen();
+            ConstantPool cpg = localAdviceMethod.getEnclosingClass().getConstantPool();
             while (curr != end) {
                 InstructionHandle next = curr.getNext();
                 Instruction inst = curr.getInstruction();
-                if ((inst instanceof INVOKESTATIC)
-                    && proceedName.equals(((INVOKESTATIC) inst).getMethodName(cpg))) {
+                if ((inst.opcode==Constants.INVOKESTATIC)
+                    && proceedName.equals(((InvokeInstruction) inst).getMethodName(cpg))) {
 
                     localAdviceMethod.getBody().append(
                         curr,
@@ -2563,7 +2534,7 @@ public class BcelShadow extends Shadow {
             // [TODO document @AJ code rule: don't manipulate 2 jps proceed at the same time.. in an advice body]
             InstructionHandle curr = localAdviceMethod.getBody().getStart();
             InstructionHandle end = localAdviceMethod.getBody().getEnd();
-            ConstantPoolGen cpg = localAdviceMethod.getEnclosingClass().getConstantPoolGen();
+            ConstantPool cpg = localAdviceMethod.getEnclosingClass().getConstantPool();
             while (curr != end) {
                 InstructionHandle next = curr.getNext();
                 Instruction inst = curr.getInstruction();
@@ -2753,7 +2724,7 @@ public class BcelShadow extends Shadow {
                     indexIntoObjectArrayForArguments=1;
             	} else {
             		// use local variable 0 (which is 'this' for a non-static method)
-            		ret.append(new ALOAD(0));
+            		ret.append(InstructionFactory.createALOAD(0));
                 	indexIntoCallbackMethodForArguments++;
             	}
             }
@@ -2791,7 +2762,7 @@ public class BcelShadow extends Shadow {
                 Type stateType = callbackMethod.getArgumentTypes()[i];
                 BcelWorld.fromBcel(stateType).resolve(world);
                 if ("Lorg/aspectj/lang/JoinPoint;".equals(stateType.getSignature())) {
-                    ret.append(new ALOAD(localJp));// from localAdvice signature
+                    ret.append(new InstructionLV(Constants.ALOAD,localJp));// from localAdvice signature
                 } else {
                     ret.append(InstructionFactory.createLoad(objectArrayType, localProceedArgArray));
                     ret.append(Utility.createConstant(fact, i-indexIntoCallbackMethodForArguments +indexIntoObjectArrayForArguments));
@@ -2814,7 +2785,7 @@ public class BcelShadow extends Shadow {
                 /*ResolvedType stateTypeX =*/ 
                 BcelWorld.fromBcel(stateType).resolve(world);
                 if ("Lorg/aspectj/lang/JoinPoint;".equals(stateType.getSignature())) {
-                    ret.append(new ALOAD(localJp));// from localAdvice signature
+                    ret.append(InstructionFactory.createALOAD(localJp));// from localAdvice signature
 //                } else if ("Lorg/aspectj/lang/ProceedingJoinPoint;".equals(stateType.getSignature())) {
 //                    //FIXME ALEX?
 //                        ret.append(new ALOAD(localJp));// from localAdvice signature
@@ -3089,7 +3060,7 @@ public class BcelShadow extends Shadow {
         if (munger.getConcreteAspect()!=null && munger.getConcreteAspect().isAnnotationStyleAspect() 
            && munger.getDeclaringAspect()!=null && munger.getDeclaringAspect().resolve(world).isAnnotationStyleAspect()) {
         	// stick the bitflags on the stack and call the variant of linkClosureAndJoinPoint that takes an int
-        	closureInstantiation.append(fact.createConstant(new Integer(bitflags)));
+        	closureInstantiation.append(fact.createConstant(Integer.valueOf(bitflags)));
             closureInstantiation.append(Utility.createInvoke(
                     getFactory(),
                     getWorld(),
@@ -3195,7 +3166,7 @@ public class BcelShadow extends Shadow {
         	stateIndex++;
         }
         il.append(fact.createNew(new ObjectType(constructor.getDeclaringType().getName())));
-        il.append(new DUP());
+        il.append(InstructionConstants.DUP);
         arrayVar.appendLoad(il, fact);
         il.append(Utility.createInvoke(fact, world, constructor));
         if (getKind() == PreInitialization) {
@@ -3246,7 +3217,7 @@ public class BcelShadow extends Shadow {
 			                                     Modifier.PUBLIC,
 			                                     new String[] {},
 			                                     getWorld());
-        InstructionFactory fact = new InstructionFactory(closureClass.getConstantPoolGen());
+        InstructionFactory fact = new InstructionFactory(closureClass.getConstantPool());
         				
         // constructor
         LazyMethodGen constructor = new LazyMethodGen(Modifier.PUBLIC, 
@@ -3393,7 +3364,7 @@ public class BcelShadow extends Shadow {
 		InvokeInstruction superCallInstruction = 
 			(InvokeInstruction) superCallHandle.getInstruction();
 		return superCallInstruction.getArgumentTypes(
-			getEnclosingClass().getConstantPoolGen());
+			getEnclosingClass().getConstantPool());
 	}
 
 

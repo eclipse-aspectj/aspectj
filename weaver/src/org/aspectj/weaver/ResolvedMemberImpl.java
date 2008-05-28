@@ -60,7 +60,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     
     //XXX deprecate this in favor of the constructor below
 	public ResolvedMemberImpl(
-		Kind kind,
+		MemberKind kind,
 		UnresolvedType declaringType,
 		int modifiers,
 		UnresolvedType returnType,
@@ -73,7 +73,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     
     
 	public ResolvedMemberImpl(
-		Kind kind,
+		MemberKind kind,
 		UnresolvedType declaringType,
 		int modifiers,
 		UnresolvedType returnType,
@@ -86,7 +86,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	}
     
 	public ResolvedMemberImpl(
-			Kind kind,
+			MemberKind kind,
 			UnresolvedType declaringType,
 			int modifiers,
 			UnresolvedType returnType,
@@ -101,7 +101,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		}
 	
 	public ResolvedMemberImpl(
-		Kind kind,
+		MemberKind kind,
 		UnresolvedType declaringType,
 		int modifiers,
 		String name,
@@ -413,7 +413,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     
     public static ResolvedMemberImpl readResolvedMember(VersionedDataInputStream s, ISourceContext sourceContext) throws IOException {
     	
-    	ResolvedMemberImpl m = new ResolvedMemberImpl(Kind.read(s), UnresolvedType.read(s), s.readInt(), 
+    	ResolvedMemberImpl m = new ResolvedMemberImpl(MemberKind.read(s), UnresolvedType.read(s), s.readInt(), 
     			s.readUTF(), s.readUTF());
 		m.checkedExceptions = UnresolvedType.readArray(s);
 		
@@ -838,7 +838,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
       * using this method - this is safe.
       */
 	public void resetName(String newName) {this.name = newName;}
-	public void resetKind(Kind newKind)   {this.kind=newKind;  }
+	public void resetKind(MemberKind newKind) { this.kind = newKind; }
     public void resetModifiers(int newModifiers) {this.modifiers=newModifiers;}
 
 	public void resetReturnTypeToObjectArray() {

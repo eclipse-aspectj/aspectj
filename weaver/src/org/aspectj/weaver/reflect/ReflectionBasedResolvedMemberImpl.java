@@ -15,6 +15,7 @@ import java.lang.reflect.Member;
 import java.util.Iterator;
 
 import org.aspectj.weaver.AnnotationX;
+import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
@@ -42,7 +43,7 @@ public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 	 * @param name
 	 * @param parameterTypes
 	 */
-	public ReflectionBasedResolvedMemberImpl(Kind kind,
+	public ReflectionBasedResolvedMemberImpl(MemberKind kind,
 			UnresolvedType declaringType, int modifiers,
 			UnresolvedType returnType, String name,
 			UnresolvedType[] parameterTypes,
@@ -60,7 +61,7 @@ public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 	 * @param parameterTypes
 	 * @param checkedExceptions
 	 */
-	public ReflectionBasedResolvedMemberImpl(Kind kind,
+	public ReflectionBasedResolvedMemberImpl(MemberKind kind,
 			UnresolvedType declaringType, int modifiers,
 			UnresolvedType returnType, String name,
 			UnresolvedType[] parameterTypes, UnresolvedType[] checkedExceptions,
@@ -80,7 +81,7 @@ public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 	 * @param checkedExceptions
 	 * @param backingGenericMember
 	 */
-	public ReflectionBasedResolvedMemberImpl(Kind kind,
+	public ReflectionBasedResolvedMemberImpl(MemberKind kind,
 			UnresolvedType declaringType, int modifiers,
 			UnresolvedType returnType, String name,
 			UnresolvedType[] parameterTypes,
@@ -99,7 +100,7 @@ public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 	 * @param name
 	 * @param signature
 	 */
-	public ReflectionBasedResolvedMemberImpl(Kind kind,
+	public ReflectionBasedResolvedMemberImpl(MemberKind kind,
 			UnresolvedType declaringType, int modifiers, String name,
 			String signature, Member reflectMember) {
 		super(kind, declaringType, modifiers, name, signature);

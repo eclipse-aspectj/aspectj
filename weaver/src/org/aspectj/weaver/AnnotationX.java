@@ -15,12 +15,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.aspectj.apache.bcel.classfile.annotation.Annotation;
-import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
-import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
-import org.aspectj.apache.bcel.classfile.annotation.EnumElementValue;
 import org.aspectj.apache.bcel.classfile.Utility;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.EnumElementValueGen;
 
 /**
  * AnnotationX instances are holders for an annotation from either Bcel or
@@ -31,8 +31,8 @@ public class AnnotationX {
 	
   public static final AnnotationX[] NONE = new AnnotationX[0];
   
-  private Annotation theRealBcelAnnotation;
-  private AnnotationAJ theRealEclipseAnnotation;
+  private AnnotationGen theRealBcelAnnotation;
+  private AnnotationAJ theRealEclipseAnnotation; // OPTIMIZE push out into compiler, not ever used if purely binary weaving ?
   private int mode = -1;
   private final static int MODE_ECLIPSE = 1;
   private final static int  MODE_BCEL = 2;
@@ -44,7 +44,7 @@ public class AnnotationX {
   private AnnotationX atTargetAnnotation          = null;
   private Set         supportedTargets            = null;
   
-  public AnnotationX(Annotation a,World world) {
+  public AnnotationX(AnnotationGen a,World world) {
   	theRealBcelAnnotation = a;
   	signature = UnresolvedType.forSignature(theRealBcelAnnotation.getTypeSignature()).resolve(world);
   	mode = MODE_BCEL;
@@ -56,7 +56,7 @@ public class AnnotationX {
 	  	mode= MODE_ECLIPSE;
   }
 
-  public Annotation getBcelAnnotation() {
+  public AnnotationGen getBcelAnnotation() {
 	return theRealBcelAnnotation;
   }
   
@@ -168,11 +168,11 @@ public class AnnotationX {
 	  Set supportedTargets = new HashSet();
 	  if (mode==MODE_BCEL) {
 	    List values = getBcelAnnotation().getValues();
-	  	ElementNameValuePair envp = (ElementNameValuePair)values.get(0);
-	  	ArrayElementValue aev = (ArrayElementValue)envp.getValue();
-	  	ElementValue[] evs = aev.getElementValuesArray();
+	  	ElementNameValuePairGen envp = (ElementNameValuePairGen)values.get(0);
+	  	ArrayElementValueGen aev = (ArrayElementValueGen)envp.getValue();
+	  	ElementValueGen[] evs = aev.getElementValuesArray();
 	  	for (int i = 0; i < evs.length; i++) {
-			EnumElementValue ev = (EnumElementValue)evs[i];
+			EnumElementValueGen ev = (EnumElementValueGen)evs[i];
 			supportedTargets.add(ev.getEnumValueString());
 		}
 	  } else {

@@ -12,16 +12,12 @@
 package org.aspectj.weaver.bcel;
 
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.generic.ATHROW;
-import org.aspectj.apache.bcel.generic.BranchInstruction;
+import org.aspectj.apache.bcel.generic.InstructionBranch;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
-import org.aspectj.apache.bcel.generic.NOP;
 import org.aspectj.apache.bcel.generic.ObjectType;
-import org.aspectj.apache.bcel.generic.POP;
-import org.aspectj.apache.bcel.generic.PUSH;
 import org.aspectj.apache.bcel.generic.ReferenceType;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.weaver.AjAttribute;
@@ -170,11 +166,11 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
 
         //FIXME Alex percflowX is not using this one but AJ code style does generate it so..
         ResolvedMember failureFieldInfo = AjcMemberMaker.initFailureCauseField(aspectType);
-        classGen.addField(makeFieldGen(classGen, failureFieldInfo).getField(), null);
+        classGen.addField(makeFieldGen(classGen, failureFieldInfo), null);
 
         if (kind == PerClause.SINGLETON) {
             ResolvedMember perSingletonFieldInfo = AjcMemberMaker.perSingletonField(aspectType);
-            classGen.addField(makeFieldGen(classGen, perSingletonFieldInfo).getField(), null);
+            classGen.addField(makeFieldGen(classGen, perSingletonFieldInfo), null);
 // pr144602 - don't need to do this, PerObjectInterface munger will do it
 //        } else if (kind == PerClause.PEROBJECT) {
 //           ResolvedMember perObjectFieldInfo = AjcMemberMaker.perObjectField(aspectType, aspectType);
@@ -183,10 +179,10 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
 //            // it should be done here.
         } else if (kind == PerClause.PERCFLOW) {
             ResolvedMember perCflowFieldInfo = AjcMemberMaker.perCflowField(aspectType);
-            classGen.addField(makeFieldGen(classGen, perCflowFieldInfo).getField(), null);
+            classGen.addField(makeFieldGen(classGen, perCflowFieldInfo), null);
         } else if (kind == PerClause.PERTYPEWITHIN) {
             ResolvedMember perTypeWithinForField = AjcMemberMaker.perTypeWithinWithinTypeField(aspectType, aspectType);
-            classGen.addField(makeFieldGen(classGen, perTypeWithinForField).getField(), null);
+            classGen.addField(makeFieldGen(classGen, perTypeWithinForField), null);
 //        } else {
 //            throw new Error("Should not happen - no such kind " + kind.toString());
         }
@@ -200,11 +196,11 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
 
         InstructionList il = method.getBody();
         il.append(Utility.createGet(factory, AjcMemberMaker.perSingletonField(aspectType)));
-        BranchInstruction ifNotNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
+        InstructionBranch ifNotNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
         il.append(ifNotNull);
         il.append(factory.createNew(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION.getName()));
         il.append(InstructionConstants.DUP);
-        il.append(new PUSH(classGen.getConstantPoolGen(), aspectType.getName()));
+        il.append(InstructionFactory.PUSH(classGen.getConstantPool(), aspectType.getName()));
         il.append(Utility.createGet(factory, AjcMemberMaker.initFailureCauseField(aspectType)));
         il.append(factory.createInvoke(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION.getName(), "<init>", Type.VOID, new Type[] { Type.STRING, new ObjectType("java.lang.Throwable") }, Constants.INVOKESPECIAL));
         il.append(InstructionConstants.ATHROW);
@@ -221,11 +217,11 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
 
         InstructionList il = method.getBody();
         il.append(Utility.createGet(factory, AjcMemberMaker.perSingletonField(aspectType)));
-        BranchInstruction ifNull = InstructionFactory.createBranchInstruction(Constants.IFNULL, null);
+        InstructionBranch ifNull = (InstructionBranch)InstructionFactory.createBranchInstruction(Constants.IFNULL, null);
         il.append(ifNull);
-        il.append(new PUSH(classGen.getConstantPoolGen(), true));
+        il.append(InstructionFactory.PUSH(classGen.getConstantPool(), true));
         il.append(InstructionFactory.createReturn(Type.INT));
-        InstructionHandle ifElse = il.append(new PUSH(classGen.getConstantPoolGen(), false));
+        InstructionHandle ifElse = il.append(InstructionFactory.PUSH(classGen.getConstantPool(), false));
         il.append(InstructionFactory.createReturn(Type.INT));
         ifNull.setTarget(ifElse);
     }
@@ -248,7 +244,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         LazyMethodGen clinit = classGen.getStaticInitializer();
         il = new InstructionList();
         InstructionHandle tryStart = il.append(factory.createInvoke(aspectType.getName(), NameMangler.AJC_POST_CLINIT_NAME, Type.VOID, Type.NO_ARGS, Constants.INVOKESTATIC));
-        BranchInstruction tryEnd = InstructionFactory.createBranchInstruction(Constants.GOTO, null);
+        InstructionBranch tryEnd = InstructionFactory.createBranchInstruction(Constants.GOTO, null);
         il.append(tryEnd);
         InstructionHandle handler = il.append(InstructionConstants.ASTORE_0);
         il.append(InstructionConstants.ALOAD_0);
@@ -258,10 +254,10 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
 
         // replace the original "return" with a "nop"
         //TODO AV - a bit odd, looks like Bcel alters bytecode and has a IMPDEP1 in its representation
-        if (clinit.getBody().getEnd().getInstruction().getOpcode() == Constants.IMPDEP1) {
-            clinit.getBody().getEnd().getPrev().setInstruction(new NOP());
+        if (clinit.getBody().getEnd().getInstruction().opcode == Constants.IMPDEP1) {
+            clinit.getBody().getEnd().getPrev().setInstruction(InstructionConstants.NOP);
         }
-        clinit.getBody().getEnd().setInstruction(new NOP());
+        clinit.getBody().getEnd().setInstruction(InstructionConstants.NOP);
         clinit.getBody().append(il);
 
         clinit.addExceptionHandler(
@@ -279,22 +275,22 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         InstructionList il = method.getBody();
         il.append(InstructionConstants.ALOAD_0);
         il.append(factory.createInstanceOf(interfaceType));
-        BranchInstruction ifEq = InstructionFactory.createBranchInstruction(Constants.IFEQ, null);
+        InstructionBranch ifEq = InstructionFactory.createBranchInstruction(Constants.IFEQ, null);
         il.append(ifEq);
         il.append(InstructionConstants.ALOAD_0);
         il.append(factory.createCheckCast(interfaceType));
         il.append(Utility.createInvoke(factory, Constants.INVOKEINTERFACE, AjcMemberMaker.perObjectInterfaceGet(aspectType)));
         il.append(InstructionConstants.DUP);
-        BranchInstruction ifNull = InstructionFactory.createBranchInstruction(Constants.IFNULL, null);
+        InstructionBranch ifNull = InstructionFactory.createBranchInstruction(Constants.IFNULL, null);
         il.append(ifNull);
         il.append(InstructionFactory.createReturn(BcelWorld.makeBcelType(aspectType)));
-        InstructionHandle ifNullElse = il.append(new POP());
+        InstructionHandle ifNullElse = il.append(InstructionConstants.POP);
         ifNull.setTarget(ifNullElse);
         InstructionHandle ifEqElse = il.append(factory.createNew(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION.getName()));
         ifEq.setTarget(ifEqElse);
         il.append(InstructionConstants.DUP);
         il.append(factory.createInvoke(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION.getName(), "<init>", Type.VOID, Type.NO_ARGS, Constants.INVOKESPECIAL));
-        il.append(new ATHROW());
+        il.append(InstructionConstants.ATHROW);
     }
 
     private void generatePerObjectHasAspectMethod(LazyClassGen classGen) {
@@ -307,12 +303,12 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         InstructionList il = method.getBody();
         il.append(InstructionConstants.ALOAD_0);
         il.append(factory.createInstanceOf(interfaceType));
-        BranchInstruction ifEq = InstructionFactory.createBranchInstruction(Constants.IFEQ, null);
+        InstructionBranch ifEq = InstructionFactory.createBranchInstruction(Constants.IFEQ, null);
         il.append(ifEq);
         il.append(InstructionConstants.ALOAD_0);
         il.append(factory.createCheckCast(interfaceType));
         il.append(Utility.createInvoke(factory, Constants.INVOKEINTERFACE, AjcMemberMaker.perObjectInterfaceGet(aspectType)));
-        BranchInstruction ifNull = InstructionFactory.createBranchInstruction(Constants.IFNULL, null);
+        InstructionBranch ifNull = InstructionFactory.createBranchInstruction(Constants.IFNULL, null);
         il.append(ifNull);
         il.append(InstructionConstants.ICONST_1);
         il.append(InstructionFactory.createReturn(Type.INT));
@@ -332,12 +328,12 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         InstructionList il = method.getBody();
         il.append(InstructionConstants.ALOAD_0);
         il.append(factory.createInstanceOf(interfaceType));
-        BranchInstruction ifEq = InstructionFactory.createBranchInstruction(Constants.IFEQ, null);
+        InstructionBranch ifEq = InstructionFactory.createBranchInstruction(Constants.IFEQ, null);
         il.append(ifEq);
         il.append(InstructionConstants.ALOAD_0);
         il.append(factory.createCheckCast(interfaceType));
         il.append(Utility.createInvoke(factory, Constants.INVOKEINTERFACE, AjcMemberMaker.perObjectInterfaceGet(aspectType)));
-        BranchInstruction ifNonNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
+        InstructionBranch ifNonNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
         il.append(ifNonNull);
         il.append(InstructionConstants.ALOAD_0);
         il.append(factory.createCheckCast(interfaceType));
@@ -449,11 +445,11 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         ));
         il.append(InstructionConstants.ASTORE_1);
         il.append(InstructionConstants.ALOAD_1);
-        BranchInstruction ifNonNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
+        InstructionBranch ifNonNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
         il.append(ifNonNull);
         il.append(factory.createNew(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION.getName()));
         il.append(InstructionConstants.DUP);
-        il.append(new PUSH(classGen.getConstantPoolGen(), aspectType.getName()));
+        il.append(InstructionFactory.PUSH(classGen.getConstantPool(), aspectType.getName()));
         il.append(InstructionConstants.ACONST_NULL);
         il.append(factory.createInvoke(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION.getName(), "<init>", Type.VOID, new Type[] { Type.STRING, new ObjectType("java.lang.Throwable") }, Constants.INVOKESPECIAL));
         il.append(InstructionConstants.ATHROW);
@@ -500,7 +496,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
                 Constants.INVOKESTATIC,
                 AjcMemberMaker.perTypeWithinGetInstance(aspectType)
         ));
-        BranchInstruction ifNull = InstructionFactory.createBranchInstruction(Constants.IFNULL, null);
+        InstructionBranch ifNull = InstructionFactory.createBranchInstruction(Constants.IFNULL, null);
         il.append(ifNull);
         il.append(InstructionConstants.ICONST_1);
         il.append(InstructionConstants.IRETURN);
@@ -525,7 +521,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
 
         InstructionList il = method.getBody();
         InstructionHandle tryStart = il.append(InstructionConstants.ALOAD_0);
-        il.append(new PUSH(factory.getConstantPool(), NameMangler.perTypeWithinLocalAspectOf(aspectType)));
+        il.append(InstructionFactory.PUSH(factory.getConstantPool(), NameMangler.perTypeWithinLocalAspectOf(aspectType)));
         il.append(InstructionConstants.ACONST_NULL);//Class[] for "getDeclaredMethod"
         il.append(factory.createInvoke(
                 "java/lang/Class",
@@ -588,9 +584,9 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
             methodGen.makeSynthetic();
         }
         methodGen.addAttribute(
-                BcelAttributes.bcelAttribute(
+                Utility.bcelAttribute(
                         new AjAttribute.AjSynthetic(),
-                        methodGen.getEnclosingClass().getConstantPoolGen()
+                        methodGen.getEnclosingClass().getConstantPool()
                 )
         );
     }

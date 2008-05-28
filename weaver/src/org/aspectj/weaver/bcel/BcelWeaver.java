@@ -82,7 +82,6 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.BindingAnnotationTypePattern;
 import org.aspectj.weaver.patterns.BindingTypePattern;
-import org.aspectj.weaver.patterns.CflowPointcut;
 import org.aspectj.weaver.patterns.ConcreteCflowPointcut;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
@@ -476,6 +475,7 @@ public class BcelWeaver implements IWeaver {
     	if (trace.isTraceEnabled()) trace.enter("prepareForWeave",this);
     	needToReweaveWorld = xcutSet.hasChangedSinceLastReset();
     	
+
     	// update mungers
     	for (Iterator i = addedClasses.iterator(); i.hasNext(); ) { 
     		UnwovenClassFile jc = (UnwovenClassFile)i.next();

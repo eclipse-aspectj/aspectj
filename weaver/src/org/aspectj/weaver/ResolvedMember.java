@@ -155,7 +155,7 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	public boolean matches(ResolvedMember aCandidateMatch);
 	
 	public void resetName(String newName);
-	public void resetKind(Kind newKind);
+	public void resetKind(MemberKind newKind);
     public void resetModifiers(int newModifiers);
     public void resetReturnTypeToObjectArray();
     

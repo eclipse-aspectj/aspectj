@@ -23,14 +23,16 @@ import java.util.List;
 
 public class MemberImpl implements Comparable, AnnotatedElement,Member {
     
-    protected Kind kind;
+    protected MemberKind kind;
+    protected String name;
     protected UnresolvedType declaringType;
     protected int modifiers; 
     protected UnresolvedType returnType;
-    protected String name;
     protected UnresolvedType[] parameterTypes;
     private final String signature;
     private String paramSignature;
+    
+    // OPTIMIZE move out of the member!
     private boolean reportedCantFindDeclaringType = false;
     private boolean reportedUnresolvableMember = false;
 
@@ -43,7 +45,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     private JoinPointSignatureIterator joinPointSignatures = null;
 
     public MemberImpl(
-        Kind kind, 
+        MemberKind kind, 
         UnresolvedType declaringType,
         int modifiers,
         String name,
@@ -68,7 +70,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     }
 
     public  MemberImpl(
-        Kind kind, 
+        MemberKind kind, 
         UnresolvedType declaringType, 
         int modifiers,
         UnresolvedType returnType, 
@@ -433,7 +435,6 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     	return buf.toString();
     }
     
-    
     /* (non-Javadoc)
 	 * @see org.aspectj.weaver.Member#toLongString()
 	 */
@@ -455,7 +456,9 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     /* (non-Javadoc)
 	 * @see org.aspectj.weaver.Member#getKind()
 	 */
-    public Kind getKind() { return kind; }
+    public MemberKind getKind() {
+        return kind;
+    }
     /* (non-Javadoc)
 	 * @see org.aspectj.weaver.Member#getDeclaringType()
 	 */
@@ -712,7 +715,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     public String getSignatureMakerName() {
     	if (getName().equals("<clinit>")) return "makeInitializerSig";
     	
-    	Kind kind = getKind();
+    	MemberKind kind = getKind();
     	if (kind == METHOD) {
     		return "makeMethodSig";
     	} else if (kind == CONSTRUCTOR) {
@@ -741,7 +744,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 	 * @see org.aspectj.weaver.Member#getSignatureType()
 	 */
 	public String getSignatureType() {
-    	Kind kind = getKind();
+    	MemberKind kind = getKind();
     	if (getName().equals("<clinit>")) return "org.aspectj.lang.reflect.InitializerSignature";
     	
     	if (kind == METHOD) {
@@ -771,7 +774,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 	public String getSignatureString(World world) {
 		if (getName().equals("<clinit>")) return getStaticInitializationSignatureString(world);
 		
-    	Kind kind = getKind();
+    	MemberKind kind = getKind();
     	if (kind == METHOD) {
     		return getMethodSignatureString(world);
     	} else if (kind == CONSTRUCTOR) {
@@ -911,7 +914,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     }
 
 	protected String makeString(int i) {
-		return Integer.toString(i, 16);  //??? expensive
+		return Integer.toString(i, 16);
 	}
 
 

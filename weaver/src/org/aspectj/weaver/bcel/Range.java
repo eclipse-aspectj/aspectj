@@ -15,8 +15,8 @@ package org.aspectj.weaver.bcel;
 
 import java.util.Map;
 
-import org.aspectj.apache.bcel.generic.IMPDEP1;
 import org.aspectj.apache.bcel.generic.Instruction;
+import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
@@ -224,7 +224,7 @@ abstract class Range implements InstructionTargeter {
 
     // note that this is STUPIDLY copied by Instruction.copy(), so don't do that.
 
-    public static final Instruction RANGEINSTRUCTION = new IMPDEP1();
+    public static final Instruction RANGEINSTRUCTION = InstructionConstants.IMPDEP1;
     
     // ----
 

@@ -32,27 +32,23 @@ import java.util.TreeMap;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
-import org.aspectj.apache.bcel.classfile.ConstantUtf8;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.Synthetic;
 import org.aspectj.apache.bcel.classfile.Unknown;
-import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.generic.BasicType;
 import org.aspectj.apache.bcel.generic.ClassGen;
-import org.aspectj.apache.bcel.generic.ConstantPoolGen;
 import org.aspectj.apache.bcel.generic.FieldGen;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.ObjectType;
-import org.aspectj.apache.bcel.generic.PUSH;
-import org.aspectj.apache.bcel.generic.RETURN;
 import org.aspectj.apache.bcel.generic.Type;
-import org.aspectj.apache.bcel.generic.annotation.AnnotationGen;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
@@ -70,6 +66,7 @@ import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
+
 
 
 /**
@@ -93,10 +90,11 @@ public final class LazyClassGen {
 	
 	private BcelObjectType myType; // XXX is not set for types we create
 	private ClassGen myGen;
-	private ConstantPoolGen constantPoolGen;
+	private ConstantPool constantPoolGen;
 	private World world;
     private String packageName = null;
 
+    private List /*BcelField*/ fields          = new ArrayList();
     private List /*LazyMethodGen*/ methodGens  = new ArrayList();
     private List /*LazyClassGen*/  classGens   = new ArrayList();
     private List /*AnnotationGen*/ annotations = new ArrayList();
@@ -157,7 +155,7 @@ public final class LazyClassGen {
 		byte[] bytes = Utility.stringToUTF(data);
 		int length = bytes.length;
 
-		return new Unknown(nameIndex, length, bytes, constantPoolGen.getConstantPool());		
+		return new Unknown(nameIndex, length, bytes, constantPoolGen);		
 	}	
 
 //	private LazyClassGen() {}
@@ -292,9 +290,9 @@ public final class LazyClassGen {
 			// Do we need to calculate an SUID and add it?
 			if (!hasSerialVersionUIDField && world.isAddSerialVerUID()) {
 	        	calculatedSerialVersionUID = myGen.getSUID();
-	        	Field fg = new FieldGen(
+	        	FieldGen fg = new FieldGen(
 	        			Constants.ACC_PRIVATE|Constants.ACC_FINAL|Constants.ACC_STATIC,
-	        			BasicType.LONG,"serialVersionUID",getConstantPoolGen()).getField();
+	        			BasicType.LONG,"serialVersionUID",getConstantPool());
 	        	addField(fg);
 	        	hasSerialVersionUIDField=true;
 	        	serialVersionUIDRequiresInitialization=true;
@@ -305,11 +303,15 @@ public final class LazyClassGen {
 	        }
 		}
 
-        Method[] methods = myGen.getMethods();
+	    Method[] methods = myGen.getMethods();
         for (int i = 0; i < methods.length; i++) {
             addMethodGen(new LazyMethodGen(methods[i], this));
         }
-        
+
+		ResolvedMember[] fields = myType.getDeclaredFields();
+		for (int i=0; i<fields.length; i++) {
+			this.fields.add((BcelField)fields[i]);
+		}        
     }
 
 	public static boolean hasSerialVersionUIDField (ResolvedType type) {
@@ -333,9 +335,10 @@ public final class LazyClassGen {
 	// ---- 
 
     public String getInternalClassName() {
-        return getConstantPoolGen().getConstantPool().getConstantString(
-            myGen.getClassNameIndex(),
-            Constants.CONSTANT_Class);
+        return getConstantPool().getConstantString_CONSTANTClass(myGen.getClassNameIndex());
+        //getConstantPool().getConstantString(
+        //    myGen.getClassNameIndex(),
+        //    Constants.CONSTANT_Class);
 
     }
 
@@ -384,7 +387,7 @@ public final class LazyClassGen {
 		methodGens.add(gen);
 		if (highestLineNumber < gen.highestLineNumber) highestLineNumber = gen.highestLineNumber;
 	}
-
+	
 	public void addMethodGen(LazyMethodGen gen, ISourceLocation sourceLocation) {
 		addMethodGen(gen);
 		if (!gen.getMethod().isPrivate()) { 
@@ -393,7 +396,7 @@ public final class LazyClassGen {
 	}
 	
 
-	public void errorOnAddedField (Field field, ISourceLocation sourceLocation) {
+	public void errorOnAddedField (FieldGen field, ISourceLocation sourceLocation) {
 		if (isSerializable && !hasSerialVersionUIDField) {
 			getWorld().getLint().serialVersionUIDBroken.signal(
 				new String[] {
@@ -438,20 +441,20 @@ public final class LazyClassGen {
         return methodGens; //???Collections.unmodifiableList(methodGens);
     }
     
-    // FIXME asc Should be collection returned here
-    public Field[] getFieldGens() {
-      return myGen.getFields();
+    public List/*BcelField*/ getFieldGens() {
+      return fields;
+    //  return myGen.getFields();
     }
     
-    public Field getField(String name) {
-    	Field[] allFields = myGen.getFields();
-    	if (allFields==null) return null;
-    	for (int i = 0; i < allFields.length; i++) {
-			Field field = allFields[i];
-			if (field.getName().equals(name)) return field;
-		}
-    	return null;
-    }
+//    public Field getField(String name) {
+//    	Field[] allFields = myGen.getFields();
+//    	if (allFields==null) return null;
+//    	for (int i = 0; i < allFields.length; i++) {
+//			Field field = allFields[i];
+//			if (field.getName().equals(name)) return field;
+//		}
+//    	return null;
+//    }
     
     // FIXME asc How do the ones on the underlying class surface if this just returns new ones added?
     // FIXME asc ...although no one calls this right now !
@@ -460,7 +463,7 @@ public final class LazyClassGen {
     }
 
     private void writeBack(BcelWorld world) {
-        if (getConstantPoolGen().getSize() > Short.MAX_VALUE) {
+        if (getConstantPool().getSize() > Short.MAX_VALUE) {
             reportClassTooBigProblem();
         	return;
         }
@@ -470,7 +473,7 @@ public final class LazyClassGen {
 				AnnotationGen element = (AnnotationGen) iter.next();
 				myGen.addAnnotation(element);
 			}
-//	    Attribute[] annAttributes  = org.aspectj.apache.bcel.classfile.Utility.getAnnotationAttributes(getConstantPoolGen(),annotations);
+//	    Attribute[] annAttributes  = org.aspectj.apache.bcel.classfile.Utility.getAnnotationAttributes(getConstantPool(),annotations);
 //        for (int i = 0; i < annAttributes.length; i++) {
 //			Attribute attribute = annAttributes[i];
 //			System.err.println("Adding attribute for "+attribute);
@@ -479,19 +482,14 @@ public final class LazyClassGen {
         }
         
         // Add a weaver version attribute to the file being produced (if necessary...)
-        boolean hasVersionAttribute = false;        
-        Attribute[] attrs = myGen.getAttributes();
-        for (int i = 0; i < attrs.length && !hasVersionAttribute; i++) {
-			Attribute attribute = attrs[i];
-			if (attribute.getName().equals("org.aspectj.weaver.WeaverVersion")) hasVersionAttribute=true;
-		}        
-        if (!hasVersionAttribute)
-        	myGen.addAttribute(BcelAttributes.bcelAttribute(new AjAttribute.WeaverVersionInfo(),getConstantPoolGen()));
+        if (!myGen.hasAttribute("org.aspectj.weaver.WeaverVersion")) {
+        	myGen.addAttribute(Utility.bcelAttribute(new AjAttribute.WeaverVersionInfo(),getConstantPool()));
+        }
 
         if (myType != null && myType.getWeaverState() != null) {
-			myGen.addAttribute(BcelAttributes.bcelAttribute(
+			myGen.addAttribute(Utility.bcelAttribute(
 				new AjAttribute.WeaverState(myType.getWeaverState()), 
-				getConstantPoolGen()));
+				getConstantPool()));
     	}
 
         //FIXME ATAJ needed only for slow Aspects.aspectOf() - keep or remove
@@ -502,29 +500,43 @@ public final class LazyClassGen {
 //        }
 
     	addAjcInitializers();
+
+		// 17Feb05 - ASC - Skip this for now - it crashes IBM 1.4.2 jvms (pr80430).  Will be revisited when contents
+		// of attribute are confirmed to be correct.
+    	boolean sourceDebugExtensionSupportSwitchedOn = false;
     	
-        int len = methodGens.size();
-        myGen.setMethods(new Method[0]);
+    	if (sourceDebugExtensionSupportSwitchedOn) {
+    		calculateSourceDebugExtensionOffsets();
+    	}
         
-        calculateSourceDebugExtensionOffsets();
+        int len = methodGens.size();
+        myGen.setMethods(Method.NoMethods);
         for (int i = 0; i < len; i++) {
             LazyMethodGen gen = (LazyMethodGen) methodGens.get(i);
             // we skip empty clinits
             if (isEmptyClinit(gen)) continue;
             myGen.addMethod(gen.getMethod());
         }
-		if (inlinedFiles.size() != 0) {
-			if (hasSourceDebugExtensionAttribute(myGen)) {
-				world.showMessage(
-					IMessage.WARNING,
-					WeaverMessages.format(WeaverMessages.OVERWRITE_JSR45,getFileName()),
-					null,
-					null);
+        
+        len = fields.size();
+        myGen.setFields(Field.NoFields);
+        for (int i = 0; i < len; i++) {
+            BcelField gen = (BcelField) fields.get(i);
+            myGen.addField(gen.getField(this.constantPoolGen));
+        }
+
+    	if (sourceDebugExtensionSupportSwitchedOn) {
+			if (inlinedFiles.size() != 0) {
+				if (hasSourceDebugExtensionAttribute(myGen)) {
+					world.showMessage(
+						IMessage.WARNING,
+						WeaverMessages.format(WeaverMessages.OVERWRITE_JSR45,getFileName()),
+						null,
+						null);
+				}
+				// myGen.addAttribute(getSourceDebugExtensionAttribute());
 			}
-			// 17Feb05 - ASC - Skip this for now - it crashes IBM 1.4.2 jvms (pr80430).  Will be revisited when contents
-			// of attribute are confirmed to be correct.
-			// myGen.addAttribute(getSourceDebugExtensionAttribute());
-		}
+    	}
 		
 		fixupGenericSignatureAttribute();
     }
@@ -551,11 +563,7 @@ public final class LazyClassGen {
 		// 2. Find the old attribute
 		Signature sigAttr = null;
 		if (myType!=null) { // if null, this is a type built from scratch, it won't already have a sig attribute
-			Attribute[] as = myGen.getAttributes();
-			for (int i = 0; i < as.length; i++) {
-				Attribute attribute = as[i];
-				if (attribute.getName().equals("Signature")) sigAttr = (Signature)attribute;
-			}
+			sigAttr = (Signature) myGen.getAttribute("Signature");
 		}
 		
 		// 3. Do we need an attribute?
@@ -610,7 +618,7 @@ public final class LazyClassGen {
 	private Signature createSignatureAttribute(String signature) {
 		int nameIndex = constantPoolGen.addUtf8("Signature");
 		int sigIndex  = constantPoolGen.addUtf8(signature);
-		return new Signature(nameIndex,2,sigIndex,constantPoolGen.getConstantPool());
+		return new Signature(nameIndex,2,sigIndex,constantPoolGen);
 	}
 
 	/**
@@ -623,7 +631,7 @@ public final class LazyClassGen {
 		// create an empty myGen so that we can give back a return value that doesn't upset the
 		// rest of the process.
 		myGen = new ClassGen(myGen.getClassName(), myGen.getSuperclassName(), 
-		        myGen.getFileName(), myGen.getAccessFlags(), myGen.getInterfaceNames());
+		        myGen.getFileName(), myGen.getModifiers(), myGen.getInterfaceNames());
 		// raise an error against this compilation unit.
 		getWorld().showMessage(
 				IMessage.ERROR, 
@@ -634,15 +642,16 @@ public final class LazyClassGen {
 	}
 
 	private static boolean hasSourceDebugExtensionAttribute(ClassGen gen) {
-		ConstantPoolGen pool = gen.getConstantPool();
-		Attribute[] attrs = gen.getAttributes();
-		for (int i = 0; i < attrs.length; i++) {
-			if ("SourceDebugExtension"
-				.equals(((ConstantUtf8) pool.getConstant(attrs[i].getNameIndex())).getBytes())) {
-				return true;
-			}
-		}
-		return false;
+		return gen.hasAttribute("SourceDebugExtension");
+//		ConstantPool pool = gen.getConstantPool();
+//		Attribute[] attrs = gen.getAttributes();
+//		for (int i = 0; i < attrs.length; i++) {
+//			if ("SourceDebugExtension"
+//				.equals(((ConstantUtf8) pool.getConstant(attrs[i].getNameIndex())).getBytes())) {
+//				return true;
+//			}
+//		}
+//		return false;
 	}
 
     public JavaClass getJavaClass(BcelWorld world) {
@@ -725,10 +734,10 @@ public final class LazyClassGen {
 
     public String toShortString() {
         String s =
-            org.aspectj.apache.bcel.classfile.Utility.accessToString(myGen.getAccessFlags(), true);
+            org.aspectj.apache.bcel.classfile.Utility.accessToString(myGen.getModifiers(), true);
         if (s != "")
             s += " ";
-        s += org.aspectj.apache.bcel.classfile.Utility.classOrInterface(myGen.getAccessFlags());
+        s += org.aspectj.apache.bcel.classfile.Utility.classOrInterface(myGen.getModifiers());
         s += " ";
         s += myGen.getClassName();
         return s;
@@ -798,7 +807,7 @@ public final class LazyClassGen {
     	//System.err.println("checking clinig: " + gen);
     	InstructionHandle start = gen.getBody().getStart();
     	while (start != null) {
-    		if (Range.isRangeHandle(start) || (start.getInstruction() instanceof RETURN)) {
+    		if (Range.isRangeHandle(start) || (start.getInstruction().opcode==Constants.RETURN)) {
     			start = start.getNext();
     		} else {
     			return false;
@@ -808,7 +817,7 @@ public final class LazyClassGen {
     	return true;
     }
 
-    public ConstantPoolGen getConstantPoolGen() {
+    public ConstantPool getConstantPool() {
         return constantPoolGen;
     }
     
@@ -931,8 +940,9 @@ public final class LazyClassGen {
 		} else {
 			jpType = isEnclosingJp?enclosingStaticTjpType:staticTjpType;
 		}
-		ret = new FieldGen(modifiers,jpType,"ajc$tjp_" + tjpFields.size(),getConstantPoolGen()).getField();
-    	addField(ret);
+		FieldGen fGen  = new FieldGen(modifiers,jpType,"ajc$tjp_" + tjpFields.size(),getConstantPool());
+    	addField(fGen);
+    	ret = fGen.getField();
     	tjpFields.put(shadow, ret);
     	return ret;
     }
@@ -945,11 +955,11 @@ public final class LazyClassGen {
 //                Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC,
 //                classType,
 //                "aj$class",
-//                getConstantPoolGen()).getField();
+//                getConstantPool()).getField();
 //        addField(ajClassField);
 //
 //        InstructionList il = new InstructionList();
-//        il.append(new PUSH(getConstantPoolGen(), getClassName()));
+//        il.append(new PUSH(getConstantPool(), getClassName()));
 //        il.append(fact.createInvoke("java.lang.Class", "forName", classType,
 //                    new Type[] {Type.STRING}, Constants.INVOKESTATIC));
 //        il.append(fact.createFieldAccess(getClassName(), ajClassField.getName(),
@@ -970,7 +980,7 @@ public final class LazyClassGen {
     		if (il==null) {
     			il= new InstructionList();
     		}
-    	    il.append(new PUSH(getConstantPoolGen(),calculatedSerialVersionUID));
+    	    il.append(InstructionFactory.PUSH(getConstantPool(),calculatedSerialVersionUID));
     	    il.append(getFactory().createFieldAccess(getClassName(), "serialVersionUID", BasicType.LONG, Constants.PUTSTATIC));
     	}
     	
@@ -986,11 +996,11 @@ public final class LazyClassGen {
     	list.append(fact.createNew(factoryType));
     	list.append(InstructionFactory.createDup(1));
     	
-    	list.append(new PUSH(getConstantPoolGen(), getFileName()));
+    	list.append(InstructionFactory.PUSH(getConstantPool(), getFileName()));
     	
     	// load the current Class object
     	//XXX check that this works correctly for inners/anonymous
-    	list.append(new PUSH(getConstantPoolGen(), getClassName()));
+    	list.append(InstructionFactory.PUSH(getConstantPool(), getClassName()));
     	//XXX do we need to worry about the fact the theorectically this could throw
     	//a ClassNotFoundException
     	list.append(fact.createInvoke("java.lang.Class", "forName", classType,
@@ -1032,13 +1042,13 @@ public final class LazyClassGen {
     	list.append(InstructionFactory.createLoad(factoryType, 0));
     	
     	// load the kind
-    	list.append(new PUSH(getConstantPoolGen(), shadow.getKind().getName()));
+    	list.append(InstructionFactory.PUSH(getConstantPool(), shadow.getKind().getName()));
     	
     	// create the signature
     	list.append(InstructionFactory.createLoad(factoryType, 0));
     	
     	if (world.isTargettingAspectJRuntime12()) { // TAG:SUPPORTING12: We didn't have optimized factory methods in 1.2
-        	list.append(new PUSH(getConstantPoolGen(), sig.getSignatureString(shadow.getWorld())));
+        	list.append(InstructionFactory.PUSH(getConstantPool(), sig.getSignatureString(shadow.getWorld())));
     		list.append(fact.createInvoke(factoryType.getClassName(), 
     					sig.getSignatureMakerName(),
     					new ObjectType(sig.getSignatureType()),
@@ -1047,13 +1057,13 @@ public final class LazyClassGen {
     	} else 	if (sig.getKind().equals(Member.METHOD)) {
     		BcelWorld w = shadow.getWorld();
     		// For methods, push the parts of the signature on.
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getModifiers(w))));
-    		list.append(new PUSH(getConstantPoolGen(),sig.getName()));
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterTypes())));
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterNames(w))));
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getExceptions(w))));
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getReturnType())));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getModifiers(w))));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),sig.getName()));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getDeclaringType())));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getParameterTypes())));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getParameterNames(w))));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getExceptions(w))));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getReturnType())));
     		// And generate a call to the variant of makeMethodSig() that takes 7 strings
     		list.append(fact.createInvoke(factoryType.getClassName(), 
     				sig.getSignatureMakerName(),
@@ -1061,14 +1071,14 @@ public final class LazyClassGen {
     				new Type[] { Type.STRING,Type.STRING,Type.STRING,Type.STRING,Type.STRING,Type.STRING,Type.STRING },
     				Constants.INVOKEVIRTUAL));
    	    } else if (sig.getKind().equals(Member.MONITORENTER)) {
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getDeclaringType())));
     		list.append(fact.createInvoke(factoryType.getClassName(), 
     				sig.getSignatureMakerName(),
     				new ObjectType(sig.getSignatureType()),
     				new Type[] { Type.STRING},
     				Constants.INVOKEVIRTUAL));
     	} else if (sig.getKind().equals(Member.MONITOREXIT)) {
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getDeclaringType())));
     		list.append(fact.createInvoke(factoryType.getClassName(), 
     				sig.getSignatureMakerName(),
     				new ObjectType(sig.getSignatureType()),
@@ -1076,9 +1086,9 @@ public final class LazyClassGen {
     				Constants.INVOKEVIRTUAL));
      	} else if (sig.getKind().equals(Member.HANDLER)) {
     		BcelWorld w = shadow.getWorld();
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterTypes())));
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterNames(w))));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getDeclaringType())));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getParameterTypes())));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getParameterNames(w))));
     		list.append(fact.createInvoke(factoryType.getClassName(),
     				sig.getSignatureMakerName(),
     				new ObjectType(sig.getSignatureType()),
@@ -1088,22 +1098,22 @@ public final class LazyClassGen {
     		BcelWorld w = shadow.getWorld();
     		if (w.isJoinpointArrayConstructionEnabled() && sig.getDeclaringType().isArray()) {
     			// its the magical new jp
-    			list.append(new PUSH(getConstantPoolGen(),makeString(Modifier.PUBLIC)));
-	    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
-	    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterTypes())));
-	    		list.append(new PUSH(getConstantPoolGen(),""));//makeString("")));//sig.getParameterNames(w))));
-	    		list.append(new PUSH(getConstantPoolGen(),""));//makeString("")));//sig.getExceptions(w))));
+    			list.append(InstructionFactory.PUSH(getConstantPool(),makeString(Modifier.PUBLIC)));
+	    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getDeclaringType())));
+	    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getParameterTypes())));
+	    		list.append(InstructionFactory.PUSH(getConstantPool(),""));//makeString("")));//sig.getParameterNames(w))));
+	    		list.append(InstructionFactory.PUSH(getConstantPool(),""));//makeString("")));//sig.getExceptions(w))));
 	    		list.append(fact.createInvoke(factoryType.getClassName(),
 	    				sig.getSignatureMakerName(),
 	    				new ObjectType(sig.getSignatureType()),
 	    				new Type[] { Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING },
 	    				Constants.INVOKEVIRTUAL));    	
     		} else {
-	    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getModifiers(w))));	
-	    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
-	    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterTypes())));
-	    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterNames(w))));
-	    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getExceptions(w))));
+	    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getModifiers(w))));	
+	    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getDeclaringType())));
+	    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getParameterTypes())));
+	    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getParameterNames(w))));
+	    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getExceptions(w))));
 	    		list.append(fact.createInvoke(factoryType.getClassName(),
 	    				sig.getSignatureMakerName(),
 	    				new ObjectType(sig.getSignatureType()),
@@ -1112,16 +1122,16 @@ public final class LazyClassGen {
     		}
     	} else if(sig.getKind().equals(Member.FIELD)) {
     		BcelWorld w = shadow.getWorld();
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getModifiers(w))));
-    		list.append(new PUSH(getConstantPoolGen(),sig.getName()));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getModifiers(w))));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),sig.getName()));
     		// see pr227401
     		UnresolvedType dType = sig.getDeclaringType();
     		if (dType.getTypekind()==TypeKind.PARAMETERIZED || 
     			dType.getTypekind()==TypeKind.GENERIC) {
         		dType = sig.getDeclaringType().resolve(world).getGenericType();
     		}
-    		list.append(new PUSH(getConstantPoolGen(),makeString(dType)));    		
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getReturnType())));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(dType)));    		
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getReturnType())));
     		list.append(fact.createInvoke(factoryType.getClassName(),
     				sig.getSignatureMakerName(),
     				new ObjectType(sig.getSignatureType()),
@@ -1129,13 +1139,13 @@ public final class LazyClassGen {
     				Constants.INVOKEVIRTUAL));    	
     	} else if(sig.getKind().equals(Member.ADVICE)) {
     		BcelWorld w = shadow.getWorld();
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getModifiers(w))));
-    		list.append(new PUSH(getConstantPoolGen(),sig.getName()));
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterTypes())));
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getParameterNames(w))));
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getExceptions(w))));
-    		list.append(new PUSH(getConstantPoolGen(),makeString((sig.getReturnType()))));    		
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getModifiers(w))));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),sig.getName()));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getDeclaringType())));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getParameterTypes())));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getParameterNames(w))));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getExceptions(w))));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString((sig.getReturnType()))));    		
     		list.append(fact.createInvoke(factoryType.getClassName(),
     				sig.getSignatureMakerName(),
     				new ObjectType(sig.getSignatureType()),
@@ -1143,15 +1153,15 @@ public final class LazyClassGen {
     				Constants.INVOKEVIRTUAL));    	
     	} else if(sig.getKind().equals(Member.STATIC_INITIALIZATION)) {
     		BcelWorld w = shadow.getWorld();
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getModifiers(w))));
-    		list.append(new PUSH(getConstantPoolGen(),makeString(sig.getDeclaringType())));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getModifiers(w))));
+    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getDeclaringType())));
     		list.append(fact.createInvoke(factoryType.getClassName(),
     				sig.getSignatureMakerName(),
     				new ObjectType(sig.getSignatureType()),
     				new Type[] { Type.STRING, Type.STRING },
     				Constants.INVOKEVIRTUAL));
     	} else {
-    	  list.append(new PUSH(getConstantPoolGen(), sig.getSignatureString(shadow.getWorld())));
+    	  list.append(InstructionFactory.PUSH(getConstantPool(), sig.getSignatureString(shadow.getWorld())));
     	  list.append(fact.createInvoke(factoryType.getClassName(), 
 			  	   sig.getSignatureMakerName(),
 			  	   new ObjectType(sig.getSignatureType()),
@@ -1239,12 +1249,20 @@ public final class LazyClassGen {
 		return myGen.getFileName();
 	}
 
-	private void addField(Field field) {
-		myGen.addField(field);
+	// for *new* fields
+	private void addField(FieldGen field) {
 		makeSyntheticAndTransientIfNeeded(field);
+		BcelField bcelField = null;
+		if (getBcelObjectType() != null) {
+			bcelField = new BcelField(getBcelObjectType(),field.getField());
+		} else {
+			bcelField = new BcelField(getName(),field.getField(),world);
+		}
+		fields.add(bcelField);
+//		myGen.addField(field.getField());
 	}
 	
-	private void makeSyntheticAndTransientIfNeeded(Field field) {
+	private void makeSyntheticAndTransientIfNeeded(FieldGen field) {
 		if (field.getName().startsWith(NameMangler.PREFIX) &&
 			!field.getName().startsWith("ajc$interField$") &&
 			!field.getName().startsWith("ajc$instance$")) {
@@ -1260,33 +1278,29 @@ public final class LazyClassGen {
 			}
 			if (!hasSyntheticAttribute(field.getAttributes())) {
 	       	  // belt and braces, do the attribute even on Java 5 in addition to the modifier flag
-			  Attribute[] oldAttrs = field.getAttributes();
-			  Attribute[] newAttrs = new Attribute[oldAttrs.length + 1];
-			  System.arraycopy(oldAttrs, 0, newAttrs, 0, oldAttrs.length);
-   			  ConstantPoolGen cpg = myGen.getConstantPool();
+//			  Attribute[] oldAttrs = field.getAttributes();
+//			  Attribute[] newAttrs = new Attribute[oldAttrs.length + 1];
+//			  System.arraycopy(oldAttrs, 0, newAttrs, 0, oldAttrs.length);
+   			  ConstantPool cpg = myGen.getConstantPool();
    			  int index = cpg.addUtf8("Synthetic");
-   			  Attribute synthetic  = new Synthetic(index, 0, new byte[0], cpg.getConstantPool());
-   			  newAttrs[newAttrs.length - 1] = synthetic;
-   			  field.setAttributes(newAttrs);
+   			  Attribute synthetic  = new Synthetic(index, 0, new byte[0], cpg);
+   			  field.addAttribute(synthetic);
+//   			  newAttrs[newAttrs.length - 1] = synthetic;
+//   			  field.setAttributes(newAttrs);
 			}
 		}
 	}
 	
-	private boolean hasSyntheticAttribute(Attribute[] attributes) {
-		for (int i = 0; i < attributes.length; i++) {
-			if (attributes[i].getName().equals("Synthetic")) {
+		private boolean hasSyntheticAttribute(List attributes) {
+		for (int i = 0; i < attributes.size(); i++) {
+			if (((Attribute)attributes.get(i)).getName().equals("Synthetic")) {
 				return true;
 			}
 		}
 		return false;
 	}
-
-	public void replaceField(Field oldF, Field newF){
-		myGen.removeField(oldF);
-		myGen.addField(newF);
-	}
 	
-	public void addField(Field field, ISourceLocation sourceLocation) {
+	public void addField(FieldGen field, ISourceLocation sourceLocation) {
 		addField(field);
 		if (!(field.isPrivate() 
 			&& (field.isStatic() || field.isTransient()))) {
@@ -1330,10 +1344,8 @@ public final class LazyClassGen {
 	}
 	
 	
-	public boolean forcePublic() {
-		if (myGen.isPublic()) return false;
-		myGen.setAccessFlags(Utility.makePublic(myGen.getAccessFlags()));
-		return true;
+	public void forcePublic() {
+		myGen.setModifiers(Utility.makePublic(myGen.getModifiers()));
 	}
 
 	
@@ -1352,9 +1364,9 @@ public final class LazyClassGen {
 		return false;
 	}
 	
-	public void addAnnotation(Annotation a) {
+	public void addAnnotation(AnnotationGen a) {
 		if (!hasAnnotation(UnresolvedType.forSignature(a.getTypeSignature()))) {
-		  annotations.add(new AnnotationGen(a,getConstantPoolGen(),true));
+		  annotations.add(new AnnotationGen(a,getConstantPool(),true));
 		}
 	}
 	
@@ -1388,9 +1400,9 @@ public final class LazyClassGen {
 	 */
 	public String allocateField(String prefix) {
 		int highestAllocated = -1;
-		Field[] fs = getFieldGens();
-		for (int i = 0; i < fs.length; i++) {
-			Field field = fs[i];
+		List/*BcelField*/ fs = getFieldGens();
+		for (int i = 0; i < fs.size(); i++) {
+			BcelField field = (BcelField)fs.get(i);
 			if (field.getName().startsWith(prefix)) {
 				try {
 					int num = Integer.parseInt(field.getName().substring(prefix.length()));

@@ -14,7 +14,6 @@
 package org.aspectj.weaver.bcel;
 
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.generic.FieldGen;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionList;
@@ -36,10 +35,10 @@ public class BcelCflowStackFieldAdder extends BcelTypeMunger {
 		LazyClassGen gen = weaver.getLazyClassGen();
 		if (!gen.getType().equals(cflowStackField.getDeclaringType())) return false;
 
-		Field f = new FieldGen(cflowStackField.getModifiers(),
+		FieldGen f = new FieldGen(cflowStackField.getModifiers(),
 		    BcelWorld.makeBcelType(cflowStackField.getReturnType()),
 		    cflowStackField.getName(),
-    		gen.getConstantPoolGen()).getField();
+    		gen.getConstantPool());
     	gen.addField(f,getSourceLocation());
 
 		LazyMethodGen clinit = gen.getAjcPreClinit(); //StaticInitializer();

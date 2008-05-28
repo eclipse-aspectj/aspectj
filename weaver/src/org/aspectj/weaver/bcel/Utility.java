@@ -24,36 +24,36 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ClassParser;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
-import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
-import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
+import org.aspectj.apache.bcel.classfile.Unknown;
+import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValueGen;
 import org.aspectj.apache.bcel.generic.ArrayType;
-import org.aspectj.apache.bcel.generic.BIPUSH;
 import org.aspectj.apache.bcel.generic.BasicType;
-import org.aspectj.apache.bcel.generic.BranchInstruction;
-import org.aspectj.apache.bcel.generic.ConstantPushInstruction;
-import org.aspectj.apache.bcel.generic.INSTANCEOF;
 import org.aspectj.apache.bcel.generic.Instruction;
+import org.aspectj.apache.bcel.generic.InstructionByte;
+import org.aspectj.apache.bcel.generic.InstructionCP;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
+import org.aspectj.apache.bcel.generic.InstructionSelect;
+import org.aspectj.apache.bcel.generic.InstructionShort;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
-import org.aspectj.apache.bcel.generic.InvokeInstruction;
-import org.aspectj.apache.bcel.generic.LDC;
 import org.aspectj.apache.bcel.generic.LineNumberTag;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.ReferenceType;
-import org.aspectj.apache.bcel.generic.SIPUSH;
-import org.aspectj.apache.bcel.generic.SWITCH;
-import org.aspectj.apache.bcel.generic.Select;
+import org.aspectj.apache.bcel.generic.SwitchBuilder;
 import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Lint;
@@ -207,12 +207,8 @@ public class Utility {
             kind = Constants.INVOKEVIRTUAL;
         }
 
-        return fact.createInvoke(
-            declaringClass.getClassName(),
-            newMethod.getName(),
-            Type.getReturnType(newMethod.getSignature()),
-            Type.getArgumentTypes(newMethod.getSignature()),
-            kind);
+        String sig = newMethod.getSignature();
+        return fact.createInvoke(declaringClass.getClassName(),newMethod.getName(),sig,kind);
 	}
 	
 	public static byte[] stringToUTF(String s) {
@@ -231,7 +227,7 @@ public class Utility {
 			(t instanceof ArrayType)
 			? fact.getConstantPool().addArrayClass((ArrayType)t)
 			: fact.getConstantPool().addClass((ObjectType)t);
-		return new INSTANCEOF(cpoolEntry);
+		return new InstructionCP(Constants.INSTANCEOF,cpoolEntry);
     }
 
     public static Instruction createInvoke(
@@ -276,11 +272,17 @@ public class Utility {
             kind);
     }
 
+    private static String[] argNames = new String[] { "arg0", "arg1", "arg2", "arg3", "arg4" };
+    
     // ??? these should perhaps be cached.  Remember to profile this to see if it's a problem.
     public static String[] makeArgNames(int n) {
         String[] ret = new String[n];
         for (int i=0; i<n; i++) {
-            ret[i] = "arg" + i;
+            if (i < 5) {
+                ret[i] = argNames[i];
+            } else {
+                ret[i] = "arg" + i;
+            }
         }
         return ret;
     }
@@ -384,7 +386,13 @@ public class Utility {
             Type from = BcelWorld.makeBcelType(fromType);
             Type to = BcelWorld.makeBcelType(toType);
             try {
-                il.append(fact.createCast(from, to));
+            	Instruction i = fact.createCast(from, to);
+            	if (i!=null) {
+            		il.append(i);
+            	} else {
+            		il.append(fact.createCast(from, Type.INT));
+                    il.append(fact.createCast(Type.INT, to));
+            	}
             } catch (RuntimeException e) {
                 il.append(fact.createCast(from, Type.INT));
                 il.append(fact.createCast(Type.INT, to));
@@ -513,11 +521,12 @@ public class Utility {
 			case 5: inst =  InstructionConstants.ICONST_5;	break;	
 		}
 		if (i <= Byte.MAX_VALUE && i >= Byte.MIN_VALUE) {
-	     	inst =  new BIPUSH((byte)i);
+	     	inst =  new InstructionByte(Constants.BIPUSH,(byte)i);
 		} else if (i <= Short.MAX_VALUE && i >= Short.MIN_VALUE) {
-			inst =  new SIPUSH((short)i);
+			inst =  new InstructionShort(Constants.SIPUSH,(short)i);
 		} else {
-			inst =  new LDC(fact.getClassGen().getConstantPool().addInteger(i));
+		      int ii = fact.getClassGen().getConstantPool().addInteger(i);
+		      inst = new InstructionCP(i<=Constants.MAX_BYTE?Constants.LDC:Constants.LDC_W,ii);
 		}
 		return inst;
 	}
@@ -555,17 +564,6 @@ public class Utility {
 	 * @param branchInstruction the branch instruction to replace ih with
 	 * @param enclosingMethod where to find ih's instruction list.
 	 */
-    public static void replaceInstruction(
-        InstructionHandle ih,
-        BranchInstruction branchInstruction,
-        LazyMethodGen enclosingMethod) 
-    {
-        
-        InstructionList il = enclosingMethod.getBody();
-        InstructionHandle fresh = il.append(ih, branchInstruction);
-		deleteInstruction(ih, fresh, enclosingMethod);
-    }
-    
     public static void replaceInstruction(
     	InstructionHandle ih,
     	InstructionList replacementInstructions,
@@ -635,8 +633,8 @@ public class Utility {
    	 * </pre>
    	 */
 	public static Instruction copyInstruction(Instruction i) {
-		if (i instanceof Select) {
-			Select freshSelect = (Select)i;
+		if (i instanceof InstructionSelect) {
+			InstructionSelect freshSelect = (InstructionSelect)i;
 				  
 			// Create a new targets array that looks just like the existing one
 			InstructionHandle[] targets = new InstructionHandle[freshSelect.getTargets().length];
@@ -645,9 +643,8 @@ public class Utility {
 			}
 				  
 			// Create a new select statement with the new targets array
-			SWITCH switchStatement =
-				new SWITCH(freshSelect.getMatchs(), targets, freshSelect.getTarget());
-			return (Select)switchStatement.getInstruction();	
+				
+			return new SwitchBuilder(freshSelect.getMatchs(), targets, freshSelect.getTarget()).getInstruction();	
 		} else {
 			return i.copy(); // Use clone for shallow copy...
 		}
@@ -699,6 +696,7 @@ public class Utility {
 	
 	// assumes that there is no already extant source line tag.  Otherwise we'll have to be better.
 	public static void setSourceLine(InstructionHandle ih, int lineNumber) {
+		// OPTIMIZE LineNumberTag instances for the same line could be shared throughout a method...
 		ih.addTargeter(new LineNumberTag(lineNumber));
 	}
 
@@ -729,7 +727,8 @@ public class Utility {
 	}
 
 	public static boolean isConstantPushInstruction(Instruction i) {
-		return (i instanceof ConstantPushInstruction) || (i instanceof LDC);
+		long ii= Constants.instFlags[i.opcode];
+		return ((ii&Constants.PUSH_INST)!=0 && (ii&Constants.CONSTANT_INST)!=0);
 	}
 	
 	/**
@@ -753,11 +752,11 @@ public class Utility {
                 suppressed = true;
             } else { // (2)
             	// We know the value is an array value
-            	ArrayElementValue array = (ArrayElementValue)((ElementNameValuePair)vals.get(0)).getValue();
-            	ElementValue[] values = array.getElementValuesArray();
+            	ArrayElementValueGen array = (ArrayElementValueGen)((ElementNameValuePairGen)vals.get(0)).getValue();
+            	ElementValueGen[] values = array.getElementValuesArray();
             	for (int j = 0; j < values.length; j++) {
             		// We know values in the array are strings
-					SimpleElementValue value = (SimpleElementValue)values[j];
+					SimpleElementValueGen value = (SimpleElementValueGen)values[j];
 					if (value.getValueString().equals(lintkey)) {
 						suppressed = true;
 					}
@@ -785,11 +784,11 @@ public class Utility {
                suppressedWarnings.addAll(lint.allKinds());
             } else { // (2)
             	// We know the value is an array value
-            	ArrayElementValue array = (ArrayElementValue)((ElementNameValuePair)vals.get(0)).getValue();
-            	ElementValue[] values = array.getElementValuesArray();
+            	ArrayElementValueGen array = (ArrayElementValueGen)((ElementNameValuePairGen)vals.get(0)).getValue();
+            	ElementValueGen[] values = array.getElementValuesArray();
             	for (int j = 0; j < values.length; j++) {
             		// We know values in the array are strings
-					SimpleElementValue value = (SimpleElementValue)values[j];
+					SimpleElementValueGen value = (SimpleElementValueGen)values[j];
 					Lint.Kind lintKind = lint.getLintKind(value.getValueString());
 					if (lintKind != null) suppressedWarnings.add(lintKind);
 				}
@@ -800,25 +799,33 @@ public class Utility {
      }
     
      // not yet used...
-	 public static boolean isSimple(Method method) {
-		if (method.getCode()==null) return true;
-		if (method.getCode().getCode().length>10) return false;
-		InstructionList instrucs = new InstructionList(method.getCode().getCode()); // expensive!
-		InstructionHandle InstrHandle = instrucs.getStart();
-		while (InstrHandle != null) {                  
-		  Instruction Instr = InstrHandle.getInstruction();
-		  int opCode = Instr.getOpcode();
-		  // if current instruction is a branch instruction, see if it's a backward branch.
-		  // if it is return immediately (can't be trivial)
-		  if (Instr instanceof BranchInstruction) {
-		      BranchInstruction BI = (BranchInstruction) Instr;
-		      if (BI.getIndex() < 0) return false;
-		  } else if (Instr instanceof InvokeInstruction) {
-			  // if current instruction is an invocation, indicate that it can't be trivial
-		      return false;
-		  }
-		  InstrHandle = InstrHandle.getNext();
-		}
-		return true;
-	 }
+//	 public static boolean isSimple(Method method) {
+//		if (method.getCode()==null) return true;
+//		if (method.getCode().getCode().length>10) return false;
+//		InstructionList instrucs = new InstructionList(method.getCode().getCode()); // expensive!
+//		InstructionHandle InstrHandle = instrucs.getStart();
+//		while (InstrHandle != null) {                  
+//		  Instruction Instr = InstrHandle.getInstruction();
+//		  int opCode = Instr.opcode;
+//		  // if current instruction is a branch instruction, see if it's a backward branch.
+//		  // if it is return immediately (can't be trivial)
+//		  if (Instr instanceof InstructionBranch) {
+//			//  InstructionBranch BI = (InstructionBranch) Instr;
+//		      if (Instr.getIndex() < 0) return false;
+//		  } else if (Instr instanceof InvokeInstruction) {
+//			  // if current instruction is an invocation, indicate that it can't be trivial
+//		      return false;
+//		  }
+//		  InstrHandle = InstrHandle.getNext();
+//		}
+//		return true;
+//	 }
+
+	public static Attribute bcelAttribute(AjAttribute a, ConstantPool pool) {
+		int nameIndex = pool.addUtf8(a.getNameString());
+		byte[] bytes = a.getBytes();
+		int length = bytes.length;
+	
+		return new Unknown(nameIndex, length, bytes, pool);
+	}
 }

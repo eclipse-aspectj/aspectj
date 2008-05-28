@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver.bcel;
 
 import java.util.Collections;
@@ -20,10 +19,12 @@ import java.util.List;
 
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Field;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.Synthetic;
-import org.aspectj.apache.bcel.classfile.annotation.Annotation;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.generic.FieldGen;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
@@ -31,6 +32,7 @@ import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSignatureFormatException;
 
 final class BcelField extends ResolvedMemberImpl {
@@ -45,12 +47,14 @@ final class BcelField extends ResolvedMemberImpl {
 	private BcelObjectType bcelObjectType;
 	private UnresolvedType genericFieldType = null;
 	private boolean unpackedGenericSignature = false;
+	private boolean annotationsAdded = false;
+	
 
 	BcelField(BcelObjectType declaringType, Field field) {
 		super(
 			FIELD, 
 			declaringType.getResolvedTypeX(),
-			field.getAccessFlags(),
+			field.getModifiers(),
 			field.getName(), 
 			field.getSignature());
 		this.field = field;
@@ -59,20 +63,41 @@ final class BcelField extends ResolvedMemberImpl {
 		unpackAttributes(world);
 		checkedExceptions = UnresolvedType.NONE;
 	}
+	
+	/**
+	 * Constructs an instance that wrappers a Field object, but where we do not (yet) have
+	 * a BcelObjectType - usually because the containing type (and this field) are being
+	 * constructed at runtime (so there is no .class file to retrieve).  
+	 */
+	BcelField(String declaringTypeName, Field field,World world) {
+		super(FIELD,UnresolvedType.forName(declaringTypeName),field.getModifiers(),field.getName(),field.getSignature());
+		this.field = field;
+		this.world = world;
+		this.bcelObjectType = null;
+		unpackAttributes(world);
+		checkedExceptions = UnresolvedType.NONE;
+	}
 
 	// ----
 	
 	private void unpackAttributes(World world) {
 		Attribute[] attrs = field.getAttributes();
-        List as = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),attrs, getSourceContext(world),world,bcelObjectType.getWeaverVersionAttribute());
-        as.addAll(AtAjAttributes.readAj5FieldAttributes(field, this, world.resolve(getDeclaringType()), getSourceContext(world), world.getMessageHandler()));
-
-		for (Iterator iter = as.iterator(); iter.hasNext();) {
-			AjAttribute a = (AjAttribute) iter.next();
-			if (a instanceof AjAttribute.AjSynthetic) {
-				isAjSynthetic = true;
-			} else {
-				throw new BCException("weird field attribute " + a);
+		if (attrs!=null && attrs.length>0) {
+	        List as = BcelAttributes.readAjAttributes(
+	        				getDeclaringType().getClassName(),
+	        				attrs, 
+	        				getSourceContext(world),
+	        				world,
+	        				(bcelObjectType!=null?bcelObjectType.getWeaverVersionAttribute():WeaverVersionInfo.CURRENT));
+	        as.addAll(AtAjAttributes.readAj5FieldAttributes(field, this, world.resolve(getDeclaringType()), getSourceContext(world), world.getMessageHandler()));
+	
+			for (Iterator iter = as.iterator(); iter.hasNext();) {
+				AjAttribute a = (AjAttribute) iter.next();
+				if (a instanceof AjAttribute.AjSynthetic) {
+					isAjSynthetic = true;
+				} else {
+					throw new BCException("weird field attribute " + a);
+				}
 			}
 		}
 		isAjSynthetic = false;
@@ -130,7 +155,7 @@ final class BcelField extends ResolvedMemberImpl {
 	
 	private void ensureAnnotationTypesRetrieved() {
 		if (annotationTypes == null) {
-    		Annotation annos[] = field.getAnnotations();
+    		AnnotationGen annos[] = field.getAnnotations();
     		if (annos==null || annos.length==0) {
     			annotationTypes = Collections.EMPTY_SET;
     			annotations     = AnnotationX.NONE;
@@ -138,7 +163,7 @@ final class BcelField extends ResolvedMemberImpl {
 	    		annotationTypes = new HashSet();
 	    		annotations = new AnnotationX[annos.length];
 	    		for (int i = 0; i < annos.length; i++) {
-					Annotation annotation = annos[i];
+					AnnotationGen annotation = annos[i];
 					annotationTypes.add(world.resolve(UnresolvedType.forSignature(annotation.getTypeSignature())));
 					annotations[i] = new AnnotationX(annotation,world);
 				}
@@ -160,11 +185,13 @@ final class BcelField extends ResolvedMemberImpl {
 		}
 		// Add it to the set of annotation types
 		annotationTypes.add(UnresolvedType.forName(annotation.getTypeName()).resolve(world));
+		annotationsAdded=true;
 		// FIXME asc this call here suggests we are managing the annotations at
 		// too many levels, here in BcelField we keep a set and in the lower 'field'
 		// object we keep a set - we should think about reducing this to one
 		// level??
-		field.addAnnotation(annotation.getBcelAnnotation());
+		//field.addAnnotation(annotation.getBcelAnnotation());
+		// FIXME CUSTARD
 	}
 	
 	/**
@@ -174,6 +201,29 @@ final class BcelField extends ResolvedMemberImpl {
 	public UnresolvedType getGenericReturnType() {
 		unpackGenericSignature();
 		return genericFieldType;
+	}
+	
+	public Field getFieldAsIs() { return field; }
+	
+	// FIXME asc badly performing code ftw !
+	public Field getField(ConstantPool cpg) { 
+		if (!annotationsAdded) return field;
+		FieldGen fg = new FieldGen(field,cpg);
+		AnnotationGen[] alreadyHas = fg.getAnnotations();
+		if (annotations!=null) {
+			for (int i = 0; i < annotations.length; i++) {
+				AnnotationX array_element = annotations[i];
+				boolean alreadyHasIt = false;
+				for (int j = 0; j < alreadyHas.length; j++) {
+					AnnotationGen gen = alreadyHas[j];
+					if (gen.getTypeName().equals(array_element.getTypeName())) alreadyHasIt = true;
+				}
+				if (!alreadyHasIt) fg.addAnnotation(new AnnotationGen(array_element.getBcelAnnotation(),cpg,true));	
+			}
+        }
+	    field = fg.getField();
+	    annotationsAdded = false; // we are now correct again
+        return field;
 	}
 	
 	private void unpackGenericSignature() {

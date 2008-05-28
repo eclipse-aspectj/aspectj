@@ -13,7 +13,6 @@
 package org.aspectj.weaver.bcel;
 
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.generic.FieldGen;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionList;
@@ -44,10 +43,10 @@ public class BcelCflowCounterFieldAdder extends BcelTypeMunger {
 
 		// Create the field declaration.
 		// Something like: "public static final CflowCounter ajc$cflowCounter$0;"
-		Field f = new FieldGen(cflowCounterField.getModifiers(),
+		FieldGen f = new FieldGen(cflowCounterField.getModifiers(),
 		    BcelWorld.makeBcelType(cflowCounterField.getReturnType()),
 		    cflowCounterField.getName(),
-    		gen.getConstantPoolGen()).getField();
+    		gen.getConstantPool());
 		
     	gen.addField(f,getSourceLocation());
 

@@ -12,10 +12,8 @@
 package org.aspectj.weaver.bcel;
 
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.generic.ConstantPoolGen;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.generic.FieldInstruction;
-import org.aspectj.apache.bcel.generic.GETFIELD;
-import org.aspectj.apache.bcel.generic.GETSTATIC;
 import org.aspectj.apache.bcel.generic.Instruction;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
@@ -133,7 +131,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
     private void openAroundAdvice(LazyMethodGen aroundAdvice) {
         InstructionHandle curr = aroundAdvice.getBody().getStart();
         InstructionHandle end = aroundAdvice.getBody().getEnd();
-        ConstantPoolGen cpg = aroundAdvice.getEnclosingClass().getConstantPoolGen();
+        ConstantPool cpg = aroundAdvice.getEnclosingClass().getConstantPool();
         InstructionFactory factory = aroundAdvice.getEnclosingClass().getFactory();
 
         boolean realizedCannotInline = false;
@@ -205,7 +203,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
                             && invoke.getSignature(cpg).equals(resolvedMember.getSignature())
                             && !resolvedMember.isPublic()) {
                         final ResolvedMember accessor;
-                        if ((inst instanceof GETFIELD) || (inst instanceof GETSTATIC)) {
+                        if ((inst.opcode==Constants.GETFIELD) || (inst.opcode==Constants.GETSTATIC)) {
                             accessor = createOrGetInlineAccessorForFieldGet(resolvedMember);
                         } else {
                             accessor = createOrGetInlineAccessorForFieldSet(resolvedMember);
@@ -259,13 +257,13 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
             // flag it synthetic, AjSynthetic
             method.makeSynthetic();
             method.addAttribute(
-                    BcelAttributes.bcelAttribute(new AjAttribute.AjSynthetic(), m_aspectGen.getConstantPoolGen())
+                    Utility.bcelAttribute(new AjAttribute.AjSynthetic(), m_aspectGen.getConstantPool())
             );
             // flag the effective signature, so that we can deobfuscate the signature to apply method call pointcut
             method.addAttribute(
-                    BcelAttributes.bcelAttribute(
+                    Utility.bcelAttribute(
                             new AjAttribute.EffectiveSignatureAttribute(resolvedMember, Shadow.MethodCall, false),
-                            m_aspectGen.getConstantPoolGen()
+                            m_aspectGen.getConstantPool()
                     )
             );
 
@@ -320,13 +318,13 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
             // flag it synthetic, AjSynthetic
             method.makeSynthetic();
             method.addAttribute(
-                    BcelAttributes.bcelAttribute(new AjAttribute.AjSynthetic(), m_aspectGen.getConstantPoolGen())
+                    Utility.bcelAttribute(new AjAttribute.AjSynthetic(), m_aspectGen.getConstantPool())
             );
             // flag the effective signature, so that we can deobfuscate the signature to apply method call pointcut
             method.addAttribute(
-                    BcelAttributes.bcelAttribute(
+                    Utility.bcelAttribute(
                             new AjAttribute.EffectiveSignatureAttribute(resolvedMember, Shadow.MethodCall, false),
-                            m_aspectGen.getConstantPoolGen()
+                            m_aspectGen.getConstantPool()
                     )
             );
 
@@ -382,13 +380,13 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
             // flag it synthetic, AjSynthetic
             method.makeSynthetic();
             method.addAttribute(
-                    BcelAttributes.bcelAttribute(new AjAttribute.AjSynthetic(), m_aspectGen.getConstantPoolGen())
+                    Utility.bcelAttribute(new AjAttribute.AjSynthetic(), m_aspectGen.getConstantPool())
             );
             // flag the effective signature, so that we can deobfuscate the signature to apply method call pointcut
             method.addAttribute(
-                    BcelAttributes.bcelAttribute(
+                    Utility.bcelAttribute(
                             new AjAttribute.EffectiveSignatureAttribute(resolvedMember, Shadow.FieldGet, false),
-                            m_aspectGen.getConstantPoolGen()
+                            m_aspectGen.getConstantPool()
                     )
             );
 
@@ -440,13 +438,13 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
             // flag it synthetic, AjSynthetic
             method.makeSynthetic();
             method.addAttribute(
-                    BcelAttributes.bcelAttribute(new AjAttribute.AjSynthetic(), m_aspectGen.getConstantPoolGen())
+                    Utility.bcelAttribute(new AjAttribute.AjSynthetic(), m_aspectGen.getConstantPool())
             );
             // flag the effective signature, so that we can deobfuscate the signature to apply method call pointcut
             method.addAttribute(
-                    BcelAttributes.bcelAttribute(
+                    Utility.bcelAttribute(
                             new AjAttribute.EffectiveSignatureAttribute(resolvedMember, Shadow.FieldSet, false),
-                            m_aspectGen.getConstantPoolGen()
+                            m_aspectGen.getConstantPool()
                     )
             );
 

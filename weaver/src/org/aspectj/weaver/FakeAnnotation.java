@@ -15,8 +15,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import org.aspectj.apache.bcel.classfile.annotation.Annotation;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
 
 /**
  * For implementing declare @type interacting with declare @parents during compilation - we need to be 
@@ -27,14 +27,14 @@ import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
  * this will allow type resolution to succeed correctly.  The FakeAnnotation never makes it to disk, since the weaver
  * does the job properly, attaching a real annotation.
  */
-public class FakeAnnotation extends Annotation {
+public class FakeAnnotation extends AnnotationGen {
 
 	private String name;
 	private String sig;
 	private boolean isRuntimeVisible;
 	
 	public FakeAnnotation(String name,String sig,boolean isRuntimeVisible) {
-		super(0,null,true);
+		super(null,null,true,null);
 		this.name = name;
 		this.sig = sig;
 		this.isRuntimeVisible = isRuntimeVisible;
@@ -48,11 +48,11 @@ public class FakeAnnotation extends Annotation {
 		return sig;
 	}
 
-	public void addElementNameValuePair(ElementNameValuePair evp) {
+	public void addElementNameValuePair(ElementNameValuePairGen evp) {
 		// doesnt need to know about name/value pairs
 	}
 
-	protected void dump(DataOutputStream dos) throws IOException {
+	public void dump(DataOutputStream dos) throws IOException {
 		// should be serialized
 	}
 
@@ -68,7 +68,7 @@ public class FakeAnnotation extends Annotation {
 		return isRuntimeVisible;
 	}
 
-	protected void isRuntimeVisible(boolean b) {
+	protected void setIsRuntimeVisible(boolean b) {
 	}
 
 	public String toShortString() {

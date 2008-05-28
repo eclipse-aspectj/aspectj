@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
@@ -1268,7 +1269,7 @@ public class PatternParser {
 		
 		TypePattern declaringType;
 		NamePattern name = null;
-		Member.Kind kind;
+		MemberKind kind;
 		// here we can check for 'new'
 		if (maybeEatNew(returnType)) {
 			kind = Member.CONSTRUCTOR;

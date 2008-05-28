@@ -36,6 +36,7 @@ import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.Constants;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.JoinPointSignature;
+import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewFieldTypeMunger;
@@ -47,7 +48,7 @@ import org.aspectj.weaver.World;
 
 
 public class SignaturePattern extends PatternNode {
-	private Member.Kind kind;
+	private MemberKind kind;
 	private ModifiersPattern modifiers;
 	private TypePattern returnType;
     private TypePattern declaringType;
@@ -57,7 +58,7 @@ public class SignaturePattern extends PatternNode {
     private AnnotationTypePattern annotationPattern;
     private transient int hashcode = -1;
     	
-	public SignaturePattern(Member.Kind kind, ModifiersPattern modifiers,
+	public SignaturePattern(MemberKind kind, ModifiersPattern modifiers,
 	                         TypePattern returnType, TypePattern declaringType,
 	                         NamePattern name, TypePatternList parameterTypes,
 	                         ThrowsPattern throwsPattern,
@@ -596,7 +597,7 @@ public class SignaturePattern extends PatternNode {
     public NamePattern getName() { return name; }
     public TypePattern getDeclaringType() { return declaringType; }
     
-    public Member.Kind getKind() {
+    public MemberKind getKind() {
     	return kind;
     }
     
@@ -682,7 +683,7 @@ public class SignaturePattern extends PatternNode {
 	}
 
 	public static SignaturePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
-		Member.Kind kind = Member.Kind.read(s);
+		MemberKind kind = MemberKind.read(s);
 		ModifiersPattern modifiers = ModifiersPattern.read(s);
 		TypePattern returnType = TypePattern.read(s, context);
 		TypePattern declaringType = TypePattern.read(s, context);

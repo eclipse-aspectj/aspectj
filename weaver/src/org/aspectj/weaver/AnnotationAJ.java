@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
-
 /**
  * This type represents the weavers abstraction of an annotation - it is
  * not tied to any underlying BCI toolkit.  The weaver actualy handles these

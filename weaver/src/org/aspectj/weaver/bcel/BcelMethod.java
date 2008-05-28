@@ -15,6 +15,7 @@ package org.aspectj.weaver.bcel;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -32,14 +33,15 @@ import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.Signature.TypeVariableSignature;
-import org.aspectj.apache.bcel.classfile.annotation.Annotation;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
@@ -52,12 +54,7 @@ import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSigna
 public final class BcelMethod extends ResolvedMemberImpl {
 
 
-	
-	
 	private Method method;
-	private boolean isAjSynthetic;
-	private boolean isSynthetic;
-	private boolean knowIfSynthetic = false;
 	private ShadowMunger associatedShadowMunger;
 	private ResolvedPointcutDefinition preResolvedPointcut;  // used when ajc has pre-resolved the pointcut of some @Advice
 	
@@ -67,10 +64,26 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	
 	private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
 	private AjAttribute.MethodDeclarationLineNumberAttribute declarationLineNumber;
-	private World world;
 	private BcelObjectType bcelObjectType;
 	
 	private boolean parameterNamesInitialized = false;
+	
+	private int bitflags;
+	private static final int KNOW_IF_SYNTHETIC           = 0x0001;
+	private static final int PARAMETER_NAMES_INITIALIZED = 0x0002;
+	private static final int CAN_BE_PARAMETERIZED        = 0x0004;
+	private static final int UNPACKED_GENERIC_SIGNATURE  = 0x0008;
+	private static final int HAS_EFFECTIVE_SIGNATURE     = 0x0010;
+	private static final int HAS_PRERESOLVED_POINTCUT    = 0x0020;
+	private static final int IS_AJ_SYNTHETIC             = 0x0040;
+	private static final int IS_SYNTHETIC                = 0x0080;
+	private static final int IS_SYNTHETIC_INVERSE        = 0x7f7f; // all bits but IS_SYNTHETIC (and topmost bit)
+	private static final int HAS_ASSOCIATED_SHADOWMUNGER = 0x0100;
+	private static final int HAS_GENERIC_RETPARAM_TYPES  = 0x0200;
+	private static final int HAS_ANNOTATIONS             = 0x0400;
+	private static final int HAVE_DETERMINED_ANNOTATIONS = 0x0800;
+	private static final int HAS_MD_LINE_NUMBER_ATTRIBUTE= 0x1000;
+	
 
 	 private boolean canBeParameterized = false;
 	 // genericized version of return and parameter types
@@ -84,16 +97,15 @@ public final class BcelMethod extends ResolvedMemberImpl {
 				(method.getName().equals("<clinit>") ? STATIC_INITIALIZATION : METHOD), 
 			declaringType.getResolvedTypeX(),
 			declaringType.isInterface() 
-				? method.getAccessFlags() | Modifier.INTERFACE
-				: method.getAccessFlags(),
-			method.getName(), 
+				? method.getModifiers() | Modifier.INTERFACE
+				: method.getModifiers(),
+			method.getName(),
 			method.getSignature());
 		this.method = method;
 		this.sourceContext = declaringType.getResolvedTypeX().getSourceContext();
-		this.world = declaringType.getResolvedTypeX().getWorld();
 		this.bcelObjectType = declaringType;
 		unpackJavaAttributes();
-		unpackAjAttributes(world);
+		unpackAjAttributes(bcelObjectType.getWorld());
 	}
 
 	// ----
@@ -135,12 +147,12 @@ public final class BcelMethod extends ResolvedMemberImpl {
 						typename.equals("org.aspectj.lang.annotation.Before") ||
 						typename.equals("org.aspectj.lang.annotation.Around") ||
 						typename.startsWith("org.aspectj.lang.annotation.After")) {
-						Annotation a = annotationX.getBcelAnnotation();
+						AnnotationGen a = annotationX.getBcelAnnotation();
 						if (a!=null) {
 							List values = a.getValues();
 							for (Iterator iterator = values.iterator(); iterator
 									.hasNext();) {
-								ElementNameValuePair nvPair = (ElementNameValuePair) iterator.next();
+								ElementNameValuePairGen nvPair = (ElementNameValuePairGen) iterator.next();
 								if (nvPair.getNameString().equals("argNames")) {
 									String argNames = nvPair.getValue().stringifyValue();
 									StringTokenizer argNameTokenizer = new StringTokenizer(argNames," ,");
@@ -195,7 +207,8 @@ public final class BcelMethod extends ResolvedMemberImpl {
 				associatedShadowMunger = ((AjAttribute.AdviceAttribute)a).reify(this, world);
 				// return;
 			} else if (a instanceof AjAttribute.AjSynthetic) {
-				isAjSynthetic = true;
+				bitflags|=IS_AJ_SYNTHETIC;
+//				isAjSynthetic = true;
 			} else if (a instanceof AjAttribute.EffectiveSignatureAttribute) {
 				//System.out.println("found effective: " + this);
 				effectiveSignature = (AjAttribute.EffectiveSignatureAttribute)a;
@@ -211,7 +224,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	// for testing - if we have this attribute, return it - will return null if it doesnt know anything 
 	public AjAttribute[] getAttributes(String name) {
 		List results = new ArrayList();
-		List l = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),method.getAttributes(), getSourceContext(world),world,bcelObjectType.getWeaverVersionAttribute());
+		List l = BcelAttributes.readAjAttributes(getDeclaringType().getClassName(),method.getAttributes(), getSourceContext(bcelObjectType.getWorld()),bcelObjectType.getWorld(),bcelObjectType.getWeaverVersionAttribute());
 		for (Iterator iter = l.iterator(); iter.hasNext();) {
 			AjAttribute element = (AjAttribute) iter.next();		
 			if (element.getNameString().equals(name)) results.add(element);
@@ -247,7 +260,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	public boolean isAjSynthetic() {
-		return isAjSynthetic; // || getName().startsWith(NameMangler.PREFIX);
+		return (bitflags&IS_AJ_SYNTHETIC)!=0;//isAjSynthetic; // || getName().startsWith(NameMangler.PREFIX);
 	}
 	
 	//FIXME ??? needs an isSynthetic method
@@ -291,7 +304,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
       return ret;
     }
 	
-	public Kind getKind() {
+	public MemberKind getKind() {
 		if (associatedShadowMunger != null) {
 			return ADVICE;
 		} else {
@@ -310,7 +323,11 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	
 	public AnnotationX[] getAnnotations() {
 		ensureAnnotationsRetrieved();
-		return annotations;
+		if ((bitflags&HAS_ANNOTATIONS)!=0) {
+			return annotations;
+		} else {
+			return AnnotationX.NONE;
+		}
 	}
 	
 	 public ResolvedType[] getAnnotationTypes() {
@@ -323,6 +340,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 
 	 public AnnotationX getAnnotationOfType(UnresolvedType ofType) {
 		 ensureAnnotationsRetrieved();
+		 if ((bitflags&HAS_ANNOTATIONS)==0) return null;
 		 for (int i=0; i<annotations.length; i++) {
 			 if (annotations[i].getTypeName().equals(ofType.getName())) return annotations[i];
 		 }
@@ -331,51 +349,64 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	 
 	 public void addAnnotation(AnnotationX annotation) {
 	    ensureAnnotationsRetrieved();	
-		// Add it to the set of annotations
-		int len = annotations.length;
-		AnnotationX[] ret = new AnnotationX[len+1];
-		System.arraycopy(annotations, 0, ret, 0, len);
-		ret[len] = annotation;
-		annotations = ret;
+	     if ((bitflags&HAS_ANNOTATIONS)==0) {
+			annotations = new AnnotationX[1];
+			annotations[0]=annotation;
+	    } else {
+			// Add it to the set of annotations
+			int len = annotations.length;
+			AnnotationX[] ret = new AnnotationX[len+1];
+			System.arraycopy(annotations, 0, ret, 0, len);
+			ret[len] = annotation;
+			annotations = ret;
+		}
+	    bitflags|=HAS_ANNOTATIONS;
 		
 		// Add it to the set of annotation types
-		annotationTypes.add(UnresolvedType.forName(annotation.getTypeName()).resolve(world));
+	    if (annotationTypes==Collections.EMPTY_SET) annotationTypes = new HashSet();
+		annotationTypes.add(UnresolvedType.forName(annotation.getTypeName()).resolve(bcelObjectType.getWorld()));
 		// FIXME asc looks like we are managing two 'bunches' of annotations, one
 		// here and one in the real 'method' - should we reduce it to one layer?
-		method.addAnnotation(annotation.getBcelAnnotation());
+//		method.addAnnotation(annotation.getBcelAnnotation());
 	 }
 	 
 	 private void ensureAnnotationsRetrieved() {
 		if (method == null) return; // must be ok, we have evicted it
-		if (annotationTypes == null || method.getAnnotations().length!=annotations.length) { // sometimes the list changes underneath us!
-    		Annotation annos[] = method.getAnnotations();
-    		annotationTypes = new HashSet();
-    		annotations = new AnnotationX[annos.length];
-    		for (int i = 0; i < annos.length; i++) {
-				Annotation annotation = annos[i];
-				annotationTypes.add(world.resolve(UnresolvedType.forSignature(annotation.getTypeSignature())));
-				annotations[i] = new AnnotationX(annotation,world);
-			}
-    	}
+		if ((bitflags&HAVE_DETERMINED_ANNOTATIONS)!=0) return;
+		bitflags|=HAVE_DETERMINED_ANNOTATIONS;
+		
+    		AnnotationGen annos[] = method.getAnnotations();
+    		if (annos.length!=0) {
+	    		annotationTypes = new HashSet();
+	    		annotations = new AnnotationX[annos.length];
+	    		for (int i = 0; i < annos.length; i++) {
+					AnnotationGen annotation = annos[i];
+					annotationTypes.add(bcelObjectType.getWorld().resolve(UnresolvedType.forSignature(annotation.getTypeSignature())));
+					annotations[i] = new AnnotationX(annotation,bcelObjectType.getWorld());
+				}
+	    		bitflags|=HAS_ANNOTATIONS;
+    		} else {
+    			annotationTypes=Collections.EMPTY_SET;
+    		}
     }
 	
 	private void ensureParameterAnnotationsRetrieved() {
 		if (method == null) return; // must be ok, we have evicted it
-		Annotation[][] pAnns = method.getParameterAnnotations();
+		AnnotationGen[][] pAnns = method.getParameterAnnotations();
 		if (parameterAnnotationTypes==null || pAnns.length!=parameterAnnotationTypes.length) {
 			if (pAnns == Method.NO_PARAMETER_ANNOTATIONS) {
 				parameterAnnotationTypes = BcelMethod.NO_PARAMETER_ANNOTATION_TYPES;
 				parameterAnnotations     = BcelMethod.NO_PARAMETER_ANNOTATIONXS;
 			} else {
-				Annotation annos[][] = method.getParameterAnnotations();
+				AnnotationGen annos[][] = method.getParameterAnnotations();
 				parameterAnnotations = new AnnotationX[annos.length][];
 				parameterAnnotationTypes = new ResolvedType[annos.length][];
 				for (int i=0;i<annos.length;i++) {
 					parameterAnnotations[i] = new AnnotationX[annos[i].length];
 					parameterAnnotationTypes[i] = new ResolvedType[annos[i].length];
 					for (int j=0;j<annos[i].length;j++) {
-						parameterAnnotations[i][j] = new AnnotationX(annos[i][j],world);
-						parameterAnnotationTypes[i][j] = world.resolve(UnresolvedType.forSignature(annos[i][j].getTypeSignature()));
+						parameterAnnotations[i][j] = new AnnotationX(annos[i][j],bcelObjectType.getWorld());
+						parameterAnnotationTypes[i][j] = bcelObjectType.getWorld().resolve(UnresolvedType.forSignature(annos[i][j].getTypeSignature()));
 					}
 				}
 			}
@@ -423,7 +454,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	 private void unpackGenericSignature() {
 		 if (unpackedGenericSignature) return;
 		 unpackedGenericSignature = true;
- 		 if (!world.isInJava5Mode()) { 
+ 		 if (!bcelObjectType.getWorld().isInJava5Mode()) { 
  			 this.genericReturnType = getReturnType();
  			 this.genericParameterTypes = getParameterTypes();
  			 return;
@@ -443,7 +474,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 					typeVariables[i] = BcelGenericSignatureToTypeXConverter.formalTypeParameter2TypeVariable(
 							methodFtp, 
 							mSig.formalTypeParameters,
-							world);
+							bcelObjectType.getWorld());
 				} catch (GenericSignatureFormatException e) {
 					// this is a development bug, so fail fast with good info
 					throw new IllegalStateException(
@@ -463,7 +494,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 			 try {
 				genericReturnType = BcelGenericSignatureToTypeXConverter.typeSignature2TypeX(
 						 returnTypeSignature, formals,
-						 world);
+						 bcelObjectType.getWorld());
 			} catch (GenericSignatureFormatException e) {
 //				 development bug, fail fast with good info
 				throw new IllegalStateException(
@@ -477,7 +508,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 				try {
 					genericParameterTypes[i] = 
 						BcelGenericSignatureToTypeXConverter.typeSignature2TypeX(
-								paramTypeSigs[i],formals,world);
+								paramTypeSigs[i],formals,bcelObjectType.getWorld());
 				} catch (GenericSignatureFormatException e) {
 //					 development bug, fail fast with good info
 					throw new IllegalStateException(
@@ -508,27 +539,38 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	 }
 
 	public boolean isSynthetic() {
-		if (!knowIfSynthetic) workOutIfSynthetic();
-		return isSynthetic;
+		if ((bitflags&KNOW_IF_SYNTHETIC)==0) {
+			workOutIfSynthetic();
+		}
+		return (bitflags&IS_SYNTHETIC)!=0;//isSynthetic;
 	}
 
 	// Pre Java5 synthetic is an attribute 'Synthetic', post Java5 it is a modifier (4096 or 0x1000)
 	private void workOutIfSynthetic() {
-		knowIfSynthetic=true;
+		if ((bitflags&KNOW_IF_SYNTHETIC)!=0) return;
+		bitflags|=KNOW_IF_SYNTHETIC;
+//		knowIfSynthetic=true;
 		JavaClass jc = bcelObjectType.getJavaClass();
-		isSynthetic=false;
+	    bitflags&=IS_SYNTHETIC_INVERSE; // unset the bit
+//		isSynthetic=false;
 		if (jc==null) return; // what the hell has gone wrong?
 		if (jc.getMajor()<49/*Java5*/) {
 			// synthetic is an attribute
 			String[] synthetics =  getAttributeNames(false);
 			if (synthetics!=null) {
 				for (int i = 0; i < synthetics.length; i++) {
-					if (synthetics[i].equals("Synthetic")) {isSynthetic=true;break;}
+					if (synthetics[i].equals("Synthetic")) {
+						bitflags|=IS_SYNTHETIC;
+//						isSynthetic=true;
+						break;}
 				}
 			}
 		} else {
 			// synthetic is a modifier (4096)
-			isSynthetic = (modifiers&4096)!=0;
+			if ((modifiers&4096)!=0) {
+				bitflags|=IS_SYNTHETIC;
+			}
+//			isSynthetic = (modifiers&4096)!=0;
 		}
 	}
 

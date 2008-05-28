@@ -248,7 +248,7 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.toLongString();
 	}
 
-	public Kind getKind() {
+	public MemberKind getKind() {
 		return realMember.getKind();
 	}
 
@@ -386,7 +386,7 @@ public class JoinPointSignature implements ResolvedMember {
 	   realMember.resetName(newName);
    }	
 
-	public void resetKind(Kind newKind) {
+	public void resetKind(MemberKind newKind) {
 		realMember.resetKind(newKind);
 	}
 	

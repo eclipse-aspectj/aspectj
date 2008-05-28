@@ -168,7 +168,7 @@ public class MemberTestCase extends TestCase {
     private void declaringTypeTest(Member m, String declaringName) {
         assertEquals(m + " declared in", UnresolvedType.forName(declaringName), m.getDeclaringType());
     }
-    private void kindTest(Member m, MemberImpl.Kind kind) {
+    private void kindTest(Member m, MemberKind kind) {
         assertEquals(m + " kind", kind, m.getKind());
     }   
    
