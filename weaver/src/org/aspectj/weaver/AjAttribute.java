@@ -228,6 +228,8 @@ public abstract class AjAttribute {
 		
 		public static final WeaverVersionInfo UNKNOWN = 
 			new WeaverVersionInfo(WEAVER_VERSION_MAJOR_UNKNOWN,WEAVER_VERSION_MINOR_UNKNOWN);
+		public static final WeaverVersionInfo CURRENT = 
+			new WeaverVersionInfo(CURRENT_VERSION_MAJOR,CURRENT_VERSION_MINOR);
 		
 		// These are the versions read in from a particular class file.
 		private short major_version; 
