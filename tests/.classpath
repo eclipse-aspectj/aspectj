@@ -16,5 +16,6 @@
 	<classpathentry kind="var" path="JAVA_HOME/lib/tools.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/weaver"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/testing-util"/>
+	<classpathentry kind="lib" path="/lib/bcel/bcel-verifier.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
