@@ -27,8 +27,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.generic.FieldGen;
 import org.aspectj.apache.bcel.generic.FieldInstruction;
@@ -534,6 +534,13 @@ class BcelClassWeaver implements IClassWeaver {
         	wsi.setReweavable(true);
         } else {
         	clazz.getOrCreateWeaverStateInfo(false).setReweavable(false);
+        }
+
+        // tidyup, reduce ongoing memory usage of BcelMethods that hang around
+        for (Iterator i = methodGens.iterator(); i.hasNext();) {
+            LazyMethodGen mg = (LazyMethodGen) i.next();
+            BcelMethod bM = mg.getMemberView();
+            if (bM != null) bM.wipeJoinpointSignatures();
         }
         
         return isChanged;
