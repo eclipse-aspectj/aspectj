@@ -303,12 +303,18 @@ public final class LazyClassGen {
 	        }
 		}
 
-	    Method[] methods = myGen.getMethods();
-        for (int i = 0; i < methods.length; i++) {
-            addMethodGen(new LazyMethodGen(methods[i], this));
-        }
 
-		ResolvedMember[] fields = myType.getDeclaredFields();
+		ResolvedMember[] methods = myType.getDeclaredMethods();
+		for (int i=0; i<methods.length; i++) {
+			addMethodGen(new LazyMethodGen((BcelMethod)methods[i],this));
+		}
+		
+        // Method[] methods = myGen.getMethods();
+        // for (int i = 0; i < methods.length; i++) {
+        // addMethodGen(new LazyMethodGen(methods[i], this));
+        // }
+
+        ResolvedMember[] fields = myType.getDeclaredFields();
 		for (int i=0; i<fields.length; i++) {
 			this.fields.add((BcelField)fields[i]);
 		}        
