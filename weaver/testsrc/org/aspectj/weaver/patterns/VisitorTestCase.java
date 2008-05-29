@@ -50,7 +50,7 @@ public class VisitorTestCase extends TestCase {
         for (Iterator iterator = pointcuts.iterator(); iterator.hasNext();) {
             String pointcut = (String) iterator.next();
             try  {
-                PatternNodeVisitor.DumpPointcutVisitor.check(pointcut);
+                DumpPointcutVisitor.check(pointcut);
             } catch (Throwable t) {
                 t.printStackTrace();
                 fail("Failed on '"+pointcut+"': " +t.toString());
@@ -66,7 +66,7 @@ public class VisitorTestCase extends TestCase {
             String tp = (String) iterator.next();
             try  {
                 TypePattern p = new PatternParser(tp).parseTypePattern();
-                PatternNodeVisitor.DumpPointcutVisitor.check(p, true);
+                DumpPointcutVisitor.check(p, true);
             } catch (Throwable t) {
                 fail("Failed on '"+tp+"': " +t.toString());
             }
