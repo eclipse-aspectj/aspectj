@@ -1522,7 +1522,7 @@ public class BcelShadow extends Shadow {
 		}
     }
     
-    protected Member getRelevantMember(Member foundMember, Member relevantMember, ResolvedType relevantType){
+    protected ResolvedMember getRelevantMember(ResolvedMember foundMember, Member relevantMember, ResolvedType relevantType){
     	if (foundMember != null){
     		return foundMember;
     	}
@@ -1560,7 +1560,7 @@ public class BcelShadow extends Shadow {
     	return foundMember;
     }
     
-    protected ResolvedType [] getAnnotations(Member foundMember, Member relevantMember, ResolvedType relevantType){
+    protected ResolvedType [] getAnnotations(ResolvedMember foundMember, Member relevantMember, ResolvedType relevantType){
     	if (foundMember == null){
     		// check the ITD'd dooberries
     		List mungers = relevantType.resolve(world).getInterTypeMungers();
@@ -1603,23 +1603,26 @@ public class BcelShadow extends Shadow {
     	
     	// FIXME asc Refactor this code, there is duplication
     	ResolvedType[] annotations = null;
-    	Member relevantMember = getSignature();
-    	ResolvedType  relevantType   = relevantMember.getDeclaringType().resolve(world);
+//    	Member relevantMember = getSignature();
+    	Member shadowSignature = getSignature();
+    	Member annotationHolder = getSignature();
+    	ResolvedType  relevantType   = shadowSignature.getDeclaringType().resolve(world);
+    	
 	if (relevantType.isRawType() || relevantType.isParameterizedType()) relevantType = relevantType.getGenericType();
 
 	if (getKind() == Shadow.StaticInitialization) {
     		annotations  = relevantType.resolve(world).getAnnotationTypes();
     		
     	} else if (getKind() == Shadow.MethodCall  || getKind() == Shadow.ConstructorCall) {
-            Member foundMember = findMethod2(relevantType.resolve(world).getDeclaredMethods(),getSignature());            
-            annotations = getAnnotations(foundMember, relevantMember, relevantType);
-            relevantMember = getRelevantMember(foundMember,relevantMember,relevantType);
-            relevantType = relevantMember.getDeclaringType().resolve(world);
+            ResolvedMember foundMember = findMethod2(relevantType.resolve(world).getDeclaredMethods(),getSignature());            
+            annotations = getAnnotations(foundMember, shadowSignature, relevantType);
+            annotationHolder = getRelevantMember(foundMember,shadowSignature,relevantType);
+            relevantType = annotationHolder.getDeclaringType().resolve(world);
     		
     	} else if (getKind() == Shadow.FieldSet || getKind() == Shadow.FieldGet) {
-    		relevantMember = findField(relevantType.getDeclaredFields(),getSignature());
+    		annotationHolder = findField(relevantType.getDeclaredFields(),getSignature());
     		
-			if (relevantMember==null) {
+			if (annotationHolder==null) {
               // check the ITD'd dooberries
 				List mungers = relevantType.resolve(world).getInterTypeMungers();
 				for (Iterator iter = mungers.iterator(); iter.hasNext();) {
@@ -1631,21 +1634,21 @@ public class BcelShadow extends Shadow {
 				  	  ResolvedMember rmm       = findMethod(typeMunger.getAspectType(),ajcMethod);
 					  if (fakerm.equals(getSignature())) {
 						relevantType = typeMunger.getAspectType();
-						relevantMember = rmm;
+						annotationHolder = rmm;
 					  }
 					}
 				}	
 			}
-    		annotations = relevantMember.getAnnotationTypes();
+    		annotations = ((ResolvedMember)annotationHolder).getAnnotationTypes();
     		
     	} else if (getKind() == Shadow.MethodExecution || getKind() == Shadow.ConstructorExecution || 
     		        getKind() == Shadow.AdviceExecution) {
     		//ResolvedMember rm[] = relevantType.getDeclaredMethods();
-    		Member foundMember = findMethod2(relevantType.getDeclaredMethods(),getSignature());
+    		ResolvedMember foundMember = findMethod2(relevantType.getDeclaredMethods(),getSignature());
     		
-    		annotations = getAnnotations(foundMember, relevantMember, relevantType);
-    		relevantMember = foundMember;
-            relevantMember = getRelevantMember(foundMember, relevantMember,relevantType);
+    		annotations = getAnnotations(foundMember, shadowSignature, relevantType);
+    		annotationHolder = foundMember;
+    		annotationHolder = getRelevantMember(foundMember, annotationHolder,relevantType);
             
     	} else if (getKind() == Shadow.ExceptionHandler) {
     		relevantType = getSignature().getParameterTypes()[0].resolve(world);
@@ -1663,7 +1666,7 @@ public class BcelShadow extends Shadow {
     	
 		for (int i = 0; i < annotations.length; i++) {
 			ResolvedType aTX = annotations[i];
-			KindedAnnotationAccessVar kaav =  new KindedAnnotationAccessVar(getKind(),aTX.resolve(world),relevantType,relevantMember);
+			AnnotationAccessVar kaav =  new AnnotationAccessVar(getKind(),aTX.resolve(world),relevantType,annotationHolder);
     		kindedAnnotationVars.put(aTX,kaav);
 		}
     }
@@ -1711,7 +1714,7 @@ public class BcelShadow extends Shadow {
 		for (int i = 0; i < annotations.length; i++) {
 			ResolvedType ann = annotations[i];
 			Kind k = Shadow.StaticInitialization;
-			withinAnnotationVars.put(ann,new KindedAnnotationAccessVar(k,ann,getEnclosingType(),null));
+			withinAnnotationVars.put(ann,new AnnotationAccessVar(k,ann,getEnclosingType(),null));
 		}
     }
     
@@ -1726,7 +1729,7 @@ public class BcelShadow extends Shadow {
 			Kind k = (getEnclosingMethod().getMemberView().getKind()==Member.CONSTRUCTOR?
 					  Shadow.ConstructorExecution:Shadow.MethodExecution);
 			withincodeAnnotationVars.put(ann,
-					new KindedAnnotationAccessVar(k,ann,getEnclosingType(),getEnclosingCodeSignature()));
+					new AnnotationAccessVar(k,ann,getEnclosingType(),getEnclosingCodeSignature()));
 		}
     }
     
