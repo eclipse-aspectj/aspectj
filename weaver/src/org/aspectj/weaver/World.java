@@ -317,7 +317,9 @@ public abstract class World implements Dump.INode {
 		if (dumpState_cantFindTypeExceptions==null) {
 		  dumpState_cantFindTypeExceptions = new ArrayList();   
 		}
-		dumpState_cantFindTypeExceptions.add(new RuntimeException("Can't find type "+ty.getName()));
+		if (dumpState_cantFindTypeExceptions.size() < 100) { // limit growth
+            dumpState_cantFindTypeExceptions.add(new RuntimeException("Can't find type " + ty.getName()));
+        }
 		return new MissingResolvedTypeWithKnownSignature(ty.getSignature(),this);
 	}
     
