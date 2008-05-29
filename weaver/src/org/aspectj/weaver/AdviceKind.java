@@ -18,7 +18,7 @@ import java.io.IOException;
 import org.aspectj.util.TypeSafeEnum;
 
 /**
- * The 5 kinds of advice in AspectJ.
+ * The five kinds of advice in AspectJ.
  * 
  * @author Erik Hilsdale
  * @author Jim Hugunin
