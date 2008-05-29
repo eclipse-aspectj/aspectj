@@ -993,6 +993,9 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 	       	reportedUnresolvableMember = true;						
 		}
     }
-
+	
+    public void wipeJoinpointSignatures() {
+        joinPointSignatures = null;
+    }
 }
    
