@@ -1425,7 +1425,7 @@ public class BcelWeaver implements IWeaver {
     public UnwovenClassFile[] getClassFilesFor(LazyClassGen clazz) {
     	List childClasses = clazz.getChildClasses(world);
     	UnwovenClassFile[] ret = new UnwovenClassFile[1 + childClasses.size()];    	
-    	ret[0] = new UnwovenClassFile(clazz.getFileName(),clazz.getJavaClassBytesIncludingReweavable(world));
+    	ret[0] = new UnwovenClassFile(clazz.getFileName(),clazz.getClassName(),clazz.getJavaClassBytesIncludingReweavable(world));
     	int index = 1;
     	for (Iterator iter = childClasses.iterator(); iter.hasNext();) {
 			UnwovenClassFile.ChildClass element = (UnwovenClassFile.ChildClass) iter.next();
