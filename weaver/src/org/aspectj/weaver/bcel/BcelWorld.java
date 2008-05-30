@@ -27,8 +27,8 @@ import java.util.StringTokenizer;
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ClassParser;
-import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.generic.FieldInstruction;
@@ -46,16 +46,15 @@ import org.aspectj.apache.bcel.util.NonCachingClassLoaderRepository;
 import org.aspectj.apache.bcel.util.Repository;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.Advice;
-import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationOnTypeMunger;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ICrossReferenceHandler;
-import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberImpl;
+import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.NewParentTypeMunger;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
@@ -69,10 +68,8 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.AjAttribute.Aspect;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
-import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
-import org.aspectj.weaver.patterns.SimpleScope;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 
@@ -175,61 +172,6 @@ public class BcelWorld extends World implements Repository {
 		classPath.addPath(name, this.getMessageHandler());
 	}
 
-    /**
-     * Parse a string into advice.
-     * 
-     * <blockquote><pre>
-     * Kind ( Id , ... ) : Pointcut -> MethodSignature
-     * </pre></blockquote>
-     */
-    public Advice shadowMunger(String str, int extraFlag) {
-        str = str.trim();
-        int start = 0;
-        int i = str.indexOf('(');
-        AdviceKind kind = 
-            AdviceKind.stringToKind(str.substring(start, i));
-        start = ++i;
-        i = str.indexOf(')', i);
-        String[] ids = parseIds(str.substring(start, i).trim());
-        //start = ++i;
-        
-        
-        
-        i = str.indexOf(':', i);        
-        start = ++i;        
-        i = str.indexOf("->", i);
-        Pointcut pointcut = Pointcut.fromString(str.substring(start, i).trim());
-        Member m = MemberImpl.methodFromString(str.substring(i+2, str.length()).trim());
-
-        // now, we resolve
-        UnresolvedType[] types = m.getParameterTypes();
-        FormalBinding[] bindings = new FormalBinding[ids.length];
-        for (int j = 0, len = ids.length; j < len; j++) {
-            bindings[j] = new FormalBinding(types[j], ids[j], j, 0, 0, "fromString");
-        }
-
-        Pointcut p =
-        	pointcut.resolve(new SimpleScope(this, bindings));
-
-        return new BcelAdvice(kind, p, m, extraFlag, 0, 0, null, null);
-    }
-    
-    private String[] parseIds(String str) {
-        if (str.length() == 0) return ZERO_STRINGS;
-        List l = new ArrayList();
-        int start = 0;
-        while (true) {
-            int i = str.indexOf(',', start);
-            if (i == -1) {
-                l.add(str.substring(start).trim());
-                break;
-            }
-            l.add(str.substring(start, i).trim());
-            start = i+1;
-        }
-        return (String[]) l.toArray(new String[l.size()]);
-    }
-    
     // ---- various interactions with bcel
 
     public static Type makeBcelType(UnresolvedType type) {
@@ -674,7 +616,8 @@ public class BcelWorld extends World implements Repository {
 	}
 
 	public void clear() {
-		throw new RuntimeException("Not implemented");
+		delegate.clear();
+//		throw new RuntimeException("Not implemented");
 	}
 
     // @Override
