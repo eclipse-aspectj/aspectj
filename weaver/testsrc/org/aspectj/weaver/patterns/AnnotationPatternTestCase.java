@@ -9,16 +9,16 @@
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
+import junit.framework.TestCase;
+
 import org.aspectj.bridge.AbortException;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.AnnotationX;
-import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.BcweaverTests;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.bcel.BcelWorld;
-
-import junit.framework.TestCase;
 
 public class AnnotationPatternTestCase extends TestCase {
 	
@@ -29,7 +29,7 @@ public class AnnotationPatternTestCase extends TestCase {
 		AnnotationTypePattern foo = p.maybeParseAnnotationPattern();
 		foo = foo.resolveBindings(makeSimpleScope(),new Bindings(3),true);
 		assertTrue("ExactAnnotationTypePattern",foo instanceof ExactAnnotationTypePattern);
-		assertEquals("Foo",UnresolvedType.forName("Foo"),((ExactAnnotationTypePattern)foo).annotationType);
+		assertEquals("Foo", UnresolvedType.forSignature("LFoo;"), ((ExactAnnotationTypePattern) foo).annotationType);
 	}
 	
 	public void testParseAndAnnotationPattern() {
@@ -41,8 +41,8 @@ public class AnnotationPatternTestCase extends TestCase {
 		assertEquals("@Foo @Goo",fooAndGoo.toString());
 		AnnotationTypePattern left = ((AndAnnotationTypePattern)fooAndGoo).getLeft();
 		AnnotationTypePattern right = ((AndAnnotationTypePattern)fooAndGoo).getRight();
-		assertEquals("Foo",UnresolvedType.forName("Foo"),((ExactAnnotationTypePattern)left).annotationType);
-		assertEquals("Goo",UnresolvedType.forName("Goo"),((ExactAnnotationTypePattern)right).annotationType);		
+		assertEquals("Foo", UnresolvedType.forSignature("LFoo;"), ((ExactAnnotationTypePattern) left).annotationType);
+        assertEquals("Goo", UnresolvedType.forSignature("LGoo;"), ((ExactAnnotationTypePattern) right).annotationType);		
 	}
 //
 //	public void testParseOrAnnotationPattern() {
