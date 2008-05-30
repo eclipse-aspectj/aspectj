@@ -20,6 +20,7 @@ import java.util.Map;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.TypeVariableReferenceType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
@@ -102,8 +103,9 @@ public class DeclareSoft extends Declare {
     	ResolvedType excType = exception.getExactType().resolve(scope.getWorld());
     	if (!excType.isMissing()) {
     		if (excType.isTypeVariableReference()) {
+    		    TypeVariableReferenceType typeVariableRT = (TypeVariableReferenceType) excType;
     			// a declare soft in a generic abstract aspect, we need to check the upper bound
-    			excType = excType.getUpperBound().resolve(scope.getWorld());
+    			excType = typeVariableRT.getUpperBound().resolve(scope.getWorld());
     		}
     		if (!scope.getWorld().getCoreType(UnresolvedType.THROWABLE).isAssignableFrom(excType)) {
     			scope.getWorld().showMessage(IMessage.ERROR,
