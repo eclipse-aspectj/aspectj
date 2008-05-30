@@ -378,7 +378,7 @@ public abstract class World implements Dump.INode {
 			
 		} else if (ty.isGenericWildcard()) {
 			// ======= generic wildcard types =============
-			return resolveGenericWildcardFor(ty);
+			return resolveGenericWildcardFor((WildcardedUnresolvedType) ty);
     	} else {
 			// ======= simple and raw types ===============
 			String erasedSignature = ty.getErasureSignature();
@@ -463,7 +463,7 @@ public abstract class World implements Dump.INode {
     /**
      * Go from an unresolved generic wildcard (represented by UnresolvedType) to a resolved version (BoundedReferenceType).
      */
-    private ReferenceType resolveGenericWildcardFor(UnresolvedType aType) {
+    private ReferenceType resolveGenericWildcardFor(WildcardedUnresolvedType aType) {
     	BoundedReferenceType ret = null;
     	// FIXME asc doesnt take account of additional interface bounds (e.g. ? super R & Serializable - can you do that?)
     	if (aType.isExtends()) {
@@ -473,7 +473,8 @@ public abstract class World implements Dump.INode {
     		ReferenceType lowerBound = (ReferenceType) resolve(aType.getLowerBound());
     		ret = new BoundedReferenceType(lowerBound,false,this);
     	} else {
-    		// must be ? on its own!
+            // must be ? on its own!
+    	    ret = new BoundedReferenceType("*", "Ljava/lang/Object", this);
     	}
     	return ret;
     }
