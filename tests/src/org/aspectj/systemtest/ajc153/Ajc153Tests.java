@@ -91,8 +91,8 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testParsingBytecodeLess_pr152871() { 
 	  Utility.testingParseCounter=0;
 	  runTest("parsing bytecode less"); 
-	  assertTrue("Should have called parse 5 times, not "+Utility.testingParseCounter+" times",Utility.testingParseCounter==5);
-	  // 5 means:   
+	  assertTrue("Should have called parse 2 times, not " + Utility.testingParseCounter + " times", Utility.testingParseCounter == 2);
+        // 5 means: // 3 of these are gone with change to UnwovenClassFileWTPMB to take a classname in ctor
 	  // (1)=registerAspect   
 	  // (2,3)=checkingIfShouldWeave,AcceptingResult for class
 	  // (4,5)=checkingIfShouldWeave,AcceptingResult for aspect
