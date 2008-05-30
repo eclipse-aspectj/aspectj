@@ -907,7 +907,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		for (int i = 0; i < myParameterTypes.length; i++) {
 			UnresolvedType thisParameter = myParameterTypes[i];
 			if (thisParameter.isTypeVariableReference()) {
-				sig.append(thisParameter.getUpperBound().getSignature());
+                TypeVariableReferenceType typeVariableRT = (TypeVariableReferenceType) thisParameter;
+                sig.append(typeVariableRT.getUpperBound().getSignature());
 			} else {
 				sig.append(thisParameter.getSignature());
 			}
@@ -920,12 +921,13 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	// comparison.
 	public static void appendSigWithTypeVarBoundsRemoved(UnresolvedType aType, StringBuffer toBuffer, Set alreadyUsedTypeVars) {
 		if (aType.isTypeVariableReference()) {
+            TypeVariableReferenceType typeVariableRT = (TypeVariableReferenceType) aType;
 			// pr204505
 		    if (alreadyUsedTypeVars.contains(aType)) {
                 toBuffer.append("...");
             } else {
                 alreadyUsedTypeVars.add(aType);
-                appendSigWithTypeVarBoundsRemoved(aType.getUpperBound(), toBuffer, alreadyUsedTypeVars);
+                appendSigWithTypeVarBoundsRemoved(typeVariableRT.getUpperBound(), toBuffer, alreadyUsedTypeVars);
             }
 //			toBuffer.append("T;");
 		} else if (aType.isParameterizedType()) {
