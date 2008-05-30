@@ -44,10 +44,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	private boolean bindingPattern = false;
 	private Map annotationValues;
 	
-	/**
-	 * @param annotationValues 
-	 * 
-	 */
+	 // OPTIMIZE is annotationtype really unresolved???? surely it is resolved by now...
 	public ExactAnnotationTypePattern(UnresolvedType annotationType, Map annotationValues) {
 		this.annotationType = annotationType;
 		this.annotationValues = annotationValues;
