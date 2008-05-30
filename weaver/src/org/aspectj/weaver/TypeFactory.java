@@ -14,8 +14,6 @@ package org.aspectj.weaver;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aspectj.weaver.UnresolvedType.TypeKind;
-
 /**
  * @author colyer
  *
@@ -135,27 +133,18 @@ public class TypeFactory {
 				return new UnresolvedType(signature,signatureErasure,typeParams);
 			}
 			// can't replace above with convertSigToType - leads to stackoverflow
-		} else if (signature.equals("?")){
-			UnresolvedType ret = UnresolvedType.SOMETHING;
-			ret.typeKind = TypeKind.WILDCARD;
-			return ret;
+		} else if (signature.equals("?") || signature.equals("*")) {
+		    return WildcardedUnresolvedType.QUESTIONMARK;
 		} else if(firstChar=='+') { 
 			// ? extends ...
-			UnresolvedType ret = new UnresolvedType(signature);
-			ret.typeKind = TypeKind.WILDCARD;
-			
-//			UnresolvedType bound1 = UnresolvedType.forSignature(signature.substring(1));
-//			UnresolvedType bound2 = convertSigToType(signature.substring(1));
-			ret.setUpperBound(convertSigToType(signature.substring(1)));
-			return ret;
+		    UnresolvedType upperBound = convertSigToType(signature.substring(1));
+            WildcardedUnresolvedType wildcardedUT = new WildcardedUnresolvedType(signature, upperBound, null);
+			return wildcardedUT;
 		} else if (firstChar=='-') { 
 			// ? super ...
-//			UnresolvedType bound = UnresolvedType.forSignature(signature.substring(1));
-//			UnresolvedType bound2 = convertSigToType(signature.substring(1));
-			UnresolvedType ret = new UnresolvedType(signature);
-			ret.typeKind = TypeKind.WILDCARD;
-			ret.setLowerBound(convertSigToType(signature.substring(1)));
-			return ret;
+		    UnresolvedType lowerBound = convertSigToType(signature.substring(1));
+            WildcardedUnresolvedType wildcardedUT = new WildcardedUnresolvedType(signature, null, lowerBound);
+            return wildcardedUT;
 		} else if (firstChar=='T') {
 			String typeVariableName = signature.substring(1);
 			if (typeVariableName.endsWith(";")) {
