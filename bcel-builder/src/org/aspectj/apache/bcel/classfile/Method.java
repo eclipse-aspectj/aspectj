@@ -55,21 +55,21 @@ package org.aspectj.apache.bcel.classfile;
  */
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
 import org.aspectj.apache.bcel.generic.Type;
-import java.io.*;
-import java.util.*;
 
 /**
  * This class represents the method info structure, i.e., the representation 
  * for a method in the class. See JVM specification for details.
  * A method has access flags, a name, a signature and a number of attributes.
  *
- * @version $Id: Method.java,v 1.5 2008/05/28 23:53:02 aclement Exp $
+ * @version $Id: Method.java,v 1.6 2008/05/30 17:29:14 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class Method extends FieldOrMethod {

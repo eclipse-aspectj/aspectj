@@ -54,9 +54,14 @@ package org.aspectj.apache.bcel.classfile;
  * <http://www.apache.org/>.
  */
 
-import  org.aspectj.apache.bcel.Constants;
-import  java.io.*;
-import  java.util.zip.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.aspectj.apache.bcel.Constants;
 
 /**
  * Wrapper class that parses a given Java .class file. The method <A
@@ -70,7 +75,7 @@ import  java.util.zip.*;
  * JVM specification 1.0</a>. See this paper for
  * further details about the structure of a bytecode file.
  *
- * @version $Id: ClassParser.java,v 1.5 2008/05/28 23:53:01 aclement Exp $
+ * @version $Id: ClassParser.java,v 1.6 2008/05/30 17:29:14 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A> 
  */
 public final class ClassParser {

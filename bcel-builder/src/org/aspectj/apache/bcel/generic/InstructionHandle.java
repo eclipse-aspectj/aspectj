@@ -54,10 +54,9 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 
-import org.aspectj.apache.bcel.classfile.Utility;
 import java.util.HashSet;
-import java.util.Collection;
-import java.util.HashMap;
+
+import org.aspectj.apache.bcel.classfile.Utility;
 
 /**
  * Instances of this class give users a handle to the instructions contained in
@@ -71,7 +70,7 @@ import java.util.HashMap;
  * can traverse the list via an Enumeration returned by
  * InstructionList.elements().
  *
- * @version $Id: InstructionHandle.java,v 1.4 2008/05/28 23:52:59 aclement Exp $
+ * @version $Id: InstructionHandle.java,v 1.5 2008/05/30 17:29:14 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Instruction
  * @see BranchHandle
