@@ -13,11 +13,8 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
-import java.io.DataInputStream;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
-
 
 public interface Member {
 
@@ -88,15 +85,9 @@ public interface Member {
 
 	public UnresolvedType[] getExceptions(World world);
 
-	public boolean isProtected(World world);
+    public boolean isStatic();
 
-	public boolean isStatic(World world);
-
-	public boolean isStrict(World world);
-
-	public boolean isStatic();
-
-	public boolean isInterface();
+    public boolean isInterface();
 
 	public boolean isPrivate();
 
