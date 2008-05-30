@@ -304,8 +304,11 @@ public class ReferenceType extends ResolvedType {
        			for (int i = 0; i < myParameters.length; i++) {
 					if (!myParameters[i].isGenericWildcard()) {
 						wildcardsAllTheWay = false;
-					} else if (myParameters[i].isExtends() || myParameters[i].isSuper()) {
-						wildcardsAllTheWay = false;
+					} else {
+                        BoundedReferenceType boundedRT = (BoundedReferenceType) myParameters[i];
+                        if (boundedRT.isExtends() || boundedRT.isSuper()) {
+                            wildcardsAllTheWay = false;
+                        }
 					}
 				}
        			if (wildcardsAllTheWay && !other.isParameterizedType()) return true;
