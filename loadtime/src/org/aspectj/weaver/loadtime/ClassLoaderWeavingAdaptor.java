@@ -28,12 +28,9 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.aspectj.asm.IRelationship;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.Constants;
-import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.LangUtil;
-import org.aspectj.weaver.ICrossReferenceHandler;
 import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
