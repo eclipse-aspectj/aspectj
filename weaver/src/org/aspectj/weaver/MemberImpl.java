@@ -274,106 +274,6 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     
     // ---- parsing methods
     
-    /** Takes a string in this form:
-     * 
-     * <blockquote><pre>
-     * static? TypeName TypeName.Id
-     * </pre></blockquote>
-     * Pretty much just for testing, and as such should perhaps be moved.
-     */
-    
-    public static MemberImpl fieldFromString(String str) {
-        str = str.trim();
-        final int len = str.length();
-        int i = 0;
-        int mods = 0;
-        if (str.startsWith("static", i)) {
-            mods = Modifier.STATIC;
-            i += 6;
-            while (Character.isWhitespace(str.charAt(i))) i++;
-        }
-        int start = i;
-        while (! Character.isWhitespace(str.charAt(i))) i++;
-        UnresolvedType retTy = UnresolvedType.forName(str.substring(start, i));
-
-        start = i;
-        i = str.lastIndexOf('.');
-        UnresolvedType declaringTy = UnresolvedType.forName(str.substring(start, i).trim());
-        start = ++i;
-        String name = str.substring(start, len).trim();
-        return new MemberImpl(
-            FIELD,
-            declaringTy,
-            mods,
-            retTy,
-            name,
-            UnresolvedType.NONE);
-    }
-
-    /** Takes a string in this form:
-     * 
-     * <blockquote><pre>
-     * (static|interface|private)? TypeName TypeName . Id ( TypeName , ...)
-     * </pre></blockquote>
-     * Pretty much just for testing, and as such should perhaps be moved.
-     */
-    
-    public static Member methodFromString(String str) {
-        str = str.trim();
-        // final int len = str.length();
-        int i = 0;
-
-        int mods = 0;
-        if (str.startsWith("static", i)) {
-            mods = Modifier.STATIC;
-            i += 6;
-        } else if (str.startsWith("interface", i)) {
-            mods = Modifier.INTERFACE;
-            i += 9;
-        } else if (str.startsWith("private", i)) {
-            mods = Modifier.PRIVATE;
-            i += 7;
-        }            
-        while (Character.isWhitespace(str.charAt(i))) i++;
-        
-        int start = i;
-        while (! Character.isWhitespace(str.charAt(i))) i++;
-        UnresolvedType returnTy = UnresolvedType.forName(str.substring(start, i));
-
-        start = i;
-        i = str.indexOf('(', i);
-        i = str.lastIndexOf('.', i);
-        UnresolvedType declaringTy = UnresolvedType.forName(str.substring(start, i).trim());
-        
-        start = ++i;
-        i = str.indexOf('(', i);
-        String name = str.substring(start, i).trim();
-        start = ++i;
-        i = str.indexOf(')', i);
-    
-        String[] paramTypeNames = parseIds(str.substring(start, i).trim());
-
-        return method(declaringTy, mods, returnTy, name, UnresolvedType.forNames(paramTypeNames));
-    }
-
-    private static String[] parseIds(String str) {
-        if (str.length() == 0) return ZERO_STRINGS;
-        List l = new ArrayList();
-        int start = 0;
-        while (true) {
-            int i = str.indexOf(',', start);
-            if (i == -1) {
-                l.add(str.substring(start).trim());
-                break;
-            }
-            l.add(str.substring(start, i).trim());
-            start = i+1;
-        }
-        return (String[]) l.toArray(new String[l.size()]);
-    }
-
-    private static final String[] ZERO_STRINGS = new String[0];
-
     // ---- things we know without resolution
     
     public boolean equals(Object other) {
@@ -561,6 +461,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 		return resolved.getExceptions();
     }
     
+    // OPTIMIZE remove world related isMethods()
     /* (non-Javadoc)
 	 * @see org.aspectj.weaver.Member#isProtected(org.aspectj.weaver.World)
 	 */
@@ -623,6 +524,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 	 * @see org.aspectj.weaver.Member#getExtractableName()
 	 */
     public final String getExtractableName() {
+    // OPTIMIZE remove silly string compares for init - use kind==CTOR/STATIC_INITIALIZATION
     	if (name.equals("<init>")) return "init$";
     	else if (name.equals("<clinit>")) return "clinit$";
     	else return name;
@@ -631,6 +533,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     /* (non-Javadoc)
 	 * @see org.aspectj.weaver.Member#hasAnnotation(org.aspectj.weaver.UnresolvedType)
 	 */
+	 // OPTIMIZE dont have these here, move them down to ResolvedMember
 	public boolean hasAnnotation(UnresolvedType ofType) {
 		throw new UnsupportedOperationException("You should resolve this member and call hasAnnotation() on the result...");
 	}
