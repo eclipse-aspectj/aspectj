@@ -14,6 +14,7 @@
 package org.aspectj.weaver;
 
 import java.lang.reflect.Modifier;
+
 import org.aspectj.weaver.bcel.LazyClassGen;
 
 public class NameMangler {
@@ -31,6 +32,10 @@ public class NameMangler {
 	
 	public static final String CFLOW_STACK_TYPE = "org.aspectj.runtime.internal.CFlowStack";
 	public static final String CFLOW_COUNTER_TYPE="org.aspectj.runtime.internal.CFlowCounter";
+	
+	public static final UnresolvedType CFLOW_STACK_UNRESOLVEDTYPE = UnresolvedType.forSignature("Lorg/aspectj/runtime/internal/CFlowStack;");
+
+    public static final UnresolvedType CFLOW_COUNTER_UNRESOLVEDTYPE = UnresolvedType.forSignature("Lorg/aspectj/runtime/internal/CFlowCounter;");
 	
 	public static final String SOFT_EXCEPTION_TYPE = "org.aspectj.lang.SoftException";
 
