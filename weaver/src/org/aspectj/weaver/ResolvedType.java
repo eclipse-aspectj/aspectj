@@ -38,7 +38,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	public static final ResolvedType[] EMPTY_RESOLVED_TYPE_ARRAY  = new ResolvedType[0];
 	public static final String PARAMETERIZED_TYPE_IDENTIFIER = "P";
-	
+
+    
 	// Set during a type pattern match call - this currently used to hold the annotations
 	// that may be attached to a type when it used as a parameter
 	public ResolvedType[] temporaryAnnotationTypes;
@@ -693,16 +694,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     		return false;
     }
     
-    /**
-     * Note: Only overridden by Name subtype
-     */
-	public void addAnnotation(AnnotationX annotationX) {
-		throw new RuntimeException("ResolvedType.addAnnotation() should never be called");
-	}
+
+     public void addAnnotation(AnnotationX annotationX) {
+        throw new RuntimeException("ResolvedType.addAnnotation() should never be called");
+    }
 	
-	/**
-	 * Note: Only overridden by Name subtype
-	 */
 	public AnnotationX[] getAnnotations() {
 		throw new RuntimeException("ResolvedType.getAnnotations() should never be called");
 	}
@@ -2129,7 +2125,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			}
 			
 			for (int i = 0; i < typeParameters.length; i++) {
-				UnresolvedType aType = (ResolvedType)typeParameters[i];
+				ResolvedType aType = (ResolvedType)typeParameters[i];
 				if (aType.isTypeVariableReference()  && 
 				// assume the worst - if its definetly not a type declared one, it could be anything
 						((TypeVariableReference)aType).getTypeVariable().getDeclaringElementKind()!=TypeVariable.TYPE) {
@@ -2144,9 +2140,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 					}
 				}
 				if (aType.isGenericWildcard()) {
-					if (aType.isExtends()) {
+				    BoundedReferenceType boundedRT = (BoundedReferenceType) aType;
+					if (boundedRT.isExtends()) {
 						boolean b = false;
-						UnresolvedType upperBound = aType.getUpperBound();
+						UnresolvedType upperBound = boundedRT.getUpperBound();
 						if (upperBound.isParameterizedType()) {
 							b = upperBound.isParameterizedWithAMemberTypeVariable();
 						} else if (upperBound.isTypeVariableReference() && ((TypeVariableReference)upperBound).getTypeVariable().getDeclaringElementKind()==TypeVariable.METHOD) {
@@ -2158,9 +2155,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 						}
 						// FIXME asc need to check additional interface bounds
 					}
-					if (aType.isSuper()) {
+					if (boundedRT.isSuper()) {
 						boolean b = false;
-						UnresolvedType lowerBound = aType.getLowerBound();
+						UnresolvedType lowerBound = boundedRT.getLowerBound();
 						if (lowerBound.isParameterizedType()) {
 							b = lowerBound.isParameterizedWithAMemberTypeVariable();
 						} else if (lowerBound.isTypeVariableReference() && ((TypeVariableReference)lowerBound).getTypeVariable().getDeclaringElementKind()==TypeVariable.METHOD) {
@@ -2204,5 +2201,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public String getBinaryPath() {
 		return binaryPath;
 	}
+
 	    
 }
