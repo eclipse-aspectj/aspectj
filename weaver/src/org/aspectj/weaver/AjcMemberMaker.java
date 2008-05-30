@@ -13,10 +13,9 @@
 
 package org.aspectj.weaver;
 
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
-
 import java.lang.reflect.Modifier;
+
+import org.aspectj.lang.JoinPoint;
 
 //import org.aspectj.weaver.ResolvedType.Name;
 
@@ -37,13 +36,13 @@ public class AjcMemberMaker {
 	public static final UnresolvedType CFLOW_STACK_TYPE = 
 		UnresolvedType.forName(NameMangler.CFLOW_STACK_TYPE);
 	public static final UnresolvedType AROUND_CLOSURE_TYPE = 
-		UnresolvedType.forName("org.aspectj.runtime.internal.AroundClosure");
+		UnresolvedType.forSignature("Lorg/aspectj/runtime/internal/AroundClosure;");
 		
 	public static final UnresolvedType CONVERSIONS_TYPE =
-		UnresolvedType.forName("org.aspectj.runtime.internal.Conversions");
+		UnresolvedType.forSignature("Lorg/aspectj/runtime/internal/Conversions;");
 		
 	public static final UnresolvedType NO_ASPECT_BOUND_EXCEPTION =
-		UnresolvedType.forName("org.aspectj.lang.NoAspectBoundException");
+		UnresolvedType.forSignature("Lorg/aspectj/lang/NoAspectBoundException;");
 
 	public static ResolvedMember ajcPreClinitMethod(UnresolvedType declaringType) {
 		return new ResolvedMemberImpl(
@@ -800,21 +799,34 @@ public class AjcMemberMaker {
 	}
 
     //-- common types we use. Note: Java 5 dependand types are refered to as String
-    public final static UnresolvedType ASPECT_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.Aspect");
-    public final static UnresolvedType BEFORE_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.Before");
-    public final static UnresolvedType AROUND_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.Around");
-    public final static UnresolvedType AFTERRETURNING_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.AfterReturning");
-    public final static UnresolvedType AFTERTHROWING_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.AfterThrowing");
-    public final static UnresolvedType AFTER_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.After");
-    public final static UnresolvedType POINTCUT_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.Pointcut");
-    public final static UnresolvedType DECLAREERROR_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.DeclareError");
-    public final static UnresolvedType DECLAREWARNING_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.DeclareWarning");
-    public final static UnresolvedType DECLAREPRECEDENCE_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.DeclarePrecedence");
-    public final static UnresolvedType DECLAREIMPLEMENTS_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.DeclareImplements");
-    public final static UnresolvedType DECLAREPARENTS_ANNOTATION = UnresolvedType.forName("org.aspectj.lang.annotation.DeclareParents");
+	public final static UnresolvedType ASPECT_ANNOTATION = UnresolvedType.forSignature("Lorg/aspectj/lang/annotation/Aspect;");
 
-    public final static UnresolvedType TYPEX_JOINPOINT = UnresolvedType.forName(JoinPoint.class.getName().replace('/','.'));
-    public final static UnresolvedType TYPEX_PROCEEDINGJOINPOINT = UnresolvedType.forName(ProceedingJoinPoint.class.getName().replace('/','.'));
+    public final static UnresolvedType BEFORE_ANNOTATION = UnresolvedType.forSignature("Lorg/aspectj/lang/annotation/Before;");
+
+    public final static UnresolvedType AROUND_ANNOTATION = UnresolvedType.forSignature("Lorg/aspectj/lang/annotation/Around;");
+
+    public final static UnresolvedType AFTERRETURNING_ANNOTATION = UnresolvedType.forSignature("Lorg/aspectj/lang/annotation/AfterReturning;");
+
+    public final static UnresolvedType AFTERTHROWING_ANNOTATION = UnresolvedType.forSignature("Lorg/aspectj/lang/annotation/AfterThrowing;");
+
+    public final static UnresolvedType AFTER_ANNOTATION = UnresolvedType.forSignature("Lorg/aspectj/lang/annotation/After;");
+
+    public final static UnresolvedType POINTCUT_ANNOTATION = UnresolvedType.forSignature("Lorg/aspectj/lang/annotation/Pointcut;");
+
+    public final static UnresolvedType DECLAREERROR_ANNOTATION = UnresolvedType.forSignature("Lorg/aspectj/lang/annotation/DeclareError;");
+
+    public final static UnresolvedType DECLAREWARNING_ANNOTATION = UnresolvedType.forSignature("Lorg/aspectj/lang/annotation/DeclareWarning;");
+
+    public final static UnresolvedType DECLAREPRECEDENCE_ANNOTATION = UnresolvedType.forSignature("Lorg/aspectj/lang/annotation/DeclarePrecedence;");
+
+    public final static UnresolvedType DECLAREIMPLEMENTS_ANNOTATION = UnresolvedType.forSignature("Lorg/aspectj/lang/annotation/DeclareImplements;");
+
+    public final static UnresolvedType DECLAREPARENTS_ANNOTATION = UnresolvedType.forSignature("Lorg/aspectj/lang/annotation/DeclareParents;");
+
+    public final static UnresolvedType TYPEX_JOINPOINT = UnresolvedType.forSignature("Lorg/aspectj/lang/JoinPoint;");// UnresolvedType.forName(JoinPoint.class.getName().replace('/','.'));
+
+    public final static UnresolvedType TYPEX_PROCEEDINGJOINPOINT = UnresolvedType.forSignature("Lorg/aspectj/lang/ProceedingJoinPoint;");// UnresolvedType.forName(ProceedingJoinPoint.class.getName().replace('/','.'));
+    
     public final static UnresolvedType TYPEX_STATICJOINPOINT = UnresolvedType.forName(JoinPoint.StaticPart.class.getName().replace('/','.'));
     public final static UnresolvedType TYPEX_ENCLOSINGSTATICJOINPOINT = UnresolvedType.forName(JoinPoint.EnclosingStaticPart.class.getName().replace('/','.'));
 
