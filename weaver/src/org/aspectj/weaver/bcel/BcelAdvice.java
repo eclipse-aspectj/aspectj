@@ -35,6 +35,7 @@ import org.aspectj.weaver.IEclipseSourceContext;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
@@ -66,10 +67,33 @@ public class BcelAdvice extends Advice {
 		Member signature,
 		ResolvedType concreteAspect) 
 	{
-		super(attribute, pointcut, signature);
+		super(attribute, pointcut,shrink(attribute.getKind(),concreteAspect,signature));// (signature==null?null:signature.slimline()));
 		this.concreteAspect = concreteAspect;
 	}
-
+	/**
+	 * We don't always need to represent the signature with a heavyweight BcelMethod object - only if its around advice
+	 * and inlining is active
+	 * @param concreteAspect 
+	 * @param attribute 
+	 */
+	private static Member shrink(AdviceKind kind, ResolvedType concreteAspect, Member m) {
+		if (m==null) return null;
+		UnresolvedType dType = m.getDeclaringType();
+		// if it isnt around advice or it is but inlining is turned off then shrink it to a ResolvedMemberImpl
+		if (kind != AdviceKind.Around ||
+			((dType instanceof ResolvedType) && ((ResolvedType)dType).getWorld().isXnoInline())) {
+			if (m instanceof BcelMethod) {
+				BcelMethod bm = (BcelMethod)m;
+				if (bm.getMethod()!=null && bm.getMethod().getAnnotations()!=null) return m;
+				ResolvedMemberImpl simplermember = new ResolvedMemberImpl(bm.getKind(),bm.getDeclaringType(),
+						                                       bm.getModifiers(),bm.getReturnType(),bm.getName(),
+						                                       bm.getParameterTypes());//,bm.getExceptions(),bm.getBackingGenericMember());
+				simplermember.setParameterNames(bm.getParameterNames());
+				return simplermember;
+			}
+		}
+		return m;
+	}
 	// !!! must only be used for testing
 	public BcelAdvice(AdviceKind kind, Pointcut pointcut, Member signature,
 		int extraArgumentFlags,
