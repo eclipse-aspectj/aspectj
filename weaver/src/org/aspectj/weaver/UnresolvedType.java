@@ -94,7 +94,7 @@ import org.aspectj.weaver.tools.Traceable;
  * The wildcard ? extends Foo has signature +LFoo;
  * The wildcard ? super Foo has signature -LFoo;
  */
-public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
+public class UnresolvedType implements Unresolved, Traceable, TypeVariableDeclaringElement {
 
 	// common types referred to by the weaver
     public static final UnresolvedType[] NONE         = new UnresolvedType[0];
@@ -149,21 +149,6 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	 */
 	protected TypeVariable[] typeVariables;
 
-	/**
-	 * Iff isGenericWildcard, then this is the upper bound type for ? extends Foo
-	 */
-	private UnresolvedType upperBound;
-	
-	/**
-	 * Iff isGenericWildcard, then this is the lower bound type for ? super Foo
-	 */
-	private UnresolvedType lowerBound;
-	
-	/**
-	 * for wildcards '? extends' or for type variables 'T extends'
-	 */
-	private boolean isSuper   = false;
-	private boolean isExtends = false;
 	
    /**
      * Determines if this represents a primitive type.  A primitive type
@@ -188,12 +173,12 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
     public boolean isParameterizedType()      { return typeKind == TypeKind.PARAMETERIZED; }
     public boolean isTypeVariableReference()  { return typeKind == TypeKind.TYPE_VARIABLE; }
     public boolean isGenericWildcard()        { return typeKind == TypeKind.WILDCARD; }
-    public boolean isExtends() { return isExtends;}
-    public boolean isSuper()   { return isSuper;  }
     public TypeKind getTypekind() { return typeKind;}
     
     // for any reference type, we can get some extra information...
-    public final boolean isArray() {  return signature.startsWith("["); } 
+    public final boolean isArray() {
+        return signature.length() > 0 && signature.charAt(0) == '[';
+    } 
 
     /** 
      * Equality is checked based on the underlying signature.
@@ -254,15 +239,11 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
         super();
         this.signature = signature;
         this.signatureErasure = signature;
-        if (signature.charAt(0)=='-') isSuper   = true;
-        if (signature.charAt(0)=='+') isExtends = true;
     }
     
     protected UnresolvedType(String signature, String signatureErasure) {
     	this.signature = signature;
     	this.signatureErasure = signatureErasure;
-        if (signature.charAt(0)=='-') isSuper   = true;
-        if (signature.charAt(0)=='+') isExtends = true;
     }
     
     // called from TypeFactory
@@ -313,7 +294,6 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
     public static UnresolvedType forName(String name) {
         return forSignature(nameToSignature(name));
     }
-	
 
     /** Constructs a UnresolvedType for each java language type name in an incoming array.
      * 
@@ -579,35 +559,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		return UnresolvedType.forSignature(getErasureSignature());
 	}
 	
-	/**
-	 * Get the upper bound for a generic wildcard
-	 */
-	public UnresolvedType getUpperBound() {
-		return upperBound;
-	}
 	
-	/**
-	 * Get the lower bound for a generic wildcard
-	 */
-	public UnresolvedType getLowerBound() {
-		return lowerBound;
-	}
-	
-	/**
-	 * Set the upper bound for a generic wildcard
-	 */
-	public void setUpperBound(UnresolvedType aBound) {
-		this.upperBound = aBound;
-	}
-	
-	/**
-	 * Set the lower bound for a generic wildcard
-	 */
-	public void setLowerBound(UnresolvedType aBound) {
-		this.lowerBound = aBound;
-	}
-
- 	
     /**
      * Returns a UnresolvedType object representing the effective outermost enclosing type
      * for a name type.  For all other types, this will return the type itself.
