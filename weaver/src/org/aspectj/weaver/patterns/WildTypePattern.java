@@ -255,23 +255,25 @@ public class WildTypePattern extends TypePattern {
 	// we've matched against the base (or raw) type, but if this type pattern specifies bounds because
 	// it is a ? extends or ? super deal then we have to match them too.
 	private boolean matchesBounds(ResolvedType aType, MatchKind staticOrDynamic) {
-		if (upperBound == null && aType.getUpperBound() != null) {
+	    if (!(aType instanceof BoundedReferenceType)) return true;
+	    BoundedReferenceType boundedRT = (BoundedReferenceType) aType;
+		if (upperBound == null && boundedRT.getUpperBound() != null) {
 			// for upper bound, null can also match against Object - but anything else and we're out.
-			if (!aType.getUpperBound().getName().equals(UnresolvedType.OBJECT.getName())) {
+			if (!boundedRT.getUpperBound().getName().equals(UnresolvedType.OBJECT.getName())) {
 				return false;
 			}
 		}
-		if (lowerBound == null && aType.getLowerBound() != null) return false;
+		if (lowerBound == null && boundedRT.getLowerBound() != null) return false;
 		if (upperBound != null) {
 			// match ? extends
-			if (aType.isGenericWildcard() && aType.isSuper()) return false;
-			if (aType.getUpperBound() == null) return false;
-			return upperBound.matches((ResolvedType)aType.getUpperBound(),staticOrDynamic).alwaysTrue();
+			if (aType.isGenericWildcard() && boundedRT.isSuper()) return false;
+            if (boundedRT.getUpperBound() == null) return false;
+            return upperBound.matches((ResolvedType) boundedRT.getUpperBound(), staticOrDynamic).alwaysTrue();
 		}
 		if (lowerBound != null) {
 			// match ? super
-			if (!(aType.isGenericWildcard() && aType.isSuper())) return false;
-			return lowerBound.matches((ResolvedType)aType.getLowerBound(),staticOrDynamic).alwaysTrue();
+			if (!(boundedRT.isGenericWildcard() && boundedRT.isSuper())) return false;
+            return lowerBound.matches((ResolvedType) boundedRT.getLowerBound(), staticOrDynamic).alwaysTrue();
 		}
 		return true;
 	}
