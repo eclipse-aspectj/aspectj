@@ -28,20 +28,33 @@ import org.aspectj.weaver.patterns.PerClause;
  */
 public class BoundedReferenceType extends ReferenceType {
 
-	protected ReferenceType[] additionalInterfaceBounds = new ReferenceType[0];
-	
-	protected boolean isExtends = true;
-	protected boolean isSuper   = false;
+    private UnresolvedType lowerBound;
+
+    private UnresolvedType upperBound;
+
+    protected ReferenceType[] additionalInterfaceBounds = new ReferenceType[0];
+
+    protected boolean isExtends = true;
+
+    protected boolean isSuper = false;
+
+    public UnresolvedType getUpperBound() {
+        return upperBound;
+    }
+
+    public UnresolvedType getLowerBound() {
+        return lowerBound;
+    }
 	
 	public BoundedReferenceType(ReferenceType aBound, boolean isExtends, World world) {
 		super((isExtends ? "+" : "-") + aBound.signature,aBound.signatureErasure,world);
 		this.isExtends = isExtends; 
 		this.isSuper   = !isExtends;
 		if (isExtends) { 
-			setUpperBound(aBound);
+			upperBound = aBound;
 		} else {
-			setLowerBound(aBound);
-			setUpperBound(world.resolve(UnresolvedType.OBJECT));
+			lowerBound = aBound;
+            upperBound = world.resolve(UnresolvedType.OBJECT);
 		}
 		setDelegate(new ReferenceTypeReferenceTypeDelegate((ReferenceType)getUpperBound()));
 	}
@@ -72,7 +85,7 @@ public class BoundedReferenceType extends ReferenceType {
 	 */
 	protected BoundedReferenceType(String sig, String sigErasure, World world) {
 		super(sig, sigErasure, world);
-		setUpperBound(world.resolve(UnresolvedType.OBJECT));
+		upperBound = world.resolve(UnresolvedType.OBJECT);
 		setDelegate(new ReferenceTypeReferenceTypeDelegate((ReferenceType)getUpperBound()));
 	}
 	
@@ -103,21 +116,22 @@ public class BoundedReferenceType extends ReferenceType {
 	public boolean canBeCoercedTo(ResolvedType aCandidateType) {
 		if (alwaysMatches(aCandidateType)) return true;
 		if (aCandidateType.isGenericWildcard()) {
+		    BoundedReferenceType boundedRT = (BoundedReferenceType) aCandidateType;
 			ResolvedType myUpperBound = (ResolvedType) getUpperBound();
 			ResolvedType myLowerBound = (ResolvedType) getLowerBound();
 			if (isExtends()) {
-				if (aCandidateType.isExtends()) {
-					return myUpperBound.isAssignableFrom((ResolvedType)aCandidateType.getUpperBound()); 
-				} else if (aCandidateType.isSuper()) {
-					return myUpperBound == aCandidateType.getLowerBound();
+				if (boundedRT.isExtends()) {
+                    return myUpperBound.isAssignableFrom((ResolvedType) boundedRT.getUpperBound());
+                } else if (boundedRT.isSuper()) {
+                    return myUpperBound == boundedRT.getLowerBound();
 				} else {
 					return true;  // it's '?'
 				}
 			} else if (isSuper()) {
-				if (aCandidateType.isSuper()) {
-					return ((ResolvedType)aCandidateType.getLowerBound()).isAssignableFrom(myLowerBound);
-				} else if (aCandidateType.isExtends()) {
-					return myLowerBound == aCandidateType.getUpperBound();
+				if (boundedRT.isSuper()) {
+                    return ((ResolvedType) boundedRT.getLowerBound()).isAssignableFrom(myLowerBound);
+                } else if (boundedRT.isExtends()) {
+                    return myLowerBound == boundedRT.getUpperBound();
 				} else {
 					return true;
 				}
