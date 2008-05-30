@@ -69,6 +69,7 @@ import org.aspectj.apache.bcel.classfile.ConstantInterfaceMethodref;
 import org.aspectj.apache.bcel.classfile.ConstantLong;
 import org.aspectj.apache.bcel.classfile.ConstantMethodref;
 import org.aspectj.apache.bcel.classfile.ConstantNameAndType;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.ConstantString;
 import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 import org.aspectj.apache.bcel.classfile.Field;
@@ -79,7 +80,6 @@ import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.generic.ArrayType;
-import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.generic.FieldInstruction;
 import org.aspectj.apache.bcel.generic.IINC;
 import org.aspectj.apache.bcel.generic.INVOKEINTERFACE;
@@ -95,7 +95,6 @@ import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.RET;
 import org.aspectj.apache.bcel.generic.TABLESWITCH;
 import org.aspectj.apache.bcel.generic.Type;
-import org.aspectj.apache.bcel.verifier.EmptyClassVisitor;
 import org.aspectj.apache.bcel.verifier.PassVerifier;
 import org.aspectj.apache.bcel.verifier.VerificationResult;
 import org.aspectj.apache.bcel.verifier.Verifier;
@@ -114,7 +113,7 @@ import org.aspectj.apache.bcel.verifier.exc.StaticCodeInstructionOperandConstrai
  * More detailed information is to be found at the do_verify()
  * method's documentation. 
  *
- * @version $Id: Pass3aVerifier.java,v 1.2 2008/05/28 23:52:54 aclement Exp $
+ * @version $Id: Pass3aVerifier.java,v 1.3 2008/05/30 17:29:27 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #do_verify()
  */

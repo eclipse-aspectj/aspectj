@@ -1,9 +1,13 @@
 package org.aspectj.apache.bcel.verifier.util;
 
-import org.aspectj.apache.bcel.verifier.EmptyClassVisitor;
-import org.aspectj.apache.bcel.classfile.Utility;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.apache.bcel.generic.BranchHandle;
 import org.aspectj.apache.bcel.generic.CodeExceptionGen;
 import org.aspectj.apache.bcel.generic.FieldInstruction;
@@ -21,9 +25,6 @@ import org.aspectj.apache.bcel.generic.MethodGen;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.RET;
 import org.aspectj.apache.bcel.generic.Type;
-
-import java.io.PrintWriter;
-import java.util.*;
 
 /* ====================================================================
  * The Apache Software License, Version 1.1
@@ -84,7 +85,7 @@ import java.util.*;
  * A helper class for BCELifier.
  *
  * @see BCELifier
- * @version $Id: BCELFactory.java,v 1.2 2008/05/28 23:53:04 aclement Exp $
+ * @version $Id: BCELFactory.java,v 1.3 2008/05/30 17:29:27 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 class BCELFactory extends org.aspectj.apache.bcel.verifier.EmptyInstVisitor {
