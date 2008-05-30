@@ -38,7 +38,7 @@ public class WorldTestCase extends AbstractWorldTestCase {
         ResolvedType trace = world.resolve(UnresolvedType.forName("Trace"),true);
         assertTrue("Couldnt find type Trace",!trace.isMissing());
         fieldsTest(trace, Member.NONE);
-        /*Member constr = */MemberImpl.methodFromString("void Trace.<init>()"); 
+        /*Member constr = */TestUtils.methodFromString("void Trace.<init>()"); 
         //XXX need attribute fix - 
         //methodsTest(trace, new Member[] { constr });
 
@@ -58,13 +58,13 @@ public class WorldTestCase extends AbstractWorldTestCase {
         
         mungersTest(trace, 
             new ShadowMunger[] {
-				world.shadowMunger("before(foo): traced(foo) -> void Trace.ajc_before_4(java.lang.Object))",
+        		TestUtils.shadowMunger(world,"before(foo): traced(foo) -> void Trace.ajc_before_4(java.lang.Object))",
             					0),
-				world.shadowMunger("afterReturning(foo): traced(foo) -> void Trace.ajc_afterreturning_3(java.lang.Object, java.lang.Object))",
+            					TestUtils.shadowMunger(world,"afterReturning(foo): traced(foo) -> void Trace.ajc_afterreturning_3(java.lang.Object, java.lang.Object))",
             					Advice.ExtraArgument),
-				world.shadowMunger("around(): execution(* doit(..)) -> java.lang.Object Trace.ajc_around_2(org.aspectj.runtime.internal.AroundClosure))",
+            					TestUtils.shadowMunger(world,"around(): execution(* doit(..)) -> java.lang.Object Trace.ajc_around_2(org.aspectj.runtime.internal.AroundClosure))",
             					Advice.ExtraArgument),
-				world.shadowMunger("around(foo): traced(foo) -> java.lang.Object Trace.ajc_around_1(java.lang.Object, org.aspectj.runtime.internal.AroundClosure))",
+            					TestUtils.shadowMunger(world,"around(foo): traced(foo) -> java.lang.Object Trace.ajc_around_1(java.lang.Object, org.aspectj.runtime.internal.AroundClosure))",
             					Advice.ExtraArgument),
             });
         

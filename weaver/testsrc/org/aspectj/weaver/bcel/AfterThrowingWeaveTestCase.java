@@ -33,7 +33,7 @@ public class AfterThrowingWeaveTestCase extends WeaveTestCase {
         BcelWorld world = new BcelWorld();
         
         ShadowMunger myMunger = 
-            world.shadowMunger("afterThrowing(): get(* *.out) -> static void Aspect.ajc_afterThrowing_field_get(java.lang.Throwable)",
+            TestUtils.shadowMunger(world,"afterThrowing(): get(* *.out) -> static void Aspect.ajc_afterThrowing_field_get(java.lang.Throwable)",
                         Advice.ExtraArgument);
         ShadowMunger cm = myMunger.concretize(ResolvedType.MISSING, world, null);
 
