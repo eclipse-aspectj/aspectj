@@ -71,6 +71,7 @@ import org.aspectj.weaver.TypeVariableDeclaringElement;
 import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
+import org.aspectj.weaver.WildcardedUnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
 
@@ -223,9 +224,6 @@ public class EclipseFactory {
 		
 		if (binding instanceof WildcardBinding) {
 			WildcardBinding eWB = (WildcardBinding) binding;
-			UnresolvedType theType = TypeFactory.createTypeFromSignature(CharOperation.charToString(eWB.genericTypeSignature()));
-		    
-			
 			// Repair the bound
 			// e.g. If the bound for the wildcard is a typevariable, e.g. '? extends E' then
 			// the type variable in the unresolvedtype will be correct only in name.  In that
@@ -236,8 +234,12 @@ public class EclipseFactory {
 			} else {
 				theBound = fromBinding(eWB.bound);
 			}
-			if (theType.isGenericWildcard() && theType.isSuper()) theType.setLowerBound(theBound);
-			if (theType.isGenericWildcard() && theType.isExtends()) theType.setUpperBound(theBound);
+            // if (eWB.boundKind == WildCard.SUPER) {
+            //
+            // }
+            WildcardedUnresolvedType theType = (WildcardedUnresolvedType) TypeFactory.createTypeFromSignature(CharOperation.charToString(eWB.genericTypeSignature()));
+            // if (theType.isGenericWildcard() && theType.isSuper()) theType.setLowerBound(theBound);
+            // if (theType.isGenericWildcard() && theType.isExtends()) theType.setUpperBound(theBound);
 			return theType;
 		}
 		
