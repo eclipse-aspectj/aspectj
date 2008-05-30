@@ -44,7 +44,7 @@ import org.aspectj.weaver.bcel.BcelAdvice;
 public abstract class Shadow {
 
 	// every Shadow has a unique id, doesn't matter if it wraps...
-	private static int nextShadowID = 100;  // easier to spot than zero.
+	private static int nextShadowID = 100;  // easier to spot than zero. // OPTIMIZE is this a bug? static?
 	
 	private final Kind kind; 
     private final Member signature;
