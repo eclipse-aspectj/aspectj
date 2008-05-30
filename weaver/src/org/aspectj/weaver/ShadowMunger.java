@@ -42,8 +42,8 @@ import org.aspectj.weaver.patterns.Pointcut;
  *     which may modify state.  
  * Then implement is called. 
  */
-
 public abstract class ShadowMunger implements PartialOrder.PartialComparable, IHasPosition {
+
 	protected Pointcut pointcut;
 	
 	// these three fields hold the source location of this munger
