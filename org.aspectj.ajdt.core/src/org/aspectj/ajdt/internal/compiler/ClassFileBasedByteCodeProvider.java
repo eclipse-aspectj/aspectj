@@ -10,8 +10,11 @@
  *******************************************************************************/
 package org.aspectj.ajdt.internal.compiler;
 
+import java.util.Iterator;
+
 import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.aspectj.weaver.bcel.UnwovenClassFileWithThirdPartyManagedBytecode;
+import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 
@@ -38,11 +41,15 @@ public class ClassFileBasedByteCodeProvider
 	public static UnwovenClassFile[] unwovenClassFilesFor(CompilationResult result, 
 										            IOutputClassFileNameProvider nameProvider) {
 		ClassFile[] cfs = result.getClassFiles();
-		UnwovenClassFile[] ret = new UnwovenClassFile[cfs.length];
-		for (int i = 0; i < ret.length; i++) {
-			ClassFileBasedByteCodeProvider p = new ClassFileBasedByteCodeProvider(cfs[i]);
-			String fileName = nameProvider.getOutputClassFileName(cfs[i].fileName(), result);
-			ret[i] = new UnwovenClassFileWithThirdPartyManagedBytecode(fileName,p);
+		UnwovenClassFile[] ret = new UnwovenClassFile[result.compiledTypes.size()];
+		int i=0;
+		for (Iterator iterator = result.compiledTypes.keySet().iterator(); iterator.hasNext();) {
+			char[] className = (char[])iterator.next();
+			ClassFile cf = (ClassFile)result.compiledTypes.get(className);
+			// OPTIMIZE use char[] for classname
+			ClassFileBasedByteCodeProvider p = new ClassFileBasedByteCodeProvider(cf);
+			String fileName = nameProvider.getOutputClassFileName(cf.fileName(), result);
+			ret[i++] = new UnwovenClassFileWithThirdPartyManagedBytecode(fileName,new String(className).replace('/','.'),p);
 		}
 		return ret;
 	}
