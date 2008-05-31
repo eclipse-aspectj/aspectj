@@ -19,6 +19,7 @@ public class AllTestsAspectJ161 {
 		TestSuite suite = new TestSuite("AspectJ 1.6.1 tests");
 		//$JUnit-BEGIN$
 		suite.addTest(Ajc161Tests.suite());
+		suite.addTest(OptimizedAnnotationFieldBinding.suite());
         //$JUnit-END$
 		return suite;
 	}
