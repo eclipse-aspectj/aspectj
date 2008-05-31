@@ -41,7 +41,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	protected UnresolvedType annotationType;
 	protected String formalName;
 	protected boolean resolved = false;
-	private boolean bindingPattern = false;
+	protected boolean bindingPattern = false;
 	private Map annotationValues;
 	
 	 // OPTIMIZE is annotationtype really unresolved???? surely it is resolved by now...
@@ -292,16 +292,13 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		return ret;
 	}
 	
-	private String maybeGetSimpleName() {
+	protected String maybeGetSimpleName() {
 		if (formalName != null) return formalName;
 		String ret = annotationType.getName();
 		return (ret.indexOf('.') == -1) ? ret : null;
 	}
 	
-	/**
-	 * @param scope
-	 */
-	private void verifyIsAnnotationType(ResolvedType type,IScope scope) {
+	protected void verifyIsAnnotationType(ResolvedType type, IScope scope) {
 		if (!type.isAnnotation()) {
 			IMessage m = MessageUtil.error(
 					WeaverMessages.format(WeaverMessages.REFERENCE_TO_NON_ANNOTATION_TYPE,type.getName()),
