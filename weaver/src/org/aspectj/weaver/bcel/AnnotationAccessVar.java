@@ -42,6 +42,10 @@ public class AnnotationAccessVar extends BcelVar {
 		this.containingType = theTargetIsStoredHere; 
 		this.member = sig;
 	}
+	
+	public Kind getKind() {
+        return kind;
+    }
 
 	public String toString() {
 		return "AnnotationAccessVar(" + getType() +")";
@@ -156,5 +160,9 @@ public class AnnotationAccessVar extends BcelVar {
 			il.append(InstructionConstants.AASTORE);
 		}
 	}
+
+    public Member getMember() {
+        return member;
+    }
 
 }

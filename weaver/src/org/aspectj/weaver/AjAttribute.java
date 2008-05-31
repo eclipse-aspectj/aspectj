@@ -221,10 +221,14 @@ public abstract class AjAttribute {
 		public static short WEAVER_VERSION_MAJOR_AJ160 = 4;
 		public static short WEAVER_VERSION_MINOR_AJ160 = 0;
 
+	      // These are the weaver major/minor numbers for AspectJ 1.6.1
+        public static short WEAVER_VERSION_MAJOR_AJ161 = 6; // annotation value binding
+        public static short WEAVER_VERSION_MINOR_AJ161 = 0;
+
 		
 		// These are the weaver major/minor versions for *this* weaver
-		private static short CURRENT_VERSION_MAJOR      = WEAVER_VERSION_MAJOR_AJ160M2;
-		private static short CURRENT_VERSION_MINOR      = WEAVER_VERSION_MINOR_AJ160;
+		private static short CURRENT_VERSION_MAJOR = WEAVER_VERSION_MAJOR_AJ161;
+        private static short CURRENT_VERSION_MINOR = WEAVER_VERSION_MINOR_AJ161;
 		
 		public static final WeaverVersionInfo UNKNOWN = 
 			new WeaverVersionInfo(WEAVER_VERSION_MAJOR_UNKNOWN,WEAVER_VERSION_MINOR_UNKNOWN);

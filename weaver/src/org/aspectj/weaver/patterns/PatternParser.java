@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.internal.tools.PointcutDesignatorHandlerBasedPointcut;
@@ -957,12 +957,17 @@ public class PatternParser {
 		p = parseSimpleAnnotationName();
 		int endPos = tokenSource.peek(-1).getEnd();
 		p.setLocation(sourceContext,startPos,endPos);
-		return p;
-	}
-	
+		// For optimized syntax that allows binding directly to annotation values (pr234943)
+         if (maybeEat("(")) {
+            String formalName = parseIdentifier();
+            p = new ExactAnnotationFieldTypePattern(p, formalName);
+            eat(")");
+        }
+        return p;
+    }
 
-	/**
-	 * @return
+    /**
+     * @return
 	 */
 	private ExactAnnotationTypePattern parseSimpleAnnotationName() {
 		// the @ has already been eaten...

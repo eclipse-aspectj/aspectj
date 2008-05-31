@@ -22,6 +22,7 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.AnnotatedElement;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
@@ -38,6 +39,8 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
+import org.aspectj.weaver.bcel.AnnotationAccessFieldVar;
+import org.aspectj.weaver.bcel.AnnotationAccessVar;
 import org.aspectj.weaver.bcel.BcelTypeMunger;
 
 /**
@@ -184,12 +187,25 @@ public class AnnotationPointcut extends NameBindingPointcut {
         return ret;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#findResidue(org.aspectj.weaver.Shadow, org.aspectj.weaver.patterns.ExposedState)
-	 */
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
-		
-		if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
+		if (annotationTypePattern instanceof BindingAnnotationFieldTypePattern) {
+		    if (shadow.getKind() != Shadow.MethodExecution) {
+                shadow.getIWorld().getMessageHandler().handleMessage(
+                    MessageUtil.error("Annotation field binding is only supported at method-execution join points (compiler limitation)",
+                        getSourceLocation()));
+                return Literal.TRUE; // exit quickly, error will prevent weaving
+            }
+            BindingAnnotationFieldTypePattern btp = (BindingAnnotationFieldTypePattern) annotationTypePattern;
+            UnresolvedType formalType = btp.getFormalType().resolve(shadow.getIWorld());
+            UnresolvedType annoType = btp.getAnnotationType();
+            // TODO 2 need to sort out appropriate creation of the AnnotationAccessFieldVar - what happens for
+            // reflective (ReflectionShadow) access to types?
+            AnnotationAccessVar var = (AnnotationAccessVar) shadow.getKindedAnnotationVar(annoType);
+            if (var == null) {
+                throw new BCException("Unexpected problem locating annotation at join point '" + shadow + "'");
+            }
+            state.set(btp.getFormalIndex(), new AnnotationAccessFieldVar(var, (ResolvedType) formalType));
+        } else if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
 			BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern)annotationTypePattern;
 			UnresolvedType annotationType = btp.getAnnotationType();
 			Var var = shadow.getKindedAnnotationVar(annotationType);
@@ -213,6 +229,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 			}
 			state.set(btp.getFormalIndex(),var);
 		}
+		
 		if (matchInternal(shadow).alwaysTrue()) 
 			return Literal.TRUE;
 		else 
@@ -223,7 +240,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingAnnotationTypePatterns()
 	 */
 	public List getBindingAnnotationTypePatterns() {
-		if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
+		if (annotationTypePattern instanceof BindingPattern) { // BindingAnnotationTypePattern) {
 			List l = new ArrayList();
 			l.add(annotationTypePattern);
 			return l;
