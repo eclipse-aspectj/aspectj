@@ -80,7 +80,7 @@ import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.AndPointcut;
-import org.aspectj.weaver.patterns.BindingAnnotationTypePattern;
+import org.aspectj.weaver.patterns.BindingPattern;
 import org.aspectj.weaver.patterns.BindingTypePattern;
 import org.aspectj.weaver.patterns.ConcreteCflowPointcut;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
@@ -756,9 +756,9 @@ public class BcelWeaver implements IWeaver {
 					foundFormals[index] = true;
 				}
 			}
-    		List/*BindingAnnotationTypePattern*/ baps = ((NameBindingPointcut)pc).getBindingAnnotationTypePatterns();
+    		List/* BindingPattern */baps = ((NameBindingPointcut) pc).getBindingAnnotationTypePatterns();
     		for (Iterator iter = baps.iterator(); iter.hasNext();) {
-				BindingAnnotationTypePattern bap = (BindingAnnotationTypePattern) iter.next();
+    		    BindingPattern bap = (BindingPattern) iter.next();
 				int index = bap.getFormalIndex();
 				bindings[index] = pc;
 				if (foundFormals[index]) {
