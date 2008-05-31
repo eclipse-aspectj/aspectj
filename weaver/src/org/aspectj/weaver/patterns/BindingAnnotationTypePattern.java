@@ -27,7 +27,7 @@ import org.aspectj.weaver.World;
 
 public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern implements BindingPattern {
 
-	private int formalIndex;
+	protected int formalIndex;
 	
 	/**
 	 * @param annotationType
@@ -42,7 +42,6 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 	}
 	
 	public void resolveBinding(World world) {
-	    
 		if (resolved) return;
 		resolved = true;
 		annotationType = annotationType.resolve(world);
