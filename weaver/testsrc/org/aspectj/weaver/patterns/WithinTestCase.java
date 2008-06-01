@@ -22,10 +22,9 @@ import junit.framework.TestCase;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.IntMap;
-import org.aspectj.weaver.MemberImpl;
-import org.aspectj.weaver.TestUtils;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TestShadow;
+import org.aspectj.weaver.TestUtils;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;

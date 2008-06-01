@@ -18,9 +18,8 @@ import java.util.Arrays;
 
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
-import org.aspectj.weaver.MemberImpl;
-import org.aspectj.weaver.TestUtils;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.TestUtils;
 import org.aspectj.weaver.UnresolvedType;
 
 public class TjpWeaveTestCase extends WeaveTestCase {
