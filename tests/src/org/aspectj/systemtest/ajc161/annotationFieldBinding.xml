@@ -115,4 +115,14 @@
      </run>
    </ajc-test>
    
+   
+   <ajc-test dir="features161/optimizedAnnotationBinding" title="case thirteen - bug npe">
+     <compile options="-1.5" files="CaseThirteen.java">
+       <message kind="error" line="31" text="The field within the annotation must be an Enum"/>
+       <message kind="error" line="31" text="No field of type 'java.lang.String'"/>
+       <message kind="error" line="31" text="When using @annotation"/>
+       <message kind="error" line="32" text="cannot be resolved"/>
+     </compile>
+   </ajc-test>
+   
 </suite>

@@ -57,6 +57,9 @@ public class OptimizedAnnotationFieldBinding extends XMLBasedAjcTestCase {
     public void testCaseTwelve_BindingAnnoAndAnnoValue() {
         runTest("case twelve - binding anno and anno value");
     }
+    public void testCaseThirteen_bugNPE() {
+        runTest("case thirteen - bug npe");
+    }
     
 	/////////////////////////////////////////
 	public static Test suite() {
