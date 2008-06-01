@@ -60,7 +60,8 @@ public class ExactAnnotationFieldTypePattern extends ExactAnnotationTypePattern 
         resolved = true;
         FormalBinding formalBinding = scope.lookupFormal(formalName);
         if (formalBinding == null) {
-            scope.message(IMessage.ERROR, this, "when using @annotation(<annotationType>(<annotationField>)), <annotationField> must be bound");
+            scope.message(IMessage.ERROR, this, "When using @annotation(<annotationType>(<annotationField>)), <annotationField> must be bound");
+            return this;
         }
 
         annotationType = scope.getWorld().resolve(annotationType, true);
