@@ -12,11 +12,10 @@ package org.aspectj.ajdt.internal.compiler;
 
 import java.util.Iterator;
 
-import org.aspectj.weaver.bcel.UnwovenClassFile;
-import org.aspectj.weaver.bcel.UnwovenClassFileWithThirdPartyManagedBytecode;
-import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.weaver.bcel.UnwovenClassFile;
+import org.aspectj.weaver.bcel.UnwovenClassFileWithThirdPartyManagedBytecode;
 
 /**
  * @author colyer
