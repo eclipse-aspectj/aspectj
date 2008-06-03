@@ -3,6 +3,11 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+
+    <ajc-test dir="bugs161/pr235204" title="incorrect call relationship">
+        <compile files="RecursiveCatcher.java" options="-1.5 -emacssym"/>
+    </ajc-test>
+    
     <ajc-test dir="bugs161/pr233838" title="itd precedence - 1">
         <compile files="Z.java" options="-1.5"/>
         <run class="Z">
