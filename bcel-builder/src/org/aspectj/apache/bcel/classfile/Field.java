@@ -55,7 +55,6 @@ package org.aspectj.apache.bcel.classfile;
  */
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.List;
 
 import org.aspectj.apache.bcel.generic.Type;
 
@@ -63,7 +62,7 @@ import org.aspectj.apache.bcel.generic.Type;
  * This class represents the field info structure, i.e., the representation 
  * for a variable in the class. See JVM specification for details.
  *
- * @version $Id: Field.java,v 1.3 2008/05/28 23:53:01 aclement Exp $
+ * @version $Id: Field.java,v 1.4 2008/06/03 05:28:59 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class Field extends FieldOrMethod {
