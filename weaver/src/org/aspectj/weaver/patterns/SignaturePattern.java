@@ -36,9 +36,8 @@ import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.Constants;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.JoinPointSignature;
-import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.Member;
-import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.NewFieldTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
@@ -482,10 +481,7 @@ public class SignaturePattern extends PatternNode {
 		
 	private FuzzyBoolean matchesAnnotations(ResolvedMember member,World world) {
 	  if (member == null) {
-	        if (member.getName().startsWith(NameMangler.PREFIX)) {
-				return FuzzyBoolean.NO;
-			}
-			world.getLint().unresolvableMember.signal(member.toString(), getSourceLocation());
+            //			world.getLint().unresolvableMember.signal(member.toString(), getSourceLocation());
 			return FuzzyBoolean.NO;
 	  }
 	  annotationPattern.resolve(world);
