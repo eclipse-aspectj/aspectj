@@ -828,6 +828,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     public static final Missing   MISSING = new Missing();
     
     /** Reset the static state in the primitive types */
+    // OPTIMIZE I think we have a bug here because primitives are static and the world they use may vary (or may even be
+    // null)
     public static void resetPrimitives() {
     	BYTE.world=null;
     	CHAR.world=null;
