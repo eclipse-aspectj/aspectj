@@ -230,7 +230,9 @@ public class AsmRelationshipProvider {
 		}
 		
 		Member shadowSig = shadow.getSignature();
-		if (!shadowSig.equals(enclosingMember)) {
+		// pr235204
+		if (shadow.getKind() == Shadow.MethodCall ||
+		    !shadowSig.equals(enclosingMember)) {
 			IProgramElement bodyNode = findOrCreateCodeNode(enclosingNode, shadowSig, shadow);
 			return bodyNode;
 		} else {
