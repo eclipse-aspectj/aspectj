@@ -20,7 +20,6 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.Utility;
-import org.aspectj.apache.bcel.classfile.Utility.ResultHolder;
 
 /**
  * Generics introduces more complex signature possibilities, they are no longer just
