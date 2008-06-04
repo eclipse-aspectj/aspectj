@@ -299,6 +299,12 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     	// that doesn't mean it is an error to call this method.
     	// Normally the weaver will be working with subtypes of
     	// this type - BcelField/BcelMethod
+    	if (backingGenericMember != null) {
+    		if (annotationTypes!=null) {
+    			throw new BCException("Unexpectedly found a backing generic member and a local set of annotations");
+    		}
+    		return backingGenericMember.getAnnotationTypes();
+    	}
     	if (annotationTypes == null) return null;
 		return (ResolvedType[])annotationTypes.toArray(new ResolvedType[]{});
     }
