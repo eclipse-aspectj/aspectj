@@ -18,9 +18,7 @@ import java.lang.reflect.Modifier;
 import org.aspectj.weaver.bcel.LazyClassGen;
 
 public class NameMangler {
-	private NameMangler() {
-		throw new RuntimeException("static");
-	}
+	
 	public static final char[] AJC_DOLLAR_PREFIX = {'a', 'j', 'c','$'};
 	public static final char[] CLINIT={'<','c','l','i','n','i','t','>'};
 	public static final String PREFIX = "ajc$";
