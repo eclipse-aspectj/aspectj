@@ -180,7 +180,8 @@ public class PerClauseTest extends TestCase {
     public void testPerTypeWithin() {
         assertTrue(Aspects.hasAspect(PerClauseTestAspects.TestAspectPTW.class, PTW1.class));
         assertTrue(Aspects.hasAspect(PerClauseTestAspects.TestAspectPTW.class, PTW2.class));
-        assertFalse(Aspects.hasAspect(PerClauseTestAspects.TestAspectPTW.class, PTWNoMatch.class));
+        assertFalse("Should not have found an aspect instance of 'PerClauseTestAspects.TestAspectPTW' attached to type 'PTWNoMatch'",
+                    Aspects.hasAspect(PerClauseTestAspects.TestAspectPTW.class, PTWNoMatch.class));
 
         PTW1.foo();
         PTW2.foo();
