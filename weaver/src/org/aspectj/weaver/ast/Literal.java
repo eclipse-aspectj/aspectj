@@ -14,7 +14,7 @@
 package org.aspectj.weaver.ast;
 
 
-public class Literal extends Test {
+public final class Literal extends Test {
 
 	boolean noTest;
 	boolean val;
