@@ -308,7 +308,11 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     	if (annotationTypes == null) return null;
 		return (ResolvedType[])annotationTypes.toArray(new ResolvedType[]{});
     }
-    
+
+     public String getAnnotationDefaultValue() {
+         throw new UnsupportedOperationException("You should resolve this member and call getAnnotationDefaultValue() on the result...");
+     }
+     
     public AnnotationX[] getAnnotations() {
     	if (backingGenericMember != null) return backingGenericMember.getAnnotations();
     	return super.getAnnotations();
@@ -327,12 +331,14 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		return parameterAnnotationTypes;
     }
     
-    public AnnotationX[][] getParameterAnnotations() {
-    	if (backingGenericMember != null) return backingGenericMember.getParameterAnnotations();
-    	return super.getParameterAnnotations();
+
+     public AnnotationX[][] getParameterAnnotations() {
+        if (backingGenericMember != null) return backingGenericMember.getParameterAnnotations();
+        throw new BCException("Cannot return parameter annotations for a " + this.getClass().getName() + " member");
+//        return super.getParameterAnnotations();
     }
-	
-	public void addAnnotation(AnnotationX annotation) {
+
+    public void addAnnotation(AnnotationX annotation) {
    	    // FIXME asc only allows for annotation types, not instances - should it?
 		if (annotationTypes == null) annotationTypes = new HashSet();
 		annotationTypes.add(annotation.getSignature());
@@ -472,6 +478,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
     
     
     
+    // OPTIMIZE dont like how resolve(world) on ResolvedMemberImpl does something different to world.resolve(member)
 	public ResolvedMember resolve(World world) {
         // make sure all the pieces of a resolvedmember really are resolved
 		try {
@@ -1040,5 +1047,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	}
 
 	public void evictWeavingState() { }
+	
+	 public AnnotationX getAnnotationOfType(UnresolvedType ofType) {
+	     throw new UnsupportedOperationException("You should resolve this member and call getAnnotationOfType() on the result...");
+     }
 }
    

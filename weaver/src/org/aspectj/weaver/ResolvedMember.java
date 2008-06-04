@@ -60,6 +60,10 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	public String[] getParameterNames();
 	public void setParameterNames(String[] names);
 
+	public AnnotationX[][] getParameterAnnotations();
+	public ResolvedType[][] getParameterAnnotationTypes();
+	public String getAnnotationDefaultValue();
+	
 	public String[] getParameterNames(World world);
 
 	public AjAttribute.EffectiveSignatureAttribute getEffectiveSignature();

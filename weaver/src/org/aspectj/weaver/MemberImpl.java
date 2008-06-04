@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class MemberImpl implements Comparable, AnnotatedElement,Member {
+public class MemberImpl implements Member {
     
     protected MemberKind kind;
     protected String name;
@@ -91,13 +91,10 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
         }
     }
     
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#resolve(org.aspectj.weaver.World)
-	 */
     public ResolvedMember resolve(World world) {
     	return world.resolve(this);
     }
-
+     
     // ---- utility methods
     
     /** returns an Object[] pair of UnresolvedType, UnresolvedType[] representing return type, 
@@ -303,17 +300,15 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
         return hashCode;
     }
 
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#compareTo(java.lang.Object)
-	 */
-    public int compareTo(Object other) {
-    	Member o = (Member) other;
-    	
-    	int i = getName().compareTo(o.getName());
-    	if (i != 0) return i;
-    	return getSignature().compareTo(o.getSignature());
+
+     public int compareTo(Object other) {
+        Member o = (Member) other;
+
+        int i = getName().compareTo(o.getName());
+        if (i != 0) return i;
+        return getSignature().compareTo(o.getSignature());
     }
-    
+
     public String toString() {
     	StringBuffer buf = new StringBuffer();
     	buf.append(returnType.getName());
@@ -383,19 +378,7 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
 	 */
     public UnresolvedType[]  getParameterTypes() { return parameterTypes; }
     
-    public AnnotationX[][] getParameterAnnotations() {
-		throw new UnsupportedOperationException("You should resolve this member and call getParameterAnnotations() on the result...");
-    }
-    public ResolvedType[][] getParameterAnnotationTypes() { 
-		throw new UnsupportedOperationException("You should resolve this member and call getParameterAnnotationTypes() on the result...");
-    }
-    public String getAnnotationDefaultValue() { 
-		throw new UnsupportedOperationException("You should resolve this member and call getAnnotationDefaultValue() on the result...");
-    }
     
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getSignature()
-	 */
     public String getSignature() { return signature; }
 	
     public int getArity() { return parameterTypes.length; }
@@ -530,21 +513,6 @@ public class MemberImpl implements Comparable, AnnotatedElement,Member {
     	else return name;
     }
 
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#hasAnnotation(org.aspectj.weaver.UnresolvedType)
-	 */
-	 // OPTIMIZE dont have these here, move them down to ResolvedMember
-	public boolean hasAnnotation(UnresolvedType ofType) {
-		throw new UnsupportedOperationException("You should resolve this member and call hasAnnotation() on the result...");
-	}
-	
-	public ResolvedType[] getAnnotationTypes() {
-		throw new UnsupportedOperationException("You should resolve this member and call hasAnnotation() on the result...");
-	}
-
-    public AnnotationX getAnnotationOfType(UnresolvedType ofType) { 
-		throw new UnsupportedOperationException("You should resolve this member and call getAnnotationOfType() on the result...");
-    }
     
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.Member#getAnnotations()

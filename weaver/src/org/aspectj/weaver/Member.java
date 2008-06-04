@@ -16,7 +16,7 @@ package org.aspectj.weaver;
 import java.util.Collection;
 import java.util.Iterator;
 
-public interface Member {
+public interface Member extends Comparable {
 
 	public static final Member[] NONE = new Member[0];
 	public static final MemberKind METHOD = new MemberKind("METHOD", 1);
@@ -36,7 +36,7 @@ public interface Member {
 	
 	public ResolvedMember resolve(World world);
 
-	public int compareTo(Object other);
+    public int compareTo(Object other);
 
 	public String toLongString();
 
@@ -53,10 +53,6 @@ public interface Member {
 
 	public UnresolvedType[] getParameterTypes();
 
-	public AnnotationX[][] getParameterAnnotations();
-	public ResolvedType[][] getParameterAnnotationTypes();
-	
-	public String getAnnotationDefaultValue();
 	
 	/**
 	 * Return full signature, including return type, e.g. "()LFastCar;" for a signature without the return type,
@@ -83,7 +79,6 @@ public interface Member {
 	
 	public int getModifiers();
 
-	public UnresolvedType[] getExceptions(World world);
 
     public boolean isStatic();
 
@@ -101,28 +96,19 @@ public interface Member {
 
 	public String getExtractableName();
 
-	/**
-	 * If you want a sensible answer, resolve the member and call
-	 * hasAnnotation() on the ResolvedMember.
-	 */
-	public boolean hasAnnotation(UnresolvedType ofType);
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.AnnotatedElement#getAnnotationTypes()
-	 */
-	public ResolvedType[] getAnnotationTypes();
-
-	public AnnotationX[] getAnnotations();
-
-	public Collection/*ResolvedType*/getDeclaringTypes(World world);
+    public AnnotationX[] getAnnotations();
 
 	// ---- reflective thisJoinPoint stuff
 	public String getSignatureMakerName();
 
 	public String getSignatureType();
 
+	
+    public Collection/* ResolvedType */getDeclaringTypes(World world);
+    
 	public String getSignatureString(World world);
 
 	public String[] getParameterNames(World world);
 
+    public UnresolvedType[] getExceptions(World world);
 }
