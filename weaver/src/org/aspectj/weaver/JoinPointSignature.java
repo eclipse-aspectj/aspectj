@@ -308,10 +308,6 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.canBeParameterized();
 	}
 
-	public int getCallsiteModifiers() {
-		return realMember.getCallsiteModifiers();
-	}
-
 	public String getExtractableName() {
 		return realMember.getExtractableName();
 	}

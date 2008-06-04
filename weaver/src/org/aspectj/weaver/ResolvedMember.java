@@ -33,7 +33,8 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	public UnresolvedType[] getExceptions();
 
 	public ShadowMunger getAssociatedShadowMunger();
-//OPTIMIZE have param annotation (and anno default value) related stuff here rather than above
+	
+	//OPTIMIZE have param annotation (and anno default value) related stuff here rather than above
 	// ??? true or false?
 	public boolean isAjSynthetic();
 
@@ -41,6 +42,8 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 
 	public boolean hasAnnotation(UnresolvedType ofType);
 
+	public AnnotationX[] getAnnotations();
+	
 	public ResolvedType[] getAnnotationTypes();
 
 	public void setAnnotationTypes(UnresolvedType[] annotationtypes);

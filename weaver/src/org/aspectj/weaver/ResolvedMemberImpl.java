@@ -981,7 +981,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	   }
 	   
 	   // 'declaring' type
-	   r.append(getGenericReturnType().toDebugString());
+	   r.append(getGenericReturnType().toString());
    	   r.append(' ');
    	   
    	   // name
@@ -997,7 +997,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
          if (params.length != 0) {
        	   for (int i=0, len = params.length; i < len; i++) {
              if (i>0) r.append(", ");
-       		 r.append(params[i].toDebugString());
+       		 r.append(params[i].toString());
        		 if (parameterNamesExist) r.append(" ").append(parameterNames[i]);
        	   }
          }

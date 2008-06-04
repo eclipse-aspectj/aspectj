@@ -28,7 +28,7 @@ import org.aspectj.weaver.tools.Traceable;
  * A UnresolvedType represents a type to the weaver. It has a basic signature that knows 
  * nothing about type variables, type parameters, etc.. UnresolvedTypes are resolved in some World
  * (a repository of types). When a UnresolvedType is resolved it turns into a 
- * ResolvedType which may be a primitive type, an array type or a ReferenceType. 
+ * ResolvedType which may be a primitive type, or a ReferenceType. 
  * ReferenceTypes may refer to simple, generic, parameterized or type-variable
  * based reference types. A ReferenceType is backed by a delegate that provides 
  * information about the type based on some repository (currently either BCEL
@@ -207,34 +207,6 @@ public class UnresolvedType implements Unresolved, Traceable, TypeVariableDeclar
     	throw new UnsupportedOperationException("unable to parameterize unresolved type: " + signature);
     }
     
-    /**
-     * protected constructor for use only within UnresolvedType hierarchy. Use
-     * one of the UnresolvedType.forXXX static methods for normal creation of
-     * TypeXs.
-     * Picks apart the signature string to set the type kind and calculates the
-     * corresponding signatureErasure. A SIMPLE type created from a plain
-     * Java signature may turn into a GENERIC type when it is resolved.
-     * 
-     * This method should never be called for a primitive type. (UnresolvedType. forSignature
-     * deals with those).
-     * 
-     * @param signature in the form described in the class comment at the
-     * top of this file. 
-     */
-//    protected UnresolvedType(String aSignature) {
-//    	this.signature = aSignature;
-//
-//
-//    }
-    
-    // -----------------------------
-    // old stuff...
-    
-
-	
-	/**
-	 * @param      signature   the bytecode string representation of this Type
-	 */
     protected UnresolvedType(String signature) {
         super();
         this.signature = signature;
@@ -598,10 +570,6 @@ public class UnresolvedType implements Unresolved, Traceable, TypeVariableDeclar
      */
     public String toString() {
         return getName(); // + " - " + getKind();
-    }
-    
-    public String toDebugString() {
-    	return getName();
     }
 
     // ---- requires worlds

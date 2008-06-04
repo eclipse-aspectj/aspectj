@@ -16,6 +16,9 @@ package org.aspectj.weaver;
 import java.util.Collection;
 import java.util.Iterator;
 
+/**
+ * Abstract representation of a member within a type.
+ */
 public interface Member extends Comparable {
 
 	public static final Member[] NONE = new Member[0];
@@ -53,16 +56,12 @@ public interface Member extends Comparable {
 
 	public UnresolvedType[] getParameterTypes();
 
-	
 	/**
-	 * Return full signature, including return type, e.g. "()LFastCar;" for a signature without the return type,
-	 * use getParameterSignature() - it is importnant to choose the right one in the face of covariance.
+	 * Return full signature, including return type, e.g. "()LFastCar;". For a signature without the return type,
+	 * use getParameterSignature() - it is important to choose the right one in the face of covariance.
 	 */
 	public String getSignature();
 	
-    /**
-     * All the signatures that a join point with this member as its signature has.
-     */
     public Iterator getJoinPointSignatures(World world);
 
 	public int getArity();
@@ -79,7 +78,6 @@ public interface Member extends Comparable {
 	
 	public int getModifiers();
 
-
     public boolean isStatic();
 
     public boolean isInterface();
@@ -88,11 +86,8 @@ public interface Member extends Comparable {
 
 	/**
 	 * Returns true iff the member is generic (NOT parameterized)
-	 * For example, a method declared in a generic type
 	 */
 	public boolean canBeParameterized();
-
-	public int getCallsiteModifiers();
 
 	public String getExtractableName();
 
@@ -102,7 +97,6 @@ public interface Member extends Comparable {
 	public String getSignatureMakerName();
 
 	public String getSignatureType();
-
 	
     public Collection/* ResolvedType */getDeclaringTypes(World world);
     

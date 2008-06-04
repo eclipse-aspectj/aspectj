@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver;
 
 import java.lang.reflect.Modifier;
@@ -20,14 +19,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-
 public class MemberImpl implements Member {
     
     protected MemberKind kind;
-    protected String name;
-    protected UnresolvedType declaringType;
+
     protected int modifiers; 
+    protected String name;
     protected UnresolvedType returnType;
+    protected UnresolvedType declaringType;
     protected UnresolvedType[] parameterTypes;
     private final String signature;
     private String paramSignature;
@@ -111,6 +110,7 @@ public class MemberImpl implements Member {
      * @param      signature the JVM bytecode method signature string we want to break apart
      * @return     a pair of UnresolvedType, UnresolvedType[] representing the return types and parameter types. 
      */
+    // OPTIMIZE move static util methods out into a memberutils class
     public static String typesToSignature(UnresolvedType returnType, UnresolvedType[] paramTypes, boolean useRawTypes) {
         StringBuffer buf = new StringBuffer();
         buf.append("(");
@@ -365,27 +365,14 @@ public class MemberImpl implements Member {
     
     public UnresolvedType getGenericReturnType() { return getReturnType(); }
     public UnresolvedType[] getGenericParameterTypes() { return getParameterTypes(); }
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getType()
-	 */
-    public UnresolvedType getType() { return returnType; }
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getName()
-	 */
+    public final UnresolvedType getType() { return returnType; }
     public String getName() { return name; }
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getParameterTypes()
-	 */
     public UnresolvedType[]  getParameterTypes() { return parameterTypes; }
-    
-    
+        
     public String getSignature() { return signature; }
 	
     public int getArity() { return parameterTypes.length; }
   
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getParameterSignature()
-	 */
     public String getParameterSignature() {
     	if (paramSignature != null) return paramSignature;
     	StringBuffer sb = new StringBuffer();
@@ -460,17 +447,10 @@ public class MemberImpl implements Member {
     	return false;
     }
 
-	public final int getCallsiteModifiers() {
-		return modifiers & ~ Modifier.INTERFACE;
-	}
-	
 	public int getModifiers() {
 		return modifiers;
 	}
 
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getExtractableName()
-	 */
     public final String getExtractableName() {
     // OPTIMIZE remove silly string compares for init - use kind==CTOR/STATIC_INITIALIZATION
     	if (name.equals("<init>")) return "init$";
@@ -478,21 +458,12 @@ public class MemberImpl implements Member {
     	else return name;
     }
 
-    
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getAnnotations()
-	 */
 	public AnnotationX[] getAnnotations() {
 		throw new UnsupportedOperationException("You should resolve this member '"+this+"' and call getAnnotations() on the result...");
 	}
 
 	// ---- fields 'n' stuff
 
-
-    
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getDeclaringTypes(org.aspectj.weaver.World)
-	 */
 	public Collection/*ResolvedType*/ getDeclaringTypes(World world) {
 		ResolvedType myType = getDeclaringType().resolve(world);
 		Collection ret = new HashSet();
@@ -574,11 +545,6 @@ public class MemberImpl implements Member {
     }
     	
     
-
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getSignatureType()
-	 */
 	public String getSignatureType() {
     	MemberKind kind = getKind();
     	if (getName().equals("<clinit>")) return "org.aspectj.lang.reflect.InitializerSignature";
@@ -790,9 +756,6 @@ public class MemberImpl implements Member {
         return buf.toString();
     }
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getParameterNames(org.aspectj.weaver.World)
-	 */
 	public String[] getParameterNames(World world) {
     	ResolvedMember resolved = resolve(world);
     	if (resolved == null) {
