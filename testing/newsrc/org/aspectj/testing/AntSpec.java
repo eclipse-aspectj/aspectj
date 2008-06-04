@@ -11,18 +11,18 @@
  *******************************************************************************/
 package org.aspectj.testing;
 
-import org.aspectj.tools.ajc.AjcTestCase;
+import java.io.File;
+import java.util.StringTokenizer;
+
+import org.apache.tools.ant.BuildEvent;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
-import org.apache.tools.ant.DefaultLogger;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
-
-import java.io.File;
-import java.util.StringTokenizer;
+import org.aspectj.tools.ajc.AjcTestCase;
 
 /**
  * Element that allow to run an abritrary Ant target in a sandbox.
@@ -52,8 +52,7 @@ public class AntSpec implements ITestStep {
             + File.pathSeparator + ".." + File.separator + "loadtime/bin"
             + File.pathSeparator + ".." + File.separator + "loadtime5/bin"
             + File.pathSeparator + ".." + File.separator + "weaver/bin"
-            + File.pathSeparator + ".." + File.separator + "lib/bcel/bcel.jar"
-    		+ File.pathSeparator + ".." + File.separator + "lib/asm/asm-aj.jar";
+            + File.pathSeparator + ".." + File.separator + "lib/bcel/bcel.jar";
 
 
     private boolean m_verbose = false;
