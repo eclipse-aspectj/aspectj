@@ -542,6 +542,10 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
     public String toString() {
         return getName(); // + " - " + getKind();
     }
+    
+    public String toDebugString() {
+    	return getName();
+    }
 
     // ---- requires worlds
 
