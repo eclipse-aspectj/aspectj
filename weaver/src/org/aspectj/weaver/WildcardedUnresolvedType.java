@@ -18,7 +18,7 @@ package org.aspectj.weaver;
  * 
  * @author Andy Clement
  */
-public class WildcardedUnresolvedType extends UnresolvedType implements Unresolved {
+public class WildcardedUnresolvedType extends UnresolvedType {
 
     // TODO does not cope with extra bounds '? extends A & B & C'
     
