@@ -19,7 +19,7 @@ import org.aspectj.weaver.ast.Var;
 /**
  * A variable at a reflection shadow, used by the residual tests.
  */
-public class ReflectionVar extends Var {
+public final class ReflectionVar extends Var {
 
 	static final int THIS_VAR = 0;
 	static final int TARGET_VAR = 1;
