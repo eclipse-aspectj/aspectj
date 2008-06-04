@@ -129,7 +129,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
     // This set contains pairs of types whose signatures are concatenated
     // together, this means with a fast lookup we can tell if two types
     // are equivalent.
-    static Set validBoxing = new HashSet();
+    protected static Set validBoxing = new HashSet();
     
     static {
       validBoxing.add("Ljava/lang/Byte;B");
@@ -2185,7 +2185,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	protected Map getAjMemberParameterizationMap() {
 		Map myMap = getMemberParameterizationMap();
-		if (myMap.size() == 0) {
+		if (myMap.isEmpty()) {
 			// might extend a parameterized aspect that we also need to consider...
 			if (getSuperclass() != null) return getSuperclass().getAjMemberParameterizationMap();
 		}
