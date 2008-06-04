@@ -444,57 +444,22 @@ public class MemberImpl implements Member {
 		return resolved.getExceptions();
     }
     
-    // OPTIMIZE remove world related isMethods()
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#isProtected(org.aspectj.weaver.World)
-	 */
-    public final boolean isProtected(World world) {
-        return Modifier.isProtected(resolve(world).getModifiers());
-    }
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#isStatic(org.aspectj.weaver.World)
-	 */
-    public final boolean isStatic(World world) {
-        return Modifier.isStatic(resolve(world).getModifiers());
-    }
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#isStrict(org.aspectj.weaver.World)
-	 */
-    public final boolean isStrict(World world) {
-        return Modifier.isStrict(resolve(world).getModifiers());
-    }
-    
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#isStatic()
-	 */
     public final boolean isStatic() {
         return Modifier.isStatic(modifiers);
     }    
-    
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#isInterface()
-	 */
+
     public final boolean isInterface() {
         return Modifier.isInterface(modifiers);  // this is kinda weird
     }    
     
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#isPrivate()
-	 */
     public final boolean isPrivate() {
         return Modifier.isPrivate(modifiers);
     }    
-    
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#canBeParameterized()
-	 */
+
     public boolean canBeParameterized() {
     	return false;
     }
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getCallsiteModifiers()
-	 */
 	public final int getCallsiteModifiers() {
 		return modifiers & ~ Modifier.INTERFACE;
 	}
