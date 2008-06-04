@@ -1,6 +1,6 @@
 public class HelloWorld extends java.lang.Object:
   public void <init>():
-                    ALOAD_0     // HelloWorld this   (line 5)
+                    ALOAD_0     // LHelloWorld; this   (line 5)
                     INVOKESPECIAL java.lang.Object.<init> ()V
     constructor-execution(void HelloWorld.<init>())
     |               RETURN
@@ -14,15 +14,15 @@ public class HelloWorld extends java.lang.Object:
     |               ASTORE_1
     |               ASTORE_2
     | method-call(void java.io.PrintStream.println(java.lang.String))
-    | |             BIPUSH 2
+    | |             ICONST_2
     | |             ANEWARRAY java.lang.Object
     | |             ASTORE_3
     | |             ALOAD_3
-    | |             BIPUSH 0
+    | |             ICONST_0
     | |             ALOAD_2
     | |             AASTORE
     | |             ALOAD_3
-    | |             BIPUSH 1
+    | |             ICONST_1
     | |             ALOAD_1
     | |             AASTORE
     | |             NEW HelloWorld$AjcClosure1
@@ -57,11 +57,11 @@ public class HelloWorld$AjcClosure1 extends org.aspectj.runtime.internal.AroundC
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST java.io.PrintStream
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     AALOAD
                     CHECKCAST java.lang.String
                     INVOKESTATIC HelloWorld.println_aroundBody0 (Ljava/io/PrintStream;Ljava/lang/String;)V

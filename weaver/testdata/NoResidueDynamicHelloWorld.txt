@@ -1,6 +1,6 @@
 public class DynamicHelloWorld extends java.lang.Object implements java.io.Serializable:
   public void <init>():
-                    ALOAD_0     // DynamicHelloWorld this   (line 8)
+                    ALOAD_0     // LDynamicHelloWorld; this   (line 8)
                     INVOKESPECIAL java.lang.Object.<init> ()V
     constructor-execution(void DynamicHelloWorld.<init>())
     |               RETURN
@@ -27,7 +27,7 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
     |               DUP
     |               LDC "expected and caught: "
     |               INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
-    |               ALOAD_1     // java.lang.UnsupportedOperationException t
+    |               ALOAD_1     // Ljava/lang/UnsupportedOperationException; t
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
     | |             INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
@@ -48,14 +48,14 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
 
   String doit(String, java.util.List):
     method-execution(java.lang.String DynamicHelloWorld.doit(java.lang.String, java.util.List))
-    |               ALOAD_2     // java.util.List l   (line 21)
-    |               ALOAD_1     // java.lang.String s
+    |               ALOAD_2     // Ljava/util/List; l   (line 21)
+    |               ALOAD_1     // Ljava/lang/String; s
     | method-call(boolean java.util.List.add(java.lang.Object))
     | |             INVOKESTATIC Aspect.ajc_before_0 ()V
     | |             INVOKEINTERFACE java.util.List.add (Ljava/lang/Object;)Z
     | method-call(boolean java.util.List.add(java.lang.Object))
     |               POP
-    |               ALOAD_2     // java.util.List l   (line 22)
+    |               ALOAD_2     // Ljava/util/List; l   (line 22)
     | method-call(java.lang.String java.lang.Object.toString())
     | |             INVOKEVIRTUAL java.lang.Object.toString ()Ljava/lang/String;
     | method-call(java.lang.String java.lang.Object.toString())

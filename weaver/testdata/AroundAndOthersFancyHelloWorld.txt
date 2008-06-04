@@ -1,6 +1,6 @@
 public abstract class FancyHelloWorld extends java.lang.Object:
   public void <init>():
-                    ALOAD_0     // FancyHelloWorld this   (line 7)
+                    ALOAD_0     // LFancyHelloWorld; this   (line 7)
                     INVOKESPECIAL java.lang.Object.<init> ()V
     constructor-execution(void FancyHelloWorld.<init>())
     |               RETURN
@@ -13,21 +13,21 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |               ASTORE_1
     | finally -> E1
     | | catch java.lang.Exception -> E0
-    | | |           ALOAD_1     // java.io.PrintStream out   (line 11)
+    | | |           ALOAD_1     // Ljava/io/PrintStream; out   (line 11)
     | | |           LDC "bye"
     | | |           ASTORE 5
     | | |           ASTORE 6
     | | | method-call(void java.io.PrintStream.println(java.lang.String))
     | | | |         INVOKESTATIC Aspect.ajc_before_method_execution ()V
-    | | | |         BIPUSH 2
+    | | | |         ICONST_2
     | | | |         ANEWARRAY java.lang.Object
     | | | |         ASTORE 8
     | | | |         ALOAD 8
-    | | | |         BIPUSH 0
+    | | | |         ICONST_0
     | | | |         ALOAD 6
     | | | |         AASTORE
     | | | |         ALOAD 8
-    | | | |         BIPUSH 1
+    | | | |         ICONST_1
     | | | |         ALOAD 5
     | | | |         AASTORE
     | | | |         NEW FancyHelloWorld$AjcClosure3
@@ -40,21 +40,21 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     | | |           GOTO L0
     | | catch java.lang.Exception -> E0
     | |         E0: ASTORE_2   (line 12)
-    | |             ALOAD_1     // java.io.PrintStream out   (line 13)
-    | |             ALOAD_2     // java.lang.Exception e
+    | |             ALOAD_1     // Ljava/io/PrintStream; out   (line 13)
+    | |             ALOAD_2     // Ljava/lang/Exception; e
     | |             ASTORE 9
     | |             ASTORE 10
     | | method-call(void java.io.PrintStream.println(java.lang.Object))
     | | |           INVOKESTATIC Aspect.ajc_before_method_execution ()V
-    | | |           BIPUSH 2
+    | | |           ICONST_2
     | | |           ANEWARRAY java.lang.Object
     | | |           ASTORE 12
     | | |           ALOAD 12
-    | | |           BIPUSH 0
+    | | |           ICONST_0
     | | |           ALOAD 10
     | | |           AASTORE
     | | |           ALOAD 12
-    | | |           BIPUSH 1
+    | | |           ICONST_1
     | | |           ALOAD 9
     | | |           AASTORE
     | | |           NEW FancyHelloWorld$AjcClosure7
@@ -73,21 +73,21 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     |           L0: JSR L1
     |               GOTO L2
     |           L1: ASTORE_3
-    |               ALOAD_1     // java.io.PrintStream out   (line 15)
+    |               ALOAD_1     // Ljava/io/PrintStream; out   (line 15)
     |               LDC "finally"
     |               ASTORE 13
     |               ASTORE 14
     | method-call(void java.io.PrintStream.println(java.lang.String))
     | |             INVOKESTATIC Aspect.ajc_before_method_execution ()V
-    | |             BIPUSH 2
+    | |             ICONST_2
     | |             ANEWARRAY java.lang.Object
     | |             ASTORE 16
     | |             ALOAD 16
-    | |             BIPUSH 0
+    | |             ICONST_0
     | |             ALOAD 14
     | |             AASTORE
     | |             ALOAD 16
-    | |             BIPUSH 1
+    | |             ICONST_1
     | |             ALOAD 13
     | |             AASTORE
     | |             NEW FancyHelloWorld$AjcClosure11
@@ -106,18 +106,18 @@ public abstract class FancyHelloWorld extends java.lang.Object:
     method-execution(java.lang.String FancyHelloWorld.getName())
     |               ICONST_0   (line 20)
     |               ISTORE_0
-    |               ILOAD_0     // int x   (line 21)
+    |               ILOAD_0     // I x   (line 21)
     |               LDC "name"
     | method-call(int java.lang.String.hashCode())
     | |             INVOKEVIRTUAL java.lang.String.hashCode ()I
     | method-call(int java.lang.String.hashCode())
     |               IADD
-    |               ISTORE_0     // int x
+    |               ISTORE_0     // I x
     |               NEW java.lang.StringBuffer   (line 22)
     |               DUP
     |               LDC "name"
     |               INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
-    |               ILOAD_0     // int x
+    |               ILOAD_0     // I x
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(int))
     | |             INVOKEVIRTUAL java.lang.StringBuffer.append (I)Ljava/lang/StringBuffer;
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(int))
@@ -137,15 +137,15 @@ public abstract class FancyHelloWorld extends java.lang.Object:
 
   static final void println_aroundBody2(java.io.PrintStream, String):
                     INVOKESTATIC Aspect.ajc_before_method_execution ()V
-                    BIPUSH 2
+                    ICONST_2
                     ANEWARRAY java.lang.Object
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     ALOAD_0
                     AASTORE
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     ALOAD_1
                     AASTORE
                     NEW FancyHelloWorld$AjcClosure1
@@ -166,15 +166,15 @@ public abstract class FancyHelloWorld extends java.lang.Object:
 
   static final void println_aroundBody6(java.io.PrintStream, Object):
                     INVOKESTATIC Aspect.ajc_before_method_execution ()V
-                    BIPUSH 2
+                    ICONST_2
                     ANEWARRAY java.lang.Object
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     ALOAD_0
                     AASTORE
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     ALOAD_1
                     AASTORE
                     NEW FancyHelloWorld$AjcClosure5
@@ -195,15 +195,15 @@ public abstract class FancyHelloWorld extends java.lang.Object:
 
   static final void println_aroundBody10(java.io.PrintStream, String):
                     INVOKESTATIC Aspect.ajc_before_method_execution ()V
-                    BIPUSH 2
+                    ICONST_2
                     ANEWARRAY java.lang.Object
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     ALOAD_0
                     AASTORE
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     ALOAD_1
                     AASTORE
                     NEW FancyHelloWorld$AjcClosure9
@@ -229,11 +229,11 @@ public class FancyHelloWorld$AjcClosure1 extends org.aspectj.runtime.internal.Ar
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST java.io.PrintStream
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     AALOAD
                     CHECKCAST java.lang.String
                     INVOKESTATIC FancyHelloWorld.println_aroundBody0 (Ljava/io/PrintStream;Ljava/lang/String;)V
@@ -255,11 +255,11 @@ public class FancyHelloWorld$AjcClosure3 extends org.aspectj.runtime.internal.Ar
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST java.io.PrintStream
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     AALOAD
                     CHECKCAST java.lang.String
                     INVOKESTATIC FancyHelloWorld.println_aroundBody2 (Ljava/io/PrintStream;Ljava/lang/String;)V
@@ -281,11 +281,11 @@ public class FancyHelloWorld$AjcClosure5 extends org.aspectj.runtime.internal.Ar
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST java.io.PrintStream
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     AALOAD
                     INVOKESTATIC FancyHelloWorld.println_aroundBody4 (Ljava/io/PrintStream;Ljava/lang/Object;)V
                     ACONST_NULL
@@ -306,11 +306,11 @@ public class FancyHelloWorld$AjcClosure7 extends org.aspectj.runtime.internal.Ar
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST java.io.PrintStream
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     AALOAD
                     INVOKESTATIC FancyHelloWorld.println_aroundBody6 (Ljava/io/PrintStream;Ljava/lang/Object;)V
                     ACONST_NULL
@@ -331,11 +331,11 @@ public class FancyHelloWorld$AjcClosure9 extends org.aspectj.runtime.internal.Ar
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST java.io.PrintStream
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     AALOAD
                     CHECKCAST java.lang.String
                     INVOKESTATIC FancyHelloWorld.println_aroundBody8 (Ljava/io/PrintStream;Ljava/lang/String;)V
@@ -357,11 +357,11 @@ public class FancyHelloWorld$AjcClosure11 extends org.aspectj.runtime.internal.A
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST java.io.PrintStream
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     AALOAD
                     CHECKCAST java.lang.String
                     INVOKESTATIC FancyHelloWorld.println_aroundBody10 (Ljava/io/PrintStream;Ljava/lang/String;)V

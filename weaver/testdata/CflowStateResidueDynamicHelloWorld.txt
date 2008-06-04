@@ -1,6 +1,6 @@
 public class DynamicHelloWorld extends java.lang.Object implements java.io.Serializable:
   public void <init>():
-                    ALOAD_0     // DynamicHelloWorld this   (line 8)
+                    ALOAD_0     // LDynamicHelloWorld; this   (line 8)
                     INVOKESPECIAL java.lang.Object.<init> ()V
     constructor-execution(void DynamicHelloWorld.<init>())
     |               RETURN
@@ -13,7 +13,7 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
     |               INVOKEVIRTUAL org.aspectj.runtime.internal.CFlowStack.isValid ()Z
     |               IFEQ L0
     |               GETSTATIC Aspect.ajc$cflowStack$0 Lorg/aspectj/runtime/internal/CFlowStack;
-    |               BIPUSH 0
+    |               ICONST_0
     |               INVOKEVIRTUAL org.aspectj.runtime.internal.CFlowStack.get (I)Ljava/lang/Object;
     |               CHECKCAST java.util.ArrayList
     |               INVOKESTATIC Aspect.ajc_before_0 (Ljava/util/ArrayList;)V
@@ -35,7 +35,7 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
     |               DUP
     |               LDC "expected and caught: "
     |               INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
-    |               ALOAD_1     // java.lang.UnsupportedOperationException t
+    |               ALOAD_1     // Ljava/lang/UnsupportedOperationException; t
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
     | |             INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
@@ -56,23 +56,23 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
 
   String doit(String, java.util.List):
     method-execution(java.lang.String DynamicHelloWorld.doit(java.lang.String, java.util.List))
-    |               ALOAD_2     // java.util.List l   (line 21)
-    |               ALOAD_1     // java.lang.String s
+    |               ALOAD_2     // Ljava/util/List; l   (line 21)
+    |               ALOAD_1     // Ljava/lang/String; s
     |               ASTORE_3
     |               ASTORE 4
     | method-call(boolean java.util.List.add(java.lang.Object))
-    | |             BIPUSH 0
+    | |             ICONST_0
     | |             ISTORE 5
     | |             ALOAD 4
     | |             INSTANCEOF java.util.ArrayList
     | |             IFEQ L0
-    | |             BIPUSH 1
+    | |             ICONST_1
     | |             ISTORE 5
-    | |             BIPUSH 1
+    | |             ICONST_1
     | |             ANEWARRAY java.lang.Object
     | |             ASTORE 6
     | |             ALOAD 6
-    | |             BIPUSH 0
+    | |             ICONST_0
     | |             ALOAD 4
     | |             AASTORE
     | |             GETSTATIC Aspect.ajc$cflowStack$0 Lorg/aspectj/runtime/internal/CFlowStack;
@@ -99,7 +99,7 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
     | |         L3: NOP
     | method-call(boolean java.util.List.add(java.lang.Object))
     |               POP
-    |               ALOAD_2     // java.util.List l   (line 22)
+    |               ALOAD_2     // Ljava/util/List; l   (line 22)
     | method-call(java.lang.String java.lang.Object.toString())
     | |             INVOKEVIRTUAL java.lang.Object.toString ()Ljava/lang/String;
     | method-call(java.lang.String java.lang.Object.toString())

@@ -46,19 +46,19 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
     |               ALOAD_0
     |               INVOKEVIRTUAL Trace.ajc$before$Trace$1$26352be2 (Ljava/lang/Object;)V
     |               INVOKESTATIC MyTrace.aspectOf ()LMyTrace;
-    |               BIPUSH 3
+    |               ICONST_3
     |               ANEWARRAY java.lang.Object
     |               ASTORE 6
     |               ALOAD 6
-    |               BIPUSH 0
+    |               ICONST_0
     |               ALOAD_0
     |               AASTORE
     |               ALOAD 6
-    |               BIPUSH 1
+    |               ICONST_1
     |               ALOAD_3
     |               AASTORE
     |               ALOAD 6
-    |               BIPUSH 2
+    |               ICONST_2
     |               ALOAD 4
     |               AASTORE
     |               NEW DynamicHelloWorld$AjcClosure3
@@ -93,19 +93,19 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
   static final String doit_aroundBody2(DynamicHelloWorld, String, java.util.List):
                     INVOKESTATIC MyTrace.aspectOf ()LMyTrace;   (line 21)
                     ALOAD_0
-                    BIPUSH 3
+                    ICONST_3
                     ANEWARRAY java.lang.Object
                     ASTORE_3
                     ALOAD_3
-                    BIPUSH 0
+                    ICONST_0
                     ALOAD_0
                     AASTORE
                     ALOAD_3
-                    BIPUSH 1
+                    ICONST_1
                     ALOAD_1
                     AASTORE
                     ALOAD_3
-                    BIPUSH 2
+                    ICONST_2
                     ALOAD_2
                     AASTORE
                     NEW DynamicHelloWorld$AjcClosure1
@@ -131,15 +131,15 @@ public class DynamicHelloWorld$AjcClosure1 extends org.aspectj.runtime.internal.
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_1
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST DynamicHelloWorld
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     AALOAD
                     CHECKCAST java.lang.String
                     ALOAD_2
-                    BIPUSH 2
+                    ICONST_2
                     AALOAD
                     CHECKCAST java.util.List
                     INVOKESTATIC DynamicHelloWorld.doit_aroundBody0 (LDynamicHelloWorld;Ljava/lang/String;Ljava/util/List;)Ljava/lang/String;
@@ -160,15 +160,15 @@ public class DynamicHelloWorld$AjcClosure3 extends org.aspectj.runtime.internal.
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST DynamicHelloWorld
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     AALOAD
                     CHECKCAST java.lang.String
                     ALOAD_2
-                    BIPUSH 2
+                    ICONST_2
                     AALOAD
                     CHECKCAST java.util.List
                     INVOKESTATIC DynamicHelloWorld.doit_aroundBody2 (LDynamicHelloWorld;Ljava/lang/String;Ljava/util/List;)Ljava/lang/String;

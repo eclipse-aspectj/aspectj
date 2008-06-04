@@ -12,15 +12,15 @@ public class HelloWorld extends java.lang.Object:
                     INVOKESTATIC org.aspectj.runtime.reflect.Factory.makeJP (Lorg/aspectj/lang/JoinPoint$StaticPart;Ljava/lang/Object;Ljava/lang/Object;)Lorg/aspectj/lang/JoinPoint;
                     ASTORE_1
     constructor-execution(void HelloWorld.<init>())
-    |               BIPUSH 2
+    |               ICONST_2
     |               ANEWARRAY java.lang.Object
     |               ASTORE_3
     |               ALOAD_3
-    |               BIPUSH 0
+    |               ICONST_0
     |               ALOAD_0
     |               AASTORE
     |               ALOAD_3
-    |               BIPUSH 1
+    |               ICONST_1
     |               ALOAD_1
     |               AASTORE
     |               NEW HelloWorld$AjcClosure3
@@ -44,15 +44,15 @@ public class HelloWorld extends java.lang.Object:
                     INVOKESTATIC org.aspectj.runtime.reflect.Factory.makeJP (Lorg/aspectj/lang/JoinPoint$StaticPart;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Lorg/aspectj/lang/JoinPoint;
                     ASTORE 10
     method-execution(void HelloWorld.main(java.lang.String[]))
-    |               BIPUSH 2   (line 8)
+    |               ICONST_2   (line 8)
     |               ANEWARRAY java.lang.Object
     |               ASTORE 12
     |               ALOAD 12
-    |               BIPUSH 0
+    |               ICONST_0
     |               ALOAD 9
     |               AASTORE
     |               ALOAD 12
-    |               BIPUSH 1
+    |               ICONST_1
     |               ALOAD 10
     |               AASTORE
     |               NEW HelloWorld$AjcClosure15
@@ -83,7 +83,7 @@ public class HelloWorld extends java.lang.Object:
                     LDC ""
                     LDC ""
                     INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeConstructorSig (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/aspectj/lang/reflect/ConstructorSignature;
-                    BIPUSH 5
+                    ICONST_5
                     INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeSJP (Ljava/lang/String;Lorg/aspectj/lang/Signature;I)Lorg/aspectj/lang/JoinPoint$StaticPart;
                     PUTSTATIC HelloWorld.ajc$tjp_0 Lorg/aspectj/lang/JoinPoint$StaticPart;
                     ALOAD_0
@@ -135,15 +135,15 @@ public class HelloWorld extends java.lang.Object:
   end static final void init$_aroundBody0(HelloWorld, org.aspectj.lang.JoinPoint)
 
   static final void init$_aroundBody2(HelloWorld, org.aspectj.lang.JoinPoint):
-                    BIPUSH 2
+                    ICONST_2
                     ANEWARRAY java.lang.Object
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     ALOAD_0
                     AASTORE
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     ALOAD_1
                     AASTORE
                     NEW HelloWorld$AjcClosure1
@@ -162,11 +162,11 @@ public class HelloWorld extends java.lang.Object:
   end static final java.io.PrintStream out_aroundBody4(org.aspectj.lang.JoinPoint)
 
   static final java.io.PrintStream out_aroundBody6(org.aspectj.lang.JoinPoint):
-                    BIPUSH 1
+                    ICONST_1
                     ANEWARRAY java.lang.Object
                     ASTORE_1
                     ALOAD_1
-                    BIPUSH 0
+                    ICONST_0
                     ALOAD_0
                     AASTORE
                     NEW HelloWorld$AjcClosure5
@@ -187,19 +187,19 @@ public class HelloWorld extends java.lang.Object:
   end static final void println_aroundBody8(java.io.PrintStream, String, org.aspectj.lang.JoinPoint)
 
   static final void println_aroundBody10(java.io.PrintStream, String, org.aspectj.lang.JoinPoint):
-                    BIPUSH 3
+                    ICONST_3
                     ANEWARRAY java.lang.Object
                     ASTORE_3
                     ALOAD_3
-                    BIPUSH 0
+                    ICONST_0
                     ALOAD_0
                     AASTORE
                     ALOAD_3
-                    BIPUSH 1
+                    ICONST_1
                     ALOAD_1
                     AASTORE
                     ALOAD_3
-                    BIPUSH 2
+                    ICONST_2
                     ALOAD_2
                     AASTORE
                     NEW HelloWorld$AjcClosure9
@@ -219,11 +219,11 @@ public class HelloWorld extends java.lang.Object:
                     INVOKESTATIC org.aspectj.runtime.reflect.Factory.makeJP (Lorg/aspectj/lang/JoinPoint$StaticPart;Ljava/lang/Object;Ljava/lang/Object;)Lorg/aspectj/lang/JoinPoint;
                     ASTORE_2
     field-get(java.io.PrintStream java.lang.System.out)
-    |               BIPUSH 1
+    |               ICONST_1
     |               ANEWARRAY java.lang.Object
     |               ASTORE 4
     |               ALOAD 4
-    |               BIPUSH 0
+    |               ICONST_0
     |               ALOAD_2
     |               AASTORE
     |               NEW HelloWorld$AjcClosure7
@@ -244,19 +244,19 @@ public class HelloWorld extends java.lang.Object:
                     INVOKESTATIC org.aspectj.runtime.reflect.Factory.makeJP (Lorg/aspectj/lang/JoinPoint$StaticPart;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Lorg/aspectj/lang/JoinPoint;
                     ASTORE 10
     method-call(void java.io.PrintStream.println(java.lang.String))
-    |               BIPUSH 3
+    |               ICONST_3
     |               ANEWARRAY java.lang.Object
     |               ASTORE 12
     |               ALOAD 12
-    |               BIPUSH 0
+    |               ICONST_0
     |               ALOAD 8
     |               AASTORE
     |               ALOAD 12
-    |               BIPUSH 1
+    |               ICONST_1
     |               ALOAD 6
     |               AASTORE
     |               ALOAD 12
-    |               BIPUSH 2
+    |               ICONST_2
     |               ALOAD 10
     |               AASTORE
     |               NEW HelloWorld$AjcClosure11
@@ -271,15 +271,15 @@ public class HelloWorld extends java.lang.Object:
   end static final void main_aroundBody12(String[], org.aspectj.lang.JoinPoint)
 
   static final void main_aroundBody14(String[], org.aspectj.lang.JoinPoint):
-                    BIPUSH 2   (line 8)
+                    ICONST_2   (line 8)
                     ANEWARRAY java.lang.Object
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     ALOAD_0
                     AASTORE
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     ALOAD_1
                     AASTORE
                     NEW HelloWorld$AjcClosure13
@@ -306,11 +306,11 @@ public class HelloWorld$AjcClosure1 extends org.aspectj.runtime.internal.AroundC
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST HelloWorld
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     AALOAD
                     CHECKCAST org.aspectj.lang.JoinPoint
                     INVOKESTATIC HelloWorld.init$_aroundBody0 (LHelloWorld;Lorg/aspectj/lang/JoinPoint;)V
@@ -332,11 +332,11 @@ public class HelloWorld$AjcClosure3 extends org.aspectj.runtime.internal.AroundC
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST HelloWorld
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     AALOAD
                     CHECKCAST org.aspectj.lang.JoinPoint
                     INVOKESTATIC HelloWorld.init$_aroundBody2 (LHelloWorld;Lorg/aspectj/lang/JoinPoint;)V
@@ -358,7 +358,7 @@ public class HelloWorld$AjcClosure5 extends org.aspectj.runtime.internal.AroundC
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST org.aspectj.lang.JoinPoint
                     INVOKESTATIC HelloWorld.out_aroundBody4 (Lorg/aspectj/lang/JoinPoint;)Ljava/io/PrintStream;
@@ -379,7 +379,7 @@ public class HelloWorld$AjcClosure7 extends org.aspectj.runtime.internal.AroundC
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST org.aspectj.lang.JoinPoint
                     INVOKESTATIC HelloWorld.out_aroundBody6 (Lorg/aspectj/lang/JoinPoint;)Ljava/io/PrintStream;
@@ -400,15 +400,15 @@ public class HelloWorld$AjcClosure9 extends org.aspectj.runtime.internal.AroundC
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST java.io.PrintStream
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     AALOAD
                     CHECKCAST java.lang.String
                     ALOAD_2
-                    BIPUSH 2
+                    ICONST_2
                     AALOAD
                     CHECKCAST org.aspectj.lang.JoinPoint
                     INVOKESTATIC HelloWorld.println_aroundBody8 (Ljava/io/PrintStream;Ljava/lang/String;Lorg/aspectj/lang/JoinPoint;)V
@@ -430,15 +430,15 @@ public class HelloWorld$AjcClosure11 extends org.aspectj.runtime.internal.Around
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST java.io.PrintStream
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     AALOAD
                     CHECKCAST java.lang.String
                     ALOAD_2
-                    BIPUSH 2
+                    ICONST_2
                     AALOAD
                     CHECKCAST org.aspectj.lang.JoinPoint
                     INVOKESTATIC HelloWorld.println_aroundBody10 (Ljava/io/PrintStream;Ljava/lang/String;Lorg/aspectj/lang/JoinPoint;)V
@@ -460,11 +460,11 @@ public class HelloWorld$AjcClosure13 extends org.aspectj.runtime.internal.Around
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST [Ljava.lang.String;
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     AALOAD
                     CHECKCAST org.aspectj.lang.JoinPoint
                     INVOKESTATIC HelloWorld.main_aroundBody12 ([Ljava/lang/String;Lorg/aspectj/lang/JoinPoint;)V
@@ -486,11 +486,11 @@ public class HelloWorld$AjcClosure15 extends org.aspectj.runtime.internal.Around
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST [Ljava.lang.String;
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     AALOAD
                     CHECKCAST org.aspectj.lang.JoinPoint
                     INVOKESTATIC HelloWorld.main_aroundBody14 ([Ljava/lang/String;Lorg/aspectj/lang/JoinPoint;)V

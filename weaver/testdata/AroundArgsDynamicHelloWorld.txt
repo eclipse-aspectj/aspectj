@@ -1,6 +1,6 @@
 public class DynamicHelloWorld extends java.lang.Object implements java.io.Serializable:
   public void <init>():
-                    ALOAD_0     // DynamicHelloWorld this   (line 8)
+                    ALOAD_0     // LDynamicHelloWorld; this   (line 8)
                     INVOKESPECIAL java.lang.Object.<init> ()V
     constructor-execution(void DynamicHelloWorld.<init>())
     |               RETURN
@@ -27,7 +27,7 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
     |               DUP
     |               LDC "expected and caught: "
     |               INVOKESPECIAL java.lang.StringBuffer.<init> (Ljava/lang/String;)V
-    |               ALOAD_1     // java.lang.UnsupportedOperationException t
+    |               ALOAD_1     // Ljava/lang/UnsupportedOperationException; t
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
     | |             INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
@@ -48,8 +48,8 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
 
   String doit(String, java.util.List):
     method-execution(java.lang.String DynamicHelloWorld.doit(java.lang.String, java.util.List))
-    |               ALOAD_2     // java.util.List l   (line 21)
-    |               ALOAD_1     // java.lang.String s
+    |               ALOAD_2     // Ljava/util/List; l   (line 21)
+    |               ALOAD_1     // Ljava/lang/String; s
     |               ASTORE_3
     |               ASTORE 4
     | method-call(boolean java.util.List.add(java.lang.Object))
@@ -58,19 +58,19 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
     | |             IFEQ L0
     | |             ALOAD 4
     | |             CHECKCAST java.util.ArrayList
-    | |             BIPUSH 3
+    | |             ICONST_3
     | |             ANEWARRAY java.lang.Object
     | |             ASTORE 5
     | |             ALOAD 5
-    | |             BIPUSH 0
+    | |             ICONST_0
     | |             ALOAD_0
     | |             AASTORE
     | |             ALOAD 5
-    | |             BIPUSH 1
+    | |             ICONST_1
     | |             ALOAD 4
     | |             AASTORE
     | |             ALOAD 5
-    | |             BIPUSH 2
+    | |             ICONST_2
     | |             ALOAD_3
     | |             AASTORE
     | |             NEW DynamicHelloWorld$AjcClosure1
@@ -86,7 +86,7 @@ public class DynamicHelloWorld extends java.lang.Object implements java.io.Seria
     | |         L1: NOP
     | method-call(boolean java.util.List.add(java.lang.Object))
     |               POP
-    |               ALOAD_2     // java.util.List l   (line 22)
+    |               ALOAD_2     // Ljava/util/List; l   (line 22)
     | method-call(java.lang.String java.lang.Object.toString())
     | |             INVOKEVIRTUAL java.lang.Object.toString ()Ljava/lang/String;
     | method-call(java.lang.String java.lang.Object.toString())
@@ -115,15 +115,15 @@ public class DynamicHelloWorld$AjcClosure1 extends org.aspectj.runtime.internal.
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST DynamicHelloWorld
                     ALOAD_1
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST java.util.List
                     ALOAD_2
-                    BIPUSH 2
+                    ICONST_2
                     AALOAD
                     INVOKESTATIC DynamicHelloWorld.add_aroundBody0 (LDynamicHelloWorld;Ljava/util/List;Ljava/lang/Object;)Z
                     INVOKESTATIC org.aspectj.runtime.internal.Conversions.booleanObject (Z)Ljava/lang/Object;

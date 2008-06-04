@@ -1,6 +1,6 @@
 public class MultiArgHelloWorld extends java.lang.Object:
   public void <init>():
-                    ALOAD_0     // MultiArgHelloWorld this   (line 3)
+                    ALOAD_0     // LMultiArgHelloWorld; this   (line 3)
                     INVOKESPECIAL java.lang.Object.<init> ()V
     constructor-execution(void MultiArgHelloWorld.<init>())
     |               RETURN
@@ -34,7 +34,7 @@ public class MultiArgHelloWorld extends java.lang.Object:
     |               NEW java.lang.StringBuffer
     |               DUP
     |               INVOKESPECIAL java.lang.StringBuffer.<init> ()V
-    |               ALOAD_0     // java.lang.Object s
+    |               ALOAD_0     // Ljava/lang/Object; s
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
     | |             INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
@@ -42,7 +42,7 @@ public class MultiArgHelloWorld extends java.lang.Object:
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.String))
     | |             INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/String;)Ljava/lang/StringBuffer;
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.String))
-    |               ALOAD_1     // java.lang.Object t
+    |               ALOAD_1     // Ljava/lang/Object; t
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))
     | |             INVOKEVIRTUAL java.lang.StringBuffer.append (Ljava/lang/Object;)Ljava/lang/StringBuffer;
     | method-call(java.lang.StringBuffer java.lang.StringBuffer.append(java.lang.Object))

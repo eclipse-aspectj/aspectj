@@ -3,11 +3,11 @@ public class HelloWorld extends java.lang.Object:
                     ALOAD_0     // LHelloWorld; this   (line 5)
                     INVOKESPECIAL java.lang.Object.<init> ()V
     constructor-execution(void HelloWorld.<init>())
-    |               BIPUSH 1
+    |               ICONST_1
     |               ANEWARRAY java.lang.Object
     |               ASTORE_1
     |               ALOAD_1
-    |               BIPUSH 0
+    |               ICONST_0
     |               ALOAD_0
     |               AASTORE
     |               NEW HelloWorld$AjcClosure1
@@ -24,11 +24,11 @@ public class HelloWorld extends java.lang.Object:
                     ALOAD_0
                     ASTORE 5
     method-execution(void HelloWorld.main(java.lang.String[]))
-    |               BIPUSH 1   (line 8)
+    |               ICONST_1   (line 8)
     |               ANEWARRAY java.lang.Object
     |               ASTORE 6
     |               ALOAD 6
-    |               BIPUSH 0
+    |               ICONST_0
     |               ALOAD 5
     |               AASTORE
     |               NEW HelloWorld$AjcClosure7
@@ -59,7 +59,7 @@ public class HelloWorld extends java.lang.Object:
 
   static final void main_aroundBody6(String[]):
     field-get(java.io.PrintStream java.lang.System.out)
-    |               BIPUSH 0
+    |               ICONST_0
     |               ANEWARRAY java.lang.Object
     |               ASTORE_1
     |               NEW HelloWorld$AjcClosure3
@@ -73,15 +73,15 @@ public class HelloWorld extends java.lang.Object:
                     ASTORE_3
                     ASTORE 5
     method-call(void java.io.PrintStream.println(java.lang.String))
-    |               BIPUSH 2
+    |               ICONST_2
     |               ANEWARRAY java.lang.Object
     |               ASTORE 7
     |               ALOAD 7
-    |               BIPUSH 0
+    |               ICONST_0
     |               ALOAD 5
     |               AASTORE
     |               ALOAD 7
-    |               BIPUSH 1
+    |               ICONST_1
     |               ALOAD_3
     |               AASTORE
     |               NEW HelloWorld$AjcClosure5
@@ -108,7 +108,7 @@ public class HelloWorld$AjcClosure1 extends org.aspectj.runtime.internal.AroundC
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST HelloWorld
                     INVOKESTATIC HelloWorld.init$_aroundBody0 (LHelloWorld;)V
@@ -147,11 +147,11 @@ public class HelloWorld$AjcClosure5 extends org.aspectj.runtime.internal.AroundC
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST java.io.PrintStream
                     ALOAD_2
-                    BIPUSH 1
+                    ICONST_1
                     AALOAD
                     CHECKCAST java.lang.String
                     INVOKESTATIC HelloWorld.println_aroundBody4 (Ljava/io/PrintStream;Ljava/lang/String;)V
@@ -173,7 +173,7 @@ public class HelloWorld$AjcClosure7 extends org.aspectj.runtime.internal.AroundC
                     GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
                     ASTORE_2
                     ALOAD_2
-                    BIPUSH 0
+                    ICONST_0
                     AALOAD
                     CHECKCAST [Ljava.lang.String;
                     INVOKESTATIC HelloWorld.main_aroundBody6 ([Ljava/lang/String;)V

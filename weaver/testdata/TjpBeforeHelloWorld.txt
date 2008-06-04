@@ -77,7 +77,7 @@ public class HelloWorld extends java.lang.Object:
                     LDC ""
                     LDC ""
                     INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeConstructorSig (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/aspectj/lang/reflect/ConstructorSignature;
-                    BIPUSH 5
+                    ICONST_5
                     INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeSJP (Ljava/lang/String;Lorg/aspectj/lang/Signature;I)Lorg/aspectj/lang/JoinPoint$StaticPart;
                     PUTSTATIC HelloWorld.ajc$tjp_0 Lorg/aspectj/lang/JoinPoint$StaticPart;
                     ALOAD_0
