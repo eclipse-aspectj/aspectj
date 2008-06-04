@@ -14,7 +14,7 @@
 package org.aspectj.weaver.patterns;
 
 
-public class BasicToken implements IToken {
+public final class BasicToken implements IToken {
 	private String value;
 	private boolean isIdentifier;
 	private String literalKind;
