@@ -94,7 +94,7 @@ import org.aspectj.weaver.tools.Traceable;
  * The wildcard ? extends Foo has signature +LFoo;
  * The wildcard ? super Foo has signature -LFoo;
  */
-public class UnresolvedType implements Unresolved, Traceable, TypeVariableDeclaringElement {
+public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
 	// common types referred to by the weaver
     public static final UnresolvedType[] NONE         = new UnresolvedType[0];
