@@ -23,6 +23,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.1
+	public void testAnnotationExposureGenerics_pr235597() { runTest("annotation exposure and generics");}
     public void testIncorrectRelationship_pr235204() {
         runTest("incorrect call relationship");
         IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
@@ -39,8 +40,7 @@ public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
         }
     }
 
-    public void testITDPrecedence_pr233838_1() {
-        runTest("itd precedence - 1"); }
+    public void testITDPrecedence_pr233838_1() { runTest("itd precedence - 1"); }
 	public void testITDPrecedence_pr233838_2() { runTest("itd precedence - 2"); }
 	public void testGetFieldGenerics_pr227401() { runTest("getfield problem with generics");}
 	public void testGenericAbstractAspects_pr231478() { runTest("generic abstract aspects"); }

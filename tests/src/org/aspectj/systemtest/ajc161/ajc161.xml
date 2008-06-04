@@ -3,6 +3,29 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+    <ajc-test dir="bugs161/pr235597" title="annotation exposure and generics">
+        <compile files="AnnotationTest1.java SomeAnnotation.java SomeAspect.java" options="-1.5"/>
+        <run class="AnnotationTest1">
+          <stdout>
+            <line text="@someAspect annotation parameter (call)"/>
+            <line text="@someAspect annotation no parameter"/>
+            <line text="@someAspect method name"/>
+            <line text="@someAspect annotation parameter (execution)"/>
+            <line text="test 1"/>
+            <line text="@someAspect annotation parameter (call)"/>
+            <line text="@someAspect annotation no parameter"/>
+            <line text="@someAspect method name"/>
+            <line text="@someAspect annotation parameter (execution)"/>
+            <line text="test 2"/>
+            <line text="@someAspect annotation parameter (call)"/>
+            <line text="@someAspect annotation no parameter"/>
+            <line text="@someAspect method name"/>
+            <line text="@someAspect annotation parameter (execution)"/>
+            <line text="test 3"/>
+          </stdout>
+        </run>
+    </ajc-test>
+    
 
     <ajc-test dir="bugs161/pr235204" title="incorrect call relationship">
         <compile files="RecursiveCatcher.java" options="-1.5 -emacssym"/>
