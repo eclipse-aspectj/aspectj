@@ -49,7 +49,6 @@ import org.aspectj.org.eclipse.jdt.internal.core.builder.ReferenceCollection;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.StringSet;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.BCException;
-import org.aspectj.weaver.IWeaver;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
@@ -1065,7 +1064,7 @@ public class AjState {
 				for (Iterator iterator = compiledTypes.keySet().iterator(); iterator.hasNext();) {
 					char[] className = (char[])iterator.next();
 					String typeName = new String(className).replace('/','.');
-					if (typeName.indexOf(IWeaver.SYNTHETIC_CLASS_POSTFIX) == -1) {
+					if (typeName.indexOf(BcelWeaver.SYNTHETIC_CLASS_POSTFIX) == -1) {
 						ResolvedType rt = world.resolve(typeName);
 						if (rt.isMissing()) {
 							throw new IllegalStateException("Type '" + rt.getSignature() + "' not found in world!");
@@ -1555,7 +1554,7 @@ public class AjState {
 		public void deleteFromFileSystem() {
 			String namePrefix = locationOnDisk.getName();
 			namePrefix = namePrefix.substring(0,namePrefix.lastIndexOf('.'));
-			final String targetPrefix = namePrefix + IWeaver.CLOSURE_CLASS_PREFIX;
+			final String targetPrefix = namePrefix + BcelWeaver.CLOSURE_CLASS_PREFIX;
 			File dir = locationOnDisk.getParentFile();
 			if (dir != null) {
 				File[] weaverGenerated = dir.listFiles(new FilenameFilter() {
