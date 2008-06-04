@@ -94,7 +94,9 @@ public class BcelAdvice extends Advice {
 		}
 		return m;
 	}
-	// !!! must only be used for testing
+	/**
+	 * For testing only
+	 */
 	public BcelAdvice(AdviceKind kind, Pointcut pointcut, Member signature,
 		int extraArgumentFlags,
         int start, int end, ISourceContext sourceContext, ResolvedType concreteAspect)
