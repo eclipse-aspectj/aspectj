@@ -15,6 +15,7 @@
 
 package org.aspectj.ajdt.internal.compiler.lookup;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -977,7 +978,7 @@ public class EclipseFactory {
 	}
 
 	public MethodBinding makeMethodBindingForCall(Member member) {
-		return new MethodBinding(member.getCallsiteModifiers(),
+		return new MethodBinding(member.getModifiers() & ~ Modifier.INTERFACE,
 				member.getName().toCharArray(),
 				makeTypeBinding(member.getReturnType()),
 				makeTypeBindings(member.getParameterTypes()),
