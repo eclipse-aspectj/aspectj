@@ -45,7 +45,7 @@ import org.aspectj.weaver.ast.Var;
 import org.aspectj.weaver.internal.tools.MatchingContextBasedTest;
 
 // we generate right to left, btw.
-public class BcelRenderer implements ITestVisitor, IExprVisitor {
+public final class BcelRenderer implements ITestVisitor, IExprVisitor {
 
     private InstructionList instructions;
     private InstructionFactory fact;
