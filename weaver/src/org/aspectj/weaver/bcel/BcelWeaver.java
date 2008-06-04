@@ -67,7 +67,6 @@ import org.aspectj.weaver.CrosscuttingMembersSet;
 import org.aspectj.weaver.CustomMungerFactory;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IWeaveRequestor;
-import org.aspectj.weaver.IWeaver;
 import org.aspectj.weaver.NewParentTypeMunger;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
@@ -98,7 +97,12 @@ import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 
 
-public class BcelWeaver implements IWeaver {
+public class BcelWeaver {
+
+	public static final String CLOSURE_CLASS_PREFIX = "$Ajc";
+	
+	public static final String SYNTHETIC_CLASS_POSTFIX = "$ajc";
+	
     private BcelWorld world;
     private CrosscuttingMembersSet xcutSet;
     private IProgressListener progressListener = null;
