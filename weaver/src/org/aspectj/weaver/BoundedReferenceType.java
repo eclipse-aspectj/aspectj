@@ -28,9 +28,9 @@ import org.aspectj.weaver.patterns.PerClause;
  */
 public class BoundedReferenceType extends ReferenceType {
 
-    private UnresolvedType lowerBound;
+    private ResolvedType lowerBound;
 
-    private UnresolvedType upperBound;
+    private ResolvedType upperBound;
 
     protected ReferenceType[] additionalInterfaceBounds = new ReferenceType[0];
 

@@ -147,25 +147,10 @@ public class UnresolvedType implements Unresolved, Traceable, TypeVariableDeclar
 	 * Iff isParameterized(), then these are the type variables bound as parameters
 	 * in the type 
 	 */
+	// OPTIMIZE should be no state in here that will damage whether equals() is correct...
 	protected TypeVariable[] typeVariables;
 
 	
-   /**
-     * Determines if this represents a primitive type.  A primitive type
-     * is one of nine predefined resolved types.
-     *
-     * @return true iff this type represents a primitive type
-     *
-     * @see     ResolvedType#Boolean
-     * @see     ResolvedType#Character
-     * @see     ResolvedType#Byte
-     * @see     ResolvedType#Short
-     * @see     ResolvedType#Integer
-     * @see     ResolvedType#Long
-     * @see     ResolvedType#Float
-     * @see     ResolvedType#Double
-     * @see     ResolvedType#Void
-     */   
     public boolean isPrimitiveType()          { return typeKind == TypeKind.PRIMITIVE; }
     public boolean isSimpleType()             { return typeKind == TypeKind.SIMPLE; }
     public boolean isRawType()                { return typeKind == TypeKind.RAW; }
@@ -197,18 +182,8 @@ public class UnresolvedType implements Unresolved, Traceable, TypeVariableDeclar
         return signature.hashCode();
     }
     
-    /**
-     * Return a version of this parameterized type in which any type parameters
-     * that are type variable references are replaced by their matching type variable
-     * binding.
-     */
-    // OPTIMIZE methods like this just allow callers to be lazy and not ensure they are working with the right (resolved) subtype
-    public UnresolvedType parameterize(Map typeBindings) {
-    	throw new UnsupportedOperationException("unable to parameterize unresolved type: " + signature);
-    }
     
     protected UnresolvedType(String signature) {
-        super();
         this.signature = signature;
         this.signatureErasure = signature;
     }
@@ -505,10 +480,6 @@ public class UnresolvedType implements Unresolved, Traceable, TypeVariableDeclar
 		return signature;
     }
 	
-	
-//	public String getParameterizedSignature() {
-//		return signature;
-//	}
 	
 	/**
 	 * For parameterized types, return the signature for the raw type
@@ -822,16 +793,6 @@ public class UnresolvedType implements Unresolved, Traceable, TypeVariableDeclar
 		private final String type;
 	}
 	
-	/**
-	 * Will return true if the type being represented is parameterized with a type variable
-	 * from a generic method/ctor rather than a type variable from a generic type.  
-	 * Only subclasses know the answer...
-	 */
-	// OPTIMIZE don't allow this to be called, the caller must have a resolved entity
-	public boolean isParameterizedWithAMemberTypeVariable() {
-		throw new RuntimeException("I dont know - you should ask a resolved version of me: "+this);
-	}
-	
 	public TypeVariable getTypeVariableNamed(String name) {
 		TypeVariable[] vars = getTypeVariables();
 		if (vars==null || vars.length==0) return null;
@@ -846,5 +807,14 @@ public class UnresolvedType implements Unresolved, Traceable, TypeVariableDeclar
 		return getClass().getName() + "[" + getName() + "]";
 	}
 	
+    /**
+     * Return a version of this parameterized type in which any type parameters
+     * that are type variable references are replaced by their matching type variable
+     * binding.
+     */
+    // OPTIMIZE methods like this just allow callers to be lazy and not ensure they are working with the right (resolved) subtype
+    public UnresolvedType parameterize(Map typeBindings) {
+    	throw new UnsupportedOperationException("unable to parameterize unresolved type: " + signature);
+    }
 }
 

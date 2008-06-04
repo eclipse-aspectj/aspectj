@@ -2147,7 +2147,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 						boolean b = false;
 						UnresolvedType upperBound = boundedRT.getUpperBound();
 						if (upperBound.isParameterizedType()) {
-							b = upperBound.isParameterizedWithAMemberTypeVariable();
+							b = ((ResolvedType)upperBound).isParameterizedWithAMemberTypeVariable();
 						} else if (upperBound.isTypeVariableReference() && ((TypeVariableReference)upperBound).getTypeVariable().getDeclaringElementKind()==TypeVariable.METHOD) {
 							b = true;
 						}
@@ -2161,7 +2161,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 						boolean b = false;
 						UnresolvedType lowerBound = boundedRT.getLowerBound();
 						if (lowerBound.isParameterizedType()) {
-							b = lowerBound.isParameterizedWithAMemberTypeVariable();
+							b = ((ResolvedType)lowerBound).isParameterizedWithAMemberTypeVariable();
 						} else if (lowerBound.isTypeVariableReference() && ((TypeVariableReference)lowerBound).getTypeVariable().getDeclaringElementKind()==TypeVariable.METHOD) {
 							b = true;
 						}
