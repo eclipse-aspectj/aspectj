@@ -47,6 +47,7 @@ import org.aspectj.apache.bcel.generic.LocalVariableTag;
 import org.aspectj.apache.bcel.generic.MethodGen;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.Tag;
+import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
@@ -96,8 +97,8 @@ public final class LazyMethodGen implements Traceable {
     private BcelMethod memberView;
     private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
     int highestLineNumber = 0;
+    boolean wasPackedOptimally = false;
     
-
     /*
      * We use LineNumberTags and not Gens.
      * 
@@ -433,7 +434,8 @@ public final class LazyMethodGen implements Traceable {
     	
     	try {
 			MethodGen gen = pack();
-			return gen.getMethod();
+			savedMethod = gen.getMethod();
+			return savedMethod;
     	} catch (ClassGenException e) {
     		enclosingClass.getBcelObjectType().getResolvedTypeX().getWorld().showMessage(
     			IMessage.ERROR, 
@@ -450,6 +452,9 @@ public final class LazyMethodGen implements Traceable {
     }
     
     public void markAsChanged() {
+    	if (wasPackedOptimally) {
+    		throw new RuntimeException("Already packed method is being re-modified: "+getClassName()+" "+toShortString());
+    	}
     	initialize();
     	savedMethod = null;
     }
@@ -933,7 +938,15 @@ public final class LazyMethodGen implements Traceable {
         }
         
         if (hasBody()) {
-            packBody(gen);
+        	if (this.enclosingClass.getWorld().shouldFastPackMethods()) {
+	            if (isAdviceMethod() || getName().equals("<clinit>")) {
+	        		packBody(gen);
+	        	} else {
+	        		optimizedPackBody(gen); 
+	        	}
+        	} else {
+        		packBody(gen);
+        	}
             gen.setMaxLocals();
             gen.setMaxStack();
         } else {
@@ -1046,6 +1059,108 @@ public final class LazyMethodGen implements Traceable {
         }
     }
     
+
+    /*
+     * Optimized packing that does a 'local packing' of the code rather than building a brand new method
+     * and packing into it.  Only usable when the packing is going to be done just once.
+     */
+    public void optimizedPackBody(MethodGen gen) {
+    	InstructionList theBody = getBody();
+        InstructionHandle iHandle = theBody.getStart();
+
+        int currLine = -1;
+		int lineNumberOffset = (fromFilename == null) ? 0: getEnclosingClass().getSourceDebugExtensionOffset(fromFilename);
+        Map localVariables = new HashMap();
+        LinkedList exceptionList = new LinkedList();   
+        Set forDeletion = new HashSet();
+        Set branchInstructions = new HashSet();
+        // OPTIMIZE sort out in here: getRange()/insertHandler() and type of exceptionList
+        while (iHandle != null) {
+        	Instruction inst = iHandle.getInstruction();
+        	InstructionHandle nextInst = iHandle.getNext();
+        	// OPTIMIZE remove this instructionhandle as it now points to nowhere?
+        	if (inst == Range.RANGEINSTRUCTION) {
+        		Range r = Range.getRange(iHandle);
+	    		if (r instanceof ExceptionRange) {
+	    		    ExceptionRange er = (ExceptionRange) r;
+	    		    if (er.getStart() == iHandle) {
+	    		    	if (!er.isEmpty()){
+	    		        	// order is important, insert handlers in order of start
+	    		        	insertHandler(er, exceptionList);	    	      
+	    		    	}
+	    		    }
+	    		} 
+    			forDeletion.add(iHandle);
+    		} else {
+    			if (inst instanceof InstructionBranch) {
+    				branchInstructions.add(iHandle);
+    			}
+
+              InstructionTargeter[] targeters = iHandle.getTargeters();
+              if (targeters != null) {
+                  for (int k = targeters.length - 1; k >= 0; k--) {
+                      InstructionTargeter targeter = targeters[k];
+                      if (targeter instanceof LineNumberTag) {
+                          int line = ((LineNumberTag)targeter).getLineNumber();
+                          if (line != currLine) {
+                              gen.addLineNumber(iHandle, line + lineNumberOffset);
+                              currLine = line;
+                          }
+                      } else if (targeter instanceof LocalVariableTag) {
+                          LocalVariableTag lvt = (LocalVariableTag) targeter;
+                          LVPosition p = (LVPosition)localVariables.get(lvt);
+                          // If we don't know about it, create a new position and store
+                          // If we do know about it - update its end position
+                          if (p==null) {
+                          	LVPosition newp = new LVPosition();
+                          	newp.start=newp.end=iHandle;
+                          	localVariables.put(lvt,newp);
+                          } else {
+                          	p.end = iHandle;
+                          }
+                      }
+                  }
+              }
+    		}
+        	iHandle = iHandle.getNext();
+        }
+        for (Iterator iterator = branchInstructions.iterator(); iterator.hasNext();) {
+			BranchHandle iBranch = (BranchHandle) iterator.next();
+			handleBranchInstruction(iBranch,forDeletion);
+		}
+    	// now add exception handlers
+        for (Iterator iter = exceptionList.iterator(); iter.hasNext();) {
+            ExceptionRange r = (ExceptionRange) iter.next();
+            if (r.isEmpty()) continue;
+            gen.addExceptionHandler(
+                jumpForward(r.getRealStart(),forDeletion), 
+                jumpForward(r.getRealEnd(),forDeletion),
+                jumpForward(r.getHandler(),forDeletion),
+                (r.getCatchType() == null)
+                ? null 
+                : (ObjectType) BcelWorld.makeBcelType(r.getCatchType()));
+        }
+        
+        for (Iterator iterator = forDeletion.iterator(); iterator.hasNext();) {
+        	try {
+				theBody.delete((InstructionHandle)iterator.next());
+			} catch (TargetLostException e) {
+				e.printStackTrace();
+			}
+        }
+        gen.setInstructionList(theBody);
+        addLocalVariables(gen,localVariables);
+        
+        // JAVAC adds line number tables (with just one entry) to generated accessor methods - this
+        // keeps some tools that rely on finding at least some form of linenumbertable happy.
+        // Let's check if we have one - if we don't then let's add one.
+        // TODO Could be made conditional on whether line debug info is being produced
+        if (gen.getLineNumbers().length==0) { 
+        	gen.addLineNumber(gen.getInstructionList().getStart(),1);
+        }
+        wasPackedOptimally = true;
+    }
+    
     private void addLocalVariables(MethodGen gen, Map localVariables) {
 		// now add local variables
         gen.removeLocalVariables();
@@ -1118,6 +1233,44 @@ public final class LazyMethodGen implements Traceable {
 	        }
 	    }
 	}
+	
+	private InstructionHandle jumpForward(InstructionHandle t,Set handlesForDeletion) {
+		
+		InstructionHandle target = t;
+		  if (handlesForDeletion.contains(target)) {
+		    	do {
+		    		target = target.getNext();
+		    	} while (handlesForDeletion.contains(target));
+		    }
+		  return target;
+	}
+	
+	private void handleBranchInstruction(BranchHandle branchHandle, Set handlesForDeletion) {
+		InstructionBranch branchInstruction = (InstructionBranch) branchHandle.getInstruction();
+	    InstructionHandle target = branchInstruction.getTarget(); // old target
+   
+	    if (handlesForDeletion.contains(target)) {
+	    	do {
+	    		target = target.getNext();
+	    	} while (handlesForDeletion.contains(target));
+	    	branchInstruction.setTarget(target);
+	    }
+   
+	    if (branchInstruction instanceof InstructionSelect) { 
+	        // Either LOOKUPSWITCH or TABLESWITCH
+	        InstructionHandle[] targets = ((InstructionSelect)branchInstruction).getTargets();
+	        for (int k = targets.length - 1; k >= 0; k--) { 
+	        	InstructionHandle oneTarget = targets[k];
+	        	if (handlesForDeletion.contains(oneTarget)) {
+	    	    	do {
+	    	    		oneTarget = oneTarget.getNext();
+	    	    	} while (handlesForDeletion.contains(oneTarget));
+	    	    	branchInstruction.setTarget(oneTarget);
+	    	    	oneTarget.addTargeter(branchInstruction);
+	    	    }
+	        }
+	    }
+	}
 
 	private void handleRangeInstruction(InstructionHandle ih, LinkedList exnList) {
 		// we're a range instruction
@@ -1181,6 +1334,13 @@ public final class LazyMethodGen implements Traceable {
 //			curr = next;
 //    	}
 //	}
+   
+   private static InstructionHandle fNext(InstructionHandle ih) {
+	   while (true) {
+		   if (ih.getInstruction()==Range.RANGEINSTRUCTION) ih = ih.getNext();
+		   else return ih;
+	   }
+   }
 
     private static InstructionHandle remap(InstructionHandle ih, Map map) {
         while (true) {

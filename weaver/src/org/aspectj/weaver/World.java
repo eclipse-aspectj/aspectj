@@ -117,6 +117,7 @@ public abstract class World implements Dump.INode {
 	private boolean runMinimalMemory = false;
 	private boolean shouldPipelineCompilation = true;
 	protected boolean bcelRepositoryCaching = xsetBCEL_REPOSITORY_CACHING_DEFAULT.equalsIgnoreCase("true");
+	private boolean fastMethodPacking = false; 
 	private boolean completeBinaryTypes = false;
 	public boolean forDEBUG_structuralChangesCode = false;
 	public boolean forDEBUG_bridgingCode = false;
@@ -810,6 +811,7 @@ public abstract class World implements Dump.INode {
 	public final static String xsetCOMPLETE_BINARY_TYPES = "completeBinaryTypes";
 	public final static String xsetCOMPLETE_BINARY_TYPES_DEFAULT = "false"; 
 	public final static String xsetBCEL_REPOSITORY_CACHING_DEFAULT = "true"; 
+	public final static String xsetFAST_PACK_METHODS = "fastPackMethods";  // default TRUE
 	
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;
@@ -1218,6 +1220,9 @@ public abstract class World implements Dump.INode {
 				if (!bcelRepositoryCaching) {
 					getMessageHandler().handleMessage(MessageUtil.info("[bcelRepositoryCaching=false] AspectJ will not use a bcel cache for class information"));
 				}
+
+				s = p.getProperty(xsetFAST_PACK_METHODS,"true");
+				fastMethodPacking = s.equalsIgnoreCase("true");
 				
 				s = p.getProperty(xsetPIPELINE_COMPILATION,xsetPIPELINE_COMPILATION_DEFAULT);
 				shouldPipelineCompilation = s.equalsIgnoreCase("true");
@@ -1249,6 +1254,11 @@ public abstract class World implements Dump.INode {
 	      ensureAdvancedConfigurationProcessed();
 	    	  return runMinimalMemory;
 	    }
+
+    public boolean shouldFastPackMethods() {
+        ensureAdvancedConfigurationProcessed();
+        return fastMethodPacking;
+    }
 	    
 	    public boolean shouldPipelineCompilation() {
 	    	ensureAdvancedConfigurationProcessed();
