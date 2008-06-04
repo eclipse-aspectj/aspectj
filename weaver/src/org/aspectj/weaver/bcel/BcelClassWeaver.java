@@ -868,7 +868,7 @@ class BcelClassWeaver implements IClassWeaver {
 			for (int i = 0; i < paramTypes.length; i++) {
 				UnresolvedType type = paramTypes[i];
 				String s = org.aspectj.apache.bcel.classfile.Utility.signatureToString(type.getSignature());
-				if (s.lastIndexOf(".")!=-1) s =s.substring(s.lastIndexOf(".")+1);
+				if (s.lastIndexOf('.')!=-1) s =s.substring(s.lastIndexOf('.')+1);
 				parmString.append(s);
 				if ((i+1)<paramTypes.length) parmString.append(",");
 			}
@@ -970,7 +970,7 @@ class BcelClassWeaver implements IClassWeaver {
 			}
 			return null;
 		} else {
-			throw new RuntimeException("Not sure what this is: "+methodCtorMunger);
+			throw new BCException("Not sure what this is: "+methodCtorMunger);
 		}
 	}
 	
@@ -1519,7 +1519,7 @@ class BcelClassWeaver implements IClassWeaver {
 					}
 					walker = walker.getNext();
 				}
-				if (rets.size()>0) {
+				if (!rets.isEmpty()) {
 					// need to ensure targeters for 'return' now instead target the load instruction
 					// (so we never jump over the monitorexit logic)
 					
@@ -1550,7 +1550,7 @@ class BcelClassWeaver implements IClassWeaver {
 									// move it
 									targeter.updateTarget(element, monitorExitBlockStart);
 								} else {
-									throw new RuntimeException("Unexpected targeter encountered during transform: "+targeter);
+									throw new BCException("Unexpected targeter encountered during transform: "+targeter);
 								}
 							}		
 						}
@@ -1730,7 +1730,7 @@ class BcelClassWeaver implements IClassWeaver {
 								// move it
 								targeter.updateTarget(element, monitorExitBlockStart);
 							} else {
-								throw new RuntimeException("Unexpected targeter encountered during transform: "+targeter);
+								throw new BCException("Unexpected targeter encountered during transform: "+targeter);
 							}
 						}		
 					}
@@ -1806,7 +1806,7 @@ class BcelClassWeaver implements IClassWeaver {
 				}
 				walker = walker.getNext();
 			}
-			if (rets.size()>0) {
+			if (!rets.isEmpty()) {
 				// need to ensure targeters for 'return' now instead target the load instruction
 				// (so we never jump over the monitorexit logic)
 				
@@ -1838,7 +1838,7 @@ class BcelClassWeaver implements IClassWeaver {
 								// move it
 								targeter.updateTarget(element, monitorExitBlockStart);
 							} else {
-								throw new RuntimeException("Unexpected targeter encountered during transform: "+targeter);
+								throw new BCException("Unexpected targeter encountered during transform: "+targeter);
 							}
 						}		
 					}
