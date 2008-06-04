@@ -16,7 +16,7 @@ import org.aspectj.util.TypeSafeEnum;
  * An enumeration of the different kinds of pointcut primitives
  * supported by AspectJ.
  */
-public class PointcutPrimitive extends TypeSafeEnum {
+public final class PointcutPrimitive extends TypeSafeEnum {
 
 	public static final PointcutPrimitive CALL = new PointcutPrimitive("call",1);
 	public static final PointcutPrimitive EXECUTION = new PointcutPrimitive("execution",2);
