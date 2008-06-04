@@ -15,7 +15,7 @@ package org.aspectj.weaver.tools;
 /** 
  * This class implements a boolean that includes a "maybe"
  */
-public class FuzzyBoolean {
+public final class FuzzyBoolean {
 	
 	// Note :- this implementation is not safe under serialization / deserialization
 	private String name;
