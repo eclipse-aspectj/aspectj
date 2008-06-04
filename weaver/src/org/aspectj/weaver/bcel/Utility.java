@@ -62,10 +62,6 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 
 public class Utility {
-
-    private Utility() {
-        super();
-    }
 	
 	/*
 	 * Ensure we report a nice source location - particular in the case
@@ -507,26 +503,26 @@ public class Utility {
         return il;
     }
 
-	public static Instruction createConstant(
-    		InstructionFactory fact,
-    		int i) {
+	public static Instruction createConstant(InstructionFactory fact,int value) {
 		Instruction inst;
-		switch(i) {
+		switch (value) {
 			case -1: inst =  InstructionConstants.ICONST_M1; break;
 			case 0: inst =  InstructionConstants.ICONST_0;	break;			
 			case 1: inst =  InstructionConstants.ICONST_1; break;
 			case 2: inst =  InstructionConstants.ICONST_2; break;				
 			case 3: inst =  InstructionConstants.ICONST_3; break;
 			case 4: inst =  InstructionConstants.ICONST_4;	break;			
-			case 5: inst =  InstructionConstants.ICONST_5;	break;	
-		}
-		if (i <= Byte.MAX_VALUE && i >= Byte.MIN_VALUE) {
-	     	inst =  new InstructionByte(Constants.BIPUSH,(byte)i);
-		} else if (i <= Short.MAX_VALUE && i >= Short.MIN_VALUE) {
-			inst =  new InstructionShort(Constants.SIPUSH,(short)i);
-		} else {
-		      int ii = fact.getClassGen().getConstantPool().addInteger(i);
-		      inst = new InstructionCP(i<=Constants.MAX_BYTE?Constants.LDC:Constants.LDC_W,ii);
+			case 5: inst =  InstructionConstants.ICONST_5;	break;
+			default: 
+				if (value <= Byte.MAX_VALUE && value >= Byte.MIN_VALUE) {
+			     	inst =  new InstructionByte(Constants.BIPUSH,(byte)value);
+				} else if (value <= Short.MAX_VALUE && value >= Short.MIN_VALUE) {
+					inst =  new InstructionShort(Constants.SIPUSH,(short)value);
+				} else {
+				      int ii = fact.getClassGen().getConstantPool().addInteger(value);
+				      inst = new InstructionCP(value<=Constants.MAX_BYTE?Constants.LDC:Constants.LDC_W,ii);
+				}
+				break;
 		}
 		return inst;
 	}
@@ -748,7 +744,7 @@ public class Utility {
             // 1. there are no values specified (i.e. @SuppressAjWarnings)
             // 2. there are values specified (i.e. @SuppressAjWarnings("A") or @SuppressAjWarnings({"A","B"})
             List vals = anns[i].getBcelAnnotation().getValues();
-            if (vals == null || vals.size()==0) { // (1)
+            if (vals == null || vals.isEmpty()) { // (1)
                 suppressed = true;
             } else { // (2)
             	// We know the value is an array value
@@ -780,7 +776,7 @@ public class Utility {
             // 1. there are no values specified (i.e. @SuppressAjWarnings)
             // 2. there are values specified (i.e. @SuppressAjWarnings("A") or @SuppressAjWarnings({"A","B"})
             List vals = anns[i].getBcelAnnotation().getValues();
-            if (vals == null || vals.size()==0) { // (1)
+            if (vals == null || vals.isEmpty()) { // (1)
                suppressedWarnings.addAll(lint.allKinds());
             } else { // (2)
             	// We know the value is an array value
