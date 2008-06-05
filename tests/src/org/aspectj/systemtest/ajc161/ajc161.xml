@@ -3,6 +3,12 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+	<ajc-test dir="bugs161/pr235829" title="crazy generics and inner types">
+    	<compile files="Main.java a/Adapter.java a/b/Adapter.java" options="-1.5"/>
+    	<run class="Main"/>
+    </ajc-test>
+    
+
     <ajc-test dir="bugs161/pr235597" title="annotation exposure and generics">
         <compile files="AnnotationTest1.java SomeAnnotation.java SomeAspect.java" options="-1.5"/>
         <run class="AnnotationTest1">
