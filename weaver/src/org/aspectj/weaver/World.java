@@ -838,6 +838,7 @@ public abstract class World implements Dump.INode {
 		return targetAspectjRuntimeLevel;
 	}
 	
+	// OPTIMIZE are users falling foul of not supplying -1.5 and so targetting the old runtime?
 	public boolean isTargettingAspectJRuntime12() {
 		boolean b = false; // pr116679
 		if (!isInJava5Mode()) b=true;

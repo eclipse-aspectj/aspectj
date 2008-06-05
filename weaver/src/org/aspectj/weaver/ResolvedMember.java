@@ -34,10 +34,10 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 
 	public ShadowMunger getAssociatedShadowMunger();
 	
-	//OPTIMIZE have param annotation (and anno default value) related stuff here rather than above
-	// ??? true or false?
 	public boolean isAjSynthetic();
 
+	public boolean isCompatibleWith(Member am);
+	
 	public boolean hasAnnotations();
 
 	public boolean hasAnnotation(UnresolvedType ofType);

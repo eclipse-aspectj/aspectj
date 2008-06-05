@@ -53,26 +53,24 @@ import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSigna
 
 public final class BcelMethod extends ResolvedMemberImpl {
 
-
 	private Method method;
+
+	// these fields are not set for many BcelMethods...
 	private ShadowMunger associatedShadowMunger;
 	private ResolvedPointcutDefinition preResolvedPointcut;  // used when ajc has pre-resolved the pointcut of some @Advice
+	private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
 	
-//    private ResolvedType[] annotationTypes = null;
+	
+	private AjAttribute.MethodDeclarationLineNumberAttribute declarationLineNumber;	
     private AnnotationX[] annotations = null;
     private AnnotationX[][] parameterAnnotations = null;
-	
-	private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
-	private AjAttribute.MethodDeclarationLineNumberAttribute declarationLineNumber;
 	private BcelObjectType bcelObjectType;
 	
-	private boolean parameterNamesInitialized = false;
-	
 	private int bitflags;
-	private static final int KNOW_IF_SYNTHETIC           = 0x0001;
-	private static final int PARAMETER_NAMES_INITIALIZED = 0x0002;
-	private static final int CAN_BE_PARAMETERIZED        = 0x0004;
-	private static final int UNPACKED_GENERIC_SIGNATURE  = 0x0008;
+	private static final int KNOW_IF_SYNTHETIC           = 0x0001; // used
+	private static final int PARAMETER_NAMES_INITIALIZED = 0x0002; // used
+	private static final int CAN_BE_PARAMETERIZED        = 0x0004; // used
+	private static final int UNPACKED_GENERIC_SIGNATURE  = 0x0008; // used
 	private static final int HAS_EFFECTIVE_SIGNATURE     = 0x0010;
 	private static final int HAS_PRERESOLVED_POINTCUT    = 0x0020;
 	private static final int IS_AJ_SYNTHETIC             = 0x0040;
@@ -80,14 +78,12 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	private static final int IS_SYNTHETIC_INVERSE        = 0x7f7f; // all bits but IS_SYNTHETIC (and topmost bit)
 	private static final int HAS_ASSOCIATED_SHADOWMUNGER = 0x0100;
 	private static final int HAS_GENERIC_RETPARAM_TYPES  = 0x0200;
-	private static final int HAS_ANNOTATIONS             = 0x0400;
-	private static final int HAVE_DETERMINED_ANNOTATIONS = 0x0800;
+	private static final int HAS_ANNOTATIONS             = 0x0400; // used
+	private static final int HAVE_DETERMINED_ANNOTATIONS = 0x0800; // used
 	private static final int HAS_MD_LINE_NUMBER_ATTRIBUTE= 0x1000;
 	
 
-	 private boolean canBeParameterized = false;
 	 // genericized version of return and parameter types
-	 private boolean unpackedGenericSignature = false;
 	 private UnresolvedType genericReturnType = null;
 	 private UnresolvedType[] genericParameterTypes = null;
 
@@ -132,8 +128,8 @@ public final class BcelMethod extends ResolvedMemberImpl {
     }
 	
 	public void determineParameterNames() {
-		if (parameterNamesInitialized) return;
-		parameterNamesInitialized=true;
+		if ((bitflags&PARAMETER_NAMES_INITIALIZED)!=0) { return; }
+		bitflags|=PARAMETER_NAMES_INITIALIZED;
 		LocalVariableTable varTable = method.getLocalVariableTable();
 		int len = getArity();
 		if (varTable == null) {
@@ -431,7 +427,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	  */
 	 public boolean canBeParameterized() {
 		 unpackGenericSignature();
-		return canBeParameterized;
+		return (bitflags & CAN_BE_PARAMETERIZED)!=0;
 	}
 	 
 	 
@@ -452,8 +448,8 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	 public Method getMethod() { return method; }
 	 
 	 private void unpackGenericSignature() {
-		 if (unpackedGenericSignature) return;
-		 unpackedGenericSignature = true;
+		if ((bitflags&UNPACKED_GENERIC_SIGNATURE)!=0) { return; }
+		bitflags|=UNPACKED_GENERIC_SIGNATURE;
  		 if (!bcelObjectType.getWorld().isInJava5Mode()) { 
  			 this.genericReturnType = getReturnType();
  			 this.genericParameterTypes = getParameterTypes();
@@ -464,7 +460,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 			 Signature.MethodTypeSignature mSig = new GenericSignatureParser().parseAsMethodSignature(gSig);//method.getGenericSignature());
  			 if (mSig.formalTypeParameters.length > 0) {
 				// generic method declaration
-				canBeParameterized = true;
+				bitflags|=CAN_BE_PARAMETERIZED;
 			 }
  			 
  			typeVariables = new TypeVariable[mSig.formalTypeParameters.length];
@@ -517,7 +513,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 							+ e.getMessage());
 				}
 				if (paramTypeSigs[i] instanceof TypeVariableSignature) {
-					canBeParameterized = true;
+					bitflags|=CAN_BE_PARAMETERIZED;
 				}
 			 }
 		 } else {
@@ -549,10 +545,8 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	private void workOutIfSynthetic() {
 		if ((bitflags&KNOW_IF_SYNTHETIC)!=0) return;
 		bitflags|=KNOW_IF_SYNTHETIC;
-//		knowIfSynthetic=true;
 		JavaClass jc = bcelObjectType.getJavaClass();
 	    bitflags&=IS_SYNTHETIC_INVERSE; // unset the bit
-//		isSynthetic=false;
 		if (jc==null) return; // what the hell has gone wrong?
 		if (jc.getMajor()<49/*Java5*/) {
 			// synthetic is an attribute
@@ -561,7 +555,6 @@ public final class BcelMethod extends ResolvedMemberImpl {
 				for (int i = 0; i < synthetics.length; i++) {
 					if (synthetics[i].equals("Synthetic")) {
 						bitflags|=IS_SYNTHETIC;
-//						isSynthetic=true;
 						break;}
 				}
 			}
@@ -570,7 +563,6 @@ public final class BcelMethod extends ResolvedMemberImpl {
 			if ((modifiers&4096)!=0) {
 				bitflags|=IS_SYNTHETIC;
 			}
-//			isSynthetic = (modifiers&4096)!=0;
 		}
 	}
 

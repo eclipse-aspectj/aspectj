@@ -386,30 +386,9 @@ public class MemberImpl implements Member {
     	return paramSignature;
     }
     
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#isCompatibleWith(org.aspectj.weaver.Member)
-	 */
-    public boolean isCompatibleWith(Member am) {
-        if (kind != METHOD || am.getKind() != METHOD) return true;
-        if (! name.equals(am.getName())) return true;
-        if (! equalTypes(getParameterTypes(), am.getParameterTypes())) return true;
-        return getReturnType().equals(am.getReturnType());
-    }
-    
-    private static boolean equalTypes(UnresolvedType[] a, UnresolvedType[] b) {
-        int len = a.length;
-        if (len != b.length) return false;
-        for (int i = 0; i < len; i++) {
-            if (!a[i].equals(b[i])) return false;
-        }
-        return true;
-    }
-    
+    // OPTIMIZE see next line. Why the hell are they in here if we only know it once resolution has occurred...
     // ---- things we know only with resolution
     
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getModifiers(org.aspectj.weaver.World)
-	 */
     public int getModifiers(World world) {
     	ResolvedMember resolved = resolve(world);
     	if (resolved == null) {
@@ -419,9 +398,6 @@ public class MemberImpl implements Member {
 		return resolved.getModifiers();
     }
     
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getExceptions(org.aspectj.weaver.World)
-	 */
     public UnresolvedType[] getExceptions(World world) {
     	ResolvedMember resolved = resolve(world);
     	if (resolved == null) {

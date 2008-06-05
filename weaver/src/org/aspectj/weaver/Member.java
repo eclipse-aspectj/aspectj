@@ -72,8 +72,6 @@ public interface Member extends Comparable {
 	 */
 	public String getParameterSignature();
 
-	public boolean isCompatibleWith(Member am);
-
 	public int getModifiers(World world);
 	
 	public int getModifiers();
