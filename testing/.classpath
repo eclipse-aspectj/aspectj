@@ -2,9 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="testsrc"/>
-	<classpathentry sourcepath="JRE_SRC" kind="var" path="JRE_LIB"/>
-	<classpathentry sourcepath="/lib/ant/ant-src.zip" kind="lib" path="/lib/ant/lib/ant.jar"/>
-	<classpathentry sourcepath="/lib/junit/junit-src.jar" kind="lib" path="/lib/junit/junit.jar"/>
+	<classpathentry kind="lib" path="/lib/ant/lib/ant.jar" sourcepath="/lib/ant/ant-src.zip"/>
+	<classpathentry kind="lib" path="/lib/junit/junit.jar" sourcepath="/lib/junit/junit-src.jar"/>
 	<classpathentry kind="lib" path="/lib/jdiff/jdiff.jar"/>
 	<classpathentry kind="lib" path="/lib/regexp/jakarta-regexp-1.2.jar"/>
 	<classpathentry kind="src" path="/bridge"/>
@@ -12,7 +11,7 @@
 	<classpathentry kind="src" path="/testing-client"/>
 	<classpathentry kind="lib" path="/lib/ant/lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="/lib/ant/lib/xml-apis.jar"/>
-	<classpathentry exported="true" sourcepath="/lib/commons/commons-src.zip" kind="lib" path="/lib/commons/commons.jar"/>
+	<classpathentry exported="true" kind="lib" path="/lib/commons/commons.jar" sourcepath="/lib/commons/commons-src.zip"/>
 	<classpathentry kind="src" path="/testing-util"/>
 	<classpathentry kind="src" path="/ajde"/>
 	<classpathentry kind="src" path="/asm"/>
@@ -22,5 +21,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/weaver"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/loadtime"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ajde.core"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
