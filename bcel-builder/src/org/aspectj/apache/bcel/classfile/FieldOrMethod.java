@@ -64,14 +64,13 @@ import java.util.List;
 /** 
  * Abstract super class for fields and methods.
  *
- * @version $Id: FieldOrMethod.java,v 1.6 2008/05/28 23:53:01 aclement Exp $
+ * @version $Id: FieldOrMethod.java,v 1.7 2008/06/06 04:24:20 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldOrMethod extends Modifiers implements Cloneable, Node {
   protected int           nameIndex;      
   protected int           signatureIndex;
   protected Attribute[] attributes;
-   protected int          attributes_count;// No. of attributes
   
   protected ConstantPool  cpool;
   private String  name; // lazily initialized
@@ -111,7 +110,6 @@ public abstract class FieldOrMethod extends Modifiers implements Cloneable, Node
    */
   public void setAttributes(Attribute[] attributes) {
     this.attributes  = attributes;
-    attributes_count = (attributes == null)? 0 : attributes.length;
   }
 
   
