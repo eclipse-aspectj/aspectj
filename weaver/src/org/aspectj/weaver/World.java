@@ -491,6 +491,7 @@ public abstract class World implements Dump.INode {
      * any other type, but if they are not found it is more serious and we issue an
      * error message immediately.
      */
+    // OPTIMIZE streamline path for core types? They are just simple types, could look straight in the typemap?
     public ResolvedType getCoreType(UnresolvedType tx) {
     	ResolvedType coreTy = resolve(tx,true);
     	if (coreTy.isMissing()) {
