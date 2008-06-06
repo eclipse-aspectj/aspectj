@@ -381,22 +381,6 @@ public class BcelWorld extends World implements Repository {
             			fi.getName(cpg),
             			fi.getSignature(cpg));
     }
-	
-//    public static Member makeFieldSetSignature(LazyClassGen cg, FieldInstruction fi) {
-//    	ConstantPoolGen cpg = cg.getConstantPoolGen();
-//        return 
-//            MemberImpl.field(
-//                fi.getClassName(cpg),
-//                (fi instanceof GETSTATIC || fi instanceof PUTSTATIC)
-//                ? Modifier.STATIC
-//                : 0, 
-//                fi.getName(cpg),
-//                "(" + fi.getSignature(cpg) + ")" +fi.getSignature(cpg));
-//    }
-
-	public Member makeJoinPointSignature(LazyMethodGen mg) {
-		return makeJoinPointSignatureFromMethod(mg, null);
-	}
 
 	
 	public Member makeJoinPointSignatureFromMethod(LazyMethodGen mg, MemberKind kind) {
@@ -405,16 +389,6 @@ public class BcelWorld extends World implements Repository {
 	        int mods = mg.getAccessFlags();
 	        if (mg.getEnclosingClass().isInterface()) {
 	            mods |= Modifier.INTERFACE;
-	        }
-	        if (kind == null) {
-	        	//OPTIMIZE surely we can pass the kind in and not resort to string compares?
-		        if (mg.getName().equals("<init>")) {
-		        	kind = Member.CONSTRUCTOR;
-		        } else if (mg.getName().equals("<clinit>")) {
-		        	kind = Member.STATIC_INITIALIZATION;
-		        } else {
-		        	kind = Member.METHOD;
-		        }
 	        }
 	        return new ResolvedMemberImpl(kind,
 	                UnresolvedType.forName(mg.getClassName()), 

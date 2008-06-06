@@ -482,7 +482,7 @@ public class BcelShadow extends Shadow {
 			new BcelShadow(
 				world,
 				ConstructorExecution,
-				world.makeJoinPointSignature(enclosingMethod),
+				world.makeJoinPointSignatureFromMethod(enclosingMethod,Member.CONSTRUCTOR),
 				enclosingMethod,
 				null);
 		ShadowRange r = new ShadowRange(body);
@@ -525,7 +525,7 @@ public class BcelShadow extends Shadow {
             new BcelShadow(
                 world,
                 StaticInitialization,
-                world.makeJoinPointSignature(enclosingMethod),
+                world.makeJoinPointSignatureFromMethod(enclosingMethod,Member.STATIC_INITIALIZATION),
                 enclosingMethod,
                 null);
         ShadowRange r = new ShadowRange(body);
@@ -676,7 +676,7 @@ public class BcelShadow extends Shadow {
 		BcelShadow ret =  new BcelShadow(
 			world,
 			Initialization,
-			world.makeJoinPointSignature(constructor),
+			world.makeJoinPointSignatureFromMethod(constructor,Member.CONSTRUCTOR),
 			constructor,
 			null);
 		if (constructor.getEffectiveSignature() != null) {
@@ -692,10 +692,9 @@ public class BcelShadow extends Shadow {
 		BcelShadow ret =  new BcelShadow(
 			world,
 			PreInitialization,
-			world.makeJoinPointSignature(constructor),
+			world.makeJoinPointSignatureFromMethod(constructor,Member.CONSTRUCTOR),
 			constructor,
 			null);
-//		ret.fallsThrough = true;
 		if (constructor.getEffectiveSignature() != null) {
 			ret.setMatchingSignature(constructor.getEffectiveSignature().getEffectiveSignature());
 		}
@@ -755,7 +754,7 @@ public class BcelShadow extends Shadow {
                 null);
         ShadowRange r = new ShadowRange(body);
         r.associateWithShadow(s);
-        r.associateWithTargets(
+        r.associateWithTargets(// OPTIMIZE this occurs lots of times for all jp kinds...
             Range.genStart(body),
             Range.genEnd(body));                  
         return s;
@@ -1292,14 +1291,13 @@ public class BcelShadow extends Shadow {
     public BcelVar getThisJoinPointStaticPartBcelVar(final boolean isEnclosingJp) {
     	if (thisJoinPointStaticPartVar == null) {
     		Field field = getEnclosingClass().getTjpField(this, isEnclosingJp);
-    		
     			ResolvedType sjpType = null;
     	       	if (world.isTargettingAspectJRuntime12()) { // TAG:SUPPORTING12: We didn't have different jpsp types in 1.2	
-    		    	sjpType = world.getCoreType(UnresolvedType.forName("org.aspectj.lang.JoinPoint$StaticPart"));
+    		    	sjpType = world.getCoreType(UnresolvedType.JOINPOINT_STATICPART);
     		    } else {
     		    	sjpType = isEnclosingJp?
-                              world.getCoreType(UnresolvedType.forName("org.aspectj.lang.JoinPoint$EnclosingStaticPart")):
-                              world.getCoreType(UnresolvedType.forName("org.aspectj.lang.JoinPoint$StaticPart"));
+                              world.getCoreType(UnresolvedType.JOINPOINT_ENCLOSINGSTATICPART):
+                              world.getCoreType(UnresolvedType.JOINPOINT_STATICPART);
     		    }
     		    thisJoinPointStaticPartVar = new BcelFieldRef(
     				sjpType,
@@ -1590,27 +1588,27 @@ public class BcelShadow extends Shadow {
     	}
     	return foundMember.getAnnotationTypes();
     }
-	
+    
+    /**
+     * By determining what "kind" of shadow we are, we can find out the
+	 * annotations on the appropriate element (method, field, constructor, type).
+	 * Then create one BcelVar entry in the map for each annotation, keyed by
+	 * annotation type.
+	 */
     public void initializeKindedAnnotationVars() {
     	if (kindedAnnotationVars != null) return;
     	kindedAnnotationVars = new HashMap();
-    	// by determining what "kind" of shadow we are, we can find out the
-    	// annotations on the appropriate element (method, field, constructor, type).
-    	// Then create one BcelVar entry in the map for each annotation, keyed by
-    	// annotation type.
     	
     	// FIXME asc Refactor this code, there is duplication
     	ResolvedType[] annotations = null;
-//    	Member relevantMember = getSignature();
     	Member shadowSignature = getSignature();
     	Member annotationHolder = getSignature();
     	ResolvedType  relevantType   = shadowSignature.getDeclaringType().resolve(world);
     	
-	if (relevantType.isRawType() || relevantType.isParameterizedType()) relevantType = relevantType.getGenericType();
+    	if (relevantType.isRawType() || relevantType.isParameterizedType()) relevantType = relevantType.getGenericType();
 
-	if (getKind() == Shadow.StaticInitialization) {
+    	if (getKind() == Shadow.StaticInitialization) {
     		annotations  = relevantType.resolve(world).getAnnotationTypes();
-    		
     	} else if (getKind() == Shadow.MethodCall  || getKind() == Shadow.ConstructorCall) {
             ResolvedMember foundMember = findMethod2(relevantType.resolve(world).getDeclaredMethods(),getSignature());            
             annotations = getAnnotations(foundMember, shadowSignature, relevantType);
@@ -1651,7 +1649,6 @@ public class BcelShadow extends Shadow {
     	} else if (getKind() == Shadow.ExceptionHandler) {
     		relevantType = getSignature().getParameterTypes()[0].resolve(world);
     		annotations  =  relevantType.getAnnotationTypes();
-    		
     	} else if (getKind() == Shadow.PreInitialization || getKind() == Shadow.Initialization) {
     		ResolvedMember found = findMethod2(relevantType.getDeclaredMethods(),getSignature());
     		annotations = found.getAnnotationTypes();
@@ -1659,17 +1656,17 @@ public class BcelShadow extends Shadow {
     	
     	if (annotations == null) {
     		// We can't have recognized the shadow - should blow up now to be on the safe side
-    		throw new BCException("Couldn't discover annotations for shadow: "+getKind());
+    		throw new BCException("Could not discover annotations for shadow: "+getKind());
     	}
     	
 		for (int i = 0; i < annotations.length; i++) {
-			ResolvedType aTX = annotations[i];
-			AnnotationAccessVar kaav =  new AnnotationAccessVar(getKind(),aTX.resolve(world),relevantType,annotationHolder);
-    		kindedAnnotationVars.put(aTX,kaav);
+			ResolvedType annotationType = annotations[i];
+			AnnotationAccessVar accessVar =  new AnnotationAccessVar(getKind(),annotationType.resolve(world),relevantType,annotationHolder);
+    		kindedAnnotationVars.put(annotationType,accessVar);
 		}
     }
     
-//FIXME asc whats the real diff between this one and the version in findMethod()?
+    //FIXME asc whats the real diff between this one and the version in findMethod()?
 	 ResolvedMember findMethod2(ResolvedMember rm[], Member sig) {
 		ResolvedMember found = null;
 		// String searchString = getSignature().getName()+getSignature().getParameterSignature();
@@ -3577,7 +3574,7 @@ public class BcelShadow extends Shadow {
 	}
 
 	public boolean isFallsThrough() {
-		return !terminatesWithReturn(); //fallsThrough;
+		return !terminatesWithReturn();
 	}
 
 	public void setActualTargetType(String className) {

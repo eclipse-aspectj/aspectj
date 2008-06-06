@@ -41,13 +41,12 @@ public interface Member extends Comparable {
 
     public int compareTo(Object other);
 
-	public String toLongString();
-
 	public UnresolvedType getDeclaringType();
 
 	public UnresolvedType getReturnType();
 	
 	public UnresolvedType getGenericReturnType();
+	
 	public UnresolvedType[] getGenericParameterTypes();
 
 	public UnresolvedType getType();
@@ -87,18 +86,9 @@ public interface Member extends Comparable {
 	 */
 	public boolean canBeParameterized();
 
-	public String getExtractableName();
-
     public AnnotationX[] getAnnotations();
-
-	// ---- reflective thisJoinPoint stuff
-	public String getSignatureMakerName();
-
-	public String getSignatureType();
 	
     public Collection/* ResolvedType */getDeclaringTypes(World world);
-    
-	public String getSignatureString(World world);
 
 	public String[] getParameterNames(World world);
 

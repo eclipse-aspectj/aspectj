@@ -244,10 +244,6 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.compareTo(other);
 	}
 
-	public String toLongString() {
-		return realMember.toLongString();
-	}
-
 	public MemberKind getKind() {
 		return realMember.getKind();
 	}
@@ -308,28 +304,12 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.canBeParameterized();
 	}
 
-	public String getExtractableName() {
-		return realMember.getExtractableName();
-	}
-
 	public AnnotationX[] getAnnotations() {
 		return realMember.getAnnotations();
 	}
 
 	public Collection getDeclaringTypes(World world) {
 		throw new UnsupportedOperationException("Adrian doesn't think you should be calling this...");
-	}
-
-	public String getSignatureMakerName() {
-		return realMember.getSignatureMakerName();
-	}
-
-	public String getSignatureType() {
-		return realMember.getSignatureType();
-	}
-
-	public String getSignatureString(World world) {
-		return realMember.getSignatureString(world);
 	}
 
 	public Iterator getJoinPointSignatures(World world) {

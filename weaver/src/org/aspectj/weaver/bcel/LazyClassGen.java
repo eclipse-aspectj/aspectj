@@ -59,6 +59,7 @@ import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.SignatureUtils;
 import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
@@ -283,6 +284,9 @@ public final class LazyClassGen {
 			for (int i = 0; i < methods.length; i++) {
 				ResolvedMember method = methods[i];
 				if (method.getName().equals("<clinit>")) {
+					if (method.getKind()!=Member.STATIC_INITIALIZATION) {
+						throw new RuntimeException("qui?");
+					}
 					hasClinit = true;					
 				}
 			}
@@ -649,15 +653,6 @@ public final class LazyClassGen {
 
 	private static boolean hasSourceDebugExtensionAttribute(ClassGen gen) {
 		return gen.hasAttribute("SourceDebugExtension");
-//		ConstantPool pool = gen.getConstantPool();
-//		Attribute[] attrs = gen.getAttributes();
-//		for (int i = 0; i < attrs.length; i++) {
-//			if ("SourceDebugExtension"
-//				.equals(((ConstantUtf8) pool.getConstant(attrs[i].getNameIndex())).getBytes())) {
-//				return true;
-//			}
-//		}
-//		return false;
 	}
 
     public JavaClass getJavaClass(BcelWorld world) {
@@ -809,6 +804,7 @@ public final class LazyClassGen {
     }
     
     private boolean isEmptyClinit(LazyMethodGen gen) {
+    	
     	if (!gen.getName().equals("<clinit>")) return false;
     	//System.err.println("checking clinig: " + gen);
     	InstructionHandle start = gen.getBody().getStart();
@@ -860,6 +856,7 @@ public final class LazyClassGen {
     public LazyMethodGen getStaticInitializer() {
         for (Iterator i = methodGens.iterator(); i.hasNext();) {
             LazyMethodGen gen = (LazyMethodGen) i.next();
+            // OPTIMIZE persist kind of member into the gen object? for clinit
 			if (gen.getName().equals("<clinit>")) return gen;
         } 
         LazyMethodGen clinit = new LazyMethodGen(
@@ -1053,14 +1050,15 @@ public final class LazyClassGen {
     	// create the signature
     	list.append(InstructionFactory.createLoad(factoryType, 0));
     	
+    	String signatureMakerName = SignatureUtils.getSignatureMakerName(sig);
+    	ObjectType signatureType = new ObjectType(SignatureUtils.getSignatureType(sig));
+    	
+    	
     	if (world.isTargettingAspectJRuntime12()) { // TAG:SUPPORTING12: We didn't have optimized factory methods in 1.2
-        	list.append(InstructionFactory.PUSH(getConstantPool(), sig.getSignatureString(shadow.getWorld())));
+        	list.append(InstructionFactory.PUSH(getConstantPool(), SignatureUtils.getSignatureString(sig,shadow.getWorld())));
     		list.append(fact.createInvoke(factoryType.getClassName(), 
-    					sig.getSignatureMakerName(),
-    					new ObjectType(sig.getSignatureType()),
-    					new Type[] { Type.STRING },
-    					Constants.INVOKEVIRTUAL));
-    	} else 	if (sig.getKind().equals(Member.METHOD)) {
+    					signatureMakerName,signatureType,Type.STRINGARRAY1, Constants.INVOKEVIRTUAL));
+    	} else if (sig.getKind().equals(Member.METHOD)) {    	
     		BcelWorld w = shadow.getWorld();
     		// For methods, push the parts of the signature on.
     		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getModifiers(w))));
@@ -1072,23 +1070,18 @@ public final class LazyClassGen {
     		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getReturnType())));
     		// And generate a call to the variant of makeMethodSig() that takes 7 strings
     		list.append(fact.createInvoke(factoryType.getClassName(), 
-    				sig.getSignatureMakerName(),
-    				new ObjectType(sig.getSignatureType()),
+					signatureMakerName,signatureType,
     				new Type[] { Type.STRING,Type.STRING,Type.STRING,Type.STRING,Type.STRING,Type.STRING,Type.STRING },
     				Constants.INVOKEVIRTUAL));
    	    } else if (sig.getKind().equals(Member.MONITORENTER)) {
     		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getDeclaringType())));
     		list.append(fact.createInvoke(factoryType.getClassName(), 
-    				sig.getSignatureMakerName(),
-    				new ObjectType(sig.getSignatureType()),
-    				new Type[] { Type.STRING},
+					signatureMakerName,signatureType,Type.STRINGARRAY1,
     				Constants.INVOKEVIRTUAL));
     	} else if (sig.getKind().equals(Member.MONITOREXIT)) {
     		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getDeclaringType())));
     		list.append(fact.createInvoke(factoryType.getClassName(), 
-    				sig.getSignatureMakerName(),
-    				new ObjectType(sig.getSignatureType()),
-    				new Type[] { Type.STRING},
+					signatureMakerName,signatureType,Type.STRINGARRAY1,
     				Constants.INVOKEVIRTUAL));
      	} else if (sig.getKind().equals(Member.HANDLER)) {
     		BcelWorld w = shadow.getWorld();
@@ -1096,9 +1089,7 @@ public final class LazyClassGen {
     		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getParameterTypes())));
     		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getParameterNames(w))));
     		list.append(fact.createInvoke(factoryType.getClassName(),
-    				sig.getSignatureMakerName(),
-    				new ObjectType(sig.getSignatureType()),
-    				new Type[] { Type.STRING, Type.STRING, Type.STRING },
+					signatureMakerName,signatureType,Type.STRINGARRAY3,
     				Constants.INVOKEVIRTUAL));    	
     	} else if(sig.getKind().equals(Member.CONSTRUCTOR)) {
     		BcelWorld w = shadow.getWorld();
@@ -1110,9 +1101,7 @@ public final class LazyClassGen {
 	    		list.append(InstructionFactory.PUSH(getConstantPool(),""));//makeString("")));//sig.getParameterNames(w))));
 	    		list.append(InstructionFactory.PUSH(getConstantPool(),""));//makeString("")));//sig.getExceptions(w))));
 	    		list.append(fact.createInvoke(factoryType.getClassName(),
-	    				sig.getSignatureMakerName(),
-	    				new ObjectType(sig.getSignatureType()),
-	    				new Type[] { Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING },
+    					signatureMakerName,signatureType,Type.STRINGARRAY5,
 	    				Constants.INVOKEVIRTUAL));    	
     		} else {
 	    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getModifiers(w))));	
@@ -1121,9 +1110,7 @@ public final class LazyClassGen {
 	    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getParameterNames(w))));
 	    		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getExceptions(w))));
 	    		list.append(fact.createInvoke(factoryType.getClassName(),
-	    				sig.getSignatureMakerName(),
-	    				new ObjectType(sig.getSignatureType()),
-	    				new Type[] { Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING },
+    					signatureMakerName,signatureType,Type.STRINGARRAY5,
 	    				Constants.INVOKEVIRTUAL));    	
     		}
     	} else if(sig.getKind().equals(Member.FIELD)) {
@@ -1139,9 +1126,7 @@ public final class LazyClassGen {
     		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(dType)));    		
     		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getReturnType())));
     		list.append(fact.createInvoke(factoryType.getClassName(),
-    				sig.getSignatureMakerName(),
-    				new ObjectType(sig.getSignatureType()),
-    				new Type[] { Type.STRING, Type.STRING, Type.STRING, Type.STRING },
+					signatureMakerName,signatureType,Type.STRINGARRAY4,
     				Constants.INVOKEVIRTUAL));    	
     	} else if(sig.getKind().equals(Member.ADVICE)) {
     		BcelWorld w = shadow.getWorld();
@@ -1153,8 +1138,7 @@ public final class LazyClassGen {
     		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getExceptions(w))));
     		list.append(InstructionFactory.PUSH(getConstantPool(),makeString((sig.getReturnType()))));    		
     		list.append(fact.createInvoke(factoryType.getClassName(),
-    				sig.getSignatureMakerName(),
-    				new ObjectType(sig.getSignatureType()),
+					signatureMakerName,signatureType,
     				new Type[] { Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING },
     				Constants.INVOKEVIRTUAL));    	
     	} else if(sig.getKind().equals(Member.STATIC_INITIALIZATION)) {
@@ -1162,16 +1146,12 @@ public final class LazyClassGen {
     		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getModifiers(w))));
     		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getDeclaringType())));
     		list.append(fact.createInvoke(factoryType.getClassName(),
-    				sig.getSignatureMakerName(),
-    				new ObjectType(sig.getSignatureType()),
-    				new Type[] { Type.STRING, Type.STRING },
+					signatureMakerName,signatureType,Type.STRINGARRAY2,
     				Constants.INVOKEVIRTUAL));
     	} else {
-    	  list.append(InstructionFactory.PUSH(getConstantPool(), sig.getSignatureString(shadow.getWorld())));
+    	  list.append(InstructionFactory.PUSH(getConstantPool(), SignatureUtils.getSignatureString(sig,shadow.getWorld())));
     	  list.append(fact.createInvoke(factoryType.getClassName(), 
-			  	   sig.getSignatureMakerName(),
-			  	   new ObjectType(sig.getSignatureType()),
-			  	   new Type[] { Type.STRING },
+					signatureMakerName,signatureType,Type.STRINGARRAY1,
 			  	   Constants.INVOKEVIRTUAL));
     	}   	
     	

@@ -22,7 +22,6 @@ import java.util.List;
 public class MemberImpl implements Member {
     
     protected MemberKind kind;
-
     protected int modifiers; 
     protected String name;
     protected UnresolvedType returnType;
@@ -34,12 +33,9 @@ public class MemberImpl implements Member {
     // OPTIMIZE move out of the member!
     private boolean reportedCantFindDeclaringType = false;
     private boolean reportedUnresolvableMember = false;
-
     
     /**
      * All the signatures that a join point with this member as its signature has.
-     * The fact that this has to go on MemberImpl and not ResolvedMemberImpl says a lot about
-     * how broken the Member/ResolvedMember distinction currently is.
      */
     private JoinPointSignatureIterator joinPointSignatures = null;
 
@@ -76,7 +72,6 @@ public class MemberImpl implements Member {
         String name, 
         UnresolvedType[] parameterTypes) 
     {
-        super();
         this.kind = kind;
         this.declaringType = declaringType;
         this.modifiers = modifiers;
@@ -211,6 +206,7 @@ public class MemberImpl implements Member {
     public static Member field(UnresolvedType declaring, int mods, String name, UnresolvedType type) {
         return new MemberImpl(FIELD, declaring, mods, type, name, UnresolvedType.NONE);
     }    
+    // OPTIMIZE do we need to call this? unless necessary the signatureToTypes() call smacks of laziness on the behalf of the caller of this method
     public static MemberImpl method(UnresolvedType declaring, int mods, String name, String signature) {
         Object[] pair = signatureToTypes(signature,false);
         return method(declaring, mods, (UnresolvedType) pair[0], name, (UnresolvedType[]) pair[1]);
@@ -250,6 +246,7 @@ public class MemberImpl implements Member {
             name,
             paramTys);
     }
+    
     private static Member pointcut(UnresolvedType declTy, int mods, UnresolvedType rTy, String name, UnresolvedType[] paramTys) {
         return new MemberImpl(
             POINTCUT,
@@ -268,10 +265,6 @@ public class MemberImpl implements Member {
 			"<catch>",
 			"(" + catchType.getSignature() + ")V");
 	}
-    
-    // ---- parsing methods
-    
-    // ---- things we know without resolution
     
     public boolean equals(Object other) {
         if (! (other instanceof Member)) return false;
@@ -303,7 +296,6 @@ public class MemberImpl implements Member {
 
      public int compareTo(Object other) {
         Member o = (Member) other;
-
         int i = getName().compareTo(o.getName());
         if (i != 0) return i;
         return getSignature().compareTo(o.getSignature());
@@ -329,38 +321,13 @@ public class MemberImpl implements Member {
     	}
     	return buf.toString();
     }
-    
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#toLongString()
-	 */
-    public String toLongString() {
-        StringBuffer buf = new StringBuffer();
-        buf.append(kind);
-        buf.append(' ');
-        if (modifiers != 0) {
-            buf.append(Modifier.toString(modifiers));
-            buf.append(' ');
-        }
-        buf.append(toString());
-        buf.append(" <");
-        buf.append(signature);
-        buf.append(" >");
-        return buf.toString();
-    }        
 
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getKind()
-	 */
     public MemberKind getKind() {
         return kind;
     }
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getDeclaringType()
-	 */
+
     public UnresolvedType getDeclaringType() { return declaringType; }
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getReturnType()
-	 */
+
     public UnresolvedType getReturnType() { return returnType; }
     
     public UnresolvedType getGenericReturnType() { return getReturnType(); }
@@ -412,7 +379,7 @@ public class MemberImpl implements Member {
     }    
 
     public final boolean isInterface() {
-        return Modifier.isInterface(modifiers);  // this is kinda weird
+        return Modifier.isInterface(modifiers);
     }    
     
     public final boolean isPrivate() {
@@ -426,13 +393,6 @@ public class MemberImpl implements Member {
 	public int getModifiers() {
 		return modifiers;
 	}
-
-    public final String getExtractableName() {
-    // OPTIMIZE remove silly string compares for init - use kind==CTOR/STATIC_INITIALIZATION
-    	if (name.equals("<init>")) return "init$";
-    	else if (name.equals("<clinit>")) return "clinit$";
-    	else return name;
-    }
 
 	public AnnotationX[] getAnnotations() {
 		throw new UnsupportedOperationException("You should resolve this member '"+this+"' and call getAnnotations() on the result...");
@@ -490,247 +450,6 @@ public class MemberImpl implements Member {
 			return b;
 		}
 	}
-
-	// ---- reflective thisJoinPoint stuff
-    /* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getSignatureMakerName()
-	 */
-    public String getSignatureMakerName() {
-    	if (getName().equals("<clinit>")) return "makeInitializerSig";
-    	
-    	MemberKind kind = getKind();
-    	if (kind == METHOD) {
-    		return "makeMethodSig";
-    	} else if (kind == CONSTRUCTOR) {
-    		return "makeConstructorSig";
-    	} else if (kind == FIELD) {
-    		return "makeFieldSig";
-    	} else if (kind == HANDLER) {
-    		return "makeCatchClauseSig";
-    	} else if (kind == STATIC_INITIALIZATION) {
-    		return "makeInitializerSig";
-    	} else if (kind == ADVICE) {
-    		return "makeAdviceSig";
-    	} else if (kind == MONITORENTER) {
-    		return "makeLockSig";
-    	} else if (kind == MONITOREXIT) {
-    		return "makeUnlockSig";
-    	} else {
-    		throw new RuntimeException("unimplemented");
-    	}
-    }
-    	
-    
-	public String getSignatureType() {
-    	MemberKind kind = getKind();
-    	if (getName().equals("<clinit>")) return "org.aspectj.lang.reflect.InitializerSignature";
-    	
-    	if (kind == METHOD) {
-    		return "org.aspectj.lang.reflect.MethodSignature";
-    	} else if (kind == CONSTRUCTOR) {
-    		return "org.aspectj.lang.reflect.ConstructorSignature";
-    	} else if (kind == FIELD) {
-    		return "org.aspectj.lang.reflect.FieldSignature";
-    	} else if (kind == HANDLER) {
-    		return "org.aspectj.lang.reflect.CatchClauseSignature";
-    	} else if (kind == STATIC_INITIALIZATION) {
-    		return "org.aspectj.lang.reflect.InitializerSignature";
-    	} else if (kind == ADVICE) {
-    		return "org.aspectj.lang.reflect.AdviceSignature";
-    	} else if (kind == MONITORENTER) {
-    		return "org.aspectj.lang.reflect.LockSignature";
-    	} else if (kind == MONITOREXIT) {
-    		return "org.aspectj.lang.reflect.UnlockSignature";
-    	} else {
-    		throw new RuntimeException("unimplemented");
-    	}
-    }
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.Member#getSignatureString(org.aspectj.weaver.World)
-	 */
-	public String getSignatureString(World world) {
-		if (getName().equals("<clinit>")) return getStaticInitializationSignatureString(world);
-		
-    	MemberKind kind = getKind();
-    	if (kind == METHOD) {
-    		return getMethodSignatureString(world);
-    	} else if (kind == CONSTRUCTOR) {
-    		return getConstructorSignatureString(world);
-    	} else if (kind == FIELD) {
-    		return getFieldSignatureString(world);
-    	} else if (kind == HANDLER) {
-    		return getHandlerSignatureString(world);
-    	} else if (kind == STATIC_INITIALIZATION) {
-    		return getStaticInitializationSignatureString(world);
-    	} else if (kind == ADVICE) {
-    		return getAdviceSignatureString(world);
-    	} else if (kind == MONITORENTER || kind == MONITOREXIT) {
-    		return getMonitorSignatureString(world);
-    	} else {
-    		throw new RuntimeException("unimplemented");
-    	}
-    }
-
-	private String getHandlerSignatureString(World world) {
-        StringBuffer buf = new StringBuffer();
-        buf.append(makeString(0));
-        buf.append('-');
-        //buf.append(getName());
-        buf.append('-');
-        buf.append(makeString(getDeclaringType()));
-        buf.append('-');
-        buf.append(makeString(getParameterTypes()[0]));
-        buf.append('-');
-        String pName = "<missing>";
-        String[] names = getParameterNames(world);
-        if (names != null) pName = names[0];
-        buf.append(pName);
-        buf.append('-');
-        return buf.toString();
-	}
-	
-	private String getStaticInitializationSignatureString(World world) {
-        StringBuffer buf = new StringBuffer();
-        buf.append(makeString(getModifiers(world)));
-        buf.append('-');
-        //buf.append(getName());
-        buf.append('-');
-        buf.append(makeString(getDeclaringType()));
-        buf.append('-');
-        return buf.toString();
-	}
-
-
-
-	protected String getAdviceSignatureString(World world) {
-        StringBuffer buf = new StringBuffer();
-        buf.append(makeString(getModifiers(world)));
-        buf.append('-');
-        buf.append(getName());
-        buf.append('-');
-        buf.append(makeString(getDeclaringType()));
-        buf.append('-');
-        buf.append(makeString(getParameterTypes()));
-        buf.append('-');
-        buf.append(makeString(getParameterNames(world)));
-        buf.append('-');
-        buf.append(makeString(getExceptions(world)));
-        buf.append('-');
-        buf.append(makeString(getReturnType()));
-        buf.append('-');
-        return buf.toString();
-	}
-
-
-	protected String getMethodSignatureString(World world) {
-        StringBuffer buf = new StringBuffer();
-        buf.append(makeString(getModifiers(world)));
-        buf.append('-');
-        buf.append(getName());
-        buf.append('-');
-        buf.append(makeString(getDeclaringType()));
-        buf.append('-');
-        buf.append(makeString(getParameterTypes()));
-        buf.append('-');
-        buf.append(makeString(getParameterNames(world)));
-        buf.append('-');
-        buf.append(makeString(getExceptions(world)));
-        buf.append('-');
-        buf.append(makeString(getReturnType()));
-        buf.append('-');
-        return buf.toString();
-	}
-	
-	protected String getMonitorSignatureString(World world) {
-        StringBuffer buf = new StringBuffer();
-        buf.append(makeString(Modifier.STATIC));    // modifiers
-        buf.append('-');
-        buf.append(getName());                      // name
-        buf.append('-');
-        buf.append(makeString(getDeclaringType())); // Declaring Type
-        buf.append('-');
-        buf.append(makeString(getParameterTypes()[0])); // Parameter Types
-        buf.append('-');
-        buf.append("");                                 // Parameter names
-        buf.append('-');
-        return buf.toString();
-	}
-	
-
-
-	protected String getConstructorSignatureString(World world) {
-        StringBuffer buf = new StringBuffer();
-        buf.append(makeString(getModifiers(world)));
-        buf.append('-');
-        buf.append('-');
-        buf.append(makeString(getDeclaringType()));
-        buf.append('-');
-        buf.append(makeString(getParameterTypes()));
-        buf.append('-');
-        buf.append(makeString(getParameterNames(world)));
-        buf.append('-');
-        buf.append(makeString(getExceptions(world)));
-        buf.append('-');
-        return buf.toString();
-    }
-	
-	
-
-
-	protected String getFieldSignatureString(World world) {
-        StringBuffer buf = new StringBuffer();
-        buf.append(makeString(getModifiers(world)));
-        buf.append('-');
-        buf.append(getName());
-        buf.append('-');
-        buf.append(makeString(getDeclaringType()));
-        buf.append('-');
-        buf.append(makeString(getReturnType()));
-        buf.append('-');
-        return buf.toString();
-    }
-
-	protected String makeString(int i) {
-		return Integer.toString(i, 16);
-	}
-
-
-
-
-	protected String makeString(UnresolvedType t) {
-    	// this is the inverse of the odd behavior for Class.forName w/ arrays
-    	if (t.isArray()) {
-    		// this behavior matches the string used by the eclipse compiler for Foo.class literals
-    		return t.getSignature().replace('/', '.');
-    	} else {
-    		return t.getName();
-    	}
-    }
-    
-
-
-	protected String makeString(UnresolvedType[] types) {
-    	if (types == null) return "";
-        StringBuffer buf = new StringBuffer();
-        for (int i = 0, len=types.length; i < len; i++) {
-            buf.append(makeString(types[i]));
-            buf.append(':');
-        }
-        return buf.toString();
-    }
-    
-
-
-	protected String makeString(String[] names) {
-    	if (names == null) return "";
-        StringBuffer buf = new StringBuffer();
-        for (int i = 0, len=names.length; i < len; i++) {
-            buf.append(names[i]);
-            buf.append(':');
-        }
-        return buf.toString();
-    }
 
 	public String[] getParameterNames(World world) {
     	ResolvedMember resolved = resolve(world);
