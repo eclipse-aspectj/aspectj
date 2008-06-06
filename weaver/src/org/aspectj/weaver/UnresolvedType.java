@@ -117,6 +117,8 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
     public static final UnresolvedType   AT_TARGET = forSignature("Ljava/lang/annotation/Target;");
     public static final UnresolvedType   SOMETHING = new UnresolvedType("?");
     public static final UnresolvedType[] ARRAY_WITH_JUST_OBJECT = new UnresolvedType[]{OBJECT};
+    public static final UnresolvedType JOINPOINT_STATICPART = forSignature("Lorg/aspectj/lang/JoinPoint$StaticPart;");
+    public static final UnresolvedType JOINPOINT_ENCLOSINGSTATICPART = forSignature("Lorg/aspectj/lang/JoinPoint$EnclosingStaticPart;");
 
     // this doesn't belong here and will get moved to ResolvedType later in the refactoring
 	public static final String MISSING_NAME = "@missing@";
