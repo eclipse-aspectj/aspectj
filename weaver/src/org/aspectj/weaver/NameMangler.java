@@ -363,9 +363,18 @@ public class NameMangler {
 
 	public static String aroundCallbackMethodName(Member shadowSig, LazyClassGen enclosingType) {
 		StringBuffer ret = new StringBuffer();
-		ret.append(shadowSig.getExtractableName()).append("_aroundBody").append(enclosingType.getNewGeneratedNameTag());
+		ret.append(getExtractableName(shadowSig)).append("_aroundBody").append(enclosingType.getNewGeneratedNameTag());
 		return ret.toString();
 	}
+	
+	 public static String getExtractableName(Member shadowSignature) {
+		String name = shadowSignature.getName();
+		MemberKind kind = shadowSignature.getKind();
+    	if (kind==Member.CONSTRUCTOR) return "init$";
+    	else if (kind==Member.STATIC_INITIALIZATION) return "clinit$";
+    	else return name;
+    }
+
 
 	public static String proceedMethodName(String adviceMethodName) {
 		return adviceMethodName + "proceed";
