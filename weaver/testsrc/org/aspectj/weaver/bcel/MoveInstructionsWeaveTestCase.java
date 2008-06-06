@@ -36,7 +36,7 @@ public class MoveInstructionsWeaveTestCase extends WeaveTestCase {
 				BcelShadow shadow = (BcelShadow) s;
 				LazyMethodGen newMethod =
 					shadow.extractMethod(
-						shadow.getSignature().getExtractableName() + "_extracted",
+						NameMangler.getExtractableName(shadow.getSignature()) + "_extracted",
 						0,
 						this);
 				shadow.getRange().append(shadow.makeCallToCallback(newMethod));
@@ -60,7 +60,7 @@ public class MoveInstructionsWeaveTestCase extends WeaveTestCase {
             }
             public void implementOn(Shadow s) {
                 BcelShadow shadow = (BcelShadow) s;
-                LazyMethodGen newMethod = shadow.extractMethod(shadow.getSignature().getExtractableName() + "_extracted" + counter++, 0, this);
+                LazyMethodGen newMethod = shadow.extractMethod(NameMangler.getExtractableName(shadow.getSignature()) + "_extracted" + counter++, 0, this);
                 shadow.getRange().append(shadow.makeCallToCallback(newMethod));
 
                 if (! shadow.isFallsThrough()) {
