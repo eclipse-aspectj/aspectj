@@ -53,6 +53,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SyntheticFieldBindin
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.BoundedReferenceType;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.IHasPosition;
@@ -657,22 +658,42 @@ public class EclipseFactory {
 			RawTypeBinding rtb = lookupEnvironment.createRawType(baseTypeBinding,baseTypeBinding.enclosingType());
 			return rtb;
 		} else if (typeX.isGenericWildcard()) {
-		    // translate from boundedreferencetype to WildcardBinding
-			BoundedReferenceType brt = (BoundedReferenceType)typeX;
-			// Work out 'kind' for the WildcardBinding
-			int boundkind = Wildcard.UNBOUND;
-			TypeBinding bound = null;
-			if (brt.isExtends()) {
-				boundkind = Wildcard.EXTENDS;
-				bound = makeTypeBinding(brt.getUpperBound());
-			} else if (brt.isSuper()) {
-				boundkind = Wildcard.SUPER;
-				bound = makeTypeBinding(brt.getLowerBound());
+			if (typeX instanceof WildcardedUnresolvedType) {
+				WildcardedUnresolvedType wut = (WildcardedUnresolvedType)typeX;
+				int boundkind = Wildcard.UNBOUND;
+				TypeBinding bound = null;
+				if (wut.isExtends()) {
+					boundkind = Wildcard.EXTENDS;
+					bound = makeTypeBinding(wut.getUpperBound());
+				} else if (wut.isSuper()) {
+					boundkind = Wildcard.SUPER;
+					bound = makeTypeBinding(wut.getLowerBound());
+				}
+				TypeBinding[] otherBounds = null;
+				// TODO 2 ought to support extra bounds for WildcardUnresolvedType
+				// if (wut.getAdditionalBounds()!=null && wut.getAdditionalBounds().length!=0) otherBounds = makeTypeBindings(wut.getAdditionalBounds());
+				WildcardBinding wb = lookupEnvironment.createWildcard(baseTypeForParameterizedType,indexOfTypeParameterBeingConverted,bound,otherBounds,boundkind);
+				return wb;
+			} else if (typeX instanceof BoundedReferenceType) {
+			    // translate from boundedreferencetype to WildcardBinding
+				BoundedReferenceType brt = (BoundedReferenceType)typeX;
+				// Work out 'kind' for the WildcardBinding
+				int boundkind = Wildcard.UNBOUND;
+				TypeBinding bound = null;
+				if (brt.isExtends()) {
+					boundkind = Wildcard.EXTENDS;
+					bound = makeTypeBinding(brt.getUpperBound());
+				} else if (brt.isSuper()) {
+					boundkind = Wildcard.SUPER;
+					bound = makeTypeBinding(brt.getLowerBound());
+				}
+				TypeBinding[] otherBounds = null;
+				if (brt.getAdditionalBounds()!=null && brt.getAdditionalBounds().length!=0) otherBounds = makeTypeBindings(brt.getAdditionalBounds());
+				WildcardBinding wb = lookupEnvironment.createWildcard(baseTypeForParameterizedType,indexOfTypeParameterBeingConverted,bound,otherBounds,boundkind);
+				return wb;
+			} else {
+				throw new BCException("This type "+typeX+" (class "+typeX.getClass().getName()+") should not be claiming to be a wildcard!");
 			}
-			TypeBinding[] otherBounds = null;
-			if (brt.getAdditionalBounds()!=null && brt.getAdditionalBounds().length!=0) otherBounds = makeTypeBindings(brt.getAdditionalBounds());
-			WildcardBinding wb = lookupEnvironment.createWildcard(baseTypeForParameterizedType,indexOfTypeParameterBeingConverted,bound,otherBounds,boundkind);
-			return wb;
 		} else {
 			return lookupBinding(typeX.getName());
 		}
