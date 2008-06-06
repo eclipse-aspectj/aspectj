@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="testsrc"/>
-	<classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
 	<classpathentry kind="src" path="/ajde"/>
 	<classpathentry kind="src" path="/util"/>
 	<classpathentry kind="lib" path="/lib/junit/junit.jar" sourcepath="/lib/junit/junit-src.jar"/>
@@ -13,5 +12,6 @@
 	<classpathentry kind="src" path="/loadtime"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/weaver5"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ajde.core"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
