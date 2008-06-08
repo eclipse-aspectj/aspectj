@@ -2,19 +2,19 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="java5-testsrc"/>
-	<classpathentry sourcepath="JRE_SRC" kind="var" path="JRE_LIB"/>
 	<classpathentry kind="src" path="/bridge"/>
 	<classpathentry kind="src" path="/weaver"/>
 	<classpathentry kind="src" path="/asm"/>
 	<classpathentry kind="src" path="/util"/>
 	<classpathentry kind="src" path="/runtime"/>
 	<classpathentry kind="src" path="testsrc"/>
-	<classpathentry sourcepath="/lib/bcel/bcel-src.zip" kind="lib" path="/lib/bcel/bcel.jar"/>
-	<classpathentry sourcepath="/lib/junit/junit-src.jar" kind="lib" path="/lib/junit/junit.jar"/>
+	<classpathentry kind="lib" path="/lib/bcel/bcel.jar" sourcepath="/lib/bcel/bcel-src.zip"/>
+	<classpathentry kind="lib" path="/lib/junit/junit.jar" sourcepath="/lib/junit/junit-src.jar"/>
 	<classpathentry kind="src" path="/testing-util"/>
 	<classpathentry kind="src" path="/testing-client"/>
 	<classpathentry kind="src" path="/org.eclipse.jdt.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/loadtime"/>
 	<classpathentry kind="lib" path="/lib/bcel/bcel-verifier.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
