@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
 	<classpathentry kind="src" path="/testing-drivers"/>
 	<classpathentry kind="lib" path="/lib/junit/junit.jar" sourcepath="/lib/junit/junit-src.jar"/>
 	<classpathentry kind="src" path="/testing"/>
@@ -16,5 +15,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/weaver"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/testing-util"/>
 	<classpathentry kind="lib" path="/lib/bcel/bcel-verifier.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
