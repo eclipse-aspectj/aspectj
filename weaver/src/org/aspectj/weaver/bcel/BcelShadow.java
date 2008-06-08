@@ -3035,10 +3035,18 @@ public class BcelShadow extends Shadow {
 					stateRTX);
 			}
 		} else {
+		    // pr226201
+			Member mungerSignature = munger.getSignature();
+			if (munger.getSignature() instanceof ResolvedMember) {
+				if (((ResolvedMember)mungerSignature).hasBackingGenericMember()) {
+					mungerSignature = ((ResolvedMember)mungerSignature).getBackingGenericMember();
+				}
+			}
+			UnresolvedType returnType = mungerSignature.getReturnType();
 	        returnConversionCode = 
 	            Utility.createConversion(
 	                getFactory(), 
-	                BcelWorld.makeBcelType(munger.getSignature().getReturnType()), 
+	                BcelWorld.makeBcelType(returnType), 
 	                callbackMethod.getReturnType(),world.isInJava5Mode());
 			if (!isFallsThrough()) {
 				returnConversionCode.append(
