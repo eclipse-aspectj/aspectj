@@ -3,6 +3,13 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+	<ajc-test dir="bugs161/pr226201" title="generic aspect around advice">
+    	<compile files="IntAspTest.java" options="-1.5"/>
+    	<run class="IntAspTest">
+    	</run>
+    </ajc-test>
+    
+
 	<ajc-test dir="bugs161/pr235829" title="crazy generics and inner types">
     	<compile files="Main.java a/Adapter.java a/b/Adapter.java" options="-1.5"/>
     	<run class="Main"/>
