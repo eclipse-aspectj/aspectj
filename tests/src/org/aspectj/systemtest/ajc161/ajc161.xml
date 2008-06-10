@@ -3,6 +3,18 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+	<ajc-test dir="bugs161/pr199130" title="complex bounds on generic aspect - 1">
+    	<compile files="Simple.java" options="-1.5"/>
+    	<run class="Simple">
+    	</run>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr199130" title="complex bounds on generic aspect - 2">
+    	<compile files="Complex.java" options="-1.5"/>
+    	<run class="Complex">
+    	</run>
+    </ajc-test>
+    
 	<ajc-test dir="bugs161/pr226201" title="generic aspect around advice">
     	<compile files="IntAspTest.java" options="-1.5"/>
     	<run class="IntAspTest">
