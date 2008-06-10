@@ -12,9 +12,9 @@
 package org.aspectj.ajdt.internal.compiler.ast;
 
 import java.lang.reflect.Modifier;
-import java.util.Stack;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
@@ -47,7 +47,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
-import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.UnresolvedType;
