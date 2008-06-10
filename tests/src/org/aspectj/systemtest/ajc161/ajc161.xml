@@ -3,6 +3,11 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+	<ajc-test dir="bugs161/pr230075" title="protected methods and around advice">
+    	<compile files="A.java B.java C.java X.java" options="-1.5"/>
+    	<run class="a.C"/>
+    </ajc-test>
+    
 	<ajc-test dir="bugs161/pr174385" title="static strings in annotation pointcuts">
     	<compile files="StaticFinalStringInPointcutAspect.java" options="-1.5"/>
     	<run class="bug.StaticFinalStringInPointcutAspect"/>
