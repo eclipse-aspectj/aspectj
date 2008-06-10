@@ -24,6 +24,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedMember;
@@ -173,7 +174,10 @@ public class IfPointcut extends Pointcut {
                     //    is bindings for the arguments
                     residueSource.findResidue(shadow, myState);
 
-
+					UnresolvedType[] pTypes = (testMethod==null?null:testMethod.getParameterTypes());
+                    if (pTypes!=null && baseArgsCount>pTypes.length) { //pr155347
+                    	throw new BCException("Unexpected problem with testMethod "+testMethod+": expecting "+baseArgsCount+" arguments");
+                    }
                     // pr118149
                     // It is possible for vars in myState (which would normally be set
                     // in the call to residueSource.findResidue) to not be set (be null)
@@ -186,7 +190,7 @@ public class IfPointcut extends Pointcut {
                         args.add(v);
                         ret = Test.makeAnd(ret,
                             Test.makeInstanceof(v,
-                                testMethod.getParameterTypes()[i].resolve(shadow.getIWorld())));
+                                pTypes[i].resolve(shadow.getIWorld())));
                     }
                 }
 
