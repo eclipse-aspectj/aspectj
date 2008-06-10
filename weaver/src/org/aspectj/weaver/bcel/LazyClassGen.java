@@ -582,9 +582,6 @@ public final class LazyClassGen {
 		
 		// check the interfaces
 		if (!needAttribute) {
-			if (myType==null) {
-				boolean stop = true;
-			}
 			ResolvedType[] interfaceRTXs = myType.getDeclaredInterfaces();
 			for (int i = 0; i < interfaceRTXs.length; i++) {
 				ResolvedType typeX = interfaceRTXs[i];
