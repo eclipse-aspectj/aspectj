@@ -23,7 +23,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.1
-//	public void testFinalStringsAnnotationPointcut_pr174385() { runTest("static strings in annotation pointcuts");}
+	public void testFinalStringsAnnotationPointcut_pr174385() { runTest("static strings in annotation pointcuts");}
 	public void testComplexBoundsGenericAspect_pr199130_1() { runTest("complex bounds on generic aspect - 1");}
 	public void testComplexBoundsGenericAspect_pr199130_2() { runTest("complex bounds on generic aspect - 2");}
 	public void testComplexBoundsGenericAspect_pr199130_3() { runTest("complex bounds on generic aspect - 3");}
