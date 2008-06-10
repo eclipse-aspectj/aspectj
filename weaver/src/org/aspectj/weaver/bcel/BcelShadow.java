@@ -3447,9 +3447,10 @@ public class BcelShadow extends Shadow {
         		targetType =  UnresolvedType.forName(getActualTargetType()).resolve(world);
         	}
             ResolvedMember resolvedMember = getSignature().resolve(world);
-            
+
+            // pr230075
             if (resolvedMember != null && Modifier.isProtected(resolvedMember.getModifiers()) && 
-            	!samePackage(targetType.getPackageName(), getEnclosingType().getPackageName()) &&
+            	!samePackage(resolvedMember.getDeclaringType().getPackageName(), getEnclosingType().getPackageName()) &&
 				!resolvedMember.getName().equals("clone"))
             {
             	if (!targetType.resolve(world).isAssignableFrom(getThisType().resolve(world))) {
