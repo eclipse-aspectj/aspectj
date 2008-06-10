@@ -228,13 +228,6 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
         for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
             units[i].scope.checkParameterizedTypes();
         }
-        
-		for (int i = lastCompletedUnitIndex +1; i<=lastUnitIndex; i++) {
-			SourceTypeBinding[] b = units[i].scope.topLevelTypes;
-            for (int j = 0; j < b.length; j++) {
-            	verifyAnyTypeParametersMeetBounds(b[j]);
-            }
-		}
 		
         for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
             SourceTypeBinding[] b = units[i].scope.topLevelTypes;
