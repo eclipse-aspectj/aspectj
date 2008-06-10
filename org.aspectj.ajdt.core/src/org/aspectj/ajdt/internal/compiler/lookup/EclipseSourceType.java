@@ -36,6 +36,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MemberValuePair;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.NameReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
@@ -45,6 +46,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
@@ -59,6 +61,7 @@ import org.aspectj.weaver.AnnotationTargetKind;
 import org.aspectj.weaver.AnnotationValue;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.ArrayAnnotationValue;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.EnumAnnotationValue;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
@@ -171,8 +174,17 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 			char[] sig = ans[i].resolvedType.signature();
 			if (CharOperation.equals(pointcutSig,sig)) {
 				if (ans[i].memberValuePairs().length==0) return ""; // empty pointcut expression
-				StringLiteral sLit = ((StringLiteral)(ans[i].memberValuePairs()[0].value));
-				return new String(sLit.source());
+				Expression expr = ans[i].memberValuePairs()[0].value;
+				if (expr instanceof StringLiteral) {
+					StringLiteral sLit = ((StringLiteral)expr);
+					return new String(sLit.source());
+				} else if (expr instanceof NameReference && (((NameReference)expr).binding instanceof FieldBinding)) {
+					Binding b = ((NameReference)expr).binding;
+					Constant c = ((FieldBinding)b).constant;
+					return c.stringValue();
+				} else {
+					throw new BCException("Do not know how to recover pointcut definition from "+expr+" (type "+expr.getClass().getName()+")");
+				}
 			}
 		}
 		return "";
