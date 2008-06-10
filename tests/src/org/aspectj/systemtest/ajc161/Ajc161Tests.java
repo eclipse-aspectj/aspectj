@@ -27,6 +27,10 @@ public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testComplexBoundsGenericAspect_pr199130_1() { runTest("complex bounds on generic aspect - 1");}
 	public void testComplexBoundsGenericAspect_pr199130_2() { runTest("complex bounds on generic aspect - 2");}
 	public void testComplexBoundsGenericAspect_pr199130_3() { runTest("complex bounds on generic aspect - 3");}
+	public void testPrivilegedGenericAspect_pr235505() { runTest("privileged generic aspect");}
+	public void testPrivilegedGenericAspect_pr235505_2() { runTest("privileged generic aspect - 2");}
+	public void testParsingAroundNoReturn_pr64222() { runTest("parsing around advice no return");}
+	public void testParsingBeforeArrayRef_pr159268() { runTest("before array name");}
 	public void testGenericAspectAroundAdvice_pr226201() { runTest("generic aspect around advice");}
 	public void testCrazyGenericsInnerTypes_pr235829() { runTest("crazy generics and inner types");}
 	public void testAnnotationExposureGenerics_pr235597() { runTest("annotation exposure and generics");}

@@ -154,5 +154,31 @@
         <compile files="BarAspect.aj Foo.java Bar.java" options="-1.5"/>
         <compile files="BarAspect.aj Bar.java Foo.java" options="-1.5"/>
     </ajc-test> 
+    
+    <ajc-test dir="bugs161/pr235505" title="privileged generic aspect">
+        <compile files="A.java" options="-1.5"/>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs161/pr235505" title="privileged generic aspect - 2">
+        <compile files="B.java" options="-1.5"/>
+        <run class="B">
+          <stdout>
+            <line text="Hello World"/>
+            <line text="Hello World"/>
+          </stdout>
+        </run>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs161/pr64222" title="parsing around advice no return">
+        <compile files="C.java" options="-1.5">
+          <message kind="error" line="6" text="to complete around advice declaration"/>
+        </compile>
+    </ajc-test> 
+
+    <ajc-test dir="bugs161/pr159268" title="before array name">
+        <compile files="C.java" options="-1.5"/>
+    </ajc-test> 
+    
+    
 
 </suite>
