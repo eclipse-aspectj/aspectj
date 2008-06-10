@@ -185,6 +185,8 @@ public class TypeVariable {
 	 */
 	public boolean canBeBoundTo(ResolvedType aCandidateType) {
 		if (!isResolved) throw new IllegalStateException("Can't answer binding questions prior to resolving");
+		
+		// TODO 2 is this next bit bogus, what is it for?
 		if (aCandidateType.isTypeVariableReference()) {
 			return matchingBounds((TypeVariableReferenceType)aCandidateType);
 		}
