@@ -3,6 +3,12 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+	<ajc-test dir="bugs161/pr168982" title="error on non-abstract generic ataspectj aspect">
+    	<compile files="TracingAspect2.java" options="-1.5">
+    	  <message kind="error" line="9"/>
+    	</compile>
+    </ajc-test>
+    
 	<ajc-test dir="bugs161/pr234933" title="ignoring type level suppress">
     	<compile files="Foobar.java" options="-1.5 -Xlint:error"/>
     </ajc-test>

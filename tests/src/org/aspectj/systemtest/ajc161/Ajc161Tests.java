@@ -23,6 +23,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.1	
+	public void testErrorOnNonabstractGenericAtAspectJAspect_pr168982() { runTest("error on non-abstract generic ataspectj aspect");}
 	public void testIgnoringTypeLevelSuppression_pr234933() { runTest("ignoring type level suppress");}
 	public void testDuplicateMethodSignature_pr223226_2() { runTest("duplicate method signature - 2"); }
 	public void testDuplicateMethodSignature_pr223226() { runTest("duplicate method signature"); }
