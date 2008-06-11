@@ -23,6 +23,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.1
+	public void testProtectedMethodsAroundAdvice_pr197719_2() { runTest("protected methods and around advice - again - 2");}
 	public void testProtectedMethodsAroundAdvice_pr197719() { runTest("protected methods and around advice - again");}
 	public void testProtectedMethodsAroundAdvice_pr230075() { runTest("protected methods and around advice");}
 	public void testFinalStringsAnnotationPointcut_pr174385() { runTest("static strings in annotation pointcuts");}
