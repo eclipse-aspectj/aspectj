@@ -3456,8 +3456,6 @@ public class BcelShadow extends Shadow {
             	if (!hasThis()) { // pr197719 - static accessor has been created to handle the call
             		if (Modifier.isStatic(enclosingMethod.getAccessFlags()) && enclosingMethod.getName().startsWith("access$")) {
             			targetType = BcelWorld.fromBcel(enclosingMethod.getArgumentTypes()[0]);
-            		} else {
-            			throw new BCException("unexpectedly found static context at shadow "+toString()+": accessor method involved?");
             		}
             	} else {
 	            	if (!targetType.resolve(world).isAssignableFrom(getThisType().resolve(world))) {
