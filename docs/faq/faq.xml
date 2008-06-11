@@ -3844,6 +3844,37 @@ aspect A {
 		  </para>
         </answer>
       </qandaentry>
+       <qandaentry>
+        <question id="q:weavingcglib"
+            xreflabel="Q:I get a VerifyError when running CGLIB generated code that has been woven by AspectJ. Why is this?">
+          <para>I get a VerifyError when running CGLIB generated code that has been woven by
+          AspectJ. Why is this?
+          </para>
+        </question>
+        <answer>
+          <para>When weaving after advice into any piece of code, the AspectJ strategy is to make all
+          exit points from that code jump to a single exit point that executes the advice
+          before returning.  There is a verifier rule in the JVM specification that specifies
+          that all routes to a jump destination must have the same height stack when they get there,
+          regardless of the route taken to get there through the bytecode.  The CGLIB generated code has different
+          stack heights at the various exit points.  This is not a problem with the CGLIB generated code,
+          it is perfectly valid - it is just unusual and the AspectJ weaving strategy causes the
+          verify error to trigger when it makes all exits jump to a single destination.
+          </para>
+          <para>AspectJ could cope with this and instead implement after advice by calling the
+          advice and returning at each exit point.  However, it is unlikely that the user
+          actually meant to weave the CGLIB generated code in the first place - and so usually
+          the right thing to do is to exclude CGLIB generate code from the weaving process by
+          appropriate use of the exclude element in the aop.xml.  A typical clause in the aop.xml might
+          look as follows:
+          </para>
+           <programlisting>
+&lt;weaver&gt;
+  &lt;exclude within="*CGLIB*" /&gt; 
+&lt;/weaver&gt;
+          </programlisting>
+        </answer>
+      </qandaentry> 
     </qandadiv>
 
     <qandadiv id="aj11" xreflabel="AspectJ 1.1 and eclipse.org">
