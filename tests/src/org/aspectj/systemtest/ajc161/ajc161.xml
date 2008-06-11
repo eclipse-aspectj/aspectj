@@ -3,6 +3,20 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+	<ajc-test dir="bugs161/pr223226" title="duplicate method signature - 2">
+    	<compile files="AspectX.java BInterface.java FooInterface.java AspectXMarker.java Foo.java Test.java" options="-1.5"/>
+    	<run class="Test"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr223226" title="duplicate method signature">
+    	<compile files="AspectX.java BInterface.java FooInterface.java AspectXMarker.java Foo.java Test.java" options="">
+    	  <message kind="error" line="1"/>
+    	  <message kind="error" line="2"/>
+    	  <message kind="error" line="3"/>
+    	  <message kind="error" line="5"/>
+    	</compile>
+    </ajc-test>
+
 	<ajc-test dir="bugs161/pr197719" title="protected methods and around advice - again - 2">
     	<compile files="test/aspects/C1.java test/aspects/C3.java test/aspects/MyAnn.java test/aspects/MyAnnAspect.java test/aspects2/C2.java" options="-1.5 -showWeaveInfo">
     	  <message kind="weave" text="Join point 'method-call(void test.aspects.C1.aMethod())' in Type 'test.aspects.C1' (C1.java:12) "/>

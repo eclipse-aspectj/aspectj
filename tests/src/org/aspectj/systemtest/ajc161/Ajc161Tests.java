@@ -23,6 +23,8 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.1
+	public void testDuplicateMethodSignature_pr223226_2() { runTest("duplicate method signature - 2"); }
+	public void testDuplicateMethodSignature_pr223226() { runTest("duplicate method signature"); }
 	public void testProtectedMethodsAroundAdvice_pr197719_2() { runTest("protected methods and around advice - again - 2");}
 	public void testProtectedMethodsAroundAdvice_pr197719() { runTest("protected methods and around advice - again");}
 	public void testProtectedMethodsAroundAdvice_pr230075() { runTest("protected methods and around advice");}
