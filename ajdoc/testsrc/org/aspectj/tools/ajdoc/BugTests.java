@@ -156,4 +156,26 @@ public class BugTests extends AjdocTestCase {
 				"appear in ajdoc output but it did not", 
 				AjdocOutputChecker.containsString(htmlFile, goo));
 	}
+	
+	/**
+	 * Comments for a constructor should be included in the ajdoc output
+	 */
+	public void testPr164340() throws Exception {
+		initialiseProject("pr164340");
+		File[] files = {new File(getAbsoluteProjectDir() + "/C.java")};
+		runAjdoc(files);
+	    File htmlFile = new File(getAbsolutePathOutdir() + "/C.html");
+		if (htmlFile == null || !htmlFile.exists()) {
+			fail("couldn't find " + htmlFile.getAbsolutePath() + 
+					" (ajc aborted: " + Main.hasAborted() + ")");
+		}
+		String methodDesc = "This is method foo";
+		String constDesc = "This is a constructor";
+		assertTrue("expected method description 'This is method foo' to appear" +
+				" in ajdoc output but it did not", 
+				AjdocOutputChecker.containsString(htmlFile, methodDesc));
+		assertTrue("expected constructor description 'This is a constructor' to " +
+				"appear in ajdoc output but it did not", 
+				AjdocOutputChecker.containsString(htmlFile, constDesc));
+	}
 }
