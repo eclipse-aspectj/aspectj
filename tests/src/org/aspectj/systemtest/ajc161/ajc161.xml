@@ -3,6 +3,10 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+	<ajc-test dir="bugs161/pr234933" title="ignoring type level suppress">
+    	<compile files="Foobar.java" options="-1.5 -Xlint:error"/>
+    </ajc-test>
+    
 	<ajc-test dir="bugs161/pr223226" title="duplicate method signature - 2">
     	<compile files="AspectX.java BInterface.java FooInterface.java AspectXMarker.java Foo.java Test.java" options="-1.5"/>
     	<run class="Test"/>
