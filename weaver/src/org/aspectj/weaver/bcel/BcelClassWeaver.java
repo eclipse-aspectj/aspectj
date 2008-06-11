@@ -714,10 +714,12 @@ class BcelClassWeaver implements IClassWeaver {
 			UnresolvedType[] bm = BcelWorld.fromBcel(bridgeToCandidate.getArgumentTypes());
 			ResolvedMember overriddenMethod = checkForOverride(theSuperclass,name,psig,rsig,bridgeToCandidate.getAccessFlags(),pkgName,bm);
 			if (overriddenMethod!=null) { 
-				boolean alreadyHaveABridgeMethod = methodsSet.contains(overriddenMethod.getName()+overriddenMethod.getSignature());
+				String key = new StringBuffer().append(overriddenMethod.getName()).append(overriddenMethod.getSignature()).toString();
+				boolean alreadyHaveABridgeMethod = methodsSet.contains(key);
 				if (!alreadyHaveABridgeMethod) {
 					if (world.forDEBUG_bridgingCode) System.err.println("Bridging:bridging to '"+overriddenMethod+"'");
 					createBridgeMethod(world, bridgeToCandidate, clazz, overriddenMethod);
+					methodsSet.add(key);
 					didSomething = true;
 					continue; // look at the next method
 				}
@@ -730,9 +732,11 @@ class BcelClassWeaver implements IClassWeaver {
 				ResolvedType interfaceType = world.resolve(interfaces[j]);
 				overriddenMethod = checkForOverride(interfaceType,name,psig,rsig,bridgeToCandidate.getAccessFlags(),clazz.getPackageName(),bm);
 				if (overriddenMethod!=null) { 
-					boolean alreadyHaveABridgeMethod = methodsSet.contains(overriddenMethod.getName()+overriddenMethod.getSignature());
+					String key = new StringBuffer().append(overriddenMethod.getName()).append(overriddenMethod.getSignature()).toString();
+					boolean alreadyHaveABridgeMethod = methodsSet.contains(key);
 					if (!alreadyHaveABridgeMethod) {
 						createBridgeMethod(world, bridgeToCandidate, clazz, overriddenMethod);
+						methodsSet.add(key);
 						didSomething=true;
 						if (world.forDEBUG_bridgingCode) System.err.println("Bridging:bridging to "+overriddenMethod);
 						continue; // look at the next method
