@@ -3,6 +3,17 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+	<ajc-test dir="bugs161/pr197719" title="protected methods and around advice - again">
+    	<compile files="A.java B.java X.java" options="-1.5"/>
+    	<run class="b.B">
+    	  <stdout>
+    	    <line text="calling m()"/>
+    	    <line text="advice running"/>
+    	    <line text="m() running"/>
+    	  </stdout>
+    	</run>
+    </ajc-test>
+
 	<ajc-test dir="bugs161/pr230075" title="protected methods and around advice">
     	<compile files="A.java B.java C.java X.java" options="-1.5"/>
     	<run class="a.C"/>
