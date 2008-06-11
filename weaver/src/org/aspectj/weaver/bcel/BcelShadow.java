@@ -3448,15 +3448,23 @@ public class BcelShadow extends Shadow {
         	}
             ResolvedMember resolvedMember = getSignature().resolve(world);
 
-            // pr230075
+            // pr230075, pr197719
             if (resolvedMember != null && Modifier.isProtected(resolvedMember.getModifiers()) && 
             	!samePackage(resolvedMember.getDeclaringType().getPackageName(), getEnclosingType().getPackageName()) &&
 				!resolvedMember.getName().equals("clone"))
             {
-            	if (!targetType.resolve(world).isAssignableFrom(getThisType().resolve(world))) {
-            		throw new BCException("bad bytecode");
+            	if (!hasThis()) { // pr197719 - static accessor has been created to handle the call
+            		if (Modifier.isStatic(enclosingMethod.getAccessFlags()) && enclosingMethod.getName().startsWith("access$")) {
+            			targetType = BcelWorld.fromBcel(enclosingMethod.getArgumentTypes()[0]);
+            		} else {
+            			throw new BCException("unexpectedly found static context at shadow "+toString()+": accessor method involved?");
+            		}
+            	} else {
+	            	if (!targetType.resolve(world).isAssignableFrom(getThisType().resolve(world))) {
+	            		throw new BCException("bad bytecode");
+	            	}
+	            	targetType = getThisType();
             	}
-            	targetType = getThisType();
             }
             parameterTypes = addType(BcelWorld.makeBcelType(targetType), parameterTypes);
         }
