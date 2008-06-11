@@ -1284,7 +1284,7 @@ public class BcelWeaver {
 	                   }
 	                	 
 					   if (!(ba.getSignature() instanceof BcelMethod)
-					       || !Utility.isSuppressing((AnnotationX[])ba.getSignature().getAnnotations(),"adviceDidNotMatch")) {
+						       || !Utility.isSuppressing(ba.getSignature(),"adviceDidNotMatch")) {
 					        world.getLint().adviceDidNotMatch.signal(ba.getDeclaringAspect().toString(),
 					        		new SourceLocation(element.getSourceLocation().getSourceFile(),element.getSourceLocation().getLine()));//element.getSourceLocation());
 					   }							  

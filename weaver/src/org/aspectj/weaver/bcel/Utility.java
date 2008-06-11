@@ -728,6 +728,19 @@ public class Utility {
 	}
 	
 	/**
+	 * Checks for suppression specified on the member or on the declaring type of that member
+	 */
+	public static boolean isSuppressing(Member member,String lintkey) {
+		boolean isSuppressing = Utility.isSuppressing(member.getAnnotations(), lintkey);
+		if (isSuppressing) return true;
+		UnresolvedType type = member.getDeclaringType();
+		if (type instanceof ResolvedType) {
+			return Utility.isSuppressing(((ResolvedType)type).getAnnotations(),lintkey);		
+		}
+		return false;
+	}
+
+	/**
      * Check if the annotations contain a SuppressAjWarnings annotation and
      * if that annotation specifies that the given lint message (identified
      * by its key) should be ignored.
