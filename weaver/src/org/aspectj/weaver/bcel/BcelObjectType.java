@@ -14,6 +14,7 @@
 package org.aspectj.weaver.bcel;
 
 import java.io.PrintStream;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,6 +34,7 @@ import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
 import org.aspectj.apache.bcel.classfile.annotation.EnumElementValueGen;
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.AbstractReferenceTypeDelegate;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -337,6 +339,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		if (deferredAspectAttribute != null) {
 			// we can finally process the aspect and its associated perclause...
 			perClause = deferredAspectAttribute.reifyFromAtAspectJ(this.getResolvedTypeX());
+		}
+		if (isAspect() && !Modifier.isAbstract(getModifiers()) && isGeneric()) {
+			msgHandler.handleMessage(MessageUtil.error("The generic aspect '"+getResolvedTypeX().getName()+"' must be declared abstract",getResolvedTypeX().getSourceLocation()));
 		}
 
 	}
