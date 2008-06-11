@@ -678,7 +678,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			startIndex = ((FieldDeclaration)astNode).declarationSourceStart;
 		} else if (astNode instanceof TypeDeclaration) {
 			startIndex = ((TypeDeclaration)astNode).declarationSourceStart;
-		} 
+		} else if (astNode instanceof ConstructorDeclaration) {
+			startIndex = ((ConstructorDeclaration)astNode).declarationSourceStart;
+		}
 		
 		if (startIndex == -1) {
 			return null;
@@ -795,6 +797,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		formatter.setParameters(constructorDeclaration, peNode);
 		peNode.setModifiers(constructorDeclaration.modifiers);
 		peNode.setSourceSignature(genSourceSignature(constructorDeclaration));
+		peNode.setFormalComment(generateJavadocComment(constructorDeclaration));
 		
 		// Fix to enable us to anchor things from ctor nodes
 		if (constructorDeclaration.binding != null) {
