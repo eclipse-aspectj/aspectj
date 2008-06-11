@@ -15,6 +15,10 @@
 	  </compile>
     </ajc-test>
 
+    <ajc-test dir="bugs153/pr164340" title="formal comments are set for constructor ipes">
+      <compile files="C.java" options="-emacssym -XjavadocsInModel"/>
+    </ajc-test>
+
     <ajc-test dir="bugs153/pr162135" title="bcexception in annotation style around advice">
       <compile files="Foo.java" options="-1.5"/>
       <run class="Foo"/>

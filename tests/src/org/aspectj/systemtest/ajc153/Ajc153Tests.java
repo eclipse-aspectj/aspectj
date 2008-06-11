@@ -23,6 +23,15 @@ import org.aspectj.weaver.bcel.Utility;
 
 public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+
+  public void testFormalCommentsAreSetForConstructorIPEs_pr164340() {
+	  runTest("formal comments are set for constructor ipes");
+	  IHierarchy top = AsmManager.getDefault().getHierarchy();
+	  IProgramElement ipe = top.findElementForLabel(top.getRoot(),
+			  IProgramElement.Kind.CONSTRUCTOR,"C()");
+	  assertNotNull("expected formal comment to be non null but" +
+		  		" found that it was null",ipe.getFormalComment());
+  }
   //public void testGenericsProblem_pr151978() { runTest("generics problem");}
   // public void testArgnamesAndJavac_pr148381() { runTest("argNames and javac");}
   // public void testCFlowXMLAspectLTW_pr149096() { runTest("cflow xml concrete aspect"); }
