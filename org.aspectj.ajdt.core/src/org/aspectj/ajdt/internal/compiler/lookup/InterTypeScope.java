@@ -82,6 +82,7 @@ public class InterTypeScope extends ClassScope {
 		if (aliased!=-1) {
 			if (aliased>sourceType.typeVariables.length || sourceType.typeVariables.length==0) {
 				TypeVariableBinding tvb = new TypeVariableBinding("fake".toCharArray(),null,0);
+				tvb.superclass = getJavaLangObject();
 				tvb.fPackage = new PackageBinding(environment());
 				return tvb;
 				// error is going to be reported by someone else!
