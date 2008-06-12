@@ -195,6 +195,10 @@
 		  ]]></programlisting>
           
             <para>
+                The DTD defining the format of this file is available here: 
+                http://www.eclipse.org/aspectj/dtd/aspectj.dtd. 
+            </para>
+            <para>
                 An aop.xml file contains two key sections: <literal>aspects</literal> defines one
                 or more aspects to the weaver and controls which aspects are to be
                 used in the weaving process; <literal>weaver</literal> defines weaver options and which
