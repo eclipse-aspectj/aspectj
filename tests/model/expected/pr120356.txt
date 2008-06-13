@@ -1,4 +1,4 @@
-=== MODEL STATUS REPORT ========= After a failed batch build
+=== MODEL STATUS REPORT ========= After a batch build
 <root>  [java source file] 
   A.java  [java source file] TEST_SANDBOX\A.java:1:
     import declarations  [import reference] 
@@ -14,7 +14,7 @@
       warningMethod()  [method] TEST_SANDBOX\C.java:5:
       badMethod()  [method] TEST_SANDBOX\C.java:8:
 === END OF MODEL REPORT =========
-=== RELATIONSHIPS REPORT ========= After a failed batch build
+=== RELATIONSHIPS REPORT ========= After a batch build
 (targets=1) {A.java}A^warning (matched by) {C.java[C~warningMethod
 (targets=1) {C.java[C~badMethod (matches declare) {A.java}A^error
 (targets=1) {C.java[C~warningMethod (matches declare) {A.java}A^warning
