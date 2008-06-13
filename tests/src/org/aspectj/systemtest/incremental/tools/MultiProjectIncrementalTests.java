@@ -252,6 +252,30 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkWasntFullBuild();
 	}
 	
+	public void testBrokenCodeCompilation() {
+		initialiseProject("pr102733_1");
+		build("pr102733_1");
+		checkWasFullBuild();
+		checkCompileWeaveCount("pr102733_1",1,0);
+		assertTrue("There should be an error:\n"
+				+getErrorMessages("pr102733_1"),!getErrorMessages("pr102733_1").isEmpty());	
+		build("pr102733_1"); // incremental
+		checkCompileWeaveCount("pr102733_1",0,0);
+		checkWasntFullBuild();		
+		alter("pr102733_1","inc1"); // fix the error
+		build("pr102733_1");
+		checkWasntFullBuild();		
+		checkCompileWeaveCount("pr102733_1",1,1);
+		assertTrue("There should be no errors:\n"
+				+getErrorMessages("pr102733_1"),getErrorMessages("pr102733_1").isEmpty());	
+		alter("pr102733_1","inc2"); // break it again
+		build("pr102733_1");
+		checkWasntFullBuild();		
+		checkCompileWeaveCount("pr102733_1",1,0);
+		assertTrue("There should be an error:\n"
+				+getErrorMessages("pr102733_1"),!getErrorMessages("pr102733_1").isEmpty());	
+	}
+	
 //	public void testDeclareAtType_pr149293() {
 //		configureBuildStructureModel(true);
 //		initialiseProject("PR149293_1");

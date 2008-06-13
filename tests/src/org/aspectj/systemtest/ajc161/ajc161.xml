@@ -3,6 +3,20 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+	<ajc-test dir="bugs161/pr102733" title="running broken code">
+    	<compile files="Invoker.java C.java" options="">
+    	  <message kind="error" line="2" text="Syntax error"/>
+    	</compile>
+    	<run class="Invoker"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr102733" title="running broken code - 2">
+    	<compile files="Invoker2.java C2.java" options="">
+    	  <message kind="error" line="5"/>
+    	</compile>
+    	<run class="Invoker2"/>
+    </ajc-test>
+    
 	<ajc-test dir="bugs161/pr168982" title="error on non-abstract generic ataspectj aspect">
     	<compile files="TracingAspect2.java" options="-1.5">
     	  <message kind="error" line="9"/>
