@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
+import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
+
 
 public class ProceedOnErrorTestCase extends CommandTestCase {
 
@@ -29,17 +31,22 @@ public class ProceedOnErrorTestCase extends CommandTestCase {
 	 * C2.java.
 	 */
 	public void testNoProceedOnError() throws IOException {
-		checkCompile("src1/C1.java", NO_ERRORS);
-	    File f =new File(getSandboxName(),"C.class");
-	    long oldmodtime = f.lastModified();
-	    pause(2);
-		checkCompile("src1/C2.java", new int[]{1});
-	    f =new File(getSandboxName(),"C.class");
-	    long newmodtime = f.lastModified();
-        // Without -proceedOnError supplied, we should *not* change the time stamp on the .class file
-	    assertTrue("The .class file should not have been modified as '-proceedOnError' was not supplied (old="+
-	    		   new Date(oldmodtime).toString()+")(new="+new Date(newmodtime).toString()+")",
-	    		   oldmodtime==newmodtime);
+		try {
+			AjBuildManager.continueWhenErrors=false;
+			checkCompile("src1/C1.java", NO_ERRORS);
+		    File f =new File(getSandboxName(),"C.class");
+		    long oldmodtime = f.lastModified();
+		    pause(2);
+			checkCompile("src1/C2.java", new int[]{1});
+		    f =new File(getSandboxName(),"C.class");
+		    long newmodtime = f.lastModified();
+	        // Without -proceedOnError supplied, we should *not* change the time stamp on the .class file
+		    assertTrue("The .class file should not have been modified as '-proceedOnError' was not supplied (old="+
+		    		   new Date(oldmodtime).toString()+")(new="+new Date(newmodtime).toString()+")",
+		    		   oldmodtime==newmodtime);
+		} finally {
+			AjBuildManager.continueWhenErrors=true;
+		}
 	}
 
 	public void testProceedOnError() throws IOException {
