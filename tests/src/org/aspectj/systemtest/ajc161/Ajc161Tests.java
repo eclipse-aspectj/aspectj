@@ -47,15 +47,14 @@ public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
         runTest("incorrect call relationship");
         IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
         Set entries = irm.getEntries();
-        String gotit = "";
+        boolean gotSomethingValid = false;
+        String expected = "<recursivepackage{RecursiveCatcher.java}RecursiveCatcher~recursiveCall~I?method-call(void recursivepackage.RecursiveCatcher.recursiveCall(int))";
         for (Iterator iterator = entries.iterator(); iterator.hasNext();) {
-            Object object = (Object) iterator.next();
-            gotit = (String) object;
-            break;
+            String str = (String) iterator.next();
+            if (str.indexOf(expected)!=-1) gotSomethingValid = true;
         }
-        if (gotit.indexOf("method-call") == -1) {
-            String expected = "<recursivepackage{RecursiveCatcher.java}RecursiveCatcher~recursiveCall~I?method-call(void recursivepackage.RecursiveCatcher.recursiveCall(int))";
-            fail("Expected '" + expected + "' but got '" + gotit + "'");
+        if (!gotSomethingValid) {
+        	fail("Did not find a relationship with the expected data in '"+expected+"'");
         }
     }
 
