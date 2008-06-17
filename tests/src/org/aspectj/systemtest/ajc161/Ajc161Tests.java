@@ -23,6 +23,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.1	
+	public void testGenericAtAround_pr237419() { runTest("generics ataround");}
 	public void testGenericMarkerMatch_pr203367() { runTest("generic marker match");}
 //	public void testSuperItds_pr134425() { runTest("super itds"); }
 	public void testSuperItds_pr198196_1() { runTest("super itds - 2"); }
