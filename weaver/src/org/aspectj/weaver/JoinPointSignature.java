@@ -391,4 +391,12 @@ public class JoinPointSignature implements ResolvedMember {
 	public String getAnnotationDefaultValue() {
 		return realMember.getAnnotationDefaultValue();
 	}
+
+	public String getParameterSignatureErased() {
+		return realMember.getParameterSignatureErased();
+	}
+
+	public String getSignatureErased() {
+		return realMember.getSignatureErased();
+	}
 }

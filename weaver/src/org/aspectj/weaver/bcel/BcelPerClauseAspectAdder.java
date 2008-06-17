@@ -137,10 +137,12 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
     }
 
     public boolean matches(ResolvedType onType) {
-        //we cannot return onType.equals(aspectType)
-        //since we need to eagerly create the nested ajcMighHaveAspect interface on LTW
-        return true;
-        //return aspectType.equals(onType);
+    	// cannot always do the right thing because may need to eagerly generate ajcMightHaveAspect interface for LTW (says Alex)
+    	if (hasGeneratedInner) { // pr237419 - not always going to generate the marker interface
+    		return aspectType.equals(onType);
+    	} else {
+    		return true;
+    	}
     }
 
     private boolean hasPerClauseMembersAlready(LazyClassGen classGen) {

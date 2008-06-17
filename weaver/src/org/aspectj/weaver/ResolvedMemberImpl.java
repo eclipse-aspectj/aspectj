@@ -885,8 +885,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			return true;
 		} else {
 			// try erasure
-			myParameterSignature = getParameterSigErasure();
-			candidateParameterSignature = candidateMatchImpl.getParameterSigErasure();
+			myParameterSignature = getParameterSignatureErased();
+			candidateParameterSignature = candidateMatchImpl.getParameterSignatureErased();
 			return myParameterSignature.equals(candidateParameterSignature);
 		}
 	}
@@ -913,7 +913,11 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		return myParameterSignatureWithBoundsRemoved;
 	}
 	
-	private String getParameterSigErasure() {
+	/**
+	 * Return the erased form of the signature with bounds collapsed for type variables, etc.
+     * Does not include the return type, @see getParam
+	 */
+	public String getParameterSignatureErased() {
 		if (myParameterSignatureErasure != null) return myParameterSignatureErasure;
 		StringBuffer sig = new StringBuffer();
 		UnresolvedType[] myParameterTypes = getParameterTypes();
@@ -923,11 +927,20 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
                 TypeVariableReferenceType typeVariableRT = (TypeVariableReferenceType) thisParameter;
                 sig.append(typeVariableRT.getUpperBound().getSignature());
 			} else {
-				sig.append(thisParameter.getSignature());
+				sig.append(thisParameter.getErasureSignature()); 
 			}
 		}
 		myParameterSignatureErasure = sig.toString();
 		return myParameterSignatureErasure;		
+	}
+	
+	public String getSignatureErased() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("(");
+		sb.append(getParameterSignatureErased());
+		sb.append(")");
+		sb.append(getReturnType().getErasureSignature());
+		return sb.toString();
 	}
 	
 	// does NOT produce a meaningful java signature, but does give a unique string suitable for

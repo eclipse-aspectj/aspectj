@@ -66,6 +66,8 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	public AnnotationX[][] getParameterAnnotations();
 	public ResolvedType[][] getParameterAnnotationTypes();
 	public String getAnnotationDefaultValue();
+	public String getParameterSignatureErased();
+	public String getSignatureErased();
 	
 	public String[] getParameterNames(World world);
 
