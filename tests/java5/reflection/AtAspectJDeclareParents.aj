@@ -19,6 +19,8 @@ interface I{
 
 class Impl implements I {
 	
+	public Impl() {}
+	
 	private int x;
 	
 	public int getX() { return this.x; }
