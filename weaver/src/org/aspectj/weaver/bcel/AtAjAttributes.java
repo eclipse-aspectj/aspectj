@@ -246,8 +246,8 @@ public class AtAjAttributes {
         }
 
         // the following block will not detect @Pointcut in non @Aspect types for optimization purpose
-        if (!hasAtAspectAnnotation && !containsPointcut) {
-            return EMPTY_LIST;
+       if (!(hasAtAspectAnnotation || isCodeStyleAspect) && !containsPointcut) {
+           return EMPTY_LIST;
         }
 
         //FIXME AV - turn on when ajcMightHaveAspect
@@ -323,7 +323,7 @@ public class AtAjAttributes {
                     if (handleDeclareErrorOrWarningAnnotation(frvs, fstruct)
                             || handleDeclareParentsAnnotation(frvs, fstruct)) {
                         // semantic check - must be in an @Aspect [remove if previous block bypassed in advance]
-                        if (!type.isAnnotationStyleAspect()) {
+                       if (!type.isAnnotationStyleAspect() && !isCodeStyleAspect) {
                             msgHandler.handleMessage(
                                     new Message(
                                             "Found @AspectJ annotations in a non @Aspect type '" + type.getName() + "'",
