@@ -19,18 +19,22 @@ import java.util.Set;
 import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeMethodBinding;
-import org.aspectj.weaver.NameMangler;
-import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ThisReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.ResolvedMember;
 
 /**
  * Takes a method that already has the three extra parameters
@@ -41,14 +45,22 @@ public class SuperFixerVisitor extends ASTVisitor {
 	Set superMethodsCalled = new HashSet();
 	AbstractMethodDeclaration method;
 	ReferenceBinding targetClass;
+	private int depthCounter = 0; // Keeps track of whether we are inside any nested local type declarations
 
 	SuperFixerVisitor(AbstractMethodDeclaration method, ReferenceBinding targetClass) {
 		this.method = method;
 		this.targetClass = targetClass;
 	}
 
+	public boolean visit(TypeDeclaration localTypeDeclaration, BlockScope scope) {
+		depthCounter++;
+		return super.visit(localTypeDeclaration, scope);
+	}
 
-	//XXX does this walk into inners
+	public void endVisit(TypeDeclaration localTypeDeclaration,BlockScope scope) {
+		depthCounter--;
+	}	
+
 	public void endVisit(MessageSend call, BlockScope scope) {
 		//System.out.println("endVisit: " + call);
 		// an error has already occurred
@@ -68,37 +80,49 @@ public class SuperFixerVisitor extends ASTVisitor {
 //			}
 //			return;
 		}
-
     	EclipseFactory factory = ((AjLookupEnvironment)method.scope.environment()).factory;
-
-		char[] accessName;
-		if (call.isSuperAccess() && !call.binding.isStatic()) {
-			call.receiver = new ThisReference(call.receiver.sourceStart, call.receiver.sourceEnd);
-			accessName =
-				NameMangler.superDispatchMethod(factory.fromBinding(targetClass), 
-							new String(superBinding.selector)).toCharArray();
-		} else if (call.receiver.isThis() && call.binding.isProtected() && !call.binding.isStatic()) {
-			//XXX this is a hack that violates some binary compatibility rules
-			if (superBinding.declaringClass.equals(targetClass)) {
-				accessName =
-					NameMangler.protectedDispatchMethod(factory.fromBinding(targetClass), 
-								new String(superBinding.selector)).toCharArray();
+    	if (depthCounter!=0 && targetClass.isInterface()) {// pr198196 - when calling MarkerInterface.super.XXX()
+			if (call.isSuperAccess() && !call.binding.isStatic()) {
+				MethodScope currentMethodScope = scope.methodScope();
+				SourceTypeBinding sourceType = currentMethodScope.enclosingSourceType();
+				FieldBinding field = sourceType.addSyntheticFieldForInnerclass(targetClass);
+				call.receiver = new KnownFieldReference(field,call.receiver.sourceStart,call.receiver.sourceEnd);
 			} else {
-				accessName =
-				NameMangler.superDispatchMethod(factory.fromBinding(targetClass), 
-							new String(superBinding.selector)).toCharArray();
+				return;
 			}
-		} else {
-			return;
-		}
-		
-		//??? do we want these to be unique
-		MethodBinding superAccessBinding =
-			new MethodBinding(ClassFileConstants.AccPublic, accessName, 
-			superBinding.returnType, superBinding.parameters, superBinding.thrownExceptions,
-			targetClass);
+    	} else if (depthCounter==0) { // Allow case testSuperItds_pr198196_2/3
+    
+			char[] accessName;
+			if (call.isSuperAccess() && !call.binding.isStatic()) {
+				call.receiver = new ThisReference(call.receiver.sourceStart, call.receiver.sourceEnd);
+				accessName =
+					NameMangler.superDispatchMethod(factory.fromBinding(targetClass), 
+								new String(superBinding.selector)).toCharArray();
+			} else if (call.receiver.isThis() && call.binding.isProtected() && !call.binding.isStatic()) {
+				//XXX this is a hack that violates some binary compatibility rules
+				if (superBinding.declaringClass.equals(targetClass)) {
+					accessName =
+						NameMangler.protectedDispatchMethod(factory.fromBinding(targetClass), 
+									new String(superBinding.selector)).toCharArray();
+				} else {
+					accessName =
+					NameMangler.superDispatchMethod(factory.fromBinding(targetClass), 
+								new String(superBinding.selector)).toCharArray();
+				}
+			} else {
+				return;
+			}
 			
-		AstUtil.replaceMethodBinding(call, superAccessBinding);
+			//??? do we want these to be unique
+			MethodBinding superAccessBinding =
+				new MethodBinding(ClassFileConstants.AccPublic, accessName, 
+				superBinding.returnType, superBinding.parameters, superBinding.thrownExceptions,
+				targetClass);
+				
+			AstUtil.replaceMethodBinding(call, superAccessBinding);
+		} else {
+		    return;
+		}
 		ResolvedMember targetMember = null;
 		if (superBinding.declaringClass.isParameterizedType()) { //pr206911
 			targetMember = factory.makeResolvedMember(superBinding,((ParameterizedTypeBinding)superBinding.declaringClass).genericType());
