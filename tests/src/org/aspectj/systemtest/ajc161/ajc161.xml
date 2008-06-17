@@ -3,6 +3,49 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+	<ajc-test dir="bugs161/pr198196" title="super itds - 2">
+    	<compile files="Marker.java Foo.java MarkerAspect2.java"/>
+    	<run class="Foo">
+	    	<stdout>
+	    		<line text="a"/>
+	    		<line text="a"/>
+	    		<line text="a"/>
+	    		<line text="a"/>
+	    		<line text="a"/>
+	    		<line text="a"/>
+	    	</stdout>
+    	</run>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr198196" title="super itds - 3">
+    	<compile files="Marker.java Foo.java MarkerAspect1.java"/>
+    	<run class="Foo"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr198196" title="super itds - 4">
+    	<compile files="Marker.java Foo.java MarkerAspect3.java"/>
+    	<run class="Foo"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr134425" title="super itds">
+    	<compile files="Derived.java Base.java"/>
+    	<run class="pkg.Derived"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr237381" title="ataspectj deow - 1">
+    	<compile files="Deow1.java" options="-1.5">
+    	  <message kind="warning" line="7" text="fromX"/>
+    	  <message kind="warning" line="15" text="fromY"/>
+    	</compile>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr237381" title="ataspectj deow - 2">
+    	<compile files="Deow2.java" options="-1.5">
+    	  <message kind="error" line="7" text="fromX"/>
+    	  <message kind="error" line="15" text="fromY"/>
+    	</compile>
+    </ajc-test>
+    
 	<ajc-test dir="bugs161/pr102733" title="running broken code">
     	<compile files="Invoker.java C.java" options="">
     	  <message kind="error" line="2" text="Syntax error"/>
