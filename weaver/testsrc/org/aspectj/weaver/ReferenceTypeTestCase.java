@@ -19,6 +19,16 @@ import junit.framework.TestCase;
 // XXX - couldn't find any unit test cases for the rest of the ReferenceType class
 public class ReferenceTypeTestCase extends TestCase {
 
+	public void testUnresolvedTypeSignatureProcessing() {
+		BcelWorld world = new BcelWorld();
+		world.setBehaveInJava5Way(true);
+		UnresolvedType ut = null;
+		ut = UnresolvedType.forName("java.util.List<java.util.List<java.lang.String>>[]").resolve(world);
+		ut = UnresolvedType.forSignature("[Pjava/util/List<Pjava/util/List<Ljava/lang/String;>;>;").resolve(world);
+		assertEquals("Signatures not equal ","[Pjava/util/List<Pjava/util/List<Ljava/lang/String;>;>;",ut.getSignature());
+		assertEquals("Names not equal ","java.util.List<java.util.List<java.lang.String>>[]",ut.getName());
+	}
+	
 	public void testIsRawTrue() {
 		BcelWorld world = new BcelWorld();
 		world.setBehaveInJava5Way(true);
