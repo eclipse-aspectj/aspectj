@@ -23,6 +23,12 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.1	
+//	public void testSuperItds_pr134425() { runTest("super itds"); }
+	public void testSuperItds_pr198196_1() { runTest("super itds - 2"); }
+	public void testSuperItds_pr198196_2() { runTest("super itds - 3"); }
+	public void testSuperItds_pr198196_3() { runTest("super itds - 4"); }
+//	public void testDeow_pr237381_1() { runTest("ataspectj deow - 1"); }
+//	public void testDeow_pr237381_2() { runTest("ataspectj deow - 2"); }
 	public void testRunningBrokenCode_pr102733_2() { runTest("running broken code - 2"); }
 	public void testRunningBrokenCode_pr102733() { runTest("running broken code"); }
 	public void testErrorOnNonabstractGenericAtAspectJAspect_pr168982() { runTest("error on non-abstract generic ataspectj aspect");}
