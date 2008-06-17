@@ -3,6 +3,10 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+	<ajc-test dir="bugs161/pr173978" title="lv table for around">
+    	<compile files="TestAroundAspect.java Test.java" options="-1.5"/>
+    </ajc-test>
+    
 	<ajc-test dir="bugs161/pr237419" title="generics ataround">
     	<compile files="problem/aspect/AnyAspect.java problem/SpecificService.java problem/Specific.java problem/GenericService.java problem/Generic.java" options="-1.5"/>
     	<run class="problem.SpecificService"/>

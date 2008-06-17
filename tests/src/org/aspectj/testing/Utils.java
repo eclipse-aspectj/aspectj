@@ -69,7 +69,7 @@ public class Utils {
 		return null;
 	}
 	
-	protected static JavaClass getClassFrom(String frompath,String clazzname) throws ClassNotFoundException {
+	public static JavaClass getClassFrom(String frompath,String clazzname) throws ClassNotFoundException {
 		SyntheticRepository repos = createRepos(frompath);
 		return repos.loadClass(clazzname);
 	}

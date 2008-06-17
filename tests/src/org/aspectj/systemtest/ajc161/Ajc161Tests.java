@@ -16,21 +16,27 @@ import java.util.Set;
 
 import junit.framework.Test;
 
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.LocalVariable;
+import org.aspectj.apache.bcel.classfile.LocalVariableTable;
+import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IRelationshipMap;
+import org.aspectj.testing.Utils;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.tools.ajc.Ajc;
 
 public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.1	
-	public void testGenericAtAround_pr237419() { runTest("generics ataround");}
-	public void testGenericMarkerMatch_pr203367() { runTest("generic marker match");}
+	public void testGenericAtAround_pr237419() { runTest("generics ataround"); }
+	public void testGenericMarkerMatch_pr203367() { runTest("generic marker match"); }
 //	public void testSuperItds_pr134425() { runTest("super itds"); }
 	public void testSuperItds_pr198196_1() { runTest("super itds - 2"); }
 	public void testSuperItds_pr198196_2() { runTest("super itds - 3"); }
 	public void testSuperItds_pr198196_3() { runTest("super itds - 4"); }
-//	public void testDeow_pr237381_1() { runTest("ataspectj deow - 1"); }
-//	public void testDeow_pr237381_2() { runTest("ataspectj deow - 2"); }
+	public void testDeow_pr237381_1() { runTest("ataspectj deow - 1"); }
+	public void testDeow_pr237381_2() { runTest("ataspectj deow - 2"); }
 	public void testRunningBrokenCode_pr102733_2() { runTest("running broken code - 2"); }
 	public void testRunningBrokenCode_pr102733() { runTest("running broken code"); }
 	public void testErrorOnNonabstractGenericAtAspectJAspect_pr168982() { runTest("error on non-abstract generic ataspectj aspect");}
@@ -66,7 +72,28 @@ public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
         }
     }
 
-    public void testITDPrecedence_pr233838_1() { runTest("itd precedence - 1"); }
+//	public void testLVTableAround_pr173978() throws Exception { 
+//		runTest("lv table for around");
+//		JavaClass jc = Utils.getClassFrom(ajc.getSandboxDirectory().getAbsolutePath(),"Test");
+//		Method[] ms = jc.getMethods();
+//		Method m = null;
+//		for (int i = 0; i < ms.length; i++) {
+//			if (ms[i].getName().equals("sayHello")) {
+//				m = ms[i];
+//			}
+//		}
+//		if (m.getLocalVariableTable()==null) fail("Local variable table should not be null");
+//		print(m.getLocalVariableTable());
+//	}
+
+    private void print(LocalVariableTable localVariableTable) {
+    	LocalVariable[] lvs = localVariableTable.getLocalVariableTable();
+    	for (int i = 0; i < lvs.length; i++) {
+			LocalVariable localVariable = lvs[i];
+			System.out.println(localVariable);
+		}
+	}
+	public void testITDPrecedence_pr233838_1() { runTest("itd precedence - 1"); }
 	public void testITDPrecedence_pr233838_2() { runTest("itd precedence - 2"); }
 	public void testGetFieldGenerics_pr227401() { runTest("getfield problem with generics");}
 	public void testGenericAbstractAspects_pr231478() { runTest("generic abstract aspects"); }
