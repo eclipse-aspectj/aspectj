@@ -3,6 +3,11 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+	<ajc-test dir="bugs161/pr203367" title="generic marker match">
+    	<compile files="CantMatchOnInterfaceIntroducedToGenericClass.java" options="-1.5"/>
+    	<run class="bug.CantMatchOnInterfaceIntroducedToGenericClass"/>
+    </ajc-test>
+    
 	<ajc-test dir="bugs161/pr198196" title="super itds - 2">
     	<compile files="Marker.java Foo.java MarkerAspect2.java"/>
     	<run class="Foo">
