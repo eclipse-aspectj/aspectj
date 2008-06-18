@@ -277,8 +277,12 @@ public class EclipseFactory {
 			// act of resolution here may cause recursion problems since the parameters may
 			// be type variables that we haven't fixed up yet.
 			if (arguments==null) arguments=new UnresolvedType[0];
-			String parameterizedSig = ResolvedType.PARAMETERIZED_TYPE_IDENTIFIER+CharOperation.charToString(binding.genericTypeSignature()).substring(1);
-			return TypeFactory.createUnresolvedParameterizedType(parameterizedSig,baseTypeSignature,arguments);
+//			StringBuffer parameterizedSig = new StringBuffer();
+//			parameterizedSig.append(ResolvedType.PARAMETERIZED_TYPE_IDENTIFIER);
+//			
+////			String parameterizedSig = new StringBuffer().append(ResolvedType.PARAMETERIZED_TYPE_IDENTIFIER).append(CharOperation.charToString(binding.genericTypeSignature()).substring(1)).toString();
+//			return TypeFactory.createUnresolvedParameterizedType(parameterizedSig,baseTypeSignature,arguments);
+			return TypeFactory.createUnresolvedParameterizedType(baseTypeSignature,arguments);
 		}
 		
 		// Convert the source type binding for a generic type into a generic UnresolvedType
