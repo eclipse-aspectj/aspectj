@@ -239,6 +239,17 @@ public class WeavingAdaptor implements IMessageContext {
 			warn("bad library: '" + libFile + "'");
 		}
 	}
+	
+	/**
+	 * Weave a class using aspects previously supplied to the adaptor.
+	 * @param name the name of the class
+	 * @param bytes the class bytes
+	 * @return the woven bytes
+     * @exception IOException weave failed
+	 */
+	public byte[] weaveClass(String name, byte[] bytes) throws IOException {
+		return weaveClass(name,bytes,false);
+	}
 
 	/**
 	 * Weave a class using aspects previously supplied to the adaptor.
