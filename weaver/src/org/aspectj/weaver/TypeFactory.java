@@ -14,6 +14,8 @@ package org.aspectj.weaver;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aspectj.asm.internal.CharOperation;
+
 /**
  * @author colyer
  *
@@ -244,5 +246,28 @@ public class TypeFactory {
 		UnresolvedType[] typeParams = new UnresolvedType[types.size()];
 		types.toArray(typeParams);
 		return typeParams;
+	}
+
+	// OPTIMIZE improve all this signature processing stuff, use char arrays, etc
+	
+	/**
+	 * Create a signature then delegate to the other factory method.  Same input/output:
+	 * baseTypeSignature="LSomeType;"
+	 * arguments[0]= something with sig "Pcom/Foo<Ljava/lang/String;>;"
+	 * signature created = "PSomeType<Pcom/Foo<Ljava/lang/String;>;>;"
+	 */
+	public static UnresolvedType createUnresolvedParameterizedType(String baseTypeSignature, UnresolvedType[] arguments) {
+		StringBuffer parameterizedSig = new StringBuffer();
+		parameterizedSig.append(ResolvedType.PARAMETERIZED_TYPE_IDENTIFIER);
+		parameterizedSig.append(baseTypeSignature.substring(1,baseTypeSignature.length()-1));
+		if (arguments.length > 0) {
+			parameterizedSig.append("<");
+			for (int i=0;i<arguments.length;i++) {
+				parameterizedSig.append(arguments[i].getSignature());
+			}
+			parameterizedSig.append(">");
+		}
+		parameterizedSig.append(";");
+		return createUnresolvedParameterizedType(parameterizedSig.toString(),baseTypeSignature,arguments);
 	}
 }
