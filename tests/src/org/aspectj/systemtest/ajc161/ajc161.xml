@@ -3,6 +3,11 @@
 <!-- AspectJ v1.6.1 Tests -->
 <suite>
 
+
+	<ajc-test dir="bugs161/pr237447" title="signature processing">
+    	<compile files="GenericClass.java SomeClass.java GenericGenericMemberClass.java UnrelatedAspect.java" options="-1.5"/>
+    </ajc-test>
+
 	<ajc-test dir="bugs161/pr173978" title="lv table for around">
     	<compile files="TestAroundAspect.java Test.java" options="-1.5"/>
     </ajc-test>

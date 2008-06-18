@@ -16,19 +16,16 @@ import java.util.Set;
 
 import junit.framework.Test;
 
-import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
-import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IRelationshipMap;
-import org.aspectj.testing.Utils;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.tools.ajc.Ajc;
 
 public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.1	
+	public void testSignatureProcessing_pr237447() { runTest("signature processing"); }
 	public void testGenericAtAround_pr237419() { runTest("generics ataround"); }
 	public void testGenericMarkerMatch_pr203367() { runTest("generic marker match"); }
 //	public void testSuperItds_pr134425() { runTest("super itds"); }
