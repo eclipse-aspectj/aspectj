@@ -2828,17 +2828,20 @@ class BcelClassWeaver implements IClassWeaver {
 	        return isMatched;
     	} else {
 	        boolean isMatched = false;
-	        for (Iterator i = shadowMungers.iterator(); i.hasNext(); ) {
-	            ShadowMunger munger = (ShadowMunger)i.next();
+	        int max = shadowMungers.size();
+	        for (int i=0;i<max;i++) {
+	        	ShadowMunger munger = (ShadowMunger)shadowMungers.get(i);
 	            if (munger.match(shadow, world)) {
 	                shadow.addMunger(munger);
 	                isMatched = true;
-				    if (shadow.getKind() == Shadow.StaticInitialization) {
-					  clazz.warnOnAddedStaticInitializer(shadow,munger.getSourceLocation());
-				    }
+	                if (shadow.getKind() == Shadow.StaticInitialization) {
+	  				  clazz.warnOnAddedStaticInitializer(shadow,munger.getSourceLocation());
+	  	        	}	
 	        	}
 	        }       	
-	        if (isMatched) shadowAccumulator.add(shadow);
+	        if (isMatched) {
+	        	shadowAccumulator.add(shadow);
+	        }
 	        return isMatched;
     	}
     }
