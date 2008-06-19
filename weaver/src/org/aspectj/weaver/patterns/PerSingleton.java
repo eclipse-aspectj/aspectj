@@ -20,6 +20,7 @@ import java.util.Map;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.VersionedDataInputStream;
@@ -30,6 +31,9 @@ import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
 
 public class PerSingleton extends PerClause {
+
+    private ResolvedMember perSingletonAspectOfMethod;
+
 	public PerSingleton() {
 	}
 
@@ -57,6 +61,7 @@ public class PerSingleton extends PerClause {
     	return this;
     }
     
+    
     public Test findResidueInternal(Shadow shadow, ExposedState state) {
         // TODO: the commented code is for slow Aspects.aspectOf() style - keep or remove
         //
@@ -71,9 +76,11 @@ public class PerSingleton extends PerClause {
         //    	// aspect before we are bound
         //        return Literal.TRUE;
 //        if (!Ajc5MemberMaker.isSlowAspect(inAspect)) {
-            Expr myInstance =
-                Expr.makeCallExpr(AjcMemberMaker.perSingletonAspectOfMethod(inAspect),
-                                    Expr.NONE, inAspect);
+    	if (perSingletonAspectOfMethod==null) {
+    	    // Build this just once
+    		perSingletonAspectOfMethod = AjcMemberMaker.perSingletonAspectOfMethod(inAspect);
+    	}
+            Expr myInstance = Expr.makeCallExpr(perSingletonAspectOfMethod, Expr.NONE, inAspect);
 
             state.setAspectInstance(myInstance);
 
