@@ -151,52 +151,58 @@ public class MemberImpl implements Member {
      * @return     a pair of UnresolvedType, UnresolvedType[] representing the return types and parameter types. 
      */
     private static Object[] signatureToTypes(String sig,boolean keepParameterizationInfo) {
-        List l = new ArrayList();
-        int i = 1;
-        boolean hasAnyAnglies = sig.indexOf('<')!=-1;
-        while (true) {
-            char c = sig.charAt(i);
-            if (c == ')') break; // break out when the hit the ')'
-            int start = i;
-            while (c == '[') c = sig.charAt(++i);
-            if (c == 'L' || c == 'P') {
-				int nextSemicolon = sig.indexOf(';',start);
-				int firstAngly = (hasAnyAnglies?sig.indexOf('<',start):-1);
-				if (!hasAnyAnglies || firstAngly == -1 || firstAngly>nextSemicolon) {
-                  i = nextSemicolon + 1;
-                  l.add(UnresolvedType.forSignature(sig.substring(start, i)));
-				} else {
-					// generics generics generics
-					// Have to skip to the *correct* ';'
-					boolean endOfSigReached = false;
-					int posn = firstAngly;
-					int genericDepth=0;
-					while (!endOfSigReached) {
-						switch (sig.charAt(posn)) {
-						  case '<': genericDepth++;break;
-						  case '>': genericDepth--;break;
-						  case ';': if (genericDepth==0) endOfSigReached=true;break;
-						  default:
+    	boolean hasParameters = sig.charAt(1)!=')';
+    	if (hasParameters) {
+	        List l = new ArrayList();
+	        int i = 1;
+	        boolean hasAnyAnglies = sig.indexOf('<')!=-1;
+	        while (true) {
+	            char c = sig.charAt(i);
+	            if (c == ')') break; // break out when the hit the ')'
+	            int start = i;
+	            while (c == '[') c = sig.charAt(++i);
+	            if (c == 'L' || c == 'P') {
+					int nextSemicolon = sig.indexOf(';',start);
+					int firstAngly = (hasAnyAnglies?sig.indexOf('<',start):-1);
+					if (!hasAnyAnglies || firstAngly == -1 || firstAngly>nextSemicolon) {
+	                  i = nextSemicolon + 1;
+	                  l.add(UnresolvedType.forSignature(sig.substring(start, i)));
+					} else {
+						// generics generics generics
+						// Have to skip to the *correct* ';'
+						boolean endOfSigReached = false;
+						int posn = firstAngly;
+						int genericDepth=0;
+						while (!endOfSigReached) {
+							switch (sig.charAt(posn)) {
+							  case '<': genericDepth++;break;
+							  case '>': genericDepth--;break;
+							  case ';': if (genericDepth==0) endOfSigReached=true;break;
+							  default:
+							}
+							posn++;
 						}
-						posn++;
+						// posn now points to the correct nextSemicolon :)
+						i=posn;
+						l.add(UnresolvedType.forSignature(sig.substring(start,i)));					
 					}
-					// posn now points to the correct nextSemicolon :)
-					i=posn;
-					l.add(UnresolvedType.forSignature(sig.substring(start,i)));					
-				}
-            } else if (c=='T') { // assumed 'reference' to a type variable, so just "Tname;"
-				int nextSemicolon = sig.indexOf(';',start);
-				String nextbit = sig.substring(start,nextSemicolon);
-				l.add(UnresolvedType.forSignature(nextbit));
-				i=nextSemicolon+1;
-            } else {
-            	i++;
-                l.add(UnresolvedType.forSignature(sig.substring(start, i)));
-            }
-        }
-        UnresolvedType[] paramTypes = (UnresolvedType[]) l.toArray(new UnresolvedType[l.size()]);
-        UnresolvedType returnType = UnresolvedType.forSignature(sig.substring(i+1, sig.length()));
-        return new Object[] { returnType, paramTypes };
+	            } else if (c=='T') { // assumed 'reference' to a type variable, so just "Tname;"
+					int nextSemicolon = sig.indexOf(';',start);
+					String nextbit = sig.substring(start,nextSemicolon);
+					l.add(UnresolvedType.forSignature(nextbit));
+					i=nextSemicolon+1;
+	            } else {
+	            	i++;
+	                l.add(UnresolvedType.forSignature(sig.substring(start, i)));
+	            }
+	        }
+	        UnresolvedType[] paramTypes = (UnresolvedType[]) l.toArray(new UnresolvedType[l.size()]);
+	        UnresolvedType returnType = UnresolvedType.forSignature(sig.substring(i+1, sig.length()));
+	        return new Object[] { returnType, paramTypes };
+    	} else {
+	        UnresolvedType returnType = UnresolvedType.forSignature(sig.substring(2));
+	        return new Object[] { returnType, UnresolvedType.NONE };
+    	}
     }            
 
     // ---- factory methods
