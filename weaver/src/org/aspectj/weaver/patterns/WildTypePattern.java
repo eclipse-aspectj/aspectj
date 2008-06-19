@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.aspectj.asm.internal.CharOperation;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -305,7 +306,7 @@ public class WildTypePattern extends TypePattern {
 		}
 		//XXX hack
 		if (knownMatches == null && importedPrefixes == null) {
-			return innerMatchesExactly(targetTypeName,isAnonymous, isNested);
+			return innerMatchesExactly(targetTypeName, isAnonymous, isNested);
 		}
 		
 		if (isNamePatternStar()) {
@@ -371,27 +372,33 @@ public class WildTypePattern extends TypePattern {
     }
 
 	
-	private boolean innerMatchesExactly(String targetTypeName, boolean isAnonymous, boolean isNested) {
-		//??? doing this everytime is not very efficient
-		char[][] names = splitNames(targetTypeName,isNested);
 
-        return innerMatchesExactly(names, isAnonymous);
-	}
-
-    private boolean innerMatchesExactly(char[][] names, boolean isAnonymous) {
+    private boolean innerMatchesExactly(String s, boolean isAnonymous, boolean convertDollar /*isNested*/) {
         		
-        		int namesLength = names.length;
-        		int patternsLength = namePatterns.length;
-        		
-        		int namesIndex = 0;
-        		int patternsIndex = 0;
+    		List ret = new ArrayList();
+    		int startIndex = 0;
+    		while (true) {
+    		    int breakIndex = s.indexOf('.', startIndex);  // what about /
+    		    if (convertDollar && (breakIndex == -1)) breakIndex = s.indexOf('$', startIndex);  // we treat $ like . here
+    		    if (breakIndex == -1) break;
+    		    char[] name = s.substring(startIndex, breakIndex).toCharArray();
+    		    ret.add(name);
+    		    startIndex = breakIndex+1;
+    		}
+    		ret.add(s.substring(startIndex).toCharArray());
+    	
+    		int namesLength = ret.size();
+    		int patternsLength = namePatterns.length;
+    		
+    		int namesIndex = 0;
+    		int patternsIndex = 0;
  
        		if ((!namePatterns[patternsLength-1].isAny()) && isAnonymous) return false;
        		 
         		if (ellipsisCount == 0) {
         			if (namesLength != patternsLength) return false;
         			while (patternsIndex < patternsLength) {
-        				if (!namePatterns[patternsIndex++].matches(names[namesIndex++])) {
+        				if (!namePatterns[patternsIndex++].matches((char[])ret.get(namesIndex++))) {
         					return false;
         				}
         			}
@@ -403,7 +410,7 @@ public class WildTypePattern extends TypePattern {
         				if (p == NamePattern.ELLIPSIS) {
         					namesIndex = namesLength - (patternsLength-patternsIndex);
         				} else {
-        				    if (!p.matches(names[namesIndex++])) {
+        				    if (!p.matches((char[])ret.get(namesIndex++))) {
         					    return false;
         				    }
         				}
@@ -411,7 +418,7 @@ public class WildTypePattern extends TypePattern {
         			return true;
         		} else {
         //            System.err.print("match(\"" + Arrays.asList(namePatterns) + "\", \"" + Arrays.asList(names) + "\") -> ");
-                    boolean b = outOfStar(namePatterns, names, 0, 0, patternsLength - ellipsisCount, namesLength, ellipsisCount);
+                    boolean b = outOfStar(namePatterns, (char[][])ret.toArray(new char[ret.size()][]), 0, 0, patternsLength - ellipsisCount, namesLength, ellipsisCount);
         //            System.err.println(b);
                     return b;
         		}
