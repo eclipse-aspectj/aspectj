@@ -564,7 +564,13 @@ public final class LazyMethodGen implements Traceable {
 
         BodyPrinter(PrintStream out) {
             this.pool = enclosingClass.getConstantPool();
-            this.body = getBody();
+            this.body = getBodyForPrint();
+            this.out = out;
+        }
+
+        BodyPrinter(PrintStream out,InstructionList il) {
+            this.pool = enclosingClass.getConstantPool();
+            this.body = il;
             this.out = out;
         }
 
@@ -862,6 +868,9 @@ public final class LazyMethodGen implements Traceable {
     
     public InstructionList getBody() {
     	markAsChanged();
+        return body;
+    }
+    public InstructionList getBodyForPrint() {
         return body;
     }
        
@@ -1258,14 +1267,15 @@ public final class LazyMethodGen implements Traceable {
    
 	    if (branchInstruction instanceof InstructionSelect) { 
 	        // Either LOOKUPSWITCH or TABLESWITCH
-	        InstructionHandle[] targets = ((InstructionSelect)branchInstruction).getTargets();
+	    	InstructionSelect iSelect = ((InstructionSelect)branchInstruction);
+	        InstructionHandle[] targets = iSelect.getTargets();
 	        for (int k = targets.length - 1; k >= 0; k--) { 
 	        	InstructionHandle oneTarget = targets[k];
 	        	if (handlesForDeletion.contains(oneTarget)) {
 	    	    	do {
 	    	    		oneTarget = oneTarget.getNext();
 	    	    	} while (handlesForDeletion.contains(oneTarget));
-	    	    	branchInstruction.setTarget(oneTarget);
+	    	    	iSelect.setTarget(k,oneTarget);
 	    	    	oneTarget.addTargeter(branchInstruction);
 	    	    }
 	        }
