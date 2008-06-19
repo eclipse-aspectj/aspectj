@@ -86,7 +86,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeParameterAnnotations;
  * use the `removeNOPs' method to get rid off them.
  * The resulting method object can be obtained via the `getMethod()' method.
  *
- * @version $Id: MethodGen.java,v 1.9 2008/05/28 23:52:57 aclement Exp $
+ * @version $Id: MethodGen.java,v 1.10 2008/06/19 18:14:25 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author  <A HREF="http://www.vmeng.com/beard">Patrick C. Beard</A> [setMaxStack()]
  * @see     InstructionList
@@ -209,6 +209,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 	  this(m,class_name,cp,false);
   }
   
+  // OPTIMIZE should always use tags and never anything else!
   public MethodGen(Method m, String class_name, ConstantPool cp,boolean useTags) {
     this(
     		m.getModifiers(), 
