@@ -4,6 +4,9 @@ import  org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.generic.*;
 
 import  java.io.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class represents the constant pool, i.e., a table of constants, of
@@ -15,6 +18,9 @@ public class ConstantPool implements Node {
 	private Constant[] pool;
     private int        poolSize; // number of entries in the pool (could be < pool.length as the array is resized in 'chunks')
 	
+    private Map utf8Cache = new HashMap();
+  	private Map methodCache = new HashMap();
+    
     public int getSize() { return poolSize; }
     
 	public ConstantPool() { 
@@ -228,10 +234,15 @@ public class ConstantPool implements Node {
     
     
     public int lookupUtf8(String string) {
+    	Integer pos = (Integer) utf8Cache.get(string);
+    	if (pos!=null) return pos.intValue();
     	for (int i=1;i<poolSize;i++) {
     		Constant c = pool[i];
     		if (c!=null && c.tag==Constants.CONSTANT_Utf8) {
-    			if (((ConstantUtf8)c).getBytes().equals(string)) return i;
+    			if (((ConstantUtf8)c).getBytes().equals(string)) {
+    				utf8Cache.put(string,new Integer(i));
+    				return i;
+    			}
     		}
     	}
     	return -1;
@@ -513,7 +524,7 @@ case Constants.CONSTANT_Fieldref: {
 return addInterfaceMethodref(class_name, name, signature);
 
   case Constants.CONSTANT_Methodref:
-return addMethodref(class_name, name, signature);
+return addMethodref(class_name, name, signature); // OPTIMIZE indicate it should be cached!
 
   case Constants.CONSTANT_Fieldref:
 return addFieldref(class_name, name, signature);
@@ -528,6 +539,7 @@ default: // Never reached
 }
 }
 
+  // OPTIMIZE should put it in the cache now
 	public int addMethodref(String class_name, String method_name, String signature) {
 	  int  ret, class_index, name_and_type_index;
 	  if((ret = lookupMethodref(class_name, method_name, signature)) != -1)
@@ -578,8 +590,12 @@ default: // Never reached
   	  }
 	  return -1;
   }
-	
-	  public int lookupMethodref(String searchClassname, String searchMethodName, String searchSignature) {
+  
+  	  
+	  public int lookupMethodref(String searchClassname, String searchMethodName, String searchSignature) {  
+		  String key = new StringBuffer().append(searchClassname).append(searchMethodName).append(searchSignature).toString();
+		  Integer cached = (Integer)methodCache.get(key);
+		  if (cached!=null) return cached.intValue();
 		  searchClassname = searchClassname.replace('.','/');
 		  for (int i=1;i<poolSize;i++) {
 	  		Constant c = pool[i];
@@ -598,6 +614,7 @@ default: // Never reached
 	  			if (!name.equals(searchMethodName)) continue; // not this one
 	  			String typeSignature = ((ConstantUtf8)pool[cnat.getSignatureIndex()]).getBytes();
 	  			if (!typeSignature.equals(searchSignature)) continue;
+	  			methodCache.put(key,new Integer(i));
 	  			return i;
 	  		}
 	  	  }
