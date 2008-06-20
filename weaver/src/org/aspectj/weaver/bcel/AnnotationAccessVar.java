@@ -144,7 +144,7 @@ public class AnnotationAccessVar extends BcelVar {
 			il.append(fact.createConstant(Integer.valueOf(i)));
         	switch (arrayEntries[i].getType()) {
         	  case Constants.T_ARRAY:
-        	    il.append(fact.createConstant(new ObjectType(arrayEntries[i].getSignature())));
+        	    il.append(fact.createConstant(new ObjectType(arrayEntries[i].getSignature()))); // FIXME should be getName() and not getSignature()?
         	    break;
         	  case Constants.T_BOOLEAN: il.append(fact.createGetStatic("java/lang/Boolean","TYPE",arrayElementType)); break;
         	  case Constants.T_BYTE:il.append(fact.createGetStatic("java/lang/Byte","TYPE",arrayElementType)); break;
