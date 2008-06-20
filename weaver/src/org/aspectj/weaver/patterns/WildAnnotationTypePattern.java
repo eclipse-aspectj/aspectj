@@ -320,7 +320,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		TypePattern t = TypePattern.read(s,context);
 		ret = new WildAnnotationTypePattern(t);
 		ret.readLocation(context,s);
-		if (s.getMajorVersion()>=WeaverVersionInfo.WEAVER_VERSION_MINOR_AJ160) {
+		if (s.getMajorVersion()>=WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ160) {
 			if (s.readBoolean()) ret.setForParameterAnnotationMatch();
 		}
 		if (s.getMajorVersion()>=WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ160M2) {

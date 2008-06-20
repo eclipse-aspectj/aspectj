@@ -80,7 +80,7 @@ public class OrAnnotationTypePattern extends AnnotationTypePattern {
 				AnnotationTypePattern.read(s,context),
 				AnnotationTypePattern.read(s,context));
 		p.readLocation(context,s);
-		if (s.getMajorVersion()>=WeaverVersionInfo.WEAVER_VERSION_MINOR_AJ160) {
+		if (s.getMajorVersion()>=WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ160) {
 			if (s.readBoolean()) p.setForParameterAnnotationMatch();
 		}
 		return p;		

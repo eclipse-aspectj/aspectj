@@ -78,7 +78,7 @@ public class NotAnnotationTypePattern extends AnnotationTypePattern {
 	public static AnnotationTypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		AnnotationTypePattern ret = new NotAnnotationTypePattern(AnnotationTypePattern.read(s,context));
 		ret.readLocation(context,s);
-		if (s.getMajorVersion()>=WeaverVersionInfo.WEAVER_VERSION_MINOR_AJ160) {
+		if (s.getMajorVersion()>=WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ160) {
 			if (s.readBoolean()) ret.setForParameterAnnotationMatch();
 		}
 		return ret;
