@@ -32,6 +32,6 @@ public class MemberKind extends TypeSafeEnum {
             case 8: return Member.MONITORENTER;
             case 9: return Member.MONITOREXIT;
         }
-        throw new BCException("weird kind " + key);
+        throw new BCException("Unexpected memberkind, should be (1-9) but was " + key);
     }
 }
