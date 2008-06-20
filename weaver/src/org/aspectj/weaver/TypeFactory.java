@@ -14,8 +14,6 @@ package org.aspectj.weaver;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aspectj.asm.internal.CharOperation;
-
 /**
  * @author colyer
  *
