@@ -155,6 +155,8 @@ public class ResolvedPointcutDefinition extends ResolvedMemberImpl {
 	public static final ResolvedPointcutDefinition DUMMY =
 	    new ResolvedPointcutDefinition(UnresolvedType.OBJECT, 0, "missing", 
 	    				UnresolvedType.NONE, Pointcut.makeMatchesNothing(Pointcut.RESOLVED));
+	
+	public static final ResolvedPointcutDefinition[] NO_POINTCUTS = new ResolvedPointcutDefinition[]{};
 
 	public void setPointcut(Pointcut pointcut) {
 		this.pointcut = pointcut;
