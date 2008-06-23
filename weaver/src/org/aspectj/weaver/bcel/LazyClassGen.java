@@ -91,7 +91,7 @@ public final class LazyClassGen {
 	
 	private BcelObjectType myType; // XXX is not set for types we create
 	private ClassGen myGen;
-	private ConstantPool constantPoolGen;
+	private ConstantPool cp;
 	private World world;
     private String packageName = null;
 
@@ -150,13 +150,13 @@ public final class LazyClassGen {
 	}
 	
 	private Unknown getSourceDebugExtensionAttribute() {
-		int nameIndex = constantPoolGen.addUtf8("SourceDebugExtension");
+		int nameIndex = cp.addUtf8("SourceDebugExtension");
 		String data = getSourceDebugExtensionString();
 		//System.err.println(data);
 		byte[] bytes = Utility.stringToUTF(data);
 		int length = bytes.length;
 
-		return new Unknown(nameIndex, length, bytes, constantPoolGen);		
+		return new Unknown(nameIndex, length, bytes, cp);		
 	}	
 
 //	private LazyClassGen() {}
@@ -252,8 +252,8 @@ public final class LazyClassGen {
         World world) 
     {
         myGen = new ClassGen(class_name, super_class_name, file_name, access_flags, interfaces);
-		constantPoolGen = myGen.getConstantPool();
-        fact = new InstructionFactory(myGen, constantPoolGen);
+		cp = myGen.getConstantPool();
+        fact = new InstructionFactory(myGen, cp);
         regenerateGenericSignatureAttribute = true;
         this.world = world;
     }
@@ -261,8 +261,8 @@ public final class LazyClassGen {
 	//Non child type, so it comes from a real type in the world.
     public LazyClassGen(BcelObjectType myType) {
     	myGen = new ClassGen(myType.getJavaClass());
-    	constantPoolGen = myGen.getConstantPool();
-		fact = new InstructionFactory(myGen, constantPoolGen);        
+    	cp = myGen.getConstantPool();
+		fact = new InstructionFactory(myGen, cp);        
 		this.myType = myType;
 		this.world = myType.getResolvedTypeX().getWorld();
 
@@ -532,7 +532,7 @@ public final class LazyClassGen {
         myGen.setFields(Field.NoFields);
         for (int i = 0; i < len; i++) {
             BcelField gen = (BcelField) fields.get(i);
-            myGen.addField(gen.getField(this.constantPoolGen));
+            myGen.addField(gen.getField(this.cp));
         }
 
     	if (sourceDebugExtensionSupportSwitchedOn) {
@@ -623,9 +623,9 @@ public final class LazyClassGen {
 	 *  e.g. "Ljava/lang/Object;LI<Ljava/lang/Double;>;"
 	 */
 	private Signature createSignatureAttribute(String signature) {
-		int nameIndex = constantPoolGen.addUtf8("Signature");
-		int sigIndex  = constantPoolGen.addUtf8(signature);
-		return new Signature(nameIndex,2,sigIndex,constantPoolGen);
+		int nameIndex = cp.addUtf8("Signature");
+		int sigIndex  = cp.addUtf8(signature);
+		return new Signature(nameIndex,2,sigIndex,cp);
 	}
 
 	/**
@@ -817,7 +817,7 @@ public final class LazyClassGen {
     }
 
     public ConstantPool getConstantPool() {
-        return constantPoolGen;
+        return cp;
     }
     
     public String getName() {
@@ -1067,8 +1067,7 @@ public final class LazyClassGen {
     		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getReturnType())));
     		// And generate a call to the variant of makeMethodSig() that takes 7 strings
     		list.append(fact.createInvoke(factoryType.getClassName(), 
-					signatureMakerName,signatureType,
-    				new Type[] { Type.STRING,Type.STRING,Type.STRING,Type.STRING,Type.STRING,Type.STRING,Type.STRING },
+					signatureMakerName,signatureType,Type.STRINGARRAY7,
     				Constants.INVOKEVIRTUAL));
    	    } else if (sig.getKind().equals(Member.MONITORENTER)) {
     		list.append(InstructionFactory.PUSH(getConstantPool(),makeString(sig.getDeclaringType())));
