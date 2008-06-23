@@ -77,7 +77,7 @@ import  java.util.StringTokenizer;
  * class file.  Those interested in programatically generating classes
  * should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
 
- * @version $Id: JavaClass.java,v 1.10 2008/05/28 23:53:02 aclement Exp $
+ * @version $Id: JavaClass.java,v 1.11 2008/06/23 02:06:22 aclement Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -116,6 +116,8 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
   private String signatureAttributeString = null;
   private Signature signatureAttribute = null;
   private boolean searchedForSignatureAttribute = false;
+  
+  private static final String[] NO_INTERFACE_NAMES = new String[]{};
   
   /**
    * In cases where we go ahead and create something,
@@ -202,10 +204,14 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
     else
       superclass_name = "java.lang.Object";    
 
-    interface_names = new String[interfaces.length];
-    for(int i=0; i < interfaces.length; i++) {
-      String str = constant_pool.getConstantString(interfaces[i], Constants.CONSTANT_Class);
-      interface_names[i] = Utility.compactClassName(str, false);
+    if (interfaces.length==0) {
+    	interface_names = NO_INTERFACE_NAMES;
+    } else {
+	    interface_names = new String[interfaces.length];
+	    for(int i=0; i < interfaces.length; i++) {
+	      String str = constant_pool.getConstantString(interfaces[i], Constants.CONSTANT_Class);
+	      interface_names[i] = Utility.compactClassName(str, false);
+	    }
     }
   }
 
