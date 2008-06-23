@@ -17,7 +17,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -31,7 +30,7 @@ public class UnwovenClassFile {
 	protected byte[] bytes;
 //	protected JavaClass javaClass = null;
 	//protected byte[] writtenBytes = null;
-	protected List /* ChildClass */ writtenChildClasses = new ArrayList(0);
+	protected List /* ChildClass */ writtenChildClasses = Collections.EMPTY_LIST;
 	protected String className = null;
 	
 	public UnwovenClassFile(String filename, byte[] bytes) {
