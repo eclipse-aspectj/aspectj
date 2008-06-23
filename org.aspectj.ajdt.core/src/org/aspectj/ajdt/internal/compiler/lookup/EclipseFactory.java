@@ -317,8 +317,11 @@ public class EclipseFactory {
 			}
 		}
 		
-		return UnresolvedType.forName(getName(binding));
+		// was: UnresolvedType.forName(getName(binding));
+		UnresolvedType ut = UnresolvedType.forSignature(new String(binding.signature()));
+		return ut;
 	}
+	
 
 	/**
 	 * Some type variables refer to themselves recursively, this enables us to avoid
