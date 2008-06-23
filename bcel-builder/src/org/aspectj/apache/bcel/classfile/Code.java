@@ -69,7 +69,7 @@ import  java.io.*;
  * is used for debugging purposes and <em>LocalVariableTable</em> which 
  * contains information about the local variables.
  *
- * @version $Id: Code.java,v 1.4 2008/05/28 23:53:02 aclement Exp $
+ * @version $Id: Code.java,v 1.5 2008/06/23 02:05:52 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Attribute
  * @see     CodeException
@@ -82,6 +82,7 @@ public final class Code extends Attribute {
   private byte[]          code;           // Actual byte code
   private CodeException[] exceptionTable;  
   private Attribute[]     attributes;
+  private static final CodeException[] NO_EXCEPTIONS = new CodeException[]{};
 
   /**
    * Initialize from another object. Note that both objects use the same
@@ -109,9 +110,13 @@ public final class Code extends Attribute {
      * handler is active, i.e., a try { ... } catch() block.
      */
     len = file.readUnsignedShort();
-    exceptionTable        = new CodeException[len];
-    for(int i=0; i < len; i++)
-      exceptionTable[i] = new CodeException(file);
+    if (len==0) {
+    	exceptionTable = NO_EXCEPTIONS;
+    } else {
+	    exceptionTable        = new CodeException[len];
+	    for(int i=0; i < len; i++)
+	      exceptionTable[i] = new CodeException(file);
+    }
 
     // Read all attributes, eg: LineNumberTable, LocalVariableTable
     attributes = AttributeUtils.readAttributes(file,constant_pool);
