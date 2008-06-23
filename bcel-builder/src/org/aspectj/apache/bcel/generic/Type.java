@@ -55,6 +55,8 @@ package org.aspectj.apache.bcel.generic;
  */
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ClassFormatException;
@@ -65,7 +67,7 @@ import org.aspectj.apache.bcel.classfile.Utility;
  * Abstract super class for all possible java types, namely basic types
  * such as int, object types like String and array types, e.g. int[]
  *
- * @version $Id: Type.java,v 1.9 2008/06/06 04:24:20 aclement Exp $
+ * @version $Id: Type.java,v 1.10 2008/06/23 04:01:47 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  * modified:
@@ -87,8 +89,16 @@ public abstract class Type implements java.io.Serializable {
   public static final BasicType     CHAR         = new BasicType(Constants.T_CHAR);
   public static final ObjectType    OBJECT       = new ObjectType("java.lang.Object");
   public static final ObjectType    STRING       = new ObjectType("java.lang.String");
+  public static final ObjectType    OBJECT_ARRAY = new ObjectType("java.lang.Object[]");
+  public static final ObjectType    STRING_ARRAY = new ObjectType("java.lang.String[]");
   public static final ObjectType    STRINGBUFFER = new ObjectType("java.lang.StringBuffer");
+  public static final ObjectType    STRINGBUILDER= new ObjectType("java.lang.StringBuilder");
   public static final ObjectType    THROWABLE    = new ObjectType("java.lang.Throwable");
+  public static final ObjectType    CLASS        = new ObjectType("java.lang.Class");
+  public static final ObjectType    INTEGER      = new ObjectType("java.lang.Integer");
+  public static final ObjectType    EXCEPTION    = new ObjectType("java.lang.Exception");
+  public static final ObjectType    LIST         = new ObjectType("java.util.List");
+  public static final ObjectType    ITERATOR     = new ObjectType("java.util.Iterator");
   public static final Type[]        NO_ARGS      = new Type[0];
   public static final ReferenceType NULL         = new ReferenceType(){};
   public static final Type          UNKNOWN      = new Type(Constants.T_UNKNOWN,"<unknown object>"){};
@@ -97,6 +107,35 @@ public abstract class Type implements java.io.Serializable {
   public static final Type[]        STRINGARRAY3 = new Type[]{STRING,STRING,STRING};
   public static final Type[]        STRINGARRAY4 = new Type[]{STRING,STRING,STRING,STRING};
   public static final Type[]        STRINGARRAY5 = new Type[]{STRING,STRING,STRING,STRING,STRING};
+  public static final Type[]        STRINGARRAY6 = new Type[]{STRING,STRING,STRING,STRING,STRING,STRING};
+  public static final Type[]        STRINGARRAY7 = new Type[]{STRING,STRING,STRING,STRING,STRING,STRING,STRING};
+  
+  private static Map commonTypes = new HashMap();
+  
+  static {
+	  commonTypes.put(STRING.getSignature(), STRING);
+	  commonTypes.put(THROWABLE.getSignature(), THROWABLE);
+	  commonTypes.put(VOID.getSignature(), VOID);
+	  commonTypes.put(BOOLEAN.getSignature(), BOOLEAN);
+	  commonTypes.put(BYTE.getSignature(), BYTE);
+	  commonTypes.put(SHORT.getSignature(), SHORT);
+	  commonTypes.put(CHAR.getSignature(), CHAR);
+	  commonTypes.put(INT.getSignature(), INT);
+	  commonTypes.put(LONG.getSignature(), LONG);
+	  commonTypes.put(DOUBLE.getSignature(), DOUBLE);
+	  commonTypes.put(FLOAT.getSignature(), FLOAT);
+	  commonTypes.put(CLASS.getSignature(), CLASS);
+	  commonTypes.put(OBJECT.getSignature(), OBJECT);
+	  commonTypes.put(STRING_ARRAY.getSignature(), STRING_ARRAY);
+	  commonTypes.put(OBJECT_ARRAY.getSignature(), OBJECT_ARRAY);
+	  commonTypes.put(INTEGER.getSignature(), INTEGER);
+	  commonTypes.put(EXCEPTION.getSignature(), EXCEPTION);
+	  commonTypes.put(STRINGBUFFER.getSignature(), STRINGBUFFER);
+	  commonTypes.put(STRINGBUILDER.getSignature(), STRINGBUILDER);
+	  commonTypes.put(LIST.getSignature(), LIST);
+	  commonTypes.put(ITERATOR.getSignature(), ITERATOR);
+
+  }
   
   protected Type(byte t, String s) {
     type      = t;
@@ -155,8 +194,44 @@ public abstract class Type implements java.io.Serializable {
   }
   
   public static final Type getType(String signature) {
-  	TypeHolder th = getTypeInternal(signature);
-  	return th.getType();
+	  Type t = (Type)commonTypes.get(signature);
+	  if (t!=null) return t;
+	  byte type = Utility.typeOfSignature(signature);
+	  if (type <= Constants.T_VOID) {
+	      return BasicType.getType(type);
+	  } else if (type == Constants.T_ARRAY) {
+	      int dim=0;
+	      do { dim++; } while(signature.charAt(dim) == '[');
+	      // Recurse, but just once, if the signature is ok
+	      Type componentType = getType(signature.substring(dim));
+	      return new ArrayType(componentType, dim);
+	  } else { // type == T_REFERENCE
+		  // generics awareness
+	      int nextAngly = signature.indexOf('<');
+	      // Format is 'Lblahblah;'
+	      int index = signature.indexOf(';'); // Look for closing ';'
+		  
+		  String typeString = null;
+		  if (nextAngly==-1 || nextAngly>index) {
+			typeString = signature.substring(1,index).replace('/','.');
+		  } else {
+			boolean endOfSigReached = false;
+			int posn = nextAngly;
+			int genericDepth=0;
+			while (!endOfSigReached) {
+				switch (signature.charAt(posn++)) {
+				  case '<': genericDepth++;break;
+				  case '>': genericDepth--;break;
+				  case ';': if (genericDepth==0) endOfSigReached=true;break;
+				  default:
+				}
+			}
+			index=posn-1;
+			typeString = signature.substring(1,nextAngly).replace('/','.');
+		  }
+		  // ObjectType doesn't currently store parameterized info
+	      return new ObjectType(typeString);
+	  }
   }
   
   /**
