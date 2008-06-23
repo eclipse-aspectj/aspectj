@@ -1,12 +1,14 @@
 package org.aspectj.apache.bcel.classfile;
 
-import  org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.generic.*;
-
-import  java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.generic.ArrayType;
+import org.aspectj.apache.bcel.generic.ObjectType;
 
 /**
  * This class represents the constant pool, i.e., a table of constants, of
@@ -20,6 +22,7 @@ public class ConstantPool implements Node {
 	
     private Map utf8Cache = new HashMap();
   	private Map methodCache = new HashMap();
+    private Map fieldCache = new HashMap();
     
     public int getSize() { return poolSize; }
     
@@ -324,6 +327,9 @@ public class ConstantPool implements Node {
 
 	  public int lookupFieldref(String searchClassname, String searchFieldname, String searchSignature) {
 		  searchClassname = searchClassname.replace('.','/');
+		  String k = new StringBuffer().append(searchClassname).append(searchFieldname).append(searchSignature).toString();
+		  Integer pos = (Integer) fieldCache.get(k);
+	      if (pos!=null) return pos.intValue();
 		  for (int i=1;i<poolSize;i++) {
 	  		Constant c = pool[i];
 	  		if (c!=null && c.tag==Constants.CONSTANT_Fieldref) {
@@ -341,6 +347,7 @@ public class ConstantPool implements Node {
 	  			if (!name.equals(searchFieldname)) continue; // not this one
 	  			String typeSignature = ((ConstantUtf8)pool[cnat.getSignatureIndex()]).getBytes();
 	  			if (!typeSignature.equals(searchSignature)) continue;
+	  			fieldCache.put(k,new Integer(i));
 	  			return i;
 	  		}
 	  	  }
