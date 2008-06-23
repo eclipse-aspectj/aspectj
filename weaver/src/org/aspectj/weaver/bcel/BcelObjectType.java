@@ -114,6 +114,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	private static final int DISCOVERED_WHETHER_ANNOTATION_STYLE    = 0x0020;
 	private static final int DAMAGED                                = 0x0040; // see note(2) below	
 	
+	private static final String[] NO_INTERFACE_SIGS = new String[]{};
+	
 	/*
 	 * Notes:
 	 * note(1):
@@ -216,12 +218,17 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     	ResolvedType[] interfaceTypes = null;
     	if (interfaceSignatures == null) {
     		String[] names = javaClass.getInterfaceNames();
-    		interfaceSignatures = new String[names.length];
-        	interfaceTypes = new ResolvedType[names.length];
-            for (int i = 0, len = names.length; i < len; i++) {
-                interfaceTypes[i] = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(names[i]));
-                interfaceSignatures[i] = interfaceTypes[i].getSignature();
-            }
+    		if (names.length==0) {
+    			interfaceSignatures = NO_INTERFACE_SIGS;
+    			interfaceTypes = ResolvedType.NONE;
+    		} else {
+	    		interfaceSignatures = new String[names.length];
+	        	interfaceTypes = new ResolvedType[names.length];
+	            for (int i = 0, len = names.length; i < len; i++) {
+	                interfaceTypes[i] = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(names[i]));
+	                interfaceSignatures[i] = interfaceTypes[i].getSignature();
+	            }
+    		}
     	} else {
     		interfaceTypes = new ResolvedType[interfaceSignatures.length];
             for (int i = 0, len = interfaceSignatures.length; i < len; i++) {
@@ -331,8 +338,12 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		l = AtAjAttributes.readAj5ClassAttributes(javaClass, getResolvedTypeX(), getResolvedTypeX().getSourceContext(), msgHandler,isCodeStyleAspect);
 		AjAttribute.Aspect deferredAspectAttribute = processAttributes(l,pointcuts,true);
 		
-		this.pointcuts = (ResolvedPointcutDefinition[]) 
-			pointcuts.toArray(new ResolvedPointcutDefinition[pointcuts.size()]);
+		if (pointcuts.size()==0) {
+			this.pointcuts = ResolvedPointcutDefinition.NO_POINTCUTS;
+		} else {
+			this.pointcuts = (ResolvedPointcutDefinition[]) 
+				pointcuts.toArray(new ResolvedPointcutDefinition[pointcuts.size()]);
+		}
 		
 		resolveAnnotationDeclares(l);
 
@@ -715,25 +726,29 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 						+ e.getMessage());
 			}
 //			this.interfaces = new ResolvedType[cSig.superInterfaceSignatures.length];
-			this.interfaceSignatures = new String[cSig.superInterfaceSignatures.length];
-			for (int i = 0; i < cSig.superInterfaceSignatures.length; i++) {
-				try {
-//					this.interfaces[i] = 
-//						BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
-//								cSig.superInterfaceSignatures[i],
-//								formalsForResolution, 
-//								getResolvedTypeX().getWorld());
-					this.interfaceSignatures[i] = 
-						BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
-								cSig.superInterfaceSignatures[i],
-								formalsForResolution, 
-								getResolvedTypeX().getWorld()).getSignature();
-				} catch (GenericSignatureFormatException e) {
-					// development bug, fail fast with good info
-					throw new IllegalStateException(
-							"While determing the generic superinterfaces of " + this.className
-							+ " with generic signature " + getDeclaredGenericSignature() +" the following error was detected: "
-							+ e.getMessage());
+			if (cSig.superInterfaceSignatures.length==0) {
+				this.interfaceSignatures = NO_INTERFACE_SIGS;
+			} else {
+				this.interfaceSignatures = new String[cSig.superInterfaceSignatures.length];
+				for (int i = 0; i < cSig.superInterfaceSignatures.length; i++) {
+					try {
+		//					this.interfaces[i] = 
+		//						BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
+		//								cSig.superInterfaceSignatures[i],
+		//								formalsForResolution, 
+		//								getResolvedTypeX().getWorld());
+						this.interfaceSignatures[i] = 
+							BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
+									cSig.superInterfaceSignatures[i],
+									formalsForResolution, 
+									getResolvedTypeX().getWorld()).getSignature();
+					} catch (GenericSignatureFormatException e) {
+						// development bug, fail fast with good info
+						throw new IllegalStateException(
+								"While determing the generic superinterfaces of " + this.className
+								+ " with generic signature " + getDeclaredGenericSignature() +" the following error was detected: "
+								+ e.getMessage());
+					}
 				}
 			}
 		}
