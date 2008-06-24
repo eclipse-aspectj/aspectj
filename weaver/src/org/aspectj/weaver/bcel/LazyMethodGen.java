@@ -98,7 +98,7 @@ public final class LazyMethodGen implements Traceable {
     private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
     int highestLineNumber = 0;
     boolean wasPackedOptimally = false;
-    
+	
     /*
      * We use LineNumberTags and not Gens.
      * 
@@ -324,7 +324,7 @@ public final class LazyMethodGen implements Traceable {
 
             unpackHandlers(gen);
             
-			ensureAllLineNumberSetup(gen);
+			ensureAllLineNumberSetup();
 		    highestLineNumber = gen.getHighestlinenumber();
 		    
         }
@@ -396,7 +396,7 @@ public final class LazyMethodGen implements Traceable {
      * has the right line number. This is necessary because some of them may be extracted out into other
      * methods - and it'd be useful for them to maintain the source line number for debugging.
      */
-    private void ensureAllLineNumberSetup(MethodGen gen) {
+    public void ensureAllLineNumberSetup() {
         LineNumberTag lr = null;
         boolean skip = false;
         for (InstructionHandle ih = body.getStart(); ih != null; ih = ih.getNext()) {
