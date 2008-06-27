@@ -70,6 +70,8 @@ public class ModelTests extends ModelTestCase {
 	public void testAbstractAspectsAndAdvice_pr160469() {runModelTest("ensure advice from abstract aspects appear correctly in the model","pr160469_1");}
 	public void testAbstractAspectsAndDeow_pr160469() {runModelTest("ensure deow from abstract aspects appear correctly in the model","pr160469_2");}
 	
+	//public void testMultipleIdenticalJpsOnOneLine_pr238054() { runModelTest("multiple identical jps on one line","pr238054");}
+	
 	/////////////////////////////////////////
 	public static Test suite() {
 		return XMLBasedAjcTestCase.loadSuite(ModelTests.class);

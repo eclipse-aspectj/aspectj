@@ -4,6 +4,12 @@
 <suite>
 <!-- non-AspectJ 5 specific tests -->
 
+    <ajc-test dir="model/pr238054" title="multiple identical jps on one line">
+        <compile files="pr238054.aj" options="-emacssym"/>
+    </ajc-test> 
+
+
+
     <ajc-test dir="model/pr77269_1" title="advice in structure model with anonymous inner class">
         <compile files="pack/pr77269.aj" options="-emacssym"/>
     </ajc-test> 

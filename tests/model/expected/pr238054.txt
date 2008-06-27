@@ -1,0 +1,28 @@
+=== MODEL STATUS REPORT ========= After a batch build
+<root>  [java source file] 
+  pr238054.aj  [java source file] TEST_SANDBOX\pr238054.aj:1:
+    import declarations  [import reference] 
+    A  [class] TEST_SANDBOX\pr238054.aj:1:
+      x()  [method] TEST_SANDBOX\pr238054.aj:2:
+      y()  [method] TEST_SANDBOX\pr238054.aj:3:
+        method-call(void A.x())  [code] TEST_SANDBOX\pr238054.aj:3:
+        method-call(void A.x())  [code] TEST_SANDBOX\pr238054.aj:3:
+    B  [aspect] TEST_SANDBOX\pr238054.aj:6:
+      before(): <anonymous pointcut>  [advice] TEST_SANDBOX\pr238054.aj:7:
+=== END OF MODEL REPORT =========
+=== RELATIONSHIPS REPORT ========= After a batch build
+(targets=2) *pr238054.aj}B&before (advises) *pr238054.aj[A~y?method-call(void A.x())
+(targets=2) *pr238054.aj}B&before (advises) *pr238054.aj[A~y?method-call(void A.x())!2
+(targets=1) *pr238054.aj[A~y?method-call(void A.x())!2 (advised by) *pr238054.aj}B&before
+(targets=1) *pr238054.aj[A~y?method-call(void A.x()) (advised by) *pr238054.aj}B&before
+=== END OF RELATIONSHIPS REPORT ==
+=== Properties of the model and relationships map =====
+method=2
+import reference=1
+aspect=1
+code=2
+class=1
+advice=1
+RelationshipMapSize=3
+FileMapSize=1
+java source file=2
