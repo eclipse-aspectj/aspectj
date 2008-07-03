@@ -52,7 +52,7 @@ is applied to the JDT compiler (just as a sample piece of source code).
 </ol>
 <p>
 <center>
-<img src="perfSourceCompile_161.PNG"></img>
+<img src="perfSourceCompile_161.jpg"></img>
 </center>
 
 <h4>Binary weaving</h4>
@@ -65,7 +65,7 @@ classes jar 'rt.jar' as an example of a large jar file for weaving.
 <li>Binary weaving rt.jar (~12000 classes) with an insane aspect (before(): within(*) {}) (352000 join points)
 </ol>
 <center>
-<img src="perfBinaryWeave_161.PNG"></img>
+<img src="perfBinaryWeave_161.jpg"></img>
 </center>
 
 <h4>Loadtime weaving</h4>
@@ -76,7 +76,7 @@ tools jar 'tools.jar' as an example of a jar file for loadtime weaving.
 <li>Binary weaving tools.jar (~1900 classes) with an insane aspect (before(): within(*) {})
 </ol>
 <center>
-<img src="perfLTW_161.PNG"></img>
+<img src="perfLTW_161.jpg"></img>
 </center>
 <p>The refactoring work has also reduced the amount of unnecessary garbage created on the heap during the weaving process.  The next comparison shows roughly the
 reduction in amount of 'stuff' created on the heap during a weave.  This isn't the max heap required to do a weave, it is just showing how many less temporary objects
@@ -87,7 +87,7 @@ are allocated during an entire run of the weaver
 <li>Third, this time using the insane aspect
 </ol>
 <center>
-<img src="heapContents_161.PNG"></img>
+<img src="heapContents_161.jpg"></img>
 </center>
 <p>So in terms of memory required, weaving the insane aspect into tools.jar created 1.4G of 'stuff' over the entire weaving process, compared to 1.75G with 1.6.0.
 
@@ -103,11 +103,11 @@ correctly and when all threads complete (and all classloaders are orphaned), all
 
 <p>First, AspectJ 1.6.0, in which memory was never correctly recovered and so an OutOfMemory problem would always occur eventually.
 <center>
-<img src="memLtwStress_160.PNG"></img>
+<img src="memLtwStress_160.jpg"></img>
 </center>
 <p>And now AspectJ 1.6.1:
 <center>
-<img src="memLtwStress_161.PNG"></img>
+<img src="memLtwStress_161.jpg"></img>
 </center>
 
 
