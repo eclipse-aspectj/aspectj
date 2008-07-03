@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.6.2 Tests -->
+<suite>
+
+	<ajc-test dir="bugs162/pr239441" title="annotation decp">
+    	<compile files="Test3.java SampleAspect.java" options="-1.5 -showWeaveInfo -XhasMember">
+    	</compile>
+    </ajc-test>    
+
+</suite>
