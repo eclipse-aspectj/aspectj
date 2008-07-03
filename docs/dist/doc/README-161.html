@@ -100,10 +100,15 @@ weaver instance correctly matched the lifecycle of the associated classloader.  
 Here is a memory usage graph for AspectJ1.6.1 - this shows an application that spawns 7 threads which run continuously for a few minutes.  Each thread
 repeatedly creates a classloader, weaves 500 classes using it then discards the classloader.  You can see that over time the memory is recovered
 correctly and when all threads complete (and all classloaders are orphaned), all the weavers are discarded.
+
+<p>First, AspectJ 1.6.0, in which memory was never correctly recovered and so an OutOfMemory problem would always occur eventually.
+<center>
+<img src="memLtwStress_160.PNG"></img>
+</center>
+<p>And now AspectJ 1.6.1:
 <center>
 <img src="memLtwStress_161.PNG"></img>
 </center>
-<p>In 1.6.0 the memory was never correctly recovered and so an OutOfMemory problem would always occur eventually.
 
 
 <h2>Incremental compilation</h2>
