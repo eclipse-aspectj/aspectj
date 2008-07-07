@@ -156,7 +156,18 @@ public class ReferenceType extends ResolvedType {
     	return delegate.getAnnotationTypes(); 
     }
     
-    public boolean isAspect() {
+	public AnnotationX getAnnotationOfType(UnresolvedType ofType) {
+		AnnotationX[] axs = delegate.getAnnotations();
+		if (axs==null) return null;
+		for (int i=0;i<axs.length;i++) {
+			if (axs[i].getSignature().equals(ofType)) {
+				return axs[i];
+			}
+		}
+		return null;
+	}
+
+	public boolean isAspect() {
     	return delegate.isAspect();
     }
 
