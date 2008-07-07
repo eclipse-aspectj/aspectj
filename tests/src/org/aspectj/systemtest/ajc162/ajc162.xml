@@ -7,5 +7,35 @@
     	<compile files="Test3.java SampleAspect.java" options="-1.5 -showWeaveInfo -XhasMember">
     	</compile>
     </ajc-test>    
+    
+	<ajc-test dir="bugs162/pr238992" title="annotation value decp">
+    	<compile files="Foo.java" options="-1.5 -showWeaveInfo">
+    	  <message kind="weave" text="Extending interface set for type 'Goo'"/>
+    	</compile>
+    	<run class="Foo"/>
+    </ajc-test>    
+    
+	<ajc-test dir="bugs162/pr238992" title="annotation value decp - 2">
+    	<compile files="Foo2.java" options="-1.5 -showWeaveInfo">
+    	  <message kind="weave" text="Extending interface set for type 'Goo'"/>
+    	  <message kind="weave" text="Extending interface set for type 'Hoo'"/>
+    	</compile>
+    	<run class="Foo2"/>
+    </ajc-test>    
+    
+	<ajc-test dir="bugs162/pr238992" title="annotation value decp - 3">
+    	<compile files="Foo3.java" options="-1.5 -showWeaveInfo">
+    	  <message kind="weave" text="Extending interface set for type 'Goo'"/>
+    	</compile>
+    	<run class="Foo3"/>
+    </ajc-test>    
+    
+	<ajc-test dir="bugs162/pr238992" title="annotation value decp - 4">
+    	<compile files="Foo4.java" options="-1.5 -showWeaveInfo">
+    	  <message kind="weave" text="Extending interface set for type 'Goo'"/>
+    	  <message kind="weave" text="Extending interface set for type 'Hoo'"/>
+    	</compile>
+    	<run class="Foo4"/>
+    </ajc-test>    
 
 </suite>
