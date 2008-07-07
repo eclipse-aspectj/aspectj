@@ -138,7 +138,7 @@ public class EclipseAnnotationConvertor {
 		}
 	}
 	
-	private static AnnotationValue generateElementValueForConstantExpression(Expression defaultValue, TypeBinding defaultValueBinding) {
+	public static AnnotationValue generateElementValueForConstantExpression(Expression defaultValue, TypeBinding defaultValueBinding) {
 		if (defaultValueBinding != null) {
 			Constant c = defaultValue.constant;
 			if (c instanceof IntConstant) {

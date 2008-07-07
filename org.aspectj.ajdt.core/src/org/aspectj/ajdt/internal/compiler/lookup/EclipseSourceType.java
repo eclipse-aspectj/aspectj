@@ -35,6 +35,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MemberValuePair;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.NameReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
@@ -161,7 +162,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
             }
         }
         return false;
-    }
+    } 
     
     /** Returns "" if there is a problem */
     private String getPointcutStringFromAnnotationStylePointcut(AbstractMethodDeclaration amd) {
@@ -631,8 +632,10 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 				annotationAJ.addNameValuePair(
 						new AnnotationNameValuePair(new String(singleMemberAnnotation.memberValuePairs()[0].name),av));
 			}
+		} else if (annotation instanceof MarkerAnnotation) {
+			return;
 		} else {
-			// this is a marker annotation (no member value pairs)
+			// this is something else...
 			throw new MissingImplementationException(
 				    "Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation ["+annotation+"]");
 		}
@@ -656,8 +659,12 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 				}
 			} else {
 				if (constant != null && constant != Constant.NotAConstant) {
-					throw new MissingImplementationException(
-						    "Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value ["+defaultValue+"]");
+					AnnotationValue av = EclipseAnnotationConvertor.generateElementValueForConstantExpression(defaultValue,defaultValueBinding);
+					if (av==null) {
+						throw new MissingImplementationException(
+								"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value ["+defaultValue+"]");						
+					}
+					return av;
 //	   				generateElementValue(attributeOffset, defaultValue, constant, memberValuePairReturnType.leafComponentType());
 				} else {
 					AnnotationValue av = generateElementValueForNonConstantExpression(defaultValue, defaultValueBinding);
@@ -708,6 +715,15 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 					throw new MissingImplementationException(
 						    "Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value ["+defaultValue+"]");
 				}
+//			} else if (defaultValue instanceof MagicLiteral) {
+//				if (defaultValue instanceof FalseLiteral) {
+//					new AnnotationValue
+//				} else if (defaultValue instanceof TrueLiteral) {
+//					
+//				} else {					
+//					throw new MissingImplementationException(
+//						    "Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value ["+defaultValue+"]");
+//				}
 			} else {
 				// class type
 				throw new MissingImplementationException(

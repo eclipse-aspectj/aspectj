@@ -16,14 +16,19 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.IntLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TrueLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.IntConstant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.weaver.AnnotationX;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
@@ -114,6 +119,14 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 						sb.append(fb.name);
 						return sb.toString();
 					}
+				} else if (e instanceof TrueLiteral) {
+					return "true";
+				} else if (e instanceof FalseLiteral) {
+					return "false";
+				} else if (e instanceof IntLiteral) {
+					return Integer.toString(((IntConstant)e.constant).intValue());
+				} else {
+					throw new BCException("EclipseResolvedMember.getAnnotationDefaultValue() not implemented for value of type '"+e.getClass()+"' - raise an AspectJ bug !");
 				}
 			}
 		}
