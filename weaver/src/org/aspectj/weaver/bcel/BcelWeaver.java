@@ -290,7 +290,6 @@ public class BcelWeaver {
 		ClassParser parser = new ClassParser(new ByteArrayInputStream(bytes),name);
 		JavaClass jc = parser.parse();
 		ResolvedType type = world.addSourceObjectType(jc).getResolvedTypeX();
-		if (!type.isAspect()) return;
 		String typeName = type.getName().replace('.', File.separatorChar);
 		int end = name.indexOf(typeName+".class");
 		String binaryPath = null;
@@ -302,7 +301,9 @@ public class BcelWeaver {
 			binaryPath = name.substring(0,end-1);
 		}
 		type.setBinaryPath(binaryPath);		
-		toList.add(type);
+		if (type.isAspect()) {
+			toList.add(type);
+		}
 	}
 
 
