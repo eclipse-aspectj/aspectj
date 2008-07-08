@@ -290,8 +290,9 @@ public class BcelWeaver {
 		ClassParser parser = new ClassParser(new ByteArrayInputStream(bytes),name);
 		JavaClass jc = parser.parse();
 		ResolvedType type = world.addSourceObjectType(jc).getResolvedTypeX();
+		if (!type.isAspect()) return;
 		String typeName = type.getName().replace('.', File.separatorChar);
-		int end = name.lastIndexOf(typeName);
+		int end = name.indexOf(typeName+".class");
 		String binaryPath = null;
 		// if end is -1 then something wierd happened, the class file is not in the correct place, something like
 		// bin/A.class when the declaration for A specifies it is in a package.
@@ -300,10 +301,8 @@ public class BcelWeaver {
 		} else {
 			binaryPath = name.substring(0,end-1);
 		}
-		type.setBinaryPath(binaryPath);
-		if (type.isAspect()) {
-			toList.add(type);
-		}		
+		type.setBinaryPath(binaryPath);		
+		toList.add(type);
 	}
 
 
