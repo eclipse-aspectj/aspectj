@@ -291,7 +291,7 @@ public class BcelWeaver {
 		JavaClass jc = parser.parse();
 		ResolvedType type = world.addSourceObjectType(jc).getResolvedTypeX();
 		String typeName = type.getName().replace('.', File.separatorChar);
-		int end = name.indexOf(typeName+".class");
+		int end = name.lastIndexOf(typeName+".class");
 		String binaryPath = null;
 		// if end is -1 then something wierd happened, the class file is not in the correct place, something like
 		// bin/A.class when the declaration for A specifies it is in a package.
