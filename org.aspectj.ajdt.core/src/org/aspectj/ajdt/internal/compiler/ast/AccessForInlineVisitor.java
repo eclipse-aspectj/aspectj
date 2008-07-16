@@ -101,7 +101,8 @@ public class AccessForInlineVisitor extends ASTVisitor {
 			for (int i=0, len=ref.otherBindings.length; i < len && cont; i++) {
 				FieldBinding binding = ref.otherBindings[i];
 				ref.otherBindings[i] = getAccessibleField(binding, receiverType);
-				if (!(binding instanceof ProblemFieldBinding)) 	receiverType = binding.type;
+				if (!(binding instanceof ProblemFieldBinding)
+						&& binding!=null) 	receiverType = binding.type; // TODO Why is this sometimes null?
 				else                                                cont=false;
 			}
 		}
