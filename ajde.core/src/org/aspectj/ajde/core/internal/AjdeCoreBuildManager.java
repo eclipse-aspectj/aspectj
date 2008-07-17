@@ -230,6 +230,8 @@ public class AjdeCoreBuildManager {
         config.setGenerateModelMode(true);      
         // always be in incremental mode in AJDE
         config.setIncrementalMode(true);
+        // always force proceedOnError in AJDE
+        config.setProceedOnError(true);
 		return config;
 	}
 	
