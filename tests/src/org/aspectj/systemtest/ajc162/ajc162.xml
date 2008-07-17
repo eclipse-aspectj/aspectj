@@ -61,5 +61,16 @@
         <run class="ArgsBinding"/>
     </ajc-test>    
     
+    <ajc-test dir="bugs162/pr198181" title="ataspectj ltw pertarget">
+      <compile files="M.java" outjar="code.jar"/>
+      <compile files="A.java" classpath="code.jar" options="-1.5 -Xlint:ignore"/>
+      <run class="m.M" classpath="$sandbox/code.jar" ltw="aop.xml">
+        <stdout>
+          <line text="tick 0"/>
+          <line text="tick 0"/>
+          <line text="tick 0"/>
+        </stdout>
+      </run>
+    </ajc-test>
 
 </suite>

@@ -20,6 +20,7 @@ public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.2	
 	public void testAnnotationDecp_pr239441() { runTest("annotation decp"); }
+	public void testAtAspectJPerTarget_pr198181() { runTest("ataspectj ltw pertarget"); }
 //	public void testAnnotationValueDecp_pr238992() { runTest("annotation value decp"); }
 //	public void testAnnotationValueDecp_pr238992_2() { runTest("annotation value decp - 2"); }
 //	public void testAnnotationValueDecp_pr238992_3() { runTest("annotation value decp - 3"); }
