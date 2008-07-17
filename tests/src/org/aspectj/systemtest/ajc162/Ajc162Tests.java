@@ -19,12 +19,23 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.2	
-//	public void testAnnotationDecp_pr239441() { runTest("annotation decp"); }
-	public void testAnnotationValueDecp_pr238992() { runTest("annotation value decp"); }
-	public void testAnnotationValueDecp_pr238992_2() { runTest("annotation value decp - 2"); }
-	public void testAnnotationValueDecp_pr238992_3() { runTest("annotation value decp - 3"); }
-	public void testAnnotationValueDecp_pr238992_4() { runTest("annotation value decp - 4"); }
+	public void testAnnotationDecp_pr239441() { runTest("annotation decp"); }
+//	public void testAnnotationValueDecp_pr238992() { runTest("annotation value decp"); }
+//	public void testAnnotationValueDecp_pr238992_2() { runTest("annotation value decp - 2"); }
+//	public void testAnnotationValueDecp_pr238992_3() { runTest("annotation value decp - 3"); }
+//	public void testAnnotationValueDecp_pr238992_4() { runTest("annotation value decp - 4"); }
 	
+	/*
+	 * test plan
+	 * execution(* *(..,String,..))
+	 * args(..,String,..)
+	 * @args(..,Foo,..)
+	 * 
+	 */
+//	public void testParameterSubsettingMatching_pr233718_Matching() { runTest("parameter subsetting - matching");}
+//	public void testParameterSubsettingMatching_pr233718_ArgsMatching() { runTest("parameter subsetting - args matching");}
+//	public void testParameterSubsettingMatching_pr233718_ArgsBinding() { runTest("parameter subsetting - args binding");}
+
 	public static Test suite() {
       return XMLBasedAjcTestCase.loadSuite(Ajc162Tests.class);
     }

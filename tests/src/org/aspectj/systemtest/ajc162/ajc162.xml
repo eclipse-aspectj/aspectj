@@ -37,5 +37,29 @@
     	</compile>
     	<run class="Foo4"/>
     </ajc-test>    
+    
+    <ajc-test dir="bugs162/pr233718" title="parameter subsetting - matching">
+        <compile files="Matching.java" options="-1.5 -showWeaveInfo">
+          <message kind="weave" text="Join point 'method-execution(void Matching.m(java.lang.String))' in Type 'Matching' (Matching.java:3) advised by before advice from 'Matching' (Matching.java:8)"/>
+          <message kind="weave" text="'method-execution(void Matching.m(java.lang.String, java.lang.String))' in Type 'Matching' (Matching.java:4) advised by before advice from 'Matching' (Matching.java:8)"/>
+          <message kind="weave" text="'method-execution(void Matching.m(int, java.lang.String))' in Type 'Matching' (Matching.java:5) advised by before advice from 'Matching' (Matching.java:8)"/>        
+        </compile>
+    </ajc-test>    
+
+    <ajc-test dir="bugs162/pr233718" title="parameter subsetting - args matching">
+        <compile files="ArgsMatching.java" options="-1.5 -showWeaveInfo">
+ <!--
+          <message kind="weave" text="Join point 'method-execution(void Matching.m(java.lang.String))' in Type 'Matching' (Matching.java:3) advised by before advice from 'Matching' (Matching.java:8)"/>
+          <message kind="weave" text="'method-execution(void Matching.m(java.lang.String, java.lang.String))' in Type 'Matching' (Matching.java:4) advised by before advice from 'Matching' (Matching.java:8)"/>
+          <message kind="weave" text="'method-execution(void Matching.m(int, java.lang.String))' in Type 'Matching' (Matching.java:5) advised by before advice from 'Matching' (Matching.java:8)"/>        
+ -->
+        </compile>
+    </ajc-test>    
+    
+    <ajc-test dir="bugs162/pr233718" title="parameter subsetting - args binding">
+        <compile files="ArgsBinding.java" options="-1.5"/>
+        <run class="ArgsBinding"/>
+    </ajc-test>    
+    
 
 </suite>
