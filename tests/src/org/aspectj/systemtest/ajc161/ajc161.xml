@@ -66,14 +66,14 @@
     </ajc-test>
     
 	<ajc-test dir="bugs161/pr102733" title="running broken code">
-    	<compile files="Invoker.java C.java" options="">
+    	<compile files="Invoker.java C.java" options="-proceedOnError">
     	  <message kind="error" line="2" text="Syntax error"/>
     	</compile>
     	<run class="Invoker"/>
     </ajc-test>
     
 	<ajc-test dir="bugs161/pr102733" title="running broken code - 2">
-    	<compile files="Invoker2.java C2.java" options="">
+    	<compile files="Invoker2.java C2.java" options="-proceedOnError">
     	  <message kind="error" line="5"/>
     	</compile>
     	<run class="Invoker2"/>

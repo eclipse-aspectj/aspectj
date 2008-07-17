@@ -251,9 +251,48 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("P2");
 		checkWasntFullBuild();
 	}
+
+	public void testBuildingBrokenCode_pr240360() {
+		AjdeInteractionTestbed.VERBOSE=true;
+		initialiseProject("pr240360");
+		//configureNonStandardCompileOptions("pr240360","-proceedOnError");
+		build("pr240360");
+		checkWasFullBuild();
+		checkCompileWeaveCount("pr240360",5,4);
+		assertTrue("There should be an error:\n"
+				+getErrorMessages("pr240360"),!getErrorMessages("pr240360").isEmpty());	
+
+		Set s = AsmManager.getDefault().getRelationshipMap().getEntries();
+		int relmapLength = s.size();
+
+		// Delete the erroneous type
+		String f = getWorkingDir().getAbsolutePath() + File.separatorChar + "pr240360" + File.separatorChar + "src" + File.separatorChar + "test" + File.separatorChar + "Error.java";
+		(new File(f)).delete();
+		build("pr240360");
+		checkWasntFullBuild();
+		checkCompileWeaveCount("pr240360",0,0);		
+		assertEquals(relmapLength,AsmManager.getDefault().getRelationshipMap().getEntries().size());
+		
+		// Readd the erroneous type
+		alter("pr240360","inc1");
+		build("pr240360");
+		checkWasntFullBuild();
+		checkCompileWeaveCount("pr240360",1,0);
+		assertEquals(relmapLength,AsmManager.getDefault().getRelationshipMap().getEntries().size());
+
+		// Change the advice
+		alter("pr240360","inc2");
+		build("pr240360");
+		checkWasFullBuild();
+		checkCompileWeaveCount("pr240360",6,4);
+		assertEquals(relmapLength,AsmManager.getDefault().getRelationshipMap().getEntries().size());
+	
+	}
+	
 	
 	public void testBrokenCodeCompilation() {
 		initialiseProject("pr102733_1");
+//		configureNonStandardCompileOptions("pr102733_1","-proceedOnError");
 		build("pr102733_1");
 		checkWasFullBuild();
 		checkCompileWeaveCount("pr102733_1",1,0);
@@ -632,7 +671,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			initialiseProject("pr117209");
 			configureNonStandardCompileOptions("pr117209","-proceedOnError");
 			build("pr117209");
-			checkCompileWeaveCount("pr117209",6,6);
+			checkCompileWeaveCount("pr117209",6,5);
 		} finally {
 			//MyBuildOptionsAdapter.reset();
 		}
