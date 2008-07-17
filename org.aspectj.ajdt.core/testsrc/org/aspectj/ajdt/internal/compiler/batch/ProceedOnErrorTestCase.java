@@ -31,8 +31,8 @@ public class ProceedOnErrorTestCase extends CommandTestCase {
 	 * C2.java.
 	 */
 	public void testNoProceedOnError() throws IOException {
-		try {
-			AjBuildManager.continueWhenErrors=false;
+//		try {
+//			AjBuildManager.continueWhenErrors=false;
 			checkCompile("src1/C1.java", NO_ERRORS);
 		    File f =new File(getSandboxName(),"C.class");
 		    long oldmodtime = f.lastModified();
@@ -44,9 +44,9 @@ public class ProceedOnErrorTestCase extends CommandTestCase {
 		    assertTrue("The .class file should not have been modified as '-proceedOnError' was not supplied (old="+
 		    		   new Date(oldmodtime).toString()+")(new="+new Date(newmodtime).toString()+")",
 		    		   oldmodtime==newmodtime);
-		} finally {
-			AjBuildManager.continueWhenErrors=true;
-		}
+//		} finally {
+//			AjBuildManager.continueWhenErrors=true;
+//		}
 	}
 
 	public void testProceedOnError() throws IOException {

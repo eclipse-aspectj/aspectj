@@ -373,7 +373,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 			intermediateResultsRequestor.acceptResult(intRes);
 		}
 		
-		if (isXTerminateAfterCompilation || (reportedErrors && !proceedOnError)) {
+		if (unit.compilationResult.hasErrors() || (isXTerminateAfterCompilation || (reportedErrors && !proceedOnError))) {
 			acceptResult(unit.compilationResult);
 		} else {
 			queueForWeaving(intRes);

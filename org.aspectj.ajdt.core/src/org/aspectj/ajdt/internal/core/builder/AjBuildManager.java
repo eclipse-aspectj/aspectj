@@ -103,9 +103,6 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
     // If runtime version check fails, warn or fail? (unset?)
     static final boolean FAIL_IF_RUNTIME_NOT_FOUND = false;
     
-    // support for producing .class files containing errors and maintaining 'state' even when the
-    // project is broken (meaning all builds after the first are incremental)
-    public static boolean continueWhenErrors = true;
     
     private static final FileFilter binarySourceFilter = 
 		new FileFilter() {
@@ -268,7 +265,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
                 binarySourcesForTheNextCompile = state.getBinaryFilesToCompile(true);
                 performCompilation(buildConfig.getFiles());
                 state.clearBinarySourceFiles(); // we don't want these hanging around...
-                if (!continueWhenErrors && handler.hasErrors()) {
+                if (!proceedOnError() && handler.hasErrors()) {
                    	CompilationAndWeavingContext.leavingPhase(ct);
                   	if (AsmManager.isReporting())
     				    AsmManager.getDefault().reportModelInfo("After a batch build");
@@ -296,7 +293,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
                     // System.err.println("XXXX inc: " + files);
                
                     performCompilation(files);
-                    if ((!continueWhenErrors && handler.hasErrors()) || (progressListener!=null && progressListener.isCancelledRequested())) {
+                    if ((!proceedOnError() && handler.hasErrors()) || (progressListener!=null && progressListener.isCancelledRequested())) {
                         CompilationAndWeavingContext.leavingPhase(ct);
                         return false;
                     } 
@@ -1030,7 +1027,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			public void acceptResult(CompilationResult unitResult) {
 				// end of compile, must now write the results to the output destination
 				// this is either a jar file or a file in a directory
-				if (!((unitResult.hasErrors() && !continueWhenErrors) && !proceedOnError())) {			
+				if (!unitResult.hasErrors() || proceedOnError()) {			
 					Collection classFiles = unitResult.compiledTypes.values();
 					boolean shouldAddAspectName = (buildConfig.getOutxmlName() != null);
 					for (Iterator iter = classFiles.iterator(); iter.hasNext();) {
