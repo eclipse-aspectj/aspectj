@@ -344,9 +344,13 @@ public class SignaturePattern extends PatternNode {
 		}
 		if (matchesIgnoringAnnotations.alwaysFalse()) return FuzzyBoolean.NO;
 		
+		// why did Adrian put this comment in:
 		// annotations match on the *subject* 
-		if (subjectMatch && !matchesAnnotations(aMember,inAWorld).alwaysTrue()) {
-			return FuzzyBoolean.NO;
+		// surely you never want execution(@Something * *(..)) to match something just because
+		// it is a secondary join point signature for a join point and doesn't have the annotation?
+		// pr239441
+		if (matchesIgnoringAnnotations.alwaysTrue()) {
+			return matchesAnnotations(aMember,inAWorld);
 		} else {
 			return matchesIgnoringAnnotations;
 		}
