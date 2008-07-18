@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -49,8 +50,6 @@ public class ProgramElement implements IProgramElement {
 	private static int AccInterface = 0x0200;
 	private static int AccAbstract = 0x0400;
 	private static int AccStrictfp = 0x0800;
-
-	
 	
 	protected String name;
 	private Kind kind;
@@ -58,7 +57,7 @@ public class ProgramElement implements IProgramElement {
 	protected List children = Collections.EMPTY_LIST;
 	private Map kvpairs = Collections.EMPTY_MAP;	
 	protected ISourceLocation sourceLocation = null;
-	private int modifiers;
+    private int modifiers;
 	private String handle = null;
 
 
@@ -82,7 +81,6 @@ public class ProgramElement implements IProgramElement {
 		setFormalComment(comment);
 //		if (comment!=null && comment.length()>0) formalComment = comment;
 		this.modifiers = modifiers;
-//		this.accessibility = genAccessibility(modifiers);
 	}
 	
 	/**
@@ -105,7 +103,6 @@ public class ProgramElement implements IProgramElement {
 		this.sourceLocation = sourceLocation;
 		this.kind = kind;
 		this.modifiers = modifiers;
-//		this.accessibility = accessibility;
 		setDeclaringType(declaringType);//this.declaringType = declaringType;
 		//this.packageName = packageName;
 		setFormalComment(comment);
@@ -115,17 +112,12 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public List getModifiers() {
-		return genModifiers(modifiers);
+		return genModifiers(this.modifiers);
 	}
 
 	public Accessibility getAccessibility() {
-		return genAccessibility(modifiers); // accessibility
+		return genAccessibility(this.modifiers);
 	}
-	
-//	public void setAccessibility(Accessibility a) {
-//		
-//		//accessibility=a;
-//	}
 	
 	public void setDeclaringType(String t) {
 		if (t!=null && t.length()>0) {
@@ -399,6 +391,16 @@ public class ProgramElement implements IProgramElement {
 	
 	public void setModifiers(int i) {
 		this.modifiers = i;
+	}
+	
+	/**
+	 * Convenience mechanism for setting new modifiers which do not require
+	 * knowledge of the private internal representation
+	 * 
+	 * @param newModifier
+	 */
+	public void addModifiers(IProgramElement.Modifiers newModifier) {
+		modifiers |= newModifier.getBit();
 	}
 
 	public String toSignatureString() {

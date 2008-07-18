@@ -151,7 +151,7 @@ public interface IProgramElement extends Serializable {
 	public void setSourceSignature(String string);
 	
 	public IProgramElement walk(HierarchyWalker walker);
-	
+
 	/**
 	 * Uses "typesafe enum" pattern.
 	 */
@@ -159,24 +159,30 @@ public interface IProgramElement extends Serializable {
 		
 		private static final long serialVersionUID = -8279300899976607927L;
 		
-		public static final Modifiers STATIC = new Modifiers("static");
-		public static final Modifiers FINAL = new Modifiers("final");
-		public static final Modifiers ABSTRACT = new Modifiers("abstract");
-		public static final Modifiers SYNCHRONIZED = new Modifiers("synchronized");
-		public static final Modifiers VOLATILE = new Modifiers("volatile");
-		public static final Modifiers STRICTFP = new Modifiers("strictfp");
-		public static final Modifiers TRANSIENT = new Modifiers("transient");
-		public static final Modifiers NATIVE = new Modifiers("native");
+		public static final Modifiers STATIC = new Modifiers("static",0x0008);
+		public static final Modifiers FINAL = new Modifiers("final",0x0010);
+		public static final Modifiers ABSTRACT = new Modifiers("abstract",0x0400);
+		public static final Modifiers SYNCHRONIZED = new Modifiers("synchronized",0x0020);
+		public static final Modifiers VOLATILE = new Modifiers("volatile",0x0040);
+		public static final Modifiers STRICTFP = new Modifiers("strictfp",0x0800);
+		public static final Modifiers TRANSIENT = new Modifiers("transient",0x0080);
+		public static final Modifiers NATIVE = new Modifiers("native",0x0100);
 		public static final Modifiers[] ALL = { STATIC, FINAL, ABSTRACT, SYNCHRONIZED, VOLATILE, STRICTFP, TRANSIENT, NATIVE };
 		private final String name;
+		private int bit;
 		
-		private Modifiers(String name) {
+		private Modifiers(String name, int bit) {
 			this.name = name;
+			this.bit = bit;
 		}
 		
 		public String toString() {
 			return name;
 		}	
+		
+		public int getBit() {
+			return bit;
+		}
 
 		// The 4 declarations below are necessary for serialization
 		private static int nextOrdinal = 0;
