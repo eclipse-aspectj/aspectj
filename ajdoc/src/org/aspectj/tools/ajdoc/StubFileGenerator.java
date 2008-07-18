@@ -76,9 +76,7 @@ class StubFileGenerator{
     	List imports = node.getChildren();
     	for (Iterator i = imports.iterator(); i.hasNext();) {
 			IProgramElement importNode = (IProgramElement) i.next();
-			writer.print("import ");
-			writer.print(importNode.getName());
-			writer.println(';');
+			writer.println(importNode.getSourceSignature());
 		}  	 
     }
     
@@ -94,7 +92,7 @@ class StubFileGenerator{
     	
 //    	System.err.println("######" + signature + ", " + classNode.getName());
     	if (!StructureUtil.isAnonymous(classNode) && !classNode.getName().equals("<undefined>")) {
-	    	writer.println(signature + " {" );
+	    	writer.println(signature + " { " );
 	    	processMembers(classNode.getChildren(), writer, classNode.getKind().equals(IProgramElement.Kind.INTERFACE));
 	    	writer.println();
 			writer.println("}");
@@ -192,6 +190,9 @@ class StubFileGenerator{
      * replaced.
      */
     static String addToFormal(String formalComment, String string) {
+       if(string == null || string.equals("")) {
+          return formalComment;
+       }
         //boolean appendPeriod = true;
         if ( (formalComment == null) || formalComment.equals("")) {
             //formalComment = "/**\n * . \n */\n";
@@ -202,11 +203,11 @@ class StubFileGenerator{
 
         int atsignPos = formalComment.indexOf('@');
         int    endPos = formalComment.indexOf("*/");
-        int periodPos = formalComment.indexOf("/**")+2;
+        int periodPos = formalComment.indexOf("/**");
         int position  = 0;
         String periodPlaceHolder = "";
         if ( periodPos != -1 ) {
-            position = periodPos+1;
+            position = periodPos + 3;// length of "/**"
         }
         else if ( atsignPos != -1 ) {
             string = string + "\n * ";

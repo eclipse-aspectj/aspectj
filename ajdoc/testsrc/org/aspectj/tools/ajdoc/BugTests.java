@@ -146,6 +146,7 @@ public class BugTests extends AjdocTestCase {
 		String foo = "description of foo";
 		String bar = "description of bar";
 		String goo = "description of goo";
+		String bas = "description of bas";
 		assertTrue("expected method description 'description of foo' to appear" +
 				" in ajdoc output but it did not", 
 				AjdocOutputChecker.containsString(htmlFile, foo));
@@ -155,6 +156,9 @@ public class BugTests extends AjdocTestCase {
 		assertFalse("didn't expect method description 'description of goo' to " +
 				"appear in ajdoc output but it did not", 
 				AjdocOutputChecker.containsString(htmlFile, goo));
+		assertTrue("expected method description 'description of bas' to appear" +
+				" in ajdoc output but it did not", 
+				AjdocOutputChecker.containsString(htmlFile, bas));
 	}
 	
 	/**

@@ -17,5 +17,12 @@ public class C {
     //******* description of goo
     public void goo() {
     }
+    
+    /*---------------------------*/
+    /**
+     * description of bas
+     */
+    public void bas() {
+    }
 
 }
