@@ -16,6 +16,7 @@
 package org.aspectj.ajdt.internal.core.builder;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +55,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Initializer;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
@@ -546,6 +548,20 @@ public class AsmHierarchyBuilder extends ASTVisitor {
     private String genSourceSignature(MethodDeclaration methodDeclaration) {
 		StringBuffer output = new StringBuffer();
 		ASTNode.printModifiers(methodDeclaration.modifiers, output);
+		
+		//Append Type Parameters if any
+		TypeParameter types[] = methodDeclaration.typeParameters();
+		if(types != null && types.length != 0) {
+			output.append("<");
+			for(int i = 0; i < types.length;i++){
+				if(i > 0){
+					output.append(", ");
+				}
+				types[i].printStatement(0, output);
+			}
+			output.append("> ");
+		}
+		
 		methodDeclaration.printReturnType(0, output).append(methodDeclaration.selector).append('(');
 		if (methodDeclaration.arguments != null) {
 			for (int i = 0; i < methodDeclaration.arguments.length; i++) {
@@ -611,12 +627,18 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		}
 		if (!((ProgramElement)stack.peek()).getPackageName().equals(currPackageImport)) {
 		
-			IProgramElement peNode = new ProgramElement(
+			ProgramElement peNode = new ProgramElement(
 				new String(importRef.toString()),
 				IProgramElement.Kind.IMPORT_REFERENCE,	
 				makeLocation(importRef),
-				0,
+				0,//could set static here, but for some reason the info is private
 				null,null);
+			//set it here instead
+			if(importRef.isStatic()) {
+				peNode.addModifiers(IProgramElement.Modifiers.STATIC);
+			}
+			//create Source signature for import
+			peNode.setSourceSignature(genSourceSignature(importRef));
 			
 			ProgramElement imports = (ProgramElement)((ProgramElement)stack.peek()).getChildren().get(0);
 			imports.addChild(0, peNode);
@@ -635,6 +657,15 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		}
 	}
 
+	private  String genSourceSignature(ImportReference importreference){
+		StringBuffer output = new StringBuffer();
+		output.append("import ");
+		ASTNode.printModifiers(importreference.modifiers, output);
+		output.append(importreference);
+		output.append(";");
+		return output.toString();
+	}
+	
 	public boolean visit(FieldDeclaration fieldDeclaration, MethodScope scope) {
 	    IProgramElement peNode = null;
 	    if (fieldDeclaration.type == null) { // The field represents an enum value
@@ -701,6 +732,11 @@ public class AsmHierarchyBuilder extends ASTVisitor {
                         }
                         sb.append(comment[i]);
                     }
+					//The following will remove any non-javadoc comments
+					//preceeding a javadoc comment in this block
+					if(sb.toString().indexOf("/**") != 0) {
+						return sb.toString().substring(sb.toString().indexOf("/**"));
+					}
                     return sb.toString();
                 }
                 comment = CharOperation.subarray(comment, star + 1, comment.length);
@@ -731,29 +767,15 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				fieldDeclaration.initialization.printExpression(0, output);
 			}
 		} else if (fieldDeclaration.initialization instanceof QualifiedAllocationExpression) {
-			output.append(" = "); //$NON-NLS-1$
 			QualifiedAllocationExpression qae = (QualifiedAllocationExpression)fieldDeclaration.initialization;
 			StringBuffer sb = new StringBuffer();
 			qae.printExpression(0,sb);
-			// if the source is of the form 'static I MY_I = new I() {};' calling 
-			// printExpression on the qae returns
-			//
-			// new I() {
-			//	   x() {
-			//	     super();
-			//	   }
-			// }
-			//
-			// We want to remove the x() {super();} call. Assuming that this
-			// is the first entry in the expression we can do this by finding
-			// the position of the "{" and "}" - bug 148908
-			int i = sb.toString().indexOf("{");
-			output.append(sb.substring(0,i+1));
-			int j = sb.toString().indexOf("}");
-			output.append(sb.substring(j+1));
+			if(sb.toString().indexOf("new ") != 0) {
+			   output.append(" = "); //$NON-NLS-1$	         
+			   output.append(sb.toString());
+			}
 		}
-		
-		output.append(';');
+		output.append(";\n");
 		return output.toString();
 	}
 
