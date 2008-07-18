@@ -74,7 +74,7 @@
     </ajc-test>
     
 	<ajc-test dir="bugs153/pr148908" title="ensure getSourceSignature correct with static field">
-      <compile files="BadInterface.java" options="-emacssym"/>
+      <compile files="BadInterface.java" options="-1.5 -emacssym"/>
     </ajc-test> 
     
 	<ajc-test dir="bugs153/pr161502" title="generics in pointcuts">
@@ -842,4 +842,11 @@
 	  </compile>
     </ajc-test>
 
+	<ajc-test dir="bugs153/StaticImport" title="ensure static import reference have static modifier set">
+      <compile files="StaticImport.java,C.java" options="-1.5 -emacssym"/>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs153/GenericMethod" title="ensure getSourceSignature correct with generic method">
+      <compile files="C.java" options="-1.5 -emacssym"/>
+    </ajc-test> 
 </suite>

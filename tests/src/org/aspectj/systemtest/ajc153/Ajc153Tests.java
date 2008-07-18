@@ -11,6 +11,8 @@
 package org.aspectj.systemtest.ajc153;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.List;
 
 import junit.framework.Test;
 
@@ -147,11 +149,21 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	IHierarchy top = AsmManager.getDefault().getHierarchy();
 	IProgramElement ipe = top.findElementForLabel(top.getRoot(),
 	IProgramElement.Kind.FIELD,"MY_COMPARATOR");
-	String expected = "static final Comparator MY_COMPARATOR = new Comparator() {\n" +
-					"  public int compare(Object o1, Object o2) {\n" +
-					"    return 0;\n" +
-					"  }\n" +
-					"};";
+	String expected = "static final Comparator MY_COMPARATOR;\n";
+			assertEquals("expected source signature to be " + expected + 
+					" but found " + ipe.getSourceSignature(), 
+					expected, ipe.getSourceSignature());
+     
+	ipe = top.findElementForLabel(top.getRoot(),
+	IProgramElement.Kind.FIELD,"aList");
+	expected = "public List<String> aList;\n";
+			assertEquals("expected source signature to be " + expected + 
+					" but found " + ipe.getSourceSignature(), 
+					expected, ipe.getSourceSignature());
+
+	ipe = top.findElementForLabel(top.getRoot(),
+	IProgramElement.Kind.FIELD,"bList");
+	expected = "public List<String> bList;\n";
 			assertEquals("expected source signature to be " + expected + 
 					" but found " + ipe.getSourceSignature(), 
 					expected, ipe.getSourceSignature());
@@ -214,6 +226,44 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testSourceLevelJava6ThrowsUsageError_pr164384() {runTest("source level java 6 throws usage error");}
   public void testTargetLevelJava6ThrowsUsageError_pr164384() {runTest("target level java 6 throws usage error");}
   
+  public void testStaticImport() {
+		runTest("ensure static import reference have static modifier set");
+		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		
+		IProgramElement ipe = top.findElementForLabel(top.getRoot(),		
+		IProgramElement.Kind.IMPORT_REFERENCE,"ABC.StaticImport.Alphabet.A");
+		String expected = "import static ABC.StaticImport.Alphabet.A;";
+			assertEquals("expected source signature to be " + expected + 
+					" but found " + ipe.getSourceSignature(), 
+					expected, ipe.getSourceSignature());
+  }
+
+  public void testGetSourceSignature_GenericMethods(){
+	  runTest("ensure getSourceSignature correct with generic method");
+	  IHierarchy top = AsmManager.getDefault().getHierarchy();
+		
+	  IProgramElement ipe = top.findElementForLabel(top.getRoot(),		
+	  IProgramElement.Kind.METHOD,"returnT(T)");
+	  String expected = "public <T> T returnT(T a)";
+			assertEquals("expected source signature to be " + expected + 
+					" but found " + ipe.getSourceSignature(), 
+					expected, ipe.getSourceSignature());
+				
+	  ipe = top.findElementForLabel(top.getRoot(),
+	  IProgramElement.Kind.METHOD,"returnQ(Q)");
+	  expected = "public <Q extends List> Q returnQ(Q a)";
+		assertEquals("expected source signature to be " + expected + 
+				" but found " + ipe.getSourceSignature(), 
+				expected, ipe.getSourceSignature());
+				
+	  ipe = top.findElementForLabel(top.getRoot(),
+	  IProgramElement.Kind.METHOD,"doubleGeneric(Q,T)");
+	  expected = "public <T, Q> void doubleGeneric(Q a, T b)";
+		assertEquals("expected source signature to be " + expected + 
+				" but found " + ipe.getSourceSignature(), 
+				expected, ipe.getSourceSignature());
+  }
+
   
   /////////////////////////////////////////
   public static Test suite() {
