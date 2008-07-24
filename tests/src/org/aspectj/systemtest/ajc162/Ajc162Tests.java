@@ -19,6 +19,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.2	
+//	public void testParamAnnoInner_pr241861() { runTest("param annotation inner class"); }
 	public void testAnnotationDecp_pr239441() { runTest("annotation decp"); }
 	public void testAtAspectJPerTarget_pr198181() { runTest("ataspectj ltw pertarget"); }
 //	public void testAnnotationValueDecp_pr238992() { runTest("annotation value decp"); }

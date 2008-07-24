@@ -7,6 +7,11 @@
     	<compile files="Test3.java SampleAspect.java" options="-1.5 -showWeaveInfo -XhasMember">
     	</compile>
     </ajc-test>    
+
+    <ajc-test dir="bugs162/pr241861" title="param annotation inner class">
+        <compile files="Outer.java Ann.java Asp.java" options="-1.5">
+        </compile>
+    </ajc-test>    
     
 	<ajc-test dir="bugs162/pr238992" title="annotation value decp">
     	<compile files="Foo.java" options="-1.5 -showWeaveInfo">
@@ -58,7 +63,12 @@
     
     <ajc-test dir="bugs162/pr233718" title="parameter subsetting - args binding">
         <compile files="ArgsBinding.java" options="-1.5"/>
-        <run class="ArgsBinding"/>
+        <run class="ArgsBinding">
+          <stdout>
+            <line text="0) a"/>
+            <line text="0) b"/>
+          </stdout>
+        </run>
     </ajc-test>    
     
     <ajc-test dir="bugs162/pr198181" title="ataspectj ltw pertarget">
