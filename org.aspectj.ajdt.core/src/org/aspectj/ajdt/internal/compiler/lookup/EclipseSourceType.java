@@ -253,8 +253,20 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 					if (amd.binding == null || !amd.binding.isValidBinding()) continue;
 					ResolvedMember member = factory.makeResolvedMember(amd.binding);
 					if (unit != null) {
-						member.setSourceContext(new EclipseSourceContext(unit.compilationResult,amd.binding.sourceStart()));
-						member.setPosition(amd.binding.sourceStart(),amd.binding.sourceEnd());
+						boolean positionKnown = true;
+						if (amd.binding.sourceMethod() == null) {
+							if (amd.binding.declaringClass instanceof SourceTypeBinding) {
+								SourceTypeBinding stb = ((SourceTypeBinding) amd.binding.declaringClass);
+								if (stb.scope==null || stb.scope.referenceContext==null) positionKnown = false;
+							}
+						}
+						if (positionKnown) { // pr229829
+							member.setSourceContext(new EclipseSourceContext(unit.compilationResult,amd.binding.sourceStart()));
+							member.setPosition(amd.binding.sourceStart(),amd.binding.sourceEnd());
+						} else {
+							member.setSourceContext(new EclipseSourceContext(unit.compilationResult,0));
+							member.setPosition(0,0);
+						}
 					}
 					declaredMethods.add(member);
 				}
