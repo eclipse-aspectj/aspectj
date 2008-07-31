@@ -33,6 +33,9 @@ interface Config {
                                "  -classpath <pathlist>     Specify where to find user class files\n" +
                                "  -bootclasspath <pathlist> Override location of class files loaded\n" +
                                "  -d <directory>            Destination directory for output files\n" +
+                               "  -windowtitle <text>       Browser window title for the documenation" +
+                               "  -bottom <html-code>       Include bottom text for each page" +
+                               "  -link <url>               Create links to javadoc output at <url>" +
                                "  -argfile <file>           Build config file (wildcards not supported)\n" +
                                "  -verbose                  Output messages about what Javadoc is doing\n" +
                                "  -v                        Print out the version of ajdoc\n" +

@@ -224,7 +224,7 @@ public class Main implements Config {
                                           inputFiles,
                                           docModifier); 
         
-        System.out.println( "> Removing generated tags (this may take a while)..." );
+        System.out.println( "> Removing generated tags..." );
         removeDeclIDsFromFile("index-all.html", true);
         removeDeclIDsFromFile("serialized-form.html", true);
         if (packageList.size() > 0) {
@@ -261,7 +261,8 @@ public class Main implements Config {
         try {
         if ( indexFile.exists() ) {
             BufferedReader indexFileReader = new BufferedReader( new FileReader( indexFile ) );
-            String indexFileBuffer = "";
+            // StringBuffer greatly reduces the time it takes to remove generated tags
+            StringBuffer indexFileBuffer = new StringBuffer((int)indexFile.length());
             String line = indexFileReader.readLine();
             while ( line != null ) {
               int indexStart = line.indexOf( Config.DECL_ID_STRING );
@@ -270,11 +271,11 @@ public class Main implements Config {
                 line = line.substring( 0, indexStart ) +
                        line.substring( indexEnd+Config.DECL_ID_TERMINATOR.length() );
               }
-              indexFileBuffer += line;
+              indexFileBuffer.append(line);
               line = indexFileReader.readLine();
             }
             FileOutputStream fos = new FileOutputStream( indexFile );
-            fos.write( indexFileBuffer.getBytes() );
+            fos.write( indexFileBuffer.toString().getBytes() );
             
             indexFileReader.close();
             fos.close();
@@ -515,6 +516,15 @@ public class Main implements Config {
                 addNextAsSourcePath = true;
                 //options.addElement( arg );
                 //ajcOptions.addElement( arg );
+            } else if ( arg.equals( "-link" ) ) {
+                addNextAsOption = true;
+            	options.addElement(arg);
+            } else if ( arg.equals( "-bottom" ) ) {
+                addNextAsOption = true;
+            	options.addElement(arg);
+            } else if ( arg.equals( "-windowtitle" ) ) {
+                addNextAsOption = true;
+            	options.addElement(arg);
             } else if (arg.equals("-XajdocDebug")) {
             	deleteTempFilesOnExit = false;
             } else if (arg.equals("-use")) {
