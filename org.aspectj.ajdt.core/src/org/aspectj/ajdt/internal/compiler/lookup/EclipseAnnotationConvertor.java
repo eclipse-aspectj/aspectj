@@ -23,6 +23,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.BooleanConstant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.IntConstant;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.StringConstant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
@@ -147,6 +148,9 @@ public class EclipseAnnotationConvertor {
 			} else if (c instanceof BooleanConstant) {
 				BooleanConstant iConstant = (BooleanConstant)c;
 				return new SimpleAnnotationValue(ElementValueGen.PRIMITIVE_BOOLEAN,new Boolean(iConstant.booleanValue()));
+			} else if (c instanceof StringConstant) {
+				StringConstant sConstant = (StringConstant)c;
+				return new SimpleAnnotationValue(ElementValueGen.STRING,sConstant.stringValue());
 			}
 		}
 		return null;

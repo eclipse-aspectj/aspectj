@@ -20,6 +20,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.IntLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TrueLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.IntConstant;
@@ -123,6 +124,8 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 					return "true";
 				} else if (e instanceof FalseLiteral) {
 					return "false";
+				} else if (e instanceof StringLiteral) {
+					return new String(((StringLiteral)e).source());
 				} else if (e instanceof IntLiteral) {
 					return Integer.toString(((IntConstant)e.constant).intValue());
 				} else {
