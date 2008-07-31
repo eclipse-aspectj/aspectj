@@ -106,6 +106,10 @@
 			<message kind="warning" line="20" text="System.out should not be called"/>
 	  </compile>
     </ajc-test>
+    
+    <ajc-test dir="model/prX" title="inpath advised elements">
+      <compile files="X.java" inpath="inpath.jar" options="-1.5 -emacssym"/>
+    </ajc-test>
 
 
 </suite>

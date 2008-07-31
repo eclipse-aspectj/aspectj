@@ -1,0 +1,16 @@
+=== MODEL STATUS REPORT ========= After a batch build
+<root>  [java source file] 
+  X.java  [java source file] TEST_SANDBOX\X.java:1:
+    import declarations  [import reference] 
+    X  [aspect] TEST_SANDBOX\X.java:1:
+      before(): <anonymous pointcut>..  [advice] TEST_SANDBOX\X.java:2:
+=== END OF MODEL REPORT =========
+=== RELATIONSHIPS REPORT ========= After a batch build
+=== END OF RELATIONSHIPS REPORT ==
+=== Properties of the model and relationships map =====
+FileMapSize=1
+aspect=1
+advice=1
+RelationshipMapSize=0
+java source file=2
+import reference=1

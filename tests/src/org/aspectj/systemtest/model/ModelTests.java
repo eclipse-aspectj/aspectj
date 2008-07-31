@@ -62,6 +62,8 @@ public class ModelTests extends ModelTestCase {
 		}
 	}
 	
+//	public void testInpathAdvisedCode_prX() { runModelTest("inpath advised elements","prX"); }
+	
 	public void testSourceLocationAndJarFile_pr145963() {runModelTest("sourcelocation and jar file","pr145963_1");}
 	public void testSourceLocationAndClassFile_pr145963() {runModelTest("sourcelocation and class file","pr145963_2");}
 	public void testAspectInDefaultPackage_pr145963() {runModelTest("aspect in default package", "pr145963_3");}
