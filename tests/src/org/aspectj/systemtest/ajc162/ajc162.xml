@@ -50,6 +50,14 @@
     	<run class="Foo4"/>
     </ajc-test>    
     
+	<ajc-test dir="bugs162/pr238992" title="annotation value decp - 5">
+    	<compile files="Foo5.java" options="-1.5 -showWeaveInfo">
+    	  <message kind="weave" text="Extending interface set for type 'Goo'"/>
+    	  <message kind="weave" text="Extending interface set for type 'Hoo'"/>
+    	</compile>
+    	<run class="Foo5"/>
+    </ajc-test>    
+    
     <ajc-test dir="bugs162/pr233718" title="parameter subsetting - matching">
         <compile files="Matching.java" options="-1.5 -showWeaveInfo">
           <message kind="weave" text="Join point 'method-execution(void Matching.m(java.lang.String))' in Type 'Matching' (Matching.java:3) advised by before advice from 'Matching' (Matching.java:8)"/>
