@@ -18,17 +18,23 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.MatchingTask;
+import org.apache.tools.ant.taskdefs.Javadoc.AccessType;
+import org.apache.tools.ant.taskdefs.Javadoc.Html;
 import org.apache.tools.ant.types.Commandline;
+import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
 import org.aspectj.tools.ajdoc.Main;
@@ -66,9 +72,9 @@ public class Ajdoc extends MatchingTask {
     private Doclet doclet;
     private boolean failonerror;
     private boolean fork;
-
-	private boolean source14;
-    
+	private String source;
+	private Html bottom;
+    private Vector fileSets = new Vector();
     /** reset all to initial values - permit gc if Ajdoc is held */
     public Ajdoc() {
         reset();
@@ -93,6 +99,8 @@ public class Ajdoc extends MatchingTask {
         doclet  = null;
         failonerror  = false;
         fork = false;
+        source = null;
+        bottom = null;
     }
 
     protected final boolean setif(boolean b, String flag) {
@@ -114,7 +122,7 @@ public class Ajdoc extends MatchingTask {
     }
     
     public void setSource(String input) {
-        source14 = "1.4".equals(input);
+        source = input;
     }
 
     public void setSourcepath(Path path) {
@@ -151,12 +159,41 @@ public class Ajdoc extends MatchingTask {
          sourcefiles).addAll(strings(list));
     }
 
+    public void addFileset(FileSet fs) {
+        fileSets.addElement(fs);
+    }
+    
+    private void addFileSets() {
+    	if(sourcefiles == null)
+    		sourcefiles = new ArrayList();
+    	
+        Enumeration e = fileSets.elements();
+        while (e.hasMoreElements()) {
+            FileSet fs = (FileSet) e.nextElement();
+            if (!fs.hasPatterns() && !fs.hasSelectors()) {
+                fs = (FileSet) fs.clone();
+                fs.createInclude().setName("**/*.java");
+                fs.createInclude().setName("**/*.aj");
+            }
+            File baseDir = fs.getDir(getProject());
+            DirectoryScanner ds = fs.getDirectoryScanner(getProject());
+            String[] files = ds.getIncludedFiles();
+            for (int i = 0; i < files.length; i++) {
+            	sourcefiles.add((new File(baseDir, files[i])).getAbsolutePath());
+            }
+        }
+    }
+    
     public void setPackagenames(String list) {
         (packagenames == null ?
          packagenames = new ArrayList() :
          packagenames).addAll(strings(list, true));
     }
-
+    
+    public void setAccess(AccessType at) {
+        cmd.createArgument().setValue("-" + at.getValue());
+    }
+    
     public void setPackageList(String packageList) {
         this.packageList = getProject().resolveFile(packageList);
     }
@@ -288,9 +325,15 @@ public class Ajdoc extends MatchingTask {
     }
 
     public void setBottom(String bottom) {
-        set("-bottom", bottom);
+        Html html = new Html();
+        html.addText(bottom);
+        addBottom(html);
     }
 
+    public void addBottom(Html text) {
+        bottom = text;
+    }
+    
     public void setVerbose(boolean b) {
         setif(b, "-verbose");
     }
@@ -507,7 +550,7 @@ public class Ajdoc extends MatchingTask {
     }
 
     public void execute() throws BuildException {
-        if (sourcepath == null && argfiles == null) {
+        if (sourcepath == null && argfiles == null && fileSets.size() == 0) {
             throw new BuildException("one of sourcepath or argfiles must be set!",
             		getLocation());
         }
@@ -531,10 +574,13 @@ public class Ajdoc extends MatchingTask {
             cmd.createArgument().setValue("-extdirs");
             cmd.createArgument().setPath(extdirs);
         }
-        
-        if (source14) {
+        if (source != null) {
             cmd.createArgument().setValue("-source");
-            cmd.createArgument().setValue("1.4");
+            cmd.createArgument().setValue(source);
+        }
+        if (bottom != null) {
+        	cmd.createArgument().setValue("-bottom");
+        	cmd.createArgument().setValue(getProject().replaceProperties(bottom.getText()));
         }
         
         for (Iterator i = links.iterator(); i.hasNext();) {
@@ -639,6 +685,8 @@ public class Ajdoc extends MatchingTask {
                 }
             }
         }
+
+    	addFileSets();
         if (sourcefiles != null) {
             for (Iterator i = sourcefiles.iterator(); i.hasNext();) {
                 // let ajdoc resolve sourcefiles relative to sourcepath,
