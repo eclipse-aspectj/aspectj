@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -196,24 +197,40 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
             String resourcePath = System.getProperty("org.aspectj.weaver.loadtime.configuration",AOP_XML);
             if (trace.isTraceEnabled()) trace.event("parseDefinitions",this,resourcePath);
+            
     		StringTokenizer st = new StringTokenizer(resourcePath,";");
 
     		while(st.hasMoreTokens()){
-    			Enumeration xmls = weavingContext.getResources(st.nextToken());
-//    			System.out.println("? registerDefinitions: found-aop.xml=" + xmls.hasMoreElements() + ", loader=" + loader);
-
-    			Set seenBefore = new HashSet();
-    			while (xmls.hasMoreElements()) {
-    			    URL xml = (URL) xmls.nextElement();
-    			    if (trace.isTraceEnabled()) trace.event("parseDefinitions",this,xml);
-    			    if (!seenBefore.contains(xml)) {
-    			    	info("using configuration " + weavingContext.getFile(xml));
-    			    	definitions.add(DocumentParser.parse(xml));
-        			    seenBefore.add(xml);
-    			    }
-    			    else {
-    			    	warn("ignoring duplicate definition: " + xml);
-    			    }
+    			String nextDefinition = st.nextToken();
+    			if (nextDefinition.startsWith("file:")) {
+    				try {
+    					String fpath = new URL(nextDefinition).getFile();
+    					File configFile = new File(fpath);
+    					if (!configFile.exists()) {
+    						warn("configuration does not exist: "+nextDefinition);
+    					} else {
+    						definitions.add(DocumentParser.parse(configFile.toURL()));
+    					}
+    				} catch (MalformedURLException mue) {
+    					error("malformed definition url: "+nextDefinition);
+    				}
+    			} else {
+	    			Enumeration xmls = weavingContext.getResources(nextDefinition);
+	//    			System.out.println("? registerDefinitions: found-aop.xml=" + xmls.hasMoreElements() + ", loader=" + loader);
+	
+	    			Set seenBefore = new HashSet();
+	    			while (xmls.hasMoreElements()) {
+	    			    URL xml = (URL) xmls.nextElement();
+	    			    if (trace.isTraceEnabled()) trace.event("parseDefinitions",this,xml);
+	    			    if (!seenBefore.contains(xml)) {
+	    			    	info("using configuration " + weavingContext.getFile(xml));
+	    			    	definitions.add(DocumentParser.parse(xml));
+	        			    seenBefore.add(xml);
+	    			    }
+	    			    else {
+	    			    	warn("ignoring duplicate definition: " + xml);
+	    			    }
+	    			}
     			}
     		}
     		if (definitions.isEmpty()) {
