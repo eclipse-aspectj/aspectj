@@ -358,7 +358,7 @@ public class ReferenceType extends ResolvedType {
        	if (other.isTypeVariableReference()) {
        		TypeVariableReferenceType otherType = (TypeVariableReferenceType) other;
        		if (this instanceof TypeVariableReference) {
-       			return ((TypeVariableReference)this).getTypeVariable().canBeBoundTo(otherType.getTypeVariable().getFirstBound().resolve(world));// pr171952
+       			return ((TypeVariableReference)this).getTypeVariable().resolve(world).canBeBoundTo(otherType.getTypeVariable().getFirstBound().resolve(world));// pr171952
 //       			return ((TypeVariableReference)this).getTypeVariable()==otherType.getTypeVariable();
        		} else {
        		    // FIXME asc should this say canBeBoundTo??
