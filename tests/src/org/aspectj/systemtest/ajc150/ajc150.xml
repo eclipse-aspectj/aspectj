@@ -1250,7 +1250,7 @@
             <message kind="error" line="12" text="Cannot override the final method from A.TestInterface"></message>
         </compile>
         <compile files="FinalITDMOnInterface2.aj">
-            <message kind="error" line="8" text="Cannot override the final method from A.TestInterface"></message>
+            <!--message kind="error" line="8" text="Cannot override the final method from A.TestInterface"></message-->
             <message kind="error" line="8" text="can't override final void A$TestInterface.m()"></message>
         </compile>
     </ajc-test>
