@@ -68,13 +68,7 @@ public class InterTypeMethodBinding extends MethodBinding {
 		// 1st set:
 		// If the typevariable is one declared on the source method, then we know we are the declaring element
 		for (int i = 0; i < typeVariables.length; i++) {
-			TypeVariableBinding tv = typeVariables[i];
-			String name = new String(tv.sourceName);
-			TypeVariableBinding[] tv2 = sourceMethod.binding.typeVariables;
-			for (int j = 0; j < tv2.length; j++) {
-				TypeVariableBinding typeVariable = tv2[j];
-				if (new String(tv2[j].sourceName).equals(name)) typeVariables[i].declaringElement = this;
-			}
+			typeVariables[i].declaringElement = this;
 		}
 		for (int i = 0; i < typeVariables.length; i++) {
 			if (typeVariables[i].declaringElement==null) throw new RuntimeException("Declaring element not set");

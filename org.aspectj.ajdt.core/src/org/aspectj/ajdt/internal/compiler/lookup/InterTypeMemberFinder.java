@@ -248,7 +248,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	// find all of my methods, including ITDs
 	// PLUS: any public ITDs made on interfaces that I implement
 	public MethodBinding[] methods(SourceTypeBinding sourceTypeBinding) {
-		MethodBinding[] orig = sourceTypeBinding.methods();
+		MethodBinding[] orig = sourceTypeBinding.methodsBase();
 //		if (interTypeMethods.isEmpty()) return orig;
 		
 		List ret = new ArrayList(Arrays.asList(orig));
