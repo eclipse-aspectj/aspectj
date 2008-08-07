@@ -44,6 +44,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedMethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
@@ -517,9 +518,10 @@ public class AjProblemReporter extends ProblemReporter {
      * (pr115788)
      */
     public void duplicateInheritedMethods(SourceTypeBinding type, MethodBinding inheritedMethod1, MethodBinding inheritedMethod2) {
-    	if (!(inheritedMethod1 instanceof InterTypeMethodBinding && 
-    	      inheritedMethod2 instanceof InterTypeMethodBinding)) 
-    		super.duplicateInheritedMethods(type,inheritedMethod1,inheritedMethod2);
+    	if (inheritedMethod1 instanceof InterTypeMethodBinding || inheritedMethod2 instanceof InterTypeMethodBinding) return;
+    	if ((inheritedMethod1 instanceof ParameterizedMethodBinding) && ((ParameterizedMethodBinding)inheritedMethod1).original() instanceof InterTypeMethodBinding) return;
+    	if ((inheritedMethod2 instanceof ParameterizedMethodBinding) && ((ParameterizedMethodBinding)inheritedMethod2).original() instanceof InterTypeMethodBinding) return;
+   		super.duplicateInheritedMethods(type,inheritedMethod1,inheritedMethod2);
     }
     
     /**
