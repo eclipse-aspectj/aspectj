@@ -45,11 +45,11 @@ public class PointcutRewriter {
 	    } else {
 			if (WATCH_PROGRESS) System.out.println("Not distributing NOTs or pulling up disjunctions, already DNF ==> "+format(pc));
 	    }
-		result = simplifyAnds(result); // checkPC(result);
+		result = simplifyAnds(result);  //checkPC(result);
 		if (WATCH_PROGRESS) System.out.println("Simplifying ANDs gives     ==> " + format(result));
-		result = removeNothings(result);// checkPC(result);
+		result = removeNothings(result); //checkPC(result);
 	    if (WATCH_PROGRESS) System.out.println("Removing nothings gives    ==> " + format(result));
-		result = sortOrs(result);// checkPC(result);
+		result = sortOrs(result); //checkPC(result);
 		if (WATCH_PROGRESS) System.out.println("Sorting ORs gives          ==> " + format(result));
 		return result;
 	}
@@ -64,19 +64,31 @@ public class PointcutRewriter {
 		if (isNot(pc)) {
 			NotPointcut npc = (NotPointcut)pc;
 			checkPC(npc.getNegatedPointcut());
-			if (npc.getSourceContext()==null) throw new RuntimeException("Lost context");
+			if (npc.getSourceContext()==null) {
+				System.out.println("Lost context for "+npc);
+				throw new RuntimeException("Lost context");
+			}
 		} else if (isOr(pc)) {
 			OrPointcut opc = (OrPointcut)pc;
 			checkPC(opc.getLeft());
 			checkPC(opc.getRight());
-			if (opc.getSourceContext()==null) throw new RuntimeException("Lost context");
+			if (opc.getSourceContext()==null) {
+				System.out.println("Lost context for "+opc);
+				throw new RuntimeException("Lost context");
+			}
 		} else if (isAnd(pc)) {
 			AndPointcut apc = (AndPointcut)pc;
 			checkPC(apc.getLeft());
 			checkPC(apc.getRight());
-			if (apc.getSourceContext()==null) throw new RuntimeException("Lost context");
+			if (apc.getSourceContext()==null) {
+				System.out.println("Lost context for "+apc);
+				throw new RuntimeException("Lost context");
+			}
 		} else {
-			if (pc.getSourceContext()==null) throw new RuntimeException("Lost context");		
+			if (pc.getSourceContext()==null) {
+				System.out.println("Lost context for "+pc);
+				throw new RuntimeException("Lost context");		
+			}
 		}
 	}
 				
@@ -139,17 +151,17 @@ public class PointcutRewriter {
 			} else if (isAnd(notBody)) {
 				// !(X && Y) => !X || !Y
 				AndPointcut apc = (AndPointcut) notBody;
-				Pointcut newLeft = distributeNot(new NotPointcut(apc.getLeft())); 
-				Pointcut newRight = distributeNot(new NotPointcut(apc.getRight()));
+				Pointcut newLeft = distributeNot(new NotPointcut(apc.getLeft(),npc.getStart())); 
+				Pointcut newRight = distributeNot(new NotPointcut(apc.getRight(),npc.getStart()));
 				return new OrPointcut(newLeft,newRight);
 			} else if (isOr(notBody)) {
 				// !(X || Y) => !X && !Y
 				OrPointcut opc = (OrPointcut) notBody;
-				Pointcut newLeft = distributeNot(new NotPointcut(opc.getLeft())); 
-				Pointcut newRight = distributeNot(new NotPointcut(opc.getRight()));
+				Pointcut newLeft = distributeNot(new NotPointcut(opc.getLeft(),npc.getStart())); 
+				Pointcut newRight = distributeNot(new NotPointcut(opc.getRight(),npc.getStart()));
 				return new AndPointcut(newLeft,newRight);				
 			} else {
-				return new NotPointcut(notBody);
+				return new NotPointcut(notBody,npc.getStart());
 			}
 		} else if (isAnd(pc)) {
 			AndPointcut apc = (AndPointcut) pc;
