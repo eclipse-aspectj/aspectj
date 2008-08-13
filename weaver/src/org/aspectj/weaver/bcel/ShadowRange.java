@@ -17,6 +17,7 @@ import org.aspectj.apache.bcel.generic.Instruction;
 import org.aspectj.apache.bcel.generic.InstructionBranch;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
+import org.aspectj.apache.bcel.generic.InstructionLV;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.InstructionSelect;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
@@ -169,7 +170,12 @@ final class ShadowRange extends Range {
                 } else {
                     freshIndex = remap.get(oldIndex);
                 }
-                freshI.setIndex(freshIndex);
+                if (freshI instanceof RET) {
+                	freshI.setIndex(freshIndex);
+                } else {
+                    freshI = ((InstructionLV)freshI).setIndexAndCopyIfNecessary(freshIndex);
+                    freshIh.setInstruction(freshI);
+                }
             }
 //            System.err.println("JUST COPIED: " + oldIh.getInstruction().toString(freshMethod.getEnclosingClass().getConstantPoolGen().getConstantPool()) 
 //            	+ " INTO " + freshIh.getInstruction().toString(freshMethod.getEnclosingClass().getConstantPoolGen().getConstantPool()));

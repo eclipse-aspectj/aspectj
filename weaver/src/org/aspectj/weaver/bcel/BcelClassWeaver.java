@@ -38,6 +38,7 @@ import org.aspectj.apache.bcel.generic.InstructionCP;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
+import org.aspectj.apache.bcel.generic.InstructionLV;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.InstructionSelect;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
@@ -1946,7 +1947,11 @@ class BcelClassWeaver implements IClassWeaver {
 				} else {
 					freshIndex = frameEnv.get(oldIndex);
 				}
-				fresh.setIndex(freshIndex);
+				if (fresh instanceof RET) {
+					fresh.setIndex(freshIndex);
+				} else {
+					fresh = ((InstructionLV)fresh).setIndexAndCopyIfNecessary(freshIndex);
+				}
 				dest = ret.append(fresh);
 			} else {
 				dest = ret.append(fresh);
@@ -2079,7 +2084,11 @@ class BcelClassWeaver implements IClassWeaver {
 //					} else {
 						freshIndex = oldIndex;//frameEnv.get(oldIndex);
 //					}
-					fresh.setIndex(freshIndex);
+					if (fresh instanceof RET) {
+						fresh.setIndex(freshIndex);
+					} else {
+						fresh = ((InstructionLV)fresh).setIndexAndCopyIfNecessary(freshIndex);
+					}
 					dest = newList.append(fresh);
 				} else {
 					dest = newList.append(fresh);
