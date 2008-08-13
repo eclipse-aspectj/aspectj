@@ -66,7 +66,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 /** 
  * Abstract super class for all Java byte codes.
  *
- * @version $Id: Instruction.java,v 1.5 2008/05/28 23:52:58 aclement Exp $
+ * @version $Id: Instruction.java,v 1.6 2008/08/13 18:18:22 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public  class Instruction implements Cloneable, Serializable, Constants {
@@ -157,48 +157,49 @@ public  class Instruction implements Cloneable, Serializable, Constants {
 		case Constants.ALOAD  :  obj = new InstructionLV(Constants.ALOAD,wide?bytes.readUnsignedShort():bytes.readUnsignedByte()); break;
 		
 		// move these to InstructionConstants
-		case Constants.ILOAD_0:  obj = new InstructionLV(Constants.ILOAD_0);break;
-		case Constants.ILOAD_1:  obj = new InstructionLV(Constants.ILOAD_1);break;
-		case Constants.ILOAD_2:  obj = new InstructionLV(Constants.ILOAD_2);break;
-		case Constants.ILOAD_3:  obj = new InstructionLV(Constants.ILOAD_3);break;
-		case Constants.LLOAD_0:  obj = new InstructionLV(Constants.LLOAD_0);break;
-		case Constants.LLOAD_1:  obj = new InstructionLV(Constants.LLOAD_1);break;
-		case Constants.LLOAD_2:  obj = new InstructionLV(Constants.LLOAD_2);break;
-		case Constants.LLOAD_3:  obj = new InstructionLV(Constants.LLOAD_3);break;
-		case Constants.FLOAD_0:  obj = new InstructionLV(Constants.FLOAD_0);break;
-		case Constants.FLOAD_1:  obj = new InstructionLV(Constants.FLOAD_1);break;
-		case Constants.FLOAD_2:  obj = new InstructionLV(Constants.FLOAD_2);break;
-		case Constants.FLOAD_3:  obj = new InstructionLV(Constants.FLOAD_3);break;
-		case Constants.DLOAD_0:  obj = new InstructionLV(Constants.DLOAD_0);break;
-		case Constants.DLOAD_1:  obj = new InstructionLV(Constants.DLOAD_1);break;
-		case Constants.DLOAD_2:  obj = new InstructionLV(Constants.DLOAD_2);break;
-		case Constants.DLOAD_3:  obj = new InstructionLV(Constants.DLOAD_3);break;
-		case Constants.ALOAD_0:  obj = new InstructionLV(Constants.ALOAD_0);break;
-		case Constants.ALOAD_1:  obj = new InstructionLV(Constants.ALOAD_1);break;
-		case Constants.ALOAD_2:  obj = new InstructionLV(Constants.ALOAD_2);break;
-		case Constants.ALOAD_3:  obj = new InstructionLV(Constants.ALOAD_3);break;
+//		case Constants.ILOAD_0:  obj = new InstructionLV(Constants.ILOAD_0);break;
+//		case Constants.ILOAD_1:  obj = new InstructionLV(Constants.ILOAD_1);break;
+//		case Constants.ILOAD_2:  obj = new InstructionLV(Constants.ILOAD_2);break;
+//		case Constants.ILOAD_3:  obj = new InstructionLV(Constants.ILOAD_3);break;
+//		case Constants.LLOAD_0:  obj = new InstructionLV(Constants.LLOAD_0);break;
+//		case Constants.LLOAD_1:  obj = new InstructionLV(Constants.LLOAD_1);break;
+//		case Constants.LLOAD_2:  obj = new InstructionLV(Constants.LLOAD_2);break;
+//		case Constants.LLOAD_3:  obj = new InstructionLV(Constants.LLOAD_3);break;
+//		case Constants.FLOAD_0:  obj = new InstructionLV(Constants.FLOAD_0);break;
+//		case Constants.FLOAD_1:  obj = new InstructionLV(Constants.FLOAD_1);break;
+//		case Constants.FLOAD_2:  obj = new InstructionLV(Constants.FLOAD_2);break;
+//		case Constants.FLOAD_3:  obj = new InstructionLV(Constants.FLOAD_3);break;
+//		case Constants.DLOAD_0:  obj = new InstructionLV(Constants.DLOAD_0);break;
+//		case Constants.DLOAD_1:  obj = new InstructionLV(Constants.DLOAD_1);break;
+//		case Constants.DLOAD_2:  obj = new InstructionLV(Constants.DLOAD_2);break;
+//		case Constants.DLOAD_3:  obj = new InstructionLV(Constants.DLOAD_3);break;
+//		case Constants.ALOAD_0:  obj = new InstructionLV(Constants.ALOAD_0);break;
+//		case Constants.ALOAD_1:  obj = new InstructionLV(Constants.ALOAD_1);break;
+//		case Constants.ALOAD_2:  obj = new InstructionLV(Constants.ALOAD_2);break;
+//		case Constants.ALOAD_3:  obj = new InstructionLV(Constants.ALOAD_3);break;
 
 		// move to constants?
-		case Constants.ISTORE_0:  obj = new InstructionLV(Constants.ISTORE_0);break;
-		case Constants.ISTORE_1:  obj = new InstructionLV(Constants.ISTORE_1);break;
-		case Constants.ISTORE_2:  obj = new InstructionLV(Constants.ISTORE_2);break;
-		case Constants.ISTORE_3:  obj = new InstructionLV(Constants.ISTORE_3);break;
-		case Constants.LSTORE_0:  obj = new InstructionLV(Constants.LSTORE_0);break;
-		case Constants.LSTORE_1:  obj = new InstructionLV(Constants.LSTORE_1);break;
-		case Constants.LSTORE_2:  obj = new InstructionLV(Constants.LSTORE_2);break;
-		case Constants.LSTORE_3:  obj = new InstructionLV(Constants.LSTORE_3);break;
-		case Constants.FSTORE_0:  obj = new InstructionLV(Constants.FSTORE_0);break;
-		case Constants.FSTORE_1:  obj = new InstructionLV(Constants.FSTORE_1);break;
-		case Constants.FSTORE_2:  obj = new InstructionLV(Constants.FSTORE_2);break;
-		case Constants.FSTORE_3:  obj = new InstructionLV(Constants.FSTORE_3);break;
-		case Constants.DSTORE_0:  obj = new InstructionLV(Constants.DSTORE_0);break;
-		case Constants.DSTORE_1:  obj = new InstructionLV(Constants.DSTORE_1);break;
-		case Constants.DSTORE_2:  obj = new InstructionLV(Constants.DSTORE_2);break;
-		case Constants.DSTORE_3:  obj = new InstructionLV(Constants.DSTORE_3);break;
-		case Constants.ASTORE_0:  obj = new InstructionLV(Constants.ASTORE_0);break;
-		case Constants.ASTORE_1:  obj = new InstructionLV(Constants.ASTORE_1);break;
-		case Constants.ASTORE_2:  obj = new InstructionLV(Constants.ASTORE_2);break;
-		case Constants.ASTORE_3:  obj = new InstructionLV(Constants.ASTORE_3);break;	
+//		case Constants.ISTORE_0:  obj = new InstructionLV(Constants.ISTORE_0);break;
+//		case Constants.ISTORE_1:  obj = new InstructionLV(Constants.ISTORE_1);break;
+//		case Constants.ISTORE_2:  obj = new InstructionLV(Constants.ISTORE_2);break;
+//		case Constants.ISTORE_3:  obj = new InstructionLV(Constants.ISTORE_3);break;
+//		case Constants.LSTORE_0:  obj = new InstructionLV(Constants.LSTORE_0);break;
+//		case Constants.LSTORE_1:  obj = new InstructionLV(Constants.LSTORE_1);break;
+//		case Constants.LSTORE_2:  obj = new InstructionLV(Constants.LSTORE_2);break;
+//		case Constants.LSTORE_3:  obj = new InstructionLV(Constants.LSTORE_3);break;
+//		case Constants.FSTORE_0:  obj = new InstructionLV(Constants.FSTORE_0);break;
+//		case Constants.FSTORE_1:  obj = new InstructionLV(Constants.FSTORE_1);break;
+//		case Constants.FSTORE_2:  obj = new InstructionLV(Constants.FSTORE_2);break;
+//		case Constants.FSTORE_3:  obj = new InstructionLV(Constants.FSTORE_3);break;
+//		case Constants.DSTORE_0:  obj = new InstructionLV(Constants.DSTORE_0);break;
+//		case Constants.DSTORE_1:  obj = new InstructionLV(Constants.DSTORE_1);break;
+//		case Constants.DSTORE_2:  obj = new InstructionLV(Constants.DSTORE_2);break;
+//		case Constants.DSTORE_3:  obj = new InstructionLV(Constants.DSTORE_3);break;
+//		case Constants.ASTORE_0:  obj = new InstructionLV(Constants.ASTORE_0);break;
+//		case Constants.ASTORE_1:  obj = new InstructionLV(Constants.ASTORE_1);break;
+//		case Constants.ASTORE_2:  obj = new InstructionLV(Constants.ASTORE_2);break;
+//		case Constants.ASTORE_3:  obj = new InstructionLV(Constants.ASTORE_3);break;	
+		
 //	case Constants.IALOAD  :  obj = new IALOAD(); break;
 //		case Constants.LALOAD  :  obj = new LALOAD(); break;
 //		case Constants.FALOAD  :  obj = new FALOAD(); break;

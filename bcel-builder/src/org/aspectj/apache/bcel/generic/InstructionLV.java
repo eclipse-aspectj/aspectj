@@ -61,11 +61,11 @@ import org.aspectj.apache.bcel.Constants;
 /**
  * Abstract super class for instructions dealing with local variables.
  *
- * @version $Id: InstructionLV.java,v 1.2 2008/05/28 23:52:57 aclement Exp $
+ * @version $Id: InstructionLV.java,v 1.3 2008/08/13 18:18:22 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class InstructionLV extends Instruction {
-  protected int     lvar         = -1;
+  protected int     lvar        = -1;
 
    
   public InstructionLV(short opcode, int lvar) {
@@ -128,6 +128,23 @@ public class InstructionLV extends Instruction {
   public boolean isASTORE() {
 	  return opcode==ASTORE || (opcode>=ASTORE_0 && opcode<=ASTORE_3);
   }
+  
+  public int getBaseOpcode() {
+	  if ((opcode>=ILOAD && opcode<=ALOAD) || (opcode>=ISTORE && opcode<=ASTORE)) {
+		  // not an optimized instruction
+		  return opcode;
+	  }
+	  if ((opcode>=Constants.ILOAD_0) && (opcode<=Constants.ALOAD_3)) {
+		  int ret = opcode - ILOAD_0;
+		  ret = ret - (ret%4);
+		  ret = ret / 4;
+		  return ret + ILOAD;
+	  }
+	  int ret = opcode - ISTORE_0;
+	  ret = ret - (ret%4);
+	  ret = ret / 4;
+	  return ret + ISTORE;	  
+  }
 
   /**
    * @return local variable index  referred by this instruction.
@@ -155,7 +172,37 @@ public class InstructionLV extends Instruction {
 		  this.lvar = i;
 	  }
   }
-
+  
+  public boolean canSetIndex() {
+	  return true;
+  }
+  
+  public InstructionLV setIndexAndCopyIfNecessary(int newIndex) {
+	  if (canSetIndex()) {
+		  setIndex(newIndex);
+		  return this;
+	  } else {
+		if (getIndex()==newIndex) {
+			return this;
+		}
+		InstructionLV newInstruction = null;
+		int baseOpCode = getBaseOpcode();
+		if (newIndex<4) {
+			if (isStoreInstruction()) {
+				newInstruction = (InstructionLV) InstructionConstants.INSTRUCTIONS[(baseOpCode-Constants.ISTORE)*4+Constants.ISTORE_0+newIndex];
+			} else {								
+				newInstruction = (InstructionLV) InstructionConstants.INSTRUCTIONS[(baseOpCode-Constants.ILOAD)*4+Constants.ILOAD_0+newIndex];
+			}
+		} else {
+			newInstruction = new InstructionLV((short) baseOpCode, newIndex);
+		}
+//		if (getBaseOpcode()!=newInstruction.getBaseOpcode() || newInstruction.getIndex()!=newIndex) {
+//			throw new RuntimeException("New Instruction created does not appear to be valid: originalBaseOpcode="+getBaseOpcode()+" newBaseOpcode="+newInstruction.getBaseOpcode());
+//		}
+		return newInstruction;
+	  }
+  }
+  
   public int getLength() {
 	  int size=Constants.iLen[opcode];
 	  if (lvar==-1) {

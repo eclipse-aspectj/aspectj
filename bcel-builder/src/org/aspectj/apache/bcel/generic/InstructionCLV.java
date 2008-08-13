@@ -15,8 +15,13 @@ public class InstructionCLV extends InstructionLV {
 	}
 	
 	public void setIndex(int localVariableIndex) {
-		if (localVariableIndex!=getIndex())//allow this, shouldnt really...
-		throw new ClassGenException("Do not attempt to modify the index for this constant instruction: "+this);
+		if (localVariableIndex!=getIndex()) {
+			throw new ClassGenException("Do not attempt to modify the index to '"+localVariableIndex+"' for this constant instruction: "+this);
+		}
+	}
+
+	public boolean canSetIndex() {
+	    return false;
 	}
 
 }

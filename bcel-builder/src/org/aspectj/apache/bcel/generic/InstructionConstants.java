@@ -70,7 +70,7 @@ import org.aspectj.apache.bcel.Constants;
  * The Instructions can also accessed directly under their names, so
  * it's possible to write il.append(Instruction.ICONST_0);
  *
- * @version $Id: InstructionConstants.java,v 1.3 2008/05/28 23:52:55 aclement Exp $
+ * @version $Id: InstructionConstants.java,v 1.4 2008/08/13 18:18:22 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface InstructionConstants {
@@ -351,17 +351,29 @@ public interface InstructionConstants {
       INSTRUCTIONS[Constants.MONITORENTER] = MONITORENTER;
       INSTRUCTIONS[Constants.MONITOREXIT] = MONITOREXIT;
       INSTRUCTIONS[Constants.IMPDEP1] = IMPDEP1;
-      INSTRUCTIONS[Constants.IMPDEP2] = IMPDEP2; 
-//      INSTRUCTIONS[Constants.ALOAD_0] = ALOAD_0;INSTRUCTIONS[Constants.ALOAD_1] = ALOAD_1;
-//      INSTRUCTIONS[Constants.ALOAD_2] = ALOAD_2;INSTRUCTIONS[Constants.ALOAD_3] = ALOAD_3;
-//      INSTRUCTIONS[Constants.LLOAD_0] = LLOAD_0;INSTRUCTIONS[Constants.LLOAD_1] = LLOAD_1;
-//      INSTRUCTIONS[Constants.LLOAD_2] = LLOAD_2;INSTRUCTIONS[Constants.LLOAD_3] = LLOAD_3;
-//      INSTRUCTIONS[Constants.DLOAD_0] = DLOAD_0;INSTRUCTIONS[Constants.DLOAD_1] = DLOAD_1;
-//      INSTRUCTIONS[Constants.DLOAD_2] = DLOAD_2;INSTRUCTIONS[Constants.DLOAD_3] = DLOAD_3;
-//      INSTRUCTIONS[Constants.FLOAD_0] = FLOAD_0;INSTRUCTIONS[Constants.FLOAD_1] = FLOAD_1;
-//      INSTRUCTIONS[Constants.FLOAD_2] = FLOAD_2;INSTRUCTIONS[Constants.FLOAD_3] = FLOAD_3;
-//      INSTRUCTIONS[Constants.ILOAD_0] = ILOAD_0;INSTRUCTIONS[Constants.ILOAD_1] = ILOAD_1;
-//      INSTRUCTIONS[Constants.ILOAD_2] = ILOAD_2;INSTRUCTIONS[Constants.ILOAD_3] = ILOAD_3;
+      INSTRUCTIONS[Constants.IMPDEP2] = IMPDEP2;
+      
+      INSTRUCTIONS[Constants.ALOAD_0] = ALOAD_0;INSTRUCTIONS[Constants.ALOAD_1] = ALOAD_1;
+      INSTRUCTIONS[Constants.ALOAD_2] = ALOAD_2;INSTRUCTIONS[Constants.ALOAD_3] = ALOAD_3;
+      INSTRUCTIONS[Constants.LLOAD_0] = LLOAD_0;INSTRUCTIONS[Constants.LLOAD_1] = LLOAD_1;
+      INSTRUCTIONS[Constants.LLOAD_2] = LLOAD_2;INSTRUCTIONS[Constants.LLOAD_3] = LLOAD_3;
+      INSTRUCTIONS[Constants.DLOAD_0] = DLOAD_0;INSTRUCTIONS[Constants.DLOAD_1] = DLOAD_1;
+      INSTRUCTIONS[Constants.DLOAD_2] = DLOAD_2;INSTRUCTIONS[Constants.DLOAD_3] = DLOAD_3;
+      INSTRUCTIONS[Constants.FLOAD_0] = FLOAD_0;INSTRUCTIONS[Constants.FLOAD_1] = FLOAD_1;
+      INSTRUCTIONS[Constants.FLOAD_2] = FLOAD_2;INSTRUCTIONS[Constants.FLOAD_3] = FLOAD_3;
+      INSTRUCTIONS[Constants.ILOAD_0] = ILOAD_0;INSTRUCTIONS[Constants.ILOAD_1] = ILOAD_1;
+      INSTRUCTIONS[Constants.ILOAD_2] = ILOAD_2;INSTRUCTIONS[Constants.ILOAD_3] = ILOAD_3;
+
+      INSTRUCTIONS[Constants.ASTORE_0] = ASTORE_0;INSTRUCTIONS[Constants.ASTORE_1] = ASTORE_1;
+      INSTRUCTIONS[Constants.ASTORE_2] = ASTORE_2;INSTRUCTIONS[Constants.ASTORE_3] = ASTORE_3;
+      INSTRUCTIONS[Constants.LSTORE_0] = LSTORE_0;INSTRUCTIONS[Constants.LSTORE_1] = LSTORE_1;
+      INSTRUCTIONS[Constants.LSTORE_2] = LSTORE_2;INSTRUCTIONS[Constants.LSTORE_3] = LSTORE_3;
+      INSTRUCTIONS[Constants.DSTORE_0] = DSTORE_0;INSTRUCTIONS[Constants.DSTORE_1] = DSTORE_1;
+      INSTRUCTIONS[Constants.DSTORE_2] = DSTORE_2;INSTRUCTIONS[Constants.DSTORE_3] = DSTORE_3;
+      INSTRUCTIONS[Constants.FSTORE_0] = FSTORE_0;INSTRUCTIONS[Constants.FSTORE_1] = FSTORE_1;
+      INSTRUCTIONS[Constants.FSTORE_2] = FSTORE_2;INSTRUCTIONS[Constants.FSTORE_3] = FSTORE_3;
+      INSTRUCTIONS[Constants.ISTORE_0] = ISTORE_0;INSTRUCTIONS[Constants.ISTORE_1] = ISTORE_1;
+      INSTRUCTIONS[Constants.ISTORE_2] = ISTORE_2;INSTRUCTIONS[Constants.ISTORE_3] = ISTORE_3;
     }
   }
 }
