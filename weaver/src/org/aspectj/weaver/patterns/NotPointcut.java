@@ -32,6 +32,7 @@ public class NotPointcut extends Pointcut {
 		super();
 		this.body = negated;
 		this.pointcutKind = NOT;
+		setLocation(negated.getSourceContext(), negated.getStart(),negated.getEnd()); // should that be at least start-1?
 	}
 
 	public NotPointcut(Pointcut pointcut, int startPos) {
