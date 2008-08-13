@@ -3,13 +3,18 @@
 <!-- AspectJ v1.6.2 Tests -->
 <suite>
 
-	<ajc-test dir="bugs162/pr241847" title="param annos pipelining">
+    <ajc-test dir="bugs162/pr242797/case1" title="generic itds - 1">
+        <compile files="ClassUtils.java CMEFinder.java Finder.java H2Deployment.java Localized.java LocalizedFinder.java OnetElement.java OnetFinder.java Partitioned.java PartitionedFinder.java" options="-1.5">
+        </compile>
+    </ajc-test> 
+ 
+  	<ajc-test dir="bugs162/pr241847" title="param annos pipelining">
     	<compile files="Asp.aj Ann.java CC.java II.java LongLong.java" options="-1.5 -showWeaveInfo">
     		<message kind="weave" text="Join point 'method-execution(void LongLong.m1(java.lang.String))' in Type 'LongLong' (LongLong.java:2) advised by before advice from 'Asp' (Asp.aj:5)"/>
     		<message kind="weave" line="3"/>
     	</compile>
     </ajc-test>    
-
+    
 	<ajc-test dir="bugs162/pr239441" title="annotation decp">
     	<compile files="Test3.java SampleAspect.java" options="-1.5 -showWeaveInfo -XhasMember">
     	</compile>
