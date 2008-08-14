@@ -14,6 +14,7 @@ package org.aspectj.systemtest.incremental.tools;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,13 @@ public class AjdeInteractionTestbed extends TestCase {
 	public void configureAspectPath(String projectName, Set aspectpath) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		((MultiProjTestCompilerConfiguration)compiler.getCompilerConfiguration()).setAspectPath(aspectpath);
+	} 
+
+	public void configureAspectPath(String projectName, File aspectpath) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		Set s = new HashSet();
+		s.add(aspectpath);
+		((MultiProjTestCompilerConfiguration)compiler.getCompilerConfiguration()).setAspectPath(s);
 	} 
 	
 	public void configureResourceMap(String projectName, Map resourcesMap) {
