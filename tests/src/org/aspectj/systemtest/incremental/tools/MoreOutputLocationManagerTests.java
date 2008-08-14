@@ -231,51 +231,53 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 	 * a text file contained within a jar is copied and then 
 	 * deleted correctly. Essentially tests AjState.deleteResources().
 	 */
-	public void testAjStateDeleteResources() {
-		String inpathDir  = inpathTestingDir + File.separator + "inpathJar.jar";
-		addInpathEntry(inpathDir);
-		
-		build("inpathTesting");
-		
-		AjState state = getState();
-		
-		String resource = expectedOutputDir + File.separator + "inpathResource.txt";
-		File f = new File(resource);
-		assertTrue("expected file " + resource + " to exist but it did not",f.exists());
-		// this call should delete the resources
-		state.getFilesToCompile(true);
-		assertFalse("did not expect the file " + resource + " to exist but it does",f.exists());
-	}
+	// see 243376: for now don't do this, waste of cpu - ajdt better for handling resources - but is that true for inpath resources?
+//	public void testAjStateDeleteResources() {
+//		String inpathDir  = inpathTestingDir + File.separator + "inpathJar.jar";
+//		addInpathEntry(inpathDir);
+//		
+//		build("inpathTesting");
+//		
+//		AjState state = getState();
+//		
+//		String resource = expectedOutputDir + File.separator + "inpathResource.txt";
+//		File f = new File(resource);
+//		assertTrue("expected file " + resource + " to exist but it did not",f.exists());
+//		// this call should delete the resources
+//		state.getFilesToCompile(true);
+//		assertFalse("did not expect the file " + resource + " to exist but it does",f.exists());
+//	}
 	
 	/**
 	 * Can set to copy resources that are in inpath dirs - check that
 	 * a text file contained within such a dir is copied and then 
 	 * deleted correctly. Essentially tests AjState.maybeDeleteResources().
 	 */
-	public void testAjStateDeleteResourcesInInputDir() {
-		// temporary problem with this on linux, think it is a filesystem lastmodtime issue
-		if (System.getProperty("os.name","").toLowerCase().equals("linux")) return;
-		if (System.getProperty("os.name","").toLowerCase().indexOf("mac")!=-1) return;
-
-		AjBuildManager.COPY_INPATH_DIR_RESOURCES = true;
-		try {
-			String inpathDir = inpathTestingDir + File.separator + "injarBin"
-					+ File.separator + "pkg";
-			addInpathEntry(inpathDir);
-			build("inpathTesting");
-			AjState state = getState();
-			String resource = "inDirResource.txt";
-			assertTrue("expected state to have resource " + resource + "but it did not", 
-					state.hasResource(resource));
-			// this call should delete the resources - tests AjState.deleteResources()
-			state.getFilesToCompile(true);
-			assertFalse("did not expect state to have resource " + resource +
-					" but found that it did", state.hasResource(resource));
-		} finally {
-			AjBuildManager.COPY_INPATH_DIR_RESOURCES = false;
-		}
-		
-	}
+	// see 243376: for now don't do this, waste of cpu - ajdt better for handling resources - but is that true for inpath resources?
+//	public void testAjStateDeleteResourcesInInputDir() {
+//		// temporary problem with this on linux, think it is a filesystem lastmodtime issue
+//		if (System.getProperty("os.name","").toLowerCase().equals("linux")) return;
+//		if (System.getProperty("os.name","").toLowerCase().indexOf("mac")!=-1) return;
+//
+//		AjBuildManager.COPY_INPATH_DIR_RESOURCES = true;
+//		try {
+//			String inpathDir = inpathTestingDir + File.separator + "injarBin"
+//					+ File.separator + "pkg";
+//			addInpathEntry(inpathDir);
+//			build("inpathTesting");
+//			AjState state = getState();
+//			String resource = "inDirResource.txt";
+//			assertTrue("expected state to have resource " + resource + "but it did not", 
+//					state.hasResource(resource));
+//			// this call should delete the resources - tests AjState.deleteResources()
+//			state.getFilesToCompile(true);
+//			assertFalse("did not expect state to have resource " + resource +
+//					" but found that it did", state.hasResource(resource));
+//		} finally {
+//			AjBuildManager.COPY_INPATH_DIR_RESOURCES = false;
+//		}
+//		
+//	}
 	
 	/**
 	 * Changing inpath entry from a jar to a directory between builds means
