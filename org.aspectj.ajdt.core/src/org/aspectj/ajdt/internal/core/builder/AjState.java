@@ -761,7 +761,11 @@ public class AjState {
             }
 			
 			deleteClassFiles();
-			deleteResources();
+			// Do not delete resources on incremental build, AJDT will handle
+			// copying updates to the output folder.  AspectJ only does a copy
+			// of them on full build (see copyResourcesToDestination() call
+			// in AjBuildManager)
+//			deleteResources();
 			
 			addAffectedSourceFiles(thisTime,thisTime);
 		} else {

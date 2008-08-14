@@ -341,7 +341,12 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
             // have to tell state we succeeded or next is not incremental
             state.successfulCompile(buildConfig,batch);
 
-            copyResourcesToDestination();
+			// For a full compile, copy resources to the destination
+			// - they should not get deleted on incremental and AJDT
+			// will handle changes to them that require a recopying
+            if (batch) {
+            	copyResourcesToDestination();
+            }
             
             if (buildConfig.getOutxmlName() != null) {
             	writeOutxmlFile();
