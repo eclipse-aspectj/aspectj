@@ -1246,7 +1246,7 @@ void around(Point p, int x): target(p)
     </para>
 
 <programlisting><![CDATA[
-  class TraceNonStaticMethods {
+  aspect TraceNonStaticMethods {
       before(Point p): target(p) && call(* *(..)) {
           System.out.println("Entering " + thisJoinPoint + " in " + p);
       }
