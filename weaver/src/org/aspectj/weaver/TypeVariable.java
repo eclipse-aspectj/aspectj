@@ -380,7 +380,7 @@ public class TypeVariable {
 		String name = s.readUTF();
 		UnresolvedType ubound = UnresolvedType.read(s);
 		int iboundcount = s.readInt();
-		UnresolvedType[] ibounds = null;
+		UnresolvedType[] ibounds = UnresolvedType.NONE;
 		if (iboundcount>0) {
 			ibounds = new UnresolvedType[iboundcount];
 			for (int i=0; i<iboundcount; i++) {
