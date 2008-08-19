@@ -33,6 +33,11 @@
         <compile files="GenericMethodAspect.aj GenericMethodInterface.java GenericMethodImpl.java" options="-1.5">
         </compile>
     </ajc-test> 
+
+    <ajc-test dir="bugs162/pr242797/case3" title="generic itds - 3">
+        <compile files="GenericMethodAspect.aj GenericMethodInterface.java GenericMethodImpl.java GenericMethodImpl2.java Type1.java Type2.java" options="-1.5">
+        </compile>
+    </ajc-test> 
  
   	<ajc-test dir="bugs162/pr241847" title="param annos pipelining">
     	<compile files="Asp.aj Ann.java CC.java II.java LongLong.java" options="-1.5 -showWeaveInfo">
