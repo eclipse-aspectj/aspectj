@@ -25,6 +25,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.IPrivilegedHandler;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedFieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedMethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -46,7 +47,10 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 		this.inAspect = inAspect;
 	}
 
-	public FieldBinding getPrivilegedAccessField(FieldBinding baseField, ASTNode location) {		
+	public FieldBinding getPrivilegedAccessField(FieldBinding baseField, ASTNode location) {	
+		if (baseField instanceof ParameterizedFieldBinding) { 
+			baseField = ((ParameterizedFieldBinding)baseField).originalField;
+		}
 		ResolvedMember key = inAspect.factory.makeResolvedMember(baseField);
 		if (accessors.containsKey(key)) return (FieldBinding)accessors.get(key);
 		FieldBinding ret = new PrivilegedFieldBinding(inAspect, baseField);
