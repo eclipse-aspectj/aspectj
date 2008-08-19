@@ -24,6 +24,7 @@ public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testGenericItds_pr242797_1() { runTest("generic itds - 1"); }
 	public void testGenericItds_pr242797_2() { runTest("generic itds - 2"); }
 	public void testGenericItds_pr242797_3() { runTest("generic itds - 3"); }
+	public void testPrivilegedGenerics_pr240693() { runTest("privileged generics"); }
 //	public void testParamAnnosPipelining_pr241847() { runTest("param annos pipelining");}
 //	public void testParamAnnoInner_pr241861() { runTest("param annotation inner class"); }
 	public void testAnnotationDecp_pr239441() { runTest("annotation decp"); }
