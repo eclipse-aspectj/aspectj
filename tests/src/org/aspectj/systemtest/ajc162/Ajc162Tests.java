@@ -20,6 +20,7 @@ public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.2	
 	public void testGenericDecp_pr241047() { runTest("generic decp"); }
+	public void testGenericDecp_pr241047_2() { runTest("generic decp - 2"); }
 	public void testGenericItds_pr242797_1() { runTest("generic itds - 1"); }
 	public void testGenericItds_pr242797_2() { runTest("generic itds - 2"); }
 	public void testGenericItds_pr242797_3() { runTest("generic itds - 3"); }

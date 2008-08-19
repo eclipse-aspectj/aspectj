@@ -24,6 +24,20 @@
         </run>
     </ajc-test> 
 
+    <ajc-test dir="bugs162/pr241047/case2" title="generic decp - 2">
+        <compile files="SomeAspect.java SomeSubClass.java SomeInterface.java SomeBaseClass.java" options=" -Xlint:ignore -1.5">
+        </compile>
+        <run class="SomeBaseClass">
+          <stdout>
+              <line text="correct advice :-)"/>
+              <line text="some base method"/>
+              <line text="correct advice :-)"/>
+              <line text="some sub method"/>
+          </stdout>
+        </run>
+    </ajc-test> 
+
+
     <ajc-test dir="bugs162/pr242797/case1" title="generic itds - 1">
         <compile files="ClassUtils.java CMEFinder.java Finder.java H2Deployment.java Localized.java LocalizedFinder.java OnetElement.java OnetFinder.java Partitioned.java PartitionedFinder.java" options="-1.5">
         </compile>
