@@ -186,11 +186,6 @@ public class TypeVariable {
 	public boolean canBeBoundTo(ResolvedType aCandidateType) {
 		if (!isResolved) throw new IllegalStateException("Can't answer binding questions prior to resolving");
 		
-		// TODO 2 is this next bit bogus, what is it for?
-		if (aCandidateType.isTypeVariableReference()) {
-			return matchingBounds((TypeVariableReferenceType)aCandidateType);
-		}
-		
 		// wildcard can accept any binding
 		if (aCandidateType.isGenericWildcard()) {  // AMC - need a more robust test!
 			return true;
@@ -210,50 +205,6 @@ public class TypeVariable {
 		//  lowerBound is a subtype of aCandidateType
 		if ((lowerBound != null) && (!isASubtypeOf(aCandidateType,lowerBound))) {
 			return false;
-		}
-		return true;
-	}
-	
-	// can match any type in the range of the type variable...
-	// XXX what about interfaces?
-	private boolean matchingBounds(TypeVariableReferenceType tvrt) {
-		if (tvrt.getUpperBound() != getUpperBound()) {
-			UnresolvedType unresolvedCandidateUpperBound = tvrt.getUpperBound();
-			UnresolvedType unresolvedThisUpperBound = getUpperBound();
-			if (unresolvedCandidateUpperBound instanceof ResolvedType && unresolvedThisUpperBound instanceof ResolvedType) {
-				ResolvedType candidateUpperBound = (ResolvedType)unresolvedCandidateUpperBound;
-				ResolvedType thisUpperBound = (ResolvedType)unresolvedThisUpperBound;
-				if (!thisUpperBound.isAssignableFrom(candidateUpperBound)) {
-					return false;
-				}
-			} else {
-				// not right, they shouldnt have been unresolved...
-				return false;
-			}
-		}
-		if (tvrt.hasLowerBound() != (getLowerBound() != null)) return false;
-		if (tvrt.hasLowerBound() && tvrt.getLowerBound() != getLowerBound()) return false;
-		// either we both have bounds, or neither of us have bounds
-		ReferenceType[] tvrtBounds = tvrt.getAdditionalBounds();
-		if ((tvrtBounds != null) != (additionalInterfaceBounds != null)) return false;
-		if (additionalInterfaceBounds != null) {
-			// we both have bounds, compare
-			if (tvrtBounds.length != additionalInterfaceBounds.length) return false;
-			Set aAndNotB = new HashSet();
-			Set bAndNotA = new HashSet();
-			for (int i = 0; i < additionalInterfaceBounds.length; i++) {
-				aAndNotB.add(additionalInterfaceBounds[i]);
-			}
-			for (int i = 0; i < tvrtBounds.length; i++) {
-				bAndNotA.add(tvrtBounds[i]);
-			}
-			for (int i = 0; i < additionalInterfaceBounds.length; i++) {
-				bAndNotA.remove(additionalInterfaceBounds[i]);
-			}
-			for (int i = 0; i < tvrtBounds.length; i++) {
-				aAndNotB.remove(tvrtBounds[i]);
-			}
-			if (! (aAndNotB.isEmpty() && bAndNotA.isEmpty()) ) return false;
 		}
 		return true;
 	}
