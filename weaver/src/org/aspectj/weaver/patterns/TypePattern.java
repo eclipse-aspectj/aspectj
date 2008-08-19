@@ -181,7 +181,10 @@ public abstract class TypePattern extends PatternNode {
 			//System.out.println("    true");
 			return true;
 		}
-		
+		// If an ITD is applied, it will be put onto the generic type, not the parameterized or raw form
+		if (superType.isParameterizedType() || superType.isRawType()) {
+			superType = superType.getGenericType();
+		}
 		// FuzzyBoolean ret = FuzzyBoolean.NO; // ??? -eh
 		for (Iterator i = superType.getDirectSupertypes(); i.hasNext(); ) {
 			ResolvedType superSuperType = (ResolvedType)i.next();
