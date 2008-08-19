@@ -28,6 +28,11 @@
         <compile files="ClassUtils.java CMEFinder.java Finder.java H2Deployment.java Localized.java LocalizedFinder.java OnetElement.java OnetFinder.java Partitioned.java PartitionedFinder.java" options="-1.5">
         </compile>
     </ajc-test> 
+    
+    <ajc-test dir="bugs162/pr242797/case2" title="generic itds - 2">
+        <compile files="GenericMethodAspect.aj GenericMethodInterface.java GenericMethodImpl.java" options="-1.5">
+        </compile>
+    </ajc-test> 
  
   	<ajc-test dir="bugs162/pr241847" title="param annos pipelining">
     	<compile files="Asp.aj Ann.java CC.java II.java LongLong.java" options="-1.5 -showWeaveInfo">
