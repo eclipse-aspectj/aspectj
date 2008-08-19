@@ -164,8 +164,7 @@ public class BasicTokenSource implements ITokenSource {
 	}
 
 	private static String makeString(char ch) {
-		// slightly inefficient ;-)
-		return new String(new char[] {ch});
+		return Character.toString(ch);
 	}
 
 	private static String makeString(char ch, int count) {
