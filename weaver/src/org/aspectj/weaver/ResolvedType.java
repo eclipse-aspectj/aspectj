@@ -1651,9 +1651,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	      ResolvedType rtParentReturnType = parent.resolve(world).getGenericReturnType().resolve(world);
 		  ResolvedType rtChildReturnType  = child.resolve(world).getGenericReturnType().resolve(world);
 		  incompatibleReturnTypes = !rtParentReturnType.isAssignableFrom(rtChildReturnType);
-		  if (incompatibleReturnTypes) {
-			  incompatibleReturnTypes = !rtParentReturnType.isAssignableFrom(rtChildReturnType);
-		  }
+		  // For debug, uncomment this bit and we'll repeat the check - stick a breakpoint on the call
+//		  if (incompatibleReturnTypes) {
+//			  incompatibleReturnTypes = !rtParentReturnType.isAssignableFrom(rtChildReturnType);
+//		  }
 		} else {
 		  incompatibleReturnTypes =!parent.getReturnType().equals(child.getReturnType());
 		}
