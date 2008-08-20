@@ -78,10 +78,6 @@
      </run>
     </ajc-test>
  
- 	<ajc-test dir="bugs152/pr145391" title="itd calling generic method">
-     <compile files="GenericType.java" options="-1.5"/>
-     <run class="GenericType"/>
-    </ajc-test>
     
 	<ajc-test dir="bugs152/pr148536" title="NPE for unknown annotation">
      <compile files="Bug.java" options="-1.5">
@@ -105,11 +101,6 @@
       <run class="MyClass"/>
     </ajc-test>
 
-	<ajc-test dir="bugs152/pr145391" title="itd calling generic method - 2">
-     <compile files="GenericType2.java" options="-1.5"/>
-     <run class="GenericType2"/>
-    </ajc-test>
-    
 	<ajc-test dir="bugs152/pr126355" title="bizarre generic error with itds">
      <compile files="Pair.java" options="-1.5"/>
      <compile files="Test.java" options="-1.5"/>

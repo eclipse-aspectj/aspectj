@@ -27,8 +27,6 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //  public void testSuperITDExplosion_pr134425() { runTest("super ITDs");}
 //  public void testMisbehavingDeclareAnnotation_pr135865() { runTest("misbehaving declare annotation");}
 //  public void testMisbehavingDeclareAnnotation_pr135865_2() { runTest("misbehaving declare annotation - 2");}
-//  public void testItdCallingGenericMethod_pr145391() { runTest("itd calling generic method");}
-//  public void testItdCallingGenericMethod_pr145391_2() { runTest("itd calling generic method - 2");}
 //  public void testClassCastForInvalidAnnotationValue_pr148537() { runTest("classcast annotation value");}
 	
 	

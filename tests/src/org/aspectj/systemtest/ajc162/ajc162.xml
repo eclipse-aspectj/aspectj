@@ -3,6 +3,17 @@
 <!-- AspectJ v1.6.2 Tests -->
 <suite>
 
+ 	<ajc-test dir="bugs162/pr145391" title="itd calling generic method">
+     <compile files="GenericType.java" options="-1.5"/>
+     <run class="GenericType"/>
+    </ajc-test>
+
+	<ajc-test dir="bugs162/pr145391" title="itd calling generic method - 2">
+     <compile files="GenericType2.java" options="-1.5">
+       <message kind="error" text="The method getValue(V) in the type GenericType2&lt;V&gt; is not applicable for the arguments"/>
+     </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs162/pr241047" title="generic decp">
         <compile files="SomeAspect.java SomeBaseClass.java SomeSubClass.java SomeSubClass2.java SomeSubClass3.java SomeInterface.java SomeBaseClass2.java SomeBaseClass3.java" options=" -Xlint:ignore -1.5">
         </compile>
