@@ -1882,6 +1882,15 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				if (!isVisible(existing.getModifiers(),
 					existing.getDeclaringType().resolve(getWorld()),
 					this)) {
+					// if they intended to override it but it is not visible, give them a nicer message
+					if (existing.isAbstract() && conflictingSignature(existing,toAdd)) {
+						getWorld().showMessage(
+								IMessage.ERROR,
+								WeaverMessages.format(WeaverMessages.POINTCUT_NOT_VISIBLE,
+										existing.getDeclaringType().getName() + "." + existing.getName()+"()", this.getName()),
+								toAdd.getSourceLocation(),null);
+						j.remove();
+					}
 					continue;
 				}
 				if (conflictingSignature(existing, toAdd)) {

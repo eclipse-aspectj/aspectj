@@ -24,6 +24,7 @@ public class WeaverMessages {
 	public static final String THIS_OR_TARGET_IN_DECLARE = "thisOrTargetInDeclare";
 	public static final String ABSTRACT_POINTCUT = "abstractPointcut";
 	public static final String POINCUT_NOT_CONCRETE = "abstractPointcutNotMadeConcrete";
+	public static final String POINTCUT_NOT_VISIBLE = "pointcutNotVisible";
 	public static final String CONFLICTING_INHERITED_POINTCUTS = "conflictingInheritedPointcuts";
 	public static final String CIRCULAR_POINTCUT = "circularPointcutDeclaration";
 	public static final String CANT_FIND_POINTCUT = "cantFindPointcut";
