@@ -1393,9 +1393,8 @@
       keywords="from-resolved_10x"
        comment="XXX getting error - confirm line numbers">
         <compile files="parent/ParentCE.java,child/ChildCE.java">
+            <message kind="error" file="child/ChildCE.java" line="32" text="pointcut 'parent.ParentCE.define()' is not visible"/>
             <message kind="error" file="child/ChildCE.java" line="21"/>
-            <message kind="error" file="child/ChildCE.java" line="31"/>
-            <message kind="error" file="parent/ParentCE.java" line="8"/>
             <message kind="error" file="parent/ParentCE.java" line="10"/>
             <message kind="error" file="parent/ParentCE.java" line="12"/>
             <message kind="error" file="parent/ParentCE.java" line="22"/>

@@ -37,6 +37,12 @@
         </run>
     </ajc-test> 
 
+    <ajc-test dir="bugs162/pr239539" title="public pointcut">
+        <compile files="PrintAround.java PrintAroundFoo.java Foo.java" options="-1.5">
+	        <message kind="error" line="7" text="pointcut 'bar.PrintAround.method()' is not visible from type "/>
+        </compile>
+    </ajc-test> 
+
     <ajc-test dir="bugs162/pr242797/case1" title="generic itds - 1">
         <compile files="ClassUtils.java CMEFinder.java Finder.java H2Deployment.java Localized.java LocalizedFinder.java OnetElement.java OnetFinder.java Partitioned.java PartitionedFinder.java" options="-1.5">
         </compile>
