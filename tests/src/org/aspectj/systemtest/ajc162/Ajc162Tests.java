@@ -19,6 +19,8 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.2	
+	public void testGenericItdsOverrides_pr222648() { runTest("generic itds - overrides"); }
+	public void testGenericItdsOverrides_pr222648_2() { runTest("generic itds - overrides - 2"); }
     public void testItdCallingGenericMethod_pr145391() { runTest("itd calling generic method");}
     public void testItdCallingGenericMethod_pr145391_2() { runTest("itd calling generic method - 2");}
 	public void testPublicPointcut_pr239539() { runTest("public pointcut"); }
