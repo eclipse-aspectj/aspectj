@@ -658,12 +658,22 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 //		assertNoErrors("PR119570");
 //	}
 	
-	public void testPr119570_2() {
-		initialiseProject("PR119570_2");
-		build("PR119570_2");
-		List l = getWarningMessages("PR119570_2");
-		assertTrue("Should be no warnings, but got "+l,l.size()==0);
-	}
+//	public void testPr119570_212783_2() {
+//		initialiseProject("PR119570_2");
+//		build("PR119570_2");
+//		List l = getWarningMessages("PR119570_2");
+//		assertTrue("Should be no warnings, but got "+l,l.size()==0);
+//		assertNoErrors("PR119570_2");
+//	}
+//
+//	public void testPr119570_212783_3() {
+//		initialiseProject("pr119570_3");
+//		build("pr119570_3");
+//		List l = getWarningMessages("pr119570_3");
+//		assertTrue("Should be no warnings, but got "+l,l.size()==0);
+//		assertNoErrors("pr119570_3");
+//	}
+
 	
 	// If you fiddle with the compiler options - you must manually reset the options at the end of the test
 	public void testPr117209() {
