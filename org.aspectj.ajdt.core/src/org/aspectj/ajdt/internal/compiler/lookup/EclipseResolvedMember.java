@@ -25,6 +25,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TrueLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.IntConstant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
@@ -161,7 +162,7 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 			argumentNames=NO_ARGS;
 		} else {
 			TypeDeclaration typeDecl = getTypeDeclaration();
-			AbstractMethodDeclaration methodDecl = typeDecl.declarationOf((MethodBinding)realBinding);
+			AbstractMethodDeclaration methodDecl =(typeDecl==null?null:typeDecl.declarationOf((MethodBinding)realBinding));
 			Argument[] args = (methodDecl==null?null:methodDecl.arguments); // dont like this - why isnt the method found sometimes? is it because other errors are being reported?
 			if (args==null) {
 				argumentNames=NO_ARGS;
@@ -188,10 +189,23 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 
 	private TypeDeclaration getTypeDeclaration() {
 		if (realBinding instanceof MethodBinding) {
-			return ((SourceTypeBinding)((MethodBinding)realBinding).declaringClass).scope.referenceContext;
-			
+			MethodBinding mb = (MethodBinding)realBinding;
+			if (mb!=null) {
+				SourceTypeBinding stb = (SourceTypeBinding)mb.declaringClass;
+				if (stb!=null) {
+					ClassScope cScope = stb.scope;
+					if (cScope!=null) return cScope.referenceContext;
+				}
+			}			
 		} else if (realBinding instanceof FieldBinding) {
-			return ((SourceTypeBinding)((FieldBinding)realBinding).declaringClass).scope.referenceContext;
+			FieldBinding fb = (FieldBinding)realBinding;
+			if (fb!=null) {
+				SourceTypeBinding stb = (SourceTypeBinding)fb.declaringClass;
+				if (stb!=null) {
+					ClassScope cScope = stb.scope;
+					if (cScope!=null) return cScope.referenceContext;
+				}
+			}
 		}
 		return null;
 	}
