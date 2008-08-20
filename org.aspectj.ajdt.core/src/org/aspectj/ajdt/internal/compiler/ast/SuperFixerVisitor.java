@@ -100,7 +100,11 @@ public class SuperFixerVisitor extends ASTVisitor {
 								new String(superBinding.selector)).toCharArray();
 			} else if (call.receiver.isThis() && call.binding.isProtected() && !call.binding.isStatic()) {
 				//XXX this is a hack that violates some binary compatibility rules
-				if (superBinding.declaringClass.equals(targetClass)) {
+				ReferenceBinding superBindingDeclaringClass = superBinding.declaringClass;
+				if (superBindingDeclaringClass.isParameterizedType()) {
+					superBindingDeclaringClass = ((ParameterizedTypeBinding)superBindingDeclaringClass).type;
+				}
+				if (superBindingDeclaringClass.equals(targetClass)) {
 					accessName =
 						NameMangler.protectedDispatchMethod(factory.fromBinding(targetClass), 
 									new String(superBinding.selector)).toCharArray();
