@@ -74,9 +74,9 @@ public class Point {
 
    protected void makeRectangular(){
       if (!rectangular) {
-	 x = rho * Math.sin(theta);
-	 y = rho * Math.cos(theta);
-	 rectangular = true;
+		 y = rho * Math.sin(theta);
+		 x = rho * Math.cos(theta);
+		 rectangular = true;
       }
    }
 
