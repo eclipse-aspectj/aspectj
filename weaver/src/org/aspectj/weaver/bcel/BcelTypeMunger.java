@@ -1325,6 +1325,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 						NameMangler.protectedDispatchMethod(
 							onType,
 							superMethod.getName());
+				superMethod = superMethod.resolve(weaver.getWorld());
 				LazyMethodGen dispatcher =
 					makeDispatcher(
 						gen,
