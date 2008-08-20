@@ -53,8 +53,8 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 	private ResolvedType[] cachedAnnotationTypes;
 	private EclipseFactory eclipseFactory;
 	
-	public EclipseResolvedMember(MethodBinding binding, MemberKind memberKind, ResolvedType realDeclaringType, int modifiers, UnresolvedType type, String string, UnresolvedType[] types, UnresolvedType[] types2, EclipseFactory eclipseFactory) {
-		super(memberKind,realDeclaringType,modifiers,type,string,types,types2);
+	public EclipseResolvedMember(MethodBinding binding, MemberKind memberKind, ResolvedType realDeclaringType, int modifiers, UnresolvedType rettype, String name, UnresolvedType[] paramtypes, UnresolvedType[] extypes, EclipseFactory eclipseFactory) {
+		super(memberKind,realDeclaringType,modifiers,rettype,name,paramtypes,extypes);
 		this.realBinding = binding;
 		this.eclipseFactory = eclipseFactory;
 		this.w = realDeclaringType.getWorld();
