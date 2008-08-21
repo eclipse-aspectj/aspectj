@@ -19,6 +19,11 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.2	
+	public void testLostGenericsSigOnItd_pr211146() { runTest("lost generic sig on itd"); }
+	public void testLostGenericsSigOnItd_pr211146_2() { runTest("lost generic sig on itd - 2"); }
+	public void testLostGenericsSigOnItd_pr211146_3() { runTest("lost generic sig on itd - 3"); }
+	public void testLostGenericsSigOnItd_pr211146_4() { runTest("lost generic sig on itd - 4"); }
+	public void testLostGenericsSigOnItd_pr211146_5() { runTest("lost generic sig on itd - 5"); }
 	public void testMissingContext_pr194429() { runTest("missing context"); }
 	public void testWarningsForLimitations_pr210114() { runTest("warnings for limitations"); }
 	public void testPTW_pr244830() { runTest("ptw initFailureCause"); }

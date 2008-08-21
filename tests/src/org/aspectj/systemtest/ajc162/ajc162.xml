@@ -3,6 +3,31 @@
 <!-- AspectJ v1.6.2 Tests -->
 <suite>
 
+	<ajc-test dir="bugs162/pr211146" title="lost generic sig on itd">
+	  <compile files="GenericsLost.java" options="-1.5"/>
+	  <run class="GenericsLost"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs162/pr211146" title="lost generic sig on itd - 2">
+	  <compile files="GenericsLost2.java" outjar="code.jar" options="-1.5"/>
+	  <compile files="GenericsLost2Dep.java" classpath="$sandbox/code.jar" options="-1.5"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs162/pr211146" title="lost generic sig on itd - 3">
+	  <compile files="GenericsLost3.java" options="-1.5"/>
+	  <run class="GenericsLost3"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs162/pr211146" title="lost generic sig on itd - 4">
+	  <compile files="GenericsLost4.java" options="-1.5"/>
+	  <run class="GenericsLost4"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs162/pr211146" title="lost generic sig on itd - 5">
+	  <compile files="GenericsLost5.java" options="-1.5"/>
+	  <run class="GenericsLost5"/>
+	</ajc-test>
+	
 	<ajc-test dir="bugs162/pr194429" title="missing context">
 	  <compile files="A.java" options="-1.5">
 	    <message kind="error" line="14" text="incompatible type, expected java.util.Set found BindingTypePattern("/>
