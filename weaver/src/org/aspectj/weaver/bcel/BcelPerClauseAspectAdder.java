@@ -168,7 +168,9 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
 
         //FIXME Alex percflowX is not using this one but AJ code style does generate it so..
         ResolvedMember failureFieldInfo = AjcMemberMaker.initFailureCauseField(aspectType);
-        classGen.addField(makeFieldGen(classGen, failureFieldInfo), null);
+        if (kind == PerClause.SINGLETON) {
+        	classGen.addField(makeFieldGen(classGen, failureFieldInfo), null);
+        }
 
         if (kind == PerClause.SINGLETON) {
             ResolvedMember perSingletonFieldInfo = AjcMemberMaker.perSingletonField(aspectType);
