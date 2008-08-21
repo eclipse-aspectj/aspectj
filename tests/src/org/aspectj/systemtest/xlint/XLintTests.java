@@ -95,9 +95,9 @@ public class XLintTests extends org.aspectj.testing.XMLBasedAjcTestCase {
     runTest("alias getCause for getWrappedThrowable in SoftException");
   }
 
-     public void test018(){
-     runTest("XLint warning for call PCD's using subtype of defining type");
-     }
+//     public void test018(){
+//     runTest("XLint warning for call PCD's using subtype of defining type");
+//     }
 
   public void test019(){
     runTest("XLint warning for call PCD's using subtype of defining type (-1.3 -Xlint:ignore)");
