@@ -83,7 +83,7 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 	}
 	
 	public TypeVariable getTypeVariable() {
-		// if (!fixedUp) throw new BCException("ARGH"); // SAUSAGES - fix it up now?
+		// if (!fixedUp) throw new BCException("ARGH"); // fix it up now?
 		return typeVariable;
 	}
 	

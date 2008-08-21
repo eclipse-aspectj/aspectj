@@ -24,6 +24,7 @@ import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.generic.FieldGen;
 import org.aspectj.apache.bcel.generic.InstructionBranch;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
@@ -55,6 +56,7 @@ import org.aspectj.weaver.NewParentTypeMunger;
 import org.aspectj.weaver.PerObjectInterfaceTypeMunger;
 import org.aspectj.weaver.PrivilegedAccessMunger;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
@@ -858,6 +860,14 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			}
 			
 
+			if (weaver.getWorld().isInJava5Mode()){
+				String basicSignature = mangledInterMethod.getSignature();
+				String genericSignature = ((ResolvedMemberImpl)mangledInterMethod).getSignatureForAttribute();
+				if (!basicSignature.equals(genericSignature)) {
+					// Add a signature attribute to it
+					newMethod.addAttribute(createSignatureAttribute(gen.getConstantPool(),genericSignature));
+				}
+			}
 			// XXX make sure to check that we set exceptions properly on this guy.
 			weaver.addLazyMethodGen(newMethod);
 			weaver.getLazyClassGen().warnOnAddedMethod(newMethod.getMethod(),getSignature().getSourceLocation());
@@ -942,6 +952,16 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			  body.append(InstructionFactory.createReturn(returnType));
 			  mg.definingType = onType;
 			
+
+			  if (weaver.getWorld().isInJava5Mode()) {
+				  String basicSignature = mangledInterMethod.getSignature();
+				  String genericSignature = ((ResolvedMemberImpl)mangledInterMethod).getSignatureForAttribute();
+				  if (!basicSignature.equals(genericSignature)) {
+					  // Add a signature attribute to it
+					  mg.addAttribute(createSignatureAttribute(gen.getConstantPool(),genericSignature));
+				  }
+			  }
+				
 			  weaver.addOrReplaceLazyMethodGen(mg);
 			
 			  addNeededSuperCallMethods(weaver, onType, munger.getSuperMethodsCalled());
@@ -998,6 +1018,16 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		} else {
 			return false;
 		}
+	}
+	
+	/** 
+	 * Helper method to create a signature attribute based on a string signature:
+	 *  e.g. "Ljava/lang/Object;LI<Ljava/lang/Double;>;"
+	 */
+	private Signature createSignatureAttribute(ConstantPool cp,String signature) {
+		int nameIndex = cp.addUtf8("Signature");
+		int sigIndex  = cp.addUtf8(signature);
+		return new Signature(nameIndex,2,sigIndex,cp);
 	}
 	
 	/**
@@ -1586,6 +1616,17 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					}
 				}
 				
+				
+
+				if (weaver.getWorld().isInJava5Mode()){
+					String basicSignature = field.getSignature();
+					String genericSignature = field.getReturnType().resolve(weaver.getWorld()).getSignatureForAttribute();
+	//				String genericSignature = ((ResolvedMemberImpl)field).getSignatureForAttribute();
+					if (!basicSignature.equals(genericSignature)) {
+						  // Add a signature attribute to it
+						  fg.addAttribute(createSignatureAttribute(gen.getConstantPool(),genericSignature));
+					}
+				}
 				gen.addField(fg,getSourceLocation());
 	    		
 			}

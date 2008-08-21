@@ -262,7 +262,8 @@ public class TypeVariable {
 	}
 	
 	/**
-	 * Return *full* signature for insertion in signature attribute, e.g. "T extends Number" would return "T:Ljava/lang/Number;"
+	 * Return complete signature, e.g. "T extends Number" would return "T:Ljava/lang/Number;"
+	 * note: MAY INCLUDE P types if bounds are parameterized types
 	 */
 	public String getSignature() {
 	  	StringBuffer sb = new StringBuffer();
@@ -278,6 +279,25 @@ public class TypeVariable {
 	  	}
 		return sb.toString();
 	}
+	
+	/**
+	 * @return signature for inclusion in an attribute, there must be no 'P' in it signatures
+	 */
+	public String getSignatureForAttribute() {
+	  	StringBuffer sb = new StringBuffer();
+	  	sb.append(name);
+		sb.append(":");
+  		sb.append(((ResolvedType)upperBound).getSignatureForAttribute());
+	  	if (additionalInterfaceBounds!=null && additionalInterfaceBounds.length!=0) {
+		  	sb.append(":");
+		  	for (int i = 0; i < additionalInterfaceBounds.length; i++) {
+				ResolvedType iBound = (ResolvedType)additionalInterfaceBounds[i];
+				sb.append(iBound.getSignatureForAttribute());
+			}
+	  	}
+		return sb.toString();
+	}
+
 	
 	public void setRank(int rank) {
 		this.rank=rank;
@@ -350,4 +370,5 @@ public class TypeVariable {
 	public String getErasureSignature() {
 		return getFirstBound().getErasureSignature();
 	}
+
 }

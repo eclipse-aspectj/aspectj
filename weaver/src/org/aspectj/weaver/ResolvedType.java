@@ -2113,11 +2113,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	    return isAssignableFrom(o);
 	}
 	
-	/** 
-     * Implemented by ReferenceTypes
-     */
 	public String getSignatureForAttribute() {
-		throw new RuntimeException("Cannot ask this type "+this+" for a generic sig attribute");
+		return signature;  // Assume if this is being called that it is for a simple type (eg. void, int, etc)
 	}
 	
 	private FuzzyBoolean parameterizedWithTypeVariable = FuzzyBoolean.MAYBE;

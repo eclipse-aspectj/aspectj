@@ -395,8 +395,37 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			returnType.write(s);
 		}
     }
+
+    /**
+     * Return the member generic signature that would be suitable for inclusion in
+     * a class file Signature attribute.
+     * For:
+     * <T> List<String> getThem(T t) {}
+     * we would create:
+     * <T:Ljava/lang/Object;>(TT;)Ljava/util/List<Ljava/lang/String;>;;
+     * 
+     * @return the generic signature for the member that could be inserted into a class file
+     */
+    public String getSignatureForAttribute() {
+        StringBuffer sb = new StringBuffer();
+        if (typeVariables!=null) {
+      	  sb.append("<");
+  			for (int i = 0; i < typeVariables.length; i++) {
+  				sb.append(typeVariables[i].getSignatureForAttribute()); // need a 'getSignatureForAttribute()'
+  			}
+  			sb.append(">");
+  	  }
+        sb.append("(");
+        for (int i = 0; i < parameterTypes.length; i++) {
+	  		ResolvedType ptype = (ResolvedType)parameterTypes[i];
+	  		sb.append(ptype.getSignatureForAttribute());
+  	    }
+        sb.append(")");
+        sb.append(((ResolvedType)returnType).getSignatureForAttribute());
+        return sb.toString();
+      }
     
-    public String getGenericSignature() {
+      public String getGenericSignature() {
         StringBuffer sb = new StringBuffer();
         if (typeVariables!=null) {
       	  sb.append("<");
@@ -407,13 +436,13 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
   	  }
         sb.append("(");
         for (int i = 0; i < parameterTypes.length; i++) {
-  		UnresolvedType array_element = parameterTypes[i];
-  		sb.append(array_element.getSignature());
-  	  }
+	  		UnresolvedType ptype = parameterTypes[i];
+	  		sb.append(ptype.getSignature());
+  	    }
         sb.append(")");
         sb.append(returnType.getSignature());
         return sb.toString();
-      }
+    }
 
     public static void writeArray(ResolvedMember[] members, DataOutputStream s) throws IOException {
 		s.writeInt(members.length);
