@@ -19,6 +19,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.2	
+	public void testWarningsForLimitations_pr210114() { runTest("warnings for limitations"); }
 	public void testPTW_pr244830() { runTest("ptw initFailureCause"); }
 	public void testGenericItdsOverrides_pr222648() { runTest("generic itds - overrides"); }
 	public void testGenericItdsOverrides_pr222648_2() { runTest("generic itds - overrides - 2"); }

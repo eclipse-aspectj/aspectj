@@ -3,6 +3,14 @@
 <!-- AspectJ v1.6.2 Tests -->
 <suite>
 
+	<ajc-test dir="bugs162/pr210114" title="warnings for limitations">
+	  <compile files="TestAspect.java" options="-1.5">
+	  	<message kind="warning" text="Only before advice is supported on handler join points (compiler limitation)"/>
+	  	<message kind="warning" text="around on initialization not supported (compiler limitation)"/>
+	  	<message kind="warning" text="around on pre-initialization not supported (compiler limitation)"/>	  
+	  </compile>
+	</ajc-test>
+	
 	<ajc-test dir="bugs162/pr244830" title="ptw initFailureCause">
 	  <compile files="PTW.java" options="-1.5"/>
 	  <run class="PTW"/>
