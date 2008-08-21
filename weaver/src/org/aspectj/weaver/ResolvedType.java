@@ -2120,34 +2120,41 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		throw new RuntimeException("Cannot ask this type "+this+" for a generic sig attribute");
 	}
 	
-	private FuzzyBoolean parameterizedWithAMemberTypeVariable = FuzzyBoolean.MAYBE;
+	private FuzzyBoolean parameterizedWithTypeVariable = FuzzyBoolean.MAYBE;
 	
 	/**
 	 * return true if the parameterization of this type includes a member type variable.  Member
 	 * type variables occur in generic methods/ctors.
 	 */
-	public boolean isParameterizedWithAMemberTypeVariable() {
+	public boolean isParameterizedWithTypeVariable() {
 		// MAYBE means we haven't worked it out yet...
-		if (parameterizedWithAMemberTypeVariable==FuzzyBoolean.MAYBE) {
+		if (parameterizedWithTypeVariable==FuzzyBoolean.MAYBE) {
 			
 			// if there are no type parameters then we cant be...
 			if (typeParameters==null || typeParameters.length==0) {
-				parameterizedWithAMemberTypeVariable = FuzzyBoolean.NO;
+				parameterizedWithTypeVariable = FuzzyBoolean.NO;
 				return false;
 			}
 			
 			for (int i = 0; i < typeParameters.length; i++) {
 				ResolvedType aType = (ResolvedType)typeParameters[i];
-				if (aType.isTypeVariableReference()  && 
-				// assume the worst - if its definetly not a type declared one, it could be anything
-						((TypeVariableReference)aType).getTypeVariable().getDeclaringElementKind()!=TypeVariable.TYPE) {
-					parameterizedWithAMemberTypeVariable = FuzzyBoolean.YES;
+				if (aType.isTypeVariableReference()  
+					// Changed according to the problems covered in bug 222648
+					// Don't care what kind of type variable - the fact that there is one
+					// at all means we can't risk caching it against we get confused later
+					// by another variation of the parameterization that just happens to
+					// use the same type variable name
+					
+					// assume the worst - if its definetly not a type declared one, it could be anything
+					// && ((TypeVariableReference)aType).getTypeVariable().getDeclaringElementKind()!=TypeVariable.TYPE
+					) {
+					parameterizedWithTypeVariable = FuzzyBoolean.YES;
 					return true;
 				}
 				if (aType.isParameterizedType()) {
-					boolean b = aType.isParameterizedWithAMemberTypeVariable();
+					boolean b = aType.isParameterizedWithTypeVariable();
 					if (b) {
-						parameterizedWithAMemberTypeVariable = FuzzyBoolean.YES;
+						parameterizedWithTypeVariable = FuzzyBoolean.YES;
 						return true;
 					}
 				}
@@ -2157,12 +2164,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 						boolean b = false;
 						UnresolvedType upperBound = boundedRT.getUpperBound();
 						if (upperBound.isParameterizedType()) {
-							b = ((ResolvedType)upperBound).isParameterizedWithAMemberTypeVariable();
+							b = ((ResolvedType)upperBound).isParameterizedWithTypeVariable();
 						} else if (upperBound.isTypeVariableReference() && ((TypeVariableReference)upperBound).getTypeVariable().getDeclaringElementKind()==TypeVariable.METHOD) {
 							b = true;
 						}
 						if (b) {
-							parameterizedWithAMemberTypeVariable = FuzzyBoolean.YES;
+							parameterizedWithTypeVariable = FuzzyBoolean.YES;
 							return true;
 						}
 						// FIXME asc need to check additional interface bounds
@@ -2171,20 +2178,20 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 						boolean b = false;
 						UnresolvedType lowerBound = boundedRT.getLowerBound();
 						if (lowerBound.isParameterizedType()) {
-							b = ((ResolvedType)lowerBound).isParameterizedWithAMemberTypeVariable();
+							b = ((ResolvedType)lowerBound).isParameterizedWithTypeVariable();
 						} else if (lowerBound.isTypeVariableReference() && ((TypeVariableReference)lowerBound).getTypeVariable().getDeclaringElementKind()==TypeVariable.METHOD) {
 							b = true;
 						}
 						if (b) {
-							parameterizedWithAMemberTypeVariable = FuzzyBoolean.YES;
+							parameterizedWithTypeVariable = FuzzyBoolean.YES;
 							return true;
 						}
 					}
 				}
 			}
-			parameterizedWithAMemberTypeVariable=FuzzyBoolean.NO;
+			parameterizedWithTypeVariable=FuzzyBoolean.NO;
 		}
-		return parameterizedWithAMemberTypeVariable.alwaysTrue();
+		return parameterizedWithTypeVariable.alwaysTrue();
 	}
 
 	protected boolean ajMembersNeedParameterization() {

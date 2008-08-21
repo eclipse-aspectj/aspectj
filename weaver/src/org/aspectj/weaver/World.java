@@ -905,7 +905,7 @@ public abstract class World implements Dump.INode {
 		 * method/ctor as opposed to those you see declared on a generic type.
 		 */
 		public ResolvedType put(String key, ResolvedType type) { 
-			if (type.isParameterizedType() && type.isParameterizedWithAMemberTypeVariable()) {
+			if (type.isParameterizedType() && type.isParameterizedWithTypeVariable()) {
 				if (debug) 
 					System.err.println("Not putting a parameterized type that utilises member declared type variables into the typemap: key="+key+" type="+type);
 				return type;

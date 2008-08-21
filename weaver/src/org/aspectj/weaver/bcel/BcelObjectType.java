@@ -200,8 +200,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
     		if (superclassName==null) superclassName = javaClass.getSuperclassName();
     		superclassSignature = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(superclassName)).getSignature();
     	}
-        ResolvedType res = 	getResolvedTypeX().getWorld().resolve(UnresolvedType.forSignature(superclassSignature));
-    	return res;
+    	World world = getResolvedTypeX().getWorld();
+	    ResolvedType res = 	world.resolve(UnresolvedType.forSignature(superclassSignature));
+	    return res;
     }
         
     public World getWorld() {

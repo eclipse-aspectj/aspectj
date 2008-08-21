@@ -642,7 +642,13 @@ public class ReferenceType extends ResolvedType {
 	}
 
 	public ResolvedType getSuperclass() {
-		ResolvedType ret = delegate.getSuperclass();
+		ResolvedType ret = null;
+    	try {
+			world.setTypeVariableLookupScope(this);
+			ret = delegate.getSuperclass();
+    	} finally {
+    		world.setTypeVariableLookupScope(null);
+    	}
 		if (this.isParameterizedType() && ret.isParameterizedType()) {
 			ret = ret.parameterize(getMemberParameterizationMap()).resolve(getWorld());
 		}
