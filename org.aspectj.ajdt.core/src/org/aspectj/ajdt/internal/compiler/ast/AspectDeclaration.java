@@ -245,7 +245,9 @@ public class AspectDeclaration extends TypeDeclaration {
 		
 		
 		if (!isAbstract()) {
-			initFailureField = factory.createSyntheticFieldBinding(binding,AjcMemberMaker.initFailureCauseField(typeX));
+			if (perClause!=null && perClause.getKind()==PerClause.SINGLETON) {
+				initFailureField = factory.createSyntheticFieldBinding(binding,AjcMemberMaker.initFailureCauseField(typeX));
+			}
 //			binding.addSyntheticField((SyntheticFieldBinding)initFailureField);
 			//initFailureField = factory.makeFieldBinding(AjcMemberMaker.initFailureCauseField(typeX));
 			//binding.addField(initFailureField);
