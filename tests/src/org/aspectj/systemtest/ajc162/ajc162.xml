@@ -3,6 +3,12 @@
 <!-- AspectJ v1.6.2 Tests -->
 <suite>
 
+	<ajc-test dir="bugs162/pr194429" title="missing context">
+	  <compile files="A.java" options="-1.5">
+	    <message kind="error" line="14" text="incompatible type, expected java.util.Set found BindingTypePattern("/>
+	  </compile>
+	</ajc-test>
+	
 	<ajc-test dir="bugs162/pr210114" title="warnings for limitations">
 	  <compile files="TestAspect.java" options="-1.5">
 	  	<message kind="warning" text="Only before advice is supported on handler join points (compiler limitation)"/>
