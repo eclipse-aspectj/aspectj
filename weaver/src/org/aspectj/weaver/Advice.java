@@ -159,12 +159,12 @@ public abstract class Advice extends ShadowMunger {
     			return shadow.hasThis();
     		} else if (kind == AdviceKind.Around) {
     			if (shadow.getKind() == Shadow.PreInitialization) {
-	    			world.showMessage(IMessage.ERROR,
+	    			world.showMessage(IMessage.WARNING,
 	    					WeaverMessages.format(WeaverMessages.AROUND_ON_PREINIT),
 							getSourceLocation(), shadow.getSourceLocation());
 					return false;
 				} else if (shadow.getKind() == Shadow.Initialization) {
-					world.showMessage(IMessage.ERROR,
+					world.showMessage(IMessage.WARNING,
 							WeaverMessages.format(WeaverMessages.AROUND_ON_INIT),
 							getSourceLocation(), shadow.getSourceLocation());
 					return false;
