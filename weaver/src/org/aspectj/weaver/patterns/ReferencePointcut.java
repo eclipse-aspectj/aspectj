@@ -238,7 +238,7 @@ public class ReferencePointcut extends Pointcut {
 			    !p.getExactType().equals(UnresolvedType.OBJECT);
 			}
 			if (reportProblem) {
-				scope.message(IMessage.ERROR, p, "incompatible type, expected " +
+				scope.message(IMessage.ERROR, this, "incompatible type, expected " +
 						parameterTypes[i].getName() + " found " + p +".  Check the type specified in your pointcut");
 				return;
 			}
