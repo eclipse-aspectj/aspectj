@@ -10,7 +10,7 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 package org.aspectj.weaver;
-
+ 
 import java.io.DataInputStream;
 import java.io.IOException;
 
