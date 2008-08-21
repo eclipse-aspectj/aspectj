@@ -3,6 +3,11 @@
 <!-- AspectJ v1.6.2 Tests -->
 <suite>
 
+	<ajc-test dir="bugs162/pr244830" title="ptw initFailureCause">
+	  <compile files="PTW.java" options="-1.5"/>
+	  <run class="PTW"/>
+	</ajc-test>
+
 	<ajc-test dir="bugs162/pr222648" title="generic itds - overrides">
 	  <compile files="DataAspect.aj DataInterface.java Foo.java FooBase.java Marker.java Resource.java" options="-1.5"/>
 	</ajc-test>
