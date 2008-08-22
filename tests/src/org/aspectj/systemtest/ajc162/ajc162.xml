@@ -2,6 +2,21 @@
 
 <!-- AspectJ v1.6.2 Tests -->
 <suite>
+	
+	<ajc-test dir="bugs162/pr163005" title="advising joinpoints in interfaces">
+	  <compile files="SomeClass.java SomeInterface.java ProblemAspect.java" options="-1.4">
+	    <message kind="warning" text="Cannot advise join point 'method-call(java.lang.Class java.lang.Class.forName(java.lang.String))' in interface 'SomeInterface' with around advice from 'ProblemAspect.java' line '7' as it will lead to creation of code in an interface (compiler limitation, bug 163005)"/>
+	  </compile>
+	  <run class="SomeClass"/>
+	</ajc-test>
+
+    <ajc-test dir="bugs162/pr176905" title="chained itds">
+        <compile options="-1.5" files="ChainedItd.aj">
+        </compile>    
+        <run class="ChainedItd">
+            <stderr/> <!-- no errors-->
+        </run>
+    </ajc-test>
 
    <ajc-test dir="bugs162/pr198341" title="dec atanno and decp">
      <compile options="-1.5 -showWeaveInfo" files="AnnotationAspect.java">
@@ -9,7 +24,6 @@
      	<message kind="weave" text="Extending interface set for type 'Annotated' (AnnotationAspect.java) to include 'Marker' (AnnotationAspect.java)"/>
      </compile>
    </ajc-test>
-
 
    <ajc-test dir="bugs162/pr209051" title="asterisk in at aj pointcut">
      <compile options="-1.5" files="Bug.java"/>
