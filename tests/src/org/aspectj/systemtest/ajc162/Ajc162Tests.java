@@ -19,6 +19,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.2	
+	public void testMissingMarkers_pr197720() { runTest("missing markers on inherited annotated method"); }
 	public void testLostGenericsSigOnItd_pr211146() { runTest("lost generic sig on itd"); }
 	public void testLostGenericsSigOnItd_pr211146_2() { runTest("lost generic sig on itd - 2"); }
 	public void testLostGenericsSigOnItd_pr211146_3() { runTest("lost generic sig on itd - 3"); }

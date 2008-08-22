@@ -3,6 +3,20 @@
 <!-- AspectJ v1.6.2 Tests -->
 <suite>
 
+	<ajc-test dir="bugs162/pr197720" title="missing markers on inherited annotated method">
+	  <compile files="C1.java C2.java C3.java MyAnn.java MyAnnAspect.java" options="-1.5 -showWeaveInfo">
+	    <message kind="weave" text="Join point 'method-call(void test.aspects.C1.aMethod())' in Type 'test.aspects.C1' (C1.java:12) advised by around advice from 'test.aspects.MyAnnAspect' (MyAnnAspect.java:16)"/>
+	    <message kind="weave" text="Join point 'method-call(void test.aspects.C2.aMethod())' in Type 'test.aspects.C2$InnerClass' (C2.java:17) advised by around advice from 'test.aspects.MyAnnAspect' (MyAnnAspect.java:16)"/>
+	    <message kind="weave" text="Join point 'method-call(void test.aspects.C2.aMethod())' in Type 'test.aspects.C2' (C2.java:7) advised by around advice from 'test.aspects.MyAnnAspect' (MyAnnAspect.java:16)"/>
+	    <message kind="weave" text="Join point 'method-call(void test.aspects.C2.aMethod())' in Type 'test.aspects.C2' (C2.java:28) advised by around advice from 'test.aspects.MyAnnAspect' (MyAnnAspect.java:16)"/>
+	    <message kind="weave" text="Join point 'method-call(void test.aspects.C1.aMethod())' in Type 'test.aspects.C3$InnerClass' (C3.java:22) advised by around advice from 'test.aspects.MyAnnAspect' (MyAnnAspect.java:16)"/>
+	    <message kind="weave" text="Join point 'method-call(void test.aspects.C2.aMethod())' in Type 'test.aspects.C3$InnerClass' (C3.java:25) advised by around advice from 'test.aspects.MyAnnAspect' (MyAnnAspect.java:16)"/>
+	    <message kind="weave" text="Join point 'method-call(void test.aspects.C1.aMethod())' in Type 'test.aspects.C3' (C3.java:8) advised by around advice from 'test.aspects.MyAnnAspect' (MyAnnAspect.java:16)"/>
+	    <message kind="weave" text="Join point 'method-call(void test.aspects.C2.aMethod())' in Type 'test.aspects.C3' (C3.java:11) advised by around advice from 'test.aspects.MyAnnAspect' (MyAnnAspect.java:16)"/>
+	    <message kind="weave" text="Join point 'method-call(void test.aspects.C1.aMethod())' in Type 'test.aspects.C3' (C3.java:32) advised by around advice from 'test.aspects.MyAnnAspect' (MyAnnAspect.java:16)"/>
+	  </compile>
+	</ajc-test>
+	
 	<ajc-test dir="bugs162/pr211146" title="lost generic sig on itd">
 	  <compile files="GenericsLost.java" options="-1.5"/>
 	  <run class="GenericsLost"/>
