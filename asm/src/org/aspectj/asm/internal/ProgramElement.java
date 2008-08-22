@@ -134,7 +134,7 @@ public class ProgramElement implements IProgramElement {
 
 	public String getPackageName() {
 		if (kind == Kind.PACKAGE) return getName();
-		if (getParent() == null || !(getParent() instanceof IProgramElement)) {
+		if (getParent() == null) {
 			return "";
 		}
 		return ((IProgramElement)getParent()).getPackageName();
