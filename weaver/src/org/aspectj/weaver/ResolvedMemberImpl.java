@@ -285,12 +285,28 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		return  (annotationTypes!=null);
 	}
 
+	/**
+	 * Check if this member has an annotation of the specified type.  If the member has a backing generic
+	 * member then this member represents a parameterization of a member in a generic type and the annotations
+	 * available on the backing generic member should be used.
+	 * 
+	 * @param ofType the type of the annotation being searched for
+	 * @return true if the annotation is found on this member or its backing generic member
+	 */
     public boolean hasAnnotation(UnresolvedType ofType) {
          // The ctors don't allow annotations to be specified ... yet - but
         // that doesn't mean it is an error to call this method.
         // Normally the weaver will be working with subtypes of 
         // this type - BcelField/BcelMethod
-        if (annotationTypes==null) return false;
+    	if (backingGenericMember!=null) {
+    		if (annotationTypes!=null) {
+    			throw new BCException("Unexpectedly found a backing generic member and a local set of annotations");
+    		}
+    		return backingGenericMember.hasAnnotation(ofType);    		
+    	}
+        if (annotationTypes==null) {
+        		return false;
+        }
 		return annotationTypes.contains(ofType);
     }
     
