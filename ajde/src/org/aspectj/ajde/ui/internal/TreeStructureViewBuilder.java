@@ -386,41 +386,26 @@ public class TreeStructureViewBuilder {
         public int compare(Object o1, Object o2) {  
         	IProgramElement sv1 = ((IStructureViewNode)o1).getStructureNode();
         	IProgramElement sv2 = ((IStructureViewNode)o2).getStructureNode();        
-			
-            if (sv1 instanceof IProgramElement && sv2 instanceof IProgramElement) {
-         
-            	IProgramElement p1 = (IProgramElement)sv1;
-            	IProgramElement p2 = (IProgramElement)sv2;
-            	
-				if (p2.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return 1;
-				if (p1.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return -1;
-            	
-				return p1.getName().compareTo(p2.getName());
-            } else {
-            	return 0;	
-           }
+			if (sv1.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return 1;
+			if (sv2.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return -1;        	
+			return sv1.getName().compareTo(sv2.getName());
         }
     };
     
     private static final Comparator DECLARATIONAL_COMPARATOR = new Comparator() {
         public int compare(Object o1, Object o2) {            
-        	IProgramElement sv1 = ((IStructureViewNode)o1).getStructureNode();
-        	IProgramElement sv2 = ((IStructureViewNode)o2).getStructureNode();        
-            if (sv1 instanceof IProgramElement && sv2 instanceof IProgramElement) {
-            	IProgramElement p1 = (IProgramElement)sv1;
-            	IProgramElement p2 = (IProgramElement)sv2;
-            	if (p2.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return 1;
-				if (p1.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return -1;
-            	if (p1.getSourceLocation() == null || p2.getSourceLocation() == null) {
-            		return 0;
-            	} else if (p1.getSourceLocation().getLine() < p2.getSourceLocation().getLine()) {
-            		return -1;
-            	} else {
-            		return 1;
-            	}
-            } else {
-            	return 0;	
-           }
+        	IProgramElement p1 = ((IStructureViewNode)o1).getStructureNode();
+        	IProgramElement p2 = ((IStructureViewNode)o2).getStructureNode();   
+        	
+        	if (p2.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return 1;
+			if (p1.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return -1;
+        	if (p1.getSourceLocation() == null || p2.getSourceLocation() == null) {
+        		return 0;
+        	} else if (p1.getSourceLocation().getLine() < p2.getSourceLocation().getLine()) {
+        		return -1;
+        	} else {
+        		return 1;
+        	}
         }
     };
 }
