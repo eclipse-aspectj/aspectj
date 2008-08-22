@@ -198,13 +198,7 @@ public class StructureModelUtil {
 
 		for (Iterator it = node.getChildren().iterator(); it.hasNext();) {
 			IProgramElement nextNode = (IProgramElement) it.next();
-			if (nextNode instanceof IProgramElement) {
-				getPackagesHelper(
-					(IProgramElement) nextNode,
-					kind,
-					prename,
-					matches);
-			}
+			getPackagesHelper(nextNode, kind, prename, matches);
 		}
 
 		return matches;
