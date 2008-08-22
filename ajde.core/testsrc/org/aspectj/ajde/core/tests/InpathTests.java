@@ -367,7 +367,7 @@ public class InpathTests extends AjdeCoreTestCase {
 				new JarInputStream(new java.io.FileInputStream(outjarFile));
 
 			ZipEntry entry;
-			while (null != (entry = (ZipEntry)outjar.getNextEntry())) {
+			while (null != (entry = outjar.getNextEntry())) {
 				String zipentryname = entry.getName();
 				if (zipentryname.equals(filename)) {
 						byte[] filedata = FileUtil.readAsByteArray(outjar);
