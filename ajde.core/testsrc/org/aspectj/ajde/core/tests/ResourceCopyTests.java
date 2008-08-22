@@ -204,7 +204,7 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 			assertTrue(
 					"outjar older than injar: outjarLastMod="+outjarFile.lastModified()+" injarLastMod="+injarFile.lastModified(),
 					(outjarFile.lastModified() >= injarFile.lastModified()));			
-			byte[] inManifest = listJarResources(injarFile,resources);
+			byte[] inManifest = listJarResources(injarFile,resources,true);
 			listSourceResources(indirName,resources);		
 
 			ZipInputStream outjar = new ZipInputStream(new java.io.FileInputStream(outjarFile));
@@ -225,7 +225,7 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 				outjar.closeEntry();
 			}
 			outjar.close();
-
+			resources.remove("META-INF/");
 			assertTrue(resources.toString(),resources.isEmpty());
 		}
 		catch (IOException ex) {
@@ -268,9 +268,9 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 		HashSet resources = new HashSet();
 	
 		try {	
-			byte[] inManifest = listJarResources(injarFile,resources);
+			byte[] inManifest = listJarResources(injarFile,resources,false);
 			listSourceResources(indirName,resources);		
-			
+
 			File binBase = openFile(outdirName);
 			File[] toResources = FileUtil.listFiles(binBase,aspectjResourceFileFilter);
 			for (int i = 0; i < toResources.length; i++) {
@@ -284,14 +284,22 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 				boolean b = resources.remove(fileName);
 				assertTrue("Extraneous resources: " + fileName,b);
 			}
-
+			
 			assertTrue("Missing resources: " + resources.toString(), resources.isEmpty());
 		}
 		catch (IOException ex) {
 			fail(ex.toString());
 		}
 	}
-    private byte[] listJarResources (File injarFile, Set resources) {
+	/**
+	 * Look in the specified jar file for resources (anything not .class) and add it the resources Set.
+	 * 
+	 * @param injarFile jar file to open up
+	 * @param resources the set where resources should be accumulated
+	 * @param wantDirectories should any directories found in the jar be included
+	 * @return the byte data for any discovered manifest
+	 */
+    private byte[] listJarResources(File injarFile, Set resources, boolean wantDirectories) {
 		byte[] manifest = null;
 	
 		try {
@@ -299,7 +307,11 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 			ZipEntry entry;
 			while (null != (entry = injar.getNextEntry())) {
 				String fileName = entry.getName();
-				if (!entry.isDirectory() && !fileName.endsWith(".class")) {
+				if (entry.isDirectory()) {
+					if (wantDirectories) {
+						resources.add(fileName);
+					}
+				} else if (!fileName.endsWith(".class")) {
 					
 					/* JAR manifests shouldn't be copied */
 					if (fileName.equalsIgnoreCase("meta-inf/Manifest.mf")) {
