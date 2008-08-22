@@ -39,7 +39,6 @@ public class TypeVariablePattern extends PatternNode {
 	private TypePattern[] interfaceBounds; // additional upper bounds (must be interfaces) arising from
 	                                                    // declarations of the form T extends Bar & IGoo, IDoo
 	private TypePattern lowerBound; // only set if type variable is of the form T super Bar
-	private ResolvedType resolvedType; // only set if resolved
 	
 	/**
 	 * Create a named type variable with upper bound Object and no lower bounds.
