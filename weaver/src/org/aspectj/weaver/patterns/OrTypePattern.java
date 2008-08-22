@@ -146,6 +146,10 @@ public class OrTypePattern extends TypePattern {
 		}
 		return buff.toString();
 	}
+
+	public boolean isStarAnnotation() {
+		return left.isStarAnnotation() || right.isStarAnnotation();
+	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)

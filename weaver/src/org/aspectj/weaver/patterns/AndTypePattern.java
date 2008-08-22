@@ -147,6 +147,10 @@ public class AndTypePattern extends TypePattern {
 		AndTypePattern atp = (AndTypePattern) obj;
 		return left.equals(atp.left) && right.equals(atp.right);
 	}
+
+	public boolean isStarAnnotation() {
+		return left.isStarAnnotation() && right.isStarAnnotation();
+	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
