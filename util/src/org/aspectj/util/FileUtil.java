@@ -883,7 +883,7 @@ public class FileUtil {
             suffix = FileUtil.randomFileString()) {
             result = new File(parent, child+suffix);
         }
-        if ((null == result) || result.exists()) {
+        if (result.exists()) {
             System.err.println("exhausted files for child dir in " + parent);
             return null;
         } 
