@@ -165,15 +165,6 @@
        <stdout/>
      </run>
    </ajc-test>
-   
-   <ajc-test dir="bugs154/pr209051" title="asterisk in at aj pointcut">
-     <compile options="-1.5" files="Bug.java"/>
-     <run class="Bug">
-       <stdout>
-         <line text="x"/>
-       </stdout>
-     </run>
-   </ajc-test>
 
    <!-- very basic with all code style, should be fine -->
    <ajc-test dir="bugs154/pr209019/case1" title="various issues with ltw and around advice - 1">

@@ -79,7 +79,6 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testArgNamesDoesNotWork_pr148381_2() { runTest("argNames does not work - error1");}
 	public void testArgNamesDoesNotWork_pr148381_3() { runTest("argNames does not work - error2");}
 	public void testArgNamesDoesNotWork_pr148381_4() { runTest("argNames does not work - error3");}
-	//public void testAsteriskInAtPointcut_pr209051() { runTest("asterisk in at aj pointcut");}
 	public void testDecpProblemWhenTargetAlreadyImplements_pr169432_1() { runTest("declare parents problem when target already implements interface - 1");}
 	public void testDecpProblemWhenTargetAlreadyImplements_pr169432_2() { runTest("declare parents problem when target already implements interface - 2");}
 	public void testDecpProblemWhenTargetAlreadyImplements_pr169432_3() { runTest("declare parents problem when target already implements interface - 3");}
