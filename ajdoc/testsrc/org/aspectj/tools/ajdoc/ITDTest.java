@@ -26,7 +26,7 @@ public class ITDTest extends AjdocTestCase {
 		};
 		runAjdoc("private",files);
 		File htmlA = new File(getAbsolutePathOutdir() + "/pack/A.html");
-		if (htmlA == null || !htmlA.exists()) {
+		if (!htmlA.exists()) {
 			fail("couldn't find " + getAbsolutePathOutdir() + "/pack/A.html - were there compilation errors?");
 		}
 

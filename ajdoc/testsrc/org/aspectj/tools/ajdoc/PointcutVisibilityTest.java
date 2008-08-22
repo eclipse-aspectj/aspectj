@@ -83,7 +83,7 @@ public class PointcutVisibilityTest extends AjdocTestCase {
     	// (since "private" was an argument)
         // Check that this is the case......
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Pointcuts.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
 		}
 		// check the contents of the pointcut summary

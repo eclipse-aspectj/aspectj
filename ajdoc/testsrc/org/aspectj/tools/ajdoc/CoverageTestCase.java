@@ -64,7 +64,7 @@ public class CoverageTestCase extends AjdocTestCase {
 				" the 'public' flag to ajdoc",htmlFile.exists());
 
         htmlFile = new File(getAbsolutePathOutdir() + "/foo/PlainJava.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}
@@ -88,7 +88,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		File[] files = {new File(getAbsoluteProjectDir() + "/pkg/A.aj")};
 		runAjdoc("private","1.4",files);
         File htmlFile = new File(getAbsolutePathOutdir() + "/pkg/A.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()+ " - were there compilation errors?");
 		}	
 		assertTrue(htmlFile.getAbsolutePath() + " should have Aspect A as it's title",
@@ -102,7 +102,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		File[] files = {new File(getAbsoluteProjectDir() + "/pkg/C.java")};
 		runAjdoc("private","1.4",files);
         File htmlFile = new File(getAbsolutePathOutdir() + "/pkg/C.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()+ " - were there compilation errors?");
 		}	
 		assertTrue(htmlFile.getAbsolutePath() + " should have Class C as it's title",
@@ -119,7 +119,7 @@ public class CoverageTestCase extends AjdocTestCase {
         runAjdoc("private","1.4",files);
             
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/ClassA.InnerAspect.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}
@@ -137,7 +137,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		
 		// get the html file for the enclosing class
         File htmlFileClass = new File(getAbsolutePathOutdir() + "/foo/ClassA.html");
-		if (htmlFileClass == null || !htmlFileClass.exists()) {
+		if (!htmlFileClass.exists()) {
 			fail("couldn't find " + htmlFileClass.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}
@@ -163,7 +163,7 @@ public class CoverageTestCase extends AjdocTestCase {
     	runAjdoc("private","1.4",files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/AdviceNamingCoverage.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}
@@ -195,7 +195,7 @@ public class CoverageTestCase extends AjdocTestCase {
     	runAjdoc("private","1.4",files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/AdvisesRelationshipCoverage.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
 		}
         
@@ -248,7 +248,7 @@ public class CoverageTestCase extends AjdocTestCase {
     	runAjdoc("private","1.4",files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
 		}
         
@@ -279,7 +279,7 @@ public class CoverageTestCase extends AjdocTestCase {
     	runAjdoc("private","1.4",files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
 		}
         
@@ -310,7 +310,7 @@ public class CoverageTestCase extends AjdocTestCase {
     	runAjdoc("private","1.4",files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
 		}
         
@@ -341,7 +341,7 @@ public class CoverageTestCase extends AjdocTestCase {
     	runAjdoc("private","1.4",files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
 		}
         
@@ -372,7 +372,7 @@ public class CoverageTestCase extends AjdocTestCase {
     	runAjdoc("private","1.4",files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
 		}
         
@@ -403,7 +403,7 @@ public class CoverageTestCase extends AjdocTestCase {
     	runAjdoc("private","1.4",files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
 		}
         
@@ -452,7 +452,7 @@ public class CoverageTestCase extends AjdocTestCase {
     	runAjdoc("private","1.4",files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
 		}
         
@@ -480,7 +480,7 @@ public class CoverageTestCase extends AjdocTestCase {
     	runAjdoc("private","1.4",files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
 		}
         
@@ -501,7 +501,7 @@ public class CoverageTestCase extends AjdocTestCase {
     	runAjdoc("private","1.4",files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
 		}
         
@@ -532,7 +532,7 @@ public class CoverageTestCase extends AjdocTestCase {
     	runAjdoc("private","1.4",files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/pkg/C2.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
 		}
         
@@ -578,7 +578,7 @@ public class CoverageTestCase extends AjdocTestCase {
     	runAjdoc("private","1.4",files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/AdvisesRelationshipCoverage.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
 		}
 		
@@ -607,7 +607,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		runAjdoc("private","1.4",files);	
 		
 	       File htmlFile = new File(getAbsolutePathOutdir() + "/PkgVisibleClass.NestedAspect.html");
-			if (htmlFile == null || !htmlFile.exists()) {
+			if (!htmlFile.exists()) {
 				fail("couldn't find " + htmlFile.getAbsolutePath()
 						+ " - were there compilation errors?");
 			}
@@ -653,7 +653,7 @@ public class CoverageTestCase extends AjdocTestCase {
         runAjdoc("private","1.4",files);
             
         File htmlFile = new File(getAbsolutePathOutdir() + "/pkg/ClassWithNestedAspect.NestedAspect.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}
@@ -699,7 +699,7 @@ public class CoverageTestCase extends AjdocTestCase {
         runAjdoc("private","1.4",files);
             
         File htmlFile = new File(getAbsolutePathOutdir() + "/pkg/ClassWithNestedAspect.NestedAspect.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}
@@ -730,7 +730,7 @@ public class CoverageTestCase extends AjdocTestCase {
         runAjdoc("private","1.4",files);
             
         File htmlFile = new File(getAbsolutePathOutdir() + "/pkg/ClassWithNestedAspect.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}

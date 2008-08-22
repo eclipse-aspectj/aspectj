@@ -50,7 +50,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 		runAjdoc("private","1.4",files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/DeclareCoverage2.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}
@@ -85,7 +85,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 		runAjdoc("private","1.4",files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/DeclareCoverage2.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}
@@ -117,7 +117,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 		runAjdoc("private","1.4",files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Main2.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}
@@ -149,7 +149,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 		runAjdoc("private","1.4",files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point2.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}
@@ -180,7 +180,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 		runAjdoc("private","1.4",files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/DeclareCoverage2.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}
@@ -211,7 +211,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 		runAjdoc("private","1.4",files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point2.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}
@@ -265,7 +265,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 		runAjdoc("private","1.4",files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Main2.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}
@@ -299,7 +299,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	    // detail and summary the declare annotation statement.
 		// Check for this....
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/DeclareAtType.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}
@@ -342,7 +342,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 		runAjdoc("private","1.5",files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/C.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
 		}
 		
@@ -409,7 +409,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 		runAjdoc("private","1.5",files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/C.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}
@@ -443,7 +443,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 		runAjdoc("private","1.5",files);
 
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/C.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}
@@ -466,7 +466,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 		runAjdoc("private","1.4",files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/C.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}
@@ -512,7 +512,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 		runAjdoc("private","1.4",files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/DeclareParents.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}

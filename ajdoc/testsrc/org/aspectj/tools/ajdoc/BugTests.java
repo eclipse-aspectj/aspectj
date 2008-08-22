@@ -22,7 +22,7 @@ public class BugTests extends AjdocTestCase {
 		runAjdoc(files);
 		assertFalse("expected clean build of project but found that build aborted",Main.hasAborted());
 		File html = new File(getAbsolutePathOutdir() + File.separator + "C.html");
-		if (html == null || !html.exists()) {
+		if (!html.exists()) {
 			fail("couldn't find " + getAbsolutePathOutdir() + File.separator + "C.html - were there javadoc/compilation errors?");
 		}
 		assertFalse("expected all decorating tags to be removed but found that they" +
@@ -72,7 +72,7 @@ public class BugTests extends AjdocTestCase {
 		runAjdoc(files,"1.5",ajOptions);
 		assertFalse("expected clean build of project but found that build aborted",Main.hasAborted());
 		File html = new File(getAbsolutePathOutdir() + File.separator + "C.html");
-		if (html == null || !html.exists()) {
+		if (!html.exists()) {
 			fail("couldn't find " + getAbsolutePathOutdir() + File.separator + "C.html - were there javadoc/compilation errors?");
 		}
 		assertTrue("expected to find 'Advised by' in the html output but did " +
@@ -93,7 +93,7 @@ public class BugTests extends AjdocTestCase {
 		runAjdoc(files,"1.5",ajOptions);
 		assertFalse("expected clean build of project but found that build aborted",Main.hasAborted());
 		File html = new File(getAbsolutePathOutdir() + File.separator + "C.html");
-		if (html == null || !html.exists()) {
+		if (!html.exists()) {
 			fail("couldn't find " + getAbsolutePathOutdir() + File.separator + "C.html - were there javadoc/compilation errors?");
 		}
 		assertTrue("expected to find 'Advised by' in the html output but did " +
@@ -103,7 +103,7 @@ public class BugTests extends AjdocTestCase {
 				+ "META-INF" + File.separator + "aop-ajc.xml");
 		assertTrue("couldn't find " + getAbsolutePathOutdir() + File.separator 
 				+ "META-INF" + File.separator + "aop-ajc.xml" , 
-				aopFile != null && aopFile.exists());
+				aopFile.exists());
 	}	
 	
 	/**
