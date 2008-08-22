@@ -958,7 +958,7 @@ public class EclipseFactory {
 		  
 		  typeVariableToTypeBinding.put(tv.getName(),tvBinding);
 		  tvBinding.superclass=(ReferenceBinding)makeTypeBinding(tv.getUpperBound());
-		  tvBinding.firstBound=(ReferenceBinding)makeTypeBinding(tv.getFirstBound());
+		  tvBinding.firstBound=makeTypeBinding(tv.getFirstBound());
 		  if (tv.getAdditionalInterfaceBounds()==null) {
 			tvBinding.superInterfaces=TypeVariableBinding.NO_SUPERINTERFACES;
 		  } else {
