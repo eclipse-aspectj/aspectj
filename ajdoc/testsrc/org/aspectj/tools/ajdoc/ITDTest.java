@@ -79,7 +79,7 @@ public class ITDTest extends AjdocTestCase {
 
 		// Check the contents of C.html
 		File htmlC = new File(getAbsolutePathOutdir() + "/pack/C.html");
-		if (htmlC == null || !htmlC.exists()) {
+		if (!htmlC.exists()) {
 			fail("couldn't find " + getAbsolutePathOutdir()
 					+ "/pack/C.html - were there compilation errors?");
 		}

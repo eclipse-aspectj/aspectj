@@ -625,7 +625,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		
 		// get the html file for the enclosing class
         File htmlFileClass = new File(getAbsolutePathOutdir() + "/PkgVisibleClass.html");
-		if (htmlFileClass == null || !htmlFileClass.exists()) {
+		if (!htmlFileClass.exists()) {
 			fail("couldn't find " + htmlFileClass.getAbsolutePath()
 					+ " - were there compilation errors?");
 		}
