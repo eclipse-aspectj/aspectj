@@ -553,14 +553,11 @@ public final class LazyMethodGen implements Traceable {
 
 
     private class BodyPrinter {
-        Map prefixMap = new HashMap();
-        Map suffixMap = new HashMap();
         Map labelMap = new HashMap();
 
         InstructionList body;
         PrintStream out;
         ConstantPool pool;
-        List ranges;
 
         BodyPrinter(PrintStream out) {
             this.pool = enclosingClass.getConstantPool();
