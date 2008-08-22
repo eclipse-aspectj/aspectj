@@ -184,14 +184,9 @@ final class BcelField extends ResolvedMemberImpl {
 			annotationTypes = new HashSet();
 		}
 		// Add it to the set of annotation types
-		annotationTypes.add(UnresolvedType.forName(annotation.getTypeName()).resolve(world));
+		String typename = annotation.getTypeSignature();
+		annotationTypes.add(UnresolvedType.forSignature(typename).resolve(world));
 		annotationsAdded=true;
-		// FIXME asc this call here suggests we are managing the annotations at
-		// too many levels, here in BcelField we keep a set and in the lower 'field'
-		// object we keep a set - we should think about reducing this to one
-		// level??
-		//field.addAnnotation(annotation.getBcelAnnotation());
-		// FIXME CUSTARD
 	}
 	
 	/**
