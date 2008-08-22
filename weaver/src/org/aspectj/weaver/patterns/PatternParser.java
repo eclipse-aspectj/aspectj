@@ -46,8 +46,6 @@ public class PatternParser {
 	private Set pointcutDesignatorHandlers = Collections.EMPTY_SET;
 	private ReflectionWorld world;
 	
-	private AnnotationTypePattern[] parameterAnnotationTypePatterns;
-
 	/**
 	 * Constructor for PatternParser.
 	 */
