@@ -983,9 +983,7 @@ public class AjState {
 		File sourceFile = new File(result.fileName());
 		CompilationResult cr = result.result();
 
-		if (result != null) {
-			references.put(sourceFile, new ReferenceCollection(cr.qualifiedReferences, cr.simpleNameReferences));
-		}
+		references.put(sourceFile, new ReferenceCollection(cr.qualifiedReferences, cr.simpleNameReferences));
 
 		UnwovenClassFile[] unwovenClassFiles = result.unwovenClassFiles();
 		for (int i = 0; i < unwovenClassFiles.length; i++) {
