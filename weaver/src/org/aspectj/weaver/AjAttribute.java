@@ -205,36 +205,36 @@ public abstract class AjAttribute {
 		// not recognize.
 		
 		// When we don't know ... (i.e. pre 1.2.1)
-		public static short WEAVER_VERSION_MAJOR_UNKNOWN = 0;
-		public static short WEAVER_VERSION_MINOR_UNKNOWN = 0;
+		public final static short WEAVER_VERSION_MAJOR_UNKNOWN = 0;
+		public final static short WEAVER_VERSION_MINOR_UNKNOWN = 0;
 		
 		
 		// These are the weaver major/minor numbers for AspectJ 1.2.1
-		public static short WEAVER_VERSION_MAJOR_AJ121 = 1;
-		public static short WEAVER_VERSION_MINOR_AJ121 = 0;
+		public final static short WEAVER_VERSION_MAJOR_AJ121 = 1;
+		public final static short WEAVER_VERSION_MINOR_AJ121 = 0;
 		
 		// These are the weaver major/minor numbers for AspectJ 1.5.0
-		public static short WEAVER_VERSION_MAJOR_AJ150M4 = 3; 
-		public static short WEAVER_VERSION_MAJOR_AJ150 = 2;
-		public static short WEAVER_VERSION_MINOR_AJ150 = 0;
+		public final static short WEAVER_VERSION_MAJOR_AJ150M4 = 3; 
+		public final static short WEAVER_VERSION_MAJOR_AJ150 = 2;
+		public final static short WEAVER_VERSION_MINOR_AJ150 = 0;
 
 		// These are the weaver major/minor numbers for AspectJ 1.6.0
-		public static short WEAVER_VERSION_MAJOR_AJ160M2 = 5;
-		public static short WEAVER_VERSION_MAJOR_AJ160 = 4;
-		public static short WEAVER_VERSION_MINOR_AJ160 = 0;
+		public final static short WEAVER_VERSION_MAJOR_AJ160M2 = 5;
+		public final static short WEAVER_VERSION_MAJOR_AJ160 = 4;
+		public final static short WEAVER_VERSION_MINOR_AJ160 = 0;
 
 	      // These are the weaver major/minor numbers for AspectJ 1.6.1
-        public static short WEAVER_VERSION_MAJOR_AJ161 = 6; // annotation value binding
-        public static short WEAVER_VERSION_MINOR_AJ161 = 0;
+        public final static short WEAVER_VERSION_MAJOR_AJ161 = 6; // annotation value binding
+        public final static short WEAVER_VERSION_MINOR_AJ161 = 0;
 
 		
 		// These are the weaver major/minor versions for *this* weaver
-		private static short CURRENT_VERSION_MAJOR = WEAVER_VERSION_MAJOR_AJ161;
-        private static short CURRENT_VERSION_MINOR = WEAVER_VERSION_MINOR_AJ161;
+		private final static short CURRENT_VERSION_MAJOR = WEAVER_VERSION_MAJOR_AJ161;
+        private final static short CURRENT_VERSION_MINOR = WEAVER_VERSION_MINOR_AJ161;
 		
-		public static final WeaverVersionInfo UNKNOWN = 
+		public final static WeaverVersionInfo UNKNOWN = 
 			new WeaverVersionInfo(WEAVER_VERSION_MAJOR_UNKNOWN,WEAVER_VERSION_MINOR_UNKNOWN);
-		public static final WeaverVersionInfo CURRENT = 
+		public final static WeaverVersionInfo CURRENT = 
 			new WeaverVersionInfo(CURRENT_VERSION_MAJOR,CURRENT_VERSION_MINOR);
 		
 		// These are the versions read in from a particular class file.
