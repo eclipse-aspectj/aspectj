@@ -467,8 +467,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 			
 				String filename = entry.getName();
 //				System.out.println("? copyResourcesFromJarFile() filename='" + filename +"'");
-	
-				if (!entry.isDirectory() && acceptResource(filename,false)) {
+				if (entry.isDirectory()) {
+					writeDirectory(filename,jarFile);
+				} else if (acceptResource(filename,false)) {
 					byte[] bytes = FileUtil.readAsByteArray(inStream);
 					writeResource(filename,bytes,jarFile);
 				}
@@ -514,6 +515,32 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
 		}	
 	}
     
+	/**
+	 * Add a directory entry to the output zip file.  Don't do anything if not writing out to 
+	 * a zip file.  A directory entry is one whose filename ends with '/'
+	 * 
+	 * @param directory the directory path
+	 * @param srcloc the src of the directory entry, for use when creating a warning message
+	 * @throws IOException if something goes wrong creating the new zip entry
+	 */
+	private void writeDirectory(String directory, File srcloc) throws IOException {
+		if (state.hasResource(directory)) {
+			IMessage msg = new Message("duplicate resource: '" + directory + "'",
+					   IMessage.WARNING,
+					   null,
+					   new SourceLocation(srcloc,0));
+			handler.handleMessage(msg);
+			return;
+		}
+		if (zos != null) {
+			ZipEntry newEntry = new ZipEntry(directory);
+			zos.putNextEntry(newEntry);
+			zos.closeEntry();
+			state.recordResource(directory);
+		}
+		// Nothing to do if not writing to a zip file
+	}
+	
 	private void writeResource(String filename, byte[] content, File srcLocation) throws IOException {
 		if (state.hasResource(filename)) {
 			IMessage msg = new Message("duplicate resource: '" + filename + "'",
