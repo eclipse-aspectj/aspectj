@@ -85,7 +85,7 @@ public class AsmDeclarationsTests extends AjdeCoreTestCase {
 	}  
 
 	public void testDeclares() {
-		IProgramElement node = (IProgramElement)model.getRoot();
+		IProgramElement node = model.getRoot();
 		assertNotNull(node);
 	
 		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "DeclareCoverage");
