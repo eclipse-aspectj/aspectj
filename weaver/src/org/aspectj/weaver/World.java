@@ -1070,7 +1070,7 @@ public abstract class World implements Dump.INode {
 		private void collectTypes(Map map, List/*ResolvedType*/ results) {
 			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
 				String key = (String) iterator.next();
-				ResolvedType type = get((String)key);
+				ResolvedType type = get(key);
 				if (type!=null) results.add(type);
 				else System.err.println("null!:"+key);
 			}

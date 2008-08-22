@@ -106,7 +106,7 @@ public class JoinPointSignatureIterator implements Iterator {
     		return;
     	}
 
-    	firstDefiningMember = (ResolvedMemberImpl) signaturesOfMember.resolve(world);
+    	firstDefiningMember = signaturesOfMember.resolve(world);
     	
     	if (firstDefiningMember == null) {
     		couldBeFurtherAsYetUndiscoveredSignatures = false;
