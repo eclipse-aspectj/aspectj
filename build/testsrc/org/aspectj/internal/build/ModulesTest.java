@@ -177,7 +177,7 @@ public class ModulesTest extends TestCase {
         Result result = newutil.getResult(kind);
         builder.setupClasspath(result, classpath);
         System.out.println(newutil + " classpath: " + classpath);
-        if ((null == classpath) || (1 != classpath.size())) {
+        if ((1 != classpath.size())) {
             assertTrue(classpath.toString(), false);
         }
         String cpEntry = classpath.list()[0];
