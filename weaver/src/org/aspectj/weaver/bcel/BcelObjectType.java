@@ -777,7 +777,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		int lastDollar = className.lastIndexOf('$');
 		String superClassName = className.substring(0,lastDollar);
 		UnresolvedType outer = UnresolvedType.forName(superClassName);
-		return (ReferenceType) outer.resolve(getResolvedTypeX().getWorld());
+		return outer.resolve(getResolvedTypeX().getWorld());
 	}
 	
 	
