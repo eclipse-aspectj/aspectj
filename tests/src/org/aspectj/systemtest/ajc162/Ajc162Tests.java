@@ -19,6 +19,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
 	// AspectJ1.6.2	
+	public void testDecAtAnnoDecP_pr198341() { runTest("dec atanno and decp"); }
 //	public void testStarInAnnoStyle_pr209951() { runTest("asterisk in at aj pointcut"); }
 	public void testMissingMarkers_pr197720() { runTest("missing markers on inherited annotated method"); }
 	public void testLostGenericsSigOnItd_pr211146() { runTest("lost generic sig on itd"); }
