@@ -121,11 +121,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		}
 
 		if (changed && worthReporting) {
-			if (munger.getKind().equals(ResolvedTypeMunger.Parent)) {
-		  	  AsmRelationshipProvider.getDefault().addRelationship(weaver.getLazyClassGen().getType(), munger,getAspectType());
-			} else {
-		  	  AsmRelationshipProvider.getDefault().addRelationship(weaver.getLazyClassGen().getType(), munger,getAspectType());	
-			}
+		  	AsmRelationshipProvider.getDefault().addRelationship(weaver.getLazyClassGen().getType(), munger,getAspectType());	
 		}
 		
 		// TAG: WeavingMessage
