@@ -31,7 +31,13 @@ public class SimpleScope implements IScope {
 
 	private String[] importedPrefixes = javaLangPrefixArray;
 	private String[] importedNames = ZERO_STRINGS;
-    
+	private static final String[] ZERO_STRINGS = new String[0];
+	
+	private static final String[] javaLangPrefixArray =
+		new String[] { "java.lang.", };
+
+
+	
     public SimpleScope(World world, FormalBinding[] bindings) {
         super();
         this.world = world;
@@ -106,11 +112,6 @@ public class SimpleScope implements IScope {
 	
 	// ---- fields
 	
-	public static final String[] ZERO_STRINGS = new String[0];
-	
-	public static final String[] javaLangPrefixArray =
-		new String[] { "java.lang.", };
-
 
 
 	public ISourceLocation makeSourceLocation(IHasPosition location) {
