@@ -88,7 +88,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	public Pointcut parameterizeWith(Map typeVariableMap,World w) {
 		ExactAnnotationTypePattern newPattern = (ExactAnnotationTypePattern) this.annotationTypePattern.parameterizeWith(typeVariableMap,w);
 		if (newPattern.getAnnotationType() instanceof ResolvedType) {
-			verifyRuntimeRetention((ResolvedType)newPattern.getResolvedAnnotationType());
+			verifyRuntimeRetention(newPattern.getResolvedAnnotationType());
 		}
 		ThisOrTargetAnnotationPointcut ret = new ThisOrTargetAnnotationPointcut(isThis,(ExactAnnotationTypePattern)annotationTypePattern.parameterizeWith(typeVariableMap,w));
 		ret.copyLocationFrom(this);
