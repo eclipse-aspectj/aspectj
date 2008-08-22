@@ -357,7 +357,7 @@ public class BuildArgParser extends Main {
 		StringTokenizer tokenizer = new StringTokenizer(extdirs, File.pathSeparator);
 		while (tokenizer.hasMoreTokens()) {
 //			classpathCollector.add(tokenizer.nextToken());
-			File dirFile = new File((String)tokenizer.nextToken());
+			File dirFile = new File(tokenizer.nextToken());
 			if (dirFile.canRead() && dirFile.isDirectory()) {
 				File[] files = dirFile.listFiles(FileUtil.ZIP_FILTER);
 				for (int i = 0; i < files.length; i++) {
