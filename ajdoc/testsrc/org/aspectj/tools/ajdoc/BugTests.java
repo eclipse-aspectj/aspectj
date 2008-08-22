@@ -139,7 +139,7 @@ public class BugTests extends AjdocTestCase {
 		File[] files = {new File(getAbsoluteProjectDir() + "/C.java")};
 		runAjdoc(files);
 	    File htmlFile = new File(getAbsolutePathOutdir() + "/C.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath() + 
 					" (ajc aborted: " + Main.hasAborted() + ")");
 		}
@@ -169,7 +169,7 @@ public class BugTests extends AjdocTestCase {
 		File[] files = {new File(getAbsoluteProjectDir() + "/C.java")};
 		runAjdoc(files);
 	    File htmlFile = new File(getAbsolutePathOutdir() + "/C.html");
-		if (htmlFile == null || !htmlFile.exists()) {
+		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath() + 
 					" (ajc aborted: " + Main.hasAborted() + ")");
 		}
