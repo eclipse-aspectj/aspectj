@@ -1526,7 +1526,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	private boolean compareToExistingMembers(ConcreteTypeMunger munger, Iterator existingMembers) {
 		ResolvedMember sig = munger.getSignature();
 		
-		ResolvedType declaringAspectType = munger.getAspectType();
+//		ResolvedType declaringAspectType = munger.getAspectType();
 //		if (declaringAspectType.isRawType()) declaringAspectType = declaringAspectType.getGenericType();
 //		if (declaringAspectType.isGenericType()) {
 //
