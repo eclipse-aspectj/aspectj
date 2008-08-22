@@ -20,8 +20,8 @@ import org.aspectj.weaver.tools.PointcutParameter;
  */
 public class JoinPointMatchImpl implements JoinPointMatch {
 
-	public static JoinPointMatch NO_MATCH = new JoinPointMatchImpl();
-	private static PointcutParameter[] NO_BINDINGS = new PointcutParameter[0];
+	public final static JoinPointMatch NO_MATCH = new JoinPointMatchImpl();
+	private final static PointcutParameter[] NO_BINDINGS = new PointcutParameter[0];
 	
 	private boolean match;
 	private PointcutParameter[] bindings;
