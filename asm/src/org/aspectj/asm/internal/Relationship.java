@@ -10,15 +10,13 @@
  *     Mik Kersten     initial implementation 
  *     Andy Clement    Extensions for better IDE representation
  * ******************************************************************/
-
-
 package org.aspectj.asm.internal;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.aspectj.asm.IRelationship;
-//import org.aspectj.asm.IRelationship.Kind;
-
 
 /**
  * @author Mik Kersten
@@ -29,6 +27,7 @@ public class Relationship implements IRelationship {
 
 	private String name;
 	private Kind kind;
+	private boolean isAffects;
 	private String sourceHandle;
 	private List targets;
 	private boolean hasRuntimeTest;
@@ -41,6 +40,13 @@ public class Relationship implements IRelationship {
 		boolean runtimeTest) {
 			
 		this.name = name;
+		this.isAffects = 
+			name.equals("advises") || 
+	        name.equals("declares on") || 
+	        name.equals("softens") ||
+	        name.equals("matched by") || 
+	        name.equals("declared on") || 
+	        name.equals("annotates");
 		this.kind = kind;
 		this.sourceHandle = sourceHandle;
 		this.targets = targets;
@@ -63,33 +69,28 @@ public class Relationship implements IRelationship {
 		return sourceHandle;
 	}
 
+	// TODO should be a Set and not a list
 	public List getTargets() {
 		return targets;
 	}
 	
-	public boolean addTarget(String handle) {
-		if (targets.contains(handle)) return false;
+	public void addTarget(String handle) {
+		if (targets.contains(handle)) return;
 		targets.add(handle);
-		return true;
 	}
 	
 	public boolean hasRuntimeTest() {
 		return hasRuntimeTest;
 	}
 	
-	// For repairing the relationship map on incremental builds, we need
-	// to know the direction of the relationship: either 'affects' or 'affected by'
-	// this set are considered the 'affects' relationship.  If we know which direction
-	// it is in, we know which ones should be removed when a particular resource
-	// is modified because the subsequent reweave will re-add it.
+	/**
+	 * Return the direction of the relationship.  It might be affects or affected-by.
+	 * The direction enables the incremental model repair code to do the right thing.
+	 * 
+	 * @return true if is an affects relationship: advises/declareson/softens/matchedby/declaredon/annotates
+	 */
 	public boolean isAffects() {
-	    // TODO should be a well defined set (enum type) with a flag for this...
-		return name.equals("advises") || 
-		        name.equals("declares on") || 
-		        name.equals("softens") ||
-		        name.equals("matched by") || 
-		        name.equals("declared on") || 
-		        name.equals("annotates");
+		return isAffects;
 	}
 
 }
