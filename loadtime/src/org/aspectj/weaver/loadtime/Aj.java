@@ -159,7 +159,7 @@ public class Aj implements ClassPreProcessor {
                 Map m = WeaverContainer.weavingAdaptors;
                 Set keys = m.keySet();
                 for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
-                    Object object = (Object) iterator.next();
+                    Object object = iterator.next();
                     System.err.println(object + " = " + WeaverContainer.weavingAdaptors.get(object));
                 }
             }
@@ -181,7 +181,7 @@ public class Aj implements ClassPreProcessor {
                 Map m = WeaverContainer.weavingAdaptors;
                 Set keys = m.keySet();
                 for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
-                    Object object = (Object) iterator.next();
+                    Object object = iterator.next();
                     System.err.println(object + " = " + WeaverContainer.weavingAdaptors.get(object));
                 }
             }
