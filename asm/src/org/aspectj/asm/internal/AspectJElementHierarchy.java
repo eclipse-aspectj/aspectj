@@ -342,27 +342,33 @@ public class AspectJElementHierarchy implements IHierarchy {
 	// findElementForHandle() to mirror behaviour before pr141730
 	private IProgramElement findElementForHandleOrCreate(String handle, boolean create) {
 		// try the cache first...
-		IProgramElement ret = (IProgramElement) handleMap.get(handle);
-		if (ret != null) return ret;
+		IProgramElement ipe = (IProgramElement) handleMap.get(handle);
+		if (ipe != null) {
+			return ipe;
+		}
 		
-		ret = findElementForHandle(root,handle);
-		if (ret == null && create) {
-			ret = createFileStructureNode(getFilename(handle));
+		ipe = findElementForHandle(root,handle);
+		if (ipe == null && create) {
+			ipe = createFileStructureNode(getFilename(handle));
 		}
-		if (ret != null) {
-			cache(handle,(ProgramElement)ret);
+		if (ipe != null) {
+			cache(handle,ipe);
 		}
-		return ret;
+		return ipe;
 	}
 	
 	private IProgramElement findElementForHandle(IProgramElement parent, String handle) {
 		for (Iterator it = parent.getChildren().iterator(); it.hasNext(); ) {
 			IProgramElement node = (IProgramElement)it.next();
-			if (handle.equals(node.getHandleIdentifier())) {
+			String nodeHid = node.getHandleIdentifier();
+			if (handle.equals(nodeHid)) {
 				return node;
 			} else {
-				IProgramElement childSearch = findElementForHandle(node,handle);
-				if (childSearch != null) return childSearch;
+				if (handle.startsWith(nodeHid)) {
+					// it must be down here if it is anywhere
+					IProgramElement childSearch = findElementForHandle(node,handle);
+					if (childSearch != null) return childSearch;
+				}
 			}
 		}
 		return null;
