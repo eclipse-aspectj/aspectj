@@ -449,7 +449,7 @@ public class AjProblemReporter extends ProblemReporter {
     		if (ad.concreteName!=null) {
     			List declares = ad.concreteName.declares;
     			for (Iterator iter = declares.iterator(); iter.hasNext();) {
-					Object dec = (Object) iter.next();
+					Object dec =  iter.next();
 					if (dec instanceof DeclareParents) {
 						DeclareParents decp = (DeclareParents)dec;
 						TypePattern[] newparents = decp.getParents().getTypePatterns();
