@@ -753,7 +753,7 @@ public class AjState {
 			
 			if(addedFiles != null) {
 			    for (Iterator fIter = addedFiles.iterator(); fIter.hasNext();) {
-                    Object o = (Object) fIter.next();
+                    Object o = fIter.next();
                     if (!thisTime.contains(o))
                         thisTime.add(o);
                 }
@@ -1347,7 +1347,7 @@ public class AjState {
     	  StringBuffer sb = new StringBuffer();
     	  sb.append("{");
     	  for (Iterator iter = l.iterator(); iter.hasNext();) {
-			Object el = (Object) iter.next();
+			Object el = iter.next();
 			sb.append(el);
 			if (iter.hasNext()) sb.append(",");
 		}
