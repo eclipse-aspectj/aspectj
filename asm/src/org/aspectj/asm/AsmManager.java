@@ -560,7 +560,7 @@ public class AsmManager {
 				}
 				removeNode(progElem);
 				deletedNodes.add(getCanonicalFilePath(progElem.getSourceLocation().getSourceFile()));
-				if (!model.removeFromFileMap(correctedPath.toString())) 
+				if (!model.removeFromFileMap(correctedPath)) 
 						throw new RuntimeException("Whilst repairing model, couldn't remove entry for file: "+correctedPath.toString()+" from the filemap");
 				modelModified = true;
 			} 
@@ -602,7 +602,7 @@ public class AsmManager {
 				}
 				removeNode(progElem);
 				deletedNodes.add(getCanonicalFilePath(progElem.getSourceLocation().getSourceFile()));
-				if (!model.removeFromFileMap(correctedPath.toString())) 
+				if (!model.removeFromFileMap(correctedPath)) 
 						throw new RuntimeException("Whilst repairing model, couldn't remove entry for file: "+correctedPath.toString()+" from the filemap");
 				modelModified = true;
 			} 
@@ -750,9 +750,7 @@ public class AsmManager {
 			// Iterate over the source handles in the relationships map
 			sourcehandlesSet = mapper.getEntries();
 			for (Iterator keyiter = sourcehandlesSet.iterator(); keyiter.hasNext();) {
-				String hid = (String) keyiter.next();			
-		  		IProgramElement sourceElement = hierarchy.getElement(hid);
-	
+				String hid = (String) keyiter.next();				
 		  		relationshipsToRemove.clear();
 		  		List relationships = mapper.get(hid);
 				for (Iterator reliter = relationships.iterator();reliter.hasNext();) {
