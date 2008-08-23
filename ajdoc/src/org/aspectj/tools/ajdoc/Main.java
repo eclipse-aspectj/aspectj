@@ -399,7 +399,7 @@ public class Main implements Config {
 	        	StringTokenizer st = new StringTokenizer(line, " ");
 	        	List argList = new ArrayList();
 	        	while(st.hasMoreElements()) {
-	        		argList.add((String)st.nextElement());
+	        		argList.add(st.nextElement());
 	        	}
 	        	//System.err.println(argList);
 	        	args = new String[argList.size()];
