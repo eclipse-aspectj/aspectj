@@ -1541,10 +1541,10 @@ public class BcelShadow extends Shadow {
     				if (foundMember.getKind()==ResolvedMember.CONSTRUCTOR){
     					foundMember = AjcMemberMaker.interConstructor(
     							relevantType,
-    							(ResolvedMember)foundMember,
+    							foundMember,
     							typeMunger.getAspectType());
     				} else {
-    					foundMember = AjcMemberMaker.interMethod((ResolvedMember)foundMember,
+    					foundMember = AjcMemberMaker.interMethod(foundMember,
         						typeMunger.getAspectType(), false);
     				}
     				// in the above.. what about if it's on an Interface? Can that happen?
