@@ -9,12 +9,11 @@
  * Contributors: 
  *     Mik Kersten     initial implementation 
  * ******************************************************************/
-
-
 package org.aspectj.asm;
 
 import java.io.*;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Mik Kersten
@@ -27,16 +26,13 @@ public interface IRelationship extends Serializable {
 	
 	public String getSourceHandle();
 	
-	public boolean addTarget(String handle);
+	public void addTarget(String handle);
 	
 	public Kind getKind();
 	
 	public boolean hasRuntimeTest();
 		
-	/**
-	 * Uses "typesafe enum" pattern.
-	 */
-	public static class Kind implements Serializable {
+	public static class Kind implements Serializable { // typesafe enum
 		
 		private static final long serialVersionUID = -2691351740214705220L;
 		
