@@ -377,19 +377,6 @@ public class AjBuildManager implements IOutputClassFileNameProvider,IBinarySourc
         return ret;
     }
     
-    private String stringifyList(List l) {
-      if (l==null) return "";
-    	  StringBuffer sb = new StringBuffer();
-    	  sb.append("{");
-    	  for (Iterator iter = l.iterator(); iter.hasNext();) {
-			Object el = (Object) iter.next();
-			sb.append(el);
-			if (iter.hasNext()) sb.append(",");
-		}
-    	  sb.append("}");
-    	  return sb.toString();
-    }
-
 	private boolean openOutputStream(File outJar)  {
 		try {
 			OutputStream os = FileUtil.makeOutputStream(buildConfig.getOutputJar());
