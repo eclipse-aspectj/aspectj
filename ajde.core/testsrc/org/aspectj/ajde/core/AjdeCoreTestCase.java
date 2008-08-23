@@ -132,7 +132,7 @@ public class AjdeCoreTestCase extends TestCase {
 	public boolean checkFor(String what) {
 		List ll = ((TestMessageHandler)compiler.getMessageHandler()).getMessages();
 		for (Iterator iter = ll.iterator(); iter.hasNext();) {
-			Object element = (Object) iter.next();
+			Object element =  iter.next();
 			if (element.toString().indexOf(what) != -1)
 				return true;
 		}
@@ -142,7 +142,7 @@ public class AjdeCoreTestCase extends TestCase {
 	public void dumpTaskData() {
 		List ll = ((TestMessageHandler)compiler.getMessageHandler()).getMessages();
 		for (Iterator iter = ll.iterator(); iter.hasNext();) {
-			Object element = (Object) iter.next();
+			Object element =  iter.next();
 			System.out.println("RecordedMessage>"+element);
 		}
 	}
