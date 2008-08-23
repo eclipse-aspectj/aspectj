@@ -320,7 +320,7 @@ public final class LazyClassGen {
 
         ResolvedMember[] fields = myType.getDeclaredFields();
 		for (int i=0; i<fields.length; i++) {
-			this.fields.add((BcelField)fields[i]);
+			this.fields.add(fields[i]);
 		}        
     }
 
