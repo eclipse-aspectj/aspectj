@@ -10,27 +10,16 @@
  *     Mik Kersten     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.asm;
-
-//import org.aspectj.asm.internal.*;
-//import org.aspectj.asm.internal.*;
 
 /**
  * @author Mik Kersten
+ * @author Andy Clement
  */
 public abstract class HierarchyWalker {
 
-//	private IHierarchy hierarchy;
-
-	public HierarchyWalker() {
-		super();
-	}
+	public HierarchyWalker() { }
 	
-	public HierarchyWalker(IHierarchy hierarchy) {
-//		this.hierarchy = hierarchy;
-    }
-
     protected void preProcess(IProgramElement node) { }
     
     protected void postProcess(IProgramElement node) { }
