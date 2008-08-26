@@ -157,7 +157,7 @@ public class MessageUtil {
         if (null == reader) {
             loc = ISourceLocation.EMPTY;
         } else {
-            int line = (null == reader ? 0 : reader.getLineNumber());
+            int line = reader.getLineNumber();
             if (0 < line) {
                 line = 0;
             }        
