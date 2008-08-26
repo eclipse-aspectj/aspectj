@@ -65,7 +65,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
  * LOOKUPSWITCH and TABLESWITCH.
  *
  * @see InstructionList
- * @version $Id: InstructionBranch.java,v 1.3 2008/08/26 16:40:01 aclement Exp $
+ * @version $Id: InstructionBranch.java,v 1.4 2008/08/26 16:43:17 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 /**
@@ -176,7 +176,7 @@ public class InstructionBranch extends Instruction implements InstructionTargete
     positionOfThisInstruction += offset;
     
     if (Math.abs(i)>=(32767-max_offset)) { // too large for short (we think)
-    	throw new IllegalStateException("Unable to pack method, jump is too far: "+Math.abs(i));
+    	throw new IllegalStateException("Unable to pack method, jump (with opcode="+opcode+") is too far: "+Math.abs(i));
     }
     
     return 0;
