@@ -74,7 +74,7 @@ public class ArrayElementValueGen extends ElementValueGen {
     	StringBuffer sb = new StringBuffer();
     	sb.append("[");
     	for (int i =0;i<evalues.length;i++) {
-			ElementValueGen element = (ElementValueGen) evalues[i];
+			ElementValueGen element = evalues[i];
 			sb.append(element.stringifyValue());
     		if ((i+1)<evalues.length) sb.append(",");
 		}
