@@ -20,8 +20,10 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class ConfigParser {
     Location location;
@@ -116,19 +118,23 @@ public class ConfigParser {
     }
 
     void addFileOrPattern(File sourceFile) {
-        if (sourceFile.getName().equals("*.java")) {
-            addFiles(sourceFile.getParentFile(), new FileFilter() {
-                    public boolean accept(File f) {
-                        return f != null && f.getName().endsWith(".java");
-                    }});
-        } else if (sourceFile.getName().equals("*.aj")) {
-            addFiles(sourceFile.getParentFile(), new FileFilter() {
-                    public boolean accept(File f) {
-                        return f != null && f.getName().endsWith(".aj");
-                    }});
-        } else {
-            addFile(sourceFile);
-        }
+    	if (sourceFile.getName().charAt(0)=='*') {
+	        if (sourceFile.getName().equals("*.java")) {
+	            addFiles(sourceFile.getParentFile(), new FileFilter() {
+	                    public boolean accept(File f) {
+	                        return f != null && f.getName().endsWith(".java");
+	                    }});
+	        } else if (sourceFile.getName().equals("*.aj")) {
+	            addFiles(sourceFile.getParentFile(), new FileFilter() {
+	                    public boolean accept(File f) {
+	                        return f != null && f.getName().endsWith(".aj");
+	                    }});
+	        } else {
+	            addFile(sourceFile);
+	        }
+    	} else {
+    		addFile(sourceFile);
+    	}
     }
 
     void addFiles(File dir, FileFilter filter) {
@@ -186,10 +192,10 @@ public class ConfigParser {
     boolean isSourceFileName(String s) {
         if (s.endsWith(".java")) return true;
         if (s.endsWith(".aj")) return true;
-        if (s.endsWith(".ajava")) {
-            showWarning(".ajava is deprecated, replace with .aj or .java: " + s);
-            return true;
-        }
+//        if (s.endsWith(".ajava")) {
+//            showWarning(".ajava is deprecated, replace with .aj or .java: " + s);
+//            return true;
+//        }
         return false;
     }
 
