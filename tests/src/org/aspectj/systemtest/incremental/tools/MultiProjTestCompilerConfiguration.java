@@ -123,6 +123,11 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		return projectSourceFiles;
 	}
 
+	public List getProjectSourceFilesChanged() {
+		log("ICompilerConfiguration.getProjectSourceFilesChanged()");
+		return null;
+	}
+
 	public Map getSourcePathResources() {
 		log("ICompilerConfiguration.getSourcePathResources()");
 		return sourcePathResources;
