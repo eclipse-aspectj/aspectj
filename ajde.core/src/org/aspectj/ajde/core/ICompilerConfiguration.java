@@ -49,6 +49,16 @@ public interface ICompilerConfiguration {
     public List /*String*/ getProjectSourceFiles();
 
     /**
+     * Return a subset of those files we'd get on getProjectSourceFiles() - the subset that have changed since
+     * the last build.  If someone else has already worked out what needs rebuilding, we don't need to do it again
+     * by checking all of the projectSourceFiles(). Returning an empty list means nothing has changed, returning null
+     * means you have no idea what changed and the compiler should work it out.
+     * 
+     * @return a subset of those files that would be returned on getProjectSourceFiles() that have actually *changed*
+     */
+    public List /*String*/ getProjectSourceFilesChanged();
+    
+    /**
      * @return the classpath to use
      */
     public String getClasspath();
