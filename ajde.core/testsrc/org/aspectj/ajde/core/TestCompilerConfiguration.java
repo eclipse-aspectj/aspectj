@@ -94,6 +94,10 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 	public List getProjectSourceFiles() {
 		return projectSourceFiles;
 	}
+	
+	public List getProjectSourceFilesChanged() {
+		return null;
+	}
 
 	public Map getSourcePathResources() {
 		if (sourcePathResources == null) {
