@@ -98,6 +98,10 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 		return projectSourceFiles;
 	}
 
+	public List getProjectSourceFilesChanged() {
+		return null;
+	}
+
 	public Map getSourcePathResources() {
 		if (sourcePathResources == null) {
 			sourcePathResources = new HashMap();
