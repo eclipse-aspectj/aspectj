@@ -75,6 +75,12 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 		return null;
 	}
 
+	public List getProjectSourceFilesChanged() {
+		// unimplemented in AjBrowser (uses BuildConfigManager instead)
+		return null;
+	}
+
+
 	public Map getSourcePathResources() {
 		// unimplemented in AjBrowser
 		return null;
