@@ -308,7 +308,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 				org.aspectj.apache.bcel.classfile.Method bcelCons = jc.getMethod((Constructor)onMember);
 				anns = bcelCons.getParameterAnnotations();
 			} else if (onMember instanceof Field) {
-				anns = null;
+//				anns = null;
 			}
 			// the answer is cached and we don't want to hold on to memory
 			bcelRepository.clear();
@@ -336,7 +336,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 		} else if (onMember instanceof Constructor) {
 			anns = ((Constructor)ao).getParameterAnnotations();
 		} else if (onMember instanceof Field) {
-			anns = null;
+//			anns = null;
 		}
 		if (anns == null) return NO_PARAMETER_ANNOTATIONS;
 		ResolvedType[][] result = new ResolvedType[anns.length][];

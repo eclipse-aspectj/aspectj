@@ -18,7 +18,7 @@ import org.aspectj.weaver.tools.Trace;
 public class Jdk14TraceFactoryTest extends TestCase {
 
 	public void testJdk14TraceFactory() {
-		Jdk14TraceFactory factory = new Jdk14TraceFactory();
+		new Jdk14TraceFactory();
 	}
 
 	public void testGetTrace() {

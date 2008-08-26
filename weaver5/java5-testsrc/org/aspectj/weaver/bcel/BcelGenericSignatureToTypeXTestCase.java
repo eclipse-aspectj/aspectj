@@ -61,7 +61,7 @@ public class BcelGenericSignatureToTypeXTestCase extends TestCase {
 				cSig.formalTypeParameters,
 				world);
 		assertEquals("Ljava/lang/Object;",resolved.getSignature());
-		UnresolvedType resolvedInt = BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
+			BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
 				cSig.superInterfaceSignatures[0],
 				cSig.formalTypeParameters,
 				world);

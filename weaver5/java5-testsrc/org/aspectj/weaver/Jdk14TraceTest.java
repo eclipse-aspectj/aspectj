@@ -22,7 +22,7 @@ public class Jdk14TraceTest extends AbstractTraceTest {
 	}
 
 	public void testJdk14Trace() {
-		Jdk14Trace trace = new Jdk14Trace(getClass());
+		new Jdk14Trace(getClass());
 	}
 
 	public void testSetTraceEnabled() {

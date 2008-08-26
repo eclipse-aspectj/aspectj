@@ -153,14 +153,14 @@ public class Java15PointcutExpressionTest extends TestCase {
 		Method a = test.A.class.getMethod("a",new Class[] {String.class});             // public void a(String s) {}
 		Method b = test.A.class.getMethod("b",new Class[] {String.class});             // public void b(@A1 String s) {}
 		Method c = test.A.class.getMethod("c",new Class[] {String.class});             // public void c(@A1 @A2 String s) {}
-		Method d = test.A.class.getMethod("d",new Class[] {String.class,String.class});// public void d(@A1 String s,@A2 String t) {}
+//		Method d = test.A.class.getMethod("d",new Class[] {String.class,String.class});// public void d(@A1 String s,@A2 String t) {}
 
 		Method e = test.A.class.getMethod("e",new Class[] {A1AnnotatedType.class});    // public void e(A1AnnotatedType s) {}
 		Method f = test.A.class.getMethod("f",new Class[] {A2AnnotatedType.class});    // public void f(A2AnnotatedType s) {}
 		Method g = test.A.class.getMethod("g",new Class[] {A1AnnotatedType.class});    // public void g(@A2 A1AnnotatedType s) {}
 		Method h = test.A.class.getMethod("h",new Class[] {A1AnnotatedType.class});    // public void h(@A1 A1AnnotatedType s) {}
-		Method i = test.A.class.getMethod("i",new Class[] {A1AnnotatedType.class,String.class});    // public void i(A1AnnotatedType s,@A2 String t) {}
-		Method j = test.A.class.getMethod("j",new Class[] {String.class});             // public void j(@A1 @A2 String s) {}
+//		Method i = test.A.class.getMethod("i",new Class[] {A1AnnotatedType.class,String.class});    // public void i(A1AnnotatedType s,@A2 String t) {}
+//		Method j = test.A.class.getMethod("j",new Class[] {String.class});             // public void j(@A1 @A2 String s) {}
 
 		pexpr = p.parsePointcutExpression("execution(public void *(@test.A1 *))");
 		assertTrue("Should not match", pexpr.matchesMethodExecution(a).neverMatches());
@@ -223,7 +223,7 @@ public class Java15PointcutExpressionTest extends TestCase {
 			   " was '"+expectedNodeStructure+"' but it turned out to be '"+mpnv.getStringRepresentation()+"'");
 	  }
 	  
-	  String annotationTypePattern = tps[parameterNumber].getAnnotationPattern().toString();
+	  tps[parameterNumber].getAnnotationPattern().toString();
 	  
 	  // parameter type annotation checking
 	  Set<String> expected = new HashSet<String>();
@@ -558,7 +558,7 @@ public class Java15PointcutExpressionTest extends TestCase {
 	}
 	
 	public void testAnnotationInExecution() throws Exception {
-		PointcutExpression ex = parser.parsePointcutExpression("execution(@(org.springframework..*) * *(..))");		
+		parser.parsePointcutExpression("execution(@(org.springframework..*) * *(..))");		
 	}
 	
 	public void testVarArgsMatching() throws Exception {
@@ -599,7 +599,7 @@ public class Java15PointcutExpressionTest extends TestCase {
 		params[0] = parser.createPointcutParameter("d", Date.class);
 		params[1] = parser.createPointcutParameter("s", String.class);
 		params[2] = parser.createPointcutParameter("ss", String[].class);
-		PointcutExpression ex = parser.parsePointcutExpression("org.aspectj.weaver.tools.Java15PointcutExpressionTest.UsesArrays.pc(d,s,ss)",UsesArrays.class,params);
+		parser.parsePointcutExpression("org.aspectj.weaver.tools.Java15PointcutExpressionTest.UsesArrays.pc(d,s,ss)",UsesArrays.class,params);
 	}
 	
 	protected void setUp() throws Exception {
