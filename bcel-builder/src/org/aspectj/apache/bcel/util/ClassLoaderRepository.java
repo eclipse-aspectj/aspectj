@@ -80,7 +80,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  *
  * @see org.aspectj.apache.bcel.Repository
  *
- * @version $Id: ClassLoaderRepository.java,v 1.11 2008/05/28 23:52:53 aclement Exp $
+ * @version $Id: ClassLoaderRepository.java,v 1.12 2008/08/26 15:02:41 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  */
@@ -286,7 +286,7 @@ public class ClassLoaderRepository implements Repository {
 	    String classFile = className.replace('.', '/');
 		InputStream is = (useSharedCache ? url.openStream() : loaderRef.getClassLoader().getResourceAsStream(classFile + ".class"));
 	    if (is == null) { 
-		  throw new ClassNotFoundException(className + " not found "+(url==null?"":"- using url "+url));
+		  throw new ClassNotFoundException(className + " not found using url "+url);
 	    }
 		ClassParser parser = new ClassParser( is, className );
         clazz = parser.parse();
