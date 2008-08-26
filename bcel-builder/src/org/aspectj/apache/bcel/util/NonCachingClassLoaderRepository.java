@@ -78,7 +78,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  *
  * @see org.aspectj.apache.bcel.Repository
  *
- * @version $Id: NonCachingClassLoaderRepository.java,v 1.3 2008/05/28 23:52:53 aclement Exp $
+ * @version $Id: NonCachingClassLoaderRepository.java,v 1.4 2008/08/26 15:02:51 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  * 
@@ -140,7 +140,7 @@ public class NonCachingClassLoaderRepository
 			processQueue();
 			Set keys = map.keySet();
 			for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
-				Object name = (Object) iterator.next();
+				Object name = iterator.next();
 				map.remove(name);
 			}
 		  }
