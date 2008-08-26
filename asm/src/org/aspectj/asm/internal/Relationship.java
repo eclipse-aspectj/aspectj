@@ -12,9 +12,7 @@
  * ******************************************************************/
 package org.aspectj.asm.internal;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.aspectj.asm.IRelationship;
 

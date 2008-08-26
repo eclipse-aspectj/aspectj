@@ -13,7 +13,6 @@ package org.aspectj.asm;
 
 import java.io.*;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Mik Kersten
