@@ -77,7 +77,7 @@ import  java.util.StringTokenizer;
  * class file.  Those interested in programatically generating classes
  * should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
 
- * @version $Id: JavaClass.java,v 1.11 2008/06/23 02:06:22 aclement Exp $
+ * @version $Id: JavaClass.java,v 1.12 2008/08/26 15:00:28 aclement Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -240,18 +240,13 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
    * @param file Output file
    * @throws IOException
    */
-  public void dump(File file) throws IOException
-  {
-    String parent = file.getParent();
-
-    if(parent != null) {
-      File dir = new File(parent);
-      
-      if(dir != null)
-	dir.mkdirs();
-    }
-
-    dump(new DataOutputStream(new FileOutputStream(file)));
+  public void dump(File file) throws IOException {
+      String parent = file.getParent();
+      if (parent != null) {
+    	  File dir = new File(parent);
+    	  dir.mkdirs();
+      }
+      dump(new DataOutputStream(new FileOutputStream(file)));
   }
 
   /** 
