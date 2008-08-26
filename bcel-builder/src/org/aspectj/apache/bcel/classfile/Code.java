@@ -69,7 +69,7 @@ import  java.io.*;
  * is used for debugging purposes and <em>LocalVariableTable</em> which 
  * contains information about the local variables.
  *
- * @version $Id: Code.java,v 1.5 2008/06/23 02:05:52 aclement Exp $
+ * @version $Id: Code.java,v 1.6 2008/08/26 14:59:45 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Attribute
  * @see     CodeException
@@ -177,9 +177,6 @@ public final class Code extends Attribute {
     super.dump(file);
 
     file.writeShort(maxStack);
-    if (maxStack==3) {
-    	int stop = 1; // fixme
-    }
     file.writeShort(maxLocals);
     file.writeInt(code.length);
     file.write(code, 0, code.length);
