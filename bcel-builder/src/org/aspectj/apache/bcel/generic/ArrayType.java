@@ -58,7 +58,7 @@ import org.aspectj.apache.bcel.Constants;
 /** 
  * Denotes array type, such as int[][]
  *
- * @version $Id: ArrayType.java,v 1.3 2008/05/28 23:52:57 aclement Exp $
+ * @version $Id: ArrayType.java,v 1.4 2008/08/26 15:02:04 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class ArrayType extends ReferenceType {
@@ -142,7 +142,7 @@ public final class ArrayType extends ReferenceType {
 
   /** @return a hash code value for the object.
    */
-  public int hashcode() { return basic_type.hashCode() ^ dimensions; }
+  public int hashCode() { return basic_type.hashCode() ^ dimensions; }
 
   /** @return true if both type objects refer to the same array type.
    */
