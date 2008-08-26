@@ -61,13 +61,12 @@ import  java.io.*;
  * This class represents a local variable within a method. It contains its
  * scope, name, signature and index on the method's frame.
  *
- * @version $Id: LocalVariable.java,v 1.3 2008/05/28 23:53:02 aclement Exp $
+ * @version $Id: LocalVariable.java,v 1.4 2008/08/26 15:00:49 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     LocalVariableTable
  */
-public final class LocalVariable
-  implements Constants, Cloneable, Node, Serializable
-{
+public final class LocalVariable implements Constants, Cloneable, Node {
+
   private int start_pc;        // Range in which the variable is valid
   private int length;
   private int name_index;      // Index in constant pool of variable name
