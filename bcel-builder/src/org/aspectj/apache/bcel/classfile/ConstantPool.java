@@ -66,7 +66,6 @@ public class ConstantPool implements Node {
 	  * @return deep copy of this constant pool
 	  */
 	 public ConstantPool copy() {
-	   ConstantPool c = null;
 	   Constant[] newConstants = new Constant[poolSize]; // use the correct size
 	   for (int i=1;i<poolSize;i++) {
 		   if (pool[i]!=null) {
