@@ -65,7 +65,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
  * LOOKUPSWITCH and TABLESWITCH.
  *
  * @see InstructionList
- * @version $Id: InstructionBranch.java,v 1.2 2008/05/28 23:53:00 aclement Exp $
+ * @version $Id: InstructionBranch.java,v 1.3 2008/08/26 16:40:01 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 /**
@@ -79,6 +79,7 @@ public class InstructionBranch extends Instruction implements InstructionTargete
   protected InstructionHandle targetInstruction;   // Target object in instruction list
   protected int               positionOfThisInstruction; // for calculating relative branch destinations!
 
+  
   /**
    * Constructor if building an instruction branch that targets a handle (ie. we don't need to actual targetIndex in the bytecode yet)
    */
@@ -174,8 +175,8 @@ public class InstructionBranch extends Instruction implements InstructionTargete
 	
     positionOfThisInstruction += offset;
     
-    if (Math.abs(i)>=(32767-max_offset)) { // too larget for short (we think)
-    	throw new IllegalStateException("Argh!");
+    if (Math.abs(i)>=(32767-max_offset)) { // too large for short (we think)
+    	throw new IllegalStateException("Unable to pack method, jump is too far: "+Math.abs(i));
     }
     
     return 0;
