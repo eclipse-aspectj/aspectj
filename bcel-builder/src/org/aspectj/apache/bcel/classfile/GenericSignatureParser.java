@@ -73,9 +73,7 @@ public class GenericSignatureParser {
 		  tokenStream = tokenize(sig);
 		  tokenIndex = 0;
 		  FormalTypeParameter[] formals = new FormalTypeParameter[0];
-		  TypeSignature[] params = new TypeSignature[0];
 		  TypeSignature returnType = null;
-		  FieldTypeSignature[] throwsSigs = new FieldTypeSignature[0];
 		  // FormalTypeParameters-opt
 		  if (maybeEat("<")) {
 			List formalTypeParametersList = new ArrayList();
@@ -96,7 +94,7 @@ public class GenericSignatureParser {
 				  paramList.add(new Signature.BaseTypeSignature(eatIdentifier()));
 			  }			  
 		  }
-		  params = new TypeSignature[paramList.size()];
+		  TypeSignature[] params = new TypeSignature[paramList.size()];
 		  paramList.toArray(params);
 		  // return type
 		  returnType = parseFieldTypeSignature(true);
@@ -107,7 +105,7 @@ public class GenericSignatureParser {
 			  FieldTypeSignature fsig = parseFieldTypeSignature(false);
 			  throwsList.add(fsig);
 		  }
-		  throwsSigs = new FieldTypeSignature[throwsList.size()];
+		  FieldTypeSignature[]  throwsSigs = new FieldTypeSignature[throwsList.size()];
 		  throwsList.toArray(throwsSigs);
 		  return new Signature.MethodTypeSignature(formals,params,returnType,throwsSigs);
 	  }
