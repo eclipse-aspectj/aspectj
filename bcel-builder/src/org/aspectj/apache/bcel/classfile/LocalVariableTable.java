@@ -61,7 +61,7 @@ import  java.io.*;
  * This class represents collection of local variables in a
  * method. This attribute is contained in the <em>Code</em> attribute.
  *
- * @version $Id: LocalVariableTable.java,v 1.4 2008/05/28 23:53:01 aclement Exp $
+ * @version $Id: LocalVariableTable.java,v 1.5 2008/08/26 15:00:57 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Code
  * @see LocalVariable
@@ -114,7 +114,7 @@ public class LocalVariableTable extends Attribute {
   {
     super(Constants.ATTR_LOCAL_VARIABLE_TABLE,name_index, length, constant_pool);
     data = new byte[length];
-    int byteReads = file.read(data);
+    file.read(data);
     isInPackedState = true;
     // assert(bytesRead==length)
   }
