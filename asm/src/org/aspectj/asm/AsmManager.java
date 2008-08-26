@@ -140,7 +140,7 @@ public class AsmManager {
         if (node == IHierarchy.NO_STRUCTURE) {
             return null;
         } else {
-            IProgramElement fileNode = (IProgramElement)node;
+            IProgramElement fileNode = node;
             ArrayList peNodes = new ArrayList();
             getAllStructureChildren(fileNode, peNodes, showSubMember, showMemberAndType);
             for (Iterator it = peNodes.iterator(); it.hasNext(); ) {
@@ -174,7 +174,7 @@ public class AsmManager {
             	&& rels.size() > 0) {
                 result.add(next);
             }
-            getAllStructureChildren((IProgramElement)next, result, showSubMember, showMemberAndType);
+            getAllStructureChildren(next, result, showSubMember, showMemberAndType);
         }
     }
 
@@ -561,17 +561,12 @@ public class AsmManager {
 				removeNode(progElem);
 				deletedNodes.add(getCanonicalFilePath(progElem.getSourceLocation().getSourceFile()));
 				if (!model.removeFromFileMap(correctedPath)) 
-						throw new RuntimeException("Whilst repairing model, couldn't remove entry for file: "+correctedPath.toString()+" from the filemap");
+						throw new RuntimeException("Whilst repairing model, couldn't remove entry for file: "+correctedPath+" from the filemap");
 				modelModified = true;
 			} 
 		}
 		if (modelModified) model.updateHandleMap(deletedNodes);
 		return modelModified;
-	}
-	
-	private void flushModelCache() {
-		IHierarchy model = AsmManager.getDefault().getHierarchy();
-		model.flushTypeMap();		
 	}
 	
 	// This code is *SLOW* but it isnt worth fixing until we address the
@@ -603,7 +598,7 @@ public class AsmManager {
 				removeNode(progElem);
 				deletedNodes.add(getCanonicalFilePath(progElem.getSourceLocation().getSourceFile()));
 				if (!model.removeFromFileMap(correctedPath)) 
-						throw new RuntimeException("Whilst repairing model, couldn't remove entry for file: "+correctedPath.toString()+" from the filemap");
+						throw new RuntimeException("Whilst repairing model, couldn't remove entry for file: "+correctedPath+" from the filemap");
 				modelModified = true;
 			} 
 		}
@@ -631,22 +626,16 @@ public class AsmManager {
 			
 			long stime = System.currentTimeMillis();
 			
-			boolean modificationOccurred = false;
-			
 			//fixupStructureModel(fw,filesToBeCompiled,files_added,files_deleted);
 			// Let's remove all the files that are deleted on this compile
-			modificationOccurred = 
-				removeStructureModelForFiles(fw,files_deleted) | 
-				modificationOccurred;
+			removeStructureModelForFiles(fw,files_deleted);
 			long etime1 = System.currentTimeMillis(); // etime1-stime = time to fix up the model
 		
 			repairRelationships(fw);	
 			long etime2 = System.currentTimeMillis(); // etime2-stime = time to repair the relationship map
 			
-			modificationOccurred = 
-				removeStructureModelForFiles(fw,files_tobecompiled) | 
-				modificationOccurred;
-			
+			removeStructureModelForFiles(fw,files_tobecompiled);
+
 			if (dumpDeltaProcessing) {
 				fw.write("===== Delta Processing timing ==========\n");
 				fw.write("Hierarchy="+(etime1-stime)+"ms   Relationshipmap="+(etime2-etime1)+"ms\n");

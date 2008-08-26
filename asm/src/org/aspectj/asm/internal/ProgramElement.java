@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,19 +36,19 @@ public class ProgramElement implements IProgramElement {
 	public static boolean shortITDNames = true;
 	
 	private final static String UNDEFINED = "<undefined>";
-	private static int AccPublic = 0x0001;
-	private static int AccPrivate = 0x0002;
-	private static int AccProtected = 0x0004;
-	private static int AccPrivileged = 0x0006;  // XXX is this right?
-	private static int AccStatic = 0x0008;
-	private static int AccFinal = 0x0010;
-	private static int AccSynchronized = 0x0020;
-	private static int AccVolatile = 0x0040;
-	private static int AccTransient = 0x0080;
-	private static int AccNative = 0x0100;
-	private static int AccInterface = 0x0200;
-	private static int AccAbstract = 0x0400;
-	private static int AccStrictfp = 0x0800;
+	private final static int AccPublic = 0x0001;
+	private final static int AccPrivate = 0x0002;
+	private final static int AccProtected = 0x0004;
+	private final static int AccPrivileged = 0x0006;  // XXX is this right?
+	private final static int AccStatic = 0x0008;
+	private final static int AccFinal = 0x0010;
+	private final static int AccSynchronized = 0x0020;
+	private final static int AccVolatile = 0x0040;
+	private final static int AccTransient = 0x0080;
+	private final static int AccNative = 0x0100;
+	private final static int AccInterface = 0x0200;
+	private final static int AccAbstract = 0x0400;
+	private final static int AccStrictfp = 0x0800;
 	
 	protected String name;
 	private Kind kind;
@@ -137,7 +136,7 @@ public class ProgramElement implements IProgramElement {
 		if (getParent() == null) {
 			return "";
 		}
-		return ((IProgramElement)getParent()).getPackageName();
+		return getParent().getPackageName();
 	}
 
 	public Kind getKind() {
@@ -559,17 +558,6 @@ public class ProgramElement implements IProgramElement {
 		}
 	}
 	
-	/** AMC added to speed up findByHandle lookups in AspectJElementHierarchy */
-	private void cacheByHandle() {
-		String handle = getHandleIdentifier();
-		if (handle != null) {
-			AspectJElementHierarchy hierarchy = (AspectJElementHierarchy) 
-				AsmManager.getDefault().getHierarchy();
-			hierarchy.cache(handle,this);
-			//System.err.println("Cache size now "+hierarchy.handleMap.size());
-		}
-	}
-
 	public void setExtraInfo(ExtraInformation info) { 
 		if (kvpairs==Collections.EMPTY_MAP) kvpairs = new HashMap();
 		kvpairs.put("ExtraInformation",info);
