@@ -321,6 +321,7 @@ class MyCompilerConfig implements ICompilerConfiguration {
 
 	public String getNonStandardOptions() {return null;}
 	public List getProjectSourceFiles() {return null;}
+	public List getProjectSourceFilesChanged() {return null;}
 	public Map getSourcePathResources() {return null;}
 	
 }
