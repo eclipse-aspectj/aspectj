@@ -83,7 +83,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
  * existing java class (file).
  *
  * @see JavaClass
- * @version $Id: ClassGen.java,v 1.9 2008/05/28 23:52:58 aclement Exp $
+ * @version $Id: ClassGen.java,v 1.10 2008/08/27 23:59:48 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  *
  * Upgraded, Andy Clement 9th Mar 06 - calculates SUID
@@ -101,7 +101,6 @@ public class ClassGen extends Modifiers implements Cloneable {
   private ArrayList   attributesList = new ArrayList();
   private ArrayList   interface_vec = new ArrayList();
   private ArrayList   annotation_vec= new ArrayList();
-  private boolean     unpackedAnnotations = false; 
 
   /** Convenience constructor to set up some important values initially.
    *
