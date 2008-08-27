@@ -222,7 +222,7 @@ public class SimpleElementValueGen extends ElementValueGen {
     	  case PRIMITIVE_BOOLEAN:
     		ConstantInteger bo = (ConstantInteger)cpGen.getConstant(idx);
     		if (bo.getBytes() == 0) return "false";
-    		if (bo.getBytes() != 0) return "true";
+    		else return "true";
     	  case STRING:
     		ConstantUtf8 cu8 = (ConstantUtf8)cpGen.getConstant(idx);
     		return cu8.getBytes();
