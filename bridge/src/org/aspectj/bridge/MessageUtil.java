@@ -63,11 +63,11 @@ public class MessageUtil {
             && handler.handleMessage(fail(message)));
     }
 
-    /** create and handle fail message from reader (ignored if handler is null) */
-    public static boolean fail(IMessageHandler handler, String message, LineReader reader) {
-        return ((null != handler)
-            && handler.handleMessage(fail(message, reader)));
-    }
+//    /** create and handle fail message from reader (ignored if handler is null) */
+//    public static boolean fail(IMessageHandler handler, String message, LineReader reader) {
+//        return ((null != handler)
+//            && handler.handleMessage(fail(message, reader)));
+//    }
     
     /** create and handle fail message (ignored if handler is null) */
     public static boolean fail(IMessageHandler handler, String message, Throwable thrown) {
@@ -125,7 +125,9 @@ public class MessageUtil {
         if (LangUtil.isEmpty(message)) {
             return FAIL_NOMESSAGE;
         } else {
-            return fail(message, (LineReader) null);
+          return new Message(message, IMessage.FAIL, null, ISourceLocation.EMPTY);
+
+//            return fail(message, (LineReader) null);
         }
     }
     
@@ -152,19 +154,19 @@ public class MessageUtil {
      * @return IMessage with IMessage.Kind FAIL and message as text 
      * and soure location from reader 
      */
-    public static IMessage fail(String message, LineReader reader) {
-        ISourceLocation loc = null;
-        if (null == reader) {
-            loc = ISourceLocation.EMPTY;
-        } else {
-            int line = reader.getLineNumber();
-            if (0 < line) {
-                line = 0;
-            }        
-            loc = new SourceLocation(reader.getFile(), line, line, 0);
-        }
-        return new Message(message, IMessage.FAIL, null, loc);
-    }
+//    public static IMessage fail(String message) {//, LineReader reader) {
+//        ISourceLocation loc = null;
+//        if (null == reader) {
+//            loc = ISourceLocation.EMPTY;
+//        } else {
+//            int line = reader.getLineNumber();
+//            if (0 < line) {
+//                line = 0;
+//            }        
+//            loc = new SourceLocation(reader.getFile(), line, line, 0);
+//        }
+//        return new Message(message, IMessage.FAIL, null, ISourceLocation.EMPTY);
+//    }
 
     /** @return ERROR_NOMESSAGE if message is empty or IMessage otherwise */ // 
     public static IMessage error(String message, ISourceLocation location) {
@@ -211,16 +213,16 @@ public class MessageUtil {
         return new Message(message, IMessage.INFO, null, null);
     }
 
-    /** @return ISourceLocation with the current File/line of the reader */
-    public static ISourceLocation makeSourceLocation(LineReader reader) {
-        LangUtil.throwIaxIfNull(reader, "reader");
-        
-        int line = reader.getLineNumber();
-        if (0 < line) {
-            line = 0;
-        }        
-        return new SourceLocation(reader.getFile(), line, line, 0);
-    }
+//    /** @return ISourceLocation with the current File/line of the reader */
+//    public static ISourceLocation makeSourceLocation(LineReader reader) {
+//        LangUtil.throwIaxIfNull(reader, "reader");
+//        
+//        int line = reader.getLineNumber();
+//        if (0 < line) {
+//            line = 0;
+//        }        
+//        return new SourceLocation(reader.getFile(), line, line, 0);
+//    }
     
     // ------------------------ printing messages
     /**
@@ -367,7 +369,7 @@ public class MessageUtil {
                 return false;
             }
             public void dontIgnore(IMessage.Kind kind) {
-                ;
+                
             }
 			public void ignore(Kind kind) {
 			}
@@ -591,7 +593,7 @@ public class MessageUtil {
         }
 
         public void dontIgnore(IMessage.Kind kind) {
-            ;
+            
         }
 
         private boolean textIn(IMessage message) {
@@ -599,7 +601,7 @@ public class MessageUtil {
                 return true;
             }
             String text = message.getMessage();
-            return ((null != message) && (-1 != text.indexOf(infix)));
+            return (text.indexOf(infix)!=-1);
         }
 
 		public void ignore(Kind kind) {
