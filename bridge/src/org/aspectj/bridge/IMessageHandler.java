@@ -50,7 +50,7 @@ public interface IMessageHandler {
 				return false;
 			}
             public void dontIgnore(IMessage.Kind kind) {
-                ;
+                
             }
 			public void ignore(IMessage.Kind kind) {
 			}
