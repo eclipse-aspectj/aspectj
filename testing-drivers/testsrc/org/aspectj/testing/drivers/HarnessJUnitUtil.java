@@ -149,7 +149,7 @@ public class HarnessJUnitUtil {
                 String m = safeTestName(test) + " " + description;
                 throw new Error(m);
             } else if (isFailure) {
-                String m = safeTestName(test) + " " + description;
+//                String m = safeTestName(test) + " " + description;
                 throw new AssertionFailedError(description);
             } // no need to log success
         }

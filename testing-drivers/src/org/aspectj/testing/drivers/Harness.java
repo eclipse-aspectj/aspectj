@@ -54,18 +54,6 @@ import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 /**
  * Test harness for running AjcTest.Suite test suites.
@@ -240,7 +228,7 @@ public class Harness {
             return;
         }
         String[] globalOptions = (String[]) globals.toArray(new String[0]);
-        String[][] globalOptionVariants = LangUtil.optionVariants(globalOptions);
+        String[][] globalOptionVariants = optionVariants(globalOptions);
         AbstractRunSpec.RT runtime = new AbstractRunSpec.RT();
         if (verboseHarness) {
             runtime.setVerbose(true);
@@ -298,7 +286,7 @@ public class Harness {
                     } finally {
                         doEndSuite(suiteFile,elapsed);
                     }
-                    if (exitOnFailure && (null != result)) {
+                    if (exitOnFailure) {
                         int numFailures = RunUtils.numFailures(result.status, true);
                         if (0 < numFailures) {
                             System.exit(numFailures);
@@ -329,6 +317,64 @@ public class Harness {
 			}
 		}					
 	}
+    /**
+     * Generate variants of String[] options by creating an extra set for
+     * each option that ends with "-".  If none end with "-", then an
+     * array equal to <code>new String[][] { options }</code> is returned;
+     * if one ends with "-", then two sets are returned,
+     * three causes eight sets, etc.
+     * @return String[][] with each option set.
+     * @throws IllegalArgumentException if any option is null or empty.
+     */
+    public static String[][] optionVariants(String[] options) {
+        if ((null == options) || (0 == options.length)) {
+            return new String[][] { new String[0]};            
+        }
+        // be nice, don't stomp input
+        String[] temp = new String[options.length];
+        System.arraycopy(options, 0, temp, 0, temp.length);
+        options = temp;
+        boolean[] dup = new boolean[options.length];
+        int numDups = 0;
+        
+        for (int i = 0; i < options.length; i++) {
+            String option = options[i];
+            if (LangUtil.isEmpty(option)) {
+                throw new IllegalArgumentException("empty option at " + i);
+            }
+            if (option.endsWith("-")) {
+                options[i] = option.substring(0, option.length()-1);
+                dup[i] = true;
+                numDups++;
+            }
+        }
+        final String[] NONE = new String[0];
+        final int variants = exp(2, numDups);
+        final String[][] result = new String[variants][];
+        // variant is a bitmap wrt doing extra value when dup[k]=true
+        for (int variant = 0; variant < variants; variant++) { 
+            ArrayList next = new ArrayList();
+            int nextOption = 0;
+            for (int k = 0; k < options.length; k++) {
+                if (!dup[k] || (0 != (variant & (1 << (nextOption++))))) {
+                    next.add(options[k]);
+                }                   
+            }
+            result[variant] = (String[]) next.toArray(NONE);
+        }
+        return result;
+    }
+    
+    private static int exp(int base, int power) { // not in Math?
+        if (0 > power) {
+            throw new IllegalArgumentException("negative power: " + power);
+        } 
+        int result = 1;
+        while (0 < power--) {
+            result *= base;
+        }
+        return result;
+    }
 
 	/**
 	 * @param suiteFile
@@ -1255,7 +1301,7 @@ class XmlLogger extends TestCompleteListener {
  */
 class JUnitXMLLogger extends TestCompleteListener {
 
-  private File suite;
+//  private File suite;
   private StringBuffer junitOutput;
   private long startTimeMillis;
   private int numTests = 0;
@@ -1277,7 +1323,7 @@ class JUnitXMLLogger extends TestCompleteListener {
 		long duration = System.currentTimeMillis()  - startTimeMillis;
 		numTests++;
 		junitOutput.append("<testcase name=\"" + run.getIdentifier() + "\" ");
-		junitOutput.append("time=\"" + timeFormatter.format(((float)duration)/1000.0) + "\"");
+		junitOutput.append("time=\"" + timeFormatter.format((duration)/1000.0f) + "\"");
 		junitOutput.append(">");
 		if (!run.runResult())  {
 			numFails++;
@@ -1321,7 +1367,7 @@ class JUnitXMLLogger extends TestCompleteListener {
 	 */
 	protected void doStartSuite(File suite) {
 		super.doStartSuite(suite);
-		this.suite = suite;
+//		this.suite = suite;
 		numTests = 0;
 		numFails = 0;
 		junitOutput = new StringBuffer();

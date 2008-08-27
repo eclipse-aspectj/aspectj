@@ -80,7 +80,7 @@ public class AjctestsAdapter extends TestSuite {
             log("loading " + tests.length + " tests in " + suitePath);
         }
         for (int i = 0; i < tests.length; i++) {
-            AjcTest.Spec ajcTest = (AjcTest.Spec) tests[i];
+            AjcTest.Spec ajcTest = tests[i];
             result.addTest(new AjcTestSpecAsTest(ajcTest, result));
         }
         return result;
@@ -244,9 +244,9 @@ public class AjctestsAdapter extends TestSuite {
     public static class SpecTests {
         private static final HashMap TESTS = new HashMap();
 
-        private static void putSpecTestsFor(String id, SpecTests tests) {
-            TESTS.put(id, tests);
-        }
+//        private static void putSpecTestsFor(String id, SpecTests tests) {
+//            TESTS.put(id, tests);
+//        }
 
         private static SpecTests getSpecTestsFor(String id) {
             SpecTests result = (SpecTests) TESTS.get(id);
@@ -255,35 +255,7 @@ public class AjctestsAdapter extends TestSuite {
             }
             return result;
         }
-
-        private static String safeName(String name) {
-            return HarnessJUnitUtil.cleanTestName(name); 
-        }
-
-        private static String filename(String path) {            
-            if (null == path) {
-                throw new IllegalArgumentException("null path");
-            }
-            int loc = path.lastIndexOf(File.pathSeparator);
-            if (-1 != loc) {
-                path = path.substring(loc+1);
-            }
-            loc = path.lastIndexOf('/');
-            if (-1 != loc) {
-                path = path.substring(loc+1);
-            }
-            loc = path.lastIndexOf(".");
-            if (-1 != loc) {
-                path = path.substring(0, loc);
-            }
-            return path;
-        }
-
-        private static String classnameToPath(String classname) {
-            return classname.replace('.', File.separatorChar) + ".class";
-        }
-
-
+        
         // ------------------------------------
         final AjctestsAdapter mAjctestsAdapter;
 
@@ -296,7 +268,7 @@ public class AjctestsAdapter extends TestSuite {
             for (int i = 0; i < tests.length; i++) {
                 map.put(tests[i].getDescription(), tests[i]);
             }
-            ;
+            
             mDescriptionToAjcTestSpec = Collections.unmodifiableMap(map);
         }
 
