@@ -65,7 +65,7 @@ public class MessageWriter implements IMessageHandler {
      * @param kind
      */
     public void dontIgnore(IMessage.Kind kind) {
-        ;
+        
     }
 
     /**
