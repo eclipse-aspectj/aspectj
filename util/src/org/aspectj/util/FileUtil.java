@@ -673,13 +673,12 @@ public class FileUtil {
         if (!LangUtil.isEmpty(suffixes)) {
             ArrayList list = new ArrayList();
             for (int i = 0; i < paths.length; i++) {
-                boolean listed = false;
                 String path = paths[i];
-                for (int j = 0; !listed && (j < suffixes.length); j++) {
-                    String suffix = suffixes[j];
-					if (listed = path.endsWith(suffix)) {
+                for (int j = 0; j < suffixes.length; j++) {
+                	if (path.endsWith(suffixes[j])) {
                         list.add(new File(basedir, paths[i]));
-                    }
+                        break;
+                	}
 				}
             }
             result = (File[]) list.toArray(new File[0]);

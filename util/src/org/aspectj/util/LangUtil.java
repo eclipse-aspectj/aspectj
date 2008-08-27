@@ -10,11 +10,8 @@
  * Contributors: 
  *     Xerox/PARC     initial implementation 
  * ******************************************************************/
-
 package org.aspectj.util;
 
-
-//import java.awt.event.InvocationEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -29,19 +26,18 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 /**
  * 
  */
 public class LangUtil {    
-    /** map from String version to String class implemented in that version or later */
-    private static final Map VM_CLASSES;
+
+//	/** map from String version to String class implemented in that version or later */
+//    private static final Map VM_CLASSES;
 
     public static final String EOL;
     static {
@@ -52,40 +48,40 @@ public class LangUtil {
         try { 
             buf.close(); 
             StringBuffer sb = buf.getBuffer(); 
-            if ((null != sb) || (0 < sb.length())) {
+            if (sb!=null) {
                 eol = buf.toString();
             }
         } catch (Throwable t) { }
         EOL = eol;
         
-        HashMap map = new HashMap();
-        map.put("1.2", "java.lang.ref.Reference");
-        map.put("1.3", "java.lang.reflect.Proxy");
-        map.put("1.4", "java.nio.Buffer");
-        map.put("1.5", "java.lang.annotation.Annotation");
-        
-        VM_CLASSES = Collections.unmodifiableMap(map);
+//        HashMap map = new HashMap();
+//        map.put("1.2", "java.lang.ref.Reference");
+//        map.put("1.3", "java.lang.reflect.Proxy");
+//        map.put("1.4", "java.nio.Buffer");
+//        map.put("1.5", "java.lang.annotation.Annotation");
+//        
+//        VM_CLASSES = Collections.unmodifiableMap(map);
     }
 
-    /**
-     * Detect whether Java version is supported.
-     * @param version String "1.2" or "1.3" or "1.4"
-     * @return true if the currently-running VM supports the version 
-     * @throws IllegalArgumentException if version is not known
-     */
-    public static final boolean supportsJava(String version) {
-        LangUtil.throwIaxIfNull(version, "version");
-        String className = (String) VM_CLASSES.get(version);
-        if (null == className) {
-            throw new IllegalArgumentException("unknown version: " + version);
-        }
-        try {
-            Class.forName(className);
-            return true;
-        } catch (Throwable t) {
-            return false;
-        }        
-    }
+//    /**
+//     * Detect whether Java version is supported.
+//     * @param version String "1.2" or "1.3" or "1.4"
+//     * @return true if the currently-running VM supports the version 
+//     * @throws IllegalArgumentException if version is not known
+//     */
+//    public static final boolean supportsJava(String version) {
+//        LangUtil.throwIaxIfNull(version, "version");
+//        String className = (String) VM_CLASSES.get(version);
+//        if (null == className) {
+//            throw new IllegalArgumentException("unknown version: " + version);
+//        }
+//        try {
+//            Class.forName(className);
+//            return true;
+//        } catch (Throwable t) {
+//            return false;
+//        }        
+//    }
 	
 	private static boolean is13VMOrGreater = true;
 	private static boolean is14VMOrGreater = true;
@@ -156,20 +152,20 @@ public class LangUtil {
         }
     }
     
-    /**
-     * Shorthand for "if any not null or not assignable, throw IllegalArgumentException"
-     * @throws IllegalArgumentException "{name} is not assignable to {c}"  
-     */
-    public static final void throwIaxIfNotAllAssignable(final Collection collection, 
-        final Class c, final String name) {
-        throwIaxIfNull(collection, name);
-        if (null != c) {
-            for (Iterator iter = collection.iterator(); iter.hasNext();) {
-				throwIaxIfNotAssignable(iter.next(), c, name);
-				
-			}
-        }
-    }
+//    /**
+//     * Shorthand for "if any not null or not assignable, throw IllegalArgumentException"
+//     * @throws IllegalArgumentException "{name} is not assignable to {c}"  
+//     */
+//    public static final void throwIaxIfNotAllAssignable(final Collection collection, 
+//        final Class c, final String name) {
+//        throwIaxIfNull(collection, name);
+//        if (null != c) {
+//            for (Iterator iter = collection.iterator(); iter.hasNext();) {
+//				throwIaxIfNotAssignable(iter.next(), c, name);
+//				
+//			}
+//        }
+//    }
     /**
      * Shorthand for "if false, throw IllegalArgumentException"
      * @throws IllegalArgumentException "{message}" if test is false
@@ -180,11 +176,11 @@ public class LangUtil {
         }
     }
     
-    /** @return ((null == s) || (0 == s.trim().length())); */
-    public static boolean isEmptyTrimmed(String s) {
-        return ((null == s) || (0 == s.length())
-            || (0 == s.trim().length()));
-    }
+//    /** @return ((null == s) || (0 == s.trim().length())); */
+//    public static boolean isEmptyTrimmed(String s) {
+//        return ((null == s) || (0 == s.length())
+//            || (0 == s.trim().length()));
+//    }
 
     /** @return ((null == s) || (0 == s.length())); */
     public static boolean isEmpty(String s) {
@@ -318,71 +314,71 @@ public class LangUtil {
 				: Collections.unmodifiableList(list));
 	}
     
-    /**
-     * Select from input String[] based on suffix-matching
-     * @param inputs String[] of input - null ignored
-     * @param suffixes String[] of suffix selectors - null ignored
-     * @param ignoreCase if true, ignore case
-     * @return String[] of input that end with any input
-     */
-    public static String[] endsWith(String[] inputs, String[] suffixes, boolean ignoreCase) {
-        if (LangUtil.isEmpty(inputs) || LangUtil.isEmpty(suffixes)) {
-            return new String[0];
-        }
-        if (ignoreCase) {
-            String[] temp = new String[suffixes.length];
-            for (int i = 0; i < temp.length; i++) {                
-				String suff = suffixes[i];
-                temp[i] = (null ==  suff ? null : suff.toLowerCase());
-			}
-            suffixes = temp;
-        }
-        ArrayList result = new ArrayList();
-        for (int i = 0; i < inputs.length; i++) {
-            String input = inputs[i];
-            if (null == input) {
-                continue;
-            }
-            if (!ignoreCase) {
-                input = input.toLowerCase();
-            }
-            for (int j = 0; j < suffixes.length; j++) {
-                String suffix = suffixes[j];
-                if (null == suffix) {
-                    continue;
-                }
-                if (input.endsWith(suffix)) {
-                    result.add(input);
-                    break;
-                }
-            }
-        }
-        return (String[]) result.toArray(new String[0]);
-    }
-    
-    /**
-     * Select from input String[] if readable directories
-     * @param inputs String[] of input - null ignored
-     * @param baseDir the base directory of the input
-     * @return String[] of input that end with any input
-     */
-    public static String[] selectDirectories(String[] inputs, File baseDir) {
-        if (LangUtil.isEmpty(inputs)) {
-            return new String[0];
-        }
-        ArrayList result = new ArrayList();
-        for (int i = 0; i < inputs.length; i++) {
-            String input = inputs[i];
-            if (null == input) {
-                continue;
-            }
-            File inputFile = new File(baseDir, input);
-            if (inputFile.canRead() && inputFile.isDirectory()) {
-                result.add(input);
-            }
-        }
-        return (String[]) result.toArray(new String[0]);
-    }
+//    /**
+//     * Select from input String[] based on suffix-matching
+//     * @param inputs String[] of input - null ignored
+//     * @param suffixes String[] of suffix selectors - null ignored
+//     * @param ignoreCase if true, ignore case
+//     * @return String[] of input that end with any input
+//     */
+//    public static String[] endsWith(String[] inputs, String[] suffixes, boolean ignoreCase) {
+//        if (LangUtil.isEmpty(inputs) || LangUtil.isEmpty(suffixes)) {
+//            return new String[0];
+//        }
+//        if (ignoreCase) {
+//            String[] temp = new String[suffixes.length];
+//            for (int i = 0; i < temp.length; i++) {                
+//				String suff = suffixes[i];
+//                temp[i] = (null ==  suff ? null : suff.toLowerCase());
+//			}
+//            suffixes = temp;
+//        }
+//        ArrayList result = new ArrayList();
+//        for (int i = 0; i < inputs.length; i++) {
+//            String input = inputs[i];
+//            if (null == input) {
+//                continue;
+//            }
+//            if (!ignoreCase) {
+//                input = input.toLowerCase();
+//            }
+//            for (int j = 0; j < suffixes.length; j++) {
+//                String suffix = suffixes[j];
+//                if (null == suffix) {
+//                    continue;
+//                }
+//                if (input.endsWith(suffix)) {
+//                    result.add(input);
+//                    break;
+//                }
+//            }
+//        }
+//        return (String[]) result.toArray(new String[0]);
+//    }
+//    
+//    /**
+//     * Select from input String[] if readable directories
+//     * @param inputs String[] of input - null ignored
+//     * @param baseDir the base directory of the input
+//     * @return String[] of input that end with any input
+//     */
+//    public static String[] selectDirectories(String[] inputs, File baseDir) {
+//        if (LangUtil.isEmpty(inputs)) {
+//            return new String[0];
+//        }
+//        ArrayList result = new ArrayList();
+//        for (int i = 0; i < inputs.length; i++) {
+//            String input = inputs[i];
+//            if (null == input) {
+//                continue;
+//            }
+//            File inputFile = new File(baseDir, input);
+//            if (inputFile.canRead() && inputFile.isDirectory()) {
+//                result.add(input);
+//            }
+//        }
+//        return (String[]) result.toArray(new String[0]);
+//    }
 
     /** 
      * copy non-null two-dimensional String[][] 
@@ -424,7 +420,8 @@ public class LangUtil {
                 String[] option = options[i];
                 LangUtil.throwIaxIfFalse(!LangUtil.isEmpty(option), "options");
                 String sought = option[0];
-                if (found = sought.equals(args[j])) {                    
+                found = sought.equals(args[j]);
+                if (found) {                    
                     foundSet.set(i);
                     int doMore = option.length-1;
                     if (0 < doMore) {
@@ -459,185 +456,186 @@ public class LangUtil {
         
         return args;        
     }
-    
-    /** 
-     * Extract options and arguments to input parameter list, returning remainder.
-     * @param args the String[] input options
-     * @param validOptions the String[] options to find in the input args - not null
-     * @param optionArgs the int[] number of arguments for each option in validOptions
-     *         (if null, then no arguments for any option)
-     * @param extracted the List for the matched options
-     * @return String[] of args remaining after extracting options to extracted 
-     */
-    public static String[] extractOptions(String[] args, String[] validOptions,
-        int[] optionArgs, List extracted) {
-        if (LangUtil.isEmpty(args) 
-            || LangUtil.isEmpty(validOptions) ) {
-            return args;
-        }
-        if (null != optionArgs) {
-            if (optionArgs.length != validOptions.length) {
-                throw new IllegalArgumentException("args must match options");
-            }
-        }
-        String[] result = new String[args.length];
-        int resultIndex = 0;
-        for (int j = 0; j < args.length; j++) {
-            boolean found = false;
-            for (int i = 0; !found && (i < validOptions.length); i++) {
-                String sought = validOptions[i];
-                int doMore = (null == optionArgs ? 0 : optionArgs[i]);
-                if (LangUtil.isEmpty(sought)) {
-                    continue;
-                }
-                if (found = sought.equals(args[j])) {                    
-                    if (null != extracted) {
-                        extracted.add(sought);
-                    }
-                    if (0 < doMore) {
-                        final int MAX = j + doMore;
-                        if (MAX >= args.length) {
-                            String s = "expecting " + doMore + " args after ";
-                            throw new IllegalArgumentException(s + args[j]);
-                        }
-                        if (null != extracted) {                            
-                            while (j < MAX) {
-                                extracted.add(args[++j]);
-                            }
-                        } else {
-                            j = MAX;
-                        }                        
-                    }
-                    break;
-                }
-            }
-            if (!found) {
-                result[resultIndex++] = args[j];
-            }
-        }
-        if (resultIndex < args.length) {
-            String[] temp = new String[resultIndex];
-            System.arraycopy(result, 0, temp, 0, resultIndex);
-            args = temp;
-        }
-        return args;        
-    }
+//    
+//    /** 
+//     * Extract options and arguments to input parameter list, returning remainder.
+//     * @param args the String[] input options
+//     * @param validOptions the String[] options to find in the input args - not null
+//     * @param optionArgs the int[] number of arguments for each option in validOptions
+//     *         (if null, then no arguments for any option)
+//     * @param extracted the List for the matched options
+//     * @return String[] of args remaining after extracting options to extracted 
+//     */
+//    public static String[] extractOptions(String[] args, String[] validOptions,
+//        int[] optionArgs, List extracted) {
+//        if (LangUtil.isEmpty(args) 
+//            || LangUtil.isEmpty(validOptions) ) {
+//            return args;
+//        }
+//        if (null != optionArgs) {
+//            if (optionArgs.length != validOptions.length) {
+//                throw new IllegalArgumentException("args must match options");
+//            }
+//        }
+//        String[] result = new String[args.length];
+//        int resultIndex = 0;
+//        for (int j = 0; j < args.length; j++) {
+//            boolean found = false;
+//            for (int i = 0; !found && (i < validOptions.length); i++) {
+//                String sought = validOptions[i];
+//                int doMore = (null == optionArgs ? 0 : optionArgs[i]);
+//                if (LangUtil.isEmpty(sought)) {
+//                    continue;
+//                }
+//                found = sought.equals(args[j]);
+//                if (found) {                    
+//                    if (null != extracted) {
+//                        extracted.add(sought);
+//                    }
+//                    if (0 < doMore) {
+//                        final int MAX = j + doMore;
+//                        if (MAX >= args.length) {
+//                            String s = "expecting " + doMore + " args after ";
+//                            throw new IllegalArgumentException(s + args[j]);
+//                        }
+//                        if (null != extracted) {                            
+//                            while (j < MAX) {
+//                                extracted.add(args[++j]);
+//                            }
+//                        } else {
+//                            j = MAX;
+//                        }                        
+//                    }
+//                    break;
+//                }
+//            }
+//            if (!found) {
+//                result[resultIndex++] = args[j];
+//            }
+//        }
+//        if (resultIndex < args.length) {
+//            String[] temp = new String[resultIndex];
+//            System.arraycopy(result, 0, temp, 0, resultIndex);
+//            args = temp;
+//        }
+//        return args;        
+//    }
 
-    /** @return String[] of entries in validOptions found in args */
-    public static String[] selectOptions(String[] args, String[] validOptions) {
-        if (LangUtil.isEmpty(args) || LangUtil.isEmpty(validOptions)) {
-            return new String[0];
-        }
-        ArrayList result = new ArrayList();
-        for (int i = 0; i < validOptions.length; i++) {
-            String sought = validOptions[i];
-            if (LangUtil.isEmpty(sought)) {
-                continue;
-            }
-			for (int j = 0; j < args.length; j++) {
-				if (sought.equals(args[j])) {
-                    result.add(sought);
-                    break;
-                }
-			}
-		}
-        return (String[]) result.toArray(new String[0]);
-    }
+//    /** @return String[] of entries in validOptions found in args */
+//    public static String[] selectOptions(String[] args, String[] validOptions) {
+//        if (LangUtil.isEmpty(args) || LangUtil.isEmpty(validOptions)) {
+//            return new String[0];
+//        }
+//        ArrayList result = new ArrayList();
+//        for (int i = 0; i < validOptions.length; i++) {
+//            String sought = validOptions[i];
+//            if (LangUtil.isEmpty(sought)) {
+//                continue;
+//            }
+//			for (int j = 0; j < args.length; j++) {
+//				if (sought.equals(args[j])) {
+//                    result.add(sought);
+//                    break;
+//                }
+//			}
+//		}
+//        return (String[]) result.toArray(new String[0]);
+//    }
     
-    /** @return String[] of entries in validOptions found in args */
-    public static String[] selectOptions(List args, String[] validOptions) {
-        if (LangUtil.isEmpty(args) || LangUtil.isEmpty(validOptions)) {
-            return new String[0];
-        }
-        ArrayList result = new ArrayList();
-        for (int i = 0; i < validOptions.length; i++) {
-            String sought = validOptions[i];
-            if (LangUtil.isEmpty(sought)) {
-                continue;
-            }
-            for (Iterator iter = args.iterator(); iter.hasNext();) {
-				String arg = (String) iter.next();
-                if (sought.equals(arg)) {
-                    result.add(sought);
-                    break;
-                }
-            }
-        }
-        return (String[]) result.toArray(new String[0]);
-    }
+//    /** @return String[] of entries in validOptions found in args */
+//    public static String[] selectOptions(List args, String[] validOptions) {
+//        if (LangUtil.isEmpty(args) || LangUtil.isEmpty(validOptions)) {
+//            return new String[0];
+//        }
+//        ArrayList result = new ArrayList();
+//        for (int i = 0; i < validOptions.length; i++) {
+//            String sought = validOptions[i];
+//            if (LangUtil.isEmpty(sought)) {
+//                continue;
+//            }
+//            for (Iterator iter = args.iterator(); iter.hasNext();) {
+//				String arg = (String) iter.next();
+//                if (sought.equals(arg)) {
+//                    result.add(sought);
+//                    break;
+//                }
+//            }
+//        }
+//        return (String[]) result.toArray(new String[0]);
+//    }
     
-    /**
-     * Generate variants of String[] options by creating an extra set for
-     * each option that ends with "-".  If none end with "-", then an
-     * array equal to <code>new String[][] { options }</code> is returned;
-     * if one ends with "-", then two sets are returned,
-     * three causes eight sets, etc.
-     * @return String[][] with each option set.
-     * @throws IllegalArgumentException if any option is null or empty.
-     */
-    public static String[][] optionVariants(String[] options) {
-        if ((null == options) || (0 == options.length)) {
-            return new String[][] { new String[0]};            
-        }
-        // be nice, don't stomp input
-        String[] temp = new String[options.length];
-        System.arraycopy(options, 0, temp, 0, temp.length);
-        options = temp;
-        boolean[] dup = new boolean[options.length];
-        int numDups = 0;
-        
-        for (int i = 0; i < options.length; i++) {
-            String option = options[i];
-            if (LangUtil.isEmpty(option)) {
-                throw new IllegalArgumentException("empty option at " + i);
-            }
-            if (option.endsWith("-")) {
-                options[i] = option.substring(0, option.length()-1);
-                dup[i] = true;
-                numDups++;
-            }
-        }
-        final String[] NONE = new String[0];
-        final int variants = exp(2, numDups);
-        final String[][] result = new String[variants][];
-        // variant is a bitmap wrt doing extra value when dup[k]=true
-        for (int variant = 0; variant < variants; variant++) { 
-            ArrayList next = new ArrayList();
-            int nextOption = 0;
-            for (int k = 0; k < options.length; k++) {
-                if (!dup[k] || (0 != (variant & (1 << (nextOption++))))) {
-                    next.add(options[k]);
-                }                   
-            }
-            result[variant] = (String[]) next.toArray(NONE);
-        }
-        return result;
-    }
-    
-    private static int exp(int base, int power) { // not in Math?
-        if (0 > power) {
-            throw new IllegalArgumentException("negative power: " + power);
-        } 
-        int result = 1;
-        while (0 < power--) {
-            result *= base;
-        }
-        return result;
-    }
+//    /**
+//     * Generate variants of String[] options by creating an extra set for
+//     * each option that ends with "-".  If none end with "-", then an
+//     * array equal to <code>new String[][] { options }</code> is returned;
+//     * if one ends with "-", then two sets are returned,
+//     * three causes eight sets, etc.
+//     * @return String[][] with each option set.
+//     * @throws IllegalArgumentException if any option is null or empty.
+//     */
+//    public static String[][] optionVariants(String[] options) {
+//        if ((null == options) || (0 == options.length)) {
+//            return new String[][] { new String[0]};            
+//        }
+//        // be nice, don't stomp input
+//        String[] temp = new String[options.length];
+//        System.arraycopy(options, 0, temp, 0, temp.length);
+//        options = temp;
+//        boolean[] dup = new boolean[options.length];
+//        int numDups = 0;
+//        
+//        for (int i = 0; i < options.length; i++) {
+//            String option = options[i];
+//            if (LangUtil.isEmpty(option)) {
+//                throw new IllegalArgumentException("empty option at " + i);
+//            }
+//            if (option.endsWith("-")) {
+//                options[i] = option.substring(0, option.length()-1);
+//                dup[i] = true;
+//                numDups++;
+//            }
+//        }
+//        final String[] NONE = new String[0];
+//        final int variants = exp(2, numDups);
+//        final String[][] result = new String[variants][];
+//        // variant is a bitmap wrt doing extra value when dup[k]=true
+//        for (int variant = 0; variant < variants; variant++) { 
+//            ArrayList next = new ArrayList();
+//            int nextOption = 0;
+//            for (int k = 0; k < options.length; k++) {
+//                if (!dup[k] || (0 != (variant & (1 << (nextOption++))))) {
+//                    next.add(options[k]);
+//                }                   
+//            }
+//            result[variant] = (String[]) next.toArray(NONE);
+//        }
+//        return result;
+//    }
+//    
+//    private static int exp(int base, int power) { // not in Math?
+//        if (0 > power) {
+//            throw new IllegalArgumentException("negative power: " + power);
+//        } 
+//        int result = 1;
+//        while (0 < power--) {
+//            result *= base;
+//        }
+//        return result;
+//    }
 
-    /**
-     * Make a copy of the array.
-     * @return an array with the same component type as source
-     * containing same elements, even if null.
-     * @throws IllegalArgumentException if source is null
-     */
-    public static final Object[] copy(Object[] source) {
-        LangUtil.throwIaxIfNull(source, "source");        
-        final Class c = source.getClass().getComponentType();
-        Object[] result = (Object[]) Array.newInstance(c, source.length);
-        System.arraycopy(source, 0, result, 0, result.length);
-        return result;
-    }
+//    /**
+//     * Make a copy of the array.
+//     * @return an array with the same component type as source
+//     * containing same elements, even if null.
+//     * @throws IllegalArgumentException if source is null
+//     */
+//    public static final Object[] copy(Object[] source) {
+//        LangUtil.throwIaxIfNull(source, "source");        
+//        final Class c = source.getClass().getComponentType();
+//        Object[] result = (Object[]) Array.newInstance(c, source.length);
+//        System.arraycopy(source, 0, result, 0, result.length);
+//        return result;
+//    }
     
     
     /**
@@ -737,36 +735,36 @@ public class LangUtil {
         return result;
     }
 
-    /** clip StringBuffer to maximum number of lines */
-    static String clipBuffer(StringBuffer buffer, int maxLines) {
-        if ((null == buffer) || (1 > buffer.length())) return "";
-        StringBuffer result = new StringBuffer();
-        int j = 0;
-        final int MAX = maxLines;
-        final int N = buffer.length();
-        for (int i = 0, srcBegin = 0; i < MAX; srcBegin += j) {
-            // todo: replace with String variant if/since getting char?
-            char[] chars = new char[128];
-            int srcEnd = srcBegin+chars.length;
-            if (srcEnd >= N) {
-                srcEnd = N-1;
-            }
-            if (srcBegin == srcEnd) break;
-            //log("srcBegin:" + srcBegin + ":srcEnd:" + srcEnd);
-            buffer.getChars(srcBegin, srcEnd, chars, 0);            
-            for (j = 0; j < srcEnd-srcBegin/*chars.length*/; j++) {
-                char c = chars[j];
-                if (c == '\n') {
-                    i++;
-                    j++;
-                    break;
-                }
-            }
-            try { result.append(chars, 0, j); } 
-            catch (Throwable t) { }
-        }
-        return result.toString();
-    }
+//    /** clip StringBuffer to maximum number of lines */
+//    static String clipBuffer(StringBuffer buffer, int maxLines) {
+//        if ((null == buffer) || (1 > buffer.length())) return "";
+//        StringBuffer result = new StringBuffer();
+//        int j = 0;
+//        final int MAX = maxLines;
+//        final int N = buffer.length();
+//        for (int i = 0, srcBegin = 0; i < MAX; srcBegin += j) {
+//            // todo: replace with String variant if/since getting char?
+//            char[] chars = new char[128];
+//            int srcEnd = srcBegin+chars.length;
+//            if (srcEnd >= N) {
+//                srcEnd = N-1;
+//            }
+//            if (srcBegin == srcEnd) break;
+//            //log("srcBegin:" + srcBegin + ":srcEnd:" + srcEnd);
+//            buffer.getChars(srcBegin, srcEnd, chars, 0);            
+//            for (j = 0; j < srcEnd-srcBegin/*chars.length*/; j++) {
+//                char c = chars[j];
+//                if (c == '\n') {
+//                    i++;
+//                    j++;
+//                    break;
+//                }
+//            }
+//            try { result.append(chars, 0, j); } 
+//            catch (Throwable t) { }
+//        }
+//        return result.toString();
+//    }
 
     /**
      * @return "({UnqualifiedExceptionClass}) {message}"
@@ -1021,22 +1019,22 @@ public class LangUtil {
         return controller;
     }
     
-    /**
-     * Create a process to run asynchronously.
-     * @param controller if not null, initialize this one
-     * @param command the String[] command to run
-     * @param controller the ProcessControl for streams and results
-     */
-    public static ProcessController makeProcess( // not needed?
-        ProcessController controller, 
-        String[] command, 
-        String label) {
-        if (null == controller) {
-            controller = new ProcessController();
-        }
-        controller.init(command, label);
-        return controller;
-    }
+//    /**
+//     * Create a process to run asynchronously.
+//     * @param controller if not null, initialize this one
+//     * @param command the String[] command to run
+//     * @param controller the ProcessControl for streams and results
+//     */
+//    public static ProcessController makeProcess( // not needed?
+//        ProcessController controller, 
+//        String[] command, 
+//        String label) {
+//        if (null == controller) {
+//            controller = new ProcessController();
+//        }
+//        controller.init(command, label);
+//        return controller;
+//    }
     
     /**
      * Find java executable File path from java.home system property.

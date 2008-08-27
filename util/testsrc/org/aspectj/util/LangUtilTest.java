@@ -28,78 +28,78 @@ public class LangUtilTest extends TestCase {
 		super(name);
 	}
     
-    /** @see LangUtil.extractOptions(String[], String[], int[], List) */
-    public void testExtractOptions() {
-        ArrayList extracted = new ArrayList();
-        String[] args = new String[] { "-d", "classes", "-classpath", "foo.jar", "-verbose", "Bar.java" };
-        String[] validOptions = new String[] { "-classpath", "-d", "-verbose", "-help" };
-        int[] optionArgs = new int[] { 1, 1, 0, 0 };
-        String[] result = LangUtil.extractOptions(args, validOptions, optionArgs, extracted);
-        String resultString = "" + Arrays.asList(result);
-        String EXP = "[Bar.java]";
-        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
-        EXP = "[-d, classes, -classpath, foo.jar, -verbose]";
-        resultString = "" + extracted;
-        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
-        
-        // no input, no output
-        extracted.clear();
-        args = new String[] {};
-        result = LangUtil.extractOptions(args, validOptions, optionArgs, extracted);
-        resultString = "" + Arrays.asList(result);
-        EXP = "[]";
-        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
-        resultString = "" + extracted;
-        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
-        
-        // one input, nothing extracted
-        extracted.clear();
-        args = new String[] {"Bar.java"};
-        result = LangUtil.extractOptions(args, validOptions, optionArgs, extracted);
-        resultString = "" + Arrays.asList(result);
-        EXP = "[Bar.java]";
-        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
-        EXP = "[]";
-        resultString = "" + extracted;
-        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
-        
-        // one input, extracted
-        extracted.clear();
-        args = new String[] {"-verbose"};
-        result = LangUtil.extractOptions(args, validOptions, optionArgs, extracted);
-        resultString = "" + Arrays.asList(result);
-        EXP = "[]";
-        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
-        EXP = "[-verbose]";
-        resultString = "" + extracted;
-        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
-
-        // ------- booleans
-        validOptions = new String[] { "-help", "-verbose" };
-        optionArgs = null;
-
-        // one input, extracted
-        extracted.clear();
-        args = new String[] {"-verbose"};
-        result = LangUtil.extractOptions(args, validOptions, optionArgs, extracted);
-        resultString = "" + Arrays.asList(result);
-        EXP = "[]";
-        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
-        EXP = "[-verbose]";
-        resultString = "" + extracted;
-        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
-        
-        // one input, not extracted
-        extracted.clear();
-        args = new String[] {"Bar.java"};
-        result = LangUtil.extractOptions(args, validOptions, optionArgs, extracted);
-        resultString = "" + Arrays.asList(result);
-        EXP = "[Bar.java]";
-        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
-        EXP = "[]";
-        resultString = "" + extracted;
-        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
-    }
+//    /** @see LangUtil.extractOptions(String[], String[], int[], List) */
+//    public void testExtractOptions() {
+//        ArrayList extracted = new ArrayList();
+//        String[] args = new String[] { "-d", "classes", "-classpath", "foo.jar", "-verbose", "Bar.java" };
+//        String[] validOptions = new String[] { "-classpath", "-d", "-verbose", "-help" };
+//        int[] optionArgs = new int[] { 1, 1, 0, 0 };
+//        String[] result = LangUtil.extractOptions(args, validOptions, optionArgs, extracted);
+//        String resultString = "" + Arrays.asList(result);
+//        String EXP = "[Bar.java]";
+//        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
+//        EXP = "[-d, classes, -classpath, foo.jar, -verbose]";
+//        resultString = "" + extracted;
+//        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
+//        
+//        // no input, no output
+//        extracted.clear();
+//        args = new String[] {};
+//        result = LangUtil.extractOptions(args, validOptions, optionArgs, extracted);
+//        resultString = "" + Arrays.asList(result);
+//        EXP = "[]";
+//        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
+//        resultString = "" + extracted;
+//        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
+//        
+//        // one input, nothing extracted
+//        extracted.clear();
+//        args = new String[] {"Bar.java"};
+//        result = LangUtil.extractOptions(args, validOptions, optionArgs, extracted);
+//        resultString = "" + Arrays.asList(result);
+//        EXP = "[Bar.java]";
+//        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
+//        EXP = "[]";
+//        resultString = "" + extracted;
+//        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
+//        
+//        // one input, extracted
+//        extracted.clear();
+//        args = new String[] {"-verbose"};
+//        result = LangUtil.extractOptions(args, validOptions, optionArgs, extracted);
+//        resultString = "" + Arrays.asList(result);
+//        EXP = "[]";
+//        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
+//        EXP = "[-verbose]";
+//        resultString = "" + extracted;
+//        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
+//
+//        // ------- booleans
+//        validOptions = new String[] { "-help", "-verbose" };
+//        optionArgs = null;
+//
+//        // one input, extracted
+//        extracted.clear();
+//        args = new String[] {"-verbose"};
+//        result = LangUtil.extractOptions(args, validOptions, optionArgs, extracted);
+//        resultString = "" + Arrays.asList(result);
+//        EXP = "[]";
+//        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
+//        EXP = "[-verbose]";
+//        resultString = "" + extracted;
+//        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
+//        
+//        // one input, not extracted
+//        extracted.clear();
+//        args = new String[] {"Bar.java"};
+//        result = LangUtil.extractOptions(args, validOptions, optionArgs, extracted);
+//        resultString = "" + Arrays.asList(result);
+//        EXP = "[Bar.java]";
+//        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
+//        EXP = "[]";
+//        resultString = "" + extracted;
+//        assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
+//    }
     
     public void testVersion() {
         assertTrue(LangUtil.is13VMOrGreater()); // min vm now - floor may change
@@ -144,73 +144,73 @@ public class LangUtilTest extends TestCase {
         assertTrue(null == options[3][0]);
     }
 
-    public void testOptionVariants() {
-        String[] NONE = new String[0];
-        String[] one = new String[] {"-1"};
-        String[] two = new String[] {"-2"};
-        String[] three= new String[] {"-3"};
-        String[] both = new String[] {"-1", "-2" };
-        String[] oneB = new String[] {"-1-"};
-        String[] bothB = new String[] {"-1-", "-2-" };
-        String[] onetwoB = new String[] {"-1", "-2-" };
-        String[] oneBtwo = new String[] {"-1-", "-2" };
-        String[] threeB = new String[] {"-1-", "-2-", "-3-"};
-        String[] athreeB = new String[] {"a", "-1-", "-2-", "-3-"};
-        String[] threeaB = new String[] {"-1-", "a", "-2-", "-3-"};
-        
-        checkOptionVariants(NONE, new String[][] { NONE });
-        checkOptionVariants(one, new String[][] { one });
-        checkOptionVariants(both, new String[][] { both });
-        checkOptionVariants(oneB, new String[][] { NONE, one });
-        checkOptionVariants(bothB, new String[][] { NONE, one, new String[] {"-2"}, both });
-        checkOptionVariants(onetwoB, new String[][] { one, new String[] {"-1", "-2"}});
-        checkOptionVariants(oneBtwo, new String[][] { two, new String[] {"-1", "-2"}});
-        checkOptionVariants(threeB, new String[][] 
-            { 
-                NONE,
-                one,
-                two,
-                new String[] {"-1", "-2"}, 
-                three,
-                new String[] {"-1", "-3"}, 
-                new String[] {"-2", "-3"}, 
-                new String[] {"-1", "-2", "-3"} 
-             });
-        checkOptionVariants(athreeB, new String[][] 
-            { 
-                new String[] {"a"},
-                new String[] {"a", "-1"},
-                new String[] {"a", "-2"},
-                new String[] {"a", "-1", "-2"}, 
-                new String[] {"a", "-3"},
-                new String[] {"a", "-1", "-3"}, 
-                new String[] {"a", "-2", "-3"}, 
-                new String[] {"a", "-1", "-2", "-3"} 
-             });
-        checkOptionVariants(threeaB, new String[][] 
-            { 
-                new String[] {"a"},
-                new String[] {"-1", "a"},
-                new String[] {"a", "-2"},
-                new String[] {"-1", "a", "-2"}, 
-                new String[] {"a", "-3"},
-                new String[] {"-1", "a", "-3"}, 
-                new String[] {"a", "-2", "-3"}, 
-                new String[] {"-1", "a", "-2", "-3"} 
-             });
-    }
+//    public void testOptionVariants() {
+//        String[] NONE = new String[0];
+//        String[] one = new String[] {"-1"};
+//        String[] two = new String[] {"-2"};
+//        String[] three= new String[] {"-3"};
+//        String[] both = new String[] {"-1", "-2" };
+//        String[] oneB = new String[] {"-1-"};
+//        String[] bothB = new String[] {"-1-", "-2-" };
+//        String[] onetwoB = new String[] {"-1", "-2-" };
+//        String[] oneBtwo = new String[] {"-1-", "-2" };
+//        String[] threeB = new String[] {"-1-", "-2-", "-3-"};
+//        String[] athreeB = new String[] {"a", "-1-", "-2-", "-3-"};
+//        String[] threeaB = new String[] {"-1-", "a", "-2-", "-3-"};
+//        
+//        checkOptionVariants(NONE, new String[][] { NONE });
+//        checkOptionVariants(one, new String[][] { one });
+//        checkOptionVariants(both, new String[][] { both });
+//        checkOptionVariants(oneB, new String[][] { NONE, one });
+//        checkOptionVariants(bothB, new String[][] { NONE, one, new String[] {"-2"}, both });
+//        checkOptionVariants(onetwoB, new String[][] { one, new String[] {"-1", "-2"}});
+//        checkOptionVariants(oneBtwo, new String[][] { two, new String[] {"-1", "-2"}});
+//        checkOptionVariants(threeB, new String[][] 
+//            { 
+//                NONE,
+//                one,
+//                two,
+//                new String[] {"-1", "-2"}, 
+//                three,
+//                new String[] {"-1", "-3"}, 
+//                new String[] {"-2", "-3"}, 
+//                new String[] {"-1", "-2", "-3"} 
+//             });
+//        checkOptionVariants(athreeB, new String[][] 
+//            { 
+//                new String[] {"a"},
+//                new String[] {"a", "-1"},
+//                new String[] {"a", "-2"},
+//                new String[] {"a", "-1", "-2"}, 
+//                new String[] {"a", "-3"},
+//                new String[] {"a", "-1", "-3"}, 
+//                new String[] {"a", "-2", "-3"}, 
+//                new String[] {"a", "-1", "-2", "-3"} 
+//             });
+//        checkOptionVariants(threeaB, new String[][] 
+//            { 
+//                new String[] {"a"},
+//                new String[] {"-1", "a"},
+//                new String[] {"a", "-2"},
+//                new String[] {"-1", "a", "-2"}, 
+//                new String[] {"a", "-3"},
+//                new String[] {"-1", "a", "-3"}, 
+//                new String[] {"a", "-2", "-3"}, 
+//                new String[] {"-1", "a", "-2", "-3"} 
+//             });
+//    }
     
-    void checkOptionVariants(String[] options, String[][] expected) {
-        String[][] result = LangUtil.optionVariants(options);
-        if (expected.length != result.length) {
-            assertTrue("exp=" + expected.length + " actual=" + result.length, false);
-        }
-        for (int i = 0; i < expected.length; i++) {
-            assertEquals(""+i, 
-                "" + Arrays.asList(expected[i]), 
-                "" + Arrays.asList(result[i])); 
-        }
-    }
+//    void checkOptionVariants(String[] options, String[][] expected) {
+//        String[][] result = LangUtil.optionVariants(options);
+//        if (expected.length != result.length) {
+//            assertTrue("exp=" + expected.length + " actual=" + result.length, false);
+//        }
+//        for (int i = 0; i < expected.length; i++) {
+//            assertEquals(""+i, 
+//                "" + Arrays.asList(expected[i]), 
+//                "" + Arrays.asList(result[i])); 
+//        }
+//    }
     
     /** @see XMLWriterTest#testUnflattenList() */
     public void testCommaSplit() {

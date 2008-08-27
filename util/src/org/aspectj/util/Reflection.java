@@ -26,32 +26,10 @@ public class Reflection {
 	private Reflection() {
 	}
 	
-	public static Object invokestatic(Class class_, String name) {
-		return invokestaticN(class_, name, new Object[0]);
-	}
-	
-	public static Object invokestatic(Class class_, String name, Object arg1) {
-		return invokestaticN(class_, name, new Object[] { arg1 });
-	}
-	
-	public static Object invokestatic(Class class_, String name, Object arg1, Object arg2) {
-		return invokestaticN(class_, name, new Object[] { arg1, arg2 });
-	}
-	
-	public static Object invokestatic(Class class_, String name, Object arg1, Object arg2, Object arg3) {
-		return invokestaticN(class_, name, new Object[] { arg1, arg2, arg3 });
-	}
-	
-	
 	public static Object invokestaticN(Class class_, String name, Object[] args) {
 		return invokeN(class_, name, null, args);
 	}
 
-
-	public static Object invoke(Class class_, Object target, String name, Object arg1) {
-		return invokeN(class_, name, target, new Object[] { arg1 });
-	}
-	
 	public static Object invoke(Class class_, Object target, String name, Object arg1, Object arg2) {
 		return invokeN(class_, name, target, new Object[] { arg1, arg2 });
 	}
@@ -60,8 +38,6 @@ public class Reflection {
 		return invokeN(class_, name, target, new Object[] { arg1, arg2, arg3 });
 	}
 	
-
-
 	
 	public static Object invokeN(Class class_, String name, Object target, Object[] args) {
 		Method meth = getMatchingMethod(class_, name, args);

@@ -340,7 +340,6 @@ public class FileUtilTest extends TestCase {
     private void checkGetURL(String arg) {
         assertTrue(null != arg);
         File f = new File(arg);
-        assertTrue(null != f);
         URL url = FileUtil.getFileURL(f);
         assertTrue(null != url);
         log("url       " + url);

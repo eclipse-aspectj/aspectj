@@ -10,14 +10,11 @@
  * Contributors: 
  *     Xerox/PARC     initial implementation 
  * ******************************************************************/
-
-
 package org.aspectj.util;
 
-
-/** This class implements boolean that include a "maybe"
+/** 
+ * This class implements boolean that include a "maybe"
  */
-
 public abstract class FuzzyBoolean {
     public abstract boolean alwaysTrue();
     public abstract boolean alwaysFalse();
