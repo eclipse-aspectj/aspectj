@@ -972,7 +972,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				for (int ii = 0;ii<originalParams.length;ii++) {
 					if (!originalParams[ii].getErasureSignature().equals(newParams[ii].getErasureSignature())) needsbridging=true;
 				}
-				if (toBridgeTo!=null && needsbridging) {
+				if (needsbridging) {
 					ResolvedMember bridgerMethod = AjcMemberMaker.bridgerToInterMethod(unMangledInterMethod,gen.getType());
 					ResolvedMember bridgingSetter = AjcMemberMaker.interMethod(toBridgeTo, aspectType, false);
 					

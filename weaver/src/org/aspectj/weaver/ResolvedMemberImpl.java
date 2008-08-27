@@ -743,7 +743,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 //		}
         declaringType = declaringType.resolve(w);
         if (declaringType.isRawType()) declaringType = ((ResolvedType)declaringType).getGenericType();
-		TypeVariable[] typeVariables = getDeclaringType().getTypeVariables();
+//		TypeVariable[] typeVariables = getDeclaringType().getTypeVariables();
 //		if (isParameterized && (typeVariables.length != typeParameters.length)) {
 //			throw new IllegalStateException("Wrong number of type parameters supplied");
 //		}
@@ -817,12 +817,12 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 //				if (!(getDeclaringType() instanceof ResolvedType)) {
 //					int stop = 1;
 //				}
-				if (aType instanceof UnresolvedType) {
+//				if (aType!=null) {// instanceof UnresolvedType) {
 					if (w!=null) aType = aType.resolve(w);
 					else {
 						aType= aType.resolve(((ResolvedType)getDeclaringType()).getWorld());
 					}
-				}
+//				}
 				return aType.parameterize(typeVariableMap);
 			} else {
 				return aType.getRawType();

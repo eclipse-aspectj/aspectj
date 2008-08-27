@@ -149,7 +149,7 @@ public class TypeXTestCase extends TestCase {
 		assertTrue("Expected parameterization flag to be "+shouldBeParameterized,tx.isParameterizedType()==shouldBeParameterized);
 		if (numberOfTypeParameters==0) {
 			UnresolvedType[] params = tx.getTypeParameters();
-			assertTrue("Expected 0 type parameters but found "+params.length,params==null || params.length==0);
+			assertTrue("Expected 0 type parameters but found "+params.length, params.length==0);
 	    } else {
 				assertTrue("Expected #type parameters to be "+numberOfTypeParameters,tx.getTypeParameters().length==numberOfTypeParameters);
 	    }

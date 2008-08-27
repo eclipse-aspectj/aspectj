@@ -43,11 +43,11 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 	private AnnotationFinder annotationFinder;
 	
 	private ReflectionWorld() {
-		super();
-		this.setMessageHandler(new ExceptionBasedMessageHandler());
-		setBehaveInJava5Way(LangUtil.is15VMOrGreater());
-		this.classLoaderReference = new WeakClassLoaderReference(ReflectionWorld.class.getClassLoader());
-		this.annotationFinder = makeAnnotationFinderIfAny(classLoaderReference.getClassLoader(), this);
+//		super();
+//		this.setMessageHandler(new ExceptionBasedMessageHandler());
+//		setBehaveInJava5Way(LangUtil.is15VMOrGreater());
+//		this.classLoaderReference = new WeakClassLoaderReference(ReflectionWorld.class.getClassLoader());
+//		this.annotationFinder = makeAnnotationFinderIfAny(classLoaderReference.getClassLoader(), this);
 	}
 	
 	public ReflectionWorld(ClassLoader aClassLoader) {
