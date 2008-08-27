@@ -2388,7 +2388,7 @@ public class BcelShadow extends Shadow {
 			parameterTypes,
 			parameterIndex,
 			adviceParameterTypes.length);
-
+// parameterTypes is [Bug, C, org.aspectj.lang.JoinPoint, X, org.aspectj.lang.ProceedingJoinPoint, java.lang.Object, java.lang.Object]
         LazyMethodGen localAdviceMethod =
 					new LazyMethodGen(
 						Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC, 
@@ -2680,7 +2680,7 @@ public class BcelShadow extends Shadow {
         if (isProceedWithArgs) {
         	
         	// STORE the Object[] into a local variable
-            Type objectArrayType = Type.getType("[Ljava/lang/Object;");
+            Type objectArrayType = Type.OBJECT_ARRAY;
             int localProceedArgArray = localAdviceMethod.allocateLocal(objectArrayType);
             ret.append(InstructionFactory.createStore(objectArrayType, localProceedArgArray));
 
@@ -2705,25 +2705,29 @@ public class BcelShadow extends Shadow {
         	
         	// two numbers can differ because a pointcut may bind both this/target and yet at the
         	// join point this and target are the same (eg. call)
-            int indexIntoObjectArrayForArguments=0;
             int indexIntoCallbackMethodForArguments = 0;
-            if (hasThis()) {
-            	if (relatedPointcutBindsThis) {
-            		if (!(relatedPointcutBindsTarget && targetIsSameAsThis)) {
-	            		// they have supplied new this as first entry in object array
-	            		 ret.append(InstructionFactory.createLoad(objectArrayType, localProceedArgArray));
-	                     ret.append(Utility.createConstant(fact, 0));
-	                     ret.append(InstructionFactory.createArrayLoad(Type.OBJECT));
-	                     ret.append(Utility.createConversion(fact,Type.OBJECT,callbackMethod.getArgumentTypes()[0]));
-	                     indexIntoCallbackMethodForArguments++;
-            		 }
-                    indexIntoObjectArrayForArguments=1;
-            	} else {
-            		// use local variable 0 (which is 'this' for a non-static method)
-            		ret.append(InstructionFactory.createALOAD(0));
-                	indexIntoCallbackMethodForArguments++;
-            	}
+            
+            
+            if (hasThis() ) {
+        		if (!(relatedPointcutBindsTarget && targetIsSameAsThis)) {
+	            	if (relatedPointcutBindsThis) {
+	//            		if (!(relatedPointcutBindsTarget && targetIsSameAsThis)) {
+		            		// they have supplied new this as first entry in object array
+		            		 ret.append(InstructionFactory.createLoad(objectArrayType, localProceedArgArray));
+		                     ret.append(Utility.createConstant(fact, 0));
+		                     ret.append(InstructionFactory.createArrayLoad(Type.OBJECT));
+		                     ret.append(Utility.createConversion(fact,Type.OBJECT,callbackMethod.getArgumentTypes()[0]));
+		                     indexIntoCallbackMethodForArguments++;
+	//            		 }
+	            	} else {
+	            		// use local variable 0 (which is 'this' for a non-static method)
+	            		ret.append(InstructionFactory.createALOAD(0));
+	                	indexIntoCallbackMethodForArguments++;
+	            	}
+        		}
             }
+            
+            
             
             if (hasTarget()) {
             	if (relatedPointcutBindsTarget) {
@@ -2732,7 +2736,6 @@ public class BcelShadow extends Shadow {
                          ret.append(Utility.createConstant(fact, relatedPointcutBindsThis?1:0));
                          ret.append(InstructionFactory.createArrayLoad(Type.OBJECT));
                          ret.append(Utility.createConversion(fact,Type.OBJECT,callbackMethod.getArgumentTypes()[0]));
-                         indexIntoObjectArrayForArguments++;
                          indexIntoCallbackMethodForArguments++;
             		} else {
             			 int position =(hasThis()&& relatedPointcutBindsThis?1:0);
@@ -2740,7 +2743,6 @@ public class BcelShadow extends Shadow {
 	                     ret.append(Utility.createConstant(fact, position));
 	                     ret.append(InstructionFactory.createArrayLoad(Type.OBJECT));
 	                     ret.append(Utility.createConversion(fact,Type.OBJECT,callbackMethod.getArgumentTypes()[position]));
-	                     indexIntoObjectArrayForArguments=position+1;
 	             		 indexIntoCallbackMethodForArguments++;
             		}
             	} else {
@@ -2752,6 +2754,9 @@ public class BcelShadow extends Shadow {
                 	}
             	}
             }
+            
+            // Where to start in the object array in order to pick up arguments
+            int indexIntoObjectArrayForArguments = (relatedPointcutBindsThis?1:0)+(relatedPointcutBindsTarget?1:0);
             
             
             for (int i = indexIntoCallbackMethodForArguments, len=callbackMethod.getArgumentTypes().length; i < len; i++) {
