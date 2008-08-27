@@ -42,7 +42,6 @@ import org.aspectj.weaver.ast.Var;
 public class WithinAnnotationPointcut extends NameBindingPointcut {
 
 	private AnnotationTypePattern annotationTypePattern;
-	private ShadowMunger munger;
 	private String declarationText;
 	
 	/**
@@ -57,8 +56,7 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 	
 	public WithinAnnotationPointcut(AnnotationTypePattern type, ShadowMunger munger) {
 	    this(type);
-	    this.munger = munger;
-		this.pointcutKind = ATWITHIN;
+	    this.pointcutKind = ATWITHIN;
 	}
 
     public AnnotationTypePattern getAnnotationTypePattern() {
@@ -112,7 +110,7 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 					getSourceLocation()));
 			return;
 		}
-		annotationTypePattern = (ExactAnnotationTypePattern) annotationTypePattern.resolveBindings(scope,bindings,true);
+		annotationTypePattern = annotationTypePattern.resolveBindings(scope,bindings,true);
 		// must be either a Var, or an annotation type pattern
 	}
 
@@ -176,7 +174,7 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 
 	public static Pointcut read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		AnnotationTypePattern type = AnnotationTypePattern.read(s, context);
-		WithinAnnotationPointcut ret = new WithinAnnotationPointcut((ExactAnnotationTypePattern)type);
+		WithinAnnotationPointcut ret = new WithinAnnotationPointcut(type);
 		ret.readLocation(context, s);
 		return ret;
 	}

@@ -67,20 +67,15 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	private BcelObjectType bcelObjectType;
 	
 	private int bitflags;
-	private static final int KNOW_IF_SYNTHETIC           = 0x0001; // used
-	private static final int PARAMETER_NAMES_INITIALIZED = 0x0002; // used
-	private static final int CAN_BE_PARAMETERIZED        = 0x0004; // used
-	private static final int UNPACKED_GENERIC_SIGNATURE  = 0x0008; // used
-	private static final int HAS_EFFECTIVE_SIGNATURE     = 0x0010;
-	private static final int HAS_PRERESOLVED_POINTCUT    = 0x0020;
+	private static final int KNOW_IF_SYNTHETIC           = 0x0001;
+	private static final int PARAMETER_NAMES_INITIALIZED = 0x0002;
+	private static final int CAN_BE_PARAMETERIZED        = 0x0004;
+	private static final int UNPACKED_GENERIC_SIGNATURE  = 0x0008;
 	private static final int IS_AJ_SYNTHETIC             = 0x0040;
 	private static final int IS_SYNTHETIC                = 0x0080;
 	private static final int IS_SYNTHETIC_INVERSE        = 0x7f7f; // all bits but IS_SYNTHETIC (and topmost bit)
-	private static final int HAS_ASSOCIATED_SHADOWMUNGER = 0x0100;
-	private static final int HAS_GENERIC_RETPARAM_TYPES  = 0x0200;
-	private static final int HAS_ANNOTATIONS             = 0x0400; // used
-	private static final int HAVE_DETERMINED_ANNOTATIONS = 0x0800; // used
-	private static final int HAS_MD_LINE_NUMBER_ATTRIBUTE= 0x1000;
+	private static final int HAS_ANNOTATIONS             = 0x0400;
+	private static final int HAVE_DETERMINED_ANNOTATIONS = 0x0800;
 	
 
 	 // genericized version of return and parameter types
@@ -247,7 +242,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	public String[] getAttributeNames(boolean onlyIncludeAjOnes) {
 		Attribute[] as = method.getAttributes();
 		List names = new ArrayList();
-		String[] strs = new String[as.length];
+//		String[] strs = new String[as.length];
 		for (int j = 0; j < as.length; j++) {
 			if (!onlyIncludeAjOnes || as[j].getName().startsWith(AjAttribute.AttributePrefix))
 			  names.add(as[j].getName());

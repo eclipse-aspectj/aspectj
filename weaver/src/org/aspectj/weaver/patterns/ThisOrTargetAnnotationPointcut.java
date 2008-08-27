@@ -43,7 +43,6 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	private boolean isThis;
 	private boolean alreadyWarnedAboutDEoW = false;
 	private ExactAnnotationTypePattern annotationTypePattern;
-	private ShadowMunger munger;
 	private String declarationText;
 	
 	private static final int thisKindSet;
@@ -74,7 +73,6 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 
 	public ThisOrTargetAnnotationPointcut(boolean isThis, ExactAnnotationTypePattern type, ShadowMunger munger) {
 	    this(isThis,type);
-	    this.munger = munger;
 	}
 
     public ExactAnnotationTypePattern getAnnotationTypePattern() {

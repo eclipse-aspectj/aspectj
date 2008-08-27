@@ -41,6 +41,10 @@ public class Instanceof extends Test {
 			return false;
 		}
 	}
+	
+	public int hashCode() {
+		return var.hashCode()*37+type.hashCode();
+	}
 
     public Var getVar() {
         return var;

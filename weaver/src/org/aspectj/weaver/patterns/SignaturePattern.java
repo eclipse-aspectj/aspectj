@@ -15,7 +15,6 @@ package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,15 +24,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.lang.Signature;
-import org.aspectj.lang.reflect.FieldSignature;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.aspectj.util.FuzzyBoolean;
-import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AjAttribute; 
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.AnnotationTargetKind;
 import org.aspectj.weaver.ConcreteTypeMunger;
-import org.aspectj.weaver.Constants;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.JoinPointSignature;
 import org.aspectj.weaver.Member;
@@ -497,7 +492,7 @@ public class SignaturePattern extends PatternNode {
 	  // relevant member in the original aspect
 	  if (member.isAnnotatedElsewhere() && member.getKind()==Member.FIELD) {
 	    // FIXME asc duplicate of code in AnnotationPointcut.matchInternal()?  same fixmes apply here.
-	    ResolvedMember [] mems = member.getDeclaringType().resolve(world).getDeclaredFields(); // FIXME asc should include supers with getInterTypeMungersIncludingSupers?
+//	    ResolvedMember [] mems = member.getDeclaringType().resolve(world).getDeclaredFields(); // FIXME asc should include supers with getInterTypeMungersIncludingSupers?
 	    List mungers = member.getDeclaringType().resolve(world).getInterTypeMungers(); 
 		for (Iterator iter = mungers.iterator(); iter.hasNext();) {
 	        ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) iter.next();
@@ -564,35 +559,35 @@ public class SignaturePattern extends PatternNode {
 		return false;
 	}
 	
-	private Collection getDeclaringTypes(Signature sig) {
-		List l = new ArrayList();
-		Class onType = sig.getDeclaringType();
-		String memberName = sig.getName();
-		if (sig instanceof FieldSignature) {
-			Class fieldType = ((FieldSignature)sig).getFieldType();
-			Class superType = onType;
-			while(superType != null) {
-				try {
-					Field f =  (superType.getDeclaredField(memberName));
-					if (f.getType() == fieldType) {
-						l.add(superType);
-					}
-				} catch (NoSuchFieldException nsf) {}
-				superType = superType.getSuperclass();
-			}
-		} else if (sig instanceof MethodSignature) {
-			Class[] paramTypes = ((MethodSignature)sig).getParameterTypes();
-			Class superType = onType;
-			while(superType != null) {
-				try {
-					superType.getDeclaredMethod(memberName,paramTypes);
-					l.add(superType);
-				} catch (NoSuchMethodException nsm) {}
-				superType = superType.getSuperclass();
-			}
-		}
-		return l;
-	}
+//	private Collection getDeclaringTypes(Signature sig) {
+//		List l = new ArrayList();
+//		Class onType = sig.getDeclaringType();
+//		String memberName = sig.getName();
+//		if (sig instanceof FieldSignature) {
+//			Class fieldType = ((FieldSignature)sig).getFieldType();
+//			Class superType = onType;
+//			while(superType != null) {
+//				try {
+//					Field f =  (superType.getDeclaredField(memberName));
+//					if (f.getType() == fieldType) {
+//						l.add(superType);
+//					}
+//				} catch (NoSuchFieldException nsf) {}
+//				superType = superType.getSuperclass();
+//			}
+//		} else if (sig instanceof MethodSignature) {
+//			Class[] paramTypes = ((MethodSignature)sig).getParameterTypes();
+//			Class superType = onType;
+//			while(superType != null) {
+//				try {
+//					superType.getDeclaredMethod(memberName,paramTypes);
+//					l.add(superType);
+//				} catch (NoSuchMethodException nsm) {}
+//				superType = superType.getSuperclass();
+//			}
+//		}
+//		return l;
+//	}
 	
     public NamePattern getName() { return name; }
     public TypePattern getDeclaringType() { return declaringType; }
@@ -735,14 +730,14 @@ public class SignaturePattern extends PatternNode {
 	 * return true if last argument in params is an Object[] but the modifiers say this method
 	 * was declared with varargs (Object...).  We shouldn't be matching if this is the case.
 	 */
-	private boolean matchedArrayAgainstVarArgs(TypePatternList params,int modifiers) {
-		if (params.size()>0 && (modifiers & Constants.ACC_VARARGS)!=0) {
-			// we have at least one parameter in the pattern list, and the method has a varargs signature
-			TypePattern lastPattern = params.get(params.size()-1);
-			if (lastPattern.isArray() && !lastPattern.isVarArgs) return true;
-		}
-	    return false;
-	}
+//	private boolean matchedArrayAgainstVarArgs(TypePatternList params,int modifiers) {
+//		if (params.size()>0 && (modifiers & Constants.ACC_VARARGS)!=0) {
+//			// we have at least one parameter in the pattern list, and the method has a varargs signature
+//			TypePattern lastPattern = params.get(params.size()-1);
+//			if (lastPattern.isArray() && !lastPattern.isVarArgs) return true;
+//		}
+//	    return false;
+//	}
 	
 	public AnnotationTypePattern getAnnotationPattern() {
 		return annotationPattern;

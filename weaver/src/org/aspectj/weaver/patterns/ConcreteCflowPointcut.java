@@ -173,6 +173,14 @@ public class ConcreteCflowPointcut extends Pointcut {
 				o.formalType.equals(this.formalType);
 		}
 		
+	    public int hashCode() {
+	        int result = 19;
+	        result = 37*result + formalIndex;
+	        result = 37*result + arrayIndex;
+	        result = 37*result + formalType.hashCode();
+	        return result;
+	    }
+		
 		public String toString() {
 			return "Slot(" + formalIndex + ", " + formalType + ", " + arrayIndex + ")";
 		}

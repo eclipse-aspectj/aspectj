@@ -277,7 +277,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
     	int deCtr = 1;
     	int dwCtr = 1;
     	for (Iterator iter = children.iterator(); iter.hasNext();) {
-			Object element = (Object) iter.next();
+			Object element = iter.next();
 			if (element instanceof DeclareErrorOrWarning) {
 				DeclareErrorOrWarning decl = (DeclareErrorOrWarning)element;
 				int counter = 0;

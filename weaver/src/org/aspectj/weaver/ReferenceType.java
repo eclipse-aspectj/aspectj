@@ -304,7 +304,7 @@ public class ReferenceType extends ResolvedType {
        		if (isAssignableFrom((ResolvedType)other.getRawType())) return true;
        	}
        	if (this.isGenericType() && other.isRawType()) {
-       		if (isAssignableFrom((ResolvedType)other.getGenericType())) return true;
+       		if (isAssignableFrom(other.getGenericType())) return true;
        	}
        	
        	if (this.isParameterizedType()) {
@@ -415,7 +415,7 @@ public class ReferenceType extends ResolvedType {
 		if (parameterizedInterfaces != null) return parameterizedInterfaces;
 		if (isParameterizedType()) {
 			ResolvedType[] delegateInterfaces = delegate.getDeclaredInterfaces();
-			UnresolvedType[] paramTypes = getTypesForMemberParameterization();
+//			UnresolvedType[] paramTypes = getTypesForMemberParameterization();
 			parameterizedInterfaces = new ResolvedType[delegateInterfaces.length];
 			for (int i = 0; i < delegateInterfaces.length; i++) {
 				// We may have to sub/super set the set of parametertypes if the implemented interface
@@ -453,15 +453,15 @@ public class ReferenceType extends ResolvedType {
 	 * Locates the named type variable in the list of those on this generic type and returns
 	 * the type parameter from the second list supplied.  Returns null if it can't be found
 	 */
-	private UnresolvedType findTypeParameterInList(String name, TypeVariable[] tvarsOnThisGenericType, UnresolvedType[] paramTypes) {
-		int position = -1;
-		for (int i = 0; i < tvarsOnThisGenericType.length; i++) {
-			TypeVariable tv = tvarsOnThisGenericType[i];
-			if (tv.getName().equals(name)) position = i;
-		}
-		if (position == -1 ) return null;
-		return paramTypes[position];
-	}
+//	private UnresolvedType findTypeParameterInList(String name, TypeVariable[] tvarsOnThisGenericType, UnresolvedType[] paramTypes) {
+//		int position = -1;
+//		for (int i = 0; i < tvarsOnThisGenericType.length; i++) {
+//			TypeVariable tv = tvarsOnThisGenericType[i];
+//			if (tv.getName().equals(name)) position = i;
+//		}
+//		if (position == -1 ) return null;
+//		return paramTypes[position];
+//	}
 	
 
 	/**

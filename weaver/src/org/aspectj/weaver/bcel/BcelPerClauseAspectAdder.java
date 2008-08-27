@@ -221,7 +221,7 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
 
         InstructionList il = method.getBody();
         il.append(Utility.createGet(factory, AjcMemberMaker.perSingletonField(aspectType)));
-        InstructionBranch ifNull = (InstructionBranch)InstructionFactory.createBranchInstruction(Constants.IFNULL, null);
+        InstructionBranch ifNull = InstructionFactory.createBranchInstruction(Constants.IFNULL, null);
         il.append(ifNull);
         il.append(InstructionFactory.PUSH(classGen.getConstantPool(), true));
         il.append(InstructionFactory.createReturn(Type.INT));
@@ -350,28 +350,28 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
         ifNonNull.setTarget(end);
     }
 
-    private void generatePerObjectGetSetMethods(LazyClassGen classGen) {
-        InstructionFactory factory = classGen.getFactory();
-
-        LazyMethodGen methodGet = makeMethodGen(classGen, AjcMemberMaker.perObjectInterfaceGet(aspectType));
-        flagAsSynthetic(methodGet, true);
-        classGen.addMethodGen(methodGet);
-        InstructionList ilGet = methodGet.getBody();
-        ilGet = new InstructionList();
-        ilGet.append(InstructionConstants.ALOAD_0);
-        ilGet.append(Utility.createGet(factory, AjcMemberMaker.perObjectField(aspectType, aspectType)));
-        ilGet.append(InstructionFactory.createReturn(Type.OBJECT));
-
-        LazyMethodGen methodSet = makeMethodGen(classGen, AjcMemberMaker.perObjectInterfaceSet(aspectType));
-        flagAsSynthetic(methodSet, true);
-        classGen.addMethodGen(methodSet);
-        InstructionList ilSet = methodSet.getBody();
-        ilSet = new InstructionList();
-        ilSet.append(InstructionConstants.ALOAD_0);
-        ilSet.append(InstructionConstants.ALOAD_1);
-        ilSet.append(Utility.createSet(factory, AjcMemberMaker.perObjectField(aspectType, aspectType)));
-        ilSet.append(InstructionFactory.createReturn(Type.VOID));
-    }
+//    private void generatePerObjectGetSetMethods(LazyClassGen classGen) {
+//        InstructionFactory factory = classGen.getFactory();
+//
+//        LazyMethodGen methodGet = makeMethodGen(classGen, AjcMemberMaker.perObjectInterfaceGet(aspectType));
+//        flagAsSynthetic(methodGet, true);
+//        classGen.addMethodGen(methodGet);
+//        InstructionList ilGet = methodGet.getBody();
+//        ilGet = new InstructionList();
+//        ilGet.append(InstructionConstants.ALOAD_0);
+//        ilGet.append(Utility.createGet(factory, AjcMemberMaker.perObjectField(aspectType, aspectType)));
+//        ilGet.append(InstructionFactory.createReturn(Type.OBJECT));
+//
+//        LazyMethodGen methodSet = makeMethodGen(classGen, AjcMemberMaker.perObjectInterfaceSet(aspectType));
+//        flagAsSynthetic(methodSet, true);
+//        classGen.addMethodGen(methodSet);
+//        InstructionList ilSet = methodSet.getBody();
+//        ilSet = new InstructionList();
+//        ilSet.append(InstructionConstants.ALOAD_0);
+//        ilSet.append(InstructionConstants.ALOAD_1);
+//        ilSet.append(Utility.createSet(factory, AjcMemberMaker.perObjectField(aspectType, aspectType)));
+//        ilSet.append(InstructionFactory.createReturn(Type.VOID));
+//    }
 
     private void generatePerCflowAspectOfMethod(LazyClassGen classGen) {
         InstructionFactory factory = classGen.getFactory();

@@ -192,7 +192,6 @@ public final class BcelRenderer implements ITestVisitor, IExprVisitor {
         Member getClass = MemberImpl.method(UnresolvedType.OBJECT, 0, UnresolvedType.JAVA_LANG_CLASS,"getClass", UnresolvedType.NONE);
         il.append(Utility.createInvoke(fact, world, getClass));
         // aload annotationClass
-        String s = hasAnnotation.getAnnotationType().getName();
         il.append(fact.createConstant(new ObjectType(hasAnnotation.getAnnotationType().getName())));
 //        int annClassIndex = fact.getConstantPool().addClass(hasAnnotation.getAnnotationType().getSignature());
 //        il.append(new LDC_W(annClassIndex));

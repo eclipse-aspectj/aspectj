@@ -24,7 +24,7 @@ class IfFinder extends IdentityPointcutVisitor {
     boolean hasIf = false;
     public Object visit(IfPointcut node, Object data) {
         if (node.alwaysFalse() || node.alwaysTrue()) {
-            ;//IfFalse / IfTrue
+            //IfFalse / IfTrue
         } else {
             hasIf = true;
         }

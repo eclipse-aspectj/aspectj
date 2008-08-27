@@ -21,7 +21,8 @@ public class CommonsTraceTest extends AbstractTraceTest {
 	}
 	
 	public void testCommonsTrace() {
-		CommonsTrace trace = new CommonsTrace(getClass());
+//		CommonsTrace trace = 
+			new CommonsTrace(getClass());
 	}
 
 	public void testSetTraceEnabled() {

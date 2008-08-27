@@ -42,4 +42,8 @@ public class Not extends Test {
 			return false;
 		}
 	}
+	
+	public int hashCode() {
+		return test.hashCode();
+	}
 }

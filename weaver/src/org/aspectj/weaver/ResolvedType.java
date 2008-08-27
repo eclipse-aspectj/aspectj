@@ -1262,7 +1262,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			ConcreteTypeMunger munger = (ConcreteTypeMunger) iter.next();
             if (munger.getSignature() != null && munger.getSignature().isAbstract()) { // Rule 1
                 if (munger.getMunger().getKind() == ResolvedTypeMunger.MethodDelegate) {
-                    ;//ignore for @AJ ITD as munger.getSignature() is the interface method hence abstract
+                    //ignore for @AJ ITD as munger.getSignature() is the interface method hence abstract
                 } else {
                 world.getMessageHandler().handleMessage(
                     new Message("must implement abstract inter-type declaration: " + munger.getSignature(),
@@ -1457,7 +1457,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			return;
 		}
 		
-		ConcreteTypeMunger originalMunger = munger;
+//		ConcreteTypeMunger originalMunger = munger;
 		// we will use the 'parameterized' ITD for all the comparisons but we say the original
         // one passed in actually matched as it will be added to the intertype member finder
 		// for the target type.  It is possible we only want to do this if a generic type 
@@ -1604,7 +1604,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 									existingMember),
 							munger.getSourceLocation())
                     );
-                    ;
+                    
 				}
 				//return;
 			}
@@ -1832,16 +1832,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		ResolvedType higherType  = this.getSuperclass().getTopmostImplementor(interfaceType);
 		if (higherType!=null) return higherType;
 		return this;
-	}
-	
-	private ResolvedType findHigher(ResolvedType other) {
-	 if (this == other) return this;
-     for(Iterator i = other.getDirectSupertypes(); i.hasNext(); ) {
-     	ResolvedType rtx = (ResolvedType)i.next();
-     	boolean b = this.isAssignableFrom(rtx);
-     	if (b) return rtx;
-     }       
-     return null;
 	}
 	
 	public List getExposedPointcuts() {

@@ -1091,7 +1091,8 @@ public class BcelWeaver {
         if (input.isApplyAtAspectJMungersOnly()) {
             ContextToken atAspectJMungersOnly = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_ATASPECTJTYPE_MUNGERS_ONLY, "");
             requestor.weavingAspects();
-            ContextToken aspectToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING_ASPECTS, "");
+//            ContextToken aspectToken = 
+            	CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING_ASPECTS, "");
             for (Iterator i = input.getClassFileIterator(); i.hasNext(); ) {
                 UnwovenClassFile classFile = (UnwovenClassFile)i.next();
                 String className = classFile.getClassName();
@@ -1255,7 +1256,7 @@ public class BcelWeaver {
 			
 			public int hashCode() {
 				return 37 + 17*lineNo + 17*inAspect.hashCode();
-			};
+			}
 		}
 		
 		// FIXME asc Should be factored out into Xlint code and done automatically for all xlint messages, ideally.

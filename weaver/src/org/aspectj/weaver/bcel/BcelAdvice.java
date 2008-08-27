@@ -318,10 +318,7 @@ public class BcelAdvice extends Advice {
     private void removeUnnecessaryProblems(BcelMethod method, int problemLineNumber) {
 		ISourceContext sourceContext = method.getSourceContext();
 		if (sourceContext instanceof IEclipseSourceContext) {
-			if (sourceContext != null 
-				&& sourceContext instanceof IEclipseSourceContext) {
-				((IEclipseSourceContext)sourceContext).removeUnnecessaryProblems(method, problemLineNumber);						
-			}
+			((IEclipseSourceContext)sourceContext).removeUnnecessaryProblems(method, problemLineNumber);						
 		}
     }
     
@@ -422,7 +419,7 @@ public class BcelAdvice extends Advice {
 		BcelVar extraArgVar,
 		InstructionHandle ifNoAdvice) 
 	{
-        BcelShadow shadow = (BcelShadow) s;
+        BcelShadow shadow =  s;
         InstructionFactory fact = shadow.getFactory();
         BcelWorld world = shadow.getWorld();
 		
@@ -504,7 +501,7 @@ public class BcelAdvice extends Advice {
             if (v == null) {
                 // if not @AJ aspect, go on with the regular binding handling
             	if (!isAnnotationStyleAspect) {
-            		;
+            		
             	} else {
                     // ATAJ: for @AJ aspects, handle implicit binding of xxJoinPoint
 	                //if (getKind() == AdviceKind.Around) {

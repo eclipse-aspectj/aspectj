@@ -137,7 +137,7 @@ class BcelClassWeaver implements IClassWeaver {
 	
 	private Map mapToAnnotations = new HashMap();
     
-    private BcelShadow clinitShadow = null;
+//    private BcelShadow clinitShadow = null;
     
     /**
      * This holds the initialization and pre-initialization shadows for this class
@@ -182,7 +182,7 @@ class BcelClassWeaver implements IClassWeaver {
 
     private List[] perKindShadowMungers;
     private boolean canMatchBodyShadows = false;
-    private boolean canMatchInitialization = false;
+//    private boolean canMatchInitialization = false;
     private void fastMatchShadowMungers(List shadowMungers) {
     	// beware the annoying property that SHADOW_KINDS[i].getKey == (i+1) !
     	
@@ -207,8 +207,8 @@ class BcelClassWeaver implements IClassWeaver {
 //			}
 		}
     	
-    	if (!perKindShadowMungers[Shadow.Initialization.getKey()].isEmpty())
-    		canMatchInitialization = true;
+//    	if (!perKindShadowMungers[Shadow.Initialization.getKey()].isEmpty())
+//    		canMatchInitialization = true;
     	
     	for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
 			Shadow.Kind kind = Shadow.SHADOW_KINDS[i];
@@ -1371,7 +1371,7 @@ class BcelClassWeaver implements IClassWeaver {
 		InstructionHandle call = findSuperOrThisCall(mg);
 		InstructionList body = mg.getBody();
 		ShadowRange r = new ShadowRange(body);
-		r.associateWithShadow((BcelShadow) s);
+		r.associateWithShadow( s);
 		if (s.getKind() == Shadow.PreInitialization) {
 			// XXX assert first instruction is an ALOAD_0.
 			// a pre shadow goes from AFTER the first instruction (which we believe to
@@ -1464,7 +1464,6 @@ class BcelClassWeaver implements IClassWeaver {
 		InstructionList body    = synchronizedMethod.getBody();
 		InstructionList prepend = new InstructionList();
 		Type enclosingClassType = BcelWorld.makeBcelType(synchronizedMethod.getEnclosingClass().getType());
-		Type javaLangClassType  = Type.getType(Class.class);
 		
 		
 		// STATIC METHOD TRANSFORMATION
@@ -2097,8 +2096,7 @@ class BcelClassWeaver implements IClassWeaver {
 			}
 			
 			// second pass: retarget branch instructions, copy ranges and tags
-			Map tagMap = new HashMap();
-			Map shadowMap = new HashMap();		
+			Map tagMap = new HashMap();	
 			for (InstructionHandle dest = newList.getStart(), src = sourceList.getStart(); 
 					dest != null; 
 					dest = dest.getNext(), src = src.getNext()) {
@@ -2313,7 +2311,8 @@ class BcelClassWeaver implements IClassWeaver {
 			return false;			
 		} else {
 			if (startsAngly && mg.getName().equals("<clinit>")) {
-				clinitShadow = enclosingShadow = BcelShadow.makeStaticInitialization(world, mg);
+//				clinitShadow = 
+					enclosingShadow = BcelShadow.makeStaticInitialization(world, mg);
 				//System.err.println(enclosingShadow);
 			} else if (mg.isAdviceMethod()) {
 				enclosingShadow = BcelShadow.makeAdviceExecution(world, mg);
@@ -2389,7 +2388,7 @@ class BcelClassWeaver implements IClassWeaver {
 		// XXX we don't do pre-inits of interfaces
 		
 		// now add interface inits
-		if (superOrThisCall != null && ! isThisCall(superOrThisCall)) {
+		if (! isThisCall(superOrThisCall)) {
 			InstructionHandle curr = enclosingShadow.getRange().getStart();
 			for (Iterator i = addedSuperInitializersAsList.iterator(); i.hasNext(); ) {
 				IfaceInitList l = (IfaceInitList) i.next();
@@ -2871,7 +2870,8 @@ class BcelClassWeaver implements IClassWeaver {
             shadow.implement();
             CompilationAndWeavingContext.leavingPhase(tok);
         }
-		int ii = mg.getMaxLocals();
+//		int ii = 
+		mg.getMaxLocals();
 		mg.matchedShadows = null;
     }
     

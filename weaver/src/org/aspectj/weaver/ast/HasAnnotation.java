@@ -43,6 +43,10 @@ public class HasAnnotation extends Test {
 			return false;
 		}
 	}
+	
+	public int hashCode() {
+		return v.hashCode()*37+annType.hashCode();
+	}
 
     public Var getVar() {
         return v;

@@ -500,7 +500,6 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 					int ps = s.readInt();
 					UnresolvedType[] params = new UnresolvedType[ps];
 					for (int i = 0; i < params.length; i++) {
-						UnresolvedType type = params[i];
 						params[i]=TypeFactory.createTypeFromSignature(s.readUTF());
 					}
 					UnresolvedType rt =  TypeFactory.createTypeFromSignature(s.readUTF());

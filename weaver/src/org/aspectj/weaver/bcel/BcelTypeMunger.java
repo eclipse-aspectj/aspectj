@@ -150,7 +150,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
                     
         		}
             } else if (munger.getKind().equals(ResolvedTypeMunger.FieldHost)) {
-                ;//hidden
+                //hidden
             } else {
         		ResolvedMember declaredSig = munger.getSignature();
 //        		if (declaredSig==null) declaredSig= munger.getSignature();
@@ -1041,7 +1041,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		// Algorithm:  Step1. Check in this type - has someone already created the bridge method?
 		//             Step2. Look above us - do we 'override' a method and yet differ in return type (i.e. covariance)
 		//             Step3. Create a forwarding bridge method
-		ResolvedType superclass = onType.getSuperclass();
+//		ResolvedType superclass = onType.getSuperclass();
 		boolean quitRightNow = false;
 		
 		String localMethodName    = unMangledInterMethod.getName();
@@ -1093,7 +1093,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		
 		LazyMethodGen bridgeMethod = makeMethodGen(clazz,theBridgeMethod); // The bridge method in this type will have the same signature as the one in the supertype
 		bridgeMethod.setAccessFlags(bridgeMethod.getAccessFlags() | 0x00000040 /*BRIDGE    = 0x00000040*/ );
-		UnresolvedType[] newParams = munger.getSignature().getParameterTypes();
+//		UnresolvedType[] newParams = munger.getSignature().getParameterTypes();
 		Type returnType   = BcelWorld.makeBcelType(theBridgeMethod.getReturnType());
 		body = bridgeMethod.getBody();
 		fact = clazz.getFactory();
@@ -1267,7 +1267,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
             // don't signal error as it could be a consequence of a wild type pattern
             return false;
         }
-        boolean shouldApply = munger.matches(weaver.getLazyClassGen().getType(), aspectType);
+//        boolean shouldApply = 
+        	munger.matches(weaver.getLazyClassGen().getType(), aspectType); // why do this?
         ResolvedMember host = AjcMemberMaker.itdAtDeclareParentsField(
                 weaver.getLazyClassGen().getType(),
                 munger.getSignature().getType(),
@@ -1677,7 +1678,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				ResolvedMember toBridgeTo = munger.getDeclaredSignature().parameterizedWith(null,munger.getSignature().getDeclaringType().resolve(getWorld()),false,munger.getTypeVariableAliases());
 				boolean needsbridging = false;
 				if (!toBridgeTo.getReturnType().getErasureSignature().equals(munger.getSignature().getReturnType().getErasureSignature())) needsbridging = true;
-				if (toBridgeTo!=null && needsbridging) {
+				if (needsbridging) {
 				  ResolvedMember bridgingGetter = AjcMemberMaker.interFieldInterfaceGetter(toBridgeTo, gen.getType(), aspectType);				  
 				  createBridgeMethodForITDF(weaver,gen,itdfieldGetter,bridgingGetter);
 			  }
@@ -1708,8 +1709,10 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			if (munger.getDeclaredSignature()!=null) {
 			  ResolvedMember toBridgeTo = munger.getDeclaredSignature().parameterizedWith(null,munger.getSignature().getDeclaringType().resolve(getWorld()),false,munger.getTypeVariableAliases());
 			  boolean needsbridging = false;
-			  if (!toBridgeTo.getReturnType().getErasureSignature().equals(munger.getSignature().getReturnType().getErasureSignature())) needsbridging = true;
-			  if (toBridgeTo!=null && needsbridging) {
+			  if (!toBridgeTo.getReturnType().getErasureSignature().equals(munger.getSignature().getReturnType().getErasureSignature())) {
+				  needsbridging = true;
+			  }
+			  if (needsbridging) {
 				ResolvedMember bridgingSetter = AjcMemberMaker.interFieldInterfaceSetter(toBridgeTo, gen.getType(), aspectType);
 				createBridgeMethodForITDF(weaver, gen, itdfieldSetter, bridgingSetter);
 			  }

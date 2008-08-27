@@ -323,7 +323,7 @@ public class ReferencePointcut extends Pointcut {
 			}
 					
 			//System.err.println("start: " + searchStart);
-			ResolvedType[] parameterTypes = searchStart.getWorld().resolve(pointcutDec.getParameterTypes());
+//			ResolvedType[] parameterTypes = searchStart.getWorld().resolve(pointcutDec.getParameterTypes());
 			
 			TypePatternList arguments = this.arguments.resolveReferences(bindings);
 			

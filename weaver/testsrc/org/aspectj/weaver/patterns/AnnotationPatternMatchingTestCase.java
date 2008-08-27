@@ -102,12 +102,13 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 			return false;
 		}
 		public boolean isIgnoring(Kind kind) {return false;}
-        public void dontIgnore(IMessage.Kind kind) {;}
+        public void dontIgnore(IMessage.Kind kind) {}
 		public void ignore(Kind kind) {}
 	}
 	
 	public void testReferenceToNonAnnotationType() {
-		ResolvedType rtx = loadType("AnnotatedClass"); // inits the world
+//		ResolvedType rtx = 
+			loadType("AnnotatedClass"); // inits the world
 		PatternParser p = new PatternParser("@java.lang.String");
 		
 		MyMessageHandler mh = new MyMessageHandler();
@@ -123,7 +124,8 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	}
 	
 	public void testReferenceViaFormalToNonAnnotationType() {
-		ResolvedType rtx = loadType("AnnotatedClass"); // inits the world
+//		ResolvedType rtx = 
+			loadType("AnnotatedClass"); // inits the world
 		PatternParser p = new PatternParser("a");
 		
 		MyMessageHandler mh = new MyMessageHandler();

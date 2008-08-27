@@ -133,7 +133,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 								if (ms[i].isAbstract() && ms[i].getParameterTypes().length==0 && ms[i].getName().equals(k)) {
 									// we might be onto something
 									String s= ms[i].getAnnotationDefaultValue();
-									if (s!=null && s.equals(v)) foundMatch=true;;
+									if (s!=null && s.equals(v)) foundMatch=true;
 								}
 							}
 							if (!foundMatch)
@@ -168,7 +168,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 										if (ms[i].isAbstract() && ms[i].getParameterTypes().length==0 && ms[i].getName().equals(k)) {
 											// we might be onto something
 											String s= ms[i].getAnnotationDefaultValue();
-											if (s!=null && s.equals(v)) foundMatch=true;;
+											if (s!=null && s.equals(v)) foundMatch=true;
 										}
 									}
 									if (!foundMatch)

@@ -354,8 +354,6 @@ public abstract class World implements Dump.INode {
     	return resolve(UnresolvedType.forName(name),allowMissing);
     }
     
-	private ResolvedType currentlyResolvingBaseType;
-
 	/**
 	 * Resolve to a ReferenceType - simple, raw, parameterized, or generic.
      * Raw, parameterized, and generic versions of a type share a delegate.
@@ -366,10 +364,8 @@ public abstract class World implements Dump.INode {
 			ResolvedType rt = resolveGenericTypeFor(ty,allowMissing);
 			if (rt.isMissing()) return rt;
 			ReferenceType genericType = (ReferenceType)rt;
-			currentlyResolvingBaseType = genericType;
-						ReferenceType parameterizedType = 
+			ReferenceType parameterizedType = 
 				TypeFactory.createParameterizedType(genericType, ty.typeParameters, this);
-			currentlyResolvingBaseType = null;
 			return parameterizedType;
 			
 		} else if (ty.isGenericType()) {
@@ -414,7 +410,7 @@ public abstract class World implements Dump.INode {
     public ResolvedType resolveGenericTypeFor(UnresolvedType anUnresolvedType, boolean allowMissing) {
         // Look up the raw type by signature
     	String rawSignature = anUnresolvedType.getRawType().getSignature();
-    	ResolvedType rawType = (ResolvedType) typeMap.get(rawSignature);
+    	ResolvedType rawType = typeMap.get(rawSignature);
     	if (rawType==null) {
     		rawType = resolve(UnresolvedType.forSignature(rawSignature),allowMissing);
         	typeMap.put(rawSignature,rawType);
@@ -859,9 +855,9 @@ public abstract class World implements Dump.INode {
 		private static boolean debug = false;
 
 		// Strategy for entries in the expendable map
-		public static int DONT_USE_REFS = 0; // Hang around forever
-		public static int USE_WEAK_REFS = 1; // Collected asap
-		public static int USE_SOFT_REFS = 2; // Collected when short on memory
+		public final static int DONT_USE_REFS = 0; // Hang around forever
+		public final static int USE_WEAK_REFS = 1; // Collected asap
+		public final static int USE_SOFT_REFS = 2; // Collected when short on memory
 		
 		// SECRETAPI - Can switch to a policy of choice ;)
 		public static int policy  = USE_SOFT_REFS; 
@@ -1085,7 +1081,6 @@ public abstract class World implements Dump.INode {
 	protected boolean isExpendable(ResolvedType type) {
 		return (
 				!type.equals(UnresolvedType.OBJECT) && 
-				  (type != null) &&
 				  (!type.isExposedToWeaver()) &&
 				  (!type.isPrimitiveType())
 				);

@@ -34,7 +34,6 @@ import org.aspectj.weaver.tools.TraceFactory;
  * @author Jim Hugunin
  */
 public class CrosscuttingMembersSet {
-	private World world;
 	//FIXME AV - ? we may need a sequencedHashMap there to ensure source based precedence for @AJ advice
     private Map /* ResolvedType (the aspect) > CrosscuttingMembers */members = new HashMap();
 	
@@ -55,8 +54,6 @@ public class CrosscuttingMembersSet {
 	
 	public CrosscuttingMembersSet(World world) {
 		trace.enter("<init>",this,world);
-
-		this.world = world;
 
 		trace.exit("<init>");
 	}

@@ -27,10 +27,6 @@ import org.aspectj.weaver.bcel.BcelWorld;
 /**
  * @author hugunin
  *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
  */
 public class AndOrNotTestCase extends TestCase {		
 	/**
@@ -41,6 +37,9 @@ public class AndOrNotTestCase extends TestCase {
 		super(name);
 	}
 	
+	static {
+		new Foo();new Bar();new C(); // just to touch them and so eclipse thinks they are used
+	}
 	World world;
 	                          	
 	
@@ -97,8 +96,8 @@ public class AndOrNotTestCase extends TestCase {
 		assertEquals("write/read", p, newP);	
 	}
 	
-	private static class Foo{};
-	private static class Bar{};
-	private static class C{};
+	private static class Foo{}
+	private static class Bar{}
+	private static class C{}
 	
 }

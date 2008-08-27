@@ -71,7 +71,7 @@ public class AnnotationAccessFieldVar extends BcelVar {
                 boolean doneAndDusted = false;
                 for (Iterator iterator = vals.iterator(); iterator.hasNext();) {
                     ElementNameValuePairGen object = (ElementNameValuePairGen) iterator.next();
-                    String name = object.getNameString();
+//                    String name = object.getNameString();
                     EnumElementValueGen v = (EnumElementValueGen) object.getValue();
                     String s = v.getEnumTypeString();
                     ResolvedType rt = toType.getWorld().resolve(UnresolvedType.forSignature(s));

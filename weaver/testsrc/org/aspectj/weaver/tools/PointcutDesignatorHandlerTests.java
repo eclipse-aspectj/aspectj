@@ -77,7 +77,8 @@ public class PointcutDesignatorHandlerTests extends TestCase {
         // public void testBean1SetAge() { }
 
         // This should be found and resolved
-        PointcutExpression pc = parser.parsePointcutExpression("CounterAspect.testBean1SetAge()");
+//        PointcutExpression pc = 
+        	parser.parsePointcutExpression("CounterAspect.testBean1SetAge()");
 
     }
 

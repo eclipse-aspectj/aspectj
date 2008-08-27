@@ -54,43 +54,43 @@ public class PointcutRewriter {
 		return result;
 	}
 	
-	/**
-	 * Checks pointcuts - used for debugging.
-	 * - this variant checks if the context has been lost, since
-	 *   that can indicate an NPE will happen later reporting a message (pr162657).
-	 *   Not finished, but helped locate the problem ;)
-	 */
-	private void checkPC(Pointcut pc) {
-		if (isNot(pc)) {
-			NotPointcut npc = (NotPointcut)pc;
-			checkPC(npc.getNegatedPointcut());
-			if (npc.getSourceContext()==null) {
-				System.out.println("Lost context for "+npc);
-				throw new RuntimeException("Lost context");
-			}
-		} else if (isOr(pc)) {
-			OrPointcut opc = (OrPointcut)pc;
-			checkPC(opc.getLeft());
-			checkPC(opc.getRight());
-			if (opc.getSourceContext()==null) {
-				System.out.println("Lost context for "+opc);
-				throw new RuntimeException("Lost context");
-			}
-		} else if (isAnd(pc)) {
-			AndPointcut apc = (AndPointcut)pc;
-			checkPC(apc.getLeft());
-			checkPC(apc.getRight());
-			if (apc.getSourceContext()==null) {
-				System.out.println("Lost context for "+apc);
-				throw new RuntimeException("Lost context");
-			}
-		} else {
-			if (pc.getSourceContext()==null) {
-				System.out.println("Lost context for "+pc);
-				throw new RuntimeException("Lost context");		
-			}
-		}
-	}
+//	/**
+//	 * Checks pointcuts - used for debugging.
+//	 * - this variant checks if the context has been lost, since
+//	 *   that can indicate an NPE will happen later reporting a message (pr162657).
+//	 *   Not finished, but helped locate the problem ;)
+//	 */
+//	private void checkPC(Pointcut pc) {
+//		if (isNot(pc)) {
+//			NotPointcut npc = (NotPointcut)pc;
+//			checkPC(npc.getNegatedPointcut());
+//			if (npc.getSourceContext()==null) {
+//				System.out.println("Lost context for "+npc);
+//				throw new RuntimeException("Lost context");
+//			}
+//		} else if (isOr(pc)) {
+//			OrPointcut opc = (OrPointcut)pc;
+//			checkPC(opc.getLeft());
+//			checkPC(opc.getRight());
+//			if (opc.getSourceContext()==null) {
+//				System.out.println("Lost context for "+opc);
+//				throw new RuntimeException("Lost context");
+//			}
+//		} else if (isAnd(pc)) {
+//			AndPointcut apc = (AndPointcut)pc;
+//			checkPC(apc.getLeft());
+//			checkPC(apc.getRight());
+//			if (apc.getSourceContext()==null) {
+//				System.out.println("Lost context for "+apc);
+//				throw new RuntimeException("Lost context");
+//			}
+//		} else {
+//			if (pc.getSourceContext()==null) {
+//				System.out.println("Lost context for "+pc);
+//				throw new RuntimeException("Lost context");		
+//			}
+//		}
+//	}
 				
 	public Pointcut rewrite(Pointcut pc) {
 		return rewrite(pc,false);
@@ -289,18 +289,18 @@ public class PointcutRewriter {
 //		}
 //	}
 	
-	private SignaturePattern removeDeclaringTypePattern(SignaturePattern sp) {
-		return new SignaturePattern(
-		  sp.getKind(),
-		  sp.getModifiers(),
-		  sp.getReturnType(),
-		  TypePattern.ANY,
-		  sp.getName(),
-		  sp.getParameterTypes(),
-		  sp.getThrowsPattern(),
-		  sp.getAnnotationPattern()
-		);
-	}
+//	private SignaturePattern removeDeclaringTypePattern(SignaturePattern sp) {
+//		return new SignaturePattern(
+//		  sp.getKind(),
+//		  sp.getModifiers(),
+//		  sp.getReturnType(),
+//		  TypePattern.ANY,
+//		  sp.getName(),
+//		  sp.getParameterTypes(),
+//		  sp.getThrowsPattern(),
+//		  sp.getAnnotationPattern()
+//		);
+//	}
 
 	// this finds the root of each && tree and then aggregates all of the branches
 	// into a sorted set:
@@ -437,22 +437,4 @@ public class PointcutRewriter {
 		return (pc instanceof OrPointcut);
 	}
 	
-	private boolean isExecution(Pointcut pc) {
-		if (pc instanceof KindedPointcut) {
-			KindedPointcut kp = (KindedPointcut) pc;
-			if (kp.kind == Shadow.MethodExecution) return true;
-			if (kp.kind == Shadow.ConstructorExecution) return true;
-		}
-		return false;
-	}
-	
-	private boolean isWithinCode(Pointcut pc) {
-		return (pc instanceof WithincodePointcut); 
-	}
-	
-	private boolean isAnyType(TypePattern tp) {
-		if (tp == TypePattern.ANY) return true;
-		if (tp.toString().equals("*")) return true;
-		return false;
-	}
 }

@@ -15,7 +15,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.weaver.ISourceContext;
-import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 

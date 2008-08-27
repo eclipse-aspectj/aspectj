@@ -97,7 +97,6 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 	 * @Override
 	 */
     protected ReferenceTypeDelegate resolveDelegate(ReferenceType ty) {  	
-        String name = ty.getName();
 
         // use reflection delegates for all bootstrap types
         ReferenceTypeDelegate bootstrapLoaderDelegate = resolveIfBootstrapDelegate(ty);

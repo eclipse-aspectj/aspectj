@@ -21,7 +21,8 @@ public class DefaultTraceTest extends AbstractTraceTest {
 	}
 
 	public void testDefaultTrace() {
-		DefaultTrace trace = new DefaultTrace(getClass());
+//		DefaultTrace trace = 
+			new DefaultTrace(getClass());
 	}
 
 	public void testSetTraceEnabled() {

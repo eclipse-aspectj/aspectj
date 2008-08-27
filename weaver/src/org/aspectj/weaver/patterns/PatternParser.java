@@ -498,7 +498,7 @@ public class PatternParser {
 	}
 
 	private Pointcut parseWithinAnnotationPointcut() {
-		String kind = parseIdentifier();
+		/* String kind = */parseIdentifier();
 		eat("(");
 		if (maybeEat(")")) {
 			throw new ParserException("expecting @AnnotationName or parameter, but found ')'", tokenSource.peek());
@@ -509,7 +509,7 @@ public class PatternParser {
 	}
 
 	private Pointcut parseWithinCodeAnnotationPointcut() {
-		String kind = parseIdentifier();
+		/*String kind = */parseIdentifier();
 		eat("(");
 		if (maybeEat(")")) {
 			throw new ParserException("expecting @AnnotationName or parameter, but found ')'", tokenSource.peek());
@@ -628,7 +628,7 @@ public class PatternParser {
 	/** Covers the 'lock()' and 'unlock()' pointcuts */
 	private KindedPointcut parseMonitorPointcut(String kind) {
 		eat("(");
-		TypePattern type = TypePattern.ANY;
+//		TypePattern type = TypePattern.ANY;
 		eat(")");
 		
 		if (kind.equals("lock")) {
@@ -1009,10 +1009,6 @@ public class PatternParser {
 //	}
 	
 
-	private boolean isAnnotationPattern(PatternNode p) {
-		return (p instanceof AnnotationTypePattern);
-	}
-	
 	public List parseDottedNamePattern() {
 		List names = new ArrayList();
 		StringBuffer buf = new StringBuffer();
@@ -1096,7 +1092,8 @@ public class PatternParser {
 	public String parseAnnotationNameValuePattern() {
 		StringBuffer buf = new StringBuffer();
 		IToken tok;
-		int startPos = tokenSource.peek().getStart();
+//		int startPos = 
+			tokenSource.peek().getStart();
 		boolean dotOK = false;
 		int depth = 0;
 		while (true) {
@@ -1423,8 +1420,7 @@ public class PatternParser {
 		TypePattern upperBound = null;
 		TypePattern[] additionalInterfaceBounds = null;
 		TypePattern lowerBound = null;
-		String typeVariableName = null;
-		if (typeVariableName == null) typeVariableName = parseIdentifier();
+		String typeVariableName = parseIdentifier();
 		if (maybeEatIdentifier("extends")) {
 			upperBound = parseTypePattern();
 			additionalInterfaceBounds = maybeParseAdditionalInterfaceBounds();

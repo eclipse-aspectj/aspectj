@@ -39,6 +39,13 @@ public class Or extends Test {
 		}
 	}
 
+    public int hashCode() {
+        int result = 19;
+        result = 37*result + left.hashCode();
+        result = 37*result + right.hashCode();
+        return result;
+    }
+
     public Test getLeft() {
         return left;
     }

@@ -18,7 +18,6 @@ import java.util.Map;
 
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
-import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
@@ -45,7 +44,6 @@ import org.aspectj.weaver.ast.Var;
 public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 
 	private ExactAnnotationTypePattern annotationTypePattern;
-    private ShadowMunger munger = null; // only set after concretization
     private String declarationText;
     
     private static final int matchedShadowKinds;
@@ -67,7 +65,6 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 
 	public WithinCodeAnnotationPointcut(ExactAnnotationTypePattern type, ShadowMunger munger) {
 		this(type);
-		this.munger = munger;
 		this.pointcutKind = Pointcut.ATWITHINCODE;
 	}
 
@@ -96,7 +93,6 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.Pointcut#match(org.aspectj.weaver.Shadow)
 	 */
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
-		AnnotatedElement toMatchAgainst = null;
 		Member member = shadow.getEnclosingCodeSignature();		
 		ResolvedMember rMember = member.resolve(shadow.getIWorld());
 

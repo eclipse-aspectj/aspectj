@@ -66,7 +66,7 @@ public class ClassPathManager {
 		if (trace.isTraceEnabled()) trace.exit("<init>");
 	}
 
-	protected ClassPathManager() {};
+	protected ClassPathManager() {}
 	
 	public void addPath (String name, IMessageHandler handler) {
 		File f = new File(name);

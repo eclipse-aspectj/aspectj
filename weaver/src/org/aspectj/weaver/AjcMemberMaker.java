@@ -258,7 +258,7 @@ public class AjcMemberMaker {
 		return new ResolvedMemberImpl(Member.METHOD,
 			declaringType, PUBLIC_STATIC, "hasAspect", 
 			"()Z");		
-	};
+	}
 	
 	public static ResolvedMember perCflowAspectOfMethod(UnresolvedType declaringType) {
 		return perSingletonAspectOfMethod(declaringType);
@@ -266,7 +266,7 @@ public class AjcMemberMaker {
 	
 	public static ResolvedMember perCflowHasAspectMethod(UnresolvedType declaringType) {
 		return perSingletonHasAspectMethod(declaringType);
-	};
+	}
 	
 	public static ResolvedMember perObjectAspectOfMethod(UnresolvedType declaringType) {
 		return new ResolvedMemberImpl(Member.METHOD,
@@ -278,7 +278,7 @@ public class AjcMemberMaker {
 		return new ResolvedMemberImpl(Member.METHOD,
 			declaringType, PUBLIC_STATIC, "hasAspect", 
 			"(Ljava/lang/Object;)Z");		
-	};
+	}
 	
 	// PTWIMPL ResolvedMember for aspectOf(), declared in aspect
 	public static ResolvedMember perTypeWithinAspectOfMethod(UnresolvedType declaringType,boolean inJava5Mode) {
@@ -331,7 +331,7 @@ public class AjcMemberMaker {
 //		return new ResolvedMemberImpl(Member.METHOD,
 //			declaringType, PUBLIC_STATIC, "hasAspect", 
 //			"(Ljava/lang/Class;)Z");		
-	};
+	}
 	
 	// -- privileged accessors
 	

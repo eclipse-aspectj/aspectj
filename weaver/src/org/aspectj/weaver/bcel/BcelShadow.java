@@ -68,7 +68,6 @@ import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.IdentityPointcutVisitor;
 import org.aspectj.weaver.patterns.NotPointcut;
 import org.aspectj.weaver.patterns.OrPointcut;
-import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.ThisOrTargetPointcut;
 
 
@@ -402,7 +401,7 @@ public class BcelShadow extends Shadow {
 			  }
 			  if (getKind() == ConstructorCall) {
 				if (!world.isJoinpointArrayConstructionEnabled() || !this.getSignature().getDeclaringType().isArray()) {
-					range.insert((Instruction) InstructionFactory.createDup(1), Range.InsideBefore);
+					range.insert(InstructionFactory.createDup(1), Range.InsideBefore);
 					range.insert(
 						fact.createNew(
 							(ObjectType) BcelWorld.makeBcelType(
@@ -1343,7 +1342,7 @@ public class BcelShadow extends Shadow {
         final InstructionList il = new InstructionList();
         int alen = getArgCount() ;
         il.append(Utility.createConstant(fact, alen));
-        il.append((Instruction)fact.createNewArray(Type.OBJECT, (short)1));
+        il.append(fact.createNewArray(Type.OBJECT, (short)1));
         arrayVar.appendStore(il, fact);
 
         int stateIndex = 0;     
@@ -2131,8 +2130,7 @@ public class BcelShadow extends Shadow {
 	
 				    int alen = cflowStateVars.length;
 				    entrySuccessInstructions.append(Utility.createConstant(fact, alen));
-				    entrySuccessInstructions.append(
-				    		(Instruction) fact.createNewArray(Type.OBJECT, (short) 1));
+				    entrySuccessInstructions.append(fact.createNewArray(Type.OBJECT, (short) 1));
 				    arrayVar.appendStore(entrySuccessInstructions, fact);
 		 
 				    for (int i = 0; i < alen; i++) {
@@ -2612,39 +2610,39 @@ public class BcelShadow extends Shadow {
 		return ret;
 	}
 	
-    private static boolean bindsThisOrTarget(Pointcut pointcut) {
-        ThisTargetFinder visitor = new ThisTargetFinder();
-        pointcut.accept(visitor, null);
-        return visitor.bindsThisOrTarget;
-    }
+//    private static boolean bindsThisOrTarget(Pointcut pointcut) {
+//        ThisTargetFinder visitor = new ThisTargetFinder();
+//        pointcut.accept(visitor, null);
+//        return visitor.bindsThisOrTarget;
+//    }
     
-    private static class ThisTargetFinder extends IdentityPointcutVisitor {
-        boolean bindsThisOrTarget = false;
-
-        public Object visit(ThisOrTargetPointcut node, Object data) {
-        	if (node.isBinding()) {
-                bindsThisOrTarget = true;
-            }
-            return node;
-        }
-
-        public Object visit(AndPointcut node, Object data) {
-            if (!bindsThisOrTarget) node.getLeft().accept(this, data);
-            if (!bindsThisOrTarget) node.getRight().accept(this, data);
-            return node;
-        }
-
-        public Object visit(NotPointcut node, Object data) {
-            if (!bindsThisOrTarget) node.getNegatedPointcut().accept(this, data);
-            return node;
-        }
-
-        public Object visit(OrPointcut node, Object data) {
-            if (!bindsThisOrTarget) node.getLeft().accept(this, data);
-            if (!bindsThisOrTarget) node.getRight().accept(this, data);
-            return node;
-        }
-    }
+//    private static class ThisTargetFinder extends IdentityPointcutVisitor {
+//        boolean bindsThisOrTarget = false;
+//
+//        public Object visit(ThisOrTargetPointcut node, Object data) {
+//        	if (node.isBinding()) {
+//                bindsThisOrTarget = true;
+//            }
+//            return node;
+//        }
+//
+//        public Object visit(AndPointcut node, Object data) {
+//            if (!bindsThisOrTarget) node.getLeft().accept(this, data);
+//            if (!bindsThisOrTarget) node.getRight().accept(this, data);
+//            return node;
+//        }
+//
+//        public Object visit(NotPointcut node, Object data) {
+//            if (!bindsThisOrTarget) node.getNegatedPointcut().accept(this, data);
+//            return node;
+//        }
+//
+//        public Object visit(OrPointcut node, Object data) {
+//            if (!bindsThisOrTarget) node.getLeft().accept(this, data);
+//            if (!bindsThisOrTarget) node.getRight().accept(this, data);
+//            return node;
+//        }
+//    }
 
     /**
      * ATAJ Handle the inlining for @AJ aspects
@@ -3147,7 +3145,7 @@ public class BcelShadow extends Shadow {
         			((targetVar != null && targetVar != thisVar) ? 1 : 0) + 
         			(thisJoinPointVar == null ? 0 : 1);
         il.append(Utility.createConstant(fact, alen));
-        il.append((Instruction)fact.createNewArray(Type.OBJECT, (short)1));
+        il.append(fact.createNewArray(Type.OBJECT, (short)1));
         arrayVar.appendStore(il, fact);
 
         int stateIndex = 0;     
@@ -3188,7 +3186,7 @@ public class BcelShadow extends Shadow {
 
         IntMap ret = new IntMap();
         for(int i = 0, len = adviceArgs.length; i < len; i++) {
-            BcelVar v = (BcelVar) adviceArgs[i];
+            BcelVar v = adviceArgs[i];
             if (v == null) continue; // XXX we don't know why this is required
             int pos = v.getPositionInAroundState();
             if (pos >= 0) {  // need this test to avoid args bound via cflow
@@ -3344,7 +3342,7 @@ public class BcelShadow extends Shadow {
 		
         body.append(Utility.createConstant(fact, len));
 
-        body.append((Instruction)fact.createNewArray(Type.OBJECT, (short)1));
+        body.append(fact.createNewArray(Type.OBJECT, (short)1));
         arrayVar.appendStore(body, fact);
 
         for (int i = len - 1; i >= 0; i++) {

@@ -140,15 +140,15 @@ public class ArgsTestCase extends TestCase {
 		public void anInt(int i) {}
 		public void anInteger(Integer i) {}
 		
-	};
+	}
 	private static class B extends A {
 		public void x(A a) {}
 		public void y(B b) {}
-	};
+	}
 	private static class C {
 		public void z(A a, C c) {}
 		public void t(B b, A a) {}
-	};
+	}
 
 	
 	private boolean needToSkip = false;

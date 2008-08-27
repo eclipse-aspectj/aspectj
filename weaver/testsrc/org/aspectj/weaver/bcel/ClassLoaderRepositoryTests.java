@@ -77,19 +77,19 @@ public class ClassLoaderRepositoryTests extends TestCase {
 		System.err.println(rep2.report());
     }
 
-	 private void loadOnce() throws Exception {
-		ClassLoaderRepository rep = setupRepository();
-		while (entries.hasMoreElements()) {
-			ZipEntry zfe = (ZipEntry) entries.nextElement();
-			String classfileName = zfe.getName();
-			if (classfileName.endsWith(".class")) {
-				String clazzname = classfileName.substring(0,
-						classfileName.length() - 6).replace('/', '.');
-
-				rep.loadClass(clazzname);
-			}
-		}
-	}
+//	 private void loadOnce() throws Exception {
+//		ClassLoaderRepository rep = setupRepository();
+//		while (entries.hasMoreElements()) {
+//			ZipEntry zfe = (ZipEntry) entries.nextElement();
+//			String classfileName = zfe.getName();
+//			if (classfileName.endsWith(".class")) {
+//				String clazzname = classfileName.substring(0,
+//						classfileName.length() - 6).replace('/', '.');
+//
+//				rep.loadClass(clazzname);
+//			}
+//		}
+//	}
 
 	 public void testMultiThreaded() throws Throwable {		 
 		 ClassLoaderRepository.useSharedCache=true;

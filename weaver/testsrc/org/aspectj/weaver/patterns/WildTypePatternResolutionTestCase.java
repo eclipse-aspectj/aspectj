@@ -58,7 +58,7 @@ import org.aspectj.weaver.bcel.BcelWorld;
 		 assertEquals("Ljava/util/List;",rt.getSignature());
 		 assertTrue(rt.isRawType());
 		 
-		 ExactTypePattern etp = (ExactTypePattern) writeAndRead((ExactTypePattern)rtp);
+		 ExactTypePattern etp = (ExactTypePattern) writeAndRead(rtp);
 		 exactType = etp.getExactType();
 
 		 assertEquals("Ljava/util/List;",exactType.getSignature());
@@ -92,7 +92,7 @@ import org.aspectj.weaver.bcel.BcelWorld;
 		 assertEquals("Pjava/util/List<Ljava/lang/String;>;",rt.getSignature());
 		 assertTrue(rt.isParameterizedType());
 
-		 ExactTypePattern etp = (ExactTypePattern) writeAndRead((ExactTypePattern)rtp);
+		 ExactTypePattern etp = (ExactTypePattern) writeAndRead(rtp);
 		 exactType = etp.getExactType();
 
 		 assertEquals("Pjava/util/List<Ljava/lang/String;>;",rt.getSignature());

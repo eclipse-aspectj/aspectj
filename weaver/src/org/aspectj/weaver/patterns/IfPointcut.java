@@ -357,7 +357,7 @@ public class IfPointcut extends Pointcut {
                         || AjcMemberMaker.TYPEX_PROCEEDINGJOINPOINT.getSignature().equals(argSignature)
                         || AjcMemberMaker.TYPEX_STATICJOINPOINT.getSignature().equals(argSignature)
                         || AjcMemberMaker.TYPEX_ENCLOSINGSTATICJOINPOINT.getSignature().equals(argSignature)) {
-                        ;
+                        
                     } else {
                         ret.baseArgsCount++;
                     }

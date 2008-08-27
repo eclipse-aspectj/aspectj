@@ -98,7 +98,7 @@ public class PerTypeWithin extends PerClause {
     }
     
     protected Test findResidueInternal(Shadow shadow, ExposedState state) {
-    	Member ptwField = AjcMemberMaker.perTypeWithinField(shadow.getEnclosingType(),inAspect);
+//    	Member ptwField = AjcMemberMaker.perTypeWithinField(shadow.getEnclosingType(),inAspect);
     	
     	Expr myInstance =
     		Expr.makeCallExpr(AjcMemberMaker.perTypeWithinLocalAspectOf(shadow.getEnclosingType(),inAspect/*shadow.getEnclosingType()*/),

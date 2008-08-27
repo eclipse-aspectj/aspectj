@@ -293,7 +293,7 @@ public class AtAjAttributes {
             for (int j = 0; j < mattributes.length; j++) {
                 Attribute mattribute = mattributes[j];
                 if (acceptAttribute(mattribute)) {
-                	if (mstruct==null) mstruct = new AjAttributeMethodStruct(method, null, type, context, msgHandler);//FIXME AVASM
+                	mstruct = new AjAttributeMethodStruct(method, null, type, context, msgHandler);//FIXME AVASM
                     processedPointcut = handlePointcutAnnotation((RuntimeAnnotations) mattribute, mstruct);
                     // there can only be one RuntimeVisible bytecode attribute
                     break;
@@ -332,7 +332,7 @@ public class AtAjAttributes {
                                             type.getSourceLocation()
                                     )
                             );
-                            ;// go ahead
+                            // go ahead
                         }
                     }
                     // there can only be one RuntimeVisible bytecode attribute
@@ -421,7 +421,7 @@ public class AtAjAttributes {
                             type.getSourceLocation()
                     )
             );
-            ;// go ahead
+            // go ahead
         }
         // semantic check - advice must be public
         if (hasAtAspectJAnnotation && !struct.method.isPublic()) {
@@ -433,7 +433,7 @@ public class AtAjAttributes {
                             type.getSourceLocation()
                     )
             );
-            ;// go ahead
+            // go ahead
         }
         
         // semantic check - advice must not be static
@@ -446,7 +446,7 @@ public class AtAjAttributes {
 //                            type.getSourceLocation()
 //                    )
 //            );
-            ;// go ahead
+            // go ahead
         }
         
         // semantic check for non around advice must return void
@@ -461,7 +461,7 @@ public class AtAjAttributes {
                             type.getSourceLocation()
                     )
             );
-            ;// go ahead
+            // go ahead
         }
 
         return struct.ajAttributes;
@@ -744,7 +744,7 @@ public class AtAjAttributes {
                     boolean hasAtLeastOneMethod = false;
                     ResolvedMember[] methods = (ResolvedMember[])fieldType.getMethodsWithoutIterator(true, false).toArray(new ResolvedMember[0]);
                     for (int i = 0; i < methods.length; i++) {
-                        ResolvedMember method = (ResolvedMember)methods[i];
+                        ResolvedMember method = methods[i];
                         if (method.isAbstract()) {
                         // moved to be detected at weave time if the target doesnt implement the methods
 //                            if (defaultImplClassName == null) {
@@ -1187,13 +1187,13 @@ public class AtAjAttributes {
         if (!(Type.VOID.equals(struct.method.getReturnType())
               || (Type.BOOLEAN.equals(struct.method.getReturnType()) && struct.method.isStatic() && struct.method.isPublic()))) {
             reportWarning("Found @Pointcut on a method not returning 'void' or not 'public static boolean'", struct);
-            ;//no need to stop
+            //no need to stop
         }
 
         // semantic check: the method must not throw anything
         if (struct.method.getExceptionTable() != null) {
             reportWarning("Found @Pointcut on a method throwing exception", struct);
-            ;// no need to stop
+            // no need to stop
         }
 
         String argumentNames = getArgNamesValue(pointcut);
@@ -1364,20 +1364,6 @@ public class AtAjAttributes {
     }
 
     /**
-     * Returns a readable representation of a field.
-     * Field.toString() is not suitable.
-     *
-     * @param field
-     * @return a readable representation of a field
-     */
-    private static String fieldToString(Field field) {
-        StringBuffer sb = new StringBuffer();
-        sb.append(field.getName()).append(' ');
-        sb.append(field.getSignature());
-        return sb.toString();
-    }
-
-    /**
      * Build the bindings for a given method (pointcut / advice)
      *
      * @param struct
@@ -1421,11 +1407,11 @@ public class AtAjAttributes {
     private static FormalBinding[] extractBindings(AjAttributeMethodStruct struct, String excludeFormal)
             throws UnreadableDebugInfoException {
         FormalBinding[] bindings = extractBindings(struct);
-        int excludeIndex = -1;
+//        int excludeIndex = -1;
         for (int i = 0; i < bindings.length; i++) {
             FormalBinding binding = bindings[i];
             if (binding.getName().equals(excludeFormal)) {
-                excludeIndex = i;
+//                excludeIndex = i;
                 bindings[i] = new FormalBinding.ImplicitFormalBinding(
                         binding.getType(), binding.getName(), binding.getIndex()
                 );
@@ -1560,7 +1546,7 @@ public class AtAjAttributes {
 
         final int startAtStackIndex = method.isStatic() ? 0 : 1;
         final List arguments = new ArrayList();
-        LocalVariableTable lt = (LocalVariableTable) method.getLocalVariableTable();
+        LocalVariableTable lt = method.getLocalVariableTable();
         if (lt != null) {
             for (int j = 0; j < lt.getLocalVariableTable().length; j++) {
                 LocalVariable localVariable = lt.getLocalVariableTable()[j];

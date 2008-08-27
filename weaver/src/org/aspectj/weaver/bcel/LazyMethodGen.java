@@ -1083,7 +1083,7 @@ public final class LazyMethodGen implements Traceable {
         // OPTIMIZE sort out in here: getRange()/insertHandler() and type of exceptionList
         while (iHandle != null) {
         	Instruction inst = iHandle.getInstruction();
-        	InstructionHandle nextInst = iHandle.getNext();
+//        	InstructionHandle nextInst = iHandle.getNext();
         	// OPTIMIZE remove this instructionhandle as it now points to nowhere?
         	if (inst == Range.RANGEINSTRUCTION) {
         		Range r = Range.getRange(iHandle);
@@ -1199,7 +1199,7 @@ public final class LazyMethodGen implements Traceable {
             gen.addLocalVariable(
             		tag.getName(),
             		t,
-                tag.getSlot(),(InstructionHandle) start,(InstructionHandle) lvpos.end);
+                tag.getSlot(), start, lvpos.end);
         }
 	}
 
@@ -1342,12 +1342,12 @@ public final class LazyMethodGen implements Traceable {
 //    	}
 //	}
    
-   private static InstructionHandle fNext(InstructionHandle ih) {
-	   while (true) {
-		   if (ih.getInstruction()==Range.RANGEINSTRUCTION) ih = ih.getNext();
-		   else return ih;
-	   }
-   }
+//   private static InstructionHandle fNext(InstructionHandle ih) {
+//	   while (true) {
+//		   if (ih.getInstruction()==Range.RANGEINSTRUCTION) ih = ih.getNext();
+//		   else return ih;
+//	   }
+//   }
 
     private static InstructionHandle remap(InstructionHandle ih, Map map) {
         while (true) {

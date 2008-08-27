@@ -38,7 +38,6 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.Synthetic;
-import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.generic.BasicType;
 import org.aspectj.apache.bcel.generic.ClassGen;
@@ -149,15 +148,15 @@ public final class LazyClassGen {
 		return ((InlinedSourceFileInfo) inlinedFiles.get(fullpath)).offset;
 	}
 	
-	private Unknown getSourceDebugExtensionAttribute() {
-		int nameIndex = cp.addUtf8("SourceDebugExtension");
-		String data = getSourceDebugExtensionString();
-		//System.err.println(data);
-		byte[] bytes = Utility.stringToUTF(data);
-		int length = bytes.length;
-
-		return new Unknown(nameIndex, length, bytes, cp);		
-	}	
+//	private Unknown getSourceDebugExtensionAttribute() {
+//		int nameIndex = cp.addUtf8("SourceDebugExtension");
+//		String data = getSourceDebugExtensionString();
+//		//System.err.println(data);
+//		byte[] bytes = Utility.stringToUTF(data);
+//		int length = bytes.length;
+//
+//		return new Unknown(nameIndex, length, bytes, cp);		
+//	}	
 
 //	private LazyClassGen() {}
 //	public static void main(String[] args) {
@@ -171,51 +170,51 @@ public final class LazyClassGen {
 //	}
 	
 	// For the entire pathname, we're using package names.  This is probably wrong.
-	private String getSourceDebugExtensionString() {
-		StringBuffer out = new StringBuffer();
-		String myFileName = getFileName();
-		// header section
-		out.append("SMAP\n");
-		out.append(myFileName);
-		out.append("\nAspectJ\n");
-		// stratum section
-		out.append("*S AspectJ\n");
-		// file section
-		out.append("*F\n");
-		out.append("1 ");
-		out.append(myFileName);
-		out.append("\n");
-		int i = 2;
-		for (Iterator iter = inlinedFiles.keySet().iterator(); iter.hasNext();) {
-			String element = (String) iter.next(); 
-			int ii = element.lastIndexOf('/');
-			if (ii == -1) {
-				out.append(i++); out.append(' '); 
-				out.append(element); out.append('\n');				
-			} else {
-				out.append("+ "); out.append(i++); out.append(' '); 
-				out.append(element.substring(ii+1)); out.append('\n');
-				out.append(element); out.append('\n');							
-			}
-		}
-		// emit line section
-		out.append("*L\n");
-		out.append("1#1,");
-		out.append(highestLineNumber);
-		out.append(":1,1\n");
-		i = 2;	
-		for (Iterator iter = inlinedFiles.values().iterator(); iter.hasNext();) {
-			InlinedSourceFileInfo element = (InlinedSourceFileInfo) iter.next();
-			out.append("1#"); 
-			out.append(i++); out.append(',');
-			out.append(element.highestLineNumber); out.append(":");
-			out.append(element.offset + 1); out.append(",1\n");
-		}	
-		// end section
-		out.append("*E\n");
-		// and finish up...
-		return out.toString();
-	}
+//	private String getSourceDebugExtensionString() {
+//		StringBuffer out = new StringBuffer();
+//		String myFileName = getFileName();
+//		// header section
+//		out.append("SMAP\n");
+//		out.append(myFileName);
+//		out.append("\nAspectJ\n");
+//		// stratum section
+//		out.append("*S AspectJ\n");
+//		// file section
+//		out.append("*F\n");
+//		out.append("1 ");
+//		out.append(myFileName);
+//		out.append("\n");
+//		int i = 2;
+//		for (Iterator iter = inlinedFiles.keySet().iterator(); iter.hasNext();) {
+//			String element = (String) iter.next(); 
+//			int ii = element.lastIndexOf('/');
+//			if (ii == -1) {
+//				out.append(i++); out.append(' '); 
+//				out.append(element); out.append('\n');				
+//			} else {
+//				out.append("+ "); out.append(i++); out.append(' '); 
+//				out.append(element.substring(ii+1)); out.append('\n');
+//				out.append(element); out.append('\n');							
+//			}
+//		}
+//		// emit line section
+//		out.append("*L\n");
+//		out.append("1#1,");
+//		out.append(highestLineNumber);
+//		out.append(":1,1\n");
+//		i = 2;	
+//		for (Iterator iter = inlinedFiles.values().iterator(); iter.hasNext();) {
+//			InlinedSourceFileInfo element = (InlinedSourceFileInfo) iter.next();
+//			out.append("1#"); 
+//			out.append(i++); out.append(',');
+//			out.append(element.highestLineNumber); out.append(":");
+//			out.append(element.offset + 1); out.append(",1\n");
+//		}	
+//		// end section
+//		out.append("*E\n");
+//		// and finish up...
+//		return out.toString();
+//	}
 	
 	// ---- end JSR45-related stuff
 	
@@ -410,7 +409,7 @@ public final class LazyClassGen {
 		if (isSerializable && !hasSerialVersionUIDField) {
 			getWorld().getLint().serialVersionUIDBroken.signal(
 				new String[] {
-					myType.getResolvedTypeX().getName().toString(),
+					myType.getResolvedTypeX().getName(),
 					field.getName()
 				},
 				sourceLocation,

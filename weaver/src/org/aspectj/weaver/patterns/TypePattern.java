@@ -124,7 +124,7 @@ public abstract class TypePattern extends PatternNode {
 	public abstract FuzzyBoolean matchesInstanceof(ResolvedType type);	
 	
 	public final FuzzyBoolean matches(ResolvedType type, MatchKind kind) {
-		FuzzyBoolean typeMatch = null;
+//		FuzzyBoolean typeMatch = null;
 		//??? This is part of gracefully handling missing references
 		if (type.isMissing()) return FuzzyBoolean.NO;
 		

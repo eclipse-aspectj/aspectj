@@ -155,10 +155,6 @@ public class BcelWorld extends World implements Repository {
     		delegate = getClassLoaderRepositoryFor(loaderRef);
     	}
     }
-    
-    private ClassLoader getClassLoader() {
-        return loaderRef.getClassLoader();
-    } 
 
     public Repository getClassLoaderRepositoryFor(ClassLoaderReference loader) {
         if (bcelRepositoryCaching) {
@@ -246,55 +242,15 @@ public class BcelWorld extends World implements Repository {
 
 	protected ReferenceTypeDelegate resolveDelegate(ReferenceType ty) {
         String name = ty.getName();
-        JavaClass jc = null;
-    	    ensureAdvancedConfigurationProcessed();
-        //UnwovenClassFile classFile = (UnwovenClassFile)sourceJavaClasses.get(name);
-        //if (classFile != null) jc = classFile.getJavaClass();
-//        if (isFastDelegateSupportEnabled() && classPath!=null && !ty.needsModifiableDelegate() && isNotOnPackageRestrictedList(name)) {
-//	        ClassPathManager.ClassFile cf = classPath.find(ty);
-//	        if (cf==null) {
-//	        	return null;
-//	        } else {
-//	        	ReferenceTypeDelegate delegate =  buildAsmDelegate(ty,cf);
-//	        	if (fallbackToLoadingBcelDelegatesForAspects && delegate.isAspect()) {
-//	        		// bugger - pr135001 - we can't inline around advice from an aspect because we don't load the instructions.
-//	        		// fixing this quick to get AJDT upgraded with a good 1.5.2dev build.
-//	        		// other fixes would be:
-//	        		// 1. record that we are loading the superclass for an aspect, so we know to make it a BCEL delegate
-//	        		//
-//	        		// the 'fix' here is only reasonable because there are many less aspects than classes!
-//	        		
-//	        		// Create a BCEL delegate
-//	        		if (jc == null) jc = lookupJavaClass(classPath, name);
-//	    	        if (jc == null) return delegate; // worrying situation ?!?
-//	    	        else            return buildBcelDelegate(ty, jc, false);
-//	        	} else {
-//	        		return delegate;
-//	        	}
-//	        }
-//        } else {
-	        if (jc == null) {
-	        	jc = lookupJavaClass(classPath, name);
-	        }       
-	        if (jc == null) {
-	        	return null;
-	        } else {
-	        	return buildBcelDelegate(ty, jc, false);
-	        }
-//	    }
+	    ensureAdvancedConfigurationProcessed();
+	    JavaClass jc = lookupJavaClass(classPath, name);
+        if (jc == null) {
+        	return null;
+        } else {
+        	return buildBcelDelegate(ty, jc, false);
+        }
 	}
 	
-//    private ReferenceTypeDelegate buildAsmDelegate(ReferenceType type,ClassPathManager.ClassFile t) {
-//    	AsmDelegate asmDelegate;
-//		try {
-//			asmDelegate = new AsmDelegate(type,t.getInputStream());
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			return null;
-//		}
-//		return asmDelegate;
-//	}
-    
 	public BcelObjectType buildBcelDelegate(ReferenceType resolvedTypeX, JavaClass jc, boolean exposedToWeaver) {
 		BcelObjectType ret = new BcelObjectType(resolvedTypeX, jc, exposedToWeaver);
 		return ret;
@@ -500,8 +456,6 @@ public class BcelWorld extends World implements Repository {
         return MemberImpl.method(
             UnresolvedType.forName(javaClass.getClassName()), mods, method.getName(), method.getSignature()); 
     }
-    
-    private static final String[] ZERO_STRINGS = new String[0];
     
 	public String toString() {
 		StringBuffer buf = new StringBuffer();

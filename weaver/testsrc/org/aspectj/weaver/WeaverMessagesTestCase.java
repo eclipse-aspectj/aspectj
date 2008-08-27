@@ -33,7 +33,7 @@ public class WeaverMessagesTestCase extends TestCase {
 			if (f.getType() == String.class) {
 				try {
 					String key = (String) f.get(null);
-					String value = WeaverMessages.format(key);
+//					String value = WeaverMessages.format(key);
 					assertFalse("Each key should be unique",fieldList.contains(key));
 					fieldList.add(key);
 //					System.out.println(key + "," + value);

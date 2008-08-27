@@ -180,7 +180,8 @@ public class PointcutRewriterTest extends TestCase {
 	
 	public void testNotRemoveNearlyDuplicatesInAnd() {
 		Pointcut toAndto = getPointcut("this(Object+) && this(Object)");
-		Pointcut rewritten = prw.rewrite(toAndto);
+//		Pointcut rewritten = 
+			prw.rewrite(toAndto);
 	}
 	
 	public void testAAndNotAinAnd() {

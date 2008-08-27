@@ -86,8 +86,10 @@ public class AnnotationPatternTestCase extends TestCase {
 		ap = ap.resolveBindings(makeSimpleScope(),new Bindings(3),true);		
 		AndAnnotationTypePattern atp = (AndAnnotationTypePattern) ap;
 		NotAnnotationTypePattern notBoo = (NotAnnotationTypePattern) atp.getRight();
-		ExactAnnotationTypePattern boo = (ExactAnnotationTypePattern) notBoo.getNegatedPattern();
-		AnnotationTypePattern fooOrGoo = (AnnotationTypePattern) atp.getLeft();
+//		ExactAnnotationTypePattern boo = (ExactAnnotationTypePattern) 
+			notBoo.getNegatedPattern();
+//		AnnotationTypePattern fooOrGoo = (AnnotationTypePattern) 
+			atp.getLeft();
 		assertEquals("@((Foo || Goo)) !@Boo",ap.toString());
 	}
 	
@@ -116,14 +118,15 @@ public class AnnotationPatternTestCase extends TestCase {
 	public void testParseNameOrVarAnnotationPattern() {
 		PatternParser p = new PatternParser("Foo");
 		AnnotationTypePattern foo = p.parseAnnotationNameOrVarTypePattern();
-		assertTrue("ExactAnnotationTypePattern",foo instanceof ExactAnnotationTypePattern);
+		assertTrue("ExactAnnotationTypePattern expected",foo!=null);
 		assertEquals("Foo",UnresolvedType.forName("Foo"),((ExactAnnotationTypePattern)foo).annotationType);		
 	}
 	
 	public void testParseNameOrVarAnnotationPatternWithNot() {
 		PatternParser p = new PatternParser("!@Foo");
 		try {
-			AnnotationTypePattern bad = p.parseAnnotationNameOrVarTypePattern();
+//			AnnotationTypePattern bad = 
+				p.parseAnnotationNameOrVarTypePattern();
 			fail("ParserException expected");
 		} catch(ParserException pEx) {
 			assertEquals("identifier",pEx.getMessage());

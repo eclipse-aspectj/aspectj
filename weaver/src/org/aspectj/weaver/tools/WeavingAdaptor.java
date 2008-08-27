@@ -653,7 +653,8 @@ public class WeavingAdaptor implements IMessageContext {
 		}
 
 		public boolean handleMessage(IMessage message) throws AbortException {
-			boolean result = super.handleMessage(message);
+//			boolean result = 
+				super.handleMessage(message);
 			if (abortOnError && 0 <= message.getKind().compareTo(failKind)) {
 				throw new AbortException(message);
 			}
