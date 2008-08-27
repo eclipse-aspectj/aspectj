@@ -15,6 +15,7 @@
 package org.aspectj.testing.harness.bridge;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 import org.aspectj.bridge.*;
@@ -98,6 +99,73 @@ public class CompilerRun implements IAjcRun {
         injars = new ArrayList();
         inpaths = new ArrayList();
     }
+    
+
+    /**
+     * Select from input String[] if readable directories
+     * @param inputs String[] of input - null ignored
+     * @param baseDir the base directory of the input
+     * @return String[] of input that end with any input
+     */
+    public static String[] selectDirectories(String[] inputs, File baseDir) {
+        if (LangUtil.isEmpty(inputs)) {
+            return new String[0];
+        }
+        ArrayList result = new ArrayList();
+        for (int i = 0; i < inputs.length; i++) {
+            String input = inputs[i];
+            if (null == input) {
+                continue;
+            }
+            File inputFile = new File(baseDir, input);
+            if (inputFile.canRead() && inputFile.isDirectory()) {
+                result.add(input);
+            }
+        }
+        return (String[]) result.toArray(new String[0]);
+    }
+    
+    /**
+     * Select from input String[] based on suffix-matching
+     * @param inputs String[] of input - null ignored
+     * @param suffixes String[] of suffix selectors - null ignored
+     * @param ignoreCase if true, ignore case
+     * @return String[] of input that end with any input
+     */
+    public static String[] endsWith(String[] inputs, String[] suffixes, boolean ignoreCase) {
+        if (LangUtil.isEmpty(inputs) || LangUtil.isEmpty(suffixes)) {
+            return new String[0];
+        }
+        if (ignoreCase) {
+            String[] temp = new String[suffixes.length];
+            for (int i = 0; i < temp.length; i++) {                
+				String suff = suffixes[i];
+                temp[i] = (null ==  suff ? null : suff.toLowerCase());
+			}
+            suffixes = temp;
+        }
+        ArrayList result = new ArrayList();
+        for (int i = 0; i < inputs.length; i++) {
+            String input = inputs[i];
+            if (null == input) {
+                continue;
+            }
+            if (!ignoreCase) {
+                input = input.toLowerCase();
+            }
+            for (int j = 0; j < suffixes.length; j++) {
+                String suffix = suffixes[j];
+                if (null == suffix) {
+                    continue;
+                }
+                if (input.endsWith(suffix)) {
+                    result.add(input);
+                    break;
+                }
+            }
+        }
+        return (String[]) result.toArray(new String[0]);
+    }
 
     /** 
      * This checks that the spec is reasonable and does setup:
@@ -160,14 +228,14 @@ public class CompilerRun implements IAjcRun {
         {
             final String[] paths = spec.getPathsArray();
             srcPaths =
-                LangUtil.endsWith(
+                endsWith(
                     paths,
                     CompilerRun.SOURCE_SUFFIXES,
                     true);
             injarPaths =
-                LangUtil.endsWith(paths, CompilerRun.JAR_SUFFIXES, true);
+                endsWith(paths, CompilerRun.JAR_SUFFIXES, true);
             inpathPaths =
-                LangUtil.selectDirectories(paths, testBaseSrcDir);
+                selectDirectories(paths, testBaseSrcDir);
             if (!spec.badInput) {
                 int found = inpathPaths.length + injarPaths.length + srcPaths.length;
                 if (paths.length !=  found) {
@@ -175,6 +243,7 @@ public class CompilerRun implements IAjcRun {
                 }
             }
         }
+        
         // validate readable for sources
         if (!spec.badInput) {
             if (!validator.canRead(testBaseSrcDir, srcPaths, "sources")
@@ -656,7 +725,7 @@ public class CompilerRun implements IAjcRun {
             int version = sourceVersion.charAt(2) - '0';
             switch (version) {
                 case (3) :
-                    if (LangUtil.supportsJava("1.4")) {
+                    if (Globals.supportsJava("1.4")) {
                         if (!FileUtil.canReadFile(Globals.J2SE13_RTJAR)) {
                             return "no 1.3 libraries to handle -source 1.3";
                         }
@@ -665,7 +734,7 @@ public class CompilerRun implements IAjcRun {
                     }
                     break;
                 case (4) :
-                    if (!LangUtil.supportsJava("1.4")) {
+                    if (!Globals.supportsJava("1.4")) {
                         if (ReflectionFactory
                             .ECLIPSE
                             .equals(compilerName)) {
@@ -870,7 +939,21 @@ public class CompilerRun implements IAjcRun {
             if (LangUtil.isEmpty(argfiles)) {
                 return new String[0];
             }
-            return (String[]) LangUtil.copy(argfiles);
+            return (String[]) copy(argfiles);
+        }
+        
+        /**
+         * Make a copy of the array.
+         * @return an array with the same component type as source
+         * containing same elements, even if null.
+         * @throws IllegalArgumentException if source is null
+         */
+        public static final Object[] copy(Object[] source) {
+            LangUtil.throwIaxIfNull(source, "source");        
+            final Class c = source.getClass().getComponentType();
+            Object[] result = (Object[]) Array.newInstance(c, source.length);
+            System.arraycopy(source, 0, result, 0, result.length);
+            return result;
         }
 
         /**

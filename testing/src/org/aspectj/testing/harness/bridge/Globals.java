@@ -16,6 +16,9 @@
 package org.aspectj.testing.harness.bridge;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
@@ -23,6 +26,10 @@ import org.aspectj.util.LangUtil;
 /**
  */
 public class Globals {
+
+	/** map from String version to String class implemented in that version or later */
+    private static final Map VM_CLASSES;
+    
     public static final String FORK_NAME = "harness.fork";
     // XXX in testing-drivers/../package.htm
     /** name/key of the System property to set to define library dir */
@@ -64,6 +71,13 @@ public class Globals {
                 && FileUtil.canReadFile(F_aspectjrt_jar)
                 && FileUtil.canReadFile(J2SE13_RTJAR)
                 && FileUtil.canReadFile(J2SE14_RTJAR));
+        HashMap map = new HashMap();
+        map.put("1.2", "java.lang.ref.Reference");
+        map.put("1.3", "java.lang.reflect.Proxy");
+        map.put("1.4", "java.nio.Buffer");
+        map.put("1.5", "java.lang.annotation.Annotation");
+        
+        VM_CLASSES = Collections.unmodifiableMap(map);
     }
 
     private static File getRtJarFor(
@@ -122,6 +136,27 @@ public class Globals {
         } catch (Throwable t) {
         }
         return result;
+    }
+    
+
+    /**
+     * Detect whether Java version is supported.
+     * @param version String "1.2" or "1.3" or "1.4"
+     * @return true if the currently-running VM supports the version 
+     * @throws IllegalArgumentException if version is not known
+     */
+    public static final boolean supportsJava(String version) {
+        LangUtil.throwIaxIfNull(version, "version");
+        String className = (String) VM_CLASSES.get(version);
+        if (null == className) {
+            throw new IllegalArgumentException("unknown version: " + version);
+        }
+        try {
+            Class.forName(className);
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }        
     }
 
 }

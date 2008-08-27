@@ -31,9 +31,9 @@ import org.aspectj.testing.util.BridgeUtil;
 import org.aspectj.testing.util.ObjectChecker;
 import org.aspectj.testing.util.SFileReader;
 import org.aspectj.testing.util.StandardObjectChecker;
+import org.aspectj.testing.util.UtilLineReader;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
-import org.aspectj.util.LineReader;
 
 /** 
  * SFileReader.Maker implementation to read tests 
@@ -74,9 +74,9 @@ public class FlatSuiteReader implements SFileReader.Maker {
 	 * test definition in reader and taking the parent directory of
 	 * the reader as the base directory for the test suite root. 
 	 * @return the next AjcTest in reader, or null
-	 * @see org.aspectj.testing.harness.bridge.SFileReader.Maker#make(LineReader)
+	 * @see org.aspectj.testing.harness.bridge.SFileReader.Maker#make(UtilLineReader)
 	 */
-	public Object make(final LineReader reader)
+	public Object make(final UtilLineReader reader)
 		throws AbortException, IOException {
 		final AjcTest.Spec result = new AjcTest.Spec();
 		boolean usingEclipse = false; // XXX
@@ -233,7 +233,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
      * - convert test options to force-options
      * - detect illegal xml characters
      */
-    private void cleanup(AjcTest.Spec result, LineReader lineReader) {
+    private void cleanup(AjcTest.Spec result, UtilLineReader lineReader) {
         LangUtil.throwIaxIfNull(result, "result");
         LangUtil.throwIaxIfNull(lineReader, "lineReader");
 

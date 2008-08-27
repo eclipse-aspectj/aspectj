@@ -181,9 +181,15 @@ abstract public class AbstractRunSpec implements IRunSpec {
         addKeyword(keyword);
     }
     
+    /** @return ((null == s) || (0 == s.trim().length())); */
+    public static boolean isEmptyTrimmed(String s) {
+        return ((null == s) || (0 == s.length())
+            || (0 == s.trim().length()));
+    }
+    
     /** Add keyword if non-empty and not duplicate */
     public void addKeyword(String keyword) {
-        if (!LangUtil.isEmptyTrimmed(keyword)) {
+        if (!isEmptyTrimmed(keyword)) {
             keyword = keyword.trim();
             if (!keywords.contains(keyword)) {
                 keywords.add(keyword);

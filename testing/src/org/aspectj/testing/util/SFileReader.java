@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.util.LangUtil;
-import org.aspectj.util.LineReader;
 
 
 /**
@@ -98,9 +97,9 @@ public class SFileReader {
         } else if (!file.isAbsolute()) {
             throw new IllegalArgumentException("file not absolute");
         }
-        LineReader reader = null;
+        UtilLineReader reader = null;
         try {
-            reader = LineReader.createTester(file);
+            reader = UtilLineReader.createTester(file);
             if (null == reader) {
                 throw new IOException("no reader for " + file);
             }
@@ -167,7 +166,7 @@ public class SFileReader {
          * Make the result using the input from the LineReader,
          * starting with lastLine().
          */
-        Object make(LineReader reader) throws AbortException, IOException;
+        Object make(UtilLineReader reader) throws AbortException, IOException;
         
         /** @return type of the Object made */
         Class getType();
@@ -176,7 +175,7 @@ public class SFileReader {
          * @return file:line: {line}
          */
         static final Maker ECHO = new Maker() {
-            public Object make(LineReader reader) {
+            public Object make(UtilLineReader reader) {
                 return reader + ": " + reader.lastLine();
             }
             public Class getType() { return String.class; }

@@ -277,7 +277,7 @@ public class JavaRun implements IAjcRun {
             cmd.add(classpath);
         } else {
             // verify 1.4 or above, assuming same vm as running this
-            if (!LangUtil.supportsJava("1.4")) {
+            if (!Globals.supportsJava("1.4")) {
                 throw new Error("load-time weaving test requires Java 1.4+");
             }
             cmd.add("-Djava.system.class.loader=org.aspectj.weaver.WeavingURLClassLoader");
@@ -660,7 +660,7 @@ public class JavaRun implements IAjcRun {
          * @throws IllegalArgumentException if version is not recognized
          */
         public void setJavaVersion(String version) {
-            LangUtil.supportsJava(version);
+        	Globals.supportsJava(version);
             this.javaVersion = version;
         }
         
@@ -779,7 +779,7 @@ public class JavaRun implements IAjcRun {
             if (!super.doAdoptParentValues(parentRuntime, handler)) {
                 return false;
             }
-            if ((null != javaVersion) && (!LangUtil.supportsJava(javaVersion))) {
+            if ((null != javaVersion) && (!Globals.supportsJava(javaVersion))) {
                 skipMessage(handler, "requires Java version " + javaVersion);
                 return false;
             }

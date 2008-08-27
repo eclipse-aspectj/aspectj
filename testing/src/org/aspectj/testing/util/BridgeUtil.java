@@ -24,7 +24,6 @@ import org.aspectj.bridge.SourceLocation;
 import org.aspectj.testing.run.IRunStatus;
 import org.aspectj.testing.run.RunValidator;
 import org.aspectj.util.FileUtil;
-import org.aspectj.util.LineReader;
 
 /**
  * 
@@ -43,7 +42,7 @@ public class BridgeUtil {
     private static final String MESSAGE_DELIM = "\" - ";
 
     
-    public static ISourceLocation makeSourceLocation(LineReader reader) {
+    public static ISourceLocation makeSourceLocation(UtilLineReader reader) {
         LangUtil.throwIaxIfNull(reader, "reader");
         int line = reader.getLineNumber();
         
@@ -59,12 +58,12 @@ public class BridgeUtil {
     private static ISourceLocation readSourceLocation(String sourceLocStr) {
         return BridgeUtil.makeSourceLocation(sourceLocStr);
     }
-    public static IMessage makeMessage(String message, IMessage.Kind kind, 
-                                       Throwable thrown, LineReader reader) {
-        ISourceLocation sl = (null == reader ? null : MessageUtil.makeSourceLocation(reader));
-        if (null == kind) kind = IMessage.INFO;
-        return new Message(message, kind, thrown, sl);        
-    }
+//    public static IMessage makeMessage(String message, IMessage.Kind kind, 
+//                                       Throwable thrown, LineReader reader) {
+//        ISourceLocation sl = (null == reader ? null : MessageUtil.makeSourceLocation(reader));
+//        if (null == kind) kind = IMessage.INFO;
+//        return new Message(message, kind, thrown, sl);        
+//    }
 
     /**
      * Read a message from a string written by writeMessage(IMessage).
