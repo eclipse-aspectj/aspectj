@@ -13,7 +13,6 @@ import java.io.File;
 
 import org.aspectj.ajde.core.AjdeCoreTestCase;
 import org.aspectj.ajde.core.TestCompilerConfiguration;
-import org.aspectj.ajde.core.TestMessageHandler;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
@@ -27,13 +26,11 @@ public class AsmDeclarationsTests extends AjdeCoreTestCase {
 			"pkg" + File.separator + "InPackage.java"
 	};
 	
-	private TestMessageHandler handler;
 	private TestCompilerConfiguration compilerConfig;
 
 	protected void setUp() throws Exception {
 		super.setUp();
 		initialiseProject("coverage");
-		handler = (TestMessageHandler) getCompiler().getMessageHandler();
 		compilerConfig = (TestCompilerConfiguration) getCompiler()
 				.getCompilerConfiguration();
 		compilerConfig.setProjectSourceFiles(getSourceFileList(files));
@@ -43,13 +40,12 @@ public class AsmDeclarationsTests extends AjdeCoreTestCase {
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		handler = null;
 		compilerConfig = null;
 		model = null;
 	}
 	
 	public void testRoot() {
-		IProgramElement root = (IProgramElement)model.getRoot();
+		IProgramElement root = model.getRoot();
 		assertNotNull(root);
 		assertEquals("Expected root to be named 'coverage' but found "
 				+ root.toLabelString(), root.toLabelString(), "coverage");	
@@ -124,7 +120,7 @@ public class AsmDeclarationsTests extends AjdeCoreTestCase {
 	} 
 
 	public void testInterTypeMemberDeclares() {
-		IProgramElement node = (IProgramElement)model.getRoot();
+		IProgramElement node = model.getRoot();
 		assertNotNull(node);
 	
 		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "InterTypeDecCoverage");
@@ -148,7 +144,7 @@ public class AsmDeclarationsTests extends AjdeCoreTestCase {
 	}
 	
 	public void testPointcuts() {
-		IProgramElement node = (IProgramElement)model.getRoot();
+		IProgramElement node = model.getRoot();
 		assertNotNull(node);
 	
 		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "AdviceNamingCoverage");
@@ -166,7 +162,7 @@ public class AsmDeclarationsTests extends AjdeCoreTestCase {
 	}
 
 	public void testAbstract() {
-		IProgramElement node = (IProgramElement)model.getRoot();
+		IProgramElement node = model.getRoot();
 		assertNotNull(node);
 	
 		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "AbstractAspect");
@@ -179,7 +175,7 @@ public class AsmDeclarationsTests extends AjdeCoreTestCase {
 	}
 
 	public void testAdvice() {
-		IProgramElement node = (IProgramElement)model.getRoot();
+		IProgramElement node = model.getRoot();
 		assertNotNull(node);
 	
 		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "AdviceNamingCoverage");

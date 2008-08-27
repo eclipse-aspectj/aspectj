@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.aspectj.ajde.core.AjdeCoreTestCase;
 import org.aspectj.ajde.core.TestCompilerConfiguration;
-import org.aspectj.ajde.core.TestMessageHandler;
 import org.aspectj.ajdt.internal.core.builder.AsmHierarchyBuilder;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
@@ -31,13 +30,11 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 			"pkg" + File.separator + "InPackage.java"
 	};
 	
-	private TestMessageHandler handler;
 	private TestCompilerConfiguration compilerConfig;
 
 	protected void setUp() throws Exception {
 		super.setUp();
 		initialiseProject("coverage");
-		handler = (TestMessageHandler) getCompiler().getMessageHandler();
 		compilerConfig = (TestCompilerConfiguration) getCompiler()
 				.getCompilerConfiguration();
 		compilerConfig.setProjectSourceFiles(getSourceFileList(files));
@@ -47,7 +44,6 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		handler = null;
 		compilerConfig = null;
 		manager = null;
 	}

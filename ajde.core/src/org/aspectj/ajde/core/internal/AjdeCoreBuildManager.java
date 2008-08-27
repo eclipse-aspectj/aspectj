@@ -21,7 +21,6 @@ import java.util.StringTokenizer;
 import org.aspectj.ajde.core.AjCompiler;
 import org.aspectj.ajde.core.ICompilerConfiguration;
 import org.aspectj.ajde.core.IOutputLocationManager;
-import org.aspectj.ajde.core.JavaOptions;
 import org.aspectj.ajdt.ajc.AjdtCommand;
 import org.aspectj.ajdt.ajc.BuildArgParser;
 import org.aspectj.ajdt.ajc.ConfigParser;
@@ -88,14 +87,26 @@ public class AjdeCoreBuildManager {
 			handleMessage(new Message(getFormattedOptionsString(),IMessage.INFO,null,null));
 
 			CompilationAndWeavingContext.reset();
+
 			AjBuildConfig buildConfig = genAjBuildConfig();
 			if (buildConfig == null) return;
-			
+
             if (buildFresh) {
             	ajBuildManager.batchBuild(buildConfig,msgHandlerAdapter); 
             } else {
 				ajBuildManager.incrementalBuild(buildConfig,msgHandlerAdapter);				
             }
+/*			
+            if (buildFresh) {
+    			AjBuildConfig buildConfig = genAjBuildConfig();
+    			if (buildConfig == null) return;
+            	ajBuildManager.batchBuild(buildConfig,msgHandlerAdapter); 
+            } else {
+            	AjBuildConfig buildConfig = ajBuildManager.getState().getBuildConfig();
+            	
+				ajBuildManager.incrementalBuild(buildConfig,msgHandlerAdapter);				
+            }
+*/
 			IncrementalStateManager.recordSuccessfulBuild(compiler.getId(),ajBuildManager.getState());
             
         } catch (ConfigParser.ParseException pe) {
@@ -109,7 +120,7 @@ public class AjdeCoreBuildManager {
             } else {
             	handleMessage(new Message(message.getMessage() + "\n" 
             			+ CompilationAndWeavingContext.getCurrentContext(),IMessage.ERROR,e,null));
-            };
+            }
 		} catch (Throwable t) {
             handleMessage(new Message("Compile error: " + LangUtil.unqualifiedClassName(t) + " thrown: " +
             		"" + t.getMessage(),IMessage.ABORT,t,null));
@@ -233,38 +244,6 @@ public class AjdeCoreBuildManager {
         // always force proceedOnError in AJDE
         config.setProceedOnError(true);
 		return config;
-	}
-	
-	/**
-	 * Check that the user hasn't specified Java 6 for the compliance, source and
-	 * target levels. If they have then an error is thrown. 
-	 */
-	private void checkNotAskedForJava6Compliance() {
-		// bug 164384 - Throwing an IMessage.ERRROR rather than an IMessage.ABORT 
-		// means that we'll continue to try to compile the code. This means that
-		// the user may see other errors (for example, if they're using annotations
-		// then they'll get errors saying that they require 5.0 compliance).
-		// Throwing IMessage.ABORT would prevent this, however, 'abort' is really
-		// for compiler exceptions.
-		Map javaOptions = compiler.getCompilerConfiguration().getJavaOptionsMap();
-		if (javaOptions != null){
-			String version = (String)javaOptions.get(CompilerOptions.OPTION_Compliance);
-			String sourceVersion = (String)javaOptions.get(CompilerOptions.OPTION_Source);
-			String targetVersion = (String)javaOptions.get(CompilerOptions.OPTION_TargetPlatform);
-			if (version!=null && version.equals(JavaOptions.VERSION_16)) {
-				String msg = "Java 6.0 compliance level is unsupported";
-				IMessage m = new Message(msg, IMessage.ERROR, null, null);            
-				compiler.getMessageHandler().handleMessage(m);
-			} else if (sourceVersion!=null && sourceVersion.equals(JavaOptions.VERSION_16)) {
-				String msg = "Java 6.0 source level is unsupported";
-				IMessage m = new Message(msg, IMessage.ERROR, null, null);            
-				compiler.getMessageHandler().handleMessage(m);				
-			} else if (targetVersion!=null && targetVersion.equals(JavaOptions.VERSION_16)) {
-				String msg = "Java 6.0 target level is unsupported";
-				IMessage m = new Message(msg, IMessage.ERROR, null, null);            
-				compiler.getMessageHandler().handleMessage(m);	
-			}
-		}
 	}
 	
 	/**

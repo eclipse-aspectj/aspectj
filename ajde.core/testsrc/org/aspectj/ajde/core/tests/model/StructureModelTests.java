@@ -19,7 +19,6 @@ import java.util.Iterator;
 
 import org.aspectj.ajde.core.AjdeCoreTestCase;
 import org.aspectj.ajde.core.TestCompilerConfiguration;
-import org.aspectj.ajde.core.TestMessageHandler;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.HierarchyWalker;
 import org.aspectj.asm.IHierarchy;
@@ -40,13 +39,11 @@ public class StructureModelTests extends AjdeCoreTestCase {
 			"figures" + File.separator + "primitives" + File.separator + "solid" + File.separator + "SolidPoint.java"
 	};
 	
-	private TestMessageHandler handler;
 	private TestCompilerConfiguration compilerConfig;
 
 	protected void setUp() throws Exception {
 		super.setUp();
 		initialiseProject("figures-coverage");
-		handler = (TestMessageHandler) getCompiler().getMessageHandler();
 		compilerConfig = (TestCompilerConfiguration) getCompiler()
 				.getCompilerConfiguration();
 		compilerConfig.setProjectSourceFiles(getSourceFileList(files));
@@ -56,7 +53,6 @@ public class StructureModelTests extends AjdeCoreTestCase {
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		handler = null;
 		compilerConfig = null;
 		manager = null;
 	}
@@ -66,8 +62,7 @@ public class StructureModelTests extends AjdeCoreTestCase {
 		IProgramElement node = manager.getHierarchy().findElementForSourceFile(
 			testFile.getAbsolutePath());
 		assertTrue("find result", node != null) ;	
-		IProgramElement pNode = (IProgramElement)node;
-		String child = ((IProgramElement)pNode.getChildren().get(1)).getName();
+		String child = ((IProgramElement)node.getChildren().get(1)).getName();
         assertTrue("expected Figure got child " + child, child.equals("Figure"));
 	}
 
@@ -76,7 +71,7 @@ public class StructureModelTests extends AjdeCoreTestCase {
 		IProgramElement node = manager.getHierarchy().findElementForSourceFile(
 			testFile.getAbsolutePath());
 		assertTrue("find result", node != null) ;	
-		IProgramElement pNode = (IProgramElement)((IProgramElement)node).getChildren().get(2);
+		IProgramElement pNode = (IProgramElement)(node).getChildren().get(2);
 		IProgramElement pointcut = (IProgramElement)pNode.getChildren().get(0);
 		assertTrue("kind", pointcut.getKind().equals(IProgramElement.Kind.POINTCUT));
 		assertTrue("found node: " + pointcut.getName(), pointcut.toLabelString().equals("testptct()"));
@@ -92,8 +87,7 @@ public class StructureModelTests extends AjdeCoreTestCase {
 			testFile.getAbsolutePath(), 1);
 		assertTrue("find result", node != null) ;	
 		assertEquals("find result has children", 3, node.getChildren().size()) ;	
-		IProgramElement pNode = (IProgramElement)node;
-		assertTrue("found node: " + pNode.getName(), pNode.getKind().equals(IProgramElement.Kind.FILE_JAVA));
+		assertTrue("found node: " + node.getName(), node.getKind().equals(IProgramElement.Kind.FILE_JAVA));
 	}
   
   	/**
@@ -106,7 +100,7 @@ public class StructureModelTests extends AjdeCoreTestCase {
 		File testFile = openFile("figures" + File.separator + "Main.java");
 		IProgramElement node = model.findElementForSourceLine(testFile.getAbsolutePath(), 11);	
 		assertTrue("find result", node != null);	
-		IProgramElement pNode = (IProgramElement)((IProgramElement)node).getParent();
+		IProgramElement pNode = node.getParent();
         if (null == pNode) {
             assertTrue("null parent of " + node, false);
         }

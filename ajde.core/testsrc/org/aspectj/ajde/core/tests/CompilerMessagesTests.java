@@ -70,7 +70,7 @@ public class CompilerMessagesTests extends AjdeCoreTestCase {
 	
 	public void testDeclareMessageContents() {
 		List msgs = handler.getMessages();
-		IMessage msg = (IMessage)((TestMessageHandler.TestMessage)msgs.get(1)).getContainedMessage();
+		IMessage msg = ((TestMessageHandler.TestMessage)msgs.get(1)).getContainedMessage();
 		assertEquals( "Please don't call setters" , msg.getMessage());
 		assertEquals("field-set(int apackage.SomeClass.x)", msg.getDetails());
 	}

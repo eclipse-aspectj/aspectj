@@ -39,7 +39,6 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 	
 	private TestMessageHandler handler;
 	private TestCompilerConfiguration compilerConfig;
-	private String testProps;
 	
 	private String[] config1 = new String[] {
 		"src" + File.separator + "Main.java",
@@ -56,7 +55,6 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 		handler = (TestMessageHandler) getCompiler().getMessageHandler();
 		compilerConfig = (TestCompilerConfiguration) getCompiler()
 				.getCompilerConfiguration();
-		testProps = getAbsoluteProjectDir() + File.separator + "src" + File.separator + "testsrc" + File.separator + "test.props";
 	}
 
 	protected void tearDown() throws Exception {
