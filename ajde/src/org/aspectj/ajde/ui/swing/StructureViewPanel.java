@@ -103,7 +103,7 @@ public class StructureViewPanel extends JPanel implements StructureViewRenderer 
 	public void setActiveNode(IStructureViewNode node, int lineOffset) {
 		if (node == null) return;
 // 		if (!(node.getStructureNode() instanceof IProgramElement)) return;
-		IProgramElement pNode = (IProgramElement)node.getStructureNode();
+		IProgramElement pNode = node.getStructureNode();
  		treeManager.highlightNode(pNode);
  		if (pNode.getSourceLocation() != null) {
  			Ajde.getDefault().getEditorAdapter().showSourceLine(
@@ -117,8 +117,8 @@ public class StructureViewPanel extends JPanel implements StructureViewRenderer 
  	public void highlightActiveNode() {
  		if (currentView.getActiveNode() == null) return;
  		IProgramElement node = currentView.getActiveNode().getStructureNode();
- 		if (node instanceof IProgramElement) {
- 			treeManager.highlightNode((IProgramElement)node);
+ 		if (node!=null) {
+ 			treeManager.highlightNode(node);
  		}
  	}
 

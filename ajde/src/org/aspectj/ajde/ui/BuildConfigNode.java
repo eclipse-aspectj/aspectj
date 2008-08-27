@@ -100,12 +100,11 @@ public class BuildConfigNode {
 	 * Comparison is string-name based only.
 	 */
 	public int compareTo(Object o) throws ClassCastException {
-		if (this == o) {
-			return 0;
-		} else {
+		if (o instanceof BuildConfigNode) {
 			BuildConfigNode sn = (BuildConfigNode)o;
 			return this.getName().compareTo(sn.getName());
 		}
+		return -1;
 	}
 
 	public String getName() {
@@ -197,9 +196,15 @@ public class BuildConfigNode {
 			return name;
 		}	
 		
-		public boolean equals(Object o) {
-			return o.equals(name);	
-		}
+//		public boolean equals(Object o) {
+//			return (o instanceof Kind? this==o : false);
+////			return o.equals(name);	
+//		}
+//		
+//		public int hashCode() {
+//			return ordinal;
+////			return name.hashCode();
+//		}
 		
 		public boolean isDeclareKind() {
 			return name.startsWith("declare");	

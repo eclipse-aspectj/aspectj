@@ -163,8 +163,8 @@ public class TreeStructureViewBuilder {
 	}
 	
 	private boolean acceptNode(IProgramElement node, StructureViewProperties properties) {
-		if (node instanceof IProgramElement) {
-			IProgramElement pNode = (IProgramElement)node;
+		if (node!=null) {
+			IProgramElement pNode = node;
 			if (!acceptGranularity(pNode.getKind(), properties.getGranularity())) {
 				return false;
 			} else if (pNode.getKind().isMember()) {
@@ -180,11 +180,6 @@ public class TreeStructureViewBuilder {
 					}	
 				}
 			}
-//		} else if (node instanceof IRelationship) {
-//			IRelationship relation = (IRelationship)node;
-//			return properties.getRelations().contains(relation);
-		} else {
-			return true;
 		}
 		return true;
 	}
@@ -387,15 +382,12 @@ public class TreeStructureViewBuilder {
         	IProgramElement sv1 = ((IStructureViewNode)o1).getStructureNode();
         	IProgramElement sv2 = ((IStructureViewNode)o2).getStructureNode();        
 			
-            if (sv1 instanceof IProgramElement && sv2 instanceof IProgramElement) {
+            if (sv1!=null && sv2!=null) {
          
-            	IProgramElement p1 = (IProgramElement)sv1;
-            	IProgramElement p2 = (IProgramElement)sv2;
+				if (sv2.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return 1;
+				if (sv1.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return -1;
             	
-				if (p2.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return 1;
-				if (p1.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return -1;
-            	
-				return p1.getName().compareTo(p2.getName());
+				return sv1.getName().compareTo(sv2.getName());
             } else {
             	return 0;	
            }
@@ -405,15 +397,13 @@ public class TreeStructureViewBuilder {
     private static final Comparator DECLARATIONAL_COMPARATOR = new Comparator() {
         public int compare(Object o1, Object o2) {            
         	IProgramElement sv1 = ((IStructureViewNode)o1).getStructureNode();
-        	IProgramElement sv2 = ((IStructureViewNode)o2).getStructureNode();        
-            if (sv1 instanceof IProgramElement && sv2 instanceof IProgramElement) {
-            	IProgramElement p1 = (IProgramElement)sv1;
-            	IProgramElement p2 = (IProgramElement)sv2;
-            	if (p2.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return 1;
-				if (p1.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return -1;
-            	if (p1.getSourceLocation() == null || p2.getSourceLocation() == null) {
+        	IProgramElement sv2 = ((IStructureViewNode)o2).getStructureNode();      
+            if (sv1!=null && sv2!=null) {
+            	if (sv2.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return 1;
+				if (sv1.getKind() == IProgramElement.Kind.IMPORT_REFERENCE) return -1;
+            	if (sv1.getSourceLocation() == null || sv2.getSourceLocation() == null) {
             		return 0;
-            	} else if (p1.getSourceLocation().getLine() < p2.getSourceLocation().getLine()) {
+            	} else if (sv1.getSourceLocation().getLine() < sv2.getSourceLocation().getLine()) {
             		return -1;
             	} else {
             		return 1;

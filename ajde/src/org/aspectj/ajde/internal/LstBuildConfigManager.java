@@ -87,7 +87,7 @@ public class LstBuildConfigManager implements BuildConfigManager {
         addFilesToDirTree(model, relativePaths, badEntries);
         
         pruneEmptyDirs(root);
-        sortModel((BuildConfigNode)model.getRoot(), ALPHABETICAL_COMPARATOR);
+        sortModel(model.getRoot(), ALPHABETICAL_COMPARATOR);
         //addImportedFilesToDirTree(model, importedFiles);
         
         addProblemEntries(root, badEntries);

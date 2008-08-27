@@ -61,7 +61,7 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
         SwingTreeViewNode treeNode = (SwingTreeViewNode)tree.getLastSelectedPathComponent();
         if (treeNode != null && !e.isControlDown() && !e.isShiftDown() && e.getModifiers() != 4) {
             IProgramElement currNode = (IProgramElement)treeNode.getUserObject();
-            if (currNode instanceof IProgramElement && !e.isControlDown()
+            if (currNode!=null && !e.isControlDown()
                 && !e.isShiftDown() && e.getModifiers() != 4) {
                 //AjdeUIManager.getDefault().getViewManager().showNodeInMasterView((ProgramElementNode)currNode);
                 //if (AjdeUIManager.getDefault().getViewManager().isSplitViewMode()) {
@@ -83,7 +83,7 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
             SwingTreeViewNode treeNode = (SwingTreeViewNode)tree.getLastSelectedPathComponent();
             if (treeNode != null) {
                 IProgramElement currNode = (IProgramElement)treeNode.getUserObject();
-                if (currNode instanceof IProgramElement && !e.isControlDown() && !e.isShiftDown()
+                if (currNode!=null && !e.isControlDown() && !e.isShiftDown()
                     && e.getModifiers() != 4) {
                     //AjdeUIManager.getDefault().getViewManager().showNodeInMasterView(((LinkNode)currNode).getProgramElementNode());
                     //AjdeUIManager.getDefault().getViewManager().showNodeInSlaveView(((LinkNode)currNode).getProgramElementNode());

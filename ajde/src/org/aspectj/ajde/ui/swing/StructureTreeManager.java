@@ -81,7 +81,7 @@ class StructureTreeManager {
     private void highlightNode(SwingTreeViewNode parent, IProgramElement node) {
         for (int i = 0; i < parent.getChildCount(); i++) {
             SwingTreeViewNode currNode = (SwingTreeViewNode)parent.getChildAt(i);
-            IProgramElement sNode = (IProgramElement)currNode.getStructureNode();
+            IProgramElement sNode = currNode.getStructureNode();
             if (sNode != null && sNode.equals(node) && currNode.getKind() != IStructureViewNode.Kind.LINK) {
                 TreePath path = new TreePath(currNode.getPath());
                 structureTree.setSelectionPath(path);
@@ -177,7 +177,7 @@ class StructureTreeManager {
         structureTree.expandPath(structureTree.getPathForRow(0));
     }
 
-    private class StructureTreeModel extends DefaultTreeModel implements TreeModel {
+    private static class StructureTreeModel extends DefaultTreeModel {
         
 		private static final long serialVersionUID = 1L;
 

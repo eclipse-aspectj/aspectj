@@ -107,7 +107,7 @@ public class BrowserViewPanel extends JPanel implements StructureViewRenderer {
 
     public void updateView(StructureView structureView) {
     	if (structureView instanceof GlobalStructureView) {
-    		treeManager.updateTree((GlobalStructureView)structureView);
+    		treeManager.updateTree(structureView);
     	}
     }
 

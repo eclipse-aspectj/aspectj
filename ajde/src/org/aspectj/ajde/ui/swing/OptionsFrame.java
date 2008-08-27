@@ -142,20 +142,20 @@ public class OptionsFrame extends JFrame {
         setVisible(true);
         main_tabbedPane.setSelectedComponent(panel);
     }
-
-	private void loadOptions() {
-		try {
-			Component[] components = main_tabbedPane.getComponents();
-			for (int i = 0; i < components.length; i++) {
-				if (components[i] instanceof OptionsPanel) {
-					((OptionsPanel)components[i]).loadOptions();
-				}
-			}
-		} catch (IOException ioe) {
-        	Message msg = new Message("Could not load options.",IMessage.ERROR,ioe,null);
-        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
-		}
-	}
+//
+//	private void loadOptions() {
+//		try {
+//			Component[] components = main_tabbedPane.getComponents();
+//			for (int i = 0; i < components.length; i++) {
+//				if (components[i] instanceof OptionsPanel) {
+//					((OptionsPanel)components[i]).loadOptions();
+//				}
+//			}
+//		} catch (IOException ioe) {
+//        	Message msg = new Message("Could not load options.",IMessage.ERROR,ioe,null);
+//        	Ajde.getDefault().getMessageHandler().handleMessage(msg);
+//		}
+//	}
 
 	private void saveOptions() {
 		try {

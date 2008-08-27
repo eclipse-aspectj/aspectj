@@ -90,7 +90,7 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
             jLabel1.setText(" Build configuration: " + configFile);
 
             model = Ajde.getDefault().getBuildConfigManager().buildModel(configFile);            
-			root = buildTree((BuildConfigNode)model.getRoot());
+			root = buildTree(model.getRoot());
 
             buildConfig_tree.setModel(new DefaultTreeModel(root));
             buildConfig_tree.addMouseListener(new ConfigFileMouseAdapter(buildConfig_tree));
@@ -155,7 +155,7 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
         jScrollPane.getViewport().add(buildConfig_tree, null);
     }
 
-    private class ConfigTreeNode extends DefaultMutableTreeNode {
+    private static class ConfigTreeNode extends DefaultMutableTreeNode {
        
 		private static final long serialVersionUID = 1L;
 		public JCheckBox checkBox = null;
@@ -176,7 +176,7 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
 
     }
 
-    private class ConfigFileMouseAdapter extends MouseAdapter {
+    private static class ConfigFileMouseAdapter extends MouseAdapter {
         private JTree tree = null;
         final JCheckBox checkBoxProto = new JCheckBox();
         final int width = checkBoxProto.getPreferredSize().width;

@@ -93,8 +93,8 @@ public class StructureViewManager {
 			newFilePath,
 			lineNumber);
 		
-		if (currNode instanceof IProgramElement) {
-			navigationAction((IProgramElement)currNode, true);	
+		if (currNode!=null) {
+			navigationAction(currNode, true);	
 		}
 	} 
 		
@@ -127,7 +127,7 @@ public class StructureViewManager {
     		StructureView view = (StructureView)it.next();
     		if (!(view instanceof GlobalStructureView) || !recordHistory || defaultFileView == null) {
 	    		if (node.getKind().equals(IProgramElement.Kind.CODE)) {
-	    			IProgramElement parentNode = (IProgramElement)node.getParent();
+	    			IProgramElement parentNode = node.getParent();
 	    			if (parentNode != null) {
 		    			IStructureViewNode currNode = view.findCorrespondingViewNode(parentNode);
 		    			int lineOffset = node.getSourceLocation().getLine() - parentNode.getSourceLocation().getLine();

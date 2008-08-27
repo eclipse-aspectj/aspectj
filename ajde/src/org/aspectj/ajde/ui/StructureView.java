@@ -57,7 +57,7 @@ public abstract class StructureView {
 	 */
 	public IStructureViewNode getActiveNode() {
 		if (activeNode != null 
-			&& activeNode.getStructureNode() instanceof IProgramElement) {
+			&& activeNode.getStructureNode()!=null) {
 			return activeNode;
 		} else {
 			return null;

@@ -225,7 +225,7 @@ public class Ajde {
 				} else if (0 != result) {
 					String m = "Result of running " + context;
 					uiBuildMsgHandler.handleMessage(new Message(m,
-							IMessage.ERROR, thrown, null));
+							IMessage.ERROR, null, null));
 				}
 				if (null != any.fromInPipe) {
 					String m = "Error processing input pipe for " + context;
@@ -245,8 +245,7 @@ public class Ajde {
 			}
 		};
 
-		controller = LangUtil.makeProcess(controller, props.classpath,
-				props.mainClass, props.args);
+		controller = LangUtil.makeProcess(controller, props.classpath, props.mainClass, props.args);
 
 		command.append(Arrays.asList(controller.getCommand()).toString());
 
@@ -347,7 +346,7 @@ public class Ajde {
 		compilerThread.start();
 	}
 
-	class CompilerThread extends Thread {
+	static class CompilerThread extends Thread {
 
 		private AjCompiler compiler;
 		private boolean buildFresh;
@@ -505,8 +504,7 @@ public class Ajde {
 	public AjCompiler getCompilerForConfigFile(String configFile) {
 		if (configFile == null)
 			return null;
-		if ((compiler == null || !compiler.getId().equals(configFile))
-				&& configFile != null) {
+		if ((compiler == null || !compiler.getId().equals(configFile))) {
 			if (compiler != null) {
 				// have to remove the incremental state of the previous
 				// compiler - this will remove it from the

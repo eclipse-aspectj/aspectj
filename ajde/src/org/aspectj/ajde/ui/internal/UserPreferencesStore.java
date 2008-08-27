@@ -34,7 +34,7 @@ import org.aspectj.util.LangUtil;
 
 public class UserPreferencesStore implements UserPreferencesAdapter {
     public static final String FILE_NAME = "/.ajbrowser";
-    private final String VALUE_SEP = ";";
+    private static final String VALUE_SEP = ";";
     private Properties properties = new Properties();
     private boolean persist = true;
 	

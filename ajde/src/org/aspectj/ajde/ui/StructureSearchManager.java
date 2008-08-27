@@ -39,10 +39,10 @@ public class StructureSearchManager {
 		
 		List matches = new ArrayList();
 		IHierarchy model = AsmManager.getDefault().getHierarchy();
-		if (model.equals(IHierarchy.NO_STRUCTURE)) {
+		if (model.getRoot().equals(IHierarchy.NO_STRUCTURE)) {
 			return null;
 		} else {
-			return findMatchesHelper((IProgramElement)model.getRoot(), pattern, kind, matches);
+			return findMatchesHelper(model.getRoot(), pattern, kind, matches);
 		}
 	}					
 	
@@ -61,9 +61,9 @@ public class StructureSearchManager {
 		if (node != null && node.getChildren() != null) {
 			for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
 				IProgramElement nextNode = (IProgramElement)it.next();
-				if (nextNode instanceof IProgramElement) {
+				if (nextNode!=null) {
 					findMatchesHelper(
-							(IProgramElement)nextNode, 
+							nextNode, 
 							pattern, 
 							kind,
 							matches);

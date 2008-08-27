@@ -76,9 +76,7 @@ public abstract class AbstractIconRegistry {
 	/**
 	 * @return	null if the kind could not be resolved
 	 */
-	protected AbstractIcon getStructureIcon(IProgramElement.Kind kind, IProgramElement.Accessibility accessibility) {
-		return getStructureIcon(kind, IProgramElement.Accessibility.PUBLIC);
-	}	
+	protected abstract AbstractIcon getStructureIcon(IProgramElement.Kind kind, IProgramElement.Accessibility accessibility);
 	
 	/**
 	 * Assumes "public" visibility for the icon.

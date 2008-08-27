@@ -42,8 +42,7 @@ public class BuildConfigModel {
 			return upPathMatch;
 		} else {
 			StringTokenizer st = new StringTokenizer(path, "/");
-			BuildConfigNode node = (BuildConfigNode)root;
-			return getNodeForPathHelper(st, node);
+			return getNodeForPathHelper(st, root);
 		}
 	}
 
@@ -72,7 +71,7 @@ public class BuildConfigModel {
 	
 	public List getActiveNodes(BuildConfigNode.Kind kind) {
 		List nodes = new ArrayList();
-		getActiveNodesHelper((BuildConfigNode)getRoot(), kind, nodes);
+		getActiveNodesHelper(root, kind, nodes);
 		return nodes;
 	}
 
@@ -134,8 +133,7 @@ public class BuildConfigModel {
 				&& ((node.getSourceLocation().getLine() <= lineNumber
 					&& node.getSourceLocation().getEndLine() >= lineNumber)
 					||
-					(lineNumber <= 1
-					 && node instanceof BuildConfigNode)	
+					(lineNumber <= 1)	
 				);
 		} catch (IOException ioe) { 
 			return false;
