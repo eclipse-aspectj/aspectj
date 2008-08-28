@@ -22,14 +22,13 @@ import org.aspectj.ajde.core.ICompilerConfiguration;
 import org.aspectj.ajde.core.IOutputLocationManager;
 
 /**
- * ICompilerConfiguration which mirrors the way AJDT behaves. Always returns
- * that its 1.5 compliant and enables the setting of all options except
- * output jar.
+ * ICompilerConfiguration which mirrors the way AJDT behaves. Always returns that its 1.5 compliant and enables the setting of all
+ * options except output jar.
  */
 public class MultiProjTestCompilerConfiguration implements ICompilerConfiguration {
 
 	private boolean verbose = false;
-	
+
 	private String classPath = "";
 	private Set aspectPath = null;
 	private Map sourcePathResources = null;
@@ -39,15 +38,18 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 	private Set inpath;
 	private String outjar;
 	private String nonstandardoptions;
+	private List modifiedFiles;
 	private List projectSourceFiles = new ArrayList();
 	private String projectPath;
+
+	int changed;
 
 	public MultiProjTestCompilerConfiguration(String projectPath) {
 		this.projectPath = projectPath;
 	}
-	
+
 	public Set getAspectPath() {
-		log("ICompilerConfiguration.getAspectPath("+aspectPath+")");
+		log("ICompilerConfiguration.getAspectPath(" + aspectPath + ")");
 		return aspectPath;
 	}
 
@@ -60,27 +62,21 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 			File dir = (File) iterator.next();
 			sb.append(File.pathSeparator + dir.getAbsolutePath());
 		}
-		String cp =  
-		  sb.toString() + File.pathSeparator + 
-		  new File(AjdeInteractionTestbed.testdataSrcDir) + File.pathSeparator +
-		  System.getProperty("sun.boot.class.path") + 
-		  File.pathSeparator + "../runtime/bin" +
-		  File.pathSeparator + this.classPath + 
-		  File.pathSeparator +  System.getProperty("aspectjrt.path") +
-		  File.pathSeparator +  "../lib/junit/junit.jar" +
-		  "c:/batik/batik-1.6/lib/batik-util.jar;"+
-		  "c:/batik/batik-1.6/lib/batik-awt-util.jar;"+
-		  "c:/batik/batik-1.6/lib/batik-dom.jar;"+
-		  "c:/batik/batik-1.6/lib/batik-svggen.jar;"+
-		  File.pathSeparator+".."+File.separator+"lib" + File.separator+"test"+File.separator+"aspectjrt.jar";
-		
+		String cp = sb.toString() + File.pathSeparator + new File(AjdeInteractionTestbed.testdataSrcDir) + File.pathSeparator
+				+ System.getProperty("sun.boot.class.path") + File.pathSeparator + "../runtime/bin" + File.pathSeparator
+				+ this.classPath + File.pathSeparator + System.getProperty("aspectjrt.path") + File.pathSeparator
+				+ "../lib/junit/junit.jar" + "c:/batik/batik-1.6/lib/batik-util.jar;"
+				+ "c:/batik/batik-1.6/lib/batik-awt-util.jar;" + "c:/batik/batik-1.6/lib/batik-dom.jar;"
+				+ "c:/batik/batik-1.6/lib/batik-svggen.jar;" + File.pathSeparator + ".." + File.separator + "lib" + File.separator
+				+ "test" + File.separator + "aspectjrt.jar";
+
 		// look at dependant projects
-		if (dependants!=null) {
+		if (dependants != null) {
 			for (Iterator iter = dependants.iterator(); iter.hasNext();) {
-				cp = AjdeInteractionTestbed.getFile((String)iter.next(),"bin")+File.pathSeparator+cp;
+				cp = AjdeInteractionTestbed.getFile((String) iter.next(), "bin") + File.pathSeparator + cp;
 			}
 		}
-		//System.err.println("For project "+projectPath+" getClasspath() returning "+cp);
+		// System.err.println("For project "+projectPath+" getClasspath() returning "+cp);
 		return cp;
 	}
 
@@ -91,17 +87,18 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 
 	public Map getJavaOptionsMap() {
 		log("ICompilerConfiguration.getJavaOptionsMap()");
-		if (javaOptionsMap != null && !javaOptionsMap.isEmpty() ) return javaOptionsMap;
-		
+		if (javaOptionsMap != null && !javaOptionsMap.isEmpty())
+			return javaOptionsMap;
+
 		Hashtable ht = new Hashtable();
-		ht.put("org.eclipse.jdt.core.compiler.compliance","1.5");
-		ht.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform","1.5");
-		ht.put("org.eclipse.jdt.core.compiler.source","1.5");
-		return ht;				
+		ht.put("org.eclipse.jdt.core.compiler.compliance", "1.5");
+		ht.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.5");
+		ht.put("org.eclipse.jdt.core.compiler.source", "1.5");
+		return ht;
 	}
 
 	public String getNonStandardOptions() {
-		log("ICompilerConfiguration.getNonStandardOptions( " + nonstandardoptions +")");
+		log("ICompilerConfiguration.getNonStandardOptions( " + nonstandardoptions + ")");
 		return nonstandardoptions;
 	}
 
@@ -125,59 +122,88 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 
 	public List getProjectSourceFilesChanged() {
 		log("ICompilerConfiguration.getProjectSourceFilesChanged()");
-		return null;
+		return modifiedFiles;
 	}
 
 	public Map getSourcePathResources() {
 		log("ICompilerConfiguration.getSourcePathResources()");
 		return sourcePathResources;
 	}
-	
+
 	public void log(String s) {
-		if (verbose) System.out.println(s);
+		if (verbose)
+			System.out.println(s);
 	}
-	
+
 	public void addDependancy(String projectItDependsOn) {
 		if (dependants == null) {
 			dependants = new ArrayList();
 		}
 		dependants.add(projectItDependsOn);
 	}
-	
+
 	// -------------------- setter methods useful for testing ---------------
 	public void setAspectPath(Set aspectPath) {
 		this.aspectPath = aspectPath;
+		this.changed |= ICompilerConfiguration.ASPECTPATH_CHANGED;
 	}
 
 	public void setInpath(Set inpath) {
 		this.inpath = inpath;
+		this.changed |= ICompilerConfiguration.INPATH_CHANGED;
 	}
 
 	public void setOutjar(String outjar) {
 		this.outjar = outjar;
+		this.changed |= ICompilerConfiguration.OUTJAR_CHANGED;
 	}
 
 	public void setJavaOptions(Map javaOptions) {
 		this.javaOptionsMap = javaOptions;
+		this.changed |= ICompilerConfiguration.JAVAOPTIONS_CHANGED;
 	}
-	
+
 	public void setNonStandardOptions(String options) {
 		this.nonstandardoptions = options;
+		this.changed |= ICompilerConfiguration.NONSTANDARDOPTIONS_CHANGED;
 	}
 
 	public void setProjectSourceFiles(List projectSourceFiles) {
 		this.projectSourceFiles = projectSourceFiles;
+		this.changed |= ICompilerConfiguration.PROJECTSOURCEFILES_CHANGED;
+	}
+
+	public void addProjectSourceFileChanged(File f) {
+		if (this.modifiedFiles == null) {
+			this.modifiedFiles = new ArrayList();
+		}
+		if (f != null) {
+			modifiedFiles.add(f);
+		}
 	}
 
 	public void setSourcePathResources(Map sourcePathResources) {
 		this.sourcePathResources = sourcePathResources;
+		this.changed |= ICompilerConfiguration.PROJECTSOURCERESOURCES_CHANGED;
 	}
-	
-	public void setOutputLocationManager(IOutputLocationManager manager)  {
+
+	public void setOutputLocationManager(IOutputLocationManager manager) {
 		this.outputLocationManager = manager;
 	}
-	
+
 	public void setClasspath(String path) {
 		this.classPath = path;
+		this.changed |= ICompilerConfiguration.CLASSPATH_CHANGED;
 	}
+
+	public int getConfigurationChanges() {
+		return changed;
+		// return EVERYTHING;
+	}
+
+	public void configurationRead() {
+		changed = NO_CHANGES;
+		modifiedFiles = null;
+	}
+
 }
