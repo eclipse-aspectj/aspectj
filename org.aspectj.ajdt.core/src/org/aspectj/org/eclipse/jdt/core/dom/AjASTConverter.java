@@ -157,7 +157,7 @@ public class AjASTConverter extends ASTConverter {
 				adviceDecl.setBody(block);
 			}
 			if (block != null && statements != null) {
-				int statementsLength = statements == null ? 0 : statements.length;
+				int statementsLength = statements.length;
 				for (int i = 0; i < statementsLength; i++) {
 					if (statements[i] instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.LocalDeclaration) {
 						checkAndAddMultipleLocalDeclaration(statements, i, block.statements());

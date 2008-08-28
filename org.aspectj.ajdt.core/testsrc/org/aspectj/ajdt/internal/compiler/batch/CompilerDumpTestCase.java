@@ -24,78 +24,75 @@ public class CompilerDumpTestCase extends AjcTestCase {
 	private File baseDir;
 	private File dumpFile;
 	private IMessage.Kind savedDumpCondition;
-	
+
 	protected void setUp() throws Exception {
 		super.setUp();
 
-		baseDir = new File("../org.aspectj.ajdt.core/testdata",PROJECT_DIR);
+		baseDir = new File("../org.aspectj.ajdt.core/testdata", PROJECT_DIR);
 		dumpFile = null;
 		savedDumpCondition = Dump.getDumpOnExit();
 	}
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		
+
 		if (dumpFile != null && dumpFile.exists()) {
 			boolean deleted = dumpFile.delete();
-			assertTrue("Dump file '" + dumpFile.getPath() + "' could not be deleted",deleted);
-		} 
+			assertTrue("Dump file '" + dumpFile.getPath() + "' could not be deleted", deleted);
+		}
 		Dump.setDumpOnExit(savedDumpCondition);
 	}
 
 	/**
-	 * Aim: Dump after successful compile to ensure it contains the command 
-	 * line information.
+	 * Aim: Dump after successful compile to ensure it contains the command line information.
 	 * 
-	 * Inputs to the compiler:
-	 *   HelloWorld.java Pointcuts.aj Aspect.aj
+	 * Inputs to the compiler: HelloWorld.java Pointcuts.aj Aspect.aj
 	 * 
 	 * Expected result = Compile succeeds.
 	 */
-	public void testDump () {
+	public void testDump() {
 		String[] args = new String[] { "src/HelloWorld.java", "src/Pointcuts.aj", "src/Aspect.aj" };
-		CompilationResult result = ajc(baseDir,args);
+		CompilationResult result = ajc(baseDir, args);
 		assertNoMessages(result);
 		String fileName = Dump.dump("DumpTestCase.testDump()");
 		dumpFile = new File(fileName);
-		org.aspectj.weaver.DumpTestCase.assertContents(dumpFile,"Command Line","HelloWorld.java");
+		org.aspectj.weaver.DumpTestCase.assertContents(dumpFile, "Command Line", "HelloWorld.java");
 	}
-	
+
 	/**
-	 * Aim: Dump after successful compile to ensure it contains warning 
-	 * messages. 
+	 * Aim: Dump after successful compile to ensure it contains warning messages.
 	 * 
-	 * Inputs to the compiler:
-	 *   HelloWorld.java Pointcuts.aj Aspect.aj DeclareWarning.aj
+	 * Inputs to the compiler: HelloWorld.java Pointcuts.aj Aspect.aj DeclareWarning.aj
 	 * 
 	 * Expected result = Compile succeeds.
 	 */
-	public void testDumpWithWarnings () {
+	public void testDumpWithWarnings() {
 		String[] args = new String[] { "src/HelloWorld.java", "src/Pointcuts.aj", "src/DeclareWarning.aj" };
 		Dump.preserveOnNextReset();
-		CompilationResult result = ajc(baseDir,args);
+		// CompilationResult result =
+		ajc(baseDir, args);
 		String fileName = Dump.dump("DumpTestCase.testDumpWithWarnings()");
 		dumpFile = new File(fileName);
-		org.aspectj.weaver.DumpTestCase.assertContents(dumpFile,"Compiler Messages","warning");
+		org.aspectj.weaver.DumpTestCase.assertContents(dumpFile, "Compiler Messages", "warning");
 	}
-	
+
 	/**
-	 * Aim: Dump due to errors. 
+	 * Aim: Dump due to errors.
 	 * 
-	 * Inputs to the compiler:
-	 *   HelloWorld.java Pointcuts.aj Aspect.aj DeclareError.aj
+	 * Inputs to the compiler: HelloWorld.java Pointcuts.aj Aspect.aj DeclareError.aj
 	 * 
 	 * Expected result = Compile fails and dump file created.
 	 */
-	public void testWithErrors () {
+	public void testWithErrors() {
 		Dump.setDumpOnExit(IMessage.ERROR);
 		String previousFileName = Dump.getLastDumpFileName();
 		String[] args = new String[] { "src/HelloWorld.java", "src/Pointcuts.aj", "src/DeclareError.aj" };
-		CompilationResult result = ajc(baseDir,args);
+		// CompilationResult result =
+		ajc(baseDir, args);
 		String fileName = Dump.getLastDumpFileName();
-		assertTrue("Dump file should be created",!fileName.equals(previousFileName));
+		assertTrue("Dump file should be created", !fileName.equals(previousFileName));
 		dumpFile = new File(fileName);
-		org.aspectj.weaver.DumpTestCase.assertContents(dumpFile,"Compiler Messages","error");
+		org.aspectj.weaver.DumpTestCase.assertContents(dumpFile, "Compiler Messages", "error");
 	}
 
 }
