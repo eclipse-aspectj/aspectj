@@ -21,6 +21,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.apache.bcel.Constants;
@@ -597,7 +598,7 @@ public class Utility {
     	LazyMethodGen enclosingMethod) 
     {
         InstructionList il = enclosingMethod.getBody();
-        InstructionTargeter[] targeters = ih.getTargeters();
+        InstructionTargeter[] targeters = ih.getTargetersArray();
         if (targeters != null) {
             for (int i = targeters.length - 1; i >= 0; i--) {
                 InstructionTargeter targeter = targeters[i];
@@ -669,16 +670,13 @@ public class Utility {
 		// arbitrary rule that we will never lookahead more than 100 instructions for a line #
 		while (lookahead++ < 100) {
 			if (ih == null) return -1;
-			
-	        InstructionTargeter[] ts = ih.getTargeters();
-	        if (ts != null) { 
-	            for (int j = ts.length - 1; j >= 0; j--) {
-	                InstructionTargeter t = ts[j];
+			Iterator tIter = ih.getTargeters().iterator();
+			while (tIter.hasNext()) {
+	                InstructionTargeter t = (InstructionTargeter)tIter.next();
 	                if (t instanceof LineNumberTag) {
 	                	return ((LineNumberTag)t).getLineNumber();
 	                }
 	            }
-	        }
 //	        if (goforwards) ih=ih.getNext(); else 
 	        	ih=ih.getPrev();
 		}
