@@ -921,19 +921,19 @@ public class AjState {
 	// }
 	// }
 
-	private void maybeDeleteResource(String resName, List oldResources) {
-		if (resources.contains(resName)) {
-			oldResources.remove(resName);
-			List outputDirs = getOutputLocations(buildConfig);
-			for (Iterator iterator = outputDirs.iterator(); iterator.hasNext();) {
-				File dir = (File) iterator.next();
-				File source = new File(dir, resName);
-				if (source.exists() && (source.lastModified() >= lastSuccessfulBuildTime)) {
-					resources.remove(resName); // will ensure it is re-copied
-				}
-			}
-		}
-	}
+	// private void maybeDeleteResource(String resName, List oldResources) {
+	// if (resources.contains(resName)) {
+	// oldResources.remove(resName);
+	// List outputDirs = getOutputLocations(buildConfig);
+	// for (Iterator iterator = outputDirs.iterator(); iterator.hasNext();) {
+	// File dir = (File) iterator.next();
+	// File source = new File(dir, resName);
+	// if (source.exists() && (source.lastModified() >= lastSuccessfulBuildTime)) {
+	// resources.remove(resName); // will ensure it is re-copied
+	// }
+	// }
+	// }
+	// }
 
 	// private void deleteResourcesFromDirectory(File dir, List oldResources) {
 	// File[] files = FileUtil.listFiles(dir, new FileFilter() {

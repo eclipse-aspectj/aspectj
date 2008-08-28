@@ -119,21 +119,22 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 		le.factory = eFactory;
 		forCompiler.lookupEnvironment = le;
 
-		AjBuildNotifier ajNotifier = (AjBuildNotifier) notifier;
+		// AjBuildNotifier ajNotifier = (AjBuildNotifier) notifier;
 		if (fileNameProvider == null)
 			fileNameProvider = new OutputFileNameProvider(getProject());
 
 		// * the set of binary source entries for this compile -- from analyzing deltas, or everything if batch
 		// * the full set of binary source entries for the project -- from IAspectJProject
 		// TODO deal with inpath, injars here...
-		IBinarySourceProvider bsProvider = new NullBinarySourceProvider();
-		Map fullBinarySourceEntries = new HashMap();
+		// IBinarySourceProvider bsProvider = new NullBinarySourceProvider();
+		// Map fullBinarySourceEntries = new HashMap();
 
 		// * the intermediate result set from the last batch compile
 		if (isBatchBuild) {
 			unwovenResultCollector = new UnwovenResultCollector();
 		}
-		Collection resultSetForFullWeave = unwovenResultCollector.getIntermediateResults();
+		// Collection resultSetForFullWeave =
+		unwovenResultCollector.getIntermediateResults();
 
 		throw new UnsupportedOperationException("Is anyone actually using the AspectJBuilder class??");
 		// return new AjCompilerAdapter(forCompiler,isBatchBuild,myBcelWorld,

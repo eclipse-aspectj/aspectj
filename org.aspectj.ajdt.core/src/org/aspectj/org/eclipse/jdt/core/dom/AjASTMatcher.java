@@ -101,7 +101,7 @@ public class AjASTMatcher extends ASTMatcher {
 		if (!(other instanceof PerTypeWithin)) {
 			return false;
 		}
-		PerTypeWithin o = (PerTypeWithin) other;
+		// PerTypeWithin o = (PerTypeWithin) other;
 		return true; // ajh02: stub, should look at the type pattern
 	}
 

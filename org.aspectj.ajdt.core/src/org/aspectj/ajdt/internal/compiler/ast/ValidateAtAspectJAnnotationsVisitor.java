@@ -266,7 +266,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 
 		int[] pcLoc = new int[2];
 		String perClause = getStringLiteralFor("value", aspectAnnotation, pcLoc);
-		AspectDeclaration aspectDecl = new AspectDeclaration(typeDecl.compilationResult);
+		// AspectDeclaration aspectDecl = new AspectDeclaration(typeDecl.compilationResult);
 
 		try {
 			if (perClause != null && !perClause.equals("")) {
@@ -326,7 +326,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			int[] throwingLocation = new int[2];
 			String thrownFormal = getStringLiteralFor("throwing", ajAnnotations.adviceAnnotation, throwingLocation);
 			if (thrownFormal != null) {
-				Argument[] arguments = methodDeclaration.arguments;
+				// Argument[] arguments = methodDeclaration.arguments;
 				if (!toArgumentNames(methodDeclaration.arguments).contains(thrownFormal)) {
 					methodDeclaration.scope.problemReporter().signalError(methodDeclaration.sourceStart,
 							methodDeclaration.sourceEnd,

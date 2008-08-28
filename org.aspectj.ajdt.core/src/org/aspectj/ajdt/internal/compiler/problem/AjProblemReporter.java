@@ -350,7 +350,6 @@ public class AjProblemReporter extends ProblemReporter {
 	 * the other methodMustOverride() method is used.
 	 */
 	public void methodMustOverride(AbstractMethodDeclaration method) {
-		MethodBinding binding = method.binding;
 
 		// ignore ajc$ methods
 		if (new String(method.selector).startsWith("ajc$"))

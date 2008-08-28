@@ -603,7 +603,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	public AnnotationX convertEclipseAnnotation(Annotation eclipseAnnotation, World w) {
 		// TODO if it is sourcevisible, we shouldn't let it through!!!!!!!!! testcase!
 		ResolvedType annotationType = factory.fromTypeBindingToRTX(eclipseAnnotation.type.resolvedType);
-		long bs = (eclipseAnnotation.bits & TagBits.AnnotationRetentionMASK);
+		// long bs = (eclipseAnnotation.bits & TagBits.AnnotationRetentionMASK);
 		boolean isRuntimeVisible = (eclipseAnnotation.bits & TagBits.AnnotationRetentionMASK) == TagBits.AnnotationRuntimeRetention;
 		AnnotationAJ annotationAJ = new AnnotationAJ(annotationType.getSignature(), isRuntimeVisible);
 		generateAnnotation(eclipseAnnotation, annotationAJ);

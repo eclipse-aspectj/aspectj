@@ -193,7 +193,7 @@ public class AjdtCommandTestCase extends TestCase {
 		}
 
 		String text = byteArrayOut.toString();
-		String text2 = byteArrayErr.toString();
+		// String text2 = byteArrayErr.toString();
 		assertTrue("version output does not include 'AspectJ Compiler', output was:\n'" + text + "'", text
 				.indexOf("AspectJ Compiler") != -1);
 	}

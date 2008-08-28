@@ -283,7 +283,8 @@ public class AjASTTest extends AjASTTestCase {
 
 	public void testPropertyDescriptorsForDefaultTypePattern() {
 		AjAST ajast = createAjAST();
-		DefaultTypePattern d = ajast.newDefaultTypePattern();
+		// DefaultTypePattern d =
+		ajast.newDefaultTypePattern();
 		List props = DefaultTypePattern.propertyDescriptors(AST.JLS3);
 		assertEquals("there should be no properties for the DefaultTypePattern", 0, props.size());
 	}
@@ -314,7 +315,8 @@ public class AjASTTest extends AjASTTestCase {
 
 	public void testPropertyDescriptorsForSignaturePattern() {
 		AjAST ajast = createAjAST();
-		SignaturePattern p = ajast.newSignaturePattern();
+		// SignaturePattern p =
+		ajast.newSignaturePattern();
 		List props = SignaturePattern.propertyDescriptors(AST.JLS3);
 		assertEquals("there should be no properties for the DefaultTypePattern", 0, props.size());
 	}
@@ -718,7 +720,8 @@ public class AjASTTest extends AjASTTestCase {
 
 	public void testPropertyDescriptorsForAjTypeDeclaration() {
 		AjAST ajast = createAjAST();
-		AjTypeDeclaration d = ajast.newAjTypeDeclaration();
+		// AjTypeDeclaration d =
+		ajast.newAjTypeDeclaration();
 		List props = AjTypeDeclaration.propertyDescriptors(AST.JLS3);
 		boolean foundAspect = false;
 		for (Iterator iter = props.iterator(); iter.hasNext();) {
