@@ -88,7 +88,6 @@ import org.aspectj.apache.bcel.classfile.SourceFile;
 import org.aspectj.apache.bcel.classfile.StackMap;
 import org.aspectj.apache.bcel.classfile.Synthetic;
 import org.aspectj.apache.bcel.classfile.Unknown;
-import org.aspectj.apache.bcel.classfile.ClassVisitor;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
@@ -107,10 +106,10 @@ import org.aspectj.apache.bcel.verifier.exc.AssertionViolatedException;
  * Note that this class also serves as a placeholder for more sophisticated message
  * handling in future versions of JustIce.
  * 
- * @version $Id: StringRepresentation.java,v 1.2 2008/05/28 23:52:54 aclement Exp $
+ * @version $Id: StringRepresentation.java,v 1.3 2008/08/28 00:02:14 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
-public class StringRepresentation extends org.aspectj.apache.bcel.verifier.EmptyClassVisitor implements ClassVisitor{
+public class StringRepresentation extends org.aspectj.apache.bcel.verifier.EmptyClassVisitor{
 	/** The string representation, created by a visitXXX() method, output by toString(). */
 	private String tostring;
   /** The node we ask for its string representation. Not really needed; only for debug output. */

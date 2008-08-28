@@ -77,7 +77,6 @@ import org.aspectj.apache.bcel.generic.RET;
 import org.aspectj.apache.bcel.generic.ReturnaddressType;
 import org.aspectj.apache.bcel.generic.TABLESWITCH;
 import org.aspectj.apache.bcel.generic.Type;
-import org.aspectj.apache.bcel.generic.InstVisitor;
 import org.aspectj.apache.bcel.verifier.EmptyInstVisitor;
 
 /**
@@ -103,12 +102,12 @@ import org.aspectj.apache.bcel.verifier.EmptyInstVisitor;
  * If a two-slot type is stored into a local variable, the next variable
  * is given the type Type.UNKNOWN.
  *
- * @version $Id: ExecutionVisitor.java,v 1.2 2008/05/28 23:53:02 aclement Exp $
+ * @version $Id: ExecutionVisitor.java,v 1.3 2008/08/28 00:02:13 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #visitDSTORE(DSTORE o)
  * @see InstConstraintVisitor
  */
-public class ExecutionVisitor extends EmptyInstVisitor implements InstVisitor {
+public class ExecutionVisitor extends EmptyInstVisitor {
  
 	/**
 	 * The executionframe we're operating on.

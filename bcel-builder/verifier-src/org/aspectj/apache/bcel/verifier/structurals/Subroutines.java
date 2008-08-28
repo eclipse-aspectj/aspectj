@@ -84,7 +84,7 @@ import java.util.Iterator;
    *
 	 * TODO: refer to the paper.
 	 *
-	 * @version $Id: Subroutines.java,v 1.2 2008/05/28 23:53:02 aclement Exp $
+	 * @version $Id: Subroutines.java,v 1.3 2008/08/28 00:02:13 aclement Exp $
 	 * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
 	 * @see #getTopLevel()
 	 */
@@ -98,7 +98,7 @@ public class Subroutines{
 		 * field. This is used for the "top-level" Subroutine;
 		 * i.e. no subroutine.
 		 */
-		private final int UNSET = -1;
+		private final static int UNSET = -1;
 
 		/**
 		 * The Local Variable slot where the first

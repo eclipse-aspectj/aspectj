@@ -91,7 +91,6 @@ import org.aspectj.apache.bcel.classfile.Node;
 import org.aspectj.apache.bcel.classfile.SourceFile;
 import org.aspectj.apache.bcel.classfile.Synthetic;
 import org.aspectj.apache.bcel.classfile.Unknown;
-import org.aspectj.apache.bcel.classfile.ClassVisitor;
 import org.aspectj.apache.bcel.generic.ArrayType;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.Type;
@@ -112,7 +111,7 @@ import org.aspectj.apache.bcel.verifier.exc.LocalVariableInfoInconsistentExcepti
  * More detailed information is to be found at the do_verify()
  * method's documentation.
  *
- * @version $Id: Pass2Verifier.java,v 1.2 2008/05/28 23:52:54 aclement Exp $
+ * @version $Id: Pass2Verifier.java,v 1.3 2008/08/28 00:02:14 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #do_verify()
  */
@@ -313,7 +312,7 @@ public final class Pass2Verifier extends PassVerifier implements Constants{
    *
    * @see #constant_pool_entries_satisfy_static_constraints()
 	 */
-	private class CPESSC_Visitor extends org.aspectj.apache.bcel.verifier.EmptyClassVisitor implements ClassVisitor{
+	private class CPESSC_Visitor extends org.aspectj.apache.bcel.verifier.EmptyClassVisitor{
 		private Class CONST_Class;
 		/*
         private Class CONST_Fieldref;
@@ -1126,7 +1125,7 @@ public final class Pass2Verifier extends PassVerifier implements Constants{
    * @see #constant_pool_entries_satisfy_static_constraints()
 	 * @see org.aspectj.apache.bcel.classfile.ConstantCP
 	 */
-	private class FAMRAV_Visitor extends EmptyClassVisitor implements ClassVisitor{
+	private class FAMRAV_Visitor extends EmptyClassVisitor{
 		private final ConstantPool cp; // ==jc.getConstantPool() -- only here to save typing work.
 		private FAMRAV_Visitor(JavaClass _jc){
 			cp = _jc.getConstantPool();

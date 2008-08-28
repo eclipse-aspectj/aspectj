@@ -89,7 +89,6 @@ import org.aspectj.apache.bcel.generic.ReferenceType;
 import org.aspectj.apache.bcel.generic.ReturnaddressType;
 import org.aspectj.apache.bcel.generic.TABLESWITCH;
 import org.aspectj.apache.bcel.generic.Type;
-import org.aspectj.apache.bcel.generic.InstVisitor;
 
 
 /**
@@ -100,12 +99,12 @@ import org.aspectj.apache.bcel.generic.InstVisitor;
  * TODO: Currently, the JVM's behaviour concerning monitors (MONITORENTER,
  * MONITOREXIT) is not modeled in JustIce.
  *
- * @version $Id: InstConstraintVisitor.java,v 1.2 2008/05/28 23:53:03 aclement Exp $
+ * @version $Id: InstConstraintVisitor.java,v 1.3 2008/08/28 00:02:13 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see org.aspectj.apache.bcel.verifier.exc.StructuralCodeConstraintException
  * @see org.aspectj.apache.bcel.verifier.exc.LinkingConstraintException
  */
-public class InstConstraintVisitor extends EmptyInstVisitor implements InstVisitor {
+public class InstConstraintVisitor extends EmptyInstVisitor {
 
 	private static ObjectType GENERIC_ARRAY = new ObjectType("org.aspectj.apache.bcel.verifier.structurals.GenericArray");
 

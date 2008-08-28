@@ -81,7 +81,7 @@ import org.apache.regexp.*;
       ...
     }
 </pre>
- * @version $Id: InstructionFinder.java,v 1.2 2008/05/28 23:53:04 aclement Exp $
+ * @version $Id: InstructionFinder.java,v 1.3 2008/08/28 00:02:14 aclement Exp $
  * @author  <A HREF="http://www.berlin.de/~markus.dahm/">M. Dahm</A>
  * @see Instruction
  * @see InstructionList
@@ -413,28 +413,28 @@ public class InstructionFinder {
     return buf.toString();
   }
 
-  /*
-   * Internal debugging routines.
-   */
-  private static final String pattern2string(String pattern) {
-    return pattern2string(pattern, true);
-  }
-
-  private static final String pattern2string(String pattern, boolean make_string) {
-    StringBuffer buf = new StringBuffer();
-
-    for(int i=0; i < pattern.length(); i++) {
-      char ch = pattern.charAt(i);
-
-      if(ch >= OFFSET) {
-	if(make_string)
-	  buf.append(Constants.OPCODE_NAMES[ch - OFFSET]);
-	else
-	  buf.append((int)(ch - OFFSET));
-      } else
-	buf.append(ch);
-    }
-
-    return buf.toString();
-  }
+//  /*
+//   * Internal debugging routines.
+//   */
+//  private static final String pattern2string(String pattern) {
+//    return pattern2string(pattern, true);
+//  }
+//
+//  private static final String pattern2string(String pattern, boolean make_string) {
+//    StringBuffer buf = new StringBuffer();
+//
+//    for(int i=0; i < pattern.length(); i++) {
+//      char ch = pattern.charAt(i);
+//
+//      if(ch >= OFFSET) {
+//	if(make_string)
+//	  buf.append(Constants.OPCODE_NAMES[ch - OFFSET]);
+//	else
+//	  buf.append((int)(ch - OFFSET));
+//      } else
+//	buf.append(ch);
+//    }
+//
+//    return buf.toString();
+//  }
 }
