@@ -11,8 +11,6 @@
 package org.aspectj.systemtest.ajc153;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.List;
 
 import junit.framework.Test;
 
@@ -108,8 +106,8 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  // (2,3)=checkingIfShouldWeave,AcceptingResult for class
 	  // (4,5)=checkingIfShouldWeave,AcceptingResult for aspect
   }
-  public void testMatchVolatileField_pr150671() {runTest("match volatile field");};
-  public void testDuplicateJVMTIAgents_pr151938() {runTest("Duplicate JVMTI agents");};
+  public void testMatchVolatileField_pr150671() {runTest("match volatile field");}
+  public void testDuplicateJVMTIAgents_pr151938() {runTest("Duplicate JVMTI agents");}
   public void testLTWWorldWithAnnotationMatching_pr153572() { runTest("LTWWorld with annotation matching");}
   
   public void testReweavableAspectNotRegistered_pr129525 () {
@@ -122,7 +120,7 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   
   public void testNPEinFieldSignatureImpl_pr155972 () {
 	  runTest("NPE in FieldSignatureImpl");
-  }
+  } 
   
   public void testNPEinInitializerSignatureImpl_pr155972 () {
 	  runTest("NPE in InitializerSignatureImpl");
@@ -262,6 +260,14 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		assertEquals("expected source signature to be " + expected + 
 				" but found " + ipe.getSourceSignature(), 
 				expected, ipe.getSourceSignature());
+		
+		// Generic Method Constructor
+	  	ipe = top.findElementForLabel(top.getRoot(),
+	  		  IProgramElement.Kind.CONSTRUCTOR,"C(T)");
+	  		  expected = "public <T> C(T b)";
+	  			assertEquals("expected source signature to be " + expected + 
+	  					" but found " + ipe.getSourceSignature(), 
+	  					expected, ipe.getSourceSignature());
   }
 
   
