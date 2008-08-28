@@ -55,47 +55,57 @@ package org.aspectj.apache.bcel.generic;
  */
 import org.aspectj.apache.bcel.Constants;
 
-/** 
+/**
  * Denotes basic type such as int.
- *
- * @version $Id: BasicType.java,v 1.3 2008/05/28 23:52:57 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * 
+ * @version $Id: BasicType.java,v 1.4 2008/08/28 00:05:57 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class BasicType extends Type {
-  /**
-   * Constructor for basic types such as int, long, `void'
-   *
-   * @param type one of T_INT, T_BOOLEAN, ..., T_VOID
-   * @see org.aspectj.apache.bcel.Constants
-   */
-  BasicType(byte type) {
-    super(type, Constants.SHORT_TYPE_NAMES[type]);
+	/**
+	 * Constructor for basic types such as int, long, `void'
+	 * 
+	 * @param type one of T_INT, T_BOOLEAN, ..., T_VOID
+	 * @see org.aspectj.apache.bcel.Constants
+	 */
+	BasicType(byte type) {
+		super(type, Constants.SHORT_TYPE_NAMES[type]);
 
-    if((type < Constants.T_BOOLEAN) || (type > Constants.T_VOID))
-      throw new ClassGenException("Invalid type: " + type);
-  }
+		if (type < Constants.T_BOOLEAN || type > Constants.T_VOID) {
+			throw new ClassGenException("Invalid type: " + type);
+		}
+	}
 
-  public static final BasicType getType(byte type) {
-    switch(type) {
-    case Constants.T_VOID:    return VOID;
-    case Constants.T_BOOLEAN: return BOOLEAN;
-    case Constants.T_BYTE:    return BYTE;
-    case Constants.T_SHORT:   return SHORT;
-    case Constants.T_CHAR:    return CHAR;
-    case Constants.T_INT:     return INT;
-    case Constants.T_LONG:    return LONG;
-    case Constants.T_DOUBLE:  return DOUBLE;
-    case Constants.T_FLOAT:   return FLOAT;
+	public static final BasicType getType(byte type) {
+		switch (type) {
+		case Constants.T_VOID:
+			return VOID;
+		case Constants.T_BOOLEAN:
+			return BOOLEAN;
+		case Constants.T_BYTE:
+			return BYTE;
+		case Constants.T_SHORT:
+			return SHORT;
+		case Constants.T_CHAR:
+			return CHAR;
+		case Constants.T_INT:
+			return INT;
+		case Constants.T_LONG:
+			return LONG;
+		case Constants.T_DOUBLE:
+			return DOUBLE;
+		case Constants.T_FLOAT:
+			return FLOAT;
 
-    default:
-      throw new ClassGenException("Invalid type: " + type);
-    }
-  }
+		default:
+			throw new ClassGenException("Invalid type: " + type);
+		}
+	}
 
-  /** @return true if both type objects refer to the same type
-   */
-  public boolean equals(Object type) {
-    return (type instanceof BasicType)?
-      ((BasicType)type).type == this.type : false;
-  }
+	/**
+	 * @return true if both type objects refer to the same type
+	 */
+	public boolean equals(Object type) {
+		return type instanceof BasicType ? ((BasicType) type).type == this.type : false;
+	}
 }
