@@ -13,6 +13,8 @@
 
 package org.aspectj.weaver.bcel;
 
+import java.util.Iterator;
+
 import org.aspectj.apache.bcel.generic.Instruction;
 import org.aspectj.apache.bcel.generic.InstructionBranch;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
@@ -122,7 +124,7 @@ final class ShadowRange extends Range {
 			// instead of the old instruction.  We use updateTarget to do this.  One goal is
 			// to make sure we remove all targeters from the old guy, so we can successfully
 			// delete it.
-            InstructionTargeter[] sources = oldIh.getTargeters();
+            InstructionTargeter[] sources = oldIh.getTargetersArray();
             if (sources != null) {
                 for (int j = sources.length - 1; j >= 0; j--) {
                     InstructionTargeter source = sources[j];
@@ -184,16 +186,15 @@ final class ShadowRange extends Range {
         // now go through again and update variable slots that have been altered as a result
         // of remapping...
         for (InstructionHandle newIh = freshBody.getStart(); newIh != freshBody.getEnd(); newIh = newIh.getNext()) {
-            InstructionTargeter[] sources = newIh.getTargeters();
-            if (sources != null) {
-                for (int i = sources.length - 1; i >= 0; i--) {
-                    if (sources[i] instanceof LocalVariableTag) {
-                    	LocalVariableTag lvt = (LocalVariableTag) sources[i];
+        	Iterator tIter = newIh.getTargeters().iterator();
+        	while (tIter.hasNext()) {
+        			InstructionTargeter source = (InstructionTargeter)tIter.next();
+                    if (source instanceof LocalVariableTag) {
+                    	LocalVariableTag lvt = (LocalVariableTag) source;
                     	if (!lvt.isRemapped() && remap.hasKey(lvt.getSlot())) {
                     		lvt.updateSlot(remap.get(lvt.getSlot()));                    		
                     	}
                     }
-                }
             }
         }
        
@@ -221,7 +222,7 @@ final class ShadowRange extends Range {
                 InstructionFactory.createReturn(freshMethod.getReturnType()));
         }
 		// and remap all the old targeters of the end handle of the range to the return.
-        InstructionTargeter[] ts = end.getTargeters();
+        InstructionTargeter[] ts = end.getTargetersArray();
         if (ts != null) {  // shouldn't be the case, but let's test for paranoia
             for (int j = ts.length - 1; j >= 0; j--) {
                 InstructionTargeter t = ts[j];
