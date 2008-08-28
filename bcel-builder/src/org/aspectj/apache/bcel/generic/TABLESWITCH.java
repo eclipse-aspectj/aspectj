@@ -1,5 +1,3 @@
-package org.aspectj.apache.bcel.generic;
-
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -53,84 +51,88 @@ package org.aspectj.apache.bcel.generic;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-import java.io.*;
+package org.aspectj.apache.bcel.generic;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.util.ByteSequence;
 
-/** 
+import com.sun.org.apache.bcel.internal.generic.SWITCH;
+
+/**
  * TABLESWITCH - Switch within given range of values, i.e., low..high
- *
- * @version $Id: TABLESWITCH.java,v 1.4 2008/05/28 23:52:54 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * 
+ * @version $Id: TABLESWITCH.java,v 1.5 2008/08/28 00:05:29 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see SWITCH
  */
 public class TABLESWITCH extends InstructionSelect {
 
+	/**
+	 * @param match sorted array of match values, match[0] must be low value, match[match_length - 1] high value
+	 * @param targets where to branch for matched values
+	 * @param target default branch
+	 */
+	public TABLESWITCH(int[] match, InstructionHandle[] targets, InstructionHandle target) {
+		super(org.aspectj.apache.bcel.Constants.TABLESWITCH, match, targets, target);
 
-  /**
-   * @param match sorted array of match values, match[0] must be low value, 
-   * match[match_length - 1] high value
-   * @param targets where to branch for matched values
-   * @param target default branch
-   */
-  public TABLESWITCH(int[] match, InstructionHandle[] targets,
-		     InstructionHandle target) {
-    super(org.aspectj.apache.bcel.Constants.TABLESWITCH, match, targets, target);
-    
-//    if (match_length==0) {
-//    	throw new RuntimeException("A tableswitch with no targets should be represented as a LOOKUPSWITCH");
-//    }
-    
-    length = (short)(13 + matchLength * 4); /* Alignment remainder assumed
-					      * 0 here, until dump time */
-    fixedLength = length;
-  }
+		// if (match_length==0) {
+		// throw new RuntimeException("A tableswitch with no targets should be represented as a LOOKUPSWITCH");
+		// }
 
-  /**
-   * Dump instruction as byte code to stream out.
-   * @param out Output stream
-   */
-  public void dump(DataOutputStream out) throws IOException {
-    super.dump(out);
+		// Alignment remainder assumed 0 here, until dump time
+		length = (short) (13 + matchLength * 4);
+		fixedLength = length;
+	}
 
-    int low = (matchLength > 0)? match[0] : 0;
-    out.writeInt(low);
+	/**
+	 * Dump instruction as byte code to stream out.
+	 * 
+	 * @param out Output stream
+	 */
+	public void dump(DataOutputStream out) throws IOException {
+		super.dump(out);
 
-    int high = (matchLength > 0)? match[matchLength - 1] : 0;
-    out.writeInt(high);
+		int low = matchLength > 0 ? match[0] : 0;
+		out.writeInt(low);
 
-//  See aj bug pr104720
-//    if (match_length==0) out.writeInt(0); // following the switch you need to supply "HIGH-LOW+1" entries
-    
-    for(int i=0; i < matchLength; i++)     // jump offsets
-      out.writeInt(indices[i] = getTargetOffset(targets[i]));
-  }
+		int high = matchLength > 0 ? match[matchLength - 1] : 0;
+		out.writeInt(high);
 
-  /**
-   * Read needed data (e.g. index) from file.
-   */
-  public TABLESWITCH(ByteSequence bytes) throws IOException
-  {
-    super(Constants.TABLESWITCH,bytes);
+		// See aj bug pr104720
+		// if (match_length==0) out.writeInt(0); // following the switch you need to supply "HIGH-LOW+1" entries
 
-    int low    = bytes.readInt();
-    int high   = bytes.readInt();
+		for (int i = 0; i < matchLength; i++) {
+			out.writeInt(indices[i] = getTargetOffset(targets[i]));
+		}
+	}
 
-    matchLength = high - low + 1;
-    fixedLength = (short)(13 + matchLength * 4);
-    length       = (short)(fixedLength + padding);
+	/**
+	 * Read needed data (e.g. index) from file.
+	 */
+	public TABLESWITCH(ByteSequence bytes) throws IOException {
+		super(Constants.TABLESWITCH, bytes);
 
-    match   = new int[matchLength];
-    indices = new int[matchLength];
-    targets = new InstructionHandle[matchLength];
+		int low = bytes.readInt();
+		int high = bytes.readInt();
 
-    for(int i=low; i <= high; i++)
-      match[i - low] = i;
+		matchLength = high - low + 1;
+		fixedLength = (short) (13 + matchLength * 4);
+		length = (short) (fixedLength + padding);
 
-    for(int i=0; i < matchLength; i++) {
-      indices[i] = bytes.readInt();
-    }
-  }
+		match = new int[matchLength];
+		indices = new int[matchLength];
+		targets = new InstructionHandle[matchLength];
+
+		for (int i = low; i <= high; i++) {
+			match[i - low] = i;
+		}
+
+		for (int i = 0; i < matchLength; i++) {
+			indices[i] = bytes.readInt();
+		}
+	}
 
 }
