@@ -13,6 +13,7 @@
 
 package org.aspectj.weaver.bcel;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import org.aspectj.apache.bcel.generic.Instruction;
@@ -196,16 +197,15 @@ abstract class Range implements InstructionTargeter {
     protected static final Range getRange(InstructionHandle ih) {
         // assert isRangeHandle(ih)
 		Range ret = null;
-        InstructionTargeter[] targeters = ih.getTargeters();
-        if (targeters!=null) {
-        for (int i = targeters.length - 1; i >= 0; i--) {
-            if (targeters[i] instanceof Range) {
-            	Range r = (Range) targeters[i];
+		Iterator tIter = ih.getTargeters().iterator();
+		while (tIter.hasNext()) {
+			InstructionTargeter targeter = (InstructionTargeter)tIter.next();
+            if (targeter instanceof Range) {
+            	Range r = (Range) targeter;
 				if (r.getStart() != ih && r.getEnd() != ih) continue;
-				if (ret != null) throw new BCException("multiple ranges on same range handle: " + ret + ",  " + targeters[i]);
-            	ret = (Range) targeters[i];
+				if (ret != null) throw new BCException("multiple ranges on same range handle: " + ret + ",  " + targeter);
+            	ret = r;
             }
-        }
         }
 		if (ret == null) {
 			throw new BCException("shouldn't happen");
