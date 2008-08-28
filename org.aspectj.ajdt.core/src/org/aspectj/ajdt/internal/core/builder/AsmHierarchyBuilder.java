@@ -16,7 +16,6 @@
 package org.aspectj.ajdt.internal.core.builder;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -850,6 +849,20 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	private String genSourceSignature(ConstructorDeclaration constructorDeclaration) {
 		StringBuffer output = new StringBuffer();
 		ASTNode.printModifiers(constructorDeclaration.modifiers, output);
+		
+		//Append Type Parameters if any
+		TypeParameter types[] = constructorDeclaration.typeParameters();
+		if(types != null && types.length != 0) {
+			output.append("<");
+			for(int i = 0; i < types.length;i++){
+				if(i > 0){
+					output.append(", ");
+				}
+				types[i].printStatement(0, output);
+			}
+			output.append("> ");
+		}
+		
 		output.append(constructorDeclaration.selector).append('(');  
 		if (constructorDeclaration.arguments != null) {
 			for (int i = 0; i < constructorDeclaration.arguments.length; i++) {
@@ -1001,6 +1014,4 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	private int getEndLine( TypeDeclaration td){
 		return Util.getLineNumber(td.declarationSourceEnd,lineseps,0,lineseps.length-1);
 	}
-
-
 }
