@@ -60,171 +60,207 @@ import org.aspectj.apache.bcel.Constants;
 
 /**
  * Abstract super class for instructions dealing with local variables.
- *
- * @version $Id: InstructionLV.java,v 1.3 2008/08/13 18:18:22 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * 
+ * @version $Id: InstructionLV.java,v 1.4 2008/08/28 00:05:01 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class InstructionLV extends Instruction {
-  protected int     lvar        = -1;
+	protected int lvar = -1;
 
-   
-  public InstructionLV(short opcode, int lvar) {
-    this.opcode = opcode;
-    this.lvar = lvar;
-  }
+	public InstructionLV(short opcode, int lvar) {
+		super(opcode);
+		this.lvar = lvar;
+	}
 
-  public InstructionLV(short opcode) {
-    this.opcode = opcode; 
-  }
+	public InstructionLV(short opcode) {
+		super(opcode);
+	}
 
-  public void dump(DataOutputStream out) throws IOException {
-	  if (lvar==-1) {
-		  out.writeByte(opcode);
-	  } else {
-		if (lvar<4) {
-			if (opcode==ALOAD)         { out.writeByte(ALOAD_0+lvar);
-			} else if (opcode==ASTORE) { out.writeByte(ASTORE_0+lvar); 
-			} else if (opcode==ILOAD)  { out.writeByte(ILOAD_0+lvar); 
-			} else if (opcode==ISTORE) { out.writeByte(ISTORE_0+lvar); 
-			} else if (opcode==DLOAD)  { out.writeByte(DLOAD_0+lvar); 
-			} else if (opcode==DSTORE) { out.writeByte(DSTORE_0+lvar); 
-			} else if (opcode==FLOAD)  { out.writeByte(FLOAD_0+lvar); 
-			} else if (opcode==FSTORE) { out.writeByte(FSTORE_0+lvar); 
-			} else if (opcode==LLOAD)  { out.writeByte(LLOAD_0+lvar); 
-			} else if (opcode==LSTORE) { out.writeByte(LSTORE_0+lvar); 
+	public void dump(DataOutputStream out) throws IOException {
+		if (lvar == -1) {
+			out.writeByte(opcode);
+		} else {
+			if (lvar < 4) {
+				if (opcode == ALOAD) {
+					out.writeByte(ALOAD_0 + lvar);
+				} else if (opcode == ASTORE) {
+					out.writeByte(ASTORE_0 + lvar);
+				} else if (opcode == ILOAD) {
+					out.writeByte(ILOAD_0 + lvar);
+				} else if (opcode == ISTORE) {
+					out.writeByte(ISTORE_0 + lvar);
+				} else if (opcode == DLOAD) {
+					out.writeByte(DLOAD_0 + lvar);
+				} else if (opcode == DSTORE) {
+					out.writeByte(DSTORE_0 + lvar);
+				} else if (opcode == FLOAD) {
+					out.writeByte(FLOAD_0 + lvar);
+				} else if (opcode == FSTORE) {
+					out.writeByte(FSTORE_0 + lvar);
+				} else if (opcode == LLOAD) {
+					out.writeByte(LLOAD_0 + lvar);
+				} else if (opcode == LSTORE) {
+					out.writeByte(LSTORE_0 + lvar);
+				} else {
+					if (wide()) {
+						out.writeByte(Constants.WIDE);
+					}
+					out.writeByte(opcode);
+					if (wide()) {
+						out.writeShort(lvar);
+					} else {
+						out.writeByte(lvar);
+					}
+				}
 			} else {
-			    if (wide()) out.writeByte(Constants.WIDE);
-			    out.writeByte(opcode);
-			    if (wide()) out.writeShort(lvar);
-			    else        out.writeByte(lvar);
+				if (wide()) {
+					out.writeByte(Constants.WIDE);
+				}
+				out.writeByte(opcode);
+				if (wide()) {
+					out.writeShort(lvar);
+				} else {
+					out.writeByte(lvar);
+				}
 			}
-		} else {
-		    if (wide()) out.writeByte(Constants.WIDE);
-		    out.writeByte(opcode);
-		    if (wide()) out.writeShort(lvar);
-		    else        out.writeByte(lvar);
 		}
-	  }
-  }
+	}
 
-  /**
-   * Long output format:
-   *
-   * 'name of opcode' "[" 'opcode number' "]" 
-   * "(" 'length of instruction' ")" "<" 'local variable index' ">"
-   */
-  public String toString(boolean verbose) {
-    if(((opcode >= Constants.ILOAD_0)  && (opcode <= Constants.ALOAD_3)) ||
-       ((opcode >= Constants.ISTORE_0) && (opcode <= Constants.ASTORE_3)))
-      return super.toString(verbose);
-    else
-      return super.toString(verbose) + ((lvar!=-1&&lvar<4)?"_":" ") + lvar;
-  }
+	/**
+	 * Long output format:
+	 * 
+	 * 'name of opcode' "[" 'opcode number' "]" "(" 'length of instruction' ")" "<" 'local variable index' ">"
+	 */
+	public String toString(boolean verbose) {
+		if (opcode >= Constants.ILOAD_0 && opcode <= Constants.ALOAD_3 || opcode >= Constants.ISTORE_0
+				&& opcode <= Constants.ASTORE_3) {
+			return super.toString(verbose);
+		} else {
+			return super.toString(verbose) + (lvar != -1 && lvar < 4 ? "_" : " ") + lvar;
+		}
+	}
 
-  public boolean isALOAD() {
-	  return opcode==ALOAD || (opcode>=ALOAD_0 && opcode<=ALOAD_3);
-  }
-  
-  public boolean isASTORE() {
-	  return opcode==ASTORE || (opcode>=ASTORE_0 && opcode<=ASTORE_3);
-  }
-  
-  public int getBaseOpcode() {
-	  if ((opcode>=ILOAD && opcode<=ALOAD) || (opcode>=ISTORE && opcode<=ASTORE)) {
-		  // not an optimized instruction
-		  return opcode;
-	  }
-	  if ((opcode>=Constants.ILOAD_0) && (opcode<=Constants.ALOAD_3)) {
-		  int ret = opcode - ILOAD_0;
-		  ret = ret - (ret%4);
-		  ret = ret / 4;
-		  return ret + ILOAD;
-	  }
-	  int ret = opcode - ISTORE_0;
-	  ret = ret - (ret%4);
-	  ret = ret / 4;
-	  return ret + ISTORE;	  
-  }
+	public boolean isALOAD() {
+		return opcode == ALOAD || opcode >= ALOAD_0 && opcode <= ALOAD_3;
+	}
 
-  /**
-   * @return local variable index  referred by this instruction.
-   */
-  // optimize!
-  public final int getIndex() { 
-	  if (lvar!=-1) return lvar; 
-	  if (opcode>= Constants.ILOAD_0 && opcode <= Constants.ALOAD_3) {
-	      return (opcode - Constants.ILOAD_0) % 4;
-	  } else if (opcode>= Constants.ISTORE_0 && opcode <= Constants.ASTORE_3) {
-	      return (opcode - Constants.ISTORE_0) % 4;
-      }
-	  return -1;
-  }
-  
-  public void setIndex(int i) {
-	  // Switching the index for a load/store without a current index specified (ie. an aload_1 or istore_2) 
-	  // means we need to should adjust to a normal aload/istore opcode
-	  if (getIndex()!=i) {
-		  if(opcode>= Constants.ILOAD_0 && opcode <= Constants.ALOAD_3) {
-			  opcode = (short)(ILOAD + (opcode-ILOAD_0)/4);
-		  } else if (opcode>= Constants.ISTORE_0 && opcode <= Constants.ASTORE_3) {
-			  opcode = (short)(ISTORE+ (opcode-ISTORE_0)/4);
-		  }
-		  this.lvar = i;
-	  }
-  }
-  
-  public boolean canSetIndex() {
-	  return true;
-  }
-  
-  public InstructionLV setIndexAndCopyIfNecessary(int newIndex) {
-	  if (canSetIndex()) {
-		  setIndex(newIndex);
-		  return this;
-	  } else {
-		if (getIndex()==newIndex) {
+	public boolean isASTORE() {
+		return opcode == ASTORE || opcode >= ASTORE_0 && opcode <= ASTORE_3;
+	}
+
+	public int getBaseOpcode() {
+		if (opcode >= ILOAD && opcode <= ALOAD || opcode >= ISTORE && opcode <= ASTORE) {
+			// not an optimized instruction
+			return opcode;
+		}
+		if (opcode >= Constants.ILOAD_0 && opcode <= Constants.ALOAD_3) {
+			int ret = opcode - ILOAD_0;
+			ret = ret - ret % 4;
+			ret = ret / 4;
+			return ret + ILOAD;
+		}
+		int ret = opcode - ISTORE_0;
+		ret = ret - ret % 4;
+		ret = ret / 4;
+		return ret + ISTORE;
+	}
+
+	/**
+	 * @return local variable index referred by this instruction.
+	 */
+	// optimize!
+	public final int getIndex() {
+		if (lvar != -1) {
+			return lvar;
+		}
+		if (opcode >= Constants.ILOAD_0 && opcode <= Constants.ALOAD_3) {
+			return (opcode - Constants.ILOAD_0) % 4;
+		} else if (opcode >= Constants.ISTORE_0 && opcode <= Constants.ASTORE_3) {
+			return (opcode - Constants.ISTORE_0) % 4;
+		}
+		return -1;
+	}
+
+	public void setIndex(int i) {
+		// Switching the index for a load/store without a current index specified (ie. an aload_1 or istore_2)
+		// means we need to should adjust to a normal aload/istore opcode
+		if (getIndex() != i) {
+			if (opcode >= Constants.ILOAD_0 && opcode <= Constants.ALOAD_3) {
+				opcode = (short) (ILOAD + (opcode - ILOAD_0) / 4);
+			} else if (opcode >= Constants.ISTORE_0 && opcode <= Constants.ASTORE_3) {
+				opcode = (short) (ISTORE + (opcode - ISTORE_0) / 4);
+			}
+			this.lvar = i;
+		}
+	}
+
+	public boolean canSetIndex() {
+		return true;
+	}
+
+	public InstructionLV setIndexAndCopyIfNecessary(int newIndex) {
+		if (canSetIndex()) {
+			setIndex(newIndex);
 			return this;
-		}
-		InstructionLV newInstruction = null;
-		int baseOpCode = getBaseOpcode();
-		if (newIndex<4) {
-			if (isStoreInstruction()) {
-				newInstruction = (InstructionLV) InstructionConstants.INSTRUCTIONS[(baseOpCode-Constants.ISTORE)*4+Constants.ISTORE_0+newIndex];
-			} else {								
-				newInstruction = (InstructionLV) InstructionConstants.INSTRUCTIONS[(baseOpCode-Constants.ILOAD)*4+Constants.ILOAD_0+newIndex];
-			}
 		} else {
-			newInstruction = new InstructionLV((short) baseOpCode, newIndex);
-		}
-//		if (getBaseOpcode()!=newInstruction.getBaseOpcode() || newInstruction.getIndex()!=newIndex) {
-//			throw new RuntimeException("New Instruction created does not appear to be valid: originalBaseOpcode="+getBaseOpcode()+" newBaseOpcode="+newInstruction.getBaseOpcode());
-//		}
-		return newInstruction;
-	  }
-  }
-  
-  public int getLength() {
-	  int size=Constants.iLen[opcode];
-	  if (lvar==-1) {
-		  return size;
-	  } else {
-		if (lvar<4) {
-			if (opcode==ALOAD || opcode==ASTORE) return 1;
-			else if (opcode==ILOAD || opcode==ISTORE) return 1;
-			else if (opcode==DLOAD || opcode==DSTORE) return 1;
-			else if (opcode==FLOAD || opcode==FSTORE) return 1;
-			else if (opcode==LLOAD || opcode==LSTORE) return 1;
-			else {
-			    if (wide()) return size +2;
-			    return size;
+			if (getIndex() == newIndex) {
+				return this;
 			}
-		} else {
-		    if (wide()) return size +2;
-		    return size;
+			InstructionLV newInstruction = null;
+			int baseOpCode = getBaseOpcode();
+			if (newIndex < 4) {
+				if (isStoreInstruction()) {
+					newInstruction = (InstructionLV) InstructionConstants.INSTRUCTIONS[(baseOpCode - Constants.ISTORE) * 4
+							+ Constants.ISTORE_0 + newIndex];
+				} else {
+					newInstruction = (InstructionLV) InstructionConstants.INSTRUCTIONS[(baseOpCode - Constants.ILOAD) * 4
+							+ Constants.ILOAD_0 + newIndex];
+				}
+			} else {
+				newInstruction = new InstructionLV((short) baseOpCode, newIndex);
+			}
+			// if (getBaseOpcode()!=newInstruction.getBaseOpcode() || newInstruction.getIndex()!=newIndex) {
+			// throw new
+			// RuntimeException("New Instruction created does not appear to be valid: originalBaseOpcode="+getBaseOpcode()+
+			// " newBaseOpcode="+newInstruction.getBaseOpcode());
+			// }
+			return newInstruction;
 		}
-	  }
-  }
-  
-  private final boolean wide() { return lvar > Constants.MAX_BYTE; }
+	}
+
+	public int getLength() {
+		int size = Constants.iLen[opcode];
+		if (lvar == -1) {
+			return size;
+		} else {
+			if (lvar < 4) {
+				if (opcode == ALOAD || opcode == ASTORE) {
+					return 1;
+				} else if (opcode == ILOAD || opcode == ISTORE) {
+					return 1;
+				} else if (opcode == DLOAD || opcode == DSTORE) {
+					return 1;
+				} else if (opcode == FLOAD || opcode == FSTORE) {
+					return 1;
+				} else if (opcode == LLOAD || opcode == LSTORE) {
+					return 1;
+				} else {
+					if (wide()) {
+						return size + 2;
+					}
+					return size;
+				}
+			} else {
+				if (wide()) {
+					return size + 2;
+				}
+				return size;
+			}
+		}
+	}
+
+	private final boolean wide() {
+		return lvar > Constants.MAX_BYTE;
+	}
 
 }
