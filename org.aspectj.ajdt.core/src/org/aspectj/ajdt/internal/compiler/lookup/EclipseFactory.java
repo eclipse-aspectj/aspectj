@@ -245,7 +245,7 @@ public class EclipseFactory {
 			UnresolvedType[] arguments = null;
 
 			if (ptb.arguments != null) { // null can mean this is an inner type of a Parameterized Type with no bounds of its own
-											// (pr100227)
+				// (pr100227)
 				arguments = new UnresolvedType[ptb.arguments.length];
 				for (int i = 0; i < arguments.length; i++) {
 					arguments[i] = fromBinding(ptb.arguments[i]);
@@ -758,8 +758,8 @@ public class EclipseFactory {
 	public SyntheticFieldBinding createSyntheticFieldBinding(SourceTypeBinding owningType, ResolvedMember member) {
 		SyntheticFieldBinding sfb = new SyntheticFieldBinding(member.getName().toCharArray(), makeTypeBinding(member
 				.getReturnType()), member.getModifiers() | Flags.AccSynthetic, owningType, Constant.NotAConstant, -1); // index
-																														// filled in
-																														// later
+		// filled in
+		// later
 		owningType.addSyntheticField(sfb);
 		return sfb;
 	}
@@ -771,7 +771,6 @@ public class EclipseFactory {
 	 */
 	public FieldBinding internalMakeFieldBinding(ResolvedMember member, List aliases) {
 		typeVariableToTypeBinding.clear();
-		TypeVariableBinding[] tvbs = null;
 
 		ReferenceBinding declaringType = (ReferenceBinding) makeTypeBinding(member.getDeclaringType());
 
@@ -972,7 +971,7 @@ public class EclipseFactory {
 			tvBinding = new TypeVariableBinding(tv.getName().toCharArray(), declaringElement, tv.getRank());
 			typeVariableToTypeBinding.put(tv.getName(), tvBinding);
 			tvBinding.superclass = (ReferenceBinding) makeTypeBinding(tv.getUpperBound());
-			tvBinding.firstBound = (ReferenceBinding) makeTypeBinding(tv.getFirstBound());
+			tvBinding.firstBound = makeTypeBinding(tv.getFirstBound());
 			if (tv.getAdditionalInterfaceBounds() == null) {
 				tvBinding.superInterfaces = TypeVariableBinding.NO_SUPERINTERFACES;
 			} else {

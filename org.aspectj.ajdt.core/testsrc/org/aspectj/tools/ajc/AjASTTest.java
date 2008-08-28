@@ -372,7 +372,8 @@ public class AjASTTest extends AjASTTestCase {
 
 	public void testPropertyDescriptorsForPointcutDeclaration() {
 		AjAST ajast = createAjAST();
-		PointcutDeclaration d = ajast.newPointcutDeclaration();
+		// PointcutDeclaration d =
+		ajast.newPointcutDeclaration();
 		List props = PointcutDeclaration.propertyDescriptors(AST.JLS3);
 		boolean foundJavadoc = false;
 		boolean foundModifiers = false;
@@ -484,7 +485,8 @@ public class AjASTTest extends AjASTTestCase {
 
 	public void testPropertyDescriptorsForAspectDeclaration() {
 		AjAST ajast = createAjAST();
-		AspectDeclaration d = ajast.newAspectDeclaration();
+		// AspectDeclaration d =
+		ajast.newAspectDeclaration();
 		List props = AspectDeclaration.propertyDescriptors(AST.JLS3);
 		boolean foundJavadoc = false;
 		boolean foundPerClause = false;
@@ -745,13 +747,15 @@ public class AjASTTest extends AjASTTestCase {
 	// associated with the AjTypeDeclaration
 	public void testPropertyDescriptorsForAjTypeDeclaration2() {
 		AjAST ajast = createAjAST();
-		AspectDeclaration ad = ajast.newAspectDeclaration();
-		List aspectProps = AspectDeclaration.propertyDescriptors(AST.JLS3);
-		AjTypeDeclaration d = ajast.newAjTypeDeclaration();
+		// AspectDeclaration ad =
+		ajast.newAspectDeclaration();
+		// List aspectProps = AspectDeclaration.propertyDescriptors(AST.JLS3);
+		// AjTypeDeclaration d =
+		ajast.newAjTypeDeclaration();
 		List props = AjTypeDeclaration.propertyDescriptors(AST.JLS3);
 		boolean foundPrivileged = false;
 		boolean foundPerClause = false;
-		boolean foundAspect = false;
+		// boolean foundAspect = false;
 		for (Iterator iter = props.iterator(); iter.hasNext();) {
 			Object o = iter.next();
 			if (o instanceof SimplePropertyDescriptor) {
@@ -776,9 +780,12 @@ public class AjASTTest extends AjASTTestCase {
 	// associated with the TypeDeclaration
 	public void testPropertyDescriptorsForAjTypeDeclaration3() {
 		AjAST ajast = createAjAST();
-		AjTypeDeclaration d = ajast.newAjTypeDeclaration();
-		List ajProps = AjTypeDeclaration.propertyDescriptors(AST.JLS3);
-		TypeDeclaration td = ajast.newTypeDeclaration();
+		// AjTypeDeclaration d =
+		ajast.newAjTypeDeclaration();
+		// List ajProps =
+		AjTypeDeclaration.propertyDescriptors(AST.JLS3);
+		// TypeDeclaration td =
+		ajast.newTypeDeclaration();
 		List props = TypeDeclaration.propertyDescriptors(AST.JLS3);
 		boolean foundAspect = false;
 		for (Iterator iter = props.iterator(); iter.hasNext();) {
@@ -804,7 +811,8 @@ public class AjASTTest extends AjASTTestCase {
 
 	public void testPropertyDescriptorsForDeclareAtField() {
 		AjAST ajast = createAjAST();
-		DeclareAtFieldDeclaration d = ajast.newDeclareAtFieldDeclaration();
+		// DeclareAtFieldDeclaration d =
+		ajast.newDeclareAtFieldDeclaration();
 		List props = DeclareAtFieldDeclaration.propertyDescriptors(AST.JLS3);
 		boolean foundJavadoc = false;
 		boolean foundPattern = false;
@@ -1097,7 +1105,8 @@ public class AjASTTest extends AjASTTestCase {
 
 	public void testPropertyDescriptorsForDeclareAtType() {
 		AjAST ajast = createAjAST();
-		DeclareAtTypeDeclaration d = ajast.newDeclareAtTypeDeclaration();
+		// DeclareAtTypeDeclaration d =
+		ajast.newDeclareAtTypeDeclaration();
 		List props = DeclareAtTypeDeclaration.propertyDescriptors(AST.JLS3);
 		boolean foundJavadoc = false;
 		boolean foundPattern = false;
@@ -1194,7 +1203,8 @@ public class AjASTTest extends AjASTTestCase {
 
 	public void testPropertyDescriptorsForDeclareErrorDeclaration() {
 		AjAST ajast = createAjAST();
-		DeclareErrorDeclaration d = ajast.newDeclareErrorDeclaration();
+		// DeclareErrorDeclaration d =
+		ajast.newDeclareErrorDeclaration();
 		List props = DeclareErrorDeclaration.propertyDescriptors(AST.JLS3);
 		boolean foundJavadoc = false;
 		boolean foundPointcut = false;

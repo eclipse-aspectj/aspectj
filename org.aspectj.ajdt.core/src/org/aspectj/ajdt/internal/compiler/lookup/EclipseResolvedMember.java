@@ -147,7 +147,8 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 
 	public ResolvedType[] getAnnotationTypes() {
 		if (cachedAnnotationTypes == null) {
-			long abits = realBinding.getAnnotationTagBits(); // ensure resolved
+			// long abits =
+			realBinding.getAnnotationTagBits(); // ensure resolved
 			Annotation[] annos = getEclipseAnnotations();
 			if (annos == null) {
 				cachedAnnotationTypes = ResolvedType.EMPTY_RESOLVED_TYPE_ARRAY;

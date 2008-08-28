@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.ajdt.internal.compiler.ast;
 
 import java.lang.reflect.Modifier;
@@ -46,30 +45,28 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.UnresolvedType;
 
 /**
- * Represents before, after and around advice in an aspect.
- * Will generate a method corresponding to the body of the advice with an
+ * Represents before, after and around advice in an aspect. Will generate a method corresponding to the body of the advice with an
  * attribute including additional information.
  * 
  * @author Jim Hugunin
  */
 public class AdviceDeclaration extends AjMethodDeclaration {
-	public PointcutDesignator pointcutDesignator;  // set during parsing
-	int baseArgumentCount;                               // referenced by IfPseudoToken.makeArguments
-	
-	public Argument extraArgument;                    // set during parsing, referenced by Proceed
-	
-	public AdviceKind kind;									// set during parsing, referenced by Proceed and AsmElementFormatter
+	public PointcutDesignator pointcutDesignator; // set during parsing
+	int baseArgumentCount; // referenced by IfPseudoToken.makeArguments
+
+	public Argument extraArgument; // set during parsing, referenced by Proceed
+
+	public AdviceKind kind; // set during parsing, referenced by Proceed and AsmElementFormatter
 	private int extraArgumentFlags = 0;
-	
-	public MethodBinding proceedMethodBinding;   // set during this.resolveStaments, referenced by Proceed
-	public List proceedCalls = new ArrayList(2);    // populated during Proceed.findEnclosingAround
-	
+
+	public MethodBinding proceedMethodBinding; // set during this.resolveStaments, referenced by Proceed
+	public List proceedCalls = new ArrayList(2); // populated during Proceed.findEnclosingAround
+
 	private boolean proceedInInners;
 	private ResolvedMember[] proceedCallSignatures;
 	private boolean[] formalsUnchangedToProceed;
 	private UnresolvedType[] declaredExceptions;
-	
-	
+
 	public AdviceDeclaration(CompilationResult result, AdviceKind kind) {
 		super(result);
 		this.returnType = TypeReference.baseTypeReference(T_void, 0);
@@ -80,33 +77,32 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 	protected int generateInfoAttributes(ClassFile classFile) {
 		List l = new ArrayList(1);
 		l.add(new EclipseAttributeAdapter(makeAttribute()));
-		addDeclarationStartLineAttribute(l,classFile);
+		addDeclarationStartLineAttribute(l, classFile);
 
 		return classFile.generateMethodInfoAttribute(binding, false, l);
 	}
-	
+
 	private AjAttribute makeAttribute() {
 		if (kind == AdviceKind.Around) {
-			return new AjAttribute.AdviceAttribute(kind, pointcutDesignator.getPointcut(), 
-					extraArgumentFlags, sourceStart, sourceEnd, null,
-					proceedInInners, proceedCallSignatures, formalsUnchangedToProceed, 
-					declaredExceptions);
+			return new AjAttribute.AdviceAttribute(kind, pointcutDesignator.getPointcut(), extraArgumentFlags, sourceStart,
+					sourceEnd, null, proceedInInners, proceedCallSignatures, formalsUnchangedToProceed, declaredExceptions);
 		} else {
-			return new AjAttribute.AdviceAttribute(kind, pointcutDesignator.getPointcut(), 
-					extraArgumentFlags, sourceStart, sourceEnd, null);
+			return new AjAttribute.AdviceAttribute(kind, pointcutDesignator.getPointcut(), extraArgumentFlags, sourceStart,
+					sourceEnd, null);
 		}
 	}
 
 	// override
 	public void resolveStatements() {
-		if (binding == null || ignoreFurtherInvestigation) return;
-		
-		ClassScope upperScope = (ClassScope)scope.parent;  //!!! safety
-		
+		if (binding == null || ignoreFurtherInvestigation)
+			return;
+
+		ClassScope upperScope = (ClassScope) scope.parent; // !!! safety
+
 		modifiers = checkAndSetModifiers(modifiers, upperScope);
 		int bindingModifiers = (modifiers | (binding.modifiers & ExtraCompilerModifiers.AccGenericSignature));
 		binding.modifiers = bindingModifiers;
-		
+
 		if (kind == AdviceKind.AfterThrowing && extraArgument != null) {
 			TypeBinding argTb = extraArgument.binding.type;
 			TypeBinding expectedTb = upperScope.getJavaLangThrowable();
@@ -116,82 +112,80 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 				return;
 			}
 		}
-		
-		
-		pointcutDesignator.finishResolveTypes(this, this.binding, 
-			baseArgumentCount, upperScope.referenceContext.binding);
-		
-		if (binding == null || ignoreFurtherInvestigation) return;
-		
+
+		pointcutDesignator.finishResolveTypes(this, this.binding, baseArgumentCount, upperScope.referenceContext.binding);
+
+		if (binding == null || ignoreFurtherInvestigation)
+			return;
+
 		if (kind == AdviceKind.Around) {
-			ReferenceBinding[] exceptions = 
-				new ReferenceBinding[] { upperScope.getJavaLangThrowable() };
-			proceedMethodBinding = new MethodBinding(Modifier.STATIC | Flags.AccSynthetic,
-				"proceed".toCharArray(), binding.returnType,
-				resize(baseArgumentCount+1, binding.parameters),
-				exceptions, binding.declaringClass);
-			proceedMethodBinding.selector =
-				CharOperation.concat(selector, proceedMethodBinding.selector);
+			ReferenceBinding[] exceptions = new ReferenceBinding[] { upperScope.getJavaLangThrowable() };
+			proceedMethodBinding = new MethodBinding(Modifier.STATIC | Flags.AccSynthetic, "proceed".toCharArray(),
+					binding.returnType, resize(baseArgumentCount + 1, binding.parameters), exceptions, binding.declaringClass);
+			proceedMethodBinding.selector = CharOperation.concat(selector, proceedMethodBinding.selector);
 		}
-		
-		super.resolveStatements(); //upperScope);
-		if (binding != null) determineExtraArgumentFlags();
-		
+
+		super.resolveStatements(); // upperScope);
+		if (binding != null)
+			determineExtraArgumentFlags();
+
 		if (kind == AdviceKind.Around) {
 			int n = proceedCalls.size();
-//			EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(upperScope);
-						
-			//System.err.println("access to: " + Arrays.asList(handler.getMembers()));
-			
-			//XXX set these correctly
+			// EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(upperScope);
+
+			// System.err.println("access to: " + Arrays.asList(handler.getMembers()));
+
+			// XXX set these correctly
 			formalsUnchangedToProceed = new boolean[baseArgumentCount];
 			proceedCallSignatures = new ResolvedMember[0];
 			proceedInInners = false;
 			declaredExceptions = new UnresolvedType[0];
-			
-			for (int i=0; i < n; i++) {
-				Proceed call = (Proceed)proceedCalls.get(i);
+
+			for (int i = 0; i < n; i++) {
+				Proceed call = (Proceed) proceedCalls.get(i);
 				if (call.inInner) {
-					//System.err.println("proceed in inner: " + call);
+					// System.err.println("proceed in inner: " + call);
 					proceedInInners = true;
-					//XXX wrong
-					//proceedCallSignatures[i] = world.makeResolvedMember(call.binding);
+					// XXX wrong
+					// proceedCallSignatures[i] = world.makeResolvedMember(call.binding);
 				}
 			}
-			
+
 			// ??? should reorganize into AspectDeclaration
 			// if we have proceed in inners we won't ever be inlined so the code below is unneeded
 			if (!proceedInInners) {
-				PrivilegedHandler handler = (PrivilegedHandler)upperScope.referenceContext.binding.privilegedHandler;
+				PrivilegedHandler handler = (PrivilegedHandler) upperScope.referenceContext.binding.privilegedHandler;
 				if (handler == null) {
-					handler = new PrivilegedHandler((AspectDeclaration)upperScope.referenceContext);
-					//upperScope.referenceContext.binding.privilegedHandler = handler;
+					handler = new PrivilegedHandler((AspectDeclaration) upperScope.referenceContext);
+					// upperScope.referenceContext.binding.privilegedHandler = handler;
 				}
-				
-				this.traverse(new MakeDeclsPublicVisitor(), (ClassScope)null);
-				
-				AccessForInlineVisitor v = new AccessForInlineVisitor((AspectDeclaration)upperScope.referenceContext, handler);
-				ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.ACCESS_FOR_INLINE, selector);
+
+				this.traverse(new MakeDeclsPublicVisitor(), (ClassScope) null);
+
+				AccessForInlineVisitor v = new AccessForInlineVisitor((AspectDeclaration) upperScope.referenceContext, handler);
+				ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.ACCESS_FOR_INLINE,
+						selector);
 				this.traverse(v, (ClassScope) null);
 				CompilationAndWeavingContext.leavingPhase(tok);
-				
+
 				// ??? if we found a construct that we can't inline, set
-				//     proceedInInners so that we won't try to inline this body
-				if (!v.isInlinable) proceedInInners = true;
+				// proceedInInners so that we won't try to inline this body
+				if (!v.isInlinable)
+					proceedInInners = true;
 			}
 		}
 	}
 
-     // called by Proceed.resolveType
+	// called by Proceed.resolveType
 	public int getDeclaredParameterCount() {
 		// this only works before code generation
 		return this.arguments.length - 3 - ((extraArgument == null) ? 0 : 1);
-		//Advice.countOnes(extraArgumentFlags);
+		// Advice.countOnes(extraArgumentFlags);
 	}
 
 	private void generateProceedMethod(ClassScope classScope, ClassFile classFile) {
-		MethodBinding binding = (MethodBinding)proceedMethodBinding;
-		
+		MethodBinding binding = proceedMethodBinding;
+
 		classFile.generateMethodInfoHeader(binding);
 		int methodAttributeOffset = classFile.contentsOffset;
 		int attributeNumber = classFile.generateMethodInfoAttribute(binding, false, AstUtil.getAjSyntheticAttribute());
@@ -199,29 +193,24 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		classFile.generateCodeAttributeHeader();
 		CodeStream codeStream = classFile.codeStream;
 		codeStream.reset(this, classFile);
-		
+
 		// push the closure
 		int nargs = binding.parameters.length;
 		int closureIndex = 0;
-		for (int i=0; i < nargs-1; i++) {
+		for (int i = 0; i < nargs - 1; i++) {
 			closureIndex += AstUtil.slotsNeeded(binding.parameters[i]);
 		}
-		
-		
+
 		codeStream.aload(closureIndex);
-		
+
 		// build the Object[]
 
-		codeStream.generateInlinedValue(nargs-1);
-		codeStream.newArray(
-				new ArrayBinding(
-						classScope.getType(TypeConstants.JAVA_LANG_OBJECT, 
-								TypeConstants.JAVA_LANG_OBJECT.length), 
-								1,
-								classScope.environment()));
-		
+		codeStream.generateInlinedValue(nargs - 1);
+		codeStream.newArray(new ArrayBinding(classScope.getType(TypeConstants.JAVA_LANG_OBJECT,
+				TypeConstants.JAVA_LANG_OBJECT.length), 1, classScope.environment()));
+
 		int index = 0;
-		for (int i=0; i < nargs-1; i++) {
+		for (int i = 0; i < nargs - 1; i++) {
 			TypeBinding type = binding.parameters[i];
 			codeStream.dup();
 			codeStream.generateInlinedValue(i);
@@ -230,12 +219,12 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 			if (type.isBaseType()) {
 				codeStream.invokestatic(AjTypeConstants.getConversionMethodToObject(classScope, type));
 			}
-			
+
 			codeStream.aastore();
 		}
-		
+
 		// call run
-		ReferenceBinding closureType = (ReferenceBinding)binding.parameters[nargs-1];
+		ReferenceBinding closureType = (ReferenceBinding) binding.parameters[nargs - 1];
 		MethodBinding runMethod = closureType.getMethods("run".toCharArray())[0];
 		codeStream.invokevirtual(runMethod);
 
@@ -246,31 +235,31 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 			codeStream.checkcast(returnType);
 		}
 		AstUtil.generateReturn(returnType, codeStream);
-		codeStream.recordPositionsFrom(0,1);
+		codeStream.recordPositionsFrom(0, 1);
 		classFile.completeCodeAttribute(codeAttributeOffset);
 		attributeNumber++;
 		classFile.completeMethodInfo(methodAttributeOffset, attributeNumber);
 	}
 
-
 	// override
 	public void generateCode(ClassScope classScope, ClassFile classFile) {
-		if (ignoreFurtherInvestigation) return;
-		
+		if (ignoreFurtherInvestigation)
+			return;
+
 		super.generateCode(classScope, classFile);
 		if (proceedMethodBinding != null) {
 			generateProceedMethod(classScope, classFile);
 		}
 	}
 
-
 	private void determineExtraArgumentFlags() {
-		if (extraArgument != null) extraArgumentFlags |= Advice.ExtraArgument;
-		
+		if (extraArgument != null)
+			extraArgumentFlags |= Advice.ExtraArgument;
+
 		ThisJoinPointVisitor tjp = new ThisJoinPointVisitor(this);
 		extraArgumentFlags |= tjp.removeUnusedExtraArguments();
 	}
-	
+
 	private static TypeBinding[] resize(int newSize, TypeBinding[] bindings) {
 		int len = bindings.length;
 		TypeBinding[] ret = new TypeBinding[newSize];
@@ -289,75 +278,78 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 			extraArgumentName = new String(extraArgument.name);
 		}
 		String argNames = buildArgNameRepresentation();
-		
+
 		if (kind == AdviceKind.Before) {
-			adviceAnnotation = AtAspectJAnnotationFactory.createBeforeAnnotation(pointcutExpression,argNames,declarationSourceStart);
+			adviceAnnotation = AtAspectJAnnotationFactory.createBeforeAnnotation(pointcutExpression, argNames,
+					declarationSourceStart);
 		} else if (kind == AdviceKind.After) {
-			adviceAnnotation = AtAspectJAnnotationFactory.createAfterAnnotation(pointcutExpression,argNames,declarationSourceStart);			
+			adviceAnnotation = AtAspectJAnnotationFactory.createAfterAnnotation(pointcutExpression, argNames,
+					declarationSourceStart);
 		} else if (kind == AdviceKind.AfterReturning) {
-			adviceAnnotation = AtAspectJAnnotationFactory.createAfterReturningAnnotation(pointcutExpression,argNames,extraArgumentName,declarationSourceStart);
+			adviceAnnotation = AtAspectJAnnotationFactory.createAfterReturningAnnotation(pointcutExpression, argNames,
+					extraArgumentName, declarationSourceStart);
 		} else if (kind == AdviceKind.AfterThrowing) {
-			adviceAnnotation = AtAspectJAnnotationFactory.createAfterThrowingAnnotation(pointcutExpression,argNames,extraArgumentName,declarationSourceStart);
+			adviceAnnotation = AtAspectJAnnotationFactory.createAfterThrowingAnnotation(pointcutExpression, argNames,
+					extraArgumentName, declarationSourceStart);
 		} else if (kind == AdviceKind.Around) {
-			adviceAnnotation = AtAspectJAnnotationFactory.createAroundAnnotation(pointcutExpression,argNames,declarationSourceStart);
+			adviceAnnotation = AtAspectJAnnotationFactory.createAroundAnnotation(pointcutExpression, argNames,
+					declarationSourceStart);
 		}
-		AtAspectJAnnotationFactory.addAnnotation(this, adviceAnnotation,this.scope);
+		AtAspectJAnnotationFactory.addAnnotation(this, adviceAnnotation, this.scope);
 	}
-	
+
 	private String buildArgNameRepresentation() {
 		StringBuffer args = new StringBuffer();
 		int numArgsWeCareAbout = getDeclaredParameterCount();
 		if (this.arguments != null) {
 			for (int i = 0; i < numArgsWeCareAbout; i++) {
-				if (i != 0) args.append(",");
+				if (i != 0)
+					args.append(",");
 				args.append(new String(this.arguments[i].name));
 			}
 		}
 		if (extraArgument != null) {
-			if (numArgsWeCareAbout > 0) { args.append(","); }
+			if (numArgsWeCareAbout > 0) {
+				args.append(",");
+			}
 			args.append(new String(extraArgument.name));
 		}
 		return args.toString();
 	}
-	
+
 	// override, Called by ClassScope.postParse
 	public void postParse(TypeDeclaration typeDec) {
-		AspectDeclaration aspectDecl = (AspectDeclaration)typeDec;
+		AspectDeclaration aspectDecl = (AspectDeclaration) typeDec;
 		int adviceSequenceNumberInType = aspectDecl.adviceCounter++;
-		
+
 		StringBuffer stringifiedPointcut = new StringBuffer(30);
-		pointcutDesignator.print(0,stringifiedPointcut);
-		this.selector =
-			NameMangler.adviceName(
-			  EclipseFactory.getName(typeDec.binding).replace('.', '_'),
-			  kind, 
-			  adviceSequenceNumberInType,
-			  stringifiedPointcut.toString().hashCode()).toCharArray();
+		pointcutDesignator.print(0, stringifiedPointcut);
+		this.selector = NameMangler.adviceName(EclipseFactory.getName(typeDec.binding).replace('.', '_'), kind,
+				adviceSequenceNumberInType, stringifiedPointcut.toString().hashCode()).toCharArray();
 		if (arguments != null) {
 			baseArgumentCount = arguments.length;
 		}
-		
+
 		if (kind == AdviceKind.Around) {
-			extraArgument = makeFinalArgument("ajc_aroundClosure",
-					AjTypeConstants.getAroundClosureType());
+			extraArgument = makeFinalArgument("ajc_aroundClosure", AjTypeConstants.getAroundClosureType());
 		}
-		
+
 		int addedArguments = 3;
 		if (extraArgument != null) {
 			addedArguments += 1;
 		}
-		
+
 		arguments = extendArgumentsLength(arguments, addedArguments);
-		
+
 		int index = baseArgumentCount;
 		if (extraArgument != null) {
 			arguments[index++] = extraArgument;
 		}
-		
+
 		arguments[index++] = makeFinalArgument("thisJoinPointStaticPart", AjTypeConstants.getJoinPointStaticPartType());
 		arguments[index++] = makeFinalArgument("thisJoinPoint", AjTypeConstants.getJoinPointType());
 		arguments[index++] = makeFinalArgument("thisEnclosingJoinPointStaticPart", AjTypeConstants.getJoinPointStaticPartType());
-		
+
 		if (pointcutDesignator.isError()) {
 			this.ignoreFurtherInvestigation = true;
 		}
@@ -365,34 +357,34 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 	}
 
 	private int checkAndSetModifiers(int modifiers, ClassScope scope) {
-		if (modifiers == 0) return Modifier.PUBLIC;
-		else if (modifiers == Modifier.STRICT) return Modifier.PUBLIC | Modifier.STRICT;
+		if (modifiers == 0)
+			return Modifier.PUBLIC;
+		else if (modifiers == Modifier.STRICT)
+			return Modifier.PUBLIC | Modifier.STRICT;
 		else {
 			tagAsHavingErrors();
-			scope.problemReporter().signalError(declarationSourceStart, sourceStart-1, "illegal modifier on advice, only strictfp is allowed");
+			scope.problemReporter().signalError(declarationSourceStart, sourceStart - 1,
+					"illegal modifier on advice, only strictfp is allowed");
 			return Modifier.PUBLIC;
 		}
 	}
 
 	// called by IfPseudoToken
-	public static Argument[]  addTjpArguments(Argument[] arguments) {
+	public static Argument[] addTjpArguments(Argument[] arguments) {
 		int index = arguments.length;
 		arguments = extendArgumentsLength(arguments, 3);
-		
+
 		arguments[index++] = makeFinalArgument("thisJoinPointStaticPart", AjTypeConstants.getJoinPointStaticPartType());
 		arguments[index++] = makeFinalArgument("thisJoinPoint", AjTypeConstants.getJoinPointType());
 		arguments[index++] = makeFinalArgument("thisEnclosingJoinPointStaticPart", AjTypeConstants.getJoinPointStaticPartType());
-	
+
 		return arguments;
 	}
-	
-	
 
 	private static Argument makeFinalArgument(String name, TypeReference typeRef) {
-		long pos = 0; //XXX encode start and end location
+		long pos = 0; // XXX encode start and end location
 		return new Argument(name.toCharArray(), pos, typeRef, Modifier.FINAL);
 	}
-
 
 	private static Argument[] extendArgumentsLength(Argument[] args, int addedArguments) {
 		if (args == null) {
@@ -404,62 +396,61 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		return ret;
 	}
 
-	
-//	public String toString(int tab) {
-//		String s = tabString(tab);
-//		if (modifiers != AccDefault) {
-//			s += modifiersString(modifiers);
-//		}
-//
-//		if (kind == AdviceKind.Around) {
-//			s += returnTypeToString(0);
-//		}
-//
-//		s += new String(selector) + "("; //$NON-NLS-1$
-//		if (arguments != null) {
-//			for (int i = 0; i < arguments.length; i++) {
-//				s += arguments[i].toString(0);
-//				if (i != (arguments.length - 1))
-//					s = s + ", "; //$NON-NLS-1$
-//			};
-//		};
-//		s += ")"; //$NON-NLS-1$
-//		
-//		if (extraArgument != null) {
-//			s += "(" + extraArgument.toString(0) + ")";
-//		}
-//		
-//		
-//		
-//		if (thrownExceptions != null) {
-//			s += " throws "; //$NON-NLS-1$
-//			for (int i = 0; i < thrownExceptions.length; i++) {
-//				s += thrownExceptions[i].toString(0);
-//				if (i != (thrownExceptions.length - 1))
-//					s = s + ", "; //$NON-NLS-1$
-//			};
-//		};
-//		
-//		s += ": ";
-//		if (pointcutDesignator != null) {
-//			s += pointcutDesignator.toString(0);
-//		}
-//
-//		s += toStringStatements(tab + 1);
-//		return s;
-//	}
+	// public String toString(int tab) {
+	// String s = tabString(tab);
+	// if (modifiers != AccDefault) {
+	// s += modifiersString(modifiers);
+	// }
+	//
+	// if (kind == AdviceKind.Around) {
+	// s += returnTypeToString(0);
+	// }
+	//
+	//		s += new String(selector) + "("; //$NON-NLS-1$
+	// if (arguments != null) {
+	// for (int i = 0; i < arguments.length; i++) {
+	// s += arguments[i].toString(0);
+	// if (i != (arguments.length - 1))
+	//					s = s + ", "; //$NON-NLS-1$
+	// };
+	// };
+	//		s += ")"; //$NON-NLS-1$
+	//		
+	// if (extraArgument != null) {
+	// s += "(" + extraArgument.toString(0) + ")";
+	// }
+	//		
+	//		
+	//		
+	// if (thrownExceptions != null) {
+	//			s += " throws "; //$NON-NLS-1$
+	// for (int i = 0; i < thrownExceptions.length; i++) {
+	// s += thrownExceptions[i].toString(0);
+	// if (i != (thrownExceptions.length - 1))
+	//					s = s + ", "; //$NON-NLS-1$
+	// };
+	// };
+	//		
+	// s += ": ";
+	// if (pointcutDesignator != null) {
+	// s += pointcutDesignator.toString(0);
+	// }
+	//
+	// s += toStringStatements(tab + 1);
+	// return s;
+	// }
 
 	public StringBuffer printBody(int indent, StringBuffer output) {
 		output.append(": ");
 		if (pointcutDesignator != null) {
 			output.append(pointcutDesignator.toString());
 		}
-		return super.printBody(indent,output);
+		return super.printBody(indent, output);
 	}
 
 	public StringBuffer printReturnType(int indent, StringBuffer output) {
 		if (this.kind == AdviceKind.Around) {
-			return super.printReturnType(indent,output);
+			return super.printReturnType(indent, output);
 		}
 		return output;
 	}

@@ -886,40 +886,40 @@ public class AjState {
 		}
 	}
 
-	private void deleteResources() {
-		List oldResources = new ArrayList();
-		oldResources.addAll(resources);
-
-		// note - this deliberately ignores resources in jars as we don't yet handle jar changes
-		// with incremental compilation
-		for (Iterator i = buildConfig.getInpath().iterator(); i.hasNext();) {
-			File inPathElement = (File) i.next();
-			if (inPathElement.isDirectory() && AjBuildManager.COPY_INPATH_DIR_RESOURCES) {
-				deleteResourcesFromDirectory(inPathElement, oldResources);
-			}
-		}
-
-		if (buildConfig.getSourcePathResources() != null) {
-			for (Iterator i = buildConfig.getSourcePathResources().keySet().iterator(); i.hasNext();) {
-				String resource = (String) i.next();
-				maybeDeleteResource(resource, oldResources);
-			}
-		}
-
-		// oldResources need to be deleted...
-		for (Iterator iter = oldResources.iterator(); iter.hasNext();) {
-			String victim = (String) iter.next();
-			List outputDirs = getOutputLocations(buildConfig);
-			for (Iterator iterator = outputDirs.iterator(); iterator.hasNext();) {
-				File dir = (File) iterator.next();
-				File f = new File(dir, victim);
-				if (f.exists()) {
-					f.delete();
-				}
-				resources.remove(victim);
-			}
-		}
-	}
+	// private void deleteResources() {
+	// List oldResources = new ArrayList();
+	// oldResources.addAll(resources);
+	//
+	// // note - this deliberately ignores resources in jars as we don't yet handle jar changes
+	// // with incremental compilation
+	// for (Iterator i = buildConfig.getInpath().iterator(); i.hasNext();) {
+	// File inPathElement = (File) i.next();
+	// if (inPathElement.isDirectory() && AjBuildManager.COPY_INPATH_DIR_RESOURCES) {
+	// deleteResourcesFromDirectory(inPathElement, oldResources);
+	// }
+	// }
+	//
+	// if (buildConfig.getSourcePathResources() != null) {
+	// for (Iterator i = buildConfig.getSourcePathResources().keySet().iterator(); i.hasNext();) {
+	// String resource = (String) i.next();
+	// maybeDeleteResource(resource, oldResources);
+	// }
+	// }
+	//
+	// // oldResources need to be deleted...
+	// for (Iterator iter = oldResources.iterator(); iter.hasNext();) {
+	// String victim = (String) iter.next();
+	// List outputDirs = getOutputLocations(buildConfig);
+	// for (Iterator iterator = outputDirs.iterator(); iterator.hasNext();) {
+	// File dir = (File) iterator.next();
+	// File f = new File(dir, victim);
+	// if (f.exists()) {
+	// f.delete();
+	// }
+	// resources.remove(victim);
+	// }
+	// }
+	// }
 
 	private void maybeDeleteResource(String resName, List oldResources) {
 		if (resources.contains(resName)) {
@@ -935,32 +935,32 @@ public class AjState {
 		}
 	}
 
-	private void deleteResourcesFromDirectory(File dir, List oldResources) {
-		File[] files = FileUtil.listFiles(dir, new FileFilter() {
-			public boolean accept(File f) {
-				boolean accept = !(f.isDirectory() || f.getName().endsWith(".class"));
-				return accept;
-			}
-		});
-
-		// For each file, add it either as a real .class file or as a resource
-		for (int i = 0; i < files.length; i++) {
-			// ASSERT: files[i].getAbsolutePath().startsWith(inFile.getAbsolutePath()
-			// or we are in trouble...
-			String filename = null;
-			try {
-				filename = files[i].getCanonicalPath().substring(dir.getCanonicalPath().length() + 1);
-			} catch (IOException e) {
-				// we are in trouble if this happens...
-				IMessage msg = new Message("call to getCanonicalPath() failed for file " + files[i] + " with: " + e.getMessage(),
-						new SourceLocation(files[i], 0), false);
-				buildManager.handler.handleMessage(msg);
-				filename = files[i].getAbsolutePath().substring(dir.getAbsolutePath().length() + 1);
-			}
-
-			maybeDeleteResource(filename, oldResources);
-		}
-	}
+	// private void deleteResourcesFromDirectory(File dir, List oldResources) {
+	// File[] files = FileUtil.listFiles(dir, new FileFilter() {
+	// public boolean accept(File f) {
+	// boolean accept = !(f.isDirectory() || f.getName().endsWith(".class"));
+	// return accept;
+	// }
+	// });
+	//
+	// // For each file, add it either as a real .class file or as a resource
+	// for (int i = 0; i < files.length; i++) {
+	// // ASSERT: files[i].getAbsolutePath().startsWith(inFile.getAbsolutePath()
+	// // or we are in trouble...
+	// String filename = null;
+	// try {
+	// filename = files[i].getCanonicalPath().substring(dir.getCanonicalPath().length() + 1);
+	// } catch (IOException e) {
+	// // we are in trouble if this happens...
+	// IMessage msg = new Message("call to getCanonicalPath() failed for file " + files[i] + " with: " + e.getMessage(),
+	// new SourceLocation(files[i], 0), false);
+	// buildManager.handler.handleMessage(msg);
+	// filename = files[i].getAbsolutePath().substring(dir.getAbsolutePath().length() + 1);
+	// }
+	//
+	// maybeDeleteResource(filename, oldResources);
+	// }
+	// }
 
 	private void deleteClassFile(ClassFile cf) {
 		classesFromName.remove(cf.fullyQualifiedTypeName);
@@ -1356,14 +1356,14 @@ public class AjState {
 		return (eclipseModifiers == resolvedTypeModifiers);
 	}
 
-	private static StringSet makeStringSet(List strings) {
-		StringSet ret = new StringSet(strings.size());
-		for (Iterator iter = strings.iterator(); iter.hasNext();) {
-			String element = (String) iter.next();
-			ret.add(element);
-		}
-		return ret;
-	}
+	// private static StringSet makeStringSet(List strings) {
+	// StringSet ret = new StringSet(strings.size());
+	// for (Iterator iter = strings.iterator(); iter.hasNext();) {
+	// String element = (String) iter.next();
+	// ret.add(element);
+	// }
+	// return ret;
+	// }
 
 	private String stringifyList(Set l) {
 		StringBuffer sb = new StringBuffer();

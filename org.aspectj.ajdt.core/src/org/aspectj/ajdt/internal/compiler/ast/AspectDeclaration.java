@@ -334,7 +334,7 @@ public class AspectDeclaration extends TypeDeclaration {
 			return;
 		}
 
-		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
+		// EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 
 		if (perClause.getKind() == PerClause.SINGLETON) {
 			generatePerSingletonAspectOfMethod(classFile);

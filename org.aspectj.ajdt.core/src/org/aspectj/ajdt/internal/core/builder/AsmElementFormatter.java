@@ -72,7 +72,7 @@ public class AsmElementFormatter {
 			setParameters(methodDeclaration, node);
 
 		} else if (methodDeclaration instanceof PointcutDeclaration) {
-			PointcutDeclaration pd = (PointcutDeclaration) methodDeclaration;
+			// PointcutDeclaration pd = (PointcutDeclaration) methodDeclaration;
 			node.setKind(IProgramElement.Kind.POINTCUT);
 			node.setName(translatePointcutName(new String(methodDeclaration.selector)));
 			setParameters(methodDeclaration, node);

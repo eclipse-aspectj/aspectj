@@ -582,7 +582,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			// && returnsVoid
 			// && (methodDeclaration.arguments == null || methodDeclaration.arguments.length == 0)) {
 			) {
-				;// fine
+				// fine
 			} else {
 				methodDeclaration.scope.problemReporter().signalError(methodDeclaration.returnType.sourceStart,
 						methodDeclaration.returnType.sourceEnd,
