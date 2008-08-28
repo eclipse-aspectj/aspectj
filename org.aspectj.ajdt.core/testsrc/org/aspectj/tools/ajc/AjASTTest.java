@@ -1284,7 +1284,8 @@ public class AjASTTest extends AjASTTestCase {
 
 	public void testPropertyDescriptorsForDeclareParentsDeclaration() {
 		AjAST ajast = createAjAST();
-		DeclareParentsDeclaration d = ajast.newDeclareParentsDeclaration();
+		// DeclareParentsDeclaration d =
+		ajast.newDeclareParentsDeclaration();
 		List props = DeclareParentsDeclaration.propertyDescriptors(AST.JLS3);
 		boolean foundJavadoc = false;
 		boolean foundTypePattern = false;
@@ -1370,7 +1371,8 @@ public class AjASTTest extends AjASTTestCase {
 
 	public void testPropertyDescriptorsForDeclarePrecedence() {
 		AjAST ajast = createAjAST();
-		DeclarePrecedenceDeclaration d = ajast.newDeclarePrecedenceDeclaration();
+		// DeclarePrecedenceDeclaration d =
+		ajast.newDeclarePrecedenceDeclaration();
 		List props = DeclarePrecedenceDeclaration.propertyDescriptors(AST.JLS3);
 		boolean foundJavadoc = false;
 		boolean foundTypePatterns = false;
@@ -1441,7 +1443,8 @@ public class AjASTTest extends AjASTTestCase {
 
 	public void testPropertyDescriptorsForDeclareSoftDeclaration() {
 		AjAST ajast = createAjAST();
-		DeclareSoftDeclaration d = ajast.newDeclareSoftDeclaration();
+		// DeclareSoftDeclaration d =
+		ajast.newDeclareSoftDeclaration();
 		List props = DeclareSoftDeclaration.propertyDescriptors(AST.JLS3);
 		boolean foundJavadoc = false;
 		boolean foundPointcut = false;
@@ -1531,7 +1534,8 @@ public class AjASTTest extends AjASTTestCase {
 
 	public void testPropertyDescriptorsForDeclareWarningDeclaration() {
 		AjAST ajast = createAjAST();
-		DeclareWarningDeclaration d = ajast.newDeclareWarningDeclaration();
+		// DeclareWarningDeclaration d =
+		ajast.newDeclareWarningDeclaration();
 		List props = DeclareWarningDeclaration.propertyDescriptors(AST.JLS3);
 		boolean foundJavadoc = false;
 		boolean foundPointcut = false;

@@ -394,16 +394,16 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return output.toString();
 	}
 
-	private IProgramElement findEnclosingClass(Stack stack) {
-		for (int i = stack.size() - 1; i >= 0; i--) {
-			IProgramElement pe = (IProgramElement) stack.get(i);
-			if (pe.getKind() == IProgramElement.Kind.CLASS) {
-				return pe;
-			}
-
-		}
-		return (IProgramElement) stack.peek();
-	}
+	// private IProgramElement findEnclosingClass(Stack stack) {
+	// for (int i = stack.size() - 1; i >= 0; i--) {
+	// IProgramElement pe = (IProgramElement) stack.get(i);
+	// if (pe.getKind() == IProgramElement.Kind.CLASS) {
+	// return pe;
+	// }
+	//
+	// }
+	// return (IProgramElement) stack.peek();
+	// }
 
 	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
 		IProgramElement peNode = null;

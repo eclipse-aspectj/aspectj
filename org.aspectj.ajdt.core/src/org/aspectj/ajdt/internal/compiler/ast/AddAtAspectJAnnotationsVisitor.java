@@ -20,58 +20,52 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 
 /**
- * Adds runtime visible annotations to code-style aspect declarations so that the
- * MAP can provide aspect information at runtime.
+ * Adds runtime visible annotations to code-style aspect declarations so that the MAP can provide aspect information at runtime.
  * 
- * Done:
- *  - AspectDeclaration
- *  - AdviceDeclaration
- *  - PointcutDeclaration
- *  
- *  To Do:
- *  - DeclareDeclaration
- *  - Inter-Type Declaration
+ * Done: - AspectDeclaration - AdviceDeclaration - PointcutDeclaration
+ * 
+ * To Do: - DeclareDeclaration - Inter-Type Declaration
  */
 public class AddAtAspectJAnnotationsVisitor extends ASTVisitor {
 
-	private CompilationUnitDeclaration unit;
-	
+	// private CompilationUnitDeclaration unit;
+
 	public AddAtAspectJAnnotationsVisitor(CompilationUnitDeclaration unit) {
-		this.unit = unit;
+		// this.unit = unit;
 	}
-	
+
 	public boolean visit(TypeDeclaration localTypeDeclaration, BlockScope scope) {
 		if (localTypeDeclaration instanceof AspectDeclaration) {
 			((AspectDeclaration) localTypeDeclaration).addAtAspectJAnnotations();
 		}
 		return true;
 	}
-		
-	public boolean visit(TypeDeclaration memberTypeDeclaration,ClassScope scope) {
+
+	public boolean visit(TypeDeclaration memberTypeDeclaration, ClassScope scope) {
 		if (memberTypeDeclaration instanceof AspectDeclaration) {
 			((AspectDeclaration) memberTypeDeclaration).addAtAspectJAnnotations();
 		}
 		return true;
 	}
-	
+
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
 		if (typeDeclaration instanceof AspectDeclaration) {
 			((AspectDeclaration) typeDeclaration).addAtAspectJAnnotations();
 		}
 		return true;
 	}
+
 	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
 		if (methodDeclaration instanceof AdviceDeclaration) {
-			((AdviceDeclaration)methodDeclaration).addAtAspectJAnnotations();
+			((AdviceDeclaration) methodDeclaration).addAtAspectJAnnotations();
 		} else if (methodDeclaration instanceof PointcutDeclaration) {
-			((PointcutDeclaration)methodDeclaration).addAtAspectJAnnotations();
+			((PointcutDeclaration) methodDeclaration).addAtAspectJAnnotations();
 		} else if (methodDeclaration instanceof DeclareDeclaration) {
-			((DeclareDeclaration)methodDeclaration).addAtAspectJAnnotations();
+			((DeclareDeclaration) methodDeclaration).addAtAspectJAnnotations();
 		} else if (methodDeclaration instanceof InterTypeDeclaration) {
-			((InterTypeDeclaration)methodDeclaration).addAtAspectJAnnotations();
+			((InterTypeDeclaration) methodDeclaration).addAtAspectJAnnotations();
 		}
 		return false;
 	}
-	
 
 }

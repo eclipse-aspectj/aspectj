@@ -614,23 +614,23 @@ public class AjState {
 		return false;
 	}
 
-	/**
-	 * For a given class file, determine which source file it came from. This will only succeed if the class file is from a source
-	 * file within this project.
-	 */
-	private File getSourceFileForClassFile(File classfile) {
-		Set sourceFiles = fullyQualifiedTypeNamesResultingFromCompilationUnit.keySet();
-		for (Iterator sourceFileIterator = sourceFiles.iterator(); sourceFileIterator.hasNext();) {
-			File sourceFile = (File) sourceFileIterator.next();
-			List/* ClassFile */classesFromSourceFile = (List/* ClassFile */) fullyQualifiedTypeNamesResultingFromCompilationUnit
-					.get(sourceFile);
-			for (int i = 0; i < classesFromSourceFile.size(); i++) {
-				if (((ClassFile) classesFromSourceFile.get(i)).locationOnDisk.equals(classfile))
-					return sourceFile;
-			}
-		}
-		return null;
-	}
+	// /**
+	// * For a given class file, determine which source file it came from. This will only succeed if the class file is from a source
+	// * file within this project.
+	// */
+	// private File getSourceFileForClassFile(File classfile) {
+	// Set sourceFiles = fullyQualifiedTypeNamesResultingFromCompilationUnit.keySet();
+	// for (Iterator sourceFileIterator = sourceFiles.iterator(); sourceFileIterator.hasNext();) {
+	// File sourceFile = (File) sourceFileIterator.next();
+	// List/* ClassFile */classesFromSourceFile = (List/* ClassFile */) fullyQualifiedTypeNamesResultingFromCompilationUnit
+	// .get(sourceFile);
+	// for (int i = 0; i < classesFromSourceFile.size(); i++) {
+	// if (((ClassFile) classesFromSourceFile.get(i)).locationOnDisk.equals(classfile))
+	// return sourceFile;
+	// }
+	// }
+	// return null;
+	// }
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
@@ -1090,19 +1090,19 @@ public class AjState {
 
 	}
 
-	private UnwovenClassFile removeFromPreviousIfPresent(UnwovenClassFile cf, InterimCompilationResult previous) {
-		if (previous == null)
-			return null;
-		UnwovenClassFile[] unwovenClassFiles = previous.unwovenClassFiles();
-		for (int i = 0; i < unwovenClassFiles.length; i++) {
-			UnwovenClassFile candidate = unwovenClassFiles[i];
-			if ((candidate != null) && candidate.getFilename().equals(cf.getFilename())) {
-				unwovenClassFiles[i] = null;
-				return candidate;
-			}
-		}
-		return null;
-	}
+	// private UnwovenClassFile removeFromPreviousIfPresent(UnwovenClassFile cf, InterimCompilationResult previous) {
+	// if (previous == null)
+	// return null;
+	// UnwovenClassFile[] unwovenClassFiles = previous.unwovenClassFiles();
+	// for (int i = 0; i < unwovenClassFiles.length; i++) {
+	// UnwovenClassFile candidate = unwovenClassFiles[i];
+	// if ((candidate != null) && candidate.getFilename().equals(cf.getFilename())) {
+	// unwovenClassFiles[i] = null;
+	// return candidate;
+	// }
+	// }
+	// return null;
+	// }
 
 	private void recordClassFile(UnwovenClassFile thisTime, File lastTime) {
 		if (simpleStrings == null) {

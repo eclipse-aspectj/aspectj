@@ -15,11 +15,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.aspectj.apache.bcel.Repository;
-import org.aspectj.apache.bcel.classfile.JavaClass;
-import org.aspectj.apache.bcel.verifier.VerificationResult;
-import org.aspectj.apache.bcel.verifier.Verifier;
-import org.aspectj.apache.bcel.verifier.VerifierFactory;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.tools.ajc.CompilationResult;
@@ -126,7 +121,6 @@ public class DeclareParents extends AjcTestCase {
 	 * Note: Error messages and locations for binary weaving are much better than their source counterparts !
 	 */
 	public void test_cantMakeInheritedInstanceMethodsStatic() {
-		File testBase = new File(baseDir, "TestC");
 		runSourceAndBinaryTestcase(new File(baseDir, "TestC"), new String[] { "A1.java", "B1.java" }, new String[] { "X1.java" },
 				true, false);
 	}
@@ -135,7 +129,6 @@ public class DeclareParents extends AjcTestCase {
 	 * Cannot extend a final class
 	 */
 	public void xxxtest_cantExtendFinalClass() { // XXX removed test, need to discuss with andy how to repair...
-		File testBase = new File(baseDir, "TestC");
 		runSourceAndBinaryTestcase(new File(baseDir, "TestC"), new String[] { "A2.java", "B2.java" }, new String[] { "X2.java" },
 				true, true);
 	}
@@ -150,7 +143,6 @@ public class DeclareParents extends AjcTestCase {
 	 * if you inherit methods you cannot override them and reduce their visibility
 	 */
 	public void test_cantReduceVisibilityOfOverriddenMethods_1() {
-		File testBase = new File(baseDir, "TestB");
 		runSourceAndBinaryTestcase(new File(baseDir, "TestB"), new String[] { "Top1.java", "Middle1.java" },
 				new String[] { "Aspect1.java" }, true, false);
 	}
@@ -161,7 +153,6 @@ public class DeclareParents extends AjcTestCase {
 	 * test 2 in this set checks methods from a superclass of the named new parent.
 	 */
 	public void test_cantReduceVisibilityOfOverriddenMethods_2() {
-		File testBase = new File(baseDir, "TestB");
 		runSourceAndBinaryTestcase(new File(baseDir, "TestB"), new String[] { "TopTop6.java", "Top6.java", "Middle6.java" },
 				new String[] { "Aspect6.java" }, true, false);
 	}
@@ -170,8 +161,6 @@ public class DeclareParents extends AjcTestCase {
 	 * If you inherit methods you cannot have incompatible return types (java1.5 will make this a little messier).
 	 */
 	public void test_overriddenMethodsCantHaveIncompatibleReturnTypes() {
-		File testBase = new File(baseDir, "TestB");
-		CompilationResult result = null;
 		runSourceAndBinaryTestcase(new File(baseDir, "TestB"),
 				new String[] { "Top2.java", "Middle2.java", "Super.java", "Sub.java" }, new String[] { "Aspect2.java" }, true);
 	}
@@ -182,8 +171,6 @@ public class DeclareParents extends AjcTestCase {
 	 * Test 1 in this set is simple.
 	 */
 	public void test_inheritedAbstractMethodsMustBeImplemented_1() {
-		File testBase = new File(baseDir, "TestB");
-		CompilationResult result = null;
 		runSourceAndBinaryTestcase(new File(baseDir, "TestB"),
 				new String[] { "Top3.java", "Middle3.java", "Super.java", "Sub.java" }, new String[] { "Aspect3.java" }, true);
 	}
@@ -193,7 +180,6 @@ public class DeclareParents extends AjcTestCase {
 	 */
 	public void test_interfaceMethodsImplemented() {
 		File testBase = new File(baseDir, "TestD");
-		CompilationResult result = null;
 		runSourceAndBinaryTestcase(testBase, new String[] { "SimpleClass1.java", "SimpleIntf1.java" },
 				new String[] { "SimpleAspect1.java" }, true);
 	}
@@ -204,8 +190,6 @@ public class DeclareParents extends AjcTestCase {
 	 * Test 2 in this set includes methods further up the hierarchy that must be implemented.
 	 */
 	public void test_inheritedAbstractMethodsMustBeImplemented_2() {
-		File testBase = new File(baseDir, "TestB");
-		CompilationResult result = null;
 		runSourceAndBinaryTestcase(new File(baseDir, "TestB"), new String[] { "TopTop4.java", "Top4.java", "Middle4.java" },
 				new String[] { "Aspect4.java" }, true);
 	}
@@ -217,8 +201,6 @@ public class DeclareParents extends AjcTestCase {
 	 * ITDs from the aspect
 	 */
 	public void test_inheritedAbstractMethodsMustBeImplemented_3() {
-		File testBase = new File(baseDir, "TestD");
-		CompilationResult result = null;
 		runSourceAndBinaryTestcase(new File(baseDir, "TestD"), new String[] { "SimpleClass2.java" },
 				new String[] { "SimpleAspect2.java" }, true);
 	}
@@ -228,7 +210,6 @@ public class DeclareParents extends AjcTestCase {
 	 */
 	public void test_missingCtorAddedViaITD() {
 		File testBase = new File(baseDir, "TestE");
-		CompilationResult result = null;
 		runSourceAndBinaryTestcase(testBase, new String[] { "A.java", "B.java", "C.java" }, new String[] { "X.java" }, true);
 	}
 
@@ -390,59 +371,59 @@ public class DeclareParents extends AjcTestCase {
 		baseDir = new File("../org.aspectj.ajdt.core/testdata", PROJECT_DIR);
 	}
 
-	private List verify(String name) {
-		List verifyProblems = new ArrayList();
-		System.out.println("Now verifying: " + name + "\n");
+	// private List verify(String name) {
+	// List verifyProblems = new ArrayList();
+	// System.out.println("Now verifying: " + name + "\n");
+	//
+	// Verifier v = VerifierFactory.getVerifier(name);
+	// VerificationResult vr;
+	//
+	// vr = v.doPass1();
+	// if (vr != VerificationResult.VR_OK)
+	// verifyProblems.add("Pass1: " + vr.getMessage());
+	//
+	// vr = v.doPass2();
+	// if (vr != VerificationResult.VR_OK)
+	// verifyProblems.add("Pass2: " + vr.getMessage());
+	//
+	// if (vr == VerificationResult.VR_OK) {
+	// JavaClass jc = Repository.lookupClass(name);
+	// for (int i = 0; i < jc.getMethods().length; i++) {
+	// vr = v.doPass3a(i);
+	// if (vr != VerificationResult.VR_OK)
+	// verifyProblems.add("Pass3a: " + jc.getMethods()[i] + " " + vr.getMessage());
+	//
+	// vr = v.doPass3b(i);
+	// if (vr != VerificationResult.VR_OK)
+	// verifyProblems.add("Pass3b: " + jc.getMethods()[i] + " " + vr.getMessage());
+	// }
+	// }
+	//
+	// System.out.println("Warnings:");
+	// String[] warnings = v.getMessages();
+	// if (warnings.length == 0)
+	// System.out.println("<none>");
+	// for (int j = 0; j < warnings.length; j++) {
+	// System.out.println(warnings[j]);
+	// }
+	//
+	// System.out.println("\n");
+	//
+	// // avoid swapping.
+	// v.flush();
+	// Repository.clearCache();
+	// return verifyProblems;
+	// }
 
-		Verifier v = VerifierFactory.getVerifier(name);
-		VerificationResult vr;
-
-		vr = v.doPass1();
-		if (vr != VerificationResult.VR_OK)
-			verifyProblems.add("Pass1: " + vr.getMessage());
-
-		vr = v.doPass2();
-		if (vr != VerificationResult.VR_OK)
-			verifyProblems.add("Pass2: " + vr.getMessage());
-
-		if (vr == VerificationResult.VR_OK) {
-			JavaClass jc = Repository.lookupClass(name);
-			for (int i = 0; i < jc.getMethods().length; i++) {
-				vr = v.doPass3a(i);
-				if (vr != VerificationResult.VR_OK)
-					verifyProblems.add("Pass3a: " + jc.getMethods()[i] + " " + vr.getMessage());
-
-				vr = v.doPass3b(i);
-				if (vr != VerificationResult.VR_OK)
-					verifyProblems.add("Pass3b: " + jc.getMethods()[i] + " " + vr.getMessage());
-			}
-		}
-
-		System.out.println("Warnings:");
-		String[] warnings = v.getMessages();
-		if (warnings.length == 0)
-			System.out.println("<none>");
-		for (int j = 0; j < warnings.length; j++) {
-			System.out.println(warnings[j]);
-		}
-
-		System.out.println("\n");
-
-		// avoid swapping.
-		v.flush();
-		Repository.clearCache();
-		return verifyProblems;
-	}
-
-	private void runClass(String name) {
-		RunResult rr = null;
-		try {
-			rr = run(name, new String[] {}, ajc.getSandboxDirectory() + File.separator + "classes2");
-		} catch (VerifyError ve) {
-			ve.printStackTrace();
-			fail("Unexpected VerifyError for type upon which we declared parents");
-		}
-		// assertTrue("Didn't expect any errors from the run of "+name+", but got: "+rr.toString(),rr.get);
-	}
+	// private void runClass(String name) {
+	// RunResult rr = null;
+	// try {
+	// rr = run(name, new String[] {}, ajc.getSandboxDirectory() + File.separator + "classes2");
+	// } catch (VerifyError ve) {
+	// ve.printStackTrace();
+	// fail("Unexpected VerifyError for type upon which we declared parents");
+	// }
+	// // assertTrue("Didn't expect any errors from the run of "+name+", but got: "+rr.toString(),rr.get);
+	// }
 
 }
