@@ -54,175 +54,161 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.aspectj.apache.bcel.classfile.Utility;
 
 /**
- * Instances of this class give users a handle to the instructions contained in
- * an InstructionList. Instruction objects may be used more than once within a
- * list, this is useful because it saves memory and may be much faster.
- *
- * Within an InstructionList an InstructionHandle object is wrapped
- * around all instructions, i.e., it implements a cell in a
- * doubly-linked list. From the outside only the next and the
- * previous instruction (handle) are accessible. One
- * can traverse the list via an Enumeration returned by
- * InstructionList.elements().
- *
- * @version $Id: InstructionHandle.java,v 1.5 2008/05/30 17:29:14 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * Instances of this class give users a handle to the instructions contained in an InstructionList. Instruction objects may be used
+ * more than once within a list, this is useful because it saves memory and may be much faster.
+ * 
+ * Within an InstructionList an InstructionHandle object is wrapped around all instructions, i.e., it implements a cell in a
+ * doubly-linked list. From the outside only the next and the previous instruction (handle) are accessible. One can traverse the
+ * list via an Enumeration returned by InstructionList.elements().
+ * 
+ * @version $Id: InstructionHandle.java,v 1.6 2008/08/28 00:03:46 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Instruction
  * @see BranchHandle
- * @see InstructionList 
+ * @see InstructionList
  */
 public class InstructionHandle implements java.io.Serializable {
-  InstructionHandle next, prev;  // Will be set from the outside
-  Instruction       instruction;
-  protected int     i_position = -1; // byte code offset of instruction
-  private HashSet   targeters;
+	InstructionHandle next, prev; // Will be set from the outside
+	Instruction instruction;
+	protected int i_position = -1; // byte code offset of instruction
+	private HashSet targeters;
 
-  public final InstructionHandle getNext()        { return next; }
-  public final InstructionHandle getPrev()        { return prev; }
-  public final Instruction       getInstruction() { return instruction; }
+	public final InstructionHandle getNext() {
+		return next;
+	}
 
-  /**
-   * Replace current instruction contained in this handle.
-   * Old instruction is disposed using Instruction.dispose().
-   */
-  public void setInstruction(Instruction i) { // Overridden in BranchHandle
-//    if(i == null)
-//      throw new ClassGenException("Assigning null to handle");
-//
-//    if((this.getClass() != BranchHandle.class) && (i instanceof InstructionBranch))
-//      throw new ClassGenException("Assigning branch instruction " + i + " to plain handle");
+	public final InstructionHandle getPrev() {
+		return prev;
+	}
 
-    if(instruction != null)
-      instruction.dispose();
+	public final Instruction getInstruction() {
+		return instruction;
+	}
 
-    instruction = i;
-  }
+	/**
+	 * Replace current instruction contained in this handle. Old instruction is disposed using Instruction.dispose().
+	 */
+	public void setInstruction(Instruction i) { // Overridden in BranchHandle
+		if (instruction != null) {
+			instruction.dispose();
+		}
+		instruction = i;
+	}
 
-  /**
-   * Temporarily swap the current instruction, without disturbing
-   * anything. Meant to be used by a debugger, implementing
-   * breakpoints. Current instruction is returned.
-   */
-  public Instruction swapInstruction(Instruction i) {
-    Instruction oldInstruction = instruction;
-    instruction = i;
-    return oldInstruction;
-  }
+	protected InstructionHandle(Instruction i) {
+		setInstruction(i);
+	}
 
-  /*private*/ protected InstructionHandle(Instruction i) {
-    setInstruction(i);
-  }
+	static final InstructionHandle getInstructionHandle(Instruction i) {
+		return new InstructionHandle(i);
+	}
 
+	/**
+	 * Called by InstructionList.setPositions when setting the position for every instruction. In the presence of variable length
+	 * instructions 'setPositions()' performs multiple passes over the instruction list to calculate the correct (byte) positions
+	 * and offsets by calling this function.
+	 * 
+	 * @param offset additional offset caused by preceding (variable length) instructions
+	 * @param max_offset the maximum offset that may be caused by these instructions
+	 * @return additional offset caused by possible change of this instruction's length
+	 */
+	protected int updatePosition(int offset, int max_offset) {
+		i_position += offset;
+		return 0;
+	}
 
-  /** 
-   * Factory method.
-   */
-  static final InstructionHandle getInstructionHandle(Instruction i) {
-      return new InstructionHandle(i);
-    }
+	/**
+	 * @return the position, i.e., the byte code offset of the contained instruction. This is accurate only after
+	 *         InstructionList.setPositions() has been called.
+	 */
+	public int getPosition() {
+		return i_position;
+	}
 
-  /**
-   * Called by InstructionList.setPositions when setting the position for every
-   * instruction. In the presence of variable length instructions `setPositions()'
-   * performs multiple passes over the instruction list to calculate the
-   * correct (byte) positions and offsets by calling this function.
-   *
-   * @param offset additional offset caused by preceding (variable length) instructions
-   * @param max_offset the maximum offset that may be caused by these instructions
-   * @return additional offset caused by possible change of this instruction's length
-   */
-  protected int updatePosition(int offset, int max_offset) {
-    i_position += offset;
-    return 0;
-  }
+	/**
+	 * Set the position, i.e., the byte code offset of the contained instruction.
+	 */
+	void setPosition(int pos) {
+		i_position = pos;
+	}
 
-  /** @return the position, i.e., the byte code offset of the contained
-   * instruction. This is accurate only after
-   * InstructionList.setPositions() has been called.
-   */
-  public int getPosition() { return i_position; }
+	/**
+	 * Delete contents, i.e., remove user access and make handle reusable.
+	 */
+	// OPTIMIZE get rid of this? why do we need it
+	void dispose() {
+		next = prev = null;
+		instruction.dispose();
+		instruction = null;
+		i_position = -1;
+		removeAllTargeters();
+	}
 
-  /** Set the position, i.e., the byte code offset of the contained
-   * instruction.
-   */
-  void setPosition(int pos) { i_position = pos; }
+	/**
+	 * Remove all targeters, if any.
+	 */
+	public void removeAllTargeters() {
+		if (targeters != null) {
+			targeters.clear();
+		}
+	}
 
+	/**
+	 * Denote this handle isn't referenced anymore by t.
+	 */
+	public void removeTargeter(InstructionTargeter t) {
+		targeters.remove(t);
+	}
 
-  /**
-   * Delete contents, i.e., remove user access and make handle reusable.
-   */
-  // OPTIMIZE get rid of this? why do we need it
-  void dispose() {
-    next = prev = null;
-    instruction.dispose();
-    instruction = null;
-    i_position = -1;
-    removeAllTargeters();
-  }
+	/**
+	 * Denote this handle is being referenced by t.
+	 */
+	public void addTargeter(InstructionTargeter t) {
+		if (targeters == null) {
+			targeters = new HashSet();
+		}
 
-  /** Remove all targeters, if any.
-   */
-  public void removeAllTargeters() {
-    if(targeters != null)
-      targeters.clear();
-  }
+		// if(!targeters.contains(t))
+		targeters.add(t);
+	}
 
-  /**
-   * Denote this handle isn't referenced anymore by t.
-   */
-  public void removeTargeter(InstructionTargeter t) {
-    targeters.remove(t);
-  }
-  
-  /**
-   * Denote this handle is being referenced by t.
-   */
-  public void addTargeter(InstructionTargeter t) {
-    if(targeters == null)
-      targeters = new HashSet();
+	public boolean hasTargeters() {
+		return targeters != null && targeters.size() > 0;
+	}
 
-    //if(!targeters.contains(t))
-    targeters.add(t);
-  }
+	public InstructionTargeter[] getTargetersArray() {
+		if (!hasTargeters()) {
+			return null;
+		}
 
-  public boolean hasTargeters() {
-    return (targeters != null) && (targeters.size() > 0);
-  }
+		InstructionTargeter[] t = new InstructionTargeter[targeters.size()];
+		targeters.toArray(t);
+		return t;
+	}
 
-  /**
-   * @return null, if there are no targeters
-   */
-  public InstructionTargeter[] getTargeters() {
-    if(!hasTargeters())
-      return null;
-    
-    InstructionTargeter[] t = new InstructionTargeter[targeters.size()];
-    targeters.toArray(t);
-    return t;
-  }
+	public Set getTargeters() {
+		if (targeters == null || targeters.size() == 0) {
+			return Collections.EMPTY_SET;
+		}
+		return targeters;
+	}
 
-  /** @return a (verbose) string representation of the contained instruction. 
-   */
-  public String toString(boolean verbose) {
-    return Utility.format(i_position, 4, false, ' ') + ": " + instruction.toString(verbose);
-  }
+	/**
+	 * @return a (verbose) string representation of the contained instruction.
+	 */
+	public String toString(boolean verbose) {
+		return Utility.format(i_position, 4, false, ' ') + ": " + instruction.toString(verbose);
+	}
 
-  /** @return a string representation of the contained instruction. 
-   */
-  public String toString() {
-    return toString(true);
-  }
+	public String toString() {
+		return toString(true);
+	}
 
-  /** Convenience method, simply calls accept() on the contained instruction.
-   *
-   * @param v Visitor object
-   */
-  public void accept(InstVisitor v) {
-    instruction.accept(v);
-  }
 }
