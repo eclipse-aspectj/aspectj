@@ -18,13 +18,15 @@ import junit.framework.TestCase;
 public class AjTest extends TestCase {
 
 	public void testAj() {
-		Aj aj = new Aj();
+		// Aj aj =
+		new Aj();
 	}
 
 	public void testAjIWeavingContext() {
 		ClassLoader loader = new URLClassLoader(new URL[] {}, null);
 		IWeavingContext weavingContext = new DefaultWeavingContext(loader);
-		Aj aj = new Aj(weavingContext);
+		// Aj aj =
+		new Aj(weavingContext);
 	}
 
 	public void testInitialize() {
@@ -42,14 +44,14 @@ public class AjTest extends TestCase {
 		ClassLoader loader = new URLClassLoader(new URL[] {}, null);
 		Aj aj = new Aj();
 		String namespace = aj.getNamespace(loader);
-		assertEquals("Namespace should be empty","",namespace);
+		assertEquals("Namespace should be empty", "", namespace);
 	}
 
 	public void testGeneratedClassesExist() {
 		ClassLoader loader = new URLClassLoader(new URL[] {}, null);
 		Aj aj = new Aj();
 		boolean exist = aj.generatedClassesExist(loader);
-		assertFalse("There should be no generated classes",exist);
+		assertFalse("There should be no generated classes", exist);
 	}
 
 	public void testFlushGeneratedClasses() {
@@ -57,7 +59,7 @@ public class AjTest extends TestCase {
 		Aj aj = new Aj();
 		aj.flushGeneratedClasses(loader);
 		boolean exist = aj.generatedClassesExist(loader);
-		assertFalse("There should be no generated classes",exist);
+		assertFalse("There should be no generated classes", exist);
 	}
 
 }
