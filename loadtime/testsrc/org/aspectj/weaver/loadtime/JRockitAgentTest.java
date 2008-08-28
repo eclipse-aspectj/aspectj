@@ -97,7 +97,7 @@ public class JRockitAgentTest extends TestCase {
 				else if (file.exists() && file.getName().endsWith(".jar"))
 					pathElement = new JarFile(file);
 				else
-					throw new RuntimeException(file.getAbsolutePath().toString());
+					throw new RuntimeException(file.getAbsolutePath());
 				path.add(pathElement);
 			}
 
