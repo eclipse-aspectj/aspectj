@@ -1,5 +1,3 @@
-package org.aspectj.apache.bcel.generic;
-
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -53,34 +51,46 @@ package org.aspectj.apache.bcel.generic;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.aspectj.apache.bcel.generic;
 
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-
-/** 
+/**
  * Instruction that needs one byte
  */
 public class InstructionByte extends Instruction {
-  private byte b;
+	private final byte theByte;
 
-  public InstructionByte(short opcode, byte b) {
-	  this.opcode = opcode;
-	  this.b      = b;
-  }
-  
-  public void dump(DataOutputStream out) throws IOException {
-    out.writeByte(opcode);
-    out.writeByte(b);
-  }
+	public InstructionByte(short opcode, byte b) {
+		super(opcode);
+		this.theByte = b;
+	}
 
-  public String toString(boolean verbose) {
-    return super.toString(verbose) + " " + b;
-  }
-  
-  public final byte getTypecode() { return b; } // NEWARRAY
+	public void dump(DataOutputStream out) throws IOException {
+		out.writeByte(opcode);
+		out.writeByte(theByte);
+	}
 
-  // NEWARRAY
+	public String toString(boolean verbose) {
+		return super.toString(verbose) + " " + theByte;
+	}
+
+	/**
+	 * For supporting NEWARRAY
+	 * 
+	 * @return typecode of the array
+	 */
+	public final byte getTypecode() {
+		return theByte;
+	}
+
+	/**
+	 * For supporting NEWARRAY
+	 * 
+	 * @return type of the array
+	 */
 	public final Type getType() {
-	    return new ArrayType(BasicType.getType(b), 1);
+		return new ArrayType(BasicType.getType(theByte), 1);
 	}
 }
