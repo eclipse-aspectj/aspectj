@@ -1093,13 +1093,11 @@ public final class LazyMethodGen implements Traceable {
     			if (inst instanceof InstructionBranch) {
     				branchInstructions.add(iHandle);
     			}
-    			Iterator tIter = iHandle.getTargeters().iterator();
-    			while (tIter.hasNext()) {
     				
-//              InstructionTargeter[] targeters = iHandle.getTargetersArray();
-//              if (targeters != null) {
-//                  for (int k = targeters.length - 1; k >= 0; k--) {
-                      InstructionTargeter targeter = (InstructionTargeter)tIter.next();//targeters[k];
+              InstructionTargeter[] targeters = iHandle.getTargetersArray();
+              if (targeters != null) {
+                  for (int k = targeters.length - 1; k >= 0; k--) {
+                      InstructionTargeter targeter = targeters[k];
                       if (targeter instanceof LineNumberTag) {
                           int line = ((LineNumberTag)targeter).getLineNumber();
                           if (line != currLine) {
@@ -1118,7 +1116,7 @@ public final class LazyMethodGen implements Traceable {
                           } else {
                           	  p.end = iHandle;
                           }
-//                      }
+                      }
                   }
               }
     		}
