@@ -61,7 +61,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 /**
  * Super class for object and array types.
  * 
- * @version $Id: ReferenceType.java,v 1.4 2008/08/28 00:04:32 aclement Exp $
+ * @version $Id: ReferenceType.java,v 1.5 2008/08/28 15:36:59 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class ReferenceType extends Type {
@@ -292,72 +292,74 @@ public abstract class ReferenceType extends Type {
 		return null;
 	}
 
-	/**
-	 * This commutative operation returns the first common superclass (narrowest ReferenceType referencing a class, not an
-	 * interface). If one of the types is a superclass of the other, the former is returned. If "this" is Type.NULL, then t is
-	 * returned. If t is Type.NULL, then "this" is returned. If "this" equals t ['this.equals(t)'] "this" is returned. If "this" or
-	 * t is an ArrayType, then Type.OBJECT is returned. If "this" or t is a ReferenceType referencing an interface, then Type.OBJECT
-	 * is returned. If not all of the two classes' superclasses cannot be found, "null" is returned. See the JVM specification
-	 * edition 2, "§4.9.2 The Bytecode Verifier".
-	 * 
-	 * @deprecated use getFirstCommonSuperclass(ReferenceType t) which has slightly changed semantics.
-	 */
-	public ReferenceType firstCommonSuperclass(ReferenceType t) {
-		if (this.equals(Type.NULL)) {
-			return t;
-		}
-		if (t.equals(Type.NULL)) {
-			return this;
-		}
-		if (this.equals(t)) {
-			return this;
-			/*
-			 * TODO: Above sounds a little arbitrary. On the other hand, there is no object referenced by Type.NULL so we can also
-			 * say all the objects referenced by Type.NULL were derived from java.lang.Object. However, the Java Language's
-			 * "instanceof" operator proves us wrong: "null" is not referring to an instance of java.lang.Object :)
-			 */
-		}
-
-		if (this instanceof ArrayType || t instanceof ArrayType) {
-			return Type.OBJECT;
-			// TODO: Is there a proof of OBJECT being the direct ancestor of every ArrayType?
-		}
-
-		if (this instanceof ObjectType && ((ObjectType) this).referencesInterface() || t instanceof ObjectType
-				&& ((ObjectType) t).referencesInterface()) {
-			return Type.OBJECT;
-			// TODO: The above line is correct comparing to the vmspec2. But one could
-			// make class file verification a bit stronger here by using the notion of
-			// superinterfaces or even castability or assignment compatibility.
-		}
-
-		// this and t are ObjectTypes, see above.
-		ObjectType thiz = (ObjectType) this;
-		ObjectType other = (ObjectType) t;
-		JavaClass[] thiz_sups = Repository.getSuperClasses(thiz.getClassName());
-		JavaClass[] other_sups = Repository.getSuperClasses(other.getClassName());
-
-		if (thiz_sups == null || other_sups == null) {
-			return null;
-		}
-
-		// Waaahh...
-		JavaClass[] this_sups = new JavaClass[thiz_sups.length + 1];
-		JavaClass[] t_sups = new JavaClass[other_sups.length + 1];
-		System.arraycopy(thiz_sups, 0, this_sups, 1, thiz_sups.length);
-		System.arraycopy(other_sups, 0, t_sups, 1, other_sups.length);
-		this_sups[0] = Repository.lookupClass(thiz.getClassName());
-		t_sups[0] = Repository.lookupClass(other.getClassName());
-
-		for (int i = 0; i < t_sups.length; i++) {
-			for (int j = 0; j < this_sups.length; j++) {
-				if (this_sups[j].equals(t_sups[i])) {
-					return new ObjectType(this_sups[j].getClassName());
-				}
-			}
-		}
-
-		// Huh? Did you ask for Type.OBJECT's superclass??
-		return null;
-	}
+	// /**
+	// * This commutative operation returns the first common superclass (narrowest ReferenceType referencing a class, not an
+	// * interface). If one of the types is a superclass of the other, the former is returned. If "this" is Type.NULL, then t is
+	// * returned. If t is Type.NULL, then "this" is returned. If "this" equals t ['this.equals(t)'] "this" is returned. If "this"
+	// or
+	// * t is an ArrayType, then Type.OBJECT is returned. If "this" or t is a ReferenceType referencing an interface, then
+	// Type.OBJECT
+	// * is returned. If not all of the two classes' superclasses cannot be found, "null" is returned. See the JVM specification
+	// * edition 2, "§4.9.2 The Bytecode Verifier".
+	// *
+	// * @deprecated use getFirstCommonSuperclass(ReferenceType t) which has slightly changed semantics.
+	// */
+	// public ReferenceType firstCommonSuperclass(ReferenceType t) {
+	// if (this.equals(Type.NULL)) {
+	// return t;
+	// }
+	// if (t.equals(Type.NULL)) {
+	// return this;
+	// }
+	// if (this.equals(t)) {
+	// return this;
+	// /*
+	// * TODO: Above sounds a little arbitrary. On the other hand, there is no object referenced by Type.NULL so we can also
+	// * say all the objects referenced by Type.NULL were derived from java.lang.Object. However, the Java Language's
+	// * "instanceof" operator proves us wrong: "null" is not referring to an instance of java.lang.Object :)
+	// */
+	// }
+	//
+	// if (this instanceof ArrayType || t instanceof ArrayType) {
+	// return Type.OBJECT;
+	// // TODO: Is there a proof of OBJECT being the direct ancestor of every ArrayType?
+	// }
+	//
+	// if (this instanceof ObjectType && ((ObjectType) this).referencesInterface() || t instanceof ObjectType
+	// && ((ObjectType) t).referencesInterface()) {
+	// return Type.OBJECT;
+	// // TODO: The above line is correct comparing to the vmspec2. But one could
+	// // make class file verification a bit stronger here by using the notion of
+	// // superinterfaces or even castability or assignment compatibility.
+	// }
+	//
+	// // this and t are ObjectTypes, see above.
+	// ObjectType thiz = (ObjectType) this;
+	// ObjectType other = (ObjectType) t;
+	// JavaClass[] thiz_sups = Repository.getSuperClasses(thiz.getClassName());
+	// JavaClass[] other_sups = Repository.getSuperClasses(other.getClassName());
+	//
+	// if (thiz_sups == null || other_sups == null) {
+	// return null;
+	// }
+	//
+	// // Waaahh...
+	// JavaClass[] this_sups = new JavaClass[thiz_sups.length + 1];
+	// JavaClass[] t_sups = new JavaClass[other_sups.length + 1];
+	// System.arraycopy(thiz_sups, 0, this_sups, 1, thiz_sups.length);
+	// System.arraycopy(other_sups, 0, t_sups, 1, other_sups.length);
+	// this_sups[0] = Repository.lookupClass(thiz.getClassName());
+	// t_sups[0] = Repository.lookupClass(other.getClassName());
+	//
+	// for (int i = 0; i < t_sups.length; i++) {
+	// for (int j = 0; j < this_sups.length; j++) {
+	// if (this_sups[j].equals(t_sups[i])) {
+	// return new ObjectType(this_sups[j].getClassName());
+	// }
+	// }
+	// }
+	//
+	// // Huh? Did you ask for Type.OBJECT's superclass??
+	// return null;
+	// }
 }
