@@ -257,7 +257,7 @@ public class BcelShadow extends Shadow {
 		}
 	}
 	private void retargetFrom(InstructionHandle old, InstructionHandle fresh) {
-		InstructionTargeter[] sources = old.getTargeters();
+		InstructionTargeter[] sources = old.getTargetersArray();
 		if (sources != null) {
 			for (int i = sources.length - 1; i >= 0; i--) {
 				if (sources[i] instanceof ExceptionRange) {
@@ -317,7 +317,7 @@ public class BcelShadow extends Shadow {
             // Now the exception range starts just after our new instruction.
             // The next bit of code changes the exception range to point at
             // the store instruction
-			InstructionTargeter[] targeters = start.getTargeters();
+			InstructionTargeter[] targeters = start.getTargetersArray();
 			for (int i = 0; i < targeters.length; i++) {
 				InstructionTargeter t = targeters[i];
 				if (t instanceof ExceptionRange) {
@@ -577,18 +577,16 @@ public class BcelShadow extends Shadow {
 		{
 			int slot = startOfHandler.getInstruction().getIndex();
 			//System.out.println("got store: " + startOfHandler.getInstruction() + ", " + index);
-			InstructionTargeter[] targeters = startOfHandler.getNext().getTargeters();
-			if (targeters!=null) {
-				for (int i=targeters.length-1; i >= 0; i--) {
-					if (targeters[i] instanceof LocalVariableTag) {
-						LocalVariableTag t = (LocalVariableTag)targeters[i];
-						if (t.getSlot() == slot) {
-							return t.getName();
-						}
-						//System.out.println("tag: " + targeters[i]);
+			Iterator tIter = startOfHandler.getNext().getTargeters().iterator();
+			while (tIter.hasNext()) {
+				InstructionTargeter targeter = (InstructionTargeter)tIter.next();
+				if (targeter instanceof LocalVariableTag) {
+					LocalVariableTag t = (LocalVariableTag)targeter;
+					if (t.getSlot() == slot) {
+						return t.getName();
 					}
 				}
- 			}
+			}
 		}
 		
 		return "<missing>";
@@ -989,7 +987,7 @@ public class BcelShadow extends Shadow {
     }    
 
 	public static void retargetAllBranches(InstructionHandle from, InstructionHandle to) {
-		InstructionTargeter[] sources = from.getTargeters();
+		InstructionTargeter[] sources = from.getTargetersArray();
 		if (sources != null) {
 			for (int i = sources.length - 1; i >= 0; i--) {
 				InstructionTargeter source = sources[i];
@@ -2644,8 +2642,17 @@ public class BcelShadow extends Shadow {
 //        }
 //    }
 
+	
     /**
-     * ATAJ Handle the inlining for @AJ aspects
+     * Annotation style handling for inlining.
+     * 
+     * Note:
+     * The proceedingjoinpoint is already on the stack (since the user was calling pjp.proceed(...)
+     * 
+     * The proceed map is ignored (in terms of argument repositioning) since we have a fixed expected
+     * format for annotation style.  The aim here is to change the proceed() call into a call to
+     * the xxx_aroundBody0 method.
+     * 
      *
      */
     private InstructionList getRedoneProceedCallForAnnotationStyle(
@@ -2655,25 +2662,7 @@ public class BcelShadow extends Shadow {
         LazyMethodGen localAdviceMethod,
         List argVarList,
         boolean isProceedWithArgs)
-    {
-        // Notes:
-        // proceedingjp is on stack (since user was calling pjp.proceed(...)
-
-        // new Object[]{new Integer(argAdvice1-1)};// arg of proceed
-        // call to proceed(..) is NOT made
-        // instead we do
-        // itar callback args i
-        //     get from array i, convert it to the callback arg i
-        //     if ask for JP, push the one we got on the stack
-        // invoke callback, create conversion back to Object/Integer
-
-        // rest of method -- (hence all those conversions)
-        // intValue() from original code
-        // int res = .. from original code
-
-        //Note: we just don't care about the proceed map etc
-    	// (we would need to care if we allow repositioning of arguments in advice signature)
-
+    { 
         InstructionList ret = new InstructionList();
 
         // store the Object[] array on stack if proceed with args
@@ -2681,98 +2670,81 @@ public class BcelShadow extends Shadow {
         	
         	// STORE the Object[] into a local variable
             Type objectArrayType = Type.OBJECT_ARRAY;
-            int localProceedArgArray = localAdviceMethod.allocateLocal(objectArrayType);
-            ret.append(InstructionFactory.createStore(objectArrayType, localProceedArgArray));
+            int theObjectArrayLocalNumber = localAdviceMethod.allocateLocal(objectArrayType);
+            ret.append(InstructionFactory.createStore(objectArrayType, theObjectArrayLocalNumber));
 
             // STORE the ProceedingJoinPoint instance into a local variable
             Type proceedingJpType = Type.getType("Lorg/aspectj/lang/ProceedingJoinPoint;");
-            int localJp = localAdviceMethod.allocateLocal(proceedingJpType);
-            ret.append(InstructionFactory.createStore(proceedingJpType, localJp));
-
-            // push on stack each element of the object array
-            // that is assumed to be consistent with the callback argument (ie munger args)
-            // TODO do we want to try catch ClassCast and AOOBE exception ?
-
-            // special logic when withincode is static or not
+            int pjpLocalNumber = localAdviceMethod.allocateLocal(proceedingJpType);
+            ret.append(InstructionFactory.createStore(proceedingJpType, pjpLocalNumber));
             
-            // This next bit of code probably makes more sense if you read its implementation for
-            // weaveAroundClosure() - see JoinPointImpl.proceed(Object[]).  Basically depending
-            // on whether the join point has a this/target and whether the pointcut binds this/target
-            // then the arguments to the 'new' proceed call need to be reorganized. (pr126167)
-        	boolean relatedPointcutBindsThis = bindsThis(munger);
-        	boolean relatedPointcutBindsTarget = bindsTarget(munger);
+            // Aim here initially is to determine whether the user will have provided a new
+            // this/target in the object array and consume them if they have, leaving us the rest of 
+            // the arguments to process as regular arguments to the invocation at the original join point
+            
+        	boolean pointcutBindsThis = bindsThis(munger);
+        	boolean pointcutBindsTarget = bindsTarget(munger);
         	boolean targetIsSameAsThis = getKind().isTargetSameAsThis();
         	
-        	// two numbers can differ because a pointcut may bind both this/target and yet at the
-        	// join point this and target are the same (eg. call)
-            int indexIntoCallbackMethodForArguments = 0;
-            
+            int nextArgumentToProvideForCallback = 0;
             
             if (hasThis() ) {
-        		if (!(relatedPointcutBindsTarget && targetIsSameAsThis)) {
-	            	if (relatedPointcutBindsThis) {
-	//            		if (!(relatedPointcutBindsTarget && targetIsSameAsThis)) {
-		            		// they have supplied new this as first entry in object array
-		            		 ret.append(InstructionFactory.createLoad(objectArrayType, localProceedArgArray));
+        		if (!(pointcutBindsTarget && targetIsSameAsThis)) {
+	            	if (pointcutBindsThis) {
+		            		// they have supplied new this as first entry in object array, consume it
+		            		 ret.append(InstructionFactory.createLoad(objectArrayType, theObjectArrayLocalNumber));
 		                     ret.append(Utility.createConstant(fact, 0));
 		                     ret.append(InstructionFactory.createArrayLoad(Type.OBJECT));
 		                     ret.append(Utility.createConversion(fact,Type.OBJECT,callbackMethod.getArgumentTypes()[0]));
-		                     indexIntoCallbackMethodForArguments++;
-	//            		 }
 	            	} else {
-	            		// use local variable 0 (which is 'this' for a non-static method)
+	            		// use local variable 0
 	            		ret.append(InstructionFactory.createALOAD(0));
-	                	indexIntoCallbackMethodForArguments++;
 	            	}
+                    nextArgumentToProvideForCallback++;
         		}
             }
             
             
             
             if (hasTarget()) {
-            	if (relatedPointcutBindsTarget) {
+            	if (pointcutBindsTarget) {
             		if (getKind().isTargetSameAsThis()) {
-            			 ret.append(InstructionFactory.createLoad(objectArrayType, localProceedArgArray));
-                         ret.append(Utility.createConstant(fact, relatedPointcutBindsThis?1:0));
+            			 ret.append(InstructionFactory.createLoad(objectArrayType, theObjectArrayLocalNumber));
+                         ret.append(Utility.createConstant(fact, pointcutBindsThis?1:0));
                          ret.append(InstructionFactory.createArrayLoad(Type.OBJECT));
                          ret.append(Utility.createConversion(fact,Type.OBJECT,callbackMethod.getArgumentTypes()[0]));
-                         indexIntoCallbackMethodForArguments++;
             		} else {
-            			 int position =(hasThis()&& relatedPointcutBindsThis?1:0);
-	           			 ret.append(InstructionFactory.createLoad(objectArrayType, localProceedArgArray));
+            			 int position =(hasThis()&& pointcutBindsThis?1:0);
+	           			 ret.append(InstructionFactory.createLoad(objectArrayType, theObjectArrayLocalNumber));
 	                     ret.append(Utility.createConstant(fact, position));
 	                     ret.append(InstructionFactory.createArrayLoad(Type.OBJECT));
 	                     ret.append(Utility.createConversion(fact,Type.OBJECT,callbackMethod.getArgumentTypes()[position]));
-	             		 indexIntoCallbackMethodForArguments++;
             		}
+                    nextArgumentToProvideForCallback++;
             	} else {
                 	if (getKind().isTargetSameAsThis()) {
                 		//ret.append(new ALOAD(0));
                 	} else {
                 		ret.append(InstructionFactory.createLoad(localAdviceMethod.getArgumentTypes()[0],hasThis()?1:0));
-                		indexIntoCallbackMethodForArguments++;
+                		nextArgumentToProvideForCallback++;
                 	}
             	}
             }
             
             // Where to start in the object array in order to pick up arguments
-            int indexIntoObjectArrayForArguments = (relatedPointcutBindsThis?1:0)+(relatedPointcutBindsTarget?1:0);
+            int indexIntoObjectArrayForArguments = (pointcutBindsThis?1:0)+(pointcutBindsTarget?1:0);
             
-            
-            for (int i = indexIntoCallbackMethodForArguments, len=callbackMethod.getArgumentTypes().length; i < len; i++) {
+            int len = callbackMethod.getArgumentTypes().length;
+            for (int i = nextArgumentToProvideForCallback; i < len; i++) {
                 Type stateType = callbackMethod.getArgumentTypes()[i];
                 BcelWorld.fromBcel(stateType).resolve(world);
                 if ("Lorg/aspectj/lang/JoinPoint;".equals(stateType.getSignature())) {
-                    ret.append(new InstructionLV(Constants.ALOAD,localJp));// from localAdvice signature
+                    ret.append(new InstructionLV(Constants.ALOAD, pjpLocalNumber));
                 } else {
-                    ret.append(InstructionFactory.createLoad(objectArrayType, localProceedArgArray));
-                    ret.append(Utility.createConstant(fact, i-indexIntoCallbackMethodForArguments +indexIntoObjectArrayForArguments));
+                    ret.append(InstructionFactory.createLoad(objectArrayType, theObjectArrayLocalNumber));
+                    ret.append(Utility.createConstant(fact, i-nextArgumentToProvideForCallback+indexIntoObjectArrayForArguments));
                     ret.append(InstructionFactory.createArrayLoad(Type.OBJECT));
-                    ret.append(Utility.createConversion(
-                            fact,
-                            Type.OBJECT,
-                            stateType
-                    ));
+                    ret.append(Utility.createConversion(fact, Type.OBJECT, stateType));
                 }
             }
 

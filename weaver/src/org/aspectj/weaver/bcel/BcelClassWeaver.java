@@ -1537,7 +1537,7 @@ class BcelClassWeaver implements IClassWeaver {
 						InstructionHandle monitorExitBlockStart = body.insert(element,monitorExitBlock);
 						
 						// now move the targeters from the RET to the start of the monitorexit block
-						InstructionTargeter[] targeters = element.getTargeters();
+						InstructionTargeter[] targeters = element.getTargetersArray();
 						if (targeters!=null) {
 							for (int i = 0; i < targeters.length; i++) {
 						
@@ -1717,7 +1717,7 @@ class BcelClassWeaver implements IClassWeaver {
 					InstructionHandle monitorExitBlockStart = body.insert(element,monitorExitBlock);
 					
 					// now move the targeters from the RET to the start of the monitorexit block
-					InstructionTargeter[] targeters = element.getTargeters();
+					InstructionTargeter[] targeters = element.getTargetersArray();
 					if (targeters!=null) {
 						for (int i = 0; i < targeters.length; i++) {
 					
@@ -1825,7 +1825,7 @@ class BcelClassWeaver implements IClassWeaver {
 					InstructionHandle monitorExitBlockStart = body.insert(element,monitorExitBlock);
 					
 					// now move the targeters from the RET to the start of the monitorexit block
-					InstructionTargeter[] targeters = element.getTargeters();
+					InstructionTargeter[] targeters = element.getTargetersArray();
 					if (targeters!=null) {
 						for (int i = 0; i < targeters.length; i++) {
 					
@@ -1990,55 +1990,54 @@ class BcelClassWeaver implements IClassWeaver {
 			}			
 			
 			//copy over tags and range attributes
-	        InstructionTargeter[] srcTargeters = src.getTargeters();
-	        if (srcTargeters != null) { 
-	            for (int j = srcTargeters.length - 1; j >= 0; j--) {
-	                InstructionTargeter old = srcTargeters[j];
-	                if (old instanceof Tag) {
-	                	Tag oldTag = (Tag) old;
-	                	Tag fresh = (Tag) tagMap.get(oldTag);
-	                	if (fresh == null) {
-	                		fresh = oldTag.copy();
-	                		tagMap.put(oldTag, fresh);
-	                	}
-	                	dest.addTargeter(fresh);
-	                } else if (old instanceof ExceptionRange) {
-	                	ExceptionRange er = (ExceptionRange) old;
-	                	if (er.getStart() == src) {
-	                		ExceptionRange freshEr =
-	                			new ExceptionRange(
-	                				recipient.getBody(),
-	                				er.getCatchType(),
-	                				er.getPriority());
-	                		freshEr.associateWithTargets(
-								dest,
-								(InstructionHandle)srcToDest.get(er.getEnd()),
-								(InstructionHandle)srcToDest.get(er.getHandler()));
-	                	}
-					} else if (old instanceof ShadowRange) {
-						ShadowRange oldRange = (ShadowRange) old;
-						if (oldRange.getStart() == src) {
-							BcelShadow oldShadow = oldRange.getShadow();
-							BcelShadow freshEnclosing =
-								oldShadow.getEnclosingShadow() == null
-									? null
-									: (BcelShadow) shadowMap.get(oldShadow.getEnclosingShadow());
-							BcelShadow freshShadow =
-								oldShadow.copyInto(recipient, freshEnclosing);
-							ShadowRange freshRange = new ShadowRange(recipient.getBody());
-							freshRange.associateWithShadow(freshShadow);
-							freshRange.associateWithTargets(
-								dest,
-								(InstructionHandle) srcToDest.get(oldRange.getEnd()));
-							shadowMap.put(oldRange, freshRange);
-							//recipient.matchedShadows.add(freshShadow);
-							// XXX should go through the NEW copied shadow and update
-							// the thisVar, targetVar, and argsVar
-							// ??? Might want to also go through at this time and add
-							// "extra" vars to the shadow. 
-						}
+			
+			Iterator tIter = src.getTargeters().iterator();
+			while (tIter.hasNext()) {
+                InstructionTargeter old = (InstructionTargeter)tIter.next();
+                if (old instanceof Tag) {
+                	Tag oldTag = (Tag) old;
+                	Tag fresh = (Tag) tagMap.get(oldTag);
+                	if (fresh == null) {
+                		fresh = oldTag.copy();
+                		tagMap.put(oldTag, fresh);
+                	}
+                	dest.addTargeter(fresh);
+                } else if (old instanceof ExceptionRange) {
+                	ExceptionRange er = (ExceptionRange) old;
+                	if (er.getStart() == src) {
+                		ExceptionRange freshEr =
+                			new ExceptionRange(
+                				recipient.getBody(),
+                				er.getCatchType(),
+                				er.getPriority());
+                		freshEr.associateWithTargets(
+							dest,
+							(InstructionHandle)srcToDest.get(er.getEnd()),
+							(InstructionHandle)srcToDest.get(er.getHandler()));
+                	}
+				} else if (old instanceof ShadowRange) {
+					ShadowRange oldRange = (ShadowRange) old;
+					if (oldRange.getStart() == src) {
+						BcelShadow oldShadow = oldRange.getShadow();
+						BcelShadow freshEnclosing =
+							oldShadow.getEnclosingShadow() == null
+								? null
+								: (BcelShadow) shadowMap.get(oldShadow.getEnclosingShadow());
+						BcelShadow freshShadow =
+							oldShadow.copyInto(recipient, freshEnclosing);
+						ShadowRange freshRange = new ShadowRange(recipient.getBody());
+						freshRange.associateWithShadow(freshShadow);
+						freshRange.associateWithTargets(
+							dest,
+							(InstructionHandle) srcToDest.get(oldRange.getEnd()));
+						shadowMap.put(oldRange, freshRange);
+						//recipient.matchedShadows.add(freshShadow);
+						// XXX should go through the NEW copied shadow and update
+						// the thisVar, targetVar, and argsVar
+						// ??? Might want to also go through at this time and add
+						// "extra" vars to the shadow. 
 					}
-	            }
+				}	            
 	        }			
 		}
 		if (!keepReturns) ret.append(footer);
@@ -2126,10 +2125,10 @@ class BcelClassWeaver implements IClassWeaver {
 				}			
 				
 				//copy over tags and range attributes
-		        InstructionTargeter[] srcTargeters = src.getTargeters();
-		        if (srcTargeters != null) { 
-		            for (int j = srcTargeters.length - 1; j >= 0; j--) {
-		                InstructionTargeter old = srcTargeters[j];
+		        Iterator tIter = src.getTargeters().iterator();
+
+		        while (tIter.hasNext()) {
+					InstructionTargeter old = (InstructionTargeter)tIter.next();
 		                if (old instanceof Tag) {
 		                	 Tag oldTag = (Tag) old;
 		                	 Tag fresh = (Tag) tagMap.get(oldTag);
@@ -2172,7 +2171,6 @@ class BcelClassWeaver implements IClassWeaver {
 								// "extra" vars to the shadow. 
 							}
 						}*/
-		            }
 		        }			
 			}
 			if (!keepReturns) newList.append(footer);
@@ -2469,7 +2467,7 @@ class BcelClassWeaver implements IClassWeaver {
         
         // Exception handlers (pr230817)
         if (canMatch(Shadow.ExceptionHandler) && !Range.isRangeHandle(ih)) {
-            InstructionTargeter[] targeters = ih.getTargeters();
+            InstructionTargeter[] targeters = ih.getTargetersArray();
             if (targeters != null) {
                 for (int j = 0; j < targeters.length; j++) {
                     InstructionTargeter t = targeters[j];

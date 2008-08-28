@@ -400,15 +400,13 @@ public final class LazyMethodGen implements Traceable {
         LineNumberTag lr = null;
         boolean skip = false;
         for (InstructionHandle ih = body.getStart(); ih != null; ih = ih.getNext()) {
-            InstructionTargeter[] targeters = ih.getTargeters();
+        	Iterator tIter = ih.getTargeters().iterator();
             skip = false;
-            if (targeters != null) {
-                for (int i = targeters.length - 1; i >= 0; i--) {
-                    InstructionTargeter targeter = targeters[i];
-                    if (targeter instanceof LineNumberTag) {
-                        lr = (LineNumberTag) targeter;
-                        skip=true;
-                    }
+        	while (tIter.hasNext()) {
+                InstructionTargeter targeter = (InstructionTargeter)tIter.next();
+                if (targeter instanceof LineNumberTag) {
+                    lr = (LineNumberTag) targeter;
+                    skip=true;
                 }
             }
             if (lr != null && !skip) {
@@ -584,10 +582,9 @@ public final class LazyMethodGen implements Traceable {
 //            boolean hasPendingTargeters = false;
             int lcounter = 0;
             for (InstructionHandle ih = body.getStart(); ih != null; ih = ih.getNext()) {
-                InstructionTargeter[] targeters = ih.getTargeters();
-                if (targeters != null) {
-                    for (int i = targeters.length - 1; i >= 0; i--) {
-                        InstructionTargeter t = targeters[i];
+            	Iterator tIter = ih.getTargeters().iterator();
+            	while (tIter.hasNext()) {            	
+                        InstructionTargeter t = (InstructionTargeter)tIter.next();//targeters[i];
                         if (t instanceof ExceptionRange) {
                             // assert isRangeHandle(h);
                             ExceptionRange r = (ExceptionRange) t;
@@ -601,7 +598,6 @@ public final class LazyMethodGen implements Traceable {
                         } else {
                             // assert isRangeHandle(h)
                         }
-                    }
                 }
                 if (pendingLabel != null) {
                     labelMap.put(ih, pendingLabel);
@@ -758,10 +754,9 @@ public final class LazyMethodGen implements Traceable {
         InstructionHandle ih,
         int index) 
     {
-        InstructionTargeter[] targeters = ih.getTargeters();
-        if (targeters == null) return null;
-        for (int i = targeters.length - 1; i >= 0; i--) {
-            InstructionTargeter t = targeters[i];
+    	Iterator tIter = ih.getTargeters().iterator();
+    	while (tIter.hasNext()) {
+            InstructionTargeter t = (InstructionTargeter)tIter.next();
             if (t instanceof LocalVariableTag) {
                 LocalVariableTag lvt = (LocalVariableTag) t;
                 if (lvt.getSlot() == index) return lvt;
@@ -774,10 +769,9 @@ public final class LazyMethodGen implements Traceable {
         InstructionHandle ih,
         int prevLine) 
     {
-        InstructionTargeter[] targeters = ih.getTargeters();
-        if (targeters == null) return prevLine;
-        for (int i = targeters.length - 1; i >= 0; i--) {
-            InstructionTargeter t = targeters[i];
+    	Iterator tIter = ih.getTargeters().iterator();
+    	while (tIter.hasNext()) {
+            InstructionTargeter t = (InstructionTargeter)tIter.next();
             if (t instanceof LineNumberTag) {
                 return ((LineNumberTag)t).getLineNumber();
             }
@@ -1021,10 +1015,9 @@ public final class LazyMethodGen implements Traceable {
                 
                 // now deal with line numbers 
                 // and store up info for local variables
-                InstructionTargeter[] targeters = oldInstructionHandle.getTargeters();
-                if (targeters != null) {
-                    for (int k = targeters.length - 1; k >= 0; k--) {
-                        InstructionTargeter targeter = targeters[k];
+        		Iterator tIter = oldInstructionHandle.getTargeters().iterator();
+        		while (tIter.hasNext()) {
+                        InstructionTargeter targeter = (InstructionTargeter)tIter.next();//targeters[k];
                         if (targeter instanceof LineNumberTag) {
                             int line = ((LineNumberTag)targeter).getLineNumber();
                             if (line != currLine) {
@@ -1044,7 +1037,6 @@ public final class LazyMethodGen implements Traceable {
                             	p.end = newInstructionHandle;
                             }
                         }
-                    }
                 }
                 
                 // now continue
@@ -1101,11 +1093,13 @@ public final class LazyMethodGen implements Traceable {
     			if (inst instanceof InstructionBranch) {
     				branchInstructions.add(iHandle);
     			}
-
-              InstructionTargeter[] targeters = iHandle.getTargeters();
-              if (targeters != null) {
-                  for (int k = targeters.length - 1; k >= 0; k--) {
-                      InstructionTargeter targeter = targeters[k];
+    			Iterator tIter = iHandle.getTargeters().iterator();
+    			while (tIter.hasNext()) {
+    				
+//              InstructionTargeter[] targeters = iHandle.getTargetersArray();
+//              if (targeters != null) {
+//                  for (int k = targeters.length - 1; k >= 0; k--) {
+                      InstructionTargeter targeter = (InstructionTargeter)tIter.next();//targeters[k];
                       if (targeter instanceof LineNumberTag) {
                           int line = ((LineNumberTag)targeter).getLineNumber();
                           if (line != currLine) {
@@ -1118,13 +1112,13 @@ public final class LazyMethodGen implements Traceable {
                           // If we don't know about it, create a new position and store
                           // If we do know about it - update its end position
                           if (p==null) {
-                          	LVPosition newp = new LVPosition();
-                          	newp.start=newp.end=iHandle;
-                          	localVariables.put(lvt,newp);
+                          	  LVPosition newp = new LVPosition();
+                          	  newp.start=newp.end=iHandle;
+                          	  localVariables.put(lvt,newp);
                           } else {
-                          	p.end = iHandle;
+                          	  p.end = iHandle;
                           }
-                      }
+//                      }
                   }
               }
     		}
@@ -1461,11 +1455,9 @@ public final class LazyMethodGen implements Traceable {
 		
 		for (InstructionHandle ih = il.getStart(); ih != null; ih = ih.getNext()) {
 			assertGoodHandle(ih, body, ranges, from);
-			InstructionTargeter[] ts = ih.getTargeters();
-			if (ts != null) {
-				for (int i = ts.length - 1; i >= 0; i--) {
-					assertGoodTargeter(ts[i], ih, body, from);
-				}
+			Iterator tIter = ih.getTargeters().iterator();
+			while (tIter.hasNext()) {
+				assertGoodTargeter((InstructionTargeter)tIter.next(),ih,body,from);
 			}
 		}
 	}
@@ -1547,10 +1539,9 @@ public final class LazyMethodGen implements Traceable {
         InstructionTargeter targeter,
         String from) 
     {
-    	InstructionTargeter[] ts = target.getTargeters();
-    	if (ts == null) throw new BCException("bad targeting relationship in " + from);
-    	for (int i = ts.length - 1; i >= 0; i--) {
-    		if (ts[i] == targeter) return;
+    	Iterator tIter = target.getTargeters().iterator();
+    	while (tIter.hasNext()) {
+    		if (((InstructionTargeter)tIter.next()) == targeter) return;
     	}
 		throw new RuntimeException("bad targeting relationship in " + from);
     }
@@ -1580,12 +1571,15 @@ public final class LazyMethodGen implements Traceable {
 
     private static Range getRangeAndAssertExactlyOne(InstructionHandle ih, String from) {
     	Range ret = null;
-    	InstructionTargeter[] ts = ih.getTargeters();
-    	if (ts == null) throw new BCException("range handle with no range in " + from);
-    	for (int i = ts.length - 1; i >= 0; i--) {
-    		if (ts[i] instanceof Range) {
+    	Iterator tIter = ih.getTargeters().iterator();
+    	if (!tIter.hasNext()) {
+    		throw new BCException("range handle with no range in " + from);
+    	}
+    	while (tIter.hasNext()) {
+    		InstructionTargeter ts = (InstructionTargeter)tIter.next();
+    		if (ts instanceof Range) {
     			if (ret != null) throw new BCException("range handle with multiple ranges in " + from);
-    			ret = (Range) ts[i];
+    			ret = (Range) ts;
     		}
     	}
     	if (ret == null) throw new BCException("range handle with no range in " + from);
