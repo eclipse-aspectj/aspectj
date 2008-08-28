@@ -62,11 +62,11 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
  * byte code generating backend of a compiler. You can subclass it to
  * add your own create methods.
  *
- * @version $Id: InstructionFactory.java,v 1.4 2008/05/28 23:52:59 aclement Exp $
+ * @version $Id: InstructionFactory.java,v 1.5 2008/08/28 00:03:24 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Constants
  */
-public class InstructionFactory implements InstructionConstants, java.io.Serializable {
+public class InstructionFactory implements InstructionConstants {
   protected ClassGen        cg;
   protected ConstantPool cp;
 
@@ -178,28 +178,6 @@ public class InstructionFactory implements InstructionConstants, java.io.Seriali
 
     return instruction;
   }
-
-  private static class MethodObject {
-    Type[]   arg_types;
-    Type     result_type;
-    String[] arg_names;
-    String   class_name;
-    String   name;
-    int      access;
-
-    MethodObject(String c, String n, Type r, Type[] a, int acc) {
-      class_name  = c;
-      name        = n;
-      result_type = r;
-      arg_types   = a;
-      access      = acc;
-    }
-  }
-
-  private InvokeInstruction createInvoke(MethodObject m, short kind) {
-    return createInvoke(m.class_name, m.name, m.result_type, m.arg_types, kind);
-  }
-
 
   /** Create a field instruction.
    *
