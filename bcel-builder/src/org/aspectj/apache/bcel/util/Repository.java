@@ -62,11 +62,11 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  * Repository.setRepository method.
  *
  * @see org.aspectj.apache.bcel.Repository
- * @version $Id: Repository.java,v 1.3 2008/05/28 23:52:53 aclement Exp $
+ * @version $Id: Repository.java,v 1.4 2008/08/28 00:01:38 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  */
-public interface Repository extends java.io.Serializable {
+public interface Repository {
   /**
    * Store the provided class under "clazz.getClassName()" 
    */
