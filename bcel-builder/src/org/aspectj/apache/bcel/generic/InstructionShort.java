@@ -54,26 +54,27 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-/** 
+/**
  * Instruction that needs one short
  */
 public class InstructionShort extends Instruction {
-  private short s;
+	private final short s;
 
-  public InstructionShort(short opcode, short s) {
-	  this.opcode = opcode;
-	  this.s      = s;
-  }
-  
-  public void dump(DataOutputStream out) throws IOException {
-    out.writeByte(opcode);
-    out.writeShort(s);
-  }
+	public InstructionShort(short opcode, short s) {
+		super(opcode);
+		this.s = s;
+	}
 
-  public String toString(boolean verbose) {
-    return super.toString(verbose) + " " + s;
-  }
+	public void dump(DataOutputStream out) throws IOException {
+		out.writeByte(opcode);
+		out.writeShort(s);
+	}
+
+	public String toString(boolean verbose) {
+		return super.toString(verbose) + " " + s;
+	}
 
 }
