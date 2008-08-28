@@ -235,6 +235,18 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 					" but found " + ipe.getSourceSignature(), 
 					expected, ipe.getSourceSignature());
   }
+  public void testAspected_Annotation(){
+	  runTest("ensure Annotations are added to import list");
+	  IHierarchy top = AsmManager.getDefault().getHierarchy();
+		
+	  IProgramElement ipe = top.findElementForLabel(top.getRoot(),		
+	  IProgramElement.Kind.IMPORT_REFERENCE,"annotation.A");
+	  String expected = "import annotation.A;";
+			assertEquals("expected source signature to be " + expected + 
+					" but found " + ipe.getSourceSignature(), 
+					expected, ipe.getSourceSignature());
+				
+  }
 
   public void testGetSourceSignature_GenericMethods(){
 	  runTest("ensure getSourceSignature correct with generic method");

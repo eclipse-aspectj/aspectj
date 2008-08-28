@@ -849,4 +849,8 @@
     <ajc-test dir="bugs153/GenericMethod" title="ensure getSourceSignature correct with generic method">
       <compile files="C.java" options="-1.5 -emacssym"/>
     </ajc-test> 
+    
+    <ajc-test dir="bugs153/Annotation" title="ensure Annotations are added to import list">
+      <compile files="C.java, Anno.aj, A.java" options="-1.5 -emacssym"/>
+    </ajc-test> 
 </suite>
