@@ -21,6 +21,7 @@ import java.lang.ref.SoftReference;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -60,7 +61,7 @@ import org.aspectj.weaver.bcel.UnwovenClassFile;
  * lets just do it for all now)
  * 
  */
-public class AjState {
+public class AjState implements CompilerConfigurationChangeFlags {
 
 	// SECRETAPI static so beware of multi-threading bugs...
 	public static IStateListener stateListener = null;
@@ -272,13 +273,18 @@ public class AjState {
 		else
 			qualifiedStrings.clear();
 
-		Set oldFiles = new HashSet(buildConfig.getFiles());
-		Set newFiles = new HashSet(newBuildConfig.getFiles());
+		if ((newBuildConfig.getChanged() & PROJECTSOURCEFILES_CHANGED) == 0) {
+			addedFiles = Collections.EMPTY_SET;
+			deletedFiles = Collections.EMPTY_SET;
+		} else {
+			Set oldFiles = new HashSet(buildConfig.getFiles());
+			Set newFiles = new HashSet(newBuildConfig.getFiles());
 
-		addedFiles = new HashSet(newFiles);
-		addedFiles.removeAll(oldFiles);
-		deletedFiles = new HashSet(oldFiles);
-		deletedFiles.removeAll(newFiles);
+			addedFiles = new HashSet(newFiles);
+			addedFiles.removeAll(oldFiles);
+			deletedFiles = new HashSet(oldFiles);
+			deletedFiles.removeAll(newFiles);
+		}
 
 		Set oldBinaryFiles = new HashSet(buildConfig.getBinaryFiles());
 		Set newBinaryFiles = new HashSet(newBuildConfig.getBinaryFiles());
@@ -334,18 +340,27 @@ public class AjState {
 
 	Collection getModifiedFiles(long lastBuildTime) {
 		Set ret = new HashSet();
-		// not our job to account for new and deleted files
-		for (Iterator i = buildConfig.getFiles().iterator(); i.hasNext();) {
-			File file = (File) i.next();
-			if (!file.exists())
-				continue;
 
-			long modTime = file.lastModified();
-			// System.out.println("check: " + file + " mod " + modTime + " build " + lastBuildTime);
-			// need to add 1000 since lastModTime is only accurate to a second on some (all?) platforms
-			if (modTime + 1000 > lastBuildTime) {
-				ret.add(file);
+		// Check if the build configuration knows what files have changed...
+		List/* File */modifiedFiles = buildConfig.getModifiedFiles();
+
+		if (modifiedFiles == null) {
+			// do not know, so need to go looking
+			// not our job to account for new and deleted files
+			for (Iterator i = buildConfig.getFiles().iterator(); i.hasNext();) {
+				File file = (File) i.next();
+				if (!file.exists())
+					continue;
+
+				long modTime = file.lastModified();
+				// System.out.println("check: " + file + " mod " + modTime + " build " + lastBuildTime);
+				// need to add 1000 since lastModTime is only accurate to a second on some (all?) platforms
+				if (modTime + 1000 > lastBuildTime) {
+					ret.add(file);
+				}
 			}
+		} else {
+			ret.addAll(modifiedFiles);
 		}
 		ret.addAll(affectedFiles);
 		return ret;
@@ -658,34 +673,57 @@ public class AjState {
 		return (strucModTime > lastSuccessfulBuildTime);
 	}
 
-	private boolean pathChange(AjBuildConfig oldConfig, AjBuildConfig newConfig) {
-		boolean changed = false;
+	/**
+	 * Determine if something has changed on the classpath/inpath/aspectpath and a full build is required rather than an incremental
+	 * one.
+	 * 
+	 * @param previousConfig the previous configuration used
+	 * @param newConfig the new configuration being used
+	 * @return true if full build required
+	 */
+	private boolean pathChange(AjBuildConfig previousConfig, AjBuildConfig newConfig) {
+		int changes = newConfig.getChanged();
 
-		List oldOutputLocs = getOutputLocations(oldConfig);
+		// currently very coarse grained
+		if ((changes & (CLASSPATH_CHANGED | ASPECTPATH_CHANGED | INPATH_CHANGED | OUTPUTDESTINATIONS_CHANGED | INJARS_CHANGED)) != 0) {
+			List oldOutputLocs = getOutputLocations(previousConfig);
 
-		List oldClasspath = oldConfig.getClasspath();
-		List newClasspath = newConfig.getClasspath();
-		if (stateListener != null)
-			stateListener.aboutToCompareClasspaths(oldClasspath, newClasspath);
-		if (changedAndNeedsFullBuild(oldClasspath, newClasspath, true, oldOutputLocs))
-			return true;
-		List oldAspectpath = oldConfig.getAspectpath();
-		List newAspectpath = newConfig.getAspectpath();
-		if (changedAndNeedsFullBuild(oldAspectpath, newAspectpath, true, oldOutputLocs))
-			return true;
-		List oldInJars = oldConfig.getInJars();
-		List newInJars = newConfig.getInJars();
-		if (changedAndNeedsFullBuild(oldInJars, newInJars, false, oldOutputLocs))
-			return true;
-		List oldInPath = oldConfig.getInpath();
-		List newInPath = newConfig.getInpath();
-		if (changedAndNeedsFullBuild(oldInPath, newInPath, false, oldOutputLocs))
-			return true;
-		return changed;
+			List oldClasspath = previousConfig.getClasspath();
+			List newClasspath = newConfig.getClasspath();
+			if (stateListener != null)
+				stateListener.aboutToCompareClasspaths(oldClasspath, newClasspath);
+			if (changedAndNeedsFullBuild(oldClasspath, newClasspath, true, oldOutputLocs))
+				return true;
+
+			List oldAspectpath = previousConfig.getAspectpath();
+			List newAspectpath = newConfig.getAspectpath();
+			if (changedAndNeedsFullBuild(oldAspectpath, newAspectpath, true, oldOutputLocs))
+				return true;
+
+			List oldInPath = previousConfig.getInpath();
+			List newInPath = newConfig.getInpath();
+			if (changedAndNeedsFullBuild(oldInPath, newInPath, false, oldOutputLocs))
+				return true;
+
+			List oldInJars = previousConfig.getInJars();
+			List newInJars = newConfig.getInJars();
+			if (changedAndNeedsFullBuild(oldInJars, newInJars, false, oldOutputLocs))
+				return true;
+		}
+
+		return false;
 	}
 
+	/**
+	 * Return a list of the output locations - this includes any 'default' output location and then any known by a registered
+	 * CompilationResultDestinationManager.
+	 * 
+	 * @param config the build configuration for which the output locations should be determined
+	 * @return a list of file objects
+	 */
 	private List /* File */getOutputLocations(AjBuildConfig config) {
 		List outputLocs = new ArrayList();
+		// Is there a default location?
 		if (config.getOutputDir() != null) {
 			try {
 				outputLocs.add(config.getOutputDir().getCanonicalFile());
@@ -697,10 +735,10 @@ public class AjState {
 			for (Iterator iterator = dirs.iterator(); iterator.hasNext();) {
 				File f = (File) iterator.next();
 				try {
-					if (!outputLocs.contains(f.getCanonicalFile())) {
-						outputLocs.add(f.getCanonicalFile());
+					File cf = f.getCanonicalFile();
+					if (!outputLocs.contains(cf)) {
+						outputLocs.add(cf);
 					}
-
 				} catch (IOException e) {
 				}
 			}
@@ -708,6 +746,17 @@ public class AjState {
 		return outputLocs;
 	}
 
+	/**
+	 * Check the old and new paths, if they vary by length or individual elements then that is considered a change. Or if the last
+	 * modified time of a path entry has changed (or last modified time of a classfile in that path entry has changed) then return
+	 * true. The outputlocations are supplied so they can be 'ignored' in the comparison.
+	 * 
+	 * @param oldPath
+	 * @param newPath
+	 * @param checkClassFiles whether to examine individual class files within directories
+	 * @param outputLocs the output locations that should be ignored if they occur on the paths being compared
+	 * @return true if a change is detected that requires a full build
+	 */
 	private boolean changedAndNeedsFullBuild(List oldPath, List newPath, boolean checkClassFiles, List outputLocs) {
 		if (oldPath == null)
 			oldPath = new ArrayList();
@@ -731,7 +780,7 @@ public class AjState {
 			if (f.exists() && !f.isDirectory() && (f.lastModified() >= lastSuccessfulBuildTime)) {
 				return true;
 			}
-			if (f.exists() && f.isDirectory() && checkClassFiles) {
+			if (checkClassFiles && f.exists() && f.isDirectory()) {
 				boolean foundMatch = false;
 				for (Iterator iterator = outputLocs.iterator(); iterator.hasNext();) {
 					File dir = (File) iterator.next();
