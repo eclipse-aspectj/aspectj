@@ -333,6 +333,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		// Map optionsMap = options.getMap();
 		// join(optionsMap,global.getOptions().getMap());
 		// options.set(optionsMap);
+		options.defaultEncoding = global.options.defaultEncoding;// pr244321
 		join(aspectpath, global.aspectpath);
 		join(classpath, global.classpath);
 		if (null == configFile) {
