@@ -13,5 +13,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/weaver5"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ajde.core"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.aspectj.ajdt.core"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
