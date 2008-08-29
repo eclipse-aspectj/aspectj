@@ -51,6 +51,8 @@ public class IncrementalPerformanceTests extends AbstractMultiProjectIncremental
 		long nochangebuild = getTimeTakenForBuild(proj);
 		System.out.println("Incr build time for no changes at all: " + nochangebuild + "ms");
 
+		// An incremental build with no source file changes at all *and* we tell the compiler there are
+		// no source changes (so it doesn't need to check timestamps). super fast
 		addProjectSourceFileChanged(proj, null);
 		build(proj);
 		checkWasntFullBuild();
