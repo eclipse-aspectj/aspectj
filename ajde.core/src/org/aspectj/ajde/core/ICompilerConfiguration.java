@@ -14,92 +14,96 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.aspectj.ajdt.internal.core.builder.CompilerConfigurationChangeFlags;
+
 /**
- * Interface that contains all the configuration required for the 
- * compiler to be able to perform a build
+ * Interface that contains all the configuration required for the compiler to be able to perform a build
  */
-public interface ICompilerConfiguration {
-	
+public interface ICompilerConfiguration extends CompilerConfigurationChangeFlags {
+
 	/**
-	 * Returns the table of the current custom java options. 
+	 * Returns the table of the current custom java options.
 	 * <p>
-	 * For a complete description of the configurable options, see 
-	 * {@link org.aspectj.ajde.core.JavaOptions#getDefaultJavaOptions}
+	 * For a complete description of the configurable options, see {@link org.aspectj.ajde.core.JavaOptions#getDefaultJavaOptions}
 	 * or {@link org.aspectj.org.eclipse.jdt.core.IJavaProject#getOptions(boolean)}
 	 * </p>
 	 * 
-	 * @return table of current settings of all options 
-	 *   (key type: <code>String</code>; value type: <code>String</code>)
+	 * @return table of current settings of all options (key type: <code>String</code>; value type: <code>String</code>)
 	 * @see org.aspectj.ajde.core.JavaOptions#getDefaultJavaOptions or
-	 * org.aspectj.org.eclipse.jdt.core.IJavaProject#getOptions(boolean)
+	 *      org.aspectj.org.eclipse.jdt.core.IJavaProject#getOptions(boolean)
 	 */
-	public Map /*String --> String */getJavaOptionsMap();
-	
+	public Map /* String --> String */getJavaOptionsMap();
+
 	/**
-	 * The non-standard options, typically prefaced with -X when used 
-	 * with a command line compiler. The default is no non-standard 
-	 * options. Options should be separated by a space, for example 
-	 * "-showWeaveInfo -XnoInline"
+	 * The non-standard options, typically prefaced with -X when used with a command line compiler. The default is no non-standard
+	 * options. Options should be separated by a space, for example "-showWeaveInfo -XnoInline"
 	 */
 	public String getNonStandardOptions();
-	
+
 	/**
 	 * @return a list of those files to include in the build
 	 */
-    public List /*String*/ getProjectSourceFiles();
-
-    /**
-     * Return a subset of those files we'd get on getProjectSourceFiles() - the subset that have changed since
-     * the last build.  If someone else has already worked out what needs rebuilding, we don't need to do it again
-     * by checking all of the projectSourceFiles(). Returning an empty list means nothing has changed, returning null
-     * means you have no idea what changed and the compiler should work it out.
-     * 
-     * @return a subset of those files that would be returned on getProjectSourceFiles() that have actually *changed*
-     */
-    public List /*String*/ getProjectSourceFilesChanged();
-    
-    /**
-     * @return the classpath to use
-     */
-    public String getClasspath();
-
-    /**
-     * @return the IOutputLocationManager associated with this 
-     * compiler configuration
-     */
-    public IOutputLocationManager getOutputLocationManager();
+	public List /* String */getProjectSourceFiles();
 
 	/**
-	 * @return the set of input path elements for this compilation.
-	 * Set members should be of the type java.io.File.
-	 * An empty set or null is acceptable for this option.
-	 * From -inpath
-	 */
-    public Set /*java.io.File*/ getInpath();
-    
-	/**
-	 * @return the output jar file for the compilation results.
-	 * Return null to leave classfiles unjar'd in output directory
-	 * From -outjar
-	 */
-    public String getOutJar();
-
-	/**
-	 * @return the set of aspect jar files to be used for the compilation.
-	 * Returning null or an empty set disables this option. Set members
-	 * should be of type java.io.File.
-	 * From -aspectpath
-	 */
-    public Set /*java.io.File*/ getAspectPath();
-    
-	/**
-	 * Get the set of non-Java resources for this compilation.
-	 * Set members should be of type java.io.File.
-	 * An empty set or null is acceptable for this option.
+	 * Return a subset of those files we'd get on getProjectSourceFiles() - the subset that have changed since the last build. If
+	 * someone else has already worked out what needs rebuilding, we don't need to do it again by checking all of the
+	 * projectSourceFiles(). Returning an empty list means nothing has changed, returning null means you have no idea what changed
+	 * and the compiler should work it out.
 	 * 
-	 * @return map from unique resource name to absolute path to source 
-	 * resource (String to File)
+	 * @return a subset of those files that would be returned on getProjectSourceFiles() that have actually *changed*
 	 */
-    public Map /*String --> java.io.File */getSourcePathResources();
-	
+	public List /* File */getProjectSourceFilesChanged();
+
+	/**
+	 * @return the classpath to use
+	 */
+	public String getClasspath();
+
+	/**
+	 * @return the IOutputLocationManager associated with this compiler configuration
+	 */
+	public IOutputLocationManager getOutputLocationManager();
+
+	/**
+	 * @return the set of input path elements for this compilation. Set members should be of the type java.io.File. An empty set or
+	 *         null is acceptable for this option. From -inpath
+	 */
+	public Set /* java.io.File */getInpath();
+
+	/**
+	 * @return the output jar file for the compilation results. Return null to leave classfiles unjar'd in output directory From
+	 *         -outjar
+	 */
+	public String getOutJar();
+
+	/**
+	 * @return the set of aspect jar files to be used for the compilation. Returning null or an empty set disables this option. Set
+	 *         members should be of type java.io.File. From -aspectpath
+	 */
+	public Set /* java.io.File */getAspectPath();
+
+	/**
+	 * Get the set of non-Java resources for this compilation. Set members should be of type java.io.File. An empty set or null is
+	 * acceptable for this option.
+	 * 
+	 * @return map from unique resource name to absolute path to source resource (String to File)
+	 */
+	public Map /* String --> java.io.File */getSourcePathResources();
+
+	/**
+	 * Returns a set of bit flags indicating what has changed in the configuration since it was previously read. This allows the
+	 * compiler to avoid repeating computation for values that are the same as before.
+	 * 
+	 * @return set of bit flags, see the constants in @link {@link CompilerConfigurationChangeFlags}. If unsure return EVERYTHING
+	 */
+	public int getConfigurationChanges();
+
+	/**
+	 * Called by AspectJ once it has processed the configuration object and is ready to do a build. The configuration object may or
+	 * may not be interested in this event. It probably will be if it is correctly tracking changes and answering
+	 * getConfigurationChanges() with something other than EVERYTHING.
+	 */
+	public void configurationRead();
+
 }
