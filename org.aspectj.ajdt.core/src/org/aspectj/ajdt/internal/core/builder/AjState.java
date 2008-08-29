@@ -44,6 +44,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatExcepti
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryField;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryMethod;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.ReferenceCollection;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.StringSet;
@@ -74,6 +75,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 
 	private AjBuildManager buildManager;
 	private boolean couldBeSubsequentIncrementalBuild = false;
+	private INameEnvironment nameEnvironment;
 
 	private IHierarchy structureModel;
 	private IRelationshipMap relmap;
@@ -1689,5 +1691,13 @@ public class AjState implements CompilerConfigurationChangeFlags {
 
 	public AjBuildManager getAjBuildManager() {
 		return buildManager;
+	}
+
+	public INameEnvironment getNameEnvironment() {
+		return this.nameEnvironment;
+	}
+
+	public void setNameEnvironment(INameEnvironment nameEnvironment) {
+		this.nameEnvironment = nameEnvironment;
 	}
 }

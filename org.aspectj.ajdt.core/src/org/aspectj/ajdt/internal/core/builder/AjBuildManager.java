@@ -374,6 +374,12 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		return ret;
 	}
 
+	/**
+	 * Open an output jar file in which to write the compiler output.
+	 * 
+	 * @param outJar the jar file to open
+	 * @return true if successful
+	 */
 	private boolean openOutputStream(File outJar) {
 		try {
 			OutputStream os = FileUtil.makeOutputStream(buildConfig.getOutputJar());
@@ -389,8 +395,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 	private void closeOutputStream(File outJar) {
 		try {
-			if (zos != null)
+			if (zos != null) {
 				zos.close();
+			}
 			zos = null;
 
 			/* Ensure we don't write an incomplete JAR bug-71339 */
@@ -856,37 +863,11 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		}
 	}
 
-	// public boolean weaveAndGenerateClassFiles() throws IOException {
-	// handler.handleMessage(MessageUtil.info("weaving"));
-	// if (progressListener != null) progressListener.setText("weaving aspects");
-	// bcelWeaver.setProgressListener(progressListener, 0.5, 0.5/state.addedClassFiles.size());
-	// //!!! doesn't provide intermediate progress during weaving
-	// // XXX add all aspects even during incremental builds?
-	// addAspectClassFilesToWeaver(state.addedClassFiles);
-	// if (buildConfig.isNoWeave()) {
-	// if (buildConfig.getOutputJar() != null) {
-	// bcelWeaver.dumpUnwoven(buildConfig.getOutputJar());
-	// } else {
-	// bcelWeaver.dumpUnwoven();
-	// bcelWeaver.dumpResourcesToOutPath();
-	// }
-	// } else {
-	// if (buildConfig.getOutputJar() != null) {
-	// bcelWeaver.weave(buildConfig.getOutputJar());
-	// } else {
-	// bcelWeaver.weave();
-	// bcelWeaver.dumpResourcesToOutPath();
-	// }
-	// }
-	// if (progressListener != null) progressListener.setProgress(1.0);
-	// return true;
-	// //return messageAdapter.getErrorCount() == 0; //!javaBuilder.notifier.anyErrors();
-	// }
-
 	public FileSystem getLibraryAccess(String[] classpaths, String[] filenames) {
 		String defaultEncoding = buildConfig.getOptions().defaultEncoding;
-		if ("".equals(defaultEncoding)) //$NON-NLS-1$
+		if ("".equals(defaultEncoding)) {//$NON-NLS-1$
 			defaultEncoding = null; //$NON-NLS-1$	
+		}
 		// Bug 46671: We need an array as long as the number of elements in the classpath - *even though* not every
 		// element of the classpath is likely to be a directory. If we ensure every element of the array is set to
 		// only look for BINARY, then we make sure that for any classpath element that is a directory, we won't build
@@ -938,36 +919,42 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			sourceFileCount = files.size();
 			progressListener.setText("compiling source files");
 		}
-		// System.err.println("got files: " + files);
+
+		// Translate from strings to File objects
 		String[] filenames = new String[files.size()];
-		int ii = 0;
+		int idx = 0;
 		for (Iterator fIterator = files.iterator(); fIterator.hasNext();) {
 			File f = (File) fIterator.next();
-			filenames[ii++] = f.getPath();
+			filenames[idx++] = f.getPath();
 		}
 
-		List cps = buildConfig.getFullClasspath();
-		Dump.saveFullClasspath(cps);
-		String[] classpaths = new String[cps.size()];
-		for (int i = 0; i < cps.size(); i++) {
-			classpaths[i] = (String) cps.get(i);
+		environment = state.getNameEnvironment();
+
+		boolean environmentNeedsRebuilding = false;
+
+		// Might be a bit too cautious, but let us see how it goes
+		if (buildConfig.getChanged() != AjBuildConfig.NO_CHANGES) {
+			environmentNeedsRebuilding = true;
 		}
 
-		// System.out.println("compiling");
-		environment = getLibraryAccess(classpaths, filenames);
+		if (environment == null || environmentNeedsRebuilding) {
+			List cps = buildConfig.getFullClasspath();
+			Dump.saveFullClasspath(cps);
+			String[] classpaths = new String[cps.size()];
+			for (int i = 0; i < cps.size(); i++) {
+				classpaths[i] = (String) cps.get(i);
+			}
+			environment = new StatefulNameEnvironment(getLibraryAccess(classpaths, filenames), state.getClassNameToFileMap(), state);
+			state.setNameEnvironment(environment);
 
-		// if (!state.getClassNameToFileMap().isEmpty()) { // see pr133532 (disabled to state can be used to answer questions)
-		environment = new StatefulNameEnvironment(environment, state.getClassNameToFileMap(), state);
-		// }
+		}
 
 		org.aspectj.ajdt.internal.compiler.CompilerAdapter.setCompilerAdapterFactory(this);
 		org.aspectj.org.eclipse.jdt.internal.compiler.Compiler compiler = new org.aspectj.org.eclipse.jdt.internal.compiler.Compiler(
 				environment, DefaultErrorHandlingPolicies.proceedWithAllProblems(), buildConfig.getOptions().getMap(),
 				getBatchRequestor(), getProblemFactory());
 
-		CompilerOptions options = compiler.options;
-
-		options.produceReferenceInfo = true; // TODO turn off when not needed
+		compiler.options.produceReferenceInfo = true; // TODO turn off when not needed
 
 		try {
 			compiler.compile(getCompilationUnits(filenames));
@@ -977,8 +964,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		// cleanup
 		org.aspectj.ajdt.internal.compiler.CompilerAdapter.setCompilerAdapterFactory(null);
 		AnonymousClassPublisher.aspectOf().setAnonymousClassCreationListener(null);
-		environment.cleanup();
-		environment = null;
+		// environment.cleanup();
+		// environment = null;
 	}
 
 	/*
