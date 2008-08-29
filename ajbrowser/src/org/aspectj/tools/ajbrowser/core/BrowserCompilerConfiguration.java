@@ -22,11 +22,9 @@ import org.aspectj.ajde.ui.UserPreferencesAdapter;
 import org.aspectj.tools.ajbrowser.BrowserManager;
 
 /**
- * AjBrowser implementation of ICompilerConfiguration which returns something
- * for getClasspath(), getJavaOptionsMap(), getNonStandardOptions() and 
- * getOutputLocationManager() and null for everything else. The reason it doesn't
- * return anything for getProjectSourceFiles() is that it uses .lst files to record
- * what is needed to build (via BuildConfigManager).
+ * AjBrowser implementation of ICompilerConfiguration which returns something for getClasspath(), getJavaOptionsMap(),
+ * getNonStandardOptions() and getOutputLocationManager() and null for everything else. The reason it doesn't return anything for
+ * getProjectSourceFiles() is that it uses .lst files to record what is needed to build (via BuildConfigManager).
  */
 public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 
@@ -39,8 +37,7 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 
 	public String getClasspath() {
 		StringBuffer classpath = new StringBuffer();
-		String userPath = preferencesAdapter
-			.getProjectPreference(PreferenceStoreConstants.BUILD_CLASSPATH);
+		String userPath = preferencesAdapter.getProjectPreference(PreferenceStoreConstants.BUILD_CLASSPATH);
 		if (userPath != null && userPath.trim().length() != 0) {
 			classpath.append(userPath);
 		}
@@ -50,7 +47,7 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 			classpath.append(File.pathSeparator + dir.getAbsolutePath() + File.pathSeparator);
 		}
 		classpath.append(System.getProperty("java.class.path", "."));
-		//System.out.println("classpath: " + classpath.toString());
+		// System.out.println("classpath: " + classpath.toString());
 		return classpath.toString();
 	}
 
@@ -59,8 +56,7 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 	}
 
 	public String getNonStandardOptions() {
-		return preferencesAdapter
-				.getProjectPreference(PreferenceStoreConstants.NONSTANDARD_OPTIONS);
+		return preferencesAdapter.getProjectPreference(PreferenceStoreConstants.NONSTANDARD_OPTIONS);
 	}
 
 	public IOutputLocationManager getOutputLocationManager() {
@@ -80,7 +76,6 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 		return null;
 	}
 
-
 	public Map getSourcePathResources() {
 		// unimplemented in AjBrowser
 		return null;
@@ -99,5 +94,12 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 	public String getOutJar() {
 		// unimplemented in AjBrowser
 		return null;
+	}
+
+	public int getConfigurationChanges() {
+		return ICompilerConfiguration.EVERYTHING;
+	}
+
+	public void configurationRead() {
 	}
 }
