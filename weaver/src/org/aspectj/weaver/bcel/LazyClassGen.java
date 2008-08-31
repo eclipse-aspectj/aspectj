@@ -345,14 +345,6 @@ public final class LazyClassGen {
 		}
 	}
 
-	public File getPackagePath(File root) {
-		String str = getInternalClassName();
-		int index = str.lastIndexOf('/');
-		if (index == -1)
-			return root;
-		return new File(root, str.substring(0, index));
-	}
-
 	/**
 	 * Returns the packagename - if its the default package we return an empty string
 	 */
@@ -367,14 +359,6 @@ public final class LazyClassGen {
 		if (index == -1)
 			return "";
 		return str.substring(0, index).replace('/', '.');
-	}
-
-	public String getClassId() {
-		String str = getInternalClassName();
-		int index = str.lastIndexOf('/');
-		if (index == -1)
-			return str;
-		return str.substring(index + 1);
 	}
 
 	public void addMethodGen(LazyMethodGen gen) {
@@ -548,7 +532,7 @@ public final class LazyClassGen {
 		boolean needAttribute = false;
 		if (sigAttr != null)
 			needAttribute = true; // If we had one before, we definetly still need one as types can't be 'removed' from the
-									// hierarchy
+		// hierarchy
 
 		// check the interfaces
 		if (!needAttribute) {

@@ -25,7 +25,6 @@ import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.JavaClass;
-import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.generic.FieldInstruction;
 import org.aspectj.apache.bcel.generic.INVOKEINTERFACE;
 import org.aspectj.apache.bcel.generic.Instruction;
@@ -395,17 +394,6 @@ public class BcelWorld extends World implements Repository {
 				declaringType = UnresolvedType.forName(declaring);
 		}
 		return MemberImpl.method(declaringType, modifier, name, signature);
-	}
-
-	public static Member makeMungerMethodSignature(JavaClass javaClass, Method method) {
-		int mods = 0;
-		if (method.isStatic())
-			mods = Modifier.STATIC;
-		else if (javaClass.isInterface())
-			mods = Modifier.INTERFACE;
-		else if (method.isPrivate())
-			mods = Modifier.PRIVATE;
-		return MemberImpl.method(UnresolvedType.forName(javaClass.getClassName()), mods, method.getName(), method.getSignature());
 	}
 
 	public String toString() {
