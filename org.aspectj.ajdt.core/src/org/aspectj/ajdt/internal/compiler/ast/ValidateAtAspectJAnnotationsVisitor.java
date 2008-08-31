@@ -432,7 +432,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 					|| CharOperation.equals(proceedingJoinPoint, argTypeBinding.signature()) || name.equals(extraArgName)) {
 				ret[i] = new FormalBinding.ImplicitFormalBinding(type, name, i);
 			} else {
-				ret[i] = new FormalBinding(type, name, i, arg.sourceStart, arg.sourceEnd, "unknown");
+				ret[i] = new FormalBinding(type, name, i, arg.sourceStart, arg.sourceEnd);
 			}
 		}
 		return ret;
