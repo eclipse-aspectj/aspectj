@@ -18,26 +18,20 @@ import java.util.Map;
 import java.util.Stack;
 
 /**
- * @author colyer
- * This class is responsible for tracking progress through the various phases of
- * compilation and weaving. When an exception occurs (or a message is issued, if
- * desired), you can ask this class for a "stack trace" that gives information about
- * what the compiler was doing at the time. The trace will say something like:
+ * @author colyer This class is responsible for tracking progress through the various phases of compilation and weaving. When an
+ *         exception occurs (or a message is issued, if desired), you can ask this class for a "stack trace" that gives information
+ *         about what the compiler was doing at the time. The trace will say something like:
  * 
- * when matching pointcut xyz
- * when matching shadow sss
- * when weaving type ABC
- * when weaving shadow mungers
+ *         when matching pointcut xyz when matching shadow sss when weaving type ABC when weaving shadow mungers
  * 
- * Since we can't use ThreadLocal (have to work on 1.3), we use a 
- * map from Thread -> ContextStack.
+ *         Since we can't use ThreadLocal (have to work on 1.3), we use a map from Thread -> ContextStack.
  */
 public class CompilationAndWeavingContext {
 
 	private static int nextTokenId = 1;
 
 	// unique constants for the different phases that can be registered
-	
+
 	// "FRONT END"
 	public static final int BATCH_BUILD = 0;
 	public static final int INCREMENTAL_BUILD = 1;
@@ -61,9 +55,9 @@ public class CompilationAndWeavingContext {
 	public static final int FIXING_SUPER_CALLS_IN_ITDS = 19;
 	public static final int FIXING_SUPER_CALLS = 20;
 	public static final int OPTIMIZING_THIS_JOIN_POINT_CALLS = 21;
-	
+
 	// "BACK END"
-	
+
 	public static final int WEAVING = 22;
 	public static final int PROCESSING_REWEAVABLE_STATE = 23;
 	public static final int PROCESSING_TYPE_MUNGERS = 24;
@@ -74,85 +68,63 @@ public class CompilationAndWeavingContext {
 	public static final int IMPLEMENTING_ON_SHADOW = 29;
 	public static final int MATCHING_POINTCUT = 30;
 	public static final int MUNGING_WITH = 31;
-    public static final int PROCESSING_ATASPECTJTYPE_MUNGERS_ONLY = 32;
+	public static final int PROCESSING_ATASPECTJTYPE_MUNGERS_ONLY = 32;
 
+	// phase names
+	public static final String[] PHASE_NAMES = new String[] { "batch building", "incrementally building",
+			"processing compilation unit", "resolving types defined in compilation unit",
+			"analysing types defined in compilation unit", "generating unwoven code for type defined in compilation unit",
+			"completing type bindings", "processing declare parents", "checking and setting imports", "connecting type hierarchy",
+			"building fields and methods", "collecting itds and declares", "processing declare annotations",
+			"weaving intertype declarations", "resolving pointcut declarations", "adding declare warning and errors",
+			"validating @AspectJ annotations", "creating accessors for inlining", "adding @AspectJ annotations",
+			"fixing super calls in ITDs in interface context", "fixing super calls in ITDs",
+			"optimizing thisJoinPoint calls",
 
-    // phase names
-	public static final String[] PHASE_NAMES = new String[] {
-		"batch building",
-		"incrementally building",
-		"processing compilation unit",
-		"resolving types defined in compilation unit",
-		"analysing types defined in compilation unit",
-		"generating unwoven code for type defined in compilation unit",
-		"completing type bindings",
-		"processing declare parents",
-		"checking and setting imports",
-		"connecting type hierarchy",
-		"building fields and methods",
-		"collecting itds and declares",
-		"processing declare annotations",
-		"weaving intertype declarations",
-		"resolving pointcut declarations",
-		"adding declare warning and errors",
-		"validating @AspectJ annotations",
-		"creating accessors for inlining",
-		"adding @AspectJ annotations",
-		"fixing super calls in ITDs in interface context",
-		"fixing super calls in ITDs",
-		"optimizing thisJoinPoint calls",
-		
-		// BACK END
-		
-		"weaving",
-		"processing reweavable state",
-		"processing type mungers",
-		"weaving aspects",
-		"weaving classes",
-		"weaving type",
-		"matching shadow",
-		"implementing on shadow",
-		"matching pointcut",
-		"type munging with",
-        "type munging for @AspectJ aspectOf"
-    };
-	
+			// BACK END
+
+			"weaving", "processing reweavable state", "processing type mungers", "weaving aspects", "weaving classes",
+			"weaving type", "matching shadow", "implementing on shadow", "matching pointcut", "type munging with",
+			"type munging for @AspectJ aspectOf" };
+
 	// context stacks, one per thread
 	private static Map contextMap = new HashMap();
-	
+
 	// single thread mode stack
 	private static Stack contextStack = new Stack();
-	
+
 	// formatters, by phase id
 	private static Map formatterMap = new HashMap();
-	
+
 	private static ContextFormatter defaultFormatter = new DefaultFormatter();
-	
+
 	private static boolean multiThreaded = true;
-	
+
 	/**
 	 * this is a static service
 	 */
 	private CompilationAndWeavingContext() {
 	}
-	
+
 	public static void reset() {
-        if (!multiThreaded) {
-            contextMap = new HashMap();
-            contextStack = new Stack();
-            formatterMap = new HashMap();
-            nextTokenId = 1;
-        } else {
-            contextMap.remove(Thread.currentThread());
-            // TODO what about formatterMap?
-            // TODO what about nextTokenId?
-        }
+		if (!multiThreaded) {
+			contextMap.clear();
+			contextStack.clear();
+			formatterMap.clear();
+			nextTokenId = 1;
+		} else {
+			contextMap.remove(Thread.currentThread());
+			// TODO what about formatterMap?
+			// TODO what about nextTokenId?
+		}
 	}
-	
-	public static void setMultiThreaded(boolean mt) { multiThreaded = mt; }
-	
+
+	public static void setMultiThreaded(boolean mt) {
+		multiThreaded = mt;
+	}
+
 	public static void registerFormatter(int phaseId, ContextFormatter aFormatter) {
-		formatterMap.put(new Integer(phaseId),aFormatter);
+		formatterMap.put(new Integer(phaseId), aFormatter);
 	}
 
 	/**
@@ -165,7 +137,7 @@ public class CompilationAndWeavingContext {
 			ContextStackEntry entry = (ContextStackEntry) iter.next();
 			Object data = entry.getData();
 			if (data != null) {
-				explanationStack.push(getFormatter(entry).formatEntry(entry.phaseId,data));
+				explanationStack.push(getFormatter(entry).formatEntry(entry.phaseId, data));
 			}
 		}
 		StringBuffer sb = new StringBuffer();
@@ -176,52 +148,52 @@ public class CompilationAndWeavingContext {
 		}
 		return sb.toString();
 	}
-	
+
 	public static ContextToken enteringPhase(int phaseId, Object data) {
 		Stack contextStack = getContextStack();
 		ContextTokenImpl nextToken = nextToken();
-		contextStack.push(new ContextStackEntry(nextToken,phaseId,new WeakReference(data)));
+		contextStack.push(new ContextStackEntry(nextToken, phaseId, new WeakReference(data)));
 		return nextToken;
 	}
-	
+
 	/**
-	 * Exit a phase, all stack entries from the one with the given token
-	 * down will be removed.
+	 * Exit a phase, all stack entries from the one with the given token down will be removed.
 	 */
 	public static void leavingPhase(ContextToken aToken) {
 		Stack contextStack = getContextStack();
 		while (!contextStack.isEmpty()) {
 			ContextStackEntry entry = (ContextStackEntry) contextStack.pop();
-			if (entry.contextToken == aToken) break;
+			if (entry.contextToken == aToken)
+				break;
 		}
 	}
-	
+
 	/**
 	 * Forget about the context for the current thread
 	 */
 	public static void resetForThread() {
-		if (!multiThreaded) return;
+		if (!multiThreaded)
+			return;
 		contextMap.remove(Thread.currentThread());
 	}
-	
+
 	private static Stack getContextStack() {
 		if (!multiThreaded) {
 			return contextStack;
-		}
-		else {
-		    Stack contextStack = (Stack) contextMap.get(Thread.currentThread());
-            if (contextStack == null) {
+		} else {
+			Stack contextStack = (Stack) contextMap.get(Thread.currentThread());
+			if (contextStack == null) {
 				contextStack = new Stack();
-				contextMap.put(Thread.currentThread(),contextStack);
+				contextMap.put(Thread.currentThread(), contextStack);
 			}
-            return contextStack;
+			return contextStack;
 		}
 	}
-	
+
 	private static ContextTokenImpl nextToken() {
 		return new ContextTokenImpl(nextTokenId++);
 	}
-	
+
 	private static ContextFormatter getFormatter(ContextStackEntry entry) {
 		Integer key = new Integer(entry.phaseId);
 		if (formatterMap.containsKey(key)) {
@@ -230,37 +202,41 @@ public class CompilationAndWeavingContext {
 			return defaultFormatter;
 		}
 	}
-	
+
 	private static class ContextTokenImpl implements ContextToken {
 		public int tokenId;
-		public ContextTokenImpl(int id) { this.tokenId = id; }
+
+		public ContextTokenImpl(int id) {
+			this.tokenId = id;
+		}
 	}
-	
+
 	// dumb data structure
 	private static class ContextStackEntry {
-		public ContextTokenImpl contextToken; 
+		public ContextTokenImpl contextToken;
 		public int phaseId;
 		private WeakReference dataRef;
+
 		public ContextStackEntry(ContextTokenImpl ct, int phase, WeakReference data) {
 			this.contextToken = ct;
 			this.phaseId = phase;
 			this.dataRef = data;
 		}
-		
+
 		public Object getData() {
 			return dataRef.get();
 		}
-		
+
 		public String toString() {
 			Object data = getData();
 			if (data == null) {
 				return "referenced context entry has gone out of scope";
 			} else {
-				return CompilationAndWeavingContext.getFormatter(this).formatEntry(phaseId, data);				
+				return CompilationAndWeavingContext.getFormatter(this).formatEntry(phaseId, data);
 			}
 		}
 	}
-	
+
 	private static class DefaultFormatter implements ContextFormatter {
 
 		public String formatEntry(int phaseId, Object data) {
@@ -268,7 +244,7 @@ public class CompilationAndWeavingContext {
 			sb.append(PHASE_NAMES[phaseId]);
 			sb.append(" ");
 			if (data instanceof char[]) {
-				sb.append(new String((char[])data));
+				sb.append(new String((char[]) data));
 			} else {
 				try {
 					sb.append(data.toString());
@@ -279,6 +255,6 @@ public class CompilationAndWeavingContext {
 			}
 			return sb.toString();
 		}
-		
+
 	}
 }
