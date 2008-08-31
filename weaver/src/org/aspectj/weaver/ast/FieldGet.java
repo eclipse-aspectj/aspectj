@@ -10,12 +10,10 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver.ast;
 
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedType;
-
 
 public class FieldGet extends Expr {
 	Member field;
@@ -23,10 +21,10 @@ public class FieldGet extends Expr {
 
 	public FieldGet(Member field, ResolvedType resolvedType) {
 		super();
-		this.field = field;		
+		this.field = field;
 		this.resolvedType = resolvedType;
 	}
-    
+
 	public ResolvedType getType() {
 		return resolvedType;
 	}
@@ -34,16 +32,13 @@ public class FieldGet extends Expr {
 	public String toString() {
 		return "(FieldGet " + field + ")";
 	}
-    
-    public void accept(IExprVisitor v) {
-        v.visit(this);
-    }
-	public Member getField() {
-		return field;
+
+	public void accept(IExprVisitor v) {
+		v.visit(this);
 	}
 
-	public ResolvedType getResolvedType() {
-		return resolvedType;
+	public Member getField() {
+		return field;
 	}
 
 }

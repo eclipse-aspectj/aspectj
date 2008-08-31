@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver;
 
 import java.io.DataOutputStream;
@@ -23,42 +22,40 @@ import org.aspectj.bridge.ISourceLocation;
 
 public class NewMethodTypeMunger extends ResolvedTypeMunger {
 
-
-	public NewMethodTypeMunger(
-		ResolvedMember signature,
-		Set superMethodsCalled,
-		List typeVariableAliases) {
+	public NewMethodTypeMunger(ResolvedMember signature, Set superMethodsCalled, List typeVariableAliases) {
 		super(Method, signature);
 		this.typeVariableAliases = typeVariableAliases;
 		this.setSuperMethodsCalled(superMethodsCalled);
 	}
-	
+
 	public ResolvedMember getInterMethodBody(UnresolvedType aspectType) {
 		return AjcMemberMaker.interMethodBody(signature, aspectType);
 	}
-	
+
 	/**
-	 * If the munger has a declared signature 
+	 * If the munger has a declared signature
 	 */
-	public ResolvedMember getDeclaredInterMethodBody(UnresolvedType aspectType,World w) {
-		if (declaredSignature!=null) {
-			ResolvedMember rm = declaredSignature.parameterizedWith(null,signature.getDeclaringType().resolve(w),false,getTypeVariableAliases());
+	public ResolvedMember getDeclaredInterMethodBody(UnresolvedType aspectType, World w) {
+		if (declaredSignature != null) {
+			ResolvedMember rm = declaredSignature.parameterizedWith(null, signature.getDeclaringType().resolve(w), false,
+					getTypeVariableAliases());
 			return AjcMemberMaker.interMethodBody(rm, aspectType);
 		} else {
-			return AjcMemberMaker.interMethodBody(signature,aspectType);
+			return AjcMemberMaker.interMethodBody(signature, aspectType);
 		}
 	}
-	
-	public ResolvedMember getInterMethodDispatcher(UnresolvedType aspectType) {
-		return AjcMemberMaker.interMethodDispatcher(signature, aspectType);
-	}
-	
-	public ResolvedMember getDeclaredInterMethodDispatcher(UnresolvedType aspectType,World w) {
-		if (declaredSignature!=null) {
-			ResolvedMember rm = declaredSignature.parameterizedWith(null,signature.getDeclaringType().resolve(w),false,getTypeVariableAliases());
+
+	// public ResolvedMember getInterMethodDispatcher(UnresolvedType aspectType) {
+	// return AjcMemberMaker.interMethodDispatcher(signature, aspectType);
+	// }
+
+	public ResolvedMember getDeclaredInterMethodDispatcher(UnresolvedType aspectType, World w) {
+		if (declaredSignature != null) {
+			ResolvedMember rm = declaredSignature.parameterizedWith(null, signature.getDeclaringType().resolve(w), false,
+					getTypeVariableAliases());
 			return AjcMemberMaker.interMethodDispatcher(rm, aspectType);
 		} else {
-			return AjcMemberMaker.interMethodDispatcher(signature,aspectType);
+			return AjcMemberMaker.interMethodDispatcher(signature, aspectType);
 		}
 	}
 
@@ -69,33 +66,36 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 		writeSourceLocation(s);
 		writeOutTypeAliases(s);
 	}
-	
+
 	public static ResolvedTypeMunger readMethod(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		ISourceLocation sloc = null;
 		ResolvedMemberImpl rmImpl = ResolvedMemberImpl.readResolvedMember(s, context);
 		Set superMethodsCalled = readSuperMethodsCalled(s);
 		sloc = readSourceLocation(s);
 		List typeVarAliases = readInTypeAliases(s);
-		
-		ResolvedTypeMunger munger = new NewMethodTypeMunger(rmImpl,superMethodsCalled,typeVarAliases);
-		if (sloc!=null) munger.setSourceLocation(sloc);
+
+		ResolvedTypeMunger munger = new NewMethodTypeMunger(rmImpl, superMethodsCalled, typeVarAliases);
+		if (sloc != null)
+			munger.setSourceLocation(sloc);
 		return munger;
 	}
-	
-	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedType aspectType) {	
+
+	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedType aspectType) {
 		ResolvedMember ret = AjcMemberMaker.interMethodDispatcher(getSignature(), aspectType);
-		if (ResolvedType.matches(ret, member)) return getSignature();
+		if (ResolvedType.matches(ret, member))
+			return getSignature();
 		return super.getMatchingSyntheticMember(member, aspectType);
 	}
 
 	/**
-     * see ResolvedTypeMunger.parameterizedFor(ResolvedType)
-     */
+	 * see ResolvedTypeMunger.parameterizedFor(ResolvedType)
+	 */
 	public ResolvedTypeMunger parameterizedFor(ResolvedType target) {
 		ResolvedType genericType = target;
-		if (target.isRawType() || target.isParameterizedType()) genericType = genericType.getGenericType();
+		if (target.isRawType() || target.isParameterizedType())
+			genericType = genericType.getGenericType();
 		ResolvedMember parameterizedSignature = null;
-		// If we are parameterizing it for a generic type, we just need to 'swap the letters' from the ones used 
+		// If we are parameterizing it for a generic type, we just need to 'swap the letters' from the ones used
 		// in the original ITD declaration to the ones used in the actual target type declaration.
 		if (target.isGenericType()) {
 			TypeVariable vars[] = target.getTypeVariables();
@@ -103,38 +103,41 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 			for (int i = 0; i < vars.length; i++) {
 				varRefs[i] = new UnresolvedTypeVariableReferenceType(vars[i]);
 			}
-			parameterizedSignature = getSignature().parameterizedWith(varRefs,genericType,true,typeVariableAliases);
+			parameterizedSignature = getSignature().parameterizedWith(varRefs, genericType, true, typeVariableAliases);
 		} else {
-		  // For raw and 'normal' parameterized targets  (e.g. Interface, Interface<String>)
-		  parameterizedSignature = getSignature().parameterizedWith(target.getTypeParameters(),genericType,target.isParameterizedType(),typeVariableAliases);
+			// For raw and 'normal' parameterized targets (e.g. Interface, Interface<String>)
+			parameterizedSignature = getSignature().parameterizedWith(target.getTypeParameters(), genericType,
+					target.isParameterizedType(), typeVariableAliases);
 		}
-		NewMethodTypeMunger nmtm = new NewMethodTypeMunger(parameterizedSignature,getSuperMethodsCalled(),typeVariableAliases);
+		NewMethodTypeMunger nmtm = new NewMethodTypeMunger(parameterizedSignature, getSuperMethodsCalled(), typeVariableAliases);
 		nmtm.setDeclaredSignature(getSignature());
 		nmtm.setSourceLocation(getSourceLocation());
 		return nmtm;
 	}
-	
-    public boolean equals(Object other) {
-        if (! (other instanceof NewMethodTypeMunger)) return false;
-        NewMethodTypeMunger o = (NewMethodTypeMunger) other;
-        return kind.equals(o.kind)
-        		&& ((o.signature == null) ? (signature == null ) : signature.equals(o.signature))
-        		&& ((o.declaredSignature == null) ? (declaredSignature == null ) : declaredSignature.equals(o.declaredSignature))
-        		&& ((o.typeVariableAliases == null) ? (typeVariableAliases == null ) : typeVariableAliases.equals(o.typeVariableAliases));
-    }
-	   
-    public int hashCode() {
-    	int result = 17;
-        result = 37*result + kind.hashCode();
-        result = 37*result + ((signature == null) ? 0 : signature.hashCode());
-        result = 37*result + ((declaredSignature == null) ? 0 : declaredSignature.hashCode());
-        result = 37*result + ((typeVariableAliases == null) ? 0 : typeVariableAliases.hashCode());
-        return result;
-    }
+
+	public boolean equals(Object other) {
+		if (!(other instanceof NewMethodTypeMunger))
+			return false;
+		NewMethodTypeMunger o = (NewMethodTypeMunger) other;
+		return kind.equals(o.kind)
+				&& ((o.signature == null) ? (signature == null) : signature.equals(o.signature))
+				&& ((o.declaredSignature == null) ? (declaredSignature == null) : declaredSignature.equals(o.declaredSignature))
+				&& ((o.typeVariableAliases == null) ? (typeVariableAliases == null) : typeVariableAliases
+						.equals(o.typeVariableAliases));
+	}
+
+	public int hashCode() {
+		int result = 17;
+		result = 37 * result + kind.hashCode();
+		result = 37 * result + ((signature == null) ? 0 : signature.hashCode());
+		result = 37 * result + ((declaredSignature == null) ? 0 : declaredSignature.hashCode());
+		result = 37 * result + ((typeVariableAliases == null) ? 0 : typeVariableAliases.hashCode());
+		return result;
+	}
 
 	public ResolvedTypeMunger parameterizeWith(Map m, World w) {
-		ResolvedMember parameterizedSignature = getSignature().parameterizedWith(m,w);
-		NewMethodTypeMunger nmtm = new NewMethodTypeMunger(parameterizedSignature,getSuperMethodsCalled(),typeVariableAliases);
+		ResolvedMember parameterizedSignature = getSignature().parameterizedWith(m, w);
+		NewMethodTypeMunger nmtm = new NewMethodTypeMunger(parameterizedSignature, getSuperMethodsCalled(), typeVariableAliases);
 		nmtm.setDeclaredSignature(getSignature());
 		nmtm.setSourceLocation(getSourceLocation());
 		return nmtm;

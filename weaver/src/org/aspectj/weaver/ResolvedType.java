@@ -119,9 +119,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return null;
 	}
 
-	public final UnresolvedType getSuperclass(World world) {
-		return getSuperclass();
-	}
+	// public final UnresolvedType getSuperclass(World world) {
+	// return getSuperclass();
+	// }
 
 	// This set contains pairs of types whose signatures are concatenated
 	// together, this means with a fast lookup we can tell if two types
@@ -507,40 +507,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 		// System.err.println("collected cc members: " + this + ", " + collectDeclares());
 		return crosscuttingMembers;
-	}
-
-	public final Collection collectTypeMungers() {
-		if (!this.isAspect())
-			return Collections.EMPTY_LIST;
-
-		ArrayList ret = new ArrayList();
-		// if (this.isAbstract()) {
-		// for (Iterator i = getDeclares().iterator(); i.hasNext();) {
-		// Declare dec = (Declare) i.next();
-		// if (!dec.isAdviceLike()) ret.add(dec);
-		// }
-		//        
-		// if (!includeAdviceLike) return ret;
-
-		if (!this.isAbstract()) {
-			final Iterators.Filter dupFilter = Iterators.dupFilter();
-			Iterators.Getter typeGetter = new Iterators.Getter() {
-				public Iterator get(Object o) {
-					return dupFilter.filter(((ResolvedType) o).getDirectSupertypes());
-				}
-			};
-			Iterator typeIterator = Iterators.recur(this, typeGetter);
-
-			while (typeIterator.hasNext()) {
-				ResolvedType ty = (ResolvedType) typeIterator.next();
-				for (Iterator i = ty.getTypeMungers().iterator(); i.hasNext();) {
-					ConcreteTypeMunger dec = (ConcreteTypeMunger) i.next();
-					ret.add(dec);
-				}
-			}
-		}
-
-		return ret;
 	}
 
 	public final Collection collectDeclares(boolean includeAdviceLike) {
@@ -1269,10 +1235,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 	}
 
-	public static boolean hasBridgeModifier(int modifiers) {
-		return (modifiers & Constants.ACC_BRIDGE) != 0;
-	}
-
 	private static boolean samePackage(ResolvedType targetType, ResolvedType fromType) {
 		String p1 = targetType.getPackageName();
 		String p2 = fromType.getPackageName();
@@ -1910,14 +1872,14 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return parameterizedSuperTypes.length > 0;
 	}
 
-	public boolean hasGenericSuperType() {
-		ResolvedType[] superTypes = getDeclaredInterfaces();
-		for (int i = 0; i < superTypes.length; i++) {
-			if (superTypes[i].isGenericType())
-				return true;
-		}
-		return false;
-	}
+	// public boolean hasGenericSuperType() {
+	// ResolvedType[] superTypes = getDeclaredInterfaces();
+	// for (int i = 0; i < superTypes.length; i++) {
+	// if (superTypes[i].isGenericType())
+	// return true;
+	// }
+	// return false;
+	// }
 
 	private ResolvedType[] parameterizedSuperTypes = null;
 
