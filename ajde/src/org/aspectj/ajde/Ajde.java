@@ -16,7 +16,6 @@ package org.aspectj.ajde;
 
 import java.awt.Frame;
 import java.io.File;
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -44,12 +43,14 @@ import org.aspectj.util.LangUtil;
 import org.aspectj.util.Reflection;
 
 /**
- * Singleton class used to initialize the Ajde ui as well as the properties required
- * to run the compiler. Users must call "Ajde.init(...)" before doing anything
- * else. There are getter methods for the various properties that are set in
- * the initialization.
+ * Singleton class used to initialize the Ajde ui as well as the properties required to run the compiler. Users must call
+ * "Ajde.init(...)" before doing anything else. There are getter methods for the various properties that are set in the
+ * initialization.
+ * 
+ * This also defines the factory for getting new AjCompiler instances.
  * 
  * @author Mik Kersten
+ * @author Andy Clement
  */
 public class Ajde {
 
@@ -70,8 +71,6 @@ public class Ajde {
 	private StructureViewManager structureViewManager;
 	private StructureSearchManager structureSearchManager;
 	private BuildConfigManager configurationManager;
-	
-	private PrintStream logPrintStream = null;
 
 	// all to do with building....
 	private ICompilerConfiguration compilerConfig;
@@ -80,8 +79,7 @@ public class Ajde {
 	private AjCompiler compiler;
 
 	/**
-	 * This class can only be constructured by itself (as a singleton) or by
-	 * sub-classes.
+	 * This class can only be constructured by itself (as a singleton) or by sub-classes.
 	 */
 	protected Ajde() {
 		configurationManager = new LstBuildConfigManager();
@@ -90,12 +88,9 @@ public class Ajde {
 	/**
 	 * Initializes the ajde ui and sets up the compiler
 	 */
-	public void init(ICompilerConfiguration compilerConfig,
-			IUIBuildMessageHandler uiBuildMessageHandler,
-			IBuildProgressMonitor monitor, EditorAdapter editorAdapter,
-			IdeUIAdapter ideUIAdapter, IconRegistry iconRegistry,
-			Frame rootFrame, IRuntimeProperties runtimeProperties,
-			boolean useFileView) {
+	public void init(ICompilerConfiguration compilerConfig, IUIBuildMessageHandler uiBuildMessageHandler,
+			IBuildProgressMonitor monitor, EditorAdapter editorAdapter, IdeUIAdapter ideUIAdapter, IconRegistry iconRegistry,
+			Frame rootFrame, IRuntimeProperties runtimeProperties, boolean useFileView) {
 		try {
 
 			INSTANCE.compilerConfig = compilerConfig;
@@ -108,18 +103,15 @@ public class Ajde {
 			INSTANCE.rootFrame = rootFrame;
 			INSTANCE.runtimeProperties = runtimeProperties;
 
-			INSTANCE.configurationManager
-					.addListener(INSTANCE.STRUCTURE_UPDATE_CONFIG_LISTENER);
+			INSTANCE.configurationManager.addListener(INSTANCE.STRUCTURE_UPDATE_CONFIG_LISTENER);
 			INSTANCE.ideUIAdapter = ideUIAdapter;
 			INSTANCE.editorAdapter = editorAdapter;
 			INSTANCE.structureSearchManager = new StructureSearchManager();
-			INSTANCE.structureViewManager = new StructureViewManager(
-					new SwingTreeViewNodeFactory(iconRegistry));
+			INSTANCE.structureViewManager = new StructureViewManager(new SwingTreeViewNodeFactory(iconRegistry));
 
 			if (useFileView) {
-				FileStructureView structureView = structureViewManager
-						.createViewForSourceFile(editorAdapter.getCurrFile(),
-								structureViewManager.getDefaultViewProperties());
+				FileStructureView structureView = structureViewManager.createViewForSourceFile(editorAdapter.getCurrFile(),
+						structureViewManager.getDefaultViewProperties());
 				structureViewManager.setDefaultFileView(structureView);
 				fileStructurePanel = new StructureViewPanel(structureView);
 			}
@@ -129,17 +121,14 @@ public class Ajde {
 
 			initialized = true;
 		} catch (Throwable t) {
-			Message error = new Message("AJDE UI failed to initilize",
-					IMessage.ABORT, t, null);
+			Message error = new Message("AJDE UI failed to initialize", IMessage.ABORT, t, null);
 			uiBuildMsgHandler.handleMessage(error);
 		}
 	}
 
 	public void showOptionsFrame() {
-		int x = (rootFrame.getWidth() / 2) + rootFrame.getX()
-				- optionsFrame.getWidth() / 2;
-		int y = (rootFrame.getHeight() / 2) + rootFrame.getY()
-				- optionsFrame.getHeight() / 2;
+		int x = (rootFrame.getWidth() / 2) + rootFrame.getX() - optionsFrame.getWidth() / 2;
+		int y = (rootFrame.getHeight() / 2) + rootFrame.getY() - optionsFrame.getHeight() / 2;
 		optionsFrame.setLocation(x, y);
 		optionsFrame.setVisible(true);
 	}
@@ -162,29 +151,23 @@ public class Ajde {
 	};
 
 	/**
-	 * Utility to run the project main class from the project properties in the
-	 * same VM using a class loader populated with the classpath and output path
-	 * or jar. Errors are logged to the ErrorHandler.
+	 * Utility to run the project main class from the project properties in the same VM using a class loader populated with the
+	 * classpath and output path or jar. Errors are logged to the ErrorHandler.
 	 * 
-	 * @param project
-	 *            the ProjectPropertiesAdapter specifying the main class,
-	 *            classpath, and executable arguments.
+	 * @param project the ProjectPropertiesAdapter specifying the main class, classpath, and executable arguments.
 	 * @return Thread running with process, or null if unable to start
 	 */
 	public Thread runInSameVM() {
-		final RunProperties props = new RunProperties(compilerConfig,
-				runtimeProperties, uiBuildMsgHandler, rootFrame);
+		final RunProperties props = new RunProperties(compilerConfig, runtimeProperties, uiBuildMsgHandler, rootFrame);
 		if (!props.valid) {
 			return null; // error already handled
 		}
 		Runnable runner = new Runnable() {
 			public void run() {
 				try {
-					Reflection.runMainInSameVM(props.classpath,
-							props.mainClass, props.args);
+					Reflection.runMainInSameVM(props.classpath, props.mainClass, props.args);
 				} catch (Throwable e) {
-					Message msg = new Message("Error running "
-							+ props.mainClass, IMessage.ERROR, e, null);
+					Message msg = new Message("Error running " + props.mainClass, IMessage.ERROR, e, null);
 					uiBuildMsgHandler.handleMessage(msg);
 				}
 			}
@@ -195,15 +178,12 @@ public class Ajde {
 	}
 
 	/**
-	 * Utility to run the project main class from the project properties in a
-	 * new VM. Errors are logged to the ErrorHandler.
+	 * Utility to run the project main class from the project properties in a new VM. Errors are logged to the ErrorHandler.
 	 * 
-	 * @return LangUtil.ProcessController running with process, or null if
-	 *         unable to start
+	 * @return LangUtil.ProcessController running with process, or null if unable to start
 	 */
 	public LangUtil.ProcessController runInNewVM() {
-		final RunProperties props = new RunProperties(compilerConfig,
-				runtimeProperties, uiBuildMsgHandler, rootFrame);
+		final RunProperties props = new RunProperties(compilerConfig, runtimeProperties, uiBuildMsgHandler, rootFrame);
 		if (!props.valid) {
 			return null; // error already handled
 		}
@@ -216,31 +196,25 @@ public class Ajde {
 					return; // no errors
 				}
 				// handle errors
-				String context = props.mainClass + " command \"" + command
-						+ "\"";
+				String context = props.mainClass + " command \"" + command + "\"";
 				if (null != thrown) {
 					String m = "Exception running " + context;
-					uiBuildMsgHandler.handleMessage(new Message(m,
-							IMessage.ERROR, thrown, null));
+					uiBuildMsgHandler.handleMessage(new Message(m, IMessage.ERROR, thrown, null));
 				} else if (0 != result) {
 					String m = "Result of running " + context;
-					uiBuildMsgHandler.handleMessage(new Message(m,
-							IMessage.ERROR, null, null));
+					uiBuildMsgHandler.handleMessage(new Message(m, IMessage.ERROR, null, null));
 				}
 				if (null != any.fromInPipe) {
 					String m = "Error processing input pipe for " + context;
-					uiBuildMsgHandler.handleMessage(new Message(m,
-							IMessage.ERROR, thrown, null));
+					uiBuildMsgHandler.handleMessage(new Message(m, IMessage.ERROR, thrown, null));
 				}
 				if (null != any.fromOutPipe) {
 					String m = "Error processing output pipe for " + context;
-					uiBuildMsgHandler.handleMessage(new Message(m,
-							IMessage.ERROR, thrown, null));
+					uiBuildMsgHandler.handleMessage(new Message(m, IMessage.ERROR, thrown, null));
 				}
 				if (null != any.fromErrPipe) {
 					String m = "Error processing error pipe for " + context;
-					uiBuildMsgHandler.handleMessage(new Message(m,
-							IMessage.ERROR, thrown, null));
+					uiBuildMsgHandler.handleMessage(new Message(m, IMessage.ERROR, thrown, null));
 				}
 			}
 		};
@@ -262,9 +236,8 @@ public class Ajde {
 		final boolean valid;
 		private Frame rootFrame;
 
-		RunProperties(ICompilerConfiguration compilerConfig,
-				IRuntimeProperties runtimeProperties,
-				IUIBuildMessageHandler handler, Frame rootFrame) {
+		RunProperties(ICompilerConfiguration compilerConfig, IRuntimeProperties runtimeProperties, IUIBuildMessageHandler handler,
+				Frame rootFrame) {
 			// XXX really run arbitrary handler in constructor? hmm.
 			LangUtil.throwIaxIfNull(runtimeProperties, "runtime properties");
 			LangUtil.throwIaxIfNull(compilerConfig, "compiler configuration");
@@ -281,16 +254,12 @@ public class Ajde {
 				showWarningMessage("No main class specified");
 			} else {
 				StringBuffer sb = new StringBuffer();
-				List outputDirs = compilerConfig.getOutputLocationManager()
-						.getAllOutputLocations();
-				for (Iterator iterator = outputDirs.iterator(); iterator
-						.hasNext();) {
+				List outputDirs = compilerConfig.getOutputLocationManager().getAllOutputLocations();
+				for (Iterator iterator = outputDirs.iterator(); iterator.hasNext();) {
 					File dir = (File) iterator.next();
 					sb.append(dir.getAbsolutePath() + File.pathSeparator);
 				}
-				classpath = LangUtil.makeClasspath(null, compilerConfig
-						.getClasspath(), sb.toString(), compilerConfig
-						.getOutJar());
+				classpath = LangUtil.makeClasspath(null, compilerConfig.getClasspath(), sb.toString(), compilerConfig.getOutJar());
 				if (LangUtil.isEmpty(classpath)) {
 					showWarningMessage("No classpath specified");
 				} else {
@@ -305,8 +274,7 @@ public class Ajde {
 		}
 
 		private void showWarningMessage(String message) {
-			JOptionPane.showMessageDialog(rootFrame, message, "Warning",
-					JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(rootFrame, message, "Warning", JOptionPane.WARNING_MESSAGE);
 		}
 
 	}
@@ -315,8 +283,7 @@ public class Ajde {
 	 * Set the build off in the same thread
 	 * 
 	 * @param configFile
-	 * @param buildFresh -
-	 *            true if want to do a full build, false otherwise
+	 * @param buildFresh - true if want to do a full build, false otherwise
 	 */
 	public void runBuildInSameThread(String configFile, boolean buildFresh) {
 		AjCompiler c = getCompilerForConfigFile(configFile);
@@ -330,13 +297,11 @@ public class Ajde {
 	}
 
 	/**
-	 * Set the build off in a different thread. Would need to set the build off
-	 * in a different thread if using a swing application to display the build
-	 * progress.
+	 * Set the build off in a different thread. Would need to set the build off in a different thread if using a swing application
+	 * to display the build progress.
 	 * 
 	 * @param configFile
-	 * @param buildFresh -
-	 *            true if want to do a full build, false otherwise
+	 * @param buildFresh - true if want to do a full build, false otherwise
 	 */
 	public void runBuildInDifferentThread(String configFile, boolean buildFresh) {
 		AjCompiler c = getCompilerForConfigFile(configFile);
@@ -365,24 +330,6 @@ public class Ajde {
 		}
 	}
 
-	public void enableLogging(PrintStream logPrintStream) {
-		this.logPrintStream = logPrintStream;
-	}
-	
-	public void disableLogging() {
-		this.logPrintStream = null;	
-	}
-	
-	public boolean isLogging() {
-		return (this.logPrintStream!=null);
-	}
-	
-	public void logEvent(String message) {
-		if (logPrintStream != null) {
-			logPrintStream.println("<AJDE> " + message);	
-		}	
-	}
-	
 	// ---------- getter methods for the ui --------------
 
 	/**
@@ -414,96 +361,95 @@ public class Ajde {
 	}
 
 	/**
-	 * @return the IdeUIAdapter 
+	 * @return the IdeUIAdapter
 	 */
 	public IdeUIAdapter getIdeUIAdapter() {
 		return ideUIAdapter;
 	}
-	
+
 	/**
-	 * @return the EditorAdapter 
+	 * @return the EditorAdapter
 	 */
 	public EditorAdapter getEditorAdapter() {
 		return editorAdapter;
 	}
 
 	/**
-	 * @return the TreeViewBuildConfigEditor 
+	 * @return the TreeViewBuildConfigEditor
 	 */
 	public TreeViewBuildConfigEditor getBuildConfigEditor() {
 		return buildConfigEditor;
 	}
 
 	/**
-	 * @return the StructureViewPanel 
+	 * @return the StructureViewPanel
 	 */
 	public StructureViewPanel getFileStructurePanel() {
 		return fileStructurePanel;
 	}
 
 	/**
-	 * @return the IconRegistry 
+	 * @return the IconRegistry
 	 */
 	public IconRegistry getIconRegistry() {
 		return iconRegistry;
 	}
-	
+
 	/**
-	 * @return the StructureViewManager 
+	 * @return the StructureViewManager
 	 */
 	public StructureViewManager getStructureViewManager() {
 		return structureViewManager;
 	}
 
 	/**
-	 * @return the StructureSearchManager 
+	 * @return the StructureSearchManager
 	 */
 	public StructureSearchManager getStructureSearchManager() {
 		return structureSearchManager;
 	}
-	
+
 	/**
-	 * @return the BuildConfigManager 
+	 * @return the BuildConfigManager
 	 */
 	public BuildConfigManager getBuildConfigManager() {
 		return configurationManager;
 	}
 
 	// -------------- getter methods for the compiler -------------
-	
+
 	/**
-	 * @return the ICompilerConfiguration 
+	 * @return the ICompilerConfiguration
 	 */
 	public ICompilerConfiguration getCompilerConfig() {
 		return compilerConfig;
 	}
 
 	/**
-	 * @return the IUIBuildMessageHandler 
+	 * @return the IUIBuildMessageHandler
 	 */
 	public IUIBuildMessageHandler getMessageHandler() {
 		return uiBuildMsgHandler;
 	}
 
 	/**
-	 * @return the IBuildProgressMonitor 
+	 * @return the IBuildProgressMonitor
 	 */
 	public IBuildProgressMonitor getBuildProgressMonitor() {
 		return buildProgressMonitor;
 	}
 
 	/**
-	 * If the provided configFile is the same as the id for the
-	 * last compiler then returns that, otherwise clears the
-	 * state for the saved compiler and creates a new one for
-	 * the provided configFile
+	 * If the provided configFile is the same as the id for the last compiler then returns that, otherwise clears the state for the
+	 * saved compiler and creates a new one for the provided configFile
 	 * 
 	 * @param configFile
 	 * @return the AjCompiler with the id of the given configFile
 	 */
 	public AjCompiler getCompilerForConfigFile(String configFile) {
-		if (configFile == null)
+		if (configFile == null) {
 			return null;
+		}
 		if ((compiler == null || !compiler.getId().equals(configFile))) {
 			if (compiler != null) {
 				// have to remove the incremental state of the previous
@@ -513,8 +459,7 @@ public class Ajde {
 				compiler.clearLastState();
 			}
 			getMessageHandler().reset();
-			compiler = new AjCompiler(configFile, getCompilerConfig(),
-					getBuildProgressMonitor(), getMessageHandler());
+			compiler = new AjCompiler(configFile, getCompilerConfig(), getBuildProgressMonitor(), getMessageHandler());
 		}
 		return compiler;
 	}
