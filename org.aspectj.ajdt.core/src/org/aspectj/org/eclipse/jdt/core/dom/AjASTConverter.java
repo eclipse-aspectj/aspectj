@@ -398,25 +398,25 @@ public class AjASTConverter extends ASTConverter {
 				declareDeclaration = new DeclareAtTypeDeclaration(this.ast);
 				((DeclareAtTypeDeclaration) declareDeclaration).setPatternNode(convert(da.getTypePattern()));
 				SimpleName annotationName = new SimpleName(this.ast);
-				annotationName.internalSetIdentifier(new String(da.getAnnotationString()));
+				annotationName.internalSetIdentifier(da.getAnnotationString());
 				((DeclareAtTypeDeclaration) declareDeclaration).setAnnotationName(annotationName);
 			} else if (da.getKind().equals(DeclareAnnotation.AT_CONSTRUCTOR)) {
 				declareDeclaration = new DeclareAtConstructorDeclaration(this.ast);
 				((DeclareAtConstructorDeclaration) declareDeclaration).setPatternNode(convert(da.getSignaturePattern()));
 				SimpleName annotationName = new SimpleName(this.ast);
-				annotationName.internalSetIdentifier(new String(da.getAnnotationString()));
+				annotationName.internalSetIdentifier(da.getAnnotationString());
 				((DeclareAtConstructorDeclaration) declareDeclaration).setAnnotationName(annotationName);
 			} else if (da.getKind().equals(DeclareAnnotation.AT_FIELD)) {
 				declareDeclaration = new DeclareAtFieldDeclaration(this.ast);
 				((DeclareAtFieldDeclaration) declareDeclaration).setPatternNode(convert(da.getSignaturePattern()));
 				SimpleName annotationName = new SimpleName(this.ast);
-				annotationName.internalSetIdentifier(new String(da.getAnnotationString()));
+				annotationName.internalSetIdentifier(da.getAnnotationString());
 				((DeclareAtFieldDeclaration) declareDeclaration).setAnnotationName(annotationName);
 			} else if (da.getKind().equals(DeclareAnnotation.AT_METHOD)) {
 				declareDeclaration = new DeclareAtMethodDeclaration(this.ast);
 				((DeclareAtMethodDeclaration) declareDeclaration).setPatternNode(convert(da.getSignaturePattern()));
 				SimpleName annotationName = new SimpleName(this.ast);
-				annotationName.internalSetIdentifier(new String(da.getAnnotationString()));
+				annotationName.internalSetIdentifier(da.getAnnotationString());
 				((DeclareAtMethodDeclaration) declareDeclaration).setAnnotationName(annotationName);
 			}
 		} else if (declare instanceof DeclareErrorOrWarning) {
