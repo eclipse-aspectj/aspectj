@@ -217,7 +217,7 @@ public class AjConfigTests extends AjdeCoreTestCase {
 	}
 	
 	private AjBuildConfig genAjBuildConfig() {
-		AjBuildConfig buildConfig = ajdeBuildManager.genAjBuildConfig();			
+		AjBuildConfig buildConfig = ajdeBuildManager.generateAjBuildConfig();			
 		assertNotNull("exepected to generate a non null AjBuildConfig but " +
 				"didn't", buildConfig);	
 		return buildConfig;

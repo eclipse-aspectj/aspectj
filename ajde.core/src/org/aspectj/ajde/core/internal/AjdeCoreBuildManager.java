@@ -46,16 +46,16 @@ import org.aspectj.util.LangUtil;
 public class AjdeCoreBuildManager {
 
 	private AjCompiler compiler;
-
-	private AjdeCoreBuildNotifierAdapter currNotifier = null;
+	private AjdeCoreBuildNotifierAdapter buildEventNotifier = null;
 	private AjBuildManager ajBuildManager;
 	private IMessageHandler msgHandlerAdapter;
 
 	public AjdeCoreBuildManager(AjCompiler compiler) {
 		this.compiler = compiler;
-		msgHandlerAdapter = new AjdeCoreMessageHandlerAdapter(compiler.getMessageHandler());
-		ajBuildManager = new AjBuildManager(msgHandlerAdapter);
-		ajBuildManager.environmentSupportsIncrementalCompilation(true);
+		this.msgHandlerAdapter = new AjdeCoreMessageHandlerAdapter(compiler.getMessageHandler());
+		this.ajBuildManager = new AjBuildManager(msgHandlerAdapter);
+		this.ajBuildManager.environmentSupportsIncrementalCompilation(true);
+
 		// this static information needs to be set to ensure
 		// incremental compilation works correctly
 		IncrementalStateManager.recordIncrementalStates = true;
@@ -63,45 +63,51 @@ public class AjdeCoreBuildManager {
 		AsmManager.attemptIncrementalModelRepairs = true;
 	}
 
-	// XXX hideous, should not be Object
-	public void setCustomMungerFactory(Object o) {
-		ajBuildManager.setCustomMungerFactory(o);
-	}
-
-	public Object getCustomMungerFactory() {
-		return ajBuildManager.getCustomMungerFactory();
-	}
-
 	/**
-	 * @param buildFresh - true if want to force a full build, false otherwise
+	 * Execute a full or incremental build
+	 * 
+	 * @param fullBuild true if requesting a full build, false if requesting to try an incremental build
 	 */
-	public void doBuild(boolean buildFresh) {
-		if (!buildFresh) {
-			buildFresh = updateAsmManagerInformation();
+	public void performBuild(boolean fullBuild) {
+
+		// If an incremental build is requested, check that we can
+		if (!fullBuild) {
+			AjState existingState = IncrementalStateManager.retrieveStateFor(compiler.getId());
+			if (existingState == null) {
+				// No existing state so we must do a full build
+				fullBuild = true;
+			} else {
+				AsmManager.getDefault().setRelationshipMap(existingState.getRelationshipMap());
+				AsmManager.getDefault().setHierarchy(existingState.getStructureModel());
+			}
 		}
 		try {
-			startNotifiers();
+			reportProgressBegin();
 
-			// record the options passed to the compiler
-			if (!compiler.getMessageHandler().isIgnoring(IMessage.INFO)) {
+			// record the options passed to the compiler if INFO turned on
+			if (!msgHandlerAdapter.isIgnoring(IMessage.INFO)) {
 				handleMessage(new Message(getFormattedOptionsString(), IMessage.INFO, null, null));
 			}
 
 			CompilationAndWeavingContext.reset();
 
-			if (buildFresh) {
-				AjBuildConfig buildConfig = genAjBuildConfig();
+			if (fullBuild) { // FULL BUILD
+				AjBuildConfig buildConfig = generateAjBuildConfig();
 				if (buildConfig == null) {
 					return;
 				}
 				ajBuildManager.batchBuild(buildConfig, msgHandlerAdapter);
-			} else {
+			} else { // INCREMENTAL BUILD
 				// Only rebuild the config object if the configuration has changed
 				AjBuildConfig buildConfig = null;
 				ICompilerConfiguration compilerConfig = compiler.getCompilerConfiguration();
 				int changes = compilerConfig.getConfigurationChanges();
 				if (changes != ICompilerConfiguration.NO_CHANGES) {
-					buildConfig = genAjBuildConfig();
+
+					// What configuration changes can we cope with? And besides just repairing the config object
+					// what does it mean for any existing state that we have?
+
+					buildConfig = generateAjBuildConfig();
 					if (buildConfig == null) {
 						return;
 					}
@@ -144,25 +150,10 @@ public class AjdeCoreBuildManager {
 	/**
 	 * Starts the various notifiers which are interested in the build progress
 	 */
-	private void startNotifiers() {
+	private void reportProgressBegin() {
 		compiler.getBuildProgressMonitor().begin();
-		currNotifier = new AjdeCoreBuildNotifierAdapter(compiler.getBuildProgressMonitor());
-		ajBuildManager.setProgressListener(currNotifier);
-	}
-
-	/**
-	 * Switches the relationshipMap and hierarchy used by AsmManager to be the one for the current compiler - this will not be
-	 * necessary once the static nature is removed from the asm.
-	 */
-	private boolean updateAsmManagerInformation() {
-		AjState updatedState = IncrementalStateManager.retrieveStateFor(compiler.getId());
-		if (updatedState == null) {
-			return true;
-		} else {
-			AsmManager.getDefault().setRelationshipMap(updatedState.getRelationshipMap());
-			AsmManager.getDefault().setHierarchy(updatedState.getStructureModel());
-		}
-		return false;
+		buildEventNotifier = new AjdeCoreBuildNotifierAdapter(compiler.getBuildProgressMonitor());
+		ajBuildManager.setProgressListener(buildEventNotifier);
 	}
 
 	private String getFormattedOptionsString() {
@@ -211,34 +202,96 @@ public class AjdeCoreBuildManager {
 	}
 
 	/**
-	 * Generate a new AjBuildConfig from the compiler configuration associated with this AjdeCoreBuildManager
+	 * Generate a new AjBuildConfig from the compiler configuration associated with this AjdeCoreBuildManager or from a
+	 * configuration file.
 	 * 
 	 * @return null if invalid configuration, corresponding AjBuildConfig otherwise
 	 */
-	public AjBuildConfig genAjBuildConfig() {
+	public AjBuildConfig generateAjBuildConfig() {
 		File configFile = new File(compiler.getId());
+		ICompilerConfiguration compilerConfig = compiler.getCompilerConfiguration();
+		CountingMessageHandler handler = CountingMessageHandler.makeCountingMessageHandler(msgHandlerAdapter);
+
 		String[] args = null;
+		// Retrieve the set of files from either an arg file (@filename) or the compiler configuration
 		if (configFile.exists() && configFile.isFile()) {
 			args = new String[] { "@" + configFile.getAbsolutePath() };
 		} else {
-			List l = compiler.getCompilerConfiguration().getProjectSourceFiles();
-			if (l == null)
+			List l = compilerConfig.getProjectSourceFiles();
+			if (l == null) {
 				return null;
-			args = new String[l.size()];
-			int counter = 0;
-			for (Iterator iter = l.iterator(); iter.hasNext();) {
-				String element = (String) iter.next();
-				args[counter] = element;
-				counter++;
 			}
+			args = (String[]) l.toArray(new String[l.size()]);
 		}
-		CountingMessageHandler handler = CountingMessageHandler.makeCountingMessageHandler(msgHandlerAdapter);
+
 		BuildArgParser parser = new BuildArgParser(handler);
 
 		AjBuildConfig config = new AjBuildConfig();
+
 		parser.populateBuildConfig(config, args, false, configFile);
-		configureCompilerOptions(config);
-		compiler.getCompilerConfiguration().configurationRead();
+
+		// Process the CLASSPATH
+		String propcp = compilerConfig.getClasspath();
+		if (propcp != null && propcp.length() != 0) {
+			StringTokenizer st = new StringTokenizer(propcp, File.pathSeparator);
+			List configClasspath = config.getClasspath();
+			ArrayList toAdd = new ArrayList();
+			while (st.hasMoreTokens()) {
+				String entry = st.nextToken();
+				if (!configClasspath.contains(entry)) {
+					toAdd.add(entry);
+				}
+			}
+			if (0 < toAdd.size()) {
+				ArrayList both = new ArrayList(configClasspath.size() + toAdd.size());
+				both.addAll(configClasspath);
+				both.addAll(toAdd);
+				config.setClasspath(both);
+			}
+		}
+
+		// Process the OUTJAR
+		if (config.getOutputJar() == null) {
+			String outJar = compilerConfig.getOutJar();
+			if (outJar != null && outJar.length() != 0) {
+				config.setOutputJar(new File(outJar));
+			}
+		}
+
+		// Process the OUTPUT LOCATION MANAGER
+		IOutputLocationManager outputLocationManager = compilerConfig.getOutputLocationManager();
+		if (config.getCompilationResultDestinationManager() == null && outputLocationManager != null) {
+			config.setCompilationResultDestinationManager(new OutputLocationAdapter(outputLocationManager));
+		}
+
+		// Process the INPATH
+		mergeInto(config.getInpath(), compilerConfig.getInpath());
+		// bug 168840 - calling 'setInPath(..)' creates BinarySourceFiles which
+		// are used to see if there have been changes in classes on the inpath
+		if (config.getInpath() != null) {
+			config.setInPath(config.getInpath());
+		}
+
+		// Process the SOURCE PATH RESOURCES
+		config.setSourcePathResources(compilerConfig.getSourcePathResources());
+
+		// Process the ASPECTPATH
+		mergeInto(config.getAspectpath(), compilerConfig.getAspectPath());
+
+		// Process the JAVA OPTIONS MAP
+		Map jom = compilerConfig.getJavaOptionsMap();
+		if (jom != null) {
+			String version = (String) jom.get(CompilerOptions.OPTION_Compliance);
+			if (version != null && (version.equals(CompilerOptions.VERSION_1_5) || version.equals(CompilerOptions.VERSION_1_6))) {
+				config.setBehaveInJava5Way(true);
+			}
+			config.getOptions().set(jom);
+		}
+
+		// Process the NON-STANDARD COMPILER OPTIONS
+		configureNonStandardOptions(config);
+
+		compilerConfig.configurationRead();
 
 		ISourceLocation location = null;
 		if (config.getConfigFile() != null) {
@@ -260,68 +313,7 @@ public class AjdeCoreBuildManager {
 		return config;
 	}
 
-	/**
-	 * Configure the given AjBuildConfig with the options found in the ICompilerConfiguration implementation associated with the
-	 * AjCompiler for this AjdeCoreBuildManager
-	 * 
-	 * @param config
-	 */
-	private void configureCompilerOptions(AjBuildConfig config) {
-
-		String propcp = compiler.getCompilerConfiguration().getClasspath();
-		if (!LangUtil.isEmpty(propcp)) {
-			StringTokenizer st = new StringTokenizer(propcp, File.pathSeparator);
-			List configClasspath = config.getClasspath();
-			ArrayList toAdd = new ArrayList();
-			while (st.hasMoreTokens()) {
-				String entry = st.nextToken();
-				if (!configClasspath.contains(entry)) {
-					toAdd.add(entry);
-				}
-			}
-			if (0 < toAdd.size()) {
-				ArrayList both = new ArrayList(configClasspath.size() + toAdd.size());
-				both.addAll(configClasspath);
-				both.addAll(toAdd);
-				config.setClasspath(both);
-			}
-		}
-
-		// set the outputjar
-		if (config.getOutputJar() == null) {
-			String outJar = compiler.getCompilerConfiguration().getOutJar();
-			if (!LangUtil.isEmpty(outJar)) {
-				config.setOutputJar(new File(outJar));
-			}
-		}
-
-		// set compilation result destination manager
-		IOutputLocationManager outputLocationManager = compiler.getCompilerConfiguration().getOutputLocationManager();
-		if (config.getCompilationResultDestinationManager() == null && outputLocationManager != null) {
-			config.setCompilationResultDestinationManager(new OutputLocationAdapter(outputLocationManager));
-		}
-
-		join(config.getInpath(), compiler.getCompilerConfiguration().getInpath());
-		// bug 168840 - calling 'setInPath(..)' creates BinarySourceFiles which
-		// are used to see if there have been changes in classes on the inpath
-		if (config.getInpath() != null)
-			config.setInPath(config.getInpath());
-		config.setSourcePathResources(compiler.getCompilerConfiguration().getSourcePathResources());
-		join(config.getAspectpath(), compiler.getCompilerConfiguration().getAspectPath());
-
-		Map jom = compiler.getCompilerConfiguration().getJavaOptionsMap();
-		if (jom != null) {
-			String version = (String) jom.get(CompilerOptions.OPTION_Compliance);
-			if (version != null && (version.equals(CompilerOptions.VERSION_1_5) || version.equals(CompilerOptions.VERSION_1_6))) {
-				config.setBehaveInJava5Way(true);
-			}
-			config.getOptions().set(jom);
-		}
-
-		configureNonStandardOptions(config);
-	}
-
-	private void join(Collection target, Collection source) {
+	private void mergeInto(Collection target, Collection source) {
 		if ((null == target) || (null == source)) {
 			return;
 		}
@@ -388,5 +380,13 @@ public class AjdeCoreBuildManager {
 	 */
 	private void handleMessage(Message msg) {
 		compiler.getMessageHandler().handleMessage(msg);
+	}
+
+	public void setCustomMungerFactory(Object o) {
+		ajBuildManager.setCustomMungerFactory(o);
+	}
+
+	public Object getCustomMungerFactory() {
+		return ajBuildManager.getCustomMungerFactory();
 	}
 }
