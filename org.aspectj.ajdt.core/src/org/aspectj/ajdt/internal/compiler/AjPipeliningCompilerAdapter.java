@@ -200,9 +200,6 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 				nonaspects.add(units[i]);
 		}
 
-		if (units == null)
-			return; // what does this mean?
-
 		// ...and put them back together, aspects first
 		int posn = 0;
 		for (Iterator iter = aspects.iterator(); iter.hasNext();) {
@@ -432,7 +429,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 			}
 		}
 		ensureWeaverInitialized(); // by doing this only once, are we saying needToReweaveWorld can't change once the aspects have
-									// been stuffed into the weaver?
+		// been stuffed into the weaver?
 		if (weaver.needToReweaveWorld() && !isBatchCompile)
 			return true;
 		weaver.weave(new WeaverAdapter(this, weaverMessageHandler, progressListener));
@@ -560,8 +557,8 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 			for (int index = 0; index < declaration.annotations.length; index++) {
 				TypeDeclaration
 						.resolveAnnotations(declaration.staticInitializerScope, declaration.annotations, declaration.binding); // force
-																																// annotation
-																																// resolution
+				// annotation
+				// resolution
 				Annotation a = declaration.annotations[index];
 				if (a.resolvedType == null)
 					continue; // another problem is being reported, so don't crash here
@@ -590,7 +587,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		return (String) pipelineOutput.get(key);
 	}
 
-	private final boolean debugPipeline = false;
+	private final static boolean debugPipeline = false;
 
 	public List getResultsPendingWeave() {
 		return resultsPendingWeave;

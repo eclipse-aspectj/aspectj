@@ -57,10 +57,6 @@ import org.aspectj.weaver.bcel.UnwovenClassFile;
 
 /**
  * Maintains state needed for incremental compilation
- * 
- * tests: two ajdt projects, aspect is changed in dependent, does dependee do a full build? (could just do it if on aspect path but
- * lets just do it for all now)
- * 
  */
 public class AjState implements CompilerConfigurationChangeFlags {
 
@@ -256,8 +252,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			// coming - otherwise a file that has been deleted from an inpath jar
 			// since the last build will not be deleted from the output directory.
 			removeAllResultsOfLastBuild();
-			if (stateListener != null)
+			if (stateListener != null) {
 				stateListener.pathChangeDetected();
+			}
 			structuralChangesSinceLastFullBuild.clear();
 			if (listenerDefined())
 				getListener()
@@ -321,8 +318,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			File aDeletedFile = (File) iter.next();
 			if (this.sourceFilesDefiningAspects.contains(aDeletedFile)) {
 				removeAllResultsOfLastBuild();
-				if (stateListener != null)
+				if (stateListener != null) {
 					stateListener.detectedAspectDeleted(aDeletedFile);
+				}
 				return false;
 			}
 			List/* ClassFile */classes = (List) fullyQualifiedTypeNamesResultingFromCompilationUnit.get(aDeletedFile);

@@ -176,38 +176,42 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	}
 
 	public boolean batchBuild(AjBuildConfig buildConfig, IMessageHandler baseHandler) throws IOException, AbortException {
-		return doBuild(buildConfig, baseHandler, true);
+		return performBuild(buildConfig, baseHandler, true);
 	}
 
 	public boolean incrementalBuild(AjBuildConfig buildConfig, IMessageHandler baseHandler) throws IOException, AbortException {
-		return doBuild(buildConfig, baseHandler, false);
+		return performBuild(buildConfig, baseHandler, false);
 	}
 
-	/** @throws AbortException if check for runtime fails */
-	protected boolean doBuild(AjBuildConfig buildConfig, IMessageHandler baseHandler, boolean batch) throws IOException,
+	/**
+	 * Perform a build.
+	 * 
+	 * @return true if the build was successful (ie. no errors)
+	 */
+	private boolean performBuild(AjBuildConfig buildConfig, IMessageHandler baseHandler, boolean isFullBuild) throws IOException,
 			AbortException {
 		boolean ret = true;
-		batchCompile = batch;
-		wasFullBuild = batch;
+		batchCompile = isFullBuild;
+		wasFullBuild = isFullBuild;
 		if (baseHandler instanceof ILifecycleAware) {
-			((ILifecycleAware) baseHandler).buildStarting(!batch);
+			((ILifecycleAware) baseHandler).buildStarting(!isFullBuild);
 		}
 		CompilationAndWeavingContext.reset();
-		int phase = batch ? CompilationAndWeavingContext.BATCH_BUILD : CompilationAndWeavingContext.INCREMENTAL_BUILD;
+		int phase = isFullBuild ? CompilationAndWeavingContext.BATCH_BUILD : CompilationAndWeavingContext.INCREMENTAL_BUILD;
 		ContextToken ct = CompilationAndWeavingContext.enteringPhase(phase, buildConfig);
 		try {
-			if (batch) {
+			if (isFullBuild) {
 				this.state = new AjState(this);
 			}
 
 			this.state.setCouldBeSubsequentIncrementalBuild(this.environmentSupportsIncrementalCompilation);
 
 			boolean canIncremental = state.prepareForNextBuild(buildConfig);
-			if (!canIncremental && !batch) { // retry as batch?
+			if (!canIncremental && !isFullBuild) { // retry as batch?
 				CompilationAndWeavingContext.leavingPhase(ct);
 				if (state.listenerDefined())
 					state.getListener().recordDecision("Falling back to batch compilation");
-				return doBuild(buildConfig, baseHandler, true);
+				return performBuild(buildConfig, baseHandler, true);
 			}
 			this.handler = CountingMessageHandler.makeCountingMessageHandler(baseHandler);
 
@@ -229,14 +233,15 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			// if (batch) {
 			setBuildConfig(buildConfig);
 			// }
-			if (batch || !AsmManager.attemptIncrementalModelRepairs) {
+			if (isFullBuild || !AsmManager.attemptIncrementalModelRepairs) {
 				// if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {
 				setupModel(buildConfig);
 				// }
 			}
-			if (batch) {
+			if (isFullBuild) {
 				initBcelWorld(handler);
 			}
+
 			if (handler.hasErrors()) {
 				CompilationAndWeavingContext.leavingPhase(ct);
 				return false;
@@ -249,7 +254,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				}
 			}
 
-			if (batch) {
+			if (isFullBuild) {
 				// System.err.println("XXXX batch: " + buildConfig.getFiles());
 				if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {
 					getWorld().setModel(AsmManager.getDefault().getHierarchy());
@@ -334,12 +339,12 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			}
 
 			// have to tell state we succeeded or next is not incremental
-			state.successfulCompile(buildConfig, batch);
+			state.successfulCompile(buildConfig, isFullBuild);
 
 			// For a full compile, copy resources to the destination
 			// - they should not get deleted on incremental and AJDT
 			// will handle changes to them that require a recopying
-			if (batch) {
+			if (isFullBuild) {
 				copyResourcesToDestination();
 			}
 
@@ -358,7 +363,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 		} finally {
 			if (baseHandler instanceof ILifecycleAware) {
-				((ILifecycleAware) baseHandler).buildFinished(!batch);
+				((ILifecycleAware) baseHandler).buildFinished(!isFullBuild);
 			}
 			if (zos != null) {
 				closeOutputStream(buildConfig.getOutputJar());

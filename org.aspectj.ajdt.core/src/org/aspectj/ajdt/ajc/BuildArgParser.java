@@ -116,18 +116,18 @@ public class BuildArgParser extends Main {
 	}
 
 	/**
-	 * Generate build configuration for the input args, passing to handler any error messages.
+	 * Generate build configuration for the input arguments, passing to handler any error messages.
 	 * 
 	 * @param args the String[] arguments for the build configuration
 	 * @param setClasspath determines if the classpath should be parsed and set on the build configuration
 	 * @param configFile can be null
-	 * @return AjBuildConfig per args, which will be invalid unless there are no handler errors.
+	 * @return AjBuildConfig per arguments, which will be invalid unless there are no handler errors.
 	 */
 	public AjBuildConfig populateBuildConfig(AjBuildConfig buildConfig, String[] args, boolean setClasspath, File configFile) {
 		Dump.saveCommandLine(args);
 		buildConfig.setConfigFile(configFile);
 		try {
-			// sets filenames to be non-null in order to make sure that file paramters are ignored
+			// sets filenames to be non-null in order to make sure that file parameters are ignored
 			super.filenames = new String[] { "" };
 
 			AjcConfigParser parser = new AjcConfigParser(buildConfig, handler);

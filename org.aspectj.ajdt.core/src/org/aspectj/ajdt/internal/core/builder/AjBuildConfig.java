@@ -63,9 +63,6 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 
 	private AjCompilerOptions options;
 
-	/** if true, then global values override local when joining */
-	private boolean override = true;
-
 	// incremental variants handled by the compiler client, but parsed here
 	private boolean incrementalMode;
 	private File incrementalFile;
@@ -411,15 +408,21 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		}
 	}
 
+	/**
+	 * Join some global options into a local set of options - globals will override locals.
+	 * 
+	 * @param local
+	 * @param global
+	 */
 	void join(Map local, Map global) {
 		for (Iterator iter = global.keySet().iterator(); iter.hasNext();) {
 			Object key = iter.next();
-			if (override || (null == local.get(key))) { // 
-				Object value = global.get(key);
-				if (null != value) {
-					local.put(key, value);
-				}
+			// if (override || (null == local.get(key))) { //
+			Object value = global.get(key);
+			if (null != value) {
+				local.put(key, value);
 			}
+			// }
 		}
 	}
 
