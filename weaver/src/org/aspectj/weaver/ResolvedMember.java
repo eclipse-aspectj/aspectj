@@ -33,17 +33,17 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	public UnresolvedType[] getExceptions();
 
 	public ShadowMunger getAssociatedShadowMunger();
-	
+
 	public boolean isAjSynthetic();
 
 	public boolean isCompatibleWith(Member am);
-	
+
 	public boolean hasAnnotations();
 
 	public boolean hasAnnotation(UnresolvedType ofType);
 
 	public AnnotationX[] getAnnotations();
-	
+
 	public ResolvedType[] getAnnotationTypes();
 
 	public void setAnnotationTypes(UnresolvedType[] annotationtypes);
@@ -61,14 +61,19 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	public ISourceContext getSourceContext(World world);
 
 	public String[] getParameterNames();
+
 	public void setParameterNames(String[] names);
 
 	public AnnotationX[][] getParameterAnnotations();
+
 	public ResolvedType[][] getParameterAnnotationTypes();
+
 	public String getAnnotationDefaultValue();
+
 	public String getParameterSignatureErased();
+
 	public String getSignatureErased();
-	
+
 	public String[] getParameterNames(World world);
 
 	public AjAttribute.EffectiveSignatureAttribute getEffectiveSignature();
@@ -102,14 +107,14 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	public void setAnnotatedElsewhere(boolean b);
 
 	public boolean isAnnotatedElsewhere();
-	
+
 	// like toString but include generic signature info
 	public String toGenericString();
-	
+
 	public String toDebugString();
-	
 
 	public boolean hasBackingGenericMember();
+
 	public ResolvedMember getBackingGenericMember();
 
 	/**
@@ -125,49 +130,49 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	// return a resolved member in which all type variables in the signature of this
 	// member have been replaced with the given bindings.
 	// the isParameterized flag tells us whether we are creating a raw type version or not
-	// if isParameterized List<T> will turn into List<String> (for example), 
+	// if isParameterized List<T> will turn into List<String> (for example),
 	// but if !isParameterized List<T> will turn into List.
-	public ResolvedMemberImpl parameterizedWith(
-			UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
+	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
 			boolean isParameterized);
 
-    // this variant allows for aliases for type variables (i.e. allowing them to have another name)
-    // this is used for processing ITDs that share type variables with their target generic type
-	public ResolvedMemberImpl parameterizedWith(
-			UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
-			boolean isParameterized,List aliases);
+	// this variant allows for aliases for type variables (i.e. allowing them to have another name)
+	// this is used for processing ITDs that share type variables with their target generic type
+	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
+			boolean isParameterized, List aliases);
 
 	public void setTypeVariables(TypeVariable[] types);
 
 	public TypeVariable[] getTypeVariables();
 
-	/**
-	 * If this member is defined by a parameterized super-type, return the erasure
-	 * of that member.
-	 * For example:
-	 * interface I<T> { T foo(T aTea); }
-	 * class C implements I<String> {
-	 *   String foo(String aString) { return "something"; }
-	 * }
-	 * The resolved member for C.foo has signature String foo(String). The
-	 * erasure of that member is Object foo(Object)  -- use upper bound of type
-	 * variable.
-	 * A type is a supertype of itself.
-	 */
-	public ResolvedMember getErasure();
+	// /**
+	// * If this member is defined by a parameterized super-type, return the erasure
+	// * of that member.
+	// * For example:
+	// * interface I<T> { T foo(T aTea); }
+	// * class C implements I<String> {
+	// * String foo(String aString) { return "something"; }
+	// * }
+	// * The resolved member for C.foo has signature String foo(String). The
+	// * erasure of that member is Object foo(Object) -- use upper bound of type
+	// * variable.
+	// * A type is a supertype of itself.
+	// */
+	// public ResolvedMember getErasure();
 
 	/**
-	 * Returns true if this member matches the other. The matching takes into account
-	 * name and parameter types only. When comparing parameter types, we allow any type
-	 * variable to match any other type variable regardless of bounds.
+	 * Returns true if this member matches the other. The matching takes into account name and parameter types only. When comparing
+	 * parameter types, we allow any type variable to match any other type variable regardless of bounds.
 	 */
 	public boolean matches(ResolvedMember aCandidateMatch);
-	
+
 	public void resetName(String newName);
+
 	public void resetKind(MemberKind newKind);
-    public void resetModifiers(int newModifiers);
-    public void resetReturnTypeToObjectArray();
-    
+
+	public void resetModifiers(int newModifiers);
+
+	public void resetReturnTypeToObjectArray();
+
 	public void evictWeavingState();
 
 	public ResolvedMember parameterizedWith(Map m, World w);

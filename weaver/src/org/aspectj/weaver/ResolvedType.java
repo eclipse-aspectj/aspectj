@@ -1818,15 +1818,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return null;
 	}
 
-	/**
-	 * overriden by ReferenceType to return the gsig for a generic type
-	 * 
-	 * @return
-	 */
-	public String getGenericSignature() {
-		return "";
-	}
-
 	public ResolvedType parameterizedWith(UnresolvedType[] typeParameters) {
 		if (!(isGenericType() || isParameterizedType()))
 			return this;
@@ -1867,10 +1858,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 	}
 
-	public boolean hasParameterizedSuperType() {
-		getParameterizedSuperTypes();
-		return parameterizedSuperTypes.length > 0;
-	}
+	// public boolean hasParameterizedSuperType() {
+	// getParameterizedSuperTypes();
+	// return parameterizedSuperTypes.length > 0;
+	// }
 
 	// public boolean hasGenericSuperType() {
 	// ResolvedType[] superTypes = getDeclaredInterfaces();
@@ -1881,43 +1872,34 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	// return false;
 	// }
 
-	private ResolvedType[] parameterizedSuperTypes = null;
+	// private ResolvedType[] parameterizedSuperTypes = null;
 
 	/**
 	 * Similar to the above method, but accumulates the super types
 	 * 
 	 * @return
 	 */
-	public ResolvedType[] getParameterizedSuperTypes() {
-		if (parameterizedSuperTypes != null)
-			return parameterizedSuperTypes;
-		List accumulatedTypes = new ArrayList();
-		accumulateParameterizedSuperTypes(this, accumulatedTypes);
-		ResolvedType[] ret = new ResolvedType[accumulatedTypes.size()];
-		parameterizedSuperTypes = (ResolvedType[]) accumulatedTypes.toArray(ret);
-		return parameterizedSuperTypes;
-	}
-
-	private void accumulateParameterizedSuperTypes(ResolvedType forType, List parameterizedTypeList) {
-		if (forType.isParameterizedType()) {
-			parameterizedTypeList.add(forType);
-		}
-		if (forType.getSuperclass() != null) {
-			accumulateParameterizedSuperTypes(forType.getSuperclass(), parameterizedTypeList);
-		}
-		ResolvedType[] interfaces = forType.getDeclaredInterfaces();
-		for (int i = 0; i < interfaces.length; i++) {
-			accumulateParameterizedSuperTypes(interfaces[i], parameterizedTypeList);
-		}
-	}
-
-	/**
-	 * Types may have pointcuts just as they have methods and fields.
-	 */
-	public ResolvedPointcutDefinition findPointcut(String name, World world) {
-		throw new UnsupportedOperationException("Not yet implemenented");
-	}
-
+	// public ResolvedType[] getParameterizedSuperTypes() {
+	// if (parameterizedSuperTypes != null)
+	// return parameterizedSuperTypes;
+	// List accumulatedTypes = new ArrayList();
+	// accumulateParameterizedSuperTypes(this, accumulatedTypes);
+	// ResolvedType[] ret = new ResolvedType[accumulatedTypes.size()];
+	// parameterizedSuperTypes = (ResolvedType[]) accumulatedTypes.toArray(ret);
+	// return parameterizedSuperTypes;
+	// }
+	// private void accumulateParameterizedSuperTypes(ResolvedType forType, List parameterizedTypeList) {
+	// if (forType.isParameterizedType()) {
+	// parameterizedTypeList.add(forType);
+	// }
+	// if (forType.getSuperclass() != null) {
+	// accumulateParameterizedSuperTypes(forType.getSuperclass(), parameterizedTypeList);
+	// }
+	// ResolvedType[] interfaces = forType.getDeclaredInterfaces();
+	// for (int i = 0; i < interfaces.length; i++) {
+	// accumulateParameterizedSuperTypes(interfaces[i], parameterizedTypeList);
+	// }
+	// }
 	/**
 	 * @return true if assignable to java.lang.Exception
 	 */

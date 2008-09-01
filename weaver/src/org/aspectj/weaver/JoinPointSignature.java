@@ -22,31 +22,26 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute.EffectiveSignatureAttribute;
 
 /**
- * @author colyer
- * Instances of this class are created by ResolvedMember.getSignatures() when collating
- * all of the signatures for a member. We need to create entries in the set for the "gaps"
- * in the hierarchy. For example:
+ * @author colyer Instances of this class are created by ResolvedMember.getSignatures() when collating all of the signatures for a
+ *         member. We need to create entries in the set for the "gaps" in the hierarchy. For example:
  * 
- * class A {
- *   void foo();
- * }
+ *         class A { void foo(); }
  * 
- * class B extends A {}
+ *         class B extends A {}
  * 
- * Join Point : call(* B.foo())
+ *         Join Point : call(* B.foo())
  * 
- * has signatures:
+ *         has signatures:
  * 
- * B.foo() AND A.foo()
- * B.foo() will be created as a ResolvedMemberWithSubstituteDeclaringType
+ *         B.foo() AND A.foo() B.foo() will be created as a ResolvedMemberWithSubstituteDeclaringType
  * 
- * Oh for a JDK 1.4 dynamic proxy.... we have to run on 1.3 :(
+ *         Oh for a JDK 1.4 dynamic proxy.... we have to run on 1.3 :(
  */
 public class JoinPointSignature implements ResolvedMember {
 
 	private ResolvedMember realMember;
-	private ResolvedType   substituteDeclaringType;
-	
+	private ResolvedType substituteDeclaringType;
+
 	public JoinPointSignature(ResolvedMember backing, ResolvedType aType) {
 		this.realMember = backing;
 		this.substituteDeclaringType = aType;
@@ -91,7 +86,7 @@ public class JoinPointSignature implements ResolvedMember {
 	public ResolvedType[] getAnnotationTypes() {
 		return realMember.getAnnotationTypes();
 	}
-	
+
 	public AnnotationX getAnnotationOfType(UnresolvedType ofType) {
 		return realMember.getAnnotationOfType(ofType);
 	}
@@ -127,7 +122,7 @@ public class JoinPointSignature implements ResolvedMember {
 	public String[] getParameterNames() {
 		return realMember.getParameterNames();
 	}
-	
+
 	public void setParameterNames(String[] names) {
 		realMember.setParameterNames(names);
 	}
@@ -157,7 +152,7 @@ public class JoinPointSignature implements ResolvedMember {
 	}
 
 	public void setPosition(int sourceStart, int sourceEnd) {
-		realMember.setPosition(sourceStart,sourceEnd);
+		realMember.setPosition(sourceStart, sourceEnd);
 	}
 
 	public void setSourceContext(ISourceContext sourceContext) {
@@ -208,12 +203,14 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.getGenericParameterTypes();
 	}
 
-	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType, boolean isParameterized) {
+	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
+			boolean isParameterized) {
 		return realMember.parameterizedWith(typeParameters, newDeclaringType, isParameterized);
 	}
-	
-	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType, boolean isParameterized,List aliases) {
-		return realMember.parameterizedWith(typeParameters, newDeclaringType, isParameterized,aliases);
+
+	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
+			boolean isParameterized, List aliases) {
+		return realMember.parameterizedWith(typeParameters, newDeclaringType, isParameterized, aliases);
 	}
 
 	public void setTypeVariables(TypeVariable[] types) {
@@ -223,13 +220,9 @@ public class JoinPointSignature implements ResolvedMember {
 	public TypeVariable[] getTypeVariables() {
 		return realMember.getTypeVariables();
 	}
-	
+
 	public TypeVariable getTypeVariableNamed(String name) {
 		return realMember.getTypeVariableNamed(name);
-	}
-
-	public ResolvedMember getErasure() {
-		throw new UnsupportedOperationException("Adrian doesn't think you should be asking for the erasure of one of these...");
 	}
 
 	public boolean matches(ResolvedMember aCandidateMatch) {
@@ -263,11 +256,11 @@ public class JoinPointSignature implements ResolvedMember {
 	public UnresolvedType[] getParameterTypes() {
 		return realMember.getParameterTypes();
 	}
-	
+
 	public AnnotationX[][] getParameterAnnotations() {
 		return realMember.getParameterAnnotations();
 	}
-	
+
 	public ResolvedType[][] getParameterAnnotationTypes() {
 		return realMember.getParameterAnnotationTypes();
 	}
@@ -315,61 +308,64 @@ public class JoinPointSignature implements ResolvedMember {
 	public Iterator getJoinPointSignatures(World world) {
 		return realMember.getJoinPointSignatures(world);
 	}
-	
-   public String toString() {
-    	StringBuffer buf = new StringBuffer();
-    	buf.append(getReturnType().getName());
-    	buf.append(' ');
-   		buf.append(getDeclaringType().getName());
-        buf.append('.');
-   		buf.append(getName());
-    	if (getKind() != FIELD) {
-    		buf.append("(");
-    		UnresolvedType[] parameterTypes = getParameterTypes();
-            if (parameterTypes.length != 0) {
-                buf.append(parameterTypes[0]);
-        		for (int i=1, len = parameterTypes.length; i < len; i++) {
-                    buf.append(", ");
-        		    buf.append(parameterTypes[i].getName());
-        		}
-            }
-    		buf.append(")");
-    	}
-    	return buf.toString();
-    }
-   
-   public String toGenericString() {
-	   return realMember.toGenericString();
-   }
-   
-   public String toDebugString() {
-	   return realMember.toDebugString();
-   }
 
-   public void resetName(String newName) {
-	   realMember.resetName(newName);
-   }	
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append(getReturnType().getName());
+		buf.append(' ');
+		buf.append(getDeclaringType().getName());
+		buf.append('.');
+		buf.append(getName());
+		if (getKind() != FIELD) {
+			buf.append("(");
+			UnresolvedType[] parameterTypes = getParameterTypes();
+			if (parameterTypes.length != 0) {
+				buf.append(parameterTypes[0]);
+				for (int i = 1, len = parameterTypes.length; i < len; i++) {
+					buf.append(", ");
+					buf.append(parameterTypes[i].getName());
+				}
+			}
+			buf.append(")");
+		}
+		return buf.toString();
+	}
+
+	public String toGenericString() {
+		return realMember.toGenericString();
+	}
+
+	public String toDebugString() {
+		return realMember.toDebugString();
+	}
+
+	public void resetName(String newName) {
+		realMember.resetName(newName);
+	}
 
 	public void resetKind(MemberKind newKind) {
 		realMember.resetKind(newKind);
 	}
-	
+
 	public void resetModifiers(int newModifiers) {
 		realMember.resetModifiers(newModifiers);
 	}
-	
+
 	public void resetReturnTypeToObjectArray() {
 		realMember.resetReturnTypeToObjectArray();
 	}
 
 	public boolean equals(Object obj) {
-		if (! (obj instanceof JoinPointSignature)) return false;
+		if (!(obj instanceof JoinPointSignature))
+			return false;
 		JoinPointSignature other = (JoinPointSignature) obj;
-		if (!realMember.equals(other.realMember)) return false;
-		if (!substituteDeclaringType.equals(other.substituteDeclaringType)) return false;
+		if (!realMember.equals(other.realMember))
+			return false;
+		if (!substituteDeclaringType.equals(other.substituteDeclaringType))
+			return false;
 		return true;
 	}
-	
+
 	public int hashCode() {
 		return 17 + (37 * realMember.hashCode()) + (37 * substituteDeclaringType.hashCode());
 	}
@@ -382,10 +378,12 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.getBackingGenericMember();
 	}
 
-	public void evictWeavingState() { realMember.evictWeavingState(); }
+	public void evictWeavingState() {
+		realMember.evictWeavingState();
+	}
 
 	public ResolvedMember parameterizedWith(Map m, World w) {
-		return realMember.parameterizedWith(m,w);
+		return realMember.parameterizedWith(m, w);
 	}
 
 	public String getAnnotationDefaultValue() {

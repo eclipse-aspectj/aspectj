@@ -1018,24 +1018,24 @@ public abstract class World implements Dump.INode {
 			return sb.toString();
 		}
 
-		public ResolvedType[] getAllTypes() {
-			List/* ResolvedType */results = new ArrayList();
-
-			collectTypes(expendableMap, results);
-			collectTypes(tMap, results);
-			return (ResolvedType[]) results.toArray(new ResolvedType[results.size()]);
-		}
-
-		private void collectTypes(Map map, List/* ResolvedType */results) {
-			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-				String key = (String) iterator.next();
-				ResolvedType type = get(key);
-				if (type != null)
-					results.add(type);
-				else
-					System.err.println("null!:" + key);
-			}
-		}
+		// public ResolvedType[] getAllTypes() {
+		// List/* ResolvedType */results = new ArrayList();
+		//
+		// collectTypes(expendableMap, results);
+		// collectTypes(tMap, results);
+		// return (ResolvedType[]) results.toArray(new ResolvedType[results.size()]);
+		// }
+		//
+		// private void collectTypes(Map map, List/* ResolvedType */results) {
+		// for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
+		// String key = (String) iterator.next();
+		// ResolvedType type = get(key);
+		// if (type != null)
+		// results.add(type);
+		// else
+		// System.err.println("null!:" + key);
+		// }
+		// }
 
 	}
 

@@ -46,12 +46,6 @@ public class ReferenceType extends ResolvedType {
 	int startPos = 0;
 	int endPos = 0;
 
-	public static ReferenceType fromTypeX(UnresolvedType tx, World world) {
-		ReferenceType rt = new ReferenceType(tx.getErasureSignature(), world);
-		rt.typeKind = tx.typeKind;
-		return rt;
-	}
-
 	// cached values for members
 	ResolvedMember[] parameterizedMethods = null;
 	ResolvedMember[] parameterizedFields = null;
@@ -67,6 +61,12 @@ public class ReferenceType extends ResolvedType {
 
 	public ReferenceType(String signature, String signatureErasure, World world) {
 		super(signature, signatureErasure, world);
+	}
+
+	public static ReferenceType fromTypeX(UnresolvedType tx, World world) {
+		ReferenceType rt = new ReferenceType(tx.getErasureSignature(), world);
+		rt.typeKind = tx.typeKind;
+		return rt;
 	}
 
 	/**
@@ -472,7 +472,6 @@ public class ReferenceType extends ResolvedType {
 	// if (position == -1 ) return null;
 	// return paramTypes[position];
 	// }
-
 	/**
 	 * It is possible this type has multiple type variables but the interface we are about to parameterize only uses a subset - this
 	 * method determines the subset to use by looking at the type variable names used. For example: <code>
@@ -753,10 +752,9 @@ public class ReferenceType extends ResolvedType {
 	 */
 	private static String makeParameterizedSignature(ResolvedType aGenericType, ResolvedType[] someParameters) {
 		String rawSignature = aGenericType.getErasureSignature();
-		String prefix = PARAMETERIZED_TYPE_IDENTIFIER + rawSignature.substring(1, rawSignature.length() - 1);
-
 		StringBuffer ret = new StringBuffer();
-		ret.append(prefix);
+		ret.append(PARAMETERIZED_TYPE_IDENTIFIER);
+		ret.append(rawSignature.substring(1, rawSignature.length() - 1));
 		ret.append("<");
 		for (int i = 0; i < someParameters.length; i++) {
 			ret.append(someParameters[i].getSignature());
