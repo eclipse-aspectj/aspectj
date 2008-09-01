@@ -113,8 +113,6 @@ public class BcelWorld extends World implements Repository {
 		setCrossReferenceHandler(xrefHandler);
 		// Tell BCEL to use us for resolving any classes
 		delegate = this;
-		// TODO Alex do we need to call org.aspectj.apache.bcel.Repository.setRepository(delegate);
-		// if so, how can that be safe in J2EE ?? (static stuff in Bcel)
 	}
 
 	public BcelWorld(ClassPathManager cpm, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
@@ -123,8 +121,6 @@ public class BcelWorld extends World implements Repository {
 		setCrossReferenceHandler(xrefHandler);
 		// Tell BCEL to use us for resolving any classes
 		delegate = this;
-		// TODO Alex do we need to call org.aspectj.apache.bcel.Repository.setRepository(delegate);
-		// if so, how can that be safe in J2EE ?? (static stuff in Bcel)
 	}
 
 	/**

@@ -152,7 +152,7 @@ public class ClassPathManager {
 	public abstract static class Entry {
 		public abstract ClassFile find(String name) throws IOException;
 
-		public abstract List getAllClassFiles() throws IOException;
+		// public abstract List getAllClassFiles() throws IOException;
 	}
 
 	private static class FileClassFile extends ClassFile {

@@ -368,7 +368,7 @@ class BcelClassWeaver implements IClassWeaver {
 							.getSignature());
 		}
 		LazyMethodGen bridgeMethod = makeBridgeMethod(clazz, theBridgeMethod); // The bridge method in this type will have the same
-																				// signature as the one in the supertype
+		// signature as the one in the supertype
 		int newflags = bridgeMethod.getAccessFlags() | 0x00000040;/* BRIDGE = 0x00000040 */
 		if ((newflags & 0x00000100) != 0)
 			newflags = newflags - 0x100;/* NATIVE = 0x00000100 - need to clear it */
@@ -883,16 +883,16 @@ class BcelClassWeaver implements IClassWeaver {
 					if (annotationsToAdd != null) {
 						Method oldMethod = mg.getMethod();
 						MethodGen myGen = new MethodGen(oldMethod, clazz.getClassName(), clazz.getConstantPool(), false);// dont use
-																															// tags,
-																															// they
-																															// won't
-																															// get
-																															// repaired
-																															// like
-																															// for
-																															// woven
-																															// methods
-																															// .
+						// tags,
+						// they
+						// won't
+						// get
+						// repaired
+						// like
+						// for
+						// woven
+						// methods
+						// .
 						for (Iterator iter = annotationsToAdd.iterator(); iter.hasNext();) {
 							AnnotationGen a = (AnnotationGen) iter.next();
 							myGen.addAnnotation(a);
@@ -1186,8 +1186,8 @@ class BcelClassWeaver implements IClassWeaver {
 			unusedDecafs.addAll(decaFs);
 			for (int fieldCounter = 0; fieldCounter < fields.size(); fieldCounter++) {
 				BcelField aBcelField = (BcelField) fields.get(fieldCounter);// new
-																			// BcelField(clazz.getBcelObjectType(),fields[fieldCounter
-																			// ]);
+				// BcelField(clazz.getBcelObjectType(),fields[fieldCounter
+				// ]);
 				if (!aBcelField.getName().startsWith(NameMangler.PREFIX)) {
 					// Single first pass
 					List worthRetrying = new ArrayList();
@@ -1209,7 +1209,7 @@ class BcelClassWeaver implements IClassWeaver {
 								}
 
 								if (decaF.getAnnotationX().isRuntimeVisible()) { // isAnnotationWithRuntimeRetention(clazz.
-																					// getJavaClass(world))){
+									// getJavaClass(world))){
 									// if(decaF.getAnnotationTypeX().isAnnotationWithRuntimeRetention(world)){
 									// it should be runtime visible, so put it on the Field
 									// Annotation a = decaF.getAnnotationX().getBcelAnnotation();
@@ -1637,7 +1637,7 @@ class BcelClassWeaver implements IClassWeaver {
 				parttwo.append(InstructionFactory.createDup(1));
 				int slotForThis = synchronizedMethod.allocateLocal(classType);
 				parttwo.append(InstructionFactory.createStore(clazzType, slotForThis)); // ? should be the real type ? String or
-																						// something?
+				// something?
 				parttwo.append(InstructionFactory.MONITORENTER);
 
 				String fieldname = synchronizedMethod.getEnclosingClass().allocateField("class$");
@@ -2250,20 +2250,20 @@ class BcelClassWeaver implements IClassWeaver {
 		}
 	}
 
-	void addPerSingletonField(Member field) {
-		ObjectType aspectType = (ObjectType) BcelWorld.makeBcelType(field.getReturnType());
-		String aspectName = field.getReturnType().getName();
-
-		LazyMethodGen clinit = clazz.getStaticInitializer();
-		InstructionList setup = new InstructionList();
-		InstructionFactory fact = clazz.getFactory();
-
-		setup.append(fact.createNew(aspectType));
-		setup.append(InstructionFactory.createDup(1));
-		setup.append(fact.createInvoke(aspectName, "<init>", Type.VOID, new Type[0], Constants.INVOKESPECIAL));
-		setup.append(fact.createFieldAccess(aspectName, field.getName(), aspectType, Constants.PUTSTATIC));
-		clinit.getBody().insert(setup);
-	}
+	// void addPerSingletonField(Member field) {
+	// ObjectType aspectType = (ObjectType) BcelWorld.makeBcelType(field.getReturnType());
+	// String aspectName = field.getReturnType().getName();
+	//
+	// LazyMethodGen clinit = clazz.getStaticInitializer();
+	// InstructionList setup = new InstructionList();
+	// InstructionFactory fact = clazz.getFactory();
+	//
+	// setup.append(fact.createNew(aspectType));
+	// setup.append(InstructionFactory.createDup(1));
+	// setup.append(fact.createInvoke(aspectName, "<init>", Type.VOID, new Type[0], Constants.INVOKESPECIAL));
+	// setup.append(fact.createFieldAccess(aspectName, field.getName(), aspectType, Constants.PUTSTATIC));
+	// clinit.getBody().insert(setup);
+	// }
 
 	/**
 	 * Returns null if this is not a Java constructor, and then we won't weave into it at all
@@ -2777,7 +2777,7 @@ class BcelClassWeaver implements IClassWeaver {
 	private boolean match(BcelShadow shadow, List shadowAccumulator) {
 		// System.err.println("match: " + shadow);
 		if (captureLowLevelContext) { // duplicate blocks - one with context capture, one without, seems faster than multiple
-										// 'ifs()'
+			// 'ifs()'
 			ContextToken shadowMatchToken = CompilationAndWeavingContext.enteringPhase(
 					CompilationAndWeavingContext.MATCHING_SHADOW, shadow);
 			boolean isMatched = false;

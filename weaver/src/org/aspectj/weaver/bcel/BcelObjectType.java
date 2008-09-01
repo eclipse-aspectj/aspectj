@@ -275,7 +275,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 		if (typeVars == null) {
 			Signature.ClassSignature classSig = getGenericClassTypeSignature();// cachedGenericClassTypeSignature;//javaClass.
-																				// getGenericClassTypeSignature();
+			// getGenericClassTypeSignature();
 			typeVars = new TypeVariable[classSig.formalTypeParameters.length];
 			for (int i = 0; i < typeVars.length; i++) {
 				Signature.FormalTypeParameter ftp = classSig.formalTypeParameters[i];
