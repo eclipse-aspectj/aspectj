@@ -655,6 +655,19 @@ public class FileUtil {
 	}
 
 	/**
+	 * Recursively list .class files in specified directory
+	 * 
+	 * @return List of File objects
+	 */
+	public static List listClassFiles(File dir) {
+		ArrayList result = new ArrayList();
+		if ((null != dir) && dir.canRead()) {
+			listClassFiles(dir, result);
+		}
+		return result;
+	}
+
+	/**
 	 * Convert String[] paths to File[] as offset of base directory
 	 * 
 	 * @param basedir the non-null File base directory for File to create with paths
@@ -1280,6 +1293,20 @@ public class FileUtil {
 			}
 		}
 		return LangUtil.sleepUntil(++delayUntil);
+	}
+
+	private static void listClassFiles(final File baseDir, ArrayList result) {
+		File[] files = baseDir.listFiles();
+		for (int i = 0; i < files.length; i++) {
+			File f = files[i];
+			if (f.isDirectory()) {
+				listClassFiles(f, result);
+			} else {
+				if (f.getName().endsWith(".class")) {
+					result.add(f);
+				}
+			}
+		}
 	}
 
 	private static void listFiles(final File baseDir, ArrayList result, FileFilter filter) {
