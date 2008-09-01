@@ -65,10 +65,6 @@ public class AjState implements CompilerConfigurationChangeFlags {
 
 	public static boolean FORCE_INCREMENTAL_DURING_TESTING = false;
 
-	// if set to true we will not do a full build if we see a type changed on our classpath
-	// but no type in this state instance references it
-	public static boolean IGNORE_NON_REFERENCED_TYPES = true;
-
 	private AjBuildManager buildManager;
 	private boolean couldBeSubsequentIncrementalBuild = false;
 	private INameEnvironment nameEnvironment;
@@ -263,14 +259,16 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			return false;
 		}
 
-		if (simpleStrings.elementSize > 20)
+		if (simpleStrings.elementSize > 20) {
 			simpleStrings = new StringSet(3);
-		else
+		} else {
 			simpleStrings.clear();
-		if (qualifiedStrings.elementSize > 20)
+		}
+		if (qualifiedStrings.elementSize > 20) {
 			qualifiedStrings = new StringSet(3);
-		else
+		} else {
 			qualifiedStrings.clear();
+		}
 
 		if ((newBuildConfig.getChanged() & PROJECTSOURCEFILES_CHANGED) == 0) {
 			addedFiles = Collections.EMPTY_SET;
@@ -397,6 +395,12 @@ public class AjState implements CompilerConfigurationChangeFlags {
 
 	private static int MAX_AFFECTED_FILES_BEFORE_FULL_BUILD = 30;
 
+	public static final FileFilter classFileFilter = new FileFilter() {
+		public boolean accept(File pathname) {
+			return pathname.getName().endsWith(".class");
+		}
+	};
+
 	/**
 	 * Analyse .class files in the directory specified, if they have changed since the last successful build then see if we can
 	 * determine which source files in our project depend on the change. If we can then we can still do an incremental build, if we
@@ -404,9 +408,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * 
 	 */
 	private int classFileChangedInDirSinceLastBuildRequiringFullBuild(File dir) {
-		int defaultReply = (IGNORE_NON_REFERENCED_TYPES ? CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD
-				: CLASS_FILE_CHANGED_THAT_NEEDS_INCREMENTAL_BUILD);
-		// Is another AspectJ project building into that directory?
+		// Are we managing that output directory?
 		AjState state = IncrementalStateManager.findStateManagingOutputLocation(dir);
 		if (listenerDefined()) {
 			if (state != null) {
@@ -416,56 +418,45 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			}
 		}
 
-		File[] classFiles = FileUtil.listFiles(dir, new FileFilter() {
-			public boolean accept(File pathname) {
-				return pathname.getName().endsWith(".class");
-			}
-		});
+		List classFiles = FileUtil.listClassFiles(dir);
 
-		for (int i = 0; i < classFiles.length; i++) {
-			long modTime = classFiles[i].lastModified();
+		for (Iterator iterator = classFiles.iterator(); iterator.hasNext();) {
+			File classFile = (File) iterator.next();
+			long modTime = classFile.lastModified();
 			if ((modTime + 1000) >= lastSuccessfulBuildTime) {
-				// so the class on disk has changed since our last successful build
+				// so the class on disk has changed since the last successful build for this state object
+
+				// BUG? we stop on the first change that leads us to an incremental build, surely we need to continue and look
+				// at all files incase another change means we need to incremental a bit more stuff?
 
 				// To work out if it is a real change we should ask any state
-				// object managing this output location whether the file has
+				// object managing the output location whether the file has
 				// structurally changed or not
 				if (state != null) {
-					if (state.isAspect(classFiles[i])) {
+					if (state.isAspect(classFile)) {
 						return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
 					}
-					if (state.hasStructuralChangedSince(classFiles[i], lastSuccessfulBuildTime)) {
-						if (listenerDefined())
-							getListener().recordDecision("Structural change detected in : " + classFiles[i]);
+					if (state.hasStructuralChangedSince(classFile, lastSuccessfulBuildTime)) {
+						if (listenerDefined()) {
+							getListener().recordDecision("Structural change detected in : " + classFile);
+						}
 
-						if (!IGNORE_NON_REFERENCED_TYPES || isTypeWeReferTo(classFiles[i])) {
+						if (isTypeWeReferTo(classFile)) {
 							if (affectedFiles.size() > MAX_AFFECTED_FILES_BEFORE_FULL_BUILD)
 								return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
 						}
 					} else {
 						if (listenerDefined())
-							getListener().recordDecision("Change detected in " + classFiles[i] + " but it is not structural");
+							getListener().recordDecision("Change detected in " + classFile + " but it is not structural");
 					}
-					// Is the change in a type that any of our source files care about? and if it is, is it
-					// a structural change?
-					// if (!IGNORE_NON_REFERENCED_TYPES || isTypeWeReferTo(classFiles[i])) {
-					// if (affectedFiles.size() > MAX_AFFECTED_FILES_BEFORE_FULL_BUILD)
-					// return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
-					// if (state.hasStructuralChangedSince(classFiles[i], lastSuccessfulBuildTime))
-					// return defaultReply;
-					// }
 				} else {
 					// No state object to ask, so it only matters if we know which type depends on this file
-					if (!IGNORE_NON_REFERENCED_TYPES) {
-						return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
+					if (isTypeWeReferTo(classFile)) {
+						if (affectedFiles.size() > MAX_AFFECTED_FILES_BEFORE_FULL_BUILD)
+							return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
+						return CLASS_FILE_CHANGED_THAT_NEEDS_INCREMENTAL_BUILD;
 					} else {
-						if (isTypeWeReferTo(classFiles[i])) {
-							if (affectedFiles.size() > MAX_AFFECTED_FILES_BEFORE_FULL_BUILD)
-								return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
-							return CLASS_FILE_CHANGED_THAT_NEEDS_INCREMENTAL_BUILD;
-						} else {
-							return CLASS_FILE_NO_CHANGES;
-						}
+						return CLASS_FILE_NO_CHANGES;
 					}
 				}
 			}
@@ -684,7 +675,6 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	private boolean pathChange(AjBuildConfig previousConfig, AjBuildConfig newConfig) {
 		int changes = newConfig.getChanged();
 
-		// currently very coarse grained
 		if ((changes & (CLASSPATH_CHANGED | ASPECTPATH_CHANGED | INPATH_CHANGED | OUTPUTDESTINATIONS_CHANGED | INJARS_CHANGED)) != 0) {
 			List oldOutputLocs = getOutputLocations(previousConfig);
 
@@ -758,10 +748,12 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * @return true if a change is detected that requires a full build
 	 */
 	private boolean changedAndNeedsFullBuild(List oldPath, List newPath, boolean checkClassFiles, List outputLocs) {
-		if (oldPath == null)
+		if (oldPath == null) {
 			oldPath = new ArrayList();
-		if (newPath == null)
+		}
+		if (newPath == null) {
 			newPath = new ArrayList();
+		}
 		if (oldPath.size() != newPath.size()) {
 			return true;
 		}
@@ -781,6 +773,12 @@ public class AjState implements CompilerConfigurationChangeFlags {
 				return true;
 			}
 			if (checkClassFiles && f.exists() && f.isDirectory()) {
+
+				// We should use here a list/set of directories we know have or have not changed - some kind of
+				// List<File> buildConfig.getClasspathEntriesWithChangedContents()
+				// and then only proceed to look inside directories if it is one of these, ignoring others -
+				// that should save a massive amount of processing for incremental builds in a multi project scenario
+
 				boolean foundMatch = false;
 				for (Iterator iterator = outputLocs.iterator(); iterator.hasNext();) {
 					File dir = (File) iterator.next();
