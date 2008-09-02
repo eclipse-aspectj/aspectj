@@ -158,4 +158,8 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 		return ICompilerConfiguration.EVERYTHING;
 	}
 
+	public List getClasspathElementsWithModifiedContents() {
+		return null;
+	}
+
 }
