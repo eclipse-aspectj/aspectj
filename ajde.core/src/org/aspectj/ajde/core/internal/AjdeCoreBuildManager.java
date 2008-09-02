@@ -115,6 +115,7 @@ public class AjdeCoreBuildManager {
 					buildConfig = ajBuildManager.getState().getBuildConfig();
 					buildConfig.setChanged(changes); // pass it through for the state to use it when making decisions
 					buildConfig.setModifiedFiles(compilerConfig.getProjectSourceFilesChanged());
+					buildConfig.setClasspathElementsWithModifiedContents(compilerConfig.getClasspathElementsWithModifiedContents());
 					compilerConfig.configurationRead();
 				}
 				ajBuildManager.incrementalBuild(buildConfig, msgHandlerAdapter);
