@@ -356,6 +356,11 @@ class MyCompilerConfig implements ICompilerConfiguration {
 	public int getConfigurationChanges() {
 		return ICompilerConfiguration.EVERYTHING;
 	}
+
+	public List getClasspathElementsWithModifiedContents() {
+		return null;
+	}
+
 }
 
 class MyOutputLocationManager implements IOutputLocationManager {
@@ -379,5 +384,4 @@ class MyOutputLocationManager implements IOutputLocationManager {
 	public String getUniqueIdentifier() {
 		return null;
 	}
-
 }
