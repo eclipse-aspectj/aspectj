@@ -106,4 +106,16 @@ public interface ICompilerConfiguration extends CompilerConfigurationChangeFlags
 	 */
 	public void configurationRead();
 
+	/**
+	 * Return a List (Strings) of the directory elements on the classpath that are likely to contain modified .class files since the
+	 * previous build and must be checked. This would be used in the situation where a project has a dependency on another project
+	 * and the dependency is captured by inclusion of one project on the classpath for the other. When the first project is built,
+	 * we need to check the classpath element on the second projects classpath that represents the bin folder of the first project.
+	 * By explicitly returning a list here we can avoid checking EVERYTHING.
+	 * 
+	 * @return a list of modified elements that should be checked (can be empty) or null if unknown (and in which case every
+	 *         classpath element will be checked)
+	 */
+	public List getClasspathElementsWithModifiedContents();
+
 }
