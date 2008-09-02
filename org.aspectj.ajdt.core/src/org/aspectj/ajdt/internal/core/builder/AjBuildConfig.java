@@ -54,6 +54,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	private List/* File */aspectpath = new ArrayList();
 	private List/* String */classpath = new ArrayList();
 	private List/* String */bootclasspath = new ArrayList();
+	private List/* String */cpElementsWithModifiedContents = new ArrayList();
 
 	private File configFile;
 	private String lintMode = AJLINT_DEFAULT;
@@ -658,5 +659,13 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 
 	public List getModifiedFiles() {
 		return this.changedFiles;
+	}
+
+	public void setClasspathElementsWithModifiedContents(List cpElementsWithModifiedContents) {
+		this.cpElementsWithModifiedContents = cpElementsWithModifiedContents;
+	}
+
+	public List getClasspathElementsWithModifiedContents() {
+		return this.cpElementsWithModifiedContents;
 	}
 }
