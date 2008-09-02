@@ -102,4 +102,8 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 
 	public void configurationRead() {
 	}
+
+	public List getClasspathElementsWithModifiedContents() {
+		return null;
+	}
 }
