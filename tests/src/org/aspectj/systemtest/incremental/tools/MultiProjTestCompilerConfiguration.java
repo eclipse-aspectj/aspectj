@@ -39,6 +39,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 	private String outjar;
 	private String nonstandardoptions;
 	private List modifiedFiles;
+	private List modifiedDirs;
 	private List projectSourceFiles = new ArrayList();
 	private String projectPath;
 
@@ -182,6 +183,15 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		}
 	}
 
+	public void addClasspathEntryChanged(String f) {
+		if (this.modifiedDirs == null) {
+			this.modifiedDirs = new ArrayList();
+		}
+		if (f != null) {
+			modifiedDirs.add(f);
+		}
+	}
+
 	public void setSourcePathResources(Map sourcePathResources) {
 		this.sourcePathResources = sourcePathResources;
 		this.changed |= ICompilerConfiguration.PROJECTSOURCERESOURCES_CHANGED;
@@ -204,6 +214,11 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 	public void configurationRead() {
 		changed = NO_CHANGES;
 		modifiedFiles = null;
+		modifiedDirs = null;
+	}
+
+	public List getClasspathElementsWithModifiedContents() {
+		return modifiedDirs;
 	}
 
 }
