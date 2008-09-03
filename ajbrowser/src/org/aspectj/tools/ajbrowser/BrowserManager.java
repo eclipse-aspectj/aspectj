@@ -60,17 +60,17 @@ public class BrowserManager {
 	private static final BrowserManager INSTANCE = new BrowserManager();
 	private EditorManager editorManager;
 	private UserPreferencesAdapter preferencesAdapter;
-    private static TopFrame topFrame = null;
+	private static TopFrame topFrame = null;
 
-    private List configFiles = new ArrayList();
+	private List configFiles = new ArrayList();
 	private JavaBuildOptions javaBuildOptions;
-	
+
 	public static BrowserManager getDefault() {
 		return INSTANCE;
 	}
-    
+
 	public final IHierarchyListener VIEW_LISTENER = new IHierarchyListener() {
-		public void elementsUpdated(IHierarchy model) {        	
+		public void elementsUpdated(IHierarchy model) {
 			FileStructureView fsv = Ajde.getDefault().getStructureViewManager().getDefaultFileView();
 			if (fsv != null) {
 				fsv.setSourceFile(BrowserManager.getDefault().getEditorManager().getCurrFile());
@@ -86,19 +86,12 @@ public class BrowserManager {
 
 			BasicEditor ajdeEditor = new BasicEditor();
 			editorManager = new EditorManager(ajdeEditor);
-			
+
 			BrowserMessageHandler messageHandler = new BrowserMessageHandler();
-			
-			Ajde.getDefault().init(
-					new BrowserCompilerConfiguration(preferencesAdapter),
-					messageHandler,
-					new BrowserBuildProgressMonitor(messageHandler),
-					ajdeEditor, 
-					new BrowserUIAdapter(), 
-					new IconRegistry(), 
-					topFrame,
-					new BrowserRuntimeProperties(preferencesAdapter),
-					true);
+
+			Ajde.getDefault().init(new BrowserCompilerConfiguration(preferencesAdapter), messageHandler,
+					new BrowserBuildProgressMonitor(messageHandler), ajdeEditor, new BrowserUIAdapter(), new IconRegistry(),
+					topFrame, new BrowserRuntimeProperties(preferencesAdapter), true);
 
 			setUpTopFrame(visible);
 			addOptionsPanels();
@@ -115,57 +108,54 @@ public class BrowserManager {
 
 	/**
 	 * Find and create the set of build configuration files
+	 * 
 	 * @param configFilesArgs
 	 */
 	private void setUpConfigFiles(String[] configFilesArgs) {
 		configFiles = getConfigFilesList(configFilesArgs);
 		if (configFiles.size() == 0) {
-			BrowserErrorHandler
-					.handleWarning("No build configuration selected. "
-							+ "Select a \".lst\" build configuration file in order to compile and navigate structure.");
+			BrowserErrorHandler.handleWarning("No build configuration selected. "
+					+ "Select a \".lst\" build configuration file in order to compile and navigate structure.");
 		} else {
-			Ajde.getDefault().getBuildConfigManager().setActiveConfigFile(
-					(String)configFiles.get(0));
-		}	
+			Ajde.getDefault().getBuildConfigManager().setActiveConfigFile((String) configFiles.get(0));
+		}
 	}
 
 	/**
 	 * Create the top frame of the browser
 	 */
 	private void setUpTopFrame(boolean visible) {
-		MultiStructureViewPanel multiViewPanel = new MultiStructureViewPanel(
-				Ajde.getDefault().getViewManager()
-						.getBrowserPanel(), Ajde.getDefault()
-						.getFileStructurePanel());
+		MultiStructureViewPanel multiViewPanel = new MultiStructureViewPanel(Ajde.getDefault().getViewManager().getBrowserPanel(),
+				Ajde.getDefault().getFileStructurePanel());
 
-		topFrame.init(multiViewPanel, new MessageHandlerPanel(), 
-				editorManager.getEditorPanel());
+		topFrame.init(multiViewPanel, new MessageHandlerPanel(), editorManager.getEditorPanel());
 
 		if (visible)
 			topFrame.setVisible(true);
 	}
 
-    public void resetEditorFrame() {
-        topFrame.resetSourceEditorPanel();
-    }
+	public void resetEditorFrame() {
+		topFrame.resetSourceEditorPanel();
+	}
 
 	public void resetEditor() {
-        BrowserManager.getDefault().getRootFrame().setSize(BrowserManager.getDefault().getRootFrame().getWidth()+1, BrowserManager.getDefault().getRootFrame().getHeight()+1);
-        BrowserManager.getDefault().getRootFrame().doLayout();
-        BrowserManager.getDefault().getRootFrame().repaint();
-    }
+		BrowserManager.getDefault().getRootFrame().setSize(BrowserManager.getDefault().getRootFrame().getWidth() + 1,
+				BrowserManager.getDefault().getRootFrame().getHeight() + 1);
+		BrowserManager.getDefault().getRootFrame().doLayout();
+		BrowserManager.getDefault().getRootFrame().repaint();
+	}
 
-    public void setStatusInformation(String text) {
-        topFrame.statusText_label.setText(text);
-    }
+	public void setStatusInformation(String text) {
+		topFrame.statusText_label.setText(text);
+	}
 
-    public void setEditorStatusText(String text) {
-        topFrame.setTitle(BrowserManager.TITLE + " - " + text);
-    }
+	public void setEditorStatusText(String text) {
+		topFrame.setTitle(BrowserManager.TITLE + " - " + text);
+	}
 
-    public void saveAll() {
-        editorManager.saveContents();
-    }
+	public void saveAll() {
+		editorManager.saveContents();
+	}
 
 	public JFrame getRootFrame() {
 		return topFrame;
@@ -176,17 +166,14 @@ public class BrowserManager {
 			if (filePath.endsWith(".lst")) {
 				Ajde.getDefault().getBuildConfigEditor().openFile(filePath);
 				topFrame.setEditorPanel(Ajde.getDefault().getBuildConfigEditor());
-			} else if (FileUtil.hasSourceSuffix(filePath)){
-				editorManager.showSourceLine(filePath, 0, false);		
+			} else if (FileUtil.hasSourceSuffix(filePath)) {
+				editorManager.showSourceLine(filePath, 0, false);
 			} else {
-				BrowserErrorHandler
-						.handleError("File: "
-								+ filePath
-								+ " could not be opened because the extension was not recoginzed.");
+				BrowserErrorHandler.handleError("File: " + filePath
+						+ " could not be opened because the extension was not recoginzed.");
 			}
 		} catch (IOException ioe) {
-			BrowserErrorHandler.handleError("Could not open file: "
-					+ filePath, ioe);
+			BrowserErrorHandler.handleError("Could not open file: " + filePath, ioe);
 		} catch (InvalidResourceException ire) {
 			BrowserErrorHandler.handleError("Invalid file: " + filePath, ire);
 		}
@@ -195,30 +182,23 @@ public class BrowserManager {
 	private List getConfigFilesList(String[] configFiles) {
 		List configs = new ArrayList();
 		for (int i = 0; i < configFiles.length; i++) {
-            if (configFiles[i].endsWith(BuildConfigManager.CONFIG_FILE_SUFFIX)) {
-                configs.add(configFiles[i]);
-            }
-        }
-        return configs;
+			if (configFiles[i].endsWith(BuildConfigManager.CONFIG_FILE_SUFFIX)) {
+				configs.add(configFiles[i]);
+			}
+		}
+		return configs;
 	}
-	
+
 	/**
-	 * Add the different options panels to the main options frame
-	 * (adds panels for java compliance, compiler warnings, debug
-	 * warnings, other java options and options specific to 
-	 * ajbrowser)
+	 * Add the different options panels to the main options frame (adds panels for java compliance, compiler warnings, debug
+	 * warnings, other java options and options specific to ajbrowser)
 	 */
 	private void addOptionsPanels() {
-		Ajde.getDefault().getOptionsFrame().addOptionsPanel(
-				new JavaComplianceOptionsPanel(javaBuildOptions));
-		Ajde.getDefault().getOptionsFrame().addOptionsPanel(
-				new JavaCompilerWarningsOptionsPanel(javaBuildOptions));
-		Ajde.getDefault().getOptionsFrame().addOptionsPanel(
-				new JavaOtherOptionsPanel(javaBuildOptions));
-		Ajde.getDefault().getOptionsFrame().addOptionsPanel(
-				new JavaDebugOptionsPanel(javaBuildOptions));
-		Ajde.getDefault().getOptionsFrame().addOptionsPanel(
-				new BrowserOptionsPanel());		
+		Ajde.getDefault().getOptionsFrame().addOptionsPanel(new JavaComplianceOptionsPanel(javaBuildOptions));
+		Ajde.getDefault().getOptionsFrame().addOptionsPanel(new JavaCompilerWarningsOptionsPanel(javaBuildOptions));
+		Ajde.getDefault().getOptionsFrame().addOptionsPanel(new JavaOtherOptionsPanel(javaBuildOptions));
+		Ajde.getDefault().getOptionsFrame().addOptionsPanel(new JavaDebugOptionsPanel(javaBuildOptions));
+		Ajde.getDefault().getOptionsFrame().addOptionsPanel(new BrowserOptionsPanel());
 	}
 
 	/**
@@ -227,9 +207,9 @@ public class BrowserManager {
 	public EditorManager getEditorManager() {
 		return editorManager;
 	}
-	
+
 	/**
-	 * @return the UserPreferencesAdapter 
+	 * @return the UserPreferencesAdapter
 	 */
 	public UserPreferencesAdapter getPreferencesAdapter() {
 		return preferencesAdapter;
