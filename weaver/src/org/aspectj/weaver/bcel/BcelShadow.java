@@ -642,11 +642,7 @@ public class BcelShadow extends Shadow {
 	}
 
 	public static BcelShadow makeMethodExecution(BcelWorld world, LazyMethodGen enclosingMethod) {
-		return makeShadowForMethod(world, enclosingMethod, MethodExecution, enclosingMethod.getMemberView()); // world.
-																												// makeMethodSignature
-																												// (
-																												// enclosingMethod))
-																												// ;
+		return makeShadowForMethod(world, enclosingMethod, MethodExecution, enclosingMethod.getMemberView());
 	}
 
 	public static BcelShadow makeShadowForMethod(BcelWorld world, LazyMethodGen enclosingMethod, Shadow.Kind kind, Member sig) {
@@ -857,6 +853,7 @@ public class BcelShadow extends Shadow {
 	private Map/* <UnresolvedType,BcelVar> */[] argAnnotationVars = null;
 	private Map/* <UnresolvedType,BcelVar> */withinAnnotationVars = null;
 	private Map/* <UnresolvedType,BcelVar> */withincodeAnnotationVars = null;
+	private boolean allArgVarsInitialized = false;
 
 	public Var getThisVar() {
 		if (!hasThis()) {
@@ -899,7 +896,7 @@ public class BcelShadow extends Shadow {
 	}
 
 	public Var getArgVar(int i) {
-		initializeArgVars();
+		ensureInitializedArgVar(i);
 		return argVars[i];
 	}
 
@@ -1210,8 +1207,8 @@ public class BcelShadow extends Shadow {
 			// Lets go back through the code from the start of the shadow
 			InstructionHandle searchPtr = range.getStart().getPrev();
 			while (Range.isRangeHandle(searchPtr) || searchPtr.getInstruction().isStoreInstruction()) { // ignore this instruction -
-																										// it doesnt give us the
-																										// info we want
+				// it doesnt give us the
+				// info we want
 				searchPtr = searchPtr.getPrev();
 			}
 
@@ -1248,12 +1245,68 @@ public class BcelShadow extends Shadow {
 		return tx;
 	}
 
-	public void initializeArgVars() {
-		if (argVars != null)
+	public void ensureInitializedArgVar(int argNumber) {
+		if (allArgVarsInitialized || (argVars != null && argVars[argNumber] != null)) {
 			return;
+		}
 		InstructionFactory fact = getFactory();
 		int len = getArgCount();
-		argVars = new BcelVar[len];
+		if (argVars == null) {
+			argVars = new BcelVar[len];
+		}
+
+		// Need to initialize argument i
+		int positionOffset = (hasTarget() ? 1 : 0) + ((hasThis() && !getKind().isTargetSameAsThis()) ? 1 : 0);
+
+		if (getKind().argsOnStack()) {
+			// Let's just do them all now since they are on the stack
+			// we move backwards because we're popping off the stack
+			for (int i = len - 1; i >= 0; i--) {
+				UnresolvedType type = getArgType(i);
+				BcelVar tmp = genTempVar(type, "ajc$arg" + i);
+				range.insert(tmp.createStore(getFactory()), Range.OutsideBefore);
+				int position = i;
+				position += positionOffset;
+				tmp.setPositionInAroundState(position);
+				argVars[i] = tmp;
+			}
+			allArgVarsInitialized = true;
+		} else {
+			int index = 0;
+			if (arg0HoldsThis()) {
+				index++;
+			}
+			boolean allInited = true;
+			for (int i = 0; i < len; i++) {
+				UnresolvedType type = getArgType(i);
+				if (i == argNumber) {
+					argVars[argNumber] = genTempVar(type, "ajc$arg" + argNumber);
+					range.insert(argVars[argNumber].createCopyFrom(fact, index), Range.OutsideBefore);
+					argVars[argNumber].setPositionInAroundState(argNumber + positionOffset);
+				}
+				allInited = allInited && argVars[i] != null;
+				index += type.getSize();
+			}
+			if (allInited && (argNumber + 1) == len) {
+				allArgVarsInitialized = true;
+			}
+		}
+	}
+
+	/**
+	 * Initialize all the available arguments at the shadow. This means creating a copy of them that we can then use for advice
+	 * calls (the copy ensures we are not affected by other advice changing the values). This method initializes all arguments
+	 * whereas the method ensureInitializedArgVar will only ensure a single argument is setup.
+	 */
+	public void initializeArgVars() {
+		if (allArgVarsInitialized) {
+			return;
+		}
+		InstructionFactory fact = getFactory();
+		int len = getArgCount();
+		if (argVars == null) {
+			argVars = new BcelVar[len];
+		}
 		int positionOffset = (hasTarget() ? 1 : 0) + ((hasThis() && !getKind().isTargetSameAsThis()) ? 1 : 0);
 
 		if (getKind().argsOnStack()) {
@@ -1269,22 +1322,23 @@ public class BcelShadow extends Shadow {
 			}
 		} else {
 			int index = 0;
-			if (arg0HoldsThis())
+			if (arg0HoldsThis()) {
 				index++;
+			}
 
 			for (int i = 0; i < len; i++) {
 				UnresolvedType type = getArgType(i);
-				BcelVar tmp = genTempVar(type, "ajc$arg" + i);
-				range.insert(tmp.createCopyFrom(fact, index), Range.OutsideBefore);
-				argVars[i] = tmp;
-				int position = i;
-				position += positionOffset;
-				// System.out.println("set position: " + tmp + ", " + position + " in " + this);
-				// System.out.println("   hasThis: " + hasThis() + ", hasTarget: " + hasTarget());
-				tmp.setPositionInAroundState(position);
+				if (argVars[i] == null) {
+					BcelVar tmp = genTempVar(type, "ajc$arg" + i);
+					range.insert(tmp.createCopyFrom(fact, index), Range.OutsideBefore);
+					argVars[i] = tmp;
+					tmp.setPositionInAroundState(i + positionOffset);
+				}
 				index += type.getSize();
 			}
 		}
+		allArgVarsInitialized = true;
+
 	}
 
 	public void initializeForAroundClosure() {
@@ -1313,8 +1367,8 @@ public class BcelShadow extends Shadow {
 		} else {
 			targetAnnotationVars = new HashMap();
 			ResolvedType[] rtx = this.getTargetType().resolve(world).getAnnotationTypes(); // what about annotations we havent
-																							// gotten yet but we will get in
-																							// subclasses?
+			// gotten yet but we will get in
+			// subclasses?
 			for (int i = 0; i < rtx.length; i++) {
 				ResolvedType typeX = rtx[i];
 				targetAnnotationVars.put(typeX, new TypeAnnotationAccessVar(typeX, (BcelVar) getTargetVar()));
@@ -2105,7 +2159,7 @@ public class BcelShadow extends Shadow {
 		Type[] adviceParameterTypes = BcelWorld.makeBcelTypes(munger.getSignature().getParameterTypes());
 		// adviceMethod.getArgumentTypes();
 		adviceMethod.getArgumentTypes(); // forces initialization ... dont like this but seems to be required for some tests to
-											// pass, I think that means
+		// pass, I think that means
 		// there is a LazyMethodGen method that is not correctly setup to call initialize() when it is invoked - but I dont have
 		// time right now to discover which
 		Type[] extractedMethodParameterTypes = extractedMethod.getArgumentTypes();
