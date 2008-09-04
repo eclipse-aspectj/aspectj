@@ -18,7 +18,8 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
-	// AspectJ1.6.2	
+	// AspectJ1.6.2	 
+	public void testAnnoValueBinding_pr246264() { runTest("anno value binding"); }
 	public void testAroundAdviceProceed_pr211607() { runTest("around advice proceed"); }
 //	public void testAdvisingInterfaces_pr163005() { runTest("advising joinpoints in interfaces"); }
 	public void testChainedItds_pr176905() { runTest("chained itds"); }

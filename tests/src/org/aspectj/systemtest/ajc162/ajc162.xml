@@ -3,6 +3,11 @@
 <!-- AspectJ v1.6.2 Tests -->
 <suite>
 	
+   <ajc-test dir="bugs162/pr246264" title="anno value binding">
+     <compile options="-1.5" files="A.java"/>
+     <run class="A"/>
+   </ajc-test>
+   
    <ajc-test dir="bugs162/pr211607" title="around advice proceed">
      <compile options="-1.5" files="Bug.java"/>
      <run class="Bug"/>
