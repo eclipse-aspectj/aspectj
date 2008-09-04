@@ -10,16 +10,15 @@
  *******************************************************************/
 package org.aspectj.asm.internal;
 
-
 /**
  * Taken from org.aspectj.org.eclipse.jdt.core.compiler.CharOperation
- *
+ * 
  */
 public class CharOperation {
-	
+
 	/**
 	 * Taken from org.aspectj.org.eclipse.jdt.core.compiler.CharOperation
-	 */	
+	 */
 	public static final char[] subarray(char[] array, int start, int end) {
 		if (end == -1)
 			end = array.length;
@@ -34,40 +33,30 @@ public class CharOperation {
 		System.arraycopy(array, start, result, 0, end - start);
 		return result;
 	}
-	
+
 	/**
 	 * Taken from org.aspectj.org.eclipse.jdt.core.compiler.CharOperation
-	 */	
+	 */
 	public static final int lastIndexOf(char toBeFound, char[] array) {
 		for (int i = array.length; --i >= 0;)
 			if (toBeFound == array[i])
 				return i;
 		return -1;
 	}
-	
-//	/**
-//	 * Taken from org.aspectj.org.eclipse.jdt.core.compiler.CharOperation
-//	 */	
-//	public static final boolean contains(char character, char[] array) {
-//		for (int i = array.length; --i >= 0;)
-//			if (array[i] == character)
-//				return true;
-//		return false;
-//	}
 
 	/**
 	 * Taken from org.aspectj.org.eclipse.jdt.core.compiler.CharOperation
-	 */	
+	 */
 	public static final int indexOf(char toBeFound, char[] array) {
 		for (int i = 0; i < array.length; i++)
 			if (toBeFound == array[i])
 				return i;
 		return -1;
 	}
-	
+
 	/**
 	 * Taken from org.aspectj.org.eclipse.jdt.core.compiler.CharOperation
-	 */	
+	 */
 	public static final char[] concat(char[] first, char[] second) {
 		if (first == null)
 			return second;
@@ -81,10 +70,10 @@ public class CharOperation {
 		System.arraycopy(second, 0, result, length1, length2);
 		return result;
 	}
-	
+
 	/**
 	 * Taken from org.aspectj.org.eclipse.jdt.core.compiler.CharOperation
-	 */	
+	 */
 	public static final boolean equals(char[] first, char[] second) {
 		if (first == second)
 			return true;
@@ -98,14 +87,11 @@ public class CharOperation {
 				return false;
 		return true;
 	}
-	
+
 	/**
 	 * Taken from org.aspectj.org.eclipse.jdt.core.compiler.CharOperation
-	 */	
-	public static final void replace(
-		char[] array,
-		char toBeReplaced,
-		char replacementChar) {
+	 */
+	public static final void replace(char[] array, char toBeReplaced, char replacementChar) {
 		if (toBeReplaced != replacementChar) {
 			for (int i = 0, max = array.length; i < max; i++) {
 				if (array[i] == toBeReplaced)

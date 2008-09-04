@@ -50,23 +50,10 @@ import org.aspectj.bridge.ISourceLocation;
  */
 public class AsmManager {
 
-	/**
-	 * @deprecated use getDefault() method instead
-	 */
-	private static AsmManager INSTANCE = new AsmManager();
+	private static AsmManager instance = new AsmManager();
 
 	private IElementHandleProvider handleProvider;
 	private List structureListeners = new ArrayList();
-
-	// private boolean shouldSaveModel = true;
-
-	public void setRelationshipMap(IRelationshipMap irm) {
-		mapper = irm;
-	}
-
-	public void setHierarchy(IHierarchy ih) {
-		hierarchy = ih;
-	}
 
 	// The model is 'manipulated' by the AjBuildManager.setupModel() code which trashes all the
 	// fields when setting up a new model for a batch build.
@@ -90,6 +77,9 @@ public class AsmManager {
 	private static boolean reporting = false;
 
 	private static boolean completingTypeBindings = false;
+	private CanonicalFilePathMap canonicalFilePathMap = new CanonicalFilePathMap();
+	// Record the Set<File> for which the model has been modified during the last incremental build
+	private Set lastBuildChanges = new HashSet();
 
 	// static {
 	// setReporting("c:/model.nfo",true,true,true,true);
@@ -113,7 +103,7 @@ public class AsmManager {
 	}
 
 	public static AsmManager getDefault() {
-		return INSTANCE;
+		return instance;
 	}
 
 	public IRelationshipMap getRelationshipMap() {
@@ -207,9 +197,6 @@ public class AsmManager {
 		this.handleProvider = handleProvider;
 	}
 
-	/**
-	 * Fails silently.
-	 */
 	public void writeStructureModel(String configFilePath) {
 		try {
 			String filePath = genExternFilePath(configFilePath);
@@ -228,7 +215,6 @@ public class AsmManager {
 	}
 
 	/**
-	 * @todo add proper handling of bad paths/suffixes/etc
 	 * @param configFilePath path to an ".lst" file
 	 */
 	public void readStructureModel(String configFilePath) {
@@ -272,28 +258,9 @@ public class AsmManager {
 		return configFilePath + ".ajsym";
 	}
 
-	// public void setShouldSaveModel(boolean shouldSaveModel) {
-	// this.shouldSaveModel = shouldSaveModel;
-	// }
-
-	// ==== implementation of canonical file path map and accessors ==============
-
-	// a more sophisticated optimisation is left here commented out as the
-	// performance gains don't justify the disturbance this close to a release...
-	// can't call prepareForWeave until preparedForCompilation has completed...
-	// public synchronized void prepareForCompilation(List files) {
-	// canonicalFilePathMap.prepopulate(files);
-	// }
-	//	
-	// public synchronized void prepareForWeave() {
-	// canonicalFilePathMap.handover();
-	// }
-
 	public String getCanonicalFilePath(File f) {
 		return canonicalFilePathMap.get(f);
 	}
-
-	private CanonicalFilePathMap canonicalFilePathMap = new CanonicalFilePathMap();
 
 	private static class CanonicalFilePathMap {
 		private static final int MAX_SIZE = 4000;
@@ -558,6 +525,7 @@ public class AsmManager {
 					fw.write("Deleting " + progElem + " node for file " + fileForCompilation + "\n");
 				}
 				removeNode(progElem);
+				lastBuildChanges.add(fileForCompilation);
 				deletedNodes.add(getCanonicalFilePath(progElem.getSourceLocation().getSourceFile()));
 				if (!model.removeFromFileMap(correctedPath))
 					throw new RuntimeException("Whilst repairing model, couldn't remove entry for file: " + correctedPath
@@ -1167,6 +1135,25 @@ public class AsmManager {
 
 	public static boolean isCompletingTypeBindings() {
 		return completingTypeBindings;
+	}
+
+	public void setRelationshipMap(IRelationshipMap irm) {
+		mapper = irm;
+	}
+
+	public void setHierarchy(IHierarchy ih) {
+		hierarchy = ih;
+	}
+
+	public void resetDeltaProcessing() {
+		lastBuildChanges.clear();
+	}
+
+	/**
+	 * @return the Set of files for which the structure model was modified (they may have been removed or otherwise rebuilt)
+	 */
+	public Set getModelChangesOnLastBuild() {
+		return lastBuildChanges;
 	}
 
 }
