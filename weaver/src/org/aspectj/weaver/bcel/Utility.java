@@ -56,12 +56,53 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 public class Utility {
+
+	public static List readAjAttributes(String classname, Attribute[] as, ISourceContext context, World w,
+			AjAttribute.WeaverVersionInfo version) {
+		List l = new ArrayList();
+
+		// first pass, look for version
+		List forSecondPass = new ArrayList();
+		for (int i = as.length - 1; i >= 0; i--) {
+			Attribute a = as[i];
+			if (a instanceof Unknown) {
+				Unknown u = (Unknown) a;
+				String name = u.getName();
+				if (name.charAt(0) == 'o') { // 'o'rg.aspectj
+					if (name.startsWith(AjAttribute.AttributePrefix)) {
+						if (name.endsWith(WeaverVersionInfo.AttributeName)) {
+							version = (AjAttribute.WeaverVersionInfo) AjAttribute.read(version, name, u.getBytes(), context, w);
+							if (version.getMajorVersion() > WeaverVersionInfo.getCurrentWeaverMajorVersion()) {
+								throw new BCException(
+										"Unable to continue, this version of AspectJ supports classes built with weaver version "
+												+ WeaverVersionInfo.toCurrentVersionString() + " but the class " + classname
+												+ " is version " + version.toString());
+							}
+						}
+						forSecondPass.add(a);
+					}
+				}
+			}
+		}
+
+		for (int i = forSecondPass.size() - 1; i >= 0; i--) {
+			Unknown a = (Unknown) forSecondPass.get(i);
+			String name = a.getName();
+			AjAttribute attr = AjAttribute.read(version, name, a.getBytes(), context, w);
+			if (attr != null)
+				l.add(attr);
+		}
+		return l;
+	}
 
 	/*
 	 * Ensure we report a nice source location - particular in the case where the source info is missing (binary weave).

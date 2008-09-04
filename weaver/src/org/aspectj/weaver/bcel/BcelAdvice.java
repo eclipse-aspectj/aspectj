@@ -11,7 +11,6 @@
  *     Alexandre Vasseur    support for @AJ aspects
  * ******************************************************************/
 
-
 package org.aspectj.weaver.bcel;
 
 import java.lang.reflect.Modifier;
@@ -55,123 +54,120 @@ import org.aspectj.weaver.patterns.Pointcut;
  * @author Erik Hilsdale
  * @author Jim Hugunin
  */
-public class BcelAdvice extends Advice {
+class BcelAdvice extends Advice {
 	private Test pointcutTest;
 	private ExposedState exposedState;
-    
-    private boolean hasMatchedAtLeastOnce = false;
 
-	public BcelAdvice(
-		AjAttribute.AdviceAttribute attribute,
-		Pointcut pointcut,
-		Member signature,
-		ResolvedType concreteAspect) 
-	{
-		super(attribute, pointcut,shrink(attribute.getKind(),concreteAspect,signature));// (signature==null?null:signature.slimline()));
+	public BcelAdvice(AjAttribute.AdviceAttribute attribute, Pointcut pointcut, Member signature, ResolvedType concreteAspect) {
+		super(attribute, pointcut, shrink(attribute.getKind(), concreteAspect, signature));//(signature==null?null:signature.slimline
+		// ()));
 		this.concreteAspect = concreteAspect;
 	}
+
 	/**
-	 * We don't always need to represent the signature with a heavyweight BcelMethod object - only if its around advice
-	 * and inlining is active
-	 * @param concreteAspect 
-	 * @param attribute 
+	 * We don't always need to represent the signature with a heavyweight BcelMethod object - only if its around advice and inlining
+	 * is active
+	 * 
+	 * @param concreteAspect
+	 * @param attribute
 	 */
 	private static Member shrink(AdviceKind kind, ResolvedType concreteAspect, Member m) {
-		if (m==null) return null;
+		if (m == null)
+			return null;
 		UnresolvedType dType = m.getDeclaringType();
 		// if it isnt around advice or it is but inlining is turned off then shrink it to a ResolvedMemberImpl
-		if (kind != AdviceKind.Around ||
-			((dType instanceof ResolvedType) && ((ResolvedType)dType).getWorld().isXnoInline())) {
+		if (kind != AdviceKind.Around || ((dType instanceof ResolvedType) && ((ResolvedType) dType).getWorld().isXnoInline())) {
 			if (m instanceof BcelMethod) {
-				BcelMethod bm = (BcelMethod)m;
-				if (bm.getMethod()!=null && bm.getMethod().getAnnotations()!=null) return m;
-				ResolvedMemberImpl simplermember = new ResolvedMemberImpl(bm.getKind(),bm.getDeclaringType(),
-						                                       bm.getModifiers(),bm.getReturnType(),bm.getName(),
-						                                       bm.getParameterTypes());//,bm.getExceptions(),bm.getBackingGenericMember());
+				BcelMethod bm = (BcelMethod) m;
+				if (bm.getMethod() != null && bm.getMethod().getAnnotations() != null)
+					return m;
+				ResolvedMemberImpl simplermember = new ResolvedMemberImpl(bm.getKind(), bm.getDeclaringType(), bm.getModifiers(),
+						bm.getReturnType(), bm.getName(), bm.getParameterTypes());//,bm.getExceptions(),bm.getBackingGenericMember()
+				// );
 				simplermember.setParameterNames(bm.getParameterNames());
 				return simplermember;
 			}
 		}
 		return m;
 	}
+
 	/**
 	 * For testing only
 	 */
-	public BcelAdvice(AdviceKind kind, Pointcut pointcut, Member signature,
-		int extraArgumentFlags,
-        int start, int end, ISourceContext sourceContext, ResolvedType concreteAspect)
-    {
-		this(new AjAttribute.AdviceAttribute(kind, pointcut, extraArgumentFlags, start, end, sourceContext), 
-			pointcut, signature, concreteAspect);
-		thrownExceptions = Collections.EMPTY_LIST;  //!!! interaction with unit tests
+	public BcelAdvice(AdviceKind kind, Pointcut pointcut, Member signature, int extraArgumentFlags, int start, int end,
+			ISourceContext sourceContext, ResolvedType concreteAspect) {
+		this(new AjAttribute.AdviceAttribute(kind, pointcut, extraArgumentFlags, start, end, sourceContext), pointcut, signature,
+				concreteAspect);
+		thrownExceptions = Collections.EMPTY_LIST; // !!! interaction with unit tests
 	}
 
-    // ---- implementations of ShadowMunger's methods
-    
+	// ---- implementations of ShadowMunger's methods
+
 	public ShadowMunger concretize(ResolvedType fromType, World world, PerClause clause) {
 		suppressLintWarnings(world);
 		ShadowMunger ret = super.concretize(fromType, world, clause);
-		clearLintSuppressions(world,this.suppressedLintKinds);
+		clearLintSuppressions(world, this.suppressedLintKinds);
 		IfFinder ifinder = new IfFinder();
-		ret.getPointcut().accept(ifinder,null);
+		ret.getPointcut().accept(ifinder, null);
 		boolean hasGuardTest = ifinder.hasIf && getKind() != AdviceKind.Around;
 		boolean isAround = getKind() == AdviceKind.Around;
 		if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
-		  if (!isAround && !hasGuardTest && world.getLint().noGuardForLazyTjp.isEnabled()) {
-			// can't build tjp lazily, no suitable test...
-			// ... only want to record it once against the advice(bug 133117)
-			world.getLint().noGuardForLazyTjp.signal("",getSourceLocation());	
-		  }
+			if (!isAround && !hasGuardTest && world.getLint().noGuardForLazyTjp.isEnabled()) {
+				// can't build tjp lazily, no suitable test...
+				// ... only want to record it once against the advice(bug 133117)
+				world.getLint().noGuardForLazyTjp.signal("", getSourceLocation());
+			}
 		}
 		return ret;
 	}
-	
-	public ShadowMunger parameterizeWith(ResolvedType declaringType,Map typeVariableMap) {
-		Pointcut pc = getPointcut().parameterizeWith(typeVariableMap,declaringType.getWorld());
-		
+
+	public ShadowMunger parameterizeWith(ResolvedType declaringType, Map typeVariableMap) {
+		Pointcut pc = getPointcut().parameterizeWith(typeVariableMap, declaringType.getWorld());
+
 		BcelAdvice ret = null;
-		Member adviceSignature = signature;		
+		Member adviceSignature = signature;
 		// allows for around advice where the return value is a type variable (see pr115250)
 		if (signature instanceof ResolvedMember && signature.getDeclaringType().isGenericType()) {
-			adviceSignature = ((ResolvedMember)signature).parameterizedWith(declaringType.getTypeParameters(),declaringType,declaringType.isParameterizedType());
+			adviceSignature = ((ResolvedMember) signature).parameterizedWith(declaringType.getTypeParameters(), declaringType,
+					declaringType.isParameterizedType());
 		}
-		ret = new BcelAdvice(this.attribute,pc,adviceSignature,this.concreteAspect);
+		ret = new BcelAdvice(this.attribute, pc, adviceSignature, this.concreteAspect);
 		return ret;
 	}
-	
+
 	public boolean match(Shadow shadow, World world) {
 		suppressLintWarnings(world);
 		boolean ret = super.match(shadow, world);
-		clearLintSuppressions(world,this.suppressedLintKinds);
+		clearLintSuppressions(world, this.suppressedLintKinds);
 		return ret;
 	}
-	
-    public void specializeOn(Shadow shadow) {
-	  	if (getKind() == AdviceKind.Around) {
-	  		((BcelShadow)shadow).initializeForAroundClosure();
-	  	}
-    	
-    	//XXX this case is just here for supporting lazy test code
-    	if (getKind() == null) {
+
+	public void specializeOn(Shadow shadow) {
+		if (getKind() == AdviceKind.Around) {
+			((BcelShadow) shadow).initializeForAroundClosure();
+		}
+
+		// XXX this case is just here for supporting lazy test code
+		if (getKind() == null) {
 			exposedState = new ExposedState(0);
-    		return;
-    	}
-    	if (getKind().isPerEntry()) {
-    		exposedState = new ExposedState(0);
-    	} else if (getKind().isCflow()) {
-    		exposedState = new ExposedState(nFreeVars);
-    	} else if (getSignature() != null) {
+			return;
+		}
+		if (getKind().isPerEntry()) {
+			exposedState = new ExposedState(0);
+		} else if (getKind().isCflow()) {
+			exposedState = new ExposedState(nFreeVars);
+		} else if (getSignature() != null) {
 			exposedState = new ExposedState(getSignature());
-    	} else {
-    		exposedState = new ExposedState(0);
-    		return;  //XXX this case is just here for supporting lazy test code
-    	}
-    	
-    	World world = shadow.getIWorld();
-    	suppressLintWarnings(world);
+		} else {
+			exposedState = new ExposedState(0);
+			return; // XXX this case is just here for supporting lazy test code
+		}
+
+		World world = shadow.getIWorld();
+		suppressLintWarnings(world);
 		pointcutTest = getPointcut().findResidue(shadow, exposedState);
-		clearLintSuppressions(world,this.suppressedLintKinds);
-		
+		clearLintSuppressions(world, this.suppressedLintKinds);
+
 		// these initializations won't be performed by findResidue, but need to be
 		// so that the joinpoint is primed for weaving
 		if (getKind() == AdviceKind.PerThisEntry) {
@@ -179,186 +175,181 @@ public class BcelAdvice extends Advice {
 		} else if (getKind() == AdviceKind.PerTargetEntry) {
 			shadow.getTargetVar();
 		}
-		
-		
-        // make sure thisJoinPoint parameters are initialized
-        if ((getExtraParameterFlags() & ThisJoinPointStaticPart) != 0) {
-        	((BcelShadow)shadow).getThisJoinPointStaticPartVar();
-			((BcelShadow)shadow).getEnclosingClass().warnOnAddedStaticInitializer(shadow,getSourceLocation());
-        }
 
-        if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
-    		boolean hasGuardTest = pointcutTest != Literal.TRUE && getKind() != AdviceKind.Around;
-    		boolean isAround = getKind() == AdviceKind.Around;
-			((BcelShadow)shadow).requireThisJoinPoint(hasGuardTest,isAround);
-			((BcelShadow)shadow).getEnclosingClass().warnOnAddedStaticInitializer(shadow,getSourceLocation());
+		// make sure thisJoinPoint parameters are initialized
+		if ((getExtraParameterFlags() & ThisJoinPointStaticPart) != 0) {
+			((BcelShadow) shadow).getThisJoinPointStaticPartVar();
+			((BcelShadow) shadow).getEnclosingClass().warnOnAddedStaticInitializer(shadow, getSourceLocation());
+		}
+
+		if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
+			boolean hasGuardTest = pointcutTest != Literal.TRUE && getKind() != AdviceKind.Around;
+			boolean isAround = getKind() == AdviceKind.Around;
+			((BcelShadow) shadow).requireThisJoinPoint(hasGuardTest, isAround);
+			((BcelShadow) shadow).getEnclosingClass().warnOnAddedStaticInitializer(shadow, getSourceLocation());
 			if (!hasGuardTest && world.getLint().multipleAdviceStoppingLazyTjp.isEnabled()) {
 				// collect up the problematic advice
-				((BcelShadow)shadow).addAdvicePreventingLazyTjp(this);
+				((BcelShadow) shadow).addAdvicePreventingLazyTjp(this);
 			}
-        }
-        
-        if ((getExtraParameterFlags() & ThisEnclosingJoinPointStaticPart) != 0) {
-        	((BcelShadow)shadow).getThisEnclosingJoinPointStaticPartVar();
-			((BcelShadow)shadow).getEnclosingClass().warnOnAddedStaticInitializer(shadow,getSourceLocation());
-        }
-    }   
-       
-    private boolean canInline(Shadow s) {
-    	if (attribute.isProceedInInners()) return false;
-    	//XXX this guard seems to only be needed for bad test cases
-    	if (concreteAspect == null || concreteAspect.isMissing()) return false;
+		}
 
-		if (concreteAspect.getWorld().isXnoInline()) return false;
-    	//System.err.println("isWoven? " + ((BcelObjectType)concreteAspect).getLazyClassGen().getWeaverState());
-    	return BcelWorld.getBcelObjectType(concreteAspect).getLazyClassGen().isWoven();
-    }
+		if ((getExtraParameterFlags() & ThisEnclosingJoinPointStaticPart) != 0) {
+			((BcelShadow) shadow).getThisEnclosingJoinPointStaticPartVar();
+			((BcelShadow) shadow).getEnclosingClass().warnOnAddedStaticInitializer(shadow, getSourceLocation());
+		}
+	}
 
-    public void implementOn(Shadow s) {
-        hasMatchedAtLeastOnce=true;
-        BcelShadow shadow = (BcelShadow) s;
-        
-        // remove any unnecessary exceptions if the compiler option is set to
-        // error or warning and if this piece of advice throws exceptions
-        // (bug 129282). This may be expanded to include other compiler warnings
-        // at the moment it only deals with 'declared exception is not thrown'
-        if (!shadow.getWorld().isIgnoringUnusedDeclaredThrownException() 
-        		&& !getThrownExceptions().isEmpty()) {
-        	Member member = shadow.getSignature();
-        	if (member instanceof BcelMethod) {
-        		removeUnnecessaryProblems((BcelMethod)member, 
-        				((BcelMethod)member).getDeclarationLineNumber());
+	private boolean canInline(Shadow s) {
+		if (attribute.isProceedInInners())
+			return false;
+		// XXX this guard seems to only be needed for bad test cases
+		if (concreteAspect == null || concreteAspect.isMissing())
+			return false;
+
+		if (concreteAspect.getWorld().isXnoInline())
+			return false;
+		// System.err.println("isWoven? " + ((BcelObjectType)concreteAspect).getLazyClassGen().getWeaverState());
+		return BcelWorld.getBcelObjectType(concreteAspect).getLazyClassGen().isWoven();
+	}
+
+	public void implementOn(Shadow s) {
+		hasMatchedAtLeastOnce = true;
+		BcelShadow shadow = (BcelShadow) s;
+
+		// remove any unnecessary exceptions if the compiler option is set to
+		// error or warning and if this piece of advice throws exceptions
+		// (bug 129282). This may be expanded to include other compiler warnings
+		// at the moment it only deals with 'declared exception is not thrown'
+		if (!shadow.getWorld().isIgnoringUnusedDeclaredThrownException() && !getThrownExceptions().isEmpty()) {
+			Member member = shadow.getSignature();
+			if (member instanceof BcelMethod) {
+				removeUnnecessaryProblems((BcelMethod) member, ((BcelMethod) member).getDeclarationLineNumber());
 			} else {
 				// we're in a call shadow therefore need the line number of the
 				// declared method (which may be in a different type). However,
-		        // we want to remove the problems from the CompilationResult
+				// we want to remove the problems from the CompilationResult
 				// held within the current type's EclipseSourceContext so need
 				// the enclosing shadow too
 				ResolvedMember resolvedMember = shadow.getSignature().resolve(shadow.getWorld());
-				if (resolvedMember instanceof BcelMethod 
-						&& shadow.getEnclosingShadow() instanceof BcelShadow) { 
+				if (resolvedMember instanceof BcelMethod && shadow.getEnclosingShadow() instanceof BcelShadow) {
 					Member enclosingMember = shadow.getEnclosingShadow().getSignature();
 					if (enclosingMember instanceof BcelMethod) {
-						removeUnnecessaryProblems((BcelMethod)enclosingMember,
-								((BcelMethod)resolvedMember).getDeclarationLineNumber());
+						removeUnnecessaryProblems((BcelMethod) enclosingMember, ((BcelMethod) resolvedMember)
+								.getDeclarationLineNumber());
 					}
 				}
 			}
 		}
 
-        if (shadow.getIWorld().isJoinpointSynchronizationEnabled() &&
-        		shadow.getKind()==Shadow.MethodExecution &&
-        		(s.getSignature().getModifiers() & Modifier.SYNCHRONIZED)!=0) {
-        	shadow.getIWorld().getLint().advisingSynchronizedMethods.signal(new String[]{shadow.toString()},shadow.getSourceLocation(),new ISourceLocation[]{getSourceLocation()});
-        }
-        
-        //FIXME AV - see #75442, this logic is not enough so for now comment it out until we fix the bug
-//        // callback for perObject AJC MightHaveAspect postMunge (#75442)
-//        if (getConcreteAspect() != null
-//                && getConcreteAspect().getPerClause() != null
-//                && PerClause.PEROBJECT.equals(getConcreteAspect().getPerClause().getKind())) {
-//            final PerObject clause;
-//            if (getConcreteAspect().getPerClause() instanceof PerFromSuper) {
-//                clause = (PerObject)((PerFromSuper) getConcreteAspect().getPerClause()).lookupConcretePerClause(getConcreteAspect());
-//            } else {
-//                clause = (PerObject) getConcreteAspect().getPerClause();
-//            }
-//            if (clause.isThis()) {
-//                PerObjectInterfaceTypeMunger.registerAsAdvisedBy(s.getThisVar().getType(), getConcreteAspect());
-//            } else {
-//                PerObjectInterfaceTypeMunger.registerAsAdvisedBy(s.getTargetVar().getType(), getConcreteAspect());
-//            }
-//        }
+		if (shadow.getIWorld().isJoinpointSynchronizationEnabled() && shadow.getKind() == Shadow.MethodExecution
+				&& (s.getSignature().getModifiers() & Modifier.SYNCHRONIZED) != 0) {
+			shadow.getIWorld().getLint().advisingSynchronizedMethods.signal(new String[] { shadow.toString() }, shadow
+					.getSourceLocation(), new ISourceLocation[] { getSourceLocation() });
+		}
 
-        if (getKind() == AdviceKind.Before) {
-            shadow.weaveBefore(this);
-        } else if (getKind() == AdviceKind.AfterReturning) {
-            shadow.weaveAfterReturning(this);
-        } else if (getKind() == AdviceKind.AfterThrowing) {
-            UnresolvedType catchType = 
-                hasExtraParameter()
-                ? getExtraParameterType()
-                : UnresolvedType.THROWABLE;
-            shadow.weaveAfterThrowing(this, catchType);
-        } else if (getKind() == AdviceKind.After) {   
-            shadow.weaveAfter(this);
-        } else if (getKind() == AdviceKind.Around) {
-            // Note: under regular LTW the aspect is usually loaded after the first use of any class affecteted by it
-            // This means that as long as the aspect has not been thru the LTW, it's woven state is unknown
-            // and thus canInline(s) will return false.
-            // To force inlining (test), ones can do Class aspect = FQNAspect.class in the clinit of the target class
-            // FIXME AV : for AJC compiled @AJ aspect (or any code style aspect), the woven state can never be known
-            // if the aspect belongs to a parent classloader. In that case the aspect will never be inlined.
-            // It might be dangerous to change that especially for @AJ aspect non compiled with AJC since if those
-            // are not weaved (f.e. use of some limiteed LTW etc) then they cannot be prepared for inlining.
-            // One solution would be to flag @AJ aspect with an annotation as "prepared" and query that one.
-        	if (!canInline(s)) {
-        		shadow.weaveAroundClosure(this, hasDynamicTests());
-        	} else {
-            	shadow.weaveAroundInline(this, hasDynamicTests());
-        	}
-        } else if (getKind() == AdviceKind.InterInitializer) {
-        	 shadow.weaveAfterReturning(this);
-        } else if (getKind().isCflow()) {
-        	 shadow.weaveCflowEntry(this, getSignature());
-        } else if (getKind() == AdviceKind.PerThisEntry) {
-        	 shadow.weavePerObjectEntry(this, (BcelVar)shadow.getThisVar());
-        } else if (getKind() == AdviceKind.PerTargetEntry) {
-        	 shadow.weavePerObjectEntry(this, (BcelVar)shadow.getTargetVar());
-        } else if (getKind() == AdviceKind.Softener) {
-        	 shadow.weaveSoftener(this, ((ExactTypePattern)exceptionType).getType());
-        } else if (getKind() == AdviceKind.PerTypeWithinEntry) {
-             // PTWIMPL Entry to ptw is the static initialization of a type that matched the ptw type pattern
-       	     shadow.weavePerTypeWithinAspectInitialization(this,shadow.getEnclosingType());
-        } else {
-            throw new BCException("unimplemented kind: " + getKind());
-        }
-    }
+		// FIXME AV - see #75442, this logic is not enough so for now comment it out until we fix the bug
+		// // callback for perObject AJC MightHaveAspect postMunge (#75442)
+		// if (getConcreteAspect() != null
+		// && getConcreteAspect().getPerClause() != null
+		// && PerClause.PEROBJECT.equals(getConcreteAspect().getPerClause().getKind())) {
+		// final PerObject clause;
+		// if (getConcreteAspect().getPerClause() instanceof PerFromSuper) {
+		// clause = (PerObject)((PerFromSuper) getConcreteAspect().getPerClause()).lookupConcretePerClause(getConcreteAspect());
+		// } else {
+		// clause = (PerObject) getConcreteAspect().getPerClause();
+		// }
+		// if (clause.isThis()) {
+		// PerObjectInterfaceTypeMunger.registerAsAdvisedBy(s.getThisVar().getType(), getConcreteAspect());
+		// } else {
+		// PerObjectInterfaceTypeMunger.registerAsAdvisedBy(s.getTargetVar().getType(), getConcreteAspect());
+		// }
+		// }
 
-    private void removeUnnecessaryProblems(BcelMethod method, int problemLineNumber) {
+		if (getKind() == AdviceKind.Before) {
+			shadow.weaveBefore(this);
+		} else if (getKind() == AdviceKind.AfterReturning) {
+			shadow.weaveAfterReturning(this);
+		} else if (getKind() == AdviceKind.AfterThrowing) {
+			UnresolvedType catchType = hasExtraParameter() ? getExtraParameterType() : UnresolvedType.THROWABLE;
+			shadow.weaveAfterThrowing(this, catchType);
+		} else if (getKind() == AdviceKind.After) {
+			shadow.weaveAfter(this);
+		} else if (getKind() == AdviceKind.Around) {
+			// Note: under regular LTW the aspect is usually loaded after the first use of any class affecteted by it
+			// This means that as long as the aspect has not been thru the LTW, it's woven state is unknown
+			// and thus canInline(s) will return false.
+			// To force inlining (test), ones can do Class aspect = FQNAspect.class in the clinit of the target class
+			// FIXME AV : for AJC compiled @AJ aspect (or any code style aspect), the woven state can never be known
+			// if the aspect belongs to a parent classloader. In that case the aspect will never be inlined.
+			// It might be dangerous to change that especially for @AJ aspect non compiled with AJC since if those
+			// are not weaved (f.e. use of some limiteed LTW etc) then they cannot be prepared for inlining.
+			// One solution would be to flag @AJ aspect with an annotation as "prepared" and query that one.
+			if (!canInline(s)) {
+				shadow.weaveAroundClosure(this, hasDynamicTests());
+			} else {
+				shadow.weaveAroundInline(this, hasDynamicTests());
+			}
+		} else if (getKind() == AdviceKind.InterInitializer) {
+			shadow.weaveAfterReturning(this);
+		} else if (getKind().isCflow()) {
+			shadow.weaveCflowEntry(this, getSignature());
+		} else if (getKind() == AdviceKind.PerThisEntry) {
+			shadow.weavePerObjectEntry(this, (BcelVar) shadow.getThisVar());
+		} else if (getKind() == AdviceKind.PerTargetEntry) {
+			shadow.weavePerObjectEntry(this, (BcelVar) shadow.getTargetVar());
+		} else if (getKind() == AdviceKind.Softener) {
+			shadow.weaveSoftener(this, ((ExactTypePattern) exceptionType).getType());
+		} else if (getKind() == AdviceKind.PerTypeWithinEntry) {
+			// PTWIMPL Entry to ptw is the static initialization of a type that matched the ptw type pattern
+			shadow.weavePerTypeWithinAspectInitialization(this, shadow.getEnclosingType());
+		} else {
+			throw new BCException("unimplemented kind: " + getKind());
+		}
+	}
+
+	private void removeUnnecessaryProblems(BcelMethod method, int problemLineNumber) {
 		ISourceContext sourceContext = method.getSourceContext();
 		if (sourceContext instanceof IEclipseSourceContext) {
-			((IEclipseSourceContext)sourceContext).removeUnnecessaryProblems(method, problemLineNumber);						
+			((IEclipseSourceContext) sourceContext).removeUnnecessaryProblems(method, problemLineNumber);
 		}
-    }
-    
-    // ---- implementations
-	
+	}
+
+	// ---- implementations
+
 	private Collection collectCheckedExceptions(UnresolvedType[] excs) {
-		if (excs == null || excs.length == 0) return Collections.EMPTY_LIST;
-		
+		if (excs == null || excs.length == 0)
+			return Collections.EMPTY_LIST;
+
 		Collection ret = new ArrayList();
 		World world = concreteAspect.getWorld();
 		ResolvedType runtimeException = world.getCoreType(UnresolvedType.RUNTIME_EXCEPTION);
 		ResolvedType error = world.getCoreType(UnresolvedType.ERROR);
-		
-		for (int i=0, len=excs.length; i < len; i++) {
-			ResolvedType t = world.resolve(excs[i],true);
-            if (t.isMissing()) {
-            		world.getLint().cantFindType.signal(
-            				WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_EXCEPTION_TYPE,excs[i].getName()),
-            				getSourceLocation()
-            				);
-//                IMessage msg = new Message(
-//                  WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_EXCEPTION_TYPE,excs[i].getName()),
-//                  "",IMessage.ERROR,getSourceLocation(),null,null);
-//                world.getMessageHandler().handleMessage(msg);
-            }
+
+		for (int i = 0, len = excs.length; i < len; i++) {
+			ResolvedType t = world.resolve(excs[i], true);
+			if (t.isMissing()) {
+				world.getLint().cantFindType.signal(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_EXCEPTION_TYPE, excs[i]
+						.getName()), getSourceLocation());
+				// IMessage msg = new Message(
+				// WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_EXCEPTION_TYPE,excs[i].getName()),
+				// "",IMessage.ERROR,getSourceLocation(),null,null);
+				// world.getMessageHandler().handleMessage(msg);
+			}
 			if (!(runtimeException.isAssignableFrom(t) || error.isAssignableFrom(t))) {
 				ret.add(t);
 			}
 		}
-			
+
 		return ret;
 	}
 
 	private Collection thrownExceptions = null;
+
 	public Collection getThrownExceptions() {
 		if (thrownExceptions == null) {
-			//??? can we really lump in Around here, how does this interact with Throwable
+			// ??? can we really lump in Around here, how does this interact with Throwable
 			if (concreteAspect != null && concreteAspect.getWorld() != null && // null tests for test harness
-				  (getKind().isAfter() || getKind() == AdviceKind.Before || getKind() == AdviceKind.Around))
-			{
+					(getKind().isAfter() || getKind() == AdviceKind.Before || getKind() == AdviceKind.Around)) {
 				World world = concreteAspect.getWorld();
 				ResolvedMember m = world.resolve(signature);
 				if (m == null) {
@@ -373,311 +364,261 @@ public class BcelAdvice extends Advice {
 		return thrownExceptions;
 	}
 
-    /**
-     * The munger must not check for the advice exceptions to be declared by the shadow in the case
-     * of @AJ aspects so that around can throws Throwable
-     *
-     * @return
-     */
-    public boolean mustCheckExceptions() {
-        if (getConcreteAspect() == null) {
-            return true;
-        }
-        return !getConcreteAspect().isAnnotationStyleAspect();
-    }
-
-
-
-    // only call me after prepare has been called
-    public boolean hasDynamicTests() {
-//    	if (hasExtraParameter() && getKind() == AdviceKind.AfterReturning) {
-//            UnresolvedType extraParameterType = getExtraParameterType();
-//            if (! extraParameterType.equals(UnresolvedType.OBJECT) 
-//            		&& ! extraParameterType.isPrimitive())
-//            	return true;
-//    	}
-    	
-    	
-        return pointcutTest != null && 
-        	!(pointcutTest == Literal.TRUE);// || pointcutTest == Literal.NO_TEST);
-    }
-
-
 	/**
-	 * get the instruction list for the really simple version of this advice.  
-	 * Is broken apart
-	 * for other advice, but if you want it in one block, this is the method to call.
+	 * The munger must not check for the advice exceptions to be declared by the shadow in the case of @AJ aspects so that around
+	 * can throws Throwable
 	 * 
-	 * @param s The shadow around which these instructions will eventually live.
-	 * @param extraArgVar The var that will hold the return value or thrown exception 
-	 * 			for afterX advice
-	 * @param ifNoAdvice The instructionHandle to jump to if the dynamic 
-	 * 			tests for this munger fails.
+	 * @return
 	 */
-	InstructionList getAdviceInstructions(
-		BcelShadow s,
-		BcelVar extraArgVar,
-		InstructionHandle ifNoAdvice) 
-	{
-        BcelShadow shadow =  s;
-        InstructionFactory fact = shadow.getFactory();
-        BcelWorld world = shadow.getWorld();
-		
-		InstructionList il = new InstructionList();
-
-        // we test to see if we have the right kind of thing...
-        // after throwing does this just by the exception mechanism.
-        if (hasExtraParameter() && getKind() == AdviceKind.AfterReturning) {
-            UnresolvedType extraParameterType = getExtraParameterType();
-            if (! extraParameterType.equals(UnresolvedType.OBJECT) 
-            		&& ! extraParameterType.isPrimitiveType()) {
-                il.append(
-                    BcelRenderer.renderTest(
-                        fact, 
-                        world,
-                        Test.makeInstanceof(
-                            extraArgVar, getExtraParameterType().resolve(world)),
-                        null,
-                        ifNoAdvice,
-                        null));
-            }
-        }
-        il.append(getAdviceArgSetup(shadow, extraArgVar, null));
-	    il.append(getNonTestAdviceInstructions(shadow));
-	    
-        InstructionHandle ifYesAdvice = il.getStart();
-        il.insert(getTestInstructions(shadow, ifYesAdvice, ifNoAdvice, ifYesAdvice));
-        
-        // If inserting instructions at the start of a method, we need a nice line number for this entry
-        // in the stack trace
-        if (shadow.getKind()==Shadow.MethodExecution && getKind()==AdviceKind.Before) {
-        	int lineNumber=0;
-        	// Uncomment this code if you think we should use the method decl line number when it exists...
-//        	// If the advised join point is in a class built by AspectJ, we can use the declaration line number
-//        	boolean b = shadow.getEnclosingMethod().getMemberView().hasDeclarationLineNumberInfo();
-//        	if (b) {
-//        		lineNumber = shadow.getEnclosingMethod().getMemberView().getDeclarationLineNumber();
-//        	} else { // If it wasn't, the best we can do is the line number of the first instruction in the method
-        		lineNumber = shadow.getEnclosingMethod().getMemberView().getLineNumberOfFirstInstruction();
-//        	}
-        	if (lineNumber>0) il.getStart().addTargeter(new LineNumberTag(lineNumber));
-        }
-        
-        
-        return il;
+	public boolean mustCheckExceptions() {
+		if (getConcreteAspect() == null) {
+			return true;
+		}
+		return !getConcreteAspect().isAnnotationStyleAspect();
 	}
 
-	public InstructionList getAdviceArgSetup(
-		BcelShadow shadow,
-		BcelVar extraVar,
-		InstructionList closureInstantiation) 
-	{
-        InstructionFactory fact = shadow.getFactory();
-        BcelWorld world = shadow.getWorld();
-        InstructionList il = new InstructionList();
+	// only call me after prepare has been called
+	public boolean hasDynamicTests() {
+		// if (hasExtraParameter() && getKind() == AdviceKind.AfterReturning) {
+		// UnresolvedType extraParameterType = getExtraParameterType();
+		// if (! extraParameterType.equals(UnresolvedType.OBJECT)
+		// && ! extraParameterType.isPrimitive())
+		// return true;
+		// }
 
-//        if (targetAspectField != null) {
-//        	il.append(fact.createFieldAccess(
-//        		targetAspectField.getDeclaringType().getName(),
-//        		targetAspectField.getName(),
-//        		BcelWorld.makeBcelType(targetAspectField.getType()),
-//        		Constants.GETSTATIC));
-//        }
-//        
-		//System.err.println("BcelAdvice: " + exposedState);
+		return pointcutTest != null && !(pointcutTest == Literal.TRUE);// || pointcutTest == Literal.NO_TEST);
+	}
 
+	/**
+	 * get the instruction list for the really simple version of this advice. Is broken apart for other advice, but if you want it
+	 * in one block, this is the method to call.
+	 * 
+	 * @param s The shadow around which these instructions will eventually live.
+	 * @param extraArgVar The var that will hold the return value or thrown exception for afterX advice
+	 * @param ifNoAdvice The instructionHandle to jump to if the dynamic tests for this munger fails.
+	 */
+	InstructionList getAdviceInstructions(BcelShadow s, BcelVar extraArgVar, InstructionHandle ifNoAdvice) {
+		BcelShadow shadow = s;
+		InstructionFactory fact = shadow.getFactory();
+		BcelWorld world = shadow.getWorld();
+
+		InstructionList il = new InstructionList();
+
+		// we test to see if we have the right kind of thing...
+		// after throwing does this just by the exception mechanism.
+		if (hasExtraParameter() && getKind() == AdviceKind.AfterReturning) {
+			UnresolvedType extraParameterType = getExtraParameterType();
+			if (!extraParameterType.equals(UnresolvedType.OBJECT) && !extraParameterType.isPrimitiveType()) {
+				il.append(BcelRenderer.renderTest(fact, world, Test.makeInstanceof(extraArgVar, getExtraParameterType().resolve(
+						world)), null, ifNoAdvice, null));
+			}
+		}
+		il.append(getAdviceArgSetup(shadow, extraArgVar, null));
+		il.append(getNonTestAdviceInstructions(shadow));
+
+		InstructionHandle ifYesAdvice = il.getStart();
+		il.insert(getTestInstructions(shadow, ifYesAdvice, ifNoAdvice, ifYesAdvice));
+
+		// If inserting instructions at the start of a method, we need a nice line number for this entry
+		// in the stack trace
+		if (shadow.getKind() == Shadow.MethodExecution && getKind() == AdviceKind.Before) {
+			int lineNumber = 0;
+			// Uncomment this code if you think we should use the method decl line number when it exists...
+			// // If the advised join point is in a class built by AspectJ, we can use the declaration line number
+			// boolean b = shadow.getEnclosingMethod().getMemberView().hasDeclarationLineNumberInfo();
+			// if (b) {
+			// lineNumber = shadow.getEnclosingMethod().getMemberView().getDeclarationLineNumber();
+			// } else { // If it wasn't, the best we can do is the line number of the first instruction in the method
+			lineNumber = shadow.getEnclosingMethod().getMemberView().getLineNumberOfFirstInstruction();
+			// }
+			if (lineNumber > 0)
+				il.getStart().addTargeter(new LineNumberTag(lineNumber));
+		}
+
+		return il;
+	}
+
+	public InstructionList getAdviceArgSetup(BcelShadow shadow, BcelVar extraVar, InstructionList closureInstantiation) {
+		InstructionFactory fact = shadow.getFactory();
+		BcelWorld world = shadow.getWorld();
+		InstructionList il = new InstructionList();
+
+		// if (targetAspectField != null) {
+		// il.append(fact.createFieldAccess(
+		// targetAspectField.getDeclaringType().getName(),
+		// targetAspectField.getName(),
+		// BcelWorld.makeBcelType(targetAspectField.getType()),
+		// Constants.GETSTATIC));
+		// }
+		//        
+		// System.err.println("BcelAdvice: " + exposedState);
 
 		if (exposedState.getAspectInstance() != null) {
 			il.append(BcelRenderer.renderExpr(fact, world, exposedState.getAspectInstance()));
 		}
 		// pr121385
 		boolean x = this.getDeclaringAspect().resolve(world).isAnnotationStyleAspect();
-        final boolean isAnnotationStyleAspect = getConcreteAspect()!=null && getConcreteAspect().isAnnotationStyleAspect() && x;
-        boolean previousIsClosure = false;
-        for (int i = 0, len = exposedState.size(); i < len; i++) {
-        	if (exposedState.isErroneousVar(i)) continue; // Erroneous vars have already had error msgs reported!
-            BcelVar v = (BcelVar) exposedState.get(i);
+		final boolean isAnnotationStyleAspect = getConcreteAspect() != null && getConcreteAspect().isAnnotationStyleAspect() && x;
+		boolean previousIsClosure = false;
+		for (int i = 0, len = exposedState.size(); i < len; i++) {
+			if (exposedState.isErroneousVar(i))
+				continue; // Erroneous vars have already had error msgs reported!
+			BcelVar v = (BcelVar) exposedState.get(i);
 
-            if (v == null) {
-                // if not @AJ aspect, go on with the regular binding handling
-            	if (!isAnnotationStyleAspect) {
-            		
-            	} else {
-                    // ATAJ: for @AJ aspects, handle implicit binding of xxJoinPoint
-	                //if (getKind() == AdviceKind.Around) {
-                    //    previousIsClosure = true;
-	                //    il.append(closureInstantiation);
-                    if ("Lorg/aspectj/lang/ProceedingJoinPoint;".equals(getSignature().getParameterTypes()[i].getSignature())) {
-                        //make sure we are in an around, since we deal with the closure, not the arg here
-                        if (getKind() != AdviceKind.Around) {
-                            previousIsClosure = false;
-                            getConcreteAspect().getWorld().getMessageHandler().handleMessage(
-                                    new Message(
-                                            "use of ProceedingJoinPoint is allowed only on around advice ("
-                                            + "arg " + i + " in " + toString() + ")",
-                                            this.getSourceLocation(),
-                                            true
-                                    )
-                            );
-                            // try to avoid verify error and pass in null
-                            il.append(InstructionConstants.ACONST_NULL);
-                        } else {
-                            if (previousIsClosure) {
-                                il.append(InstructionConstants.DUP);
-                            } else {
-                                previousIsClosure = true;
-                                il.append(closureInstantiation.copy());
-                            }
-                        }
-	                } else if ("Lorg/aspectj/lang/JoinPoint$StaticPart;".equals(getSignature().getParameterTypes()[i].getSignature())) {
-                        previousIsClosure = false;
-	                    if ((getExtraParameterFlags() & ThisJoinPointStaticPart) != 0) {
-	                        shadow.getThisJoinPointStaticPartBcelVar().appendLoad(il, fact);
-	                    }
-	                } else if ("Lorg/aspectj/lang/JoinPoint;".equals(getSignature().getParameterTypes()[i].getSignature())) {
-                        previousIsClosure = false;
-	                    if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
-	                        il.append(shadow.loadThisJoinPoint());
-	                    }
-	                } else if ("Lorg/aspectj/lang/JoinPoint$EnclosingStaticPart;".equals(getSignature().getParameterTypes()[i].getSignature())) {
-                        previousIsClosure = false;
-	                    if ((getExtraParameterFlags() & ThisEnclosingJoinPointStaticPart) != 0) {
-	                        shadow.getThisEnclosingJoinPointStaticPartBcelVar().appendLoad(il, fact);
-	                    }
-	                } else if (hasExtraParameter()) {
-                        previousIsClosure = false;
-                            extraVar.appendLoadAndConvert(
-                                il,
-                                fact,
-                                getExtraParameterType().resolve(world));
-                    } else {
-                        previousIsClosure = false;
-                        getConcreteAspect().getWorld().getMessageHandler().handleMessage(
-                                new Message(
-                                        "use of ProceedingJoinPoint is allowed only on around advice ("
-                                        + "arg " + i + " in " + toString() + ")",
-                                        this.getSourceLocation(),
-                                        true
-                                )
-                        );
-                        // try to avoid verify error and pass in null
-                        il.append(InstructionConstants.ACONST_NULL);
-	                }
-            	}
-            } else {
-                UnresolvedType desiredTy = getBindingParameterTypes()[i];
-                v.appendLoadAndConvert(il, fact, desiredTy.resolve(world));
-            }
-        }
+			if (v == null) {
+				// if not @AJ aspect, go on with the regular binding handling
+				if (!isAnnotationStyleAspect) {
 
+				} else {
+					// ATAJ: for @AJ aspects, handle implicit binding of xxJoinPoint
+					// if (getKind() == AdviceKind.Around) {
+					// previousIsClosure = true;
+					// il.append(closureInstantiation);
+					if ("Lorg/aspectj/lang/ProceedingJoinPoint;".equals(getSignature().getParameterTypes()[i].getSignature())) {
+						// make sure we are in an around, since we deal with the closure, not the arg here
+						if (getKind() != AdviceKind.Around) {
+							previousIsClosure = false;
+							getConcreteAspect().getWorld().getMessageHandler().handleMessage(
+									new Message("use of ProceedingJoinPoint is allowed only on around advice (" + "arg " + i
+											+ " in " + toString() + ")", this.getSourceLocation(), true));
+							// try to avoid verify error and pass in null
+							il.append(InstructionConstants.ACONST_NULL);
+						} else {
+							if (previousIsClosure) {
+								il.append(InstructionConstants.DUP);
+							} else {
+								previousIsClosure = true;
+								il.append(closureInstantiation.copy());
+							}
+						}
+					} else if ("Lorg/aspectj/lang/JoinPoint$StaticPart;".equals(getSignature().getParameterTypes()[i]
+							.getSignature())) {
+						previousIsClosure = false;
+						if ((getExtraParameterFlags() & ThisJoinPointStaticPart) != 0) {
+							shadow.getThisJoinPointStaticPartBcelVar().appendLoad(il, fact);
+						}
+					} else if ("Lorg/aspectj/lang/JoinPoint;".equals(getSignature().getParameterTypes()[i].getSignature())) {
+						previousIsClosure = false;
+						if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
+							il.append(shadow.loadThisJoinPoint());
+						}
+					} else if ("Lorg/aspectj/lang/JoinPoint$EnclosingStaticPart;".equals(getSignature().getParameterTypes()[i]
+							.getSignature())) {
+						previousIsClosure = false;
+						if ((getExtraParameterFlags() & ThisEnclosingJoinPointStaticPart) != 0) {
+							shadow.getThisEnclosingJoinPointStaticPartBcelVar().appendLoad(il, fact);
+						}
+					} else if (hasExtraParameter()) {
+						previousIsClosure = false;
+						extraVar.appendLoadAndConvert(il, fact, getExtraParameterType().resolve(world));
+					} else {
+						previousIsClosure = false;
+						getConcreteAspect().getWorld().getMessageHandler().handleMessage(
+								new Message("use of ProceedingJoinPoint is allowed only on around advice (" + "arg " + i + " in "
+										+ toString() + ")", this.getSourceLocation(), true));
+						// try to avoid verify error and pass in null
+						il.append(InstructionConstants.ACONST_NULL);
+					}
+				}
+			} else {
+				UnresolvedType desiredTy = getBindingParameterTypes()[i];
+				v.appendLoadAndConvert(il, fact, desiredTy.resolve(world));
+			}
+		}
 
-        // ATAJ: for code style aspect, handles the extraFlag as usual ie not
-        // in the middle of the formal bindings but at the end, in a rock solid ordering
-        if (!isAnnotationStyleAspect) {
-            if (getKind() == AdviceKind.Around) {
-                il.append(closureInstantiation);
-            } else if (hasExtraParameter()) {
-                extraVar.appendLoadAndConvert(
-                    il,
-                    fact,
-                    getExtraParameterType().resolve(world));
-            }
+		// ATAJ: for code style aspect, handles the extraFlag as usual ie not
+		// in the middle of the formal bindings but at the end, in a rock solid ordering
+		if (!isAnnotationStyleAspect) {
+			if (getKind() == AdviceKind.Around) {
+				il.append(closureInstantiation);
+			} else if (hasExtraParameter()) {
+				extraVar.appendLoadAndConvert(il, fact, getExtraParameterType().resolve(world));
+			}
 
-            // handle thisJoinPoint parameters
-            // these need to be in that same order as parameters in
-            // org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration
-            if ((getExtraParameterFlags() & ThisJoinPointStaticPart) != 0) {
-                shadow.getThisJoinPointStaticPartBcelVar().appendLoad(il, fact);
-            }
+			// handle thisJoinPoint parameters
+			// these need to be in that same order as parameters in
+			// org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration
+			if ((getExtraParameterFlags() & ThisJoinPointStaticPart) != 0) {
+				shadow.getThisJoinPointStaticPartBcelVar().appendLoad(il, fact);
+			}
 
-            if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
-                il.append(shadow.loadThisJoinPoint());
-            }
+			if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
+				il.append(shadow.loadThisJoinPoint());
+			}
 
-            if ((getExtraParameterFlags() & ThisEnclosingJoinPointStaticPart) != 0) {
-                shadow.getThisEnclosingJoinPointStaticPartBcelVar().appendLoad(il, fact);
-            }
-        }
+			if ((getExtraParameterFlags() & ThisEnclosingJoinPointStaticPart) != 0) {
+				shadow.getThisEnclosingJoinPointStaticPartBcelVar().appendLoad(il, fact);
+			}
+		}
 
+		return il;
+	}
 
-        return il;
-    }
-    
-    public InstructionList getNonTestAdviceInstructions(BcelShadow shadow) {
-        return new InstructionList(
-            Utility.createInvoke(shadow.getFactory(), shadow.getWorld(), getOriginalSignature()));
-    }
-    
-    public Member getOriginalSignature() {
-    	Member sig = getSignature();
-    	if (sig instanceof ResolvedMember) {
-    		ResolvedMember rsig = (ResolvedMember)sig;
-    		if (rsig.hasBackingGenericMember()) return rsig.getBackingGenericMember();
-    	}
-    	return sig;
-    }
+	public InstructionList getNonTestAdviceInstructions(BcelShadow shadow) {
+		return new InstructionList(Utility.createInvoke(shadow.getFactory(), shadow.getWorld(), getOriginalSignature()));
+	}
 
-    public InstructionList getTestInstructions(
-        BcelShadow shadow,
-        InstructionHandle sk,
-        InstructionHandle fk,
-        InstructionHandle next) 
-	{
-		//System.err.println("test: " + pointcutTest);
-		return BcelRenderer.renderTest(
-			shadow.getFactory(),
-			shadow.getWorld(),
-			pointcutTest,
-			sk,
-			fk,
-			next);
+	public Member getOriginalSignature() {
+		Member sig = getSignature();
+		if (sig instanceof ResolvedMember) {
+			ResolvedMember rsig = (ResolvedMember) sig;
+			if (rsig.hasBackingGenericMember())
+				return rsig.getBackingGenericMember();
+		}
+		return sig;
+	}
+
+	public InstructionList getTestInstructions(BcelShadow shadow, InstructionHandle sk, InstructionHandle fk, InstructionHandle next) {
+		// System.err.println("test: " + pointcutTest);
+		return BcelRenderer.renderTest(shadow.getFactory(), shadow.getWorld(), pointcutTest, sk, fk, next);
 	}
 
 	public int compareTo(Object other) {
-		if (!(other instanceof BcelAdvice)) return 0;
-		BcelAdvice o = (BcelAdvice)other;
-		
-		//System.err.println("compareTo: " + this + ", " + o);
+		if (!(other instanceof BcelAdvice))
+			return 0;
+		BcelAdvice o = (BcelAdvice) other;
+
+		// System.err.println("compareTo: " + this + ", " + o);
 		if (kind.getPrecedence() != o.kind.getPrecedence()) {
-			if (kind.getPrecedence() > o.kind.getPrecedence()) return +1;
-			else return -1;
+			if (kind.getPrecedence() > o.kind.getPrecedence())
+				return +1;
+			else
+				return -1;
 		}
-		
+
 		if (kind.isCflow()) {
-//			System.err.println("sort: " + this + " innerCflowEntries " + innerCflowEntries);
-//			System.err.println("      " + o + " innerCflowEntries " + o.innerCflowEntries);
+			// System.err.println("sort: " + this + " innerCflowEntries " + innerCflowEntries);
+			// System.err.println("      " + o + " innerCflowEntries " + o.innerCflowEntries);
 			boolean isBelow = (kind == AdviceKind.CflowBelowEntry);
 
-			if (this.innerCflowEntries.contains(o)) return isBelow ? +1 : -1;
-			else if (o.innerCflowEntries.contains(this)) return isBelow ? -1 : +1;
-			else return 0;
+			if (this.innerCflowEntries.contains(o))
+				return isBelow ? +1 : -1;
+			else if (o.innerCflowEntries.contains(this))
+				return isBelow ? -1 : +1;
+			else
+				return 0;
 		}
-		
-		
+
 		if (kind.isPerEntry() || kind == AdviceKind.Softener) {
 			return 0;
 		}
-		
-		//System.out.println("compare: " + this + " with " + other);
+
+		// System.out.println("compare: " + this + " with " + other);
 		World world = concreteAspect.getWorld();
-		
-		int ret =
-			concreteAspect.getWorld().compareByPrecedence(
-				concreteAspect,
-				o.concreteAspect);
-		if (ret != 0) return ret;
-		
-		
+
+		int ret = concreteAspect.getWorld().compareByPrecedence(concreteAspect, o.concreteAspect);
+		if (ret != 0)
+			return ret;
+
 		ResolvedType declaringAspect = getDeclaringAspect().resolve(world);
 		ResolvedType o_declaringAspect = o.getDeclaringAspect().resolve(world);
-		
-		
+
 		if (declaringAspect == o_declaringAspect) {
-		    if (kind.isAfter() || o.kind.isAfter()) {
-		    	return this.getStart() < o.getStart() ? -1: +1;
-		    } else {
-		    	return this.getStart()< o.getStart() ? +1: -1;
-		    }
+			if (kind.isAfter() || o.kind.isAfter()) {
+				return this.getStart() < o.getStart() ? -1 : +1;
+			} else {
+				return this.getStart() < o.getStart() ? +1 : -1;
+			}
 		} else if (declaringAspect.isAssignableFrom(o_declaringAspect)) {
 			return -1;
 		} else if (o_declaringAspect.isAssignableFrom(declaringAspect)) {
@@ -688,44 +629,37 @@ public class BcelAdvice extends Advice {
 	}
 
 	public BcelVar[] getExposedStateAsBcelVars(boolean isAround) {
-        // ATAJ aspect
-        if (isAround) {
-            // the closure instantiation has the same mapping as the extracted method from wich it is called
-            if (getConcreteAspect()!= null && getConcreteAspect().isAnnotationStyleAspect()) {
-                return BcelVar.NONE;
-            }
-        }
+		// ATAJ aspect
+		if (isAround) {
+			// the closure instantiation has the same mapping as the extracted method from wich it is called
+			if (getConcreteAspect() != null && getConcreteAspect().isAnnotationStyleAspect()) {
+				return BcelVar.NONE;
+			}
+		}
 
-        //System.out.println("vars: " + Arrays.asList(exposedState.vars));
-		if (exposedState == null) return BcelVar.NONE;
+		// System.out.println("vars: " + Arrays.asList(exposedState.vars));
+		if (exposedState == null)
+			return BcelVar.NONE;
 		int len = exposedState.vars.length;
 		BcelVar[] ret = new BcelVar[len];
-		for (int i=0; i < len; i++) {
-			ret[i] = (BcelVar)exposedState.vars[i];
+		for (int i = 0; i < len; i++) {
+			ret[i] = (BcelVar) exposedState.vars[i];
 		}
-		return ret; //(BcelVar[]) exposedState.vars;
-	}
-	
-	public boolean hasMatchedSomething() {
-		return hasMatchedAtLeastOnce;
+		return ret; // (BcelVar[]) exposedState.vars;
 	}
 
-	public void setHasMatchedSomething(boolean hasMatchedSomething) {
-		hasMatchedAtLeastOnce = hasMatchedSomething;
-	}
-	
 	protected void suppressLintWarnings(World inWorld) {
 		if (suppressedLintKinds == null) {
-    		if (signature instanceof BcelMethod) {
-    			this.suppressedLintKinds = Utility.getSuppressedWarnings(signature.getAnnotations(), inWorld.getLint());
-    		} else {
-    			this.suppressedLintKinds = Collections.EMPTY_LIST;
-    		}
-    	}
-    	inWorld.getLint().suppressKinds(suppressedLintKinds);
+			if (signature instanceof BcelMethod) {
+				this.suppressedLintKinds = Utility.getSuppressedWarnings(signature.getAnnotations(), inWorld.getLint());
+			} else {
+				this.suppressedLintKinds = Collections.EMPTY_LIST;
+			}
+		}
+		inWorld.getLint().suppressKinds(suppressedLintKinds);
 	}
-	
-	protected void clearLintSuppressions(World inWorld,Collection toClear) {
+
+	protected void clearLintSuppressions(World inWorld, Collection toClear) {
 		inWorld.getLint().clearSuppressions(toClear);
 	}
 }

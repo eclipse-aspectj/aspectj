@@ -30,6 +30,7 @@ public abstract class Advice extends ShadowMunger {
 
 	protected AdviceKind kind; // alias of attribute.getKind()
 	protected Member signature;
+	protected boolean hasMatchedAtLeastOnce = false;
 
 	// not necessarily declaring aspect, this is a semantics change from 1.0
 	protected ResolvedType concreteAspect; // null until after concretize
@@ -415,5 +416,15 @@ public abstract class Advice extends ShadowMunger {
 	public ResolvedType getConcreteAspect() {
 		return concreteAspect;
 	}
+
+	public boolean hasMatchedSomething() {
+		return hasMatchedAtLeastOnce;
+	}
+
+	public void setHasMatchedSomething(boolean hasMatchedSomething) {
+		hasMatchedAtLeastOnce = hasMatchedSomething;
+	}
+
+	public abstract boolean hasDynamicTests();
 
 }

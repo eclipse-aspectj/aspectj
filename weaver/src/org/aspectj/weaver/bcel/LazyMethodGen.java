@@ -514,8 +514,8 @@ public final class LazyMethodGen implements Traceable {
 		if (enclosingClass != null && enclosingClass.getType() != null) {
 			context = enclosingClass.getType().getSourceContext();
 		}
-		List as = BcelAttributes.readAjAttributes(getClassName(), (Attribute[]) attributes.toArray(new Attribute[] {}), context,
-				null, weaverVersion);
+		List as = Utility.readAjAttributes(getClassName(), (Attribute[]) attributes.toArray(new Attribute[] {}), context, null,
+				weaverVersion);
 		if (!as.isEmpty()) {
 			out.println("    " + as.get(0)); // XXX assuming exactly one attribute, munger...
 		}

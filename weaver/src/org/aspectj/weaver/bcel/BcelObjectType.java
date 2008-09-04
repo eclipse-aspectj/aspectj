@@ -338,7 +338,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		bitflag |= UNPACKED_AJATTRIBUTES;
 		IMessageHandler msgHandler = getResolvedTypeX().getWorld().getMessageHandler();
 		// Pass in empty list that can store things for readAj5 to process
-		List l = BcelAttributes.readAjAttributes(className, javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),
+		List l = Utility.readAjAttributes(className, javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),
 				getResolvedTypeX().getWorld(), AjAttribute.WeaverVersionInfo.UNKNOWN);
 		List pointcuts = new ArrayList();
 		typeMungers = new ArrayList();

@@ -27,7 +27,6 @@ import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
-import org.aspectj.weaver.bcel.BcelAdvice;
 
 public class AsmRelationshipProvider {
 
@@ -183,7 +182,7 @@ public class AsmRelationshipProvider {
 			IProgramElement targetNode = getNode(AsmManager.getDefault().getHierarchy(), shadow);
 			if (targetNode == null)
 				return;
-			boolean runtimeTest = ((BcelAdvice) munger).hasDynamicTests();
+			boolean runtimeTest = advice.hasDynamicTests();
 
 			// Work out extra info to inform interested UIs !
 			IProgramElement.ExtraInformation ai = new IProgramElement.ExtraInformation();

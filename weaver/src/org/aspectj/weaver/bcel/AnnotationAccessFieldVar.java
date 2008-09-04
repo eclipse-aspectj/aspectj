@@ -33,7 +33,7 @@ import org.aspectj.weaver.UnresolvedType;
  * 
  * @author Andy Clement
  */
-public class AnnotationAccessFieldVar extends BcelVar {
+class AnnotationAccessFieldVar extends BcelVar {
 
 	private AnnotationAccessVar annoAccessor;
 	private ResolvedType annoFieldOfInterest;
@@ -71,7 +71,7 @@ public class AnnotationAccessFieldVar extends BcelVar {
 				if (!doneAndDusted) {
 					ResolvedMember[] annotationFields = toType.getWorld().resolve(
 							UnresolvedType.forSignature(annotation.getTypeSignature())).getDeclaredMethods();
-	
+
 					// ResolvedMember[] fs = rt.getDeclaredFields();
 					for (int ii = 0; ii < annotationFields.length; ii++) {
 						if (annotationFields[ii].getType().equals(annoFieldOfInterest)) {

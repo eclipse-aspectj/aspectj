@@ -113,7 +113,7 @@ import org.aspectj.weaver.patterns.ThisOrTargetPointcut;
  *      supposedly don't have a target (according to AspectJ), but they clearly
  *      do have a target of sorts, just one that needs to be pushed on the stack,
  *      dupped, and not touched otherwise until the constructor runs.
- * 
+ *  
  * @author Jim Hugunin
  * @author Erik Hilsdale
  * 

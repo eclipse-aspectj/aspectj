@@ -15,11 +15,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aspectj.weaver.bcel.BcelAdvice;
-import org.aspectj.weaver.patterns.FormalBinding;
-import org.aspectj.weaver.patterns.Pointcut;
-import org.aspectj.weaver.patterns.SimpleScope;
-
 public class TestUtils {
 	private static final String[] ZERO_STRINGS = new String[0];
 
@@ -289,7 +284,7 @@ public class TestUtils {
 		return MemberImpl.method(declaringTy, mods, returnTy, name, UnresolvedType.forNames(paramTypeNames));
 	}
 
-	private static String[] parseIds(String str) {
+	public static String[] parseIds(String str) {
 		if (str.length() == 0)
 			return ZERO_STRINGS;
 		List l = new ArrayList();
@@ -306,44 +301,4 @@ public class TestUtils {
 		return (String[]) l.toArray(new String[l.size()]);
 	}
 
-	/**
-	 * Moved from BcelWorld to here
-	 * 
-	 * Parse a string into advice.
-	 * 
-	 * <blockquote>
-	 * 
-	 * <pre>
-	 * Kind ( Id , ... ) : Pointcut -&gt; MethodSignature
-	 * </pre>
-	 * 
-	 * </blockquote>
-	 */
-	public static Advice shadowMunger(World w, String str, int extraFlag) {
-		str = str.trim();
-		int start = 0;
-		int i = str.indexOf('(');
-		AdviceKind kind = AdviceKind.stringToKind(str.substring(start, i));
-		start = ++i;
-		i = str.indexOf(')', i);
-		String[] ids = parseIds(str.substring(start, i).trim());
-		// start = ++i;
-
-		i = str.indexOf(':', i);
-		start = ++i;
-		i = str.indexOf("->", i);
-		Pointcut pointcut = Pointcut.fromString(str.substring(start, i).trim());
-		Member m = TestUtils.methodFromString(str.substring(i + 2, str.length()).trim());
-
-		// now, we resolve
-		UnresolvedType[] types = m.getParameterTypes();
-		FormalBinding[] bindings = new FormalBinding[ids.length];
-		for (int j = 0, len = ids.length; j < len; j++) {
-			bindings[j] = new FormalBinding(types[j], ids[j], j, 0, 0);
-		}
-
-		Pointcut p = pointcut.resolve(new SimpleScope(w, bindings));
-
-		return new BcelAdvice(kind, p, m, extraFlag, 0, 0, null, null);
-	}
 }

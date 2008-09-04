@@ -10,12 +10,13 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver.bcel;
 
 import java.io.IOException;
 
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.ShadowMunger;
 
 public class AfterThrowingWeaveTestCase extends WeaveTestCase {
 	{
@@ -25,19 +26,20 @@ public class AfterThrowingWeaveTestCase extends WeaveTestCase {
 	public AfterThrowingWeaveTestCase(String name) {
 		super(name);
 	}
-	
+
 	public void testAfterThrowing() throws IOException {
 		weaveTest(getStandardTargets(), "AfterThrowing", makeAdviceAll("afterThrowing"));
 	}
-    public void testAfterThrowingParam() throws IOException {
-        BcelWorld world = new BcelWorld();
-        
-        ShadowMunger myMunger = 
-            TestUtils.shadowMunger(world,"afterThrowing(): get(* *.out) -> static void Aspect.ajc_afterThrowing_field_get(java.lang.Throwable)",
-                        Advice.ExtraArgument);
-        ShadowMunger cm = myMunger.concretize(ResolvedType.MISSING, world, null);
 
-        weaveTest(getStandardTargets(), "AfterThrowingParam", cm);     
-    }
+	public void testAfterThrowingParam() throws IOException {
+		BcelWorld world = new BcelWorld();
+
+		ShadowMunger myMunger = BcelTestUtils.shadowMunger(world,
+				"afterThrowing(): get(* *.out) -> static void Aspect.ajc_afterThrowing_field_get(java.lang.Throwable)",
+				Advice.ExtraArgument);
+		ShadowMunger cm = myMunger.concretize(ResolvedType.MISSING, world, null);
+
+		weaveTest(getStandardTargets(), "AfterThrowingParam", cm);
+	}
 
 }

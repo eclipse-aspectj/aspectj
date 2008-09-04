@@ -24,6 +24,7 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.Shadow.Kind;
+import org.aspectj.weaver.ast.Var;
 
 /**
  * Represents access to an annotation on an element, relating to some kinded pointcut. Depending on the kind of pointcut the element
@@ -193,4 +194,13 @@ public class AnnotationAccessVar extends BcelVar {
 		return member;
 	}
 
+	/**
+	 * Return an object that can access a particular value of this annotation.
+	 * 
+	 * @param valueType The type from the annotation that is of interest
+	 * @return a variable that represents access to that annotation value
+	 */
+	public Var getAccessorForValue(ResolvedType valueType) {
+		return new AnnotationAccessFieldVar(this, valueType);
+	}
 }

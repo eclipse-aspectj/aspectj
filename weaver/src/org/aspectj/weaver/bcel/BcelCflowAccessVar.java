@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver.bcel;
 
 import org.aspectj.apache.bcel.Constants;
@@ -23,13 +22,11 @@ import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedType;
 
 /**
- * XXX Erik and I need to discuss this hierarchy.  Having FieldRef
- * extend Var is convenient, but hopefully there's a better design.
+ * XXX Erik and I need to discuss this hierarchy. Having FieldRef extend Var is convenient, but hopefully there's a better design.
  * 
  * This is always a static reference.
  */
 public class BcelCflowAccessVar extends BcelVar {
-
 
 	private Member stackField;
 	private int index;
@@ -49,17 +46,18 @@ public class BcelCflowAccessVar extends BcelVar {
 		return "BcelCflowAccessVar(" + getType() + " " + stackField + "." + index + ")";
 	}
 
-    public Instruction createLoad(InstructionFactory fact) {
+	public Instruction createLoad(InstructionFactory fact) {
 		throw new RuntimeException("unimplemented");
-    }
-    public Instruction createStore(InstructionFactory fact) {
-    	throw new RuntimeException("unimplemented");
-    }
+	}
 
-    public InstructionList createCopyFrom(InstructionFactory fact, int oldSlot) {
-        throw new RuntimeException("unimplemented");
-    }
-    
+	public Instruction createStore(InstructionFactory fact) {
+		throw new RuntimeException("unimplemented");
+	}
+
+	public InstructionList createCopyFrom(InstructionFactory fact, int oldSlot) {
+		throw new RuntimeException("unimplemented");
+	}
+
 	public void appendLoad(InstructionList il, InstructionFactory fact) {
 		il.append(createLoadInstructions(getType(), fact));
 	}
@@ -69,22 +67,16 @@ public class BcelCflowAccessVar extends BcelVar {
 
 		il.append(Utility.createGet(fact, stackField));
 		il.append(Utility.createConstant(fact, index));
-		il.append(
-			fact.createInvoke(
-				NameMangler.CFLOW_STACK_TYPE, "get", 
-				Type.OBJECT, new Type[] { Type.INT }, 
+		il.append(fact.createInvoke(NameMangler.CFLOW_STACK_TYPE, "get", Type.OBJECT, new Type[] { Type.INT },
 				Constants.INVOKEVIRTUAL));
 		il.append(Utility.createConversion(fact, Type.OBJECT, BcelWorld.makeBcelType(toType)));
 
 		return il;
-		
+
 	}
 
-	public void appendLoadAndConvert(
-		InstructionList il,
-		InstructionFactory fact,
-		ResolvedType toType) {
-		il.append(createLoadInstructions(toType, fact));				
+	public void appendLoadAndConvert(InstructionList il, InstructionFactory fact, ResolvedType toType) {
+		il.append(createLoadInstructions(toType, fact));
 
 	}
 

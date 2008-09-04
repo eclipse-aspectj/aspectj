@@ -39,20 +39,28 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
-import org.aspectj.weaver.bcel.AnnotationAccessFieldVar;
 import org.aspectj.weaver.bcel.AnnotationAccessVar;
 import org.aspectj.weaver.bcel.BcelTypeMunger;
 
 /**
- * @annotation(@Foo) or @annotation(foo)
+ * (at)Annotation((at)Foo) or (at)Annotation(foo)<br>
+ * <p>
+ * Matches any join point where the subject of the join point has an annotation matching the annotationTypePattern:
  * 
- *                      Matches any join point where the subject of the join point has an annotation matching the
- *                      annotationTypePattern:
- * 
- *                      Join Point Kind Subject ================================ method call the target method method execution the
- *                      method constructor call the constructor constructor execution the constructor get the target field set the
- *                      target field adviceexecution the advice initialization the constructor preinitialization the constructor
- *                      staticinitialization the type being initialized handler the declared type of the handled exception
+ * <br>
+ * Join Point Kind - Subject <br>
+ * ================================ <br>
+ * method call - the target method <br>
+ * method execution - the method <br>
+ * constructor call - the constructor <br>
+ * constructor execution - the constructor <br>
+ * get - the target field <br>
+ * set - the target field <br>
+ * adviceexecution - the advice <br>
+ * initialization - the constructor <br>
+ * preinitialization - the constructor <br>
+ * staticinitialization - the type being initialized <br>
+ * handler - the declared type of the handled exception <br>
  */
 public class AnnotationPointcut extends NameBindingPointcut {
 
@@ -205,7 +213,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 			if (var == null) {
 				throw new BCException("Unexpected problem locating annotation at join point '" + shadow + "'");
 			}
-			state.set(btp.getFormalIndex(), new AnnotationAccessFieldVar(var, (ResolvedType) formalType));
+			state.set(btp.getFormalIndex(), var.getAccessorForValue(formalType));
 		} else if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
 			BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern) annotationTypePattern;
 			UnresolvedType annotationType = btp.getAnnotationType();

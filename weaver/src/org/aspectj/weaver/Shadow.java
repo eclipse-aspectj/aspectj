@@ -32,7 +32,6 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.util.TypeSafeEnum;
 import org.aspectj.weaver.ast.Var;
-import org.aspectj.weaver.bcel.BcelAdvice;
 
 /*
  * The superclass of anything representing a the shadow of a join point.  A shadow represents
@@ -553,9 +552,9 @@ public abstract class Shadow {
 					Object b = mungers.get(j);
 
 					// Make sure they are the right type
-					if (a instanceof BcelAdvice && b instanceof BcelAdvice) {
-						BcelAdvice adviceA = (BcelAdvice) a;
-						BcelAdvice adviceB = (BcelAdvice) b;
+					if (a instanceof Advice && b instanceof Advice) {
+						Advice adviceA = (Advice) a;
+						Advice adviceB = (Advice) b;
 						if (!adviceA.concreteAspect.equals(adviceB.concreteAspect)) {
 							AdviceKind adviceKindA = adviceA.getKind();
 							AdviceKind adviceKindB = adviceB.getKind();
@@ -678,7 +677,7 @@ public abstract class Shadow {
 					beautifyLocation(getSourceLocation()), advisingType, beautifyLocation(munger.getSourceLocation()) },
 					advisedType, advisingType);
 		} else {
-			boolean runtimeTest = ((BcelAdvice) advice).hasDynamicTests();
+			boolean runtimeTest = advice.hasDynamicTests();
 			String joinPointDescription = this.toString();
 			msg = WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ADVISES, new String[] { joinPointDescription,
 					advisedType, beautifyLocation(getSourceLocation()), description, advisingType,
@@ -739,7 +738,7 @@ public abstract class Shadow {
 				world.getCrossReferenceHandler().addCrossReference(munger.getSourceLocation(), // What is being applied
 						this.getSourceLocation(), // Where is it being applied
 						determineRelKind(munger), // What kind of advice?
-						((BcelAdvice) munger).hasDynamicTests() // Is a runtime test being stuffed in the code?
+						((Advice) munger).hasDynamicTests() // Is a runtime test being stuffed in the code?
 						);
 			}
 
