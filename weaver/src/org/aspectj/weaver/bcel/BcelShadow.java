@@ -1460,19 +1460,21 @@ public class BcelShadow extends Shadow {
 	 * constructor, type). Then create one BcelVar entry in the map for each annotation, keyed by annotation type.
 	 */
 	public void initializeKindedAnnotationVars() {
-		if (kindedAnnotationVars != null)
+		if (kindedAnnotationVars != null) {
 			return;
+		}
 		kindedAnnotationVars = new HashMap();
 
-		// FIXME asc Refactor this code, there is duplication
 		ResolvedType[] annotations = null;
 		Member shadowSignature = getSignature();
 		Member annotationHolder = getSignature();
 		ResolvedType relevantType = shadowSignature.getDeclaringType().resolve(world);
 
-		if (relevantType.isRawType() || relevantType.isParameterizedType())
+		if (relevantType.isRawType() || relevantType.isParameterizedType()) {
 			relevantType = relevantType.getGenericType();
+		}
 
+		// Determine the annotations that are of interest
 		if (getKind() == Shadow.StaticInitialization) {
 			annotations = relevantType.resolve(world).getAnnotationTypes();
 		} else if (getKind() == Shadow.MethodCall || getKind() == Shadow.ConstructorCall) {
@@ -1480,7 +1482,6 @@ public class BcelShadow extends Shadow {
 			annotations = getAnnotations(foundMember, shadowSignature, relevantType);
 			annotationHolder = getRelevantMember(foundMember, shadowSignature, relevantType);
 			relevantType = annotationHolder.getDeclaringType().resolve(world);
-
 		} else if (getKind() == Shadow.FieldSet || getKind() == Shadow.FieldGet) {
 			annotationHolder = findField(relevantType.getDeclaredFields(), getSignature());
 
@@ -1515,6 +1516,7 @@ public class BcelShadow extends Shadow {
 		} else if (getKind() == Shadow.ExceptionHandler) {
 			relevantType = getSignature().getParameterTypes()[0].resolve(world);
 			annotations = relevantType.getAnnotationTypes();
+
 		} else if (getKind() == Shadow.PreInitialization || getKind() == Shadow.Initialization) {
 			ResolvedMember found = findMethod2(relevantType.getDeclaredMethods(), getSignature());
 			annotations = found.getAnnotationTypes();
