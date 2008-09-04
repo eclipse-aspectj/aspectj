@@ -123,6 +123,26 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		}
 	}
 
+	public void testIncrementalAndAnnotations() {
+		initialiseProject("Annos");
+		build("Annos");
+		checkWasFullBuild();
+		checkCompileWeaveCount("Annos", 4, 4);
+		assertEquals("Should be 3 relationships ", 3, AsmManager.getDefault().getRelationshipMap().getEntries().size());
+
+		alter("Annos", "inc1"); // Comment out the annotation on Parent
+		build("Annos");
+		checkWasntFullBuild();
+		assertEquals("Should be no relationships ", 0, AsmManager.getDefault().getRelationshipMap().getEntries().size());
+		checkCompileWeaveCount("Annos", 3, 3);
+
+		alter("Annos", "inc2"); // Add the annotation back onto Parent
+		build("Annos");
+		checkWasntFullBuild();
+		assertEquals("Should be 3 relationships ", 3, AsmManager.getDefault().getRelationshipMap().getEntries().size());
+		checkCompileWeaveCount("Annos", 3, 3);
+	}
+
 	public void testIncrementalItdsWithMultipleAspects_pr173729() {
 		initialiseProject("PR173729");
 		build("PR173729");
