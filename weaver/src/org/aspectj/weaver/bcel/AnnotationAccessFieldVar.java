@@ -17,7 +17,6 @@ import java.util.List;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
 import org.aspectj.apache.bcel.classfile.annotation.EnumElementValueGen;
-import org.aspectj.apache.bcel.generic.Instruction;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.Type;
@@ -29,130 +28,67 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 
 /**
- * For creating the code that accesses a field of an annotation.
+ * An AnnotationAccessVar represents access to a particular annotation, whilst an AnnotationAccessFieldVar represents access to a
+ * specific field of that annotation.
  * 
+ * @author Andy Clement
  */
- // TODO 2 tidy this code up, don't make it a delegator for AnnotationAccessVar - don't override irrelevant methods
 public class AnnotationAccessFieldVar extends BcelVar {
 
-    AnnotationAccessVar aav;
-    ResolvedType f;
+	private AnnotationAccessVar annoAccessor;
+	private ResolvedType annoFieldOfInterest;
 
-    public AnnotationAccessFieldVar(AnnotationAccessVar aav, ResolvedType field) {
-        super(field, 0);
-        this.aav = aav;
-        this.f = field;
-    }
+	public AnnotationAccessFieldVar(AnnotationAccessVar aav, ResolvedType annoFieldOfInterest) {
+		super(annoFieldOfInterest, 0);
+		this.annoAccessor = aav;
+		this.annoFieldOfInterest = annoFieldOfInterest;
+	}
 
-    void appendConvertableArrayLoad(InstructionList il, InstructionFactory fact, int index, ResolvedType convertTo) {
-        // TODO Auto-generated method stub
-        super.appendConvertableArrayLoad(il, fact, index, convertTo);
-    }
+	public void appendLoadAndConvert(InstructionList il, InstructionFactory fact, ResolvedType toType) {
+		// Only possible to do annotation field value extraction at MethodExecution
+		if (annoAccessor.getKind() != Shadow.MethodExecution) {
+			return;
+		}
+		String annotationOfInterestSignature = annoAccessor.getType().getSignature();
+		// So we have an entity that has an annotation on and within it is the value we want
+		Member holder = annoAccessor.getMember();
+		AnnotationX[] annos = holder.getAnnotations();
+		for (int i = 0; i < annos.length; i++) {
+			AnnotationGen annotation = annos[i].getBcelAnnotation();
+			if (annotation.getTypeSignature().equals(annotationOfInterestSignature)) {
+				List vals = annotation.getValues();
+				boolean doneAndDusted = false;
+				for (Iterator iterator = vals.iterator(); iterator.hasNext();) {
+					ElementNameValuePairGen object = (ElementNameValuePairGen) iterator.next();
+					EnumElementValueGen v = (EnumElementValueGen) object.getValue();
+					String s = v.getEnumTypeString();
+					ResolvedType rt = toType.getWorld().resolve(UnresolvedType.forSignature(s));
+					if (rt.equals(toType)) {
+						il.append(fact.createGetStatic(rt.getName(), v.getEnumValueString(), Type.getType(rt.getSignature())));
+						doneAndDusted = true;
+					}
+				}
+				if (!doneAndDusted) {
+					ResolvedMember[] annotationFields = toType.getWorld().resolve(
+							UnresolvedType.forSignature(annotation.getTypeSignature())).getDeclaredMethods();
+	
+					// ResolvedMember[] fs = rt.getDeclaredFields();
+					for (int ii = 0; ii < annotationFields.length; ii++) {
+						if (annotationFields[ii].getType().equals(annoFieldOfInterest)) {
+							String dvalue = annotationFields[ii].getAnnotationDefaultValue();
+							// form will be LBLAHBLAHBLAH;X where X is the field within X
+							String typename = dvalue.substring(0, dvalue.lastIndexOf(';') + 1);
+							String field = dvalue.substring(dvalue.lastIndexOf(';') + 1);
+							ResolvedType rt = toType.getWorld().resolve(UnresolvedType.forSignature(typename));
+							il.append(fact.createGetStatic(rt.getName(), field, Type.getType(rt.getSignature())));
+						}
+					}
+				}
+			}
+		}
+	}
 
-    void appendConvertableArrayStore(InstructionList il, InstructionFactory fact, int index, BcelVar storee) {
-        // TODO Auto-generated method stub
-        super.appendConvertableArrayStore(il, fact, index, storee);
-    }
-
-    public void appendLoad(InstructionList il, InstructionFactory fact) {
-        // TODO Auto-generated method stub
-        super.appendLoad(il, fact);
-    }
-
-    public void appendLoadAndConvert(InstructionList il, InstructionFactory fact, ResolvedType toType) {
-        System.err.println("Loading " + toType);
-        if (aav.getKind() == Shadow.MethodExecution) {
-            // So we have an entity that has an annotation on and within it is the value we want
-            Member holder = aav.getMember();
-            AnnotationX[] annos = holder.getAnnotations();
-            for (int i = 0; i < annos.length; i++) {
-                AnnotationGen ag = annos[i].getBcelAnnotation();
-                List vals = ag.getValues();
-                boolean doneAndDusted = false;
-                for (Iterator iterator = vals.iterator(); iterator.hasNext();) {
-                    ElementNameValuePairGen object = (ElementNameValuePairGen) iterator.next();
-//                    String name = object.getNameString();
-                    EnumElementValueGen v = (EnumElementValueGen) object.getValue();
-                    String s = v.getEnumTypeString();
-                    ResolvedType rt = toType.getWorld().resolve(UnresolvedType.forSignature(s));
-                    if (rt.equals(toType)) {
-                        il.append(fact.createGetStatic(rt.getName(), v.getEnumValueString(), Type.getType(rt.getSignature())));
-                        doneAndDusted = true;
-                    }
-                }
-                if (!doneAndDusted) {
-                    ResolvedMember[] annotationFields = toType.getWorld().resolve(UnresolvedType.forSignature(ag.getTypeSignature())).getDeclaredMethods();
-                
-                    // ResolvedMember[] fs = rt.getDeclaredFields();
-                     for (int ii = 0; ii < annotationFields.length; ii++) {
-                        if (annotationFields[ii].getType().equals(f)) {
-                            String dvalue = annotationFields[ii].getAnnotationDefaultValue();
-                            // form will be LBLAHBLAHBLAH;X where X is the field within X
-                            String typename = dvalue.substring(0, dvalue.lastIndexOf(';') + 1);
-                            String field = dvalue.substring(dvalue.lastIndexOf(';') + 1);
-                            ResolvedType rt = toType.getWorld().resolve(UnresolvedType.forSignature(typename));
-                            il.append(fact.createGetStatic(rt.getName(), field, Type.getType(rt.getSignature())));
-                        }
-                    }
-                }
-            }
-        } else {
-            throw new RuntimeException("You, sir, are having a laugh");
-        }
-    }
-
-    public void appendStore(InstructionList il, InstructionFactory fact) {
-        // TODO Auto-generated method stub
-        super.appendStore(il, fact);
-    }
-
-    InstructionList createConvertableArrayLoad(InstructionFactory fact, int index, ResolvedType convertTo) {
-        // TODO Auto-generated method stub
-        return super.createConvertableArrayLoad(fact, index, convertTo);
-    }
-
-    InstructionList createConvertableArrayStore(InstructionFactory fact, int index, BcelVar storee) {
-        // TODO Auto-generated method stub
-        return super.createConvertableArrayStore(fact, index, storee);
-    }
-
-    public InstructionList createCopyFrom(InstructionFactory fact, int oldSlot) {
-        // TODO Auto-generated method stub
-        return super.createCopyFrom(fact, oldSlot);
-    }
-
-    public Instruction createLoad(InstructionFactory fact) {
-        
-        return null;
-    }
-
-    public Instruction createStore(InstructionFactory fact) {
-        // TODO Auto-generated method stub
-        return super.createStore(fact);
-    }
-
-    public int getPositionInAroundState() {
-        // TODO Auto-generated method stub
-        return super.getPositionInAroundState();
-    }
-
-    public int getSlot() {
-        // TODO Auto-generated method stub
-        return super.getSlot();
-    }
-
-    public void insertLoad(InstructionList il, InstructionFactory fact) {
-        // TODO Auto-generated method stub
-        super.insertLoad(il, fact);
-    }
-
-    public void setPositionInAroundState(int positionInAroundState) {
-        // TODO Auto-generated method stub
-        super.setPositionInAroundState(positionInAroundState);
-    }
-
-    public String toString() {
-        // TODO Auto-generated method stub
-        return super.toString();
-    }
+	public String toString() {
+		return super.toString();
+	}
 }
