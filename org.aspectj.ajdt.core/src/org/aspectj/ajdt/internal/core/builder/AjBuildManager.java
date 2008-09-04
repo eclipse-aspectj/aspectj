@@ -282,8 +282,10 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				binarySourcesForTheNextCompile = state.getBinaryFilesToCompile(true);
 				Set files = state.getFilesToCompile(true);
 				if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode())
-					if (AsmManager.attemptIncrementalModelRepairs)
+					if (AsmManager.attemptIncrementalModelRepairs) {
+						AsmManager.getDefault().resetDeltaProcessing();
 						AsmManager.getDefault().processDelta(files, state.getAddedFiles(), state.getDeletedFiles());
+					}
 				boolean hereWeGoAgain = !(files.isEmpty() && binarySourcesForTheNextCompile.isEmpty());
 				for (int i = 0; (i < 5) && hereWeGoAgain; i++) {
 					if (state.listenerDefined())
