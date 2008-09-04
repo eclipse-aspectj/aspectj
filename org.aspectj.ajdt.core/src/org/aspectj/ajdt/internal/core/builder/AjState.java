@@ -41,6 +41,7 @@ import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatException;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryField;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryMethod;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
@@ -1339,6 +1340,27 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		// superclass name
 		if (!CharOperation.equals(reader.getSuperclassName(), existingType.superclassName)) {
 			return true;
+		}
+
+		// have annotations changed on the type?
+		IBinaryAnnotation[] newAnnos = reader.getAnnotations();
+		if (newAnnos == null || newAnnos.length == 0) {
+			if (existingType.annotations != null && existingType.annotations.length != 0) {
+				return true;
+			}
+		} else {
+			IBinaryAnnotation[] existingAnnos = existingType.annotations;
+			if (existingAnnos == null || existingAnnos.length != newAnnos.length) {
+				return true;
+			}
+			// Does not allow for an order switch
+			// Does not cope with a change in values set on the annotation (hard to create a testcase where this is a problem tho)
+			for (int i = 0; i < newAnnos.length; i++) {
+				if (!CharOperation.equals(newAnnos[i].getTypeName(), existingAnnos[i].getTypeName())) {
+					return true;
+				}
+			}
+
 		}
 
 		// interfaces
