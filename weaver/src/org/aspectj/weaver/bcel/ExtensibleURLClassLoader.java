@@ -11,7 +11,7 @@
  *     Martin Lippert     initial implementation 
  * ******************************************************************/
 
-package org.aspectj.weaver;
+package org.aspectj.weaver.bcel;
 
 import java.io.IOException;
 import java.net.URL;
@@ -19,7 +19,7 @@ import java.net.URLClassLoader;
 import java.security.CodeSource;
 
 import org.aspectj.util.FileUtil;
-import org.aspectj.weaver.bcel.ClassPathManager;
+import org.aspectj.weaver.UnresolvedType;
 
 public abstract class ExtensibleURLClassLoader extends URLClassLoader {
 	
