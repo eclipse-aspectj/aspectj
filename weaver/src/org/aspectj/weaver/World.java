@@ -36,11 +36,9 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.context.PinpointingMessageHandler;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
-import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
-import org.aspectj.weaver.reflect.ReflectionBasedReferenceTypeDelegate;
 import org.aspectj.weaver.tools.PointcutDesignatorHandler;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
@@ -973,49 +971,6 @@ public abstract class World implements Dump.INode {
 				}
 			}
 			return ret;
-		}
-
-		public String toString() {
-			StringBuffer sb = new StringBuffer();
-			sb.append("types:\n");
-			sb.append(dumpthem(tMap));
-			sb.append("expendables:\n");
-			sb.append(dumpthem(expendableMap));
-			return sb.toString();
-		}
-
-		private String dumpthem(Map m) {
-			StringBuffer sb = new StringBuffer();
-
-			int otherTypes = 0;
-			int bcelDel = 0;
-			int refDel = 0;
-
-			for (Iterator iter = m.entrySet().iterator(); iter.hasNext();) {
-				Map.Entry entry = (Map.Entry) iter.next();
-				Object val = entry.getValue();
-				if (val instanceof WeakReference) {
-					val = ((WeakReference) val).get();
-				} else if (val instanceof SoftReference) {
-					val = ((SoftReference) val).get();
-				}
-				sb.append(entry.getKey() + "=" + val).append("\n");
-				if (val instanceof ReferenceType) {
-					ReferenceType refType = (ReferenceType) val;
-					if (refType.getDelegate() instanceof BcelObjectType) {
-						bcelDel++;
-					} else if (refType.getDelegate() instanceof ReflectionBasedReferenceTypeDelegate) {
-						refDel++;
-					} else {
-						otherTypes++;
-					}
-				} else {
-					otherTypes++;
-				}
-			}
-			sb.append("# BCEL = " + bcelDel + ", # REF = " + refDel + ", # Other = " + otherTypes);
-
-			return sb.toString();
 		}
 
 		// public ResolvedType[] getAllTypes() {
