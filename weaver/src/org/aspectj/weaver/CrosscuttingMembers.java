@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.aspectj.weaver.bcel.BcelMethod;
-import org.aspectj.weaver.bcel.BcelTypeMunger;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
@@ -44,8 +42,8 @@ import org.aspectj.weaver.patterns.PointcutRewriter;
  * @author Jim Hugunin
  */
 public class CrosscuttingMembers {
-	private ResolvedType inAspect;
-	private World world;
+	private final ResolvedType inAspect;
+	private final World world;
 
 	private PerClause perClause;
 
@@ -70,8 +68,8 @@ public class CrosscuttingMembers {
 		this.shouldConcretizeIfNeeded = shouldConcretizeIfNeeded;
 	}
 
-	private Hashtable cflowFields = new Hashtable();
-	private Hashtable cflowBelowFields = new Hashtable();
+	private final Hashtable cflowFields = new Hashtable();
+	private final Hashtable cflowBelowFields = new Hashtable();
 
 	// public void addConcreteShadowMungers(Collection c) {
 	// shadowMungers.addAll(c);
@@ -314,8 +312,8 @@ public class CrosscuttingMembers {
 		if (!careAboutShadowMungers) {
 			for (Iterator iter = typeMungers.iterator(); iter.hasNext();) {
 				Object o = iter.next();
-				if (o instanceof BcelTypeMunger) {
-					BcelTypeMunger typeMunger = (BcelTypeMunger) o;
+				if (o instanceof ConcreteTypeMunger) {
+					ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) o;
 					if (!typeMunger.existsToSupportShadowMunging()) {
 						theseTypeMungers.add(typeMunger);
 					}
@@ -326,8 +324,8 @@ public class CrosscuttingMembers {
 
 			for (Iterator iter = other.typeMungers.iterator(); iter.hasNext();) {
 				Object o = iter.next();
-				if (o instanceof BcelTypeMunger) {
-					BcelTypeMunger typeMunger = (BcelTypeMunger) o;
+				if (o instanceof ConcreteTypeMunger) {
+					ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) o;
 					if (!typeMunger.existsToSupportShadowMunging()) {
 						otherTypeMungers.add(typeMunger);
 					}
@@ -426,8 +424,8 @@ public class CrosscuttingMembers {
 			for (Iterator iterator = otherInlinedAroundMungers.iterator(); iterator.hasNext();) {
 				Advice otherAdvice = (Advice) iterator.next();
 				if (thisAdvice.equals(otherAdvice)) {
-					if (thisAdvice.getSignature() instanceof BcelMethod) {
-						if (((BcelMethod) thisAdvice.getSignature()).isEquivalentTo(otherAdvice.getSignature())) {
+					if (thisAdvice.getSignature() instanceof ResolvedMemberImpl) {
+						if (((ResolvedMemberImpl) thisAdvice.getSignature()).isEquivalentTo(otherAdvice.getSignature())) {
 							foundIt = true;
 							continue;
 						}

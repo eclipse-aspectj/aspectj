@@ -26,17 +26,16 @@ import java.util.Set;
 import org.aspectj.bridge.ISourceLocation;
 
 /**
- * This is the declared member, i.e. it will always correspond to an actual
- * method/... declaration
+ * This is the declared member, i.e. it will always correspond to an actual method/... declaration
  */
-public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
-		AnnotatedElement, TypeVariableDeclaringElement, ResolvedMember {
+public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, AnnotatedElement, TypeVariableDeclaringElement,
+		ResolvedMember {
 
 	private String[] parameterNames = null;
 	protected UnresolvedType[] checkedExceptions = UnresolvedType.NONE;
 	/**
-	 * if this member is a parameterized version of a member in a generic type,
-	 * then this field holds a reference to the member we parameterize.
+	 * if this member is a parameterized version of a member in a generic type, then this field holds a reference to the member we
+	 * parameterize.
 	 */
 	protected ResolvedMember backingGenericMember = null;
 
@@ -62,43 +61,33 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 	protected ISourceContext sourceContext = null;
 
 	// XXX deprecate this in favor of the constructor below
-	public ResolvedMemberImpl(MemberKind kind, UnresolvedType declaringType,
-			int modifiers, UnresolvedType returnType, String name,
+	public ResolvedMemberImpl(MemberKind kind, UnresolvedType declaringType, int modifiers, UnresolvedType returnType, String name,
 			UnresolvedType[] parameterTypes) {
 		super(kind, declaringType, modifiers, returnType, name, parameterTypes);
 	}
 
-	public ResolvedMemberImpl(MemberKind kind, UnresolvedType declaringType,
-			int modifiers, UnresolvedType returnType, String name,
+	public ResolvedMemberImpl(MemberKind kind, UnresolvedType declaringType, int modifiers, UnresolvedType returnType, String name,
 			UnresolvedType[] parameterTypes, UnresolvedType[] checkedExceptions) {
 		super(kind, declaringType, modifiers, returnType, name, parameterTypes);
 		this.checkedExceptions = checkedExceptions;
 	}
 
-	public ResolvedMemberImpl(MemberKind kind, UnresolvedType declaringType,
-			int modifiers, UnresolvedType returnType, String name,
-			UnresolvedType[] parameterTypes,
-			UnresolvedType[] checkedExceptions,
-			ResolvedMember backingGenericMember) {
-		this(kind, declaringType, modifiers, returnType, name, parameterTypes,
-				checkedExceptions);
+	public ResolvedMemberImpl(MemberKind kind, UnresolvedType declaringType, int modifiers, UnresolvedType returnType, String name,
+			UnresolvedType[] parameterTypes, UnresolvedType[] checkedExceptions, ResolvedMember backingGenericMember) {
+		this(kind, declaringType, modifiers, returnType, name, parameterTypes, checkedExceptions);
 		this.backingGenericMember = backingGenericMember;
 		this.isAjSynthetic = backingGenericMember.isAjSynthetic();
 	}
 
-	public ResolvedMemberImpl(MemberKind kind, UnresolvedType declaringType,
-			int modifiers, String name, String signature) {
+	public ResolvedMemberImpl(MemberKind kind, UnresolvedType declaringType, int modifiers, String name, String signature) {
 		super(kind, declaringType, modifiers, name, signature);
 	}
 
 	/**
-	 * Compute the full set of signatures for a member. This walks up the
-	 * hierarchy giving the ResolvedMember in each defining type in the
-	 * hierarchy. A shadowMember can be created with a target type (declaring
-	 * type) that does not actually define the member. This is ok as long as the
-	 * member is inherited in the declaring type. Each declaring type in the
-	 * line to the actual declaring type is added as an additional signature.
-	 * For example:
+	 * Compute the full set of signatures for a member. This walks up the hierarchy giving the ResolvedMember in each defining type
+	 * in the hierarchy. A shadowMember can be created with a target type (declaring type) that does not actually define the member.
+	 * This is ok as long as the member is inherited in the declaring type. Each declaring type in the line to the actual declaring
+	 * type is added as an additional signature. For example:
 	 * 
 	 * class A { void foo(); } class B extends A {}
 	 * 
@@ -109,16 +98,13 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 	 * @param joinPointSignature
 	 * @param inAWorld
 	 */
-	public static JoinPointSignature[] getJoinPointSignatures(
-			Member joinPointSignature, World inAWorld) {
+	public static JoinPointSignature[] getJoinPointSignatures(Member joinPointSignature, World inAWorld) {
 
 		// Walk up hierarchy creating one member for each type up to and
 		// including the
 		// first defining type
-		ResolvedType originalDeclaringType = joinPointSignature
-				.getDeclaringType().resolve(inAWorld);
-		ResolvedMemberImpl firstDefiningMember = (ResolvedMemberImpl) joinPointSignature
-				.resolve(inAWorld);
+		ResolvedType originalDeclaringType = joinPointSignature.getDeclaringType().resolve(inAWorld);
+		ResolvedMemberImpl firstDefiningMember = (ResolvedMemberImpl) joinPointSignature.resolve(inAWorld);
 		if (firstDefiningMember == null) {
 			return new JoinPointSignature[0];
 		}
@@ -127,8 +113,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 		// should be fixed elsewhere but add this resolve call on the end for
 		// now so that we can
 		// focus on one problem at a time...
-		ResolvedType firstDefiningType = firstDefiningMember.getDeclaringType()
-				.resolve(inAWorld);
+		ResolvedType firstDefiningType = firstDefiningMember.getDeclaringType().resolve(inAWorld);
 		if (firstDefiningType != originalDeclaringType) {
 			if (joinPointSignature.getKind() == Member.CONSTRUCTOR) {
 				return new JoinPointSignature[0];
@@ -139,13 +124,11 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 		}
 
 		List declaringTypes = new ArrayList();
-		accumulateTypesInBetween(originalDeclaringType, firstDefiningType,
-				declaringTypes);
+		accumulateTypesInBetween(originalDeclaringType, firstDefiningType, declaringTypes);
 		Set memberSignatures = new HashSet();
 		for (Iterator iter = declaringTypes.iterator(); iter.hasNext();) {
 			ResolvedType declaringType = (ResolvedType) iter.next();
-			ResolvedMember member = firstDefiningMember
-					.withSubstituteDeclaringType(declaringType);
+			ResolvedMember member = firstDefiningMember.withSubstituteDeclaringType(declaringType);
 			memberSignatures.add(member);
 		}
 
@@ -154,15 +137,12 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 			// include the signature for
 			// every type between the firstDefiningMember and the root defining
 			// member.
-			Iterator superTypeIterator = firstDefiningType
-					.getDirectSupertypes();
+			Iterator superTypeIterator = firstDefiningType.getDirectSupertypes();
 			List typesAlreadyVisited = new ArrayList();
-			accumulateMembersMatching(firstDefiningMember, superTypeIterator,
-					typesAlreadyVisited, memberSignatures);
+			accumulateMembersMatching(firstDefiningMember, superTypeIterator, typesAlreadyVisited, memberSignatures);
 		}
 
-		JoinPointSignature[] ret = new JoinPointSignature[memberSignatures
-				.size()];
+		JoinPointSignature[] ret = new JoinPointSignature[memberSignatures.size()];
 		memberSignatures.toArray(ret);
 		return ret;
 	}
@@ -178,11 +158,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 	}
 
 	/**
-	 * Build a list containing every type between subtype and supertype,
-	 * inclusively.
+	 * Build a list containing every type between subtype and supertype, inclusively.
 	 */
-	private static void accumulateTypesInBetween(ResolvedType subType,
-			ResolvedType superType, List types) {
+	private static void accumulateTypesInBetween(ResolvedType subType, ResolvedType superType, List types) {
 		types.add(subType);
 		if (subType == superType) {
 			return;
@@ -197,47 +175,33 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 	}
 
 	/**
-	 * We have a resolved member, possibly with type parameter references as
-	 * parameters or return type. We need to find all its ancestor members. When
-	 * doing this, a type parameter matches regardless of bounds (bounds can be
-	 * narrowed down the hierarchy).
+	 * We have a resolved member, possibly with type parameter references as parameters or return type. We need to find all its
+	 * ancestor members. When doing this, a type parameter matches regardless of bounds (bounds can be narrowed down the hierarchy).
 	 */
-	private static void accumulateMembersMatching(
-			ResolvedMemberImpl memberToMatch, Iterator typesToLookIn,
+	private static void accumulateMembersMatching(ResolvedMemberImpl memberToMatch, Iterator typesToLookIn,
 			List typesAlreadyVisited, Set foundMembers) {
 		while (typesToLookIn.hasNext()) {
 			ResolvedType toLookIn = (ResolvedType) typesToLookIn.next();
 			if (!typesAlreadyVisited.contains(toLookIn)) {
 				typesAlreadyVisited.add(toLookIn);
-				ResolvedMemberImpl foundMember = (ResolvedMemberImpl) toLookIn
-						.lookupResolvedMember(memberToMatch, true);
-				if (foundMember != null
-						&& isVisibleTo(memberToMatch, foundMember)) {
+				ResolvedMemberImpl foundMember = (ResolvedMemberImpl) toLookIn.lookupResolvedMember(memberToMatch, true);
+				if (foundMember != null && isVisibleTo(memberToMatch, foundMember)) {
 					List declaringTypes = new ArrayList();
 					// declaring type can be unresolved if the member can from
 					// an ITD...
-					ResolvedType resolvedDeclaringType = foundMember
-							.getDeclaringType().resolve(toLookIn.getWorld());
-					accumulateTypesInBetween(toLookIn, resolvedDeclaringType,
-							declaringTypes);
-					for (Iterator iter = declaringTypes.iterator(); iter
-							.hasNext();) {
+					ResolvedType resolvedDeclaringType = foundMember.getDeclaringType().resolve(toLookIn.getWorld());
+					accumulateTypesInBetween(toLookIn, resolvedDeclaringType, declaringTypes);
+					for (Iterator iter = declaringTypes.iterator(); iter.hasNext();) {
 						ResolvedType declaringType = (ResolvedType) iter.next();
 						// typesAlreadyVisited.add(declaringType);
-						ResolvedMember member = foundMember
-								.withSubstituteDeclaringType(declaringType);
+						ResolvedMember member = foundMember.withSubstituteDeclaringType(declaringType);
 						foundMembers.add(member);
 					}
-					if (toLookIn.isParameterizedType()
-							&& (foundMember.backingGenericMember != null)) {
-						foundMembers.add(new JoinPointSignature(
-								foundMember.backingGenericMember,
-								foundMember.declaringType.resolve(toLookIn
-										.getWorld())));
+					if (toLookIn.isParameterizedType() && (foundMember.backingGenericMember != null)) {
+						foundMembers.add(new JoinPointSignature(foundMember.backingGenericMember, foundMember.declaringType
+								.resolve(toLookIn.getWorld())));
 					}
-					accumulateMembersMatching(foundMember, toLookIn
-							.getDirectSupertypes(), typesAlreadyVisited,
-							foundMembers);
+					accumulateMembersMatching(foundMember, toLookIn.getDirectSupertypes(), typesAlreadyVisited, foundMembers);
 					// if this was a parameterized type, look in the generic
 					// type that backs it too
 				}
@@ -246,18 +210,15 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 	}
 
 	/**
-	 * Returns true if the parent member is visible to the child member In the
-	 * same declaring type this is always true, otherwise if parent is private
-	 * it is false.
+	 * Returns true if the parent member is visible to the child member In the same declaring type this is always true, otherwise if
+	 * parent is private it is false.
 	 * 
 	 * @param childMember
 	 * @param parentMember
 	 * @return
 	 */
-	private static boolean isVisibleTo(ResolvedMember childMember,
-			ResolvedMember parentMember) {
-		if (childMember.getDeclaringType().equals(
-				parentMember.getDeclaringType()))
+	private static boolean isVisibleTo(ResolvedMember childMember, ResolvedMember parentMember) {
+		if (childMember.getDeclaringType().equals(parentMember.getDeclaringType()))
 			return true;
 		if (Modifier.isPrivate(parentMember.getModifiers())) {
 			return false;
@@ -304,15 +265,12 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 	}
 
 	/**
-	 * Check if this member has an annotation of the specified type. If the
-	 * member has a backing generic member then this member represents a
-	 * parameterization of a member in a generic type and the annotations
-	 * available on the backing generic member should be used.
+	 * Check if this member has an annotation of the specified type. If the member has a backing generic member then this member
+	 * represents a parameterization of a member in a generic type and the annotations available on the backing generic member
+	 * should be used.
 	 * 
-	 * @param ofType
-	 *            the type of the annotation being searched for
-	 * @return true if the annotation is found on this member or its backing
-	 *         generic member
+	 * @param ofType the type of the annotation being searched for
+	 * @return true if the annotation is found on this member or its backing generic member
 	 */
 	public boolean hasAnnotation(UnresolvedType ofType) {
 		// The ctors don't allow annotations to be specified ... yet - but
@@ -321,8 +279,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 		// this type - BcelField/BcelMethod
 		if (backingGenericMember != null) {
 			if (annotationTypes != null) {
-				throw new BCException(
-						"Unexpectedly found a backing generic member and a local set of annotations");
+				throw new BCException("Unexpectedly found a backing generic member and a local set of annotations");
 			}
 			return backingGenericMember.hasAnnotation(ofType);
 		}
@@ -339,8 +296,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 		// this type - BcelField/BcelMethod
 		if (backingGenericMember != null) {
 			if (annotationTypes != null) {
-				throw new BCException(
-						"Unexpectedly found a backing generic member and a local set of annotations");
+				throw new BCException("Unexpectedly found a backing generic member and a local set of annotations");
 			}
 			return backingGenericMember.getAnnotationTypes();
 		}
@@ -378,8 +334,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 	public AnnotationAJ[][] getParameterAnnotations() {
 		if (backingGenericMember != null)
 			return backingGenericMember.getParameterAnnotations();
-		throw new BCException("Cannot return parameter annotations for a "
-				+ this.getClass().getName() + " member");
+		throw new BCException("Cannot return parameter annotations for a " + this.getClass().getName() + " member");
 		// return super.getParameterAnnotations();
 	}
 
@@ -392,8 +347,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 	}
 
 	public boolean isBridgeMethod() {
-		return (modifiers & Constants.ACC_BRIDGE) != 0
-				&& getKind().equals(METHOD);
+		return (modifiers & Constants.ACC_BRIDGE) != 0 && getKind().equals(METHOD);
 	}
 
 	public boolean isVarargsMethod() {
@@ -446,13 +400,10 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 	}
 
 	/**
-	 * Return the member generic signature that would be suitable for inclusion
-	 * in a class file Signature attribute. For: <T> List<String> getThem(T t)
-	 * {} we would create:
-	 * <T:Ljava/lang/Object;>(TT;)Ljava/util/List<Ljava/lang/String;>;;
+	 * Return the member generic signature that would be suitable for inclusion in a class file Signature attribute. For: <T>
+	 * List<String> getThem(T t) {} we would create: <T:Ljava/lang/Object;>(TT;)Ljava/util/List<Ljava/lang/String;>;;
 	 * 
-	 * @return the generic signature for the member that could be inserted into
-	 *         a class file
+	 * @return the generic signature for the member that could be inserted into a class file
 	 */
 	public String getSignatureForAttribute() {
 		StringBuffer sb = new StringBuffer();
@@ -494,20 +445,18 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 		return sb.toString();
 	}
 
-	public static void writeArray(ResolvedMember[] members, DataOutputStream s)
-			throws IOException {
+	public static void writeArray(ResolvedMember[] members, DataOutputStream s) throws IOException {
 		s.writeInt(members.length);
 		for (int i = 0, len = members.length; i < len; i++) {
 			members[i].write(s);
 		}
 	}
 
-	public static ResolvedMemberImpl readResolvedMember(
-			VersionedDataInputStream s, ISourceContext sourceContext)
+	public static ResolvedMemberImpl readResolvedMember(VersionedDataInputStream s, ISourceContext sourceContext)
 			throws IOException {
 
-		ResolvedMemberImpl m = new ResolvedMemberImpl(MemberKind.read(s),
-				UnresolvedType.read(s), s.readInt(), s.readUTF(), s.readUTF());
+		ResolvedMemberImpl m = new ResolvedMemberImpl(MemberKind.read(s), UnresolvedType.read(s), s.readInt(), s.readUTF(), s
+				.readUTF());
 		m.checkedExceptions = UnresolvedType.readArray(s);
 
 		m.start = s.readInt();
@@ -536,11 +485,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 					int ps = s.readInt();
 					UnresolvedType[] params = new UnresolvedType[ps];
 					for (int i = 0; i < params.length; i++) {
-						params[i] = TypeFactory.createTypeFromSignature(s
-								.readUTF());
+						params[i] = TypeFactory.createTypeFromSignature(s.readUTF());
 					}
-					UnresolvedType rt = TypeFactory.createTypeFromSignature(s
-							.readUTF());
+					UnresolvedType rt = TypeFactory.createTypeFromSignature(s.readUTF());
 					m.parameterTypes = params;
 					m.returnType = rt;
 				}
@@ -549,9 +496,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 		return m;
 	}
 
-	public static ResolvedMember[] readResolvedMemberArray(
-			VersionedDataInputStream s, ISourceContext context)
-			throws IOException {
+	public static ResolvedMember[] readResolvedMemberArray(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		int len = s.readInt();
 		ResolvedMember[] members = new ResolvedMember[len];
 		for (int i = 0; i < len; i++) {
@@ -581,8 +526,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 			}
 			declaringType = declaringType.resolve(world);
 			if (declaringType.isRawType())
-				declaringType = ((ReferenceType) declaringType)
-						.getGenericType();
+				declaringType = ((ReferenceType) declaringType).getGenericType();
 
 			if (parameterTypes != null && parameterTypes.length > 0) {
 				for (int i = 0; i < parameterTypes.length; i++) {
@@ -674,8 +618,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 
 	public boolean isVisible(ResolvedType fromType) {
 		World world = fromType.getWorld();
-		return ResolvedType.isVisible(getModifiers(), getDeclaringType()
-				.resolve(world), fromType);
+		return ResolvedType.isVisible(getModifiers(), getDeclaringType().resolve(world), fromType);
 	}
 
 	public void setCheckedExceptions(UnresolvedType[] checkedExceptions) {
@@ -691,60 +634,48 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 	}
 
 	/**
-	 * Get the UnresolvedType for the return type, taking generic signature into
-	 * account
+	 * Get the UnresolvedType for the return type, taking generic signature into account
 	 */
 	public UnresolvedType getGenericReturnType() {
 		return getReturnType();
 	}
 
 	/**
-	 * Get the TypeXs of the parameter types, taking generic signature into
-	 * account
+	 * Get the TypeXs of the parameter types, taking generic signature into account
 	 */
 	public UnresolvedType[] getGenericParameterTypes() {
 		return getParameterTypes();
 	}
 
-	public ResolvedMemberImpl parameterizedWith(
-			UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
+	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
 			boolean isParameterized) {
-		return parameterizedWith(typeParameters, newDeclaringType,
-				isParameterized, null);
+		return parameterizedWith(typeParameters, newDeclaringType, isParameterized, null);
 	}
 
 	/**
-	 * Return a resolvedmember in which all the type variables in the signature
-	 * have been replaced with the given bindings. The 'isParameterized' flag
-	 * tells us whether we are creating a raw type version or not. if
-	 * (isParameterized) then List<T> will turn into List<String> (for example)
-	 * - if (!isParameterized) then List<T> will turn into List.
+	 * Return a resolvedmember in which all the type variables in the signature have been replaced with the given bindings. The
+	 * 'isParameterized' flag tells us whether we are creating a raw type version or not. if (isParameterized) then List<T> will
+	 * turn into List<String> (for example) - if (!isParameterized) then List<T> will turn into List.
 	 */
-	public ResolvedMemberImpl parameterizedWith(
-			UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
+	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
 			boolean isParameterized, List aliases) {
 		if (// isParameterized && <-- might need this bit...
 		!getDeclaringType().isGenericType()) {
-			throw new IllegalStateException(
-					"Can't ask to parameterize a member of non-generic type: "
-							+ getDeclaringType() + "  kind("
-							+ getDeclaringType().typeKind + ")");
+			throw new IllegalStateException("Can't ask to parameterize a member of non-generic type: " + getDeclaringType()
+					+ "  kind(" + getDeclaringType().typeKind + ")");
 		}
 		TypeVariable[] typeVariables = getDeclaringType().getTypeVariables();
 		if (isParameterized && (typeVariables.length != typeParameters.length)) {
-			throw new IllegalStateException(
-					"Wrong number of type parameters supplied");
+			throw new IllegalStateException("Wrong number of type parameters supplied");
 		}
 		Map typeMap = new HashMap();
-		boolean typeParametersSupplied = typeParameters != null
-				&& typeParameters.length > 0;
+		boolean typeParametersSupplied = typeParameters != null && typeParameters.length > 0;
 		if (typeVariables != null) {
 			// If no 'replacements' were supplied in the typeParameters array
 			// then collapse
 			// type variables to their first bound.
 			for (int i = 0; i < typeVariables.length; i++) {
-				UnresolvedType ut = (!typeParametersSupplied ? typeVariables[i]
-						.getFirstBound() : typeParameters[i]);
+				UnresolvedType ut = (!typeParametersSupplied ? typeVariables[i].getFirstBound() : typeParameters[i]);
 				typeMap.put(typeVariables[i].getName(), ut);
 			}
 		}
@@ -757,23 +688,19 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 			int posn = 0;
 			for (Iterator iter = aliases.iterator(); iter.hasNext();) {
 				String typeVariableAlias = (String) iter.next();
-				typeMap.put(typeVariableAlias,
-						(!typeParametersSupplied ? typeVariables[posn]
-								.getFirstBound() : typeParameters[posn]));
+				typeMap.put(typeVariableAlias, (!typeParametersSupplied ? typeVariables[posn].getFirstBound()
+						: typeParameters[posn]));
 				posn++;
 			}
 		}
 
-		UnresolvedType parameterizedReturnType = parameterize(
-				getGenericReturnType(), typeMap, isParameterized);
+		UnresolvedType parameterizedReturnType = parameterize(getGenericReturnType(), typeMap, isParameterized);
 		UnresolvedType[] parameterizedParameterTypes = new UnresolvedType[getGenericParameterTypes().length];
 		UnresolvedType[] genericParameterTypes = getGenericParameterTypes();
 		for (int i = 0; i < parameterizedParameterTypes.length; i++) {
-			parameterizedParameterTypes[i] = parameterize(
-					genericParameterTypes[i], typeMap, isParameterized);
+			parameterizedParameterTypes[i] = parameterize(genericParameterTypes[i], typeMap, isParameterized);
 		}
-		ResolvedMemberImpl ret = new ResolvedMemberImpl(getKind(),
-				newDeclaringType, getModifiers(), parameterizedReturnType,
+		ResolvedMemberImpl ret = new ResolvedMemberImpl(getKind(), newDeclaringType, getModifiers(), parameterizedReturnType,
 				getName(), parameterizedParameterTypes, getExceptions(), this);
 		ret.setTypeVariables(getTypeVariables());
 		ret.setSourceContext(getSourceContext());
@@ -783,10 +710,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 	}
 
 	/**
-	 * Replace occurrences of type variables in the signature with values
-	 * contained in the map. The map is of the form A=String,B=Integer and so a
-	 * signature List<A> Foo.m(B i) {} would become List<String> Foo.m(Integer
-	 * i) {}
+	 * Replace occurrences of type variables in the signature with values contained in the map. The map is of the form
+	 * A=String,B=Integer and so a signature List<A> Foo.m(B i) {} would become List<String> Foo.m(Integer i) {}
 	 */
 	public ResolvedMember parameterizedWith(Map m, World w) {
 		// if (//isParameterized && <-- might need this bit...
@@ -834,16 +759,13 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 		// }
 		// }
 
-		UnresolvedType parameterizedReturnType = parameterize(
-				getGenericReturnType(), m, true, w);
+		UnresolvedType parameterizedReturnType = parameterize(getGenericReturnType(), m, true, w);
 		UnresolvedType[] parameterizedParameterTypes = new UnresolvedType[getGenericParameterTypes().length];
 		UnresolvedType[] genericParameterTypes = getGenericParameterTypes();
 		for (int i = 0; i < parameterizedParameterTypes.length; i++) {
-			parameterizedParameterTypes[i] = parameterize(
-					genericParameterTypes[i], m, true, w);
+			parameterizedParameterTypes[i] = parameterize(genericParameterTypes[i], m, true, w);
 		}
-		ResolvedMemberImpl ret = new ResolvedMemberImpl(getKind(),
-				declaringType, getModifiers(), parameterizedReturnType,
+		ResolvedMemberImpl ret = new ResolvedMemberImpl(getKind(), declaringType, getModifiers(), parameterizedReturnType,
 				getName(), parameterizedParameterTypes, getExceptions(), this);
 		ret.setTypeVariables(getTypeVariables());
 		ret.setSourceContext(getSourceContext());
@@ -860,16 +782,13 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 		return typeVariables;
 	}
 
-	protected UnresolvedType parameterize(UnresolvedType aType,
-			Map typeVariableMap, boolean inParameterizedType) {
+	protected UnresolvedType parameterize(UnresolvedType aType, Map typeVariableMap, boolean inParameterizedType) {
 		return parameterize(aType, typeVariableMap, inParameterizedType, null);
 	}
 
-	protected UnresolvedType parameterize(UnresolvedType aType,
-			Map typeVariableMap, boolean inParameterizedType, World w) {
+	protected UnresolvedType parameterize(UnresolvedType aType, Map typeVariableMap, boolean inParameterizedType, World w) {
 		if (aType instanceof TypeVariableReference) {
-			String variableName = ((TypeVariableReference) aType)
-					.getTypeVariable().getName();
+			String variableName = ((TypeVariableReference) aType).getTypeVariable().getName();
 			if (!typeVariableMap.containsKey(variableName)) {
 				return aType; // if the type variable comes from the method (and
 				// not the type) thats OK
@@ -884,8 +803,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 				if (w != null)
 					aType = aType.resolve(w);
 				else {
-					aType = aType.resolve(((ResolvedType) getDeclaringType())
-							.getWorld());
+					aType = aType.resolve(((ResolvedType) getDeclaringType()).getWorld());
 				}
 				// }
 				return aType.parameterize(typeVariableMap);
@@ -898,22 +816,19 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 			String sig = aType.getSignature();
 			while (sig.charAt(dims) == '[')
 				dims++;
-			UnresolvedType componentSig = UnresolvedType.forSignature(sig
-					.substring(dims));
-			UnresolvedType arrayType = ResolvedType.makeArray(parameterize(
-					componentSig, typeVariableMap, inParameterizedType), dims);
+			UnresolvedType componentSig = UnresolvedType.forSignature(sig.substring(dims));
+			UnresolvedType arrayType = ResolvedType.makeArray(parameterize(componentSig, typeVariableMap, inParameterizedType),
+					dims);
 			return arrayType;
 		}
 		return aType;
 	}
 
 	/**
-	 * If this member is defined by a parameterized super-type, return the
-	 * erasure of that member. For example: interface I<T> { T foo(T aTea); }
-	 * class C implements I<String> { String foo(String aString) { return
-	 * "something"; } } The resolved member for C.foo has signature String
-	 * foo(String). The erasure of that member is Object foo(Object) -- use
-	 * upper bound of type variable. A type is a supertype of itself.
+	 * If this member is defined by a parameterized super-type, return the erasure of that member. For example: interface I<T> { T
+	 * foo(T aTea); } class C implements I<String> { String foo(String aString) { return "something"; } } The resolved member for
+	 * C.foo has signature String foo(String). The erasure of that member is Object foo(Object) -- use upper bound of type variable.
+	 * A type is a supertype of itself.
 	 */
 	// public ResolvedMember getErasure() {
 	// if (calculatedMyErasure) return myErasure;
@@ -956,8 +871,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 	}
 
 	/**
-	 * For ITDs, we use the default factory methods to build a resolved member,
-	 * then alter a couple of characteristics using this method - this is safe.
+	 * For ITDs, we use the default factory methods to build a resolved member, then alter a couple of characteristics using this
+	 * method - this is safe.
 	 */
 	public void resetName(String newName) {
 		this.name = newName;
@@ -976,49 +891,41 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 	}
 
 	/**
-	 * Returns a copy of this member but with the declaring type swapped. Copy
-	 * only needs to be shallow.
+	 * Returns a copy of this member but with the declaring type swapped. Copy only needs to be shallow.
 	 * 
 	 * @param newDeclaringType
 	 */
-	public JoinPointSignature withSubstituteDeclaringType(
-			ResolvedType newDeclaringType) {
+	public JoinPointSignature withSubstituteDeclaringType(ResolvedType newDeclaringType) {
 		JoinPointSignature ret = new JoinPointSignature(this, newDeclaringType);
 		return ret;
 	}
 
 	/**
-	 * Returns true if this member matches the other. The matching takes into
-	 * account name and parameter types only. When comparing parameter types, we
-	 * allow any type variable to match any other type variable regardless of
-	 * bounds.
+	 * Returns true if this member matches the other. The matching takes into account name and parameter types only. When comparing
+	 * parameter types, we allow any type variable to match any other type variable regardless of bounds.
 	 */
 	public boolean matches(ResolvedMember aCandidateMatch) {
 		ResolvedMemberImpl candidateMatchImpl = (ResolvedMemberImpl) aCandidateMatch;
 		if (!getName().equals(aCandidateMatch.getName()))
 			return false;
 		UnresolvedType[] myParameterTypes = getGenericParameterTypes();
-		UnresolvedType[] candidateParameterTypes = aCandidateMatch
-				.getGenericParameterTypes();
+		UnresolvedType[] candidateParameterTypes = aCandidateMatch.getGenericParameterTypes();
 		if (myParameterTypes.length != candidateParameterTypes.length)
 			return false;
 		String myParameterSignature = getParameterSigWithBoundsRemoved();
-		String candidateParameterSignature = candidateMatchImpl
-				.getParameterSigWithBoundsRemoved();
+		String candidateParameterSignature = candidateMatchImpl.getParameterSigWithBoundsRemoved();
 		if (myParameterSignature.equals(candidateParameterSignature)) {
 			return true;
 		} else {
 			// try erasure
 			myParameterSignature = getParameterSignatureErased();
-			candidateParameterSignature = candidateMatchImpl
-					.getParameterSignatureErased();
+			candidateParameterSignature = candidateMatchImpl.getParameterSignatureErased();
 			return myParameterSignature.equals(candidateParameterSignature);
 		}
 	}
 
 	/**
-	 * converts e.g. <T extends Number>.... List<T> to just Ljava/util/List<T;>;
-	 * whereas the full signature would be
+	 * converts e.g. <T extends Number>.... List<T> to just Ljava/util/List<T;>; whereas the full signature would be
 	 * Ljava/util/List<T:Ljava/lang/Number;>;
 	 */
 	private String myParameterSignatureWithBoundsRemoved = null;
@@ -1036,16 +943,15 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 		StringBuffer sig = new StringBuffer();
 		UnresolvedType[] myParameterTypes = getGenericParameterTypes();
 		for (int i = 0; i < myParameterTypes.length; i++) {
-			appendSigWithTypeVarBoundsRemoved(myParameterTypes[i], sig,
-					new HashSet());
+			appendSigWithTypeVarBoundsRemoved(myParameterTypes[i], sig, new HashSet());
 		}
 		myParameterSignatureWithBoundsRemoved = sig.toString();
 		return myParameterSignatureWithBoundsRemoved;
 	}
 
 	/**
-	 * Return the erased form of the signature with bounds collapsed for type
-	 * variables, etc. Does not include the return type, @see getParam
+	 * Return the erased form of the signature with bounds collapsed for type variables, etc. Does not include the return type, @see
+	 * getParam
 	 */
 	public String getParameterSignatureErased() {
 		if (myParameterSignatureErasure != null)
@@ -1077,8 +983,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 	// does NOT produce a meaningful java signature, but does give a unique
 	// string suitable for
 	// comparison.
-	public static void appendSigWithTypeVarBoundsRemoved(UnresolvedType aType,
-			StringBuffer toBuffer, Set alreadyUsedTypeVars) {
+	public static void appendSigWithTypeVarBoundsRemoved(UnresolvedType aType, StringBuffer toBuffer, Set alreadyUsedTypeVars) {
 		if (aType.isTypeVariableReference()) {
 			TypeVariableReferenceType typeVariableRT = (TypeVariableReferenceType) aType;
 			// pr204505
@@ -1086,16 +991,14 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 				toBuffer.append("...");
 			} else {
 				alreadyUsedTypeVars.add(aType);
-				appendSigWithTypeVarBoundsRemoved(typeVariableRT
-						.getUpperBound(), toBuffer, alreadyUsedTypeVars);
+				appendSigWithTypeVarBoundsRemoved(typeVariableRT.getUpperBound(), toBuffer, alreadyUsedTypeVars);
 			}
 			// toBuffer.append("T;");
 		} else if (aType.isParameterizedType()) {
 			toBuffer.append(aType.getRawType().getSignature());
 			toBuffer.append("<");
 			for (int i = 0; i < aType.getTypeParameters().length; i++) {
-				appendSigWithTypeVarBoundsRemoved(aType.getTypeParameters()[i],
-						toBuffer, alreadyUsedTypeVars);
+				appendSigWithTypeVarBoundsRemoved(aType.getTypeParameters()[i], toBuffer, alreadyUsedTypeVars);
 			}
 			toBuffer.append(">;");
 		} else {
@@ -1149,9 +1052,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 		if (kind != FIELD) {
 			r.append("(");
 			UnresolvedType[] params = getGenericParameterTypes();
-			boolean parameterNamesExist = showParameterNames
-					&& parameterNames != null
-					&& parameterNames.length == params.length;
+			boolean parameterNamesExist = showParameterNames && parameterNames != null && parameterNames.length == params.length;
 			if (params.length != 0) {
 				for (int i = 0, len = params.length; i < len; i++) {
 					if (i > 0)
@@ -1233,7 +1134,10 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition,
 	}
 
 	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
-		throw new UnsupportedOperationException(
-				"You should resolve this member and call getAnnotationOfType() on the result...");
+		throw new UnsupportedOperationException("You should resolve this member and call getAnnotationOfType() on the result...");
+	}
+
+	public boolean isEquivalentTo(Object other) {
+		return this.equals(other);
 	}
 }

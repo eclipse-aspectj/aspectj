@@ -1811,21 +1811,4 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		}
 		return hashCode;
 	}
-
-	/**
-	 * Some type mungers are created purely to help with the implementation of shadow mungers. For example to support the cflow()
-	 * pointcut we create a new cflow field in the aspect, and that is added via a BcelCflowCounterFieldAdder.
-	 * 
-	 * During compilation we need to compare sets of type mungers, and if some only come into existence after the 'shadowy' type
-	 * things have been processed, we need to ignore them during the comparison.
-	 * 
-	 * Returning true from this method indicates the type munger exists to support 'shadowy' stuff - and so can be ignored in some
-	 * comparison.
-	 */
-	public boolean existsToSupportShadowMunging() {
-		if (munger != null) {
-			return munger.existsToSupportShadowMunging();
-		}
-		return false;
-	}
 }
