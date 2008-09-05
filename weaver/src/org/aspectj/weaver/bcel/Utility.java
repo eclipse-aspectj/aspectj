@@ -54,7 +54,7 @@ import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute;
-import org.aspectj.weaver.AnnotationX;
+import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Lint;
@@ -112,7 +112,8 @@ public class Utility {
 		if (isl == null || isl.getSourceFile() == null || isl.getSourceFile().getName().indexOf("no debug info available") != -1) {
 			nice.append("no debug info available");
 		} else {
-			// can't use File.getName() as this fails when a Linux box encounters a path created on Windows and vice-versa
+			// can't use File.getName() as this fails when a Linux box
+			// encounters a path created on Windows and vice-versa
 			int takeFrom = isl.getSourceFile().getPath().lastIndexOf('/');
 			if (takeFrom == -1) {
 				takeFrom = isl.getSourceFile().getPath().lastIndexOf('\\');
@@ -268,7 +269,8 @@ public class Utility {
 
 	private static String[] argNames = new String[] { "arg0", "arg1", "arg2", "arg3", "arg4" };
 
-	// ??? these should perhaps be cached. Remember to profile this to see if it's a problem.
+	// ??? these should perhaps be cached. Remember to profile this to see if
+	// it's a problem.
 	public static String[] makeArgNames(int n) {
 		String[] ret = new String[n];
 		for (int i = 0; i < n; i++) {
@@ -308,7 +310,8 @@ public class Utility {
 		if (!toType.isConvertableFrom(fromType) && !fromType.isConvertableFrom(toType)) {
 			throw new BCException("can't convert from " + fromType + " to " + toType);
 		}
-		// XXX I'm sure this test can be simpler but my brain hurts and this works
+		// XXX I'm sure this test can be simpler but my brain hurts and this
+		// works
 		if (!toType.getWorld().isInJava5Mode()) {
 			if (toType.needsNoConversionFrom(fromType))
 				return;
@@ -339,7 +342,8 @@ public class Utility {
 			il.append(fact.createInvoke("org.aspectj.runtime.internal.Conversions", name, Type.OBJECT, new Type[] { from },
 					Constants.INVOKESTATIC));
 		} else if (toType.getWorld().isInJava5Mode() && validBoxing.get(toType.getSignature() + fromType.getSignature()) != null) {
-			// XXX could optimize by using any java boxing code that may be just before the call...
+			// XXX could optimize by using any java boxing code that may be just
+			// before the call...
 			Type from = BcelWorld.makeBcelType(fromType);
 			Type to = BcelWorld.makeBcelType(toType);
 			String name = (String) validBoxing.get(toType.getSignature() + fromType.getSignature());
@@ -598,7 +602,8 @@ public class Utility {
 	}
 
 	/** returns -1 if no source line attribute */
-	// this naive version overruns the JVM stack size, if only Java understood tail recursion...
+	// this naive version overruns the JVM stack size, if only Java understood
+	// tail recursion...
 	// public static int getSourceLine(InstructionHandle ih) {
 	// if (ih == null) return -1;
 	//		
@@ -613,9 +618,11 @@ public class Utility {
 	// }
 	// return getSourceLine(ih.getNext());
 	// }
-	public static int getSourceLine(InstructionHandle ih) {// ,boolean goforwards) {
+	public static int getSourceLine(InstructionHandle ih) {// ,boolean
+		// goforwards) {
 		int lookahead = 0;
-		// arbitrary rule that we will never lookahead more than 100 instructions for a line #
+		// arbitrary rule that we will never lookahead more than 100
+		// instructions for a line #
 		while (lookahead++ < 100) {
 			if (ih == null)
 				return -1;
@@ -637,9 +644,11 @@ public class Utility {
 	// return getSourceLine(ih,false);
 	// }
 
-	// assumes that there is no already extant source line tag. Otherwise we'll have to be better.
+	// assumes that there is no already extant source line tag. Otherwise we'll
+	// have to be better.
 	public static void setSourceLine(InstructionHandle ih, int lineNumber) {
-		// OPTIMIZE LineNumberTag instances for the same line could be shared throughout a method...
+		// OPTIMIZE LineNumberTag instances for the same line could be shared
+		// throughout a method...
 		ih.addTargeter(new LineNumberTag(lineNumber));
 	}
 
@@ -687,18 +696,19 @@ public class Utility {
 	 * (identified by its key) should be ignored.
 	 * 
 	 */
-	public static boolean isSuppressing(AnnotationX[] anns, String lintkey) {
+	public static boolean isSuppressing(AnnotationAJ[] anns, String lintkey) {
 		if (anns == null)
 			return false;
 		boolean suppressed = false;
 		// Go through the annotation types on the advice
 		for (int i = 0; !suppressed && i < anns.length; i++) {
 			// Check for the SuppressAjWarnings annotation
-			if (UnresolvedType.SUPPRESS_AJ_WARNINGS.getSignature().equals(anns[i].getBcelAnnotation().getTypeSignature())) {
+			if (UnresolvedType.SUPPRESS_AJ_WARNINGS.getSignature().equals(anns[i].getTypeSignature())) {
 				// Two possibilities:
 				// 1. there are no values specified (i.e. @SuppressAjWarnings)
-				// 2. there are values specified (i.e. @SuppressAjWarnings("A") or @SuppressAjWarnings({"A","B"})
-				List vals = anns[i].getBcelAnnotation().getValues();
+				// 2. there are values specified (i.e. @SuppressAjWarnings("A")
+				// or @SuppressAjWarnings({"A","B"})
+				List vals = ((BcelAnnotation) anns[i]).getBcelAnnotation().getValues();
 				if (vals == null || vals.isEmpty()) { // (1)
 					suppressed = true;
 				} else { // (2)
@@ -718,7 +728,7 @@ public class Utility {
 		return suppressed;
 	}
 
-	public static List/* Lint.Kind */getSuppressedWarnings(AnnotationX[] anns, Lint lint) {
+	public static List/* Lint.Kind */getSuppressedWarnings(AnnotationAJ[] anns, Lint lint) {
 		if (anns == null)
 			return Collections.EMPTY_LIST;
 		// Go through the annotation types
@@ -726,12 +736,14 @@ public class Utility {
 		boolean found = false;
 		for (int i = 0; !found && i < anns.length; i++) {
 			// Check for the SuppressAjWarnings annotation
-			if (UnresolvedType.SUPPRESS_AJ_WARNINGS.getSignature().equals(anns[i].getBcelAnnotation().getTypeSignature())) {
+			if (UnresolvedType.SUPPRESS_AJ_WARNINGS.getSignature().equals(
+					((BcelAnnotation) anns[i]).getBcelAnnotation().getTypeSignature())) {
 				found = true;
 				// Two possibilities:
 				// 1. there are no values specified (i.e. @SuppressAjWarnings)
-				// 2. there are values specified (i.e. @SuppressAjWarnings("A") or @SuppressAjWarnings({"A","B"})
-				List vals = anns[i].getBcelAnnotation().getValues();
+				// 2. there are values specified (i.e. @SuppressAjWarnings("A")
+				// or @SuppressAjWarnings({"A","B"})
+				List vals = ((BcelAnnotation) anns[i]).getBcelAnnotation().getValues();
 				if (vals == null || vals.isEmpty()) { // (1)
 					suppressedWarnings.addAll(lint.allKinds());
 				} else { // (2)
@@ -755,18 +767,21 @@ public class Utility {
 	// public static boolean isSimple(Method method) {
 	// if (method.getCode()==null) return true;
 	// if (method.getCode().getCode().length>10) return false;
-	// InstructionList instrucs = new InstructionList(method.getCode().getCode()); // expensive!
+	// InstructionList instrucs = new
+	// InstructionList(method.getCode().getCode()); // expensive!
 	// InstructionHandle InstrHandle = instrucs.getStart();
 	// while (InstrHandle != null) {
 	// Instruction Instr = InstrHandle.getInstruction();
 	// int opCode = Instr.opcode;
-	// // if current instruction is a branch instruction, see if it's a backward branch.
+	// // if current instruction is a branch instruction, see if it's a backward
+	// branch.
 	// // if it is return immediately (can't be trivial)
 	// if (Instr instanceof InstructionBranch) {
 	// // InstructionBranch BI = (InstructionBranch) Instr;
 	// if (Instr.getIndex() < 0) return false;
 	// } else if (Instr instanceof InvokeInstruction) {
-	// // if current instruction is an invocation, indicate that it can't be trivial
+	// // if current instruction is an invocation, indicate that it can't be
+	// trivial
 	// return false;
 	// }
 	// InstrHandle = InstrHandle.getNext();

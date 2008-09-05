@@ -37,8 +37,8 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.AbstractReferenceTypeDelegate;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationTargetKind;
-import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ReferenceType;
@@ -73,7 +73,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	private ResolvedMember[] fields = null;
 	private ResolvedMember[] methods = null;
 	private ResolvedType[] annotationTypes = null;
-	private AnnotationX[] annotations = null;
+	private AnnotationAJ[] annotations = null;
 	private TypeVariable[] typeVars = null;
 	private String retentionPolicy;
 	private AnnotationTargetKind[] annotationTargetKinds;
@@ -99,14 +99,16 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	private boolean isNested;
 	private boolean isObject = false; // set upon construction
 	private boolean isAnnotationStyleAspect = false;// set upon construction
-	private boolean isCodeStyleAspect = false; // not redundant with field above!
+	private boolean isCodeStyleAspect = false; // not redundant with field
+	// above!
 
 	private int bitflag = 0x0000;
 
 	// discovery bits
 	private static final int DISCOVERED_ANNOTATION_RETENTION_POLICY = 0x0001;
 	private static final int UNPACKED_GENERIC_SIGNATURE = 0x0002;
-	private static final int UNPACKED_AJATTRIBUTES = 0x0004; // see note(1) below
+	private static final int UNPACKED_AJATTRIBUTES = 0x0004; // see note(1)
+	// below
 	private static final int DISCOVERED_ANNOTATION_TARGET_KINDS = 0x0008;
 	private static final int DISCOVERED_DECLARED_SIGNATURE = 0x0010;
 	private static final int DISCOVERED_WHETHER_ANNOTATION_STYLE = 0x0020;
@@ -128,7 +130,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		this.javaClass = javaClass;
 		initializeFromJavaclass();
 
-		// ATAJ: set the delegate right now for @AJ pointcut, else it is done too late to lookup
+		// ATAJ: set the delegate right now for @AJ pointcut, else it is done
+		// too late to lookup
 		// @AJ pc refs annotation in class hierarchy
 		resolvedTypeX.setDelegate(this);
 
@@ -143,7 +146,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		isObject = (javaClass.getSuperclassNameIndex() == 0);
 		ensureAspectJAttributesUnpacked();
 		// if (sourceContext instanceof SourceContextImpl) {
-		// ((SourceContextImpl)sourceContext).setSourceFileName(javaClass.getSourceFileName());
+		// ((SourceContextImpl)sourceContext).setSourceFileName(javaClass.
+		// getSourceFileName());
 		// }
 		setSourcefilename(javaClass.getSourceFileName());
 	}
@@ -274,7 +278,12 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			return TypeVariable.NONE;
 
 		if (typeVars == null) {
-			Signature.ClassSignature classSig = getGenericClassTypeSignature();// cachedGenericClassTypeSignature;//javaClass.
+			Signature.ClassSignature classSig = getGenericClassTypeSignature();// cachedGenericClassTypeSignature
+			// ;
+			// /
+			// /
+			// javaClass
+			// .
 			// getGenericClassTypeSignature();
 			typeVars = new TypeVariable[classSig.formalTypeParameters.length];
 			for (int i = 0; i < typeVars.length; i++) {
@@ -398,7 +407,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 					setSourcefilename(sca.getSourceFileName());
 				}
 			} else if (a instanceof AjAttribute.WeaverVersionInfo) {
-				wvInfo = (AjAttribute.WeaverVersionInfo) a; // Set the weaver version used to build this type
+				wvInfo = (AjAttribute.WeaverVersionInfo) a; // Set the weaver
+				// version used to
+				// build this type
 			} else {
 				throw new BCException("bad attribute " + a);
 			}
@@ -444,7 +455,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	public void resetState() {
 		if (javaClass == null) {
 			// we might store the classname and allow reloading?
-			// At this point we are relying on the world to not evict if it might want to reweave multiple times
+			// At this point we are relying on the world to not evict if it
+			// might want to reweave multiple times
 			throw new BCException("can't weave evicted type");
 		}
 
@@ -478,7 +490,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		// this.perClause = null;
 		// this.weaverState = null;
 		// this.lazyClassGen = null;
-		// this next line frees up memory, but need to understand incremental implications
+		// this next line frees up memory, but need to understand incremental
+		// implications
 		// before leaving it in.
 		// getResolvedTypeX().setSourceContext(null);
 	}
@@ -508,7 +521,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			// System.err.println("creating lazy class gen for: " + this);
 			ret = new LazyClassGen(this);
 			// ret.print(System.err);
-			// System.err.println("made LCG from : " + this.getJavaClass().getSuperclassName );
+			// System.err.println("made LCG from : " +
+			// this.getJavaClass().getSuperclassName );
 			if (isAspect()) {
 				lazyClassGen = ret;
 			}
@@ -549,7 +563,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 				interfaceSignatures = newInterfaceSignatures;
 			}
 		}
-		// System.err.println("javaClass: " + Arrays.asList(javaClass.getInterfaceNames()) + " super " + superclassName);
+		// System.err.println("javaClass: " +
+		// Arrays.asList(javaClass.getInterfaceNames()) + " super " +
+		// superclassName);
 		// if (lazyClassGen != null) lazyClassGen.print();
 	}
 
@@ -560,7 +576,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		return annotationTypes;
 	}
 
-	public AnnotationX[] getAnnotations() {
+	public AnnotationAJ[] getAnnotations() {
 		ensureAnnotationsUnpacked();
 		return annotations;
 	}
@@ -576,10 +592,10 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 
 	// evil mutator - adding state not stored in the java class
-	public void addAnnotation(AnnotationX annotation) {
+	public void addAnnotation(AnnotationAJ annotation) {
 		bitflag |= DAMAGED;
 		int len = annotations.length;
-		AnnotationX[] ret = new AnnotationX[len + 1];
+		AnnotationAJ[] ret = new AnnotationAJ[len + 1];
 		System.arraycopy(annotations, 0, ret, 0, len);
 		ret[len] = annotation;
 		annotations = ret;
@@ -602,9 +618,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			if (isAnnotation()) {
 				ensureAnnotationsUnpacked();
 				for (int i = annotations.length - 1; i >= 0; i--) {
-					AnnotationX ax = annotations[i];
+					AnnotationAJ ax = annotations[i];
 					if (ax.getTypeName().equals(UnresolvedType.AT_RETENTION.getName())) {
-						List values = ax.getBcelAnnotation().getValues();
+						List values = ((BcelAnnotation) ax).getBcelAnnotation().getValues();
 						for (Iterator it = values.iterator(); it.hasNext();) {
 							ElementNameValuePairGen element = (ElementNameValuePairGen) it.next();
 							EnumElementValueGen v = (EnumElementValueGen) element.getValue();
@@ -634,7 +650,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		if ((bitflag & DISCOVERED_ANNOTATION_TARGET_KINDS) != 0)
 			return annotationTargetKinds;
 		bitflag |= DISCOVERED_ANNOTATION_TARGET_KINDS;
-		annotationTargetKinds = null; // null means we have no idea or the @Target annotation hasn't been used
+		annotationTargetKinds = null; // null means we have no idea or the
+		// @Target annotation hasn't been used
 		List targetKinds = new ArrayList();
 		if (isAnnotation()) {
 			AnnotationGen[] annotationsOnThisType = javaClass.getAnnotations();
@@ -683,15 +700,15 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			AnnotationGen annos[] = javaClass.getAnnotations();
 			if (annos == null || annos.length == 0) {
 				annotationTypes = ResolvedType.NONE;
-				annotations = AnnotationX.NONE;
+				annotations = AnnotationAJ.EMPTY_ARRAY;
 			} else {
 				World w = getResolvedTypeX().getWorld();
 				annotationTypes = new ResolvedType[annos.length];
-				annotations = new AnnotationX[annos.length];
+				annotations = new AnnotationAJ[annos.length];
 				for (int i = 0; i < annos.length; i++) {
 					AnnotationGen annotation = annos[i];
 					annotationTypes[i] = w.resolve(UnresolvedType.forSignature(annotation.getTypeSignature()));
-					annotations[i] = new AnnotationX(annotation, w);
+					annotations[i] = new BcelAnnotation(annotation, w);
 				}
 			}
 		}
@@ -714,7 +731,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		if (cSig != null) {
 			formalsForResolution = cSig.formalTypeParameters;
 			if (isNested()) {
-				// we have to find any type variables from the outer type before proceeding with resolution.
+				// we have to find any type variables from the outer type before
+				// proceeding with resolution.
 				Signature.FormalTypeParameter[] extraFormals = getFormalTypeParametersFromOuterClass();
 				if (extraFormals.length > 0) {
 					List allFormals = new ArrayList();
@@ -732,7 +750,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			try {
 				// this.superClass =
 				// BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
-				// superSig, formalsForResolution, getResolvedTypeX().getWorld());
+				// superSig, formalsForResolution,
+				// getResolvedTypeX().getWorld());
 
 				ResolvedType rt = BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(superSig, formalsForResolution,
 						getResolvedTypeX().getWorld());
@@ -745,7 +764,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 						+ " with generic signature " + getDeclaredGenericSignature() + " the following error was detected: "
 						+ e.getMessage());
 			}
-			// this.interfaces = new ResolvedType[cSig.superInterfaceSignatures.length];
+			// this.interfaces = new
+			// ResolvedType[cSig.superInterfaceSignatures.length];
 			if (cSig.superInterfaceSignatures.length == 0) {
 				this.interfaceSignatures = NO_INTERFACE_SIGS;
 			} else {
@@ -753,7 +773,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 				for (int i = 0; i < cSig.superInterfaceSignatures.length; i++) {
 					try {
 						// this.interfaces[i] =
-						// BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
+						// BcelGenericSignatureToTypeXConverter.
+						// classTypeSignature2TypeX(
 						// cSig.superInterfaceSignatures[i],
 						// formalsForResolution,
 						// getResolvedTypeX().getWorld());
@@ -772,7 +793,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		if (isGeneric()) {
 			// update resolved typex to point at generic type not raw type.
 			ReferenceType genericType = (ReferenceType) this.resolvedTypeX.getGenericType();
-			// genericType.setSourceContext(this.resolvedTypeX.getSourceContext());
+			// genericType.setSourceContext(this.resolvedTypeX.getSourceContext()
+			// );
 			genericType.setStartPos(this.resolvedTypeX.getStartPos());
 			this.resolvedTypeX = genericType;
 		}
@@ -830,9 +852,12 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			getDeclaredInterfaces();
 			getDeclaredFields();
 			getDeclaredMethods();
-			// The lazyClassGen is preserved for aspects - it exists to enable around advice
-			// inlining since the method will need 'injecting' into the affected class. If
-			// XnoInline is on, we can chuck away the lazyClassGen since it won't be required
+			// The lazyClassGen is preserved for aspects - it exists to enable
+			// around advice
+			// inlining since the method will need 'injecting' into the affected
+			// class. If
+			// XnoInline is on, we can chuck away the lazyClassGen since it
+			// won't be required
 			// later.
 			if (getResolvedTypeX().getWorld().isXnoInline())
 				lazyClassGen = null;
@@ -847,8 +872,10 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			for (int i = fields.length - 1; i >= 0; i--)
 				fields[i].evictWeavingState();
 			javaClass = null;
-			// setSourceContext(SourceContextImpl.UNKNOWN_SOURCE_CONTEXT); // bit naughty
-			// interfaces=null; // force reinit - may get us the right instances!
+			// setSourceContext(SourceContextImpl.UNKNOWN_SOURCE_CONTEXT); //
+			// bit naughty
+			// interfaces=null; // force reinit - may get us the right
+			// instances!
 			// superClass=null;
 		}
 	}
@@ -863,11 +890,15 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 	// --- methods for testing
 
-	// for testing - if we have this attribute, return it - will return null if it doesnt know anything
+	// for testing - if we have this attribute, return it - will return null if
+	// it doesnt know anything
 	// public AjAttribute[] getAttributes(String name) {
 	// List results = new ArrayList();
-	// List l = BcelAttributes.readAjAttributes(javaClass.getClassName(),javaClass.getAttributes(),
-	// getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld(),AjAttribute.WeaverVersionInfo.UNKNOWN);
+	// List l =
+	// BcelAttributes.readAjAttributes(javaClass.getClassName(),javaClass
+	// .getAttributes(),
+	// getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld(),
+	// AjAttribute.WeaverVersionInfo.UNKNOWN);
 	// for (Iterator iter = l.iterator(); iter.hasNext();) {
 	// AjAttribute element = (AjAttribute) iter.next();
 	// if (element.getNameString().equals(name)) results.add(element);
@@ -878,7 +909,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	// return null;
 	// }
 	//	
-	// // for testing - use with the method above - this returns *all* including those that are not Aj attributes
+	// // for testing - use with the method above - this returns *all* including
+	// those that are not Aj attributes
 	// public String[] getAttributeNames() {
 	// Attribute[] as = javaClass.getAttributes();
 	// String[] strs = new String[as.length];

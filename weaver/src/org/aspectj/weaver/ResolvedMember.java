@@ -20,7 +20,8 @@ import java.util.Map;
 
 import org.aspectj.bridge.ISourceLocation;
 
-public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDeclaringElement {
+public interface ResolvedMember extends Member, AnnotatedElement,
+		TypeVariableDeclaringElement {
 
 	public static final ResolvedMember[] NONE = new ResolvedMember[0];
 
@@ -42,13 +43,13 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 
 	public boolean hasAnnotation(UnresolvedType ofType);
 
-	public AnnotationX[] getAnnotations();
+	public AnnotationAJ[] getAnnotations();
 
 	public ResolvedType[] getAnnotationTypes();
 
 	public void setAnnotationTypes(UnresolvedType[] annotationtypes);
 
-	public void addAnnotation(AnnotationX annotation);
+	public void addAnnotation(AnnotationAJ annotation);
 
 	public boolean isBridgeMethod();
 
@@ -64,7 +65,7 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 
 	public void setParameterNames(String[] names);
 
-	public AnnotationX[][] getParameterAnnotations();
+	public AnnotationAJ[][] getParameterAnnotations();
 
 	public ResolvedType[][] getParameterAnnotationTypes();
 
@@ -118,26 +119,34 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	public ResolvedMember getBackingGenericMember();
 
 	/**
-	 * Get the UnresolvedType for the return type, taking generic signature into account
+	 * Get the UnresolvedType for the return type, taking generic signature into
+	 * account
 	 */
 	public UnresolvedType getGenericReturnType();
 
 	/**
-	 * Get the TypeXs of the parameter types, taking generic signature into account
+	 * Get the TypeXs of the parameter types, taking generic signature into
+	 * account
 	 */
 	public UnresolvedType[] getGenericParameterTypes();
 
-	// return a resolved member in which all type variables in the signature of this
+	// return a resolved member in which all type variables in the signature of
+	// this
 	// member have been replaced with the given bindings.
-	// the isParameterized flag tells us whether we are creating a raw type version or not
+	// the isParameterized flag tells us whether we are creating a raw type
+	// version or not
 	// if isParameterized List<T> will turn into List<String> (for example),
 	// but if !isParameterized List<T> will turn into List.
-	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
+	public ResolvedMemberImpl parameterizedWith(
+			UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
 			boolean isParameterized);
 
-	// this variant allows for aliases for type variables (i.e. allowing them to have another name)
-	// this is used for processing ITDs that share type variables with their target generic type
-	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
+	// this variant allows for aliases for type variables (i.e. allowing them to
+	// have another name)
+	// this is used for processing ITDs that share type variables with their
+	// target generic type
+	public ResolvedMemberImpl parameterizedWith(
+			UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
 			boolean isParameterized, List aliases);
 
 	public void setTypeVariables(TypeVariable[] types);
@@ -145,7 +154,8 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	public TypeVariable[] getTypeVariables();
 
 	// /**
-	// * If this member is defined by a parameterized super-type, return the erasure
+	// * If this member is defined by a parameterized super-type, return the
+	// erasure
 	// * of that member.
 	// * For example:
 	// * interface I<T> { T foo(T aTea); }
@@ -160,8 +170,10 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	// public ResolvedMember getErasure();
 
 	/**
-	 * Returns true if this member matches the other. The matching takes into account name and parameter types only. When comparing
-	 * parameter types, we allow any type variable to match any other type variable regardless of bounds.
+	 * Returns true if this member matches the other. The matching takes into
+	 * account name and parameter types only. When comparing parameter types, we
+	 * allow any type variable to match any other type variable regardless of
+	 * bounds.
 	 */
 	public boolean matches(ResolvedMember aCandidateMatch);
 

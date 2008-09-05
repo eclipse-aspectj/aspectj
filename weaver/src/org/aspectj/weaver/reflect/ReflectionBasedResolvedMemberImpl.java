@@ -14,27 +14,25 @@ package org.aspectj.weaver.reflect;
 import java.lang.reflect.Member;
 import java.util.Iterator;
 
-import org.aspectj.weaver.AnnotationX;
+import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 
-
 /**
- * Subtype of ResolvedMemberImpl used in reflection world.
- * Knows how to get annotations from a java.lang.reflect.Member
- *
+ * Subtype of ResolvedMemberImpl used in reflection world. Knows how to get
+ * annotations from a java.lang.reflect.Member
+ * 
  */
 public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 
 	private AnnotationFinder annotationFinder = null;
-	private GenericSignatureInformationProvider gsigInfoProvider = 
-		new Java14GenericSignatureInformationProvider();
-	
+	private GenericSignatureInformationProvider gsigInfoProvider = new Java14GenericSignatureInformationProvider();
+
 	private Member reflectMember;
-	
+
 	/**
 	 * @param kind
 	 * @param declaringType
@@ -46,8 +44,7 @@ public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 	public ReflectionBasedResolvedMemberImpl(MemberKind kind,
 			UnresolvedType declaringType, int modifiers,
 			UnresolvedType returnType, String name,
-			UnresolvedType[] parameterTypes,
-			Member reflectMember) {
+			UnresolvedType[] parameterTypes, Member reflectMember) {
 		super(kind, declaringType, modifiers, returnType, name, parameterTypes);
 		this.reflectMember = reflectMember;
 	}
@@ -64,8 +61,8 @@ public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 	public ReflectionBasedResolvedMemberImpl(MemberKind kind,
 			UnresolvedType declaringType, int modifiers,
 			UnresolvedType returnType, String name,
-			UnresolvedType[] parameterTypes, UnresolvedType[] checkedExceptions,
-			Member reflectMember) {
+			UnresolvedType[] parameterTypes,
+			UnresolvedType[] checkedExceptions, Member reflectMember) {
 		super(kind, declaringType, modifiers, returnType, name, parameterTypes,
 				checkedExceptions);
 		this.reflectMember = reflectMember;
@@ -86,8 +83,7 @@ public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 			UnresolvedType returnType, String name,
 			UnresolvedType[] parameterTypes,
 			UnresolvedType[] checkedExceptions,
-			ResolvedMember backingGenericMember,
-			Member reflectMember) {
+			ResolvedMember backingGenericMember, Member reflectMember) {
 		super(kind, declaringType, modifiers, returnType, name, parameterTypes,
 				checkedExceptions, backingGenericMember);
 		this.reflectMember = reflectMember;
@@ -110,93 +106,108 @@ public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 	public Member getMember() {
 		return this.reflectMember;
 	}
-	
+
 	// generic signature support
-	
-	public void setGenericSignatureInformationProvider(GenericSignatureInformationProvider gsigProvider) {
+
+	public void setGenericSignatureInformationProvider(
+			GenericSignatureInformationProvider gsigProvider) {
 		this.gsigInfoProvider = gsigProvider;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.ResolvedMemberImpl#getGenericParameterTypes()
 	 */
 	public UnresolvedType[] getGenericParameterTypes() {
 		return this.gsigInfoProvider.getGenericParameterTypes(this);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.ResolvedMemberImpl#getGenericReturnType()
 	 */
 	public UnresolvedType getGenericReturnType() {
 		return this.gsigInfoProvider.getGenericReturnType(this);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.ResolvedMemberImpl#isSynthetic()
 	 */
 	public boolean isSynthetic() {
 		return this.gsigInfoProvider.isSynthetic(this);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.ResolvedMemberImpl#isVarargsMethod()
 	 */
 	public boolean isVarargsMethod() {
 		return this.gsigInfoProvider.isVarArgs(this);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.ResolvedMemberImpl#isBridgeMethod()
 	 */
 	public boolean isBridgeMethod() {
 		return this.gsigInfoProvider.isBridge(this);
 	}
-	
+
 	// annotation support
-	
+
 	public void setAnnotationFinder(AnnotationFinder finder) {
 		this.annotationFinder = finder;
 	}
-	
+
 	public boolean hasAnnotation(UnresolvedType ofType) {
 		unpackAnnotations();
 		return super.hasAnnotation(ofType);
 	}
-	
+
 	public boolean hasAnnotations() {
 		unpackAnnotations();
 		return super.hasAnnotations();
 	}
-	
+
 	public ResolvedType[] getAnnotationTypes() {
 		unpackAnnotations();
 		return super.getAnnotationTypes();
 	}
-	
-	public AnnotationX getAnnotationOfType(UnresolvedType ofType) {
+
+	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
 		unpackAnnotations();
-		if (annotationFinder==null) return null;
+		if (annotationFinder == null)
+			return null;
 		for (Iterator iterator = annotationTypes.iterator(); iterator.hasNext();) {
 			ResolvedType type = (ResolvedType) iterator.next();
 			if (type.getSignature().equals(ofType.getSignature())) {
-				return annotationFinder.getAnnotationOfType(ofType, reflectMember);
+				return annotationFinder.getAnnotationOfType(ofType,
+						reflectMember);
 			}
 		}
 		return null;
 	}
 
 	public String getAnnotationDefaultValue() {
-		if (annotationFinder==null) return null;
+		if (annotationFinder == null)
+			return null;
 		return annotationFinder.getAnnotationDefaultValue(reflectMember);
 	}
 
 	public ResolvedType[][] getParameterAnnotationTypes() {
-    	if (parameterAnnotationTypes==null && annotationFinder!=null) {
-    		parameterAnnotationTypes = annotationFinder.getParameterAnnotationTypes(reflectMember);
-    	}
-    	return parameterAnnotationTypes;
-    }
-	
+		if (parameterAnnotationTypes == null && annotationFinder != null) {
+			parameterAnnotationTypes = annotationFinder
+					.getParameterAnnotationTypes(reflectMember);
+		}
+		return parameterAnnotationTypes;
+	}
+
 	private void unpackAnnotations() {
 		if (annotationTypes == null && annotationFinder != null) {
 			annotationTypes = annotationFinder.getAnnotations(reflectMember);

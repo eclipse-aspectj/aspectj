@@ -1,121 +1,93 @@
 /* *******************************************************************
- * Copyright (c) 2006 Contributors
+ * Copyright (c) 2006-2008 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
- * Contributors: 
- *     Andy Clement IBM     initial implementation 
  * ******************************************************************/
 package org.aspectj.weaver;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
 /**
- * This type represents the weavers abstraction of an annotation - it is
- * not tied to any underlying BCI toolkit.  The weaver actualy handles these
- * through AnnotationX wrapper objects - until we start transforming the
- * BCEL annotations into this form (expensive) or offer a clever
- * visitor mechanism over the BCEL annotation stuff that builds these
- * annotation types directly.
- *
+ * Simple representation of an annotation that the weaver can work with.
+ * 
  * @author AndyClement
  */
-public class AnnotationAJ {
+public interface AnnotationAJ {
 
-	private String type;
-	private boolean isRuntimeVisible;
-	
-	private List /*of AnnotationNVPair*/ nvPairs = null;
-	
-	public AnnotationAJ(String type,boolean isRuntimeVisible) {
-		this.type = type;
-		this.isRuntimeVisible = isRuntimeVisible;
-	}
-	
-	public String getTypeSignature() {
-		return type;
-	}
-	
-	public List getNameValuePairs() {
-		return nvPairs;
-	}
-	
-	public boolean hasNameValuePairs() {
-		return nvPairs!=null && nvPairs.size()!=0;
-	}
-	
-	public boolean isRuntimeVisible() {
-		return isRuntimeVisible;
-	}
-	
-	public String stringify() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("@").append(UnresolvedType.forSignature(type).getClassName());
-		if (hasNameValuePairs()) {
-			sb.append("(");
-			for (Iterator iter = nvPairs.iterator(); iter.hasNext();) {
-				AnnotationNameValuePair element = (AnnotationNameValuePair) iter.next();
-				sb.append(element.stringify());
-			}
-			sb.append(")");
-		}
-		return sb.toString();
-	}
-
-	public String getStringValueOf(Object name) {
-		if (!hasNameValuePairs()) return null;
-		for (Iterator iter = nvPairs.iterator(); iter.hasNext();) {
-			AnnotationNameValuePair nvpair = (AnnotationNameValuePair) iter.next();
-			if (nvpair.getName().equals(name)) return nvpair.getValue().stringify();
-		}
-		return null;
-	}
-
-	public void addNameValuePair(AnnotationNameValuePair pair) {
-		if (nvPairs==null) nvPairs=new ArrayList();
-		nvPairs.add(pair);
-	}
-	
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("ANNOTATION ["+getTypeSignature()+"] ["+
-				(isRuntimeVisible?"runtimeVisible":"runtimeInvisible")+"] [");
-		if (nvPairs!=null) { 
-			for (Iterator iter = nvPairs.iterator(); iter.hasNext();) {
-				AnnotationNameValuePair element = (AnnotationNameValuePair) iter.next();
-				sb.append(element.toString());
-				if (iter.hasNext()) sb.append(",");
-			}
-		}
-		sb.append("]");
-		return sb.toString();
-	}
-
-	public boolean hasNamedValue(String n) {
-		if (nvPairs==null) return false;
-		for (int i=0;i<nvPairs.size();i++) {
-			AnnotationNameValuePair pair = (AnnotationNameValuePair)nvPairs.get(i);
-			if (pair.getName().equals(n)) return true;
-		}
-		return false;
-	}
+	public static final AnnotationAJ[] EMPTY_ARRAY = new AnnotationAJ[0];
 
 	/**
-     * Return true if the annotation has a value with the specified name (n) and value (v)
-     */
-	public boolean hasNameValuePair(String n, String v) {
-		if (nvPairs==null) return false;
-		for (int i=0;i<nvPairs.size();i++) {
-			AnnotationNameValuePair pair = (AnnotationNameValuePair)nvPairs.get(i);
-			if (pair.getName().equals(n)) {
-				if (pair.getValue().stringify().equals(v)) return true;
-			}
-		}
-		return false;
-	}
+	 * @return the signature for the annotation type, eg. Lcom/foo/MyAnno;
+	 */
+	public String getTypeSignature();
+
+	/**
+	 * @return the type name for the annotation, eg. com.foo.MyAnno
+	 */
+	public String getTypeName();
+
+	/**
+	 * @return the type of the annotation
+	 */
+	public ResolvedType getType();
+
+	/**
+	 * return true if this annotation can target an annotation type
+	 */
+	public boolean allowedOnAnnotationType();
+
+	/**
+	 * @return true if this annotation can be put on a field
+	 */
+	public boolean allowedOnField();
+
+	/**
+	 * @return true if this annotation can target a 'regular' type. A 'regular' type is enum/class/interface - it is *not*
+	 *         annotation.
+	 */
+	public boolean allowedOnRegularType();
+
+	/**
+	 * @return for the @target annotation, this will return a set of the element-types it can be applied to. For other annotations ,
+	 *         it returns the empty set.
+	 */
+	public Set getTargets();
+
+	/**
+	 * @param name the name of the value
+	 * @return true if there is a value with that name
+	 */
+	public boolean hasNamedValue(String name);
+
+	/**
+	 * @param name the name of the annotation field
+	 * @param value the value of the annotation field
+	 * @return true if there is a value with the specified name and value
+	 */
+	public boolean hasNameValuePair(String name, String value);
+
+	/**
+	 * @return String representation of the valid targets for this annotation, eg. "{TYPE,FIELD}"
+	 */
+	public String getValidTargets();
+
+	/**
+	 * @return String form of the annotation and any values, eg. @Foo(a=b,c=d)
+	 */
+	public String stringify();
+
+	/**
+	 * @return true if this annotation is marked with @target
+	 */
+	public boolean specifiesTarget();
+
+	/**
+	 * @return true if the annotation is marked for runtime visibility
+	 */
+	public boolean isRuntimeVisible();
+
 }

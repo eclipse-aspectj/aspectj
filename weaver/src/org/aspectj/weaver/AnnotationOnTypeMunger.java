@@ -10,7 +10,6 @@
  *     Andy Clement     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver;
 
 import java.io.DataOutputStream;
@@ -20,10 +19,10 @@ import java.io.IOException;
  * Represents adding an annotation to a type
  */
 public class AnnotationOnTypeMunger extends ResolvedTypeMunger {
-	AnnotationX newAnnotation;
-	
-	public AnnotationOnTypeMunger(AnnotationX anno) {
-		super(AnnotationOnType,null);
+	AnnotationAJ newAnnotation;
+
+	public AnnotationOnTypeMunger(AnnotationAJ anno) {
+		super(AnnotationOnType, null);
 		newAnnotation = anno;
 	}
 
@@ -31,25 +30,28 @@ public class AnnotationOnTypeMunger extends ResolvedTypeMunger {
 		throw new RuntimeException("unimplemented");
 	}
 
-
-	public AnnotationX getNewAnnotation() {
+	public AnnotationAJ getNewAnnotation() {
 		return newAnnotation;
 	}
 
-    public boolean equals(Object other) {
-    	if (!(other instanceof AnnotationOnTypeMunger)) return false;
-    	AnnotationOnTypeMunger o = (AnnotationOnTypeMunger)other;
-    	return newAnnotation.getSignature().equals(o.newAnnotation.getSignature());
-    }
+	public boolean equals(Object other) {
+		if (!(other instanceof AnnotationOnTypeMunger))
+			return false;
+		AnnotationOnTypeMunger o = (AnnotationOnTypeMunger) other;
+		// TODO does not check equality of annotation values
+		return newAnnotation.getTypeSignature().equals(
+				o.newAnnotation.getTypeSignature());
+	}
 
-    private volatile int hashCode = 0;
-    public int hashCode() {
-    	if (hashCode == 0) {
-    		int result = 17;
-    	    result = 37*result + newAnnotation.getSignature().hashCode();
-    	    hashCode = result;
+	private volatile int hashCode = 0;
+
+	public int hashCode() {
+		if (hashCode == 0) {
+			int result = 17;
+			result = 37 * result + newAnnotation.getTypeSignature().hashCode();
+			hashCode = result;
 		}
-	    return hashCode;
-    }
-	
+		return hashCode;
+	}
+
 }

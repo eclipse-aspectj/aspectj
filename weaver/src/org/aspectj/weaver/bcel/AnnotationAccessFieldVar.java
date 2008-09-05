@@ -20,7 +20,7 @@ import org.aspectj.apache.bcel.classfile.annotation.EnumElementValueGen;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.Type;
-import org.aspectj.weaver.AnnotationX;
+import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
@@ -45,16 +45,18 @@ class AnnotationAccessFieldVar extends BcelVar {
 	}
 
 	public void appendLoadAndConvert(InstructionList il, InstructionFactory fact, ResolvedType toType) {
-		// Only possible to do annotation field value extraction at MethodExecution
+		// Only possible to do annotation field value extraction at
+		// MethodExecution
 		if (annoAccessor.getKind() != Shadow.MethodExecution) {
 			return;
 		}
 		String annotationOfInterestSignature = annoAccessor.getType().getSignature();
-		// So we have an entity that has an annotation on and within it is the value we want
+		// So we have an entity that has an annotation on and within it is the
+		// value we want
 		Member holder = annoAccessor.getMember();
-		AnnotationX[] annos = holder.getAnnotations();
+		AnnotationAJ[] annos = holder.getAnnotations();
 		for (int i = 0; i < annos.length; i++) {
-			AnnotationGen annotation = annos[i].getBcelAnnotation();
+			AnnotationGen annotation = ((BcelAnnotation) annos[i]).getBcelAnnotation();
 			if (annotation.getTypeSignature().equals(annotationOfInterestSignature)) {
 				List vals = annotation.getValues();
 				boolean doneAndDusted = false;
@@ -76,7 +78,8 @@ class AnnotationAccessFieldVar extends BcelVar {
 					for (int ii = 0; ii < annotationFields.length; ii++) {
 						if (annotationFields[ii].getType().equals(annoFieldOfInterest)) {
 							String dvalue = annotationFields[ii].getAnnotationDefaultValue();
-							// form will be LBLAHBLAHBLAH;X where X is the field within X
+							// form will be LBLAHBLAHBLAH;X where X is the field
+							// within X
 							String typename = dvalue.substring(0, dvalue.lastIndexOf(';') + 1);
 							String field = dvalue.substring(dvalue.lastIndexOf(';') + 1);
 							ResolvedType rt = toType.getWorld().resolve(UnresolvedType.forSignature(typename));

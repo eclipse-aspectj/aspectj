@@ -17,55 +17,88 @@ import java.util.Collection;
 import org.aspectj.weaver.patterns.PerClause;
 
 /**
- * Abstraction over a type - a reference type is Object and a descendant of Object, other types (int/etc) are
- * considered primitive types.  Abstract implementation provided by AbstractReferenceTypeDelegate.
+ * Abstraction over a type - a reference type is Object and a descendant of
+ * Object, other types (int/etc) are considered primitive types. Abstract
+ * implementation provided by AbstractReferenceTypeDelegate.
  */
 public interface ReferenceTypeDelegate {
-	
+
 	// TODO asc move to proxy
-	public void addAnnotation(AnnotationX annotationX);
-	public void ensureDelegateConsistent(); // Required evil because of mutator methods in delegates :(  (see pr85132)
-	
+	public void addAnnotation(AnnotationAJ annotationX);
+
+	public void ensureDelegateConsistent(); // Required evil because of mutator
+
+	// methods in delegates :( (see
+	// pr85132)
+
 	public boolean isAspect();
-    public boolean isAnnotationStyleAspect();
-    public boolean isInterface();
-    public boolean isEnum();
-    public boolean isAnnotation();
-    public String getRetentionPolicy();
-    public boolean canAnnotationTargetType();
-    public AnnotationTargetKind[] getAnnotationTargetKinds();
-    public boolean isAnnotationWithRuntimeRetention();
+
+	public boolean isAnnotationStyleAspect();
+
+	public boolean isInterface();
+
+	public boolean isEnum();
+
+	public boolean isAnnotation();
+
+	public String getRetentionPolicy();
+
+	public boolean canAnnotationTargetType();
+
+	public AnnotationTargetKind[] getAnnotationTargetKinds();
+
+	public boolean isAnnotationWithRuntimeRetention();
+
 	public boolean isClass();
+
 	public boolean isGeneric();
+
 	public boolean isAnonymous();
+
 	public boolean isNested();
+
 	public boolean isExposedToWeaver();
-	
+
 	public boolean hasAnnotation(UnresolvedType ofType);
-	
-	public AnnotationX[]    getAnnotations();
-    public ResolvedType[]  getAnnotationTypes();
+
+	public AnnotationAJ[] getAnnotations();
+
+	public ResolvedType[] getAnnotationTypes();
+
 	public ResolvedMember[] getDeclaredFields();
-	public ResolvedType[]  getDeclaredInterfaces();
+
+	public ResolvedType[] getDeclaredInterfaces();
+
 	public ResolvedMember[] getDeclaredMethods();
+
 	public ResolvedMember[] getDeclaredPointcuts();
+
 	public TypeVariable[] getTypeVariables();
 
-	public PerClause  getPerClause();
-	public Collection getDeclares() ;
+	public PerClause getPerClause();
+
+	public Collection getDeclares();
+
 	public Collection getTypeMungers();
+
 	public Collection getPrivilegedAccesses();
+
 	public int getModifiers();
-	public ResolvedType getSuperclass();		
+
+	public ResolvedType getSuperclass();
+
 	public WeaverStateInfo getWeaverState();
+
 	public ReferenceType getResolvedTypeX();
+
 	public boolean doesNotExposeShadowMungers();
-	
+
 	public ISourceContext getSourceContext();
-	
+
 	public String getSourcefilename();
-	
+
 	public String getDeclaredGenericSignature();
+
 	public ResolvedType getOuterClass();
-	
+
 }

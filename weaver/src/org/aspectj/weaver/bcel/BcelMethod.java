@@ -37,7 +37,7 @@ import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.AjAttribute;
-import org.aspectj.weaver.AnnotationX;
+import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.MemberKind;
@@ -56,12 +56,15 @@ public final class BcelMethod extends ResolvedMemberImpl {
 
 	// these fields are not set for many BcelMethods...
 	private ShadowMunger associatedShadowMunger;
-	private ResolvedPointcutDefinition preResolvedPointcut; // used when ajc has pre-resolved the pointcut of some @Advice
+	private ResolvedPointcutDefinition preResolvedPointcut; // used when ajc has
+	// pre-resolved the
+	// pointcut of some
+	// @Advice
 	private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
 
 	private AjAttribute.MethodDeclarationLineNumberAttribute declarationLineNumber;
-	private AnnotationX[] annotations = null;
-	private AnnotationX[][] parameterAnnotations = null;
+	private AnnotationAJ[] annotations = null;
+	private AnnotationAJ[][] parameterAnnotations = null;
 	private BcelObjectType bcelObjectType;
 
 	private int bitflags;
@@ -71,7 +74,9 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	private static final int UNPACKED_GENERIC_SIGNATURE = 0x0008;
 	private static final int IS_AJ_SYNTHETIC = 0x0040;
 	private static final int IS_SYNTHETIC = 0x0080;
-	private static final int IS_SYNTHETIC_INVERSE = 0x7f7f; // all bits but IS_SYNTHETIC (and topmost bit)
+	private static final int IS_SYNTHETIC_INVERSE = 0x7f7f; // all bits but
+	// IS_SYNTHETIC (and
+	// topmost bit)
 	private static final int HAS_ANNOTATIONS = 0x0400;
 	private static final int HAVE_DETERMINED_ANNOTATIONS = 0x0800;
 
@@ -123,15 +128,15 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		if (varTable == null) {
 			// do we have an annotation with the argNames value specified...
 			if (hasAnnotations()) {
-				AnnotationX[] axs = getAnnotations();
+				AnnotationAJ[] axs = getAnnotations();
 				for (int i = 0; i < axs.length; i++) {
-					AnnotationX annotationX = axs[i];
+					AnnotationAJ annotationX = axs[i];
 					String typename = annotationX.getTypeName();
 					if (typename.equals("org.aspectj.lang.annotation.Pointcut")
 							|| typename.equals("org.aspectj.lang.annotation.Before")
 							|| typename.equals("org.aspectj.lang.annotation.Around")
 							|| typename.startsWith("org.aspectj.lang.annotation.After")) {
-						AnnotationGen a = annotationX.getBcelAnnotation();
+						AnnotationGen a = ((BcelAnnotation) annotationX).getBcelAnnotation();
 						if (a != null) {
 							List values = a.getValues();
 							for (Iterator iterator = values.iterator(); iterator.hasNext();) {
@@ -198,7 +203,8 @@ public final class BcelMethod extends ResolvedMemberImpl {
 				// System.out.println("found effective: " + this);
 				effectiveSignature = (AjAttribute.EffectiveSignatureAttribute) a;
 			} else if (a instanceof AjAttribute.PointcutDeclarationAttribute) {
-				// this is an @AspectJ annotated advice method, with pointcut pre-resolved by ajc
+				// this is an @AspectJ annotated advice method, with pointcut
+				// pre-resolved by ajc
 				preResolvedPointcut = ((AjAttribute.PointcutDeclarationAttribute) a).reify();
 			} else {
 				throw new BCException("weird method attribute " + a);
@@ -206,7 +212,8 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		}
 	}
 
-	// for testing - if we have this attribute, return it - will return null if it doesnt know anything
+	// for testing - if we have this attribute, return it - will return null if
+	// it doesnt know anything
 	public AjAttribute[] getAttributes(String name) {
 		List results = new ArrayList();
 		List l = Utility.readAjAttributes(getDeclaringType().getClassName(), method.getAttributes(),
@@ -247,7 +254,10 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	public boolean isAjSynthetic() {
-		return (bitflags & IS_AJ_SYNTHETIC) != 0;// isAjSynthetic; // || getName().startsWith(NameMangler.PREFIX);
+		return (bitflags & IS_AJ_SYNTHETIC) != 0;// isAjSynthetic; // ||
+		// getName(
+		// ).startsWith(NameMangler
+		// .PREFIX);
 	}
 
 	// FIXME ??? needs an isSynthetic method
@@ -311,12 +321,12 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		return false;
 	}
 
-	public AnnotationX[] getAnnotations() {
+	public AnnotationAJ[] getAnnotations() {
 		ensureAnnotationsRetrieved();
 		if ((bitflags & HAS_ANNOTATIONS) != 0) {
 			return annotations;
 		} else {
-			return AnnotationX.NONE;
+			return AnnotationAJ.EMPTY_ARRAY;
 		}
 	}
 
@@ -327,7 +337,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		return ret;
 	}
 
-	public AnnotationX getAnnotationOfType(UnresolvedType ofType) {
+	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
 		ensureAnnotationsRetrieved();
 		if ((bitflags & HAS_ANNOTATIONS) == 0)
 			return null;
@@ -338,15 +348,15 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		return null;
 	}
 
-	public void addAnnotation(AnnotationX annotation) {
+	public void addAnnotation(AnnotationAJ annotation) {
 		ensureAnnotationsRetrieved();
 		if ((bitflags & HAS_ANNOTATIONS) == 0) {
-			annotations = new AnnotationX[1];
+			annotations = new AnnotationAJ[1];
 			annotations[0] = annotation;
 		} else {
 			// Add it to the set of annotations
 			int len = annotations.length;
-			AnnotationX[] ret = new AnnotationX[len + 1];
+			AnnotationAJ[] ret = new AnnotationAJ[len + 1];
 			System.arraycopy(annotations, 0, ret, 0, len);
 			ret[len] = annotation;
 			annotations = ret;
@@ -357,7 +367,8 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		if (annotationTypes == Collections.EMPTY_SET)
 			annotationTypes = new HashSet();
 		annotationTypes.add(UnresolvedType.forName(annotation.getTypeName()).resolve(bcelObjectType.getWorld()));
-		// FIXME asc looks like we are managing two 'bunches' of annotations, one
+		// FIXME asc looks like we are managing two 'bunches' of annotations,
+		// one
 		// here and one in the real 'method' - should we reduce it to one layer?
 		// method.addAnnotation(annotation.getBcelAnnotation());
 	}
@@ -372,11 +383,11 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		AnnotationGen annos[] = method.getAnnotations();
 		if (annos.length != 0) {
 			annotationTypes = new HashSet();
-			annotations = new AnnotationX[annos.length];
+			annotations = new AnnotationAJ[annos.length];
 			for (int i = 0; i < annos.length; i++) {
 				AnnotationGen annotation = annos[i];
 				annotationTypes.add(bcelObjectType.getWorld().resolve(UnresolvedType.forSignature(annotation.getTypeSignature())));
-				annotations[i] = new AnnotationX(annotation, bcelObjectType.getWorld());
+				annotations[i] = new BcelAnnotation(annotation, bcelObjectType.getWorld());
 			}
 			bitflags |= HAS_ANNOTATIONS;
 		} else {
@@ -394,13 +405,13 @@ public final class BcelMethod extends ResolvedMemberImpl {
 				parameterAnnotations = BcelMethod.NO_PARAMETER_ANNOTATIONXS;
 			} else {
 				AnnotationGen annos[][] = method.getParameterAnnotations();
-				parameterAnnotations = new AnnotationX[annos.length][];
+				parameterAnnotations = new AnnotationAJ[annos.length][];
 				parameterAnnotationTypes = new ResolvedType[annos.length][];
 				for (int i = 0; i < annos.length; i++) {
-					parameterAnnotations[i] = new AnnotationX[annos[i].length];
+					parameterAnnotations[i] = new AnnotationAJ[annos[i].length];
 					parameterAnnotationTypes[i] = new ResolvedType[annos[i].length];
 					for (int j = 0; j < annos[i].length; j++) {
-						parameterAnnotations[i][j] = new AnnotationX(annos[i][j], bcelObjectType.getWorld());
+						parameterAnnotations[i][j] = new BcelAnnotation(annos[i][j], bcelObjectType.getWorld());
 						parameterAnnotationTypes[i][j] = bcelObjectType.getWorld().resolve(
 								UnresolvedType.forSignature(annos[i][j].getTypeSignature()));
 					}
@@ -409,7 +420,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		}
 	}
 
-	public AnnotationX[][] getParameterAnnotations() {
+	public AnnotationAJ[][] getParameterAnnotations() {
 		ensureParameterAnnotationsRetrieved();
 		return parameterAnnotations;
 	}
@@ -482,7 +493,8 @@ public final class BcelMethod extends ResolvedMemberImpl {
 			Signature.FormalTypeParameter[] parentFormals = bcelObjectType.getAllFormals();
 			Signature.FormalTypeParameter[] formals = new Signature.FormalTypeParameter[parentFormals.length
 					+ mSig.formalTypeParameters.length];
-			// put method formal in front of type formals for overriding in lookup
+			// put method formal in front of type formals for overriding in
+			// lookup
 			System.arraycopy(mSig.formalTypeParameters, 0, formals, 0, mSig.formalTypeParameters.length);
 			System.arraycopy(parentFormals, 0, formals, mSig.formalTypeParameters.length, parentFormals.length);
 			Signature.TypeSignature returnTypeSignature = mSig.returnType;
@@ -534,7 +546,8 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		return (bitflags & IS_SYNTHETIC) != 0;// isSynthetic;
 	}
 
-	// Pre Java5 synthetic is an attribute 'Synthetic', post Java5 it is a modifier (4096 or 0x1000)
+	// Pre Java5 synthetic is an attribute 'Synthetic', post Java5 it is a
+	// modifier (4096 or 0x1000)
 	private void workOutIfSynthetic() {
 		if ((bitflags & KNOW_IF_SYNTHETIC) != 0)
 			return;

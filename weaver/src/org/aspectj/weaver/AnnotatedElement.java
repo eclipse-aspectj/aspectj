@@ -14,8 +14,8 @@ package org.aspectj.weaver;
  */
 public interface AnnotatedElement {
 	boolean hasAnnotation(UnresolvedType ofType);
-	
+
 	ResolvedType[] getAnnotationTypes();
-	
-	AnnotationX getAnnotationOfType(UnresolvedType ofType);
+
+	AnnotationAJ getAnnotationOfType(UnresolvedType ofType);
 }
