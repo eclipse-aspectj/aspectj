@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.aspectj.bridge.AbortException;
-import org.aspectj.weaver.ExtensibleURLClassLoader;
+import org.aspectj.weaver.bcel.ExtensibleURLClassLoader;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 import org.aspectj.weaver.tools.WeavingAdaptor;
