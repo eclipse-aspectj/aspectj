@@ -879,8 +879,8 @@ class BcelClassWeaver implements IClassWeaver {
 							annotationsToAdd.add(ag);
 							mg.addAnnotation(decaM.getAnnotationX());
 
-							AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaM.getSourceLocation(),
-									clazz.getName(), mg.getMethod());
+							AsmRelationshipProvider.getDefault().addDeclareAnnotationMethodRelationship(decaM.getSourceLocation(),
+									clazz.getName(), mg.getMemberView());//getMethod());
 							reportMethodCtorWeavingMessage(clazz, mg.getMemberView(), decaM, mg.getDeclarationLineNumber());
 							isChanged = true;
 							modificationOccured = true;
@@ -923,8 +923,8 @@ class BcelClassWeaver implements IClassWeaver {
 								annotationsToAdd.add(a);
 
 								mg.addAnnotation(decaM.getAnnotationX());
-								AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaM.getSourceLocation(),
-										clazz.getName(), mg.getMethod());
+								AsmRelationshipProvider.getDefault().addDeclareAnnotationMethodRelationship(decaM.getSourceLocation(),
+										clazz.getName(), mg.getMemberView());//getMethod());
 								isChanged = true;
 								modificationOccured = true;
 								forRemoval.add(decaM);
@@ -1302,8 +1302,8 @@ class BcelClassWeaver implements IClassWeaver {
 								}
 							}
 
-							AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),
-									clazz.getName(), aBcelField.getFieldAsIs());
+							AsmRelationshipProvider.getDefault().addDeclareAnnotationFieldRelationship(decaF.getSourceLocation(),
+									clazz.getName(), aBcelField);//.getFieldAsIs());
 							reportFieldAnnotationWeavingMessage(clazz, fields, fieldCounter, decaF);
 							isChanged = true;
 							modificationOccured = true;
@@ -1337,8 +1337,8 @@ class BcelClassWeaver implements IClassWeaver {
 									continue; // skip this one...
 								}
 								aBcelField.addAnnotation(decaF.getAnnotationX());
-								AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),
-										clazz.getName(), aBcelField.getFieldAsIs());
+								AsmRelationshipProvider.getDefault().addDeclareAnnotationFieldRelationship(decaF.getSourceLocation(),
+										clazz.getName(), aBcelField);//.getFieldAsIs());
 								isChanged = true;
 								modificationOccured = true;
 								forRemoval.add(decaF);

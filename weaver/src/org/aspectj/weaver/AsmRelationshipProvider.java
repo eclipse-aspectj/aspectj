@@ -15,10 +15,6 @@ package org.aspectj.weaver;
 import java.util.Iterator;
 import java.util.List;
 
-import org.aspectj.apache.bcel.classfile.Field;
-import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.classfile.Utility;
-import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
@@ -351,7 +347,7 @@ public class AsmRelationshipProvider {
 	 * read 'fragile') bit of code that could break at any moment but it's working for my simple testcase. Currently just fails
 	 * silently if any of the lookup code doesn't find anything...
 	 */
-	public void addDeclareAnnotationRelationship(ISourceLocation sourceLocation, String typename, Method method) {
+	public void addDeclareAnnotationMethodRelationship(ISourceLocation sourceLocation, String typename, ResolvedMember method) {
 		if (!AsmManager.isCreatingModel())
 			return;
 
@@ -368,10 +364,10 @@ public class AsmRelationshipProvider {
 			return;
 
 		StringBuffer parmString = new StringBuffer("(");
-		Type[] args = method.getArgumentTypes();
+		UnresolvedType[] args = method.getParameterTypes();
+//		Type[] args = method.getArgumentTypes();
 		for (int i = 0; i < args.length; i++) {
-			Type type2 = args[i];
-			String s = Utility.signatureToString(type2.getSignature(), false);
+			String s = args[i].getName();//Utility.signatureToString(args[i].getName()getSignature(), false);
 			parmString.append(s);
 			if ((i + 1) < args.length)
 				parmString.append(",");
@@ -420,7 +416,7 @@ public class AsmRelationshipProvider {
 	 * we have no line number info for it, we have to dig through the structure model under the fields' type in order to locate it.
 	 * Currently just fails silently if any of the lookup code doesn't find anything...
 	 */
-	public void addDeclareAnnotationRelationship(ISourceLocation sourceLocation, String typename, Field field) {
+	public void addDeclareAnnotationFieldRelationship(ISourceLocation sourceLocation, String typename, ResolvedMember field) {
 		if (!AsmManager.isCreatingModel())
 			return;
 
