@@ -31,11 +31,11 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationNameValuePair;
 import org.aspectj.weaver.AnnotationValue;
-import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.ArrayAnnotationValue;
 import org.aspectj.weaver.EnumAnnotationValue;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.SimpleAnnotationValue;
+import org.aspectj.weaver.StandardAnnotation;
 import org.aspectj.weaver.World;
 
 // not yet used...
@@ -47,14 +47,15 @@ public class EclipseAnnotationConvertor {
 	 * than limping along with a malformed annotation. When the *BANG* is encountered the bug reporter should indicate the kind of
 	 * annotation they were working with and this code can be enhanced to support it.
 	 */
-	public static AnnotationX convertEclipseAnnotation(Annotation eclipseAnnotation, World w, EclipseFactory factory) {
-		// TODO if it is sourcevisible, we shouldn't let it through!!!!!!!!! testcase!
+	public static AnnotationAJ convertEclipseAnnotation(Annotation eclipseAnnotation, World w, EclipseFactory factory) {
+		// TODO if it is sourcevisible, we shouldn't let it through!!!!!!!!!
+		// testcase!
 		ResolvedType annotationType = factory.fromTypeBindingToRTX(eclipseAnnotation.type.resolvedType);
 		// long bs = (eclipseAnnotation.bits & TagBits.AnnotationRetentionMASK);
 		boolean isRuntimeVisible = (eclipseAnnotation.bits & TagBits.AnnotationRetentionMASK) == TagBits.AnnotationRuntimeRetention;
-		AnnotationAJ annotationAJ = new AnnotationAJ(annotationType.getSignature(), isRuntimeVisible);
+		StandardAnnotation annotationAJ = new StandardAnnotation(annotationType, isRuntimeVisible);
 		generateAnnotation(eclipseAnnotation, annotationAJ);
-		return new AnnotationX(annotationAJ, w);
+		return annotationAJ;
 	}
 
 	static class MissingImplementationException extends RuntimeException {
@@ -63,7 +64,7 @@ public class EclipseAnnotationConvertor {
 		}
 	}
 
-	private static void generateAnnotation(Annotation annotation, AnnotationAJ annotationAJ) {
+	private static void generateAnnotation(Annotation annotation, StandardAnnotation annotationAJ) {
 		if (annotation instanceof NormalAnnotation) {
 			NormalAnnotation normalAnnotation = (NormalAnnotation) annotation;
 			MemberValuePair[] memberValuePairs = normalAnnotation.memberValuePairs;
@@ -119,7 +120,8 @@ public class EclipseAnnotationConvertor {
 					throw new MissingImplementationException(
 							"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value ["
 									+ defaultValue + "]");
-					// generateElementValue(attributeOffset, defaultValue, constant, memberValuePairReturnType.leafComponentType());
+					// generateElementValue(attributeOffset, defaultValue,
+					// constant, memberValuePairReturnType.leafComponentType());
 				} else {
 					AnnotationValue av = generateElementValueForNonConstantExpression(defaultValue, defaultValueBinding);
 					return new ArrayAnnotationValue(new AnnotationValue[] { av });
@@ -133,7 +135,8 @@ public class EclipseAnnotationConvertor {
 					throw new MissingImplementationException(
 							"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value ["
 									+ defaultValue + "]");
-					// generateElementValue(attributeOffset, defaultValue, constant, memberValuePairReturnType.leafComponentType());
+					// generateElementValue(attributeOffset, defaultValue,
+					// constant, memberValuePairReturnType.leafComponentType());
 				} else {
 					AnnotationValue av = generateElementValueForNonConstantExpression(defaultValue, defaultValueBinding);
 					return av;
@@ -188,7 +191,8 @@ public class EclipseAnnotationConvertor {
 						"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value [" + defaultValue
 								+ "]");
 				// contents[contentsOffset++] = (byte) '@';
-				// generateAnnotation((Annotation) defaultValue, attributeOffset);
+				// generateAnnotation((Annotation) defaultValue,
+				// attributeOffset);
 			} else if (defaultValueBinding.isArrayType()) {
 				// array type
 				if (defaultValue instanceof ArrayInitializer) {
@@ -197,9 +201,9 @@ public class EclipseAnnotationConvertor {
 					AnnotationValue[] values = new AnnotationValue[arrayLength];
 					for (int i = 0; i < arrayLength; i++) {
 						values[i] = generateElementValue(arrayInitializer.expressions[i], defaultValueBinding.leafComponentType());// ,
-																																	// attributeOffset
-																																	// )
-																																	// ;
+						// attributeOffset
+						// )
+						// ;
 					}
 					ArrayAnnotationValue aav = new ArrayAnnotationValue(values);
 					return aav;
@@ -218,8 +222,11 @@ public class EclipseAnnotationConvertor {
 				// }
 				// contents[contentsOffset++] = (byte) 'c';
 				// if (defaultValue instanceof ClassLiteralAccess) {
-				// ClassLiteralAccess classLiteralAccess = (ClassLiteralAccess) defaultValue;
-				// final int classInfoIndex = constantPool.literalIndex(classLiteralAccess.targetType.signature());
+				// ClassLiteralAccess classLiteralAccess = (ClassLiteralAccess)
+				// defaultValue;
+				// final int classInfoIndex =
+				// constantPool.literalIndex(classLiteralAccess
+				// .targetType.signature());
 				// contents[contentsOffset++] = (byte) (classInfoIndex >> 8);
 				// contents[contentsOffset++] = (byte) classInfoIndex;
 				// } else {

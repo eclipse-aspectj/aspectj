@@ -59,7 +59,6 @@ import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationNameValuePair;
 import org.aspectj.weaver.AnnotationTargetKind;
 import org.aspectj.weaver.AnnotationValue;
-import org.aspectj.weaver.AnnotationX;
 import org.aspectj.weaver.ArrayAnnotationValue;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.EnumAnnotationValue;
@@ -67,6 +66,7 @@ import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.StandardAnnotation;
 import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverStateInfo;
@@ -105,9 +105,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 
 	private boolean discoveredAnnotationTargetKinds = false;
 	private AnnotationTargetKind[] annotationTargetKinds;
-	private AnnotationX[] annotations = null;
+	private AnnotationAJ[] annotations = null;
 	private final static ResolvedType[] NO_ANNOTATION_TYPES = new ResolvedType[0];
-	private final static AnnotationX[] NO_ANNOTATIONS = new AnnotationX[0];
 
 	protected EclipseFactory eclipseWorld() {
 		return factory;
@@ -169,7 +168,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 			return "";
 		for (int i = 0; i < ans.length; i++) {
 			if (ans[i].resolvedType == null)
-				continue; // XXX happens if we do this very early from buildInterTypeandPerClause
+				continue; // XXX happens if we do this very early from
+			// buildInterTypeandPerClause
 			// may prevent us from resolving references made in @Pointcuts to
 			// an @Pointcut in a code-style aspect
 			char[] sig = ans[i].resolvedType.signature();
@@ -198,7 +198,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 			return false;
 		for (int i = 0; i < annotations.length; i++) {
 			if (annotations[i].resolvedType == null)
-				continue; // XXX happens if we do this very early from buildInterTypeandPerClause
+				continue; // XXX happens if we do this very early from
+			// buildInterTypeandPerClause
 			// may prevent us from resolving references made in @Pointcuts to
 			// an @Pointcut in a code-style aspect
 			char[] sig = annotations[i].resolvedType.signature();
@@ -229,7 +230,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		List declaredMethods = new ArrayList();
 		List declaredFields = new ArrayList();
 
-		binding.methods(); // the important side-effect of this call is to make sure bindings are completed
+		binding.methods(); // the important side-effect of this call is to make
+		// sure bindings are completed
 		AbstractMethodDeclaration[] methods = declaration.methods;
 		if (methods != null) {
 			for (int i = 0, len = methods.length; i < len; i++) {
@@ -243,13 +245,15 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 				} else if (amd instanceof InterTypeDeclaration) {
 					// these are handled in a separate pass
 					continue;
-				} else if (amd instanceof DeclareDeclaration && !(amd instanceof DeclareAnnotationDeclaration)) { // surfaces the
+				} else if (amd instanceof DeclareDeclaration && !(amd instanceof DeclareAnnotationDeclaration)) { // surfaces
+					// the
 					// annotated
 					// ajc$ method
 					// these are handled in a separate pass
 					continue;
 				} else if (amd instanceof AdviceDeclaration) {
-					// these are ignored during compilation and only used during weaving
+					// these are ignored during compilation and only used during
+					// weaving
 					continue;
 				} else if ((amd.annotations != null) && isAnnotationStylePointcut(amd.annotations)) {
 					// consider pointcuts defined via annotations
@@ -296,7 +300,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 
 	private ResolvedPointcutDefinition makeResolvedPointcutDefinition(AbstractMethodDeclaration md) {
 		if (md.binding == null)
-			return null; // there is another error that has caused this... pr138143
+			return null; // there is another error that has caused this...
+		// pr138143
 
 		EclipseSourceContext eSourceContext = new EclipseSourceContext(md.compilationResult);
 		Pointcut pc = null;
@@ -304,7 +309,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 			String expression = getPointcutStringFromAnnotationStylePointcut(md);
 			try {
 				pc = new PatternParser(expression, eSourceContext).parsePointcut();
-			} catch (ParserException pe) { // error will be reported by other means...
+			} catch (ParserException pe) { // error will be reported by other
+				// means...
 				pc = Pointcut.makeMatchesNothing(Pointcut.SYMBOLIC);
 			}
 		}
@@ -411,15 +417,19 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 			}
 		}
 
-		// now check all inherited pointcuts to be sure that they're handled reasonably
+		// now check all inherited pointcuts to be sure that they're handled
+		// reasonably
 		if (sawError || !isAspect())
 			return;
 
-		// find all pointcuts that override ones from super and check override is legal
+		// find all pointcuts that override ones from super and check override
+		// is legal
 		// i.e. same signatures and greater or equal visibility
-		// find all inherited abstract pointcuts and make sure they're concretized if I'm concrete
+		// find all inherited abstract pointcuts and make sure they're
+		// concretized if I'm concrete
 		// find all inherited pointcuts and make sure they don't conflict
-		getResolvedTypeX().getExposedPointcuts(); // ??? this is an odd construction
+		getResolvedTypeX().getExposedPointcuts(); // ??? this is an odd
+		// construction
 
 	}
 
@@ -430,14 +440,16 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 
 	// public ISourceLocation getSourceLocation() {
 	// TypeDeclaration dec = binding.scope.referenceContext;
-	// return new EclipseSourceLocation(dec.compilationResult, dec.sourceStart, dec.sourceEnd);
+	// return new EclipseSourceLocation(dec.compilationResult, dec.sourceStart,
+	// dec.sourceEnd);
 	// }
 
 	public boolean isInterface() {
 		return binding.isInterface();
 	}
 
-	// XXXAJ5: Should be constants in the eclipse compiler somewhere, once it supports 1.5
+	// XXXAJ5: Should be constants in the eclipse compiler somewhere, once it
+	// supports 1.5
 	public final static short ACC_ANNOTATION = 0x2000;
 	public final static short ACC_ENUM = 0x4000;
 
@@ -449,7 +461,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		return (binding.getAccessFlags() & ACC_ANNOTATION) != 0;
 	}
 
-	public void addAnnotation(AnnotationX annotationX) {
+	public void addAnnotation(AnnotationAJ annotationX) {
 		// XXX Big hole here - annotationX holds a BCEL annotation but
 		// we need an Eclipse one here, we haven't written the conversion utils
 		// yet. Not sure if this method will be called in practice...
@@ -487,16 +499,19 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		if (discoveredAnnotationTargetKinds)
 			return annotationTargetKinds;
 		discoveredAnnotationTargetKinds = true;
-		annotationTargetKinds = null; // null means we have no idea or the @Target annotation hasn't been used
+		annotationTargetKinds = null; // null means we have no idea or the
+		// @Target annotation hasn't been used
 		// if (isAnnotation()) {
 		// Annotation[] annotationsOnThisType = declaration.annotations;
 		// if (annotationsOnThisType != null) {
 		// for (int i = 0; i < annotationsOnThisType.length; i++) {
 		// Annotation a = annotationsOnThisType[i];
 		// if (a.resolvedType != null) {
-		// String packageName = new String(a.resolvedType.qualifiedPackageName()).concat(".");
+		// String packageName = new
+		// String(a.resolvedType.qualifiedPackageName()).concat(".");
 		// String sourceName = new String(a.resolvedType.qualifiedSourceName());
-		// if ((packageName + sourceName).equals(UnresolvedType.AT_TARGET.getName())) {
+		// if ((packageName +
+		// sourceName).equals(UnresolvedType.AT_TARGET.getName())) {
 		// MemberValuePair[] pairs = a.memberValuePairs();
 		// for (int j = 0; j < pairs.length; j++) {
 		// MemberValuePair pair = pairs[j];
@@ -550,7 +565,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		for (int i = 0; i < as.length; i++) {
 			Annotation annotation = as[i];
 			if (annotation.resolvedType == null) {
-				// Something has gone wrong - probably we have a 1.4 rt.jar around
+				// Something has gone wrong - probably we have a 1.4 rt.jar
+				// around
 				// which will result in a separate error message.
 				return false;
 			}
@@ -577,15 +593,15 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	 * annotations, this code only needs to deal with converting system annotations that the weaver needs to process
 	 * (RetentionPolicy, Target).
 	 */
-	public AnnotationX[] getAnnotations() {
+	public AnnotationAJ[] getAnnotations() {
 		if (annotations != null)
 			return annotations; // only do this once
 		getAnnotationTypes(); // forces resolution and sets resolvedAnnotations
 		Annotation[] as = declaration.annotations;
 		if (as == null || as.length == 0) {
-			annotations = NO_ANNOTATIONS;
+			annotations = AnnotationAJ.EMPTY_ARRAY;
 		} else {
-			annotations = new AnnotationX[as.length];
+			annotations = new AnnotationAJ[as.length];
 			for (int i = 0; i < as.length; i++) {
 				annotations[i] = convertEclipseAnnotation(as[i], factory.getWorld());
 			}
@@ -600,14 +616,15 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	 * than limping along with a malformed annotation. When the *BANG* is encountered the bug reporter should indicate the kind of
 	 * annotation they were working with and this code can be enhanced to support it.
 	 */
-	public AnnotationX convertEclipseAnnotation(Annotation eclipseAnnotation, World w) {
-		// TODO if it is sourcevisible, we shouldn't let it through!!!!!!!!! testcase!
+	public AnnotationAJ convertEclipseAnnotation(Annotation eclipseAnnotation, World w) {
+		// TODO if it is sourcevisible, we shouldn't let it through!!!!!!!!!
+		// testcase!
 		ResolvedType annotationType = factory.fromTypeBindingToRTX(eclipseAnnotation.type.resolvedType);
 		// long bs = (eclipseAnnotation.bits & TagBits.AnnotationRetentionMASK);
 		boolean isRuntimeVisible = (eclipseAnnotation.bits & TagBits.AnnotationRetentionMASK) == TagBits.AnnotationRuntimeRetention;
-		AnnotationAJ annotationAJ = new AnnotationAJ(annotationType.getSignature(), isRuntimeVisible);
+		StandardAnnotation annotationAJ = new StandardAnnotation(annotationType, isRuntimeVisible);
 		generateAnnotation(eclipseAnnotation, annotationAJ);
-		return new AnnotationX(annotationAJ, w);
+		return annotationAJ;
 	}
 
 	static class MissingImplementationException extends RuntimeException {
@@ -616,7 +633,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		}
 	}
 
-	private void generateAnnotation(Annotation annotation, AnnotationAJ annotationAJ) {
+	private void generateAnnotation(Annotation annotation, StandardAnnotation annotationAJ) {
 		if (annotation instanceof NormalAnnotation) {
 			NormalAnnotation normalAnnotation = (NormalAnnotation) annotation;
 			MemberValuePair[] memberValuePairs = normalAnnotation.memberValuePairs;
@@ -674,7 +691,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 					throw new MissingImplementationException(
 							"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value ["
 									+ defaultValue + "]");
-					// generateElementValue(attributeOffset, defaultValue, constant, memberValuePairReturnType.leafComponentType());
+					// generateElementValue(attributeOffset, defaultValue,
+					// constant, memberValuePairReturnType.leafComponentType());
 				} else {
 					AnnotationValue av = generateElementValueForNonConstantExpression(defaultValue, defaultValueBinding);
 					return new ArrayAnnotationValue(new AnnotationValue[] { av });
@@ -689,7 +707,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 										+ defaultValue + "]");
 					}
 					return av;
-					// generateElementValue(attributeOffset, defaultValue, constant, memberValuePairReturnType.leafComponentType());
+					// generateElementValue(attributeOffset, defaultValue,
+					// constant, memberValuePairReturnType.leafComponentType());
 				} else {
 					AnnotationValue av = generateElementValueForNonConstantExpression(defaultValue, defaultValueBinding);
 					return av;
@@ -726,7 +745,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 						"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value [" + defaultValue
 								+ "]");
 				// contents[contentsOffset++] = (byte) '@';
-				// generateAnnotation((Annotation) defaultValue, attributeOffset);
+				// generateAnnotation((Annotation) defaultValue,
+				// attributeOffset);
 			} else if (defaultValueBinding.isArrayType()) {
 				// array type
 				if (defaultValue instanceof ArrayInitializer) {
@@ -753,7 +773,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 				//					
 				// } else {
 				// throw new MissingImplementationException(
-				// "Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value ["+defaultValue+"]");
+				// "Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value ["
+				// +defaultValue+"]");
 				// }
 			} else {
 				// class type
@@ -765,8 +786,11 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 				// }
 				// contents[contentsOffset++] = (byte) 'c';
 				// if (defaultValue instanceof ClassLiteralAccess) {
-				// ClassLiteralAccess classLiteralAccess = (ClassLiteralAccess) defaultValue;
-				// final int classInfoIndex = constantPool.literalIndex(classLiteralAccess.targetType.signature());
+				// ClassLiteralAccess classLiteralAccess = (ClassLiteralAccess)
+				// defaultValue;
+				// final int classInfoIndex =
+				// constantPool.literalIndex(classLiteralAccess
+				// .targetType.signature());
 				// contents[contentsOffset++] = (byte) (classInfoIndex >> 8);
 				// contents[contentsOffset++] = (byte) classInfoIndex;
 				// } else {
@@ -807,7 +831,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 
 	public PerClause getPerClause() {
 		// should probably be: ((AspectDeclaration)declaration).perClause;
-		// but we don't need this level of detail, and working with real per clauses
+		// but we don't need this level of detail, and working with real per
+		// clauses
 		// at this stage of compilation is not worth the trouble
 		if (!isAnnotationStyleAspect()) {
 			if (declaration instanceof AspectDeclaration) {
@@ -817,14 +842,16 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 			}
 			return new PerSingleton();
 		} else {
-			// for @Aspect, we do need the real kind though we don't need the real perClause
+			// for @Aspect, we do need the real kind though we don't need the
+			// real perClause
 			// at least try to get the right perclause
 			PerClause pc = null;
 			if (declaration instanceof AspectDeclaration)
 				pc = ((AspectDeclaration) declaration).perClause;
 			if (pc == null) {
 				PerClause.Kind kind = getPerClauseForTypeDeclaration(declaration);
-				// returning a perFromSuper is enough to get the correct kind.. (that's really a hack - AV)
+				// returning a perFromSuper is enough to get the correct kind..
+				// (that's really a hack - AV)
 				return new PerFromSuper(kind);
 			}
 			return pc;
@@ -839,7 +866,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 				// found @Aspect(...)
 				if (annotation.memberValuePairs() == null || annotation.memberValuePairs().length == 0) {
 					// it is an @Aspect or @Aspect()
-					// needs to use PerFromSuper if declaration extends a super aspect
+					// needs to use PerFromSuper if declaration extends a super
+					// aspect
 					PerClause.Kind kind = lookupPerClauseKind(typeDeclaration.binding.superclass);
 					// if no super aspect, we have a @Aspect() means singleton
 					if (kind == null) {
@@ -852,7 +880,15 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 					SingleMemberAnnotation theAnnotation = (SingleMemberAnnotation) annotation;
 					String clause = new String(((StringLiteral) theAnnotation.memberValue).source());// TODO cast safe ?
 					return determinePerClause(typeDeclaration, clause);
-				} else if (annotation instanceof NormalAnnotation) { // this kind if it was added by the visitor !
+				} else if (annotation instanceof NormalAnnotation) { // this
+					// kind
+					// if it
+					// was
+					// added
+					// by
+					// the
+					// visitor
+					// !
 					// it is an @Aspect(...something...)
 					NormalAnnotation theAnnotation = (NormalAnnotation) annotation;
 					if (theAnnotation.memberValuePairs == null || theAnnotation.memberValuePairs.length < 1)
@@ -866,7 +902,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 							"@Aspect annotation is expected to be SingleMemberAnnotation with 'String value()' as unique element",
 							new EclipseSourceLocation(typeDeclaration.compilationResult, typeDeclaration.sourceStart,
 									typeDeclaration.sourceEnd), null);
-					return PerClause.SINGLETON;// fallback strategy just to avoid NPE
+					return PerClause.SINGLETON;// fallback strategy just to
+					// avoid NPE
 				}
 			}
 		}
@@ -902,7 +939,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		if (binding instanceof BinaryTypeBinding) {
 			ResolvedType superTypeX = factory.fromEclipse(binding);
 			PerClause perClause = superTypeX.getPerClause();
-			// clause is null for non aspect classes since coming from BCEL attributes
+			// clause is null for non aspect classes since coming from BCEL
+			// attributes
 			if (perClause != null) {
 				kind = superTypeX.getPerClause().getKind();
 			} else {
@@ -913,8 +951,10 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 			if (sourceSc.scope.referenceContext instanceof AspectDeclaration) {
 				// code style
 				kind = ((AspectDeclaration) sourceSc.scope.referenceContext).perClause.getKind();
-			} else { // if (sourceSc.scope.referenceContext instanceof TypeDeclaration) {
-				// if @Aspect: perFromSuper, else if @Aspect(..) get from anno value, else null
+			} else { // if (sourceSc.scope.referenceContext instanceof
+				// TypeDeclaration) {
+				// if @Aspect: perFromSuper, else if @Aspect(..) get from anno
+				// value, else null
 				kind = getPerClauseForTypeDeclaration((sourceSc.scope.referenceContext));
 			}
 		} else {
