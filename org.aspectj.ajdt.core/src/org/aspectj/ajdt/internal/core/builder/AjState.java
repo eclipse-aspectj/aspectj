@@ -69,7 +69,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 
 	public static boolean FORCE_INCREMENTAL_DURING_TESTING = false;
 
-	private AjBuildManager buildManager;
+	private final AjBuildManager buildManager;
 	private boolean couldBeSubsequentIncrementalBuild = false;
 	private INameEnvironment nameEnvironment;
 
@@ -80,10 +80,10 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * When looking at changes on the classpath, this set accumulates files in our state instance that affected by those changes.
 	 * Then if we can do an incremental build - these must be compiled.
 	 */
-	private Set affectedFiles = new HashSet();
+	private final Set affectedFiles = new HashSet();
 
 	private long lastSuccessfulFullBuildTime = -1;
-	private Hashtable /* File, long */structuralChangesSinceLastFullBuild = new Hashtable();
+	private final Hashtable /* File, long */structuralChangesSinceLastFullBuild = new Hashtable();
 
 	private long lastSuccessfulBuildTime = -1;
 	private long currentBuildTime = -1;
@@ -100,7 +100,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * 
 	 * Added by AMC during state refactoring, 1Q06.
 	 */
-	private Map/* <File, List<ClassFile> */fullyQualifiedTypeNamesResultingFromCompilationUnit = new HashMap();
+	private final Map/* <File, List<ClassFile> */fullyQualifiedTypeNamesResultingFromCompilationUnit = new HashMap();
 
 	/**
 	 * Source files defining aspects
@@ -109,14 +109,14 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * 
 	 * Added by AMC during state refactoring, 1Q06.
 	 */
-	private Set/* <File> */sourceFilesDefiningAspects = new HashSet();
+	private final Set/* <File> */sourceFilesDefiningAspects = new HashSet();
 
 	/**
 	 * Populated in noteResult to record the set of types that should be recompiled if the given file is modified or deleted.
 	 * 
 	 * Refered to during addAffectedSourceFiles when calculating incremental compilation set.
 	 */
-	private Map/* <File, ReferenceCollection> */references = new HashMap();
+	private final Map/* <File, ReferenceCollection> */references = new HashMap();
 
 	/**
 	 * Holds UnwovenClassFiles (byte[]s) originating from the given file source. This could be a jar file, a directory, or an
@@ -143,13 +143,13 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * (type name, File) not UnwovenClassFiles (which also have all the byte code in them). After a batch build, binarySourceFiles
 	 * is cleared, leaving just this much lighter weight map to use in processing subsequent incremental builds.
 	 */
-	private Map/* <File,List<ClassFile> */inputClassFilesBySource = new HashMap();
+	private final Map/* <File,List<ClassFile> */inputClassFilesBySource = new HashMap();
 
 	/**
 	 * Holds structure information on types as they were at the end of the last build. It would be nice to get rid of this too, but
 	 * can't see an easy way to do that right now.
 	 */
-	private Map/* FQN,CompactStructureRepresentation */resolvedTypeStructuresFromLastBuild = new HashMap();
+	private final Map/* FQN,CompactStructureRepresentation */resolvedTypeStructuresFromLastBuild = new HashMap();
 
 	/**
 	 * Populated in noteResult to record the set of UnwovenClassFiles (intermediate results) that originated from compilation of the
@@ -159,7 +159,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * 
 	 * Passed into StatefulNameEnvironment during incremental compilation to support findType lookups.
 	 */
-	private Map/* <String, File> */classesFromName = new HashMap();
+	private final Map/* <String, File> */classesFromName = new HashMap();
 
 	/**
 	 * Populated by AjBuildManager to record the aspects with the file name in which they're contained. This is later used when
@@ -170,7 +170,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	private Map /* <String, char[]> */aspectsFromFileNames;
 
 	private Set/* File */compiledSourceFiles = new HashSet();
-	private List/* String */resources = new ArrayList();
+	private final List/* String */resources = new ArrayList();
 
 	// these are references created on a particular compile run - when looping round in
 	// addAffectedSourceFiles(), if some have been created then we look at which source files
@@ -496,9 +496,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 
 	public static class SoftHashMap extends AbstractMap {
 
-		private Map map;
+		private final Map map;
 
-		private ReferenceQueue rq = new ReferenceQueue();
+		private final ReferenceQueue rq = new ReferenceQueue();
 
 		public SoftHashMap(Map map) {
 			this.map = map;
@@ -733,10 +733,16 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			// it as a standalone element on our classpath rather than going through them all
 			List/* String */modifiedCpElements = newConfig.getClasspathElementsWithModifiedContents();
 			for (Iterator iterator = modifiedCpElements.iterator(); iterator.hasNext();) {
-				File cpDir = new File((String) iterator.next());
-				int classFileChanges = classFileChangedInDirSinceLastBuildRequiringFullBuild(cpDir);
-				if (classFileChanges == CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD) {
-					return true;
+				File cpElement = new File((String) iterator.next());
+				if (cpElement.exists() && !cpElement.isDirectory()) {
+					if (cpElement.lastModified() > lastSuccessfulBuildTime) {
+						return true;
+					}
+				} else {
+					int classFileChanges = classFileChangedInDirSinceLastBuildRequiringFullBuild(cpElement);
+					if (classFileChanges == CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD) {
+						return true;
+					}
 				}
 			}
 		}
