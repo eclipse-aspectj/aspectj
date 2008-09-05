@@ -136,4 +136,18 @@ public class StandardAnnotation extends AbstractAnnotationAJ {
 		nvPairs.add(pair);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getStringFormOfValue(String name) {
+		if (hasNameValuePairs()) {
+			for (Iterator iterator = nvPairs.iterator(); iterator.hasNext();) {
+				AnnotationNameValuePair nvPair = (AnnotationNameValuePair) iterator.next();
+				if (nvPair.getName().equals(name)) {
+					return nvPair.getValue().stringify();
+				}
+			}
+		}
+		return null;
+	}
 }

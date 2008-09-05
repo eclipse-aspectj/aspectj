@@ -18,7 +18,6 @@ import java.util.List;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.weaver.bcel.Utility;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -218,7 +217,7 @@ public abstract class Advice extends ShadowMunger {
 			if (shadowReturnType.isParameterizedType() && (shadowReturnType.getRawType() == afterReturningType.getRawType())) {
 				uncheckedMatchWith = shadowReturnType.getSimpleName();
 			}
-			if (!Utility.isSuppressing(getSignature().getAnnotations(), "uncheckedArgument")) {
+			if (!Utils.isSuppressing(getSignature().getAnnotations(), "uncheckedArgument")) {
 				world.getLint().uncheckedArgument.signal(new String[] { afterReturningType.getSimpleName(), uncheckedMatchWith,
 						afterReturningType.getSimpleBaseName(), shadow.toResolvedString(world) }, getSourceLocation(),
 						new ISourceLocation[] { shadow.getSourceLocation() });

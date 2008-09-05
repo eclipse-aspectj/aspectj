@@ -61,6 +61,7 @@ import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.Utils;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
@@ -681,51 +682,14 @@ public class Utility {
 	 * Checks for suppression specified on the member or on the declaring type of that member
 	 */
 	public static boolean isSuppressing(Member member, String lintkey) {
-		boolean isSuppressing = Utility.isSuppressing(member.getAnnotations(), lintkey);
+		boolean isSuppressing = Utils.isSuppressing(member.getAnnotations(), lintkey);
 		if (isSuppressing)
 			return true;
 		UnresolvedType type = member.getDeclaringType();
 		if (type instanceof ResolvedType) {
-			return Utility.isSuppressing(((ResolvedType) type).getAnnotations(), lintkey);
+			return Utils.isSuppressing(((ResolvedType) type).getAnnotations(), lintkey);
 		}
 		return false;
-	}
-
-	/**
-	 * Check if the annotations contain a SuppressAjWarnings annotation and if that annotation specifies that the given lint message
-	 * (identified by its key) should be ignored.
-	 * 
-	 */
-	public static boolean isSuppressing(AnnotationAJ[] anns, String lintkey) {
-		if (anns == null)
-			return false;
-		boolean suppressed = false;
-		// Go through the annotation types on the advice
-		for (int i = 0; !suppressed && i < anns.length; i++) {
-			// Check for the SuppressAjWarnings annotation
-			if (UnresolvedType.SUPPRESS_AJ_WARNINGS.getSignature().equals(anns[i].getTypeSignature())) {
-				// Two possibilities:
-				// 1. there are no values specified (i.e. @SuppressAjWarnings)
-				// 2. there are values specified (i.e. @SuppressAjWarnings("A")
-				// or @SuppressAjWarnings({"A","B"})
-				List vals = ((BcelAnnotation) anns[i]).getBcelAnnotation().getValues();
-				if (vals == null || vals.isEmpty()) { // (1)
-					suppressed = true;
-				} else { // (2)
-					// We know the value is an array value
-					ArrayElementValueGen array = (ArrayElementValueGen) ((ElementNameValuePairGen) vals.get(0)).getValue();
-					ElementValueGen[] values = array.getElementValuesArray();
-					for (int j = 0; j < values.length; j++) {
-						// We know values in the array are strings
-						SimpleElementValueGen value = (SimpleElementValueGen) values[j];
-						if (value.getValueString().equals(lintkey)) {
-							suppressed = true;
-						}
-					}
-				}
-			}
-		}
-		return suppressed;
 	}
 
 	public static List/* Lint.Kind */getSuppressedWarnings(AnnotationAJ[] anns, Lint lint) {

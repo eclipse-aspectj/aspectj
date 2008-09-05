@@ -104,4 +104,21 @@ public class BcelAnnotation extends AbstractAnnotationAJ {
 		return bcelAnnotation;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getStringFormOfValue(String name) {
+		List annotationValues = this.bcelAnnotation.getValues();
+		if (annotationValues == null || annotationValues.size() == 0) {
+			return null;
+		} else {
+			for (Iterator iterator = annotationValues.iterator(); iterator.hasNext();) {
+				ElementNameValuePairGen nvPair = (ElementNameValuePairGen) iterator.next();
+				if (nvPair.getNameString().equals(name)) {
+					return nvPair.getValue().stringifyValue();
+				}
+			}
+			return null;
+		}
+	}
 }
