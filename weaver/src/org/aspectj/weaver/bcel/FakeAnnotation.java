@@ -9,7 +9,7 @@
  * Contributors:
  * initial implementation              Andy Clement
  *******************************************************************************/
-package org.aspectj.weaver;
+package org.aspectj.weaver.bcel;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
