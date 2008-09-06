@@ -412,6 +412,11 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * 
 	 */
 	private int classFileChangedInDirSinceLastBuildRequiringFullBuild(File dir) {
+
+		if (!dir.isDirectory()) {
+			return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
+		}
+
 		// Are we managing that output directory?
 		AjState state = IncrementalStateManager.findStateManagingOutputLocation(dir);
 		if (listenerDefined()) {
