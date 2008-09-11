@@ -128,6 +128,7 @@ concrete-aspect
     name CDATA #REQUIRED
     extends CDATA #REQUIRED
     precedence CDATA #IMPLIED
+    perclause CDATA #IMPLIED
 >
 <!--*****************************************************************************************************************************
 pointcut

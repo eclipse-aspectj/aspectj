@@ -33,6 +33,7 @@ import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
 import org.aspectj.weaver.AnnotationAJ;
+import org.aspectj.weaver.GeneratedReferenceTypeDelegate;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
@@ -48,13 +49,14 @@ import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.PerSingleton;
 
 /**
- * Generates bytecode for concrete-aspect <p/> The concrete aspect is @AspectJ
- * code generated. As it is build during aop.xml definitions registration we
- * perform the type munging for perclause ie aspectOf artifact directly, instead
- * of waiting for it to go thru the weaver (that we are in the middle of
- * configuring).
+ * Generates bytecode for concrete-aspect.
+ * <p>
+ * The concrete aspect is @AspectJ code generated. As it is build during aop.xml definitions registration we perform the type
+ * munging for perclause, ie. aspectOf() artifact directly, instead of waiting for it to go thru the weaver (that we are in the
+ * middle of configuring).
  * 
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur
+ * @author Andy Clement
  */
 public class ConcreteAspectCodeGen {
 
@@ -64,27 +66,27 @@ public class ConcreteAspectCodeGen {
 	/**
 	 * Concrete aspect definition we build for
 	 */
-	private final Definition.ConcreteAspect m_concreteAspect;
+	private final Definition.ConcreteAspect concreteAspect;
 
 	/**
 	 * World for which we build for
 	 */
-	private final World m_world;
+	private final World world;
 
 	/**
 	 * Set to true when all is checks are verified
 	 */
-	private boolean m_isValid = false;
+	private boolean isValid = false;
 
 	/**
 	 * The parent aspect, not concretized
 	 */
-	private ResolvedType m_parent;
+	private ResolvedType parent;
 
 	/**
 	 * Aspect perClause, used for direct munging of aspectOf artifacts
 	 */
-	private PerClause m_perClause;
+	private PerClause perclause;
 
 	/**
 	 * Create a new compiler for a concrete aspect
@@ -93,8 +95,8 @@ public class ConcreteAspectCodeGen {
 	 * @param world
 	 */
 	ConcreteAspectCodeGen(Definition.ConcreteAspect concreteAspect, World world) {
-		m_concreteAspect = concreteAspect;
-		m_world = world;
+		this.concreteAspect = concreteAspect;
+		this.world = world;
 	}
 
 	/**
@@ -103,7 +105,7 @@ public class ConcreteAspectCodeGen {
 	 * @return true if ok, false otherwise
 	 */
 	public boolean validate() {
-		if (!(m_world instanceof BcelWorld)) {
+		if (!(world instanceof BcelWorld)) {
 			reportError("Internal error: world must be of type BcelWorld");
 			return false;
 		}
@@ -111,62 +113,57 @@ public class ConcreteAspectCodeGen {
 		// name must be undefined so far
 		// TODO only convert the name to signature once, probably earlier than
 		// this
-		ResolvedType current = m_world.lookupBySignature(UnresolvedType
-				.forName(m_concreteAspect.name).getSignature());
+		ResolvedType current = world.lookupBySignature(UnresolvedType.forName(concreteAspect.name).getSignature());
 
 		if (current != null && !current.isMissing()) {
-			reportError("Attempt to concretize but chosen aspect name already defined: "
-					+ stringify());
+			reportError("Attempt to concretize but chosen aspect name already defined: " + stringify());
 			return false;
 		}
 
 		// it can happen that extends is null, for precedence only declaration
-		if (m_concreteAspect.extend == null
-				&& m_concreteAspect.precedence != null) {
-			if (m_concreteAspect.pointcuts.isEmpty()) {
-				m_isValid = true;
-				m_perClause = new PerSingleton();
-				m_parent = null;
+		if (concreteAspect.extend == null && concreteAspect.precedence != null) {
+			if (concreteAspect.pointcuts.isEmpty()) {
+				isValid = true;
+				// m_perClause = new PerSingleton();
+				parent = null;
 				return true;// no need to checks more in that special case
 			} else {
-				reportError("Attempt to use nested pointcuts without extends clause: "
-						+ stringify());
+				reportError("Attempt to use nested pointcuts without extends clause: " + stringify());
 				return false;
 			}
 		}
 
-		m_parent = m_world.resolve(m_concreteAspect.extend, true);
+		parent = world.resolve(concreteAspect.extend, true);
 		// handle inner classes
-		if (m_parent.isMissing()) {
+		if (parent.isMissing()) {
 			// fallback on inner class lookup mechanism
-			String fixedName = m_concreteAspect.extend;
+			String fixedName = concreteAspect.extend;
 			int hasDot = fixedName.lastIndexOf('.');
 			while (hasDot > 0) {
 				char[] fixedNameChars = fixedName.toCharArray();
 				fixedNameChars[hasDot] = '$';
 				fixedName = new String(fixedNameChars);
 				hasDot = fixedName.lastIndexOf('.');
-				m_parent = m_world.resolve(UnresolvedType.forName(fixedName),
-						true);
-				if (!m_parent.isMissing()) {
+				parent = world.resolve(UnresolvedType.forName(fixedName), true);
+				if (!parent.isMissing()) {
 					break;
 				}
 			}
 		}
-		if (m_parent.isMissing()) {
+
+		if (parent.isMissing()) {
 			reportError("Cannot find m_parent aspect for: " + stringify());
 			return false;
 		}
 
 		// extends must be abstract
-		if (!m_parent.isAbstract()) {
-			reportError("Attempt to concretize a non-abstract aspect: "
-					+ stringify());
+		if (!parent.isAbstract()) {
+			reportError("Attempt to concretize a non-abstract aspect: " + stringify());
 			return false;
 		}
 
 		// m_parent must be aspect
-		if (!m_parent.isAspect()) {
+		if (!parent.isAspect()) {
 			reportError("Attempt to concretize a non aspect: " + stringify());
 			return false;
 		}
@@ -174,64 +171,66 @@ public class ConcreteAspectCodeGen {
 		// must have all abstractions defined
 		List elligibleAbstractions = new ArrayList();
 
-		Collection abstractMethods = getOutstandingAbstractMethods(m_parent);
+		Collection abstractMethods = getOutstandingAbstractMethods(parent);
 		for (Iterator iter = abstractMethods.iterator(); iter.hasNext();) {
 			ResolvedMember method = (ResolvedMember) iter.next();
 			if ("()V".equals(method.getSignature())) {
 				String n = method.getName();
-				if (n.startsWith("ajc$pointcut")) { // Allow for the abstract
-					// pointcut being from a
-					// code style aspect
-					// compiled with
-					// -1.5 (see test for 128744)
+				// Allow for the abstract pointcut being from a code style aspect compiled with -1.5 (see test for 128744)
+				if (n.startsWith("ajc$pointcut")) {
 					n = n.substring(14);
 					n = n.substring(0, n.indexOf("$"));
 					elligibleAbstractions.add(n);
 				} else if (hasPointcutAnnotation(method)) {
 					elligibleAbstractions.add(method.getName());
 				} else {
-					// error, an outstanding abstract method that can't be
-					// concretized in XML
-					reportError("Abstract method '" + method.toString()
-							+ "' cannot be concretized in XML: " + stringify());
+					// error, an outstanding abstract method that can't be concretized in XML
+					reportError("Abstract method '" + method.toString() + "' cannot be concretized in XML: " + stringify());
 					return false;
 				}
 			} else {
-				if (method.getName().startsWith("ajc$pointcut")
-						|| hasPointcutAnnotation(method)) {
-					// it may be a pointcut but it doesn't meet the requirements
-					// for XML concretization
+				if (method.getName().startsWith("ajc$pointcut") || hasPointcutAnnotation(method)) {
+					// it may be a pointcut but it doesn't meet the requirements for XML concretization
 					reportError("Abstract method '"
 							+ method.toString()
 							+ "' cannot be concretized as a pointcut (illegal signature, must have no arguments, must return void): "
 							+ stringify());
 					return false;
 				} else {
-					// error, an outstanding abstract method that can't be
-					// concretized in XML
-					reportError("Abstract method '" + method.toString()
-							+ "' cannot be concretized in XML: " + stringify());
+					// error, an outstanding abstract method that can't be concretized in XML
+					reportError("Abstract method '" + method.toString() + "' cannot be concretized in XML: " + stringify());
 					return false;
 				}
 			}
 		}
 		List pointcutNames = new ArrayList();
-		for (Iterator it = m_concreteAspect.pointcuts.iterator(); it.hasNext();) {
+		for (Iterator it = concreteAspect.pointcuts.iterator(); it.hasNext();) {
 			Definition.Pointcut abstractPc = (Definition.Pointcut) it.next();
 			pointcutNames.add(abstractPc.name);
 		}
 		for (Iterator it = elligibleAbstractions.iterator(); it.hasNext();) {
 			String elligiblePc = (String) it.next();
 			if (!pointcutNames.contains(elligiblePc)) {
-				reportError("Abstract pointcut '" + elligiblePc
-						+ "' not configured: " + stringify());
+				reportError("Abstract pointcut '" + elligiblePc + "' not configured: " + stringify());
 				return false;
 			}
 		}
 
-		m_perClause = m_parent.getPerClause();
-		m_isValid = true;
-		return m_isValid;
+		if (concreteAspect.perclause != null) {
+			String perclauseString = concreteAspect.perclause;
+			if (perclauseString.startsWith("persingleton")) {
+			} else if (perclauseString.startsWith("percflow")) {
+			} else if (perclauseString.startsWith("pertypewithin")) {
+			} else if (perclauseString.startsWith("perthis")) {
+			} else if (perclauseString.startsWith("pertarget")) {
+			} else if (perclauseString.startsWith("percflowbelow")) {
+			} else {
+				reportError("Unrecognized per clause specified " + stringify());
+				return false;
+			}
+		}
+		isValid = true;
+		return isValid;
 	}
 
 	private Collection getOutstandingAbstractMethods(ResolvedType type) {
@@ -246,15 +245,13 @@ public class ConcreteAspectCodeGen {
 	// We are trying to determine abstract methods left over at the bottom of a
 	// hierarchy that have not been
 	// concretized.
-	private void getOutstandingAbstractMethodsHelper(ResolvedType type,
-			Map collector) {
+	private void getOutstandingAbstractMethodsHelper(ResolvedType type, Map collector) {
 		if (type == null)
 			return;
 		// Get to the top
 		if (!type.equals(ResolvedType.OBJECT)) {
 			if (type.getSuperclass() != null)
-				getOutstandingAbstractMethodsHelper(type.getSuperclass(),
-						collector);
+				getOutstandingAbstractMethodsHelper(type.getSuperclass(), collector);
 		}
 		ResolvedMember[] rms = type.getDeclaredMethods();
 		if (rms != null) {
@@ -271,16 +268,17 @@ public class ConcreteAspectCodeGen {
 	}
 
 	/**
-	 * Rebuild the XML snip that defines this concrete aspect, for log error
-	 * purpose
+	 * Rebuild the XML snip that defines this concrete aspect, for log error purpose
 	 * 
 	 * @return string repr.
 	 */
 	private String stringify() {
 		StringBuffer sb = new StringBuffer("<concrete-aspect name='");
-		sb.append(m_concreteAspect.name);
+		sb.append(concreteAspect.name);
 		sb.append("' extends='");
-		sb.append(m_concreteAspect.extend);
+		sb.append(concreteAspect.extend);
+		sb.append("' perclause='");
+		sb.append(concreteAspect.perclause);
 		sb.append("'/> in aop.xml");
 		return sb.toString();
 	}
@@ -290,8 +288,7 @@ public class ConcreteAspectCodeGen {
 		if (as == null || as.length == 0)
 			return false;
 		for (int i = 0; i < as.length; i++) {
-			if (as[i].getTypeSignature().equals(
-					"Lorg/aspectj/lang/annotation/Pointcut;")) {
+			if (as[i].getTypeSignature().equals("Lorg/aspectj/lang/annotation/Pointcut;")) {
 				return true;
 			}
 		}
@@ -299,7 +296,7 @@ public class ConcreteAspectCodeGen {
 	}
 
 	public String getClassName() {
-		return m_concreteAspect.name;
+		return concreteAspect.name;
 	}
 
 	/**
@@ -308,8 +305,31 @@ public class ConcreteAspectCodeGen {
 	 * @return concrete aspect bytecode
 	 */
 	public byte[] getBytes() {
-		if (!m_isValid) {
+		if (!isValid) {
 			throw new RuntimeException("Must validate first");
+		}
+		PerClause parentPerClause = (parent != null ? parent.getPerClause() : null);
+		if (parentPerClause == null) {
+			parentPerClause = new PerSingleton();
+		}
+		PerClause.Kind perclauseKind = PerClause.SINGLETON;
+		String perclauseString = null;
+
+		if (concreteAspect.perclause != null) {
+			perclauseString = concreteAspect.perclause;
+			if (perclauseString.startsWith("persingleton")) {
+				perclauseKind = PerClause.SINGLETON;
+			} else if (perclauseString.startsWith("percflow")) {
+				perclauseKind = PerClause.PERCFLOW;
+			} else if (perclauseString.startsWith("pertypewithin")) {
+				perclauseKind = PerClause.PERTYPEWITHIN;
+			} else if (perclauseString.startsWith("perthis")) {
+				perclauseKind = PerClause.PEROBJECT;
+			} else if (perclauseString.startsWith("pertarget")) {
+				perclauseKind = PerClause.PEROBJECT;
+			} else if (perclauseString.startsWith("percflowbelow")) {
+				perclauseKind = PerClause.PERCFLOW;
+			}
 		}
 
 		// TODO AV - abstract away from BCEL...
@@ -321,63 +341,55 @@ public class ConcreteAspectCodeGen {
 		// }
 
 		// @Aspect public class ...
-		LazyClassGen cg = new LazyClassGen(m_concreteAspect.name.replace('.',
-				'/'), (m_parent == null) ? "java/lang/Object" : m_parent
+		LazyClassGen cg = new LazyClassGen(concreteAspect.name.replace('.', '/'), (parent == null) ? "java/lang/Object" : parent
 				.getName().replace('.', '/'), null,// TODO AV - we could point
 				// to the aop.xml that
 				// defines it and use
 				// JSR-45
-				Modifier.PUBLIC + Constants.ACC_SUPER, EMPTY_STRINGS, m_world);
-		AnnotationGen ag = new AnnotationGen(new ObjectType(
-				"org/aspectj/lang/annotation/Aspect"), Collections.EMPTY_LIST,
-				true, cg.getConstantPool());
-		cg.addAnnotation(ag);
-		if (m_concreteAspect.precedence != null) {
-			SimpleElementValueGen svg = new SimpleElementValueGen(
-					ElementValueGen.STRING, cg.getConstantPool(),
-					m_concreteAspect.precedence);
-			List elems = new ArrayList();
-			elems.add(new ElementNameValuePairGen("value", svg, cg
-					.getConstantPool()));
-			AnnotationGen agprec = new AnnotationGen(new ObjectType(
-					"org/aspectj/lang/annotation/DeclarePrecedence"), elems,
+				Modifier.PUBLIC + Constants.ACC_SUPER, EMPTY_STRINGS, world);
+		if (perclauseString == null) {
+			AnnotationGen ag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/Aspect"), Collections.EMPTY_LIST,
 					true, cg.getConstantPool());
+			cg.addAnnotation(ag);
+		} else {
+			// List elems = new ArrayList();
+			List elems = new ArrayList();
+			elems.add(new ElementNameValuePairGen("value", new SimpleElementValueGen(ElementValueGen.STRING, cg.getConstantPool(),
+					perclauseString), cg.getConstantPool()));
+			AnnotationGen ag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/Aspect"), elems, true, cg
+					.getConstantPool());
+			cg.addAnnotation(ag);
+		}
+		if (concreteAspect.precedence != null) {
+			SimpleElementValueGen svg = new SimpleElementValueGen(ElementValueGen.STRING, cg.getConstantPool(),
+					concreteAspect.precedence);
+			List elems = new ArrayList();
+			elems.add(new ElementNameValuePairGen("value", svg, cg.getConstantPool()));
+			AnnotationGen agprec = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/DeclarePrecedence"), elems, true,
+					cg.getConstantPool());
 			cg.addAnnotation(agprec);
 		}
 
 		// default constructor
-		LazyMethodGen init = new LazyMethodGen(Modifier.PUBLIC, Type.VOID,
-				"<init>", EMPTY_TYPES, EMPTY_STRINGS, cg);
+		LazyMethodGen init = new LazyMethodGen(Modifier.PUBLIC, Type.VOID, "<init>", EMPTY_TYPES, EMPTY_STRINGS, cg);
 		InstructionList cbody = init.getBody();
 		cbody.append(InstructionConstants.ALOAD_0);
-		cbody.append(cg.getFactory().createInvoke(
-				(m_parent == null) ? "java/lang/Object" : m_parent.getName()
-						.replace('.', '/'), "<init>", Type.VOID, EMPTY_TYPES,
-				Constants.INVOKESPECIAL));
+		cbody.append(cg.getFactory().createInvoke((parent == null) ? "java/lang/Object" : parent.getName().replace('.', '/'),
+				"<init>", Type.VOID, EMPTY_TYPES, Constants.INVOKESPECIAL));
 		cbody.append(InstructionConstants.RETURN);
 		cg.addMethodGen(init);
 
-		for (Iterator it = m_concreteAspect.pointcuts.iterator(); it.hasNext();) {
+		for (Iterator it = concreteAspect.pointcuts.iterator(); it.hasNext();) {
 			Definition.Pointcut abstractPc = (Definition.Pointcut) it.next();
-
-			LazyMethodGen mg = new LazyMethodGen(Modifier.PUBLIC,// TODO AV -
-					// respect
-					// visibility
-					// instead
-					// of
-					// opening
-					// up?
-					Type.VOID, abstractPc.name, EMPTY_TYPES, EMPTY_STRINGS, cg);
-			SimpleElementValueGen svg = new SimpleElementValueGen(
-					ElementValueGen.STRING, cg.getConstantPool(),
+			// TODO AV - respect visibility instead of opening up as public?
+			LazyMethodGen mg = new LazyMethodGen(Modifier.PUBLIC, Type.VOID, abstractPc.name, EMPTY_TYPES, EMPTY_STRINGS, cg);
+			SimpleElementValueGen svg = new SimpleElementValueGen(ElementValueGen.STRING, cg.getConstantPool(),
 					abstractPc.expression);
 			List elems = new ArrayList();
-			elems.add(new ElementNameValuePairGen("value", svg, cg
-					.getConstantPool()));
-			AnnotationGen mag = new AnnotationGen(new ObjectType(
-					"org/aspectj/lang/annotation/Pointcut"), elems, true, cg
+			elems.add(new ElementNameValuePairGen("value", svg, cg.getConstantPool()));
+			AnnotationGen mag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/Pointcut"), elems, true, cg
 					.getConstantPool());
-			AnnotationAJ max = new BcelAnnotation(mag, m_world);
+			AnnotationAJ max = new BcelAnnotation(mag, world);
 			mg.addAnnotation(max);
 
 			InstructionList body = mg.getBody();
@@ -387,17 +399,19 @@ public class ConcreteAspectCodeGen {
 		}
 
 		// handle the perClause
-		ReferenceType rt = new ReferenceType(ResolvedType.forName(
-				m_concreteAspect.name).getSignature(), m_world);
-		BcelPerClauseAspectAdder perClauseMunger = new BcelPerClauseAspectAdder(
-				rt, m_perClause.getKind());
+		ReferenceType rt = new ReferenceType(ResolvedType.forName(concreteAspect.name).getSignature(), world);
+		GeneratedReferenceTypeDelegate grtd = new GeneratedReferenceTypeDelegate(rt);
+		grtd.setSuperclass(parent);
+		rt.setDelegate(grtd);
+
+		BcelPerClauseAspectAdder perClauseMunger = new BcelPerClauseAspectAdder(rt, perclauseKind);
 		perClauseMunger.forceMunge(cg, false);
 
 		// TODO AV - unsafe cast
 		// register the fresh new class into the world repository as it does not
 		// exist on the classpath anywhere
-		JavaClass jc = cg.getJavaClass((BcelWorld) m_world);
-		((BcelWorld) m_world).addSourceObjectType(jc);
+		JavaClass jc = cg.getJavaClass((BcelWorld) world);
+		((BcelWorld) world).addSourceObjectType(jc);
 
 		return jc.getBytes();
 	}
@@ -408,7 +422,6 @@ public class ConcreteAspectCodeGen {
 	 * @param message
 	 */
 	private void reportError(String message) {
-		m_world.getMessageHandler().handleMessage(
-				new Message(message, IMessage.ERROR, null, null));
+		world.getMessageHandler().handleMessage(new Message(message, IMessage.ERROR, null, null));
 	}
 }
