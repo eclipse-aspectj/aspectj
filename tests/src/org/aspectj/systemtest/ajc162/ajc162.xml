@@ -3,6 +3,49 @@
 <!-- AspectJ v1.6.2 Tests -->
 <suite>
 	
+   <ajc-test dir="bugs162/pr246918" title="ltw perclause">
+     <compile options="-1.5" files="Code.java Dode.java" outjar="code.jar"/>
+     <compile options="-1.5 -Xlint:ignore" files="Base.java" outjar="aspects.jar"/>
+     <run class="Code" classpath="aspects.jar;code.jar" ltw="aop1.xml">
+       <stderr>
+         <line text="advice fired class Code"/>
+         <line text="advice fired class Dode"/>
+       </stderr>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs162/pr246918" title="ltw perclause - 2">
+     <compile options="-1.5" files="Code.java Dode.java" outjar="code.jar"/>
+     <compile options="-1.5 -Xlint:ignore" files="Base.java" outjar="aspects.jar"/>
+     <run class="Code" classpath="aspects.jar;code.jar" ltw="aop2.xml">
+       <stderr>
+         <line text="advice fired class Dode"/>
+       </stderr>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs162/pr246918" title="ltw perclause - 3">
+     <compile options="-1.5" files="Code.java Dode.java" outjar="code.jar"/>
+     <compile options="-1.5 -Xlint:ignore" files="Base2.java" outjar="aspects.jar"/>
+     <run class="Code" classpath="aspects.jar;code.jar" ltw="aop3.xml">
+       <stderr>
+         <line text="advice fired class Dode"/>
+       </stderr>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs162/pr246918" title="ltw perclause - 4">
+     <compile options="-1.5" files="Code.java Dode.java" outjar="code.jar"/>
+     <compile options="-1.5 -Xlint:ignore" files="Base2.java" outjar="aspects.jar"/>
+     <run class="Code" classpath="aspects.jar;code.jar" ltw="aop4.xml">
+       <stderr>
+         <line text="Unrecognized per clause specified"/>
+         <line text="Concrete-aspect 'SubAspect' could not be registered"/>
+         <line text="warning failure(s) registering aspects."/>
+       </stderr>
+     </run>
+   </ajc-test>
+   
    <ajc-test dir="bugs162/pr246264" title="anno value binding">
      <compile options="-1.5" files="A.java"/>
      <run class="A"/>
