@@ -103,7 +103,7 @@ public class AjcMemberMaker {
 		if (!isSerializableAspect(aspectType)) {
 			modifiers |= Modifier.TRANSIENT;
 		}
-		return new ResolvedMemberImpl(Member.FIELD, declaringType, modifiers, UnresolvedType.forSignature("Ljava/lang/String;"),
+		return new ResolvedMemberImpl(Member.FIELD, declaringType, modifiers, UnresolvedType.JAVA_LANG_STRING,
 				NameMangler.PERTYPEWITHIN_WITHINTYPEFIELD, UnresolvedType.NONE);
 	}
 
@@ -242,7 +242,7 @@ public class AjcMemberMaker {
 		}
 
 		return new ResolvedMemberImpl(Member.METHOD, field.getDeclaringType(), PUBLIC_STATIC, // Modifier.PUBLIC | (field.isStatic()
-																								// ? Modifier.STATIC : 0),
+				// ? Modifier.STATIC : 0),
 				NameMangler.privilegedAccessMethodForFieldGet(field.getName(), field.getDeclaringType(), aspectType), sig);
 	}
 
@@ -255,7 +255,7 @@ public class AjcMemberMaker {
 		}
 
 		return new ResolvedMemberImpl(Member.METHOD, field.getDeclaringType(), PUBLIC_STATIC, // Modifier.PUBLIC | (field.isStatic()
-																								// ? Modifier.STATIC : 0),
+				// ? Modifier.STATIC : 0),
 				NameMangler.privilegedAccessMethodForFieldSet(field.getName(), field.getDeclaringType(), aspectType), sig);
 	}
 
@@ -289,7 +289,7 @@ public class AjcMemberMaker {
 		}
 
 		return new ResolvedMemberImpl(Member.METHOD, aspectType, PUBLIC_STATIC, // Modifier.PUBLIC | (field.isStatic() ?
-																				// Modifier.STATIC : 0),
+				// Modifier.STATIC : 0),
 				NameMangler.inlineAccessMethodForFieldGet(field.getName(), field.getDeclaringType(), aspectType), sig);
 	}
 
@@ -302,7 +302,7 @@ public class AjcMemberMaker {
 		}
 
 		return new ResolvedMemberImpl(Member.METHOD, aspectType, PUBLIC_STATIC, // Modifier.PUBLIC | (field.isStatic() ?
-																				// Modifier.STATIC : 0),
+				// Modifier.STATIC : 0),
 				NameMangler.inlineAccessMethodForFieldSet(field.getName(), field.getDeclaringType(), aspectType), sig);
 	}
 
@@ -588,19 +588,10 @@ public class AjcMemberMaker {
 	public final static UnresolvedType DECLAREPARENTS_ANNOTATION = UnresolvedType
 			.forSignature("Lorg/aspectj/lang/annotation/DeclareParents;");
 
-	public final static UnresolvedType TYPEX_JOINPOINT = UnresolvedType.forSignature("Lorg/aspectj/lang/JoinPoint;");// UnresolvedType
-																														// .forName(
-																														// JoinPoint
-																														// .class.
-																														// getName
-																														// ().
-																														// replace
-																														// ('/'
-																														// ,'.'));
+	public final static UnresolvedType TYPEX_JOINPOINT = UnresolvedType.forSignature("Lorg/aspectj/lang/JoinPoint;");
 
 	public final static UnresolvedType TYPEX_PROCEEDINGJOINPOINT = UnresolvedType
-			.forSignature("Lorg/aspectj/lang/ProceedingJoinPoint;");// UnresolvedType.forName(ProceedingJoinPoint.class.getName().
-																	// replace('/','.'));
+			.forSignature("Lorg/aspectj/lang/ProceedingJoinPoint;");
 
 	public final static UnresolvedType TYPEX_STATICJOINPOINT = UnresolvedType.forName(JoinPoint.StaticPart.class.getName().replace(
 			'/', '.'));
