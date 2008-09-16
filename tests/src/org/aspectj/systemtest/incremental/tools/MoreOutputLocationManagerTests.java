@@ -376,6 +376,11 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		public File getDefaultOutputLocation() {
 			return outputLoc;
 		}
+
+		public String getSourceFolderForFile(File sourceFile) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 	
 }
