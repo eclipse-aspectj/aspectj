@@ -384,4 +384,8 @@ class MyOutputLocationManager implements IOutputLocationManager {
 	public String getUniqueIdentifier() {
 		return null;
 	}
+
+	public String getSourceFolderForFile(File sourceFile) {
+		return null;
+	}
 }
