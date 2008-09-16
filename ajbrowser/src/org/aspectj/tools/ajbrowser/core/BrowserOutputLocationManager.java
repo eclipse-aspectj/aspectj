@@ -57,4 +57,8 @@ public class BrowserOutputLocationManager implements IOutputLocationManager {
 		return new File(getCommonOutputDir());
 	}
 
+	public String getSourceFolderForFile(File sourceFile) {
+		return null;
+	}
+
 }
