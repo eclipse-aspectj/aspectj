@@ -35,6 +35,14 @@ public interface CompilationResultDestinationManager {
 	File getOutputLocationForClass(File compilationUnit);
 	
 	/**
+     * Return the source folder where this source file came from, relative to the project root.
+     * For example 'src' or 'src/main/java' or 'src/test/java'
+     * @param sourceFile the file for which the source folder should be determined
+     * @return the source folder
+     */
+ 	String getSourceFolderForFile(File sourceFile);
+	
+	/**
 	 * When copying resources from source folders to output location, return the
 	 * root directory under which the resource should be copied.
 	 * 
