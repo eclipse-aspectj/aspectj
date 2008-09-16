@@ -135,5 +135,9 @@ public class OutputLocationManagerTests extends AbstractMultiProjectIncrementalA
 		public File getDefaultOutputLocation() {
 			return new File(projectHome,"target/main/classes");
 		}
+
+		public String getSourceFolderForFile(File sourceFile) {
+			return null;
+		}
 	}
 }
