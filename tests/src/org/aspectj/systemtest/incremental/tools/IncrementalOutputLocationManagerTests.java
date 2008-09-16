@@ -81,6 +81,10 @@ public class IncrementalOutputLocationManagerTests extends AbstractMultiProjectI
 		public File getDefaultOutputLocation() {
 			return new File(projectDir + File.separator + "bin");
 		}
+
+		public String getSourceFolderForFile(File sourceFile) {
+			return null;
+		}
 		
 	}
 	
