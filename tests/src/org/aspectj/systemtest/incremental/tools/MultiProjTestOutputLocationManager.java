@@ -12,7 +12,9 @@ package org.aspectj.systemtest.incremental.tools;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.ajde.core.IOutputLocationManager;
 
@@ -27,6 +29,7 @@ public class MultiProjTestOutputLocationManager implements IOutputLocationManage
 	private String testProjectOutputPath;
 	private File classOutputLoc;
 	private File resourceOutputLoc;
+	private Map sourceFolders = new HashMap();
 	private List allOutputLocations;
 	
 	public MultiProjTestOutputLocationManager(String testProjectPath) {
@@ -73,8 +76,17 @@ public class MultiProjTestOutputLocationManager implements IOutputLocationManage
 		classOutputLoc = f;
 	}
 	
+	public void setSourceFolderFor(File sourceFile,String sourceFolder) {
+		sourceFolders.put(sourceFile.getPath(),sourceFolder);
+	}
+	
 	public void setOutputLocForResource(File f) {
 		resourceOutputLoc = f;
+	}
+
+	public String getSourceFolderForFile(File sourceFile) {
+		String f = (String)sourceFolders.get(sourceFile.getPath());
+		return f;
 	}
 
 }

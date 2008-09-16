@@ -15,9 +15,9 @@
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
 (targets=1) <pkg[AbstractBeanConfigurerAspect.class (binary)}AbstractBeanConfigurerAspect&afterReturning (advises) <test{Simple.java[Simple~Simple
-(targets=1) <pkg[AbstractBeanConfigurerAspect.class (binary)}AbstractBeanConfigurerAspect&before (advises) <test{Simple.java[Simple~Simple
+(targets=1) <pkg[AbstractBeanConfigurerAspect.class (binary)}AbstractBeanConfigurerAspect&before!2 (advises) <test{Simple.java[Simple~Simple
 (targets=2) <test{Simple.java[Simple~Simple (advised by) <pkg[AbstractBeanConfigurerAspect.class (binary)}AbstractBeanConfigurerAspect&afterReturning
-(targets=2) <test{Simple.java[Simple~Simple (advised by) <pkg[AbstractBeanConfigurerAspect.class (binary)}AbstractBeanConfigurerAspect&before
+(targets=2) <test{Simple.java[Simple~Simple (advised by) <pkg[AbstractBeanConfigurerAspect.class (binary)}AbstractBeanConfigurerAspect&before!2
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 import reference=2

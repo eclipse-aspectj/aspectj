@@ -53,6 +53,11 @@ public class AjdeInteractionTestbed extends TestCase {
 	public void configureNewProjectDependency(String fromProjectName, String projectItDependsOn) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + fromProjectName);
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).addDependancy(projectItDependsOn);
+	} 
+	
+	public void addSourceFolderForSourceFile(String projectName, File f, String sourceFolder) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		((MultiProjTestOutputLocationManager)((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).getOutputLocationManager()).setSourceFolderFor(f,sourceFolder);
 	}
 
 	public void setNextChangeResponse(String projName, int flags) {
