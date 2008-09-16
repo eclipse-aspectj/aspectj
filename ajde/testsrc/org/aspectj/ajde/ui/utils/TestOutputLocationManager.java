@@ -81,6 +81,10 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 			resourceOutputLoc = new File(testProjectOutputPath);
 		}
 	}
+
+	public String getSourceFolderForFile(File sourceFile) {
+		return null;
+	}
 	
 
 }
