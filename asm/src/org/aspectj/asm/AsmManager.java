@@ -42,9 +42,11 @@ import org.aspectj.asm.internal.RelationshipMap;
 import org.aspectj.bridge.ISourceLocation;
 
 /**
- * The Abstract Structure Model (ASM) represents the containment hierarchy and crossccutting structure map for AspectJ programs. It
- * is used by IDE views such as the document outline, and by other tools such as ajdoc to show both AspectJ declarations and
- * crosscutting links, such as which advice affects which join point shadows.
+ * The Abstract Structure Model (ASM) represents the containment hierarchy and
+ * crossccutting structure map for AspectJ programs. It is used by IDE views
+ * such as the document outline, and by other tools such as ajdoc to show both
+ * AspectJ declarations and crosscutting links, such as which advice affects
+ * which join point shadows.
  * 
  * @author Mik Kersten
  */
@@ -53,18 +55,23 @@ public class AsmManager {
 	private static AsmManager instance = new AsmManager();
 
 	private IElementHandleProvider handleProvider;
-	private List structureListeners = new ArrayList();
+	private final List structureListeners = new ArrayList();
 
-	// The model is 'manipulated' by the AjBuildManager.setupModel() code which trashes all the
+	// The model is 'manipulated' by the AjBuildManager.setupModel() code which
+	// trashes all the
 	// fields when setting up a new model for a batch build.
-	// Due to the requirements of incremental compilation we need to tie some of the info
-	// below to the AjState for a compilation and recover it if switching between projects.
+	// Due to the requirements of incremental compilation we need to tie some of
+	// the info
+	// below to the AjState for a compilation and recover it if switching
+	// between projects.
 	protected IHierarchy hierarchy;
 	private IRelationshipMap mapper;
 
 	private static boolean creatingModel = false;
-	public static boolean dumpModelPostBuild = false; // Dumping the model is expensive
-	// SECRETAPI asc pull the secret options together into a system API you lazy fool
+	public static boolean dumpModelPostBuild = false; // Dumping the model is
+	// expensive
+	// SECRETAPI asc pull the secret options together into a system API you lazy
+	// fool
 	public static boolean attemptIncrementalModelRepairs = false;
 
 	// For offline debugging, you can now ask for the AsmManager to
@@ -77,9 +84,10 @@ public class AsmManager {
 	private static boolean reporting = false;
 
 	private static boolean completingTypeBindings = false;
-	private CanonicalFilePathMap canonicalFilePathMap = new CanonicalFilePathMap();
-	// Record the Set<File> for which the model has been modified during the last incremental build
-	private Set lastBuildChanges = new HashSet();
+	private final CanonicalFilePathMap canonicalFilePathMap = new CanonicalFilePathMap();
+	// Record the Set<File> for which the model has been modified during the
+	// last incremental build
+	private final Set lastBuildChanges = new HashSet();
 
 	// static {
 	// setReporting("c:/model.nfo",true,true,true,true);
@@ -120,7 +128,8 @@ public class AsmManager {
 	/**
 	 * Constructs map each time it's called.
 	 */
-	public HashMap getInlineAnnotations(String sourceFile, boolean showSubMember, boolean showMemberAndType) {
+	public HashMap getInlineAnnotations(String sourceFile,
+			boolean showSubMember, boolean showMemberAndType) {
 
 		if (!hierarchy.isValid())
 			return null;
@@ -132,7 +141,8 @@ public class AsmManager {
 		} else {
 			IProgramElement fileNode = node;
 			ArrayList peNodes = new ArrayList();
-			getAllStructureChildren(fileNode, peNodes, showSubMember, showMemberAndType);
+			getAllStructureChildren(fileNode, peNodes, showSubMember,
+					showMemberAndType);
 			for (Iterator it = peNodes.iterator(); it.hasNext();) {
 				IProgramElement peNode = (IProgramElement) it.next();
 				List entries = new ArrayList();
@@ -151,7 +161,8 @@ public class AsmManager {
 		}
 	}
 
-	private void getAllStructureChildren(IProgramElement node, List result, boolean showSubMember, boolean showMemberAndType) {
+	private void getAllStructureChildren(IProgramElement node, List result,
+			boolean showSubMember, boolean showMemberAndType) {
 		List children = node.getChildren();
 		if (node.getChildren() == null)
 			return;
@@ -159,11 +170,13 @@ public class AsmManager {
 			IProgramElement next = (IProgramElement) it.next();
 			List rels = AsmManager.getDefault().getRelationshipMap().get(next);
 			if (next != null
-					&& ((next.getKind() == IProgramElement.Kind.CODE && showSubMember) || (next.getKind() != IProgramElement.Kind.CODE && showMemberAndType))
+					&& ((next.getKind() == IProgramElement.Kind.CODE && showSubMember) || (next
+							.getKind() != IProgramElement.Kind.CODE && showMemberAndType))
 					&& rels != null && rels.size() > 0) {
 				result.add(next);
 			}
-			getAllStructureChildren(next, result, showSubMember, showMemberAndType);
+			getAllStructureChildren(next, result, showSubMember,
+					showMemberAndType);
 		}
 	}
 
@@ -209,13 +222,15 @@ public class AsmManager {
 			fos.close();
 			s.close();
 		} catch (Exception e) {
-			// System.err.println("AsmManager: Unable to write structure model: "+configFilePath+" because of:");
+			//System.err.println("AsmManager: Unable to write structure model: "
+			// +configFilePath+" because of:");
 			// e.printStackTrace();
 		}
 	}
 
 	/**
-	 * @param configFilePath path to an ".lst" file
+	 * @param configFilePath
+	 *            path to an ".lst" file
 	 */
 	public void readStructureModel(String configFilePath) {
 		boolean hierarchyReadOK = false;
@@ -237,12 +252,15 @@ public class AsmManager {
 		} catch (EOFException eofe) {
 			// Might be an old format sym file that is missing its relationships
 			if (!hierarchyReadOK) {
-				System.err.println("AsmManager: Unable to read structure model: " + configFilePath + " because of:");
+				System.err
+						.println("AsmManager: Unable to read structure model: "
+								+ configFilePath + " because of:");
 				eofe.printStackTrace();
 				hierarchy.setRoot(IHierarchy.NO_STRUCTURE);
 			}
 		} catch (Exception e) {
-			// System.err.println("AsmManager: Unable to read structure model: "+configFilePath+" because of:");
+			//System.err.println("AsmManager: Unable to read structure model: "+
+			// configFilePath+" because of:");
 			// e.printStackTrace();
 			hierarchy.setRoot(IHierarchy.NO_STRUCTURE);
 		} finally {
@@ -253,7 +271,8 @@ public class AsmManager {
 	private String genExternFilePath(String configFilePath) {
 		// sometimes don't have ".lst"
 		if (configFilePath.lastIndexOf(".lst") != -1) {
-			configFilePath = configFilePath.substring(0, configFilePath.lastIndexOf(".lst"));
+			configFilePath = configFilePath.substring(0, configFilePath
+					.lastIndexOf(".lst"));
 		}
 		return configFilePath + ".ajsym";
 	}
@@ -265,7 +284,7 @@ public class AsmManager {
 	private static class CanonicalFilePathMap {
 		private static final int MAX_SIZE = 4000;
 
-		private Map pathMap = new HashMap(20);
+		private final Map pathMap = new HashMap(20);
 
 		// // guards to ensure correctness and liveness
 		// private boolean cacheInUse = false;
@@ -304,7 +323,8 @@ public class AsmManager {
 		// }
 		// new Thread() {
 		// public void run() {
-		// System.out.println("Starting cache population: " + System.currentTimeMillis());
+		// System.out.println("Starting cache population: " +
+		// System.currentTimeMillis());
 		// Iterator it = files.iterator();
 		// while (!isStopRequested() && it.hasNext()) {
 		// File f = (File)it.next();
@@ -326,9 +346,11 @@ public class AsmManager {
 		//		
 		// /**
 		// * Stop pre-populating the cache - our customers are ready to use it.
-		// * If there are any cache misses from this point on, we'll populate the
+		// * If there are any cache misses from this point on, we'll populate
+		// the
 		// * cache as we go.
-		// * The handover is done this way to ensure that only one thread is ever
+		// * The handover is done this way to ensure that only one thread is
+		// ever
 		// * accessing the cache, and that we minimize synchronization.
 		// */
 		// public synchronized void handover() {
@@ -341,7 +363,8 @@ public class AsmManager {
 		// }
 
 		public String get(File f) {
-			// if (!cacheInUse) { // unsynchronized test - should never be parallel
+			// if (!cacheInUse) { // unsynchronized test - should never be
+			// parallel
 			// // threads at this point
 			// throw new IllegalStateException(
 			// "Must take ownership of cache before using by calling " +
@@ -363,7 +386,8 @@ public class AsmManager {
 	}
 
 	// SECRETAPI
-	public static void setReporting(String filename, boolean dModel, boolean dRels, boolean dDeltaProcessing, boolean deletefile) {
+	public static void setReporting(String filename, boolean dModel,
+			boolean dRels, boolean dDeltaProcessing, boolean deletefile) {
 		reporting = true;
 		dumpModel = dModel;
 		dumpRelationships = dRels;
@@ -373,7 +397,8 @@ public class AsmManager {
 		dumpFilename = filename;
 	}
 
-	public static void setReporting(String filename, boolean dModel, boolean dRels, boolean dDeltaProcessing, boolean deletefile,
+	public static void setReporting(String filename, boolean dModel,
+			boolean dRels, boolean dDeltaProcessing, boolean deletefile,
 			IModelFilter aFilter) {
 		setReporting(filename, dModel, dRels, dDeltaProcessing, deletefile);
 		modelFilter = aFilter;
@@ -402,19 +427,23 @@ public class AsmManager {
 			FileWriter fw = new FileWriter(dumpFilename, true);
 			BufferedWriter bw = new BufferedWriter(fw);
 			if (dumpModel) {
-				bw.write("=== MODEL STATUS REPORT ========= " + reasonForReport + "\n");
-				dumptree(bw, AsmManager.getDefault().getHierarchy().getRoot(), 0);
+				bw.write("=== MODEL STATUS REPORT ========= " + reasonForReport
+						+ "\n");
+				dumptree(bw, AsmManager.getDefault().getHierarchy().getRoot(),
+						0);
 
 				bw.write("=== END OF MODEL REPORT =========\n");
 			}
 			if (dumpRelationships) {
-				bw.write("=== RELATIONSHIPS REPORT ========= " + reasonForReport + "\n");
+				bw.write("=== RELATIONSHIPS REPORT ========= "
+						+ reasonForReport + "\n");
 				dumprels(bw);
 				bw.write("=== END OF RELATIONSHIPS REPORT ==\n");
 			}
 			Properties p = ModelInfo.summarizeModel().getProperties();
 			Enumeration pkeyenum = p.keys();
-			bw.write("=== Properties of the model and relationships map =====\n");
+			bw
+					.write("=== Properties of the model and relationships map =====\n");
 			while (pkeyenum.hasMoreElements()) {
 				String pkey = (String) pkeyenum.nextElement();
 				bw.write(pkey + "=" + p.getProperty(pkey) + "\n");
@@ -422,12 +451,14 @@ public class AsmManager {
 			bw.flush();
 			fw.close();
 		} catch (IOException e) {
-			System.err.println("InternalError: Unable to report model information:");
+			System.err
+					.println("InternalError: Unable to report model information:");
 			e.printStackTrace();
 		}
 	}
 
-	public static void dumptree(Writer w, IProgramElement node, int indent) throws IOException {
+	public static void dumptree(Writer w, IProgramElement node, int indent)
+			throws IOException {
 		for (int i = 0; i < indent; i++)
 			w.write(" ");
 		String loc = "";
@@ -438,14 +469,17 @@ public class AsmManager {
 					loc = modelFilter.processFilelocation(loc);
 			}
 		}
-		w.write(node + "  [" + (node == null ? "null" : node.getKind().toString()) + "] " + loc + "\n");
+		w.write(node + "  ["
+				+ (node == null ? "null" : node.getKind().toString()) + "] "
+				+ loc + "\n");
 		if (node != null)
 			for (Iterator i = node.getChildren().iterator(); i.hasNext();) {
 				dumptree(w, (IProgramElement) i.next(), indent + 2);
 			}
 	}
 
-	public static void dumptree(IProgramElement node, int indent) throws IOException {
+	public static void dumptree(IProgramElement node, int indent)
+			throws IOException {
 		for (int i = 0; i < indent; i++)
 			System.out.print(" ");
 		String loc = "";
@@ -453,7 +487,9 @@ public class AsmManager {
 			if (node.getSourceLocation() != null)
 				loc = node.getSourceLocation().toString();
 		}
-		System.out.println(node + "  [" + (node == null ? "null" : node.getKind().toString()) + "] " + loc);
+		System.out.println(node + "  ["
+				+ (node == null ? "null" : node.getKind().toString()) + "] "
+				+ loc);
 		if (node != null)
 			for (Iterator i = node.getChildren().iterator(); i.hasNext();) {
 				dumptree((IProgramElement) i.next(), indent + 2);
@@ -470,12 +506,14 @@ public class AsmManager {
 			for (Iterator iterator = rels.iterator(); iterator.hasNext();) {
 				IRelationship ir = (IRelationship) iterator.next();
 				List targets = ir.getTargets();
-				for (Iterator iterator2 = targets.iterator(); iterator2.hasNext();) {
+				for (Iterator iterator2 = targets.iterator(); iterator2
+						.hasNext();) {
 					String thid = (String) iterator2.next();
 					StringBuffer sb = new StringBuffer();
 					if (modelFilter == null || modelFilter.wantsHandleIds())
 						sb.append("Hid:" + (ctr++) + ":");
-					sb.append("(targets=" + targets.size() + ") " + hid + " (" + ir.getName() + ") " + thid + "\n");
+					sb.append("(targets=" + targets.size() + ") " + hid + " ("
+							+ ir.getName() + ") " + thid + "\n");
 					w.write(sb.toString());
 				}
 			}
@@ -493,22 +531,27 @@ public class AsmManager {
 			for (Iterator iterator = rels.iterator(); iterator.hasNext();) {
 				IRelationship ir = (IRelationship) iterator.next();
 				List targets = ir.getTargets();
-				for (Iterator iterator2 = targets.iterator(); iterator2.hasNext();) {
+				for (Iterator iterator2 = targets.iterator(); iterator2
+						.hasNext();) {
 					String thid = (String) iterator2.next();
-					System.err.println("Hid:" + (ctr++) + ":(targets=" + targets.size() + ") " + hid + " (" + ir.getName() + ") "
-							+ thid);
+					System.err.println("Hid:" + (ctr++) + ":(targets="
+							+ targets.size() + ") " + hid + " (" + ir.getName()
+							+ ") " + thid);
 				}
 			}
 		}
 		System.err.println("End of relationships dump for: " + key);
 	}
 
-	// ===================== DELTA PROCESSING CODE ============== start ==========//
+	// ===================== DELTA PROCESSING CODE ============== start
+	// ==========//
 
 	/**
-	 * Removes the hierarchy structure for the specified files from the structure model. Returns true if it deleted anything
+	 * Removes the hierarchy structure for the specified files from the
+	 * structure model. Returns true if it deleted anything
 	 */
-	public boolean removeStructureModelForFiles(Writer fw, Collection files) throws IOException {
+	public boolean removeStructureModelForFiles(Writer fw, Collection files)
+			throws IOException {
 
 		IHierarchy model = AsmManager.getDefault().getHierarchy();
 
@@ -517,19 +560,24 @@ public class AsmManager {
 		Set deletedNodes = new HashSet();
 		for (Iterator iter = files.iterator(); iter.hasNext();) {
 			File fileForCompilation = (File) iter.next();
-			String correctedPath = AsmManager.getDefault().getCanonicalFilePath(fileForCompilation);
-			IProgramElement progElem = (IProgramElement) model.findInFileMap(correctedPath);
+			String correctedPath = AsmManager.getDefault()
+					.getCanonicalFilePath(fileForCompilation);
+			IProgramElement progElem = (IProgramElement) model
+					.findInFileMap(correctedPath);
 			if (progElem != null) {
 				// Found it, let's remove it
 				if (dumpDeltaProcessing) {
-					fw.write("Deleting " + progElem + " node for file " + fileForCompilation + "\n");
+					fw.write("Deleting " + progElem + " node for file "
+							+ fileForCompilation + "\n");
 				}
 				removeNode(progElem);
 				lastBuildChanges.add(fileForCompilation);
-				deletedNodes.add(getCanonicalFilePath(progElem.getSourceLocation().getSourceFile()));
+				deletedNodes.add(getCanonicalFilePath(progElem
+						.getSourceLocation().getSourceFile()));
 				if (!model.removeFromFileMap(correctedPath))
-					throw new RuntimeException("Whilst repairing model, couldn't remove entry for file: " + correctedPath
-							+ " from the filemap");
+					throw new RuntimeException(
+							"Whilst repairing model, couldn't remove entry for file: "
+									+ correctedPath + " from the filemap");
 				modelModified = true;
 			}
 		}
@@ -540,35 +588,44 @@ public class AsmManager {
 
 	// This code is *SLOW* but it isnt worth fixing until we address the
 	// bugs in binary weaving.
-	public void fixupStructureModel(Writer fw, List filesToBeCompiled, Set files_added, Set files_deleted) throws IOException {
+	public void fixupStructureModel(Writer fw, List filesToBeCompiled,
+			Set files_added, Set files_deleted) throws IOException {
 		// Three kinds of things to worry about:
 		// 1. New files have been added since the last compile
 		// 2. Files have been deleted since the last compile
-		// 3. Files have 'changed' since the last compile (really just those in config.getFiles())
+		// 3. Files have 'changed' since the last compile (really just those in
+		// config.getFiles())
 
 		// List files = config.getFiles();
 		IHierarchy model = AsmManager.getDefault().getHierarchy();
 
 		boolean modelModified = false;
-		// Files to delete are: those to be compiled + those that have been deleted
+		// Files to delete are: those to be compiled + those that have been
+		// deleted
 
 		Set filesToRemoveFromStructureModel = new HashSet(filesToBeCompiled);
 		filesToRemoveFromStructureModel.addAll(files_deleted);
 		Set deletedNodes = new HashSet();
-		for (Iterator iter = filesToRemoveFromStructureModel.iterator(); iter.hasNext();) {
+		for (Iterator iter = filesToRemoveFromStructureModel.iterator(); iter
+				.hasNext();) {
 			File fileForCompilation = (File) iter.next();
-			String correctedPath = AsmManager.getDefault().getCanonicalFilePath(fileForCompilation);
-			IProgramElement progElem = (IProgramElement) model.findInFileMap(correctedPath);
+			String correctedPath = AsmManager.getDefault()
+					.getCanonicalFilePath(fileForCompilation);
+			IProgramElement progElem = (IProgramElement) model
+					.findInFileMap(correctedPath);
 			if (progElem != null) {
 				// Found it, let's remove it
 				if (dumpDeltaProcessing) {
-					fw.write("Deleting " + progElem + " node for file " + fileForCompilation + "\n");
+					fw.write("Deleting " + progElem + " node for file "
+							+ fileForCompilation + "\n");
 				}
 				removeNode(progElem);
-				deletedNodes.add(getCanonicalFilePath(progElem.getSourceLocation().getSourceFile()));
+				deletedNodes.add(getCanonicalFilePath(progElem
+						.getSourceLocation().getSourceFile()));
 				if (!model.removeFromFileMap(correctedPath))
-					throw new RuntimeException("Whilst repairing model, couldn't remove entry for file: " + correctedPath
-							+ " from the filemap");
+					throw new RuntimeException(
+							"Whilst repairing model, couldn't remove entry for file: "
+									+ correctedPath + " from the filemap");
 				modelModified = true;
 			}
 		}
@@ -578,7 +635,8 @@ public class AsmManager {
 		}
 	}
 
-	public void processDelta(Collection files_tobecompiled, Set files_added, Set files_deleted) {
+	public void processDelta(Collection files_tobecompiled, Set files_added,
+			Set files_deleted) {
 
 		try {
 			Writer fw = null;
@@ -588,26 +646,34 @@ public class AsmManager {
 				FileWriter filew = new FileWriter(dumpFilename, true);
 				fw = new BufferedWriter(filew);
 				fw.write("=== Processing delta changes for the model ===\n");
-				fw.write("Files for compilation:#" + files_tobecompiled.size() + ":" + files_tobecompiled + "\n");
-				fw.write("Files added          :#" + files_added.size() + ":" + files_added + "\n");
-				fw.write("Files deleted        :#" + files_deleted.size() + ":" + files_deleted + "\n");
+				fw.write("Files for compilation:#" + files_tobecompiled.size()
+						+ ":" + files_tobecompiled + "\n");
+				fw.write("Files added          :#" + files_added.size() + ":"
+						+ files_added + "\n");
+				fw.write("Files deleted        :#" + files_deleted.size() + ":"
+						+ files_deleted + "\n");
 			}
 
 			long stime = System.currentTimeMillis();
 
-			// fixupStructureModel(fw,filesToBeCompiled,files_added,files_deleted);
+			//fixupStructureModel(fw,filesToBeCompiled,files_added,files_deleted
+			// );
 			// Let's remove all the files that are deleted on this compile
 			removeStructureModelForFiles(fw, files_deleted);
-			long etime1 = System.currentTimeMillis(); // etime1-stime = time to fix up the model
+			long etime1 = System.currentTimeMillis(); // etime1-stime = time to
+			// fix up the model
 
 			repairRelationships(fw);
-			long etime2 = System.currentTimeMillis(); // etime2-stime = time to repair the relationship map
+			long etime2 = System.currentTimeMillis(); // etime2-stime = time to
+			// repair the
+			// relationship map
 
 			removeStructureModelForFiles(fw, files_tobecompiled);
 
 			if (dumpDeltaProcessing) {
 				fw.write("===== Delta Processing timing ==========\n");
-				fw.write("Hierarchy=" + (etime1 - stime) + "ms   Relationshipmap=" + (etime2 - etime1) + "ms\n");
+				fw.write("Hierarchy=" + (etime1 - stime)
+						+ "ms   Relationshipmap=" + (etime2 - etime1) + "ms\n");
 				fw.write("===== Traversal ========================\n");
 				// fw.write("Source handles processed="+srchandlecounter+"\n");
 				// fw.write("Target handles processed="+tgthandlecounter+"\n");
@@ -628,17 +694,20 @@ public class AsmManager {
 	 * 
 	 * A affects B B affectedBy A
 	 * 
-	 * Both of these relationships are added when 'B' is modified. Concrete examples are 'advises/advisedby' or
-	 * 'annotates/annotatedby'.
+	 * Both of these relationships are added when 'B' is modified. Concrete
+	 * examples are 'advises/advisedby' or 'annotates/annotatedby'.
 	 * 
-	 * What we need to do is when 'B' is going to be woven, remove all relationships that may reoccur when it is woven. So - remove
-	 * 'affects' relationships where the target is 'B', remove all 'affectedBy' relationships where the source is 'B'.
+	 * What we need to do is when 'B' is going to be woven, remove all
+	 * relationships that may reoccur when it is woven. So - remove 'affects'
+	 * relationships where the target is 'B', remove all 'affectedBy'
+	 * relationships where the source is 'B'.
 	 * 
 	 */
 	public void removeRelationshipsTargettingThisType(String typename) {
 		boolean debug = false;
 		if (debug)
-			System.err.println(">>removeRelationshipsTargettingThisType " + typename);
+			System.err.println(">>removeRelationshipsTargettingThisType "
+					+ typename);
 		String pkg = null;
 		String type = typename;
 		int lastSep = typename.lastIndexOf('.');
@@ -650,14 +719,17 @@ public class AsmManager {
 		IProgramElement typeNode = hierarchy.findElementForType(pkg, type);
 
 		// Reasons for that being null:
-		// 1. the file has fundamental errors and so doesn't exist in the model (-proceedOnError probably forced us to weave)
+		// 1. the file has fundamental errors and so doesn't exist in the model
+		// (-proceedOnError probably forced us to weave)
 		if (typeNode == null)
 			return;
 
 		Set sourcesToRemove = new HashSet();
 
-		// Iterate over the source handles in the relationships map, the aim here is to remove any 'affected by'
-		// relationships where the source of the relationship is the specified type (since it will be readded
+		// Iterate over the source handles in the relationships map, the aim
+		// here is to remove any 'affected by'
+		// relationships where the source of the relationship is the specified
+		// type (since it will be readded
 		// when the type is woven)
 		Set sourcehandlesSet = mapper.getEntries();
 		List relationshipsToRemove = new ArrayList();
@@ -668,15 +740,21 @@ public class AsmManager {
 				// worth continuing as there may be a relationship to remove
 				relationshipsToRemove.clear();
 				List relationships = mapper.get(hid);
-				for (Iterator reliter = relationships.iterator(); reliter.hasNext();) {
+				for (Iterator reliter = relationships.iterator(); reliter
+						.hasNext();) {
 					IRelationship rel = (IRelationship) reliter.next();
 					if (rel.getKind() == IRelationship.Kind.USES_POINTCUT)
-						continue; // these relationships are added at compile time, argh
+						continue; // these relationships are added at compile
+					// time, argh
 					if (rel.isAffects())
-						continue; // we want 'affected by' relationships - (e.g. advised by)
-					relationshipsToRemove.add(rel); // all the relationships can be removed, regardless of the target(s)
+						continue; // we want 'affected by' relationships - (e.g.
+					// advised by)
+					relationshipsToRemove.add(rel); // all the relationships can
+					// be removed, regardless of
+					// the target(s)
 				}
-				// Now, were any relationships emptied during that processing and so need removing for this source handle
+				// Now, were any relationships emptied during that processing
+				// and so need removing for this source handle
 				if (relationshipsToRemove.size() > 0) {
 					didsomething = true;
 					if (relationshipsToRemove.size() == relationships.size())
@@ -691,15 +769,17 @@ public class AsmManager {
 		// Remove sources that have no valid relationships any more
 		for (Iterator srciter = sourcesToRemove.iterator(); srciter.hasNext();) {
 			String hid = (String) srciter.next();
-			// System.err.println("  source handle: all relationships have gone for "+hid);
+			// System.err.println(
+			// "  source handle: all relationships have gone for "+hid);
 			mapper.removeAll(hid);
 			IProgramElement ipe = hierarchy.getElement(hid);
 			if (ipe != null) {
 				// If the relationship was hanging off a 'code' node, delete it.
 				if (ipe.getKind().equals(IProgramElement.Kind.CODE)) {
 					if (debug)
-						System.err.println("  source handle: it was code node, removing that as well... code=" + ipe + " parent="
-								+ ipe.getParent());
+						System.err
+								.println("  source handle: it was code node, removing that as well... code="
+										+ ipe + " parent=" + ipe.getParent());
 					removeSingleNode(ipe);
 				}
 			}
@@ -714,25 +794,32 @@ public class AsmManager {
 				dumprelsStderr("before processing 'affects'");
 			// Iterate over the source handles in the relationships map
 			sourcehandlesSet = mapper.getEntries();
-			for (Iterator keyiter = sourcehandlesSet.iterator(); keyiter.hasNext();) {
+			for (Iterator keyiter = sourcehandlesSet.iterator(); keyiter
+					.hasNext();) {
 				String hid = (String) keyiter.next();
 				relationshipsToRemove.clear();
 				List relationships = mapper.get(hid);
-				for (Iterator reliter = relationships.iterator(); reliter.hasNext();) {
+				for (Iterator reliter = relationships.iterator(); reliter
+						.hasNext();) {
 					IRelationship rel = (IRelationship) reliter.next();
 					if (rel.getKind() == IRelationship.Kind.USES_POINTCUT)
-						continue; // these relationships are added at compile time, argh
+						continue; // these relationships are added at compile
+					// time, argh
 					if (!rel.isAffects())
 						continue;
 					List targets = rel.getTargets();
 					List targetsToRemove = new ArrayList();
 
-					// find targets that target the type we are interested in, they need removing
-					for (Iterator targetsIter = targets.iterator(); targetsIter.hasNext();) {
+					// find targets that target the type we are interested in,
+					// they need removing
+					for (Iterator targetsIter = targets.iterator(); targetsIter
+							.hasNext();) {
 						String targethid = (String) targetsIter.next();
 						// Does this point to the same type?
-						IProgramElement existingTarget = hierarchy.getElement(targethid);
-						if (existingTarget == null || sameType(targethid, existingTarget, typeNode))
+						IProgramElement existingTarget = hierarchy
+								.getElement(targethid);
+						if (existingTarget == null
+								|| sameType(targethid, existingTarget, typeNode))
 							targetsToRemove.add(targethid);
 					}
 
@@ -741,16 +828,19 @@ public class AsmManager {
 							relationshipsToRemove.add(rel);
 						else {
 							// Remove all the targets that are no longer valid
-							for (Iterator targsIter = targetsToRemove.iterator(); targsIter.hasNext();) {
+							for (Iterator targsIter = targetsToRemove
+									.iterator(); targsIter.hasNext();) {
 								String togo = (String) targsIter.next();
 								targets.remove(togo);
 							}
 						}
 					}
 				}
-				// Now, were any relationships emptied during that processing and so need removing for this source handle
+				// Now, were any relationships emptied during that processing
+				// and so need removing for this source handle
 				if (relationshipsToRemove.size() > 0) {
-					// Are we removing *all* of the relationships for this source handle?
+					// Are we removing *all* of the relationships for this
+					// source handle?
 					if (relationshipsToRemove.size() == relationships.size())
 						sourcesToRemove.add(hid);
 					else {
@@ -760,17 +850,23 @@ public class AsmManager {
 				}
 			}
 			// Remove sources that have no valid relationships any more
-			for (Iterator srciter = sourcesToRemove.iterator(); srciter.hasNext();) {
+			for (Iterator srciter = sourcesToRemove.iterator(); srciter
+					.hasNext();) {
 				String hid = (String) srciter.next();
-				// System.err.println("  source handle: all relationships have gone for "+hid);
+				// System.err.println(
+				// "  source handle: all relationships have gone for "+hid);
 				mapper.removeAll(hid);
 				IProgramElement ipe = hierarchy.getElement(hid);
 				if (ipe != null) {
-					// If the relationship was hanging off a 'code' node, delete it.
+					// If the relationship was hanging off a 'code' node, delete
+					// it.
 					if (ipe.getKind().equals(IProgramElement.Kind.CODE)) {
 						if (debug)
-							System.err.println("  source handle: it was code node, removing that as well... code=" + ipe
-									+ " parent=" + ipe.getParent());
+							System.err
+									.println("  source handle: it was code node, removing that as well... code="
+											+ ipe
+											+ " parent="
+											+ ipe.getParent());
 						removeSingleNode(ipe);
 					}
 				}
@@ -786,54 +882,66 @@ public class AsmManager {
 	/**
 	 * Return true if the target element is in the type specified.
 	 */
-	private boolean sameType(String hid, IProgramElement target, IProgramElement type) {
+	private boolean sameType(String hid, IProgramElement target,
+			IProgramElement type) {
 		IProgramElement containingType = target;
 		if (target == null)
 			throw new RuntimeException("target can't be null!");
 		if (type == null)
 			throw new RuntimeException("type can't be null!");
 		if (target.getKind().isSourceFile()) {
-			// @AJ aspect with broken relationship endpoint - we couldn't find the real
-			// endpoint (the declare parents or ITD or similar) so defaulted to the
+			// @AJ aspect with broken relationship endpoint - we couldn't find
+			// the real
+			// endpoint (the declare parents or ITD or similar) so defaulted to
+			// the
 			// first line of the source file...
 
 			// FRAGILE
-			// Let's assume the worst, and that it is the same type if the source files
-			// are the same. This will break for multiple top level types in a file...
+			// Let's assume the worst, and that it is the same type if the
+			// source files
+			// are the same. This will break for multiple top level types in a
+			// file...
 			if (target.getSourceLocation() == null)
-				return false; // these four possibilities should really be FIXED so we don't have this situation
+				return false; // these four possibilities should really be FIXED
+			// so we don't have this situation
 			if (type.getSourceLocation() == null)
 				return false;
 			if (target.getSourceLocation().getSourceFile() == null)
 				return false;
 			if (type.getSourceLocation().getSourceFile() == null)
 				return false;
-			return (target.getSourceLocation().getSourceFile().equals(type.getSourceLocation().getSourceFile()));
+			return (target.getSourceLocation().getSourceFile().equals(type
+					.getSourceLocation().getSourceFile()));
 		}
 		while (!containingType.getKind().isType()) {
-			// System.err.println("Checked: "+containingType.getKind()+" "+containingType);
+			// System.err.println("Checked: "+containingType.getKind()+" "+
+			// containingType);
 			containingType = containingType.getParent();
 		}
 		return (type.equals(containingType));
 	}
 
 	/**
-	 * Go through all the relationships in the model, if any endpoints no longer exist (the node it points to has been deleted from
-	 * the model) then delete the relationship.
+	 * Go through all the relationships in the model, if any endpoints no longer
+	 * exist (the node it points to has been deleted from the model) then delete
+	 * the relationship.
 	 */
 	private void repairRelationships(Writer fw) {
 		try {
 			IHierarchy model = AsmManager.getDefault().getHierarchy();
 			// TODO Speed this code up by making this assumption:
-			// the only piece of the handle that is interesting is the file name. We are working at file granularity, if the
-			// file does not exist (i.e. its not in the filemap) then any handle inside that file cannot exist.
+			// the only piece of the handle that is interesting is the file
+			// name. We are working at file granularity, if the
+			// file does not exist (i.e. its not in the filemap) then any handle
+			// inside that file cannot exist.
 			if (dumpDeltaProcessing)
 				fw.write("Repairing relationships map:\n");
 
 			// Now sort out the relationships map
 			IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
 			Set sourcesToRemove = new HashSet();
-			Set nonExistingHandles = new HashSet(); // Cache of handles that we *know* are invalid
+			Set nonExistingHandles = new HashSet(); // Cache of handles that we
+			// *know* are invalid
 			int srchandlecounter = 0;
 			int tgthandlecounter = 0;
 
@@ -850,7 +958,9 @@ public class AsmManager {
 					// We better check if it actually exists
 					IProgramElement existingElement = model.getElement(hid);
 					if (dumpDeltaProcessing)
-						fw.write("Looking for handle [" + hid + "] in model, found: " + existingElement + "\n");
+						fw.write("Looking for handle [" + hid
+								+ "] in model, found: " + existingElement
+								+ "\n");
 
 					// Did we find it?
 					if (existingElement == null) {
@@ -861,29 +971,38 @@ public class AsmManager {
 						// Ok, so the source is valid, what about the targets?
 						List relationships = irm.get(hid);
 						List relationshipsToRemove = new ArrayList();
-						// Iterate through the relationships against this source handle
-						for (Iterator reliter = relationships.iterator(); reliter.hasNext();) {
+						// Iterate through the relationships against this source
+						// handle
+						for (Iterator reliter = relationships.iterator(); reliter
+								.hasNext();) {
 							IRelationship rel = (IRelationship) reliter.next();
 							List targets = rel.getTargets();
 							List targetsToRemove = new ArrayList();
 
 							// Iterate through the targets for this relationship
-							for (Iterator targetIter = targets.iterator(); targetIter.hasNext();) {
+							for (Iterator targetIter = targets.iterator(); targetIter
+									.hasNext();) {
 								String targethid = (String) targetIter.next();
 								tgthandlecounter++;
 								// Do we already know it doesn't exist?
 								if (nonExistingHandles.contains(targethid)) {
 									if (dumpDeltaProcessing)
-										fw.write("Target handle [" + targethid + "] for srchid[" + hid + "]rel[" + rel.getName()
+										fw.write("Target handle [" + targethid
+												+ "] for srchid[" + hid
+												+ "]rel[" + rel.getName()
 												+ "] does not exist\n");
 									targetsToRemove.add(targethid);
 								} else {
 									// We better check
-									IProgramElement existingTarget = model.getElement(targethid);
+									IProgramElement existingTarget = model
+											.getElement(targethid);
 									if (existingTarget == null) {
 										if (dumpDeltaProcessing)
-											fw.write("Target handle [" + targethid + "] for srchid[" + hid + "]rel["
-													+ rel.getName() + "] does not exist\n");
+											fw.write("Target handle ["
+													+ targethid
+													+ "] for srchid[" + hid
+													+ "]rel[" + rel.getName()
+													+ "] does not exist\n");
 										targetsToRemove.add(targethid);
 										nonExistingHandles.add(targethid);
 									}
@@ -892,40 +1011,71 @@ public class AsmManager {
 
 							// Do we have some targets that need removing?
 							if (targetsToRemove.size() != 0) {
-								// Are we removing *all* of the targets for this relationship (i.e. removing the relationship)
+								// Are we removing *all* of the targets for this
+								// relationship (i.e. removing the relationship)
 								if (targetsToRemove.size() == targets.size()) {
 									if (dumpDeltaProcessing)
-										fw.write("No targets remain for srchid[" + hid + "] rel[" + rel.getName()
-												+ "]: removing it\n");
+										fw
+												.write("No targets remain for srchid["
+														+ hid
+														+ "] rel["
+														+ rel.getName()
+														+ "]: removing it\n");
 									relationshipsToRemove.add(rel);
 								} else {
-									// Remove all the targets that are no longer valid
-									for (Iterator targsIter = targetsToRemove.iterator(); targsIter.hasNext();) {
+									// Remove all the targets that are no longer
+									// valid
+									for (Iterator targsIter = targetsToRemove
+											.iterator(); targsIter.hasNext();) {
 										String togo = (String) targsIter.next();
 										targets.remove(togo);
 									}
-									// Should have already been caught above, but lets double check ...
+									// Should have already been caught above,
+									// but lets double check ...
 									if (targets.size() == 0) {
 										if (dumpDeltaProcessing)
-											fw.write("No targets remain for srchid[" + hid + "] rel[" + rel.getName()
-													+ "]: removing it\n");
-										relationshipsToRemove.add(rel); // TODO Should only remove this relationship for the srchid?
+											fw
+													.write("No targets remain for srchid["
+															+ hid
+															+ "] rel["
+															+ rel.getName()
+															+ "]: removing it\n");
+										relationshipsToRemove.add(rel); // TODO
+										// Should
+										// only
+										// remove
+										// this
+										// relationship
+										// for
+										// the
+										// srchid
+										// ?
 									}
 								}
 							}
 						}
-						// Now, were any relationships emptied during that processing and so need removing for this source handle
+						// Now, were any relationships emptied during that
+						// processing and so need removing for this source
+						// handle
 						if (relationshipsToRemove.size() > 0) {
-							// Are we removing *all* of the relationships for this source handle?
-							if (relationshipsToRemove.size() == relationships.size()) {
-								// We know they are all going to go, so just delete the source handle.
+							// Are we removing *all* of the relationships for
+							// this source handle?
+							if (relationshipsToRemove.size() == relationships
+									.size()) {
+								// We know they are all going to go, so just
+								// delete the source handle.
 								sourcesToRemove.add(hid);
 							} else {
-								// MEMORY LEAK - we don't remove the relationships !!
-								for (int i = 0; i < relationshipsToRemove.size(); i++) {
-									IRelationship irel = (IRelationship) relationshipsToRemove.get(i);
-									verifyAssumption(irm.remove(hid, irel), "Failed to remove relationship " + irel.getName()
-											+ " for shid " + hid);
+								// MEMORY LEAK - we don't remove the
+								// relationships !!
+								for (int i = 0; i < relationshipsToRemove
+										.size(); i++) {
+									IRelationship irel = (IRelationship) relationshipsToRemove
+											.get(i);
+									verifyAssumption(irm.remove(hid, irel),
+											"Failed to remove relationship "
+													+ irel.getName()
+													+ " for shid " + hid);
 								}
 								List rels = irm.get(hid);
 								if (rels == null || rels.size() == 0)
@@ -936,12 +1086,14 @@ public class AsmManager {
 				}
 			}
 			// Remove sources that have no valid relationships any more
-			for (Iterator srciter = sourcesToRemove.iterator(); srciter.hasNext();) {
+			for (Iterator srciter = sourcesToRemove.iterator(); srciter
+					.hasNext();) {
 				String hid = (String) srciter.next();
 				irm.removeAll(hid);
 				IProgramElement ipe = model.getElement(hid);
 				if (ipe != null) {
-					// If the relationship was hanging off a 'code' node, delete it.
+					// If the relationship was hanging off a 'code' node, delete
+					// it.
 					if (ipe.getKind().equals(IProgramElement.Kind.CODE)) {
 						// System.err.println("Deleting code node");
 						removeSingleNode(ipe);
@@ -955,8 +1107,9 @@ public class AsmManager {
 	}
 
 	/**
-	 * Removes a specified program element from the structure model. We go to the parent of the program element, ask for all its
-	 * children and remove the node we want to delete from the list of children.
+	 * Removes a specified program element from the structure model. We go to
+	 * the parent of the program element, ask for all its children and remove
+	 * the node we want to delete from the list of children.
 	 */
 	private void removeSingleNode(IProgramElement progElem) {
 		verifyAssumption(progElem != null);
@@ -974,19 +1127,22 @@ public class AsmManager {
 	}
 
 	/**
-	 * Removes a specified program element from the structure model. Two processing stages:
+	 * Removes a specified program element from the structure model. Two
+	 * processing stages:
 	 * <p>
-	 * First: We go to the parent of the program element, ask for all its children and remove the node we want to delete from the
-	 * list of children.
+	 * First: We go to the parent of the program element, ask for all its
+	 * children and remove the node we want to delete from the list of children.
 	 * <p>
-	 * Second:We check if that parent has any other children. If it has no other children and it is either a CODE node or a PACKAGE
-	 * node, we delete it too.
+	 * Second:We check if that parent has any other children. If it has no other
+	 * children and it is either a CODE node or a PACKAGE node, we delete it
+	 * too.
 	 */
 	private void removeNode(IProgramElement progElem) {
 
 		// StringBuffer flightrecorder = new StringBuffer();
 		try {
-			// flightrecorder.append("In removeNode, about to chuck away: "+progElem+"\n");
+			// flightrecorder.append("In removeNode, about to chuck away: "+
+			// progElem+"\n");
 
 			verifyAssumption(progElem != null);
 			// boolean deleteOK = false;
@@ -1007,15 +1163,18 @@ public class AsmManager {
 			// Are there any kids left for this node?
 			if (parent.getChildren().size() == 0
 					&& parent.getParent() != null
-					&& (parent.getKind().equals(IProgramElement.Kind.CODE) || parent.getKind().equals(IProgramElement.Kind.PACKAGE))) {
-				// This node is on its own, we should trim it too *as long as its not a structural node* which we currently check by
+					&& (parent.getKind().equals(IProgramElement.Kind.CODE) || parent
+							.getKind().equals(IProgramElement.Kind.PACKAGE))) {
+				// This node is on its own, we should trim it too *as long as
+				// its not a structural node* which we currently check by
 				// making sure its a code node
 				// We should trim if it
 				// System.err.println("Deleting parent:"+parent);
 				removeNode(parent);
 			}
 		} catch (NullPointerException npe) {
-			// Occurred when commenting out other 2 ras classes in wsif?? reproducable?
+			// Occurred when commenting out other 2 ras classes in wsif??
+			// reproducable?
 			// System.err.println(flightrecorder.toString());
 			npe.printStackTrace();
 		}
@@ -1038,20 +1197,24 @@ public class AsmManager {
 		}
 	}
 
-	// ===================== DELTA PROCESSING CODE ============== end ==========//
+	// ===================== DELTA PROCESSING CODE ============== end
+	// ==========//
 
 	/**
-	 * A ModelInfo object captures basic information about the structure model. It is used for testing and producing debug info.
+	 * A ModelInfo object captures basic information about the structure model.
+	 * It is used for testing and producing debug info.
 	 */
 	public static class ModelInfo {
-		private Hashtable nodeTypeCount = new Hashtable();
-		private Properties extraProperties = new Properties();
+		private final Hashtable nodeTypeCount = new Hashtable();
+		private final Properties extraProperties = new Properties();
 
 		private ModelInfo(IHierarchy hierarchy, IRelationshipMap relationshipMap) {
 			IProgramElement ipe = hierarchy.getRoot();
 			walkModel(ipe);
-			recordStat("FileMapSize", new Integer(hierarchy.getFileMapEntrySet().size()).toString());
-			recordStat("RelationshipMapSize", new Integer(relationshipMap.getEntries().size()).toString());
+			recordStat("FileMapSize", new Integer(hierarchy
+					.getFileMapEntrySet().size()).toString());
+			recordStat("RelationshipMapSize", new Integer(relationshipMap
+					.getEntries().size()).toString());
 		}
 
 		private void walkModel(IProgramElement ipe) {
@@ -1110,20 +1273,22 @@ public class AsmManager {
 		}
 
 		public static ModelInfo summarizeModel() {
-			return new ModelInfo(AsmManager.getDefault().getHierarchy(), AsmManager.getDefault().getRelationshipMap());
+			return new ModelInfo(AsmManager.getDefault().getHierarchy(),
+					AsmManager.getDefault().getRelationshipMap());
 		}
 	}
 
 	/**
-	 * Set to indicate whether we are currently building a structure model, should be set up front.
+	 * Set to indicate whether we are currently building a structure model,
+	 * should be set up front.
 	 */
 	public static void setCreatingModel(boolean b) {
 		creatingModel = b;
 	}
 
 	/**
-	 * returns true if we are currently generating a structure model, enables guarding of expensive operations on an empty/null
-	 * model.
+	 * returns true if we are currently generating a structure model, enables
+	 * guarding of expensive operations on an empty/null model.
 	 */
 	public static boolean isCreatingModel() {
 		return creatingModel;
@@ -1150,7 +1315,8 @@ public class AsmManager {
 	}
 
 	/**
-	 * @return the Set of files for which the structure model was modified (they may have been removed or otherwise rebuilt)
+	 * @return the Set of files for which the structure model was modified (they
+	 *         may have been removed or otherwise rebuilt)
 	 */
 	public Set getModelChangesOnLastBuild() {
 		return lastBuildChanges;
