@@ -33,6 +33,10 @@ public class OutputLocationAdapter implements CompilationResultDestinationManage
 	public File getOutputLocationForClass(File compilationUnit) {
 		return this.locationManager.getOutputLocationForClass(compilationUnit);
 	}
+	
+	public String getSourceFolderForFile(File sourceFile) {
+		return this.locationManager.getSourceFolderForFile(sourceFile);
+	}
 
 	public File getOutputLocationForResource(File resource) {
 		return this.locationManager.getOutputLocationForResource(resource);

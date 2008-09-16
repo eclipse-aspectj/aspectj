@@ -31,6 +31,16 @@ public interface IOutputLocationManager {
 	 *  unit should be written
 	 */
 	File getOutputLocationForClass(File compilationUnit);
+
+	/**
+     * For environments where multiple source folders are supported, they need to be included
+     * in the model.  This method allows AspectJ to determine which source folder a source file
+     * came from.  Example return values would be "src" or "main/java"
+     *
+	 * @param sourceFile the File object for the source file
+	 * @return the source folder where this file came from, or null if in project root or source folders not supported.
+	 */
+	String getSourceFolderForFile(File sourceFile);
 	
 	/**
 	 * When copying resources from source folders to output location, return the
@@ -52,5 +62,6 @@ public interface IOutputLocationManager {
 	 * where classes which are on the inpath will be placed.
 	 */
 	File getDefaultOutputLocation();
+
 		
 }
