@@ -72,9 +72,9 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testCompletelyBrokenAopConcretization_pr142165_1() { runTest("broken concretization");}
   public void testCompletelyBrokenAopConcretization_pr142165_2() { runTest("broken concretization - 2");}
   public void testCompletelyBrokenAopConcretization_pr142165_3() { runTest("broken concretization - 3");}
-  public void testVerifyErrorLTW_pr135068() { runTest("ltw verifyerror");}
-  public void testVerifyErrorLTW_pr135068_2() { runTest("ltw verifyerror - 2");}
-  public void testVerifyErrorLTW_pr135068_3() { runTest("ltw verifyerror - 3");}
+//  public void testVerifyErrorLTW_pr135068() { runTest("ltw verifyerror");}
+//  public void testVerifyErrorLTW_pr135068_2() { runTest("ltw verifyerror - 2");}
+//  public void testVerifyErrorLTW_pr135068_3() { runTest("ltw verifyerror - 3");}
   public void testVerifyErrorLTW_pr135068_4() { runTest("ltw verifyerror - 4");}
   public void testVerifyErrorForComplexCflow_pr136026() { runTest("verifyerror");}
   public void testVerifyErrorForComplexCflow_pr136026_2() { runTest("verifyerror - 2");}
