@@ -27,7 +27,7 @@ public final class JavaOptions {
 	public static final String VERSION_13 = CompilerOptions.VERSION_1_3;
 	public static final String VERSION_14 = CompilerOptions.VERSION_1_4;
 	public static final String VERSION_15 = CompilerOptions.VERSION_1_5;
-	public static final String VERSION_16 = "1.6";	// current version of the compiler doesn't support java6
+	public static final String VERSION_16 = CompilerOptions.VERSION_1_6;
 	
 	// by default will use the platform default encoding 
 	public static final String CHARACTER_ENCODING = CompilerOptions.OPTION_Encoding;
