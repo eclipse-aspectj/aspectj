@@ -11,6 +11,7 @@
 package org.aspectj.systemtest.incremental.tools;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +78,13 @@ public class MultiProjTestOutputLocationManager implements IOutputLocationManage
 	}
 	
 	public void setSourceFolderFor(File sourceFile,String sourceFolder) {
-		sourceFolders.put(sourceFile.getPath(),sourceFolder);
+		try {
+			System.out.println("Stored against "+sourceFile.getCanonicalPath());
+			sourceFolders.put(sourceFile.getCanonicalPath(),sourceFolder);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 	}
 	
 	public void setOutputLocForResource(File f) {
@@ -85,8 +92,14 @@ public class MultiProjTestOutputLocationManager implements IOutputLocationManage
 	}
 
 	public String getSourceFolderForFile(File sourceFile) {
-		String f = (String)sourceFolders.get(sourceFile.getPath());
-		return f;
+		try {
+			System.out.println("Looked up against "+sourceFile.getCanonicalPath());
+			String f = (String)sourceFolders.get(sourceFile.getCanonicalPath());
+			return f;
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 	}
 
 }

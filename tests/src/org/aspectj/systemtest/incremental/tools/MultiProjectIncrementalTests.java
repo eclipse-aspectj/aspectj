@@ -33,6 +33,7 @@ import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.asm.internal.JDTLikeHandleProvider;
 import org.aspectj.asm.internal.Relationship;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.SourceLocation;
 import org.aspectj.tools.ajc.Ajc;
 import org.aspectj.util.FileUtil;
 
@@ -184,6 +185,62 @@ public class MultiProjectIncrementalTests extends
 		build(p);
 		dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
 		// incomplete
+	}
+	
+	public void testAdviceHandlesAreJDTCompatible() {
+		String p = "AdviceHandles";
+		initialiseProject(p);
+		addSourceFolderForSourceFile(p, getProjectRelativePath(p, "src/Handles.aj"), "src");
+		build(p);
+		IProgramElement root = AsmManager.getDefault().getHierarchy().getRoot();
+		IProgramElement typeDecl = findElementAtLine(root,4);
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles",typeDecl.getHandleIdentifier());
+		
+		IProgramElement advice1 = findElementAtLine(root,7);
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles&before",advice1.getHandleIdentifier());
+
+		IProgramElement advice2 = findElementAtLine(root,11);
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles&before!2",advice2.getHandleIdentifier());
+		
+		IProgramElement advice3 = findElementAtLine(root,15);
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles&before&I",advice3.getHandleIdentifier());
+		
+		IProgramElement advice4 = findElementAtLine(root,20);
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles&before&I!2",advice4.getHandleIdentifier());
+
+		IProgramElement advice5 = findElementAtLine(root,25);
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles&after",advice5.getHandleIdentifier());
+
+		IProgramElement advice6 = findElementAtLine(root,30);
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles&afterReturning",advice6.getHandleIdentifier());
+
+		IProgramElement advice7 = findElementAtLine(root,35);
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles&afterThrowing",advice7.getHandleIdentifier());
+
+		IProgramElement advice8 = findElementAtLine(root,40);
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles&afterThrowing&I",advice8.getHandleIdentifier());
+
+	}
+	
+	private IProgramElement findElementAtLine(IProgramElement whereToLook, int line) {
+		if (whereToLook == null) {
+			return null;
+		}
+		if (whereToLook.getSourceLocation()!=null && whereToLook.getSourceLocation().getLine()==line) {
+			return whereToLook;
+		}
+		List kids = whereToLook.getChildren();
+		for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
+			IProgramElement object = (IProgramElement) iterator.next();
+			if (object.getSourceLocation()!=null && object.getSourceLocation().getLine()==line) {
+				return object;
+			}
+			IProgramElement gotSomething = findElementAtLine(object,line);
+			if (gotSomething!=null) {
+				return gotSomething;
+			}
+		}
+		return null;		
 	}
 
 	public void testModelWithMultipleSourceFolders() {
