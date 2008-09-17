@@ -65,6 +65,12 @@ import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
+import org.aspectj.weaver.bcel.asm.AsmDetector;
+import org.aspectj.weaver.bcel.asm.StackMapAdder;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+
+import com.sun.org.apache.bcel.internal.classfile.StackMap;
 
 /**
  * Lazy lazy lazy. We don't unpack the underlying class unless necessary. Things like new methods and annotations accumulate in here
@@ -612,6 +618,11 @@ public final class LazyClassGen {
 	public byte[] getJavaClassBytesIncludingReweavable(BcelWorld world) {
 		writeBack(world);
 		byte[] wovenClassFileData = myGen.getJavaClass().getBytes();
+		// if is java 6 class file
+//		if (myGen.getMajor()>=Constants.MAJOR_1_6 && AsmDetector.isAsmAround) {
+//			wovenClassFileData = StackMapAdder.addStackMaps(wovenClassFileData);
+//		}
+		
 		WeaverStateInfo wsi = myType.getWeaverState();// getOrCreateWeaverStateInfo();
 		if (wsi != null && wsi.isReweavable()) { // && !reweavableDataInserted
 			// reweavableDataInserted = true;
