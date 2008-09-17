@@ -20,10 +20,11 @@ import org.aspectj.weaver.World;
 
 /**
  * Tests the model when there is no requirement on Java5 features.
- * @see org.aspectj.systemtest.model.ModelTestCase 
+ * 
+ * @see org.aspectj.systemtest.model.ModelTestCase
  */
 public class ModelTests extends ModelTestCase {
-	
+
 	static {
 		// Switch this to true for a single iteration if you want to reconstruct the
 		// 'expected model' files.
@@ -32,10 +33,21 @@ public class ModelTests extends ModelTestCase {
 		debugTest = false;
 	}
 
-	public void testAdviceInStructureModelWithAnonymousInnerClass_pr77269() {runModelTest("advice in structure model with anonymous inner class","pr77269_1");}
-	public void testAdviceInStructureModelWithNamedInnerClass_pr77269() {runModelTest("advice in structure model with named inner class","pr77269_2");}
-	public void testDWInStructureModelWithAnonymousInnerClass_pr77269() {runModelTest("declare warning in structure model with anonymous inner class","pr77269_3");}
-	public void testNewIProgramElementMethods_pr141730() {runModelTest("new iprogramelement methods","pr141730_1");}
+	public void testAdviceInStructureModelWithAnonymousInnerClass_pr77269() {
+		runModelTest("advice in structure model with anonymous inner class", "pr77269_1");
+	}
+
+	public void testAdviceInStructureModelWithNamedInnerClass_pr77269() {
+		runModelTest("advice in structure model with named inner class", "pr77269_2");
+	}
+
+	public void testDWInStructureModelWithAnonymousInnerClass_pr77269() {
+		runModelTest("declare warning in structure model with anonymous inner class", "pr77269_3");
+	}
+
+	public void testNewIProgramElementMethods_pr141730() {
+		runModelTest("new iprogramelement methods", "pr141730_1");
+	}
 
 	// if not filling in the model for aspects contained in jar files then
 	// want to ensure that the relationship map is correct and has nodes
@@ -44,12 +56,12 @@ public class ModelTests extends ModelTestCase {
 	public void testAspectPathRelWhenNotFillingInModel_pr141730() {
 		World.createInjarHierarchy = false;
 		try {
-			runModelTest("ensure aspectpath injar relationships are correct when not filling in model","pr141730_3");
+			runModelTest("ensure aspectpath injar relationships are correct when not filling in model", "pr141730_3");
 		} finally {
 			World.createInjarHierarchy = true;
 		}
 	}
-	
+
 	public void testPCDInClassAppearsInModel_pr148027() {
 		boolean b = AsmHierarchyBuilder.shouldAddUsesPointcut;
 		AsmHierarchyBuilder.shouldAddUsesPointcut = true;
@@ -61,20 +73,36 @@ public class ModelTests extends ModelTestCase {
 			AsmHierarchyBuilder.shouldAddUsesPointcut = b;
 		}
 	}
-	
-//	public void testInpathAdvisedCode_prX() { runModelTest("inpath advised elements","prX"); }
-	
-	public void testSourceLocationAndJarFile_pr145963() {runModelTest("sourcelocation and jar file","pr145963_1");}
-	public void testSourceLocationAndClassFile_pr145963() {runModelTest("sourcelocation and class file","pr145963_2");}
-	public void testAspectInDefaultPackage_pr145963() {runModelTest("aspect in default package", "pr145963_3");}
-	public void testAspectInJavaFile_pr145963() {runModelTest("aspect in java file", "pr145963_4");}
 
-	public void testAbstractAspectsAndAdvice_pr160469() {runModelTest("ensure advice from abstract aspects appear correctly in the model","pr160469_1");}
-	public void testAbstractAspectsAndDeow_pr160469() {runModelTest("ensure deow from abstract aspects appear correctly in the model","pr160469_2");}
-	
-	//public void testMultipleIdenticalJpsOnOneLine_pr238054() { runModelTest("multiple identical jps on one line","pr238054");}
-	
-	/////////////////////////////////////////
+	// public void testInpathAdvisedCode_prX() { runModelTest("inpath advised elements","prX"); }
+
+	public void testSourceLocationAndJarFile_pr145963() {
+		runModelTest("sourcelocation and jar file", "pr145963_1");
+	}
+
+	public void testSourceLocationAndClassFile_pr145963() {
+		runModelTest("sourcelocation and class file", "pr145963_2");
+	}
+
+	public void testAspectInDefaultPackage_pr145963() {
+		runModelTest("aspect in default package", "pr145963_3");
+	}
+
+	public void testAspectInJavaFile_pr145963() {
+		runModelTest("aspect in java file", "pr145963_4");
+	}
+
+	public void testAbstractAspectsAndAdvice_pr160469() {
+		runModelTest("ensure advice from abstract aspects appear correctly in the model", "pr160469_1");
+	}
+
+	public void testAbstractAspectsAndDeow_pr160469() {
+		runModelTest("ensure deow from abstract aspects appear correctly in the model", "pr160469_2");
+	}
+
+	// public void testMultipleIdenticalJpsOnOneLine_pr238054() { runModelTest("multiple identical jps on one line","pr238054");}
+
+	// ///////////////////////////////////////
 	public static Test suite() {
 		return XMLBasedAjcTestCase.loadSuite(ModelTests.class);
 	}

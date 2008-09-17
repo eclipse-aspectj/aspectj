@@ -1,45 +1,60 @@
 package spacewar;
 
-//=Spacewar Example/src<spacewar*Handles.aj}Handles
+//=AdviceHandles/src<spacewar*Handles.aj}Handles
 public aspect Handles {
 
-	// =Spacewar Example/src<spacewar*Handles.aj}Handles&before
+	// =AdviceHandles/src<spacewar*Handles.aj}Handles&before
 	before() : execution(* *..*()) {
 		
 	}
-	// =Spacewar Example/src<spacewar*Handles.aj}Handles&before!2
+	// =AdviceHandles/src<spacewar*Handles.aj}Handles&before!2
 	before() : execution(* *..*()) {
 		
 	}
-	// =Spacewar Example/src<spacewar*Handles.aj}Handles&before&I
+	// =AdviceHandles/src<spacewar*Handles.aj}Handles&before&I
 	before(int x) : execution(* *..*(int)) && args(x) {
 		
 	}
 	
-	// =Spacewar Example/src<spacewar*Handles.aj}Handles&before&I!2
+	// =AdviceHandles/src<spacewar*Handles.aj}Handles&before&I!2
 	before(int x) : execution(* *..*(int)) && args(x) {
 		
 	}
 
-	// =Spacewar Example/src<spacewar*Handles.aj}Handles&after
+	// =AdviceHandles/src<spacewar*Handles.aj}Handles&after
 	after() : execution(* *..*()) {
 		
 	}
 	
-	// =Spacewar Example/src<spacewar*Handles.aj}Handles&afterReturning
+	// =AdviceHandles/src<spacewar*Handles.aj}Handles&afterReturning
 	after() returning() : execution(* *..*()) {
 		
 	}
 
-	// =Spacewar Example/src<spacewar*Handles.aj}Handles&afterThrowing
+	// =AdviceHandles/src<spacewar*Handles.aj}Handles&afterThrowing
 	after() throwing(): execution(* *..*()) {
 		
 	}
 
-	// =Spacewar Example/src<spacewar*Handles.aj}Handles&afterThrowing&I
+	// =AdviceHandles/src<spacewar*Handles.aj}Handles&afterThrowing&I
 	after(int x) throwing(): execution(* *..*(int)) && args(x) {
 		
 	}
 
+        int x() {
+          // =AdviceHandles/src<spacewar*Handles.aj}Handles~x[NamedClass
+          class NamedClass {
+            void doIt() {
+            }
+          }
+          return 0;
+        }
+
+  interface I {}
+  public void foo() {
+    new I() {};
+    new I() {};
+  }
+       
 }
 
