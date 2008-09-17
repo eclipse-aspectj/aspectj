@@ -111,6 +111,7 @@ public abstract class World implements Dump.INode {
 	// Xset'table options
 	private boolean runMinimalMemory = false;
 	private boolean shouldPipelineCompilation = true;
+	private boolean shouldGenerateStackMaps = false;
 	protected boolean bcelRepositoryCaching = xsetBCEL_REPOSITORY_CACHING_DEFAULT.equalsIgnoreCase("true");
 	private boolean fastMethodPacking = false;
 	private boolean completeBinaryTypes = false;
@@ -758,6 +759,7 @@ public abstract class World implements Dump.INode {
 	public final static String xsetDEBUG_BRIDGING = "debugBridging"; // default false
 	public final static String xsetBCEL_REPOSITORY_CACHING = "bcelRepositoryCaching";
 	public final static String xsetPIPELINE_COMPILATION = "pipelineCompilation";
+	public final static String xsetGENERATE_STACKMAPS = "generateStackMaps";
 	public final static String xsetPIPELINE_COMPILATION_DEFAULT = "true";
 	public final static String xsetCOMPLETE_BINARY_TYPES = "completeBinaryTypes";
 	public final static String xsetCOMPLETE_BINARY_TYPES_DEFAULT = "false";
@@ -1144,6 +1146,9 @@ public abstract class World implements Dump.INode {
 
 				s = p.getProperty(xsetPIPELINE_COMPILATION, xsetPIPELINE_COMPILATION_DEFAULT);
 				shouldPipelineCompilation = s.equalsIgnoreCase("true");
+				
+				s = p.getProperty(xsetGENERATE_STACKMAPS, "false");
+				shouldGenerateStackMaps = s.equalsIgnoreCase("true");
 
 				s = p.getProperty(xsetCOMPLETE_BINARY_TYPES, xsetCOMPLETE_BINARY_TYPES_DEFAULT);
 				completeBinaryTypes = s.equalsIgnoreCase("true");
@@ -1183,7 +1188,12 @@ public abstract class World implements Dump.INode {
 		ensureAdvancedConfigurationProcessed();
 		return shouldPipelineCompilation;
 	}
-
+	
+	public boolean shouldGenerateStackMaps() {
+		ensureAdvancedConfigurationProcessed();
+		return shouldGenerateStackMaps;
+	}
+	
 	public void setIncrementalCompileCouldFollow(boolean b) {
 		incrementalCompileCouldFollow = b;
 	}
