@@ -143,16 +143,34 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 						index + 1, byteCodeName.length));
 			}
 		} else if (ipe.getKind().equals(IProgramElement.Kind.ADVICE)) {
-			int lastDollar = CharOperation.lastIndexOf('$', byteCodeName);
-			if (lastDollar != -1) {
-				char[] upToDollar = CharOperation.subarray(byteCodeName, 0,
-						lastDollar);
-				int secondToLastDollar = CharOperation.lastIndexOf('$',
-						upToDollar);
-				if (secondToLastDollar != -1) {
-					return convertCount(CharOperation.subarray(upToDollar,
-							secondToLastDollar + 1, upToDollar.length));
+			// depends on previous children
+			int count = 1;
+			List kids = ipe.getParent().getChildren();
+			String ipeSig = ipe.getBytecodeSignature();
+			for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
+				IProgramElement object = (IProgramElement) iterator.next();
+				if (object.equals(ipe)) {
+					break;
 				}
+				if (object.getKind()==ipe.getKind()) {
+					if (object.getName().equals(ipe.getName())) {
+						String sig1 = object.getBytecodeSignature();
+						if (sig1==null && ipeSig==null || sig1.equals(ipeSig)) {
+							String existingHandle = object.getHandleIdentifier();
+							int suffixPosition = existingHandle.indexOf('!');
+							if (suffixPosition!=-1) {
+								count = new Integer(existingHandle.substring(suffixPosition+1)).intValue()+1;
+							} else {
+								if (count==1) {
+									count = 2;
+								}
+							}
+						}
+					}
+				}
+			}
+			if (count>1) {
+				return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
 			}
 		} else if (ipe.getKind().equals(IProgramElement.Kind.INITIALIZER)) {
 			return String.valueOf(++initializerCounter).toCharArray();
