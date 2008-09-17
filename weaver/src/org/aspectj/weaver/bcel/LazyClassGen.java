@@ -65,12 +65,6 @@ import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
-import org.aspectj.weaver.bcel.asm.AsmDetector;
-import org.aspectj.weaver.bcel.asm.StackMapAdder;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-
-import com.sun.org.apache.bcel.internal.classfile.StackMap;
 
 /**
  * Lazy lazy lazy. We don't unpack the underlying class unless necessary. Things like new methods and annotations accumulate in here
@@ -85,23 +79,23 @@ public final class LazyClassGen {
 
 	int highestLineNumber = 0; // ---- JSR 45 info
 
-	private SortedMap /* <String, InlinedSourceFileInfo> */inlinedFiles = new TreeMap();
+	private final SortedMap /* <String, InlinedSourceFileInfo> */inlinedFiles = new TreeMap();
 
 	private boolean regenerateGenericSignatureAttribute = false;
 
 	private BcelObjectType myType; // XXX is not set for types we create
 	private ClassGen myGen;
-	private ConstantPool cp;
-	private World world;
-	private String packageName = null;
+	private final ConstantPool cp;
+	private final World world;
+	private final String packageName = null;
 
-	private List /* BcelField */fields = new ArrayList();
-	private List /* LazyMethodGen */methodGens = new ArrayList();
-	private List /* LazyClassGen */classGens = new ArrayList();
-	private List /* AnnotationGen */annotations = new ArrayList();
+	private final List /* BcelField */fields = new ArrayList();
+	private final List /* LazyMethodGen */methodGens = new ArrayList();
+	private final List /* LazyClassGen */classGens = new ArrayList();
+	private final List /* AnnotationGen */annotations = new ArrayList();
 	private int childCounter = 0;
 
-	private InstructionFactory fact;
+	private final InstructionFactory fact;
 
 	private boolean isSerializable = false;
 	private boolean hasSerialVersionUIDField = false;
@@ -619,10 +613,10 @@ public final class LazyClassGen {
 		writeBack(world);
 		byte[] wovenClassFileData = myGen.getJavaClass().getBytes();
 		// if is java 6 class file
-//		if (myGen.getMajor()>=Constants.MAJOR_1_6 && AsmDetector.isAsmAround) {
-//			wovenClassFileData = StackMapAdder.addStackMaps(wovenClassFileData);
-//		}
-		
+		// if (myGen.getMajor()>=Constants.MAJOR_1_6 && AsmDetector.isAsmAround) {
+		// wovenClassFileData = StackMapAdder.addStackMaps(wovenClassFileData);
+		// }
+
 		WeaverStateInfo wsi = myType.getWeaverState();// getOrCreateWeaverStateInfo();
 		if (wsi != null && wsi.isReweavable()) { // && !reweavableDataInserted
 			// reweavableDataInserted = true;
