@@ -22,11 +22,9 @@ import org.aspectj.bridge.ISourceLocation;
 /**
  * Creates JDT-like handles, for example
  * 
- * method with string argument: <tjp{Demo.java[Demo~main~\[QString; method with
- * generic argument: <pkg{MyClass.java[MyClass~myMethod~QList\<QString;>; an
- * aspect: <pkg*A1.aj}A1 advice with Integer arg:
- * <pkg*A8.aj}A8&afterReturning&QInteger; method call:
- * <pkg*A10.aj[C~m1?method-call(void pkg.C.m2())
+ * method with string argument: <tjp{Demo.java[Demo~main~\[QString; method with generic argument:
+ * <pkg{MyClass.java[MyClass~myMethod~QList\<QString;>; an aspect: <pkg*A1.aj}A1 advice with Integer arg:
+ * <pkg*A8.aj}A8&afterReturning&QInteger; method call: <pkg*A10.aj[C~m1?method-call(void pkg.C.m2())
  * 
  */
 public class JDTLikeHandleProvider implements IElementHandleProvider {
@@ -36,8 +34,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 	private int initializerCounter = 0;
 
 	private final char[] empty = new char[] {};
-	private final char[] countDelim = new char[] { HandleProviderDelimiter.COUNT
-			.getDelimiter() };
+	private final char[] countDelim = new char[] { HandleProviderDelimiter.COUNT.getDelimiter() };
 
 	private final String backslash = "\\";
 	private final String emptyString = "";
@@ -46,24 +43,20 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 
 		// AjBuildManager.setupModel --> top of the tree is either
 		// <root> or the .lst file
-		if (ipe == null
-				|| (ipe.getKind().equals(IProgramElement.Kind.FILE_JAVA) && ipe
-						.getName().equals("<root>"))) {
+		if (ipe == null || (ipe.getKind().equals(IProgramElement.Kind.FILE_JAVA) && ipe.getName().equals("<root>"))) {
 			return "";
 		} else if (ipe.getHandleIdentifier(false) != null) {
 			// have already created the handle for this ipe
 			// therefore just return it
 			return ipe.getHandleIdentifier();
 		} else if (ipe.getKind().equals(IProgramElement.Kind.FILE_LST)) {
-			String configFile = AsmManager.getDefault().getHierarchy()
-					.getConfigFile();
+			String configFile = AsmManager.getDefault().getHierarchy().getConfigFile();
 			int start = configFile.lastIndexOf(File.separator);
 			int end = configFile.lastIndexOf(".lst");
 			if (end != -1) {
 				configFile = configFile.substring(start + 1, end);
 			} else {
-				configFile = new StringBuffer("=").append(
-						configFile.substring(start + 1)).toString();
+				configFile = new StringBuffer("=").append(configFile.substring(start + 1)).toString();
 			}
 			ipe.setHandleIdentifier(configFile);
 			return configFile;
@@ -76,9 +69,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 			return handle;
 		}
 		IProgramElement parent = ipe.getParent();
-		if (parent != null
-				&& parent.getKind().equals(
-						IProgramElement.Kind.IMPORT_REFERENCE)) {
+		if (parent != null && parent.getKind().equals(IProgramElement.Kind.IMPORT_REFERENCE)) {
 			// want to miss out '#import declaration' in the handle
 			parent = ipe.getParent().getParent();
 		}
@@ -91,8 +82,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 		// add the name and any parameters unless we're an initializer
 		// (initializer's names are '...')
 		if (!ipe.getKind().equals(IProgramElement.Kind.INITIALIZER)) {
-			if (ipe.getKind() == IProgramElement.Kind.CLASS
-					&& ipe.getName().endsWith("{..}")) {
+			if (ipe.getKind() == IProgramElement.Kind.CLASS && ipe.getName().endsWith("{..}")) {
 				// format: 'new Runnable() {..}'
 				String n = ipe.getName();
 				int bracketPos = n.indexOf("(");
@@ -110,8 +100,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 	}
 
 	private String getParameters(IProgramElement ipe) {
-		if (ipe.getParameterSignatures() == null
-				|| ipe.getParameterSignatures().isEmpty())
+		if (ipe.getParameterSignatures() == null || ipe.getParameterSignatures().isEmpty())
 			return "";
 		StringBuffer sb = new StringBuffer();
 		List parameterTypes = ipe.getParameterSignatures();
@@ -122,8 +111,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 				// its an array
 				sb.append(HandleProviderDelimiter.ESCAPE.getDelimiter());
 				sb.append(HandleProviderDelimiter.TYPE.getDelimiter());
-				sb.append(NameConvertor.getTypeName(CharOperation.subarray(
-						element, 1, element.length)));
+				sb.append(NameConvertor.getTypeName(CharOperation.subarray(element, 1, element.length)));
 			} else if (element[0] == NameConvertor.PARAMETERIZED) {
 				// its a parameterized type
 				sb.append(NameConvertor.createShortName(element));
@@ -134,16 +122,24 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 		return sb.toString();
 	}
 
+	/**
+	 * Determine a count to be suffixed to the handle, this is only necessary for identical looking entries at the same level in the
+	 * model (for example two anonymous class declarations). The format is !<n> where n will be greater than 2.
+	 * 
+	 * @param ipe the program element for which the handle is being constructed
+	 * @return a char suffix that will either be empty or of the form "!<n>"
+	 */
 	private char[] getCount(IProgramElement ipe) {
+		// TODO could optimize this code
 		char[] byteCodeName = ipe.getBytecodeName().toCharArray();
+
 		if (ipe.getKind().isDeclare()) {
 			int index = CharOperation.lastIndexOf('_', byteCodeName);
 			if (index != -1) {
-				return convertCount(CharOperation.subarray(byteCodeName,
-						index + 1, byteCodeName.length));
+				return convertCount(CharOperation.subarray(byteCodeName, index + 1, byteCodeName.length));
 			}
 		} else if (ipe.getKind().equals(IProgramElement.Kind.ADVICE)) {
-			// depends on previous children
+			// Look at any peer advice
 			int count = 1;
 			List kids = ipe.getParent().getChildren();
 			String ipeSig = ipe.getBytecodeSignature();
@@ -152,16 +148,16 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 				if (object.equals(ipe)) {
 					break;
 				}
-				if (object.getKind()==ipe.getKind()) {
+				if (object.getKind() == ipe.getKind()) {
 					if (object.getName().equals(ipe.getName())) {
 						String sig1 = object.getBytecodeSignature();
-						if (sig1==null && ipeSig==null || sig1.equals(ipeSig)) {
+						if (sig1 == null && ipeSig == null || sig1.equals(ipeSig)) {
 							String existingHandle = object.getHandleIdentifier();
 							int suffixPosition = existingHandle.indexOf('!');
-							if (suffixPosition!=-1) {
-								count = new Integer(existingHandle.substring(suffixPosition+1)).intValue()+1;
+							if (suffixPosition != -1) {
+								count = new Integer(existingHandle.substring(suffixPosition + 1)).intValue() + 1;
 							} else {
-								if (count==1) {
+								if (count == 1) {
 									count = 2;
 								}
 							}
@@ -169,7 +165,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 					}
 				}
 			}
-			if (count>1) {
+			if (count > 1) {
 				return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
 			}
 		} else if (ipe.getKind().equals(IProgramElement.Kind.INITIALIZER)) {
@@ -177,8 +173,33 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 		} else if (ipe.getKind().equals(IProgramElement.Kind.CODE)) {
 			int index = CharOperation.lastIndexOf('!', byteCodeName);
 			if (index != -1) {
-				return convertCount(CharOperation.subarray(byteCodeName,
-						index + 1, byteCodeName.length));
+				return convertCount(CharOperation.subarray(byteCodeName, index + 1, byteCodeName.length));
+			}
+		} else if (ipe.getKind() == IProgramElement.Kind.CLASS) {
+			// depends on previous children
+			int count = 1;
+			List kids = ipe.getParent().getChildren();
+			for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
+				IProgramElement object = (IProgramElement) iterator.next();
+				if (object.equals(ipe)) {
+					break;
+				}
+				if (object.getKind() == ipe.getKind()) {
+					if (object.getName().equals(ipe.getName())) {
+						String existingHandle = object.getHandleIdentifier();
+						int suffixPosition = existingHandle.indexOf('!');
+						if (suffixPosition != -1) {
+							count = new Integer(existingHandle.substring(suffixPosition + 1)).intValue() + 1;
+						} else {
+							if (count == 1) {
+								count = 2;
+							}
+						}
+					}
+				}
+			}
+			if (count > 1) {
+				return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
 			}
 		}
 		return empty;
@@ -195,15 +216,11 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 	}
 
 	public String getFileForHandle(String handle) {
-		IProgramElement node = AsmManager.getDefault().getHierarchy()
-				.getElement(handle);
+		IProgramElement node = AsmManager.getDefault().getHierarchy().getElement(handle);
 		if (node != null) {
-			return AsmManager.getDefault().getCanonicalFilePath(
-					node.getSourceLocation().getSourceFile());
-		} else if (handle.charAt(0) == HandleProviderDelimiter.ASPECT_CU
-				.getDelimiter()
-				|| handle.charAt(0) == HandleProviderDelimiter.COMPILATIONUNIT
-						.getDelimiter()) {
+			return AsmManager.getDefault().getCanonicalFilePath(node.getSourceLocation().getSourceFile());
+		} else if (handle.charAt(0) == HandleProviderDelimiter.ASPECT_CU.getDelimiter()
+				|| handle.charAt(0) == HandleProviderDelimiter.COMPILATIONUNIT.getDelimiter()) {
 			// it's something like *MyAspect.aj or {MyClass.java. In other words
 			// it's a file node that's been created with no children and no
 			// parent
@@ -213,14 +230,11 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 	}
 
 	public int getLineNumberForHandle(String handle) {
-		IProgramElement node = AsmManager.getDefault().getHierarchy()
-				.getElement(handle);
+		IProgramElement node = AsmManager.getDefault().getHierarchy().getElement(handle);
 		if (node != null) {
 			return node.getSourceLocation().getLine();
-		} else if (handle.charAt(0) == HandleProviderDelimiter.ASPECT_CU
-				.getDelimiter()
-				|| handle.charAt(0) == HandleProviderDelimiter.COMPILATIONUNIT
-						.getDelimiter()) {
+		} else if (handle.charAt(0) == HandleProviderDelimiter.ASPECT_CU.getDelimiter()
+				|| handle.charAt(0) == HandleProviderDelimiter.COMPILATIONUNIT.getDelimiter()) {
 			// it's something like *MyAspect.aj or {MyClass.java. In other words
 			// it's a file node that's been created with no children and no
 			// parent
@@ -230,14 +244,11 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 	}
 
 	public int getOffSetForHandle(String handle) {
-		IProgramElement node = AsmManager.getDefault().getHierarchy()
-				.getElement(handle);
+		IProgramElement node = AsmManager.getDefault().getHierarchy().getElement(handle);
 		if (node != null) {
 			return node.getSourceLocation().getOffset();
-		} else if (handle.charAt(0) == HandleProviderDelimiter.ASPECT_CU
-				.getDelimiter()
-				|| handle.charAt(0) == HandleProviderDelimiter.COMPILATIONUNIT
-						.getDelimiter()) {
+		} else if (handle.charAt(0) == HandleProviderDelimiter.ASPECT_CU.getDelimiter()
+				|| handle.charAt(0) == HandleProviderDelimiter.COMPILATIONUNIT.getDelimiter()) {
 			// it's something like *MyAspect.aj or {MyClass.java. In other words
 			// it's a file node that's been created with no children and no
 			// parent
@@ -247,19 +258,16 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 	}
 
 	public String createHandleIdentifier(ISourceLocation location) {
-		IProgramElement node = AsmManager.getDefault().getHierarchy()
-				.findElementForSourceLine(location);
+		IProgramElement node = AsmManager.getDefault().getHierarchy().findElementForSourceLine(location);
 		if (node != null) {
 			return createHandleIdentifier(node);
 		}
 		return null;
 	}
 
-	public String createHandleIdentifier(File sourceFile, int line, int column,
-			int offset) {
-		IProgramElement node = AsmManager.getDefault().getHierarchy()
-				.findElementForOffSet(sourceFile.getAbsolutePath(), line,
-						offset);
+	public String createHandleIdentifier(File sourceFile, int line, int column, int offset) {
+		IProgramElement node = AsmManager.getDefault().getHierarchy().findElementForOffSet(sourceFile.getAbsolutePath(), line,
+				offset);
 		if (node != null) {
 			return createHandleIdentifier(node);
 		}
