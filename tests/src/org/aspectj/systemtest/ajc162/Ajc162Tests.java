@@ -11,14 +11,47 @@
 package org.aspectj.systemtest.ajc162;
 
 import java.io.File;
+import java.io.PrintWriter;
 
 import junit.framework.Test;
 
+import org.aspectj.asm.AsmManager;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	// AspectJ1.6.2
+
+	// When faulting in the binary hierarchy:
+	// <root> [java source file]
+	// Clazz.java [java source file] C:\temp\ajcSandbox\aspectj16_2\ajcTest3344.tmp\Clazz.java:1::0
+	// import declarations [import reference]
+	// Clazz [class] C:\temp\ajcSandbox\aspectj16_2\ajcTest3344.tmp\Clazz.java:1::13
+	// foo() [method] C:\temp\ajcSandbox\aspectj16_2\ajcTest3344.tmp\Clazz.java:2::36
+	// Asp.class (binary) [class] C:\temp\ajcSandbox\aspectj16_2\ajcTest3344.tmp\binaryaspect.jar!Asp.class:1::0
+	// import declarations [import reference]
+	// Asp [aspect] C:\temp\ajcSandbox\aspectj16_2\ajcTest3344.tmp\binaryaspect.jar!Asp.class:1::0
+	// before(): <anonymous pointcut> [advice] C:\temp\ajcSandbox\aspectj16_2\ajcTest3344.tmp\binaryaspect.jar!Asp.class:2::0
+	// Hid:1:(targets=1) [Asp.class (binary)}Asp&before (advises) {Clazz.java[Clazz~foo
+	// Hid:2:(targets=1) {Clazz.java[Clazz~foo (advised by) [Asp.class (binary)}Asp&before
+
+	// without faulting in the model they stop at the top level (the class level)
+
+	// Hid:1:(targets=1) "{Clazz.java[Clazz~foo" (advised by) "{Asp.class"
+	// Hid:2:(targets=1) "{Asp.class" (advises) "{Clazz.java[Clazz~foo"
+
+	// what I want for the hid is:
+
+	// <somethingIndicatingBinary>"[Asp.class}Asp&before"
+/*
+	public void testBinaryAspectModeling() throws Exception {
+		runTest("binary aspects model");
+		AsmManager.dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
+		PrintWriter pw = new PrintWriter(System.out);
+		AsmManager.getDefault().dumprels(pw);
+		pw.flush();
+	}
+*/
 	public void testPerClause() {
 		runTest("ltw perclause");
 	}

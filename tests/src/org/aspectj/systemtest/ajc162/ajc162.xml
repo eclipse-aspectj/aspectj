@@ -3,6 +3,10 @@
 <!-- AspectJ v1.6.2 Tests -->
 <suite>
 	
+   <ajc-test dir="bugs162/IntoBinary" title="binary aspects model">
+     <compile options="-1.5 -emacssym" files="Clazz.java" aspectpath="binaryaspect.jar"/>
+   </ajc-test>
+   
    <ajc-test dir="bugs162/pr246918" title="ltw perclause">
      <compile options="-1.5" files="Code.java Dode.java" outjar="code.jar"/>
      <compile options="-1.5 -Xlint:ignore" files="Base.java" outjar="aspects.jar"/>
