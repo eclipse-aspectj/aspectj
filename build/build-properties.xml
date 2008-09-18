@@ -64,6 +64,8 @@
             location="${aspectj.modules.dir}/aj-build"/>
 	  <property name="aj.temp.dir" 
             location="${aj.build.dir}/temp"/>
+  	  <property name="aj.src.dir" 
+              location="${aj.build.dir}/src"/>
       <property name="aj.jar.dir" 
             location="${aj.build.dir}/jars"/>
       <property name="aj.dist.dir" 
