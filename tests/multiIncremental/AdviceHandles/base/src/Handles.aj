@@ -56,5 +56,19 @@ public aspect Handles {
     new I() {};
   }
        
+
+//Line60: 247742: c3 
+void b(String x) {
+  new Condition() {}; // l62
+  new Condition() {}; // l63
 }
 
+
+}
+
+class Condition {}
+
+aspect Foo { // Line 71: 247742: c4
+ after(String x) returning(String y) : within(NotExisting*) {  } //src<p*Foo.aj[Foo*&afterReturning&QString;
+ after(String x) returning(int y) : within(NotExisting*) {  }    //src<p*Foo.aj[Foo*&afterReturning&QString;!2
+}

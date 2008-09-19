@@ -13,8 +13,8 @@
         declare warning: "blah blah blah"  [declare warning] TEST_SANDBOX\pack\pr77269c.aj:18:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
-(targets=1) <pack*pr77269c.aj}A`declare warning (matched by) <pack*pr77269c.aj[Test~testMethod[new Runnable~run?method-call(void pack.Test.someMethod())
-(targets=1) <pack*pr77269c.aj[Test~testMethod[new Runnable~run?method-call(void pack.Test.someMethod()) (matches declare) <pack*pr77269c.aj}A`declare warning
+(targets=1) <pack*pr77269c.aj}A`declare warning (matched by) <pack*pr77269c.aj[Test~testMethod[~run?method-call(void pack.Test.someMethod())
+(targets=1) <pack*pr77269c.aj[Test~testMethod[~run?method-call(void pack.Test.someMethod()) (matches declare) <pack*pr77269c.aj}A`declare warning
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 method=3

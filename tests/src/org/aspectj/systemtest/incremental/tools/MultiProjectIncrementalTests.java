@@ -188,11 +188,16 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		IProgramElement namedInnerClass = findElementAtLine(root, 46);
 		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles~x[NamedClass", namedInnerClass.getHandleIdentifier());
 
-		IProgramElement anonInner1 = findElementAtLine(root, 55);
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles~foo[new I", anonInner1.getHandleIdentifier());
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles~foo[", findElementAtLine(root, 55).getHandleIdentifier());
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles~foo[!2", findElementAtLine(root, 56).getHandleIdentifier());
 
-		IProgramElement anonInner2 = findElementAtLine(root, 56);
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles~foo[new I!2", anonInner2.getHandleIdentifier());
+		// From 247742: comment 3
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles~b~QString;[", findElementAtLine(root, 62).getHandleIdentifier());
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles~b~QString;[!2", findElementAtLine(root, 63).getHandleIdentifier());
+
+//		// From 247742: comment 4
+//		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Foo&afterReturning&QString;", findElementAtLine(root, 72).getHandleIdentifier());
+//		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Foo&afterReturning&QString;!2", findElementAtLine(root, 73).getHandleIdentifier());
 
 	}
 
@@ -303,15 +308,15 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	// 
-	public void testAspectPath_pr242797_c41() {
-		String bug = "pr242797_3";
-		String bug2 = "pr242797_4";
-		initialiseProject(bug);
-		initialiseProject(bug2);
-		configureAspectPath(bug2, getProjectRelativePath(bug, "bin"));
-		build(bug);
-		build(bug2);
-	}
+//	public void testAspectPath_pr242797_c41() {
+//		String bug = "pr242797_3";
+//		String bug2 = "pr242797_4";
+//		initialiseProject(bug);
+//		initialiseProject(bug2);
+//		configureAspectPath(bug2, getProjectRelativePath(bug, "bin"));
+//		build(bug);
+//		build(bug2);
+//	}
 
 	/**
 	 * Build a project containing a resource - then mark the resource readOnly(), then do an inc-compile, it will report an error
