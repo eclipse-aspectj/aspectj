@@ -291,6 +291,28 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkForError("P1", "invalid aspectpath entry");
 	}
 
+	// incorrect use of '?' when it should be '*'
+	public void testAspectPath_pr242797_c46() {
+		String bug = "pr242797_1";
+		String bug2 = "pr242797_2";
+		initialiseProject(bug);
+		initialiseProject(bug2);
+		configureAspectPath(bug2, getProjectRelativePath(bug, "bin"));
+		build(bug);
+		build(bug2);
+	}
+
+	// 
+	public void testAspectPath_pr242797_c41() {
+		String bug = "pr242797_3";
+		String bug2 = "pr242797_4";
+		initialiseProject(bug);
+		initialiseProject(bug2);
+		configureAspectPath(bug2, getProjectRelativePath(bug, "bin"));
+		build(bug);
+		build(bug2);
+	}
+
 	/**
 	 * Build a project containing a resource - then mark the resource readOnly(), then do an inc-compile, it will report an error
 	 * about write access to the resource in the output folder being denied

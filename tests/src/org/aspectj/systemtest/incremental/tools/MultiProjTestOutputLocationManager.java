@@ -20,19 +20,18 @@ import java.util.Map;
 import org.aspectj.ajde.core.IOutputLocationManager;
 
 /**
- * An IOutputLocationManager which by default sends all output to the 
- * testProjectPath\bin directory. However, there are getter methods which
- * enable sending resources and classes to different output dirs. Doesn't
- * enable sending different classes to different output locations.
+ * An IOutputLocationManager which by default sends all output to the testProjectPath\bin directory. However, there are getter
+ * methods which enable sending resources and classes to different output dirs. Doesn't enable sending different classes to
+ * different output locations.
  */
 public class MultiProjTestOutputLocationManager implements IOutputLocationManager {
 
-	private String testProjectOutputPath;
+	private final String testProjectOutputPath;
 	private File classOutputLoc;
 	private File resourceOutputLoc;
-	private Map sourceFolders = new HashMap();
+	private final Map sourceFolders = new HashMap();
 	private List allOutputLocations;
-	
+
 	public MultiProjTestOutputLocationManager(String testProjectPath) {
 		this.testProjectOutputPath = testProjectPath + File.separator + "bin";
 	}
@@ -48,7 +47,7 @@ public class MultiProjTestOutputLocationManager implements IOutputLocationManage
 	}
 
 	public List getAllOutputLocations() {
-		if(allOutputLocations == null) {
+		if (allOutputLocations == null) {
 			allOutputLocations = new ArrayList();
 			initLocations();
 			allOutputLocations.add(classOutputLoc);
@@ -62,7 +61,7 @@ public class MultiProjTestOutputLocationManager implements IOutputLocationManage
 	public File getDefaultOutputLocation() {
 		return classOutputLoc;
 	}
-	
+
 	private void initLocations() {
 		if (classOutputLoc == null) {
 			classOutputLoc = new File(testProjectOutputPath);
@@ -71,30 +70,28 @@ public class MultiProjTestOutputLocationManager implements IOutputLocationManage
 			resourceOutputLoc = new File(testProjectOutputPath);
 		}
 	}
-	
+
 	// -------------- setter methods useful for testing -------------
 	public void setOutputLocForClass(File f) {
 		classOutputLoc = f;
 	}
-	
-	public void setSourceFolderFor(File sourceFile,String sourceFolder) {
+
+	public void setSourceFolderFor(File sourceFile, String sourceFolder) {
 		try {
-			System.out.println("Stored against "+sourceFile.getCanonicalPath());
-			sourceFolders.put(sourceFile.getCanonicalPath(),sourceFolder);
+			sourceFolders.put(sourceFile.getCanonicalPath(), sourceFolder);
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public void setOutputLocForResource(File f) {
 		resourceOutputLoc = f;
 	}
 
 	public String getSourceFolderForFile(File sourceFile) {
 		try {
-			System.out.println("Looked up against "+sourceFile.getCanonicalPath());
-			String f = (String)sourceFolders.get(sourceFile.getCanonicalPath());
+			String f = (String) sourceFolders.get(sourceFile.getCanonicalPath());
 			return f;
 		} catch (IOException e) {
 			e.printStackTrace();
