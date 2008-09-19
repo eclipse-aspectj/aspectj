@@ -169,12 +169,12 @@ import org.aspectj.weaver.bcel.BcelWorld;
 		 assertTrue("resolves to exact type",rtp instanceof ExactTypePattern);
 		 UnresolvedType exactType = rtp.getExactType();
 		 assertTrue(exactType.isParameterizedType());
-		 assertEquals("Pjava/util/List<?>;",exactType.getSignature());
+		 assertEquals("Pjava/util/List<*>;",exactType.getSignature());
 
 		 ExactTypePattern etp = (ExactTypePattern) writeAndRead(rtp);
 		 exactType = etp.getExactType();
 		 assertTrue(exactType.isParameterizedType());
-		 assertEquals("Pjava/util/List<?>;",exactType.getSignature());
+		 assertEquals("Pjava/util/List<*>;",exactType.getSignature());
 
 		 assertFalse("does not match List",etp.matches(javaUtilList, TypePattern.STATIC).alwaysTrue());
 		 assertFalse("does not match generic List",etp.matches(javaUtilList.getGenericType(),TypePattern.STATIC).alwaysTrue());
@@ -345,7 +345,8 @@ import org.aspectj.weaver.bcel.BcelWorld;
 						new UnresolvedType[] {UnresolvedType.forName("java.lang.Double").resolve(world)}, 
 						world);
 			 
-		 assertFalse("does not match list of number",wtp.matches(listOfNumber,TypePattern.STATIC).alwaysTrue());
+		 boolean matchesListOfNumber = wtp.matches(listOfNumber,TypePattern.STATIC).alwaysTrue();
+		 assertFalse("does not match list of number",matchesListOfNumber);
 		 assertFalse("does not match list of double",wtp.matches(listOfDouble,TypePattern.STATIC).alwaysTrue());
 
 		 ResolvedType extendsNumber = TypeFactory.createTypeFromSignature("+Ljava/lang/Number;").resolve(world);
@@ -355,7 +356,8 @@ import org.aspectj.weaver.bcel.BcelWorld;
 						new UnresolvedType[] {extendsNumber}, 
 						world);
 
-		 assertTrue("matches list of ? extends number",wtp.matches(listOfExtendsNumber,TypePattern.STATIC).alwaysTrue());		 
+		 boolean matchesListOfQmarkExtendsNumber = wtp.matches(listOfExtendsNumber,TypePattern.STATIC).alwaysTrue();
+		 assertTrue("failed to correctly match list of ? extends number",matchesListOfQmarkExtendsNumber);		 
 
 		 ResolvedType extendsDouble = TypeFactory.createTypeFromSignature("+Ljava/lang/Double;").resolve(world);
 		 ResolvedType listOfExtendsDouble =

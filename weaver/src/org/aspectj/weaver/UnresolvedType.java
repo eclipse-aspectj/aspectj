@@ -695,7 +695,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 			return "? extends " + signatureToName(signature.substring(1, signature.length()));
 		case '-':
 			return "? super " + signatureToName(signature.substring(1, signature.length()));
-		case '?':
+		case '*':
 			return "?";
 		default:
 			throw new BCException("Bad type signature: " + signature);

@@ -85,7 +85,8 @@ import org.aspectj.weaver.World;
  * 
  */
 public class WildTypePattern extends TypePattern {
-	private static final String GENERIC_WILDCARD_CHARACTER = "?";
+	private static final String GENERIC_WILDCARD_CHARACTER = "?"; // signature of ? is *
+	private static final String GENERIC_WILDCARD_SIGNATURE_CHARACTER = "*"; // signature of ? is *
 	private NamePattern[] namePatterns;
 	int ellipsisCount;
 	String[] importedPrefixes;
@@ -774,7 +775,7 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	private TypePattern resolveGenericWildcard(IScope scope, UnresolvedType aType) {
-		if (!aType.getSignature().equals(GENERIC_WILDCARD_CHARACTER)) throw new IllegalStateException("Can only have bounds for a generic wildcard");
+		if (!aType.getSignature().equals(GENERIC_WILDCARD_SIGNATURE_CHARACTER)) throw new IllegalStateException("Can only have bounds for a generic wildcard");
 		boolean canBeExact = true;
 		if ((upperBound != null) && ResolvedType.isMissing(upperBound.getExactType())) canBeExact = false;
 		if ((lowerBound != null) && ResolvedType.isMissing(lowerBound.getExactType())) canBeExact = false;
