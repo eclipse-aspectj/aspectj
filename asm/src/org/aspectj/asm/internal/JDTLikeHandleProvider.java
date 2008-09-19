@@ -83,10 +83,8 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 		// (initializer's names are '...')
 		if (!ipe.getKind().equals(IProgramElement.Kind.INITIALIZER)) {
 			if (ipe.getKind() == IProgramElement.Kind.CLASS && ipe.getName().endsWith("{..}")) {
-				// format: 'new Runnable() {..}'
-				String n = ipe.getName();
-				int bracketPos = n.indexOf("(");
-				handle.append(n.substring(0, bracketPos));
+				// format: 'new Runnable() {..}' but its anon-y-mouse
+				// dont append anything, there may be a count to follow though (!<n>)
 			} else {
 				handle.append(ipe.getName()).append(getParameters(ipe));
 			}
@@ -100,8 +98,9 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 	}
 
 	private String getParameters(IProgramElement ipe) {
-		if (ipe.getParameterSignatures() == null || ipe.getParameterSignatures().isEmpty())
+		if (ipe.getParameterSignatures() == null || ipe.getParameterSignatures().isEmpty()) {			
 			return "";
+		}
 		StringBuffer sb = new StringBuffer();
 		List parameterTypes = ipe.getParameterSignatures();
 		for (Iterator iter = parameterTypes.iterator(); iter.hasNext();) {
