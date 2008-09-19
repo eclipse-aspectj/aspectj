@@ -98,7 +98,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 	}
 
 	private String getParameters(IProgramElement ipe) {
-		if (ipe.getParameterSignatures() == null || ipe.getParameterSignatures().isEmpty()) {			
+		if (ipe.getParameterSignatures() == null || ipe.getParameterSignatures().isEmpty()) {
 			return "";
 		}
 		StringBuffer sb = new StringBuffer();
@@ -178,20 +178,43 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 			// depends on previous children
 			int count = 1;
 			List kids = ipe.getParent().getChildren();
-			for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
-				IProgramElement object = (IProgramElement) iterator.next();
-				if (object.equals(ipe)) {
-					break;
+			if (ipe.getName().endsWith("{..}")) {
+				// only depends on previous anonymous children, name irrelevant
+				for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
+					IProgramElement object = (IProgramElement) iterator.next();
+					if (object.equals(ipe)) {
+						break;
+					}
+					if (object.getKind() == ipe.getKind()) {
+						if (object.getName().endsWith("{..}")) {
+							String existingHandle = object.getHandleIdentifier();
+							int suffixPosition = existingHandle.indexOf('!');
+							if (suffixPosition != -1) {
+								count = new Integer(existingHandle.substring(suffixPosition + 1)).intValue() + 1;
+							} else {
+								if (count == 1) {
+									count = 2;
+								}
+							}
+						}
+					}
 				}
-				if (object.getKind() == ipe.getKind()) {
-					if (object.getName().equals(ipe.getName())) {
-						String existingHandle = object.getHandleIdentifier();
-						int suffixPosition = existingHandle.indexOf('!');
-						if (suffixPosition != -1) {
-							count = new Integer(existingHandle.substring(suffixPosition + 1)).intValue() + 1;
-						} else {
-							if (count == 1) {
-								count = 2;
+			} else {
+				for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
+					IProgramElement object = (IProgramElement) iterator.next();
+					if (object.equals(ipe)) {
+						break;
+					}
+					if (object.getKind() == ipe.getKind()) {
+						if (object.getName().equals(ipe.getName())) {
+							String existingHandle = object.getHandleIdentifier();
+							int suffixPosition = existingHandle.indexOf('!');
+							if (suffixPosition != -1) {
+								count = new Integer(existingHandle.substring(suffixPosition + 1)).intValue() + 1;
+							} else {
+								if (count == 1) {
+									count = 2;
+								}
 							}
 						}
 					}
