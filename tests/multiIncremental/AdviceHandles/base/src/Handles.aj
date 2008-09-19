@@ -62,11 +62,15 @@ void b(String x) {
   new Condition() {}; // l62
   new Condition() {}; // l63
 }
+void c(String x) {
+  new Condition() {}; // l66
+  new Fondue() {}; // l67
+}
 
 
 }
 
-class Condition {}
+class Condition {} class Fondue {}
 
 aspect Foo { // Line 71: 247742: c4
  after(String x) returning(String y) : within(NotExisting*) {  } //src<p*Foo.aj[Foo*&afterReturning&QString;

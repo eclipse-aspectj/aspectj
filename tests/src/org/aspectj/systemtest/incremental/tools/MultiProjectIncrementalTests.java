@@ -191,13 +191,23 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles~foo[", findElementAtLine(root, 55).getHandleIdentifier());
 		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles~foo[!2", findElementAtLine(root, 56).getHandleIdentifier());
 
-		// From 247742: comment 3
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles~b~QString;[", findElementAtLine(root, 62).getHandleIdentifier());
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles~b~QString;[!2", findElementAtLine(root, 63).getHandleIdentifier());
+		// From 247742: comment 3: two anon class declarations
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles~b~QString;[", findElementAtLine(root, 62)
+				.getHandleIdentifier());
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles~b~QString;[!2", findElementAtLine(root, 63)
+				.getHandleIdentifier());
 
-//		// From 247742: comment 4
-//		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Foo&afterReturning&QString;", findElementAtLine(root, 72).getHandleIdentifier());
-//		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Foo&afterReturning&QString;!2", findElementAtLine(root, 73).getHandleIdentifier());
+		// From 247742: comment 6: two diff anon class declarations
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles~c~QString;[", findElementAtLine(root, 66)
+				.getHandleIdentifier());
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles~c~QString;[!2", findElementAtLine(root, 67)
+				.getHandleIdentifier());
+
+		// // From 247742: comment 4
+		// assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Foo&afterReturning&QString;", findElementAtLine(root,
+		// 72).getHandleIdentifier());
+		// assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Foo&afterReturning&QString;!2", findElementAtLine(root,
+		// 73).getHandleIdentifier());
 
 	}
 
@@ -308,15 +318,15 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	// 
-//	public void testAspectPath_pr242797_c41() {
-//		String bug = "pr242797_3";
-//		String bug2 = "pr242797_4";
-//		initialiseProject(bug);
-//		initialiseProject(bug2);
-//		configureAspectPath(bug2, getProjectRelativePath(bug, "bin"));
-//		build(bug);
-//		build(bug2);
-//	}
+	// public void testAspectPath_pr242797_c41() {
+	// String bug = "pr242797_3";
+	// String bug2 = "pr242797_4";
+	// initialiseProject(bug);
+	// initialiseProject(bug2);
+	// configureAspectPath(bug2, getProjectRelativePath(bug, "bin"));
+	// build(bug);
+	// build(bug2);
+	// }
 
 	/**
 	 * Build a project containing a resource - then mark the resource readOnly(), then do an inc-compile, it will report an error
