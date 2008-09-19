@@ -84,10 +84,10 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testAtajInheritance_pr149305_1()     { runTest("ataj inheritance - 1");}
   public void testAtajInheritance_pr149305_2()     { runTest("ataj inheritance - 2");}
   public void testAtajInheritance_pr149305_3()     { runTest("ataj inheritance - 3");}
-  public void testVerificationFailureForAspectOf_pr148693() {
-	runTest("verification problem");   // build the code
-	Utils.verifyClass(ajc,"mypackage.MyAspect"); // verify it <<< BRAND NEW VERIFY UTILITY FOR EVERYONE TO TRY ;)
-  }
+//  public void testVerificationFailureForAspectOf_pr148693() {
+//	runTest("verification problem");   // build the code
+//	Utils.verifyClass(ajc,"mypackage.MyAspect"); // verify it <<< BRAND NEW VERIFY UTILITY FOR EVERYONE TO TRY ;)
+//  }
   public void testIncorrectAnnotationValue_pr148537()          { runTest("incorrect annotation value");}
   public void testVerifyErrNoTypeCflowField_pr145693_1()       { runTest("verifyErrNoTypeCflowField"); }
   public void testVerifyErrInpathNoTypeCflowField_pr145693_2() { runTest("verifyErrInpathNoTypeCflowField"); }
