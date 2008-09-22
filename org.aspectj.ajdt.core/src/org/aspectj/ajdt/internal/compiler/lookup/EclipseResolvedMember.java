@@ -89,14 +89,14 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 		// long abits =
 		realBinding.getAnnotationTagBits(); // ensure resolved
 		Annotation[] annos = getEclipseAnnotations();
-		if (annos == null)
+		if (annos == null) {
 			return null;
-		// TODO errr missing in action - we need to implement this! Probably
-		// using something like EclipseAnnotationConvertor -
-		// itself not finished ;)
-		throw new RuntimeException(
-				"not yet implemented - please raise an AJ bug");
-		// return super.getAnnotations();
+		}
+		AnnotationAJ[] annoAJs = new AnnotationAJ[annos.length];
+		for (int i=0;i<annos.length;i++) {
+			annoAJs[i] = EclipseAnnotationConvertor.convertEclipseAnnotation(annos[i], w, eclipseFactory);
+		}
+		return annoAJs;
 	}
 
 	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
