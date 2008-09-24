@@ -281,7 +281,13 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				if (Arrays.equals(annotation.type.getTypeBindingPublic(scope).signature(), "Lorg/aspectj/lang/annotation/Aspect;"
 						.toCharArray())) {
 					kind = IProgramElement.Kind.ASPECT;
-				} else {
+				} else if(annotation.resolvedType != null) {
+					// Fix for the case where in a privileged aspect a parent declaration :
+					// 			declare parents: (@A C+) implements (B);
+					// is causing the resolvedType to be null when it shouldn't
+					// for the aspect and privileged annotation of that aspect.
+					
+					
 					// Creating the char[][] needed for ImportReference
 					String[] temp = (new String(annotation.resolvedType.constantPoolName())).split("/");
 					if (temp.length > 1) {
