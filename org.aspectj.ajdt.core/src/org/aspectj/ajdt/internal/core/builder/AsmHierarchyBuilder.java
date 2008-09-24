@@ -214,50 +214,52 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 
 			ImportReference unitPackage = unit.currentPackage;
 
-			if (null == unitPackage) {
-				// Is there a sourceFolder to stick in?
-				if (sourceFolder == null) {
-					addToNode = structureModel.getRoot();
-				} else {
-					addToNode = findOrCreateChildSourceFolder(sourceFolder, structureModel);
-				}
-			} else {
+			// if (null == unitPackage) {
+			// // Is there a sourceFolder to stick in?
+			// if (sourceFolder == null) {
+			// addToNode = structureModel.getRoot();
+			// } else {
+			// addToNode = findOrCreateChildSourceFolder(sourceFolder, structureModel);
+			// }
+			// } else {
 
-				IProgramElement rootForSource = structureModel.getRoot();
-				if (sourceFolder != null) {
-					rootForSource = findOrCreateChildSourceFolder(sourceFolder, structureModel);
-				}
-				String pkgName;
-				{
-					StringBuffer nameBuffer = new StringBuffer();
-					final char[][] importName = unitPackage.getImportName();
-					final int last = importName.length - 1;
-					for (int i = 0; i < importName.length; i++) {
-						nameBuffer.append(new String(importName[i]));
-						if (i < last) {
-							nameBuffer.append('.');
-						}
-					}
-					pkgName = nameBuffer.toString();
-				}
-
-				IProgramElement pkgNode = null;
-				if (structureModel != null && structureModel.getRoot() != null && rootForSource.getChildren() != null) {
-					for (Iterator it = rootForSource.getChildren().iterator(); it.hasNext();) {
-						IProgramElement currNode = (IProgramElement) it.next();
-						if (pkgName.equals(currNode.getName())) {
-							pkgNode = currNode;
-							break;
-						}
-					}
-				}
-				if (pkgNode == null) {
-					// note packages themselves have no source location
-					pkgNode = new ProgramElement(pkgName, IProgramElement.Kind.PACKAGE, new ArrayList());
-					rootForSource.addChild(pkgNode);
-				}
-				addToNode = pkgNode;
+			IProgramElement rootForSource = structureModel.getRoot();
+			if (sourceFolder != null) {
+				rootForSource = findOrCreateChildSourceFolder(sourceFolder, structureModel);
 			}
+			String pkgName;
+			if (unitPackage == null) {
+				pkgName = "";
+			} else {
+				StringBuffer nameBuffer = new StringBuffer();
+				final char[][] importName = unitPackage.getImportName();
+				final int last = importName.length - 1;
+				for (int i = 0; i < importName.length; i++) {
+					nameBuffer.append(new String(importName[i]));
+					if (i < last) {
+						nameBuffer.append('.');
+					}
+				}
+				pkgName = nameBuffer.toString();
+			}
+
+			IProgramElement pkgNode = null;
+			if (structureModel != null && structureModel.getRoot() != null && rootForSource.getChildren() != null) {
+				for (Iterator it = rootForSource.getChildren().iterator(); it.hasNext();) {
+					IProgramElement currNode = (IProgramElement) it.next();
+					if (pkgName.equals(currNode.getName())) {
+						pkgNode = currNode;
+						break;
+					}
+				}
+			}
+			if (pkgNode == null) {
+				// note packages themselves have no source location
+				pkgNode = new ProgramElement(pkgName, IProgramElement.Kind.PACKAGE, new ArrayList());
+				rootForSource.addChild(pkgNode);
+			}
+			addToNode = pkgNode;
+			// }
 		}
 		return addToNode;
 	}
@@ -281,13 +283,12 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				if (Arrays.equals(annotation.type.getTypeBindingPublic(scope).signature(), "Lorg/aspectj/lang/annotation/Aspect;"
 						.toCharArray())) {
 					kind = IProgramElement.Kind.ASPECT;
-				} else if(annotation.resolvedType != null) {
+				} else if (annotation.resolvedType != null) {
 					// Fix for the case where in a privileged aspect a parent declaration :
-					// 			declare parents: (@A C+) implements (B);
+					// declare parents: (@A C+) implements (B);
 					// is causing the resolvedType to be null when it shouldn't
 					// for the aspect and privileged annotation of that aspect.
-					
-					
+
 					// Creating the char[][] needed for ImportReference
 					String[] temp = (new String(annotation.resolvedType.constantPoolName())).split("/");
 					if (temp.length > 1) {
