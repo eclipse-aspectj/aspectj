@@ -6,14 +6,16 @@
       C  [class] TEST_SANDBOX\C.java:3:
         method1()  [method] TEST_SANDBOX\C.java:5:
           field-get(java.io.PrintStream java.lang.System.out)  [code] TEST_SANDBOX\C.java:6:
-  A.class (binary)  [class] TEST_SANDBOX\simple.jar!A.class:1:
-    import declarations  [import reference] 
-    A  [aspect] TEST_SANDBOX\simple.jar!A.class:1:
-      declare warning: "There should be n.."  [declare warning] TEST_SANDBOX\simple.jar!A.class:4:
+  binaries  [source folder] 
+      [package] 
+      A.class  [file] TEST_SANDBOX\simple.jar!\A.class:1:
+        import declarations  [import reference] 
+        A  [aspect] TEST_SANDBOX\simple.jar!\A.class:1:
+          declare warning: "There should be n.."  [declare warning] TEST_SANDBOX\simple.jar!\A.class:4:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
-(targets=1) <pack{C.java[C~method1?field-get(java.io.PrintStream java.lang.System.out) (matches declare) [A.class (binary)}A`declare warning
-(targets=1) [A.class (binary)}A`declare warning (matched by) <pack{C.java[C~method1?field-get(java.io.PrintStream java.lang.System.out)
+(targets=1) <pack{C.java[C~method1?field-get(java.io.PrintStream java.lang.System.out) (matches declare) /binaries<(A.class}A`declare warning
+(targets=1) /binaries<(A.class}A`declare warning (matched by) <pack{C.java[C~method1?field-get(java.io.PrintStream java.lang.System.out)
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 method=1
@@ -21,8 +23,10 @@ import reference=2
 aspect=1
 code=1
 declare warning=1
-class=2
+file=1
+class=1
 RelationshipMapSize=2
+source folder=1
 FileMapSize=1
-package=1
+package=2
 java source file=2

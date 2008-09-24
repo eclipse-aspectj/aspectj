@@ -15,14 +15,14 @@
         cMethod()  [method] TEST_SANDBOX\C.aj:7:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
-(targets=1) <pkg*A.aj}A+pointcutInAspect (pointcut used by) <pkg*A.aj}A&before!2
-(targets=1) <pkg*A.aj}A&before!2 (uses pointcut) <pkg*A.aj}A+pointcutInAspect
-(targets=1) <pkg*A.aj}A&before!2 (advises) <pkg*A.aj}A~aMethod
 (targets=1) <pkg*C.aj[C~cMethod (advised by) <pkg*A.aj}A&before
-(targets=1) *C.aj (pointcut used by) <pkg*A.aj}A&before
+(targets=1) <pkg*A.aj}A+pointcutInAspect (pointcut used by) <pkg*A.aj}A&before!2
 (targets=1) <pkg*A.aj}A~aMethod (advised by) <pkg*A.aj}A&before!2
+(targets=1) *C.aj (pointcut used by) <pkg*A.aj}A&before
 (targets=1) <pkg*A.aj}A&before (uses pointcut) *C.aj
 (targets=1) <pkg*A.aj}A&before (advises) <pkg*C.aj[C~cMethod
+(targets=1) <pkg*A.aj}A&before!2 (uses pointcut) <pkg*A.aj}A+pointcutInAspect
+(targets=1) <pkg*A.aj}A&before!2 (advises) <pkg*A.aj}A~aMethod
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 method=2
