@@ -837,7 +837,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		}
 		int index = name.lastIndexOf('.');
 		if (index == -1) {
-			return null;
+			return "";
 		} else {
 			return name.substring(0, index);
 		}
