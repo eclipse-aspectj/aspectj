@@ -72,7 +72,6 @@ public class RelationshipMap extends HashMap implements IRelationshipMap {
 			relationships = new ArrayList();
 			IRelationship rel = new Relationship(relationshipName, kind, source, new ArrayList(), runtimeTest);
 			relationships.add(rel);
-			System.out.println("Storing rel1 " + source + " to " + relationships);
 
 			super.put(source, relationships);
 			return rel;
@@ -125,7 +124,6 @@ public class RelationshipMap extends HashMap implements IRelationshipMap {
 	}
 
 	public Object put(Object o, Object p) {
-		System.out.println("Storing rel2 " + o + " to " + p);
 
 		return super.put(o, p);
 	}
@@ -138,7 +136,6 @@ public class RelationshipMap extends HashMap implements IRelationshipMap {
 		if (list == null) {
 			list = new ArrayList();
 			list.add(relationship);
-			System.out.println("Storing rel3 " + source + " to " + list);
 
 			super.put(source, list);
 		} else {
@@ -160,7 +157,6 @@ public class RelationshipMap extends HashMap implements IRelationshipMap {
 	}
 
 	public void put(IProgramElement source, IRelationship relationship) {
-		System.out.println("Storing rel " + source.getHandleIdentifier() + " to " + relationship);
 		put(source.getHandleIdentifier(), relationship);
 	}
 
