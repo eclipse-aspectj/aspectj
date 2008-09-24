@@ -19,7 +19,8 @@ import org.aspectj.weaver.World;
 
 /**
  * Tests the model when there is a requirement on Java5 features.
- * @see org.aspectj.systemtest.model.ModelTestCase 
+ * 
+ * @see org.aspectj.systemtest.model.ModelTestCase
  */
 public class Model5Tests extends ModelTestCase {
 
@@ -30,13 +31,30 @@ public class Model5Tests extends ModelTestCase {
 		// Switch this to true if you want to debug the comparison
 		debugTest = false;
 	}
-	
-	public void testDeclareAtTypeInStructureModel_pr115607() {runModelTest("declare at type appears correctly in structure model","pr115607");}
-	public void testStructureModelForGenericITD_pr131932() {runModelTest("structure model for generic itd","pr131932");}
-	public void testDeclareAnnotationAppearsInStructureModel_pr132130() {runModelTest("declare annotation appears in structure model when in same file","pr132130");}
-	public void testAtAspectDEOWInStructureModel_pr120356() {runModelTest("@AJ deow appear correctly when structure model is generated","pr120356");}
-	public void testDeclareAtMethodRelationship_pr143924() {runModelTest("declare @method relationship","pr143924");}
-	public void testNewIProgramElementMethodsForGenerics_pr141730() {runModelTest("new iprogramelement methods for generics","pr141730_2");}
+
+	public void testDeclareAtTypeInStructureModel_pr115607() {
+		runModelTest("declare at type appears correctly in structure model", "pr115607");
+	}
+
+	public void testStructureModelForGenericITD_pr131932() {
+		runModelTest("structure model for generic itd", "pr131932");
+	}
+
+	public void testDeclareAnnotationAppearsInStructureModel_pr132130() {
+		runModelTest("declare annotation appears in structure model when in same file", "pr132130");
+	}
+
+	public void testAtAspectDEOWInStructureModel_pr120356() {
+		runModelTest("@AJ deow appear correctly when structure model is generated", "pr120356");
+	}
+
+	public void testDeclareAtMethodRelationship_pr143924() {
+		runModelTest("declare @method relationship", "pr143924");
+	}
+
+	public void testNewIProgramElementMethodsForGenerics_pr141730() {
+		runModelTest("new iprogramelement methods for generics", "pr141730_2");
+	}
 
 	// if not filling in the model for classes contained in jar files then
 	// want to ensure that the relationship map is correct and has nodes
@@ -57,12 +75,12 @@ public class Model5Tests extends ModelTestCase {
 			// are added against the file node. Before change to using ipe's to create handles
 			// we also had the deow relationship, however, now we don't because this also
 			// uses findElementForType to find the targetNode which in the inpath case is null.
-			runModelTest("ensure inpath injar relationships are correct when not filling in model","pr141730_4");
+			runModelTest("ensure inpath injar relationships are correct when not filling in model", "pr141730_4");
 		} finally {
 			World.createInjarHierarchy = true;
 		}
 	}
-	
+
 	// ///////////////////////////////////////
 	public static Test suite() {
 		return XMLBasedAjcTestCase.loadSuite(Model5Tests.class);

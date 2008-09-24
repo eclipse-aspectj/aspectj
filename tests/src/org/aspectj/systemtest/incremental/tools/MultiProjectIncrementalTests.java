@@ -13,6 +13,7 @@ package org.aspectj.systemtest.incremental.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -143,6 +144,24 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkCompileWeaveCount("Annos", 3, 3);
 	}
 
+	public void testBrokenHandles_pr247742() {
+		String p = "BrokenHandles";
+		initialiseProject(p);
+		// alter(p, "inc1");
+		build(p);
+		// alter(p, "inc2");
+		// build(p);
+		dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
+
+		IProgramElement root = AsmManager.getDefault().getHierarchy().getRoot();
+		IProgramElement ipe = findElementAtLine(root, 4);
+		assertEquals("=BrokenHandles<p{GetInfo.java}GetInfo`declare warning", ipe.getHandleIdentifier());
+		ipe = findElementAtLine(root, 5);
+		assertEquals("=BrokenHandles<p{GetInfo.java}GetInfo`declare warning!2", ipe.getHandleIdentifier());
+		ipe = findElementAtLine(root, 6);
+		assertEquals("=BrokenHandles<p{GetInfo.java}GetInfo`declare parents!3", ipe.getHandleIdentifier());
+	}
+
 	public void testSpacewarHandles() {
 		// String p = "SpaceWar";
 		String p = "Simpler";
@@ -210,6 +229,24 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// 73).getHandleIdentifier());
 
 	}
+
+	// Testing code handles - should they included positional information? seems to be what AJDT wants but we
+	// only have the declaration start position in the programelement
+	// public void testHandlesForCodeElements() {
+	// String p = "CodeHandles";
+	// initialiseProject(p);
+	// addSourceFolderForSourceFile(p, getProjectRelativePath(p, "src/Handles.aj"), "src");
+	// build(p);
+	// IProgramElement root = AsmManager.getDefault().getHierarchy().getRoot();
+	// IProgramElement typeDecl = findElementAtLine(root, 3);
+	// assertEquals("=CodeHandles/src<spacewar*Handles.aj[C", typeDecl.getHandleIdentifier());
+	//
+	// IProgramElement code = findElementAtLine(root, 6);
+	// assertEquals("=CodeHandles/src<spacewar*Handles.aj[C~m?method-call(void spacewar.C.foo(int))", code.getHandleIdentifier());
+	// code = findElementAtLine(root, 7);
+	// assertEquals("=CodeHandles/src<spacewar*Handles.aj[C~m?method-call(void spacewar.C.foo(int))!2", code.getHandleIdentifier());
+	//
+	// }
 
 	private IProgramElement findElementAtLine(IProgramElement whereToLook, int line) {
 		if (whereToLook == null) {
@@ -317,7 +354,24 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(bug2);
 	}
 
-	// 
+	public void testAspectPath_pr247742_c16() throws IOException {
+		String bug = "AspectPathOne";
+		String bug2 = "AspectPathTwo";
+		addSourceFolderForSourceFile(bug2, getProjectRelativePath(bug2, "src/C.java"), "src");
+		initialiseProject(bug);
+		initialiseProject(bug2);
+		configureAspectPath(bug2, getProjectRelativePath(bug, "bin"));
+		build(bug);
+		build(bug2);
+//		dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
+//		PrintWriter pw = new PrintWriter(System.out);
+//		AsmManager.getDefault().dumprels(pw);
+//		pw.flush();
+		IProgramElement root = AsmManager.getDefault().getHierarchy().getRoot();
+		assertEquals("=AspectPathTwo/binaries<pkg(Asp.class}Asp&before", findElementAtLine(root, 5).getHandleIdentifier());
+		assertEquals("=AspectPathTwo/binaries<(Asp2.class}Asp2&before", findElementAtLine(root, 16).getHandleIdentifier());
+	}
+
 	// public void testAspectPath_pr242797_c41() {
 	// String bug = "pr242797_3";
 	// String bug2 = "pr242797_4";
