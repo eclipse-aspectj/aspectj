@@ -11,8 +11,6 @@
 === RELATIONSHIPS REPORT ========= After a batch build
 (targets=1) <{pr115607.java}pr115607`declare @type (annotates) <{pr115607.java[Simple
 (targets=1) <{pr115607.java[Simple (annotated by) <{pr115607.java}pr115607`declare @type
-(targets=1) {pr115607.java (annotates) {pr115607.java
-(targets=1) {pr115607.java (annotated by) {pr115607.java
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 import reference=1
@@ -20,7 +18,7 @@ aspect=1
 declare @type=1
 class=1
 annotation=1
-RelationshipMapSize=3
+RelationshipMapSize=2
 FileMapSize=1
 package=1
 java source file=2
