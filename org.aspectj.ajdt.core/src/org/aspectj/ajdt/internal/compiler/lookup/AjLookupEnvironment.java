@@ -56,7 +56,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 import org.aspectj.weaver.AnnotationAJ;
-import org.aspectj.weaver.AsmRelationshipProvider;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
@@ -76,19 +75,20 @@ import org.aspectj.weaver.patterns.DeclareParents;
 /**
  * Overrides the default eclipse LookupEnvironment for two purposes.
  * 
- * 1. To provide some additional phases to <code>completeTypeBindings</code> that weave declare parents and inter-type declarations
- * at the correct time.
+ * 1. To provide some additional phases to <code>completeTypeBindings</code>
+ * that weave declare parents and inter-type declarations at the correct time.
  * 
- * 2. To intercept the loading of new binary types to ensure the they will have declare parents and inter-type declarations woven
- * when appropriate.
+ * 2. To intercept the loading of new binary types to ensure the they will have
+ * declare parents and inter-type declarations woven when appropriate.
  * 
  * @author Jim Hugunin
  */
-public class AjLookupEnvironment extends LookupEnvironment implements AnonymousClassCreationListener {
+public class AjLookupEnvironment extends LookupEnvironment implements
+		AnonymousClassCreationListener {
 	public EclipseFactory factory = null;
 
 	// private boolean builtInterTypesAndPerClauses = false;
-	private List pendingTypesToWeave = new ArrayList();
+	private final List pendingTypesToWeave = new ArrayList();
 
 	// Q: What are dangerousInterfaces?
 	// A: An interface is considered dangerous if an ITD has been made upon it
@@ -114,12 +114,14 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	// interface then we put out an error message.
 
 	/**
-	 * interfaces targetted by ITDs that have to be implemented by accessing the topMostImplementor of the interface, yet the aspect
-	 * where the ITD originated is not in the world
+	 * interfaces targetted by ITDs that have to be implemented by accessing the
+	 * topMostImplementor of the interface, yet the aspect where the ITD
+	 * originated is not in the world
 	 */
-	private Map dangerousInterfaces = new HashMap();
+	private final Map dangerousInterfaces = new HashMap();
 
-	public AjLookupEnvironment(ITypeRequestor typeRequestor, CompilerOptions options, ProblemReporter problemReporter,
+	public AjLookupEnvironment(ITypeRequestor typeRequestor,
+			CompilerOptions options, ProblemReporter problemReporter,
 			INameEnvironment nameEnvironment) {
 		super(typeRequestor, options, problemReporter, nameEnvironment);
 	}
@@ -127,14 +129,17 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	// ??? duplicates some of super's code
 	public void completeTypeBindings() {
 		AsmManager.setCompletingTypeBindings(true);
-		ContextToken completeTypeBindingsToken = CompilationAndWeavingContext.enteringPhase(
-				CompilationAndWeavingContext.COMPLETING_TYPE_BINDINGS, "");
+		ContextToken completeTypeBindingsToken = CompilationAndWeavingContext
+				.enteringPhase(
+						CompilationAndWeavingContext.COMPLETING_TYPE_BINDINGS,
+						"");
 		// builtInterTypesAndPerClauses = false;
 		// pendingTypesToWeave = new ArrayList();
 		stepCompleted = BUILD_TYPE_HIERARCHY;
 
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
-			ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.CHECK_AND_SET_IMPORTS,
+			ContextToken tok = CompilationAndWeavingContext.enteringPhase(
+					CompilationAndWeavingContext.CHECK_AND_SET_IMPORTS,
 					units[i].compilationResult.fileName);
 			units[i].scope.checkAndSetImports();
 			CompilationAndWeavingContext.leavingPhase(tok);
@@ -142,7 +147,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		stepCompleted = CHECK_AND_SET_IMPORTS;
 
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
-			ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.CONNECTING_TYPE_HIERARCHY,
+			ContextToken tok = CompilationAndWeavingContext.enteringPhase(
+					CompilationAndWeavingContext.CONNECTING_TYPE_HIERARCHY,
 					units[i].compilationResult.fileName);
 			units[i].scope.connectTypeHierarchy();
 			CompilationAndWeavingContext.leavingPhase(tok);
@@ -150,7 +156,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		stepCompleted = CONNECT_TYPE_HIERARCHY;
 
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
-			ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.BUILDING_FIELDS_AND_METHODS,
+			ContextToken tok = CompilationAndWeavingContext.enteringPhase(
+					CompilationAndWeavingContext.BUILDING_FIELDS_AND_METHODS,
 					units[i].compilationResult.fileName);
 			// units[i].scope.checkParameterizedTypes(); do this check a little
 			// later, after ITDs applied to stbs
@@ -170,7 +177,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		// We won't find out about anonymous types until later though, so
 		// register to be
 		// told about them when they turn up.
-		AnonymousClassPublisher.aspectOf().setAnonymousClassCreationListener(this);
+		AnonymousClassPublisher.aspectOf().setAnonymousClassCreationListener(
+				this);
 
 		// need to build inter-type declarations for all AspectDeclarations at
 		// this point
@@ -187,7 +195,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		factory.getWorld().getCrosscuttingMembersSet().reset();
 		while (typesToProcess.size() > 0) {
 			// removes types from the list as they are processed...
-			collectAllITDsAndDeclares((SourceTypeBinding) typesToProcess.get(0), typesToProcess);
+			collectAllITDsAndDeclares(
+					(SourceTypeBinding) typesToProcess.get(0), typesToProcess);
 		}
 
 		factory.finishTypeMungers();
@@ -196,7 +205,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		Collection typeMungers = factory.getTypeMungers();
 
 		Collection declareParents = factory.getDeclareParents();
-		Collection declareAnnotationOnTypes = factory.getDeclareAnnotationOnTypes();
+		Collection declareAnnotationOnTypes = factory
+				.getDeclareAnnotationOnTypes();
 
 		doPendingWeaves();
 
@@ -222,7 +232,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		// we had the full list.
 		// 
 		// but these aren't common cases (he bravely said...)
-		boolean typeProcessingOrderIsImportant = declareParents.size() > 0 || declareAnnotationOnTypes.size() > 0; // DECAT
+		boolean typeProcessingOrderIsImportant = declareParents.size() > 0
+				|| declareAnnotationOnTypes.size() > 0; // DECAT
 
 		if (typeProcessingOrderIsImportant) {
 			typesToProcess = new ArrayList();
@@ -238,8 +249,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			while (typesToProcess.size() > 0) {
 				// A side effect of weaveIntertypes() is that the processed type
 				// is removed from the collection
-				weaveIntertypes(typesToProcess, (SourceTypeBinding) typesToProcess.get(0), typeMungers, declareParents,
-						declareAnnotationOnTypes);
+				weaveIntertypes(typesToProcess,
+						(SourceTypeBinding) typesToProcess.get(0), typeMungers,
+						declareParents, declareAnnotationOnTypes);
 			}
 
 		} else {
@@ -247,7 +259,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 				// System.err.println("Working on "+new
 				// String(units[i].getFileName()));
-				weaveInterTypeDeclarations(units[i].scope, typeMungers, declareParents, declareAnnotationOnTypes);
+				weaveInterTypeDeclarations(units[i].scope, typeMungers,
+						declareParents, declareAnnotationOnTypes);
 			}
 		}
 
@@ -258,8 +271,10 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			SourceTypeBinding[] b = units[i].scope.topLevelTypes;
 			for (int j = 0; j < b.length; j++) {
-				ContextToken tok = CompilationAndWeavingContext.enteringPhase(
-						CompilationAndWeavingContext.RESOLVING_POINTCUT_DECLARATIONS, b[j].sourceName);
+				ContextToken tok = CompilationAndWeavingContext
+						.enteringPhase(
+								CompilationAndWeavingContext.RESOLVING_POINTCUT_DECLARATIONS,
+								b[j].sourceName);
 				resolvePointcutDeclarations(b[j].scope);
 				CompilationAndWeavingContext.leavingPhase(tok);
 			}
@@ -268,8 +283,10 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			SourceTypeBinding[] b = units[i].scope.topLevelTypes;
 			for (int j = 0; j < b.length; j++) {
-				ContextToken tok = CompilationAndWeavingContext.enteringPhase(
-						CompilationAndWeavingContext.ADDING_DECLARE_WARNINGS_AND_ERRORS, b[j].sourceName);
+				ContextToken tok = CompilationAndWeavingContext
+						.enteringPhase(
+								CompilationAndWeavingContext.ADDING_DECLARE_WARNINGS_AND_ERRORS,
+								b[j].sourceName);
 				addAdviceLikeDeclares(b[j].scope);
 				CompilationAndWeavingContext.leavingPhase(tok);
 			}
@@ -316,7 +333,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	// new Integer(i+1),
 	// typeVariables[i].getDisplayName(),
 	// superType.getGenericType().getName());
-	// factory.getWorld().getMessageHandler().handleMessage(MessageUtil.error(msg
+	//factory.getWorld().getMessageHandler().handleMessage(MessageUtil.error(msg
 	// ,onType.getSourceLocation()));
 	// }
 	// }
@@ -333,21 +350,26 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		} else if (rb instanceof ParameterizedTypeBinding) {
 			// If its a PTB we need to pull the SourceTypeBinding out of it.
 			ParameterizedTypeBinding ptb = (ParameterizedTypeBinding) rb;
-			if (ptb.type instanceof SourceTypeBinding && yetToProcess.contains(ptb.type)) {
-				collectAllITDsAndDeclares((SourceTypeBinding) ptb.type, yetToProcess);
+			if (ptb.type instanceof SourceTypeBinding
+					&& yetToProcess.contains(ptb.type)) {
+				collectAllITDsAndDeclares((SourceTypeBinding) ptb.type,
+						yetToProcess);
 			}
 		}
 	}
 
 	/**
-	 * Find all the ITDs and Declares, but it is important we do this from the supertypes down to the subtypes.
+	 * Find all the ITDs and Declares, but it is important we do this from the
+	 * supertypes down to the subtypes.
 	 * 
 	 * @param sourceType
 	 * @param yetToProcess
 	 */
-	private void collectAllITDsAndDeclares(SourceTypeBinding sourceType, Collection yetToProcess) {
+	private void collectAllITDsAndDeclares(SourceTypeBinding sourceType,
+			Collection yetToProcess) {
 		// Look at the supertype first
-		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.COLLECTING_ITDS_AND_DECLARES,
+		ContextToken tok = CompilationAndWeavingContext.enteringPhase(
+				CompilationAndWeavingContext.COLLECTING_ITDS_AND_DECLARES,
 				sourceType.sourceName);
 
 		yetToProcess.remove(sourceType);
@@ -368,40 +390,51 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	}
 
 	/**
-	 * Weave the parents and intertype decls into a given type. This method looks at the supertype and superinterfaces for the
-	 * specified type and recurses to weave those first if they are in the full list of types we are going to process during this
-	 * compile... it stops recursing the first time it hits a type we aren't going to process during this compile. This could cause
-	 * problems if you supply 'pieces' of a hierarchy, i.e. the bottom and the top, but not the middle - but what the hell are you
-	 * doing if you do that?
+	 * Weave the parents and intertype decls into a given type. This method
+	 * looks at the supertype and superinterfaces for the specified type and
+	 * recurses to weave those first if they are in the full list of types we
+	 * are going to process during this compile... it stops recursing the first
+	 * time it hits a type we aren't going to process during this compile. This
+	 * could cause problems if you supply 'pieces' of a hierarchy, i.e. the
+	 * bottom and the top, but not the middle - but what the hell are you doing
+	 * if you do that?
 	 */
-	private void weaveIntertypes(List typesToProcess, SourceTypeBinding typeToWeave, Collection typeMungers,
+	private void weaveIntertypes(List typesToProcess,
+			SourceTypeBinding typeToWeave, Collection typeMungers,
 			Collection declareParents, Collection declareAnnotationOnTypes) {
 		// Look at the supertype first
 		ReferenceBinding superType = typeToWeave.superclass();
-		if (typesToProcess.contains(superType) && superType instanceof SourceTypeBinding) {
+		if (typesToProcess.contains(superType)
+				&& superType instanceof SourceTypeBinding) {
 			// System.err.println("Recursing to supertype "+new
 			// String(superType.getFileName()));
-			weaveIntertypes(typesToProcess, (SourceTypeBinding) superType, typeMungers, declareParents, declareAnnotationOnTypes);
+			weaveIntertypes(typesToProcess, (SourceTypeBinding) superType,
+					typeMungers, declareParents, declareAnnotationOnTypes);
 		}
 		// Then look at the superinterface list
 		ReferenceBinding[] interfaceTypes = typeToWeave.superInterfaces();
 		for (int i = 0; i < interfaceTypes.length; i++) {
 			ReferenceBinding binding = interfaceTypes[i];
-			if (typesToProcess.contains(binding) && binding instanceof SourceTypeBinding) {
+			if (typesToProcess.contains(binding)
+					&& binding instanceof SourceTypeBinding) {
 				// System.err.println("Recursing to superinterface "+new
 				// String(binding.getFileName()));
-				weaveIntertypes(typesToProcess, (SourceTypeBinding) binding, typeMungers, declareParents, declareAnnotationOnTypes);
+				weaveIntertypes(typesToProcess, (SourceTypeBinding) binding,
+						typeMungers, declareParents, declareAnnotationOnTypes);
 			}
 		}
-		weaveInterTypeDeclarations(typeToWeave, typeMungers, declareParents, declareAnnotationOnTypes, false);
+		weaveInterTypeDeclarations(typeToWeave, typeMungers, declareParents,
+				declareAnnotationOnTypes, false);
 		typesToProcess.remove(typeToWeave);
 	}
 
 	private void doPendingWeaves() {
 		for (Iterator i = pendingTypesToWeave.iterator(); i.hasNext();) {
 			SourceTypeBinding t = (SourceTypeBinding) i.next();
-			ContextToken tok = CompilationAndWeavingContext.enteringPhase(
-					CompilationAndWeavingContext.WEAVING_INTERTYPE_DECLARATIONS, t.sourceName);
+			ContextToken tok = CompilationAndWeavingContext
+					.enteringPhase(
+							CompilationAndWeavingContext.WEAVING_INTERTYPE_DECLARATIONS,
+							t.sourceName);
 			weaveInterTypeDeclarations(t);
 			CompilationAndWeavingContext.leavingPhase(tok);
 		}
@@ -413,7 +446,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 
 		if (dec instanceof AspectDeclaration) {
 			ResolvedType typeX = factory.fromEclipse(dec.binding);
-			factory.getWorld().getCrosscuttingMembersSet().addAdviceLikeDeclares(typeX);
+			factory.getWorld().getCrosscuttingMembersSet()
+					.addAdviceLikeDeclares(typeX);
 		}
 
 		SourceTypeBinding sourceType = s.referenceContext.binding;
@@ -428,10 +462,13 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 
 		if (dec instanceof AspectDeclaration) {
 			ResolvedType typeX = factory.fromEclipse(dec.binding);
-			factory.getWorld().getCrosscuttingMembersSet().addOrReplaceAspect(typeX, false);
+			factory.getWorld().getCrosscuttingMembersSet().addOrReplaceAspect(
+					typeX, false);
 
-			if (typeX.getSuperclass().isAspect() && !typeX.getSuperclass().isExposedToWeaver()) {
-				factory.getWorld().getCrosscuttingMembersSet().addOrReplaceAspect(typeX.getSuperclass(), false);
+			if (typeX.getSuperclass().isAspect()
+					&& !typeX.getSuperclass().isExposedToWeaver()) {
+				factory.getWorld().getCrosscuttingMembersSet()
+						.addOrReplaceAspect(typeX.getSuperclass(), false);
 			}
 		}
 
@@ -461,9 +498,12 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			}
 		}
 
-		if (hasPointcuts || dec instanceof AspectDeclaration || couldBeAnnotationStyleAspectDeclaration(dec)) {
-			ReferenceType name = (ReferenceType) factory.fromEclipse(sourceType);
-			EclipseSourceType eclipseSourceType = (EclipseSourceType) name.getDelegate();
+		if (hasPointcuts || dec instanceof AspectDeclaration
+				|| couldBeAnnotationStyleAspectDeclaration(dec)) {
+			ReferenceType name = (ReferenceType) factory
+					.fromEclipse(sourceType);
+			EclipseSourceType eclipseSourceType = (EclipseSourceType) name
+					.getDelegate();
 			eclipseSourceType.checkPointcutDeclarations();
 		}
 
@@ -474,10 +514,12 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	}
 
 	/**
-	 * Return true if the declaration has @Aspect annotation. Called 'couldBe' rather than 'is' because someone else may have
-	 * defined an annotation called Aspect - we can't verify the full name (including package name) because it may not have been
-	 * resolved just yet and rather going through expensive resolution when we dont have to, this gives us a cheap check that tells
-	 * us whether to bother.
+	 * Return true if the declaration has @Aspect annotation. Called 'couldBe'
+	 * rather than 'is' because someone else may have defined an annotation
+	 * called Aspect - we can't verify the full name (including package name)
+	 * because it may not have been resolved just yet and rather going through
+	 * expensive resolution when we dont have to, this gives us a cheap check
+	 * that tells us whether to bother.
 	 */
 	private boolean couldBeAnnotationStyleAspectDeclaration(TypeDeclaration dec) {
 		Annotation[] annotations = dec.annotations;
@@ -502,8 +544,11 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		if (sourceType.superclass != null) {
 			ResolvedType parent = factory.fromEclipse(sourceType.superclass);
 			if (parent.isAspect() && !isAspect(dec)) {
-				factory.showMessage(IMessage.ERROR, "class \'" + new String(sourceType.sourceName) + "\' can not extend aspect \'"
-						+ parent.getName() + "\'", factory.fromEclipse(sourceType).getSourceLocation(), null);
+				factory.showMessage(IMessage.ERROR, "class \'"
+						+ new String(sourceType.sourceName)
+						+ "\' can not extend aspect \'" + parent.getName()
+						+ "\'", factory.fromEclipse(sourceType)
+						.getSourceLocation(), null);
 			}
 		}
 
@@ -522,21 +567,27 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			for (int i = 0; i < decl.annotations.length; i++) {
 				Annotation ann = decl.annotations[i];
 				if (ann.type instanceof SingleTypeReference) {
-					if (CharOperation.equals("Aspect".toCharArray(), ((SingleTypeReference) ann.type).token))
+					if (CharOperation.equals("Aspect".toCharArray(),
+							((SingleTypeReference) ann.type).token))
 						return true;
 				} else if (ann.type instanceof QualifiedTypeReference) {
 					QualifiedTypeReference qtr = (QualifiedTypeReference) ann.type;
 					if (qtr.tokens.length != 5)
 						return false;
-					if (!CharOperation.equals("org".toCharArray(), qtr.tokens[0]))
+					if (!CharOperation.equals("org".toCharArray(),
+							qtr.tokens[0]))
 						return false;
-					if (!CharOperation.equals("aspectj".toCharArray(), qtr.tokens[1]))
+					if (!CharOperation.equals("aspectj".toCharArray(),
+							qtr.tokens[1]))
 						return false;
-					if (!CharOperation.equals("lang".toCharArray(), qtr.tokens[2]))
+					if (!CharOperation.equals("lang".toCharArray(),
+							qtr.tokens[2]))
 						return false;
-					if (!CharOperation.equals("annotation".toCharArray(), qtr.tokens[3]))
+					if (!CharOperation.equals("annotation".toCharArray(),
+							qtr.tokens[3]))
 						return false;
-					if (!CharOperation.equals("Aspect".toCharArray(), qtr.tokens[4]))
+					if (!CharOperation.equals("Aspect".toCharArray(),
+							qtr.tokens[4]))
 						return false;
 					return true;
 				}
@@ -545,10 +596,12 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		return false;
 	}
 
-	private void weaveInterTypeDeclarations(CompilationUnitScope unit, Collection typeMungers, Collection declareParents,
+	private void weaveInterTypeDeclarations(CompilationUnitScope unit,
+			Collection typeMungers, Collection declareParents,
 			Collection declareAnnotationOnTypes) {
 		for (int i = 0, length = unit.topLevelTypes.length; i < length; i++) {
-			weaveInterTypeDeclarations(unit.topLevelTypes[i], typeMungers, declareParents, declareAnnotationOnTypes, false);
+			weaveInterTypeDeclarations(unit.topLevelTypes[i], typeMungers,
+					declareParents, declareAnnotationOnTypes, false);
 		}
 	}
 
@@ -557,15 +610,18 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			if (!pendingTypesToWeave.contains(sourceType))
 				pendingTypesToWeave.add(sourceType);
 		} else {
-			weaveInterTypeDeclarations(sourceType, factory.getTypeMungers(), factory.getDeclareParents(), factory
-					.getDeclareAnnotationOnTypes(), true);
+			weaveInterTypeDeclarations(sourceType, factory.getTypeMungers(),
+					factory.getDeclareParents(), factory
+							.getDeclareAnnotationOnTypes(), true);
 		}
 	}
 
-	private void weaveInterTypeDeclarations(SourceTypeBinding sourceType, Collection typeMungers, Collection declareParents,
+	private void weaveInterTypeDeclarations(SourceTypeBinding sourceType,
+			Collection typeMungers, Collection declareParents,
 			Collection declareAnnotationOnTypes, boolean skipInners) {
 
-		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING_INTERTYPE_DECLARATIONS,
+		ContextToken tok = CompilationAndWeavingContext.enteringPhase(
+				CompilationAndWeavingContext.WEAVING_INTERTYPE_DECLARATIONS,
 				sourceType.sourceName);
 
 		ResolvedType onType = factory.fromEclipse(sourceType);
@@ -596,11 +652,13 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		// Check if the type we are looking at is the topMostImplementor of a
 		// dangerous interface -
 		// report a problem if it is.
-		for (Iterator i = dangerousInterfaces.entrySet().iterator(); i.hasNext();) {
+		for (Iterator i = dangerousInterfaces.entrySet().iterator(); i
+				.hasNext();) {
 			Map.Entry entry = (Map.Entry) i.next();
 			ResolvedType interfaceType = (ResolvedType) entry.getKey();
 			if (onType.isTopmostImplementor(interfaceType)) {
-				factory.showMessage(IMessage.ERROR, onType + ": " + entry.getValue(), onType.getSourceLocation(), null);
+				factory.showMessage(IMessage.ERROR, onType + ": "
+						+ entry.getValue(), onType.getSourceLocation(), null);
 			}
 		}
 
@@ -650,7 +708,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		}
 
 		// now lets loop over and over until we have done all we can
-		while ((anyNewAnnotations || anyNewParents) && (!decpToRepeat.isEmpty() || !decaToRepeat.isEmpty())) {
+		while ((anyNewAnnotations || anyNewParents)
+				&& (!decpToRepeat.isEmpty() || !decaToRepeat.isEmpty())) {
 			anyNewParents = anyNewAnnotations = false;
 			List forRemoval = new ArrayList();
 			for (Iterator i = decpToRepeat.iterator(); i.hasNext();) {
@@ -666,7 +725,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			forRemoval = new ArrayList();
 			for (Iterator i = declareAnnotationOnTypes.iterator(); i.hasNext();) {
 				DeclareAnnotation deca = (DeclareAnnotation) i.next();
-				boolean didSomething = doDeclareAnnotations(deca, sourceType, false);
+				boolean didSomething = doDeclareAnnotations(deca, sourceType,
+						false);
 				if (didSomething) {
 					anyNewAnnotations = true;
 					forRemoval.add(deca);
@@ -679,8 +739,13 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			EclipseTypeMunger munger = (EclipseTypeMunger) i.next();
 			if (munger.matches(onType)) {
 				if (needOldStyleWarning) {
-					factory.showMessage(IMessage.WARNING, "The class for " + onType
-							+ " should be recompiled with ajc-1.1.1 for best results", onType.getSourceLocation(), null);
+					factory
+							.showMessage(
+									IMessage.WARNING,
+									"The class for "
+											+ onType
+											+ " should be recompiled with ajc-1.1.1 for best results",
+									onType.getSourceLocation(), null);
 					needOldStyleWarning = false;
 				}
 				onType.addInterTypeMunger(munger);
@@ -718,30 +783,38 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		ReferenceBinding[] memberTypes = sourceType.memberTypes;
 		for (int i = 0, length = memberTypes.length; i < length; i++) {
 			if (memberTypes[i] instanceof SourceTypeBinding) {
-				weaveInterTypeDeclarations((SourceTypeBinding) memberTypes[i], typeMungers, declareParents,
-						declareAnnotationOnTypes, false);
+				weaveInterTypeDeclarations((SourceTypeBinding) memberTypes[i],
+						typeMungers, declareParents, declareAnnotationOnTypes,
+						false);
 			}
 		}
 		CompilationAndWeavingContext.leavingPhase(tok);
 	}
 
 	/**
-	 * Called when we discover we are weaving intertype declarations on some type that has an existing 'WeaverStateInfo' object -
-	 * this is typically some previously woven type that has been passed on the inpath.
+	 * Called when we discover we are weaving intertype declarations on some
+	 * type that has an existing 'WeaverStateInfo' object - this is typically
+	 * some previously woven type that has been passed on the inpath.
 	 * 
-	 * sourceType and onType are the 'same type' - the former is the 'Eclipse' version and the latter is the 'Weaver' version.
+	 * sourceType and onType are the 'same type' - the former is the 'Eclipse'
+	 * version and the latter is the 'Weaver' version.
 	 */
-	private void processTypeMungersFromExistingWeaverState(SourceTypeBinding sourceType, ResolvedType onType) {
-		Collection previouslyAppliedMungers = onType.getWeaverState().getTypeMungers(onType);
+	private void processTypeMungersFromExistingWeaverState(
+			SourceTypeBinding sourceType, ResolvedType onType) {
+		Collection previouslyAppliedMungers = onType.getWeaverState()
+				.getTypeMungers(onType);
 
 		for (Iterator i = previouslyAppliedMungers.iterator(); i.hasNext();) {
 			ConcreteTypeMunger m = (ConcreteTypeMunger) i.next();
 			EclipseTypeMunger munger = factory.makeEclipseTypeMunger(m);
 			if (munger.munge(sourceType, onType)) {
-				if (onType.isInterface() && munger.getMunger().needsAccessToTopmostImplementor()) {
-					if (!onType.getWorld().getCrosscuttingMembersSet().containsAspect(munger.getAspectType())) {
-						dangerousInterfaces
-								.put(onType, "implementors of " + onType + " must be woven by " + munger.getAspectType());
+				if (onType.isInterface()
+						&& munger.getMunger().needsAccessToTopmostImplementor()) {
+					if (!onType.getWorld().getCrosscuttingMembersSet()
+							.containsAspect(munger.getAspectType())) {
+						dangerousInterfaces.put(onType, "implementors of "
+								+ onType + " must be woven by "
+								+ munger.getAspectType());
 					}
 				}
 			}
@@ -749,29 +822,37 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		}
 	}
 
-	private boolean doDeclareParents(DeclareParents declareParents, SourceTypeBinding sourceType) {
-		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_DECLARE_PARENTS,
+	private boolean doDeclareParents(DeclareParents declareParents,
+			SourceTypeBinding sourceType) {
+		ContextToken tok = CompilationAndWeavingContext.enteringPhase(
+				CompilationAndWeavingContext.PROCESSING_DECLARE_PARENTS,
 				sourceType.sourceName);
 		ResolvedType resolvedSourceType = factory.fromEclipse(sourceType);
-		List newParents = declareParents.findMatchingNewParents(resolvedSourceType, false);
+		List newParents = declareParents.findMatchingNewParents(
+				resolvedSourceType, false);
 		if (!newParents.isEmpty()) {
 			for (Iterator i = newParents.iterator(); i.hasNext();) {
 				ResolvedType parent = (ResolvedType) i.next();
 				if (dangerousInterfaces.containsKey(parent)) {
 					ResolvedType onType = factory.fromEclipse(sourceType);
-					factory.showMessage(IMessage.ERROR, onType + ": " + dangerousInterfaces.get(parent),
-							onType.getSourceLocation(), null);
+					factory.showMessage(IMessage.ERROR, onType + ": "
+							+ dangerousInterfaces.get(parent), onType
+							.getSourceLocation(), null);
 				}
 				if (Modifier.isFinal(parent.getModifiers())) {
-					factory.showMessage(IMessage.ERROR, "cannot extend final class " + parent.getClassName(), declareParents
-							.getSourceLocation(), null);
+					factory.showMessage(IMessage.ERROR,
+							"cannot extend final class "
+									+ parent.getClassName(), declareParents
+									.getSourceLocation(), null);
 				} else {
 					// do not actually do it if the type isn't exposed - this
 					// will correctly reported as a problem elsewhere
 					if (!resolvedSourceType.isExposedToWeaver())
 						return false;
-					AsmRelationshipProvider.getDefault().addDeclareParentsRelationship(declareParents.getSourceLocation(),
-							factory.fromEclipse(sourceType), newParents);
+					// AsmRelationshipProvider.getDefault().
+					// addDeclareParentsRelationship
+					// (declareParents.getSourceLocation(),
+					// factory.fromEclipse(sourceType), newParents);
 					addParent(sourceType, parent);
 				}
 			}
@@ -814,14 +895,16 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		return sb.toString();
 	}
 
-	private boolean doDeclareAnnotations(DeclareAnnotation decA, SourceTypeBinding sourceType, boolean reportProblems) {
+	private boolean doDeclareAnnotations(DeclareAnnotation decA,
+			SourceTypeBinding sourceType, boolean reportProblems) {
 		ResolvedType rtx = factory.fromEclipse(sourceType);
 		if (!decA.matches(rtx))
 			return false;
 		if (!rtx.isExposedToWeaver())
 			return false;
 
-		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_DECLARE_ANNOTATIONS,
+		ContextToken tok = CompilationAndWeavingContext.enteringPhase(
+				CompilationAndWeavingContext.PROCESSING_DECLARE_ANNOTATIONS,
 				sourceType.sourceName);
 
 		// Get the annotation specified in the declare
@@ -872,7 +955,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			if (decaMethod != null) { // could assert this ...
 				AnnotationAJ[] axs = decaMethod.getAnnotations();
 				toAdd = new Annotation[1];
-				toAdd[0] = createAnnotationFromBcelAnnotation(axs[0], decaMethod.getSourceLocation().getOffset(), factory);
+				toAdd[0] = createAnnotationFromBcelAnnotation(axs[0],
+						decaMethod.getSourceLocation().getOffset(), factory);
 				// BUG BUG BUG - We dont test these abits are correct, in fact
 				// we'll be very lucky if they are.
 				// What does that mean? It means on an incremental compile you
@@ -884,10 +968,12 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		} else {
 			// much nicer, its a real SourceTypeBinding so we can stay in
 			// eclipse land
-			MethodBinding[] mbs = stb.getMethods(decA.getAnnotationMethod().toCharArray());
+			MethodBinding[] mbs = stb.getMethods(decA.getAnnotationMethod()
+					.toCharArray());
 			abits = mbs[0].getAnnotationTagBits(); // ensure resolved
 			TypeDeclaration typeDecl = ((SourceTypeBinding) mbs[0].declaringClass).scope.referenceContext;
-			AbstractMethodDeclaration methodDecl = typeDecl.declarationOf(mbs[0]);
+			AbstractMethodDeclaration methodDecl = typeDecl
+					.declarationOf(mbs[0]);
 			toAdd = methodDecl.annotations; // this is what to add
 			toAdd[0] = createAnnotationCopy(toAdd[0]);
 			if (toAdd[0].resolvedType != null) // pr148536
@@ -901,7 +987,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			ResolvedType theTargetType = factory.fromEclipse(sourceType);
 			TypeBinding theAnnotationType = toAdd[0].resolvedType;
 			String sig = new String(theAnnotationType.signature());
-			UnresolvedType bcelAnnotationType = UnresolvedType.forSignature(sig);
+			UnresolvedType bcelAnnotationType = UnresolvedType
+					.forSignature(sig);
 			String name = bcelAnnotationType.getName();
 			if (theTargetType.hasAnnotation(bcelAnnotationType)) {
 				CompilationAndWeavingContext.leavingPhase(tok);
@@ -920,16 +1007,23 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 
 					if (reportProblems) {
 						if (decA.isExactPattern()) {
-							factory.showMessage(IMessage.ERROR, WeaverMessages.format(
-									WeaverMessages.INCORRECT_TARGET_FOR_DECLARE_ANNOTATION, rtx.getName(), toAdd[0].type,
-									stringifyTargets(abits)), decA.getSourceLocation(), null);
+							factory
+									.showMessage(
+											IMessage.ERROR,
+											WeaverMessages
+													.format(
+															WeaverMessages.INCORRECT_TARGET_FOR_DECLARE_ANNOTATION,
+															rtx.getName(),
+															toAdd[0].type,
+															stringifyTargets(abits)),
+											decA.getSourceLocation(), null);
 						}
 						// dont put out the lint - the weaving process will do
 						// that
 						// else {
 						// if (factory.getWorld().getLint().
 						// invalidTargetForAnnotation.isEnabled()) {
-						// factory.getWorld().getLint().invalidTargetForAnnotation
+						//factory.getWorld().getLint().invalidTargetForAnnotation
 						// .signal(new
 						// String[]{rtx.getName(),toAdd[0].type.toString(),
 						// stringifyTargets
@@ -945,8 +1039,10 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				return false;
 			}
 
-			theTargetType.addAnnotation(new BcelAnnotation(new FakeAnnotation(name, sig,
-					(abits & TagBits.AnnotationRuntimeRetention) != 0), factory.getWorld()));
+			theTargetType.addAnnotation(new BcelAnnotation(new FakeAnnotation(
+					name, sig,
+					(abits & TagBits.AnnotationRuntimeRetention) != 0), factory
+					.getWorld()));
 			CompilationAndWeavingContext.leavingPhase(tok);
 			return true;
 		}
@@ -955,7 +1051,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		if (currentAnnotations != null)
 			for (int i = 0; i < currentAnnotations.length; i++) {
 				Annotation annotation = currentAnnotations[i];
-				String a = CharOperation.toString(annotation.type.getTypeName());
+				String a = CharOperation
+						.toString(annotation.type.getTypeName());
 				String b = CharOperation.toString(toAdd[0].type.getTypeName());
 				// FIXME asc we have a lint for attempting to add an annotation
 				// twice to a method,
@@ -981,9 +1078,16 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 
 				if (reportProblems) {
 					if (decA.isExactPattern()) {
-						factory.showMessage(IMessage.ERROR, WeaverMessages.format(
-								WeaverMessages.INCORRECT_TARGET_FOR_DECLARE_ANNOTATION, rtx.getName(), toAdd[0].type,
-								stringifyTargets(abits)), decA.getSourceLocation(), null);
+						factory
+								.showMessage(
+										IMessage.ERROR,
+										WeaverMessages
+												.format(
+														WeaverMessages.INCORRECT_TARGET_FOR_DECLARE_ANNOTATION,
+														rtx.getName(),
+														toAdd[0].type,
+														stringifyTargets(abits)),
+										decA.getSourceLocation(), null);
 					}
 					// dont put out the lint - the weaving process will do that
 					// else {
@@ -1008,9 +1112,11 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		// first time it is called for a type)
 		sourceType.scope.referenceContext.rememberAnnotations();
 
-		AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decA.getSourceLocation(), rtx.getSourceLocation());
+		//AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(
+		// decA.getSourceLocation(), rtx.getSourceLocation());
 		Annotation abefore[] = sourceType.scope.referenceContext.annotations;
-		Annotation[] newset = new Annotation[toAdd.length + (abefore == null ? 0 : abefore.length)];
+		Annotation[] newset = new Annotation[toAdd.length
+				+ (abefore == null ? 0 : abefore.length)];
 		System.arraycopy(toAdd, 0, newset, 0, toAdd.length);
 		if (abefore != null) {
 			System.arraycopy(abefore, 0, newset, toAdd.length, abefore.length);
@@ -1021,16 +1127,20 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	}
 
 	/**
-	 * Transform an annotation from its AJ form to an eclipse form. We *DONT* care about the values of the annotation. that is
-	 * because it is only being stuck on a type during type completion to allow for other constructs (decps, decas) that might be
-	 * looking for it - when the class actually gets to disk it wont have this new annotation on it and during weave time we will do
-	 * the right thing copying across values too.
+	 * Transform an annotation from its AJ form to an eclipse form. We *DONT*
+	 * care about the values of the annotation. that is because it is only being
+	 * stuck on a type during type completion to allow for other constructs
+	 * (decps, decas) that might be looking for it - when the class actually
+	 * gets to disk it wont have this new annotation on it and during weave time
+	 * we will do the right thing copying across values too.
 	 */
-	private static Annotation createAnnotationFromBcelAnnotation(AnnotationAJ annX, int pos, EclipseFactory factory) {
+	private static Annotation createAnnotationFromBcelAnnotation(
+			AnnotationAJ annX, int pos, EclipseFactory factory) {
 		String name = annX.getTypeName();
 		TypeBinding tb = factory.makeTypeBinding(annX.getType());
 		// String theName = annX.getSignature().getBaseName();
-		char[][] typeName = CharOperation.splitOn('.', name.replace('$', '.').toCharArray()); // pr149293 - not bulletproof...
+		char[][] typeName = CharOperation.splitOn('.', name.replace('$', '.')
+				.toCharArray()); // pr149293 - not bulletproof...
 		long[] positions = new long[typeName.length];
 		for (int i = 0; i < positions.length; i++)
 			positions[i] = pos;
@@ -1051,8 +1161,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	}
 
 	/**
-	 * Create a copy of an annotation, not deep but deep enough so we don't copy across fields that will get us into trouble like
-	 * 'recipient'
+	 * Create a copy of an annotation, not deep but deep enough so we don't copy
+	 * across fields that will get us into trouble like 'recipient'
 	 */
 	private static Annotation createAnnotationCopy(Annotation ann) {
 		NormalAnnotation ann2 = new NormalAnnotation(ann.type, ann.sourceStart);
@@ -1086,12 +1196,15 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		// return ann;
 	}
 
-	private boolean isAnnotationTargettingSomethingOtherThanAnnotationOrNormal(long abits) {
+	private boolean isAnnotationTargettingSomethingOtherThanAnnotationOrNormal(
+			long abits) {
 		return (abits & (TagBits.AnnotationForAnnotationType | TagBits.AnnotationForType)) == 0;
 	}
 
-	private void reportDeclareParentsMessage(WeaveMessage.WeaveMessageKind wmk, SourceTypeBinding sourceType, ResolvedType parent) {
-		if (!factory.getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
+	private void reportDeclareParentsMessage(WeaveMessage.WeaveMessageKind wmk,
+			SourceTypeBinding sourceType, ResolvedType parent) {
+		if (!factory.getWorld().getMessageHandler().isIgnoring(
+				IMessage.WEAVEINFO)) {
 			String filename = new String(sourceType.getFileName());
 
 			int takefrom = filename.lastIndexOf('/');
@@ -1100,8 +1213,12 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			filename = filename.substring(takefrom + 1);
 
 			factory.getWorld().getMessageHandler().handleMessage(
-					WeaveMessage.constructWeavingMessage(wmk, new String[] { CharOperation.toString(sourceType.compoundName),
-							filename, parent.getClassName(), getShortname(parent.getSourceLocation().getSourceFile().getPath()) }));
+					WeaveMessage.constructWeavingMessage(wmk, new String[] {
+							CharOperation.toString(sourceType.compoundName),
+							filename,
+							parent.getClassName(),
+							getShortname(parent.getSourceLocation()
+									.getSourceFile().getPath()) }));
 		}
 	}
 
@@ -1114,7 +1231,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	}
 
 	private void addParent(SourceTypeBinding sourceType, ResolvedType parent) {
-		ReferenceBinding parentBinding = (ReferenceBinding) factory.makeTypeBinding(parent);
+		ReferenceBinding parentBinding = (ReferenceBinding) factory
+				.makeTypeBinding(parent);
 		if (parentBinding == null)
 			return; // The parent is missing, it will be reported elsewhere.
 		sourceType.rememberTypeHierarchy();
@@ -1169,30 +1287,37 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 
 	public void warnOnAddedInterface(ResolvedType type, ResolvedType parent) {
 		World world = factory.getWorld();
-		ResolvedType serializable = world.getCoreType(UnresolvedType.SERIALIZABLE);
-		if (serializable.isAssignableFrom(type) && !serializable.isAssignableFrom(parent)
+		ResolvedType serializable = world
+				.getCoreType(UnresolvedType.SERIALIZABLE);
+		if (serializable.isAssignableFrom(type)
+				&& !serializable.isAssignableFrom(parent)
 				&& !LazyClassGen.hasSerialVersionUIDField(type)) {
-			world.getLint().needsSerialVersionUIDField.signal(new String[] { type.getName().toString(),
-					"added interface " + parent.getName().toString() }, null, null);
+			world.getLint().needsSerialVersionUIDField.signal(new String[] {
+					type.getName().toString(),
+					"added interface " + parent.getName().toString() }, null,
+					null);
 		}
 	}
 
-	private List pendingTypesToFinish = new ArrayList();
+	private final List pendingTypesToFinish = new ArrayList();
 	boolean inBinaryTypeCreationAndWeaving = false;
 	boolean processingTheQueue = false;
 
-	public BinaryTypeBinding createBinaryTypeFrom(IBinaryType binaryType, PackageBinding packageBinding,
-			boolean needFieldsAndMethods, AccessRestriction accessRestriction) {
+	public BinaryTypeBinding createBinaryTypeFrom(IBinaryType binaryType,
+			PackageBinding packageBinding, boolean needFieldsAndMethods,
+			AccessRestriction accessRestriction) {
 
 		if (inBinaryTypeCreationAndWeaving) {
-			BinaryTypeBinding ret = super.createBinaryTypeFrom(binaryType, packageBinding, needFieldsAndMethods, accessRestriction);
+			BinaryTypeBinding ret = super.createBinaryTypeFrom(binaryType,
+					packageBinding, needFieldsAndMethods, accessRestriction);
 			pendingTypesToFinish.add(ret);
 			return ret;
 		}
 
 		inBinaryTypeCreationAndWeaving = true;
 		try {
-			BinaryTypeBinding ret = super.createBinaryTypeFrom(binaryType, packageBinding, needFieldsAndMethods, accessRestriction);
+			BinaryTypeBinding ret = super.createBinaryTypeFrom(binaryType,
+					packageBinding, needFieldsAndMethods, accessRestriction);
 			factory.getWorld().validateType(factory.fromBinding(ret));
 			// if you need the bytes to pass to validate, here they
 			// are:((ClassFileReader)binaryType).getReferenceBytes()
@@ -1205,7 +1330,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			if (pendingTypesToFinish.size() > 0) {
 				processingTheQueue = true;
 				while (!pendingTypesToFinish.isEmpty()) {
-					BinaryTypeBinding nextVictim = (BinaryTypeBinding) pendingTypesToFinish.remove(0);
+					BinaryTypeBinding nextVictim = (BinaryTypeBinding) pendingTypesToFinish
+							.remove(0);
 					// During this call we may recurse into this method and add
 					// more entries to the pendingTypesToFinish list.
 					weaveInterTypeDeclarations(nextVictim);
@@ -1216,8 +1342,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	}
 
 	/**
-	 * Callback driven when the compiler detects an anonymous type during block resolution. We need to add it to the weaver so that
-	 * we don't trip up later.
+	 * Callback driven when the compiler detects an anonymous type during block
+	 * resolution. We need to add it to the weaver so that we don't trip up
+	 * later.
 	 * 
 	 * @param aBinding
 	 */
@@ -1301,7 +1428,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 // System.arraycopy(currentlyHas,0,newset,1,currentlyHas.length);
 // }
 // methodDecl.annotations = newset;
-// System.err.println("New set on "+CharOperation.charToString(sourceMb.selector)
+//System.err.println("New set on "+CharOperation.charToString(sourceMb.selector)
 // +" is "+newset);
 // } else
 // System.err.println("NO MATCH");
