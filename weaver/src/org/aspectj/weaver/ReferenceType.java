@@ -24,27 +24,21 @@ import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
 
 /**
- * A reference type represents some 'real' type, not a primitive, not an array -
- * but a real type, for example java.util.List. Each ReferenceType has a
- * delegate that is the underlying artifact - either an eclipse artifact or a
- * bcel artifact. If the type represents a raw type (i.e. there is a generic
- * form) then the genericType field is set to point to the generic type. If it
- * is for a parameterized type then the generic type is also set to point to the
- * generic form.
+ * A reference type represents some 'real' type, not a primitive, not an array - but a real type, for example java.util.List. Each
+ * ReferenceType has a delegate that is the underlying artifact - either an eclipse artifact or a bcel artifact. If the type
+ * represents a raw type (i.e. there is a generic form) then the genericType field is set to point to the generic type. If it is for
+ * a parameterized type then the generic type is also set to point to the generic form.
  */
 public class ReferenceType extends ResolvedType {
 
 	/**
-	 * For generic types, this list holds references to all the derived raw and
-	 * parameterized versions. We need this so that if the generic delegate is
-	 * swapped during incremental compilation, the delegate of the derivatives
-	 * is swapped also.
+	 * For generic types, this list holds references to all the derived raw and parameterized versions. We need this so that if the
+	 * generic delegate is swapped during incremental compilation, the delegate of the derivatives is swapped also.
 	 */
-	private List/* ReferenceType */derivativeTypes = new ArrayList();
+	private final List/* ReferenceType */derivativeTypes = new ArrayList();
 
 	/**
-	 * For parameterized types (or the raw type) - this field points to the
-	 * actual reference type from which they are derived.
+	 * For parameterized types (or the raw type) - this field points to the actual reference type from which they are derived.
 	 */
 	ReferenceType genericType = null;
 
@@ -78,10 +72,8 @@ public class ReferenceType extends ResolvedType {
 	/**
 	 * Constructor used when creating a parameterized type.
 	 */
-	public ReferenceType(ResolvedType theGenericType,
-			ResolvedType[] theParameters, World aWorld) {
-		super(makeParameterizedSignature(theGenericType, theParameters),
-				theGenericType.signatureErasure, aWorld);
+	public ReferenceType(ResolvedType theGenericType, ResolvedType[] theParameters, World aWorld) {
+		super(makeParameterizedSignature(theGenericType, theParameters), theGenericType.signatureErasure, aWorld);
 		ReferenceType genericReferenceType = (ReferenceType) theGenericType;
 		this.typeParameters = theParameters;
 		this.genericType = genericReferenceType;
@@ -150,6 +142,9 @@ public class ReferenceType extends ResolvedType {
 	}
 
 	public ResolvedType[] getAnnotationTypes() {
+		if (delegate == null) {
+			throw new BCException("Unexpected null delegate for type " + this.getName());
+		}
 		return delegate.getAnnotationTypes();
 	}
 
@@ -250,26 +245,22 @@ public class ReferenceType extends ResolvedType {
 			if (getTypeParameters().length == other.getTypeParameters().length) {
 				// there's a chance it can be done
 				ResolvedType[] myTypeParameters = getResolvedTypeParameters();
-				ResolvedType[] theirTypeParameters = other
-						.getResolvedTypeParameters();
+				ResolvedType[] theirTypeParameters = other.getResolvedTypeParameters();
 				for (int i = 0; i < myTypeParameters.length; i++) {
 					if (myTypeParameters[i] != theirTypeParameters[i]) {
 						// thin ice now... but List<String> may still be
 						// coerceable from e.g. List<T>
 						if (myTypeParameters[i].isGenericWildcard()) {
 							BoundedReferenceType wildcard = (BoundedReferenceType) myTypeParameters[i];
-							if (!wildcard
-									.canBeCoercedTo(theirTypeParameters[i]))
+							if (!wildcard.canBeCoercedTo(theirTypeParameters[i]))
 								return false;
-						} else if (myTypeParameters[i]
-								.isTypeVariableReference()) {
+						} else if (myTypeParameters[i].isTypeVariableReference()) {
 							TypeVariableReferenceType tvrt = (TypeVariableReferenceType) myTypeParameters[i];
 							TypeVariable tv = tvrt.getTypeVariable();
 							tv.resolve(world);
 							if (!tv.canBeBoundTo(theirTypeParameters[i]))
 								return false;
-						} else if (theirTypeParameters[i]
-								.isTypeVariableReference()) {
+						} else if (theirTypeParameters[i].isTypeVariableReference()) {
 							TypeVariableReferenceType tvrt = (TypeVariableReferenceType) theirTypeParameters[i];
 							TypeVariable tv = tvrt.getTypeVariable();
 							tv.resolve(world);
@@ -304,8 +295,7 @@ public class ReferenceType extends ResolvedType {
 		if (other.isPrimitiveType()) {
 			if (!world.isInJava5Mode())
 				return false;
-			if (ResolvedType.validBoxing.contains(this.getSignature()
-					+ other.getSignature()))
+			if (ResolvedType.validBoxing.contains(this.getSignature() + other.getSignature()))
 				return true;
 		}
 		if (this == other)
@@ -313,8 +303,7 @@ public class ReferenceType extends ResolvedType {
 		if (this.getSignature().equals(ResolvedType.OBJECT.getSignature()))
 			return true;
 
-		if ((this.isRawType() || this.isGenericType())
-				&& other.isParameterizedType()) {
+		if ((this.isRawType() || this.isGenericType()) && other.isParameterizedType()) {
 			if (isAssignableFrom((ResolvedType) other.getRawType()))
 				return true;
 		}
@@ -345,15 +334,13 @@ public class ReferenceType extends ResolvedType {
 				if (wildcardsAllTheWay && !other.isParameterizedType())
 					return true;
 				// we have to match by parameters one at a time
-				ResolvedType[] theirParameters = other
-						.getResolvedTypeParameters();
+				ResolvedType[] theirParameters = other.getResolvedTypeParameters();
 				boolean parametersAssignable = true;
 				if (myParameters.length == theirParameters.length) {
 					for (int i = 0; i < myParameters.length; i++) {
 						if (myParameters[i] == theirParameters[i])
 							continue;
-						if (myParameters[i].isAssignableFrom(
-								theirParameters[i], allowMissing)) {
+						if (myParameters[i].isAssignableFrom(theirParameters[i], allowMissing)) {
 							continue;
 						}
 						if (!myParameters[i].isGenericWildcard()) {
@@ -388,25 +375,21 @@ public class ReferenceType extends ResolvedType {
 			// /
 			// Object
 			// ;
-			TypeVariable aVar = ((TypeVariableReference) this)
-					.getTypeVariable();
+			TypeVariable aVar = ((TypeVariableReference) this).getTypeVariable();
 			return aVar.resolve(world).canBeBoundTo(other);
 		}
 
 		if (other.isTypeVariableReference()) {
 			TypeVariableReferenceType otherType = (TypeVariableReferenceType) other;
 			if (this instanceof TypeVariableReference) {
-				return ((TypeVariableReference) this).getTypeVariable()
-						.resolve(world).canBeBoundTo(
-								otherType.getTypeVariable().getFirstBound()
-										.resolve(world));// pr171952
+				return ((TypeVariableReference) this).getTypeVariable().resolve(world).canBeBoundTo(
+						otherType.getTypeVariable().getFirstBound().resolve(world));// pr171952
 				// return
 				// ((TypeVariableReference)this).getTypeVariable()==otherType
 				// .getTypeVariable();
 			} else {
 				// FIXME asc should this say canBeBoundTo??
-				return this.isAssignableFrom(otherType.getTypeVariable()
-						.getFirstBound().resolve(world));
+				return this.isAssignableFrom(otherType.getTypeVariable().getFirstBound().resolve(world));
 			}
 		}
 
@@ -446,8 +429,7 @@ public class ReferenceType extends ResolvedType {
 			ResolvedMember[] delegateFields = delegate.getDeclaredFields();
 			parameterizedFields = new ResolvedMember[delegateFields.length];
 			for (int i = 0; i < delegateFields.length; i++) {
-				parameterizedFields[i] = delegateFields[i].parameterizedWith(
-						getTypesForMemberParameterization(), this,
+				parameterizedFields[i] = delegateFields[i].parameterizedWith(getTypesForMemberParameterization(), this,
 						isParameterizedType());
 			}
 			return parameterizedFields;
@@ -457,16 +439,14 @@ public class ReferenceType extends ResolvedType {
 	}
 
 	/**
-	 * Find out from the generic signature the true signature of any interfaces
-	 * I implement. If I am parameterized, these may then need to be
-	 * parameterized before returning.
+	 * Find out from the generic signature the true signature of any interfaces I implement. If I am parameterized, these may then
+	 * need to be parameterized before returning.
 	 */
 	public ResolvedType[] getDeclaredInterfaces() {
 		if (parameterizedInterfaces != null)
 			return parameterizedInterfaces;
 		if (isParameterizedType()) {
-			ResolvedType[] delegateInterfaces = delegate
-					.getDeclaredInterfaces();
+			ResolvedType[] delegateInterfaces = delegate.getDeclaredInterfaces();
 			// UnresolvedType[] paramTypes =
 			// getTypesForMemberParameterization();
 			parameterizedInterfaces = new ResolvedType[delegateInterfaces.length];
@@ -476,17 +456,14 @@ public class ReferenceType extends ResolvedType {
 				// needs more or less than this type does. (pr124803/pr125080)
 
 				if (delegateInterfaces[i].isParameterizedType()) {
-					parameterizedInterfaces[i] = delegateInterfaces[i]
-							.parameterize(getMemberParameterizationMap())
-							.resolve(world);
+					parameterizedInterfaces[i] = delegateInterfaces[i].parameterize(getMemberParameterizationMap()).resolve(world);
 				} else {
 					parameterizedInterfaces[i] = delegateInterfaces[i];
 				}
 			}
 			return parameterizedInterfaces;
 		} else if (isRawType()) {
-			ResolvedType[] delegateInterfaces = delegate
-					.getDeclaredInterfaces();
+			ResolvedType[] delegateInterfaces = delegate.getDeclaredInterfaces();
 			UnresolvedType[] paramTypes = getTypesForMemberParameterization();
 			parameterizedInterfaces = new ResolvedType[delegateInterfaces.length];
 			for (int i = 0; i < parameterizedInterfaces.length; i++) {
@@ -494,15 +471,12 @@ public class ReferenceType extends ResolvedType {
 				if (parameterizedInterfaces[i].isGenericType()) {
 					// a generic supertype of a raw type is replaced by its raw
 					// equivalent
-					parameterizedInterfaces[i] = parameterizedInterfaces[i]
-							.getRawType().resolve(getWorld());
+					parameterizedInterfaces[i] = parameterizedInterfaces[i].getRawType().resolve(getWorld());
 				} else if (parameterizedInterfaces[i].isParameterizedType()) {
 					// a parameterized supertype collapses any type vars to
 					// their upper bounds
-					UnresolvedType[] toUseForParameterization = determineThoseTypesToUse(
-							parameterizedInterfaces[i], paramTypes);
-					parameterizedInterfaces[i] = parameterizedInterfaces[i]
-							.parameterizedWith(toUseForParameterization);
+					UnresolvedType[] toUseForParameterization = determineThoseTypesToUse(parameterizedInterfaces[i], paramTypes);
+					parameterizedInterfaces[i] = parameterizedInterfaces[i].parameterizedWith(toUseForParameterization);
 				}
 			}
 			return parameterizedInterfaces;
@@ -511,9 +485,8 @@ public class ReferenceType extends ResolvedType {
 	}
 
 	/**
-	 * Locates the named type variable in the list of those on this generic type
-	 * and returns the type parameter from the second list supplied. Returns
-	 * null if it can't be found
+	 * Locates the named type variable in the list of those on this generic type and returns the type parameter from the second list
+	 * supplied. Returns null if it can't be found
 	 */
 	// private UnresolvedType findTypeParameterInList(String name,
 	// TypeVariable[] tvarsOnThisGenericType, UnresolvedType[]
@@ -527,18 +500,15 @@ public class ReferenceType extends ResolvedType {
 	// return paramTypes[position];
 	// }
 	/**
-	 * It is possible this type has multiple type variables but the interface we
-	 * are about to parameterize only uses a subset - this method determines the
-	 * subset to use by looking at the type variable names used. For example:
-	 * <code>
+	 * It is possible this type has multiple type variables but the interface we are about to parameterize only uses a subset - this
+	 * method determines the subset to use by looking at the type variable names used. For example: <code>
 	 * class Foo<T extends String,E extends Number> implements SuperInterface<T> {}
 	 * </code> where <code>
 	 * interface SuperInterface<Z> {}
-	 * </code> In that example, a use of the 'Foo' raw type should
-	 * know that it implements the SuperInterface<String>.
+	 * </code> In that
+	 * example, a use of the 'Foo' raw type should know that it implements the SuperInterface<String>.
 	 */
-	private UnresolvedType[] determineThoseTypesToUse(
-			ResolvedType parameterizedInterface, UnresolvedType[] paramTypes) {
+	private UnresolvedType[] determineThoseTypesToUse(ResolvedType parameterizedInterface, UnresolvedType[] paramTypes) {
 		// What are the type parameters for the supertype?
 		UnresolvedType[] tParms = parameterizedInterface.getTypeParameters();
 		UnresolvedType[] retVal = new UnresolvedType[tParms.length];
@@ -573,9 +543,8 @@ public class ReferenceType extends ResolvedType {
 	}
 
 	/**
-	 * Returns the position within the set of type variables for this type for
-	 * the specified type variable name. Returns -1 if there is no type variable
-	 * with the specified name.
+	 * Returns the position within the set of type variables for this type for the specified type variable name. Returns -1 if there
+	 * is no type variable with the specified name.
 	 */
 	private int getRank(String tvname) {
 		TypeVariable[] thisTypesTVars = getGenericType().getTypeVariables();
@@ -595,8 +564,7 @@ public class ReferenceType extends ResolvedType {
 			UnresolvedType[] parameters = getTypesForMemberParameterization();
 			parameterizedMethods = new ResolvedMember[delegateMethods.length];
 			for (int i = 0; i < delegateMethods.length; i++) {
-				parameterizedMethods[i] = delegateMethods[i].parameterizedWith(
-						parameters, this, isParameterizedType());
+				parameterizedMethods[i] = delegateMethods[i].parameterizedWith(parameters, this, isParameterizedType());
 			}
 			return parameterizedMethods;
 		} else {
@@ -608,13 +576,11 @@ public class ReferenceType extends ResolvedType {
 		if (parameterizedPointcuts != null)
 			return parameterizedPointcuts;
 		if (isParameterizedType()) {
-			ResolvedMember[] delegatePointcuts = delegate
-					.getDeclaredPointcuts();
+			ResolvedMember[] delegatePointcuts = delegate.getDeclaredPointcuts();
 			parameterizedPointcuts = new ResolvedMember[delegatePointcuts.length];
 			for (int i = 0; i < delegatePointcuts.length; i++) {
-				parameterizedPointcuts[i] = delegatePointcuts[i]
-						.parameterizedWith(getTypesForMemberParameterization(),
-								this, isParameterizedType());
+				parameterizedPointcuts[i] = delegatePointcuts[i].parameterizedWith(getTypesForMemberParameterization(), this,
+						isParameterizedType());
 			}
 			return parameterizedPointcuts;
 		} else {
@@ -655,8 +621,7 @@ public class ReferenceType extends ResolvedType {
 		PerClause pclause = delegate.getPerClause();
 		if (isParameterizedType()) { // could cache the result here...
 			Map parameterizationMap = getAjMemberParameterizationMap();
-			pclause = (PerClause) pclause.parameterizeWith(parameterizationMap,
-					world);
+			pclause = (PerClause) pclause.parameterizeWith(parameterizationMap, world);
 		}
 		return pclause;
 	}
@@ -671,8 +636,7 @@ public class ReferenceType extends ResolvedType {
 			Map parameterizationMap = getAjMemberParameterizationMap();
 			for (Iterator iter = genericDeclares.iterator(); iter.hasNext();) {
 				Declare declareStatement = (Declare) iter.next();
-				parameterizedDeclares.add(declareStatement.parameterizeWith(
-						parameterizationMap, world));
+				parameterizedDeclares.add(declareStatement.parameterizeWith(parameterizationMap, world));
 			}
 			declares = parameterizedDeclares;
 		} else {
@@ -727,8 +691,7 @@ public class ReferenceType extends ResolvedType {
 			world.setTypeVariableLookupScope(null);
 		}
 		if (this.isParameterizedType() && ret.isParameterizedType()) {
-			ret = ret.parameterize(getMemberParameterizationMap()).resolve(
-					getWorld());
+			ret = ret.parameterize(getMemberParameterizationMap()).resolve(getWorld());
 		}
 		return ret;
 	}
@@ -740,11 +703,9 @@ public class ReferenceType extends ResolvedType {
 	public void setDelegate(ReferenceTypeDelegate delegate) {
 		// Don't copy from BcelObjectType to EclipseSourceType - the context may
 		// be tidied (result null'd) after previous weaving
-		if (this.delegate != null
-				&& !(this.delegate instanceof BcelObjectType)
+		if (this.delegate != null && !(this.delegate instanceof BcelObjectType)
 				&& this.delegate.getSourceContext() != SourceContextImpl.UNKNOWN_SOURCE_CONTEXT)
-			((AbstractReferenceTypeDelegate) delegate)
-					.setSourceContext(this.delegate.getSourceContext());
+			((AbstractReferenceTypeDelegate) delegate).setSourceContext(this.delegate.getSourceContext());
 		this.delegate = delegate;
 		for (Iterator it = this.derivativeTypes.iterator(); it.hasNext();) {
 			ReferenceType dependent = (ReferenceType) it.next();
@@ -816,15 +777,13 @@ public class ReferenceType extends ResolvedType {
 	}
 
 	/**
-	 * a parameterized signature starts with a "P" in place of the "L", see the
-	 * comment on signatures in UnresolvedType.
+	 * a parameterized signature starts with a "P" in place of the "L", see the comment on signatures in UnresolvedType.
 	 * 
 	 * @param aGenericType
 	 * @param someParameters
 	 * @return
 	 */
-	private static String makeParameterizedSignature(ResolvedType aGenericType,
-			ResolvedType[] someParameters) {
+	private static String makeParameterizedSignature(ResolvedType aGenericType, ResolvedType[] someParameters) {
 		String rawSignature = aGenericType.getErasureSignature();
 		StringBuffer ret = new StringBuffer();
 		ret.append(PARAMETERIZED_TYPE_IDENTIFIER);
@@ -837,15 +796,13 @@ public class ReferenceType extends ResolvedType {
 		return ret.toString();
 	}
 
-	private static String makeDeclaredSignature(ResolvedType aGenericType,
-			UnresolvedType[] someParameters) {
+	private static String makeDeclaredSignature(ResolvedType aGenericType, UnresolvedType[] someParameters) {
 		StringBuffer ret = new StringBuffer();
 		String rawSig = aGenericType.getErasureSignature();
 		ret.append(rawSig.substring(0, rawSig.length() - 1));
 		ret.append("<");
 		for (int i = 0; i < someParameters.length; i++) {
-			ret.append(((ReferenceType) someParameters[i])
-					.getSignatureForAttribute());
+			ret.append(((ReferenceType) someParameters[i]).getSignatureForAttribute());
 		}
 		ret.append(">;");
 		return ret.toString();
