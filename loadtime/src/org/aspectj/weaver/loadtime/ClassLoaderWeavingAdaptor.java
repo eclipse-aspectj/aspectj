@@ -735,7 +735,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	protected String getDumpDir() {
 		if (dumpDirPerClassloader) {
 			StringBuffer dir = new StringBuffer();
-			dir.append("_ajdump").append(File.separator).append(weavingContext.getClassLoaderName());
+			dir.append("_ajdump").append(File.separator).append(weavingContext.getId());
 			return dir.toString();
 		} else {
 			return super.getDumpDir();

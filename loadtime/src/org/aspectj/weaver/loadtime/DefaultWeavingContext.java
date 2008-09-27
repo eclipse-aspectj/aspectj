@@ -84,7 +84,9 @@ public class DefaultWeavingContext implements IWeavingContext {
 		if (shortName == null) {
 			shortName = getClassLoaderName().replace('$','.');
 			int index = shortName.lastIndexOf(".");
-			shortName = shortName.substring(index + 1);
+			if (index!=-1) {
+				shortName = shortName.substring(index + 1);
+			}
 		}
 		return shortName;
 	}
