@@ -52,6 +52,7 @@ public class DocumentParser extends DefaultHandler {
 	private final static String WEAVER_ELEMENT = "weaver";
 	private final static String DUMP_ELEMENT = "dump";
 	private final static String DUMP_BEFOREANDAFTER_ATTRIBUTE = "beforeandafter";
+	private final static String DUMP_PERCLASSLOADERDIR_ATTRIBUTE = "perclassloaderdumpdir";
 	private final static String INCLUDE_ELEMENT = "include";
 	private final static String EXCLUDE_ELEMENT = "exclude";
 	private final static String OPTIONS_ATTRIBUTE = "options";
@@ -204,6 +205,10 @@ public class DocumentParser extends DefaultHandler {
 			String beforeAndAfter = attributes.getValue(DUMP_BEFOREANDAFTER_ATTRIBUTE);
 			if (isTrue(beforeAndAfter)) {
 				m_definition.setDumpBefore(true);
+			}
+			String perWeaverDumpDir = attributes.getValue(DUMP_PERCLASSLOADERDIR_ATTRIBUTE);
+			if (isTrue(perWeaverDumpDir)) {
+				m_definition.setCreateDumpDirPerClassloader(true);
 			}
 		} else if (EXCLUDE_ELEMENT.equals(qName) && m_inAspects) {
 			String typePattern = getWithinAttribute(attributes);

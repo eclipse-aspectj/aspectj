@@ -62,6 +62,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 	private List m_dumpTypePattern = new ArrayList();
 	private boolean m_dumpBefore = false;
+	private boolean dumpDirPerClassloader = false;
 	private List m_includeTypePattern = new ArrayList();
 	private List m_excludeTypePattern = new ArrayList();
 	private List m_includeStartsWith = new ArrayList();
@@ -593,6 +594,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			if (definition.shouldDumpBefore()) {
 				m_dumpBefore = true;
 			}
+			if (definition.createDumpDirPerClassloader()) {
+				dumpDirPerClassloader = true;
+			}
 		}
 	}
 
@@ -728,9 +732,20 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		return false;
 	}
 
+	protected String getDumpDir() {
+		if (dumpDirPerClassloader) {
+			StringBuffer dir = new StringBuffer();
+			dir.append("_ajdump").append(File.separator).append(weavingContext.getClassLoaderName());
+			return dir.toString();
+		} else {
+			return super.getDumpDir();
+		}
+	}
+	
 	/*
 	 * shared classes methods
 	 */
+
 
 	/**
 	 * @return Returns the key.

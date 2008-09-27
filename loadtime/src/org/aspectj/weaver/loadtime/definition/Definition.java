@@ -26,6 +26,8 @@ public class Definition {
 	private final List m_dumpPatterns;
 
 	private boolean m_dumpBefore;
+	
+	private boolean perClassloaderDumpDir;
 
 	private final List m_includePatterns;
 
@@ -42,6 +44,7 @@ public class Definition {
 	public Definition() {
 		m_weaverOptions = new StringBuffer();
 		m_dumpBefore = false;
+		perClassloaderDumpDir = false;
 		m_dumpPatterns = new ArrayList(0);
 		m_includePatterns = new ArrayList(0);
 		m_excludePatterns = new ArrayList(0);
@@ -65,6 +68,14 @@ public class Definition {
 
 	public boolean shouldDumpBefore() {
 		return m_dumpBefore;
+	}
+
+	public void setCreateDumpDirPerClassloader(boolean b) {
+		perClassloaderDumpDir = b;
+	}
+
+	public boolean createDumpDirPerClassloader() {
+		return perClassloaderDumpDir;
 	}
 
 	public List getIncludePatterns() {
