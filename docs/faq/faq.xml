@@ -4275,6 +4275,33 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
         </answer>
       </qandaentry>
       <qandaentry>
+        <question id="q:ltwAppServers"
+            xreflabel="Q:How do I get load-time weaving to work in my chosen application server?">
+          <para>How do I get load-time weaving to work in my chosen application server?
+          </para>
+        </question>
+        <answer>
+          <para>You have two choices based on how wide you want the weaving to take effect: application-server wide and application-specific weaving. 
+          You choose between the two by loading aspect artifacts--aspects, associated types, and aop.xml--through the right classloader. 
+          The aop.xml must be in the META-INF directory on the classpath for the chosen classloader. In either case, you modify the 
+          startup script to specify the -javaagent:path-to/aspectjweaver.jar option to the Java virtual machine. Note that it is not 
+          essential that all the artifacts be placed in a single jar.  
+          </para>
+          <para>For application-server wide weaving, you make aspect artifacts accessible to the server's classloader. Typically, you 
+          achieve such access by putting these artifacts in the server's lib directory. For example, for Tomcat, you will place 
+          the aspect artifacts in the TOMCAT_HOME/lib directory.</para>
+		  <para>For application-specific weaving, you make aspect artifacts accessible to application classloader by bundling 
+		  them along with application's classes. For example, for a web application, you will place the aspect artifacts in 
+		  the MY_APP/WEB-INF/lib and/or MY_APP/WEB-INF/classes directory.</para>
+	      <para>
+		  We recommend that you start with application-specific weaving.
+          Note that you have an additional option if your application is based on the Spring framework. If you deploy in one of 
+          the supported web servers or application servers, you can avoid modifications to the startup script. Please 
+          see <ulink url="http://static.springframework.org/spring/docs/2.5.x/reference/aop.html#aop-aj-ltw-spring">http://static.springframework.org/spring/docs/2.5.x/reference/aop.html#aop-aj-ltw-spring</ulink> for more details.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
         <question id="q:reflection"
             xreflabel="Q:Does AspectJ use reflection at runtime?">
           <para>Does AspectJ use reflection at runtime?
