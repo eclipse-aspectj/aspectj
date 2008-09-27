@@ -86,6 +86,9 @@ public class AsmManager {
 	// Record the Set<File> for which the model has been modified during the
 	// last incremental build
 	private final Set lastBuildChanges = new HashSet();
+	
+	// Record the Set<File> of aspects that wove the files listed in lastBuildChanges
+	final Set aspectsWeavingInLastBuild = new HashSet();
 
 	// static {
 	// setReporting("c:/model.nfo",true,true,true,true);
@@ -1213,13 +1216,25 @@ public class AsmManager {
 
 	public void resetDeltaProcessing() {
 		lastBuildChanges.clear();
+	    aspectsWeavingInLastBuild.clear();
 	}
 
 	/**
-	 * @return the Set of files for which the structure model was modified (they may have been removed or otherwise rebuilt)
+	 * @return the Set of files for which the structure model was modified (they may have been removed or otherwise rebuilt).  Set is empty for a full build.
 	 */
 	public Set getModelChangesOnLastBuild() {
 		return lastBuildChanges;
+	}
+
+	/**
+	 * @return the Set of aspects that wove files on the last build (either incremental or full build)
+	 */
+	public Set getAspectsWeavingFilesOnLastBuild() {
+		return aspectsWeavingInLastBuild;
+	}
+	
+	public void addAspectInEffectThisBuild(File f) {
+		aspectsWeavingInLastBuild.add(f);
 	}
 
 }
