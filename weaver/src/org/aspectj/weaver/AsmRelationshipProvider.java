@@ -79,6 +79,10 @@ public class AsmRelationshipProvider {
 		if (back != null && back.getTargets() != null) {
 			back.addTarget(sourceHandle);
 		}
+		if (sourceNode.getSourceLocation()!=null) {
+			AsmManager.getDefault().addAspectInEffectThisBuild(sourceNode.getSourceLocation().getSourceFile());
+		}
+
 	}
 
 	// For ITDs
@@ -89,15 +93,16 @@ public class AsmRelationshipProvider {
 			return;
 		if (originatingAspect.getSourceLocation() != null) {
 			String sourceHandle = "";
+			IProgramElement sourceNode = null;
 			if (munger.getSourceLocation() != null
 					&& munger.getSourceLocation().getOffset() != -1) {
-				IProgramElement sourceNode = AsmManager.getDefault()
+				sourceNode = AsmManager.getDefault()
 						.getHierarchy().findElementForSourceLine(
 								munger.getSourceLocation());
 				sourceHandle = AsmManager.getDefault().getHandleProvider()
 						.createHandleIdentifier(sourceNode);
 			} else {
-				IProgramElement sourceNode = AsmManager.getDefault()
+				sourceNode = AsmManager.getDefault()
 						.getHierarchy().findElementForSourceLine(
 								originatingAspect.getSourceLocation());
 				sourceHandle = AsmManager.getDefault().getHandleProvider()
@@ -123,6 +128,7 @@ public class AsmRelationshipProvider {
 					IRelationship.Kind.DECLARE_INTER_TYPE,
 					INTER_TYPE_DECLARED_BY, false, true);
 			back.addTarget(sourceHandle);
+			AsmManager.getDefault().addAspectInEffectThisBuild(sourceNode.getSourceLocation().getSourceFile());
 		}
 	}
 
@@ -192,6 +198,9 @@ public class AsmRelationshipProvider {
 				IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATED_BY, false,
 				true);
 		back.addTarget(sourceHandle);
+		if (sourceNode.getSourceLocation()!=null) {
+			AsmManager.getDefault().addAspectInEffectThisBuild(sourceNode.getSourceLocation().getSourceFile());
+		}
 	}
 
 	public void adviceMunger(IHierarchy model, Shadow shadow,
@@ -263,6 +272,9 @@ public class AsmRelationshipProvider {
 				if (back != null)
 					back.addTarget(adviceHandle);// back.getTargets().add(
 													// adviceHandle);
+			}
+			if (adviceElement.getSourceLocation()!=null) {
+				AsmManager.getDefault().addAspectInEffectThisBuild(adviceElement.getSourceLocation().getSourceFile());
 			}
 		}
 	}
