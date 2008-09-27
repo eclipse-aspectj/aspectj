@@ -492,7 +492,8 @@ public class WeavingAdaptor implements IMessageContext {
 	 * @throws Throwable
 	 */
 	protected void dump(String name, byte[] b, boolean before) {
-		String dirName = "_ajdump";
+		String dirName = getDumpDir();
+		
 		if (before) dirName = dirName + File.separator + "_before";
 		
 	    String className = name.replace('.', '/');
@@ -513,6 +514,13 @@ public class WeavingAdaptor implements IMessageContext {
 	    catch (IOException ex) {
 	    	warn("unable to dump class " + name + " in directory " + dirName,ex);
 	    }
+	}
+	
+	/**
+	 * @return the directory in which to dump - default is _ajdump but it 
+	 */
+	protected String getDumpDir() {
+		return "_ajdump";
 	}
 
 	/**
