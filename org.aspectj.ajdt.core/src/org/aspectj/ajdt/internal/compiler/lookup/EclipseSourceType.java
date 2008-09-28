@@ -81,7 +81,8 @@ import org.aspectj.weaver.patterns.PerSingleton;
 import org.aspectj.weaver.patterns.Pointcut;
 
 /**
- * Supports viewing eclipse TypeDeclarations/SourceTypeBindings as a ResolvedType
+ * Supports viewing eclipse TypeDeclarations/SourceTypeBindings as a
+ * ResolvedType
  * 
  * @author Jim Hugunin
  */
@@ -95,11 +96,11 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	public List declares = new ArrayList();
 	public List typeMungers = new ArrayList();
 
-	private EclipseFactory factory;
+	private final EclipseFactory factory;
 
-	private SourceTypeBinding binding;
-	private TypeDeclaration declaration;
-	private CompilationUnitDeclaration unit;
+	private final SourceTypeBinding binding;
+	private final TypeDeclaration declaration;
+	private final CompilationUnitDeclaration unit;
 	private boolean annotationsResolved = false;
 	private ResolvedType[] resolvedAnnotations = null;
 
@@ -357,8 +358,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	}
 
 	/**
-	 * This method may not return all fields, for example it may not include the ajc$initFailureCause or ajc$perSingletonInstance
-	 * fields - see bug 129613
+	 * This method may not return all fields, for example it may not include the
+	 * ajc$initFailureCause or ajc$perSingletonInstance fields - see bug 129613
 	 */
 	public ResolvedMember[] getDeclaredFields() {
 		if (declaredFields == null)
@@ -367,8 +368,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	}
 
 	/**
-	 * This method may not return all methods, for example it may not include clinit, aspectOf, hasAspect or ajc$postClinit methods
-	 * - see bug 129613
+	 * This method may not return all methods, for example it may not include
+	 * clinit, aspectOf, hasAspect or ajc$postClinit methods - see bug 129613
 	 */
 	public ResolvedMember[] getDeclaredMethods() {
 		if (declaredMethods == null)
@@ -581,17 +582,23 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	/**
 	 * WARNING: This method does not have a complete implementation.
 	 * 
-	 * The aim is that it converts Eclipse annotation objects to the AspectJ form of annotations (the type AnnotationAJ). The
-	 * AnnotationX objects returned are wrappers over either a Bcel annotation type or the AspectJ AnnotationAJ type. The minimal
-	 * implementation provided here is for processing the RetentionPolicy and Target annotation types - these are the only ones
-	 * which the weaver will attempt to process from an EclipseSourceType.
+	 * The aim is that it converts Eclipse annotation objects to the AspectJ
+	 * form of annotations (the type AnnotationAJ). The AnnotationX objects
+	 * returned are wrappers over either a Bcel annotation type or the AspectJ
+	 * AnnotationAJ type. The minimal implementation provided here is for
+	 * processing the RetentionPolicy and Target annotation types - these are
+	 * the only ones which the weaver will attempt to process from an
+	 * EclipseSourceType.
 	 * 
-	 * More notes: The pipeline has required us to implement this. With the pipeline we can be weaving a type and asking questions
-	 * of annotations before they have been turned into Bcel objects - ie. when they are still in EclipseSourceType form. Without
-	 * the pipeline we would have converted everything to Bcel objects before proceeding with weaving. Because the pipeline won't
-	 * start weaving until all aspects have been compiled and the fact that no AspectJ constructs match on the values within
-	 * annotations, this code only needs to deal with converting system annotations that the weaver needs to process
-	 * (RetentionPolicy, Target).
+	 * More notes: The pipeline has required us to implement this. With the
+	 * pipeline we can be weaving a type and asking questions of annotations
+	 * before they have been turned into Bcel objects - ie. when they are still
+	 * in EclipseSourceType form. Without the pipeline we would have converted
+	 * everything to Bcel objects before proceeding with weaving. Because the
+	 * pipeline won't start weaving until all aspects have been compiled and the
+	 * fact that no AspectJ constructs match on the values within annotations,
+	 * this code only needs to deal with converting system annotations that the
+	 * weaver needs to process (RetentionPolicy, Target).
 	 */
 	public AnnotationAJ[] getAnnotations() {
 		if (annotations != null)
@@ -610,11 +617,14 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	}
 
 	/**
-	 * Convert one eclipse annotation into an AnnotationX object containing an AnnotationAJ object.
+	 * Convert one eclipse annotation into an AnnotationX object containing an
+	 * AnnotationAJ object.
 	 * 
-	 * This code and the helper methods used by it will go *BANG* if they encounter anything not currently supported - this is safer
-	 * than limping along with a malformed annotation. When the *BANG* is encountered the bug reporter should indicate the kind of
-	 * annotation they were working with and this code can be enhanced to support it.
+	 * This code and the helper methods used by it will go *BANG* if they
+	 * encounter anything not currently supported - this is safer than limping
+	 * along with a malformed annotation. When the *BANG* is encountered the bug
+	 * reporter should indicate the kind of annotation they were working with
+	 * and this code can be enhanced to support it.
 	 */
 	public AnnotationAJ convertEclipseAnnotation(Annotation eclipseAnnotation, World w) {
 		// TODO if it is sourcevisible, we shouldn't let it through!!!!!!!!!
@@ -633,6 +643,13 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		}
 	}
 
+	/**
+	 * Use the information in the supplied eclipse based annotation to fill in
+	 * the standard annotation.
+	 * 
+	 * @param annotation eclipse based annotation representation
+	 * @param annotationAJ AspectJ based annotation representation
+	 */
 	private void generateAnnotation(Annotation annotation, StandardAnnotation annotationAJ) {
 		if (annotation instanceof NormalAnnotation) {
 			NormalAnnotation normalAnnotation = (NormalAnnotation) annotation;
@@ -653,9 +670,6 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 						annotationAJ.addNameValuePair(anvp);
 					}
 				}
-			} else {
-				throw new MissingImplementationException(
-						"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation [" + annotation + "]");
 			}
 		} else if (annotation instanceof SingleMemberAnnotation) {
 			// this is a single member annotation (one member value)
@@ -878,7 +892,10 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 				} else if (annotation instanceof SingleMemberAnnotation) {
 					// it is an @Aspect(...something...)
 					SingleMemberAnnotation theAnnotation = (SingleMemberAnnotation) annotation;
-					String clause = new String(((StringLiteral) theAnnotation.memberValue).source());// TODO cast safe ?
+					String clause = new String(((StringLiteral) theAnnotation.memberValue).source());// TODO
+					// cast
+					// safe
+					// ?
 					return determinePerClause(typeDeclaration, clause);
 				} else if (annotation instanceof NormalAnnotation) { // this
 					// kind
@@ -893,7 +910,9 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 					NormalAnnotation theAnnotation = (NormalAnnotation) annotation;
 					if (theAnnotation.memberValuePairs == null || theAnnotation.memberValuePairs.length < 1)
 						return PerClause.SINGLETON;
-					String clause = new String(((StringLiteral) theAnnotation.memberValuePairs[0].value).source());// TODO cast safe
+					String clause = new String(((StringLiteral) theAnnotation.memberValuePairs[0].value).source());// TODO
+					// cast
+					// safe
 					// ?
 					return determinePerClause(typeDeclaration, clause);
 				} else {
