@@ -11,11 +11,9 @@
 package org.aspectj.systemtest.ajc162;
 
 import java.io.File;
-import java.io.PrintWriter;
 
 import junit.framework.Test;
 
-import org.aspectj.asm.AsmManager;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
@@ -43,17 +41,17 @@ public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// what I want for the hid is:
 
 	// <somethingIndicatingBinary>"[Asp.class}Asp&before"
-/*
-	public void testBinaryAspectModeling() throws Exception {
-		runTest("binary aspects model");
-		AsmManager.dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
-		PrintWriter pw = new PrintWriter(System.out);
-		AsmManager.getDefault().dumprels(pw);
-		pw.flush();
-	}
-*/
+	/*
+	 * public void testBinaryAspectModeling() throws Exception { runTest("binary aspects model");
+	 * AsmManager.dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0); PrintWriter pw = new PrintWriter(System.out);
+	 * AsmManager.getDefault().dumprels(pw); pw.flush(); }
+	 */
 	public void testPerClause() {
 		runTest("ltw perclause");
+	}
+
+	public void testNullDelegateForArray_pr247683() {
+		runTest("null delegate for array");
 	}
 
 	public void testPerClause2() {
@@ -167,7 +165,18 @@ public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	// public void testParamAnnosPipelining_pr241847() { runTest("param annos pipelining");}
-	// public void testParamAnnoInner_pr241861() { runTest("param annotation inner class"); }
+	// public void testParamAnnoInner_pr241861() {
+	// runTest("param annotation inner class");
+	// }
+	//
+	// public void testParamAnnoInner_pr241861_2() {
+	// runTest("param annotation inner class - 2");
+	// }
+	//
+	// public void testParamAnnoInner_pr241861_3() {
+	// runTest("param annotation inner class - 3");
+	// }
+
 	public void testAnnotationDecp_pr239441() {
 		runTest("annotation decp");
 	}
