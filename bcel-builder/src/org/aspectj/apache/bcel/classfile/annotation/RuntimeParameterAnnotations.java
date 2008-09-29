@@ -52,6 +52,14 @@ public abstract class RuntimeParameterAnnotations extends Attribute {
 	
 	public AnnotationGen[] getAnnotationsOnParameter(int parameterIndex) {
 		if (!inflated) inflate();
+		// This may happen.  In a ctor for a non static inner type the compiler
+		// may have added an extra parameter to the generated ctor (the parameter
+		// contains the instance of the outer class) - in this case
+		// it may appear that there are more parameters than there are entries
+		// in the parameter annotations array
+		if (parameterIndex>=parameterAnnotations.size()) {
+			return AnnotationGen.NO_ANNOTATIONS;
+		}
 		return (AnnotationGen[])parameterAnnotations.get(parameterIndex);
 	}
 	
