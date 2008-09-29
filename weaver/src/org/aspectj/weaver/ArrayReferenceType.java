@@ -15,172 +15,182 @@ import java.lang.reflect.Modifier;
 
 /**
  * Represents a resolved array type
- *
- * @author Andy Clement 
+ * 
+ * @author Andy Clement
  */
 public class ArrayReferenceType extends ReferenceType {
 
-	private ResolvedType componentType;
+	private final ResolvedType componentType;
 
+	public ArrayReferenceType(String sig, String erasureSig, World world, ResolvedType componentType) {
+		super(sig, erasureSig, world);
+		this.componentType = componentType;
+	}
 
-    public ArrayReferenceType(String sig, String erasureSig, World world, ResolvedType componentType) {
-        super(sig, erasureSig, world);
-        this.componentType = componentType;
-    }
+	// These methods are from the original implementation when Array was a ResolvedType and not a ReferenceType
 
-    // These methods are from the original implementation when Array was a ResolvedType and not a ReferenceType
-    
-    public final ResolvedMember[] getDeclaredFields() {
-        return ResolvedMember.NONE;
-    }
+	public final ResolvedMember[] getDeclaredFields() {
+		return ResolvedMember.NONE;
+	}
 
-    public final ResolvedMember[] getDeclaredMethods() {
-        // ??? should this return clone? Probably not...
-        // If it ever does, here is the code:
-        // ResolvedMember cloneMethod =
-        // new ResolvedMember(Member.METHOD,this,Modifier.PUBLIC,UnresolvedType.OBJECT,"clone",new UnresolvedType[]{});
-        // return new ResolvedMember[]{cloneMethod};
-        return ResolvedMember.NONE;
-    }
+	public final ResolvedMember[] getDeclaredMethods() {
+		// ??? should this return clone? Probably not...
+		// If it ever does, here is the code:
+		// ResolvedMember cloneMethod =
+		// new ResolvedMember(Member.METHOD,this,Modifier.PUBLIC,UnresolvedType.OBJECT,"clone",new UnresolvedType[]{});
+		// return new ResolvedMember[]{cloneMethod};
+		return ResolvedMember.NONE;
+	}
 
-    public final ResolvedType[] getDeclaredInterfaces() {
-        return new ResolvedType[] { world.getCoreType(CLONEABLE), world.getCoreType(SERIALIZABLE) };
-    }
+	public final ResolvedType[] getDeclaredInterfaces() {
+		return new ResolvedType[] { world.getCoreType(CLONEABLE), world.getCoreType(SERIALIZABLE) };
+	}
 
-    public final ResolvedMember[] getDeclaredPointcuts() {
-        return ResolvedMember.NONE;
-    }
+	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
+		return null;
+	}
 
-    public boolean hasAnnotation(UnresolvedType ofType) {
-        return false;
-    }
+	public AnnotationAJ[] getAnnotations() {
+		return AnnotationAJ.EMPTY_ARRAY;
+	}
 
-    public final ResolvedType getSuperclass() {
-        return world.getCoreType(OBJECT);
-    }
+	public ResolvedType[] getAnnotationTypes() {
+		return ResolvedType.NONE;
+	}
 
-    public final boolean isAssignableFrom(ResolvedType o) {
-        if (!o.isArray())
-            return false;
-        if (o.getComponentType().isPrimitiveType()) {
-            return o.equals(this);
-        } else {
-            return getComponentType().resolve(world).isAssignableFrom(o.getComponentType().resolve(world));
-        }
-    }
+	public final ResolvedMember[] getDeclaredPointcuts() {
+		return ResolvedMember.NONE;
+	}
 
-    public boolean isAssignableFrom(ResolvedType o, boolean allowMissing) {
-        return isAssignableFrom(o);
-    }
+	public boolean hasAnnotation(UnresolvedType ofType) {
+		return false;
+	}
 
-    public final boolean isCoerceableFrom(ResolvedType o) {
-        if (o.equals(UnresolvedType.OBJECT) || o.equals(UnresolvedType.SERIALIZABLE) || o.equals(UnresolvedType.CLONEABLE)) {
-            return true;
-        }
-        if (!o.isArray())
-            return false;
-        if (o.getComponentType().isPrimitiveType()) {
-            return o.equals(this);
-        } else {
-            return getComponentType().resolve(world).isCoerceableFrom(o.getComponentType().resolve(world));
-        }
-    }
+	public final ResolvedType getSuperclass() {
+		return world.getCoreType(OBJECT);
+	}
 
-    public final int getModifiers() {
-        int mask = Modifier.PUBLIC | Modifier.PRIVATE | Modifier.PROTECTED;
-        return (componentType.getModifiers() & mask) | Modifier.FINAL;
-    }
+	public final boolean isAssignableFrom(ResolvedType o) {
+		if (!o.isArray())
+			return false;
+		if (o.getComponentType().isPrimitiveType()) {
+			return o.equals(this);
+		} else {
+			return getComponentType().resolve(world).isAssignableFrom(o.getComponentType().resolve(world));
+		}
+	}
 
-    public UnresolvedType getComponentType() {
-        return componentType;
-    }
+	public boolean isAssignableFrom(ResolvedType o, boolean allowMissing) {
+		return isAssignableFrom(o);
+	}
 
-    public ResolvedType getResolvedComponentType() {
-        return componentType;
-    }
+	public final boolean isCoerceableFrom(ResolvedType o) {
+		if (o.equals(UnresolvedType.OBJECT) || o.equals(UnresolvedType.SERIALIZABLE) || o.equals(UnresolvedType.CLONEABLE)) {
+			return true;
+		}
+		if (!o.isArray())
+			return false;
+		if (o.getComponentType().isPrimitiveType()) {
+			return o.equals(this);
+		} else {
+			return getComponentType().resolve(world).isCoerceableFrom(o.getComponentType().resolve(world));
+		}
+	}
 
-    public ISourceContext getSourceContext() {
-        return getResolvedComponentType().getSourceContext();
-    }
+	public final int getModifiers() {
+		int mask = Modifier.PUBLIC | Modifier.PRIVATE | Modifier.PROTECTED;
+		return (componentType.getModifiers() & mask) | Modifier.FINAL;
+	}
 
+	public UnresolvedType getComponentType() {
+		return componentType;
+	}
 
-    // Methods overridden from ReferenceType follow
+	public ResolvedType getResolvedComponentType() {
+		return componentType;
+	}
 
-    public TypeVariable[] getTypeVariables() {
-        if (this.typeVariables == null && componentType.getTypeVariables() != null) {
-            this.typeVariables = componentType.getTypeVariables();
-            for (int i = 0; i < this.typeVariables.length; i++) {
-                this.typeVariables[i].resolve(world);
-            }
-        }
-        return this.typeVariables;
-    }
+	public ISourceContext getSourceContext() {
+		return getResolvedComponentType().getSourceContext();
+	}
 
-    public boolean isAnnotation() {
-        return false;
-    }
+	// Methods overridden from ReferenceType follow
 
-    public boolean isAnonymous() {
-        return false;
-    }
+	public TypeVariable[] getTypeVariables() {
+		if (this.typeVariables == null && componentType.getTypeVariables() != null) {
+			this.typeVariables = componentType.getTypeVariables();
+			for (int i = 0; i < this.typeVariables.length; i++) {
+				this.typeVariables[i].resolve(world);
+			}
+		}
+		return this.typeVariables;
+	}
 
-    public boolean isAnnotationStyleAspect() {
-        return false;
-    }
+	public boolean isAnnotation() {
+		return false;
+	}
+
+	public boolean isAnonymous() {
+		return false;
+	}
+
+	public boolean isAnnotationStyleAspect() {
+		return false;
+	}
 
 	public boolean isAspect() {
-        return false;
-    }
+		return false;
+	}
 
-    public boolean isPrimitiveType() {
-        return typeKind == TypeKind.PRIMITIVE;
-    }
+	public boolean isPrimitiveType() {
+		return typeKind == TypeKind.PRIMITIVE;
+	}
 
-    public boolean isSimpleType() {
-        return typeKind == TypeKind.SIMPLE;
-    }
+	public boolean isSimpleType() {
+		return typeKind == TypeKind.SIMPLE;
+	}
 
-    public boolean isRawType() {
-        return typeKind == TypeKind.RAW;
-    }
+	public boolean isRawType() {
+		return typeKind == TypeKind.RAW;
+	}
 
-    public boolean isGenericType() {
-        return typeKind == TypeKind.GENERIC;
-    }
+	public boolean isGenericType() {
+		return typeKind == TypeKind.GENERIC;
+	}
 
-    public boolean isParameterizedType() {
-        return typeKind == TypeKind.PARAMETERIZED;
-    }
+	public boolean isParameterizedType() {
+		return typeKind == TypeKind.PARAMETERIZED;
+	}
 
-    public boolean isTypeVariableReference() {
-        return typeKind == TypeKind.TYPE_VARIABLE;
-    }
+	public boolean isTypeVariableReference() {
+		return typeKind == TypeKind.TYPE_VARIABLE;
+	}
 
-    public boolean isGenericWildcard() {
-        return typeKind == TypeKind.WILDCARD;
-    }
-    
+	public boolean isGenericWildcard() {
+		return typeKind == TypeKind.WILDCARD;
+	}
+
 	public boolean isEnum() {
-        return false;
-    }
+		return false;
+	}
 
 	public boolean isNested() {
-        return false;
-    }
+		return false;
+	}
 
-    public boolean isClass() {
-        return false;
-    }
+	public boolean isClass() {
+		return false;
+	}
 
-    public boolean canAnnotationTargetType() {
-        return false;
-    }
-   	
-   	public AnnotationTargetKind[] getAnnotationTargetKinds() {
-        return null;
-    }
+	public boolean canAnnotationTargetType() {
+		return false;
+	}
 
-    public boolean isAnnotationWithRuntimeRetention() {
-        return false;
-    }
+	public AnnotationTargetKind[] getAnnotationTargetKinds() {
+		return null;
+	}
+
+	public boolean isAnnotationWithRuntimeRetention() {
+		return false;
+	}
 }
