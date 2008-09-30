@@ -229,7 +229,10 @@ public class BcelShadow extends Shadow {
 			InstructionHandle dupHandle = endHandle;
 			endHandle = endHandle.getNext();
 			nextHandle = endHandle.getNext();
+			boolean skipEndRepositioning = false;
 			if (endHandle.getInstruction().opcode == Constants.SWAP) {
+			} else if (endHandle.getInstruction().opcode == Constants.IMPDEP1) {
+				skipEndRepositioning = true; // pr186884
 			} else {
 				// XXX see next XXX comment
 				throw new RuntimeException("Unhandled kind of new " + endHandle);
@@ -237,7 +240,9 @@ public class BcelShadow extends Shadow {
 			// Now make any jumps to the 'new', the 'dup' or the 'end' now target the nextHandle
 			retargetFrom(newHandle, nextHandle);
 			retargetFrom(dupHandle, nextHandle);
-			retargetFrom(endHandle, nextHandle);
+			if (!skipEndRepositioning) {
+				retargetFrom(endHandle, nextHandle);
+			}
 		} else {
 			endHandle = newHandle;
 			nextHandle = endHandle.getNext();
@@ -261,7 +266,6 @@ public class BcelShadow extends Shadow {
 			for (int i = sources.length - 1; i >= 0; i--) {
 				if (sources[i] instanceof ExceptionRange) {
 					ExceptionRange it = (ExceptionRange) sources[i];
-					System.err.println("...");
 					it.updateTarget(old, fresh, it.getBody());
 				} else {
 					sources[i].updateTarget(old, fresh);
