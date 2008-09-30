@@ -36,16 +36,13 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.PerClause;
 
 /**
- * @author colyer A delegate for a resolved type that uses runtime type
- *         information (java.lang.reflect) to answer questions. This class uses
- *         only Java 1.4 features to answer questions. In a Java 1.5 environment
- *         use the Java5ReflectionBasedReferenceTypeDelegate subtype.
+ * @author colyer A delegate for a resolved type that uses runtime type information (java.lang.reflect) to answer questions. This
+ *         class uses only Java 1.4 features to answer questions. In a Java 1.5 environment use the
+ *         Java5ReflectionBasedReferenceTypeDelegate subtype.
  */
-public class ReflectionBasedReferenceTypeDelegate implements
-		ReferenceTypeDelegate {
+public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelegate {
 
-	private static final ClassLoader BootClassLoader = new URLClassLoader(
-			new URL[0]);// ReflectionBasedReferenceTypeDelegate.class.
+	private static final ClassLoader bootClassLoader = new URLClassLoader(new URL[0]);// ReflectionBasedReferenceTypeDelegate.class.
 	// getClassLoader();
 
 	protected Class myClass = null;
@@ -56,8 +53,7 @@ public class ReflectionBasedReferenceTypeDelegate implements
 	private ResolvedMember[] methods = null;
 	private ResolvedType[] interfaces = null;
 
-	public ReflectionBasedReferenceTypeDelegate(Class forClass,
-			ClassLoader aClassLoader, World inWorld, ReferenceType resolvedType) {
+	public ReflectionBasedReferenceTypeDelegate(Class forClass, ClassLoader aClassLoader, World inWorld, ReferenceType resolvedType) {
 		initialize(resolvedType, forClass, aClassLoader, inWorld);
 	}
 
@@ -65,13 +61,11 @@ public class ReflectionBasedReferenceTypeDelegate implements
 	public ReflectionBasedReferenceTypeDelegate() {
 	}
 
-	public void initialize(ReferenceType aType, Class aClass,
-			ClassLoader aClassLoader, World aWorld) {
+	public void initialize(ReferenceType aType, Class aClass, ClassLoader aClassLoader, World aWorld) {
 		this.myClass = aClass;
 		this.resolvedType = aType;
 		this.world = aWorld;
-		this.classLoaderReference = new WeakClassLoaderReference(
-				(aClassLoader != null) ? aClassLoader : BootClassLoader);
+		this.classLoaderReference = new WeakClassLoaderReference((aClassLoader != null) ? aClassLoader : bootClassLoader);
 	}
 
 	protected Class getBaseClass() {
@@ -83,20 +77,16 @@ public class ReflectionBasedReferenceTypeDelegate implements
 	}
 
 	public ReferenceType buildGenericType() {
-		throw new UnsupportedOperationException(
-				"Shouldn't be asking for generic type at 1.4 source level or lower");
+		throw new UnsupportedOperationException("Shouldn't be asking for generic type at 1.4 source level or lower");
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.aspectj.weaver.ReferenceTypeDelegate#addAnnotation(org.aspectj.weaver
-	 * .AnnotationX)
+	 * @see org.aspectj.weaver.ReferenceTypeDelegate#addAnnotation(org.aspectj.weaver .AnnotationX)
 	 */
 	public void addAnnotation(AnnotationAJ annotationX) {
-		throw new UnsupportedOperationException(
-				"Cannot add an annotation to a reflection based delegate");
+		throw new UnsupportedOperationException("Cannot add an annotation to a reflection based delegate");
 	}
 
 	/*
@@ -153,9 +143,7 @@ public class ReflectionBasedReferenceTypeDelegate implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.aspectj.weaver.ReferenceTypeDelegate#isAnnotationWithRuntimeRetention
-	 * ()
+	 * @see org.aspectj.weaver.ReferenceTypeDelegate#isAnnotationWithRuntimeRetention ()
 	 */
 	public boolean isAnnotationWithRuntimeRetention() {
 		// cant be an annotation in Java 1.4 or prior
@@ -181,8 +169,7 @@ public class ReflectionBasedReferenceTypeDelegate implements
 	 * @see org.aspectj.weaver.ReferenceTypeDelegate#isClass()
 	 */
 	public boolean isClass() {
-		return !this.myClass.isInterface() && !this.myClass.isPrimitive()
-				&& !this.myClass.isArray();
+		return !this.myClass.isInterface() && !this.myClass.isPrimitive() && !this.myClass.isArray();
 	}
 
 	/*
@@ -228,9 +215,7 @@ public class ReflectionBasedReferenceTypeDelegate implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.aspectj.weaver.ReferenceTypeDelegate#hasAnnotation(org.aspectj.weaver
-	 * .UnresolvedType)
+	 * @see org.aspectj.weaver.ReferenceTypeDelegate#hasAnnotation(org.aspectj.weaver .UnresolvedType)
 	 */
 	public boolean hasAnnotation(UnresolvedType ofType) {
 		// in Java 1.4 we cant have an annotation
@@ -267,8 +252,7 @@ public class ReflectionBasedReferenceTypeDelegate implements
 			Field[] reflectFields = this.myClass.getDeclaredFields();
 			ResolvedMember[] rFields = new ResolvedMember[reflectFields.length];
 			for (int i = 0; i < reflectFields.length; i++) {
-				rFields[i] = ReflectionBasedReferenceTypeDelegateFactory
-						.createResolvedMember(reflectFields[i], world);
+				rFields[i] = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(reflectFields[i], world);
 			}
 			this.fields = rFields;
 		}
@@ -285,8 +269,7 @@ public class ReflectionBasedReferenceTypeDelegate implements
 			Class[] reflectInterfaces = this.myClass.getInterfaces();
 			ResolvedType[] rInterfaces = new ResolvedType[reflectInterfaces.length];
 			for (int i = 0; i < reflectInterfaces.length; i++) {
-				rInterfaces[i] = ReflectionBasedReferenceTypeDelegateFactory
-						.resolveTypeInWorld(reflectInterfaces[i], world);
+				rInterfaces[i] = ReflectionBasedReferenceTypeDelegateFactory.resolveTypeInWorld(reflectInterfaces[i], world);
 			}
 			this.interfaces = rInterfaces;
 		}
@@ -302,15 +285,13 @@ public class ReflectionBasedReferenceTypeDelegate implements
 		if (methods == null) {
 			Method[] reflectMethods = this.myClass.getDeclaredMethods();
 			Constructor[] reflectCons = this.myClass.getDeclaredConstructors();
-			ResolvedMember[] rMethods = new ResolvedMember[reflectMethods.length
-					+ reflectCons.length];
+			ResolvedMember[] rMethods = new ResolvedMember[reflectMethods.length + reflectCons.length];
 			for (int i = 0; i < reflectMethods.length; i++) {
-				rMethods[i] = ReflectionBasedReferenceTypeDelegateFactory
-						.createResolvedMember(reflectMethods[i], world);
+				rMethods[i] = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(reflectMethods[i], world);
 			}
 			for (int i = 0; i < reflectCons.length; i++) {
-				rMethods[i + reflectMethods.length] = ReflectionBasedReferenceTypeDelegateFactory
-						.createResolvedMember(reflectCons[i], world);
+				rMethods[i + reflectMethods.length] = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(
+						reflectCons[i], world);
 			}
 			this.methods = rMethods;
 		}
@@ -397,8 +378,7 @@ public class ReflectionBasedReferenceTypeDelegate implements
 			}
 			return world.resolve(UnresolvedType.OBJECT);
 		}
-		return ReflectionBasedReferenceTypeDelegateFactory.resolveTypeInWorld(
-				this.myClass.getSuperclass(), world);
+		return ReflectionBasedReferenceTypeDelegateFactory.resolveTypeInWorld(this.myClass.getSuperclass(), world);
 	}
 
 	/*
@@ -422,8 +402,7 @@ public class ReflectionBasedReferenceTypeDelegate implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.aspectj.weaver.ReferenceTypeDelegate#doesNotExposeShadowMungers()
+	 * @see org.aspectj.weaver.ReferenceTypeDelegate#doesNotExposeShadowMungers()
 	 */
 	public boolean doesNotExposeShadowMungers() {
 		return false;
@@ -432,8 +411,7 @@ public class ReflectionBasedReferenceTypeDelegate implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.aspectj.weaver.ReferenceTypeDelegate#getDeclaredGenericSignature()
+	 * @see org.aspectj.weaver.ReferenceTypeDelegate#getDeclaredGenericSignature()
 	 */
 	public String getDeclaredGenericSignature() {
 		// no generic sig in 1.4
@@ -445,8 +423,7 @@ public class ReflectionBasedReferenceTypeDelegate implements
 		// inconsistent...
 	}
 
-	public ReflectionBasedResolvedMemberImpl createResolvedMemberFor(
-			Member aMember) {
+	public ReflectionBasedResolvedMemberImpl createResolvedMemberFor(Member aMember) {
 		return null;
 	}
 
