@@ -171,6 +171,69 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// incomplete
 	}
 
+	public void testBeanExample() throws Exception {
+		String p = "BeanExample";
+		initialiseProject(p);
+		build(p);
+		dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
+		PrintWriter pw = new PrintWriter(System.out);
+		AsmManager.getDefault().dumprels(pw);
+		pw.flush();
+		// incomplete
+	}
+
+	private void checkIfContainsFile(Set s, String filename, boolean shouldBeFound) {
+		StringBuffer sb = new StringBuffer("Set of files\n");
+		for (Iterator iterator = s.iterator(); iterator.hasNext();) {
+			Object object = iterator.next();
+			sb.append(object).append("\n");
+		}
+		for (Iterator iterator = s.iterator(); iterator.hasNext();) {
+			File fname = (File) iterator.next();
+			if (fname.getName().endsWith(filename)) {
+				if (!shouldBeFound) {
+					System.out.println(sb.toString());
+					fail("Unexpectedly found file " + filename);
+				} else {
+					return;
+				}
+			}
+		}
+		if (shouldBeFound) {
+			System.out.println(sb.toString());
+			fail("Did not find filename " + filename);
+		}
+	}
+
+	/**
+	 * Checking return values of the AsmManager API calls that can be invoked post incremental build that tell the caller which
+	 * files had their relationships altered. As well as the affected (woven) files, it is possible to query the aspects that wove
+	 * those files.
+	 */
+	public void testChangesOnBuild() throws Exception {
+		String p = "ChangesOnBuild";
+		initialiseProject(p);
+		build(p);
+		// Not incremental
+		checkIfContainsFile(AsmManager.getDefault().getModelChangesOnLastBuild(), "A.java", false);
+		alter(p, "inc1");
+		build(p);
+		// Incremental
+		checkIfContainsFile(AsmManager.getDefault().getModelChangesOnLastBuild(), "A.java", true);
+		checkIfContainsFile(AsmManager.getDefault().getAspectsWeavingFilesOnLastBuild(), "X.java", true);
+		checkIfContainsFile(AsmManager.getDefault().getAspectsWeavingFilesOnLastBuild(), "Y.java", false);
+	}
+
+	public void testITDIncremental_pr192877() {
+		String p = "PR192877";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+	}
+
 	public void testAdviceHandlesAreJDTCompatible() {
 		String p = "AdviceHandles";
 		initialiseProject(p);
@@ -363,10 +426,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		configureAspectPath(bug2, getProjectRelativePath(bug, "bin"));
 		build(bug);
 		build(bug2);
-//		dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
-//		PrintWriter pw = new PrintWriter(System.out);
-//		AsmManager.getDefault().dumprels(pw);
-//		pw.flush();
+		// dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
+		// PrintWriter pw = new PrintWriter(System.out);
+		// AsmManager.getDefault().dumprels(pw);
+		// pw.flush();
 		IProgramElement root = AsmManager.getDefault().getHierarchy().getRoot();
 		assertEquals("=AspectPathTwo/binaries<pkg(Asp.class}Asp&before", findElementAtLine(root, 5).getHandleIdentifier());
 		assertEquals("=AspectPathTwo/binaries<(Asp2.class}Asp2&before", findElementAtLine(root, 16).getHandleIdentifier());
@@ -516,10 +579,14 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// assertNoErrors();
 	// }
 
-	/*
-	 * public void testRefactoring_pr148285() { configureBuildStructureModel(true); initialiseProject("PR148285");
-	 * build("PR148285"); System.err.println("xxx"); alter("PR148285","inc1"); build("PR148285"); }
-	 */
+	public void testRefactoring_pr148285() {
+		// configureBuildStructureModel(true);
+
+		initialiseProject("PR148285");
+		build("PR148285");
+		alter("PR148285", "inc1");
+		build("PR148285");
+	}
 
 	/**
 	 * In order for this next test to run, I had to move the weaver/world pair we keep in the AjBuildManager instance down into the
