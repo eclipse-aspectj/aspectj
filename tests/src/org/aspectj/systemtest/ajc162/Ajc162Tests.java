@@ -50,6 +50,10 @@ public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("ltw perclause");
 	}
 
+//	public void testParserProblemSubArrayPatterns_pr148508() {
+//		runTest("parser problem for array subtypes");
+//	}
+
 	public void testNullDelegateForArray_pr247683() {
 		runTest("null delegate for array");
 	}
@@ -165,17 +169,17 @@ public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	// public void testParamAnnosPipelining_pr241847() { runTest("param annos pipelining");}
-	// public void testParamAnnoInner_pr241861() {
-	// runTest("param annotation inner class");
-	// }
-	//
-	// public void testParamAnnoInner_pr241861_2() {
-	// runTest("param annotation inner class - 2");
-	// }
-	//
-	// public void testParamAnnoInner_pr241861_3() {
-	// runTest("param annotation inner class - 3");
-	// }
+	//public void testParamAnnoInner_pr241861() {
+	//	runTest("param annotation inner class");
+	//}
+//
+	//public void testParamAnnoInner_pr241861_2() {
+	//	runTest("param annotation inner class - 2");
+	//}
+//
+	//public void testParamAnnoInner_pr241861_3() {
+	//	runTest("param annotation inner class - 3");
+	//}
 
 	public void testAnnotationDecp_pr239441() {
 		runTest("annotation decp");

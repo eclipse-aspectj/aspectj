@@ -3,6 +3,11 @@
 <!-- AspectJ v1.6.2 Tests -->
 <suite>
 	
+   <ajc-test dir="bugs162" title="parser problem for array subtypes">
+     <compile files="PR148508.java"/>
+     <run class="PR148508">
+     </run>
+   </ajc-test>
 	
    <ajc-test dir="bugs162/pr247683" title="null delegate for array">
      <compile options="-1.5" files="A.java"/>
@@ -241,19 +246,20 @@
     </ajc-test>    
 
     <ajc-test dir="bugs162/pr241861" title="param annotation inner class">
-        <compile files="Outer.java Ann.java Asp.java" options="-1.5">
-        </compile>
+     <compile files="Outer.java Ann.java Asp.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'constructor-execution(void Outer$Inner.&lt;init&gt;(Outer, java.lang.String))' in Type 'Outer$Inner' (Outer.java:5) advised by before advice from 'Asp' (Asp.java:2)"/>
+     </compile>
     </ajc-test>    
     
     <ajc-test dir="bugs162/pr241861" title="param annotation inner class - 2">
         <compile files="X.java" options="-1.5 -showWeaveInfo">
-          <message kind="weave" text="fubar"/>
+          <message kind="weave" text="Join point 'constructor-execution(void Outer$Inner.&lt;init&gt;(Outer, java.lang.Integer))' in Type 'Outer$Inner' (X.java:7) advised by before advice from 'Asp' (X.java:2)"/>
         </compile>
     </ajc-test>    
     
     <ajc-test dir="bugs162/pr241861" title="param annotation inner class - 3">
         <compile files="Y.java" options="-1.5 -showWeaveInfo">
-          <message kind="weave" text="fubar"/>
+          <message kind="weave" text="Join point 'constructor-execution(void Outer$Inner.&lt;init&gt;(Outer, java.lang.String))' in Type 'Outer$Inner' (Y.java:7) advised by before advice from 'Asp' (Y.java:2)"/>
         </compile>
     </ajc-test>    
     
