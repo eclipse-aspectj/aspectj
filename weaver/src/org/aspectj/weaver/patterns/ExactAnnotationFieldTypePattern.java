@@ -76,6 +76,11 @@ public class ExactAnnotationFieldTypePattern extends ExactAnnotationTypePattern 
                 cleanname = cleanname.substring(0, lastDot) + "$" + cleanname.substring(lastDot + 1);
             }
             annotationType = scope.getWorld().resolve(type, true);
+            if (ResolvedType.isMissing(annotationType)) {
+            	// there are likely to be other errors around that have led to us being unable to 
+            	// resolve the annotation type, let's quit now
+                return this;
+            }
         }
 
         verifyIsAnnotationType((ResolvedType) annotationType, scope);
