@@ -873,7 +873,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	public FileSystem getLibraryAccess(String[] classpaths, String[] filenames) {
 		String defaultEncoding = buildConfig.getOptions().defaultEncoding;
 		if ("".equals(defaultEncoding)) {//$NON-NLS-1$
-			defaultEncoding = null; //$NON-NLS-1$	
+			defaultEncoding = null;
 		}
 		// Bug 46671: We need an array as long as the number of elements in the classpath - *even though* not every
 		// element of the classpath is likely to be a directory. If we ensure every element of the array is set to
@@ -898,7 +898,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 		String defaultEncoding = buildConfig.getOptions().defaultEncoding;
 		if ("".equals(defaultEncoding)) {//$NON-NLS-1$
-			defaultEncoding = null; //$NON-NLS-1$
+			defaultEncoding = null;
 		}
 
 		for (int i = 0; i < fileCount; i++) {
@@ -971,8 +971,17 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		// cleanup
 		org.aspectj.ajdt.internal.compiler.CompilerAdapter.setCompilerAdapterFactory(null);
 		AnonymousClassPublisher.aspectOf().setAnonymousClassCreationListener(null);
-		// environment.cleanup();
-		// environment = null;
+		if (!willReceiveAJDTCallbackForCleanup) {
+			environment.cleanup();
+			environment = null;
+		}
+	}
+
+	public static boolean willReceiveAJDTCallbackForCleanup = false;
+
+	public void cleanup() {
+		environment.cleanup();
+		environment = null;
 	}
 
 	/*
