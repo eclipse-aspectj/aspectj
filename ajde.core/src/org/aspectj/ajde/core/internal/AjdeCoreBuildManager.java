@@ -391,7 +391,7 @@ public class AjdeCoreBuildManager {
 		return ajBuildManager.getCustomMungerFactory();
 	}
 
-	public void cleanup() {
-		ajBuildManager.cleanup();
+	public void cleanupEnvironment() {
+		ajBuildManager.cleanupEnvironment();
 	}
 }

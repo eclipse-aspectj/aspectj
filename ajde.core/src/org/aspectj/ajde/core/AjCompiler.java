@@ -89,13 +89,6 @@ public class AjCompiler {
 	}
 
 	/**
-	 * Cleanup the compiler instance, ready for removal.
-	 */
-	public void cleanup() {
-		buildManager.cleanup();
-	}
-
-	/**
 	 * Perform a full build.
 	 */
 	public void buildFresh() {
@@ -106,10 +99,12 @@ public class AjCompiler {
 
 	/**
 	 * Clear the incremental state associated with this AjCompiler from the IncrementalStateManager. This is necessary until AjState
-	 * is reworked and there's an AjState associated with an AjCompiler rather than requiring a map of them.
+	 * is reworked and there's an AjState associated with an AjCompiler rather than requiring a map of them. If the environment is
+	 * not cleaned up then jar locks may be kept.
 	 */
 	public void clearLastState() {
 		IncrementalStateManager.removeIncrementalStateInformationFor(compilerId);
+		buildManager.cleanupEnvironment();
 	}
 
 	/**
