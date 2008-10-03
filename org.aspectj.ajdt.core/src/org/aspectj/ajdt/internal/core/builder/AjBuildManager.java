@@ -953,7 +953,6 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			}
 			environment = new StatefulNameEnvironment(getLibraryAccess(classpaths, filenames), state.getClassNameToFileMap(), state);
 			state.setNameEnvironment(environment);
-
 		}
 
 		org.aspectj.ajdt.internal.compiler.CompilerAdapter.setCompilerAdapterFactory(this);
@@ -971,15 +970,11 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		// cleanup
 		org.aspectj.ajdt.internal.compiler.CompilerAdapter.setCompilerAdapterFactory(null);
 		AnonymousClassPublisher.aspectOf().setAnonymousClassCreationListener(null);
-		if (!willReceiveAJDTCallbackForCleanup) {
-			environment.cleanup();
-			environment = null;
-		}
+		environment.cleanup();
+		// environment = null;
 	}
 
-	public static boolean willReceiveAJDTCallbackForCleanup = false;
-
-	public void cleanup() {
+	public void cleanupEnvironment() {
 		environment.cleanup();
 		environment = null;
 	}
