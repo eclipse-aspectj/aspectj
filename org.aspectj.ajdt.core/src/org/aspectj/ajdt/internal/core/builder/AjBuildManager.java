@@ -975,8 +975,10 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	}
 
 	public void cleanupEnvironment() {
-		environment.cleanup();
-		environment = null;
+		if (environment != null) {
+			environment.cleanup();
+			environment = null;
+		}
 	}
 
 	/*
