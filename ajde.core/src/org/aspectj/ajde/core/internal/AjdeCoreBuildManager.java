@@ -45,10 +45,10 @@ import org.aspectj.util.LangUtil;
  */
 public class AjdeCoreBuildManager {
 
-	private AjCompiler compiler;
+	private final AjCompiler compiler;
 	private AjdeCoreBuildNotifierAdapter buildEventNotifier = null;
-	private AjBuildManager ajBuildManager;
-	private IMessageHandler msgHandlerAdapter;
+	private final AjBuildManager ajBuildManager;
+	private final IMessageHandler msgHandlerAdapter;
 
 	public AjdeCoreBuildManager(AjCompiler compiler) {
 		this.compiler = compiler;
@@ -389,5 +389,9 @@ public class AjdeCoreBuildManager {
 
 	public Object getCustomMungerFactory() {
 		return ajBuildManager.getCustomMungerFactory();
+	}
+
+	public void cleanup() {
+		ajBuildManager.cleanup();
 	}
 }

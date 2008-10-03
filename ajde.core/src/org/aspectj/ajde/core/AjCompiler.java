@@ -27,11 +27,11 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
  */
 public class AjCompiler {
 
-	private String compilerId;
-	private ICompilerConfiguration compilerConfig;
-	private IBuildProgressMonitor monitor;
-	private IBuildMessageHandler handler;
-	private AjdeCoreBuildManager buildManager;
+	private final String compilerId;
+	private final ICompilerConfiguration compilerConfig;
+	private final IBuildProgressMonitor monitor;
+	private final IBuildMessageHandler handler;
+	private final AjdeCoreBuildManager buildManager;
 
 	/**
 	 * Creates a new AjCompiler for the given id, ICompilerConfiguration, IBuildProgressMonitor and IBuildMessageHandler. None of
@@ -86,6 +86,13 @@ public class AjCompiler {
 		if (hasValidId()) {
 			buildManager.performBuild(false);
 		}
+	}
+
+	/**
+	 * Cleanup the compiler instance, ready for removal.
+	 */
+	public void cleanup() {
+		buildManager.cleanup();
 	}
 
 	/**
