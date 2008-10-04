@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.6.2 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2008 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 1.6.2 Readme</h1>
+
+<p>The main theme of AspectJ1.6.2 was improved IDE incremental performance and a number of changes
+have gone in to improve how AspectJ and AJDT communicate - greatly reducing the time taken 
+to perform an incremental compile (more details below).  1.6.2 also includes a number of fixes
+and enhancements covering areas such as:
+<ul>
+<li>better support for generics and intertype declarations
+<li>better support for annotation style syntax
+<li>improvements to ajdoc
+<li>bringing the AspectJ structure model more in line with the JDT model
+</ul>
+<p>Many thanks to all the users that helped diagnose problems, provide testcases and contribute fixes. In particular:
+<ul>
+<li>Dave Whittaker - for generics and intertype declaration testing and testcases
+<li>Jason Naylor, Arturo Salazar - for ajdoc testcases, fixes and design input
+<li>Andrew Eisenberg - for helping shape the AJDT/AspectJ interface and improving incremental
+</ul>
+
+<p>The complete list of issues resolved for AspectJ 1.6.2 (more than 60) can be found with
+this bugzilla query:
+<ul>
+<li><a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&short_desc=&product=AspectJ&target_milestone=1.6.2&long_desc_type=allwordssubstr&long_desc=&bug_file_loc_type=allwordssubstr&bug_file_loc=&status_whiteboard_type=allwordssubstr&status_whiteboard=&keywords_type=allwords&keywords=&bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&emailtype1=substring&email1=&emailtype2=substring&email2=&bugidtype=include&bug_id=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&cmdtype=doit&order=Reuse+same+sort+as+last+time&field0-0-0=noop&type0-0-0=noop&value0-0-0=">Bugs resolved</a>
+</ul>
+
+<hr>
+
+<h2>Incremental compilation (<a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=247742">bug 247742</a>, <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=245566">bug 245566</a>, <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=243376">bug 243376</a>)</h2>
+
+<p>Two main changes in this area.
+<ul>
+<li>Better communication between AJDT and AspectJ.  The interface between the two has been modified so that AJDT can give more input
+to AspectJ about what needs to be done for an incremental compile, rather than having AspectJ discover it each time.
+<li>Structure model changes.  The AspectJ structure model (of types in a project and the weaving amongst them) allows handles to be created
+for every node, as a lightweight reference to the elements of the model.  These handles were similar to those that JDT uses for references to
+elements of a project but not identical.  Many many fixes have gone in to bring the handle formats closer and closer.  For example including src folders
+as elements in the AspectJ model and using the fully correct set of JDT delimiters throughout each handle.  This means there is no longer an expensive 
+transformation cost in going from an AspectJ element to its related JDT element and no need for AJDT to maintain a more JDT like version of the
+AspectJ structure model.  The imminent development builds of AJDT will utilise these changes.
+</ul>
+
+<p><i>What difference does it make?</i>
+<p>For every kind of build there are two numbers to take into account.  Firstly there is the time spent in the compiler (time spent compiling and weaving), 
+secondly there is the time spent in AJDT (time spent communicating what happened back to the user via the problems view, gutter annotations).  Values
+for these times can be seen by opening the 'AJDT Event Trace View' in eclipse.  The changes within AspectJ obviously effect the time spent in the compiler
+and that is described as 'time spent in AJDE' within the event trace view (AJDE being the compiler wrapper invoked by AJDT).
+<p>For a 1000 source file AspectJ project, the times spent in AJDE have changed as follows for a single whitespace change and save operation:
+<ul>
+<li>For a sourcefile unaffected by aspects.  Was 1828ms, now 75ms.
+<li>For a sourcefile affected by some advice.  Was 1844ms, now 90ms.
+<li>For a sourcefile affected by lots of advice.  Was 1937ms, now 188ms.
+</ul>
+<p>The AspectJ changes are done to support this, but we are still bedding them down in AJDT.  If you want to see numbers like those above you need to 
+install the latest AJDT dev builds for Eclipse 3.4 (an AJDT 1.6.1 dev build from the dev update site: http://download.eclipse.org/tools/ajdt/34/dev/update ) 
+and then after starting Eclipse, select 'Window>Preferences' and in the AspectJ tab select 'Incremental Compiler Optimizations'.  Let us know how you get 
+on!  When it has had enough testing it will be made the default and then is likely to be back ported to Eclipse 3.3 AJDT.
+<p>
+<hr>
+<!-- ============================== -->  
+</body>
+</html>
