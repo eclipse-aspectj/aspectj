@@ -205,24 +205,24 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		}
 	}
 
-	/**
-	 * Checking return values of the AsmManager API calls that can be invoked post incremental build that tell the caller which
-	 * files had their relationships altered. As well as the affected (woven) files, it is possible to query the aspects that wove
-	 * those files.
-	 */
-	public void testChangesOnBuild() throws Exception {
-		String p = "ChangesOnBuild";
-		initialiseProject(p);
-		build(p);
-		// Not incremental
-		checkIfContainsFile(AsmManager.getDefault().getModelChangesOnLastBuild(), "A.java", false);
-		alter(p, "inc1");
-		build(p);
-		// Incremental
-		checkIfContainsFile(AsmManager.getDefault().getModelChangesOnLastBuild(), "A.java", true);
-		checkIfContainsFile(AsmManager.getDefault().getAspectsWeavingFilesOnLastBuild(), "X.java", true);
-		checkIfContainsFile(AsmManager.getDefault().getAspectsWeavingFilesOnLastBuild(), "Y.java", false);
-	}
+	// /**
+	// * Checking return values of the AsmManager API calls that can be invoked post incremental build that tell the caller which
+	// * files had their relationships altered. As well as the affected (woven) files, it is possible to query the aspects that wove
+	// * those files.
+	// */
+	// public void testChangesOnBuild() throws Exception {
+	// String p = "ChangesOnBuild";
+	// initialiseProject(p);
+	// build(p);
+	// // Not incremental
+	// checkIfContainsFile(AsmManager.getDefault().getModelChangesOnLastBuild(), "A.java", false);
+	// alter(p, "inc1");
+	// build(p);
+	// // Incremental
+	// checkIfContainsFile(AsmManager.getDefault().getModelChangesOnLastBuild(), "A.java", true);
+	// checkIfContainsFile(AsmManager.getDefault().getAspectsWeavingFilesOnLastBuild(), "X.java", true);
+	// checkIfContainsFile(AsmManager.getDefault().getAspectsWeavingFilesOnLastBuild(), "Y.java", false);
+	// }
 
 	public void testITDIncremental_pr192877() {
 		String p = "PR192877";
