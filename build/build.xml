@@ -341,7 +341,7 @@ To use testing client jar in tests,
 </echo>
 	</target>
 
-    <target name="aspectj" depends="init,aspectjtools-dist,docs-dist,src" description="create installer from local distributions">
+    <target name="aspectj" depends="init,aspectjtools-dist,docs-dist" description="create installer from local distributions">
 	  <property name="installer.staging.dir" location="${aj.temp.dir}/installer-staging"/>
 	  <clean-dir dir="${installer.staging.dir}"/>
 	  <copy todir="${installer.staging.dir}">
