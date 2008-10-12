@@ -50,7 +50,8 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSignatureFormatException;
 
-public final class BcelMethod extends ResolvedMemberImpl {
+//public final 
+class BcelMethod extends ResolvedMemberImpl {
 
 	private Method method;
 
@@ -65,7 +66,7 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	private AjAttribute.MethodDeclarationLineNumberAttribute declarationLineNumber;
 	private AnnotationAJ[] annotations = null;
 	private AnnotationAJ[][] parameterAnnotations = null;
-	private BcelObjectType bcelObjectType;
+	private final BcelObjectType bcelObjectType;
 
 	private int bitflags;
 	private static final int KNOW_IF_SYNTHETIC = 0x0001;
@@ -89,8 +90,8 @@ public final class BcelMethod extends ResolvedMemberImpl {
 				: METHOD), declaringType.getResolvedTypeX(), declaringType.isInterface() ? method.getModifiers()
 				| Modifier.INTERFACE : method.getModifiers(), method.getName(), method.getSignature());
 		this.method = method;
-		this.sourceContext = declaringType.getResolvedTypeX().getSourceContext();
-		this.bcelObjectType = declaringType;
+		sourceContext = declaringType.getResolvedTypeX().getSourceContext();
+		bcelObjectType = declaringType;
 		unpackJavaAttributes();
 		unpackAjAttributes(bcelObjectType.getWorld());
 	}
@@ -431,8 +432,9 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	/**
-	 * A method can be parameterized if it has one or more generic parameters. A generic parameter (type variable parameter) is
-	 * identified by the prefix "T"
+	 * A method can be parameterized if it has one or more generic parameters. A
+	 * generic parameter (type variable parameter) is identified by the prefix
+	 * "T"
 	 */
 	public boolean canBeParameterized() {
 		unpackGenericSignature();
@@ -445,7 +447,8 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	/**
-	 * Return the parameterized/generic return type or the normal return type if the method is not generic.
+	 * Return the parameterized/generic return type or the normal return type if
+	 * the method is not generic.
 	 */
 	public UnresolvedType getGenericReturnType() {
 		unpackGenericSignature();
@@ -463,13 +466,14 @@ public final class BcelMethod extends ResolvedMemberImpl {
 		}
 		bitflags |= UNPACKED_GENERIC_SIGNATURE;
 		if (!bcelObjectType.getWorld().isInJava5Mode()) {
-			this.genericReturnType = getReturnType();
-			this.genericParameterTypes = getParameterTypes();
+			genericReturnType = getReturnType();
+			genericParameterTypes = getParameterTypes();
 			return;
 		}
 		String gSig = method.getGenericSignature();
 		if (gSig != null) {
-			Signature.MethodTypeSignature mSig = new GenericSignatureParser().parseAsMethodSignature(gSig);// method.
+			Signature.MethodTypeSignature mSig = new GenericSignatureParser().parseAsMethodSignature(gSig);// method
+																											// .
 			// getGenericSignature
 			// ());
 			if (mSig.formalTypeParameters.length > 0) {
@@ -576,8 +580,9 @@ public final class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	/**
-	 * Returns whether or not the given object is equivalent to the current one. Returns true if
-	 * getMethod().getCode().getCodeString() are equal. Allows for different line number tables.
+	 * Returns whether or not the given object is equivalent to the current one.
+	 * Returns true if getMethod().getCode().getCodeString() are equal. Allows
+	 * for different line number tables.
 	 */
 	// bug 154054: is similar to equals(Object) however
 	// doesn't require implementing equals in Method and Code

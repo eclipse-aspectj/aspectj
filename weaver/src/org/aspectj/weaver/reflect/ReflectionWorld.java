@@ -15,47 +15,43 @@ import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.util.LangUtil;
-import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.BCException;
-import org.aspectj.weaver.ConcreteTypeMunger;
-import org.aspectj.weaver.Member;
+import org.aspectj.weaver.IWeavingSupport;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
-import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
-import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeakClassLoaderReference;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.AjAttribute.AdviceAttribute;
-import org.aspectj.weaver.patterns.Pointcut;
-import org.aspectj.weaver.patterns.PerClause.Kind;
 
 /**
- * A ReflectionWorld is used solely for purposes of type resolution based on 
- * the runtime classpath (java.lang.reflect). It does not support weaving operations
+ * A ReflectionWorld is used solely for purposes of type resolution based on the
+ * runtime classpath (java.lang.reflect). It does not support weaving operations
  * (creation of mungers etc..).
- *
+ * 
  */
 public class ReflectionWorld extends World implements IReflectionWorld {
 
 	private WeakClassLoaderReference classLoaderReference;
 	private AnnotationFinder annotationFinder;
-	
+
 	private ReflectionWorld() {
-//		super();
-//		this.setMessageHandler(new ExceptionBasedMessageHandler());
-//		setBehaveInJava5Way(LangUtil.is15VMOrGreater());
-//		this.classLoaderReference = new WeakClassLoaderReference(ReflectionWorld.class.getClassLoader());
-//		this.annotationFinder = makeAnnotationFinderIfAny(classLoaderReference.getClassLoader(), this);
+		// super();
+		// this.setMessageHandler(new ExceptionBasedMessageHandler());
+		// setBehaveInJava5Way(LangUtil.is15VMOrGreater());
+		// this.classLoaderReference = new
+		// WeakClassLoaderReference(ReflectionWorld.class.getClassLoader());
+		// this.annotationFinder =
+		// makeAnnotationFinderIfAny(classLoaderReference.getClassLoader(),
+		// this);
 	}
-	
+
 	public ReflectionWorld(ClassLoader aClassLoader) {
 		super();
 		this.setMessageHandler(new ExceptionBasedMessageHandler());
 		setBehaveInJava5Way(LangUtil.is15VMOrGreater());
-		this.classLoaderReference = new WeakClassLoaderReference(aClassLoader);
-		this.annotationFinder = makeAnnotationFinderIfAny(classLoaderReference.getClassLoader(), this);
+		classLoaderReference = new WeakClassLoaderReference(aClassLoader);
+		annotationFinder = makeAnnotationFinderIfAny(classLoaderReference.getClassLoader(), this);
 	}
 
 	public static AnnotationFinder makeAnnotationFinderIfAny(ClassLoader loader, World world) {
@@ -67,88 +63,44 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 				annotationFinder.setClassLoader(loader);
 				annotationFinder.setWorld(world);
 			}
-		} catch(ClassNotFoundException ex) {
+		} catch (ClassNotFoundException ex) {
 			// must be on 1.4 or earlier
-		} catch(IllegalAccessException ex) {
+		} catch (IllegalAccessException ex) {
 			// not so good
-			throw new BCException("AspectJ internal error",ex);
-		} catch(InstantiationException ex) {
-			throw new BCException("AspectJ internal error",ex);
+			throw new BCException("AspectJ internal error", ex);
+		} catch (InstantiationException ex) {
+			throw new BCException("AspectJ internal error", ex);
 		}
 		return annotationFinder;
 	}
-	
+
 	public ClassLoader getClassLoader() {
-		return this.classLoaderReference.getClassLoader();
+		return classLoaderReference.getClassLoader();
 	}
-	
+
 	public AnnotationFinder getAnnotationFinder() {
-		return this.annotationFinder;
+		return annotationFinder;
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.reflect.IReflectionWorld#resolve(java.lang.Class)
-	 */
+
 	public ResolvedType resolve(Class aClass) {
 		return resolve(this, aClass);
 	}
-	
+
 	public static ResolvedType resolve(World world, Class aClass) {
-		// classes that represent arrays return a class name that is the signature of the array type, ho-hum...
+		// classes that represent arrays return a class name that is the
+		// signature of the array type, ho-hum...
 		String className = aClass.getName();
 		if (aClass.isArray()) {
-			return world.resolve(UnresolvedType.forSignature(className.replace('.','/')));
-		}
-		else{
+			return world.resolve(UnresolvedType.forSignature(className.replace('.', '/')));
+		} else {
 			return world.resolve(className);
-		} 
+		}
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.World#resolveDelegate(org.aspectj.weaver.ReferenceType)
-	 */
+
 	protected ReferenceTypeDelegate resolveDelegate(ReferenceType ty) {
-		return ReflectionBasedReferenceTypeDelegateFactory.createDelegate(ty, this, this.classLoaderReference.getClassLoader());
+		return ReflectionBasedReferenceTypeDelegateFactory.createDelegate(ty, this, classLoaderReference.getClassLoader());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.World#createAdviceMunger(org.aspectj.weaver.AjAttribute.AdviceAttribute, org.aspectj.weaver.patterns.Pointcut, org.aspectj.weaver.Member)
-	 */
-	public Advice createAdviceMunger(AdviceAttribute attribute,
-			Pointcut pointcut, Member signature) {
-		throw new UnsupportedOperationException("Cannot create advice munger in ReflectionWorld");
-	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.World#makeCflowStackFieldAdder(org.aspectj.weaver.ResolvedMember)
-	 */
-	public ConcreteTypeMunger makeCflowStackFieldAdder(ResolvedMember cflowField) {
-		throw new UnsupportedOperationException("Cannot create cflow stack in ReflectionWorld");
-	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.World#makeCflowCounterFieldAdder(org.aspectj.weaver.ResolvedMember)
-	 */
-	public ConcreteTypeMunger makeCflowCounterFieldAdder(
-			ResolvedMember cflowField) {
-		throw new UnsupportedOperationException("Cannot create cflow counter in ReflectionWorld");
-	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.World#makePerClauseAspect(org.aspectj.weaver.ResolvedType, org.aspectj.weaver.patterns.PerClause.Kind)
-	 */
-	public ConcreteTypeMunger makePerClauseAspect(ResolvedType aspect, Kind kind) {
-		throw new UnsupportedOperationException("Cannot create per clause in ReflectionWorld");
-	}
-
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.World#concreteTypeMunger(org.aspectj.weaver.ResolvedTypeMunger, org.aspectj.weaver.ResolvedType)
-	 */
-	public ConcreteTypeMunger concreteTypeMunger(ResolvedTypeMunger munger,
-			ResolvedType aspectType) {
-		throw new UnsupportedOperationException("Cannot create type munger in ReflectionWorld");
-	}
-	
 	public static class ReflectionWorldException extends RuntimeException {
 
 		private static final long serialVersionUID = -3432261918302793005L;
@@ -157,7 +109,7 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 			super(message);
 		}
 	}
-	
+
 	private static class ExceptionBasedMessageHandler implements IMessageHandler {
 
 		public boolean handleMessage(IMessage message) throws AbortException {
@@ -179,7 +131,11 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 		public void ignore(org.aspectj.bridge.IMessage.Kind kind) {
 			// empty
 		}
-		
+
+	}
+
+	public IWeavingSupport getWeavingSupport() {
+		return null;
 	}
 
 }

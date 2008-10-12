@@ -25,7 +25,8 @@ import org.aspectj.weaver.patterns.TypePattern;
 
 public abstract class Advice extends ShadowMunger {
 
-	protected AjAttribute.AdviceAttribute attribute; // the pointcut field is ignored
+	protected AjAttribute.AdviceAttribute attribute; // the pointcut field is
+														// ignored
 
 	protected AdviceKind kind; // alias of attribute.getKind()
 	protected Member signature;
@@ -34,15 +35,20 @@ public abstract class Advice extends ShadowMunger {
 	// not necessarily declaring aspect, this is a semantics change from 1.0
 	protected ResolvedType concreteAspect; // null until after concretize
 
-	protected List innerCflowEntries = Collections.EMPTY_LIST; // just for cflow*Entry kinds
+	protected List innerCflowEntries = Collections.EMPTY_LIST; // just for
+																// cflow*Entry
+																// kinds
 	protected int nFreeVars; // just for cflow*Entry kinds
 
 	protected TypePattern exceptionType; // just for Softener kind
 
-	// if we are parameterized, these type may be different to the advice signature types
+	// if we are parameterized, these type may be different to the advice
+	// signature types
 	protected UnresolvedType[] bindingParameterTypes;
 
-	protected List/* Lint.Kind */suppressedLintKinds = null; // based on annotations on this advice
+	protected List/* Lint.Kind */suppressedLintKinds = null; // based on
+															// annotations on
+															// this advice
 
 	ISourceLocation lastReportedMonitorExitJoinpointLocation = null;
 
@@ -73,7 +79,8 @@ public abstract class Advice extends ShadowMunger {
 		return ret;
 	}
 
-	// PTWIMPL per type within entry advice is what initializes the aspect instance in the matched type
+	// PTWIMPL per type within entry advice is what initializes the aspect
+	// instance in the matched type
 	public static Advice makePerTypeWithinEntry(World world, Pointcut p, ResolvedType inAspect) {
 		Advice ret = world.createAdviceMunger(AdviceKind.PerTypeWithinEntry, p, null, 0, p);
 		ret.concreteAspect = inAspect;
@@ -93,12 +100,12 @@ public abstract class Advice extends ShadowMunger {
 	public Advice(AjAttribute.AdviceAttribute attribute, Pointcut pointcut, Member signature) {
 		super(pointcut, attribute.getStart(), attribute.getEnd(), attribute.getSourceContext());
 		this.attribute = attribute;
-		this.kind = attribute.getKind(); // alias
+		kind = attribute.getKind(); // alias
 		this.signature = signature;
 		if (signature != null) {
-			this.bindingParameterTypes = signature.getParameterTypes();
+			bindingParameterTypes = signature.getParameterTypes();
 		} else {
-			this.bindingParameterTypes = new UnresolvedType[0];
+			bindingParameterTypes = new UnresolvedType[0];
 		}
 	}
 
@@ -163,7 +170,8 @@ public abstract class Advice extends ShadowMunger {
 							.getEnclosingType().getName()), getSourceLocation(), shadow.getSourceLocation());
 					return false;
 				} else {
-					// System.err.println(getSignature().getReturnType() + " from " + shadow.getReturnType());
+					// System.err.println(getSignature().getReturnType() +
+					// " from " + shadow.getReturnType());
 					if (getSignature().getReturnType() == ResolvedType.VOID) {
 						if (shadow.getReturnType() != ResolvedType.VOID) {
 							world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.NON_VOID_RETURN, shadow),
@@ -176,7 +184,12 @@ public abstract class Advice extends ShadowMunger {
 						ResolvedType shadowReturnType = shadow.getReturnType().resolve(world);
 						ResolvedType adviceReturnType = getSignature().getGenericReturnType().resolve(world);
 
-						if (shadowReturnType.isParameterizedType() && adviceReturnType.isRawType()) { // Set<Integer> and Set
+						if (shadowReturnType.isParameterizedType() && adviceReturnType.isRawType()) { // Set
+																										// <
+																										// Integer
+																										// >
+																										// and
+																										// Set
 							ResolvedType shadowReturnGenericType = shadowReturnType.getGenericType(); // Set
 							ResolvedType adviceReturnGenericType = adviceReturnType.getGenericType(); // Set
 							if (shadowReturnGenericType.isAssignableFrom(adviceReturnGenericType)
@@ -186,7 +199,8 @@ public abstract class Advice extends ShadowMunger {
 										new ISourceLocation[] { getSourceLocation() });
 							}
 						} else if (!shadowReturnType.isAssignableFrom(adviceReturnType)) {
-							// System.err.println(this + ", " + sourceContext + ", " + start);
+							// System.err.println(this + ", " + sourceContext +
+							// ", " + start);
 							world.showMessage(IMessage.ERROR, WeaverMessages
 									.format(WeaverMessages.INCOMPATIBLE_RETURN_TYPE, shadow), getSourceLocation(), shadow
 									.getSourceLocation());
@@ -202,10 +216,11 @@ public abstract class Advice extends ShadowMunger {
 	}
 
 	/**
-	 * In after returning advice if we are binding the extra parameter to a parameterized type we may not be able to do a type-safe
-	 * conversion.
+	 * In after returning advice if we are binding the extra parameter to a
+	 * parameterized type we may not be able to do a type-safe conversion.
 	 * 
-	 * @param resolvedExtraParameterType the type in the after returning declaration
+	 * @param resolvedExtraParameterType the type in the after returning
+	 *            declaration
 	 * @param shadowReturnType the type at the shadow
 	 * @param world
 	 */
@@ -248,11 +263,11 @@ public abstract class Advice extends ShadowMunger {
 	}
 
 	public UnresolvedType[] getBindingParameterTypes() {
-		return this.bindingParameterTypes;
+		return bindingParameterTypes;
 	}
 
 	public void setBindingParameterTypes(UnresolvedType[] types) {
-		this.bindingParameterTypes = types;
+		bindingParameterTypes = types;
 	}
 
 	public static int countOnes(int bits) {
@@ -344,11 +359,12 @@ public abstract class Advice extends ShadowMunger {
 			p.m_ignoreUnboundBindingForNames = oldP.m_ignoreUnboundBindingForNames;
 		}
 
-		Advice munger = world.createAdviceMunger(attribute, p, signature);
+		Advice munger = world.getWeavingSupport().createAdviceMunger(attribute, p, signature);
 		munger.concreteAspect = fromType;
-		munger.bindingParameterTypes = this.bindingParameterTypes;
+		munger.bindingParameterTypes = bindingParameterTypes;
 		munger.setDeclaringType(getDeclaringType());
-		// System.err.println("concretizing here " + p + " with clause " + clause);
+		// System.err.println("concretizing here " + p + " with clause " +
+		// clause);
 		return munger;
 	}
 
@@ -379,7 +395,8 @@ public abstract class Advice extends ShadowMunger {
 				&& ((o.signature == null) ? (signature == null) : o.signature.equals(signature))
 				&& (AsmManager.getDefault().getHandleProvider().dependsOnLocation() ? ((o.getSourceLocation() == null) ? (getSourceLocation() == null)
 						: o.getSourceLocation().equals(getSourceLocation()))
-						: true) // pr134471 - remove when handles are improved to be independent of location
+						: true) // pr134471 - remove when handles are improved
+								// to be independent of location
 		;
 
 	}

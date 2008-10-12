@@ -39,13 +39,11 @@ import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.NonCachingClassLoaderRepository;
 import org.aspectj.apache.bcel.util.Repository;
 import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.weaver.Advice;
-import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationOnTypeMunger;
 import org.aspectj.weaver.BCException;
-import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ICrossReferenceHandler;
+import org.aspectj.weaver.IWeavingSupport;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberImpl;
 import org.aspectj.weaver.MemberKind;
@@ -61,24 +59,17 @@ import org.aspectj.weaver.WeakClassLoaderReference;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
-import org.aspectj.weaver.patterns.PerClause;
-import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 
 public class BcelWorld extends World implements Repository {
-	private ClassPathManager classPath;
 
+	private final ClassPathManager classPath;
 	protected Repository delegate;
 	private WeakClassLoaderReference loaderRef;
+	private final BcelWeavingSupport bcelWeavingSupport = new BcelWeavingSupport();
 
-	// private ClassPathManager aspectPath = null;
-	// private List aspectPathEntries;
-
-	private static Trace trace = TraceFactory.getTraceFactory().getTrace(
-			BcelWorld.class);
-
-	// ---- constructors
+	private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelWorld.class);
 
 	public BcelWorld() {
 		this("");
@@ -92,7 +83,6 @@ public class BcelWorld extends World implements Repository {
 		List classPath = new ArrayList();
 		classPath.addAll(getPathEntries(cp));
 		classPath.addAll(getPathEntries(ClassPath.getClassPath()));
-		// System.err.println("classpath: " + classPath);
 		return classPath;
 
 	}
@@ -107,8 +97,7 @@ public class BcelWorld extends World implements Repository {
 		return ret;
 	}
 
-	public BcelWorld(List classPath, IMessageHandler handler,
-			ICrossReferenceHandler xrefHandler) {
+	public BcelWorld(List classPath, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
 		// this.aspectPath = new ClassPathManager(aspectPath, handler);
 		this.classPath = new ClassPathManager(classPath, handler);
 		setMessageHandler(handler);
@@ -117,9 +106,8 @@ public class BcelWorld extends World implements Repository {
 		delegate = this;
 	}
 
-	public BcelWorld(ClassPathManager cpm, IMessageHandler handler,
-			ICrossReferenceHandler xrefHandler) {
-		this.classPath = cpm;
+	public BcelWorld(ClassPathManager cpm, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
+		classPath = cpm;
 		setMessageHandler(handler);
 		setCrossReferenceHandler(xrefHandler);
 		// Tell BCEL to use us for resolving any classes
@@ -133,10 +121,9 @@ public class BcelWorld extends World implements Repository {
 	 * @param handler
 	 * @param xrefHandler
 	 */
-	public BcelWorld(ClassLoader loader, IMessageHandler handler,
-			ICrossReferenceHandler xrefHandler) {
-		this.classPath = null;
-		this.loaderRef = new WeakClassLoaderReference(loader);
+	public BcelWorld(ClassLoader loader, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
+		classPath = null;
+		loaderRef = new WeakClassLoaderReference(loader);
 		setMessageHandler(handler);
 		setCrossReferenceHandler(xrefHandler);
 		// Tell BCEL to use us for resolving any classes
@@ -210,10 +197,8 @@ public class BcelWorld extends World implements Repository {
 		}
 	}
 
-	public BcelObjectType buildBcelDelegate(ReferenceType resolvedTypeX,
-			JavaClass jc, boolean exposedToWeaver) {
-		BcelObjectType ret = new BcelObjectType(resolvedTypeX, jc,
-				exposedToWeaver);
+	public BcelObjectType buildBcelDelegate(ReferenceType resolvedTypeX, JavaClass jc, boolean exposedToWeaver) {
+		BcelObjectType ret = new BcelObjectType(resolvedTypeX, jc, exposedToWeaver);
 		return ret;
 	}
 
@@ -223,25 +208,21 @@ public class BcelWorld extends World implements Repository {
 				ensureRepositorySetup();
 				JavaClass jc = delegate.loadClass(name);
 				if (trace.isTraceEnabled())
-					trace.event("lookupJavaClass", this, new Object[] { name,
-							jc });
+					trace.event("lookupJavaClass", this, new Object[] { name, jc });
 				return jc;
 			} catch (ClassNotFoundException e) {
 				if (trace.isTraceEnabled())
-					trace.error("Unable to find class '" + name
-							+ "' in repository", e);
+					trace.error("Unable to find class '" + name + "' in repository", e);
 				return null;
 			}
 		}
 
 		try {
-			ClassPathManager.ClassFile file = classPath.find(UnresolvedType
-					.forName(name));
+			ClassPathManager.ClassFile file = classPath.find(UnresolvedType.forName(name));
 			if (file == null)
 				return null;
 
-			ClassParser parser = new ClassParser(file.getInputStream(), file
-					.getPath());
+			ClassParser parser = new ClassParser(file.getInputStream(), file.getPath());
 
 			JavaClass jc = parser.parse();
 			file.close();
@@ -253,18 +234,15 @@ public class BcelWorld extends World implements Repository {
 
 	public BcelObjectType addSourceObjectType(JavaClass jc) {
 		BcelObjectType ret = null;
-		String signature = UnresolvedType.forName(jc.getClassName())
-				.getSignature();
+		String signature = UnresolvedType.forName(jc.getClassName()).getSignature();
 
 		Object fromTheMap = typeMap.get(signature);
 
 		if (fromTheMap != null && !(fromTheMap instanceof ReferenceType)) {
 			// what on earth is it then? See pr 112243
 			StringBuffer exceptionText = new StringBuffer();
-			exceptionText
-					.append("Found invalid (not a ReferenceType) entry in the type map. ");
-			exceptionText.append("Signature=[" + signature + "] Found=["
-					+ fromTheMap + "] Class=[" + fromTheMap.getClass() + "]");
+			exceptionText.append("Found invalid (not a ReferenceType) entry in the type map. ");
+			exceptionText.append("Signature=[" + signature + "] Found=[" + fromTheMap + "] Class=[" + fromTheMap.getClass() + "]");
 			throw new BCException(exceptionText.toString());
 		}
 
@@ -273,12 +251,10 @@ public class BcelWorld extends World implements Repository {
 		if (nameTypeX == null) {
 			if (jc.isGeneric() && isInJava5Mode()) {
 
-				nameTypeX = ReferenceType.fromTypeX(UnresolvedType
-						.forRawTypeName(jc.getClassName()), this);
+				nameTypeX = ReferenceType.fromTypeX(UnresolvedType.forRawTypeName(jc.getClassName()), this);
 				ret = buildBcelDelegate(nameTypeX, jc, true);
-				ReferenceType genericRefType = new ReferenceType(UnresolvedType
-						.forGenericTypeSignature(signature, ret
-								.getDeclaredGenericSignature()), this);
+				ReferenceType genericRefType = new ReferenceType(UnresolvedType.forGenericTypeSignature(signature, ret
+						.getDeclaredGenericSignature()), this);
 				nameTypeX.setDelegate(ret);
 				genericRefType.setDelegate(ret);
 				nameTypeX.setGenericType(genericRefType);
@@ -298,26 +274,21 @@ public class BcelWorld extends World implements Repository {
 		typeMap.remove(ty.getSignature());
 	}
 
-	public static Member makeFieldJoinPointSignature(LazyClassGen cg,
-			FieldInstruction fi) {
+	public static Member makeFieldJoinPointSignature(LazyClassGen cg, FieldInstruction fi) {
 		ConstantPool cpg = cg.getConstantPool();
-		return MemberImpl
-				.field(
-						fi.getClassName(cpg),
-						(fi.opcode == Constants.GETSTATIC || fi.opcode == Constants.PUTSTATIC) ? Modifier.STATIC
-								: 0, fi.getName(cpg), fi.getSignature(cpg));
+		return MemberImpl.field(fi.getClassName(cpg),
+				(fi.opcode == Constants.GETSTATIC || fi.opcode == Constants.PUTSTATIC) ? Modifier.STATIC : 0, fi.getName(cpg), fi
+						.getSignature(cpg));
 	}
 
-	public Member makeJoinPointSignatureFromMethod(LazyMethodGen mg,
-			MemberKind kind) {
+	public Member makeJoinPointSignatureFromMethod(LazyMethodGen mg, MemberKind kind) {
 		Member ret = mg.getMemberView();
 		if (ret == null) {
 			int mods = mg.getAccessFlags();
 			if (mg.getEnclosingClass().isInterface()) {
 				mods |= Modifier.INTERFACE;
 			}
-			return new ResolvedMemberImpl(kind, UnresolvedType.forName(mg
-					.getClassName()), mods, fromBcel(mg.getReturnType()), mg
+			return new ResolvedMemberImpl(kind, UnresolvedType.forName(mg.getClassName()), mods, fromBcel(mg.getReturnType()), mg
 					.getName(), fromBcel(mg.getArgumentTypes()));
 		} else {
 			return ret;
@@ -325,18 +296,15 @@ public class BcelWorld extends World implements Repository {
 
 	}
 
-	public Member makeJoinPointSignatureForMonitorEnter(LazyClassGen cg,
-			InstructionHandle h) {
+	public Member makeJoinPointSignatureForMonitorEnter(LazyClassGen cg, InstructionHandle h) {
 		return MemberImpl.monitorEnter();
 	}
 
-	public Member makeJoinPointSignatureForMonitorExit(LazyClassGen cg,
-			InstructionHandle h) {
+	public Member makeJoinPointSignatureForMonitorExit(LazyClassGen cg, InstructionHandle h) {
 		return MemberImpl.monitorExit();
 	}
 
-	public Member makeJoinPointSignatureForArrayConstruction(LazyClassGen cg,
-			InstructionHandle handle) {
+	public Member makeJoinPointSignatureForArrayConstruction(LazyClassGen cg, InstructionHandle handle) {
 		Instruction i = handle.getInstruction();
 		ConstantPool cpg = cg.getConstantPool();
 		Member retval = null;
@@ -346,8 +314,7 @@ public class BcelWorld extends World implements Repository {
 			Type ot = i.getType(cpg);
 			UnresolvedType ut = fromBcel(ot);
 			ut = UnresolvedType.makeArray(ut, 1);
-			retval = MemberImpl.method(ut, Modifier.PUBLIC, ResolvedType.VOID,
-					"<init>", new ResolvedType[] { ResolvedType.INT });
+			retval = MemberImpl.method(ut, Modifier.PUBLIC, ResolvedType.VOID, "<init>", new ResolvedType[] { ResolvedType.INT });
 		} else if (i instanceof MULTIANEWARRAY) {
 			MULTIANEWARRAY arrayInstruction = (MULTIANEWARRAY) i;
 			UnresolvedType ut = null;
@@ -363,25 +330,20 @@ public class BcelWorld extends World implements Repository {
 			ResolvedType[] parms = new ResolvedType[dimensions];
 			for (int ii = 0; ii < dimensions; ii++)
 				parms[ii] = ResolvedType.INT;
-			retval = MemberImpl.method(ut, Modifier.PUBLIC, ResolvedType.VOID,
-					"<init>", parms);
+			retval = MemberImpl.method(ut, Modifier.PUBLIC, ResolvedType.VOID, "<init>", parms);
 
 		} else if (i.opcode == Constants.NEWARRAY) {
 			// NEWARRAY arrayInstruction = (NEWARRAY)i;
 			Type ot = i.getType();
 			UnresolvedType ut = fromBcel(ot);
-			retval = MemberImpl.method(ut, Modifier.PUBLIC, ResolvedType.VOID,
-					"<init>", new ResolvedType[] { ResolvedType.INT });
+			retval = MemberImpl.method(ut, Modifier.PUBLIC, ResolvedType.VOID, "<init>", new ResolvedType[] { ResolvedType.INT });
 		} else {
-			throw new BCException(
-					"Cannot create array construction signature for this non-array instruction:"
-							+ i);
+			throw new BCException("Cannot create array construction signature for this non-array instruction:" + i);
 		}
 		return retval;
 	}
 
-	public Member makeJoinPointSignatureForMethodInvocation(LazyClassGen cg,
-			InvokeInstruction ii) {
+	public Member makeJoinPointSignatureForMethodInvocation(LazyClassGen cg, InvokeInstruction ii) {
 		ConstantPool cpg = cg.getConstantPool();
 		String name = ii.getName(cpg);
 		String declaring = ii.getClassName(cpg);
@@ -390,9 +352,8 @@ public class BcelWorld extends World implements Repository {
 		String signature = ii.getSignature(cpg);
 
 		int modifier = (ii instanceof INVOKEINTERFACE) ? Modifier.INTERFACE
-				: (ii.opcode == Constants.INVOKESTATIC) ? Modifier.STATIC
-						: (ii.opcode == Constants.INVOKESPECIAL && !name
-								.equals("<init>")) ? Modifier.PRIVATE : 0;
+				: (ii.opcode == Constants.INVOKESTATIC) ? Modifier.STATIC : (ii.opcode == Constants.INVOKESPECIAL && !name
+						.equals("<init>")) ? Modifier.PRIVATE : 0;
 
 		// in Java 1.4 and after, static method call of super class within
 		// subclass method appears
@@ -401,12 +362,10 @@ public class BcelWorld extends World implements Repository {
 		if (ii.opcode == Constants.INVOKESTATIC) {
 			ResolvedType appearsDeclaredBy = resolve(declaring);
 			// look for the method there
-			for (Iterator iterator = appearsDeclaredBy.getMethods(); iterator
-					.hasNext();) {
+			for (Iterator iterator = appearsDeclaredBy.getMethods(); iterator.hasNext();) {
 				ResolvedMember method = (ResolvedMember) iterator.next();
 				if (method.isStatic()) {
-					if (name.equals(method.getName())
-							&& signature.equals(method.getSignature())) {
+					if (name.equals(method.getName()) && signature.equals(method.getSignature())) {
 						// we found it
 						declaringType = method.getDeclaringType();
 						break;
@@ -433,48 +392,13 @@ public class BcelWorld extends World implements Repository {
 		return buf.toString();
 	}
 
-	public Advice createAdviceMunger(AjAttribute.AdviceAttribute attribute,
-			Pointcut pointcut, Member signature) {
-		// System.err.println("concrete advice: " + signature + " context " +
-		// sourceContext);
-		return new BcelAdvice(attribute, pointcut, signature, null);
-	}
-
-	public ConcreteTypeMunger concreteTypeMunger(ResolvedTypeMunger munger,
-			ResolvedType aspectType) {
-		return new BcelTypeMunger(munger, aspectType);
-	}
-
-	public ConcreteTypeMunger makeCflowStackFieldAdder(ResolvedMember cflowField) {
-		return new BcelCflowStackFieldAdder(cflowField);
-	}
-
-	public ConcreteTypeMunger makeCflowCounterFieldAdder(
-			ResolvedMember cflowField) {
-		return new BcelCflowCounterFieldAdder(cflowField);
-	}
-
-	/**
-	 * Register a munger for perclause @AJ aspect so that we add aspectOf(..) to
-	 * them as needed
-	 * 
-	 * @param aspect
-	 * @param kind
-	 * @return munger
-	 */
-	public ConcreteTypeMunger makePerClauseAspect(ResolvedType aspect,
-			PerClause.Kind kind) {
-		return new BcelPerClauseAspectAdder(aspect, kind);
-	}
-
 	/**
 	 * Retrieve a bcel delegate for an aspect - this will return NULL if the
 	 * delegate is an EclipseSourceType and not a BcelObjectType - this happens
 	 * quite often when incrementally compiling.
 	 */
 	public static BcelObjectType getBcelObjectType(ResolvedType concreteAspect) {
-		ReferenceTypeDelegate rtDelegate = ((ReferenceType) concreteAspect)
-				.getDelegate();
+		ReferenceTypeDelegate rtDelegate = ((ReferenceType) concreteAspect).getDelegate();
 		if (rtDelegate instanceof BcelObjectType) {
 			return (BcelObjectType) rtDelegate;
 		} else {
@@ -517,7 +441,6 @@ public class BcelWorld extends World implements Repository {
 		// throw new RuntimeException("Not implemented");
 	}
 
-	// @Override
 	/**
 	 * The aim of this method is to make sure a particular type is 'ok'. Some
 	 * operations on the delegate for a type modify it and this method is
@@ -563,12 +486,10 @@ public class BcelWorld extends World implements Repository {
 				// (like transform super calls) - that is done in
 				// BcelTypeMunger.mungeNewParent()
 				classType.addParent(newParent);
-				ResolvedTypeMunger newParentMunger = new NewParentTypeMunger(
-						newParent);
+				ResolvedTypeMunger newParentMunger = new NewParentTypeMunger(newParent);
 				newParentMunger.setSourceLocation(p.getSourceLocation());
-				onType.addInterTypeMunger(new BcelTypeMunger(newParentMunger,
-						getCrosscuttingMembersSet().findAspectDeclaringParents(
-								p)));
+				onType.addInterTypeMunger(new BcelTypeMunger(newParentMunger, getCrosscuttingMembersSet()
+						.findAspectDeclaringParents(p)));
 			}
 		}
 		return didSomething;
@@ -577,8 +498,7 @@ public class BcelWorld extends World implements Repository {
 	/**
 	 * Apply a declare @type - return true if we change the type
 	 */
-	private boolean applyDeclareAtType(DeclareAnnotation decA,
-			ResolvedType onType, boolean reportProblems) {
+	private boolean applyDeclareAtType(DeclareAnnotation decA, ResolvedType onType, boolean reportProblems) {
 		boolean didSomething = false;
 		if (decA.matches(onType)) {
 
@@ -594,11 +514,9 @@ public class BcelWorld extends World implements Repository {
 
 			if (isOK) {
 				didSomething = true;
-				ResolvedTypeMunger newAnnotationTM = new AnnotationOnTypeMunger(
-						annoX);
+				ResolvedTypeMunger newAnnotationTM = new AnnotationOnTypeMunger(annoX);
 				newAnnotationTM.setSourceLocation(decA.getSourceLocation());
-				onType.addInterTypeMunger(new BcelTypeMunger(newAnnotationTM,
-						decA.getAspect().resolve(this)));
+				onType.addInterTypeMunger(new BcelTypeMunger(newAnnotationTM, decA.getAspect().resolve(this)));
 				decA.copyAnnotationTo(onType);
 			}
 		}
@@ -609,11 +527,9 @@ public class BcelWorld extends World implements Repository {
 	 * Checks for an @target() on the annotation and if found ensures it allows
 	 * the annotation to be attached to the target type that matched.
 	 */
-	private boolean checkTargetOK(DeclareAnnotation decA, ResolvedType onType,
-			AnnotationAJ annoX) {
+	private boolean checkTargetOK(DeclareAnnotation decA, ResolvedType onType, AnnotationAJ annoX) {
 		if (annoX.specifiesTarget()) {
-			if ((onType.isAnnotation() && !annoX.allowedOnAnnotationType())
-					|| (!annoX.allowedOnRegularType())) {
+			if ((onType.isAnnotation() && !annoX.allowedOnAnnotationType()) || (!annoX.allowedOnRegularType())) {
 				return false;
 			}
 		}
@@ -626,8 +542,7 @@ public class BcelWorld extends World implements Repository {
 	// weaving.
 	protected void weaveInterTypeDeclarations(ResolvedType onType) {
 
-		List declareParentsList = getCrosscuttingMembersSet()
-				.getDeclareParents();
+		List declareParentsList = getCrosscuttingMembersSet().getDeclareParents();
 		if (onType.isRawType())
 			onType = onType.getGenericType();
 		onType.clearInterTypeMungers();
@@ -650,8 +565,7 @@ public class BcelWorld extends World implements Repository {
 		}
 
 		// Still first pass - apply all dec @type mungers
-		for (Iterator i = getCrosscuttingMembersSet()
-				.getDeclareAnnotationOnTypes().iterator(); i.hasNext();) {
+		for (Iterator i = getCrosscuttingMembersSet().getDeclareAnnotationOnTypes().iterator(); i.hasNext();) {
 			DeclareAnnotation decA = (DeclareAnnotation) i.next();
 			boolean typeChanged = applyDeclareAtType(decA, onType, true);
 			if (typeChanged) {
@@ -659,8 +573,7 @@ public class BcelWorld extends World implements Repository {
 			}
 		}
 
-		while ((aParentChangeOccurred || anAnnotationChangeOccurred)
-				&& !decpToRepeat.isEmpty()) {
+		while ((aParentChangeOccurred || anAnnotationChangeOccurred) && !decpToRepeat.isEmpty()) {
 			anAnnotationChangeOccurred = aParentChangeOccurred = false;
 			List decpToRepeatNextTime = new ArrayList();
 			for (Iterator iter = decpToRepeat.iterator(); iter.hasNext();) {
@@ -673,8 +586,7 @@ public class BcelWorld extends World implements Repository {
 				}
 			}
 
-			for (Iterator iter = getCrosscuttingMembersSet()
-					.getDeclareAnnotationOnTypes().iterator(); iter.hasNext();) {
+			for (Iterator iter = getCrosscuttingMembersSet().getDeclareAnnotationOnTypes().iterator(); iter.hasNext();) {
 				DeclareAnnotation decA = (DeclareAnnotation) iter.next();
 				boolean typeChanged = applyDeclareAtType(decA, onType, false);
 				if (typeChanged) {
@@ -683,6 +595,10 @@ public class BcelWorld extends World implements Repository {
 			}
 			decpToRepeat = decpToRepeatNextTime;
 		}
+	}
+
+	public IWeavingSupport getWeavingSupport() {
+		return bcelWeavingSupport;
 	}
 
 }

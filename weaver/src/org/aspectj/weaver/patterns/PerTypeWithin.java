@@ -35,37 +35,36 @@ import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
 
-
 // PTWIMPL Represents a parsed pertypewithin()
 public class PerTypeWithin extends PerClause {
 
 	private TypePattern typePattern;
-	
+
 	// Any shadow could be considered within a pertypewithin() type pattern
 	private static final int kindSet = Shadow.ALL_SHADOW_KINDS_BITS;
-	
+
 	public TypePattern getTypePattern() {
 		return typePattern;
 	}
-	
+
 	public PerTypeWithin(TypePattern p) {
-		this.typePattern = p;
+		typePattern = p;
 	}
 
 	public Object accept(PatternNodeVisitor visitor, Object data) {
-		return visitor.visit(this,data);
+		return visitor.visit(this, data);
 	}
-	
+
 	public int couldMatchKinds() {
 		return kindSet;
 	}
-	
-	public Pointcut parameterizeWith(Map typeVariableMap,World w) {
-		PerTypeWithin ret = new PerTypeWithin(typePattern.parameterizeWith(typeVariableMap,w));
+
+	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+		PerTypeWithin ret = new PerTypeWithin(typePattern.parameterizeWith(typeVariableMap, w));
 		ret.copyLocationFrom(this);
 		return ret;
 	}
-	
+
 	// -----
 	public FuzzyBoolean fastMatch(FastMatchInfo info) {
 		if (typePattern.annotationPattern instanceof AnyAnnotationTypePattern) {
@@ -73,133 +72,138 @@ public class PerTypeWithin extends PerClause {
 		}
 		return FuzzyBoolean.MAYBE;
 	}
-		
-    protected FuzzyBoolean matchInternal(Shadow shadow) {
-    	ResolvedType enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType(),true);
-    	if (enclosingType.isMissing()) {
-    		//PTWIMPL ?? Add a proper message
-    		IMessage msg = new Message(
-    				"Cant find type pertypewithin matching...",
-					shadow.getSourceLocation(),true,new ISourceLocation[]{getSourceLocation()});
-    		shadow.getIWorld().getMessageHandler().handleMessage(msg);
-    	}
-    	
-    	// See pr106554 - we can't put advice calls in an interface when the advice is defined
-    	// in a pertypewithin aspect - the JPs only exist in the static initializer and can't 
-    	// call the localAspectOf() method.
-    	if (enclosingType.isInterface()) return FuzzyBoolean.NO;
-    	
-    	typePattern.resolve(shadow.getIWorld());
-    	return isWithinType(enclosingType);
-    }
 
-    public void resolveBindings(IScope scope, Bindings bindings) {
-    	typePattern = typePattern.resolveBindings(scope, bindings, false, false);
-    }
-    
-    protected Test findResidueInternal(Shadow shadow, ExposedState state) {
-//    	Member ptwField = AjcMemberMaker.perTypeWithinField(shadow.getEnclosingType(),inAspect);
-    	
-    	Expr myInstance =
-    		Expr.makeCallExpr(AjcMemberMaker.perTypeWithinLocalAspectOf(shadow.getEnclosingType(),inAspect/*shadow.getEnclosingType()*/),
-    				Expr.NONE,inAspect);
-    	state.setAspectInstance(myInstance);
-    	
-    	// this worked at one point
-    	//Expr myInstance = Expr.makeFieldGet(ptwField,shadow.getEnclosingType().resolve(shadow.getIWorld()));//inAspect);
-    	//state.setAspectInstance(myInstance);
-    	
-    	
-//   	return Test.makeFieldGetCall(ptwField,null,Expr.NONE);
-    	// cflowField, cflowCounterIsValidMethod, Expr.NONE
-    	
-    	// This is what is in the perObject variant of this ...
-//    	Expr myInstance =
-//    		Expr.makeCallExpr(AjcMemberMaker.perTypeWithinAspectOfMethod(inAspect),
-//    							new Expr[] {getVar(shadow)}, inAspect);
-//    	state.setAspectInstance(myInstance);
-//    	return Test.makeCall(AjcMemberMaker.perTypeWithinHasAspectMethod(inAspect), 
-//    			new Expr[] { getVar(shadow) });
-//    	
+	protected FuzzyBoolean matchInternal(Shadow shadow) {
+		ResolvedType enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType(), true);
+		if (enclosingType.isMissing()) {
+			// PTWIMPL ?? Add a proper message
+			IMessage msg = new Message("Cant find type pertypewithin matching...", shadow.getSourceLocation(), true,
+					new ISourceLocation[] { getSourceLocation() });
+			shadow.getIWorld().getMessageHandler().handleMessage(msg);
+		}
 
-    	
-    	 return match(shadow).alwaysTrue()?Literal.TRUE:Literal.FALSE;
-    }
-    
+		// See pr106554 - we can't put advice calls in an interface when the
+		// advice is defined
+		// in a pertypewithin aspect - the JPs only exist in the static
+		// initializer and can't
+		// call the localAspectOf() method.
+		if (enclosingType.isInterface())
+			return FuzzyBoolean.NO;
+
+		typePattern.resolve(shadow.getIWorld());
+		return isWithinType(enclosingType);
+	}
+
+	public void resolveBindings(IScope scope, Bindings bindings) {
+		typePattern = typePattern.resolveBindings(scope, bindings, false, false);
+	}
+
+	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
+		// Member ptwField =
+		// AjcMemberMaker.perTypeWithinField(shadow.getEnclosingType
+		// (),inAspect);
+
+		Expr myInstance = Expr.makeCallExpr(AjcMemberMaker.perTypeWithinLocalAspectOf(shadow.getEnclosingType(), inAspect/*
+																														 * shadow.
+																														 * getEnclosingType
+																														 * (
+																														 * )
+																														 */),
+				Expr.NONE, inAspect);
+		state.setAspectInstance(myInstance);
+
+		// this worked at one point
+		// Expr myInstance =
+		// Expr.makeFieldGet(ptwField,shadow.getEnclosingType()
+		// .resolve(shadow.getIWorld()));//inAspect);
+		// state.setAspectInstance(myInstance);
+
+		// return Test.makeFieldGetCall(ptwField,null,Expr.NONE);
+		// cflowField, cflowCounterIsValidMethod, Expr.NONE
+
+		// This is what is in the perObject variant of this ...
+		// Expr myInstance =
+		//Expr.makeCallExpr(AjcMemberMaker.perTypeWithinAspectOfMethod(inAspect)
+		// ,
+		// new Expr[] {getVar(shadow)}, inAspect);
+		// state.setAspectInstance(myInstance);
+		// return
+		// Test.makeCall(AjcMemberMaker.perTypeWithinHasAspectMethod(inAspect),
+		// new Expr[] { getVar(shadow) });
+		//    	
+
+		return match(shadow).alwaysTrue() ? Literal.TRUE : Literal.FALSE;
+	}
 
 	public PerClause concretize(ResolvedType inAspect) {
 		PerTypeWithin ret = new PerTypeWithin(typePattern);
 		ret.copyLocationFrom(this);
 		ret.inAspect = inAspect;
-		if (inAspect.isAbstract()) return ret;
-		
-		
+		if (inAspect.isAbstract())
+			return ret;
+
 		World world = inAspect.getWorld();
-		
-		SignaturePattern sigpat = new SignaturePattern(
-				Member.STATIC_INITIALIZATION,
-				ModifiersPattern.ANY,
-				TypePattern.ANY,
-				TypePattern.ANY,//typePattern,
-				NamePattern.ANY,
-				TypePatternList.ANY,
-				ThrowsPattern.ANY,
-				AnnotationTypePattern.ANY
-				);
-		
-		Pointcut staticInitStar = new KindedPointcut(Shadow.StaticInitialization,sigpat);
-		Pointcut withinTp= new WithinPointcut(typePattern);
-		Pointcut andPcut = new AndPointcut(staticInitStar,withinTp);
-		// We want the pointcut to be 'staticinitialization(*) && within(<typepattern>' -
-		// we *cannot* shortcut this to staticinitialization(<typepattern>) because it
+
+		SignaturePattern sigpat = new SignaturePattern(Member.STATIC_INITIALIZATION, ModifiersPattern.ANY, TypePattern.ANY,
+				TypePattern.ANY,// typePattern,
+				NamePattern.ANY, TypePatternList.ANY, ThrowsPattern.ANY, AnnotationTypePattern.ANY);
+
+		Pointcut staticInitStar = new KindedPointcut(Shadow.StaticInitialization, sigpat);
+		Pointcut withinTp = new WithinPointcut(typePattern);
+		Pointcut andPcut = new AndPointcut(staticInitStar, withinTp);
+		// We want the pointcut to be 'staticinitialization(*) &&
+		// within(<typepattern>' -
+		// we *cannot* shortcut this to staticinitialization(<typepattern>)
+		// because it
 		// doesnt mean the same thing.
 
-		// This munger will initialize the aspect instance field in the matched type
+		// This munger will initialize the aspect instance field in the matched
+		// type
 		inAspect.crosscuttingMembers.addConcreteShadowMunger(Advice.makePerTypeWithinEntry(world, andPcut, inAspect));
-		
+
 		ResolvedTypeMunger munger = new PerTypeWithinTargetTypeMunger(inAspect, ret);
-		inAspect.crosscuttingMembers.addTypeMunger(world.concreteTypeMunger(munger, inAspect));
+		inAspect.crosscuttingMembers.addTypeMunger(world.getWeavingSupport().concreteTypeMunger(munger, inAspect));
 
-        //ATAJ: add a munger to add the aspectOf(..) to the @AJ aspects
-        if (inAspect.isAnnotationStyleAspect() && !inAspect.isAbstract()) {
-            inAspect.crosscuttingMembers.addLateTypeMunger(
-                    inAspect.getWorld().makePerClauseAspect(inAspect, getKind())
-            );
-        }
+		// ATAJ: add a munger to add the aspectOf(..) to the @AJ aspects
+		if (inAspect.isAnnotationStyleAspect() && !inAspect.isAbstract()) {
+			inAspect.crosscuttingMembers.addLateTypeMunger(inAspect.getWorld().getWeavingSupport().makePerClauseAspect(inAspect,
+					getKind()));
+		}
 
-        //ATAJ inline around advice support - don't use a late munger to allow around inling for itself
-        if (inAspect.isAnnotationStyleAspect() && !inAspect.getWorld().isXnoInline()) {
-            inAspect.crosscuttingMembers.addTypeMunger(new BcelAccessForInlineMunger(inAspect));
-        }
+		// ATAJ inline around advice support - don't use a late munger to allow
+		// around inling for itself
+		if (inAspect.isAnnotationStyleAspect() && !inAspect.getWorld().isXnoInline()) {
+			inAspect.crosscuttingMembers.addTypeMunger(new BcelAccessForInlineMunger(inAspect));
+		}
 
 		return ret;
-		
+
 	}
 
-    public void write(DataOutputStream s) throws IOException {
-    	PERTYPEWITHIN.write(s);
-    	typePattern.write(s);
-    	writeLocation(s);
-    }
-    
+	public void write(DataOutputStream s) throws IOException {
+		PERTYPEWITHIN.write(s);
+		typePattern.write(s);
+		writeLocation(s);
+	}
+
 	public static PerClause readPerClause(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		PerClause ret = new PerTypeWithin(TypePattern.read(s, context));
 		ret.readLocation(context, s);
 		return ret;
 	}
-	
+
 	public PerClause.Kind getKind() {
 		return PERTYPEWITHIN;
 	}
-	
+
 	public String toString() {
-		return "pertypewithin("+typePattern+")";
+		return "pertypewithin(" + typePattern + ")";
 	}
-	
+
 	public String toDeclarationString() {
 		return toString();
 	}
-	
+
 	private FuzzyBoolean isWithinType(ResolvedType type) {
 		while (type != null) {
 			if (typePattern.matchesStatically(type)) {
@@ -209,19 +213,20 @@ public class PerTypeWithin extends PerClause {
 		}
 		return FuzzyBoolean.NO;
 	}
-	
-    public boolean equals(Object other) {
-    	if (!(other instanceof PerTypeWithin)) return false;
-    	PerTypeWithin pc = (PerTypeWithin)other;   
-    	return ((pc.inAspect == null) ? (inAspect == null) : pc.inAspect.equals(inAspect))
-    	   		&& ((pc.typePattern == null) ? (typePattern == null) : pc.typePattern.equals(typePattern));
-    }
-    
-    public int hashCode() {
-        int result = 17;
-        result = 37*result + ((inAspect == null) ? 0 : inAspect.hashCode());
-        result = 37*result + ((typePattern == null) ? 0 : typePattern.hashCode());
-        return result;
-    }
-	
+
+	public boolean equals(Object other) {
+		if (!(other instanceof PerTypeWithin))
+			return false;
+		PerTypeWithin pc = (PerTypeWithin) other;
+		return ((pc.inAspect == null) ? (inAspect == null) : pc.inAspect.equals(inAspect))
+				&& ((pc.typePattern == null) ? (typePattern == null) : pc.typePattern.equals(typePattern));
+	}
+
+	public int hashCode() {
+		int result = 17;
+		result = 37 * result + ((inAspect == null) ? 0 : inAspect.hashCode());
+		result = 37 * result + ((typePattern == null) ? 0 : typePattern.hashCode());
+		return result;
+	}
+
 }

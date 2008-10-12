@@ -21,27 +21,29 @@ import org.aspectj.apache.bcel.classfile.Signature.ClassSignature;
 import org.aspectj.bridge.ISourceLocation;
 
 public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDelegate {
-	
-	public final static String UNKNOWN_SOURCE_FILE = "<Unknown>"; // Just randomly picked, happens to match BCEL javaclass default
-	
-	private String sourcefilename = UNKNOWN_SOURCE_FILE; // Sourcefilename is stored only here
+
+	private String sourcefilename = UNKNOWN_SOURCE_FILE;
+	private ISourceContext sourceContext = SourceContextImpl.UNKNOWN_SOURCE_CONTEXT;
+
 	protected boolean exposedToWeaver;
 	protected ReferenceType resolvedTypeX;
-	private ISourceContext sourceContext = SourceContextImpl.UNKNOWN_SOURCE_CONTEXT;
 	protected ClassSignature cachedGenericClassTypeSignature;
 
-    public AbstractReferenceTypeDelegate(ReferenceType resolvedTypeX, boolean exposedToWeaver) {
-        this.resolvedTypeX = resolvedTypeX;
-        this.exposedToWeaver = exposedToWeaver;
-    }
-        
+	// Happens to match Bcel javaClass default of '<Unknown>'
+	public final static String UNKNOWN_SOURCE_FILE = "<Unknown>";
+
+	public AbstractReferenceTypeDelegate(ReferenceType resolvedTypeX, boolean exposedToWeaver) {
+		this.resolvedTypeX = resolvedTypeX;
+		this.exposedToWeaver = exposedToWeaver;
+	}
+
 	public final boolean isClass() {
-    	return !isAspect() && !isInterface();
-    }
+		return !isAspect() && !isInterface();
+	}
 
 	/**
-	 * Designed to be overriden by EclipseType to disable collection of shadow mungers
-	 * during pre-weave compilation phase
+	 * Designed to be overriden by EclipseType to disable collection of shadow
+	 * mungers during pre-weave compilation phase
 	 */
 	public boolean doesNotExposeShadowMungers() {
 		return false;
@@ -54,54 +56,52 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 	public ReferenceType getResolvedTypeX() {
 		return resolvedTypeX;
 	}
-	
-  
-    
-    public final String getSourcefilename() {
-    	return sourcefilename;
-    }
-    
-    public final void setSourcefilename(String sourceFileName) {
-		this.sourcefilename = sourceFileName;
-		if (sourceFileName!=null && sourceFileName.equals(AbstractReferenceTypeDelegate.UNKNOWN_SOURCE_FILE)) {
-			this.sourcefilename = "Type '"+ getResolvedTypeX().getName()+"' (no debug info available)";
+
+	public final String getSourcefilename() {
+		return sourcefilename;
+	}
+
+	public final void setSourcefilename(String sourceFileName) {
+		sourcefilename = sourceFileName;
+		if (sourceFileName != null && sourceFileName.equals(AbstractReferenceTypeDelegate.UNKNOWN_SOURCE_FILE)) {
+			sourcefilename = "Type '" + getResolvedTypeX().getName() + "' (no debug info available)";
 		} else {
 			String pname = getResolvedTypeX().getPackageName();
 			if (pname != null) {
-				this.sourcefilename = pname.replace('.', '/') + '/' + sourceFileName;
+				sourcefilename = pname.replace('.', '/') + '/' + sourceFileName;
 			}
 		}
-		if (this.sourcefilename!=null && sourceContext instanceof SourceContextImpl) {
-			((SourceContextImpl)sourceContext).setSourceFileName(this.sourcefilename);
+		if (sourcefilename != null && sourceContext instanceof SourceContextImpl) {
+			((SourceContextImpl) sourceContext).setSourceFileName(sourcefilename);
 		}
-    }
-    
-	public ISourceLocation getSourceLocation() {
-		return getSourceContext().makeSourceLocation(0, 0); 
 	}
-	
+
+	public ISourceLocation getSourceLocation() {
+		return getSourceContext().makeSourceLocation(0, 0);
+	}
+
 	public ISourceContext getSourceContext() {
 		return sourceContext;
 	}
-	
+
 	public void setSourceContext(ISourceContext isc) {
-		this.sourceContext = isc;
+		sourceContext = isc;
 	}
 
 	public Signature.ClassSignature getGenericClassTypeSignature() {
-		if (cachedGenericClassTypeSignature==null) {
+		if (cachedGenericClassTypeSignature == null) {
 			String sig = getDeclaredGenericSignature();
-			if (sig!=null) {
+			if (sig != null) {
 				GenericSignatureParser parser = new GenericSignatureParser();
 				cachedGenericClassTypeSignature = parser.parseAsClassSignature(sig);
 			}
 		}
 		return cachedGenericClassTypeSignature;
 	}
-	
+
 	protected Signature.FormalTypeParameter[] getFormalTypeParametersFromOuterClass() {
 		List typeParameters = new ArrayList();
-		ReferenceType outer = (ReferenceType)getOuterClass();
+		ReferenceType outer = (ReferenceType) getOuterClass();
 		ReferenceTypeDelegate outerDelegate = outer.getDelegate();
 		AbstractReferenceTypeDelegate outerObjectType = (AbstractReferenceTypeDelegate) outerDelegate;
 		if (outerObjectType.isNested()) {
@@ -112,15 +112,14 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 		}
 		Signature.ClassSignature outerSig = outerObjectType.getGenericClassTypeSignature();
 		if (outerSig != null) {
-			for (int i = 0; i < outerSig.formalTypeParameters .length; i++) {
+			for (int i = 0; i < outerSig.formalTypeParameters.length; i++) {
 				typeParameters.add(outerSig.formalTypeParameters[i]);
 			}
-		} 
-		
+		}
+
 		Signature.FormalTypeParameter[] ret = new Signature.FormalTypeParameter[typeParameters.size()];
 		typeParameters.toArray(ret);
 		return ret;
 	}
-
 
 }

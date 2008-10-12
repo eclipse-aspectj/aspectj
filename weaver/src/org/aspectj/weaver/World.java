@@ -37,7 +37,6 @@ import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.context.PinpointingMessageHandler;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
-import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.tools.PointcutDesignatorHandler;
 import org.aspectj.weaver.tools.Trace;
@@ -50,10 +49,16 @@ public abstract class World implements Dump.INode {
 	/** handler for any messages produced during resolution etc. */
 	private IMessageHandler messageHandler = IMessageHandler.SYSTEM_ERR;
 
-	/** handler for cross-reference information produced during the weaving process */
+	/**
+	 * handler for cross-reference information produced during the weaving
+	 * process
+	 */
 	private ICrossReferenceHandler xrefHandler = null;
 
-	/** Currently 'active' scope in which to lookup (resolve) typevariable references */
+	/**
+	 * Currently 'active' scope in which to lookup (resolve) typevariable
+	 * references
+	 */
 	private TypeVariableDeclaringElement typeVariableLookupScope;
 
 	/** The heart of the world, a map from type signatures to resolved types */
@@ -87,7 +92,10 @@ public abstract class World implements Dump.INode {
 	/** XhasMember option setting passed down to weaver */
 	private boolean XhasMember = false;
 
-	/** Xpinpoint controls whether we put out developer info showing the source of messages */
+	/**
+	 * Xpinpoint controls whether we put out developer info showing the source
+	 * of messages
+	 */
 	private boolean Xpinpoint = false;
 
 	/** When behaving in a Java 5 way autoboxing is considered */
@@ -100,8 +108,12 @@ public abstract class World implements Dump.INode {
 	private String targetAspectjRuntimeLevel = Constants.RUNTIME_LEVEL_DEFAULT;
 
 	/** Flags for the new joinpoints that are 'optional' */
-	private boolean optionalJoinpoint_ArrayConstruction = false; // Command line flag: "-Xjoinpoints:arrayconstruction"
-	private boolean optionalJoinpoint_Synchronization = false; // Command line flag: "-Xjoinpoints:synchronization"
+	private boolean optionalJoinpoint_ArrayConstruction = false; // Command line
+	// flag:
+	// "-Xjoinpoints:arrayconstruction"
+	private boolean optionalJoinpoint_Synchronization = false; // Command line
+	// flag:
+	// "-Xjoinpoints:synchronization"
 
 	private boolean addSerialVerUID = false;
 
@@ -124,12 +136,14 @@ public abstract class World implements Dump.INode {
 	private long warningThreshold;
 
 	/**
-	 * A list of RuntimeExceptions containing full stack information for every type we couldn't find.
+	 * A list of RuntimeExceptions containing full stack information for every
+	 * type we couldn't find.
 	 */
 	private List dumpState_cantFindTypeExceptions = null;
 
 	/**
-	 * Play God. On the first day, God created the primitive types and put them in the type map.
+	 * Play God. On the first day, God created the primitive types and put them
+	 * in the type map.
 	 */
 	protected World() {
 		super();
@@ -169,9 +183,11 @@ public abstract class World implements Dump.INode {
 		}
 	}
 
-	// =============================================================================
+	//==========================================================================
+	// ===
 	// T Y P E R E S O L U T I O N
-	// =============================================================================
+	//==========================================================================
+	// ===
 
 	/**
 	 * Resolve a type that we require to be present in the world
@@ -181,8 +197,10 @@ public abstract class World implements Dump.INode {
 	}
 
 	/**
-	 * Attempt to resolve a type - the source location gives you some context in which resolution is taking place. In the case of an
-	 * error where we can't find the type - we can then at least report why (source location) we were trying to resolve it.
+	 * Attempt to resolve a type - the source location gives you some context in
+	 * which resolution is taking place. In the case of an error where we can't
+	 * find the type - we can then at least report why (source location) we were
+	 * trying to resolve it.
 	 */
 	public ResolvedType resolve(UnresolvedType ty, ISourceLocation isl) {
 		ResolvedType ret = resolve(ty, true);
@@ -190,9 +208,11 @@ public abstract class World implements Dump.INode {
 			// IMessage msg = null;
 			getLint().cantFindType.signal(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE, ty.getName()), isl);
 			// if (isl!=null) {
-			// msg = MessageUtil.error(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName()),isl);
+			// msg = MessageUtil.error(WeaverMessages.format(WeaverMessages.
+			// CANT_FIND_TYPE,ty.getName()),isl);
 			// } else {
-			// msg = MessageUtil.error(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName()));
+			// msg = MessageUtil.error(WeaverMessages.format(WeaverMessages.
+			// CANT_FIND_TYPE,ty.getName()));
 			// }
 			// messageHandler.handleMessage(msg);
 		}
@@ -200,8 +220,8 @@ public abstract class World implements Dump.INode {
 	}
 
 	/**
-	 * Convenience method for resolving an array of unresolved types in one hit. Useful for e.g. resolving type parameters in
-	 * signatures.
+	 * Convenience method for resolving an array of unresolved types in one hit.
+	 * Useful for e.g. resolving type parameters in signatures.
 	 */
 	public ResolvedType[] resolve(UnresolvedType[] types) {
 		if (types == null)
@@ -215,7 +235,8 @@ public abstract class World implements Dump.INode {
 	}
 
 	/**
-	 * Resolve a type. This the hub of type resolution. The resolved type is added to the type map by signature.
+	 * Resolve a type. This the hub of type resolution. The resolved type is
+	 * added to the type map by signature.
 	 */
 	public ResolvedType resolve(UnresolvedType ty, boolean allowMissing) {
 
@@ -226,13 +247,16 @@ public abstract class World implements Dump.INode {
 			return rty;
 		}
 
-		// dispatch back to the type variable reference to resolve its constituent parts
-		// don't do this for other unresolved types otherwise you'll end up in a loop
+		// dispatch back to the type variable reference to resolve its
+		// constituent parts
+		// don't do this for other unresolved types otherwise you'll end up in a
+		// loop
 		if (ty.isTypeVariableReference()) {
 			return ty.resolve(this);
 		}
 
-		// if we've already got a resolved type for the signature, just return it
+		// if we've already got a resolved type for the signature, just return
+		// it
 		// after updating the world
 		String signature = ty.getSignature();
 		ResolvedType ret = typeMap.get(signature);
@@ -240,9 +264,11 @@ public abstract class World implements Dump.INode {
 			ret.world = this; // Set the world for the RTX
 			return ret;
 		} else if (signature.equals("?") || signature.equals("*")) {
-			// might be a problem here, not sure '?' should make it to here as a signature, the
+			// might be a problem here, not sure '?' should make it to here as a
+			// signature, the
 			// proper signature for wildcard '?' is '*'
-			// fault in generic wildcard, can't be done earlier because of init issues
+			// fault in generic wildcard, can't be done earlier because of init
+			// issues
 			// TODO ought to be shared single instance representing this
 			ResolvedType something = new BoundedReferenceType("*", "Ljava/lang/Object", this);
 			typeMap.put("?", something);
@@ -252,7 +278,8 @@ public abstract class World implements Dump.INode {
 		// no existing resolved type, create one
 		if (ty.isArray()) {
 			ResolvedType componentType = resolve(ty.getComponentType(), allowMissing);
-			// String brackets = signature.substring(0,signature.lastIndexOf("[")+1);
+			// String brackets =
+			// signature.substring(0,signature.lastIndexOf("[")+1);
 			ret = new ArrayReferenceType(signature, "[" + componentType.getErasureSignature(), this, componentType);
 		} else {
 			ret = resolveToReferenceType(ty, allowMissing);
@@ -272,14 +299,16 @@ public abstract class World implements Dump.INode {
 	}
 
 	/**
-	 * Called when a type is resolved - enables its type hierarchy to be finished off before we proceed
+	 * Called when a type is resolved - enables its type hierarchy to be
+	 * finished off before we proceed
 	 */
 	protected void completeBinaryType(ResolvedType ret) {
 	}
 
 	/**
-	 * Return true if the classloader relating to this world is definetly the one that will define the specified class. Return false
-	 * otherwise or we don't know for certain.
+	 * Return true if the classloader relating to this world is definetly the
+	 * one that will define the specified class. Return false otherwise or we
+	 * don't know for certain.
 	 */
 	public boolean isLocallyDefined(String classname) {
 		return false;
@@ -289,7 +318,8 @@ public abstract class World implements Dump.INode {
 	 * We tried to resolve a type and couldn't find it...
 	 */
 	private ResolvedType handleRequiredMissingTypeDuringResolution(UnresolvedType ty) {
-		// defer the message until someone asks a question of the type that we can't answer
+		// defer the message until someone asks a question of the type that we
+		// can't answer
 		// just from the signature.
 		// MessageUtil.error(messageHandler,
 		// WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName()));
@@ -303,8 +333,10 @@ public abstract class World implements Dump.INode {
 	}
 
 	/**
-	 * Some TypeFactory operations create resolved types directly, but these won't be in the typeMap - this resolution process puts
-	 * them there. Resolved types are also told their world which is needed for the special autoboxing resolved types.
+	 * Some TypeFactory operations create resolved types directly, but these
+	 * won't be in the typeMap - this resolution process puts them there.
+	 * Resolved types are also told their world which is needed for the special
+	 * autoboxing resolved types.
 	 */
 	public ResolvedType resolve(ResolvedType ty) {
 		if (ty.isTypeVariableReference())
@@ -319,7 +351,8 @@ public abstract class World implements Dump.INode {
 	}
 
 	/**
-	 * Convenience method for finding a type by name and resolving it in one step.
+	 * Convenience method for finding a type by name and resolving it in one
+	 * step.
 	 */
 	public ResolvedType resolve(String name) {
 		// trace.enter("resolve", this, new Object[] {name});
@@ -333,8 +366,8 @@ public abstract class World implements Dump.INode {
 	}
 
 	/**
-	 * Resolve to a ReferenceType - simple, raw, parameterized, or generic. Raw, parameterized, and generic versions of a type share
-	 * a delegate.
+	 * Resolve to a ReferenceType - simple, raw, parameterized, or generic. Raw,
+	 * parameterized, and generic versions of a type share a delegate.
 	 */
 	private final ResolvedType resolveToReferenceType(UnresolvedType ty, boolean allowMissing) {
 		if (ty.isParameterizedType()) {
@@ -364,13 +397,18 @@ public abstract class World implements Dump.INode {
 			// 117854
 			// if (delegate == null) return ResolvedType.MISSING;
 			if (delegate == null)
-				return new MissingResolvedTypeWithKnownSignature(ty.getSignature(), erasedSignature, this);// ResolvedType.MISSING;
+				return new MissingResolvedTypeWithKnownSignature(ty.getSignature(), erasedSignature, this);// ResolvedType
+			// .
+			// MISSING
+			// ;
 
 			if (delegate.isGeneric() && behaveInJava5Way) {
 				// ======== raw type ===========
 				simpleOrRawType.typeKind = TypeKind.RAW;
 				ReferenceType genericType = makeGenericTypeFrom(delegate, simpleOrRawType);
-				// name = ReferenceType.fromTypeX(UnresolvedType.forRawTypeNames(ty.getName()),this);
+				// name =
+				// ReferenceType.fromTypeX(UnresolvedType.forRawTypeNames(
+				// ty.getName()),this);
 				simpleOrRawType.setDelegate(delegate);
 				genericType.setDelegate(delegate);
 				simpleOrRawType.setGenericType(genericType);
@@ -399,13 +437,16 @@ public abstract class World implements Dump.INode {
 			return rawType;
 
 		// Does the raw type know its generic form? (It will if we created the
-		// raw type from a source type, it won't if its been created just through
+		// raw type from a source type, it won't if its been created just
+		// through
 		// being referenced, e.g. java.util.List
 		ResolvedType genericType = rawType.getGenericType();
 
-		// There is a special case to consider here (testGenericsBang_pr95993 highlights it)
+		// There is a special case to consider here (testGenericsBang_pr95993
+		// highlights it)
 		// You may have an unresolvedType for a parameterized type but it
-		// is backed by a simple type rather than a generic type. This occurs for
+		// is backed by a simple type rather than a generic type. This occurs
+		// for
 		// inner types of generic types that inherit their enclosing types
 		// type variables.
 		if (rawType.isSimpleType() && (anUnresolvedType.typeParameters == null || anUnresolvedType.typeParameters.length == 0)) {
@@ -439,11 +480,13 @@ public abstract class World implements Dump.INode {
 	}
 
 	/**
-	 * Go from an unresolved generic wildcard (represented by UnresolvedType) to a resolved version (BoundedReferenceType).
+	 * Go from an unresolved generic wildcard (represented by UnresolvedType) to
+	 * a resolved version (BoundedReferenceType).
 	 */
 	private ReferenceType resolveGenericWildcardFor(WildcardedUnresolvedType aType) {
 		BoundedReferenceType ret = null;
-		// FIXME asc doesnt take account of additional interface bounds (e.g. ? super R & Serializable - can you do that?)
+		// FIXME asc doesnt take account of additional interface bounds (e.g. ?
+		// super R & Serializable - can you do that?)
 		if (aType.isExtends()) {
 			ReferenceType upperBound = (ReferenceType) resolve(aType.getUpperBound());
 			ret = new BoundedReferenceType(upperBound, true, this);
@@ -458,15 +501,18 @@ public abstract class World implements Dump.INode {
 	}
 
 	/**
-	 * Find the ReferenceTypeDelegate behind this reference type so that it can fulfill its contract.
+	 * Find the ReferenceTypeDelegate behind this reference type so that it can
+	 * fulfill its contract.
 	 */
 	protected abstract ReferenceTypeDelegate resolveDelegate(ReferenceType ty);
 
 	/**
-	 * Special resolution for "core" types like OBJECT. These are resolved just like any other type, but if they are not found it is
-	 * more serious and we issue an error message immediately.
+	 * Special resolution for "core" types like OBJECT. These are resolved just
+	 * like any other type, but if they are not found it is more serious and we
+	 * issue an error message immediately.
 	 */
-	// OPTIMIZE streamline path for core types? They are just simple types, could look straight in the typemap?
+	// OPTIMIZE streamline path for core types? They are just simple types,
+	// could look straight in the typemap?
 	public ResolvedType getCoreType(UnresolvedType tx) {
 		ResolvedType coreTy = resolve(tx, true);
 		if (coreTy.isMissing()) {
@@ -476,7 +522,8 @@ public abstract class World implements Dump.INode {
 	}
 
 	/**
-	 * Lookup a type by signature, if not found then build one and put it in the map.
+	 * Lookup a type by signature, if not found then build one and put it in the
+	 * map.
 	 */
 	public ReferenceType lookupOrCreateName(UnresolvedType ty) {
 		String signature = ty.getSignature();
@@ -489,18 +536,22 @@ public abstract class World implements Dump.INode {
 	}
 
 	/**
-	 * Lookup a reference type in the world by its signature. Returns null if not found.
+	 * Lookup a reference type in the world by its signature. Returns null if
+	 * not found.
 	 */
 	public ReferenceType lookupBySignature(String signature) {
 		return (ReferenceType) typeMap.get(signature);
 	}
 
-	// =============================================================================
+	//==========================================================================
+	// ===
 	// T Y P E R E S O L U T I O N -- E N D
-	// =============================================================================
+	//==========================================================================
+	// ===
 
 	/**
-	 * Member resolution is achieved by resolving the declaring type and then looking up the member in the resolved declaring type.
+	 * Member resolution is achieved by resolving the declaring type and then
+	 * looking up the member in the resolved declaring type.
 	 */
 	public ResolvedMember resolve(Member member) {
 		ResolvedType declaring = member.getDeclaringType().resolve(this);
@@ -519,14 +570,13 @@ public abstract class World implements Dump.INode {
 		return declaring.lookupSyntheticMember(member);
 	}
 
-	// Methods for creating various cross-cutting members...
-	// ===========================================================
+	public abstract IWeavingSupport getWeavingSupport();
 
 	/**
 	 * Create an advice shadow munger from the given advice attribute
 	 */
-	public abstract Advice createAdviceMunger(AjAttribute.AdviceAttribute attribute, Pointcut pointcut, Member signature);
-
+	// public abstract Advice createAdviceMunger(AjAttribute.AdviceAttribute
+	// attribute, Pointcut pointcut, Member signature);
 	/**
 	 * Create an advice shadow munger for the given advice kind
 	 */
@@ -534,24 +584,12 @@ public abstract class World implements Dump.INode {
 			IHasSourceLocation loc) {
 		AjAttribute.AdviceAttribute attribute = new AjAttribute.AdviceAttribute(kind, p, extraParameterFlags, loc.getStart(), loc
 				.getEnd(), loc.getSourceContext());
-		return createAdviceMunger(attribute, p, signature);
+		return getWeavingSupport().createAdviceMunger(attribute, p, signature);
 	}
 
-	public abstract ConcreteTypeMunger makeCflowStackFieldAdder(ResolvedMember cflowField);
-
-	public abstract ConcreteTypeMunger makeCflowCounterFieldAdder(ResolvedMember cflowField);
-
 	/**
-	 * Register a munger for perclause @AJ aspect so that we add aspectOf(..) to them as needed
-	 * 
-	 * @see org.aspectj.weaver.bcel.BcelWorld#makePerClauseAspect(ResolvedType, org.aspectj.weaver.patterns.PerClause.Kind)
-	 */
-	public abstract ConcreteTypeMunger makePerClauseAspect(ResolvedType aspect, PerClause.Kind kind);
-
-	public abstract ConcreteTypeMunger concreteTypeMunger(ResolvedTypeMunger munger, ResolvedType aspectType);
-
-	/**
-	 * Same signature as org.aspectj.util.PartialOrder.PartialComparable.compareTo
+	 * Same signature as
+	 * org.aspectj.util.PartialOrder.PartialComparable.compareTo
 	 */
 	public int compareByPrecedence(ResolvedType aspect1, ResolvedType aspect2) {
 		return precedenceCalculator.compareByPrecedence(aspect1, aspect2);
@@ -562,7 +600,8 @@ public abstract class World implements Dump.INode {
 	}
 
 	/**
-	 * compares by precedence with the additional rule that a super-aspect is sorted before its sub-aspects
+	 * compares by precedence with the additional rule that a super-aspect is
+	 * sorted before its sub-aspects
 	 */
 	public int compareByPrecedenceAndHierarchy(ResolvedType aspect1, ResolvedType aspect2) {
 		return precedenceCalculator.compareByPrecedenceAndHierarchy(aspect1, aspect2);
@@ -572,7 +611,8 @@ public abstract class World implements Dump.INode {
 	// ===========================================================
 
 	/**
-	 * Nobody should hold onto a copy of this message handler, or setMessageHandler won't work right.
+	 * Nobody should hold onto a copy of this message handler, or
+	 * setMessageHandler won't work right.
 	 */
 	public IMessageHandler getMessageHandler() {
 		return messageHandler;
@@ -587,8 +627,8 @@ public abstract class World implements Dump.INode {
 	}
 
 	/**
-	 * convenenience method for creating and issuing messages via the message handler - if you supply two locations you will get two
-	 * messages.
+	 * convenenience method for creating and issuing messages via the message
+	 * handler - if you supply two locations you will get two messages.
 	 */
 	public void showMessage(Kind kind, String message, ISourceLocation loc1, ISourceLocation loc2) {
 		if (loc1 != null) {
@@ -609,11 +649,11 @@ public abstract class World implements Dump.INode {
 	 * Get the cross-reference handler for the world, may be null.
 	 */
 	public ICrossReferenceHandler getCrossReferenceHandler() {
-		return this.xrefHandler;
+		return xrefHandler;
 	}
 
 	public void setTypeVariableLookupScope(TypeVariableDeclaringElement scope) {
-		this.typeVariableLookupScope = scope;
+		typeVariableLookupScope = scope;
 	}
 
 	public TypeVariableDeclaringElement getTypeVariableLookupScope() {
@@ -689,7 +729,7 @@ public abstract class World implements Dump.INode {
 	}
 
 	public void setPinpointMode(boolean b) {
-		this.Xpinpoint = b;
+		Xpinpoint = b;
 	}
 
 	public void setBehaveInJava5Way(boolean b) {
@@ -697,7 +737,8 @@ public abstract class World implements Dump.INode {
 	}
 
 	/**
-	 * Set the error and warning threashold which can be taken from CompilerOptions (see bug 129282)
+	 * Set the error and warning threashold which can be taken from
+	 * CompilerOptions (see bug 129282)
 	 * 
 	 * @param errorThreshold
 	 * @param warningThreshold
@@ -708,12 +749,13 @@ public abstract class World implements Dump.INode {
 	}
 
 	/**
-	 * @return true if ignoring the UnusedDeclaredThrownException and false if this compiler option is set to error or warning
+	 * @return true if ignoring the UnusedDeclaredThrownException and false if
+	 *         this compiler option is set to error or warning
 	 */
 	public boolean isIgnoringUnusedDeclaredThrownException() {
 		// the 0x800000 is CompilerOptions.UnusedDeclaredThrownException
 		// which is ASTNode.bit24
-		if ((this.errorThreshold & 0x800000) != 0 || (this.warningThreshold & 0x800000) != 0)
+		if ((errorThreshold & 0x800000) != 0 || (warningThreshold & 0x800000) != 0)
 			return false;
 		return true;
 	}
@@ -752,12 +794,24 @@ public abstract class World implements Dump.INode {
 		return extraConfiguration;
 	}
 
-	public final static String xsetWEAVE_JAVA_PACKAGES = "weaveJavaPackages"; // default false - controls LTW
-	public final static String xsetWEAVE_JAVAX_PACKAGES = "weaveJavaxPackages"; // default false - controls LTW
-	public final static String xsetCAPTURE_ALL_CONTEXT = "captureAllContext"; // default false
-	public final static String xsetRUN_MINIMAL_MEMORY = "runMinimalMemory"; // default true
-	public final static String xsetDEBUG_STRUCTURAL_CHANGES_CODE = "debugStructuralChangesCode"; // default false
-	public final static String xsetDEBUG_BRIDGING = "debugBridging"; // default false
+	public final static String xsetWEAVE_JAVA_PACKAGES = "weaveJavaPackages"; // default
+	// false
+	// -
+	// controls
+	// LTW
+	public final static String xsetWEAVE_JAVAX_PACKAGES = "weaveJavaxPackages"; // default
+	// false
+	// -
+	// controls
+	// LTW
+	public final static String xsetCAPTURE_ALL_CONTEXT = "captureAllContext"; // default
+	// false
+	public final static String xsetRUN_MINIMAL_MEMORY = "runMinimalMemory"; // default
+	// true
+	public final static String xsetDEBUG_STRUCTURAL_CHANGES_CODE = "debugStructuralChangesCode"; // default
+	// false
+	public final static String xsetDEBUG_BRIDGING = "debugBridging"; // default
+	// false
 	public final static String xsetBCEL_REPOSITORY_CACHING = "bcelRepositoryCaching";
 	public final static String xsetPIPELINE_COMPILATION = "pipelineCompilation";
 	public final static String xsetGENERATE_STACKMAPS = "generateStackMaps";
@@ -765,7 +819,9 @@ public abstract class World implements Dump.INode {
 	public final static String xsetCOMPLETE_BINARY_TYPES = "completeBinaryTypes";
 	public final static String xsetCOMPLETE_BINARY_TYPES_DEFAULT = "false";
 	public final static String xsetBCEL_REPOSITORY_CACHING_DEFAULT = "true";
-	public final static String xsetFAST_PACK_METHODS = "fastPackMethods"; // default TRUE
+	public final static String xsetFAST_PACK_METHODS = "fastPackMethods"; // default
+
+	// TRUE
 
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;
@@ -796,20 +852,23 @@ public abstract class World implements Dump.INode {
 		return targetAspectjRuntimeLevel;
 	}
 
-	// OPTIMIZE are users falling foul of not supplying -1.5 and so targetting the old runtime?
+	// OPTIMIZE are users falling foul of not supplying -1.5 and so targetting
+	// the old runtime?
 	public boolean isTargettingAspectJRuntime12() {
 		boolean b = false; // pr116679
 		if (!isInJava5Mode())
 			b = true;
 		else
 			b = getTargetAspectjRuntimeLevel().equals(org.aspectj.weaver.Constants.RUNTIME_LEVEL_12);
-		// System.err.println("Asked if targetting runtime 1.2 , returning: "+b);
+		//System.err.println("Asked if targetting runtime 1.2 , returning: "+b);
 		return b;
 	}
 
 	/*
-	 * Map of types in the world, can have 'references' to expendable ones which can be garbage collected to recover memory. An
-	 * expendable type is a reference type that is not exposed to the weaver (ie just pulled in for type resolution purposes).
+	 * Map of types in the world, can have 'references' to expendable ones which
+	 * can be garbage collected to recover memory. An expendable type is a
+	 * reference type that is not exposed to the weaver (ie just pulled in for
+	 * type resolution purposes).
 	 */
 	protected static class TypeMap {
 
@@ -818,24 +877,25 @@ public abstract class World implements Dump.INode {
 		// Strategy for entries in the expendable map
 		public final static int DONT_USE_REFS = 0; // Hang around forever
 		public final static int USE_WEAK_REFS = 1; // Collected asap
-		public final static int USE_SOFT_REFS = 2; // Collected when short on memory
+		public final static int USE_SOFT_REFS = 2; // Collected when short on
+		// memory
 
 		// SECRETAPI - Can switch to a policy of choice ;)
 		public static int policy = USE_SOFT_REFS;
 
 		// Map of types that never get thrown away
-		private Map /* String -> ResolvedType */tMap = new HashMap();
+		private final Map /* String -> ResolvedType */tMap = new HashMap();
 
 		// Map of types that may be ejected from the cache if we need space
-		private Map expendableMap = Collections.synchronizedMap(new WeakHashMap());
+		private final Map expendableMap = Collections.synchronizedMap(new WeakHashMap());
 
-		private World w;
+		private final World w;
 
 		// profiling tools...
 		private boolean memoryProfiling = false;
 		private int maxExpendableMapSize = -1;
 		private int collectedTypes = 0;
-		private ReferenceQueue rq = new ReferenceQueue();
+		private final ReferenceQueue rq = new ReferenceQueue();
 
 		private static Trace trace = TraceFactory.getTraceFactory().getTrace(World.TypeMap.class);
 
@@ -843,20 +903,25 @@ public abstract class World implements Dump.INode {
 			if (trace.isTraceEnabled())
 				trace.enter("<init>", this, w);
 			this.w = w;
-			memoryProfiling = false;// !w.getMessageHandler().isIgnoring(Message.INFO);
+			memoryProfiling = false;//!w.getMessageHandler().isIgnoring(Message.
+			// INFO);
 			if (trace.isTraceEnabled())
 				trace.exit("<init>");
 		}
 
 		/**
-		 * Add a new type into the map, the key is the type signature. Some types do *not* go in the map, these are ones involving
-		 * *member* type variables. The reason is that when all you have is the signature which gives you a type variable name, you
-		 * cannot guarantee you are using the type variable in the same way as someone previously working with a similarly named
-		 * type variable. So, these do not go into the map: - TypeVariableReferenceType. - ParameterizedType where a member type
-		 * variable is involved. - BoundedReferenceType when one of the bounds is a type variable.
+		 * Add a new type into the map, the key is the type signature. Some
+		 * types do *not* go in the map, these are ones involving *member* type
+		 * variables. The reason is that when all you have is the signature
+		 * which gives you a type variable name, you cannot guarantee you are
+		 * using the type variable in the same way as someone previously working
+		 * with a similarly named type variable. So, these do not go into the
+		 * map: - TypeVariableReferenceType. - ParameterizedType where a member
+		 * type variable is involved. - BoundedReferenceType when one of the
+		 * bounds is a type variable.
 		 * 
-		 * definition: "member type variables" - a tvar declared on a generic method/ctor as opposed to those you see declared on a
-		 * generic type.
+		 * definition: "member type variables" - a tvar declared on a generic
+		 * method/ctor as opposed to those you see declared on a generic type.
 		 */
 		public ResolvedType put(String key, ResolvedType type) {
 			if (type.isParameterizedType() && type.isParameterizedWithTypeVariable()) {
@@ -871,7 +936,8 @@ public abstract class World implements Dump.INode {
 					System.err.println("Not putting a type variable reference type into the typemap: key=" + key + " type=" + type);
 				return type;
 			}
-			// this test should be improved - only avoid putting them in if one of the
+			// this test should be improved - only avoid putting them in if one
+			// of the
 			// bounds is a member type variable
 			if (type instanceof BoundedReferenceType) {
 				if (debug)
@@ -934,7 +1000,8 @@ public abstract class World implements Dump.INode {
 		}
 
 		/**
-		 * Lookup a type by its signature, always look in the real map before the expendable map
+		 * Lookup a type by its signature, always look in the real map before
+		 * the expendable map
 		 */
 		public ResolvedType get(String key) {
 			checkq();
@@ -981,11 +1048,13 @@ public abstract class World implements Dump.INode {
 		//
 		// collectTypes(expendableMap, results);
 		// collectTypes(tMap, results);
-		// return (ResolvedType[]) results.toArray(new ResolvedType[results.size()]);
+		// return (ResolvedType[]) results.toArray(new
+		// ResolvedType[results.size()]);
 		// }
 		//
 		// private void collectTypes(Map map, List/* ResolvedType */results) {
-		// for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
+		// for (Iterator iterator = map.keySet().iterator();
+		// iterator.hasNext();) {
 		// String key = (String) iterator.next();
 		// ResolvedType type = get(key);
 		// if (type != null)
@@ -998,28 +1067,31 @@ public abstract class World implements Dump.INode {
 	}
 
 	/**
-	 * Reference types we don't intend to weave may be ejected from the cache if we need the space.
+	 * Reference types we don't intend to weave may be ejected from the cache if
+	 * we need the space.
 	 */
 	protected boolean isExpendable(ResolvedType type) {
 		return (!type.equals(UnresolvedType.OBJECT) && (!type.isExposedToWeaver()) && (!type.isPrimitiveType()));
 	}
 
 	/**
-	 * This class is used to compute and store precedence relationships between aspects.
+	 * This class is used to compute and store precedence relationships between
+	 * aspects.
 	 */
 	private static class AspectPrecedenceCalculator {
 
-		private World world;
-		private Map cachedResults;
+		private final World world;
+		private final Map cachedResults;
 
 		public AspectPrecedenceCalculator(World forSomeWorld) {
-			this.world = forSomeWorld;
-			this.cachedResults = new HashMap();
+			world = forSomeWorld;
+			cachedResults = new HashMap();
 		}
 
 		/**
-		 * Ask every declare precedence in the world to order the two aspects. If more than one declare precedence gives an
-		 * ordering, and the orderings conflict, then that's an error.
+		 * Ask every declare precedence in the world to order the two aspects.
+		 * If more than one declare precedence gives an ordering, and the
+		 * orderings conflict, then that's an error.
 		 */
 		public int compareByPrecedence(ResolvedType firstAspect, ResolvedType secondAspect) {
 			PrecedenceCacheKey key = new PrecedenceCacheKey(firstAspect, secondAspect);
@@ -1027,7 +1099,9 @@ public abstract class World implements Dump.INode {
 				return ((Integer) cachedResults.get(key)).intValue();
 			} else {
 				int order = 0;
-				DeclarePrecedence orderer = null; // Records the declare precedence statement that gives the first ordering
+				DeclarePrecedence orderer = null; // Records the declare
+				// precedence statement that
+				// gives the first ordering
 				for (Iterator i = world.getCrosscuttingMembersSet().getDeclareDominates().iterator(); i.hasNext();) {
 					DeclarePrecedence d = (DeclarePrecedence) i.next();
 					int thisOrder = d.compare(firstAspect, secondAspect);
@@ -1076,8 +1150,8 @@ public abstract class World implements Dump.INode {
 			public ResolvedType aspect2;
 
 			public PrecedenceCacheKey(ResolvedType a1, ResolvedType a2) {
-				this.aspect1 = a1;
-				this.aspect2 = a2;
+				aspect1 = a1;
+				aspect2 = a2;
 			}
 
 			public boolean equals(Object obj) {
@@ -1096,12 +1170,15 @@ public abstract class World implements Dump.INode {
 	public void validateType(UnresolvedType type) {
 	}
 
-	// --- with java5 we can get into a recursive mess if we aren't careful when resolving types (*cough* java.lang.Enum) ---
+	// --- with java5 we can get into a recursive mess if we aren't careful when
+	// resolving types (*cough* java.lang.Enum) ---
 
-	// --- this first map is for java15 delegates which may try and recursively access the same type variables.
-	// --- I would rather stash this against a reference type - but we don't guarantee referencetypes are unique for
+	// --- this first map is for java15 delegates which may try and recursively
+	// access the same type variables.
+	// --- I would rather stash this against a reference type - but we don't
+	// guarantee referencetypes are unique for
 	// so we can't :(
-	private Map workInProgress1 = new HashMap();
+	private final Map workInProgress1 = new HashMap();
 
 	public TypeVariable[] getTypeVariablesCurrentlyBeingProcessed(Class baseClass) {
 		return (TypeVariable[]) workInProgress1.get(baseClass);
@@ -1147,7 +1224,7 @@ public abstract class World implements Dump.INode {
 
 				s = p.getProperty(xsetPIPELINE_COMPILATION, xsetPIPELINE_COMPILATION_DEFAULT);
 				shouldPipelineCompilation = s.equalsIgnoreCase("true");
-				
+
 				s = p.getProperty(xsetGENERATE_STACKMAPS, "false");
 				shouldGenerateStackMaps = s.equalsIgnoreCase("true");
 
@@ -1162,7 +1239,8 @@ public abstract class World implements Dump.INode {
 				runMinimalMemory = s.equalsIgnoreCase("true");
 				// if (runMinimalMemory)
 				// getMessageHandler().handleMessage(MessageUtil.info(
-				// "[runMinimalMemory=true] Optimizing bcel processing (and cost of performance) to use less memory"));
+				// "[runMinimalMemory=true] Optimizing bcel processing (and cost of performance) to use less memory"
+				// ));
 
 				s = p.getProperty(xsetDEBUG_STRUCTURAL_CHANGES_CODE, "false");
 				forDEBUG_structuralChangesCode = s.equalsIgnoreCase("true");
@@ -1189,12 +1267,12 @@ public abstract class World implements Dump.INode {
 		ensureAdvancedConfigurationProcessed();
 		return shouldPipelineCompilation;
 	}
-	
+
 	public boolean shouldGenerateStackMaps() {
 		ensureAdvancedConfigurationProcessed();
 		return shouldGenerateStackMaps;
 	}
-	
+
 	public void setIncrementalCompileCouldFollow(boolean b) {
 		incrementalCompileCouldFollow = b;
 	}
@@ -1216,7 +1294,8 @@ public abstract class World implements Dump.INode {
 	}
 
 	/**
-	 * Register a new pointcut designator handler with the world - this can be used by any pointcut parsers attached to the world.
+	 * Register a new pointcut designator handler with the world - this can be
+	 * used by any pointcut parsers attached to the world.
 	 * 
 	 * @param designatorHandler handler for the new pointcut
 	 */
