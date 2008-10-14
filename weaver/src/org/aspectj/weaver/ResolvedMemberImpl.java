@@ -814,11 +814,24 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			// The component type might be a type variable (pr150095)
 			int dims = 1;
 			String sig = aType.getSignature();
-			while (sig.charAt(dims) == '[')
-				dims++;
+			// while (sig.charAt(dims) == '[')
+			// dims++;
+			UnresolvedType arrayType = null;
 			UnresolvedType componentSig = UnresolvedType.forSignature(sig.substring(dims));
-			UnresolvedType arrayType = ResolvedType.makeArray(parameterize(componentSig, typeVariableMap, inParameterizedType),
-					dims);
+			UnresolvedType parameterizedComponentSig = parameterize(componentSig, typeVariableMap, inParameterizedType);
+			if (parameterizedComponentSig.isTypeVariableReference()
+					&& parameterizedComponentSig instanceof UnresolvedTypeVariableReferenceType
+					&& typeVariableMap.containsKey(((UnresolvedTypeVariableReferenceType) parameterizedComponentSig)
+							.getTypeVariable().getName())) { // pr250632
+				// TODO ASC bah, this code is rubbish - i should fix it properly
+				StringBuffer newsig = new StringBuffer();
+				newsig.append("[T");
+				newsig.append(((UnresolvedTypeVariableReferenceType) parameterizedComponentSig).getTypeVariable().getName());
+				newsig.append(";");
+				arrayType = UnresolvedType.forSignature(newsig.toString());
+			} else {
+				arrayType = ResolvedType.makeArray(parameterizedComponentSig, dims);
+			}
 			return arrayType;
 		}
 		return aType;
