@@ -1,0 +1,17 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+    <ajc-test dir="bugs163/pr250493" title="bridge methods for generic itds">
+      <compile files="Bridged.java" options="-1.5"/>
+      <run class="Bridged">
+        <stdout>
+          <line text="getterA()java.lang.Object  isBridged?true"/>
+          <line text="getterA()java.lang.String  isBridged?false"/>
+          <line text="getterB()java.lang.Object  isBridged?true"/>
+          <line text="getterB()java.lang.String  isBridged?false"/>
+        </stdout>
+      </run>
+    </ajc-test>
+
+</suite>
