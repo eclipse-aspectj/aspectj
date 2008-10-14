@@ -25,6 +25,8 @@ public class AjcMemberMaker {
 
 	private static final int PUBLIC_STATIC = Modifier.PUBLIC | Modifier.STATIC;
 
+	private static final int BRIDGE = 0x0040;
+
 	private static final int VISIBILITY = Modifier.PUBLIC | Modifier.PRIVATE | Modifier.PROTECTED;
 
 	public static final UnresolvedType CFLOW_STACK_TYPE = UnresolvedType.forName(NameMangler.CFLOW_STACK_TYPE);
@@ -465,6 +467,25 @@ public class AjcMemberMaker {
 			return meth;
 
 		int modifiers = makePublicNonFinal(meth.getModifiers());
+		if (onInterface)
+			modifiers |= Modifier.ABSTRACT;
+
+		ResolvedMemberImpl rmi = new ResolvedMemberImpl(Member.METHOD, meth.getDeclaringType(), modifiers, meth.getReturnType(),
+				NameMangler.interMethod(meth.getModifiers(), aspectType, meth.getDeclaringType(), meth.getName()), meth
+						.getParameterTypes(), meth.getExceptions());
+		rmi.setTypeVariables(meth.getTypeVariables());
+		return rmi;
+	}
+
+	/**
+	 * This method goes on the target type of the inter-type method. (and possibly the topmost-implementors, if the target type is
+	 * an interface). The implementation will call the interMethodDispatch method on the aspect.
+	 */
+	public static ResolvedMember interMethodBridger(ResolvedMember meth, UnresolvedType aspectType, boolean onInterface) {
+		// if (Modifier.isPublic(meth.getModifiers()) && !onInterface)
+		// return meth;
+
+		int modifiers = makePublicNonFinal(meth.getModifiers()) | BRIDGE;
 		if (onInterface)
 			modifiers |= Modifier.ABSTRACT;
 

@@ -986,7 +986,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					}
 					if (needsbridging) {
 						ResolvedMember bridgerMethod = AjcMemberMaker.bridgerToInterMethod(unMangledInterMethod, gen.getType());
-						ResolvedMember bridgingSetter = AjcMemberMaker.interMethod(toBridgeTo, aspectType, false);
+						ResolvedMember bridgingSetter = AjcMemberMaker.interMethodBridger(toBridgeTo, aspectType, false); // pr250493
 
 						// FIXME asc ----------------8<---------------- extract
 						// method
