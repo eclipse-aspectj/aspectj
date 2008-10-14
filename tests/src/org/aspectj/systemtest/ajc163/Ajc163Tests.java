@@ -18,6 +18,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testGenericMethodConversions_pr250632() {
+		runTest("type conversion in generic itd");
+	}
+
 	public void testGenericMethodBridging_pr250493() {
 		runTest("bridge methods for generic itds");
 	}

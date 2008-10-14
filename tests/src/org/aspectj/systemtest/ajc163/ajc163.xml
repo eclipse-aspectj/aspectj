@@ -2,6 +2,11 @@
 
 <suite>
 
+
+    <ajc-test dir="bugs163/pr250632" title="type conversion in generic itd">
+      <compile files="MyAspect.java" options="-1.5"/>
+    </ajc-test>
+
     <ajc-test dir="bugs163/pr250493" title="bridge methods for generic itds">
       <compile files="Bridged.java" options="-1.5"/>
       <run class="Bridged">
