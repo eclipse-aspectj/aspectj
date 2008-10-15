@@ -146,6 +146,11 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	private final Map/* <File,List<ClassFile> */inputClassFilesBySource = new HashMap();
 
 	/**
+	 * A list of the .class files created by this state that contain aspects.
+	 */
+	private final List/* <String> */aspectClassFiles = new ArrayList();
+
+	/**
 	 * Holds structure information on types as they were at the end of the last build. It would be nice to get rid of this too, but
 	 * can't see an easy way to do that right now.
 	 */
@@ -492,11 +497,8 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		return CLASS_FILE_NO_CHANGES;
 	}
 
-	private boolean isAspect(File file) {
-		if (aspectsFromFileNames == null) {
-			return false;
-		}
-		return aspectsFromFileNames.containsKey(file);
+	private boolean isAspect(File file) {	
+		return aspectClassFiles.contains(file.getAbsolutePath());
 	}
 
 	public static class SoftHashMap extends AbstractMap {
@@ -1164,6 +1166,35 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		recordFQNsResultingFromCompilationUnit(sourceFile, result);
 	}
 
+	public void noteNewResult(CompilationResult cr) {
+		// if (!maybeIncremental()) {
+		// return;
+		// }
+		//
+		// // File sourceFile = new File(result.fileName());
+		// // CompilationResult cr = result.result();
+		// if (new String(cr.getFileName()).indexOf("C") != -1) {
+		// cr.references.put(new String(cr.getFileName()),
+		// new ReferenceCollection(cr.qualifiedReferences, cr.simpleNameReferences));
+		// int stop = 1;
+		// }
+
+		// references.put(sourceFile, new ReferenceCollection(cr.qualifiedReferences, cr.simpleNameReferences));
+		//
+		// UnwovenClassFile[] unwovenClassFiles = cr.unwovenClassFiles();
+		// for (int i = 0; i < unwovenClassFiles.length; i++) {
+		// File lastTimeRound = (File) classesFromName.get(unwovenClassFiles[i].getClassName());
+		// recordClassFile(unwovenClassFiles[i], lastTimeRound);
+		// classesFromName.put(unwovenClassFiles[i].getClassName(), new File(unwovenClassFiles[i].getFilename()));
+		// }
+
+		// need to do this before types are deleted from the World...
+		// recordWhetherCompilationUnitDefinedAspect(sourceFile, cr);
+		// deleteTypesThatWereInThisCompilationUnitLastTimeRoundButHaveBeenDeletedInThisIncrement(sourceFile, unwovenClassFiles);
+		//
+		// recordFQNsResultingFromCompilationUnit(sourceFile, result);
+	}
+
 	/**
 	 * @param sourceFile
 	 * @param unwovenClassFiles
@@ -1823,5 +1854,16 @@ public class AjState implements CompilerConfigurationChangeFlags {
 
 	public void setNameEnvironment(INameEnvironment nameEnvironment) {
 		this.nameEnvironment = nameEnvironment;
+	}
+
+	/**
+	 * Record an aspect that came in on the aspect path. When a .class file changes on the aspect path we can then recognize it as
+	 * an aspect and know to do more than just a tiny incremental build. <br>
+	 * TODO but this doesn't allow for a new aspect created on the aspectpath?
+	 * 
+	 * @param aspectFile path to the file, eg. c:/temp/foo/Fred.class
+	 */
+	public void recordAspectClassFile(String aspectFile) {
+		aspectClassFiles.add(aspectFile);
 	}
 }

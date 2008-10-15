@@ -1017,7 +1017,13 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 						filename = filename.replace('/', File.separatorChar) + ".class";
 						try {
 							if (buildConfig.getOutputJar() == null) {
-								writeDirectoryEntry(unitResult, classFile, filename);
+								String outfile = writeDirectoryEntry(unitResult, classFile, filename);
+								if (environmentSupportsIncrementalCompilation) {
+									ResolvedType type = getBcelWorld().resolve(classname);
+									if (type.isAspect()) {
+										state.recordAspectClassFile(outfile);
+									}
+								}
 							} else {
 								writeZipEntry(classFile, filename);
 							}
@@ -1030,6 +1036,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 						}
 
 					}
+					state.noteNewResult(unitResult);
 					unitResult.compiledTypes.clear(); // free up references to AjClassFile instances
 				}
 
@@ -1043,7 +1050,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 			}
 
-			private void writeDirectoryEntry(CompilationResult unitResult, ClassFile classFile, String filename) throws IOException {
+			private String writeDirectoryEntry(CompilationResult unitResult, ClassFile classFile, String filename)
+					throws IOException {
 				File destinationPath = buildConfig.getOutputDir();
 				if (buildConfig.getCompilationResultDestinationManager() != null) {
 					destinationPath = buildConfig.getCompilationResultDestinationManager().getOutputLocationForClass(
@@ -1059,6 +1067,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				BufferedOutputStream os = FileUtil.makeOutputStream(new File(outFile));
 				os.write(classFile.getBytes());
 				os.close();
+				return outFile;
 			}
 
 			private void writeZipEntry(ClassFile classFile, String name) throws IOException {
