@@ -94,8 +94,8 @@
             />
             <fileset dir="${aspectj.modules.dir}/org.aspectj.ajdt.core/src"
             />
-            <fileset dir="${aspectj.modules.dir}/org.aspectj.lib/src"
-            />
+            <!--fileset dir="${aspectj.modules.dir}/org.aspectj.lib/src"
+            /-->
             <fileset dir="${aspectj.modules.dir}/runtime/src" />
             <fileset dir="${aspectj.modules.dir}/taskdefs/src" />
             <fileset dir="${aspectj.modules.dir}/util/src" />
