@@ -86,7 +86,7 @@ public class AsmManager {
 	// Record the Set<File> for which the model has been modified during the
 	// last incremental build
 	private final Set lastBuildChanges = new HashSet();
-	
+
 	// Record the Set<File> of aspects that wove the files listed in lastBuildChanges
 	final Set aspectsWeavingInLastBuild = new HashSet();
 
@@ -105,6 +105,7 @@ public class AsmManager {
 		// call initialize on the handleProvider when we create a new ASM
 		// to give handleProviders the chance to reset any state
 		handleProvider.initialize();
+		resetDeltaProcessing();
 	}
 
 	public IHierarchy getHierarchy() {
@@ -1216,11 +1217,12 @@ public class AsmManager {
 
 	public void resetDeltaProcessing() {
 		lastBuildChanges.clear();
-	    aspectsWeavingInLastBuild.clear();
+		aspectsWeavingInLastBuild.clear();
 	}
 
 	/**
-	 * @return the Set of files for which the structure model was modified (they may have been removed or otherwise rebuilt).  Set is empty for a full build.
+	 * @return the Set of files for which the structure model was modified (they may have been removed or otherwise rebuilt). Set is
+	 *         empty for a full build.
 	 */
 	public Set getModelChangesOnLastBuild() {
 		return lastBuildChanges;
@@ -1232,7 +1234,7 @@ public class AsmManager {
 	public Set getAspectsWeavingFilesOnLastBuild() {
 		return aspectsWeavingInLastBuild;
 	}
-	
+
 	public void addAspectInEffectThisBuild(File f) {
 		aspectsWeavingInLastBuild.add(f);
 	}
