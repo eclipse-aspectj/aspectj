@@ -426,13 +426,64 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		configureAspectPath(bug2, getProjectRelativePath(bug, "bin"));
 		build(bug);
 		build(bug2);
+		dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
+		PrintWriter pw = new PrintWriter(System.out);
+		AsmManager.getDefault().dumprels(pw);
+		pw.flush();
+		IProgramElement root = AsmManager.getDefault().getHierarchy().getRoot();
+		assertEquals("=AspectPathTwo/binaries<pkg(Asp.class}Asp&before", findElementAtLine(root, 5).getHandleIdentifier());
+		assertEquals("=AspectPathTwo/binaries<(Asp2.class}Asp2&before", findElementAtLine(root, 16).getHandleIdentifier());
+	}
+
+	/**
+	 * A change is made to an aspect on the aspectpath (staticinitialization() advice is added) for another project.
+	 * <p>
+	 * Managing the aspectpath is hard. We want to do a minimal build of this project which means recognizing what kind of changes
+	 * have occurred on the aspectpath. Was it a regular class or an aspect? Was it a structural change to that aspect?
+	 * <p>
+	 * The filenames for .class files created that contain aspects is stored in the AjState.aspectClassFiles field. When a change is
+	 * detected we can see who was managing the location where the change occurred and ask them if the .class file contained an
+	 * aspect. Right now a change detected like this will cause a full build. We might improve the detection logic here but it isn't
+	 * trivial:
+	 * <ul>
+	 * <li>Around advice is inlined. Changing the body of an around advice would not normally be thought of as a structural change
+	 * (as it does not change the signature of the class) but due to inlining it is a change we would need to pay attention to as it
+	 * will affect types previously woven with that advice.
+	 * <li>Annotation style aspects include pointcuts in strings. Changes to these are considered non-structural but clearly they do
+	 * affect what might be woven.
+	 * </ul>
+	 */
+	public void testAspectPath_pr249212_c1() throws IOException {
+		String p1 = "AspectPathOne";
+		String p2 = "AspectPathTwo";
+		addSourceFolderForSourceFile(p2, getProjectRelativePath(p2, "src/C.java"), "src");
+		initialiseProject(p1);
+		initialiseProject(p2);
+		configureAspectPath(p2, getProjectRelativePath(p1, "bin"));
+		build(p1);
+		build(p2);
+
+		AjdeInteractionTestbed.VERBOSE = true;
+		alter(p1, "inc1");
+		build(p1); // Modify the aspect Asp2 to include staticinitialization() advice
+		checkWasFullBuild();
+		Set s = AsmManager.getDefault().getModelChangesOnLastBuild();
+		assertTrue("Should be empty as was full build:" + s, s.isEmpty());
+
+		// prod the build of the second project with some extra info to tell it more precisely about the change:
+		addClasspathEntryChanged(p2, getProjectRelativePath(p1, "bin").toString());
+		build(p2);
+		checkWasFullBuild();
+
 		// dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
 		// PrintWriter pw = new PrintWriter(System.out);
 		// AsmManager.getDefault().dumprels(pw);
 		// pw.flush();
-		IProgramElement root = AsmManager.getDefault().getHierarchy().getRoot();
-		assertEquals("=AspectPathTwo/binaries<pkg(Asp.class}Asp&before", findElementAtLine(root, 5).getHandleIdentifier());
-		assertEquals("=AspectPathTwo/binaries<(Asp2.class}Asp2&before", findElementAtLine(root, 16).getHandleIdentifier());
+
+		// Not incremental
+		assertTrue("Should be empty as was full build:" + s, s.isEmpty());
+		// Set s = AsmManager.getDefault().getModelChangesOnLastBuild();
+		// checkIfContainsFile(AsmManager.getDefault().getModelChangesOnLastBuild(), "C.java", true);
 	}
 
 	// public void testAspectPath_pr242797_c41() {
