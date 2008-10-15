@@ -1426,8 +1426,10 @@ public class BcelWeaver {
 						ResolvedType rtx = world.resolve(UnresolvedType.forName(requiredTypeName), true);
 						boolean exists = !rtx.isMissing();
 						if (!exists) {
-							world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.MISSING_REWEAVABLE_TYPE,
-									requiredTypeName, className), classType.getSourceLocation(), null);
+							world.getLint().missingAspectForReweaving.signal(new String[] { requiredTypeName, className },
+									classType.getSourceLocation(), null);
+							// world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.MISSING_REWEAVABLE_TYPE,
+							// requiredTypeName, className), classType.getSourceLocation(), null);
 						} else {
 							// weaved in aspect that are not declared in aop.xml
 							// trigger an error for now
