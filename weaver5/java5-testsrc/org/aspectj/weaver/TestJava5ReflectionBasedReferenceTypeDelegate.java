@@ -35,7 +35,7 @@ public class TestJava5ReflectionBasedReferenceTypeDelegate extends ReflectionBas
 		int i = findMethod("toArray", 1, methods);
 		assertTrue("Couldn't find 'toArray' in the set of methods? ", i != -1);
 		// String expectedSignature = "java.lang.Object[] java.util.Collection.toArray(java.lang.Object[])";
-		String expectedSignature = "([Ljava/lang/Object;)Ljava/lang/Object;";
+		String expectedSignature = "([Ljava/lang/Object;)[Ljava/lang/Object;";
 		assertTrue("Expected signature of '" + expectedSignature + "' but it was '" + methods[i].getSignatureErased(), methods[i]
 				.getSignatureErased().equals(expectedSignature));
 	}
