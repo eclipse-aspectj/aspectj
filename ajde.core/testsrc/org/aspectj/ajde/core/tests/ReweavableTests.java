@@ -41,8 +41,7 @@ public class ReweavableTests extends AjdeCoreTestCase {
 		initialiseProject("ReweavableTest");
 		handler = (TestMessageHandler) getCompiler().getMessageHandler();
 		handler.dontIgnore(IMessage.INFO);
-		compilerConfig = (TestCompilerConfiguration) getCompiler()
-				.getCompilerConfiguration();
+		compilerConfig = (TestCompilerConfiguration) getCompiler().getCompilerConfiguration();
 	}
 
 	protected void tearDown() throws Exception {
@@ -52,34 +51,32 @@ public class ReweavableTests extends AjdeCoreTestCase {
 	}
 
 	/**
-	 * Aim: Check we haven't damaged 'normal compilation' when not supplying
-	 * -Xreweavable. Also determines baseline sizes for the compiled class files
-	 * for later comparison.
+	 * Aim: Check we haven't damaged 'normal compilation' when not supplying -Xreweavable. Also determines baseline sizes for the
+	 * compiled class files for later comparison.
 	 * 
-	 * Inputs to the compiler: NonReweavable1.lst -> CalculatePI.java ->
-	 * Logger.aj -> -verbose -> -noExit
+	 * Inputs to the compiler: NonReweavable1.lst -> CalculatePI.java -> Logger.aj -> -verbose -> -noExit
 	 * 
-	 * Expected result = Compile successful, the types will not be reweavable
-	 * and the weaver should not report it is running in reweavable mode.
+	 * Expected result = Compile successful, the types will not be reweavable and the weaver should not report it is running in
+	 * reweavable mode.
 	 */
 	public void testNonReweavableCompile() {
-		if (debugTests)System.out.println("testNonReweavableCompile: Building with NonReweavable1.lst");
+		if (debugTests)
+			System.out.println("testNonReweavableCompile: Building with NonReweavable1.lst");
 		String[] files = new String[] { "CalculatePI.java", "Logger.aj" };
 		compilerConfig.setProjectSourceFiles(getSourceFileList(files));
 		compilerConfig.setNonStandardOptions("-verbose -noExit -XnotReweavable");
 
 		doBuild(true);
 
-		assertFalse("Did not expect to find a message about the weaver operating " +
-				"in reweavable mode",checkFor("weaver operating in reweavable mode"));
+		assertFalse("Did not expect to find a message about the weaver operating " + "in reweavable mode",
+				checkFor("weaver operating in reweavable mode"));
 
 		File fCalc = openFile("bin/CalculatePI.class");
 		File fLog = openFile("bin/Logger.class");
 		assertTrue("bin/CalculatePI.class should exist?!?", fCalc.exists());
 		assertTrue("bin/Logger.class should exist?!?", fLog.exists());
 		if (debugTests)
-			System.out.println("CalculatePI.class is of size: "
-					+ fCalc.length());
+			System.out.println("CalculatePI.class is of size: " + fCalc.length());
 		if (debugTests)
 			System.out.println("Logger.class is of size: " + fLog.length());
 		if (debugTests)
@@ -89,37 +86,32 @@ public class ReweavableTests extends AjdeCoreTestCase {
 	}
 
 	/**
-	 * Aim: Basic call to -Xreweavable. Weaver should report it is in reweavable
-	 * mode and the classes produced should be much larger than normal classes
-	 * (those produced in the first test).
+	 * Aim: Basic call to -Xreweavable. Weaver should report it is in reweavable mode and the classes produced should be much larger
+	 * than normal classes (those produced in the first test).
 	 * 
-	 * Inputs to the compiler: Reweavable1.lst -> CalculatePI.java -> Logger.aj ->
-	 * -Xreweavable -> -verbose -> -noExit
+	 * Inputs to the compiler: Reweavable1.lst -> CalculatePI.java -> Logger.aj -> -Xreweavable -> -verbose -> -noExit
 	 * 
-	 * Expected result = Compile successful, the types will be reweavable and
-	 * the weaver should report it is running in reweavable mode. The files
-	 * produced should be larger than those created during the last test.
+	 * Expected result = Compile successful, the types will be reweavable and the weaver should report it is running in reweavable
+	 * mode. The files produced should be larger than those created during the last test.
 	 */
 	public void testReweavableCompile() {
 		if (debugTests)
-			System.out
-					.println("testReweavableCompile: Building with Reweavable1.lst");
+			System.out.println("testReweavableCompile: Building with Reweavable1.lst");
 		String[] files = new String[] { "CalculatePI.java", "Logger.aj" };
 		compilerConfig.setProjectSourceFiles(getSourceFileList(files));
 		compilerConfig.setNonStandardOptions("-verbose -noExit");
 
 		doBuild(true);
 
-		assertTrue("Expected a message about operating in reweavable mode, but " +
-				"didn't get one",checkFor("weaver operating in reweavable mode"));
+		assertTrue("Expected a message about operating in reweavable mode, but " + "didn't get one",
+				checkFor("weaver operating in reweavable mode"));
 
 		File fCalc = openFile("bin/CalculatePI.class");
 		File fLog = openFile("bin/Logger.class");
 		assertTrue("bin/CalculatePI.class should exist?!?", fCalc.exists());
 		assertTrue("bin/Logger.class should exist?!?", fLog.exists());
 		if (debugTests)
-			System.out.println("CalculatePI.class is of size: "
-					+ fCalc.length());
+			System.out.println("CalculatePI.class is of size: " + fCalc.length());
 		if (debugTests)
 			System.out.println("Logger.class is of size: " + fLog.length());
 		// Temporarily remove these tests - it seems the order in which the
@@ -140,33 +132,28 @@ public class ReweavableTests extends AjdeCoreTestCase {
 	}
 
 	/**
-	 * Aim: Use the optional ':compress' modifier on -Xreweavable. This causes
-	 * some of the meta-data for use in reweaving to be compressed. It should
-	 * succeed and produce class files smaller than straight -Xreweavable but
-	 * larger than without specifying -Xreweavable.
+	 * Aim: Use the optional ':compress' modifier on -Xreweavable. This causes some of the meta-data for use in reweaving to be
+	 * compressed. It should succeed and produce class files smaller than straight -Xreweavable but larger than without specifying
+	 * -Xreweavable.
 	 * 
-	 * Inputs to the compiler: ReweavableCompress1.lst -> CalculatePI.java ->
-	 * Logger.aj -> -Xreweavable:compress -> -verbose -> -noExit
+	 * Inputs to the compiler: ReweavableCompress1.lst -> CalculatePI.java -> Logger.aj -> -Xreweavable:compress -> -verbose ->
+	 * -noExit
 	 * 
-	 * Expected result = Compile successful, the types will be reweavable and
-	 * the weaver should report it is running in reweavable mode. The files
-	 * created should have a size between the non-reweavable versions and the
-	 * reweavable (without compression) versions.
+	 * Expected result = Compile successful, the types will be reweavable and the weaver should report it is running in reweavable
+	 * mode. The files created should have a size between the non-reweavable versions and the reweavable (without compression)
+	 * versions.
 	 */
 	public void testReweavableCompressCompile() {
 		if (debugTests)
-			System.out
-					.println("testReweavableCompressCompile: Building with ReweavableCompress1.lst");
+			System.out.println("testReweavableCompressCompile: Building with ReweavableCompress1.lst");
 
 		String[] files = new String[] { "CalculatePI.java", "Logger.aj" };
 		compilerConfig.setProjectSourceFiles(getSourceFileList(files));
-		compilerConfig
-				.setNonStandardOptions("-Xreweavable:compress -verbose -noExit");
+		compilerConfig.setNonStandardOptions("-Xreweavable:compress -verbose -noExit");
 
 		doBuild(true);
 
-		assertTrue(
-				"Expected a message about operating in reweavable mode, but didn't get one",
+		assertTrue("Expected a message about operating in reweavable mode, but didn't get one",
 				checkFor("weaver operating in reweavable mode"));
 
 		File fCalc = openFile("bin/CalculatePI.class");
@@ -208,24 +195,19 @@ public class ReweavableTests extends AjdeCoreTestCase {
 	}
 
 	/**
-	 * Aim: The tests above have determined that reweaving appears to be
-	 * behaving in terms of the .class files it is creating. Now lets actually
-	 * attempt a reweave. For this, we build two files as reweavable and then
-	 * build a single file whilst specifying an inpath that contains the .class
-	 * files from the first compile. This should succeed.
+	 * Aim: The tests above have determined that reweaving appears to be behaving in terms of the .class files it is creating. Now
+	 * lets actually attempt a reweave. For this, we build two files as reweavable and then build a single file whilst specifying an
+	 * inpath that contains the .class files from the first compile. This should succeed.
 	 * 
-	 * Inputs to the first compile: Reweavable1.lst -> CalculatePI.java ->
-	 * Logger.aj -> -Xreweavable -> -verbose -> -noExit
+	 * Inputs to the first compile: Reweavable1.lst -> CalculatePI.java -> Logger.aj -> -Xreweavable -> -verbose -> -noExit
 	 * 
-	 * Input to the second compile: Reweavable2.lst -> SecondAspect.aj ->
-	 * -Xreweavable -> -verbose -> -noExit -inpath bin\.
+	 * Input to the second compile: Reweavable2.lst -> SecondAspect.aj -> -Xreweavable -> -verbose -> -noExit -inpath bin\.
 	 * 
 	 * Expected result = Both compiles will succeed.
 	 */
 	public void testReweavableSimpleCompile() {
 		if (debugTests)
-			System.out
-					.println("testReweavableSimpleCompile: Building with Reweavable1.lst");
+			System.out.println("testReweavableSimpleCompile: Building with Reweavable1.lst");
 
 		String[] files = new String[] { "CalculatePI.java", "Logger.aj" };
 		compilerConfig.setProjectSourceFiles(getSourceFileList(files));
@@ -233,13 +215,11 @@ public class ReweavableTests extends AjdeCoreTestCase {
 
 		doBuild(true);
 
-		assertTrue(
-				"Expected a message about operating in reweavable mode, but didn't get one",
+		assertTrue("Expected a message about operating in reweavable mode, but didn't get one",
 				checkFor("weaver operating in reweavable mode"));
 
 		if (debugTests)
-			System.out
-					.println("\ntestReweavableSimpleCompile: Building with Reweavable2.lst");
+			System.out.println("\ntestReweavableSimpleCompile: Building with Reweavable2.lst");
 		Set paths = new HashSet();
 		paths.add(openFile(binDir));
 		compilerConfig.setInpath(paths);
@@ -249,8 +229,7 @@ public class ReweavableTests extends AjdeCoreTestCase {
 		doBuild(true);
 
 		String expMessage = "successfully verified type Logger exists";
-		assertTrue("Expected message '" + expMessage + "' but did not find it",
-				checkFor(expMessage));
+		assertTrue("Expected message '" + expMessage + "' but did not find it", checkFor(expMessage));
 
 		File fCalc = openFile("bin/CalculatePI.class");
 		File fLog = openFile("bin/Logger.class");
@@ -264,23 +243,18 @@ public class ReweavableTests extends AjdeCoreTestCase {
 	}
 
 	/**
-	 * Aim: Based on the test above, if we delete Logger.class between the first
-	 * and second compiles the second compile should fail because there is not
-	 * enough information to reweave CalculatePI
+	 * Aim: Based on the test above, if we delete Logger.class between the first and second compiles the second compile should fail
+	 * because there is not enough information to reweave CalculatePI
 	 * 
-	 * Inputs to the first compile: Reweavable1.lst -> CalculatePI.java ->
-	 * Logger.aj -> -Xreweavable -> -verbose -> -noExit
+	 * Inputs to the first compile: Reweavable1.lst -> CalculatePI.java -> Logger.aj -> -Xreweavable -> -verbose -> -noExit
 	 * 
-	 * Input to the second compile: Reweavable2.lst -> SecondAspect.aj ->
-	 * -Xreweavable -> -verbose -> -noExit -inpath bin\.
+	 * Input to the second compile: Reweavable2.lst -> SecondAspect.aj -> -Xreweavable -> -verbose -> -noExit -inpath bin\.
 	 * 
-	 * Expected result = Second compile will fail - reporting that Logger is
-	 * missing (it 'touched' in the first compile CalculatePI)
+	 * Expected result = Second compile will fail - reporting that Logger is missing (it 'touched' in the first compile CalculatePI)
 	 */
 	public void testForReweavableSimpleErrorCompile() {
 		if (debugTests)
-			System.out
-					.println("testForReweavableSimpleErrorCompile: Building with Reweavable2.lst");
+			System.out.println("testForReweavableSimpleErrorCompile: Building with Reweavable2.lst");
 
 		String[] files = new String[] { "CalculatePI.java", "Logger.aj" };
 		compilerConfig.setProjectSourceFiles(getSourceFileList(files));
@@ -288,16 +262,13 @@ public class ReweavableTests extends AjdeCoreTestCase {
 
 		doBuild(true);
 
-		assertTrue(
-				"Expected a message about operating in reweavable mode, but didn't get one",
+		assertTrue("Expected a message about operating in reweavable mode, but didn't get one",
 				checkFor("weaver operating in reweavable mode"));
 
-		assertTrue("Could not delete bin/Logger.class??", openFile(
-				"bin/Logger.class").delete());
+		assertTrue("Could not delete bin/Logger.class??", openFile("bin/Logger.class").delete());
 
 		if (debugTests)
-			System.out
-					.println("\ntestForReweavableSimpleErrorCompile: Building with Reweavable2.lst");
+			System.out.println("\ntestForReweavableSimpleErrorCompile: Building with Reweavable2.lst");
 		Set paths = new HashSet();
 		paths.add(openFile(binDir));
 		compilerConfig.setInpath(paths);
@@ -306,9 +277,8 @@ public class ReweavableTests extends AjdeCoreTestCase {
 
 		doBuild(true);
 
-		String expMessage = "type Logger is needed by reweavable type CalculatePI";
-		assertTrue("Expected message '" + expMessage + "' but did not find it",
-				checkFor(expMessage));
+		String expMessage = "aspect Logger cannot be found when reweaving CalculatePI";
+		assertTrue("Expected message '" + expMessage + "' but did not find it", checkFor(expMessage));
 
 		File fCalc = openFile("bin/CalculatePI.class");
 		File fLog = openFile("bin/Logger.class");
@@ -322,36 +292,30 @@ public class ReweavableTests extends AjdeCoreTestCase {
 	}
 
 	/**
-	 * Aim: Based on the test above, if we delete Logger.class between the first
-	 * and second compiles the second compile should fail because there is not
-	 * enough information to reweave CalculatePI
+	 * Aim: Based on the test above, if we delete Logger.class between the first and second compiles the second compile should fail
+	 * because there is not enough information to reweave CalculatePI
 	 * 
-	 * Inputs to the first compile: TJP1.lst -> tjp/Demo.java ->
-	 * tjp/GetInfo.java -> -Xreweavable -> -verbose -> -noExit
+	 * Inputs to the first compile: TJP1.lst -> tjp/Demo.java -> tjp/GetInfo.java -> -Xreweavable -> -verbose -> -noExit
 	 * 
-	 * Now, delete bin\tjp\GetInfo.class and do a compile with: TJP2.lst ->
-	 * -Xreweavable -> -verbose -> -noExit -inpath bin\.
+	 * Now, delete bin\tjp\GetInfo.class and do a compile with: TJP2.lst -> -Xreweavable -> -verbose -> -noExit -inpath bin\.
 	 * 
-	 * Expected result = Second compile will fail - reporting that tjp.GetInfo
-	 * is missing (it 'touched' in the first compile tjp.Demo)
+	 * Expected result = Second compile will fail - reporting that tjp.GetInfo is missing (it 'touched' in the first compile
+	 * tjp.Demo)
 	 */
 	public void testErrorScenario2Compile() {
 		if (debugTests)
 			System.out.println("testErrorScenario2: Building with TJP1.lst");
 
-		String[] files = new String[] { "tjp" + File.separator + "Demo.java",
-				"tjp" + File.separator + "GetInfo.java" };
+		String[] files = new String[] { "tjp" + File.separator + "Demo.java", "tjp" + File.separator + "GetInfo.java" };
 		compilerConfig.setProjectSourceFiles(getSourceFileList(files));
 		compilerConfig.setNonStandardOptions("-verbose -noExit");
 
 		doBuild(true);
 
-		assertTrue(
-				"Expected a message about operating in reweavable mode, but didn't get one",
+		assertTrue("Expected a message about operating in reweavable mode, but didn't get one",
 				checkFor("weaver operating in reweavable mode"));
 
-		assertTrue("Could not delete bin/tjp/GetInfo.class??", openFile(
-				"bin/tjp/GetInfo.class").delete());
+		assertTrue("Could not delete bin/tjp/GetInfo.class??", openFile("bin/tjp/GetInfo.class").delete());
 
 		if (debugTests)
 			System.out.println("\ntestErrorScenario2: Building with TJP2.lst");
@@ -361,34 +325,32 @@ public class ReweavableTests extends AjdeCoreTestCase {
 		compilerConfig.setProjectSourceFiles(new ArrayList());
 		doBuild(true);
 
-		String expMessage = "type tjp.GetInfo is needed by reweavable type tjp.Demo";
-		assertTrue("Expected message '" + expMessage + "' but did not find it",
-				checkFor(expMessage));
+		String expMessage = "aspect tjp.GetInfo cannot be found when reweaving tjp.Demo";
+		assertTrue("Expected message '" + expMessage + "' but did not find it", checkFor(expMessage));
 
 		File fDemo = openFile("bin/tjp/Demo.class");
 		File fGetInfo = openFile("bin/tjp/GetInfo.class");
 		assertTrue("bin/tjp/Demo.class should exist!", fDemo.exists());
 		assertTrue("bin/tjp/GetInfo.class should not exist!", !fGetInfo.exists());
 
-		if (debugTests)System.out.println("\n\n\n");
+		if (debugTests)
+			System.out.println("\n\n\n");
 	}
 
 	public void testWorkingScenario2Compile() {
 		if (debugTests)
 			System.out.println("testWorkingScenario2: Building with TJP1.lst");
-		String[] files = new String[] { "tjp" + File.separator + "Demo.java",
-				"tjp" + File.separator + "GetInfo.java" };
+		String[] files = new String[] { "tjp" + File.separator + "Demo.java", "tjp" + File.separator + "GetInfo.java" };
 		compilerConfig.setProjectSourceFiles(getSourceFileList(files));
-		compilerConfig
-				.setNonStandardOptions("-Xreweavable:compress -verbose -noExit");
+		compilerConfig.setNonStandardOptions("-Xreweavable:compress -verbose -noExit");
 
 		doBuild(true);
 
-		assertTrue(
-				"Expected a message about operating in reweavable mode, but didn't get one",
+		assertTrue("Expected a message about operating in reweavable mode, but didn't get one",
 				checkFor("weaver operating in reweavable mode"));
 
-		if (debugTests)System.out.println("\ntestWorkingScenario2: Building with TJP2.lst");
+		if (debugTests)
+			System.out.println("\ntestWorkingScenario2: Building with TJP2.lst");
 		Set paths = new HashSet();
 		paths.add(openFile(binDir));
 		compilerConfig.setInpath(paths);
@@ -396,8 +358,7 @@ public class ReweavableTests extends AjdeCoreTestCase {
 		doBuild(true);
 
 		String expMessage = "successfully verified type tjp.GetInfo exists";
-		assertTrue("Expected message '" + expMessage + "' but did not find it",
-				checkFor(expMessage));
+		assertTrue("Expected message '" + expMessage + "' but did not find it", checkFor(expMessage));
 
 		File fGetInfo = openFile("bin/tjp/GetInfo.class");
 		File fDemo = openFile("bin/tjp/Demo.class");
