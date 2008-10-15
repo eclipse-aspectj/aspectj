@@ -220,7 +220,7 @@
         <available file="${docs.src.dir}/../org.aspectj.lib/build-aspectjlib.xml"
                    property="org.aspectj.lib.available"
         />
-        <fail unless="org.aspectj.lib.available"
+        <!--fail unless="org.aspectj.lib.available"
               message="unable to find org.aspectj.lib"
         />
         <mkdir dir="${docs.dist.dir}/doc/aspectjlib" />
@@ -228,8 +228,9 @@
             <fileset dir="${docs.src.dir}/../org.aspectj.lib"
                      includes="build-aspectjlib.xml,src/**"
                 	excludes="CVS"
-            />
+                  />
         </copy>
+        -->
     </target>
 
     <target name="api"
