@@ -23,19 +23,19 @@ import java.util.StringTokenizer;
 import org.aspectj.apache.bcel.classfile.AnnotationDefault;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ExceptionTable;
-import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.LineNumber;
 import org.aspectj.apache.bcel.classfile.LineNumberTable;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.classfile.Signature;
-import org.aspectj.apache.bcel.classfile.Signature.TypeVariableSignature;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
+import org.aspectj.util.GenericSignature;
+import org.aspectj.util.GenericSignatureParser;
+import org.aspectj.util.GenericSignature.TypeVariableSignature;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.BCException;
@@ -432,9 +432,8 @@ class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	/**
-	 * A method can be parameterized if it has one or more generic parameters. A
-	 * generic parameter (type variable parameter) is identified by the prefix
-	 * "T"
+	 * A method can be parameterized if it has one or more generic parameters. A generic parameter (type variable parameter) is
+	 * identified by the prefix "T"
 	 */
 	public boolean canBeParameterized() {
 		unpackGenericSignature();
@@ -447,8 +446,7 @@ class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	/**
-	 * Return the parameterized/generic return type or the normal return type if
-	 * the method is not generic.
+	 * Return the parameterized/generic return type or the normal return type if the method is not generic.
 	 */
 	public UnresolvedType getGenericReturnType() {
 		unpackGenericSignature();
@@ -472,8 +470,8 @@ class BcelMethod extends ResolvedMemberImpl {
 		}
 		String gSig = method.getGenericSignature();
 		if (gSig != null) {
-			Signature.MethodTypeSignature mSig = new GenericSignatureParser().parseAsMethodSignature(gSig);// method
-																											// .
+			GenericSignature.MethodTypeSignature mSig = new GenericSignatureParser().parseAsMethodSignature(gSig);// method
+			// .
 			// getGenericSignature
 			// ());
 			if (mSig.formalTypeParameters.length > 0) {
@@ -483,7 +481,7 @@ class BcelMethod extends ResolvedMemberImpl {
 
 			typeVariables = new TypeVariable[mSig.formalTypeParameters.length];
 			for (int i = 0; i < typeVariables.length; i++) {
-				Signature.FormalTypeParameter methodFtp = mSig.formalTypeParameters[i];
+				GenericSignature.FormalTypeParameter methodFtp = mSig.formalTypeParameters[i];
 				try {
 					typeVariables[i] = BcelGenericSignatureToTypeXConverter.formalTypeParameter2TypeVariable(methodFtp,
 							mSig.formalTypeParameters, bcelObjectType.getWorld());
@@ -494,14 +492,14 @@ class BcelMethod extends ResolvedMemberImpl {
 				}
 			}
 
-			Signature.FormalTypeParameter[] parentFormals = bcelObjectType.getAllFormals();
-			Signature.FormalTypeParameter[] formals = new Signature.FormalTypeParameter[parentFormals.length
+			GenericSignature.FormalTypeParameter[] parentFormals = bcelObjectType.getAllFormals();
+			GenericSignature.FormalTypeParameter[] formals = new GenericSignature.FormalTypeParameter[parentFormals.length
 					+ mSig.formalTypeParameters.length];
 			// put method formal in front of type formals for overriding in
 			// lookup
 			System.arraycopy(mSig.formalTypeParameters, 0, formals, 0, mSig.formalTypeParameters.length);
 			System.arraycopy(parentFormals, 0, formals, mSig.formalTypeParameters.length, parentFormals.length);
-			Signature.TypeSignature returnTypeSignature = mSig.returnType;
+			GenericSignature.TypeSignature returnTypeSignature = mSig.returnType;
 			try {
 				genericReturnType = BcelGenericSignatureToTypeXConverter.typeSignature2TypeX(returnTypeSignature, formals,
 						bcelObjectType.getWorld());
@@ -510,7 +508,7 @@ class BcelMethod extends ResolvedMemberImpl {
 				throw new IllegalStateException("While determing the generic return type of " + this.toString()
 						+ " with generic signature " + gSig + " the following error was detected: " + e.getMessage());
 			}
-			Signature.TypeSignature[] paramTypeSigs = mSig.parameters;
+			GenericSignature.TypeSignature[] paramTypeSigs = mSig.parameters;
 			genericParameterTypes = new UnresolvedType[paramTypeSigs.length];
 			for (int i = 0; i < paramTypeSigs.length; i++) {
 				try {
@@ -580,9 +578,8 @@ class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	/**
-	 * Returns whether or not the given object is equivalent to the current one.
-	 * Returns true if getMethod().getCode().getCodeString() are equal. Allows
-	 * for different line number tables.
+	 * Returns whether or not the given object is equivalent to the current one. Returns true if
+	 * getMethod().getCode().getCodeString() are equal. Allows for different line number tables.
 	 */
 	// bug 154054: is similar to equals(Object) however
 	// doesn't require implementing equals in Method and Code

@@ -20,11 +20,11 @@ import java.util.List;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.Field;
-import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
-import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.Synthetic;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.generic.FieldGen;
+import org.aspectj.util.GenericSignature;
+import org.aspectj.util.GenericSignatureParser;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.BCException;
@@ -43,8 +43,8 @@ final class BcelField extends ResolvedMemberImpl {
 	private boolean isAjSynthetic;
 	private boolean isSynthetic = false;
 	private AnnotationAJ[] annotations;
-	private World world;
-	private BcelObjectType bcelObjectType;
+	private final World world;
+	private final BcelObjectType bcelObjectType;
 	private UnresolvedType genericFieldType = null;
 	private boolean unpackedGenericSignature = false;
 	private boolean annotationsAdded = false;
@@ -228,13 +228,14 @@ final class BcelField extends ResolvedMemberImpl {
 		String gSig = field.getGenericSignature();
 		if (gSig != null) {
 			// get from generic
-			Signature.FieldTypeSignature fts = new GenericSignatureParser().parseAsFieldSignature(gSig);
-			Signature.ClassSignature genericTypeSig = bcelObjectType.getGenericClassTypeSignature();
+			GenericSignature.FieldTypeSignature fts = new GenericSignatureParser().parseAsFieldSignature(gSig);
+			GenericSignature.ClassSignature genericTypeSig = bcelObjectType.getGenericClassTypeSignature();
 
-			Signature.FormalTypeParameter[] parentFormals = bcelObjectType.getAllFormals();
-			Signature.FormalTypeParameter[] typeVars = ((genericTypeSig == null) ? new Signature.FormalTypeParameter[0]
+			GenericSignature.FormalTypeParameter[] parentFormals = bcelObjectType.getAllFormals();
+			GenericSignature.FormalTypeParameter[] typeVars = ((genericTypeSig == null) ? new GenericSignature.FormalTypeParameter[0]
 					: genericTypeSig.formalTypeParameters);
-			Signature.FormalTypeParameter[] formals = new Signature.FormalTypeParameter[parentFormals.length + typeVars.length];
+			GenericSignature.FormalTypeParameter[] formals = new GenericSignature.FormalTypeParameter[parentFormals.length
+					+ typeVars.length];
 			// put method formal in front of type formals for overriding in
 			// lookup
 			System.arraycopy(typeVars, 0, formals, 0, typeVars.length);

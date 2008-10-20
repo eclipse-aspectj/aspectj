@@ -14,59 +14,74 @@ package org.aspectj.weaver.bcel;
 import junit.framework.TestCase;
 
 import org.aspectj.apache.bcel.Repository;
-import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Signature;
+import org.aspectj.util.GenericSignature;
+import org.aspectj.util.GenericSignatureParser;
+import org.aspectj.util.GenericSignature.ClassSignature;
 import org.aspectj.weaver.UnresolvedType;
 
 /**
  * @author colyer
- *
+ * 
  */
 public class BcelGenericSignatureToTypeXTestCase extends TestCase {
+
+	public final GenericSignature.ClassSignature getGenericClassTypeSignature(JavaClass jClass) {
+		Signature sig = jClass.getSignatureAttribute();
+		if (sig != null) {
+			GenericSignatureParser parser = new GenericSignatureParser();
+			ClassSignature classSig = parser.parseAsClassSignature(sig.getSignature());
+			return classSig;
+		}
+		return null;
+	}
+
+	// public final GenericSignature.MethodTypeSignature getGenericMethodTypeSignature(JavaClass jClass) {
+	// Signature sig = jClass.getSignatureAttribute();
+	// if (sig != null) {
+	// GenericSignatureParser parser = new GenericSignatureParser();
+	// MethodTypeSignature mSig = parser.parseAsMethodSignature(sig);
+	// return mSig;
+	// }
+	// return null;
+	// }
+
+	// public FieldTypeSignature asFieldTypeSignature() {
+	// if (fieldSig == null) {
+	// GenericSignatureParser parser = new GenericSignatureParser();
+	// fieldSig = parser.parseAsFieldSignature(getSignature());
+	// }
+	// return fieldSig;
+	// }
 
 	public void testEnumFromHell() throws Exception {
 		BcelWorld world = new BcelWorld();
 		JavaClass javaLangEnum = Repository.lookupClass("java/lang/Enum");
-		Signature.ClassSignature cSig = javaLangEnum.getGenericClassTypeSignature();
-		UnresolvedType superclass = 
-			BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
-					cSig.superclassSignature,
-					cSig.formalTypeParameters,
-					world
-					);
-		assertEquals("Ljava/lang/Object;",superclass.getSignature());
-		assertEquals("2 superinterfaces",2,cSig.superInterfaceSignatures.length);
-		UnresolvedType comparable = 
-			BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
-					cSig.superInterfaceSignatures[0],
-					cSig.formalTypeParameters,
-					world
-					);		
-		assertEquals("Pjava/lang/Comparable<TE;>;",comparable.getSignature());
-		UnresolvedType serializable = 
-			BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
-					cSig.superInterfaceSignatures[1],
-					cSig.formalTypeParameters,
-					world
-					);
-		assertEquals("Ljava/io/Serializable;",serializable.getSignature());
+		GenericSignature.ClassSignature cSig = getGenericClassTypeSignature(javaLangEnum);
+		UnresolvedType superclass = BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(cSig.superclassSignature,
+				cSig.formalTypeParameters, world);
+		assertEquals("Ljava/lang/Object;", superclass.getSignature());
+		assertEquals("2 superinterfaces", 2, cSig.superInterfaceSignatures.length);
+		UnresolvedType comparable = BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(cSig.superInterfaceSignatures[0],
+				cSig.formalTypeParameters, world);
+		assertEquals("Pjava/lang/Comparable<TE;>;", comparable.getSignature());
+		UnresolvedType serializable = BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
+				cSig.superInterfaceSignatures[1], cSig.formalTypeParameters, world);
+		assertEquals("Ljava/io/Serializable;", serializable.getSignature());
 	}
-	
+
 	public void testColonColon() throws Exception {
 		BcelWorld world = new BcelWorld();
-		Signature.ClassSignature cSig = new GenericSignatureParser().parseAsClassSignature("<T::Ljava/io/Serializable;>Ljava/lang/Object;Ljava/lang/Comparable<TT;>;");
-		UnresolvedType resolved = BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
-				cSig.superclassSignature,
-				cSig.formalTypeParameters,
+		GenericSignature.ClassSignature cSig = new GenericSignatureParser()
+				.parseAsClassSignature("<T::Ljava/io/Serializable;>Ljava/lang/Object;Ljava/lang/Comparable<TT;>;");
+		UnresolvedType resolved = BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(cSig.superclassSignature,
+				cSig.formalTypeParameters, world);
+		assertEquals("Ljava/lang/Object;", resolved.getSignature());
+		// UnresolvedType resolvedInt =
+		BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(cSig.superInterfaceSignatures[0], cSig.formalTypeParameters,
 				world);
-		assertEquals("Ljava/lang/Object;",resolved.getSignature());
-//		UnresolvedType resolvedInt = 
-			BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
-				cSig.superInterfaceSignatures[0],
-				cSig.formalTypeParameters,
-				world);
-		
+
 	}
-	
+
 }

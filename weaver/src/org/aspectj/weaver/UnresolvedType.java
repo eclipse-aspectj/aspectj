@@ -19,9 +19,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
-import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
-import org.aspectj.apache.bcel.classfile.Signature;
-import org.aspectj.apache.bcel.classfile.Signature.ClassSignature;
+import org.aspectj.util.GenericSignature;
+import org.aspectj.util.GenericSignatureParser;
+import org.aspectj.util.GenericSignature.ClassSignature;
 import org.aspectj.weaver.tools.Traceable;
 
 /**
@@ -289,16 +289,16 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
 		ClassSignature csig = new GenericSignatureParser().parseAsClassSignature(declaredGenericSig);
 
-		Signature.FormalTypeParameter[] ftps = csig.formalTypeParameters;
+		GenericSignature.FormalTypeParameter[] ftps = csig.formalTypeParameters;
 		ret.typeVariables = new TypeVariable[ftps.length];
 		for (int i = 0; i < ftps.length; i++) {
-			Signature.FormalTypeParameter parameter = ftps[i];
-			if (parameter.classBound instanceof Signature.ClassTypeSignature) {
-				Signature.ClassTypeSignature cts = (Signature.ClassTypeSignature) parameter.classBound;
+			GenericSignature.FormalTypeParameter parameter = ftps[i];
+			if (parameter.classBound instanceof GenericSignature.ClassTypeSignature) {
+				GenericSignature.ClassTypeSignature cts = (GenericSignature.ClassTypeSignature) parameter.classBound;
 				ret.typeVariables[i] = new TypeVariable(ftps[i].identifier, UnresolvedType.forSignature(cts.outerType.identifier
 						+ ";"));
-			} else if (parameter.classBound instanceof Signature.TypeVariableSignature) {
-				Signature.TypeVariableSignature tvs = (Signature.TypeVariableSignature) parameter.classBound;
+			} else if (parameter.classBound instanceof GenericSignature.TypeVariableSignature) {
+				GenericSignature.TypeVariableSignature tvs = (GenericSignature.TypeVariableSignature) parameter.classBound;
 				UnresolvedTypeVariableReferenceType utvrt = new UnresolvedTypeVariableReferenceType(new TypeVariable(
 						tvs.typeVariableName));
 				ret.typeVariables[i] = new TypeVariable(ftps[i].identifier, utvrt);

@@ -15,10 +15,10 @@ package org.aspectj.weaver;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aspectj.apache.bcel.classfile.GenericSignatureParser;
-import org.aspectj.apache.bcel.classfile.Signature;
-import org.aspectj.apache.bcel.classfile.Signature.ClassSignature;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.util.GenericSignature;
+import org.aspectj.util.GenericSignatureParser;
+import org.aspectj.util.GenericSignature.ClassSignature;
 
 public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDelegate {
 
@@ -42,8 +42,7 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 	}
 
 	/**
-	 * Designed to be overriden by EclipseType to disable collection of shadow
-	 * mungers during pre-weave compilation phase
+	 * Designed to be overriden by EclipseType to disable collection of shadow mungers during pre-weave compilation phase
 	 */
 	public boolean doesNotExposeShadowMungers() {
 		return false;
@@ -88,7 +87,7 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 		sourceContext = isc;
 	}
 
-	public Signature.ClassSignature getGenericClassTypeSignature() {
+	public GenericSignature.ClassSignature getGenericClassTypeSignature() {
 		if (cachedGenericClassTypeSignature == null) {
 			String sig = getDeclaredGenericSignature();
 			if (sig != null) {
@@ -99,25 +98,25 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 		return cachedGenericClassTypeSignature;
 	}
 
-	protected Signature.FormalTypeParameter[] getFormalTypeParametersFromOuterClass() {
+	protected GenericSignature.FormalTypeParameter[] getFormalTypeParametersFromOuterClass() {
 		List typeParameters = new ArrayList();
 		ReferenceType outer = (ReferenceType) getOuterClass();
 		ReferenceTypeDelegate outerDelegate = outer.getDelegate();
 		AbstractReferenceTypeDelegate outerObjectType = (AbstractReferenceTypeDelegate) outerDelegate;
 		if (outerObjectType.isNested()) {
-			Signature.FormalTypeParameter[] parentParams = outerObjectType.getFormalTypeParametersFromOuterClass();
+			GenericSignature.FormalTypeParameter[] parentParams = outerObjectType.getFormalTypeParametersFromOuterClass();
 			for (int i = 0; i < parentParams.length; i++) {
 				typeParameters.add(parentParams[i]);
 			}
 		}
-		Signature.ClassSignature outerSig = outerObjectType.getGenericClassTypeSignature();
+		GenericSignature.ClassSignature outerSig = outerObjectType.getGenericClassTypeSignature();
 		if (outerSig != null) {
 			for (int i = 0; i < outerSig.formalTypeParameters.length; i++) {
 				typeParameters.add(outerSig.formalTypeParameters[i]);
 			}
 		}
 
-		Signature.FormalTypeParameter[] ret = new Signature.FormalTypeParameter[typeParameters.size()];
+		GenericSignature.FormalTypeParameter[] ret = new GenericSignature.FormalTypeParameter[typeParameters.size()];
 		typeParameters.toArray(ret);
 		return ret;
 	}

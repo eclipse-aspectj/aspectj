@@ -34,6 +34,7 @@ import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
 import org.aspectj.apache.bcel.classfile.annotation.EnumElementValueGen;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
+import org.aspectj.util.GenericSignature;
 import org.aspectj.weaver.AbstractReferenceTypeDelegate;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -87,7 +88,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	private List typeMungers = Collections.EMPTY_LIST;
 	private List declares = Collections.EMPTY_LIST;
 
-	private Signature.FormalTypeParameter[] formalsForResolution = null;
+	private GenericSignature.FormalTypeParameter[] formalsForResolution = null;
 	private String declaredSignature = null;
 
 	private boolean hasBeenWoven = false;
@@ -278,7 +279,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			return TypeVariable.NONE;
 
 		if (typeVars == null) {
-			Signature.ClassSignature classSig = getGenericClassTypeSignature();// cachedGenericClassTypeSignature
+			GenericSignature.ClassSignature classSig = getGenericClassTypeSignature();// cachedGenericClassTypeSignature
 			// ;
 			// /
 			// /
@@ -287,7 +288,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			// getGenericClassTypeSignature();
 			typeVars = new TypeVariable[classSig.formalTypeParameters.length];
 			for (int i = 0; i < typeVars.length; i++) {
-				Signature.FormalTypeParameter ftp = classSig.formalTypeParameters[i];
+				GenericSignature.FormalTypeParameter ftp = classSig.formalTypeParameters[i];
 				try {
 					typeVars[i] = BcelGenericSignatureToTypeXConverter.formalTypeParameter2TypeVariable(ftp,
 							classSig.formalTypeParameters, getResolvedTypeX().getWorld());
@@ -727,13 +728,13 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		bitflag |= UNPACKED_GENERIC_SIGNATURE;
 		if (!getResolvedTypeX().getWorld().isInJava5Mode())
 			return;
-		Signature.ClassSignature cSig = getGenericClassTypeSignature();
+		GenericSignature.ClassSignature cSig = getGenericClassTypeSignature();
 		if (cSig != null) {
 			formalsForResolution = cSig.formalTypeParameters;
 			if (isNested()) {
 				// we have to find any type variables from the outer type before
 				// proceeding with resolution.
-				Signature.FormalTypeParameter[] extraFormals = getFormalTypeParametersFromOuterClass();
+				GenericSignature.FormalTypeParameter[] extraFormals = getFormalTypeParametersFromOuterClass();
 				if (extraFormals.length > 0) {
 					List allFormals = new ArrayList();
 					for (int i = 0; i < formalsForResolution.length; i++) {
@@ -742,11 +743,11 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 					for (int i = 0; i < extraFormals.length; i++) {
 						allFormals.add(extraFormals[i]);
 					}
-					formalsForResolution = new Signature.FormalTypeParameter[allFormals.size()];
+					formalsForResolution = new GenericSignature.FormalTypeParameter[allFormals.size()];
 					allFormals.toArray(formalsForResolution);
 				}
 			}
-			Signature.ClassTypeSignature superSig = cSig.superclassSignature;
+			GenericSignature.ClassTypeSignature superSig = cSig.superclassSignature;
 			try {
 				// this.superClass =
 				// BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(
@@ -800,10 +801,10 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		}
 	}
 
-	public Signature.FormalTypeParameter[] getAllFormals() {
+	public GenericSignature.FormalTypeParameter[] getAllFormals() {
 		ensureGenericSignatureUnpacked();
 		if (formalsForResolution == null) {
-			return new Signature.FormalTypeParameter[0];
+			return new GenericSignature.FormalTypeParameter[0];
 		} else {
 			return formalsForResolution;
 		}
