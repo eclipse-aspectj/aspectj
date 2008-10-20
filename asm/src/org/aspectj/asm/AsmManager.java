@@ -40,6 +40,7 @@ import org.aspectj.asm.internal.AspectJElementHierarchy;
 import org.aspectj.asm.internal.JDTLikeHandleProvider;
 import org.aspectj.asm.internal.RelationshipMap;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.util.IStructureModel;
 
 /**
  * The Abstract Structure Model (ASM) represents the containment hierarchy and crosscutting structure map for AspectJ programs. It
@@ -49,7 +50,7 @@ import org.aspectj.bridge.ISourceLocation;
  * @author Mik Kersten
  * @author Andy Clement
  */
-public class AsmManager {
+public class AsmManager implements IStructureModel {
 
 	// For testing ONLY
 	public static boolean recordingLastActiveStructureModel = true;
@@ -118,7 +119,6 @@ public class AsmManager {
 	public IHierarchy getHierarchy() {
 		return hierarchy;
 	}
-
 
 	public IRelationshipMap getRelationshipMap() {
 		return mapper;
