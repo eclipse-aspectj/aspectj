@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+
+Name: org/aspectj/matcher/
+Specification-Title: AspectJ Matcher Classes
+Specification-Version: @build.version.short@
+Specification-Vendor: @company.name@
+Implementation-Title: org.aspectj.matcher
+Implementation-Version: @build.version.short@
+Implementation-Vendor: @company.name@
+
