@@ -32,7 +32,6 @@ import org.aspectj.ajde.ui.javaoptions.JavaComplianceOptionsPanel;
 import org.aspectj.ajde.ui.javaoptions.JavaDebugOptionsPanel;
 import org.aspectj.ajde.ui.javaoptions.JavaOtherOptionsPanel;
 import org.aspectj.ajde.ui.swing.MultiStructureViewPanel;
-import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IHierarchyListener;
 import org.aspectj.tools.ajbrowser.core.BrowserBuildProgressMonitor;
@@ -98,7 +97,7 @@ public class BrowserManager {
 
 			setUpConfigFiles(configFilesArgs);
 
-			AsmManager.getDefault().addListener(VIEW_LISTENER);
+			Ajde.getDefault().getModel().addListener(VIEW_LISTENER);
 
 		} catch (Throwable t) {
 			t.printStackTrace();
