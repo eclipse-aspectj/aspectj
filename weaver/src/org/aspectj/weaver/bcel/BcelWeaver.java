@@ -43,7 +43,6 @@ import java.util.zip.ZipOutputStream;
 
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
-import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -1114,10 +1113,10 @@ public class BcelWeaver {
 
 		for (Iterator i = input.getClassFileIterator(); i.hasNext();) {
 			UnwovenClassFile classFile = (UnwovenClassFile) i.next();
-			if (AsmManager.isCreatingModel() && !isBatchWeave) {
+			if (world.getModel() != null /* AsmManager.isCreatingModel() */&& !isBatchWeave) {
 				// remove all relationships where this file being woven is the
 				// target of the relationship
-				AsmManager.getDefault().removeRelationshipsTargettingThisType(classFile.getClassName());
+				world.getModel().removeRelationshipsTargettingThisType(classFile.getClassName());
 			}
 		}
 
@@ -1602,7 +1601,7 @@ public class BcelWeaver {
 			boolean problemReported = verifyTargetIsOK(decA, onType, annoX, reportProblems);
 
 			if (!problemReported) {
-				AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decA.getSourceLocation(),
+				AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(world.getModel(), decA.getSourceLocation(),
 						onType.getSourceLocation());
 				// TAG: WeavingMessage
 				if (!getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {

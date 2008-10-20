@@ -99,12 +99,12 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		return sourceLocation;
 	}
 
-	public String getHandle() {
+	public String getHandle(AsmManager asm) {
 		if (null == handle) {
 			ISourceLocation sl = getSourceLocation();
 			if (sl != null) {
-				IProgramElement ipe = AsmManager.getDefault().getHierarchy().findElementForSourceLine(sl);
-				handle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(ipe);
+				IProgramElement ipe = asm.getHierarchy().findElementForSourceLine(sl);
+				handle = asm.getHandleProvider().createHandleIdentifier(ipe);
 			}
 		}
 		return handle;
@@ -152,11 +152,11 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	/**
 	 * Creates the hierarchy for binary aspects
 	 */
-	public void createHierarchy() {
+	public void createHierarchy(AsmManager asm) {
 		if (!isBinary())
 			return;
 
-		IProgramElement sourceFileNode = AsmManager.getDefault().getHierarchy().findElementForSourceLine(getSourceLocation());
+		IProgramElement sourceFileNode = asm.getHierarchy().findElementForSourceLine(getSourceLocation());
 		// the call to findElementForSourceLine(ISourceLocation) returns a file
 		// node
 		// if it can't find a node in the hierarchy for the given
@@ -170,25 +170,23 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		ResolvedType aspect = getDeclaringType();
 
 		// create the class file node
-		IProgramElement classFileNode = new ProgramElement(sourceFileNode.getName(), IProgramElement.Kind.FILE,
+		IProgramElement classFileNode = new ProgramElement(asm, sourceFileNode.getName(), IProgramElement.Kind.FILE,
 				getBinarySourceLocation(aspect.getSourceLocation()), 0, null, null);
 
 		// create package ipe if one exists....
-		IProgramElement root = AsmManager.getDefault().getHierarchy().getRoot();
-		IProgramElement binaries = AsmManager.getDefault().getHierarchy().findElementForLabel(root,
-				IProgramElement.Kind.SOURCE_FOLDER, "binaries");
+		IProgramElement root = asm.getHierarchy().getRoot();
+		IProgramElement binaries = asm.getHierarchy().findElementForLabel(root, IProgramElement.Kind.SOURCE_FOLDER, "binaries");
 		if (binaries == null) {
-			binaries = new ProgramElement("binaries", IProgramElement.Kind.SOURCE_FOLDER, new ArrayList());
+			binaries = new ProgramElement(asm, "binaries", IProgramElement.Kind.SOURCE_FOLDER, new ArrayList());
 			root.addChild(binaries);
 		}
 		// if (aspect.getPackageName() != null) {
 		String packagename = aspect.getPackageName() == null ? "" : aspect.getPackageName();
 		// check that there doesn't already exist a node with this name
-		IProgramElement pkgNode = AsmManager.getDefault().getHierarchy().findElementForLabel(binaries,
-				IProgramElement.Kind.PACKAGE, packagename);
+		IProgramElement pkgNode = asm.getHierarchy().findElementForLabel(binaries, IProgramElement.Kind.PACKAGE, packagename);
 		// note packages themselves have no source location
 		if (pkgNode == null) {
-			pkgNode = new ProgramElement(packagename, IProgramElement.Kind.PACKAGE, new ArrayList());
+			pkgNode = new ProgramElement(asm, packagename, IProgramElement.Kind.PACKAGE, new ArrayList());
 			binaries.addChild(pkgNode);
 			pkgNode.addChild(classFileNode);
 		} else {
@@ -223,21 +221,21 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		// }
 
 		// add and create empty import declaration ipe
-		classFileNode
-				.addChild(new ProgramElement("import declarations", IProgramElement.Kind.IMPORT_REFERENCE, null, 0, null, null));
+		classFileNode.addChild(new ProgramElement(asm, "import declarations", IProgramElement.Kind.IMPORT_REFERENCE, null, 0, null,
+				null));
 
 		// add and create aspect ipe
-		IProgramElement aspectNode = new ProgramElement(aspect.getSimpleName(), IProgramElement.Kind.ASPECT,
+		IProgramElement aspectNode = new ProgramElement(asm, aspect.getSimpleName(), IProgramElement.Kind.ASPECT,
 				getBinarySourceLocation(aspect.getSourceLocation()), aspect.getModifiers(), null, null);
 		classFileNode.addChild(aspectNode);
 
-		addChildNodes(aspectNode, aspect.getDeclaredPointcuts());
+		addChildNodes(asm, aspectNode, aspect.getDeclaredPointcuts());
 
-		addChildNodes(aspectNode, aspect.getDeclaredAdvice());
-		addChildNodes(aspectNode, aspect.getDeclares());
+		addChildNodes(asm, aspectNode, aspect.getDeclaredAdvice());
+		addChildNodes(asm, aspectNode, aspect.getDeclares());
 	}
 
-	private void addChildNodes(IProgramElement parent, ResolvedMember[] children) {
+	private void addChildNodes(AsmManager asm, IProgramElement parent, ResolvedMember[] children) {
 		for (int i = 0; i < children.length; i++) {
 			ResolvedMember pcd = children[i];
 			if (pcd instanceof ResolvedPointcutDefinition) {
@@ -246,13 +244,13 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 				if (sLoc == null) {
 					sLoc = rpcd.getSourceLocation();
 				}
-				parent.addChild(new ProgramElement(pcd.getName(), IProgramElement.Kind.POINTCUT, getBinarySourceLocation(sLoc), pcd
-						.getModifiers(), null, Collections.EMPTY_LIST));
+				parent.addChild(new ProgramElement(asm, pcd.getName(), IProgramElement.Kind.POINTCUT,
+						getBinarySourceLocation(sLoc), pcd.getModifiers(), null, Collections.EMPTY_LIST));
 			}
 		}
 	}
 
-	private void addChildNodes(IProgramElement parent, Collection children) {
+	private void addChildNodes(AsmManager asm, IProgramElement parent, Collection children) {
 		int deCtr = 1;
 		int dwCtr = 1;
 		for (Iterator iter = children.iterator(); iter.hasNext();) {
@@ -265,16 +263,16 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 				} else {
 					counter = dwCtr++;
 				}
-				parent.addChild(createDeclareErrorOrWarningChild(decl, counter));
+				parent.addChild(createDeclareErrorOrWarningChild(asm, decl, counter));
 			} else if (element instanceof Advice) {
 				Advice advice = (Advice) element;
-				parent.addChild(createAdviceChild(advice));
+				parent.addChild(createAdviceChild(asm, advice));
 			}
 		}
 	}
 
-	private IProgramElement createDeclareErrorOrWarningChild(DeclareErrorOrWarning decl, int count) {
-		IProgramElement deowNode = new ProgramElement(decl.getName(), decl.isError() ? IProgramElement.Kind.DECLARE_ERROR
+	private IProgramElement createDeclareErrorOrWarningChild(AsmManager asm, DeclareErrorOrWarning decl, int count) {
+		IProgramElement deowNode = new ProgramElement(asm, decl.getName(), decl.isError() ? IProgramElement.Kind.DECLARE_ERROR
 				: IProgramElement.Kind.DECLARE_WARNING, getBinarySourceLocation(decl.getSourceLocation()), decl.getDeclaringType()
 				.getModifiers(), null, null);
 		deowNode.setDetails("\"" + AsmRelationshipUtils.genDeclareMessage(decl.getMessage()) + "\"");
@@ -284,8 +282,8 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		return deowNode;
 	}
 
-	private IProgramElement createAdviceChild(Advice advice) {
-		IProgramElement adviceNode = new ProgramElement(advice.kind.getName(), IProgramElement.Kind.ADVICE,
+	private IProgramElement createAdviceChild(AsmManager asm, Advice advice) {
+		IProgramElement adviceNode = new ProgramElement(asm, advice.kind.getName(), IProgramElement.Kind.ADVICE,
 				getBinarySourceLocation(advice.getSourceLocation()), advice.signature.getModifiers(), null, Collections.EMPTY_LIST);
 		adviceNode.setDetails(AsmRelationshipUtils.genPointcutDetails(advice.getPointcut()));
 		adviceNode.setBytecodeName(advice.getSignature().getName());

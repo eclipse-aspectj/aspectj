@@ -15,7 +15,6 @@ package org.aspectj.weaver;
 import java.util.Collections;
 import java.util.List;
 
-import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.patterns.AndPointcut;
@@ -26,7 +25,7 @@ import org.aspectj.weaver.patterns.TypePattern;
 public abstract class Advice extends ShadowMunger {
 
 	protected AjAttribute.AdviceAttribute attribute; // the pointcut field is
-														// ignored
+	// ignored
 
 	protected AdviceKind kind; // alias of attribute.getKind()
 	protected Member signature;
@@ -36,8 +35,8 @@ public abstract class Advice extends ShadowMunger {
 	protected ResolvedType concreteAspect; // null until after concretize
 
 	protected List innerCflowEntries = Collections.EMPTY_LIST; // just for
-																// cflow*Entry
-																// kinds
+	// cflow*Entry
+	// kinds
 	protected int nFreeVars; // just for cflow*Entry kinds
 
 	protected TypePattern exceptionType; // just for Softener kind
@@ -47,8 +46,8 @@ public abstract class Advice extends ShadowMunger {
 	protected UnresolvedType[] bindingParameterTypes;
 
 	protected List/* Lint.Kind */suppressedLintKinds = null; // based on
-															// annotations on
-															// this advice
+	// annotations on
+	// this advice
 
 	ISourceLocation lastReportedMonitorExitJoinpointLocation = null;
 
@@ -185,11 +184,11 @@ public abstract class Advice extends ShadowMunger {
 						ResolvedType adviceReturnType = getSignature().getGenericReturnType().resolve(world);
 
 						if (shadowReturnType.isParameterizedType() && adviceReturnType.isRawType()) { // Set
-																										// <
-																										// Integer
-																										// >
-																										// and
-																										// Set
+							// <
+							// Integer
+							// >
+							// and
+							// Set
 							ResolvedType shadowReturnGenericType = shadowReturnType.getGenericType(); // Set
 							ResolvedType adviceReturnGenericType = adviceReturnType.getGenericType(); // Set
 							if (shadowReturnGenericType.isAssignableFrom(adviceReturnGenericType)
@@ -216,11 +215,10 @@ public abstract class Advice extends ShadowMunger {
 	}
 
 	/**
-	 * In after returning advice if we are binding the extra parameter to a
-	 * parameterized type we may not be able to do a type-safe conversion.
+	 * In after returning advice if we are binding the extra parameter to a parameterized type we may not be able to do a type-safe
+	 * conversion.
 	 * 
-	 * @param resolvedExtraParameterType the type in the after returning
-	 *            declaration
+	 * @param resolvedExtraParameterType the type in the after returning declaration
 	 * @param shadowReturnType the type at the shadow
 	 * @param world
 	 */
@@ -390,14 +388,14 @@ public abstract class Advice extends ShadowMunger {
 		if (!(other instanceof Advice))
 			return false;
 		Advice o = (Advice) other;
-		return o.kind.equals(kind)
-				&& ((o.pointcut == null) ? (pointcut == null) : o.pointcut.equals(pointcut))
-				&& ((o.signature == null) ? (signature == null) : o.signature.equals(signature))
-				&& (AsmManager.getDefault().getHandleProvider().dependsOnLocation() ? ((o.getSourceLocation() == null) ? (getSourceLocation() == null)
-						: o.getSourceLocation().equals(getSourceLocation()))
-						: true) // pr134471 - remove when handles are improved
-								// to be independent of location
-		;
+		return o.kind.equals(kind) && ((o.pointcut == null) ? (pointcut == null) : o.pointcut.equals(pointcut))
+				&& ((o.signature == null) ? (signature == null) : o.signature.equals(signature));
+		// && (AsmManager.getDefault().getHandleProvider().dependsOnLocation() ? ((o.getSourceLocation() == null) ?
+		// (getSourceLocation() == null)
+		// : o.getSourceLocation().equals(getSourceLocation()))
+		// : true) // pr134471 - remove when handles are improved
+		// // to be independent of location
+		// ;
 
 	}
 

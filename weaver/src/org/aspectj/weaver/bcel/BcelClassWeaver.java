@@ -123,11 +123,11 @@ class BcelClassWeaver implements IClassWeaver {
 	private List addedSuperInitializersAsList = null; // List<IfaceInitList>
 	private final Map addedSuperInitializers = new HashMap(); // Interface ->
 	// IfaceInitList
-	private List addedThisInitializers = new ArrayList(); // List<NewFieldMunger>
-	private List addedClassInitializers = new ArrayList(); // List<NewFieldMunger
+	private final List addedThisInitializers = new ArrayList(); // List<NewFieldMunger>
+	private final List addedClassInitializers = new ArrayList(); // List<NewFieldMunger
 	// >
 
-	private Map mapToAnnotations = new HashMap();
+	private final Map mapToAnnotations = new HashMap();
 
 	// private BcelShadow clinitShadow = null;
 
@@ -880,7 +880,7 @@ class BcelClassWeaver implements IClassWeaver {
 							mg.addAnnotation(decaM.getAnnotationX());
 
 							AsmRelationshipProvider.getDefault().addDeclareAnnotationMethodRelationship(decaM.getSourceLocation(),
-									clazz.getName(), mg.getMemberView());//getMethod());
+									clazz.getName(), mg.getMemberView(), world.getModel());// getMethod());
 							reportMethodCtorWeavingMessage(clazz, mg.getMemberView(), decaM, mg.getDeclarationLineNumber());
 							isChanged = true;
 							modificationOccured = true;
@@ -923,8 +923,8 @@ class BcelClassWeaver implements IClassWeaver {
 								annotationsToAdd.add(a);
 
 								mg.addAnnotation(decaM.getAnnotationX());
-								AsmRelationshipProvider.getDefault().addDeclareAnnotationMethodRelationship(decaM.getSourceLocation(),
-										clazz.getName(), mg.getMemberView());//getMethod());
+								AsmRelationshipProvider.getDefault().addDeclareAnnotationMethodRelationship(
+										decaM.getSourceLocation(), clazz.getName(), mg.getMemberView(), world.getModel());// getMethod());
 								isChanged = true;
 								modificationOccured = true;
 								forRemoval.add(decaM);
@@ -1102,8 +1102,8 @@ class BcelClassWeaver implements IClassWeaver {
 					if (doesAlreadyHaveAnnotation(annotationHolder, itdIsActually, decaF, reportedErrors))
 						continue; // skip this one...
 					annotationHolder.addAnnotation(decaF.getAnnotationX());
-					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),
-							itdIsActually.getSourceLocation());
+					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(world.getModel(),
+							decaF.getSourceLocation(), itdIsActually.getSourceLocation());
 					isChanged = true;
 					modificationOccured = true;
 
@@ -1125,8 +1125,8 @@ class BcelClassWeaver implements IClassWeaver {
 						if (doesAlreadyHaveAnnotation(annotationHolder, itdIsActually, decaF, reportedErrors))
 							continue; // skip this one...
 						annotationHolder.addAnnotation(decaF.getAnnotationX());
-						AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaF.getSourceLocation(),
-								itdIsActually.getSourceLocation());
+						AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(world.getModel(),
+								decaF.getSourceLocation(), itdIsActually.getSourceLocation());
 						isChanged = true;
 						modificationOccured = true;
 						forRemoval.add(decaF);
@@ -1160,8 +1160,8 @@ class BcelClassWeaver implements IClassWeaver {
 					}
 					annotationHolder.addAnnotation(decaMC.getAnnotationX());
 					isChanged = true;
-					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaMC.getSourceLocation(),
-							unMangledInterMethod.getSourceLocation());
+					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(world.getModel(),
+							decaMC.getSourceLocation(), unMangledInterMethod.getSourceLocation());
 					reportMethodCtorWeavingMessage(clazz, unMangledInterMethod, decaMC, -1);
 					modificationOccured = true;
 				} else {
@@ -1183,8 +1183,8 @@ class BcelClassWeaver implements IClassWeaver {
 							continue; // skip this one...
 						annotationHolder.addAnnotation(decaMC.getAnnotationX());
 						unMangledInterMethod.addAnnotation(decaMC.getAnnotationX());
-						AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(decaMC.getSourceLocation(),
-								unMangledInterMethod.getSourceLocation());
+						AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(world.getModel(),
+								decaMC.getSourceLocation(), unMangledInterMethod.getSourceLocation());
 						isChanged = true;
 						modificationOccured = true;
 						forRemoval.add(decaMC);
@@ -1302,8 +1302,8 @@ class BcelClassWeaver implements IClassWeaver {
 								}
 							}
 
-							AsmRelationshipProvider.getDefault().addDeclareAnnotationFieldRelationship(decaF.getSourceLocation(),
-									clazz.getName(), aBcelField);//.getFieldAsIs());
+							AsmRelationshipProvider.getDefault().addDeclareAnnotationFieldRelationship(world.getModel(),
+									decaF.getSourceLocation(), clazz.getName(), aBcelField);// .getFieldAsIs());
 							reportFieldAnnotationWeavingMessage(clazz, fields, fieldCounter, decaF);
 							isChanged = true;
 							modificationOccured = true;
@@ -1337,8 +1337,8 @@ class BcelClassWeaver implements IClassWeaver {
 									continue; // skip this one...
 								}
 								aBcelField.addAnnotation(decaF.getAnnotationX());
-								AsmRelationshipProvider.getDefault().addDeclareAnnotationFieldRelationship(decaF.getSourceLocation(),
-										clazz.getName(), aBcelField);//.getFieldAsIs());
+								AsmRelationshipProvider.getDefault().addDeclareAnnotationFieldRelationship(world.getModel(),
+										decaF.getSourceLocation(), clazz.getName(), aBcelField);// .getFieldAsIs());
 								isChanged = true;
 								modificationOccured = true;
 								forRemoval.add(decaF);

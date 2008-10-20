@@ -31,7 +31,6 @@ import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.InvokeInstruction;
 import org.aspectj.apache.bcel.generic.Type;
-import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -118,7 +117,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		}
 
 		if (changed && worthReporting) {
-			AsmRelationshipProvider.getDefault().addRelationship(weaver.getLazyClassGen().getType(), munger, getAspectType());
+			AsmRelationshipProvider.getDefault().addRelationship(getWorld().getModel(), weaver.getLazyClassGen().getType(), munger,
+					getAspectType());
 		}
 
 		// TAG: WeavingMessage
@@ -1792,10 +1792,11 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			return false;
 		BcelTypeMunger o = (BcelTypeMunger) other;
 		return ((o.getMunger() == null) ? (getMunger() == null) : o.getMunger().equals(getMunger()))
-				&& ((o.getAspectType() == null) ? (getAspectType() == null) : o.getAspectType().equals(getAspectType()))
-				&& (AsmManager.getDefault().getHandleProvider().dependsOnLocation() ? ((o.getSourceLocation() == null) ? (getSourceLocation() == null)
-						: o.getSourceLocation().equals(getSourceLocation()))
-						: true); // pr134471 - remove when handles are improved
+				&& ((o.getAspectType() == null) ? (getAspectType() == null) : o.getAspectType().equals(getAspectType()));
+		// && (AsmManager.getDefault().getHandleProvider().dependsOnLocation() ? ((o.getSourceLocation() == null) ?
+		// (getSourceLocation() == null)
+		// : o.getSourceLocation().equals(getSourceLocation()))
+		// : true); // pr134471 - remove when handles are improved
 		// to be independent of location
 
 	}

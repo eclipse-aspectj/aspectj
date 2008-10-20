@@ -353,8 +353,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		typeMungers = new ArrayList();
 		declares = new ArrayList();
 		processAttributes(l, pointcuts, false);
-		l = AtAjAttributes.readAj5ClassAttributes(javaClass, getResolvedTypeX(), getResolvedTypeX().getSourceContext(), msgHandler,
-				isCodeStyleAspect);
+		l = AtAjAttributes.readAj5ClassAttributes(getResolvedTypeX().getWorld().getModel(), javaClass, getResolvedTypeX(),
+				getResolvedTypeX().getSourceContext(), msgHandler, isCodeStyleAspect);
 		AjAttribute.Aspect deferredAspectAttribute = processAttributes(l, pointcuts, true);
 
 		if (pointcuts.size() == 0) {
