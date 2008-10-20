@@ -32,6 +32,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.util.TypeSafeEnum;
 import org.aspectj.weaver.ast.Var;
+import org.aspectj.weaver.model.AsmRelationshipProvider;
 
 /*
  * The superclass of anything representing a the shadow of a join point.  A shadow represents

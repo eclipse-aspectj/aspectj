@@ -8,7 +8,7 @@
  * Contributors: IBM Corporation - initial API and implementation 
  * 				 Helen Hawkins   - initial version
  *******************************************************************/
-package org.aspectj.weaver;
+package org.aspectj.weaver.model;
 
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.OrPointcut;

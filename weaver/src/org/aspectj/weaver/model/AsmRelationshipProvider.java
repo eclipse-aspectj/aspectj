@@ -10,7 +10,7 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-package org.aspectj.weaver;
+package org.aspectj.weaver.model;
 
 import java.util.Iterator;
 
@@ -22,6 +22,19 @@ import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
+import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.AdviceKind;
+import org.aspectj.weaver.Checker;
+import org.aspectj.weaver.Lint;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.Lint.Kind;
 
 public class AsmRelationshipProvider {
 
