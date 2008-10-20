@@ -16,5 +16,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/testing-util"/>
 	<classpathentry kind="lib" path="/lib/bcel/bcel-verifier.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.aspectj.matcher"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
