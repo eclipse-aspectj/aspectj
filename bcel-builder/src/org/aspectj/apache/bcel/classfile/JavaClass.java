@@ -79,7 +79,7 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
  * The intent of this class is to represent a parsed or otherwise existing class file. Those interested in programatically
  * generating classes should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
  * 
- * @version $Id: JavaClass.java,v 1.13 2008/08/28 15:36:59 aclement Exp $
+ * @version $Id: JavaClass.java,v 1.14 2008/10/20 18:31:01 aclement Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -939,15 +939,9 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 		}
 	}
 
-	/**
-	 * the parsed version of the above
-	 */
-	public final Signature.ClassSignature getGenericClassTypeSignature() {
+	public final Signature getSignatureAttribute() {
 		loadGenericSignatureInfoIfNecessary();
-		if (signatureAttribute != null) {
-			return signatureAttribute.asClassSignature();
-		}
-		return null;
+		return signatureAttribute;
 	}
 
 }
