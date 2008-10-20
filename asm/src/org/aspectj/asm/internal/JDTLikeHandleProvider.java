@@ -29,6 +29,8 @@ import org.aspectj.bridge.ISourceLocation;
  */
 public class JDTLikeHandleProvider implements IElementHandleProvider {
 
+	private final AsmManager asm;
+
 	// Need to keep our own count of the number of initializers
 	// because this information cannot be gained from the ipe.
 	private int initializerCounter = 0;
@@ -38,6 +40,10 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 
 	private final String backslash = "\\";
 	private final String emptyString = "";
+
+	public JDTLikeHandleProvider(AsmManager asm) {
+		this.asm = asm;
+	}
 
 	public String createHandleIdentifier(IProgramElement ipe) {
 
@@ -50,7 +56,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 			// therefore just return it
 			return ipe.getHandleIdentifier();
 		} else if (ipe.getKind().equals(IProgramElement.Kind.FILE_LST)) {
-			String configFile = AsmManager.getDefault().getHierarchy().getConfigFile();
+			String configFile = asm.getHierarchy().getConfigFile();
 			int start = configFile.lastIndexOf(File.separator);
 			int end = configFile.lastIndexOf(".lst");
 			if (end != -1) {
@@ -242,9 +248,9 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 	}
 
 	public String getFileForHandle(String handle) {
-		IProgramElement node = AsmManager.getDefault().getHierarchy().getElement(handle);
+		IProgramElement node = asm.getHierarchy().getElement(handle);
 		if (node != null) {
-			return AsmManager.getDefault().getCanonicalFilePath(node.getSourceLocation().getSourceFile());
+			return asm.getCanonicalFilePath(node.getSourceLocation().getSourceFile());
 		} else if (handle.charAt(0) == HandleProviderDelimiter.ASPECT_CU.getDelimiter()
 				|| handle.charAt(0) == HandleProviderDelimiter.COMPILATIONUNIT.getDelimiter()) {
 			// it's something like *MyAspect.aj or {MyClass.java. In other words
@@ -256,7 +262,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 	}
 
 	public int getLineNumberForHandle(String handle) {
-		IProgramElement node = AsmManager.getDefault().getHierarchy().getElement(handle);
+		IProgramElement node = asm.getHierarchy().getElement(handle);
 		if (node != null) {
 			return node.getSourceLocation().getLine();
 		} else if (handle.charAt(0) == HandleProviderDelimiter.ASPECT_CU.getDelimiter()
@@ -270,7 +276,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 	}
 
 	public int getOffSetForHandle(String handle) {
-		IProgramElement node = AsmManager.getDefault().getHierarchy().getElement(handle);
+		IProgramElement node = asm.getHierarchy().getElement(handle);
 		if (node != null) {
 			return node.getSourceLocation().getOffset();
 		} else if (handle.charAt(0) == HandleProviderDelimiter.ASPECT_CU.getDelimiter()
@@ -284,7 +290,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 	}
 
 	public String createHandleIdentifier(ISourceLocation location) {
-		IProgramElement node = AsmManager.getDefault().getHierarchy().findElementForSourceLine(location);
+		IProgramElement node = asm.getHierarchy().findElementForSourceLine(location);
 		if (node != null) {
 			return createHandleIdentifier(node);
 		}
@@ -292,8 +298,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 	}
 
 	public String createHandleIdentifier(File sourceFile, int line, int column, int offset) {
-		IProgramElement node = AsmManager.getDefault().getHierarchy().findElementForOffSet(sourceFile.getAbsolutePath(), line,
-				offset);
+		IProgramElement node = asm.getHierarchy().findElementForOffSet(sourceFile.getAbsolutePath(), line, offset);
 		if (node != null) {
 			return createHandleIdentifier(node);
 		}

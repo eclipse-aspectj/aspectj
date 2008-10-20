@@ -42,17 +42,35 @@ import org.aspectj.asm.internal.RelationshipMap;
 import org.aspectj.bridge.ISourceLocation;
 
 /**
- * The Abstract Structure Model (ASM) represents the containment hierarchy and crossccutting structure map for AspectJ programs. It
+ * The Abstract Structure Model (ASM) represents the containment hierarchy and crosscutting structure map for AspectJ programs. It
  * is used by IDE views such as the document outline, and by other tools such as ajdoc to show both AspectJ declarations and
  * crosscutting links, such as which advice affects which join point shadows.
  * 
  * @author Mik Kersten
+ * @author Andy Clement
  */
 public class AsmManager {
 
-	private static AsmManager instance = new AsmManager();
+	// For testing ONLY
+	public static boolean recordingLastActiveStructureModel = true;
+	public static AsmManager lastActiveStructureModel;
+	public static boolean forceSingletonBehaviour = false;
 
-	private IElementHandleProvider handleProvider;
+	// SECRETAPI asc pull the secret options together into a system API you lazy fool
+	public static boolean attemptIncrementalModelRepairs = false;
+	// Dumping the model is expensive
+	public static boolean dumpModelPostBuild = false;
+	// For offline debugging, you can now ask for the AsmManager to
+	// dump the model - see the method setReporting()
+	private static boolean dumpModel = false;
+	private static boolean dumpRelationships = false;
+	private static boolean dumpDeltaProcessing = false;
+	private static IModelFilter modelFilter = null;
+	private static String dumpFilename = "";
+	private static boolean reporting = false;
+
+	private static boolean completingTypeBindings = false;
+
 	private final List structureListeners = new ArrayList();
 
 	// The model is 'manipulated' by the AjBuildManager.setupModel() code which
@@ -64,24 +82,8 @@ public class AsmManager {
 	// between projects.
 	protected IHierarchy hierarchy;
 	private IRelationshipMap mapper;
+	private IElementHandleProvider handleProvider;
 
-	private static boolean creatingModel = false;
-	public static boolean dumpModelPostBuild = false; // Dumping the model is
-	// expensive
-	// SECRETAPI asc pull the secret options together into a system API you lazy
-	// fool
-	public static boolean attemptIncrementalModelRepairs = false;
-
-	// For offline debugging, you can now ask for the AsmManager to
-	// dump the model - see the method setReporting()
-	private static boolean dumpModel = false;
-	private static boolean dumpRelationships = false;
-	private static boolean dumpDeltaProcessing = false;
-	private static IModelFilter modelFilter = null;
-	private static String dumpFilename = "";
-	private static boolean reporting = false;
-
-	private static boolean completingTypeBindings = false;
 	private final CanonicalFilePathMap canonicalFilePathMap = new CanonicalFilePathMap();
 	// Record the Set<File> for which the model has been modified during the
 	// last incremental build
@@ -94,27 +96,29 @@ public class AsmManager {
 	// setReporting("c:/model.nfo",true,true,true,true);
 	// }
 
-	protected AsmManager() {
-		handleProvider = new JDTLikeHandleProvider();
-		createNewASM();
+	private AsmManager() {
 	}
 
-	public void createNewASM() {
-		hierarchy = new AspectJElementHierarchy();
-		mapper = new RelationshipMap(hierarchy);
+	public static AsmManager createNewStructureModel() {
+		if (forceSingletonBehaviour && lastActiveStructureModel != null) {
+			return lastActiveStructureModel;
+		}
+		AsmManager asm = new AsmManager();
+		asm.hierarchy = new AspectJElementHierarchy(asm);
+		asm.mapper = new RelationshipMap(asm.hierarchy);
+		asm.handleProvider = new JDTLikeHandleProvider(asm);
 		// call initialize on the handleProvider when we create a new ASM
 		// to give handleProviders the chance to reset any state
-		handleProvider.initialize();
-		resetDeltaProcessing();
+		asm.handleProvider.initialize();
+		asm.resetDeltaProcessing();
+		setLastActiveStructureModel(asm);
+		return asm;
 	}
 
 	public IHierarchy getHierarchy() {
 		return hierarchy;
 	}
 
-	public static AsmManager getDefault() {
-		return instance;
-	}
 
 	public IRelationshipMap getRelationshipMap() {
 		return mapper;
@@ -167,7 +171,7 @@ public class AsmManager {
 			return;
 		for (Iterator it = children.iterator(); it.hasNext();) {
 			IProgramElement next = (IProgramElement) it.next();
-			List rels = AsmManager.getDefault().getRelationshipMap().get(next);
+			List rels = mapper.get(next);
 			if (next != null
 					&& ((next.getKind() == IProgramElement.Kind.CODE && showSubMember) || (next.getKind() != IProgramElement.Kind.CODE && showMemberAndType))
 					&& rels != null && rels.size() > 0) {
@@ -238,6 +242,7 @@ public class AsmManager {
 				FileInputStream in = new FileInputStream(filePath);
 				ObjectInputStream s = new ObjectInputStream(in);
 				hierarchy = (AspectJElementHierarchy) s.readObject();
+				((AspectJElementHierarchy) hierarchy).setAsmManager(this);
 				hierarchyReadOK = true;
 				mapper = (RelationshipMap) s.readObject();
 				((RelationshipMap) mapper).setHierarchy(hierarchy);
@@ -419,7 +424,7 @@ public class AsmManager {
 			BufferedWriter bw = new BufferedWriter(fw);
 			if (dumpModel) {
 				bw.write("=== MODEL STATUS REPORT ========= " + reasonForReport + "\n");
-				dumptree(bw, AsmManager.getDefault().getHierarchy().getRoot(), 0);
+				dumptree(bw, hierarchy.getRoot(), 0);
 
 				bw.write("=== END OF MODEL REPORT =========\n");
 			}
@@ -428,7 +433,7 @@ public class AsmManager {
 				dumprels(bw);
 				bw.write("=== END OF RELATIONSHIPS REPORT ==\n");
 			}
-			Properties p = ModelInfo.summarizeModel().getProperties();
+			Properties p = summarizeModel().getProperties();
 			Enumeration pkeyenum = p.keys();
 			bw.write("=== Properties of the model and relationships map =====\n");
 			while (pkeyenum.hasMoreElements()) {
@@ -477,12 +482,11 @@ public class AsmManager {
 	}
 
 	public void dumprels(Writer w) throws IOException {
-		IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
 		int ctr = 1;
-		Set entries = irm.getEntries();
+		Set entries = mapper.getEntries();
 		for (Iterator iter = entries.iterator(); iter.hasNext();) {
 			String hid = (String) iter.next();
-			List rels = irm.get(hid);
+			List rels = mapper.get(hid);
 			for (Iterator iterator = rels.iterator(); iterator.hasNext();) {
 				IRelationship ir = (IRelationship) iterator.next();
 				List targets = ir.getTargets();
@@ -500,12 +504,11 @@ public class AsmManager {
 
 	private void dumprelsStderr(String key) {
 		System.err.println("Relationships dump follows: " + key);
-		IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
 		int ctr = 1;
-		Set entries = irm.getEntries();
+		Set entries = mapper.getEntries();
 		for (Iterator iter = entries.iterator(); iter.hasNext();) {
 			String hid = (String) iter.next();
-			List rels = irm.get(hid);
+			List rels = mapper.get(hid);
 			for (Iterator iterator = rels.iterator(); iterator.hasNext();) {
 				IRelationship ir = (IRelationship) iterator.next();
 				List targets = ir.getTargets();
@@ -527,15 +530,13 @@ public class AsmManager {
 	 */
 	public boolean removeStructureModelForFiles(Writer fw, Collection files) throws IOException {
 
-		IHierarchy model = AsmManager.getDefault().getHierarchy();
-
 		boolean modelModified = false;
 
 		Set deletedNodes = new HashSet();
 		for (Iterator iter = files.iterator(); iter.hasNext();) {
 			File fileForCompilation = (File) iter.next();
-			String correctedPath = AsmManager.getDefault().getCanonicalFilePath(fileForCompilation);
-			IProgramElement progElem = (IProgramElement) model.findInFileMap(correctedPath);
+			String correctedPath = getCanonicalFilePath(fileForCompilation);
+			IProgramElement progElem = (IProgramElement) hierarchy.findInFileMap(correctedPath);
 			if (progElem != null) {
 				// Found it, let's remove it
 				if (dumpDeltaProcessing) {
@@ -544,14 +545,15 @@ public class AsmManager {
 				removeNode(progElem);
 				lastBuildChanges.add(fileForCompilation);
 				deletedNodes.add(getCanonicalFilePath(progElem.getSourceLocation().getSourceFile()));
-				if (!model.removeFromFileMap(correctedPath))
+				if (!hierarchy.removeFromFileMap(correctedPath))
 					throw new RuntimeException("Whilst repairing model, couldn't remove entry for file: " + correctedPath
 							+ " from the filemap");
 				modelModified = true;
 			}
 		}
-		if (modelModified)
-			model.updateHandleMap(deletedNodes);
+		if (modelModified) {
+			hierarchy.updateHandleMap(deletedNodes);
+		}
 		return modelModified;
 	}
 
@@ -565,7 +567,6 @@ public class AsmManager {
 		// config.getFiles())
 
 		// List files = config.getFiles();
-		IHierarchy model = AsmManager.getDefault().getHierarchy();
 
 		boolean modelModified = false;
 		// Files to delete are: those to be compiled + those that have been
@@ -576,8 +577,8 @@ public class AsmManager {
 		Set deletedNodes = new HashSet();
 		for (Iterator iter = filesToRemoveFromStructureModel.iterator(); iter.hasNext();) {
 			File fileForCompilation = (File) iter.next();
-			String correctedPath = AsmManager.getDefault().getCanonicalFilePath(fileForCompilation);
-			IProgramElement progElem = (IProgramElement) model.findInFileMap(correctedPath);
+			String correctedPath = getCanonicalFilePath(fileForCompilation);
+			IProgramElement progElem = (IProgramElement) hierarchy.findInFileMap(correctedPath);
 			if (progElem != null) {
 				// Found it, let's remove it
 				if (dumpDeltaProcessing) {
@@ -585,15 +586,15 @@ public class AsmManager {
 				}
 				removeNode(progElem);
 				deletedNodes.add(getCanonicalFilePath(progElem.getSourceLocation().getSourceFile()));
-				if (!model.removeFromFileMap(correctedPath))
+				if (!hierarchy.removeFromFileMap(correctedPath))
 					throw new RuntimeException("Whilst repairing model, couldn't remove entry for file: " + correctedPath
 							+ " from the filemap");
 				modelModified = true;
 			}
 		}
 		if (modelModified) {
-			model.flushTypeMap();
-			model.updateHandleMap(deletedNodes);
+			hierarchy.flushTypeMap();
+			hierarchy.updateHandleMap(deletedNodes);
 		}
 	}
 
@@ -867,7 +868,7 @@ public class AsmManager {
 	 */
 	private void repairRelationships(Writer fw) {
 		try {
-			IHierarchy model = AsmManager.getDefault().getHierarchy();
+			// IHierarchy model = AsmManager.getDefault().getHierarchy();
 			// TODO Speed this code up by making this assumption:
 			// the only piece of the handle that is interesting is the file
 			// name. We are working at file granularity, if the
@@ -877,7 +878,7 @@ public class AsmManager {
 				fw.write("Repairing relationships map:\n");
 
 			// Now sort out the relationships map
-			IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
+			// IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
 			Set sourcesToRemove = new HashSet();
 			Set nonExistingHandles = new HashSet(); // Cache of handles that we
 			// *know* are invalid
@@ -885,7 +886,7 @@ public class AsmManager {
 			int tgthandlecounter = 0;
 
 			// Iterate over the source handles in the relationships map
-			Set keyset = irm.getEntries(); // These are source handles
+			Set keyset = mapper.getEntries(); // These are source handles
 			for (Iterator keyiter = keyset.iterator(); keyiter.hasNext();) {
 				String hid = (String) keyiter.next();
 				srchandlecounter++;
@@ -895,7 +896,7 @@ public class AsmManager {
 					sourcesToRemove.add(hid);
 				} else {
 					// We better check if it actually exists
-					IProgramElement existingElement = model.getElement(hid);
+					IProgramElement existingElement = hierarchy.getElement(hid);
 					if (dumpDeltaProcessing)
 						fw.write("Looking for handle [" + hid + "] in model, found: " + existingElement + "\n");
 
@@ -906,7 +907,7 @@ public class AsmManager {
 						nonExistingHandles.add(hid); // Speed up a bit you swine
 					} else {
 						// Ok, so the source is valid, what about the targets?
-						List relationships = irm.get(hid);
+						List relationships = mapper.get(hid);
 						List relationshipsToRemove = new ArrayList();
 						// Iterate through the relationships against this source
 						// handle
@@ -927,7 +928,7 @@ public class AsmManager {
 									targetsToRemove.add(targethid);
 								} else {
 									// We better check
-									IProgramElement existingTarget = model.getElement(targethid);
+									IProgramElement existingTarget = hierarchy.getElement(targethid);
 									if (existingTarget == null) {
 										if (dumpDeltaProcessing)
 											fw.write("Target handle [" + targethid + "] for srchid[" + hid + "]rel["
@@ -989,10 +990,10 @@ public class AsmManager {
 								// relationships !!
 								for (int i = 0; i < relationshipsToRemove.size(); i++) {
 									IRelationship irel = (IRelationship) relationshipsToRemove.get(i);
-									verifyAssumption(irm.remove(hid, irel), "Failed to remove relationship " + irel.getName()
+									verifyAssumption(mapper.remove(hid, irel), "Failed to remove relationship " + irel.getName()
 											+ " for shid " + hid);
 								}
-								List rels = irm.get(hid);
+								List rels = mapper.get(hid);
 								if (rels == null || rels.size() == 0)
 									sourcesToRemove.add(hid);
 							}
@@ -1003,8 +1004,8 @@ public class AsmManager {
 			// Remove sources that have no valid relationships any more
 			for (Iterator srciter = sourcesToRemove.iterator(); srciter.hasNext();) {
 				String hid = (String) srciter.next();
-				irm.removeAll(hid);
-				IProgramElement ipe = model.getElement(hid);
+				mapper.removeAll(hid);
+				IProgramElement ipe = hierarchy.getElement(hid);
 				if (ipe != null) {
 					// If the relationship was hanging off a 'code' node, delete
 					// it.
@@ -1113,7 +1114,7 @@ public class AsmManager {
 	/**
 	 * A ModelInfo object captures basic information about the structure model. It is used for testing and producing debug info.
 	 */
-	public static class ModelInfo {
+	public class ModelInfo {
 		private final Hashtable nodeTypeCount = new Hashtable();
 		private final Properties extraProperties = new Properties();
 
@@ -1179,26 +1180,26 @@ public class AsmManager {
 			extraProperties.setProperty(string, string2);
 		}
 
-		public static ModelInfo summarizeModel() {
-			return new ModelInfo(AsmManager.getDefault().getHierarchy(), AsmManager.getDefault().getRelationshipMap());
-		}
+	}
+
+	public ModelInfo summarizeModel() {
+		return new ModelInfo(getHierarchy(), getRelationshipMap());
 	}
 
 	/**
 	 * Set to indicate whether we are currently building a structure model, should be set up front.
 	 */
-	public static void setCreatingModel(boolean b) {
-		creatingModel = b;
-	}
-
-	/**
-	 * returns true if we are currently generating a structure model, enables guarding of expensive operations on an empty/null
-	 * model.
-	 */
-	public static boolean isCreatingModel() {
-		return creatingModel;
-	}
-
+	// public static void setCreatingModel(boolean b) {
+	// creatingModel = b;
+	// }
+	//
+	// /**
+	// * returns true if we are currently generating a structure model, enables guarding of expensive operations on an empty/null
+	// * model.
+	// */
+	// public static boolean isCreatingModel() {
+	// return creatingModel;
+	// }
 	public static void setCompletingTypeBindings(boolean b) {
 		completingTypeBindings = b;
 	}
@@ -1207,13 +1208,13 @@ public class AsmManager {
 		return completingTypeBindings;
 	}
 
-	public void setRelationshipMap(IRelationshipMap irm) {
-		mapper = irm;
-	}
-
-	public void setHierarchy(IHierarchy ih) {
-		hierarchy = ih;
-	}
+	// public void setRelationshipMap(IRelationshipMap irm) {
+	// mapper = irm;
+	// }
+	//
+	// public void setHierarchy(IHierarchy ih) {
+	// hierarchy = ih;
+	// }
 
 	public void resetDeltaProcessing() {
 		lastBuildChanges.clear();
@@ -1237,6 +1238,12 @@ public class AsmManager {
 
 	public void addAspectInEffectThisBuild(File f) {
 		aspectsWeavingInLastBuild.add(f);
+	}
+
+	public static void setLastActiveStructureModel(AsmManager structureModel) {
+		if (recordingLastActiveStructureModel) {
+			lastActiveStructureModel = structureModel;
+		}
 	}
 
 }

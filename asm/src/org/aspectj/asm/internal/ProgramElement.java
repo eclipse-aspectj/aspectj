@@ -31,6 +31,7 @@ import org.aspectj.bridge.ISourceLocation;
  */
 public class ProgramElement implements IProgramElement {
 
+	public transient AsmManager asm; // which structure model is this node part of
 	private static final long serialVersionUID = 171673495267384449L;
 	public static boolean shortITDNames = true;
 
@@ -60,21 +61,30 @@ public class ProgramElement implements IProgramElement {
 
 	// --- ctors
 
+	public AsmManager getModel() {
+		return asm;
+	}
+
 	/** Used during de-externalization */
 	public ProgramElement() {
+		int stop = 1;
 	}
 
 	/** Use to create program element nodes that do not correspond to source locations */
-	public ProgramElement(String name, Kind kind, List children) {
+	public ProgramElement(AsmManager asm, String name, Kind kind, List children) {
+		this.asm = asm;
+		if (asm == null && !name.equals("<build to view structure>")) {
+			throw new RuntimeException();
+		}
 		this.name = name;
 		this.kind = kind;
 		if (children != null)
 			setChildren(children);
 	}
 
-	public ProgramElement(String name, IProgramElement.Kind kind, ISourceLocation sourceLocation, int modifiers, String comment,
-			List children) {
-		this(name, kind, children);
+	public ProgramElement(AsmManager asm, String name, IProgramElement.Kind kind, ISourceLocation sourceLocation, int modifiers,
+			String comment, List children) {
+		this(asm, name, kind, children);
 		this.sourceLocation = sourceLocation;
 		setFormalComment(comment);
 		// if (comment!=null && comment.length()>0) formalComment = comment;
@@ -525,7 +535,11 @@ public class ProgramElement implements IProgramElement {
 
 	public String getHandleIdentifier(boolean create) {
 		if (null == handle && create) {
-			handle = AsmManager.getDefault().getHandleProvider().createHandleIdentifier(this);
+			if (asm == null && name.equals("<build to view structure>")) {
+				handle = "<build to view structure>";
+			} else {
+				handle = asm.getHandleProvider().createHandleIdentifier(this);
+			}
 		}
 		return handle;
 	}

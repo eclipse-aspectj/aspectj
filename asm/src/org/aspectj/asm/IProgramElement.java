@@ -195,6 +195,8 @@ public interface IProgramElement extends Serializable {
 
 	public IProgramElement walk(HierarchyWalker walker);
 
+	public AsmManager getModel();
+
 	/**
 	 * Uses "typesafe enum" pattern.
 	 */
