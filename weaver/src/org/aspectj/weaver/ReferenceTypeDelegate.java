@@ -17,9 +17,8 @@ import java.util.Collection;
 import org.aspectj.weaver.patterns.PerClause;
 
 /**
- * Abstraction over a type - a reference type is Object and a descendant of
- * Object, other types (int/etc) are considered primitive types. Abstract
- * implementation provided by AbstractReferenceTypeDelegate.
+ * Abstraction over a type - a reference type is Object and a descendant of Object, other types (int/etc) are considered primitive
+ * types. Abstract implementation provided by AbstractReferenceTypeDelegate.
  */
 public interface ReferenceTypeDelegate {
 
@@ -100,5 +99,7 @@ public interface ReferenceTypeDelegate {
 	public String getDeclaredGenericSignature();
 
 	public ResolvedType getOuterClass();
+
+	public boolean copySourceContext();
 
 }

@@ -28,13 +28,13 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.context.PinpointingMessageHandler;
+import org.aspectj.util.IStructureModel;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -75,8 +75,8 @@ public abstract class World implements Dump.INode {
 	/** All of the type and shadow mungers known to us */
 	private final CrosscuttingMembersSet crosscuttingMembersSet = new CrosscuttingMembersSet(this);
 
-	/** Model holds ASM relationships */
-	private AsmManager model = null;
+	/** The structure model for the compilation */
+	private IStructureModel model = null;
 
 	/** for processing Xlint messages */
 	private Lint lint = new Lint(this);
@@ -662,11 +662,11 @@ public abstract class World implements Dump.INode {
 		return crosscuttingMembersSet;
 	}
 
-	public AsmManager getModel() {
+	public IStructureModel getModel() {
 		return model;
 	}
 
-	public void setModel(AsmManager model) {
+	public void setModel(IStructureModel model) {
 		this.model = model;
 	}
 

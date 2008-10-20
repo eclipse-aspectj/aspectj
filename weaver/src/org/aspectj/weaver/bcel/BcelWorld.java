@@ -38,6 +38,7 @@ import org.aspectj.apache.bcel.util.ClassLoaderRepository;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.NonCachingClassLoaderRepository;
 import org.aspectj.apache.bcel.util.Repository;
+import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IRelationship;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
@@ -129,7 +130,7 @@ public class BcelWorld extends World implements Repository {
 
 		if (getModel() != null) {
 			// System.err.println("munger: " + munger + " on " + this);
-			AsmRelationshipProvider.adviceMunger(getModel(), shadow, munger);
+			AsmRelationshipProvider.adviceMunger(getModelAsAsmManager(), shadow, munger);
 		}
 	}
 
@@ -775,9 +776,13 @@ public class BcelWorld extends World implements Repository {
 		}
 
 		if (getModel() != null) {
-			AsmRelationshipProvider.checkerMunger(getModel(), shadow, checker);
+			AsmRelationshipProvider.checkerMunger(getModelAsAsmManager(), shadow, checker);
 		}
 
+	}
+
+	public AsmManager getModelAsAsmManager() {
+		return (AsmManager) getModel(); // For now... always an AsmManager in a bcel environment
 	}
 
 }

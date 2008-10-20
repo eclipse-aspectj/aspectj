@@ -14,8 +14,6 @@ package org.aspectj.weaver;
 
 import java.lang.reflect.Modifier;
 
-import org.aspectj.weaver.bcel.LazyClassGen;
-
 public class NameMangler {
 
 	// public static final char[] AJC_DOLLAR_PREFIX = { 'a', 'j', 'c', '$' };
@@ -312,9 +310,9 @@ public class NameMangler {
 		return enclosingType.getName() + "$AjcClosure" + index;
 	}
 
-	public static String aroundCallbackMethodName(Member shadowSig, LazyClassGen enclosingType) {
+	public static String aroundCallbackMethodName(Member shadowSig, String suffixTag) {
 		StringBuffer ret = new StringBuffer();
-		ret.append(getExtractableName(shadowSig)).append("_aroundBody").append(enclosingType.getNewGeneratedNameTag());
+		ret.append(getExtractableName(shadowSig)).append("_aroundBody").append(suffixTag);
 		return ret.toString();
 	}
 

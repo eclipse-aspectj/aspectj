@@ -436,4 +436,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 		return SourceContextImpl.UNKNOWN_SOURCE_CONTEXT;
 	}
 
+	public boolean copySourceContext() {
+		return true;
+	}
 }

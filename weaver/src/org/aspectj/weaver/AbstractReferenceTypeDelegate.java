@@ -121,4 +121,8 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 		return ret;
 	}
 
+	public boolean copySourceContext() {
+		return true;
+	}
+
 }

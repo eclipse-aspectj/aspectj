@@ -1116,7 +1116,7 @@ public class BcelWeaver {
 			if (world.getModel() != null /* AsmManager.isCreatingModel() */&& !isBatchWeave) {
 				// remove all relationships where this file being woven is the
 				// target of the relationship
-				world.getModel().removeRelationshipsTargettingThisType(classFile.getClassName());
+				world.getModelAsAsmManager().removeRelationshipsTargettingThisType(classFile.getClassName());
 			}
 		}
 
@@ -1601,8 +1601,8 @@ public class BcelWeaver {
 			boolean problemReported = verifyTargetIsOK(decA, onType, annoX, reportProblems);
 
 			if (!problemReported) {
-				AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(world.getModel(), decA.getSourceLocation(),
-						onType.getSourceLocation());
+				AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(world.getModelAsAsmManager(),
+						decA.getSourceLocation(), onType.getSourceLocation());
 				// TAG: WeavingMessage
 				if (!getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
 					getWorld().getMessageHandler().handleMessage(
