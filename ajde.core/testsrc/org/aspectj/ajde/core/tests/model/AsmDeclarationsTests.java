@@ -19,6 +19,7 @@ import org.aspectj.asm.IProgramElement;
 
 public class AsmDeclarationsTests extends AjdeCoreTestCase {
 
+	private AsmManager manager = null;
 	private IHierarchy model = null;
 
 	private final String[] files = new String[] { "ModelCoverage.java", "pkg" + File.separator + "InPackage.java" };
@@ -31,7 +32,8 @@ public class AsmDeclarationsTests extends AjdeCoreTestCase {
 		compilerConfig = (TestCompilerConfiguration) getCompiler().getCompilerConfiguration();
 		compilerConfig.setProjectSourceFiles(getSourceFileList(files));
 		doBuild();
-		model = AsmManager.getDefault().getHierarchy();
+		manager = AsmManager.lastActiveStructureModel;
+		model = AsmManager.lastActiveStructureModel.getHierarchy();
 	}
 
 	protected void tearDown() throws Exception {
@@ -47,7 +49,7 @@ public class AsmDeclarationsTests extends AjdeCoreTestCase {
 	}
 
 	public void testAspectAccessibility() {
-		IProgramElement packageAspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "AdviceNamingCoverage");
+		IProgramElement packageAspect = model.findElementForType(null, "AdviceNamingCoverage");
 		assertNotNull(packageAspect);
 		assertEquals(IProgramElement.Accessibility.PACKAGE, packageAspect.getAccessibility());
 		assertEquals("aspect should not have public in it's signature", "aspect AdviceNamingCoverage", packageAspect
@@ -55,7 +57,7 @@ public class AsmDeclarationsTests extends AjdeCoreTestCase {
 	}
 
 	public void testStaticModifiers() {
-		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "ModifiersCoverage");
+		IProgramElement aspect = model.findElementForType(null, "ModifiersCoverage");
 		assertNotNull(aspect);
 
 		IProgramElement staticA = model.findElementForSignature(aspect, IProgramElement.Kind.FIELD, "staticA");
@@ -64,7 +66,6 @@ public class AsmDeclarationsTests extends AjdeCoreTestCase {
 		IProgramElement finalA = model.findElementForSignature(aspect, IProgramElement.Kind.FIELD, "finalA");
 		assertTrue(!finalA.getModifiers().contains(IProgramElement.Modifiers.STATIC));
 		assertTrue(finalA.getModifiers().contains(IProgramElement.Modifiers.FINAL));
-
 	}
 
 	public void testFileInPackageAndDefaultPackage() {
@@ -81,7 +82,7 @@ public class AsmDeclarationsTests extends AjdeCoreTestCase {
 		IProgramElement node = model.getRoot();
 		assertNotNull(node);
 
-		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "DeclareCoverage");
+		IProgramElement aspect = model.findElementForType(null, "DeclareCoverage");
 		assertNotNull(aspect);
 
 		String label = "declare error: \"Illegal construct..\"";
@@ -123,7 +124,7 @@ public class AsmDeclarationsTests extends AjdeCoreTestCase {
 		IProgramElement node = model.getRoot();
 		assertNotNull(node);
 
-		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "InterTypeDecCoverage");
+		IProgramElement aspect = model.findElementForType(null, "InterTypeDecCoverage");
 		assertNotNull(aspect);
 
 		String fieldMsg = "Point.xxx";
@@ -148,7 +149,7 @@ public class AsmDeclarationsTests extends AjdeCoreTestCase {
 		IProgramElement node = model.getRoot();
 		assertNotNull(node);
 
-		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "AdviceNamingCoverage");
+		IProgramElement aspect = model.findElementForType(null, "AdviceNamingCoverage");
 		assertNotNull(aspect);
 
 		String ptct = "named()";
@@ -166,7 +167,7 @@ public class AsmDeclarationsTests extends AjdeCoreTestCase {
 		IProgramElement node = model.getRoot();
 		assertNotNull(node);
 
-		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "AbstractAspect");
+		IProgramElement aspect = model.findElementForType(null, "AbstractAspect");
 		assertNotNull(aspect);
 
 		String abst = "abPtct()";
@@ -179,7 +180,7 @@ public class AsmDeclarationsTests extends AjdeCoreTestCase {
 		IProgramElement node = model.getRoot();
 		assertNotNull(node);
 
-		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "AdviceNamingCoverage");
+		IProgramElement aspect = model.findElementForType(null, "AdviceNamingCoverage");
 		assertNotNull(aspect);
 
 		String anon = "before(): <anonymous pointcut>";

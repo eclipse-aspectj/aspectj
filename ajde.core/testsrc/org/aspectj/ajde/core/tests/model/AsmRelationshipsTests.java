@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.aspectj.ajde.core.AjdeCoreTestCase;
 import org.aspectj.ajde.core.TestCompilerConfiguration;
-import org.aspectj.ajdt.internal.core.builder.AsmHierarchyBuilder;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
@@ -25,21 +24,17 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 
 	private AsmManager manager = null;
 
-	private String[] files = new String[]{
-			"ModelCoverage.java",
-			"pkg" + File.separator + "InPackage.java"
-	};
-	
+	private final String[] files = new String[] { "ModelCoverage.java", "pkg" + File.separator + "InPackage.java" };
+
 	private TestCompilerConfiguration compilerConfig;
 
 	protected void setUp() throws Exception {
 		super.setUp();
 		initialiseProject("coverage");
-		compilerConfig = (TestCompilerConfiguration) getCompiler()
-				.getCompilerConfiguration();
+		compilerConfig = (TestCompilerConfiguration) getCompiler().getCompilerConfiguration();
 		compilerConfig.setProjectSourceFiles(getSourceFileList(files));
 		doBuild();
-		manager = AsmManager.getDefault();
+		manager = AsmManager.lastActiveStructureModel;
 	}
 
 	protected void tearDown() throws Exception {
@@ -47,155 +42,152 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 		compilerConfig = null;
 		manager = null;
 	}
-	
-	// see pr148027
-	public void testUsesPointcut() {
-		if (!AsmHierarchyBuilder.shouldAddUsesPointcut) return;
-		
-	    IProgramElement ptUsage = AsmManager.getDefault().getHierarchy().findElementForType(null, "PointcutUsage");
-	    assertNotNull(ptUsage);
-	    IProgramElement pts = AsmManager.getDefault().getHierarchy().findElementForType(null, "Pointcuts");
-	    assertNotNull(pts);
-	    
-		IProgramElement pUsesA = manager.getHierarchy().findElementForLabel(
-		        ptUsage, 
-				IProgramElement.Kind.POINTCUT, 
-				"usesA()"/*Point"*/);
-		assertNotNull(pUsesA);
 
-		IProgramElement ptsA = manager.getHierarchy().findElementForLabel(
-		        pts, 
-				IProgramElement.Kind.POINTCUT, 
-				"a()"/*Point"*/);
-		assertNotNull(ptsA);
-		
-		assertTrue(AsmManager.getDefault().getRelationshipMap().get(pUsesA).size()>0);
-		assertTrue(AsmManager.getDefault().getRelationshipMap().get(ptsA).size()>0);
-	}
-	
-	public void testDeclareParents() {		
-		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, "DeclareCoverage");
+	// // see pr148027
+	// public void testUsesPointcut() {
+	// if (!AsmHierarchyBuilder.shouldAddUsesPointcut) return;
+	//		
+	// IProgramElement ptUsage = AsmManager.getDefault().getHierarchy().findElementForType(null, "PointcutUsage");
+	// assertNotNull(ptUsage);
+	// IProgramElement pts = AsmManager.getDefault().getHierarchy().findElementForType(null, "Pointcuts");
+	// assertNotNull(pts);
+	//	    
+	// IProgramElement pUsesA = manager.getHierarchy().findElementForLabel(
+	// ptUsage,
+	// IProgramElement.Kind.POINTCUT,
+	// "usesA()"/*Point"*/);
+	// assertNotNull(pUsesA);
+	//
+	// IProgramElement ptsA = manager.getHierarchy().findElementForLabel(
+	// pts,
+	// IProgramElement.Kind.POINTCUT,
+	// "a()"/*Point"*/);
+	// assertNotNull(ptsA);
+	//		
+	// assertTrue(AsmManager.getDefault().getRelationshipMap().get(pUsesA).size()>0);
+	// assertTrue(AsmManager.getDefault().getRelationshipMap().get(ptsA).size()>0);
+	// }
 
-		IProgramElement dp = manager.getHierarchy().findElementForLabel(
-				aspect, 
-				IProgramElement.Kind.DECLARE_PARENTS, 
-				"declare parents: implements Serializable"/*Point"*/);
-		
+	public void testDeclareParents() {
+		IProgramElement aspect = manager.getHierarchy().findElementForType(null, "DeclareCoverage");
+
+		IProgramElement dp = manager.getHierarchy().findElementForLabel(aspect, IProgramElement.Kind.DECLARE_PARENTS,
+				"declare parents: implements Serializable"/* Point" */);
+
 		assertNotNull(dp);
-		/*List relations = */manager.getRelationshipMap().get(dp);
-				
-		List rels = AsmManager.getDefault().getRelationshipMap().get(dp);
-		assertTrue(rels.size()>0);
-		
-//		assertTrue(rel.getTargets().size() > 0);
-//		
-//		checkDeclareMapping("DeclareCoverage", "Point", , 
-//			"Point", "matched by", "matches declare", 
-//			IProgramElement.Kind.DECLARE_PARENTS);		
-	}
-	
-	public void testDeclareWarningAndError() {		
-		checkDeclareMapping("DeclareCoverage", "Point", "declare warning: \"Illegal call.\"", 
-			"method-call(void Point.setX(int))", "matched by", "matches declare", IProgramElement.Kind.DECLARE_WARNING);		
-	}
-	
-	public void testInterTypeDeclarations() {		
-		checkInterTypeMapping("InterTypeDecCoverage", "Point", "Point.xxx", "Point", 
-			"declared on", "aspect declarations", IProgramElement.Kind.INTER_TYPE_FIELD);	
-		checkInterTypeMapping("InterTypeDecCoverage", "Point", "Point.check(int,Line)", 
-			"Point", "declared on", "aspect declarations", IProgramElement.Kind.INTER_TYPE_METHOD);	
+		/* List relations = */manager.getRelationshipMap().get(dp);
+
+		List rels = manager.getRelationshipMap().get(dp);
+		assertTrue(rels.size() > 0);
+
+		// assertTrue(rel.getTargets().size() > 0);
+		//		
+		// checkDeclareMapping("DeclareCoverage", "Point", ,
+		// "Point", "matched by", "matches declare",
+		// IProgramElement.Kind.DECLARE_PARENTS);
 	}
 
-	public void testAdvice() {	
-		checkMapping("AdvisesRelationshipCoverage", "Point", "before(): methodExecutionP..", 
-			"setX(int)", "advises", "advised by");
-		checkUniDirectionalMapping("AdvisesRelationshipCoverage", "Point", "before(): getP..", 
-			"field-get(int Point.x)", "advises");
-		checkUniDirectionalMapping("AdvisesRelationshipCoverage", "Point", "before(): setP..", 
-			"field-set(int Point.x)", "advises");	
+	public void testDeclareWarningAndError() {
+		checkDeclareMapping("DeclareCoverage", "Point", "declare warning: \"Illegal call.\"", "method-call(void Point.setX(int))",
+				"matched by", "matches declare", IProgramElement.Kind.DECLARE_WARNING);
 	}
 
-	private void checkDeclareMapping(String fromType, String toType, String from, String to, 
-		String forwardRelName, String backRelName, IProgramElement.Kind kind) {
-		
-		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, fromType);
-		assertNotNull(aspect);		
+	public void testInterTypeDeclarations() {
+		checkInterTypeMapping("InterTypeDecCoverage", "Point", "Point.xxx", "Point", "declared on", "aspect declarations",
+				IProgramElement.Kind.INTER_TYPE_FIELD);
+		checkInterTypeMapping("InterTypeDecCoverage", "Point", "Point.check(int,Line)", "Point", "declared on",
+				"aspect declarations", IProgramElement.Kind.INTER_TYPE_METHOD);
+	}
+
+	public void testAdvice() {
+		checkMapping("AdvisesRelationshipCoverage", "Point", "before(): methodExecutionP..", "setX(int)", "advises", "advised by");
+		checkUniDirectionalMapping("AdvisesRelationshipCoverage", "Point", "before(): getP..", "field-get(int Point.x)", "advises");
+		checkUniDirectionalMapping("AdvisesRelationshipCoverage", "Point", "before(): setP..", "field-set(int Point.x)", "advises");
+	}
+
+	private void checkDeclareMapping(String fromType, String toType, String from, String to, String forwardRelName,
+			String backRelName, IProgramElement.Kind kind) {
+
+		IProgramElement aspect = manager.getHierarchy().findElementForType(null, fromType);
+		assertNotNull(aspect);
 		String beforeExec = from;
 		IProgramElement beforeExecNode = manager.getHierarchy().findElementForLabel(aspect, kind, beforeExec);
 		assertNotNull(beforeExecNode);
 		IRelationship rel = manager.getRelationshipMap().get(beforeExecNode, IRelationship.Kind.DECLARE, forwardRelName);
 		assertTrue(rel.getTargets().size() > 0);
-		String handle = (String)rel.getTargets().get(0);
-		assertEquals(manager.getHierarchy().findElementForHandle(handle).toString(), to);  
+		String handle = (String) rel.getTargets().get(0);
+		assertEquals(manager.getHierarchy().findElementForHandle(handle).toString(), to);
 
-		IProgramElement clazz = AsmManager.getDefault().getHierarchy().findElementForType(null, toType);
+		IProgramElement clazz = manager.getHierarchy().findElementForType(null, toType);
 		assertNotNull(clazz);
 		String set = to;
 		IProgramElement setNode = manager.getHierarchy().findElementForLabel(clazz, IProgramElement.Kind.CODE, set);
 		assertNotNull(setNode);
 		IRelationship rel2 = manager.getRelationshipMap().get(setNode, IRelationship.Kind.DECLARE, backRelName);
-		String handle2 = (String)rel2.getTargets().get(0);
+		String handle2 = (String) rel2.getTargets().get(0);
 		assertEquals(manager.getHierarchy().findElementForHandle(handle2).toString(), from);
 	}
-	
-	private void checkUniDirectionalMapping(String fromType, String toType, String from, 
-		String to, String relName) {
-		
-		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, fromType);
-		assertNotNull(aspect);		
+
+	private void checkUniDirectionalMapping(String fromType, String toType, String from, String to, String relName) {
+
+		IProgramElement aspect = manager.getHierarchy().findElementForType(null, fromType);
+		assertNotNull(aspect);
 		String beforeExec = from;
-		IProgramElement beforeExecNode = manager.getHierarchy().findElementForLabel(aspect, IProgramElement.Kind.ADVICE, beforeExec);
+		IProgramElement beforeExecNode = manager.getHierarchy()
+				.findElementForLabel(aspect, IProgramElement.Kind.ADVICE, beforeExec);
 		assertNotNull(beforeExecNode);
 		IRelationship rel = manager.getRelationshipMap().get(beforeExecNode, IRelationship.Kind.ADVICE, relName);
-		for (Iterator it = rel.getTargets().iterator(); it.hasNext(); ) {
-			String currHandle = (String)it.next();
-			if (manager.getHierarchy().findElementForHandle(currHandle).toLabelString().equals(to)) return;
+		for (Iterator it = rel.getTargets().iterator(); it.hasNext();) {
+			String currHandle = (String) it.next();
+			if (manager.getHierarchy().findElementForHandle(currHandle).toLabelString().equals(to))
+				return;
 		}
 		fail(); // didn't find it
 	}
 
-	private void checkMapping(String fromType, String toType, String from, String to, 
-		String forwardRelName, String backRelName) {
-		
-		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, fromType);
-		assertNotNull(aspect);		
+	private void checkMapping(String fromType, String toType, String from, String to, String forwardRelName, String backRelName) {
+
+		IProgramElement aspect = manager.getHierarchy().findElementForType(null, fromType);
+		assertNotNull(aspect);
 		String beforeExec = from;
-		IProgramElement beforeExecNode = manager.getHierarchy().findElementForLabel(aspect, IProgramElement.Kind.ADVICE, beforeExec);
+		IProgramElement beforeExecNode = manager.getHierarchy()
+				.findElementForLabel(aspect, IProgramElement.Kind.ADVICE, beforeExec);
 		assertNotNull(beforeExecNode);
 		IRelationship rel = manager.getRelationshipMap().get(beforeExecNode, IRelationship.Kind.ADVICE, forwardRelName);
-		String handle = (String)rel.getTargets().get(0);
-		assertEquals(manager.getHierarchy().findElementForHandle(handle).toString(), to);  
+		String handle = (String) rel.getTargets().get(0);
+		assertEquals(manager.getHierarchy().findElementForHandle(handle).toString(), to);
 
-		IProgramElement clazz = AsmManager.getDefault().getHierarchy().findElementForType(null, toType);
+		IProgramElement clazz = manager.getHierarchy().findElementForType(null, toType);
 		assertNotNull(clazz);
 		String set = to;
 		IProgramElement setNode = manager.getHierarchy().findElementForLabel(clazz, IProgramElement.Kind.METHOD, set);
 		assertNotNull(setNode);
 		IRelationship rel2 = manager.getRelationshipMap().get(setNode, IRelationship.Kind.ADVICE, backRelName);
-		String handle2 = (String)rel2.getTargets().get(0);
+		String handle2 = (String) rel2.getTargets().get(0);
 		assertEquals(manager.getHierarchy().findElementForHandle(handle2).toString(), from);
 	}
 
-	private void checkInterTypeMapping(String fromType, String toType, String from, 
-		String to, String forwardRelName, String backRelName, IProgramElement.Kind declareKind) {
-		
-		IProgramElement aspect = AsmManager.getDefault().getHierarchy().findElementForType(null, fromType);
-		assertNotNull(aspect);		
+	private void checkInterTypeMapping(String fromType, String toType, String from, String to, String forwardRelName,
+			String backRelName, IProgramElement.Kind declareKind) {
+
+		IProgramElement aspect = manager.getHierarchy().findElementForType(null, fromType);
+		assertNotNull(aspect);
 		String beforeExec = from;
 		IProgramElement fromNode = manager.getHierarchy().findElementForLabel(aspect, declareKind, beforeExec);
 		assertNotNull(fromNode);
 		IRelationship rel = manager.getRelationshipMap().get(fromNode, IRelationship.Kind.DECLARE_INTER_TYPE, forwardRelName);
-		String handle = (String)rel.getTargets().get(0);
-		assertEquals(manager.getHierarchy().findElementForHandle(handle).toString(), to);  
+		String handle = (String) rel.getTargets().get(0);
+		assertEquals(manager.getHierarchy().findElementForHandle(handle).toString(), to);
 
-		IProgramElement clazz = AsmManager.getDefault().getHierarchy().findElementForType(null, toType);
+		IProgramElement clazz = manager.getHierarchy().findElementForType(null, toType);
 		assertNotNull(clazz);
-//		String set = to;
+		// String set = to;
 		IRelationship rel2 = manager.getRelationshipMap().get(clazz, IRelationship.Kind.DECLARE_INTER_TYPE, backRelName);
-//		String handle2 = (String)rel2.getTargets().get(0);
-		for (Iterator it = rel2.getTargets().iterator(); it.hasNext(); ) {
-			String currHandle = (String)it.next();
-			if (manager.getHierarchy().findElementForHandle(currHandle).toLabelString().equals(from)) return;
+		// String handle2 = (String)rel2.getTargets().get(0);
+		for (Iterator it = rel2.getTargets().iterator(); it.hasNext();) {
+			String currHandle = (String) it.next();
+			if (manager.getHierarchy().findElementForHandle(currHandle).toLabelString().equals(from))
+				return;
 		}
 		fail(); // didn't find it
 	}

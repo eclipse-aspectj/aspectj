@@ -63,6 +63,10 @@ public class AjdeCoreBuildManager {
 		AsmManager.attemptIncrementalModelRepairs = true;
 	}
 
+	// public AsmManager getStructureModel() {
+	// return ajBuildManager.
+	// }
+
 	/**
 	 * Execute a full or incremental build
 	 * 
@@ -77,8 +81,9 @@ public class AjdeCoreBuildManager {
 				// No existing state so we must do a full build
 				fullBuild = true;
 			} else {
-				AsmManager.getDefault().setRelationshipMap(existingState.getRelationshipMap());
-				AsmManager.getDefault().setHierarchy(existingState.getStructureModel());
+				AsmManager.setLastActiveStructureModel(existingState.getStructureModel());
+				// AsmManager.getDefault().setRelationshipMap(existingState.getRelationshipMap());
+				// AsmManager.getDefault().setHierarchy(existingState.getStructureModel());
 			}
 		}
 		try {
@@ -393,5 +398,9 @@ public class AjdeCoreBuildManager {
 
 	public void cleanupEnvironment() {
 		ajBuildManager.cleanupEnvironment();
+	}
+
+	public AsmManager getStructureModel() {
+		return ajBuildManager.getStructureModel();
 	}
 }

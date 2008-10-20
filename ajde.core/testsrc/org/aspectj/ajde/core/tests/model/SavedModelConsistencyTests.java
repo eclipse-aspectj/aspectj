@@ -26,11 +26,8 @@ import org.aspectj.asm.IProgramElement;
 
 public class SavedModelConsistencyTests extends AjdeCoreTestCase {
 
-	private String[] files = new String[]{
-			"ModelCoverage.java",
-			"pkg" + File.separator + "InPackage.java"
-	};
-	
+	private final String[] files = new String[] { "ModelCoverage.java", "pkg" + File.separator + "InPackage.java" };
+
 	private TestMessageHandler handler;
 	private TestCompilerConfiguration compilerConfig;
 
@@ -38,18 +35,16 @@ public class SavedModelConsistencyTests extends AjdeCoreTestCase {
 		super.setUp();
 		initialiseProject("coverage");
 		handler = (TestMessageHandler) getCompiler().getMessageHandler();
-		compilerConfig = (TestCompilerConfiguration) getCompiler()
-				.getCompilerConfiguration();
+		compilerConfig = (TestCompilerConfiguration) getCompiler().getCompilerConfiguration();
 		compilerConfig.setProjectSourceFiles(getSourceFileList(files));
 		// In order to get a model on the disk to read in, do a build with the right flag set !
 		try {
-			AsmManager.dumpModelPostBuild=true;
+			AsmManager.dumpModelPostBuild = true;
 			doBuild();
 		} finally {
-			AsmManager.dumpModelPostBuild=false;
+			AsmManager.dumpModelPostBuild = false;
 		}
-		assertTrue("Expected no compiler errors but found "
-				+ handler.getErrors(), handler.getErrors().isEmpty());
+		assertTrue("Expected no compiler errors but found " + handler.getErrors(), handler.getErrors().isEmpty());
 	}
 
 	protected void tearDown() throws Exception {
@@ -57,63 +52,61 @@ public class SavedModelConsistencyTests extends AjdeCoreTestCase {
 		handler = null;
 		compilerConfig = null;
 	}
-	
+
 	public void testInterfaceIsSameInBoth() {
-		AsmManager.getDefault().readStructureModel(getAbsoluteProjectDir());
-		
-        IHierarchy model = AsmManager.getDefault().getHierarchy();
-        assertTrue("model exists", model != null);
-        
-		assertTrue("root exists", model.getRoot() != null);        // TODO-path
+		AsmManager asm = AsmManager.createNewStructureModel();
+		asm.readStructureModel(getAbsoluteProjectDir());
+
+		IHierarchy model = asm.getHierarchy();
+		assertTrue("model exists", model != null);
+
+		assertTrue("root exists", model.getRoot() != null); // TODO-path
 		File testFile = openFile("ModelCoverage.java");
 		assertTrue("Expected " + testFile.getAbsolutePath() + " to exist, but it did not", testFile.exists());
-		
-		IProgramElement nodePreBuild = model.findElementForSourceLine(testFile.getAbsolutePath(), 5);	
-		
-		doBuild();
-		assertTrue("Expected no compiler errors but found "
-				+ handler.getErrors(), handler.getErrors().isEmpty());
-		
-		IProgramElement nodePostBuild = model.findElementForSourceLine(testFile.getAbsolutePath(), 5);	
-		
-		assertTrue("Nodes should be identical: Prebuild kind = "+nodePreBuild.getKind()+
-				   "   Postbuild kind = "+nodePostBuild.getKind(),
-				   nodePreBuild.getKind().equals(nodePostBuild.getKind()));
-		
-	}
-	
-	public void testModelIsSamePreAndPostBuild() {
-		AsmManager.getDefault().readStructureModel(getAbsoluteProjectDir());
-        IHierarchy model = AsmManager.getDefault().getHierarchy();
-        assertTrue("model exists", model != null);
-	
-        final List preBuildKinds = new ArrayList();
-		HierarchyWalker walker = new HierarchyWalker() {
-  		    public void preProcess(IProgramElement node) {
-  		    	preBuildKinds.add(node.getKind());
-  		    }
-  		};
-  		AsmManager.getDefault().getHierarchy().getRoot().walk(walker);
-		assertFalse("Expected there to be build kinds but didn't "
-				+ "find any", preBuildKinds.isEmpty());
-  		
-		doBuild();
-		assertTrue("Expected no compiler errors but found "
-				+ handler.getErrors(), handler.getErrors().isEmpty());
-		
-        final List postBuildKinds = new ArrayList();
-		HierarchyWalker walker2 = new HierarchyWalker() {
-  		    public void preProcess(IProgramElement node) {
-  		    	postBuildKinds.add(node.getKind());
-  		    }
-  		};
-  		AsmManager.getDefault().getHierarchy().getRoot().walk(walker2);	
-		assertFalse("Expected there to be build kinds but didn't "
-				+ "find any", preBuildKinds.isEmpty());
 
-		assertTrue("Lists should be the same: PRE"+preBuildKinds.toString()
-				+"  POST"+postBuildKinds.toString(),preBuildKinds.equals(postBuildKinds));
-		
+		IProgramElement nodePreBuild = model.findElementForSourceLine(testFile.getAbsolutePath(), 5);
+
+		doBuild();
+		assertTrue("Expected no compiler errors but found " + handler.getErrors(), handler.getErrors().isEmpty());
+
+		IProgramElement nodePostBuild = model.findElementForSourceLine(testFile.getAbsolutePath(), 5);
+
+		assertTrue("Nodes should be identical: Prebuild kind = " + nodePreBuild.getKind() + "   Postbuild kind = "
+				+ nodePostBuild.getKind(), nodePreBuild.getKind().equals(nodePostBuild.getKind()));
+
 	}
-	
+
+	public void testModelIsSamePreAndPostBuild() {
+		AsmManager asm = AsmManager.createNewStructureModel();
+		asm.readStructureModel(getAbsoluteProjectDir());
+		// AsmManager.getDefault().readStructureModel(getAbsoluteProjectDir());
+		IHierarchy model = asm.getHierarchy();
+		assertTrue("model exists", model != null);
+
+		final List preBuildKinds = new ArrayList();
+		HierarchyWalker walker = new HierarchyWalker() {
+			public void preProcess(IProgramElement node) {
+				preBuildKinds.add(node.getKind());
+			}
+		};
+		asm.getHierarchy().getRoot().walk(walker);
+		assertFalse("Expected there to be build kinds but didn't " + "find any", preBuildKinds.isEmpty());
+
+		doBuild();
+		assertTrue("Expected no compiler errors but found " + handler.getErrors(), handler.getErrors().isEmpty());
+
+		final List postBuildKinds = new ArrayList();
+		HierarchyWalker walker2 = new HierarchyWalker() {
+			public void preProcess(IProgramElement node) {
+				postBuildKinds.add(node.getKind());
+			}
+		};
+		asm.getHierarchy().getRoot().walk(walker2);
+		assertFalse("Expected there to be build kinds but didn't " + "find any", preBuildKinds.isEmpty());
+
+		assertTrue("Lists should be the same: PRE" + preBuildKinds.toString() + "  POST" + postBuildKinds.toString(), preBuildKinds
+				.equals(postBuildKinds));
+
+	}
+
 }

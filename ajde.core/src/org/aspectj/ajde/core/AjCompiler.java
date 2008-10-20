@@ -12,6 +12,7 @@ package org.aspectj.ajde.core;
 
 import org.aspectj.ajde.core.internal.AjdeCoreBuildManager;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
+import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
@@ -148,4 +149,12 @@ public class AjCompiler {
 	public Object getCustomMungerFactory() {
 		return buildManager.getCustomMungerFactory();
 	}
+
+	public AsmManager getModel() {
+		return buildManager.getStructureModel();
+	}
+
+	// public AsmManager getStructureModel() {
+	// return buildManager.getStructureModel();
+	// }
 }
