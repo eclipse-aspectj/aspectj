@@ -26,61 +26,55 @@ public class SymbolFileGenerationTest extends AjcTestCase {
 	private static final String DIR = "../ajde/testdata/examples/coverage";
 
 	protected File dir = new File(DIR);
-	protected File configFile = new File(DIR + "/coverage.lst");	
+	protected File configFile = new File(DIR + "/coverage.lst");
 	protected File esymFile, outDir, crossRefsFile;
-	
+
 	protected void setUp() throws Exception {
 		super.setUp();
 		esymFile = new File(DIR + "/ModelCoverage.ajesym");
-		outDir = new File(DIR + "/bin");	
+		outDir = new File(DIR + "/bin");
 		crossRefsFile = new File(outDir.getAbsolutePath() + "/build.ajsym");
 	}
-	
+
 	protected void tearDown() throws Exception {
 		super.tearDown();
-				
-		FileUtil.deleteContents(new File(DIR),ajesymResourceFileFilter);
-		FileUtil.deleteContents(new File(DIR + "/pkg"),ajesymResourceFileFilter);
-		
+
+		FileUtil.deleteContents(new File(DIR), ajesymResourceFileFilter);
+		FileUtil.deleteContents(new File(DIR + "/pkg"), ajesymResourceFileFilter);
+
 		FileUtil.deleteContents(new File(DIR + "/bin"));
 		(new File(DIR + "/bin")).delete();
 
 	}
-	
-	public FileFilter ajesymResourceFileFilter =
-		new FileFilter() {
+
+	public FileFilter ajesymResourceFileFilter = new FileFilter() {
 		public boolean accept(File pathname) {
 			String name = pathname.getName().toLowerCase();
 			return name.endsWith(".ajesym");
 		}
 	};
-		
+
 	public void testCrossRefsFileGeneration() {
-		if (crossRefsFile.exists()) assertTrue(crossRefsFile.delete());
-		if (esymFile.exists()) assertTrue(esymFile.delete());
-		String[] args = new String[] {
-				"-d",
-				outDir.getAbsolutePath(),
-				"-crossrefs",
-				"@" + configFile.getAbsolutePath()
-		};
+		if (crossRefsFile.exists())
+			assertTrue(crossRefsFile.delete());
+		if (esymFile.exists())
+			assertTrue(esymFile.delete());
+		String[] args = new String[] { "-d", outDir.getAbsolutePath(), "-crossrefs", "@" + configFile.getAbsolutePath() };
 		ajc(dir, args);
-		
+
 		assertFalse(esymFile.exists());
 		assertTrue(crossRefsFile.exists());
 	}
 
 	public void testEmacssymGeneration() {
-		if (crossRefsFile.exists()) assertTrue(crossRefsFile.delete());
-		if (esymFile.exists()) assertTrue(esymFile.delete());
-		String[] args = new String[] {
-				"-d",
-				outDir.getAbsolutePath(),
-				"-emacssym",
-				"@" + configFile.getAbsolutePath()
-		};
+		if (crossRefsFile.exists()) {
+			assertTrue(crossRefsFile.delete());
+		}
+		if (esymFile.exists())
+			assertTrue(esymFile.delete());
+		String[] args = new String[] { "-d", outDir.getAbsolutePath(), "-emacssym", "@" + configFile.getAbsolutePath() };
 		ajc(dir, args);
-		
+
 		assertTrue(esymFile.exists());
 		assertFalse(crossRefsFile.exists());
 	}
