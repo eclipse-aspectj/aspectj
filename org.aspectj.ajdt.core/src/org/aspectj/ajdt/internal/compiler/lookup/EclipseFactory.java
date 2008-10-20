@@ -83,16 +83,16 @@ public class EclipseFactory {
 	public static boolean DEBUG = false;
 	public static int debug_mungerCount = -1;
 
-	private AjBuildManager buildManager;
-	private LookupEnvironment lookupEnvironment;
-	private boolean xSerializableAspects;
-	private World world;
+	private final AjBuildManager buildManager;
+	private final LookupEnvironment lookupEnvironment;
+	private final boolean xSerializableAspects;
+	private final World world;
 	public Collection finishedTypeMungers = null;
 
 	// We can get clashes if we don't treat raw types differently - we end up looking
 	// up a raw and getting the generic type (pr115788)
-	private Map/* UnresolvedType, TypeBinding */typexToBinding = new HashMap();
-	private Map/* UnresolvedType, TypeBinding */rawTypeXToBinding = new HashMap();
+	private final Map/* UnresolvedType, TypeBinding */typexToBinding = new HashMap();
+	private final Map/* UnresolvedType, TypeBinding */rawTypeXToBinding = new HashMap();
 
 	// XXX currently unused
 	// private Map/*TypeBinding, ResolvedType*/ bindingToResolvedTypeX = new HashMap();
@@ -471,7 +471,7 @@ public class EclipseFactory {
 	 * Before converting the parts of a methodbinding (params, return type) we store the type variables in this structure, then
 	 * should any component of the method binding refer to them, we grab them from the map.
 	 */
-	private Map typeVariablesForThisMember = new HashMap();
+	private final Map typeVariablesForThisMember = new HashMap();
 
 	/**
 	 * This is a map from typevariablebindings (eclipsey things) to the names the user originally specified in their ITD. For
@@ -911,7 +911,7 @@ public class EclipseFactory {
 	// map back to the same type binding - this is important later when Eclipse code is processing
 	// a methodbinding trying to come up with possible bindings for the type variables.
 	// key is currently the name of the type variable...is that ok?
-	private Map typeVariableToTypeBinding = new HashMap();
+	private final Map typeVariableToTypeBinding = new HashMap();
 
 	// /**
 	// * Converts from an TypeVariableReference to a TypeVariableBinding. A TypeVariableReference

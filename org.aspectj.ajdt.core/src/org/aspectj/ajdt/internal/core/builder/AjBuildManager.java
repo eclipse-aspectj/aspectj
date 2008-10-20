@@ -134,7 +134,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	private Map /* String -> List<UCF> */binarySourcesForTheNextCompile = new HashMap();
 
 	// FIXME asc should this really be in here?
-	private IHierarchy structureModel;
+	// private AsmManager structureModel;
 	public AjBuildConfig buildConfig;
 	private boolean ignoreOutxml;
 	private boolean wasFullBuild = true; // true if last build was a full build rather than an incremental build
@@ -257,7 +257,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			if (isFullBuild) {
 				// System.err.println("XXXX batch: " + buildConfig.getFiles());
 				if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {
-					getWorld().setModel(AsmManager.getDefault().getHierarchy());
+					AsmManager.setLastActiveStructureModel(state.getStructureModel());
+					getWorld().setModel(state.getStructureModel());
 					// in incremental build, only get updated model?
 				}
 				binarySourcesForTheNextCompile = state.getBinaryFilesToCompile(true);
@@ -265,13 +266,15 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				state.clearBinarySourceFiles(); // we don't want these hanging around...
 				if (!proceedOnError() && handler.hasErrors()) {
 					CompilationAndWeavingContext.leavingPhase(ct);
-					if (AsmManager.isReporting())
-						AsmManager.getDefault().reportModelInfo("After a batch build");
+					if (AsmManager.isReporting()) {
+						state.getStructureModel().reportModelInfo("After a batch build");
+					}
 					return false;
 				}
 
-				if (AsmManager.isReporting())
-					AsmManager.getDefault().reportModelInfo("After a batch build");
+				if (AsmManager.isReporting()) {
+					state.getStructureModel().reportModelInfo("After a batch build");
+				}
 
 			} else {
 				// done already?
@@ -279,13 +282,15 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				// bcelWorld.setModel(StructureModelManager.INSTANCE.getStructureModel());
 				// }
 				// System.err.println("XXXX start inc ");
+				AsmManager.setLastActiveStructureModel(state.getStructureModel());
 				binarySourcesForTheNextCompile = state.getBinaryFilesToCompile(true);
 				Set files = state.getFilesToCompile(true);
-				if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode())
+				if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {
 					if (AsmManager.attemptIncrementalModelRepairs) {
-						AsmManager.getDefault().resetDeltaProcessing();
-						AsmManager.getDefault().processDelta(files, state.getAddedFiles(), state.getDeletedFiles());
+						state.getStructureModel().resetDeltaProcessing();
+						state.getStructureModel().processDelta(files, state.getAddedFiles(), state.getDeletedFiles());
 					}
+				}
 				boolean hereWeGoAgain = !(files.isEmpty() && binarySourcesForTheNextCompile.isEmpty());
 				for (int i = 0; (i < 5) && hereWeGoAgain; i++) {
 					if (state.listenerDefined())
@@ -317,27 +322,28 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 					if (hereWeGoAgain) {
 						if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode())
 							if (AsmManager.attemptIncrementalModelRepairs)
-								AsmManager.getDefault().processDelta(files, state.getAddedFiles(), state.getDeletedFiles());
+								state.getStructureModel().processDelta(files, state.getAddedFiles(), state.getDeletedFiles());
 					}
 				}
 				if (!files.isEmpty()) {
 					CompilationAndWeavingContext.leavingPhase(ct);
 					return batchBuild(buildConfig, baseHandler);
 				} else {
-					if (AsmManager.isReporting())
-						AsmManager.getDefault().reportModelInfo("After an incremental build");
+					if (AsmManager.isReporting()) {
+						state.getStructureModel().reportModelInfo("After an incremental build");
+					}
 				}
 			}
 
 			// XXX not in Mik's incremental
 			if (buildConfig.isEmacsSymMode()) {
-				new org.aspectj.ajdt.internal.core.builder.EmacsStructureModelManager().externalizeModel();
+				new org.aspectj.ajdt.internal.core.builder.EmacsStructureModelManager().externalizeModel(state.getStructureModel());
 			}
 
 			// for bug 113554: support ajsym file generation for command line builds
 			if (buildConfig.isGenerateCrossRefsMode()) {
 				File configFileProxy = new File(buildConfig.getOutputDir(), CROSSREFS_FILE_NAME);
-				AsmManager.getDefault().writeStructureModel(configFileProxy.getAbsolutePath());
+				state.getStructureModel().writeStructureModel(configFileProxy.getAbsolutePath());
 			}
 
 			// have to tell state we succeeded or next is not incremental
@@ -359,7 +365,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			// but always returns true
 			// XXX weaved not in Mik's incremental
 			if (buildConfig.isGenerateModelMode()) {
-				AsmManager.getDefault().fireModelUpdated();
+				state.getStructureModel().fireModelUpdated();
 			}
 			CompilationAndWeavingContext.leavingPhase(ct);
 
@@ -719,13 +725,16 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	 * This code is driven before each 'fresh' (batch) build to create a new model.
 	 */
 	private void setupModel(AjBuildConfig config) {
-		AsmManager.setCreatingModel(config.isEmacsSymMode() || config.isGenerateModelMode());
-		if (!AsmManager.isCreatingModel())
+		if (!(config.isEmacsSymMode() || config.isGenerateModelMode())) {
 			return;
+		}
+		// AsmManager.setCreatingModel(config.isEmacsSymMode() || config.isGenerateModelMode());
+		// if (!AsmManager.isCreatingModel())
+		// return;
 
-		AsmManager.getDefault().createNewASM();
+		AsmManager structureModel = AsmManager.createNewStructureModel();
 		// AsmManager.getDefault().getRelationshipMap().clear();
-		IHierarchy model = AsmManager.getDefault().getHierarchy();
+		IHierarchy model = structureModel.getHierarchy();
 		String rootLabel = "<root>";
 
 		IProgramElement.Kind kind = IProgramElement.Kind.FILE_JAVA;
@@ -734,12 +743,12 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			model.setConfigFile(buildConfig.getConfigFile().getAbsolutePath());
 			kind = IProgramElement.Kind.FILE_LST;
 		}
-		model.setRoot(new ProgramElement(rootLabel, kind, new ArrayList()));
+		model.setRoot(new ProgramElement(structureModel, rootLabel, kind, new ArrayList()));
 
 		model.setFileMap(new HashMap());
-		setStructureModel(model);
-		state.setStructureModel(model);
-		state.setRelationshipMap(AsmManager.getDefault().getRelationshipMap());
+		// setStructureModel(model);
+		state.setStructureModel(structureModel);
+		// state.setRelationshipMap(AsmManager.getDefault().getRelationshipMap());
 	}
 
 	//    
@@ -1230,15 +1239,16 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		return buf.toString();
 	}
 
-	public void setStructureModel(IHierarchy structureModel) {
-		this.structureModel = structureModel;
-	}
+	//
+	// public void setStructureModel(IHierarchy structureModel) {
+	// this.structureModel = structureModel;
+	// }
 
 	/**
 	 * Returns null if there is no structure model
 	 */
-	public IHierarchy getStructureModel() {
-		return structureModel;
+	public AsmManager getStructureModel() {
+		return (state == null ? null : state.getStructureModel());
 	}
 
 	public IProgressListener getProgressListener() {

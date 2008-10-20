@@ -32,8 +32,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.ajdt.internal.compiler.InterimCompilationResult;
-import org.aspectj.asm.IHierarchy;
-import org.aspectj.asm.IRelationshipMap;
+import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.SourceLocation;
@@ -72,9 +71,10 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	private final AjBuildManager buildManager;
 	private boolean couldBeSubsequentIncrementalBuild = false;
 	private INameEnvironment nameEnvironment;
-
-	private IHierarchy structureModel;
-	private IRelationshipMap relmap;
+	//
+	// private IHierarchy structureModel;
+	// private IRelationshipMap relmap;
+	private AsmManager structureModel;
 
 	/**
 	 * When looking at changes on the classpath, this set accumulates files in our state instance that affected by those changes.
@@ -497,7 +497,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		return CLASS_FILE_NO_CHANGES;
 	}
 
-	private boolean isAspect(File file) {	
+	private boolean isAspect(File file) {
 		return aspectClassFiles.contains(file.getAbsolutePath());
 	}
 
@@ -1672,11 +1672,11 @@ public class AjState implements CompilerConfigurationChangeFlags {
 
 	}
 
-	public void setStructureModel(IHierarchy model) {
-		structureModel = model;
+	public void setStructureModel(AsmManager structureModel) {
+		this.structureModel = structureModel;
 	}
 
-	public IHierarchy getStructureModel() {
+	public AsmManager getStructureModel() {
 		return structureModel;
 	}
 
@@ -1696,13 +1696,14 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		return world;
 	}
 
-	public void setRelationshipMap(IRelationshipMap irm) {
-		relmap = irm;
-	}
-
-	public IRelationshipMap getRelationshipMap() {
-		return relmap;
-	}
+	//
+	// public void setRelationshipMap(IRelationshipMap irm) {
+	// relmap = irm;
+	// }
+	//
+	// public IRelationshipMap getRelationshipMap() {
+	// return relmap;
+	// }
 
 	public int getNumberOfStructuralChangesSinceLastFullBuild() {
 		return structuralChangesSinceLastFullBuild.size();
@@ -1820,7 +1821,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 
 	public void wipeAllKnowledge() {
 		buildManager.state = null;
-		buildManager.setStructureModel(null);
+		// buildManager.setStructureModel(null);
 	}
 
 	public Map getAspectNamesToFileNameMap() {
