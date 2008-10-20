@@ -53,11 +53,12 @@ public class AjdeInteractionTestbed extends TestCase {
 	public void configureNewProjectDependency(String fromProjectName, String projectItDependsOn) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + fromProjectName);
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).addDependancy(projectItDependsOn);
-	} 
-	
+	}
+
 	public void addSourceFolderForSourceFile(String projectName, File f, String sourceFolder) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
-		((MultiProjTestOutputLocationManager)((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).getOutputLocationManager()).setSourceFolderFor(f,sourceFolder);
+		((MultiProjTestOutputLocationManager) ((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration())
+				.getOutputLocationManager()).setSourceFolderFor(f, sourceFolder);
 	}
 
 	public void setNextChangeResponse(String projName, int flags) {
@@ -166,6 +167,11 @@ public class AjdeInteractionTestbed extends TestCase {
 				+ ((MultiProjTestBuildProgressMonitor) compiler.getBuildProgressMonitor()).getTimeTaken() + "ms");
 		return true;
 	}
+
+	// public AsmManager getStructureModelFor(String projectName) {
+	// AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+	// returnc compiler.getStructureModelFor(projectName)
+	// }
 
 	/** Drives a full build **/
 	public boolean doFullBuild(String projectName) {
@@ -302,11 +308,11 @@ public class AjdeInteractionTestbed extends TestCase {
 		if (getCompiledFiles(projectName).size() == 0 && getWovenClasses(projectName).size() == 0)
 			sb.append("No files were compiled or woven\n");
 		for (Iterator iter = getCompiledFiles(projectName).iterator(); iter.hasNext();) {
-			Object element = (Object) iter.next();
+			Object element = iter.next();
 			sb.append("compiled: " + element + "\n");
 		}
 		for (Iterator iter = getWovenClasses(projectName).iterator(); iter.hasNext();) {
-			Object element = (Object) iter.next();
+			Object element = iter.next();
 			sb.append("woven: " + element + "\n");
 		}
 		return sb.toString();
@@ -367,6 +373,11 @@ public class AjdeInteractionTestbed extends TestCase {
 	public List getCompiledFiles(String projectName) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		return ((MultiProjTestBuildProgressMonitor) compiler.getBuildProgressMonitor()).getCompiledFiles();
+	}
+
+	public AsmManager getModelFor(String projectName) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		return compiler.getModel();
 	}
 
 	public List getWovenClasses(String projectName) {

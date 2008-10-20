@@ -26,12 +26,10 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
 import org.aspectj.asm.AsmManager;
-import org.aspectj.asm.IElementHandleProvider;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
 import org.aspectj.asm.IRelationshipMap;
-import org.aspectj.asm.internal.JDTLikeHandleProvider;
 import org.aspectj.asm.internal.Relationship;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.tools.ajc.Ajc;
@@ -63,28 +61,28 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			// see pr148027 AsmHierarchyBuilder.shouldAddUsesPointcut=false;
 			initialiseProject("P4");
 			build("P4");
-			Ajc.dumpAJDEStructureModel("after full build where advice is applying");
+			Ajc.dumpAJDEStructureModel(getModelFor("P4"), "after full build where advice is applying");
 			// should be 4 relationship entries
 
 			// In inc1 the first advised line is 'commented out'
 			alter("P4", "inc1");
 			build("P4");
 			checkWasntFullBuild();
-			Ajc.dumpAJDEStructureModel("after inc build where first advised line is gone");
+			Ajc.dumpAJDEStructureModel(getModelFor("P4"), "after inc build where first advised line is gone");
 			// should now be 2 relationship entries
 
 			// This will be the line 6 entry in C.java
-			IProgramElement codeElement = findCode(checkForNode("pack", "C", true));
+			IProgramElement codeElement = findCode(checkForNode(getModelFor("P4"), "pack", "C", true));
 
 			// This will be the line 7 entry in A.java
-			IProgramElement advice = findAdvice(checkForNode("pack", "A", true));
+			IProgramElement advice = findAdvice(checkForNode(getModelFor("P4"), "pack", "A", true));
 
-			IRelationshipMap asmRelMap = AsmManager.getDefault().getRelationshipMap();
+			IRelationshipMap asmRelMap = getModelFor("P4").getRelationshipMap();
 			assertEquals("There should be two relationships in the relationship map", 2, asmRelMap.getEntries().size());
 
 			for (Iterator iter = asmRelMap.getEntries().iterator(); iter.hasNext();) {
 				String sourceOfRelationship = (String) iter.next();
-				IProgramElement ipe = AsmManager.getDefault().getHierarchy().findElementForHandle(sourceOfRelationship);
+				IProgramElement ipe = getModelFor("P4").getHierarchy().findElementForHandle(sourceOfRelationship);
 				assertNotNull("expected to find IProgramElement with handle " + sourceOfRelationship + " but didn't", ipe);
 				if (ipe.getKind().equals(IProgramElement.Kind.ADVICE)) {
 					assertEquals("expected source of relationship to be " + advice.toString() + " but found " + ipe.toString(),
@@ -104,7 +102,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 					List targets = rel.getTargets();
 					for (Iterator iterator2 = targets.iterator(); iterator2.hasNext();) {
 						String t = (String) iterator2.next();
-						IProgramElement link = AsmManager.getDefault().getHierarchy().findElementForHandle(t);
+						IProgramElement link = getModelFor("P4").getHierarchy().findElementForHandle(t);
 						if (ipe.getKind().equals(IProgramElement.Kind.ADVICE)) {
 							assertEquals("expected target of relationship to be " + codeElement.toString() + " but found "
 									+ link.toString(), codeElement, link);
@@ -129,18 +127,19 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("Annos");
 		checkWasFullBuild();
 		checkCompileWeaveCount("Annos", 4, 4);
-		assertEquals("Should be 3 relationships ", 3, AsmManager.getDefault().getRelationshipMap().getEntries().size());
+		AsmManager model = getModelFor("Annos");
+		assertEquals("Should be 3 relationships ", 3, model.getRelationshipMap().getEntries().size());
 
 		alter("Annos", "inc1"); // Comment out the annotation on Parent
 		build("Annos");
 		checkWasntFullBuild();
-		assertEquals("Should be no relationships ", 0, AsmManager.getDefault().getRelationshipMap().getEntries().size());
+		assertEquals("Should be no relationships ", 0, model.getRelationshipMap().getEntries().size());
 		checkCompileWeaveCount("Annos", 3, 3);
 
 		alter("Annos", "inc2"); // Add the annotation back onto Parent
 		build("Annos");
 		checkWasntFullBuild();
-		assertEquals("Should be 3 relationships ", 3, AsmManager.getDefault().getRelationshipMap().getEntries().size());
+		assertEquals("Should be 3 relationships ", 3, model.getRelationshipMap().getEntries().size());
 		checkCompileWeaveCount("Annos", 3, 3);
 	}
 
@@ -151,9 +150,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p);
 		// alter(p, "inc2");
 		// build(p);
-		dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
+		AsmManager model = getModelFor(p);
+		dumptree(model.getHierarchy().getRoot(), 0);
 
-		IProgramElement root = AsmManager.getDefault().getHierarchy().getRoot();
+		IProgramElement root = model.getHierarchy().getRoot();
 		IProgramElement ipe = findElementAtLine(root, 4);
 		assertEquals("=BrokenHandles<p{GetInfo.java}GetInfo`declare warning", ipe.getHandleIdentifier());
 		ipe = findElementAtLine(root, 5);
@@ -167,7 +167,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		String p = "Simpler";
 		initialiseProject(p);
 		build(p);
-		dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
+		dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
 		// incomplete
 	}
 
@@ -175,9 +175,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		String p = "BeanExample";
 		initialiseProject(p);
 		build(p);
-		dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
+		dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
 		PrintWriter pw = new PrintWriter(System.out);
-		AsmManager.getDefault().dumprels(pw);
+		getModelFor(p).dumprels(pw);
 		pw.flush();
 		// incomplete
 	}
@@ -239,7 +239,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject(p);
 		addSourceFolderForSourceFile(p, getProjectRelativePath(p, "src/Handles.aj"), "src");
 		build(p);
-		IProgramElement root = AsmManager.getDefault().getHierarchy().getRoot();
+		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
 		IProgramElement typeDecl = findElementAtLine(root, 4);
 		assertEquals("=AdviceHandles/src<spacewar*Handles.aj}Handles", typeDecl.getHandleIdentifier());
 
@@ -342,11 +342,11 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		addSourceFolderForSourceFile("MultiSource", getProjectRelativePath("MultiSource", "src2/CodeTwo.java"), "src2");
 		addSourceFolderForSourceFile("MultiSource", getProjectRelativePath("MultiSource", "src3/pkg/CodeThree.java"), "src3");
 		build("MultiSource");
-		IProgramElement srcOne = AsmManager.getDefault().getHierarchy().findElementForHandle("=MultiSource/src1");
-		IProgramElement CodeOneClass = AsmManager.getDefault().getHierarchy().findElementForHandle(
+		IProgramElement srcOne = getModelFor("MultiSource").getHierarchy().findElementForHandle("=MultiSource/src1");
+		IProgramElement CodeOneClass = getModelFor("MultiSource").getHierarchy().findElementForHandle(
 				"=MultiSource/src1{CodeOne.java[CodeOne");
-		IProgramElement srcTwoPackage = AsmManager.getDefault().getHierarchy().findElementForHandle("=MultiSource/src2<pkg");
-		IProgramElement srcThreePackage = AsmManager.getDefault().getHierarchy().findElementForHandle("=MultiSource/src3<pkg");
+		IProgramElement srcTwoPackage = getModelFor("MultiSource").getHierarchy().findElementForHandle("=MultiSource/src2<pkg");
+		IProgramElement srcThreePackage = getModelFor("MultiSource").getHierarchy().findElementForHandle("=MultiSource/src3<pkg");
 		assertNotNull(srcOne);
 		assertNotNull(CodeOneClass);
 		assertNotNull(srcTwoPackage);
@@ -426,11 +426,11 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		configureAspectPath(bug2, getProjectRelativePath(bug, "bin"));
 		build(bug);
 		build(bug2);
-		dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
+		dumptree(getModelFor(bug2).getHierarchy().getRoot(), 0);
 		PrintWriter pw = new PrintWriter(System.out);
-		AsmManager.getDefault().dumprels(pw);
+		getModelFor(bug2).dumprels(pw);
 		pw.flush();
-		IProgramElement root = AsmManager.getDefault().getHierarchy().getRoot();
+		IProgramElement root = getModelFor(bug2).getHierarchy().getRoot();
 		assertEquals("=AspectPathTwo/binaries<pkg(Asp.class}Asp&before", findElementAtLine(root, 5).getHandleIdentifier());
 		assertEquals("=AspectPathTwo/binaries<(Asp2.class}Asp2&before", findElementAtLine(root, 16).getHandleIdentifier());
 	}
@@ -467,7 +467,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		alter(p1, "inc1");
 		build(p1); // Modify the aspect Asp2 to include staticinitialization() advice
 		checkWasFullBuild();
-		Set s = AsmManager.getDefault().getModelChangesOnLastBuild();
+		Set s = getModelFor(p1).getModelChangesOnLastBuild();
 		assertTrue("Should be empty as was full build:" + s, s.isEmpty());
 
 		// prod the build of the second project with some extra info to tell it more precisely about the change:
@@ -569,7 +569,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkCompileWeaveCount("pr240360", 5, 4);
 		assertTrue("There should be an error:\n" + getErrorMessages("pr240360"), !getErrorMessages("pr240360").isEmpty());
 
-		Set s = AsmManager.getDefault().getRelationshipMap().getEntries();
+		Set s = getModelFor("pr240360").getRelationshipMap().getEntries();
 		int relmapLength = s.size();
 
 		// Delete the erroneous type
@@ -579,21 +579,21 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("pr240360");
 		checkWasntFullBuild();
 		checkCompileWeaveCount("pr240360", 0, 0);
-		assertEquals(relmapLength, AsmManager.getDefault().getRelationshipMap().getEntries().size());
+		assertEquals(relmapLength, getModelFor("pr240360").getRelationshipMap().getEntries().size());
 
 		// Readd the erroneous type
 		alter("pr240360", "inc1");
 		build("pr240360");
 		checkWasntFullBuild();
 		checkCompileWeaveCount("pr240360", 1, 0);
-		assertEquals(relmapLength, AsmManager.getDefault().getRelationshipMap().getEntries().size());
+		assertEquals(relmapLength, getModelFor("pr240360").getRelationshipMap().getEntries().size());
 
 		// Change the advice
 		alter("pr240360", "inc2");
 		build("pr240360");
 		checkWasFullBuild();
 		checkCompileWeaveCount("pr240360", 6, 4);
-		assertEquals(relmapLength, AsmManager.getDefault().getRelationshipMap().getEntries().size());
+		assertEquals(relmapLength, getModelFor("pr240360").getRelationshipMap().getEntries().size());
 
 	}
 
@@ -681,16 +681,16 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject("P2");
 
 		build("P1");
-		checkForNode("pkg", "C", true);
+		checkForNode(getModelFor("P1"), "pkg", "C", true);
 
 		build("P2");
-		checkForNode("pkg", "C", false);
+		checkForNode(getModelFor("P2"), "pkg", "C", false);
 
 		build("P1");
-		checkForNode("pkg", "C", true);
+		checkForNode(getModelFor("P1"), "pkg", "C", true);
 
 		build("P2");
-		checkForNode("pkg", "C", false);
+		checkForNode(getModelFor("P2"), "pkg", "C", false);
 	}
 
 	// Setup up two simple projects and build them in turn - check the
@@ -700,16 +700,16 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject("P2");
 
 		build("P1");
-		checkForNode("pkg", "C", true);
+		checkForNode(getModelFor("P1"), "pkg", "C", true);
 
 		build("P2");
-		checkForNode("pkg", "C", false);
+		checkForNode(getModelFor("P2"), "pkg", "C", false);
 
 		build("P1");
-		checkForNode("pkg", "C", true);
+		checkForNode(getModelFor("P1"), "pkg", "C", true);
 
 		build("P2");
-		checkForNode("pkg", "C", false);
+		checkForNode(getModelFor("P2"), "pkg", "C", false);
 	}
 
 	/**
@@ -1552,118 +1552,118 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 				.get(0)).getSourceLocation().getLine());
 		alter("PR134541", "inc1");
 		build("PR134541");
-		if (AsmManager.getDefault().getHandleProvider().dependsOnLocation())
-			checkWasFullBuild(); // the line number has changed... but nothing
-		// structural about the code
-		else
-			checkWasntFullBuild(); // the line number has changed... but nothing
+		// if (getModelFor("PR134541").getHandleProvider().dependsOnLocation())
+		// checkWasFullBuild(); // the line number has changed... but nothing
+		// // structural about the code
+		// else
+		checkWasntFullBuild(); // the line number has changed... but nothing
 		// structural about the code
 		assertEquals("[Xlint:adviceDidNotMatch] should now be associated with line 7", 7,
 				((IMessage) getWarningMessages("PR134541").get(0)).getSourceLocation().getLine());
 	}
 
 	public void testJDTLikeHandleProviderWithLstFile_pr141730() {
-		IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
-		AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
-		try {
-			// The JDTLike-handles should start with the name
-			// of the buildconfig file
-			initialiseProject("JDTLikeHandleProvider");
-			build("JDTLikeHandleProvider");
-			IHierarchy top = AsmManager.getDefault().getHierarchy();
-			IProgramElement pe = top.findElementForType("pkg", "A");
-			String expectedHandle = "=JDTLikeHandleProvider<pkg*A.aj}A";
-			assertEquals("expected handle to be " + expectedHandle + ", but found " + pe.getHandleIdentifier(), expectedHandle, pe
-					.getHandleIdentifier());
-		} finally {
-			AsmManager.getDefault().setHandleProvider(handleProvider);
-		}
+		// IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
+		// AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
+		// try {
+		// The JDTLike-handles should start with the name
+		// of the buildconfig file
+		initialiseProject("JDTLikeHandleProvider");
+		build("JDTLikeHandleProvider");
+		IHierarchy top = getModelFor("JDTLikeHandleProvider").getHierarchy();
+		IProgramElement pe = top.findElementForType("pkg", "A");
+		String expectedHandle = "=JDTLikeHandleProvider<pkg*A.aj}A";
+		assertEquals("expected handle to be " + expectedHandle + ", but found " + pe.getHandleIdentifier(), expectedHandle, pe
+				.getHandleIdentifier());
+		// } finally {
+		// AsmManager.getDefault().setHandleProvider(handleProvider);
+		// }
 	}
 
 	public void testMovingAdviceDoesntChangeHandles_pr141730() {
-		IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
-		AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
-		try {
-			initialiseProject("JDTLikeHandleProvider");
-			build("JDTLikeHandleProvider");
-			checkWasFullBuild();
-			IHierarchy top = AsmManager.getDefault().getHierarchy();
-			IProgramElement pe = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.ADVICE,
-					"before(): <anonymous pointcut>");
-			// add a line which shouldn't change the handle
-			alter("JDTLikeHandleProvider", "inc1");
-			build("JDTLikeHandleProvider");
-			checkWasntFullBuild();
-			IHierarchy top2 = AsmManager.getDefault().getHierarchy();
-			IProgramElement pe2 = top.findElementForLabel(top2.getRoot(), IProgramElement.Kind.ADVICE,
-					"before(): <anonymous pointcut>");
-			assertEquals("expected advice to be on line " + pe.getSourceLocation().getLine() + 1 + " but was on "
-					+ pe2.getSourceLocation().getLine(), pe.getSourceLocation().getLine() + 1, pe2.getSourceLocation().getLine());
-			assertEquals("expected advice to have handle " + pe.getHandleIdentifier() + " but found handle "
-					+ pe2.getHandleIdentifier(), pe.getHandleIdentifier(), pe2.getHandleIdentifier());
-		} finally {
-			AsmManager.getDefault().setHandleProvider(handleProvider);
-		}
+		// IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
+		// AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
+		// try {
+		initialiseProject("JDTLikeHandleProvider");
+		build("JDTLikeHandleProvider");
+		checkWasFullBuild();
+		IHierarchy top = getModelFor("JDTLikeHandleProvider").getHierarchy();
+		IProgramElement pe = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.ADVICE, "before(): <anonymous pointcut>");
+		// add a line which shouldn't change the handle
+		alter("JDTLikeHandleProvider", "inc1");
+		build("JDTLikeHandleProvider");
+		checkWasntFullBuild();
+		IHierarchy top2 = getModelFor("JDTLikeHandleProvider").getHierarchy();
+		IProgramElement pe2 = top
+				.findElementForLabel(top2.getRoot(), IProgramElement.Kind.ADVICE, "before(): <anonymous pointcut>");
+		assertEquals("expected advice to be on line " + pe.getSourceLocation().getLine() + 1 + " but was on "
+				+ pe2.getSourceLocation().getLine(), pe.getSourceLocation().getLine() + 1, pe2.getSourceLocation().getLine());
+		assertEquals("expected advice to have handle " + pe.getHandleIdentifier() + " but found handle "
+				+ pe2.getHandleIdentifier(), pe.getHandleIdentifier(), pe2.getHandleIdentifier());
+		// } finally {
+		// AsmManager.getDefault().setHandleProvider(handleProvider);
+		// }
 	}
 
 	public void testSwappingAdviceAndHandles_pr141730() {
-		IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
-		AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
-		try {
-			initialiseProject("JDTLikeHandleProvider");
-			build("JDTLikeHandleProvider");
-			IHierarchy top = AsmManager.getDefault().getHierarchy();
+		// IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
+		// AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
+		// try {
+		initialiseProject("JDTLikeHandleProvider");
+		build("JDTLikeHandleProvider");
+		IHierarchy top = getModelFor("JDTLikeHandleProvider").getHierarchy();
 
-			IProgramElement call = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.ADVICE, "after(): callPCD..");
-			IProgramElement exec = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.ADVICE, "after(): execPCD..");
-			// swap the two after advice statements over. This forces
-			// a full build which means 'after(): callPCD..' will now
-			// be the second after advice in the file and have the same
-			// handle as 'after(): execPCD..' originally did.
-			alter("JDTLikeHandleProvider", "inc2");
-			build("JDTLikeHandleProvider");
-			checkWasFullBuild();
+		IProgramElement call = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.ADVICE, "after(): callPCD..");
+		IProgramElement exec = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.ADVICE, "after(): execPCD..");
+		// swap the two after advice statements over. This forces
+		// a full build which means 'after(): callPCD..' will now
+		// be the second after advice in the file and have the same
+		// handle as 'after(): execPCD..' originally did.
+		alter("JDTLikeHandleProvider", "inc2");
+		build("JDTLikeHandleProvider");
+		checkWasFullBuild();
 
-			IHierarchy top2 = AsmManager.getDefault().getHierarchy();
-			IProgramElement newCall = top2.findElementForLabel(top2.getRoot(), IProgramElement.Kind.ADVICE, "after(): callPCD..");
-			IProgramElement newExec = top2.findElementForLabel(top2.getRoot(), IProgramElement.Kind.ADVICE, "after(): execPCD..");
+		IHierarchy top2 = getModelFor("JDTLikeHandleProvider").getHierarchy();
+		IProgramElement newCall = top2.findElementForLabel(top2.getRoot(), IProgramElement.Kind.ADVICE, "after(): callPCD..");
+		IProgramElement newExec = top2.findElementForLabel(top2.getRoot(), IProgramElement.Kind.ADVICE, "after(): execPCD..");
 
-			assertEquals("after swapping places, expected 'after(): callPCD..' " + "to be on line "
-					+ newExec.getSourceLocation().getLine() + " but was on line " + call.getSourceLocation().getLine(), newExec
-					.getSourceLocation().getLine(), call.getSourceLocation().getLine());
-			assertEquals("after swapping places, expected 'after(): callPCD..' " + "to have handle " + exec.getHandleIdentifier()
-					+ " (because was full build) but had " + newCall.getHandleIdentifier(), exec.getHandleIdentifier(), newCall
-					.getHandleIdentifier());
-		} finally {
-			AsmManager.getDefault().setHandleProvider(handleProvider);
-		}
+		assertEquals("after swapping places, expected 'after(): callPCD..' " + "to be on line "
+				+ newExec.getSourceLocation().getLine() + " but was on line " + call.getSourceLocation().getLine(), newExec
+				.getSourceLocation().getLine(), call.getSourceLocation().getLine());
+		assertEquals("after swapping places, expected 'after(): callPCD..' " + "to have handle " + exec.getHandleIdentifier()
+				+ " (because was full build) but had " + newCall.getHandleIdentifier(), exec.getHandleIdentifier(), newCall
+				.getHandleIdentifier());
+		// } finally {
+		// AsmManager.getDefault().setHandleProvider(handleProvider);
+		// }
 	}
 
 	public void testInitializerCountForJDTLikeHandleProvider_pr141730() {
-		IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
-		AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
-		try {
-			initialiseProject("JDTLikeHandleProvider");
-			build("JDTLikeHandleProvider");
-			String expected = "=JDTLikeHandleProvider<pkg*A.aj[C|1";
+		// IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
+		// AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
+		// try {
+		initialiseProject("JDTLikeHandleProvider");
+		build("JDTLikeHandleProvider");
+		String expected = "=JDTLikeHandleProvider<pkg*A.aj[C|1";
 
-			IHierarchy top = AsmManager.getDefault().getHierarchy();
-			IProgramElement init = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.INITIALIZER, "...");
-			assertEquals("expected initializers handle to be " + expected + "," + " but found " + init.getHandleIdentifier(true),
-					expected, init.getHandleIdentifier(true));
+		IHierarchy top = getModelFor("JDTLikeHandleProvider").getHierarchy();
+		IProgramElement init = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.INITIALIZER, "...");
+		assertEquals("expected initializers handle to be " + expected + "," + " but found " + init.getHandleIdentifier(true),
+				expected, init.getHandleIdentifier(true));
 
-			alter("JDTLikeHandleProvider", "inc2");
-			build("JDTLikeHandleProvider");
-			checkWasFullBuild();
+		alter("JDTLikeHandleProvider", "inc2");
+		build("JDTLikeHandleProvider");
+		checkWasFullBuild();
 
-			IHierarchy top2 = AsmManager.getDefault().getHierarchy();
-			IProgramElement init2 = top2.findElementForLabel(top2.getRoot(), IProgramElement.Kind.INITIALIZER, "...");
-			assertEquals("expected initializers handle to still be " + expected + "," + " but found "
-					+ init2.getHandleIdentifier(true), expected, init2.getHandleIdentifier(true));
+		IHierarchy top2 = getModelFor("JDTLikeHandleProvider").getHierarchy();
+		IProgramElement init2 = top2.findElementForLabel(top2.getRoot(), IProgramElement.Kind.INITIALIZER, "...");
+		assertEquals(
+				"expected initializers handle to still be " + expected + "," + " but found " + init2.getHandleIdentifier(true),
+				expected, init2.getHandleIdentifier(true));
 
-		} finally {
-			AsmManager.getDefault().setHandleProvider(handleProvider);
-		}
+		// } finally {
+		// AsmManager.getDefault().setHandleProvider(handleProvider);
+		// }
 	}
 
 	// 134471 related tests perform incremental compilation and verify features
@@ -1677,15 +1677,15 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			configureNonStandardCompileOptions("PR134471", "-showWeaveInfo -emacssym");
 			configureShowWeaveInfoMessages("PR134471", true);
 			build("PR134471");
-
+			AsmManager model = getModelFor("PR134471");
 			// Step2. Quick check that the advice points to something...
-			IProgramElement nodeForTypeA = checkForNode("pkg", "A", true);
+			IProgramElement nodeForTypeA = checkForNode(model, "pkg", "A", true);
 			IProgramElement nodeForAdvice = findAdvice(nodeForTypeA);
-			List relatedElements = getRelatedElements(nodeForAdvice, 1);
+			List relatedElements = getRelatedElements(model, nodeForAdvice, 1);
 
 			// Step3. Check the advice applying at the first 'code' join point
 			// in pkg.C is from aspect pkg.A, line 7
-			IProgramElement programElement = getFirstRelatedElement(findCode(checkForNode("pkg", "C", true)));
+			IProgramElement programElement = getFirstRelatedElement(model, findCode(checkForNode(model, "pkg", "C", true)));
 			int line = programElement.getSourceLocation().getLine();
 			assertTrue("advice should be at line 7 - but is at line " + line, line == 7);
 
@@ -1693,15 +1693,16 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			// in it
 			alter("PR134471", "inc1");
 			build("PR134471");
+			model = getModelFor("PR134471");
 
 			// Step5. Quick check that the advice points to something...
-			nodeForTypeA = checkForNode("pkg", "A", true);
+			nodeForTypeA = checkForNode(model, "pkg", "A", true);
 			nodeForAdvice = findAdvice(nodeForTypeA);
-			relatedElements = getRelatedElements(nodeForAdvice, 1);
+			relatedElements = getRelatedElements(model, nodeForAdvice, 1);
 
 			// Step6. Check the advice applying at the first 'code' join point
 			// in pkg.C is from aspect pkg.A, line 7
-			programElement = getFirstRelatedElement(findCode(checkForNode("pkg", "C", true)));
+			programElement = getFirstRelatedElement(model, findCode(checkForNode(model, "pkg", "C", true)));
 			line = programElement.getSourceLocation().getLine();
 			assertTrue("advice should be at line 7 - but is at line " + line, line == 7);
 		} finally {
@@ -1718,9 +1719,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		configureNonStandardCompileOptions("PR134471_2", "-showWeaveInfo -emacssym");
 		configureShowWeaveInfoMessages("PR134471_2", true);
 		build("PR134471_2");
-
+		AsmManager model = getModelFor("PR134471_2");
 		// Step2. confirm advice is from correct location
-		IProgramElement programElement = getFirstRelatedElement(findCode(checkForNode("pkg", "C", true)));
+		IProgramElement programElement = getFirstRelatedElement(model, findCode(checkForNode(model, "pkg", "C", true)));
 		int line = programElement.getSourceLocation().getLine();
 		assertTrue("advice should be at line 7 - but is at line " + line, line == 7);
 
@@ -1728,11 +1729,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// down a few lines... (change in source location)
 		alter("PR134471_2", "inc1");
 		build("PR134471_2");
-		if (AsmManager.getDefault().getHandleProvider().dependsOnLocation())
-			checkWasFullBuild(); // the line number has changed... but nothing
-		// structural about the code
-		else
-			checkWasntFullBuild(); // the line number has changed... but nothing
+		model = getModelFor("PR134471_2");
+		checkWasntFullBuild(); // the line number has changed... but nothing
 		// structural about the code
 
 		// checkWasFullBuild(); // this is true whilst we consider
@@ -1740,7 +1738,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// to until the handles are independent of location
 
 		// Step4. Check we have correctly realised the advice moved to line 11
-		programElement = getFirstRelatedElement(findCode(checkForNode("pkg", "C", true)));
+		programElement = getFirstRelatedElement(model, findCode(checkForNode(model, "pkg", "C", true)));
 		line = programElement.getSourceLocation().getLine();
 		assertTrue("advice should be at line 11 - but is at line " + line, line == 11);
 	}
@@ -1768,29 +1766,30 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			configureNonStandardCompileOptions("PR134471", "-showWeaveInfo -emacssym");
 			configureShowWeaveInfoMessages("PR134471", true);
 			build("PR134471");
-
+			AsmManager model = getModelFor("PR134471");
 			// Step2. confirm advice is from correct location
-			IProgramElement programElement = getFirstRelatedElement(findCode(checkForNode("pkg", "C", true)));
+			IProgramElement programElement = getFirstRelatedElement(model, findCode(checkForNode(model, "pkg", "C", true)));
 			int line = programElement.getSourceLocation().getLine();
 			assertTrue("advice should be at line 7 - but is at line " + line, line == 7);
 
 			// Step3. No change to the aspect at all
 			alter("PR134471", "inc1");
 			build("PR134471");
-
+			model = getModelFor("PR134471");
 			// Step4. Quick check that the advice points to something...
-			IProgramElement nodeForTypeA = checkForNode("pkg", "A", true);
+			IProgramElement nodeForTypeA = checkForNode(model, "pkg", "A", true);
 			IProgramElement nodeForAdvice = findAdvice(nodeForTypeA);
-			List relatedElements = getRelatedElements(nodeForAdvice, 1);
+			List relatedElements = getRelatedElements(model, nodeForAdvice, 1);
 
 			// Step5. No change to the file C but it should still be advised
 			// afterwards
 			alter("PR134471", "inc2");
 			build("PR134471");
 			checkWasntFullBuild();
+			model = getModelFor("PR134471");
 
 			// Step6. confirm advice is from correct location
-			programElement = getFirstRelatedElement(findCode(checkForNode("pkg", "C", true)));
+			programElement = getFirstRelatedElement(model, findCode(checkForNode(model, "pkg", "C", true)));
 			line = programElement.getSourceLocation().getLine();
 			assertTrue("advice should be at line 7 - but is at line " + line, line == 7);
 		} finally {
@@ -1809,33 +1808,31 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("PR134471_3");
 		checkWasFullBuild();
 
+		AsmManager model = getModelFor("PR134471_3");
 		// Step2. confirm declare warning is from correct location, decw matches
 		// line 7 in pkg.C
-		IProgramElement programElement = getFirstRelatedElement(findCode(checkForNode("pkg", "C", true), 7));
+		IProgramElement programElement = getFirstRelatedElement(model, findCode(checkForNode(model, "pkg", "C", true), 7));
 		int line = programElement.getSourceLocation().getLine();
 		assertTrue("declare warning should be at line 10 - but is at line " + line, line == 10);
 
 		// Step3. confirm advice is from correct location, advice matches line 6
 		// in pkg.C
-		programElement = getFirstRelatedElement(findCode(checkForNode("pkg", "C", true), 6));
+		programElement = getFirstRelatedElement(model, findCode(checkForNode(model, "pkg", "C", true), 6));
 		line = programElement.getSourceLocation().getLine();
 		assertTrue("advice should be at line 7 - but is at line " + line, line == 7);
 
 		// Step4. Move declare warning in the aspect
 		alter("PR134471_3", "inc1");
 		build("PR134471_3");
-		if (AsmManager.getDefault().getHandleProvider().dependsOnLocation())
-			checkWasFullBuild(); // the line number has changed... but nothing
-		// structural about the code
-		else
-			checkWasntFullBuild(); // the line number has changed... but nothing
+		model = getModelFor("PR134471_3");
+		checkWasntFullBuild(); // the line number has changed... but nothing
 		// structural about the code
 
 		// checkWasFullBuild();
 
 		// Step5. confirm declare warning is from correct location, decw (now at
 		// line 12) in pkg.A matches line 7 in pkg.C
-		programElement = getFirstRelatedElement(findCode(checkForNode("pkg", "C", true), 7));
+		programElement = getFirstRelatedElement(model, findCode(checkForNode(model, "pkg", "C", true), 7));
 		line = programElement.getSourceLocation().getLine();
 		assertTrue("declare warning should be at line 12 - but is at line " + line, line == 12);
 
@@ -1843,10 +1840,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		alter("PR134471_3", "inc2");
 		build("PR134471_3");
 		checkWasntFullBuild();
-
+		model = getModelFor("PR134471_3");
 		// Step7. confirm declare warning is from correct location, decw (now at
 		// line 12) in pkg.A matches line 7 in pkg.C
-		programElement = getFirstRelatedElement(findCode(checkForNode("pkg", "C", true), 7));
+		programElement = getFirstRelatedElement(model, findCode(checkForNode(model, "pkg", "C", true), 7));
 		line = programElement.getSourceLocation().getLine();
 		assertTrue("declare warning should be at line 12 - but is at line " + line, line == 12);
 	}
@@ -1860,34 +1857,31 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		configureShowWeaveInfoMessages("PR134471_3", true);
 		build("PR134471_3");
 		checkWasFullBuild();
-
+		AsmManager model = getModelFor("PR134471_3");
 		// Step2. confirm declare warning is from correct location, decw matches
 		// line 7 in pkg.C
-		IProgramElement programElement = getFirstRelatedElement(findCode(checkForNode("pkg", "C", true), 7));
+		IProgramElement programElement = getFirstRelatedElement(model, findCode(checkForNode(model, "pkg", "C", true), 7));
 		int line = programElement.getSourceLocation().getLine();
 		assertTrue("declare warning should be at line 10 - but is at line " + line, line == 10);
 
 		// Step3. confirm advice is from correct location, advice matches line 6
 		// in pkg.C
-		programElement = getFirstRelatedElement(findCode(checkForNode("pkg", "C", true), 6));
+		programElement = getFirstRelatedElement(model, findCode(checkForNode(model, "pkg", "C", true), 6));
 		line = programElement.getSourceLocation().getLine();
 		assertTrue("advice should be at line 7 - but is at line " + line, line == 7);
 
 		// Step4. Move declare warning in the aspect
 		alter("PR134471_3", "inc1");
 		build("PR134471_3");
-		if (AsmManager.getDefault().getHandleProvider().dependsOnLocation())
-			checkWasFullBuild(); // the line number has changed... but nothing
-		// structural about the code
-		else
-			checkWasntFullBuild(); // the line number has changed... but nothing
+		model = getModelFor("PR134471_3");
+		checkWasntFullBuild(); // the line number has changed... but nothing
 		// structural about the code
 
 		// checkWasFullBuild();
 
 		// Step5. confirm declare warning is from correct location, decw (now at
 		// line 12) in pkg.A matches line 7 in pkg.C
-		programElement = getFirstRelatedElement(findCode(checkForNode("pkg", "C", true), 7));
+		programElement = getFirstRelatedElement(model, findCode(checkForNode(model, "pkg", "C", true), 7));
 		line = programElement.getSourceLocation().getLine();
 		assertTrue("declare warning should be at line 12 - but is at line " + line, line == 12);
 
@@ -1895,10 +1889,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		alter("PR134471_3", "inc2");
 		build("PR134471_3");
 		checkWasntFullBuild();
-
+		model = getModelFor("PR134471_3");
 		// Step7. confirm declare warning is from correct location, decw (now at
 		// line 12) in pkg.A matches line 7 in pkg.C
-		programElement = getFirstRelatedElement(findCode(checkForNode("pkg", "C", true), 7));
+		programElement = getFirstRelatedElement(model, findCode(checkForNode(model, "pkg", "C", true), 7));
 		line = programElement.getSourceLocation().getLine();
 		assertTrue("declare warning should be at line 12 - but is at line " + line, line == 12);
 
@@ -1910,7 +1904,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 		// Step9. confirm declare warning is from correct location, decw (now at
 		// line 12) in pkg.A matches line 7 in pkg.C
-		programElement = getFirstRelatedElement(findCode(checkForNode("pkg", "C", true), 7));
+		programElement = getFirstRelatedElement(model, findCode(checkForNode(model, "pkg", "C", true), 7));
 		line = programElement.getSourceLocation().getLine();
 		assertTrue("declare warning should be at line 12 - but is at line " + line, line == 12);
 	}
@@ -1944,11 +1938,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertTrue("There should be no warnings:\n" + warnings, warnings.isEmpty());
 		alter("PR152589", "inc1");
 		build("PR152589");
-		if (AsmManager.getDefault().getHandleProvider().dependsOnLocation())
-			checkWasFullBuild(); // the line number has changed... but nothing
-		// structural about the code
-		else
-			checkWasntFullBuild(); // the line number has changed... but nothing
+		checkWasntFullBuild(); // the line number has changed... but nothing
 		// structural about the code
 
 		// checkWasFullBuild();
@@ -1975,8 +1965,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	public void testPR158573() {
-		IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
-		AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
+		// IElementHandleProvider handleProvider = AsmManager.getDefault().getHandleProvider();
+		// AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
 		initialiseProject("PR158573");
 		build("PR158573");
 		List warnings = getWarningMessages("PR158573");
@@ -1987,7 +1977,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkWasntFullBuild();
 		warnings = getWarningMessages("PR158573");
 		assertTrue("There should be no warnings after changing the value of a " + "variable:\n" + warnings, warnings.isEmpty());
-		AsmManager.getDefault().setHandleProvider(handleProvider);
+		// AsmManager.getDefault().setHandleProvider(handleProvider);
 	}
 
 	/**
@@ -2124,14 +2114,13 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	 * @param programElement Program element whose related elements are to be found
 	 * @param expected the number of expected related elements
 	 */
-	private List/* IProgramElement */getRelatedElements(IProgramElement programElement, int expected) {
-		List relatedElements = getRelatedElements(programElement);
+	private List/* IProgramElement */getRelatedElements(AsmManager model, IProgramElement programElement, int expected) {
+		List relatedElements = getRelatedElements(model, programElement);
 		StringBuffer debugString = new StringBuffer();
 		if (relatedElements != null) {
 			for (Iterator iter = relatedElements.iterator(); iter.hasNext();) {
 				String element = (String) iter.next();
-				debugString.append(AsmManager.getDefault().getHierarchy().findElementForHandle(element).toLabelString()).append(
-						"\n");
+				debugString.append(model.getHierarchy().findElementForHandle(element).toLabelString()).append("\n");
 			}
 		}
 		assertTrue("Should be " + expected + " element" + (expected > 1 ? "s" : "") + " related to this one '" + programElement
@@ -2139,14 +2128,14 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		return relatedElements;
 	}
 
-	private IProgramElement getFirstRelatedElement(IProgramElement programElement) {
-		List rels = getRelatedElements(programElement, 1);
-		return AsmManager.getDefault().getHierarchy().findElementForHandle((String) rels.get(0));
+	private IProgramElement getFirstRelatedElement(AsmManager model, IProgramElement programElement) {
+		List rels = getRelatedElements(model, programElement, 1);
+		return model.getHierarchy().findElementForHandle((String) rels.get(0));
 	}
 
-	private List/* IProgramElement */getRelatedElements(IProgramElement advice) {
+	private List/* IProgramElement */getRelatedElements(AsmManager model, IProgramElement advice) {
 		List output = null;
-		IRelationshipMap map = AsmManager.getDefault().getRelationshipMap();
+		IRelationshipMap map = model.getRelationshipMap();
 		List/* IRelationship */rels = map.get(advice);
 		if (rels == null)
 			fail("Did not find any related elements!");
@@ -2213,23 +2202,23 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// --------------------------------------------------------------------------
 	// -------------------------
 
-	private IProgramElement checkForNode(String packageName, String typeName, boolean shouldBeFound) {
-		IProgramElement ipe = AsmManager.getDefault().getHierarchy().findElementForType(packageName, typeName);
+	private IProgramElement checkForNode(AsmManager model, String packageName, String typeName, boolean shouldBeFound) {
+		IProgramElement ipe = model.getHierarchy().findElementForType(packageName, typeName);
 		if (shouldBeFound) {
 			if (ipe == null)
-				printModel();
+				printModel(model);
 			assertTrue("Should have been able to find '" + packageName + "." + typeName + "' in the asm", ipe != null);
 		} else {
 			if (ipe != null)
-				printModel();
+				printModel(model);
 			assertTrue("Should have NOT been able to find '" + packageName + "." + typeName + "' in the asm", ipe == null);
 		}
 		return ipe;
 	}
 
-	private void printModel() {
+	private void printModel(AsmManager model) {
 		try {
-			AsmManager.dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
+			AsmManager.dumptree(model.getHierarchy().getRoot(), 0);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

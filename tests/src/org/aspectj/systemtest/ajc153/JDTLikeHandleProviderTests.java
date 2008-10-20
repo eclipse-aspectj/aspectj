@@ -18,25 +18,23 @@ import java.util.List;
 import junit.framework.Test;
 
 import org.aspectj.asm.AsmManager;
-import org.aspectj.asm.IElementHandleProvider;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
-import org.aspectj.asm.internal.JDTLikeHandleProvider;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 
-	IElementHandleProvider handleProvider;
+	// IElementHandleProvider handleProvider;
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		handleProvider = AsmManager.getDefault().getHandleProvider();
-		AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
+		// handleProvider = AsmManager.getDefault().getHandleProvider();
+		// AsmManager.getDefault().setHandleProvider(new JDTLikeHandleProvider());
 	}
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		AsmManager.getDefault().setHandleProvider(handleProvider);
+		// AsmManager.getDefault().setHandleProvider(handleProvider);
 	}
 
 	public void testMoreThanOneNamedPointcut() {
@@ -45,7 +43,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 
 	public void testAspectHandle() {
 		runTest("aspect handle");
-		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		IProgramElement pe = top.findElementForType("pkg", "A1");
 		String expected = "<pkg*A1.aj}A1";
 		String found = pe.getHandleIdentifier();
@@ -64,7 +62,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 
 	public void testGetIPEWithAspectHandle() {
 		runTest("get IProgramElement with aspect handle");
-		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		String handle = "<pkg*A1.aj}A1";
 		IProgramElement ipe = top.getElement(handle);
 		assertNotNull("should have found ipe with handle " + handle, ipe);
@@ -155,7 +153,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 	// signature and the same pointcut
 	public void testTwoPiecesOfAdviceWithSameSignatureAndPointcut() {
 		runTest("two pieces of advice with the same signature and pointcut");
-		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		IProgramElement parent = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.ASPECT, "A5");
 		List children = parent.getChildren();
 		String handle1 = null;
@@ -208,7 +206,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 	// on the end
 	public void testIPEsWithSameNameHaveUniqueHandles_methodCall() {
 		runTest("ipes with same name have unique handles - method-call");
-		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		String handle1 = "<*TwoMethodCalls.aj[Main~main~\\[QString;?method-call("
 				+ "void java.io.PrintStream.println(java.lang.String))";
 		assertNotNull("expected to find node with handle " + handle1 + ", but did not", top.getElement(handle1));
@@ -226,7 +224,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 	// shouldn't have the "2"
 	public void testIPEsWithDiffNamesDontHaveCounter_methodCall() {
 		runTest("ipes with different names do not have counter - method-call");
-		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		String handle1 = "<*TwoDiffMethodCalls.aj[Main~main~\\[QString;?method-call("
 				+ "void java.io.PrintStream.println(java.lang.String))";
 		assertNotNull("expected to find node with handle " + handle1 + ", but did not", top.getElement(handle1));
@@ -238,7 +236,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 
 	public void testIPEsWithSameNameHaveUniqueHandles_handler() {
 		runTest("ipes with same name have unique handles - handler");
-		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		String handle1 = "<*Handler.aj[C~method?exception-handler(void C." + "<catch>(java.io.FileNotFoundException))";
 		assertNotNull("expected to find node with handle " + handle1 + ", but did not", top.getElement(handle1));
 
@@ -248,7 +246,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 
 	public void testIPEsWithSameNameHaveUniqueHandles_get() {
 		runTest("ipes with same name have unique handles - get");
-		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		String handle1 = "<*Get.aj[C1~method1?field-get(int C1.x)";
 		assertNotNull("expected to find node with handle " + handle1 + ", but did not", top.getElement(handle1));
 
@@ -258,7 +256,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 
 	public void testIPEsWithSameNameHaveUniqueHandles_set() {
 		runTest("ipes with same name have unique handles - set");
-		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		String handle1 = "<*Set.aj[C1~method?field-set(int C1.x)";
 		assertNotNull("expected to find node with handle " + handle1 + ", but did not", top.getElement(handle1));
 
@@ -268,13 +266,13 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 
 	public void testTwoPiecesOfBeforeAdviceInInjarAspectHaveUniqueHandles_pr159896() {
 		runTest("advice with same name in injar aspect should have unique handles");
-		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		String handle1 = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.ADVICE, "before(): p..").getHandleIdentifier();
 		String handle2 = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.ADVICE, "before(): exec..")
 				.getHandleIdentifier();
 		assertFalse("expected the two advice nodes to have unique handles but" + " did not", handle1.equals(handle2));
 		try {
-			AsmManager.getDefault().dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
+			AsmManager.lastActiveStructureModel.dumptree(AsmManager.lastActiveStructureModel.getHierarchy().getRoot(), 0);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -283,7 +281,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 
 	public void testTwoDeclareWarningsInInjarAspectHaveUniqueHandles_pr159896() {
 		runTest("declare warnings in injar aspect should have unique handles");
-		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		String handle1 = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.DECLARE_WARNING, "declare warning: \"blah\"")
 				.getHandleIdentifier();
 		String handle2 = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.DECLARE_WARNING, "declare warning: \"blah2\"")
@@ -297,7 +295,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 	// their handle
 	public void testOnlyIncrementSameDeclareTypeFromInjar_pr159896() {
 		runTest("dont increment counter for different declares");
-		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		String warning = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.DECLARE_WARNING,
 				"declare warning: \"warning\"").getHandleIdentifier();
 		assertTrue("shouldn't have incremented counter for declare warning handle " + "because only one declare warning statement",
@@ -387,7 +385,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 	public void testTypeSameAsJDT() {
 		// JDT: =TJP Example/src<tjp{Demo.java[Demo
 		runTest("type same as jdt");
-		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		IProgramElement pe = top.findElementForType("tjp", "Demo");
 		String expected = "<tjp{Demo.java[Demo";
 		String found = pe.getHandleIdentifier();
@@ -404,7 +402,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 		// JDT: =TJP Example/src<tjp{Demo.java[Demo|1
 		// and =TJP Example/src<tjp{Demo.java[Demo|2
 		runTest("initialization same as jdt");
-		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		IProgramElement parent = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.CLASS, "Demo");
 		List children = parent.getChildren();
 		String handle1 = null;
@@ -466,7 +464,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 	public void testEnumSameAsJDT() {
 		// JDT: =Java5 Handles/src<pkg{E.java[E
 		runTest("enum same as jdt");
-		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		IProgramElement pe = top.findElementForType("pkg", "E");
 		String expected = "<pkg{E.java[E";
 		String found = pe.getHandleIdentifier();
@@ -482,7 +480,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 	public void testAnnotationSameAsJDT() {
 		// JDT: =Java5 Handles/src<pkg{MyAnnotation.java[MyAnnotation
 		runTest("annotation same as jdt");
-		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		IProgramElement pe = top.findElementForType("pkg", "MyAnnotation");
 		String expected = "<pkg{MyAnnotation.java[MyAnnotation";
 		String found = pe.getHandleIdentifier();
@@ -534,7 +532,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 
 	// ----------- helper methods ---------------
 	private void compareHandles(IProgramElement.Kind kind, String ipeName, String expectedHandle) {
-		IHierarchy top = AsmManager.getDefault().getHierarchy();
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		IProgramElement pe = top.findElementForLabel(top.getRoot(), kind, ipeName);
 		String found = pe.getHandleIdentifier();
 		System.err.println("expected: " + expectedHandle);

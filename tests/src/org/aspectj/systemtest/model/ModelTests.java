@@ -14,7 +14,6 @@ import java.io.File;
 
 import junit.framework.Test;
 
-import org.aspectj.ajdt.internal.core.builder.AsmHierarchyBuilder;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.weaver.World;
 
@@ -62,17 +61,18 @@ public class ModelTests extends ModelTestCase {
 		}
 	}
 
-	public void testPCDInClassAppearsInModel_pr148027() {
-		boolean b = AsmHierarchyBuilder.shouldAddUsesPointcut;
-		AsmHierarchyBuilder.shouldAddUsesPointcut = true;
-		World.createInjarHierarchy = false;
-		try {
-			runModelTest("ensure pcd declare in class appears in model", "pr148027");
-		} finally {
-			World.createInjarHierarchy = true;
-			AsmHierarchyBuilder.shouldAddUsesPointcut = b;
-		}
-	}
+	//
+	// public void testPCDInClassAppearsInModel_pr148027() {
+	// boolean b = AsmHierarchyBuilder.shouldAddUsesPointcut;
+	// AsmHierarchyBuilder.shouldAddUsesPointcut = true;
+	// World.createInjarHierarchy = false;
+	// try {
+	// runModelTest("ensure pcd declare in class appears in model", "pr148027");
+	// } finally {
+	// World.createInjarHierarchy = true;
+	// AsmHierarchyBuilder.shouldAddUsesPointcut = b;
+	// }
+	// }
 
 	// public void testInpathAdvisedCode_prX() { runModelTest("inpath advised elements","prX"); }
 
