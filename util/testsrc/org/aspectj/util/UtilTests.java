@@ -11,22 +11,26 @@
  *     Xerox/PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.util;
 
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 public class UtilTests extends TestCase {
 
-    public static Test suite() { 
-        TestSuite suite = new TestSuite(UtilTests.class.getName());
-        //$JUnit-BEGIN$
-        suite.addTestSuite(FileUtilTest.class); 
-        suite.addTestSuite(LangUtilTest.class); 
-        //$JUnit-END$
-        return suite;
-    }
+	public static Test suite() {
+		TestSuite suite = new TestSuite(UtilTests.class.getName());
+		// $JUnit-BEGIN$
+		suite.addTestSuite(FileUtilTest.class);
+		suite.addTestSuite(LangUtilTest.class);
+		suite.addTestSuite(GenericSignatureParserTest.class);
+		// $JUnit-END$
+		return suite;
+	}
 
-    public UtilTests(String name) { super(name); }
+	public UtilTests(String name) {
+		super(name);
+	}
 
-}  
+}
