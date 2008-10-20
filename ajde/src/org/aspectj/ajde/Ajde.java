@@ -62,7 +62,7 @@ public class Ajde {
 	private IconRegistry iconRegistry;
 	private IRuntimeProperties runtimeProperties;
 	private boolean initialized = false;
-
+	private AsmManager asm;
 	private OptionsFrame optionsFrame = null;
 	private Frame rootFrame = null;
 	private StructureViewPanel fileStructurePanel = null;
@@ -70,13 +70,17 @@ public class Ajde {
 	private EditorAdapter editorAdapter;
 	private StructureViewManager structureViewManager;
 	private StructureSearchManager structureSearchManager;
-	private BuildConfigManager configurationManager;
+	private final BuildConfigManager configurationManager;
 
 	// all to do with building....
 	private ICompilerConfiguration compilerConfig;
 	private IUIBuildMessageHandler uiBuildMsgHandler;
 	private IBuildProgressMonitor buildProgressMonitor;
 	private AjCompiler compiler;
+
+	public AsmManager getModel() {
+		return asm;
+	}
 
 	/**
 	 * This class can only be constructured by itself (as a singleton) or by sub-classes.
@@ -96,6 +100,7 @@ public class Ajde {
 			INSTANCE.compilerConfig = compilerConfig;
 			INSTANCE.uiBuildMsgHandler = uiBuildMessageHandler;
 			INSTANCE.buildProgressMonitor = monitor;
+			INSTANCE.asm = AsmManager.createNewStructureModel();
 
 			INSTANCE.iconRegistry = iconRegistry;
 			INSTANCE.ideUIAdapter = ideUIAdapter;
@@ -142,8 +147,9 @@ public class Ajde {
 
 	private final BuildConfigListener STRUCTURE_UPDATE_CONFIG_LISTENER = new BuildConfigListener() {
 		public void currConfigChanged(String configFilePath) {
-			if (configFilePath != null)
-				AsmManager.getDefault().readStructureModel(configFilePath);
+			if (configFilePath != null) {
+				Ajde.getDefault().asm.readStructureModel(configFilePath);
+			}
 		}
 
 		public void configsListUpdated(List configsList) {
@@ -234,7 +240,7 @@ public class Ajde {
 		final String classpath;
 		final String[] args;
 		final boolean valid;
-		private Frame rootFrame;
+		private final Frame rootFrame;
 
 		RunProperties(ICompilerConfiguration compilerConfig, IRuntimeProperties runtimeProperties, IUIBuildMessageHandler handler,
 				Frame rootFrame) {
@@ -313,8 +319,8 @@ public class Ajde {
 
 	static class CompilerThread extends Thread {
 
-		private AjCompiler compiler;
-		private boolean buildFresh;
+		private final AjCompiler compiler;
+		private final boolean buildFresh;
 
 		public CompilerThread(AjCompiler compiler, boolean buildFresh) {
 			this.compiler = compiler;
@@ -462,5 +468,21 @@ public class Ajde {
 			compiler = new AjCompiler(configFile, getCompilerConfig(), getBuildProgressMonitor(), getMessageHandler());
 		}
 		return compiler;
+	}
+
+	public AsmManager getModelForConfigFile(String configFile) {
+		return compiler.getModel();
+		// if ((compiler == null || !compiler.getId().equals(configFile))) {
+		// if (compiler != null) {
+		// // have to remove the incremental state of the previous
+		// // compiler - this will remove it from the
+		// // IncrementalStateManager's
+		// // list
+		// compiler.clearLastState();
+		// }
+		// getMessageHandler().reset();
+		// compiler = new AjCompiler(configFile, getCompilerConfig(), getBuildProgressMonitor(), getMessageHandler());
+		// }
+
 	}
 }

@@ -21,7 +21,6 @@ import java.util.List;
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.ui.internal.NavigationHistoryModel;
 import org.aspectj.ajde.ui.internal.TreeStructureViewBuilder;
-import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IHierarchyListener;
 import org.aspectj.asm.IProgramElement;
@@ -33,11 +32,11 @@ import org.aspectj.asm.internal.AspectJElementHierarchy;
  */
 public class StructureViewManager {
 
-	private TreeStructureViewBuilder treeViewBuilder;
+	private final TreeStructureViewBuilder treeViewBuilder;
 	// private String buildConfigFilePath = null;
 
-	private NavigationHistoryModel historyModel = new NavigationHistoryModel();
-	private ArrayList structureViews = new ArrayList();
+	private final NavigationHistoryModel historyModel = new NavigationHistoryModel();
+	private final ArrayList structureViews = new ArrayList();
 	private FileStructureView defaultFileView = null;
 
 	private static final StructureViewProperties DEFAULT_VIEW_PROPERTIES;
@@ -59,7 +58,7 @@ public class StructureViewManager {
 	public StructureViewManager(StructureViewNodeFactory nodeFactory) {
 		treeViewBuilder = new TreeStructureViewBuilder(nodeFactory);
 
-		AsmManager.getDefault().addListener(VIEW_LISTENER);
+		Ajde.getDefault().getModel().addListener(VIEW_LISTENER);
 	}
 
 	public void fireNavigateBackAction(StructureView view) {
@@ -88,7 +87,7 @@ public class StructureViewManager {
 	 * @param newFilePath the canonicalized path to the new file
 	 */
 	public void fireNavigationAction(String newFilePath, int lineNumber) {
-		IProgramElement currNode = AsmManager.getDefault().getHierarchy().findElementForSourceLine(newFilePath, lineNumber);
+		IProgramElement currNode = Ajde.getDefault().getModel().getHierarchy().findElementForSourceLine(newFilePath, lineNumber);
 
 		if (currNode != null) {
 			navigationAction(currNode, true);
@@ -116,7 +115,7 @@ public class StructureViewManager {
 			String newFilePath = node.getSourceLocation().getSourceFile().getAbsolutePath();
 			if (defaultFileView.getSourceFile() != null && !defaultFileView.getSourceFile().equals(newFilePath)) {
 				defaultFileView.setSourceFile(newFilePath);
-				treeViewBuilder.buildView(defaultFileView, AsmManager.getDefault().getHierarchy());
+				treeViewBuilder.buildView(defaultFileView, Ajde.getDefault().getModel().getHierarchy());
 			}
 		}
 
@@ -142,7 +141,7 @@ public class StructureViewManager {
 
 	public void refreshView(StructureView view) {
 		IStructureViewNode activeNode = view.getActiveNode();
-		treeViewBuilder.buildView(view, AsmManager.getDefault().getHierarchy());
+		treeViewBuilder.buildView(view, Ajde.getDefault().getModel().getHierarchy());
 		view.setActiveNode(activeNode);
 	}
 
@@ -177,7 +176,7 @@ public class StructureViewManager {
 			properties = DEFAULT_VIEW_PROPERTIES;
 		FileStructureView view = new FileStructureView(properties);
 		view.setSourceFile(sourceFilePath);
-		treeViewBuilder.buildView(view, AsmManager.getDefault().getHierarchy());
+		treeViewBuilder.buildView(view, Ajde.getDefault().getModel().getHierarchy());
 		structureViews.add(view);
 		return view;
 	}
