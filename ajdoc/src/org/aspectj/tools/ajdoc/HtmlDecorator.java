@@ -53,13 +53,13 @@ class HtmlDecorator {
 	static File rootDir = null;
 	static String docVisibilityModifier;
 
-	static void decorateHTMLFromInputFiles(Hashtable table, File newRootDir, File[] inputFiles, String docModifier)
+	static void decorateHTMLFromInputFiles(AsmManager model, Hashtable table, File newRootDir, File[] inputFiles, String docModifier)
 			throws IOException {
 		rootDir = newRootDir;
 		declIDTable = table;
 		docVisibilityModifier = docModifier;
 		for (int i = 0; i < inputFiles.length; i++) {
-			decorateHTMLFromIPEs(getProgramElements(inputFiles[i].getCanonicalPath()), rootDir.getCanonicalPath()
+			decorateHTMLFromIPEs(getProgramElements(model, inputFiles[i].getCanonicalPath()), rootDir.getCanonicalPath()
 					+ Config.DIR_SEP_CHAR, docModifier, false);
 		}
 	}
@@ -516,7 +516,7 @@ class HtmlDecorator {
 				IProgramElement currDecl = null;
 				if (o instanceof String) {
 					String currHandle = (String) o;
-					currDecl = AsmManager.getDefault().getHierarchy().findElementForHandle(currHandle);
+					currDecl = node.getModel().getHierarchy().findElementForHandle(currHandle);
 				} else if (o instanceof IProgramElement) {
 					currDecl = (IProgramElement) o;
 				} else {
@@ -668,7 +668,7 @@ class HtmlDecorator {
 		List addedNames = new ArrayList(); // for ensuring that we don't add duplciates
 		for (Iterator it = targets.iterator(); it.hasNext();) {
 			String currHandle = (String) it.next();
-			IProgramElement currDecl = AsmManager.getDefault().getHierarchy().findElementForHandle(currHandle);
+			IProgramElement currDecl = decl.getModel().getHierarchy().findElementForHandle(currHandle);
 			if (currDecl.getKind().equals(IProgramElement.Kind.CODE)) {
 				currDecl = currDecl.getParent(); // promote to enclosing
 			}
@@ -850,9 +850,9 @@ class HtmlDecorator {
 		return formattedComment;
 	}
 
-	static public IProgramElement[] getProgramElements(String filename) {
+	static public IProgramElement[] getProgramElements(AsmManager model, String filename) {
 
-		IProgramElement file = (IProgramElement) AsmManager.getDefault().getHierarchy().findElementForSourceFile(filename);
+		IProgramElement file = (IProgramElement) model.getHierarchy().findElementForSourceFile(filename);
 		final List nodes = new ArrayList();
 		HierarchyWalker walker = new HierarchyWalker() {
 			public void preProcess(IProgramElement node) {

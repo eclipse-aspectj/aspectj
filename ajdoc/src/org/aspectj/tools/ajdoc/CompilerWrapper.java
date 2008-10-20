@@ -9,8 +9,9 @@
  * Contributors: 
  *     Mik Kersten     initial implementation 
  * ******************************************************************/
- package org.aspectj.tools.ajdoc;
+package org.aspectj.tools.ajdoc;
 
+import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 
 /**
@@ -21,17 +22,17 @@ import org.aspectj.bridge.IMessage;
 public class CompilerWrapper extends org.aspectj.tools.ajc.Main {
 
 	private static CompilerWrapper INSTANCE = null;
-	
-    public static void main(String[] args) {
-    	INSTANCE = new CompilerWrapper();
-		INSTANCE.runMain(args, true);
 
-    }
-    
+	public static AsmManager executeMain(String[] args) {
+		INSTANCE = new CompilerWrapper();
+		INSTANCE.runMain(args, true);
+		return AsmManager.lastActiveStructureModel;
+	}
+
 	public static boolean hasErrors() {
 		return INSTANCE.ourHandler.getErrors().length > 0;
 	}
-	
+
 	public static IMessage[] getErrors() {
 		return INSTANCE.ourHandler.getErrors();
 	}
