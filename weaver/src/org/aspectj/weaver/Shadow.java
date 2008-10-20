@@ -13,7 +13,6 @@
 package org.aspectj.weaver;
 
 import java.io.DataInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,17 +21,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.aspectj.asm.IRelationship;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
-import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.util.TypeSafeEnum;
 import org.aspectj.weaver.ast.Var;
-import org.aspectj.weaver.model.AsmRelationshipProvider;
 
 /*
  * The superclass of anything representing a the shadow of a join point.  A shadow represents
@@ -597,161 +592,13 @@ public abstract class Shadow {
 		throw new RuntimeException("Generic shadows cannot be prepared");
 	}
 
-	/*
-	 * Ensure we report a nice source location - particular in the case where the source info is missing (binary weave).
-	 */
-	private String beautifyLocation(ISourceLocation isl) {
-		StringBuffer nice = new StringBuffer();
-		if (isl == null || isl.getSourceFile() == null || isl.getSourceFile().getName().indexOf("no debug info available") != -1) {
-			nice.append("no debug info available");
-		} else {
-			// can't use File.getName() as this fails when a Linux box encounters a path created on Windows and vice-versa
-			int takeFrom = isl.getSourceFile().getPath().lastIndexOf('/');
-			if (takeFrom == -1) {
-				takeFrom = isl.getSourceFile().getPath().lastIndexOf('\\');
-			}
-			int binary = isl.getSourceFile().getPath().lastIndexOf('!');
-			if (binary != -1 && binary < takeFrom) {
-				// we have been woven by a binary aspect
-				String pathToBinaryLoc = isl.getSourceFile().getPath().substring(0, binary + 1);
-				if (pathToBinaryLoc.indexOf(".jar") != -1) {
-					// only want to add the extra info if we're from a jar file
-					int lastSlash = pathToBinaryLoc.lastIndexOf('/');
-					if (lastSlash == -1) {
-						lastSlash = pathToBinaryLoc.lastIndexOf('\\');
-					}
-					nice.append(pathToBinaryLoc.substring(lastSlash + 1));
-				}
-			}
-			nice.append(isl.getSourceFile().getPath().substring(takeFrom + 1));
-			if (isl.getLine() != 0)
-				nice.append(":").append(isl.getLine());
-			// if it's a binary file then also want to give the file name
-			if (isl.getSourceFileName() != null)
-				nice.append("(from " + isl.getSourceFileName() + ")");
-		}
-		return nice.toString();
-	}
-
-	/*
-	 * Report a message about the advice weave that has occurred. Some messing about to make it pretty ! This code is just asking
-	 * for an NPE to occur ...
-	 */
-	private void reportWeavingMessage(ShadowMunger munger) {
-		Advice advice = (Advice) munger;
-		AdviceKind aKind = advice.getKind();
-		// Only report on interesting advice kinds ...
-		if (aKind == null || advice.getConcreteAspect() == null) {
-			// We suspect someone is programmatically driving the weaver
-			// (e.g. IdWeaveTestCase in the weaver testcases)
-			return;
-		}
-		if (!(aKind.equals(AdviceKind.Before) || aKind.equals(AdviceKind.After) || aKind.equals(AdviceKind.AfterReturning)
-				|| aKind.equals(AdviceKind.AfterThrowing) || aKind.equals(AdviceKind.Around) || aKind.equals(AdviceKind.Softener)))
-			return;
-
-		// synchronized blocks are implemented with multiple monitor_exit instructions in the bytecode
-		// (one for normal exit from the method, one for abnormal exit), we only want to tell the user
-		// once we have advised the end of the sync block, even though under the covers we will have
-		// woven both exit points
-		if (this.kind == Shadow.SynchronizationUnlock) {
-			if (advice.lastReportedMonitorExitJoinpointLocation == null) {
-				// this is the first time through, let's continue...
-				advice.lastReportedMonitorExitJoinpointLocation = getSourceLocation();
-			} else {
-				if (areTheSame(getSourceLocation(), advice.lastReportedMonitorExitJoinpointLocation)) {
-					// Don't report it again!
-					advice.lastReportedMonitorExitJoinpointLocation = null;
-					return;
-				}
-				// hmmm, this means some kind of nesting is going on, urgh
-				advice.lastReportedMonitorExitJoinpointLocation = getSourceLocation();
-			}
-		}
-
-		String description = advice.getKind().toString();
-		String advisedType = this.getEnclosingType().getName();
-		String advisingType = advice.getConcreteAspect().getName();
-		Message msg = null;
-		if (advice.getKind().equals(AdviceKind.Softener)) {
-			msg = WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_SOFTENS, new String[] { advisedType,
-					beautifyLocation(getSourceLocation()), advisingType, beautifyLocation(munger.getSourceLocation()) },
-					advisedType, advisingType);
-		} else {
-			boolean runtimeTest = advice.hasDynamicTests();
-			String joinPointDescription = this.toString();
-			msg = WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ADVISES, new String[] { joinPointDescription,
-					advisedType, beautifyLocation(getSourceLocation()), description, advisingType,
-					beautifyLocation(munger.getSourceLocation()), (runtimeTest ? " [with runtime test]" : "") }, advisedType,
-					advisingType);
-			// Boolean.toString(runtimeTest)});
-		}
-		getIWorld().getMessageHandler().handleMessage(msg);
-	}
-
-	private boolean areTheSame(ISourceLocation locA, ISourceLocation locB) {
-		if (locA == null)
-			return locB == null;
-		if (locB == null)
-			return false;
-		if (locA.getLine() != locB.getLine())
-			return false;
-		File fA = locA.getSourceFile();
-		File fB = locA.getSourceFile();
-		if (fA == null)
-			return fB == null;
-		if (fB == null)
-			return false;
-		return fA.getName().equals(fB.getName());
-	}
-
-	public IRelationship.Kind determineRelKind(ShadowMunger munger) {
-		AdviceKind ak = ((Advice) munger).getKind();
-		if (ak.getKey() == AdviceKind.Before.getKey())
-			return IRelationship.Kind.ADVICE_BEFORE;
-		else if (ak.getKey() == AdviceKind.After.getKey())
-			return IRelationship.Kind.ADVICE_AFTER;
-		else if (ak.getKey() == AdviceKind.AfterThrowing.getKey())
-			return IRelationship.Kind.ADVICE_AFTERTHROWING;
-		else if (ak.getKey() == AdviceKind.AfterReturning.getKey())
-			return IRelationship.Kind.ADVICE_AFTERRETURNING;
-		else if (ak.getKey() == AdviceKind.Around.getKey())
-			return IRelationship.Kind.ADVICE_AROUND;
-		else if (ak.getKey() == AdviceKind.CflowEntry.getKey() || ak.getKey() == AdviceKind.CflowBelowEntry.getKey()
-				|| ak.getKey() == AdviceKind.InterInitializer.getKey() || ak.getKey() == AdviceKind.PerCflowEntry.getKey()
-				|| ak.getKey() == AdviceKind.PerCflowBelowEntry.getKey() || ak.getKey() == AdviceKind.PerThisEntry.getKey()
-				|| ak.getKey() == AdviceKind.PerTargetEntry.getKey() || ak.getKey() == AdviceKind.Softener.getKey()
-				|| ak.getKey() == AdviceKind.PerTypeWithinEntry.getKey()) {
-			// System.err.println("Dont want a message about this: "+ak);
-			return null;
-		}
-		throw new RuntimeException("Shadow.determineRelKind: What the hell is it? " + ak);
-	}
-
 	/** Actually implement the (non-empty) mungers associated with this shadow */
 	private void implementMungers() {
 		World world = getIWorld();
 		for (Iterator iter = mungers.iterator(); iter.hasNext();) {
 			ShadowMunger munger = (ShadowMunger) iter.next();
 			munger.implementOn(this);
-
-			if (world.getCrossReferenceHandler() != null) {
-				world.getCrossReferenceHandler().addCrossReference(munger.getSourceLocation(), // What is being applied
-						this.getSourceLocation(), // Where is it being applied
-						determineRelKind(munger), // What kind of advice?
-						((Advice) munger).hasDynamicTests() // Is a runtime test being stuffed in the code?
-						);
-			}
-
-			// TAG: WeavingMessage
-			if (!getIWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
-				reportWeavingMessage(munger);
-			}
-
-			if (world.getModel() != null) {
-				// System.err.println("munger: " + munger + " on " + this);
-				AsmRelationshipProvider.getDefault().adviceMunger(world.getModel(), this, munger);
-			}
+			world.reportMatch(munger, this);
 		}
 	}
 

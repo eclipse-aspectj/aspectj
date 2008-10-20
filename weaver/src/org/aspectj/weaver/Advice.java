@@ -49,7 +49,7 @@ public abstract class Advice extends ShadowMunger {
 	// annotations on
 	// this advice
 
-	ISourceLocation lastReportedMonitorExitJoinpointLocation = null;
+	public ISourceLocation lastReportedMonitorExitJoinpointLocation = null;
 
 	public static Advice makeCflowEntry(World world, Pointcut entry, boolean isBelow, Member stackField, int nFreeVars,
 			List innerCflowEntries, ResolvedType inAspect) {

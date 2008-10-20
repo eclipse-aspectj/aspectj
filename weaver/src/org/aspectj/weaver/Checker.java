@@ -16,82 +16,88 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import org.aspectj.asm.IRelationship;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.Message;
-import org.aspectj.weaver.model.AsmRelationshipProvider;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
 
+/**
+ * Representation of a shadow munger for a declare error or warning declaration.
+ * 
+ * @author Andy Clement
+ */
 public class Checker extends ShadowMunger {
 
-	private String msg;
-	private boolean isError;
+	private final String message;
+	private final boolean isError; // if not error then it is a warning
+	private volatile int hashCode = -1;
 
+	/**
+	 * Create a Checker for a deow.
+	 * 
+	 * @param deow the declare error or warning for which to create the checker munger
+	 */
 	public Checker(DeclareErrorOrWarning deow) {
 		super(deow.getPointcut(), deow.getStart(), deow.getEnd(), deow.getSourceContext());
-		this.msg = deow.getMessage();
+		this.message = deow.getMessage();
 		this.isError = deow.isError();
 	}
 
-	private Checker(Pointcut pc, int start, int end, ISourceContext context) {
+	/**
+	 * Only used when filling in a parameterized Checker.
+	 * 
+	 * @param pc the pointcut
+	 * @param start the start
+	 * @param end the end
+	 * @param context the source context
+	 * @param message the message string
+	 * @param isError whether it is an error or just a warning
+	 */
+	private Checker(Pointcut pc, int start, int end, ISourceContext context, String message, boolean isError) {
 		super(pc, start, end, context);
+		this.message = message;
+		this.isError = isError;
 	}
 
-	public ShadowMunger concretize(ResolvedType fromType, World world, PerClause clause) {
-		pointcut = pointcut.concretize(fromType, getDeclaringType(), 0, this);
-		return this;
+	public boolean isError() {
+		return isError;
 	}
 
+	/**
+	 * Not supported for a Checker
+	 */
 	public void specializeOn(Shadow shadow) {
 		throw new RuntimeException("illegal state");
 	}
 
+	/**
+	 * Not supported for a Checker
+	 */
 	public void implementOn(Shadow shadow) {
 		throw new RuntimeException("illegal state");
 	}
 
-	public ShadowMunger parameterizeWith(ResolvedType declaringType, Map typeVariableMap) {
-		Checker ret = new Checker(getPointcut().parameterizeWith(typeVariableMap, declaringType.getWorld()), getStart(), getEnd(),
-				this.sourceContext);
-		ret.msg = this.msg;
-		ret.isError = this.isError;
-		return ret;
-	}
-
+	/**
+	 * Determine if the Checker matches at a shadow. If it does then we can immediately report the message. There (currently) can
+	 * never be a non-statically determinable match.
+	 * 
+	 * @param shadow the shadow which to match against
+	 * @param world the world through which to access message handlers
+	 */
 	public boolean match(Shadow shadow, World world) {
 		if (super.match(shadow, world)) {
-			IMessage message = new Message(msg, shadow.toString(), isError ? IMessage.ERROR : IMessage.WARNING, shadow
-					.getSourceLocation(), null, new ISourceLocation[] { this.getSourceLocation() }, true, 0, // id
-					-1, -1); // source start/end
-
-			world.getMessageHandler().handleMessage(message);
-
-			if (world.getCrossReferenceHandler() != null) {
-				world.getCrossReferenceHandler().addCrossReference(this.getSourceLocation(), shadow.getSourceLocation(),
-						(this.isError ? IRelationship.Kind.DECLARE_ERROR : IRelationship.Kind.DECLARE_WARNING), false);
-
-			}
-
-			if (world.getModel() != null) {
-				AsmRelationshipProvider.getDefault().checkerMunger(world.getModel(), shadow, this);
-			}
+			world.reportCheckerMatch(this, shadow);
 		}
 		return false;
 	}
 
+	// FIXME what the hell?
 	public int compareTo(Object other) {
 		return 0;
 	}
 
-	public Collection getThrownExceptions() {
-		return Collections.EMPTY_LIST;
-	}
-
+	// FIXME Alex: ATAJ is that ok in all cases ?
 	/**
-	 * Default to true FIXME Alex: ATAJ is that ok in all cases ?
+	 * Default to true
 	 * 
 	 * @return
 	 */
@@ -99,20 +105,18 @@ public class Checker extends ShadowMunger {
 		return true;
 	}
 
-	// XXX this perhaps ought to take account of the other fields in advice ...
-	public boolean equals(Object other) {
-		if (!(other instanceof Checker))
-			return false;
-		Checker o = (Checker) other;
-		return o.isError == isError && ((o.pointcut == null) ? (pointcut == null) : o.pointcut.equals(pointcut))
-		// &&
-		// (AsmManager.getDefault().getHandleProvider().dependsOnLocation()
-		// ?((o.getSourceLocation()==null) ? (getSourceLocation()==null): o.getSourceLocation().equals(getSourceLocation())):true)
-		// // pr134471 - remove when handles are improved to be independent of location
-		;
+	public Collection getThrownExceptions() {
+		return Collections.EMPTY_LIST;
 	}
 
-	private volatile int hashCode = -1;
+	// FIXME this perhaps ought to take account of the other fields in advice ...
+	public boolean equals(Object other) {
+		if (!(other instanceof Checker)) {
+			return false;
+		}
+		Checker o = (Checker) other;
+		return o.isError == isError && ((o.pointcut == null) ? (pointcut == null) : o.pointcut.equals(pointcut));
+	}
 
 	public int hashCode() {
 		if (hashCode == -1) {
@@ -124,8 +128,24 @@ public class Checker extends ShadowMunger {
 		return hashCode;
 	}
 
-	public boolean isError() {
-		return isError;
+	public ShadowMunger parameterizeWith(ResolvedType declaringType, Map typeVariableMap) {
+		Checker ret = new Checker(this.pointcut.parameterizeWith(typeVariableMap, declaringType.getWorld()), this.start, this.end,
+				this.sourceContext, this.message, this.isError);
+		return ret;
+	}
+
+	/**
+	 * Concretize this Checker by concretizing the pointcut.
+	 * 
+	 */
+	public ShadowMunger concretize(ResolvedType theAspect, World world, PerClause clause) {
+		this.pointcut = this.pointcut.concretize(theAspect, getDeclaringType(), 0, this);
+		this.hashCode = -1;
+		return this;
+	}
+
+	public String getMessage() {
+		return this.message;
 	}
 
 }

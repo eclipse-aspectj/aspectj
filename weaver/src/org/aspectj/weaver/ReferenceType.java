@@ -626,7 +626,7 @@ public class ReferenceType extends ResolvedType {
 		return pclause;
 	}
 
-	protected Collection getDeclares() {
+	public Collection getDeclares() {
 		if (parameterizedDeclares != null)
 			return parameterizedDeclares;
 		Collection declares = null;

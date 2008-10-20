@@ -12,6 +12,9 @@
 
 package org.aspectj.weaver.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 import org.aspectj.asm.AsmManager;
@@ -28,13 +31,14 @@ import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.Lint.Kind;
+import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 
 public class AsmRelationshipProvider {
 
@@ -54,14 +58,14 @@ public class AsmRelationshipProvider {
 	public static final String ANNOTATES = "annotates";
 	public static final String ANNOTATED_BY = "annotated by";
 
-	public void checkerMunger(AsmManager asm, Shadow shadow, Checker checker) {
+	public static void checkerMunger(AsmManager asm, Shadow shadow, Checker checker) {
 		if (asm == null) // !AsmManager.isCreatingModel())
 			return;
 		if (shadow.getSourceLocation() == null || checker.getSourceLocation() == null)
 			return;
 
 		if (World.createInjarHierarchy) {
-			checker.createHierarchy(asm);
+			createHierarchy(asm, checker);
 		}
 
 		// Ensure a node for the target exists
@@ -187,7 +191,166 @@ public class AsmRelationshipProvider {
 		}
 	}
 
-	public void adviceMunger(AsmManager asm, Shadow shadow, ShadowMunger munger) {
+	/**
+	 * Creates the hierarchy for binary aspects
+	 */
+	public static void createHierarchy(AsmManager asm, ShadowMunger munger) {
+		if (!munger.isBinary())
+			return;
+
+		IProgramElement sourceFileNode = asm.getHierarchy().findElementForSourceLine(munger.getSourceLocation());
+		// the call to findElementForSourceLine(ISourceLocation) returns a file
+		// node
+		// if it can't find a node in the hierarchy for the given
+		// sourcelocation.
+		// Therefore, if this is returned, we know we can't find one and have to
+		// continue to fault in the model.
+		if (!sourceFileNode.getKind().equals(IProgramElement.Kind.FILE_JAVA)) {
+			return;
+		}
+
+		ResolvedType aspect = munger.getDeclaringType();
+
+		// create the class file node
+		IProgramElement classFileNode = new ProgramElement(asm, sourceFileNode.getName(), IProgramElement.Kind.FILE, munger
+				.getBinarySourceLocation(aspect.getSourceLocation()), 0, null, null);
+
+		// create package ipe if one exists....
+		IProgramElement root = asm.getHierarchy().getRoot();
+		IProgramElement binaries = asm.getHierarchy().findElementForLabel(root, IProgramElement.Kind.SOURCE_FOLDER, "binaries");
+		if (binaries == null) {
+			binaries = new ProgramElement(asm, "binaries", IProgramElement.Kind.SOURCE_FOLDER, new ArrayList());
+			root.addChild(binaries);
+		}
+		// if (aspect.getPackageName() != null) {
+		String packagename = aspect.getPackageName() == null ? "" : aspect.getPackageName();
+		// check that there doesn't already exist a node with this name
+		IProgramElement pkgNode = asm.getHierarchy().findElementForLabel(binaries, IProgramElement.Kind.PACKAGE, packagename);
+		// note packages themselves have no source location
+		if (pkgNode == null) {
+			pkgNode = new ProgramElement(asm, packagename, IProgramElement.Kind.PACKAGE, new ArrayList());
+			binaries.addChild(pkgNode);
+			pkgNode.addChild(classFileNode);
+		} else {
+			// need to add it first otherwise the handle for classFileNode
+			// may not be generated correctly if it uses information from
+			// it's parent node
+			pkgNode.addChild(classFileNode);
+			for (Iterator iter = pkgNode.getChildren().iterator(); iter.hasNext();) {
+				IProgramElement element = (IProgramElement) iter.next();
+				if (!element.equals(classFileNode) && element.getHandleIdentifier().equals(classFileNode.getHandleIdentifier())) {
+					// already added the classfile so have already
+					// added the structure for this aspect
+					pkgNode.removeChild(classFileNode);
+					return;
+				}
+			}
+		}
+		// } else {
+		// // need to add it first otherwise the handle for classFileNode
+		// // may not be generated correctly if it uses information from
+		// // it's parent node
+		// root.addChild(classFileNode);
+		// for (Iterator iter = root.getChildren().iterator(); iter.hasNext();) {
+		// IProgramElement element = (IProgramElement) iter.next();
+		// if (!element.equals(classFileNode) && element.getHandleIdentifier().equals(classFileNode.getHandleIdentifier())) {
+		// // already added the sourcefile so have already
+		// // added the structure for this aspect
+		// root.removeChild(classFileNode);
+		// return;
+		// }
+		// }
+		// }
+
+		// add and create empty import declaration ipe
+		classFileNode.addChild(new ProgramElement(asm, "import declarations", IProgramElement.Kind.IMPORT_REFERENCE, null, 0, null,
+				null));
+
+		// add and create aspect ipe
+		IProgramElement aspectNode = new ProgramElement(asm, aspect.getSimpleName(), IProgramElement.Kind.ASPECT, munger
+				.getBinarySourceLocation(aspect.getSourceLocation()), aspect.getModifiers(), null, null);
+		classFileNode.addChild(aspectNode);
+
+		addChildNodes(asm, munger, aspectNode, aspect.getDeclaredPointcuts());
+
+		addChildNodes(asm, munger, aspectNode, aspect.getDeclaredAdvice());
+		addChildNodes(asm, munger, aspectNode, aspect.getDeclares());
+	}
+
+	private static void addChildNodes(AsmManager asm, ShadowMunger munger, IProgramElement parent, ResolvedMember[] children) {
+		for (int i = 0; i < children.length; i++) {
+			ResolvedMember pcd = children[i];
+			if (pcd instanceof ResolvedPointcutDefinition) {
+				ResolvedPointcutDefinition rpcd = (ResolvedPointcutDefinition) pcd;
+				ISourceLocation sLoc = rpcd.getPointcut().getSourceLocation();
+				if (sLoc == null) {
+					sLoc = rpcd.getSourceLocation();
+				}
+				parent.addChild(new ProgramElement(asm, pcd.getName(), IProgramElement.Kind.POINTCUT, munger
+						.getBinarySourceLocation(sLoc), pcd.getModifiers(), null, Collections.EMPTY_LIST));
+			}
+		}
+	}
+
+	private static void addChildNodes(AsmManager asm, ShadowMunger munger, IProgramElement parent, Collection children) {
+		int deCtr = 1;
+		int dwCtr = 1;
+		for (Iterator iter = children.iterator(); iter.hasNext();) {
+			Object element = iter.next();
+			if (element instanceof DeclareErrorOrWarning) {
+				DeclareErrorOrWarning decl = (DeclareErrorOrWarning) element;
+				int counter = 0;
+				if (decl.isError()) {
+					counter = deCtr++;
+				} else {
+					counter = dwCtr++;
+				}
+				parent.addChild(createDeclareErrorOrWarningChild(asm, munger, decl, counter));
+			} else if (element instanceof Advice) {
+				Advice advice = (Advice) element;
+				parent.addChild(createAdviceChild(asm, advice));
+			}
+		}
+	}
+
+	private static IProgramElement createDeclareErrorOrWarningChild(AsmManager asm, ShadowMunger munger,
+			DeclareErrorOrWarning decl, int count) {
+		IProgramElement deowNode = new ProgramElement(asm, decl.getName(), decl.isError() ? IProgramElement.Kind.DECLARE_ERROR
+				: IProgramElement.Kind.DECLARE_WARNING, munger.getBinarySourceLocation(decl.getSourceLocation()), decl
+				.getDeclaringType().getModifiers(), null, null);
+		deowNode.setDetails("\"" + AsmRelationshipUtils.genDeclareMessage(decl.getMessage()) + "\"");
+		if (count != -1) {
+			deowNode.setBytecodeName(decl.getName() + "_" + count);
+		}
+		return deowNode;
+	}
+
+	private static IProgramElement createAdviceChild(AsmManager asm, Advice advice) {
+		IProgramElement adviceNode = new ProgramElement(asm, advice.getKind().getName(), IProgramElement.Kind.ADVICE, advice
+				.getBinarySourceLocation(advice.getSourceLocation()), advice.getSignature().getModifiers(), null,
+				Collections.EMPTY_LIST);
+		adviceNode.setDetails(AsmRelationshipUtils.genPointcutDetails(advice.getPointcut()));
+		adviceNode.setBytecodeName(advice.getSignature().getName());
+		// String nn = advice.getSignature().getName();
+		// if (counter != 1) {
+		// adviceNode.setBytecodeName(advice.getKind().getName() + "$"
+		// + counter + "$");
+		// }
+		return adviceNode;
+	}
+
+	public static String getHandle(Advice advice, AsmManager asm) {
+		if (null == advice.handle) {
+			ISourceLocation sl = advice.getSourceLocation();
+			if (sl != null) {
+				IProgramElement ipe = asm.getHierarchy().findElementForSourceLine(sl);
+				advice.handle = asm.getHandleProvider().createHandleIdentifier(ipe);
+			}
+		}
+		return advice.handle;
+	}
+
+	public static void adviceMunger(AsmManager asm, Shadow shadow, ShadowMunger munger) {
 		if (asm == null) // !AsmManager.isCreatingModel())
 			return;
 		if (munger instanceof Advice) {
@@ -199,7 +362,7 @@ public class AsmRelationshipProvider {
 			}
 
 			if (World.createInjarHierarchy) {
-				munger.createHierarchy(asm);
+				createHierarchy(asm, advice);
 			}
 
 			IRelationshipMap mapper = asm.getRelationshipMap();
@@ -211,7 +374,7 @@ public class AsmRelationshipProvider {
 			// Work out extra info to inform interested UIs !
 			IProgramElement.ExtraInformation ai = new IProgramElement.ExtraInformation();
 
-			String adviceHandle = advice.getHandle(asm);
+			String adviceHandle = getHandle(advice, asm);
 			if (adviceHandle == null)
 				return;
 
@@ -252,7 +415,7 @@ public class AsmRelationshipProvider {
 		}
 	}
 
-	protected IProgramElement getNode(AsmManager model, Shadow shadow) {
+	protected static IProgramElement getNode(AsmManager model, Shadow shadow) {
 		Member enclosingMember = shadow.getEnclosingCodeSignature();
 
 		IProgramElement enclosingNode = lookupMember(model.getHierarchy(), enclosingMember);
@@ -274,7 +437,7 @@ public class AsmRelationshipProvider {
 		}
 	}
 
-	private boolean sourceLinesMatch(ISourceLocation loc1, ISourceLocation loc2) {
+	private static boolean sourceLinesMatch(ISourceLocation loc1, ISourceLocation loc2) {
 		if (loc1.getLine() != loc2.getLine())
 			return false;
 		return true;
@@ -292,7 +455,8 @@ public class AsmRelationshipProvider {
 	 * consistent over incremental builds. All aspects are compiled up front and any new aspect created will force a full build.
 	 * Moreover, if the body of the enclosingShadow is changed, then the model for this is rebuilt from scratch.
 	 */
-	private IProgramElement findOrCreateCodeNode(AsmManager asm, IProgramElement enclosingNode, Member shadowSig, Shadow shadow) {
+	private static IProgramElement findOrCreateCodeNode(AsmManager asm, IProgramElement enclosingNode, Member shadowSig,
+			Shadow shadow) {
 		for (Iterator it = enclosingNode.getChildren().iterator(); it.hasNext();) {
 			IProgramElement node = (IProgramElement) it.next();
 			int excl = node.getBytecodeName().lastIndexOf('!');
@@ -329,13 +493,13 @@ public class AsmRelationshipProvider {
 		return peNode;
 	}
 
-	protected IProgramElement lookupMember(IHierarchy model, Member member) {
+	protected static IProgramElement lookupMember(IHierarchy model, Member member) {
 		UnresolvedType declaringType = member.getDeclaringType();
 		IProgramElement classNode = model.findElementForType(declaringType.getPackageName(), declaringType.getClassName());
 		return findMemberInClass(classNode, member);
 	}
 
-	protected IProgramElement findMemberInClass(IProgramElement classNode, Member member) {
+	protected static IProgramElement findMemberInClass(IProgramElement classNode, Member member) {
 		if (classNode == null)
 			return null; // XXX remove this check
 		for (Iterator it = classNode.getChildren().iterator(); it.hasNext();) {

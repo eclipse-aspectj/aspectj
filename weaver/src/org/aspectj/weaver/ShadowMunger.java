@@ -13,20 +13,12 @@
 package org.aspectj.weaver;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 
-import org.aspectj.asm.AsmManager;
-import org.aspectj.asm.IProgramElement;
-import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.PartialOrder;
-import org.aspectj.weaver.model.AsmRelationshipUtils;
-import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
 
@@ -48,7 +40,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	private ISourceLocation sourceLocation;
 	private ISourceLocation binarySourceLocation;
 	private File binaryFile;
-	private String handle = null;
+	public String handle = null;
 	private ResolvedType declaringType; // the type that declared this munger.
 
 	public ShadowMunger(Pointcut pointcut, int start, int end, ISourceContext sourceContext) {
@@ -100,17 +92,6 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		return sourceLocation;
 	}
 
-	public String getHandle(AsmManager asm) {
-		if (null == handle) {
-			ISourceLocation sl = getSourceLocation();
-			if (sl != null) {
-				IProgramElement ipe = asm.getHierarchy().findElementForSourceLine(sl);
-				handle = asm.getHandleProvider().createHandleIdentifier(ipe);
-			}
-		}
-		return handle;
-	}
-
 	// ---- fields
 
 	public static final ShadowMunger[] NONE = new ShadowMunger[0];
@@ -151,157 +132,11 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	public abstract boolean mustCheckExceptions();
 
 	/**
-	 * Creates the hierarchy for binary aspects
-	 */
-	public void createHierarchy(AsmManager asm) {
-		if (!isBinary())
-			return;
-
-		IProgramElement sourceFileNode = asm.getHierarchy().findElementForSourceLine(getSourceLocation());
-		// the call to findElementForSourceLine(ISourceLocation) returns a file
-		// node
-		// if it can't find a node in the hierarchy for the given
-		// sourcelocation.
-		// Therefore, if this is returned, we know we can't find one and have to
-		// continue to fault in the model.
-		if (!sourceFileNode.getKind().equals(IProgramElement.Kind.FILE_JAVA)) {
-			return;
-		}
-
-		ResolvedType aspect = getDeclaringType();
-
-		// create the class file node
-		IProgramElement classFileNode = new ProgramElement(asm, sourceFileNode.getName(), IProgramElement.Kind.FILE,
-				getBinarySourceLocation(aspect.getSourceLocation()), 0, null, null);
-
-		// create package ipe if one exists....
-		IProgramElement root = asm.getHierarchy().getRoot();
-		IProgramElement binaries = asm.getHierarchy().findElementForLabel(root, IProgramElement.Kind.SOURCE_FOLDER, "binaries");
-		if (binaries == null) {
-			binaries = new ProgramElement(asm, "binaries", IProgramElement.Kind.SOURCE_FOLDER, new ArrayList());
-			root.addChild(binaries);
-		}
-		// if (aspect.getPackageName() != null) {
-		String packagename = aspect.getPackageName() == null ? "" : aspect.getPackageName();
-		// check that there doesn't already exist a node with this name
-		IProgramElement pkgNode = asm.getHierarchy().findElementForLabel(binaries, IProgramElement.Kind.PACKAGE, packagename);
-		// note packages themselves have no source location
-		if (pkgNode == null) {
-			pkgNode = new ProgramElement(asm, packagename, IProgramElement.Kind.PACKAGE, new ArrayList());
-			binaries.addChild(pkgNode);
-			pkgNode.addChild(classFileNode);
-		} else {
-			// need to add it first otherwise the handle for classFileNode
-			// may not be generated correctly if it uses information from
-			// it's parent node
-			pkgNode.addChild(classFileNode);
-			for (Iterator iter = pkgNode.getChildren().iterator(); iter.hasNext();) {
-				IProgramElement element = (IProgramElement) iter.next();
-				if (!element.equals(classFileNode) && element.getHandleIdentifier().equals(classFileNode.getHandleIdentifier())) {
-					// already added the classfile so have already
-					// added the structure for this aspect
-					pkgNode.removeChild(classFileNode);
-					return;
-				}
-			}
-		}
-		// } else {
-		// // need to add it first otherwise the handle for classFileNode
-		// // may not be generated correctly if it uses information from
-		// // it's parent node
-		// root.addChild(classFileNode);
-		// for (Iterator iter = root.getChildren().iterator(); iter.hasNext();) {
-		// IProgramElement element = (IProgramElement) iter.next();
-		// if (!element.equals(classFileNode) && element.getHandleIdentifier().equals(classFileNode.getHandleIdentifier())) {
-		// // already added the sourcefile so have already
-		// // added the structure for this aspect
-		// root.removeChild(classFileNode);
-		// return;
-		// }
-		// }
-		// }
-
-		// add and create empty import declaration ipe
-		classFileNode.addChild(new ProgramElement(asm, "import declarations", IProgramElement.Kind.IMPORT_REFERENCE, null, 0, null,
-				null));
-
-		// add and create aspect ipe
-		IProgramElement aspectNode = new ProgramElement(asm, aspect.getSimpleName(), IProgramElement.Kind.ASPECT,
-				getBinarySourceLocation(aspect.getSourceLocation()), aspect.getModifiers(), null, null);
-		classFileNode.addChild(aspectNode);
-
-		addChildNodes(asm, aspectNode, aspect.getDeclaredPointcuts());
-
-		addChildNodes(asm, aspectNode, aspect.getDeclaredAdvice());
-		addChildNodes(asm, aspectNode, aspect.getDeclares());
-	}
-
-	private void addChildNodes(AsmManager asm, IProgramElement parent, ResolvedMember[] children) {
-		for (int i = 0; i < children.length; i++) {
-			ResolvedMember pcd = children[i];
-			if (pcd instanceof ResolvedPointcutDefinition) {
-				ResolvedPointcutDefinition rpcd = (ResolvedPointcutDefinition) pcd;
-				ISourceLocation sLoc = rpcd.getPointcut().getSourceLocation();
-				if (sLoc == null) {
-					sLoc = rpcd.getSourceLocation();
-				}
-				parent.addChild(new ProgramElement(asm, pcd.getName(), IProgramElement.Kind.POINTCUT,
-						getBinarySourceLocation(sLoc), pcd.getModifiers(), null, Collections.EMPTY_LIST));
-			}
-		}
-	}
-
-	private void addChildNodes(AsmManager asm, IProgramElement parent, Collection children) {
-		int deCtr = 1;
-		int dwCtr = 1;
-		for (Iterator iter = children.iterator(); iter.hasNext();) {
-			Object element = iter.next();
-			if (element instanceof DeclareErrorOrWarning) {
-				DeclareErrorOrWarning decl = (DeclareErrorOrWarning) element;
-				int counter = 0;
-				if (decl.isError()) {
-					counter = deCtr++;
-				} else {
-					counter = dwCtr++;
-				}
-				parent.addChild(createDeclareErrorOrWarningChild(asm, decl, counter));
-			} else if (element instanceof Advice) {
-				Advice advice = (Advice) element;
-				parent.addChild(createAdviceChild(asm, advice));
-			}
-		}
-	}
-
-	private IProgramElement createDeclareErrorOrWarningChild(AsmManager asm, DeclareErrorOrWarning decl, int count) {
-		IProgramElement deowNode = new ProgramElement(asm, decl.getName(), decl.isError() ? IProgramElement.Kind.DECLARE_ERROR
-				: IProgramElement.Kind.DECLARE_WARNING, getBinarySourceLocation(decl.getSourceLocation()), decl.getDeclaringType()
-				.getModifiers(), null, null);
-		deowNode.setDetails("\"" + AsmRelationshipUtils.genDeclareMessage(decl.getMessage()) + "\"");
-		if (count != -1) {
-			deowNode.setBytecodeName(decl.getName() + "_" + count);
-		}
-		return deowNode;
-	}
-
-	private IProgramElement createAdviceChild(AsmManager asm, Advice advice) {
-		IProgramElement adviceNode = new ProgramElement(asm, advice.kind.getName(), IProgramElement.Kind.ADVICE,
-				getBinarySourceLocation(advice.getSourceLocation()), advice.signature.getModifiers(), null, Collections.EMPTY_LIST);
-		adviceNode.setDetails(AsmRelationshipUtils.genPointcutDetails(advice.getPointcut()));
-		adviceNode.setBytecodeName(advice.getSignature().getName());
-		// String nn = advice.getSignature().getName();
-		// if (counter != 1) {
-		// adviceNode.setBytecodeName(advice.getKind().getName() + "$"
-		// + counter + "$");
-		// }
-		return adviceNode;
-	}
-
-	/**
 	 * Returns the binarySourceLocation for the given sourcelocation. This isn't cached because it's used when faulting in the
 	 * binary nodes and is called with ISourceLocations for all advice, pointcuts and deows contained within the
 	 * resolvedDeclaringAspect.
 	 */
-	private ISourceLocation getBinarySourceLocation(ISourceLocation sl) {
+	public ISourceLocation getBinarySourceLocation(ISourceLocation sl) {
 		if (sl == null)
 			return null;
 		String sourceFileName = null;
@@ -339,7 +174,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	 * Returns whether or not this shadow munger came from a binary aspect - keep a record of whether or not we've checked if we're
 	 * binary otherwise we keep caluclating the same thing many times
 	 */
-	protected boolean isBinary() {
+	public boolean isBinary() {
 		if (!checkedIsBinary) {
 			ResolvedType rt = getDeclaringType();
 			if (rt != null) {

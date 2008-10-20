@@ -1276,4 +1276,11 @@ public abstract class World implements Dump.INode {
 		return pointcutDesignators;
 	}
 
+	public void reportMatch(ShadowMunger munger, Shadow shadow) {
+
+	}
+
+	public void reportCheckerMatch(Checker checker, Shadow shadow) {
+	}
+
 }

@@ -38,10 +38,18 @@ import org.aspectj.apache.bcel.util.ClassLoaderRepository;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.NonCachingClassLoaderRepository;
 import org.aspectj.apache.bcel.util.Repository;
+import org.aspectj.asm.IRelationship;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.Message;
+import org.aspectj.bridge.WeaveMessage;
+import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationOnTypeMunger;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.ICrossReferenceHandler;
 import org.aspectj.weaver.IWeavingSupport;
 import org.aspectj.weaver.Member;
@@ -54,9 +62,12 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeakClassLoaderReference;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.model.AsmRelationshipProvider;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.tools.Trace;
@@ -77,6 +88,157 @@ public class BcelWorld extends World implements Repository {
 
 	public BcelWorld(String cp) {
 		this(makeDefaultClasspath(cp), IMessageHandler.THROW, null);
+	}
+
+	public IRelationship.Kind determineRelKind(ShadowMunger munger) {
+		AdviceKind ak = ((Advice) munger).getKind();
+		if (ak.getKey() == AdviceKind.Before.getKey())
+			return IRelationship.Kind.ADVICE_BEFORE;
+		else if (ak.getKey() == AdviceKind.After.getKey())
+			return IRelationship.Kind.ADVICE_AFTER;
+		else if (ak.getKey() == AdviceKind.AfterThrowing.getKey())
+			return IRelationship.Kind.ADVICE_AFTERTHROWING;
+		else if (ak.getKey() == AdviceKind.AfterReturning.getKey())
+			return IRelationship.Kind.ADVICE_AFTERRETURNING;
+		else if (ak.getKey() == AdviceKind.Around.getKey())
+			return IRelationship.Kind.ADVICE_AROUND;
+		else if (ak.getKey() == AdviceKind.CflowEntry.getKey() || ak.getKey() == AdviceKind.CflowBelowEntry.getKey()
+				|| ak.getKey() == AdviceKind.InterInitializer.getKey() || ak.getKey() == AdviceKind.PerCflowEntry.getKey()
+				|| ak.getKey() == AdviceKind.PerCflowBelowEntry.getKey() || ak.getKey() == AdviceKind.PerThisEntry.getKey()
+				|| ak.getKey() == AdviceKind.PerTargetEntry.getKey() || ak.getKey() == AdviceKind.Softener.getKey()
+				|| ak.getKey() == AdviceKind.PerTypeWithinEntry.getKey()) {
+			// System.err.println("Dont want a message about this: "+ak);
+			return null;
+		}
+		throw new RuntimeException("Shadow.determineRelKind: What the hell is it? " + ak);
+	}
+
+	public void reportMatch(ShadowMunger munger, Shadow shadow) {
+		if (getCrossReferenceHandler() != null) {
+			getCrossReferenceHandler().addCrossReference(munger.getSourceLocation(), // What is being applied
+					shadow.getSourceLocation(), // Where is it being applied
+					determineRelKind(munger), // What kind of advice?
+					((Advice) munger).hasDynamicTests() // Is a runtime test being stuffed in the code?
+					);
+		}
+
+		// TAG: WeavingMessage
+		if (!getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
+			reportWeavingMessage(munger, shadow);
+		}
+
+		if (getModel() != null) {
+			// System.err.println("munger: " + munger + " on " + this);
+			AsmRelationshipProvider.adviceMunger(getModel(), shadow, munger);
+		}
+	}
+
+	/*
+	 * Report a message about the advice weave that has occurred. Some messing about to make it pretty ! This code is just asking
+	 * for an NPE to occur ...
+	 */
+	private void reportWeavingMessage(ShadowMunger munger, Shadow shadow) {
+		Advice advice = (Advice) munger;
+		AdviceKind aKind = advice.getKind();
+		// Only report on interesting advice kinds ...
+		if (aKind == null || advice.getConcreteAspect() == null) {
+			// We suspect someone is programmatically driving the weaver
+			// (e.g. IdWeaveTestCase in the weaver testcases)
+			return;
+		}
+		if (!(aKind.equals(AdviceKind.Before) || aKind.equals(AdviceKind.After) || aKind.equals(AdviceKind.AfterReturning)
+				|| aKind.equals(AdviceKind.AfterThrowing) || aKind.equals(AdviceKind.Around) || aKind.equals(AdviceKind.Softener)))
+			return;
+
+		// synchronized blocks are implemented with multiple monitor_exit instructions in the bytecode
+		// (one for normal exit from the method, one for abnormal exit), we only want to tell the user
+		// once we have advised the end of the sync block, even though under the covers we will have
+		// woven both exit points
+		if (shadow.getKind() == Shadow.SynchronizationUnlock) {
+			if (advice.lastReportedMonitorExitJoinpointLocation == null) {
+				// this is the first time through, let's continue...
+				advice.lastReportedMonitorExitJoinpointLocation = shadow.getSourceLocation();
+			} else {
+				if (areTheSame(shadow.getSourceLocation(), advice.lastReportedMonitorExitJoinpointLocation)) {
+					// Don't report it again!
+					advice.lastReportedMonitorExitJoinpointLocation = null;
+					return;
+				}
+				// hmmm, this means some kind of nesting is going on, urgh
+				advice.lastReportedMonitorExitJoinpointLocation = shadow.getSourceLocation();
+			}
+		}
+
+		String description = advice.getKind().toString();
+		String advisedType = shadow.getEnclosingType().getName();
+		String advisingType = advice.getConcreteAspect().getName();
+		Message msg = null;
+		if (advice.getKind().equals(AdviceKind.Softener)) {
+			msg = WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_SOFTENS, new String[] { advisedType,
+					beautifyLocation(shadow.getSourceLocation()), advisingType, beautifyLocation(munger.getSourceLocation()) },
+					advisedType, advisingType);
+		} else {
+			boolean runtimeTest = advice.hasDynamicTests();
+			String joinPointDescription = shadow.toString();
+			msg = WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ADVISES, new String[] { joinPointDescription,
+					advisedType, beautifyLocation(shadow.getSourceLocation()), description, advisingType,
+					beautifyLocation(munger.getSourceLocation()), (runtimeTest ? " [with runtime test]" : "") }, advisedType,
+					advisingType);
+			// Boolean.toString(runtimeTest)});
+		}
+		getMessageHandler().handleMessage(msg);
+	}
+
+	private boolean areTheSame(ISourceLocation locA, ISourceLocation locB) {
+		if (locA == null)
+			return locB == null;
+		if (locB == null)
+			return false;
+		if (locA.getLine() != locB.getLine())
+			return false;
+		File fA = locA.getSourceFile();
+		File fB = locA.getSourceFile();
+		if (fA == null)
+			return fB == null;
+		if (fB == null)
+			return false;
+		return fA.getName().equals(fB.getName());
+	}
+
+	/*
+	 * Ensure we report a nice source location - particular in the case where the source info is missing (binary weave).
+	 */
+	private String beautifyLocation(ISourceLocation isl) {
+		StringBuffer nice = new StringBuffer();
+		if (isl == null || isl.getSourceFile() == null || isl.getSourceFile().getName().indexOf("no debug info available") != -1) {
+			nice.append("no debug info available");
+		} else {
+			// can't use File.getName() as this fails when a Linux box encounters a path created on Windows and vice-versa
+			int takeFrom = isl.getSourceFile().getPath().lastIndexOf('/');
+			if (takeFrom == -1) {
+				takeFrom = isl.getSourceFile().getPath().lastIndexOf('\\');
+			}
+			int binary = isl.getSourceFile().getPath().lastIndexOf('!');
+			if (binary != -1 && binary < takeFrom) {
+				// we have been woven by a binary aspect
+				String pathToBinaryLoc = isl.getSourceFile().getPath().substring(0, binary + 1);
+				if (pathToBinaryLoc.indexOf(".jar") != -1) {
+					// only want to add the extra info if we're from a jar file
+					int lastSlash = pathToBinaryLoc.lastIndexOf('/');
+					if (lastSlash == -1) {
+						lastSlash = pathToBinaryLoc.lastIndexOf('\\');
+					}
+					nice.append(pathToBinaryLoc.substring(lastSlash + 1));
+				}
+			}
+			nice.append(isl.getSourceFile().getPath().substring(takeFrom + 1));
+			if (isl.getLine() != 0)
+				nice.append(":").append(isl.getLine());
+			// if it's a binary file then also want to give the file name
+			if (isl.getSourceFileName() != null)
+				nice.append("(from " + isl.getSourceFileName() + ")");
+		}
+		return nice.toString();
 	}
 
 	private static List makeDefaultClasspath(String cp) {
@@ -393,9 +555,8 @@ public class BcelWorld extends World implements Repository {
 	}
 
 	/**
-	 * Retrieve a bcel delegate for an aspect - this will return NULL if the
-	 * delegate is an EclipseSourceType and not a BcelObjectType - this happens
-	 * quite often when incrementally compiling.
+	 * Retrieve a bcel delegate for an aspect - this will return NULL if the delegate is an EclipseSourceType and not a
+	 * BcelObjectType - this happens quite often when incrementally compiling.
 	 */
 	public static BcelObjectType getBcelObjectType(ResolvedType concreteAspect) {
 		ReferenceTypeDelegate rtDelegate = ((ReferenceType) concreteAspect).getDelegate();
@@ -442,9 +603,8 @@ public class BcelWorld extends World implements Repository {
 	}
 
 	/**
-	 * The aim of this method is to make sure a particular type is 'ok'. Some
-	 * operations on the delegate for a type modify it and this method is
-	 * intended to undo that... see pr85132
+	 * The aim of this method is to make sure a particular type is 'ok'. Some operations on the delegate for a type modify it and
+	 * this method is intended to undo that... see pr85132
 	 */
 	public void validateType(UnresolvedType type) {
 		ResolvedType result = typeMap.get(type.getSignature());
@@ -524,8 +684,8 @@ public class BcelWorld extends World implements Repository {
 	}
 
 	/**
-	 * Checks for an @target() on the annotation and if found ensures it allows
-	 * the annotation to be attached to the target type that matched.
+	 * Checks for an @target() on the annotation and if found ensures it allows the annotation to be attached to the target type
+	 * that matched.
 	 */
 	private boolean checkTargetOK(DeclareAnnotation decA, ResolvedType onType, AnnotationAJ annoX) {
 		if (annoX.specifiesTarget()) {
@@ -599,6 +759,25 @@ public class BcelWorld extends World implements Repository {
 
 	public IWeavingSupport getWeavingSupport() {
 		return bcelWeavingSupport;
+	}
+
+	public void reportCheckerMatch(Checker checker, Shadow shadow) {
+		IMessage iMessage = new Message(checker.getMessage(), shadow.toString(), checker.isError() ? IMessage.ERROR
+				: IMessage.WARNING, shadow.getSourceLocation(), null, new ISourceLocation[] { checker.getSourceLocation() }, true,
+				0, -1, -1);
+
+		getMessageHandler().handleMessage(iMessage);
+
+		if (getCrossReferenceHandler() != null) {
+			getCrossReferenceHandler().addCrossReference(checker.getSourceLocation(), shadow.getSourceLocation(),
+					(checker.isError() ? IRelationship.Kind.DECLARE_ERROR : IRelationship.Kind.DECLARE_WARNING), false);
+
+		}
+
+		if (getModel() != null) {
+			AsmRelationshipProvider.checkerMunger(getModel(), shadow, checker);
+		}
+
 	}
 
 }
