@@ -9,9 +9,10 @@
  * Contributors: 
  *     Andy Clement     initial implementation 
  * ******************************************************************/
-package org.aspectj.weaver;
+package org.aspectj.weaver.bcel;
 
-import java.lang.ref.WeakReference;
+import org.aspectj.apache.bcel.util.ClassLoaderReference;
+import org.aspectj.weaver.WeakClassLoaderReference;
 
 /**
  * Wraps a reference to a classloader inside a WeakReference. This should be used where we do not want the existence of a
@@ -32,32 +33,17 @@ import java.lang.ref.WeakReference;
  * 
  * @author Andy Clement
  */
-public class WeakClassLoaderReference {
+public class BcelWeakClassLoaderReference extends WeakClassLoaderReference implements ClassLoaderReference {
 
-	protected final int hashcode;
-
-	private final WeakReference loaderRef;
-
-	public WeakClassLoaderReference(ClassLoader loader) {
-		loaderRef = new WeakReference(loader);
-		hashcode = loader.hashCode() * 37;
-	}
-
-	public ClassLoader getClassLoader() {
-		ClassLoader instance = (ClassLoader) loaderRef.get();
-		// Assert instance!=null
-		return instance;
+	public BcelWeakClassLoaderReference(ClassLoader loader) {
+		super(loader);
 	}
 
 	public boolean equals(Object obj) {
-		if (!(obj instanceof WeakClassLoaderReference))
+		if (!(obj instanceof BcelWeakClassLoaderReference))
 			return false;
-		WeakClassLoaderReference other = (WeakClassLoaderReference) obj;
+		BcelWeakClassLoaderReference other = (BcelWeakClassLoaderReference) obj;
 		return (other.hashcode == hashcode);
-	}
-
-	public int hashCode() {
-		return hashcode;
 	}
 
 }

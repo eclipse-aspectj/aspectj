@@ -66,7 +66,6 @@ import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
-import org.aspectj.weaver.WeakClassLoaderReference;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.model.AsmRelationshipProvider;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
@@ -78,7 +77,7 @@ public class BcelWorld extends World implements Repository {
 
 	private final ClassPathManager classPath;
 	protected Repository delegate;
-	private WeakClassLoaderReference loaderRef;
+	private BcelWeakClassLoaderReference loaderRef;
 	private final BcelWeavingSupport bcelWeavingSupport = new BcelWeavingSupport();
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelWorld.class);
@@ -286,7 +285,7 @@ public class BcelWorld extends World implements Repository {
 	 */
 	public BcelWorld(ClassLoader loader, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
 		classPath = null;
-		loaderRef = new WeakClassLoaderReference(loader);
+		loaderRef = new BcelWeakClassLoaderReference(loader);
 		setMessageHandler(handler);
 		setCrossReferenceHandler(xrefHandler);
 		// Tell BCEL to use us for resolving any classes

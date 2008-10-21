@@ -25,9 +25,8 @@ import org.aspectj.weaver.WeakClassLoaderReference;
 import org.aspectj.weaver.World;
 
 /**
- * A ReflectionWorld is used solely for purposes of type resolution based on the
- * runtime classpath (java.lang.reflect). It does not support weaving operations
- * (creation of mungers etc..).
+ * A ReflectionWorld is used solely for purposes of type resolution based on the runtime classpath (java.lang.reflect). It does not
+ * support weaving operations (creation of mungers etc..).
  * 
  */
 public class ReflectionWorld extends World implements IReflectionWorld {
