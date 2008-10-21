@@ -35,7 +35,6 @@ import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Test;
-import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
 
 public class PerCflow extends PerClause {
 	private final boolean isBelow;

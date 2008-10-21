@@ -24,7 +24,6 @@ import java.util.Set;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageUtil;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.util.TypeSafeEnum;
 import org.aspectj.weaver.ast.Var;
@@ -272,22 +271,36 @@ public abstract class Shadow {
 		return getResolvedSignature().getGenericReturnType();
 	}
 
+	public static String METHOD_EXECUTION = "method-execution";
+	public static String METHOD_CALL = "method-call";
+	public static String CONSTRUCTOR_EXECUTION = "constructor-execution";
+	public static String CONSTRUCTOR_CALL = "constructor-call";
+	public static String FIELD_GET = "field-get";
+	public static String FIELD_SET = "field-set";
+	public static String STATICINITIALIZATION = "staticinitialization";
+	public static String PREINITIALIZATION = "preinitialization";
+	public static String INITIALIZATION = "initialization";
+	public static String EXCEPTION_HANDLER = "exception-handler";
+	public static String SYNCHRONIZATION_LOCK = "lock";
+	public static String SYNCHRONIZATION_UNLOCK = "unlock";
+	public static String ADVICE_EXECUTION = "adviceexecution";
+
 	/**
 	 * These names are the ones that will be returned by thisJoinPoint.getKind() Those need to be documented somewhere
 	 */
-	public static final Kind MethodCall = new Kind(JoinPoint.METHOD_CALL, 1, true);
-	public static final Kind ConstructorCall = new Kind(JoinPoint.CONSTRUCTOR_CALL, 2, true);
-	public static final Kind MethodExecution = new Kind(JoinPoint.METHOD_EXECUTION, 3, false);
-	public static final Kind ConstructorExecution = new Kind(JoinPoint.CONSTRUCTOR_EXECUTION, 4, false);
-	public static final Kind FieldGet = new Kind(JoinPoint.FIELD_GET, 5, true);
-	public static final Kind FieldSet = new Kind(JoinPoint.FIELD_SET, 6, true);
-	public static final Kind StaticInitialization = new Kind(JoinPoint.STATICINITIALIZATION, 7, false);
-	public static final Kind PreInitialization = new Kind(JoinPoint.PREINITIALIZATION, 8, false);
-	public static final Kind AdviceExecution = new Kind(JoinPoint.ADVICE_EXECUTION, 9, false);
-	public static final Kind Initialization = new Kind(JoinPoint.INITIALIZATION, 10, false);
-	public static final Kind ExceptionHandler = new Kind(JoinPoint.EXCEPTION_HANDLER, 11, true);
-	public static final Kind SynchronizationLock = new Kind(JoinPoint.SYNCHRONIZATION_LOCK, 12, true);
-	public static final Kind SynchronizationUnlock = new Kind(JoinPoint.SYNCHRONIZATION_UNLOCK, 13, true);
+	public static final Kind MethodCall = new Kind(METHOD_CALL, 1, true);
+	public static final Kind ConstructorCall = new Kind(CONSTRUCTOR_CALL, 2, true);
+	public static final Kind MethodExecution = new Kind(METHOD_EXECUTION, 3, false);
+	public static final Kind ConstructorExecution = new Kind(CONSTRUCTOR_EXECUTION, 4, false);
+	public static final Kind FieldGet = new Kind(FIELD_GET, 5, true);
+	public static final Kind FieldSet = new Kind(FIELD_SET, 6, true);
+	public static final Kind StaticInitialization = new Kind(STATICINITIALIZATION, 7, false);
+	public static final Kind PreInitialization = new Kind(PREINITIALIZATION, 8, false);
+	public static final Kind AdviceExecution = new Kind(ADVICE_EXECUTION, 9, false);
+	public static final Kind Initialization = new Kind(INITIALIZATION, 10, false);
+	public static final Kind ExceptionHandler = new Kind(EXCEPTION_HANDLER, 11, true);
+	public static final Kind SynchronizationLock = new Kind(SYNCHRONIZATION_LOCK, 12, true);
+	public static final Kind SynchronizationUnlock = new Kind(SYNCHRONIZATION_UNLOCK, 13, true);
 
 	// Bits here are 1<<(Kind.getKey()) - and unfortunately keys didn't start at zero so bits here start at 2
 	public static final int MethodCallBit = 0x002;

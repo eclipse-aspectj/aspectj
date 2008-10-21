@@ -28,7 +28,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.aspectj.bridge.IMessage;
-import org.aspectj.weaver.bcel.BcelTypeMunger;
 
 /**
  * WeaverStateInfo represents how a type was processed. It is used by the weaver to determine how a type was previously treated and
@@ -201,7 +200,7 @@ public class WeaverStateInfo {
 				continue;
 			}
 
-			ret.add(new BcelTypeMunger(entry.typeMunger, aspectType));
+			ret.add(new TemporaryTypeMunger(entry.typeMunger, aspectType));
 		}
 		return ret;
 	}
