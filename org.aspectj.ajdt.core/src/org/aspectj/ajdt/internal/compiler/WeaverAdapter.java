@@ -19,8 +19,8 @@ import org.aspectj.bridge.IProgressListener;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.aspectj.weaver.IClassFileProvider;
+import org.aspectj.weaver.IUnwovenClassFile;
 import org.aspectj.weaver.IWeaveRequestor;
-import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.eclipse.core.runtime.OperationCanceledException;
 
 /**
@@ -29,13 +29,13 @@ import org.eclipse.core.runtime.OperationCanceledException;
  */
 public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Iterator {
 
-	private AbstractCompilerAdapter compilerAdapter;
+	private final AbstractCompilerAdapter compilerAdapter;
 	private Iterator resultIterator;
 	private int classFileIndex = 0;
 	private InterimCompilationResult nowProcessing;
 	private InterimCompilationResult lastReturnedResult;
-	private WeaverMessageHandler weaverMessageHandler;
-	private IProgressListener progressListener;
+	private final WeaverMessageHandler weaverMessageHandler;
+	private final IProgressListener progressListener;
 	private boolean finalPhase = false;
 	private int localIteratorCounter;
 
@@ -43,7 +43,7 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 	private int progressMaxTypes;
 	private String progressPhasePrefix;
 	private double fromPercent;
-	private double toPercent = 100.0;
+	private final double toPercent = 100.0;
 	private int progressCompletionCount;
 
 	public WeaverAdapter(AbstractCompilerAdapter forCompiler, WeaverMessageHandler weaverMessageHandler,
@@ -193,7 +193,7 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 	 * 
 	 * @see org.aspectj.weaver.IWeaveRequestor#acceptResult(org.aspectj.weaver.bcel.UnwovenClassFile)
 	 */
-	public void acceptResult(UnwovenClassFile result) {
+	public void acceptResult(IUnwovenClassFile result) {
 		char[] key = result.getClassNameAsChars();
 		removeFromMap(lastReturnedResult.result().compiledTypes, key);
 		AjClassFile ajcf = new AjClassFile(key, result.getBytes());
