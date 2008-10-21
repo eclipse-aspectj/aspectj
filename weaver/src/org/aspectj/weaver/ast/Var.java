@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver.ast;
 
 import org.aspectj.weaver.ResolvedType;
@@ -20,9 +19,9 @@ public class Var extends Expr {
 
 	public Var(ResolvedType variableType) {
 		super();
-		this.variableType = variableType;		
+		this.variableType = variableType;
 	}
-    
+
 	public ResolvedType getType() {
 		return variableType;
 	}
@@ -30,8 +29,19 @@ public class Var extends Expr {
 	public String toString() {
 		return "(Var " + variableType + ")";
 	}
-    
-    public void accept(IExprVisitor v) {
-        v.visit(this);
-    }
+
+	public void accept(IExprVisitor v) {
+		v.visit(this);
+	}
+
+	/**
+	 * For an annotation this will return a variable that can access a specific field of the annotation (of the specified type) TODO
+	 * what kind of behaviour happens for two annotation fields of the same type?
+	 * 
+	 * @param formalType
+	 * @return
+	 */
+	public Var getAccessorForValue(ResolvedType formalType) {
+		throw new IllegalStateException("Only makes sense for annotation variables");
+	}
 }

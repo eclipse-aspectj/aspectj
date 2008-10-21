@@ -25,6 +25,7 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.PoliceExtensionUse;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
@@ -32,7 +33,6 @@ import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
-import org.aspectj.weaver.bcel.PoliceExtensionUse;
 
 /**
  * The lifecycle of Pointcuts is modeled by Pointcut.State.   It has three things:

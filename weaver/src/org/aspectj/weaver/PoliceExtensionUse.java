@@ -8,12 +8,10 @@
  * Contributors:
  *    Andy Clement - initial API and implementation
  *******************************************************************************/
-package org.aspectj.weaver.bcel;
+package org.aspectj.weaver;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageUtil;
-import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.AbstractPatternNodeVisitor;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.KindedPointcut;

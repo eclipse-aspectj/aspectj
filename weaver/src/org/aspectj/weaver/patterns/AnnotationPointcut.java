@@ -23,6 +23,7 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
@@ -39,8 +40,6 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
-import org.aspectj.weaver.bcel.AnnotationAccessVar;
-import org.aspectj.weaver.bcel.BcelTypeMunger;
 
 /**
  * (at)Annotation((at)Foo) or (at)Annotation(foo)<br>
@@ -139,7 +138,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 					// FIXME asc should include supers with getInterTypeMungersIncludingSupers ?
 					List mungers = rMember.getDeclaringType().resolve(shadow.getIWorld()).getInterTypeMungers();
 					for (Iterator iter = mungers.iterator(); iter.hasNext();) {
-						BcelTypeMunger typeMunger = (BcelTypeMunger) iter.next();
+						ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) iter.next();
 						if (typeMunger.getMunger() instanceof NewFieldTypeMunger) {
 							ResolvedMember fakerm = typeMunger.getSignature();
 							if (fakerm.equals(member)) {
@@ -209,7 +208,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 			UnresolvedType annoType = btp.getAnnotationType();
 			// TODO 2 need to sort out appropriate creation of the AnnotationAccessFieldVar - what happens for
 			// reflective (ReflectionShadow) access to types?
-			AnnotationAccessVar var = (AnnotationAccessVar) shadow.getKindedAnnotationVar(annoType);
+			Var var = shadow.getKindedAnnotationVar(annoType);
 			if (var == null) {
 				throw new BCException("Unexpected problem locating annotation at join point '" + shadow + "'");
 			}
