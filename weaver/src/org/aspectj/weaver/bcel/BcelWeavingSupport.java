@@ -19,12 +19,12 @@ import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.ast.Var;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
 
 /**
- * Bcel implementation of the weaving support required in a BcelWorld which will
- * actually modify bytecode.
+ * Bcel implementation of the weaving support required in a BcelWorld which will actually modify bytecode.
  * 
  * @author Andy Clement
  */
@@ -45,8 +45,7 @@ public class BcelWeavingSupport implements IWeavingSupport {
 	}
 
 	/**
-	 * Register a munger for perclause @AJ aspect so that we add aspectOf(..) to
-	 * them as needed
+	 * Register a munger for perclause @AJ aspect so that we add aspectOf(..) to them as needed
 	 * 
 	 * @param aspect
 	 * @param kind
@@ -56,7 +55,16 @@ public class BcelWeavingSupport implements IWeavingSupport {
 		return new BcelPerClauseAspectAdder(aspect, kind);
 	}
 
+	public Var makeCflowAccessVar(ResolvedType formalType, Member cflowField, int arrayIndex) {
+		return new BcelCflowAccessVar(formalType, cflowField, arrayIndex);
+	}
+
 	public ConcreteTypeMunger concreteTypeMunger(ResolvedTypeMunger munger, ResolvedType aspectType) {
 		return new BcelTypeMunger(munger, aspectType);
 	}
+
+	public ConcreteTypeMunger createAccessForInlineMunger(ResolvedType aspect) {
+		return new BcelAccessForInlineMunger(aspect);
+	}
+
 }

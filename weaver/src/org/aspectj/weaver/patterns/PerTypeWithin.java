@@ -33,7 +33,6 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
-import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
 
 // PTWIMPL Represents a parsed pertypewithin()
 public class PerTypeWithin extends PerClause {
@@ -106,8 +105,7 @@ public class PerTypeWithin extends PerClause {
 		Expr myInstance = Expr.makeCallExpr(AjcMemberMaker.perTypeWithinLocalAspectOf(shadow.getEnclosingType(), inAspect/*
 																														 * shadow.
 																														 * getEnclosingType
-																														 * (
-																														 * )
+																														 * ( )
 																														 */),
 				Expr.NONE, inAspect);
 		state.setAspectInstance(myInstance);
@@ -123,7 +121,7 @@ public class PerTypeWithin extends PerClause {
 
 		// This is what is in the perObject variant of this ...
 		// Expr myInstance =
-		//Expr.makeCallExpr(AjcMemberMaker.perTypeWithinAspectOfMethod(inAspect)
+		// Expr.makeCallExpr(AjcMemberMaker.perTypeWithinAspectOfMethod(inAspect)
 		// ,
 		// new Expr[] {getVar(shadow)}, inAspect);
 		// state.setAspectInstance(myInstance);
@@ -159,6 +157,7 @@ public class PerTypeWithin extends PerClause {
 
 		// This munger will initialize the aspect instance field in the matched
 		// type
+
 		inAspect.crosscuttingMembers.addConcreteShadowMunger(Advice.makePerTypeWithinEntry(world, andPcut, inAspect));
 
 		ResolvedTypeMunger munger = new PerTypeWithinTargetTypeMunger(inAspect, ret);
@@ -166,14 +165,13 @@ public class PerTypeWithin extends PerClause {
 
 		// ATAJ: add a munger to add the aspectOf(..) to the @AJ aspects
 		if (inAspect.isAnnotationStyleAspect() && !inAspect.isAbstract()) {
-			inAspect.crosscuttingMembers.addLateTypeMunger(inAspect.getWorld().getWeavingSupport().makePerClauseAspect(inAspect,
-					getKind()));
+			inAspect.crosscuttingMembers.addLateTypeMunger(world.getWeavingSupport().makePerClauseAspect(inAspect, getKind()));
 		}
 
 		// ATAJ inline around advice support - don't use a late munger to allow
 		// around inling for itself
-		if (inAspect.isAnnotationStyleAspect() && !inAspect.getWorld().isXnoInline()) {
-			inAspect.crosscuttingMembers.addTypeMunger(new BcelAccessForInlineMunger(inAspect));
+		if (inAspect.isAnnotationStyleAspect() && !world.isXnoInline()) {
+			inAspect.crosscuttingMembers.addTypeMunger(world.getWeavingSupport().createAccessForInlineMunger(inAspect));
 		}
 
 		return ret;

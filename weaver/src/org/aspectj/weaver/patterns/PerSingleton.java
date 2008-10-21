@@ -27,7 +27,6 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
-import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
 
 public class PerSingleton extends PerClause {
 
@@ -65,7 +64,7 @@ public class PerSingleton extends PerClause {
 		// or remove
 		//
 		// Expr myInstance =
-		//Expr.makeCallExpr(AjcMemberMaker.perSingletonAspectOfMethod(inAspect),
+		// Expr.makeCallExpr(AjcMemberMaker.perSingletonAspectOfMethod(inAspect),
 		// Expr.NONE, inAspect);
 		//
 		// state.setAspectInstance(myInstance);
@@ -111,6 +110,8 @@ public class PerSingleton extends PerClause {
 
 		ret.copyLocationFrom(this);
 
+		World world = inAspect.getWorld();
+
 		ret.inAspect = inAspect;
 
 		// ATAJ: add a munger to add the aspectOf(..) to the @AJ aspects
@@ -119,17 +120,15 @@ public class PerSingleton extends PerClause {
 			// dig:
 			// "can't be Serializable/Cloneable unless -XserializableAspects"
 			if (getKind() == SINGLETON) { // pr149560
-				inAspect.crosscuttingMembers.addTypeMunger(inAspect.getWorld().getWeavingSupport().makePerClauseAspect(inAspect,
-						getKind()));
+				inAspect.crosscuttingMembers.addTypeMunger(world.getWeavingSupport().makePerClauseAspect(inAspect, getKind()));
 			} else {
-				inAspect.crosscuttingMembers.addLateTypeMunger(inAspect.getWorld().getWeavingSupport().makePerClauseAspect(
-						inAspect, getKind()));
+				inAspect.crosscuttingMembers.addLateTypeMunger(world.getWeavingSupport().makePerClauseAspect(inAspect, getKind()));
 			}
 		}
 
 		// ATAJ inline around advice support
 		if (inAspect.isAnnotationStyleAspect() && !inAspect.getWorld().isXnoInline()) {
-			inAspect.crosscuttingMembers.addTypeMunger(new BcelAccessForInlineMunger(inAspect));
+			inAspect.crosscuttingMembers.addTypeMunger(world.getWeavingSupport().createAccessForInlineMunger(inAspect));
 		}
 
 		return ret;

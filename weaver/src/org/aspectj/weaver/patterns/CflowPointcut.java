@@ -47,11 +47,9 @@ public class CflowPointcut extends Pointcut {
 	private int[] freeVars;
 
 	/**
-	 * Used to indicate that we're in the context of a cflow when concretizing
-	 * if's
+	 * Used to indicate that we're in the context of a cflow when concretizing if's
 	 * 
-	 * Will be removed or replaced with something better when we handle this as
-	 * a non-error
+	 * Will be removed or replaced with something better when we handle this as a non-error
 	 */
 	public static final ResolvedPointcutDefinition CFLOW_MARKER = new ResolvedPointcutDefinition(null, 0, null,
 			UnresolvedType.NONE, Pointcut.makeMatchesNothing(Pointcut.RESOLVED));
@@ -245,7 +243,7 @@ public class CflowPointcut extends Pointcut {
 				// it
 			}
 
-			Pointcut ret = new ConcreteCflowPointcut(localCflowField, null, true);
+			Pointcut ret = new ConcreteCflowPointcut(concreteAspect, localCflowField, null, true);
 			ret.copyLocationFrom(this);
 			return ret;
 		} else {
@@ -309,7 +307,7 @@ public class CflowPointcut extends Pointcut {
 						.makeCflowStackFieldAdder(localCflowField));
 				putCflowfield(xcut, concreteEntry, concreteAspect, localCflowField, "stack");
 			}
-			Pointcut ret = new ConcreteCflowPointcut(localCflowField, slots, false);
+			Pointcut ret = new ConcreteCflowPointcut(concreteAspect, localCflowField, slots, false);
 			ret.copyLocationFrom(this);
 			return ret;
 		}

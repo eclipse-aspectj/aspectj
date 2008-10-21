@@ -29,7 +29,6 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.ast.Var;
-import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
 
 public class PerObject extends PerClause {
 	private final boolean isThis;
@@ -131,7 +130,7 @@ public class PerObject extends PerClause {
 		// ATAJ inline around advice support - don't use a late munger to allow
 		// around inling for itself
 		if (inAspect.isAnnotationStyleAspect() && !inAspect.getWorld().isXnoInline()) {
-			inAspect.crosscuttingMembers.addTypeMunger(new BcelAccessForInlineMunger(inAspect));
+			inAspect.crosscuttingMembers.addTypeMunger(world.getWeavingSupport().createAccessForInlineMunger(inAspect));
 		}
 
 		return ret;
