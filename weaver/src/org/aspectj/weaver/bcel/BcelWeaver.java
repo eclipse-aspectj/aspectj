@@ -61,6 +61,7 @@ import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.CrosscuttingMembersSet;
 import org.aspectj.weaver.CustomMungerFactory;
 import org.aspectj.weaver.IClassFileProvider;
+import org.aspectj.weaver.IUnwovenClassFile;
 import org.aspectj.weaver.IWeaveRequestor;
 import org.aspectj.weaver.NewParentTypeMunger;
 import org.aspectj.weaver.ReferenceType;
@@ -999,9 +1000,9 @@ public class BcelWeaver {
 
 			public IWeaveRequestor getRequestor() {
 				return new IWeaveRequestor() {
-					public void acceptResult(UnwovenClassFile result) {
+					public void acceptResult(IUnwovenClassFile result) {
 						try {
-							writeZipEntry(result.filename, result.bytes);
+							writeZipEntry(result.getFilename(), result.getBytes());
 						} catch (IOException ex) {
 						}
 					}

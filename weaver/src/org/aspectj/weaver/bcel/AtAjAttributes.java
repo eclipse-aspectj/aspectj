@@ -46,7 +46,7 @@ import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
-import org.aspectj.weaver.IHasPosition;
+import org.aspectj.weaver.BindingScope;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.MethodDelegateTypeMunger;
 import org.aspectj.weaver.NameMangler;
@@ -71,7 +71,6 @@ import org.aspectj.weaver.patterns.PerObject;
 import org.aspectj.weaver.patterns.PerSingleton;
 import org.aspectj.weaver.patterns.PerTypeWithin;
 import org.aspectj.weaver.patterns.Pointcut;
-import org.aspectj.weaver.patterns.SimpleScope;
 import org.aspectj.weaver.patterns.TypePattern;
 
 /**
@@ -1502,50 +1501,6 @@ public class AtAjAttributes {
 			this.name = name;
 			this.indexOnStack = indexOnStack;
 		}
-	}
-
-	/**
-	 * BindingScope that knows the enclosingType, which is needed for pointcut reference resolution
-	 * 
-	 * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
-	 */
-	public static class BindingScope extends SimpleScope {
-		private final ResolvedType m_enclosingType;
-		private final ISourceContext m_sourceContext;
-
-		public BindingScope(ResolvedType type, ISourceContext sourceContext, FormalBinding[] bindings) {
-			super(type.getWorld(), bindings);
-			m_enclosingType = type;
-			m_sourceContext = sourceContext;
-		}
-
-		public ResolvedType getEnclosingType() {
-			return m_enclosingType;
-		}
-
-		public ISourceLocation makeSourceLocation(IHasPosition location) {
-			return m_sourceContext.makeSourceLocation(location);
-		}
-
-		public UnresolvedType lookupType(String name, IHasPosition location) {
-			// bug 126560
-			if (m_enclosingType != null) {
-				// add the package we're in to the list of imported
-				// prefixes so that we can find types in the same package
-				String pkgName = m_enclosingType.getPackageName();
-				if (pkgName != null && !pkgName.equals("")) {
-					String[] currentImports = getImportedPrefixes();
-					String[] newImports = new String[currentImports.length + 1];
-					for (int i = 0; i < currentImports.length; i++) {
-						newImports[i] = currentImports[i];
-					}
-					newImports[currentImports.length] = pkgName.concat(".");
-					setImportedPrefixes(newImports);
-				}
-			}
-			return super.lookupType(name, location);
-		}
-
 	}
 
 	/**

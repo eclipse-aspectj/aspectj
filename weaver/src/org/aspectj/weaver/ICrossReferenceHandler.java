@@ -10,20 +10,14 @@
  *******************************************************************************/
 package org.aspectj.weaver;
 
-import org.aspectj.asm.IRelationship;
 import org.aspectj.bridge.ISourceLocation;
 
 /**
- * Clients can pass a single cross-reference handler to the weaver on construction
- * of a BcelWorld. Any cross-references detected during munging will be notified
- * to the handler.
+ * Clients can pass a single cross-reference handler to the weaver on construction of a BcelWorld. Any cross-references detected
+ * during munging will be notified to the handler.
  */
 public interface ICrossReferenceHandler {
 
-	void addCrossReference(
-	  ISourceLocation from, 
-	  ISourceLocation to,
-	  IRelationship.Kind kind,
-	  boolean runtimeTest);
-	
+	void addCrossReference(ISourceLocation from, ISourceLocation to, String kind, boolean runtimeTest);
+
 }

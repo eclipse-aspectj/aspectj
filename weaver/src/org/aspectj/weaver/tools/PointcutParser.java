@@ -22,6 +22,7 @@ import java.util.Set;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
+import org.aspectj.weaver.BindingScope;
 import org.aspectj.weaver.IHasPosition;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
@@ -30,7 +31,6 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeakClassLoaderReference;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.bcel.AtAjAttributes;
 import org.aspectj.weaver.internal.tools.PointcutExpressionImpl;
 import org.aspectj.weaver.internal.tools.TypePatternMatcherImpl;
 import org.aspectj.weaver.patterns.AndPointcut;
@@ -410,7 +410,7 @@ public class PointcutParser {
     			}
     			public void tidy() {}
     		};
-    		return new AtAjAttributes.BindingScope(inType,sourceContext,formalBindings);
+    		return new BindingScope(inType,sourceContext,formalBindings);
     	}
     }
     

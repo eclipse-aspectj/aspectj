@@ -14,8 +14,6 @@ package org.aspectj.weaver;
 
 import java.lang.reflect.Modifier;
 
-import org.aspectj.lang.JoinPoint;
-
 //import org.aspectj.weaver.ResolvedType.Name;
 
 public class AjcMemberMaker {
@@ -614,9 +612,10 @@ public class AjcMemberMaker {
 	public final static UnresolvedType TYPEX_PROCEEDINGJOINPOINT = UnresolvedType
 			.forSignature("Lorg/aspectj/lang/ProceedingJoinPoint;");
 
-	public final static UnresolvedType TYPEX_STATICJOINPOINT = UnresolvedType.forName(JoinPoint.StaticPart.class.getName().replace(
-			'/', '.'));
-	public final static UnresolvedType TYPEX_ENCLOSINGSTATICJOINPOINT = UnresolvedType.forName(JoinPoint.EnclosingStaticPart.class
-			.getName().replace('/', '.'));
+	public final static UnresolvedType TYPEX_STATICJOINPOINT = UnresolvedType
+			.forSignature("Lorg/aspectj/lang/JoinPoint$StaticPart;");
+
+	public final static UnresolvedType TYPEX_ENCLOSINGSTATICJOINPOINT = UnresolvedType
+			.forSignature("Lorg/aspectj/lang/JoinPoint$EnclosingStaticPart;");
 
 }

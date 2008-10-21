@@ -118,7 +118,7 @@ public class BcelWorld extends World implements Repository {
 		if (getCrossReferenceHandler() != null) {
 			getCrossReferenceHandler().addCrossReference(munger.getSourceLocation(), // What is being applied
 					shadow.getSourceLocation(), // Where is it being applied
-					determineRelKind(munger), // What kind of advice?
+					determineRelKind(munger).getName(), // What kind of advice?
 					((Advice) munger).hasDynamicTests() // Is a runtime test being stuffed in the code?
 					);
 		}
@@ -770,8 +770,12 @@ public class BcelWorld extends World implements Repository {
 		getMessageHandler().handleMessage(iMessage);
 
 		if (getCrossReferenceHandler() != null) {
-			getCrossReferenceHandler().addCrossReference(checker.getSourceLocation(), shadow.getSourceLocation(),
-					(checker.isError() ? IRelationship.Kind.DECLARE_ERROR : IRelationship.Kind.DECLARE_WARNING), false);
+			getCrossReferenceHandler()
+					.addCrossReference(
+							checker.getSourceLocation(),
+							shadow.getSourceLocation(),
+							(checker.isError() ? IRelationship.Kind.DECLARE_ERROR.getName() : IRelationship.Kind.DECLARE_WARNING
+									.getName()), false);
 
 		}
 

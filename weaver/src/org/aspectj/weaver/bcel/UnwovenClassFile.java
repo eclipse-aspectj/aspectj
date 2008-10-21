@@ -21,8 +21,9 @@ import java.util.List;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.IUnwovenClassFile;
 
-public class UnwovenClassFile {
+public class UnwovenClassFile implements IUnwovenClassFile {
 	protected String filename;
 	protected char[] charfilename;
 	protected byte[] bytes;

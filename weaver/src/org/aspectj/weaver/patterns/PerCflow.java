@@ -96,10 +96,10 @@ public class PerCflow extends PerClause {
 
 		Collection previousCflowEntries = xcut.getCflowEntries();
 		Pointcut concreteEntry = entry.concretize(inAspect, inAspect, 0, null); // IntMap
-																				// .
-																				// EMPTY
-																				// )
-																				// ;
+		// .
+		// EMPTY
+		// )
+		// ;
 		List innerCflowEntries = new ArrayList(xcut.getCflowEntries());
 		innerCflowEntries.removeAll(previousCflowEntries);
 
@@ -115,7 +115,8 @@ public class PerCflow extends PerClause {
 		// ATAJ inline around advice support - don't use a late munger to allow
 		// around inling for itself
 		if (inAspect.isAnnotationStyleAspect() && !inAspect.getWorld().isXnoInline()) {
-			inAspect.crosscuttingMembers.addTypeMunger(new BcelAccessForInlineMunger(inAspect));
+			inAspect.crosscuttingMembers.addTypeMunger(inAspect.getWorld().getWeavingSupport()
+					.createAccessForInlineMunger(inAspect));
 		}
 
 		return ret;

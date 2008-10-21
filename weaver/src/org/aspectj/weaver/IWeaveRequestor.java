@@ -10,29 +10,29 @@
  *******************************************************************************/
 package org.aspectj.weaver;
 
-import org.aspectj.weaver.bcel.UnwovenClassFile;
 
 /**
  * @author colyer
- *
- * This interface is implemented by clients driving weaving through the 
- * IClassFileProvider interface. It is used by the weaver to return woven
- * class file results back to the client. The client can correlate weave 
- * results with inputs since it knows the last UnwovenClassFile returned by
- * its iterator.
+ * 
+ *         This interface is implemented by clients driving weaving through the IClassFileProvider interface. It is used by the
+ *         weaver to return woven class file results back to the client. The client can correlate weave results with inputs since it
+ *         knows the last UnwovenClassFile returned by its iterator.
  */
 public interface IWeaveRequestor {
-	
+
 	/*
-	 * A class file resulting from a weave (yes, even though the type name
-	 * says "unwoven"...).
+	 * A class file resulting from a weave (yes, even though the type name says "unwoven"...).
 	 */
-	void acceptResult(UnwovenClassFile result);
-	
+	void acceptResult(IUnwovenClassFile result);
+
 	// various notifications to the requestor about our progress...
 	void processingReweavableState();
+
 	void addingTypeMungers();
+
 	void weavingAspects();
+
 	void weavingClasses();
+
 	void weaveCompleted();
 }
