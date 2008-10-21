@@ -35,12 +35,12 @@ import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
-import org.aspectj.weaver.WeakClassLoaderReference;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.Lint.Kind;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.Utility;
+import org.aspectj.weaver.bcel.BcelWeakClassLoaderReference;
 import org.aspectj.weaver.loadtime.definition.Definition;
 import org.aspectj.weaver.loadtime.definition.DocumentParser;
 import org.aspectj.weaver.ltw.LTWWorld;
@@ -102,10 +102,10 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	}
 
 	class SimpleGeneratedClassHandler implements GeneratedClassHandler {
-		private WeakClassLoaderReference loaderRef;
+		private BcelWeakClassLoaderReference loaderRef;
 
 		SimpleGeneratedClassHandler(ClassLoader loader) {
-			loaderRef = new WeakClassLoaderReference(loader);
+			loaderRef = new BcelWeakClassLoaderReference(loader);
 		}
 
 		/**

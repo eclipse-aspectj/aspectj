@@ -16,7 +16,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.aspectj.weaver.WeakClassLoaderReference;
+import org.aspectj.weaver.bcel.BcelWeakClassLoaderReference;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 import org.aspectj.weaver.tools.WeavingAdaptor;
@@ -28,7 +28,7 @@ import org.aspectj.weaver.tools.WeavingAdaptor;
  */
 public class DefaultWeavingContext implements IWeavingContext {
 
-	protected WeakClassLoaderReference loaderRef;
+	protected BcelWeakClassLoaderReference loaderRef;
 	private String shortName;
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(DefaultWeavingContext.class);
@@ -40,7 +40,7 @@ public class DefaultWeavingContext implements IWeavingContext {
 	 */
 	public DefaultWeavingContext(ClassLoader loader) {
 		super();
-		this.loaderRef = new WeakClassLoaderReference(loader);
+		this.loaderRef = new BcelWeakClassLoaderReference(loader);
 	}
 
 	/**
