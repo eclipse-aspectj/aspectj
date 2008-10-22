@@ -17,7 +17,7 @@
 	<classpathentry kind="src" path="/testing-util"/>
 	<classpathentry kind="src" path="/util"/>
 	<classpathentry kind="src" path="/weaver"/>
-	<classpathentry sourcepath="/lib/junit/junit-src.jar" kind="lib" path="/lib/junit/junit.jar"/>
+	<classpathentry kind="lib" path="/lib/junit/junit.jar" sourcepath="/lib/junit/junit-src.jar"/>
 	<classpathentry kind="src" path="/tests"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/aspectj5rt"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ajdoc"/>
@@ -25,5 +25,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/loadtime5"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/weaver5"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ajde.core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.aspectj.matcher"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
