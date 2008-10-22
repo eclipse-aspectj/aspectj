@@ -61,6 +61,25 @@ public interface IRelationship extends Serializable {
 					|| this == DECLARE_SOFT;
 		}
 
+		public String getName() {
+			return name;
+		}
+
+		/**
+		 * Return the Kind of the relationship that is passed in by name.
+		 * 
+		 * @param stringFormOfRelationshipKind the relationship name, eg. 'declare warning', 'declare error', etc.
+		 * @return the Kind instance
+		 */
+		public static Kind getKindFor(String stringFormOfRelationshipKind) {
+			for (int i = 0; i < ALL.length; i++) {
+				if (ALL[i].name.equals(stringFormOfRelationshipKind)) {
+					return ALL[i];
+				}
+			}
+			return null;
+		}
+
 		private Kind(String name) {
 			this.name = name;
 		}
