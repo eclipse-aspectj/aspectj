@@ -50,12 +50,12 @@ public class Ajc {
 
 	private static final String SANDBOX_NAME = "ajcSandbox";
 
+	// ALSO SEE ANTSPEC AND AJCTESTCASE
 	private static final String TESTER_PATH = ".." + File.separator + "testing-client" + File.separator + "bin"
 			+ File.pathSeparator + ".." + File.separator + "runtime" + File.separator + "bin" + File.pathSeparator + ".."
 			+ File.separator + "aspectj5rt" + File.separator + "bin" + File.pathSeparator + ".." + File.separator + "lib"
 			+ File.separator + "junit" + File.separator + "junit.jar" + File.pathSeparator + ".." + File.separator + "bridge"
-			+ File.separator + "bin" + File.pathSeparator + ".." + File.separator + "loadtime" + File.separator
-			+ "bin"
+			+ File.separator + "bin" + File.pathSeparator + ".." + File.separator + "loadtime" + File.separator + "bin"
 			+ File.pathSeparator
 			+ ".."
 			+ File.separator
@@ -68,16 +68,24 @@ public class Ajc {
 			+ "weaver5"
 			+ File.separator
 			+ "bin"
+			+ File.pathSeparator
+			+ ".."
+			+ File.separator
+			+ "org.aspectj.matcher"
+			+ File.separator
+			+ "bin"
 
 			// When the build machine executes the tests, it is using code built into jars rather than code build into
 			// bin directories. This means for the necessary types to be found we have to put these jars on the classpath:
 			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "bridge.jar"
-			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "util.jar"
-			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "loadtime.jar"
-			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "weaver.jar"
-			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "weaver5.jar"
-			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "asm.jar"
-			+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "test" + File.separator + "testing-client.jar"
+			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator
+			+ "org.aspectj.matcher.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
+			+ File.separator + "util.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
+			+ File.separator + "loadtime.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
+			+ File.separator + "weaver.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
+			+ File.separator + "weaver5.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
+			+ File.separator + "asm.jar" + File.pathSeparator + ".." + File.separator + "lib" + File.separator + "test"
+			+ File.separator + "testing-client.jar"
 			// hmmm, this next one should perhaps point to an aj-build jar...
 			+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "test" + File.separator + "aspectjrt.jar";
 

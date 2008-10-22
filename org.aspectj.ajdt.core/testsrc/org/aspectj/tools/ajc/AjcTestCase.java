@@ -59,6 +59,7 @@ public class AjcTestCase extends TestCase {
 	 */
 	protected Ajc ajc;
 
+	// see Ajc and AntSpec
 	public static final String DEFAULT_CLASSPATH_ENTRIES = File.pathSeparator + ".." + File.separator + "bridge" + File.separator
 			+ "bin" + File.pathSeparator + ".." + File.separator + "util" + File.separator + "bin" + File.pathSeparator + ".."
 			+ File.separator + "loadtime" + File.separator + "bin" + File.pathSeparator + ".." + File.separator + "weaver"
@@ -66,8 +67,9 @@ public class AjcTestCase extends TestCase {
 			+ File.pathSeparator + ".." + File.separator + "asm" + File.separator + "bin" + File.pathSeparator + ".."
 			+ File.separator + "testing-client" + File.separator + "bin" + File.pathSeparator + ".." + File.separator + "runtime"
 			+ File.separator + "bin" + File.pathSeparator + ".." + File.separator + "aspectj5rt" + File.separator + "bin"
-			+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "junit" + File.separator + "junit.jar"
-			+ File.pathSeparator + ".." + File.separator + "lib"
+			+ File.pathSeparator + ".." + File.separator + "org.aspectj.matcher" + File.separator + "bin" + File.pathSeparator
+			+ ".." + File.separator + "lib" + File.separator + "junit" + File.separator + "junit.jar" + File.pathSeparator + ".."
+			+ File.separator + "lib"
 			+ File.separator
 			+ "bcel"
 			+ File.separator
