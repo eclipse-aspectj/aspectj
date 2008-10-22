@@ -7,8 +7,6 @@
 	<classpathentry kind="src" path="/testing-util"/>
 	<classpathentry kind="src" path="/bridge"/>
 	<classpathentry kind="lib" path="/lib/commons/commons.jar" sourcepath="/lib/commons/commons-src.zip"/>
-	<classpathentry kind="lib" path="/lib/bcel/bcel.jar" sourcepath="/lib/bcel/bcel-src.zip"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/lib/asm/asm-3.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
