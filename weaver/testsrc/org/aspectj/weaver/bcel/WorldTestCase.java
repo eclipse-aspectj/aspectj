@@ -14,9 +14,9 @@ package org.aspectj.weaver.bcel;
 
 import java.lang.reflect.Modifier;
 
-import org.aspectj.weaver.AbstractWorldTestCase;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.BcweaverTests;
+import org.aspectj.weaver.CommonWorldTests;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberImpl;
 import org.aspectj.weaver.ResolvedMember;
@@ -29,16 +29,16 @@ import org.aspectj.weaver.World;
 /**
  * This is a test case for the nameType parts of worlds.
  */
-public class WorldTestCase extends AbstractWorldTestCase {
-
-	public WorldTestCase(String name) {
-		super(name);
-	}
+public class WorldTestCase extends CommonWorldTests {
 
 	private final BcelWorld world = new BcelWorld(BcweaverTests.TESTDATA_PATH + "/tracing.jar");
 
 	protected World getWorld() {
 		return world;
+	}
+
+	protected boolean getSupportsAutoboxing() {
+		return true;
 	}
 
 	// XXX fix the various XXXs before expecting this test to work
