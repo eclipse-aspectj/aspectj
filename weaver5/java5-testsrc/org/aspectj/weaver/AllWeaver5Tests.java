@@ -15,7 +15,7 @@ package org.aspectj.weaver;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.aspectj.weaver.reflect.ReflectionWorldTest;
+import org.aspectj.weaver.reflect.ReflectionWorldSpecificTest;
 import org.aspectj.weaver.tools.PointcutExpressionTest;
 
 public class AllWeaver5Tests {
@@ -26,7 +26,7 @@ public class AllWeaver5Tests {
         suite.addTest(AllTracing5Tests.suite());
         suite.addTest(BcweaverModuleTests15.suite());
 		suite.addTestSuite(PointcutExpressionTest.class);
-		suite.addTestSuite(ReflectionWorldTest.class);
+		suite.addTestSuite(ReflectionWorldSpecificTest.class);
 		//$JUnit-END$
 		return suite;
 	}

@@ -1,4 +1,5 @@
 package org.aspectj.weaver;
+
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
  * All rights reserved. 
@@ -15,23 +16,26 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXTestCase;
+import org.aspectj.weaver.bcel.BcelWorldReferenceTypeTest;
 import org.aspectj.weaver.patterns.WildTypePatternResolutionTestCase;
 import org.aspectj.weaver.tools.Java15PointcutExpressionTest;
 
 public class BcweaverModuleTests15 extends TestCase {
-	   public static Test suite() { 
-	        TestSuite suite = new TestSuite(BcweaverModuleTests15.class.getName());
-	        suite.addTestSuite(BcelGenericSignatureToTypeXTestCase.class);
-	        suite.addTestSuite(BoundedReferenceTypeTestCase.class);
-	        suite.addTest(Java15PointcutExpressionTest.suite());
-	        suite.addTestSuite(MemberTestCase15.class);
-	        suite.addTestSuite(ReferenceTypeTestCase.class);
-	        suite.addTest(TestJava5ReflectionBasedReferenceTypeDelegate.suite());
-   	        suite.addTestSuite(TypeVariableTestCase.class);
-	        suite.addTestSuite(TypeVariableReferenceTypeTestCase.class);
-	        suite.addTestSuite(WildTypePatternResolutionTestCase.class);
-	        return suite;
-	    }
+	public static Test suite() {
+		TestSuite suite = new TestSuite(BcweaverModuleTests15.class.getName());
+		suite.addTestSuite(BcelGenericSignatureToTypeXTestCase.class);
+		suite.addTestSuite(BoundedReferenceTypeTestCase.class);
+		suite.addTest(Java15PointcutExpressionTest.suite());
+		suite.addTestSuite(MemberTestCase15.class);
+		suite.addTestSuite(BcelWorldReferenceTypeTest.class);
+		suite.addTest(TestJava5ReflectionBasedReferenceTypeDelegate.suite());
+		suite.addTestSuite(TypeVariableTestCase.class);
+		suite.addTestSuite(TypeVariableReferenceTypeTestCase.class);
+		suite.addTestSuite(WildTypePatternResolutionTestCase.class);
+		return suite;
+	}
 
-	    public BcweaverModuleTests15(String name) { super(name); }
+	public BcweaverModuleTests15(String name) {
+		super(name);
+	}
 }
