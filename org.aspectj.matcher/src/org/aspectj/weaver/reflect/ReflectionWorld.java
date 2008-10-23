@@ -33,6 +33,7 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 
 	private WeakClassLoaderReference classLoaderReference;
 	private AnnotationFinder annotationFinder;
+	private boolean mustUseOneFourDelegates = false; // for testing
 
 	private ReflectionWorld() {
 		// super();
@@ -51,6 +52,15 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 		setBehaveInJava5Way(LangUtil.is15VMOrGreater());
 		classLoaderReference = new WeakClassLoaderReference(aClassLoader);
 		annotationFinder = makeAnnotationFinderIfAny(classLoaderReference.getClassLoader(), this);
+	}
+
+	public ReflectionWorld(boolean forceUseOf14Delegates, ClassLoader aClassLoader) {
+		this(aClassLoader);
+		this.mustUseOneFourDelegates = forceUseOf14Delegates;
+		if (forceUseOf14Delegates) {
+			// Dont use 1.4 delegates and yet allow autoboxing
+			this.setBehaveInJava5Way(false);
+		}
 	}
 
 	public static AnnotationFinder makeAnnotationFinderIfAny(ClassLoader loader, World world) {
@@ -97,7 +107,11 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 	}
 
 	protected ReferenceTypeDelegate resolveDelegate(ReferenceType ty) {
-		return ReflectionBasedReferenceTypeDelegateFactory.createDelegate(ty, this, classLoaderReference.getClassLoader());
+		if (mustUseOneFourDelegates) {
+			return ReflectionBasedReferenceTypeDelegateFactory.create14Delegate(ty, this, classLoaderReference.getClassLoader());
+		} else {
+			return ReflectionBasedReferenceTypeDelegateFactory.createDelegate(ty, this, classLoaderReference.getClassLoader());
+		}
 	}
 
 	public static class ReflectionWorldException extends RuntimeException {
