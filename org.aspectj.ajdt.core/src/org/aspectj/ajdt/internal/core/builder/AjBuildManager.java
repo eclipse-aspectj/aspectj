@@ -1016,7 +1016,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			public void acceptResult(CompilationResult unitResult) {
 				// end of compile, must now write the results to the output destination
 				// this is either a jar file or a file in a directory
-				if (!unitResult.hasErrors() || proceedOnError()) {
+				boolean hasErrors = unitResult.hasErrors();
+				if (!hasErrors || proceedOnError()) {
 					Collection classFiles = unitResult.compiledTypes.values();
 					boolean shouldAddAspectName = (buildConfig.getOutxmlName() != null);
 					for (Iterator iter = classFiles.iterator(); iter.hasNext();) {
@@ -1024,19 +1025,22 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 						String filename = new String(classFile.fileName());
 						String classname = filename.replace('/', '.');
 						filename = filename.replace('/', File.separatorChar) + ".class";
+
 						try {
 							if (buildConfig.getOutputJar() == null) {
 								String outfile = writeDirectoryEntry(unitResult, classFile, filename);
 								if (environmentSupportsIncrementalCompilation) {
-									ResolvedType type = getBcelWorld().resolve(classname);
-									if (type.isAspect()) {
-										state.recordAspectClassFile(outfile);
+									if (!classname.endsWith("$ajcMightHaveAspect")) {
+										ResolvedType type = getBcelWorld().resolve(classname);
+										if (type.isAspect()) {
+											state.recordAspectClassFile(outfile);
+										}
 									}
 								}
 							} else {
 								writeZipEntry(classFile, filename);
 							}
-							if (shouldAddAspectName)
+							if (shouldAddAspectName && !classname.endsWith("$ajcMightHaveAspect"))
 								addAspectName(classname, unitResult.getFileName());
 						} catch (IOException ex) {
 							IMessage message = EclipseAdapterUtils.makeErrorMessage(new String(unitResult.fileName),
