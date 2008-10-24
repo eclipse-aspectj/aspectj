@@ -171,6 +171,13 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// incomplete
 	}
 
+	public void testNullDelegateBrokenCode_pr251940() {
+		String p = "pr251940";
+		initialiseProject(p);
+		build(p);
+		checkForError(p, "The type F must implement the inherited");
+	}
+
 	public void testBeanExample() throws Exception {
 		String p = "BeanExample";
 		initialiseProject(p);

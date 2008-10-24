@@ -2,10 +2,6 @@
 
 <suite>
 
-    <ajc-test dir="bugs163/pr251940" title="implements pertarget">
-      <compile files="F.aj" options="-1.5"/>
-    </ajc-test>
-
     <ajc-test dir="bugs163/pr226163" title="breaking recovery">
       <compile files="Code.java" options="-1.5">
         <message kind="error" line="4" text="Syntax error"/>

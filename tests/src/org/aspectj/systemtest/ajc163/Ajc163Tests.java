@@ -18,10 +18,6 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
-	// public void testImplementsPertarget_pr251940() {
-	// runTest("implements pertarget");
-	// }
-
 	public void testBreakingRecovery_pr226163() {
 		runTest("breaking recovery");
 	}
