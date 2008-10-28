@@ -25,7 +25,7 @@ public class BcweaverModuleTests extends TestCase {
 		TestSuite suite = new TestSuite(BcweaverModuleTests.class.getName());
 		suite.addTest(org.aspectj.weaver.bcel.BcelTests.suite());
 		suite.addTest(org.aspectj.weaver.BcweaverTests.suite());
-		suite.addTest(org.aspectj.weaver.patterns.PatternsTests.suite());
+		suite.addTest(org.aspectj.weaver.patterns.bcel.BcelPatternsTests.suite());
 		suite.addTestSuite(LocaleTest.class);
 		suite.addTestSuite(GenericSignatureParserTest.class);
 		suite.addTest(ToolsTests.suite());

@@ -16,7 +16,6 @@ package org.aspectj.weaver.bcel;
 import java.io.IOException;
 
 import org.aspectj.weaver.*;
-import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.patterns.*;
 
 public class NonstaticWeaveTestCase extends WeaveTestCase {

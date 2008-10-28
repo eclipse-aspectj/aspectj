@@ -19,7 +19,6 @@ import java.util.*;
 
 import org.aspectj.weaver.*;
 import org.aspectj.weaver.patterns.*;
-import org.aspectj.weaver.patterns.SimpleScope;
 
 public class PointcutResidueTestCase extends WeaveTestCase {
 	{

@@ -2,6 +2,8 @@ package fluffy;
 
 import java.io.IOException;
 
+import org.aspectj.weaver.testcode.Base;
+
 public class Derived extends Base {
 
 	public static void onlyDerived() throws IOException, CloneNotSupportedException {}

@@ -19,6 +19,7 @@ import org.aspectj.weaver.BcweaverTests;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.weaver.patterns.TestScope;
 
 public class AnnotationPatternTestCase extends TestCase {
 

@@ -25,6 +25,7 @@ import org.aspectj.weaver.BcweaverTests;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.weaver.patterns.TestScope;
 
 /*
  * Sample types that this program uses are:
