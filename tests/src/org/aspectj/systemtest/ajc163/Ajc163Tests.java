@@ -30,6 +30,10 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("bridge methods for generic itds");
 	}
 
+	public void testGenericFieldBridging_pr252285() {
+		runTest("bridge methods for generic itd fields");
+	}
+
 	public static Test suite() {
 		return XMLBasedAjcTestCase.loadSuite(Ajc163Tests.class);
 	}

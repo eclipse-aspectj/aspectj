@@ -23,5 +23,17 @@
         </stdout>
       </run>
     </ajc-test>
+    
+    <ajc-test dir="bugs163/pr252285" title="bridge methods for generic itd fields">
+      <compile files="Bridged.java" options="-1.5"/>
+      <run class="Bridged">
+        <stdout>
+          <line text="ajc$interFieldGet$X$Super$getterA()java.lang.Integer isBridged?false"/>
+          <line text="ajc$interFieldGet$X$Super$getterA()java.lang.Number isBridged?true"/>
+          <line text="ajc$interFieldSet$X$Super$getterA()void isBridged?false"/>
+          <line text="ajc$interFieldSet$X$Super$getterA()void isBridged?true"/>
+        </stdout>
+      </run>
+    </ajc-test>
 
 </suite>
