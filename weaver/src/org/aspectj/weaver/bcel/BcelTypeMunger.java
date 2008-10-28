@@ -1743,6 +1743,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			ResolvedMember bridgingSetter) {
 		InstructionFactory fact;
 		LazyMethodGen bridgeMethod = makeMethodGen(gen, bridgingSetter);
+		bridgeMethod.setAccessFlags(bridgeMethod.getAccessFlags() | 0x00000040); // BRIDGE = 0x00000040
 		Type[] paramTypes = BcelWorld.makeBcelTypes(bridgingSetter.getParameterTypes());
 		Type[] bridgingToParms = BcelWorld.makeBcelTypes(itdfieldSetter.getParameterTypes());
 		Type returnType = BcelWorld.makeBcelType(bridgingSetter.getReturnType());
@@ -1759,8 +1760,6 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			body.append(InstructionFactory.createLoad(paramType, pos));
 			if (!bridgingSetter.getParameterTypes()[i].getErasureSignature().equals(
 					itdfieldSetter.getParameterTypes()[i].getErasureSignature())) {
-				// une cast est required
-				System.err.println("Putting in cast from " + paramType + " to " + bridgingToParms[i]);
 				body.append(fact.createCast(paramType, bridgingToParms[i]));
 			}
 			pos += paramType.getSize();
