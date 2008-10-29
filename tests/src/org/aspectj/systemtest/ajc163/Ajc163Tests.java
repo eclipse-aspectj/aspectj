@@ -18,13 +18,13 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testTerminateAfterCompilation_pr249710() {
+		runTest("terminateAfterCompilation");
+	}
+
 	public void testItdCCE_pr250091() {
 		runTest("itd cce");
 	}
-
-	// class A from java.net.URLClassLoader@1e4853f extends class java.lang.Object (false)
-	// class java.lang.ClassNotFoundException from null extends class java.lang.Exception (true)
-	// class Base from java.net.URLClassLoader@1e4853f extends class java.lang.Object (false)
 
 	public void testBreakingRecovery_pr226163() {
 		runTest("breaking recovery");

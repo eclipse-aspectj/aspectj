@@ -19,6 +19,11 @@
       </compile>
     </ajc-test>
 
+    <ajc-test dir="bugs163/pr249710" title="terminateAfterCompilation">
+      <compile files="Foo.java" options="-1.5">
+      </compile>
+    </ajc-test>
+
     <ajc-test dir="bugs163/pr250632" title="type conversion in generic itd">
       <compile files="MyAspect.java" options="-1.5"/>
     </ajc-test>
