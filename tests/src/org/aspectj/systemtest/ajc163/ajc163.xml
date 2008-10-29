@@ -2,6 +2,17 @@
 
 <suite>
 
+    <ajc-test dir="bugs163/pr250091" title="itd cce">
+      <compile files="Demo.java" options="-1.5"/>
+      <run class="Demo">
+        <stdout>
+          <line text="class A (false)"/>
+          <line text="class A (false)"/>
+          <line text="class Base (false)"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
     <ajc-test dir="bugs163/pr226163" title="breaking recovery">
       <compile files="Code.java" options="-1.5">
         <message kind="error" line="4" text="Syntax error"/>
