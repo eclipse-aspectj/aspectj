@@ -49,7 +49,7 @@ public class AntSpec implements ITestStep {
 			+ File.separator + "bridge/bin" + File.pathSeparator + ".." + File.separator + "loadtime/bin" + File.pathSeparator
 			+ ".." + File.separator + "loadtime5/bin" + File.pathSeparator + ".." + File.separator + "weaver/bin"
 			+ File.pathSeparator + ".." + File.separator + "org.aspectj.matcher/bin" + File.pathSeparator + ".." + File.separator
-			+ "lib/bcel/bcel.jar" + File.separator + "lib/bcel/bcel-verifier.jar";;
+			+ "lib/bcel/bcel.jar" + File.pathSeparator + "lib/bcel/bcel-verifier.jar";;
 
 	private boolean m_verbose = false;
 	private AjcTest m_ajcTest;
