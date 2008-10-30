@@ -894,7 +894,7 @@ public final class LazyMethodGen implements Traceable {
 		if (newAnnotations != null) {
 			for (Iterator iter = newAnnotations.iterator(); iter.hasNext();) {
 				AnnotationAJ element = (AnnotationAJ) iter.next();
-				gen.addAnnotation(new AnnotationGen(((BcelAnnotation)element).getBcelAnnotation(), gen.getConstantPool(), true));
+				gen.addAnnotation(new AnnotationGen(((BcelAnnotation) element).getBcelAnnotation(), gen.getConstantPool(), true));
 			}
 		}
 
@@ -1028,7 +1028,15 @@ public final class LazyMethodGen implements Traceable {
 		}
 
 		addExceptionHandlers(gen, map, exceptionList);
-		addLocalVariables(gen, localVariables);
+		if (localVariables.size() == 0) {
+			// Might be a case of 173978 where around advice on an execution join point
+			// has caused everything to be extracted from the method and thus we
+			// are left with no local variables, not even the ones for 'this' and
+			// parameters passed to the method
+			createNewLocalVariables(gen);
+		} else {
+			addLocalVariables(gen, localVariables);
+		}
 
 		// JAVAC adds line number tables (with just one entry) to generated
 		// accessor methods - this
@@ -1039,6 +1047,37 @@ public final class LazyMethodGen implements Traceable {
 		// produced
 		if (gen.getLineNumbers().length == 0) {
 			gen.addLineNumber(gen.getInstructionList().getStart(), 1);
+		}
+	}
+
+	private void createNewLocalVariables(MethodGen gen) {
+		gen.removeLocalVariables();
+		// ignore <clinit> or <init> for now
+		if (!getName().startsWith("<")) {
+			int slot = 0;
+			InstructionHandle start = gen.getInstructionList().getStart();
+			InstructionHandle end = gen.getInstructionList().getEnd();
+			// Add a 'this' if non-static
+			if (!isStatic()) {
+				String cname = this.enclosingClass.getClassName();
+				if (cname == null) {
+					return; // give up for now
+				}
+				Type enclosingType = BcelWorld.makeBcelType(UnresolvedType.forName(cname));
+				gen.addLocalVariable("this", enclosingType, slot++, start, end);
+			}
+			// Add entries for the method arguments
+			String[] paramNames = (memberView == null ? null : memberView.getParameterNames());
+			if (paramNames != null) {
+				for (int i = 0; i < argumentTypes.length; i++) {
+					String pname = paramNames[i];
+					if (pname == null) {
+						pname = "arg" + i;
+					}
+					gen.addLocalVariable(pname, argumentTypes[i], slot, start, end);
+					slot += argumentTypes[i].getSize();
+				}
+			}
 		}
 	}
 
@@ -1132,7 +1171,15 @@ public final class LazyMethodGen implements Traceable {
 			}
 		}
 		gen.setInstructionList(theBody);
-		addLocalVariables(gen, localVariables);
+		if (localVariables.size() == 0) {
+			// Might be a case of 173978 where around advice on an execution join point
+			// has caused everything to be extracted from the method and thus we
+			// are left with no local variables, not even the ones for 'this' and
+			// parameters passed to the method
+			createNewLocalVariables(gen);
+		} else {
+			addLocalVariables(gen, localVariables);
+		}
 
 		// JAVAC adds line number tables (with just one entry) to generated
 		// accessor methods - this
@@ -1403,14 +1450,16 @@ public final class LazyMethodGen implements Traceable {
 	 * A good body is a body with the following properties:
 	 * 
 	 * <ul>
-	 * <li> For each branch instruction S in body, target T of S is in body. <li> For each branch instruction S in body, target T of
-	 * S has S as a targeter. <li> For each instruction T in body, for each branch instruction S that is a targeter of T, S is in
-	 * body. <li> For each non-range-handle instruction T in body, for each instruction S that is a targeter of T, S is either a
-	 * branch instruction, an exception range or a tag <li> For each range-handle instruction T in body, there is exactly one
-	 * targeter S that is a range. <li> For each range-handle instruction T in body, the range R targeting T is in body. <li> For
-	 * each instruction T in body, for each exception range R targeting T, R is in body. <li> For each exception range R in body,
-	 * let T := R.handler. T is in body, and R is one of T's targeters <li> All ranges are properly nested: For all ranges Q and R,
-	 * if Q.start preceeds R.start, then R.end preceeds Q.end.
+	 * <li>For each branch instruction S in body, target T of S is in body.
+	 * <li>For each branch instruction S in body, target T of S has S as a targeter.
+	 * <li>For each instruction T in body, for each branch instruction S that is a targeter of T, S is in body.
+	 * <li>For each non-range-handle instruction T in body, for each instruction S that is a targeter of T, S is either a branch
+	 * instruction, an exception range or a tag
+	 * <li>For each range-handle instruction T in body, there is exactly one targeter S that is a range.
+	 * <li>For each range-handle instruction T in body, the range R targeting T is in body.
+	 * <li>For each instruction T in body, for each exception range R targeting T, R is in body.
+	 * <li>For each exception range R in body, let T := R.handler. T is in body, and R is one of T's targeters
+	 * <li>All ranges are properly nested: For all ranges Q and R, if Q.start preceeds R.start, then R.end preceeds Q.end.
 	 * </ul>
 	 * 
 	 * Where the shorthand "R is in body" means "R.start is in body, R.end is in body, and any InstructionHandle stored in a field
