@@ -10,13 +10,13 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver.bcel;
 
-import java.io.*;
+import java.io.IOException;
 
 import org.aspectj.apache.bcel.generic.InstructionFactory;
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.Shadow;
 
 public class MoveInstructionsWeaveTestCase extends WeaveTestCase {
 	{
@@ -26,48 +26,51 @@ public class MoveInstructionsWeaveTestCase extends WeaveTestCase {
 	public MoveInstructionsWeaveTestCase(String name) {
 		super(name);
 	}
-    public void testHello() throws IOException {
-        BcelAdvice p = new BcelAdvice(null, makePointcutAll(), null, 0, -1, -1, null, null) {
-            public void specializeOn(Shadow s) {
-            	super.specializeOn(s);
-                ((BcelShadow) s).initializeForAroundClosure();
-            }
-			public void implementOn(Shadow s) {
+
+	public void testHello() throws IOException {
+		BcelAdvice p = new BcelAdvice(null, makePointcutAll(), null, 0, -1, -1, null, null) {
+			public void specializeOn(Shadow s) {
+				super.specializeOn(s);
+				((BcelShadow) s).initializeForAroundClosure();
+			}
+
+			public boolean implementOn(Shadow s) {
 				BcelShadow shadow = (BcelShadow) s;
-				LazyMethodGen newMethod =
-					shadow.extractMethod(
-						NameMangler.getExtractableName(shadow.getSignature()) + "_extracted",
-						0,
-						this);
+				LazyMethodGen newMethod = shadow.extractMethod(
+						NameMangler.getExtractableName(shadow.getSignature()) + "_extracted", 0, this);
 				shadow.getRange().append(shadow.makeCallToCallback(newMethod));
 
 				if (!shadow.isFallsThrough()) {
-					shadow.getRange().append(
-						InstructionFactory.createReturn(newMethod.getReturnType()));
+					shadow.getRange().append(InstructionFactory.createReturn(newMethod.getReturnType()));
 				}
+				return true;
 			}
-        };
+		};
 
-        weaveTest("HelloWorld", "ExtractedHelloWorld", p);
-    }  
-   
-    static int counter = 0;
+		weaveTest("HelloWorld", "ExtractedHelloWorld", p);
+	}
+
+	static int counter = 0;
+
 	public void testFancyHello() throws IOException {
 		BcelAdvice p = new BcelAdvice(null, makePointcutAll(), null, 0, -1, -1, null, null) {
-            public void specializeOn(Shadow s) {
-            	super.specializeOn(s);
-                ((BcelShadow) s).initializeForAroundClosure();
-            }
-            public void implementOn(Shadow s) {
-                BcelShadow shadow = (BcelShadow) s;
-                LazyMethodGen newMethod = shadow.extractMethod(NameMangler.getExtractableName(shadow.getSignature()) + "_extracted" + counter++, 0, this);
-                shadow.getRange().append(shadow.makeCallToCallback(newMethod));
+			public void specializeOn(Shadow s) {
+				super.specializeOn(s);
+				((BcelShadow) s).initializeForAroundClosure();
+			}
 
-                if (! shadow.isFallsThrough()) {
-                    shadow.getRange().append(InstructionFactory.createReturn(newMethod.getReturnType()));
-                }
-            }
-  		};
+			public boolean implementOn(Shadow s) {
+				BcelShadow shadow = (BcelShadow) s;
+				LazyMethodGen newMethod = shadow.extractMethod(NameMangler.getExtractableName(shadow.getSignature()) + "_extracted"
+						+ counter++, 0, this);
+				shadow.getRange().append(shadow.makeCallToCallback(newMethod));
+
+				if (!shadow.isFallsThrough()) {
+					shadow.getRange().append(InstructionFactory.createReturn(newMethod.getReturnType()));
+				}
+				return true;
+			}
+		};
 
 		weaveTest("FancyHelloWorld", "ExtractedFancyHelloWorld", p);
 	}

@@ -2044,7 +2044,6 @@ public class BcelShadow extends Shadow {
 	 * method-execution, then the new method for the advice can also be re-lined. We are not doing that presently.
 	 */
 	public void weaveAroundInline(BcelAdvice munger, boolean hasDynamicTest) {
-
 		// !!! THIS BLOCK OF CODE SHOULD BE IN A METHOD CALLED weaveAround(...);
 		Member mungerSig = munger.getSignature();
 		// Member originalSig = mungerSig; // If mungerSig is on a parameterized type, originalSig is the member on the generic type

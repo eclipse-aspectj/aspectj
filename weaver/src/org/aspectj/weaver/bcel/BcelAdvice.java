@@ -59,7 +59,7 @@ class BcelAdvice extends Advice {
 	private ExposedState exposedState;
 
 	public BcelAdvice(AjAttribute.AdviceAttribute attribute, Pointcut pointcut, Member signature, ResolvedType concreteAspect) {
-		super(attribute, pointcut, shrink(attribute.getKind(), concreteAspect, signature));//(signature==null?null:signature.slimline
+		super(attribute, pointcut, shrink(attribute.getKind(), concreteAspect, signature));// (signature==null?null:signature.slimline
 		// ()));
 		this.concreteAspect = concreteAspect;
 	}
@@ -82,7 +82,7 @@ class BcelAdvice extends Advice {
 				if (bm.getMethod() != null && bm.getMethod().getAnnotations() != null)
 					return m;
 				ResolvedMemberImpl simplermember = new ResolvedMemberImpl(bm.getKind(), bm.getDeclaringType(), bm.getModifiers(),
-						bm.getReturnType(), bm.getName(), bm.getParameterTypes());//,bm.getExceptions(),bm.getBackingGenericMember()
+						bm.getReturnType(), bm.getName(), bm.getParameterTypes());// ,bm.getExceptions(),bm.getBackingGenericMember()
 				// );
 				simplermember.setParameterNames(bm.getParameterNames());
 				return simplermember;
@@ -212,7 +212,7 @@ class BcelAdvice extends Advice {
 		return BcelWorld.getBcelObjectType(concreteAspect).getLazyClassGen().isWoven();
 	}
 
-	public void implementOn(Shadow s) {
+	public boolean implementOn(Shadow s) {
 		hasMatchedAtLeastOnce = true;
 		BcelShadow shadow = (BcelShadow) s;
 
@@ -284,6 +284,13 @@ class BcelAdvice extends Advice {
 			// It might be dangerous to change that especially for @AJ aspect non compiled with AJC since if those
 			// are not weaved (f.e. use of some limiteed LTW etc) then they cannot be prepared for inlining.
 			// One solution would be to flag @AJ aspect with an annotation as "prepared" and query that one.
+			LazyClassGen enclosingClass = shadow.getEnclosingClass();
+			if (enclosingClass != null && enclosingClass.isInterface() && shadow.getEnclosingMethod().getName().charAt(0) == '<') {
+				// Do not add methods with bodies to an interface (252198, 163005)
+				shadow.getWorld().getLint().cannotAdviseJoinpointInInterfaceWithAroundAdvice.signal(shadow.toString(), shadow
+						.getSourceLocation());
+				return false;
+			}
 			if (!canInline(s)) {
 				shadow.weaveAroundClosure(this, hasDynamicTests());
 			} else {
@@ -305,6 +312,7 @@ class BcelAdvice extends Advice {
 		} else {
 			throw new BCException("unimplemented kind: " + getKind());
 		}
+		return true;
 	}
 
 	private void removeUnnecessaryProblems(BcelMethod method, int problemLineNumber) {
