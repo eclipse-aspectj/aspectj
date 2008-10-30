@@ -18,6 +18,10 @@
         <message kind="error" line="4" text="Syntax error"/>
       </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs163/pr173978" title="missing local variable table on around advice">
+      <compile files="Test.java TestAroundAspect.java" options="-1.5"/>
+    </ajc-test>
 
     <ajc-test dir="bugs163/pr249710" title="terminateAfterCompilation">
       <compile files="Foo.java" options="-1.5">

@@ -16,8 +16,6 @@ import java.util.Set;
 
 import junit.framework.Test;
 
-import org.aspectj.apache.bcel.classfile.LocalVariable;
-import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.testing.XMLBasedAjcTestCase;
@@ -151,28 +149,6 @@ public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		}
 		if (!gotSomethingValid) {
 			fail("Did not find a relationship with the expected data in '" + expected + "'");
-		}
-	}
-
-	// public void testLVTableAround_pr173978() throws Exception {
-	// runTest("lv table for around");
-	// JavaClass jc = Utils.getClassFrom(ajc.getSandboxDirectory().getAbsolutePath(),"Test");
-	// Method[] ms = jc.getMethods();
-	// Method m = null;
-	// for (int i = 0; i < ms.length; i++) {
-	// if (ms[i].getName().equals("sayHello")) {
-	// m = ms[i];
-	// }
-	// }
-	// if (m.getLocalVariableTable()==null) fail("Local variable table should not be null");
-	// print(m.getLocalVariableTable());
-	// }
-
-	private void print(LocalVariableTable localVariableTable) {
-		LocalVariable[] lvs = localVariableTable.getLocalVariableTable();
-		for (int i = 0; i < lvs.length; i++) {
-			LocalVariable localVariable = lvs[i];
-			System.out.println(localVariable);
 		}
 	}
 
