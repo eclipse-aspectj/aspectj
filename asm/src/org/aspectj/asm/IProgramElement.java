@@ -67,6 +67,10 @@ public interface IProgramElement extends Serializable {
 
 	public void setParent(IProgramElement parent);
 
+	public void setParentTypes(List parentTypes);
+
+	public List getParentTypes();
+
 	public String getName();
 
 	public void setName(String name);
@@ -90,8 +94,7 @@ public interface IProgramElement extends Serializable {
 	public String getPackageName();
 
 	/**
-	 * @param method
-	 *            return types or field types
+	 * @param method return types or field types
 	 */
 	public void setCorrespondingType(String returnType);
 
@@ -129,8 +132,7 @@ public interface IProgramElement extends Serializable {
 	public String toString();
 
 	/**
-	 * @return the javadoc comment for this program element, null if not
-	 *         available
+	 * @return the javadoc comment for this program element, null if not available
 	 */
 	public String getFormalComment();
 
@@ -161,8 +163,7 @@ public interface IProgramElement extends Serializable {
 	public List getParameterTypes();
 
 	/**
-	 * The format of the string handle is not specified, but is stable across
-	 * compilation sessions.
+	 * The format of the string handle is not specified, but is stable across compilation sessions.
 	 * 
 	 * @return a string representation of this element
 	 */
@@ -173,8 +174,7 @@ public interface IProgramElement extends Serializable {
 	public void setHandleIdentifier(String handle);
 
 	/**
-	 * @return a string representation of this node and all of its children
-	 *         (recursive)
+	 * @return a string representation of this node and all of its children (recursive)
 	 */
 	public String toLongString();
 
@@ -206,19 +206,13 @@ public interface IProgramElement extends Serializable {
 
 		public static final Modifiers STATIC = new Modifiers("static", 0x0008);
 		public static final Modifiers FINAL = new Modifiers("final", 0x0010);
-		public static final Modifiers ABSTRACT = new Modifiers("abstract",
-				0x0400);
-		public static final Modifiers SYNCHRONIZED = new Modifiers(
-				"synchronized", 0x0020);
-		public static final Modifiers VOLATILE = new Modifiers("volatile",
-				0x0040);
-		public static final Modifiers STRICTFP = new Modifiers("strictfp",
-				0x0800);
-		public static final Modifiers TRANSIENT = new Modifiers("transient",
-				0x0080);
+		public static final Modifiers ABSTRACT = new Modifiers("abstract", 0x0400);
+		public static final Modifiers SYNCHRONIZED = new Modifiers("synchronized", 0x0020);
+		public static final Modifiers VOLATILE = new Modifiers("volatile", 0x0040);
+		public static final Modifiers STRICTFP = new Modifiers("strictfp", 0x0800);
+		public static final Modifiers TRANSIENT = new Modifiers("transient", 0x0080);
 		public static final Modifiers NATIVE = new Modifiers("native", 0x0100);
-		public static final Modifiers[] ALL = { STATIC, FINAL, ABSTRACT,
-				SYNCHRONIZED, VOLATILE, STRICTFP, TRANSIENT, NATIVE };
+		public static final Modifiers[] ALL = { STATIC, FINAL, ABSTRACT, SYNCHRONIZED, VOLATILE, STRICTFP, TRANSIENT, NATIVE };
 		private final String name;
 		private final int bit;
 
@@ -253,13 +247,10 @@ public interface IProgramElement extends Serializable {
 
 		public static final Accessibility PUBLIC = new Accessibility("public");
 		public static final Accessibility PACKAGE = new Accessibility("package");
-		public static final Accessibility PROTECTED = new Accessibility(
-				"protected");
+		public static final Accessibility PROTECTED = new Accessibility("protected");
 		public static final Accessibility PRIVATE = new Accessibility("private");
-		public static final Accessibility PRIVILEGED = new Accessibility(
-				"privileged");
-		public static final Accessibility[] ALL = { PUBLIC, PACKAGE, PROTECTED,
-				PRIVATE, PRIVILEGED };
+		public static final Accessibility PRIVILEGED = new Accessibility("privileged");
+		public static final Accessibility[] ALL = { PUBLIC, PACKAGE, PROTECTED, PRIVATE, PRIVILEGED };
 		private final String name;
 
 		private Accessibility(String name) {
@@ -301,12 +292,9 @@ public interface IProgramElement extends Serializable {
 		public static final Kind ANNOTATION = new Kind("annotation");
 		public static final Kind INITIALIZER = new Kind("initializer");
 		public static final Kind INTER_TYPE_FIELD = new Kind("inter-type field");
-		public static final Kind INTER_TYPE_METHOD = new Kind(
-				"inter-type method");
-		public static final Kind INTER_TYPE_CONSTRUCTOR = new Kind(
-				"inter-type constructor");
-		public static final Kind INTER_TYPE_PARENT = new Kind(
-				"inter-type parent");
+		public static final Kind INTER_TYPE_METHOD = new Kind("inter-type method");
+		public static final Kind INTER_TYPE_CONSTRUCTOR = new Kind("inter-type constructor");
+		public static final Kind INTER_TYPE_PARENT = new Kind("inter-type parent");
 		public static final Kind CONSTRUCTOR = new Kind("constructor");
 		public static final Kind METHOD = new Kind("method");
 		public static final Kind FIELD = new Kind("field");
@@ -316,30 +304,20 @@ public interface IProgramElement extends Serializable {
 		public static final Kind DECLARE_WARNING = new Kind("declare warning");
 		public static final Kind DECLARE_ERROR = new Kind("declare error");
 		public static final Kind DECLARE_SOFT = new Kind("declare soft");
-		public static final Kind DECLARE_PRECEDENCE = new Kind(
-				"declare precedence");
+		public static final Kind DECLARE_PRECEDENCE = new Kind("declare precedence");
 		public static final Kind CODE = new Kind("code");
 		public static final Kind ERROR = new Kind("error");
-		public static final Kind DECLARE_ANNOTATION_AT_CONSTRUCTOR = new Kind(
-				"declare @constructor");
-		public static final Kind DECLARE_ANNOTATION_AT_FIELD = new Kind(
-				"declare @field");
-		public static final Kind DECLARE_ANNOTATION_AT_METHOD = new Kind(
-				"declare @method");
-		public static final Kind DECLARE_ANNOTATION_AT_TYPE = new Kind(
-				"declare @type");
+		public static final Kind DECLARE_ANNOTATION_AT_CONSTRUCTOR = new Kind("declare @constructor");
+		public static final Kind DECLARE_ANNOTATION_AT_FIELD = new Kind("declare @field");
+		public static final Kind DECLARE_ANNOTATION_AT_METHOD = new Kind("declare @method");
+		public static final Kind DECLARE_ANNOTATION_AT_TYPE = new Kind("declare @type");
 		public static final Kind SOURCE_FOLDER = new Kind("source folder");
 
-		public static final Kind[] ALL = { PROJECT, PACKAGE, FILE, FILE_JAVA,
-				FILE_ASPECTJ, FILE_LST, IMPORT_REFERENCE, CLASS, INTERFACE,
-				ASPECT, ENUM, ENUM_VALUE, ANNOTATION, INITIALIZER,
-				INTER_TYPE_FIELD, INTER_TYPE_METHOD, INTER_TYPE_CONSTRUCTOR,
-				INTER_TYPE_PARENT, CONSTRUCTOR, METHOD, FIELD, POINTCUT,
-				ADVICE, DECLARE_PARENTS, DECLARE_WARNING, DECLARE_ERROR,
-				DECLARE_SOFT, DECLARE_PRECEDENCE, CODE, ERROR,
-				DECLARE_ANNOTATION_AT_CONSTRUCTOR, DECLARE_ANNOTATION_AT_FIELD,
-				DECLARE_ANNOTATION_AT_METHOD, DECLARE_ANNOTATION_AT_TYPE,
-				SOURCE_FOLDER
+		public static final Kind[] ALL = { PROJECT, PACKAGE, FILE, FILE_JAVA, FILE_ASPECTJ, FILE_LST, IMPORT_REFERENCE, CLASS,
+				INTERFACE, ASPECT, ENUM, ENUM_VALUE, ANNOTATION, INITIALIZER, INTER_TYPE_FIELD, INTER_TYPE_METHOD,
+				INTER_TYPE_CONSTRUCTOR, INTER_TYPE_PARENT, CONSTRUCTOR, METHOD, FIELD, POINTCUT, ADVICE, DECLARE_PARENTS,
+				DECLARE_WARNING, DECLARE_ERROR, DECLARE_SOFT, DECLARE_PRECEDENCE, CODE, ERROR, DECLARE_ANNOTATION_AT_CONSTRUCTOR,
+				DECLARE_ANNOTATION_AT_FIELD, DECLARE_ANNOTATION_AT_METHOD, DECLARE_ANNOTATION_AT_TYPE, SOURCE_FOLDER
 
 		};
 
@@ -371,18 +349,16 @@ public interface IProgramElement extends Serializable {
 		}
 
 		public boolean isMember() {
-			return this == FIELD || this == METHOD || this == CONSTRUCTOR
-					|| this == POINTCUT || this == ADVICE || this == ENUM_VALUE;
+			return this == FIELD || this == METHOD || this == CONSTRUCTOR || this == POINTCUT || this == ADVICE
+					|| this == ENUM_VALUE;
 		}
 
 		public boolean isInterTypeMember() {
-			return this == INTER_TYPE_CONSTRUCTOR || this == INTER_TYPE_FIELD
-					|| this == INTER_TYPE_METHOD;
+			return this == INTER_TYPE_CONSTRUCTOR || this == INTER_TYPE_FIELD || this == INTER_TYPE_METHOD;
 		}
 
 		public boolean isType() {
-			return this == CLASS || this == INTERFACE || this == ASPECT
-					|| this == ANNOTATION || this == ENUM;
+			return this == CLASS || this == INTERFACE || this == ASPECT || this == ANNOTATION || this == ENUM;
 		}
 
 		public boolean isSourceFile() {

@@ -341,6 +341,16 @@ public class ProgramElement implements IProgramElement {
 		// this.returnType = s;
 	}
 
+	public void setParentTypes(List ps) {
+		if (kvpairs == Collections.EMPTY_MAP)
+			kvpairs = new HashMap();
+		kvpairs.put("parentTypes", ps);
+	}
+
+	public List getParentTypes() {
+		return (List) (kvpairs == null ? null : kvpairs.get("parentTypes"));
+	}
+
 	public String getCorrespondingType() {
 		return getCorrespondingType(false);
 	}
