@@ -54,7 +54,13 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 
 	public abstract void specializeOn(Shadow shadow);
 
-	public abstract void implementOn(Shadow shadow);
+	/**
+	 * Implement this munger at the specified shadow, returning a boolean to indicate success.
+	 * 
+	 * @param shadow the shadow where this munger should be applied
+	 * @return true if the munger was successful
+	 */
+	public abstract boolean implementOn(Shadow shadow);
 
 	/**
 	 * All overriding methods should call super

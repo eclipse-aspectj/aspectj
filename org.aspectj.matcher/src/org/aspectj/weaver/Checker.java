@@ -72,7 +72,7 @@ public class Checker extends ShadowMunger {
 	/**
 	 * Not supported for a Checker
 	 */
-	public void implementOn(Shadow shadow) {
+	public boolean implementOn(Shadow shadow) {
 		throw new RuntimeException("illegal state");
 	}
 

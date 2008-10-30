@@ -610,8 +610,9 @@ public abstract class Shadow {
 		World world = getIWorld();
 		for (Iterator iter = mungers.iterator(); iter.hasNext();) {
 			ShadowMunger munger = (ShadowMunger) iter.next();
-			munger.implementOn(this);
-			world.reportMatch(munger, this);
+			if (munger.implementOn(this)) {
+				world.reportMatch(munger, this);
+			}
 		}
 	}
 

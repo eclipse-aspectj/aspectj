@@ -126,6 +126,10 @@ public class Lint {
 			"mustWeaveXmlDefinedAspects",
 			"XML Defined aspects must be woven in cases where cflow pointcuts are involved. Currently the include/exclude patterns exclude ''{0}''");
 
+	public final Kind cannotAdviseJoinpointInInterfaceWithAroundAdvice = new Kind(
+			"cannotAdviseJoinpointInInterfaceWithAroundAdvice",
+			"The joinpoint ''{0}'' cannot be advised and is being skipped as the compiler implementation will lead to creation of methods with bodies in an interface (compiler limitation)");
+
 	/**
 	 * Indicates an aspect could not be found when attempting reweaving.
 	 */
