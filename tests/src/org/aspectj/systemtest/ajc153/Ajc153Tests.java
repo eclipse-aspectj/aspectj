@@ -17,6 +17,7 @@ import junit.framework.Test;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.testing.Utils;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.weaver.bcel.Utility;
 
@@ -207,10 +208,11 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("ataj inheritance - 3");
 	}
 
-	// public void testVerificationFailureForAspectOf_pr148693() {
-	// runTest("verification problem"); // build the code
-	// Utils.verifyClass(ajc,"mypackage.MyAspect"); // verify it <<< BRAND NEW VERIFY UTILITY FOR EVERYONE TO TRY ;)
-	// }
+	public void testVerificationFailureForAspectOf_pr148693() {
+		runTest("verification problem"); // build the code
+		Utils.verifyClass(ajc, "mypackage.MyAspect"); // verify it <<< BRAND NEW VERIFY UTILITY FOR EVERYONE TO TRY ;)
+	}
+
 	public void testIncorrectAnnotationValue_pr148537() {
 		runTest("incorrect annotation value");
 	}
