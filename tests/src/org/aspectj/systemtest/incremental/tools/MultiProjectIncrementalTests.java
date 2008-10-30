@@ -48,6 +48,27 @@ import org.aspectj.util.FileUtil;
  */
 public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
 
+	public void testDeclareParentsInModel() {
+		String p = "decps";
+		initialiseProject(p);
+		build(p);
+		IProgramElement decp = getModelFor(p).getHierarchy().findElementForHandle("=decps<a{A.java}A`declare parents");
+		List ps = decp.getParentTypes();
+		assertNotNull(ps);
+		assertEquals(2, ps.size());
+		int count = 0;
+		for (Iterator iterator = ps.iterator(); iterator.hasNext();) {
+			String type = (String) iterator.next();
+			if (type.equals("java.io.Serializable")) {
+				count++;
+			}
+			if (type.equals("a.Goo")) {
+				count++;
+			}
+		}
+		assertEquals("Should have found the two types in: " + ps, 2, count);
+	}
+
 	/*
 	 * A.aj package pack; public aspect A { pointcut p() : call( C.method before() : p() { // line 7 } }
 	 * 
@@ -378,6 +399,17 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			for (int i = 0; i < indent; i++)
 				System.out.print(" ");
 			System.out.println("  hid is " + node.getHandleIdentifier());
+			// Map m = ((ProgramElement) node).kvpairs;
+			// if (m != null) {
+			// Set keys = m.keySet();
+			// for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+			// Object object = (Object) iterator.next();
+			//
+			// for (int i = 0; i < indent; i++)
+			// System.out.print(" ");
+			// System.out.println("kvp: " + object + " = " + m.get(object));
+			// }
+			// }
 			for (Iterator i = node.getChildren().iterator(); i.hasNext();) {
 				dumptree((IProgramElement) i.next(), indent + 2);
 			}
