@@ -27,6 +27,7 @@ import java.util.StringTokenizer;
 import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
 import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.DeclareDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.InterTypeDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
@@ -65,9 +66,12 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.AndPointcut;
+import org.aspectj.weaver.patterns.Declare;
+import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.OrPointcut;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.ReferencePointcut;
+import org.aspectj.weaver.patterns.TypePatternList;
 
 /**
  * At each iteration of <CODE>processCompilationUnit</CODE> the declarations for a particular compilation unit are added to the
@@ -484,6 +488,18 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		// if (shouldAddUsesPointcut)
 		// addUsesPointcutRelationsForNode(peNode, namedPointcuts, methodDeclaration);
 
+		if (methodDeclaration instanceof DeclareDeclaration) {
+			DeclareDeclaration dDeclaration = (DeclareDeclaration) methodDeclaration;
+			Declare decl = dDeclaration.declareDecl;
+			if (decl instanceof DeclareParents) {
+				TypePatternList tpl = ((DeclareParents) decl).getParents();
+				List parents = new ArrayList();
+				for (int i = 0; i < tpl.size(); i++) {
+					parents.add(tpl.get(i).getExactType().getName());
+				}
+				peNode.setParentTypes(parents);
+			}
+		}
 		if (methodDeclaration.returnType != null) {
 			// if we don't make the distinction between ITD fields and other
 			// methods, then we loose the type, for example int, for the field
