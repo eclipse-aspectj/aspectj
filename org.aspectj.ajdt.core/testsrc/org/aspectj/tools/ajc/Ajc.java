@@ -54,9 +54,12 @@ public class Ajc {
 	private static final String TESTER_PATH = ".." + File.separator + "testing-client" + File.separator + "bin"
 			+ File.pathSeparator + ".." + File.separator + "runtime" + File.separator + "bin" + File.pathSeparator + ".."
 			+ File.separator + "aspectj5rt" + File.separator + "bin" + File.pathSeparator + ".." + File.separator + "lib"
-			+ File.separator + "junit" + File.separator + "junit.jar" + File.pathSeparator + ".." + File.separator + "bridge"
-			+ File.separator + "bin" + File.pathSeparator + ".." + File.separator + "loadtime" + File.separator + "bin"
-			+ File.pathSeparator
+			+ File.separator + "junit" + File.separator + "junit.jar" + File.separator + "lib" + File.separator + "bcel"
+			+ File.separator + "bcel.jar" + File.separator + "lib" + File.separator + "bcel" + File.separator + "bcel-verifier.jar"
+			+
+
+			File.pathSeparator + ".." + File.separator + "bridge" + File.separator + "bin" + File.pathSeparator + ".."
+			+ File.separator + "loadtime" + File.separator + "bin" + File.pathSeparator
 			+ ".."
 			+ File.separator
 			+ "weaver"
