@@ -2,6 +2,28 @@
 
 <suite>
 
+
+    <ajc-test dir="bugs163/pr163005" title="do not add method bodies to an interface">
+      <compile files="Code.java" options="-1.4">
+        <message kind="warning" text="The joinpoint 'method-call(java.lang.Class java.lang.Class.forName(java.lang.String))' cannot be advised"/>
+      </compile>      
+      <run class="Code"/>
+    </ajc-test>
+    
+     <ajc-test dir="bugs163/pr163005" title="do not add method bodies to an interface - 2">
+      <compile files="Code.java" options="-1.4 -XnoInline">
+        <message kind="warning" text="The joinpoint 'method-call(java.lang.Class java.lang.Class.forName(java.lang.String))' cannot be advised"/>
+      </compile>      
+      <run class="Code"/>
+    </ajc-test>
+    
+     <ajc-test dir="bugs163/pr163005" title="do not add method bodies to an interface - 3">
+      <compile files="Code2.java" options="-1.4">
+        <message kind="warning" text="The joinpoint 'constructor-call(void java.lang.Object.&lt;init&gt;())' cannot be advised"/>
+      </compile>      
+      <run class="Code2"/>
+    </ajc-test>
+
     <ajc-test dir="bugs163/pr250091" title="itd cce">
       <compile files="Demo.java" options="-1.5"/>
       <run class="Demo">

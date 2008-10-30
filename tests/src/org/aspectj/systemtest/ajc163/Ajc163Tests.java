@@ -23,6 +23,18 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testDontAddMethodBodiesToInterface_pr163005() {
+		runTest("do not add method bodies to an interface");
+	}
+
+	public void testDontAddMethodBodiesToInterface_pr163005_2() {
+		runTest("do not add method bodies to an interface - 2");
+	}
+
+	public void testDontAddMethodBodiesToInterface_pr163005_3() {
+		runTest("do not add method bodies to an interface - 3");
+	}
+
 	public void testMissingLocalVariableTableEntriesOnAroundAdvice_pr173978() throws Exception {
 		runTest("missing local variable table on around advice");
 		JavaClass jc = Utils.getClassFrom(ajc.getSandboxDirectory().getAbsolutePath(), "Test");

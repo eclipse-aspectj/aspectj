@@ -1090,7 +1090,9 @@
     </ajc-test>
 
     <ajc-test dir="bugs150" pr="80571" title="around advice on interface initializer">
-        <compile files="pr80571.aj"/>
+        <compile files="pr80571.aj">
+          <message kind="warning" text="The joinpoint 'constructor-call(void pr80571.&lt;init&gt;())' cannot be advised"/>
+        </compile>
         <run class="pr80571">
             <stdout>
                 <line text="before"/>

@@ -1,4 +1,4 @@
-public class pr80571 {
+public class pr80571 implements I{
 	
 	public static void main(String[] args) {
 		new pr80571();
