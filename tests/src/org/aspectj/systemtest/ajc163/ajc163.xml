@@ -3,6 +3,14 @@
 <suite>
 
 
+    <ajc-test dir="bugs163/pr194314" title="broken lvt - 1">
+      <compile files="Service.java IService.java Main.java ServiceInterceptor.java" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr194314" title="broken lvt - 2">
+      <compile files="Service.java IService.java Main.java ServiceInterceptorCodeStyle.java" options="-1.5"/>
+    </ajc-test>
+
     <ajc-test dir="bugs163/pr163005" title="do not add method bodies to an interface">
       <compile files="Code.java" options="-1.4">
         <message kind="warning" text="The joinpoint 'method-call(java.lang.Class java.lang.Class.forName(java.lang.String))' cannot be advised"/>
