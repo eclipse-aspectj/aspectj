@@ -3,6 +3,19 @@
 <suite>
 
 
+    <ajc-test dir="bugs163/pr253109" title="generic pointcuts - 1">
+      <compile files="CodeOne.java" options="-1.5">
+        <message kind="warning" line="4" text="has not been applied"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr253109" title="generic pointcuts - 2">
+      <compile files="CodeTwo.java" options="-1.5">
+        <message kind="warning" line="4" text="has not been applied"/>
+      </compile>
+    </ajc-test>
+    
+
     <ajc-test dir="bugs163/pr194314" title="broken lvt - 1">
       <compile files="Service.java IService.java Main.java ServiceInterceptor.java" options="-1.5"/>
     </ajc-test>
