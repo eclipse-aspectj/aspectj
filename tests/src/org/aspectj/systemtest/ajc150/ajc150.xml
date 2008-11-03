@@ -5408,7 +5408,7 @@
    </ajc-test>
 
   <ajc-test dir="java5/generics/pointcuts" title="args with generic wildcard">
-     <compile files="ArgsListOfSomething.aj" options="-1.5">
+     <compile files="ArgsListOfSomething.aj" options="-1.5 -Xlint:ignore">
      </compile>
      <run class="ArgsListOfSomething">
          <stdout>
@@ -5536,6 +5536,9 @@
    
    <ajc-test dir="java5/generics/afterAdvice" title="after returning with generic wildcard">
      <compile files="AfterReturningListOfSomething.aj" options="-1.5">
+       <!-- warning is unchecked match of List<?> from line 28 onto line 15. -->
+       <!-- some sets may be lists unless the set is final, so as a cast is allowed, the match is allowed -->
+       <message kind="warning" line="28"/>
      </compile>
      <run class="AfterReturningListOfSomething">
          <stdout>

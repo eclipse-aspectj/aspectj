@@ -25,6 +25,12 @@
         <message kind="warning" line="9" text="unchecked"/>        
       </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs163/pr253109" title="generic pointcuts - 4">
+      <compile files="CodeFour.java" options="-1.5">
+        <message kind="warning" text="has not been applied"/>
+      </compile>
+    </ajc-test>
 
     <ajc-test dir="bugs163/pr194314" title="broken lvt - 1">
       <compile files="Service.java IService.java Main.java ServiceInterceptor.java" options="-1.5"/>

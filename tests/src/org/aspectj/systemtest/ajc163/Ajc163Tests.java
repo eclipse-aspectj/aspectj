@@ -22,7 +22,7 @@ import org.aspectj.testing.Utils;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
-/*
+
 	public void testGenericPointcuts_1() {
 		runTest("generic pointcuts - 1");
 	}
@@ -34,7 +34,11 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testGenericPointcuts_3() {
 		runTest("generic pointcuts - 3");
 	}
-*/
+
+	public void testGenericPointcuts_4() {
+		runTest("generic pointcuts - 4");
+	}
+
 	// public void testBrokenLVT_pr194314_1() throws Exception {
 	// runTest("broken lvt - 1");
 	// JavaClass jc = Utils.getClassFrom(ajc.getSandboxDirectory().getAbsolutePath(), "Service");
