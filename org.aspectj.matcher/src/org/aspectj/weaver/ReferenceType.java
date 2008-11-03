@@ -240,7 +240,7 @@ public class ReferenceType extends ResolvedType {
 			return false;
 		ResolvedType myRawType = (ResolvedType) getRawType();
 		ResolvedType theirRawType = (ResolvedType) other.getRawType();
-		if (myRawType == theirRawType) {
+		if (myRawType == theirRawType || myRawType.isCoerceableFrom(theirRawType)) {
 			if (getTypeParameters().length == other.getTypeParameters().length) {
 				// there's a chance it can be done
 				ResolvedType[] myTypeParameters = getResolvedTypeParameters();
@@ -265,6 +265,11 @@ public class ReferenceType extends ResolvedType {
 							tv.resolve(world);
 							if (!tv.canBeBoundTo(myTypeParameters[i]))
 								return false;
+						} else if (theirTypeParameters[i].isGenericWildcard()) {
+							BoundedReferenceType wildcard = (BoundedReferenceType) theirTypeParameters[i];
+							if (!wildcard.canBeCoercedTo(myTypeParameters[i])) {
+								return false;
+							}
 						} else {
 							return false;
 						}
@@ -272,15 +277,15 @@ public class ReferenceType extends ResolvedType {
 				}
 				return true;
 			}
-		} else {
-			// we do this walk for situations like the following:
-			// Base<T>, Sub<S,T> extends Base<S>
-			// is Sub<Y,Z> coerceable from Base<X> ???
-			for (Iterator i = getDirectSupertypes(); i.hasNext();) {
-				ReferenceType parent = (ReferenceType) i.next();
-				if (parent.isCoerceableFromParameterizedType(other))
-					return true;
-			}
+			// } else {
+			// // we do this walk for situations like the following:
+			// // Base<T>, Sub<S,T> extends Base<S>
+			// // is Sub<Y,Z> coerceable from Base<X> ???
+			// for (Iterator i = getDirectSupertypes(); i.hasNext();) {
+			// ReferenceType parent = (ReferenceType) i.next();
+			// if (parent.isCoerceableFromParameterizedType(other))
+			// return true;
+			// }
 		}
 		return false;
 	}
@@ -336,11 +341,23 @@ public class ReferenceType extends ResolvedType {
 				ResolvedType[] theirParameters = other.getResolvedTypeParameters();
 				boolean parametersAssignable = true;
 				if (myParameters.length == theirParameters.length) {
-					for (int i = 0; i < myParameters.length; i++) {
+					for (int i = 0; i < myParameters.length && parametersAssignable; i++) {
 						if (myParameters[i] == theirParameters[i])
 							continue;
-						if (myParameters[i].isAssignableFrom(theirParameters[i], allowMissing)) {
-							continue;
+						// dont do this!
+						// if (myParameters[i].isAssignableFrom(theirParameters[i], allowMissing)) {
+						// continue;
+						// }
+						if (myParameters[i].isTypeVariableReference() && theirParameters[i].isTypeVariableReference()) {
+							TypeVariable myTV = ((TypeVariableReferenceType) myParameters[i]).getTypeVariable();
+							// TypeVariable theirTV = ((TypeVariableReferenceType) theirParameters[i]).getTypeVariable();
+							boolean b = myTV.canBeBoundTo(theirParameters[i]);
+							if (!b) {// TODO incomplete testing here I think
+								parametersAssignable = false;
+								break;
+							} else {
+								continue;
+							}
 						}
 						if (!myParameters[i].isGenericWildcard()) {
 							parametersAssignable = false;
