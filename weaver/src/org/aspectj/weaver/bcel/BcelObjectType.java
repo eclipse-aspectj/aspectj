@@ -243,6 +243,12 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		} else {
 			interfaceTypes = new ResolvedType[interfaceSignatures.length];
 			for (int i = 0, len = interfaceSignatures.length; i < len; i++) {
+				if (interfaceSignatures[i] == null) { // debug for NPE
+					String msg = "Null interface signature (element:" + i + " of " + interfaceSignatures.length
+							+ ").  Type for which we" + "are looking at interfaces is " + this.className + ".";
+					System.err.println(msg);
+					throw new BCException(msg);
+				}
 				interfaceTypes[i] = getResolvedTypeX().getWorld().resolve(UnresolvedType.forSignature(interfaceSignatures[i]));
 			}
 		}
