@@ -15,6 +15,18 @@
       </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs163/pr253109" title="generic pointcuts - 3">
+      <compile files="CodeThree.java" options="-1.5 -showWeaveInfo">      
+        <message kind="weave" text="advised by before advice from 'CodeThree' (CodeThree.java:4)"/>
+        <message kind="weave" text="advised by before advice from 'CodeThree' (CodeThree.java:5) [with runtime test]"/>
+        <message kind="warning" line="6" text="has not been applied"/>
+        <message kind="warning" line="7" text="has not been applied"/>
+        <message kind="weave" text="advised by before advice from 'CodeThree' (CodeThree.java:8)"/>
+        <message kind="weave" text="advised by before advice from 'CodeThree' (CodeThree.java:9) [with runtime test]"/> 
+        <message kind="warning" line="5" text="unchecked"/>        
+        <message kind="warning" line="9" text="unchecked"/>        
+      </compile>
+    </ajc-test>
 
     <ajc-test dir="bugs163/pr194314" title="broken lvt - 1">
       <compile files="Service.java IService.java Main.java ServiceInterceptor.java" options="-1.5"/>
