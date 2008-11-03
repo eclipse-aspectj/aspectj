@@ -422,7 +422,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 	// TODO: optimize this lookup
 	// only want to create a file node if can't find the IPE if called through
 	// findElementForHandle() to mirror behaviour before pr141730
-	private IProgramElement findElementForHandleOrCreate(String handle, boolean create) {
+	public IProgramElement findElementForHandleOrCreate(String handle, boolean create) {
 		// try the cache first...
 		IProgramElement ipe = (IProgramElement) handleMap.get(handle);
 		if (ipe != null) {

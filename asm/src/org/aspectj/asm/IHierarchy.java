@@ -43,10 +43,9 @@ public interface IHierarchy extends Serializable {
 
 	public boolean isValid();
 
-	/**
-	 * @return null if not found
-	 */
 	public IProgramElement findElementForHandle(String handle);
+
+	public IProgramElement findElementForHandleOrCreate(String handle, boolean create);
 
 	/**
 	 * Returns the first match
