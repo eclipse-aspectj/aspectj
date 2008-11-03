@@ -22,7 +22,7 @@ import org.aspectj.testing.Utils;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
-
+/*
 	public void testGenericPointcuts_1() {
 		runTest("generic pointcuts - 1");
 	}
@@ -34,59 +34,59 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testGenericPointcuts_3() {
 		runTest("generic pointcuts - 3");
 	}
-
-	public void testBrokenLVT_pr194314_1() throws Exception {
-		runTest("broken lvt - 1");
-		JavaClass jc = Utils.getClassFrom(ajc.getSandboxDirectory().getAbsolutePath(), "Service");
-		Method[] ms = jc.getMethods();
-		Method m = null;
-		for (int i = 0; i < ms.length; i++) {
-			if (ms[i].getName().equals("method_aroundBody1$advice")) {
-				m = ms[i];
-			}
-		}
-		if (m.getLocalVariableTable() == null) {
-			fail("Local variable table should not be null");
-		}
-		System.out.println(m.getLocalVariableTable());
-		LocalVariable[] lvt = m.getLocalVariableTable().getLocalVariableTable();
-		assertEquals(8, lvt.length);
-	}
-
-	public void testBrokenLVT_pr194314_2() throws Exception {
-		runTest("broken lvt - 2");
-		JavaClass jc = Utils.getClassFrom(ajc.getSandboxDirectory().getAbsolutePath(), "Service");
-		Method[] ms = jc.getMethods();
-		Method m = null;
-		for (int i = 0; i < ms.length; i++) {
-			if (ms[i].getName().equals("method_aroundBody1$advice")) {
-				m = ms[i];
-			}
-		}
-		if (m.getLocalVariableTable() == null) {
-			fail("Local variable table should not be null");
-		}
-		System.out.println(m.getLocalVariableTable());
-		LocalVariable[] lvt = m.getLocalVariableTable().getLocalVariableTable();
-		assertEquals(8, lvt.length);
-		// assertEquals(2, m.getLocalVariableTable().getLocalVariableTable().length);
-
-		// Before I've started any work on this:
-		// LocalVariable(start_pc = 0, length = 68, index = 0:ServiceInterceptorCodeStyle this)
-		// LocalVariable(start_pc = 0, length = 68, index = 1:org.aspectj.runtime.internal.AroundClosure ajc_aroundClosure)
-		// LocalVariable(start_pc = 0, length = 68, index = 2:org.aspectj.lang.JoinPoint thisJoinPoint)
-		// LocalVariable(start_pc = 9, length = 59, index = 3:Object[] args)
-		// LocalVariable(start_pc = 21, length = 47, index = 4:long id)
-
-		// Method signature:
-		// private static final void method_aroundBody1$advice(Service, long, org.aspectj.lang.JoinPoint,
-		// ServiceInterceptorCodeStyle, org.aspectj.runtime.internal.AroundClosure, org.aspectj.lang.JoinPoint);
-		//
-		// Service, JoinPoint, ServiceInterceptorCodeStyle, AroundClosure, JoinPoint
-
-		// args should be in slot 7 and the long in position 8
-
-	}
+*/
+	// public void testBrokenLVT_pr194314_1() throws Exception {
+	// runTest("broken lvt - 1");
+	// JavaClass jc = Utils.getClassFrom(ajc.getSandboxDirectory().getAbsolutePath(), "Service");
+	// Method[] ms = jc.getMethods();
+	// Method m = null;
+	// for (int i = 0; i < ms.length; i++) {
+	// if (ms[i].getName().equals("method_aroundBody1$advice")) {
+	// m = ms[i];
+	// }
+	// }
+	// if (m.getLocalVariableTable() == null) {
+	// fail("Local variable table should not be null");
+	// }
+	// System.out.println(m.getLocalVariableTable());
+	// LocalVariable[] lvt = m.getLocalVariableTable().getLocalVariableTable();
+	// assertEquals(8, lvt.length);
+	// }
+	//
+	// public void testBrokenLVT_pr194314_2() throws Exception {
+	// runTest("broken lvt - 2");
+	// JavaClass jc = Utils.getClassFrom(ajc.getSandboxDirectory().getAbsolutePath(), "Service");
+	// Method[] ms = jc.getMethods();
+	// Method m = null;
+	// for (int i = 0; i < ms.length; i++) {
+	// if (ms[i].getName().equals("method_aroundBody1$advice")) {
+	// m = ms[i];
+	// }
+	// }
+	// if (m.getLocalVariableTable() == null) {
+	// fail("Local variable table should not be null");
+	// }
+	// System.out.println(m.getLocalVariableTable());
+	// LocalVariable[] lvt = m.getLocalVariableTable().getLocalVariableTable();
+	// assertEquals(8, lvt.length);
+	// // assertEquals(2, m.getLocalVariableTable().getLocalVariableTable().length);
+	//
+	// // Before I've started any work on this:
+	// // LocalVariable(start_pc = 0, length = 68, index = 0:ServiceInterceptorCodeStyle this)
+	// // LocalVariable(start_pc = 0, length = 68, index = 1:org.aspectj.runtime.internal.AroundClosure ajc_aroundClosure)
+	// // LocalVariable(start_pc = 0, length = 68, index = 2:org.aspectj.lang.JoinPoint thisJoinPoint)
+	// // LocalVariable(start_pc = 9, length = 59, index = 3:Object[] args)
+	// // LocalVariable(start_pc = 21, length = 47, index = 4:long id)
+	//
+	// // Method signature:
+	// // private static final void method_aroundBody1$advice(Service, long, org.aspectj.lang.JoinPoint,
+	// // ServiceInterceptorCodeStyle, org.aspectj.runtime.internal.AroundClosure, org.aspectj.lang.JoinPoint);
+	// //
+	// // Service, JoinPoint, ServiceInterceptorCodeStyle, AroundClosure, JoinPoint
+	//
+	// // args should be in slot 7 and the long in position 8
+	//
+	// }
 
 	public void testDontAddMethodBodiesToInterface_pr163005() {
 		runTest("do not add method bodies to an interface");
