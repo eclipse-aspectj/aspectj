@@ -2,6 +2,20 @@
 
 <suite>
 
+    <ajc-test dir="bugs163/pr254207" title="ordering issue">
+      <compile files="Abstract.java Concrete.java" options="-1.5 -proceedOnError -Xset:pipelineCompilation=false">
+        <message kind="error" line="1" text="Bound mismatch"/>
+      </compile>      
+      <compile files="Concrete.java Abstract.java" options="-1.5 -proceedOnError -Xset:pipelineCompilation=false">
+        <message kind="error" line="1" text="Bound mismatch"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr254207/case2" title="ordering issue - 2">
+      <compile files="Interface.java Clazz.java Abstract.java Concrete.java" options="-1.5 -proceedOnError -Xset:pipelineCompilation=false">
+        <message kind="error" line="1" text="Bound mismatch"/>
+      </compile>      
+    </ajc-test>
 
     <ajc-test dir="bugs163/pr253109" title="generic pointcuts - 1">
       <compile files="CodeOne.java" options="-1.5">
@@ -14,7 +28,7 @@
     </ajc-test>
     
     <ajc-test dir="bugs163/pr253109" title="generic pointcuts - 3">
-      <compile files="CodeThree.java" options="-1.5 -showWeaveInfo">      
+      <compile files="CodeThree.java" options="-1.5 -showWeaveInfo">
         <message kind="weave" text="advised by before advice from 'CodeThree' (CodeThree.java:4)"/>
         <message kind="weave" text="advised by before advice from 'CodeThree' (CodeThree.java:5) [with runtime test]"/>
         <message kind="warning" line="6" text="has not been applied"/>
@@ -31,6 +45,13 @@
         <message kind="warning" text="has not been applied"/>
       </compile>
     </ajc-test>
+    
+    <ajc-test dir="bugs163/pr253109" title="generic pointcuts - 5">
+      <compile files="CodeFive.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="advised by around advice"/>
+      </compile>
+    </ajc-test>
+    
 
     <ajc-test dir="bugs163/pr194314" title="broken lvt - 1">
       <compile files="Service.java IService.java Main.java ServiceInterceptor.java" options="-1.5"/>
