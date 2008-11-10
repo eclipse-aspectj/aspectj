@@ -528,6 +528,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	public CrosscuttingMembers collectCrosscuttingMembers(boolean shouldConcretizeIfNeeded) {
 		crosscuttingMembers = new CrosscuttingMembers(this, shouldConcretizeIfNeeded);
+		if (getPerClause() == null) {
+			return crosscuttingMembers;
+		}
 		crosscuttingMembers.setPerClause(getPerClause());
 		crosscuttingMembers.addShadowMungers(collectShadowMungers());
 		// GENERICITDFIX
