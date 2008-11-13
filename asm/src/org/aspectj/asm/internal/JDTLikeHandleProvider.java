@@ -92,10 +92,14 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 				// format: 'new Runnable() {..}' but its anon-y-mouse
 				// dont append anything, there may be a count to follow though (!<n>)
 			} else {
-				// if (ipe.getKind() == IProgramElement.Kind.PACKAGE && ipe.getName().equals("DEFAULT")) {
-				// // the delimiter will be in there, but skip the word DEFAULT as it is just a placeholder
-				// } else {
-				handle.append(ipe.getName()).append(getParameters(ipe));
+				if (ipe.getKind() == IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR) {
+					handle.append(ipe.getName()).append("_new").append(getParameters(ipe));
+				} else {
+					// if (ipe.getKind() == IProgramElement.Kind.PACKAGE && ipe.getName().equals("DEFAULT")) {
+					// // the delimiter will be in there, but skip the word DEFAULT as it is just a placeholder
+					// } else {
+					handle.append(ipe.getName()).append(getParameters(ipe));
+				}
 				// }
 			}
 		}
