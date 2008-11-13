@@ -103,7 +103,8 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 
 	public void testConstructorITDWithArgs() {
 		runTest("constructor itd with args");
-		compareHandles(IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR, "C.C(int,java.lang.String)", "<pkg*A13.aj}A13)C.C)I)QString;");
+		compareHandles(IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR, "C.C(int,java.lang.String)",
+				"<pkg*A13.aj}A13)C.C_new)I)QString;");
 	}
 
 	public void testDeclareParentsHandle() {
