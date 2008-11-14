@@ -197,6 +197,8 @@ public interface IProgramElement extends Serializable {
 
 	public AsmManager getModel();
 
+	public int getRawModifiers();
+
 	/**
 	 * Uses "typesafe enum" pattern.
 	 */

@@ -54,9 +54,9 @@ public class ProgramElement implements IProgramElement {
 	private Kind kind;
 	protected IProgramElement parent = null;
 	protected List children = Collections.EMPTY_LIST;
-	private Map kvpairs = Collections.EMPTY_MAP;
+	public Map kvpairs = Collections.EMPTY_MAP;
 	protected ISourceLocation sourceLocation = null;
-	private int modifiers;
+	public int modifiers;
 	private String handle = null;
 
 	// --- ctors
@@ -118,6 +118,10 @@ public class ProgramElement implements IProgramElement {
 	// if (relations!=null && relations.size()!=0) setRelations(relations);
 	// // this.relations = relations;
 	// }
+
+	public int getRawModifiers() {
+		return this.modifiers;
+	}
 
 	public List getModifiers() {
 		return genModifiers(this.modifiers);
