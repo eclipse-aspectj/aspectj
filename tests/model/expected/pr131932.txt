@@ -15,8 +15,8 @@
 === RELATIONSHIPS REPORT ========= After a batch build
 (targets=1) <*pr131932.aj}Slide74)Bar.children (declared on) <*pr131932.aj}Slide74[Bar
 (targets=1) <*pr131932.aj}Slide74)Bar.getFirst (declared on) <*pr131932.aj}Slide74[Bar
-(targets=1) <*pr131932.aj[Foo (aspect declarations) <*pr131932.aj}Slide74)Foo.Foo)QList\<TT;>;
-(targets=1) <*pr131932.aj}Slide74)Foo.Foo)QList\<TT;>; (declared on) <*pr131932.aj[Foo
+(targets=1) <*pr131932.aj[Foo (aspect declarations) <*pr131932.aj}Slide74)Foo.Foo_new)QList\<TT;>;
+(targets=1) <*pr131932.aj}Slide74)Foo.Foo_new)QList\<TT;>; (declared on) <*pr131932.aj[Foo
 (targets=2) <*pr131932.aj}Slide74[Bar (aspect declarations) <*pr131932.aj}Slide74)Bar.getFirst
 (targets=2) <*pr131932.aj}Slide74[Bar (aspect declarations) <*pr131932.aj}Slide74)Bar.children
 === END OF RELATIONSHIPS REPORT ==
