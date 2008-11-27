@@ -69,7 +69,12 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 		} else if (ipe.getKind() == IProgramElement.Kind.SOURCE_FOLDER) {
 			StringBuffer sb = new StringBuffer();
 			sb.append(createHandleIdentifier(ipe.getParent())).append("/");
-			sb.append(ipe.getName());
+			// pr249216 - escape any embedded slashes
+			String folder = ipe.getName();
+			if (folder.indexOf("/") != -1) {
+				folder = folder.replace("/", "\\/");
+			}
+			sb.append(folder);
 			String handle = sb.toString();
 			ipe.setHandleIdentifier(handle);
 			return handle;
