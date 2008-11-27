@@ -374,6 +374,30 @@ class BcelMethod extends ResolvedMemberImpl {
 		// method.addAnnotation(annotation.getBcelAnnotation());
 	}
 
+	public static final AnnotationAJ[] NO_PARAMETER_ANNOTATIONS = new AnnotationAJ[] {};
+
+	public void addParameterAnnotation(int param, AnnotationAJ anno) {
+		ensureParameterAnnotationsRetrieved();
+		if (parameterAnnotations == NO_PARAMETER_ANNOTATIONXS) {
+			// First time we've added any, so lets set up the array
+			parameterAnnotations = new AnnotationAJ[getArity()][];
+			for (int i = 0; i < getArity(); i++) {
+				parameterAnnotations[i] = NO_PARAMETER_ANNOTATIONS;
+			}
+		}
+		int existingCount = parameterAnnotations[param].length;
+		if (existingCount == 0) {
+			AnnotationAJ[] annoArray = new AnnotationAJ[1];
+			annoArray[0] = anno;
+			parameterAnnotations[param] = annoArray;
+		} else {
+			AnnotationAJ[] newAnnoArray = new AnnotationAJ[existingCount + 1];
+			System.arraycopy(parameterAnnotations[param], 0, newAnnoArray, 0, existingCount);
+			newAnnoArray[existingCount] = anno;
+			parameterAnnotations[param] = newAnnoArray;
+		}
+	}
+
 	private void ensureAnnotationsRetrieved() {
 		if (method == null)
 			return; // must be ok, we have evicted it

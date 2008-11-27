@@ -786,8 +786,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 			// pr98901
 			// For copying the annotations across, we have to discover the real
-			// member in the aspect
-			// which is holding them.
+			// member in the aspect which is holding them.
 			if (weaver.getWorld().isInJava5Mode()) {
 				AnnotationAJ annotationsOnRealMember[] = null;
 				ResolvedType toLookOn = aspectType;
@@ -805,6 +804,20 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 						AnnotationGen a = ((BcelAnnotation) annotationX).getBcelAnnotation();
 						AnnotationGen ag = new AnnotationGen(a, weaver.getLazyClassGen().getConstantPool(), true);
 						newMethod.addAnnotation(new BcelAnnotation(ag, weaver.getWorld()));
+					}
+				}
+				AnnotationAJ[][] pAnnos = realMember.getParameterAnnotations();
+				int offset = newMethod.isStatic() ? 0 : 1;
+				if (pAnnos != null && pAnnos.length != 0) {
+					int param = 0;
+					for (int i = offset; i < pAnnos.length; i++) {
+						AnnotationAJ[] annosOnParam = pAnnos[i];
+						if (annosOnParam != null && annosOnParam.length > 0) {
+							for (int j = 0; j < annosOnParam.length; j++) {
+								newMethod.addParameterAnnotation(param, annosOnParam[j]);
+							}
+						}
+						param++;
 					}
 				}
 				// the below loop fixes the very special (and very stupid)
@@ -912,6 +925,21 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 							AnnotationGen a = ((BcelAnnotation) annotationX).getBcelAnnotation();
 							AnnotationGen ag = new AnnotationGen(a, weaver.getLazyClassGen().getConstantPool(), true);
 							mg.addAnnotation(new BcelAnnotation(ag, weaver.getWorld()));
+						}
+					}
+
+					AnnotationAJ[][] pAnnos = realMember.getParameterAnnotations();
+					int offset = mg.isStatic() ? 0 : 1;
+					if (pAnnos != null && pAnnos.length != 0) {
+						int param = 0;
+						for (int i = offset; i < pAnnos.length; i++) {
+							AnnotationAJ[] annosOnParam = pAnnos[i];
+							if (annosOnParam != null && annosOnParam.length > 0) {
+								for (int j = 0; j < annosOnParam.length; j++) {
+									mg.addParameterAnnotation(param, annosOnParam[j]);
+								}
+							}
+							param++;
 						}
 					}
 				}

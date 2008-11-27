@@ -89,6 +89,7 @@ public final class LazyMethodGen implements Traceable {
 	private InstructionList body; // leaving null for abstracts
 	private List attributes;
 	private List newAnnotations;
+	private AnnotationAJ[][] newParameterAnnotations;
 	private final LazyClassGen enclosingClass;
 	private BcelMethod memberView;
 	private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
@@ -273,6 +274,35 @@ public final class LazyMethodGen implements Traceable {
 			newAnnotations.add(ax);
 		} else {
 			memberView.addAnnotation(ax);
+		}
+	}
+
+	private static final AnnotationAJ[] NO_ANNOTATIONAJ = new AnnotationAJ[] {};
+
+	public void addParameterAnnotation(int parameterNumber, AnnotationAJ anno) {
+		initialize();
+		if (memberView == null) {
+			if (newParameterAnnotations == null) {
+				// time to create it
+				int pcount = getArgumentTypes().length;
+				newParameterAnnotations = new AnnotationAJ[pcount][];
+				for (int i = 0; i < pcount; i++) {
+					if (i == parameterNumber) {
+						newParameterAnnotations[i] = new AnnotationAJ[1];
+						newParameterAnnotations[i][0] = anno;
+					} else {
+						newParameterAnnotations[i] = NO_ANNOTATIONAJ;
+					}
+				}
+			} else {
+				AnnotationAJ[] currentAnnoArray = newParameterAnnotations[parameterNumber];
+				AnnotationAJ[] newAnnoArray = new AnnotationAJ[currentAnnoArray.length + 1];
+				System.arraycopy(currentAnnoArray, 0, newAnnoArray, 0, currentAnnoArray.length);
+				newAnnoArray[currentAnnoArray.length] = anno;
+				newParameterAnnotations[parameterNumber] = newAnnoArray;
+			}
+		} else {
+			memberView.addParameterAnnotation(parameterNumber, anno);
 		}
 	}
 
@@ -895,6 +925,16 @@ public final class LazyMethodGen implements Traceable {
 			for (Iterator iter = newAnnotations.iterator(); iter.hasNext();) {
 				AnnotationAJ element = (AnnotationAJ) iter.next();
 				gen.addAnnotation(new AnnotationGen(((BcelAnnotation) element).getBcelAnnotation(), gen.getConstantPool(), true));
+			}
+		}
+
+		if (newParameterAnnotations != null) {
+			for (int i = 0; i < newParameterAnnotations.length; i++) {
+				AnnotationAJ[] annos = newParameterAnnotations[i];
+				for (int j = 0; j < annos.length; j++) {
+					gen.addParameterAnnotation(i, new AnnotationGen(((BcelAnnotation) annos[j]).getBcelAnnotation(), gen
+							.getConstantPool(), true));
+				}
 			}
 		}
 
