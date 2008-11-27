@@ -164,7 +164,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 				if (object.getKind() == ipe.getKind()) {
 					if (object.getName().equals(ipe.getName())) {
 						String sig1 = object.getBytecodeSignature();
-						if (sig1 == null && ipeSig == null || sig1.equals(ipeSig)) {
+						if (sig1 == null && ipeSig == null || (sig1 != null && sig1.equals(ipeSig))) {
 							String existingHandle = object.getHandleIdentifier();
 							int suffixPosition = existingHandle.indexOf('!');
 							if (suffixPosition != -1) {
