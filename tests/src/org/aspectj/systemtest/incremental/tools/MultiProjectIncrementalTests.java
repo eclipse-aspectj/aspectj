@@ -386,6 +386,38 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
 	}
 
+	// Now the source folders are more complex 'src/java/main' and 'src/java/tests'
+	public void testModelWithMultipleSourceFolders2() {
+		initialiseProject("MultiSource");
+		// File sourceFolderOne = getProjectRelativePath("MultiSource", "src/java/main");
+		// File sourceFolderTwo = getProjectRelativePath("MultiSource", "src2");
+		// File sourceFolderThree = getProjectRelativePath("MultiSource",
+		// "src3");
+		addSourceFolderForSourceFile("MultiSource", getProjectRelativePath("MultiSource", "src1/CodeOne.java"), "src/java/main");
+		addSourceFolderForSourceFile("MultiSource", getProjectRelativePath("MultiSource", "src2/CodeTwo.java"), "src/java/main");
+		addSourceFolderForSourceFile("MultiSource", getProjectRelativePath("MultiSource", "src3/pkg/CodeThree.java"),
+				"src/java/tests");
+		build("MultiSource");
+
+		IProgramElement srcOne = getModelFor("MultiSource").getHierarchy().findElementForHandleOrCreate(
+				"=MultiSource/src\\/java\\/main", false);
+		IProgramElement CodeOneClass = getModelFor("MultiSource").getHierarchy().findElementForHandle(
+				"=MultiSource/src\\/java\\/main{CodeOne.java[CodeOne");
+		IProgramElement srcTwoPackage = getModelFor("MultiSource").getHierarchy().findElementForHandle(
+				"=MultiSource/src\\/java\\/tests<pkg");
+		IProgramElement srcThreePackage = getModelFor("MultiSource").getHierarchy().findElementForHandle(
+				"=MultiSource/src\\/java\\/testssrc3<pkg");
+		assertNotNull(srcOne);
+		assertNotNull(CodeOneClass);
+		assertNotNull(srcTwoPackage);
+		assertNotNull(srcThreePackage);
+		if (srcTwoPackage.equals(srcThreePackage)) {
+			throw new RuntimeException(
+					"Should not have found these package nodes to be the same, they are in different source folders");
+		}
+		// dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
+	}
+
 	public static void dumptree(IProgramElement node, int indent) {
 		for (int i = 0; i < indent; i++)
 			System.out.print(" ");
