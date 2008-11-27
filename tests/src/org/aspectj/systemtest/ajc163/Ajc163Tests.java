@@ -23,6 +23,22 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testParameterAnnotationsOnITDs_pr256669() { // regular itd
+		runTest("parameter annotations on ITDs");
+	}
+
+	public void testParameterAnnotationsOnITDs_pr256669_2() { // static itd
+		runTest("parameter annotations on ITDs - 2");
+	}
+
+	public void testParameterAnnotationsOnITDs_pr256669_3() { // multiple parameters
+		runTest("parameter annotations on ITDs - 3");
+	}
+
+	public void testParameterAnnotationsOnITDs_pr256669_4() { // itd on interface
+		runTest("parameter annotations on ITDs - 4");
+	}
+
 	public void testOrderingIssue_1() {
 		runTest("ordering issue");
 	}
@@ -31,9 +47,9 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("ordering issue - 2");
 	}
 
-//	public void testGenericPointcuts_5() {
-//		runTest("generic pointcuts - 5");
-//	}
+	// public void testGenericPointcuts_5() {
+	// runTest("generic pointcuts - 5");
+	// }
 
 	public void testGenericPointcuts_1() {
 		runTest("generic pointcuts - 1");
@@ -50,7 +66,6 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testGenericPointcuts_4() {
 		runTest("generic pointcuts - 4");
 	}
-
 
 	// public void testBrokenLVT_pr194314_1() throws Exception {
 	// runTest("broken lvt - 1");

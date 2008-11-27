@@ -16,6 +16,46 @@
         <message kind="error" line="1" text="Bound mismatch"/>
       </compile>      
     </ajc-test>
+    
+    <ajc-test dir="bugs163/pr256669" title="parameter annotations on ITDs">
+      <compile files="Destination.java SimpleTest.java Introduction.java SomeAnnotation.java" options="-1.5"/>
+      <run class="SimpleTest">
+        <stdout>
+           <line text="Parameter 0 has 1 parameter annotations"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr256669" title="parameter annotations on ITDs - 2">
+      <compile files="Two.java" options="-1.5"/>
+      <run class="Two">
+        <stdout>
+           <line text="Parameter 0 has 1 parameter annotations"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr256669" title="parameter annotations on ITDs - 3">
+      <compile files="Three.java" options="-1.5"/>
+      <run class="Three">
+        <stdout>
+           <line text="Parameter 0 has 0 parameter annotations"/>
+           <line text="Parameter 1 has 1 parameter annotations"/>
+           <line text="Parameter 2 has 0 parameter annotations"/>
+           <line text="Parameter 3 has 1 parameter annotations"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr256669" title="parameter annotations on ITDs - 4">
+      <compile files="Four.java" options="-1.5"/>
+      <run class="Four">
+        <stdout>
+           <line text="Class D parameter 0 has 1 parameter annotations"/>
+           <line text="Interface I parameter 0 has 1 parameter annotations"/>
+        </stdout>
+      </run>
+    </ajc-test>
 
     <ajc-test dir="bugs163/pr253109" title="generic pointcuts - 1">
       <compile files="CodeOne.java" options="-1.5">
