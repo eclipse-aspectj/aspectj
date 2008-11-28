@@ -508,7 +508,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				peNode.setCorrespondingType(methodDeclaration.returnType.toString());
 			} else {
 				if (methodDeclaration.returnType.resolvedType != null)
-					peNode.setCorrespondingType(methodDeclaration.returnType.resolvedType.debugName());
+					peNode.setCorrespondingType(new String(methodDeclaration.returnType.resolvedType.readableName()));
 				else
 					peNode.setCorrespondingType(null);
 			}

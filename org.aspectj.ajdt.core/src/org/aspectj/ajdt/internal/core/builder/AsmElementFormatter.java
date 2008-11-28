@@ -187,7 +187,7 @@ public class AsmElementFormatter {
 				node.setKind(IProgramElement.Kind.ERROR);
 				node.setName(name);
 			}
-			node.setCorrespondingType(itd.returnType.toString());
+			node.setCorrespondingType(new String(itd.returnType.resolvedType.readableName()));
 			if (node.getKind() != IProgramElement.Kind.INTER_TYPE_FIELD) {
 				setParameters(methodDeclaration, node);
 			}
