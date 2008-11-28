@@ -11,6 +11,8 @@
 package org.aspectj.systemtest.ajc163;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.List;
 
 import junit.framework.Test;
 
@@ -18,10 +20,42 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IProgramElement;
 import org.aspectj.testing.Utils;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
+
+	public void testFQType_pr256937() {
+		runTest("fully qualified return type");
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
+		IProgramElement itd = findElementAtLine(top.getRoot(), 10);
+		String type = itd.getCorrespondingType(true);
+		assertEquals("java.util.List<java.lang.String>", type);
+	}
+
+	private IProgramElement findElementAtLine(IProgramElement whereToLook, int line) {
+		if (whereToLook == null) {
+			return null;
+		}
+		if (whereToLook.getSourceLocation() != null && whereToLook.getSourceLocation().getLine() == line) {
+			return whereToLook;
+		}
+		List kids = whereToLook.getChildren();
+		for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
+			IProgramElement object = (IProgramElement) iterator.next();
+			if (object.getSourceLocation() != null && object.getSourceLocation().getLine() == line) {
+				return object;
+			}
+			IProgramElement gotSomething = findElementAtLine(object, line);
+			if (gotSomething != null) {
+				return gotSomething;
+			}
+		}
+		return null;
+	}
 
 	public void testParameterAnnotationsOnITDs_pr256669() { // regular itd
 		runTest("parameter annotations on ITDs");

@@ -2,6 +2,10 @@
 
 <suite>
 
+    <ajc-test dir="bugs163/pr256937" title="fully qualified return type">
+   	  <compile files="Ship.java ShipAccessor.java" options="-emacssym -1.5"/>
+    </ajc-test>
+    
     <ajc-test dir="bugs163/pr254207" title="ordering issue">
       <compile files="Abstract.java Concrete.java" options="-1.5 -proceedOnError -Xset:pipelineCompilation=false">
         <message kind="error" line="1" text="Bound mismatch"/>
