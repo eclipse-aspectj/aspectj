@@ -1582,8 +1582,12 @@ public class BcelWeaver {
 	private boolean applyDeclareAtType(DeclareAnnotation decA, ResolvedType onType, boolean reportProblems) {
 		boolean didSomething = false;
 		if (decA.matches(onType)) {
-
-			if (onType.hasAnnotation(decA.getAnnotationX().getType())) {
+			AnnotationAJ theAnnotation = decA.getAnnotationX();
+			// can be null for broken code!
+			if (theAnnotation == null) {
+				return false;
+			}
+			if (onType.hasAnnotation(theAnnotation.getType())) {
 				// Could put out a lint here for an already annotated type ...
 				// if (reportProblems) {
 				// world.getLint().elementAlreadyAnnotated.signal(
