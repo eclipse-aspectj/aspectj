@@ -101,8 +101,7 @@ public class DeclareAnnotation extends Declare {
 		ret.append("declare @");
 		ret.append(kind);
 		ret.append(" : ");
-		ret.append(typePattern != null ? typePattern.toString() : sigPattern
-				.toString());
+		ret.append(typePattern != null ? typePattern.toString() : sigPattern.toString());
 		ret.append(" : ");
 		ret.append(annotationString);
 		return ret.toString();
@@ -124,13 +123,11 @@ public class DeclareAnnotation extends Declare {
 			} else if (kind == AT_CONSTRUCTOR) {
 				msg = WeaverMessages.DECLARE_ATCONS_ONLY_SUPPORTED_AT_JAVA5_LEVEL;
 			}
-			scope.message(MessageUtil.error(WeaverMessages.format(msg),
-					getSourceLocation()));
+			scope.message(MessageUtil.error(WeaverMessages.format(msg), getSourceLocation()));
 			return;
 		}
 		if (typePattern != null) {
-			typePattern = typePattern.resolveBindings(scope, Bindings.NONE,
-					false, false);
+			typePattern = typePattern.resolveBindings(scope, Bindings.NONE, false, false);
 		}
 		if (sigPattern != null) {
 			sigPattern = sigPattern.resolveBindings(scope, Bindings.NONE);
@@ -141,11 +138,9 @@ public class DeclareAnnotation extends Declare {
 	public Declare parameterizeWith(Map typeVariableBindingMap, World w) {
 		DeclareAnnotation ret;
 		if (this.kind == AT_TYPE) {
-			ret = new DeclareAnnotation(kind, this.typePattern
-					.parameterizeWith(typeVariableBindingMap, w));
+			ret = new DeclareAnnotation(kind, this.typePattern.parameterizeWith(typeVariableBindingMap, w));
 		} else {
-			ret = new DeclareAnnotation(kind, this.sigPattern.parameterizeWith(
-					typeVariableBindingMap, w));
+			ret = new DeclareAnnotation(kind, this.sigPattern.parameterizeWith(typeVariableBindingMap, w));
 		}
 		ret.annotationMethod = this.annotationMethod;
 		ret.annotationString = this.annotationString;
@@ -203,8 +198,7 @@ public class DeclareAnnotation extends Declare {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)
+	 * @see org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)
 	 */
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Declare.ANNOTATION);
@@ -218,8 +212,7 @@ public class DeclareAnnotation extends Declare {
 		writeLocation(s);
 	}
 
-	public static Declare read(VersionedDataInputStream s,
-			ISourceContext context) throws IOException {
+	public static Declare read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		DeclareAnnotation ret = null;
 		int kind = s.readInt();
 		String annotationString = s.readUTF();
@@ -275,10 +268,8 @@ public class DeclareAnnotation extends Declare {
 	public boolean matches(ResolvedType typeX) {
 		if (!typePattern.matchesStatically(typeX))
 			return false;
-		if (typeX.getWorld().getLint().typeNotExposedToWeaver.isEnabled()
-				&& !typeX.isExposedToWeaver()) {
-			typeX.getWorld().getLint().typeNotExposedToWeaver.signal(typeX
-					.getName(), getSourceLocation());
+		if (typeX.getWorld().getLint().typeNotExposedToWeaver.isEnabled() && !typeX.isExposedToWeaver()) {
+			typeX.getWorld().getLint().typeNotExposedToWeaver.signal(typeX.getName(), getSourceLocation());
 		}
 		return true;
 	}
@@ -304,9 +295,8 @@ public class DeclareAnnotation extends Declare {
 	}
 
 	/**
-	 * The annotation specified in the declare @type is stored against a simple
-	 * method of the form "ajc$declare_<NN>", this method finds that method and
-	 * retrieves the annotation
+	 * The annotation specified in the declare @type is stored against a simple method of the form "ajc$declare_<NN>", this method
+	 * finds that method and retrieves the annotation
 	 */
 	private void ensureAnnotationDiscovered() {
 		if (annotation != null)
@@ -314,7 +304,12 @@ public class DeclareAnnotation extends Declare {
 		for (Iterator iter = containingAspect.getMethods(); iter.hasNext();) {
 			ResolvedMember member = (ResolvedMember) iter.next();
 			if (member.getName().equals(annotationMethod)) {
-				annotation = member.getAnnotations()[0];
+				AnnotationAJ[] annos = member.getAnnotations();
+				if (annos == null) {
+					// if weaving broken code, this can happen
+					return;
+				}
+				annotation = annos[0];
 			}
 		}
 	}
@@ -332,8 +327,7 @@ public class DeclareAnnotation extends Declare {
 			return typePattern.isStarAnnotation();
 		if (sigPattern != null)
 			return sigPattern.isStarAnnotation();
-		throw new RuntimeException("Impossible! what kind of deca is this: "
-				+ this);
+		throw new RuntimeException("Impossible! what kind of deca is this: " + this);
 	}
 
 	public Kind getKind() {
@@ -381,9 +375,8 @@ public class DeclareAnnotation extends Declare {
 	}
 
 	/**
-	 * Return true if this declare annotation could ever match something in the
-	 * specified type - only really able to make intelligent decision if a type
-	 * was specified in the sig/type pattern signature.
+	 * Return true if this declare annotation could ever match something in the specified type - only really able to make
+	 * intelligent decision if a type was specified in the sig/type pattern signature.
 	 */
 	public boolean couldEverMatch(ResolvedType type) {
 		// Haven't implemented variant for typePattern (doesn't seem worth it!)
@@ -393,14 +386,12 @@ public class DeclareAnnotation extends Declare {
 		// in all types exposed to the weaver! So look out for bugs here and
 		// we can update the test as appropriate.
 		if (sigPattern != null)
-			return sigPattern.getDeclaringType().matches(type,
-					TypePattern.STATIC).maybeTrue();
+			return sigPattern.getDeclaringType().matches(type, TypePattern.STATIC).maybeTrue();
 		return true;
 	}
 
 	/**
-	 * Provide a name suffix so that we can tell the different declare
-	 * annotations forms apart in the AjProblemReporter
+	 * Provide a name suffix so that we can tell the different declare annotations forms apart in the AjProblemReporter
 	 */
 	public String getNameSuffix() {
 		return getKind().toString();
