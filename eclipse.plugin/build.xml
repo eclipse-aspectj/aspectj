@@ -90,6 +90,7 @@
             <fileset dir="${aspectj.modules.dir}/aspectj5rt/src" />
             <fileset dir="${aspectj.modules.dir}/bridge/src" />
             <fileset dir="${aspectj.modules.dir}/loadtime/src" />
+            <fileset dir="${aspectj.modules.dir}/org.aspectj.matcher/src" />
             <fileset dir="${aspectj.modules.dir}/loadtime5/java5-src"
             />
             <fileset dir="${aspectj.modules.dir}/org.aspectj.ajdt.core/src"
