@@ -183,6 +183,13 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("=BrokenHandles<p{GetInfo.java}GetInfo`declare parents!3", ipe.getHandleIdentifier());
 	}
 
+	public void testAnnotations_pr255555() {
+		String p = "pr255555";
+		initialiseProject(p);
+		build(p);
+		checkCompileWeaveCount(p, 2, 1);
+	}
+
 	public void testSpacewarHandles() {
 		// String p = "SpaceWar";
 		String p = "Simpler";
