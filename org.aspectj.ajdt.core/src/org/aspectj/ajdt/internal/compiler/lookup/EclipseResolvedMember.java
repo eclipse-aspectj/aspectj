@@ -38,11 +38,9 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
 /**
- * In the pipeline world, we can be weaving before all types have come through
- * from compilation. In some cases this means the weaver will want to ask
- * questions of eclipse types and this subtype of ResolvedMemberImpl is here to
- * answer some of those questions - it is backed by the real eclipse
- * MethodBinding object and can translate from Eclipse -> Weaver information.
+ * In the pipeline world, we can be weaving before all types have come through from compilation. In some cases this means the weaver
+ * will want to ask questions of eclipse types and this subtype of ResolvedMemberImpl is here to answer some of those questions - it
+ * is backed by the real eclipse MethodBinding object and can translate from Eclipse -> Weaver information.
  */
 public class EclipseResolvedMember extends ResolvedMemberImpl {
 
@@ -54,20 +52,17 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 	private ResolvedType[] cachedAnnotationTypes;
 	private EclipseFactory eclipseFactory;
 
-	public EclipseResolvedMember(MethodBinding binding, MemberKind memberKind,
-			ResolvedType realDeclaringType, int modifiers,
-			UnresolvedType rettype, String name, UnresolvedType[] paramtypes,
-			UnresolvedType[] extypes, EclipseFactory eclipseFactory) {
-		super(memberKind, realDeclaringType, modifiers, rettype, name,
-				paramtypes, extypes);
+	public EclipseResolvedMember(MethodBinding binding, MemberKind memberKind, ResolvedType realDeclaringType, int modifiers,
+			UnresolvedType rettype, String name, UnresolvedType[] paramtypes, UnresolvedType[] extypes,
+			EclipseFactory eclipseFactory) {
+		super(memberKind, realDeclaringType, modifiers, rettype, name, paramtypes, extypes);
 		this.realBinding = binding;
 		this.eclipseFactory = eclipseFactory;
 		this.w = realDeclaringType.getWorld();
 	}
 
-	public EclipseResolvedMember(FieldBinding binding, MemberKind field,
-			ResolvedType realDeclaringType, int modifiers, ResolvedType type,
-			String string, UnresolvedType[] none) {
+	public EclipseResolvedMember(FieldBinding binding, MemberKind field, ResolvedType realDeclaringType, int modifiers,
+			ResolvedType type, String string, UnresolvedType[] none) {
 		super(field, realDeclaringType, modifiers, type, string, none);
 		this.realBinding = binding;
 		this.w = realDeclaringType.getWorld();
@@ -93,7 +88,7 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 			return null;
 		}
 		AnnotationAJ[] annoAJs = new AnnotationAJ[annos.length];
-		for (int i=0;i<annos.length;i++) {
+		for (int i = 0; i < annos.length; i++) {
 			annoAJs[i] = EclipseAnnotationConvertor.convertEclipseAnnotation(annos[i], w, eclipseFactory);
 		}
 		return annoAJs;
@@ -107,12 +102,10 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 			return null;
 		for (int i = 0; i < annos.length; i++) {
 			Annotation anno = annos[i];
-			UnresolvedType ut = UnresolvedType.forSignature(new String(
-					anno.resolvedType.signature()));
+			UnresolvedType ut = UnresolvedType.forSignature(new String(anno.resolvedType.signature()));
 			if (w.resolve(ut).equals(ofType)) {
 				// Found the one
-				return EclipseAnnotationConvertor.convertEclipseAnnotation(
-						anno, w, eclipseFactory);
+				return EclipseAnnotationConvertor.convertEclipseAnnotation(anno, w, eclipseFactory);
 			}
 		}
 		return null;
@@ -120,8 +113,7 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 
 	public String getAnnotationDefaultValue() {
 		if (realBinding instanceof MethodBinding) {
-			AbstractMethodDeclaration methodDecl = getTypeDeclaration()
-					.declarationOf((MethodBinding) realBinding);
+			AbstractMethodDeclaration methodDecl = getTypeDeclaration().declarationOf((MethodBinding) realBinding);
 			if (methodDecl instanceof AnnotationMethodDeclaration) {
 				AnnotationMethodDeclaration annoMethodDecl = (AnnotationMethodDeclaration) methodDecl;
 				Expression e = annoMethodDecl.defaultValue;
@@ -145,13 +137,10 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 				} else if (e instanceof StringLiteral) {
 					return new String(((StringLiteral) e).source());
 				} else if (e instanceof IntLiteral) {
-					return Integer.toString(((IntConstant) e.constant)
-							.intValue());
+					return Integer.toString(((IntConstant) e.constant).intValue());
 				} else {
-					throw new BCException(
-							"EclipseResolvedMember.getAnnotationDefaultValue() not implemented for value of type '"
-									+ e.getClass()
-									+ "' - raise an AspectJ bug !");
+					throw new BCException("EclipseResolvedMember.getAnnotationDefaultValue() not implemented for value of type '"
+							+ e.getClass() + "' - raise an AspectJ bug !");
 				}
 			}
 		}
@@ -169,9 +158,7 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 				cachedAnnotationTypes = new ResolvedType[annos.length];
 				for (int i = 0; i < annos.length; i++) {
 					Annotation type = annos[i];
-					cachedAnnotationTypes[i] = w.resolve(UnresolvedType
-							.forSignature(new String(type.resolvedType
-									.signature())));
+					cachedAnnotationTypes[i] = w.resolve(UnresolvedType.forSignature(new String(type.resolvedType.signature())));
 				}
 			}
 		}
@@ -185,8 +172,7 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 			argumentNames = NO_ARGS;
 		} else {
 			TypeDeclaration typeDecl = getTypeDeclaration();
-			AbstractMethodDeclaration methodDecl = (typeDecl == null ? null
-					: typeDecl.declarationOf((MethodBinding) realBinding));
+			AbstractMethodDeclaration methodDecl = (typeDecl == null ? null : typeDecl.declarationOf((MethodBinding) realBinding));
 			Argument[] args = (methodDecl == null ? null : methodDecl.arguments); // dont
 			// like
 			// this
@@ -212,12 +198,14 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 
 	private Annotation[] getEclipseAnnotations() {
 		if (realBinding instanceof MethodBinding) {
-			AbstractMethodDeclaration methodDecl = getTypeDeclaration()
-					.declarationOf((MethodBinding) realBinding);
+			TypeDeclaration tDecl = getTypeDeclaration();
+			if (tDecl == null) {
+				return null; // if the code is broken then tDecl may be null
+			}
+			AbstractMethodDeclaration methodDecl = tDecl.declarationOf((MethodBinding) realBinding);
 			return methodDecl.annotations;
 		} else if (realBinding instanceof FieldBinding) {
-			FieldDeclaration fieldDecl = getTypeDeclaration().declarationOf(
-					(FieldBinding) realBinding);
+			FieldDeclaration fieldDecl = getTypeDeclaration().declarationOf((FieldBinding) realBinding);
 			return fieldDecl.annotations;
 		}
 		return null;
