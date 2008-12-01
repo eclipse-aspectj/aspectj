@@ -387,7 +387,7 @@ public class AtAjAttributes {
 		hasAtAspectJAnnotation = hasAtAspectJAnnotation || hasAtAspectJAnnotationMustReturnVoid;
 
 		// semantic check - must be in an @Aspect [remove if previous block bypassed in advance]
-		if (hasAtAspectJAnnotation && !type.isAnnotationStyleAspect()) {
+		if (hasAtAspectJAnnotation && !type.isAspect()) { // isAnnotationStyleAspect()) {
 			msgHandler.handleMessage(new Message("Found @AspectJ annotations in a non @Aspect type '" + type.getName() + "'",
 					IMessage.WARNING, null, type.getSourceLocation()));
 			// go ahead
