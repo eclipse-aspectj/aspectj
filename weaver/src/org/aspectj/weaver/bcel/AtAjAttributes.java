@@ -1510,7 +1510,7 @@ public class AtAjAttributes {
 	 * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
 	 */
 	public static class LazyResolvedPointcutDefinition extends ResolvedPointcutDefinition {
-		private final Pointcut m_pointcutUnresolved;
+		private final Pointcut m_pointcutUnresolved; // null for abstract pointcut
 		private final IScope m_binding;
 
 		private Pointcut m_lazyPointcut = null;
@@ -1523,7 +1523,7 @@ public class AtAjAttributes {
 		}
 
 		public Pointcut getPointcut() {
-			if (m_lazyPointcut == null) {
+			if (m_lazyPointcut == null && m_pointcutUnresolved != null) {
 				m_lazyPointcut = m_pointcutUnresolved.resolve(m_binding);
 				m_lazyPointcut.copyLocationFrom(m_pointcutUnresolved);
 			}

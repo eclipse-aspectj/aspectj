@@ -39,6 +39,7 @@ import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
+import org.aspectj.weaver.patterns.Pointcut;
 
 public class AsmRelationshipProvider {
 
@@ -282,7 +283,8 @@ public class AsmRelationshipProvider {
 			ResolvedMember pcd = children[i];
 			if (pcd instanceof ResolvedPointcutDefinition) {
 				ResolvedPointcutDefinition rpcd = (ResolvedPointcutDefinition) pcd;
-				ISourceLocation sLoc = rpcd.getPointcut().getSourceLocation();
+				Pointcut p = rpcd.getPointcut();
+				ISourceLocation sLoc = (p == null ? null : p.getSourceLocation());
 				if (sLoc == null) {
 					sLoc = rpcd.getSourceLocation();
 				}
