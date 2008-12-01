@@ -197,16 +197,15 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 	}
 
 	private Annotation[] getEclipseAnnotations() {
-		if (realBinding instanceof MethodBinding) {
-			TypeDeclaration tDecl = getTypeDeclaration();
-			if (tDecl == null) {
-				return null; // if the code is broken then tDecl may be null
+		TypeDeclaration tDecl = getTypeDeclaration();
+		if (tDecl != null) {// if the code is broken then tDecl may be null
+			if (realBinding instanceof MethodBinding) {
+				AbstractMethodDeclaration methodDecl = tDecl.declarationOf((MethodBinding) realBinding);
+				return methodDecl.annotations;
+			} else if (realBinding instanceof FieldBinding) {
+				FieldDeclaration fieldDecl = tDecl.declarationOf((FieldBinding) realBinding);
+				return fieldDecl.annotations;
 			}
-			AbstractMethodDeclaration methodDecl = tDecl.declarationOf((MethodBinding) realBinding);
-			return methodDecl.annotations;
-		} else if (realBinding instanceof FieldBinding) {
-			FieldDeclaration fieldDecl = getTypeDeclaration().declarationOf((FieldBinding) realBinding);
-			return fieldDecl.annotations;
 		}
 		return null;
 	}
