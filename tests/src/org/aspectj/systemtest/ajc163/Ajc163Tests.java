@@ -28,6 +28,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testGetMethodNull_pr154427() {
+		runTest("getMethod returning null");
+	}
+
 	public void testFQType_pr256937() {
 		runTest("fully qualified return type");
 		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();

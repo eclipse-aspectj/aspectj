@@ -2,6 +2,23 @@
 
 <suite>
 
+    <ajc-test dir="bugs163/pr154427" title="getMethod returning null">
+   	  <compile files="AuthorizationImpl.java Authorization.java AuthorizationAdmin.java CallAndMethodSignatureAspect.java CallTest.java" options=""/>
+   	  <run class="CallTest">
+   	    <stdout>
+   	      <line text="public abstract boolean Authorization.mayPerform(java.lang.String,java.lang.String)"/>
+   	      <line text="public abstract interface boolean AuthorizationAdmin.mayPerform(java.lang.String, java.lang.String)"/>
+   	      <line text="mayPerform() executing"/>
+   	      <line text="public abstract boolean AuthorizationAdmin.mayPerform2(java.lang.String,java.lang.String)"/>
+   	      <line text="public abstract interface boolean AuthorizationAdmin.mayPerform2(java.lang.String, java.lang.String)"/>
+   	      <line text="mayPerform2() executing"/>
+   	      <line text="public abstract boolean Authorization.mayPerform(java.lang.String,java.lang.String)"/>
+   	      <line text="public abstract interface boolean Authorization.mayPerform(java.lang.String, java.lang.String)"/>
+   	      <line text="mayPerform() executing"/>
+   	    </stdout>
+   	  </run>
+    </ajc-test>
+    
     <ajc-test dir="bugs163/pr256937" title="fully qualified return type">
    	  <compile files="Ship.java ShipAccessor.java" options="-emacssym -1.5"/>
     </ajc-test>
