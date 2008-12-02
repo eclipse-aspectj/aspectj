@@ -32,18 +32,20 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("getMethod returning null");
 	}
 
+	public void testItdOnAnonInner_pr171042() {
+		runTest("itd on anonymous inner");
+	}
+
 	public void testMixedStyles_pr213751() {
 		runTest("mixed styles");
 	}
-/*
-	public void testHandles_pr249216c24() {
-		runTest("handles - escaped square brackets");
-		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
-		IProgramElement itd = findElementAtLine(top.getRoot(), 4);
-		// System.out.println(itd.getHandleIdentifier());
-		assertEquals("<{Handles.java}Handles)Ship.i)\\[\\[String;>;", itd.getHandleIdentifier());
-	}
-*/
+
+	/*
+	 * public void testHandles_pr249216c24() { runTest("handles - escaped square brackets"); IHierarchy top =
+	 * AsmManager.lastActiveStructureModel.getHierarchy(); IProgramElement itd = findElementAtLine(top.getRoot(), 4); //
+	 * System.out.println(itd.getHandleIdentifier()); assertEquals("<{Handles.java}Handles)Ship.i)\\[\\[String;>;",
+	 * itd.getHandleIdentifier()); }
+	 */
 	public void testFQType_pr256937() {
 		runTest("fully qualified return type");
 		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();

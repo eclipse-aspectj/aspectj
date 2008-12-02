@@ -31,6 +31,10 @@
    	  <compile files="Handles.java" options="-emacssym -1.5"/>
     </ajc-test>
     
+    <ajc-test dir="bugs163/pr171042" title="itd on anonymous inner">
+   	  <compile files="TestClass.java Executable.java RunnableAspect.java" options=""/>
+    </ajc-test>
+    
     <ajc-test dir="bugs163/pr254207" title="ordering issue">
       <compile files="Abstract.java Concrete.java" options="-1.5 -proceedOnError -Xset:pipelineCompilation=false">
         <message kind="error" line="1" text="Bound mismatch"/>
