@@ -1144,6 +1144,28 @@ public class BcelShadow extends Shadow {
 		}
 	}
 
+	 public Member getRealEnclosingCodeSignature() {
+			return enclosingMethod.getMemberView();
+	 }
+
+	// public Member getEnclosingCodeSignatureForModel() {
+	// if (getKind().isEnclosingKind()) {
+	// return getSignature();
+	// } else if (getKind() == Shadow.PreInitialization) {
+	// // PreInit doesn't enclose code but its signature
+	// // is correctly the signature of the ctor.
+	// return getSignature();
+	// } else if (enclosingShadow == null) {
+	// return getEnclosingMethod().getMemberView();
+	// } else {
+	// if (enclosingShadow.getKind() == Shadow.MethodExecution && enclosingMethod.getEffectiveSignature() != null) {
+	//
+	// } else {
+	// return enclosingShadow.getSignature();
+	// }
+	// }
+	// }
+
 	private InstructionList makeArgsObjectArray() {
 		InstructionFactory fact = getFactory();
 		BcelVar arrayVar = genTempVar(UnresolvedType.OBJECTARRAY);

@@ -38,6 +38,7 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.BcelShadow;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.Pointcut;
 
@@ -419,8 +420,32 @@ public class AsmRelationshipProvider {
 
 	protected static IProgramElement getNode(AsmManager model, Shadow shadow) {
 		Member enclosingMember = shadow.getEnclosingCodeSignature();
+		// This variant will not be tricked by ITDs that would report they are in the target type already.
+		// This enables us to discover the ITD declaration (in the aspect) and advise it appropriately.
 
-		IProgramElement enclosingNode = lookupMember(model.getHierarchy(), enclosingMember);
+		// Have to be smart here, for a code node within an ITD we want to lookup the declaration of the
+		// ITD in the aspect in order to add the code node at the right place - and not lookup the
+		// ITD as it applies in some target type. Due to the use of effectiveSignature we will find
+		// that shadow.getEnclosingCodeSignature() will return a member representing the ITD as it will
+		// appear in the target type. So here, we do an extra bit of analysis to make sure we
+		// do the right thing in the ITD case.
+		IProgramElement enclosingNode = null;
+		if (shadow instanceof BcelShadow) {
+			Member actualEnclosingMember = ((BcelShadow) shadow).getRealEnclosingCodeSignature();
+
+			UnresolvedType type = enclosingMember.getDeclaringType();
+			UnresolvedType actualType = actualEnclosingMember.getDeclaringType();
+
+			// if these are not the same, it is an ITD and we need to use the latter to lookup
+			if (type.equals(actualType)) {
+				enclosingNode = lookupMember(model.getHierarchy(), shadow.getEnclosingType(), enclosingMember);
+			} else {
+				enclosingNode = lookupMember(model.getHierarchy(), shadow.getEnclosingType(), actualEnclosingMember);
+			}
+		} else {
+			enclosingNode = lookupMember(model.getHierarchy(), shadow.getEnclosingType(), enclosingMember);
+		}
+
 		if (enclosingNode == null) {
 			Lint.Kind err = shadow.getIWorld().getLint().shadowNotInStructure;
 			if (err.isEnabled()) {
@@ -497,6 +522,11 @@ public class AsmRelationshipProvider {
 
 	protected static IProgramElement lookupMember(IHierarchy model, Member member) {
 		UnresolvedType declaringType = member.getDeclaringType();
+		IProgramElement classNode = model.findElementForType(declaringType.getPackageName(), declaringType.getClassName());
+		return findMemberInClass(classNode, member);
+	}
+
+	protected static IProgramElement lookupMember(IHierarchy model, UnresolvedType declaringType, Member member) {
 		IProgramElement classNode = model.findElementForType(declaringType.getPackageName(), declaringType.getClassName());
 		return findMemberInClass(classNode, member);
 	}
