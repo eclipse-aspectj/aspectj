@@ -199,6 +199,19 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// incomplete
 	}
 
+	public void testAdvisingCallJoinpointsInITDS_pr253067() {
+		String p = "pr253067";
+		initialiseProject(p);
+		build(p);
+		// Check for a code node at line 5 - if there is one then we created it correctly when building
+		// the advice relationship
+		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
+		IProgramElement code = findElementAtLine(root, 5);
+		assertEquals("=pr253067<aa*AdvisesC.aj}AdvisesC)C.nothing?method-call(int aa.C.nothing())", code.getHandleIdentifier());
+		// dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
+		// Ajc.dumpAJDEStructureModel(getModelFor("pr253067"), "after inc build where first advised line is gone");
+	}
+
 	public void testNullDelegateBrokenCode_pr251940() {
 		String p = "pr251940";
 		initialiseProject(p);
