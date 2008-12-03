@@ -23,6 +23,10 @@
    	  <compile files="Ship.java ShipAccessor.java" options="-emacssym -1.5"/>
     </ajc-test>
     
+    <ajc-test dir="bugs163/pr164016" title="ataspectj decp">
+      <compile files="Code.aj" options="-1.5"/>
+      <run class="test.Code"/>
+    </ajc-test>    
     <ajc-test dir="bugs163/pr213751" title="mixed styles">
    	  <compile files="Foo.java" options="-emacssym -1.5"/>
     </ajc-test>
