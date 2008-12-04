@@ -21,7 +21,11 @@
 
     <ajc-test dir="bugs153/pr162135" title="bcexception in annotation style around advice">
       <compile files="Foo.java" options="-1.5"/>
-      <run class="Foo"/>
+      <run class="Foo">
+        <stdout>
+          <line text="In if(), is there a caller? yes"/>
+        </stdout>
+      </run>
     </ajc-test>
 
     <ajc-test dir="bugs153/pr162657" title="complex pointcut">
@@ -51,6 +55,26 @@
     <ajc-test dir="bugs153/pr162135" title="bcexception in annotation style around advice - 5">
       <compile files="Foo5.java" options="-1.5"/>
       <run class="Foo5"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs153/pr162135" title="bcexception in annotation style around advice - 6">
+      <compile files="Foo6.java" options="-1.5"/>
+      <run class="Foo6">
+      <stdout>
+      <line text="ProceedingJoinPoint is call(java.lang.RuntimeException(String))"/>
+      <line text="caller is notnull"/>
+      </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs153/pr162135" title="bcexception in annotation style around advice - 7">
+      <compile files="Real.java" options="-1.5"/>
+      <run class="a.b.c.Real">
+      <stdout>
+      <line text="advice running"/>
+      <line text="newmessage"/>
+      </stdout>
+      </run>
     </ajc-test>
     
      <ajc-test dir="bugs153/pr159143" title="declare method annotations">

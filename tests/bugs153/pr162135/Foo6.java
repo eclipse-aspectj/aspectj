@@ -4,26 +4,27 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 
-@Aspect public class Foo {
+@Aspect public class Foo6 {
 
- static class X {
   public void m() {
     new RuntimeException("hello");
   }
- }
 	
   public static void main(String[] argv) {
-	    new X().m();
+	  try {
+	   new Foo6().m();
+	  } catch (Throwable t) {}
   }
 		
   @Pointcut("call(Throwable+.new(String, ..)) && this(caller) && if()")
   public static boolean exceptionInitializer(Object caller) {
-      System.out.println("In if(), is there a caller? "+(caller!=null?"yes":"no"));
       return true;
   }
 
   @Around("exceptionInitializer(caller)")
   public Object annotateException(ProceedingJoinPoint jp, Object caller) {
+      System.out.println("ProceedingJoinPoint is "+jp);
+      System.out.println("caller is "+(caller==null?"null":"notnull"));
       return null;
   }
 }
