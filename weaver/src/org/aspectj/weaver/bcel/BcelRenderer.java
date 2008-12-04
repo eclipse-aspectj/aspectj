@@ -192,7 +192,7 @@ public final class BcelRenderer implements ITestVisitor, IExprVisitor {
 
 	public void visit(Literal literal) {
 		if (literal == Literal.FALSE)
-			throw new BCException("bad");
+			throw new BCException("visiting a false expression");
 	}
 
 	public void visit(Call call) {
@@ -204,7 +204,15 @@ public final class BcelRenderer implements ITestVisitor, IExprVisitor {
 		for (int i = 0, len = args.length; i < len; i++) {
 			// XXX only correct for static method calls
 			Type desiredType = BcelWorld.makeBcelType(method.getParameterTypes()[i]);
-			callIl.append(renderExpr(fact, world, args[i], desiredType));
+			Expr arg = args[i];
+			// if arg is null it is because we couldn't bind it properly, for example see 162135
+			if (arg == null) {
+				InstructionList iList = new InstructionList();
+				iList.append(InstructionFactory.createNull(desiredType));
+				callIl.append(iList);
+			} else {
+				callIl.append(renderExpr(fact, world, arg, desiredType));
+			}
 		}
 		// System.out.println("rendered args: " + callIl);
 		callIl.append(Utility.createInvoke(fact, world, method));
