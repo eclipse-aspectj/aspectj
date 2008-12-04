@@ -52,6 +52,7 @@ import org.aspectj.weaver.MethodDelegateTypeMunger;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
@@ -711,8 +712,21 @@ public class AtAjAttributes {
 							// return false;
 							// }
 							hasAtLeastOneMethod = true;
-							MethodDelegateTypeMunger mdtm = new MethodDelegateTypeMunger(method, struct.enclosingType,
-									defaultImplClassName, typePattern);
+							// What we are saying here:
+							// We have this method 'method' and we want to put a forwarding method into a type that matches
+							// typePattern that should delegate to the version of the method in 'defaultImplClassName'
+
+							// Now the method may be from a supertype but the declaring type of the method we pass into the type
+							// munger is what is used to determine the type of the field that hosts the delegate instance.
+							// So here we create a modified method with an alternative declaring type so that we lookup
+							// the right field. See pr164016. Generics will probably break this horribly
+/*
+							ResolvedMemberImpl methodWithAlteredDeclaringType = new ResolvedMemberImpl(method.getKind(), fieldType,
+									method.getModifiers(), method.getReturnType(), method.getName(), method.getParameterTypes(),
+									method.getExceptions());
+*/
+							MethodDelegateTypeMunger mdtm = new MethodDelegateTypeMunger(method,
+									struct.enclosingType, defaultImplClassName, typePattern);
 							mdtm.setSourceLocation(struct.enclosingType.getSourceLocation());
 							struct.ajAttributes.add(new AjAttribute.TypeMunger(mdtm));
 						}
