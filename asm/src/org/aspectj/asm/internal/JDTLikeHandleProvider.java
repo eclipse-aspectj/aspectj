@@ -103,7 +103,12 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 					// if (ipe.getKind() == IProgramElement.Kind.PACKAGE && ipe.getName().equals("DEFAULT")) {
 					// // the delimiter will be in there, but skip the word DEFAULT as it is just a placeholder
 					// } else {
-					handle.append(ipe.getName()).append(getParameters(ipe));
+					if (ipe.getKind().isDeclareAnnotation()) {
+						// escape the @ (pr249216c9)
+						handle.append("declare \\@").append(ipe.getName().substring(9)).append(getParameters(ipe));
+					} else {
+						handle.append(ipe.getName()).append(getParameters(ipe));
+					}
 				}
 				// }
 			}
@@ -125,17 +130,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 		for (Iterator iter = parameterTypes.iterator(); iter.hasNext();) {
 			char[] element = (char[]) iter.next();
 			sb.append(HandleProviderDelimiter.getDelimiter(ipe));
-			if (element[0] == HandleProviderDelimiter.TYPE.getDelimiter()) {
-				// its an array
-				sb.append(HandleProviderDelimiter.ESCAPE.getDelimiter());
-				sb.append(HandleProviderDelimiter.TYPE.getDelimiter());
-				sb.append(NameConvertor.getTypeName(CharOperation.subarray(element, 1, element.length)));
-			} else if (element[0] == NameConvertor.PARAMETERIZED) {
-				// its a parameterized type
-				sb.append(NameConvertor.createShortName(element));
-			} else {
-				sb.append(NameConvertor.getTypeName(element));
-			}
+			sb.append(NameConvertor.createShortName(element, false, false));
 		}
 		return sb.toString();
 	}
