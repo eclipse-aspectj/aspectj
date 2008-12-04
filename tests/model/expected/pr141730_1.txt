@@ -33,14 +33,14 @@
 (targets=11) <*pr141730.aj}A&before (advises) <*pr141730.aj[C~myClassMethod~LMyClass;
 (targets=11) <*pr141730.aj}A&before (advises) <*pr141730.aj[C~twoArgsMethod~I~QString;
 (targets=11) <*pr141730.aj}A&before (advises) <*pr141730.aj[C~main~\[QString;
-(targets=11) <*pr141730.aj}A&before (advises) <*pr141730.aj[C~multiMethod~\[[String;
+(targets=11) <*pr141730.aj}A&before (advises) <*pr141730.aj[C~multiMethod~\[\[QString;
 (targets=11) <*pr141730.aj}A&before (advises) <*pr141730.aj[C~intArray~\[I
 (targets=1) <*pr141730.aj[C~stringMethod~QString; (advised by) <*pr141730.aj}A&before
 (targets=1) <*pr141730.aj[C~intArray~\[I (advised by) <*pr141730.aj}A&before
 (targets=1) <*pr141730.aj[C~myClassMethod~LMyClass; (advised by) <*pr141730.aj}A&before
 (targets=1) <*pr141730.aj[C~C (advised by) <*pr141730.aj}A&before
 (targets=1) <*pr141730.aj}A (advised by) <*pr141730.aj}A&before
-(targets=1) <*pr141730.aj[C~multiMethod~\[[String; (advised by) <*pr141730.aj}A&before
+(targets=1) <*pr141730.aj[C~multiMethod~\[\[QString; (advised by) <*pr141730.aj}A&before
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 method=8

@@ -21,9 +21,9 @@
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
 (targets=1) <bar*MyBar.aj}MyBar`declare parents!2 (declared on) {MyFoo.java
-(targets=1) {MyFoo.java (annotated by) <bar*MyBar.aj}MyBar`declare @type!3
+(targets=1) {MyFoo.java (annotated by) <bar*MyBar.aj}MyBar`declare \@type!3
 (targets=1) {MyFoo.java (aspect declarations) <bar*MyBar.aj}MyBar`declare parents!2
-(targets=1) <bar*MyBar.aj}MyBar`declare @type!3 (annotates) {MyFoo.java
+(targets=1) <bar*MyBar.aj}MyBar`declare \@type!3 (annotates) {MyFoo.java
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 import reference=4

@@ -16,14 +16,14 @@
 === RELATIONSHIPS REPORT ========= After a batch build
 (targets=1) <*pr141730.aj[MyClass (advised by) <*pr141730.aj}A&before
 (targets=1) <*pr141730.aj[MyGenericClass (advised by) <*pr141730.aj}A&before
-(targets=1) <*pr141730.aj[C~genericMethod2~PMyGenericClass\<QString;LMyClass;>; (advised by) <*pr141730.aj}A&before
+(targets=1) <*pr141730.aj[C~genericMethod2~QMyGenericClass\<QString;LMyClass;>; (advised by) <*pr141730.aj}A&before
 (targets=6) <*pr141730.aj}A&before (advises) <*pr141730.aj}A
 (targets=6) <*pr141730.aj}A&before (advises) <*pr141730.aj[C
-(targets=6) <*pr141730.aj}A&before (advises) <*pr141730.aj[C~genericMethod~QList\<QString;>;
-(targets=6) <*pr141730.aj}A&before (advises) <*pr141730.aj[C~genericMethod2~PMyGenericClass\<QString;LMyClass;>;
+(targets=6) <*pr141730.aj}A&before (advises) <*pr141730.aj[C~genericMethod~Qjava.util.List\<QString;>;
+(targets=6) <*pr141730.aj}A&before (advises) <*pr141730.aj[C~genericMethod2~QMyGenericClass\<QString;LMyClass;>;
 (targets=6) <*pr141730.aj}A&before (advises) <*pr141730.aj[MyGenericClass
 (targets=6) <*pr141730.aj}A&before (advises) <*pr141730.aj[MyClass
-(targets=1) <*pr141730.aj[C~genericMethod~QList\<QString;>; (advised by) <*pr141730.aj}A&before
+(targets=1) <*pr141730.aj[C~genericMethod~Qjava.util.List\<QString;>; (advised by) <*pr141730.aj}A&before
 (targets=1) <*pr141730.aj[C (advised by) <*pr141730.aj}A&before
 (targets=1) <*pr141730.aj}A (advised by) <*pr141730.aj}A&before
 === END OF RELATIONSHIPS REPORT ==
