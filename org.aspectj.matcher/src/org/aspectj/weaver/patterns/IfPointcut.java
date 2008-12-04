@@ -229,7 +229,12 @@ public class IfPointcut extends Pointcut {
 					} else {
 						// we don't use i as JoinPoint.* can be anywhere in the signature in @style
 						Var v = state.get(currentStateIndex++);
+
+						while (v == null && currentStateIndex < state.size()) { // pr162135
+							v = state.get(currentStateIndex++);
+						}
 						args.add(v);
+
 						ret = Test.makeAnd(ret, Test.makeInstanceof(v, testMethod.getParameterTypes()[i]
 								.resolve(shadow.getIWorld())));
 					}
