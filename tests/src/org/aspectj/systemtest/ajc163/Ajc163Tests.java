@@ -28,6 +28,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+//	public void testAtAspectJDecp_pr164016() {
+//		runTest("ataspectj decp");
+//	}
+
 	public void testGetMethodNull_pr154427() {
 		runTest("getMethod returning null");
 	}
@@ -40,12 +44,38 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("mixed styles");
 	}
 
-	/*
-	 * public void testHandles_pr249216c24() { runTest("handles - escaped square brackets"); IHierarchy top =
-	 * AsmManager.lastActiveStructureModel.getHierarchy(); IProgramElement itd = findElementAtLine(top.getRoot(), 4); //
-	 * System.out.println(itd.getHandleIdentifier()); assertEquals("<{Handles.java}Handles)Ship.i)\\[\\[String;>;",
-	 * itd.getHandleIdentifier()); }
-	 */
+	public void testHandles_pr249216c24() {
+		runTest("handles - escaped square brackets");
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
+		IProgramElement ipe = null;
+		ipe = findElementAtLine(top.getRoot(), 4);// public java.util.List<String> Ship.i(List<String>[][] u)
+		assertEquals("<{Handles.java}Handles)Ship.i)\\[\\[Qjava.util.List\\<QString;>;", ipe.getHandleIdentifier());
+
+		ipe = findElementAtLine(top.getRoot(), 7);// public java.util.List<String> Ship.i(Set<String>[][] u)
+		assertEquals("<{Handles.java}Handles)Ship.i)\\[\\[Qjava.util.Set\\<QString;>;", ipe.getHandleIdentifier());
+
+		// public java.util.Set<String> i(java.util.Set<String>[][] u)
+		ipe = findElementAtLine(top.getRoot(), 10);
+		assertEquals("<{Handles.java}Handles~i~\\[\\[Qjava.util.Set\\<QString;>;", ipe.getHandleIdentifier());
+
+		ipe = findElementAtLine(top.getRoot(), 13);// public java.util.Set<String> i(java.util.Set<String>[][] u,int i) {
+		assertEquals("<{Handles.java}Handles~i~\\[\\[Qjava.util.Set\\<QString;>;~I", ipe.getHandleIdentifier());
+
+		ipe = findElementAtLine(top.getRoot(), 16);// public java.util.Set<String> i(java.util.Set<String>[][] u,int i) {
+		assertEquals("<{Handles.java}Handles~i2~\\[\\[Qjava.util.Set\\<+QCollection\\<QString;>;>;", ipe.getHandleIdentifier());
+
+		ipe = findElementAtLine(top.getRoot(), 19);// public java.util.Set<String> i3(java.util.Set<? extends
+		// Collection<String[]>>[][] u)
+		assertEquals("<{Handles.java}Handles~i3~\\[\\[Qjava.util.Set\\<+QCollection\\<\\[QString;>;>;", ipe.getHandleIdentifier());
+
+		ipe = findElementAtLine(top.getRoot(), 22);
+		assertEquals("<{Handles.java}Handles~i4~Qjava.util.Set\\<+QCollection\\<QString;>;>;", ipe.getHandleIdentifier());
+
+		ipe = findElementAtLine(top.getRoot(), 25);
+		assertEquals("<{Handles.java}Handles~i5~Qjava.util.Set\\<*>;", ipe.getHandleIdentifier());
+
+	}
+
 	public void testFQType_pr256937() {
 		runTest("fully qualified return type");
 		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();

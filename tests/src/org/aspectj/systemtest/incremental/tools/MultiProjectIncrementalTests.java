@@ -212,6 +212,18 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// Ajc.dumpAJDEStructureModel(getModelFor("pr253067"), "after inc build where first advised line is gone");
 	}
 
+	public void testHandles_DeclareAnno_pr249216_c9() {
+		String p = "pr249216";
+		initialiseProject(p);
+		build(p);
+		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
+		IProgramElement code = findElementAtLine(root, 4);
+		// the @ should be escapified
+		assertEquals("=pr249216<{Deca.java}X`declare \\@type", code.getHandleIdentifier());
+		// dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
+		// Ajc.dumpAJDEStructureModel(getModelFor(p), "after inc build where first advised line is gone");
+	}
+
 	public void testNullDelegateBrokenCode_pr251940() {
 		String p = "pr251940";
 		initialiseProject(p);
