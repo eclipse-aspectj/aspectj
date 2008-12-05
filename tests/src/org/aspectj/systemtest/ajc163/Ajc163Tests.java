@@ -28,10 +28,26 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
-//	public void testAtAspectJDecp_pr164016() {
-//		runTest("ataspectj decp");
-//	}
+	// public void testAtAspectJDecp_pr164016() {
+	// runTest("ataspectj decp");
+	// }
 
+	public void testPoorAtAjIfMessage_pr256458() {
+		runTest("poor ataj if message - 1");
+	}
+
+	public void testPoorAtAjIfMessage_pr256458_2() {
+		runTest("poor ataj if message - 2");
+	}
+/*
+	public void testInheritedAnnotations_pr128664() {
+		runTest("inherited annotations");
+	}
+
+	public void testInheritedAnnotations_pr128664_2() {
+		runTest("inherited annotations - 2");
+	}
+*/
 	public void testGetMethodNull_pr154427() {
 		runTest("getMethod returning null");
 	}

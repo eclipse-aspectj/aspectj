@@ -19,6 +19,32 @@
    	  </run>
     </ajc-test>
     
+    <ajc-test dir="bugs163/pr128664" title="inherited annotations">
+   	  <compile files="Bug.java" options="-1.5 -showWeaveInfo">
+   	    <message kind="weave" text=""/>
+   	  </compile>
+   	  <run class="Bug"/>
+    </ajc-test>
+        
+    <ajc-test dir="bugs163/pr128664" title="inherited annotations - 2">
+   	  <compile files="Bug2.java" options="-1.5 -showWeaveInfo">
+   	    <message kind="weave" text=""/>
+   	  </compile>
+   	  <run class="Bug2"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr256458" title="poor ataj if message - 1">
+   	  <compile files="Code.java" options="-1.5">
+   	    <message kind="error" text="in annotation style, if(...) pointcuts cannot contain code"/>
+   	  </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs163/pr256458" title="poor ataj if message - 2">
+   	  <compile files="Code2.java" options="-1.5">
+   	    <message kind="error" text="in annotation style, if(...) pointcuts cannot contain code"/>
+   	  </compile>
+    </ajc-test>
+
     <ajc-test dir="bugs163/pr256937" title="fully qualified return type">
    	  <compile files="Ship.java ShipAccessor.java" options="-emacssym -1.5"/>
     </ajc-test>
