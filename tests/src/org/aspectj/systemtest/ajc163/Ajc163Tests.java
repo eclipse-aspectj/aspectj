@@ -32,6 +32,32 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// runTest("ataspectj decp");
 	// }
 
+	public void testIncorrectArgOrdering_pr219419() {
+		runTest("incorrect arg ordering anno style");
+	}
+
+	public void testIncorrectArgOrdering_pr219419_2() {
+		runTest("incorrect arg ordering anno style - 2");
+	}
+
+	public void testIncorrectArgOrdering_pr219419_3() {
+		runTest("incorrect arg ordering anno style - 3");
+	}
+
+	// similar to 3 but parameters other way round
+	public void testIncorrectArgOrdering_pr219419_4() {
+		runTest("incorrect arg ordering anno style - 4");
+	}
+
+	// similar to 3 but also JoinPoint passed into advice
+	public void testIncorrectArgOrdering_pr219419_5() {
+		runTest("incorrect arg ordering anno style - 5");
+	}
+
+	// public void testDecpAnnoStyle_pr257754() {
+	// runTest("decp anno style");
+	// }
+
 	public void testPoorAtAjIfMessage_pr256458() {
 		runTest("poor ataj if message - 1");
 	}
@@ -39,15 +65,12 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testPoorAtAjIfMessage_pr256458_2() {
 		runTest("poor ataj if message - 2");
 	}
-/*
-	public void testInheritedAnnotations_pr128664() {
-		runTest("inherited annotations");
-	}
 
-	public void testInheritedAnnotations_pr128664_2() {
-		runTest("inherited annotations - 2");
-	}
-*/
+	/*
+	 * public void testInheritedAnnotations_pr128664() { runTest("inherited annotations"); }
+	 * 
+	 * public void testInheritedAnnotations_pr128664_2() { runTest("inherited annotations - 2"); }
+	 */
 	public void testGetMethodNull_pr154427() {
 		runTest("getMethod returning null");
 	}
@@ -97,6 +120,10 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		IProgramElement itd = findElementAtLine(top.getRoot(), 10);
 		String type = itd.getCorrespondingType(true);
+		assertEquals("java.util.List<java.lang.String>", type);
+
+		itd = findElementAtLine(top.getRoot(), 16);
+		type = itd.getCorrespondingType(true);
 		assertEquals("java.util.List<java.lang.String>", type);
 	}
 

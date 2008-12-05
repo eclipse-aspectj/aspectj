@@ -33,6 +33,61 @@
    	  <run class="Bug2"/>
     </ajc-test>
     
+    <ajc-test dir="bugs163/pr257754" title="decp anno style">
+   	  <compile files="Main.java" options="-1.5"/>
+   	  <run class="example.Main"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr219419" title="incorrect arg ordering anno style">
+   	  <compile files="Code.java" options="-1.5"/>
+   	  <run class="Code">
+   	    <stdout>
+   	    <line text="Catching mess. Argument was ewwww"/>
+   	    </stdout>
+   	  </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr219419" title="incorrect arg ordering anno style - 2">
+   	  <compile files="Code2.java" options="-1.5"/>
+   	  <run class="Code2">
+   	    <stdout>
+   	    <line text="Catching mess. Argument was ewwww"/>
+   	    </stdout>
+   	  </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr219419" title="incorrect arg ordering anno style - 3">
+   	  <compile files="Code3.java" options="-1.5"/>
+   	  <run class="Code3">
+   	    <stdout>
+   	    <line text="afterReturningCreateBean advice input='s' ret=37"/>
+   	    <line text="Code3.main returned from call to createBean 37"/>
+   	    </stdout>
+   	  </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr219419" title="incorrect arg ordering anno style - 4">
+   	  <compile files="Code4.java" options="-1.5"/>
+   	  <run class="Code4">
+   	    <stdout>
+   	    <line text="afterReturningCreateBean advice input='s' ret=37"/>
+   	    <line text="Code4.main returned from call to createBean 37"/>
+   	    </stdout>
+   	  </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr219419" title="incorrect arg ordering anno style - 5">
+   	  <compile files="Code5.java" options="-1.5"/>
+   	  <run class="Code5">
+   	    <stdout>
+   	    <line text="afterReturningCreateBean advice input='s' ret=37"/>
+   	    <line text="Code5.main returned from call to createBean 37"/>
+   	    </stdout>
+   	  </run>
+    </ajc-test>
+    
+    
+    
     <ajc-test dir="bugs163/pr256458" title="poor ataj if message - 1">
    	  <compile files="Code.java" options="-1.5">
    	    <message kind="error" text="in annotation style, if(...) pointcuts cannot contain code"/>
