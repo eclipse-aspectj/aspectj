@@ -294,25 +294,70 @@ public abstract class Advice extends ShadowMunger {
 		return result;
 	}
 
+
+	/**
+	 * Return the type of the 'extra argument'. For either after returning or after throwing advice, the extra argument will be the
+	 * returned value or the thrown exception respectively. With annotation style the user may declare the parameters in any order,
+	 * whereas for code style they are in a well defined order. So there is some extra complexity in here for annotation style that
+	 * looks up the correct parameter in the advice signature by name, based on the name specified in the annotation. If this fails
+	 * then we 'fallback' to guessing at positions, where the extra argument is presumed to come at the end.
+	 * 
+	 * @return the type of the extraParameter
+	 */
 	public UnresolvedType getExtraParameterType() {
-		if (!hasExtraParameter())
+		if (!hasExtraParameter()) {
 			return ResolvedType.MISSING;
+		}
 		if (signature instanceof ResolvedMember) {
+			ResolvedMember method = (ResolvedMember) signature;
+			UnresolvedType[] parameterTypes = method.getGenericParameterTypes();
 			if (getConcreteAspect().isAnnotationStyleAspect()) {
+
+				// Examine the annotation to determine the parameter name then look it up in the parameters for the method
+				String[] pnames = method.getParameterNames();
+				if (pnames != null) {
+					// It is worth attempting to look up the correct parameter
+					AnnotationAJ[] annos = getSignature().getAnnotations();
+					String parameterToLookup = null;
+					if (annos != null && (getKind() == AdviceKind.AfterThrowing || getKind() == AdviceKind.AfterReturning)) {
+						for (int i = 0; i < annos.length && parameterToLookup == null; i++) {
+							AnnotationAJ anno = annos[i];
+							String annosig = anno.getType().getSignature();
+							if (annosig.equals("Lorg/aspectj/lang/annotation/AfterThrowing;")) {
+								// the 'throwing' value in the annotation will name the parameter to bind to
+								parameterToLookup = anno.getStringFormOfValue("throwing");
+							} else if (annosig.equals("Lorg/aspectj/lang/annotation/AfterReturning;")) {
+								// the 'returning' value in the annotation will name the parameter to bind to
+								parameterToLookup = anno.getStringFormOfValue("returning");
+							}
+						}
+					}
+					if (parameterToLookup != null) {
+						for (int i = 0; i < pnames.length; i++) {
+							if (pnames[i].equals(parameterToLookup)) {
+								return parameterTypes[i];
+							}
+						}
+					}
+				}
+
+				// Don't think this code works so well... why isnt it getBaseParameterCount()-1 ?
+
+				int baseParmCnt = getBaseParameterCount();
+
 				// bug 122742 - if we're an annotation style aspect then one
 				// of the extra parameters could be JoinPoint which we want
 				// to ignore
-				int baseParmCnt = getBaseParameterCount();
-				UnresolvedType[] genericParameterTypes = ((ResolvedMember) signature).getGenericParameterTypes();
-				while ((baseParmCnt + 1 < genericParameterTypes.length)
-						&& (genericParameterTypes[baseParmCnt].equals(AjcMemberMaker.TYPEX_JOINPOINT)
-								|| genericParameterTypes[baseParmCnt].equals(AjcMemberMaker.TYPEX_STATICJOINPOINT) || genericParameterTypes[baseParmCnt]
+				while ((baseParmCnt + 1 < parameterTypes.length)
+						&& (parameterTypes[baseParmCnt].equals(AjcMemberMaker.TYPEX_JOINPOINT)
+								|| parameterTypes[baseParmCnt].equals(AjcMemberMaker.TYPEX_STATICJOINPOINT) || parameterTypes[baseParmCnt]
 								.equals(AjcMemberMaker.TYPEX_ENCLOSINGSTATICJOINPOINT))) {
 					baseParmCnt++;
 				}
-				return ((ResolvedMember) signature).getGenericParameterTypes()[baseParmCnt];
+				return parameterTypes[baseParmCnt];
+			} else {
+				return parameterTypes[getBaseParameterCount()];
 			}
-			return ((ResolvedMember) signature).getGenericParameterTypes()[getBaseParameterCount()];
 		} else {
 			return signature.getParameterTypes()[getBaseParameterCount()];
 		}
