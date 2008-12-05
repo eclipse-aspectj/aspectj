@@ -366,7 +366,11 @@ public class PatternParser {
 			eat(")");
 			p = new KindedPointcut(Shadow.PreInitialization, sig);
 		} else if (kind.equals("if")) {
-			// @style support allows if(), if(true), if(false)
+			// - annotation style only allows if(), if(true) or if(false)
+			// - if() means the body of the annotated method represents the if expression
+			// - anything else is an error because code cannot be put into the if()
+			// - code style will already have been processed and the call to maybeGetParsedPointcut()
+			// at the top of this method will have succeeded.
 			eat("(");
 			if (maybeEatIdentifier("true")) {
 				eat(")");
@@ -375,7 +379,11 @@ public class PatternParser {
 				eat(")");
 				p = new IfPointcut.IfFalsePointcut();
 			} else {
-				eat(")");
+				if (!maybeEat(")")) {
+					throw new ParserException(
+							"in annotation style, if(...) pointcuts cannot contain code. Use if() and put the code in the annotated method",
+							t);
+				}
 				// TODO - Alex has some token stuff going on here to get a readable name in place of ""...
 				p = new IfPointcut("");
 			}
