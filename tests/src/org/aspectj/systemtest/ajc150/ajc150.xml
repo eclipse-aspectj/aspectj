@@ -194,7 +194,7 @@
     
     <ajc-test dir="java5/decps" title="decps - 3c">
      <compile files="Basic3c.java" options="-1.5">
-       <message kind="error" text="@DeclareParents: defaultImpl=&quot;X$IImpl&quot; has no public no-arg constructor"/>
+       <message kind="error" text="@DeclareParents: defaultImpl=&quot;X$IImpl&quot; has a no argument constructor, but it is of incorrect visibility"/>
 	 </compile>
     </ajc-test>  
         
@@ -1086,7 +1086,9 @@
     </ajc-test>
         
     <ajc-test dir="bugs150" title="(@Foo *)+ type pattern parse error">
-        <compile files="AnnotationPlusPatternParseError.aj" options="-1.5"/>
+        <compile files="AnnotationPlusPatternParseError.aj" options="-1.5">
+          <message kind="warning" line="19"/>
+        </compile>
     </ajc-test>
 
     <ajc-test dir="bugs150" pr="80571" title="around advice on interface initializer">

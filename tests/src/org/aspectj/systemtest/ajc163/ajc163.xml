@@ -35,7 +35,18 @@
     
     <ajc-test dir="bugs163/pr257754" title="decp anno style">
    	  <compile files="Main.java" options="-1.5"/>
-   	  <run class="example.Main"/>
+   	  <run class="example.Main">
+   	  <stdout>
+   	  <line text="In doFoo class example.DefaultFoo"/>
+   	  <line text="Bar"/>
+   	  </stdout>
+   	  </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr257754" title="decp anno style - 2">
+   	  <compile files="Main2.java Foo.java DefaultFoo.java" options="-1.5">
+   	  <message kind="error" text="but it is of incorrect visibility"/>
+   	  </compile>
     </ajc-test>
     
     <ajc-test dir="bugs163/pr219419" title="incorrect arg ordering anno style">

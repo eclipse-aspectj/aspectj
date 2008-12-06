@@ -54,9 +54,13 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("incorrect arg ordering anno style - 5");
 	}
 
-	// public void testDecpAnnoStyle_pr257754() {
-	// runTest("decp anno style");
-	// }
+	public void testDecpAnnoStyle_pr257754() {
+		runTest("decp anno style");
+	}
+
+	public void testDecpAnnoStyle_pr257754_2() {
+		runTest("decp anno style - 2");
+	}
 
 	public void testPoorAtAjIfMessage_pr256458() {
 		runTest("poor ataj if message - 1");
