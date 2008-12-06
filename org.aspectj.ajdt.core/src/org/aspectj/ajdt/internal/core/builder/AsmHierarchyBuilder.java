@@ -29,6 +29,7 @@ import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.DeclareDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.InterTypeDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.InterTypeFieldDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
@@ -505,7 +506,14 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			// methods, then we loose the type, for example int, for the field
 			// and instead get "void".
 			if (peNode.getKind().equals(IProgramElement.Kind.INTER_TYPE_FIELD)) {
-				peNode.setCorrespondingType(methodDeclaration.returnType.toString());
+
+				InterTypeFieldDeclaration itfd = (InterTypeFieldDeclaration) methodDeclaration;
+				if (itfd.getRealFieldType() != null) {
+					peNode.setCorrespondingType(new String(itfd.getRealFieldType().readableName()));
+				} else
+					peNode.setCorrespondingType(null);
+
+				// was peNode.setCorrespondingType(methodDeclaration.returnType.toString());
 			} else {
 				if (methodDeclaration.returnType.resolvedType != null)
 					peNode.setCorrespondingType(new String(methodDeclaration.returnType.resolvedType.readableName()));
