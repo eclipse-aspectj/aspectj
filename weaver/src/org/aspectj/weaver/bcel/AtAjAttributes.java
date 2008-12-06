@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.aspectj.weaver.bcel;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,7 +53,6 @@ import org.aspectj.weaver.MethodDelegateTypeMunger;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
@@ -672,13 +672,30 @@ public class AtAjAttributes {
 							// check public no arg ctor
 							ResolvedType impl = struct.enclosingType.getWorld().resolve(defaultImplClassName, false);
 							ResolvedMember[] mm = impl.getDeclaredMethods();
+							int implModifiers = impl.getModifiers();
+							boolean defaultVisibilityImpl = !(Modifier.isPrivate(implModifiers)
+									|| Modifier.isProtected(implModifiers) || Modifier.isPublic(implModifiers));
 							boolean hasNoCtorOrANoArgOne = true;
+							ResolvedMember foundOneOfIncorrectVisibility = null;
 							for (int i = 0; i < mm.length; i++) {
 								ResolvedMember resolvedMember = mm[i];
 								if (resolvedMember.getName().equals("<init>")) {
 									hasNoCtorOrANoArgOne = false;
-									if (resolvedMember.getParameterTypes().length == 0 && resolvedMember.isPublic()) {
-										hasNoCtorOrANoArgOne = true;
+
+									if (resolvedMember.getParameterTypes().length == 0) {
+										if (defaultVisibilityImpl) { // default visibility implementation
+											if (resolvedMember.isPublic() || resolvedMember.isDefault()) {
+												hasNoCtorOrANoArgOne = true;
+											} else {
+												foundOneOfIncorrectVisibility = resolvedMember;
+											}
+										} else if (Modifier.isPublic(implModifiers)) { // public implementation
+											if (resolvedMember.isPublic()) {
+												hasNoCtorOrANoArgOne = true;
+											} else {
+												foundOneOfIncorrectVisibility = resolvedMember;
+											}
+										}
 									}
 								}
 								if (hasNoCtorOrANoArgOne) {
@@ -686,8 +703,16 @@ public class AtAjAttributes {
 								}
 							}
 							if (!hasNoCtorOrANoArgOne) {
-								reportError("@DeclareParents: defaultImpl=\"" + defaultImplClassName
-										+ "\" has no public no-arg constructor", struct);
+								if (foundOneOfIncorrectVisibility != null) {
+									reportError(
+											"@DeclareParents: defaultImpl=\""
+													+ defaultImplClassName
+													+ "\" has a no argument constructor, but it is of incorrect visibility.  It must be at least as visible as the type.",
+											struct);
+								} else {
+									reportError("@DeclareParents: defaultImpl=\"" + defaultImplClassName
+											+ "\" has no public no-arg constructor", struct);
+								}
 							}
 							if (!fieldType.isAssignableFrom(impl)) {
 								reportError("@DeclareParents: defaultImpl=\"" + defaultImplClassName
@@ -720,13 +745,13 @@ public class AtAjAttributes {
 							// munger is what is used to determine the type of the field that hosts the delegate instance.
 							// So here we create a modified method with an alternative declaring type so that we lookup
 							// the right field. See pr164016. Generics will probably break this horribly
-/*
-							ResolvedMemberImpl methodWithAlteredDeclaringType = new ResolvedMemberImpl(method.getKind(), fieldType,
-									method.getModifiers(), method.getReturnType(), method.getName(), method.getParameterTypes(),
-									method.getExceptions());
-*/
-							MethodDelegateTypeMunger mdtm = new MethodDelegateTypeMunger(method,
-									struct.enclosingType, defaultImplClassName, typePattern);
+							/*
+							 * ResolvedMemberImpl methodWithAlteredDeclaringType = new ResolvedMemberImpl(method.getKind(),
+							 * fieldType, method.getModifiers(), method.getReturnType(), method.getName(),
+							 * method.getParameterTypes(), method.getExceptions());
+							 */
+							MethodDelegateTypeMunger mdtm = new MethodDelegateTypeMunger(method, struct.enclosingType,
+									defaultImplClassName, typePattern);
 							mdtm.setSourceLocation(struct.enclosingType.getSourceLocation());
 							struct.ajAttributes.add(new AjAttribute.TypeMunger(mdtm));
 						}
@@ -1019,8 +1044,7 @@ public class AtAjAttributes {
 			ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber(), struct.bMethod
 					.getDeclarationOffset());
 			struct.ajAttributes.add(new AjAttribute.AdviceAttribute(AdviceKind.AfterThrowing, pc, extraArgument, sl.getOffset(), sl
-					.getOffset() + 1,// FIXME AVASM
-					struct.context));
+					.getOffset() + 1, struct.context));
 			return true;
 		}
 		return false;
