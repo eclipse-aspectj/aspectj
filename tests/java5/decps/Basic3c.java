@@ -22,6 +22,7 @@ public class Basic3c {
   }
 
   class IImpl implements I {
+	  private IImpl() {}
     public void m2() { }
     public void m3() { }
     public void m4() { }
