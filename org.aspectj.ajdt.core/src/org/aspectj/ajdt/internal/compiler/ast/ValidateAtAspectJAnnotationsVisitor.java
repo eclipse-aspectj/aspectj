@@ -376,7 +376,9 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			pointcutExpression = getStringLiteralFor("value", adviceAnn, pcLocation);
 		try {
 			ISourceContext context = new EclipseSourceContext(unit.compilationResult, pcLocation[0]);
-			Pointcut pc = new PatternParser(pointcutExpression, context).parsePointcut();
+			PatternParser pp = new PatternParser(pointcutExpression, context);
+			Pointcut pc = pp.parsePointcut();
+			pp.checkEof();
 			FormalBinding[] bindings = buildFormalAdviceBindingsFrom(methodDeclaration);
 			pc.resolve(new EclipseScope(bindings, methodDeclaration.scope));
 			EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(methodDeclaration.scope);
