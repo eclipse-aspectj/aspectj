@@ -191,6 +191,13 @@
         <message kind="warning" line="4" text="has not been applied"/>
       </compile>
     </ajc-test>
+
+    <ajc-test dir="bugs163/pr257833" title="param annos and at args">
+      <compile files="NotNull.java NotNullAspect.java NotNullTest.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'constructor-execution(void patterntesting.check.runtime.NotNullTest.&lt;init&gt;(java.lang.String))' in Type"/>
+      </compile>
+      <run class="patterntesting.check.runtime.NotNullTest"/>
+    </ajc-test>
     
     <ajc-test dir="bugs163/pr253109" title="generic pointcuts - 2">
       <compile files="CodeTwo.java" options="-1.5"/>
