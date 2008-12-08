@@ -28,6 +28,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testAtTargetPlus_pr255856() {
+		runTest("attarget with plus");
+	}
+
 	public void testNonNullAtArgs_pr257833() {
 		runTest("param annos and at args");
 	}

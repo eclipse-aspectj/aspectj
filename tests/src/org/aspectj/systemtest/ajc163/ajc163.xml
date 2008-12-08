@@ -222,9 +222,15 @@
       </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs163/pr255856" title="attarget with plus">
+      <compile files="Bug.java" options="-1.5">
+      <message kind="error" text="unexpected pointcut element"/>
+      </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs163/pr253109" title="generic pointcuts - 5">
       <compile files="CodeFive.java" options="-1.5 -showWeaveInfo">
-        <message kind="weave" text="advised by around advice"/>
+        <message kind="weave" line="55" text="advised by around advice"/>
       </compile>
     </ajc-test>
     
