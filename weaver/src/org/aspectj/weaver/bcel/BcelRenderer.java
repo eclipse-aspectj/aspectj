@@ -140,11 +140,21 @@ public final class BcelRenderer implements ITestVisitor, IExprVisitor {
 		// in Java:
 		// foo.class.isAnnotationPresent(annotationClass);
 		// in bytecode:
+
+		// ifnull? skip to the end if it is as getClass() will fail (see pr 257833)
+
 		// load var onto the stack (done for us later)
 		// invokevirtual java/lang/Object.getClass:()Ljava/lang/Class
 		// ldc_w annotationClass
 		// invokevirtual java/lang/Class.isAnnotationPresent:(Ljava/lang/Class;)Z
 		InstructionList il = new InstructionList();
+
+		// If it is null jump past the advice call
+		il.append(fact.createBranchInstruction(Constants.IFNULL, fk));
+
+		// Load up the var again
+		il.append(((BcelVar) hasAnnotation.getVar()).createLoad(fact));
+
 		Member getClass = MemberImpl.method(UnresolvedType.OBJECT, 0, UnresolvedType.JAVA_LANG_CLASS, "getClass",
 				UnresolvedType.NONE);
 		il.append(Utility.createInvoke(fact, world, getClass));
