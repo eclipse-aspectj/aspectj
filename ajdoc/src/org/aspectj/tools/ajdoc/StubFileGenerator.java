@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
-import org.aspectj.util.FileUtil;
 
 /**
  * @author Mik Kersten
@@ -43,12 +42,6 @@ class StubFileGenerator {
 
 	static void processFile(AsmManager model, File inputFile, File signatureFile) throws DocException {
 		try {
-			// Special Case for package-info.java just copy file directly.
-			if(signatureFile.getName().equals("package-info.java")) {
-			   FileUtil.copyFile(inputFile, signatureFile);
-			   return;
-			}
-			
 			String path = StructureUtil.translateAjPathName(signatureFile.getCanonicalPath());
 			PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(path)));
 

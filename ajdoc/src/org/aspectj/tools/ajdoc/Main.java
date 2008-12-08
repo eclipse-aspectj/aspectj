@@ -145,8 +145,6 @@ public class Main implements Config {
 			System.out.println("> Building signature files...");
 			try {
 				StubFileGenerator.doFiles(model, declIDTable, inputFiles, signatureFiles);
-				//Copy package.html and related files over
-				packageHTML(model, inputFiles);
 			} catch (DocException d) {
 				System.err.println(d.getMessage());
 				return;
@@ -162,56 +160,6 @@ public class Main implements Config {
 			handleInternalError(e);
 			exit(-2);
 		}
-	}
-
-	/** Method to copy over any package.html files that may be part of the documentation
-	 * so that javadoc generates the package-summary properly. */
-	private static void packageHTML(AsmManager model, File[] inputFiles) throws IOException {
-		ArrayList dirList = new ArrayList();
-		for(int i = 0; i < inputFiles.length; i++){			
-			String packageName = StructureUtil.getPackageDeclarationFromFile(model, inputFiles[i]);
-			// Only copy the package.html file once.
-			if(dirList.contains(packageName))
-				continue;
-			
-			// Check to see if there exist a package.html file for this package.
-			String dir = inputFiles[i].getAbsolutePath().substring(0, inputFiles[i].getAbsolutePath().lastIndexOf("\\"));
-			File input = new File(dir + Config.DIR_SEP_CHAR + "package.html");
-			File inDir = new File(dir+ Config.DIR_SEP_CHAR + "doc-files");
-			// If it does not exist lets go to the next package.
-			if(!input.exists()){
-				dirList.add(packageName);
-				continue;
-			}
-			
-			String filename = "";
-			String docFiles = "";
-			if (packageName != null) {
-				String pathName = outputWorkingDir + '/' + packageName.replace('.', '/');
-				File packageDir = new File(pathName);
-				if (!packageDir.exists()) {
-					dirList.add(packageDir);
-					continue;
-				}
-				packageName = packageName.replace('.', '/'); // !!!
-				filename = outputWorkingDir + Config.DIR_SEP_CHAR + packageName + Config.DIR_SEP_CHAR + "package.html";
-				docFiles = rootDir.getAbsolutePath() + Config.DIR_SEP_CHAR + packageName + Config.DIR_SEP_CHAR + "doc-files";
-			} else {
-				filename = outputWorkingDir + Config.DIR_SEP_CHAR + "package.html";
-				docFiles = rootDir.getAbsolutePath() + Config.DIR_SEP_CHAR + "doc-files";
-			}
-			
-			
-			File output = new File(filename);
-			FileUtil.copyFile(input, output);// Copy package.html
-			// javadoc doesn't do anything with the doc-files folder so 
-			// we'll just copy it directly to the document location.
-			if(!inDir.exists())
-				continue;
-			File outDir = new File(docFiles);
-			System.out.println("> Copying folder " + outDir);
-			FileUtil.copyFile(inDir, outDir);// Copy doc-files folder if it exist
-		}	
 	}
 
 	private static AsmManager callAjc(File[] inputFiles) {
