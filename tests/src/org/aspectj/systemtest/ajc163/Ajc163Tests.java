@@ -27,6 +27,9 @@ import org.aspectj.testing.Utils;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
+//	public void testGenericMethodBridging_pr251326() {
+//		runTest("itd anonymous inner class in wrong package");
+//	}
 
 	public void testAtTargetPlus_pr255856() {
 		runTest("attarget with plus");

@@ -318,4 +318,14 @@
       </run>
     </ajc-test>
 
+    <ajc-test dir="bugs163/pr251326" title="itd anonymous inner class in wrong package">
+      <compile files="pkgA/Listener.java pkgA/Target.java pkgB/InferListener.aj" options="-1.5"/>
+      <run class="pkgA.Target">
+        <stdout>
+          <line text="Simple A"/>
+          <line text="Inferred B"/>
+        </stdout>
+      </run>
+    </ajc-test>
+
 </suite>
