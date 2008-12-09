@@ -216,6 +216,14 @@ public class ReferenceType extends ResolvedType {
 			return isCoerceableFromParameterizedType(other);
 		}
 
+		if (this.isParameterizedType() && other.isRawType()) {
+			return ((ReferenceType) this.getRawType()).isCoerceableFrom(other.getGenericType());
+		}
+
+		if (this.isRawType() && other.isParameterizedType()) {
+			return this.getGenericType().isCoerceableFrom(((ReferenceType) other.getRawType()));
+		}
+
 		if (!this.isInterface() && !other.isInterface()) {
 			return false;
 		}
@@ -302,14 +310,17 @@ public class ReferenceType extends ResolvedType {
 			if (ResolvedType.validBoxing.contains(this.getSignature() + other.getSignature()))
 				return true;
 		}
-		if (this == other)
+		if (this == other) {
 			return true;
-		if (this.getSignature().equals(ResolvedType.OBJECT.getSignature()))
+		}
+		if (this.getSignature().equals(ResolvedType.OBJECT.getSignature())) {
 			return true;
+		}
 
 		if ((this.isRawType() || this.isGenericType()) && other.isParameterizedType()) {
-			if (isAssignableFrom((ResolvedType) other.getRawType()))
+			if (isAssignableFrom((ResolvedType) other.getRawType())) {
 				return true;
+			}
 		}
 		if (this.isRawType() && other.isGenericType()) {
 			if (isAssignableFrom((ResolvedType) other.getRawType()))
@@ -319,6 +330,11 @@ public class ReferenceType extends ResolvedType {
 			if (isAssignableFrom(other.getGenericType()))
 				return true;
 		}
+		// if (this.isParameterizedType() && other.isRawType()) {
+		// if (((ReferenceType) this.getRawType()).isAssignableFrom(other.getGenericType())) {
+		// return true;
+		// }
+		// }
 
 		if (this.isParameterizedType()) {
 			// look at wildcards...
