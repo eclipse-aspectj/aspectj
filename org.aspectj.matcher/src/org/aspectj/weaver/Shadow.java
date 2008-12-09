@@ -364,7 +364,7 @@ public abstract class Shadow {
 			return !isTargetSameAsThis();
 		}
 
-		// !!! this is false for handlers!
+		// false for handlers
 		public boolean allowsExtraction() {
 			return true;
 		}
