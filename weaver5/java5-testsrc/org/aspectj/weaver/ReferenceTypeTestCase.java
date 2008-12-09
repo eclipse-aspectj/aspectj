@@ -471,177 +471,234 @@ public class ReferenceTypeTestCase extends TestCase {
 		ReferenceType ajListOfInteger = resolve("Pjava/util/List<Ljava/lang/Integer;>;");
 		ReferenceType ajListOfNumber = resolve("Pjava/util/List<Ljava/lang/Number;>;");
 
-		//
-		// // void around(): execution(* C.m4(..)) && args(List<Integer>){} //:
-		// Should not match (but it does) ERROR
-		// // void around(): execution(* C.m4(..)) && args(ArrayList<Integer>){}//:
-		// Should not match (but it does) ERROR
-		// // void around(): execution(* C.m4(..)) && args(List<Number>){}//: Should
-		// not match (but it does) ERROR
-		// // void around(): execution(* C.m4(..)) && args(ArrayList<Number>){}//:
-		// Should not match (but it does) ERROR
-		// // void around(): execution(* C.m4(..)) && args(List<? extends
-		// Number>){}//: Should not match (but it does) ERROR
-		// // void around(): execution(* C.m4(..)) && args(ArrayList<? extends
-		// Number>){}//: Should not match (but it does!) ERROR
-		// // void around(): execution(* C.m4(..)) && args(List){}//: Should match
-		// (it does)
-		// // void around(): execution(* C.m4(..)) && args(ArrayList){}//: Should
-		// runtime check (it does!)
-		// // void around(): execution(* C.m4(..)) && args(List<?>){}//: Should
-		// match (it does)
-		// // void around(): execution(* C.m4(..)) && args(ArrayList<?>){}//: Should
-		// runtime check (it does!)
-		// // void around(): execution(* C.m4(..)) && args(ArrayList<String>){}//:
-		// Should not match (it does not match!)
-		//
-		// // void around(): execution(* C.m5(..)) && args(List<Integer>){} //:
-		// Should not match (but it does) ERROR
-		// // void around(): execution(* C.m5(..)) && args(ArrayList<Integer>){}//:
-		// Should not match (but it does!) ERROR
-		// // void around(): execution(* C.m5(..)) && args(List<Number>){}//: Should
-		// not match (but it does!) ERROR
-		// // void around(): execution(* C.m5(..)) && args(ArrayList<Number>){}//:
-		// Should not match (it does) ERROR
-		// // void around(): execution(* C.m5(..)) && args(List<? extends
-		// Number>){}//: Should match (it does)
-		// // void around(): execution(* C.m5(..)) && args(ArrayList<? extends
-		// Number>){}//: Should runtime check (it does!)
-		// // void around(): execution(* C.m5(..)) && args(List){}//: Should match
-		// (it does)
-		// // void around(): execution(* C.m5(..)) && args(ArrayList){}//: Should
-		// runtime check (it does not match!) ERROR
-		// // void around(): execution(* C.m5(..)) && args(List<?>){}//: Should
-		// match (it does)
-		// // void around(): execution(* C.m5(..)) && args(ArrayList<?>){}//: Should
-		// runtime check (it does not match!)
-		// // void around(): execution(* C.m5(..)) && args(ArrayList<String>){}//:
-		// Should not match (it does not match!)
-		//
-		// // void around(): execution(* D2.m5(..)) && args(List<D1>){} //: Should
-		// not match (but it does) ERROR
-		// // void around(): execution(* D2.m5(..)) && args(ArrayList<D1>){}//:
-		// Should not match (but it does!) ERROR
-		// // void around(): execution(* D2.m5(..)) && args(List<C1>){}//: Should
-		// not match (but it does!) ERROR
-		// // void around(): execution(* D2.m5(..)) && args(ArrayList<C1>){}//:
-		// Should not match (it does) ERROR
-		// // void around(): execution(* D2.m5(..)) && args(List<? extends B1>){}//:
-		// Should match (it does)
-		// // void around(): execution(* D2.m5(..)) && args(ArrayList<? extends
-		// B1>){}//: Should runtime check (it does!)
-		// // void around(): execution(* D2.m5(..)) && args(List<? extends C1>){}//:
-		// Should match (it does)
-		// // void around(): execution(* D2.m5(..)) && args(ArrayList<? extends
-		// C1>){}//: Should runtime check (it does!)
-		// // void around(): execution(* D2.m5(..)) && args(List){}//: Should match
-		// (it does)
-		// // void around(): execution(* D2.m5(..)) && args(ArrayList){}//: Should
-		// runtime check (it does not match!) ERROR
-		// // void around(): execution(* D2.m5(..)) && args(List<?>){}//: Should
-		// match (it does)
-		// // void around(): execution(* D2.m5(..)) && args(ArrayList<?>){}//:
-		// Should runtime check (it does not match!)
-		// // void around(): execution(* D2.m5(..)) && args(ArrayList<String>){}//:
-		// Should not match (it does not match!)
-		//
-		// // void around(): execution(* C.m6(..)) && args(List<Integer>){} //:
-		// Should not match (but it does) ERROR
-		// // void around(): execution(* C.m6(..)) && args(ArrayList<Integer>){}//:
-		// Should not match (but it does!) ERROR
-		// // void around(): execution(* C.m6(..)) && args(List<Number>){}//: Should
-		// not match (but it does!) ERROR
-		// // void around(): execution(* C.m6(..)) && args(ArrayList<Number>){}//:
-		// Should not match (it does) ERROR
-		// // void around(): execution(* C.m6(..)) && args(List<? extends
-		// Number>){}//: Should match (it does)
-		// // void around(): execution(* C.m6(..)) && args(ArrayList<? extends
-		// Number>){}//: Should runtime check (it does!)
-		// // void around(): execution(* C.m6(..)) && args(List){}//: Should match
-		// (it does)
-		// // void around(): execution(* C.m6(..)) && args(ArrayList){}//: Should
-		// runtime check (it does not match!)
-		// // void around(): execution(* C.m6(..)) && args(List<?>){}//: Should
-		// match (it does)
-		// // void around(): execution(* C.m6(..)) && args(ArrayList<?>){}//: Should
-		// runtime check (it does not match!)
-		// // void around(): execution(* C.m6(..)) && args(ArrayList<String>){}//:
-		// Should not match (it does not match!)
-		//
-		// // void around(): execution(* C.m7(..)) && args(List<List<Integer>>){}
-		// //: Should not match (but it does) ERROR
-		// // void around(): execution(* C.m7(..)) &&
-		// args(ArrayList<List<Integer>>){}//: Should not match (but it does!) ERROR
-		// // void around(): execution(* C.m7(..)) && args(List<List<Number>>){}//:
-		// Should not match (but it does!) ERROR
-		// // void around(): execution(* C.m7(..)) &&
-		// args(ArrayList<List<Number>>){}//: Should not match (but it does) ERROR
-		// // void around(): execution(* C.m7(..)) && args(List<? extends
-		// List<Number>>){}//: Should not match (but it does) ERROR
-		// // void around(): execution(* C.m7(..)) && args(ArrayList< ? extends
-		// List<Number>>){}//: Should not match (but it does!) ERROR
-		// // void around(): execution(* C.m7(..)) && args(List< ? extends List<?
-		// extends Number>>){}//: Should match (it does!)
-		// // void around(): execution(* C.m7(..)) && args(ArrayList< ? extends
-		// List<? extends Number>>){}//: Should match (it does!)
-		// // void around(): execution(* C.m7(..)) && args(List){}//: Should match
-		// (it does)
-		// // void around(): execution(* C.m7(..)) && args(ArrayList){}//: Should
-		// runtime check (it does not match!)
-		// // void around(): execution(* C.m7(..)) && args(List<?>){}//: Should
-		// match (it does)
-		// // void around(): execution(* C.m7(..)) && args(ArrayList<?>){}//: Should
-		// runtime check (it does!)
-		// // void around(): execution(* C.m7(..)) &&
-		// args(ArrayList<List<String>>){}//: Should not match (it does not match!)
-		//
-		// // void around(): execution(* C.m8(..)) && args(List<Integer>){} //:
-		// Should match with unchecked conversion (it does)
-		// // void around(): execution(* C.m8(..)) && args(ArrayList<Integer>){}//:
-		// Should runtime check with unchecked conversion (it does!)
-		// // void around(): execution(* C.m8(..)) && args(List<Number>){}//: Should
-		// match with unchecked conversion (it does!)
-		// // void around(): execution(* C.m8(..)) && args(ArrayList<Number>){}//:
-		// Should runtime check with unchecked conversion (it does)
-		// // void around(): execution(* C.m8(..)) && args(List<? extends
-		// Number>){}//: Should match with unchecked conversion (it does!)
-		// // void around(): execution(* C.m8(..)) && args(ArrayList<? extends
-		// Number>){}//: Should runtime check with unchecked conversion (it does)
-		// // void around(): execution(* C.m8(..)) && args(List){}//: Should match
-		// (it does)
-		// // void around(): execution(* C.m8(..)) && args(ArrayList){}//: Should
-		// runtime check (it does!)
-		// // void around(): execution(* C.m8(..)) && args(List<?>){}//: Should
-		// match (it does)
-		// // void around(): execution(* C.m8(..)) && args(ArrayList<?>){}//: Should
-		// runtime check (it does!)
-		// // void around(): execution(* C.m8(..)) && args(ArrayList<String>){}//:
-		// Should not match (it does not match!)
-		//
-		// // void around(): execution(* C.m9(..)) && args(List<Integer>){} //:
-		// Should not match (but it does) ERROR
-		// // void around(): execution(* C.m9(..)) && args(ArrayList<Integer>){}//:
-		// Should not match (it does not match!)
-		// // void around(): execution(* C.m9(..)) && args(Number){}//: Should match
-		// (it does!)
-		// // void around(): execution(* C.m9(..)) && args(Integer){}//: Should
-		// runtime check (it does)
-		// // void around(): execution(* C.m9(..)) && args(List<? extends
-		// Number>){}//: Should not match (but it does) ERROR
-		// // void around(): execution(* C.m9(..)) && args(ArrayList<? extends
-		// Number>){}//: Should not match (it does not match!)
-		// // void around(): execution(* C.m9(..)) && args(List){}//: Should not
-		// match (but it does) ERROR
-		// // void around(): execution(* C.m9(..)) && args(ArrayList){}//: Should
-		// not match (it does not match!)
-		// // void around(): execution(* C.m9(..)) && args(List<?>){}//: Should not
-		// match (but it does) ERROR
-		// // void around(): execution(* C.m9(..)) && args(ArrayList<?>){}//: Should
-		// not match (it does not match!)
-		// // void around(): execution(* C.m9(..)) && args(String){}//: Should not
-		// match (it does not match!)
+		// void m4(List<?> e) {}
+
+		// void around(): execution(* C.m4(..)) && args(List<Integer>){} //: Should match with unchecked warning
+		listOfInteger = (List<Integer>) listOfSomething;
+		assertFalse(ajListOfInteger.isAssignableFrom(ajListOfSomething));
+		assertTrue(ajListOfInteger.isCoerceableFrom(ajListOfSomething));
+
+		// void around(): execution(* C.m4(..)) && args(ArrayList<Integer>){} // Should match with unchecked warning
+		arraylistOfInteger = (ArrayList<Integer>) listOfSomething;
+		assertFalse(ajArrayListOfInteger.isAssignableFrom(ajListOfSomething));
+		assertTrue(ajArrayListOfInteger.isCoerceableFrom(ajListOfSomething));
+
+		// void around(): execution(* C.m4(..)) && args(List<Number>){} // Should match with unchecked warning
+		listOfNumber = (List<Number>) listOfSomething;
+		assertFalse(ajListOfNumber.isAssignableFrom(ajListOfSomething));
+		assertTrue(ajListOfNumber.isCoerceableFrom(ajListOfSomething));
+
+		// void around(): execution(* C.m4(..)) && args(ArrayList<Number>){} // Should match with unchecked warning
+		arrayListOfNumber = (ArrayList<Number>) listOfSomething;
+		assertFalse(ajArrayListOfNumber.isAssignableFrom(ajListOfSomething));
+		assertTrue(ajArrayListOfNumber.isCoerceableFrom(ajListOfSomething));
+
+		// void around(): execution(* C.m4(..)) && args(List<? extends Number>){} // Should match with unchecked warning
+		listOfSomethingNumberish = (List<? extends Number>) listOfSomething;
+		assertFalse(ajListOfSomethingNumberish.isAssignableFrom(ajListOfSomething));
+		assertTrue(ajListOfSomethingNumberish.isCoerceableFrom(ajListOfSomething));
+
+		// void around(): execution(* C.m4(..)) && args(ArrayList<? extends Number>){} // Should match with unchecked warning
+		arrayListOfSomethingNumberish = (ArrayList<? extends Number>) listOfSomething;
+		assertFalse(ajArrayListOfSomethingNumberish.isAssignableFrom(ajListOfSomething));
+		assertTrue(ajArrayListOfSomethingNumberish.isCoerceableFrom(ajListOfSomething));
+
+		// void around(): execution(* C.m4(..)) && args(List){} // Should match
+		list = listOfSomething;
+		assertTrue(ajList.isAssignableFrom(ajListOfSomething));
+
+		// void around(): execution(* C.m4(..)) && args(ArrayList){} // Should runtime check
+		arraylist = (ArrayList) listOfSomething;
+		assertFalse(ajArrayList.isAssignableFrom(ajListOfSomething));
+		assertTrue(ajArrayList.isCoerceableFrom(ajListOfSomething));
+
+		// void around(): execution(* C.m4(..)) && args(List<?>){}//: Should match
+		list = listOfSomething;
+		assertTrue(ajList.isAssignableFrom(ajListOfSomething));
+
+		// void around(): execution(* C.m4(..)) && args(ArrayList<?>){} // Should runtime check
+		arrayListOfSomething = (ArrayList<?>) listOfSomething;
+		assertFalse(ajArrayListOfSomething.isAssignableFrom(ajListOfSomething));
+		assertTrue(ajArrayListOfSomething.isCoerceableFrom(ajListOfSomething));
+
+		// void around(): execution(* C.m4(..)) && args(ArrayList<String>){} // Should match with unchecked warning
+		arrayListOfString = (ArrayList<String>) listOfSomething;
+		assertFalse(ajArrayListOfString.isAssignableFrom(ajListOfSomething));
+		assertTrue(ajArrayListOfString.isCoerceableFrom(ajListOfSomething));
 
 	}
+
+	// public void testAssignable_method_m5() {
+	// List list = new ArrayList();
+	// ArrayList arraylist = null;
+	// List<String> listOfString = new ArrayList<String>();
+	// List<?> listOfSomething = new ArrayList<Integer>();
+	// ArrayList<?> arrayListOfSomething = null;
+	// List<Number> listOfNumber = null;
+	// ArrayList<Number> arrayListOfNumber = null;
+	// ArrayList<? extends Number> arrayListOfSomethingNumberish = null;
+	// List<? extends Number> listOfSomethingNumberish = new ArrayList<Integer>();
+	// List<? super Double> listOfSomethingSuperDouble = new ArrayList<Number>();
+	// List<Integer> listOfInteger = new ArrayList<Integer>();
+	// ArrayList<String> arrayListOfString;
+	// ArrayList<Integer> arraylistOfInteger;
+	// // interfaces too List<? extends A,B>
+	//
+	// ReferenceType ajArrayListOfString = resolve("Pjava/util/ArrayList<Ljava/lang/String;>;");
+	// ReferenceType ajArrayListOfInteger = resolve("Pjava/util/ArrayList<Ljava/lang/Integer;>;");
+	// ReferenceType ajArrayListOfNumber = resolve("Pjava/util/ArrayList<Ljava/lang/Number;>;");
+	// ReferenceType ajArrayListOfSomethingNumberish = resolve("Pjava/util/ArrayList<+Ljava/lang/Number;>;");
+	// ReferenceType ajList = resolve("Ljava/util/List;");
+	// ReferenceType ajArrayList = resolve("Ljava/util/ArrayList;");
+	// ReferenceType ajListOfString = resolve("Pjava/util/List<Ljava/lang/String;>;");
+	// ReferenceType ajListOfSomething = resolve("Pjava/util/List<*>;");
+	// ReferenceType ajArrayListOfSomething = resolve("Pjava/util/ArrayList<*>;");
+	// ReferenceType ajListOfSomethingNumberish = resolve("Pjava/util/List<+Ljava/lang/Number;>;");
+	// ReferenceType ajListOfSomethingSuperDouble = resolve("Pjava/util/List<-Ljava/lang/Double;>;");
+	// ReferenceType ajListOfInteger = resolve("Pjava/util/List<Ljava/lang/Integer;>;");
+	// ReferenceType ajListOfNumber = resolve("Pjava/util/List<Ljava/lang/Number;>;");
+	// ReferenceType ajListOfEextendsNumber = resolve("Pjava/util/List<+TE")
+	//
+	// // class C<E extends Number> {
+	// // void m5(List<E> e) { }
+	// //
+	// // void around(): execution(* C.m5(..)) && args(List<Integer>){} Should not match (but it does) ERROR
+	//
+	// // void around(): execution(* C.m5(..)) && args(ArrayList<Integer>){}//: Should not match (but it does!) ERROR
+	// // void around(): execution(* C.m5(..)) && args(List<Number>){}//: Should not match (but it does!) ERROR
+	// // void around(): execution(* C.m5(..)) && args(ArrayList<Number>){}//: Should not match (it does) ERROR
+	// // void around(): execution(* C.m5(..)) && args(List<? extends Number>){}//: Should match (it does)
+	// // void around(): execution(* C.m5(..)) && args(ArrayList<? extends Number>){}//: Should runtime check (it does!)
+	// // void around(): execution(* C.m5(..)) && args(List){}//: Should match (it does)
+	// // void around(): execution(* C.m5(..)) && args(ArrayList){}//: Should runtime check (it does not match!) ERROR
+	// // void around(): execution(* C.m5(..)) && args(List<?>){}//: Should match (it does)
+	// // void around(): execution(* C.m5(..)) && args(ArrayList<?>){}//: Should runtime check (it does not match!)
+	// // void around(): execution(* C.m5(..)) && args(ArrayList<String>){}//: Should not match (it does not match!)
+	// //
+	// // // void around(): execution(* D2.m5(..)) && args(List<D1>){} //: Should
+	// // not match (but it does) ERROR
+	// // // void around(): execution(* D2.m5(..)) && args(ArrayList<D1>){}//:
+	// // Should not match (but it does!) ERROR
+	// // // void around(): execution(* D2.m5(..)) && args(List<C1>){}//: Should
+	// // not match (but it does!) ERROR
+	// // // void around(): execution(* D2.m5(..)) && args(ArrayList<C1>){}//:
+	// // Should not match (it does) ERROR
+	// // // void around(): execution(* D2.m5(..)) && args(List<? extends B1>){}//:
+	// // Should match (it does)
+	// // // void around(): execution(* D2.m5(..)) && args(ArrayList<? extends
+	// // B1>){}//: Should runtime check (it does!)
+	// // // void around(): execution(* D2.m5(..)) && args(List<? extends C1>){}//:
+	// // Should match (it does)
+	// // // void around(): execution(* D2.m5(..)) && args(ArrayList<? extends
+	// // C1>){}//: Should runtime check (it does!)
+	// // // void around(): execution(* D2.m5(..)) && args(List){}//: Should match
+	// // (it does)
+	// // // void around(): execution(* D2.m5(..)) && args(ArrayList){}//: Should
+	// // runtime check (it does not match!) ERROR
+	// // // void around(): execution(* D2.m5(..)) && args(List<?>){}//: Should
+	// // match (it does)
+	// // // void around(): execution(* D2.m5(..)) && args(ArrayList<?>){}//:
+	// // Should runtime check (it does not match!)
+	// // // void around(): execution(* D2.m5(..)) && args(ArrayList<String>){}//:
+	// // Should not match (it does not match!)
+	// //
+	// // // void around(): execution(* C.m6(..)) && args(List<Integer>){} //:
+	// // Should not match (but it does) ERROR
+	// // // void around(): execution(* C.m6(..)) && args(ArrayList<Integer>){}//:
+	// // Should not match (but it does!) ERROR
+	// // // void around(): execution(* C.m6(..)) && args(List<Number>){}//: Should
+	// // not match (but it does!) ERROR
+	// // // void around(): execution(* C.m6(..)) && args(ArrayList<Number>){}//:
+	// // Should not match (it does) ERROR
+	// // // void around(): execution(* C.m6(..)) && args(List<? extends
+	// // Number>){}//: Should match (it does)
+	// // // void around(): execution(* C.m6(..)) && args(ArrayList<? extends
+	// // Number>){}//: Should runtime check (it does!)
+	// // // void around(): execution(* C.m6(..)) && args(List){}//: Should match
+	// // (it does)
+	// // // void around(): execution(* C.m6(..)) && args(ArrayList){}//: Should
+	// // runtime check (it does not match!)
+	// // // void around(): execution(* C.m6(..)) && args(List<?>){}//: Should
+	// // match (it does)
+	// // // void around(): execution(* C.m6(..)) && args(ArrayList<?>){}//: Should
+	// // runtime check (it does not match!)
+	// // // void around(): execution(* C.m6(..)) && args(ArrayList<String>){}//:
+	// // Should not match (it does not match!)
+	// //
+	// // // void around(): execution(* C.m7(..)) && args(List<List<Integer>>){}
+	// // //: Should not match (but it does) ERROR
+	// // // void around(): execution(* C.m7(..)) &&
+	// // args(ArrayList<List<Integer>>){}//: Should not match (but it does!) ERROR
+	// // // void around(): execution(* C.m7(..)) && args(List<List<Number>>){}//:
+	// // Should not match (but it does!) ERROR
+	// // // void around(): execution(* C.m7(..)) &&
+	// // args(ArrayList<List<Number>>){}//: Should not match (but it does) ERROR
+	// // // void around(): execution(* C.m7(..)) && args(List<? extends
+	// // List<Number>>){}//: Should not match (but it does) ERROR
+	// // // void around(): execution(* C.m7(..)) && args(ArrayList< ? extends
+	// // List<Number>>){}//: Should not match (but it does!) ERROR
+	// // // void around(): execution(* C.m7(..)) && args(List< ? extends List<?
+	// // extends Number>>){}//: Should match (it does!)
+	// // // void around(): execution(* C.m7(..)) && args(ArrayList< ? extends
+	// // List<? extends Number>>){}//: Should match (it does!)
+	// // // void around(): execution(* C.m7(..)) && args(List){}//: Should match
+	// // (it does)
+	// // // void around(): execution(* C.m7(..)) && args(ArrayList){}//: Should
+	// // runtime check (it does not match!)
+	// // // void around(): execution(* C.m7(..)) && args(List<?>){}//: Should
+	// // match (it does)
+	// // // void around(): execution(* C.m7(..)) && args(ArrayList<?>){}//: Should
+	// // runtime check (it does!)
+	// // // void around(): execution(* C.m7(..)) &&
+	// // args(ArrayList<List<String>>){}//: Should not match (it does not match!)
+	// //
+	// // // void around(): execution(* C.m8(..)) && args(List<Integer>){} //:
+	// // Should match with unchecked conversion (it does)
+	// // // void around(): execution(* C.m8(..)) && args(ArrayList<Integer>){}//:
+	// // Should runtime check with unchecked conversion (it does!)
+	// // // void around(): execution(* C.m8(..)) && args(List<Number>){}//: Should
+	// // match with unchecked conversion (it does!)
+	// // // void around(): execution(* C.m8(..)) && args(ArrayList<Number>){}//:
+	// // Should runtime check with unchecked conversion (it does)
+	// // // void around(): execution(* C.m8(..)) && args(List<? extends
+	// // Number>){}//: Should match with unchecked conversion (it does!)
+	// // // void around(): execution(* C.m8(..)) && args(ArrayList<? extends
+	// // Number>){}//: Should runtime check with unchecked conversion (it does)
+	// // // void around(): execution(* C.m8(..)) && args(List){}//: Should match
+	// // (it does)
+	// // // void around(): execution(* C.m8(..)) && args(ArrayList){}//: Should
+	// // runtime check (it does!)
+	// // // void around(): execution(* C.m8(..)) && args(List<?>){}//: Should
+	// // match (it does)
+	// // // void around(): execution(* C.m8(..)) && args(ArrayList<?>){}//: Should
+	// // runtime check (it does!)
+	// // // void around(): execution(* C.m8(..)) && args(ArrayList<String>){}//:
+	// // Should not match (it does not match!)
+	// //
+	// // // void around(): execution(* C.m9(..)) && args(List<Integer>){} //:
+	// // Should not match (but it does) ERROR
+	// // // void around(): execution(* C.m9(..)) && args(ArrayList<Integer>){}//:
+	// // Should not match (it does not match!)
+	// // // void around(): execution(* C.m9(..)) && args(Number){}//: Should match
+	// // (it does!)
+	// // // void around(): execution(* C.m9(..)) && args(Integer){}//: Should
+	// // runtime check (it does)
+	// // // void around(): execution(* C.m9(..)) && args(List<? extends
+	// // Number>){}//: Should not match (but it does) ERROR
+	// // // void around(): execution(* C.m9(..)) && args(ArrayList<? extends
+	// // Number>){}//: Should not match (it does not match!)
+	// // // void around(): execution(* C.m9(..)) && args(List){}//: Should not
+	// // match (but it does) ERROR
+	// // // void around(): execution(* C.m9(..)) && args(ArrayList){}//: Should
+	// // not match (it does not match!)
+	// // // void around(): execution(* C.m9(..)) && args(List<?>){}//: Should not
+	// // match (but it does) ERROR
+	// // // void around(): execution(* C.m9(..)) && args(ArrayList<?>){}//: Should
+	// // not match (it does not match!)
+	// // // void around(): execution(* C.m9(..)) && args(String){}//: Should not
+	// // match (it does not match!)
+	//
+	// }
 
 	private ReferenceType resolve(String sig) {
 		return (ReferenceType) world.resolve(UnresolvedType.forSignature(sig));
