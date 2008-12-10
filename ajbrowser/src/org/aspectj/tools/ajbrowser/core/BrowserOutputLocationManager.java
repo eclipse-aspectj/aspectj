@@ -18,15 +18,13 @@ import org.aspectj.ajde.core.IOutputLocationManager;
 import org.aspectj.ajde.ui.UserPreferencesAdapter;
 
 /**
- * IOutputLocationManager which returns the same output location for
- * all files and resources.
+ * IOutputLocationManager which returns the same output location for all files and resources.
  */
 public class BrowserOutputLocationManager implements IOutputLocationManager {
 
 	private UserPreferencesAdapter preferencesAdapter;
 
-	public BrowserOutputLocationManager(
-			UserPreferencesAdapter preferencesAdapter) {
+	public BrowserOutputLocationManager(UserPreferencesAdapter preferencesAdapter) {
 		this.preferencesAdapter = preferencesAdapter;
 	}
 
@@ -39,8 +37,7 @@ public class BrowserOutputLocationManager implements IOutputLocationManager {
 	}
 
 	private String getCommonOutputDir() {
-		String outputPath = preferencesAdapter.getProjectPreference(
-				PreferenceStoreConstants.BUILD_OUTPUTPATH);
+		String outputPath = preferencesAdapter.getProjectPreference(PreferenceStoreConstants.BUILD_OUTPUTPATH);
 		if (outputPath == null) {
 			return ".";
 		}
@@ -59,6 +56,9 @@ public class BrowserOutputLocationManager implements IOutputLocationManager {
 
 	public String getSourceFolderForFile(File sourceFile) {
 		return null;
+	}
+
+	public void reportClassFileWrite(String outputfile) {
 	}
 
 }
