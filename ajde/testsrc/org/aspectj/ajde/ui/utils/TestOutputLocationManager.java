@@ -17,11 +17,9 @@ import java.util.List;
 import org.aspectj.ajde.core.IOutputLocationManager;
 
 /**
- * Test implementation of IOutputLocationManager. By default returns the
- * same location for both resources and classes, however, setter methods
- * enable the user to specify different location for these. Note that the
- * user is unable to specify different output location for different class
- * files.
+ * Test implementation of IOutputLocationManager. By default returns the same location for both resources and classes, however,
+ * setter methods enable the user to specify different location for these. Note that the user is unable to specify different output
+ * location for different class files.
  */
 public class TestOutputLocationManager implements IOutputLocationManager {
 
@@ -29,11 +27,14 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 	private File classOutputLoc;
 	private File resourceOutputLoc;
 	private List allOutputLocations;
-	
+
 	public TestOutputLocationManager(String testProjectPath) {
 		this.testProjectOutputPath = testProjectPath + File.separator + "bin";
 	}
-	
+
+	public void reportClassFileWrite(String outputfile) {
+	}
+
 	public String getUniqueIdentifier() {
 		return testProjectOutputPath;
 	}
@@ -47,18 +48,18 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 		initLocations();
 		return resourceOutputLoc;
 	}
-	
+
 	// -------------- setter methods useful for testing -------------
 	public void setOutputLocForClass(File f) {
 		classOutputLoc = f;
 	}
-	
+
 	public void setOutputLocForResource(File f) {
 		resourceOutputLoc = f;
 	}
 
 	public List getAllOutputLocations() {
-		if(allOutputLocations == null) {
+		if (allOutputLocations == null) {
 			allOutputLocations = new ArrayList();
 			initLocations();
 			allOutputLocations.add(classOutputLoc);
@@ -72,7 +73,7 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 	public File getDefaultOutputLocation() {
 		return classOutputLoc;
 	}
-	
+
 	private void initLocations() {
 		if (classOutputLoc == null) {
 			classOutputLoc = new File(testProjectOutputPath);
@@ -85,6 +86,5 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 	public String getSourceFolderForFile(File sourceFile) {
 		return null;
 	}
-	
 
 }
