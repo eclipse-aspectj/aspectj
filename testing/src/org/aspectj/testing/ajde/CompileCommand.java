@@ -388,4 +388,8 @@ class MyOutputLocationManager implements IOutputLocationManager {
 	public String getSourceFolderForFile(File sourceFile) {
 		return null;
 	}
+
+	public void reportClassFileWrite(String outputfile) {
+	}
+
 }
