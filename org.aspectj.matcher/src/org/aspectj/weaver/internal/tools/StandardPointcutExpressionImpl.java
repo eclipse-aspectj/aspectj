@@ -10,9 +10,7 @@
 package org.aspectj.weaver.internal.tools;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Member;
-import java.lang.reflect.Method;
 
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
@@ -35,9 +33,8 @@ import org.aspectj.weaver.patterns.ThisOrTargetPointcut;
 import org.aspectj.weaver.patterns.WithinAnnotationPointcut;
 import org.aspectj.weaver.patterns.WithinCodeAnnotationPointcut;
 import org.aspectj.weaver.reflect.ReflectionFastMatchInfo;
-import org.aspectj.weaver.reflect.ReflectionShadow;
-import org.aspectj.weaver.reflect.ShadowMatchImpl;
 import org.aspectj.weaver.reflect.StandardShadow;
+import org.aspectj.weaver.reflect.StandardShadowMatchImpl;
 import org.aspectj.weaver.tools.DefaultMatchingContext;
 import org.aspectj.weaver.tools.MatchingContext;
 import org.aspectj.weaver.tools.PointcutParameter;
@@ -93,179 +90,181 @@ public class StandardPointcutExpressionImpl implements StandardPointcutExpressio
 		return new ExposedState(parameters.length);
 	}
 
-	public ShadowMatch matchesMethodExecution(Method aMethod) {
-		return matchesExecution(aMethod);
-	}
+	// public ShadowMatch matchesMethodExecution(Method aMethod) {
+	// return matchesExecution(aMethod);
+	// }
 
 	public ShadowMatch matchesMethodExecution(ResolvedMember aMethod) {
 		return matchesExecution(aMethod);
 	}
 
 	public ShadowMatch matchesConstructorExecution(Constructor aConstructor) {
-		return matchesExecution(aConstructor);
+		return null;
+		// return matchesExecution(aConstructor);
 	}
 
-	private ShadowMatch matchesExecution(Member aMember) {
-		Shadow s = ReflectionShadow.makeExecutionShadow(world, aMember, this.matchContext);
-		ShadowMatchImpl sm = getShadowMatch(s);
-		sm.setSubject(aMember);
-		sm.setWithinCode(null);
-		sm.setWithinType(aMember.getDeclaringClass());
-		return sm;
-	}
+	// private ShadowMatch matchesExecution(Member aMember) {
+	// Shadow s = ReflectionShadow.makeExecutionShadow(world, aMember, this.matchContext);
+	// ShadowMatchImpl sm = getShadowMatch(s);
+	// sm.setSubject(aMember);
+	// sm.setWithinCode(null);
+	// sm.setWithinType(aMember.getDeclaringClass());
+	// return sm;
+	// }
 
 	private ShadowMatch matchesExecution(ResolvedMember aMember) {
 		Shadow s = StandardShadow.makeExecutionShadow(world, aMember, this.matchContext);
-		ShadowMatchImpl sm = getShadowMatch(s);
-		// sm.setSubject(aMember);
-		// sm.setWithinCode(null);
-		// sm.setWithinType(aMember.getDeclaringClass());
+		StandardShadowMatchImpl sm = getShadowMatch(s);
+		sm.setSubject(aMember);
+		sm.setWithinCode(null);
+		sm.setWithinType((ResolvedType) aMember.getDeclaringType());
 		return sm;
 	}
 
-	public ShadowMatch matchesStaticInitialization(Class aClass) {
-		Shadow s = ReflectionShadow.makeStaticInitializationShadow(world, aClass, this.matchContext);
-		ShadowMatchImpl sm = getShadowMatch(s);
+	// public ShadowMatch matchesStaticInitialization(Class aClass) {
+	// Shadow s = ReflectionShadow.makeStaticInitializationShadow(world, aClass, this.matchContext);
+	// StandardShadowMatchImpl sm = getShadowMatch(s);
+	// sm.setSubject(null);
+	// sm.setWithinCode(null);
+	// sm.setWithinType(aClass);
+	// return sm;
+	// }
+
+	public ShadowMatch matchesStaticInitialization(ResolvedType aType) {
+		Shadow s = StandardShadow.makeStaticInitializationShadow(world, aType, this.matchContext);
+		StandardShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(null);
 		sm.setWithinCode(null);
-		sm.setWithinType(aClass);
+		sm.setWithinType(aType);
 		return sm;
 	}
 
-	public ShadowMatch matchesStaticInitialization(ResolvedType type) {
-		Shadow s = StandardShadow.makeStaticInitializationShadow(world, type, this.matchContext);
-		ShadowMatchImpl sm = getShadowMatch(s);
-		sm.setSubject(null);
-		sm.setWithinCode(null);
-		// sm.setWithinType(aClass);
-		return sm;
-	}
-
-	public ShadowMatch matchesAdviceExecution(Method aMethod) {
-		Shadow s = ReflectionShadow.makeAdviceExecutionShadow(world, aMethod, this.matchContext);
-		ShadowMatchImpl sm = getShadowMatch(s);
+	// public ShadowMatch matchesAdviceExecution(Method aMethod) {
+	// Shadow s = ReflectionShadow.makeAdviceExecutionShadow(world, aMethod, this.matchContext);
+	// StandardShadowMatchImpl sm = getShadowMatch(s);
+	// sm.setSubject(aMethod);
+	// sm.setWithinCode(null);
+	// sm.setWithinType(aMethod.getDeclaringClass());
+	// return sm;
+	// }
+	//
+	// public ShadowMatch matchesInitialization(Constructor aConstructor) {
+	// Shadow s = ReflectionShadow.makeInitializationShadow(world, aConstructor, this.matchContext);
+	// StandardShadowMatchImpl sm = getShadowMatch(s);
+	// sm.setSubject(aConstructor);
+	// sm.setWithinCode(null);
+	// sm.setWithinType(aConstructor.getDeclaringClass());
+	// return sm;
+	// }
+	//
+	// public ShadowMatch matchesPreInitialization(Constructor aConstructor) {
+	// Shadow s = ReflectionShadow.makePreInitializationShadow(world, aConstructor, this.matchContext);
+	// StandardShadowMatchImpl sm = getShadowMatch(s);
+	// sm.setSubject(aConstructor);
+	// sm.setWithinCode(null);
+	// sm.setWithinType(aConstructor.getDeclaringClass());
+	// return sm;
+	// }
+	//
+	public ShadowMatch matchesMethodCall(ResolvedMember aMethod, ResolvedMember withinCode) {
+		Shadow s = StandardShadow.makeCallShadow(world, aMethod, withinCode, this.matchContext);
+		StandardShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aMethod);
-		sm.setWithinCode(null);
-		sm.setWithinType(aMethod.getDeclaringClass());
-		return sm;
-	}
-
-	public ShadowMatch matchesInitialization(Constructor aConstructor) {
-		Shadow s = ReflectionShadow.makeInitializationShadow(world, aConstructor, this.matchContext);
-		ShadowMatchImpl sm = getShadowMatch(s);
-		sm.setSubject(aConstructor);
-		sm.setWithinCode(null);
-		sm.setWithinType(aConstructor.getDeclaringClass());
-		return sm;
-	}
-
-	public ShadowMatch matchesPreInitialization(Constructor aConstructor) {
-		Shadow s = ReflectionShadow.makePreInitializationShadow(world, aConstructor, this.matchContext);
-		ShadowMatchImpl sm = getShadowMatch(s);
-		sm.setSubject(aConstructor);
-		sm.setWithinCode(null);
-		sm.setWithinType(aConstructor.getDeclaringClass());
-		return sm;
-	}
-
-	public ShadowMatch matchesMethodCall(Method aMethod, Member withinCode) {
-		Shadow s = ReflectionShadow.makeCallShadow(world, aMethod, withinCode, this.matchContext);
-		ShadowMatchImpl sm = getShadowMatch(s);
-		sm.setSubject(aMethod);
 		sm.setWithinCode(withinCode);
-		sm.setWithinType(withinCode.getDeclaringClass());
+		sm.setWithinType((ResolvedType) withinCode.getDeclaringType());
 		return sm;
 	}
 
-	public ShadowMatch matchesMethodCall(Method aMethod, Class callerType) {
-		Shadow s = ReflectionShadow.makeCallShadow(world, aMethod, callerType, this.matchContext);
-		ShadowMatchImpl sm = getShadowMatch(s);
-		sm.setSubject(aMethod);
-		sm.setWithinCode(null);
-		sm.setWithinType(callerType);
-		return sm;
-	}
+	//
+	// public ShadowMatch matchesMethodCall(Method aMethod, Class callerType) {
+	// Shadow s = ReflectionShadow.makeCallShadow(world, aMethod, callerType, this.matchContext);
+	// ShadowMatchImpl sm = getShadowMatch(s);
+	// sm.setSubject(aMethod);
+	// sm.setWithinCode(null);
+	// sm.setWithinType(callerType);
+	// return sm;
+	// }
+	//
+	// public ShadowMatch matchesConstructorCall(Constructor aConstructor, Class callerType) {
+	// Shadow s = ReflectionShadow.makeCallShadow(world, aConstructor, callerType, this.matchContext);
+	// ShadowMatchImpl sm = getShadowMatch(s);
+	// sm.setSubject(aConstructor);
+	// sm.setWithinCode(null);
+	// sm.setWithinType(callerType);
+	// return sm;
+	// }
+	//
+	// public ShadowMatch matchesConstructorCall(Constructor aConstructor, Member withinCode) {
+	// Shadow s = ReflectionShadow.makeCallShadow(world, aConstructor, withinCode, this.matchContext);
+	// ShadowMatchImpl sm = getShadowMatch(s);
+	// sm.setSubject(aConstructor);
+	// sm.setWithinCode(withinCode);
+	// sm.setWithinType(withinCode.getDeclaringClass());
+	// return sm;
+	// }
+	//
+	// public ShadowMatch matchesHandler(Class exceptionType, Class handlingType) {
+	// Shadow s = ReflectionShadow.makeHandlerShadow(world, exceptionType, handlingType, this.matchContext);
+	// ShadowMatchImpl sm = getShadowMatch(s);
+	// sm.setSubject(null);
+	// sm.setWithinCode(null);
+	// sm.setWithinType(handlingType);
+	// return sm;
+	// }
+	//
+	// public ShadowMatch matchesHandler(Class exceptionType, Member withinCode) {
+	// Shadow s = ReflectionShadow.makeHandlerShadow(world, exceptionType, withinCode, this.matchContext);
+	// ShadowMatchImpl sm = getShadowMatch(s);
+	// sm.setSubject(null);
+	// sm.setWithinCode(withinCode);
+	// sm.setWithinType(withinCode.getDeclaringClass());
+	// return sm;
+	// }
+	//
+	// public ShadowMatch matchesFieldGet(Field aField, Class withinType) {
+	// Shadow s = ReflectionShadow.makeFieldGetShadow(world, aField, withinType, this.matchContext);
+	// ShadowMatchImpl sm = getShadowMatch(s);
+	// sm.setSubject(aField);
+	// sm.setWithinCode(null);
+	// sm.setWithinType(withinType);
+	// return sm;
+	// }
+	//
+	// public ShadowMatch matchesFieldGet(Field aField, Member withinCode) {
+	// Shadow s = ReflectionShadow.makeFieldGetShadow(world, aField, withinCode, this.matchContext);
+	// ShadowMatchImpl sm = getShadowMatch(s);
+	// sm.setSubject(aField);
+	// sm.setWithinCode(withinCode);
+	// sm.setWithinType(withinCode.getDeclaringClass());
+	// return sm;
+	// }
+	//
+	// public ShadowMatch matchesFieldSet(Field aField, Class withinType) {
+	// Shadow s = ReflectionShadow.makeFieldSetShadow(world, aField, withinType, this.matchContext);
+	// ShadowMatchImpl sm = getShadowMatch(s);
+	// sm.setSubject(aField);
+	// sm.setWithinCode(null);
+	// sm.setWithinType(withinType);
+	// return sm;
+	// }
+	//
+	// public ShadowMatch matchesFieldSet(Field aField, Member withinCode) {
+	// Shadow s = ReflectionShadow.makeFieldSetShadow(world, aField, withinCode, this.matchContext);
+	// StandardShadowMatchImpl sm = getShadowMatch(s);
+	// sm.setSubject(aField);
+	// sm.setWithinCode(withinCode);
+	// sm.setWithinType(withinCode.getDeclaringClass());
+	// return sm;
+	// }
 
-	public ShadowMatch matchesConstructorCall(Constructor aConstructor, Class callerType) {
-		Shadow s = ReflectionShadow.makeCallShadow(world, aConstructor, callerType, this.matchContext);
-		ShadowMatchImpl sm = getShadowMatch(s);
-		sm.setSubject(aConstructor);
-		sm.setWithinCode(null);
-		sm.setWithinType(callerType);
-		return sm;
-	}
-
-	public ShadowMatch matchesConstructorCall(Constructor aConstructor, Member withinCode) {
-		Shadow s = ReflectionShadow.makeCallShadow(world, aConstructor, withinCode, this.matchContext);
-		ShadowMatchImpl sm = getShadowMatch(s);
-		sm.setSubject(aConstructor);
-		sm.setWithinCode(withinCode);
-		sm.setWithinType(withinCode.getDeclaringClass());
-		return sm;
-	}
-
-	public ShadowMatch matchesHandler(Class exceptionType, Class handlingType) {
-		Shadow s = ReflectionShadow.makeHandlerShadow(world, exceptionType, handlingType, this.matchContext);
-		ShadowMatchImpl sm = getShadowMatch(s);
-		sm.setSubject(null);
-		sm.setWithinCode(null);
-		sm.setWithinType(handlingType);
-		return sm;
-	}
-
-	public ShadowMatch matchesHandler(Class exceptionType, Member withinCode) {
-		Shadow s = ReflectionShadow.makeHandlerShadow(world, exceptionType, withinCode, this.matchContext);
-		ShadowMatchImpl sm = getShadowMatch(s);
-		sm.setSubject(null);
-		sm.setWithinCode(withinCode);
-		sm.setWithinType(withinCode.getDeclaringClass());
-		return sm;
-	}
-
-	public ShadowMatch matchesFieldGet(Field aField, Class withinType) {
-		Shadow s = ReflectionShadow.makeFieldGetShadow(world, aField, withinType, this.matchContext);
-		ShadowMatchImpl sm = getShadowMatch(s);
-		sm.setSubject(aField);
-		sm.setWithinCode(null);
-		sm.setWithinType(withinType);
-		return sm;
-	}
-
-	public ShadowMatch matchesFieldGet(Field aField, Member withinCode) {
-		Shadow s = ReflectionShadow.makeFieldGetShadow(world, aField, withinCode, this.matchContext);
-		ShadowMatchImpl sm = getShadowMatch(s);
-		sm.setSubject(aField);
-		sm.setWithinCode(withinCode);
-		sm.setWithinType(withinCode.getDeclaringClass());
-		return sm;
-	}
-
-	public ShadowMatch matchesFieldSet(Field aField, Class withinType) {
-		Shadow s = ReflectionShadow.makeFieldSetShadow(world, aField, withinType, this.matchContext);
-		ShadowMatchImpl sm = getShadowMatch(s);
-		sm.setSubject(aField);
-		sm.setWithinCode(null);
-		sm.setWithinType(withinType);
-		return sm;
-	}
-
-	public ShadowMatch matchesFieldSet(Field aField, Member withinCode) {
-		Shadow s = ReflectionShadow.makeFieldSetShadow(world, aField, withinCode, this.matchContext);
-		ShadowMatchImpl sm = getShadowMatch(s);
-		sm.setSubject(aField);
-		sm.setWithinCode(withinCode);
-		sm.setWithinType(withinCode.getDeclaringClass());
-		return sm;
-	}
-
-	private ShadowMatchImpl getShadowMatch(Shadow forShadow) {
+	private StandardShadowMatchImpl getShadowMatch(Shadow forShadow) {
 		org.aspectj.util.FuzzyBoolean match = pointcut.match(forShadow);
 		Test residueTest = Literal.TRUE;
 		ExposedState state = getExposedState();
 		if (match.maybeTrue()) {
 			residueTest = pointcut.findResidue(forShadow, state);
 		}
-		ShadowMatchImpl sm = new ShadowMatchImpl(match, residueTest, state, parameters);
+		StandardShadowMatchImpl sm = new StandardShadowMatchImpl(match, residueTest, state, parameters);
 		sm.setMatchingContext(this.matchContext);
 		return sm;
 	}

@@ -71,14 +71,15 @@ public class StandardShadow extends Shadow {
 		return new StandardShadow(inWorld, kind, signature, null, enclosingType, null, withContext);
 	}
 
-	public static Shadow makeCallShadow(World inWorld, java.lang.reflect.Member aMember, java.lang.reflect.Member withinCode,
+	public static Shadow makeCallShadow(World inWorld, ResolvedMember aMember, ResolvedMember withinCode,
 			MatchingContext withContext) {
 		Shadow enclosingShadow = makeExecutionShadow(inWorld, withinCode, withContext);
-		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(aMember, inWorld);
-		ResolvedMember enclosingMember = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(withinCode, inWorld);
-		ResolvedType enclosingType = enclosingMember.getDeclaringType().resolve(inWorld);
-		Kind kind = aMember instanceof Method ? Shadow.MethodCall : Shadow.ConstructorCall;
-		return new StandardShadow(inWorld, kind, signature, enclosingShadow, enclosingType, enclosingMember, withContext);
+		// Member signature = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(aMember, inWorld);
+		// ResolvedMember enclosingMember = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(withinCode, inWorld);
+		// ResolvedType enclosingType = enclosingMember.getDeclaringType().resolve(inWorld);
+		Kind kind = !aMember.getName().equals("<init>") ? Shadow.MethodCall : Shadow.ConstructorCall;
+		return new StandardShadow(inWorld, kind, aMember, enclosingShadow, (ResolvedType) withinCode.getDeclaringType(),
+				withinCode, withContext);
 	}
 
 	public static Shadow makeCallShadow(World inWorld, java.lang.reflect.Member aMember, Class thisClass,
