@@ -237,6 +237,7 @@ public class StandardPointcutParser {
 		} catch (ParserException pEx) {
 			throw new IllegalArgumentException(buildUserMessageFromParserException(expression, pEx));
 		} catch (ReflectionWorld.ReflectionWorldException rwEx) {
+			rwEx.printStackTrace();
 			throw new IllegalArgumentException(rwEx.getMessage());
 		}
 		return pcExpr;

@@ -8,5 +8,6 @@
 	<classpathentry kind="src" path="/bridge"/>
 	<classpathentry kind="lib" path="/lib/commons/commons.jar" sourcepath="/lib/commons/commons-src.zip"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="testdata/testdata.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

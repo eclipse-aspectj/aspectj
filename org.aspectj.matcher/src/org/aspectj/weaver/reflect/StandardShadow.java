@@ -103,7 +103,6 @@ public class StandardShadow extends Shadow {
 		ResolvedMember[] members = forType.getDeclaredMethods();
 		int clinit = -1;
 		for (int i = 0; i < members.length && clinit == -1; i++) {
-			System.out.println(members[i]);
 			if (members[i].getName().equals("<clinit>")) {
 				clinit = i;
 			}

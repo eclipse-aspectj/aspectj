@@ -25,9 +25,17 @@ import org.aspectj.weaver.tools.StandardPointcutParser;
  * 
  * This is based on the Reflection oriented PointcutExpressionTest in the weaver project.
  * 
+ * TESTDATA. The testdata for these tests is kept in org.aspectj.matcher/testdata. It is a series of .java files that need to be
+ * compiled and available at runtime. Since they are java5 (they include annotations) they cannot be in a source folder for the
+ * project, so they are compiled separately and then jar'd into a testdata.jar file in that folder. This folder is defined to be on
+ * the classpath for org.aspectj.matcher, this enables them to be seen by a simple world that uses the classpath of the matcher
+ * project as the definition of what it can see. Other worlds, for example JDT World, will need to have those types defined in a
+ * project that is accessible in the JDT World instance. Because these tests exercise Java5 matching, the concrete ReflectionWorld
+ * subtype is not defined in here, it is defined in weaver5 (messy, but works well).
+ * 
  * @author Andy Clement
  */
-public abstract class FurtherCommonPointcutExpressionTests extends TestCase {
+public abstract class CommonAdvancedPointcutExpressionTests extends TestCase {
 
 	private World world;
 	private StandardPointcutParser pointcutParser;
@@ -40,15 +48,44 @@ public abstract class FurtherCommonPointcutExpressionTests extends TestCase {
 		pointcutParser = StandardPointcutParser.getPointcutParserSupportingAllPrimitives(world);
 	}
 
-	// public void testResolvingOneType() {
-	// // do it via name
-	// ResolvedType type = world.resolve("java.lang.String");
-	// assertNotNull(type);
-	// // do it via signature
-	// type = world.resolve(UnresolvedType.forSignature("Ljava/lang/String;"));
-	// assertNotNull(type);
-	// }
+	public void testResolvingOneType() {
+		assertFalse(world.resolve("testdata.SomeAnnotation").isMissing());
+		assertFalse(world.resolve("testdata.MethodLevelAnnotation").isMissing());
+		assertFalse(world.resolve("testdata.AnnotatedClass").isMissing());
+	}
+
+	public void testTypeLevelAnnotationMatchingWithStaticInitialization01() {
+		StandardPointcutExpression ex = pointcutParser.parsePointcutExpression("staticinitialization(@testdata.SomeAnnotation *)");
+		ResolvedType jlString = world.resolve("java.lang.String");
+		ResolvedType tAnnotatedClass = world.resolve("testdata.AnnotatedClass");
+
+		assertTrue(ex.matchesStaticInitialization(tAnnotatedClass).alwaysMatches());
+		assertTrue(ex.matchesStaticInitialization(jlString).neverMatches());
+	}
+
+	public void testTypeLevelAnnotationMatchingWithExecution01() {
+		StandardPointcutExpression ex = pointcutParser.parsePointcutExpression("execution(* (@testdata.SomeAnnotation *).*(..))");
+		ResolvedType jlString = world.resolve("java.lang.String");
+		ResolvedType tAnnotatedClass = world.resolve("testdata.AnnotatedClass");
+		assertTrue(ex.matchesMethodExecution(getMethod(tAnnotatedClass, "annotatedMethod", "()V")).alwaysMatches());
+		assertTrue(ex.matchesMethodExecution(getMethod(jlString, "valueOf", "(Z)Ljava/lang/String;")).neverMatches());
+	}
+
+	public void testMethodLevelAnnotationMatchingWithExecution01() {
+		StandardPointcutExpression ex = pointcutParser
+				.parsePointcutExpression("execution(@testdata.MethodLevelAnnotation * *(..))");
+		ResolvedType jlString = world.resolve("java.lang.String");
+		ResolvedType tAnnotatedClass = world.resolve("testdata.AnnotatedClass");
+		assertTrue(ex.matchesMethodExecution(getMethod(tAnnotatedClass, "annotatedMethod", "()V")).alwaysMatches());
+		assertTrue(ex.matchesMethodExecution(getMethod(tAnnotatedClass, "nonAnnotatedMethod", "()V")).neverMatches());
+		assertTrue(ex.matchesMethodExecution(getMethod(jlString, "valueOf", "(Z)Ljava/lang/String;")).neverMatches());
+	}
+
 	//
+	// ResolvedMember stringSplitMethod = getMethod(jlString, "split", "(Ljava/lang/String;I)[Ljava/lang/String;");
+	// ResolvedMember stringValueOfIntMethod = getMethod(jlString, "valueOf", "(I)Ljava/lang/String;");
+	// ResolvedMember listAddMethod = getMethod(juList, "add", "(Ljava/lang/Object;)Z");
+
 	// public void testResolveTypeAndRetrieveMethod() {
 	// ResolvedType type = world.resolve("java.lang.String");
 	// assertNotNull(type);
