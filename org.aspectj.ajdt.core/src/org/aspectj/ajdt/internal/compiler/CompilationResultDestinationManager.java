@@ -16,51 +16,56 @@ import java.util.List;
 
 /**
  * acts as a bridge from ajde's OutputLocationManager interface to the compiler internals
+ * 
  * @author adrian
- *
+ * 
  */
 public interface CompilationResultDestinationManager {
 
 	/**
-	 * Return the directory root under which the results of compiling the given
-	 * source file. For example, if the source file contains the type a.b.C, and
-	 * this method returns "target/classes" the resulting class file will be written
-	 * to "target/classes/a/b/C.class"
+	 * Return the directory root under which the results of compiling the given source file. For example, if the source file
+	 * contains the type a.b.C, and this method returns "target/classes" the resulting class file will be written to
+	 * "target/classes/a/b/C.class"
 	 * 
-	 * @param compilationUnit  the compilation unit that has been
-	 *  compiled
-	 * @return a File object representing the root directory under which compilation results for this
-	 *  unit should be written
+	 * @param compilationUnit the compilation unit that has been compiled
+	 * @return a File object representing the root directory under which compilation results for this unit should be written
 	 */
 	File getOutputLocationForClass(File compilationUnit);
-	
+
 	/**
-     * Return the source folder where this source file came from, relative to the project root.
-     * For example 'src' or 'src/main/java' or 'src/test/java'
-     * @param sourceFile the file for which the source folder should be determined
-     * @return the source folder
-     */
- 	String getSourceFolderForFile(File sourceFile);
-	
+	 * Return the source folder where this source file came from, relative to the project root. For example 'src' or 'src/main/java'
+	 * or 'src/test/java'
+	 * 
+	 * @param sourceFile the file for which the source folder should be determined
+	 * @return the source folder
+	 */
+	String getSourceFolderForFile(File sourceFile);
+
 	/**
-	 * When copying resources from source folders to output location, return the
-	 * root directory under which the resource should be copied.
+	 * When copying resources from source folders to output location, return the root directory under which the resource should be
+	 * copied.
 	 * 
 	 * @param resource the resource to be copied
-	 * @return a File object representing the root directory under which this resource
-	 * should be copied
+	 * @return a File object representing the root directory under which this resource should be copied
 	 */
 	File getOutputLocationForResource(File resource);
-	
+
 	/**
 	 * Return a list of all output locations handled by this OutputLocationManager
 	 */
-	List /*File*/ getAllOutputLocations();
-	
+	List /* File */getAllOutputLocations();
+
 	/**
-	 * Return the default output location (for example, <my_project>/bin). This is
-	 * where classes which are on the inpath will be placed.
+	 * Return the default output location (for example, <my_project>/bin). This is where classes which are on the inpath will be
+	 * placed.
 	 */
 	File getDefaultOutputLocation();
-	
+
+	/**
+	 * Report that a class file is being written to the specified location.
+	 * 
+	 * @param outputfile the output file (including .class suffix)
+	 */
+	void reportClassFileWrite(String outputfile);
+
 }
