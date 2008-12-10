@@ -27,8 +27,8 @@ import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.internal.tools.PointcutDesignatorHandlerBasedPointcut;
-import org.aspectj.weaver.reflect.ReflectionWorld;
 import org.aspectj.weaver.tools.ContextBasedMatcher;
 import org.aspectj.weaver.tools.PointcutDesignatorHandler;
 
@@ -43,7 +43,7 @@ public class PatternParser {
 
 	/** extension handlers used in weaver tools API only */
 	private Set pointcutDesignatorHandlers = Collections.EMPTY_SET;
-	private ReflectionWorld world;
+	private World world;
 
 	/**
 	 * Constructor for PatternParser.
@@ -55,7 +55,7 @@ public class PatternParser {
 	}
 
 	/** only used by weaver tools API */
-	public void setPointcutDesignatorHandlers(Set handlers, ReflectionWorld world) {
+	public void setPointcutDesignatorHandlers(Set handlers, World world) {
 		this.pointcutDesignatorHandlers = handlers;
 		this.world = world;
 	}
