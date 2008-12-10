@@ -15,53 +15,50 @@ import java.io.File;
 import java.util.List;
 
 /**
- * Interface that handles where the compilation output is sent. Allows
- * for the output folder to be different for different source files.
+ * Interface that handles where the compilation output is sent. Allows for the output folder to be different for different source
+ * files.
  */
 public interface IOutputLocationManager {
 
 	/**
-	 * Return the directory root under which the results of compiling the given
-	 * source file. For example, if the source file contains the type a.b.C, and
-	 * this method returns "target/classes" the resulting class file will be written
-	 * to "target/classes/a/b/C.class"
+	 * Return the directory root under which the results of compiling the given source file. For example, if the source file
+	 * contains the type a.b.C, and this method returns "target/classes" the resulting class file will be written to
+	 * "target/classes/a/b/C.class"
 	 * 
-	 * @param compilationUnit  the compilation unit that has been compiled
-	 * @return a File object representing the root directory under which compilation results for this
-	 *  unit should be written
+	 * @param compilationUnit the compilation unit that has been compiled
+	 * @return a File object representing the root directory under which compilation results for this unit should be written
 	 */
 	File getOutputLocationForClass(File compilationUnit);
 
 	/**
-     * For environments where multiple source folders are supported, they need to be included
-     * in the model.  This method allows AspectJ to determine which source folder a source file
-     * came from.  Example return values would be "src" or "main/java"
-     *
+	 * For environments where multiple source folders are supported, they need to be included in the model. This method allows
+	 * AspectJ to determine which source folder a source file came from. Example return values would be "src" or "main/java"
+	 * 
 	 * @param sourceFile the File object for the source file
 	 * @return the source folder where this file came from, or null if in project root or source folders not supported.
 	 */
 	String getSourceFolderForFile(File sourceFile);
-	
+
 	/**
-	 * When copying resources from source folders to output location, return the
-	 * root directory under which the resource should be copied.
+	 * When copying resources from source folders to output location, return the root directory under which the resource should be
+	 * copied.
 	 * 
 	 * @param resource the resource to be copied
-	 * @return a File object representing the root directory under which this resource
-	 * should be copied
+	 * @return a File object representing the root directory under which this resource should be copied
 	 */
 	File getOutputLocationForResource(File resource);
 
 	/**
 	 * Return a list of all output locations handled by this OutputLocationManager
 	 */
-	List /*File*/ getAllOutputLocations();
-	
+	List /* File */getAllOutputLocations();
+
 	/**
-	 * Return the default output location (for example, <my_project>/bin). This is
-	 * where classes which are on the inpath will be placed.
+	 * Return the default output location (for example, <my_project>/bin). This is where classes which are on the inpath will be
+	 * placed.
 	 */
 	File getDefaultOutputLocation();
 
-		
+	void reportClassFileWrite(String outputfile);
+
 }

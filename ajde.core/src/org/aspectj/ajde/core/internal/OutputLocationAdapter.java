@@ -19,21 +19,20 @@ import org.aspectj.ajde.core.IOutputLocationManager;
 import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
 
 /**
- * Enables the output locations detailed by the IOutputLocationManager 
- * implementation to be related to the comipler/weaver.
+ * Enables the output locations detailed by the IOutputLocationManager implementation to be related to the comipler/weaver.
  */
 public class OutputLocationAdapter implements CompilationResultDestinationManager {
 
 	private IOutputLocationManager locationManager;
-	
+
 	public OutputLocationAdapter(IOutputLocationManager mgr) {
 		this.locationManager = mgr;
 	}
-	
+
 	public File getOutputLocationForClass(File compilationUnit) {
 		return this.locationManager.getOutputLocationForClass(compilationUnit);
 	}
-	
+
 	public String getSourceFolderForFile(File sourceFile) {
 		return this.locationManager.getSourceFolderForFile(sourceFile);
 	}
@@ -48,5 +47,9 @@ public class OutputLocationAdapter implements CompilationResultDestinationManage
 
 	public File getDefaultOutputLocation() {
 		return this.locationManager.getDefaultOutputLocation();
+	}
+
+	public void reportClassFileWrite(String outputfile) {
+		this.locationManager.reportClassFileWrite(outputfile);
 	}
 }
