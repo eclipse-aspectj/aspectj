@@ -35,40 +35,42 @@ import org.aspectj.weaver.tools.ContextBasedMatcher;
 import org.aspectj.weaver.tools.MatchingContext;
 
 /**
- * Implementation of Pointcut that is backed by a user-extension
- * pointcut designator handler.
- *
+ * Implementation of Pointcut that is backed by a user-extension pointcut designator handler.
+ * 
  */
-public class PointcutDesignatorHandlerBasedPointcut extends Pointcut{
+public class PointcutDesignatorHandlerBasedPointcut extends Pointcut {
 
 	private final ContextBasedMatcher matcher;
-	private final ReflectionWorld world;
-	
-	public PointcutDesignatorHandlerBasedPointcut(
-			ContextBasedMatcher expr, 
-			ReflectionWorld world) {
+	private final World world;
+
+	public PointcutDesignatorHandlerBasedPointcut(ContextBasedMatcher expr, World world) {
 		this.matcher = expr;
 		this.world = world;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.patterns.Pointcut#getPointcutKind()
 	 */
 	public byte getPointcutKind() {
 		return Pointcut.USER_EXTENSION;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.patterns.Pointcut#fastMatch(org.aspectj.weaver.patterns.FastMatchInfo)
 	 */
 	public FuzzyBoolean fastMatch(FastMatchInfo info) {
 		if (info instanceof ReflectionFastMatchInfo) {
 			try {
-				return FuzzyBoolean.fromBoolean(
-					this.matcher.couldMatchJoinPointsInType(
-							Class.forName(info.getType().getName(),false,world.getClassLoader()),
-							((ReflectionFastMatchInfo)info).getMatchingContext())
-					);
+				// Really need a reflectionworld here...
+				if (!(world instanceof ReflectionWorld)) {
+					throw new IllegalStateException("Can only match user-extension pcds with a ReflectionWorld");
+				}
+				return FuzzyBoolean.fromBoolean(this.matcher.couldMatchJoinPointsInType(Class.forName(info.getType().getName(),
+						false, ((ReflectionWorld) world).getClassLoader()), ((ReflectionFastMatchInfo) info).getMatchingContext()));
 			} catch (ClassNotFoundException cnfEx) {
 				return FuzzyBoolean.MAYBE;
 			}
@@ -76,21 +78,24 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut{
 		throw new IllegalStateException("Can only match user-extension pcds against Reflection FastMatchInfo objects");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.patterns.Pointcut#couldMatchKinds()
 	 */
 	public int couldMatchKinds() {
 		return Shadow.ALL_SHADOW_KINDS_BITS;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.patterns.Pointcut#matchInternal(org.aspectj.weaver.Shadow)
 	 */
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		if (shadow instanceof ReflectionShadow) {
-			MatchingContext context = ((ReflectionShadow)shadow).getMatchingContext();
-			org.aspectj.weaver.tools.FuzzyBoolean match = 
-				this.matcher.matchesStatically(context);
+			MatchingContext context = ((ReflectionShadow) shadow).getMatchingContext();
+			org.aspectj.weaver.tools.FuzzyBoolean match = this.matcher.matchesStatically(context);
 			if (match == org.aspectj.weaver.tools.FuzzyBoolean.MAYBE) {
 				return FuzzyBoolean.MAYBE;
 			} else if (match == org.aspectj.weaver.tools.FuzzyBoolean.YES) {
@@ -101,25 +106,32 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut{
 		}
 		throw new IllegalStateException("Can only match user-extension pcds against Reflection shadows (not BCEL)");
 	}
-	
-	
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#resolveBindings(org.aspectj.weaver.patterns.IScope, org.aspectj.weaver.patterns.Bindings)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.aspectj.weaver.patterns.Pointcut#resolveBindings(org.aspectj.weaver.patterns.IScope,
+	 * org.aspectj.weaver.patterns.Bindings)
 	 */
 	protected void resolveBindings(IScope scope, Bindings bindings) {
 		// no-op
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedType, org.aspectj.weaver.ResolvedType, org.aspectj.weaver.IntMap)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedType, org.aspectj.weaver.ResolvedType,
+	 * org.aspectj.weaver.IntMap)
 	 */
-	protected Pointcut concretize1(ResolvedType inAspect,
-			ResolvedType declaringType, IntMap bindings) {
+	protected Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
 		return this;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.weaver.patterns.Pointcut#findResidueInternal(org.aspectj.weaver.Shadow, org.aspectj.weaver.patterns.ExposedState)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.aspectj.weaver.patterns.Pointcut#findResidueInternal(org.aspectj.weaver.Shadow,
+	 * org.aspectj.weaver.patterns.ExposedState)
 	 */
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		if (!this.matcher.mayNeedDynamicTest()) {
@@ -131,25 +143,31 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut{
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.patterns.Pointcut#parameterizeWith(java.util.Map)
 	 */
-	public Pointcut parameterizeWith(Map typeVariableMap,World w) {
+	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
 		return this;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)
 	 */
 	public void write(DataOutputStream s) throws IOException {
 		throw new UnsupportedOperationException("can't write custom pointcut designator expressions to stream");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.patterns.PatternNode#accept(org.aspectj.weaver.patterns.PatternNodeVisitor, java.lang.Object)
 	 */
 	public Object accept(PatternNodeVisitor visitor, Object data) {
-		//visitor.visit(this);
+		// visitor.visit(this);
 		// no-op?
 		return data;
 	}
