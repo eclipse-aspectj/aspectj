@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.aspectj.ajde.core.IOutputLocationManager;
 
-
 /**
  * OutputLocationManger tests which check whether the correct type of build has happened.
  */
@@ -24,15 +23,14 @@ public class IncrementalOutputLocationManagerTests extends AbstractMultiProjectI
 
 	public void testPr166580() {
 		initialiseProject("PR166580");
-		configureOutputLocationManager("PR166580",new MyOutputLocationManager("PR166580",2));
+		configureOutputLocationManager("PR166580", new MyOutputLocationManager("PR166580", 2));
 		build("PR166580");
 		checkWasFullBuild();
-		alter("PR166580","inc1");
+		alter("PR166580", "inc1");
 		build("PR166580");
 		checkWasntFullBuild();
 	}
-	
-	
+
 	/**
 	 * Will send output from src dir 'srcX' to directory 'binX'
 	 */
@@ -41,17 +39,20 @@ public class IncrementalOutputLocationManagerTests extends AbstractMultiProjectI
 		private String projectDir;
 		private int numberOfSrcDirs;
 		private List allOutputDirs;
-		
+
 		public MyOutputLocationManager(String projectName, int numberOfSrcDirs) {
 			projectDir = getWorkingDir() + File.separator + projectName;
 			this.numberOfSrcDirs = numberOfSrcDirs;
 		}
-		
+
+		public void reportClassFileWrite(String outputfile) {
+		}
+
 		public File getOutputLocationForClass(File compilationUnit) {
 			String path = compilationUnit.getAbsolutePath();
 			int index = path.indexOf("src");
-			String number = path.substring(index +3,index + 4);
-			File ret =  new File(projectDir + File.separator + "bin" + number);
+			String number = path.substring(index + 3, index + 4);
+			File ret = new File(projectDir + File.separator + "bin" + number);
 			if (!ret.exists()) {
 				ret.mkdirs();
 			}
@@ -85,7 +86,7 @@ public class IncrementalOutputLocationManagerTests extends AbstractMultiProjectI
 		public String getSourceFolderForFile(File sourceFile) {
 			return null;
 		}
-		
+
 	}
-	
+
 }
