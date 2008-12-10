@@ -15,6 +15,7 @@ package org.aspectj.weaver;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.aspectj.matcher.tools.ReflectionWorldAdvancedPointcutExpressionTests;
 import org.aspectj.weaver.reflect.ReflectionWorldReferenceTypeTest;
 import org.aspectj.weaver.reflect.ReflectionWorldSpecificTest;
 import org.aspectj.weaver.tools.PointcutExpressionTest;
@@ -28,6 +29,7 @@ public class AllWeaver5Tests {
 		suite.addTest(BcweaverModuleTests15.suite());
 		suite.addTestSuite(ReflectionWorldReferenceTypeTest.class);
 		suite.addTestSuite(PointcutExpressionTest.class);
+		suite.addTestSuite(ReflectionWorldAdvancedPointcutExpressionTests.class);
 		suite.addTestSuite(ReflectionWorldSpecificTest.class);
 		// $JUnit-END$
 		return suite;
