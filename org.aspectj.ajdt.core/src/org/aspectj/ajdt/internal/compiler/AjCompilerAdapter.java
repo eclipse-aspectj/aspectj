@@ -37,8 +37,8 @@ import org.aspectj.weaver.bcel.BcelWorld;
 
 /**
  * @author colyer
- *
- * Adapts standard JDT Compiler to add in AspectJ specific behaviours.
+ * 
+ *         Adapts standard JDT Compiler to add in AspectJ specific behaviours.
  */
 public class AjCompilerAdapter extends AbstractCompilerAdapter {
 
@@ -56,45 +56,36 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	private IOutputClassFileNameProvider outputFileNameProvider;
 	private IBinarySourceProvider binarySourceProvider;
 	private WeaverMessageHandler weaverMessageHandler;
-	private Map /* fileName |-> List<UnwovenClassFile> */ binarySourceSetForFullWeave = new HashMap();
-	
+	private Map /* fileName |-> List<UnwovenClassFile> */binarySourceSetForFullWeave = new HashMap();
+
 	private ContextToken processingToken = null;
 	private ContextToken resolvingToken = null;
 	private ContextToken analysingToken = null;
 	private ContextToken generatingToken = null;
-	
+
 	private AjState incrementalCompilationState;
-	
-	List /*InterimResult*/ resultsPendingWeave = new ArrayList();
+
+	List /* InterimResult */resultsPendingWeave = new ArrayList();
 
 	/**
-	 * Create an adapter, and tell it everything it needs to now to drive the AspectJ
-	 * parts of a compile cycle.
-	 * @param compiler	the JDT compiler that produces class files from source
-	 * @param isBatchCompile  true if this is a full build (non-incremental)
-	 * @param world  the bcelWorld used for type resolution during weaving
+	 * Create an adapter, and tell it everything it needs to now to drive the AspectJ parts of a compile cycle.
+	 * 
+	 * @param compiler the JDT compiler that produces class files from source
+	 * @param isBatchCompile true if this is a full build (non-incremental)
+	 * @param world the bcelWorld used for type resolution during weaving
 	 * @param weaver the weaver
-	 * @param intRequestor  recipient of interim compilation results from compiler (pre-weave)
+	 * @param intRequestor recipient of interim compilation results from compiler (pre-weave)
 	 * @param outputFileNameProvider implementor of a strategy providing output file names for results
 	 * @param binarySourceEntries binary source that we didn't compile, but that we need to weave
-	 * @param resultSetForFullWeave if we are doing an incremental build, and the weaver determines
-	 *                              that we need to weave the world, this is the set of intermediate
-	 *                              results that will be passed to the weaver.
+	 * @param resultSetForFullWeave if we are doing an incremental build, and the weaver determines that we need to weave the world,
+	 *        this is the set of intermediate results that will be passed to the weaver.
 	 */
-	public AjCompilerAdapter(Compiler compiler,
-							 boolean isBatchCompile,
-							 BcelWorld world,
-							 BcelWeaver weaver,
-							 EclipseFactory eFactory,
-							 IIntermediateResultsRequestor intRequestor,
-							 IProgressListener progressListener,
-							 IOutputClassFileNameProvider outputFileNameProvider,
-							 IBinarySourceProvider binarySourceProvider,
-							 Map fullBinarySourceEntries, /* fileName |-> List<UnwovenClassFile> */
-							 boolean isXterminateAfterCompilation,
-							 boolean proceedOnError,
-							 boolean noAtAspectJProcessing,
-							 AjState incrementalCompilationState) {
+	public AjCompilerAdapter(Compiler compiler, boolean isBatchCompile, BcelWorld world, BcelWeaver weaver,
+			EclipseFactory eFactory, IIntermediateResultsRequestor intRequestor, IProgressListener progressListener,
+			IOutputClassFileNameProvider outputFileNameProvider, IBinarySourceProvider binarySourceProvider,
+			Map fullBinarySourceEntries, /* fileName |-> List<UnwovenClassFile> */
+			boolean isXterminateAfterCompilation, boolean proceedOnError, boolean noAtAspectJProcessing,
+			AjState incrementalCompilationState) {
 		this.compiler = compiler;
 		this.isBatchCompile = isBatchCompile;
 		this.weaver = weaver;
@@ -109,14 +100,15 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 		this.inJava5Mode = false;
 		this.noAtAspectJAnnotationProcessing = noAtAspectJProcessing;
 		this.incrementalCompilationState = incrementalCompilationState;
-		
-		if (compiler.options.complianceLevel >= ClassFileConstants.JDK1_5) inJava5Mode = true;
-		
+
+		if (compiler.options.complianceLevel >= ClassFileConstants.JDK1_5)
+			inJava5Mode = true;
+
 		IMessageHandler msgHandler = world.getMessageHandler();
 		// Do we need to reset the message handler or create a new one? (This saves a ton of memory lost on incremental compiles...)
 		if (msgHandler instanceof WeaverMessageHandler) {
-			((WeaverMessageHandler)msgHandler).resetCompiler(compiler);
-			weaverMessageHandler = (WeaverMessageHandler)msgHandler;
+			((WeaverMessageHandler) msgHandler).resetCompiler(compiler);
+			weaverMessageHandler = (WeaverMessageHandler) msgHandler;
 		} else {
 			weaverMessageHandler = new WeaverMessageHandler(msgHandler, compiler);
 			world.setMessageHandler(weaverMessageHandler);
@@ -124,25 +116,28 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	}
 
 	// the compilation lifecycle methods below are called in order as compilation progresses...
-	
+
 	public void beforeCompiling(ICompilationUnit[] sourceUnits) {
 		resultsPendingWeave = new ArrayList();
-		reportedErrors = false;		
+		reportedErrors = false;
 	}
 
 	public void beforeProcessing(CompilationUnitDeclaration unit) {
 		eWorld.showMessage(IMessage.INFO, "compiling " + new String(unit.getFileName()), null, null);
-		processingToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_COMPILATION_UNIT,unit.getFileName());
+		processingToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_COMPILATION_UNIT, unit
+				.getFileName());
 		if (inJava5Mode && !noAtAspectJAnnotationProcessing) {
-			ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.ADDING_AT_ASPECTJ_ANNOTATIONS, unit.getFileName());
+			ContextToken tok = CompilationAndWeavingContext.enteringPhase(
+					CompilationAndWeavingContext.ADDING_AT_ASPECTJ_ANNOTATIONS, unit.getFileName());
 			AddAtAspectJAnnotationsVisitor atAspectJVisitor = new AddAtAspectJAnnotationsVisitor(unit);
 			unit.traverse(atAspectJVisitor, unit.scope);
 			CompilationAndWeavingContext.leavingPhase(tok);
-		}		
+		}
 	}
 
 	public void beforeResolving(CompilationUnitDeclaration unit) {
-		resolvingToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.RESOLVING_COMPILATION_UNIT, unit.getFileName());
+		resolvingToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.RESOLVING_COMPILATION_UNIT, unit
+				.getFileName());
 	}
 
 	public void afterResolving(CompilationUnitDeclaration unit) {
@@ -151,11 +146,12 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	}
 
 	public void beforeAnalysing(CompilationUnitDeclaration unit) {
-		analysingToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.ANALYSING_COMPILATION_UNIT, unit.getFileName());
+		analysingToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.ANALYSING_COMPILATION_UNIT, unit
+				.getFileName());
 		if (inJava5Mode && !noAtAspectJAnnotationProcessing) {
 			ValidateAtAspectJAnnotationsVisitor atAspectJVisitor = new ValidateAtAspectJAnnotationsVisitor(unit);
 			unit.traverse(atAspectJVisitor, unit.scope);
-		}		
+		}
 	}
 
 	public void afterAnalysing(CompilationUnitDeclaration unit) {
@@ -164,7 +160,8 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	}
 
 	public void beforeGenerating(CompilationUnitDeclaration unit) {
-		generatingToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.GENERATING_UNWOVEN_CODE_FOR_COMPILATION_UNIT, unit.getFileName());
+		generatingToken = CompilationAndWeavingContext.enteringPhase(
+				CompilationAndWeavingContext.GENERATING_UNWOVEN_CODE_FOR_COMPILATION_UNIT, unit.getFileName());
 	}
 
 	public void afterGenerating(CompilationUnitDeclaration unit) {
@@ -176,9 +173,9 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 		this.eWorld.cleanup();
 		try {
 			// not great ... but one more check before we continue, see pr132314
-			if (!reportedErrors && units!=null) {
+			if (!reportedErrors && units != null) {
 				for (int i = 0; i < units.length; i++) {
-					if (units[i]!=null && units[i].compilationResult!=null && units[i].compilationResult.hasErrors()) {
+					if (units[i] != null && units[i].compilationResult != null && units[i].compilationResult.hasErrors()) {
 						reportedErrors = true;
 						break;
 					}
@@ -188,66 +185,69 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 				// no point weaving... just tell the requestor we're done
 				notifyRequestor();
 			} else {
-				weave();  // notification happens as weave progresses...
-//		        weaver.getWorld().flush(); // pr152257
+				weave(); // notification happens as weave progresses...
+				// weaver.getWorld().flush(); // pr152257
 			}
 		} catch (IOException ex) {
-			AbortCompilation ac = new AbortCompilation(null,ex);
+			AbortCompilation ac = new AbortCompilation(null, ex);
 			throw ac;
 		} catch (RuntimeException rEx) {
-			if (rEx instanceof AbortCompilation) throw rEx; // Don't wrap AbortCompilation exceptions!
+			if (rEx instanceof AbortCompilation)
+				throw rEx; // Don't wrap AbortCompilation exceptions!
 
 			// This will be unwrapped in Compiler.handleInternalException() and the nested
 			// RuntimeException thrown back to the original caller - which is AspectJ
 			// which will then then log it as a compiler problem.
-			throw new AbortCompilation(true,rEx);
+			throw new AbortCompilation(true, rEx);
 		}
 	}
 
 	public void afterProcessing(CompilationUnitDeclaration unit, int unitIndex) {
 		CompilationAndWeavingContext.leavingPhase(processingToken);
 		eWorld.finishedCompilationUnit(unit);
-		InterimCompilationResult intRes = new InterimCompilationResult(unit.compilationResult,outputFileNameProvider);
-		if (unit.compilationResult.hasErrors()) reportedErrors = true;
-		
+		InterimCompilationResult intRes = new InterimCompilationResult(unit.compilationResult, outputFileNameProvider);
+		if (unit.compilationResult.hasErrors())
+			reportedErrors = true;
+
 		if (intermediateResultsRequestor != null) {
 			intermediateResultsRequestor.acceptResult(intRes);
 		}
-		
+
 		if (isXTerminateAfterCompilation) {
 			acceptResult(unit.compilationResult);
 		} else {
 			resultsPendingWeave.add(intRes);
 		}
 	}
-	
-//	public void beforeResolving(CompilationUnitDeclaration unit, ICompilationUnit sourceUnit, boolean verifyMethods, boolean analyzeCode, boolean generateCode) {
-//		resultsPendingWeave = new ArrayList();
-//		reportedErrors = false;		
-//	}
-//
-//	public void afterResolving(CompilationUnitDeclaration unit, ICompilationUnit sourceUnit, boolean verifyMethods, boolean analyzeCode, boolean generateCode) {
-//		InterimCompilationResult intRes = new InterimCompilationResult(unit.compilationResult,outputFileNameProvider);
-//		if (unit.compilationResult.hasErrors()) reportedErrors = true;
-//		if (isXNoWeave || !generateCode) {
-//			acceptResult(unit.compilationResult);
-//		} else if (generateCode){
-//			resultsPendingWeave.add(intRes);
-//			try {
-//			  weave();
-//			} catch (IOException ex) {
-//				AbortCompilation ac = new AbortCompilation(null,ex);
-//				throw ac;
-//			} 
-//		}
-//	}
-	
+
+	// public void beforeResolving(CompilationUnitDeclaration unit, ICompilationUnit sourceUnit, boolean verifyMethods, boolean
+	// analyzeCode, boolean generateCode) {
+	// resultsPendingWeave = new ArrayList();
+	// reportedErrors = false;
+	// }
+	//
+	// public void afterResolving(CompilationUnitDeclaration unit, ICompilationUnit sourceUnit, boolean verifyMethods, boolean
+	// analyzeCode, boolean generateCode) {
+	// InterimCompilationResult intRes = new InterimCompilationResult(unit.compilationResult,outputFileNameProvider);
+	// if (unit.compilationResult.hasErrors()) reportedErrors = true;
+	// if (isXNoWeave || !generateCode) {
+	// acceptResult(unit.compilationResult);
+	// } else if (generateCode){
+	// resultsPendingWeave.add(intRes);
+	// try {
+	// weave();
+	// } catch (IOException ex) {
+	// AbortCompilation ac = new AbortCompilation(null,ex);
+	// throw ac;
+	// }
+	// }
+	// }
+
 	// helper methods...
 	// ==================================================================================
-	
+
 	/*
-	 * Called from the weaverAdapter once it has finished weaving the class files
-	 * associated with a given compilation result.
+	 * Called from the weaverAdapter once it has finished weaving the class files associated with a given compilation result.
 	 */
 	public void acceptResult(CompilationResult result) {
 		compiler.requestor.acceptResult(result.tagAsAccepted());
@@ -261,7 +261,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 			}
 		}
 	}
-	
+
 	private List getBinarySourcesFrom(Map binarySourceEntries) {
 		// Map is fileName |-> List<UnwovenClassFile>
 		List ret = new ArrayList();
@@ -269,39 +269,38 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 			String sourceFileName = (String) binIter.next();
 			List unwovenClassFiles = (List) binarySourceEntries.get(sourceFileName);
 			// XXX - see bugs 57432,58679 - final parameter on next call should be "compiler.options.maxProblemsPerUnit"
-			CompilationResult result = new CompilationResult(sourceFileName.toCharArray(),0,0,Integer.MAX_VALUE);
+			CompilationResult result = new CompilationResult(sourceFileName.toCharArray(), 0, 0, Integer.MAX_VALUE);
 			result.noSourceAvailable();
-			InterimCompilationResult binarySource = 
-				new InterimCompilationResult(result,unwovenClassFiles);
+			InterimCompilationResult binarySource = new InterimCompilationResult(result, unwovenClassFiles);
 			ret.add(binarySource);
 		}
 		return ret;
 	}
-	
+
 	private void notifyRequestor() {
 		for (Iterator iter = resultsPendingWeave.iterator(); iter.hasNext();) {
 			InterimCompilationResult iresult = (InterimCompilationResult) iter.next();
 			compiler.requestor.acceptResult(iresult.result().tagAsAccepted());
 		}
 	}
-		
+
 	private void weave() throws IOException {
 		// ensure weaver state is set up correctly
 		for (Iterator iter = resultsPendingWeave.iterator(); iter.hasNext();) {
 			InterimCompilationResult iresult = (InterimCompilationResult) iter.next();
 			for (int i = 0; i < iresult.unwovenClassFiles().length; i++) {
 				weaver.addClassFile(iresult.unwovenClassFiles()[i]);
-			}			
+			}
 		}
 
 		weaver.setIsBatchWeave(isBatchCompile);
 		weaver.prepareForWeave();
 		if (weaver.needToReweaveWorld()) {
 			if (!isBatchCompile) {
-				//force full recompilation from source
+				// force full recompilation from source
 				this.incrementalCompilationState.forceBatchBuildNextTimeAround();
 				return;
-//				addAllKnownClassesToWeaveList(); // if it's batch, they're already on the list...
+				// addAllKnownClassesToWeaveList(); // if it's batch, they're already on the list...
 			}
 			resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourceSetForFullWeave));
 		} else {
@@ -309,30 +308,32 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 			resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourcesToAdd));
 		}
 
-//		if (isBatchCompile) {
-//			resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourceSetForFullWeave));  
-//			// passed into the compiler, the set of classes in injars and inpath...
-//		} else if (weaver.needToReweaveWorld()) {
-//			addAllKnownClassesToWeaveList();
-//			resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourceSetForFullWeave));
-//		}
+		// if (isBatchCompile) {
+		// resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourceSetForFullWeave));
+		// // passed into the compiler, the set of classes in injars and inpath...
+		// } else if (weaver.needToReweaveWorld()) {
+		// addAllKnownClassesToWeaveList();
+		// resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourceSetForFullWeave));
+		// }
 		try {
-		  weaver.weave(new WeaverAdapter(this,weaverMessageHandler,progressListener));
+			weaver.weave(new WeaverAdapter(this, weaverMessageHandler, progressListener));
 		} finally {
 			// ???: is this the right point for this? After weaving has finished clear the caches.
-		    weaverMessageHandler.setCurrentResult(null);
+			weaverMessageHandler.setCurrentResult(null);
 			weaver.allWeavingComplete();
 			weaver.tidyUp();
 			IMessageHandler imh = weaver.getWorld().getMessageHandler();
 			if (imh instanceof WeaverMessageHandler)
-			  ((WeaverMessageHandler)imh).resetCompiler(null);
+				((WeaverMessageHandler) imh).resetCompiler(null);
 		}
 	}
 
 	public void afterDietParsing(CompilationUnitDeclaration[] units) {
 		// to be filled in...
-	}	
+	}
 
-	public List getResultsPendingWeave() { return resultsPendingWeave;}
+	public List getResultsPendingWeave() {
+		return resultsPendingWeave;
+	}
 
 }

@@ -28,10 +28,13 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.patterns.Pointcut;
 
 /**
@@ -215,8 +218,12 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 		if (resolvedPointcutDeclaration != null)
 			return resolvedPointcutDeclaration;
 		// System.out.println("pc: " + getPointcut() + ", " + getPointcut().state);
-		resolvedPointcutDeclaration = new ResolvedPointcutDefinition(inWorld.fromBinding(this.binding.declaringClass),
-				declaredModifiers, declaredName, inWorld.fromBindings(this.binding.parameters), getPointcut()); // ??? might want to
+		ReferenceBinding declaringClass = binding.declaringClass;
+		TypeBinding[] parameters = binding.parameters;
+		UnresolvedType utDeclaringClass = inWorld.fromBinding(declaringClass);
+		UnresolvedType[] utParameters = inWorld.fromBindings(parameters);
+		resolvedPointcutDeclaration = new ResolvedPointcutDefinition(utDeclaringClass, declaredModifiers, declaredName,
+				utParameters, getPointcut()); // ??? might want to
 		// use null
 
 		resolvedPointcutDeclaration.setPosition(sourceStart, sourceEnd);
