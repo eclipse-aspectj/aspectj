@@ -1,6 +1,10 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 
 <suite>
+    
+    <ajc-test dir="bugs163/pr258653" title="getNode">
+   	  <compile files="staticinit.java" options="-1.5 -emacssym"/>
+    </ajc-test>
 
     <ajc-test dir="bugs163/pr154427" title="getMethod returning null">
    	  <compile files="AuthorizationImpl.java Authorization.java AuthorizationAdmin.java CallAndMethodSignatureAspect.java CallTest.java" options=""/>
