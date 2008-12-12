@@ -433,14 +433,18 @@ public class AsmRelationshipProvider {
 		if (shadow instanceof BcelShadow) {
 			Member actualEnclosingMember = ((BcelShadow) shadow).getRealEnclosingCodeSignature();
 
-			UnresolvedType type = enclosingMember.getDeclaringType();
-			UnresolvedType actualType = actualEnclosingMember.getDeclaringType();
-
-			// if these are not the same, it is an ITD and we need to use the latter to lookup
-			if (type.equals(actualType)) {
+			if (actualEnclosingMember == null) {
 				enclosingNode = lookupMember(model.getHierarchy(), shadow.getEnclosingType(), enclosingMember);
 			} else {
-				enclosingNode = lookupMember(model.getHierarchy(), shadow.getEnclosingType(), actualEnclosingMember);
+				UnresolvedType type = enclosingMember.getDeclaringType();
+				UnresolvedType actualType = actualEnclosingMember.getDeclaringType();
+
+				// if these are not the same, it is an ITD and we need to use the latter to lookup
+				if (type.equals(actualType)) {
+					enclosingNode = lookupMember(model.getHierarchy(), shadow.getEnclosingType(), enclosingMember);
+				} else {
+					enclosingNode = lookupMember(model.getHierarchy(), shadow.getEnclosingType(), actualEnclosingMember);
+				}
 			}
 		} else {
 			enclosingNode = lookupMember(model.getHierarchy(), shadow.getEnclosingType(), enclosingMember);
