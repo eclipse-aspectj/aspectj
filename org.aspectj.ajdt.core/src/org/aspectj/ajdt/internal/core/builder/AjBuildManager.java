@@ -1077,12 +1077,12 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				} else {
 					outFile = new File(destinationPath, filename).getPath();
 				}
-				if (buildConfig.getCompilationResultDestinationManager() != null) {
-					buildConfig.getCompilationResultDestinationManager().reportClassFileWrite(outFile);
-				}
 				BufferedOutputStream os = FileUtil.makeOutputStream(new File(outFile));
 				os.write(classFile.getBytes());
 				os.close();
+				if (buildConfig.getCompilationResultDestinationManager() != null) {
+					buildConfig.getCompilationResultDestinationManager().reportClassFileWrite(outFile);
+				}
 				return outFile;
 			}
 
