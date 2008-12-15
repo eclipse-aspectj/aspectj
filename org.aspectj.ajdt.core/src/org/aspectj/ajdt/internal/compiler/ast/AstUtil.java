@@ -10,18 +10,16 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.ajdt.internal.compiler.ast;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aspectj.weaver.AjAttribute;
-import org.aspectj.weaver.patterns.WildTypePattern;
+import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
@@ -45,11 +43,13 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeIds;
-import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
+import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.patterns.WildTypePattern;
 
 public class AstUtil {
 
-	private AstUtil() {}
+	private AstUtil() {
+	}
 
 	public static void addMethodBinding(SourceTypeBinding sourceType, MethodBinding method) {
 		int len = sourceType.methods.length;
@@ -58,100 +58,81 @@ public class AstUtil {
 		temp[len] = method;
 		sourceType.methods = temp;
 	}
-	
-	
+
 	public static void addMethodDeclaration(TypeDeclaration typeDec, AbstractMethodDeclaration dec) {
 		AbstractMethodDeclaration[] methods = typeDec.methods;
 		int len = methods.length;
-		AbstractMethodDeclaration[] newMethods = new AbstractMethodDeclaration[len+1];
+		AbstractMethodDeclaration[] newMethods = new AbstractMethodDeclaration[len + 1];
 		System.arraycopy(methods, 0, newMethods, 0, len);
 		newMethods[len] = dec;
 		typeDec.methods = newMethods;
 	}
-	
-	
+
 	public static Argument makeFinalArgument(char[] name, TypeBinding typeBinding) {
-		long pos = 0; //XXX encode start and end location
-		LocalVariableBinding binding =
-			new LocalVariableBinding(name, typeBinding, Modifier.FINAL, true);
+		long pos = 0; // XXX encode start and end location
+		LocalVariableBinding binding = new LocalVariableBinding(name, typeBinding, Modifier.FINAL, true);
 		Argument ret = new Argument(name, pos, makeTypeReference(typeBinding), Modifier.FINAL);
 		ret.binding = binding;
 		return ret;
 	}
-	
+
 	public static TypeReference makeTypeReference(TypeBinding binding) {
-		// ??? does this work for primitives	
-		QualifiedTypeReference ref =
-			new QualifiedTypeReference(new char[][] {binding.sourceName()}, new long[] {0}); //???
+		// ??? does this work for primitives
+		QualifiedTypeReference ref = new QualifiedTypeReference(new char[][] { binding.sourceName() }, new long[] { 0 }); // ???
 		ref.resolvedType = binding;
 		ref.constant = Constant.NotAConstant;
 		return ref;
 	}
-	
-	
+
 	public static NameReference makeNameReference(TypeBinding binding) {
-		
-			char[][] name = new char[][] {binding.sourceName()};
-			long[] dummyPositions = new long[name.length];
-			QualifiedNameReference ref = 
-			new QualifiedNameReference(name, dummyPositions, 0, 0);
-		ref.binding = binding;		ref.constant = Constant.NotAConstant;
+
+		char[][] name = new char[][] { binding.sourceName() };
+		long[] dummyPositions = new long[name.length];
+		QualifiedNameReference ref = new QualifiedNameReference(name, dummyPositions, 0, 0);
+		ref.binding = binding;
+		ref.constant = Constant.NotAConstant;
 		return ref;
 	}
-	
-	
 
-	
-	
 	public static ReturnStatement makeReturnStatement(Expression expr) {
 		return new ReturnStatement(expr, 0, 0);
 	}
-	
-	public static MethodDeclaration makeMethodDeclaration(
-			MethodBinding binding)
-	{
+
+	public static MethodDeclaration makeMethodDeclaration(MethodBinding binding) {
 		MethodDeclaration ret = new MethodDeclaration(null);
 		ret.binding = binding;
 		int nargs = binding.parameters.length;
 		ret.arguments = new Argument[nargs];
-		for (int i=0; i < nargs; i++) {
-			ret.arguments[i] = makeFinalArgument(("arg"+i).toCharArray(),
-								binding.parameters[i]);
+		for (int i = 0; i < nargs; i++) {
+			ret.arguments[i] = makeFinalArgument(("arg" + i).toCharArray(), binding.parameters[i]);
 		}
 		return ret;
 	}
-	
-	public static void setStatements(
-			MethodDeclaration ret, List statements)
-	{
-		ret.statements =
-			(Statement[])statements.toArray(new Statement[statements.size()]);
+
+	public static void setStatements(MethodDeclaration ret, List statements) {
+		ret.statements = (Statement[]) statements.toArray(new Statement[statements.size()]);
 	}
-	
-	public static SingleNameReference makeLocalVariableReference(
-			LocalVariableBinding binding)
-	{
+
+	public static SingleNameReference makeLocalVariableReference(LocalVariableBinding binding) {
 		SingleNameReference ret = new SingleNameReference(binding.name, 0);
 		ret.binding = binding;
 		ret.codegenBinding = binding;
 		ret.constant = Constant.NotAConstant;
-		ret.bits &= ~ASTNode.RestrictiveFlagMASK;  // clear bits
-		ret.bits |= Binding.VARIABLE; 
+		ret.bits &= ~ASTNode.RestrictiveFlagMASK; // clear bits
+		ret.bits |= Binding.VARIABLE;
 		return ret;
 	}
-	
-	public static SingleNameReference makeResolvedLocalVariableReference(
-			LocalVariableBinding binding)
-	{
+
+	public static SingleNameReference makeResolvedLocalVariableReference(LocalVariableBinding binding) {
 		SingleNameReference ret = new SingleNameReference(binding.name, 0);
 		ret.binding = binding;
 		ret.codegenBinding = binding;
 		ret.constant = Constant.NotAConstant;
-		ret.bits &= ~ASTNode.RestrictiveFlagMASK;  // clear bits
-		ret.bits |= Binding.LOCAL; 
+		ret.bits &= ~ASTNode.RestrictiveFlagMASK; // clear bits
+		ret.bits |= Binding.LOCAL;
 		return ret;
 	}
-	
+
 	public static int makePublic(int modifiers) {
 		return makePackageVisible(modifiers) | ClassFileConstants.AccPublic;
 	}
@@ -163,12 +144,11 @@ public class AstUtil {
 
 	public static CompilationUnitScope getCompilationUnitScope(Scope scope) {
 		if (scope instanceof CompilationUnitScope) {
-			return (CompilationUnitScope)scope;
+			return (CompilationUnitScope) scope;
 		}
 		return getCompilationUnitScope(scope.parent);
 	}
-	
-	
+
 	public static void generateParameterLoads(TypeBinding[] parameters, CodeStream codeStream) {
 		int paramIndex = 0;
 		int varIndex = 0;
@@ -179,54 +159,59 @@ public class AstUtil {
 		}
 	}
 
-	
+	public static void generateParameterLoads(TypeBinding[] parameters, CodeStream codeStream, int offset) {
+		int paramIndex = 0;
+		int varIndex = offset;
+		while (paramIndex < parameters.length) {
+			TypeBinding param = parameters[paramIndex++];
+			codeStream.load(param, varIndex);
+			varIndex += slotsNeeded(param);
+		}
+	}
+
 	public static void generateReturn(TypeBinding returnType, CodeStream codeStream) {
 		if (returnType.id == TypeIds.T_void) {
 			codeStream.return_();
 		} else if (returnType.isBaseType()) {
 			switch (returnType.id) {
-				case TypeIds.T_boolean :
-				case TypeIds.T_int:
-				case TypeIds.T_byte :
-				case TypeIds.T_short :
-				case TypeIds.T_char:
-					codeStream.ireturn();
-					break;
-				case TypeIds.T_float :
-					codeStream.freturn();
-					break;
-				case TypeIds.T_long:
-					codeStream.lreturn();
-					break;
-				case TypeIds.T_double :
-					codeStream.dreturn();
-					break;
-				default :
-					throw new RuntimeException("huh");
+			case TypeIds.T_boolean:
+			case TypeIds.T_int:
+			case TypeIds.T_byte:
+			case TypeIds.T_short:
+			case TypeIds.T_char:
+				codeStream.ireturn();
+				break;
+			case TypeIds.T_float:
+				codeStream.freturn();
+				break;
+			case TypeIds.T_long:
+				codeStream.lreturn();
+				break;
+			case TypeIds.T_double:
+				codeStream.dreturn();
+				break;
+			default:
+				throw new RuntimeException("huh");
 			}
 		} else {
 			codeStream.areturn();
 		}
 	}
-	
-	//XXX this could be inconsistent for wierd case, i.e. a class named "java_lang_String"
+
+	// XXX this could be inconsistent for wierd case, i.e. a class named "java_lang_String"
 	public static char[] makeMangledName(ReferenceBinding type) {
 		return CharOperation.concatWith(type.compoundName, '_');
 	}
-	
-	
 
 	public static final char[] PREFIX = "ajc".toCharArray();
 
-	//XXX not efficient
+	// XXX not efficient
 	public static char[] makeAjcMangledName(char[] kind, ReferenceBinding type, char[] name) {
-		return CharOperation.concat(
-			CharOperation.concat(PREFIX, new char[] {'$'}, kind), '$', makeMangledName(type), '$', name);
+		return CharOperation.concat(CharOperation.concat(PREFIX, new char[] { '$' }, kind), '$', makeMangledName(type), '$', name);
 	}
 
 	public static char[] makeAjcMangledName(char[] kind, char[] p, char[] name) {
-		return CharOperation.concat(
-			CharOperation.concat(PREFIX, new char[] {'$'}, kind), '$', p, '$', name);
+		return CharOperation.concat(CharOperation.concat(PREFIX, new char[] { '$' }, kind), '$', p, '$', name);
 	}
 
 	public static List getAjSyntheticAttribute() {
@@ -236,72 +221,87 @@ public class AstUtil {
 	}
 
 	public static long makeLongPos(int start, int end) {
-		return (long)end | ((long)start << 32);
-	}
-	public static char[][] getCompoundName(String string) {
-		return WildTypePattern.splitNames(string,true);
+		return (long) end | ((long) start << 32);
 	}
 
-	public static TypeBinding[] insert(
-		TypeBinding first,
-		TypeBinding[] rest) {
+	public static char[][] getCompoundName(String string) {
+		return WildTypePattern.splitNames(string, true);
+	}
+
+	public static TypeBinding[] insert(TypeBinding first, TypeBinding[] rest) {
 		if (rest == null) {
-			return new TypeBinding[] {first};
+			return new TypeBinding[] { first };
 		}
-		
+
 		int len = rest.length;
-		TypeBinding[] ret = new TypeBinding[len+1];
+		TypeBinding[] ret = new TypeBinding[len + 1];
 		ret[0] = first;
 		System.arraycopy(rest, 0, ret, 1, len);
 		return ret;
 	}
-	public static Argument[] insert(
-		Argument first,
-		Argument[] rest) {
+
+	public static Argument[] insert(Argument first, Argument[] rest) {
 		if (rest == null) {
-			return new Argument[] {first};
+			return new Argument[] { first };
 		}
-		
+
 		int len = rest.length;
-		Argument[] ret = new Argument[len+1];
+		Argument[] ret = new Argument[len + 1];
 		ret[0] = first;
 		System.arraycopy(rest, 0, ret, 1, len);
 		return ret;
 	}
+
+	public static Expression[] insert(Expression first, Expression[] rest) {
+		if (rest == null) {
+			return new Expression[] { first };
+		}
+
+		int len = rest.length;
+		Expression[] ret = new Expression[len + 1];
+		ret[0] = first;
+		System.arraycopy(rest, 0, ret, 1, len);
+		return ret;
+	}
+
 	public static Argument[] copyArguments(Argument[] inArgs) {
 		// Lets do a proper copy
-		if (inArgs == null) return new Argument[]{};
+		if (inArgs == null)
+			return new Argument[] {};
 		Argument[] outArgs = new Argument[inArgs.length];
 		for (int i = 0; i < inArgs.length; i++) {
 			Argument argument = inArgs[i];
-			outArgs[i] = new Argument(argument.name,0,argument.type,argument.modifiers);			
+			outArgs[i] = new Argument(argument.name, 0, argument.type, argument.modifiers);
 		}
 		return outArgs;
 
-//		if (inArgs == null) return new Argument[] {};
-//		int len = inArgs.length;
-//		Argument[] outArgs = new Argument[len];
-//		//??? we're not sure whether or not copying these is okay
-//		System.arraycopy(inArgs, 0, outArgs, 0, len);
-//		return outArgs;
+		// if (inArgs == null) return new Argument[] {};
+		// int len = inArgs.length;
+		// Argument[] outArgs = new Argument[len];
+		// //??? we're not sure whether or not copying these is okay
+		// System.arraycopy(inArgs, 0, outArgs, 0, len);
+		// return outArgs;
 
 	}
 
 	public static Statement[] remove(int i, Statement[] statements) {
 		int len = statements.length;
-		Statement[] ret = new Statement[len-1];
+		Statement[] ret = new Statement[len - 1];
 		System.arraycopy(statements, 0, ret, 0, i);
-		System.arraycopy(statements, i+1, ret, i, len-i-1);
+		System.arraycopy(statements, i + 1, ret, i, len - i - 1);
 		return ret;
 	}
+
 	public static int slotsNeeded(TypeBinding type) {
-		if (type == TypeBinding.DOUBLE || type == TypeBinding.LONG) return 2;
-		else return 1;
+		if (type == TypeBinding.DOUBLE || type == TypeBinding.LONG)
+			return 2;
+		else
+			return 1;
 	}
-	
+
 	public static void replaceMethodBinding(MessageSend send, MethodBinding newBinding) {
 		send.binding = send.codegenBinding = newBinding;
 		send.setActualReceiverType(newBinding.declaringClass);
-		
+
 	}
 }

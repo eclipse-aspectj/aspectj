@@ -843,7 +843,7 @@ public class AspectDeclaration extends TypeDeclaration {
 			public void generate(CodeStream codeStream) {
 				// body starts here
 				codeStream.aload_0();
-				AstUtil.generateParameterLoads(accessMethod.parameters, codeStream);
+				AstUtil.generateParameterLoads(accessMethod.parameters, codeStream, 1);
 				codeStream.invokespecial(factory.makeMethodBinding(method));
 				AstUtil.generateReturn(accessMethod.returnType, codeStream);
 				// body ends here
