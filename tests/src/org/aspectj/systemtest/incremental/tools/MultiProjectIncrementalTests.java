@@ -166,7 +166,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkCompileWeaveCount("Annos", 3, 3);
 	}
 
-	
 	// package a.b.c;
 	//
 	// public class A {
@@ -211,39 +210,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		ProgramElement ctorDecp = (ProgramElement) findElementAtLine(root, 16);
 		String ctordecphandle = ctorDecp.getHandleIdentifier();
 		assertEquals("=itdfq<a.b.c{A.java}XX)B.B_new)QString;", ctordecphandle); // 252702, comment 7
-	}
-
-	public void testItdProgramElement_pr252702() {
-		String p = "itdpe";
-		AjdeInteractionTestbed.VERBOSE = true;
-		initialiseProject(p);
-		build(p);
-		AsmManager model = getModelFor(p);
-		dumptree(model.getHierarchy().getRoot(), 0);
-		IProgramElement root = model.getHierarchy().getRoot();
-		ProgramElement theITD = (ProgramElement) findElementAtLine(root, 7);
-		Map m = theITD.kvpairs;
-		for (Iterator iterator = m.keySet().iterator(); iterator.hasNext();) {
-			String type = (String) iterator.next();
-			System.out.println(type + " = " + m.get(type));
-		}
-		// return type of the ITD
-		assertEquals("a.b.c.B", theITD.getCorrespondingType(true));
-		List ptypes = theITD.getParameterTypes();
-		for (Iterator iterator = ptypes.iterator(); iterator.hasNext();) {
-			char[] object = (char[]) iterator.next();
-			System.out.println("p = " + new String(object));
-		}
-		ProgramElement decp = (ProgramElement) findElementAtLine(root, 8);
-		m = decp.kvpairs;
-		for (Iterator iterator = m.keySet().iterator(); iterator.hasNext();) {
-			String type = (String) iterator.next();
-			System.out.println(type + " = " + m.get(type));
-		}
-		List l = decp.getParentTypes();
-		assertEquals("java.io.Serializable", (String) l.get(0));
-
-		// 
 	}
 
 	public void testBrokenHandles_pr247742() {
