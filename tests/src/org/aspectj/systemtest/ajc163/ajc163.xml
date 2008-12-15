@@ -5,6 +5,26 @@
     <ajc-test dir="bugs163/pr258653" title="getNode">
    	  <compile files="staticinit.java" options="-1.5 -emacssym"/>
     </ajc-test>
+    
+    <ajc-test dir="bugs163/pr252722" title="extending AbstractSecurityInterceptor">
+   	  <compile files="A.java" options="-1.5"/>
+   	  <run class="A"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr252722" title="extending AbstractSecurityInterceptor - 2">
+   	  <compile files="ACode.java" options="-1.5"/>
+   	  <run class="ACode"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr252722" title="extending AbstractSecurityInterceptor - 3">
+   	  <compile files="B.java" options="-1.5"/>
+   	  <run class="B"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr252722" title="extending AbstractSecurityInterceptor - 4">
+   	  <compile files="BCode.java" options="-1.5"/>
+   	  <run class="BCode"/>
+    </ajc-test>
 
     <ajc-test dir="bugs163/pr154427" title="getMethod returning null">
    	  <compile files="AuthorizationImpl.java Authorization.java AuthorizationAdmin.java CallAndMethodSignatureAspect.java CallTest.java" options=""/>
