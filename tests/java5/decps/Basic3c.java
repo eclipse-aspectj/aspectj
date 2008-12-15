@@ -15,13 +15,13 @@ public class Basic3c {
 
 @Aspect class X {
 
-  interface I { 
+  interface I {
 	  public void m2();
 	  public void m3();
 	  public void m4();
   }
 
-  class IImpl implements I {
+  static class IImpl implements I {
 	  private IImpl() {}
     public void m2() { }
     public void m3() { }
