@@ -87,6 +87,8 @@ public class WeavingAdaptor implements IMessageContext {
 	protected BcelObjectType delegateForCurrentClass; // lazily initialized, should be used to prevent parsing bytecode multiple
 	// times
 
+	private boolean haveWarnedOnJavax = false;
+
 	private int weavingSpecialTypes = 0;
 	private static final int INITIALIZED = 0x1;
 	private static final int WEAVE_JAVA_PACKAGE = 0x2;
@@ -339,12 +341,36 @@ public class WeavingAdaptor implements IMessageContext {
 				}
 			}
 		}
-		boolean should = !(name.startsWith("org.aspectj.")
-				|| (name.startsWith("java.") && (weavingSpecialTypes & WEAVE_JAVA_PACKAGE) == 0)
-				|| (name.startsWith("javax.") && (weavingSpecialTypes & WEAVE_JAVAX_PACKAGE) == 0)
-		// || name.startsWith("$Proxy")//JDK proxies//FIXME AV is that 1.3 proxy ? fe. ataspect.$Proxy0 is a java5 proxy...
-		|| name.startsWith("sun.reflect."));// JDK reflect
-		return should;
+		if (name.startsWith("org.aspectj.")) {
+			return false;
+		}
+		if (name.startsWith("sun.reflect.")) {// JDK reflect
+			return false;
+		}
+		if (name.startsWith("javax.")) {
+			if ((weavingSpecialTypes & WEAVE_JAVAX_PACKAGE) != 0) {
+				return true;
+			} else {
+				if (!haveWarnedOnJavax) {
+					haveWarnedOnJavax = true;
+					warn("javax.* types are not being woven because the weaver option '-Xset:weaveJavaxPackages=true' has not been specified");
+				}
+				return false;
+			}
+		}
+		if (name.startsWith("java.")) {
+			if ((weavingSpecialTypes & WEAVE_JAVA_PACKAGE) != 0) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		// boolean should = !(name.startsWith("org.aspectj.")
+		// || (name.startsWith("java.") && (weavingSpecialTypes & WEAVE_JAVA_PACKAGE) == 0)
+		// || (name.startsWith("javax.") && (weavingSpecialTypes & WEAVE_JAVAX_PACKAGE) == 0)
+		// // || name.startsWith("$Proxy")//JDK proxies//FIXME AV is that 1.3 proxy ? fe. ataspect.$Proxy0 is a java5 proxy...
+		// || name.startsWith("sun.reflect."));
+		return true;
 	}
 
 	/**
