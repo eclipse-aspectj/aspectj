@@ -262,8 +262,12 @@ public class AjcMemberMaker {
 	// --- inline accessors
 	// ??? can eclipse handle a transform this weird without putting synthetics into the mix
 	public static ResolvedMember superAccessMethod(UnresolvedType baseType, ResolvedMember method) {
+		UnresolvedType[] paramTypes = method.getParameterTypes();
+		// if (!method.isStatic()) {
+		// paramTypes = UnresolvedType.insert(method.getDeclaringType(), paramTypes);
+		// }
 		return new ResolvedMemberImpl(Member.METHOD, baseType, Modifier.PUBLIC, method.getReturnType(), NameMangler
-				.superDispatchMethod(baseType, method.getName()), method.getParameterTypes(), method.getExceptions());
+				.superDispatchMethod(baseType, method.getName()), paramTypes, method.getExceptions());
 	}
 
 	public static ResolvedMember inlineAccessMethodForMethod(UnresolvedType aspectType, ResolvedMember method) {
