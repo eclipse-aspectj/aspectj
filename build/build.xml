@@ -460,6 +460,7 @@ To use testing client jar in tests,
 	
 	<target name="src" depends="init" description="build src modules">
 		
+		<mkdir dir="${aj.src.dir}"/>
 		<jar destfile="${aj.src.dir}/aspectjrt${build.version}-src.jar">
 			<fileset dir="${aspectj.modules.dir}/aspectj5rt/java5-src">
 				<exclude name="CVS"/>
@@ -500,6 +501,10 @@ To use testing client jar in tests,
 				<exclude name="**/.cvsignore"/>
 			</fileset>
 			<fileset dir="${aspectj.modules.dir}/loadtime/src">
+				<exclude name="CVS"/>
+				<exclude name="**/.cvsignore"/>
+			</fileset>
+			<fileset dir="${aspectj.modules.dir}/org.aspectj.matcher/src">
 				<exclude name="CVS"/>
 				<exclude name="**/.cvsignore"/>
 			</fileset>
@@ -585,6 +590,10 @@ To use testing client jar in tests,
 				<exclude name="CVS"/>
 				<exclude name="**/.cvsignore"/>
 			</fileset>
+			<fileset dir="${aspectj.modules.dir}/org.aspectj.matcher/src">
+				<exclude name="CVS"/>
+				<exclude name="**/.cvsignore"/>
+			</fileset>
 			<fileset dir="${aspectj.modules.dir}/weaver5/java5-src">
 				<exclude name="CVS"/>
 				<exclude name="**/.cvsignore"/>
@@ -593,17 +602,96 @@ To use testing client jar in tests,
 		<delete dir="${aj.src.dir}/bcelsrc" failonerror="false"/>
 		<delete dir="${aj.src.dir}/jdtsrc" failonerror="false"/>
 		
+		<jar destfile="${aj.src.dir}/org.aspectj.matcher-${build.version}-src.jar">
+					<fileset dir="${aspectj.modules.dir}/bridge/src">
+						<exclude name="CVS"/>
+						<exclude name="**/.cvsignore"/>
+					</fileset>
+					<fileset dir="${aspectj.modules.dir}/util/src">
+						<exclude name="CVS"/>
+						<exclude name="**/.cvsignore"/>
+					</fileset>
+			<fileset dir="${aspectj.modules.dir}/org.aspectj.matcher/src">
+				<exclude name="CVS"/>
+				<exclude name="**/.cvsignore"/>
+			</fileset>
+			<!--
+					<fileset dir="${aj.src.dir}/jdtsrc">
+						<exclude name="CVS"/>
+						<exclude name="**/.cvsignore"/>
+					</fileset>
+					<fileset dir="${aj.src.dir}/bcelsrc">
+						<exclude name="CVS"/>
+						<exclude name="**/.cvsignore"/>
+					</fileset>
+					<fileset dir="${aspectj.modules.dir}/loadtime5/java5-src">
+						<exclude name="CVS"/>
+						<exclude name="**/.cvsignore"/>
+					</fileset>
+					<fileset dir="${aspectj.modules.dir}/loadtime/src">
+						<exclude name="CVS"/>
+						<exclude name="**/.cvsignore"/>
+					</fileset>
+					<fileset dir="${aspectj.modules.dir}/ajde/src">
+						<exclude name="CVS"/>
+						<exclude name="**/.cvsignore"/>
+					</fileset>
+					<fileset dir="${aspectj.modules.dir}/ajde.core/src">
+						<exclude name="CVS"/>
+						<exclude name="**/.cvsignore"/>
+					</fileset>
+					<fileset dir="${aspectj.modules.dir}/runtime/src">
+						<exclude name="CVS"/>
+						<exclude name="**/.cvsignore"/>
+					</fileset>
+					<fileset dir="${aspectj.modules.dir}/aspectj5rt/src">
+						<exclude name="CVS"/>
+						<exclude name="**/.cvsignore"/>
+					</fileset>
+					<fileset dir="${aspectj.modules.dir}/ajdoc/src">
+						<exclude name="CVS"/>
+						<exclude name="**/.cvsignore"/>
+					</fileset>
+					<fileset dir="${aspectj.modules.dir}/asm/src">
+						<exclude name="CVS"/>
+						<exclude name="**/.cvsignore"/>
+					</fileset>
+					<fileset dir="${aspectj.modules.dir}/loadtime/src">
+						<exclude name="CVS"/>
+						<exclude name="**/.cvsignore"/>
+					</fileset>
+					<fileset dir="${aspectj.modules.dir}/org.aspectj.ajdt.core/src">
+						<exclude name="CVS"/>
+						<exclude name="**/.cvsignore"/>
+					</fileset>
+					<fileset dir="${aspectj.modules.dir}/taskdefs/src">
+						<exclude name="CVS"/>
+						<exclude name="**/.cvsignore"/>
+					</fileset>
+					<fileset dir="${aspectj.modules.dir}/weaver/src">
+						<exclude name="CVS"/>
+						<exclude name="**/.cvsignore"/>
+					</fileset>
+					<fileset dir="${aspectj.modules.dir}/weaver5/java5-src">
+						<exclude name="CVS"/>
+						<exclude name="**/.cvsignore"/>
+					</fileset>
+					-->
+				</jar>
+		
 		<jar destfile="${aj.src.dir}/org.aspectj-${build.version}-src.jar">
 			<fileset dir="${aj.src.dir}">
 				<include name="aspectjrt${build.version}-src.jar"/> 
 				<include name="aspectjweaver${build.version}-src.jar"/> 
 				<include name="aspectjtools${build.version}-src.jar"/>
+				<include name="org.aspectj.matcher-${build.version}-src.jar"/>
 			</fileset>
 		</jar>
 		
 		<delete file="{aj.src.dir}/aspectjrt${build.version}-src.jar"/> 
 		<delete file="{aj.src.dir}/aspectjweaver${build.version}-src.jar"/> 
 		<delete file="{aj.src.dir}/aspectjtools${build.version}-src.jar"/> 
+		<delete file="{aj.src.dir}/org.aspectj.matcher${build.version}-src.jar"/> 
     </target>
 
 </project>
