@@ -2,6 +2,17 @@
 
 <suite>
     
+    
+    <ajc-test dir="bugs163/pr259279" title="ordering repetitive method">
+   	  <compile files="SomeServiceImpl.java SomeInterface.java Main.java GenericService.java GenericServiceImpl.java Aspect.java" options="-1.5"/>
+   	  <run class="Main"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr259279" title="ordering repetitive method - 2">
+   	  <compile files="GenericServiceImpl.java SomeServiceImpl.java SomeInterface.java Main.java GenericService.java Aspect.java" options="-1.5"/>
+   	  <run class="Main"/>
+    </ajc-test>
+    
     <ajc-test dir="bugs163/pr258653" title="getNode">
    	  <compile files="staticinit.java" options="-1.5 -emacssym"/>
     </ajc-test>

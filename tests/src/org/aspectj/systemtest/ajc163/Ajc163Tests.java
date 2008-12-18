@@ -31,6 +31,14 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// runTest("itd anonymous inner class in wrong package");
 	// }
 
+	public void testOrderingRepetitive_pr259279() {
+		runTest("ordering repetitive method");
+	}
+
+	public void testOrderingRepetitive_pr259279_2() {
+		runTest("ordering repetitive method - 2");
+	}
+
 	public void testExtendingASI_pr252722() {
 		runTest("extending AbstractSecurityInterceptor");
 	}
