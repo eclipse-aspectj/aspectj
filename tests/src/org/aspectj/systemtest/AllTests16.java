@@ -10,16 +10,19 @@ import org.aspectj.systemtest.ajc160.AllTestsAspectJ160;
 import org.aspectj.systemtest.ajc161.AllTestsAspectJ161;
 import org.aspectj.systemtest.ajc162.AllTestsAspectJ162;
 import org.aspectj.systemtest.ajc163.AllTestsAspectJ163;
+import org.aspectj.systemtest.ajc164.AllTestsAspectJ164;
 
 public class AllTests16 {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ System Test Suite - JDK 1.6");
 		// $JUnit-BEGIN$
-		suite.addTest(AllTestsAspectJ160.suite()); // dont require a 1.6 JRE to run but checks 1.6 compiler behaviour
-		suite.addTest(AllTestsAspectJ161.suite()); // dont require a 1.6 JRE to run but checks 1.6 compiler behaviour
-		suite.addTest(AllTestsAspectJ162.suite()); // dont require a 1.6 JRE to run but checks 1.6 compiler behaviour
-		suite.addTest(AllTestsAspectJ163.suite()); // dont require a 1.6 JRE to run but checks 1.6 compiler behaviour
+		// These 16X tests do not require 1.6 jre to run
+		suite.addTest(AllTestsAspectJ160.suite());
+		suite.addTest(AllTestsAspectJ161.suite());
+		suite.addTest(AllTestsAspectJ162.suite());
+		suite.addTest(AllTestsAspectJ163.suite());
+		suite.addTest(AllTestsAspectJ164.suite());
 		suite.addTest(AllTests15.suite());
 		// $JUnit-END$
 		return suite;
