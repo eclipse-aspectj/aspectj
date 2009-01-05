@@ -26,13 +26,18 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
 		this.aspectType = aspectType;
 	}
 
-	// An EclipseTypeMunger and a BcelTypeMunger may say TRUE for equivalentTo()...
-	// public boolean equivalentTo(Object other) {
-	// if (! (other instanceof ConcreteTypeMunger)) return false;
-	// ConcreteTypeMunger o = (ConcreteTypeMunger) other;
-	// return ((o.getMunger() == null) ? (getMunger() == null) : o.getMunger().equals(getMunger()))
-	// && ((o.getAspectType() == null) ? (getAspectType() == null) : o.getAspectType().equals(getAspectType()));
-	// }
+    /**
+     * Equivalence can be true for an EclipseTypeMunger and a BcelTypeMunger that represent the
+     * same transformation (just at different points in the pipeline).
+    */
+	public boolean equivalentTo(Object other) {
+		if (!(other instanceof ConcreteTypeMunger)) {
+			return false;
+		}
+		ConcreteTypeMunger o = (ConcreteTypeMunger) other;
+		return ((o.getMunger() == null) ? (getMunger() == null) : o.getMunger().equals(getMunger()))
+				&& ((o.getAspectType() == null) ? (getAspectType() == null) : o.getAspectType().equals(getAspectType()));
+	}
 
 	// public abstract boolean munge(LazyClassGen gen);
 
@@ -140,5 +145,9 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
 			return munger.existsToSupportShadowMunging();
 		}
 		return false;
+	}
+
+	public boolean shouldOverwrite() {
+		return true;
 	}
 }
