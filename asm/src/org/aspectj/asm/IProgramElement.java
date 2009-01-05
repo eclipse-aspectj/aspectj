@@ -366,6 +366,9 @@ public interface IProgramElement extends Serializable {
 		public boolean isSourceFile() {
 			return this == FILE_ASPECTJ || this == FILE_JAVA;
 		}
+		public boolean isFile() {
+			return this == FILE;
+		}
 
 		public boolean isDeclare() {
 			return name.startsWith("declare");
