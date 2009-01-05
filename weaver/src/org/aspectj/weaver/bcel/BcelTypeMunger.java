@@ -77,6 +77,10 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		return "(BcelTypeMunger " + getMunger() + ")";
 	}
 
+	public boolean shouldOverwrite() {
+		return false;
+	}
+
 	public boolean munge(BcelClassWeaver weaver) {
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.MUNGING_WITH, this);
 		boolean changed = false;
