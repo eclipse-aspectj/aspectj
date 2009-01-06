@@ -31,7 +31,7 @@ public class HandleProviderDelimiter {
 	public static final HandleProviderDelimiter ESCAPE = new HandleProviderDelimiter('\\');
 	// these below are not currently used because no iprogramelement.kind equivalent
 	public static final HandleProviderDelimiter PACKAGEFRAGMENTROOT = new HandleProviderDelimiter('/');
-	public static final HandleProviderDelimiter PACKAGEDECLARATION = new HandleProviderDelimiter('%');
+	public static final HandleProviderDelimiter PACKAGEDECLARATION = new HandleProviderDelimiter('%'); // now used
 	public static final HandleProviderDelimiter LOCALVARIABLE = new HandleProviderDelimiter('@');
 	public static final HandleProviderDelimiter TYPE_PARAMETER = new HandleProviderDelimiter(']');
 
@@ -78,6 +78,8 @@ public class HandleProviderDelimiter {
 			return ASPECT_CU.getDelimiter();
 		} else if (kind.equals(IProgramElement.Kind.IMPORT_REFERENCE)) {
 			return IMPORTDECLARATION.getDelimiter();
+		} else if (kind.equals(IProgramElement.Kind.PACKAGE_DECLARATION)) {
+			return PACKAGEDECLARATION.getDelimiter();
 		} else if (kind.equals(IProgramElement.Kind.CLASS) || kind.equals(IProgramElement.Kind.INTERFACE)
 				|| kind.equals(IProgramElement.Kind.ENUM) || kind.equals(IProgramElement.Kind.ANNOTATION)) {
 			return TYPE.getDelimiter();
