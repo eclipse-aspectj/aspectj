@@ -314,12 +314,13 @@ public interface IProgramElement extends Serializable {
 		public static final Kind DECLARE_ANNOTATION_AT_METHOD = new Kind("declare @method");
 		public static final Kind DECLARE_ANNOTATION_AT_TYPE = new Kind("declare @type");
 		public static final Kind SOURCE_FOLDER = new Kind("source folder");
+		public static final Kind PACKAGE_DECLARATION = new Kind("package declaration");
 
 		public static final Kind[] ALL = { PROJECT, PACKAGE, FILE, FILE_JAVA, FILE_ASPECTJ, FILE_LST, IMPORT_REFERENCE, CLASS,
 				INTERFACE, ASPECT, ENUM, ENUM_VALUE, ANNOTATION, INITIALIZER, INTER_TYPE_FIELD, INTER_TYPE_METHOD,
 				INTER_TYPE_CONSTRUCTOR, INTER_TYPE_PARENT, CONSTRUCTOR, METHOD, FIELD, POINTCUT, ADVICE, DECLARE_PARENTS,
 				DECLARE_WARNING, DECLARE_ERROR, DECLARE_SOFT, DECLARE_PRECEDENCE, CODE, ERROR, DECLARE_ANNOTATION_AT_CONSTRUCTOR,
-				DECLARE_ANNOTATION_AT_FIELD, DECLARE_ANNOTATION_AT_METHOD, DECLARE_ANNOTATION_AT_TYPE, SOURCE_FOLDER
+				DECLARE_ANNOTATION_AT_FIELD, DECLARE_ANNOTATION_AT_METHOD, DECLARE_ANNOTATION_AT_TYPE, SOURCE_FOLDER, PACKAGE_DECLARATION
 
 		};
 
@@ -384,6 +385,10 @@ public interface IProgramElement extends Serializable {
 
 		private Object readResolve() throws ObjectStreamException {
 			return ALL[ordinal];
+		}
+
+		public boolean isPackageDeclaration() {
+			return this == PACKAGE_DECLARATION;
 		}
 	}
 }
