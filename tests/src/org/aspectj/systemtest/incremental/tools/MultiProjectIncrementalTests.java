@@ -247,6 +247,35 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// incomplete
 	}
 
+	/**
+	 * Test what is in the model for package declarations and import statements.  Package Declaration nodes are new
+	 * in AspectJ 1.6.4.  Import statements are contained with an 'import references' node.
+	 */
+	public void testImportHandles() {
+		String p = "Imports";
+		initialiseProject(p);
+		build(p);
+
+		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
+		
+		// Looking for 'package p.q'
+		IProgramElement ipe = findElementAtLine(root, 1);
+		ipe = (IProgramElement)ipe.getChildren().get(0); // package decl is first entry in the type
+		System.out.println(ipe.getHandleIdentifier()+"  "+ipe.getKind());
+		assertEquals(IProgramElement.Kind.PACKAGE_DECLARATION, ipe.getKind());
+		assertEquals("=Imports<p.q*Example.aj%p.q", ipe.getHandleIdentifier());
+		assertEquals("package p.q;", ipe.getSourceSignature());
+		assertEquals(ipe.getSourceLocation().getOffset(),8); // "package p.q" - location of p.q
+
+		
+		// Looking for import containing containing string and integer
+		ipe = findElementAtLine(root, 3); // first import
+		ipe = ipe.getParent(); // imports container
+		System.out.println(ipe.getHandleIdentifier()+"  "+ipe.getKind());
+		dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
+		assertEquals("=Imports<p.q*Example.aj#", ipe.getHandleIdentifier());
+	}
+
 	public void testAdvisingCallJoinpointsInITDS_pr253067() {
 		String p = "pr253067";
 		initialiseProject(p);
@@ -334,6 +363,18 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 	public void testITDIncremental_pr192877() {
 		String p = "PR192877";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+	}
+
+
+	public void testIncrementalBuildsWithItds_pr259528() {
+		String p = "pr259528";
+		AjdeInteractionTestbed.VERBOSE = true;
 		initialiseProject(p);
 		build(p);
 		checkWasFullBuild();
@@ -1137,7 +1178,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkWasFullBuild();
 		alter("PR117882", "inc1");
 		build("PR117882");
-		checkWasFullBuild(); // back to the source for an aspect
+		// This should be an incremental build now - because of the changes under 259649
+		checkWasntFullBuild(); // back to the source for an aspect
 		// AjdeInteractionTestbed.VERBOSE=false;
 		// AjdeInteractionTestbed.configureBuildStructureModel(false);
 	}
