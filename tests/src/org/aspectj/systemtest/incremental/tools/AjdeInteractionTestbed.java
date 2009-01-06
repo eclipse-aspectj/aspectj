@@ -71,6 +71,12 @@ public class AjdeInteractionTestbed extends TestCase {
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).addProjectSourceFileChanged(changedFile);
 	}
 
+	public void addClasspathEntry(String projectName, File classpathEntry) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		MultiProjTestCompilerConfiguration config = ((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration());
+		config.setClasspath(config.getClasspath() + File.pathSeparator + classpathEntry.toString());
+	}
+
 	public void addClasspathEntryChanged(String projectName, String changedDir) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).addClasspathEntryChanged(changedDir);
