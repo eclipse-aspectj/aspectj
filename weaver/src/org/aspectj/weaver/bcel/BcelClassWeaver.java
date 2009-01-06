@@ -50,6 +50,7 @@ import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.RET;
 import org.aspectj.apache.bcel.generic.Tag;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -1052,34 +1053,29 @@ class BcelClassWeaver implements IClassWeaver {
 
 	// FIXME asc refactor this to neaten it up
 	public LazyMethodGen locateAnnotationHolderForMethodCtorMunger(LazyClassGen clazz, BcelTypeMunger methodCtorMunger) {
-		if (methodCtorMunger.getMunger() instanceof NewMethodTypeMunger) {
-			NewMethodTypeMunger nftm = (NewMethodTypeMunger) methodCtorMunger.getMunger();
-
-			ResolvedMember lookingFor = AjcMemberMaker.interMethodDispatcher(nftm.getSignature(), methodCtorMunger.getAspectType());
-
-			List meths = clazz.getMethodGens();
-			for (Iterator iter = meths.iterator(); iter.hasNext();) {
-				LazyMethodGen element = (LazyMethodGen) iter.next();
-				if (element.getName().equals(lookingFor.getName())
-						&& element.getParameterSignature().equals(lookingFor.getParameterSignature()))
-					return element;
-			}
-			return null;
-		} else if (methodCtorMunger.getMunger() instanceof NewConstructorTypeMunger) {
-			NewConstructorTypeMunger nftm = (NewConstructorTypeMunger) methodCtorMunger.getMunger();
-			ResolvedMember lookingFor = AjcMemberMaker.postIntroducedConstructor(methodCtorMunger.getAspectType(), nftm
-					.getSignature().getDeclaringType(), nftm.getSignature().getParameterTypes());
-			List meths = clazz.getMethodGens();
-			for (Iterator iter = meths.iterator(); iter.hasNext();) {
-				LazyMethodGen element = (LazyMethodGen) iter.next();
-				if (element.getName().equals(lookingFor.getName())
-						&& element.getParameterSignature().equals(lookingFor.getParameterSignature()))
-					return element;
-			}
-			return null;
+		ResolvedTypeMunger rtMunger = methodCtorMunger.getMunger();
+		ResolvedMember lookingFor = null;
+		if (rtMunger instanceof NewMethodTypeMunger) {
+			NewMethodTypeMunger nftm = (NewMethodTypeMunger) rtMunger;
+			lookingFor = AjcMemberMaker.interMethodDispatcher(nftm.getSignature(), methodCtorMunger.getAspectType());
+		} else if (rtMunger instanceof NewConstructorTypeMunger) {
+			NewConstructorTypeMunger nftm = (NewConstructorTypeMunger) rtMunger;
+			lookingFor = AjcMemberMaker.postIntroducedConstructor(methodCtorMunger.getAspectType(), nftm.getSignature()
+					.getDeclaringType(), nftm.getSignature().getParameterTypes());
 		} else {
 			throw new BCException("Not sure what this is: " + methodCtorMunger);
 		}
+		List meths = clazz.getMethodGens();
+		String name = lookingFor.getName();
+		String paramSignature = lookingFor.getParameterSignature();
+		for (Iterator iter = meths.iterator(); iter.hasNext();) {
+			LazyMethodGen element = (LazyMethodGen) iter.next();
+			if (element.getName().equals(name) && element.getParameterSignature().equals(paramSignature)) {
+				return element;
+			}
+		}
+		return null;
+
 	}
 
 	/**
@@ -1143,9 +1139,10 @@ class BcelClassWeaver implements IClassWeaver {
 	 * Applies some set of declare @method/@ctor constructs (List<DeclareAnnotation>) to some bunch of ITDmembers
 	 * (List<BcelTypeMunger>. It will iterate over the fields repeatedly until everything has been applied.
 	 */
-	private boolean weaveAtMethodOnITDSRepeatedly(List decaMCs, List itdMethodsCtors, List reportedErrors) {
+	private boolean weaveAtMethodOnITDSRepeatedly(List decaMCs, List itdsForMethodAndConstructor, List reportedErrors) {
 		boolean isChanged = false;
-		for (Iterator iter = itdMethodsCtors.iterator(); iter.hasNext();) {
+		AsmManager asmManager = world.getModelAsAsmManager();
+		for (Iterator iter = itdsForMethodAndConstructor.iterator(); iter.hasNext();) {
 			BcelTypeMunger methodctorMunger = (BcelTypeMunger) iter.next();
 			ResolvedMember unMangledInterMethod = methodctorMunger.getSignature();
 			List worthRetrying = new ArrayList();
@@ -1161,15 +1158,15 @@ class BcelClassWeaver implements IClassWeaver {
 					}
 					annotationHolder.addAnnotation(decaMC.getAnnotationX());
 					isChanged = true;
-					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(world.getModelAsAsmManager(),
-							decaMC.getSourceLocation(), unMangledInterMethod.getSourceLocation());
+					AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(asmManager, decaMC.getSourceLocation(),
+							unMangledInterMethod.getSourceLocation());
 					reportMethodCtorWeavingMessage(clazz, unMangledInterMethod, decaMC, -1);
 					modificationOccured = true;
 				} else {
-					if (!decaMC.isStarredAnnotationPattern())
-						worthRetrying.add(decaMC); // an annotation is specified
-					// that might be put on by a
-					// subsequent decaf
+					// If an annotation is specified, it might be added by one of the other declare annotation statements
+					if (!decaMC.isStarredAnnotationPattern()) {
+						worthRetrying.add(decaMC);
+					}
 				}
 			}
 
@@ -1184,7 +1181,7 @@ class BcelClassWeaver implements IClassWeaver {
 							continue; // skip this one...
 						annotationHolder.addAnnotation(decaMC.getAnnotationX());
 						unMangledInterMethod.addAnnotation(decaMC.getAnnotationX());
-						AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(world.getModelAsAsmManager(),
+						AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(asmManager,
 								decaMC.getSourceLocation(), unMangledInterMethod.getSourceLocation());
 						isChanged = true;
 						modificationOccured = true;
@@ -1371,11 +1368,11 @@ class BcelClassWeaver implements IClassWeaver {
 			if ((declA.isExactPattern() || (declA.getSignaturePattern().getDeclaringType() instanceof ExactTypePattern))
 					&& (!declA.getSignaturePattern().getName().isAny() || (declA.getKind() == DeclareAnnotation.AT_CONSTRUCTOR))) {
 
-				// Quickly check if an ITD meets supplies the 'missing' member
+				// Quickly check if an ITD supplies the 'missing' member
 				boolean itdMatch = false;
 				List lst = clazz.getType().getInterTypeMungers();
 				for (Iterator iterator = lst.iterator(); iterator.hasNext() && !itdMatch;) {
-					BcelTypeMunger element = (BcelTypeMunger) iterator.next();
+					ConcreteTypeMunger element = (ConcreteTypeMunger) iterator.next();
 					if (element.getMunger() instanceof NewFieldTypeMunger) {
 						NewFieldTypeMunger nftm = (NewFieldTypeMunger) element.getMunger();
 						itdMatch = declA.getSignaturePattern().matches(nftm.getSignature(), world, false);
