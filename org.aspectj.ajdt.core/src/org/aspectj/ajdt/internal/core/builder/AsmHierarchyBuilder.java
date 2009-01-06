@@ -101,6 +101,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	 */
 	protected Stack stack;
 
+	protected ImportReference packageDecl = null;
+
 	/**
 	 * Reset for every compilation unit.
 	 */
@@ -121,6 +123,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		lineseps = currCompilationResult.lineSeparatorPositions;
 		LangUtil.throwIaxIfNull(currCompilationResult, "result");
 		stack = new Stack();
+		packageDecl = null;
 		this.buildConfig = buildConfig;
 		internalBuild(cuDeclaration, structureModel);
 		this.buildConfig = null; // clear reference since this structure is
@@ -157,7 +160,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 						sourceLocation, 0, null, null);
 			}
 
-			cuNode.addChild(new ProgramElement(structureModel, "import declarations", IProgramElement.Kind.IMPORT_REFERENCE, null,
+			// container for import declarations - this may move to position 1 in the child list, if there
+			// is a package declaration
+			cuNode.addChild(new ProgramElement(structureModel, "", IProgramElement.Kind.IMPORT_REFERENCE, null,
 					0, null, null));
 
 			final IProgramElement addToNode = genAddToNode(file, unit, structureModel);
@@ -180,6 +185,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			stack.push(cuNode);
 			unit.traverse(this, unit.scope);
 
+			
 			// -- update file map (XXX do this before traversal?)
 			try {
 				structureModel.getHierarchy().addToFileMap(file.getCanonicalPath(), cuNode);
@@ -316,7 +322,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 								IProgramElement.Kind.IMPORT_REFERENCE, makeLocation(importRef), 0, null, null);
 						ceNode.setSourceSignature(genSourceSignature(importRef));
 						// Add Element to Imports of Current Class
-						ProgramElement imports = (ProgramElement) ((IProgramElement) stack.peek()).getChildren().get(0);
+						ProgramElement imports = getImportReferencesRoot();//(ProgramElement) ((IProgramElement) stack.peek()).getChildren().get(0);
 						imports.addChild(0, ceNode);
 					}
 				}
@@ -337,9 +343,30 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		stack.push(peNode);
 		return true;
 	}
-
+	
+	
 	public void endVisit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
-		stack.pop();
+		// Is there a package declaration to insert into the model?
+		if (packageDecl!=null) {
+			int dotIndex = packageDecl.toString().lastIndexOf('.');
+			String packageString = packageDecl.toString();
+			if (dotIndex != -1) {
+				packageString = packageDecl.toString().substring(0, dotIndex);
+			}
+			ProgramElement packageDeclaration = new ProgramElement(activeStructureModel, packageString,
+					IProgramElement.Kind.PACKAGE_DECLARATION, makeLocation(packageDecl),0,null,null);
+			StringBuffer packageSourceDeclaration = new StringBuffer();
+			packageSourceDeclaration.append("package ");
+			packageSourceDeclaration.append(packageString);
+			packageSourceDeclaration.append(";");
+			packageDeclaration.setSourceSignature(packageSourceDeclaration.toString());
+			stack.pop();
+			ProgramElement containingTypeElement = (ProgramElement)stack.peek();
+			containingTypeElement.addChild(0,packageDeclaration);
+			packageDecl = null;
+		} else {
+			stack.pop();
+		}
 	}
 
 	// ??? share impl with visit(TypeDeclaration, ..) ?
@@ -705,8 +732,10 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		if (dotIndex != -1) {
 			currPackageImport = importRef.toString().substring(0, dotIndex);
 		}
-		if (!((IProgramElement) stack.peek()).getPackageName().equals(currPackageImport)) {
-
+		if (((IProgramElement) stack.peek()).getPackageName().equals(currPackageImport)) {
+			packageDecl = importRef;
+		} else {
+		
 			ProgramElement peNode = new ProgramElement(activeStructureModel, new String(importRef.toString()),
 					IProgramElement.Kind.IMPORT_REFERENCE, makeLocation(importRef), 0,// could set static here, but for
 					// some reason the info is
@@ -719,11 +748,18 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			// create Source signature for import
 			peNode.setSourceSignature(genSourceSignature(importRef));
 
-			ProgramElement imports = (ProgramElement) ((IProgramElement) stack.peek()).getChildren().get(0);
+			IProgramElement containingTypeElement = (IProgramElement)stack.peek();
+			ProgramElement imports = getImportReferencesRoot();
 			imports.addChild(0, peNode);
 			stack.push(peNode);
 		}
 		return true;
+	}
+	
+	private ProgramElement getImportReferencesRoot() {
+		IProgramElement element = (IProgramElement)stack.peek();
+		boolean hasPackageDeclaration = ((IProgramElement)element.getChildren().get(0)).getKind().isPackageDeclaration();
+		return (ProgramElement)element.getChildren().get(hasPackageDeclaration?1:0);
 	}
 
 	public void endVisit(ImportReference importRef, CompilationUnitScope scope) {
@@ -737,6 +773,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		}
 	}
 
+
+
+	
 	private String genSourceSignature(ImportReference importreference) {
 		StringBuffer output = new StringBuffer();
 		output.append("import ");
