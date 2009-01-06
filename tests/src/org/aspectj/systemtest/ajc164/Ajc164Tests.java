@@ -18,13 +18,13 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
-	// public void testAtAspectJDecp_pr164016() {
-	// runTest("ataspectj decp 164016");
-	// }
+	public void testAtAspectJDecp_pr164016() {
+		runTest("ataspectj decp 164016");
+	}
 
-	// public void testAtAspectJDecp_pr258788() {
-	// runTest("ataspectj decp 258788");
-	// }
+	public void testAtAspectJDecp_pr258788() {
+		runTest("ataspectj decp 258788");
+	}
 
 	public static Test suite() {
 		return XMLBasedAjcTestCase.loadSuite(Ajc164Tests.class);

@@ -150,6 +150,10 @@
    	  <compile files="Ship.java ShipAccessor.java" options="-emacssym -1.5"/>
     </ajc-test>
     
+    <ajc-test dir="bugs163/pr213751" title="mixed styles">
+   	  <compile files="Foo.java" options="-emacssym -1.5"/>
+    </ajc-test> 
+    
     <ajc-test dir="bugs163/pr249216" title="handles - escaped square brackets">
    	  <compile files="Handles.java" options="-emacssym -1.5"/>
     </ajc-test>
