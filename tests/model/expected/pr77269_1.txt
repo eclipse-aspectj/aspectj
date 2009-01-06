@@ -2,7 +2,8 @@
 <root>  [java source file] 
   pack  [package] 
     pr77269.aj  [java source file] TEST_SANDBOX\pack\pr77269.aj:1:
-      import declarations  [import reference] 
+      pack  [package declaration] TEST_SANDBOX\pack\pr77269.aj:1:
+        [import reference] 
       Test  [class] TEST_SANDBOX\pack\pr77269.aj:2:
         testMethod()  [method] TEST_SANDBOX\pack\pr77269.aj:4:
           new Runnable() {..}  [class] TEST_SANDBOX\pack\pr77269.aj:5:
@@ -25,6 +26,7 @@ class=3
 advice=1
 pointcut=1
 RelationshipMapSize=2
+package declaration=1
 FileMapSize=1
 package=1
 java source file=2

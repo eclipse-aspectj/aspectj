@@ -2,7 +2,8 @@
 <root>  [java source file] 
   test  [package] 
     Simple.java  [java source file] TEST_SANDBOX\Simple.java:1:
-      import declarations  [import reference] 
+      test  [package declaration] TEST_SANDBOX\Simple.java:1:
+        [import reference] 
       Simple  [class] TEST_SANDBOX\Simple.java:3:
         Simple()  [constructor] TEST_SANDBOX\Simple.java:5:
   binaries  [source folder] 
@@ -29,6 +30,7 @@ class=1
 advice=2
 pointcut=1
 RelationshipMapSize=3
+package declaration=1
 source folder=1
 FileMapSize=1
 package=2

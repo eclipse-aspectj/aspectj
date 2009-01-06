@@ -2,7 +2,7 @@
 <root>  [java source file] 
     [package] 
     pr115607.java  [java source file] TEST_SANDBOX\pr115607.java:1:
-      import declarations  [import reference] 
+        [import reference] 
       I  [annotation] TEST_SANDBOX\pr115607.java:1:
       Simple  [class] TEST_SANDBOX\pr115607.java:3:
       pr115607  [aspect] TEST_SANDBOX\pr115607.java:5:

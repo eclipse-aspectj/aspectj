@@ -2,7 +2,7 @@
 <root>  [java source file] 
     [package] 
     pr143924.aj  [java source file] TEST_SANDBOX\pr143924.aj:1:
-      import declarations  [import reference] 
+        [import reference] 
       DeclareAnnotation  [aspect] TEST_SANDBOX\pr143924.aj:1:
         declare @method: * debit(..) : @Secured(role = "supervisor")  [declare @method] TEST_SANDBOX\pr143924.aj:2:
       BankAccount  [class] TEST_SANDBOX\pr143924.aj:5:
@@ -10,8 +10,8 @@
       Secured  [annotation] TEST_SANDBOX\pr143924.aj:11:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
-(targets=1) <*pr143924.aj}DeclareAnnotation`declare \@method (annotates) <*pr143924.aj[BankAccount~debit~QString;~J
 (targets=1) <*pr143924.aj[BankAccount~debit~QString;~J (annotated by) <*pr143924.aj}DeclareAnnotation`declare \@method
+(targets=1) <*pr143924.aj}DeclareAnnotation`declare \@method (annotates) <*pr143924.aj[BankAccount~debit~QString;~J
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 method=1

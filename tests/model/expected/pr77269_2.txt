@@ -2,7 +2,7 @@
 <root>  [java source file] 
     [package] 
     pr77269b.aj  [java source file] TEST_SANDBOX\pr77269b.aj:1:
-      import declarations  [import reference] 
+        [import reference] 
       Test  [class] TEST_SANDBOX\pr77269b.aj:1:
         testMethod()  [method] TEST_SANDBOX\pr77269b.aj:3:
           new Runnable() {..}  [class] TEST_SANDBOX\pr77269b.aj:4:

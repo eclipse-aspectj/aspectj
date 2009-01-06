@@ -2,7 +2,7 @@
 <root>  [java source file] 
     [package] 
     C.java  [java source file] TEST_SANDBOX\C.java:1:
-      import declarations  [import reference] 
+        [import reference] 
       C  [class] TEST_SANDBOX\C.java:3:
         method1()  [method] TEST_SANDBOX\C.java:5:
           field-get(java.io.PrintStream java.lang.System.out)  [code] TEST_SANDBOX\C.java:6:

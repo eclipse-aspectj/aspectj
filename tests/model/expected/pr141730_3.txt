@@ -2,7 +2,8 @@
 <root>  [java source file] 
   foo  [package] 
     MyFoo.java  [java source file] TEST_SANDBOX\MyFoo.java:1:
-      import declarations  [import reference] 
+      foo  [package declaration] TEST_SANDBOX\MyFoo.java:1:
+        [import reference] 
       MyFoo  [class] TEST_SANDBOX\MyFoo.java:3:
         callMain()  [method] TEST_SANDBOX\MyFoo.java:5:
           method-call(void foo.MyFoo.main())  [code] TEST_SANDBOX\MyFoo.java:6:
@@ -13,11 +14,12 @@
 (targets=1) {MyBar.class (advises) <foo{MyFoo.java[MyFoo~callMain?method-call(void foo.MyFoo.main())
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
-package=1
-FileMapSize=1
-RelationshipMapSize=2
-java source file=2
+method=2
 import reference=1
 code=1
 class=1
-method=2
+RelationshipMapSize=2
+package declaration=1
+FileMapSize=1
+package=1
+java source file=2

@@ -2,7 +2,7 @@
 <root>  [java source file] 
     [package] 
     pr141730.aj  [java source file] TEST_SANDBOX\pr141730.aj:1:
-      import declarations  [import reference] 
+        [import reference] 
       A  [aspect] TEST_SANDBOX\pr141730.aj:1:
         p()  [pointcut] TEST_SANDBOX\pr141730.aj:3:
         before(): p..  [advice] TEST_SANDBOX\pr141730.aj:5:
@@ -35,12 +35,12 @@
 (targets=11) <*pr141730.aj}A&before (advises) <*pr141730.aj[C~main~\[QString;
 (targets=11) <*pr141730.aj}A&before (advises) <*pr141730.aj[C~multiMethod~\[\[QString;
 (targets=11) <*pr141730.aj}A&before (advises) <*pr141730.aj[C~intArray~\[I
+(targets=1) <*pr141730.aj[C~multiMethod~\[\[QString; (advised by) <*pr141730.aj}A&before
 (targets=1) <*pr141730.aj[C~stringMethod~QString; (advised by) <*pr141730.aj}A&before
 (targets=1) <*pr141730.aj[C~intArray~\[I (advised by) <*pr141730.aj}A&before
 (targets=1) <*pr141730.aj[C~myClassMethod~LMyClass; (advised by) <*pr141730.aj}A&before
 (targets=1) <*pr141730.aj[C~C (advised by) <*pr141730.aj}A&before
 (targets=1) <*pr141730.aj}A (advised by) <*pr141730.aj}A&before
-(targets=1) <*pr141730.aj[C~multiMethod~\[\[QString; (advised by) <*pr141730.aj}A&before
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 method=8

@@ -2,7 +2,8 @@
 <root>  [java source file] 
   pack  [package] 
     C.java  [java source file] TEST_SANDBOX\C.java:1:
-      import declarations  [import reference] 
+      pack  [package declaration] TEST_SANDBOX\C.java:1:
+        [import reference] 
       C  [class] TEST_SANDBOX\C.java:3:
         method1()  [method] TEST_SANDBOX\C.java:5:
           field-get(java.io.PrintStream java.lang.System.out)  [code] TEST_SANDBOX\C.java:6:
@@ -26,6 +27,7 @@ declare warning=1
 file=1
 class=1
 RelationshipMapSize=2
+package declaration=1
 source folder=1
 FileMapSize=1
 package=2

@@ -2,14 +2,16 @@
 <root>  [java source file] 
   pkg  [package] 
     SourceAspect.aj  [java source file] TEST_SANDBOX\SourceAspect.aj:1:
-      import declarations  [import reference] 
+      pkg  [package declaration] TEST_SANDBOX\SourceAspect.aj:1:
+        [import reference] 
       SourceAspect  [aspect] TEST_SANDBOX\SourceAspect.aj:3:
         declare warning: "There should be n.."  [declare warning] TEST_SANDBOX\SourceAspect.aj:5:
         p()  [pointcut] TEST_SANDBOX\SourceAspect.aj:7:
         before(): p..  [advice] TEST_SANDBOX\SourceAspect.aj:9:
   pack  [package] 
     C.java  [java source file] TEST_SANDBOX\C.java:1:
-      import declarations  [import reference] 
+      pack  [package declaration] TEST_SANDBOX\C.java:1:
+        [import reference] 
       C  [class] TEST_SANDBOX\C.java:3:
         method1()  [method] TEST_SANDBOX\C.java:5:
           field-get(java.io.PrintStream java.lang.System.out)  [code] TEST_SANDBOX\C.java:6:
@@ -43,6 +45,7 @@ class=1
 advice=2
 pointcut=2
 RelationshipMapSize=6
+package declaration=2
 source folder=1
 FileMapSize=2
 package=3

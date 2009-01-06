@@ -2,7 +2,7 @@
 <root>  [java source file] 
     [package] 
     pr132130.aj  [java source file] TEST_SANDBOX\pr132130.aj:1:
-      import declarations  [import reference] 
+        [import reference] 
       basic  [aspect] TEST_SANDBOX\pr132130.aj:1:
         declare @method: * debit(..) : @Secured(role = "supervisor")  [declare @method] TEST_SANDBOX\pr132130.aj:3:
         declare @constructor: BankAccount+.new(..) : @Secured(role = "supervisor")  [declare @constructor] TEST_SANDBOX\pr132130.aj:4:
