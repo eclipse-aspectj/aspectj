@@ -90,7 +90,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			changed = mungeNewField(weaver, (NewFieldTypeMunger) munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.Method) {
 			changed = mungeNewMethod(weaver, (NewMethodTypeMunger) munger);
-		} else if (munger.getKind() == ResolvedTypeMunger.MethodDelegate) {
+		} else if (munger.getKind() == ResolvedTypeMunger.MethodDelegate2) {
 			changed = mungeMethodDelegate(weaver, (MethodDelegateTypeMunger) munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.FieldHost) {
 			changed = mungeFieldHost(weaver, (MethodDelegateTypeMunger.FieldHostTypeMunger) munger);
@@ -302,7 +302,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 										satisfiedByITD = true;
 									}
 								}
-							} else if (m.getMunger() != null && m.getMunger().getKind() == ResolvedTypeMunger.MethodDelegate) {
+							} else if (m.getMunger() != null && m.getMunger().getKind() == ResolvedTypeMunger.MethodDelegate2) {
 								satisfiedByITD = true;// AV - that should be
 								// enough, no need to
 								// check more

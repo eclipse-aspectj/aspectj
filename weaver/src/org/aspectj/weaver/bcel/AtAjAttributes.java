@@ -744,14 +744,10 @@ public class AtAjAttributes {
 							// Now the method may be from a supertype but the declaring type of the method we pass into the type
 							// munger is what is used to determine the type of the field that hosts the delegate instance.
 							// So here we create a modified method with an alternative declaring type so that we lookup
-							// the right field. See pr164016. Generics will probably break this horribly
-							/*
-							 * ResolvedMemberImpl methodWithAlteredDeclaringType = new ResolvedMemberImpl(method.getKind(),
-							 * fieldType, method.getModifiers(), method.getReturnType(), method.getName(),
-							 * method.getParameterTypes(), method.getExceptions());
-							 */
+							// the right field. See pr164016.
 							MethodDelegateTypeMunger mdtm = new MethodDelegateTypeMunger(method, struct.enclosingType,
 									defaultImplClassName, typePattern);
+							mdtm.setFieldType(fieldType);
 							mdtm.setSourceLocation(struct.enclosingType.getSourceLocation());
 							struct.ajAttributes.add(new AjAttribute.TypeMunger(mdtm));
 						}
@@ -759,9 +755,9 @@ public class AtAjAttributes {
 					// successfull so far, we thus need a bcel type munger to have
 					// a field hosting the mixin in the target type
 					if (hasAtLeastOneMethod && defaultImplClassName != null) {
+						ResolvedMember fieldHost = AjcMemberMaker.itdAtDeclareParentsField(null, fieldType, struct.enclosingType);
 						struct.ajAttributes.add(new AjAttribute.TypeMunger(new MethodDelegateTypeMunger.FieldHostTypeMunger(
-								AjcMemberMaker.itdAtDeclareParentsField(null,// prototyped
-										fieldType, struct.enclosingType), struct.enclosingType, typePattern)));
+								fieldHost, struct.enclosingType, typePattern)));
 					}
 
 					return true;
