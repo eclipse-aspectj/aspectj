@@ -61,7 +61,9 @@ class StubFileGenerator {
 			IProgramElement fileNode = model.getHierarchy().findElementForSourceFile(inputFile.getAbsolutePath());
 			for (Iterator it = fileNode.getChildren().iterator(); it.hasNext();) {
 				IProgramElement node = (IProgramElement) it.next();
-				if (node.getKind().equals(IProgramElement.Kind.IMPORT_REFERENCE)) {
+				if (node.getKind().isPackageDeclaration()) {
+					// skip
+				} else if (node.getKind().equals(IProgramElement.Kind.IMPORT_REFERENCE)) {
 					processImportDeclaration(node, writer);
 				} else {
 					try {
