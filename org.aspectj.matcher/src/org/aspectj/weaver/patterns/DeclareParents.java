@@ -148,6 +148,7 @@ public class DeclareParents extends Declare {
     public void resolve(IScope scope) {
 //		ScopeWithTypeVariables resolutionScope = new ScopeWithTypeVariables(typeVariablesInScope,scope);
     	child = child.resolveBindings(scope, Bindings.NONE, false, false);
+		isWildChild = (child instanceof WildTypePattern);
     	parents = parents.resolveBindings(scope, Bindings.NONE, false, true); 
 
 //    	 Could assert this ...
@@ -175,6 +176,8 @@ public class DeclareParents extends Declare {
 	
 	private ResolvedType maybeGetNewParent(ResolvedType targetType, TypePattern typePattern, World world,boolean reportErrors) {
 		if (typePattern == TypePattern.NO) return null;  // already had an error here
+
+//		isWildChild = (child instanceof WildTypePattern);
 		UnresolvedType iType = typePattern.getExactType();
 		ResolvedType parentType = iType.resolve(world);
 		

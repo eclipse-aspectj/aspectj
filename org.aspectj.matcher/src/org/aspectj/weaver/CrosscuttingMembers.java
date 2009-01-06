@@ -31,12 +31,11 @@ import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.PointcutRewriter;
 
 /**
- * This holds on to all members that have an invasive effect outside of there
- * own compilation unit. These members need to be all gathered up and in a world
- * before any weaving can take place.
+ * This holds on to all members that have an invasive effect outside of there own compilation unit. These members need to be all
+ * gathered up and in a world before any weaving can take place.
  * 
- * They are also important in the compilation process and need to be gathered up
- * before the inter-type declaration weaving stage (unsurprisingly).
+ * They are also important in the compilation process and need to be gathered up before the inter-type declaration weaving stage
+ * (unsurprisingly).
  * 
  * All members are concrete.
  * 
@@ -52,15 +51,15 @@ public class CrosscuttingMembers {
 	private List typeMungers = new ArrayList(4);
 	private List lateTypeMungers = new ArrayList(0);
 
-	private List declareParents = new ArrayList(4);
+	private Set declareParents = new HashSet();
 	private List declareSofts = new ArrayList(0);
 	private List declareDominates = new ArrayList(4);
 
 	// These are like declare parents type mungers
-	private List declareAnnotationsOnType = new ArrayList();
-	private List declareAnnotationsOnField = new ArrayList();
-	private List declareAnnotationsOnMethods = new ArrayList(); // includes
-																// ctors
+	private Set declareAnnotationsOnType = new HashSet();
+	private Set declareAnnotationsOnField = new HashSet();
+	private Set declareAnnotationsOnMethods = new HashSet(); 
+	// declareAnnotationsOnMethods includes constructors too
 
 	private boolean shouldConcretizeIfNeeded = true;
 
@@ -99,9 +98,9 @@ public class CrosscuttingMembers {
 	}
 
 	public void addTypeMunger(ConcreteTypeMunger m) {
-		if (m == null)
+		if (m == null) {
 			throw new Error("FIXME AV - should not happen or what ?");// return;
-																		// //???
+		}
 		typeMungers.add(m);
 	}
 
@@ -220,20 +219,15 @@ public class CrosscuttingMembers {
 	}
 
 	/**
-	 * Updates the records if something has changed. This is called at most
-	 * twice, firstly whilst collecting ITDs and declares. At this point the
-	 * CrosscuttingMembers we're comparing ourselves with doesn't know about
-	 * shadowmungers. Therefore a straight comparison with the existing list of
-	 * shadowmungers would return that something has changed even though it
-	 * might not have, so in this first round we ignore the shadowMungers. The
-	 * second time this is called is whilst we're preparing to weave. At this
-	 * point we know everything in the system and so we're able to compare the
-	 * shadowMunger list. (see bug 129163)
+	 * Updates the records if something has changed. This is called at most twice, firstly whilst collecting ITDs and declares. At
+	 * this point the CrosscuttingMembers we're comparing ourselves with doesn't know about shadowmungers. Therefore a straight
+	 * comparison with the existing list of shadowmungers would return that something has changed even though it might not have, so
+	 * in this first round we ignore the shadowMungers. The second time this is called is whilst we're preparing to weave. At this
+	 * point we know everything in the system and so we're able to compare the shadowMunger list. (see bug 129163)
 	 * 
 	 * @param other
 	 * @param careAboutShadowMungers
-	 * @return true if something has changed since the last time this method was
-	 *         called, false otherwise
+	 * @return true if something has changed since the last time this method was called, false otherwise
 	 */
 	public boolean replaceWith(CrosscuttingMembers other, boolean careAboutShadowMungers) {
 		boolean changed = false;
@@ -352,44 +346,49 @@ public class CrosscuttingMembers {
 
 		// initial go at equivalence logic rather than set compare (see
 		// pr133532)
-		// if (theseTypeMungers.size()!=otherTypeMungers.size()) {
-		// changed = true;
-		// typeMungers = other.typeMungers;
-		// } else {
-		// boolean foundInequality=false;
-		// for (Iterator iter = theseTypeMungers.iterator(); iter.hasNext() &&
-		// !foundInequality;) {
-		// Object thisOne = (Object) iter.next();
-		// boolean foundInOtherSet = false;
-		// for (Iterator iterator = otherTypeMungers.iterator();
-		// iterator.hasNext();) {
-		// Object otherOne = (Object) iterator.next();
-		// if (thisOne instanceof ConcreteTypeMunger && otherOne instanceof
-		// ConcreteTypeMunger) {
-		// if (((ConcreteTypeMunger)thisOne).equivalentTo(otherOne)) {
-		// foundInOtherSet=true;
-		// } else if (thisOne.equals(otherOne)) {
-		// foundInOtherSet=true;
-		// }
-		// } else {
-		// if (thisOne.equals(otherOne)) {
-		// foundInOtherSet=true;
-		// }
-		// }
-		// }
-		// if (!foundInOtherSet) foundInequality=true;
-		// }
-		// if (foundInequality) {
-		// changed = true;
-		// typeMungers = other.typeMungers;
-		// // } else {
-		// // typeMungers = other.typeMungers;
-		// }
-		// }
-		if (!theseTypeMungers.equals(otherTypeMungers)) {
+		if (theseTypeMungers.size() != otherTypeMungers.size()) {
 			changed = true;
 			typeMungers = other.typeMungers;
+		} else {
+			boolean shouldOverwriteThis = false;
+			boolean foundInequality = false;
+			for (Iterator iter = theseTypeMungers.iterator(); iter.hasNext() && !foundInequality;) {
+				Object thisOne = (Object) iter.next();
+				boolean foundInOtherSet = false;
+				for (Iterator iterator = otherTypeMungers.iterator(); iterator.hasNext();) {
+					Object otherOne = (Object) iterator.next();
+					if (thisOne instanceof ConcreteTypeMunger) {
+						if (((ConcreteTypeMunger) thisOne).shouldOverwrite()) {
+							shouldOverwriteThis = true;
+						}
+					}
+					if (thisOne instanceof ConcreteTypeMunger && otherOne instanceof ConcreteTypeMunger) {
+						if (((ConcreteTypeMunger) thisOne).equivalentTo(otherOne)) {
+							foundInOtherSet = true;
+						} else if (thisOne.equals(otherOne)) {
+							foundInOtherSet = true;
+						}
+					} else {
+						if (thisOne.equals(otherOne)) {
+							foundInOtherSet = true;
+						}
+					}
+				}
+				if (!foundInOtherSet)
+					foundInequality = true;
+			}
+			if (foundInequality) {
+				// System.out.println("type munger change");
+				changed = true;
+			}
+			if (shouldOverwriteThis) {
+				typeMungers = other.typeMungers;
+			}
 		}
+		// if (!theseTypeMungers.equals(otherTypeMungers)) {
+		// changed = true;
+		// typeMungers = other.typeMungers;
+		// }
 
 		if (!lateTypeMungers.equals(other.lateTypeMungers)) {
 			changed = true;
@@ -460,10 +459,8 @@ public class CrosscuttingMembers {
 		PointcutRewriter pr = new PointcutRewriter();
 		Pointcut p = munger.getPointcut();
 		Pointcut newP = pr.rewrite(p);
-		if (p.m_ignoreUnboundBindingForNames.length != 0) {// *sigh* dirty fix
-															// for dirty hacky
-															// implementation
-															// pr149305
+		if (p.m_ignoreUnboundBindingForNames.length != 0) {
+  			// *sigh* dirty fix for dirty hacky implementation pr149305
 			newP.m_ignoreUnboundBindingForNames = p.m_ignoreUnboundBindingForNames;
 		}
 		munger.setPointcut(newP);
@@ -482,7 +479,7 @@ public class CrosscuttingMembers {
 		return declareDominates;
 	}
 
-	public List getDeclareParents() {
+	public Collection getDeclareParents() {
 		return declareParents;
 	}
 
@@ -502,18 +499,18 @@ public class CrosscuttingMembers {
 		return lateTypeMungers;
 	}
 
-	public List getDeclareAnnotationOnTypes() {
+	public Collection getDeclareAnnotationOnTypes() {
 		return declareAnnotationsOnType;
 	}
 
-	public List getDeclareAnnotationOnFields() {
+	public Collection getDeclareAnnotationOnFields() {
 		return declareAnnotationsOnField;
 	}
 
 	/**
 	 * includes declare @method and @constructor
 	 */
-	public List getDeclareAnnotationOnMethods() {
+	public Collection getDeclareAnnotationOnMethods() {
 		return declareAnnotationsOnMethods;
 	}
 
