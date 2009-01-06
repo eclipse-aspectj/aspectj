@@ -147,9 +147,11 @@ public abstract class ResolvedTypeMunger {
 		} else if (kind == Constructor) {
 			return NewConstructorTypeMunger.readConstructor(s, context);
 		} else if (kind == MethodDelegate) {
-			return MethodDelegateTypeMunger.readMethod(s, context);
+			return MethodDelegateTypeMunger.readMethod(s, context, false);
 		} else if (kind == FieldHost) {
 			return MethodDelegateTypeMunger.FieldHostTypeMunger.readFieldHost(s, context);
+		} else if (kind == MethodDelegate2) {
+			return MethodDelegateTypeMunger.readMethod(s, context, true);
 		} else {
 			throw new RuntimeException("unimplemented");
 		}
@@ -256,6 +258,8 @@ public abstract class ResolvedTypeMunger {
 				return MethodDelegate;
 			case 10:
 				return FieldHost;
+			case 11:
+				return MethodDelegate2;
 			}
 			throw new BCException("bad kind: " + key);
 		}
@@ -263,7 +267,7 @@ public abstract class ResolvedTypeMunger {
 		public String toString() {
 			// we want MethodDelegate to appear as Method in WeaveInfo messages
 			// TODO we may want something for fieldhost ?
-			if (MethodDelegate.getName().equals(getName())) {
+			if (getName().startsWith(MethodDelegate.getName())) {// startsWith will cover MethodDelegate2 as well
 				return Method.toString();
 			} else {
 				return super.toString();
@@ -283,12 +287,14 @@ public abstract class ResolvedTypeMunger {
 
 	public static final Kind Parent = new Kind("Parent", 6);
 	public static final Kind PerTypeWithinInterface = new Kind("PerTypeWithinInterface", 7); // PTWIMPL not serialized, used during
-																								// concretization of aspects
+	// concretization of aspects
 
 	public static final Kind AnnotationOnType = new Kind("AnnotationOnType", 8); // not serialized
 
 	public static final Kind MethodDelegate = new Kind("MethodDelegate", 9);// serialized, @AJ ITDs
 	public static final Kind FieldHost = new Kind("FieldHost", 10);// serialized, @AJ ITDs
+
+	public static final Kind MethodDelegate2 = new Kind("MethodDelegate2", 11);// serialized, @AJ ITDs
 
 	public static final String SUPER_DISPATCH_NAME = "superDispatch";
 
