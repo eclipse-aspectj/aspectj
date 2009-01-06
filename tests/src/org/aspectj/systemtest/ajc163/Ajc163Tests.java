@@ -67,10 +67,6 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("param annos and at args");
 	}
 
-	// public void testAtAspectJDecp_pr164016() {
-	// runTest("ataspectj decp");
-	// }
-
 	public void testIncorrectArgOrdering_pr219419() {
 		runTest("incorrect arg ordering anno style");
 	}

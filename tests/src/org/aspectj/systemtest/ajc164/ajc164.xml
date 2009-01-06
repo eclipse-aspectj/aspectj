@@ -2,5 +2,18 @@
 
 <suite>
     
-
+    <ajc-test dir="bugs163/pr164016" title="ataspectj decp 164016">
+      <compile files="Code.aj" options="-1.5"/>
+      <run class="test.Code"/>
+    </ajc-test>    
+    
+    <ajc-test dir="bugs163/pr258788" title="ataspectj decp 258788">
+      <compile files="NameAware.java NameManager.java NameManagerImpl.java StartClass.java TargetClass.java TestAspect.java" options="-1.5"/>
+      <run class="com.StartClass"/>
+    </ajc-test>    
+    
+    <ajc-test dir="bugs163/pr213751" title="mixed styles">
+   	  <compile files="Foo.java" options="-emacssym -1.5"/>
+    </ajc-test>
+    
 </suite>
