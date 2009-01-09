@@ -217,6 +217,10 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 	public ResolvedPointcutDefinition makeResolvedPointcutDefinition(EclipseFactory inWorld) {
 		if (resolvedPointcutDeclaration != null)
 			return resolvedPointcutDeclaration;
+		if (binding == null) {
+		    // other errors exist that will be reported separately
+			return null;  
+		}
 		// System.out.println("pc: " + getPointcut() + ", " + getPointcut().state);
 		ReferenceBinding declaringClass = binding.declaringClass;
 		TypeBinding[] parameters = binding.parameters;

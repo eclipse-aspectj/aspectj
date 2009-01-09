@@ -397,6 +397,10 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		ResolvedMember[] pointcuts = getDeclaredPointcuts();
 		boolean sawError = false;
 		for (int i = 0, len = pointcuts.length; i < len; i++) {
+			if (pointcuts[i]==null) {
+				// Something else is broken in this file and will be reported separately
+				continue; 
+			}
 			if (pointcuts[i].isAbstract()) {
 				if (!this.isAspect()) {
 					eclipseWorld().showMessage(IMessage.ERROR, "abstract pointcut only allowed in aspect" + pointcuts[i].getName(),
@@ -410,6 +414,10 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 			}
 
 			for (int j = i + 1; j < len; j++) {
+				if (pointcuts[j]==null) {
+					// Something else is broken in this file and will be reported separately
+					continue; 
+				}
 				if (pointcuts[i].getName().equals(pointcuts[j].getName())) {
 					eclipseWorld().showMessage(IMessage.ERROR, "duplicate pointcut name: " + pointcuts[j].getName(),
 							pointcuts[i].getSourceLocation(), pointcuts[j].getSourceLocation());
