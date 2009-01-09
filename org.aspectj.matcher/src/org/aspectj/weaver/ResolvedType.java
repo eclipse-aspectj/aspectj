@@ -506,8 +506,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// System.err.println("looking for pointcuts " + this);
 		for (Iterator i = getPointcuts(); i.hasNext();) {
 			ResolvedPointcutDefinition f = (ResolvedPointcutDefinition) i.next();
-			// System.err.println(f);
-			if (name.equals(f.getName())) {
+			// the resolvedpointcutdefinition can be null if there are other problems that
+			// prevented its resolution
+			if (f!=null && name.equals(f.getName())) {
 				return f;
 			}
 		}
@@ -1832,7 +1833,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			// System.err.println("looking at: " + inherited + " in " + this);
 			// System.err.println("            " + inherited.isAbstract() +
 			// " in " + this.isAbstract());
-			if (inherited.isAbstract()) {
+			if (inherited!=null && inherited.isAbstract()) {
 				if (!this.isAbstract()) {
 					getWorld().showMessage(IMessage.ERROR,
 							WeaverMessages.format(WeaverMessages.POINCUT_NOT_CONCRETE, inherited, this.getName()),
