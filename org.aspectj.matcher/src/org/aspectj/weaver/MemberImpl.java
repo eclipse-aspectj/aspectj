@@ -343,7 +343,11 @@ public class MemberImpl implements Member {
 		StringBuffer buf = new StringBuffer();
 		buf.append(returnType.getName());
 		buf.append(' ');
-		buf.append(declaringType.getName());
+		if (declaringType==null) {
+			buf.append("<NULL>");
+		} else {
+			buf.append(declaringType.getName());
+		}
 		buf.append('.');
 		buf.append(name);
 		if (kind != FIELD) {
