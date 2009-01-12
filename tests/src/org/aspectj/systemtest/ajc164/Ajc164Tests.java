@@ -18,6 +18,14 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testCompilingSpring_pr260384() {
+		runTest("compiling spring");
+	}
+
+	public void testCompilingSpring_pr260384_2() {
+		runTest("compiling spring - 2");
+	}
+	
 	public void testAtAspectJDecp_pr164016() {
 		runTest("ataspectj decp 164016");
 	}
