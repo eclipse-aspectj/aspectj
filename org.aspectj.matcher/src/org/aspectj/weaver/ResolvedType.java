@@ -333,9 +333,50 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	/**
 	 * described in JVM spec 2ed 5.4.3.3. Doesnt check ITDs.
+	 * 
+	 * <p>
+	 * Check the current type for the method.  If it is not found, check the super class and any super interfaces.  Taking
+	 * care not to process interfaces multiple times.
 	 */
 	public ResolvedMember lookupMethod(Member m) {
-		return lookupMember(m, getMethods());
+		List typesTolookat = new ArrayList();
+		typesTolookat.add(this);
+		int pos = 0;
+		while (pos<typesTolookat.size()) {
+			ResolvedType type = (ResolvedType)typesTolookat.get(pos++);
+			if (!type.isMissing()) {
+				ResolvedMember[] methods = type.getDeclaredMethods();
+				if (methods!=null) {
+					for (int i=0;i<methods.length;i++) {
+						ResolvedMember method = methods[i];
+						if (matches(method, m)) {
+							return method;
+						}
+						// might be worth checking the method behind the parameterized method (137496)
+						if (method.hasBackingGenericMember() && m.getName().equals(method.getName())) { 
+							if (matches(method.getBackingGenericMember(), m))
+								return method;
+						}					
+					}
+				}
+			}
+			// Queue the superclass:
+			ResolvedType superclass = type.getSuperclass();
+			if (superclass!=null) {
+				typesTolookat.add(superclass);
+			}
+			// Queue any interfaces not already checked:
+			ResolvedType[] superinterfaces = type.getDeclaredInterfaces();
+			if (superinterfaces!=null) {
+				for (int i = 0; i < superinterfaces.length; i++) {
+					ResolvedType interf = superinterfaces[i];
+					if (!typesTolookat.contains(interf)) {
+						typesTolookat.add(interf);
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	public ResolvedMember lookupMethodInITDs(Member m) {
@@ -350,6 +391,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return null;
 	}
 
+	
 	/**
 	 * return null if not found
 	 */
