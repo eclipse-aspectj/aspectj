@@ -100,7 +100,11 @@ public class ConfigParser {
 		s = stripSingleLineComment(s, "#");
 		s = s.trim();
 		if (s.startsWith("\"") && s.endsWith("\"")) {
-			s = s.substring(1, s.length() - 1);
+			if (s.length()==1) {
+				return "";
+			} else {
+				s = s.substring(1, s.length() - 1);
+			}
 		}
 		return s;
 	}
