@@ -41,6 +41,7 @@ import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.Shadow.Kind;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.patterns.ExactTypePattern;
@@ -264,7 +265,14 @@ class BcelAdvice extends Advice {
 		// PerObjectInterfaceTypeMunger.registerAsAdvisedBy(s.getTargetVar().getType(), getConcreteAspect());
 		// }
 		// }
-
+		if (pointcutTest == Literal.FALSE) { // not usually allowed, except in one case (260384)
+			Member sig = shadow.getSignature();
+			if (sig.getArity() == 0 && shadow.getKind() == Shadow.MethodCall && sig.getName().charAt(0) == 'c' 
+				&& sig.getReturnType().equals(ResolvedType.OBJECT) && sig.getName().equals("clone")) {
+				return false;
+			}
+		}
+		
 		if (getKind() == AdviceKind.Before) {
 			shadow.weaveBefore(this);
 		} else if (getKind() == AdviceKind.AfterReturning) {
