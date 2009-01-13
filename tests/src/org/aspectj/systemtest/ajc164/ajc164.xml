@@ -2,10 +2,6 @@
 
 <suite>
     
-    <ajc-test dir="bugs164/pr260384" title="compiling spring - 3">
-      <compile files="C.java" options="-1.5 -emacssym"/>
-    </ajc-test>    
-    
     <ajc-test dir="bugs164/pr260384" title="compiling spring">
       <compile files="Broken.java" options="-1.5">
       </compile>
@@ -13,6 +9,15 @@
 
     <ajc-test dir="bugs164/pr260384" title="compiling spring - 2">
       <compile files="Broken2.java" options="-1.5">
+      </compile>
+    </ajc-test>    
+    
+    <ajc-test dir="bugs164/pr260384" title="compiling spring - 3">
+      <compile files="C.java" options="-1.5 -emacssym"/>
+    </ajc-test>    
+    
+    <ajc-test dir="bugs164/pr260384" title="compiling spring - 4">
+      <compile files="D.java" options="-1.5">
       </compile>
     </ajc-test>    
     
