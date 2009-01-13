@@ -2,9 +2,8 @@
 
 <suite>
     
-    <ajc-test dir="bugs164/pr164016" title="ataspectj decp 164016">
-      <compile files="Code.aj" options="-1.5"/>
-      <run class="test.Code"/>
+    <ajc-test dir="bugs164/pr260384" title="compiling spring - 3">
+      <compile files="C.java" options="-1.5 -emacssym"/>
     </ajc-test>    
     
     <ajc-test dir="bugs164/pr260384" title="compiling spring">
@@ -16,6 +15,12 @@
       <compile files="Broken2.java" options="-1.5">
       </compile>
     </ajc-test>    
+    
+    <ajc-test dir="bugs164/pr164016" title="ataspectj decp 164016">
+      <compile files="Code.aj" options="-1.5"/>
+      <run class="test.Code"/>
+    </ajc-test>    
+    
     
     <ajc-test dir="bugs164/pr164016" title="ataspectj decp 164016 - 2">
       <compile files="Code.java TargetBad.java TargetGood.java" aspectpath="code.jar" options="-1.5"/>
