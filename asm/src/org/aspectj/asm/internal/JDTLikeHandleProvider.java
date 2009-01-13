@@ -202,8 +202,9 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 					if (object.getKind() == ipe.getKind()) {
 						if (object.getName().endsWith("{..}")) {
 							String existingHandle = object.getHandleIdentifier();
-							int suffixPosition = existingHandle.indexOf('!');
-							if (suffixPosition != -1) {
+							int suffixPosition = existingHandle.lastIndexOf('!');
+							int lastSquareBracket = existingHandle.lastIndexOf('['); // type delimiter
+							if (suffixPosition != -1 && lastSquareBracket<suffixPosition) { // pr260384
 								count = new Integer(existingHandle.substring(suffixPosition + 1)).intValue() + 1;
 							} else {
 								if (count == 1) {
@@ -222,8 +223,9 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 					if (object.getKind() == ipe.getKind()) {
 						if (object.getName().equals(ipe.getName())) {
 							String existingHandle = object.getHandleIdentifier();
-							int suffixPosition = existingHandle.indexOf('!');
-							if (suffixPosition != -1) {
+							int suffixPosition = existingHandle.lastIndexOf('!');
+							int lastSquareBracket = existingHandle.lastIndexOf('['); // type delimiter
+							if (suffixPosition != -1 && lastSquareBracket<suffixPosition) { // pr260384
 								count = new Integer(existingHandle.substring(suffixPosition + 1)).intValue() + 1;
 							} else {
 								if (count == 1) {
