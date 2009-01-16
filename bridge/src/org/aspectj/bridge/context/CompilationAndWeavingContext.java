@@ -12,6 +12,7 @@
 package org.aspectj.bridge.context;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -88,7 +89,7 @@ public class CompilationAndWeavingContext {
 			"type munging for @AspectJ aspectOf" };
 
 	// context stacks, one per thread
-	private static Map contextMap = new HashMap();
+	private static Map contextMap = Collections.synchronizedMap(new HashMap());
 
 	// single thread mode stack
 	private static Stack contextStack = new Stack();
