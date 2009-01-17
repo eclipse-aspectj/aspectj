@@ -314,7 +314,9 @@ public class StandardPointcutParser {
 			formalBindings[i] = new FormalBinding(toUnresolvedType(formalParameters[i].getType()), formalParameters[i].getName(), i);
 		}
 		if (inScope == null) {
-			return new SimpleScope(getWorld(), formalBindings);
+			SimpleScope ss = new SimpleScope(getWorld(), formalBindings);
+			ss.setImportedPrefixes(new String[] { "java.lang.", "java.util." });
+			return ss;
 		} else {
 			ResolvedType inType = getWorld().resolve(inScope.getName());
 			ISourceContext sourceContext = new ISourceContext() {
@@ -333,7 +335,9 @@ public class StandardPointcutParser {
 				public void tidy() {
 				}
 			};
-			return new BindingScope(inType, sourceContext, formalBindings);
+			BindingScope bScope = new BindingScope(inType, sourceContext, formalBindings);
+			bScope.setImportedPrefixes(new String[] { "java.lang.", "java.util." });
+			return bScope;
 		}
 	}
 

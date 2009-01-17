@@ -85,6 +85,58 @@ public abstract class CommonPointcutExpressionTests extends TestCase {
 		checkAlwaysMatches("execution(*b*[] *())", "java.util.List", "toArray", "()[Ljava/lang/Object;");
 	}
 
+	public void testConstructorExecutionMatching01() {
+		checkAlwaysMatches("execution(new())", "java.lang.String", "<init>", "()V");
+	}
+
+	public void testConstructorExecutionMatching02() {
+		checkAlwaysMatches("execution(new(char[]))", "java.lang.String", "<init>", "([C)V");
+		checkAlwaysMatches("execution(new(..))", "java.lang.String", "<init>", "()V");
+		checkAlwaysMatches("execution(new(..))", "java.lang.String", "<init>", "(Ljava/lang/String;)V");
+		checkAlwaysMatches("execution(new(*))", "java.lang.String", "<init>", "(Ljava/lang/String;)V");
+		checkNeverMatches("execution(new(*))", "java.lang.String", "<init>", "()V");
+		checkAlwaysMatches("execution(new(*,*,*))", "java.lang.String", "<init>", "([CII)V");
+		checkAlwaysMatches("execution(new(*,int,*))", "java.lang.String", "<init>", "([III)V");
+		checkNeverMatches("execution(new(..,int[]))", "java.lang.String", "<init>", "([III)V");
+	}
+
+	public void testConstructorExecutionMatching03() {
+
+		ResolvedType jlArrayList = world.resolve("java.util.ArrayList");
+		ResolvedType juList = world.resolve("java.util.List");
+
+		StandardPointcutExpression ex = pointcutParser.parsePointcutExpression("execution(java.util.ArrayList.new(..))");
+		assertNotNull(ex);
+
+		// simple constructor
+		ShadowMatch shadowMatch = ex.matchesMethodExecution(getMethod(jlArrayList, "<init>", "()V"));
+		assertTrue(shadowMatch.alwaysMatches());
+
+		ex = pointcutParser.parsePointcutExpression("execution(ArrayList.new(..))");
+		shadowMatch = ex.matchesMethodExecution(getMethod(jlArrayList, "<init>", "()V"));
+		assertTrue(shadowMatch.alwaysMatches());
+
+		ex = pointcutParser.parsePointcutExpression("execution(*Arr*.new(..))");
+		shadowMatch = ex.matchesMethodExecution(getMethod(jlArrayList, "<init>", "()V"));
+		assertTrue(shadowMatch.alwaysMatches());
+
+		ex = pointcutParser.parsePointcutExpression("execution(java.util.*.new(..))");
+		shadowMatch = ex.matchesMethodExecution(getMethod(jlArrayList, "<init>", "()V"));
+		assertTrue(shadowMatch.alwaysMatches());
+
+		ex = pointcutParser.parsePointcutExpression("execution(java.*.new(..))");
+		shadowMatch = ex.matchesMethodExecution(getMethod(jlArrayList, "<init>", "()V"));
+		assertTrue(shadowMatch.neverMatches());
+
+		ex = pointcutParser.parsePointcutExpression("execution(java..*.new(..))");
+		shadowMatch = ex.matchesMethodExecution(getMethod(jlArrayList, "<init>", "()V"));
+		assertTrue(shadowMatch.alwaysMatches());
+
+		ex = pointcutParser.parsePointcutExpression("execution(*..ArrayList.new(..))");
+		shadowMatch = ex.matchesMethodExecution(getMethod(jlArrayList, "<init>", "()V"));
+		assertTrue(shadowMatch.alwaysMatches());
+	}
+
 	public void testMatchingThis01() {
 		StandardPointcutExpression ex = pointcutParser.parsePointcutExpression("this(java.lang.String)");
 		ResolvedType jlString = world.resolve("java.lang.String");
@@ -199,6 +251,25 @@ public abstract class CommonPointcutExpressionTests extends TestCase {
 		assertTrue(ex.matchesMethodCall(listAddMethod, stringSplitMethod).neverMatches());
 	}
 
+	public void testCall() {
+		StandardPointcutExpression ex = pointcutParser.parsePointcutExpression("call(* *..A.a*(..))");
+		// assertTrue("Should match call to A.a()", ex.matchesMethodCall(a, a).alwaysMatches());
+		// assertTrue("Should match call to A.aaa()", ex.matchesMethodCall(aaa, a).alwaysMatches());
+		// assertTrue("Should match call to B.aa()", ex.matchesMethodCall(bsaa, a).alwaysMatches());
+		// assertTrue("Should not match call to B.b()", ex.matchesMethodCall(b, a).neverMatches());
+		// ex = p.parsePointcutExpression("call(* *..A.a*(int))");
+		// assertTrue("Should match call to A.aa()", ex.matchesMethodCall(aa, a).alwaysMatches());
+		// assertTrue("Should not match call to A.a()", ex.matchesMethodCall(a, a).neverMatches());
+		// ex = p.parsePointcutExpression("call(void aaa(..)) && this(org.aspectj.weaver.tools.PointcutExpressionTest.Client)");
+		// assertTrue("Should match call to A.aaa() from Client", ex.matchesMethodCall(aaa, foo).alwaysMatches());
+		// ex = p.parsePointcutExpression("call(void aaa(..)) && this(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
+		// assertTrue("Should match call to A.aaa() from B", ex.matchesMethodCall(aaa, b).alwaysMatches());
+		// assertTrue("May match call to A.aaa() from A", ex.matchesMethodCall(aaa, a).maybeMatches());
+		// assertFalse("May match call to A.aaa() from A", ex.matchesMethodCall(aaa, a).alwaysMatches());
+		// ex = p.parsePointcutExpression("execution(* *.*(..))");
+		// assertTrue("Should not match call to A.aa", ex.matchesMethodCall(aa, a).neverMatches());
+	}
+
 	public void testCallAndThisMatchesMethodCall() {
 		StandardPointcutExpression ex = pointcutParser.parsePointcutExpression("call(* *(..)) && this(java.util.ArrayList)");
 		ResolvedType jlString = world.resolve("java.lang.String");
@@ -212,22 +283,6 @@ public abstract class CommonPointcutExpressionTests extends TestCase {
 		assertTrue(ex.matchesMethodCall(stringSplitMethod, listAddMethod).maybeMatches());
 	}
 
-	// PointcutExpression ex = p.parsePointcutExpression("call(* *..A.a*(..))");
-	// assertTrue("Should match call to A.a()", ex.matchesMethodCall(a, a).alwaysMatches());
-	// assertTrue("Should match call to A.aaa()", ex.matchesMethodCall(aaa, a).alwaysMatches());
-	// assertTrue("Should match call to B.aa()", ex.matchesMethodCall(bsaa, a).alwaysMatches());
-	// assertTrue("Should not match call to B.b()", ex.matchesMethodCall(b, a).neverMatches());
-	// ex = p.parsePointcutExpression("call(* *..A.a*(int))");
-	// assertTrue("Should match call to A.aa()", ex.matchesMethodCall(aa, a).alwaysMatches());
-	// assertTrue("Should not match call to A.a()", ex.matchesMethodCall(a, a).neverMatches());
-	// ex = p.parsePointcutExpression("call(void aaa(..)) && this(org.aspectj.weaver.tools.PointcutExpressionTest.Client)");
-	// assertTrue("Should match call to A.aaa() from Client", ex.matchesMethodCall(aaa, foo).alwaysMatches());
-	// ex = p.parsePointcutExpression("call(void aaa(..)) && this(org.aspectj.weaver.tools.PointcutExpressionTest.B)");
-	// assertTrue("Should match call to A.aaa() from B", ex.matchesMethodCall(aaa, b).alwaysMatches());
-	// assertTrue("May match call to A.aaa() from A", ex.matchesMethodCall(aaa, a).maybeMatches());
-	// assertFalse("May match call to A.aaa() from A", ex.matchesMethodCall(aaa, a).alwaysMatches());
-	// ex = p.parsePointcutExpression("execution(* *.*(..))");
-	// assertTrue("Should not match call to A.aa", ex.matchesMethodCall(aa, a).neverMatches());
 	// // this
 	// ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.Client)");
 	// assertTrue("Should match Client", ex.matchesMethodCall(a, foo).alwaysMatches());
@@ -294,14 +349,6 @@ public abstract class CommonPointcutExpressionTests extends TestCase {
 	// assertTrue("Should not match", ex.matchesConstructorCall(bsCons, b).neverMatches());
 	// }
 	//
-	// public void testMatchesConstructorExecution() {
-	// PointcutExpression ex = p.parsePointcutExpression("execution(new(String))");
-	// assertTrue("Should match A(String)", ex.matchesConstructorExecution(asCons).alwaysMatches());
-	// assertTrue("Should match B(String)", ex.matchesConstructorExecution(bsStringCons).alwaysMatches());
-	// assertTrue("Should not match B()", ex.matchesConstructorExecution(bsCons).neverMatches());
-	// ex = p.parsePointcutExpression("execution(*..A.new(String))");
-	// assertTrue("Should match A(String)", ex.matchesConstructorExecution(asCons).alwaysMatches());
-	// assertTrue("Should not match B(String)", ex.matchesConstructorExecution(bsStringCons).neverMatches());
 	//
 	// // test this
 	// ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.A)");
@@ -404,7 +451,7 @@ public abstract class CommonPointcutExpressionTests extends TestCase {
 	// }
 	// -- next few tests relate to matching different pointcut expressions against a staticinitialization join point
 
-	public void testMethodMatchesStaticInitialization() {
+	public void testMethodMatchesStaticInitialization01() {
 		StandardPointcutExpression ex = pointcutParser.parsePointcutExpression("staticinitialization(java.lang.String)");
 		assertNotNull(ex);
 
@@ -412,6 +459,28 @@ public abstract class CommonPointcutExpressionTests extends TestCase {
 
 		boolean b = ex.matchesStaticInitialization(jlString).alwaysMatches();
 		assertTrue(b);
+	}
+
+	public void testMethodMatchesStaticInitialization02() {
+		ResolvedType jlString = world.resolve("java.lang.String");
+		StandardPointcutExpression ex = pointcutParser.parsePointcutExpression("staticinitialization(java..*)");
+		assertTrue(ex.matchesStaticInitialization(jlString).alwaysMatches());
+		ex = pointcutParser.parsePointcutExpression("staticinitialization(java..*)");
+		assertTrue(ex.matchesStaticInitialization(jlString).alwaysMatches());
+		ex = pointcutParser.parsePointcutExpression("staticinitialization(java.*)");
+		assertTrue(ex.matchesStaticInitialization(jlString).neverMatches());
+	}
+
+	public void testMethodMatchesStaticInitialization03() {
+		ResolvedType juArrayList = world.resolve("java.util.ArrayList");
+		StandardPointcutExpression ex = pointcutParser.parsePointcutExpression("staticinitialization(java..*)");
+		assertTrue(ex.matchesStaticInitialization(juArrayList).alwaysMatches());
+		ex = pointcutParser.parsePointcutExpression("staticinitialization(java.util.ArrayList)");
+		assertTrue(ex.matchesStaticInitialization(juArrayList).alwaysMatches());
+		ex = pointcutParser.parsePointcutExpression("staticinitialization(java.util.List+)");
+		assertTrue(ex.matchesStaticInitialization(juArrayList).alwaysMatches());
+		ex = pointcutParser.parsePointcutExpression("staticinitialization(List)");
+		assertTrue(ex.matchesStaticInitialization(juArrayList).neverMatches());
 	}
 
 	//
@@ -481,11 +550,6 @@ public abstract class CommonPointcutExpressionTests extends TestCase {
 	// }
 	//
 	// public void testMatchesStaticInitialization() {
-	// // staticinit
-	// PointcutExpression ex = p.parsePointcutExpression("staticinitialization(*..A+)");
-	// assertTrue("Matches A", ex.matchesStaticInitialization(A.class).alwaysMatches());
-	// assertTrue("Matches B", ex.matchesStaticInitialization(B.class).alwaysMatches());
-	// assertTrue("Doesn't match Client", ex.matchesStaticInitialization(Client.class).neverMatches());
 	// // this
 	// ex = p.parsePointcutExpression("this(org.aspectj.weaver.tools.PointcutExpressionTest.A)");
 	// assertTrue("No this", ex.matchesStaticInitialization(A.class).neverMatches());
@@ -675,6 +739,7 @@ public abstract class CommonPointcutExpressionTests extends TestCase {
 	private ResolvedMember getMethod(ResolvedType type, String methodName, String methodSignature) {
 		ResolvedMember[] methods = type.getDeclaredMethods();
 		for (int i = 0; i < methods.length; i++) {
+			System.out.println(methods[i].getName() + methods[i].getSignature());
 			if (methods[i].getName().equals(methodName)
 					&& (methodSignature == null || methodSignature.equals(methods[i].getSignature()))) {
 				return methods[i];
@@ -688,9 +753,9 @@ public abstract class CommonPointcutExpressionTests extends TestCase {
 		assertNotNull(ex);
 		ResolvedType resolvedType = world.resolve(type);
 		ResolvedMember method = getMethod(resolvedType, methodName, methodSignature);
-		assertNotNull(method);
+		assertNotNull("Couldn't find a method with signature " + methodSignature, method);
 		boolean b = ex.matchesMethodExecution(method).alwaysMatches();
-		assertTrue(b);
+		assertTrue("Match failed", b);
 	}
 
 	private void checkNeverMatches(String pointcutExpression, String type, String methodName, String methodSignature) {
