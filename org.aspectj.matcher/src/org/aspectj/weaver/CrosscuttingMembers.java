@@ -353,10 +353,10 @@ public class CrosscuttingMembers {
 			boolean shouldOverwriteThis = false;
 			boolean foundInequality = false;
 			for (Iterator iter = theseTypeMungers.iterator(); iter.hasNext() && !foundInequality;) {
-				Object thisOne = (Object) iter.next();
+				Object thisOne = iter.next();
 				boolean foundInOtherSet = false;
 				for (Iterator iterator = otherTypeMungers.iterator(); iterator.hasNext();) {
-					Object otherOne = (Object) iterator.next();
+					Object otherOne = iterator.next();
 					if (thisOne instanceof ConcreteTypeMunger) {
 						if (((ConcreteTypeMunger) thisOne).shouldOverwrite()) {
 							shouldOverwriteThis = true;
