@@ -17,21 +17,17 @@ import java.util.Collection;
 import org.aspectj.weaver.patterns.PerClause;
 
 /**
- * Abstraction over a type - a reference type is Object and a descendant of Object, other types (int/etc) are considered primitive
+ * Abstraction over a type - a reference type is Object or a descendant of Object, other types (int/etc) are considered primitive
  * types. Abstract implementation provided by AbstractReferenceTypeDelegate.
  */
+
 public interface ReferenceTypeDelegate {
 
-	// TODO asc move to proxy
-	public void addAnnotation(AnnotationAJ annotationX);
-
-	public void ensureDelegateConsistent(); // Required evil because of mutator
-
-	// methods in delegates :( (see
-	// pr85132)
-
 	public boolean isAspect();
-
+	
+	/**
+	 * @return true if the type is an annotation style aspect (a type marked @Aspect)
+	 */
 	public boolean isAnnotationStyleAspect();
 
 	public boolean isInterface();
@@ -42,10 +38,19 @@ public interface ReferenceTypeDelegate {
 
 	public String getRetentionPolicy();
 
+	/**
+	 * @return true if this annotation type can be on a regular type (ie. it doesn't specify anything or it specifies TYPE)
+	 */
 	public boolean canAnnotationTargetType();
 
+	/**
+	 * @return all the possible targets that this annotation can be placed upon
+	 */
 	public AnnotationTargetKind[] getAnnotationTargetKinds();
 
+	/**
+	 * @return true if this annotation type has a retention policy of RUNTIME
+	 */
 	public boolean isAnnotationWithRuntimeRetention();
 
 	public boolean isClass();
@@ -55,8 +60,6 @@ public interface ReferenceTypeDelegate {
 	public boolean isAnonymous();
 
 	public boolean isNested();
-
-	public boolean isExposedToWeaver();
 
 	public boolean hasAnnotation(UnresolvedType ofType);
 
@@ -74,6 +77,12 @@ public interface ReferenceTypeDelegate {
 
 	public TypeVariable[] getTypeVariables();
 
+	public int getModifiers();
+
+	// aspect declaration related members
+	/**
+	 * @return for an aspect declaration, return the
+	 */
 	public PerClause getPerClause();
 
 	public Collection getDeclares();
@@ -82,13 +91,16 @@ public interface ReferenceTypeDelegate {
 
 	public Collection getPrivilegedAccesses();
 
-	public int getModifiers();
+	// end of aspect declaration related members
 
 	public ResolvedType getSuperclass();
 
 	public WeaverStateInfo getWeaverState();
 
 	public ReferenceType getResolvedTypeX();
+
+	// needs renaming isWeavable or removing from here
+	public boolean isExposedToWeaver();
 
 	public boolean doesNotExposeShadowMungers();
 

@@ -335,39 +335,39 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * described in JVM spec 2ed 5.4.3.3. Doesnt check ITDs.
 	 * 
 	 * <p>
-	 * Check the current type for the method.  If it is not found, check the super class and any super interfaces.  Taking
-	 * care not to process interfaces multiple times.
+	 * Check the current type for the method. If it is not found, check the super class and any super interfaces. Taking care not to
+	 * process interfaces multiple times.
 	 */
 	public ResolvedMember lookupMethod(Member m) {
 		List typesTolookat = new ArrayList();
 		typesTolookat.add(this);
 		int pos = 0;
-		while (pos<typesTolookat.size()) {
-			ResolvedType type = (ResolvedType)typesTolookat.get(pos++);
+		while (pos < typesTolookat.size()) {
+			ResolvedType type = (ResolvedType) typesTolookat.get(pos++);
 			if (!type.isMissing()) {
 				ResolvedMember[] methods = type.getDeclaredMethods();
-				if (methods!=null) {
-					for (int i=0;i<methods.length;i++) {
+				if (methods != null) {
+					for (int i = 0; i < methods.length; i++) {
 						ResolvedMember method = methods[i];
 						if (matches(method, m)) {
 							return method;
 						}
 						// might be worth checking the method behind the parameterized method (137496)
-						if (method.hasBackingGenericMember() && m.getName().equals(method.getName())) { 
+						if (method.hasBackingGenericMember() && m.getName().equals(method.getName())) {
 							if (matches(method.getBackingGenericMember(), m))
 								return method;
-						}					
+						}
 					}
 				}
 			}
 			// Queue the superclass:
 			ResolvedType superclass = type.getSuperclass();
-			if (superclass!=null) {
+			if (superclass != null) {
 				typesTolookat.add(superclass);
 			}
 			// Queue any interfaces not already checked:
 			ResolvedType[] superinterfaces = type.getDeclaredInterfaces();
-			if (superinterfaces!=null) {
+			if (superinterfaces != null) {
 				for (int i = 0; i < superinterfaces.length; i++) {
 					ResolvedType interf = superinterfaces[i];
 					if (!typesTolookat.contains(interf)) {
@@ -391,7 +391,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return null;
 	}
 
-	
 	/**
 	 * return null if not found
 	 */
@@ -550,7 +549,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			ResolvedPointcutDefinition f = (ResolvedPointcutDefinition) i.next();
 			// the resolvedpointcutdefinition can be null if there are other problems that
 			// prevented its resolution
-			if (f!=null && name.equals(f.getName())) {
+			if (f != null && name.equals(f.getName())) {
 				return f;
 			}
 		}
@@ -648,6 +647,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 
 		return acc;
+	}
+
+	public void addParent(ResolvedType newParent) {
+		// Nothing to do for anything except a ReferenceType
 	}
 
 	protected boolean doesNotExposeShadowMungers() {
@@ -1875,7 +1878,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			// System.err.println("looking at: " + inherited + " in " + this);
 			// System.err.println("            " + inherited.isAbstract() +
 			// " in " + this.isAbstract());
-			if (inherited!=null && inherited.isAbstract()) {
+			if (inherited != null && inherited.isAbstract()) {
 				if (!this.isAbstract()) {
 					getWorld().showMessage(IMessage.ERROR,
 							WeaverMessages.format(WeaverMessages.POINCUT_NOT_CONCRETE, inherited, this.getName()),
@@ -2241,6 +2244,15 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 */
 	public String getBinaryPath() {
 		return binaryPath;
+	}
+
+	/**
+	 * Undo any temporary modifications to the type (for example it may be holding annotations temporarily whilst some matching is
+	 * occurring - These annotations will be added properly during weaving but sometimes for type completion they need to be held
+	 * here for a while).
+	 */
+	public void ensureConsistent() {
+		// Nothing to do for anything except a ReferenceType
 	}
 
 }

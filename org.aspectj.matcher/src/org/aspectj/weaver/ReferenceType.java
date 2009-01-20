@@ -53,6 +53,18 @@ public class ReferenceType extends ResolvedType {
 	Collection parameterizedDeclares = null;
 	Collection parameterizedTypeMungers = null;
 
+	// During matching it can be necessary to temporary mark types as annotated. For example
+	// a declare @type may trigger a separate declare parents to match, and so the annotation
+	// is temporarily held against the referencetype, the annotation will be properly
+	// added to the class during weaving.
+	private ResolvedType[] annotationTypes = null;
+	private AnnotationAJ[] annotations = null;
+	
+	// Similarly these are temporary replacements and additions for the superclass and
+	// superinterfaces
+	private ResolvedType newSuperclass;
+	private ResolvedType[] newInterfaces;
+
 	// ??? should set delegate before any use
 	public ReferenceType(String signature, World world) {
 		super(signature, world);
@@ -133,23 +145,72 @@ public class ReferenceType extends ResolvedType {
 	}
 
 	public void addAnnotation(AnnotationAJ annotationX) {
-		delegate.addAnnotation(annotationX);
+		if (annotations == null) {
+			annotations = new AnnotationAJ[1];
+			annotations[0] = annotationX;
+		} else {
+			AnnotationAJ[] newAnnotations = new AnnotationAJ[annotations.length + 1];
+			System.arraycopy(annotations, 0, newAnnotations, 1, annotations.length);
+			newAnnotations[0] = annotationX;
+			annotations = newAnnotations;
+		}
+		addAnnotationType(annotationX.getType());
 	}
 
 	public boolean hasAnnotation(UnresolvedType ofType) {
-		return delegate.hasAnnotation(ofType);
+		boolean onDelegate = delegate.hasAnnotation(ofType);
+		if (onDelegate) {
+			return true;
+		}
+		if (annotationTypes != null) {
+			for (int i = 0; i < annotationTypes.length; i++) {
+				if (annotationTypes[i].equals(ofType)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private void addAnnotationType(ResolvedType ofType) {
+		if (annotationTypes == null) {
+			annotationTypes = new ResolvedType[1];
+			annotationTypes[0] = ofType;
+		} else {
+			ResolvedType[] newAnnotationTypes = new ResolvedType[annotationTypes.length + 1];
+			System.arraycopy(annotationTypes, 0, newAnnotationTypes, 1, annotationTypes.length);
+			newAnnotationTypes[0] = ofType;
+			annotationTypes = newAnnotationTypes;
+		}
 	}
 
 	public ResolvedType[] getAnnotationTypes() {
 		if (delegate == null) {
 			throw new BCException("Unexpected null delegate for type " + this.getName());
 		}
-		return delegate.getAnnotationTypes();
+		if (annotationTypes == null) {
+			// there are no extras:
+			return delegate.getAnnotationTypes();
+		} else {
+			ResolvedType[] delegateAnnotationTypes = delegate.getAnnotationTypes();
+			ResolvedType[] result = new ResolvedType[annotationTypes.length + delegateAnnotationTypes.length];
+			System.arraycopy(delegateAnnotationTypes, 0, result, 0, delegateAnnotationTypes.length);
+			System.arraycopy(annotationTypes, 0, result, delegateAnnotationTypes.length, annotationTypes.length);
+			return result;
+		}
 	}
 
 	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
 		AnnotationAJ[] axs = delegate.getAnnotations();
 		if (axs == null) {
+			if (annotations != null) {
+				String searchSig = ofType.getSignature();
+				for (int i = 0; i < annotations.length; i++) {
+					if (annotations[i].getTypeSignature().equals(searchSig)) {
+						return annotations[i];
+					}
+				}
+			}
 			return null;
 		}
 		for (int i = 0; i < axs.length; i++) {
@@ -477,8 +538,14 @@ public class ReferenceType extends ResolvedType {
 	public ResolvedType[] getDeclaredInterfaces() {
 		if (parameterizedInterfaces != null)
 			return parameterizedInterfaces;
+		ResolvedType[] delegateInterfaces = delegate.getDeclaredInterfaces();
+		if (newInterfaces != null) {
+			ResolvedType[] extraInterfaces = new ResolvedType[delegateInterfaces.length + newInterfaces.length];
+			System.arraycopy(delegateInterfaces, 0, extraInterfaces, 0, delegateInterfaces.length);
+			System.arraycopy(newInterfaces, 0, extraInterfaces, delegateInterfaces.length, newInterfaces.length);
+			delegateInterfaces = extraInterfaces;
+		}
 		if (isParameterizedType()) {
-			ResolvedType[] delegateInterfaces = delegate.getDeclaredInterfaces();
 			// UnresolvedType[] paramTypes =
 			// getTypesForMemberParameterization();
 			parameterizedInterfaces = new ResolvedType[delegateInterfaces.length];
@@ -495,7 +562,6 @@ public class ReferenceType extends ResolvedType {
 			}
 			return parameterizedInterfaces;
 		} else if (isRawType()) {
-			ResolvedType[] delegateInterfaces = delegate.getDeclaredInterfaces();
 			UnresolvedType[] paramTypes = getTypesForMemberParameterization();
 			parameterizedInterfaces = new ResolvedType[delegateInterfaces.length];
 			for (int i = 0; i < parameterizedInterfaces.length; i++) {
@@ -513,7 +579,7 @@ public class ReferenceType extends ResolvedType {
 			}
 			return parameterizedInterfaces;
 		}
-		return delegate.getDeclaredInterfaces();
+		return delegateInterfaces;
 	}
 
 	/**
@@ -715,6 +781,12 @@ public class ReferenceType extends ResolvedType {
 	}
 
 	public ResolvedType getSuperclass() {
+		if (newSuperclass != null) {
+			if (this.isParameterizedType() && newSuperclass.isParameterizedType()) {
+				return newSuperclass.parameterize(getMemberParameterizationMap()).resolve(getWorld());
+			}
+			return newSuperclass;
+		}
 		ResolvedType ret = null;
 		try {
 			world.setTypeVariableLookupScope(this);
@@ -840,4 +912,36 @@ public class ReferenceType extends ResolvedType {
 		return ret.toString();
 	}
 
+	public void ensureConsistent() {
+		annotations = null;
+		annotationTypes = null;
+		newSuperclass = null;
+		newInterfaces = null;
+	}
+
+
+	public void addParent(ResolvedType newParent) {
+		if (newParent.isClass()) {
+			newSuperclass = newParent;
+		} else {
+			if (newInterfaces == null) {
+				newInterfaces = new ResolvedType[1];
+				newInterfaces[0] = newParent;
+			} else {
+				ResolvedType[] existing = delegate.getDeclaredInterfaces();
+				if (existing != null) {
+					for (int i = 0; i < existing.length; i++) {
+						if (existing[i].equals(newParent)) {
+							return; // already has this interface
+						}
+					}
+				}
+				ResolvedType[] newNewInterfaces = new ResolvedType[newInterfaces.length + 1];
+				System.arraycopy(newInterfaces, 0, newNewInterfaces, 1, newInterfaces.length);
+				newNewInterfaces[0] = newParent;
+				newInterfaces = newNewInterfaces;
+				parameterizedInterfaces = null;// invalidate cached info
+			}
+		}
+	}
 }

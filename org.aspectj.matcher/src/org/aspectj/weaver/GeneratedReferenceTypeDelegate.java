@@ -26,11 +26,6 @@ public class GeneratedReferenceTypeDelegate extends AbstractReferenceTypeDelegat
 	public GeneratedReferenceTypeDelegate(ReferenceType backing) {
 		super(backing, false);
 	}
-
-	public void addAnnotation(AnnotationAJ annotationX) {
-		throw new UnsupportedOperationException("Not supported for GeneratedReferenceTypeDelegate");
-	}
-
 	public boolean isAspect() {
 		throw new UnsupportedOperationException("Not supported for GeneratedReferenceTypeDelegate");
 	}
@@ -148,10 +143,6 @@ public class GeneratedReferenceTypeDelegate extends AbstractReferenceTypeDelegat
 	}
 
 	public TypeVariable[] getTypeVariables() {
-		throw new UnsupportedOperationException("Not supported for GeneratedReferenceTypeDelegate");
-	}
-
-	public void ensureDelegateConsistent() {
 		throw new UnsupportedOperationException("Not supported for GeneratedReferenceTypeDelegate");
 	}
 

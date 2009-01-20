@@ -79,27 +79,11 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	public ReferenceType buildGenericType() {
 		throw new UnsupportedOperationException("Shouldn't be asking for generic type at 1.4 source level or lower");
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.ReferenceTypeDelegate#addAnnotation(org.aspectj.weaver .AnnotationX)
-	 */
-	public void addAnnotation(AnnotationAJ annotationX) {
-		throw new UnsupportedOperationException("Cannot add an annotation to a reflection based delegate");
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.ReferenceTypeDelegate#isAspect()
-	 */
 	public boolean isAspect() {
 		// we could do better than this in Java 5 by looking at the annotations
 		// on the type...
 		return false;
 	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -110,36 +94,14 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 		// on the type...
 		return false;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.ReferenceTypeDelegate#isInterface()
-	 */
+	
 	public boolean isInterface() {
 		return this.myClass.isInterface();
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.ReferenceTypeDelegate#isEnum()
-	 */
 	public boolean isEnum() {
 		// cant be an enum in Java 1.4 or prior
 		return false;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.ReferenceTypeDelegate#isAnnotation()
-	 */
-	public boolean isAnnotation() {
-		// cant be an annotation in Java 1.4 or prior
-		return false;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -149,7 +111,10 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 		// cant be an annotation in Java 1.4 or prior
 		return false;
 	}
-
+public boolean isAnnotation() {
+		// cant be an annotation in Java 1.4 or prior
+		return false;
+	}
 	public String getRetentionPolicy() {
 		// cant be an annotation in Java 1.4 or prior
 		return null;
@@ -162,12 +127,6 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	public AnnotationTargetKind[] getAnnotationTargetKinds() {
 		return null;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.ReferenceTypeDelegate#isClass()
-	 */
 	public boolean isClass() {
 		return !this.myClass.isInterface() && !this.myClass.isPrimitive() && !this.myClass.isArray();
 	}
@@ -416,11 +375,6 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	public String getDeclaredGenericSignature() {
 		// no generic sig in 1.4
 		return null;
-	}
-
-	public void ensureDelegateConsistent() {
-		// Nothing to do - a reflection based delegate can't become
-		// inconsistent...
 	}
 
 	public ReflectionBasedResolvedMemberImpl createResolvedMemberFor(Member aMember) {

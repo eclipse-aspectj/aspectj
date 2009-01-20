@@ -18,11 +18,10 @@ import java.util.Map;
 import org.aspectj.weaver.patterns.PerClause;
 
 /**
- * A BoundedReferenceType is the result of a generics wildcard expression ?
- * extends String, ? super Foo etc..
+ * A BoundedReferenceType is the result of a generics wildcard expression ? extends String, ? super Foo etc..
  * 
- * The "signature" for a bounded reference type follows the generic signature
- * specification in section 4.4 of JVM spec: *,+,- plus signature strings.
+ * The "signature" for a bounded reference type follows the generic signature specification in section 4.4 of JVM spec: *,+,- plus
+ * signature strings.
  * 
  * The bound may be a type variable (e.g. ? super T)
  */
@@ -46,10 +45,8 @@ public class BoundedReferenceType extends ReferenceType {
 		return lowerBound;
 	}
 
-	public BoundedReferenceType(ReferenceType aBound, boolean isExtends,
-			World world) {
-		super((isExtends ? "+" : "-") + aBound.signature,
-				aBound.signatureErasure, world);
+	public BoundedReferenceType(ReferenceType aBound, boolean isExtends, World world) {
+		super((isExtends ? "+" : "-") + aBound.signature, aBound.signatureErasure, world);
 		this.isExtends = isExtends;
 		this.isSuper = !isExtends;
 		if (isExtends) {
@@ -58,12 +55,10 @@ public class BoundedReferenceType extends ReferenceType {
 			lowerBound = aBound;
 			upperBound = world.resolve(UnresolvedType.OBJECT);
 		}
-		setDelegate(new ReferenceTypeReferenceTypeDelegate(
-				(ReferenceType) getUpperBound()));
+		setDelegate(new ReferenceTypeReferenceTypeDelegate((ReferenceType) getUpperBound()));
 	}
 
-	public BoundedReferenceType(ReferenceType aBound, boolean isExtends,
-			World world, ReferenceType[] additionalInterfaces) {
+	public BoundedReferenceType(ReferenceType aBound, boolean isExtends, World world, ReferenceType[] additionalInterfaces) {
 		this(aBound, isExtends, world);
 		this.additionalInterfaceBounds = additionalInterfaces;
 	}
@@ -76,29 +71,24 @@ public class BoundedReferenceType extends ReferenceType {
 		ReferenceType[] parameterizedAdditionalInterfaces = new ReferenceType[additionalInterfaceBounds == null ? 0
 				: additionalInterfaceBounds.length];
 		for (int i = 0; i < parameterizedAdditionalInterfaces.length; i++) {
-			parameterizedAdditionalInterfaces[i] = (ReferenceType) additionalInterfaceBounds[i]
-					.parameterize(typeBindings);
+			parameterizedAdditionalInterfaces[i] = (ReferenceType) additionalInterfaceBounds[i].parameterize(typeBindings);
 		}
 		if (isExtends) {
-			return new BoundedReferenceType((ReferenceType) getUpperBound()
-					.parameterize(typeBindings), isExtends, world,
+			return new BoundedReferenceType((ReferenceType) getUpperBound().parameterize(typeBindings), isExtends, world,
 					parameterizedAdditionalInterfaces);
 		} else {
-			return new BoundedReferenceType((ReferenceType) getLowerBound()
-					.parameterize(typeBindings), isExtends, world,
+			return new BoundedReferenceType((ReferenceType) getLowerBound().parameterize(typeBindings), isExtends, world,
 					parameterizedAdditionalInterfaces);
 		}
 	}
 
 	/**
-	 * only for use when resolving GenericsWildcardTypeX or a
-	 * TypeVariableReferenceType
+	 * only for use when resolving GenericsWildcardTypeX or a TypeVariableReferenceType
 	 */
 	protected BoundedReferenceType(String sig, String sigErasure, World world) {
 		super(sig, sigErasure, world);
 		upperBound = world.resolve(UnresolvedType.OBJECT);
-		setDelegate(new ReferenceTypeReferenceTypeDelegate(
-				(ReferenceType) getUpperBound()));
+		setDelegate(new ReferenceTypeReferenceTypeDelegate((ReferenceType) getUpperBound()));
 	}
 
 	public ReferenceType[] getInterfaceBounds() {
@@ -110,8 +100,7 @@ public class BoundedReferenceType extends ReferenceType {
 	}
 
 	public boolean isExtends() {
-		return (isExtends && !getUpperBound().getSignature().equals(
-				"Ljava/lang/Object;"));
+		return (isExtends && !getUpperBound().getSignature().equals("Ljava/lang/Object;"));
 	}
 
 	public boolean isSuper() {
@@ -121,12 +110,10 @@ public class BoundedReferenceType extends ReferenceType {
 	public boolean alwaysMatches(ResolvedType aCandidateType) {
 		if (isExtends()) {
 			// aCandidateType must be a subtype of upperBound
-			return ((ReferenceType) getUpperBound())
-					.isAssignableFrom(aCandidateType);
+			return ((ReferenceType) getUpperBound()).isAssignableFrom(aCandidateType);
 		} else if (isSuper()) {
 			// aCandidateType must be a supertype of lowerBound
-			return aCandidateType
-					.isAssignableFrom((ReferenceType) getLowerBound());
+			return aCandidateType.isAssignableFrom((ReferenceType) getLowerBound());
 		} else {
 			return true; // straight '?'
 		}
@@ -142,9 +129,7 @@ public class BoundedReferenceType extends ReferenceType {
 			ResolvedType myLowerBound = (ResolvedType) getLowerBound();
 			if (isExtends()) {
 				if (boundedRT.isExtends()) {
-					return myUpperBound
-							.isAssignableFrom((ResolvedType) boundedRT
-									.getUpperBound());
+					return myUpperBound.isAssignableFrom((ResolvedType) boundedRT.getUpperBound());
 				} else if (boundedRT.isSuper()) {
 					return myUpperBound == boundedRT.getLowerBound();
 				} else {
@@ -152,8 +137,7 @@ public class BoundedReferenceType extends ReferenceType {
 				}
 			} else if (isSuper()) {
 				if (boundedRT.isSuper()) {
-					return ((ResolvedType) boundedRT.getLowerBound())
-							.isAssignableFrom(myLowerBound);
+					return ((ResolvedType) boundedRT.getLowerBound()).isAssignableFrom(myLowerBound);
 				} else if (boundedRT.isExtends()) {
 					return myLowerBound == boundedRT.getUpperBound();
 				} else {
@@ -181,13 +165,9 @@ public class BoundedReferenceType extends ReferenceType {
 	public ResolvedType[] getDeclaredInterfaces() {
 		ResolvedType[] interfaces = super.getDeclaredInterfaces();
 		if (additionalInterfaceBounds.length > 0) {
-			ResolvedType[] allInterfaces = new ResolvedType[interfaces.length
-					+ additionalInterfaceBounds.length];
-			System
-					.arraycopy(interfaces, 0, allInterfaces, 0,
-							interfaces.length);
-			System.arraycopy(additionalInterfaceBounds, 0, allInterfaces,
-					interfaces.length, additionalInterfaceBounds.length);
+			ResolvedType[] allInterfaces = new ResolvedType[interfaces.length + additionalInterfaceBounds.length];
+			System.arraycopy(interfaces, 0, allInterfaces, 0, interfaces.length);
+			System.arraycopy(additionalInterfaceBounds, 0, allInterfaces, interfaces.length, additionalInterfaceBounds.length);
 			return allInterfaces;
 		} else {
 			return interfaces;
@@ -198,16 +178,10 @@ public class BoundedReferenceType extends ReferenceType {
 		return true;
 	}
 
-	protected static class ReferenceTypeReferenceTypeDelegate extends
-			AbstractReferenceTypeDelegate {
+	protected static class ReferenceTypeReferenceTypeDelegate extends AbstractReferenceTypeDelegate {
 
 		public ReferenceTypeReferenceTypeDelegate(ReferenceType backing) {
 			super(backing, false);
-		}
-
-		public void addAnnotation(AnnotationAJ annotationX) {
-			throw new UnsupportedOperationException(
-					"What on earth do you think you are doing???");
 		}
 
 		public boolean isAspect() {
@@ -324,10 +298,6 @@ public class BoundedReferenceType extends ReferenceType {
 
 		public TypeVariable[] getTypeVariables() {
 			return resolvedTypeX.getTypeVariables();
-		}
-
-		public void ensureDelegateConsistent() {
-			resolvedTypeX.getDelegate().ensureDelegateConsistent();
 		}
 
 	}

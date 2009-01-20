@@ -18,108 +18,105 @@ import java.io.IOException;
  * Represents a type variable with bounds
  */
 public class TypeVariable {
-	
+
 	public static final TypeVariable[] NONE = new TypeVariable[0];
 	/**
-	 * whether or not the bounds of this type variable have been 
-	 * resolved
+	 * whether or not the bounds of this type variable have been resolved
 	 */
 	private boolean isResolved = false;
-	
-	
+
 	private boolean beingResolved = false;
-	
+
 	/**
 	 * the name of the type variable as recorded in the generic signature
 	 */
 	private String name;
-	
+
 	private int rank;
 
-    // It would be nice to push this field onto the TypeVariableDeclaringElement
-    // interface (a getKind()) but at the moment we don't always guarantee
-    // to set the declaring element (eclipse seems to utilise the knowledge of
-    // what declared the type variable, but we dont yet...)
+	// It would be nice to push this field onto the TypeVariableDeclaringElement
+	// interface (a getKind()) but at the moment we don't always guarantee
+	// to set the declaring element (eclipse seems to utilise the knowledge of
+	// what declared the type variable, but we dont yet...)
 	/**
 	 * What kind of element declared this type variable?
 	 */
 	private int declaringElementKind = UNKNOWN;
 	public static final int UNKNOWN = -1;
-	public static final int METHOD  = 1;
-	public static final int TYPE    = 2;
+	public static final int METHOD = 1;
+	public static final int TYPE = 2;
 	private TypeVariableDeclaringElement declaringElement;
-	
+
 	/**
-	 * the upper bound of the type variable (default to Object).
-	 * From the extends clause, eg. T extends Number.
+	 * the upper bound of the type variable (default to Object). From the extends clause, eg. T extends Number.
 	 */
 	private UnresolvedType upperBound = UnresolvedType.OBJECT;
-	
+
 	/**
-	 * any additional upper (interface) bounds.
-	 * from the extends clause, e.g. T extends Number & Comparable
+	 * any additional upper (interface) bounds. from the extends clause, e.g. T extends Number & Comparable
 	 */
 	private UnresolvedType[] additionalInterfaceBounds = new UnresolvedType[0];
-	
+
 	/**
-	 * any lower bound.
-	 * from the super clause, eg T super Foo
+	 * any lower bound. from the super clause, eg T super Foo
 	 */
 	private UnresolvedType lowerBound = null;
-	
+
 	public TypeVariable(String aName) {
 		this.name = aName;
 	}
-	
+
 	public TypeVariable(String aName, UnresolvedType anUpperBound) {
 		this(aName);
 		this.upperBound = anUpperBound;
 	}
-	
-	public TypeVariable(String aName, UnresolvedType anUpperBound, 
-			                        UnresolvedType[] someAdditionalInterfaceBounds) {
-		this(aName,anUpperBound);
+
+	public TypeVariable(String aName, UnresolvedType anUpperBound, UnresolvedType[] someAdditionalInterfaceBounds) {
+		this(aName, anUpperBound);
 		this.additionalInterfaceBounds = someAdditionalInterfaceBounds;
 	}
-	
-	public TypeVariable(String aName, UnresolvedType anUpperBound, 
-            UnresolvedType[] someAdditionalInterfaceBounds, UnresolvedType aLowerBound) {
-		this(aName,anUpperBound,someAdditionalInterfaceBounds);
+
+	public TypeVariable(String aName, UnresolvedType anUpperBound, UnresolvedType[] someAdditionalInterfaceBounds,
+			UnresolvedType aLowerBound) {
+		this(aName, anUpperBound, someAdditionalInterfaceBounds);
 		this.lowerBound = aLowerBound;
 	}
-	
-	// First bound is the first 'real' bound, this can be an interface if 
+
+	// First bound is the first 'real' bound, this can be an interface if
 	// no class bound was specified (it will default to object)
 	public UnresolvedType getFirstBound() {
-		if (upperBound.equals(UnresolvedType.OBJECT) && additionalInterfaceBounds!=null && additionalInterfaceBounds.length!=0) {
+		if (upperBound.equals(UnresolvedType.OBJECT) && additionalInterfaceBounds != null && additionalInterfaceBounds.length != 0) {
 			return additionalInterfaceBounds[0];
 		}
 		return upperBound;
 	}
-	
+
 	public UnresolvedType getUpperBound() {
 		return upperBound;
 	}
-	
+
 	public UnresolvedType[] getAdditionalInterfaceBounds() {
 		return additionalInterfaceBounds;
 	}
-	
+
 	public UnresolvedType getLowerBound() {
 		return lowerBound;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	/**
 	 * resolve all the bounds of this type variable
 	 */
 	public TypeVariable resolve(World inSomeWorld) {
-		if (beingResolved) { return this; } // avoid spiral of death
+		if (beingResolved) {
+			return this;
+		} // avoid spiral of death
 		beingResolved = true;
-		if (isResolved) return this;
+		if (isResolved)
+			return this;
 
 		TypeVariable resolvedTVar = null;
 
@@ -140,33 +137,35 @@ public class TypeVariable {
 				ResolvedMember declaring = (ResolvedMember) declaringElement;
 				TypeVariable[] tvrts = declaring.getTypeVariables();
 				for (int i = 0; i < tvrts.length; i++) {
-					if (tvrts[i].getName().equals(getName())) resolvedTVar = tvrts[i];
-//					if (tvrts[i].isTypeVariableReference()) {
-//						TypeVariableReferenceType tvrt = (TypeVariableReferenceType) tvrts[i].resolve(inSomeWorld);
-//						TypeVariable tv = tvrt.getTypeVariable();
-//						if (tv.getName().equals(getName())) resolvedTVar = tv;
-//					}
-				}			
+					if (tvrts[i].getName().equals(getName()))
+						resolvedTVar = tvrts[i];
+					// if (tvrts[i].isTypeVariableReference()) {
+					// TypeVariableReferenceType tvrt = (TypeVariableReferenceType) tvrts[i].resolve(inSomeWorld);
+					// TypeVariable tv = tvrt.getTypeVariable();
+					// if (tv.getName().equals(getName())) resolvedTVar = tv;
+					// }
+				}
 			}
-			
+
 			if (resolvedTVar == null) {
 				// well, this is bad... we didn't find the type variable on the member
 				// could be a separate compilation issue...
 				// should issue message, this is a workaround to get us going...
-				resolvedTVar = this;				
+				resolvedTVar = this;
 			}
 		} else {
 			resolvedTVar = this;
 		}
-				
+
 		upperBound = resolvedTVar.upperBound;
 		lowerBound = resolvedTVar.lowerBound;
 		additionalInterfaceBounds = resolvedTVar.additionalInterfaceBounds;
-		
+
 		upperBound = upperBound.resolve(inSomeWorld);
-		if (lowerBound != null) lowerBound = lowerBound.resolve(inSomeWorld);
-		
-		if (additionalInterfaceBounds!=null) {
+		if (lowerBound != null)
+			lowerBound = lowerBound.resolve(inSomeWorld);
+
+		if (additionalInterfaceBounds != null) {
 			for (int i = 0; i < additionalInterfaceBounds.length; i++) {
 				additionalInterfaceBounds[i] = additionalInterfaceBounds[i].resolve(inSomeWorld);
 			}
@@ -175,63 +174,63 @@ public class TypeVariable {
 		beingResolved = false;
 		return this;
 	}
-	
+
 	/**
-	 * answer true if the given type satisfies all of the bound constraints of this
-	 * type variable.
-	 * If type variable has not been resolved then throws IllegalStateException
+	 * answer true if the given type satisfies all of the bound constraints of this type variable. If type variable has not been
+	 * resolved then throws IllegalStateException
 	 */
 	public boolean canBeBoundTo(ResolvedType aCandidateType) {
-		if (!isResolved) throw new IllegalStateException("Can't answer binding questions prior to resolving");
-		
+		if (!isResolved)
+			throw new IllegalStateException("Can't answer binding questions prior to resolving");
+
 		// wildcard can accept any binding
-		if (aCandidateType.isGenericWildcard()) {  // AMC - need a more robust test!
+		if (aCandidateType.isGenericWildcard()) { // AMC - need a more robust test!
 			return true;
 		}
-		
+
 		// otherwise can be bound iff...
-		//  aCandidateType is a subtype of upperBound
-		if (!isASubtypeOf(upperBound,aCandidateType)) {
+		// aCandidateType is a subtype of upperBound
+		if (!isASubtypeOf(upperBound, aCandidateType)) {
 			return false;
 		}
-		//  aCandidateType is a subtype of all additionalInterfaceBounds
+		// aCandidateType is a subtype of all additionalInterfaceBounds
 		for (int i = 0; i < additionalInterfaceBounds.length; i++) {
 			if (!isASubtypeOf(additionalInterfaceBounds[i], aCandidateType)) {
 				return false;
 			}
 		}
-		//  lowerBound is a subtype of aCandidateType
-		if ((lowerBound != null) && (!isASubtypeOf(aCandidateType,lowerBound))) {
+		// lowerBound is a subtype of aCandidateType
+		if ((lowerBound != null) && (!isASubtypeOf(aCandidateType, lowerBound))) {
 			return false;
 		}
 		return true;
 	}
-	
+
 	private boolean isASubtypeOf(UnresolvedType candidateSuperType, UnresolvedType candidateSubType) {
 		ResolvedType superType = (ResolvedType) candidateSuperType;
 		ResolvedType subType = (ResolvedType) candidateSubType;
 		return superType.isAssignableFrom(subType);
 	}
 
-	// only used when resolving 
+	// only used when resolving
 	public void setUpperBound(UnresolvedType aTypeX) {
 		this.upperBound = aTypeX;
 	}
-	
+
 	// only used when resolving
 	public void setLowerBound(UnresolvedType aTypeX) {
 		this.lowerBound = aTypeX;
 	}
-	
+
 	// only used when resolving
 	public void setAdditionalInterfaceBounds(UnresolvedType[] someTypeXs) {
 		this.additionalInterfaceBounds = someTypeXs;
 	}
-	
+
 	public String toDebugString() {
 		return getDisplayName();
 	}
-	
+
 	public String getDisplayName() {
 		StringBuffer ret = new StringBuffer();
 		ret.append(name);
@@ -253,54 +252,53 @@ public class TypeVariable {
 		}
 		return ret.toString();
 	}
-	
+
 	// good enough approximation
 	public String toString() {
 		return "TypeVar " + getDisplayName();
 	}
-	
+
 	/**
-	 * Return complete signature, e.g. "T extends Number" would return "T:Ljava/lang/Number;"
-	 * note: MAY INCLUDE P types if bounds are parameterized types
+	 * Return complete signature, e.g. "T extends Number" would return "T:Ljava/lang/Number;" note: MAY INCLUDE P types if bounds
+	 * are parameterized types
 	 */
 	public String getSignature() {
-	  	StringBuffer sb = new StringBuffer();
-	  	sb.append(name);
+		StringBuffer sb = new StringBuffer();
+		sb.append(name);
 		sb.append(":");
-  		sb.append(upperBound.getSignature());
-	  	if (additionalInterfaceBounds!=null && additionalInterfaceBounds.length!=0) {
-		  	sb.append(":");
-		  	for (int i = 0; i < additionalInterfaceBounds.length; i++) {
+		sb.append(upperBound.getSignature());
+		if (additionalInterfaceBounds != null && additionalInterfaceBounds.length != 0) {
+			sb.append(":");
+			for (int i = 0; i < additionalInterfaceBounds.length; i++) {
 				UnresolvedType iBound = additionalInterfaceBounds[i];
 				sb.append(iBound.getSignature());
 			}
-	  	}
+		}
 		return sb.toString();
 	}
-	
+
 	/**
 	 * @return signature for inclusion in an attribute, there must be no 'P' in it signatures
 	 */
 	public String getSignatureForAttribute() {
-	  	StringBuffer sb = new StringBuffer();
-	  	sb.append(name);
+		StringBuffer sb = new StringBuffer();
+		sb.append(name);
 		sb.append(":");
-  		sb.append(((ResolvedType)upperBound).getSignatureForAttribute());
-	  	if (additionalInterfaceBounds!=null && additionalInterfaceBounds.length!=0) {
-		  	sb.append(":");
-		  	for (int i = 0; i < additionalInterfaceBounds.length; i++) {
-				ResolvedType iBound = (ResolvedType)additionalInterfaceBounds[i];
+		sb.append(((ResolvedType) upperBound).getSignatureForAttribute());
+		if (additionalInterfaceBounds != null && additionalInterfaceBounds.length != 0) {
+			sb.append(":");
+			for (int i = 0; i < additionalInterfaceBounds.length; i++) {
+				ResolvedType iBound = (ResolvedType) additionalInterfaceBounds[i];
 				sb.append(iBound.getSignatureForAttribute());
 			}
-	  	}
+		}
 		return sb.toString();
 	}
 
-	
 	public void setRank(int rank) {
-		this.rank=rank;
+		this.rank = rank;
 	}
-	
+
 	public int getRank() {
 		return rank;
 	}
@@ -313,25 +311,25 @@ public class TypeVariable {
 			this.declaringElementKind = METHOD;
 		}
 	}
-	
+
 	public TypeVariableDeclaringElement getDeclaringElement() {
 		return declaringElement;
 	}
-	
+
 	public void setDeclaringElementKind(int kind) {
 		this.declaringElementKind = kind;
 	}
-	
+
 	public int getDeclaringElementKind() {
-//		if (declaringElementKind==UNKNOWN) throw new RuntimeException("Dont know declarer of this tvar : "+this);
+		// if (declaringElementKind==UNKNOWN) throw new RuntimeException("Dont know declarer of this tvar : "+this);
 		return declaringElementKind;
 	}
-	
+
 	public void write(DataOutputStream s) throws IOException {
-	// name, upperbound, additionalInterfaceBounds, lowerbound
+		// name, upperbound, additionalInterfaceBounds, lowerbound
 		s.writeUTF(name);
 		upperBound.write(s);
-		if (additionalInterfaceBounds==null || additionalInterfaceBounds.length==0) {
+		if (additionalInterfaceBounds == null || additionalInterfaceBounds.length == 0) {
 			s.writeInt(0);
 		} else {
 			s.writeInt(additionalInterfaceBounds.length);
@@ -341,30 +339,31 @@ public class TypeVariable {
 			}
 		}
 	}
-	
+
 	public static TypeVariable read(VersionedDataInputStream s) throws IOException {
-    	
-		//if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
-			
+
+		// if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
+
 		String name = s.readUTF();
 		UnresolvedType ubound = UnresolvedType.read(s);
 		int iboundcount = s.readInt();
 		UnresolvedType[] ibounds = UnresolvedType.NONE;
-		if (iboundcount>0) {
+		if (iboundcount > 0) {
 			ibounds = new UnresolvedType[iboundcount];
-			for (int i=0; i<iboundcount; i++) {
+			for (int i = 0; i < iboundcount; i++) {
 				ibounds[i] = UnresolvedType.read(s);
 			}
 		}
-		
-		TypeVariable newVariable = new TypeVariable(name,ubound,ibounds);
-		return newVariable;		
-    }
+
+		TypeVariable newVariable = new TypeVariable(name, ubound, ibounds);
+		return newVariable;
+	}
 
 	public String getGenericSignature() {
-		return "T"+name+";";
-//		return "T"+getSignature();
+		return "T" + name + ";";
+		// return "T"+getSignature();
 	}
+
 	public String getErasureSignature() {
 		return getFirstBound().getErasureSignature();
 	}
