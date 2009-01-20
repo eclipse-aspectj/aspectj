@@ -441,7 +441,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	 * The main part of implementing declare parents extends. Modify super ctor calls to target the new type.
 	 */
 	public boolean attemptToModifySuperCalls(BcelClassWeaver weaver, LazyClassGen newParentTarget, ResolvedType newParent) {
-		String currentParent = newParentTarget.getSuperClassname();
+		String currentParent = newParentTarget.getSuperClass().getName();// getName();
 		if (newParent.getGenericType() != null)
 			newParent = newParent.getGenericType(); // target new super calls at
 		// the generic type if its
@@ -692,7 +692,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 			gen.addMethodGen(mg1);
 
-			gen.addInterface(munger.getInterfaceType(), getSourceLocation());
+			gen.addInterface(munger.getInterfaceType().resolve(weaver.getWorld()), getSourceLocation());
 
 			return true;
 		} else {

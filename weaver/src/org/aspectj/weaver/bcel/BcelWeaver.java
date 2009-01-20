@@ -1128,9 +1128,7 @@ public class BcelWeaver {
 			String className = classFile.getClassName();
 			ResolvedType theType = world.resolve(className);
 			if (theType != null) {
-				BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
-				if (classType != null)
-					classType.ensureDelegateConsistent();
+				theType.ensureConsistent();
 			}
 		}
 
@@ -1672,7 +1670,8 @@ public class BcelWeaver {
 				// itself
 				// (like transform super calls) - that is done in
 				// BcelTypeMunger.mungeNewParent()
-				classType.addParent(newParent);
+				// classType.addParent(newParent);
+				onType.addParent(newParent);
 				ResolvedTypeMunger newParentMunger = new NewParentTypeMunger(newParent);
 				newParentMunger.setSourceLocation(p.getSourceLocation());
 				onType.addInterTypeMunger(new BcelTypeMunger(newParentMunger, xcutSet.findAspectDeclaringParents(p)));

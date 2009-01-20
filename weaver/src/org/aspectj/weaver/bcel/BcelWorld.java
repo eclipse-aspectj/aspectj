@@ -613,7 +613,8 @@ public class BcelWorld extends World implements Repository {
 		if (!result.isExposedToWeaver())
 			return; // cant need resetting
 		ReferenceType rt = (ReferenceType) result;
-		rt.getDelegate().ensureDelegateConsistent();
+		rt.ensureConsistent();
+		// rt.getDelegate().ensureDelegateConsistent();
 		// If we want to rebuild it 'from scratch' then:
 		// ClassParser cp = new ClassParser(new
 		// ByteArrayInputStream(newbytes),new String(cs));
@@ -645,7 +646,8 @@ public class BcelWorld extends World implements Repository {
 				// itself
 				// (like transform super calls) - that is done in
 				// BcelTypeMunger.mungeNewParent()
-				classType.addParent(newParent);
+				// classType.addParent(newParent);
+				onType.addParent(newParent);
 				ResolvedTypeMunger newParentMunger = new NewParentTypeMunger(newParent);
 				newParentMunger.setSourceLocation(p.getSourceLocation());
 				onType.addInterTypeMunger(new BcelTypeMunger(newParentMunger, getCrosscuttingMembersSet()

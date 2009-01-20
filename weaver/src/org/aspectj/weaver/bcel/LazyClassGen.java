@@ -105,6 +105,9 @@ public final class LazyClassGen {
 	private long calculatedSerialVersionUID;
 	private boolean hasClinit = false;
 
+	private ResolvedType[] extraSuperInterfaces = null;
+	private ResolvedType superclass = null;
+
 	// ---
 
 	static class InlinedSourceFileInfo {
@@ -504,25 +507,35 @@ public final class LazyClassGen {
 	}
 
 	/**
-	 * When working with 1.5 generics, a signature attribute is attached to the type which indicates how it was declared. This
-	 * routine ensures the signature attribute for what we are about to write out is correct. Basically its responsibilities are: 1.
-	 * Checking whether the attribute needs changing (i.e. did weaving change the type hierarchy) 2. If it did, removing the old
-	 * attribute 3. Check if we need an attribute at all, are we generic? are our supertypes parameterized/generic? 4. Build the new
-	 * attribute which includes all typevariable, supertype and superinterface information
+	 * When working with Java generics, a signature attribute is attached to the type which indicates how it was declared. This
+	 * routine ensures the signature attribute for the class we are about to write out is correct. Basically its responsibilities
+	 * are:
+	 * <ol>
+	 * <li>
+	 * Checking whether the attribute needs changing (ie. did weaving change the type hierarchy) - if it did, remove the old
+	 * attribute
+	 * <li>
+	 * Check if we need an attribute at all, are we generic? are our supertypes parameterized/generic?
+	 * <li>
+	 * Build the new attribute which includes all typevariable, supertype and superinterface information
+	 * </ol>
 	 */
 	private void fixupGenericSignatureAttribute() {
 
-		if (getWorld() != null && !getWorld().isInJava5Mode())
+		if (getWorld() != null && !getWorld().isInJava5Mode()) {
 			return;
+		}
 
 		// TODO asc generics Temporarily assume that types we generate dont need a signature attribute (closure/etc).. will need
 		// revisiting no doubt...
-		if (myType == null)
+		if (myType == null) {
 			return;
+		}
 
 		// 1. Has anything changed that would require us to modify this attribute?
-		if (!regenerateGenericSignatureAttribute)
+		if (!regenerateGenericSignatureAttribute) {
 			return;
+		}
 
 		// 2. Find the old attribute
 		Signature sigAttr = null;
@@ -544,9 +557,16 @@ public final class LazyClassGen {
 				if (typeX.isGenericType() || typeX.isParameterizedType())
 					needAttribute = true;
 			}
+			if (extraSuperInterfaces != null) {
+				for (int i = 0; i < extraSuperInterfaces.length; i++) {
+					ResolvedType interfaceType = extraSuperInterfaces[i];
+					if (interfaceType.isGenericType() || interfaceType.isParameterizedType())
+						needAttribute = true;
+				}
+			}
 
 			// check the supertype
-			ResolvedType superclassRTX = myType.getSuperclass();
+			ResolvedType superclassRTX = getSuperClass();
 			if (superclassRTX.isGenericType() || superclassRTX.isParameterizedType())
 				needAttribute = true;
 		}
@@ -564,15 +584,22 @@ public final class LazyClassGen {
 				signature.append(">");
 			}
 			// now the supertype
-			String supersig = myType.getSuperclass().getSignatureForAttribute();
+			String supersig = getSuperClass().getSignatureForAttribute();
 			signature.append(supersig);
 			ResolvedType[] interfaceRTXs = myType.getDeclaredInterfaces();
 			for (int i = 0; i < interfaceRTXs.length; i++) {
 				String s = interfaceRTXs[i].getSignatureForAttribute();
 				signature.append(s);
 			}
-			if (sigAttr != null)
+			if (extraSuperInterfaces != null) {
+				for (int i = 0; i < extraSuperInterfaces.length; i++) {
+					String s = extraSuperInterfaces[i].getSignatureForAttribute();
+					signature.append(s);
+				}
+			}
+			if (sigAttr != null) {
 				myGen.removeAttribute(sigAttr);
+			}
 			myGen.addAttribute(createSignatureAttribute(signature.toString()));
 		}
 	}
@@ -632,27 +659,41 @@ public final class LazyClassGen {
 		classGens.add(newClass);
 	}
 
-	public void addInterface(UnresolvedType typeX, ISourceLocation sourceLocation) {
+	public void addInterface(ResolvedType newInterface, ISourceLocation sourceLocation) {
 		regenerateGenericSignatureAttribute = true;
-		myGen.addInterface(typeX.getRawName());
-		if (!typeX.equals(UnresolvedType.SERIALIZABLE))
-			warnOnAddedInterface(typeX.getName(), sourceLocation);
+
+		if (extraSuperInterfaces == null) {
+			extraSuperInterfaces = new ResolvedType[1];
+			extraSuperInterfaces[0] = newInterface;
+		} else {
+			ResolvedType[] x = new ResolvedType[extraSuperInterfaces.length + 1];
+			System.arraycopy(extraSuperInterfaces, 0, x, 1, extraSuperInterfaces.length);
+			x[0] = newInterface;
+			extraSuperInterfaces = x;
+		}
+		myGen.addInterface(newInterface.getRawName());
+		if (!newInterface.equals(UnresolvedType.SERIALIZABLE))
+			warnOnAddedInterface(newInterface.getName(), sourceLocation);
 	}
 
-	public void setSuperClass(ResolvedType typeX) {
+	public void setSuperClass(ResolvedType newSuperclass) {
 		regenerateGenericSignatureAttribute = true;
-		myType.addParent(typeX); // used for the attribute
-		if (typeX.getGenericType() != null)
-			typeX = typeX.getGenericType();
-		myGen.setSuperclassName(typeX.getName()); // used in the real class data
+		superclass = newSuperclass;
+		// myType.addParent(typeX); // used for the attribute
+		if (newSuperclass.getGenericType() != null) {
+			newSuperclass = newSuperclass.getGenericType();
+		}
+		myGen.setSuperclassName(newSuperclass.getName()); // used in the real class data
 	}
 
-	public String getSuperClassname() {
-		return myGen.getSuperclassName();
-	}
+	// public String getSuperClassname() {
+	// return myGen.getSuperclassName();
+	// }
 
-	// FIXME asc not great that some of these ask the gen and some ask the type ! (see the related setters too)
 	public ResolvedType getSuperClass() {
+		if (superclass != null) {
+			return superclass;
+		}
 		return myType.getSuperclass();
 	}
 
@@ -665,7 +706,6 @@ public final class LazyClassGen {
 		List ret = new ArrayList();
 		ret.add(this);
 		ret.addAll(classGens);
-
 		return ret;
 	}
 

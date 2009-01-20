@@ -113,7 +113,6 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	private static final int DISCOVERED_ANNOTATION_TARGET_KINDS = 0x0008;
 	private static final int DISCOVERED_DECLARED_SIGNATURE = 0x0010;
 	private static final int DISCOVERED_WHETHER_ANNOTATION_STYLE = 0x0020;
-	private static final int DAMAGED = 0x0040; // see note(2) below
 
 	private static final String[] NO_INTERFACE_SIGS = new String[] {};
 
@@ -453,12 +452,6 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		return javaClass;
 	}
 
-	public void ensureDelegateConsistent() {
-		if ((bitflag & DAMAGED) != 0) {
-			resetState();
-		}
-	}
-
 	public void resetState() {
 		if (javaClass == null) {
 			// we might store the classname and allow reloading?
@@ -545,36 +538,6 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		return wvInfo;
 	}
 
-	public void addParent(ResolvedType newParent) {
-		bitflag |= DAMAGED;
-		if (newParent.isClass()) {
-			superclassSignature = newParent.getSignature();
-			superclassName = newParent.getName();
-			// superClass = newParent;
-		} else {
-			ResolvedType[] oldInterfaceNames = getDeclaredInterfaces();
-			int exists = -1;
-			for (int i = 0; i < oldInterfaceNames.length; i++) {
-				ResolvedType type = oldInterfaceNames[i];
-				if (type.equals(newParent)) {
-					exists = i;
-					break;
-				}
-			}
-			if (exists == -1) {
-
-				int len = interfaceSignatures.length;
-				String[] newInterfaceSignatures = new String[len + 1];
-				System.arraycopy(interfaceSignatures, 0, newInterfaceSignatures, 0, len);
-				newInterfaceSignatures[len] = newParent.getSignature();
-				interfaceSignatures = newInterfaceSignatures;
-			}
-		}
-		// System.err.println("javaClass: " +
-		// Arrays.asList(javaClass.getInterfaceNames()) + " super " +
-		// superclassName);
-		// if (lazyClassGen != null) lazyClassGen.print();
-	}
 
 	// -- annotation related
 
@@ -598,21 +561,6 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		return false;
 	}
 
-	// evil mutator - adding state not stored in the java class
-	public void addAnnotation(AnnotationAJ annotation) {
-		bitflag |= DAMAGED;
-		int len = annotations.length;
-		AnnotationAJ[] ret = new AnnotationAJ[len + 1];
-		System.arraycopy(annotations, 0, ret, 0, len);
-		ret[len] = annotation;
-		annotations = ret;
-
-		len = annotationTypes.length;
-		ResolvedType[] ret2 = new ResolvedType[len + 1];
-		System.arraycopy(annotationTypes, 0, ret2, 0, len);
-		ret2[len] = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(annotation.getTypeName()));
-		annotationTypes = ret2;
-	}
 
 	public boolean isAnnotationWithRuntimeRetention() {
 		return (getRetentionPolicy() == null ? false : getRetentionPolicy().equals("RUNTIME"));
@@ -893,48 +841,6 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			evictWeavingState();
 		if (getSourceContext() != null && !getResolvedTypeX().isAspect())
 			getSourceContext().tidy();
-	}
-
-	// --- methods for testing
-
-	// for testing - if we have this attribute, return it - will return null if
-	// it doesnt know anything
-	// public AjAttribute[] getAttributes(String name) {
-	// List results = new ArrayList();
-	// List l =
-	// BcelAttributes.readAjAttributes(javaClass.getClassName(),javaClass
-	// .getAttributes(),
-	// getResolvedTypeX().getSourceContext(),getResolvedTypeX().getWorld(),
-	// AjAttribute.WeaverVersionInfo.UNKNOWN);
-	// for (Iterator iter = l.iterator(); iter.hasNext();) {
-	// AjAttribute element = (AjAttribute) iter.next();
-	// if (element.getNameString().equals(name)) results.add(element);
-	// }
-	// if (results.size()>0) {
-	// return (AjAttribute[])results.toArray(new AjAttribute[]{});
-	// }
-	// return null;
-	// }
-	//	
-	// // for testing - use with the method above - this returns *all* including
-	// those that are not Aj attributes
-	// public String[] getAttributeNames() {
-	// Attribute[] as = javaClass.getAttributes();
-	// String[] strs = new String[as.length];
-	// for (int j = 0; j < as.length; j++) {
-	// strs[j] = as[j].getName();
-	// }
-	// return strs;
-	// }
-
-	// for testing
-	public void addPointcutDefinition(ResolvedPointcutDefinition d) {
-		bitflag |= DAMAGED;
-		int len = pointcuts.length;
-		ResolvedPointcutDefinition[] ret = new ResolvedPointcutDefinition[len + 1];
-		System.arraycopy(pointcuts, 0, ret, 0, len);
-		ret[len] = d;
-		pointcuts = ret;
 	}
 
 	public boolean hasBeenWoven() {
