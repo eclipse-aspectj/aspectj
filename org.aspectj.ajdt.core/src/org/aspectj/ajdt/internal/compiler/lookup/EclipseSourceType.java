@@ -81,8 +81,7 @@ import org.aspectj.weaver.patterns.PerSingleton;
 import org.aspectj.weaver.patterns.Pointcut;
 
 /**
- * Supports viewing eclipse TypeDeclarations/SourceTypeBindings as a
- * ResolvedType
+ * Supports viewing eclipse TypeDeclarations/SourceTypeBindings as a ResolvedType
  * 
  * @author Jim Hugunin
  */
@@ -358,8 +357,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	}
 
 	/**
-	 * This method may not return all fields, for example it may not include the
-	 * ajc$initFailureCause or ajc$perSingletonInstance fields - see bug 129613
+	 * This method may not return all fields, for example it may not include the ajc$initFailureCause or ajc$perSingletonInstance
+	 * fields - see bug 129613
 	 */
 	public ResolvedMember[] getDeclaredFields() {
 		if (declaredFields == null)
@@ -368,8 +367,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	}
 
 	/**
-	 * This method may not return all methods, for example it may not include
-	 * clinit, aspectOf, hasAspect or ajc$postClinit methods - see bug 129613
+	 * This method may not return all methods, for example it may not include clinit, aspectOf, hasAspect or ajc$postClinit methods
+	 * - see bug 129613
 	 */
 	public ResolvedMember[] getDeclaredMethods() {
 		if (declaredMethods == null)
@@ -464,18 +463,12 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 
 	public boolean isEnum() {
 		return (binding.getAccessFlags() & ACC_ENUM) != 0;
-	}
+		}
 
 	public boolean isAnnotation() {
 		return (binding.getAccessFlags() & ACC_ANNOTATION) != 0;
 	}
 
-	public void addAnnotation(AnnotationAJ annotationX) {
-		// XXX Big hole here - annotationX holds a BCEL annotation but
-		// we need an Eclipse one here, we haven't written the conversion utils
-		// yet. Not sure if this method will be called in practice...
-		throw new RuntimeException("EclipseSourceType.addAnnotation() not implemented");
-	}
 
 	public boolean isAnnotationWithRuntimeRetention() {
 		if (!isAnnotation()) {
@@ -590,23 +583,17 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	/**
 	 * WARNING: This method does not have a complete implementation.
 	 * 
-	 * The aim is that it converts Eclipse annotation objects to the AspectJ
-	 * form of annotations (the type AnnotationAJ). The AnnotationX objects
-	 * returned are wrappers over either a Bcel annotation type or the AspectJ
-	 * AnnotationAJ type. The minimal implementation provided here is for
-	 * processing the RetentionPolicy and Target annotation types - these are
-	 * the only ones which the weaver will attempt to process from an
-	 * EclipseSourceType.
+	 * The aim is that it converts Eclipse annotation objects to the AspectJ form of annotations (the type AnnotationAJ). The
+	 * AnnotationX objects returned are wrappers over either a Bcel annotation type or the AspectJ AnnotationAJ type. The minimal
+	 * implementation provided here is for processing the RetentionPolicy and Target annotation types - these are the only ones
+	 * which the weaver will attempt to process from an EclipseSourceType.
 	 * 
-	 * More notes: The pipeline has required us to implement this. With the
-	 * pipeline we can be weaving a type and asking questions of annotations
-	 * before they have been turned into Bcel objects - ie. when they are still
-	 * in EclipseSourceType form. Without the pipeline we would have converted
-	 * everything to Bcel objects before proceeding with weaving. Because the
-	 * pipeline won't start weaving until all aspects have been compiled and the
-	 * fact that no AspectJ constructs match on the values within annotations,
-	 * this code only needs to deal with converting system annotations that the
-	 * weaver needs to process (RetentionPolicy, Target).
+	 * More notes: The pipeline has required us to implement this. With the pipeline we can be weaving a type and asking questions
+	 * of annotations before they have been turned into Bcel objects - ie. when they are still in EclipseSourceType form. Without
+	 * the pipeline we would have converted everything to Bcel objects before proceeding with weaving. Because the pipeline won't
+	 * start weaving until all aspects have been compiled and the fact that no AspectJ constructs match on the values within
+	 * annotations, this code only needs to deal with converting system annotations that the weaver needs to process
+	 * (RetentionPolicy, Target).
 	 */
 	public AnnotationAJ[] getAnnotations() {
 		if (annotations != null)
@@ -625,14 +612,11 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	}
 
 	/**
-	 * Convert one eclipse annotation into an AnnotationX object containing an
-	 * AnnotationAJ object.
+	 * Convert one eclipse annotation into an AnnotationX object containing an AnnotationAJ object.
 	 * 
-	 * This code and the helper methods used by it will go *BANG* if they
-	 * encounter anything not currently supported - this is safer than limping
-	 * along with a malformed annotation. When the *BANG* is encountered the bug
-	 * reporter should indicate the kind of annotation they were working with
-	 * and this code can be enhanced to support it.
+	 * This code and the helper methods used by it will go *BANG* if they encounter anything not currently supported - this is safer
+	 * than limping along with a malformed annotation. When the *BANG* is encountered the bug reporter should indicate the kind of
+	 * annotation they were working with and this code can be enhanced to support it.
 	 */
 	public AnnotationAJ convertEclipseAnnotation(Annotation eclipseAnnotation, World w) {
 		// TODO if it is sourcevisible, we shouldn't let it through!!!!!!!!!
@@ -652,8 +636,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	}
 
 	/**
-	 * Use the information in the supplied eclipse based annotation to fill in
-	 * the standard annotation.
+	 * Use the information in the supplied eclipse based annotation to fill in the standard annotation.
 	 * 
 	 * @param annotation eclipse based annotation representation
 	 * @param annotationAJ AspectJ based annotation representation
@@ -1042,10 +1025,6 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		tv.setDeclaringElement(factory.fromBinding(aTypeParameter.binding.declaringElement));
 		tv.setRank(aTypeParameter.binding.rank);
 		return tv;
-	}
-
-	public void ensureDelegateConsistent() {
-		// do nothing, currently these can't become inconsistent (phew)
 	}
 
 }
