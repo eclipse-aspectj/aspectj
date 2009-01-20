@@ -373,24 +373,14 @@ class BcelClassWeaver implements IClassWeaver {
 					whatToBridgeToMethodGen.getAccessFlags(), whatToBridgeToMethodGen.getName(), whatToBridgeToMethodGen
 							.getSignature());
 		}
-		LazyMethodGen bridgeMethod = makeBridgeMethod(clazz, theBridgeMethod); // The
-		// bridge
-		// method
-		// in
-		// this
-		// type
-		// will
-		// have
-		// the
-		// same
-		// signature as the one in the supertype
-		int newflags = bridgeMethod.getAccessFlags() | 0x00000040;/*
-																 * BRIDGE = 0x00000040
-																 */
-		if ((newflags & 0x00000100) != 0)
-			newflags = newflags - 0x100;/*
-										 * NATIVE = 0x00000100 - need to clear it
-										 */
+		// The bridge method in this type will have the same signature as the one in the supertype
+		LazyMethodGen bridgeMethod = makeBridgeMethod(clazz, theBridgeMethod);
+		int newflags = bridgeMethod.getAccessFlags() | 0x00000040;// BRIDGE = 0x00000040
+
+		if ((newflags & 0x00000100) != 0) {
+			newflags = newflags - 0x100;// NATIVE = 0x00000100 - need to clear it
+		}
+
 		bridgeMethod.setAccessFlags(newflags);
 		Type returnType = BcelWorld.makeBcelType(theBridgeMethod.getReturnType());
 		Type[] paramTypes = BcelWorld.makeBcelTypes(theBridgeMethod.getParameterTypes());
@@ -772,20 +762,21 @@ class BcelClassWeaver implements IClassWeaver {
 
 			// Let's take a look at the superclass
 			ResolvedType theSuperclass = clazz.getSuperClass();
-			if (world.forDEBUG_bridgingCode)
+			if (world.forDEBUG_bridgingCode) {
 				System.err.println("Bridging: Checking supertype " + theSuperclass);
+			}
 			String pkgName = clazz.getPackageName();
 			UnresolvedType[] bm = BcelWorld.fromBcel(bridgeToCandidate.getArgumentTypes());
 			ResolvedMember overriddenMethod = checkForOverride(theSuperclass, name, psig, rsig, bridgeToCandidate.getAccessFlags(),
 					pkgName, bm);
 			if (overriddenMethod != null) {
 				String key = new StringBuffer().append(overriddenMethod.getName()).append(overriddenMethod.getSignatureErased())
-						.toString(); // pr
-				// 237419
+						.toString(); // pr237419
 				boolean alreadyHaveABridgeMethod = methodsSet.contains(key);
 				if (!alreadyHaveABridgeMethod) {
-					if (world.forDEBUG_bridgingCode)
+					if (world.forDEBUG_bridgingCode) {
 						System.err.println("Bridging:bridging to '" + overriddenMethod + "'");
+					}
 					createBridgeMethod(world, bridgeToCandidate, clazz, overriddenMethod);
 					methodsSet.add(key);
 					didSomething = true;
