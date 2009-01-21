@@ -70,6 +70,19 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		}
 		assertEquals("Should have found the two types in: " + ps, 2, count);
 	}
+	
+	public void testConstructorAdvice_pr261380() throws Exception {
+		String p = "261380";
+		initialiseProject(p);
+		build(p);
+		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
+		IRelationship ir = (IRelationship)irm.get("=261380<test{C.java}X&before").get(0);
+		List targets = ir.getTargets();
+		assertEquals(1,targets.size());
+		System.out.println(targets.get(0));
+		String handle = (String) targets.get(0);
+		assertEquals("Expected the handle for the code node inside the constructor decl","=261380<test{C.java[C~C?constructor-call(void test.C.<init>())",handle);
+	}
 
 	/*
 	 * A.aj package pack; public aspect A { pointcut p() : call( C.method before() : p() { // line 7 } }
