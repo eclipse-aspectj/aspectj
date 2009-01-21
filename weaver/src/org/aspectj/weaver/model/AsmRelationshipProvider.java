@@ -460,7 +460,7 @@ public class AsmRelationshipProvider {
 
 		Member shadowSig = shadow.getSignature();
 		// pr235204
-		if (shadow.getKind() == Shadow.MethodCall || !shadowSig.equals(enclosingMember)) {
+		if (shadow.getKind() == Shadow.MethodCall || shadow.getKind()==Shadow.ConstructorCall || !shadowSig.equals(enclosingMember)) {
 			IProgramElement bodyNode = findOrCreateCodeNode(model, enclosingNode, shadowSig, shadow);
 			return bodyNode;
 		} else {
