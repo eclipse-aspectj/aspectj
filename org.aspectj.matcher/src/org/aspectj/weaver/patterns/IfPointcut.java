@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -227,6 +228,25 @@ public class IfPointcut extends Pointcut {
 					} else if (AjcMemberMaker.TYPEX_ENCLOSINGSTATICJOINPOINT.getSignature().equals(argSignature)) {
 						args.add(shadow.getThisEnclosingJoinPointStaticPartVar());
 					} else {
+						if (state.size() == 0 || currentStateIndex > state.size()) {
+							String[] paramNames = testMethod.getParameterNames();
+							StringBuffer errorParameter = new StringBuffer();
+							if (paramNames != null) {
+								errorParameter.append(testMethod.getParameterTypes()[i].getName()).append(" ");
+								errorParameter.append(paramNames[i]);
+								shadow.getIWorld().getMessageHandler().handleMessage(
+										MessageUtil.error("Missing binding for if() pointcut method.  Parameter " + (i + 1) + "("
+												+ errorParameter.toString()
+												+ ") must be bound - even in reference pointcuts  (compiler limitation)",
+												testMethod.getSourceLocation()));
+							} else {
+								shadow.getIWorld().getMessageHandler().handleMessage(
+										MessageUtil.error("Missing binding for if() pointcut method.  Parameter " + (i + 1)
+												+ " must be bound - even in reference pointcuts (compiler limitation)", testMethod
+												.getSourceLocation()));
+							}
+							return Literal.TRUE; // exit quickly
+						}
 						// we don't use i as JoinPoint.* can be anywhere in the signature in @style
 						Var v = state.get(currentStateIndex++);
 
