@@ -612,9 +612,7 @@ public class BcelWorld extends World implements Repository {
 			return; // We haven't heard of it yet
 		if (!result.isExposedToWeaver())
 			return; // cant need resetting
-		ReferenceType rt = (ReferenceType) result;
-		rt.ensureConsistent();
-		// rt.getDelegate().ensureDelegateConsistent();
+		result.ensureConsistent();
 		// If we want to rebuild it 'from scratch' then:
 		// ClassParser cp = new ClassParser(new
 		// ByteArrayInputStream(newbytes),new String(cs));
