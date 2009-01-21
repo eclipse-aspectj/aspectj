@@ -92,14 +92,6 @@
      </compile>
    </ajc-test>
 
-   <ajc-test dir="bugs162/pr209051" title="asterisk in at aj pointcut">
-     <compile options="-1.5" files="Bug.java"/>
-     <run class="Bug">
-       <stdout>
-         <line text="x"/>
-       </stdout>
-     </run>
-   </ajc-test>
 
 	<ajc-test dir="bugs162/pr197720" title="missing markers on inherited annotated method">
 	  <compile files="C1.java C2.java C3.java MyAnn.java MyAnnAspect.java" options="-1.5 -showWeaveInfo">

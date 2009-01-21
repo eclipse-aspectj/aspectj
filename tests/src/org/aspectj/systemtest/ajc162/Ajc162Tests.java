@@ -87,7 +87,6 @@ public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("dec atanno and decp");
 	}
 
-	// public void testStarInAnnoStyle_pr209951() { runTest("asterisk in at aj pointcut"); }
 	public void testMissingMarkers_pr197720() {
 		runTest("missing markers on inherited annotated method");
 	}
