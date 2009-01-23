@@ -52,13 +52,13 @@ public class CrosscuttingMembers {
 	private List lateTypeMungers = new ArrayList(0);
 
 	private Set declareParents = new HashSet();
-	private List declareSofts = new ArrayList(0);
+	private Set declareSofts = new HashSet();
 	private List declareDominates = new ArrayList(4);
 
 	// These are like declare parents type mungers
 	private Set declareAnnotationsOnType = new HashSet();
 	private Set declareAnnotationsOnField = new HashSet();
-	private Set declareAnnotationsOnMethods = new HashSet(); 
+	private Set declareAnnotationsOnMethods = new HashSet();
 	// declareAnnotationsOnMethods includes constructors too
 
 	private boolean shouldConcretizeIfNeeded = true;
@@ -460,7 +460,7 @@ public class CrosscuttingMembers {
 		Pointcut p = munger.getPointcut();
 		Pointcut newP = pr.rewrite(p);
 		if (p.m_ignoreUnboundBindingForNames.length != 0) {
-  			// *sigh* dirty fix for dirty hacky implementation pr149305
+			// *sigh* dirty fix for dirty hacky implementation pr149305
 			newP.m_ignoreUnboundBindingForNames = p.m_ignoreUnboundBindingForNames;
 		}
 		munger.setPointcut(newP);
@@ -483,7 +483,7 @@ public class CrosscuttingMembers {
 		return declareParents;
 	}
 
-	public List getDeclareSofts() {
+	public Collection getDeclareSofts() {
 		return declareSofts;
 	}
 

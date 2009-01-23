@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
@@ -34,20 +33,18 @@ public class DeclareSoft extends Declare {
 		this.exception = exception;
 		this.pointcut = pointcut;
 	}
-	
+
 	public Object accept(PatternNodeVisitor visitor, Object data) {
-		return visitor.visit(this,data);
+		return visitor.visit(this, data);
 	}
-	
-	public Declare parameterizeWith(Map typeVariableBindingMap,World w) {
-		DeclareSoft ret = 
-			new DeclareSoft(
-					exception.parameterizeWith(typeVariableBindingMap,w),
-					pointcut.parameterizeWith(typeVariableBindingMap,w));
+
+	public Declare parameterizeWith(Map typeVariableBindingMap, World w) {
+		DeclareSoft ret = new DeclareSoft(exception.parameterizeWith(typeVariableBindingMap, w), pointcut.parameterizeWith(
+				typeVariableBindingMap, w));
 		ret.copyLocationFrom(this);
 		return ret;
 	}
-	
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("declare soft: ");
@@ -57,22 +54,20 @@ public class DeclareSoft extends Declare {
 		buf.append(";");
 		return buf.toString();
 	}
-	
-	public boolean equals(Object other) { 
-		if (!(other instanceof DeclareSoft)) return false;
-		DeclareSoft o = (DeclareSoft)other;
-		return
-			o.pointcut.equals(pointcut) &&
-			o.exception.equals(exception);
-	}
-    
-    public int hashCode() {
-        int result = 19;
-        result = 37*result + pointcut.hashCode();
-        result = 37*result + exception.hashCode();
-        return result;
-    }
 
+	public boolean equals(Object other) {
+		if (!(other instanceof DeclareSoft))
+			return false;
+		DeclareSoft o = (DeclareSoft) other;
+		return o.pointcut.equals(pointcut) && o.exception.equals(exception);
+	}
+
+	public int hashCode() {
+		int result = 19;
+		result = 37 * result + pointcut.hashCode();
+		result = 37 * result + exception.hashCode();
+		return result;
+	}
 
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Declare.SOFT);
@@ -82,10 +77,7 @@ public class DeclareSoft extends Declare {
 	}
 
 	public static Declare read(VersionedDataInputStream s, ISourceContext context) throws IOException {
-		Declare ret = new DeclareSoft(
-			TypePattern.read(s, context),
-			Pointcut.read(s, context)
-		);
+		Declare ret = new DeclareSoft(TypePattern.read(s, context), Pointcut.read(s, context));
 		ret.readLocation(context, s);
 		return ret;
 	}
@@ -93,44 +85,43 @@ public class DeclareSoft extends Declare {
 	public Pointcut getPointcut() {
 		return pointcut;
 	}
-	
+
 	public TypePattern getException() {
 		return exception;
 	}
 
-    public void resolve(IScope scope) {
-    	exception = exception.resolveBindings(scope, null, false, true);
-    	ResolvedType excType = exception.getExactType().resolve(scope.getWorld());
-    	if (!excType.isMissing()) {
-    		if (excType.isTypeVariableReference()) {
-    		    TypeVariableReferenceType typeVariableRT = (TypeVariableReferenceType) excType;
-    			// a declare soft in a generic abstract aspect, we need to check the upper bound
-    			excType = typeVariableRT.getUpperBound().resolve(scope.getWorld());
-    		}
-    		if (!scope.getWorld().getCoreType(UnresolvedType.THROWABLE).isAssignableFrom(excType)) {
-    			scope.getWorld().showMessage(IMessage.ERROR,
-    					WeaverMessages.format(WeaverMessages.NOT_THROWABLE,excType.getName()),
-    					exception.getSourceLocation(), null);
-    			pointcut = Pointcut.makeMatchesNothing(Pointcut.RESOLVED);
-    			return;
-    		}
-	        // ENH 42743 suggests that we don't soften runtime exceptions.
-			if (scope.getWorld().getCoreType(UnresolvedType.RUNTIME_EXCEPTION).isAssignableFrom(excType)) {
-			    scope.getWorld().getLint().runtimeExceptionNotSoftened.signal(
-			      		new String[]{excType.getName()},
-			      		exception.getSourceLocation(),null);
+	public void resolve(IScope scope) {
+		exception = exception.resolveBindings(scope, null, false, true);
+		ResolvedType excType = exception.getExactType().resolve(scope.getWorld());
+		if (!excType.isMissing()) {
+			if (excType.isTypeVariableReference()) {
+				TypeVariableReferenceType typeVariableRT = (TypeVariableReferenceType) excType;
+				// a declare soft in a generic abstract aspect, we need to check the upper bound
+				excType = typeVariableRT.getUpperBound().resolve(scope.getWorld());
+			}
+			if (!scope.getWorld().getCoreType(UnresolvedType.THROWABLE).isAssignableFrom(excType)) {
+				scope.getWorld()
+						.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.NOT_THROWABLE, excType.getName()),
+								exception.getSourceLocation(), null);
 				pointcut = Pointcut.makeMatchesNothing(Pointcut.RESOLVED);
 				return;
-			}			
-    	}
-    	
-    	pointcut = pointcut.resolve(scope); 	
-    }
-    
-    public boolean isAdviceLike() {
-		return true;
+			}
+			// ENH 42743 suggests that we don't soften runtime exceptions.
+			if (scope.getWorld().getCoreType(UnresolvedType.RUNTIME_EXCEPTION).isAssignableFrom(excType)) {
+				scope.getWorld().getLint().runtimeExceptionNotSoftened.signal(new String[] { excType.getName() }, exception
+						.getSourceLocation(), null);
+				pointcut = Pointcut.makeMatchesNothing(Pointcut.RESOLVED);
+				return;
+			}
+		}
+
+		pointcut = pointcut.resolve(scope);
 	}
-	
+
+	public boolean isAdviceLike() {
+		return false;
+	}
+
 	public String getNameSuffix() {
 		return "soft";
 	}

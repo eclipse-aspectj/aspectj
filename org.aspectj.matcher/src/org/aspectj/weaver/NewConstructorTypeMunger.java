@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver;
 
 import java.io.DataOutputStream;
@@ -25,13 +24,8 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 	private ResolvedMember syntheticConstructor;
 	private ResolvedMember explicitConstructor;
 
-
-	public NewConstructorTypeMunger(
-		ResolvedMember signature,
-		ResolvedMember syntheticConstructor,
-		ResolvedMember explicitConstructor,
-		Set superMethodsCalled,
-		List typeVariableAliases) {
+	public NewConstructorTypeMunger(ResolvedMember signature, ResolvedMember syntheticConstructor,
+			ResolvedMember explicitConstructor, Set superMethodsCalled, List typeVariableAliases) {
 		super(Constructor, signature);
 		this.syntheticConstructor = syntheticConstructor;
 		this.typeVariableAliases = typeVariableAliases;
@@ -39,31 +33,42 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 		this.setSuperMethodsCalled(superMethodsCalled);
 
 	}
-	
-    public boolean equals(Object other) {
-    	if (!(other instanceof NewConstructorTypeMunger)) return false;
-    	NewConstructorTypeMunger o = (NewConstructorTypeMunger)other;	
-    	return ((o.syntheticConstructor == null) ? (syntheticConstructor == null ) 
-    				: syntheticConstructor.equals(o.syntheticConstructor))
-    			& ((o.explicitConstructor == null) ? (explicitConstructor == null ) 
-    				: explicitConstructor.equals(o.explicitConstructor));
-    }
 
-    private volatile int hashCode = 0;
-    public int hashCode() {
-    	if (hashCode == 0) {
-    	 	int result = 17;
-    	    result = 37*result + ((syntheticConstructor == null) ? 0 : syntheticConstructor.hashCode());
-    	    result = 37*result + ((explicitConstructor == null) ? 0 : explicitConstructor.hashCode());
-    	    hashCode = result;
+	public boolean equals(Object other) {
+		if (!(other instanceof NewConstructorTypeMunger))
+			return false;
+		NewConstructorTypeMunger o = (NewConstructorTypeMunger) other;
+		return ((syntheticConstructor == null) ? (o.syntheticConstructor == null) : syntheticConstructor
+				.equals(o.syntheticConstructor))
+				& ((explicitConstructor == null) ? (o.explicitConstructor == null) : explicitConstructor
+						.equals(o.explicitConstructor));
+	}
+
+	// pr262218 - equivalence ignores the explicit constructor since that won't have yet been set for an EclipseTypeMunger
+	public boolean equivalentTo(Object other) {
+		if (!(other instanceof NewConstructorTypeMunger))
+			return false;
+		NewConstructorTypeMunger o = (NewConstructorTypeMunger) other;
+		return ((syntheticConstructor == null) ? (o.syntheticConstructor == null) : syntheticConstructor
+				.equals(o.syntheticConstructor));
+	}
+
+	private volatile int hashCode = 0;
+
+	public int hashCode() {
+		if (hashCode == 0) {
+			int result = 17;
+			result = 37 * result + ((syntheticConstructor == null) ? 0 : syntheticConstructor.hashCode());
+			result = 37 * result + ((explicitConstructor == null) ? 0 : explicitConstructor.hashCode());
+			hashCode = result;
 		}
-	    return hashCode;
-    }
-	
+		return hashCode;
+	}
+
 	// doesnt seem required....
-//	public ResolvedMember getDispatchMethod(UnresolvedType aspectType) {
-//		return AjcMemberMaker.interMethodBody(signature, aspectType);
-//	}
+	// public ResolvedMember getDispatchMethod(UnresolvedType aspectType) {
+	// return AjcMemberMaker.interMethodBody(signature, aspectType);
+	// }
 
 	public void write(DataOutputStream s) throws IOException {
 		kind.write(s);
@@ -74,17 +79,19 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 		writeSourceLocation(s);
 		writeOutTypeAliases(s);
 	}
-	
+
 	public static ResolvedTypeMunger readConstructor(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		ISourceLocation sloc = null;
-		ResolvedMember sig           = ResolvedMemberImpl.readResolvedMember(s, context);
+		ResolvedMember sig = ResolvedMemberImpl.readResolvedMember(s, context);
 		ResolvedMember syntheticCtor = ResolvedMemberImpl.readResolvedMember(s, context);
-		ResolvedMember explicitCtor  = ResolvedMemberImpl.readResolvedMember(s, context);
-		Set superMethodsCalled       = readSuperMethodsCalled(s);
-		sloc                         = readSourceLocation(s);
-		List typeVarAliases          = readInTypeAliases(s);
-		ResolvedTypeMunger munger = new NewConstructorTypeMunger(sig,syntheticCtor,explicitCtor,superMethodsCalled,typeVarAliases);
-		if (sloc!=null) munger.setSourceLocation(sloc);
+		ResolvedMember explicitCtor = ResolvedMemberImpl.readResolvedMember(s, context);
+		Set superMethodsCalled = readSuperMethodsCalled(s);
+		sloc = readSourceLocation(s);
+		List typeVarAliases = readInTypeAliases(s);
+		ResolvedTypeMunger munger = new NewConstructorTypeMunger(sig, syntheticCtor, explicitCtor, superMethodsCalled,
+				typeVarAliases);
+		if (sloc != null)
+			munger.setSourceLocation(sloc);
 		return munger;
 	}
 
@@ -101,29 +108,30 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 		// reset hashCode so that its recalculated with new value
 		hashCode = 0;
 	}
-	
+
 	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedType aspectType) {
 		ResolvedMember ret = getSyntheticConstructor();
-		if (ResolvedType.matches(ret, member)) return getSignature();
+		if (ResolvedType.matches(ret, member))
+			return getSignature();
 		return super.getMatchingSyntheticMember(member, aspectType);
 	}
-	
+
 	public void check(World world) {
 		if (getSignature().getDeclaringType().resolve(world).isAspect()) {
-			world.showMessage(IMessage.ERROR, 
-					WeaverMessages.format(WeaverMessages.ITD_CONS_ON_ASPECT),
-					getSignature().getSourceLocation(), null);
+			world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.ITD_CONS_ON_ASPECT), getSignature()
+					.getSourceLocation(), null);
 		}
 	}
 
 	/**
-     * see ResolvedTypeMunger.parameterizedFor(ResolvedType)
-     */
+	 * see ResolvedTypeMunger.parameterizedFor(ResolvedType)
+	 */
 	public ResolvedTypeMunger parameterizedFor(ResolvedType target) {
 		ResolvedType genericType = target;
-		if (target.isRawType() || target.isParameterizedType()) genericType = genericType.getGenericType();
+		if (target.isRawType() || target.isParameterizedType())
+			genericType = genericType.getGenericType();
 		ResolvedMember parameterizedSignature = null;
-		// If we are parameterizing it for a generic type, we just need to 'swap the letters' from the ones used 
+		// If we are parameterizing it for a generic type, we just need to 'swap the letters' from the ones used
 		// in the original ITD declaration to the ones used in the actual target type declaration.
 		if (target.isGenericType()) {
 			TypeVariable vars[] = target.getTypeVariables();
@@ -131,12 +139,14 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 			for (int i = 0; i < vars.length; i++) {
 				varRefs[i] = new UnresolvedTypeVariableReferenceType(vars[i]);
 			}
-			parameterizedSignature = getSignature().parameterizedWith(varRefs,genericType,true,typeVariableAliases);
+			parameterizedSignature = getSignature().parameterizedWith(varRefs, genericType, true, typeVariableAliases);
 		} else {
-		  // For raw and 'normal' parameterized targets  (e.g. Interface, Interface<String>)
-		  parameterizedSignature = getSignature().parameterizedWith(target.getTypeParameters(),genericType,target.isParameterizedType(),typeVariableAliases);
+			// For raw and 'normal' parameterized targets (e.g. Interface, Interface<String>)
+			parameterizedSignature = getSignature().parameterizedWith(target.getTypeParameters(), genericType,
+					target.isParameterizedType(), typeVariableAliases);
 		}
-		NewConstructorTypeMunger nctm = new NewConstructorTypeMunger(parameterizedSignature,syntheticConstructor,explicitConstructor,getSuperMethodsCalled(),typeVariableAliases);
+		NewConstructorTypeMunger nctm = new NewConstructorTypeMunger(parameterizedSignature, syntheticConstructor,
+				explicitConstructor, getSuperMethodsCalled(), typeVariableAliases);
 		nctm.setSourceLocation(getSourceLocation());
 		return nctm;
 	}
