@@ -244,6 +244,17 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("=BrokenHandles<p{GetInfo.java}GetInfo`declare parents!3", ipe.getHandleIdentifier());
 	}
 
+	public void testAnnotations_pr262154() {
+		String p = "pr262154";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		alter(p, "inc1");
+		build(p);
+		List l = getCompilerErrorMessages(p);
+		assertEquals("Unexpected compiler error", 0, l.size());
+	}
+
 	public void testAnnotations_pr255555() {
 		String p = "pr255555";
 		initialiseProject(p);
@@ -261,8 +272,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/**
-	 * Test what is in the model for package declarations and import statements.  Package Declaration nodes are new
-	 * in AspectJ 1.6.4.  Import statements are contained with an 'import references' node.
+	 * Test what is in the model for package declarations and import statements. Package Declaration nodes are new in AspectJ 1.6.4.
+	 * Import statements are contained with an 'import references' node.
 	 */
 	public void testImportHandles() {
 		String p = "Imports";
@@ -270,21 +281,20 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p);
 
 		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
-		
+
 		// Looking for 'package p.q'
 		IProgramElement ipe = findElementAtLine(root, 1);
-		ipe = (IProgramElement)ipe.getChildren().get(0); // package decl is first entry in the type
-		System.out.println(ipe.getHandleIdentifier()+"  "+ipe.getKind());
+		ipe = (IProgramElement) ipe.getChildren().get(0); // package decl is first entry in the type
+		System.out.println(ipe.getHandleIdentifier() + "  " + ipe.getKind());
 		assertEquals(IProgramElement.Kind.PACKAGE_DECLARATION, ipe.getKind());
 		assertEquals("=Imports<p.q*Example.aj%p.q", ipe.getHandleIdentifier());
 		assertEquals("package p.q;", ipe.getSourceSignature());
-		assertEquals(ipe.getSourceLocation().getOffset(),8); // "package p.q" - location of p.q
+		assertEquals(ipe.getSourceLocation().getOffset(), 8); // "package p.q" - location of p.q
 
-		
 		// Looking for import containing containing string and integer
 		ipe = findElementAtLine(root, 3); // first import
 		ipe = ipe.getParent(); // imports container
-		System.out.println(ipe.getHandleIdentifier()+"  "+ipe.getKind());
+		System.out.println(ipe.getHandleIdentifier() + "  " + ipe.getKind());
 		dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
 		assertEquals("=Imports<p.q*Example.aj#", ipe.getHandleIdentifier());
 	}
@@ -383,7 +393,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p);
 		checkWasntFullBuild();
 	}
-
 
 	public void testIncrementalBuildsWithItds_pr259528() {
 		String p = "pr259528";
