@@ -70,18 +70,19 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		}
 		assertEquals("Should have found the two types in: " + ps, 2, count);
 	}
-	
+
 	public void testConstructorAdvice_pr261380() throws Exception {
 		String p = "261380";
 		initialiseProject(p);
 		build(p);
 		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
-		IRelationship ir = (IRelationship)irm.get("=261380<test{C.java}X&before").get(0);
+		IRelationship ir = (IRelationship) irm.get("=261380<test{C.java}X&before").get(0);
 		List targets = ir.getTargets();
-		assertEquals(1,targets.size());
+		assertEquals(1, targets.size());
 		System.out.println(targets.get(0));
 		String handle = (String) targets.get(0);
-		assertEquals("Expected the handle for the code node inside the constructor decl","=261380<test{C.java[C~C?constructor-call(void test.C.<init>())",handle);
+		assertEquals("Expected the handle for the code node inside the constructor decl",
+				"=261380<test{C.java[C~C?constructor-call(void test.C.<init>())", handle);
 	}
 
 	/*
@@ -242,6 +243,19 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("=BrokenHandles<p{GetInfo.java}GetInfo`declare warning!2", ipe.getHandleIdentifier());
 		ipe = findElementAtLine(root, 6);
 		assertEquals("=BrokenHandles<p{GetInfo.java}GetInfo`declare parents!3", ipe.getHandleIdentifier());
+	}
+
+	public void testNPEIncremental_pr262218() {
+		AjdeInteractionTestbed.VERBOSE = true;
+		String p = "pr262218";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+		List l = getCompilerErrorMessages(p);
+		assertEquals("Unexpected compiler error", 0, l.size());
 	}
 
 	public void testAnnotations_pr262154() {
