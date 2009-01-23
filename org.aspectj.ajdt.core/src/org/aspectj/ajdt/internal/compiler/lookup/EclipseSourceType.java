@@ -396,9 +396,9 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		ResolvedMember[] pointcuts = getDeclaredPointcuts();
 		boolean sawError = false;
 		for (int i = 0, len = pointcuts.length; i < len; i++) {
-			if (pointcuts[i]==null) {
+			if (pointcuts[i] == null) {
 				// Something else is broken in this file and will be reported separately
-				continue; 
+				continue;
 			}
 			if (pointcuts[i].isAbstract()) {
 				if (!this.isAspect()) {
@@ -413,9 +413,9 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 			}
 
 			for (int j = i + 1; j < len; j++) {
-				if (pointcuts[j]==null) {
+				if (pointcuts[j] == null) {
 					// Something else is broken in this file and will be reported separately
-					continue; 
+					continue;
 				}
 				if (pointcuts[i].getName().equals(pointcuts[j].getName())) {
 					eclipseWorld().showMessage(IMessage.ERROR, "duplicate pointcut name: " + pointcuts[j].getName(),
@@ -463,12 +463,11 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 
 	public boolean isEnum() {
 		return (binding.getAccessFlags() & ACC_ENUM) != 0;
-		}
+	}
 
 	public boolean isAnnotation() {
 		return (binding.getAccessFlags() & ACC_ANNOTATION) != 0;
 	}
-
 
 	public boolean isAnnotationWithRuntimeRetention() {
 		if (!isAnnotation()) {
@@ -693,11 +692,10 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		} else {
 			if (memberValuePairReturnType.isArrayType() && !defaultValueBinding.isArrayType()) {
 				if (constant != null && constant != Constant.NotAConstant) {
-					throw new MissingImplementationException(
-							"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value ["
-									+ defaultValue + "]");
-					// generateElementValue(attributeOffset, defaultValue,
-					// constant, memberValuePairReturnType.leafComponentType());
+					// Testcase for this clause is MultiProjectIncrementalTests.testAnnotations_pr262154()
+					AnnotationValue av = EclipseAnnotationConvertor.generateElementValueForConstantExpression(defaultValue,
+							defaultValueBinding);
+					return new ArrayAnnotationValue(new AnnotationValue[] { av });
 				} else {
 					AnnotationValue av = generateElementValueForNonConstantExpression(defaultValue, defaultValueBinding);
 					return new ArrayAnnotationValue(new AnnotationValue[] { av });
