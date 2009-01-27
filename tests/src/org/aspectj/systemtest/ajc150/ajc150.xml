@@ -1107,12 +1107,10 @@
  
      <ajc-test dir="bugs150" pr="78314" title="good error message for unmatched member syntax">
         <compile files="pr78314.aj" options="-1.5">
-           <message kind="error" line="5" text="Syntax error, insert &quot;body&quot;"/>
-            <message kind="error" line="5" text="Syntax error on tokens, valid member declaration expected instead"/>
+          <message kind="error" line="5" text="Syntax error on token &quot;foo&quot;, no accurate correction available"/>
          </compile>
         <compile files="pr78314.aj">
-            <message kind="error" line="5" text="Syntax error, insert &quot;body&quot;"/>
-            <message kind="error" line="5" text="Syntax error on tokens, valid member declaration expected instead"/>
+          <message kind="error" line="5" text="Syntax error on token &quot;foo&quot;, no accurate correction available"/>
         </compile>
     </ajc-test>
     
