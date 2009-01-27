@@ -2,6 +2,17 @@
 
 <suite>
     
+    <ajc-test dir="bugs164/pr246393" title="rogue errors - 1">
+      <compile files="D.java" options="-1.5">
+        <message kind="error" line="2" text="error on token"/>
+      </compile>
+    </ajc-test> 
+
+    <ajc-test dir="bugs164/pr262257" title="name clash">
+      <compile files="C.java" options="-1.5">
+      </compile>
+    </ajc-test> 
+       
     <ajc-test dir="bugs164/pr260384" title="compiling spring">
       <compile files="Broken.java" options="-1.5">
       </compile>

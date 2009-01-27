@@ -18,6 +18,15 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testRogueErrors_pr246393_1() {
+		runTest("rogue errors - 1");
+	}
+
+//	public void testNameClash_pr262257() {
+//		runTest("name clash");
+//		fail("incomplete");
+//	}
+
 	public void testCompilingSpring_pr260384() {
 		runTest("compiling spring");
 	}
@@ -25,15 +34,15 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testCompilingSpring_pr260384_2() {
 		runTest("compiling spring - 2");
 	}
-	
+
 	public void testCompilingSpring_pr260384_3() {
 		runTest("compiling spring - 3");
 	}
-	
+
 	public void testCompilingSpring_pr260384_4() {
 		runTest("compiling spring - 4");
 	}
-	
+
 	public void testAtAspectJDecp_pr164016() {
 		runTest("ataspectj decp 164016");
 	}
