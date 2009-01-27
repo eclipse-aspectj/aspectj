@@ -2,6 +2,18 @@
 
 <suite>
     
+    <ajc-test dir="bugs164/pr262509" title="debugging before advice">
+      <compile files="Foo.java" options="-1.5"/>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs164/pr262509" title="debugging before advice - 2">
+      <compile files="Foo2.java" options="-1.5 -preserveAllLocals"/>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs164/pr262509" title="debugging before advice - 3">
+      <compile files="Foo3.java" options="-1.5 -preserveAllLocals"/>
+    </ajc-test> 
+       
     <ajc-test dir="bugs164/pr246393" title="rogue errors - 1">
       <compile files="D.java" options="-1.5">
         <message kind="error" line="2" text="error on token"/>

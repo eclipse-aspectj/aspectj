@@ -14,18 +14,56 @@ import java.io.File;
 
 import junit.framework.Test;
 
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.LocalVariable;
+import org.aspectj.apache.bcel.classfile.LocalVariableTable;
+import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.util.ClassPath;
+import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
+
+	// Single piece of advice on before execution of a method with a this and a parameter
+	public void testDebuggingBeforeAdvice_pr262509() {
+		runTest("debugging before advice");
+		Method method = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "Foo"), "foo");
+		assertEquals("LFoo; this(0) start=0 len=13", stringify(method.getLocalVariableTable(), 0));
+		assertEquals("LBar; bar(1) start=0 len=13", stringify(method.getLocalVariableTable(), 1));
+	}
+
+	// Single piece of advice on before execution of a method with a this and a parameter and other various locals within it
+	public void testDebuggingBeforeAdvice_pr262509_2() {
+		// Compile with -preserveAllLocals
+		runTest("debugging before advice - 2");
+		Method method = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "Foo2"), "foo");
+		System.out.println(stringify(method.getLocalVariableTable()));
+		assertEquals("LFoo2; this(0) start=0 len=34", stringify(method.getLocalVariableTable(), 0));
+		assertEquals("LBar; bar(1) start=0 len=34", stringify(method.getLocalVariableTable(), 1));
+		assertEquals("Ljava/lang/String; s(2) start=15 len=19", stringify(method.getLocalVariableTable(), 2));
+		assertEquals("Ljava/lang/String; s2(3) start=18 len=10", stringify(method.getLocalVariableTable(), 3));
+		assertEquals("Ljava/lang/Exception; e(3) start=29 len=4", stringify(method.getLocalVariableTable(), 4));
+	}
+
+	// Two pieces of advice on before execution of a method with a this and a parameter and another local within it
+	public void testDebuggingBeforeAdvice_pr262509_3() {
+		// Compile with -preserveAllLocals
+		runTest("debugging before advice - 3");
+		Method method = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "Foo3"), "foo");
+		System.out.println(stringify(method.getLocalVariableTable()));
+		assertEquals("LFoo3; this(0) start=0 len=35", stringify(method.getLocalVariableTable(), 0));
+		assertEquals("LBar; bar(1) start=0 len=35", stringify(method.getLocalVariableTable(), 1));
+		assertEquals("Ljava/lang/Exception; e(2) start=30 len=4", stringify(method.getLocalVariableTable(), 2));
+	}
 
 	public void testRogueErrors_pr246393_1() {
 		runTest("rogue errors - 1");
 	}
 
-//	public void testNameClash_pr262257() {
-//		runTest("name clash");
-//		fail("incomplete");
-//	}
+	// public void testNameClash_pr262257() {
+	// runTest("name clash");
+	// fail("incomplete");
+	// }
 
 	public void testCompilingSpring_pr260384() {
 		runTest("compiling spring");
@@ -51,6 +89,8 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("ataspectj decp 258788");
 	}
 
+	// ---
+
 	public static Test suite() {
 		return XMLBasedAjcTestCase.loadSuite(Ajc164Tests.class);
 	}
@@ -59,4 +99,50 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return new File("../tests/src/org/aspectj/systemtest/ajc164/ajc164.xml");
 	}
 
+	private SyntheticRepository createRepos(File cpentry) {
+		ClassPath cp = new ClassPath(cpentry + File.pathSeparator + System.getProperty("java.class.path"));
+		return SyntheticRepository.getInstance(cp);
+	}
+
+	private JavaClass getClassFrom(File where, String clazzname) {
+		try {
+			SyntheticRepository repos = createRepos(where);
+			return repos.loadClass(clazzname);
+		} catch (ClassNotFoundException cnfe) {
+			throw new RuntimeException("Failed to find class " + clazzname + " at " + where.toString());
+		}
+	}
+
+	private Method getMethodFromClass(JavaClass clazz, String methodName) {
+		Method[] meths = clazz.getMethods();
+		for (int i = 0; i < meths.length; i++) {
+			Method method = meths[i];
+			if (method.getName().equals(methodName)) {
+				return meths[i];
+			}
+		}
+		return null;
+	}
+
+	private String stringify(LocalVariableTable lvt, int slotIndex) {
+		LocalVariable lv[] = lvt.getLocalVariableTable();
+		LocalVariable lvEntry = lv[slotIndex];
+		StringBuffer sb = new StringBuffer();
+		sb.append(lvEntry.getSignature()).append(" ").append(lvEntry.getName()).append("(").append(lvEntry.getIndex()).append(
+				") start=").append(lvEntry.getStartPC()).append(" len=").append(lvEntry.getLength());
+		return sb.toString();
+	}
+
+	private String stringify(LocalVariableTable lvt) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("LocalVariableTable.  Entries=#" + lvt.getTableLength()).append("\n");
+		LocalVariable lv[] = lvt.getLocalVariableTable();
+		for (int i = 0; i < lv.length; i++) {
+			LocalVariable lvEntry = lv[i];
+			sb.append(lvEntry.getSignature()).append(" ").append(lvEntry.getName()).append("(").append(lvEntry.getIndex()).append(
+					") start=").append(lvEntry.getStartPC()).append(" len=").append(lvEntry.getLength()).append("\n");
+		}
+
+		return sb.toString();
+	}
 }
