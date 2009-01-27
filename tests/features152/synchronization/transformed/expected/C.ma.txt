@@ -2,7 +2,7 @@
 :
                     INVOKESTATIC Two.aspectOf ()LTwo;   (line 15)
                     INVOKEVIRTUAL Two.ajc$before$Two$1$8d8821ee ()V
-                    ALOAD_0
+                    ALOAD_0     // LC; this
                     DUP
                     ASTORE_1
                     MONITORENTER
