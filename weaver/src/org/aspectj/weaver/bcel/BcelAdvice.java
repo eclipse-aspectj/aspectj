@@ -19,11 +19,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.aspectj.apache.bcel.classfile.LocalVariable;
+import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.LineNumberTag;
+import org.aspectj.apache.bcel.generic.LocalVariableTag;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.weaver.Advice;
@@ -41,7 +44,6 @@ import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.Shadow.Kind;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
 import org.aspectj.weaver.patterns.ExactTypePattern;
@@ -267,12 +269,12 @@ class BcelAdvice extends Advice {
 		// }
 		if (pointcutTest == Literal.FALSE) { // not usually allowed, except in one case (260384)
 			Member sig = shadow.getSignature();
-			if (sig.getArity() == 0 && shadow.getKind() == Shadow.MethodCall && sig.getName().charAt(0) == 'c' 
-				&& sig.getReturnType().equals(ResolvedType.OBJECT) && sig.getName().equals("clone")) {
+			if (sig.getArity() == 0 && shadow.getKind() == Shadow.MethodCall && sig.getName().charAt(0) == 'c'
+					&& sig.getReturnType().equals(ResolvedType.OBJECT) && sig.getName().equals("clone")) {
 				return false;
 			}
 		}
-		
+
 		if (getKind() == AdviceKind.Before) {
 			shadow.weaveBefore(this);
 		} else if (getKind() == AdviceKind.AfterReturning) {
@@ -447,8 +449,21 @@ class BcelAdvice extends Advice {
 			// } else { // If it wasn't, the best we can do is the line number of the first instruction in the method
 			lineNumber = shadow.getEnclosingMethod().getMemberView().getLineNumberOfFirstInstruction();
 			// }
-			if (lineNumber > 0)
-				il.getStart().addTargeter(new LineNumberTag(lineNumber));
+			InstructionHandle start = il.getStart();
+			if (lineNumber > 0) {
+				start.addTargeter(new LineNumberTag(lineNumber));
+			}
+			// Fix up the local variables: find any that have a startPC of 0 and ensure they target the new start of the method
+			LocalVariableTable lvt = shadow.getEnclosingMethod().getMemberView().getMethod().getLocalVariableTable();
+			if (lvt != null) {
+				LocalVariable[] lvTable = lvt.getLocalVariableTable();
+				for (int i = 0; i < lvTable.length; i++) {
+					LocalVariable lv = lvTable[i];
+					if (lv.getStartPC() == 0) {
+						start.addTargeter(new LocalVariableTag(lv.getSignature(), lv.getName(), lv.getIndex(), 0));
+					}
+				}
+			}
 		}
 
 		return il;
