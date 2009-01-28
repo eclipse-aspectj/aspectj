@@ -2174,11 +2174,12 @@ public class BcelShadow extends Shadow {
 		// t) - see pr174449.
 
 		Type[] adviceParameterTypes = BcelWorld.makeBcelTypes(munger.getSignature().getParameterTypes());
-		// adviceMethod.getArgumentTypes();
-		adviceMethod.getArgumentTypes(); // forces initialization ... dont like this but seems to be required for some tests to
-		// pass, I think that means
-		// there is a LazyMethodGen method that is not correctly setup to call initialize() when it is invoked - but I dont have
+
+		// forces initialization ... dont like this but seems to be required for some tests to pass, I think that means there
+		// is a LazyMethodGen method that is not correctly setup to call initialize() when it is invoked - but I dont have
 		// time right now to discover which
+		adviceMethod.getArgumentTypes();
+
 		Type[] extractedMethodParameterTypes = extractedShadowMethod.getArgumentTypes();
 		Type[] parameterTypes = new Type[extractedMethodParameterTypes.length + adviceParameterTypes.length + 1];
 		int parameterIndex = 0;
@@ -2187,8 +2188,6 @@ public class BcelShadow extends Shadow {
 
 		parameterTypes[parameterIndex++] = BcelWorld.makeBcelType(adviceMethod.getEnclosingClass().getType());
 		System.arraycopy(adviceParameterTypes, 0, parameterTypes, parameterIndex, adviceParameterTypes.length);
-		// parameterTypes is [Bug, C, org.aspectj.lang.JoinPoint, X, org.aspectj.lang.ProceedingJoinPoint, java.lang.Object,
-		// java.lang.Object]
 
 		// Extract the advice into a new method. This will go in the same type as the shadow
 		// name will be something like foo_aroundBody1$advice
@@ -2196,14 +2195,12 @@ public class BcelShadow extends Shadow {
 		LazyMethodGen localAdviceMethod = new LazyMethodGen(Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC, BcelWorld
 				.makeBcelType(mungerSig.getReturnType()), localAdviceMethodName, parameterTypes, NoDeclaredExceptions, shadowClass);
 
-		// Doesnt work properly, so leave it out: (jsr45 support)
-		// String donorFileName = adviceMethod.getEnclosingClass().getInternalFileName();
-		// String recipientFileName = getEnclosingClass().getInternalFileName();
-		// // System.err.println("donor " + donorFileName);
-		// // System.err.println("recip " + recipientFileName);
-		// if (!donorFileName.equals(recipientFileName)) {
-		// localAdviceMethod.fromFilename = donorFileName;
-		// getEnclosingClass().addInlinedSourceFileInfo(donorFileName, adviceMethod.highestLineNumber);
+		// Doesnt work properly, so leave it out:
+		// String aspectFilename = adviceMethod.getEnclosingClass().getInternalFileName();
+		// String shadowFilename = shadowClass.getInternalFileName();
+		// if (!aspectFilename.equals(shadowFilename)) {
+		// localAdviceMethod.fromFilename = aspectFilename;
+		// shadowClass.addInlinedSourceFileInfo(aspectFilename, adviceMethod.highestLineNumber);
 		// }
 
 		shadowClass.addMethodGen(localAdviceMethod);
