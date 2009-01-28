@@ -310,7 +310,7 @@ public class NameMangler {
 		return enclosingType.getName() + "$AjcClosure" + suffix;
 	}
 
-	public static String aroundCallbackMethodName(Member shadowSig, String suffixTag) {
+	public static String aroundShadowMethodName(Member shadowSig, String suffixTag) {
 		StringBuffer ret = new StringBuffer();
 		ret.append(getExtractableName(shadowSig)).append("_aroundBody").append(suffixTag);
 		return ret.toString();
