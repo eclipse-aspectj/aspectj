@@ -2142,8 +2142,8 @@ public class BcelShadow extends Shadow {
 
 		// now generate the aroundBody method
 		// eg. "private static final void method_aroundBody0(M, M, String, org.aspectj.lang.JoinPoint)"
-		LazyMethodGen extractedShadowMethod = createShadowMethodGen(NameMangler.aroundCallbackMethodName(getSignature(), new Integer(
-				getEnclosingClass().getNewGeneratedNameTag()).toString()), Modifier.PRIVATE, munger);
+		LazyMethodGen extractedShadowMethod = extractShadowInstructionsIntoNewMethod(NameMangler.aroundCallbackMethodName(
+				getSignature(), new Integer(getEnclosingClass().getNewGeneratedNameTag()).toString()), Modifier.PRIVATE, munger);
 
 		List argsToCallLocalAdviceMethodWith = new ArrayList();
 		List proceedVarList = new ArrayList();
@@ -2692,8 +2692,8 @@ public class BcelShadow extends Shadow {
 
 		int linenumber = getSourceLine();
 		// MOVE OUT ALL THE INSTRUCTIONS IN MY SHADOW INTO ANOTHER METHOD!
-		LazyMethodGen callbackMethod = createShadowMethodGen(NameMangler.aroundCallbackMethodName(getSignature(), new Integer(
-				getEnclosingClass().getNewGeneratedNameTag()).toString()), 0, munger);
+		LazyMethodGen callbackMethod = extractShadowInstructionsIntoNewMethod(NameMangler.aroundCallbackMethodName(getSignature(),
+				new Integer(getEnclosingClass().getNewGeneratedNameTag()).toString()), 0, munger);
 
 		BcelVar[] adviceVars = munger.getExposedStateAsBcelVars(true);
 
@@ -2968,12 +2968,12 @@ public class BcelShadow extends Shadow {
 
 	// ---- extraction methods
 
-	public LazyMethodGen createShadowMethodGen(String newMethodName, int visibilityModifier, ShadowMunger munger) {
+	public LazyMethodGen extractShadowInstructionsIntoNewMethod(String newMethodName, int visibilityModifier, ShadowMunger munger) {
 		LazyMethodGen.assertGoodBody(range.getBody(), newMethodName);
 		if (!getKind().allowsExtraction())
 			throw new BCException("Attempt to extract method from a shadow kind that does not support this operation (" + getKind()
 					+ ")");
-		LazyMethodGen freshMethod = createMethodGen(newMethodName, visibilityModifier);
+		LazyMethodGen freshMethod = createShadowMethodGen(newMethodName, visibilityModifier);
 
 		// System.err.println("******");
 		// System.err.println("ABOUT TO EXTRACT METHOD for" + this);
@@ -3081,7 +3081,7 @@ public class BcelShadow extends Shadow {
 	 * The new method always static. It may take some extra arguments: this, target. If it's argsOnStack, then it must take both
 	 * this/target If it's argsOnFrame, it shares this and target. ??? rewrite this to do less array munging, please
 	 */
-	private LazyMethodGen createMethodGen(String newMethodName, int visibilityModifier) {
+	private LazyMethodGen createShadowMethodGen(String newMethodName, int visibilityModifier) {
 		Type[] shadowParameterTypes = BcelWorld.makeBcelTypes(getArgTypes());
 		int modifiers = Modifier.FINAL | Modifier.STATIC | visibilityModifier;
 
