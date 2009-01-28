@@ -306,13 +306,19 @@ public class NameMangler {
 		return makeName("cflowCounter", Integer.toHexString(xcut.getCflowEntries().size()));
 	}
 
-	public static String makeClosureClassName(UnresolvedType enclosingType, int index) {
-		return enclosingType.getName() + "$AjcClosure" + index;
+	public static String makeClosureClassName(UnresolvedType enclosingType, String suffix) {
+		return enclosingType.getName() + "$AjcClosure" + suffix;
 	}
 
 	public static String aroundCallbackMethodName(Member shadowSig, String suffixTag) {
 		StringBuffer ret = new StringBuffer();
 		ret.append(getExtractableName(shadowSig)).append("_aroundBody").append(suffixTag);
+		return ret.toString();
+	}
+
+	public static String aroundAdviceMethodName(Member shadowSig, String suffixTag) {
+		StringBuffer ret = new StringBuffer();
+		ret.append(getExtractableName(shadowSig)).append("_aroundBody").append(suffixTag).append("$advice");
 		return ret.toString();
 	}
 
