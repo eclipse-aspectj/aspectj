@@ -2122,16 +2122,20 @@ public class BcelShadow extends Shadow {
 
 		// We can't inline around methods if they have around advice on them, this
 		// is because the weaving will extract the body and hence the proceed call.
-		// ??? should consider optimizations to recognize simple cases that don't require body extraction
+
+		// TODO should consider optimizations to recognize simple cases that don't require body extraction
+
 		enclosingMethod.setCanInline(false);
 
-		// start by exposing various useful things into the frame
+		LazyClassGen shadowClass = getEnclosingClass();
 
-		// now generate the aroundBody method
-		// eg. "private static final void method_aroundBody0(M, M, String, org.aspectj.lang.JoinPoint)"
-		LazyMethodGen extractedShadowMethod = extractShadowInstructionsIntoNewMethod(NameMangler.aroundShadowMethodName(
-				getSignature(), new Integer(getEnclosingClass().getNewGeneratedNameTag()).toString()), Modifier.PRIVATE, munger
-				.getSourceLocation());
+		// Extract the shadow into a new method. For example:
+		// "private static final void method_aroundBody0(M, M, String, org.aspectj.lang.JoinPoint)"
+		// Parameters are: this if there is one, target if there is one and its different to this, then original arguments
+		// at the shadow, then tjp
+		String extractedShadowMethodName = NameMangler.aroundShadowMethodName(getSignature(), shadowClass.getNewGeneratedNameTag());
+		LazyMethodGen extractedShadowMethod = extractShadowInstructionsIntoNewMethod(extractedShadowMethodName, Modifier.PRIVATE,
+				munger.getSourceLocation());
 
 		List argsToCallLocalAdviceMethodWith = new ArrayList();
 		List proceedVarList = new ArrayList();
@@ -2166,9 +2170,8 @@ public class BcelShadow extends Shadow {
 		// We use the munger signature here because it allows for any parameterization of the mungers pointcut that
 		// may have occurred ie. if the pointcut is p(T t) in the super aspect and that has become p(Foo t) in the sub aspect
 		// then here the munger signature will have 'Foo' as an argument in it whilst the adviceMethod argument type will be
-		// 'Object' - since
-		// it represents the advice method in the superaspect which uses the erasure of the type variable p(Object t) - see
-		// pr174449.
+		// 'Object' - since it represents the advice method in the superaspect which uses the erasure of the type variable p(Object
+		// t) - see pr174449.
 
 		Type[] adviceParameterTypes = BcelWorld.makeBcelTypes(munger.getSignature().getParameterTypes());
 		// adviceMethod.getArgumentTypes();
@@ -2202,7 +2205,7 @@ public class BcelShadow extends Shadow {
 			getEnclosingClass().addInlinedSourceFileInfo(donorFileName, adviceMethod.highestLineNumber);
 		}
 
-		getEnclosingClass().addMethodGen(localAdviceMethod);
+		shadowClass.addMethodGen(localAdviceMethod);
 
 		// create a map that will move all slots in advice method forward by extraParamOffset
 		// in order to make room for the new proceed-required arguments that are added at
@@ -2967,7 +2970,7 @@ public class BcelShadow extends Shadow {
 	 */
 	LazyMethodGen extractShadowInstructionsIntoNewMethod(String extractedMethodName, int extractedMethodVisibilityModifier,
 			ISourceLocation adviceSourceLocation) {
-		LazyMethodGen.assertGoodBody(range.getBody(), extractedMethodName);
+		// LazyMethodGen.assertGoodBody(range.getBody(), extractedMethodName);
 		if (!getKind().allowsExtraction())
 			throw new BCException("Attempt to extract method from a shadow kind (" + getKind()
 					+ ") that does not support this operation");
@@ -3135,10 +3138,7 @@ public class BcelShadow extends Shadow {
 			}
 		}
 		return new LazyMethodGen(modifiers, BcelWorld.makeBcelType(returnType), newMethodName, shadowParameterTypes,
-				NoDeclaredExceptions,
-				// XXX again, we need to look up methods!
-				// UnresolvedType.getNames(getSignature().getExceptions(world)),
-				getEnclosingClass());
+				NoDeclaredExceptions, getEnclosingClass());
 	}
 
 	private boolean samePackage(String p1, String p2) {
