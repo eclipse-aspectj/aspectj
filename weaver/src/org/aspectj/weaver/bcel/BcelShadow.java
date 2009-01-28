@@ -2142,7 +2142,7 @@ public class BcelShadow extends Shadow {
 
 		// now generate the aroundBody method
 		// eg. "private static final void method_aroundBody0(M, M, String, org.aspectj.lang.JoinPoint)"
-		LazyMethodGen extractedMethod = extractMethod(NameMangler.aroundCallbackMethodName(getSignature(), new Integer(
+		LazyMethodGen extractedShadowMethod = extractMethod(NameMangler.aroundCallbackMethodName(getSignature(), new Integer(
 				getEnclosingClass().getNewGeneratedNameTag()).toString()), Modifier.PRIVATE, munger);
 
 		List argsToCallLocalAdviceMethodWith = new ArrayList();
@@ -2188,7 +2188,7 @@ public class BcelShadow extends Shadow {
 		// pass, I think that means
 		// there is a LazyMethodGen method that is not correctly setup to call initialize() when it is invoked - but I dont have
 		// time right now to discover which
-		Type[] extractedMethodParameterTypes = extractedMethod.getArgumentTypes();
+		Type[] extractedMethodParameterTypes = extractedShadowMethod.getArgumentTypes();
 		Type[] parameterTypes = new Type[extractedMethodParameterTypes.length + adviceParameterTypes.length + 1];
 		int parameterIndex = 0;
 		System.arraycopy(extractedMethodParameterTypes, 0, parameterTypes, parameterIndex, extractedMethodParameterTypes.length);
@@ -2252,10 +2252,10 @@ public class BcelShadow extends Shadow {
 							: new InstructionList(InstructionConstants.ACONST_NULL)));
 			// adviceMethodInvocation =
 			advice.append(Utility.createInvoke(fact, localAdviceMethod)); // (fact, getWorld(), munger.getSignature()));
-			advice.append(Utility.createConversion(getFactory(), BcelWorld.makeBcelType(mungerSig.getReturnType()), extractedMethod
+			advice.append(Utility.createConversion(getFactory(), BcelWorld.makeBcelType(mungerSig.getReturnType()), extractedShadowMethod
 					.getReturnType(), world.isInJava5Mode()));
 			if (!isFallsThrough()) {
-				advice.append(InstructionFactory.createReturn(extractedMethod.getReturnType()));
+				advice.append(InstructionFactory.createReturn(extractedShadowMethod.getReturnType()));
 			}
 		}
 
@@ -2265,9 +2265,9 @@ public class BcelShadow extends Shadow {
 			range.append(advice);
 		} else {
 			InstructionList afterThingie = new InstructionList(InstructionConstants.NOP);
-			InstructionList callback = makeCallToCallback(extractedMethod);
+			InstructionList callback = makeCallToCallback(extractedShadowMethod);
 			if (terminatesWithReturn()) {
-				callback.append(InstructionFactory.createReturn(extractedMethod.getReturnType()));
+				callback.append(InstructionFactory.createReturn(extractedShadowMethod.getReturnType()));
 			} else {
 				// InstructionHandle endNop = range.insert(fact.NOP, Range.InsideAfter);
 				advice.append(InstructionFactory.createBranchInstruction(Constants.GOTO, afterThingie.getStart()));
@@ -2295,7 +2295,7 @@ public class BcelShadow extends Shadow {
 				if ((inst.opcode == Constants.INVOKESTATIC) && proceedName.equals(((InvokeInstruction) inst).getMethodName(cpg))) {
 
 					localAdviceMethod.getBody().append(curr,
-							getRedoneProceedCall(fact, extractedMethod, munger, localAdviceMethod, proceedVarList));
+							getRedoneProceedCall(fact, extractedShadowMethod, munger, localAdviceMethod, proceedVarList));
 					Utility.deleteInstruction(curr, localAdviceMethod);
 				}
 				curr = next;
@@ -2318,7 +2318,7 @@ public class BcelShadow extends Shadow {
 					} else {
 						isProceedWithArgs = false;
 					}
-					InstructionList insteadProceedIl = getRedoneProceedCallForAnnotationStyle(fact, extractedMethod, munger,
+					InstructionList insteadProceedIl = getRedoneProceedCallForAnnotationStyle(fact, extractedShadowMethod, munger,
 							localAdviceMethod, proceedVarList, isProceedWithArgs);
 					localAdviceMethod.getBody().append(curr, insteadProceedIl);
 					Utility.deleteInstruction(curr, localAdviceMethod);
