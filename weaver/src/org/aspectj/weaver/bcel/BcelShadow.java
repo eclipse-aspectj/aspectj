@@ -2138,12 +2138,12 @@ public class BcelShadow extends Shadow {
 		enclosingMethod.setCanInline(false);
 
 		// start by exposing various useful things into the frame
-		final InstructionFactory fact = getFactory();
 
 		// now generate the aroundBody method
 		// eg. "private static final void method_aroundBody0(M, M, String, org.aspectj.lang.JoinPoint)"
 		LazyMethodGen extractedShadowMethod = extractShadowInstructionsIntoNewMethod(NameMangler.aroundShadowMethodName(
-				getSignature(), new Integer(getEnclosingClass().getNewGeneratedNameTag()).toString()), Modifier.PRIVATE, munger);
+				getSignature(), new Integer(getEnclosingClass().getNewGeneratedNameTag()).toString()), Modifier.PRIVATE, munger
+				.getSourceLocation());
 
 		List argsToCallLocalAdviceMethodWith = new ArrayList();
 		List proceedVarList = new ArrayList();
@@ -2224,6 +2224,8 @@ public class BcelShadow extends Shadow {
 		for (int i = extraParamOffset; i < nVars; i++) {
 			varMap.put(i - extraParamOffset, i);
 		}
+
+		final InstructionFactory fact = getFactory();
 
 		localAdviceMethod.getBody().insert(
 				BcelClassWeaver.genInlineInstructions(adviceMethod, localAdviceMethod, varMap, fact, true));
@@ -2693,7 +2695,7 @@ public class BcelShadow extends Shadow {
 		int linenumber = getSourceLine();
 		// MOVE OUT ALL THE INSTRUCTIONS IN MY SHADOW INTO ANOTHER METHOD!
 		LazyMethodGen callbackMethod = extractShadowInstructionsIntoNewMethod(NameMangler.aroundShadowMethodName(getSignature(),
-				new Integer(getEnclosingClass().getNewGeneratedNameTag()).toString()), 0, munger);
+				new Integer(getEnclosingClass().getNewGeneratedNameTag()).toString()), 0, munger.getSourceLocation());
 
 		BcelVar[] adviceVars = munger.getExposedStateAsBcelVars(true);
 
@@ -2968,12 +2970,20 @@ public class BcelShadow extends Shadow {
 
 	// ---- extraction methods
 
-	public LazyMethodGen extractShadowInstructionsIntoNewMethod(String newMethodName, int visibilityModifier, ShadowMunger munger) {
-		LazyMethodGen.assertGoodBody(range.getBody(), newMethodName);
+	/**
+	 * Extract the instructions in the shadow to a new method.
+	 * 
+	 * @param extractedMethodName name for the new method
+	 * @param extractedMethodVisibilityModifier visibility modifiers for the new method
+	 * @param adviceSourceLocation source location of the advice affecting the shadow
+	 */
+	public LazyMethodGen extractShadowInstructionsIntoNewMethod(String extractedMethodName, int extractedMethodVisibilityModifier,
+			ISourceLocation adviceSourceLocation) {
+		LazyMethodGen.assertGoodBody(range.getBody(), extractedMethodName);
 		if (!getKind().allowsExtraction())
 			throw new BCException("Attempt to extract method from a shadow kind that does not support this operation (" + getKind()
 					+ ")");
-		LazyMethodGen freshMethod = createShadowMethodGen(newMethodName, visibilityModifier);
+		LazyMethodGen freshMethod = createShadowMethodGen(extractedMethodName, extractedMethodVisibilityModifier);
 
 		// System.err.println("******");
 		// System.err.println("ABOUT TO EXTRACT METHOD for" + this);
@@ -2987,7 +2997,7 @@ public class BcelShadow extends Shadow {
 		if (getKind() == PreInitialization) {
 			addPreInitializationReturnCode(freshMethod, getSuperConstructorParameterTypes());
 		}
-		getEnclosingClass().addMethodGen(freshMethod, munger.getSourceLocation());
+		getEnclosingClass().addMethodGen(freshMethod, adviceSourceLocation);
 
 		return freshMethod;
 	}
