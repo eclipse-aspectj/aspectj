@@ -2190,20 +2190,21 @@ public class BcelShadow extends Shadow {
 		// parameterTypes is [Bug, C, org.aspectj.lang.JoinPoint, X, org.aspectj.lang.ProceedingJoinPoint, java.lang.Object,
 		// java.lang.Object]
 
-		// now extract the advice into its own method
-		String localAdviceMethodName = NameMangler.aroundAdviceMethodName(getSignature(), new Integer(getEnclosingClass()
-				.getNewGeneratedNameTag()).toString());
+		// Extract the advice into a new method. This will go in the same type as the shadow
+		// name will be something like foo_aroundBody1$advice
+		String localAdviceMethodName = NameMangler.aroundAdviceMethodName(getSignature(), shadowClass.getNewGeneratedNameTag());
 		LazyMethodGen localAdviceMethod = new LazyMethodGen(Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC, BcelWorld
-				.makeBcelType(mungerSig.getReturnType()), localAdviceMethodName, parameterTypes, new String[0], getEnclosingClass());
+				.makeBcelType(mungerSig.getReturnType()), localAdviceMethodName, parameterTypes, NoDeclaredExceptions, shadowClass);
 
-		String donorFileName = adviceMethod.getEnclosingClass().getInternalFileName();
-		String recipientFileName = getEnclosingClass().getInternalFileName();
-		// System.err.println("donor " + donorFileName);
-		// System.err.println("recip " + recipientFileName);
-		if (!donorFileName.equals(recipientFileName)) {
-			localAdviceMethod.fromFilename = donorFileName;
-			getEnclosingClass().addInlinedSourceFileInfo(donorFileName, adviceMethod.highestLineNumber);
-		}
+		// Doesnt work properly, so leave it out: (jsr45 support)
+		// String donorFileName = adviceMethod.getEnclosingClass().getInternalFileName();
+		// String recipientFileName = getEnclosingClass().getInternalFileName();
+		// // System.err.println("donor " + donorFileName);
+		// // System.err.println("recip " + recipientFileName);
+		// if (!donorFileName.equals(recipientFileName)) {
+		// localAdviceMethod.fromFilename = donorFileName;
+		// getEnclosingClass().addInlinedSourceFileInfo(donorFileName, adviceMethod.highestLineNumber);
+		// }
 
 		shadowClass.addMethodGen(localAdviceMethod);
 
@@ -2222,8 +2223,6 @@ public class BcelShadow extends Shadow {
 				BcelClassWeaver.genInlineInstructions(adviceMethod, localAdviceMethod, varMap, fact, true));
 
 		localAdviceMethod.setMaxLocals(nVars);
-
-		// System.err.println(localAdviceMethod);
 
 		// the shadow is now empty. First, create a correct call
 		// to the around advice. This includes both the call (which may involve
@@ -2971,9 +2970,10 @@ public class BcelShadow extends Shadow {
 	LazyMethodGen extractShadowInstructionsIntoNewMethod(String extractedMethodName, int extractedMethodVisibilityModifier,
 			ISourceLocation adviceSourceLocation) {
 		// LazyMethodGen.assertGoodBody(range.getBody(), extractedMethodName);
-		if (!getKind().allowsExtraction())
+		if (!getKind().allowsExtraction()) {
 			throw new BCException("Attempt to extract method from a shadow kind (" + getKind()
 					+ ") that does not support this operation");
+		}
 		LazyMethodGen newMethod = createShadowMethodGen(extractedMethodName, extractedMethodVisibilityModifier);
 		IntMap remapper = makeRemap();
 		range.extractInstructionsInto(newMethod, remapper, (getKind() != PreInitialization) && isFallsThrough());
