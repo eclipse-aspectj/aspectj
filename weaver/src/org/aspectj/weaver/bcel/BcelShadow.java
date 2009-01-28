@@ -2683,7 +2683,7 @@ public class BcelShadow extends Shadow {
 		int linenumber = getSourceLine();
 		// MOVE OUT ALL THE INSTRUCTIONS IN MY SHADOW INTO ANOTHER METHOD!
 		LazyMethodGen callbackMethod = extractShadowInstructionsIntoNewMethod(NameMangler.aroundShadowMethodName(getSignature(),
-				new Integer(getEnclosingClass().getNewGeneratedNameTag()).toString()), 0, munger.getSourceLocation());
+				getEnclosingClass().getNewGeneratedNameTag()), 0, munger.getSourceLocation());
 
 		BcelVar[] adviceVars = munger.getExposedStateAsBcelVars(true);
 
@@ -2965,29 +2965,21 @@ public class BcelShadow extends Shadow {
 	 * @param extractedMethodVisibilityModifier visibility modifiers for the new method
 	 * @param adviceSourceLocation source location of the advice affecting the shadow
 	 */
-	public LazyMethodGen extractShadowInstructionsIntoNewMethod(String extractedMethodName, int extractedMethodVisibilityModifier,
+	LazyMethodGen extractShadowInstructionsIntoNewMethod(String extractedMethodName, int extractedMethodVisibilityModifier,
 			ISourceLocation adviceSourceLocation) {
 		LazyMethodGen.assertGoodBody(range.getBody(), extractedMethodName);
 		if (!getKind().allowsExtraction())
-			throw new BCException("Attempt to extract method from a shadow kind that does not support this operation (" + getKind()
-					+ ")");
-		LazyMethodGen freshMethod = createShadowMethodGen(extractedMethodName, extractedMethodVisibilityModifier);
-
-		// System.err.println("******");
-		// System.err.println("ABOUT TO EXTRACT METHOD for" + this);
-		// enclosingMethod.print(System.err);
-		// System.err.println("INTO");
-		// freshMethod.print(System.err);
-		// System.err.println("WITH REMAP");
-		// System.err.println(makeRemap());
-
-		range.extractInstructionsInto(freshMethod, makeRemap(), (getKind() != PreInitialization) && isFallsThrough());
+			throw new BCException("Attempt to extract method from a shadow kind (" + getKind()
+					+ ") that does not support this operation");
+		LazyMethodGen newMethod = createShadowMethodGen(extractedMethodName, extractedMethodVisibilityModifier);
+		IntMap remapper = makeRemap();
+		range.extractInstructionsInto(newMethod, remapper, (getKind() != PreInitialization) && isFallsThrough());
 		if (getKind() == PreInitialization) {
-			addPreInitializationReturnCode(freshMethod, getSuperConstructorParameterTypes());
+			addPreInitializationReturnCode(newMethod, getSuperConstructorParameterTypes());
 		}
-		getEnclosingClass().addMethodGen(freshMethod, adviceSourceLocation);
+		getEnclosingClass().addMethodGen(newMethod, adviceSourceLocation);
 
-		return freshMethod;
+		return newMethod;
 	}
 
 	private void addPreInitializationReturnCode(LazyMethodGen extractedMethod, Type[] superConstructorTypes) {
