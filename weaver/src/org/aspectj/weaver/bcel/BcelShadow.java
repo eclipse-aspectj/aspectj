@@ -121,6 +121,8 @@ import org.aspectj.weaver.patterns.ThisOrTargetPointcut;
 
 public class BcelShadow extends Shadow {
 
+	private static final String[] NoDeclaredExceptions = new String[0];
+
 	private ShadowRange range;
 	private final BcelWorld world;
 	private final LazyMethodGen enclosingMethod;
@@ -1144,9 +1146,9 @@ public class BcelShadow extends Shadow {
 		}
 	}
 
-	 public Member getRealEnclosingCodeSignature() {
-			return enclosingMethod.getMemberView();
-	 }
+	public Member getRealEnclosingCodeSignature() {
+		return enclosingMethod.getMemberView();
+	}
 
 	// public Member getEnclosingCodeSignatureForModel() {
 	// if (getKind().isEnclosingKind()) {
@@ -2074,10 +2076,10 @@ public class BcelShadow extends Shadow {
 			if (rm.hasBackingGenericMember())
 				mungerSig = rm.getBackingGenericMember();
 		}
-		ResolvedType declaringType = world.resolve(mungerSig.getDeclaringType(), true);
-		if (declaringType.isMissing()) {
+		ResolvedType declaringAspectType = world.resolve(mungerSig.getDeclaringType(), true);
+		if (declaringAspectType.isMissing()) {
 			world.getLint().cantFindType.signal(new String[] { WeaverMessages.format(
-					WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE, declaringType.getClassName()) }, getSourceLocation(),
+					WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE, declaringAspectType.getClassName()) }, getSourceLocation(),
 					new ISourceLocation[] { munger.getSourceLocation() });
 			// IMessage msg = new Message(
 			// WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE,declaringType.getClassName()),
@@ -2086,7 +2088,7 @@ public class BcelShadow extends Shadow {
 			// world.getMessageHandler().handleMessage(msg);
 		}
 		// ??? might want some checks here to give better errors
-		ResolvedType rt = (declaringType.isParameterizedType() ? declaringType.getGenericType() : declaringType);
+		ResolvedType rt = (declaringAspectType.isParameterizedType() ? declaringAspectType.getGenericType() : declaringAspectType);
 		BcelObjectType ot = BcelWorld.getBcelObjectType(rt);
 		// if (ot==null) {
 		// world.getMessageHandler().handleMessage(
@@ -2143,12 +2145,7 @@ public class BcelShadow extends Shadow {
 		LazyMethodGen extractedMethod = extractMethod(NameMangler.aroundCallbackMethodName(getSignature(), new Integer(
 				getEnclosingClass().getNewGeneratedNameTag()).toString()), Modifier.PRIVATE, munger);
 
-		// now extract the advice into its own method
-		String adviceMethodName = NameMangler.aroundCallbackMethodName(getSignature(), new Integer(getEnclosingClass()
-				.getNewGeneratedNameTag()).toString())
-				+ "$advice";
-
-		List argVarList = new ArrayList();
+		List argsToCallLocalAdviceMethodWith = new ArrayList();
 		List proceedVarList = new ArrayList();
 		int extraParamOffset = 0;
 
@@ -2157,23 +2154,23 @@ public class BcelShadow extends Shadow {
 		// be rationalized in the future
 
 		if (thisVar != null) {
-			argVarList.add(thisVar);
+			argsToCallLocalAdviceMethodWith.add(thisVar);
 			proceedVarList.add(new BcelVar(thisVar.getType(), extraParamOffset));
 			extraParamOffset += thisVar.getType().getSize();
 		}
 
 		if (targetVar != null && targetVar != thisVar) {
-			argVarList.add(targetVar);
+			argsToCallLocalAdviceMethodWith.add(targetVar);
 			proceedVarList.add(new BcelVar(targetVar.getType(), extraParamOffset));
 			extraParamOffset += targetVar.getType().getSize();
 		}
 		for (int i = 0, len = getArgCount(); i < len; i++) {
-			argVarList.add(argVars[i]);
+			argsToCallLocalAdviceMethodWith.add(argVars[i]);
 			proceedVarList.add(new BcelVar(argVars[i].getType(), extraParamOffset));
 			extraParamOffset += argVars[i].getType().getSize();
 		}
 		if (thisJoinPointVar != null) {
-			argVarList.add(thisJoinPointVar);
+			argsToCallLocalAdviceMethodWith.add(thisJoinPointVar);
 			proceedVarList.add(new BcelVar(thisJoinPointVar.getType(), extraParamOffset));
 			extraParamOffset += thisJoinPointVar.getType().getSize();
 		}
@@ -2201,8 +2198,12 @@ public class BcelShadow extends Shadow {
 		System.arraycopy(adviceParameterTypes, 0, parameterTypes, parameterIndex, adviceParameterTypes.length);
 		// parameterTypes is [Bug, C, org.aspectj.lang.JoinPoint, X, org.aspectj.lang.ProceedingJoinPoint, java.lang.Object,
 		// java.lang.Object]
+
+		// now extract the advice into its own method
+		String localAdviceMethodName = NameMangler.aroundAdviceMethodName(getSignature(), new Integer(getEnclosingClass()
+				.getNewGeneratedNameTag()).toString());
 		LazyMethodGen localAdviceMethod = new LazyMethodGen(Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC, BcelWorld
-				.makeBcelType(mungerSig.getReturnType()), adviceMethodName, parameterTypes, new String[0], getEnclosingClass());
+				.makeBcelType(mungerSig.getReturnType()), localAdviceMethodName, parameterTypes, new String[0], getEnclosingClass());
 
 		String donorFileName = adviceMethod.getEnclosingClass().getInternalFileName();
 		String recipientFileName = getEnclosingClass().getInternalFileName();
@@ -2240,7 +2241,7 @@ public class BcelShadow extends Shadow {
 		InstructionList advice = new InstructionList();
 		// InstructionHandle adviceMethodInvocation;
 		{
-			for (Iterator i = argVarList.iterator(); i.hasNext();) {
+			for (Iterator i = argsToCallLocalAdviceMethodWith.iterator(); i.hasNext();) {
 				BcelVar var = (BcelVar) i.next();
 				var.appendLoad(advice, fact);
 			}
@@ -3118,11 +3119,11 @@ public class BcelShadow extends Shadow {
 					targetType = getThisType();
 				}
 			}
-			parameterTypes = addType(BcelWorld.makeBcelType(targetType), parameterTypes);
+			parameterTypes = addTypeToFront(BcelWorld.makeBcelType(targetType), parameterTypes);
 		}
 		if (thisVar != null) {
 			UnresolvedType thisType = getThisType();
-			parameterTypes = addType(BcelWorld.makeBcelType(thisType), parameterTypes);
+			parameterTypes = addTypeToFront(BcelWorld.makeBcelType(thisType), parameterTypes);
 		}
 
 		// We always want to pass down thisJoinPoint in case we have already woven
@@ -3139,16 +3140,18 @@ public class BcelShadow extends Shadow {
 			returnType = UnresolvedType.OBJECTARRAY;
 		} else {
 
-			if (getKind() == ConstructorCall)
+			if (getKind() == ConstructorCall) {
 				returnType = getSignature().getDeclaringType();
-			else if (getKind() == FieldSet)
+			} else if (getKind() == FieldSet) {
 				returnType = ResolvedType.VOID;
-			else
+			} else {
 				returnType = getSignature().getReturnType().resolve(world);
-			// returnType = getReturnType(); // for this and above lines, see pr137496
+				// returnType = getReturnType(); // for this and above lines, see pr137496
+			}
 		}
-		return new LazyMethodGen(modifiers, BcelWorld.makeBcelType(returnType), newMethodName, parameterTypes, new String[0],
-		// XXX again, we need to look up methods!
+		return new LazyMethodGen(modifiers, BcelWorld.makeBcelType(returnType), newMethodName, parameterTypes,
+				NoDeclaredExceptions,
+				// XXX again, we need to look up methods!
 				// UnresolvedType.getNames(getSignature().getExceptions(world)),
 				getEnclosingClass());
 	}
@@ -3161,7 +3164,7 @@ public class BcelShadow extends Shadow {
 		return p1.equals(p2);
 	}
 
-	private Type[] addType(Type type, Type[] types) {
+	private Type[] addTypeToFront(Type type, Type[] types) {
 		int len = types.length;
 		Type[] ret = new Type[len + 1];
 		ret[0] = type;

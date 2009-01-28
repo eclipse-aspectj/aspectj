@@ -234,8 +234,8 @@ public final class LazyClassGen {
 		out.println();
 	}
 
-	public int getNewGeneratedNameTag() {
-		return childCounter++;
+	public String getNewGeneratedNameTag() {
+		return new Integer(childCounter++).toString();
 	}
 
 	// ----
