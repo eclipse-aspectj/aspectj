@@ -2142,7 +2142,7 @@ public class BcelShadow extends Shadow {
 
 		// now generate the aroundBody method
 		// eg. "private static final void method_aroundBody0(M, M, String, org.aspectj.lang.JoinPoint)"
-		LazyMethodGen extractedShadowMethod = extractShadowInstructionsIntoNewMethod(NameMangler.aroundCallbackMethodName(
+		LazyMethodGen extractedShadowMethod = extractShadowInstructionsIntoNewMethod(NameMangler.aroundShadowMethodName(
 				getSignature(), new Integer(getEnclosingClass().getNewGeneratedNameTag()).toString()), Modifier.PRIVATE, munger);
 
 		List argsToCallLocalAdviceMethodWith = new ArrayList();
@@ -2692,7 +2692,7 @@ public class BcelShadow extends Shadow {
 
 		int linenumber = getSourceLine();
 		// MOVE OUT ALL THE INSTRUCTIONS IN MY SHADOW INTO ANOTHER METHOD!
-		LazyMethodGen callbackMethod = extractShadowInstructionsIntoNewMethod(NameMangler.aroundCallbackMethodName(getSignature(),
+		LazyMethodGen callbackMethod = extractShadowInstructionsIntoNewMethod(NameMangler.aroundShadowMethodName(getSignature(),
 				new Integer(getEnclosingClass().getNewGeneratedNameTag()).toString()), 0, munger);
 
 		BcelVar[] adviceVars = munger.getExposedStateAsBcelVars(true);
