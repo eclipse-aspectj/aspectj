@@ -2142,7 +2142,7 @@ public class BcelShadow extends Shadow {
 
 		// now generate the aroundBody method
 		// eg. "private static final void method_aroundBody0(M, M, String, org.aspectj.lang.JoinPoint)"
-		LazyMethodGen extractedShadowMethod = extractMethod(NameMangler.aroundCallbackMethodName(getSignature(), new Integer(
+		LazyMethodGen extractedShadowMethod = createShadowMethodGen(NameMangler.aroundCallbackMethodName(getSignature(), new Integer(
 				getEnclosingClass().getNewGeneratedNameTag()).toString()), Modifier.PRIVATE, munger);
 
 		List argsToCallLocalAdviceMethodWith = new ArrayList();
@@ -2252,8 +2252,8 @@ public class BcelShadow extends Shadow {
 							: new InstructionList(InstructionConstants.ACONST_NULL)));
 			// adviceMethodInvocation =
 			advice.append(Utility.createInvoke(fact, localAdviceMethod)); // (fact, getWorld(), munger.getSignature()));
-			advice.append(Utility.createConversion(getFactory(), BcelWorld.makeBcelType(mungerSig.getReturnType()), extractedShadowMethod
-					.getReturnType(), world.isInJava5Mode()));
+			advice.append(Utility.createConversion(getFactory(), BcelWorld.makeBcelType(mungerSig.getReturnType()),
+					extractedShadowMethod.getReturnType(), world.isInJava5Mode()));
 			if (!isFallsThrough()) {
 				advice.append(InstructionFactory.createReturn(extractedShadowMethod.getReturnType()));
 			}
@@ -2692,7 +2692,7 @@ public class BcelShadow extends Shadow {
 
 		int linenumber = getSourceLine();
 		// MOVE OUT ALL THE INSTRUCTIONS IN MY SHADOW INTO ANOTHER METHOD!
-		LazyMethodGen callbackMethod = extractMethod(NameMangler.aroundCallbackMethodName(getSignature(), new Integer(
+		LazyMethodGen callbackMethod = createShadowMethodGen(NameMangler.aroundCallbackMethodName(getSignature(), new Integer(
 				getEnclosingClass().getNewGeneratedNameTag()).toString()), 0, munger);
 
 		BcelVar[] adviceVars = munger.getExposedStateAsBcelVars(true);
@@ -2968,7 +2968,7 @@ public class BcelShadow extends Shadow {
 
 	// ---- extraction methods
 
-	public LazyMethodGen extractMethod(String newMethodName, int visibilityModifier, ShadowMunger munger) {
+	public LazyMethodGen createShadowMethodGen(String newMethodName, int visibilityModifier, ShadowMunger munger) {
 		LazyMethodGen.assertGoodBody(range.getBody(), newMethodName);
 		if (!getKind().allowsExtraction())
 			throw new BCException("Attempt to extract method from a shadow kind that does not support this operation (" + getKind()
@@ -3082,14 +3082,9 @@ public class BcelShadow extends Shadow {
 	 * this/target If it's argsOnFrame, it shares this and target. ??? rewrite this to do less array munging, please
 	 */
 	private LazyMethodGen createMethodGen(String newMethodName, int visibilityModifier) {
-		Type[] parameterTypes = BcelWorld.makeBcelTypes(getArgTypes());
-		int modifiers = Modifier.FINAL | visibilityModifier;
+		Type[] shadowParameterTypes = BcelWorld.makeBcelTypes(getArgTypes());
+		int modifiers = Modifier.FINAL | Modifier.STATIC | visibilityModifier;
 
-		// XXX some bug
-		// if (! isExpressionKind() && getSignature().isStrict(world)) {
-		// modifiers |= Modifier.STRICT;
-		// }
-		modifiers |= Modifier.STATIC;
 		if (targetVar != null && targetVar != thisVar) {
 			UnresolvedType targetType = getTargetType();
 			targetType = ensureTargetTypeIsCorrect(targetType);
@@ -3119,18 +3114,18 @@ public class BcelShadow extends Shadow {
 					targetType = getThisType();
 				}
 			}
-			parameterTypes = addTypeToFront(BcelWorld.makeBcelType(targetType), parameterTypes);
+			shadowParameterTypes = addTypeToFront(BcelWorld.makeBcelType(targetType), shadowParameterTypes);
 		}
 		if (thisVar != null) {
 			UnresolvedType thisType = getThisType();
-			parameterTypes = addTypeToFront(BcelWorld.makeBcelType(thisType), parameterTypes);
+			shadowParameterTypes = addTypeToFront(BcelWorld.makeBcelType(thisType), shadowParameterTypes);
 		}
 
 		// We always want to pass down thisJoinPoint in case we have already woven
 		// some advice in here. If we only have a single piece of around advice on a
 		// join point, it is unnecessary to accept (and pass) tjp.
 		if (thisJoinPointVar != null) {
-			parameterTypes = addTypeToEnd(LazyClassGen.tjpType, parameterTypes);
+			shadowParameterTypes = addTypeToEnd(LazyClassGen.tjpType, shadowParameterTypes);
 			// FIXME ALEX? which one
 			// parameterTypes = addTypeToEnd(LazyClassGen.proceedingTjpType, parameterTypes);
 		}
@@ -3149,7 +3144,7 @@ public class BcelShadow extends Shadow {
 				// returnType = getReturnType(); // for this and above lines, see pr137496
 			}
 		}
-		return new LazyMethodGen(modifiers, BcelWorld.makeBcelType(returnType), newMethodName, parameterTypes,
+		return new LazyMethodGen(modifiers, BcelWorld.makeBcelType(returnType), newMethodName, shadowParameterTypes,
 				NoDeclaredExceptions,
 				// XXX again, we need to look up methods!
 				// UnresolvedType.getNames(getSignature().getExceptions(world)),
