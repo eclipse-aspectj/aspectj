@@ -2081,22 +2081,10 @@ public class BcelShadow extends Shadow {
 			world.getLint().cantFindType.signal(new String[] { WeaverMessages.format(
 					WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE, declaringAspectType.getClassName()) }, getSourceLocation(),
 					new ISourceLocation[] { munger.getSourceLocation() });
-			// IMessage msg = new Message(
-			// WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE,declaringType.getClassName()),
-			// "",IMessage.ERROR,getSourceLocation(),null,
-			// new ISourceLocation[]{ munger.getSourceLocation()});
-			// world.getMessageHandler().handleMessage(msg);
 		}
 		// ??? might want some checks here to give better errors
 		ResolvedType rt = (declaringAspectType.isParameterizedType() ? declaringAspectType.getGenericType() : declaringAspectType);
 		BcelObjectType ot = BcelWorld.getBcelObjectType(rt);
-		// if (ot==null) {
-		// world.getMessageHandler().handleMessage(
-		// MessageUtil.warn("Unable to find modifiable delegate for the aspect '"+rt.getName()+
-		// "' containing around advice - cannot implement inlining",munger.getSourceLocation()));
-		// weaveAroundClosure(munger, hasDynamicTest);
-		// return;
-		// }
 		LazyMethodGen adviceMethod = ot.getLazyClassGen().getLazyMethodGen(mungerSig);
 		if (!adviceMethod.getCanInline()) {
 			weaveAroundClosure(munger, hasDynamicTest);
