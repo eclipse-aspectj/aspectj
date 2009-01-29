@@ -2082,6 +2082,7 @@ public class BcelShadow extends Shadow {
 					WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE, declaringAspectType.getClassName()) }, getSourceLocation(),
 					new ISourceLocation[] { munger.getSourceLocation() });
 		}
+
 		// ??? might want some checks here to give better errors
 		ResolvedType rt = (declaringAspectType.isParameterizedType() ? declaringAspectType.getGenericType() : declaringAspectType);
 		BcelObjectType ot = BcelWorld.getBcelObjectType(rt);
@@ -2134,8 +2135,9 @@ public class BcelShadow extends Shadow {
 		// Parameters are: this if there is one, target if there is one and its different to this, then original arguments
 		// at the shadow, then tjp
 		String extractedShadowMethodName = NameMangler.aroundShadowMethodName(getSignature(), shadowClass.getNewGeneratedNameTag());
+		List parameterNames = new ArrayList();
 		LazyMethodGen extractedShadowMethod = extractShadowInstructionsIntoNewMethod(extractedShadowMethodName, Modifier.PRIVATE,
-				munger.getSourceLocation());
+				munger.getSourceLocation(), parameterNames);
 
 		List argsToCallLocalAdviceMethodWith = new ArrayList();
 		List proceedVarList = new ArrayList();
@@ -2181,11 +2183,11 @@ public class BcelShadow extends Shadow {
 		adviceMethod.getArgumentTypes();
 
 		Type[] extractedMethodParameterTypes = extractedShadowMethod.getArgumentTypes();
+
 		Type[] parameterTypes = new Type[extractedMethodParameterTypes.length + adviceParameterTypes.length + 1];
 		int parameterIndex = 0;
 		System.arraycopy(extractedMethodParameterTypes, 0, parameterTypes, parameterIndex, extractedMethodParameterTypes.length);
 		parameterIndex += extractedMethodParameterTypes.length;
-
 		parameterTypes[parameterIndex++] = BcelWorld.makeBcelType(adviceMethod.getEnclosingClass().getType());
 		System.arraycopy(adviceParameterTypes, 0, parameterTypes, parameterIndex, adviceParameterTypes.length);
 
@@ -2314,6 +2316,41 @@ public class BcelShadow extends Shadow {
 				}
 				curr = next;
 			}
+		}
+
+		// if (parameterNames.size() == 0) {
+		// On return we have inserted the advice body into the local advice method. We have remapped all the local variables
+		// that were referenced in the advice as we did the copy, and so the local variable table for localAdviceMethod is
+		// now lacking any information about all the initial variables.
+		InstructionHandle start = localAdviceMethod.getBody().getStart();
+		InstructionHandle end = localAdviceMethod.getBody().getEnd();
+
+		// Find the real start and end
+		while (start.getInstruction().opcode == Constants.IMPDEP1) {
+			start = start.getNext();
+		}
+		while (end.getInstruction().opcode == Constants.IMPDEP1) {
+			end = end.getPrev();
+		}
+		Type[] args = localAdviceMethod.getArgumentTypes();
+		int i = 0;
+		for (int slot = 0; slot < extraParamOffset; i++) {
+			String argumentName = null;
+			if (i >= args.length || parameterNames.size() == 0 || i >= parameterNames.size()) {
+				// this should be unnecessary as I think all known joinpoints and helper methods
+				// propagate the parameter names around correctly - but just in case let us do this
+				// rather than fail. If a bug is raised reporting unknown as a local variable name
+				// then investigate the joinpoint giving rise to the ResolvedMember and why it has
+				// no parameter names specified
+				argumentName = new StringBuffer("unknown").append(i).toString();
+			} else {
+				argumentName = (String) parameterNames.get(i);
+			}
+			String argumentSignature = args[i].getSignature();
+			LocalVariableTag lvt = new LocalVariableTag(argumentSignature, argumentName, slot, 0);
+			start.addTargeter(lvt);
+			end.addTargeter(lvt);
+			slot += args[slot].getSize();
 		}
 	}
 
@@ -2682,7 +2719,7 @@ public class BcelShadow extends Shadow {
 		int linenumber = getSourceLine();
 		// MOVE OUT ALL THE INSTRUCTIONS IN MY SHADOW INTO ANOTHER METHOD!
 		LazyMethodGen callbackMethod = extractShadowInstructionsIntoNewMethod(NameMangler.aroundShadowMethodName(getSignature(),
-				getEnclosingClass().getNewGeneratedNameTag()), 0, munger.getSourceLocation());
+				getEnclosingClass().getNewGeneratedNameTag()), 0, munger.getSourceLocation(), new ArrayList());
 
 		BcelVar[] adviceVars = munger.getExposedStateAsBcelVars(true);
 
@@ -2965,20 +3002,19 @@ public class BcelShadow extends Shadow {
 	 * @param adviceSourceLocation source location of the advice affecting the shadow
 	 */
 	LazyMethodGen extractShadowInstructionsIntoNewMethod(String extractedMethodName, int extractedMethodVisibilityModifier,
-			ISourceLocation adviceSourceLocation) {
+			ISourceLocation adviceSourceLocation, List parameterNames) {
 		// LazyMethodGen.assertGoodBody(range.getBody(), extractedMethodName);
 		if (!getKind().allowsExtraction()) {
 			throw new BCException("Attempt to extract method from a shadow kind (" + getKind()
 					+ ") that does not support this operation");
 		}
-		LazyMethodGen newMethod = createShadowMethodGen(extractedMethodName, extractedMethodVisibilityModifier);
+		LazyMethodGen newMethod = createShadowMethodGen(extractedMethodName, extractedMethodVisibilityModifier, parameterNames);
 		IntMap remapper = makeRemap();
 		range.extractInstructionsInto(newMethod, remapper, (getKind() != PreInitialization) && isFallsThrough());
 		if (getKind() == PreInitialization) {
 			addPreInitializationReturnCode(newMethod, getSuperConstructorParameterTypes());
 		}
 		getEnclosingClass().addMethodGen(newMethod, adviceSourceLocation);
-
 		return newMethod;
 	}
 
@@ -3071,10 +3107,9 @@ public class BcelShadow extends Shadow {
 	 * The new method always static. It may take some extra arguments: this, target. If it's argsOnStack, then it must take both
 	 * this/target If it's argsOnFrame, it shares this and target. ??? rewrite this to do less array munging, please
 	 */
-	private LazyMethodGen createShadowMethodGen(String newMethodName, int visibilityModifier) {
+	private LazyMethodGen createShadowMethodGen(String newMethodName, int visibilityModifier, List parameterNames) {
 		Type[] shadowParameterTypes = BcelWorld.makeBcelTypes(getArgTypes());
 		int modifiers = Modifier.FINAL | Modifier.STATIC | visibilityModifier;
-
 		if (targetVar != null && targetVar != thisVar) {
 			UnresolvedType targetType = getTargetType();
 			targetType = ensureTargetTypeIsCorrect(targetType);
@@ -3104,27 +3139,40 @@ public class BcelShadow extends Shadow {
 					targetType = getThisType();
 				}
 			}
+			parameterNames.add("target");
+			// There is a 'target' and it is not the same as 'this', so add it to the parameter list
 			shadowParameterTypes = addTypeToFront(BcelWorld.makeBcelType(targetType), shadowParameterTypes);
 		}
+
 		if (thisVar != null) {
 			UnresolvedType thisType = getThisType();
+			parameterNames.add(0, "this");
 			shadowParameterTypes = addTypeToFront(BcelWorld.makeBcelType(thisType), shadowParameterTypes);
+		}
+
+		if (this.getKind() == Shadow.FieldSet || this.getKind() == Shadow.FieldGet) {
+			parameterNames.add(getSignature().getName());
+		} else {
+			String[] pnames = getSignature().getParameterNames(world);
+			if (pnames != null) {
+				for (int i = 0; i < pnames.length; i++) {
+					parameterNames.add(pnames[i]);
+				}
+			}
 		}
 
 		// We always want to pass down thisJoinPoint in case we have already woven
 		// some advice in here. If we only have a single piece of around advice on a
 		// join point, it is unnecessary to accept (and pass) tjp.
 		if (thisJoinPointVar != null) {
+			parameterNames.add("thisJoinPoint");
 			shadowParameterTypes = addTypeToEnd(LazyClassGen.tjpType, shadowParameterTypes);
-			// FIXME ALEX? which one
-			// parameterTypes = addTypeToEnd(LazyClassGen.proceedingTjpType, parameterTypes);
 		}
 
 		UnresolvedType returnType;
 		if (getKind() == PreInitialization) {
 			returnType = UnresolvedType.OBJECTARRAY;
 		} else {
-
 			if (getKind() == ConstructorCall) {
 				returnType = getSignature().getDeclaringType();
 			} else if (getKind() == FieldSet) {
