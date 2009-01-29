@@ -475,6 +475,7 @@ public class AjcMemberMaker {
 		ResolvedMemberImpl rmi = new ResolvedMemberImpl(Member.METHOD, meth.getDeclaringType(), modifiers, meth.getReturnType(),
 				NameMangler.interMethod(meth.getModifiers(), aspectType, meth.getDeclaringType(), meth.getName()), meth
 						.getParameterTypes(), meth.getExceptions());
+		rmi.setParameterNames(meth.getParameterNames());
 		rmi.setTypeVariables(meth.getTypeVariables());
 		return rmi;
 	}
@@ -527,7 +528,7 @@ public class AjcMemberMaker {
 
 		ResolvedMemberImpl rmi = new ResolvedMemberImpl(Member.METHOD, aspectType, PUBLIC_STATIC, meth.getReturnType(), NameMangler
 				.interMethodDispatcher(aspectType, meth.getDeclaringType(), meth.getName()), paramTypes, meth.getExceptions());
-
+		rmi.setParameterNames(meth.getParameterNames());
 		rmi.setTypeVariables(meth.getTypeVariables());
 
 		return rmi;
@@ -549,6 +550,7 @@ public class AjcMemberMaker {
 
 		ResolvedMemberImpl rmi = new ResolvedMemberImpl(Member.METHOD, aspectType, modifiers, meth.getReturnType(), NameMangler
 				.interMethodBody(aspectType, meth.getDeclaringType(), meth.getName()), paramTypes, meth.getExceptions());
+		rmi.setParameterNames(meth.getParameterNames());
 		rmi.setTypeVariables(meth.getTypeVariables());
 		return rmi;
 	}
