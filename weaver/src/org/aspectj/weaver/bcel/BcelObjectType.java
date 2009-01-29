@@ -436,8 +436,10 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			AjAttribute a = (AjAttribute) iter.next();
 			if (a instanceof AjAttribute.DeclareAttribute) {
 				Declare decl = (((AjAttribute.DeclareAttribute) a).getDeclare());
-				if (decl instanceof DeclareErrorOrWarning || decl instanceof DeclarePrecedence) {
+				if (decl instanceof DeclareErrorOrWarning) {
 					decl.resolve(bindingScope);
+				} else if (decl instanceof DeclarePrecedence) {
+					((DeclarePrecedence) decl).setScopeForResolution(bindingScope);
 				}
 			}
 		}
@@ -538,7 +540,6 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		return wvInfo;
 	}
 
-
 	// -- annotation related
 
 	public ResolvedType[] getAnnotationTypes() {
@@ -560,7 +561,6 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		}
 		return false;
 	}
-
 
 	public boolean isAnnotationWithRuntimeRetention() {
 		return (getRetentionPolicy() == null ? false : getRetentionPolicy().equals("RUNTIME"));
