@@ -880,11 +880,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 
 		if (fieldDeclaration.initialization != null && !(fieldDeclaration.initialization instanceof QualifiedAllocationExpression)) {
 			output.append(" = "); //$NON-NLS-1$
-			if (fieldDeclaration.initialization instanceof ExtendedStringLiteral) {
-				output.append("\"<extended string literal>\"");
-			} else {
-				fieldDeclaration.initialization.printExpression(0, output);
-			}
+			fieldDeclaration.initialization.printExpression(0, output);
 		} else if (fieldDeclaration.initialization instanceof QualifiedAllocationExpression) {
 			QualifiedAllocationExpression qae = (QualifiedAllocationExpression) fieldDeclaration.initialization;
 			StringBuffer sb = new StringBuffer();
