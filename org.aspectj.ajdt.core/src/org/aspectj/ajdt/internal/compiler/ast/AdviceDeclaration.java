@@ -331,7 +331,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		}
 
 		if (kind == AdviceKind.Around) {
-			extraArgument = makeFinalArgument("ajc_aroundClosure", AjTypeConstants.getAroundClosureType());
+			extraArgument = makeFinalArgument("ajc$aroundClosure", AjTypeConstants.getAroundClosureType());
 		}
 
 		int addedArguments = 3;
