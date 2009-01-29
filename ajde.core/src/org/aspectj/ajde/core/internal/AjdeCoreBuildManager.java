@@ -77,7 +77,7 @@ public class AjdeCoreBuildManager {
 		// If an incremental build is requested, check that we can
 		if (!fullBuild) {
 			AjState existingState = IncrementalStateManager.retrieveStateFor(compiler.getId());
-			if (existingState == null) {
+			if (existingState == null || existingState.getBuildConfig() == null) {
 				// No existing state so we must do a full build
 				fullBuild = true;
 			} else {
@@ -125,13 +125,6 @@ public class AjdeCoreBuildManager {
 				}
 				ajBuildManager.incrementalBuild(buildConfig, msgHandlerAdapter);
 			}
-			/*
-			 * if (buildFresh) { AjBuildConfig buildConfig = genAjBuildConfig(); if (buildConfig == null) return;
-			 * ajBuildManager.batchBuild(buildConfig,msgHandlerAdapter); } else { AjBuildConfig buildConfig =
-			 * ajBuildManager.getState().getBuildConfig();
-			 * 
-			 * ajBuildManager.incrementalBuild(buildConfig,msgHandlerAdapter); }
-			 */
 			IncrementalStateManager.recordSuccessfulBuild(compiler.getId(), ajBuildManager.getState());
 
 		} catch (ConfigParser.ParseException pe) {
