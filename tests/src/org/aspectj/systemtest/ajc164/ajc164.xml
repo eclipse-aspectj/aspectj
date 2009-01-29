@@ -2,6 +2,19 @@
 
 <suite>
     
+
+    <ajc-test dir="bugs164/pr194314" title="broken lvt - 1">
+      <compile files="Service.java IService.java Main.java ServiceInterceptor.java" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs164/pr194314" title="broken lvt - 2">
+      <compile files="Service.java IService.java Main.java ServiceInterceptorCodeStyle.java" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs164/pr194314" title="broken lvt - 3">
+      <compile files="ITDOne.java" options="-1.5"/>
+    </ajc-test>
+    
     <ajc-test dir="bugs164/pr262509" title="debugging before advice">
       <compile files="Foo.java" options="-1.5"/>
     </ajc-test> 
