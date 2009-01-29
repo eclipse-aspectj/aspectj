@@ -26,6 +26,7 @@ import org.aspectj.weaver.World;
 
 public class DeclarePrecedence extends Declare {
 	private TypePatternList patterns;
+	private IScope scope = null; // non-null means it has not yet been resolved (used by annotation style lazy resolution)
 
 	public DeclarePrecedence(List patterns) {
 		this(new TypePatternList(patterns));
@@ -76,13 +77,21 @@ public class DeclarePrecedence extends Declare {
 		return ret;
 	}
 
-	boolean underResolution = false;
+	public void setScopeForResolution(IScope scope) {
+		this.scope = scope;
+	}
+
+	public void ensureResolved() { // Lazy resolution - due to pr256779
+		if (scope != null) {
+			try {
+				resolve(scope);
+			} finally {
+				scope = null;
+			}
+		}
+	}
 
 	public void resolve(IScope scope) {
-		// if (underResolution) {
-		// return;
-		// }
-		// underResolution = true;
 		patterns = patterns.resolveBindings(scope, Bindings.NONE, false, false);
 		boolean seenStar = false;
 
@@ -101,7 +110,8 @@ public class DeclarePrecedence extends Declare {
 				continue;
 
 			// Cannot do a dec prec specifying a non-aspect types unless suffixed with a '+'
-			if (!exactType.isAspect() && !pi.isIncludeSubtypes() && !exactType.isTypeVariableReference()) {
+			if (!exactType.isAspect() && !exactType.isAnnotationStyleAspect() && !pi.isIncludeSubtypes()
+					&& !exactType.isTypeVariableReference()) {
 				scope.getWorld().showMessage(IMessage.ERROR,
 						WeaverMessages.format(WeaverMessages.CLASSES_IN_PRECEDENCE, exactType.getName()), pi.getSourceLocation(),
 						null);
@@ -119,15 +129,16 @@ public class DeclarePrecedence extends Declare {
 							pi.getSourceLocation(), pj.getSourceLocation());
 				}
 			}
-			// underResolution = false;
 		}
 	}
 
 	public TypePatternList getPatterns() {
+		ensureResolved();
 		return patterns;
 	}
 
 	private int matchingIndex(ResolvedType a) {
+		ensureResolved();
 		int knownMatch = -1;
 		int starMatch = -1;
 		for (int i = 0, len = patterns.size(); i < len; i++) {
@@ -152,6 +163,7 @@ public class DeclarePrecedence extends Declare {
 	}
 
 	public int compare(ResolvedType aspect1, ResolvedType aspect2) {
+		ensureResolved();
 		int index1 = matchingIndex(aspect1);
 		int index2 = matchingIndex(aspect2);
 
