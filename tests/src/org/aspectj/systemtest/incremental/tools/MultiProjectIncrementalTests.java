@@ -258,6 +258,31 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("Unexpected compiler error", 0, l.size());
 	}
 
+	public void testItdProb() {
+		AjdeInteractionTestbed.VERBOSE = true;
+		String p = "itdprob";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+		List l = getCompilerErrorMessages(p);
+		assertEquals("Unexpected compiler error", 0, l.size());
+	}
+/*
+	public void testGenericITD_pr262257() throws IOException {
+		String p = "pr262257";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+
+		dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
+		PrintWriter pw = new PrintWriter(System.out);
+		getModelFor(p).dumprels(pw);
+		pw.flush();
+	}
+*/
 	public void testAnnotations_pr262154() {
 		String p = "pr262154";
 		initialiseProject(p);
