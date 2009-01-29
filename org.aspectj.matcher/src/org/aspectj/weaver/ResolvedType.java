@@ -1818,6 +1818,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			if (member.getKind() == Member.CONSTRUCTOR) {
 				ResolvedMemberImpl ret = new ResolvedMemberImpl(Member.CONSTRUCTOR, this, Modifier.PUBLIC, ResolvedType.VOID,
 						"<init>", world.resolve(member.getParameterTypes()));
+				// Give the parameters names - they are going to be the dimensions uses to build the array (dim0 > dimN)
+				int count = ret.getParameterTypes().length;
+				String[] paramNames = new String[count];
+				for (int i = 0; i < count; i++) {
+					paramNames[i] = new StringBuffer("dim").append(i).toString();
+				}
+				ret.setParameterNames(paramNames);
 				return ret;
 			}
 		}
