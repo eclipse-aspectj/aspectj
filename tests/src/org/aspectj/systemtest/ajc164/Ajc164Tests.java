@@ -24,6 +24,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testAnnoDecprecedence_pr256779() {
+		runTest("anno decprecedence");
+	}	
+	
 	// 
 	public void testBrokenLVT_pr194314_1() throws Exception {
 		runTest("broken lvt - 1");
