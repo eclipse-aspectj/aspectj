@@ -13,6 +13,7 @@
 package org.aspectj.weaver.bcel;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.weaver.NameMangler;
@@ -38,7 +39,7 @@ public class MoveInstructionsWeaveTestCase extends WeaveTestCase {
 				BcelShadow shadow = (BcelShadow) s;
 				LazyMethodGen newMethod = shadow.extractShadowInstructionsIntoNewMethod(NameMangler.getExtractableName(shadow
 						.getSignature())
-						+ "_extracted", 0, this.getSourceLocation());
+						+ "_extracted", 0, this.getSourceLocation(), new ArrayList());
 				shadow.getRange().append(shadow.makeCallToCallback(newMethod));
 
 				if (!shadow.isFallsThrough()) {
@@ -64,7 +65,7 @@ public class MoveInstructionsWeaveTestCase extends WeaveTestCase {
 				BcelShadow shadow = (BcelShadow) s;
 				LazyMethodGen newMethod = shadow.extractShadowInstructionsIntoNewMethod(NameMangler.getExtractableName(shadow
 						.getSignature())
-						+ "_extracted" + counter++, 0, this.getSourceLocation());
+						+ "_extracted" + counter++, 0, this.getSourceLocation(), new ArrayList());
 				shadow.getRange().append(shadow.makeCallToCallback(newMethod));
 
 				if (!shadow.isFallsThrough()) {
