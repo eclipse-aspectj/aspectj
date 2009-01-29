@@ -59,7 +59,7 @@ public class ReferenceType extends ResolvedType {
 	// added to the class during weaving.
 	private ResolvedType[] annotationTypes = null;
 	private AnnotationAJ[] annotations = null;
-	
+
 	// Similarly these are temporary replacements and additions for the superclass and
 	// superinterfaces
 	private ResolvedType newSuperclass;
@@ -825,6 +825,7 @@ public class ReferenceType extends ResolvedType {
 			}
 		}
 		clearParameterizationCaches();
+		ensureConsistent();
 	}
 
 	private void clearParameterizationCaches() {
@@ -918,7 +919,6 @@ public class ReferenceType extends ResolvedType {
 		newSuperclass = null;
 		newInterfaces = null;
 	}
-
 
 	public void addParent(ResolvedType newParent) {
 		if (newParent.isClass()) {
