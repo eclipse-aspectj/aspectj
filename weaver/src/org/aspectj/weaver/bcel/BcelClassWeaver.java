@@ -2145,6 +2145,21 @@ class BcelClassWeaver implements IClassWeaver {
 					Tag fresh = (Tag) tagMap.get(oldTag);
 					if (fresh == null) {
 						fresh = oldTag.copy();
+						if (old instanceof LocalVariableTag) {
+							// LocalVariable
+							LocalVariableTag lvTag = (LocalVariableTag) old;
+							LocalVariableTag lvTagFresh = (LocalVariableTag) fresh;
+							if (lvTag.getSlot() == 0) {
+								fresh = new LocalVariableTag(lvTag.getRealType().getSignature(), "ajc$aspectInstance", frameEnv
+										.get(lvTag.getSlot()), 0);
+							} else {
+								// // Do not move it - when copying the code from the aspect to the affected target, 'this' is
+								// // going to change from aspect to affected type. So just fix the type
+								// System.out.println("For local variable tag at instruction " + src + " changing slot from "
+								// + lvTag.getSlot() + " > " + frameEnv.get(lvTag.getSlot()));
+								lvTagFresh.updateSlot(frameEnv.get(lvTag.getSlot()));
+							}
+						}
 						tagMap.put(oldTag, fresh);
 					}
 					dest.addTargeter(fresh);
@@ -2458,6 +2473,7 @@ class BcelClassWeaver implements IClassWeaver {
 					// in the effective signature
 					// would mean keeping two sets up to date (no way!!)
 
+					fixParameterNamesForResolvedMember(rm, mg.getMemberView());
 					fixAnnotationsForResolvedMember(rm, mg.getMemberView());
 
 					enclosingShadow = BcelShadow.makeShadowForMethod(world, mg, effective.getShadowKind(), rm);
@@ -2828,6 +2844,41 @@ class BcelClassWeaver implements IClassWeaver {
 	 * @param rm the sig we want it to pretend to be 'int A.m()' or somesuch ITD like thing
 	 * @param declaredSig the real sig 'blah.ajc$xxx'
 	 */
+	private void fixParameterNamesForResolvedMember(ResolvedMember rm, ResolvedMember declaredSig) {
+
+		UnresolvedType memberHostType = declaredSig.getDeclaringType();
+		String methodName = declaredSig.getName();
+		String[] pnames = null;
+		if (rm.getKind() == Member.METHOD && !rm.isAbstract()) {
+			if (methodName.startsWith("ajc$inlineAccessMethod") || methodName.startsWith("ajc$superDispatch")) {
+				ResolvedMember resolvedDooberry = world.resolve(declaredSig);
+				pnames = resolvedDooberry.getParameterNames();
+			} else {
+				ResolvedMember realthing = AjcMemberMaker.interMethodDispatcher(rm.resolve(world), memberHostType).resolve(world);
+				ResolvedMember theRealMember = findResolvedMemberNamed(memberHostType.resolve(world), realthing.getName());
+				if (theRealMember != null) {
+					pnames = theRealMember.getParameterNames();
+					// static ITDs don't need any parameter shifting
+					if (pnames.length > 0 && pnames[0].equals("ajc$this_")) {
+						String[] pnames2 = new String[pnames.length - 1];
+						System.arraycopy(pnames, 1, pnames2, 0, pnames2.length);
+						pnames = pnames2;
+					}
+				}
+			}
+			// i think ctors are missing from here... copy code from below...
+		}
+		rm.setParameterNames(pnames);
+	}
+
+	/**
+	 * For a given resolvedmember, this will discover the real annotations for it. <b>Should only be used when the resolvedmember is
+	 * the contents of an effective signature attribute, as thats the only time when the annotations aren't stored directly in the
+	 * resolvedMember</b>
+	 * 
+	 * @param rm the sig we want it to pretend to be 'int A.m()' or somesuch ITD like thing
+	 * @param declaredSig the real sig 'blah.ajc$xxx'
+	 */
 	private void fixAnnotationsForResolvedMember(ResolvedMember rm, ResolvedMember declaredSig) {
 		try {
 			UnresolvedType memberHostType = declaredSig.getDeclaringType();
@@ -2916,7 +2967,7 @@ class BcelClassWeaver implements IClassWeaver {
 					return;
 
 				ResolvedMember rm = effectiveSig.getEffectiveSignature();
-
+				fixParameterNamesForResolvedMember(rm, declaredSig);
 				fixAnnotationsForResolvedMember(rm, declaredSig); // abracadabra
 
 				if (canMatch(effectiveSig.getShadowKind()))
