@@ -24,6 +24,106 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	// 
+	public void testBrokenLVT_pr194314_1() throws Exception {
+		runTest("broken lvt - 1");
+		Method m = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "Service"), "method_aroundBody1$advice");
+		if (m.getLocalVariableTable() == null) {
+			fail("Local variable table should not be null");
+		}
+		// Method:
+		// private static final void method_aroundBody1$advice(Service, long, JoinPoint, ServiceInterceptor, ProceedingJoinPoint);
+		LocalVariable[] lvt = m.getLocalVariableTable().getLocalVariableTable();
+		assertEquals(7, lvt.length); // no aroundClosure compared to second version of this test
+		assertEquals("LService; this(0) start=0 len=86", stringify(m.getLocalVariableTable(), 0));
+		assertEquals("J l(1) start=0 len=86", stringify(m.getLocalVariableTable(), 1));
+		assertEquals("Lorg/aspectj/lang/JoinPoint; thisJoinPoint(3) start=0 len=86", stringify(m.getLocalVariableTable(), 2));
+		assertEquals("LServiceInterceptor; ajc$aspectInstance(4) start=0 len=86", stringify(m.getLocalVariableTable(), 3));
+		assertEquals("Lorg/aspectj/lang/ProceedingJoinPoint; pjp(5) start=0 len=86", stringify(m.getLocalVariableTable(), 4));
+		assertEquals("[Ljava/lang/Object; args(6) start=9 len=77", stringify(m.getLocalVariableTable(), 5));
+		assertEquals("J id(7) start=21 len=65", stringify(m.getLocalVariableTable(), 6));
+
+	}
+
+	public void testBrokenLVT_pr194314_2() throws Exception {
+		runTest("broken lvt - 2");
+		Method m = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "Service"), "method_aroundBody1$advice");
+		if (m.getLocalVariableTable() == null) {
+			fail("Local variable table should not be null");
+		}
+		System.out.println(m.getLocalVariableTable());
+		LocalVariable[] lvt = m.getLocalVariableTable().getLocalVariableTable();
+		assertEquals(8, lvt.length);
+		// private static final void method_aroundBody1$advice(Service, long, JoinPoint, ServiceInterceptorCodeStyle, AroundClosure,
+		// JoinPoint);
+		assertEquals("LService; this(0) start=0 len=68", stringify(m.getLocalVariableTable(), 0));
+		assertEquals("J l(1) start=0 len=68", stringify(m.getLocalVariableTable(), 1));
+		assertEquals("Lorg/aspectj/lang/JoinPoint; thisJoinPoint(3) start=0 len=68", stringify(m.getLocalVariableTable(), 2));
+		assertEquals("LServiceInterceptorCodeStyle; ajc$aspectInstance(4) start=0 len=68", stringify(m.getLocalVariableTable(), 3));
+		assertEquals("Lorg/aspectj/runtime/internal/AroundClosure; ajc$aroundClosure(5) start=0 len=68", stringify(m
+				.getLocalVariableTable(), 4));
+		assertEquals("Lorg/aspectj/lang/JoinPoint; thisJoinPoint(6) start=0 len=68", stringify(m.getLocalVariableTable(), 5));
+		assertEquals("[Ljava/lang/Object; args(7) start=9 len=59", stringify(m.getLocalVariableTable(), 6));
+		assertEquals("J id(8) start=21 len=47", stringify(m.getLocalVariableTable(), 7));
+	}
+
+	/**
+	 * This test checks that local variable table for the interMethodDispatcher is built correctly, for the related code see
+	 * IntertypeMethodDeclaration.generateDispatchMethod(). It checks non-static and static ITDs. Once the information here is
+	 * correct then around advice on ITDs can also be correct.
+	 */
+	public void testBrokenLVT_pr194314_3() throws Exception {
+		runTest("broken lvt - 3");
+		// Check intermethoddispatchers have the lvts correct
+		// first ITD: public void I.foo(String s,int i,String[] ss) {}
+
+		Method m = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "X"), "ajc$interMethodDispatch1$X$I$foo");
+		LocalVariableTable lvt = m.getLocalVariableTable();
+		assertNotNull(lvt);
+		assertEquals("LI; ajc$this_(0) start=0 len=10", stringify(lvt, 0));
+		assertEquals("Ljava/lang/String; s(1) start=0 len=10", stringify(lvt, 1));
+		assertEquals("I i(2) start=0 len=10", stringify(lvt, 2));
+		assertEquals("[Ljava/lang/String; ss(3) start=0 len=10", stringify(lvt, 3));
+
+		// second ITD: public void I.fooStatic(Long l,int i,String[] ss) {}
+		m = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "X"), "ajc$interMethodDispatch1$X$C$fooStatic");
+		lvt = m.getLocalVariableTable();
+		assertNotNull(lvt);
+		assertEquals("J l(0) start=0 len=7", stringify(lvt, 0));
+		assertEquals("I i(2) start=0 len=7", stringify(lvt, 1));
+		assertEquals("[Ljava/lang/String; ss(3) start=0 len=7", stringify(lvt, 2));
+
+		// Now let's check the around advice on the calls to those ITDs
+
+		// non-static:
+
+		m = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "C"), "foo_aroundBody1$advice");
+		lvt = m.getLocalVariableTable();
+		assertNotNull(lvt);
+
+		assertEquals("LC; this(0) start=0 len=0", stringify(lvt, 0));
+		assertEquals("LI; target(1) start=0 len=0", stringify(lvt, 1));
+		assertEquals("Ljava/lang/String; s(2) start=0 len=0", stringify(lvt, 2));
+		assertEquals("I i(3) start=0 len=0", stringify(lvt, 3));
+		assertEquals("[Ljava/lang/String; ss(4) start=0 len=0", stringify(lvt, 4));
+		assertEquals("LX; ajc$aspectInstance(5) start=0 len=0", stringify(lvt, 5));
+		assertEquals("Lorg/aspectj/runtime/internal/AroundClosure; ajc$aroundClosure(6) start=0 len=0", stringify(lvt, 6));
+
+		// static:
+
+		m = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "C"), "fooStatic_aroundBody3$advice");
+		lvt = m.getLocalVariableTable();
+		assertNotNull(lvt);
+
+		assertEquals("LC; this(0) start=0 len=0", stringify(lvt, 0));
+		assertEquals("J l(1) start=0 len=0", stringify(lvt, 1));
+		assertEquals("I i(3) start=0 len=0", stringify(lvt, 2));
+		assertEquals("[Ljava/lang/String; ss(4) start=0 len=0", stringify(lvt, 3));
+		assertEquals("LX; ajc$aspectInstance(5) start=0 len=0", stringify(lvt, 4));
+		assertEquals("Lorg/aspectj/runtime/internal/AroundClosure; ajc$aroundClosure(6) start=0 len=0", stringify(lvt, 5));
+
+	}
+
 	// Single piece of advice on before execution of a method with a this and a parameter
 	public void testDebuggingBeforeAdvice_pr262509() {
 		runTest("debugging before advice");
