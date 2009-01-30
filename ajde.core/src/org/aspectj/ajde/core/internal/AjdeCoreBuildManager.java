@@ -77,7 +77,7 @@ public class AjdeCoreBuildManager {
 		// If an incremental build is requested, check that we can
 		if (!fullBuild) {
 			AjState existingState = IncrementalStateManager.retrieveStateFor(compiler.getId());
-			if (existingState == null || existingState.getBuildConfig() == null) {
+			if (existingState == null || existingState.getBuildConfig()==null || ajBuildManager.getState().getBuildConfig() == null) {
 				// No existing state so we must do a full build
 				fullBuild = true;
 			} else {
