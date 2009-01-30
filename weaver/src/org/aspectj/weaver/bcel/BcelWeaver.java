@@ -54,6 +54,7 @@ import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationOnTypeMunger;
 import org.aspectj.weaver.BCException;
@@ -1328,21 +1329,20 @@ public class BcelWeaver {
 
 			for (Iterator iter = l.iterator(); iter.hasNext();) {
 				ShadowMunger element = (ShadowMunger) iter.next();
-				if (element instanceof BcelAdvice) { // This will stop us
-					// incorrectly reporting
-					// deow Checkers
+				// This will stop us incorrectly reporting deow checkers:
+				if (element instanceof BcelAdvice) {
 					BcelAdvice ba = (BcelAdvice) element;
+					if (ba.getKind() == AdviceKind.CflowEntry || ba.getKind() == AdviceKind.CflowBelowEntry) {
+						continue;
+					}
 					if (!ba.hasMatchedSomething()) {
 						// Because we implement some features of AJ itself by
 						// creating our own kind of mungers, you sometimes
 						// find that ba.getSignature() is not a BcelMethod - for
 						// example it might be a cflow entry munger.
 						if (ba.getSignature() != null) {
-
-							// check we haven't already warned on this advice
-							// and line
-							// (cflow creates multiple mungers for the same
-							// advice)
+							// check we haven't already warned on this advice and line
+							// (cflow creates multiple mungers for the same advice)
 							AdviceLocation loc = new AdviceLocation(ba);
 							if (alreadyWarnedLocations.contains(loc)) {
 								continue;
@@ -1353,13 +1353,7 @@ public class BcelWeaver {
 							if (!(ba.getSignature() instanceof BcelMethod)
 									|| !Utility.isSuppressing(ba.getSignature(), "adviceDidNotMatch")) {
 								world.getLint().adviceDidNotMatch.signal(ba.getDeclaringAspect().toString(), new SourceLocation(
-										element.getSourceLocation().getSourceFile(), element.getSourceLocation().getLine()));// element
-								// .
-								// getSourceLocation
-								// (
-								// )
-								// )
-								// ;
+										element.getSourceLocation().getSourceFile(), element.getSourceLocation().getLine()));
 							}
 						}
 					}
