@@ -4,7 +4,7 @@ class AClass {
 }
 
 aspect AnAspect {
-        pointcut a() : cflow( execution(* *(..)) );
+        pointcut a() : execution(* *(..)) && cflow( execution(* *(..)) );
 
         before() : a() {
                 System.out.println("before a");
