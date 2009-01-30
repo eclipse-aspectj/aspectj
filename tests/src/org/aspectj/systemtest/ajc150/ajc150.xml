@@ -2596,7 +2596,7 @@
    
    <ajc-test dir="bugs150" title="XLint warning for advice not applied with cflow(execution)" pr="93345">
      <compile options="-Xlint,-1.5" files="PR93345.aj" >
-       <message kind="warning" line="7" text="advice defined in AnAspect has not been applied [Xlint:adviceDidNotMatch]"/>
+       <message kind="warning" line="9" text="advice defined in AnAspect has not been applied [Xlint:adviceDidNotMatch]"/>
      </compile>
   </ajc-test>
    
