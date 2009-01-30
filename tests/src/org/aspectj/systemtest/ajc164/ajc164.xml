@@ -2,13 +2,24 @@
 
 <suite>
     
+    <ajc-test dir="features164/aopconfig/one" title="aop config - 1">
+      <compile files="A.java A2.java B.java foo.xml" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="goo"/>
+      </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs164/pr256779" title="anno decprecedence">
       <compile files="ThisAspect.java OtherAspect.java" options="-1.5"/>
       <run class="com.ThisAspect" ltw="aop.xml"/>
-      
     </ajc-test>
     
-
+    <ajc-test dir="bugs164/pr262905" title="recursive cflow">
+      <compile files="A.java" options="-1.5">
+        <message kind="warning" line="5" text="advice defined"/>
+        <message kind="error" line="3" text="circular"/>
+      </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs164/pr194314" title="broken lvt - 1">
       <compile files="Service.java IService.java Main.java ServiceInterceptor.java" options="-1.5"/>
     </ajc-test>
