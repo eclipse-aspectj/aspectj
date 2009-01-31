@@ -47,6 +47,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	private List/* File */sourceRoots = new ArrayList();
 	private List/* File */changedFiles;
 	private List/* File */files = new ArrayList();
+	private List/* File */xmlfiles = new ArrayList();
 	private List /* File */binaryFiles = new ArrayList(); // .class files in indirs...
 	private List/* File */inJars = new ArrayList();
 	private List/* File */inPath = new ArrayList();
@@ -71,7 +72,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("BuildConfig[" + (configFile == null ? "null" : configFile.getAbsoluteFile().toString()) + "] #Files="
-				+ files.size());
+				+ files.size() + " AopXmls=#" + xmlfiles.size());
 		return sb.toString();
 	}
 
@@ -120,6 +121,10 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		return files;
 	}
 
+	public List/* File */getXmlFiles() {
+		return xmlfiles;
+	}
+
 	/**
 	 * returned files includes all .class files found in a directory on the inpath, but does not include .class files contained
 	 * within jars.
@@ -142,6 +147,10 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 
 	public void setFiles(List files) {
 		this.files = files;
+	}
+
+	public void setXmlFiles(List xmlfiles) {
+		this.xmlfiles = xmlfiles;
 	}
 
 	public void setOutputDir(File outputDir) {
@@ -341,6 +350,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 			setEmacsSymMode(true);
 		}
 		join(files, global.files);
+		join(xmlfiles, global.xmlfiles);
 		if (!isGenerateModelMode() && global.isGenerateModelMode()) {
 			setGenerateModelMode(true);
 		}
