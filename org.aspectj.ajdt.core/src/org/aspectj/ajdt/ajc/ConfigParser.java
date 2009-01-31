@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,11 +26,16 @@ public class ConfigParser {
 	Location location;
 	protected File relativeDirectory = null;
 	protected List files = new LinkedList();
+	protected List xmlfiles = new ArrayList();
 	private boolean fileParsed = false;
 	protected static String CONFIG_MSG = "build config error: ";
 
 	public List getFiles() {
 		return files;
+	}
+
+	public List getXmlFiles() {
+		return xmlfiles;
 	}
 
 	public void parseCommandLine(String[] argsArray) throws ParseException {
@@ -100,7 +106,7 @@ public class ConfigParser {
 		s = stripSingleLineComment(s, "#");
 		s = s.trim();
 		if (s.startsWith("\"") && s.endsWith("\"")) {
-			if (s.length()==1) {
+			if (s.length() == 1) {
 				return "";
 			} else {
 				s = s.substring(1, s.length() - 1);
@@ -116,8 +122,14 @@ public class ConfigParser {
 		if (!sourceFile.isFile()) {
 			showError("source file does not exist: " + sourceFile.getPath());
 		}
-
 		files.add(sourceFile);
+	}
+
+	protected void addXmlFile(File xmlFile) {
+		if (!xmlFile.isFile()) {
+			showError("XML file does not exist: " + xmlFile.getPath());
+		}
+		xmlfiles.add(xmlFile);
 	}
 
 	void addFileOrPattern(File sourceFile) {
@@ -197,6 +209,13 @@ public class ConfigParser {
 		return arg.getValue();
 	}
 
+	/**
+	 * aop.xml configuration files can be passed on the command line.
+	 */
+	boolean isXml(String s) {
+		return s.endsWith(".xml");
+	}
+
 	boolean isSourceFileName(String s) {
 		if (s.endsWith(".java"))
 			return true;
@@ -219,6 +238,8 @@ public class ConfigParser {
 			parseConfigFileHelper(makeFile(removeArg(args).getValue()));
 		} else if (isSourceFileName(v)) {
 			addFileOrPattern(makeFile(v));
+		} else if (isXml(v)) {
+			addXmlFile(makeFile(v));
 		} else {
 			parseOption(arg.getValue(), args);
 		}

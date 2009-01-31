@@ -144,6 +144,9 @@ public class BuildArgParser extends Main {
 
 			boolean incrementalMode = buildConfig.isIncrementalMode() || buildConfig.isIncrementalFileMode();
 
+			List xmlfileList = new ArrayList();
+			xmlfileList.addAll(parser.getXmlFiles());
+
 			List fileList = new ArrayList();
 			List files = parser.getFiles();
 			if (!LangUtil.isEmpty(files)) {
@@ -178,6 +181,8 @@ public class BuildArgParser extends Main {
 					fileList.addAll(collectSourceRootFiles((File) i.next()));
 				}
 			}
+
+			buildConfig.setXmlFiles(xmlfileList);
 
 			buildConfig.setFiles(fileList);
 			if (destinationPath != null) { // XXX ?? unparsed but set?
