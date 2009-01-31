@@ -16,6 +16,7 @@ package org.aspectj.weaver.bcel;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -67,6 +68,8 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.loadtime.definition.Definition;
+import org.aspectj.weaver.loadtime.definition.DocumentParser;
 import org.aspectj.weaver.model.AsmRelationshipProvider;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
@@ -79,6 +82,7 @@ public class BcelWorld extends World implements Repository {
 	protected Repository delegate;
 	private BcelWeakClassLoaderReference loaderRef;
 	private final BcelWeavingSupport bcelWeavingSupport = new BcelWeavingSupport();
+	private List/* File */xmlFiles;
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelWorld.class);
 
@@ -787,5 +791,38 @@ public class BcelWorld extends World implements Repository {
 	public AsmManager getModelAsAsmManager() {
 		return (AsmManager) getModel(); // For now... always an AsmManager in a bcel environment
 	}
+
+	/**
+	 * These are aop.xml files that can be used to alter the aspects that actually apply from those passed in - and also their scope
+	 * of application to other files in the system.
+	 * 
+	 * @param xmlFiles list of File objects representing any aop.xml files passed in to configure the build process
+	 */
+	public void setXmlFiles(List xmlFiles) {
+		this.xmlFiles = xmlFiles;
+		for (Iterator iterator = xmlFiles.iterator(); iterator.hasNext();) {
+			File xmlfile = (File) iterator.next();
+			try {
+				Definition d = DocumentParser.parse(xmlfile.toURI().toURL());
+				xmlAspectNames.addAll(d.getAspectClassNames());
+				isXmlConfiguredWorld = true;
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public boolean isXmlConfigured() {
+		return isXmlConfiguredWorld;
+	}
+
+	// public boolean specifiesInclusionOfAspect(String name) {
+	// return xmlAspectNames.contains(name);
+	// }
+
+	private boolean isXmlConfiguredWorld = false;
+	private List/* String */xmlAspectNames = new ArrayList();
 
 }
