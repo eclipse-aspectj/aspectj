@@ -472,6 +472,10 @@ public class AjProblemReporter extends ProblemReporter {
 					return;
 			}
 		}
+		if (new String(localDecl.name).startsWith("ajc$")) {
+			// Do not report problems for infrastructure variables beyond the users control - pr195090
+			return;
+		}
 		super.unusedArgument(localDecl);
 	}
 
@@ -618,15 +622,10 @@ public class AjProblemReporter extends ProblemReporter {
 		super.duplicateMethodInType(type, methodDecl);
 	}
 
-    // pr246393 - if we are going to complain about privileged, we clearly don't know what is going on, so don't
-    // confuse the user 
-	public void parseErrorInsertAfterToken(
-		int start,
-		int end,
-		int currentKind,
-		char[] errorTokenSource,
-		String errorTokenName,
-		String expectedToken){
+	// pr246393 - if we are going to complain about privileged, we clearly don't know what is going on, so don't
+	// confuse the user
+	public void parseErrorInsertAfterToken(int start, int end, int currentKind, char[] errorTokenSource, String errorTokenName,
+			String expectedToken) {
 		if (expectedToken.equals("privileged")) {
 			super.parseErrorNoSuggestion(start, end, currentKind, errorTokenSource, errorTokenName);
 		} else {
