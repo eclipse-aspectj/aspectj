@@ -8,6 +8,11 @@
       </compile>
     </ajc-test>
     
+    <ajc-test dir="bugs164" title="ajcthis not read">
+      <compile files="pr195090.java" options="-1.5 -warn:+unusedArgument">
+      </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs164/pr256779" title="anno decprecedence">
       <compile files="ThisAspect.java OtherAspect.java" options="-1.5"/>
       <run class="com.ThisAspect" ltw="aop.xml"/>
