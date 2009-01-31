@@ -1283,4 +1283,15 @@ public abstract class World implements Dump.INode {
 	public void reportCheckerMatch(Checker checker, Shadow shadow) {
 	}
 
+	/**
+	 * @return true if this world has the activation and scope of application of the aspects controlled via aop.xml files
+	 */
+	public boolean isXmlConfigured() {
+		return false;
+	}
+
+	// public boolean specifiesInclusionOfAspect(String name) {
+	// return true;
+	// }
+
 }
