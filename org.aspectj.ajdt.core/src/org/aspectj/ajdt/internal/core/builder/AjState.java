@@ -1262,9 +1262,10 @@ public class AjState implements CompilerConfigurationChangeFlags {
 					if (typeName.indexOf(BcelWeaver.SYNTHETIC_CLASS_POSTFIX) == -1) {
 						ResolvedType rt = world.resolve(typeName);
 						if (rt.isMissing()) {
-							throw new IllegalStateException("Type '" + rt.getSignature() + "' not found in world!");
-						}
-						if (rt.isAspect()) {
+							// This can happen in a case where another problem has occurred that prevented it being
+							// correctly added to the world. Eg. pr148285. Duplicate types
+							// throw new IllegalStateException("Type '" + rt.getSignature() + "' not found in world!");
+						} else if (rt.isAspect()) {
 							this.sourceFilesDefiningAspects.add(sourceFile);
 							break;
 						}
