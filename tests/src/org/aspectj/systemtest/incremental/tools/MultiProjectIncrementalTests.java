@@ -159,6 +159,24 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		}
 	}
 
+	public void testPr148285() {
+		String p = "PR148285_2";
+		initialiseProject(p); // Single source file A.aj defines A and C
+		build(p);
+		checkWasFullBuild();
+		alter(p, "inc1"); // Second source introduced C.java, defines C
+		build(p);
+		checkWasntFullBuild();
+		List msgs = getErrorMessages(p);
+		assertEquals("error message should be 'The type C is already defined' ", "The type C is already defined", ((IMessage) msgs
+				.get(0)).getMessage());
+		alter("PR148285_2", "inc2"); // type C in A.aj is commented out
+		build("PR148285_2");
+		checkWasntFullBuild();
+		msgs = getErrorMessages(p);
+		assertTrue("There should be no errors reported:\n" + getErrorMessages(p), msgs.isEmpty());
+	}
+
 	public void testIncrementalAndAnnotations() {
 		initialiseProject("Annos");
 		build("Annos");
@@ -258,6 +276,19 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("Unexpected compiler error", 0, l.size());
 	}
 
+	/*public void testNPEGenericCtor_pr260944() {
+		AjdeInteractionTestbed.VERBOSE = true;
+		String p = "pr260944";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+		List l = getCompilerErrorMessages(p);
+		assertEquals("Unexpected compiler error", 0, l.size());
+	}*/
+
 	public void testItdProb() {
 		AjdeInteractionTestbed.VERBOSE = true;
 		String p = "itdprob";
@@ -270,19 +301,14 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		List l = getCompilerErrorMessages(p);
 		assertEquals("Unexpected compiler error", 0, l.size());
 	}
-/*
-	public void testGenericITD_pr262257() throws IOException {
-		String p = "pr262257";
-		initialiseProject(p);
-		build(p);
-		checkWasFullBuild();
 
-		dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
-		PrintWriter pw = new PrintWriter(System.out);
-		getModelFor(p).dumprels(pw);
-		pw.flush();
-	}
-*/
+	/*
+	 * public void testGenericITD_pr262257() throws IOException { String p = "pr262257"; initialiseProject(p); build(p);
+	 * checkWasFullBuild();
+	 * 
+	 * dumptree(getModelFor(p).getHierarchy().getRoot(), 0); PrintWriter pw = new PrintWriter(System.out);
+	 * getModelFor(p).dumprels(pw); pw.flush(); }
+	 */
 	public void testAnnotations_pr262154() {
 		String p = "pr262154";
 		initialiseProject(p);
