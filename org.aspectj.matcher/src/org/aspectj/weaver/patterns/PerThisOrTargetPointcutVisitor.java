@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.aspectj.weaver.patterns;
 
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
@@ -36,7 +37,13 @@ public class PerThisOrTargetPointcutVisitor extends AbstractPatternNodeVisitor {
 	}
 
 	public TypePattern getPerTypePointcut(Pointcut perClausePointcut) {
-		return (TypePattern) perClausePointcut.accept(this, perClausePointcut);
+		Object o = perClausePointcut.accept(this, perClausePointcut);
+		if (o instanceof TypePattern) {
+			return (TypePattern) o;
+		} else {
+			throw new BCException("perClausePointcut visitor did not return a typepattern, it returned " + o
+					+ (o == null ? "" : " of type " + o.getClass()));
+		}
 	}
 
 	// -- visitor methods, all is like Identity visitor except when it comes to transform pointcuts
