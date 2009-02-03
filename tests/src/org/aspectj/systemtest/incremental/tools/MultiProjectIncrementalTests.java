@@ -275,19 +275,43 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		List l = getCompilerErrorMessages(p);
 		assertEquals("Unexpected compiler error", 0, l.size());
 	}
-
-	/*public void testNPEGenericCtor_pr260944() {
+/*
+	public void testImports() {
 		AjdeInteractionTestbed.VERBOSE = true;
-		String p = "pr260944";
+		String p = "importProb";
 		initialiseProject(p);
 		build(p);
 		checkWasFullBuild();
 		alter(p, "inc1");
+		addProjectSourceFileChanged(p, getProjectRelativePath(p, "src/p/Code.java"));
+		addProjectSourceFileChanged(p, getProjectRelativePath(p, "src/q/Asp.java"));
 		build(p);
 		checkWasntFullBuild();
 		List l = getCompilerErrorMessages(p);
 		assertEquals("Unexpected compiler error", 0, l.size());
-	}*/
+	}
+*/
+	public void testBuildingBrokenCode_pr263323() {
+		AjdeInteractionTestbed.VERBOSE = true;
+		String p = "brokenCode";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		alter(p, "inc1"); // break the aspect
+		build(p);
+		checkWasntFullBuild();
+		alter(p, "inc2"); // whitespace change on affected file
+		build(p);
+		checkWasntFullBuild();
+		List l = getCompilerErrorMessages(p);
+		assertEquals("Unexpected compiler error", 0, l.size());
+	}
+
+	/*
+	 * public void testNPEGenericCtor_pr260944() { AjdeInteractionTestbed.VERBOSE = true; String p = "pr260944";
+	 * initialiseProject(p); build(p); checkWasFullBuild(); alter(p, "inc1"); build(p); checkWasntFullBuild(); List l =
+	 * getCompilerErrorMessages(p); assertEquals("Unexpected compiler error", 0, l.size()); }
+	 */
 
 	public void testItdProb() {
 		AjdeInteractionTestbed.VERBOSE = true;
