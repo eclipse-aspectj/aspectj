@@ -36,6 +36,8 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.IEclipseSourceContext;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ReferenceType;
+import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
@@ -212,12 +214,25 @@ class BcelAdvice extends Advice {
 		if (concreteAspect.getWorld().isXnoInline())
 			return false;
 		// System.err.println("isWoven? " + ((BcelObjectType)concreteAspect).getLazyClassGen().getWeaverState());
-		return BcelWorld.getBcelObjectType(concreteAspect).getLazyClassGen().isWoven();
+		BcelObjectType boType = BcelWorld.getBcelObjectType(concreteAspect);
+		if (boType == null) {
+			// Could be a symptom that the aspect failed to build last build... return the default answer of false
+			return false;
+		}
+		return boType.getLazyClassGen().isWoven();
 	}
 
 	public boolean implementOn(Shadow s) {
 		hasMatchedAtLeastOnce = true;
 		BcelShadow shadow = (BcelShadow) s;
+
+		// pr263323 - if the aspect is broken then the delegate will not be usable for weaving
+		if (concreteAspect instanceof ReferenceType) {
+			ReferenceTypeDelegate rtDelegate = ((ReferenceType) concreteAspect).getDelegate();
+			if (!(rtDelegate instanceof BcelObjectType)) {
+				return false;
+			}
+		}
 
 		// remove any unnecessary exceptions if the compiler option is set to
 		// error or warning and if this piece of advice throws exceptions
