@@ -327,17 +327,47 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("ensure getSourceSignature correct with static field");
 		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		IProgramElement ipe = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.FIELD, "MY_COMPARATOR");
-		String expected = "static final Comparator MY_COMPARATOR;\n";
+		String expected = "static final Comparator MY_COMPARATOR = null;\n";
+		assertEquals("expected source signature to be " + expected + " but found " + ipe.getSourceSignature(), expected, ipe
+				.getSourceSignature());
+
+		ipe = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.FIELD, "aString");
+		expected = "static final String aString = \"Constant String\";\n";
+		assertEquals("expected source signature to be " + expected + " but found " + ipe.getSourceSignature(), expected, ipe
+				.getSourceSignature());
+
+		ipe = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.FIELD, "bString");
+		expected = "static final String bString = aString;\n";
+		assertEquals("expected source signature to be " + expected + " but found " + ipe.getSourceSignature(), expected, ipe
+				.getSourceSignature());
+
+		ipe = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.FIELD, "cString");
+		expected = "static final String cString = (aString + bString);\n";
+		assertEquals("expected source signature to be " + expected + " but found " + ipe.getSourceSignature(), expected, ipe
+				.getSourceSignature());
+
+		ipe = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.FIELD, "dString");
+		expected = "static final String dString = ((aString + \" and \") + bString);\n";
+		assertEquals("expected source signature to be " + expected + " but found " + ipe.getSourceSignature(), expected, ipe
+				.getSourceSignature());
+
+		ipe = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.FIELD, "eString");
+		expected = "static final String eString = \"Hello World\";\n";
 		assertEquals("expected source signature to be " + expected + " but found " + ipe.getSourceSignature(), expected, ipe
 				.getSourceSignature());
 
 		ipe = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.FIELD, "aList");
-		expected = "public List<String> aList;\n";
+		expected = "public List<String> aList = null;\n";
 		assertEquals("expected source signature to be " + expected + " but found " + ipe.getSourceSignature(), expected, ipe
 				.getSourceSignature());
 
 		ipe = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.FIELD, "bList");
-		expected = "public List<String> bList;\n";
+		expected = "public List<String> bList = null;\n";
+		assertEquals("expected source signature to be " + expected + " but found " + ipe.getSourceSignature(), expected, ipe
+				.getSourceSignature());
+
+		ipe = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.FIELD, "cList");
+		expected = "public List<String> cList = null;\n";
 		assertEquals("expected source signature to be " + expected + " but found " + ipe.getSourceSignature(), expected, ipe
 				.getSourceSignature());
 	}
