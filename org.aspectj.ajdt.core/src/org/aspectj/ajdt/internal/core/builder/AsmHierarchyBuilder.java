@@ -47,12 +47,13 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclara
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExtendedStringLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Initializer;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Literal;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.OperatorExpression;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Reference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
@@ -878,17 +879,15 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			fieldDeclaration.type.print(0, output).append(' ').append(fieldDeclaration.name);
 		}
 
-		if (fieldDeclaration.initialization != null && !(fieldDeclaration.initialization instanceof QualifiedAllocationExpression)) {
-			output.append(" = "); //$NON-NLS-1$
+		output.append(" = ");
+		if (fieldDeclaration.initialization != null && 
+				(  fieldDeclaration.initialization instanceof Literal 
+				|| fieldDeclaration.initialization instanceof OperatorExpression
+				|| fieldDeclaration.initialization instanceof Reference)) {
 			fieldDeclaration.initialization.printExpression(0, output);
-		} else if (fieldDeclaration.initialization instanceof QualifiedAllocationExpression) {
-			QualifiedAllocationExpression qae = (QualifiedAllocationExpression) fieldDeclaration.initialization;
-			StringBuffer sb = new StringBuffer();
-			qae.printExpression(0, sb);
-			if (sb.toString().indexOf("new ") != 0) {
-				output.append(" = "); //$NON-NLS-1$	         
-				output.append(sb.toString());
-			}
+		} 
+		else {
+			output.append("null");
 		}
 		output.append(";\n");
 		return output.toString();
