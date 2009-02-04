@@ -11,6 +11,8 @@
 package org.aspectj.systemtest.ajc164;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.List;
 
 import junit.framework.Test;
 
@@ -20,10 +22,33 @@ import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IProgramElement;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testHandles_pr263666() {
+		runTest("around advice handles");
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
+		IProgramElement ipe = null;
+		ipe = findElementAtLine(top.getRoot(), 22);// public java.util.List<String> Ship.i(List<String>[][] u)
+		assertEquals("<x*OverrideOptions.aj}OverrideOptions&around", ipe.getHandleIdentifier());
+		ipe = findElementAtLine(top.getRoot(), 29);// public java.util.List<String> Ship.i(List<String>[][] u)
+		assertEquals("<x*OverrideOptions.aj}OverrideOptions&around!2", ipe.getHandleIdentifier());
+	}
+/*
+	// Only one of two aspects named
+	public void testAopConfig1() {
+		runTest("aop config - 1");
+	}
+
+	// Only one of two aspects named - and named one is scoped to only affect one type
+	public void testAopConfig2() {
+		runTest("aop config - 2");
+	}
+*/
 	public void testAjcThisNotRead() {
 		runTest("ajcthis not read");
 	}
@@ -31,10 +56,6 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testRecursiveCflow() {
 		runTest("recursive cflow");
 	}
-
-	// public void testAopConfig1() {
-	// runTest("aop config - 1");
-	// }
 
 	public void testAnnoDecprecedence_pr256779() {
 		runTest("anno decprecedence");
@@ -260,5 +281,26 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		}
 
 		return sb.toString();
+	}
+
+	private IProgramElement findElementAtLine(IProgramElement whereToLook, int line) {
+		if (whereToLook == null) {
+			return null;
+		}
+		if (whereToLook.getSourceLocation() != null && whereToLook.getSourceLocation().getLine() == line) {
+			return whereToLook;
+		}
+		List kids = whereToLook.getChildren();
+		for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
+			IProgramElement object = (IProgramElement) iterator.next();
+			if (object.getSourceLocation() != null && object.getSourceLocation().getLine() == line) {
+				return object;
+			}
+			IProgramElement gotSomething = findElementAtLine(object, line);
+			if (gotSomething != null) {
+				return gotSomething;
+			}
+		}
+		return null;
 	}
 }
