@@ -156,6 +156,11 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 			int count = 1;
 			List kids = ipe.getParent().getChildren();
 			String ipeSig = ipe.getBytecodeSignature();
+			// remove return type from the signature - it should not be included in the comparison
+			int idx = 0;
+			if (ipeSig != null && ((idx = ipeSig.indexOf(")")) != -1)) {
+				ipeSig = ipeSig.substring(0, idx);
+			}
 			for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
 				IProgramElement object = (IProgramElement) iterator.next();
 				if (object.equals(ipe)) {
@@ -164,6 +169,9 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 				if (object.getKind() == ipe.getKind()) {
 					if (object.getName().equals(ipe.getName())) {
 						String sig1 = object.getBytecodeSignature();
+						if (sig1 != null && (idx = sig1.indexOf(")")) != -1) {
+							sig1 = sig1.substring(0, idx);
+						}
 						if (sig1 == null && ipeSig == null || (sig1 != null && sig1.equals(ipeSig))) {
 							String existingHandle = object.getHandleIdentifier();
 							int suffixPosition = existingHandle.indexOf('!');
@@ -204,7 +212,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 							String existingHandle = object.getHandleIdentifier();
 							int suffixPosition = existingHandle.lastIndexOf('!');
 							int lastSquareBracket = existingHandle.lastIndexOf('['); // type delimiter
-							if (suffixPosition != -1 && lastSquareBracket<suffixPosition) { // pr260384
+							if (suffixPosition != -1 && lastSquareBracket < suffixPosition) { // pr260384
 								count = new Integer(existingHandle.substring(suffixPosition + 1)).intValue() + 1;
 							} else {
 								if (count == 1) {
@@ -225,7 +233,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 							String existingHandle = object.getHandleIdentifier();
 							int suffixPosition = existingHandle.lastIndexOf('!');
 							int lastSquareBracket = existingHandle.lastIndexOf('['); // type delimiter
-							if (suffixPosition != -1 && lastSquareBracket<suffixPosition) { // pr260384
+							if (suffixPosition != -1 && lastSquareBracket < suffixPosition) { // pr260384
 								count = new Integer(existingHandle.substring(suffixPosition + 1)).intValue() + 1;
 							} else {
 								if (count == 1) {
