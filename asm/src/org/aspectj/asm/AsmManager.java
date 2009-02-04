@@ -831,7 +831,7 @@ public class AsmManager implements IStructureModel {
 			throw new RuntimeException("target can't be null!");
 		if (type == null)
 			throw new RuntimeException("type can't be null!");
-		if (target.getKind().isSourceFile()) {
+		if (target.getKind().isSourceFile() || target.getKind().isFile()) { // isFile() covers pr263487
 			// @AJ aspect with broken relationship endpoint - we couldn't find
 			// the real
 			// endpoint (the declare parents or ITD or similar) so defaulted to
@@ -854,10 +854,16 @@ public class AsmManager implements IStructureModel {
 				return false;
 			return (target.getSourceLocation().getSourceFile().equals(type.getSourceLocation().getSourceFile()));
 		}
-		while (!containingType.getKind().isType()) {
-			// System.err.println("Checked: "+containingType.getKind()+" "+
-			// containingType);
-			containingType = containingType.getParent();
+		try {
+			while (!containingType.getKind().isType()) {
+				containingType = containingType.getParent();
+			}
+		} catch (Throwable t) {
+			// Example:
+			// java.lang.RuntimeException: Exception whilst walking up from target X.class kind=(file)
+			// hid=(=importProb/binaries<x(X.class)
+			throw new RuntimeException("Exception whilst walking up from target " + target.toLabelString() + " kind=("
+					+ target.getKind() + ") hid=(" + target.getHandleIdentifier() + ")", t);
 		}
 		return (type.equals(containingType));
 	}
