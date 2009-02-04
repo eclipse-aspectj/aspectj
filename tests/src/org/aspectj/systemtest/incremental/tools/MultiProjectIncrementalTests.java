@@ -275,22 +275,31 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		List l = getCompilerErrorMessages(p);
 		assertEquals("Unexpected compiler error", 0, l.size());
 	}
-/*
-	public void testImports() {
+
+	public void testImports_pr263487() {
 		AjdeInteractionTestbed.VERBOSE = true;
+		String p2 = "importProb2";
+		initialiseProject(p2);
+		build(p2);
+		checkWasFullBuild();
+
 		String p = "importProb";
 		initialiseProject(p);
 		build(p);
+		configureAspectPath(p, getProjectRelativePath(p2, "bin"));
 		checkWasFullBuild();
+		build(p);
+		build(p);
+		build(p);
 		alter(p, "inc1");
 		addProjectSourceFileChanged(p, getProjectRelativePath(p, "src/p/Code.java"));
-		addProjectSourceFileChanged(p, getProjectRelativePath(p, "src/q/Asp.java"));
+		// addProjectSourceFileChanged(p, getProjectRelativePath(p, "src/q/Asp.java"));
 		build(p);
 		checkWasntFullBuild();
 		List l = getCompilerErrorMessages(p);
 		assertEquals("Unexpected compiler error", 0, l.size());
 	}
-*/
+
 	public void testBuildingBrokenCode_pr263323() {
 		AjdeInteractionTestbed.VERBOSE = true;
 		String p = "brokenCode";
