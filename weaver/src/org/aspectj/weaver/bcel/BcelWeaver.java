@@ -1729,7 +1729,8 @@ public class BcelWeaver {
 				boolean isChanged = false;
 
 				if (mightNeedToWeave)
-					isChanged = BcelClassWeaver.weave(world, clazz, shadowMungers, typeMungers, lateTypeMungerList);
+					isChanged = BcelClassWeaver.weave(world, clazz, shadowMungers, typeMungers, lateTypeMungerList,
+							inReweavableMode);
 
 				if (mightNeedBridgeMethods)
 					isChanged = BcelClassWeaver.calculateAnyRequiredBridgeMethods(world, clazz) || isChanged;
@@ -1841,13 +1842,8 @@ public class BcelWeaver {
 	}
 
 	public void setReweavableMode(boolean xNotReweavable) {
-		if (trace.isTraceEnabled())
-			trace.enter("setReweavableMode", this, xNotReweavable);
 		inReweavableMode = !xNotReweavable;
 		WeaverStateInfo.setReweavableModeDefaults(!xNotReweavable, false, true);
-		BcelClassWeaver.setReweavableMode(!xNotReweavable);
-		if (trace.isTraceEnabled())
-			trace.exit("setReweavableMode");
 	}
 
 	public boolean isReweavable() {

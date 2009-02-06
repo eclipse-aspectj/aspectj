@@ -94,9 +94,13 @@ class BcelClassWeaver implements IClassWeaver {
 
 	/**
 	 * This is called from {@link BcelWeaver} to perform the per-class weaving process.
+	 * 
 	 */
-	public static boolean weave(BcelWorld world, LazyClassGen clazz, List shadowMungers, List typeMungers, List lateTypeMungers) {
-		boolean b = new BcelClassWeaver(world, clazz, shadowMungers, typeMungers, lateTypeMungers).weave();
+	public static boolean weave(BcelWorld world, LazyClassGen clazz, List shadowMungers, List typeMungers, List lateTypeMungers,
+			boolean inReweavableMode) {
+		BcelClassWeaver classWeaver = new BcelClassWeaver(world, clazz, shadowMungers, typeMungers, lateTypeMungers);
+		classWeaver.setReweavableMode(inReweavableMode);
+		boolean b = classWeaver.weave();
 		// System.out.println(clazz.getClassName() + ", " +
 		// clazz.getType().getWeaverState());
 		// clazz.print();
@@ -118,8 +122,7 @@ class BcelClassWeaver implements IClassWeaver {
 	private final List addedLazyMethodGens = new ArrayList();
 	private final Set addedDispatchTargets = new HashSet();
 
-	// Static setting across BcelClassWeavers
-	private static boolean inReweavableMode = false;
+	private boolean inReweavableMode = false;
 
 	private List addedSuperInitializersAsList = null; // List<IfaceInitList>
 	private final Map addedSuperInitializers = new HashMap(); // Interface ->
@@ -3070,13 +3073,11 @@ class BcelClassWeaver implements IClassWeaver {
 		return world;
 	}
 
-	// Called by the BcelWeaver to let us know all BcelClassWeavers need to
-	// collect reweavable info
-	public static void setReweavableMode(boolean mode) {
+	public void setReweavableMode(boolean mode) {
 		inReweavableMode = mode;
 	}
 
-	public static boolean getReweavableMode() {
+	public boolean getReweavableMode() {
 		return inReweavableMode;
 	}
 
