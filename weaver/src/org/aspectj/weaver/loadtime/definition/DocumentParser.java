@@ -60,6 +60,7 @@ public class DocumentParser extends DefaultHandler {
 	private final static String ASPECT_ELEMENT = "aspect";
 	private final static String CONCRETE_ASPECT_ELEMENT = "concrete-aspect";
 	private final static String NAME_ATTRIBUTE = "name";
+	private final static String SCOPE_ATTRIBUTE = "scope";
 	private final static String EXTEND_ATTRIBUTE = "extends";
 	private final static String PRECEDENCE_ATTRIBUTE = "precedence";
 	private final static String PERCLAUSE_ATTRIBUTE = "perclause";
@@ -150,8 +151,12 @@ public class DocumentParser extends DefaultHandler {
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		if (ASPECT_ELEMENT.equals(qName)) {
 			String name = attributes.getValue(NAME_ATTRIBUTE);
+			String scopePattern = replaceXmlAnd(attributes.getValue(SCOPE_ATTRIBUTE));
 			if (!isNull(name)) {
 				m_definition.getAspectClassNames().add(name);
+				if (scopePattern != null) {
+					m_definition.addScopedAspect(name, scopePattern);
+				}
 			}
 		} else if (WEAVER_ELEMENT.equals(qName)) {
 			String options = attributes.getValue(OPTIONS_ATTRIBUTE);

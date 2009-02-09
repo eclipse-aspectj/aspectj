@@ -12,7 +12,9 @@
 package org.aspectj.weaver.loadtime.definition;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A POJO that contains raw strings from the XML (sort of XMLBean for our simple LTW DTD)
@@ -41,6 +43,11 @@ public class Definition {
 
 	private final List m_concreteAspects;
 
+	/**
+	 * When aspects are defined, they can specify a scope type pattern and then will only apply to types matching that pattern.
+	 */
+	private final Map scopedAspects;
+
 	public Definition() {
 		m_weaverOptions = new StringBuffer();
 		m_dumpBefore = false;
@@ -52,6 +59,7 @@ public class Definition {
 		m_aspectExcludePatterns = new ArrayList(0);
 		m_aspectIncludePatterns = new ArrayList(0);
 		m_concreteAspects = new ArrayList(0);
+		scopedAspects = new HashMap();
 	}
 
 	public String getWeaverOptions() {
@@ -142,6 +150,14 @@ public class Definition {
 
 	public void appendWeaverOptions(String option) {
 		m_weaverOptions.append(option.trim()).append(' ');
+	}
+
+	public void addScopedAspect(String name, String scopePattern) {
+		scopedAspects.put(name, scopePattern);
+	}
+
+	public String getScopeForAspect(String name) {
+		return (String) scopedAspects.get(name);
 	}
 
 }

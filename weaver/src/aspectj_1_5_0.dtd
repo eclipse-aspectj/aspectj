@@ -106,6 +106,7 @@ aspect
 <!ELEMENT aspect EMPTY>
 <!ATTLIST aspect
     name CDATA #REQUIRED
+    scope CDATA #IMPLIED
 >
 <!--*****************************************************************************************************************************
 exclude

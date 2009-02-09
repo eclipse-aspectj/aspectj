@@ -18,8 +18,10 @@ import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.aspectj.apache.bcel.Constants;
@@ -45,6 +47,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
@@ -73,6 +76,8 @@ import org.aspectj.weaver.loadtime.definition.DocumentParser;
 import org.aspectj.weaver.model.AsmRelationshipProvider;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
+import org.aspectj.weaver.patterns.PatternParser;
+import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 
@@ -82,7 +87,8 @@ public class BcelWorld extends World implements Repository {
 	protected Repository delegate;
 	private BcelWeakClassLoaderReference loaderRef;
 	private final BcelWeavingSupport bcelWeavingSupport = new BcelWeavingSupport();
-	private List/* File */xmlFiles;
+	private boolean isXmlConfiguredWorld = false;
+	private WeavingXmlConfig xmlConfiguration;
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelWorld.class);
 
@@ -563,6 +569,12 @@ public class BcelWorld extends World implements Repository {
 	 * BcelObjectType - this happens quite often when incrementally compiling.
 	 */
 	public static BcelObjectType getBcelObjectType(ResolvedType concreteAspect) {
+		if (concreteAspect == null) {
+			return null;
+		}
+		if (!(concreteAspect instanceof ReferenceType)) { // Might be Missing
+			return null;
+		}
 		ReferenceTypeDelegate rtDelegate = ((ReferenceType) concreteAspect).getDelegate();
 		if (rtDelegate instanceof BcelObjectType) {
 			return (BcelObjectType) rtDelegate;
@@ -799,17 +811,23 @@ public class BcelWorld extends World implements Repository {
 	 * @param xmlFiles list of File objects representing any aop.xml files passed in to configure the build process
 	 */
 	public void setXmlFiles(List xmlFiles) {
-		this.xmlFiles = xmlFiles;
+		if (!xmlFiles.isEmpty()) {
+			isXmlConfiguredWorld = true;
+			xmlConfiguration = new WeavingXmlConfig(this);
+		}
 		for (Iterator iterator = xmlFiles.iterator(); iterator.hasNext();) {
 			File xmlfile = (File) iterator.next();
 			try {
 				Definition d = DocumentParser.parse(xmlfile.toURI().toURL());
-				xmlAspectNames.addAll(d.getAspectClassNames());
-				isXmlConfiguredWorld = true;
+				xmlConfiguration.add(d);
 			} catch (MalformedURLException e) {
-				e.printStackTrace();
+				getMessageHandler().handleMessage(
+						MessageUtil.error("Unexpected problem processing XML config file '" + xmlfile.getName() + "' :"
+								+ e.getMessage()));
 			} catch (Exception e) {
-				e.printStackTrace();
+				getMessageHandler().handleMessage(
+						MessageUtil.error("Unexpected problem processing XML config file '" + xmlfile.getName() + "' :"
+								+ e.getMessage()));
 			}
 		}
 	}
@@ -818,11 +836,96 @@ public class BcelWorld extends World implements Repository {
 		return isXmlConfiguredWorld;
 	}
 
-	// public boolean specifiesInclusionOfAspect(String name) {
-	// return xmlAspectNames.contains(name);
-	// }
+	public boolean isAspectIncluded(ResolvedType aspectType) {
+		if (!isXmlConfigured()) {
+			return true;
+		}
+		return xmlConfiguration.specifiesInclusionOfAspect(aspectType.getName());
+	}
 
-	private boolean isXmlConfiguredWorld = false;
-	private List/* String */xmlAspectNames = new ArrayList();
+	public TypePattern getAspectScope(ResolvedType declaringType) {
+		return xmlConfiguration.getScopeFor(declaringType.getName());
+	}
+
+	/**
+	 * A WeavingXmlConfig is initially a collection of definitions from XML files - once the world is ready and weaving is running
+	 * it will initialize and transform those definitions into an optimized set of values (eg. resolve type patterns and string
+	 * names to real entities). It can then answer questions quickly: (1) is this aspect included in the weaving? (2) Is there a
+	 * scope specified for this aspect and does it include type X?
+	 * 
+	 */
+	static class WeavingXmlConfig {
+
+		private boolean initialized = false; // Lazily done
+		private List/* Definition */definitions = new ArrayList();
+
+		private List/* <String> */resolvedIncludedAspects = new ArrayList();
+		private Map/* <String,TypePattern> */scopes = new HashMap();
+
+		private BcelWorld world;
+
+		public WeavingXmlConfig(BcelWorld bcelWorld) {
+			this.world = bcelWorld;
+		}
+
+		public void add(Definition d) {
+			definitions.add(d);
+		}
+
+		public void ensureInitialized() {
+			if (!initialized) {
+				try {
+					resolvedIncludedAspects = new ArrayList();
+					// Process the definitions into something more optimal
+					for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
+						Definition definition = (Definition) iterator.next();
+						List/* String */aspectNames = definition.getAspectClassNames();
+						for (Iterator iterator2 = aspectNames.iterator(); iterator2.hasNext();) {
+							String name = (String) iterator2.next();
+							resolvedIncludedAspects.add(name);
+							// TODO check for existence?
+							// ResolvedType resolvedAspect = resolve(UnresolvedType.forName(name));
+							// if (resolvedAspect.isMissing()) {
+							// // ERROR
+							// } else {
+							// resolvedIncludedAspects.add(resolvedAspect);
+							// }
+							String scope = definition.getScopeForAspect(name);
+							if (scope != null) {
+								// Resolve the type pattern
+								try {
+									TypePattern scopePattern = new PatternParser(scope).parseTypePattern();
+									scopePattern.resolve(world);
+									scopes.put(name, scopePattern);
+									if (!world.getMessageHandler().isIgnoring(IMessage.INFO)) {
+										world.getMessageHandler().handleMessage(
+												MessageUtil.info("Aspect '" + name
+														+ "' is scoped to apply against types matching pattern '"
+														+ scopePattern.toString() + "'"));
+									}
+								} catch (Exception e) {
+									// TODO definitions should remember which file they came from, for inclusion in this message
+									world.getMessageHandler().handleMessage(
+											MessageUtil.error("Unable to parse scope as type pattern.  Scope was '" + scope + "': "
+													+ e.getMessage()));
+								}
+							}
+						}
+					}
+				} finally {
+					initialized = true;
+				}
+			}
+		}
+
+		public boolean specifiesInclusionOfAspect(String name) {
+			ensureInitialized();
+			return resolvedIncludedAspects.contains(name);
+		}
+
+		public TypePattern getScopeFor(String name) {
+			return (TypePattern) scopes.get(name);
+		}
+	}
 
 }
