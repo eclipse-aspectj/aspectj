@@ -34,6 +34,7 @@ public class CrosscuttingMembersSet {
 	// FIXME AV - ? we may need a sequencedHashMap there to ensure source based precedence for @AJ advice
 	private final Map /* ResolvedType (the aspect) > CrosscuttingMembers */members = new HashMap();
 
+	private World world;
 	private List shadowMungers = null;
 	private List typeMungers = null;
 	private List lateTypeMungers = null;
@@ -46,14 +47,12 @@ public class CrosscuttingMembersSet {
 	private boolean changedSinceLastReset = false;
 
 	private List /* IVerificationRequired */verificationList = null; // List of things to be verified once the type system is
-																	// 'complete'
+	// 'complete'
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(CrosscuttingMembersSet.class);
 
 	public CrosscuttingMembersSet(World world) {
-		trace.enter("<init>", this, world);
-
-		trace.exit("<init>");
+		this.world = world;
 	}
 
 	public boolean addOrReplaceAspect(ResolvedType aspectType) {
@@ -65,7 +64,10 @@ public class CrosscuttingMembersSet {
 	 *         this
 	 */
 	public boolean addOrReplaceAspect(ResolvedType aspectType, boolean inWeavingPhase) {
-		trace.enter("addOrReplaceAspect", this, new Object[] { aspectType, new Boolean(inWeavingPhase) });
+
+		if (!world.isAspectIncluded(aspectType)) {
+			return false;
+		}
 
 		boolean change = false;
 		CrosscuttingMembers xcut = (CrosscuttingMembers) members.get(aspectType);
@@ -93,7 +95,6 @@ public class CrosscuttingMembersSet {
 		}
 		changedSinceLastReset = changedSinceLastReset || change;
 
-		trace.exit("addOrReplaceAspect", change);
 		return change;
 	}
 
@@ -117,6 +118,9 @@ public class CrosscuttingMembersSet {
 	}
 
 	public void addAdviceLikeDeclares(ResolvedType aspectType) {
+		if (!members.containsKey(aspectType)) {
+			return;
+		}
 		CrosscuttingMembers xcut = (CrosscuttingMembers) members.get(aspectType);
 		xcut.addDeclares(aspectType.collectDeclares(true));
 	}

@@ -21,6 +21,7 @@ import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.TypePattern;
 
 /**
  * For every shadow munger, nothing can be done with it until it is concretized. Then...
@@ -66,6 +67,15 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	 * All overriding methods should call super
 	 */
 	public boolean match(Shadow shadow, World world) {
+		if (world.isXmlConfigured() && world.isAspectIncluded(declaringType)) {
+			TypePattern scoped = world.getAspectScope(declaringType);
+			if (scoped != null) {
+				boolean b = scoped.matches(shadow.getEnclosingType().resolve(world), TypePattern.STATIC).alwaysTrue();
+				if (!b) {
+					return false;
+				}
+			}
+		}
 		return pointcut.match(shadow).maybeTrue();
 	}
 

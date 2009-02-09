@@ -38,6 +38,7 @@ import org.aspectj.util.IStructureModel;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.tools.PointcutDesignatorHandler;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
@@ -1290,8 +1291,12 @@ public abstract class World implements Dump.INode {
 		return false;
 	}
 
-	// public boolean specifiesInclusionOfAspect(String name) {
-	// return true;
-	// }
+	public boolean isAspectIncluded(ResolvedType aspectType) {
+		return true;
+	}
+
+	public TypePattern getAspectScope(ResolvedType declaringType) {
+		return null;
+	}
 
 }
