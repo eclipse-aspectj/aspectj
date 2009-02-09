@@ -1,0 +1,43 @@
+This is to cover https://bugs.eclipse.org/bugs/show_bug.cgi?id=124460 which relates
+to the use of aop.xml configure compile time and binary weaving, in addition to
+load time weaving.
+
+For source compilation and binary weaving the goal is to offer the same experience 
+users will get when using their aop.xml for LTW.
+
+Additionally for source compilation it also offers a way to control
+aspects when they are extracted from source src zip and then used across some
+set of source folders they were never originally intended for (see the
+compiling spring bug where a test aspect is leaking across all the source folders
+in the whole of spring).
+
+So - that means consuming aspects from either the inpath/aspectpath or source folders
+should include aop.xml searching.  Or they can be specified directly as source
+entries perhaps when passing source files:
+
+ajc A.java B.java foo.xml
+
+
+--
+Testing
+
+- basic aop.xml that includes one aspect
+- the variety of mungers (checkers/itd members/advice/decp/deca)
+- wildcarded includes/excludes
+- compound type patterns for scope
+- new messages: ignoring weaver sections, scoping aspects, excluding aspects, problems processing aop.xml
+- aspect supertypes included if subtypes excluded?
+- annotation style
+- inner aspects
+- needs a command line option to switch support for this on/off (ie. to make it search
+  for xml files on aspectpath/inpath - we dont want unexpected behaviour)
+
+--
+Implementation Notes
+
+- Just because the contents of the aspect are not used in weaving, doesnt mean
+  the aspect shouldn't be fully compiled/resolved and written to the bin folder
+  correctly as a valid aspect for later consumption.  So we can't short circuit
+  resolution if the aspect is included - we really just want to exclude inclusion
+  of that aspect in the crosscuttingset - or maybe even later we just want to
+  skip any mungers that came from it (but what about inherited mungers from supertypes?)

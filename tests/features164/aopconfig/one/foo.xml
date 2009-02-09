@@ -1,0 +1,6 @@
+<aspectj>
+<aspects>
+  <aspect name="A"/>
+  <!-- <aspect name="A2"/> -->
+</aspects>
+</aspectj>

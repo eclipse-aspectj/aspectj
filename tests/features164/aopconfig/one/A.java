@@ -1,0 +1,3 @@
+aspect A {
+  before():staticinitialization(*) {}
+}

@@ -1,0 +1,7 @@
+<!-- A is scoped to only affect certain types matching the scope -->
+<aspectj>
+<aspects>
+  <aspect name="A" scope="B"/>
+  <!-- <aspect name="A2"/> -->
+</aspects>
+</aspectj>
