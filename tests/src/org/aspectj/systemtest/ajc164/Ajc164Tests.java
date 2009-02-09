@@ -29,16 +29,26 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testHandles_pr263310() {
+		runTest("inner handles");
+		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
+		IProgramElement ipe = null;
+		ipe = findElementAtLine(top.getRoot(), 13);
+		assertEquals("<p{HandleTestingAspect.java}HandleTestingAspect[InnerClass}InnerInnerAspect|1", ipe.getHandleIdentifier());
+		// ipe = findElementAtLine(top.getRoot(), 29);
+		// assertEquals("<x*OverrideOptions.aj}OverrideOptions&around!2", ipe.getHandleIdentifier());
+	}
+
 	public void testHandles_pr263666() {
 		runTest("around advice handles");
 		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		IProgramElement ipe = null;
-		ipe = findElementAtLine(top.getRoot(), 22);// public java.util.List<String> Ship.i(List<String>[][] u)
+		ipe = findElementAtLine(top.getRoot(), 22);
 		assertEquals("<x*OverrideOptions.aj}OverrideOptions&around", ipe.getHandleIdentifier());
-		ipe = findElementAtLine(top.getRoot(), 29);// public java.util.List<String> Ship.i(List<String>[][] u)
+		ipe = findElementAtLine(top.getRoot(), 29);
 		assertEquals("<x*OverrideOptions.aj}OverrideOptions&around!2", ipe.getHandleIdentifier());
 	}
-/*
+
 	// Only one of two aspects named
 	public void testAopConfig1() {
 		runTest("aop config - 1");
@@ -48,7 +58,12 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testAopConfig2() {
 		runTest("aop config - 2");
 	}
-*/
+
+	// Invalid scope specified - cannot be parsed as type pattern
+	public void testAopConfig3() {
+		runTest("aop config - 3");
+	}
+
 	public void testAjcThisNotRead() {
 		runTest("ajcthis not read");
 	}

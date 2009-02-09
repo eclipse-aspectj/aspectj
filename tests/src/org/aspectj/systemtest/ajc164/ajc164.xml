@@ -2,11 +2,6 @@
 
 <suite>
     
-    <ajc-test dir="bugs164/pr263666" title="around advice handles">
-      <compile files="x/A.java x/B.java x/OverrideOptions.aj" options="-1.5 -emacssym"/>
-    </ajc-test>
-    
-    
     <ajc-test dir="features164/aopconfig/one" title="aop config - 1">
       <compile files="A.java A2.java B.java foo.xml" options="-1.5 -showWeaveInfo">
         <message kind="weave" text="Join point 'staticinitialization(void A.&lt;clinit&gt;())' in Type 'A' (A.java:1) advised by before advice from 'A' (A.java:2)"/>
@@ -19,6 +14,21 @@
       <compile files="A.java A2.java B.java B2.java foo2.xml" options="-1.5 -showWeaveInfo">
         <message kind="weave" text="Join point 'staticinitialization(void B.&lt;clinit&gt;())' in Type 'B' (B.java:1) advised by before advice from 'A' (A.java:2)"/>
       </compile>
+    </ajc-test>
+    
+    <ajc-test dir="features164/aopconfig/two" title="aop config - 3">
+      <!-- type pattern in the scope in foo.xml is complete nonsense -->
+      <compile files="A.java B.java foo.xml" options="-1.5 -Xlint:ignore">
+      	<message kind="error" text="Unable to parse scope as type pattern"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs164/pr263310" title="inner handles">
+      <compile files="HandleTestingAspect.java" options="-1.5 -emacssym -Xlint:ignore"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs164/pr263666" title="around advice handles">
+      <compile files="x/A.java x/B.java x/OverrideOptions.aj" options="-1.5 -emacssym"/>
     </ajc-test>
     
     <ajc-test dir="bugs164" title="ajcthis not read">
