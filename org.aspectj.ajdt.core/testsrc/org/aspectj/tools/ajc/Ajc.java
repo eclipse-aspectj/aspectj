@@ -363,6 +363,14 @@ public class Ajc {
 				File f = new File(args[i]);
 				// newArgs[i] = new File(baseDir,args[i]).getAbsolutePath(); // might be quicker?
 				newArgs[i] = adjustFileOrDir(f, doCopy).getAbsolutePath();
+			} else if (args[i].endsWith(".xml") && !args[i].startsWith("-")) {
+				if (i > 0 && args[i - 1].equals("-outxmlfile")) {
+					// dont adjust it
+				} else {
+					File f = new File(args[i]);
+					// newArgs[i] = new File(baseDir,args[i]).getAbsolutePath(); // might be quicker?
+					newArgs[i] = adjustFileOrDir(f, doCopy).getAbsolutePath();
+				}
 			} else {
 				if ((args[i].equals("-aspectpath") || args[i].equals("-inpath") || args[i].equals("-injars")
 						|| args[i].equals("-outjar") || args[i].equals("-classpath") || args[i].equals("-sourceroots")
