@@ -811,8 +811,13 @@ public class BcelWorld extends World implements Repository {
 	 * @param xmlFiles list of File objects representing any aop.xml files passed in to configure the build process
 	 */
 	public void setXmlFiles(List xmlFiles) {
+		if (!isXmlConfiguredWorld && !xmlFiles.isEmpty()) {
+			getMessageHandler().handleMessage(
+					MessageUtil
+							.error("xml configuration files only supported by the compiler when -xmlConfigured option specified"));
+			return;
+		}
 		if (!xmlFiles.isEmpty()) {
-			isXmlConfiguredWorld = true;
 			xmlConfiguration = new WeavingXmlConfig(this);
 		}
 		for (Iterator iterator = xmlFiles.iterator(); iterator.hasNext();) {
@@ -832,8 +837,12 @@ public class BcelWorld extends World implements Repository {
 		}
 	}
 
+	public void setXmlConfigured(boolean b) {
+		this.isXmlConfiguredWorld = b;
+	}
+
 	public boolean isXmlConfigured() {
-		return isXmlConfiguredWorld;
+		return isXmlConfiguredWorld && xmlConfiguration != null;
 	}
 
 	public boolean isAspectIncluded(ResolvedType aspectType) {
