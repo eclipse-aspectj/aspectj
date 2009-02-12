@@ -3,9 +3,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.aspectj</groupId>
-  <artifactId>aspectjtools</artifactId>
+  <artifactId>aspectjweaver</artifactId>
   <version>ASPECTJVERSION</version>
-  <name>AspectJ tools</name>
+  <name>AspectJ weaver</name>
   <url>http://www.aspectj.org</url>
 
   <licenses>
