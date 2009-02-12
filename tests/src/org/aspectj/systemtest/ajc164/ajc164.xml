@@ -3,7 +3,7 @@
 <suite>
     
     <ajc-test dir="features164/aopconfig/one" title="aop config - 1">
-      <compile files="A.java A2.java B.java foo.xml" options="-1.5 -showWeaveInfo">
+      <compile files="A.java A2.java B.java foo.xml" options="-1.5 -showWeaveInfo -xmlConfigured">
         <message kind="weave" text="Join point 'staticinitialization(void A.&lt;clinit&gt;())' in Type 'A' (A.java:1) advised by before advice from 'A' (A.java:2)"/>
         <message kind="weave" text="Join point 'staticinitialization(void A2.&lt;clinit&gt;())' in Type 'A2' (A2.java:1) advised by before advice from 'A' (A.java:2)"/>
         <message kind="weave" text="Join point 'staticinitialization(void B.&lt;clinit&gt;())' in Type 'B' (B.java:1) advised by before advice from 'A' (A.java:2)"/>
@@ -11,14 +11,14 @@
     </ajc-test>
     
     <ajc-test dir="features164/aopconfig/one" title="aop config - 2">
-      <compile files="A.java A2.java B.java B2.java foo2.xml" options="-1.5 -showWeaveInfo">
+      <compile files="A.java A2.java B.java B2.java foo2.xml" options="-1.5 -showWeaveInfo -xmlConfigured">
         <message kind="weave" text="Join point 'staticinitialization(void B.&lt;clinit&gt;())' in Type 'B' (B.java:1) advised by before advice from 'A' (A.java:2)"/>
       </compile>
     </ajc-test>
     
     <ajc-test dir="features164/aopconfig/two" title="aop config - 3">
       <!-- type pattern in the scope in foo.xml is complete nonsense -->
-      <compile files="A.java B.java foo.xml" options="-1.5 -Xlint:ignore">
+      <compile files="A.java B.java foo.xml" options="-1.5 -Xlint:ignore -xmlConfigured">
       	<message kind="error" text="Unable to parse scope as type pattern"/>
       </compile>
     </ajc-test>

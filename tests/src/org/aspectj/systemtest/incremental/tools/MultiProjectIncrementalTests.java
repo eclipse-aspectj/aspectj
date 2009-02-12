@@ -50,6 +50,26 @@ import org.aspectj.util.FileUtil;
  */
 public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
 
+	public void testXmlConfiguredProject() {
+		AjdeInteractionTestbed.VERBOSE = true;
+		String p = "xmlone";
+		initialiseProject(p);
+		configureNonStandardCompileOptions(p, "-showWeaveInfo -xmlConfigured");
+		configureShowWeaveInfoMessages(p, true);
+		addXmlConfigFile(p, getProjectRelativePath(p, "p/aop.xml").toString());
+		build(p);
+		checkWasFullBuild();
+		List weaveMessages = getWeavingMessages(p);
+		if (weaveMessages.size() != 1) {
+			for (Iterator iterator = weaveMessages.iterator(); iterator.hasNext();) {
+				Object object = (Object) iterator.next();
+				System.out.println(object);
+			}
+			fail("Expected just one weave message.  The aop.xml should have limited the weaving");
+		}
+
+	}
+
 	public void testDeclareParentsInModel() {
 		String p = "decps";
 		initialiseProject(p);

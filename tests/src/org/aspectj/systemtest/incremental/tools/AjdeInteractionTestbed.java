@@ -71,6 +71,13 @@ public class AjdeInteractionTestbed extends TestCase {
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).addProjectSourceFileChanged(changedFile);
 	}
 
+	public void addXmlConfigFile(String projectName, String xmlfile) {
+		List l = new ArrayList();
+		l.add(xmlfile);
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setProjectXmlConfigFiles(l);
+	}
+
 	public void addClasspathEntry(String projectName, File classpathEntry) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		MultiProjTestCompilerConfiguration config = ((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration());
@@ -164,6 +171,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		resetCompilerRecords(compiler);
 		addSourceFilesToBuild(projectName, compiler);
+		// addXmlConfigFilesToBuild(projectName, compiler);
 		pause(1000); // delay to allow previous runs build stamps to be OK
 		lognoln("Building project '" + projectName + "'");
 		compiler.build();
@@ -184,6 +192,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		resetCompilerRecords(compiler);
 		addSourceFilesToBuild(projectName, compiler);
+		addXmlConfigFilesToBuild(projectName, compiler);
 		pause(1000); // delay to allow previous runs build stamps to be OK
 		lognoln("Building project '" + projectName + "'");
 		compiler.buildFresh();
@@ -226,6 +235,26 @@ public class AjdeInteractionTestbed extends TestCase {
 		}
 	}
 
+	private void addXmlConfigFilesToBuild(String pname, AjCompiler compiler) {
+		File projectBase = new File(sandboxDir, pname);
+		ICompilerConfiguration icc = compiler.getCompilerConfiguration();
+		List currentXmlFiles = icc.getProjectXmlConfigFiles();
+		List collector = new ArrayList();
+		collectUpXmlFiles(projectBase, projectBase, collector);
+		boolean changed = false;
+		for (int i = 0; i < collector.size(); i++) {
+			if (!currentXmlFiles.contains(collector.get(i)))
+				changed = true;
+		}
+		for (int i = 0; i < currentXmlFiles.size(); i++) {
+			if (!collector.contains(currentXmlFiles.get(i)))
+				changed = true;
+		}
+		if (changed) {
+			((MultiProjTestCompilerConfiguration) icc).setProjectXmlConfigFiles(collector);
+		}
+	}
+
 	private void collectUpFiles(File location, File base, List collectionPoint) {
 		String contents[] = location.list();
 		if (contents == null)
@@ -243,6 +272,27 @@ public class AjdeInteractionTestbed extends TestCase {
 					// String toRemove = base.getCanonicalPath();
 					// if (!fileFound.startsWith(toRemove)) throw new RuntimeException("eh? "+fileFound+"   "+toRemove);
 					// collectionPoint.add(fileFound.substring(toRemove.length()+1));//+1 captures extra separator
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	private void collectUpXmlFiles(File location, File base, List collectionPoint) {
+		String contents[] = location.list();
+		if (contents == null)
+			return;
+		for (int i = 0; i < contents.length; i++) {
+			String string = contents[i];
+			File f = new File(location, string);
+			if (f.isDirectory()) {
+				collectUpXmlFiles(f, base, collectionPoint);
+			} else if (f.isFile() && f.getName().endsWith(".xml")) {
+				String fileFound;
+				try {
+					fileFound = f.getCanonicalPath();
+					collectionPoint.add(fileFound);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

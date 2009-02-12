@@ -41,6 +41,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 	private List modifiedFiles;
 	private List modifiedDirs;
 	private List projectSourceFiles = new ArrayList();
+	private List xmlConfigFiles = new ArrayList();
 	private String projectPath;
 
 	int changed;
@@ -121,6 +122,10 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		return projectSourceFiles;
 	}
 
+	public List getProjectXmlConfigFiles() {
+		return xmlConfigFiles;
+	}
+
 	public List getProjectSourceFilesChanged() {
 		log("ICompilerConfiguration.getProjectSourceFilesChanged()");
 		return modifiedFiles;
@@ -172,6 +177,11 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 	public void setProjectSourceFiles(List projectSourceFiles) {
 		this.projectSourceFiles = projectSourceFiles;
 		this.changed |= ICompilerConfiguration.PROJECTSOURCEFILES_CHANGED;
+	}
+
+	public void setProjectXmlConfigFiles(List xmlConfigFiles) {
+		this.xmlConfigFiles = xmlConfigFiles;
+		this.changed |= ICompilerConfiguration.XMLCONFIG_CHANGED;
 	}
 
 	public void addProjectSourceFileChanged(File f) {
