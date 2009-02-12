@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.ajdt.internal.core.builder;
 
 import java.util.Map;
@@ -19,48 +18,47 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.weaver.Constants;
 
-
 /**
- * Compiler options used by Eclipse integration  (AJDT) 
+ * Compiler options used by Eclipse integration (AJDT)
  */
 public class AjCompilerOptions extends CompilerOptions {
 
 	// AspectJ Lint options
-	public static final String OPTION_ReportInvalidAbsoluteTypeName = "org.aspectj.ajdt.core.compiler.lint.InvalidAbsoluteTypeName"; 
-	public static final String OPTION_ReportInvalidWildcardTypeName = "org.aspectj.ajdt.core.compiler.lint.WildcardTypeName"; 
-	public static final String OPTION_ReportUnresolvableMember      = "org.aspectj.ajdt.core.compiler.lint.UnresolvableMember"; 
-	public static final String OPTION_ReportTypeNotExposedToWeaver  = "org.aspectj.ajdt.core.compiler.lint.TypeNotExposedToWeaver"; 
-	public static final String OPTION_ReportShadowNotInStructure    = "org.aspectj.ajdt.core.compiler.lint.ShadowNotInStructure"; 
-	public static final String OPTION_ReportUnmatchedSuperTypeInCall    = "org.aspectj.ajdt.core.compiler.list.UnmatchedSuperTypeInCall";
-	public static final String OPTION_ReportCannotImplementLazyTJP  = "org.aspectj.ajdt.core.compiler.lint.CannotImplementLazyTJP"; 
-	public static final String OPTION_ReportNeedSerialVersionUIDField   = "org.aspectj.ajdt.core.compiler.lint.NeedSerialVersionUIDField"; 
-	public static final String OPTION_ReportIncompatibleSerialVersion   = "org.aspectj.ajdt.core.compiler.lint.BrokeSerialVersionCompatibility";
-	
+	public static final String OPTION_ReportInvalidAbsoluteTypeName = "org.aspectj.ajdt.core.compiler.lint.InvalidAbsoluteTypeName";
+	public static final String OPTION_ReportInvalidWildcardTypeName = "org.aspectj.ajdt.core.compiler.lint.WildcardTypeName";
+	public static final String OPTION_ReportUnresolvableMember = "org.aspectj.ajdt.core.compiler.lint.UnresolvableMember";
+	public static final String OPTION_ReportTypeNotExposedToWeaver = "org.aspectj.ajdt.core.compiler.lint.TypeNotExposedToWeaver";
+	public static final String OPTION_ReportShadowNotInStructure = "org.aspectj.ajdt.core.compiler.lint.ShadowNotInStructure";
+	public static final String OPTION_ReportUnmatchedSuperTypeInCall = "org.aspectj.ajdt.core.compiler.list.UnmatchedSuperTypeInCall";
+	public static final String OPTION_ReportCannotImplementLazyTJP = "org.aspectj.ajdt.core.compiler.lint.CannotImplementLazyTJP";
+	public static final String OPTION_ReportNeedSerialVersionUIDField = "org.aspectj.ajdt.core.compiler.lint.NeedSerialVersionUIDField";
+	public static final String OPTION_ReportIncompatibleSerialVersion = "org.aspectj.ajdt.core.compiler.lint.BrokeSerialVersionCompatibility";
+
 	// General AspectJ Compiler options (excludes paths etc, these are handled separately)
-	public static final String OPTION_TerminateAfterCompilation                 = "org.aspectj.ajdt.core.compiler.weaver.TerminateAfterCompilation";
-	public static final String OPTION_XSerializableAspects    = "org.aspectj.ajdt.core.compiler.weaver.XSerializableAspects";
-	public static final String OPTION_XLazyThisJoinPoint      = "org.aspectj.ajdt.core.compiler.weaver.XLazyThisJoinPoint";
-	public static final String OPTION_XNoInline               = "org.aspectj.ajdt.core.compiler.weaver.XNoInline";
-	public static final String OPTION_XNotReweavable          = "org.aspectj.ajdt.core.compiler.weaver.XNotReweavable";
-	public static final String OPTION_XHasMember              = "org.aspectj.ajdt.core.compiler.weaver.XHasMember";
-	public static final String OPTION_XdevPinpoint            = "org.aspectj.ajdt.core.compiler.weaver.XdevPinpoint";
-	
+	public static final String OPTION_TerminateAfterCompilation = "org.aspectj.ajdt.core.compiler.weaver.TerminateAfterCompilation";
+	public static final String OPTION_XSerializableAspects = "org.aspectj.ajdt.core.compiler.weaver.XSerializableAspects";
+	public static final String OPTION_XLazyThisJoinPoint = "org.aspectj.ajdt.core.compiler.weaver.XLazyThisJoinPoint";
+	public static final String OPTION_XNoInline = "org.aspectj.ajdt.core.compiler.weaver.XNoInline";
+	public static final String OPTION_XNotReweavable = "org.aspectj.ajdt.core.compiler.weaver.XNotReweavable";
+	public static final String OPTION_XHasMember = "org.aspectj.ajdt.core.compiler.weaver.XHasMember";
+	public static final String OPTION_XdevPinpoint = "org.aspectj.ajdt.core.compiler.weaver.XdevPinpoint";
+
 	// these next four not exposed by IDEs
 	public static final String OPTION_XDevNoAtAspectJProcessing = "org.aspectj.ajdt.core.compiler.ast.NoAtAspectJProcessing";
-    public static final String OPTION_GenerateModel           = "org.aspectj.ajdt.core.compiler.model.GenerateModel";
-    public static final String OPTION_GenerateJavaDocsInModel = "org.aspectj.ajdt.core.compiler.model.GenerateJavaDocsInModel";
-    public static final String OPTION_Emacssym                = "org.aspectj.ajdt.core.compiler.model.Emacssym";
-	
+	public static final String OPTION_GenerateModel = "org.aspectj.ajdt.core.compiler.model.GenerateModel";
+	public static final String OPTION_GenerateJavaDocsInModel = "org.aspectj.ajdt.core.compiler.model.GenerateJavaDocsInModel";
+	public static final String OPTION_Emacssym = "org.aspectj.ajdt.core.compiler.model.Emacssym";
+
 	// constants for irritant levels
-	public static final long InvalidAbsoluteTypeName    = ASTNode.Bit47L;
-	public static final long InvalidWildCardTypeName    = ASTNode.Bit48L;
-	public static final long UnresolvableMember           = ASTNode.Bit49L;
-	public static final long TypeNotExposedToWeaver   = ASTNode.Bit50L;
-	public static final long ShadowNotInStructure       = ASTNode.Bit51L;
-	public static final long UnmatchedSuperTypeInCall   = ASTNode.Bit52L;
-	public static final long CannotImplementLazyTJP     = ASTNode.Bit53L;
-	public static final long NeedSerialVersionUIDField  = ASTNode.Bit54L;
-	public static final long IncompatibleSerialVersion  = ASTNode.Bit55L;
+	public static final long InvalidAbsoluteTypeName = ASTNode.Bit47L;
+	public static final long InvalidWildCardTypeName = ASTNode.Bit48L;
+	public static final long UnresolvableMember = ASTNode.Bit49L;
+	public static final long TypeNotExposedToWeaver = ASTNode.Bit50L;
+	public static final long ShadowNotInStructure = ASTNode.Bit51L;
+	public static final long UnmatchedSuperTypeInCall = ASTNode.Bit52L;
+	public static final long CannotImplementLazyTJP = ASTNode.Bit53L;
+	public static final long NeedSerialVersionUIDField = ASTNode.Bit54L;
+	public static final long IncompatibleSerialVersion = ASTNode.Bit55L;
 
 	public boolean terminateAfterCompilation = false;
 	public boolean xSerializableAspects = false;
@@ -70,103 +68,120 @@ public class AjCompilerOptions extends CompilerOptions {
 	public boolean xHasMember = false;
 	public boolean xdevPinpoint = false;
 	public boolean showWeavingInformation = false;
-	
+
 	public String xOptionalJoinpoints = null;
-	
+
 	// If true - autoboxing behaves differently ...
 	public boolean behaveInJava5Way = false;
-	
+
 	// Specifies the level of the aspectjrt.jar we are targetting
 	public String targetAspectjRuntimeLevel = Constants.RUNTIME_LEVEL_DEFAULT;
-	
+
 	public String xConfigurationInfo;
 	public boolean addSerialVerUID = false;
-	
+	public boolean xmlConfigured = false;
+
 	// these next four not exposed by IDEs
 	public boolean generateModel = false;
 	public boolean generateJavaDocsInModel = false;
 	public boolean generateEmacsSymFiles = false;
 	public boolean noAtAspectJProcessing = false;
-	
+
 	/**
-	 * Generates a map of cross references based on information
-	 * in the structure model.
+	 * Generates a map of cross references based on information in the structure model.
 	 */
 	public boolean generateCrossRefs = false;
-	
+
 	// Check aspectjrt*.jar exists and within it the version number is right (see AjBuildManager.checkRtJar())
 	public boolean checkRuntimeVersion = true;
-	
+
 	public boolean proceedOnError = false;
 
-	
-	/** 
+	/**
 	 * Initializing the compiler options with defaults
 	 */
-	public AjCompilerOptions(){
+	public AjCompilerOptions() {
 		super();
-		setAspectJWarningDefaults();			
+		setAspectJWarningDefaults();
 	}
 
-	/** 
+	/**
 	 * Initializing the compiler options with external settings
+	 * 
 	 * @param settings
 	 */
-	public AjCompilerOptions(Map settings){
+	public AjCompilerOptions(Map settings) {
 		setAspectJWarningDefaults();
-		if (settings == null) return;
-		set(settings);	
+		if (settings == null)
+			return;
+		set(settings);
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jdt.internal.compiler.impl.CompilerOptions#getMap()
 	 */
 	public Map getMap() {
 		Map map = super.getMap();
 		// now add AspectJ additional options
-		map.put(OPTION_ReportInvalidAbsoluteTypeName,getSeverityString(InvalidAbsoluteTypeName));
-		map.put(OPTION_ReportInvalidWildcardTypeName,getSeverityString(InvalidWildCardTypeName));
-		map.put(OPTION_ReportUnresolvableMember,getSeverityString(UnresolvableMember));
-		map.put(OPTION_ReportTypeNotExposedToWeaver,getSeverityString(TypeNotExposedToWeaver));
-		map.put(OPTION_ReportShadowNotInStructure,getSeverityString(ShadowNotInStructure));
-		map.put(OPTION_ReportUnmatchedSuperTypeInCall,getSeverityString(UnmatchedSuperTypeInCall));
-		map.put(OPTION_ReportCannotImplementLazyTJP,getSeverityString(CannotImplementLazyTJP));
-		map.put(OPTION_ReportNeedSerialVersionUIDField,getSeverityString(NeedSerialVersionUIDField));
-		map.put(OPTION_ReportIncompatibleSerialVersion,getSeverityString(IncompatibleSerialVersion));
-		map.put(CompilerOptions.OPTION_ReportSwallowedExceptionInCatchBlock,getSeverityString(CompilerOptions.SwallowedExceptionInCatchBlock));
-		
+		map.put(OPTION_ReportInvalidAbsoluteTypeName, getSeverityString(InvalidAbsoluteTypeName));
+		map.put(OPTION_ReportInvalidWildcardTypeName, getSeverityString(InvalidWildCardTypeName));
+		map.put(OPTION_ReportUnresolvableMember, getSeverityString(UnresolvableMember));
+		map.put(OPTION_ReportTypeNotExposedToWeaver, getSeverityString(TypeNotExposedToWeaver));
+		map.put(OPTION_ReportShadowNotInStructure, getSeverityString(ShadowNotInStructure));
+		map.put(OPTION_ReportUnmatchedSuperTypeInCall, getSeverityString(UnmatchedSuperTypeInCall));
+		map.put(OPTION_ReportCannotImplementLazyTJP, getSeverityString(CannotImplementLazyTJP));
+		map.put(OPTION_ReportNeedSerialVersionUIDField, getSeverityString(NeedSerialVersionUIDField));
+		map.put(OPTION_ReportIncompatibleSerialVersion, getSeverityString(IncompatibleSerialVersion));
+		map.put(CompilerOptions.OPTION_ReportSwallowedExceptionInCatchBlock,
+				getSeverityString(CompilerOptions.SwallowedExceptionInCatchBlock));
+
 		map.put(OPTION_TerminateAfterCompilation, this.terminateAfterCompilation ? ENABLED : DISABLED);
-		map.put(OPTION_XSerializableAspects,this.xSerializableAspects ? ENABLED : DISABLED);
-		map.put(OPTION_XLazyThisJoinPoint,this.xLazyThisJoinPoint ? ENABLED : DISABLED);
-		map.put(OPTION_XNoInline,this.xNoInline ? ENABLED : DISABLED);
-		map.put(OPTION_XNotReweavable,this.xNotReweavable ? ENABLED : DISABLED);
+		map.put(OPTION_XSerializableAspects, this.xSerializableAspects ? ENABLED : DISABLED);
+		map.put(OPTION_XLazyThisJoinPoint, this.xLazyThisJoinPoint ? ENABLED : DISABLED);
+		map.put(OPTION_XNoInline, this.xNoInline ? ENABLED : DISABLED);
+		map.put(OPTION_XNotReweavable, this.xNotReweavable ? ENABLED : DISABLED);
 		map.put(OPTION_XHasMember, this.xHasMember ? ENABLED : DISABLED);
 		map.put(OPTION_XdevPinpoint, this.xdevPinpoint ? ENABLED : DISABLED);
 
-		map.put(OPTION_GenerateModel,this.generateModel ? ENABLED : DISABLED);
-		map.put(OPTION_GenerateJavaDocsInModel,this.generateJavaDocsInModel ? ENABLED : DISABLED);
-		map.put(OPTION_Emacssym,this.generateEmacsSymFiles ? ENABLED : DISABLED);
-		map.put(OPTION_XDevNoAtAspectJProcessing,this.noAtAspectJProcessing ? ENABLED : DISABLED);
-		
+		map.put(OPTION_GenerateModel, this.generateModel ? ENABLED : DISABLED);
+		map.put(OPTION_GenerateJavaDocsInModel, this.generateJavaDocsInModel ? ENABLED : DISABLED);
+		map.put(OPTION_Emacssym, this.generateEmacsSymFiles ? ENABLED : DISABLED);
+		map.put(OPTION_XDevNoAtAspectJProcessing, this.noAtAspectJProcessing ? ENABLED : DISABLED);
+
 		return map;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jdt.internal.compiler.impl.CompilerOptions#set(java.util.Map)
 	 */
 	public void set(Map optionsMap) {
 		super.set(optionsMap);
 		Object optionValue;
-		if ((optionValue = optionsMap.get(OPTION_ReportInvalidAbsoluteTypeName)) != null) updateSeverity(InvalidAbsoluteTypeName, optionValue);
-		if ((optionValue = optionsMap.get(OPTION_ReportInvalidWildcardTypeName)) != null) updateSeverity(InvalidWildCardTypeName, optionValue);
-		if ((optionValue = optionsMap.get(OPTION_ReportUnresolvableMember)) != null) updateSeverity(UnresolvableMember, optionValue);
-		if ((optionValue = optionsMap.get(OPTION_ReportTypeNotExposedToWeaver)) != null) updateSeverity(TypeNotExposedToWeaver, optionValue);
-		if ((optionValue = optionsMap.get(OPTION_ReportShadowNotInStructure)) != null) updateSeverity(ShadowNotInStructure, optionValue);
-		if ((optionValue = optionsMap.get(OPTION_ReportUnmatchedSuperTypeInCall)) != null) updateSeverity(UnmatchedSuperTypeInCall, optionValue);
-		if ((optionValue = optionsMap.get(OPTION_ReportCannotImplementLazyTJP)) != null) updateSeverity(CannotImplementLazyTJP, optionValue);
-		if ((optionValue = optionsMap.get(OPTION_ReportNeedSerialVersionUIDField)) != null) updateSeverity(NeedSerialVersionUIDField, optionValue);
-		if ((optionValue = optionsMap.get(OPTION_ReportIncompatibleSerialVersion)) != null) updateSeverity(IncompatibleSerialVersion, optionValue);
-		if ((optionValue = optionsMap.get(CompilerOptions.OPTION_ReportSwallowedExceptionInCatchBlock)) != null) updateSeverity(CompilerOptions.SwallowedExceptionInCatchBlock, optionValue);
-		
+		if ((optionValue = optionsMap.get(OPTION_ReportInvalidAbsoluteTypeName)) != null)
+			updateSeverity(InvalidAbsoluteTypeName, optionValue);
+		if ((optionValue = optionsMap.get(OPTION_ReportInvalidWildcardTypeName)) != null)
+			updateSeverity(InvalidWildCardTypeName, optionValue);
+		if ((optionValue = optionsMap.get(OPTION_ReportUnresolvableMember)) != null)
+			updateSeverity(UnresolvableMember, optionValue);
+		if ((optionValue = optionsMap.get(OPTION_ReportTypeNotExposedToWeaver)) != null)
+			updateSeverity(TypeNotExposedToWeaver, optionValue);
+		if ((optionValue = optionsMap.get(OPTION_ReportShadowNotInStructure)) != null)
+			updateSeverity(ShadowNotInStructure, optionValue);
+		if ((optionValue = optionsMap.get(OPTION_ReportUnmatchedSuperTypeInCall)) != null)
+			updateSeverity(UnmatchedSuperTypeInCall, optionValue);
+		if ((optionValue = optionsMap.get(OPTION_ReportCannotImplementLazyTJP)) != null)
+			updateSeverity(CannotImplementLazyTJP, optionValue);
+		if ((optionValue = optionsMap.get(OPTION_ReportNeedSerialVersionUIDField)) != null)
+			updateSeverity(NeedSerialVersionUIDField, optionValue);
+		if ((optionValue = optionsMap.get(OPTION_ReportIncompatibleSerialVersion)) != null)
+			updateSeverity(IncompatibleSerialVersion, optionValue);
+		if ((optionValue = optionsMap.get(CompilerOptions.OPTION_ReportSwallowedExceptionInCatchBlock)) != null)
+			updateSeverity(CompilerOptions.SwallowedExceptionInCatchBlock, optionValue);
+
 		if ((optionValue = optionsMap.get(OPTION_TerminateAfterCompilation)) != null) {
 			if (ENABLED.equals(optionValue)) {
 				this.terminateAfterCompilation = true;
@@ -203,17 +218,10 @@ public class AjCompilerOptions extends CompilerOptions {
 			}
 		}
 		/*
-		if ((optionValue = optionsMap.get(OPTION_XReweavableCompress)) != null) {
-			if (ENABLED.equals(optionValue)) {
-				this.xReweavableCompress = true;
-			} else if (DISABLED.equals(optionValue)) {
-				this.xReweavableCompress = false;
-			}
-		}
-*/
-		
-		
-		
+		 * if ((optionValue = optionsMap.get(OPTION_XReweavableCompress)) != null) { if (ENABLED.equals(optionValue)) {
+		 * this.xReweavableCompress = true; } else if (DISABLED.equals(optionValue)) { this.xReweavableCompress = false; } }
+		 */
+
 		if ((optionValue = optionsMap.get(OPTION_XHasMember)) != null) {
 			if (ENABLED.equals(optionValue)) {
 				this.xHasMember = true;
@@ -258,28 +266,24 @@ public class AjCompilerOptions extends CompilerOptions {
 				this.noAtAspectJProcessing = false;
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * Add these warnings to the default set...
 	 */
 	private void setAspectJWarningDefaults() {
-		super.warningThreshold = 
-			super.warningThreshold |
-			InvalidAbsoluteTypeName |
-			UnresolvableMember |
-			TypeNotExposedToWeaver |
-			UnmatchedSuperTypeInCall |
-			CannotImplementLazyTJP |
-			CompilerOptions.SwallowedExceptionInCatchBlock;
+		super.warningThreshold = super.warningThreshold | InvalidAbsoluteTypeName | UnresolvableMember | TypeNotExposedToWeaver
+				| UnmatchedSuperTypeInCall | CannotImplementLazyTJP | CompilerOptions.SwallowedExceptionInCatchBlock;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer( super.toString() );
+		StringBuffer buf = new StringBuffer(super.toString());
 		// now add AspectJ additional options
 		buf.append("\n\tAspectJ Specific Options:");
 		buf.append("\n\t- terminate after compilation: ").append(this.terminateAfterCompilation ? ENABLED : DISABLED); //$NON-NLS-1$
@@ -293,7 +297,7 @@ public class AjCompilerOptions extends CompilerOptions {
 		buf.append("\n\t- generate Javadocs in AJDE model: ").append(this.generateJavaDocsInModel ? ENABLED : DISABLED); //$NON-NLS-1$		
 		buf.append("\n\t- generate Emacs symbol files: ").append(this.generateEmacsSymFiles ? ENABLED : DISABLED); //$NON-NLS-1$
 		buf.append("\n\t- suppress @AspectJ processing: ").append(this.noAtAspectJProcessing ? ENABLED : DISABLED); //$NON-NLS-1$
-		
+
 		buf.append("\n\t- invalid absolute type name (XLint): ").append(getSeverityString(InvalidAbsoluteTypeName)); //$NON-NLS-1$
 		buf.append("\n\t- invalid wildcard type name (XLint): ").append(getSeverityString(InvalidWildCardTypeName)); //$NON-NLS-1$
 		buf.append("\n\t- unresolvable member (XLint): ").append(getSeverityString(UnresolvableMember)); //$NON-NLS-1$
@@ -303,9 +307,9 @@ public class AjCompilerOptions extends CompilerOptions {
 		buf.append("\n\t- cannot implement lazy thisJoinPoint (XLint): ").append(getSeverityString(CannotImplementLazyTJP)); //$NON-NLS-1$
 		buf.append("\n\t- need serialVersionUID field (XLint): ").append(getSeverityString(NeedSerialVersionUIDField)); //$NON-NLS-1$
 		buf.append("\n\t- incompatible serial version (XLint): ").append(getSeverityString(IncompatibleSerialVersion)); //$NON-NLS-1$
-		buf.append("\n\t- swallowed exception in catch block (XLint): ").append(getSeverityString(CompilerOptions.SwallowedExceptionInCatchBlock)); //$NON-NLS-1$
-		
+		buf
+				.append("\n\t- swallowed exception in catch block (XLint): ").append(getSeverityString(CompilerOptions.SwallowedExceptionInCatchBlock)); //$NON-NLS-1$
+
 		return buf.toString();
 	}
 }
-  
