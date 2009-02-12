@@ -11,6 +11,7 @@
 package org.aspectj.tools.ajbrowser.core;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -105,5 +106,9 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 
 	public List getClasspathElementsWithModifiedContents() {
 		return null;
+	}
+
+	public List getProjectXmlConfigFiles() {
+		return Collections.EMPTY_LIST;
 	}
 }
