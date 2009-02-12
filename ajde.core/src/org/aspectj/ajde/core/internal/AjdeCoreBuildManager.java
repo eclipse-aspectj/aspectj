@@ -77,7 +77,8 @@ public class AjdeCoreBuildManager {
 		// If an incremental build is requested, check that we can
 		if (!fullBuild) {
 			AjState existingState = IncrementalStateManager.retrieveStateFor(compiler.getId());
-			if (existingState == null || existingState.getBuildConfig()==null || ajBuildManager.getState().getBuildConfig() == null) {
+			if (existingState == null || existingState.getBuildConfig() == null
+					|| ajBuildManager.getState().getBuildConfig() == null) {
 				// No existing state so we must do a full build
 				fullBuild = true;
 			} else {
@@ -220,7 +221,20 @@ public class AjdeCoreBuildManager {
 			if (l == null) {
 				return null;
 			}
-			args = (String[]) l.toArray(new String[l.size()]);
+			List xmlfiles = compilerConfig.getProjectXmlConfigFiles();
+			if (xmlfiles != null && !xmlfiles.isEmpty()) {
+				args = new String[l.size() + xmlfiles.size()];
+				// TODO speedup
+				int p = 0;
+				for (int i = 0; i < l.size(); i++) {
+					args[p++] = (String) l.get(i);
+				}
+				for (int i = 0; i < xmlfiles.size(); i++) {
+					args[p++] = (String) xmlfiles.get(i);
+				}
+			} else {
+				args = (String[]) l.toArray(new String[l.size()]);
+			}
 		}
 
 		BuildArgParser parser = new BuildArgParser(handler);

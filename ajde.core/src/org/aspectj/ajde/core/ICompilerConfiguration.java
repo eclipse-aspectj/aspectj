@@ -46,6 +46,11 @@ public interface ICompilerConfiguration extends CompilerConfigurationChangeFlags
 	public List /* String */getProjectSourceFiles();
 
 	/**
+	 * @return a list of those files that should be used to configure a build
+	 */
+	public List /* String */getProjectXmlConfigFiles();
+
+	/**
 	 * Return a subset of those files we'd get on getProjectSourceFiles() - the subset that have changed since the last build. If
 	 * someone else has already worked out what needs rebuilding, we don't need to do it again by checking all of the
 	 * projectSourceFiles(). Returning an empty list means nothing has changed, returning null means you have no idea what changed
