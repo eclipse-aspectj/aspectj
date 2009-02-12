@@ -71,6 +71,9 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 			sb.append(createHandleIdentifier(ipe.getParent())).append("/");
 			// pr249216 - escape any embedded slashes
 			String folder = ipe.getName();
+			if (folder.endsWith("/")) {
+				folder = folder.substring(0, folder.length() - 1);
+			}
 			if (folder.indexOf("/") != -1) {
 				folder = folder.replace("/", "\\/");
 			}
