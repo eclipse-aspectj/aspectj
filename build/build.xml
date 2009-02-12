@@ -693,6 +693,71 @@ To use testing client jar in tests,
 		<delete file="{aj.src.dir}/aspectjtools${build.version}-src.jar"/> 
 		<delete file="{aj.src.dir}/org.aspectj.matcher${build.version}-src.jar"/> 
     </target>
+	
+
+	<target name="repo" depends="init" description="build maven repo">
+		<property name="repo" value="${modules.dir}/aj-build/repo/org/aspectj"/>
+		<property name="repo.tools" value="${repo}/aspectjtools/${repo.version}"/>
+		<property name="repo.weaver" value="${repo}/aspectjweaver/${repo.version}"/>
+		<property name="repo.rt" value="${repo}/aspectjrt/${repo.version}"/>
+		<delete dir="${modules.dir}/aj-build/repo" />
+		
+		<mkdir dir="${modules.dir}/aj-build/repo/org/aspectj" />
+		<mkdir dir="${repo.tools}" />
+		<mkdir dir="${repo.weaver}" />
+		<mkdir dir="${repo.rt}" />
+
+		<!-- get the jars in the right place with the right name -->
+		<copy file="${modules.dir}/aj-build/src/aspectjtools${build.version}-src.jar" todir="${repo.tools}"/>
+		<copy file="${modules.dir}/aj-build/src/aspectjweaver${build.version}-src.jar" todir="${repo.weaver}"/>
+		<copy file="${modules.dir}/aj-build/src/aspectjrt${build.version}-src.jar" todir="${repo.rt}"/>		
+		<move file="${repo.tools}/aspectjtools${build.version}-src.jar" tofile="${repo.tools}/aspectjtools-${repo.version}-sources.jar"/>
+		<move file="${repo.weaver}/aspectjweaver${build.version}-src.jar" tofile="${repo.weaver}/aspectjweaver-${repo.version}-sources.jar"/>
+		<move file="${repo.rt}/aspectjrt${build.version}-src.jar" tofile="${repo.rt}/aspectjrt-${repo.version}-sources.jar"/>
+
+		<!-- get the source jars in the right place with the right name -->
+		<copy file="${modules.dir}/aj-build/dist/tools/lib/aspectjtools.jar" todir="${repo.tools}"/>
+		<copy file="${modules.dir}/aj-build/dist/tools/lib/aspectjweaver.jar" todir="${repo.weaver}"/>
+		<copy file="${modules.dir}/aj-build/dist/tools/lib/aspectjrt.jar" todir="${repo.rt}"/>		
+		<move file="${repo.tools}/aspectjtools.jar" tofile="${repo.tools}/aspectjtools-${repo.version}.jar"/>
+		<move file="${repo.weaver}/aspectjweaver.jar" tofile="${repo.weaver}/aspectjweaver-${repo.version}.jar"/>
+		<move file="${repo.rt}/aspectjrt.jar" tofile="${repo.rt}/aspectjrt-${repo.version}.jar"/>
+		
+		<!-- poms -->
+		<copy toDir="${repo.tools}" file="aspectjtools.pom"/>
+		<move file="${repo.tools}/aspectjtools.pom" tofile="${repo.tools}/aspectjtools-${repo.version}.pom"/>
+		<copy toDir="${repo.weaver}" file="aspectjweaver.pom"/>
+		<move file="${repo.weaver}/aspectjweaver.pom" tofile="${repo.weaver}/aspectjweaver-${repo.version}.pom"/>
+		<copy toDir="${repo.rt}" file="aspectjrt.pom"/>
+		<move file="${repo.rt}/aspectjrt.pom" tofile="${repo.rt}/aspectjrt-${repo.version}.pom"/>
+		<replaceregexp byline="true" flags="g">
+	  		<regexp pattern="ASPECTJVERSION"/>
+			<substitution expression="${repo.version}"/>
+			<fileset dir="${modules.dir}/aj-build/repo">
+	  			<include name="**/*.pom"/>
+	  		</fileset>			
+    	</replaceregexp>		
+		
+		<antcall target="computeDigests"><param name="dir" value="${repo.tools}"/><param name="file" value="aspectjtools-${repo.version}.jar"/></antcall>
+		<antcall target="computeDigests"><param name="dir" value="${repo.tools}"/><param name="file" value="aspectjtools-${repo.version}.pom"/></antcall>
+		<antcall target="computeDigests"><param name="dir" value="${repo.tools}"/><param name="file" value="aspectjtools-${repo.version}-sources.jar"/></antcall>
+		<antcall target="computeDigests"><param name="dir" value="${repo.weaver}"/><param name="file" value="aspectjweaver-${repo.version}.jar"/></antcall>
+		<antcall target="computeDigests"><param name="dir" value="${repo.weaver}"/><param name="file" value="aspectjweaver-${repo.version}.pom"/></antcall>
+		<antcall target="computeDigests"><param name="dir" value="${repo.weaver}"/><param name="file" value="aspectjweaver-${repo.version}-sources.jar"/></antcall>
+		<antcall target="computeDigests"><param name="dir" value="${repo.rt}"/><param name="file" value="aspectjrt-${repo.version}.jar"/></antcall>
+		<antcall target="computeDigests"><param name="dir" value="${repo.rt}"/><param name="file" value="aspectjrt-${repo.version}.pom"/></antcall>
+		<antcall target="computeDigests"><param name="dir" value="${repo.rt}"/><param name="file" value="aspectjrt-${repo.version}-sources.jar"/></antcall>
+	</target>
+	
+	<target name="computeDigests">
+		<exec dir="${dir}" executable="sha1sum" os="Windows Vista" output="${dir}/${file}.sha1">
+		  <arg line="${file}"/>
+		</exec>
+		<exec dir="${dir}" executable="md5sum" os="Windows Vista" output="${dir}/${file}.md5">
+		  <arg line="${file}"/>
+		</exec>
+	</target>
+	
 
 </project>
 
