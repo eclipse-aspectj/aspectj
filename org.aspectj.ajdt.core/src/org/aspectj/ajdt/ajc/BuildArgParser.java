@@ -544,6 +544,8 @@ public class BuildArgParser extends Main {
 				buildConfig.setNoAtAspectJAnnotationProcessing(true);
 			} else if (arg.equals("-XaddSerialVersionUID")) {
 				buildConfig.setAddSerialVerUID(true);
+			} else if (arg.equals("-xmlConfigured")) {
+				buildConfig.setXmlConfigured(true);
 			} else if (arg.equals("-Xdev:Pinpoint")) {
 				buildConfig.setXdevPinpointMode(true);
 			} else if (arg.startsWith("-Xjoinpoints:")) {
