@@ -21,6 +21,7 @@ import java.io.PrintStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -317,6 +318,10 @@ class MyCompilerConfig implements ICompilerConfiguration {
 
 	public Map getJavaOptionsMap() {
 		return JavaOptions.getDefaultJavaOptions();
+	}
+
+	public List getProjectXmlConfigFiles() {
+		return Collections.EMPTY_LIST;
 	}
 
 	public String getOutJar() {
