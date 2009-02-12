@@ -13,6 +13,7 @@ package org.aspectj.ajde.core;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -50,6 +51,10 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 
 	public Set getAspectPath() {
 		return aspectpath;
+	}
+
+	public List getProjectXmlConfigFiles() {
+		return Collections.EMPTY_LIST;
 	}
 
 	public String getClasspath() {
