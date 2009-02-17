@@ -407,24 +407,16 @@ public class BcelPerClauseAspectAdder extends BcelTypeMunger {
 
 	private void generatePerCflowAjcClinitMethod(LazyClassGen classGen) {
 		InstructionFactory factory = classGen.getFactory();
-		LazyMethodGen method = makeMethodGen(classGen, AjcMemberMaker.ajcPreClinitMethod(aspectType));
-		flagAsSynthetic(method, true);
-		classGen.addMethodGen(method);
 
-		InstructionList il = method.getBody();
+		LazyMethodGen method = classGen.getAjcPreClinit(); // Creates a clinit if there isn't one
+
+		InstructionList il = new InstructionList();
 		il.append(factory.createNew(AjcMemberMaker.CFLOW_STACK_TYPE.getName()));
 		il.append(InstructionConstants.DUP);
 		il.append(factory.createInvoke(AjcMemberMaker.CFLOW_STACK_TYPE.getName(), "<init>", Type.VOID, Type.NO_ARGS,
 				Constants.INVOKESPECIAL));
 		il.append(Utility.createSet(factory, AjcMemberMaker.perCflowField(aspectType)));
-		il.append(InstructionFactory.createReturn(Type.VOID));
-
-		// patch <clinit> to delegate to ajc$preClinit at the beginning
-		LazyMethodGen clinit = classGen.getStaticInitializer();
-		il = new InstructionList();
-		il.append(factory.createInvoke(aspectType.getName(), NameMangler.AJC_PRE_CLINIT_NAME, Type.VOID, Type.NO_ARGS,
-				Constants.INVOKESTATIC));
-		clinit.getBody().insert(il);
+		method.getBody().insert(il);
 	}
 
 	private void generatePerTWAspectOfMethod(LazyClassGen classGen) {
