@@ -29,6 +29,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testDualPreClinit_pr233032() {
+		runTest("dual preClinit");
+	}
+
 	public void testHandles_pr263310() {
 		runTest("inner handles");
 		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
