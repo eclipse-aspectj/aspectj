@@ -68,18 +68,20 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	private static final char[] aspectSig = "Lorg/aspectj/lang/annotation/Aspect;".toCharArray();
 	private static final char[] declareParentsSig = "Lorg/aspectj/lang/annotation/DeclareParents;".toCharArray();
 	private static final char[] adviceNameSig = "Lorg/aspectj/lang/annotation/AdviceName;".toCharArray();
-	// private static final char[] orgAspectJLangAnnotation = "org/aspectj/lang/annotation/".toCharArray();
+	// private static final char[] orgAspectJLangAnnotation =
+	// "org/aspectj/lang/annotation/".toCharArray();
 	private static final char[] voidType = "void".toCharArray();
 	private static final char[] booleanType = "boolean".toCharArray();
 	private static final char[] joinPoint = "Lorg/aspectj/lang/JoinPoint;".toCharArray();
 	private static final char[] joinPointStaticPart = "Lorg/aspectj/lang/JoinPoint$StaticPart;".toCharArray();
 	private static final char[] joinPointEnclosingStaticPart = "Lorg/aspectj/lang/JoinPoint$EnclosingStaticPart;".toCharArray();
 	private static final char[] proceedingJoinPoint = "Lorg/aspectj/lang/ProceedingJoinPoint;".toCharArray();
-	// private static final char[][] adviceSigs = new char[][] { beforeAdviceSig, afterAdviceSig, afterReturningAdviceSig,
+	// private static final char[][] adviceSigs = new char[][] {
+	// beforeAdviceSig, afterAdviceSig, afterReturningAdviceSig,
 	// afterThrowingAdviceSig, aroundAdviceSig };
 
-	private CompilationUnitDeclaration unit;
-	private Stack typeStack = new Stack();
+	private final CompilationUnitDeclaration unit;
+	private final Stack typeStack = new Stack();
 	private AspectJAnnotations ajAnnotations;
 
 	public ValidateAtAspectJAnnotationsVisitor(CompilationUnitDeclaration unit) {
@@ -143,7 +145,8 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 				}
 			}
 		} else {
-			// check that aspect doesn't have @Aspect annotation, we've already added on ourselves.
+			// check that aspect doesn't have @Aspect annotation, we've already
+			// added on ourselves.
 			if (ajAnnotations.hasMultipleAspectAnnotations) {
 				typeDecl.scope.problemReporter().signalError(typeDecl.sourceStart, typeDecl.sourceEnd,
 						"aspects cannot have @Aspect annotation");
@@ -169,7 +172,8 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 				CompilationAndWeavingContext.VALIDATING_AT_ASPECTJ_ANNOTATIONS, methodDeclaration.selector);
 		ajAnnotations = new AspectJAnnotations(methodDeclaration.annotations);
 		if (!methodDeclaration.getClass().equals(AjMethodDeclaration.class)) {
-			// simply test for innapropriate use of annotations on code-style members
+			// simply test for innapropriate use of annotations on code-style
+			// members
 			if (methodDeclaration instanceof PointcutDeclaration) {
 				if (ajAnnotations.hasMultiplePointcutAnnotations || ajAnnotations.hasAdviceAnnotation
 						|| ajAnnotations.hasAspectAnnotation || ajAnnotations.hasAdviceNameAnnotation) {
@@ -221,7 +225,8 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	}
 
 	/**
-	 * aspect must be public nested aspect must be static cannot extend a concrete aspect pointcut in perclause must be good.
+	 * aspect must be public nested aspect must be static cannot extend a
+	 * concrete aspect pointcut in perclause must be good.
 	 */
 	private void validateAspectDeclaration(TypeDeclaration typeDecl) {
 		if (typeStack.size() > 1) {
@@ -243,7 +248,8 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 
 		// FIXME AV - do we really want that
 		// if (!Modifier.isPublic(typeDecl.modifiers)) {
-		// typeDecl.scope.problemReporter().signalError(typeDecl.sourceStart,typeDecl.sourceEnd,"@Aspect class must be public");
+		// typeDecl.scope.problemReporter().signalError(typeDecl.sourceStart,
+		// typeDecl.sourceEnd,"@Aspect class must be public");
 		// }
 
 		TypeReference parentRef = typeDecl.superclass;
@@ -251,7 +257,9 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			TypeBinding parentBinding = parentRef.resolvedType;
 			if (parentBinding instanceof SourceTypeBinding) {
 				SourceTypeBinding parentSTB = (SourceTypeBinding) parentBinding;
-				if (parentSTB.scope != null) { // scope is null if its a binarytypebinding (in AJ world, thats a subclass of
+				if (parentSTB.scope != null) { // scope is null if its a
+					// binarytypebinding (in AJ
+					// world, thats a subclass of
 					// SourceTypeBinding)
 					TypeDeclaration parentDecl = parentSTB.scope.referenceContext;
 					if (isAspect(parentDecl) && !Modifier.isAbstract(parentDecl.modifiers)) {
@@ -266,7 +274,8 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 
 		int[] pcLoc = new int[2];
 		String perClause = getStringLiteralFor("value", aspectAnnotation, pcLoc);
-		// AspectDeclaration aspectDecl = new AspectDeclaration(typeDecl.compilationResult);
+		// AspectDeclaration aspectDecl = new
+		// AspectDeclaration(typeDecl.compilationResult);
 
 		try {
 			if (perClause != null && !perClause.equals("")) {
@@ -284,9 +293,10 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	}
 
 	/**
-	 * 1) Advice must be public 2) Advice must have a void return type if not around advice 3) Advice must not have any other @AspectJ
-	 * annotations 4) After throwing advice must declare the thrown formal 5) After returning advice must declare the returning
-	 * formal 6) Advice must not be static
+	 * 1) Advice must be public 2) Advice must have a void return type if not
+	 * around advice 3) Advice must not have any other @AspectJ annotations 4)
+	 * After throwing advice must declare the thrown formal 5) After returning
+	 * advice must declare the returning formal 6) Advice must not be static
 	 */
 	private void validateAdvice(MethodDeclaration methodDeclaration) {
 
@@ -382,7 +392,8 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			FormalBinding[] bindings = buildFormalAdviceBindingsFrom(methodDeclaration);
 			pc.resolve(new EclipseScope(bindings, methodDeclaration.scope));
 			EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(methodDeclaration.scope);
-			// now create a ResolvedPointcutDefinition,make an attribute out of it, and add it to the method
+			// now create a ResolvedPointcutDefinition,make an attribute out of
+			// it, and add it to the method
 			UnresolvedType[] paramTypes = new UnresolvedType[bindings.length];
 			for (int i = 0; i < paramTypes.length; i++)
 				paramTypes[i] = bindings[i].getType();
@@ -528,20 +539,31 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			pcDecl.setGenerateSyntheticPointcutMethod();
 			TypeDeclaration onType = (TypeDeclaration) typeStack.peek();
 			pcDecl.postParse(onType);
-			// EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(methodDeclaration.scope);
-			// int argsLength = methodDeclaration.arguments == null ? 0 : methodDeclaration.arguments.length;
+			// EclipseFactory factory =
+			// EclipseFactory.fromScopeLookupEnvironment
+			// (methodDeclaration.scope);
+			// int argsLength = methodDeclaration.arguments == null ? 0 :
+			// methodDeclaration.arguments.length;
 			FormalBinding[] bindings = buildFormalAdviceBindingsFrom(methodDeclaration);
 			// FormalBinding[] bindings = new FormalBinding[argsLength];
 			// for (int i = 0, len = bindings.length; i < len; i++) {
 			// Argument arg = methodDeclaration.arguments[i];
 			// String name = new String(arg.name);
-			// UnresolvedType type = factory.fromBinding(methodDeclaration.binding.parameters[i]);
-			// bindings[i] = new FormalBinding(type, name, i, arg.sourceStart, arg.sourceEnd, "unknown");
+			// UnresolvedType type =
+			// factory.fromBinding(methodDeclaration.binding.parameters[i]);
+			// bindings[i] = new FormalBinding(type, name, i, arg.sourceStart,
+			// arg.sourceEnd, "unknown");
 			// }
 			swap(onType, methodDeclaration, pcDecl);
 			if (pc != null) {
 				// has an expression
-				pc.resolve(new EclipseScope(bindings, methodDeclaration.scope));
+				EclipseScope eScope = new EclipseScope(bindings, methodDeclaration.scope);
+				char[] packageName = null;
+				if (typeDecl.binding != null && typeDecl.binding.getPackage() != null) {
+					packageName = typeDecl.binding.getPackage().readableName();
+				}
+				eScope.setLimitedImports(packageName);
+				pc.resolve(eScope);
 				HasIfPCDVisitor ifFinder = new HasIfPCDVisitor();
 				pc.traverse(ifFinder, null);
 				containsIfPcd = ifFinder.containsIfPcd;
@@ -579,10 +601,17 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 		}
 
 		if (pcDecl.pointcutDesignator == null) {
-			if (Modifier.isAbstract(methodDeclaration.modifiers) || noValueSupplied // this is a matches nothing pointcut
-			// those 2 checks makes sense for aop.xml concretization but NOT for regular abstraction of pointcut
+			if (Modifier.isAbstract(methodDeclaration.modifiers) || noValueSupplied // this
+			// is
+			// a
+			// matches
+			// nothing
+			// pointcut
+			// those 2 checks makes sense for aop.xml concretization but NOT for
+			// regular abstraction of pointcut
 			// && returnsVoid
-			// && (methodDeclaration.arguments == null || methodDeclaration.arguments.length == 0)) {
+			// && (methodDeclaration.arguments == null ||
+			// methodDeclaration.arguments.length == 0)) {
 			) {
 				// fine
 			} else {
