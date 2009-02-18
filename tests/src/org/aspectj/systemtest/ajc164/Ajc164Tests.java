@@ -11,6 +11,9 @@
 package org.aspectj.systemtest.ajc164;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,6 +32,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testIncorrectDateResolution_pr265360() {
+		runTest("incorrect resolution of Date");
+	}
+
 	public void testDualPreClinit_pr233032() {
 		runTest("dual preClinit");
 	}
@@ -40,7 +47,8 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		ipe = findElementAtLine(top.getRoot(), 13);
 		assertEquals("<p{HandleTestingAspect.java}HandleTestingAspect[InnerClass}InnerInnerAspect|1", ipe.getHandleIdentifier());
 		// ipe = findElementAtLine(top.getRoot(), 29);
-		// assertEquals("<x*OverrideOptions.aj}OverrideOptions&around!2", ipe.getHandleIdentifier());
+		// assertEquals("<x*OverrideOptions.aj}OverrideOptions&around!2",
+		// ipe.getHandleIdentifier());
 	}
 
 	public void testHandles_pr263666() {
@@ -58,7 +66,8 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("aop config - 1");
 	}
 
-	// Only one of two aspects named - and named one is scoped to only affect one type
+	// Only one of two aspects named - and named one is scoped to only affect
+	// one type
 	public void testAopConfig2() {
 		runTest("aop config - 2");
 	}
@@ -88,9 +97,11 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 			fail("Local variable table should not be null");
 		}
 		// Method:
-		// private static final void method_aroundBody1$advice(Service, long, JoinPoint, ServiceInterceptor, ProceedingJoinPoint);
+		// private static final void method_aroundBody1$advice(Service, long,
+		// JoinPoint, ServiceInterceptor, ProceedingJoinPoint);
 		LocalVariable[] lvt = m.getLocalVariableTable().getLocalVariableTable();
-		assertEquals(7, lvt.length); // no aroundClosure compared to second version of this test
+		assertEquals(7, lvt.length); // no aroundClosure compared to second
+		// version of this test
 		assertEquals("LService; this(0) start=0 len=86", stringify(m.getLocalVariableTable(), 0));
 		assertEquals("J l(1) start=0 len=86", stringify(m.getLocalVariableTable(), 1));
 		assertEquals("Lorg/aspectj/lang/JoinPoint; thisJoinPoint(3) start=0 len=86", stringify(m.getLocalVariableTable(), 2));
@@ -110,7 +121,8 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		System.out.println(m.getLocalVariableTable());
 		LocalVariable[] lvt = m.getLocalVariableTable().getLocalVariableTable();
 		assertEquals(8, lvt.length);
-		// private static final void method_aroundBody1$advice(Service, long, JoinPoint, ServiceInterceptorCodeStyle, AroundClosure,
+		// private static final void method_aroundBody1$advice(Service, long,
+		// JoinPoint, ServiceInterceptorCodeStyle, AroundClosure,
 		// JoinPoint);
 		assertEquals("LService; this(0) start=0 len=68", stringify(m.getLocalVariableTable(), 0));
 		assertEquals("J l(1) start=0 len=68", stringify(m.getLocalVariableTable(), 1));
@@ -124,9 +136,11 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	/**
-	 * This test checks that local variable table for the interMethodDispatcher is built correctly, for the related code see
-	 * IntertypeMethodDeclaration.generateDispatchMethod(). It checks non-static and static ITDs. Once the information here is
-	 * correct then around advice on ITDs can also be correct.
+	 * This test checks that local variable table for the interMethodDispatcher
+	 * is built correctly, for the related code see
+	 * IntertypeMethodDeclaration.generateDispatchMethod(). It checks non-static
+	 * and static ITDs. Once the information here is correct then around advice
+	 * on ITDs can also be correct.
 	 */
 	public void testBrokenLVT_pr194314_3() throws Exception {
 		runTest("broken lvt - 3");
@@ -180,7 +194,8 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	}
 
-	// Single piece of advice on before execution of a method with a this and a parameter
+	// Single piece of advice on before execution of a method with a this and a
+	// parameter
 	public void testDebuggingBeforeAdvice_pr262509() {
 		runTest("debugging before advice");
 		Method method = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "Foo"), "foo");
@@ -188,20 +203,51 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		assertEquals("LBar; bar(1) start=0 len=13", stringify(method.getLocalVariableTable(), 1));
 	}
 
-	// Single piece of advice on before execution of a method with a this and a parameter and other various locals within it
+	// Single piece of advice on before execution of a method with a this and a
+	// parameter and other various locals within it
 	public void testDebuggingBeforeAdvice_pr262509_2() {
 		// Compile with -preserveAllLocals
 		runTest("debugging before advice - 2");
 		Method method = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "Foo2"), "foo");
-		System.out.println(stringify(method.getLocalVariableTable()));
-		assertEquals("LFoo2; this(0) start=0 len=34", stringify(method.getLocalVariableTable(), 0));
-		assertEquals("LBar; bar(1) start=0 len=34", stringify(method.getLocalVariableTable(), 1));
-		assertEquals("Ljava/lang/String; s(2) start=15 len=19", stringify(method.getLocalVariableTable(), 2));
-		assertEquals("Ljava/lang/String; s2(3) start=18 len=10", stringify(method.getLocalVariableTable(), 3));
-		assertEquals("Ljava/lang/Exception; e(3) start=29 len=4", stringify(method.getLocalVariableTable(), 4));
+		// System.out.println(stringify(method.getLocalVariableTable()));
+		List l = sortedLocalVariables(method.getLocalVariableTable());
+		assertEquals("LBar; bar(1) start=0 len=34", stringify(l, 0));
+		assertEquals("Ljava/lang/Exception; e(3) start=29 len=4", stringify(l, 1));
+		assertEquals("LFoo2; this(0) start=0 len=34", stringify(l, 4));
+		assertEquals("Ljava/lang/String; s(2) start=15 len=19", stringify(l, 2));
+		assertEquals("Ljava/lang/String; s2(3) start=18 len=10", stringify(l, 3));
 	}
 
-	// Two pieces of advice on before execution of a method with a this and a parameter and another local within it
+	/**
+	 * Sort it by name then start position
+	 */
+	private List sortedLocalVariables(LocalVariableTable lvt) {
+		List l = new ArrayList();
+		StringBuffer sb = new StringBuffer();
+		LocalVariable lv[] = lvt.getLocalVariableTable();
+		for (int i = 0; i < lv.length; i++) {
+			LocalVariable lvEntry = lv[i];
+			l.add(lvEntry);
+		}
+		Collections.sort(l, new MyComparator());
+		return l;
+	}
+
+	private static class MyComparator implements Comparator {
+		public int compare(Object o1, Object o2) {
+			LocalVariable l1 = (LocalVariable) o1;
+			LocalVariable l2 = (LocalVariable) o2;
+			if (l1.getName().equals(l2.getName())) {
+				return l1.getStartPC() - l2.getStartPC();
+			} else {
+				return l1.getName().compareTo(l2.getName());
+			}
+		}
+
+	}
+
+	// Two pieces of advice on before execution of a method with a this and a
+	// parameter and another local within it
 	public void testDebuggingBeforeAdvice_pr262509_3() {
 		// Compile with -preserveAllLocals
 		runTest("debugging before advice - 3");
@@ -283,6 +329,14 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	private String stringify(LocalVariableTable lvt, int slotIndex) {
 		LocalVariable lv[] = lvt.getLocalVariableTable();
 		LocalVariable lvEntry = lv[slotIndex];
+		StringBuffer sb = new StringBuffer();
+		sb.append(lvEntry.getSignature()).append(" ").append(lvEntry.getName()).append("(").append(lvEntry.getIndex()).append(
+				") start=").append(lvEntry.getStartPC()).append(" len=").append(lvEntry.getLength());
+		return sb.toString();
+	}
+
+	private String stringify(List l, int slotIndex) {
+		LocalVariable lvEntry = (LocalVariable) l.get(slotIndex);
 		StringBuffer sb = new StringBuffer();
 		sb.append(lvEntry.getSignature()).append(" ").append(lvEntry.getName()).append("(").append(lvEntry.getIndex()).append(
 				") start=").append(lvEntry.getStartPC()).append(" len=").append(lvEntry.getLength());

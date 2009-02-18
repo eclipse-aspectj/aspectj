@@ -2,6 +2,12 @@
 
 <suite>
     
+    <ajc-test dir="bugs164/pr265360" title="incorrect resolution of Date">
+      <compile files="Foo.java Main.java" options="-1.5">
+        <message kind="warning" text="no match for this type name: Date "/>
+        <message kind="warning" test="advice defined in"/>
+      </compile>
+    </ajc-test>
     
     <ajc-test dir="bugs164/pr233032" title="dual preClinit">
       <compile files="A.java" options="-1.5"/>
