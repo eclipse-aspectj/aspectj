@@ -50,10 +50,6 @@ public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("ltw perclause");
 	}
 
-	// public void testParserProblemSubArrayPatterns_pr148508() {
-	// runTest("parser problem for array subtypes");
-	// }
-
 	public void testNullDelegateForArray_pr247683() {
 		runTest("null delegate for array");
 	}
