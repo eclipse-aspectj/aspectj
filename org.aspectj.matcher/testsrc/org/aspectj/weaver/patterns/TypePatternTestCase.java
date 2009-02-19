@@ -21,11 +21,6 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.patterns.Bindings;
-import org.aspectj.weaver.patterns.PatternParser;
-import org.aspectj.weaver.patterns.TestScope;
-import org.aspectj.weaver.patterns.TypePattern;
-import org.aspectj.weaver.patterns.WildTypePattern;
 import org.aspectj.weaver.reflect.ReflectionWorld;
 
 public class TypePatternTestCase extends PatternsTestCase {
@@ -170,13 +165,17 @@ public class TypePatternTestCase extends PatternsTestCase {
 		checkMatch("*[][]", "java.lang.Object", false);
 		checkMatch("*[]", "java.lang.Object[]", true);
 		checkMatch("*[][]", "java.lang.Object[][]", true);
+		checkMatch("java.lang.Object+", "java.lang.Object[]", true);
 		checkMatch("java.lang.Object[]", "java.lang.Object", false);
 		checkMatch("java.lang.Object[]", "java.lang.Object[]", true);
 		checkMatch("java.lang.Object[][]", "java.lang.Object[][]", true);
 		checkMatch("java.lang.String[]", "java.lang.Object", false);
 		checkMatch("java.lang.String[]", "java.lang.Object[]", false);
 		checkMatch("java.lang.String[][]", "java.lang.Object[][]", false);
+		checkMatch("java.lang.Object+[]", "java.lang.String[][]", true);
 		checkMatch("java.lang.Object+[]", "java.lang.String[]", true);
+		checkMatch("java.lang.Object+[]", "int[][]", true);
+		checkMatch("java.lang.Object+[]", "int[]", false);
 	}
 
 	private void checkIllegalInstanceofMatch(String pattern, String name) {
@@ -208,7 +207,10 @@ public class TypePatternTestCase extends PatternsTestCase {
 	}
 
 	private TypePattern makeTypePattern(String pattern) {
-		return new PatternParser(pattern).parseSingleTypePattern();
+		PatternParser pp = new PatternParser(pattern);
+		TypePattern tp = pp.parseSingleTypePattern();
+		pp.checkEof();
+		return tp;
 	}
 
 	private void checkMatch(String pattern, String name, boolean shouldMatch) {

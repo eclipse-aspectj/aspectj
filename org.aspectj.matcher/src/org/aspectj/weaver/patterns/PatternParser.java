@@ -864,9 +864,15 @@ public class PatternParser {
 		TypePatternList typeParameters = maybeParseTypeParameterList();
 		int endPos = tokenSource.peek(-1).getEnd();
 
-		boolean isVarArgs = maybeEat("...");
-
 		boolean includeSubtypes = maybeEat("+");
+
+		// TODO do we need to associate the + with either the type or the array?
+		while (maybeEat("[")) {
+			eat("]");
+			dim++;
+		}
+
+		boolean isVarArgs = maybeEat("...");
 
 		// ??? what about the source location of any's????
 		if (names.size() == 1 && ((NamePattern) names.get(0)).isAny() && dim == 0 && !isVarArgs && typeParameters == null)
@@ -1599,7 +1605,7 @@ public class PatternParser {
 	public void checkEof() {
 		IToken last = tokenSource.next();
 		if (last != IToken.EOF) {
-			throw new ParserException("unexpected pointcut element", last);
+			throw new ParserException("unexpected pointcut element: " + last.toString(), last);
 		}
 	}
 
