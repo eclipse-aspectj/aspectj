@@ -32,10 +32,18 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testParserProblemSubArrayPatterns_pr148508() {
+		runTest("parser problem for array subtypes");
+	}
+
+	public void testVarargs_pr265418() {
+		runTest("varargs");
+	}
+
 	public void testIncorrectDateResolution_pr265360() {
 		runTest("incorrect resolution of Date");
 	}
-
+	
 	public void testDualPreClinit_pr233032() {
 		runTest("dual preClinit");
 	}
