@@ -1,6 +1,20 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 
 <suite>
+
+   <ajc-test dir="bugs164/pr265695" title="anno inherited">
+     <compile files="Asp.aj" options="-showWeaveInfo -1.5">
+       <message kind="warning" line="22" text="advice defined"/>
+       <message kind="warning" line="24" text="advice defined"/>
+       <message kind="warning" line="26" text="advice defined"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs164/pr265695" title="new syntax for inherited anno - 1">
+     <compile files="AspNew.aj" options="-1.5 -showWeaveInfo">
+       <message kind="weave" line="22" text="foo"/>
+     </compile>
+   </ajc-test>
     
     <ajc-test dir="bugs164/pr265418" title="varargs">
       <compile files="A.java" options="-1.5"/>
@@ -21,7 +35,6 @@
      <run class="PR148508">
      </run>
    </ajc-test>
-   
     
     <ajc-test dir="bugs164/pr265360" title="incorrect resolution of Date">
       <compile files="Foo.java Main.java" options="-1.5">
