@@ -12,7 +12,13 @@
    
    <ajc-test dir="bugs164/pr265695" title="new syntax for inherited anno - 1">
      <compile files="AspNew.aj" options="-1.5 -showWeaveInfo">
-       <message kind="weave" line="22" text="foo"/>
+       <message kind="weave" text="Join point"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs164/pr265695" title="new syntax for inherited anno - 3">
+     <compile files="AspNew2.aj" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point"/>
      </compile>
    </ajc-test>
     

@@ -50,6 +50,55 @@ import org.aspectj.util.FileUtil;
  */
 public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
 
+	public void testPR265729() {
+		AjdeInteractionTestbed.VERBOSE = true;
+		String lib = "pr265729_lib";
+		initialiseProject(lib);
+		// addClasspathEntryChanged(lib, getProjectRelativePath(p1, "bin").toString());
+		build(lib);
+		checkWasFullBuild();
+
+		String cli = "pr265729_client";
+		initialiseProject(cli);
+
+		addClasspathEntry(cli, new File("../lib/junit/junit.jar"));
+		configureAspectPath(cli, getProjectRelativePath(lib, "bin"));
+		build(cli);
+		checkWasFullBuild();
+
+		IProgramElement root = getModelFor(cli).getHierarchy().getRoot();
+
+		dumptree(root, 0);
+		PrintWriter pw = new PrintWriter(System.out);
+		try {
+			getModelFor(cli).dumprels(pw);
+			pw.flush();
+		} catch (Exception e) {
+		}
+		IRelationshipMap irm = getModelFor(cli).getRelationshipMap();
+		IRelationship ir = (IRelationship) irm.get("=pr265729_client<be.cronos.aop{App.java[App").get(0);
+		// This type should be affected by an ITD and a declare parents
+		// could be either way round
+		String h1 = (String) ir.getTargets().get(0);
+		String h2 = (String) ir.getTargets().get(1);
+
+		// For ITD: public void I.g(String s) {}
+		// Node in tree: I.g(java.lang.String) [inter-type method]
+		// Handle: =pr265729_client<be.cronos.aop{App.java}X)I.g)QString;
+
+		if (h1.endsWith("parents")) {
+			assertEquals("=pr265729_client/binaries<be.cronos.aop.aspects*InterTypeAspect.aj}InterTypeAspect`declare parents", h1);
+			assertEquals(
+					"=pr265729_client/binaries<be.cronos.aop.aspects*InterTypeAspect.aj}InterTypeAspect)InterTypeAspectInterface.foo)I",
+					h2);
+		} else {
+			assertEquals("=pr265729_client/binaries<be.cronos.aop.aspects*InterTypeAspect.aj}InterTypeAspect`declare parents", h2);
+			assertEquals(
+					"=pr265729_client/binaries<be.cronos.aop.aspects*InterTypeAspect.aj}InterTypeAspect)InterTypeAspectInterface.foo)I",
+					h1);
+		}
+	}
+
 	public void testXmlConfiguredProject() {
 		AjdeInteractionTestbed.VERBOSE = true;
 		String p = "xmlone";
@@ -627,7 +676,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// File sourceFolderTwo = getProjectRelativePath("MultiSource", "src2");
 		// File sourceFolderThree = getProjectRelativePath("MultiSource",
 		// "src3");
-		addSourceFolderForSourceFile("MultiSource", getProjectRelativePath("MultiSource", "src1/CodeOne.java"), "src1");
+		// src1 source folder slashed as per 264563
+		addSourceFolderForSourceFile("MultiSource", getProjectRelativePath("MultiSource", "src1/CodeOne.java"), "src1/");
 		addSourceFolderForSourceFile("MultiSource", getProjectRelativePath("MultiSource", "src2/CodeTwo.java"), "src2");
 		addSourceFolderForSourceFile("MultiSource", getProjectRelativePath("MultiSource", "src3/pkg/CodeThree.java"), "src3");
 		build("MultiSource");

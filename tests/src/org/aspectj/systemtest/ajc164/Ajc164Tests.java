@@ -32,12 +32,16 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
-	public void testAnnoInherited_pr265695() {
-		runTest("anno inherited");
-	}
-
+	// public void testAnnoInherited_pr265695() {
+	// runTest("anno inherited");
+	// }
+	//
 	// public void testAnnoInherited_pr265695_2() {
 	// runTest("new syntax for inherited anno - 1");
+	// }
+	//
+	// public void testAnnoInherited_pr265695_3() {
+	// runTest("new syntax for inherited anno - 3");
 	// }
 
 	public void testParserProblemSubArrayPatterns_pr148508() {
