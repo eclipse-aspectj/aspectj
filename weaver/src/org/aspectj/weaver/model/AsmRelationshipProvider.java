@@ -108,7 +108,8 @@ public class AsmRelationshipProvider {
 	}
 
 	/**
-	 * Add a relationship for a type transformation (declare parents, intertype method declaration, declare annotation on type).
+	 * Add a relationship for a type transformation (declare parents, intertype
+	 * method declaration, declare annotation on type).
 	 */
 	public static void addRelationship(AsmManager model, ResolvedType onType, ResolvedTypeMunger typeTransformer,
 			ResolvedType originatingAspect) {
@@ -135,13 +136,20 @@ public class AsmRelationshipProvider {
 			} else {
 				sourceNode = model.getHierarchy().findElementForType(originatingAspect.getPackageName(),
 						originatingAspect.getClassName());
-				// sourceNode = asm.getHierarchy().findElementForSourceLine(originatingAspect.getSourceLocation());
+				// sourceNode =
+				// asm.getHierarchy().findElementForSourceLine(originatingAspect
+				// .getSourceLocation());
 				sourceHandle = model.getHandleProvider().createHandleIdentifier(sourceNode);
 			}
-			// sourceNode = asm.getHierarchy().findElementForType(originatingAspect.getPackageName(),
+			// sourceNode =
+			// asm.getHierarchy().findElementForType(originatingAspect
+			// .getPackageName(),
 			// originatingAspect.getClassName());
-			// // sourceNode = asm.getHierarchy().findElementForSourceLine(munger.getSourceLocation());
-			// sourceHandle = asm.getHandleProvider().createHandleIdentifier(sourceNode);
+			// // sourceNode =
+			// asm.getHierarchy().findElementForSourceLine(munger
+			// .getSourceLocation());
+			// sourceHandle =
+			// asm.getHandleProvider().createHandleIdentifier(sourceNode);
 			if (sourceHandle == null)
 				return;
 			IProgramElement targetNode = model.getHierarchy().findElementForSourceLine(onType.getSourceLocation());
@@ -166,9 +174,10 @@ public class AsmRelationshipProvider {
 	}
 
 	/**
-	 * Returns the binarySourceLocation for the given sourcelocation. This isn't cached because it's used when faulting in the
-	 * binary nodes and is called with ISourceLocations for all advice, pointcuts and deows contained within the
-	 * resolvedDeclaringAspect.
+	 * Returns the binarySourceLocation for the given sourcelocation. This isn't
+	 * cached because it's used when faulting in the binary nodes and is called
+	 * with ISourceLocations for all advice, pointcuts and deows contained
+	 * within the resolvedDeclaringAspect.
 	 */
 	private static ISourceLocation getBinarySourceLocation(ResolvedType aspect, ISourceLocation sl) {
 		if (sl == null) {
@@ -210,9 +219,12 @@ public class AsmRelationshipProvider {
 	}
 
 	/**
-	 * Returns the File with pathname to the class file, for example either C:\temp
-	 * \ajcSandbox\workspace\ajcTest16957.tmp\simple.jar!pkg\BinaryAspect.class if the class file is in a jar file, or
-	 * C:\temp\ajcSandbox\workspace\ajcTest16957.tmp!pkg\BinaryAspect.class if the class file is in a directory
+	 * Returns the File with pathname to the class file, for example either
+	 * C:\temp
+	 * \ajcSandbox\workspace\ajcTest16957.tmp\simple.jar!pkg\BinaryAspect.class
+	 * if the class file is in a jar file, or
+	 * C:\temp\ajcSandbox\workspace\ajcTest16957.tmp!pkg\BinaryAspect.class if
+	 * the class file is in a directory
 	 */
 	private static File getBinaryFile(ResolvedType aspect) {
 		String s = aspect.getBinaryPath();
@@ -229,13 +241,16 @@ public class AsmRelationshipProvider {
 	}
 
 	/**
-	 * Create a basic hierarchy to represent an aspect only available in binary (from the aspectpath).
+	 * Create a basic hierarchy to represent an aspect only available in binary
+	 * (from the aspectpath).
 	 */
 	private static void createHierarchy(AsmManager model, ResolvedTypeMunger typeTransformer, ResolvedType aspect) {
 		assert aspect != null;
 
 		// Check if already defined in the model
-		// IProgramElement filenode = model.getHierarchy().findElementForType(aspect.getPackageName(), aspect.getClassName());
+		// IProgramElement filenode =
+		// model.getHierarchy().findElementForType(aspect.getPackageName(),
+		// aspect.getClassName());
 		// SourceLine(typeTransformer.getSourceLocation());
 		IProgramElement filenode = model.getHierarchy().findElementForSourceLine(typeTransformer.getSourceLocation());
 		// the call to findElementForSourceLine(ISourceLocation) returns a file
@@ -289,9 +304,12 @@ public class AsmRelationshipProvider {
 		// // may not be generated correctly if it uses information from
 		// // it's parent node
 		// root.addChild(classFileNode);
-		// for (Iterator iter = root.getChildren().iterator(); iter.hasNext();) {
+		// for (Iterator iter = root.getChildren().iterator(); iter.hasNext();)
+		// {
 		// IProgramElement element = (IProgramElement) iter.next();
-		// if (!element.equals(classFileNode) && element.getHandleIdentifier().equals(classFileNode.getHandleIdentifier())) {
+		// if (!element.equals(classFileNode) &&
+		// element.getHandleIdentifier().equals
+		// (classFileNode.getHandleIdentifier())) {
 		// // already added the sourcefile so have already
 		// // added the structure for this aspect
 		// root.removeChild(classFileNode);
@@ -317,8 +335,9 @@ public class AsmRelationshipProvider {
 	}
 
 	/**
-	 * Adds a declare annotation relationship, sometimes entities don't have source locs (methods/fields) so use other variants of
-	 * this method if that is the case as they will look the entities up in the structure model.
+	 * Adds a declare annotation relationship, sometimes entities don't have
+	 * source locs (methods/fields) so use other variants of this method if that
+	 * is the case as they will look the entities up in the structure model.
 	 */
 	public static void addDeclareAnnotationRelationship(AsmManager model, ISourceLocation declareAnnotationLocation,
 			ISourceLocation annotatedLocation) {
@@ -410,9 +429,12 @@ public class AsmRelationshipProvider {
 		// // may not be generated correctly if it uses information from
 		// // it's parent node
 		// root.addChild(classFileNode);
-		// for (Iterator iter = root.getChildren().iterator(); iter.hasNext();) {
+		// for (Iterator iter = root.getChildren().iterator(); iter.hasNext();)
+		// {
 		// IProgramElement element = (IProgramElement) iter.next();
-		// if (!element.equals(classFileNode) && element.getHandleIdentifier().equals(classFileNode.getHandleIdentifier())) {
+		// if (!element.equals(classFileNode) &&
+		// element.getHandleIdentifier().equals
+		// (classFileNode.getHandleIdentifier())) {
 		// // already added the sourcefile so have already
 		// // added the structure for this aspect
 		// root.removeChild(classFileNode);
@@ -500,12 +522,16 @@ public class AsmRelationshipProvider {
 		}
 	}
 
-	// private static IProgramElement createDeclareErrorOrWarningChild(AsmManager asm, ShadowMunger munger,
+	// private static IProgramElement
+	// createDeclareErrorOrWarningChild(AsmManager asm, ShadowMunger munger,
 	// DeclareErrorOrWarning decl, int count) {
-	// IProgramElement deowNode = new ProgramElement(asm, decl.getName(), decl.isError() ? IProgramElement.Kind.DECLARE_ERROR
-	// : IProgramElement.Kind.DECLARE_WARNING, munger.getBinarySourceLocation(decl.getSourceLocation()), decl
+	// IProgramElement deowNode = new ProgramElement(asm, decl.getName(),
+	// decl.isError() ? IProgramElement.Kind.DECLARE_ERROR
+	// : IProgramElement.Kind.DECLARE_WARNING,
+	// munger.getBinarySourceLocation(decl.getSourceLocation()), decl
 	// .getDeclaringType().getModifiers(), null, null);
-	// deowNode.setDetails("\"" + AsmRelationshipUtils.genDeclareMessage(decl.getMessage()) + "\"");
+	// deowNode.setDetails("\"" +
+	// AsmRelationshipUtils.genDeclareMessage(decl.getMessage()) + "\"");
 	// if (count != -1) {
 	// deowNode.setBytecodeName(decl.getName() + "_" + count);
 	// }
@@ -534,16 +560,18 @@ public class AsmRelationshipProvider {
 	}
 
 	/**
-	 * Half baked implementation - will need completing if we go down this route rather than replacing it all for binary aspects
+	 * Half baked implementation - will need completing if we go down this route
+	 * rather than replacing it all for binary aspects
 	 */
 	private static IProgramElement createIntertypeDeclaredChild(AsmManager model, ResolvedType aspect, BcelTypeMunger itd) {
 		ResolvedTypeMunger rtMunger = itd.getMunger();
 		if (rtMunger.getKind() == ResolvedTypeMunger.Field) {
 			String name = rtMunger.getSignature().toString();
-			IProgramElement newElement = new ProgramElement(model, name, IProgramElement.Kind.INTER_TYPE_FIELD,
-					getBinarySourceLocation(aspect, itd.getSourceLocation()), rtMunger.getSignature().getModifiers(), null,
-					Collections.EMPTY_LIST);
-			return newElement;
+			IProgramElement pe = new ProgramElement(model, name, IProgramElement.Kind.INTER_TYPE_FIELD, getBinarySourceLocation(
+					aspect, itd.getSourceLocation()), rtMunger.getSignature().getModifiers(), null, Collections.EMPTY_LIST);
+			ResolvedMember sig = rtMunger.getSignature();
+			pe.setCorrespondingType(sig.getReturnType().getName());
+			return pe;
 		} else if (rtMunger.getKind() == ResolvedTypeMunger.Method) {
 			ResolvedMember sig = rtMunger.getSignature();
 			String name = sig.getDeclaringType() + "." + sig.getName();
@@ -553,16 +581,21 @@ public class AsmRelationshipProvider {
 			IProgramElement pe = new ProgramElement(model, name, IProgramElement.Kind.INTER_TYPE_METHOD, getBinarySourceLocation(
 					aspect, itd.getSourceLocation()), rtMunger.getSignature().getModifiers(), null, Collections.EMPTY_LIST);
 			UnresolvedType[] ts = sig.getParameterTypes();
+			// String[] pnames = sig.getParameterNames();
+			pe.setParameterNames(Collections.EMPTY_LIST);
 			if (ts == null) {
-				pe.setParameterNames(Collections.EMPTY_LIST);
 				pe.setParameterSignatures(Collections.EMPTY_LIST);
 			} else {
 				List paramSigs = new ArrayList();
+				List paramNames = new ArrayList();
 				for (int i = 0; i < ts.length; i++) {
 					paramSigs.add(ts[i].getSignature().toCharArray());
+					// paramNames.add(pnames[i]);
 				}
 				pe.setParameterSignatures(paramSigs);
+				// pe.setParameterNames(paramNames);
 			}
+			pe.setCorrespondingType(sig.getReturnType().getName());
 			return pe;
 		}
 		// other cases ignored for now
@@ -653,14 +686,21 @@ public class AsmRelationshipProvider {
 
 	protected static IProgramElement getNode(AsmManager model, Shadow shadow) {
 		Member enclosingMember = shadow.getEnclosingCodeSignature();
-		// This variant will not be tricked by ITDs that would report they are in the target type already.
-		// This enables us to discover the ITD declaration (in the aspect) and advise it appropriately.
+		// This variant will not be tricked by ITDs that would report they are
+		// in the target type already.
+		// This enables us to discover the ITD declaration (in the aspect) and
+		// advise it appropriately.
 
-		// Have to be smart here, for a code node within an ITD we want to lookup the declaration of the
-		// ITD in the aspect in order to add the code node at the right place - and not lookup the
-		// ITD as it applies in some target type. Due to the use of effectiveSignature we will find
-		// that shadow.getEnclosingCodeSignature() will return a member representing the ITD as it will
-		// appear in the target type. So here, we do an extra bit of analysis to make sure we
+		// Have to be smart here, for a code node within an ITD we want to
+		// lookup the declaration of the
+		// ITD in the aspect in order to add the code node at the right place -
+		// and not lookup the
+		// ITD as it applies in some target type. Due to the use of
+		// effectiveSignature we will find
+		// that shadow.getEnclosingCodeSignature() will return a member
+		// representing the ITD as it will
+		// appear in the target type. So here, we do an extra bit of analysis to
+		// make sure we
 		// do the right thing in the ITD case.
 		IProgramElement enclosingNode = null;
 		if (shadow instanceof BcelShadow) {
@@ -672,7 +712,8 @@ public class AsmRelationshipProvider {
 				UnresolvedType type = enclosingMember.getDeclaringType();
 				UnresolvedType actualType = actualEnclosingMember.getDeclaringType();
 
-				// if these are not the same, it is an ITD and we need to use the latter to lookup
+				// if these are not the same, it is an ITD and we need to use
+				// the latter to lookup
 				if (type.equals(actualType)) {
 					enclosingNode = lookupMember(model.getHierarchy(), shadow.getEnclosingType(), enclosingMember);
 				} else {
@@ -709,14 +750,19 @@ public class AsmRelationshipProvider {
 	/**
 	 * Finds or creates a code IProgramElement for the given shadow.
 	 * 
-	 * The byteCodeName of the created node is set to 'shadowSig.getName() + "!" + counter', eg "println!3". The counter is the
-	 * occurence count of children within the enclosingNode which have the same name. So, for example, if a method contains two
-	 * System.out.println statements, the first one will have byteCodeName 'println!1' and the second will have byteCodeName
-	 * 'println!2'. This is to ensure the two nodes have unique handles when the handles do not depend on sourcelocations.
+	 * The byteCodeName of the created node is set to 'shadowSig.getName() + "!"
+	 * + counter', eg "println!3". The counter is the occurence count of
+	 * children within the enclosingNode which have the same name. So, for
+	 * example, if a method contains two System.out.println statements, the
+	 * first one will have byteCodeName 'println!1' and the second will have
+	 * byteCodeName 'println!2'. This is to ensure the two nodes have unique
+	 * handles when the handles do not depend on sourcelocations.
 	 * 
-	 * Currently the shadows are examined in the sequence they appear in the source file. This means that the counters are
-	 * consistent over incremental builds. All aspects are compiled up front and any new aspect created will force a full build.
-	 * Moreover, if the body of the enclosingShadow is changed, then the model for this is rebuilt from scratch.
+	 * Currently the shadows are examined in the sequence they appear in the
+	 * source file. This means that the counters are consistent over incremental
+	 * builds. All aspects are compiled up front and any new aspect created will
+	 * force a full build. Moreover, if the body of the enclosingShadow is
+	 * changed, then the model for this is rebuilt from scratch.
 	 */
 	private static IProgramElement findOrCreateCodeNode(AsmManager asm, IProgramElement enclosingNode, Member shadowSig,
 			Shadow shadow) {
@@ -772,8 +818,10 @@ public class AsmRelationshipProvider {
 	}
 
 	/**
-	 * Add a relationship for a matching declare annotation method or declare annotation constructor. Locating the method is a messy
-	 * (for messy read 'fragile') bit of code that could break at any moment but it's working for my simple testcase.
+	 * Add a relationship for a matching declare annotation method or declare
+	 * annotation constructor. Locating the method is a messy (for messy read
+	 * 'fragile') bit of code that could break at any moment but it's working
+	 * for my simple testcase.
 	 */
 	public static void addDeclareAnnotationMethodRelationship(ISourceLocation sourceLocation, String affectedTypeName,
 			ResolvedMember affectedMethod, AsmManager model) {
@@ -846,8 +894,10 @@ public class AsmRelationshipProvider {
 	}
 
 	/**
-	 * Add a relationship for a matching declare ATfield. Locating the field is trickier than it might seem since we have no line
-	 * number info for it, we have to dig through the structure model under the fields' type in order to locate it.
+	 * Add a relationship for a matching declare ATfield. Locating the field is
+	 * trickier than it might seem since we have no line number info for it, we
+	 * have to dig through the structure model under the fields' type in order
+	 * to locate it.
 	 */
 	public static void addDeclareAnnotationFieldRelationship(AsmManager model, ISourceLocation declareLocation,
 			String affectedTypeName, ResolvedMember affectedFieldName) {
