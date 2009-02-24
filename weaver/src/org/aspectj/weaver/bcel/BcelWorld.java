@@ -132,14 +132,12 @@ public class BcelWorld extends World implements Repository {
 					);
 		}
 
-		// TAG: WeavingMessage
 		if (!getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
 			reportWeavingMessage(munger, shadow);
 		}
 
 		if (getModel() != null) {
-			// System.err.println("munger: " + munger + " on " + this);
-			AsmRelationshipProvider.adviceMunger(getModelAsAsmManager(), shadow, munger);
+			AsmRelationshipProvider.addAdvisedRelationship(getModelAsAsmManager(), shadow, munger);
 		}
 	}
 
@@ -795,7 +793,7 @@ public class BcelWorld extends World implements Repository {
 		}
 
 		if (getModel() != null) {
-			AsmRelationshipProvider.checkerMunger(getModelAsAsmManager(), shadow, checker);
+			AsmRelationshipProvider.addDeclareErrorOrWarningRelationship(getModelAsAsmManager(), shadow, checker);
 		}
 
 	}
