@@ -224,6 +224,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 					}
 				}
 			}
+			// 'binaries' will be checked automatically by the code above as it is represented as a SOURCE_FOLDER
 			return matchingPackageNodes;
 		} else {
 			// dealing directly with packages below the root, no source folders. Therefore at most one
@@ -241,6 +242,20 @@ public class AspectJElementHierarchy implements IHierarchy {
 						List result = new ArrayList();
 						result.add(possiblePackage);
 						return result;
+					}
+				}
+				if (possiblePackage.getKind() == IProgramElement.Kind.SOURCE_FOLDER) { // might be 'binaries'
+					if (possiblePackage.getName().equals("binaries")) {
+						for (Iterator iter2 = possiblePackage.getChildren().iterator(); iter2.hasNext();) {
+							IProgramElement possiblePackage2 = (IProgramElement) iter2.next();
+							if (possiblePackage2.getKind() == IProgramElement.Kind.PACKAGE) {
+								if (possiblePackage2.getName().equals(packagename)) {
+									List result = new ArrayList();
+									result.add(possiblePackage2);
+									return result;
+								}
+							}
+						}
 					}
 				}
 			}
@@ -325,8 +340,8 @@ public class AspectJElementHierarchy implements IHierarchy {
 	public IProgramElement findElementForSourceLine(String sourceFilePath, int lineNumber) {
 		String canonicalSFP = asm.getCanonicalFilePath(new File(sourceFilePath));
 		// Used to do this:
-//		IProgramElement node2 = findNodeForSourceLineHelper(root, canonicalSFP, lineNumber, -1);
-		
+		// IProgramElement node2 = findNodeForSourceLineHelper(root, canonicalSFP, lineNumber, -1);
+
 		// Find the relevant source file node first
 		IProgramElement node = findNodeForSourceFile(root, canonicalSFP);
 		if (node == null) {
@@ -358,7 +373,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 				return node;
 			}
 			return null; // no need to search children of a source file node
-		} else  {
+		} else {
 			// check the children
 			for (Iterator iterator = node.getChildren().iterator(); iterator.hasNext();) {
 				IProgramElement foundit = findNodeForSourceFile((IProgramElement) iterator.next(), sourcefilePath);
@@ -408,7 +423,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 	 * @param lineno the line number
 	 * @return any closer match below 'node' or null if nothing is a more accurate match
 	 */
-	private IProgramElement findCloserMatchForLineNumber(IProgramElement node, int lineno) {
+	public IProgramElement findCloserMatchForLineNumber(IProgramElement node, int lineno) {
 		for (Iterator childrenIter = node.getChildren().iterator(); childrenIter.hasNext();) {
 			IProgramElement child = (IProgramElement) childrenIter.next();
 			ISourceLocation childLoc = child.getSourceLocation();
@@ -421,11 +436,12 @@ public class AspectJElementHierarchy implements IHierarchy {
 					} else {
 						return evenCloserMatch;
 					}
-				} else if (child.getKind().isType()) { // types are a bit clueless about where they are... do other nodes have similar problems??
+				} else if (child.getKind().isType()) { // types are a bit clueless about where they are... do other nodes have
+					// similar problems??
 					IProgramElement evenCloserMatch = findCloserMatchForLineNumber(child, lineno);
 					if (evenCloserMatch != null) {
 						return evenCloserMatch;
-					}					
+					}
 				}
 			}
 		}

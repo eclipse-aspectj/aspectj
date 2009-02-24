@@ -111,6 +111,8 @@ public class HandleProviderDelimiter {
 		} else if (kind == IProgramElement.Kind.FILE) {
 			if (ipe.getName().endsWith(".class")) {
 				return CLASSFILE.getDelimiter();
+			} else if (ipe.getName().endsWith(".aj")) {
+				return ASPECT_CU.getDelimiter();
 			} else {
 				return empty;
 			}

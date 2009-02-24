@@ -13,6 +13,7 @@ package org.aspectj.asm;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.aspectj.asm.internal.ProgramElement;
@@ -102,4 +103,13 @@ public interface IHierarchy extends Serializable {
 	public void flushHandleMap();
 
 	public void updateHandleMap(Set deletedFiles);
+
+	/**
+	 * For a specified node, check if any of the children more accurately represent the specified line.
+	 * 
+	 * @param node where to start looking
+	 * @param lineno the line number
+	 * @return any closer match below 'node' or null if nothing is a more accurate match
+	 */
+	public IProgramElement findCloserMatchForLineNumber(IProgramElement node, int lineno);
 }
