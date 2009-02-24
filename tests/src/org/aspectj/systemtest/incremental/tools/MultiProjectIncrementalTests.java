@@ -66,7 +66,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		String cli = "pr265729_client";
 		initialiseProject(cli);
 
-		addClasspathEntry(cli, new File("../lib/junit/junit.jar"));
+		// addClasspathEntry(cli, new File("../lib/junit/junit.jar"));
 		configureAspectPath(cli, getProjectRelativePath(lib, "bin"));
 		build(cli);
 		checkWasFullBuild();
@@ -91,17 +91,35 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// Node in tree: I.g(java.lang.String) [inter-type method]
 		// Handle: =pr265729_client<be.cronos.aop{App.java}X)I.g)QString;
 
-		if (h1.endsWith("parents")) {
-			assertEquals("=pr265729_client/binaries<be.cronos.aop.aspects*InterTypeAspect.aj}InterTypeAspect`declare parents", h1);
-			assertEquals(
-					"=pr265729_client/binaries<be.cronos.aop.aspects*InterTypeAspect.aj}InterTypeAspect)InterTypeAspectInterface.foo)I",
-					h2);
-		} else {
-			assertEquals("=pr265729_client/binaries<be.cronos.aop.aspects*InterTypeAspect.aj}InterTypeAspect`declare parents", h2);
-			assertEquals(
-					"=pr265729_client/binaries<be.cronos.aop.aspects*InterTypeAspect.aj}InterTypeAspect)InterTypeAspectInterface.foo)I",
-					h1);
+		if (!h1.endsWith("parents")) {
+			String h3 = h1;
+			h1 = h2;
+			h2 = h3;
 		}
+		// ITD from the test program:
+		// public String InterTypeAspectInterface.foo(int i,List list,App a) {
+		assertEquals("=pr265729_client/binaries<be.cronos.aop.aspects*InterTypeAspect.aj}InterTypeAspect`declare parents", h1);
+		assertEquals(
+				"=pr265729_client/binaries<be.cronos.aop.aspects*InterTypeAspect.aj}InterTypeAspect)InterTypeAspectInterface.foo)I)QList;)QSerializable;",
+				h2);
+		IProgramElement binaryDecp = getModelFor(cli).getHierarchy().getElement(h1);
+		assertNotNull(binaryDecp);
+		IProgramElement binaryITDM = getModelFor(cli).getHierarchy().getElement(h2);
+		assertNotNull(binaryITDM);
+
+		// @see AsmRelationshipProvider.createIntertypeDeclaredChild()
+		List ptypes = binaryITDM.getParameterTypes();
+		assertEquals("int", new String((char[]) ptypes.get(0)));
+		assertEquals("java.util.List", new String((char[]) ptypes.get(1)));
+		assertEquals("java.io.Serializable", new String((char[]) ptypes.get(2)));
+
+		// param names not set
+		// List pnames = binaryITDM.getParameterNames();
+		// assertEquals("i", new String((char[]) pnames.get(0)));
+		// assertEquals("list", new String((char[]) pnames.get(1)));
+		// assertEquals("b", new String((char[]) pnames.get(2)));
+
+		assertEquals("java.lang.String", binaryITDM.getCorrespondingType(true));
 	}
 
 	public void testXmlConfiguredProject() {

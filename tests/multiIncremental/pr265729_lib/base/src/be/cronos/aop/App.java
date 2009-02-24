@@ -9,7 +9,7 @@ public class App
     {
         //System.out.println( "Hello World!" ); //should throw compiler error, OK
 	App app = new App();
-	app.foo(42);
+	app.foo(42,null,null);
 
 	
     }
