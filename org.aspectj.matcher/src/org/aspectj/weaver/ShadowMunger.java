@@ -194,7 +194,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 
 	/**
 	 * Returns whether or not this shadow munger came from a binary aspect - keep a record of whether or not we've checked if we're
-	 * binary otherwise we keep caluclating the same thing many times
+	 * binary otherwise we keep calculating the same thing many times
 	 */
 	public boolean isBinary() {
 		if (!checkedIsBinary) {
