@@ -665,7 +665,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return Collections.EMPTY_LIST;
 	}
 
-	protected Collection getTypeMungers() {
+	public Collection getTypeMungers() {
 		return Collections.EMPTY_LIST;
 	}
 

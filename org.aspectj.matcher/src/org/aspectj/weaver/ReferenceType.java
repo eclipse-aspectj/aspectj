@@ -747,7 +747,7 @@ public class ReferenceType extends ResolvedType {
 		return declares;
 	}
 
-	protected Collection getTypeMungers() {
+	public Collection getTypeMungers() {
 		return delegate.getTypeMungers();
 	}
 

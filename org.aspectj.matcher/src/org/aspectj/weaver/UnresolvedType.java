@@ -119,6 +119,16 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	protected String signature;
 
 	/**
+	 * Calculated on first request - the package name (java.lang for type java.lang.String)
+	 */
+	private String packageName;
+
+	/**
+	 * Calculated on first request - the class name (String for type java.lang.String)
+	 */
+	private String className;
+
+	/**
 	 * The erasure of the signature. Contains only the Java signature of the type with all supertype, superinterface, type variable,
 	 * and parameter information removed.
 	 */
@@ -831,16 +841,19 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	}
 
 	public String getPackageName() {
-		String name = getName();
-		if (name.indexOf("<") != -1) {
-			name = name.substring(0, name.indexOf("<"));
+		if (packageName == null) {
+			String name = getName();
+			if (name.indexOf("<") != -1) {
+				name = name.substring(0, name.indexOf("<"));
+			}
+			int index = name.lastIndexOf('.');
+			if (index == -1) {
+				packageName = "";
+			} else {
+				packageName = name.substring(0, index);
+			}
 		}
-		int index = name.lastIndexOf('.');
-		if (index == -1) {
-			return "";
-		} else {
-			return name.substring(0, index);
-		}
+		return packageName;
 	}
 
 	public UnresolvedType[] getTypeParameters() {
@@ -851,13 +864,16 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	 * Doesn't include the package
 	 */
 	public String getClassName() {
-		String name = getName();
-		int index = name.lastIndexOf('.');
-		if (index == -1) {
-			return name;
-		} else {
-			return name.substring(index + 1);
+		if (className == null) {
+			String name = getName();
+			int index = name.lastIndexOf('.');
+			if (index == -1) {
+				className = name;
+			} else {
+				className = name.substring(index + 1);
+			}
 		}
+		return className;
 	}
 
 	public TypeVariable[] getTypeVariables() {
