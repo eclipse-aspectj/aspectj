@@ -69,9 +69,10 @@ import org.aspectj.weaver.bcel.asm.AsmDetector;
 import org.aspectj.weaver.bcel.asm.StackMapAdder;
 
 /**
- * Lazy lazy lazy. We don't unpack the underlying class unless necessary. Things like new methods and annotations accumulate in here
- * until they must be written out, don't add them to the underlying MethodGen! Things are slightly different if this represents an
- * Aspect.
+ * Lazy lazy lazy. We don't unpack the underlying class unless necessary. Things
+ * like new methods and annotations accumulate in here until they must be
+ * written out, don't add them to the underlying MethodGen! Things are slightly
+ * different if this represents an Aspect.
  */
 public final class LazyClassGen {
 
@@ -169,7 +170,8 @@ public final class LazyClassGen {
 	// System.err.println(m.getSourceDebugExtensionString());
 	// }
 
-	// For the entire pathname, we're using package names. This is probably wrong.
+	// For the entire pathname, we're using package names. This is probably
+	// wrong.
 	// private String getSourceDebugExtensionString() {
 	// StringBuffer out = new StringBuffer();
 	// String myFileName = getFileName();
@@ -255,7 +257,7 @@ public final class LazyClassGen {
 		cp = myGen.getConstantPool();
 		fact = new InstructionFactory(myGen, cp);
 		this.myType = myType;
-		this.world = myType.getResolvedTypeX().getWorld();
+		world = myType.getResolvedTypeX().getWorld();
 
 		/* Does this class support serialization */
 		if (implementsSerializable(getType())) {
@@ -265,7 +267,8 @@ public final class LazyClassGen {
 			// for (int i = 0; i < fields.length; i++) {
 			// ResolvedMember field = fields[i];
 			// if (field.getName().equals("serialVersionUID")
-			// && field.isStatic() && field.getType().equals(ResolvedType.LONG)) {
+			// && field.isStatic() && field.getType().equals(ResolvedType.LONG))
+			// {
 			// hasSerialVersionUIDField = true;
 			// }
 			// }
@@ -351,7 +354,8 @@ public final class LazyClassGen {
 	}
 
 	/**
-	 * Returns the packagename - if its the default package we return an empty string
+	 * Returns the packagename - if its the default package we return an empty
+	 * string
 	 */
 	public String getPackageName() {
 		if (packageName != null)
@@ -442,7 +446,8 @@ public final class LazyClassGen {
 				myGen.addAnnotation(element);
 			}
 			// Attribute[] annAttributes =
-			// org.aspectj.apache.bcel.classfile.Utility.getAnnotationAttributes(getConstantPool(),annotations);
+			//org.aspectj.apache.bcel.classfile.Utility.getAnnotationAttributes(
+			// getConstantPool(),annotations);
 			// for (int i = 0; i < annAttributes.length; i++) {
 			// Attribute attribute = annAttributes[i];
 			// System.err.println("Adding attribute for "+attribute);
@@ -450,7 +455,8 @@ public final class LazyClassGen {
 			// }
 		}
 
-		// Add a weaver version attribute to the file being produced (if necessary...)
+		// Add a weaver version attribute to the file being produced (if
+		// necessary...)
 		if (!myGen.hasAttribute("org.aspectj.weaver.WeaverVersion")) {
 			myGen.addAttribute(Utility.bcelAttribute(new AjAttribute.WeaverVersionInfo(), getConstantPool()));
 		}
@@ -468,7 +474,8 @@ public final class LazyClassGen {
 
 		addAjcInitializers();
 
-		// 17Feb05 - ASC - Skip this for now - it crashes IBM 1.4.2 jvms (pr80430). Will be revisited when contents
+		// 17Feb05 - ASC - Skip this for now - it crashes IBM 1.4.2 jvms
+		// (pr80430). Will be revisited when contents
 		// of attribute are confirmed to be correct.
 		boolean sourceDebugExtensionSupportSwitchedOn = false;
 
@@ -490,7 +497,7 @@ public final class LazyClassGen {
 		myGen.setFields(Field.NoFields);
 		for (int i = 0; i < len; i++) {
 			BcelField gen = (BcelField) fields.get(i);
-			myGen.addField(gen.getField(this.cp));
+			myGen.addField(gen.getField(cp));
 		}
 
 		if (sourceDebugExtensionSupportSwitchedOn) {
@@ -507,17 +514,20 @@ public final class LazyClassGen {
 	}
 
 	/**
-	 * When working with Java generics, a signature attribute is attached to the type which indicates how it was declared. This
-	 * routine ensures the signature attribute for the class we are about to write out is correct. Basically its responsibilities
-	 * are:
+	 * When working with Java generics, a signature attribute is attached to the
+	 * type which indicates how it was declared. This routine ensures the
+	 * signature attribute for the class we are about to write out is correct.
+	 * Basically its responsibilities are:
 	 * <ol>
 	 * <li>
-	 * Checking whether the attribute needs changing (ie. did weaving change the type hierarchy) - if it did, remove the old
-	 * attribute
+	 * Checking whether the attribute needs changing (ie. did weaving change the
+	 * type hierarchy) - if it did, remove the old attribute
 	 * <li>
-	 * Check if we need an attribute at all, are we generic? are our supertypes parameterized/generic?
+	 * Check if we need an attribute at all, are we generic? are our supertypes
+	 * parameterized/generic?
 	 * <li>
-	 * Build the new attribute which includes all typevariable, supertype and superinterface information
+	 * Build the new attribute which includes all typevariable, supertype and
+	 * superinterface information
 	 * </ol>
 	 */
 	private void fixupGenericSignatureAttribute() {
@@ -526,75 +536,94 @@ public final class LazyClassGen {
 			return;
 		}
 
-		// TODO asc generics Temporarily assume that types we generate dont need a signature attribute (closure/etc).. will need
+		// TODO asc generics Temporarily assume that types we generate dont need
+		// a signature attribute (closure/etc).. will need
 		// revisiting no doubt...
-		if (myType == null) {
-			return;
-		}
+		// if (myType == null) {
+		// return;
+		// }
 
-		// 1. Has anything changed that would require us to modify this attribute?
+		// 1. Has anything changed that would require us to modify this
+		// attribute?
 		if (!regenerateGenericSignatureAttribute) {
 			return;
 		}
 
 		// 2. Find the old attribute
 		Signature sigAttr = null;
-		if (myType != null) { // if null, this is a type built from scratch, it won't already have a sig attribute
+		if (myType != null) { // if null, this is a type built from scratch, it
+			// won't already have a sig attribute
 			sigAttr = (Signature) myGen.getAttribute("Signature");
 		}
 
 		// 3. Do we need an attribute?
 		boolean needAttribute = false;
-		if (sigAttr != null)
-			needAttribute = true; // If we had one before, we definetly still need one as types can't be 'removed' from the
-		// hierarchy
+		// If we had one before, we definetly still need one as types can't be
+		// 'removed' from the hierarchy
+		if (sigAttr != null) {
+			needAttribute = true;
+		}
 
 		// check the interfaces
 		if (!needAttribute) {
-			ResolvedType[] interfaceRTXs = myType.getDeclaredInterfaces();
-			for (int i = 0; i < interfaceRTXs.length; i++) {
-				ResolvedType typeX = interfaceRTXs[i];
-				if (typeX.isGenericType() || typeX.isParameterizedType())
-					needAttribute = true;
-			}
-			if (extraSuperInterfaces != null) {
-				for (int i = 0; i < extraSuperInterfaces.length; i++) {
-					ResolvedType interfaceType = extraSuperInterfaces[i];
-					if (interfaceType.isGenericType() || interfaceType.isParameterizedType())
+			if (myType != null) {
+				ResolvedType[] interfaceRTXs = myType.getDeclaredInterfaces();
+				for (int i = 0; i < interfaceRTXs.length; i++) {
+					ResolvedType typeX = interfaceRTXs[i];
+					if (typeX.isGenericType() || typeX.isParameterizedType())
 						needAttribute = true;
+				}
+				if (extraSuperInterfaces != null) {
+					for (int i = 0; i < extraSuperInterfaces.length; i++) {
+						ResolvedType interfaceType = extraSuperInterfaces[i];
+						if (interfaceType.isGenericType() || interfaceType.isParameterizedType())
+							needAttribute = true;
+					}
 				}
 			}
 
-			// check the supertype
-			ResolvedType superclassRTX = getSuperClass();
-			if (superclassRTX.isGenericType() || superclassRTX.isParameterizedType())
-				needAttribute = true;
+			if (myType == null) {
+				ResolvedType superclassRTX = superclass;
+				if (superclassRTX != null) {
+					if (superclassRTX.isGenericType() || superclassRTX.isParameterizedType())
+						needAttribute = true;
+				}
+			} else {
+				// check the supertype
+				ResolvedType superclassRTX = getSuperClass();
+				if (superclassRTX.isGenericType() || superclassRTX.isParameterizedType())
+					needAttribute = true;
+			}
 		}
 
 		if (needAttribute) {
 			StringBuffer signature = new StringBuffer();
 			// first, the type variables...
-			TypeVariable[] tVars = myType.getTypeVariables();
-			if (tVars.length > 0) {
-				signature.append("<");
-				for (int i = 0; i < tVars.length; i++) {
-					TypeVariable variable = tVars[i];
-					signature.append(variable.getSignature());
+			if (myType != null) {
+				TypeVariable[] tVars = myType.getTypeVariables();
+				if (tVars.length > 0) {
+					signature.append("<");
+					for (int i = 0; i < tVars.length; i++) {
+						TypeVariable variable = tVars[i];
+						signature.append(variable.getSignature());
+					}
+					signature.append(">");
 				}
-				signature.append(">");
 			}
 			// now the supertype
 			String supersig = getSuperClass().getSignatureForAttribute();
 			signature.append(supersig);
-			ResolvedType[] interfaceRTXs = myType.getDeclaredInterfaces();
-			for (int i = 0; i < interfaceRTXs.length; i++) {
-				String s = interfaceRTXs[i].getSignatureForAttribute();
-				signature.append(s);
-			}
-			if (extraSuperInterfaces != null) {
-				for (int i = 0; i < extraSuperInterfaces.length; i++) {
-					String s = extraSuperInterfaces[i].getSignatureForAttribute();
+			if (myType != null) {
+				ResolvedType[] interfaceRTXs = myType.getDeclaredInterfaces();
+				for (int i = 0; i < interfaceRTXs.length; i++) {
+					String s = interfaceRTXs[i].getSignatureForAttribute();
 					signature.append(s);
+				}
+				if (extraSuperInterfaces != null) {
+					for (int i = 0; i < extraSuperInterfaces.length; i++) {
+						String s = extraSuperInterfaces[i].getSignatureForAttribute();
+						signature.append(s);
+					}
 				}
 			}
 			if (sigAttr != null) {
@@ -605,7 +634,8 @@ public final class LazyClassGen {
 	}
 
 	/**
-	 * Helper method to create a signature attribute based on a string signature: e.g. "Ljava/lang/Object;LI<Ljava/lang/Double;>;"
+	 * Helper method to create a signature attribute based on a string
+	 * signature: e.g. "Ljava/lang/Object;LI<Ljava/lang/Double;>;"
 	 */
 	private Signature createSignatureAttribute(String signature) {
 		int nameIndex = cp.addUtf8("Signature");
@@ -618,9 +648,12 @@ public final class LazyClassGen {
 	 */
 	private void reportClassTooBigProblem() {
 		// PR 59208
-		// we've generated a class that is just toooooooooo big (you've been generating programs
-		// again haven't you? come on, admit it, no-one writes classes this big by hand).
-		// create an empty myGen so that we can give back a return value that doesn't upset the
+		// we've generated a class that is just toooooooooo big (you've been
+		// generating programs
+		// again haven't you? come on, admit it, no-one writes classes this big
+		// by hand).
+		// create an empty myGen so that we can give back a return value that
+		// doesn't upset the
 		// rest of the process.
 		myGen = new ClassGen(myGen.getClassName(), myGen.getSuperclassName(), myGen.getFileName(), myGen.getModifiers(), myGen
 				.getInterfaceNames());
@@ -646,7 +679,8 @@ public final class LazyClassGen {
 			wovenClassFileData = StackMapAdder.addStackMaps(world, wovenClassFileData);
 		}
 
-		WeaverStateInfo wsi = myType.getWeaverState();// getOrCreateWeaverStateInfo();
+		WeaverStateInfo wsi = myType.getWeaverState();// getOrCreateWeaverStateInfo
+		// ();
 		if (wsi != null && wsi.isReweavable()) { // && !reweavableDataInserted
 			// reweavableDataInserted = true;
 			return wsi.replaceKeyWithDiff(wovenClassFileData);
@@ -683,7 +717,8 @@ public final class LazyClassGen {
 		if (newSuperclass.getGenericType() != null) {
 			newSuperclass = newSuperclass.getGenericType();
 		}
-		myGen.setSuperclassName(newSuperclass.getName()); // used in the real class data
+		myGen.setSuperclassName(newSuperclass.getName()); // used in the real
+		// class data
 	}
 
 	// public String getSuperClassname() {
@@ -905,8 +940,10 @@ public final class LazyClassGen {
 		// better include them in the check below. (or just change it to
 		// shadow.getEnclosingMethod().getCanInline())
 
-		// If the enclosing method is around advice, we could inline the join point
-		// that has led to this shadow. If we do that then the TJP we are creating
+		// If the enclosing method is around advice, we could inline the join
+		// point
+		// that has led to this shadow. If we do that then the TJP we are
+		// creating
 		// here must be PUBLIC so it is visible to the type in which the
 		// advice is inlined. (PR71377)
 		LazyMethodGen encMethod = shadow.getEnclosingMethod();
@@ -921,7 +958,9 @@ public final class LazyClassGen {
 			modifiers |= Modifier.PRIVATE;
 		}
 		ObjectType jpType = null;
-		if (world.isTargettingAspectJRuntime12()) { // TAG:SUPPORTING12: We didn't have different staticjp types in 1.2
+		if (world.isTargettingAspectJRuntime12()) { // TAG:SUPPORTING12: We
+			// didn't have different
+			// staticjp types in 1.2
 			jpType = staticTjpType;
 		} else {
 			jpType = isEnclosingJp ? enclosingStaticTjpType : staticTjpType;
@@ -986,7 +1025,8 @@ public final class LazyClassGen {
 		// load the current Class object
 		// XXX check that this works correctly for inners/anonymous
 		list.append(InstructionFactory.PUSH(getConstantPool(), getClassName()));
-		// XXX do we need to worry about the fact the theorectically this could throw
+		// XXX do we need to worry about the fact the theorectically this could
+		// throw
 		// a ClassNotFoundException
 		list.append(fact.createInvoke("java.lang.Class", "forName", classType, new Type[] { Type.STRING }, Constants.INVOKESTATIC));
 
@@ -1014,7 +1054,8 @@ public final class LazyClassGen {
 
 	private void initializeTjp(InstructionFactory fact, InstructionList list, Field field, BcelShadow shadow) {
 		Member sig = shadow.getSignature();
-		// ResolvedMember mem = shadow.getSignature().resolve(shadow.getWorld());
+		// ResolvedMember mem =
+		// shadow.getSignature().resolve(shadow.getWorld());
 
 		// load the factory
 		list.append(InstructionFactory.createLoad(factoryType, 0));
@@ -1028,7 +1069,9 @@ public final class LazyClassGen {
 		String signatureMakerName = SignatureUtils.getSignatureMakerName(sig);
 		ObjectType signatureType = new ObjectType(SignatureUtils.getSignatureType(sig));
 
-		if (world.isTargettingAspectJRuntime12()) { // TAG:SUPPORTING12: We didn't have optimized factory methods in 1.2
+		if (world.isTargettingAspectJRuntime12()) { // TAG:SUPPORTING12: We
+			// didn't have optimized
+			// factory methods in 1.2
 			list.append(InstructionFactory.PUSH(getConstantPool(), SignatureUtils.getSignatureString(sig, shadow.getWorld())));
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY1,
 					Constants.INVOKEVIRTUAL));
@@ -1043,7 +1086,8 @@ public final class LazyClassGen {
 			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getParameterNames(w))));
 			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getExceptions(w))));
 			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getReturnType())));
-			// And generate a call to the variant of makeMethodSig() that takes 7 strings
+			// And generate a call to the variant of makeMethodSig() that takes
+			// 7 strings
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY7,
 					Constants.INVOKEVIRTUAL));
 		} else if (sig.getKind().equals(Member.MONITORENTER)) {
@@ -1068,8 +1112,44 @@ public final class LazyClassGen {
 				list.append(InstructionFactory.PUSH(getConstantPool(), makeString(Modifier.PUBLIC)));
 				list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getDeclaringType())));
 				list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getParameterTypes())));
-				list.append(InstructionFactory.PUSH(getConstantPool(), ""));// makeString("")));//sig.getParameterNames(w))));
-				list.append(InstructionFactory.PUSH(getConstantPool(), ""));// makeString("")));//sig.getExceptions(w))));
+				list.append(InstructionFactory.PUSH(getConstantPool(), ""));// makeString
+				// (
+				// ""
+				// )
+				// )
+				// )
+				// ;
+				// /
+				// /
+				// sig
+				// .
+				// getParameterNames
+				// (
+				// w
+				// )
+				// )
+				// )
+				// )
+				// ;
+				list.append(InstructionFactory.PUSH(getConstantPool(), ""));// makeString
+				// (
+				// ""
+				// )
+				// )
+				// )
+				// ;
+				// /
+				// /
+				// sig
+				// .
+				// getExceptions
+				// (
+				// w
+				// )
+				// )
+				// )
+				// )
+				// ;
 				list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY5,
 						Constants.INVOKEVIRTUAL));
 			} else {
@@ -1122,7 +1202,9 @@ public final class LazyClassGen {
 
 		final String factoryMethod;
 
-		if (world.isTargettingAspectJRuntime12()) { // TAG:SUPPORTING12: We didn't have makeESJP() in 1.2
+		if (world.isTargettingAspectJRuntime12()) { // TAG:SUPPORTING12: We
+			// didn't have makeESJP() in
+			// 1.2
 			list.append(fact.createInvoke(factoryType.getClassName(), "makeSJP", staticTjpType, new Type[] { Type.STRING, sigType,
 					Type.INT }, Constants.INVOKEVIRTUAL));
 
@@ -1151,7 +1233,8 @@ public final class LazyClassGen {
 	protected String makeString(UnresolvedType t) {
 		// this is the inverse of the odd behavior for Class.forName w/ arrays
 		if (t.isArray()) {
-			// this behavior matches the string used by the eclipse compiler for Foo.class literals
+			// this behavior matches the string used by the eclipse compiler for
+			// Foo.class literals
 			return t.getSignature().replace('/', '.');
 		} else {
 			if (t.isParameterizedType()) {
@@ -1225,7 +1308,8 @@ public final class LazyClassGen {
 				field.setModifiers(field.getModifiers() | ACC_SYNTHETIC);
 			}
 			if (!hasSyntheticAttribute(field.getAttributes())) {
-				// belt and braces, do the attribute even on Java 5 in addition to the modifier flag
+				// belt and braces, do the attribute even on Java 5 in addition
+				// to the modifier flag
 				// Attribute[] oldAttrs = field.getAttributes();
 				// Attribute[] newAttrs = new Attribute[oldAttrs.length + 1];
 				// System.arraycopy(oldAttrs, 0, newAttrs, 0, oldAttrs.length);
@@ -1317,9 +1401,13 @@ public final class LazyClassGen {
 	}
 
 	// this test is like asking:
-	// if (UnresolvedType.SERIALIZABLE.resolve(getType().getWorld()).isAssignableFrom(getType())) {
-	// only we don't do that because this forces us to find all the supertypes of the type,
-	// and if one of them is missing we fail, and it's not worth failing just to put out
+	// if
+	//(UnresolvedType.SERIALIZABLE.resolve(getType().getWorld()).isAssignableFrom
+	// (getType())) {
+	// only we don't do that because this forces us to find all the supertypes
+	// of the type,
+	// and if one of them is missing we fail, and it's not worth failing just to
+	// put out
 	// a warning message!
 	private boolean implementsSerializable(ResolvedType aType) {
 		if (aType.getSignature().equals(UnresolvedType.SERIALIZABLE.getSignature()))
@@ -1344,8 +1432,8 @@ public final class LazyClassGen {
 	}
 
 	/**
-	 * Return the next available field name with the specified 'prefix', e.g. for prefix 'class$' where class$0, class$1 exist then
-	 * return class$2
+	 * Return the next available field name with the specified 'prefix', e.g.
+	 * for prefix 'class$' where class$0, class$1 exist then return class$2
 	 */
 	public String allocateField(String prefix) {
 		int highestAllocated = -1;
@@ -1358,7 +1446,8 @@ public final class LazyClassGen {
 					if (num > highestAllocated)
 						highestAllocated = num;
 				} catch (NumberFormatException nfe) {
-					// something wrong with the number on the end of that field...
+					// something wrong with the number on the end of that
+					// field...
 				}
 			}
 		}
