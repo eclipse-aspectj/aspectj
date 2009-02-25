@@ -32,6 +32,22 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testOptimizingIf_pr266165_1() {
+		runTest("optimizing if for constant reference - 1");
+	}
+
+	public void testOptimizingIf_pr266165_2() {
+		runTest("optimizing if for constant reference - 2");
+	}
+
+	public void testOptimizingIf_pr266165_3() {
+		runTest("optimizing if for constant reference - 3");
+	}
+
+	public void testOptimizingIf_pr266165_4() {
+		runTest("optimizing if for constant reference - 4");
+	}
+
 	// public void testAnnoInherited_pr265695() {
 	// runTest("anno inherited");
 	// }

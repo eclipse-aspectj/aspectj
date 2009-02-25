@@ -1,6 +1,26 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 
 <suite>
+   
+   <ajc-test dir="bugs164/pr266165" title="optimizing if for constant reference - 1">
+     <compile files="NeverWeave.java" options="-1.5 -Xlint:ignore -showWeaveInfo"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs164/pr266165" title="optimizing if for constant reference - 2">
+     <compile files="AlwaysWeave.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs164/pr266165" title="optimizing if for constant reference - 3">
+     <compile files="NeverWeave2.java" options="-1.5 -Xlint:ignore -showWeaveInfo"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs164/pr266165" title="optimizing if for constant reference - 4">
+     <compile files="AlwaysWeave2.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point"/>
+     </compile>
+   </ajc-test>
 
    <ajc-test dir="bugs164/pr265695" title="anno inherited">
      <compile files="Asp.aj" options="-showWeaveInfo -1.5">
