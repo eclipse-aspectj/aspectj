@@ -82,6 +82,13 @@ public class IfPointcut extends Pointcut {
 	}
 
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
+		if ((extraParameterFlags & Advice.ConstantReference) != 0) {
+			if ((extraParameterFlags & Advice.ConstantValue) != 0) {
+				return FuzzyBoolean.YES;
+			} else {
+				return FuzzyBoolean.NO;
+			}
+		}
 		// ??? this is not maximally efficient
 		return FuzzyBoolean.MAYBE;
 	}
@@ -160,8 +167,9 @@ public class IfPointcut extends Pointcut {
 	 * At each shadow that matched, the residue can be different.
 	 */
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
-		if (findingResidue)
+		if (findingResidue) {
 			return Literal.TRUE;
+		}
 		findingResidue = true;
 		try {
 
@@ -174,6 +182,22 @@ public class IfPointcut extends Pointcut {
 
 			// code style
 			if (extraParameterFlags >= 0) {
+				if ((extraParameterFlags & Advice.ConstantReference) != 0) {
+					// it is either always true or always false, no need for test
+					if ((extraParameterFlags & Advice.ConstantValue) != 0) {
+						ret = Literal.TRUE;
+						ifLastMatchedShadowId = shadow.shadowId;
+						ifLastMatchedShadowResidue = ret;
+						return ret;
+					} else {
+						// Dont think we should be in here as the match cannot have succeeded...
+						ret = Literal.FALSE;
+						ifLastMatchedShadowId = shadow.shadowId;
+						ifLastMatchedShadowResidue = ret;
+						return ret;
+					}
+				}
+
 				// If there are no args to sort out, don't bother with the recursive call
 				if (baseArgsCount > 0) {
 					ExposedState myState = new ExposedState(baseArgsCount);
@@ -525,6 +549,17 @@ public class IfPointcut extends Pointcut {
 
 		public String toString() {
 			return "if(true)";
+		}
+	}
+
+	/**
+	 * Called when it is determined that the pointcut refers to a constant value of TRUE or FALSE - enabling exact matching and no
+	 * unnecessary calls to the method representing the if body.
+	 */
+	public void setAlways(boolean matches) {
+		extraParameterFlags |= Advice.ConstantReference;
+		if (matches) {
+			extraParameterFlags |= Advice.ConstantValue;
 		}
 	}
 

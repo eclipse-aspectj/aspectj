@@ -294,7 +294,6 @@ public abstract class Advice extends ShadowMunger {
 		return result;
 	}
 
-
 	/**
 	 * Return the type of the 'extra argument'. For either after returning or after throwing advice, the extra argument will be the
 	 * returned value or the thrown exception respectively. With annotation style the user may declare the parameters in any order,
@@ -459,12 +458,15 @@ public abstract class Advice extends ShadowMunger {
 
 	// ---- fields
 
-	public static final int ExtraArgument = 1;
-	public static final int ThisJoinPoint = 2;
-	public static final int ThisJoinPointStaticPart = 4;
-	public static final int ThisEnclosingJoinPointStaticPart = 8;
-	public static final int ParameterMask = 0xf;
-
+	public static final int ExtraArgument = 0x01;
+	public static final int ThisJoinPoint = 0x02;
+	public static final int ThisJoinPointStaticPart = 0x04;
+	public static final int ThisEnclosingJoinPointStaticPart = 0x08;
+	public static final int ParameterMask = 0x0f;
+	// For an if pointcut, this indicates it is hard wired to access a constant of either true or false
+	public static final int ConstantReference = 0x10; 
+	// When the above flag is set, this indicates whether it is true or false
+	public static final int ConstantValue = 0x20; 
 	public static final int CanInline = 0x40;
 
 	// for testing only
