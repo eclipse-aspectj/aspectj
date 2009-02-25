@@ -32,6 +32,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testGenericsAopXml_pr266220() {
+		runTest("generics and aop.xml");
+	}
+
 	public void testOptimizingIf_pr266165_1() {
 		runTest("optimizing if for constant reference - 1");
 	}
@@ -172,9 +176,11 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	/**
-	 * This test checks that local variable table for the interMethodDispatcher is built correctly, for the related code see
-	 * IntertypeMethodDeclaration.generateDispatchMethod(). It checks non-static and static ITDs. Once the information here is
-	 * correct then around advice on ITDs can also be correct.
+	 * This test checks that local variable table for the interMethodDispatcher
+	 * is built correctly, for the related code see
+	 * IntertypeMethodDeclaration.generateDispatchMethod(). It checks non-static
+	 * and static ITDs. Once the information here is correct then around advice
+	 * on ITDs can also be correct.
 	 */
 	public void testBrokenLVT_pr194314_3() throws Exception {
 		runTest("broken lvt - 3");
