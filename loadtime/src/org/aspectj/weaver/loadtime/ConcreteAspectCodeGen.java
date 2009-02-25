@@ -51,9 +51,10 @@ import org.aspectj.weaver.patterns.PerSingleton;
 /**
  * Generates bytecode for concrete-aspect.
  * <p>
- * The concrete aspect is @AspectJ code generated. As it is build during aop.xml definitions registration we perform the type
- * munging for perclause, ie. aspectOf() artifact directly, instead of waiting for it to go thru the weaver (that we are in the
- * middle of configuring).
+ * The concrete aspect is @AspectJ code generated. As it is build during aop.xml
+ * definitions registration we perform the type munging for perclause, ie.
+ * aspectOf() artifact directly, instead of waiting for it to go thru the weaver
+ * (that we are in the middle of configuring).
  * 
  * @author Alexandre Vasseur
  * @author Andy Clement
@@ -133,7 +134,27 @@ public class ConcreteAspectCodeGen {
 			}
 		}
 
-		parent = world.resolve(concreteAspect.extend, true);
+		String parentAspectName = concreteAspect.extend;
+		if (parentAspectName.indexOf("<") != -1) {
+			// yikes, generic parent
+			parent = world.resolve(UnresolvedType.forName(parentAspectName), true);
+			if (parent.isMissing()) {
+				reportError("Unable to resolve type reference: " + stringify());
+				return false;
+			}
+			if (parent.isParameterizedType()) {
+				UnresolvedType[] typeParameters = parent.getTypeParameters();
+				for (int i = 0; i < typeParameters.length; i++) {
+					UnresolvedType typeParameter = typeParameters[i];
+					if (typeParameter instanceof ResolvedType && ((ResolvedType) typeParameter).isMissing()) {
+						reportError("Unablet to resolve type parameter '" + typeParameter.getName() + "' from " + stringify());
+						return false;
+					}
+				}
+			}
+		} else {
+			parent = world.resolve(concreteAspect.extend, true);
+		}
 		// handle inner classes
 		if (parent.isMissing()) {
 			// fallback on inner class lookup mechanism
@@ -176,7 +197,8 @@ public class ConcreteAspectCodeGen {
 			ResolvedMember method = (ResolvedMember) iter.next();
 			if ("()V".equals(method.getSignature())) {
 				String n = method.getName();
-				// Allow for the abstract pointcut being from a code style aspect compiled with -1.5 (see test for 128744)
+				// Allow for the abstract pointcut being from a code style
+				// aspect compiled with -1.5 (see test for 128744)
 				if (n.startsWith("ajc$pointcut")) {
 					n = n.substring(14);
 					n = n.substring(0, n.indexOf("$"));
@@ -184,20 +206,23 @@ public class ConcreteAspectCodeGen {
 				} else if (hasPointcutAnnotation(method)) {
 					elligibleAbstractions.add(method.getName());
 				} else {
-					// error, an outstanding abstract method that can't be concretized in XML
+					// error, an outstanding abstract method that can't be
+					// concretized in XML
 					reportError("Abstract method '" + method.toString() + "' cannot be concretized in XML: " + stringify());
 					return false;
 				}
 			} else {
 				if (method.getName().startsWith("ajc$pointcut") || hasPointcutAnnotation(method)) {
-					// it may be a pointcut but it doesn't meet the requirements for XML concretization
+					// it may be a pointcut but it doesn't meet the requirements
+					// for XML concretization
 					reportError("Abstract method '"
 							+ method.toString()
 							+ "' cannot be concretized as a pointcut (illegal signature, must have no arguments, must return void): "
 							+ stringify());
 					return false;
 				} else {
-					// error, an outstanding abstract method that can't be concretized in XML
+					// error, an outstanding abstract method that can't be
+					// concretized in XML
 					reportError("Abstract method '" + method.toString() + "' cannot be concretized in XML: " + stringify());
 					return false;
 				}
@@ -268,7 +293,8 @@ public class ConcreteAspectCodeGen {
 	}
 
 	/**
-	 * Rebuild the XML snip that defines this concrete aspect, for log error purpose
+	 * Rebuild the XML snip that defines this concrete aspect, for log error
+	 * purpose
 	 * 
 	 * @return string repr.
 	 */
@@ -339,14 +365,22 @@ public class ConcreteAspectCodeGen {
 		// [@Pointcut(xxxExpression-n)
 		// public void xxxName-n() {}]
 		// }
-
+		String parentName = "java/lang/Object";
+		if (parent != null) {
+			if (parent.isParameterizedType()) {
+				parentName = parent.getGenericType().getName().replace('.', '/');
+			} else {
+				parentName = parent.getName().replace('.', '/');
+			}
+		}
 		// @Aspect public class ...
-		LazyClassGen cg = new LazyClassGen(concreteAspect.name.replace('.', '/'), (parent == null) ? "java/lang/Object" : parent
-				.getName().replace('.', '/'), null,// TODO AV - we could point
-				// to the aop.xml that
-				// defines it and use
-				// JSR-45
-				Modifier.PUBLIC + Constants.ACC_SUPER, EMPTY_STRINGS, world);
+		// TODO AV - we could point to the aop.xml that defines it and use
+		// JSR-45
+		LazyClassGen cg = new LazyClassGen(concreteAspect.name.replace('.', '/'), parentName, null, Modifier.PUBLIC
+				+ Constants.ACC_SUPER, EMPTY_STRINGS, world);
+		if (parent != null && parent.isParameterizedType()) {
+			cg.setSuperClass(parent);
+		}
 		if (perclauseString == null) {
 			AnnotationGen ag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/Aspect"), Collections.EMPTY_LIST,
 					true, cg.getConstantPool());
@@ -374,8 +408,8 @@ public class ConcreteAspectCodeGen {
 		LazyMethodGen init = new LazyMethodGen(Modifier.PUBLIC, Type.VOID, "<init>", EMPTY_TYPES, EMPTY_STRINGS, cg);
 		InstructionList cbody = init.getBody();
 		cbody.append(InstructionConstants.ALOAD_0);
-		cbody.append(cg.getFactory().createInvoke((parent == null) ? "java/lang/Object" : parent.getName().replace('.', '/'),
-				"<init>", Type.VOID, EMPTY_TYPES, Constants.INVOKESPECIAL));
+
+		cbody.append(cg.getFactory().createInvoke(parentName, "<init>", Type.VOID, EMPTY_TYPES, Constants.INVOKESPECIAL));
 		cbody.append(InstructionConstants.RETURN);
 		cg.addMethodGen(init);
 
@@ -394,7 +428,6 @@ public class ConcreteAspectCodeGen {
 
 			InstructionList body = mg.getBody();
 			body.append(InstructionConstants.RETURN);
-
 			cg.addMethodGen(mg);
 		}
 
