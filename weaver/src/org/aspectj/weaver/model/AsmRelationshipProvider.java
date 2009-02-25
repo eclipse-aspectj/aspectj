@@ -245,7 +245,7 @@ public class AsmRelationshipProvider {
 	 * (from the aspectpath).
 	 */
 	private static void createHierarchy(AsmManager model, ResolvedTypeMunger typeTransformer, ResolvedType aspect) {
-		assert aspect != null;
+		// assert aspect != null;
 
 		// Check if already defined in the model
 		// IProgramElement filenode =
