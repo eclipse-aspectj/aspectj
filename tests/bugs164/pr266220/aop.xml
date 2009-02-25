@@ -1,0 +1,8 @@
+<aspectj>
+<aspects>
+  <concrete-aspect name="IsolatorForCode" extends="Isolator&lt;Code&gt;"/>
+</aspects>
+<weaver options="-showWeaveInfo">
+</weaver>
+</aspectj>
+
