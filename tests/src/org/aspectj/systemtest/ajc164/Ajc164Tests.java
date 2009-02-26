@@ -11,6 +11,7 @@
 package org.aspectj.systemtest.ajc164;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -28,9 +29,74 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationship;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
+
+	/**
+	 * This test program can be used to compare handles for faulted in binary
+	 * aspects with handles that would be used if the aspect was available as
+	 * source. There are two compile steps in the xml for the test - commenting
+	 * out the first will allow the source handles to be seen, leaving it in
+	 * will switch to binary. Effectively the only difference should be that in
+	 * the binary case the handles are prefixed 'binaries'.
+	 */
+	public void testItdsAspectPathModel_pr265729_1() {
+		runTest("aspectpath model");
+		AsmManager model = AsmManager.lastActiveStructureModel;
+		IHierarchy top = model.getHierarchy();
+		printModel(model);
+		IProgramElement ipe = null;
+
+		// ITD METHOD
+		// should be the ITD method from the binary aspect:
+		// public Color Orange.getColor() { return Color.orange; }
+		ipe = top.findElementForType("demo", "Orange");
+		assertNotNull(ipe);
+		assertEquals("<demo{Orange.java[Orange", ipe.getHandleIdentifier());
+		IRelationship ir = (IRelationship) model.getRelationshipMap().get(ipe).get(0);
+		String itdMethodHandle = (String) ir.getTargets().get(0);
+		// handle when all source: <{Aspect.java}Aspect)Orange.getColor
+		assertEquals("/binaries<{Aspect.java}Aspect)Orange.getColor", itdMethodHandle);
+		IProgramElement itdpe = model.getHierarchy().findElementForHandle(itdMethodHandle);
+		assertEquals("java.awt.Color", itdpe.getCorrespondingType(true));
+
+		// ITD FIELD
+		// should be the ITD field from the binary aspect:
+		// public Color Strawberry.color
+		ipe = top.findElementForType("demo", "Strawberry");
+		assertNotNull(ipe);
+		assertEquals("<demo{Strawberry.java[Strawberry", ipe.getHandleIdentifier());
+		ir = (IRelationship) model.getRelationshipMap().get(ipe).get(0);
+		String itdFieldHandle = (String) ir.getTargets().get(0);
+		// source handle <{Aspect.java}Aspect)Strawberry.color
+		assertEquals("/binaries<{Aspect.java}Aspect)Strawberry.color", itdFieldHandle);
+		IProgramElement itdfpe = model.getHierarchy().findElementForHandle(itdMethodHandle);
+		assertEquals("java.awt.Color", itdfpe.getCorrespondingType(true));
+
+		// ITD CONSTRUCTOR
+		// /binaries< Aspect.java}Aspect)java.awt.Color demo.Strawberry.color
+		ipe = top.findElementForType("demo", "Fruit");
+		assertNotNull(ipe);
+		assertEquals("<demo{Fruit.java[Fruit", ipe.getHandleIdentifier());
+		ir = (IRelationship) model.getRelationshipMap().get(ipe).get(0);
+		String itdCtorHandle = (String) ir.getTargets().get(0);
+		// source handle <{Aspect.java}Aspect)Fruit.Fruit_new)QColor;)QString;
+		assertEquals("/binaries<{Aspect.java}Aspect)Fruit.Fruit_new)QColor;)QString;", itdCtorHandle);
+		IProgramElement itdcpe = model.getHierarchy().findElementForHandle(itdCtorHandle);
+		List ptypes = itdcpe.getParameterTypes();
+		assertEquals("java.awt.Color", new String((char[]) ptypes.get(0)));
+		assertEquals("java.lang.String", new String((char[]) ptypes.get(1)));
+	}
+
+	private void printModel(AsmManager model) {
+		try {
+			model.dumptree(model.getHierarchy().getRoot(), 0);
+			model.dumprels(new PrintWriter(System.out));
+		} catch (Exception e) {
+		}
+	}
 
 	public void testGenericsAopXml_pr266220() {
 		runTest("generics and aop.xml");

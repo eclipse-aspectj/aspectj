@@ -2,6 +2,12 @@
 
 <suite>
    
+   <ajc-test dir="bugs164/pr265729" title="aspectpath model">
+    <compile files="Aspect.java Orange.java Strawberry.java Fruit.java" outjar="library.jar" options="-emacssym"/>
+    <compile files="Orange.java Strawberry.java Fruit.java" aspectpath="library.jar" options="-emacssym"/>
+    <!--
+    -->
+   </ajc-test>
    
     <ajc-test dir="bugs164/pr266220" title="generics and aop.xml">
         <compile files="Code.java"/>
