@@ -1,7 +1,7 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 
 <suite>
-    
+     
     
     <ajc-test dir="bugs163/pr259279" title="ordering repetitive method">
    	  <compile files="SomeServiceImpl.java SomeInterface.java Main.java GenericService.java GenericServiceImpl.java Aspect.java" options="-1.5"/>
