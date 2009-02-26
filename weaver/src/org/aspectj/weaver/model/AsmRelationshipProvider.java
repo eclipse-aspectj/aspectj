@@ -561,45 +561,67 @@ public class AsmRelationshipProvider {
 
 	/**
 	 * Half baked implementation - will need completing if we go down this route
-	 * rather than replacing it all for binary aspects
+	 * rather than replacing it all for binary aspects. Doesn't attempt to get
+	 * parameter names correct - they may have been lost during
+	 * (de)serialization of the munger, but the member could still be located so
+	 * they might be retrievable.
 	 */
 	private static IProgramElement createIntertypeDeclaredChild(AsmManager model, ResolvedType aspect, BcelTypeMunger itd) {
 		ResolvedTypeMunger rtMunger = itd.getMunger();
-		if (rtMunger.getKind() == ResolvedTypeMunger.Field) {
-			String name = rtMunger.getSignature().toString();
+
+		ResolvedMember sig = rtMunger.getSignature();
+		if (rtMunger.getKind() == ResolvedTypeMunger.Field) { // ITD FIELD
+			// String name = rtMunger.getSignature().toString();
+			String name = sig.getDeclaringType().getClassName() + "." + sig.getName();
+			if (name.indexOf("$") != -1) {
+				name = name.substring(name.indexOf("$") + 1);
+			}
 			IProgramElement pe = new ProgramElement(model, name, IProgramElement.Kind.INTER_TYPE_FIELD, getBinarySourceLocation(
 					aspect, itd.getSourceLocation()), rtMunger.getSignature().getModifiers(), null, Collections.EMPTY_LIST);
-			ResolvedMember sig = rtMunger.getSignature();
 			pe.setCorrespondingType(sig.getReturnType().getName());
 			return pe;
-		} else if (rtMunger.getKind() == ResolvedTypeMunger.Method) {
-			ResolvedMember sig = rtMunger.getSignature();
-			String name = sig.getDeclaringType() + "." + sig.getName();
+		} else if (rtMunger.getKind() == ResolvedTypeMunger.Method) { // ITD
+			// METHOD
+			String name = sig.getDeclaringType().getClassName() + "." + sig.getName();
 			if (name.indexOf("$") != -1) {
 				name = name.substring(name.indexOf("$") + 1);
 			}
 			IProgramElement pe = new ProgramElement(model, name, IProgramElement.Kind.INTER_TYPE_METHOD, getBinarySourceLocation(
 					aspect, itd.getSourceLocation()), rtMunger.getSignature().getModifiers(), null, Collections.EMPTY_LIST);
-			UnresolvedType[] ts = sig.getParameterTypes();
-			// String[] pnames = sig.getParameterNames();
-			pe.setParameterNames(Collections.EMPTY_LIST);
-			if (ts == null) {
-				pe.setParameterSignatures(Collections.EMPTY_LIST);
-			} else {
-				List paramSigs = new ArrayList();
-				List paramNames = new ArrayList();
-				for (int i = 0; i < ts.length; i++) {
-					paramSigs.add(ts[i].getSignature().toCharArray());
-					// paramNames.add(pnames[i]);
-				}
-				pe.setParameterSignatures(paramSigs);
-				// pe.setParameterNames(paramNames);
+			setParams(pe, sig);
+			return pe;
+		} else if (rtMunger.getKind() == ResolvedTypeMunger.Constructor) {
+			String name = sig.getDeclaringType().getClassName() + "." + sig.getDeclaringType().getClassName();
+			if (name.indexOf("$") != -1) {
+				name = name.substring(name.indexOf("$") + 1);
 			}
-			pe.setCorrespondingType(sig.getReturnType().getName());
+			IProgramElement pe = new ProgramElement(model, name, IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR,
+					getBinarySourceLocation(aspect, itd.getSourceLocation()), rtMunger.getSignature().getModifiers(), null,
+					Collections.EMPTY_LIST);
+			setParams(pe, sig);
 			return pe;
 		}
 		// other cases ignored for now
 		return null;
+	}
+
+	private static void setParams(IProgramElement pe, ResolvedMember sig) {
+		UnresolvedType[] ts = sig.getParameterTypes();
+		pe.setParameterNames(Collections.EMPTY_LIST);
+		String[] pnames = sig.getParameterNames();
+		if (ts == null) {
+			pe.setParameterSignatures(Collections.EMPTY_LIST);
+		} else {
+			List paramSigs = new ArrayList();
+			List paramNames = new ArrayList();
+			for (int i = 0; i < ts.length; i++) {
+				paramSigs.add(ts[i].getSignature().toCharArray());
+				// paramNames.add(pnames[i]);
+			}
+			pe.setParameterSignatures(paramSigs);
+			// pe.setParameterNames(paramNames);
+		}
+		pe.setCorrespondingType(sig.getReturnType().getName());
 	}
 
 	private static IProgramElement createDeclareParentsChild(AsmManager model, DeclareParents decp) {
