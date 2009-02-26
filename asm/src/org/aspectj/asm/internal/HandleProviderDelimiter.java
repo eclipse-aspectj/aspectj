@@ -29,9 +29,11 @@ public class HandleProviderDelimiter {
 	public static final HandleProviderDelimiter IMPORTDECLARATION = new HandleProviderDelimiter('#');
 	public static final HandleProviderDelimiter COUNT = new HandleProviderDelimiter('!');
 	public static final HandleProviderDelimiter ESCAPE = new HandleProviderDelimiter('\\');
-	// these below are not currently used because no iprogramelement.kind equivalent
+	// these below are not currently used because no iprogramelement.kind
+	// equivalent
 	public static final HandleProviderDelimiter PACKAGEFRAGMENTROOT = new HandleProviderDelimiter('/');
-	public static final HandleProviderDelimiter PACKAGEDECLARATION = new HandleProviderDelimiter('%'); // now used
+	public static final HandleProviderDelimiter PACKAGEDECLARATION = new HandleProviderDelimiter('%'); // now
+																										// used
 	public static final HandleProviderDelimiter LOCALVARIABLE = new HandleProviderDelimiter('@');
 	public static final HandleProviderDelimiter TYPE_PARAMETER = new HandleProviderDelimiter(']');
 
@@ -52,15 +54,17 @@ public class HandleProviderDelimiter {
 	}
 
 	/**
-	 * Returns the delimiter for the HandleProviderDelimiter, for example ASPECT returns '*' and METHOD returns '~'
+	 * Returns the delimiter for the HandleProviderDelimiter, for example ASPECT
+	 * returns '*' and METHOD returns '~'
 	 */
 	public char getDelimiter() {
 		return delim;
 	}
 
 	/**
-	 * Returns the delimiter for the given IProgramElement for example if the IProgramElement is an aspect returns '*' and if the
-	 * IProgramElement is a method returns '~'
+	 * Returns the delimiter for the given IProgramElement for example if the
+	 * IProgramElement is an aspect returns '*' and if the IProgramElement is a
+	 * method returns '~'
 	 */
 	public static char getDelimiter(IProgramElement ipe) {
 		IProgramElement.Kind kind = ipe.getKind();
@@ -113,6 +117,8 @@ public class HandleProviderDelimiter {
 				return CLASSFILE.getDelimiter();
 			} else if (ipe.getName().endsWith(".aj")) {
 				return ASPECT_CU.getDelimiter();
+			} else if (ipe.getName().endsWith(".java")) {
+				return COMPILATIONUNIT.getDelimiter();
 			} else {
 				return empty;
 			}
