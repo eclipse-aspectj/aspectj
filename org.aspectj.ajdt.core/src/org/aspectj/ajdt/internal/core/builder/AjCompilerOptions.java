@@ -161,6 +161,8 @@ public class AjCompilerOptions extends CompilerOptions {
 	public void set(Map optionsMap) {
 		super.set(optionsMap);
 		Object optionValue;
+		if ((optionValue = optionsMap.get(OPTION_ReportUnusedPrivateMember)) != null)
+			updateSeverity(UnusedPrivateMember, optionValue);
 		if ((optionValue = optionsMap.get(OPTION_ReportInvalidAbsoluteTypeName)) != null)
 			updateSeverity(InvalidAbsoluteTypeName, optionValue);
 		if ((optionValue = optionsMap.get(OPTION_ReportInvalidWildcardTypeName)) != null)

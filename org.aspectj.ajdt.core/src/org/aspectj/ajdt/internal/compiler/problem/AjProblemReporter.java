@@ -15,6 +15,7 @@ package org.aspectj.ajdt.internal.compiler.problem;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -57,6 +58,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemSeverities;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ConcreteTypeMunger;
+import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
@@ -465,6 +467,19 @@ public class AjProblemReporter extends ProblemReporter {
 						if (privilegedHandler != null) {
 							if (privilegedHandler.definesPrivilegedAccessToField(fieldDecl.binding)) {
 								return;
+							}
+						} else if (theAspect instanceof ReferenceType) {
+							// ResolvedMember rm = factory.makeResolvedMember(fieldDecl.binding);
+							String fname = new String(fieldDecl.name);
+							Collection/* ResolvedMember */privvies = ((ReferenceType) theAspect).getPrivilegedAccesses();
+							// On an incremental compile the information is in the bcel delegate
+							if (privvies != null) {
+								for (Iterator iterator = privvies.iterator(); iterator.hasNext();) {
+									ResolvedMember priv = (ResolvedMember) iterator.next();
+									if (priv.getName().equals(fname)) {
+										return;
+									}
+								}
 							}
 						}
 					}
