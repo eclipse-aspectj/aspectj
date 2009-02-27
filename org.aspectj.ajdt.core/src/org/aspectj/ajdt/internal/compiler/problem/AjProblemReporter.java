@@ -15,8 +15,10 @@ package org.aspectj.ajdt.internal.compiler.problem;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Modifier;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
@@ -36,12 +38,14 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.IPrivilegedHandler;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedMethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -436,6 +440,39 @@ public class AjProblemReporter extends ProblemReporter {
 			}
 		}
 		super.unusedPrivateType(typeDecl);
+	}
+
+	// Don't warn if there is an ITD method/ctor from a privileged aspect
+	public void unusedPrivateField(FieldDeclaration fieldDecl) {
+		if (fieldDecl.binding != null && fieldDecl.binding.declaringClass != null) {
+			ReferenceBinding type = fieldDecl.binding.declaringClass;
+
+			ResolvedType weaverType = null;
+			if (!type.isAnonymousType()) {
+				weaverType = factory.fromEclipse(type);
+			} else {
+				weaverType = factory.fromEclipse(type.superclass());
+			}
+			Set checked = new HashSet();
+			for (Iterator i = weaverType.getInterTypeMungersIncludingSupers().iterator(); i.hasNext();) {
+				ConcreteTypeMunger m = (ConcreteTypeMunger) i.next();
+				ResolvedType theAspect = m.getAspectType();
+				if (!checked.contains(theAspect)) {
+					TypeBinding tb = factory.makeTypeBinding(m.getAspectType());
+					// Let's check the privilegedHandler from that aspect
+					if (tb instanceof SourceTypeBinding) { // BinaryTypeBinding is also a SourceTypeBinding ;)
+						IPrivilegedHandler privilegedHandler = ((SourceTypeBinding) tb).privilegedHandler;
+						if (privilegedHandler != null) {
+							if (privilegedHandler.definesPrivilegedAccessToField(fieldDecl.binding)) {
+								return;
+							}
+						}
+					}
+					checked.add(theAspect);
+				}
+			}
+		}
+		super.unusedPrivateField(fieldDecl);
 	}
 
 	public void unusedPrivateMethod(AbstractMethodDeclaration methodDecl) {
