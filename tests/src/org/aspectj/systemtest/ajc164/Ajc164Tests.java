@@ -34,6 +34,14 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testAnnoStyleLong_pr266564() {
+		runTest("annotation style long");
+	}
+
+	public void testAnnoStyleLong_pr266564_2() {
+		runTest("annotation style long - 2");
+	}
+
 	public void testUnusedPrivateWarning_pr266420() {
 		runTest("unused private warning");
 	}
