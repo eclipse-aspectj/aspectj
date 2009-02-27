@@ -185,6 +185,7 @@ public class Main {
 	public Main() {
 		controller = new CommandController();
 		commandName = ReflectionFactory.ECLIPSE;
+		CompilationAndWeavingContext.setMultiThreaded(false);
 		ourHandler = new MessageHandler(true);
 	}
 
@@ -292,15 +293,17 @@ public class Main {
 	/**
 	 * Run without using System.exit(..), putting all messages in holder:
 	 * <ul>
-	 * <li>ERROR: compiler error</li> <li>WARNING: compiler warning</li> <li>FAIL: command error (bad arguments, exception thrown)
-	 * </li>
+	 * <li>ERROR: compiler error</li>
+	 * <li>WARNING: compiler warning</li>
+	 * <li>FAIL: command error (bad arguments, exception thrown)</li>
 	 * </ul>
 	 * This handles incremental behavior:
 	 * <ul>
-	 * <li>If args include "-incremental", repeat for every input char until 'q' is entered.<li> <li>If args include
-	 * "-incrementalTagFile {file}", repeat every time we detect that {file} modification time has changed. </li> <li>Either way,
-	 * list files recompiled each time if args includes "-verbose".</li> <li>Exit when the commmand/compiler throws any Throwable.
-	 * </li>
+	 * <li>If args include "-incremental", repeat for every input char until 'q' is entered.
+	 * <li>
+	 * <li>If args include "-incrementalTagFile {file}", repeat every time we detect that {file} modification time has changed.</li>
+	 * <li>Either way, list files recompiled each time if args includes "-verbose".</li>
+	 * <li>Exit when the commmand/compiler throws any Throwable.</li>
 	 * </ul>
 	 * When complete, this contains all the messages of the final run of the command and/or any FAIL messages produced in running
 	 * the command, including any Throwable thrown by the command itself.

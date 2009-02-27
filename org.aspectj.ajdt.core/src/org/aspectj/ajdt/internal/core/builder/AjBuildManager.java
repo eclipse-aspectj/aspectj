@@ -115,7 +115,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	public static AsmHierarchyBuilder asmHierarchyBuilder = new AsmHierarchyBuilder();
 
 	static {
-		CompilationAndWeavingContext.setMultiThreaded(false);
+		// CompilationAndWeavingContext.setMultiThreaded(false);
 		CompilationAndWeavingContext.registerFormatter(CompilationAndWeavingContext.BATCH_BUILD, new AjBuildContexFormatter());
 		CompilationAndWeavingContext
 				.registerFormatter(CompilationAndWeavingContext.INCREMENTAL_BUILD, new AjBuildContexFormatter());
