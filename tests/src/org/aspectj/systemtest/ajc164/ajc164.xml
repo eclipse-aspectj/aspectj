@@ -2,7 +2,23 @@
 
 <suite>
    
-   <ajc-test dir="bugs164/pr265729" title="aspectpath model">
+   <ajc-test dir="bugs164/pr266420" title="unused private warning">
+     <compile files="A.java" options="-1.5 -warn:unusedPrivate"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs164/pr266420" title="unused private warning - 2">
+     <compile files="B.java" options="-1.5 -warn:unusedPrivate">
+       <message kind="warning" text="The field B.i is never read locally"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs164/pr266420" title="unused private warning - 3">
+     <compile files="C.java" options="-1.5 -warn:unusedPrivate">
+       <message kind="warning" text="The field C.j is never read locally"/>
+     </compile>
+   </ajc-test>
+   
+    <ajc-test dir="bugs164/pr265729" title="aspectpath model">
     <compile files="Aspect.java Orange.java Strawberry.java Fruit.java" outjar="library.jar" options="-emacssym"/>
     <compile files="Orange.java Strawberry.java Fruit.java" aspectpath="library.jar" options="-emacssym"/>
     <!--

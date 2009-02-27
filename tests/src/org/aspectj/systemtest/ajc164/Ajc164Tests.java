@@ -34,13 +34,23 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testUnusedPrivateWarning_pr266420() {
+		runTest("unused private warning");
+	}
+
+	public void testUnusedPrivateWarning_pr266420_2() {
+		runTest("unused private warning - 2");
+	}
+
+	public void testUnusedPrivateWarning_pr266420_3() {
+		runTest("unused private warning - 3");
+	}
+
 	/**
-	 * This test program can be used to compare handles for faulted in binary
-	 * aspects with handles that would be used if the aspect was available as
-	 * source. There are two compile steps in the xml for the test - commenting
-	 * out the first will allow the source handles to be seen, leaving it in
-	 * will switch to binary. Effectively the only difference should be that in
-	 * the binary case the handles are prefixed 'binaries'.
+	 * This test program can be used to compare handles for faulted in binary aspects with handles that would be used if the aspect
+	 * was available as source. There are two compile steps in the xml for the test - commenting out the first will allow the source
+	 * handles to be seen, leaving it in will switch to binary. Effectively the only difference should be that in the binary case
+	 * the handles are prefixed 'binaries'.
 	 */
 	public void testItdsAspectPathModel_pr265729_1() {
 		runTest("aspectpath model");
@@ -242,11 +252,9 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	/**
-	 * This test checks that local variable table for the interMethodDispatcher
-	 * is built correctly, for the related code see
-	 * IntertypeMethodDeclaration.generateDispatchMethod(). It checks non-static
-	 * and static ITDs. Once the information here is correct then around advice
-	 * on ITDs can also be correct.
+	 * This test checks that local variable table for the interMethodDispatcher is built correctly, for the related code see
+	 * IntertypeMethodDeclaration.generateDispatchMethod(). It checks non-static and static ITDs. Once the information here is
+	 * correct then around advice on ITDs can also be correct.
 	 */
 	public void testBrokenLVT_pr194314_3() throws Exception {
 		runTest("broken lvt - 3");
