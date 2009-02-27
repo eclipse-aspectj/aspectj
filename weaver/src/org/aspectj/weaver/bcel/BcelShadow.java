@@ -2158,6 +2158,7 @@ public class BcelShadow extends Shadow {
 			proceedVarList.add(new BcelVar(targetVar.getType(), extraParamOffset));
 			extraParamOffset += targetVar.getType().getSize();
 		}
+		int idx = 0;
 		for (int i = 0, len = getArgCount(); i < len; i++) {
 			argsToCallLocalAdviceMethodWith.add(argVars[i]);
 			proceedVarList.add(new BcelVar(argVars[i].getType(), extraParamOffset));
@@ -2533,6 +2534,7 @@ public class BcelShadow extends Shadow {
 			int localJp = localAdviceMethod.allocateLocal(proceedingJpType);
 			ret.append(InstructionFactory.createStore(proceedingJpType, localJp));
 
+			int idx = 0;
 			for (int i = 0, len = callbackMethod.getArgumentTypes().length; i < len; i++) {
 				Type stateType = callbackMethod.getArgumentTypes()[i];
 				/* ResolvedType stateTypeX = */
@@ -2547,8 +2549,10 @@ public class BcelShadow extends Shadow {
 					// // ));
 					// // cast ?
 					//
+					idx++;
 				} else {
-					ret.append(InstructionFactory.createLoad(stateType, i));
+					ret.append(InstructionFactory.createLoad(stateType, idx));
+					idx += stateType.getSize();
 				}
 			}
 		}
