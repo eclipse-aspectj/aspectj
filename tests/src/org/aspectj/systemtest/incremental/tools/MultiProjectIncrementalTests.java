@@ -38,21 +38,40 @@ import org.aspectj.tools.ajc.Ajc;
 import org.aspectj.util.FileUtil;
 
 /**
- * The superclass knows all about talking through Ajde to the compiler. The
- * superclass isn't in charge of knowing how to simulate overlays for
- * incremental builds, that is in here. As is the ability to generate valid
- * build configs based on a directory structure. To support this we just need
- * access to a sandbox directory - this sandbox is managed by the superclass (it
- * only assumes all builds occur in <sandboxDir>/<projectName>/ )
+ * The superclass knows all about talking through Ajde to the compiler. The superclass isn't in charge of knowing how to simulate
+ * overlays for incremental builds, that is in here. As is the ability to generate valid build configs based on a directory
+ * structure. To support this we just need access to a sandbox directory - this sandbox is managed by the superclass (it only
+ * assumes all builds occur in <sandboxDir>/<projectName>/ )
  * 
- * The idea is you can initialize multiple projects in the sandbox and they can
- * all be built independently, hopefully exploiting incremental compilation.
- * Between builds you can alter the contents of a project using the alter()
- * method that overlays some set of new files onto the current set (adding new
- * files/changing existing ones) - you can then drive a new build and check it
- * behaves as expected.
+ * The idea is you can initialize multiple projects in the sandbox and they can all be built independently, hopefully exploiting
+ * incremental compilation. Between builds you can alter the contents of a project using the alter() method that overlays some set
+ * of new files onto the current set (adding new files/changing existing ones) - you can then drive a new build and check it behaves
+ * as expected.
  */
 public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
+
+	public void testUnusedPrivates_pr266420() {
+		AjdeInteractionTestbed.VERBOSE = true;
+		String p = "pr266420";
+		initialiseProject(p);
+
+		Hashtable javaOptions = new Hashtable();
+		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
+		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
+		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.6");
+		javaOptions.put("org.eclipse.jdt.core.compiler.problem.unusedPrivateMember", "warning");
+		configureJavaOptionsMap(p, javaOptions);
+
+		build(p);
+		checkWasFullBuild();
+		List warnings = getWarningMessages(p);
+		assertEquals(0, warnings.size());
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+		warnings = getWarningMessages(p);
+		assertEquals(0, warnings.size());
+	}
 
 	public void testPR265729() {
 		AjdeInteractionTestbed.VERBOSE = true;
@@ -178,12 +197,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/*
-	 * A.aj package pack; public aspect A { pointcut p() : call( C.method
-	 * before() : p() { // line 7 } }
+	 * A.aj package pack; public aspect A { pointcut p() : call( C.method before() : p() { // line 7 } }
 	 * 
-	 * C.java package pack; public class C { public void method1() { method2();
-	 * // line 6 } public void method2() { } public void method3() { method2();
-	 * // line 13 }
+	 * C.java package pack; public class C { public void method1() { method2(); // line 6 } public void method2() { } public void
+	 * method3() { method2(); // line 13 }
 	 * 
 	 * }
 	 */
@@ -415,11 +432,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/*
-	 * public void testNPEGenericCtor_pr260944() {
-	 * AjdeInteractionTestbed.VERBOSE = true; String p = "pr260944";
-	 * initialiseProject(p); build(p); checkWasFullBuild(); alter(p, "inc1");
-	 * build(p); checkWasntFullBuild(); List l = getCompilerErrorMessages(p);
-	 * assertEquals("Unexpected compiler error", 0, l.size()); }
+	 * public void testNPEGenericCtor_pr260944() { AjdeInteractionTestbed.VERBOSE = true; String p = "pr260944";
+	 * initialiseProject(p); build(p); checkWasFullBuild(); alter(p, "inc1"); build(p); checkWasntFullBuild(); List l =
+	 * getCompilerErrorMessages(p); assertEquals("Unexpected compiler error", 0, l.size()); }
 	 */
 
 	public void testItdProb() {
@@ -436,11 +451,11 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/*
-	 * public void testGenericITD_pr262257() throws IOException { String p =
-	 * "pr262257"; initialiseProject(p); build(p); checkWasFullBuild();
+	 * public void testGenericITD_pr262257() throws IOException { String p = "pr262257"; initialiseProject(p); build(p);
+	 * checkWasFullBuild();
 	 * 
-	 * dumptree(getModelFor(p).getHierarchy().getRoot(), 0); PrintWriter pw =
-	 * new PrintWriter(System.out); getModelFor(p).dumprels(pw); pw.flush(); }
+	 * dumptree(getModelFor(p).getHierarchy().getRoot(), 0); PrintWriter pw = new PrintWriter(System.out);
+	 * getModelFor(p).dumprels(pw); pw.flush(); }
 	 */
 	public void testAnnotations_pr262154() {
 		String p = "pr262154";
@@ -470,9 +485,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/**
-	 * Test what is in the model for package declarations and import statements.
-	 * Package Declaration nodes are new in AspectJ 1.6.4. Import statements are
-	 * contained with an 'import references' node.
+	 * Test what is in the model for package declarations and import statements. Package Declaration nodes are new in AspectJ 1.6.4.
+	 * Import statements are contained with an 'import references' node.
 	 */
 	public void testImportHandles() {
 		String p = "Imports";
@@ -876,29 +890,21 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/**
-	 * A change is made to an aspect on the aspectpath (staticinitialization()
-	 * advice is added) for another project.
+	 * A change is made to an aspect on the aspectpath (staticinitialization() advice is added) for another project.
 	 * <p>
-	 * Managing the aspectpath is hard. We want to do a minimal build of this
-	 * project which means recognizing what kind of changes have occurred on the
-	 * aspectpath. Was it a regular class or an aspect? Was it a structural
-	 * change to that aspect?
+	 * Managing the aspectpath is hard. We want to do a minimal build of this project which means recognizing what kind of changes
+	 * have occurred on the aspectpath. Was it a regular class or an aspect? Was it a structural change to that aspect?
 	 * <p>
-	 * The filenames for .class files created that contain aspects is stored in
-	 * the AjState.aspectClassFiles field. When a change is detected we can see
-	 * who was managing the location where the change occurred and ask them if
-	 * the .class file contained an aspect. Right now a change detected like
-	 * this will cause a full build. We might improve the detection logic here
-	 * but it isn't trivial:
+	 * The filenames for .class files created that contain aspects is stored in the AjState.aspectClassFiles field. When a change is
+	 * detected we can see who was managing the location where the change occurred and ask them if the .class file contained an
+	 * aspect. Right now a change detected like this will cause a full build. We might improve the detection logic here but it isn't
+	 * trivial:
 	 * <ul>
-	 * <li>Around advice is inlined. Changing the body of an around advice would
-	 * not normally be thought of as a structural change (as it does not change
-	 * the signature of the class) but due to inlining it is a change we would
-	 * need to pay attention to as it will affect types previously woven with
-	 * that advice.
-	 * <li>Annotation style aspects include pointcuts in strings. Changes to
-	 * these are considered non-structural but clearly they do affect what might
-	 * be woven.
+	 * <li>Around advice is inlined. Changing the body of an around advice would not normally be thought of as a structural change
+	 * (as it does not change the signature of the class) but due to inlining it is a change we would need to pay attention to as it
+	 * will affect types previously woven with that advice.
+	 * <li>Annotation style aspects include pointcuts in strings. Changes to these are considered non-structural but clearly they do
+	 * affect what might be woven.
 	 * </ul>
 	 */
 	public void testAspectPath_pr249212_c1() throws IOException {
@@ -933,7 +939,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// Not incremental
 		assertTrue("Should be empty as was full build:" + s, s.isEmpty());
 		// Set s = AsmManager.getDefault().getModelChangesOnLastBuild();
-		//checkIfContainsFile(AsmManager.getDefault().getModelChangesOnLastBuild
+		// checkIfContainsFile(AsmManager.getDefault().getModelChangesOnLastBuild
 		// (), "C.java", true);
 	}
 
@@ -948,30 +954,20 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// }
 
 	/**
-	 * Build a project containing a resource - then mark the resource
-	 * readOnly(), then do an inc-compile, it will report an error about write
-	 * access to the resource in the output folder being denied
+	 * Build a project containing a resource - then mark the resource readOnly(), then do an inc-compile, it will report an error
+	 * about write access to the resource in the output folder being denied
 	 */
 	/*
-	 * public void testProblemCopyingResources_pr138171() {
-	 * initialiseProject("PR138171");
+	 * public void testProblemCopyingResources_pr138171() { initialiseProject("PR138171");
 	 * 
-	 * File f=getProjectRelativePath("PR138171","res.txt"); Map m = new
-	 * HashMap(); m.put("res.txt",f);
-	 * AjdeInteractionTestbed.MyProjectPropertiesAdapter
-	 * .getInstance().setSourcePathResources(m); build("PR138171"); File f2 =
-	 * getProjectOutputRelativePath("PR138171","res.txt"); boolean successful =
-	 * f2.setReadOnly();
+	 * File f=getProjectRelativePath("PR138171","res.txt"); Map m = new HashMap(); m.put("res.txt",f);
+	 * AjdeInteractionTestbed.MyProjectPropertiesAdapter .getInstance().setSourcePathResources(m); build("PR138171"); File f2 =
+	 * getProjectOutputRelativePath("PR138171","res.txt"); boolean successful = f2.setReadOnly();
 	 * 
-	 * alter("PR138171","inc1");
-	 * AjdeInteractionTestbed.MyProjectPropertiesAdapter
-	 * .getInstance().setSourcePathResources(m); build("PR138171"); List msgs =
-	 * MyTaskListManager.getErrorMessages();
-	 * assertTrue("there should be one message but there are "
-	 * +(msgs==null?0:msgs.size())+":\n"+msgs,msgs!=null && msgs.size()==1);
-	 * IMessage msg = (IMessage)msgs.get(0); String exp =
-	 * "unable to copy resource to output folder: 'res.txt'";
-	 * assertTrue("Expected message to include this text ["
+	 * alter("PR138171","inc1"); AjdeInteractionTestbed.MyProjectPropertiesAdapter .getInstance().setSourcePathResources(m);
+	 * build("PR138171"); List msgs = MyTaskListManager.getErrorMessages(); assertTrue("there should be one message but there are "
+	 * +(msgs==null?0:msgs.size())+":\n"+msgs,msgs!=null && msgs.size()==1); IMessage msg = (IMessage)msgs.get(0); String exp =
+	 * "unable to copy resource to output folder: 'res.txt'"; assertTrue("Expected message to include this text ["
 	 * +exp+"] but it does not: "+msg,msg.toString().indexOf(exp)!=-1); }
 	 */
 
@@ -1101,10 +1097,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/**
-	 * In order for this next test to run, I had to move the weaver/world pair
-	 * we keep in the AjBuildManager instance down into the state object - this
-	 * makes perfect sense - otherwise when reusing the state for another
-	 * project we'd not be switching to the right weaver/world for that project.
+	 * In order for this next test to run, I had to move the weaver/world pair we keep in the AjBuildManager instance down into the
+	 * state object - this makes perfect sense - otherwise when reusing the state for another project we'd not be switching to the
+	 * right weaver/world for that project.
 	 */
 	public void testBuildingTwoProjectsMakingSmallChanges() {
 
@@ -1136,8 +1131,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/**
-	 * Setup up two simple projects and build them in turn - check the structure
-	 * model is right after each build
+	 * Setup up two simple projects and build them in turn - check the structure model is right after each build
 	 */
 	public void testBuildingTwoProjectsAndVerifyingModel() {
 		initialiseProject("P1");
@@ -1176,11 +1170,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/**
-	 * Complex. Here we are testing that a state object records structural
-	 * changes since the last full build correctly. We build a simple project
-	 * from scratch - this will be a full build and so the structural changes
-	 * since last build count should be 0. We then alter a class, adding a new
-	 * method and check structural changes is 1.
+	 * Complex. Here we are testing that a state object records structural changes since the last full build correctly. We build a
+	 * simple project from scratch - this will be a full build and so the structural changes since last build count should be 0. We
+	 * then alter a class, adding a new method and check structural changes is 1.
 	 */
 	public void testStateManagement1() {
 
@@ -1205,11 +1197,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/**
-	 * Complex. Here we are testing that a state object records structural
-	 * changes since the last full build correctly. We build a simple project
-	 * from scratch - this will be a full build and so the structural changes
-	 * since last build count should be 0. We then alter a class, changing body
-	 * of a method, not the structure and check struc changes is still 0.
+	 * Complex. Here we are testing that a state object records structural changes since the last full build correctly. We build a
+	 * simple project from scratch - this will be a full build and so the structural changes since last build count should be 0. We
+	 * then alter a class, changing body of a method, not the structure and check struc changes is still 0.
 	 */
 	public void testStateManagement2() {
 		File binDirectoryForP1 = new File(getFile("P1", "bin"));
@@ -1236,9 +1226,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/**
-	 * The C.java file modified in this test has an inner class - this means the
-	 * inner class has a this$0 field and <init>(C) ctor to watch out for when
-	 * checking for structural changes
+	 * The C.java file modified in this test has an inner class - this means the inner class has a this$0 field and <init>(C) ctor
+	 * to watch out for when checking for structural changes
 	 * 
 	 */
 	public void testStateManagement3() {
@@ -1262,8 +1251,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/**
-	 * The C.java file modified in this test has an inner class - which has two
-	 * ctors - this checks how they are mangled with an instance of C.
+	 * The C.java file modified in this test has an inner class - which has two ctors - this checks how they are mangled with an
+	 * instance of C.
 	 * 
 	 */
 	public void testStateManagement4() {
@@ -1287,9 +1276,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/**
-	 * The C.java file modified in this test has an inner class - it has two
-	 * ctors but also a reference to C.this in it - which will give rise to an
-	 * accessor being created in C
+	 * The C.java file modified in this test has an inner class - it has two ctors but also a reference to C.this in it - which will
+	 * give rise to an accessor being created in C
 	 * 
 	 */
 	public void testStateManagement5() {
@@ -1313,10 +1301,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/**
-	 * Now the most complex test. Create a dependancy between two projects.
-	 * Building one may affect whether the other does an incremental or full
-	 * build. The structural information recorded in the state object should be
-	 * getting used to control whether a full build is necessary...
+	 * Now the most complex test. Create a dependancy between two projects. Building one may affect whether the other does an
+	 * incremental or full build. The structural information recorded in the state object should be getting used to control whether
+	 * a full build is necessary...
 	 */
 	public void testBuildingDependantProjects() {
 		initialiseProject("P1");
@@ -1519,10 +1506,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/**
-	 * Checks we aren't leaking mungers across compiles (accumulating multiple
-	 * instances of the same one that all do the same thing). On the first
-	 * compile the munger is added late on - so at the time we set the count it
-	 * is still zero. On the subsequent compiles we know about this extra one.
+	 * Checks we aren't leaking mungers across compiles (accumulating multiple instances of the same one that all do the same
+	 * thing). On the first compile the munger is added late on - so at the time we set the count it is still zero. On the
+	 * subsequent compiles we know about this extra one.
 	 */
 	public void testPr141956_IncrementallyCompilingAtAj() {
 		initialiseProject("PR141956");
@@ -1566,9 +1552,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/*
-	 * public void testPr111779() { super.VERBOSE=true;
-	 * initialiseProject("PR111779"); build("PR111779");
-	 * alter("PR111779","inc1"); build("PR111779"); }
+	 * public void testPr111779() { super.VERBOSE=true; initialiseProject("PR111779"); build("PR111779"); alter("PR111779","inc1");
+	 * build("PR111779"); }
 	 */
 
 	public void testPr93310_1() {
@@ -1663,8 +1648,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/**
-	 * We have problems with multiple rewrites of a pointcut across incremental
-	 * builds.
+	 * We have problems with multiple rewrites of a pointcut across incremental builds.
 	 */
 	public void testPr113257() {
 		initialiseProject("PR113257");
@@ -1840,54 +1824,39 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 	// Case001: renaming a private field in a type
 	/*
-	 * public void testPrReducingDependentBuilds_001_221427() {
-	 * AjdeInteractionTestbed.VERBOSE=true;
-	 * IncrementalStateManager.debugIncrementalStates=true;
-	 * initialiseProject("P221427_1"); initialiseProject("P221427_2");
+	 * public void testPrReducingDependentBuilds_001_221427() { AjdeInteractionTestbed.VERBOSE=true;
+	 * IncrementalStateManager.debugIncrementalStates=true; initialiseProject("P221427_1"); initialiseProject("P221427_2");
 	 * configureNewProjectDependency("P221427_2","P221427_1");
 	 * 
-	 * build("P221427_1"); build("P221427_2"); alter("P221427_1","inc1"); //
-	 * rename private class in super project MyStateListener.reset();
-	 * build("P221427_1"); build("P221427_2");
+	 * build("P221427_1"); build("P221427_2"); alter("P221427_1","inc1"); // rename private class in super project
+	 * MyStateListener.reset(); build("P221427_1"); build("P221427_2");
 	 * 
-	 * AjState ajs = IncrementalStateManager.findStateManagingOutputLocation(new
-	 * File(getFile("P221427_1","bin")));
+	 * AjState ajs = IncrementalStateManager.findStateManagingOutputLocation(new File(getFile("P221427_1","bin")));
 	 * assertTrue("There should be state for project P221427_1",ajs!=null);
-	 * //System.out.println(MyStateListener.getInstance().getDecisions());
-	 * checkWasntFullBuild();
-	 * assertTrue("Should be one structural change but there were "+
-	 * ajs.getNumberOfStructuralChangesSinceLastFullBuild(),
+	 * //System.out.println(MyStateListener.getInstance().getDecisions()); checkWasntFullBuild();
+	 * assertTrue("Should be one structural change but there were "+ ajs.getNumberOfStructuralChangesSinceLastFullBuild(),
 	 * ajs.getNumberOfStructuralChangesSinceLastFullBuild()==1);
 	 * 
 	 * }
 	 * 
-	 * // Case002: changing a class to final that is extended in a dependent
-	 * project public void testPrReducingDependentBuilds_002_221427() {
-	 * AjdeInteractionTestbed.VERBOSE=true;
-	 * IncrementalStateManager.debugIncrementalStates=true;
-	 * initialiseProject("P221427_3"); initialiseProject("P221427_4");
+	 * // Case002: changing a class to final that is extended in a dependent project public void
+	 * testPrReducingDependentBuilds_002_221427() { AjdeInteractionTestbed.VERBOSE=true;
+	 * IncrementalStateManager.debugIncrementalStates=true; initialiseProject("P221427_3"); initialiseProject("P221427_4");
 	 * configureNewProjectDependency("P221427_4","P221427_3");
 	 * 
-	 * build("P221427_3"); build("P221427_4"); // build OK, type in super
-	 * project is non-final alter("P221427_3","inc1"); // change class
-	 * declaration in super-project to final MyStateListener.reset();
-	 * build("P221427_3"); build("P221427_4"); // build FAIL, type in super
-	 * project is now final
+	 * build("P221427_3"); build("P221427_4"); // build OK, type in super project is non-final alter("P221427_3","inc1"); // change
+	 * class declaration in super-project to final MyStateListener.reset(); build("P221427_3"); build("P221427_4"); // build FAIL,
+	 * type in super project is now final
 	 * 
-	 * AjState ajs = IncrementalStateManager.findStateManagingOutputLocation(new
-	 * File(getFile("P221427_3","bin")));
+	 * AjState ajs = IncrementalStateManager.findStateManagingOutputLocation(new File(getFile("P221427_3","bin")));
 	 * assertTrue("There should be state for project P221427_3",ajs!=null);
 	 * System.out.println(MyStateListener.getInstance().getDecisions());
 	 * 
-	 * List errors = getErrorMessages("P221427_4"); if (errors.size()!=1) { if
-	 * (errors.size()==0)
-	 * fail("Expected error about not being able to extend final class"); for
-	 * (Iterator iterator = errors.iterator(); iterator.hasNext();) { Object
-	 * object = (Object) iterator.next(); System.out.println(object); }
-	 * fail("Expected 1 error but got "+errors.size()); } //
-	 * assertTrue("Shouldn't be one structural change but there were "+ //
-	 * ajs.getNumberOfStructuralChangesSinceLastFullBuild(), //
-	 * ajs.getNumberOfStructuralChangesSinceLastFullBuild()==1);
+	 * List errors = getErrorMessages("P221427_4"); if (errors.size()!=1) { if (errors.size()==0)
+	 * fail("Expected error about not being able to extend final class"); for (Iterator iterator = errors.iterator();
+	 * iterator.hasNext();) { Object object = (Object) iterator.next(); System.out.println(object); }
+	 * fail("Expected 1 error but got "+errors.size()); } // assertTrue("Shouldn't be one structural change but there were "+ //
+	 * ajs.getNumberOfStructuralChangesSinceLastFullBuild(), // ajs.getNumberOfStructuralChangesSinceLastFullBuild()==1);
 	 * 
 	 * }
 	 */
@@ -2481,9 +2450,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/**
-	 * If the user has specified that they want Java 6 compliance and kept the
-	 * default classfile and source file level settings (also 6.0) then expect
-	 * an error saying that we don't support java 6.
+	 * If the user has specified that they want Java 6 compliance and kept the default classfile and source file level settings
+	 * (also 6.0) then expect an error saying that we don't support java 6.
 	 */
 	public void testPR164384_1() {
 		initialiseProject("PR164384");
@@ -2514,9 +2482,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/**
-	 * If the user has specified that they want Java 6 compliance and selected
-	 * classfile and source file level settings to be 5.0 then expect an error
-	 * saying that we don't support java 6.
+	 * If the user has specified that they want Java 6 compliance and selected classfile and source file level settings to be 5.0
+	 * then expect an error saying that we don't support java 6.
 	 */
 	public void testPR164384_2() {
 		initialiseProject("PR164384");
@@ -2545,9 +2512,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/**
-	 * If the user has specified that they want Java 6 compliance and set the
-	 * classfile level to be 6.0 and source file level to be 5.0 then expect an
-	 * error saying that we don't support java 6.
+	 * If the user has specified that they want Java 6 compliance and set the classfile level to be 6.0 and source file level to be
+	 * 5.0 then expect an error saying that we don't support java 6.
 	 */
 	public void testPR164384_3() {
 		initialiseProject("PR164384");
@@ -2611,12 +2577,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// --- helper code ---
 
 	/**
-	 * Retrieve program elements related to this one regardless of the
-	 * relationship. A JUnit assertion is made that the number that the
-	 * 'expected' number are found.
+	 * Retrieve program elements related to this one regardless of the relationship. A JUnit assertion is made that the number that
+	 * the 'expected' number are found.
 	 * 
-	 * @param programElement Program element whose related elements are to be
-	 *            found
+	 * @param programElement Program element whose related elements are to be found
 	 * @param expected the number of expected related elements
 	 */
 	private List/* IProgramElement */getRelatedElements(AsmManager model, IProgramElement programElement, int expected) {
@@ -2675,17 +2639,15 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/**
-	 * Finds the first 'code' program element below the element supplied - will
-	 * return null if there aren't any
+	 * Finds the first 'code' program element below the element supplied - will return null if there aren't any
 	 */
 	private IProgramElement findCode(IProgramElement ipe) {
 		return findCode(ipe, -1);
 	}
 
 	/**
-	 * Searches a hierarchy of program elements for a 'code' element at the
-	 * specified line number, a line number of -1 means just return the first
-	 * one you find
+	 * Searches a hierarchy of program elements for a 'code' element at the specified line number, a line number of -1 means just
+	 * return the first one you find
 	 */
 	private IProgramElement findCode(IProgramElement ipe, int linenumber) {
 		if (ipe.getKind() == IProgramElement.Kind.CODE) {
@@ -2706,7 +2668,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// - memory usage (freemem calls?)
 	// - relationship map
 
-	//--------------------------------------------------------------------------
+	// --------------------------------------------------------------------------
 	// -------------------------
 
 	private IProgramElement checkForNode(AsmManager model, String packageName, String typeName, boolean shouldBeFound) {
