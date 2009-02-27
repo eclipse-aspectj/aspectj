@@ -669,7 +669,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return Collections.EMPTY_LIST;
 	}
 
-	protected Collection getPrivilegedAccesses() {
+	public Collection getPrivilegedAccesses() {
 		return Collections.EMPTY_LIST;
 	}
 

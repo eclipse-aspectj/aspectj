@@ -772,7 +772,7 @@ public class ReferenceType extends ResolvedType {
 	// return ret;
 	// }
 
-	protected Collection getPrivilegedAccesses() {
+	public Collection getPrivilegedAccesses() {
 		return delegate.getPrivilegedAccesses();
 	}
 
