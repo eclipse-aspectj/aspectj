@@ -28,7 +28,6 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Reader;
@@ -44,7 +43,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 /**
  * 
@@ -66,15 +64,15 @@ public class FileUtil {
 		}
 	};
 
-	public static final FileFilter SOURCE_FILTER = new FileFilter() {
-		public boolean accept(File file) {
-			return hasSourceSuffix(file);
-		}
-
-		public String toString() {
-			return "SOURCE_FILTER";
-		}
-	};
+	// public static final FileFilter SOURCE_FILTER = new FileFilter() {
+	// public boolean accept(File file) {
+	// return hasSourceSuffix(file);
+	// }
+	//
+	// public String toString() {
+	// return "SOURCE_FILTER";
+	// }
+	// };
 
 	final static int[] INT_RA = new int[0];
 
@@ -134,7 +132,10 @@ public class FileUtil {
 		return ((null != path) && (0 != sourceSuffixLength(path)));
 	}
 
-	/** @return 0 if file has no source suffix or the length of the suffix otherwise */
+	/**
+	 * @return 0 if file has no source suffix or the length of the suffix
+	 *         otherwise
+	 */
 	public static int sourceSuffixLength(File file) {
 		return (null == file ? 0 : sourceSuffixLength(file.getPath()));
 	}
@@ -174,21 +175,30 @@ public class FileUtil {
 		return ((null != file) && file.canWrite() && file.isFile());
 	}
 
-	/** @throws IllegalArgumentException unless file is readable and not a directory */
-	public static void throwIaxUnlessCanReadFile(File file, String label) {
-		if (!canReadFile(file)) {
-			throw new IllegalArgumentException(label + " not readable file: " + file);
-		}
-	}
+	// /**
+	// * @throws IllegalArgumentException unless file is readable and not a
+	// * directory
+	// */
+	// public static void throwIaxUnlessCanReadFile(File file, String label) {
+	// if (!canReadFile(file)) {
+	// throw new IllegalArgumentException(label + " not readable file: " +
+	// file);
+	// }
+	// }
 
-	/** @throws IllegalArgumentException unless dir is a readable directory */
+	/**
+	 * @throws IllegalArgumentException unless dir is a readable directory
+	 */
 	public static void throwIaxUnlessCanReadDir(File dir, String label) {
 		if (!canReadDir(dir)) {
 			throw new IllegalArgumentException(label + " not readable dir: " + dir);
 		}
 	}
 
-	/** @throws IllegalArgumentException unless file is readable and not a directory */
+	/**
+	 * @throws IllegalArgumentException unless file is readable and not a
+	 *             directory
+	 */
 	public static void throwIaxUnlessCanWriteFile(File file, String label) {
 		if (!canWriteFile(file)) {
 			throw new IllegalArgumentException(label + " not writable file: " + file);
@@ -233,13 +243,16 @@ public class FileUtil {
 	}
 
 	/**
-	 * Extract the name of a class from the path to its file. If the basedir is null, then the class is assumed to be in the default
-	 * package unless the classFile has one of the top-level suffixes { com, org, java, javax } as a parent directory.
+	 * Extract the name of a class from the path to its file. If the basedir is
+	 * null, then the class is assumed to be in the default package unless the
+	 * classFile has one of the top-level suffixes { com, org, java, javax } as
+	 * a parent directory.
 	 * 
 	 * @param basedir the File of the base directory (prefix of classFile)
 	 * @param classFile the File of the class to extract the name for
-	 * @throws IllegalArgumentException if classFile is null or does not end with ".class" or a non-null basedir is not a prefix of
-	 *         classFile
+	 * @throws IllegalArgumentException if classFile is null or does not end
+	 *             with ".class" or a non-null basedir is not a prefix of
+	 *             classFile
 	 */
 	public static String fileToClassName(File basedir, File classFile) {
 		LangUtil.throwIaxIfNull(classFile, "classFile");
@@ -277,10 +290,12 @@ public class FileUtil {
 	}
 
 	/**
-	 * Normalize path for comparisons by rendering absolute, clipping basedir prefix, trimming and changing '\\' to '/'
+	 * Normalize path for comparisons by rendering absolute, clipping basedir
+	 * prefix, trimming and changing '\\' to '/'
 	 * 
 	 * @param file the File with the path to normalize
-	 * @param basedir the File for the prefix of the file to normalize - ignored if null
+	 * @param basedir the File for the prefix of the file to normalize - ignored
+	 *            if null
 	 * @return "" if null or normalized path otherwise
 	 * @throws IllegalArgumentException if basedir is not a prefix of file
 	 */
@@ -299,12 +314,15 @@ public class FileUtil {
 	}
 
 	/**
-	 * Render a set of files to String as a path by getting absolute paths of each and delimiting with infix.
+	 * Render a set of files to String as a path by getting absolute paths of
+	 * each and delimiting with infix.
 	 * 
 	 * @param files the File[] to flatten - may be null or empty
-	 * @param infix the String delimiter internally between entries (if null, then use File.pathSeparator). (alias to
-	 *        <code>flatten(getAbsolutePaths(files), infix)</code>
-	 * @return String with absolute paths to entries in order, delimited with infix
+	 * @param infix the String delimiter internally between entries (if null,
+	 *            then use File.pathSeparator). (alias to
+	 *            <code>flatten(getAbsolutePaths(files), infix)</code>
+	 * @return String with absolute paths to entries in order, delimited with
+	 *         infix
 	 */
 	public static String flatten(File[] files, String infix) {
 		if (LangUtil.isEmpty(files)) {
@@ -341,7 +359,8 @@ public class FileUtil {
 	}
 
 	/**
-	 * Normalize path for comparisons by rendering absolute trimming and changing '\\' to '/'
+	 * Normalize path for comparisons by rendering absolute trimming and
+	 * changing '\\' to '/'
 	 * 
 	 * @return "" if null or normalized path otherwise
 	 */
@@ -350,7 +369,8 @@ public class FileUtil {
 	}
 
 	/**
-	 * Weakly normalize path for comparisons by trimming and changing '\\' to '/'
+	 * Weakly normalize path for comparisons by trimming and changing '\\' to
+	 * '/'
 	 */
 	public static String weakNormalize(String path) {
 		if (null != path) {
@@ -360,8 +380,9 @@ public class FileUtil {
 	}
 
 	/**
-	 * Get best File for the first-readable path in input paths, treating entries prefixed "sp:" as system property keys. Safe to
-	 * call in static initializers.
+	 * Get best File for the first-readable path in input paths, treating
+	 * entries prefixed "sp:" as system property keys. Safe to call in static
+	 * initializers.
 	 * 
 	 * @param paths the String[] of paths to check.
 	 * @return null if not found, or valid File otherwise
@@ -462,8 +483,8 @@ public class FileUtil {
 	}
 
 	/**
-	 * Recursively delete some contents of dir, but not the dir itself. This deletes any subdirectory which is empty after its files
-	 * are deleted.
+	 * Recursively delete some contents of dir, but not the dir itself. This
+	 * deletes any subdirectory which is empty after its files are deleted.
 	 * 
 	 * @return the total number of files deleted
 	 */
@@ -472,8 +493,9 @@ public class FileUtil {
 	}
 
 	/**
-	 * Recursively delete some contents of dir, but not the dir itself. If deleteEmptyDirs is true, this deletes any subdirectory
-	 * which is empty after its files are deleted.
+	 * Recursively delete some contents of dir, but not the dir itself. If
+	 * deleteEmptyDirs is true, this deletes any subdirectory which is empty
+	 * after its files are deleted.
 	 * 
 	 * @param dir the File directory (if a file, the the file is deleted)
 	 * @return the total number of files deleted
@@ -521,55 +543,71 @@ public class FileUtil {
 	}
 
 	/**
-	 * Recursively copy files in fromDir (with any fromSuffix) to toDir, replacing fromSuffix with toSuffix if any. This silently
-	 * ignores dirs and files that are not readable but throw IOException for directories that are not writable. This does not clean
-	 * out the original contents of toDir. (subdirectories are not renamed per directory rules)
+	 * Recursively copy files in fromDir (with any fromSuffix) to toDir,
+	 * replacing fromSuffix with toSuffix if any. This silently ignores dirs and
+	 * files that are not readable but throw IOException for directories that
+	 * are not writable. This does not clean out the original contents of toDir.
+	 * (subdirectories are not renamed per directory rules)
 	 * 
-	 * @param fromSuffix select files with this suffix - select all if null or empty
-	 * @param toSuffix replace fromSuffix with toSuffix in the destination file name - ignored if null or empty, appended to name if
-	 *        fromSuffix is null or empty
+	 * @param fromSuffix select files with this suffix - select all if null or
+	 *            empty
+	 * @param toSuffix replace fromSuffix with toSuffix in the destination file
+	 *            name - ignored if null or empty, appended to name if
+	 *            fromSuffix is null or empty
 	 * @return the total number of files copied
 	 */
 	public static int copyDir(File fromDir, File toDir, final String fromSuffix, String toSuffix) throws IOException {
 		return copyDir(fromDir, toDir, fromSuffix, toSuffix, (FileFilter) null);
 	}
 
-	/**
-	 * Recursively copy files in fromDir (with any fromSuffix) to toDir, replacing fromSuffix with toSuffix if any, and adding the
-	 * destination file to any collector. This silently ignores dirs and files that are not readable but throw IOException for
-	 * directories that are not writable. This does not clean out the original contents of toDir. (subdirectories are not renamed
-	 * per directory rules) This calls any delegate FilenameFilter to collect any selected file.
-	 * 
-	 * @param fromSuffix select files with this suffix - select all if null or empty
-	 * @param toSuffix replace fromSuffix with toSuffix in the destination file name - ignored if null or empty, appended to name if
-	 *        fromSuffix is null or empty
-	 * @param collector the List sink for destination files - ignored if null
-	 * @return the total number of files copied
-	 */
-	public static int copyDir(File fromDir, File toDir, final String fromSuffix, final String toSuffix, final List collector)
-			throws IOException {
-		// int before = collector.size();
-		if (null == collector) {
-			return copyDir(fromDir, toDir, fromSuffix, toSuffix);
-		} else {
-			FileFilter collect = new FileFilter() {
-				public boolean accept(File pathname) {
-					return collector.add(pathname);
-				}
-			};
-			return copyDir(fromDir, toDir, fromSuffix, toSuffix, collect);
-		}
-	}
+	// /**
+	// * Recursively copy files in fromDir (with any fromSuffix) to toDir,
+	// * replacing fromSuffix with toSuffix if any, and adding the destination
+	// * file to any collector. This silently ignores dirs and files that are
+	// not
+	// * readable but throw IOException for directories that are not writable.
+	// * This does not clean out the original contents of toDir. (subdirectories
+	// * are not renamed per directory rules) This calls any delegate
+	// * FilenameFilter to collect any selected file.
+	// *
+	// * @param fromSuffix select files with this suffix - select all if null or
+	// * empty
+	// * @param toSuffix replace fromSuffix with toSuffix in the destination
+	// file
+	// * name - ignored if null or empty, appended to name if
+	// * fromSuffix is null or empty
+	// * @param collector the List sink for destination files - ignored if null
+	// * @return the total number of files copied
+	// */
+	// public static int copyDir(File fromDir, File toDir, final String
+	// fromSuffix, final String toSuffix, final List collector)
+	// throws IOException {
+	// // int before = collector.size();
+	// if (null == collector) {
+	// return copyDir(fromDir, toDir, fromSuffix, toSuffix);
+	// } else {
+	// FileFilter collect = new FileFilter() {
+	// public boolean accept(File pathname) {
+	// return collector.add(pathname);
+	// }
+	// };
+	// return copyDir(fromDir, toDir, fromSuffix, toSuffix, collect);
+	// }
+	// }
 
 	/**
-	 * Recursively copy files in fromDir (with any fromSuffix) to toDir, replacing fromSuffix with toSuffix if any. This silently
-	 * ignores dirs and files that are not readable but throw IOException for directories that are not writable. This does not clean
-	 * out the original contents of toDir. (subdirectories are not renamed per directory rules) This calls any delegate
-	 * FilenameFilter to collect any selected file.
+	 * Recursively copy files in fromDir (with any fromSuffix) to toDir,
+	 * replacing fromSuffix with toSuffix if any. This silently ignores dirs and
+	 * files that are not readable but throw IOException for directories that
+	 * are not writable. This does not clean out the original contents of toDir.
+	 * (subdirectories are not renamed per directory rules) This calls any
+	 * delegate FilenameFilter to collect any selected file.
 	 * 
-	 * @param fromSuffix select files with this suffix - select all if null or empty
-	 * @param toSuffix replace fromSuffix with toSuffix in the destination file name - ignored if null or empty, appended to name if
-	 *        fromSuffix is null or empty
+	 * @param fromSuffix select files with this suffix - select all if null or
+	 *            empty
+	 * @param toSuffix replace fromSuffix with toSuffix in the destination file
+	 *            name - ignored if null or empty, appended to name if
+	 *            fromSuffix is null or empty
 	 * @return the total number of files copied
 	 */
 	public static int copyDir(File fromDir, File toDir, final String fromSuffix, final String toSuffix, final FileFilter delegate)
@@ -624,7 +662,8 @@ public class FileUtil {
 	/**
 	 * Recursively list files in srcDir.
 	 * 
-	 * @return ArrayList with String paths of File under srcDir (relative to srcDir)
+	 * @return ArrayList with String paths of File under srcDir (relative to
+	 *         srcDir)
 	 */
 	public static String[] listFiles(File srcDir) {
 		ArrayList result = new ArrayList();
@@ -644,7 +683,8 @@ public class FileUtil {
 	/**
 	 * Recursively list files in srcDir.
 	 * 
-	 * @return ArrayList with String paths of File under srcDir (relative to srcDir)
+	 * @return ArrayList with String paths of File under srcDir (relative to
+	 *         srcDir)
 	 */
 	public static File[] listFiles(File srcDir, FileFilter fileFilter) {
 		ArrayList result = new ArrayList();
@@ -670,7 +710,8 @@ public class FileUtil {
 	/**
 	 * Convert String[] paths to File[] as offset of base directory
 	 * 
-	 * @param basedir the non-null File base directory for File to create with paths
+	 * @param basedir the non-null File base directory for File to create with
+	 *            paths
 	 * @param paths the String[] of paths to create
 	 * @return File[] with same length as paths
 	 */
@@ -681,9 +722,11 @@ public class FileUtil {
 	/**
 	 * Convert String[] paths to File[] as offset of base directory
 	 * 
-	 * @param basedir the non-null File base directory for File to create with paths
+	 * @param basedir the non-null File base directory for File to create with
+	 *            paths
 	 * @param paths the String[] of paths to create
-	 * @param suffixes the String[] of suffixes to limit sources to - ignored if null
+	 * @param suffixes the String[] of suffixes to limit sources to - ignored if
+	 *            null
 	 * @return File[] with same length as paths
 	 */
 	public static File[] getBaseDirFiles(File basedir, String[] paths, String[] suffixes) {
@@ -734,14 +777,18 @@ public class FileUtil {
 	}
 
 	/**
-	 * Copy files from source dir into destination directory, creating any needed directories. This differs from copyDir in not
-	 * being recursive; each input with the source dir creates a full path. However, if the source is a directory, it is copied as
-	 * such.
+	 * Copy files from source dir into destination directory, creating any
+	 * needed directories. This differs from copyDir in not being recursive;
+	 * each input with the source dir creates a full path. However, if the
+	 * source is a directory, it is copied as such.
 	 * 
-	 * @param srcDir an existing, readable directory containing relativePaths files
-	 * @param relativePaths a set of paths relative to srcDir to readable File to copy
+	 * @param srcDir an existing, readable directory containing relativePaths
+	 *            files
+	 * @param relativePaths a set of paths relative to srcDir to readable File
+	 *            to copy
 	 * @param destDir an existing, writable directory to copy files to
-	 * @throws IllegalArgumentException if input invalid, IOException if operations fail
+	 * @throws IllegalArgumentException if input invalid, IOException if
+	 *             operations fail
 	 */
 	public static File[] copyFiles(File srcDir, String[] relativePaths, File destDir) throws IllegalArgumentException, IOException {
 		final String[] paths = relativePaths;
@@ -766,10 +813,13 @@ public class FileUtil {
 	}
 
 	/**
-	 * Copy fromFile to toFile, handling file-file, dir-dir, and file-dir copies.
+	 * Copy fromFile to toFile, handling file-file, dir-dir, and file-dir
+	 * copies.
 	 * 
-	 * @param fromFile the File path of the file or directory to copy - must be readable
-	 * @param toFile the File path of the target file or directory - must be writable (will be created if it does not exist)
+	 * @param fromFile the File path of the file or directory to copy - must be
+	 *            readable
+	 * @param toFile the File path of the target file or directory - must be
+	 *            writable (will be created if it does not exist)
 	 */
 	public static void copyFile(File fromFile, File toFile) throws IOException {
 		LangUtil.throwIaxIfNull(fromFile, "fromFile");
@@ -805,12 +855,14 @@ public class FileUtil {
 	}
 
 	/**
-	 * Ensure that the parent directory to path can be written. If the path has a null parent, DEFAULT_PARENT is tested. If the path
-	 * parent does not exist, this tries to create it.
+	 * Ensure that the parent directory to path can be written. If the path has
+	 * a null parent, DEFAULT_PARENT is tested. If the path parent does not
+	 * exist, this tries to create it.
 	 * 
 	 * @param path the File path whose parent should be writable
 	 * @return the File path of the writable parent directory
-	 * @throws IllegalArgumentException if parent cannot be written or path is null.
+	 * @throws IllegalArgumentException if parent cannot be written or path is
+	 *             null.
 	 */
 	public static File ensureParentWritable(File path) {
 		LangUtil.throwIaxIfNull(path, "path");
@@ -903,8 +955,8 @@ public class FileUtil {
 	}
 
 	/**
-	 * Make a new temporary directory in the same directory that the system uses for temporary files, or if that files, in the
-	 * current directory.
+	 * Make a new temporary directory in the same directory that the system uses
+	 * for temporary files, or if that files, in the current directory.
 	 * 
 	 * @param name the preferred (simple) name of the directory - may be null.
 	 * @return File of an existing new temp dir, or null if unable to create
@@ -943,7 +995,8 @@ public class FileUtil {
 	}
 
 	/**
-	 * Get URL for a File. This appends "/" for directories. prints errors to System.err
+	 * Get URL for a File. This appends "/" for directories. prints errors to
+	 * System.err
 	 * 
 	 * @param file the File to convert to URL (not null)
 	 */
@@ -951,7 +1004,8 @@ public class FileUtil {
 		LangUtil.throwIaxIfNull(file, "file");
 		URL result = null;
 		try {
-			result = file.toURL();// TODO AV - was toURI.toURL that does not works on Java 1.3
+			result = file.toURL();// TODO AV - was toURI.toURL that does not
+			// works on Java 1.3
 			if (null != result) {
 				return result;
 			}
@@ -965,8 +1019,8 @@ public class FileUtil {
 	}
 
 	/**
-	 * Write contents to file, returning null on success or error message otherwise. This tries to make any necessary parent
-	 * directories first.
+	 * Write contents to file, returning null on success or error message
+	 * otherwise. This tries to make any necessary parent directories first.
 	 * 
 	 * @param file the File to write (not null)
 	 * @param contents the String to write (use "" if null)
@@ -1082,22 +1136,22 @@ public class FileUtil {
 		return b.toString();
 	}
 
-	/**
-	 * Returns the contents of this stream as a String
-	 */
-	public static String readAsString(InputStream in) throws IOException {
-		BufferedReader r = new BufferedReader(new InputStreamReader(in));
-		StringBuffer b = new StringBuffer();
-		while (true) {
-			int ch = r.read();
-			if (ch == -1)
-				break;
-			b.append((char) ch);
-		}
-		in.close();
-		r.close();
-		return b.toString();
-	}
+	// /**
+	// * Returns the contents of this stream as a String
+	// */
+	// public static String readAsString(InputStream in) throws IOException {
+	// BufferedReader r = new BufferedReader(new InputStreamReader(in));
+	// StringBuffer b = new StringBuffer();
+	// while (true) {
+	// int ch = r.read();
+	// if (ch == -1)
+	// break;
+	// b.append((char) ch);
+	// }
+	// in.close();
+	// r.close();
+	// return b.toString();
+	// }
 
 	/**
 	 * Returns the contents of this file as a byte[]
@@ -1167,35 +1221,40 @@ public class FileUtil {
 		}
 	}
 
-	public static void extractJar(String zipFile, String outDir) throws IOException {
-		ZipInputStream zs = new ZipInputStream(new FileInputStream(zipFile));
-		ZipEntry entry;
-		while ((entry = zs.getNextEntry()) != null) {
-			if (entry.isDirectory())
-				continue;
-			byte[] in = readAsByteArray(zs);
-
-			File outFile = new File(outDir + "/" + entry.getName());
-			// if (!outFile.getParentFile().exists())
-			// System.err.println("parent: " + outFile.getParentFile());
-			// System.err.println("parent: " + outFile.getParentFile());
-			outFile.getParentFile().mkdirs();
-			FileOutputStream os = new FileOutputStream(outFile);
-			os.write(in);
-			os.close();
-			zs.closeEntry();
-		}
-		zs.close();
-	}
+	//
+	// public static void extractJar(String zipFile, String outDir) throws
+	// IOException {
+	// ZipInputStream zs = new ZipInputStream(new FileInputStream(zipFile));
+	// ZipEntry entry;
+	// while ((entry = zs.getNextEntry()) != null) {
+	// if (entry.isDirectory())
+	// continue;
+	// byte[] in = readAsByteArray(zs);
+	//
+	// File outFile = new File(outDir + "/" + entry.getName());
+	// // if (!outFile.getParentFile().exists())
+	// // System.err.println("parent: " + outFile.getParentFile());
+	// // System.err.println("parent: " + outFile.getParentFile());
+	// outFile.getParentFile().mkdirs();
+	// FileOutputStream os = new FileOutputStream(outFile);
+	// os.write(in);
+	// os.close();
+	// zs.closeEntry();
+	// }
+	// zs.close();
+	// }
 
 	/**
-	 * Do line-based search for literal text in source files, returning file:line where found.
+	 * Do line-based search for literal text in source files, returning
+	 * file:line where found.
 	 * 
 	 * @param sought the String text to seek in the file
 	 * @param sources the List of String paths to the source files
 	 * @param listAll if false, only list first match in file
-	 * @param errorSink the PrintStream to print any errors to (one per line) (use null to silently ignore errors)
-	 * @return List of String of the form file:line for each found entry (never null, might be empty)
+	 * @param errorSink the PrintStream to print any errors to (one per line)
+	 *            (use null to silently ignore errors)
+	 * @return List of String of the form file:line for each found entry (never
+	 *         null, might be empty)
 	 */
 	// OPTIMIZE only used by tests? move it out
 	public static List lineSeek(String sought, List sources, boolean listAll, PrintStream errorSink) {
@@ -1214,14 +1273,16 @@ public class FileUtil {
 	}
 
 	/**
-	 * Do line-based search for literal text in source file, returning line where found as a String in the form
-	 * {sourcePath}:line:column submitted to the collecting parameter sink. Any error is rendered to String and returned as the
-	 * result.
+	 * Do line-based search for literal text in source file, returning line
+	 * where found as a String in the form {sourcePath}:line:column submitted to
+	 * the collecting parameter sink. Any error is rendered to String and
+	 * returned as the result.
 	 * 
 	 * @param sought the String text to seek in the file
 	 * @param sources the List of String paths to the source files
 	 * @param listAll if false, only list first match in file
-	 * @param List sink the List for String entries of the form {sourcePath}:line:column
+	 * @param List sink the List for String entries of the form
+	 *            {sourcePath}:line:column
 	 * @return String error if any, or add String entries to sink
 	 */
 	public static String lineSeek(String sought, String sourcePath, boolean listAll, ArrayList sink) {
@@ -1273,8 +1334,9 @@ public class FileUtil {
 	/**
 	 * Sleep until after the last last-modified stamp from the files.
 	 * 
-	 * @param files the File[] of files to inspect for last modified times (this ignores null or empty files array and null or
-	 *        non-existing components of files array)
+	 * @param files the File[] of files to inspect for last modified times (this
+	 *            ignores null or empty files array and null or non-existing
+	 *            components of files array)
 	 * @return true if succeeded without 100 interrupts
 	 */
 	public static boolean sleepPastFinalModifiedTime(File[] files) {
@@ -1351,7 +1413,6 @@ public class FileUtil {
 	}
 
 	private FileUtil() {
-		throw new Error("utility class");
 	}
 
 	public static List makeClasspath(URL[] urls) {
@@ -1365,7 +1426,8 @@ public class FileUtil {
 	}
 
 	/**
-	 * A pipe when run reads from an input stream to an output stream, optionally sleeping between reads.
+	 * A pipe when run reads from an input stream to an output stream,
+	 * optionally sleeping between reads.
 	 * 
 	 * @see #copyStream(InputStream, OutputStream)
 	 */
@@ -1384,7 +1446,8 @@ public class FileUtil {
 		private final boolean closeOutput;
 
 		/**
-		 * If true, then continue processing stream until no characters are returned when halting.
+		 * If true, then continue processing stream until no characters are
+		 * returned when halting.
 		 */
 		private boolean finishStream;
 
@@ -1403,8 +1466,10 @@ public class FileUtil {
 		/**
 		 * @param in the InputStream source to read
 		 * @param out the OutputStream sink to write
-		 * @param tryClosingStreams if true, then try closing both streams when done
-		 * @param sleep milliseconds to delay between reads (pinned to 0..1 minute)
+		 * @param tryClosingStreams if true, then try closing both streams when
+		 *            done
+		 * @param sleep milliseconds to delay between reads (pinned to 0..1
+		 *            minute)
 		 */
 		Pipe(InputStream in, OutputStream out, long sleep, boolean closeInput, boolean closeOutput) {
 			LangUtil.throwIaxIfNull(in, "in");
@@ -1421,7 +1486,8 @@ public class FileUtil {
 		}
 
 		/**
-		 * Run the pipe. This halts on the first Throwable thrown or when a read returns -1 (for end-of-file) or on demand.
+		 * Run the pipe. This halts on the first Throwable thrown or when a read
+		 * returns -1 (for end-of-file) or on demand.
 		 */
 		public void run() {
 			totalWritten = 0;
@@ -1480,8 +1546,10 @@ public class FileUtil {
 		 * Tell the pipe to halt the next time it gains control.
 		 * 
 		 * @param wait if true, this waits synchronously until pipe is done
-		 * @param finishStream if true, then continue until a read from the input stream returns no bytes, then halt.
-		 * @return true if <code>run()</code> will return the next time it gains control
+		 * @param finishStream if true, then continue until a read from the
+		 *            input stream returns no bytes, then halt.
+		 * @return true if <code>run()</code> will return the next time it gains
+		 *         control
 		 */
 		public boolean halt(boolean wait, boolean finishStream) {
 			if (!halt) {
@@ -1515,8 +1583,10 @@ public class FileUtil {
 		}
 
 		/**
-		 * This is called when the pipe is completing. This implementation does nothing. Subclasses implement this to get notice.
-		 * Note that halt(true, true) might or might not have completed before this method is called.
+		 * This is called when the pipe is completing. This implementation does
+		 * nothing. Subclasses implement this to get notice. Note that
+		 * halt(true, true) might or might not have completed before this method
+		 * is called.
 		 */
 		protected void completing(long totalWritten, Throwable thrown) {
 		}
