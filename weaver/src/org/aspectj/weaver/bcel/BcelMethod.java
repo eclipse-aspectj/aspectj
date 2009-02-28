@@ -213,22 +213,26 @@ class BcelMethod extends ResolvedMemberImpl {
 		}
 	}
 
-	// for testing - if we have this attribute, return it - will return null if
-	// it doesnt know anything
-	public AjAttribute[] getAttributes(String name) {
-		List results = new ArrayList();
-		List l = Utility.readAjAttributes(getDeclaringType().getClassName(), method.getAttributes(),
-				getSourceContext(bcelObjectType.getWorld()), bcelObjectType.getWorld(), bcelObjectType.getWeaverVersionAttribute());
-		for (Iterator iter = l.iterator(); iter.hasNext();) {
-			AjAttribute element = (AjAttribute) iter.next();
-			if (element.getNameString().equals(name))
-				results.add(element);
-		}
-		if (results.size() > 0) {
-			return (AjAttribute[]) results.toArray(new AjAttribute[] {});
-		}
-		return null;
-	}
+	//
+	// // for testing - if we have this attribute, return it - will return null
+	// if
+	// // it doesnt know anything
+	// public AjAttribute[] getAttributes(String name) {
+	// List results = new ArrayList();
+	// List l = Utility.readAjAttributes(getDeclaringType().getClassName(),
+	// method.getAttributes(),
+	// getSourceContext(bcelObjectType.getWorld()), bcelObjectType.getWorld(),
+	// bcelObjectType.getWeaverVersionAttribute());
+	// for (Iterator iter = l.iterator(); iter.hasNext();) {
+	// AjAttribute element = (AjAttribute) iter.next();
+	// if (element.getNameString().equals(name))
+	// results.add(element);
+	// }
+	// if (results.size() > 0) {
+	// return (AjAttribute[]) results.toArray(new AjAttribute[] {});
+	// }
+	// return null;
+	// }
 
 	public String getAnnotationDefaultValue() {
 		Attribute[] attrs = method.getAttributes();
@@ -456,8 +460,9 @@ class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	/**
-	 * A method can be parameterized if it has one or more generic parameters. A generic parameter (type variable parameter) is
-	 * identified by the prefix "T"
+	 * A method can be parameterized if it has one or more generic parameters. A
+	 * generic parameter (type variable parameter) is identified by the prefix
+	 * "T"
 	 */
 	public boolean canBeParameterized() {
 		unpackGenericSignature();
@@ -470,7 +475,8 @@ class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	/**
-	 * Return the parameterized/generic return type or the normal return type if the method is not generic.
+	 * Return the parameterized/generic return type or the normal return type if
+	 * the method is not generic.
 	 */
 	public UnresolvedType getGenericReturnType() {
 		unpackGenericSignature();
@@ -602,8 +608,9 @@ class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	/**
-	 * Returns whether or not the given object is equivalent to the current one. Returns true if
-	 * getMethod().getCode().getCodeString() are equal. Allows for different line number tables.
+	 * Returns whether or not the given object is equivalent to the current one.
+	 * Returns true if getMethod().getCode().getCodeString() are equal. Allows
+	 * for different line number tables.
 	 */
 	// bug 154054: is similar to equals(Object) however
 	// doesn't require implementing equals in Method and Code

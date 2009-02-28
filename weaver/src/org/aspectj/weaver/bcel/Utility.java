@@ -13,8 +13,6 @@
 package org.aspectj.weaver.bcel;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -28,7 +26,6 @@ import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.JavaClass;
-import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValueGen;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
@@ -106,7 +103,8 @@ public class Utility {
 	}
 
 	/*
-	 * Ensure we report a nice source location - particular in the case where the source info is missing (binary weave).
+	 * Ensure we report a nice source location - particular in the case where
+	 * the source info is missing (binary weave).
 	 */
 	public static String beautifyLocation(ISourceLocation isl) {
 		StringBuffer nice = new StringBuffer();
@@ -175,26 +173,6 @@ public class Utility {
 				.getReturnType()), kind);
 	}
 
-	/**
-	 * Creae a field GET instruction
-	 * 
-	 * @param fact
-	 * @param signature
-	 * @param declaringType
-	 * @return
-	 */
-	public static Instruction createGetOn(InstructionFactory fact, Member signature, UnresolvedType declaringType) {
-		short kind;
-		if (signature.isStatic()) {
-			kind = Constants.GETSTATIC;
-		} else {
-			kind = Constants.GETFIELD;
-		}
-
-		return fact.createFieldAccess(declaringType.getName(), signature.getName(), BcelWorld.makeBcelType(signature
-				.getReturnType()), kind);
-	}
-
 	public static Instruction createSet(InstructionFactory fact, Member signature) {
 		short kind;
 		if (signature.isStatic()) {
@@ -205,33 +183,6 @@ public class Utility {
 
 		return fact.createFieldAccess(signature.getDeclaringType().getName(), signature.getName(), BcelWorld.makeBcelType(signature
 				.getReturnType()), kind);
-	}
-
-	public static Instruction createInvoke(InstructionFactory fact, JavaClass declaringClass, Method newMethod) {
-		short kind;
-		if (newMethod.isInterface()) {
-			kind = Constants.INVOKEINTERFACE;
-		} else if (newMethod.isStatic()) {
-			kind = Constants.INVOKESTATIC;
-		} else if (newMethod.isPrivate() || newMethod.getName().equals("<init>")) {
-			kind = Constants.INVOKESPECIAL;
-		} else {
-			kind = Constants.INVOKEVIRTUAL;
-		}
-
-		String sig = newMethod.getSignature();
-		return fact.createInvoke(declaringClass.getClassName(), newMethod.getName(), sig, kind);
-	}
-
-	public static byte[] stringToUTF(String s) {
-		try {
-			ByteArrayOutputStream out0 = new ByteArrayOutputStream();
-			DataOutputStream out1 = new DataOutputStream(out0);
-			out1.writeUTF(s);
-			return out0.toByteArray();
-		} catch (IOException e) {
-			throw new RuntimeException("sanity check");
-		}
 	}
 
 	public static Instruction createInstanceof(InstructionFactory fact, ReferenceType t) {
@@ -507,22 +458,9 @@ public class Utility {
 		}
 	}
 
-	public static String arrayToString(int[] a) {
-		int len = a.length;
-		if (len == 0)
-			return "[]";
-		StringBuffer buf = new StringBuffer("[");
-		buf.append(a[0]);
-		for (int i = 1; i < len; i++) {
-			buf.append(", ");
-			buf.append(a[i]);
-		}
-		buf.append("]");
-		return buf.toString();
-	}
-
 	/**
-	 * replace an instruction handle with another instruction, in this case, a branch instruction.
+	 * replace an instruction handle with another instruction, in this case, a
+	 * branch instruction.
 	 * 
 	 * @param ih the instruction handle to replace.
 	 * @param branchInstruction the branch instruction to replace ih with
@@ -536,8 +474,10 @@ public class Utility {
 	}
 
 	/**
-	 * delete an instruction handle and retarget all targeters of the deleted instruction to the next instruction. Obviously, this
-	 * should not be used to delete a control transfer instruction unless you know what you're doing.
+	 * delete an instruction handle and retarget all targeters of the deleted
+	 * instruction to the next instruction. Obviously, this should not be used
+	 * to delete a control transfer instruction unless you know what you're
+	 * doing.
 	 * 
 	 * @param ih the instruction handle to delete.
 	 * @param enclosingMethod where to find ih's instruction list.
@@ -547,7 +487,8 @@ public class Utility {
 	}
 
 	/**
-	 * delete an instruction handle and retarget all targeters of the deleted instruction to the provided target.
+	 * delete an instruction handle and retarget all targeters of the deleted
+	 * instruction to the provided target.
 	 * 
 	 * @param ih the instruction handle to delete
 	 * @param retargetTo the instruction handle to retarget targeters of ih to.
@@ -573,9 +514,11 @@ public class Utility {
 	/**
 	 * Fix for Bugzilla #39479, #40109 patch contributed by Andy Clement
 	 * 
-	 * Need to manually copy Select instructions - if we rely on the the 'fresh' object created by copy(), the InstructionHandle
-	 * array 'targets' inside the Select object will not have been deep copied, so modifying targets in fresh will modify the
-	 * original Select - not what we want ! (It is a bug in BCEL to do with cloning Select objects).
+	 * Need to manually copy Select instructions - if we rely on the the 'fresh'
+	 * object created by copy(), the InstructionHandle array 'targets' inside
+	 * the Select object will not have been deep copied, so modifying targets in
+	 * fresh will modify the original Select - not what we want ! (It is a bug
+	 * in BCEL to do with cloning Select objects).
 	 * 
 	 * <pre>
 	 * declare error:
@@ -679,7 +622,8 @@ public class Utility {
 	}
 
 	/**
-	 * Checks for suppression specified on the member or on the declaring type of that member
+	 * Checks for suppression specified on the member or on the declaring type
+	 * of that member
 	 */
 	public static boolean isSuppressing(Member member, String lintkey) {
 		boolean isSuppressing = Utils.isSuppressing(member.getAnnotations(), lintkey);
