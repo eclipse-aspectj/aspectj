@@ -797,10 +797,13 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				if (aspectType.isRawType())
 					toLookOn = aspectType.getGenericType();
 				ResolvedMember realMember = getRealMemberForITDFromAspect(toLookOn, memberHoldingAnyAnnotations, false);
-				if (realMember == null)
-					throw new BCException("Couldn't find ITD holder member '" + memberHoldingAnyAnnotations + "' on aspect "
-							+ aspectType);
-				annotationsOnRealMember = realMember.getAnnotations();
+				// 266602 - consider it missing to mean that the corresponding aspect had errors
+				if (realMember == null) {
+					// signalWarning("Unable to apply any annotations attached to " + munger.getSignature(), weaver);
+					// throw new BCException("Couldn't find ITD init member '" + interMethodBody + "' on aspect " + aspectType);
+				} else {
+					annotationsOnRealMember = realMember.getAnnotations();
+				}
 
 				if (annotationsOnRealMember != null) {
 					for (int i = 0; i < annotationsOnRealMember.length; i++) {
@@ -810,18 +813,20 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 						newMethod.addAnnotation(new BcelAnnotation(ag, weaver.getWorld()));
 					}
 				}
-				AnnotationAJ[][] pAnnos = realMember.getParameterAnnotations();
-				int offset = newMethod.isStatic() ? 0 : 1;
-				if (pAnnos != null && pAnnos.length != 0) {
-					int param = 0;
-					for (int i = offset; i < pAnnos.length; i++) {
-						AnnotationAJ[] annosOnParam = pAnnos[i];
-						if (annosOnParam != null && annosOnParam.length > 0) {
-							for (int j = 0; j < annosOnParam.length; j++) {
-								newMethod.addParameterAnnotation(param, annosOnParam[j]);
+				if (realMember != null) {
+					AnnotationAJ[][] pAnnos = realMember.getParameterAnnotations();
+					int offset = newMethod.isStatic() ? 0 : 1;
+					if (pAnnos != null && pAnnos.length != 0) {
+						int param = 0;
+						for (int i = offset; i < pAnnos.length; i++) {
+							AnnotationAJ[] annosOnParam = pAnnos[i];
+							if (annosOnParam != null && annosOnParam.length > 0) {
+								for (int j = 0; j < annosOnParam.length; j++) {
+									newMethod.addParameterAnnotation(param, annosOnParam[j]);
+								}
 							}
+							param++;
 						}
-						param++;
 					}
 				}
 				// the below loop fixes the very special (and very stupid)
@@ -1436,6 +1441,11 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		weaver.getWorld().getMessageHandler().handleMessage(msg);
 	}
 
+	private void signalWarning(String msgString, BcelClassWeaver weaver) {
+		IMessage msg = MessageUtil.warn(msgString, getSourceLocation());
+		weaver.getWorld().getMessageHandler().handleMessage(msg);
+	}
+
 	private boolean mungeNewConstructor(BcelClassWeaver weaver, NewConstructorTypeMunger newConstructorTypeMunger) {
 
 		final LazyClassGen currentClass = weaver.getLazyClassGen();
@@ -1475,8 +1485,13 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					newConstructorTypeMunger.getSignature().getParameterTypes());
 			AnnotationAJ annotationsOnRealMember[] = null;
 			ResolvedMember realMember = getRealMemberForITDFromAspect(aspectType, interMethodDispatcher, true);
-			if (realMember == null)
-				throw new BCException("Couldn't find ITD holder member '" + interMethodDispatcher + "' on aspect " + aspectType);
+			// 266602 - consider it missing to mean that the corresponding aspect had errors
+			if (realMember == null) {
+				// signalWarning("Unable to apply any annotations attached to " + munger.getSignature(), weaver);
+				// throw new BCException("Couldn't find ITD init member '" + interMethodBody + "' on aspect " + aspectType);
+			} else {
+				annotationsOnRealMember = realMember.getAnnotations();
+			}
 			annotationsOnRealMember = realMember.getAnnotations();
 			if (annotationsOnRealMember != null) {
 				for (int i = 0; i < annotationsOnRealMember.length; i++) {
@@ -1631,12 +1646,16 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			// the below line just gets the method with the same name in
 			// aspectType.getDeclaredMethods();
 			ResolvedType toLookOn = aspectType;
-			if (aspectType.isRawType())
+			if (aspectType.isRawType()) {
 				toLookOn = aspectType.getGenericType();
+			}
 			ResolvedMember realMember = getRealMemberForITDFromAspect(toLookOn, interMethodBody, false);
-			if (realMember == null)
-				throw new BCException("Couldn't find ITD init member '" + interMethodBody + "' on aspect " + aspectType);
-			annotationsOnRealMember = realMember.getAnnotations();
+			if (realMember == null) {
+				// signalWarning("Unable to apply any annotations attached to " + munger.getSignature(), weaver);
+				// throw new BCException("Couldn't find ITD init member '" + interMethodBody + "' on aspect " + aspectType);
+			} else {
+				annotationsOnRealMember = realMember.getAnnotations();
+			}
 		}
 
 		if (onType.equals(gen.getType())) {
