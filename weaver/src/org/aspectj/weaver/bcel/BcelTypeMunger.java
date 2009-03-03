@@ -1247,7 +1247,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					LazyMethodGen m = (LazyMethodGen) i.next();
 					if (m.getName().equals(introduced.getName())
 							&& m.getParameterSignature().equals(introduced.getParameterSignature())
-							&& m.getReturnType().equals(introduced.getReturnType())) {
+							&& m.getReturnType().equals(BcelWorld.makeBcelType(introduced.getReturnType()))) {
 						isOK = true;
 					}
 				}
