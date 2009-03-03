@@ -222,7 +222,7 @@ public class AsmManager implements IStructureModel {
 			fos.flush();
 			fos.close();
 			s.close();
-		} catch (Exception e) {
+		} catch (IOException e) {
 			// System.err.println("AsmManager: Unable to write structure model: "
 			// +configFilePath+" because of:");
 			// e.printStackTrace();
@@ -389,8 +389,9 @@ public class AsmManager implements IStructureModel {
 		dumpModel = dModel;
 		dumpRelationships = dRels;
 		dumpDeltaProcessing = dDeltaProcessing;
-		if (deletefile)
+		if (deletefile) {
 			new File(filename).delete();
+		}
 		dumpFilename = filename;
 	}
 
@@ -1032,7 +1033,9 @@ public class AsmManager implements IStructureModel {
 	 * children and remove the node we want to delete from the list of children.
 	 */
 	private void removeSingleNode(IProgramElement progElem) {
-		verifyAssumption(progElem != null);
+		if (progElem == null) {
+			throw new IllegalStateException("AsmManager.removeNode(): programElement unexpectedly null");
+		}
 		boolean deleteOK = false;
 		IProgramElement parent = progElem.getParent();
 		List kids = parent.getChildren();
@@ -1061,8 +1064,9 @@ public class AsmManager implements IStructureModel {
 		try {
 			// flightrecorder.append("In removeNode, about to chuck away: "+
 			// progElem+"\n");
-
-			verifyAssumption(progElem != null);
+			if (progElem == null) {
+				throw new IllegalStateException("AsmManager.removeNode(): programElement unexpectedly null");
+			}
 			// boolean deleteOK = false;
 			IProgramElement parent = progElem.getParent();
 			// flightrecorder.append("Parent of it is "+parent+"\n");
@@ -1120,7 +1124,7 @@ public class AsmManager implements IStructureModel {
 	/**
 	 * A ModelInfo object captures basic information about the structure model. It is used for testing and producing debug info.
 	 */
-	public class ModelInfo {
+	public static class ModelInfo {
 		private final Hashtable nodeTypeCount = new Hashtable();
 		private final Properties extraProperties = new Properties();
 
