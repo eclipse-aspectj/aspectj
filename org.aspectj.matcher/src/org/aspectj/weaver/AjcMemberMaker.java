@@ -613,6 +613,9 @@ public class AjcMemberMaker {
 	public final static UnresolvedType DECLAREPARENTS_ANNOTATION = UnresolvedType
 			.forSignature("Lorg/aspectj/lang/annotation/DeclareParents;");
 
+	public final static UnresolvedType DECLAREMIXIN_ANNOTATION = UnresolvedType
+			.forSignature("Lorg/aspectj/lang/annotation/DeclareMixin;");
+
 	public final static UnresolvedType TYPEX_JOINPOINT = UnresolvedType.forSignature("Lorg/aspectj/lang/JoinPoint;");
 
 	public final static UnresolvedType TYPEX_PROCEEDINGJOINPOINT = UnresolvedType
