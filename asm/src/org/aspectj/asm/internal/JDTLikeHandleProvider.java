@@ -35,11 +35,11 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 	// because this information cannot be gained from the ipe.
 	private int initializerCounter = 0;
 
-	private final char[] empty = new char[] {};
-	private final char[] countDelim = new char[] { HandleProviderDelimiter.COUNT.getDelimiter() };
+	private static final char[] empty = new char[] {};
+	private static final char[] countDelim = new char[] { HandleProviderDelimiter.COUNT.getDelimiter() };
 
-	private final String backslash = "\\";
-	private final String emptyString = "";
+	private static final String backslash = "\\";
+	private static final String emptyString = "";
 
 	public JDTLikeHandleProvider(AsmManager asm) {
 		this.asm = asm;
