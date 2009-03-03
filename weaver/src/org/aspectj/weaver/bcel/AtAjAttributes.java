@@ -288,8 +288,13 @@ public class AtAjAttributes {
 			for (int j = 0; j < mattributes.length; j++) {
 				Attribute mattribute = mattributes[j];
 				if (acceptAttribute(mattribute)) {
-					mstruct = new AjAttributeMethodStruct(method, null, type, context, msgHandler);// FIXME AVASM
+					// TODO speed all this nonsense up rather than looking through all the annotations every time
+					// same for fields
+					mstruct = new AjAttributeMethodStruct(method, null, type, context, msgHandler);
 					processedPointcut = handlePointcutAnnotation((RuntimeAnnotations) mattribute, mstruct);
+//					if (!processedPointcut) {
+//						handleDeclareMixinAnnotation((RuntimeAnnotations) mattribute, mstruct);
+//					}
 					// there can only be one RuntimeVisible bytecode attribute
 					break;
 				}
@@ -756,6 +761,160 @@ public class AtAjAttributes {
 					// a field hosting the mixin in the target type
 					if (hasAtLeastOneMethod && defaultImplClassName != null) {
 						ResolvedMember fieldHost = AjcMemberMaker.itdAtDeclareParentsField(null, fieldType, struct.enclosingType);
+						struct.ajAttributes.add(new AjAttribute.TypeMunger(new MethodDelegateTypeMunger.FieldHostTypeMunger(
+								fieldHost, struct.enclosingType, typePattern)));
+					}
+
+					return true;
+				} else {
+					reportError("@DeclareParents: can only be used on a field whose type is an interface", struct);
+					return false;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Process any @DeclareMixin annotation.
+	 * 
+	 * @param runtimeAnnotations
+	 * @param struct
+	 * @return true if found
+	 */
+	private static boolean handleDeclareMixinAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct) {
+		AnnotationGen declareMixinAnnotation = getAnnotation(runtimeAnnotations, AjcMemberMaker.DECLAREMIXIN_ANNOTATION);
+		if (declareMixinAnnotation != null) {
+			ElementNameValuePairGen declareMixinPatternNameValuePair = getAnnotationElement(declareMixinAnnotation, VALUE);
+			String declareMixinPattern = declareMixinPatternNameValuePair.getValue().stringifyValue();
+			if (declareMixinPattern != null) {
+				TypePattern typePattern = parseTypePattern(declareMixinPattern, struct);
+				ResolvedType methodType = UnresolvedType.forSignature(struct.method.getSignature()).resolve(
+						struct.enclosingType.getWorld());
+				// For @DeclareMixin:
+				// methodType - might be a class or an interface. If a class then the interfaces value of the
+				// annotation will subset it
+				if (methodType.isInterface()) {
+					// TODO DECLAREMIXIN set the location more accurately than this
+					// TODO DECLAREMIXIN check for interfaces specified and if they aren't it is an error
+					TypePattern parent = parseTypePattern(methodType.getName(), struct);
+					FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+					IScope binding = new BindingScope(struct.enclosingType, struct.context, bindings);
+					// first add the declare implements like
+					List parents = new ArrayList(1);
+					parents.add(parent);
+					// how do we mark this as a decp due to decmixin?
+					DeclareParents dp = new DeclareParents(typePattern, parents, false);
+					dp.resolve(binding); // resolves the parent and child parts of the decp
+
+					// resolve this so that we can use it for the MethodDelegateMungers below.
+					// eg. '@Coloured *' will change from a WildTypePattern to an 'AnyWithAnnotationTypePattern' after this
+					// resolution
+					typePattern = typePattern.resolveBindings(binding, Bindings.NONE, false, false);
+					// TODO kick ISourceLocation sl = struct.bField.getSourceLocation(); ??
+					// dp.setLocation(dp.getDeclaringType().getSourceContext(),
+					// dp.getDeclaringType().getSourceLocation().getOffset(),
+					// dp.getDeclaringType().getSourceLocation().getOffset());
+					dp.setLocation(struct.context, -1, -1); // not ideal...
+					struct.ajAttributes.add(new AjAttribute.DeclareAttribute(dp));
+
+					// do we have a defaultImpl=xxx.class (ie implementation)
+					String defaultImplClassName = null;
+					ElementNameValuePairGen defaultImplNVP = getAnnotationElement(declareMixinAnnotation, "defaultImpl");
+					// if (defaultImplNVP != null) {
+					// ClassElementValueGen defaultImpl = (ClassElementValueGen) defaultImplNVP.getValue();
+					// defaultImplClassName = UnresolvedType.forSignature(defaultImpl.getClassString()).getName();
+					// if (defaultImplClassName.equals("org.aspectj.lang.annotation.DeclareParents")) {
+					// defaultImplClassName = null;
+					// } else {
+					// // check public no arg ctor
+					// ResolvedType impl = struct.enclosingType.getWorld().resolve(defaultImplClassName, false);
+					// ResolvedMember[] mm = impl.getDeclaredMethods();
+					// int implModifiers = impl.getModifiers();
+					// boolean defaultVisibilityImpl = !(Modifier.isPrivate(implModifiers)
+					// || Modifier.isProtected(implModifiers) || Modifier.isPublic(implModifiers));
+					// boolean hasNoCtorOrANoArgOne = true;
+					// ResolvedMember foundOneOfIncorrectVisibility = null;
+					// for (int i = 0; i < mm.length; i++) {
+					// ResolvedMember resolvedMember = mm[i];
+					// if (resolvedMember.getName().equals("<init>")) {
+					// hasNoCtorOrANoArgOne = false;
+					//
+					// if (resolvedMember.getParameterTypes().length == 0) {
+					// if (defaultVisibilityImpl) { // default visibility implementation
+					// if (resolvedMember.isPublic() || resolvedMember.isDefault()) {
+					// hasNoCtorOrANoArgOne = true;
+					// } else {
+					// foundOneOfIncorrectVisibility = resolvedMember;
+					// }
+					// } else if (Modifier.isPublic(implModifiers)) { // public implementation
+					// if (resolvedMember.isPublic()) {
+					// hasNoCtorOrANoArgOne = true;
+					// } else {
+					// foundOneOfIncorrectVisibility = resolvedMember;
+					// }
+					// }
+					// }
+					// }
+					// if (hasNoCtorOrANoArgOne) {
+					// break;
+					// }
+					// }
+					// if (!hasNoCtorOrANoArgOne) {
+					// if (foundOneOfIncorrectVisibility != null) {
+					// reportError(
+					// "@DeclareParents: defaultImpl=\""
+					// + defaultImplClassName
+					// +
+					// "\" has a no argument constructor, but it is of incorrect visibility.  It must be at least as visible as the type.",
+					// struct);
+					// } else {
+					// reportError("@DeclareParents: defaultImpl=\"" + defaultImplClassName
+					// + "\" has no public no-arg constructor", struct);
+					// }
+					// }
+					// if (!methodType.isAssignableFrom(impl)) {
+					// reportError("@DeclareParents: defaultImpl=\"" + defaultImplClassName
+					// + "\" does not implement the interface '" + methodType.toString() + "'", struct);
+					// }
+					// }
+					//
+					// }
+
+					// then iterate on field interface hierarchy (not object)
+					boolean hasAtLeastOneMethod = false;
+					ResolvedMember[] methods = (ResolvedMember[]) methodType.getMethodsWithoutIterator(true, false).toArray(
+							new ResolvedMember[0]);
+					for (int i = 0; i < methods.length; i++) {
+						ResolvedMember method = methods[i];
+						if (method.isAbstract()) {
+							// moved to be detected at weave time if the target doesnt implement the methods
+							// if (defaultImplClassName == null) {
+							// // non marker interface with no default impl provided
+							// reportError("@DeclareParents: used with a non marker interface and no defaultImpl=\"...\" provided",
+							// struct);
+							// return false;
+							// }
+							hasAtLeastOneMethod = true;
+							// What we are saying here:
+							// We have this method 'method' and we want to put a forwarding method into a type that matches
+							// typePattern that should delegate to the version of the method in 'defaultImplClassName'
+
+							// Now the method may be from a supertype but the declaring type of the method we pass into the type
+							// munger is what is used to determine the type of the field that hosts the delegate instance.
+							// So here we create a modified method with an alternative declaring type so that we lookup
+							// the right field. See pr164016.
+							MethodDelegateTypeMunger mdtm = new MethodDelegateTypeMunger(method, struct.enclosingType,
+									defaultImplClassName, typePattern);
+							mdtm.setFieldType(methodType);
+							mdtm.setSourceLocation(struct.enclosingType.getSourceLocation());
+							struct.ajAttributes.add(new AjAttribute.TypeMunger(mdtm));
+						}
+					}
+					// successfull so far, we thus need a bcel type munger to have
+					// a field hosting the mixin in the target type
+					if (hasAtLeastOneMethod && defaultImplClassName != null) {
+						ResolvedMember fieldHost = AjcMemberMaker.itdAtDeclareParentsField(null, methodType, struct.enclosingType);
 						struct.ajAttributes.add(new AjAttribute.TypeMunger(new MethodDelegateTypeMunger.FieldHostTypeMunger(
 								fieldHost, struct.enclosingType, typePattern)));
 					}
