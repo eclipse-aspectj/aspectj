@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver.bcel;
 
 import java.io.File;
@@ -28,89 +27,63 @@ import org.aspectj.weaver.UnresolvedType;
 
 public class MegaZipTestCase extends WeaveTestCase {
 
-    private File outDir;
+	private File outDir;
 
 	public MegaZipTestCase(String arg0) {
 		super(arg0);
 	}
 
-    public void setUp() {
-        outDir = BcweaverTests.getOutdir();
-    }
+	public void setUp() throws Exception {
+		super.setUp();
+		outDir = BcweaverTests.getOutdir();
+	}
 
-    public void tearDown() {
-        BcweaverTests.removeOutDir();
-        outDir = null;
-    }
+	public void tearDown() throws Exception {
+		super.tearDown();
+		BcweaverTests.removeOutDir();
+		outDir = null;
+	}
 
+	private BcelAdvice makeAroundMunger(final boolean matchOnlyPrintln) {
+		// BcelWorld world = new BcelWorld();
+		final Member sig = MemberImpl.method(UnresolvedType.forName("fluffy.Aspect"), Modifier.STATIC, "aroundFun",
+				"(Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;");
 
-    private BcelAdvice makeAroundMunger(final boolean matchOnlyPrintln) {
-        // BcelWorld world = new BcelWorld();
-        final Member sig = 
-            MemberImpl.method(
-                UnresolvedType.forName("fluffy.Aspect"),
-                Modifier.STATIC,
-                "aroundFun",
-                "(Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;");
-        
-        return new BcelAdvice(
-        	AdviceKind.stringToKind("around"), 
-        	matchOnlyPrintln ? makePointcutPrintln() : makePointcutAll(),
-	        sig, 0, -1, -1, null, null)
-	    {
-            public void specializeOn(Shadow s) {
-            	super.specializeOn(s);
-                ((BcelShadow) s).initializeForAroundClosure();
-            }
-        };    
-    }  
+		return new BcelAdvice(AdviceKind.stringToKind("around"), matchOnlyPrintln ? makePointcutPrintln() : makePointcutAll(), sig,
+				0, -1, -1, null, null) {
+			public void specializeOn(Shadow s) {
+				super.specializeOn(s);
+				((BcelShadow) s).initializeForAroundClosure();
+			}
+		};
+	}
 
 	public List getShadowMungers() {
-        List ret = new ArrayList();
-            ret.add(
-                makeConcreteAdvice(
-                    "before"
-                        + "(): call(* *.println(..)) -> static void fluffy.Aspect.before_method_call()"));
-            ret.add(
-                makeConcreteAdvice(
-                    "afterReturning"
-                        + "(): call(* *.println(..)) -> static void fluffy.Aspect.afterReturning_method_call()"));
+		List ret = new ArrayList();
+		ret.add(makeConcreteAdvice("before" + "(): call(* *.println(..)) -> static void fluffy.Aspect.before_method_call()"));
+		ret.add(makeConcreteAdvice("afterReturning"
+				+ "(): call(* *.println(..)) -> static void fluffy.Aspect.afterReturning_method_call()"));
 
-            ret.add(
-                makeConcreteAdvice(
-                    "before"
-                        + "(): execution(* *.*(..)) -> static void fluffy.Aspect.ignoreMe()"));
-                        
-            ret.add(
-                makeConcreteAdvice(
-                    "afterReturning"
-                        + "(): execution(* *.*(..)) -> static void fluffy.Aspect.ignoreMe()"));
+		ret.add(makeConcreteAdvice("before" + "(): execution(* *.*(..)) -> static void fluffy.Aspect.ignoreMe()"));
 
-            ret.add(
-                makeConcreteAdvice(
-                    "afterThrowing"
-                        + "(): execution(* *.*(..)) -> static void fluffy.Aspect.afterThrowing_method_execution(java.lang.Throwable)",
-                    1));
-            ret.add(
-                makeConcreteAdvice(
-                    "after"
-                        + "(): execution(* *.*(..)) -> static void fluffy.Aspect.ignoreMe()"));
+		ret.add(makeConcreteAdvice("afterReturning" + "(): execution(* *.*(..)) -> static void fluffy.Aspect.ignoreMe()"));
 
+		ret.add(makeConcreteAdvice("afterThrowing"
+				+ "(): execution(* *.*(..)) -> static void fluffy.Aspect.afterThrowing_method_execution(java.lang.Throwable)", 1));
+		ret.add(makeConcreteAdvice("after" + "(): execution(* *.*(..)) -> static void fluffy.Aspect.ignoreMe()"));
 
-            ret.add(makeAroundMunger(true));
+		ret.add(makeAroundMunger(true));
 		return ret;
 	}
 
-	
 	public void zipTest(String fileName) throws IOException {
 		long startTime = System.currentTimeMillis();
 		File inFile = new File(BcweaverTests.TESTDATA_PATH, fileName);
 		File outFile = new File(outDir, fileName);
 		outFile.delete();
-		
+
 		world = new BcelWorld("c:/apps/java-1.3.1_04/lib/tools.jar");
 		BcelWeaver weaver1 = new BcelWeaver(world);
-
 
 		ZipFileWeaver weaver = new ZipFileWeaver(inFile);
 
@@ -118,8 +91,11 @@ public class MegaZipTestCase extends WeaveTestCase {
 
 		weaver.weave(weaver1, outFile);
 		assertTrue(outFile.lastModified() > startTime);
-	}	
-	public void testEmptyForAntJUnit(){}
+	}
+
+	public void testEmptyForAntJUnit() {
+	}
+
 	// this is something we test every now and again.
 	// to try, rename as testBig and put aspectjtools.jar in testdata
 	public void trytestBig() throws IOException {

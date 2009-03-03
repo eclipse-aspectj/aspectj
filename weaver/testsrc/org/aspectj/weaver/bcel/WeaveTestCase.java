@@ -60,7 +60,7 @@ public abstract class WeaveTestCase extends TestCase {
 		super(name);
 	}
 
-	public void setUp() {
+	public void setUp() throws Exception {
 		outDir = BcweaverTests.getOutdir();
 		outDirPath = outDir.getAbsolutePath();
 	}
