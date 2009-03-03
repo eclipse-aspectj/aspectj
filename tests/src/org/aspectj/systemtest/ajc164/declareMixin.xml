@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+   
+   <ajc-test dir="features164/declareMixin" title="simple scenario">
+     <compile files="CaseA.java" options="-1.5"/>
+     <run class="CaseA"/>
+   </ajc-test>
+        
+</suite>
