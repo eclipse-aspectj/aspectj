@@ -133,28 +133,30 @@ class BcelMethod extends ResolvedMemberImpl {
 				for (int i = 0; i < axs.length; i++) {
 					AnnotationAJ annotationX = axs[i];
 					String typename = annotationX.getTypeName();
-					if (typename.equals("org.aspectj.lang.annotation.Pointcut")
-							|| typename.equals("org.aspectj.lang.annotation.Before")
-							|| typename.equals("org.aspectj.lang.annotation.Around")
-							|| typename.startsWith("org.aspectj.lang.annotation.After")) {
-						AnnotationGen a = ((BcelAnnotation) annotationX).getBcelAnnotation();
-						if (a != null) {
-							List values = a.getValues();
-							for (Iterator iterator = values.iterator(); iterator.hasNext();) {
-								ElementNameValuePairGen nvPair = (ElementNameValuePairGen) iterator.next();
-								if (nvPair.getNameString().equals("argNames")) {
-									String argNames = nvPair.getValue().stringifyValue();
-									StringTokenizer argNameTokenizer = new StringTokenizer(argNames, " ,");
-									List argsList = new ArrayList();
-									while (argNameTokenizer.hasMoreTokens()) {
-										argsList.add(argNameTokenizer.nextToken());
+					if (typename.charAt(0) == 'o') {
+						if (typename.equals("org.aspectj.lang.annotation.Pointcut")
+								|| typename.equals("org.aspectj.lang.annotation.Before")
+								|| typename.equals("org.aspectj.lang.annotation.Around")
+								|| typename.startsWith("org.aspectj.lang.annotation.After")) {
+							AnnotationGen a = ((BcelAnnotation) annotationX).getBcelAnnotation();
+							if (a != null) {
+								List values = a.getValues();
+								for (Iterator iterator = values.iterator(); iterator.hasNext();) {
+									ElementNameValuePairGen nvPair = (ElementNameValuePairGen) iterator.next();
+									if (nvPair.getNameString().equals("argNames")) {
+										String argNames = nvPair.getValue().stringifyValue();
+										StringTokenizer argNameTokenizer = new StringTokenizer(argNames, " ,");
+										List argsList = new ArrayList();
+										while (argNameTokenizer.hasMoreTokens()) {
+											argsList.add(argNameTokenizer.nextToken());
+										}
+										int requiredCount = getParameterTypes().length;
+										while (argsList.size() < requiredCount) {
+											argsList.add("arg" + argsList.size());
+										}
+										setParameterNames((String[]) argsList.toArray(new String[] {}));
+										return;
 									}
-									int requiredCount = getParameterTypes().length;
-									while (argsList.size() < requiredCount) {
-										argsList.add("arg" + argsList.size());
-									}
-									setParameterNames((String[]) argsList.toArray(new String[] {}));
-									return;
 								}
 							}
 						}
@@ -259,10 +261,7 @@ class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	public boolean isAjSynthetic() {
-		return (bitflags & IS_AJ_SYNTHETIC) != 0;// isAjSynthetic; // ||
-		// getName(
-		// ).startsWith(NameMangler
-		// .PREFIX);
+		return (bitflags & IS_AJ_SYNTHETIC) != 0;
 	}
 
 	// FIXME ??? needs an isSynthetic method
