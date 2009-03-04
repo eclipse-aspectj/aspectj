@@ -7,7 +7,7 @@
  * http://eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- * initial implementation              Andy Clement
+ * initial implementation              Andy Clement 
  *******************************************************************************/
 package org.aspectj.lang.annotation;
 
