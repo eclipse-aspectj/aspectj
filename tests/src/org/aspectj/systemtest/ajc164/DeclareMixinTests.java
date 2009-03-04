@@ -25,14 +25,62 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  * <ul>
  * <li>model relationships
  * <li>incremental compilation
+ * <li>ltw
+ * <li>generic factory methods
+ * <li>showWeaveInfo
+ * <li>Clashing with existing methods
+ * <li>varying parameter type on the factory method
+ * <li>See CaseF - what if mixin target is not assignable to the parameter type? create cast?
  * </ul>
  * 
  * @author Andy Clement
  */
 public class DeclareMixinTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
-	public void testSimpleCase() {
-	//	runTest("simple case");
+	// Very basics with a simple static factory method
+	public void testCaseA() {
+		runTest("casea");
+	}
+
+	// non static factory method, will need aspectOf() calling on
+	// the aspect before the factory is called
+	public void testCaseB() {
+		runTest("caseb");
+	}
+
+	// factory method takes the object for which the delegate exists
+	public void testCaseC() {
+		runTest("casec");
+	}
+
+	// factory method is non static and takes the object for which the delegate is being created
+	public void testCaseD() {
+		runTest("cased");
+	}
+
+	// multiple instances causing factory invocation multiple times (but is cached)
+	public void testCaseE() {
+		runTest("casee");
+	}
+
+	// Factory method directly takes the type specified in the Mixin target (strongly typed)
+	public void testCaseF() {
+		runTest("casef");
+	}
+
+	// targeting multiple types from the Mixin
+	public void testCaseG() {
+		runTest("caseg");
+	}
+
+	// Null value for mixin target pattern
+	public void testCaseH() {
+		runTest("caseh");
+	}
+
+	// Invalid interfaces annotation value entries
+	public void testCaseI() {
+		runTest("casei");
 	}
 
 	// --
