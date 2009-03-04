@@ -18,9 +18,9 @@ import java.io.IOException;
 import org.aspectj.weaver.patterns.TypePattern;
 
 /**
- * Type munger for @AspectJ ITD declare parents ie with an interface AND an implementation. Given the aspect that has a field public
- * static Interface fieldI = ... // impl. we will weave in the Interface' methods and delegate to the aspect public static field
- * fieldI
+ * Type munger for annotation style ITD declare parents. with an interface AND an implementation. Given the aspect that has a field
+ * public static Interface fieldI = ... // impl. we will weave in the Interface' methods and delegate to the aspect public static
+ * field fieldI
  * 
  * Note: this munger DOES NOT handles the interface addition to the target classes - a regular Parent kinded munger must be added in
  * coordination.
@@ -32,7 +32,7 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 	private UnresolvedType fieldType;
 
 	/**
-	 * The mixin impl (no arg ctor)
+	 * The mixin implementation (which should have a no-argument constructor)
 	 */
 	private final String implClassName;
 
@@ -40,6 +40,12 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 	 * Type pattern this munger applies to
 	 */
 	private final TypePattern typePattern;
+
+	/**
+	 * When created to represent a mixed in method for @DeclareMixin, these hold the signature of the factory method
+	 */
+	private String factoryMethodName;
+	private String factoryMethodSignature;
 
 	/**
 	 * Construct a new type munger for @AspectJ ITD
@@ -54,6 +60,18 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 		this.aspect = aspect;
 		this.typePattern = typePattern;
 		this.implClassName = implClassName;
+		factoryMethodName = "";
+		factoryMethodSignature = "";
+	}
+
+	public MethodDelegateTypeMunger(ResolvedMember signature, UnresolvedType aspect, String implClassName, TypePattern typePattern,
+			String factoryMethodName, String factoryMethodSignature) {
+		super(MethodDelegate2, signature);
+		this.aspect = aspect;
+		this.typePattern = typePattern;
+		this.implClassName = implClassName;
+		this.factoryMethodName = factoryMethodName;
+		this.factoryMethodSignature = factoryMethodSignature;
 	}
 
 	public boolean equals(Object other) {
@@ -63,7 +81,10 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 		return ((o.aspect == null) ? (aspect == null) : aspect.equals(o.aspect))
 				&& ((o.typePattern == null) ? (typePattern == null) : typePattern.equals(o.typePattern))
 				&& ((o.implClassName == null) ? (implClassName == null) : implClassName.equals(o.implClassName))
-				&& ((o.fieldType == null ? (fieldType == null) : fieldType.equals(o.fieldType)));
+				&& ((o.fieldType == null ? (fieldType == null) : fieldType.equals(o.fieldType)))
+				&& ((o.factoryMethodName == null) ? (factoryMethodName == null) : factoryMethodName.equals(o.factoryMethodName))
+				&& ((o.factoryMethodSignature == null) ? (factoryMethodSignature == null) : factoryMethodSignature
+						.equals(o.factoryMethodSignature));
 	}
 
 	private volatile int hashCode = 0;
@@ -75,6 +96,8 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 			result = 37 * result + ((typePattern == null) ? 0 : typePattern.hashCode());
 			result = 37 * result + ((implClassName == null) ? 0 : implClassName.hashCode());
 			result = 37 * result + ((fieldType == null) ? 0 : fieldType.hashCode());
+			result = 37 * result + ((factoryMethodName == null) ? 0 : factoryMethodName.hashCode());
+			result = 37 * result + ((factoryMethodSignature == null) ? 0 : factoryMethodSignature.hashCode());
 			hashCode = result;
 		}
 		return hashCode;
@@ -82,6 +105,18 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 
 	public ResolvedMember getDelegate(ResolvedType targetType) {
 		return AjcMemberMaker.itdAtDeclareParentsField(targetType, fieldType, aspect);
+	}
+
+	public ResolvedMember getDelegateFactoryMethod(World w) {
+		ResolvedType aspectType = w.resolve(aspect);
+		ResolvedMember[] methods = aspectType.getDeclaredMethods();
+		for (int i = 0; i < methods.length; i++) {
+			ResolvedMember rm = methods[i];
+			if (rm.getName().equals(factoryMethodName) && rm.getSignature().equals(factoryMethodSignature)) {
+				return rm;
+			}
+		}
+		return null;
 	}
 
 	public String getImplClassName() {
@@ -95,22 +130,29 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 		s.writeUTF(implClassName);
 		typePattern.write(s);
 		fieldType.write(s);
+		s.writeUTF(factoryMethodName);
+		s.writeUTF(factoryMethodSignature);
 	}
 
-	public static ResolvedTypeMunger readMethod(VersionedDataInputStream s, ISourceContext context,
-			boolean willFindFieldTypeInStream) throws IOException {
+	public static ResolvedTypeMunger readMethod(VersionedDataInputStream s, ISourceContext context, boolean isEnhanced)
+			throws IOException {
 		ResolvedMemberImpl signature = ResolvedMemberImpl.readResolvedMember(s, context);
 		UnresolvedType aspect = UnresolvedType.read(s);
 		String implClassName = s.readUTF();
 		TypePattern tp = TypePattern.read(s, context);
 		MethodDelegateTypeMunger typeMunger = new MethodDelegateTypeMunger(signature, aspect, implClassName, tp);
 		UnresolvedType fieldType = null;
-		if (willFindFieldTypeInStream) {
+		if (isEnhanced) {
 			fieldType = UnresolvedType.read(s);
 		} else {
-			fieldType = signature.getDeclaringType(); // a guess... that will work in a lot of cases
+			// a guess... that will work in a lot of cases
+			fieldType = signature.getDeclaringType();
 		}
 		typeMunger.setFieldType(fieldType);
+		if (isEnhanced) {
+			typeMunger.factoryMethodName = s.readUTF();
+			typeMunger.factoryMethodSignature = s.readUTF();
+		}
 		return typeMunger;
 	}
 
@@ -141,7 +183,7 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 
 	public static class FieldHostTypeMunger extends ResolvedTypeMunger {
 
-		private UnresolvedType aspect;
+		private final UnresolvedType aspect;
 
 		/**
 		 * Type pattern this munger applies to
@@ -214,5 +256,21 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 
 	public void setFieldType(UnresolvedType fieldType) {
 		this.fieldType = fieldType;
+	}
+
+	public boolean specifiesDelegateFactoryMethod() {
+		return factoryMethodName != null && factoryMethodName.length() != 0;
+	}
+
+	public String getFactoryMethodName() {
+		return factoryMethodName;
+	}
+
+	public String getFactoryMethodSignature() {
+		return factoryMethodSignature;
+	}
+
+	public UnresolvedType getAspect() {
+		return aspect;
 	}
 }
