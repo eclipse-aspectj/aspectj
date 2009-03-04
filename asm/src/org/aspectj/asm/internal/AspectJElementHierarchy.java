@@ -424,6 +424,9 @@ public class AspectJElementHierarchy implements IHierarchy {
 	 * @return any closer match below 'node' or null if nothing is a more accurate match
 	 */
 	public IProgramElement findCloserMatchForLineNumber(IProgramElement node, int lineno) {
+		if (node == null || node.getChildren() == null) {
+			return null;
+		}
 		for (Iterator childrenIter = node.getChildren().iterator(); childrenIter.hasNext();) {
 			IProgramElement child = (IProgramElement) childrenIter.next();
 			ISourceLocation childLoc = child.getSourceLocation();
