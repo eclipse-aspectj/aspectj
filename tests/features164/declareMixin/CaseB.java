@@ -1,16 +1,17 @@
-// TESTING: Very basics with a simple static factory method
 import org.aspectj.lang.annotation.*;
 
-public class CaseA {
+public class CaseB {
   public static void main(String[]argv) {
-    CaseA ca = new CaseA();
-    ((I)ca).methodOne(); // will only succeed if mixin applied
+    CaseB cb = new CaseB();
+    ((I)cb).methodOne(); // will only succeed if mixin applied
   }
 }
 
 aspect X {
-  @DeclareMixin("CaseA")
-  public static I createImplementation() {
+  // TESTING: non static factory method, will need aspectOf() calling on 
+  // the aspect before the factory is called
+  @DeclareMixin("CaseB")
+  public I createImplementation() {
     System.out.println("Delegate factory invoked");
     return new Implementation();
   }
