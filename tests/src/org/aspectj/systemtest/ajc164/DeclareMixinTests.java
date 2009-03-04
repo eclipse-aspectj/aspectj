@@ -21,7 +21,13 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  * In many ways the design is similar to DeclareParents now - so we have to plug in at the same points, but the code generation for
  * generating the delegate object and the choice of which interfaces (and methods within those) to mixin is different.
  * 
- * <h4>Design and test considerations:</h4><br>
+ * <h4>Tested:</h4><br>
+ * <ul>
+ * <li>Factory method with void or primitive return value
+ * <li>Check the factory method has at most one parameter
+ * </ul>
+ * 
+ * <h4>Still to test/explore:</h4><br>
  * <ul>
  * <li>model relationships
  * <li>incremental compilation
@@ -31,7 +37,6 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  * <li>Clashing with existing methods
  * <li>varying parameter type on the factory method
  * <li>See CaseF - what if mixin target is not assignable to the parameter type? create cast?
- * <li>Check the factory method has at most one parameter
  * </ul>
  * 
  * @author Andy Clement
@@ -82,6 +87,16 @@ public class DeclareMixinTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// Invalid interfaces annotation value entries
 	public void testCaseI() {
 		runTest("casei");
+	}
+
+	// invalid return type for factory method
+	public void testCaseJ() {
+		runTest("casej");
+	}
+
+	// too many arguments to the factory method
+	public void testCaseK() {
+		runTest("casek");
 	}
 
 	// --

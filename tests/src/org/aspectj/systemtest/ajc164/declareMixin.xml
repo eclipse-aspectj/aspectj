@@ -89,5 +89,18 @@
          <message kind="error" text="Types listed in the 'interfaces'"/>
      </compile>
    </ajc-test>
+   
+   <ajc-test dir="features164/declareMixin" title="casej">
+     <compile files="CaseJ.java" options="-1.5">
+         <message kind="error" text="createImplementation1"/>
+         <message kind="error" text="Method 'int X.createImplementation2(java.lang.Object)':  factory methods "/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features164/declareMixin" title="casek">
+     <compile files="CaseK.java" options="-1.5">
+         <message kind="error" text="factory methods for a mixin can take a maximum of one parameter"/>
+     </compile>
+   </ajc-test>
         
 </suite>
