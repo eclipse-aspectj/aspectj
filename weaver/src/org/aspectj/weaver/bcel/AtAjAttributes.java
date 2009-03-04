@@ -829,6 +829,28 @@ public class AtAjAttributes {
 	}
 
 	/**
+	 * Return a nicely formatted method string, for example: int X.foo(java.lang.String)
+	 */
+	public static String getMethodForMessage(AjAttributeMethodStruct methodstructure) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("Method '");
+		sb.append(methodstructure.method.getReturnType().toString());
+		sb.append(" ").append(methodstructure.enclosingType).append(".").append(methodstructure.method.getName());
+		sb.append("(");
+		Type[] args = methodstructure.method.getArgumentTypes();
+		if (args != null) {
+			for (int t = 0; t < args.length; t++) {
+				if (t > 0) {
+					sb.append(",");
+				}
+				sb.append(args[t].toString());
+			}
+		}
+		sb.append(")'");
+		return sb.toString();
+	}
+
+	/**
 	 * Process any @DeclareMixin annotation.
 	 * 
 	 * Example Declaration <br>
@@ -857,6 +879,17 @@ public class AtAjAttributes {
 
 		// Return value of the annotated method is the interface or class that the mixin delegate should have
 		ResolvedType methodReturnType = UnresolvedType.forSignature(annotatedMethod.getReturnType().getSignature()).resolve(world);
+
+		if (methodReturnType.isPrimitiveType()) {
+			reportError(getMethodForMessage(struct) + ":  factory methods for a mixin cannot return void or a primitive type",
+					struct);
+			return false;
+		}
+
+		if (annotatedMethod.getArgumentTypes().length > 1) {
+			reportError(getMethodForMessage(struct) + ": factory methods for a mixin can take a maximum of one parameter", struct);
+			return false;
+		}
 
 		// The set of interfaces to be mixed in is either:
 		// supplied as a list in the 'Class[] interfaces' value in the annotation value
