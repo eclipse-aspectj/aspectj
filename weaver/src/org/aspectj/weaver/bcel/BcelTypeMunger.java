@@ -1140,7 +1140,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	 * @param unMangledInterMethod the method to bridge 'to' that we have already created in the 'subtype'
 	 * @param clazz the class in which to put the bridge method
 	 * @param paramTypes Parameter types for the bridge method, passed in as an optimization since the caller is likely to have
-	 *        already created them.
+	 *            already created them.
 	 * @param theBridgeMethod
 	 */
 	private void createBridgeMethod(BcelWorld world, NewMethodTypeMunger munger, ResolvedMember unMangledInterMethod,
@@ -1240,7 +1240,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			// If no implementation class was specified, the intention was that
 			// the types matching the pattern
 			// already implemented the interface, let's check that now!
-			if (munger.getImplClassName() == null) {
+			if (munger.getImplClassName() == null && !munger.specifiesDelegateFactoryMethod()) {
 				boolean isOK = false;
 				List/* LazyMethodGen */existingMethods = gen.getMethodGens();
 				for (Iterator i = existingMethods.iterator(); i.hasNext() && !isOK;) {
@@ -1303,11 +1303,41 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			body.append(ifNonNull);
 
 			// Create and store a new instance
-			body.append(InstructionConstants.ALOAD_0);
-			body.append(fact.createNew(munger.getImplClassName()));
-			body.append(InstructionConstants.DUP);
-			body.append(fact.createInvoke(munger.getImplClassName(), "<init>", Type.VOID, Type.NO_ARGS, Constants.INVOKESPECIAL));
-			body.append(Utility.createSet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
+			body.append(InstructionConstants.ALOAD_0); // 'this' is where we'll store the field value
+
+			// TODO for non-static case, call aspectOf() then call the factory method on the retval
+			// TODO decide whether the value can really be cached
+
+			// locate the aspect and call the static method in it
+			if (munger.specifiesDelegateFactoryMethod()) {
+				ResolvedMember rm = munger.getDelegateFactoryMethod(weaver.getWorld());
+
+				if (rm.isStatic()) {
+					if (rm.getArity() != 0) {
+						body.append(InstructionConstants.ALOAD_0);
+					}
+					body.append(fact.createInvoke(rm.getDeclaringType().getName(), rm.getName(), rm.getSignature(),
+							Constants.INVOKESTATIC));
+					body.append(Utility.createSet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
+				} else {
+					// Need to call aspectOf() to obtain the aspect instance then call the factory method upon that
+					UnresolvedType theAspect = munger.getAspect();
+					body.append(fact.createInvoke(theAspect.getName(), "aspectOf", "()" + theAspect.getSignature(),
+							Constants.INVOKESTATIC));
+					if (rm.getArity() != 0) {
+						body.append(InstructionConstants.ALOAD_0);
+					}
+					body.append(fact.createInvoke(rm.getDeclaringType().getName(), rm.getName(), rm.getSignature(),
+							Constants.INVOKEVIRTUAL));
+					body.append(Utility.createSet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
+				}
+			} else {
+				body.append(fact.createNew(munger.getImplClassName()));
+				body.append(InstructionConstants.DUP);
+				body.append(fact
+						.createInvoke(munger.getImplClassName(), "<init>", Type.VOID, Type.NO_ARGS, Constants.INVOKESPECIAL));
+				body.append(Utility.createSet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
+			}
 
 			// if not null use the instance we've got
 			InstructionHandle ifNonNullElse = body.append(InstructionConstants.ALOAD_0);

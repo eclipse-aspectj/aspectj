@@ -30,8 +30,10 @@ import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValueGen;
 import org.aspectj.apache.bcel.classfile.annotation.ClassElementValueGen;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
 import org.aspectj.apache.bcel.generic.Type;
@@ -57,6 +59,7 @@ import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.Bindings;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclareParents;
@@ -124,7 +127,9 @@ public class AtAjAttributes {
 
 		// argument names used for formal binding
 		private String[] m_argumentNamesLazy = null;
-		public String unparsedArgumentNames = null; // Set only if discovered as argNames attribute of annotation
+		public String unparsedArgumentNames = null; // Set only if discovered as
+		// argNames attribute of
+		// annotation
 
 		final Method method;
 		final BcelMethod bMethod;
@@ -220,10 +225,12 @@ public class AtAjAttributes {
 			Attribute attribute = attributes[i];
 			if (acceptAttribute(attribute)) {
 				RuntimeAnnotations rvs = (RuntimeAnnotations) attribute;
-				// we don't need to look for several attribute occurrences since it cannot happen as per JSR175
+				// we don't need to look for several attribute occurrences since
+				// it cannot happen as per JSR175
 				if (!isCodeStyleAspect && !javaClass.isInterface()) {
 					hasAtAspectAnnotation = handleAspectAnnotation(rvs, struct);
-					// TODO AV - if put outside the if isCodeStyleAspect then we would enable mix style
+					// TODO AV - if put outside the if isCodeStyleAspect then we
+					// would enable mix style
 					hasAtPrecedenceAnnotation = handlePrecedenceAnnotation(rvs, struct);
 				}
 				// there can only be one RuntimeVisible bytecode attribute
@@ -239,7 +246,8 @@ public class AtAjAttributes {
 			return EMPTY_LIST;
 		}
 
-		// the following block will not detect @Pointcut in non @Aspect types for optimization purpose
+		// the following block will not detect @Pointcut in non @Aspect types
+		// for optimization purpose
 		if (!(hasAtAspectAnnotation || isCodeStyleAspect) && !containsPointcut) {
 			return EMPTY_LIST;
 		}
@@ -263,7 +271,8 @@ public class AtAjAttributes {
 		// if (hasAtAspectAnnotation && !javaClass.isPublic()) {
 		// msgHandler.handleMessage(
 		// new Message(
-		// "Found @Aspect annotation on a non public class '" + javaClass.getClassName() + "'",
+		// "Found @Aspect annotation on a non public class '" +
+		// javaClass.getClassName() + "'",
 		// IMessage.ERROR,
 		// null,
 		// type.getSourceLocation()
@@ -273,46 +282,53 @@ public class AtAjAttributes {
 		// }
 
 		// code style pointcuts are class attributes
-		// we need to gather the @AJ pointcut right now and not at method level annotation extraction time
+		// we need to gather the @AJ pointcut right now and not at method level
+		// annotation extraction time
 		// in order to be able to resolve the pointcut references later on
-		// we don't need to look in super class, the pointcut reference in the grammar will do it
+		// we don't need to look in super class, the pointcut reference in the
+		// grammar will do it
 
 		for (int i = 0; i < javaClass.getMethods().length; i++) {
 			Method method = javaClass.getMethods()[i];
 			if (method.getName().startsWith(NameMangler.PREFIX))
 				continue; // already dealt with by ajc...
-			// FIXME alex optimize, this method struct will gets recreated for advice extraction
+			// FIXME alex optimize, this method struct will gets recreated for
+			// advice extraction
 			AjAttributeMethodStruct mstruct = null;
 			boolean processedPointcut = false;
 			Attribute[] mattributes = method.getAttributes();
 			for (int j = 0; j < mattributes.length; j++) {
 				Attribute mattribute = mattributes[j];
 				if (acceptAttribute(mattribute)) {
-					// TODO speed all this nonsense up rather than looking through all the annotations every time
+					// TODO speed all this nonsense up rather than looking
+					// through all the annotations every time
 					// same for fields
 					mstruct = new AjAttributeMethodStruct(method, null, type, context, msgHandler);
 					processedPointcut = handlePointcutAnnotation((RuntimeAnnotations) mattribute, mstruct);
-//					if (!processedPointcut) {
-//						handleDeclareMixinAnnotation((RuntimeAnnotations) mattribute, mstruct);
-//					}
+					if (!processedPointcut) {
+						processedPointcut = handleDeclareMixinAnnotation((RuntimeAnnotations) mattribute, mstruct);
+					}
 					// there can only be one RuntimeVisible bytecode attribute
 					break;
 				}
 			}
 			if (processedPointcut) {
-				// FIXME asc should check we aren't adding multiple versions... will do once I get the tests passing again...
+				// FIXME asc should check we aren't adding multiple versions...
+				// will do once I get the tests passing again...
 				struct.ajAttributes.add(new AjAttribute.WeaverVersionInfo());
 				struct.ajAttributes.addAll(mstruct.ajAttributes);
 			}
 		}
 
-		// code style declare error / warning / implements / parents are field attributes
+		// code style declare error / warning / implements / parents are field
+		// attributes
 		Field[] fs = javaClass.getFields();
 		for (int i = 0; i < fs.length; i++) {
 			Field field = fs[i];
 			if (field.getName().startsWith(NameMangler.PREFIX))
 				continue; // already dealt with by ajc...
-			// FIXME alex optimize, this method struct will gets recreated for advice extraction
+			// FIXME alex optimize, this method struct will gets recreated for
+			// advice extraction
 			AjAttributeFieldStruct fstruct = new AjAttributeFieldStruct(field, null, type, context, msgHandler);
 			Attribute[] fattributes = field.getAttributes();
 
@@ -322,7 +338,8 @@ public class AtAjAttributes {
 					RuntimeAnnotations frvs = (RuntimeAnnotations) fattribute;
 					if (handleDeclareErrorOrWarningAnnotation(model, frvs, fstruct)
 							|| handleDeclareParentsAnnotation(frvs, fstruct)) {
-						// semantic check - must be in an @Aspect [remove if previous block bypassed in advance]
+						// semantic check - must be in an @Aspect [remove if
+						// previous block bypassed in advance]
 						if (!type.isAnnotationStyleAspect() && !isCodeStyleAspect) {
 							msgHandler.handleMessage(new Message("Found @AspectJ annotations in a non @Aspect type '"
 									+ type.getName() + "'", IMessage.WARNING, null, type.getSourceLocation()));
@@ -356,12 +373,16 @@ public class AtAjAttributes {
 		AjAttributeMethodStruct struct = new AjAttributeMethodStruct(method, bMethod, type, context, msgHandler);
 		Attribute[] attributes = method.getAttributes();
 
-		// we remember if we found one @AJ annotation for minimal semantic error reporting
-		// the real reporting beeing done thru AJDT and the compiler mapping @AJ to AjAtttribute
+		// we remember if we found one @AJ annotation for minimal semantic error
+		// reporting
+		// the real reporting beeing done thru AJDT and the compiler mapping @AJ
+		// to AjAtttribute
 		// or thru APT
 		//
-		// Note: we could actually skip the whole thing if type is not itself an @Aspect
-		// but then we would not see any warning. We do bypass for pointcut but not for advice since it would
+		// Note: we could actually skip the whole thing if type is not itself an
+		// @Aspect
+		// but then we would not see any warning. We do bypass for pointcut but
+		// not for advice since it would
 		// be too silent.
 		boolean hasAtAspectJAnnotation = false;
 		boolean hasAtAspectJAnnotationMustReturnVoid = false;
@@ -392,8 +413,10 @@ public class AtAjAttributes {
 		}
 		hasAtAspectJAnnotation = hasAtAspectJAnnotation || hasAtAspectJAnnotationMustReturnVoid;
 
-		// semantic check - must be in an @Aspect [remove if previous block bypassed in advance]
-		if (hasAtAspectJAnnotation && !type.isAspect()) { // isAnnotationStyleAspect()) {
+		// semantic check - must be in an @Aspect [remove if previous block
+		// bypassed in advance]
+		if (hasAtAspectJAnnotation && !type.isAspect()) { // isAnnotationStyleAspect())
+			// {
 			msgHandler.handleMessage(new Message("Found @AspectJ annotations in a non @Aspect type '" + type.getName() + "'",
 					IMessage.WARNING, null, type.getSourceLocation()));
 			// go ahead
@@ -410,7 +433,8 @@ public class AtAjAttributes {
 			msgHandler.handleMessage(MessageUtil.error("Advice cannot be declared static '" + methodToString(struct.method) + "'",
 					type.getSourceLocation()));
 			// new Message(
-			// "Advice cannot be declared static '" + methodToString(struct.method) + "'",
+			// "Advice cannot be declared static '" +
+			// methodToString(struct.method) + "'",
 			// IMessage.ERROR,
 			// null,
 			// type.getSourceLocation()
@@ -440,7 +464,8 @@ public class AtAjAttributes {
 	 */
 	public static List readAj5FieldAttributes(Field field, BcelField bField, ResolvedType type, ISourceContext context,
 			IMessageHandler msgHandler) {
-		// Note: field annotation are for ITD and DEOW - processed at class level directly
+		// Note: field annotation are for ITD and DEOW - processed at class
+		// level directly
 		return Collections.EMPTY_LIST;
 	}
 
@@ -485,7 +510,8 @@ public class AtAjAttributes {
 				// could not parse it, ignore the aspect
 				return false;
 			} else {
-				perClause.setLocation(struct.context, -1, -1);// struct.context.getOffset(), struct.context.getOffset()+1);//FIXME
+				perClause.setLocation(struct.context, -1, -1);// struct.context.getOffset(),
+				// struct.context.getOffset()+1);//FIXME
 				// AVASM
 				// FIXME asc see related comment way about about the version...
 				struct.ajAttributes.add(new AjAttribute.WeaverVersionInfo());
@@ -495,8 +521,10 @@ public class AtAjAttributes {
 				final IScope binding;
 				binding = new BindingScope(struct.enclosingType, struct.context, bindings);
 
-				// // we can't resolve here since the perclause typically refers to pointcuts
-				// // defined in the aspect that we haven't told the BcelObjectType about yet.
+				// // we can't resolve here since the perclause typically refers
+				// to pointcuts
+				// // defined in the aspect that we haven't told the
+				// BcelObjectType about yet.
 				//
 				// perClause.resolve(binding);
 
@@ -543,7 +571,8 @@ public class AtAjAttributes {
 		} else if (perClauseString.equalsIgnoreCase(PerClause.SINGLETON.getName() + "()")) {
 			perClause = new PerSingleton();
 		} else {
-			// could not parse the @AJ perclause - fallback to singleton and issue an error
+			// could not parse the @AJ perclause - fallback to singleton and
+			// issue an error
 			reportError("@Aspect per clause cannot be read '" + perClauseString + "'", struct);
 			return null;
 		}
@@ -589,19 +618,26 @@ public class AtAjAttributes {
 	// * @param struct
 	// * @return true if found
 	// */
-	// private static boolean handleDeclareImplementsAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeFieldStruct
+	// private static boolean
+	// handleDeclareImplementsAnnotation(RuntimeAnnotations runtimeAnnotations,
+	// AjAttributeFieldStruct
 	// struct) {//, ResolvedPointcutDefinition preResolvedPointcut) {
-	// Annotation deci = getAnnotation(runtimeAnnotations, AjcMemberMaker.DECLAREIMPLEMENTS_ANNOTATION);
+	// Annotation deci = getAnnotation(runtimeAnnotations,
+	// AjcMemberMaker.DECLAREIMPLEMENTS_ANNOTATION);
 	// if (deci != null) {
-	// ElementNameValuePairGen deciPatternNVP = getAnnotationElement(deci, VALUE);
+	// ElementNameValuePairGen deciPatternNVP = getAnnotationElement(deci,
+	// VALUE);
 	// String deciPattern = deciPatternNVP.getValue().stringifyValue();
 	// if (deciPattern != null) {
 	// TypePattern typePattern = parseTypePattern(deciPattern, struct);
-	// ResolvedType fieldType = UnresolvedType.forSignature(struct.field.getSignature()).resolve(struct.enclosingType.getWorld());
+	// ResolvedType fieldType =
+	// UnresolvedType.forSignature(struct.field.getSignature()).resolve(struct.enclosingType.getWorld());
 	// if (fieldType.isPrimitiveType()) {
 	// return false;
 	// } else if (fieldType.isInterface()) {
-	// TypePattern parent = new ExactTypePattern(UnresolvedType.forSignature(struct.field.getSignature()), false, false);
+	// TypePattern parent = new
+	// ExactTypePattern(UnresolvedType.forSignature(struct.field.getSignature()),
+	// false, false);
 	// parent.resolve(struct.enclosingType.getWorld());
 	// List parents = new ArrayList(1);
 	// parents.add(parent);
@@ -617,7 +653,8 @@ public class AtAjAttributes {
 	// );
 	// return true;
 	// } else {
-	// reportError("@DeclareImplements: can only be used on field whose type is an interface", struct);
+	// reportError("@DeclareImplements: can only be used on field whose type is an interface",
+	// struct);
 	// return false;
 	// }
 	// }
@@ -652,13 +689,17 @@ public class AtAjAttributes {
 					List parents = new ArrayList(1);
 					parents.add(parent);
 					DeclareParents dp = new DeclareParents(typePattern, parents, false);
-					dp.resolve(binding); // resolves the parent and child parts of the decp
+					dp.resolve(binding); // resolves the parent and child parts
+					// of the decp
 
-					// resolve this so that we can use it for the MethodDelegateMungers below.
-					// eg. '@Coloured *' will change from a WildTypePattern to an 'AnyWithAnnotationTypePattern' after this
+					// resolve this so that we can use it for the
+					// MethodDelegateMungers below.
+					// eg. '@Coloured *' will change from a WildTypePattern to
+					// an 'AnyWithAnnotationTypePattern' after this
 					// resolution
 					typePattern = typePattern.resolveBindings(binding, Bindings.NONE, false, false);
-					// TODO kick ISourceLocation sl = struct.bField.getSourceLocation(); ??
+					// TODO kick ISourceLocation sl =
+					// struct.bField.getSourceLocation(); ??
 					// dp.setLocation(dp.getDeclaringType().getSourceContext(),
 					// dp.getDeclaringType().getSourceLocation().getOffset(),
 					// dp.getDeclaringType().getSourceLocation().getOffset());
@@ -688,13 +729,16 @@ public class AtAjAttributes {
 									hasNoCtorOrANoArgOne = false;
 
 									if (resolvedMember.getParameterTypes().length == 0) {
-										if (defaultVisibilityImpl) { // default visibility implementation
+										if (defaultVisibilityImpl) { // default
+											// visibility
+											// implementation
 											if (resolvedMember.isPublic() || resolvedMember.isDefault()) {
 												hasNoCtorOrANoArgOne = true;
 											} else {
 												foundOneOfIncorrectVisibility = resolvedMember;
 											}
-										} else if (Modifier.isPublic(implModifiers)) { // public implementation
+										} else if (Modifier.isPublic(implModifiers)) { // public
+											// implementation
 											if (resolvedMember.isPublic()) {
 												hasNoCtorOrANoArgOne = true;
 											} else {
@@ -734,21 +778,29 @@ public class AtAjAttributes {
 					for (int i = 0; i < methods.length; i++) {
 						ResolvedMember method = methods[i];
 						if (method.isAbstract()) {
-							// moved to be detected at weave time if the target doesnt implement the methods
+							// moved to be detected at weave time if the target
+							// doesnt implement the methods
 							// if (defaultImplClassName == null) {
-							// // non marker interface with no default impl provided
+							// // non marker interface with no default impl
+							// provided
 							// reportError("@DeclareParents: used with a non marker interface and no defaultImpl=\"...\" provided",
 							// struct);
 							// return false;
 							// }
 							hasAtLeastOneMethod = true;
 							// What we are saying here:
-							// We have this method 'method' and we want to put a forwarding method into a type that matches
-							// typePattern that should delegate to the version of the method in 'defaultImplClassName'
+							// We have this method 'method' and we want to put a
+							// forwarding method into a type that matches
+							// typePattern that should delegate to the version
+							// of the method in 'defaultImplClassName'
 
-							// Now the method may be from a supertype but the declaring type of the method we pass into the type
-							// munger is what is used to determine the type of the field that hosts the delegate instance.
-							// So here we create a modified method with an alternative declaring type so that we lookup
+							// Now the method may be from a supertype but the
+							// declaring type of the method we pass into the
+							// type
+							// munger is what is used to determine the type of
+							// the field that hosts the delegate instance.
+							// So here we create a modified method with an
+							// alternative declaring type so that we lookup
 							// the right field. See pr164016.
 							MethodDelegateTypeMunger mdtm = new MethodDelegateTypeMunger(method, struct.enclosingType,
 									defaultImplClassName, typePattern);
@@ -757,7 +809,8 @@ public class AtAjAttributes {
 							struct.ajAttributes.add(new AjAttribute.TypeMunger(mdtm));
 						}
 					}
-					// successfull so far, we thus need a bcel type munger to have
+					// successfull so far, we thus need a bcel type munger to
+					// have
 					// a field hosting the mixin in the target type
 					if (hasAtLeastOneMethod && defaultImplClassName != null) {
 						ResolvedMember fieldHost = AjcMemberMaker.itdAtDeclareParentsField(null, fieldType, struct.enclosingType);
@@ -778,155 +831,235 @@ public class AtAjAttributes {
 	/**
 	 * Process any @DeclareMixin annotation.
 	 * 
+	 * Example Declaration <br>
+	 * 
+	 * @DeclareMixin("Foo+") public I createImpl(Object o) { return new Impl(o); }
+	 * 
+	 * <br>
 	 * @param runtimeAnnotations
 	 * @param struct
 	 * @return true if found
 	 */
 	private static boolean handleDeclareMixinAnnotation(RuntimeAnnotations runtimeAnnotations, AjAttributeMethodStruct struct) {
 		AnnotationGen declareMixinAnnotation = getAnnotation(runtimeAnnotations, AjcMemberMaker.DECLAREMIXIN_ANNOTATION);
-		if (declareMixinAnnotation != null) {
-			ElementNameValuePairGen declareMixinPatternNameValuePair = getAnnotationElement(declareMixinAnnotation, VALUE);
-			String declareMixinPattern = declareMixinPatternNameValuePair.getValue().stringifyValue();
-			if (declareMixinPattern != null) {
-				TypePattern typePattern = parseTypePattern(declareMixinPattern, struct);
-				ResolvedType methodType = UnresolvedType.forSignature(struct.method.getSignature()).resolve(
-						struct.enclosingType.getWorld());
-				// For @DeclareMixin:
-				// methodType - might be a class or an interface. If a class then the interfaces value of the
-				// annotation will subset it
-				if (methodType.isInterface()) {
-					// TODO DECLAREMIXIN set the location more accurately than this
-					// TODO DECLAREMIXIN check for interfaces specified and if they aren't it is an error
-					TypePattern parent = parseTypePattern(methodType.getName(), struct);
-					FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
-					IScope binding = new BindingScope(struct.enclosingType, struct.context, bindings);
-					// first add the declare implements like
-					List parents = new ArrayList(1);
-					parents.add(parent);
-					// how do we mark this as a decp due to decmixin?
-					DeclareParents dp = new DeclareParents(typePattern, parents, false);
-					dp.resolve(binding); // resolves the parent and child parts of the decp
+		if (declareMixinAnnotation == null) {
+			// No annotation found
+			return false;
+		}
 
-					// resolve this so that we can use it for the MethodDelegateMungers below.
-					// eg. '@Coloured *' will change from a WildTypePattern to an 'AnyWithAnnotationTypePattern' after this
-					// resolution
-					typePattern = typePattern.resolveBindings(binding, Bindings.NONE, false, false);
-					// TODO kick ISourceLocation sl = struct.bField.getSourceLocation(); ??
-					// dp.setLocation(dp.getDeclaringType().getSourceContext(),
-					// dp.getDeclaringType().getSourceLocation().getOffset(),
-					// dp.getDeclaringType().getSourceLocation().getOffset());
-					dp.setLocation(struct.context, -1, -1); // not ideal...
-					struct.ajAttributes.add(new AjAttribute.DeclareAttribute(dp));
+		Method annotatedMethod = struct.method;
+		World world = struct.enclosingType.getWorld();
+		ElementNameValuePairGen declareMixinPatternNameValuePair = getAnnotationElement(declareMixinAnnotation, VALUE);
 
-					// do we have a defaultImpl=xxx.class (ie implementation)
-					String defaultImplClassName = null;
-					ElementNameValuePairGen defaultImplNVP = getAnnotationElement(declareMixinAnnotation, "defaultImpl");
-					// if (defaultImplNVP != null) {
-					// ClassElementValueGen defaultImpl = (ClassElementValueGen) defaultImplNVP.getValue();
-					// defaultImplClassName = UnresolvedType.forSignature(defaultImpl.getClassString()).getName();
-					// if (defaultImplClassName.equals("org.aspectj.lang.annotation.DeclareParents")) {
-					// defaultImplClassName = null;
-					// } else {
-					// // check public no arg ctor
-					// ResolvedType impl = struct.enclosingType.getWorld().resolve(defaultImplClassName, false);
-					// ResolvedMember[] mm = impl.getDeclaredMethods();
-					// int implModifiers = impl.getModifiers();
-					// boolean defaultVisibilityImpl = !(Modifier.isPrivate(implModifiers)
-					// || Modifier.isProtected(implModifiers) || Modifier.isPublic(implModifiers));
-					// boolean hasNoCtorOrANoArgOne = true;
-					// ResolvedMember foundOneOfIncorrectVisibility = null;
-					// for (int i = 0; i < mm.length; i++) {
-					// ResolvedMember resolvedMember = mm[i];
-					// if (resolvedMember.getName().equals("<init>")) {
-					// hasNoCtorOrANoArgOne = false;
-					//
-					// if (resolvedMember.getParameterTypes().length == 0) {
-					// if (defaultVisibilityImpl) { // default visibility implementation
-					// if (resolvedMember.isPublic() || resolvedMember.isDefault()) {
-					// hasNoCtorOrANoArgOne = true;
-					// } else {
-					// foundOneOfIncorrectVisibility = resolvedMember;
-					// }
-					// } else if (Modifier.isPublic(implModifiers)) { // public implementation
-					// if (resolvedMember.isPublic()) {
-					// hasNoCtorOrANoArgOne = true;
-					// } else {
-					// foundOneOfIncorrectVisibility = resolvedMember;
-					// }
-					// }
-					// }
-					// }
-					// if (hasNoCtorOrANoArgOne) {
-					// break;
-					// }
-					// }
-					// if (!hasNoCtorOrANoArgOne) {
-					// if (foundOneOfIncorrectVisibility != null) {
-					// reportError(
-					// "@DeclareParents: defaultImpl=\""
-					// + defaultImplClassName
-					// +
-					// "\" has a no argument constructor, but it is of incorrect visibility.  It must be at least as visible as the type.",
-					// struct);
-					// } else {
-					// reportError("@DeclareParents: defaultImpl=\"" + defaultImplClassName
-					// + "\" has no public no-arg constructor", struct);
-					// }
-					// }
-					// if (!methodType.isAssignableFrom(impl)) {
-					// reportError("@DeclareParents: defaultImpl=\"" + defaultImplClassName
-					// + "\" does not implement the interface '" + methodType.toString() + "'", struct);
-					// }
-					// }
-					//
-					// }
+		// declareMixinPattern could be of the form "Bar*" or "A || B" or "Foo+"
+		String declareMixinPattern = declareMixinPatternNameValuePair.getValue().stringifyValue();
+		TypePattern targetTypePattern = parseTypePattern(declareMixinPattern, struct);
 
-					// then iterate on field interface hierarchy (not object)
-					boolean hasAtLeastOneMethod = false;
-					ResolvedMember[] methods = (ResolvedMember[]) methodType.getMethodsWithoutIterator(true, false).toArray(
-							new ResolvedMember[0]);
-					for (int i = 0; i < methods.length; i++) {
-						ResolvedMember method = methods[i];
-						if (method.isAbstract()) {
-							// moved to be detected at weave time if the target doesnt implement the methods
-							// if (defaultImplClassName == null) {
-							// // non marker interface with no default impl provided
-							// reportError("@DeclareParents: used with a non marker interface and no defaultImpl=\"...\" provided",
-							// struct);
-							// return false;
-							// }
-							hasAtLeastOneMethod = true;
-							// What we are saying here:
-							// We have this method 'method' and we want to put a forwarding method into a type that matches
-							// typePattern that should delegate to the version of the method in 'defaultImplClassName'
+		// Return value of the annotated method is the interface or class that the mixin delegate should have
+		ResolvedType methodReturnType = UnresolvedType.forSignature(annotatedMethod.getReturnType().getSignature()).resolve(world);
 
-							// Now the method may be from a supertype but the declaring type of the method we pass into the type
-							// munger is what is used to determine the type of the field that hosts the delegate instance.
-							// So here we create a modified method with an alternative declaring type so that we lookup
-							// the right field. See pr164016.
-							MethodDelegateTypeMunger mdtm = new MethodDelegateTypeMunger(method, struct.enclosingType,
-									defaultImplClassName, typePattern);
-							mdtm.setFieldType(methodType);
-							mdtm.setSourceLocation(struct.enclosingType.getSourceLocation());
-							struct.ajAttributes.add(new AjAttribute.TypeMunger(mdtm));
-						}
-					}
-					// successfull so far, we thus need a bcel type munger to have
-					// a field hosting the mixin in the target type
-					if (hasAtLeastOneMethod && defaultImplClassName != null) {
-						ResolvedMember fieldHost = AjcMemberMaker.itdAtDeclareParentsField(null, methodType, struct.enclosingType);
-						struct.ajAttributes.add(new AjAttribute.TypeMunger(new MethodDelegateTypeMunger.FieldHostTypeMunger(
-								fieldHost, struct.enclosingType, typePattern)));
-					}
+		// The set of interfaces to be mixed in is either:
+		// supplied as a list in the 'Class[] interfaces' value in the annotation value
+		// supplied as just the interface return value of the annotated method
+		// supplied as just the class return value of the annotated method
+		ElementNameValuePairGen interfaceListSpecified = getAnnotationElement(declareMixinAnnotation, "interfaces");
 
-					return true;
-				} else {
-					reportError("@DeclareParents: can only be used on a field whose type is an interface", struct);
+		List newParents = new ArrayList(1);
+		List newParentTypes = new ArrayList(1);
+		if (interfaceListSpecified != null) {
+			ArrayElementValueGen arrayOfInterfaceTypes = (ArrayElementValueGen) interfaceListSpecified.getValue();
+			int numberOfTypes = arrayOfInterfaceTypes.getElementValuesArraySize();
+			ElementValueGen[] theTypes = arrayOfInterfaceTypes.getElementValuesArray();
+			for (int i = 0; i < numberOfTypes; i++) {
+				ClassElementValueGen interfaceType = (ClassElementValueGen) theTypes[i];
+				// Check: needs to be resolvable
+				// TODO crappy replace required
+				ResolvedType ajInterfaceType = UnresolvedType.forSignature(interfaceType.getClassString().replace("/", "."))
+						.resolve(world);
+				newParentTypes.add(ajInterfaceType);
+				if (ajInterfaceType.isMissing() || !ajInterfaceType.isInterface()) {
+					reportError(
+							"Types listed in the 'interfaces' DeclareMixin annotation value must be valid interfaces. This is invalid: "
+									+ ajInterfaceType.getName(), struct); // TODO better error location, use the method position
 					return false;
+				}
+				// Checking that it is a superinterface of the methods return value is done at weave time
+				TypePattern newParent = parseTypePattern(ajInterfaceType.getName(), struct);
+				newParents.add(newParent);
+			}
+		} else {
+			// Use the method return type: this might be a class or an interface
+			TypePattern newParent = parseTypePattern(methodReturnType.getName(), struct);
+			newParentTypes.add(methodReturnType);
+			newParents.add(newParent);
+		}
+		if (newParents.size() == 0) {
+			// Warning: did they foolishly put @DeclareMixin(value="Bar+",interfaces={})
+			// TODO output warning
+			return false;
+		}
+		// TODO DECLAREMIXIN set the location more accurately than
+		// this
+		FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+		IScope binding = new BindingScope(struct.enclosingType, struct.context, bindings);
+		// first add the declare implements like
+		// how do we mark this as a decp due to decmixin?
+		DeclareParents dp = new DeclareParents(targetTypePattern, newParents, false);
+		dp.resolve(binding); // resolves the parent and child parts
+		// of the decp
+
+		// resolve this so that we can use it for the
+		// MethodDelegateMungers below.
+		// eg. '@Coloured *' will change from a WildTypePattern to
+		// an 'AnyWithAnnotationTypePattern' after this
+		// resolution
+		targetTypePattern = dp.getChild();// targetTypePattern.resolveBindings(binding, Bindings.NONE, false, false);
+		// TODO kick ISourceLocation sl =
+		// struct.bField.getSourceLocation(); ??
+		// dp.setLocation(dp.getDeclaringType().getSourceContext(),
+		// dp.getDeclaringType().getSourceLocation().getOffset(),
+		// dp.getDeclaringType().getSourceLocation().getOffset());
+		dp.setLocation(struct.context, -1, -1); // not ideal...
+		struct.ajAttributes.add(new AjAttribute.DeclareAttribute(dp));
+
+		// The factory method for building the implementation is the
+		// one attached to the annotation:
+		Method implementationFactory = struct.method;
+		// do we have a defaultImpl=xxx.class (ie implementation)
+		// String defaultImplClassName = null;
+		// ElementNameValuePairGen defaultImplNVP =
+		// getAnnotationElement(declareMixinAnnotation,
+		// "defaultImpl");
+		// if (defaultImplNVP != null) {
+		// ClassElementValueGen defaultImpl = (ClassElementValueGen)
+		// defaultImplNVP.getValue();
+		// defaultImplClassName =
+		// UnresolvedType.forSignature(defaultImpl.getClassString()).getName();
+		// if
+		// (defaultImplClassName.equals("org.aspectj.lang.annotation.DeclareParents"))
+		// {
+		// defaultImplClassName = null;
+		// } else {
+		// // check public no arg ctor
+		// ResolvedType impl =
+		// struct.enclosingType.getWorld().resolve(defaultImplClassName,
+		// false);
+		// ResolvedMember[] mm = impl.getDeclaredMethods();
+		// int implModifiers = impl.getModifiers();
+		// boolean defaultVisibilityImpl =
+		// !(Modifier.isPrivate(implModifiers)
+		// || Modifier.isProtected(implModifiers) ||
+		// Modifier.isPublic(implModifiers));
+		// boolean hasNoCtorOrANoArgOne = true;
+		// ResolvedMember foundOneOfIncorrectVisibility = null;
+		// for (int i = 0; i < mm.length; i++) {
+		// ResolvedMember resolvedMember = mm[i];
+		// if (resolvedMember.getName().equals("<init>")) {
+		// hasNoCtorOrANoArgOne = false;
+		//
+		// if (resolvedMember.getParameterTypes().length == 0) {
+		// if (defaultVisibilityImpl) { // default visibility
+		// implementation
+		// if (resolvedMember.isPublic() ||
+		// resolvedMember.isDefault()) {
+		// hasNoCtorOrANoArgOne = true;
+		// } else {
+		// foundOneOfIncorrectVisibility = resolvedMember;
+		// }
+		// } else if (Modifier.isPublic(implModifiers)) { // public
+		// implementation
+		// if (resolvedMember.isPublic()) {
+		// hasNoCtorOrANoArgOne = true;
+		// } else {
+		// foundOneOfIncorrectVisibility = resolvedMember;
+		// }
+		// }
+		// }
+		// }
+		// if (hasNoCtorOrANoArgOne) {
+		// break;
+		// }
+		// }
+		// if (!hasNoCtorOrANoArgOne) {
+		// if (foundOneOfIncorrectVisibility != null) {
+		// reportError(
+		// "@DeclareParents: defaultImpl=\""
+		// + defaultImplClassName
+		// +
+		// "\" has a no argument constructor, but it is of incorrect visibility.  It must be at least as visible as the type.",
+		// struct);
+		// } else {
+		// reportError("@DeclareParents: defaultImpl=\"" +
+		// defaultImplClassName
+		// + "\" has no public no-arg constructor", struct);
+		// }
+		// }
+		// if (!methodType.isAssignableFrom(impl)) {
+		// reportError("@DeclareParents: defaultImpl=\"" +
+		// defaultImplClassName
+		// + "\" does not implement the interface '" +
+		// methodType.toString() + "'", struct);
+		// }
+		// }
+		//
+		// }
+
+		// then iterate on field interface hierarchy (not object)
+		boolean hasAtLeastOneMethod = false;
+
+		for (Iterator iterator = newParentTypes.iterator(); iterator.hasNext();) {
+			ResolvedType typeForDelegation = (ResolvedType) iterator.next();
+			// TODO check for overlapping interfaces. Eg. A implements I, I extends J - if they specify interfaces={I,J} we dont
+			// want to do any methods twice
+			ResolvedMember[] methods = (ResolvedMember[]) typeForDelegation.getMethodsWithoutIterator(true, false).toArray(
+					new ResolvedMember[0]);
+			for (int i = 0; i < methods.length; i++) {
+				ResolvedMember method = methods[i];
+				if (method.isAbstract()) {
+					// moved to be detected at weave time if the target
+					// doesnt implement the methods
+					// if (defaultImplClassName == null) {
+					// // non marker interface with no default impl
+					// provided
+					// reportError("@DeclareParents: used with a non marker interface and no defaultImpl=\"...\" provided",
+					// struct);
+					// return false;
+					// }
+					hasAtLeastOneMethod = true;
+					// What we are saying here:
+					// We have this method 'method' and we want to put a
+					// forwarding method into a type that matches
+					// typePattern that should delegate to the version
+					// of the method in 'defaultImplClassName'
+
+					// Now the method may be from a supertype but the
+					// declaring type of the method we pass into the
+					// type
+					// munger is what is used to determine the type of
+					// the field that hosts the delegate instance.
+					// So here we create a modified method with an
+					// alternative declaring type so that we lookup
+					// the right field. See pr164016.
+					MethodDelegateTypeMunger mdtm = new MethodDelegateTypeMunger(method, struct.enclosingType, "",
+							targetTypePattern, struct.method.getName(), struct.method.getSignature());
+					mdtm.setFieldType(methodReturnType);
+					mdtm.setSourceLocation(struct.enclosingType.getSourceLocation());
+					struct.ajAttributes.add(new AjAttribute.TypeMunger(mdtm));
 				}
 			}
 		}
-		return false;
+		// successfull so far, we thus need a bcel type munger to
+		// have
+		// a field hosting the mixin in the target type
+		if (hasAtLeastOneMethod) {
+			ResolvedMember fieldHost = AjcMemberMaker.itdAtDeclareParentsField(null, methodReturnType, struct.enclosingType);
+			struct.ajAttributes.add(new AjAttribute.TypeMunger(new MethodDelegateTypeMunger.FieldHostTypeMunger(fieldHost,
+					struct.enclosingType, targetTypePattern)));
+		} else {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -1069,7 +1202,8 @@ public class AtAjAttributes {
 				if (isNullOrEmpty(returned)) {
 					returned = null;
 				} else {
-					// check that thrownFormal exists as the last parameter in the advice
+					// check that thrownFormal exists as the last parameter in
+					// the advice
 					String[] pNames = owningMethod.getParameterNames();
 					if (pNames == null || pNames.length == 0 || !Arrays.asList(pNames).contains(returned)) {
 						throw new ReturningFormalNotDeclaredInAdviceSignatureException(returned);
@@ -1081,7 +1215,8 @@ public class AtAjAttributes {
 				struct.unparsedArgumentNames = argumentNames;
 			}
 			// this/target/args binding
-			// exclude the return binding from the pointcut binding since it is an extraArg binding
+			// exclude the return binding from the pointcut binding since it is
+			// an extraArg binding
 			FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
 			try {
 				bindings = (returned == null ? extractBindings(struct) : extractBindings(struct, returned));
@@ -1156,7 +1291,8 @@ public class AtAjAttributes {
 				if (isNullOrEmpty(thrownFormal)) {
 					thrownFormal = null;
 				} else {
-					// check that thrownFormal exists as the last parameter in the advice
+					// check that thrownFormal exists as the last parameter in
+					// the advice
 					String[] pNames = owningMethod.getParameterNames();
 					if (pNames == null || pNames.length == 0 || !Arrays.asList(pNames).contains(thrownFormal)) {
 						throw new ThrownFormalNotDeclaredInAdviceSignatureException(thrownFormal);
@@ -1168,7 +1304,8 @@ public class AtAjAttributes {
 				struct.unparsedArgumentNames = argumentNames;
 			}
 			// this/target/args binding
-			// exclude the throwned binding from the pointcut binding since it is an extraArg binding
+			// exclude the throwned binding from the pointcut binding since it
+			// is an extraArg binding
 			FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
 			try {
 				bindings = (thrownFormal == null ? extractBindings(struct) : extractBindings(struct, thrownFormal));
@@ -1269,7 +1406,8 @@ public class AtAjAttributes {
 			return false;
 		ElementNameValuePairGen pointcutExpr = getAnnotationElement(pointcut, VALUE);
 
-		// semantic check: the method must return void, or be "public static boolean" for if() support
+		// semantic check: the method must return void, or be
+		// "public static boolean" for if() support
 		if (!(Type.VOID.equals(struct.method.getReturnType()) || (Type.BOOLEAN.equals(struct.method.getReturnType())
 				&& struct.method.isStatic() && struct.method.isPublic()))) {
 			reportWarning("Found @Pointcut on a method not returning 'void' or not 'public static boolean'", struct);
@@ -1314,17 +1452,22 @@ public class AtAjAttributes {
 			}
 		} else {
 			if (pointcutExpr == null || isNullOrEmpty(pointcutExpr.getValue().stringifyValue())) {
-				// the matches nothing pointcut (125475/125480) - perhaps not as cleanly supported as it could be.
+				// the matches nothing pointcut (125475/125480) - perhaps not as
+				// cleanly supported as it could be.
 			} else {
 				// if (pointcutExpr != null) {
-				// use a LazyResolvedPointcutDefinition so that the pointcut is resolved lazily
-				// since for it to be resolved, we will need other pointcuts to be registered as well
+				// use a LazyResolvedPointcutDefinition so that the pointcut is
+				// resolved lazily
+				// since for it to be resolved, we will need other pointcuts to
+				// be registered as well
 				pc = parsePointcut(pointcutExpr.getValue().stringifyValue(), struct, true);
 				if (pc == null)
 					return false;// parse error
-				pc.setLocation(struct.context, -1, -1);// FIXME AVASM !! bMethod is null here..
+				pc.setLocation(struct.context, -1, -1);// FIXME AVASM !! bMethod
+				// is null here..
 				// } else {
-				// reportError("Found undefined @Pointcut on a non-abstract method", struct);
+				// reportError("Found undefined @Pointcut on a non-abstract method",
+				// struct);
 				// return false;
 				// }
 			}
@@ -1332,7 +1475,12 @@ public class AtAjAttributes {
 		// do not resolve binding now but lazily
 		struct.ajAttributes.add(new AjAttribute.PointcutDeclarationAttribute(new LazyResolvedPointcutDefinition(
 				struct.enclosingType, struct.method.getModifiers(), struct.method.getName(), argumentTypes, UnresolvedType
-						.forSignature(struct.method.getReturnType().getSignature()), pc,// can be null for abstract pointcut
+						.forSignature(struct.method.getReturnType().getSignature()), pc,// can
+				// be
+				// null
+				// for
+				// abstract
+				// pointcut
 				binding // can be null for abstract pointcut
 				)));
 		return true;
@@ -1454,8 +1602,10 @@ public class AtAjAttributes {
 			String argumentName = argumentNames[i];
 			UnresolvedType argumentType = UnresolvedType.forSignature(method.getArgumentTypes()[i].getSignature());
 
-			// do not bind JoinPoint / StaticJoinPoint / EnclosingStaticJoinPoint
-			// TODO solve me : this means that the JP/SJP/ESJP cannot appear as binding
+			// do not bind JoinPoint / StaticJoinPoint /
+			// EnclosingStaticJoinPoint
+			// TODO solve me : this means that the JP/SJP/ESJP cannot appear as
+			// binding
 			// f.e. when applying advice on advice etc
 			if ((AjcMemberMaker.TYPEX_JOINPOINT.equals(argumentType)
 					|| AjcMemberMaker.TYPEX_PROCEEDINGJOINPOINT.equals(argumentType)
@@ -1488,13 +1638,15 @@ public class AtAjAttributes {
 		return bindings;
 		//
 		// if (excludeIndex >= 0) {
-		// FormalBinding[] bindingsFiltered = new FormalBinding[bindings.length-1];
+		// FormalBinding[] bindingsFiltered = new
+		// FormalBinding[bindings.length-1];
 		// int k = 0;
 		// for (int i = 0; i < bindings.length; i++) {
 		// if (i == excludeIndex) {
 		// ;
 		// } else {
-		// bindingsFiltered[k] = new FormalBinding(bindings[i].getType(), bindings[i].getName(), k);
+		// bindingsFiltered[k] = new FormalBinding(bindings[i].getType(),
+		// bindings[i].getName(), k);
 		// k++;
 		// }
 		// }
@@ -1703,7 +1855,8 @@ public class AtAjAttributes {
 	 * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
 	 */
 	public static class LazyResolvedPointcutDefinition extends ResolvedPointcutDefinition {
-		private final Pointcut m_pointcutUnresolved; // null for abstract pointcut
+		private final Pointcut m_pointcutUnresolved; // null for abstract
+		// pointcut
 		private final IScope m_binding;
 
 		private Pointcut m_lazyPointcut = null;
@@ -1771,6 +1924,12 @@ public class AtAjAttributes {
 		}
 	}
 
+	private static void reportError(String message, IMessageHandler handler, ISourceLocation sourceLocation) {
+		if (!handler.isIgnoring(IMessage.ERROR)) {
+			handler.handleMessage(new Message(message, sourceLocation, true));
+		}
+	}
+
 	/**
 	 * Report a warning
 	 * 
@@ -1801,7 +1960,8 @@ public class AtAjAttributes {
 				reportError("if() pointcut is not allowed at this pointcut location '" + pointcutString + "'", struct);
 				return null;
 			}
-			pointcut.setLocation(struct.context, -1, -1);// FIXME -1,-1 is not good enough
+			pointcut.setLocation(struct.context, -1, -1);// FIXME -1,-1 is not
+			// good enough
 			return pointcut;
 		} catch (ParserException e) {
 			reportError("Invalid pointcut '" + pointcutString + "': " + e.toString()
@@ -1826,7 +1986,9 @@ public class AtAjAttributes {
 	private static TypePattern parseTypePattern(String patternString, AjAttributeStruct location) {
 		try {
 			TypePattern typePattern = new PatternParser(patternString).parseTypePattern();
-			typePattern.setLocation(location.context, -1, -1);// FIXME -1,-1 is not good enough
+			typePattern.setLocation(location.context, -1, -1);// FIXME -1,-1 is
+			// not good
+			// enough
 			return typePattern;
 		} catch (ParserException e) {
 			reportError("Invalid type pattern'" + patternString + "' : " + e.getLocation(), location);
