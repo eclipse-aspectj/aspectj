@@ -50,8 +50,19 @@ import org.aspectj.util.FileUtil;
  */
 public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
 
+	public void testIncrementalMixin() {
+		String p = "mixin";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		assertEquals(0, getErrorMessages(p).size());
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+		assertEquals(0, getErrorMessages(p).size());
+	}
+
 	public void testUnusedPrivates_pr266420() {
-		AjdeInteractionTestbed.VERBOSE = true;
 		String p = "pr266420";
 		initialiseProject(p);
 
