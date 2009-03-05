@@ -63,6 +63,7 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.Bindings;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclareParents;
+import org.aspectj.weaver.patterns.DeclareParentsMixin;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.IScope;
@@ -937,7 +938,7 @@ public class AtAjAttributes {
 		IScope binding = new BindingScope(struct.enclosingType, struct.context, bindings);
 		// first add the declare implements like
 		// how do we mark this as a decp due to decmixin?
-		DeclareParents dp = new DeclareParents(targetTypePattern, newParents, false);
+		DeclareParents dp = new DeclareParentsMixin(targetTypePattern, newParents);
 		dp.resolve(binding); // resolves the parent and child parts
 		// of the decp
 
