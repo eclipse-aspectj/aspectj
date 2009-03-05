@@ -648,16 +648,36 @@
         <title>Inter-type Declarations</title>
 
         <para>
-            Inter-type declarations are challenging to support using an annotation style.
-            It's very important to preserve the same semantics between the code style
-            and the annotation style. We also want to support compilation of a large set
-            of @AspectJ applications using a standard Java 5 compiler. For these reasons,
-            the 1.5.0 release of AspectJ 5 only supports inter-type declarations
-            backed by interfaces when using the annotation style - 
-            which means it is not possible to
-            introduce constructors or fields, as it would not be not possible to call 
-            those unless already woven and available on a binary form.
+            Inter-type declarations are challenging to support using an annotation style.  For code style aspects,
+            compiled with the ajc compiler, the entire type system can be made aware of inter-type declarations (new
+            supertypes, new methods, new fields) and the completeness and correctness of it can be guaranteed.
+            
+            Achieving this with an annotation style is hard because the source code may simply be compiled with javac
+            where the type system cannot be influenced and what is compiled must be 'pure java'.
         </para>
+        <para>            
+            AspectJ 1.5.0 introduced @DeclareParents, an attempt to offer something like that which is achievable with
+            code style declare parents and the other intertype declarations (fields, methods, constructors).  However,
+            it has proved too challenging to get close to the expressiveness and capabilities of code style in this area
+            and effectively @DeclareParents is offering a mixin strategy.  The definition of mixin I am using here is that
+            some interface I is mixed into some target type T and that means all the methods from I are added to T and their
+            implementations are simple forwarding methods that call a delegate which that provides an implementation of I.
+        </para>
+        <para>            
+            The next section here talks about @DeclareParents and what is possible, but moving forward, starting with
+            AspectJ 1.6.4, we are offering @DeclareMixin - an improved approach to defining a mixin and the choice of a different
+            name will hopefully alleviate some of the confusion about why @DeclareParents just doesn't offer the same 
+            semantics as the code style variant.  Offering @DeclareMixin also gives code style developers a new tool for a simple
+            mixin whereas previously they would have avoided @DeclareParents thinking what it could do was already achievable with
+            code style syntax.  
+        </para>
+        <para>
+            In future releases the @DeclareParents support may be deprecated if it cannot be made more similar to code style.  
+        </para>
+
+
+        <sect2 id="atDeclareParents" xreflabel="atDeclareParents">
+            <title>@DeclareParents</title>
 
         <para>
             Consider the following aspect:
@@ -798,6 +818,162 @@
         	If the interface defines one or more operations, and these are not implemented by
         	the target type, an error will be issued during weaving.
         </para>
+        
+        </sect2>
+        
+        <sect2 id="atDeclareMixin" xreflabel="atDeclareMixin">
+            <title>@DeclareMixin</title>
+                    <para>
+            Consider the following aspect:
+        </para>
+
+        <programlisting><![CDATA[
+     public aspect MoodIndicator {
+
+        public interface Moody {};
+
+        private Mood Moody.mood = Mood.HAPPY;
+
+        public Mood Moody.getMood() {
+          return mood;
+        }
+
+        declare parents : org.xyz..* implements Moody;
+
+        before(Moody m) : execution(* *.*(..)) && this(m) {
+           System.out.println("I'm feeling " + m.getMood());
+        }
+     }
+         ]]></programlisting>
+
+        <para>
+            This declares an interface <literal>Moody</literal>, and then makes two inter-type declarations on the interface 
+            - a field that is private to the aspect, and a method that returns the mood. Within the body of the inter-type
+            declared method <literal>getMoody</literal>, the type of <literal>this</literal> is <literal>Moody</literal>
+            (the target type of the inter-type declaration).
+        </para>
+
+        <para>Using the annotation style this aspect can be written:
+        </para>
+
+        <programlisting><![CDATA[
+     @Aspect
+     public class MoodIndicator {
+
+        // this interface can be outside of the aspect
+        public interface Moody {
+          Mood getMood();
+        };
+
+        // this implementation can be outside of the aspect
+        public static class MoodyImpl implements Moody {
+           private Mood mood = Mood.HAPPY;
+
+           public Mood getMood() {
+             return mood;
+           }
+        }
+
+        // The DeclareMixin annotation is attached to a factory method that can return instances of the delegate
+        // which offers an implementation of the mixin interface.  The interface that is mixed in is the
+        // return type of the method.
+        @DeclareMixin("org.xyz..*")
+        public static Moody createMoodyImplementation() {
+          return new MoodyImpl();
+        }
+
+        @Before("execution(* *.*(..)) && this(m)")
+        void feelingMoody(Moody m) {
+           System.out.println("I'm feeling " + m.getMood());
+        }
+     }
+         ]]></programlisting>
+
+        <para>
+            Basically, the <literal>@DeclareMixin</literal> annotation is attached to a factory method.  The
+            factory method specifies the interface to mixin as its return type, and calling the method should
+            create an instance of a delegate that implements the interface.  This is the interface which will
+            be delegated to from any target matching the specified type pattern.
+        </para>
+        
+        <para>
+            Exploiting this syntax requires the user to obey the rules of pure Java.  So references to any
+            targeted type as if it were affected by the Mixin must be made through a cast, like this:
+        </para>
+        
+        <programlisting><![CDATA[
+     // this type will be affected by the inter-type declaration as the type pattern matches
+     package org.xyz;
+     public class MoodTest {
+
+        public void test() {
+            // see here the cast to the introduced interface (required)
+            Mood mood = ((Moody)this).getMood();
+            ...
+        }
+    }
+         ]]></programlisting>
+
+        <para>
+            Sometimes the delegate instance may want to perform differently depending upon the type/instance for
+            which it is behaving as a delegate.  To support this it is possible for the factory method to specify a
+            parameter.  If it does, then when the factory method is called the parameter will be the object instance for
+            which a delegate should be created:
+        </para>
+        <programlisting><![CDATA[
+      
+      @Aspect
+      public class Foo {
+      
+        @DeclareMixin("org.xyz..*")
+        public static SomeInterface createDelegate(Object instance) {
+          return new SomeImplementation(instance);
+        }
+      }
+         ]]></programlisting>
+       
+       <para>
+          It is also possible to make the factory method non-static - and in this case it can then exploit 
+          the local state in the surrounding aspect instance, but this is only supported for singleton aspects:
+       </para>
+        <programlisting><![CDATA[
+      
+      @Aspect
+      public class Foo {
+        public int maxLimit=35;
+        
+        @DeclareMixin("org.xyz..*")
+        public SomeInterface createDelegate(Object instance) {
+          return new SomeImplementation(instance,maxLimit);
+        }
+      }
+         ]]></programlisting>
+       
+       <para>
+         Although the interface type is usually determined purely from the return type of the factory method, it can
+         be specified in the annotation if necessary.  In this example the return type of the method extends multiple
+         other interfaces and only a couple of them (I and J) should be mixed into any matching targets:
+       </para>
+        <programlisting><![CDATA[
+        // interfaces is an array of interface classes that should be mixed in
+        @DeclareMixin(value="org.xyz..*",interfaces={I.class,J.class})
+        public static InterfaceExtendingLotsOfInterfaces createMoodyImplementation() {
+          return new MoodyImpl();
+        }
+         ]]></programlisting>
+       
+       <para>
+          There are clearly similarities between <literal>@DeclareMixin</literal> and <literal>@DeclareParents</literal> but
+          <literal>@DeclareMixin</literal> is not pretending to offer more than a simple mixin strategy.  The flexibility in
+          being able to provide the factory method instead of requiring a no-arg constructor for the implementation also 
+          enables delegate instances to make decisions based upon the type for which they are the delegate.
+       </para>
+       
+       <para>
+          Any annotations defined on the interface methods are also put upon the delegate forwarding methods created in the
+          matched target type.
+       </para>
+        </sect2>
 
     </sect1>
 
