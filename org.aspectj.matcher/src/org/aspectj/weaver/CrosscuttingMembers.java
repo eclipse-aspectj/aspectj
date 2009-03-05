@@ -401,8 +401,32 @@ public class CrosscuttingMembers {
 		}
 
 		if (!declareParents.equals(other.declareParents)) {
-			changed = true;
-			declareParents = other.declareParents;
+			// Are the differences just because of a mixin? These are not created until weave time so should be gotten rid of for
+			// the up front comparison
+			if (!careAboutShadowMungers) {
+				// this means we are in front end compilation and if the differences are purely mixin parents, we can continue OK
+				Set trimmedThis = new HashSet();
+				for (Iterator iterator = declareParents.iterator(); iterator.hasNext();) {
+					DeclareParents decp = (DeclareParents) iterator.next();
+					if (!decp.isMixin()) {
+						trimmedThis.add(decp);
+					}
+				}
+				Set trimmedOther = new HashSet();
+				for (Iterator iterator = other.declareParents.iterator(); iterator.hasNext();) {
+					DeclareParents decp = (DeclareParents) iterator.next();
+					if (!decp.isMixin()) {
+						trimmedOther.add(decp);
+					}
+				}
+				if (!trimmedThis.equals(trimmedOther)) {
+					changed = true;
+					declareParents = other.declareParents;
+				}
+			} else {
+				changed = true;
+				declareParents = other.declareParents;
+			}
 		}
 
 		if (!declareSofts.equals(other.declareSofts)) {

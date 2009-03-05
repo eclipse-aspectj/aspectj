@@ -252,6 +252,9 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 			return false;
 		}
 
+		public boolean existsToSupportShadowMunging() {
+			return true;
+		}
 	}
 
 	public void setFieldType(UnresolvedType fieldType) {
@@ -272,5 +275,9 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 
 	public UnresolvedType getAspect() {
 		return aspect;
+	}
+
+	public boolean existsToSupportShadowMunging() {
+		return true;
 	}
 }
