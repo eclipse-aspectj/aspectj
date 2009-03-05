@@ -628,12 +628,14 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		// annotation patterns then they might match later...remember that...
 		for (Iterator i = declareParents.iterator(); i.hasNext();) {
 			DeclareParents decp = (DeclareParents) i.next();
-			boolean didSomething = doDeclareParents(decp, sourceType);
-			if (didSomething) {
-				anyNewParents = true;
-			} else {
-				if (!decp.getChild().isStarAnnotation())
-					decpToRepeat.add(decp);
+			if (!decp.isMixin()) {
+				boolean didSomething = doDeclareParents(decp, sourceType);
+				if (didSomething) {
+					anyNewParents = true;
+				} else {
+					if (!decp.getChild().isStarAnnotation())
+						decpToRepeat.add(decp);
+				}
 			}
 		}
 
