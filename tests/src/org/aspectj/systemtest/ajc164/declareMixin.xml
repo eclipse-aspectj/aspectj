@@ -102,5 +102,50 @@
          <message kind="error" text="factory methods for a mixin can take a maximum of one parameter"/>
      </compile>
    </ajc-test>
-        
+   
+   <ajc-test dir="features164/declareMixin" title="casel">
+     <compile files="CaseL.java" options="-1.5">
+       <message kind="error" text="Cannot cast from CaseL to C"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features164/declareMixin" title="casem">
+     <compile files="CaseM.java" options="-1.5">
+       <message kind="error" text=": factory methods for a mixin must either return an interface type or specify interfaces in the annotation and return a class"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features164/declareMixin" title="casen">
+     <compile files="CaseN.java" options="-1.5"/>
+     <run class="CaseN">
+       <stdout>
+         <line text="foo() running"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features164/declareMixin" title="caseo">
+     <compile files="CaseO.java" options="-1.5">
+       <message kind="error" text="factory method does not return something that implements 'I'"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features164/declareMixin" title="casep">
+     <compile files="CaseP.java" options="-1.5"/>
+     <run class="CaseP">
+       <stdout>
+         <line text="foo() running"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features164/declareMixin" title="caseq">
+     <compile files="CaseQ.java" options="-1.5"/>
+     <run class="CaseQ">
+       <stdout>
+         <line text="foo() running"/>
+         <line text="goo() running"/>
+       </stdout>
+     </run>
+   </ajc-test>     
 </suite>

@@ -99,6 +99,36 @@ public class DeclareMixinTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("casek");
 	}
 
+	// mixin of a class - should be an error (this one reported by the compiler due to a failed cast)
+	public void testCaseL() {
+		runTest("casel");
+	}
+
+	// mixin of a class - should be an error (this one reported by the annotation processing)
+	public void testCaseM() {
+		runTest("casem");
+	}
+
+	// factory returns class but interface specified - this is OK
+	public void testCaseN() {
+		runTest("casen");
+	}
+
+	// factory returns class but interface specified - not ok as class doesn't implement interface
+	public void testCaseO() {
+		runTest("caseo");
+	}
+
+	// interface subsetting used (factory returns class) - but only one method should be delegated
+	public void testCaseP() {
+		runTest("casep");
+	}
+
+	// factory return type implements two interfaces, both should be mixed as specified
+	public void testCaseQ() {
+		runTest("caseq");
+	}
+
 	// --
 
 	public static Test suite() {
