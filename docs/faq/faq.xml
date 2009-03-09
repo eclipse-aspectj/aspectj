@@ -3989,6 +3989,7 @@ aspect A {
       </qandaentry>
     </qandadiv>
     <qandadiv id="AspectJ5" xreflabel="AspectJ 5 and Java 5">
+     <title>AspectJ 5 and Java 5</title>
       <qandaentry>
         <question id="q:aspectj5features"
             xreflabel="Q:What are the new features of AspectJ 5?">
