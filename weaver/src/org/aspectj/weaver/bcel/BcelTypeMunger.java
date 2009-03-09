@@ -135,25 +135,31 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			String fName = getShortname(getAspectType().getSourceLocation().getSourceFile().getPath());
 			if (munger.getKind().equals(ResolvedTypeMunger.Parent)) {
 				// This message could come out of AjLookupEnvironment.addParent
-				// if doing parents
-				// munging at compile time only...
+				// if doing parents munging at compile time only...
 				NewParentTypeMunger parentTM = (NewParentTypeMunger) munger;
-				if (parentTM.getNewParent().isInterface()) {
+				if (parentTM.isMixin()) {
 					weaver.getWorld().getMessageHandler().handleMessage(
-							WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_DECLAREPARENTSIMPLEMENTS,
-									new String[] { weaver.getLazyClassGen().getType().getName(), tName,
-											parentTM.getNewParent().getName(), fName }, weaver.getLazyClassGen().getClassName(),
-									getAspectType().getName()));
+							WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_MIXIN,
+									new String[] { parentTM.getNewParent().getName(), fName,
+											weaver.getLazyClassGen().getType().getName(), tName }, weaver.getLazyClassGen()
+											.getClassName(), getAspectType().getName()));
 				} else {
-					weaver.getWorld().getMessageHandler().handleMessage(
-							WeaveMessage
-									.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_DECLAREPARENTSEXTENDS, new String[] {
-											weaver.getLazyClassGen().getType().getName(), tName, parentTM.getNewParent().getName(),
-											fName }));
-					// TAG: WeavingMessage DECLARE PARENTS: EXTENDS
-					// reportDeclareParentsMessage(WeaveMessage.
-					// WEAVEMESSAGE_DECLAREPARENTSEXTENDS,sourceType,parent);
+					if (parentTM.getNewParent().isInterface()) {
+						weaver.getWorld().getMessageHandler().handleMessage(
+								WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_DECLAREPARENTSIMPLEMENTS,
+										new String[] { weaver.getLazyClassGen().getType().getName(), tName,
+												parentTM.getNewParent().getName(), fName },
+										weaver.getLazyClassGen().getClassName(), getAspectType().getName()));
+					} else {
+						weaver.getWorld().getMessageHandler().handleMessage(
+								WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_DECLAREPARENTSEXTENDS, new String[] {
+										weaver.getLazyClassGen().getType().getName(), tName, parentTM.getNewParent().getName(),
+										fName }));
+						// TAG: WeavingMessage DECLARE PARENTS: EXTENDS
+						// reportDeclareParentsMessage(WeaveMessage.
+						// WEAVEMESSAGE_DECLAREPARENTSEXTENDS,sourceType,parent);
 
+					}
 				}
 			} else if (munger.getKind().equals(ResolvedTypeMunger.FieldHost)) {
 				// hidden
@@ -1140,7 +1146,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	 * @param unMangledInterMethod the method to bridge 'to' that we have already created in the 'subtype'
 	 * @param clazz the class in which to put the bridge method
 	 * @param paramTypes Parameter types for the bridge method, passed in as an optimization since the caller is likely to have
-	 *            already created them.
+	 *        already created them.
 	 * @param theBridgeMethod
 	 */
 	private void createBridgeMethod(BcelWorld world, NewMethodTypeMunger munger, ResolvedMember unMangledInterMethod,
@@ -1312,6 +1318,15 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			if (munger.specifiesDelegateFactoryMethod()) {
 				ResolvedMember rm = munger.getDelegateFactoryMethod(weaver.getWorld());
 
+				// Check the method parameter is compatible with the type of the instance to be passed
+				if (rm.getArity() != 0) {
+					ResolvedType parameterType = rm.getParameterTypes()[0].resolve(weaver.getWorld());
+					if (!parameterType.isAssignableFrom(weaver.getLazyClassGen().getType())) {
+						signalError("For mixin factory method '" + rm + "': Instance type '" + weaver.getLazyClassGen().getType()
+								+ "' is not compatible with factory parameter type '" + parameterType + "'", weaver);
+						return false;
+					}
+				}
 				if (rm.isStatic()) {
 					if (rm.getArity() != 0) {
 						body.append(InstructionConstants.ALOAD_0);
@@ -1473,6 +1488,11 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 	private void signalWarning(String msgString, BcelClassWeaver weaver) {
 		IMessage msg = MessageUtil.warn(msgString, getSourceLocation());
+		weaver.getWorld().getMessageHandler().handleMessage(msg);
+	}
+
+	private void signalError(String msgString, BcelClassWeaver weaver) {
+		IMessage msg = MessageUtil.error(msgString, getSourceLocation());
 		weaver.getWorld().getMessageHandler().handleMessage(msg);
 	}
 

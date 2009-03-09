@@ -1666,7 +1666,10 @@ public class BcelWeaver {
 				// BcelTypeMunger.mungeNewParent()
 				// classType.addParent(newParent);
 				onType.addParent(newParent);
-				ResolvedTypeMunger newParentMunger = new NewParentTypeMunger(newParent);
+				NewParentTypeMunger newParentMunger = new NewParentTypeMunger(newParent);
+				if (p.isMixin()) {
+					newParentMunger.setIsMixin(true);
+				}
 				newParentMunger.setSourceLocation(p.getSourceLocation());
 				onType.addInterTypeMunger(new BcelTypeMunger(newParentMunger, xcutSet.findAspectDeclaringParents(p)));
 			}
