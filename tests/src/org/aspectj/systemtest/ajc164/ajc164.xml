@@ -2,6 +2,10 @@
 
 <suite>
    
+   <ajc-test dir="bugs164/pr267559" title="generics and itd npe">
+     <compile files="IMarker.java ClassB.java Aspect.java ClassA.java" options="-1.5"/>
+   </ajc-test>
+   
    <ajc-test dir="bugs164/pr266564" title="annotation style long">
      <compile files="AA.java" options="-1.5"/>
      <run class="business.AA"/>
