@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver;
 
 import java.io.DataOutputStream;
@@ -18,34 +17,47 @@ import java.io.IOException;
 
 public class NewParentTypeMunger extends ResolvedTypeMunger {
 	ResolvedType newParent;
-	
+	private boolean isMixin;
+
 	public NewParentTypeMunger(ResolvedType newParent) {
 		super(Parent, null);
 		this.newParent = newParent;
+		this.isMixin = false;
 	}
 
 	public void write(DataOutputStream s) throws IOException {
 		throw new RuntimeException("unimplemented");
 	}
 
-
 	public ResolvedType getNewParent() {
 		return newParent;
 	}
 
-    public boolean equals(Object other) {
-        if (! (other instanceof NewParentTypeMunger)) return false;
-        NewParentTypeMunger o = (NewParentTypeMunger) other;
-        return newParent.equals(o.newParent);
-    }
-	   
-    private volatile int hashCode = 0;
-    public int hashCode() {
-	    if (hashCode == 0) {
-	    	int result = 17;
-	    	result = 37*result + newParent.hashCode();
-	    	hashCode = result;
-	    }
-        return hashCode;
-    }
+	public boolean equals(Object other) {
+		if (!(other instanceof NewParentTypeMunger)) {
+			return false;
+		}
+		NewParentTypeMunger o = (NewParentTypeMunger) other;
+		return newParent.equals(o.newParent) && isMixin == o.isMixin;
+	}
+
+	private volatile int hashCode = 0;
+
+	public int hashCode() {
+		if (hashCode == 0) {
+			int result = 17;
+			result = 37 * result + newParent.hashCode();
+			result = 37 * result + (isMixin ? 0 : 1);
+			hashCode = result;
+		}
+		return hashCode;
+	}
+
+	public void setIsMixin(boolean b) {
+		isMixin = true;
+	}
+
+	public boolean isMixin() {
+		return isMixin;
+	}
 }
