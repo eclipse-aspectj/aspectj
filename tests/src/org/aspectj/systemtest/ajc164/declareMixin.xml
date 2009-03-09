@@ -147,5 +147,27 @@
          <line text="goo() running"/>
        </stdout>
      </run>
+   </ajc-test>   
+     
+   <ajc-test dir="features164/declareMixin" title="caser">
+     <compile files="CaseR.java" options="-1.5"/>
+     <run class="CaseR">
+       <stdout>
+         <line text="true"/>
+         <line text="false"/>
+       </stdout>
+     </run>
+   </ajc-test>    
+    
+   <ajc-test dir="features164/declareMixin" title="cases">
+     <compile files="CaseS.java" options="-1.5">
+       <message kind="error" text="not compatible"/>
+     </compile>
    </ajc-test>     
+   
+   <ajc-test dir="features164/declareMixin" title="caset">
+     <compile files="CaseT.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Mixing interface 'I' (CaseT.java) into type 'CaseT' (CaseT.java)"/>
+     </compile>
+   </ajc-test>    
 </suite>

@@ -25,18 +25,18 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  * <ul>
  * <li>Factory method with void or primitive return value
  * <li>Check the factory method has at most one parameter
+ * <li>incremental compilation
+ * <li>error message if mixin target instance not compatible with factory method parameter
  * </ul>
  * 
  * <h4>Still to test/explore:</h4><br>
  * <ul>
  * <li>model relationships
- * <li>incremental compilation
  * <li>ltw
  * <li>generic factory methods
  * <li>showWeaveInfo
  * <li>Clashing with existing methods
  * <li>varying parameter type on the factory method
- * <li>See CaseF - what if mixin target is not assignable to the parameter type? create cast?
  * </ul>
  * 
  * @author Andy Clement
@@ -127,6 +127,21 @@ public class DeclareMixinTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// factory return type implements two interfaces, both should be mixed as specified
 	public void testCaseQ() {
 		runTest("caseq");
+	}
+
+	// testing a pure marker interface - no methods added
+	public void testCaseR() {
+		runTest("caser");
+	}
+
+	// factory method has incompatible return type - verifyerror if we did use that factory
+	public void testCaseS() {
+		runTest("cases");
+	}
+
+	// weave info - what happens?
+	public void testCaseT() {
+		runTest("caset");
 	}
 
 	// --
