@@ -35,7 +35,7 @@ public @interface DeclareMixin {
 
 	/**
 	 * Array of interfaces that are to be mixed in. This is optional and if not specified the return type of the annotated method
-	 * will be used to determine the interface/class to mix in.
+	 * will be used to determine the interface to mix in.
 	 */
 	Class[] interfaces() default { Object.class };
 
