@@ -363,6 +363,8 @@ public class ReferenceType extends ResolvedType {
 		return isAssignableFrom(other, false);
 	}
 
+	// TODO rewrite this method - it is a terrible mess
+
 	// true iff the statement "this = other" would compile.
 	public boolean isAssignableFrom(ResolvedType other, boolean allowMissing) {
 		if (other.isPrimitiveType()) {
@@ -419,12 +421,38 @@ public class ReferenceType extends ResolvedType {
 				boolean parametersAssignable = true;
 				if (myParameters.length == theirParameters.length) {
 					for (int i = 0; i < myParameters.length && parametersAssignable; i++) {
-						if (myParameters[i] == theirParameters[i])
+						if (myParameters[i] == theirParameters[i]) {
 							continue;
-						// dont do this!
+						}
+						// dont do this: pr253109
 						// if (myParameters[i].isAssignableFrom(theirParameters[i], allowMissing)) {
 						// continue;
 						// }
+						ResolvedType mp = myParameters[i];
+						ResolvedType tp = theirParameters[i];
+						if (mp.isParameterizedType() && tp.isParameterizedType()) {
+							if (mp.getGenericType().equals(tp.getGenericType())) {
+								UnresolvedType[] mtps = mp.getTypeParameters();
+								UnresolvedType[] ttps = tp.getTypeParameters();
+								for (int ii = 0; ii < mtps.length; ii++) {
+									if (mtps[ii].isTypeVariableReference() && ttps[ii].isTypeVariableReference()) {
+										TypeVariable mtv = ((TypeVariableReferenceType) mtps[ii]).getTypeVariable();
+										boolean b = mtv.canBeBoundTo((ResolvedType) ttps[ii]);
+										if (!b) {// TODO incomplete testing here I think
+											parametersAssignable = false;
+											break;
+										}
+									} else {
+										parametersAssignable = false;
+										break;
+									}
+								}
+								continue;
+							} else {
+								parametersAssignable = false;
+								break;
+							}
+						}
 						if (myParameters[i].isTypeVariableReference() && theirParameters[i].isTypeVariableReference()) {
 							TypeVariable myTV = ((TypeVariableReferenceType) myParameters[i]).getTypeVariable();
 							// TypeVariable theirTV = ((TypeVariableReferenceType) theirParameters[i]).getTypeVariable();
