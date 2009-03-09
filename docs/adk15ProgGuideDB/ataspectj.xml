@@ -648,10 +648,9 @@
         <title>Inter-type Declarations</title>
 
         <para>
-            Inter-type declarations are challenging to support using an annotation style.  For code style aspects,
+            Inter-type declarations are challenging to support using an annotation style.  For code style aspects
             compiled with the ajc compiler, the entire type system can be made aware of inter-type declarations (new
-            supertypes, new methods, new fields) and the completeness and correctness of it can be guaranteed.
-            
+            supertypes, new methods, new fields) and the completeness and correctness of it can be guaranteed.            
             Achieving this with an annotation style is hard because the source code may simply be compiled with javac
             where the type system cannot be influenced and what is compiled must be 'pure java'.
         </para>
@@ -659,20 +658,20 @@
             AspectJ 1.5.0 introduced @DeclareParents, an attempt to offer something like that which is achievable with
             code style declare parents and the other intertype declarations (fields, methods, constructors).  However,
             it has proved too challenging to get close to the expressiveness and capabilities of code style in this area
-            and effectively @DeclareParents is offering a mixin strategy.  The definition of mixin I am using here is that
-            some interface I is mixed into some target type T and that means all the methods from I are added to T and their
+            and effectively @DeclareParents is offering just a mixin strategy.  The definition of mixin I am using here is that when
+            some interface I is mixed into some target type T then this means that all the methods from I are created in T and their
             implementations are simple forwarding methods that call a delegate which that provides an implementation of I.
         </para>
         <para>            
-            The next section here talks about @DeclareParents and what is possible, but moving forward, starting with
-            AspectJ 1.6.4, we are offering @DeclareMixin - an improved approach to defining a mixin and the choice of a different
-            name will hopefully alleviate some of the confusion about why @DeclareParents just doesn't offer the same 
-            semantics as the code style variant.  Offering @DeclareMixin also gives code style developers a new tool for a simple
-            mixin whereas previously they would have avoided @DeclareParents thinking what it could do was already achievable with
-            code style syntax.  
+            The next section covers @DeclareParents but AspectJ 1.6.4 introduces @DeclareMixin - an improved approach to defining 
+            a mixin and the choice of a different name for the annotation will hopefully alleviate some of the confusion about 
+            why @DeclareParents just doesn't offer the same semantics as the code style variant.  Offering @DeclareMixin also gives 
+            code style developers a new tool for a simple mixin whereas previously they would have avoided @DeclareParents 
+            thinking what it could only do was already achievable with code style syntax.  
         </para>
         <para>
-            In future releases the @DeclareParents support may be deprecated if it cannot be made more similar to code style.  
+            The defaultImpl attribute of @DeclareParents may become deprecated if @DeclareMixin proves popular, leaving
+            @DeclareParents purely as a way to introduce a marker interface.
         </para>
 
 
