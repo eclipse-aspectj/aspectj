@@ -439,6 +439,36 @@ public class ReferenceTypeTestCase extends TestCase {
 		// error: arrayListOfString = listOfNumber;
 		assertFalse(ajArrayListOfString.isAssignableFrom(ajListOfNumber));
 		assertFalse(ajArrayListOfString.isCoerceableFrom(ajListOfNumber));
+
+	}
+
+	static class ClassA<T> {
+	}
+
+	static interface IMarker<H> {
+	}
+
+	static class ClassB<T> implements IMarker<ClassA<T>> {
+	}
+
+	static class ClassC<T> implements IMarker<T> {
+	}
+
+	public void testAssignability_pr267559() {
+		ClassB cb = new ClassB();
+		ClassB cb2 = new ClassB();
+
+		ReferenceType rcb = resolve("Lorg/aspectj/weaver/ReferenceTypeTestCase$ClassB;");
+		ReferenceType rcb2 = resolve("Lorg/aspectj/weaver/ReferenceTypeTestCase$ClassB;");
+		boolean b = rcb.isAssignableFrom(rcb2);
+		assertTrue(b);
+		b = rcb2.isAssignableFrom(rcb);
+		assertTrue(b);
+
+		rcb = resolve("Porg/aspectj/weaver/ReferenceTypeTestCase$IMarker<Porg/aspectj/weaver/ReferenceTypeTestCase$ClassA<TT;>;>;");
+		rcb2 = resolve("Lorg/aspectj/weaver/ReferenceTypeTestCase$ClassB;");
+		b = rcb.isAssignableFrom(rcb2);
+		assertTrue(b);
 	}
 
 	public void testAssignable03_method_m4() {
