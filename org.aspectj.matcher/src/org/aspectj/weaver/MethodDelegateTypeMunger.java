@@ -47,6 +47,9 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 	private String factoryMethodName;
 	private String factoryMethodSignature;
 
+	private int bitflags;
+	private static final int REPLACING_EXISTING_METHOD = 0x001;
+
 	/**
 	 * Construct a new type munger for @AspectJ ITD
 	 * 
@@ -84,7 +87,7 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 				&& ((o.fieldType == null ? (fieldType == null) : fieldType.equals(o.fieldType)))
 				&& ((o.factoryMethodName == null) ? (factoryMethodName == null) : factoryMethodName.equals(o.factoryMethodName))
 				&& ((o.factoryMethodSignature == null) ? (factoryMethodSignature == null) : factoryMethodSignature
-						.equals(o.factoryMethodSignature));
+						.equals(o.factoryMethodSignature)) && o.bitflags == bitflags;
 	}
 
 	private volatile int hashCode = 0;
@@ -98,6 +101,7 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 			result = 37 * result + ((fieldType == null) ? 0 : fieldType.hashCode());
 			result = 37 * result + ((factoryMethodName == null) ? 0 : factoryMethodName.hashCode());
 			result = 37 * result + ((factoryMethodSignature == null) ? 0 : factoryMethodSignature.hashCode());
+			result = 37 * result + bitflags;
 			hashCode = result;
 		}
 		return hashCode;
@@ -132,6 +136,7 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 		fieldType.write(s);
 		s.writeUTF(factoryMethodName);
 		s.writeUTF(factoryMethodSignature);
+		s.writeInt(bitflags);
 	}
 
 	public static ResolvedTypeMunger readMethod(VersionedDataInputStream s, ISourceContext context, boolean isEnhanced)
@@ -152,6 +157,7 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 		if (isEnhanced) {
 			typeMunger.factoryMethodName = s.readUTF();
 			typeMunger.factoryMethodSignature = s.readUTF();
+			typeMunger.bitflags = s.readInt();
 		}
 		return typeMunger;
 	}
@@ -279,5 +285,13 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 
 	public boolean existsToSupportShadowMunging() {
 		return true;
+	}
+
+	public void tagAsReplacingExistingMethod() {
+		bitflags |= REPLACING_EXISTING_METHOD;
+	}
+
+	public boolean isReplacingExistingMethod() {
+		return (bitflags & REPLACING_EXISTING_METHOD) != 0;
 	}
 }
