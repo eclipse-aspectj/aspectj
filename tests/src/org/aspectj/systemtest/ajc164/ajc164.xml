@@ -2,10 +2,18 @@
 
 <suite>
 
+   <ajc-test dir="bugs164/pr268710" title="generics aspects incorrect error">
+     <compile files="GenericAspect.aj ConcreteAspect.aj" options="-1.5"/>
+     <run class="none.ConcreteAspect">
+       <stdout>
+         <line text="Building an object class none.C"/>
+         <line text="C.init"/>
+       </stdout>
+     </run>
+   </ajc-test>
+
    <ajc-test dir="bugs164/pr268689" title="generics aspects npe">
-     <compile files="GenericAspect.aj ConcreteAspect.aj" options="-1.5">
-       <message kind="error" line="15" text="parameterized types not supported for this and target pointcuts (erasure limitation)"/>
-     </compile>
+     <compile files="GenericAspect.aj ConcreteAspect.aj" options="-1.5"/>
    </ajc-test>
    
    <ajc-test dir="bugs164/pr267559" title="generics and itd npe">
