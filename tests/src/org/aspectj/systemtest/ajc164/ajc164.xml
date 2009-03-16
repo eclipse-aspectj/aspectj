@@ -1,6 +1,12 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 
 <suite>
+
+   <ajc-test dir="bugs164/pr268689" title="generics aspects npe">
+     <compile files="GenericAspect.aj ConcreteAspect.aj" options="-1.5">
+       <message kind="error" line="15" text="parameterized types not supported for this and target pointcuts (erasure limitation)"/>
+     </compile>
+   </ajc-test>
    
    <ajc-test dir="bugs164/pr267559" title="generics and itd npe">
      <compile files="IMarker.java ClassB.java Aspect.java ClassA.java" options="-1.5"/>

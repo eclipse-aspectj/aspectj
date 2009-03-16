@@ -34,6 +34,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testGenericAspectsNpe_pr268689() {
+		runTest("generics aspects npe");
+	}
+
 	public void testGenericsItdNpe_pr267559() {
 		runTest("generics and itd npe");
 	}
