@@ -694,11 +694,13 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			}
 		}
 
-		UnresolvedType parameterizedReturnType = parameterize(getGenericReturnType(), typeMap, isParameterized);
+		UnresolvedType parameterizedReturnType = parameterize(getGenericReturnType(), typeMap, isParameterized, newDeclaringType
+				.getWorld());
 		UnresolvedType[] parameterizedParameterTypes = new UnresolvedType[getGenericParameterTypes().length];
 		UnresolvedType[] genericParameterTypes = getGenericParameterTypes();
 		for (int i = 0; i < parameterizedParameterTypes.length; i++) {
-			parameterizedParameterTypes[i] = parameterize(genericParameterTypes[i], typeMap, isParameterized);
+			parameterizedParameterTypes[i] = parameterize(genericParameterTypes[i], typeMap, isParameterized, newDeclaringType
+					.getWorld());
 		}
 		ResolvedMemberImpl ret = new ResolvedMemberImpl(getKind(), newDeclaringType, getModifiers(), parameterizedReturnType,
 				getName(), parameterizedParameterTypes, getExceptions(), this);
@@ -782,10 +784,6 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		return typeVariables;
 	}
 
-	protected UnresolvedType parameterize(UnresolvedType aType, Map typeVariableMap, boolean inParameterizedType) {
-		return parameterize(aType, typeVariableMap, inParameterizedType, null);
-	}
-
 	protected UnresolvedType parameterize(UnresolvedType aType, Map typeVariableMap, boolean inParameterizedType, World w) {
 		if (aType instanceof TypeVariableReference) {
 			String variableName = ((TypeVariableReference) aType).getTypeVariable().getName();
@@ -796,16 +794,12 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			return (UnresolvedType) typeVariableMap.get(variableName);
 		} else if (aType.isParameterizedType()) {
 			if (inParameterizedType) {
-				// if (!(getDeclaringType() instanceof ResolvedType)) {
-				// int stop = 1;
-				// }
-				// if (aType!=null) {// instanceof UnresolvedType) {
 				if (w != null)
 					aType = aType.resolve(w);
 				else {
-					aType = aType.resolve(((ResolvedType) getDeclaringType()).getWorld());
+					UnresolvedType dType = getDeclaringType();
+					aType = aType.resolve(((ResolvedType) dType).getWorld());
 				}
-				// }
 				return aType.parameterize(typeVariableMap);
 			} else {
 				return aType.getRawType();
@@ -818,7 +812,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			// dims++;
 			UnresolvedType arrayType = null;
 			UnresolvedType componentSig = UnresolvedType.forSignature(sig.substring(dims));
-			UnresolvedType parameterizedComponentSig = parameterize(componentSig, typeVariableMap, inParameterizedType);
+			UnresolvedType parameterizedComponentSig = parameterize(componentSig, typeVariableMap, inParameterizedType, w);
 			if (parameterizedComponentSig.isTypeVariableReference()
 					&& parameterizedComponentSig instanceof UnresolvedTypeVariableReferenceType
 					&& typeVariableMap.containsKey(((UnresolvedTypeVariableReferenceType) parameterizedComponentSig)
