@@ -1251,6 +1251,9 @@ class BcelClassWeaver implements IClassWeaver {
 					// go through all the declare @field statements
 					for (Iterator iter = decaFs.iterator(); iter.hasNext();) {
 						DeclareAnnotation decaF = (DeclareAnnotation) iter.next();
+						if (decaF.getAnnotationX() == null) {
+							return false;
+						}
 						if (decaF.matches(aBcelField, world)) {
 
 							if (!dontAddTwice(decaF, dontAddMeTwice)) {
@@ -2042,7 +2045,7 @@ class BcelClassWeaver implements IClassWeaver {
 	 * 
 	 * @param donor the method from which we will copy (and adjust frame and jumps) instructions.
 	 * @param recipient the method the instructions will go into. Used to get the frame size so we can allocate new frame locations
-	 *        for locals in donor.
+	 *            for locals in donor.
 	 * @param frameEnv an environment to map from donor frame to recipient frame, initially populated with argument locations.
 	 * @param fact an instruction factory for recipient
 	 */
