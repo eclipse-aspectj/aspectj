@@ -355,7 +355,7 @@ public class DeclareAnnotation extends Declare {
 	 */
 	public UnresolvedType getAnnotationTypeX() {
 		ensureAnnotationDiscovered();
-		return this.annotation.getType();
+		return (this.annotation == null ? null : this.annotation.getType());
 	}
 
 	/**
