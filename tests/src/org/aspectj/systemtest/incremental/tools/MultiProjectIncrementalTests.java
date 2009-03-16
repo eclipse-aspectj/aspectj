@@ -34,6 +34,7 @@ import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.asm.internal.Relationship;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.Message;
 import org.aspectj.tools.ajc.Ajc;
 import org.aspectj.util.FileUtil;
 
@@ -49,6 +50,16 @@ import org.aspectj.util.FileUtil;
  * as expected.
  */
 public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
+
+	public void testBrokenCodeDeca_268611() {
+		String p = "pr268611";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		assertEquals(1, getErrorMessages(p).size());
+		assertTrue(((Message) getErrorMessages(p).get(0)).getMessage().indexOf(
+				"Syntax error on token \")\", \"name pattern\" expected") != -1);
+	}
 
 	public void testIncrementalMixin() {
 		String p = "mixin";
