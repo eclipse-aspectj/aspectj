@@ -22,6 +22,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.patterns.FormalBinding;
@@ -75,6 +76,13 @@ public class PointcutDesignator extends ASTNode {
 			Argument arg = arguments[i];
 			String name = new String(arg.name);
 			UnresolvedType type = world.fromBinding(parameters[i]);
+			// pr268710: allow for inner interfaces in a generic aspect
+			if (parameters[i].isInterface() && parameters[i].isParameterizedType() && parameters[i].isMemberType()) {
+				TypeVariableBinding[] tvs = parameters[i].typeVariables();
+				if (tvs == null || tvs.length == 0) {
+					type = type.getRawType();
+				}
+			}
 			bindings[i] = new FormalBinding(type, name, i, arg.sourceStart, arg.sourceEnd);
 		}
 
