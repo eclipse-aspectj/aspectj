@@ -28,8 +28,9 @@ public class AllWeaver5Tests {
 		suite.addTest(BcweaverModuleTests15.suite());
 		suite.addTestSuite(ReflectionWorldReferenceTypeTest.class);
 		suite.addTestSuite(PointcutExpressionTest.class);
+		suite.addTestSuite(JoinPointSignatureIteratorTests.class);
 		// gives incompatible class version error...
-		//suite.addTestSuite(ReflectionWorldAdvancedPointcutExpressionTests.class
+		// suite.addTestSuite(ReflectionWorldAdvancedPointcutExpressionTests.class
 		// );
 		suite.addTestSuite(ReflectionWorldSpecificTest.class);
 		// $JUnit-END$
