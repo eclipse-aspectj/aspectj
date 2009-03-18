@@ -139,7 +139,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			// member.
 			Iterator superTypeIterator = firstDefiningType.getDirectSupertypes();
 			List typesAlreadyVisited = new ArrayList();
-			accumulateMembersMatching(firstDefiningMember, superTypeIterator, typesAlreadyVisited, memberSignatures);
+			accumulateMembersMatching(firstDefiningMember, superTypeIterator, typesAlreadyVisited, memberSignatures, false);
 		}
 
 		JoinPointSignature[] ret = new JoinPointSignature[memberSignatures.size()];
@@ -179,12 +179,13 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	 * ancestor members. When doing this, a type parameter matches regardless of bounds (bounds can be narrowed down the hierarchy).
 	 */
 	private static void accumulateMembersMatching(ResolvedMemberImpl memberToMatch, Iterator typesToLookIn,
-			List typesAlreadyVisited, Set foundMembers) {
+			List typesAlreadyVisited, Set foundMembers, boolean ignoreGenerics) {
 		while (typesToLookIn.hasNext()) {
 			ResolvedType toLookIn = (ResolvedType) typesToLookIn.next();
 			if (!typesAlreadyVisited.contains(toLookIn)) {
 				typesAlreadyVisited.add(toLookIn);
-				ResolvedMemberImpl foundMember = (ResolvedMemberImpl) toLookIn.lookupResolvedMember(memberToMatch, true);
+				ResolvedMemberImpl foundMember = (ResolvedMemberImpl) toLookIn.lookupResolvedMember(memberToMatch, true,
+						ignoreGenerics);
 				if (foundMember != null && isVisibleTo(memberToMatch, foundMember)) {
 					List declaringTypes = new ArrayList();
 					// declaring type can be unresolved if the member can from
@@ -197,11 +198,12 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 						ResolvedMember member = foundMember.withSubstituteDeclaringType(declaringType);
 						foundMembers.add(member);
 					}
-					if (toLookIn.isParameterizedType() && (foundMember.backingGenericMember != null)) {
+					if (!ignoreGenerics && toLookIn.isParameterizedType() && (foundMember.backingGenericMember != null)) {
 						foundMembers.add(new JoinPointSignature(foundMember.backingGenericMember, foundMember.declaringType
 								.resolve(toLookIn.getWorld())));
 					}
-					accumulateMembersMatching(foundMember, toLookIn.getDirectSupertypes(), typesAlreadyVisited, foundMembers);
+					accumulateMembersMatching(foundMember, toLookIn.getDirectSupertypes(), typesAlreadyVisited, foundMembers,
+							ignoreGenerics);
 					// if this was a parameterized type, look in the generic
 					// type that backs it too
 				}
@@ -911,24 +913,57 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	 * Returns true if this member matches the other. The matching takes into account name and parameter types only. When comparing
 	 * parameter types, we allow any type variable to match any other type variable regardless of bounds.
 	 */
-	public boolean matches(ResolvedMember aCandidateMatch) {
+	public boolean matches(ResolvedMember aCandidateMatch, boolean ignoreGenerics) {
+		// if (this.getName().equals("get")) {
+		// System.out.println("In RMI.matches() this=" + this + " candidate=" + aCandidateMatch);
+		// }
 		ResolvedMemberImpl candidateMatchImpl = (ResolvedMemberImpl) aCandidateMatch;
-		if (!getName().equals(aCandidateMatch.getName()))
+		if (!getName().equals(aCandidateMatch.getName())) {
 			return false;
+		}
 		UnresolvedType[] myParameterTypes = getGenericParameterTypes();
 		UnresolvedType[] candidateParameterTypes = aCandidateMatch.getGenericParameterTypes();
-		if (myParameterTypes.length != candidateParameterTypes.length)
+		if (myParameterTypes.length != candidateParameterTypes.length) {
 			return false;
-		String myParameterSignature = getParameterSigWithBoundsRemoved();
-		String candidateParameterSignature = candidateMatchImpl.getParameterSigWithBoundsRemoved();
-		if (myParameterSignature.equals(candidateParameterSignature)) {
-			return true;
-		} else {
-			// try erasure
-			myParameterSignature = getParameterSignatureErased();
-			candidateParameterSignature = candidateMatchImpl.getParameterSignatureErased();
-			return myParameterSignature.equals(candidateParameterSignature);
 		}
+		boolean b = false;
+	/*	if (ignoreGenerics) {
+			String myParameterSignature = getParameterSigWithBoundsRemoved();
+			String candidateParameterSignature = candidateMatchImpl.getParameterSigWithBoundsRemoved();
+			if (myParameterSignature.equals(candidateParameterSignature)) {
+				b = true;
+			} else {
+				myParameterSignature = (hasBackingGenericMember() ? backingGenericMember.getParameterSignatureErased()
+						: getParameterSignatureErased());
+				candidateParameterSignature = (candidateMatchImpl.hasBackingGenericMember() ? candidateMatchImpl.backingGenericMember
+						.getParameterSignatureErased()
+						: candidateMatchImpl.getParameterSignatureErased());
+				// System.out.println("my psig = " + myParameterSignature);
+				// System.out.println("can psig = " + candidateParameterSignature);
+				b = myParameterSignature.equals(candidateParameterSignature);
+			}
+		} else {
+*/
+			String myParameterSignature = getParameterSigWithBoundsRemoved();
+			String candidateParameterSignature = candidateMatchImpl.getParameterSigWithBoundsRemoved();
+			if (myParameterSignature.equals(candidateParameterSignature)) {
+				b = true;
+			} else {
+				// try erasure
+				myParameterSignature = getParameterSignatureErased();
+				candidateParameterSignature = candidateMatchImpl.getParameterSignatureErased();
+				// myParameterSignature = (hasBackingGenericMember() ? backingGenericMember.getParameterSignatureErased()
+				// : getParameterSignatureErased());
+				// candidateParameterSignature = (candidateMatchImpl.hasBackingGenericMember() ?
+				// candidateMatchImpl.backingGenericMember
+				// .getParameterSignatureErased() : candidateMatchImpl.getParameterSignatureErased());
+				// System.out.println("my psig = " + myParameterSignature);
+				// System.out.println("can psig = " + candidateParameterSignature);
+				b = myParameterSignature.equals(candidateParameterSignature);
+//			}
+		}
+		// System.out.println("Checking param signatures: " + b);
+		return b;
 	}
 
 	/**

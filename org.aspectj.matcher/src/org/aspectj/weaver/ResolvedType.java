@@ -251,48 +251,53 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public List getMethodsWithoutIterator(boolean includeITDs, boolean allowMissing) {
 		List methods = new ArrayList();
 		Set knowninterfaces = new HashSet();
-		addAndRecurse(knowninterfaces, methods, this, includeITDs, allowMissing);
+		addAndRecurse(knowninterfaces, methods, this, includeITDs, allowMissing, false);
 		return methods;
 	}
 
-	private void addAndRecurse(Set knowninterfaces, List collector, ResolvedType rtx, boolean includeITDs, boolean allowMissing) {
-		collector.addAll(Arrays.asList(rtx.getDeclaredMethods())); // Add the
-		// methods
-		// declared
-		// on this
-		// type
+	public List getMethodsWithoutIterator(boolean includeITDs, boolean allowMissing, boolean genericsAware) {
+		List methods = new ArrayList();
+		Set knowninterfaces = new HashSet();
+		addAndRecurse(knowninterfaces, methods, this, includeITDs, allowMissing, genericsAware);
+		return methods;
+	}
+
+	private void addAndRecurse(Set knowninterfaces, List collector, ResolvedType resolvedType, boolean includeITDs,
+			boolean allowMissing, boolean genericsAware) {
+		// Add the methods declared on this type
+		collector.addAll(Arrays.asList(resolvedType.getDeclaredMethods()));
 		// now add all the inter-typed members too
-		if (includeITDs && rtx.interTypeMungers != null) {
+		if (includeITDs && resolvedType.interTypeMungers != null) {
 			for (Iterator i = interTypeMungers.iterator(); i.hasNext();) {
 				ConcreteTypeMunger tm = (ConcreteTypeMunger) i.next();
 				ResolvedMember rm = tm.getSignature();
-				if (rm != null) { // new parent type munger can have null
-					// signature...
+				if (rm != null) { // new parent type munger can have null signature
 					collector.add(tm.getSignature());
 				}
 			}
 		}
-		if (!rtx.equals(ResolvedType.OBJECT)) {
-			ResolvedType superType = rtx.getSuperclass();
+		if (!resolvedType.equals(ResolvedType.OBJECT)) {
+			ResolvedType superType = resolvedType.getSuperclass();
 			if (superType != null && !superType.isMissing()) {
-				addAndRecurse(knowninterfaces, collector, superType, includeITDs, allowMissing); // Recurse if we aren't at
-				// the top
+				if (genericsAware && superType.isParameterizedType()) {
+					superType = (ResolvedType) superType.getRawType();
+				}
+				// Recurse if we are not at the top
+				addAndRecurse(knowninterfaces, collector, superType, includeITDs, allowMissing, genericsAware);
 			}
 		}
-		ResolvedType[] interfaces = rtx.getDeclaredInterfaces(); // Go through
-		// the
-		// interfaces
-		// on the
-		// way back
-		// down
+		// Go through the interfaces on the way back down
+		ResolvedType[] interfaces = resolvedType.getDeclaredInterfaces();
 		for (int i = 0; i < interfaces.length; i++) {
 			ResolvedType iface = interfaces[i];
-
+			if (!genericsAware && iface.isParameterizedType()) {
+				iface = (ResolvedType) iface.getRawType();
+			}
 			// we need to know if it is an interface from Parent kind munger
 			// as those are used for @AJ ITD and we precisely want to skip those
 			boolean shouldSkip = false;
-			for (int j = 0; j < rtx.interTypeMungers.size(); j++) {
-				ConcreteTypeMunger munger = (ConcreteTypeMunger) rtx.interTypeMungers.get(j);
+			for (int j = 0; j < resolvedType.interTypeMungers.size(); j++) {
+				ConcreteTypeMunger munger = (ConcreteTypeMunger) resolvedType.interTypeMungers.get(j);
 				if (munger.getMunger() != null && munger.getMunger().getKind() == ResolvedTypeMunger.Parent
 						&& ((NewParentTypeMunger) munger.getMunger()).getNewParent().equals(iface) // pr171953
 				) {
@@ -301,17 +306,15 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				}
 			}
 
-			if (!shouldSkip && !knowninterfaces.contains(iface)) { // Dont do
-				// interfaces
-				// more than
-				// once
+			// Do not do interfaces more than once
+			if (!shouldSkip && !knowninterfaces.contains(iface)) {
 				knowninterfaces.add(iface);
 				if (allowMissing && iface.isMissing()) {
 					if (iface instanceof MissingResolvedTypeWithKnownSignature) {
 						((MissingResolvedTypeWithKnownSignature) iface).raiseWarningOnMissingInterfaceWhilstFindingMethods();
 					}
 				} else {
-					addAndRecurse(knowninterfaces, collector, iface, includeITDs, allowMissing);
+					addAndRecurse(knowninterfaces, collector, iface, includeITDs, allowMissing, genericsAware);
 				}
 			}
 		}
@@ -433,19 +436,25 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * into account parameters which are type variables - which clearly an unresolved Member cannot do since it does not know
 	 * anything about type variables.
 	 */
-	public ResolvedMember lookupResolvedMember(ResolvedMember aMember, boolean allowMissing) {
+	public ResolvedMember lookupResolvedMember(ResolvedMember aMember, boolean allowMissing, boolean ignoreGenerics) {
 		Iterator toSearch = null;
 		ResolvedMember found = null;
 		if ((aMember.getKind() == Member.METHOD) || (aMember.getKind() == Member.CONSTRUCTOR)) {
-			toSearch = getMethodsWithoutIterator(true, allowMissing).iterator();
+			toSearch = getMethodsWithoutIterator(true, allowMissing, !ignoreGenerics).iterator();
 		} else {
 			if (aMember.getKind() != Member.FIELD)
 				throw new IllegalStateException("I didn't know you would look for members of kind " + aMember.getKind());
 			toSearch = getFields();
 		}
 		while (toSearch.hasNext()) {
-			ResolvedMemberImpl candidate = (ResolvedMemberImpl) toSearch.next();
-			if (candidate.matches(aMember)) {
+			ResolvedMember candidate = (ResolvedMemberImpl) toSearch.next();
+			if (ignoreGenerics) {
+				if (candidate.hasBackingGenericMember()) {
+					candidate = candidate.getBackingGenericMember();
+				}
+			}
+
+			if (candidate.matches(aMember, ignoreGenerics)) {
 				found = candidate;
 				break;
 			}

@@ -22,12 +22,10 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute.EffectiveSignatureAttribute;
 
 /**
- * @author colyer Instances of this class are created by
- *         ResolvedMember.getSignatures() when collating all of the signatures
- *         for a member. We need to create entries in the set for the "gaps" in
- *         the hierarchy. For example:
+ * @author colyer Instances of this class are created by ResolvedMember.getSignatures() when collating all of the signatures for a
+ *         member. We need to create entries in the set for the "gaps" in the hierarchy. For example:
  * 
- *         class A { void foo(); } 
+ *         class A { void foo(); }
  * 
  *         class B extends A {}
  * 
@@ -35,8 +33,7 @@ import org.aspectj.weaver.AjAttribute.EffectiveSignatureAttribute;
  * 
  *         has signatures:
  * 
- *         B.foo() AND A.foo() B.foo() will be created as a
- *         ResolvedMemberWithSubstituteDeclaringType
+ *         B.foo() AND A.foo() B.foo() will be created as a ResolvedMemberWithSubstituteDeclaringType
  * 
  *         Oh for a JDK 1.4 dynamic proxy.... we have to run on 1.3 :(
  */
@@ -206,18 +203,14 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.getGenericParameterTypes();
 	}
 
-	public ResolvedMemberImpl parameterizedWith(
-			UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
+	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
 			boolean isParameterized) {
-		return realMember.parameterizedWith(typeParameters, newDeclaringType,
-				isParameterized);
+		return realMember.parameterizedWith(typeParameters, newDeclaringType, isParameterized);
 	}
 
-	public ResolvedMemberImpl parameterizedWith(
-			UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
+	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
 			boolean isParameterized, List aliases) {
-		return realMember.parameterizedWith(typeParameters, newDeclaringType,
-				isParameterized, aliases);
+		return realMember.parameterizedWith(typeParameters, newDeclaringType, isParameterized, aliases);
 	}
 
 	public void setTypeVariables(TypeVariable[] types) {
@@ -232,8 +225,8 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.getTypeVariableNamed(name);
 	}
 
-	public boolean matches(ResolvedMember aCandidateMatch) {
-		return realMember.matches(aCandidateMatch);
+	public boolean matches(ResolvedMember aCandidateMatch, boolean ignoreGenerics) {
+		return realMember.matches(aCandidateMatch, ignoreGenerics);
 	}
 
 	public ResolvedMember resolve(World world) {
@@ -309,8 +302,7 @@ public class JoinPointSignature implements ResolvedMember {
 	}
 
 	public Collection getDeclaringTypes(World world) {
-		throw new UnsupportedOperationException(
-				"Adrian doesn't think you should be calling this...");
+		throw new UnsupportedOperationException("Adrian doesn't think you should be calling this...");
 	}
 
 	public Iterator getJoinPointSignatures(World world) {
@@ -375,8 +367,7 @@ public class JoinPointSignature implements ResolvedMember {
 	}
 
 	public int hashCode() {
-		return 17 + (37 * realMember.hashCode())
-				+ (37 * substituteDeclaringType.hashCode());
+		return 17 + (37 * realMember.hashCode()) + (37 * substituteDeclaringType.hashCode());
 	}
 
 	public boolean hasBackingGenericMember() {

@@ -20,8 +20,7 @@ import java.util.Map;
 
 import org.aspectj.bridge.ISourceLocation;
 
-public interface ResolvedMember extends Member, AnnotatedElement,
-		TypeVariableDeclaringElement {
+public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDeclaringElement {
 
 	public static final ResolvedMember[] NONE = new ResolvedMember[0];
 
@@ -119,14 +118,12 @@ public interface ResolvedMember extends Member, AnnotatedElement,
 	public ResolvedMember getBackingGenericMember();
 
 	/**
-	 * Get the UnresolvedType for the return type, taking generic signature into
-	 * account
+	 * Get the UnresolvedType for the return type, taking generic signature into account
 	 */
 	public UnresolvedType getGenericReturnType();
 
 	/**
-	 * Get the TypeXs of the parameter types, taking generic signature into
-	 * account
+	 * Get the TypeXs of the parameter types, taking generic signature into account
 	 */
 	public UnresolvedType[] getGenericParameterTypes();
 
@@ -137,16 +134,14 @@ public interface ResolvedMember extends Member, AnnotatedElement,
 	// version or not
 	// if isParameterized List<T> will turn into List<String> (for example),
 	// but if !isParameterized List<T> will turn into List.
-	public ResolvedMemberImpl parameterizedWith(
-			UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
+	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
 			boolean isParameterized);
 
 	// this variant allows for aliases for type variables (i.e. allowing them to
 	// have another name)
 	// this is used for processing ITDs that share type variables with their
 	// target generic type
-	public ResolvedMemberImpl parameterizedWith(
-			UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
+	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
 			boolean isParameterized, List aliases);
 
 	public void setTypeVariables(TypeVariable[] types);
@@ -170,12 +165,10 @@ public interface ResolvedMember extends Member, AnnotatedElement,
 	// public ResolvedMember getErasure();
 
 	/**
-	 * Returns true if this member matches the other. The matching takes into
-	 * account name and parameter types only. When comparing parameter types, we
-	 * allow any type variable to match any other type variable regardless of
-	 * bounds.
+	 * Returns true if this member matches the other. The matching takes into account name and parameter types only. When comparing
+	 * parameter types, we allow any type variable to match any other type variable regardless of bounds.
 	 */
-	public boolean matches(ResolvedMember aCandidateMatch);
+	public boolean matches(ResolvedMember aCandidateMatch, boolean ignoreGenerics);
 
 	public void resetName(String newName);
 
@@ -188,4 +181,5 @@ public interface ResolvedMember extends Member, AnnotatedElement,
 	public void evictWeavingState();
 
 	public ResolvedMember parameterizedWith(Map m, World w);
+
 }
