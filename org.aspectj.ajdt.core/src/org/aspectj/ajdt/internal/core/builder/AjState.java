@@ -61,7 +61,7 @@ import org.aspectj.weaver.bcel.UnwovenClassFile;
 public class AjState implements CompilerConfigurationChangeFlags {
 
 	// SECRETAPI configures whether we use state instead of lastModTime - see pr245566
-	public static boolean CHECK_STATE_FIRST = false;
+	public static boolean CHECK_STATE_FIRST = true;
 
 	// SECRETAPI static so beware of multi-threading bugs...
 	public static IStateListener stateListener = null;
@@ -432,6 +432,17 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			}
 		}
 
+		// pr268827 - this guard will cause us to exit quickly if the state says there really is
+		// nothing of interest. This will not catch the case where a user modifies the .class files outside of
+		// eclipse because the state will not be aware of it. But that seems an unlikely scenario and
+		// we are paying a heavy price to check it
+		if (state != null && !state.hasAnyStructuralChangesSince(lastSuccessfulBuildTime)) {
+			if (listenerDefined()) {
+				getListener().recordDecision("No reported changes in that state");
+			}
+			return CLASS_FILE_NO_CHANGES;
+		}
+
 		List classFiles = FileUtil.listClassFiles(dir);
 
 		for (Iterator iterator = classFiles.iterator(); iterator.hasNext();) {
@@ -680,7 +691,8 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * Determine if a file has changed since a given time, using the local information recorded in the structural changes data
 	 * structure.
 	 * 
-	 * file is the file we are wondering about lastSBT is the last build time for the state asking the question
+	 * @param file the file we are wondering about
+	 * @param lastSuccessfulBuildTime the last build time for the state asking the question
 	 */
 	private boolean hasStructuralChangedSince(File file, long lastSuccessfulBuildTime) {
 		// long lastModTime = file.lastModified();
@@ -693,6 +705,29 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		// we now have:
 		// 'strucModTime'-> the last time the class was structurally changed
 		return (strucModTime > lastSuccessfulBuildTime);
+	}
+
+	/**
+	 * Determine if anything has changed since a given time.
+	 */
+	private boolean hasAnyStructuralChangesSince(long lastSuccessfulBuildTime) {
+		Set entries = structuralChangesSinceLastFullBuild.entrySet();
+		for (Iterator iterator = entries.iterator(); iterator.hasNext();) {
+			Map.Entry entry = (Map.Entry) iterator.next();
+			Long l = (Long) entry.getValue();
+			if (l != null) {
+				long lvalue = l.longValue();
+				if (lvalue > lastSuccessfulBuildTime) {
+					if (listenerDefined()) {
+						getListener().recordDecision(
+								"Seems this has changed " + entry.getKey() + "modtime=" + lvalue + " lsbt="
+										+ this.lastSuccessfulFullBuildTime + "   incoming check value=" + lastSuccessfulBuildTime);
+					}
+					return true;
+				}
+			}
+		}
+		return (this.lastSuccessfulFullBuildTime > lastSuccessfulBuildTime);
 	}
 
 	/**
