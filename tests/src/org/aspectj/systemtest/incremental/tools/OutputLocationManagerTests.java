@@ -102,6 +102,9 @@ public class OutputLocationManagerTests extends AbstractMultiProjectIncrementalA
 		public void reportClassFileWrite(String outputfile) {
 		}
 
+		public void reportClassFileRemove(String outputfile) {
+		}
+
 		public File getOutputLocationForClass(File compilationUnit) {
 			String relativePath = "";
 			String compilationUnitName = compilationUnit.getAbsolutePath();
@@ -143,6 +146,9 @@ public class OutputLocationManagerTests extends AbstractMultiProjectIncrementalA
 	}
 
 	public void reportClassFileWrite(String outputfile) {
+	}
+
+	public void reportClassFileRemove(String outputfile) {
 	}
 
 }
