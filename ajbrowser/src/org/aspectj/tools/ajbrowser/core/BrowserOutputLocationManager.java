@@ -61,4 +61,7 @@ public class BrowserOutputLocationManager implements IOutputLocationManager {
 	public void reportClassFileWrite(String outputfile) {
 	}
 
+	public void reportClassFileRemove(String outputfile) {
+	}
+
 }
