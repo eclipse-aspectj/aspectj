@@ -354,6 +354,9 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		public void reportClassFileWrite(String outputfile) {
 		}
 
+		public void reportClassFileRemove(String outputfile) {
+		}
+
 		public String getSourceFolderForFile(File sourceFile) {
 			// TODO Auto-generated method stub
 			return null;
