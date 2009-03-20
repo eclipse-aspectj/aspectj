@@ -87,4 +87,7 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 		return null;
 	}
 
+	public void reportClassFileRemove(String outputfile) {
+	}
+
 }
