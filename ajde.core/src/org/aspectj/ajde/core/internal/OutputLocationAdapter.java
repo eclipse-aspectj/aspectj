@@ -52,4 +52,8 @@ public class OutputLocationAdapter implements CompilationResultDestinationManage
 	public void reportClassFileWrite(String outputfile) {
 		this.locationManager.reportClassFileWrite(outputfile);
 	}
+
+	public void reportClassFileRemove(String outputfile) {
+		this.locationManager.reportClassFileRemove(outputfile);
+	}
 }

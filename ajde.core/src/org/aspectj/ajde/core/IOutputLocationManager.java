@@ -61,4 +61,6 @@ public interface IOutputLocationManager {
 
 	void reportClassFileWrite(String outputfile);
 
+	void reportClassFileRemove(String outputfile);
+
 }
