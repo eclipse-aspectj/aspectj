@@ -1848,18 +1848,18 @@ public class AjState implements CompilerConfigurationChangeFlags {
 				});
 				if (weaverGenerated != null) {
 					for (int i = 0; i < weaverGenerated.length; i++) {
+						weaverGenerated[i].delete();
 						if (buildConfig != null && buildConfig.getCompilationResultDestinationManager() != null) {
 							buildConfig.getCompilationResultDestinationManager()
 									.reportClassFileRemove(weaverGenerated[i].getPath());
 						}
-						weaverGenerated[i].delete();
 					}
 				}
 			}
+			locationOnDisk.delete();
 			if (buildConfig != null && buildConfig.getCompilationResultDestinationManager() != null) {
 				buildConfig.getCompilationResultDestinationManager().reportClassFileRemove(locationOnDisk.getPath());
 			}
-			locationOnDisk.delete();
 		}
 	}
 
