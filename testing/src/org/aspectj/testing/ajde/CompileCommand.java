@@ -397,4 +397,7 @@ class MyOutputLocationManager implements IOutputLocationManager {
 	public void reportClassFileWrite(String outputfile) {
 	}
 
+	public void reportClassFileRemove(String outputfile) {
+	}
+
 }
