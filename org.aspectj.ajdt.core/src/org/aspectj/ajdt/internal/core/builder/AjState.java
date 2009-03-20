@@ -1025,12 +1025,12 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			List cfs = (List) iter.next();
 			for (Iterator iterator = cfs.iterator(); iterator.hasNext();) {
 				ClassFile cf = (ClassFile) iterator.next();
-				cf.deleteFromFileSystem();
+				cf.deleteFromFileSystem(buildConfig);
 			}
 		}
 		for (Iterator iterator = classesFromName.values().iterator(); iterator.hasNext();) {
 			File f = (File) iterator.next();
-			new ClassFile("", f).deleteFromFileSystem();
+			new ClassFile("", f).deleteFromFileSystem(buildConfig);
 		}
 		for (Iterator iter = resources.iterator(); iter.hasNext();) {
 			String resource = (String) iter.next();
@@ -1046,8 +1046,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	}
 
 	private void deleteClassFiles() {
-		if (deletedFiles == null)
+		if (deletedFiles == null) {
 			return;
+		}
 		for (Iterator i = deletedFiles.iterator(); i.hasNext();) {
 			File deletedFile = (File) i.next();
 			addDependentsOf(deletedFile);
@@ -1156,7 +1157,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	private void deleteClassFile(ClassFile cf) {
 		classesFromName.remove(cf.fullyQualifiedTypeName);
 		weaver.deleteClassFile(cf.fullyQualifiedTypeName);
-		cf.deleteFromFileSystem();
+		cf.deleteFromFileSystem(buildConfig);
 	}
 
 	private UnwovenClassFile createUnwovenClassFile(AjBuildConfig.BinarySourceFile bsf) {
@@ -1834,7 +1835,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			this.locationOnDisk = location;
 		}
 
-		public void deleteFromFileSystem() {
+		public void deleteFromFileSystem(AjBuildConfig buildConfig) {
 			String namePrefix = locationOnDisk.getName();
 			namePrefix = namePrefix.substring(0, namePrefix.lastIndexOf('.'));
 			final String targetPrefix = namePrefix + BcelWeaver.CLOSURE_CLASS_PREFIX;
@@ -1847,9 +1848,16 @@ public class AjState implements CompilerConfigurationChangeFlags {
 				});
 				if (weaverGenerated != null) {
 					for (int i = 0; i < weaverGenerated.length; i++) {
+						if (buildConfig != null && buildConfig.getCompilationResultDestinationManager() != null) {
+							buildConfig.getCompilationResultDestinationManager()
+									.reportClassFileRemove(weaverGenerated[i].getPath());
+						}
 						weaverGenerated[i].delete();
 					}
 				}
+			}
+			if (buildConfig != null && buildConfig.getCompilationResultDestinationManager() != null) {
+				buildConfig.getCompilationResultDestinationManager().reportClassFileRemove(locationOnDisk.getPath());
 			}
 			locationOnDisk.delete();
 		}

@@ -68,4 +68,11 @@ public interface CompilationResultDestinationManager {
 	 */
 	void reportClassFileWrite(String outputfile);
 
+	/**
+	 * Report that a class file is being deleted from the specified location.
+	 * 
+	 * @param outputfile the output file (including .class suffix)
+	 */
+	void reportClassFileRemove(String outputfile);
+
 }
