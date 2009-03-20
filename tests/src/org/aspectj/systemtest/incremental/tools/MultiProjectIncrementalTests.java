@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.ajde.core.ICompilerConfiguration;
+import org.aspectj.ajde.core.TestOutputLocationManager;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
@@ -50,6 +51,42 @@ import org.aspectj.util.FileUtil;
  * as expected.
  */
 public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
+
+	public void testOutputLocationCallbacks() {
+		String p = "pr268827_ol";
+		initialiseProject(p);
+		CustomOLM olm = new CustomOLM(getProjectRelativePath(p, ".").toString());
+		configureOutputLocationManager(p, olm);
+		build(p);
+		checkCompileWeaveCount(p, 2, 3);
+		alter(p, "inc1"); // this contains a new Foo.java that no longer has Extra class in it
+		build(p);
+		checkCompileWeaveCount(p, 1, 1);
+		assertEquals(1, olm.removeCount);
+	}
+
+	static class CustomOLM extends TestOutputLocationManager {
+
+		public int writeCount = 0;
+		public int removeCount = 0;
+
+		public CustomOLM(String testProjectPath) {
+			super(testProjectPath);
+		}
+
+		public void reportClassFileWrite(String outputfile) {
+			super.reportClassFileWrite(outputfile);
+			writeCount++;
+			// System.out.println("Written " + outputfile);
+		}
+
+		public void reportClassFileRemove(String outputfile) {
+			super.reportClassFileRemove(outputfile);
+			removeCount++;
+			// System.out.println("Removed " + outputfile);
+		}
+
+	}
 
 	public void testBrokenCodeDeca_268611() {
 		String p = "pr268611";
