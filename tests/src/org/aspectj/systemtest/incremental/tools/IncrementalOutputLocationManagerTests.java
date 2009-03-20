@@ -48,6 +48,9 @@ public class IncrementalOutputLocationManagerTests extends AbstractMultiProjectI
 		public void reportClassFileWrite(String outputfile) {
 		}
 
+		public void reportClassFileRemove(String outputfile) {
+		}
+
 		public File getOutputLocationForClass(File compilationUnit) {
 			String path = compilationUnit.getAbsolutePath();
 			int index = path.indexOf("src");
