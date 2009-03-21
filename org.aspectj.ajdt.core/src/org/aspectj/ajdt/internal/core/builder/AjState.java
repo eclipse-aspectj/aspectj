@@ -175,7 +175,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	private Map /* <String, char[]> */aspectsFromFileNames;
 
 	private Set/* File */compiledSourceFiles = new HashSet();
-	private final List/* String */resources = new ArrayList();
+	private final Map/* String,File sourcelocation */resources = new HashMap();
 
 	// these are references created on a particular compile run - when looping round in
 	// addAffectedSourceFiles(), if some have been created then we look at which source files
@@ -824,6 +824,20 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		return outputLocs;
 	}
 
+	private File getOutputLocationFor(AjBuildConfig config, File aResourceFile) {
+		List outputLocs = new ArrayList();
+		if (config.getCompilationResultDestinationManager() != null) {
+			File outputLoc = config.getCompilationResultDestinationManager().getOutputLocationForResource(aResourceFile);
+			if (outputLoc != null)
+				return outputLoc;
+		}
+		// Is there a default location?
+		if (config.getOutputDir() != null) {
+			return config.getOutputDir();
+		}
+		return null;
+	}
+
 	/**
 	 * Check the old and new paths, if they vary by length or individual elements then that is considered a change. Or if the last
 	 * modified time of a path entry has changed (or last modified time of a classfile in that path entry has changed) then return
@@ -1032,14 +1046,15 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			File f = (File) iterator.next();
 			new ClassFile("", f).deleteFromFileSystem(buildConfig);
 		}
-		for (Iterator iter = resources.iterator(); iter.hasNext();) {
-			String resource = (String) iter.next();
-			List outputDirs = getOutputLocations(buildConfig);
-			for (Iterator iterator = outputDirs.iterator(); iterator.hasNext();) {
-				File dir = (File) iterator.next();
-				File f = new File(dir, resource);
-				if (f.exists()) {
-					f.delete();
+		Set resourceEntries = resources.entrySet();
+		for (Iterator iter = resourceEntries.iterator(); iter.hasNext();) {
+			Map.Entry resourcePair = (Map.Entry) iter.next();
+			File sourcePath = (File) resourcePair.getValue();
+			File outputLoc = getOutputLocationFor(buildConfig, sourcePath);
+			if (outputLoc != null) {
+				outputLoc = new File(outputLoc, (String) resourcePair.getKey());
+				if (!outputLoc.getPath().equals(sourcePath.getPath()) && outputLoc.exists()) {
+					outputLoc.delete();
 				}
 			}
 		}
@@ -1797,11 +1812,11 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	}
 
 	public boolean hasResource(String resourceName) {
-		return this.resources.contains(resourceName);
+		return this.resources.keySet().contains(resourceName);
 	}
 
-	public void recordResource(String resourceName) {
-		this.resources.add(resourceName);
+	public void recordResource(String resourceName, File resourceSourceLocation) {
+		this.resources.put(resourceName, resourceSourceLocation);
 	}
 
 	/**

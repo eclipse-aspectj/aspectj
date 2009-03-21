@@ -532,7 +532,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			ZipEntry newEntry = new ZipEntry(directory);
 			zos.putNextEntry(newEntry);
 			zos.closeEntry();
-			state.recordResource(directory);
+			state.recordResource(directory, srcloc);
 		}
 		// Nothing to do if not writing to a zip file
 	}
@@ -571,7 +571,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				handler.handleMessage(msg);
 			}
 		}
-		state.recordResource(filename);
+		state.recordResource(filename, srcLocation);
 	}
 
 	/*
