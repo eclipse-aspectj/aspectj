@@ -32,7 +32,7 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 		this.testProjectOutputPath = testProjectPath + File.separator + "bin";
 	}
 
-	public void reportClassFileWrite(String outputfile) {
+	public void reportFileWrite(String outputfile, int filetype) {
 	}
 
 	public String getUniqueIdentifier() {
@@ -87,7 +87,7 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 		return null;
 	}
 
-	public void reportClassFileRemove(String outputfile) {
+	public void reportFileRemove(String outputfile, int filetype) {
 	}
 
 }
