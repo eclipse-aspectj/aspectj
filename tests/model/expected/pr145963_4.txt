@@ -10,7 +10,6 @@
   binaries  [source folder] 
       [package] 
       A.class  [file] TEST_SANDBOX\simple.jar!\A.class:1:
-        import declarations  [import reference] 
         A  [aspect] TEST_SANDBOX\simple.jar!\A.class:1:
           declare warning: "There should be n.."  [declare warning] TEST_SANDBOX\simple.jar!\A.class:4:
 === END OF MODEL REPORT =========
@@ -20,7 +19,7 @@
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 method=1
-import reference=2
+import reference=1
 aspect=1
 code=1
 declare warning=1

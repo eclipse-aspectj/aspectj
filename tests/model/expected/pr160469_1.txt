@@ -9,7 +9,6 @@
   binaries  [source folder] 
     pkg  [package] 
       AbstractBeanConfigurerAspect.class  [file] TEST_SANDBOX\aspects.jar!pkg\AbstractBeanConfigurerAspect.class:1:
-        import declarations  [import reference] 
         AbstractBeanConfigurerAspect  [aspect] TEST_SANDBOX\aspects.jar!pkg\AbstractBeanConfigurerAspect.class:1:
           beanCreation()  [pointcut] TEST_SANDBOX\aspects.jar!pkg\AbstractBeanConfigurerAspect.class:1:
           afterReturning(): beanCreation..  [advice] TEST_SANDBOX\aspects.jar!pkg\AbstractBeanConfigurerAspect.class:6:
@@ -17,12 +16,12 @@
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
 (targets=1) /binaries<pkg(AbstractBeanConfigurerAspect.class}AbstractBeanConfigurerAspect&before (advises) <test{Simple.java[Simple~Simple
-(targets=1) /binaries<pkg(AbstractBeanConfigurerAspect.class}AbstractBeanConfigurerAspect&afterReturning (advises) <test{Simple.java[Simple~Simple
 (targets=2) <test{Simple.java[Simple~Simple (advised by) /binaries<pkg(AbstractBeanConfigurerAspect.class}AbstractBeanConfigurerAspect&afterReturning
 (targets=2) <test{Simple.java[Simple~Simple (advised by) /binaries<pkg(AbstractBeanConfigurerAspect.class}AbstractBeanConfigurerAspect&before
+(targets=1) /binaries<pkg(AbstractBeanConfigurerAspect.class}AbstractBeanConfigurerAspect&afterReturning (advises) <test{Simple.java[Simple~Simple
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
-import reference=2
+import reference=1
 aspect=1
 constructor=1
 file=1

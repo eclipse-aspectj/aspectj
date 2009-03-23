@@ -9,7 +9,6 @@
   binaries  [source folder] 
     pkg  [package] 
       AbstractBeanConfigurerAspect.class  [file] TEST_SANDBOX\aspects.jar!pkg\AbstractBeanConfigurerAspect.class:1:
-        import declarations  [import reference] 
         AbstractBeanConfigurerAspect  [aspect] TEST_SANDBOX\aspects.jar!pkg\AbstractBeanConfigurerAspect.class:1:
           beanCreation()  [pointcut] TEST_SANDBOX\aspects.jar!pkg\AbstractBeanConfigurerAspect.class:1:
           declare warning: "warning"  [declare warning] TEST_SANDBOX\aspects.jar!pkg\AbstractBeanConfigurerAspect.class:7:
@@ -19,7 +18,7 @@
 (targets=1) <test{Simple.java[Simple~Simple (matches declare) /binaries<pkg(AbstractBeanConfigurerAspect.class}AbstractBeanConfigurerAspect`declare warning
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
-import reference=2
+import reference=1
 aspect=1
 declare warning=1
 constructor=1
