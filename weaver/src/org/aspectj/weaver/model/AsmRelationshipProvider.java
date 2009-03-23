@@ -108,8 +108,7 @@ public class AsmRelationshipProvider {
 	}
 
 	/**
-	 * Add a relationship for a type transformation (declare parents, intertype
-	 * method declaration, declare annotation on type).
+	 * Add a relationship for a type transformation (declare parents, intertype method declaration, declare annotation on type).
 	 */
 	public static void addRelationship(AsmManager model, ResolvedType onType, ResolvedTypeMunger typeTransformer,
 			ResolvedType originatingAspect) {
@@ -174,10 +173,9 @@ public class AsmRelationshipProvider {
 	}
 
 	/**
-	 * Returns the binarySourceLocation for the given sourcelocation. This isn't
-	 * cached because it's used when faulting in the binary nodes and is called
-	 * with ISourceLocations for all advice, pointcuts and deows contained
-	 * within the resolvedDeclaringAspect.
+	 * Returns the binarySourceLocation for the given sourcelocation. This isn't cached because it's used when faulting in the
+	 * binary nodes and is called with ISourceLocations for all advice, pointcuts and deows contained within the
+	 * resolvedDeclaringAspect.
 	 */
 	private static ISourceLocation getBinarySourceLocation(ResolvedType aspect, ISourceLocation sl) {
 		if (sl == null) {
@@ -219,12 +217,9 @@ public class AsmRelationshipProvider {
 	}
 
 	/**
-	 * Returns the File with pathname to the class file, for example either
-	 * C:\temp
-	 * \ajcSandbox\workspace\ajcTest16957.tmp\simple.jar!pkg\BinaryAspect.class
-	 * if the class file is in a jar file, or
-	 * C:\temp\ajcSandbox\workspace\ajcTest16957.tmp!pkg\BinaryAspect.class if
-	 * the class file is in a directory
+	 * Returns the File with pathname to the class file, for example either C:\temp
+	 * \ajcSandbox\workspace\ajcTest16957.tmp\simple.jar!pkg\BinaryAspect.class if the class file is in a jar file, or
+	 * C:\temp\ajcSandbox\workspace\ajcTest16957.tmp!pkg\BinaryAspect.class if the class file is in a directory
 	 */
 	private static File getBinaryFile(ResolvedType aspect) {
 		String s = aspect.getBinaryPath();
@@ -241,8 +236,7 @@ public class AsmRelationshipProvider {
 	}
 
 	/**
-	 * Create a basic hierarchy to represent an aspect only available in binary
-	 * (from the aspectpath).
+	 * Create a basic hierarchy to represent an aspect only available in binary (from the aspectpath).
 	 */
 	private static void createHierarchy(AsmManager model, ResolvedTypeMunger typeTransformer, ResolvedType aspect) {
 		// assert aspect != null;
@@ -319,8 +313,9 @@ public class AsmRelationshipProvider {
 		// }
 
 		// add and create empty import declaration ipe
-		classFileNode.addChild(new ProgramElement(model, "import declarations", IProgramElement.Kind.IMPORT_REFERENCE, null, 0,
-				null, null));
+		// no import container for binary type - 265693
+		// classFileNode.addChild(new ProgramElement(model, "import declarations", IProgramElement.Kind.IMPORT_REFERENCE, null, 0,
+		// null, null));
 
 		// add and create aspect ipe
 		IProgramElement aspectNode = new ProgramElement(model, aspect.getSimpleName(), IProgramElement.Kind.ASPECT,
@@ -335,9 +330,8 @@ public class AsmRelationshipProvider {
 	}
 
 	/**
-	 * Adds a declare annotation relationship, sometimes entities don't have
-	 * source locs (methods/fields) so use other variants of this method if that
-	 * is the case as they will look the entities up in the structure model.
+	 * Adds a declare annotation relationship, sometimes entities don't have source locs (methods/fields) so use other variants of
+	 * this method if that is the case as they will look the entities up in the structure model.
 	 */
 	public static void addDeclareAnnotationRelationship(AsmManager model, ISourceLocation declareAnnotationLocation,
 			ISourceLocation annotatedLocation) {
@@ -444,8 +438,9 @@ public class AsmRelationshipProvider {
 		// }
 
 		// add and create empty import declaration ipe
-		classFileNode.addChild(new ProgramElement(asm, "import declarations", IProgramElement.Kind.IMPORT_REFERENCE, null, 0, null,
-				null));
+		// classFileNode.addChild(new ProgramElement(asm, "import declarations", IProgramElement.Kind.IMPORT_REFERENCE, null, 0,
+		// null,
+		// null));
 
 		// add and create aspect ipe
 		IProgramElement aspectNode = new ProgramElement(asm, aspect.getSimpleName(), IProgramElement.Kind.ASPECT, munger
@@ -560,11 +555,9 @@ public class AsmRelationshipProvider {
 	}
 
 	/**
-	 * Half baked implementation - will need completing if we go down this route
-	 * rather than replacing it all for binary aspects. Doesn't attempt to get
-	 * parameter names correct - they may have been lost during
-	 * (de)serialization of the munger, but the member could still be located so
-	 * they might be retrievable.
+	 * Half baked implementation - will need completing if we go down this route rather than replacing it all for binary aspects.
+	 * Doesn't attempt to get parameter names correct - they may have been lost during (de)serialization of the munger, but the
+	 * member could still be located so they might be retrievable.
 	 */
 	private static IProgramElement createIntertypeDeclaredChild(AsmManager model, ResolvedType aspect, BcelTypeMunger itd) {
 		ResolvedTypeMunger rtMunger = itd.getMunger();
@@ -772,19 +765,14 @@ public class AsmRelationshipProvider {
 	/**
 	 * Finds or creates a code IProgramElement for the given shadow.
 	 * 
-	 * The byteCodeName of the created node is set to 'shadowSig.getName() + "!"
-	 * + counter', eg "println!3". The counter is the occurence count of
-	 * children within the enclosingNode which have the same name. So, for
-	 * example, if a method contains two System.out.println statements, the
-	 * first one will have byteCodeName 'println!1' and the second will have
-	 * byteCodeName 'println!2'. This is to ensure the two nodes have unique
-	 * handles when the handles do not depend on sourcelocations.
+	 * The byteCodeName of the created node is set to 'shadowSig.getName() + "!" + counter', eg "println!3". The counter is the
+	 * occurence count of children within the enclosingNode which have the same name. So, for example, if a method contains two
+	 * System.out.println statements, the first one will have byteCodeName 'println!1' and the second will have byteCodeName
+	 * 'println!2'. This is to ensure the two nodes have unique handles when the handles do not depend on sourcelocations.
 	 * 
-	 * Currently the shadows are examined in the sequence they appear in the
-	 * source file. This means that the counters are consistent over incremental
-	 * builds. All aspects are compiled up front and any new aspect created will
-	 * force a full build. Moreover, if the body of the enclosingShadow is
-	 * changed, then the model for this is rebuilt from scratch.
+	 * Currently the shadows are examined in the sequence they appear in the source file. This means that the counters are
+	 * consistent over incremental builds. All aspects are compiled up front and any new aspect created will force a full build.
+	 * Moreover, if the body of the enclosingShadow is changed, then the model for this is rebuilt from scratch.
 	 */
 	private static IProgramElement findOrCreateCodeNode(AsmManager asm, IProgramElement enclosingNode, Member shadowSig,
 			Shadow shadow) {
@@ -840,10 +828,8 @@ public class AsmRelationshipProvider {
 	}
 
 	/**
-	 * Add a relationship for a matching declare annotation method or declare
-	 * annotation constructor. Locating the method is a messy (for messy read
-	 * 'fragile') bit of code that could break at any moment but it's working
-	 * for my simple testcase.
+	 * Add a relationship for a matching declare annotation method or declare annotation constructor. Locating the method is a messy
+	 * (for messy read 'fragile') bit of code that could break at any moment but it's working for my simple testcase.
 	 */
 	public static void addDeclareAnnotationMethodRelationship(ISourceLocation sourceLocation, String affectedTypeName,
 			ResolvedMember affectedMethod, AsmManager model) {
@@ -916,10 +902,8 @@ public class AsmRelationshipProvider {
 	}
 
 	/**
-	 * Add a relationship for a matching declare ATfield. Locating the field is
-	 * trickier than it might seem since we have no line number info for it, we
-	 * have to dig through the structure model under the fields' type in order
-	 * to locate it.
+	 * Add a relationship for a matching declare ATfield. Locating the field is trickier than it might seem since we have no line
+	 * number info for it, we have to dig through the structure model under the fields' type in order to locate it.
 	 */
 	public static void addDeclareAnnotationFieldRelationship(AsmManager model, ISourceLocation declareLocation,
 			String affectedTypeName, ResolvedMember affectedFieldName) {
