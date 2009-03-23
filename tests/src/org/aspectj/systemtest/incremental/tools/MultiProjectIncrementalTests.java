@@ -107,34 +107,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 	}
 
-	public void testWithJP_pr268522() {
-		String p = "pr268522";
-		initialiseProject(p);
-		build(p);
-		checkWasFullBuild();
-
-		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
-		dumptree(root, 0);
-		PrintWriter pw = new PrintWriter(System.out);
-		try {
-			getModelFor(p).dumprels(pw);
-			pw.flush();
-		} catch (Exception e) {
-		}
-		alter(p, "inc1");
-		build(p);
-		checkWasntFullBuild();
-
-		root = getModelFor(p).getHierarchy().getRoot();
-		dumptree(root, 0);
-		pw = new PrintWriter(System.out);
-		try {
-			getModelFor(p).dumprels(pw);
-			pw.flush();
-		} catch (Exception e) {
-		}
-	}
-
 	public void testBrokenCodeDeca_268611() {
 		String p = "pr268611";
 		initialiseProject(p);
