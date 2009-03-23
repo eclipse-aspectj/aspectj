@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -52,6 +53,24 @@ import org.aspectj.util.FileUtil;
  */
 public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
 
+	public void testOutputLocationCallbacks2() {
+		AjdeInteractionTestbed.VERBOSE = true;
+		String p = "pr268827_ol_res";
+		initialiseProject(p);
+		Map m = new HashMap();
+		m.put("a.txt", new File(getFile(p, "src/a.txt")));
+		configureResourceMap(p, m);
+		CustomOLM olm = new CustomOLM(getProjectRelativePath(p, ".").toString());
+		configureOutputLocationManager(p, olm);
+		build(p);
+		checkCompileWeaveCount(p, 2, 2);
+		assertEquals(3, olm.writeCount);
+		alter(p, "inc1"); // this contains a new B.java that doesn't have the aspect inside it
+		build(p);
+		checkCompileWeaveCount(p, 3, 1);
+		assertEquals(1, olm.removeCount); // B.class removed
+	}
+
 	public void testOutputLocationCallbacks() {
 		String p = "pr268827_ol";
 		initialiseProject(p);
@@ -74,18 +93,46 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			super(testProjectPath);
 		}
 
-		public void reportClassFileWrite(String outputfile) {
-			super.reportClassFileWrite(outputfile);
+		public void reportFileWrite(String outputfile, int filetype) {
+			super.reportFileWrite(outputfile, filetype);
 			writeCount++;
-			// System.out.println("Written " + outputfile);
+			// System.out.println("Written " + outputfile + " " + filetype);
 		}
 
-		public void reportClassFileRemove(String outputfile) {
-			super.reportClassFileRemove(outputfile);
+		public void reportFileRemove(String outputfile, int filetype) {
+			super.reportFileRemove(outputfile, filetype);
 			removeCount++;
-			// System.out.println("Removed " + outputfile);
+			// System.out.println("Removed " + outputfile + "  " + filetype);
 		}
 
+	}
+
+	public void testWithJP_pr268522() {
+		String p = "pr268522";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+
+		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
+		dumptree(root, 0);
+		PrintWriter pw = new PrintWriter(System.out);
+		try {
+			getModelFor(p).dumprels(pw);
+			pw.flush();
+		} catch (Exception e) {
+		}
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+
+		root = getModelFor(p).getHierarchy().getRoot();
+		dumptree(root, 0);
+		pw = new PrintWriter(System.out);
+		try {
+			getModelFor(p).dumprels(pw);
+			pw.flush();
+		} catch (Exception e) {
+		}
 	}
 
 	public void testBrokenCodeDeca_268611() {

@@ -99,11 +99,11 @@ public class MultiProjTestOutputLocationManager implements IOutputLocationManage
 		}
 	}
 
-	public void reportClassFileWrite(String outputfile) {
+	public void reportFileWrite(String outputfile, int filetype) {
 		// System.err.println(">>>" + outputfile);
 	}
 
-	public void reportClassFileRemove(String outputfile) {
+	public void reportFileRemove(String outputfile, int filetype) {
 	}
 
 }
