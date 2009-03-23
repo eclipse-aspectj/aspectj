@@ -49,11 +49,12 @@ public class OutputLocationAdapter implements CompilationResultDestinationManage
 		return this.locationManager.getDefaultOutputLocation();
 	}
 
-	public void reportClassFileWrite(String outputfile) {
-		this.locationManager.reportClassFileWrite(outputfile);
+	public void reportFileWrite(String outputfile, int filetype) {
+		this.locationManager.reportFileWrite(outputfile, filetype);
 	}
 
-	public void reportClassFileRemove(String outputfile) {
-		this.locationManager.reportClassFileRemove(outputfile);
+	public void reportFileRemove(String outputfile, int filetype) {
+		this.locationManager.reportFileRemove(outputfile, filetype);
 	}
+
 }

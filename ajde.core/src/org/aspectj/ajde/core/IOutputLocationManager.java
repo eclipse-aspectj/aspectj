@@ -59,8 +59,27 @@ public interface IOutputLocationManager {
 	 */
 	File getDefaultOutputLocation();
 
-	void reportClassFileWrite(String outputfile);
+	/**
+	 * Callback from the compiler to indicate that a file has been written to disk, the type of the file (if known) is also
+	 * supplied.
+	 * 
+	 * @param outputfile the file that has been written
+	 * @param fileType the kind of file from the FILETYPE_XXX constants defined in this type
+	 */
+	void reportFileWrite(String outputfile, int fileType);
 
-	void reportClassFileRemove(String outputfile);
+	/**
+	 * Callback from the compiler to indicate that a file has been removed from disk, the type of the file (if known) is also
+	 * supplied.
+	 * 
+	 * @param file the file that has been written
+	 * @param fileType the kind of file from the FILETYPE_XXX constants defined in this type
+	 */
+	void reportFileRemove(String file, int fileType);
 
+	// match numbers in CompilationResultDestinationManager - ought to factor into super interface
+	int FILETYPE_UNKNOWN = 0;
+	int FILETYPE_CLASS = 1;
+	int FILETYPE_OUTJAR = 2;
+	int FILETYPE_RESOURCE = 3;
 }
