@@ -66,13 +66,18 @@ public interface CompilationResultDestinationManager {
 	 * 
 	 * @param outputfile the output file (including .class suffix)
 	 */
-	void reportClassFileWrite(String outputfile);
+	void reportFileWrite(String outputfile, int filetype);
 
 	/**
 	 * Report that a class file is being deleted from the specified location.
 	 * 
 	 * @param outputfile the output file (including .class suffix)
 	 */
-	void reportClassFileRemove(String outputfile);
+	void reportFileRemove(String outputfile, int filetype);
 
+	// match numbers in IOutputLocationManager - ought to factor into super interface
+	int FILETYPE_UNKNOWN = 0;
+	int FILETYPE_CLASS = 1;
+	int FILETYPE_OUTJAR = 2;
+	int FILETYPE_RESOURCE = 3;
 }
