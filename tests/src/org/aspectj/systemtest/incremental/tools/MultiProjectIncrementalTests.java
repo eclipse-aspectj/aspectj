@@ -995,6 +995,24 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("=AspectPathTwo/binaries<(Asp2.class}Asp2&before", findElementAtLine(root, 16).getHandleIdentifier());
 	}
 
+	public void testAspectPath_pr265693() throws IOException {
+		String bug = "AspectPath3";
+		String bug2 = "AspectPath4";
+		addSourceFolderForSourceFile(bug2, getProjectRelativePath(bug2, "src/C.java"), "src");
+		initialiseProject(bug);
+		initialiseProject(bug2);
+		configureAspectPath(bug2, getProjectRelativePath(bug, "bin"));
+		build(bug);
+		build(bug2);
+		dumptree(getModelFor(bug2).getHierarchy().getRoot(), 0);
+		PrintWriter pw = new PrintWriter(System.out);
+		getModelFor(bug2).dumprels(pw);
+		pw.flush();
+		IProgramElement root = getModelFor(bug2).getHierarchy().getRoot();
+		assertEquals("=AspectPath4/binaries<pkg(Asp.class}Asp&before", findElementAtLine(root, 5).getHandleIdentifier());
+		assertEquals("=AspectPath4/binaries<(Asp2.class}Asp2&before", findElementAtLine(root, 16).getHandleIdentifier());
+	}
+
 	/**
 	 * A change is made to an aspect on the aspectpath (staticinitialization() advice is added) for another project.
 	 * <p>
