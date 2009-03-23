@@ -647,9 +647,14 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				zos.write(baos.toByteArray());
 				zos.closeEntry();
 			} else {
-				OutputStream fos = FileUtil.makeOutputStream(new File(outputDir, filename));
+				File outputFile = new File(outputDir, filename);
+				OutputStream fos = FileUtil.makeOutputStream(outputFile);
 				fos.write(baos.toByteArray());
 				fos.close();
+				if (buildConfig.getCompilationResultDestinationManager() != null) {
+					buildConfig.getCompilationResultDestinationManager().reportFileWrite(outputFile.getPath(),
+							CompilationResultDestinationManager.FILETYPE_RESOURCE);
+				}
 			}
 		}
 	}
