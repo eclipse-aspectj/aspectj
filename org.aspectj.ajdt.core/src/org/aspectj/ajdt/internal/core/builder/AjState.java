@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
 import org.aspectj.ajdt.internal.compiler.InterimCompilationResult;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
@@ -1055,6 +1056,10 @@ public class AjState implements CompilerConfigurationChangeFlags {
 				outputLoc = new File(outputLoc, (String) resourcePair.getKey());
 				if (!outputLoc.getPath().equals(sourcePath.getPath()) && outputLoc.exists()) {
 					outputLoc.delete();
+					if (buildConfig.getCompilationResultDestinationManager() != null) {
+						buildConfig.getCompilationResultDestinationManager().reportFileRemove(outputLoc.getPath(),
+								CompilationResultDestinationManager.FILETYPE_RESOURCE);
+					}
 				}
 			}
 		}
@@ -1865,15 +1870,16 @@ public class AjState implements CompilerConfigurationChangeFlags {
 					for (int i = 0; i < weaverGenerated.length; i++) {
 						weaverGenerated[i].delete();
 						if (buildConfig != null && buildConfig.getCompilationResultDestinationManager() != null) {
-							buildConfig.getCompilationResultDestinationManager()
-									.reportClassFileRemove(weaverGenerated[i].getPath());
+							buildConfig.getCompilationResultDestinationManager().reportFileRemove(weaverGenerated[i].getPath(),
+									CompilationResultDestinationManager.FILETYPE_CLASS);
 						}
 					}
 				}
 			}
 			locationOnDisk.delete();
 			if (buildConfig != null && buildConfig.getCompilationResultDestinationManager() != null) {
-				buildConfig.getCompilationResultDestinationManager().reportClassFileRemove(locationOnDisk.getPath());
+				buildConfig.getCompilationResultDestinationManager().reportFileRemove(locationOnDisk.getPath(),
+						CompilationResultDestinationManager.FILETYPE_CLASS);
 			}
 		}
 	}

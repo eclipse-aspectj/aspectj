@@ -38,6 +38,7 @@ import java.util.zip.ZipEntry;
 
 import org.aspectj.ajdt.internal.compiler.AjCompilerAdapter;
 import org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter;
+import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
 import org.aspectj.ajdt.internal.compiler.IBinarySourceProvider;
 import org.aspectj.ajdt.internal.compiler.ICompilerAdapter;
 import org.aspectj.ajdt.internal.compiler.ICompilerAdapterFactory;
@@ -410,12 +411,20 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		try {
 			if (zos != null) {
 				zos.close();
+				if (buildConfig.getCompilationResultDestinationManager() != null) {
+					buildConfig.getCompilationResultDestinationManager().reportFileWrite(outJar.getPath(),
+							CompilationResultDestinationManager.FILETYPE_OUTJAR);
+				}
 			}
 			zos = null;
 
 			/* Ensure we don't write an incomplete JAR bug-71339 */
 			if (handler.hasErrors()) {
 				outJar.delete();
+				if (buildConfig.getCompilationResultDestinationManager() != null) {
+					buildConfig.getCompilationResultDestinationManager().reportFileRemove(outJar.getPath(),
+							CompilationResultDestinationManager.FILETYPE_OUTJAR);
+				}
 			}
 		} catch (IOException ex) {
 			IMessage message = new Message("Unable to write outjar " + outJar.getPath() + "(" + ex.getMessage() + ")",
@@ -552,7 +561,6 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		}
 		if (zos != null) {
 			ZipEntry newEntry = new ZipEntry(filename); // ??? get compression scheme right
-
 			zos.putNextEntry(newEntry);
 			zos.write(content);
 			zos.closeEntry();
@@ -562,9 +570,14 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				destDir = buildConfig.getCompilationResultDestinationManager().getOutputLocationForResource(srcLocation);
 			}
 			try {
-				OutputStream fos = FileUtil.makeOutputStream(new File(destDir, filename));
+				File outputLocation = new File(destDir, filename);
+				OutputStream fos = FileUtil.makeOutputStream(outputLocation);
 				fos.write(content);
 				fos.close();
+				if (buildConfig.getCompilationResultDestinationManager() != null) {
+					buildConfig.getCompilationResultDestinationManager().reportFileWrite(outputLocation.getPath(),
+							CompilationResultDestinationManager.FILETYPE_RESOURCE);
+				}
 			} catch (FileNotFoundException fnfe) {
 				IMessage msg = new Message("unable to copy resource to output folder: '" + filename + "' - reason: "
 						+ fnfe.getMessage(), IMessage.ERROR, null, new SourceLocation(srcLocation, 0));
@@ -587,11 +600,17 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				// where we sent the classes that were on the inpath
 				outputDir = buildConfig.getCompilationResultDestinationManager().getDefaultOutputLocation();
 			}
-			if (outputDir == null)
+			if (outputDir == null) {
 				return;
-			OutputStream fos = FileUtil.makeOutputStream(new File(outputDir, MANIFEST_NAME));
+			}
+			File outputLocation = new File(outputDir, MANIFEST_NAME);
+			OutputStream fos = FileUtil.makeOutputStream(outputLocation);
 			manifest.write(fos);
 			fos.close();
+			if (buildConfig.getCompilationResultDestinationManager() != null) {
+				buildConfig.getCompilationResultDestinationManager().reportFileWrite(outputLocation.getPath(),
+						CompilationResultDestinationManager.FILETYPE_RESOURCE);
+			}
 		}
 	}
 
@@ -1083,7 +1102,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				os.write(classFile.getBytes());
 				os.close();
 				if (buildConfig.getCompilationResultDestinationManager() != null) {
-					buildConfig.getCompilationResultDestinationManager().reportClassFileWrite(outFile);
+					buildConfig.getCompilationResultDestinationManager().reportFileWrite(outFile,
+							CompilationResultDestinationManager.FILETYPE_CLASS);
 				}
 				return outFile;
 			}
