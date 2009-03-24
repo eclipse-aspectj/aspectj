@@ -599,11 +599,12 @@ public class AsmRelationshipProvider {
 	}
 
 	private static void setParams(IProgramElement pe, ResolvedMember sig) {
+		// do it for itds too
 		UnresolvedType[] ts = sig.getParameterTypes();
 		pe.setParameterNames(Collections.EMPTY_LIST);
 		String[] pnames = sig.getParameterNames();
 		if (ts == null) {
-			pe.setParameterSignatures(Collections.EMPTY_LIST);
+			pe.setParameterSignatures(Collections.EMPTY_LIST, Collections.EMPTY_LIST);
 		} else {
 			List paramSigs = new ArrayList();
 			List paramNames = new ArrayList();
@@ -611,7 +612,7 @@ public class AsmRelationshipProvider {
 				paramSigs.add(ts[i].getSignature().toCharArray());
 				// paramNames.add(pnames[i]);
 			}
-			pe.setParameterSignatures(paramSigs);
+			pe.setParameterSignatures(paramSigs, Collections.EMPTY_LIST);
 			// pe.setParameterNames(paramNames);
 		}
 		pe.setCorrespondingType(sig.getReturnType().getName());
