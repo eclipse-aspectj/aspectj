@@ -13,12 +13,12 @@
       Foo  [class] TEST_SANDBOX\pr131932.aj:19:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
+(targets=1) <*pr131932.aj}Slide74)Foo.Foo_new)QList\<TT;>; (declared on) <*pr131932.aj[Foo
 (targets=1) <*pr131932.aj}Slide74)Bar.children (declared on) <*pr131932.aj}Slide74[Bar
-(targets=1) <*pr131932.aj}Slide74)Bar.getFirst (declared on) <*pr131932.aj}Slide74[Bar
-(targets=1) <*pr131932.aj[Foo (aspect declarations) <*pr131932.aj}Slide74)Foo.Foo_new)Qjava.util.List\<TT;>;
 (targets=2) <*pr131932.aj}Slide74[Bar (aspect declarations) <*pr131932.aj}Slide74)Bar.getFirst
 (targets=2) <*pr131932.aj}Slide74[Bar (aspect declarations) <*pr131932.aj}Slide74)Bar.children
-(targets=1) <*pr131932.aj}Slide74)Foo.Foo_new)Qjava.util.List\<TT;>; (declared on) <*pr131932.aj[Foo
+(targets=1) <*pr131932.aj}Slide74)Bar.getFirst (declared on) <*pr131932.aj}Slide74[Bar
+(targets=1) <*pr131932.aj[Foo (aspect declarations) <*pr131932.aj}Slide74)Foo.Foo_new)QList\<TT;>;
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 import reference=2
