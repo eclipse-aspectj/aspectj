@@ -336,9 +336,9 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testGetParameterSignaturesWithGenerics_pr141730() {
 		runTest("new iprogramelement method getParameterSignatures with generics");
 
-		checkGetParamSigOfMethod("genericMethod(java.util.List<java.lang.String>)", "Pjava/util/List<Ljava/lang/String;>;");
+		checkGetParamSigOfMethod("genericMethod(java.util.List<java.lang.String>)", "Ljava/util/List<Ljava/lang/String;>;");
 		checkGetParamSigOfMethod("genericMethod2(MyGenericClass<java.lang.String,MyClass>)",
-				"PMyGenericClass<Ljava/lang/String;LMyClass;>;");
+				"LMyGenericClass<Ljava/lang/String;LMyClass;>;");
 	}
 
 	// public void testFunkyGenericErrorWithITDs_pr126355_2() {

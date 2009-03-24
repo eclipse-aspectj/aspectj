@@ -499,7 +499,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 		// ~genericMethod1~QList\<QString;>;
 		runTest("method with generic arg same as jdt");
 		compareHandles(IProgramElement.Kind.METHOD, "genericMethod1(java.util.List<java.lang.String>)",
-				"<pkg{Java5Class.java[Java5Class~genericMethod1~Qjava.util.List\\<QString;>;");
+				"<pkg{Java5Class.java[Java5Class~genericMethod1~QList\\<QString;>;");
 	}
 
 	public void testMethodWithTwoGenericArgsSameAsJDT() {
@@ -507,8 +507,8 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 		// ~genericMethod2~QList\<QString;>;~QMyGenericClass\<QInteger;>;
 		runTest("method with two generic args same as jdt");
 		compareHandles(IProgramElement.Kind.METHOD, "genericMethod2(java.util.List<java.lang.String>,"
-				+ "pkg.MyGenericClass<java.lang.Integer>)", "<pkg{Java5Class.java[Java5Class~genericMethod2~Qjava.util.List"
-				+ "\\<QString;>;~Qpkg.MyGenericClass\\<QInteger;>;");
+				+ "pkg.MyGenericClass<java.lang.Integer>)", "<pkg{Java5Class.java[Java5Class~genericMethod2~QList"
+				+ "\\<QString;>;~QMyGenericClass\\<QInteger;>;");
 	}
 
 	public void testMethodWithTwoTypeParametersSameAsJDT() {
@@ -516,7 +516,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 		// ~QMyGenericClass2\<QString;QInteger;>;
 		runTest("method with two type parameters same as jdt");
 		compareHandles(IProgramElement.Kind.METHOD, "genericMethod4(pkg.MyGenericClass2<java.lang.String,java.lang.Integer>)",
-				"<pkg{Java5Class.java[Java5Class~genericMethod4" + "~Qpkg.MyGenericClass2\\<QString;QInteger;>;");
+				"<pkg{Java5Class.java[Java5Class~genericMethod4" + "~QMyGenericClass2\\<QString;QInteger;>;");
 	}
 
 	public void testMethodWithTwoArgsSameAsJDT_2() {
@@ -524,7 +524,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 		// ~genericMethod3~I~QList\<QString;>;
 		runTest("method with two args one of which is generic same as jdt");
 		compareHandles(IProgramElement.Kind.METHOD, "genericMethod3(int,java.util.List<java.lang.String>)",
-				"<pkg{Java5Class.java[Java5Class~genericMethod3~I~Qjava.util.List\\<QString;>;");
+				"<pkg{Java5Class.java[Java5Class~genericMethod3~I~QList\\<QString;>;");
 	}
 
 	/*
