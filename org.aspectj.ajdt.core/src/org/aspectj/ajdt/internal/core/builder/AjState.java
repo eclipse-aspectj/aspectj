@@ -432,6 +432,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 				getListener().recordDecision("Failed to find a state instance managing output location : " + dir);
 			}
 		}
+		
 
 		// pr268827 - this guard will cause us to exit quickly if the state says there really is
 		// nothing of interest. This will not catch the case where a user modifies the .class files outside of
@@ -442,6 +443,24 @@ public class AjState implements CompilerConfigurationChangeFlags {
 				getListener().recordDecision("No reported changes in that state");
 			}
 			return CLASS_FILE_NO_CHANGES;
+		}
+		
+		if (state == null) {
+			// This may be because the directory is the output path of a Java project upon which we depend
+			// we need to call back into AJDT to ask about that projects state.
+			CompilationResultDestinationManager crdm = buildConfig.getCompilationResultDestinationManager();
+			if (crdm!=null) {
+				int i = crdm.discoverChangesSince(dir,lastSuccessfulBuildTime);
+				// 0 = dontknow if it has changed
+				// 1 = definetly not changed at all
+				// further numbers can determine more granular changes
+				if (i==1) {
+					if (listenerDefined()) {
+						getListener().recordDecision("'"+dir+"' is apparently unchanged so not performing timestamp check");
+					}
+					return CLASS_FILE_NO_CHANGES;
+				}
+			}
 		}
 
 		List classFiles = FileUtil.listClassFiles(dir);

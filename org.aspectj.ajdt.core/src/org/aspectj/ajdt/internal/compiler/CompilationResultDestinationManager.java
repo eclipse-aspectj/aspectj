@@ -75,9 +75,12 @@ public interface CompilationResultDestinationManager {
 	 */
 	void reportFileRemove(String outputfile, int filetype);
 
+	int discoverChangesSince(File dir, long buildtime);
+
 	// match numbers in IOutputLocationManager - ought to factor into super interface
 	int FILETYPE_UNKNOWN = 0;
 	int FILETYPE_CLASS = 1;
 	int FILETYPE_OUTJAR = 2;
 	int FILETYPE_RESOURCE = 3;
+	
 }
