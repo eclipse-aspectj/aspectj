@@ -99,7 +99,6 @@ public interface JoinPoint {
      */
     String getKind();
 
-
     /**
      * <p>This helper object contains only the static information about a join point.
      * It is available from the <code>JoinPoint.getStaticPart()</code> method, and
@@ -141,6 +140,27 @@ public interface JoinPoint {
         *       is guaranteed to be interned</p>
         */
         String getKind();
+        
+        /**
+         * Return the id for this JoinPoint.StaticPart.  All JoinPoint.StaticPart
+         * instances are assigned an id number upon creation.  For each advised type 
+         * the id numbers start at 0.
+         * <br>
+         * The id is guaranteed to remain constant across repeated executions 
+         * of a program but may change if the code is recompiled. 
+         * <br>
+         * The benefit of having an id is that it can be used for array index
+         * purposes which can be quicker than using the JoinPoint.StaticPart
+         * object itself in a map lookup.
+         * <br>
+         * Since two JoinPoint.StaticPart instances in different advised types may have
+         * the same id, then if the id is being used to index some joinpoint specific
+         * state then that state must be maintained on a pertype basis - either by
+         * using pertypewithin() or an ITD.
+         * 
+         * @return the id of this joinpoint
+         */
+        int getId();
 
         String toString();
 
