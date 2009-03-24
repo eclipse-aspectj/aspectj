@@ -77,6 +77,8 @@ public interface IOutputLocationManager {
 	 */
 	void reportFileRemove(String file, int fileType);
 
+	int discoverChangesSince(File dir, long buildtime);
+
 	// match numbers in CompilationResultDestinationManager - ought to factor into super interface
 	int FILETYPE_UNKNOWN = 0;
 	int FILETYPE_CLASS = 1;

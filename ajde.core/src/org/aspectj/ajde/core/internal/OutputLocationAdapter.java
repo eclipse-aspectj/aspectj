@@ -57,4 +57,8 @@ public class OutputLocationAdapter implements CompilationResultDestinationManage
 		this.locationManager.reportFileRemove(outputfile, filetype);
 	}
 
+	public int discoverChangesSince(File dir, long buildtime) {
+		return this.locationManager.discoverChangesSince(dir,buildtime);
+	}
+
 }
