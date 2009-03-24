@@ -985,6 +985,30 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("=AspectPath4/binaries<(Asp2.class}Asp2&before", findElementAtLine(root, 16).getHandleIdentifier());
 	}
 
+	public void testHandleQualification_pr265993() throws IOException {
+		String p = "pr265993";
+		initialiseProject(p);
+		build(p);
+		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
+		dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
+		PrintWriter pw = new PrintWriter(System.out);
+		getModelFor(p).dumprels(pw);
+		pw.flush();
+		assertEquals("=pr265993<{A.java[A~m~QString;~Qjava.lang.String;", findElementAtLine(root, 3).getHandleIdentifier());
+		assertEquals("=pr265993<{A.java[A~m2~QList;", findElementAtLine(root, 5).getHandleIdentifier());
+		assertEquals("=pr265993<{A.java[A~m3~Qjava.util.ArrayList;", findElementAtLine(root, 6).getHandleIdentifier());
+		assertEquals("=pr265993<{A.java[A~m4~QMap\\<Qjava.lang.String;QList;>;", findElementAtLine(root, 8).getHandleIdentifier());
+		assertEquals("=pr265993<{A.java[A~m5~Qjava.util.Map\\<Qjava.lang.String;QList;>;", findElementAtLine(root, 9)
+				.getHandleIdentifier());
+		assertEquals("=pr265993<{A.java[A~m6~QMap\\<\\[IQList;>;", findElementAtLine(root, 10).getHandleIdentifier());
+		assertEquals("=pr265993<{A.java[A~m7~\\[I", findElementAtLine(root, 11).getHandleIdentifier());
+		assertEquals("=pr265993<{A.java[A~m8~\\[Qjava.lang.String;", findElementAtLine(root, 12).getHandleIdentifier());
+		assertEquals("=pr265993<{A.java[A~m9~\\[QString;", findElementAtLine(root, 13).getHandleIdentifier());
+		assertEquals("=pr265993<{A.java[A~m10~\\[\\[QList\\<QString;>;", findElementAtLine(root, 14).getHandleIdentifier());
+		assertEquals("=pr265993<{A.java[A~m11~Qjava.util.List\\<TT;>;", findElementAtLine(root, 15).getHandleIdentifier());
+		assertEquals("=pr265993<{A.java[A~m12~\\[TT;", findElementAtLine(root, 16).getHandleIdentifier());
+	}
+
 	/**
 	 * A change is made to an aspect on the aspectpath (staticinitialization() advice is added) for another project.
 	 * <p>
