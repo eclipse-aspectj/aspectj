@@ -235,32 +235,31 @@ public class AspectJElementHierarchy implements IHierarchy {
 				result.add(root);
 				return result;
 			}
+			List result = new ArrayList();
 			for (Iterator iterator = children.iterator(); iterator.hasNext();) {
 				IProgramElement possiblePackage = (IProgramElement) iterator.next();
-				if (possiblePackage.getKind() == IProgramElement.Kind.PACKAGE) {
-					if (possiblePackage.getName().equals(packagename)) {
-						List result = new ArrayList();
-						result.add(possiblePackage);
-						return result;
-					}
+				if (possiblePackage.getKind() == IProgramElement.Kind.PACKAGE && possiblePackage.getName().equals(packagename)) {
+					result.add(possiblePackage);
 				}
 				if (possiblePackage.getKind() == IProgramElement.Kind.SOURCE_FOLDER) { // might be 'binaries'
 					if (possiblePackage.getName().equals("binaries")) {
 						for (Iterator iter2 = possiblePackage.getChildren().iterator(); iter2.hasNext();) {
 							IProgramElement possiblePackage2 = (IProgramElement) iter2.next();
-							if (possiblePackage2.getKind() == IProgramElement.Kind.PACKAGE) {
-								if (possiblePackage2.getName().equals(packagename)) {
-									List result = new ArrayList();
-									result.add(possiblePackage2);
-									return result;
-								}
+							if (possiblePackage2.getKind() == IProgramElement.Kind.PACKAGE
+									&& possiblePackage2.getName().equals(packagename)) {
+								result.add(possiblePackage2);
+								break; // ok to break here, can't be another entry under binaries
 							}
 						}
 					}
 				}
 			}
+			if (result.isEmpty()) {
+				return Collections.EMPTY_LIST;
+			} else {
+				return result;
+			}
 		}
-		return Collections.EMPTY_LIST;
 	}
 
 	private IProgramElement findClassInNodes(Collection nodes, String name, String typeName) {
