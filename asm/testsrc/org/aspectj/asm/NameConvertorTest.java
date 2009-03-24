@@ -10,77 +10,77 @@
  *******************************************************************/
 package org.aspectj.asm;
 
+import junit.framework.TestCase;
+
 import org.aspectj.asm.internal.CharOperation;
 import org.aspectj.asm.internal.NameConvertor;
-
-import junit.framework.TestCase;
 
 public class NameConvertorTest extends TestCase {
 
 	public void testBoolean() {
-		checkConversion("Z","boolean");
+		checkConversion("Z", "boolean");
 	}
-	
+
 	public void testByte() {
-		checkConversion("B","byte");
+		checkConversion("B", "byte");
 	}
-	
+
 	public void testChar() {
-		checkConversion("C","char");
-	}	
-	
+		checkConversion("C", "char");
+	}
+
 	public void testDouble() {
-		checkConversion("D","double");
-	}	
-	
+		checkConversion("D", "double");
+	}
+
 	public void testFloat() {
-		checkConversion("F","float");
+		checkConversion("F", "float");
 	}
-	
+
 	public void testInt() {
-		checkConversion("I","int");
+		checkConversion("I", "int");
 	}
-	
+
 	public void testLong() {
-		checkConversion("J","long");
-	}	
-	
+		checkConversion("J", "long");
+	}
+
 	public void testShort() {
-		checkConversion("S","short");
-	}	
-	
+		checkConversion("S", "short");
+	}
+
 	public void testString() {
-		checkConversion("Ljava/lang/String;","java.lang.String");
+		checkConversion("Ljava/lang/String;", "java.lang.String");
 	}
 
 	public void testType() {
-		checkConversion("LMyClass;","MyClass");
+		checkConversion("LMyClass;", "MyClass");
 	}
 
 	public void testListPameterizedWithString() {
-		checkConversion("Pjava/util/List<Ljava/lang/String;>;",
-				"java.util.List<java.lang.String>");
+		checkConversion("Pjava/util/List<Ljava/lang/String;>;", "java.util.List<java.lang.String>");
 	}
+
 	public void testClassParameterizedWithStringAndType() {
-		checkConversion("PMyGenericClass<Ljava/lang/String;LMyClass;>;",
-				"MyGenericClass<java.lang.String,MyClass>");
+		checkConversion("PMyGenericClass<Ljava/lang/String;LMyClass;>;", "MyGenericClass<java.lang.String,MyClass>");
 	}
+
 	public void testStringArray() {
-		checkConversion("[Ljava/lang/String;","java.lang.String[]");
+		checkConversion("[Ljava/lang/String;", "java.lang.String[]");
 	}
+
 	public void testTwoDimensionalStringArray() {
-		checkConversion("[[Ljava/lang/String;","java.lang.String[][]");
+		checkConversion("[[Ljava/lang/String;", "java.lang.String[][]");
 	}
+
 	public void testIntArray() {
-		checkConversion("[I","int[]");
+		checkConversion("[I", "int[]");
 	}
 
 	private void checkConversion(String signature, String expected) {
 		char[] c = NameConvertor.convertFromSignature(signature.toCharArray());
-		assertTrue("converting " + signature + ", expected " + expected + "," +
-				"but found " + String.valueOf(c),
-				CharOperation.equals(c,expected.toCharArray()));
+		assertTrue("converting " + signature + ", expected " + expected + "," + "but found " + String.valueOf(c), CharOperation
+				.equals(c, expected.toCharArray()));
 	}
 
-	
 }
