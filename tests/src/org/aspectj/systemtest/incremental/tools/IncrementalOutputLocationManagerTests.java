@@ -90,6 +90,11 @@ public class IncrementalOutputLocationManagerTests extends AbstractMultiProjectI
 			return null;
 		}
 
+		public int discoverChangesSince(File dir, long buildtime) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
 	}
 
 }

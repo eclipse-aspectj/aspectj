@@ -361,6 +361,11 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 			// TODO Auto-generated method stub
 			return null;
 		}
+
+		public int discoverChangesSince(File dir, long buildtime) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
 	}
 
 }
