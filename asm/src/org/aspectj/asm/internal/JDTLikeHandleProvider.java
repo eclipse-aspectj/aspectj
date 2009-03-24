@@ -128,12 +128,21 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 		if (ipe.getParameterSignatures() == null || ipe.getParameterSignatures().isEmpty()) {
 			return "";
 		}
-		StringBuffer sb = new StringBuffer();
+		List sourceRefs = ipe.getParameterSignaturesSourceRefs();
 		List parameterTypes = ipe.getParameterSignatures();
-		for (Iterator iter = parameterTypes.iterator(); iter.hasNext();) {
-			char[] element = (char[]) iter.next();
-			sb.append(HandleProviderDelimiter.getDelimiter(ipe));
-			sb.append(NameConvertor.createShortName(element, false, false));
+		StringBuffer sb = new StringBuffer();
+		if (sourceRefs != null) {
+			for (int i = 0; i < sourceRefs.size(); i++) {
+				String sourceRef = (String) sourceRefs.get(i);
+				sb.append(HandleProviderDelimiter.getDelimiter(ipe));
+				sb.append(sourceRef);
+			}
+		} else {
+			for (Iterator iter = parameterTypes.iterator(); iter.hasNext();) {
+				char[] element = (char[]) iter.next();
+				sb.append(HandleProviderDelimiter.getDelimiter(ipe));
+				sb.append(NameConvertor.createShortName(element, false, false));
+			}
 		}
 		return sb.toString();
 	}

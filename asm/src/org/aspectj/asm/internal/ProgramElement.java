@@ -594,13 +594,28 @@ public class ProgramElement implements IProgramElement {
 		return parameters;
 	}
 
-	public void setParameterSignatures(List list) {
-		if (kvpairs == Collections.EMPTY_MAP)
+	public List getParameterSignaturesSourceRefs() {
+		List parameters = (List) kvpairs.get("parameterSigsSourceRefs");
+		return parameters;
+	}
+
+	/**
+	 * Set the parameter signatures for this method/constructor. The bit flags tell us if any were not singletypereferences in the
+	 * the source. A singletypereference would be 'String' - whilst a qualifiedtypereference would be 'java.lang.String' - this has
+	 * an effect on the handles.
+	 */
+	public void setParameterSignatures(List list, List sourceRefs) {
+		if (kvpairs == Collections.EMPTY_MAP) {
 			kvpairs = new HashMap();
-		if (list == null || list.size() == 0)
+		}
+		if (list == null || list.size() == 0) {
 			kvpairs.put("parameterSigs", Collections.EMPTY_LIST);
-		else
+		} else {
 			kvpairs.put("parameterSigs", list);
+		}
+		if (sourceRefs != null && sourceRefs.size() != 0) {
+			kvpairs.put("parameterSigsSourceRefs", sourceRefs);
+		}
 	}
 
 	public String getDetails() {

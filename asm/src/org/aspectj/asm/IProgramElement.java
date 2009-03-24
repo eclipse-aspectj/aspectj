@@ -158,7 +158,9 @@ public interface IProgramElement extends Serializable {
 
 	public List getParameterSignatures();
 
-	public void setParameterSignatures(List list);
+	public List getParameterSignaturesSourceRefs();
+
+	public void setParameterSignatures(List list, List paramSourceRefs);
 
 	public List getParameterTypes();
 
@@ -320,7 +322,8 @@ public interface IProgramElement extends Serializable {
 				INTERFACE, ASPECT, ENUM, ENUM_VALUE, ANNOTATION, INITIALIZER, INTER_TYPE_FIELD, INTER_TYPE_METHOD,
 				INTER_TYPE_CONSTRUCTOR, INTER_TYPE_PARENT, CONSTRUCTOR, METHOD, FIELD, POINTCUT, ADVICE, DECLARE_PARENTS,
 				DECLARE_WARNING, DECLARE_ERROR, DECLARE_SOFT, DECLARE_PRECEDENCE, CODE, ERROR, DECLARE_ANNOTATION_AT_CONSTRUCTOR,
-				DECLARE_ANNOTATION_AT_FIELD, DECLARE_ANNOTATION_AT_METHOD, DECLARE_ANNOTATION_AT_TYPE, SOURCE_FOLDER, PACKAGE_DECLARATION
+				DECLARE_ANNOTATION_AT_FIELD, DECLARE_ANNOTATION_AT_METHOD, DECLARE_ANNOTATION_AT_TYPE, SOURCE_FOLDER,
+				PACKAGE_DECLARATION
 
 		};
 
@@ -367,6 +370,7 @@ public interface IProgramElement extends Serializable {
 		public boolean isSourceFile() {
 			return this == FILE_ASPECTJ || this == FILE_JAVA;
 		}
+
 		public boolean isFile() {
 			return this == FILE;
 		}
