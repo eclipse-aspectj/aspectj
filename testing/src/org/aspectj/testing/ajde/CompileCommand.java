@@ -400,4 +400,9 @@ class MyOutputLocationManager implements IOutputLocationManager {
 	public void reportFileRemove(String outputfile, int filetype) {
 	}
 
+	public int discoverChangesSince(File dir, long buildtime) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }
