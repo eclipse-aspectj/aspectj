@@ -25,13 +25,20 @@ import org.aspectj.ajdt.internal.compiler.ast.InterTypeFieldDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.InterTypeMethodDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
-import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayQualifiedTypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ParameterizedQualifiedTypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ParameterizedSingleTypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Wildcard;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.ResolvedType;
@@ -261,14 +268,160 @@ public class AsmElementFormatter {
 	// return args;
 	// }
 
+	private String handleSigForReference(TypeReference ref, TypeBinding tb, MethodScope scope) {
+		try {
+			StringBuffer sb = new StringBuffer();
+			createHandleSigForReference(ref, tb, scope, sb);
+			return sb.toString();
+		} catch (Throwable t) {
+			System.err.println("Problem creating handle sig for this type reference " + ref);
+			t.printStackTrace(System.err);
+			return null;
+		}
+	}
+
+	/**
+	 * Aim of this method is create the signature for a parameter that can be used in a handle such that JDT can interpret the
+	 * handle. Whether a type is qualified or unqualified in its source reference is actually reflected in the handle and this code
+	 * allows for that.
+	 */
+	private void createHandleSigForReference(TypeReference ref, TypeBinding tb, MethodScope scope, StringBuffer handleSig) {
+		if (ref instanceof Wildcard) {
+			Wildcard w = (Wildcard) ref;
+			if (w.bound == null) {
+				handleSig.append('*');
+			} else {
+				handleSig.append('+');
+				TypeBinding typeB = w.bound.resolvedType;
+				if (typeB == null) {
+					typeB = w.bound.resolveType(scope);
+				}
+				createHandleSigForReference(w.bound, typeB, scope, handleSig);
+			}
+		} else if (ref instanceof ParameterizedSingleTypeReference) {
+			ParameterizedSingleTypeReference pstr = (ParameterizedSingleTypeReference) ref;
+			for (int i = pstr.dimensions(); i > 0; i--) {
+				handleSig.append("\\[");
+			}
+			handleSig.append('Q').append(pstr.token);
+			TypeReference[] typeRefs = pstr.typeArguments;
+			if (typeRefs != null && typeRefs.length > 0) {
+				handleSig.append("\\<");
+				for (int i = 0; i < typeRefs.length; i++) {
+					TypeReference typeR = typeRefs[i];
+					TypeBinding typeB = typeR.resolvedType;
+					if (typeB == null) {
+						typeB = typeR.resolveType(scope);
+					}
+					createHandleSigForReference(typeR, typeB, scope, handleSig);
+				}
+				handleSig.append('>');
+			}
+			handleSig.append(';');
+		} else if (ref instanceof ArrayTypeReference) {
+			ArrayTypeReference atr = (ArrayTypeReference) ref;
+			for (int i = 0; i < atr.dimensions; i++) {
+				handleSig.append("\\[");
+			}
+			TypeBinding typeB = atr.resolvedType;
+			if (typeB == null) {
+				typeB = atr.resolveType(scope);
+			}
+			if (typeB.leafComponentType().isBaseType()) {
+				handleSig.append(tb.leafComponentType().signature());
+			} else {
+				if (typeB.leafComponentType().isTypeVariable()) {
+					handleSig.append('T').append(atr.token).append(';');
+				} else {
+					handleSig.append('Q').append(atr.token).append(';');
+				}
+			}
+		} else if (ref instanceof SingleTypeReference) {
+			SingleTypeReference str = (SingleTypeReference) ref;
+			if (tb.isBaseType()) {
+				handleSig.append(tb.signature());
+			} else {
+				if (tb.isTypeVariable()) {
+					handleSig.append('T').append(str.token).append(';');
+				} else {
+					handleSig.append('Q').append(str.token).append(';');
+				}
+			}
+		} else if (ref instanceof ParameterizedQualifiedTypeReference) {
+			ParameterizedQualifiedTypeReference pstr = (ParameterizedQualifiedTypeReference) ref;
+			char[][] tokens = pstr.tokens;
+			for (int i = pstr.dimensions(); i > 0; i--) {
+				handleSig.append("\\[");
+			}
+			handleSig.append('Q');
+			for (int i = 0; i < tokens.length; i++) {
+				if (i > 0) {
+					handleSig.append('.');
+				}
+				handleSig.append(tokens[i]);
+				TypeReference[] typeRefs = pstr.typeArguments[i];
+				if (typeRefs != null && typeRefs.length > 0) {
+					handleSig.append("\\<");
+					for (int j = 0; j < typeRefs.length; j++) {
+						TypeReference typeR = typeRefs[j];
+						TypeBinding typeB = typeR.resolvedType;
+						if (typeB == null) {
+							typeB = typeR.resolveType(scope);
+						}
+						createHandleSigForReference(typeR, typeB, scope, handleSig);
+					}
+					handleSig.append('>');
+				}
+			}
+			handleSig.append(';');
+		} else if (ref instanceof ArrayQualifiedTypeReference) {
+			ArrayQualifiedTypeReference atr = (ArrayQualifiedTypeReference) ref;
+			for (int i = 0; i < atr.dimensions(); i++) {
+				handleSig.append("\\[");
+			}
+			TypeBinding typeB = atr.resolvedType;
+			if (typeB == null) {
+				typeB = atr.resolveType(scope);
+			}
+			if (typeB.leafComponentType().isBaseType()) {
+				handleSig.append(tb.leafComponentType().signature());
+			} else {
+				char[][] tokens = atr.tokens;
+				handleSig.append('Q');
+				for (int i = 0; i < tokens.length; i++) {
+					if (i > 0) {
+						handleSig.append('.');
+					}
+					handleSig.append(tokens[i]);
+				}
+				handleSig.append(';');
+			}
+		} else if (ref instanceof QualifiedTypeReference) {
+			QualifiedTypeReference qtr = (QualifiedTypeReference) ref;
+			char[][] tokens = qtr.tokens;
+			handleSig.append('Q');
+			for (int i = 0; i < tokens.length; i++) {
+				if (i > 0) {
+					handleSig.append('.');
+				}
+				handleSig.append(tokens[i]);
+			}
+			handleSig.append(';');
+		} else {
+			throw new RuntimeException("Cant handle " + ref.getClass());
+		}
+	}
+
 	public void setParameters(AbstractMethodDeclaration md, IProgramElement pe) {
 		Argument[] argArray = md.arguments;
 		if (argArray == null) {
 			pe.setParameterNames(Collections.EMPTY_LIST);
-			pe.setParameterSignatures(Collections.EMPTY_LIST);
+			pe.setParameterSignatures(Collections.EMPTY_LIST, Collections.EMPTY_LIST);
 		} else {
 			List names = new ArrayList();
 			List paramSigs = new ArrayList();
+			List paramSourceRefs = new ArrayList();
+			boolean problemWithSourceRefs = false;
 			for (int i = 0; i < argArray.length; i++) {
 				String argName = new String(argArray[i].name);
 				// String argType = "<UnknownType>"; // pr135052
@@ -279,16 +432,24 @@ public class AsmElementFormatter {
 						if (typeB == null) {
 							typeB = typeR.resolveType(md.scope);
 						}
-						EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(md.scope);
-						UnresolvedType ut = factory.fromBinding(typeB);
-						paramSigs.add(ut.getSignature().toCharArray());
+						// This code will conjure up a 'P' style signature:
+						// EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(md.scope);
+						// UnresolvedType ut = factory.fromBinding(typeB);
+						// paramSigs.add(ut.getSignature().toCharArray());
+						paramSigs.add(typeB.genericTypeSignature());
+						String hsig = handleSigForReference(typeR, typeB, md.scope);
+						if (hsig == null) {
+							problemWithSourceRefs = true;
+						} else {
+							paramSourceRefs.add(hsig);
+						}
 					}
 					names.add(argName);
 				}
 			}
 			pe.setParameterNames(names);
 			if (!paramSigs.isEmpty()) {
-				pe.setParameterSignatures(paramSigs);
+				pe.setParameterSignatures(paramSigs, (problemWithSourceRefs ? null : paramSourceRefs));
 			}
 		}
 	}
