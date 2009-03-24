@@ -976,13 +976,33 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		configureAspectPath(bug2, getProjectRelativePath(bug, "bin"));
 		build(bug);
 		build(bug2);
-		dumptree(getModelFor(bug2).getHierarchy().getRoot(), 0);
-		PrintWriter pw = new PrintWriter(System.out);
-		getModelFor(bug2).dumprels(pw);
-		pw.flush();
+		// dumptree(getModelFor(bug2).getHierarchy().getRoot(), 0);
+		// PrintWriter pw = new PrintWriter(System.out);
+		// getModelFor(bug2).dumprels(pw);
+		// pw.flush();
 		IProgramElement root = getModelFor(bug2).getHierarchy().getRoot();
-		assertEquals("=AspectPath4/binaries<pkg(Asp.class}Asp&before", findElementAtLine(root, 5).getHandleIdentifier());
-		assertEquals("=AspectPath4/binaries<(Asp2.class}Asp2&before", findElementAtLine(root, 16).getHandleIdentifier());
+		IProgramElement binariesNode = getChild(root, "binaries");
+		assertNotNull(binariesNode);
+		IProgramElement packageNode = (IProgramElement) binariesNode.getChildren().get(0);
+		assertEquals("a.b.c", packageNode.getName());
+		IProgramElement fileNode = (IProgramElement) packageNode.getChildren().get(0);
+		assertEquals(IProgramElement.Kind.FILE, fileNode.getKind());
+	}
+
+	private IProgramElement getChild(IProgramElement start, String name) {
+		if (start.getName().equals(name)) {
+			return start;
+		}
+		List kids = start.getChildren();
+		if (kids != null) {
+			for (int i = 0; i < kids.size(); i++) {
+				IProgramElement found = getChild((IProgramElement) kids.get(i), name);
+				if (found != null) {
+					return found;
+				}
+			}
+		}
+		return null;
 	}
 
 	public void testHandleQualification_pr265993() throws IOException {
