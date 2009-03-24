@@ -143,6 +143,11 @@ public class OutputLocationManagerTests extends AbstractMultiProjectIncrementalA
 		public String getSourceFolderForFile(File sourceFile) {
 			return null;
 		}
+
+		public int discoverChangesSince(File dir, long buildtime) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
 	}
 
 	public void reportFileWrite(String outputfile, int filetype) {
