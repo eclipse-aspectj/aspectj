@@ -69,8 +69,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p);
 		checkCompileWeaveCount(p, 3, 1);
 		assertEquals(1, olm.removeCount); // B.class removed
-	}
-
+	} 
+	
 	public void testOutputLocationCallbacks() {
 		String p = "pr268827_ol";
 		initialiseProject(p);
@@ -82,6 +82,23 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p);
 		checkCompileWeaveCount(p, 1, 1);
 		assertEquals(1, olm.removeCount);
+	}
+
+	public void testOutputLocationCallbacksFileAdd() {
+		AjdeInteractionTestbed.VERBOSE = true;
+		String p = "pr268827_ol2";
+		initialiseProject(p);
+		CustomOLM olm = new CustomOLM(getProjectRelativePath(p, ".").toString());
+		configureOutputLocationManager(p, olm);
+		build(p);
+		assertEquals(3, olm.writeCount);
+		olm.writeCount = 0;
+		checkCompileWeaveCount(p, 2, 3);
+		alter(p, "inc1"); // this contains a new file Boo.java
+		build(p);
+		assertEquals(1, olm.writeCount);
+		checkCompileWeaveCount(p, 1, 1);
+		// assertEquals(1, olm.removeCount);
 	}
 
 	static class CustomOLM extends TestOutputLocationManager {
@@ -96,12 +113,14 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		public void reportFileWrite(String outputfile, int filetype) {
 			super.reportFileWrite(outputfile, filetype);
 			writeCount++;
+			System.out.println("Written " + outputfile);
 			// System.out.println("Written " + outputfile + " " + filetype);
 		}
 
 		public void reportFileRemove(String outputfile, int filetype) {
 			super.reportFileRemove(outputfile, filetype);
 			removeCount++;
+			System.out.println("Removed " + outputfile);
 			// System.out.println("Removed " + outputfile + "  " + filetype);
 		}
 
