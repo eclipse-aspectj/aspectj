@@ -12,6 +12,7 @@
 package org.aspectj.lang.reflect;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -24,7 +25,8 @@ import org.aspectj.internal.lang.reflect.AjTypeImpl;
  */
 public class AjTypeSystem {
 	
-		private static Map<Class, WeakReference<AjType>> ajTypes = new WeakHashMap<Class,WeakReference<AjType>>();
+		private static Map<Class, WeakReference<AjType>> ajTypes = 
+			Collections.synchronizedMap(new WeakHashMap<Class,WeakReference<AjType>>());
 
 		/**
 		 * Return the AspectJ runtime type representation of the given Java type.
