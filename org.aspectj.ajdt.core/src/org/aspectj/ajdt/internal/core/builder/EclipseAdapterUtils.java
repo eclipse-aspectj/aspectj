@@ -16,6 +16,7 @@ package org.aspectj.ajdt.internal.core.builder;
 import java.io.File;
 
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IProgressListener;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.SourceLocation;
@@ -107,24 +108,31 @@ public class EclipseAdapterUtils {
 
 	/**
 	 * Extract source location file, start and end lines, and context. Column is not extracted correctly.
+	 * @param progressListener 
 	 * 
 	 * @return ISourceLocation with correct file and lines but not column.
 	 */
-	public static ISourceLocation makeSourceLocation(ICompilationUnit unit, IProblem problem) {
+	public static ISourceLocation makeSourceLocation(ICompilationUnit unit, IProblem problem, IProgressListener progressListener) {
 		int line = problem.getSourceLineNumber();
 		File file = new File(new String(problem.getOriginatingFileName()));
-		String context = makeLocationContext(unit, problem);
-		// XXX 0 column is wrong but recoverable from makeLocationContext
-		return new SourceLocation(file, line, line, 0, context);
+		// cheat here...269912 - don't build the context if under IDE control
+		if (progressListener!=null) {
+			return new SourceLocation(file, line, line, 0, null);
+		} else {
+			String context = makeLocationContext(unit, problem);
+			// XXX 0 column is wrong but recoverable from makeLocationContext
+			return new SourceLocation(file, line, line, 0, context);
+		}
 	}
 
 	/**
 	 * Extract message text and source location, including context.
 	 * 
 	 * @param world
+	 * @param progressListener 
 	 */
-	public static IMessage makeMessage(ICompilationUnit unit, IProblem problem, World world) {
-		ISourceLocation sourceLocation = makeSourceLocation(unit, problem);
+	public static IMessage makeMessage(ICompilationUnit unit, IProblem problem, World world, IProgressListener progressListener) {
+		ISourceLocation sourceLocation = makeSourceLocation(unit, problem, progressListener);
 		IProblem[] seeAlso = problem.seeAlso();
 		// If the user has turned off classfile line number gen, then we may not be able to tell them
 		// about all secondary locations (pr209372)

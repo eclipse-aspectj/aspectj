@@ -1082,7 +1082,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				if (unitResult.hasProblems() || unitResult.hasTasks()) {
 					IProblem[] problems = unitResult.getAllProblems();
 					for (int i = 0; i < problems.length; i++) {
-						IMessage message = EclipseAdapterUtils.makeMessage(unitResult.compilationUnit, problems[i], getBcelWorld());
+						IMessage message = EclipseAdapterUtils.makeMessage(unitResult.compilationUnit, problems[i], getBcelWorld(),progressListener);
 						handler.handleMessage(message);
 					}
 				}
