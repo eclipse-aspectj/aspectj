@@ -164,7 +164,10 @@ public class AsmRelationshipProvider {
 			IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARED_BY, false,
 					true);
 			back.addTarget(sourceHandle);
-			model.addAspectInEffectThisBuild(sourceNode.getSourceLocation().getSourceFile());
+			if (sourceNode!=null && sourceNode.getSourceLocation() != null) {
+				// May have been a bug in the compiled aspect - so it didn't get put in the model
+				model.addAspectInEffectThisBuild(sourceNode.getSourceLocation().getSourceFile());
+			}
 		}
 	}
 
