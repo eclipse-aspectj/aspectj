@@ -417,7 +417,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * can't then we have to do a full build.
 	 * 
 	 */
-	private int classFileChangedInDirSinceLastBuildRequiringFullBuild(File dir) {
+	private int classFileChangedInDirSinceLastBuildRequiringFullBuild(File dir, int pathid) {
 
 		if (!dir.isDirectory()) {
 			return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
@@ -468,8 +468,35 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		for (Iterator iterator = classFiles.iterator(); iterator.hasNext();) {
 			File classFile = (File) iterator.next();
 			if (CHECK_STATE_FIRST && state != null) {
+				// Next section reworked based on bug 270033: 
+				// if it is an aspect we may or may not be in trouble depending on whether (a) we depend on it (b) it is on the
+				// classpath or the aspectpath
 				if (state.isAspect(classFile)) {
-					return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
+					if (state.hasStructuralChangedSince(classFile, lastSuccessfulBuildTime) ||
+						isTypeWeReferTo(classFile)) {     
+						// further improvements possible    
+						if (listenerDefined()) {
+							getListener().recordDecision("Aspect found that has structurally changed or that this project depends upon : " + classFile);
+						}
+						return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
+					} else {
+					    // it is an aspect but we don't refer to it: 
+					    // - for CLASSPATH I think this is OK, we can continue and try an
+					    //   incremental build
+					    // - for ASPECTPATH we don't know what else might be touched in this project
+					    //   and must rebuild
+						if (pathid==PATHID_CLASSPATH) {
+							if (listenerDefined()) {
+								getListener().recordDecision("Found aspect on classpath but this project doesn't reference it, continuing to try for incremental build : " + classFile);
+							}							
+						} else {
+							if (listenerDefined()) {
+								getListener().recordDecision("Found aspect on aspectpath/inpath - can't determine if this project is affected, must full build: " + classFile);
+							}
+							return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
+						}
+					  }
+
 				}
 				if (state.hasStructuralChangedSince(classFile, lastSuccessfulBuildTime)) {
 					if (listenerDefined()) {
@@ -497,7 +524,30 @@ public class AjState implements CompilerConfigurationChangeFlags {
 					// structurally changed or not
 					if (state != null) {
 						if (state.isAspect(classFile)) {
-							return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
+							if (state.hasStructuralChangedSince(classFile, lastSuccessfulBuildTime) ||
+								      isTypeWeReferTo(classFile)) {     
+								// further improvements possible                      
+								if (listenerDefined()) {
+									getListener().recordDecision("Aspect found that has structurally changed or that this project depends upon : " + classFile);
+								}
+								return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
+							} else {
+							    // it is an aspect but we don't refer to it: 
+							    // - for CLASSPATH I think this is OK, we can continue and try an
+							    //   incremental build
+							    // - for ASPECTPATH we don't know what else might be touched in this project
+							    //   and must rebuild
+								if (pathid==PATHID_CLASSPATH) {
+									if (listenerDefined()) {
+										getListener().recordDecision("Found aspect on classpath but this project doesn't reference it, continuing to try for incremental build : " + classFile);
+									}
+								} else {
+									if (listenerDefined()) {
+										getListener().recordDecision("Found aspect on aspectpath/inpath - can't determine if this project is affected, must full build: " + classFile);
+									}
+									return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
+								}
+							  }
 						}
 						if (state.hasStructuralChangedSince(classFile, lastSuccessfulBuildTime)) {
 							if (listenerDefined()) {
@@ -659,7 +709,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			simpleNames[0] = className;
 			simpleNames = ReferenceCollection.internSimpleNames(simpleNames, true);
 		}
-
+		int newlyAffectedFiles = 0;
 		for (Iterator i = references.entrySet().iterator(); i.hasNext();) {
 			Map.Entry entry = (Map.Entry) i.next();
 			ReferenceCollection refs = (ReferenceCollection) entry.getValue();
@@ -668,14 +718,18 @@ public class AjState implements CompilerConfigurationChangeFlags {
 					getListener().recordDecision(
 							toString() + ": type " + new String(className) + " is depended upon by '" + entry.getKey() + "'");
 				}
+				newlyAffectedFiles++;
+				// possibly the beginnings of addressing the second point in 270033 comment 3
+//				List/*ClassFile*/ cfs = (List)this.fullyQualifiedTypeNamesResultingFromCompilationUnit.get(entry.getKey());
 				affectedFiles.add(entry.getKey());
 				if (affectedFiles.size() > MAX_AFFECTED_FILES_BEFORE_FULL_BUILD)
 					return true;
 				// return true;
 			}
 		}
-		if (affectedFiles.size() > 0)
+		if (newlyAffectedFiles>0) {
 			return true;
+		}
 		if (listenerDefined())
 			getListener().recordDecision(toString() + ": type " + new String(className) + " is not depended upon by this state");
 
@@ -749,6 +803,10 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		}
 		return (this.lastSuccessfulFullBuildTime > lastSuccessfulBuildTime);
 	}
+	
+	static int PATHID_CLASSPATH = 0;
+	static int PATHID_ASPECTPATH = 1;
+	static int PATHID_INPATH = 2;
 
 	/**
 	 * Determine if something has changed on the classpath/inpath/aspectpath and a full build is required rather than an incremental
@@ -775,17 +833,17 @@ public class AjState implements CompilerConfigurationChangeFlags {
 
 			List oldAspectpath = previousConfig.getAspectpath();
 			List newAspectpath = newConfig.getAspectpath();
-			if (changedAndNeedsFullBuild(oldAspectpath, newAspectpath, true, oldOutputLocs, alreadyAnalysedPaths))
+			if (changedAndNeedsFullBuild(oldAspectpath, newAspectpath, true, oldOutputLocs, alreadyAnalysedPaths, PATHID_ASPECTPATH))
 				return true;
 
 			List oldInPath = previousConfig.getInpath();
 			List newInPath = newConfig.getInpath();
-			if (changedAndNeedsFullBuild(oldInPath, newInPath, false, oldOutputLocs, alreadyAnalysedPaths))
+			if (changedAndNeedsFullBuild(oldInPath, newInPath, false, oldOutputLocs, alreadyAnalysedPaths, PATHID_INPATH))
 				return true;
 
 			List oldInJars = previousConfig.getInJars();
 			List newInJars = newConfig.getInJars();
-			if (changedAndNeedsFullBuild(oldInJars, newInJars, false, oldOutputLocs, alreadyAnalysedPaths))
+			if (changedAndNeedsFullBuild(oldInJars, newInJars, false, oldOutputLocs, alreadyAnalysedPaths, PATHID_INPATH))
 				return true;
 		} else if (newConfig.getClasspathElementsWithModifiedContents() != null) {
 			// Although the classpath entries themselves are the same as before, the contents of one of the
@@ -801,7 +859,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 						return true;
 					}
 				} else {
-					int classFileChanges = classFileChangedInDirSinceLastBuildRequiringFullBuild(cpElement);
+					int classFileChanges = classFileChangedInDirSinceLastBuildRequiringFullBuild(cpElement, PATHID_CLASSPATH);
 					if (classFileChanges == CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD) {
 						return true;
 					}
@@ -870,7 +928,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * @return true if a change is detected that requires a full build
 	 */
 	private boolean changedAndNeedsFullBuild(List oldPath, List newPath, boolean checkClassFiles, List outputLocs,
-			Set alreadyAnalysedPaths) {
+			Set alreadyAnalysedPaths, int pathid) {
 		// if (oldPath == null) {
 		// oldPath = new ArrayList();
 		// }
@@ -911,7 +969,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 				if (!foundMatch) {
 					if (!alreadyAnalysedPaths.contains(f.getAbsolutePath())) { // Do not check paths more than once
 						alreadyAnalysedPaths.add(f.getAbsolutePath());
-						int classFileChanges = classFileChangedInDirSinceLastBuildRequiringFullBuild(f);
+						int classFileChanges = classFileChangedInDirSinceLastBuildRequiringFullBuild(f,pathid);
 						if (classFileChanges == CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD)
 							return true;
 					}
@@ -968,7 +1026,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 				if (!foundMatch) {
 					if (!alreadyAnalysedPaths.contains(f.getAbsolutePath())) { // Do not check paths more than once
 						alreadyAnalysedPaths.add(f.getAbsolutePath());
-						int classFileChanges = classFileChangedInDirSinceLastBuildRequiringFullBuild(f);
+						int classFileChanges = classFileChangedInDirSinceLastBuildRequiringFullBuild(f,PATHID_CLASSPATH);
 						if (classFileChanges == CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD)
 							return true;
 					}
