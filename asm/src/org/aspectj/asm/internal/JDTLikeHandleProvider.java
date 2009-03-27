@@ -199,24 +199,6 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 								}
 							}
 						}
-						// Advice bytecode signatures are like this:
-						// a, j, c, $, a, f, t, e, r, $, c, o, m, _, k, r, o, n, o, s, _, a, s, p, e, c, t, s, _, P, r, o, c, e, s, s, A, s, p, e, c, t, $, 4, $, 2, e, 7, 5, 9, e, 0, 3]
-						// where the pointcut hash and advice number are in the mix - we should probably ignore those in the comparison - so we strip up to the third $
-						boolean stripit = false;
-//						int dollarIndex = sig1.indexOf('$');
-//						if (dollarIndex!=-1) {
-//							dollarIndex = sig1.indexOf('$',dollarIndex+1);
-//							if (dollarIndex!=-1) {
-//								dollarIndex = sig1.indexOf('$',dollarIndex+1);
-//								if (dollarIndex!=-1) {
-//									stripit = true;
-//								}
-//							}
-//						}
-//						if (stripit) {
-//							sig1 = sig1.substring(0,dollarIndex);
-//							System.out.println(sig1);
-//						}
 						
 						
 						if (sig1 == null && ipeSig == null || (sig1 != null && sig1.equals(ipeSig))) {
