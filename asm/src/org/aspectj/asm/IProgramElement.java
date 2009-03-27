@@ -395,4 +395,7 @@ public interface IProgramElement extends Serializable {
 			return this == PACKAGE_DECLARATION;
 		}
 	}
+
+	public void setAnnotationStyleDeclaration(boolean b);
+	public boolean isAnnotationStyleDeclaration();
 }

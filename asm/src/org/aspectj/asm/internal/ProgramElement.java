@@ -646,4 +646,17 @@ public class ProgramElement implements IProgramElement {
 	public ExtraInformation getExtraInfo() {
 		return (ExtraInformation) kvpairs.get("ExtraInformation");
 	}
+
+	public boolean isAnnotationStyleDeclaration() {
+		return kvpairs.get("annotationStyleDeclaration")!=null;
+	}
+
+	public void setAnnotationStyleDeclaration(boolean b) {		
+		if (b) {
+			if (kvpairs == Collections.EMPTY_MAP) {
+				kvpairs = new HashMap();
+			}
+			kvpairs.put("annotationStyleDeclaration", "true");
+		}
+	}
 }

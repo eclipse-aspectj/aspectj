@@ -88,7 +88,11 @@ public class HandleProviderDelimiter {
 				|| kind.equals(IProgramElement.Kind.ENUM) || kind.equals(IProgramElement.Kind.ANNOTATION)) {
 			return TYPE.getDelimiter();
 		} else if (kind.equals(IProgramElement.Kind.ASPECT)) {
-			return ASPECT_TYPE.getDelimiter();
+			if (ipe.isAnnotationStyleDeclaration()) {
+				return TYPE.getDelimiter();
+			} else {
+				return ASPECT_TYPE.getDelimiter();
+			}
 		} else if (kind.equals(IProgramElement.Kind.INITIALIZER)) {
 			return INITIALIZER.getDelimiter();
 		} else if (kind.equals(IProgramElement.Kind.INTER_TYPE_FIELD) || kind.equals(IProgramElement.Kind.INTER_TYPE_METHOD)
@@ -99,9 +103,17 @@ public class HandleProviderDelimiter {
 		} else if (kind.equals(IProgramElement.Kind.FIELD) || kind.equals(IProgramElement.Kind.ENUM_VALUE)) {
 			return FIELD.getDelimiter();
 		} else if (kind.equals(IProgramElement.Kind.POINTCUT)) {
-			return POINTCUT.getDelimiter();
+			if (ipe.isAnnotationStyleDeclaration()) {
+				return METHOD.getDelimiter();
+			} else {
+				return POINTCUT.getDelimiter();
+			}
 		} else if (kind.equals(IProgramElement.Kind.ADVICE)) {
-			return ADVICE.getDelimiter();
+			if (ipe.isAnnotationStyleDeclaration()) {
+				return METHOD.getDelimiter();
+			} else {
+				return ADVICE.getDelimiter();
+			}
 		} else if (kind.equals(IProgramElement.Kind.DECLARE_PARENTS) || kind.equals(IProgramElement.Kind.DECLARE_WARNING)
 				|| kind.equals(IProgramElement.Kind.DECLARE_ERROR) || kind.equals(IProgramElement.Kind.DECLARE_SOFT)
 				|| kind.equals(IProgramElement.Kind.DECLARE_PRECEDENCE)
