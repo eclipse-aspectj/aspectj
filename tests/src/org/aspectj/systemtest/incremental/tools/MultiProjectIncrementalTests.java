@@ -1067,6 +1067,31 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("=pr265993<{A.java[A~m13~QClass\\<QT;>;~QObject;~QString;", findElementAtLine(root, 17).getHandleIdentifier());
 	}
 	
+	public void testHandlesForAnnotationStyle_pr269286() throws IOException {
+		String p = "pr269286";
+		initialiseProject(p);
+		build(p);
+		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
+		dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
+		PrintWriter pw = new PrintWriter(System.out);
+		getModelFor(p).dumprels(pw);
+		pw.flush();
+		assertEquals("=pr269286<{Logger.java[Logger", findElementAtLine(root, 4).getHandleIdentifier()); // type
+		assertEquals("=pr269286<{Logger.java[Logger~boo", findElementAtLine(root, 7).getHandleIdentifier()); // before
+		assertEquals("=pr269286<{Logger.java[Logger~aoo", findElementAtLine(root, 11).getHandleIdentifier()); // after
+		assertEquals("=pr269286<{Logger.java[Logger~aroo", findElementAtLine(root, 15).getHandleIdentifier()); // around
+		
+		// pointcuts are not fixed - seems to buggy handling of them internally
+		assertEquals("=pr269286<{Logger.java[Logger+ooo", findElementAtLine(root, 20).getHandleIdentifier()); 	
+		
+		// DeclareWarning
+		assertEquals("=pr269286<{Logger.java[Logger^message", findElementAtLine(root, 24).getHandleIdentifier()); 	
+		
+		// DeclareError
+		assertEquals("=pr269286<{Logger.java[Logger^message2", findElementAtLine(root, 27).getHandleIdentifier()); 	
+	}
+
+	
 	public void testX() throws IOException {
 		String p = "prx";
 		initialiseProject(p);
