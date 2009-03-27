@@ -330,22 +330,14 @@ public class AsmElementFormatter {
 			if (typeB.leafComponentType().isBaseType()) {
 				handleSig.append(tb.leafComponentType().signature());
 			} else {
-				if (typeB.leafComponentType().isTypeVariable()) {
-					handleSig.append('T').append(atr.token).append(';');
-				} else {
-					handleSig.append('Q').append(atr.token).append(';');
-				}
+				handleSig.append('Q').append(atr.token).append(';');
 			}
 		} else if (ref instanceof SingleTypeReference) {
 			SingleTypeReference str = (SingleTypeReference) ref;
 			if (tb.isBaseType()) {
 				handleSig.append(tb.signature());
 			} else {
-				if (tb.isTypeVariable()) {
-					handleSig.append('T').append(str.token).append(';');
-				} else {
-					handleSig.append('Q').append(str.token).append(';');
-				}
+				handleSig.append('Q').append(str.token).append(';');
 			}
 		} else if (ref instanceof ParameterizedQualifiedTypeReference) {
 			ParameterizedQualifiedTypeReference pstr = (ParameterizedQualifiedTypeReference) ref;
