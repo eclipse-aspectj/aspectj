@@ -815,6 +815,24 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// , code.getHandleIdentifier());
 	//
 	// }
+	
+	private IProgramElement findFile(IProgramElement whereToLook, String filesubstring) {
+		if (whereToLook.getSourceLocation() != null && whereToLook.getKind().equals(IProgramElement.Kind.FILE_ASPECTJ) && whereToLook.getSourceLocation().getSourceFile().toString().indexOf(filesubstring)!=-1) {
+			return whereToLook;
+		}
+		List kids = whereToLook.getChildren();
+		for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
+			IProgramElement object = (IProgramElement) iterator.next();
+			if (object.getSourceLocation() != null &&  object.getKind().equals(IProgramElement.Kind.FILE_ASPECTJ) && object.getSourceLocation().getSourceFile().toString().indexOf(filesubstring)!=-1) {
+				return whereToLook;
+			}
+			IProgramElement gotSomething = findFile(object, filesubstring);
+			if (gotSomething != null) {
+				return gotSomething;
+			}
+		}
+		return null;
+	}
 
 	private IProgramElement findElementAtLine(IProgramElement whereToLook, int line) {
 		if (whereToLook == null) {
@@ -1029,10 +1047,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject(p);
 		build(p);
 		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
-		dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
-		PrintWriter pw = new PrintWriter(System.out);
-		getModelFor(p).dumprels(pw);
-		pw.flush();
+//		dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
+//		PrintWriter pw = new PrintWriter(System.out);
+//		getModelFor(p).dumprels(pw);
+//		pw.flush();
 		assertEquals("=pr265993<{A.java[A~m~QString;~Qjava.lang.String;", findElementAtLine(root, 3).getHandleIdentifier());
 		assertEquals("=pr265993<{A.java[A~m2~QList;", findElementAtLine(root, 5).getHandleIdentifier());
 		assertEquals("=pr265993<{A.java[A~m3~Qjava.util.ArrayList;", findElementAtLine(root, 6).getHandleIdentifier());
@@ -1044,8 +1062,25 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("=pr265993<{A.java[A~m8~\\[Qjava.lang.String;", findElementAtLine(root, 12).getHandleIdentifier());
 		assertEquals("=pr265993<{A.java[A~m9~\\[QString;", findElementAtLine(root, 13).getHandleIdentifier());
 		assertEquals("=pr265993<{A.java[A~m10~\\[\\[QList\\<QString;>;", findElementAtLine(root, 14).getHandleIdentifier());
-		assertEquals("=pr265993<{A.java[A~m11~Qjava.util.List\\<TT;>;", findElementAtLine(root, 15).getHandleIdentifier());
-		assertEquals("=pr265993<{A.java[A~m12~\\[TT;", findElementAtLine(root, 16).getHandleIdentifier());
+		assertEquals("=pr265993<{A.java[A~m11~Qjava.util.List\\<QT;>;", findElementAtLine(root, 15).getHandleIdentifier());
+		assertEquals("=pr265993<{A.java[A~m12~\\[QT;", findElementAtLine(root, 16).getHandleIdentifier());
+		assertEquals("=pr265993<{A.java[A~m13~QClass\\<QT;>;~QObject;~QString;", findElementAtLine(root, 17).getHandleIdentifier());
+	}
+	
+	public void testX() throws IOException {
+		String p = "prx";
+		initialiseProject(p);
+		build(p);
+		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
+		dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
+		PrintWriter pw = new PrintWriter(System.out);
+		getModelFor(p).dumprels(pw);
+		pw.flush();
+		
+		IProgramElement ff = findFile(root,"ProcessAspect.aj");
+
+		assertEquals("=prx<com.kronos.aspects*ProcessAspect.aj}ProcessAspect&after&QMyProcessor;", findElementAtLine(root, 22).getHandleIdentifier());
+		assertEquals("=prx<com.kronos.aspects*ProcessAspect.aj}ProcessAspect&after&QMyProcessor;!2", findElementAtLine(root, 68).getHandleIdentifier());
 	}
 
 	/**

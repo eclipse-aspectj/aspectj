@@ -14,5 +14,7 @@ public class A<T> {
   public void m10(List<String>[][] m) {}
   public void m11(java.util.List<T> m) {}
   public void m12(T[] m) {}
+  public <T> void m13(Class<T> c, Object f, String d) {}
+
 
 }
