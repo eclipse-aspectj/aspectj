@@ -295,6 +295,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		else if (TypeDeclaration.kind(typeDeclaration.modifiers) == TypeDeclaration.ANNOTATION_TYPE_DECL)
 			kind = IProgramElement.Kind.ANNOTATION;
 
+		boolean isAnnotationStyleAspect = false;
 		// @AJ support
 		if (typeDeclaration.annotations != null) {
 			for (int i = 0; i < typeDeclaration.annotations.length; i++) {
@@ -302,6 +303,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				if (Arrays.equals(annotation.type.getTypeBindingPublic(scope).signature(), "Lorg/aspectj/lang/annotation/Aspect;"
 						.toCharArray())) {
 					kind = IProgramElement.Kind.ASPECT;
+					if (!(typeDeclaration instanceof AspectDeclaration)) {
+						isAnnotationStyleAspect = true;
+					}
 				} else if (annotation.resolvedType != null) {
 					// Fix for the case where in a privileged aspect a parent declaration :
 					// declare parents: (@A C+) implements (B);
@@ -339,6 +343,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				null, null);
 		peNode.setSourceSignature(genSourceSignature(typeDeclaration));
 		peNode.setFormalComment(generateJavadocComment(typeDeclaration));
+		peNode.setAnnotationStyleDeclaration(isAnnotationStyleAspect);
 
 		((IProgramElement) stack.peek()).addChild(peNode);
 		stack.push(peNode);
@@ -385,6 +390,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		else if (typeDeclarationKind == TypeDeclaration.ANNOTATION_TYPE_DECL)
 			kind = IProgramElement.Kind.ANNOTATION;
 
+
+		boolean isAnnotationStyleAspect = false;
 		// @AJ support
 		if (memberTypeDeclaration.annotations != null) {
 			for (int i = 0; i < memberTypeDeclaration.annotations.length; i++) {
@@ -392,6 +399,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				if (Arrays.equals(annotation.type.getTypeBindingPublic(scope).signature(), "Lorg/aspectj/lang/annotation/Aspect;"
 						.toCharArray())) {
 					kind = IProgramElement.Kind.ASPECT;
+					if (!(memberTypeDeclaration instanceof AspectDeclaration)) {
+						isAnnotationStyleAspect = true;
+					}
 				}
 			}
 		}
@@ -405,6 +415,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				typeModifiers, null, null);
 		peNode.setSourceSignature(genSourceSignature(memberTypeDeclaration));
 		peNode.setFormalComment(generateJavadocComment(memberTypeDeclaration));
+		peNode.setAnnotationStyleDeclaration(isAnnotationStyleAspect);
 
 		((IProgramElement) stack.peek()).addChild(peNode);
 		stack.push(peNode);
@@ -440,12 +451,16 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			kind = IProgramElement.Kind.ANNOTATION;
 
 		// @AJ support
+		boolean isAnnotationStyleAspect= false;
 		if (memberTypeDeclaration.annotations != null) {
 			for (int i = 0; i < memberTypeDeclaration.annotations.length; i++) {
 				Annotation annotation = memberTypeDeclaration.annotations[i];
 				if (Arrays.equals(annotation.type.getTypeBindingPublic(scope).signature(), "Lorg/aspectj/lang/annotation/Aspect;"
 						.toCharArray())) {
 					kind = IProgramElement.Kind.ASPECT;
+					if (!(memberTypeDeclaration instanceof AspectDeclaration)) {
+						isAnnotationStyleAspect = true;
+					}
 					break;
 				}
 			}
@@ -455,6 +470,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				memberTypeDeclaration.modifiers, null, null);
 		peNode.setSourceSignature(genSourceSignature(memberTypeDeclaration));
 		peNode.setFormalComment(generateJavadocComment(memberTypeDeclaration));
+		peNode.setAnnotationStyleDeclaration(isAnnotationStyleAspect);
 		// if we're something like 'new Runnable(){..}' then set the
 		// bytecodeSignature to be the typename so we can match it later
 		// when creating the structure model

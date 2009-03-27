@@ -214,6 +214,7 @@ public class AsmElementFormatter {
 						if (annotationSig.charAt(1) == 'o') {
 							if ("Lorg/aspectj/lang/annotation/Pointcut;".equals(annotationSig)) {
 								node.setKind(IProgramElement.Kind.POINTCUT);
+								node.setAnnotationStyleDeclaration(true); // pointcuts don't seem to get handled quite right...
 								break;
 							} else if ("Lorg/aspectj/lang/annotation/Before;".equals(annotationSig)
 									|| "Lorg/aspectj/lang/annotation/After;".equals(annotationSig)
@@ -221,6 +222,7 @@ public class AsmElementFormatter {
 									|| "Lorg/aspectj/lang/annotation/AfterThrowing;".equals(annotationSig)
 									|| "Lorg/aspectj/lang/annotation/Around;".equals(annotationSig)) {
 								node.setKind(IProgramElement.Kind.ADVICE);
+								node.setAnnotationStyleDeclaration(true);
 								// TODO AV - all are considered anonymous - is that ok?
 								node.setDetails(AsmRelationshipUtils.POINTCUT_ANONYMOUS);
 								break;
