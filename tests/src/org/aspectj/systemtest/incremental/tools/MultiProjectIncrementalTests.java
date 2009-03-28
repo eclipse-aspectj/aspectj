@@ -1092,18 +1092,17 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	
-	public void testX() throws IOException {
+	public void testHandleCountersForAdvice() throws IOException {
 		String p = "prx";
 		initialiseProject(p);
 		build(p);
+//		System.out.println("Handle Counters For Advice Output");
 		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
-		dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
-		PrintWriter pw = new PrintWriter(System.out);
-		getModelFor(p).dumprels(pw);
-		pw.flush();
-		
+//		dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
+//		PrintWriter pw = new PrintWriter(System.out);
+//		getModelFor(p).dumprels(pw);
+//		pw.flush();
 		IProgramElement ff = findFile(root,"ProcessAspect.aj");
-
 		assertEquals("=prx<com.kronos.aspects*ProcessAspect.aj}ProcessAspect&after&QMyProcessor;", findElementAtLine(root, 22).getHandleIdentifier());
 		assertEquals("=prx<com.kronos.aspects*ProcessAspect.aj}ProcessAspect&after&QMyProcessor;!2", findElementAtLine(root, 68).getHandleIdentifier());
 	}
