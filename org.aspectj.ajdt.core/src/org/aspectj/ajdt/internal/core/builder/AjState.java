@@ -8,6 +8,7 @@
  *  
  * Contributors: 
  *     PARC     initial implementation 
+ *     Andy Clement     overhauled
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.core.builder;
@@ -309,8 +310,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			return false;
 		}
 
-		if (listenerDefined())
+		if (listenerDefined()) {
 			getListener().recordDecision("Preparing for build: planning to be an incremental build");
+		}
 		return true;
 	}
 
@@ -403,13 +405,15 @@ public class AjState implements CompilerConfigurationChangeFlags {
 
 	private static int CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD = 2;
 
-	private static int MAX_AFFECTED_FILES_BEFORE_FULL_BUILD = 30;
-
 	public static final FileFilter classFileFilter = new FileFilter() {
 		public boolean accept(File pathname) {
 			return pathname.getName().endsWith(".class");
 		}
 	};
+	
+	private void recordDecision(String decision) {
+		getListener().recordDecision(decision);
+	}
 
 	/**
 	 * Analyse .class files in the directory specified, if they have changed since the last successful build then see if we can
@@ -420,6 +424,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	private int classFileChangedInDirSinceLastBuildRequiringFullBuild(File dir, int pathid) {
 
 		if (!dir.isDirectory()) {
+			if (listenerDefined()) {
+				recordDecision("ClassFileChangeChecking: not a directory so forcing full build: '"+dir.getPath()+"'");
+			}
 			return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
 		}
 
@@ -427,9 +434,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		AjState state = IncrementalStateManager.findStateManagingOutputLocation(dir);
 		if (listenerDefined()) {
 			if (state != null) {
-				getListener().recordDecision("Found state instance managing output location : " + dir);
+				recordDecision("ClassFileChangeChecking: found state instance managing output location : " + dir);
 			} else {
-				getListener().recordDecision("Failed to find a state instance managing output location : " + dir);
+				recordDecision("ClassFileChangeChecking: failed to find a state instance managing output location : " + dir);
 			}
 		}
 		
@@ -440,7 +447,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		// we are paying a heavy price to check it
 		if (state != null && !state.hasAnyStructuralChangesSince(lastSuccessfulBuildTime)) {
 			if (listenerDefined()) {
-				getListener().recordDecision("No reported changes in that state");
+				getListener().recordDecision("ClassFileChangeChecking: no reported changes in that state");
 			}
 			return CLASS_FILE_NO_CHANGES;
 		}
@@ -456,7 +463,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 				// further numbers can determine more granular changes
 				if (i==1) {
 					if (listenerDefined()) {
-						getListener().recordDecision("'"+dir+"' is apparently unchanged so not performing timestamp check");
+						getListener().recordDecision("ClassFileChangeChecking: queried JDT and '"+dir+"' is apparently unchanged so not performing timestamp check");
 					}
 					return CLASS_FILE_NO_CHANGES;
 				}
@@ -476,7 +483,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 						isTypeWeReferTo(classFile)) {     
 						// further improvements possible    
 						if (listenerDefined()) {
-							getListener().recordDecision("Aspect found that has structurally changed or that this project depends upon : " + classFile);
+							getListener().recordDecision("ClassFileChangeChecking: aspect found that has structurally changed or that this project depends upon : " + classFile);
 						}
 						return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
 					} else {
@@ -487,11 +494,11 @@ public class AjState implements CompilerConfigurationChangeFlags {
 					    //   and must rebuild
 						if (pathid==PATHID_CLASSPATH) {
 							if (listenerDefined()) {
-								getListener().recordDecision("Found aspect on classpath but this project doesn't reference it, continuing to try for incremental build : " + classFile);
+								getListener().recordDecision("ClassFileChangeChecking: found aspect on classpath but this project doesn't reference it, continuing to try for incremental build : " + classFile);
 							}							
 						} else {
 							if (listenerDefined()) {
-								getListener().recordDecision("Found aspect on aspectpath/inpath - can't determine if this project is affected, must full build: " + classFile);
+								getListener().recordDecision("ClassFileChangeChecking: found aspect on aspectpath/inpath - can't determine if this project is affected, must full build: " + classFile);
 							}
 							return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
 						}
@@ -500,16 +507,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 				}
 				if (state.hasStructuralChangedSince(classFile, lastSuccessfulBuildTime)) {
 					if (listenerDefined()) {
-						getListener().recordDecision("Structural change detected in : " + classFile);
+						getListener().recordDecision("ClassFileChangeChecking: structural change detected in : " + classFile);
 					}
-
-					if (isTypeWeReferTo(classFile)) {
-						if (affectedFiles.size() > MAX_AFFECTED_FILES_BEFORE_FULL_BUILD)
-							return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
-					}
-					// } else {
-					// if (listenerDefined())
-					// getListener().recordDecision("Change detected in " + classFile + " but it is not structural");
+					isTypeWeReferTo(classFile);
 				}
 			} else {
 				long modTime = classFile.lastModified();
@@ -528,7 +528,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 								      isTypeWeReferTo(classFile)) {     
 								// further improvements possible                      
 								if (listenerDefined()) {
-									getListener().recordDecision("Aspect found that has structurally changed or that this project depends upon : " + classFile);
+									getListener().recordDecision("ClassFileChangeChecking: aspect found that has structurally changed or that this project depends upon : " + classFile);
 								}
 								return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
 							} else {
@@ -539,11 +539,11 @@ public class AjState implements CompilerConfigurationChangeFlags {
 							    //   and must rebuild
 								if (pathid==PATHID_CLASSPATH) {
 									if (listenerDefined()) {
-										getListener().recordDecision("Found aspect on classpath but this project doesn't reference it, continuing to try for incremental build : " + classFile);
+										getListener().recordDecision("ClassFileChangeChecking: found aspect on classpath but this project doesn't reference it, continuing to try for incremental build : " + classFile);
 									}
 								} else {
 									if (listenerDefined()) {
-										getListener().recordDecision("Found aspect on aspectpath/inpath - can't determine if this project is affected, must full build: " + classFile);
+										getListener().recordDecision("ClassFileChangeChecking: found aspect on aspectpath/inpath - can't determine if this project is affected, must full build: " + classFile);
 									}
 									return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
 								}
@@ -551,22 +551,16 @@ public class AjState implements CompilerConfigurationChangeFlags {
 						}
 						if (state.hasStructuralChangedSince(classFile, lastSuccessfulBuildTime)) {
 							if (listenerDefined()) {
-								getListener().recordDecision("Structural change detected in : " + classFile);
+								getListener().recordDecision("ClassFileChangeChecking: structural change detected in : " + classFile);
 							}
-
-							if (isTypeWeReferTo(classFile)) {
-								if (affectedFiles.size() > MAX_AFFECTED_FILES_BEFORE_FULL_BUILD)
-									return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
-							}
+							isTypeWeReferTo(classFile);
 						} else {
 							if (listenerDefined())
-								getListener().recordDecision("Change detected in " + classFile + " but it is not structural");
+								getListener().recordDecision("ClassFileChangeChecking: change detected in " + classFile + " but it is not structural");
 						}
 					} else {
 						// No state object to ask, so it only matters if we know which type depends on this file
 						if (isTypeWeReferTo(classFile)) {
-							if (affectedFiles.size() > MAX_AFFECTED_FILES_BEFORE_FULL_BUILD)
-								return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
 							return CLASS_FILE_CHANGED_THAT_NEEDS_INCREMENTAL_BUILD;
 						} else {
 							return CLASS_FILE_NO_CHANGES;
@@ -722,17 +716,14 @@ public class AjState implements CompilerConfigurationChangeFlags {
 				// possibly the beginnings of addressing the second point in 270033 comment 3
 //				List/*ClassFile*/ cfs = (List)this.fullyQualifiedTypeNamesResultingFromCompilationUnit.get(entry.getKey());
 				affectedFiles.add(entry.getKey());
-				if (affectedFiles.size() > MAX_AFFECTED_FILES_BEFORE_FULL_BUILD)
-					return true;
-				// return true;
 			}
 		}
 		if (newlyAffectedFiles>0) {
 			return true;
 		}
-		if (listenerDefined())
+		if (listenerDefined()) {
 			getListener().recordDecision(toString() + ": type " + new String(className) + " is not depended upon by this state");
-
+		}
 		return false;
 	}
 
@@ -929,12 +920,6 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 */
 	private boolean changedAndNeedsFullBuild(List oldPath, List newPath, boolean checkClassFiles, List outputLocs,
 			Set alreadyAnalysedPaths, int pathid) {
-		// if (oldPath == null) {
-		// oldPath = new ArrayList();
-		// }
-		// if (newPath == null) {
-		// newPath = new ArrayList();
-		// }
 		if (oldPath.size() != newPath.size()) {
 			return true;
 		}
@@ -970,8 +955,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 					if (!alreadyAnalysedPaths.contains(f.getAbsolutePath())) { // Do not check paths more than once
 						alreadyAnalysedPaths.add(f.getAbsolutePath());
 						int classFileChanges = classFileChangedInDirSinceLastBuildRequiringFullBuild(f,pathid);
-						if (classFileChanges == CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD)
+						if (classFileChanges == CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD) {
 							return true;
+						}
 					}
 				}
 			}
@@ -992,12 +978,6 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 */
 	private boolean classpathChangedAndNeedsFullBuild(List oldPath, List newPath, boolean checkClassFiles, List outputLocs,
 			Set alreadyAnalysedPaths) {
-		// if (oldPath == null) {
-		// oldPath = new ArrayList();
-		// }
-		// if (newPath == null) {
-		// newPath = new ArrayList();
-		// }
 		if (oldPath.size() != newPath.size()) {
 			return true;
 		}
@@ -1756,8 +1736,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		// add in the things we compiled previously - I know that seems crap but otherwise we may pull woven
 		// stuff off disk (since we no longer have UnwovenClassFile objects) in order to satisfy references
 		// in the new files we are about to compile (see pr133532)
-		if (addTo.size() > 0)
+		if (addTo.size() > 0) {
 			addTo.addAll(lastTimeSources);
+		}
 		// // XXX Promote addTo to a Set - then we don't need this rubbish? but does it need to be ordered?
 		// if (addTo.size()>0) {
 		// for (Iterator iter = lastTimeSources.iterator(); iter.hasNext();) {
