@@ -37,17 +37,19 @@ following sections go into details on each of those topics.</p>
 <p>As an example project, all the measurements here are based on the modified JDT compiler that AspectJ uses internally.  It is 
 1100 source files and includes aspects that affect around 850 join points.  Here are the full build times in AJDT:
 </p>
-<p>
+<p>AJDT 1.6.3 (uses AspectJ 1.6.3)</p>
 <code><pre>
-AJDT 1.6.3 (uses AspectJ 1.6.3)
 21352ms
 21597ms
+21502ms
+</pre></code>
 
-AJDT 1.6.5dev builds (use AspectJ 1.6.4)
+<p>AJDT 1.6.5dev builds (use AspectJ 1.6.4)</p>
+<code><pre>
+19811ms
 19802ms
 19504ms
 </pre></code>
-</p>
 <p>
 About 1.5-2 seconds faster for this example.
 </p>
@@ -99,7 +101,7 @@ Improvements all round, and almost instant builds now for whitespace changes, ev
 project setups.
 </p>
 <p>In addition the compilation times are also improved in situations where AspectJ projects depend upon Java projects and
-where aspectpath is used.
+where aspectpath is used.  AJDT 1.6.5 dev builds also include some changes that really speed up builds.
 </p>
 <h4>Better editor feedback</h4>
 <p>Under <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=246393">bug 246393</a> the problem has been addressed where
@@ -133,7 +135,7 @@ array lookups.  So using this the above aspect can be rewritten:
 
 <code><pre>
 aspect X pertypewithin(*) {
-  Timer timerArray = ...
+  Timer[] timerArray = ...
   
   Object around(): execution(public * *(..)) {
     Timer timerToUse = timerArray[thisJoinPointStaticPart.getId()];
