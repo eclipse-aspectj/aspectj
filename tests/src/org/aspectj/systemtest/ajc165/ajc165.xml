@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+   <ajc-test dir="bugs165/pr271169" title="around call npe">
+     <compile files="HypChecksums.java" options="-1.5"/>
+   </ajc-test>
+
+</suite>
