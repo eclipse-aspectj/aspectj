@@ -2334,24 +2334,24 @@ public class BcelShadow extends Shadow {
 			end = end.getPrev();
 		}
 		Type[] args = localAdviceMethod.getArgumentTypes();
-		int i = 0;
-		for (int slot = 0; slot < extraParamOffset; i++) {
+		int argNumber = 0;
+		for (int slot = 0; slot < extraParamOffset; argNumber++) { // slot will increase by the argument size each time
 			String argumentName = null;
-			if (i >= args.length || parameterNames.size() == 0 || i >= parameterNames.size()) {
+			if (argNumber >= args.length || parameterNames.size() == 0 || argNumber >= parameterNames.size()) {
 				// this should be unnecessary as I think all known joinpoints and helper methods
 				// propagate the parameter names around correctly - but just in case let us do this
 				// rather than fail. If a bug is raised reporting unknown as a local variable name
 				// then investigate the joinpoint giving rise to the ResolvedMember and why it has
 				// no parameter names specified
-				argumentName = new StringBuffer("unknown").append(i).toString();
+				argumentName = new StringBuffer("unknown").append(argNumber).toString();
 			} else {
-				argumentName = (String) parameterNames.get(i);
+				argumentName = (String) parameterNames.get(argNumber);
 			}
-			String argumentSignature = args[i].getSignature();
+			String argumentSignature = args[argNumber].getSignature();
 			LocalVariableTag lvt = new LocalVariableTag(argumentSignature, argumentName, slot, 0);
 			start.addTargeter(lvt);
 			end.addTargeter(lvt);
-			slot += args[slot].getSize();
+			slot += args[argNumber].getSize();
 		}
 	}
 
