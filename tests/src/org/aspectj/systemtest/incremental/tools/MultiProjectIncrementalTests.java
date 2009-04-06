@@ -2791,6 +2791,41 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		warnings = getWarningMessages("inpathTesting");
 		assertTrue("Expected there to be two warning message but found " + warnings.size() + ": " + warnings, warnings.size() == 2);
 	}
+	
+
+	// warning about cant change parents of Object is fine
+	public void testInpathHandles_271201() throws Exception {
+		AjdeInteractionTestbed.VERBOSE=true;
+		String p = "inpathHandles";
+		initialiseProject(p);
+
+		String inpathTestingDir = getWorkingDir() + File.separator + "inpathHandles";
+		String inpathDir = inpathTestingDir + File.separator + "binpath";// + File.separator+ "codep";
+		// String expectedOutputDir = inpathTestingDir + File.separator + "bin";
+
+		// set up the inpath to have the directory on it's path
+		System.out.println(inpathDir);
+		File f = new File(inpathDir);
+		Set s = new HashSet();
+		s.add(f);
+		configureInPath(p, s);
+		build(p);
+
+		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
+		
+//		alter(p,"inc1");
+//		build(p);
+//		dumptree(root, 0);
+//		PrintWriter pw = new PrintWriter(System.out);
+//		try {
+//		  getModelFor(p).dumprels(pw);
+//		  pw.flush();
+//		} catch (Exception e) {
+//		}
+		List l = getModelFor(p).getRelationshipMap().get("=inpathHandles/;<codep(Code.class[Code");
+		assertNotNull(l);
+		System.out.println(l.get(0));
+	}
 
 	// --- helper code ---
 
