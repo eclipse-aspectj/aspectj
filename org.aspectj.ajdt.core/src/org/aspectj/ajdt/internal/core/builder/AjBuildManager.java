@@ -898,12 +898,12 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		return getBcelWorld();
 	}
 
-	void addAspectClassFilesToWeaver(List addedClassFiles) throws IOException {
-		for (Iterator i = addedClassFiles.iterator(); i.hasNext();) {
-			UnwovenClassFile classFile = (UnwovenClassFile) i.next();
-			getWeaver().addClassFile(classFile);
-		}
-	}
+//	void addAspectClassFilesToWeaver(List addedClassFiles) throws IOException {
+//		for (Iterator i = addedClassFiles.iterator(); i.hasNext();) {
+//			UnwovenClassFile classFile = (UnwovenClassFile) i.next();
+//			getWeaver().addClassFile(classFile);
+//		}
+//	}
 
 	public FileSystem getLibraryAccess(String[] classpaths, String[] filenames) {
 		String defaultEncoding = buildConfig.getOptions().defaultEncoding;

@@ -289,7 +289,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 		for (Iterator iter = resultsPendingWeave.iterator(); iter.hasNext();) {
 			InterimCompilationResult iresult = (InterimCompilationResult) iter.next();
 			for (int i = 0; i < iresult.unwovenClassFiles().length; i++) {
-				weaver.addClassFile(iresult.unwovenClassFiles()[i]);
+				weaver.addClassFile(iresult.unwovenClassFiles()[i],false);
 			}
 		}
 

@@ -425,7 +425,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		for (Iterator iter = resultsPendingWeave.iterator(); iter.hasNext();) {
 			InterimCompilationResult iresult = (InterimCompilationResult) iter.next();
 			for (int i = 0; i < iresult.unwovenClassFiles().length; i++) {
-				weaver.addClassFile(iresult.unwovenClassFiles()[i]);
+				weaver.addClassFile(iresult.unwovenClassFiles()[i],false);
 			}
 		}
 		ensureWeaverInitialized(); // by doing this only once, are we saying needToReweaveWorld can't change once the aspects have
