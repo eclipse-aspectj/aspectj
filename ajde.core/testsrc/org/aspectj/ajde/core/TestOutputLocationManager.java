@@ -12,7 +12,9 @@ package org.aspectj.ajde.core;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Test implementation of IOutputLocationManager. By default returns the same location for both resources and classes, however,
@@ -25,9 +27,15 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 	private File classOutputLoc;
 	private File resourceOutputLoc;
 	private List allOutputLocations;
+	private Map inpathMap = Collections.EMPTY_MAP;
 
 	public TestOutputLocationManager(String testProjectPath) {
 		this.testProjectOutputPath = testProjectPath + File.separator + "bin";
+	}
+
+	public TestOutputLocationManager(String string, Map inpathMap) {
+		this(string);
+		this.inpathMap = inpathMap;
 	}
 
 	public File getOutputLocationForClass(File compilationUnit) {
@@ -39,6 +47,11 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 		initLocations();
 		return resourceOutputLoc;
 	}
+	
+	public Map getInpathMap() {
+		return inpathMap;
+	}
+
 
 	// -------------- setter methods useful for testing -------------
 	public void setOutputLocForClass(File f) {

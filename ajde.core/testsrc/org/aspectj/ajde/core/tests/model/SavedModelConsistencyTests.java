@@ -14,6 +14,7 @@ package org.aspectj.ajde.core.tests.model;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.aspectj.ajde.core.AjdeCoreTestCase;
@@ -54,7 +55,7 @@ public class SavedModelConsistencyTests extends AjdeCoreTestCase {
 	}
 
 	public void testInterfaceIsSameInBoth() {
-		AsmManager asm = AsmManager.createNewStructureModel();
+		AsmManager asm = AsmManager.createNewStructureModel(Collections.EMPTY_MAP);
 		asm.readStructureModel(getAbsoluteProjectDir());
 
 		IHierarchy model = asm.getHierarchy();
@@ -77,7 +78,7 @@ public class SavedModelConsistencyTests extends AjdeCoreTestCase {
 	}
 
 	public void testModelIsSamePreAndPostBuild() {
-		AsmManager asm = AsmManager.createNewStructureModel();
+		AsmManager asm = AsmManager.createNewStructureModel(Collections.EMPTY_MAP);
 		asm.readStructureModel(getAbsoluteProjectDir());
 		// AsmManager.getDefault().readStructureModel(getAbsoluteProjectDir());
 		IHierarchy model = asm.getHierarchy();

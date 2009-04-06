@@ -14,6 +14,7 @@ package org.aspectj.ajde.core.internal;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.ajde.core.IOutputLocationManager;
 import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
@@ -59,6 +60,15 @@ public class OutputLocationAdapter implements CompilationResultDestinationManage
 
 	public int discoverChangesSince(File dir, long buildtime) {
 		return this.locationManager.discoverChangesSince(dir,buildtime);
+	}
+
+	/**
+	 * Return a map from fully qualified jar/dir entries to handle components.
+	 * 
+	 * @return a map from inpath entries (jars/dirs) to handle components.
+	 */
+	public Map getInpathMap() {
+		return this.locationManager.getInpathMap();
 	}
 
 }

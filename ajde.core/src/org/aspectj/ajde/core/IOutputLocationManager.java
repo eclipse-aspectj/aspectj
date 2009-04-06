@@ -13,6 +13,7 @@ package org.aspectj.ajde.core;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Interface that handles where the compilation output is sent. Allows for the output folder to be different for different source
@@ -68,6 +69,11 @@ public interface IOutputLocationManager {
 	 */
 	void reportFileWrite(String outputfile, int fileType);
 
+	/**
+	 * @return a Map<File,String> from inpath absolute paths to handle components
+	 */
+	Map getInpathMap();
+	
 	/**
 	 * Callback from the compiler to indicate that a file has been removed from disk, the type of the file (if known) is also
 	 * supplied.
