@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -756,7 +757,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		// if (!AsmManager.isCreatingModel())
 		// return;
 
-		AsmManager structureModel = AsmManager.createNewStructureModel();
+		CompilationResultDestinationManager crdm = config.getCompilationResultDestinationManager();
+		AsmManager structureModel = AsmManager.createNewStructureModel(crdm==null?Collections.EMPTY_MAP:crdm.getInpathMap());
 		// AsmManager.getDefault().getRelationshipMap().clear();
 		IHierarchy model = structureModel.getHierarchy();
 		String rootLabel = "<root>";

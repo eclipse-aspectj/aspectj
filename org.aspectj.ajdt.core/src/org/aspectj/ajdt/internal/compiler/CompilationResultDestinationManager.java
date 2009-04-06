@@ -13,6 +13,7 @@ package org.aspectj.ajdt.internal.compiler;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 /**
  * acts as a bridge from ajde's OutputLocationManager interface to the compiler internals
@@ -74,6 +75,8 @@ public interface CompilationResultDestinationManager {
 	 * @param outputfile the output file (including .class suffix)
 	 */
 	void reportFileRemove(String outputfile, int filetype);
+
+	Map getInpathMap();
 
 	int discoverChangesSince(File dir, long buildtime);
 
