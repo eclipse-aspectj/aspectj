@@ -12,7 +12,9 @@ package org.aspectj.tools.ajbrowser.core;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.ajde.core.IOutputLocationManager;
 import org.aspectj.ajde.ui.UserPreferencesAdapter;
@@ -67,6 +69,10 @@ public class BrowserOutputLocationManager implements IOutputLocationManager {
 	public int discoverChangesSince(File dir, long buildtime) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	public Map getInpathMap() {
+		return Collections.EMPTY_MAP;
 	}
 
 }
