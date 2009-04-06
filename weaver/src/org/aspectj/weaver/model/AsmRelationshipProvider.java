@@ -195,10 +195,20 @@ public class AsmRelationshipProvider {
 				// /; - the semicolon is a 'well defined char' that means inpath
 				phantomHandle.append(HandleProviderDelimiter.PACKAGEFRAGMENTROOT.getDelimiter()).append(';');
 				
+				int pos = bpath.indexOf('!');
+				if (pos != -1) {
+					// jar or dir
+					String jarPath = bpath.substring(0,pos);
+					String element = model.getHandleElementForInpath(jarPath);
+					if (element!=null) {
+						phantomHandle.append(element);						
+					}
+				}
+				
 				// <g
 				String packageName = onType.getPackageName();
 				phantomHandle.append(HandleProviderDelimiter.PACKAGEFRAGMENT.getDelimiter()).append(packageName);
-				
+
 				// (G.class
 				// could fix the binary path to only be blah.class bit
 				int dotClassPosition = bpath.lastIndexOf(".class");// what to do if -1
@@ -207,7 +217,7 @@ public class AsmRelationshipProvider {
 				} else {
 					int startPosition = dotClassPosition;
 					char ch;
-					while (startPosition>0 && ((ch=bpath.charAt(startPosition))!='/' && ch!='\\')) {
+					while (startPosition>0 && ((ch=bpath.charAt(startPosition))!='/' && ch!='\\' && ch!='!')) {
 						startPosition--;
 					}
 					String classFile = bpath.substring(startPosition+1,dotClassPosition+6);
