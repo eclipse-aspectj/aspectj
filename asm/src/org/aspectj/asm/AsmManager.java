@@ -82,6 +82,10 @@ public class AsmManager implements IStructureModel {
 	// below to the AjState for a compilation and recover it if switching
 	// between projects.
 	protected IHierarchy hierarchy;
+	
+	/* Map from String > String - it maps absolute paths for 
+	 * inpath dirs/jars to workspace relative paths suitable for handle inclusion */
+	protected Map inpathMap;
 	private IRelationshipMap mapper;
 	private IElementHandleProvider handleProvider;
 
@@ -100,11 +104,12 @@ public class AsmManager implements IStructureModel {
 	private AsmManager() {
 	}
 
-	public static AsmManager createNewStructureModel() {
+	public static AsmManager createNewStructureModel(Map inpathMap) {
 		if (forceSingletonBehaviour && lastActiveStructureModel != null) {
 			return lastActiveStructureModel;
 		}
 		AsmManager asm = new AsmManager();
+		asm.inpathMap = inpathMap;
 		asm.hierarchy = new AspectJElementHierarchy(asm);
 		asm.mapper = new RelationshipMap(asm.hierarchy);
 		asm.handleProvider = new JDTLikeHandleProvider(asm);
@@ -1254,6 +1259,10 @@ public class AsmManager implements IStructureModel {
 		if (recordingLastActiveStructureModel) {
 			lastActiveStructureModel = structureModel;
 		}
+	}
+
+	public String getHandleElementForInpath(String binaryPath) {
+		return (String)inpathMap.get(new File(binaryPath));
 	}
 
 }
