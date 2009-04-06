@@ -32,7 +32,7 @@ public class TraceJarWeaveTestCase extends WeaveTestCase {
 		UnwovenClassFile classFile 
             = makeUnwovenClassFile(classDir, "DynamicHelloWorld", outDirPath);
         
-        weaver.addClassFile(classFile);
+        weaver.addClassFile(classFile,false);
         weaver.prepareForWeave();
 		
 		weaveTestInner(weaver, classFile, "DynamicHelloWorld", "TraceJarHello");

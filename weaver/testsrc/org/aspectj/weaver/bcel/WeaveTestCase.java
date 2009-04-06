@@ -97,7 +97,7 @@ public abstract class WeaveTestCase extends TestCase {
 
 			UnwovenClassFile classFile = makeUnwovenClassFile(classDir, name, outDirPath);
 
-			weaver.addClassFile(classFile);
+			weaver.addClassFile(classFile,false);
 			weaver.setShadowMungers(planners);
 			weaveTestInner(weaver, classFile, name, outName);
 		} finally {
