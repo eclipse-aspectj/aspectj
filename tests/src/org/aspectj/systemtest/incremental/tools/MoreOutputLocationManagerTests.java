@@ -12,6 +12,7 @@ package org.aspectj.systemtest.incremental.tools;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -338,6 +339,11 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		public File getOutputLocationForClass(File compilationUnit) {
 			return outputLoc;
 		}
+		
+		public Map getInpathMap() {
+			return Collections.EMPTY_MAP;
+		}
+
 
 		public File getOutputLocationForResource(File resource) {
 			return outputLoc;

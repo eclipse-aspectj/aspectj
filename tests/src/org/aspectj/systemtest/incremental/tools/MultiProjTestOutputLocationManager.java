@@ -13,6 +13,7 @@ package org.aspectj.systemtest.incremental.tools;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,11 @@ public class MultiProjTestOutputLocationManager implements IOutputLocationManage
 		initLocations();
 		return classOutputLoc;
 	}
+	
+	public Map getInpathMap() {
+		return Collections.EMPTY_MAP;
+	}
+
 
 	public File getOutputLocationForResource(File resource) {
 		initLocations();

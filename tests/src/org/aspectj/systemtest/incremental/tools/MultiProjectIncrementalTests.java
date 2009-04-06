@@ -2815,6 +2815,78 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		
 //		alter(p,"inc1");
 //		build(p);
+		dumptree(root, 0);
+		PrintWriter pw = new PrintWriter(System.out);
+		try {
+		  getModelFor(p).dumprels(pw);
+		  pw.flush();
+		} catch (Exception e) {
+		}
+		List l = getModelFor(p).getRelationshipMap().get("=inpathHandles/;<codep(Code.class[Code");
+		assertNotNull(l);
+	}
+	
+	public void testInpathHandles_WithInpathMap_271201() throws Exception {
+		AjdeInteractionTestbed.VERBOSE=true;
+		String p = "inpathHandles";
+		initialiseProject(p);
+
+		String inpathTestingDir = getWorkingDir() + File.separator + "inpathHandles";
+		String inpathDir = inpathTestingDir + File.separator + "binpath";// + File.separator+ "codep";
+		// String expectedOutputDir = inpathTestingDir + File.separator + "bin";
+
+		// set up the inpath to have the directory on it's path
+		System.out.println(inpathDir);
+		File f = new File(inpathDir);
+		Set s = new HashSet();
+		s.add(f);
+		Map m = new HashMap();
+		m.put(f,"wibble");		
+		configureOutputLocationManager(p,new TestOutputLocationManager(getProjectRelativePath(p, ".").toString(),m));
+
+		configureInPath(p, s);
+		build(p);
+
+		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
+		
+//		alter(p,"inc1");
+//		build(p);
+		dumptree(root, 0);
+		PrintWriter pw = new PrintWriter(System.out);
+		try {
+		  getModelFor(p).dumprels(pw);
+		  pw.flush();
+		} catch (Exception e) {
+		}
+		List l = getModelFor(p).getRelationshipMap().get("=inpathHandles/;wibble<codep(Code.class[Code");
+		assertNotNull(l);
+	}
+	
+	// warning about cant change parents of Object is fine
+//	public void testInpathJars_271201() throws Exception {
+//		AjdeInteractionTestbed.VERBOSE=true;
+//		String p = "inpathJars";
+//		initialiseProject(p);
+//
+//		String inpathTestingDir = getWorkingDir() + File.separator + "inpathJars";
+//		String inpathDir = inpathTestingDir + File.separator + "code.jar";
+//		// String expectedOutputDir = inpathTestingDir + File.separator + "bin";
+//
+//		// set up the inpath to have the directory on it's path
+//		System.out.println(inpathDir);
+//		File f = new File(inpathDir);
+//		Set s = new HashSet();
+//		s.add(f);
+//		Map m = new HashMap();
+//		m.put(f,"Gibble");		
+//		configureOutputLocationManager(p,new TestOutputLocationManager(getProjectRelativePath(p, ".").toString(),m));
+//		configureInPath(p, s);
+//		build(p);
+//
+//		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
+//		
+////		alter(p,"inc1");
+////		build(p);
 //		dumptree(root, 0);
 //		PrintWriter pw = new PrintWriter(System.out);
 //		try {
@@ -2822,10 +2894,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 //		  pw.flush();
 //		} catch (Exception e) {
 //		}
-		List l = getModelFor(p).getRelationshipMap().get("=inpathHandles/;<codep(Code.class[Code");
-		assertNotNull(l);
-		System.out.println(l.get(0));
-	}
+//		List l = getModelFor(p).getRelationshipMap().get("=inpathJars/;Gibble<codep(Code.class[Code");
+//		assertNotNull(l);
+//		System.out.println(l.get(0));
+//	}
 
 	// --- helper code ---
 

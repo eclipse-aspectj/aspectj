@@ -12,7 +12,9 @@ package org.aspectj.systemtest.incremental.tools;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.ajde.core.IOutputLocationManager;
 
@@ -49,6 +51,10 @@ public class IncrementalOutputLocationManagerTests extends AbstractMultiProjectI
 		}
 
 		public void reportFileRemove(String outputfile, int filetype) {
+		}
+		
+		public Map getInpathMap() {
+			return Collections.EMPTY_MAP;
 		}
 
 		public File getOutputLocationForClass(File compilationUnit) {
