@@ -25,6 +25,7 @@ import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
 import org.aspectj.asm.IRelationshipMap;
+import org.aspectj.asm.internal.HandleProviderDelimiter;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
@@ -149,10 +150,10 @@ public class AsmRelationshipProvider {
 			// .getSourceLocation());
 			// sourceHandle =
 			// asm.getHandleProvider().createHandleIdentifier(sourceNode);
-			if (sourceHandle == null)
+			if (sourceHandle == null) {
 				return;
-			IProgramElement targetNode = model.getHierarchy().findElementForSourceLine(onType.getSourceLocation());
-			String targetHandle = model.getHandleProvider().createHandleIdentifier(targetNode);
+			}
+			String targetHandle = findOrFakeUpNode(model, onType);
 			if (targetHandle == null)
 				return;
 
@@ -169,6 +170,82 @@ public class AsmRelationshipProvider {
 				model.addAspectInEffectThisBuild(sourceNode.getSourceLocation().getSourceFile());
 			}
 		}
+	}
+
+	private static String findOrFakeUpNode(AsmManager model, ResolvedType onType) {
+		IHierarchy hierarchy = model.getHierarchy();
+		ISourceLocation sourceLocation = onType.getSourceLocation();
+		String canonicalFilePath = model.getCanonicalFilePath(sourceLocation.getSourceFile());
+		int lineNumber = sourceLocation.getLine(); 
+		// Find the relevant source file node first
+		IProgramElement node = hierarchy.findNodeForSourceFile(hierarchy.getRoot(), canonicalFilePath);
+		if (node == null) {
+			// Does not exist in the model - probably an inpath 
+			String bpath = onType.getBinaryPath();
+			if (bpath==null) {
+				return model.getHandleProvider().createHandleIdentifier(createFileStructureNode(model,canonicalFilePath));
+			} else {
+				IProgramElement programElement = model.getHierarchy().getRoot();
+				// =Foo/;<g(G.class[G
+				StringBuffer phantomHandle = new StringBuffer();
+				
+				// =Foo
+				phantomHandle.append(programElement.getHandleIdentifier());
+				
+				// /; - the semicolon is a 'well defined char' that means inpath
+				phantomHandle.append(HandleProviderDelimiter.PACKAGEFRAGMENTROOT.getDelimiter()).append(';');
+				
+				// <g
+				String packageName = onType.getPackageName();
+				phantomHandle.append(HandleProviderDelimiter.PACKAGEFRAGMENT.getDelimiter()).append(packageName);
+				
+				// (G.class
+				// could fix the binary path to only be blah.class bit
+				int dotClassPosition = bpath.lastIndexOf(".class");// what to do if -1
+				int startPosition = dotClassPosition;
+				char ch;
+				while (startPosition>0 && ((ch=bpath.charAt(startPosition))!='/' && ch!='\\')) {
+					startPosition--;
+				}
+				String classFile = bpath.substring(startPosition+1,dotClassPosition+6);
+				phantomHandle.append(HandleProviderDelimiter.CLASSFILE.getDelimiter()).append(classFile);
+				
+				// [G
+				phantomHandle.append(HandleProviderDelimiter.TYPE.getDelimiter()).append(onType.getClassName());
+				
+				return phantomHandle.toString();
+			}
+		} else {
+			// Check if there is a more accurate child node of that source file node:
+			IProgramElement closernode = hierarchy.findCloserMatchForLineNumber(node, lineNumber);
+			if (closernode == null) {
+				return model.getHandleProvider().createHandleIdentifier(node);
+			} else {
+				return model.getHandleProvider().createHandleIdentifier(closernode);
+			}
+		}
+		
+	}
+	
+	public static IProgramElement createFileStructureNode(AsmManager asm, String sourceFilePath) {
+		// SourceFilePath might have originated on windows on linux...
+		int lastSlash = sourceFilePath.lastIndexOf('\\');
+		if (lastSlash == -1) {
+			lastSlash = sourceFilePath.lastIndexOf('/');
+		}
+		// '!' is used like in URLs "c:/blahblah/X.jar!a/b.class"
+		int i = sourceFilePath.lastIndexOf('!');
+		int j = sourceFilePath.indexOf(".class");
+		if (i > lastSlash && i != -1 && j != -1) {
+			// we are a binary aspect in the default package
+			lastSlash = i;
+		}
+		String fileName = sourceFilePath.substring(lastSlash + 1);
+		IProgramElement fileNode = new ProgramElement(asm, fileName, IProgramElement.Kind.FILE_JAVA, new SourceLocation(new File(
+				sourceFilePath), 1, 1), 0, null, null);
+		// fileNode.setSourceLocation();
+		fileNode.addChild(IHierarchy.NO_STRUCTURE);
+		return fileNode;
 	}
 
 	private static boolean isBinaryAspect(ResolvedType aspect) {
