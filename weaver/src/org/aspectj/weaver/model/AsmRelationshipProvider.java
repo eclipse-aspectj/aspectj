@@ -202,13 +202,17 @@ public class AsmRelationshipProvider {
 				// (G.class
 				// could fix the binary path to only be blah.class bit
 				int dotClassPosition = bpath.lastIndexOf(".class");// what to do if -1
-				int startPosition = dotClassPosition;
-				char ch;
-				while (startPosition>0 && ((ch=bpath.charAt(startPosition))!='/' && ch!='\\')) {
-					startPosition--;
+				if (dotClassPosition==-1) {
+					phantomHandle.append(HandleProviderDelimiter.CLASSFILE.getDelimiter()).append("UNKNOWN.class");
+				} else {
+					int startPosition = dotClassPosition;
+					char ch;
+					while (startPosition>0 && ((ch=bpath.charAt(startPosition))!='/' && ch!='\\')) {
+						startPosition--;
+					}
+					String classFile = bpath.substring(startPosition+1,dotClassPosition+6);
+					phantomHandle.append(HandleProviderDelimiter.CLASSFILE.getDelimiter()).append(classFile);
 				}
-				String classFile = bpath.substring(startPosition+1,dotClassPosition+6);
-				phantomHandle.append(HandleProviderDelimiter.CLASSFILE.getDelimiter()).append(classFile);
 				
 				// [G
 				phantomHandle.append(HandleProviderDelimiter.TYPE.getDelimiter()).append(onType.getClassName());
