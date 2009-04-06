@@ -389,6 +389,11 @@ class MyOutputLocationManager implements IOutputLocationManager {
 	public String getUniqueIdentifier() {
 		return null;
 	}
+	
+	public Map getInpathMap() {
+		return Collections.EMPTY_MAP;
+	}
+
 
 	public String getSourceFolderForFile(File sourceFile) {
 		return null;
