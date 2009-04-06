@@ -17,6 +17,7 @@ package org.aspectj.ajde;
 import java.awt.Frame;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -100,7 +101,7 @@ public class Ajde {
 			INSTANCE.compilerConfig = compilerConfig;
 			INSTANCE.uiBuildMsgHandler = uiBuildMessageHandler;
 			INSTANCE.buildProgressMonitor = monitor;
-			INSTANCE.asm = AsmManager.createNewStructureModel();
+			INSTANCE.asm = AsmManager.createNewStructureModel(Collections.EMPTY_MAP);
 
 			INSTANCE.iconRegistry = iconRegistry;
 			INSTANCE.ideUIAdapter = ideUIAdapter;

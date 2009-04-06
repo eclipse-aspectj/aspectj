@@ -12,7 +12,9 @@ package org.aspectj.ajde.ui.utils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.ajde.core.IOutputLocationManager;
 
@@ -37,6 +39,10 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 
 	public String getUniqueIdentifier() {
 		return testProjectOutputPath;
+	}
+	
+	public Map getInpathMap() {
+		return Collections.EMPTY_MAP;
 	}
 
 	public File getOutputLocationForClass(File compilationUnit) {
