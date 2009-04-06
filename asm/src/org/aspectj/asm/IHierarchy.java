@@ -112,4 +112,13 @@ public interface IHierarchy extends Serializable {
 	 * @return any closer match below 'node' or null if nothing is a more accurate match
 	 */
 	public IProgramElement findCloserMatchForLineNumber(IProgramElement node, int lineno);
+
+	/**
+	 * Discover the node representing a particular source file.
+	 * 
+	 * @param node where in the model to start looking (usually the root on the initial call)
+	 * @param sourcefilePath the source file being searched for
+	 * @return the node representing that source file or null if it cannot be found
+	 */
+	public IProgramElement findNodeForSourceFile(IProgramElement node, String sourcefilePath);
 }

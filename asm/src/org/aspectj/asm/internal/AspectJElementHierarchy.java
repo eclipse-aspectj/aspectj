@@ -363,7 +363,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 	 * @param sourcefilePath the source file being searched for
 	 * @return the node representing that source file or null if it cannot be found
 	 */
-	private IProgramElement findNodeForSourceFile(IProgramElement node, String sourcefilePath) {
+	public IProgramElement findNodeForSourceFile(IProgramElement node, String sourcefilePath) {
 		// 1. why is <root> a sourcefile node?
 		// 2. should isSourceFile() return true for a FILE that is a .class file...?
 		if ((node.getKind().isSourceFile() && !node.getName().equals("<root>")) || node.getKind().isFile()) {
