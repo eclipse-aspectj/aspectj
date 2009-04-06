@@ -371,7 +371,7 @@ public class BcelWeaver {
 						UnwovenClassFile classFile = new UnwovenClassFile(new File(outDir, filename).getAbsolutePath(), bytes);
 
 						if (filename.endsWith(".class")) {
-							this.addClassFile(classFile);
+							this.addClassFile(classFile,false);
 							addedClassFiles.add(classFile);
 						}
 						// else if (!entry.isDirectory()) {
@@ -436,13 +436,16 @@ public class BcelWeaver {
 	/**
 	 * Should be addOrReplace
 	 */
-	public void addClassFile(UnwovenClassFile classFile) {
+	public void addClassFile(UnwovenClassFile classFile, boolean fromInpath) {
 		addedClasses.add(classFile);
 		// if (null != sourceJavaClasses.put(classFile.getClassName(),
 		// classFile)) {
 		// // throw new RuntimeException(classFile.getClassName());
 		// }
-		world.addSourceObjectType(classFile.getJavaClass());
+		ReferenceType type = world.addSourceObjectType(classFile.getJavaClass()).getResolvedTypeX();
+		if (fromInpath) {
+			type.setBinaryPath(classFile.getFilename());
+		}
 	}
 
 	public UnwovenClassFile addClassFile(File classFile, File inPathDir, File outDir) throws IOException {
@@ -458,7 +461,7 @@ public class BcelWeaver {
 		if (filename.endsWith(".class")) {
 			// System.err.println(
 			// "BCELWeaver: processing class from input directory "+classFile);
-			this.addClassFile(ucf);
+			this.addClassFile(ucf,true);
 		}
 		fis.close();
 		return ucf;
