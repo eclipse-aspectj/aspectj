@@ -372,11 +372,11 @@ public class BcelWeaver {
 
 						if (filename.endsWith(".class")) {
 							ReferenceType type = this.addClassFile(classFile,false);
-//							StringBuffer sb = new StringBuffer();
-//							sb.append(inFile.getAbsolutePath());
-//							sb.append("!");
-//							sb.append(entry.getName());
-//							type.setBinaryPath(sb.toString());
+							StringBuffer sb = new StringBuffer();
+							sb.append(inFile.getAbsolutePath());
+							sb.append("!");
+							sb.append(entry.getName());
+							type.setBinaryPath(sb.toString());
 							addedClassFiles.add(classFile);
 						}
 						// else if (!entry.isDirectory()) {
