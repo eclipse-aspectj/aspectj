@@ -37,6 +37,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.aspectj.asm.internal.AspectJElementHierarchy;
+import org.aspectj.asm.internal.HandleProviderDelimiter;
 import org.aspectj.asm.internal.JDTLikeHandleProvider;
 import org.aspectj.asm.internal.RelationshipMap;
 import org.aspectj.bridge.ISourceLocation;
@@ -653,6 +654,32 @@ public class AsmManager implements IStructureModel {
 
 	}
 
+	private String getTypeNameFromHandle(String handle,Map cache) {
+		String typename = (String)cache.get(handle);
+		if (typename!=null) {
+			return typename;
+		}
+		// inpath handle - but for which type?
+		// let's do it the slow way, we can optimize this with a cache perhaps
+		int hasPackage = handle.indexOf('<');
+		int typeLocation = handle.indexOf('['); 
+		if (typeLocation==-1) {
+			typeLocation = handle.indexOf('}');
+		}
+		if (typeLocation == -1) {
+			// unexpected - time to give up
+			return "";
+		}
+		StringBuffer qualifiedTypeNameFromHandle = new StringBuffer();
+		if (hasPackage!=-1) {
+			qualifiedTypeNameFromHandle.append(handle.substring(hasPackage+1,handle.indexOf('(',hasPackage)));
+			qualifiedTypeNameFromHandle.append('.');
+		}
+		qualifiedTypeNameFromHandle.append(handle.substring(typeLocation+1));
+		typename = qualifiedTypeNameFromHandle.toString();
+		cache.put(handle,typename);
+		return typename;
+	}
 	/**
 	 * two kinds of relationships
 	 * 
@@ -686,7 +713,7 @@ public class AsmManager implements IStructureModel {
 			return;
 
 		Set sourcesToRemove = new HashSet();
-
+		Map handleToTypenameCache = new HashMap();
 		// Iterate over the source handles in the relationships map, the aim
 		// here is to remove any 'affected by'
 		// relationships where the source of the relationship is the specified
@@ -696,6 +723,13 @@ public class AsmManager implements IStructureModel {
 		List relationshipsToRemove = new ArrayList();
 		for (Iterator keyiter = sourcehandlesSet.iterator(); keyiter.hasNext();) {
 			String hid = (String) keyiter.next();
+			if (isPhantomHandle(hid)) {
+				// inpath handle - but for which type?
+				// TODO promote cache for reuse during one whole model update
+				if (!getTypeNameFromHandle(hid,handleToTypenameCache).equals(typename)) {
+					continue;
+				}
+			}
 			IProgramElement sourceElement = hierarchy.getElement(hid);
 			if (sourceElement == null || sameType(hid, sourceElement, typeNode)) {
 				// worth continuing as there may be a relationship to remove
@@ -771,6 +805,9 @@ public class AsmManager implements IStructureModel {
 					// they need removing
 					for (Iterator targetsIter = targets.iterator(); targetsIter.hasNext();) {
 						String targethid = (String) targetsIter.next();
+						if (isPhantomHandle(hid) && !getTypeNameFromHandle(hid,handleToTypenameCache).equals(typename)) {
+							continue;
+						}
 						// Does this point to the same type?
 						IProgramElement existingTarget = hierarchy.getElement(targethid);
 						if (existingTarget == null || sameType(targethid, existingTarget, typeNode))
@@ -873,6 +910,14 @@ public class AsmManager implements IStructureModel {
 		}
 		return (type.equals(containingType));
 	}
+	
+	/**
+	 * @param handle a JDT like handle, following the form described in AsmRelationshipProvider.findOrFakeUpNode
+	 * @return true if the handle contains ';' - the char indicating that it is a phantom handle
+	 */
+	private boolean isPhantomHandle(String handle) {
+		return handle.indexOf(HandleProviderDelimiter.PHANTOM.getDelimiter())!=-1;
+	}
 
 	/**
 	 * Go through all the relationships in the model, if any endpoints no longer exist (the node it points to has been deleted from
@@ -906,12 +951,12 @@ public class AsmManager implements IStructureModel {
 				// Do we already know this handle points to nowhere?
 				if (nonExistingHandles.contains(hid)) {
 					sourcesToRemove.add(hid);
-				} else {
+				} else if (!isPhantomHandle(hid)) {
 					// We better check if it actually exists
 					IProgramElement existingElement = hierarchy.getElement(hid);
-					if (dumpDeltaProcessing)
+					if (dumpDeltaProcessing) {
 						fw.write("Looking for handle [" + hid + "] in model, found: " + existingElement + "\n");
-
+					}
 					// Did we find it?
 					if (existingElement == null) {
 						// No, so delete this relationship
@@ -938,7 +983,7 @@ public class AsmManager implements IStructureModel {
 										fw.write("Target handle [" + targethid + "] for srchid[" + hid + "]rel[" + rel.getName()
 												+ "] does not exist\n");
 									targetsToRemove.add(targethid);
-								} else {
+								} else if (!isPhantomHandle(targethid)) {
 									// We better check
 									IProgramElement existingTarget = hierarchy.getElement(targethid);
 									if (existingTarget == null) {

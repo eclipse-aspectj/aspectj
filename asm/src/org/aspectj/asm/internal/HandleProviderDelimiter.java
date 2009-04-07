@@ -45,6 +45,8 @@ public class HandleProviderDelimiter {
 	public static final HandleProviderDelimiter ITD = new HandleProviderDelimiter(')');
 	public static final HandleProviderDelimiter DECLARE = new HandleProviderDelimiter('`');
 	public static final HandleProviderDelimiter POINTCUT = new HandleProviderDelimiter('+');
+	
+	public static final HandleProviderDelimiter PHANTOM = new HandleProviderDelimiter(',');
 
 	private static char empty = ' ';
 	private final char delim;
