@@ -2800,8 +2800,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject(p);
 
 		String inpathTestingDir = getWorkingDir() + File.separator + "inpathHandles";
-		String inpathDir = inpathTestingDir + File.separator + "binpath";// + File.separator+ "codep";
-		// String expectedOutputDir = inpathTestingDir + File.separator + "bin";
+		String inpathDir = inpathTestingDir + File.separator + "binpath";
 
 		// set up the inpath to have the directory on it's path
 		System.out.println(inpathDir);
@@ -2822,8 +2821,45 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		  pw.flush();
 		} catch (Exception e) {
 		}
-		List l = getModelFor(p).getRelationshipMap().get("=inpathHandles/;<codep(Code.class[Code");
+		List l = getModelFor(p).getRelationshipMap().get("=inpathHandles/,<codep(Code.class[Code");
 		assertNotNull(l);
+	}
+	
+	// warning about cant change parents of Object is fine
+	public void testInpathHandles_IncrementalCompilation_271201() throws Exception {
+		AjdeInteractionTestbed.VERBOSE=true;
+		String p = "inpathHandles";
+		initialiseProject(p);
+
+		String inpathTestingDir = getWorkingDir() + File.separator + "inpathHandles";
+		String inpathDir = inpathTestingDir + File.separator + "binpath";
+
+		// set up the inpath to have the directory on it's path
+		File f = new File(inpathDir);
+		Set s = new HashSet();
+		s.add(f);
+		configureInPath(p, s);
+		
+		// This build will weave a declare parents into the inpath class codep.Code
+		build(p);
+		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles/,<codep(Code.class[Code"));
+		
+		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
+		
+		// This alteration introduces a new source file B.java, the build should not
+		// damage phantom handle based relationships
+		alter(p,"inc1");
+		build(p);
+		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles/,<codep(Code.class[Code"));
+		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles<p{B.java[B"));
+
+		// This alteration removes B.java, the build should not damage phantom handle based relationships
+		String fileB = getWorkingDir().getAbsolutePath() + File.separatorChar + "inpathHandles" + File.separatorChar + "src"
+		+ File.separatorChar + "p" + File.separatorChar + "B.java";
+		(new File(fileB)).delete();
+		build(p);
+		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles/,<codep(Code.class[Code"));
+		assertNull(getModelFor(p).getRelationshipMap().get("=inpathHandles<p{B.java[B"));
 	}
 	
 	public void testInpathHandles_WithInpathMap_271201() throws Exception {
@@ -2858,7 +2894,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		  pw.flush();
 		} catch (Exception e) {
 		}
-		List l = getModelFor(p).getRelationshipMap().get("=inpathHandles/;wibble<codep(Code.class[Code");
+		List l = getModelFor(p).getRelationshipMap().get("=inpathHandles/,wibble<codep(Code.class[Code");
 		assertNotNull(l);
 	}
 	
