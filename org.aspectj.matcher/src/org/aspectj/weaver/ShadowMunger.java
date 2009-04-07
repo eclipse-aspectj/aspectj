@@ -178,16 +178,20 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	private File getBinaryFile() {
 		if (binaryFile == null) {
 			String s = getDeclaringType().getBinaryPath();
-			File f = getDeclaringType().getSourceLocation().getSourceFile();
-			// Replace the source file suffix with .class
-			int i = f.getPath().lastIndexOf('.');
-			String path = null;
-			if (i != -1) {
-				path = f.getPath().substring(0, i) + ".class";
+			if (s.indexOf("!")==-1) {
+				File f = getDeclaringType().getSourceLocation().getSourceFile();
+				// Replace the source file suffix with .class
+				int i = f.getPath().lastIndexOf('.');
+				String path = null;
+				if (i != -1) {
+					path = f.getPath().substring(0, i) + ".class";
+				} else {
+					path = f.getPath() + ".class";
+				}
+				binaryFile = new File(s + "!" + path);
 			} else {
-				path = f.getPath() + ".class";
+				binaryFile = new File(s);
 			}
-			binaryFile = new File(s + "!" + path);
 		}
 		return binaryFile;
 	}
