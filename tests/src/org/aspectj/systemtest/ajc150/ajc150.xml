@@ -4807,7 +4807,7 @@
    	   </compile>
        <compile files="A2.aj" inpath="code.jar" options="-1.5,-showWeaveInfo">
          <message kind="weave" text="Type 'BaseClass' (BaseClass.java) has intertyped field from 'A1' (A1.aj:'java.util.List&lt;java.lang.String&gt; BaseClass.list1')"/>
-   	     <message kind="weave" text="Type 'BaseClass' (BaseClass.java:12) advised by after advice from 'A1' (A1.aj:7)"/>
+   	     <message kind="weave" text="Type 'BaseClass' (BaseClass.java:12) advised by after advice from 'A1' (code.jar!A1.class:7(from A1.aj))"/>
 	     <message kind="weave" text="Type 'BaseClass' (BaseClass.java) has intertyped field from 'A2' (A2.aj:'java.util.List&lt;N&gt; BaseClass.list2')"/>
          <message kind="weave" text="Type 'BaseClass' (BaseClass.java:13) advised by after advice from 'A2' (A2.aj:8)"/>
        </compile>

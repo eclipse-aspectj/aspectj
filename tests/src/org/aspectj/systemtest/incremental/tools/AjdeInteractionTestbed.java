@@ -121,6 +121,13 @@ public class AjdeInteractionTestbed extends TestCase {
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setInpath(inpath);
 	}
 
+	public static void configureInPath(String projectName, File inpath) {
+		Set s = new HashSet();
+		s.add(inpath);
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setInpath(s);
+	}
+
 	public static void configureOutputLocationManager(String projectName, IOutputLocationManager mgr) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setOutputLocationManager(mgr);
