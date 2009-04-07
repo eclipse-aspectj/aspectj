@@ -186,14 +186,14 @@ public class AsmRelationshipProvider {
 				return model.getHandleProvider().createHandleIdentifier(createFileStructureNode(model,canonicalFilePath));
 			} else {
 				IProgramElement programElement = model.getHierarchy().getRoot();
-				// =Foo/;<g(G.class[G
+				// =Foo/,<g(G.class[G
 				StringBuffer phantomHandle = new StringBuffer();
 				
 				// =Foo
 				phantomHandle.append(programElement.getHandleIdentifier());
 				
-				// /; - the semicolon is a 'well defined char' that means inpath
-				phantomHandle.append(HandleProviderDelimiter.PACKAGEFRAGMENTROOT.getDelimiter()).append(';');
+				// /, - the comma is a 'well defined char' that means inpath
+				phantomHandle.append(HandleProviderDelimiter.PACKAGEFRAGMENTROOT.getDelimiter()).append(HandleProviderDelimiter.PHANTOM.getDelimiter());
 				
 				int pos = bpath.indexOf('!');
 				if (pos != -1) {
