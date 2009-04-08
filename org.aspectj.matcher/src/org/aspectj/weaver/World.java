@@ -795,6 +795,9 @@ public abstract class World implements Dump.INode {
 	public final static String xsetPIPELINE_COMPILATION_DEFAULT = "true";
 	public final static String xsetCOMPLETE_BINARY_TYPES = "completeBinaryTypes";
 	public final static String xsetCOMPLETE_BINARY_TYPES_DEFAULT = "false";
+	public final static String xsetTYPE_DEMOTION = "typeDemotion";
+	public final static String xsetTYPE_DEMOTION_DEBUG = "typeDemotionDebug";
+	public final static String xsetTYPE_REFS = "useWeakTypeRefs";
 	public final static String xsetBCEL_REPOSITORY_CACHING_DEFAULT = "true";
 	public final static String xsetFAST_PACK_METHODS = "fastPackMethods"; // default
 
@@ -849,20 +852,23 @@ public abstract class World implements Dump.INode {
 
 		private static boolean debug = false;
 
+		private boolean demotionSystemActive = false;
+		private boolean debugDemotion = false;
+
 		// Strategy for entries in the expendable map
 		public final static int DONT_USE_REFS = 0; // Hang around forever
 		public final static int USE_WEAK_REFS = 1; // Collected asap
 		public final static int USE_SOFT_REFS = 2; // Collected when short on
 		// memory
+		List addedSinceLastDemote;
 
-		// SECRETAPI - Can switch to a policy of choice ;)
-		public static int policy = USE_SOFT_REFS;
+		public int policy = USE_SOFT_REFS;
 
 		// Map of types that never get thrown away
-		private final Map /* String -> ResolvedType */tMap = new HashMap();
+		final Map /* String -> ResolvedType */tMap = new HashMap();
 
 		// Map of types that may be ejected from the cache if we need space
-		private final Map expendableMap = Collections.synchronizedMap(new WeakHashMap());
+		final Map expendableMap = Collections.synchronizedMap(new WeakHashMap());
 
 		private final World w;
 
@@ -875,13 +881,52 @@ public abstract class World implements Dump.INode {
 		private static Trace trace = TraceFactory.getTraceFactory().getTrace(World.TypeMap.class);
 
 		TypeMap(World w) {
-			if (trace.isTraceEnabled())
-				trace.enter("<init>", this, w);
+			addedSinceLastDemote = new ArrayList();
 			this.w = w;
 			memoryProfiling = false;// !w.getMessageHandler().isIgnoring(Message.
 			// INFO);
-			if (trace.isTraceEnabled())
-				trace.exit("<init>");
+		}
+
+		/**
+		 * Go through any types added during the previous file weave. If any are suitable for demotion, then put them in the
+		 * expendable map where GC can claim them at some point later. Demotion means: the type is not an aspect, the type is not
+		 * java.lang.Object, the type is not primitive and the type is not affected by type mungers in any way. Further refinements
+		 * of these conditions may allow for more demotions.
+		 * 
+		 * @return number of types demoted
+		 */
+		public int demote() {
+			if (!demotionSystemActive) {
+				return 0;
+			}
+			int demotionCounter = 0;
+			Iterator iter = addedSinceLastDemote.iterator();
+			do {
+				if (!iter.hasNext()) {
+					break;
+				}
+				String key = (String) iter.next();
+				ResolvedType type = (ResolvedType) tMap.get(key);
+				if (type != null && !type.isAspect() && !type.equals(UnresolvedType.OBJECT) && !type.isPrimitiveType()) {
+					List typeMungers = type.getInterTypeMungers();
+					if (typeMungers == null || typeMungers.size() == 0) {
+						tMap.remove(key);
+						if (!expendableMap.containsKey(key)) {
+							if (policy == USE_SOFT_REFS) {
+								expendableMap.put(key, new SoftReference(type));
+							} else {
+								expendableMap.put(key, new WeakReference(type));
+							}
+						}
+						demotionCounter++;
+					}
+				}
+			} while (true);
+			if (debugDemotion) {
+				System.out.println("Demoted " + demotionCounter + " types.  Types remaining in fixed set #" + tMap.keySet().size());
+			}
+			addedSinceLastDemote.clear();
+			return demotionCounter;
 		}
 
 		/**
@@ -948,6 +993,11 @@ public abstract class World implements Dump.INode {
 				}
 				return type;
 			} else {
+
+				if (demotionSystemActive) {
+					addedSinceLastDemote.add(key);
+				}
+
 				return (ResolvedType) tMap.put(key, type);
 			}
 		}
@@ -1034,13 +1084,6 @@ public abstract class World implements Dump.INode {
 		// }
 		// }
 
-	}
-
-	/**
-	 * Reference types we don't intend to weave may be ejected from the cache if we need the space.
-	 */
-	protected boolean isExpendable(ResolvedType type) {
-		return (!type.equals(UnresolvedType.OBJECT) && (!type.isExposedToWeaver()) && (!type.isPrimitiveType()));
 	}
 
 	/**
@@ -1202,6 +1245,20 @@ public abstract class World implements Dump.INode {
 							MessageUtil.info("[completeBinaryTypes=true] Completion of binary types activated"));
 				}
 
+				s = p.getProperty(xsetTYPE_DEMOTION, "false");
+				if (s.equalsIgnoreCase("true")) {
+					typeMap.demotionSystemActive = true;
+				}
+
+				s = p.getProperty(xsetTYPE_DEMOTION_DEBUG, "false");
+				if (s.equalsIgnoreCase("true")) {
+					typeMap.debugDemotion = true;
+				}
+				s = p.getProperty(xsetTYPE_REFS, "false");
+				if (s.equalsIgnoreCase("true")) {
+					typeMap.policy = TypeMap.USE_WEAK_REFS;
+				}
+
 				s = p.getProperty(xsetRUN_MINIMAL_MEMORY, "false");
 				runMinimalMemory = s.equalsIgnoreCase("true");
 				// if (runMinimalMemory)
@@ -1297,6 +1354,40 @@ public abstract class World implements Dump.INode {
 
 	public TypePattern getAspectScope(ResolvedType declaringType) {
 		return null;
+	}
+
+	public Map getFixed() {
+		return typeMap.tMap;
+	}
+
+	public Map getExpendable() {
+		return typeMap.expendableMap;
+	}
+
+	/**
+	 * Ask the type map to demote any types it can - we don't want them anchored forever.
+	 */
+	public void demote() {
+		typeMap.demote();
+	}
+
+	// protected boolean isExpendable(ResolvedType type) {
+	// if (type.equals(UnresolvedType.OBJECT))
+	// return false;
+	// if (type == null)
+	// return false;
+	// boolean isExposed = type.isExposedToWeaver();
+	// boolean nullDele = (type instanceof ReferenceType) ? ((ReferenceType) type).getDelegate() != null : true;
+	// if (isExposed || !isExposed && nullDele)
+	// return false;
+	// return !type.isPrimitiveType();
+	// }
+
+	/**
+	 * Reference types we don't intend to weave may be ejected from the cache if we need the space.
+	 */
+	protected boolean isExpendable(ResolvedType type) {
+		return (!type.equals(UnresolvedType.OBJECT) && (!type.isExposedToWeaver()) && (!type.isPrimitiveType()));
 	}
 
 }
