@@ -225,8 +225,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	}
 
 	/**
-	 * aspect must be public nested aspect must be static cannot extend a
-	 * concrete aspect pointcut in perclause must be good.
+	 * aspect must be public nested aspect must be static cannot extend a concrete aspect pointcut in perclause must be good.
 	 */
 	private void validateAspectDeclaration(TypeDeclaration typeDecl) {
 		if (typeStack.size() > 1) {
@@ -293,10 +292,9 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	}
 
 	/**
-	 * 1) Advice must be public 2) Advice must have a void return type if not
-	 * around advice 3) Advice must not have any other @AspectJ annotations 4)
-	 * After throwing advice must declare the thrown formal 5) After returning
-	 * advice must declare the returning formal 6) Advice must not be static
+	 * 1) Advice must be public 2) Advice must have a void return type if not around advice 3) Advice must not have any other @AspectJ
+	 * annotations 4) After throwing advice must declare the thrown formal 5) After returning advice must declare the returning
+	 * formal 6) Advice must not be static
 	 */
 	private void validateAdvice(MethodDeclaration methodDeclaration) {
 
@@ -385,7 +383,8 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 		if (pointcutExpression == null)
 			pointcutExpression = getStringLiteralFor("value", adviceAnn, pcLocation);
 		try {
-			ISourceContext context = new EclipseSourceContext(unit.compilationResult, pcLocation[0]);
+			// +1 to give first char of pointcut string
+			ISourceContext context = new EclipseSourceContext(unit.compilationResult, pcLocation[0] + 1);
 			PatternParser pp = new PatternParser(pointcutExpression, context);
 			Pointcut pc = pp.parsePointcut();
 			pp.checkEof();
