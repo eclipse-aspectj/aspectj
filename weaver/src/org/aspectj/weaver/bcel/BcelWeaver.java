@@ -371,7 +371,7 @@ public class BcelWeaver {
 						UnwovenClassFile classFile = new UnwovenClassFile(new File(outDir, filename).getAbsolutePath(), bytes);
 
 						if (filename.endsWith(".class")) {
-							ReferenceType type = this.addClassFile(classFile,false);
+							ReferenceType type = this.addClassFile(classFile, false);
 							StringBuffer sb = new StringBuffer();
 							sb.append(inFile.getAbsolutePath());
 							sb.append("!");
@@ -471,7 +471,7 @@ public class BcelWeaver {
 			sb.append(inPathDir.getAbsolutePath());
 			sb.append("!");
 			sb.append(filename);
-			ReferenceType type = this.addClassFile(ucf,false);
+			ReferenceType type = this.addClassFile(ucf, false);
 			type.setBinaryPath(sb.toString());
 		}
 		fis.close();
@@ -1779,7 +1779,7 @@ public class BcelWeaver {
 				getWorld().getMessageHandler().handleMessage(new Message(messageText, IMessage.ABORT, re, null));
 			}
 		}
-
+		world.demote();
 		// this is very odd return behavior trying to keep everyone happy
 		if (dump) {
 			dumpUnchanged(classFile);
