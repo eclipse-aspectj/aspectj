@@ -2,6 +2,14 @@
 
 <suite>
 
+   <ajc-test dir="bugs165/pr265356" title="annotation style message positions">
+     <compile files="Main.java" options="-1.5">
+       <message kind="warning" line="11"/>
+       <message kind="warning" line="13"/>
+       <message kind="warning" line="14"/>
+     </compile>
+   </ajc-test>
+
    <ajc-test dir="bugs165/pr271169" title="around call npe">
      <compile files="HypChecksums.java" options="-1.5"/>
    </ajc-test>

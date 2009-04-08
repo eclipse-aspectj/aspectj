@@ -11,12 +11,30 @@
 package org.aspectj.systemtest.ajc165;
 
 import java.io.File;
+import java.util.List;
 
 import junit.framework.Test;
 
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.weaver.LintMessage;
 
 public class Ajc165Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
+
+	public void testAnnotationStyle_pr265356() {
+		runTest("annotation style message positions");
+		List ms = ajc.getLastCompilationResult().getWarningMessages();
+		boolean checked = true;
+		// Look for the message relating to 'List' and check the offsets
+		for (int i = 0; i < ms.size(); i++) {
+			LintMessage m = (LintMessage) ms.get(i);
+			if (m.toString().indexOf("List") != -1) {
+				assertEquals(237, m.getSourceStart());
+				assertEquals(240, m.getSourceEnd());
+				checked = true;
+			}
+		}
+		assertTrue("Failed to check the message", checked);
+	}
 
 	public void testAroundCall_pr271169() {
 		runTest("around call npe");
