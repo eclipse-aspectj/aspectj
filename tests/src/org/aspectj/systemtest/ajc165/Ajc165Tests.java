@@ -28,8 +28,13 @@ public class Ajc165Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		for (int i = 0; i < ms.size(); i++) {
 			LintMessage m = (LintMessage) ms.get(i);
 			if (m.toString().indexOf("List") != -1) {
-				assertEquals(237, m.getSourceStart());
-				assertEquals(240, m.getSourceEnd());
+				// 225/228 on windows - 237/240 on linux
+				if (!(m.getSourceStart() == 225 || m.getSourceStart() == 237)) {
+					fail("Did not get expected start position, was:" + m.getSourceStart());
+				}
+				if (!(m.getSourceEnd() == 228 || m.getSourceEnd() == 240)) {
+					fail("Did not get expected end position, was:" + m.getSourceEnd());
+				}
 				checked = true;
 			}
 		}
