@@ -69,8 +69,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p);
 		checkCompileWeaveCount(p, 3, 1);
 		assertEquals(1, olm.removeCount); // B.class removed
-	} 
-	
+	}
+
 	public void testOutputLocationCallbacks() {
 		String p = "pr268827_ol";
 		initialiseProject(p);
@@ -815,15 +815,17 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// , code.getHandleIdentifier());
 	//
 	// }
-	
+
 	private IProgramElement findFile(IProgramElement whereToLook, String filesubstring) {
-		if (whereToLook.getSourceLocation() != null && whereToLook.getKind().equals(IProgramElement.Kind.FILE_ASPECTJ) && whereToLook.getSourceLocation().getSourceFile().toString().indexOf(filesubstring)!=-1) {
+		if (whereToLook.getSourceLocation() != null && whereToLook.getKind().equals(IProgramElement.Kind.FILE_ASPECTJ)
+				&& whereToLook.getSourceLocation().getSourceFile().toString().indexOf(filesubstring) != -1) {
 			return whereToLook;
 		}
 		List kids = whereToLook.getChildren();
 		for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
 			IProgramElement object = (IProgramElement) iterator.next();
-			if (object.getSourceLocation() != null &&  object.getKind().equals(IProgramElement.Kind.FILE_ASPECTJ) && object.getSourceLocation().getSourceFile().toString().indexOf(filesubstring)!=-1) {
+			if (object.getSourceLocation() != null && object.getKind().equals(IProgramElement.Kind.FILE_ASPECTJ)
+					&& object.getSourceLocation().getSourceFile().toString().indexOf(filesubstring) != -1) {
 				return whereToLook;
 			}
 			IProgramElement gotSomething = findFile(object, filesubstring);
@@ -1047,10 +1049,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject(p);
 		build(p);
 		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
-//		dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
-//		PrintWriter pw = new PrintWriter(System.out);
-//		getModelFor(p).dumprels(pw);
-//		pw.flush();
+		// dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
+		// PrintWriter pw = new PrintWriter(System.out);
+		// getModelFor(p).dumprels(pw);
+		// pw.flush();
 		assertEquals("=pr265993<{A.java[A~m~QString;~Qjava.lang.String;", findElementAtLine(root, 3).getHandleIdentifier());
 		assertEquals("=pr265993<{A.java[A~m2~QList;", findElementAtLine(root, 5).getHandleIdentifier());
 		assertEquals("=pr265993<{A.java[A~m3~Qjava.util.ArrayList;", findElementAtLine(root, 6).getHandleIdentifier());
@@ -1066,7 +1068,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("=pr265993<{A.java[A~m12~\\[QT;", findElementAtLine(root, 16).getHandleIdentifier());
 		assertEquals("=pr265993<{A.java[A~m13~QClass\\<QT;>;~QObject;~QString;", findElementAtLine(root, 17).getHandleIdentifier());
 	}
-	
+
 	public void testHandlesForAnnotationStyle_pr269286() throws IOException {
 		String p = "pr269286";
 		initialiseProject(p);
@@ -1080,31 +1082,32 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("=pr269286<{Logger.java[Logger~boo", findElementAtLine(root, 7).getHandleIdentifier()); // before
 		assertEquals("=pr269286<{Logger.java[Logger~aoo", findElementAtLine(root, 11).getHandleIdentifier()); // after
 		assertEquals("=pr269286<{Logger.java[Logger~aroo", findElementAtLine(root, 15).getHandleIdentifier()); // around
-		
+
 		// pointcuts are not fixed - seems to buggy handling of them internally
-		assertEquals("=pr269286<{Logger.java[Logger+ooo", findElementAtLine(root, 20).getHandleIdentifier()); 	
-		
+		assertEquals("=pr269286<{Logger.java[Logger+ooo", findElementAtLine(root, 20).getHandleIdentifier());
+
 		// DeclareWarning
-		assertEquals("=pr269286<{Logger.java[Logger^message", findElementAtLine(root, 24).getHandleIdentifier()); 	
-		
+		assertEquals("=pr269286<{Logger.java[Logger^message", findElementAtLine(root, 24).getHandleIdentifier());
+
 		// DeclareError
-		assertEquals("=pr269286<{Logger.java[Logger^message2", findElementAtLine(root, 27).getHandleIdentifier()); 	
+		assertEquals("=pr269286<{Logger.java[Logger^message2", findElementAtLine(root, 27).getHandleIdentifier());
 	}
 
-	
 	public void testHandleCountersForAdvice() throws IOException {
 		String p = "prx";
 		initialiseProject(p);
 		build(p);
-//		System.out.println("Handle Counters For Advice Output");
+		// System.out.println("Handle Counters For Advice Output");
 		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
-//		dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
-//		PrintWriter pw = new PrintWriter(System.out);
-//		getModelFor(p).dumprels(pw);
-//		pw.flush();
-		IProgramElement ff = findFile(root,"ProcessAspect.aj");
-		assertEquals("=prx<com.kronos.aspects*ProcessAspect.aj}ProcessAspect&after&QMyProcessor;", findElementAtLine(root, 22).getHandleIdentifier());
-		assertEquals("=prx<com.kronos.aspects*ProcessAspect.aj}ProcessAspect&after&QMyProcessor;!2", findElementAtLine(root, 68).getHandleIdentifier());
+		// dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
+		// PrintWriter pw = new PrintWriter(System.out);
+		// getModelFor(p).dumprels(pw);
+		// pw.flush();
+		IProgramElement ff = findFile(root, "ProcessAspect.aj");
+		assertEquals("=prx<com.kronos.aspects*ProcessAspect.aj}ProcessAspect&after&QMyProcessor;", findElementAtLine(root, 22)
+				.getHandleIdentifier());
+		assertEquals("=prx<com.kronos.aspects*ProcessAspect.aj}ProcessAspect&after&QMyProcessor;!2", findElementAtLine(root, 68)
+				.getHandleIdentifier());
 	}
 
 	/**
@@ -2791,11 +2794,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		warnings = getWarningMessages("inpathTesting");
 		assertTrue("Expected there to be two warning message but found " + warnings.size() + ": " + warnings, warnings.size() == 2);
 	}
-	
 
 	// warning about cant change parents of Object is fine
 	public void testInpathHandles_271201() throws Exception {
-		AjdeInteractionTestbed.VERBOSE=true;
+		AjdeInteractionTestbed.VERBOSE = true;
 		String p = "inpathHandles";
 		initialiseProject(p);
 
@@ -2811,23 +2813,23 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p);
 
 		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
-		
-//		alter(p,"inc1");
-//		build(p);
+
+		// alter(p,"inc1");
+		// build(p);
 		dumptree(root, 0);
 		PrintWriter pw = new PrintWriter(System.out);
 		try {
-		  getModelFor(p).dumprels(pw);
-		  pw.flush();
+			getModelFor(p).dumprels(pw);
+			pw.flush();
 		} catch (Exception e) {
 		}
 		List l = getModelFor(p).getRelationshipMap().get("=inpathHandles/,<codep(Code.class[Code");
 		assertNotNull(l);
 	}
-	
+
 	// warning about cant change parents of Object is fine
 	public void testInpathHandles_IncrementalCompilation_271201() throws Exception {
-		AjdeInteractionTestbed.VERBOSE=true;
+		AjdeInteractionTestbed.VERBOSE = true;
 		String p = "inpathHandles";
 		initialiseProject(p);
 
@@ -2839,31 +2841,31 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		Set s = new HashSet();
 		s.add(f);
 		configureInPath(p, s);
-		
+
 		// This build will weave a declare parents into the inpath class codep.Code
 		build(p);
 		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles/,<codep(Code.class[Code"));
-		
+
 		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
-		
+
 		// This alteration introduces a new source file B.java, the build should not
 		// damage phantom handle based relationships
-		alter(p,"inc1");
+		alter(p, "inc1");
 		build(p);
 		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles/,<codep(Code.class[Code"));
 		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles<p{B.java[B"));
 
 		// This alteration removes B.java, the build should not damage phantom handle based relationships
 		String fileB = getWorkingDir().getAbsolutePath() + File.separatorChar + "inpathHandles" + File.separatorChar + "src"
-		+ File.separatorChar + "p" + File.separatorChar + "B.java";
+				+ File.separatorChar + "p" + File.separatorChar + "B.java";
 		(new File(fileB)).delete();
 		build(p);
 		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles/,<codep(Code.class[Code"));
 		assertNull(getModelFor(p).getRelationshipMap().get("=inpathHandles<p{B.java[B"));
 	}
-	
+
 	public void testInpathHandles_WithInpathMap_271201() throws Exception {
-		AjdeInteractionTestbed.VERBOSE=true;
+		AjdeInteractionTestbed.VERBOSE = true;
 		String p = "inpathHandles";
 		initialiseProject(p);
 
@@ -2877,41 +2879,41 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		Set s = new HashSet();
 		s.add(f);
 		Map m = new HashMap();
-		m.put(f,"wibble");		
-		configureOutputLocationManager(p,new TestOutputLocationManager(getProjectRelativePath(p, ".").toString(),m));
+		m.put(f, "wibble");
+		configureOutputLocationManager(p, new TestOutputLocationManager(getProjectRelativePath(p, ".").toString(), m));
 
 		configureInPath(p, s);
 		build(p);
 
 		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
-		
-//		alter(p,"inc1");
-//		build(p);
+
+		// alter(p,"inc1");
+		// build(p);
 		dumptree(root, 0);
 		PrintWriter pw = new PrintWriter(System.out);
 		try {
-		  getModelFor(p).dumprels(pw);
-		  pw.flush();
+			getModelFor(p).dumprels(pw);
+			pw.flush();
 		} catch (Exception e) {
 		}
 		List l = getModelFor(p).getRelationshipMap().get("=inpathHandles/,wibble<codep(Code.class[Code");
 		assertNotNull(l);
 	}
-	
+
 	private void printModelAndRelationships(String p) {
 		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
-		
+
 		dumptree(root, 0);
 		PrintWriter pw = new PrintWriter(System.out);
 		try {
-		  getModelFor(p).dumprels(pw);
-		  pw.flush();
+			getModelFor(p).dumprels(pw);
+			pw.flush();
 		} catch (Exception e) {
 		}
 	}
-	
+
 	public void testInpathHandles_IncrementalCompilation_RemovingInpathEntries_271201() throws Exception {
-		AjdeInteractionTestbed.VERBOSE=true;
+		AjdeInteractionTestbed.VERBOSE = true;
 		String p = "inpathHandles2";
 		initialiseProject(p);
 
@@ -2920,54 +2922,43 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// set up the inpath to have the directory on it's path
 		File f = new File(inpathDir);
 		configureInPath(p, f);
-		
+
 		// This build will weave a declare parents into the inpath class codep.A and codep.B
 		build(p);
 		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles2/,<codep(A.class[A"));
-		
+
 		// Not let us delete one of the inpath .class files
-		assertTrue(new File(inpathDir,"codep"+File.separator+"A.class").delete());
+		assertTrue(new File(inpathDir, "codep" + File.separator + "A.class").delete());
 		setNextChangeResponse(p, ICompilerConfiguration.EVERYTHING);
 		build(p);
-//		printModelAndRelationships(p);
+		// printModelAndRelationships(p);
 	}
-	
+
 	// warning about cant change parents of Object is fine
-	public void testInpathJars_271201() throws Exception {
-		AjdeInteractionTestbed.VERBOSE=true;
-		String p = "inpathJars";
-		initialiseProject(p);
-
-		String inpathTestingDir = getWorkingDir() + File.separator + "inpathJars";
-		String inpathDir = inpathTestingDir + File.separator + "code.jar";
-		// String expectedOutputDir = inpathTestingDir + File.separator + "bin";
-
-		// set up the inpath to have the directory on it's path
-		System.out.println(inpathDir);
-		File f = new File(inpathDir);
-		Set s = new HashSet();
-		s.add(f);
-		Map m = new HashMap();
-		m.put(f,"Gibble");		
-		configureOutputLocationManager(p,new TestOutputLocationManager(getProjectRelativePath(p, ".").toString(),m));
-		configureInPath(p, s);
-		build(p);
-
-		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
-		
-//		alter(p,"inc1");
-//		build(p);
-		dumptree(root, 0);
-		PrintWriter pw = new PrintWriter(System.out);
-		try {
-		  getModelFor(p).dumprels(pw);
-		  pw.flush();
-		} catch (Exception e) {
-		}
-		List l = getModelFor(p).getRelationshipMap().get("=inpathJars/,Gibble<codep(Code.class[Code");
-		assertNotNull(l);
-		System.out.println(l.get(0));
-	}
+	// public void testInpathJars_271201() throws Exception {
+	// AjdeInteractionTestbed.VERBOSE = true;
+	// String p = "inpathJars";
+	// initialiseProject(p);
+	//
+	// String inpathTestingDir = getWorkingDir() + File.separator + "inpathJars";
+	// String inpathDir = inpathTestingDir + File.separator + "code.jar";
+	// // String expectedOutputDir = inpathTestingDir + File.separator + "bin";
+	//
+	// // set up the inpath to have the directory on it's path
+	// File f = new File(inpathDir);
+	// Set s = new HashSet();
+	// s.add(f);
+	// Map m = new HashMap();
+	// m.put(f, "Gibble");
+	// configureOutputLocationManager(p, new TestOutputLocationManager(getProjectRelativePath(p, ".").toString(), m));
+	// configureInPath(p, s);
+	// build(p);
+	//
+	// // alter(p,"inc1");
+	// // build(p);
+	// List l = getModelFor(p).getRelationshipMap().get("=inpathJars/,Gibble<codep(Code.class[Code");
+	// assertNotNull(l);
+	// }
 
 	// --- helper code ---
 
