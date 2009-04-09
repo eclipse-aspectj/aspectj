@@ -368,7 +368,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 		// 2. should isSourceFile() return true for a FILE that is a .class file...?
 		if ((node.getKind().isSourceFile() && !node.getName().equals("<root>")) || node.getKind().isFile()) {
 			ISourceLocation nodeLoc = node.getSourceLocation();
-			if (nodeLoc != null && nodeLoc.getSourceFile().getAbsolutePath().equals(sourcefilePath)) {
+			if (nodeLoc != null && asm.getCanonicalFilePath(nodeLoc.getSourceFile()).equals(sourcefilePath)) {
 				return node;
 			}
 			return null; // no need to search children of a source file node
