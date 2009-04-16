@@ -20,6 +20,14 @@ import org.aspectj.weaver.LintMessage;
 
 public class Ajc165Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testFunkyPointcut_pr272233() {
+		runTest("funky pointcut");
+	}
+
+	public void testFunkyPointcut_pr272233_2() {
+		runTest("funky pointcut 2");
+	}
+
 	public void testAnnotationStyle_pr265356() {
 		runTest("annotation style message positions");
 		List ms = ajc.getLastCompilationResult().getWarningMessages();

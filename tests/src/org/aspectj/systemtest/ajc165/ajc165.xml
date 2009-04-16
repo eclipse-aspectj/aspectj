@@ -2,6 +2,19 @@
 
 <suite>
 
+   <ajc-test dir="bugs165/pr272233" title="funky pointcut">
+     <compile files="Iffy.java" options="-1.5">
+       <message kind="warning" text="void is not a generic type"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs165/pr272233" title="funky pointcut 2">
+     <compile files="Iffy2.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="advised by before advice from 'Iffy2' (Iffy2.java:11)"/>
+       <message kind="weave" text="advised by before advice from 'Iffy2' (Iffy2.java:8)"/>
+     </compile>
+   </ajc-test>
+   
    <ajc-test dir="bugs165/pr265356" title="annotation style message positions">
      <compile files="Main.java" options="-1.5">
        <message kind="warning" line="11"/>
