@@ -695,67 +695,99 @@ To use testing client jar in tests,
     </target>
 	
 
-	<target name="repo" depends="init" description="build maven repo">
-		<property name="repo" value="${modules.dir}/aj-build/repo/org/aspectj"/>
-		<property name="repo.tools" value="${repo}/aspectjtools/${repo.version}"/>
-		<property name="repo.weaver" value="${repo}/aspectjweaver/${repo.version}"/>
-		<property name="repo.rt" value="${repo}/aspectjrt/${repo.version}"/>
-		<delete dir="${modules.dir}/aj-build/repo" />
+	<target name="repo" depends="init" description="deploy maven repo">
+		<property name="repo.url" value="scp://simonegianni.it/home/mavenrsync/repo"/>
+		<property name="repo.id" value="simonegianni-rsync"/>
 		
-		<mkdir dir="${modules.dir}/aj-build/repo/org/aspectj" />
-		<mkdir dir="${repo.tools}" />
-		<mkdir dir="${repo.weaver}" />
-		<mkdir dir="${repo.rt}" />
-
-		<!-- get the jars in the right place with the right name -->
-		<copy file="${modules.dir}/aj-build/src/aspectjtools${build.version}-src.jar" todir="${repo.tools}"/>
-		<copy file="${modules.dir}/aj-build/src/aspectjweaver${build.version}-src.jar" todir="${repo.weaver}"/>
-		<copy file="${modules.dir}/aj-build/src/aspectjrt${build.version}-src.jar" todir="${repo.rt}"/>		
-		<move file="${repo.tools}/aspectjtools${build.version}-src.jar" tofile="${repo.tools}/aspectjtools-${repo.version}-sources.jar"/>
-		<move file="${repo.weaver}/aspectjweaver${build.version}-src.jar" tofile="${repo.weaver}/aspectjweaver-${repo.version}-sources.jar"/>
-		<move file="${repo.rt}/aspectjrt${build.version}-src.jar" tofile="${repo.rt}/aspectjrt-${repo.version}-sources.jar"/>
-
-		<!-- get the source jars in the right place with the right name -->
-		<copy file="${modules.dir}/aj-build/dist/tools/lib/aspectjtools.jar" todir="${repo.tools}"/>
-		<copy file="${modules.dir}/aj-build/dist/tools/lib/aspectjweaver.jar" todir="${repo.weaver}"/>
-		<copy file="${modules.dir}/aj-build/dist/tools/lib/aspectjrt.jar" todir="${repo.rt}"/>		
-		<move file="${repo.tools}/aspectjtools.jar" tofile="${repo.tools}/aspectjtools-${repo.version}.jar"/>
-		<move file="${repo.weaver}/aspectjweaver.jar" tofile="${repo.weaver}/aspectjweaver-${repo.version}.jar"/>
-		<move file="${repo.rt}/aspectjrt.jar" tofile="${repo.rt}/aspectjrt-${repo.version}.jar"/>
-		
-		<!-- poms -->
-		<copy toDir="${repo.tools}" file="aspectjtools.pom"/>
-		<move file="${repo.tools}/aspectjtools.pom" tofile="${repo.tools}/aspectjtools-${repo.version}.pom"/>
-		<copy toDir="${repo.weaver}" file="aspectjweaver.pom"/>
-		<move file="${repo.weaver}/aspectjweaver.pom" tofile="${repo.weaver}/aspectjweaver-${repo.version}.pom"/>
-		<copy toDir="${repo.rt}" file="aspectjrt.pom"/>
-		<move file="${repo.rt}/aspectjrt.pom" tofile="${repo.rt}/aspectjrt-${repo.version}.pom"/>
+		<mkdir dir="${modules.dir}/aj-build/repo"/>
+		<copy toDir="${modules.dir}/aj-build/repo" file="aspectjtools.pom"/>
+		<copy toDir="${modules.dir}/aj-build/repo" file="aspectjweaver.pom"/>
+		<copy toDir="${modules.dir}/aj-build/repo" file="aspectjrt.pom"/>
 		<replaceregexp byline="true" flags="g">
-	  		<regexp pattern="ASPECTJVERSION"/>
+			<regexp pattern="ASPECTJVERSION"/>
 			<substitution expression="${repo.version}"/>
 			<fileset dir="${modules.dir}/aj-build/repo">
-	  			<include name="**/*.pom"/>
-	  		</fileset>			
-    	</replaceregexp>		
+				<include name="*.pom"/>
+			</fileset>			
+		</replaceregexp>
 		
-		<antcall target="computeDigests"><param name="dir" value="${repo.tools}"/><param name="file" value="aspectjtools-${repo.version}.jar"/></antcall>
-		<antcall target="computeDigests"><param name="dir" value="${repo.tools}"/><param name="file" value="aspectjtools-${repo.version}.pom"/></antcall>
-		<antcall target="computeDigests"><param name="dir" value="${repo.tools}"/><param name="file" value="aspectjtools-${repo.version}-sources.jar"/></antcall>
-		<antcall target="computeDigests"><param name="dir" value="${repo.weaver}"/><param name="file" value="aspectjweaver-${repo.version}.jar"/></antcall>
-		<antcall target="computeDigests"><param name="dir" value="${repo.weaver}"/><param name="file" value="aspectjweaver-${repo.version}.pom"/></antcall>
-		<antcall target="computeDigests"><param name="dir" value="${repo.weaver}"/><param name="file" value="aspectjweaver-${repo.version}-sources.jar"/></antcall>
-		<antcall target="computeDigests"><param name="dir" value="${repo.rt}"/><param name="file" value="aspectjrt-${repo.version}.jar"/></antcall>
-		<antcall target="computeDigests"><param name="dir" value="${repo.rt}"/><param name="file" value="aspectjrt-${repo.version}.pom"/></antcall>
-		<antcall target="computeDigests"><param name="dir" value="${repo.rt}"/><param name="file" value="aspectjrt-${repo.version}-sources.jar"/></antcall>
+		
+		<!-- Invoke maven to deploy the jars to the rsynced repo -->
+		<antcall target="mavenDeployJar">
+			<param name="file" value="${modules.dir}/aj-build/dist/tools/lib/aspectjtools.jar"/>
+			<param name="artifact" value="aspectjtools"/>
+			<param name="desc" value="AspectJ Tools"/>
+		</antcall>		
+		<antcall target="mavenDeployJar">
+			<param name="file" value="${modules.dir}/aj-build/dist/tools/lib/aspectjweaver.jar"/>
+			<param name="artifact" value="aspectjweaver"/>
+			<param name="desc" value="AspectJ Weaver"/>
+		</antcall>		
+		<antcall target="mavenDeployJar">
+			<param name="file" value="${modules.dir}/aj-build/dist/tools/lib/aspectjrt.jar"/>
+			<param name="artifact" value="aspectjrt"/>
+			<param name="desc" value="AspectJ Runtime"/>
+		</antcall>		
+		
+		<antcall target="mavenDeploySource">
+			<param name="file" value="${modules.dir}/aj-build/src/aspectjtools${build.version}-src.jar"/>
+			<param name="artifact" value="aspectjtools"/>
+			<param name="desc" value="AspectJ Tools"/>
+		</antcall>		
+		<antcall target="mavenDeploySource">
+			<param name="file" value="${modules.dir}/aj-build/src/aspectjweaver${build.version}-src.jar"/>
+			<param name="artifact" value="aspectjweaver"/>
+			<param name="desc" value="AspectJ Weaver"/>
+		</antcall>		
+		<antcall target="mavenDeploySource">
+			<param name="file" value="${modules.dir}/aj-build/src/aspectjrt${build.version}-src.jar"/>
+			<param name="artifact" value="aspectjrt"/>
+			<param name="desc" value="AspectJ Runtime"/>
+		</antcall>		
+		
+		
+		
+	</target>
+
+	<target name="mavenDeployJar">
+		<!-- 
+		  Currently only an exec is usable, see http://jira.codehaus.org/browse/MANTTASKS-71 
+		  this mean you need to have maven installed on your system.
+		-->
+		<exec executable="mvn" failonerror="true">
+			<arg line="--batch-mode"/>
+			<arg line="deploy:deploy-file"/>
+			<arg line="-Durl=${repo.url}"/>
+			<arg line="-DrepositoryId=${repo.id}"/>
+			<arg line="-Dfile=${file}"/>
+			<arg line="-DgroupId=org.aspectj"/>
+			<arg line="-DartifactId=${artifact}"/>
+			<arg line="-Dpackaging=jar"/>
+			<arg line="-Dversion=${repo.version}"/>
+			<arg line="-DpomFile=${modules.dir}/aj-build/repo/${artifact}.pom"/>			
+		</exec>	
 	</target>
 	
-	<target name="computeDigests">
-		<exec dir="${dir}" executable="sha1sum" os="Windows Vista" output="${dir}/${file}.sha1">
-		  <arg line="${file}"/>
-		</exec>
-		<exec dir="${dir}" executable="md5sum" os="Windows Vista" output="${dir}/${file}.md5">
-		  <arg line="${file}"/>
-		</exec>
+	<target name="mavenDeploySource">
+		<!-- 
+		     Currently only an exec is usable, see http://jira.codehaus.org/browse/MANTTASKS-71 
+		     this mean you need to have maven installed on your system.
+		     
+		     failonerror is set to false because deploy:deploy-file goes NPE for some obscure reason
+		     on recent versions, see http://jira.codehaus.org/browse/MDEPLOY-48
+		     -->
+		<exec executable="mvn" failonerror="false">
+			<arg line="--batch-mode"/>
+			<arg line="deploy:deploy-file"/>
+			<arg line="-Durl=${repo.url}"/>
+			<arg line="-DrepositoryId=${repo.id}"/>
+			<arg line="-Dfile=${file}"/>
+			<arg line="-DgroupId=org.aspectj"/>
+			<arg line="-DartifactId=${artifact}"/>
+			<arg line="-Dpackaging=java-source"/>
+			<arg line="-Dversion=${repo.version}"/>
+			<arg value="-DgeneratePom=false"/>			
+		</exec>	
 	</target>
 	
 

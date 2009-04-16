@@ -4,8 +4,10 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.aspectj</groupId>
   <artifactId>aspectjrt</artifactId>
+  <packaging>jar</packaging>
   <version>ASPECTJVERSION</version>
   <name>AspectJ runtime</name>
+  <description>The runtime needed to execute a program using AspectJ</description>
   <url>http://www.aspectj.org</url>
 
   <licenses>
@@ -15,5 +17,9 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
+  <scm>
+    <url>http://dev.eclipse.org/viewcvs/index.cgi/org.aspectj/?root=Tools_Project</url>
+  </scm>
 
 </project>
