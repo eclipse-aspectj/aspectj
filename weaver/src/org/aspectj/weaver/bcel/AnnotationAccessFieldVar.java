@@ -91,6 +91,15 @@ class AnnotationAccessFieldVar extends BcelVar {
 		}
 	}
 
+	public void insertLoad(InstructionList il, InstructionFactory fact) {
+		// Only possible to do annotation field value extraction at
+		// MethodExecution
+		if (annoAccessor.getKind() != Shadow.MethodExecution) {
+			return;
+		}
+		appendLoadAndConvert(il, fact, annoFieldOfInterest);
+	}
+
 	public String toString() {
 		return super.toString();
 	}
