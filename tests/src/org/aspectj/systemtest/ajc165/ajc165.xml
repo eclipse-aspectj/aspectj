@@ -26,5 +26,10 @@
    <ajc-test dir="bugs165/pr271169" title="around call npe">
      <compile files="HypChecksums.java" options="-1.5"/>
    </ajc-test>
+   
+   <ajc-test dir="bugs165/pr273628" title="verifyerror on anno bind">
+     <compile files="AnnotationAspect.java ApiDescriptor.java AspectTargetClass.java MonitorableMethod.java TestPointcutAnnotationAspect.java" options="-1.5"/>
+     <run class="p.TestPointcutAnnotationAspect"/>
+   </ajc-test>
 
 </suite>

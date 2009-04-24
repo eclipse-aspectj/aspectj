@@ -20,6 +20,10 @@ import org.aspectj.weaver.LintMessage;
 
 public class Ajc165Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testVerifyOnAnnoBind_pr273628() {
+		runTest("verifyerror on anno bind");
+	}
+
 	public void testFunkyPointcut_pr272233() {
 		runTest("funky pointcut");
 	}
