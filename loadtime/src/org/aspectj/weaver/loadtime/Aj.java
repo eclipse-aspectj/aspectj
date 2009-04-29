@@ -63,6 +63,8 @@ public class Aj implements ClassPreProcessor {
 
 	}
 
+	private final static String deleLoader = "sun.reflect.DelegatingClassLoader";
+
 	/**
 	 * Weave
 	 * 
@@ -72,10 +74,9 @@ public class Aj implements ClassPreProcessor {
 	 * @return weaved bytes
 	 */
 	public byte[] preProcess(String className, byte[] bytes, ClassLoader loader) {
-
 		// TODO AV needs to doc that
-		if (loader == null || className == null) {
-			// skip boot loader or null classes (hibernate)
+		if (loader == null || className == null || loader.getClass().getName().equals(deleLoader)) {
+			// skip boot loader, null classes (hibernate), or those from a reflection loader
 			return bytes;
 		}
 
@@ -220,6 +221,11 @@ public class Aj implements ClassPreProcessor {
 		}
 	}
 
+	static {
+		// pr271840 - touch the types early and outside the locks
+		new ExplicitlyInitializedClassLoaderWeavingAdaptor(new ClassLoaderWeavingAdaptor());
+	}
+
 	/**
 	 * Cache of weaver There is one weaver per classloader
 	 */
@@ -231,21 +237,17 @@ public class Aj implements ClassPreProcessor {
 			ExplicitlyInitializedClassLoaderWeavingAdaptor adaptor = null;
 			AdaptorKey adaptorKey = new AdaptorKey(loader);
 
+			String loaderClassName = loader.getClass().getName();
+
 			synchronized (weavingAdaptors) {
 				checkQ();
 				adaptor = (ExplicitlyInitializedClassLoaderWeavingAdaptor) weavingAdaptors.get(adaptorKey);
 				if (adaptor == null) {
-					String loaderClassName = loader.getClass().getName();
-					if (loaderClassName.equals("sun.reflect.DelegatingClassLoader")) {
-						// we don't weave reflection generated types at all!
-						return null;
-					} else {
-						// create it and put it back in the weavingAdaptors map but avoid any kind of instantiation
-						// within the synchronized block
-						ClassLoaderWeavingAdaptor weavingAdaptor = new ClassLoaderWeavingAdaptor();
-						adaptor = new ExplicitlyInitializedClassLoaderWeavingAdaptor(weavingAdaptor);
-						weavingAdaptors.put(adaptorKey, adaptor);
-					}
+					// create it and put it back in the weavingAdaptors map but avoid any kind of instantiation
+					// within the synchronized block
+					ClassLoaderWeavingAdaptor weavingAdaptor = new ClassLoaderWeavingAdaptor();
+					adaptor = new ExplicitlyInitializedClassLoaderWeavingAdaptor(weavingAdaptor);
+					weavingAdaptors.put(adaptorKey, adaptor);
 				}
 			}
 			// perform the initialization
