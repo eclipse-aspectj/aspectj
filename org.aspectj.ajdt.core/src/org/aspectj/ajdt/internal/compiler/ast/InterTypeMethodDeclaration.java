@@ -301,9 +301,11 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		AstUtil.generateReturn(dispatchBinding.returnType, codeStream);
 
 		// tag the local variables as used throughout the method
-		if (itdArgs != null) {
+		if (itdArgs != null && codeStream.locals != null) {
 			for (int a = 0; a < itdArgs.length; a++) {
-				codeStream.locals[a].recordInitializationEndPC(codeStream.position);
+				if (codeStream.locals[a] != null) {
+					codeStream.locals[a].recordInitializationEndPC(codeStream.position);
+				}
 			}
 		}
 		classFile.completeCodeAttribute(codeAttributeOffset);
