@@ -32,4 +32,18 @@
      <run class="p.TestPointcutAnnotationAspect"/>
    </ajc-test>
 
+   <ajc-test dir="bugs165/pr272825" title="generic ITD">
+     <compile files="Concrete.java GenericSuper.java ITDOfMethod.aj Main.java" options="-1.5"/>
+     <run class="Main">
+       <stdout>
+         <line text="In normal method"/>
+         <line text="else"/>
+         <line text="1"/>
+         <line text="In ITD method"/>
+         <line text="with"/>
+         <line text="2"/>
+       </stdout>
+     </run>
+   </ajc-test>
+
 </suite>

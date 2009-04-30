@@ -57,6 +57,10 @@ public class Ajc165Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("around call npe");
 	}
 
+	public void testGenericITD_pr272825() {
+		runTest("generic ITD");
+	}
+	
 	// ---
 
 	public static Test suite() {
