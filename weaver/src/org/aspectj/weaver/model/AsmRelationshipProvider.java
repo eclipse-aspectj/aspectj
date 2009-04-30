@@ -165,7 +165,7 @@ public class AsmRelationshipProvider {
 			IRelationship back = mapper.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARED_BY, false,
 					true);
 			back.addTarget(sourceHandle);
-			if (sourceNode!=null && sourceNode.getSourceLocation() != null) {
+			if (sourceNode != null && sourceNode.getSourceLocation() != null) {
 				// May have been a bug in the compiled aspect - so it didn't get put in the model
 				model.addAspectInEffectThisBuild(sourceNode.getSourceLocation().getSourceFile());
 			}
@@ -176,35 +176,36 @@ public class AsmRelationshipProvider {
 		IHierarchy hierarchy = model.getHierarchy();
 		ISourceLocation sourceLocation = onType.getSourceLocation();
 		String canonicalFilePath = model.getCanonicalFilePath(sourceLocation.getSourceFile());
-		int lineNumber = sourceLocation.getLine(); 
+		int lineNumber = sourceLocation.getLine();
 		// Find the relevant source file node first
 		IProgramElement node = hierarchy.findNodeForSourceFile(hierarchy.getRoot(), canonicalFilePath);
 		if (node == null) {
-			// Does not exist in the model - probably an inpath 
+			// Does not exist in the model - probably an inpath
 			String bpath = onType.getBinaryPath();
-			if (bpath==null) {
-				return model.getHandleProvider().createHandleIdentifier(createFileStructureNode(model,canonicalFilePath));
+			if (bpath == null) {
+				return model.getHandleProvider().createHandleIdentifier(createFileStructureNode(model, canonicalFilePath));
 			} else {
 				IProgramElement programElement = model.getHierarchy().getRoot();
 				// =Foo/,<g(G.class[G
 				StringBuffer phantomHandle = new StringBuffer();
-				
+
 				// =Foo
 				phantomHandle.append(programElement.getHandleIdentifier());
-				
+
 				// /, - the comma is a 'well defined char' that means inpath
-				phantomHandle.append(HandleProviderDelimiter.PACKAGEFRAGMENTROOT.getDelimiter()).append(HandleProviderDelimiter.PHANTOM.getDelimiter());
-				
+				phantomHandle.append(HandleProviderDelimiter.PACKAGEFRAGMENTROOT.getDelimiter()).append(
+						HandleProviderDelimiter.PHANTOM.getDelimiter());
+
 				int pos = bpath.indexOf('!');
 				if (pos != -1) {
 					// jar or dir
-					String jarPath = bpath.substring(0,pos);
+					String jarPath = bpath.substring(0, pos);
 					String element = model.getHandleElementForInpath(jarPath);
-					if (element!=null) {
-						phantomHandle.append(element);						
+					if (element != null) {
+						phantomHandle.append(element);
 					}
 				}
-				
+
 				// <g
 				String packageName = onType.getPackageName();
 				phantomHandle.append(HandleProviderDelimiter.PACKAGEFRAGMENT.getDelimiter()).append(packageName);
@@ -212,21 +213,21 @@ public class AsmRelationshipProvider {
 				// (G.class
 				// could fix the binary path to only be blah.class bit
 				int dotClassPosition = bpath.lastIndexOf(".class");// what to do if -1
-				if (dotClassPosition==-1) {
+				if (dotClassPosition == -1) {
 					phantomHandle.append(HandleProviderDelimiter.CLASSFILE.getDelimiter()).append("UNKNOWN.class");
 				} else {
 					int startPosition = dotClassPosition;
 					char ch;
-					while (startPosition>0 && ((ch=bpath.charAt(startPosition))!='/' && ch!='\\' && ch!='!')) {
+					while (startPosition > 0 && ((ch = bpath.charAt(startPosition)) != '/' && ch != '\\' && ch != '!')) {
 						startPosition--;
 					}
-					String classFile = bpath.substring(startPosition+1,dotClassPosition+6);
+					String classFile = bpath.substring(startPosition + 1, dotClassPosition + 6);
 					phantomHandle.append(HandleProviderDelimiter.CLASSFILE.getDelimiter()).append(classFile);
 				}
-				
+
 				// [G
 				phantomHandle.append(HandleProviderDelimiter.TYPE.getDelimiter()).append(onType.getClassName());
-				
+
 				return phantomHandle.toString();
 			}
 		} else {
@@ -238,9 +239,9 @@ public class AsmRelationshipProvider {
 				return model.getHandleProvider().createHandleIdentifier(closernode);
 			}
 		}
-		
+
 	}
-	
+
 	public static IProgramElement createFileStructureNode(AsmManager asm, String sourceFilePath) {
 		// SourceFilePath might have originated on windows on linux...
 		int lastSlash = sourceFilePath.lastIndexOf('\\');
@@ -353,8 +354,9 @@ public class AsmRelationshipProvider {
 		}
 
 		// create the class file node
-		IProgramElement classFileNode = new ProgramElement(model, filenode.getName(), IProgramElement.Kind.FILE,
-				getBinarySourceLocation(aspect, aspect.getSourceLocation()), 0, null, null);
+		ISourceLocation binLocation = getBinarySourceLocation(aspect, aspect.getSourceLocation());
+		String f = getBinaryFile(aspect).getName();
+		IProgramElement classFileNode = new ProgramElement(model, f, IProgramElement.Kind.FILE, binLocation, 0, null, null);
 
 		// create package ipe if one exists....
 		IProgramElement root = model.getHierarchy().getRoot();
