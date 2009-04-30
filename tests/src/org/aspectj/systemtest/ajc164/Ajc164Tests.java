@@ -71,6 +71,9 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	 * was available as source. There are two compile steps in the xml for the test - commenting out the first will allow the source
 	 * handles to be seen, leaving it in will switch to binary. Effectively the only difference should be that in the binary case
 	 * the handles are prefixed 'binaries'.
+	 * 
+	 * Change due to bug 274558: now AJDT wants (blah.class as the 'source file' for the ITD so that is another difference when
+	 * switching.
 	 */
 	public void testItdsAspectPathModel_pr265729_1() {
 		runTest("aspectpath model");
@@ -88,7 +91,8 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		IRelationship ir = (IRelationship) model.getRelationshipMap().get(ipe).get(0);
 		String itdMethodHandle = (String) ir.getTargets().get(0);
 		// handle when all source: <{Aspect.java}Aspect)Orange.getColor
-		assertEquals("/binaries<{Aspect.java}Aspect)Orange.getColor", itdMethodHandle);
+		// assertEquals("/binaries<{Aspect.java}Aspect)Orange.getColor", itdMethodHandle);
+		assertEquals("/binaries<(Aspect.class}Aspect)Orange.getColor", itdMethodHandle);
 		IProgramElement itdpe = model.getHierarchy().findElementForHandle(itdMethodHandle);
 		assertEquals("java.awt.Color", itdpe.getCorrespondingType(true));
 
@@ -101,7 +105,8 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		ir = (IRelationship) model.getRelationshipMap().get(ipe).get(0);
 		String itdFieldHandle = (String) ir.getTargets().get(0);
 		// source handle <{Aspect.java}Aspect)Strawberry.color
-		assertEquals("/binaries<{Aspect.java}Aspect)Strawberry.color", itdFieldHandle);
+		// assertEquals("/binaries<{Aspect.java}Aspect)Strawberry.color", itdFieldHandle);
+		assertEquals("/binaries<(Aspect.class}Aspect)Strawberry.color", itdFieldHandle);
 		IProgramElement itdfpe = model.getHierarchy().findElementForHandle(itdMethodHandle);
 		assertEquals("java.awt.Color", itdfpe.getCorrespondingType(true));
 
@@ -113,7 +118,8 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		ir = (IRelationship) model.getRelationshipMap().get(ipe).get(0);
 		String itdCtorHandle = (String) ir.getTargets().get(0);
 		// source handle <{Aspect.java}Aspect)Fruit.Fruit_new)QColor;)QString;
-		assertEquals("/binaries<{Aspect.java}Aspect)Fruit.Fruit_new)QColor;)QString;", itdCtorHandle);
+		// assertEquals("/binaries<{Aspect.java}Aspect)Fruit.Fruit_new)QColor;)QString;", itdCtorHandle);
+		assertEquals("/binaries<(Aspect.class}Aspect)Fruit.Fruit_new)QColor;)QString;", itdCtorHandle);
 		IProgramElement itdcpe = model.getHierarchy().findElementForHandle(itdCtorHandle);
 		List ptypes = itdcpe.getParameterTypes();
 		assertEquals("java.awt.Color", new String((char[]) ptypes.get(0)));

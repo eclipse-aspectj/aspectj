@@ -214,9 +214,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		}
 		// ITD from the test program:
 		// public String InterTypeAspectInterface.foo(int i,List list,App a) {
-		assertEquals("=pr265729_client/binaries<be.cronos.aop.aspects*InterTypeAspect.aj}InterTypeAspect`declare parents", h1);
+		assertEquals("=pr265729_client/binaries<be.cronos.aop.aspects(InterTypeAspect.class}InterTypeAspect`declare parents", h1);
 		assertEquals(
-				"=pr265729_client/binaries<be.cronos.aop.aspects*InterTypeAspect.aj}InterTypeAspect)InterTypeAspectInterface.foo)I)QList;)QSerializable;",
+				"=pr265729_client/binaries<be.cronos.aop.aspects(InterTypeAspect.class}InterTypeAspect)InterTypeAspectInterface.foo)I)QList;)QSerializable;",
 				h2);
 		IProgramElement binaryDecp = getModelFor(cli).getHierarchy().getElement(h1);
 		assertNotNull(binaryDecp);
@@ -924,13 +924,15 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		String loc = "";
 		if (node != null) {
 			if (node.getSourceLocation() != null)
-				loc = node.getSourceLocation().toString();
+				loc = Integer.toString(node.getSourceLocation().getLine());
 		}
-		System.out.println(node + "  [" + (node == null ? "null" : node.getKind().toString()) + "] " + loc);
+		// System.out.println(node + "  [" + (node == null ? "null" : node.getKind().toString()) + "] " + loc);
+		System.out.println(node + "  [" + (node == null ? "null" : node.getKind().toString()) + "] " + loc
+				+ (node == null ? "" : " hid:" + node.getHandleIdentifier()));
 		if (node != null) {
-			for (int i = 0; i < indent; i++)
-				System.out.print(" ");
-			System.out.println("  hid is " + node.getHandleIdentifier());
+			// for (int i = 0; i < indent; i++)
+			// System.out.print(" ");
+			// System.out.println("  hid is " + node.getHandleIdentifier());
 			// Map m = ((ProgramElement) node).kvpairs;
 			// if (m != null) {
 			// Set keys = m.keySet();
@@ -1004,6 +1006,30 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		IProgramElement root = getModelFor(bug2).getHierarchy().getRoot();
 		assertEquals("=AspectPathTwo/binaries<pkg(Asp.class}Asp&before", findElementAtLine(root, 5).getHandleIdentifier());
 		assertEquals("=AspectPathTwo/binaries<(Asp2.class}Asp2&before", findElementAtLine(root, 16).getHandleIdentifier());
+	}
+
+	public void testAspectPath_pr274558() throws Exception {
+		AjdeInteractionTestbed.VERBOSE = true;
+		String base = "bug274558depending";
+		String depending = "bug274558base";
+		// addSourceFolderForSourceFile(bug2, getProjectRelativePath(bug2, "src/C.java"), "src");
+		initialiseProject(base);
+		initialiseProject(depending);
+		configureAspectPath(depending, getProjectRelativePath(base, "bin"));
+		build(base);
+		build(depending);
+		printModel(depending);
+		IProgramElement root = getModelFor(depending).getHierarchy().getRoot();
+		assertEquals("=bug274558base/binaries<r(DeclaresITD.class}DeclaresITD)InterfaceForITD.x", findElementAtLine(root, 4)
+				.getHandleIdentifier());
+		// assertEquals("=AspectPathTwo/binaries<(Asp2.class}Asp2&before", findElementAtLine(root, 16).getHandleIdentifier());
+	}
+
+	private void printModel(String projectName) throws Exception {
+		dumptree(getModelFor(projectName).getHierarchy().getRoot(), 0);
+		PrintWriter pw = new PrintWriter(System.out);
+		getModelFor(projectName).dumprels(pw);
+		pw.flush();
 	}
 
 	public void testAspectPath_pr265693() throws IOException {
