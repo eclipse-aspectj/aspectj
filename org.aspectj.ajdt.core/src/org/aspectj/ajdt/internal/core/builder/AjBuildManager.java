@@ -758,7 +758,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		// return;
 
 		CompilationResultDestinationManager crdm = config.getCompilationResultDestinationManager();
-		AsmManager structureModel = AsmManager.createNewStructureModel(crdm==null?Collections.EMPTY_MAP:crdm.getInpathMap());
+		AsmManager structureModel = AsmManager.createNewStructureModel(crdm == null ? Collections.EMPTY_MAP : crdm.getInpathMap());
 		// AsmManager.getDefault().getRelationshipMap().clear();
 		IHierarchy model = structureModel.getHierarchy();
 		String rootLabel = "<root>";
@@ -900,12 +900,12 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		return getBcelWorld();
 	}
 
-//	void addAspectClassFilesToWeaver(List addedClassFiles) throws IOException {
-//		for (Iterator i = addedClassFiles.iterator(); i.hasNext();) {
-//			UnwovenClassFile classFile = (UnwovenClassFile) i.next();
-//			getWeaver().addClassFile(classFile);
-//		}
-//	}
+	// void addAspectClassFilesToWeaver(List addedClassFiles) throws IOException {
+	// for (Iterator i = addedClassFiles.iterator(); i.hasNext();) {
+	// UnwovenClassFile classFile = (UnwovenClassFile) i.next();
+	// getWeaver().addClassFile(classFile);
+	// }
+	// }
 
 	public FileSystem getLibraryAccess(String[] classpaths, String[] filenames) {
 		String defaultEncoding = buildConfig.getOptions().defaultEncoding;
@@ -1084,7 +1084,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				if (unitResult.hasProblems() || unitResult.hasTasks()) {
 					IProblem[] problems = unitResult.getAllProblems();
 					for (int i = 0; i < problems.length; i++) {
-						IMessage message = EclipseAdapterUtils.makeMessage(unitResult.compilationUnit, problems[i], getBcelWorld(),progressListener);
+						IMessage message = EclipseAdapterUtils.makeMessage(unitResult.compilationUnit, problems[i], getBcelWorld(),
+								progressListener);
 						handler.handleMessage(message);
 					}
 				}
@@ -1257,6 +1258,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 					ret = "bad jar file found in " + p.getAbsolutePath() + " error: " + ioe;
 				}
 				return null; // this is the "OK" return value!
+			} else if (p.isFile() && p.getName().indexOf("org.aspectj.runtime") != -1) {
+				// likely to be a variant from the springsource bundle repo b272591
+				return null;
 			} else {
 				// might want to catch other classpath errors
 			}
