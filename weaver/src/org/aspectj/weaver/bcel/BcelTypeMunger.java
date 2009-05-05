@@ -1563,6 +1563,22 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			}
 		}
 
+		// Might have to remove the default constructor - b275032
+		// TODO could have tagged the type munger when the fact we needed to do this was detected earlier
+		if (mg.getArgumentTypes().length == 0) {
+			LazyMethodGen toRemove = null;
+			List existingMethods = currentClass.getMethodGens();
+			for (Iterator iterator = existingMethods.iterator(); iterator.hasNext() && toRemove == null;) {
+				LazyMethodGen object = (LazyMethodGen) iterator.next();
+				if (object.getName().equals("<init>") && object.getArgumentTypes().length == 0) {
+					toRemove = object;
+				}
+			}
+			if (toRemove != null) {
+				currentClass.removeMethodGen(toRemove);
+			}
+		}
+
 		currentClass.addMethodGen(mg);
 		// weaver.addLazyMethodGen(freshConstructor);
 

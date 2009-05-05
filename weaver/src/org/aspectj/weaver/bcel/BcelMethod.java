@@ -459,9 +459,8 @@ class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	/**
-	 * A method can be parameterized if it has one or more generic parameters. A
-	 * generic parameter (type variable parameter) is identified by the prefix
-	 * "T"
+	 * A method can be parameterized if it has one or more generic parameters. A generic parameter (type variable parameter) is
+	 * identified by the prefix "T"
 	 */
 	public boolean canBeParameterized() {
 		unpackGenericSignature();
@@ -474,8 +473,7 @@ class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	/**
-	 * Return the parameterized/generic return type or the normal return type if
-	 * the method is not generic.
+	 * Return the parameterized/generic return type or the normal return type if the method is not generic.
 	 */
 	public UnresolvedType getGenericReturnType() {
 		unpackGenericSignature();
@@ -607,9 +605,8 @@ class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	/**
-	 * Returns whether or not the given object is equivalent to the current one.
-	 * Returns true if getMethod().getCode().getCodeString() are equal. Allows
-	 * for different line number tables.
+	 * Returns whether or not the given object is equivalent to the current one. Returns true if
+	 * getMethod().getCode().getCodeString() are equal. Allows for different line number tables.
 	 */
 	// bug 154054: is similar to equals(Object) however
 	// doesn't require implementing equals in Method and Code
@@ -621,6 +618,23 @@ class BcelMethod extends ResolvedMemberImpl {
 			return false;
 		BcelMethod o = (BcelMethod) other;
 		return getMethod().getCode().getCodeString().equals(o.getMethod().getCode().getCodeString());
+	}
+
+	/**
+	 * Return true if the method represents the default constructor. Hard to determine this from bytecode, but the existence of the
+	 * MethodDeclarationLineNumber attribute should tell us.
+	 * 
+	 * @return true if this BcelMethod represents the default constructor
+	 */
+	public boolean isDefaultConstructor() {
+		boolean mightBe = !hasDeclarationLineNumberInfo() && name.equals("<init>") && parameterTypes.length == 0;
+		if (mightBe) {
+			// TODO would be nice to do a check to see if the file was compiled with javac or ajc?
+			// maybe by checking the constant pool for aspectj strings?
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }
