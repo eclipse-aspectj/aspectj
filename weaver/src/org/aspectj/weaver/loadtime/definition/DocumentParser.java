@@ -43,11 +43,6 @@ public class DocumentParser extends DefaultHandler {
 	 */
 	private final static String DTD_PUBLIC_ID_ALIAS = "-//AspectJ//DTD//EN";
 
-	/**
-	 * A handler to the DTD stream so that we are only using one file descriptor
-	 */
-	private final static InputStream DTD_STREAM = DocumentParser.class.getResourceAsStream("/aspectj_1_5_0.dtd");
-
 	private final static String ASPECTJ_ELEMENT = "aspectj";
 	private final static String WEAVER_ELEMENT = "weaver";
 	private final static String DUMP_ELEMENT = "dump";
@@ -135,7 +130,7 @@ public class DocumentParser extends DefaultHandler {
 
 	public InputSource resolveEntity(String publicId, String systemId) throws SAXException {
 		if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
-			InputStream in = DTD_STREAM;
+			InputStream in = DocumentParser.class.getResourceAsStream("/aspectj_1_5_0.dtd");
 			if (in == null) {
 				System.err.println("AspectJ - WARN - could not read DTD " + publicId);
 				return null;
