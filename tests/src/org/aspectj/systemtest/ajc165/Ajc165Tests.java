@@ -20,6 +20,26 @@ import org.aspectj.weaver.LintMessage;
 
 public class Ajc165Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	// check ITD can replace a generated default constructor
+	public void testItdDefaultCtor_pr275032() {
+		runTest("itd default ctor");
+	}
+
+	// check ITD can't overwrite an existing constructor
+	public void testItdDefaultCtor_pr275032_2() {
+		runTest("itd default ctor - 2");
+	}
+
+	// binary weaving version of case 2 - check ITD can't overwrite an existing constructor
+	public void testItdDefaultCtor_pr275032_3() {
+		runTest("itd default ctor - 3");
+	}
+
+	// binary weaving version of case 4 - check ITD can replace a generated default constructor
+	public void testItdDefaultCtor_pr275032_4() {
+		runTest("itd default ctor - 4");
+	}
+
 	public void testVerifyOnAnnoBind_pr273628() {
 		runTest("verifyerror on anno bind");
 	}
@@ -60,7 +80,7 @@ public class Ajc165Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testGenericITD_pr272825() {
 		runTest("generic ITD");
 	}
-	
+
 	// ---
 
 	public static Test suite() {

@@ -2,6 +2,39 @@
 
 <suite>
 
+   <ajc-test dir="bugs165/pr275032" title="itd default ctor">
+     <compile files="A.java X.java" options="-1.5 -Xlint:ignore"/>
+     <run class="A">
+       <stdout>
+         <line text="itd ctor"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs165/pr275032/c2" title="itd default ctor - 2">
+     <compile files="A.java X.java" options="-1.5 -Xlint:ignore">
+	     <message kind="error" text="inter-type declaration from X conflicts with existing"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs165/pr275032/c2" title="itd default ctor - 3">
+     <compile files="A.java" options="-outjar foo.jar"/>
+     <compile files="X.java" options="-1.5 -Xlint:ignore"  inpath="foo.jar">
+	     <message kind="error" text="inter-type declaration from X conflicts with existing"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs165/pr275032" title="itd default ctor - 4">
+     <compile files="A.java" options="-outjar foo.jar"/>
+     <compile files="X.java" options="-1.5" inpath="foo.jar">
+     </compile>
+     <run class="A">
+       <stdout>
+         <line text="itd ctor"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
    <ajc-test dir="bugs165/pr272233" title="funky pointcut">
      <compile files="Iffy.java" options="-1.5">
        <message kind="warning" text="void is not a generic type"/>
