@@ -397,4 +397,8 @@ public class JoinPointSignature implements ResolvedMember {
 	public String getSignatureErased() {
 		return realMember.getSignatureErased();
 	}
+
+	public boolean isDefaultConstructor() {
+		return realMember.isDefaultConstructor();
+	}
 }

@@ -182,4 +182,6 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 
 	public ResolvedMember parameterizedWith(Map m, World w);
 
+	public boolean isDefaultConstructor();
+
 }

@@ -927,40 +927,33 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			return false;
 		}
 		boolean b = false;
-	/*	if (ignoreGenerics) {
-			String myParameterSignature = getParameterSigWithBoundsRemoved();
-			String candidateParameterSignature = candidateMatchImpl.getParameterSigWithBoundsRemoved();
-			if (myParameterSignature.equals(candidateParameterSignature)) {
-				b = true;
-			} else {
-				myParameterSignature = (hasBackingGenericMember() ? backingGenericMember.getParameterSignatureErased()
-						: getParameterSignatureErased());
-				candidateParameterSignature = (candidateMatchImpl.hasBackingGenericMember() ? candidateMatchImpl.backingGenericMember
-						.getParameterSignatureErased()
-						: candidateMatchImpl.getParameterSignatureErased());
-				// System.out.println("my psig = " + myParameterSignature);
-				// System.out.println("can psig = " + candidateParameterSignature);
-				b = myParameterSignature.equals(candidateParameterSignature);
-			}
+		/*
+		 * if (ignoreGenerics) { String myParameterSignature = getParameterSigWithBoundsRemoved(); String
+		 * candidateParameterSignature = candidateMatchImpl.getParameterSigWithBoundsRemoved(); if
+		 * (myParameterSignature.equals(candidateParameterSignature)) { b = true; } else { myParameterSignature =
+		 * (hasBackingGenericMember() ? backingGenericMember.getParameterSignatureErased() : getParameterSignatureErased());
+		 * candidateParameterSignature = (candidateMatchImpl.hasBackingGenericMember() ? candidateMatchImpl.backingGenericMember
+		 * .getParameterSignatureErased() : candidateMatchImpl.getParameterSignatureErased()); // System.out.println("my psig = " +
+		 * myParameterSignature); // System.out.println("can psig = " + candidateParameterSignature); b =
+		 * myParameterSignature.equals(candidateParameterSignature); } } else {
+		 */
+		String myParameterSignature = getParameterSigWithBoundsRemoved();
+		String candidateParameterSignature = candidateMatchImpl.getParameterSigWithBoundsRemoved();
+		if (myParameterSignature.equals(candidateParameterSignature)) {
+			b = true;
 		} else {
-*/
-			String myParameterSignature = getParameterSigWithBoundsRemoved();
-			String candidateParameterSignature = candidateMatchImpl.getParameterSigWithBoundsRemoved();
-			if (myParameterSignature.equals(candidateParameterSignature)) {
-				b = true;
-			} else {
-				// try erasure
-				myParameterSignature = getParameterSignatureErased();
-				candidateParameterSignature = candidateMatchImpl.getParameterSignatureErased();
-				// myParameterSignature = (hasBackingGenericMember() ? backingGenericMember.getParameterSignatureErased()
-				// : getParameterSignatureErased());
-				// candidateParameterSignature = (candidateMatchImpl.hasBackingGenericMember() ?
-				// candidateMatchImpl.backingGenericMember
-				// .getParameterSignatureErased() : candidateMatchImpl.getParameterSignatureErased());
-				// System.out.println("my psig = " + myParameterSignature);
-				// System.out.println("can psig = " + candidateParameterSignature);
-				b = myParameterSignature.equals(candidateParameterSignature);
-//			}
+			// try erasure
+			myParameterSignature = getParameterSignatureErased();
+			candidateParameterSignature = candidateMatchImpl.getParameterSignatureErased();
+			// myParameterSignature = (hasBackingGenericMember() ? backingGenericMember.getParameterSignatureErased()
+			// : getParameterSignatureErased());
+			// candidateParameterSignature = (candidateMatchImpl.hasBackingGenericMember() ?
+			// candidateMatchImpl.backingGenericMember
+			// .getParameterSignatureErased() : candidateMatchImpl.getParameterSignatureErased());
+			// System.out.println("my psig = " + myParameterSignature);
+			// System.out.println("can psig = " + candidateParameterSignature);
+			b = myParameterSignature.equals(candidateParameterSignature);
+			// }
 		}
 		// System.out.println("Checking param signatures: " + b);
 		return b;
@@ -1181,5 +1174,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 
 	public boolean isEquivalentTo(Object other) {
 		return this.equals(other);
+	}
+
+	public boolean isDefaultConstructor() {
+		return false;
 	}
 }

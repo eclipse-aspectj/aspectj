@@ -1609,9 +1609,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 								}
 							}
 							if (!isDuplicateOfPreviousITD) {
-								getWorld().getMessageHandler().handleMessage(
-										MessageUtil.error(WeaverMessages.format(WeaverMessages.ITD_MEMBER_CONFLICT, munger
-												.getAspectType().getName(), existingMember), munger.getSourceLocation()));
+								// b275032 - this is OK if it is the default ctor and that default ctor was generated
+								// at compile time, otherwise we cannot overwrite it
+								if (!(munger.getSignature().getName().equals("<init>") && existingMember.isDefaultConstructor())) {
+									getWorld().getMessageHandler().handleMessage(
+											MessageUtil.error(WeaverMessages.format(WeaverMessages.ITD_MEMBER_CONFLICT, munger
+													.getAspectType().getName(), existingMember), munger.getSourceLocation()));
+								}
 							}
 						}
 					}
