@@ -15,6 +15,7 @@ import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MemberValuePair;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
@@ -100,6 +101,8 @@ public class EclipseAnnotationConvertor {
 				annotationAJ.addNameValuePair(new AnnotationNameValuePair(new String(
 						singleMemberAnnotation.memberValuePairs()[0].name), av));
 			}
+		} else if (annotation instanceof MarkerAnnotation) {
+			MarkerAnnotation markerAnnotation = (MarkerAnnotation) annotation;
 		} else {
 			// this is a marker annotation (no member value pairs)
 			throw new MissingImplementationException(

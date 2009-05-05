@@ -26,6 +26,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.IntConstant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
@@ -52,6 +53,7 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 	private ResolvedType[] cachedAnnotationTypes;
 	private EclipseFactory eclipseFactory;
 
+	
 	public EclipseResolvedMember(MethodBinding binding, MemberKind memberKind, ResolvedType realDeclaringType, int modifiers,
 			UnresolvedType rettype, String name, UnresolvedType[] paramtypes, UnresolvedType[] extypes,
 			EclipseFactory eclipseFactory) {
@@ -233,6 +235,21 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 			}
 		}
 		return null;
+	}
+
+    /**
+     * Return true if this is the default constructor.  The default constructor
+     * is the one generated if there isn't one in the source.  Eclipse
+     * helpfully uses a bit to indicate the default constructor.
+     *
+     * @return true if this is the default constructor. 
+     */
+	public boolean isDefaultConstructor() {
+		if (!(realBinding instanceof MethodBinding)) {
+			return false;
+		}
+		MethodBinding mb = (MethodBinding) realBinding;
+		return mb.isConstructor() && ((mb.modifiers & ExtraCompilerModifiers.AccIsDefaultConstructor) != 0);
 	}
 
 }
