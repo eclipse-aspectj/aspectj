@@ -69,10 +69,9 @@ import org.aspectj.weaver.bcel.asm.AsmDetector;
 import org.aspectj.weaver.bcel.asm.StackMapAdder;
 
 /**
- * Lazy lazy lazy. We don't unpack the underlying class unless necessary. Things
- * like new methods and annotations accumulate in here until they must be
- * written out, don't add them to the underlying MethodGen! Things are slightly
- * different if this represents an Aspect.
+ * Lazy lazy lazy. We don't unpack the underlying class unless necessary. Things like new methods and annotations accumulate in here
+ * until they must be written out, don't add them to the underlying MethodGen! Things are slightly different if this represents an
+ * Aspect.
  */
 public final class LazyClassGen {
 
@@ -354,8 +353,7 @@ public final class LazyClassGen {
 	}
 
 	/**
-	 * Returns the packagename - if its the default package we return an empty
-	 * string
+	 * Returns the packagename - if its the default package we return an empty string
 	 */
 	public String getPackageName() {
 		if (packageName != null)
@@ -375,6 +373,10 @@ public final class LazyClassGen {
 		methodGens.add(gen);
 		if (highestLineNumber < gen.highestLineNumber)
 			highestLineNumber = gen.highestLineNumber;
+	}
+
+	public boolean removeMethodGen(LazyMethodGen gen) {
+		return methodGens.remove(gen);
 	}
 
 	public void addMethodGen(LazyMethodGen gen, ISourceLocation sourceLocation) {
@@ -446,7 +448,7 @@ public final class LazyClassGen {
 				myGen.addAnnotation(element);
 			}
 			// Attribute[] annAttributes =
-			//org.aspectj.apache.bcel.classfile.Utility.getAnnotationAttributes(
+			// org.aspectj.apache.bcel.classfile.Utility.getAnnotationAttributes(
 			// getConstantPool(),annotations);
 			// for (int i = 0; i < annAttributes.length; i++) {
 			// Attribute attribute = annAttributes[i];
@@ -514,20 +516,17 @@ public final class LazyClassGen {
 	}
 
 	/**
-	 * When working with Java generics, a signature attribute is attached to the
-	 * type which indicates how it was declared. This routine ensures the
-	 * signature attribute for the class we are about to write out is correct.
-	 * Basically its responsibilities are:
+	 * When working with Java generics, a signature attribute is attached to the type which indicates how it was declared. This
+	 * routine ensures the signature attribute for the class we are about to write out is correct. Basically its responsibilities
+	 * are:
 	 * <ol>
 	 * <li>
-	 * Checking whether the attribute needs changing (ie. did weaving change the
-	 * type hierarchy) - if it did, remove the old attribute
+	 * Checking whether the attribute needs changing (ie. did weaving change the type hierarchy) - if it did, remove the old
+	 * attribute
 	 * <li>
-	 * Check if we need an attribute at all, are we generic? are our supertypes
-	 * parameterized/generic?
+	 * Check if we need an attribute at all, are we generic? are our supertypes parameterized/generic?
 	 * <li>
-	 * Build the new attribute which includes all typevariable, supertype and
-	 * superinterface information
+	 * Build the new attribute which includes all typevariable, supertype and superinterface information
 	 * </ol>
 	 */
 	private void fixupGenericSignatureAttribute() {
@@ -634,8 +633,7 @@ public final class LazyClassGen {
 	}
 
 	/**
-	 * Helper method to create a signature attribute based on a string
-	 * signature: e.g. "Ljava/lang/Object;LI<Ljava/lang/Double;>;"
+	 * Helper method to create a signature attribute based on a string signature: e.g. "Ljava/lang/Object;LI<Ljava/lang/Double;>;"
 	 */
 	private Signature createSignatureAttribute(String signature) {
 		int nameIndex = cp.addUtf8("Signature");
@@ -1402,7 +1400,7 @@ public final class LazyClassGen {
 
 	// this test is like asking:
 	// if
-	//(UnresolvedType.SERIALIZABLE.resolve(getType().getWorld()).isAssignableFrom
+	// (UnresolvedType.SERIALIZABLE.resolve(getType().getWorld()).isAssignableFrom
 	// (getType())) {
 	// only we don't do that because this forces us to find all the supertypes
 	// of the type,
@@ -1432,8 +1430,8 @@ public final class LazyClassGen {
 	}
 
 	/**
-	 * Return the next available field name with the specified 'prefix', e.g.
-	 * for prefix 'class$' where class$0, class$1 exist then return class$2
+	 * Return the next available field name with the specified 'prefix', e.g. for prefix 'class$' where class$0, class$1 exist then
+	 * return class$2
 	 */
 	public String allocateField(String prefix) {
 		int highestAllocated = -1;
