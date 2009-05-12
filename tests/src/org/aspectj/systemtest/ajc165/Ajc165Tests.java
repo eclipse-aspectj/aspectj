@@ -20,6 +20,14 @@ import org.aspectj.weaver.LintMessage;
 
 public class Ajc165Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testDecAnnoMethod_pr275625() {
+		runTest("dec anno method");
+	}
+
+	public void testDecAnnoField_pr275625() {
+		runTest("dec anno field");
+	}
+
 	// check ITD can replace a generated default constructor
 	public void testItdDefaultCtor_pr275032() {
 		runTest("itd default ctor");

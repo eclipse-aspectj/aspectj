@@ -2,6 +2,14 @@
 
 <suite>
 
+   <ajc-test dir="bugs165/pr275625" title="dec anno method">
+     <compile files="A.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs165/pr275625" title="dec anno field">
+     <compile files="F.java" options="-1.5"/>
+   </ajc-test>
+   
    <ajc-test dir="bugs165/pr275032" title="itd default ctor">
      <compile files="A.java X.java" options="-1.5 -Xlint:ignore"/>
      <run class="A">
