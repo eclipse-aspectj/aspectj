@@ -861,8 +861,7 @@ class BcelClassWeaver implements IClassWeaver {
 						if (decaM.matches(mg.getMemberView(), world)) {
 							if (doesAlreadyHaveAnnotation(mg.getMemberView(), decaM, reportedProblems)) {
 								// remove the declare @method since don't want
-								// an error when
-								// the annotation is already there
+								// an error when the annotation is already there
 								unusedDecams.remove(decaM);
 								continue; // skip this one...
 							}
@@ -908,15 +907,13 @@ class BcelClassWeaver implements IClassWeaver {
 									continue; // skip this one...
 								}
 
-								if (annotationsToAdd == null)
+								if (annotationsToAdd == null) {
 									annotationsToAdd = new ArrayList();
+								}
 								AnnotationGen a = ((BcelAnnotation) decaM.getAnnotationX()).getBcelAnnotation();
-								// CUSTARD superfluous?
-								// AnnotationGen ag = new
-								// AnnotationGen(a,clazz.getConstantPool
-								// (),true);
-								annotationsToAdd.add(a);
-
+								// create copy to get the annotation type into the right constant pool
+								AnnotationGen ag = new AnnotationGen(a, clazz.getConstantPool(), true);
+								annotationsToAdd.add(ag);
 								mg.addAnnotation(decaM.getAnnotationX());
 								AsmRelationshipProvider.addDeclareAnnotationMethodRelationship(decaM.getSourceLocation(), clazz
 										.getName(), mg.getMemberView(), world.getModelAsAsmManager());// getMethod());
@@ -932,18 +929,7 @@ class BcelClassWeaver implements IClassWeaver {
 					}
 					if (annotationsToAdd != null) {
 						Method oldMethod = mg.getMethod();
-						MethodGen myGen = new MethodGen(oldMethod, clazz.getClassName(), clazz.getConstantPool(), false);// dont
-						// use
-						// tags,
-						// they
-						// won't
-						// get
-						// repaired
-						// like
-						// for
-						// woven
-						// methods
-						// .
+						MethodGen myGen = new MethodGen(oldMethod, clazz.getClassName(), clazz.getConstantPool(), false);
 						for (Iterator iter = annotationsToAdd.iterator(); iter.hasNext();) {
 							AnnotationGen a = (AnnotationGen) iter.next();
 							myGen.addAnnotation(a);
@@ -2045,7 +2031,7 @@ class BcelClassWeaver implements IClassWeaver {
 	 * 
 	 * @param donor the method from which we will copy (and adjust frame and jumps) instructions.
 	 * @param recipient the method the instructions will go into. Used to get the frame size so we can allocate new frame locations
-	 *            for locals in donor.
+	 *        for locals in donor.
 	 * @param frameEnv an environment to map from donor frame to recipient frame, initially populated with argument locations.
 	 * @param fact an instruction factory for recipient
 	 */
