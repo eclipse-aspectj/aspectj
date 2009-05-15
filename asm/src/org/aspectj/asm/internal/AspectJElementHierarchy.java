@@ -210,6 +210,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 			return Collections.EMPTY_LIST;
 		}
 		if (((IProgramElement) children.get(0)).getKind() == IProgramElement.Kind.SOURCE_FOLDER) {
+			String searchPackageName = (packagename == null ? "" : packagename); // default package means match on ""
 			// dealing with source folders
 			List matchingPackageNodes = new ArrayList();
 			for (Iterator iterator = children.iterator(); iterator.hasNext();) {
@@ -218,7 +219,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 				for (Iterator iterator2 = possiblePackageNodes.iterator(); iterator2.hasNext();) {
 					IProgramElement possiblePackageNode = (IProgramElement) iterator2.next();
 					if (possiblePackageNode.getKind() == IProgramElement.Kind.PACKAGE) {
-						if (possiblePackageNode.getName().equals(packagename)) {
+						if (possiblePackageNode.getName().equals(searchPackageName)) {
 							matchingPackageNodes.add(possiblePackageNode);
 						}
 					}
