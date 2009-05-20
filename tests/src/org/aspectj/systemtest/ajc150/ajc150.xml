@@ -1246,6 +1246,8 @@
         <compile files="p2/pr99125.aj,p/I.java,p/J.java"/> <!-- actually in package p, introduces incompatible change -->
         <compile files="Aspects.aj" options="-inpath p">
             <message kind="error" line="7" text="inter-type declaration from X conflicts with existing member"/>
+            <!-- 275032 - new error at affected member location too -->
+            <message kind="error" line="10" text="inter-type declaration from X conflicts with existing member"/>
         </compile>
     </ajc-test>
     

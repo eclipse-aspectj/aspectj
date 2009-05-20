@@ -337,6 +337,8 @@
 			<message kind="error" line="5" text="conflicts with existing member"/>
 			<message kind="error" line="10" text="conflicts with existing member"/>
 			<message kind="error" line="14" text="conflicts with existing member"/>
+			<!-- new error expected due to 275032 change - the itd for the ctor will be ignored in the clash case -->
+			<message kind="error" line="41" text="The constructor A() is not visible"/>
 		</compile>
 	</ajc-test>
 
