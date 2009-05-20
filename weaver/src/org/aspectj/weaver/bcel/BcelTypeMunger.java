@@ -1542,7 +1542,6 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			} else {
 				annotationsOnRealMember = realMember.getAnnotations();
 			}
-			annotationsOnRealMember = realMember.getAnnotations();
 			if (annotationsOnRealMember != null) {
 				for (int i = 0; i < annotationsOnRealMember.length; i++) {
 					AnnotationAJ annotationX = annotationsOnRealMember[i];
