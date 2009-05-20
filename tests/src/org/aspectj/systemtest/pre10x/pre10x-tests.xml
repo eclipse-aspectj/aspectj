@@ -497,6 +497,8 @@
             <message kind="error" line="22"/>
             <message kind="error" line="27"/>
             <message kind="error" line="30"/>
+            <!-- new error due to 275032 - other end of itd clash has error recorded against it -->
+            <message kind="error" line="7"/>
         </compile>
     </ajc-test>
 
