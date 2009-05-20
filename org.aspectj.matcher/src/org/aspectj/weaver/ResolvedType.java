@@ -1466,18 +1466,22 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// System.err.println("add: " + munger + " to " + this.getClassName() +
 		// " with " + interTypeMungers);
 		if (sig.getKind() == Member.METHOD) {
-			if (!compareToExistingMembers(munger, getMethodsWithoutIterator(false, true) /* getMethods() */))
+			if (clashesWithExistingMember(munger, getMethodsWithoutIterator(false, true))) {
 				return;
+			}
 			if (this.isInterface()) {
-				if (!compareToExistingMembers(munger, Arrays.asList(world.getCoreType(OBJECT).getDeclaredMethods()).iterator()))
+				if (clashesWithExistingMember(munger, Arrays.asList(world.getCoreType(OBJECT).getDeclaredMethods()).iterator())) {
 					return;
+				}
 			}
 		} else if (sig.getKind() == Member.FIELD) {
-			if (!compareToExistingMembers(munger, Arrays.asList(getDeclaredFields()).iterator()))
+			if (clashesWithExistingMember(munger, Arrays.asList(getDeclaredFields()).iterator())) {
 				return;
+			}
 		} else {
-			if (!compareToExistingMembers(munger, Arrays.asList(getDeclaredMethods()).iterator()))
+			if (clashesWithExistingMember(munger, Arrays.asList(getDeclaredMethods()).iterator())) {
 				return;
+			}
 		}
 
 		// now compare to existingMungers
@@ -1517,13 +1521,18 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		interTypeMungers.add(munger);
 	}
 
-	private boolean compareToExistingMembers(ConcreteTypeMunger munger, List existingMembersList) {
-		return compareToExistingMembers(munger, existingMembersList.iterator());
+	private boolean clashesWithExistingMember(ConcreteTypeMunger munger, List existingMembersList) {
+		return clashesWithExistingMember(munger, existingMembersList.iterator());
 	}
 
-	// ??? returning too soon
-	private boolean compareToExistingMembers(ConcreteTypeMunger munger, Iterator existingMembers) {
-		ResolvedMember sig = munger.getSignature();
+	/**
+	 * Compare the type transformer with the existing members. A clash may not be an error (the ITD may be the 'default
+	 * implementation') so returning false is not always a sign of an error.
+	 * 
+	 * @return true if there is a clash
+	 */
+	private boolean clashesWithExistingMember(ConcreteTypeMunger typeTransformer, Iterator existingMembers) {
+		ResolvedMember typeTransformerSignature = typeTransformer.getSignature();
 
 		// ResolvedType declaringAspectType = munger.getAspectType();
 		// if (declaringAspectType.isRawType()) declaringAspectType =
@@ -1547,39 +1556,36 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// filled in
 		// }
 		while (existingMembers.hasNext()) {
-
 			ResolvedMember existingMember = (ResolvedMember) existingMembers.next();
 			// don't worry about clashing with bridge methods
-			if (existingMember.isBridgeMethod())
+			if (existingMember.isBridgeMethod()) {
 				continue;
-			// System.err.println("Comparing munger: "+sig+" with member "+
-			// existingMember);
-			if (conflictingSignature(existingMember, munger.getSignature())) {
+			}
+			if (conflictingSignature(existingMember, typeTransformerSignature)) {
 				// System.err.println("conflict: existingMember=" +
 				// existingMember + "   typeMunger=" + munger);
 				// System.err.println(munger.getSourceLocation() + ", " +
 				// munger.getSignature() + ", " +
 				// munger.getSignature().getSourceLocation());
 
-				if (isVisible(existingMember.getModifiers(), this, munger.getAspectType())) {
-					int c = compareMemberPrecedence(sig, existingMember);
+				if (isVisible(existingMember.getModifiers(), this, typeTransformer.getAspectType())) {
+					int c = compareMemberPrecedence(typeTransformerSignature, existingMember);
 					// System.err.println("   c: " + c);
 					if (c < 0) {
 						// existingMember dominates munger
-						checkLegalOverride(munger.getSignature(), existingMember);
-						return false;
+						checkLegalOverride(typeTransformerSignature, existingMember);
+						return true;
 					} else if (c > 0) {
 						// munger dominates existingMember
-						checkLegalOverride(existingMember, munger.getSignature());
+						checkLegalOverride(existingMember, typeTransformerSignature);
 						// interTypeMungers.add(munger);
 						// ??? might need list of these overridden abstracts
 						continue;
 					} else {
 						// bridge methods can differ solely in return type.
-						// FIXME this whole method seems very hokey - unaware of
-						// covariance/varargs/bridging - it
+						// FIXME this whole method seems very hokey - unaware of covariance/varargs/bridging - it
 						// could do with a rewrite !
-						boolean sameReturnTypes = (existingMember.getReturnType().equals(sig.getReturnType()));
+						boolean sameReturnTypes = (existingMember.getReturnType().equals(typeTransformerSignature.getReturnType()));
 						if (sameReturnTypes) {
 							// pr206732 - if the existingMember is due to a
 							// previous application of this same ITD (which can
@@ -1602,7 +1608,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 										// and does it come
 										// from the same aspect
 										if (ctMunger.getSignature().equals(existingMember)
-												&& ctMunger.aspectType.equals(munger.getAspectType())) {
+												&& ctMunger.aspectType.equals(typeTransformer.getAspectType())) {
 											isDuplicateOfPreviousITD = true;
 										}
 									}
@@ -1611,24 +1617,39 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 							if (!isDuplicateOfPreviousITD) {
 								// b275032 - this is OK if it is the default ctor and that default ctor was generated
 								// at compile time, otherwise we cannot overwrite it
-								if (!(munger.getSignature().getName().equals("<init>") && existingMember.isDefaultConstructor())) {
-									getWorld().getMessageHandler().handleMessage(
-											MessageUtil.error(WeaverMessages.format(WeaverMessages.ITD_MEMBER_CONFLICT, munger
-													.getAspectType().getName(), existingMember), munger.getSourceLocation()));
+								if (!(typeTransformerSignature.getName().equals("<init>") && existingMember.isDefaultConstructor())) {
+									String aspectName = typeTransformer.getAspectType().getName();
+									ISourceLocation typeTransformerLocation = typeTransformer.getSourceLocation();
+									ISourceLocation existingMemberLocation = existingMember.getSourceLocation();
+									IMessage errorMessage = null;
+									String msg = WeaverMessages.format(WeaverMessages.ITD_MEMBER_CONFLICT, aspectName,
+											existingMember);
+
+									// this isn't quite right really... as I think the errors should only be recorded against
+									// what is currently being processed or they may get lost or reported twice
+
+									// report error on the aspect
+									getWorld().getMessageHandler().handleMessage(new Message(msg, typeTransformerLocation, true));
+
+									// report error on the affected type, if we can
+									if (existingMemberLocation != null) {
+										getWorld().getMessageHandler()
+												.handleMessage(new Message(msg, existingMemberLocation, true));
+									}
+									return true; // clash - so ignore this itd
 								}
 							}
 						}
 					}
-				} else if (isDuplicateMemberWithinTargetType(existingMember, this, sig)) {
+				} else if (isDuplicateMemberWithinTargetType(existingMember, this, typeTransformerSignature)) {
 					getWorld().getMessageHandler().handleMessage(
-							MessageUtil.error(WeaverMessages.format(WeaverMessages.ITD_MEMBER_CONFLICT, munger.getAspectType()
-									.getName(), existingMember), munger.getSourceLocation()));
-
+							MessageUtil.error(WeaverMessages.format(WeaverMessages.ITD_MEMBER_CONFLICT, typeTransformer
+									.getAspectType().getName(), existingMember), typeTransformer.getSourceLocation()));
+					return true;
 				}
-				// return;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	// we know that the member signature matches, but that the member in the
