@@ -730,7 +730,7 @@ public class ReferenceType extends ResolvedType {
 	}
 
 	public UnresolvedType getRawType() {
-		return super.getRawType().resolve(getWorld());
+		return super.getRawType().resolve(world);
 	}
 
 	public TypeVariable[] getTypeVariables() {
