@@ -91,8 +91,10 @@ public class TypeFactory {
 	 * @return
 	 */
 	public static UnresolvedType createTypeFromSignature(String signature) {
-		if (signature.equals(ResolvedType.MISSING_NAME))
+		if (signature.equals(ResolvedType.MISSING_NAME)) {
 			return ResolvedType.MISSING;
+		}
+
 		char firstChar = signature.charAt(0);
 		if (firstChar == 'P') {
 			// parameterized type, calculate signature erasure and type parameters
