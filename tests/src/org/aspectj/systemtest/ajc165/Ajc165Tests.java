@@ -20,6 +20,14 @@ import org.aspectj.weaver.LintMessage;
 
 public class Ajc165Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testIfNames_pr277508() {
+		runTest("if method names");
+	}
+
+	public void testIfNames_pr277508_2() {
+		runTest("if method names - 2");
+	}
+
 	public void testDecAnnoMethod_pr275625() {
 		runTest("dec anno method");
 	}

@@ -2,6 +2,28 @@
 
 <suite>
 
+   <ajc-test dir="bugs165/pr277508" title="if method names">
+     <compile files="Basic.java" options="-1.5"/>
+     <run class="Basic">
+       <stdout>
+         <line text="if method: public static final boolean X.ajc$if$1ba()"/>
+         <line text="if method: public static final boolean X.ajc$if$177()"/>
+         <line text="if method: public static final boolean X.ajc$if$165()"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs165/pr277508" title="if method names - 2">
+     <compile files="Basic2.java" options="-1.5"/>
+     <run class="Basic2">
+       <stdout>
+         <line text="if method: public static final boolean X.ajc$if$16d()"/>
+         <line text="if method: public static final boolean X.ajc$if$17f()"/>
+         <line text="if method: public static final boolean X.ajc$if$1c0()"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
    <ajc-test dir="bugs165/pr275625" title="dec anno method">
      <compile files="A.java" options="-1.5"/>
    </ajc-test>
