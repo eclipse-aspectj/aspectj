@@ -19,6 +19,7 @@ public class NameMangler {
 	// public static final char[] AJC_DOLLAR_PREFIX = { 'a', 'j', 'c', '$' };
 	// public static final char[] CLINIT = { '<', 'c', 'l', 'i', 'n', 'i', 't', '>' };
 	public static final String PREFIX = "ajc$";
+	public static final char[] PREFIX_CHARS = "ajc$".toCharArray();
 	// public static final char[] INIT = { '<', 'i', 'n', 'i', 't', '>' };
 	public static final String ITD_PREFIX = PREFIX + "interType$";
 	// public static final char[] METHOD_ASPECTOF = {'a', 's', 'p','e','c','t','O','f'};
