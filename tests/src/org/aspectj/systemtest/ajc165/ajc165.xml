@@ -2,6 +2,11 @@
 
 <suite>
 
+   <ajc-test dir="bugs165/pr277959" title="verifyerror">
+     <compile files="AOPTest.java  CodeAspect.java" options="-1.5"/>
+     <run class="example.AOPTest"/>
+   </ajc-test>
+   
    <ajc-test dir="bugs165/pr277508" title="if method names">
      <compile files="Basic.java" options="-1.5"/>
      <run class="Basic">

@@ -20,6 +20,10 @@ import org.aspectj.weaver.LintMessage;
 
 public class Ajc165Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testVerifyError_pr277959() {
+		runTest("verifyerror");
+	}
+
 	public void testIfNames_pr277508() {
 		runTest("if method names");
 	}
