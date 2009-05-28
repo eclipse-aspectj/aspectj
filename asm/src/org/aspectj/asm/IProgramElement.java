@@ -383,6 +383,10 @@ public interface IProgramElement extends Serializable {
 			return name.startsWith("declare @");
 		}
 
+		public boolean isDeclareParents() {
+			return name.startsWith("declare parents");
+		}
+
 		// The 4 declarations below are necessary for serialization
 		private static int nextOrdinal = 0;
 		private final int ordinal = nextOrdinal++;
@@ -397,5 +401,6 @@ public interface IProgramElement extends Serializable {
 	}
 
 	public void setAnnotationStyleDeclaration(boolean b);
+
 	public boolean isAnnotationStyleDeclaration();
 }

@@ -299,8 +299,9 @@ public class ProgramElement implements IProgramElement {
 
 	public String getBytecodeName() {
 		String s = (String) kvpairs.get("bytecodeName");
-		if (s == null)
+		if (s == null) {
 			return UNDEFINED;
+		}
 		return s;
 	}
 
@@ -648,10 +649,10 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public boolean isAnnotationStyleDeclaration() {
-		return kvpairs.get("annotationStyleDeclaration")!=null;
+		return kvpairs.get("annotationStyleDeclaration") != null;
 	}
 
-	public void setAnnotationStyleDeclaration(boolean b) {		
+	public void setAnnotationStyleDeclaration(boolean b) {
 		if (b) {
 			if (kvpairs == Collections.EMPTY_MAP) {
 				kvpairs = new HashMap();

@@ -158,7 +158,34 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 		// TODO could optimize this code
 		char[] byteCodeName = ipe.getBytecodeName().toCharArray();
 
-		if (ipe.getKind().isDeclare()) {
+		if (ipe.getKind().isDeclareAnnotation()) {
+			// look at peer declares
+			int count = 1;
+			List kids = ipe.getParent().getChildren();
+			int idx = 0;
+			for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
+				IProgramElement object = (IProgramElement) iterator.next();
+				if (object.equals(ipe)) {
+					break;
+				}
+				if (object.getKind() == ipe.getKind()) {
+					if (object.getKind().toString().equals(ipe.getKind().toString())) {
+						String existingHandle = object.getHandleIdentifier();
+						int suffixPosition = existingHandle.indexOf('!');
+						if (suffixPosition != -1) {
+							count = new Integer(existingHandle.substring(suffixPosition + 1)).intValue() + 1;
+						} else {
+							if (count == 1) {
+								count = 2;
+							}
+						}
+					}
+				}
+			}
+			if (count > 1) {
+				return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
+			}
+		} else if (ipe.getKind().isDeclare()) {
 			int index = CharOperation.lastIndexOf('_', byteCodeName);
 			if (index != -1) {
 				return convertCount(CharOperation.subarray(byteCodeName, index + 1, byteCodeName.length));
@@ -184,23 +211,22 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 						if (sig1 != null && (idx = sig1.indexOf(")")) != -1) {
 							sig1 = sig1.substring(0, idx);
 						}
-						// this code needs a speed overhaul...  and some proper tests
+						// this code needs a speed overhaul... and some proper tests
 						// Two static parts because one may be enclosing jpsp (269522)
-						if (sig1!=null) {
-							if (sig1.indexOf("Lorg/aspectj/lang")!=-1) {
+						if (sig1 != null) {
+							if (sig1.indexOf("Lorg/aspectj/lang") != -1) {
 								if (sig1.endsWith("Lorg/aspectj/lang/JoinPoint$StaticPart;")) {
-									sig1 = sig1.substring(0,sig1.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
+									sig1 = sig1.substring(0, sig1.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
 								}
 								if (sig1.endsWith("Lorg/aspectj/lang/JoinPoint;")) {
-									sig1 = sig1.substring(0,sig1.lastIndexOf("Lorg/aspectj/lang/JoinPoint;"));
+									sig1 = sig1.substring(0, sig1.lastIndexOf("Lorg/aspectj/lang/JoinPoint;"));
 								}
 								if (sig1.endsWith("Lorg/aspectj/lang/JoinPoint$StaticPart;")) {
-									sig1 = sig1.substring(0,sig1.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
+									sig1 = sig1.substring(0, sig1.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
 								}
 							}
 						}
-						
-						
+
 						if (sig1 == null && ipeSig == null || (sig1 != null && sig1.equals(ipeSig))) {
 							String existingHandle = object.getHandleIdentifier();
 							int suffixPosition = existingHandle.indexOf('!');
