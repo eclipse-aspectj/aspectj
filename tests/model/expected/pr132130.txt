@@ -12,10 +12,10 @@
       Secured  [annotation] TEST_SANDBOX\pr132130.aj:15:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
-(targets=1) <*pr132130.aj[BankAccount~BankAccount~QString;~I (annotated by) <*pr132130.aj}basic`declare \@constructor!2
-(targets=1) <*pr132130.aj}basic`declare \@method (annotates) <*pr132130.aj[BankAccount~debit~J~J
-(targets=1) <*pr132130.aj}basic`declare \@constructor!2 (annotates) <*pr132130.aj[BankAccount~BankAccount~QString;~I
+(targets=1) <*pr132130.aj}basic`declare \@constructor (annotates) <*pr132130.aj[BankAccount~BankAccount~QString;~I
 (targets=1) <*pr132130.aj[BankAccount~debit~J~J (annotated by) <*pr132130.aj}basic`declare \@method
+(targets=1) <*pr132130.aj}basic`declare \@method (annotates) <*pr132130.aj[BankAccount~debit~J~J
+(targets=1) <*pr132130.aj[BankAccount~BankAccount~QString;~I (annotated by) <*pr132130.aj}basic`declare \@constructor
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 method=1
