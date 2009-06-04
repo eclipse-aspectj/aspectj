@@ -133,21 +133,21 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 		// AJDT: =AJHandleProject/src<pkg*A.aj}A`declare \@field
 		runTest("declare @field");
 		compareHandles(IProgramElement.Kind.DECLARE_ANNOTATION_AT_FIELD, "declare @field: int pkg.C.someField : @MyAnnotation",
-				"<pkg*A12.aj}A`declare \\@field!2");
+				"<pkg*A12.aj}A`declare \\@field");
 	}
 
 	public void testDeclareAtMethod() {
 		// AJDT: =AJHandleProject/src<pkg*A.aj}A`declare \@method
 		runTest("declare @method");
 		compareHandles(IProgramElement.Kind.DECLARE_ANNOTATION_AT_METHOD,
-				"declare @method: public void pkg.C.method1() : @MyAnnotation", "<pkg*A12.aj}A`declare \\@method!3");
+				"declare @method: public void pkg.C.method1() : @MyAnnotation", "<pkg*A12.aj}A`declare \\@method");
 	}
 
 	public void testDeclareAtConstructor() {
 		// AJDT: =AJHandleProject/src<pkg*A.aj}A`declare \@constructor
 		runTest("declare @constructor");
 		compareHandles(IProgramElement.Kind.DECLARE_ANNOTATION_AT_CONSTRUCTOR, "declare @constructor: pkg.C.new() : @MyAnnotation",
-				"<pkg*A12.aj}A`declare \\@constructor!4");
+				"<pkg*A12.aj}A`declare \\@constructor");
 	}
 
 	// what about 2 pieces of before advice with the same
