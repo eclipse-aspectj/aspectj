@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.aspectj.apache.bcel.classfile.AttributeUtils;
 import org.aspectj.apache.bcel.classfile.Field;
@@ -28,9 +29,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValueGen;
 import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
 import org.aspectj.apache.bcel.classfile.annotation.EnumElementValueGen;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
@@ -609,16 +608,14 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		// @Target annotation hasn't been used
 		List targetKinds = new ArrayList();
 		if (isAnnotation()) {
-			AnnotationGen[] annotationsOnThisType = javaClass.getAnnotations();
+			AnnotationAJ[] annotationsOnThisType = getAnnotations();
 			for (int i = 0; i < annotationsOnThisType.length; i++) {
-				AnnotationGen a = annotationsOnThisType[i];
+				AnnotationAJ a = annotationsOnThisType[i];
 				if (a.getTypeName().equals(UnresolvedType.AT_TARGET.getName())) {
-					ArrayElementValueGen arrayValue = (ArrayElementValueGen) ((ElementNameValuePairGen) a.getValues().get(0))
-							.getValue();
-					ElementValueGen[] evs = arrayValue.getElementValuesArray();
-					if (evs != null) {
-						for (int j = 0; j < evs.length; j++) {
-							String targetKind = ((EnumElementValueGen) evs[j]).getEnumValueString();
+					Set targets = a.getTargets();
+					if (targets != null) {
+						for (Iterator iterator = targets.iterator(); iterator.hasNext();) {
+							String targetKind = (String) iterator.next();
 							if (targetKind.equals("ANNOTATION_TYPE")) {
 								targetKinds.add(AnnotationTargetKind.ANNOTATION_TYPE);
 							} else if (targetKind.equals("CONSTRUCTOR")) {
