@@ -1106,9 +1106,17 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				} else {
 					outFile = new File(destinationPath, filename).getPath();
 				}
-				BufferedOutputStream os = FileUtil.makeOutputStream(new File(outFile));
-				os.write(classFile.getBytes());
-				os.close();
+
+				try {
+					BufferedOutputStream os = FileUtil.makeOutputStream(new File(outFile));
+					os.write(classFile.getBytes());
+					os.close();
+				} catch (FileNotFoundException fnfe) {
+					IMessage msg = new Message("unable to write out class file: '" + filename + "' - reason: " + fnfe.getMessage(),
+							IMessage.ERROR, null, new SourceLocation(new File(outFile), 0));
+					handler.handleMessage(msg);
+				}
+
 				if (buildConfig.getCompilationResultDestinationManager() != null) {
 					buildConfig.getCompilationResultDestinationManager().reportFileWrite(outFile,
 							CompilationResultDestinationManager.FILETYPE_CLASS);
