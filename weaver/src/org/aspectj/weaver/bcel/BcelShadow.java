@@ -3150,7 +3150,7 @@ public class BcelShadow extends Shadow {
 
 		if (thisVar != null) {
 			UnresolvedType thisType = getThisType();
-			parameterNames.add(0, "this");
+			parameterNames.add(0, "ajc$this");
 			shadowParameterTypes = addTypeToFront(BcelWorld.makeBcelType(thisType), shadowParameterTypes);
 		}
 
@@ -3160,7 +3160,11 @@ public class BcelShadow extends Shadow {
 			String[] pnames = getSignature().getParameterNames(world);
 			if (pnames != null) {
 				for (int i = 0; i < pnames.length; i++) {
-					parameterNames.add(pnames[i]);
+					if (i == 0 && pnames[i].equals("this")) {
+						parameterNames.add("ajc$this");
+					} else {
+						parameterNames.add(pnames[i]);
+					}
 				}
 			}
 		}
