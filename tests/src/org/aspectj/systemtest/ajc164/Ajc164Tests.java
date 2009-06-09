@@ -244,7 +244,7 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		LocalVariable[] lvt = m.getLocalVariableTable().getLocalVariableTable();
 		assertEquals(7, lvt.length); // no aroundClosure compared to second
 		// version of this test
-		assertEquals("LService; this(0) start=0 len=86", stringify(m.getLocalVariableTable(), 0));
+		assertEquals("LService; ajc$this(0) start=0 len=86", stringify(m.getLocalVariableTable(), 0));
 		assertEquals("J l(1) start=0 len=86", stringify(m.getLocalVariableTable(), 1));
 		assertEquals("Lorg/aspectj/lang/JoinPoint; thisJoinPoint(3) start=0 len=86", stringify(m.getLocalVariableTable(), 2));
 		assertEquals("LServiceInterceptor; ajc$aspectInstance(4) start=0 len=86", stringify(m.getLocalVariableTable(), 3));
@@ -266,7 +266,7 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		// private static final void method_aroundBody1$advice(Service, long,
 		// JoinPoint, ServiceInterceptorCodeStyle, AroundClosure,
 		// JoinPoint);
-		assertEquals("LService; this(0) start=0 len=68", stringify(m.getLocalVariableTable(), 0));
+		assertEquals("LService; ajc$this(0) start=0 len=68", stringify(m.getLocalVariableTable(), 0));
 		assertEquals("J l(1) start=0 len=68", stringify(m.getLocalVariableTable(), 1));
 		assertEquals("Lorg/aspectj/lang/JoinPoint; thisJoinPoint(3) start=0 len=68", stringify(m.getLocalVariableTable(), 2));
 		assertEquals("LServiceInterceptorCodeStyle; ajc$aspectInstance(4) start=0 len=68", stringify(m.getLocalVariableTable(), 3));
@@ -311,7 +311,7 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		lvt = m.getLocalVariableTable();
 		assertNotNull(lvt);
 
-		assertEquals("LC; this(0) start=0 len=0", stringify(lvt, 0));
+		assertEquals("LC; ajc$this(0) start=0 len=0", stringify(lvt, 0));
 		assertEquals("LI; target(1) start=0 len=0", stringify(lvt, 1));
 		assertEquals("Ljava/lang/String; s(2) start=0 len=0", stringify(lvt, 2));
 		assertEquals("I i(3) start=0 len=0", stringify(lvt, 3));
@@ -325,7 +325,7 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		lvt = m.getLocalVariableTable();
 		assertNotNull(lvt);
 
-		assertEquals("LC; this(0) start=0 len=0", stringify(lvt, 0));
+		assertEquals("LC; ajc$this(0) start=0 len=0", stringify(lvt, 0));
 		assertEquals("J l(1) start=0 len=0", stringify(lvt, 1));
 		assertEquals("I i(3) start=0 len=0", stringify(lvt, 2));
 		assertEquals("[Ljava/lang/String; ss(4) start=0 len=0", stringify(lvt, 3));
