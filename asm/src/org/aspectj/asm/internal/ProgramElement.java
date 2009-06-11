@@ -553,7 +553,11 @@ public class ProgramElement implements IProgramElement {
 			if (asm == null && name.equals("<build to view structure>")) {
 				handle = "<build to view structure>";
 			} else {
-				handle = asm.getHandleProvider().createHandleIdentifier(this);
+				try {
+					handle = asm.getHandleProvider().createHandleIdentifier(this);
+				} catch (ArrayIndexOutOfBoundsException aioobe) {
+					throw new RuntimeException("AIOOBE whilst building handle for " + this, aioobe);
+				}
 			}
 		}
 		return handle;
