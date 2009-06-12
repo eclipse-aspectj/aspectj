@@ -20,6 +20,11 @@ import org.aspectj.weaver.LintMessage;
 
 public class Ajc165Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+// fix is too disruptive for 1.6.5
+//	public void testGenericsBridge_pr279983() {
+//		runTest("generics bridge");
+//	}
+
 	public void testVerifyError_pr277959() {
 		runTest("verifyerror");
 	}

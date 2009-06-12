@@ -2,6 +2,12 @@
 
 <suite>
 
+   <ajc-test dir="bugs165/pr279983" title="generics bridge">
+     <compile files="X.java" options="-1.5"/>
+     <run class="X"/>
+   </ajc-test>
+   
+   
    <ajc-test dir="bugs165/pr277959" title="verifyerror">
      <compile files="AOPTest.java  CodeAspect.java" options="-1.5"/>
      <run class="example.AOPTest"/>
