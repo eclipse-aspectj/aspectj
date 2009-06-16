@@ -56,8 +56,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// public void testIncrementalFqItds_280380() throws Exception {
 	// String p = "pr280380";
 	// initialiseProject(p);
-	// // build(p);
-	// // printModel(p);
+	// build(p);
+	// printModel(p);
 	// alter(p, "inc1");
 	// build(p);
 	// printModel(p);
@@ -68,6 +68,16 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// // Hid:5:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.AClass_new (declared on) =pr280380<f{AClass.java[AClass
 	// // Hid:6:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx (declared on) =pr280380<f{AClass.java[AClass
 	// }
+
+	public void testIncrementalCtorItdHandle_280383() throws Exception {
+		String p = "pr280383";
+		initialiseProject(p);
+		build(p);
+		printModel(p);
+		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
+		List rels = irm.get("=pr280383<f{AnAspect.java}AnAspect)f.AClass.f_AClass_new");
+		assertNotNull(rels);
+	}
 
 	public void testIncrementalAnnotationMatched_276399() throws Exception {
 		String p = "pr276399";
