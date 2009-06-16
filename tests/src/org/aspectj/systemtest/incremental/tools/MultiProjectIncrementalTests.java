@@ -53,6 +53,22 @@ import org.aspectj.util.FileUtil;
  */
 public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
 
+	// public void testIncrementalFqItds_280380() throws Exception {
+	// String p = "pr280380";
+	// initialiseProject(p);
+	// // build(p);
+	// // printModel(p);
+	// alter(p, "inc1");
+	// build(p);
+	// printModel(p);
+	// // Hid:1:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx
+	// // Hid:2:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.y
+	// // Hid:3:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.AClass_new
+	// // Hid:4:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.y (declared on) =pr280380<f{AClass.java[AClass
+	// // Hid:5:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.AClass_new (declared on) =pr280380<f{AClass.java[AClass
+	// // Hid:6:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx (declared on) =pr280380<f{AClass.java[AClass
+	// }
+
 	public void testIncrementalAnnotationMatched_276399() throws Exception {
 		String p = "pr276399";
 		initialiseProject(p);
@@ -67,6 +83,18 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		irm = getModelFor(p).getRelationshipMap();
 		List rels = irm.get("=pr276399/src<*X.aj}X&after"); // should be gone after the inc build
 		assertNull(rels);
+	}
+
+	public void testHandleCountDecA_pr278255() throws Exception {
+		String p = "pr278255";
+		initialiseProject(p);
+		build(p);
+		printModelAndRelationships(p);
+		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
+		List l = irm.get("=pr278255<{A.java}X`declare \\@type");
+		assertNotNull(l);
+		IRelationship ir = (IRelationship) l.get(0);
+		assertNotNull(ir);
 	}
 
 	public void testIncrementalItdDefaultCtor() {
