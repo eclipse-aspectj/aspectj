@@ -189,7 +189,7 @@ public class AsmElementFormatter {
 				// }
 				// argumentsSignature.append(")");
 				// InterTypeConstructorDeclaration itcd = (InterTypeConstructorDeclaration)methodDeclaration;
-				node.setName(itd.getOnType().toString() + "." + itd.getOnType().toString()/* +argumentsSignature.toString() */);
+				node.setName(itd.getOnType().toString() + "." + itd.getOnType().toString().replace('.', '_'));
 			} else {
 				node.setKind(IProgramElement.Kind.ERROR);
 				node.setName(name);
