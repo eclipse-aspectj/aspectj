@@ -43,6 +43,7 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.ResolvedTypeMunger.Kind;
 import org.aspectj.weaver.bcel.BcelShadow;
 import org.aspectj.weaver.bcel.BcelTypeMunger;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
@@ -342,6 +343,13 @@ public class AsmRelationshipProvider {
 		// aspect.getClassName());
 		// SourceLine(typeTransformer.getSourceLocation());
 		IProgramElement filenode = model.getHierarchy().findElementForSourceLine(typeTransformer.getSourceLocation());
+		if (filenode == null) {
+			if (typeTransformer.getKind() == ResolvedTypeMunger.MethodDelegate2
+					|| typeTransformer.getKind() == ResolvedTypeMunger.FieldHost) {
+				// not yet faulting these in
+				return;
+			}
+		}
 		// the call to findElementForSourceLine(ISourceLocation) returns a file
 		// node
 		// if it can't find a node in the hierarchy for the given
@@ -608,7 +616,11 @@ public class AsmRelationshipProvider {
 			} else if (element instanceof DeclareParents) {
 				parent.addChild(createDeclareParentsChild(asm, (DeclareParents) element));
 			} else if (element instanceof BcelTypeMunger) {
-				parent.addChild(createIntertypeDeclaredChild(asm, aspect, (BcelTypeMunger) element));
+				IProgramElement newChild = createIntertypeDeclaredChild(asm, aspect, (BcelTypeMunger) element);
+				// newChild==null means it is something that could not be handled by createIntertypeDeclaredChild()
+				if (newChild != null) {
+					parent.addChild(newChild);
+				}
 			}
 		}
 	}
@@ -659,7 +671,8 @@ public class AsmRelationshipProvider {
 		ResolvedTypeMunger rtMunger = itd.getMunger();
 
 		ResolvedMember sig = rtMunger.getSignature();
-		if (rtMunger.getKind() == ResolvedTypeMunger.Field) { // ITD FIELD
+		Kind kind = rtMunger.getKind();
+		if (kind == ResolvedTypeMunger.Field) { // ITD FIELD
 			// String name = rtMunger.getSignature().toString();
 			String name = sig.getDeclaringType().getClassName() + "." + sig.getName();
 			if (name.indexOf("$") != -1) {
@@ -669,7 +682,7 @@ public class AsmRelationshipProvider {
 					aspect, itd.getSourceLocation()), rtMunger.getSignature().getModifiers(), null, Collections.EMPTY_LIST);
 			pe.setCorrespondingType(sig.getReturnType().getName());
 			return pe;
-		} else if (rtMunger.getKind() == ResolvedTypeMunger.Method) { // ITD
+		} else if (kind == ResolvedTypeMunger.Method) { // ITD
 			// METHOD
 			String name = sig.getDeclaringType().getClassName() + "." + sig.getName();
 			if (name.indexOf("$") != -1) {
@@ -679,7 +692,7 @@ public class AsmRelationshipProvider {
 					aspect, itd.getSourceLocation()), rtMunger.getSignature().getModifiers(), null, Collections.EMPTY_LIST);
 			setParams(pe, sig);
 			return pe;
-		} else if (rtMunger.getKind() == ResolvedTypeMunger.Constructor) {
+		} else if (kind == ResolvedTypeMunger.Constructor) {
 			String name = sig.getDeclaringType().getClassName() + "." + sig.getDeclaringType().getClassName();
 			if (name.indexOf("$") != -1) {
 				name = name.substring(name.indexOf("$") + 1);
@@ -689,6 +702,15 @@ public class AsmRelationshipProvider {
 					Collections.EMPTY_LIST);
 			setParams(pe, sig);
 			return pe;
+			// } else if (kind == ResolvedTypeMunger.MethodDelegate2) {
+			// String name = sig.getDeclaringType().getClassName() + "." + sig.getName();
+			// if (name.indexOf("$") != -1) {
+			// name = name.substring(name.indexOf("$") + 1);
+			// }
+			// IProgramElement pe = new ProgramElement(model, name, IProgramElement.Kind.INTER_TYPE_METHOD, getBinarySourceLocation(
+			// aspect, itd.getSourceLocation()), rtMunger.getSignature().getModifiers(), null, Collections.EMPTY_LIST);
+			// setParams(pe, sig);
+			// return pe;
 		}
 		// other cases ignored for now
 		return null;
