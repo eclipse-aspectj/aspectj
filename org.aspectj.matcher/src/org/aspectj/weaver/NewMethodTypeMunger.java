@@ -116,13 +116,14 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof NewMethodTypeMunger))
+		if (!(other instanceof NewMethodTypeMunger)) {
 			return false;
+		}
 		NewMethodTypeMunger o = (NewMethodTypeMunger) other;
-		return kind.equals(o.kind)
-				&& ((o.signature == null) ? (signature == null) : signature.equals(o.signature))
-				&& ((o.declaredSignature == null) ? (declaredSignature == null) : declaredSignature.equals(o.declaredSignature))
-				&& ((o.typeVariableAliases == null) ? (typeVariableAliases == null) : typeVariableAliases
+		return ((kind == null) ? (o.kind == null) : kind.equals(o.kind))
+				&& ((signature == null) ? (o.signature == null) : signature.equals(o.signature))
+				&& ((declaredSignature == null) ? (o.declaredSignature == null) : declaredSignature.equals(o.declaredSignature))
+				&& ((typeVariableAliases == null) ? (o.typeVariableAliases == null) : typeVariableAliases
 						.equals(o.typeVariableAliases));
 	}
 
