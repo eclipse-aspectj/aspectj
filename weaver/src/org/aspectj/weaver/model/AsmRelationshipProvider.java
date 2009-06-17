@@ -34,6 +34,7 @@ import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.NewParentTypeMunger;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
@@ -109,6 +110,12 @@ public class AsmRelationshipProvider {
 		}
 	}
 
+	private static boolean isMixinRelated(ResolvedTypeMunger typeTransformer) {
+		Kind kind = typeTransformer.getKind();
+		return kind == ResolvedTypeMunger.MethodDelegate2 || kind == ResolvedTypeMunger.FieldHost
+				|| (kind == ResolvedTypeMunger.Parent && ((NewParentTypeMunger) typeTransformer).isMixin());
+	}
+
 	/**
 	 * Add a relationship for a type transformation (declare parents, intertype method declaration, declare annotation on type).
 	 */
@@ -117,7 +124,6 @@ public class AsmRelationshipProvider {
 		if (model == null) {
 			return;
 		}
-
 		if (World.createInjarHierarchy && isBinaryAspect(originatingAspect)) {
 			createHierarchy(model, typeTransformer, originatingAspect);
 		}
@@ -125,7 +131,8 @@ public class AsmRelationshipProvider {
 		if (originatingAspect.getSourceLocation() != null) {
 			String sourceHandle = "";
 			IProgramElement sourceNode = null;
-			if (typeTransformer.getSourceLocation() != null && typeTransformer.getSourceLocation().getOffset() != -1) {
+			if (typeTransformer.getSourceLocation() != null && typeTransformer.getSourceLocation().getOffset() != -1
+					&& !isMixinRelated(typeTransformer)) {
 				sourceNode = model.getHierarchy().findElementForType(originatingAspect.getPackageName(),
 						originatingAspect.getClassName());
 				IProgramElement closer = model.getHierarchy().findCloserMatchForLineNumber(sourceNode,
@@ -157,7 +164,8 @@ public class AsmRelationshipProvider {
 			String targetHandle = findOrFakeUpNode(model, onType);
 			if (targetHandle == null)
 				return;
-
+			System.err.println("source=" + sourceHandle);
+			System.err.println("target=" + targetHandle);
 			IRelationshipMap mapper = model.getRelationshipMap();
 			IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARES, false,
 					true);
