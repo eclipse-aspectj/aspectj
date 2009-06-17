@@ -775,7 +775,8 @@ public class EclipseFactory {
 		ReferenceBinding declaringType = (ReferenceBinding) makeTypeBinding(member.getDeclaringType());
 
 		// If there are aliases, place them in the map
-		if (aliases != null && aliases.size() > 0) {
+		if (aliases != null && aliases.size() > 0 && declaringType.typeVariables() != null
+				&& declaringType.typeVariables().length != 0) {
 			int i = 0;
 			for (Iterator iter = aliases.iterator(); iter.hasNext();) {
 				String element = (String) iter.next();
@@ -858,7 +859,8 @@ public class EclipseFactory {
 		ReferenceBinding declaringType = (ReferenceBinding) makeTypeBinding(member.getDeclaringType());
 
 		// If there are aliases, place them in the map
-		if (aliases != null && aliases.size() != 0) {
+		if (aliases != null && aliases.size() != 0 && declaringType.typeVariables() != null
+				&& declaringType.typeVariables().length != 0) {
 			int i = 0;
 			ReferenceBinding aliasTarget = (ReferenceBinding) makeTypeBinding(aliasTargetType);
 			if (aliasTarget.isRawType()) {
