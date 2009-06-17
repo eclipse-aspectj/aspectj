@@ -1410,9 +1410,16 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			if (debug)
 				System.err.println("  Signature that needs parameterizing: " + member);
 			// Retrieve the generic type
-			ResolvedType onType = world.resolve(member.getDeclaringType()).getGenericType();
-			member.resolve(world); // Ensure all parts of the member are
-			// resolved
+			ResolvedType onTypeResolved = world.resolve(member.getDeclaringType());
+			ResolvedType onType = onTypeResolved.getGenericType();
+			if (onType == null) {
+				// The target is not generic
+				getWorld().getMessageHandler().handleMessage(
+						MessageUtil.error("The target type for the intertype declaration is not generic", munger
+								.getSourceLocation()));
+				return munger;
+			}
+			member.resolve(world); // Ensure all parts of the member are resolved
 			if (debug)
 				System.err.println("  Actual target ontype: " + onType + "  (" + onType.typeKind + ")");
 			// quickly find the targettype in the type hierarchy for this type
