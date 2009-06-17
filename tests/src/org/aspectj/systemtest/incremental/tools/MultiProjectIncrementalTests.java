@@ -73,6 +73,24 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertNoErrors(p);
 	}
 
+	public void testIncrementalGenericItds_pr280676_2() throws Exception {
+		String p = "pr280676_2";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		assertNoErrors(p);
+		alter(p, "inc1"); // remove type variables from target type
+		build(p);
+		List errors = getErrorMessages(p);
+		// Build errors:
+		// error at \src\p\Foo.aj:8::94 The target type for the intertype declaration is not generic
+		// error at \src\p\Foo.aj:12::154 The target type for the intertype declaration is not generic
+		// error at \src\p\A.java:0::0 Inconsistent classfile encountered: The undefined type parameter N is referenced from within
+		// Foo
+		assertEquals(3, errors.size());
+		// *cough* third error, hmmm
+	}
+
 	// TODO (asc) these tests don't actually verify anything!
 	// public void testAtDeclareParents_280658() throws Exception {
 	// AjdeInteractionTestbed.VERBOSE = true;
