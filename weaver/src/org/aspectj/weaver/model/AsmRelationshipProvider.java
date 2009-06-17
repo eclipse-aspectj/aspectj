@@ -162,10 +162,9 @@ public class AsmRelationshipProvider {
 				return;
 			}
 			String targetHandle = findOrFakeUpNode(model, onType);
-			if (targetHandle == null)
+			if (targetHandle == null) {
 				return;
-			System.err.println("source=" + sourceHandle);
-			System.err.println("target=" + targetHandle);
+			}
 			IRelationshipMap mapper = model.getRelationshipMap();
 			IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, INTER_TYPE_DECLARES, false,
 					true);
