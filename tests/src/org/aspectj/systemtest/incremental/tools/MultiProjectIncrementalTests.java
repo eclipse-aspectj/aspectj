@@ -53,6 +53,59 @@ import org.aspectj.util.FileUtil;
  */
 public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
 
+	public void testIncrementalGenericItds_pr280676() throws Exception {
+		String p = "pr280676";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		assertNoErrors(p);
+		alter(p, "inc1"); // remove type variables from ITD field
+		build(p);
+		checkWasFullBuild();
+		assertNoErrors(p);
+		alter(p, "inc2"); // remove type variables from ITD method
+		build(p);
+		checkWasFullBuild();
+		assertNoErrors(p);
+		alter(p, "inc3"); // readded type variables on ITD method
+		build(p);
+		checkWasFullBuild();
+		assertNoErrors(p);
+	}
+
+	// TODO (asc) these tests don't actually verify anything!
+	// public void testAtDeclareParents_280658() throws Exception {
+	// AjdeInteractionTestbed.VERBOSE = true;
+	// String lib = "pr280658_decp";
+	// initialiseProject(lib);
+	// build(lib);
+	// checkWasFullBuild();
+	//
+	// String cli = "pr280658_target";
+	// initialiseProject(cli);
+	//
+	// configureAspectPath(cli, getProjectRelativePath(lib, "bin"));
+	// build(cli);
+	// checkWasFullBuild();
+	// printModel(cli);
+	// }
+	//
+	// public void testAtDeclareMixin_280651() throws Exception {
+	// AjdeInteractionTestbed.VERBOSE = true;
+	// String lib = "pr280651_decmix";
+	// initialiseProject(lib);
+	// build(lib);
+	// checkWasFullBuild();
+	//
+	// String cli = "pr280658_target";
+	// initialiseProject(cli);
+	//
+	// configureAspectPath(cli, getProjectRelativePath(lib, "bin"));
+	// build(cli);
+	// checkWasFullBuild();
+	// printModel(cli);
+	// }
+
 	// public void testIncrementalFqItds_280380() throws Exception {
 	// String p = "pr280380";
 	// initialiseProject(p);
