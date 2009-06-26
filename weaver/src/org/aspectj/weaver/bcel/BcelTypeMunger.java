@@ -1146,7 +1146,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	 * @param unMangledInterMethod the method to bridge 'to' that we have already created in the 'subtype'
 	 * @param clazz the class in which to put the bridge method
 	 * @param paramTypes Parameter types for the bridge method, passed in as an optimization since the caller is likely to have
-	 *        already created them.
+	 *            already created them.
 	 * @param theBridgeMethod
 	 */
 	private void createBridgeMethod(BcelWorld world, NewMethodTypeMunger munger, ResolvedMember unMangledInterMethod,
@@ -1396,7 +1396,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		// this?
 		ResolvedMember host = AjcMemberMaker.itdAtDeclareParentsField(weaver.getLazyClassGen().getType(), munger.getSignature()
 				.getType(), aspectType);
-		weaver.getLazyClassGen().addField(makeFieldGen(weaver.getLazyClassGen(), host), null);
+		FieldGen field = makeFieldGen(weaver.getLazyClassGen(), host);
+		field.setModifiers(field.getModifiers() | BcelField.AccSynthetic);
+		weaver.getLazyClassGen().addField(field, null);
 		return true;
 	}
 

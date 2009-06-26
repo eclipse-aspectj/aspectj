@@ -37,7 +37,7 @@ import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSigna
 
 final class BcelField extends ResolvedMemberImpl {
 
-	private static int AccSynthetic = 0x1000;
+	public static int AccSynthetic = 0x1000;
 
 	private Field field;
 	private boolean isAjSynthetic;
