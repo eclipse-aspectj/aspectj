@@ -86,13 +86,13 @@ public class AsmRelationshipProvider {
 		if (targetNode == null) {
 			return;
 		}
-		String targetHandle = model.getHandleProvider().createHandleIdentifier(targetNode);
+		String targetHandle = targetNode.getHandleIdentifier();
 		if (targetHandle == null) {
 			return;
 		}
 
 		IProgramElement sourceNode = model.getHierarchy().findElementForSourceLine(deow.getSourceLocation());
-		String sourceHandle = model.getHandleProvider().createHandleIdentifier(sourceNode);
+		String sourceHandle = sourceNode.getHandleIdentifier();
 		if (sourceHandle == null) {
 			return;
 		}
@@ -140,14 +140,14 @@ public class AsmRelationshipProvider {
 				if (closer != null) {
 					sourceNode = closer;
 				}
-				sourceHandle = model.getHandleProvider().createHandleIdentifier(sourceNode);
+				sourceHandle = sourceNode.getHandleIdentifier();
 			} else {
 				sourceNode = model.getHierarchy().findElementForType(originatingAspect.getPackageName(),
 						originatingAspect.getClassName());
 				// sourceNode =
 				// asm.getHierarchy().findElementForSourceLine(originatingAspect
 				// .getSourceLocation());
-				sourceHandle = model.getHandleProvider().createHandleIdentifier(sourceNode);
+				sourceHandle = sourceNode.getHandleIdentifier();
 			}
 			// sourceNode =
 			// asm.getHierarchy().findElementForType(originatingAspect
@@ -242,9 +242,9 @@ public class AsmRelationshipProvider {
 			// Check if there is a more accurate child node of that source file node:
 			IProgramElement closernode = hierarchy.findCloserMatchForLineNumber(node, lineNumber);
 			if (closernode == null) {
-				return model.getHandleProvider().createHandleIdentifier(node);
+				return node.getHandleIdentifier();
 			} else {
-				return model.getHandleProvider().createHandleIdentifier(closernode);
+				return closernode.getHandleIdentifier();
 			}
 		}
 
@@ -451,13 +451,13 @@ public class AsmRelationshipProvider {
 		}
 
 		IProgramElement sourceNode = model.getHierarchy().findElementForSourceLine(declareAnnotationLocation);
-		String sourceHandle = model.getHandleProvider().createHandleIdentifier(sourceNode);
+		String sourceHandle = sourceNode.getHandleIdentifier();
 		if (sourceHandle == null) {
 			return;
 		}
 
 		IProgramElement targetNode = model.getHierarchy().findElementForSourceLine(annotatedLocation);
-		String targetHandle = model.getHandleProvider().createHandleIdentifier(targetNode);
+		String targetHandle = targetNode.getHandleIdentifier();
 		if (targetHandle == null) {
 			return;
 		}
@@ -755,7 +755,7 @@ public class AsmRelationshipProvider {
 			ISourceLocation sl = advice.getSourceLocation();
 			if (sl != null) {
 				IProgramElement ipe = asm.getHierarchy().findElementForSourceLine(sl);
-				advice.handle = asm.getHandleProvider().createHandleIdentifier(ipe);
+				advice.handle = ipe.getHandleIdentifier();
 			}
 		}
 		return advice.handle;
@@ -1010,7 +1010,7 @@ public class AsmRelationshipProvider {
 				return;
 
 			IProgramElement sourceNode = hierarchy.findElementForSourceLine(sourceLocation);
-			String sourceHandle = model.getHandleProvider().createHandleIdentifier(sourceNode);
+			String sourceHandle = sourceNode.getHandleIdentifier();
 			if (sourceHandle == null)
 				return;
 
@@ -1062,7 +1062,7 @@ public class AsmRelationshipProvider {
 		}
 
 		IProgramElement sourceNode = hierarchy.findElementForSourceLine(declareLocation);
-		String sourceHandle = model.getHandleProvider().createHandleIdentifier(sourceNode);
+		String sourceHandle = sourceNode.getHandleIdentifier();
 		if (sourceHandle == null) {
 			return;
 		}
