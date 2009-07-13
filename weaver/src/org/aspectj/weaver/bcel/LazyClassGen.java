@@ -285,7 +285,7 @@ public final class LazyClassGen {
 			}
 
 			// Do we need to calculate an SUID and add it?
-			if (!hasSerialVersionUIDField && world.isAddSerialVerUID()) {
+			if (!getType().isInterface() && !hasSerialVersionUIDField && world.isAddSerialVerUID()) {
 				calculatedSerialVersionUID = myGen.getSUID();
 				FieldGen fg = new FieldGen(Constants.ACC_PRIVATE | Constants.ACC_FINAL | Constants.ACC_STATIC, BasicType.LONG,
 						"serialVersionUID", getConstantPool());
