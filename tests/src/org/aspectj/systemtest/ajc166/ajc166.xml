@@ -12,7 +12,7 @@
          <line text="if method: public static final boolean X.ajc$if$165()"/>
        </stdout>
        -->
-     </run>
+     </run> 
    </ajc-test>
 
 </suite>
