@@ -150,6 +150,32 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertNotNull(rels);
 	}
 
+	// public void testArraysGenerics() throws Exception {
+	// String p = "pr283864";
+	// initialiseProject(p);
+	// build(p);
+	// printModel(p);
+	// // IRelationshipMap irm = getModelFor(p).getRelationshipMap();
+	// // List rels = irm.get("=pr280383<f{AnAspect.java}AnAspect)f.AClass.f_AClass_new");
+	// // assertNotNull(rels);
+	// }
+
+	public void testSimilarITDS() throws Exception {
+		String p = "pr283657";
+		initialiseProject(p);
+		build(p);
+		// printModel(p);
+		// Hid:1:(targets=1) =pr283657<{Aspect.java}Aspect)Target.foo (declared on) =pr283657<{Aspect.java[Target
+		// Hid:2:(targets=1) =pr283657<{Aspect.java}Aspect)Target.foo!2 (declared on) =pr283657<{Aspect.java[Target
+		// Hid:3:(targets=2) =pr283657<{Aspect.java[Target (aspect declarations) =pr283657<{Aspect.java}Aspect)Target.foo
+		// Hid:4:(targets=2) =pr283657<{Aspect.java[Target (aspect declarations) =pr283657<{Aspect.java}Aspect)Target.foo!2
+		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
+		List rels = irm.get("=pr283657<{Aspect.java}Aspect)Target.foo");
+		assertNotNull(rels);
+		rels = irm.get("=pr283657<{Aspect.java}Aspect)Target.foo!2");
+		assertNotNull(rels);
+	}
+
 	public void testIncrementalAnnotationMatched_276399() throws Exception {
 		String p = "pr276399";
 		initialiseProject(p);
