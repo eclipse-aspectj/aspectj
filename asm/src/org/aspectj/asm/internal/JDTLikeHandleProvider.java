@@ -158,7 +158,33 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 		// TODO could optimize this code
 		char[] byteCodeName = ipe.getBytecodeName().toCharArray();
 
-		if (ipe.getKind().isDeclareAnnotation()) {
+		if (ipe.getKind().isInterTypeMember()) {
+			int count = 1;
+			List kids = ipe.getParent().getChildren();
+			int idx = 0;
+			for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
+				IProgramElement object = (IProgramElement) iterator.next();
+				if (object.equals(ipe)) {
+					break;
+				}
+				if (object.getKind().isInterTypeMember()) {
+					if (object.getName().equals(ipe.getName()) && getParameters(object).equals(getParameters(ipe))) {
+						String existingHandle = object.getHandleIdentifier();
+						int suffixPosition = existingHandle.indexOf('!');
+						if (suffixPosition != -1) {
+							count = new Integer(existingHandle.substring(suffixPosition + 1)).intValue() + 1;
+						} else {
+							if (count == 1) {
+								count = 2;
+							}
+						}
+					}
+				}
+			}
+			if (count > 1) {
+				return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
+			}
+		} else if (ipe.getKind().isDeclareAnnotation()) {
 			// look at peer declares
 			int count = 1;
 			List kids = ipe.getParent().getChildren();
