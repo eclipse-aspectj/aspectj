@@ -2,6 +2,11 @@
 
 <suite>
    
+  <ajc-test dir="bugs166/pr284297" title="generic signature problem">
+     <compile files="DomainLogic.java DomainObject.java FancyDomainLogic.java" options="-1.5" outjar="code.jar"/>
+     <compile files="FancyDomainLogicImpl.java" options="-1.5" classpath="code.jar"/>
+   </ajc-test>
+
    <ajc-test dir="bugs166/pr283229" title="interfaces and serializable">
      <compile files="Foo.java" options="-1.5 -XaddSerialVersionUID"/>
      <run class="Foo">
