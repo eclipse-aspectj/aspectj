@@ -604,7 +604,7 @@ public final class LazyClassGen {
 					signature.append("<");
 					for (int i = 0; i < tVars.length; i++) {
 						TypeVariable variable = tVars[i];
-						signature.append(variable.getSignature());
+						signature.append(variable.getSignatureForAttribute());
 					}
 					signature.append(">");
 				}
