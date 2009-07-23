@@ -168,7 +168,11 @@ public class AsmElementFormatter {
 
 		} else if (methodDeclaration instanceof InterTypeDeclaration) {
 			InterTypeDeclaration itd = (InterTypeDeclaration) methodDeclaration;
-			String name = itd.getOnType().toString() + "." + new String(itd.getDeclaredSelector());
+			String fqname = itd.getOnType().toString();
+			if (fqname.indexOf(".") != -1) {
+				fqname = fqname.substring(fqname.lastIndexOf(".") + 1);
+			}
+			String name = fqname + "." + new String(itd.getDeclaredSelector());
 			if (methodDeclaration instanceof InterTypeFieldDeclaration) {
 				node.setKind(IProgramElement.Kind.INTER_TYPE_FIELD);
 				node.setName(name);
