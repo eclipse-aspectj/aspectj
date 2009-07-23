@@ -124,21 +124,46 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// printModel(cli);
 	// }
 
-	// public void testIncrementalFqItds_280380() throws Exception {
-	// String p = "pr280380";
-	// initialiseProject(p);
-	// build(p);
-	// printModel(p);
-	// alter(p, "inc1");
-	// build(p);
-	// printModel(p);
-	// // Hid:1:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx
-	// // Hid:2:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.y
-	// // Hid:3:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.AClass_new
-	// // Hid:4:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.y (declared on) =pr280380<f{AClass.java[AClass
-	// // Hid:5:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.AClass_new (declared on) =pr280380<f{AClass.java[AClass
-	// // Hid:6:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx (declared on) =pr280380<f{AClass.java[AClass
-	// }
+	// just simple incremental build - no code change, just the aspect touched
+	public void testIncrementalFqItds_280380() throws Exception {
+		String p = "pr280380";
+		initialiseProject(p);
+		build(p);
+		// printModel(p);
+		alter(p, "inc1");
+		build(p);
+		// should not be an error about f.AClass not being found
+		assertNoErrors(p);
+		// printModel(p);
+	}
+
+	// modified aspect so target is fully qualified on the incremental change
+	public void testIncrementalFqItds_280380_2() throws Exception {
+		String p = "pr280380";
+		initialiseProject(p);
+		build(p);
+		// printModel(p);
+		assertEquals(6, getModelFor(p).getRelationshipMap().getEntries().size());
+		// Hid:1:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx
+		// Hid:2:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.y
+		// Hid:3:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.AClass_new
+		// Hid:4:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.y (declared on) =pr280380<f{AClass.java[AClass
+		// Hid:5:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.AClass_new (declared on) =pr280380<f{AClass.java[AClass
+		// Hid:6:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx (declared on) =pr280380<f{AClass.java[AClass
+
+		alter(p, "inc2");
+		build(p);
+		// should not be an error about f.AClass not being found
+		assertNoErrors(p);
+		// printModel(p);
+		assertEquals(6, getModelFor(p).getRelationshipMap().getEntries().size());
+		// Hid:1:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx
+		// Hid:2:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.y
+		// Hid:3:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.AClass_new
+		// Hid:4:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.y (declared on) =pr280380<f{AClass.java[AClass
+		// Hid:5:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.AClass_new (declared on) =pr280380<f{AClass.java[AClass
+		// Hid:6:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx (declared on) =pr280380<f{AClass.java[AClass
+	}
 
 	public void testIncrementalCtorItdHandle_280383() throws Exception {
 		String p = "pr280383";
@@ -187,6 +212,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertNotNull(ir);
 		alter(p, "inc1");
 		build(p);
+		printModel(p);
 		irm = getModelFor(p).getRelationshipMap();
 		List rels = irm.get("=pr276399/src<*X.aj}X&after"); // should be gone after the inc build
 		assertNull(rels);
