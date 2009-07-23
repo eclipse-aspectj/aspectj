@@ -80,6 +80,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
@@ -990,6 +991,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			}
 			environment = new StatefulNameEnvironment(getLibraryAccess(classpaths, filenames), state.getClassNameToFileMap(), state);
 			state.setNameEnvironment(environment);
+		} else {
+			((StatefulNameEnvironment) environment).update(state.getClassNameToFileMap(), state.deltaAddedClasses);
+			state.deltaAddedClasses.clear();
 		}
 
 		org.aspectj.ajdt.internal.compiler.CompilerAdapter.setCompilerAdapterFactory(this);
@@ -1015,6 +1019,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		if (environment != null) {
 			environment.cleanup();
 			environment = null;
+			// le = null;
 		}
 	}
 

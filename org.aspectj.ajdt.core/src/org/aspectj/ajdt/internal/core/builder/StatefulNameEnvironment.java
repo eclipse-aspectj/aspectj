@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.ajdt.internal.core.builder;
 
 //import java.util.HashMap;
@@ -31,94 +30,103 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
 import org.aspectj.util.FileUtil;
 
-
 public class StatefulNameEnvironment implements INameEnvironment {
 	private Map classesFromName;
 	private Map inflatedClassFilesCache;
 	private Set packageNames;
 	private AjState state;
 	private INameEnvironment baseEnvironment;
-	
+
 	public StatefulNameEnvironment(INameEnvironment baseEnvironment, Map classesFromName, AjState state) {
 		this.classesFromName = classesFromName;
 		this.inflatedClassFilesCache = new HashMap();
 		this.baseEnvironment = baseEnvironment;
-		this.state= state;
-		
+		this.state = state;
+
 		packageNames = new HashSet();
-		for (Iterator i = classesFromName.keySet().iterator(); i.hasNext(); ) {
-			String className = (String)i.next();
+		for (Iterator i = classesFromName.keySet().iterator(); i.hasNext();) {
+			String className = (String) i.next();
 			addAllPackageNames(className);
 		}
-//		System.err.println(packageNames);
+		// System.err.println(packageNames);
 	}
 
 	private void addAllPackageNames(String className) {
 		int dot = className.indexOf('.');
 		while (dot != -1) {
 			packageNames.add(className.substring(0, dot));
-			dot = className.indexOf('.', dot+1);
+			dot = className.indexOf('.', dot + 1);
 		}
 	}
 
 	public void cleanup() {
 		baseEnvironment.cleanup();
 		this.classesFromName = Collections.EMPTY_MAP;
-		this.packageNames = Collections.EMPTY_SET;
+		this.packageNames.clear();// = Collections.EMPTY_SET;
 	}
 
 	private NameEnvironmentAnswer findType(String name) {
-	    // pr133532 - ask the state for the type first
+		// pr133532 - ask the state for the type first
 		IBinaryType seenOnPreviousBuild = state.checkPreviousBuild(name);
-		if (seenOnPreviousBuild!=null) {
-			return new NameEnvironmentAnswer(seenOnPreviousBuild,null);
+		if (seenOnPreviousBuild != null) {
+			return new NameEnvironmentAnswer(seenOnPreviousBuild, null);
 		}
 		if (this.inflatedClassFilesCache.containsKey(name)) {
 			return (NameEnvironmentAnswer) this.inflatedClassFilesCache.get(name);
-		}
-		else {
-			File fileOnDisk = (File)classesFromName.get(name);
-			//System.err.println("find: " + name + " found: " + cf);
-			
-			if (fileOnDisk == null) return null;
-	
+		} else {
+			File fileOnDisk = (File) classesFromName.get(name);
+			// System.err.println("find: " + name + " found: " + cf);
+
+			if (fileOnDisk == null)
+				return null;
+
 			try {
-				//System.out.println("from cache: " + name);
+				// System.out.println("from cache: " + name);
 				byte[] bytes = FileUtil.readAsByteArray(fileOnDisk);
-				NameEnvironmentAnswer ret = 
-					new NameEnvironmentAnswer(
-						new ClassFileReader(bytes, fileOnDisk.getAbsolutePath().toCharArray()),
-						null /* no access restriction */);
-				this.inflatedClassFilesCache.put(name,ret);
+				NameEnvironmentAnswer ret = new NameEnvironmentAnswer(new ClassFileReader(bytes, fileOnDisk.getAbsolutePath()
+						.toCharArray()), null /* no access restriction */);
+				this.inflatedClassFilesCache.put(name, ret);
 				return ret;
 			} catch (ClassFormatException e) {
-				return null; //!!! seems to match FileSystem behavior
+				return null; // !!! seems to match FileSystem behavior
 			} catch (IOException ex) {
 				return null; // see above...
 			}
 		}
 	}
 
-	public NameEnvironmentAnswer findType(
-		char[] typeName,
-		char[][] packageName)
-	{
+	public NameEnvironmentAnswer findType(char[] typeName, char[][] packageName) {
 		NameEnvironmentAnswer ret = findType(new String(CharOperation.concatWith(packageName, typeName, '.')));
-		if (ret != null) return ret;
+		if (ret != null)
+			return ret;
 		return baseEnvironment.findType(typeName, packageName);
 	}
 
 	public NameEnvironmentAnswer findType(char[][] compoundName) {
 		NameEnvironmentAnswer ret = findType(new String(CharOperation.concatWith(compoundName, '.')));
-		if (ret != null) return ret;
+		if (ret != null)
+			return ret;
 		return baseEnvironment.findType(compoundName);
 	}
 
 	public boolean isPackage(char[][] parentPackageName, char[] packageName) {
-		if (baseEnvironment.isPackage(parentPackageName, packageName)) return true;
+		if (baseEnvironment.isPackage(parentPackageName, packageName))
+			return true;
 
 		String fullPackageName = new String(CharOperation.concatWith(parentPackageName, packageName, '.'));
 		return packageNames.contains(fullPackageName);
+	}
+
+	/**
+	 * Needs to be told about changes. The 'added' set is a subset of classNameToFileMap consisting of just those names added during
+	 * this build - to reduce any impact on incremental compilation times.
+	 */
+	public void update(Map classNameToFileMap, Set added) {
+		for (Iterator i = added.iterator(); i.hasNext();) {
+			String className = (String) i.next();
+			addAllPackageNames(className);
+		}
+		this.classesFromName = classNameToFileMap;
 	}
 
 }
