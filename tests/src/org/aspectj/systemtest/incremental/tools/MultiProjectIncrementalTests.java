@@ -143,7 +143,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject(p);
 		build(p);
 		// printModel(p);
-		assertEquals(6, getModelFor(p).getRelationshipMap().getEntries().size());
+		assertEquals(4, getModelFor(p).getRelationshipMap().getEntries().size());
 		// Hid:1:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx
 		// Hid:2:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.y
 		// Hid:3:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.AClass_new
@@ -156,7 +156,36 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// should not be an error about f.AClass not being found
 		assertNoErrors(p);
 		// printModel(p);
-		assertEquals(6, getModelFor(p).getRelationshipMap().getEntries().size());
+		assertEquals(4, getModelFor(p).getRelationshipMap().getEntries().size());
+		// Hid:1:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx
+		// Hid:2:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.y
+		// Hid:3:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.AClass_new
+		// Hid:4:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.y (declared on) =pr280380<f{AClass.java[AClass
+		// Hid:5:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.AClass_new (declared on) =pr280380<f{AClass.java[AClass
+		// Hid:6:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx (declared on) =pr280380<f{AClass.java[AClass
+	}
+
+	public void testIncrementalFqItds_280380_3() throws Exception {
+		String p = "pr280380";
+		initialiseProject(p);
+		build(p);
+		// printModel(p);
+		assertEquals(4, getModelFor(p).getRelationshipMap().getEntries().size());
+		// Hid:1:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx
+		// Hid:2:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.y
+		// Hid:3:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.AClass_new
+		// Hid:4:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.y (declared on) =pr280380<f{AClass.java[AClass
+		// Hid:5:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.AClass_new (declared on) =pr280380<f{AClass.java[AClass
+		// Hid:6:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx (declared on) =pr280380<f{AClass.java[AClass
+		printModel(p);
+		assertNotNull(getModelFor(p).getRelationshipMap().get("=pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx"));
+		alter(p, "inc2");
+		build(p);
+		assertNoErrors(p);
+		printModel(p);
+		// On this build the relationship should have changed to include the fully qualified target
+		assertEquals(4, getModelFor(p).getRelationshipMap().getEntries().size());
+		assertNotNull(getModelFor(p).getRelationshipMap().get("=pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx"));
 		// Hid:1:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx
 		// Hid:2:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.y
 		// Hid:3:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.AClass_new
