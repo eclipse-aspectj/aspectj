@@ -274,10 +274,19 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					List newParentTargetMethods = newParentTarget.getType().getMethodsWithoutIterator(false, true);
 					for (Iterator ii = newParentTargetMethods.iterator(); ii.hasNext() && discoveredImpl == null;) {
 						ResolvedMember gen2 = (ResolvedMember) ii.next();
-						if (gen2.getName().equals(o.getName()) && gen2.getParameterSignature().equals(o.getParameterSignature())
-								&& !gen2.isAbstract()) {
-							discoveredImpl = gen2; // Found a valid
-							// implementation !
+						if (gen2.getName().equals(o.getName()) && !gen2.isAbstract()) {
+							String oSig = o.getParameterSignature();
+							// could be a match
+							if (gen2.getParameterSignature().equals(oSig)) {
+								discoveredImpl = gen2;
+							} else {
+								// Does the erasure match? In which case a bridge method will be created later to
+								// satisfy the abstract method
+								if (gen2.hasBackingGenericMember()
+										&& gen2.getBackingGenericMember().getParameterSignature().equals(oSig)) {
+									discoveredImpl = gen2;
+								}
+							}
 						}
 					}
 					if (discoveredImpl == null) {
@@ -1146,7 +1155,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	 * @param unMangledInterMethod the method to bridge 'to' that we have already created in the 'subtype'
 	 * @param clazz the class in which to put the bridge method
 	 * @param paramTypes Parameter types for the bridge method, passed in as an optimization since the caller is likely to have
-	 *            already created them.
+	 *        already created them.
 	 * @param theBridgeMethod
 	 */
 	private void createBridgeMethod(BcelWorld world, NewMethodTypeMunger munger, ResolvedMember unMangledInterMethod,
