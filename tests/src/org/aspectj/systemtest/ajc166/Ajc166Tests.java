@@ -23,6 +23,10 @@ public class Ajc166Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// runTest("generics bridge");
 	// }
 
+	public void testGenericsDecp_pr282299() {
+		runTest("generics and decp");
+	}
+
 	public void testGenericSigProblem_pr284297() {
 		runTest("generic signature problem");
 	}
