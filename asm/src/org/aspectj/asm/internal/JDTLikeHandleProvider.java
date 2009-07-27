@@ -226,6 +226,19 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 			if (ipeSig != null && ((idx = ipeSig.indexOf(")")) != -1)) {
 				ipeSig = ipeSig.substring(0, idx);
 			}
+			if (ipeSig != null) {
+				if (ipeSig.indexOf("Lorg/aspectj/lang") != -1) {
+					if (ipeSig.endsWith("Lorg/aspectj/lang/JoinPoint$StaticPart;")) {
+						ipeSig = ipeSig.substring(0, ipeSig.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
+					}
+					if (ipeSig.endsWith("Lorg/aspectj/lang/JoinPoint;")) {
+						ipeSig = ipeSig.substring(0, ipeSig.lastIndexOf("Lorg/aspectj/lang/JoinPoint;"));
+					}
+					if (ipeSig.endsWith("Lorg/aspectj/lang/JoinPoint$StaticPart;")) {
+						ipeSig = ipeSig.substring(0, ipeSig.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
+					}
+				}
+			}
 			for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
 				IProgramElement object = (IProgramElement) iterator.next();
 				if (object.equals(ipe)) {
