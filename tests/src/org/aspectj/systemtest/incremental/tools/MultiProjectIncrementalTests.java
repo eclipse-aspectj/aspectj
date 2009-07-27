@@ -91,6 +91,20 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// *cough* third error, hmmm
 	}
 
+	public void testAdviceHandles_pr284771() throws Exception {
+		String p = "pr284771";
+		initialiseProject(p);
+		build(p);
+		printModel(p);
+		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
+		List rels = irm.get("=pr284771<test*AspectTrace.aj}AspectTrace&before");
+		assertNotNull(rels);
+		assertEquals(2, ((Relationship) rels.get(0)).getTargets().size());
+		rels = irm.get("=pr284771<test*AspectTrace.aj}AspectTrace&before!2");
+		assertNotNull(rels);
+		assertEquals(2, ((Relationship) rels.get(0)).getTargets().size());
+	}
+
 	// TODO (asc) these tests don't actually verify anything!
 	// public void testAtDeclareParents_280658() throws Exception {
 	// AjdeInteractionTestbed.VERBOSE = true;
