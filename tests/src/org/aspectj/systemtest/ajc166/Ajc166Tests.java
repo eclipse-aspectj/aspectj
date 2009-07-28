@@ -19,9 +19,9 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class Ajc166Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	// fix is too disruptive for 1.6.5
-	// public void testGenericsBridge_pr279983() {
-	// runTest("generics bridge");
-	// }
+	public void testGenericsBridge_pr279983() {
+		runTest("generics bridge");
+	}
 
 	public void testGenericsDecp_pr282299() {
 		runTest("generics and decp");
