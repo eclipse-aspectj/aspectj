@@ -995,12 +995,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		UnresolvedType[] myParameterTypes = getParameterTypes();
 		for (int i = 0; i < myParameterTypes.length; i++) {
 			UnresolvedType thisParameter = myParameterTypes[i];
-			if (thisParameter.isTypeVariableReference()) {
-				TypeVariableReferenceType typeVariableRT = (TypeVariableReferenceType) thisParameter;
-				sig.append(typeVariableRT.getFirstBound().getSignature());
-			} else {
-				sig.append(thisParameter.getErasureSignature());
-			}
+			// type vars will be erased to first bound
+			sig.append(thisParameter.getErasureSignature());
 		}
 		myParameterSignatureErasure = sig.toString();
 		return myParameterSignatureErasure;
