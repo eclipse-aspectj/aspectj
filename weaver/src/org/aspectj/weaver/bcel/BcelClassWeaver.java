@@ -79,6 +79,7 @@ import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
@@ -556,37 +557,77 @@ class BcelClassWeaver implements IClassWeaver {
 	// **************************** start of bridge method creation code
 	// *****************
 
-	// FIXME asc tidy this lot up !!
-
-	// FIXME asc refactor into ResolvedType or even ResolvedMember?
+	// FIXASC tidy this lot up !!
+	// FIXASC refactor into ResolvedType or even ResolvedMember?
 	/**
 	 * Check if a particular method is overriding another - refactored into this helper so it can be used from multiple places.
 	 */
 	private static ResolvedMember isOverriding(ResolvedType typeToCheck, ResolvedMember methodThatMightBeGettingOverridden,
 			String mname, String mrettype, int mmods, boolean inSamePackage, UnresolvedType[] methodParamsArray) {
 		// Check if we can be an override...
-		if (methodThatMightBeGettingOverridden.isStatic())
-			return null; // we can't be overriding a static method
-		if (methodThatMightBeGettingOverridden.isPrivate())
-			return null; // we can't be overriding a private method
-		if (!methodThatMightBeGettingOverridden.getName().equals(mname))
-			return null; // names dont match (this will also skip <init> and
-		// <clinit> too)
-		if (methodThatMightBeGettingOverridden.getParameterTypes().length != methodParamsArray.length)
-			return null; // check same number of parameters
-		if (!isVisibilityOverride(mmods, methodThatMightBeGettingOverridden, inSamePackage))
+		if (methodThatMightBeGettingOverridden.isStatic()) {
+			// we can't be overriding a static method
 			return null;
+		}
+		if (methodThatMightBeGettingOverridden.isPrivate()) {
+			// we can't be overriding a private method
+			return null;
+		}
+		if (!methodThatMightBeGettingOverridden.getName().equals(mname)) {
+			// names do not match (this will also skip <init> and <clinit>)
+			return null;
+		}
+		if (methodThatMightBeGettingOverridden.getParameterTypes().length != methodParamsArray.length) {
+			// not the same number of parameters
+			return null;
+		}
+		if (!isVisibilityOverride(mmods, methodThatMightBeGettingOverridden, inSamePackage)) {
+			// not override from visibility point of view
+			return null;
+		}
 
-		if (typeToCheck.getWorld().forDEBUG_bridgingCode)
+		if (typeToCheck.getWorld().forDEBUG_bridgingCode) {
 			System.err.println("  Bridging:seriously considering this might be getting overridden '"
 					+ methodThatMightBeGettingOverridden + "'");
+		}
+
+		World w = typeToCheck.getWorld();
 
 		// Look at erasures of parameters (List<String> erased is List)
 		boolean sameParams = true;
-		for (int p = 0; p < methodThatMightBeGettingOverridden.getParameterTypes().length; p++) {
-			if (!methodThatMightBeGettingOverridden.getParameterTypes()[p].getErasureSignature().equals(
-					methodParamsArray[p].getErasureSignature()))
-				sameParams = false;
+		for (int p = 0, max = methodThatMightBeGettingOverridden.getParameterTypes().length; p < max; p++) {
+
+			UnresolvedType mtmbgoParameter = methodThatMightBeGettingOverridden.getParameterTypes()[p];
+			UnresolvedType ptype = methodParamsArray[p];
+
+			if (mtmbgoParameter.isTypeVariableReference()) {
+				if (!mtmbgoParameter.resolve(w).isAssignableFrom(ptype.resolve(w))) {
+					sameParams = false;
+				}
+			} else {
+				// old condition:
+				boolean b = !methodThatMightBeGettingOverridden.getParameterTypes()[p].getErasureSignature().equals(
+						methodParamsArray[p].getErasureSignature());
+
+				UnresolvedType parameterType = methodThatMightBeGettingOverridden.getParameterTypes()[p];
+
+				// Collapse to first bound (isn't that the same as erasure!
+				if (parameterType instanceof UnresolvedTypeVariableReferenceType) {
+					parameterType = ((UnresolvedTypeVariableReferenceType) parameterType).getTypeVariable().getFirstBound();
+				}
+				UnresolvedType parameterType2 = methodParamsArray[p];
+
+				boolean b2 = !parameterType.resolve(w).equals(parameterType2.resolve(w));
+				if (b != b2) {
+					int stop = 1;
+				}
+				if (b) { // !parameterType.resolve(w).equals(parameterType2.resolve(w))) {
+					sameParams = false;
+				}
+			}
+			//
+			// if (!ut.getErasureSignature().equals(ut2.getErasureSignature()))
+			// sameParams = false;
 		}
 
 		// If the 'typeToCheck' represents a parameterized type then the method
@@ -599,8 +640,8 @@ class BcelClassWeaver implements IClassWeaver {
 		// there is a generic method we are
 		// overriding
 
+		// FIXASC Why bother with the return type? If it is incompatible then the code has other problems!
 		if (sameParams) {
-			// check for covariance
 			if (typeToCheck.isParameterizedType()) {
 				return methodThatMightBeGettingOverridden.getBackingGenericMember();
 			} else if (!methodThatMightBeGettingOverridden.getReturnType().getErasureSignature().equals(mrettype)) {
@@ -610,8 +651,13 @@ class BcelClassWeaver implements IClassWeaver {
 				ResolvedType superReturn = typeToCheck.getWorld().resolve(
 						UnresolvedType.forSignature(methodThatMightBeGettingOverridden.getReturnType().getErasureSignature()));
 				ResolvedType subReturn = typeToCheck.getWorld().resolve(UnresolvedType.forSignature(mrettype));
-				if (superReturn.isAssignableFrom(subReturn))
+				if (superReturn.isAssignableFrom(subReturn)) {
 					return methodThatMightBeGettingOverridden;
+				}
+				// } else if (typeToCheck.isParameterizedType()) {
+				// return methodThatMightBeGettingOverridden.getBackingGenericMember();
+			} else {
+				return methodThatMightBeGettingOverridden;
 			}
 		}
 		return null;
@@ -676,7 +722,8 @@ class BcelClassWeaver implements IClassWeaver {
 			if (isOverriding != null)
 				return isOverriding;
 		}
-		List l = typeToCheck.getInterTypeMungers();
+		// was: List l = typeToCheck.getInterTypeMungers();
+		List l = (typeToCheck.isRawType() ? typeToCheck.getGenericType().getInterTypeMungers() : typeToCheck.getInterTypeMungers());
 		for (Iterator iterator = l.iterator(); iterator.hasNext();) {
 			Object o = iterator.next();
 			// FIXME asc if its not a BcelTypeMunger then its an
