@@ -285,10 +285,16 @@ public abstract class World implements Dump.INode {
 		}
 
 		// Pulling in the type may have already put the right entry in the map
-		if (typeMap.get(signature) == null && !ret.isMissing()) {
+		ResolvedType result = typeMap.get(signature);
+		if (result == null && !ret.isMissing()) {
 			typeMap.put(signature, ret);
+			return ret;
 		}
-		return ret;
+		if (result == null) {
+			return ret;
+		} else {
+			return result;
+		}
 	}
 
 	/**
