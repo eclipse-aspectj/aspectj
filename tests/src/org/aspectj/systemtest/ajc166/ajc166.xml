@@ -2,6 +2,18 @@
 
 <suite>
    
+  <ajc-test dir="bugs166/pr284862" title="npe hasmember">
+     <compile files="InterfaceToAdd.java AnnotatedMethodImpl.aj AspectToMatch.aj AnnotatedMethodInterface.java Entity.java EntityClass.java PresentAnnotation.java SearchAnnotation.java" options="-1.5 -XhasMember"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs166/pr284862" title="npe hasmember - 2">
+     <compile files="AnnotatedMethodInterface.java InterfaceToAdd.java AnnotatedMethodImpl.aj AspectToMatch.aj Entity.java EntityClass.java PresentAnnotation.java SearchAnnotation.java" options="-1.5 -XhasMember"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs166/pr284862" title="npe hasmember - 3">
+     <compile files="AnnotatedMethodInterface.java InterfaceToAdd.java AnnotatedMethodImpl.aj AspectToMatch.aj Entity.java EntityClass.java PresentAnnotation.java SearchAnnotation.java" options="-Xset:pipelineCompilation=false -1.5 -XhasMember"/>
+  </ajc-test>
+  
   <ajc-test dir="bugs165/pr279983" title="generics bridge">
      <compile files="X.java" options="-1.5"/>
      <run class="X"/>

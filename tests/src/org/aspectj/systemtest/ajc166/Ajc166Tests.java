@@ -18,6 +18,18 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc166Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testHasMember_284862() {
+		runTest("npe hasmember");
+	}
+
+	public void testHasMember_284862_2() {
+		runTest("npe hasmember - 2");
+	}
+
+	public void testHasMember_284862_3() {
+		runTest("npe hasmember - 3");
+	}
+
 	// fix is too disruptive for 1.6.5
 	public void testGenericsBridge_pr279983() {
 		runTest("generics bridge");
