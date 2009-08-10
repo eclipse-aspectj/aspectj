@@ -11,7 +11,6 @@
  *     Andy Clement - upgrade to support fields targetting generic types
  * ******************************************************************/
 
-
 package org.aspectj.ajdt.internal.compiler.lookup;
 
 import java.lang.reflect.Modifier;
@@ -35,241 +34,237 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 
 /**
- * The member finder looks after intertype declared members on a type, there is
- * one member finder per type that was hit by an ITD.
+ * The member finder looks after intertype declared members on a type, there is one member finder per type that was hit by an ITD.
  */
 public class InterTypeMemberFinder implements IMemberFinder {
 	private List interTypeFields = new ArrayList();
 	private List interTypeMethods = new ArrayList();
-	
+
 	public SourceTypeBinding sourceTypeBinding;
-	
-	public FieldBinding getField(SourceTypeBinding sourceTypeBinding,char[] fieldName,InvocationSite site,Scope scope) {
-		FieldBinding retField = sourceTypeBinding.getFieldBase(fieldName, true);  // XXX may need to get the correct value for second parameter in the future (see #55341)
-		if (interTypeFields.isEmpty()) return retField;
+
+	public FieldBinding getField(SourceTypeBinding sourceTypeBinding, char[] fieldName, InvocationSite site, Scope scope) {
+		FieldBinding retField = sourceTypeBinding.getFieldBase(fieldName, true); // XXX may need to get the correct value for second
+		// parameter in the future (see #55341)
+		if (interTypeFields.isEmpty())
+			return retField;
 		int fieldLength = fieldName.length;
-		
-		for (int i=0, len=interTypeFields.size(); i < len; i++) {
-			FieldBinding field = (FieldBinding)interTypeFields.get(i);
-			if (field.name.length == fieldLength 	&& CharOperation.prefixEquals(field.name, fieldName)) {
-				retField = resolveConflicts(sourceTypeBinding, retField, field, site, scope);	
+
+		for (int i = 0, len = interTypeFields.size(); i < len; i++) {
+			FieldBinding field = (FieldBinding) interTypeFields.get(i);
+			if (field.name.length == fieldLength && CharOperation.prefixEquals(field.name, fieldName)) {
+				retField = resolveConflicts(sourceTypeBinding, retField, field, site, scope);
 			}
 		}
-		
+
 		return retField;
 	}
-	
-	private FieldBinding resolveConflicts(
-		SourceTypeBinding sourceTypeBinding,
-		FieldBinding retField,
-		FieldBinding field,
-		InvocationSite site,
-		Scope scope)
-	{
-		if (retField == null) return field;
+
+	private FieldBinding resolveConflicts(SourceTypeBinding sourceTypeBinding, FieldBinding retField, FieldBinding field,
+			InvocationSite site, Scope scope) {
+		if (retField == null)
+			return field;
 		if (site != null) {
-			if (!field.canBeSeenBy(sourceTypeBinding, site, scope)) return retField;
-			if (!retField.canBeSeenBy(sourceTypeBinding, site, scope)) return field;
+			if (!field.canBeSeenBy(sourceTypeBinding, site, scope))
+				return retField;
+			if (!retField.canBeSeenBy(sourceTypeBinding, site, scope))
+				return field;
 		}
-		//XXX need dominates check on aspects
-		return new ProblemFieldBinding(retField.declaringClass, retField.name, IProblem.AmbiguousField);//ProblemReporter.Ambiguous);
+		// XXX need dominates check on aspects
+		return new ProblemFieldBinding(retField.declaringClass, retField.name, IProblem.AmbiguousField);// ProblemReporter.Ambiguous);
 	}
 
+	// private void reportConflicts(SourceTypeBinding sourceTypeBinding,
+	// MethodBinding m1, MethodBinding m2)
+	// {
+	// if (m1 == m2) {
+	// System.err.println("odd that we're ecomparing the same: " + m1);
+	// return;
+	// }
+	//		
+	// if (!m1.areParametersEqual(m2)) return;
 
-//	private void reportConflicts(SourceTypeBinding sourceTypeBinding,
-//		MethodBinding m1, MethodBinding m2)
-//	{
-//		if (m1 == m2) {
-//			System.err.println("odd that we're ecomparing the same: " + m1);
-//			return;
-//		}
-//		
-//		if (!m1.areParametersEqual(m2)) return;
-		
-//		if (m1 instanceof InterTypeMethodBinding) {
-//			if (m2 instanceof InterTypeMethodBinding) {
-//				reportConflictsBoth(sourceTypeBinding,
-//									(InterTypeMethodBinding)m1,
-//									(InterTypeMethodBinding)m2);
-//			} else {
-//				reportConflictsOne(sourceTypeBinding,
-//									(InterTypeMethodBinding)m1,
-//									m2);
-//			}
-//		} else if (m2 instanceof InterTypeMethodBinding) {
-//			reportConflictsOne(sourceTypeBinding,
-//									(InterTypeMethodBinding)m2,
-//									m1);
-//		} else {
-//			reportConflictsNone(sourceTypeBinding,
-//								m2,
-//								m1);
-//		}
-//	}
-	
+	// if (m1 instanceof InterTypeMethodBinding) {
+	// if (m2 instanceof InterTypeMethodBinding) {
+	// reportConflictsBoth(sourceTypeBinding,
+	// (InterTypeMethodBinding)m1,
+	// (InterTypeMethodBinding)m2);
+	// } else {
+	// reportConflictsOne(sourceTypeBinding,
+	// (InterTypeMethodBinding)m1,
+	// m2);
+	// }
+	// } else if (m2 instanceof InterTypeMethodBinding) {
+	// reportConflictsOne(sourceTypeBinding,
+	// (InterTypeMethodBinding)m2,
+	// m1);
+	// } else {
+	// reportConflictsNone(sourceTypeBinding,
+	// m2,
+	// m1);
+	// }
+	// }
 
-//	private void reportConflicts(
-//		SourceTypeBinding sourceTypeBinding,
-//		MethodBinding m1,
-//		MethodBinding m2)
-//	{
-//		//System.err.println("compare: " + m1 + " with " + m2);
-//		
-//		if (m1 == m2) {
-//			System.err.println("odd that we're ecomparing the same: " + m1);
-//			return;
-//		}
-//		
-//		if (!m1.areParametersEqual(m2)) return;
-//		
-//		//System.err.println("t1: " + getTargetType(m1) + ", " + getTargetType(m2));
-//		
-//		if (getTargetType(m1) != getTargetType(m2)) return;
-//		
-//		if (m1.declaringClass == m2.declaringClass) {
-//			duplicateMethodBinding(m1, m2);
-//			return;
-//		}
-//		
-//		
-//		if (m1.isPublic() || m2.isPublic()) {
-//			duplicateMethodBinding(m1, m2);
-//			return;
-//		}
-//		
-//		// handle the wierd case where the aspect is a subtype of the target
-//		if (m2.isProtected()) {
-//			if (m2.declaringClass.isSuperclassOf(m1.declaringClass)) {
-//				duplicateMethodBinding(m1, m2);
-//			}
-//			// don't return because we also want to do the package test
-//		}
-//		
-//		if (!m1.isPrivate() || !m2.isPrivate()) {
-//			// at least package visible
-//			if (m1.declaringClass.getPackage() == m2.declaringClass.getPackage()) {
-//				duplicateMethodBinding(m1, m2);
-//			}
-//			return;
-//		}				
-//		
-//		//XXX think about inner types some day
-//	}
-////	
+	// private void reportConflicts(
+	// SourceTypeBinding sourceTypeBinding,
+	// MethodBinding m1,
+	// MethodBinding m2)
+	// {
+	// //System.err.println("compare: " + m1 + " with " + m2);
+	//		
+	// if (m1 == m2) {
+	// System.err.println("odd that we're ecomparing the same: " + m1);
+	// return;
+	// }
+	//		
+	// if (!m1.areParametersEqual(m2)) return;
+	//		
+	// //System.err.println("t1: " + getTargetType(m1) + ", " + getTargetType(m2));
+	//		
+	// if (getTargetType(m1) != getTargetType(m2)) return;
+	//		
+	// if (m1.declaringClass == m2.declaringClass) {
+	// duplicateMethodBinding(m1, m2);
+	// return;
+	// }
+	//		
+	//		
+	// if (m1.isPublic() || m2.isPublic()) {
+	// duplicateMethodBinding(m1, m2);
+	// return;
+	// }
+	//		
+	// // handle the wierd case where the aspect is a subtype of the target
+	// if (m2.isProtected()) {
+	// if (m2.declaringClass.isSuperclassOf(m1.declaringClass)) {
+	// duplicateMethodBinding(m1, m2);
+	// }
+	// // don't return because we also want to do the package test
+	// }
+	//		
+	// if (!m1.isPrivate() || !m2.isPrivate()) {
+	// // at least package visible
+	// if (m1.declaringClass.getPackage() == m2.declaringClass.getPackage()) {
+	// duplicateMethodBinding(m1, m2);
+	// }
+	// return;
+	// }
+	//		
+	// //XXX think about inner types some day
+	// }
+	// //
 	private boolean isVisible(MethodBinding m1, ReferenceBinding s) {
-		if (m1.declaringClass == s) return true;
+		if (m1.declaringClass == s)
+			return true;
 
-		
-		if (m1.isPublic()) return true;
+		if (m1.isPublic())
+			return true;
 
-		//don't need to handle protected
-		//if (m1.isProtected()) {
+		// don't need to handle protected
+		// if (m1.isProtected()) {
 
-		
 		if (!m1.isPrivate()) {
 			// at least package visible
 			return (m1.declaringClass.getPackage() == s.getPackage());
 		}
-		
+
 		return false;
 	}
-	
-//
-//	private void duplicateMethodBinding(MethodBinding m1, MethodBinding m2) {
-//		ReferenceBinding t1 = m1.declaringClass;
-//		ReferenceBinding t2 = m2.declaringClass;
-//		
-//		
-//		
-//		
-//		
-//		
-//		if (!(t1 instanceof SourceTypeBinding) || !(t2 instanceof SourceTypeBinding)) {
-//			throw new RuntimeException("unimplemented");
-//		}
-//		
-//		SourceTypeBinding s1 = (SourceTypeBinding)t1;
-//		SourceTypeBinding s2 = (SourceTypeBinding)t2;
-//
-//		if (m1.sourceMethod() != null) {
-//			s1.scope.problemReporter().duplicateMethodInType(s2, m1.sourceMethod());
-//		}
-//		if (m2.sourceMethod() != null) {
-//			s2.scope.problemReporter().duplicateMethodInType(s1, m2.sourceMethod());
-//		}
-//	}
-	
-//	private void reportConflictsNone(
-//		SourceTypeBinding sourceTypeBinding,
-//		MethodBinding m2,
-//		MethodBinding m1)
-//	{
-//		throw new RuntimeException("not possible");
-//	}
 
+	//
+	// private void duplicateMethodBinding(MethodBinding m1, MethodBinding m2) {
+	// ReferenceBinding t1 = m1.declaringClass;
+	// ReferenceBinding t2 = m2.declaringClass;
+	//		
+	//		
+	//		
+	//		
+	//		
+	//		
+	// if (!(t1 instanceof SourceTypeBinding) || !(t2 instanceof SourceTypeBinding)) {
+	// throw new RuntimeException("unimplemented");
+	// }
+	//		
+	// SourceTypeBinding s1 = (SourceTypeBinding)t1;
+	// SourceTypeBinding s2 = (SourceTypeBinding)t2;
+	//
+	// if (m1.sourceMethod() != null) {
+	// s1.scope.problemReporter().duplicateMethodInType(s2, m1.sourceMethod());
+	// }
+	// if (m2.sourceMethod() != null) {
+	// s2.scope.problemReporter().duplicateMethodInType(s1, m2.sourceMethod());
+	// }
+	// }
 
+	// private void reportConflictsNone(
+	// SourceTypeBinding sourceTypeBinding,
+	// MethodBinding m2,
+	// MethodBinding m1)
+	// {
+	// throw new RuntimeException("not possible");
+	// }
 
-//		ReferenceBinding t1 = getDeclaringClass(m1);
-//		//.declaringClass;
-//		ReferenceBinding t2 = getDeclaringClass(m2);
-//		//.declaringClass;
-//		
-//		if (t1 == t2) {
-//			AbstractMethodDeclaration methodDecl = m2.sourceMethod(); // cannot be retrieved after binding is lost
-//			System.err.println("duplicate: " + t1 + ", " + t2);
-//			sourceTypeBinding.scope.problemReporter().duplicateMethodInType(sourceTypeBinding, methodDecl);
-//			methodDecl.binding = null;
-//			//methods[m] = null;  //XXX duplicate problem reports
-//			return;
-//		}
-//		
-//		if (!(t1 instanceof SourceTypeBinding) || !(t2 instanceof SourceTypeBinding)) {
-//			throw new RuntimeException("unimplemented");
-//		}
-//		
-//		SourceTypeBinding s1 = (SourceTypeBinding)t1;
-//		SourceTypeBinding s2 = (SourceTypeBinding)t2;
-//		
-//		
-//		if (m1.canBeSeenBy(s1, null, s2.scope) || m2.canBeSeenBy(s2, null, s1.scope)) {
-//			s1.scope.problemReporter().duplicateMethodInType(s2, m1.sourceMethod());
-//			s2.scope.problemReporter().duplicateMethodInType(s1, m2.sourceMethod());
-//		}
-//	}
+	// ReferenceBinding t1 = getDeclaringClass(m1);
+	// //.declaringClass;
+	// ReferenceBinding t2 = getDeclaringClass(m2);
+	// //.declaringClass;
+	//		
+	// if (t1 == t2) {
+	// AbstractMethodDeclaration methodDecl = m2.sourceMethod(); // cannot be retrieved after binding is lost
+	// System.err.println("duplicate: " + t1 + ", " + t2);
+	// sourceTypeBinding.scope.problemReporter().duplicateMethodInType(sourceTypeBinding, methodDecl);
+	// methodDecl.binding = null;
+	// //methods[m] = null; //XXX duplicate problem reports
+	// return;
+	// }
+	//		
+	// if (!(t1 instanceof SourceTypeBinding) || !(t2 instanceof SourceTypeBinding)) {
+	// throw new RuntimeException("unimplemented");
+	// }
+	//		
+	// SourceTypeBinding s1 = (SourceTypeBinding)t1;
+	// SourceTypeBinding s2 = (SourceTypeBinding)t2;
+	//		
+	//		
+	// if (m1.canBeSeenBy(s1, null, s2.scope) || m2.canBeSeenBy(s2, null, s1.scope)) {
+	// s1.scope.problemReporter().duplicateMethodInType(s2, m1.sourceMethod());
+	// s2.scope.problemReporter().duplicateMethodInType(s1, m2.sourceMethod());
+	// }
+	// }
 
-//	private ReferenceBinding getTargetType(MethodBinding m2) {
-//		if (m2 instanceof InterTypeMethodBinding) {
-//			return ((InterTypeMethodBinding)m2).getTargetType();
-//		}
-//		
-//		return m2.declaringClass;
-//	}
+	// private ReferenceBinding getTargetType(MethodBinding m2) {
+	// if (m2 instanceof InterTypeMethodBinding) {
+	// return ((InterTypeMethodBinding)m2).getTargetType();
+	// }
+	//		
+	// return m2.declaringClass;
+	// }
 
 	// find all of my methods, including ITDs
 	// PLUS: any public ITDs made on interfaces that I implement
 	public MethodBinding[] methods(SourceTypeBinding sourceTypeBinding) {
 		MethodBinding[] orig = sourceTypeBinding.methodsBase();
-//		if (interTypeMethods.isEmpty()) return orig;
-		
+		// if (interTypeMethods.isEmpty()) return orig;
+
 		List ret = new ArrayList(Arrays.asList(orig));
-		for (int i=0, len=interTypeMethods.size(); i < len; i++) {
-			MethodBinding method = (MethodBinding)interTypeMethods.get(i);
+		for (int i = 0, len = interTypeMethods.size(); i < len; i++) {
+			MethodBinding method = (MethodBinding) interTypeMethods.get(i);
 			ret.add(method);
 		}
-		
-		ReferenceBinding [] interfaces = sourceTypeBinding.superInterfaces();
+
+		ReferenceBinding[] interfaces = sourceTypeBinding.superInterfaces();
 		for (int i = 0; i < interfaces.length; i++) {
 			if (interfaces[i] instanceof SourceTypeBinding) {
 				SourceTypeBinding intSTB = (SourceTypeBinding) interfaces[i];
-				addPublicITDSFrom(intSTB,ret);
+				addPublicITDSFrom(intSTB, ret);
 			}
 		}
-		
-		if (ret.isEmpty()) return Binding.NO_METHODS;
-		return (MethodBinding[])ret.toArray(new MethodBinding[ret.size()]);	
+
+		if (ret.isEmpty())
+			return Binding.NO_METHODS;
+		return (MethodBinding[]) ret.toArray(new MethodBinding[ret.size()]);
 	}
-	
-	private void addPublicITDSFrom(SourceTypeBinding anInterface,List toAList) {
+
+	private void addPublicITDSFrom(SourceTypeBinding anInterface, List toAList) {
 		if (anInterface.memberFinder != null) {
 			InterTypeMemberFinder finder = (InterTypeMemberFinder) anInterface.memberFinder;
 			for (Iterator iter = finder.interTypeMethods.iterator(); iter.hasNext();) {
@@ -281,169 +276,166 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		}
 		ReferenceBinding superType = anInterface.superclass;
 		if (superType instanceof SourceTypeBinding && superType.isInterface()) {
-			addPublicITDSFrom((SourceTypeBinding)superType,toAList);
+			addPublicITDSFrom((SourceTypeBinding) superType, toAList);
 		}
 	}
-	
-	//XXX conflicts
-	public MethodBinding[] getMethods(
-		SourceTypeBinding sourceTypeBinding,
-		char[] selector) {
-//		System.err.println("getMethods: " + new String(sourceTypeBinding.signature()) +
-//							", " + new String(selector));
-			
+
+	// XXX conflicts
+	public MethodBinding[] getMethods(SourceTypeBinding sourceTypeBinding, char[] selector) {
+		// System.err.println("getMethods: " + new String(sourceTypeBinding.signature()) +
+		// ", " + new String(selector));
+
 		MethodBinding[] orig = sourceTypeBinding.getMethodsBase(selector);
-		if (interTypeMethods.isEmpty()) return orig;
-		
+		if (interTypeMethods.isEmpty())
+			return orig;
+
 		List ret = new ArrayList(Arrays.asList(orig));
-//		System.err.println("declared method: " + ret + " inters = " + interTypeMethods);
-		
-		for (int i=0, len=interTypeMethods.size(); i < len; i++) {
-			MethodBinding method = (MethodBinding)interTypeMethods.get(i);
-			
+		// System.err.println("declared method: " + ret + " inters = " + interTypeMethods);
+
+		for (int i = 0, len = interTypeMethods.size(); i < len; i++) {
+			MethodBinding method = (MethodBinding) interTypeMethods.get(i);
+
 			if (CharOperation.equals(selector, method.selector)) {
 				ret.add(method);
 			}
 		}
-		
-		if (ret.isEmpty()) return Binding.NO_METHODS;
-		
-//		System.err.println("method: " + ret);
-		
+
+		if (ret.isEmpty())
+			return Binding.NO_METHODS;
+
+		// System.err.println("method: " + ret);
+
 		// check for conflicts
-//		int len = ret.size();
-//		if (len > 1) {
-//			for (int i=0; i <len; i++) {
-//				MethodBinding m1 = (MethodBinding)ret.get(i);
-//				for (int j=i+1; j < len; j++) {
-//					MethodBinding m2 = (MethodBinding)ret.get(j);
-//					//reportConflicts(sourceTypeBinding, m1, m2);
-//				}
-//			}	
-//		}
-		
-		
-		//System.err.println("got methods: " + ret + " on " + sourceTypeBinding);
-		
-		return (MethodBinding[])ret.toArray(new MethodBinding[ret.size()]);	
+		// int len = ret.size();
+		// if (len > 1) {
+		// for (int i=0; i <len; i++) {
+		// MethodBinding m1 = (MethodBinding)ret.get(i);
+		// for (int j=i+1; j < len; j++) {
+		// MethodBinding m2 = (MethodBinding)ret.get(j);
+		// //reportConflicts(sourceTypeBinding, m1, m2);
+		// }
+		// }
+		// }
+
+		// System.err.println("got methods: " + ret + " on " + sourceTypeBinding);
+
+		return (MethodBinding[]) ret.toArray(new MethodBinding[ret.size()]);
 	}
-	
-	public MethodBinding getExactMethod(
-		SourceTypeBinding sourceTypeBinding,
-		char[] selector,
-		TypeBinding[] argumentTypes,
-		CompilationUnitScope refScope)
-	{
-		MethodBinding ret = sourceTypeBinding.getExactMethodBase(selector, argumentTypes,refScope);
-		
+
+	public MethodBinding getExactMethod(SourceTypeBinding sourceTypeBinding, char[] selector, TypeBinding[] argumentTypes,
+			CompilationUnitScope refScope) {
+		MethodBinding ret = sourceTypeBinding.getExactMethodBase(selector, argumentTypes, refScope);
+
 		// An intertype declaration may override an inherited member (Bug#50776)
-		for (int i=0, len=interTypeMethods.size(); i < len; i++) {
-			MethodBinding im =
-				(MethodBinding)interTypeMethods.get(i);
+		for (int i = 0, len = interTypeMethods.size(); i < len; i++) {
+			MethodBinding im = (MethodBinding) interTypeMethods.get(i);
 			if (matches(im, selector, argumentTypes)) {
 				return im;
 			}
 		}
 		return ret;
 	}
-//				if (isVisible(im, sourceTypeBinding)) {
-//					if (ret == null) {
-//						ret = im;
-//					} else {
-//						ret = resolveOverride(ret, im);
-//					}
-//				}
-//			}
-//		}
-//		return ret;
-//	}
 
-//	private MethodBinding resolveOverride(MethodBinding m1, MethodBinding m2) {
-//		ReferenceBinding t1 = getTargetType(m1);
-//		ReferenceBinding t2 = getTargetType(m2);
-//		if (t1 == t2) {
-//			//XXX also need a test for completely matching sigs
-//			if (m1.isAbstract()) return m2;
-//			else if (m2.isAbstract()) return m1;
-//			
-//			
-//			if (m1 instanceof InterTypeMethodBinding) {
-//				//XXX need to handle dominates here
-//				EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(sourceTypeBinding.scope);
-//				int cmp = compareAspectPrecedence(world.fromEclipse(m1.declaringClass), 
-//									    world.fromEclipse(m2.declaringClass));
-//				if (cmp < 0) return m2;
-//				else if (cmp > 0) return m1;
-//			}
-//			
-//			duplicateMethodBinding(m1, m2);
-//			return null;
-//		}
-//		if (t1.isSuperclassOf(t2)) {
-//			return m2;
-//		}
-//		if (t2.isSuperclassOf(t1)) {
-//			return m1;
-//		}
-//		
-//		duplicateMethodBinding(m1, m2);
-//		return null;
-//	}
+	// if (isVisible(im, sourceTypeBinding)) {
+	// if (ret == null) {
+	// ret = im;
+	// } else {
+	// ret = resolveOverride(ret, im);
+	// }
+	// }
+	// }
+	// }
+	// return ret;
+	// }
 
+	// private MethodBinding resolveOverride(MethodBinding m1, MethodBinding m2) {
+	// ReferenceBinding t1 = getTargetType(m1);
+	// ReferenceBinding t2 = getTargetType(m2);
+	// if (t1 == t2) {
+	// //XXX also need a test for completely matching sigs
+	// if (m1.isAbstract()) return m2;
+	// else if (m2.isAbstract()) return m1;
+	//			
+	//			
+	// if (m1 instanceof InterTypeMethodBinding) {
+	// //XXX need to handle dominates here
+	// EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(sourceTypeBinding.scope);
+	// int cmp = compareAspectPrecedence(world.fromEclipse(m1.declaringClass),
+	// world.fromEclipse(m2.declaringClass));
+	// if (cmp < 0) return m2;
+	// else if (cmp > 0) return m1;
+	// }
+	//			
+	// duplicateMethodBinding(m1, m2);
+	// return null;
+	// }
+	// if (t1.isSuperclassOf(t2)) {
+	// return m2;
+	// }
+	// if (t2.isSuperclassOf(t1)) {
+	// return m1;
+	// }
+	//		
+	// duplicateMethodBinding(m1, m2);
+	// return null;
+	// }
 
-//	private int compareAspectPrecedence(ResolvedType a1, ResolvedType a2) {
-//		World world = a1.getWorld();
-//		int ret = world.compareByDominates(a1, a2);
-//		if (ret == 0) {
-//			if (a1.isAssignableFrom(a2)) return -1;
-//			if (a2.isAssignableFrom(a1)) return +1;
-//		}
-//		return ret;
-//	}
+	// private int compareAspectPrecedence(ResolvedType a1, ResolvedType a2) {
+	// World world = a1.getWorld();
+	// int ret = world.compareByDominates(a1, a2);
+	// if (ret == 0) {
+	// if (a1.isAssignableFrom(a2)) return -1;
+	// if (a2.isAssignableFrom(a1)) return +1;
+	// }
+	// return ret;
+	// }
 
-	
 	//
-	private boolean matches(MethodBinding m1, MethodBinding m2) {
+	public static boolean matches(MethodBinding m1, MethodBinding m2) {
 		return matches(m1, m2.selector, m2.parameters);
-		// && 
-		//	(isVisible(m1, m2.declaringClass) || isVisible(m2, m1.declaringClass));
+		// &&
+		// (isVisible(m1, m2.declaringClass) || isVisible(m2, m1.declaringClass));
 	}
-	
-	private boolean matches(MethodBinding method, char[] selector, TypeBinding[] argumentTypes) {
-		if (!CharOperation.equals(selector, method.selector)) return false;
+
+	private static boolean matches(MethodBinding method, char[] selector, TypeBinding[] argumentTypes) {
+		if (!CharOperation.equals(selector, method.selector)) {
+			return false;
+		}
 		int argCount = argumentTypes.length;
-		if (method.parameters.length != argCount) return false;
-		
+		if (method.parameters.length != argCount) {
+			return false;
+		}
+
 		TypeBinding[] toMatch = method.parameters;
 		for (int p = 0; p < argCount; p++) {
-			if (toMatch[p] != argumentTypes[p]) return false;
+			if (toMatch[p] != argumentTypes[p]) {
+				return false;
+			}
 		}
 		return true;
 	}
-	
-	
-	
 
 	public void addInterTypeField(FieldBinding binding) {
-		//System.err.println("adding: " + binding + " to " + this);
+		// System.err.println("adding: " + binding + " to " + this);
 		interTypeFields.add(binding);
 	}
-	
+
 	public void addInterTypeMethod(MethodBinding binding) {
 		// check for conflicts with existing methods, should really check type as well...
-		//System.err.println("adding: " + binding + " to " + sourceTypeBinding);
+		// System.err.println("adding: " + binding + " to " + sourceTypeBinding);
+		// pr284862 - this can leave a broken EclipseResolvedMember with an orphan method binding inside...ought to repair it
 		if (isVisible(binding, sourceTypeBinding)) {
 			MethodBinding[] baseMethods = sourceTypeBinding.methods;
-			for (int i=0, len=baseMethods.length; i < len; i++) {
+			for (int i = 0, len = baseMethods.length; i < len; i++) {
 				MethodBinding b = baseMethods[i];
 				sourceTypeBinding.resolveTypesFor(b); // this will return fast if its already been done.
 				if (matches(binding, b)) {
 					// this always means we should remove the existing method
 					if (b.sourceMethod() != null) {
-						b.sourceMethod().binding = null; 
+						b.sourceMethod().binding = null;
 					}
 					sourceTypeBinding.removeMethod(i);
-					//System.err.println("    left: " + Arrays.asList(sourceTypeBinding.methods));
+					// System.err.println("    left: " + Arrays.asList(sourceTypeBinding.methods));
 					break;
 				}
 			}

@@ -53,7 +53,6 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 	private ResolvedType[] cachedAnnotationTypes;
 	private EclipseFactory eclipseFactory;
 
-	
 	public EclipseResolvedMember(MethodBinding binding, MemberKind memberKind, ResolvedType realDeclaringType, int modifiers,
 			UnresolvedType rettype, String name, UnresolvedType[] paramtypes, UnresolvedType[] extypes,
 			EclipseFactory eclipseFactory) {
@@ -202,7 +201,29 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 		TypeDeclaration tDecl = getTypeDeclaration();
 		if (tDecl != null) {// if the code is broken then tDecl may be null
 			if (realBinding instanceof MethodBinding) {
-				AbstractMethodDeclaration methodDecl = tDecl.declarationOf((MethodBinding) realBinding);
+				MethodBinding methodBinding = (MethodBinding) realBinding;
+				AbstractMethodDeclaration methodDecl = tDecl.declarationOf(methodBinding);
+				if (methodDecl == null) {
+					// pr284862
+					// bindings may have been trashed by InterTypeMemberFinder.addInterTypeMethod() - and so we need to take
+					// a better look. Really this EclipseResolvedMember is broken...
+
+					// Grab the set of bindings with matching selector
+					MethodBinding[] mb = ((MethodBinding) realBinding).declaringClass.getMethods(methodBinding.selector);
+					if (mb!=null) {
+					for (int m = 0, max = mb.length; m < max; m++) {
+						MethodBinding candidate = mb[m];
+						if (candidate instanceof InterTypeMethodBinding) {
+							if (InterTypeMemberFinder.matches(mb[m], methodBinding)) {
+								InterTypeMethodBinding intertypeMethodBinding = (InterTypeMethodBinding) candidate;
+								Annotation[] annos = intertypeMethodBinding.sourceMethod.annotations;
+								return annos;
+							}
+						}
+					}
+					}
+					return null; // give up! kind of assuming here that the code has other problems (and they will be reported)
+				}
 				return methodDecl.annotations;
 			} else if (realBinding instanceof FieldBinding) {
 				FieldDeclaration fieldDecl = tDecl.declarationOf((FieldBinding) realBinding);
@@ -237,13 +258,12 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 		return null;
 	}
 
-    /**
-     * Return true if this is the default constructor.  The default constructor
-     * is the one generated if there isn't one in the source.  Eclipse
-     * helpfully uses a bit to indicate the default constructor.
-     *
-     * @return true if this is the default constructor. 
-     */
+	/**
+	 * Return true if this is the default constructor. The default constructor is the one generated if there isn't one in the
+	 * source. Eclipse helpfully uses a bit to indicate the default constructor.
+	 * 
+	 * @return true if this is the default constructor.
+	 */
 	public boolean isDefaultConstructor() {
 		if (!(realBinding instanceof MethodBinding)) {
 			return false;
