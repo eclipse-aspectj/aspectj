@@ -1154,8 +1154,8 @@ class BcelClassWeaver implements IClassWeaver {
 						modificationOccured = true;
 						forRemoval.add(decaF);
 					}
-					worthRetrying.removeAll(forRemoval);
 				}
+				worthRetrying.removeAll(forRemoval);
 			}
 		}
 		return isChanged;
@@ -1444,13 +1444,13 @@ class BcelClassWeaver implements IClassWeaver {
 	 * Check if a resolved member (field/method/ctor) already has an annotation, if it does then put out a warning and return true
 	 */
 	private boolean doesAlreadyHaveAnnotation(ResolvedMember rm, DeclareAnnotation deca, List reportedProblems) {
-		if (rm.hasAnnotation(deca.getAnnotationTypeX())) {
+		if (rm.hasAnnotation(deca.getAnnotationType())) {
 			if (world.getLint().elementAlreadyAnnotated.isEnabled()) {
 				Integer uniqueID = new Integer(rm.hashCode() * deca.hashCode());
 				if (!reportedProblems.contains(uniqueID)) {
 					reportedProblems.add(uniqueID);
 					world.getLint().elementAlreadyAnnotated.signal(new String[] { rm.toString(),
-							deca.getAnnotationTypeX().toString() }, rm.getSourceLocation(), new ISourceLocation[] { deca
+							deca.getAnnotationType().toString() }, rm.getSourceLocation(), new ISourceLocation[] { deca
 							.getSourceLocation() });
 				}
 			}
@@ -1461,14 +1461,14 @@ class BcelClassWeaver implements IClassWeaver {
 
 	private boolean doesAlreadyHaveAnnotation(LazyMethodGen rm, ResolvedMember itdfieldsig, DeclareAnnotation deca,
 			List reportedProblems) {
-		if (rm != null && rm.hasAnnotation(deca.getAnnotationTypeX())) {
+		if (rm != null && rm.hasAnnotation(deca.getAnnotationType())) {
 			if (world.getLint().elementAlreadyAnnotated.isEnabled()) {
 				Integer uniqueID = new Integer(rm.hashCode() * deca.hashCode());
 				if (!reportedProblems.contains(uniqueID)) {
 					reportedProblems.add(uniqueID);
 					reportedProblems.add(new Integer(itdfieldsig.hashCode() * deca.hashCode()));
 					world.getLint().elementAlreadyAnnotated.signal(new String[] { itdfieldsig.toString(),
-							deca.getAnnotationTypeX().toString() }, rm.getSourceLocation(), new ISourceLocation[] { deca
+							deca.getAnnotationType().toString() }, rm.getSourceLocation(), new ISourceLocation[] { deca
 							.getSourceLocation() });
 				}
 			}
