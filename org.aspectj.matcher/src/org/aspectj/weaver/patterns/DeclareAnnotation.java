@@ -42,6 +42,7 @@ public class DeclareAnnotation extends Declare {
 	private String annotationString = "@<annotation>";
 	private ResolvedType containingAspect;
 	private AnnotationAJ annotation;
+	private ResolvedType annotationType;
 
 	/**
 	 * Captures type of declare annotation (method/type/field/constructor)
@@ -309,7 +310,13 @@ public class DeclareAnnotation extends Declare {
 					// if weaving broken code, this can happen
 					return;
 				}
-				annotation = annos[0];
+				int idx = 0;
+				if (annos.length > 0
+						&& annos[0].getType().getSignature().equals("Lorg/aspectj/internal/lang/annotation/ajcDeclareAnnotation;")) {
+					idx = 1;
+				}
+				annotation = annos[idx];
+				break;
 			}
 		}
 	}
@@ -351,11 +358,28 @@ public class DeclareAnnotation extends Declare {
 	}
 
 	/**
-	 * @return UnresolvedType for the annotation
+	 * @return the type of the annotation
 	 */
-	public UnresolvedType getAnnotationTypeX() {
-		ensureAnnotationDiscovered();
-		return (this.annotation == null ? null : this.annotation.getType());
+	public ResolvedType getAnnotationType() {
+		if (annotationType == null) {
+			for (Iterator iter = containingAspect.getMethods(); iter.hasNext();) {
+				ResolvedMember member = (ResolvedMember) iter.next();
+				if (member.getName().equals(annotationMethod)) {
+					ResolvedType[] annoTypes = member.getAnnotationTypes();
+					if (annoTypes == null) {
+						// if weaving broken code, this can happen
+						return null;
+					}
+					int idx = 0;
+					if (annoTypes[0].getSignature().equals("Lorg/aspectj/internal/lang/annotation/ajcDeclareAnnotation;")) {
+						idx = 1;
+					}
+					annotationType = annoTypes[idx];
+					break;
+				}
+			}
+		}
+		return annotationType;
 	}
 
 	/**
