@@ -65,10 +65,12 @@ import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.Declare;
+import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.OrPointcut;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -163,8 +165,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 
 			// container for import declarations - this may move to position 1 in the child list, if there
 			// is a package declaration
-			cuNode.addChild(new ProgramElement(structureModel, "", IProgramElement.Kind.IMPORT_REFERENCE, null,
-					0, null, null));
+			cuNode.addChild(new ProgramElement(structureModel, "", IProgramElement.Kind.IMPORT_REFERENCE, null, 0, null, null));
 
 			final IProgramElement addToNode = genAddToNode(file, unit, structureModel);
 
@@ -186,7 +187,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			stack.push(cuNode);
 			unit.traverse(this, unit.scope);
 
-			
 			// -- update file map (XXX do this before traversal?)
 			try {
 				structureModel.getHierarchy().addToFileMap(file.getCanonicalPath(), cuNode);
@@ -327,7 +327,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 								IProgramElement.Kind.IMPORT_REFERENCE, makeLocation(importRef), 0, null, null);
 						ceNode.setSourceSignature(genSourceSignature(importRef));
 						// Add Element to Imports of Current Class
-						ProgramElement imports = getImportReferencesRoot();//(ProgramElement) ((IProgramElement) stack.peek()).getChildren().get(0);
+						ProgramElement imports = getImportReferencesRoot();// (ProgramElement) ((IProgramElement)
+						// stack.peek()).getChildren().get(0);
 						imports.addChild(0, ceNode);
 					}
 				}
@@ -349,26 +350,25 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		stack.push(peNode);
 		return true;
 	}
-	
-	
+
 	public void endVisit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
 		// Is there a package declaration to insert into the model?
-		if (packageDecl!=null) {
+		if (packageDecl != null) {
 			int dotIndex = packageDecl.toString().lastIndexOf('.');
 			String packageString = packageDecl.toString();
 			if (dotIndex != -1) {
 				packageString = packageDecl.toString().substring(0, dotIndex);
 			}
 			ProgramElement packageDeclaration = new ProgramElement(activeStructureModel, packageString,
-					IProgramElement.Kind.PACKAGE_DECLARATION, makeLocation(packageDecl),0,null,null);
+					IProgramElement.Kind.PACKAGE_DECLARATION, makeLocation(packageDecl), 0, null, null);
 			StringBuffer packageSourceDeclaration = new StringBuffer();
 			packageSourceDeclaration.append("package ");
 			packageSourceDeclaration.append(packageString);
 			packageSourceDeclaration.append(";");
 			packageDeclaration.setSourceSignature(packageSourceDeclaration.toString());
 			stack.pop();
-			ProgramElement containingTypeElement = (ProgramElement)stack.peek();
-			containingTypeElement.addChild(0,packageDeclaration);
+			ProgramElement containingTypeElement = (ProgramElement) stack.peek();
+			containingTypeElement.addChild(0, packageDeclaration);
 			packageDecl = null;
 		} else {
 			stack.pop();
@@ -389,7 +389,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			kind = IProgramElement.Kind.ENUM;
 		else if (typeDeclarationKind == TypeDeclaration.ANNOTATION_TYPE_DECL)
 			kind = IProgramElement.Kind.ANNOTATION;
-
 
 		boolean isAnnotationStyleAspect = false;
 		// @AJ support
@@ -451,7 +450,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			kind = IProgramElement.Kind.ANNOTATION;
 
 		// @AJ support
-		boolean isAnnotationStyleAspect= false;
+		boolean isAnnotationStyleAspect = false;
 		if (memberTypeDeclaration.annotations != null) {
 			for (int i = 0; i < memberTypeDeclaration.annotations.length; i++) {
 				Annotation annotation = memberTypeDeclaration.annotations[i];
@@ -543,6 +542,10 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 					parents.add(tpl.get(i).getExactType().getName().replaceAll("\\$", "."));
 				}
 				peNode.setParentTypes(parents);
+			}
+			if (decl instanceof DeclareAnnotation) {
+				ResolvedType annotationType = ((DeclareAnnotation) decl).getAnnotationType();
+				peNode.setAnnotationType(annotationType.getName());
 			}
 		}
 		if (methodDeclaration.returnType != null) {
@@ -752,7 +755,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		if (((IProgramElement) stack.peek()).getPackageName().equals(currPackageImport)) {
 			packageDecl = importRef;
 		} else {
-		
+
 			ProgramElement peNode = new ProgramElement(activeStructureModel, new String(importRef.toString()),
 					IProgramElement.Kind.IMPORT_REFERENCE, makeLocation(importRef), 0,// could set static here, but for
 					// some reason the info is
@@ -765,18 +768,18 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			// create Source signature for import
 			peNode.setSourceSignature(genSourceSignature(importRef));
 
-			IProgramElement containingTypeElement = (IProgramElement)stack.peek();
+			IProgramElement containingTypeElement = (IProgramElement) stack.peek();
 			ProgramElement imports = getImportReferencesRoot();
 			imports.addChild(0, peNode);
 			stack.push(peNode);
 		}
 		return true;
 	}
-	
+
 	private ProgramElement getImportReferencesRoot() {
-		IProgramElement element = (IProgramElement)stack.peek();
-		boolean hasPackageDeclaration = ((IProgramElement)element.getChildren().get(0)).getKind().isPackageDeclaration();
-		return (ProgramElement)element.getChildren().get(hasPackageDeclaration?1:0);
+		IProgramElement element = (IProgramElement) stack.peek();
+		boolean hasPackageDeclaration = ((IProgramElement) element.getChildren().get(0)).getKind().isPackageDeclaration();
+		return (ProgramElement) element.getChildren().get(hasPackageDeclaration ? 1 : 0);
 	}
 
 	public void endVisit(ImportReference importRef, CompilationUnitScope scope) {
@@ -790,9 +793,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		}
 	}
 
-
-
-	
 	private String genSourceSignature(ImportReference importreference) {
 		StringBuffer output = new StringBuffer();
 		output.append("import ");
@@ -896,13 +896,11 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		}
 
 		output.append(" = ");
-		if (fieldDeclaration.initialization != null && 
-				(  fieldDeclaration.initialization instanceof Literal 
-				|| fieldDeclaration.initialization instanceof OperatorExpression
-				|| fieldDeclaration.initialization instanceof Reference)) {
+		if (fieldDeclaration.initialization != null
+				&& (fieldDeclaration.initialization instanceof Literal
+						|| fieldDeclaration.initialization instanceof OperatorExpression || fieldDeclaration.initialization instanceof Reference)) {
 			fieldDeclaration.initialization.printExpression(0, output);
-		} 
-		else {
+		} else {
 			output.append("null");
 		}
 		output.append(";\n");
