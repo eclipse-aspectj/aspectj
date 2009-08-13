@@ -138,6 +138,45 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// printModel(cli);
 	// }
 
+	// Testing that declare annotation model entries preserve the fully qualified type of the annotation
+	public void testDecAnnoState_pr286539() throws Exception {
+		String p = "pr286539";
+		initialiseProject(p);
+		build(p);
+		printModel(p);
+		IProgramElement decpPE = getModelFor(p).getHierarchy().findElementForHandle(
+				"=pr286539<p.q.r{Aspect.java}Asp`declare parents");
+		assertNotNull(decpPE);
+		String s = (String) (((List) decpPE.getParentTypes()).get(0));
+		assertEquals("p.q.r.Int", s);
+
+		decpPE = getModelFor(p).getHierarchy().findElementForHandle("=pr286539<p.q.r{Aspect.java}Asp`declare parents!2");
+		assertNotNull(decpPE);
+		s = (String) (((List) decpPE.getParentTypes()).get(0));
+		assertEquals("p.q.r.Int", s);
+
+		IProgramElement decaPE = getModelFor(p).getHierarchy().findElementForHandle(
+				"=pr286539<p.q.r{Aspect.java}Asp`declare \\@type");
+		assertNotNull(decaPE);
+		assertEquals("p.q.r.Foo", decaPE.getAnnotationType());
+
+		decaPE = getModelFor(p).getHierarchy().findElementForHandle("=pr286539<p.q.r{Aspect.java}Asp`declare \\@type!2");
+		assertNotNull(decaPE);
+		assertEquals("p.q.r.Goo", decaPE.getAnnotationType());
+
+		decaPE = getModelFor(p).getHierarchy().findElementForHandle("=pr286539<p.q.r{Aspect.java}Asp`declare \\@field");
+		assertNotNull(decaPE);
+		assertEquals("p.q.r.Foo", decaPE.getAnnotationType());
+
+		decaPE = getModelFor(p).getHierarchy().findElementForHandle("=pr286539<p.q.r{Aspect.java}Asp`declare \\@method");
+		assertNotNull(decaPE);
+		assertEquals("p.q.r.Foo", decaPE.getAnnotationType());
+
+		decaPE = getModelFor(p).getHierarchy().findElementForHandle("=pr286539<p.q.r{Aspect.java}Asp`declare \\@constructor");
+		assertNotNull(decaPE);
+		assertEquals("p.q.r.Foo", decaPE.getAnnotationType());
+	}
+
 	// just simple incremental build - no code change, just the aspect touched
 	public void testIncrementalFqItds_280380() throws Exception {
 		String p = "pr280380";
