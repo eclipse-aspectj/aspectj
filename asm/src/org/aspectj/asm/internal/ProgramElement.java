@@ -356,6 +356,23 @@ public class ProgramElement implements IProgramElement {
 		return (List) (kvpairs == null ? null : kvpairs.get("parentTypes"));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAnnotationType(String fullyQualifiedAnnotationType) {
+		if (kvpairs == Collections.EMPTY_MAP) {
+			kvpairs = new HashMap();
+		}
+		kvpairs.put("annotationType", fullyQualifiedAnnotationType);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAnnotationType() {
+		return (String) (kvpairs == null ? null : kvpairs.get("annotationType"));
+	}
+
 	public String getCorrespondingType() {
 		return getCorrespondingType(false);
 	}

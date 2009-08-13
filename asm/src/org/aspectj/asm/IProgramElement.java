@@ -403,4 +403,14 @@ public interface IProgramElement extends Serializable {
 	public void setAnnotationStyleDeclaration(boolean b);
 
 	public boolean isAnnotationStyleDeclaration();
+
+	/**
+	 * @param fullyQualifiedannotationType the annotation type, eg. p.q.r.Foo
+	 */
+	public void setAnnotationType(String fullyQualifiedannotationType);
+
+	/**
+	 * @return the fully qualified annotation type, eg. p.q.r.Foo
+	 */
+	public String getAnnotationType();
 }
