@@ -113,6 +113,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	private static final int DISCOVERED_DECLARED_SIGNATURE = 0x0010;
 	private static final int DISCOVERED_WHETHER_ANNOTATION_STYLE = 0x0020;
 
+	private static final int ANNOTATION_UNPACK_IN_PROGRESS = 0x0100;
+
 	private static final String[] NO_INTERFACE_SIGS = new String[] {};
 
 	/*
@@ -552,11 +554,32 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 
 	public boolean hasAnnotation(UnresolvedType ofType) {
+		// Due to re-entrancy we may be in the middle of unpacking the annotations already... in which case use this slow
+		// alternative until the stack unwinds itself
+		if (isUnpackingAnnotations()) {
+			AnnotationGen annos[] = javaClass.getAnnotations();
+			if (annos == null || annos.length == 0) {
+				return false;
+			} else {
+				String lookingForSignature = ofType.getSignature();
+				for (int a = 0; a < annos.length; a++) {
+					AnnotationGen annotation = annos[a];
+					if (lookingForSignature.equals(annotation.getTypeSignature())) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 		ensureAnnotationsUnpacked();
 		for (int i = 0; i < annotationTypes.length; i++) {
-			ResolvedType ax = annotationTypes[i];
-			if (ax.equals(ofType))
+			UnresolvedType ax = annotationTypes[i];
+			if (ax == null) {
+				throw new RuntimeException("Annotation entry " + i + " on type " + this.getResolvedTypeX().getName() + " is null!");
+			}
+			if (ax.equals(ofType)) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -647,21 +670,39 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 	// --- unpacking methods
 
+	private boolean isUnpackingAnnotations() {
+		return (bitflag & ANNOTATION_UNPACK_IN_PROGRESS) != 0;
+	}
+
 	private void ensureAnnotationsUnpacked() {
+		if (isUnpackingAnnotations()) {
+			throw new BCException("Re-entered weaver instance whilst unpacking annotations on " + this.className);
+		}
 		if (annotationTypes == null) {
-			AnnotationGen annos[] = javaClass.getAnnotations();
-			if (annos == null || annos.length == 0) {
-				annotationTypes = ResolvedType.NONE;
-				annotations = AnnotationAJ.EMPTY_ARRAY;
-			} else {
-				World w = getResolvedTypeX().getWorld();
-				annotationTypes = new ResolvedType[annos.length];
-				annotations = new AnnotationAJ[annos.length];
-				for (int i = 0; i < annos.length; i++) {
-					AnnotationGen annotation = annos[i];
-					annotationTypes[i] = w.resolve(UnresolvedType.forSignature(annotation.getTypeSignature()));
-					annotations[i] = new BcelAnnotation(annotation, w);
+			try {
+				bitflag |= ANNOTATION_UNPACK_IN_PROGRESS;
+				AnnotationGen annos[] = javaClass.getAnnotations();
+				if (annos == null || annos.length == 0) {
+					annotationTypes = ResolvedType.NONE;
+					annotations = AnnotationAJ.EMPTY_ARRAY;
+				} else {
+					World w = getResolvedTypeX().getWorld();
+					annotationTypes = new ResolvedType[annos.length];
+					annotations = new AnnotationAJ[annos.length];
+					for (int i = 0; i < annos.length; i++) {
+						AnnotationGen annotation = annos[i];
+						String typeSignature = annotation.getTypeSignature();
+						ResolvedType rType = w.resolve(UnresolvedType.forSignature(typeSignature));
+						if (rType == null) {
+							throw new RuntimeException("Whilst unpacking annotations on '" + getResolvedTypeX().getName()
+									+ "', failed to resolve type '" + typeSignature + "'");
+						}
+						annotationTypes[i] = rType;
+						annotations[i] = new BcelAnnotation(annotation, w);
+					}
 				}
+			} finally {
+				bitflag &= ~ANNOTATION_UNPACK_IN_PROGRESS;
 			}
 		}
 	}
