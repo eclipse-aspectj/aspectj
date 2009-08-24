@@ -43,6 +43,9 @@ import java.util.zip.ZipOutputStream;
 
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IProgramElement;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -1781,6 +1784,32 @@ public class BcelWeaver {
 		}
 		world.demote();
 		// this is very odd return behavior trying to keep everyone happy
+/*
+		// can we remove it from the model now? we know it contains no relationship endpoints...
+		AsmManager asm = world.getModelAsAsmManager();
+		if (asm != null) {
+			IHierarchy model = asm.getHierarchy();
+			if (!classType.isAspect()) {
+
+				String pkgname = classType.getResolvedTypeX().getPackageName();
+				String tname = classType.getResolvedTypeX().getSimpleBaseName();
+				IProgramElement typeElement = model.findElementForType(pkgname, tname);
+				if (typeElement != null) {
+					Set deleted = new HashSet();
+					deleted.add(asm.getCanonicalFilePath(typeElement.getSourceLocation().getSourceFile()));
+
+					model.updateHandleMap(deleted);
+					IProgramElement parent = typeElement.getParent();
+					// parent may have children: PACKAGE DECL, IMPORT-REFEFERENCE, TYPE_DECL
+					if (parent != null) {
+						typeElement.getParent().removeChild(typeElement);
+						// System.out.println("Removing " + classType.getResolvedTypeX().getName() + "? "
+						// + );
+					}
+				}
+			}
+		}
+*/
 		if (dump) {
 			dumpUnchanged(classFile);
 			return clazz;
