@@ -24,26 +24,24 @@ import org.aspectj.weaver.patterns.TypePattern;
 
 public abstract class Advice extends ShadowMunger {
 
-	protected AjAttribute.AdviceAttribute attribute; // the pointcut field is
-	// ignored
-
-	protected AdviceKind kind; // alias of attribute.getKind()
+	protected AjAttribute.AdviceAttribute attribute;
+	protected transient AdviceKind kind; // alias for attribute.getKind()
 	protected Member signature;
-	protected boolean hasMatchedAtLeastOnce = false;
 
 	// not necessarily declaring aspect, this is a semantics change from 1.0
 	protected ResolvedType concreteAspect; // null until after concretize
 
-	protected List innerCflowEntries = Collections.EMPTY_LIST; // just for
-	// cflow*Entry
-	// kinds
-	protected int nFreeVars; // just for cflow*Entry kinds
+	// Just for Cflow*entry kinds
+	protected List innerCflowEntries = Collections.EMPTY_LIST;
+	protected int nFreeVars;
 
 	protected TypePattern exceptionType; // just for Softener kind
 
 	// if we are parameterized, these type may be different to the advice
 	// signature types
 	protected UnresolvedType[] bindingParameterTypes;
+
+	protected boolean hasMatchedAtLeastOnce = false;
 
 	protected List/* Lint.Kind */suppressedLintKinds = null; // based on
 	// annotations on
@@ -97,9 +95,9 @@ public abstract class Advice extends ShadowMunger {
 	}
 
 	public Advice(AjAttribute.AdviceAttribute attribute, Pointcut pointcut, Member signature) {
-		super(pointcut, attribute.getStart(), attribute.getEnd(), attribute.getSourceContext());
+		super(pointcut, attribute.getStart(), attribute.getEnd(), attribute.getSourceContext(), ShadowMungerAdvice);
 		this.attribute = attribute;
-		kind = attribute.getKind(); // alias
+		this.kind = attribute.getKind(); // alias
 		this.signature = signature;
 		if (signature != null) {
 			bindingParameterTypes = signature.getParameterTypes();
@@ -140,14 +138,16 @@ public abstract class Advice extends ShadowMunger {
 				return matches;
 			} else if (hasExtraParameter() && kind == AdviceKind.AfterThrowing) { // pr119749
 				ResolvedType exceptionType = getExtraParameterType().resolve(world);
-				if (!exceptionType.isCheckedException())
+				if (!exceptionType.isCheckedException()) {
 					return true;
+				}
 				UnresolvedType[] shadowThrows = shadow.getSignature().getExceptions(world);
 				boolean matches = false;
 				for (int i = 0; i < shadowThrows.length && !matches; i++) {
 					ResolvedType type = shadowThrows[i].resolve(world);
-					if (exceptionType.isAssignableFrom(type))
+					if (exceptionType.isAssignableFrom(type)) {
 						matches = true;
+					}
 				}
 				return matches;
 			} else if (kind == AdviceKind.PerTargetEntry) {
@@ -271,8 +271,9 @@ public abstract class Advice extends ShadowMunger {
 	public static int countOnes(int bits) {
 		int ret = 0;
 		while (bits != 0) {
-			if ((bits & 1) != 0)
+			if ((bits & 1) != 0) {
 				ret += 1;
+			}
 			bits = bits >> 1;
 		}
 		return ret;
@@ -285,8 +286,9 @@ public abstract class Advice extends ShadowMunger {
 	public String[] getBaseParameterNames(World world) {
 		String[] allNames = getSignature().getParameterNames(world);
 		int extras = getExtraParameterCount();
-		if (extras == 0)
+		if (extras == 0) {
 			return allNames;
+		}
 		String[] result = new String[getBaseParameterCount()];
 		for (int i = 0; i < result.length; i++) {
 			result[i] = allNames[i];
@@ -429,8 +431,9 @@ public abstract class Advice extends ShadowMunger {
 
 	// XXX this perhaps ought to take account of the other fields in advice ...
 	public boolean equals(Object other) {
-		if (!(other instanceof Advice))
+		if (!(other instanceof Advice)) {
 			return false;
+		}
 		Advice o = (Advice) other;
 		return o.kind.equals(kind) && ((o.pointcut == null) ? (pointcut == null) : o.pointcut.equals(pointcut))
 				&& ((o.signature == null) ? (signature == null) : o.signature.equals(signature));
@@ -464,9 +467,9 @@ public abstract class Advice extends ShadowMunger {
 	public static final int ThisEnclosingJoinPointStaticPart = 0x08;
 	public static final int ParameterMask = 0x0f;
 	// For an if pointcut, this indicates it is hard wired to access a constant of either true or false
-	public static final int ConstantReference = 0x10; 
+	public static final int ConstantReference = 0x10;
 	// When the above flag is set, this indicates whether it is true or false
-	public static final int ConstantValue = 0x20; 
+	public static final int ConstantValue = 0x20;
 	public static final int CanInline = 0x40;
 
 	// for testing only

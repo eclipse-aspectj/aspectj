@@ -597,8 +597,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	public final Collection collectDeclares(boolean includeAdviceLike) {
-		if (!this.isAspect())
+		if (!this.isAspect()) {
 			return Collections.EMPTY_LIST;
+		}
 
 		ArrayList ret = new ArrayList();
 		// if (this.isAbstract()) {

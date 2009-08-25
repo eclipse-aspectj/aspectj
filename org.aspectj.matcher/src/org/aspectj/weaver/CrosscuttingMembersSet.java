@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002-2009 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -12,6 +12,8 @@
 
 package org.aspectj.weaver;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,27 +31,30 @@ import org.aspectj.weaver.tools.TraceFactory;
  * This holds on to all CrosscuttingMembers for a world. It handles management of change.
  * 
  * @author Jim Hugunin
+ * @author Andy Clement
  */
 public class CrosscuttingMembersSet {
+
+	private static Trace trace = TraceFactory.getTraceFactory().getTrace(CrosscuttingMembersSet.class);
+
+	private transient World world;
+
 	// FIXME AV - ? we may need a sequencedHashMap there to ensure source based precedence for @AJ advice
 	private final Map /* ResolvedType (the aspect) > CrosscuttingMembers */members = new HashMap();
 
-	private World world;
-	private List shadowMungers = null;
+	// List of things to be verified once the type system is 'complete'
+	private transient List /* IVerificationRequired */verificationList = null;
+
+	private List /* ShadowMunger */shadowMungers = null;
 	private List typeMungers = null;
 	private List lateTypeMungers = null;
 	private List declareSofts = null;
 	private List declareParents = null;
 	private List declareAnnotationOnTypes = null;
 	private List declareAnnotationOnFields = null;
-	private List declareAnnotationOnMethods = null; // includes ctors
+	private List declareAnnotationOnMethods = null; // includes constructors
 	private List declareDominates = null;
 	private boolean changedSinceLastReset = false;
-
-	private List /* IVerificationRequired */verificationList = null; // List of things to be verified once the type system is
-	// 'complete'
-
-	private static Trace trace = TraceFactory.getTraceFactory().getTrace(CrosscuttingMembersSet.class);
 
 	public CrosscuttingMembersSet(World world) {
 		this.world = world;
@@ -267,8 +272,9 @@ public class CrosscuttingMembersSet {
 			ResolvedType element = (ResolvedType) iter.next();
 			for (Iterator i = ((CrosscuttingMembers) members.get(element)).getDeclareParents().iterator(); i.hasNext();) {
 				DeclareParents dp = (DeclareParents) i.next();
-				if (dp.equals(p))
+				if (dp.equals(p)) {
 					return element;
+				}
 			}
 		}
 		return null;
@@ -288,8 +294,9 @@ public class CrosscuttingMembersSet {
 	 * we go along - for example some recursive type variable references (pr133307)
 	 */
 	public void recordNecessaryCheck(IVerificationRequired verification) {
-		if (verificationList == null)
+		if (verificationList == null) {
 			verificationList = new ArrayList();
+		}
 		verificationList.add(verification);
 	}
 
@@ -297,8 +304,9 @@ public class CrosscuttingMembersSet {
 	 * Called when type bindings are complete - calls all registered verification objects in turn.
 	 */
 	public void verify() {
-		if (verificationList == null)
+		if (verificationList == null) {
 			return;
+		}
 		for (Iterator iter = verificationList.iterator(); iter.hasNext();) {
 			IVerificationRequired element = (IVerificationRequired) iter.next();
 			element.verify();
@@ -306,4 +314,25 @@ public class CrosscuttingMembersSet {
 		verificationList = null;
 	}
 
+	public int serializationVersion = 1;
+
+	public void write(DataOutputStream stream) throws IOException {
+		// stream.writeInt(serializationVersion);
+		stream.writeInt(shadowMungers.size());
+		for (Iterator iterator = shadowMungers.iterator(); iterator.hasNext();) {
+			ShadowMunger shadowMunger = (ShadowMunger) iterator.next();
+			shadowMunger.write(stream);
+		}
+		// // private List /* ShadowMunger */shadowMungers = null;
+		// // private List typeMungers = null;
+		// // private List lateTypeMungers = null;
+		// // private List declareSofts = null;
+		// // private List declareParents = null;
+		// // private List declareAnnotationOnTypes = null;
+		// // private List declareAnnotationOnFields = null;
+		// // private List declareAnnotationOnMethods = null; // includes constructors
+		// // private List declareDominates = null;
+		// // private boolean changedSinceLastReset = false;
+		//
+	}
 }

@@ -27,33 +27,29 @@ import org.aspectj.weaver.patterns.Pointcut;
  */
 public class Checker extends ShadowMunger {
 
-	private final String message;
-	private final boolean isError; // if not error then it is a warning
+	private boolean isError; // if not error then it is a warning
+	private String message;
 	private volatile int hashCode = -1;
 
+	private Checker() {
+	}
+
 	/**
-	 * Create a Checker for a deow.
+	 * Create a Checker for a declare error or declare warning.
 	 * 
-	 * @param deow the declare error or warning for which to create the checker munger
+	 * @param deow the declare error or declare warning for which to create the checker munger
 	 */
 	public Checker(DeclareErrorOrWarning deow) {
-		super(deow.getPointcut(), deow.getStart(), deow.getEnd(), deow.getSourceContext());
+		super(deow.getPointcut(), deow.getStart(), deow.getEnd(), deow.getSourceContext(), ShadowMungerDeow);
 		this.message = deow.getMessage();
 		this.isError = deow.isError();
 	}
 
 	/**
-	 * Only used when filling in a parameterized Checker.
-	 * 
-	 * @param pc the pointcut
-	 * @param start the start
-	 * @param end the end
-	 * @param context the source context
-	 * @param message the message string
-	 * @param isError whether it is an error or just a warning
+	 * Only used when filling in a parameterized Checker
 	 */
-	private Checker(Pointcut pc, int start, int end, ISourceContext context, String message, boolean isError) {
-		super(pc, start, end, context);
+	private Checker(Pointcut pointcut, int start, int end, ISourceContext context, String message, boolean isError) {
+		super(pointcut, start, end, context, ShadowMungerDeow);
 		this.message = message;
 		this.isError = isError;
 	}
@@ -62,22 +58,20 @@ public class Checker extends ShadowMunger {
 		return isError;
 	}
 
-	/**
-	 * Not supported for a Checker
-	 */
+	public String getMessage() {
+		return this.message;
+	}
+
 	public void specializeOn(Shadow shadow) {
-		throw new RuntimeException("illegal state");
+		throw new IllegalStateException("Cannot call specializeOn(...) for a Checker");
 	}
 
-	/**
-	 * Not supported for a Checker
-	 */
 	public boolean implementOn(Shadow shadow) {
-		throw new RuntimeException("illegal state");
+		throw new IllegalStateException("Cannot call implementOn(...) for a Checker");
 	}
 
 	/**
-	 * Determine if the Checker matches at a shadow. If it does then we can immediately report the message. There (currently) can
+	 * Determine if the Checker matches at a shadow. If it does then we can immediately report the message. Currently, there can
 	 * never be a non-statically determinable match.
 	 * 
 	 * @param shadow the shadow which to match against
@@ -90,17 +84,11 @@ public class Checker extends ShadowMunger {
 		return false;
 	}
 
-	// FIXME what the hell?
+	// implementation for PartialOrder.PartialComparable
 	public int compareTo(Object other) {
 		return 0;
 	}
 
-	// FIXME Alex: ATAJ is that ok in all cases ?
-	/**
-	 * Default to true
-	 * 
-	 * @return
-	 */
 	public boolean mustCheckExceptions() {
 		return true;
 	}
@@ -109,7 +97,7 @@ public class Checker extends ShadowMunger {
 		return Collections.EMPTY_LIST;
 	}
 
-	// FIXME this perhaps ought to take account of the other fields in advice ...
+	// FIXME this perhaps ought to take account of the other fields in advice (use super.equals?)
 	public boolean equals(Object other) {
 		if (!(other instanceof Checker)) {
 			return false;
@@ -128,6 +116,9 @@ public class Checker extends ShadowMunger {
 		return hashCode;
 	}
 
+	/**
+	 * Parameterize the Checker by parameterizing the pointcut
+	 */
 	public ShadowMunger parameterizeWith(ResolvedType declaringType, Map typeVariableMap) {
 		Checker ret = new Checker(this.pointcut.parameterizeWith(typeVariableMap, declaringType.getWorld()), this.start, this.end,
 				this.sourceContext, this.message, this.isError);
@@ -135,8 +126,7 @@ public class Checker extends ShadowMunger {
 	}
 
 	/**
-	 * Concretize this Checker by concretizing the pointcut.
-	 * 
+	 * Concretize this Checker by concretizing the pointcut
 	 */
 	public ShadowMunger concretize(ResolvedType theAspect, World world, PerClause clause) {
 		this.pointcut = this.pointcut.concretize(theAspect, getDeclaringType(), 0, this);
@@ -144,8 +134,16 @@ public class Checker extends ShadowMunger {
 		return this;
 	}
 
-	public String getMessage() {
-		return this.message;
-	}
-
+	// public void write(DataOutputStream stream) throws IOException {
+	// super.write(stream);
+	// stream.writeBoolean(isError);
+	// stream.writeUTF(message);
+	// }
+	//
+	// public static Checker read(DataInputStream stream, World world) throws IOException {
+	// Checker checker = new Checker();
+	// checker.isError = stream.readBoolean();
+	// checker.message = stream.readUTF();
+	// return checker;
+	// }
 }

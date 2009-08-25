@@ -88,8 +88,9 @@ public class CrosscuttingMembers {
 	}
 
 	private void addShadowMunger(ShadowMunger m) {
-		if (inAspect.isAbstract())
-			return; // we don't do mungers for abstract aspects
+		if (inAspect.isAbstract()) {
+			return; // mungers for abstract aspects are not added
+		}
 		addConcreteShadowMunger(m.concretize(inAspect, world, perClause));
 	}
 
