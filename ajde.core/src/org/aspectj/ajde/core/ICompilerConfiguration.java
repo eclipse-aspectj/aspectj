@@ -122,5 +122,10 @@ public interface ICompilerConfiguration extends CompilerConfigurationChangeFlags
 	 *         classpath element will be checked)
 	 */
 	public List getClasspathElementsWithModifiedContents();
+	//
+	// /**
+	// * @return the location where the state can be persisted across eclipse restarts. eg. f:/foo/bar/goo
+	// */
+	// public String getLocationForPersistingProjectState();
 
 }
