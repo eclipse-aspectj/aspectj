@@ -54,59 +54,52 @@ import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
 
 /**
- * Advice implemented for bcel.
+ * Advice implemented for BCEL
  * 
  * @author Erik Hilsdale
  * @author Jim Hugunin
+ * @author Andy Clement
  */
 class BcelAdvice extends Advice {
-	private Test pointcutTest;
+
+	/**
+	 * If a match is not entirely statically determinable, this captures the runtime test that must succeed in order for the advice
+	 * to run.
+	 */
+	private Test runtimeTest;
 	private ExposedState exposedState;
 
-	public BcelAdvice(AjAttribute.AdviceAttribute attribute, Pointcut pointcut, Member signature, ResolvedType concreteAspect) {
-		super(attribute, pointcut, shrink(attribute.getKind(), concreteAspect, signature));// (signature==null?null:signature.slimline
-		// ()));
+	public BcelAdvice(AjAttribute.AdviceAttribute attribute, Pointcut pointcut, Member adviceSignature, ResolvedType concreteAspect) {
+		super(attribute, pointcut, simplify(attribute.getKind(), adviceSignature));
 		this.concreteAspect = concreteAspect;
 	}
 
 	/**
-	 * We don't always need to represent the signature with a heavyweight BcelMethod object - only if its around advice and inlining
-	 * is active
-	 * 
-	 * @param concreteAspect
-	 * @param attribute
+	 * A heavyweight BcelMethod object is only required for around advice that will be inlined. For other kinds of advice it is
+	 * possible to save some space.
 	 */
-	private static Member shrink(AdviceKind kind, ResolvedType concreteAspect, Member m) {
-		if (m == null)
-			return null;
-		UnresolvedType dType = m.getDeclaringType();
-		// if it isnt around advice or it is but inlining is turned off then shrink it to a ResolvedMemberImpl
-		if (kind != AdviceKind.Around || ((dType instanceof ResolvedType) && ((ResolvedType) dType).getWorld().isXnoInline())) {
-			if (m instanceof BcelMethod) {
-				BcelMethod bm = (BcelMethod) m;
-				if (bm.getMethod() != null && bm.getMethod().getAnnotations() != null)
-					return m;
-				ResolvedMemberImpl simplermember = new ResolvedMemberImpl(bm.getKind(), bm.getDeclaringType(), bm.getModifiers(),
-						bm.getReturnType(), bm.getName(), bm.getParameterTypes());// ,bm.getExceptions(),bm.getBackingGenericMember()
-				// );
-				simplermember.setParameterNames(bm.getParameterNames());
-				return simplermember;
+	private static Member simplify(AdviceKind kind, Member adviceSignature) {
+		if (adviceSignature != null) {
+			UnresolvedType adviceDeclaringType = adviceSignature.getDeclaringType();
+			// if it isnt around advice or it is but inlining is turned off then shrink it to a ResolvedMemberImpl
+			if (kind != AdviceKind.Around
+					|| ((adviceDeclaringType instanceof ResolvedType) && ((ResolvedType) adviceDeclaringType).getWorld()
+							.isXnoInline())) {
+				if (adviceSignature instanceof BcelMethod) {
+					BcelMethod bm = (BcelMethod) adviceSignature;
+					if (bm.getMethod() != null && bm.getMethod().getAnnotations() != null) {
+						return adviceSignature;
+					}
+					ResolvedMemberImpl simplermember = new ResolvedMemberImpl(bm.getKind(), bm.getDeclaringType(), bm
+							.getModifiers(), bm.getReturnType(), bm.getName(), bm.getParameterTypes());// ,bm.getExceptions(),bm.getBackingGenericMember()
+					// );
+					simplermember.setParameterNames(bm.getParameterNames());
+					return simplermember;
+				}
 			}
 		}
-		return m;
+		return adviceSignature;
 	}
-
-	/**
-	 * For testing only
-	 */
-	public BcelAdvice(AdviceKind kind, Pointcut pointcut, Member signature, int extraArgumentFlags, int start, int end,
-			ISourceContext sourceContext, ResolvedType concreteAspect) {
-		this(new AjAttribute.AdviceAttribute(kind, pointcut, extraArgumentFlags, start, end, sourceContext), pointcut, signature,
-				concreteAspect);
-		thrownExceptions = Collections.EMPTY_LIST; // !!! interaction with unit tests
-	}
-
-	// ---- implementations of ShadowMunger's methods
 
 	public ShadowMunger concretize(ResolvedType fromType, World world, PerClause clause) {
 		suppressLintWarnings(world);
@@ -170,7 +163,7 @@ class BcelAdvice extends Advice {
 
 		World world = shadow.getIWorld();
 		suppressLintWarnings(world);
-		pointcutTest = getPointcut().findResidue(shadow, exposedState);
+		runtimeTest = getPointcut().findResidue(shadow, exposedState);
 		clearLintSuppressions(world, this.suppressedLintKinds);
 
 		// these initializations won't be performed by findResidue, but need to be
@@ -188,7 +181,7 @@ class BcelAdvice extends Advice {
 		}
 
 		if ((getExtraParameterFlags() & ThisJoinPoint) != 0) {
-			boolean hasGuardTest = pointcutTest != Literal.TRUE && getKind() != AdviceKind.Around;
+			boolean hasGuardTest = runtimeTest != Literal.TRUE && getKind() != AdviceKind.Around;
 			boolean isAround = getKind() == AdviceKind.Around;
 			((BcelShadow) shadow).requireThisJoinPoint(hasGuardTest, isAround);
 			((BcelShadow) shadow).getEnclosingClass().warnOnAddedStaticInitializer(shadow, getSourceLocation());
@@ -205,14 +198,17 @@ class BcelAdvice extends Advice {
 	}
 
 	private boolean canInline(Shadow s) {
-		if (attribute.isProceedInInners())
+		if (attribute.isProceedInInners()) {
 			return false;
+		}
 		// XXX this guard seems to only be needed for bad test cases
-		if (concreteAspect == null || concreteAspect.isMissing())
+		if (concreteAspect == null || concreteAspect.isMissing()) {
 			return false;
+		}
 
-		if (concreteAspect.getWorld().isXnoInline())
+		if (concreteAspect.getWorld().isXnoInline()) {
 			return false;
+		}
 		// System.err.println("isWoven? " + ((BcelObjectType)concreteAspect).getLazyClassGen().getWeaverState());
 		BcelObjectType boType = BcelWorld.getBcelObjectType(concreteAspect);
 		if (boType == null) {
@@ -282,7 +278,7 @@ class BcelAdvice extends Advice {
 		// PerObjectInterfaceTypeMunger.registerAsAdvisedBy(s.getTargetVar().getType(), getConcreteAspect());
 		// }
 		// }
-		if (pointcutTest == Literal.FALSE) { // not usually allowed, except in one case (260384)
+		if (runtimeTest == Literal.FALSE) { // not usually allowed, except in one case (260384)
 			Member sig = shadow.getSignature();
 			if (sig.getArity() == 0 && shadow.getKind() == Shadow.MethodCall && sig.getName().charAt(0) == 'c'
 					&& sig.getReturnType().equals(ResolvedType.OBJECT) && sig.getName().equals("clone")) {
@@ -350,8 +346,9 @@ class BcelAdvice extends Advice {
 	// ---- implementations
 
 	private Collection collectCheckedExceptions(UnresolvedType[] excs) {
-		if (excs == null || excs.length == 0)
+		if (excs == null || excs.length == 0) {
 			return Collections.EMPTY_LIST;
+		}
 
 		Collection ret = new ArrayList();
 		World world = concreteAspect.getWorld();
@@ -419,7 +416,7 @@ class BcelAdvice extends Advice {
 		// return true;
 		// }
 
-		return pointcutTest != null && !(pointcutTest == Literal.TRUE);// || pointcutTest == Literal.NO_TEST);
+		return runtimeTest != null && !(runtimeTest == Literal.TRUE);// || pointcutTest == Literal.NO_TEST);
 	}
 
 	/**
@@ -507,8 +504,9 @@ class BcelAdvice extends Advice {
 		final boolean isAnnotationStyleAspect = getConcreteAspect() != null && getConcreteAspect().isAnnotationStyleAspect() && x;
 		boolean previousIsClosure = false;
 		for (int i = 0, len = exposedState.size(); i < len; i++) {
-			if (exposedState.isErroneousVar(i))
+			if (exposedState.isErroneousVar(i)) {
 				continue; // Erroneous vars have already had error msgs reported!
+			}
 			BcelVar v = (BcelVar) exposedState.get(i);
 
 			if (v == null) {
@@ -608,28 +606,31 @@ class BcelAdvice extends Advice {
 		Member sig = getSignature();
 		if (sig instanceof ResolvedMember) {
 			ResolvedMember rsig = (ResolvedMember) sig;
-			if (rsig.hasBackingGenericMember())
+			if (rsig.hasBackingGenericMember()) {
 				return rsig.getBackingGenericMember();
+			}
 		}
 		return sig;
 	}
 
 	public InstructionList getTestInstructions(BcelShadow shadow, InstructionHandle sk, InstructionHandle fk, InstructionHandle next) {
 		// System.err.println("test: " + pointcutTest);
-		return BcelRenderer.renderTest(shadow.getFactory(), shadow.getWorld(), pointcutTest, sk, fk, next);
+		return BcelRenderer.renderTest(shadow.getFactory(), shadow.getWorld(), runtimeTest, sk, fk, next);
 	}
 
 	public int compareTo(Object other) {
-		if (!(other instanceof BcelAdvice))
+		if (!(other instanceof BcelAdvice)) {
 			return 0;
+		}
 		BcelAdvice o = (BcelAdvice) other;
 
 		// System.err.println("compareTo: " + this + ", " + o);
 		if (kind.getPrecedence() != o.kind.getPrecedence()) {
-			if (kind.getPrecedence() > o.kind.getPrecedence())
+			if (kind.getPrecedence() > o.kind.getPrecedence()) {
 				return +1;
-			else
+			} else {
 				return -1;
+			}
 		}
 
 		if (kind.isCflow()) {
@@ -637,12 +638,13 @@ class BcelAdvice extends Advice {
 			// System.err.println("      " + o + " innerCflowEntries " + o.innerCflowEntries);
 			boolean isBelow = (kind == AdviceKind.CflowBelowEntry);
 
-			if (this.innerCflowEntries.contains(o))
+			if (this.innerCflowEntries.contains(o)) {
 				return isBelow ? +1 : -1;
-			else if (o.innerCflowEntries.contains(this))
+			} else if (o.innerCflowEntries.contains(this)) {
 				return isBelow ? -1 : +1;
-			else
+			} else {
 				return 0;
+			}
 		}
 
 		if (kind.isPerEntry() || kind == AdviceKind.Softener) {
@@ -653,8 +655,9 @@ class BcelAdvice extends Advice {
 		World world = concreteAspect.getWorld();
 
 		int ret = concreteAspect.getWorld().compareByPrecedence(concreteAspect, o.concreteAspect);
-		if (ret != 0)
+		if (ret != 0) {
 			return ret;
+		}
 
 		ResolvedType declaringAspect = getDeclaringAspect().resolve(world);
 		ResolvedType o_declaringAspect = o.getDeclaringAspect().resolve(world);
@@ -684,8 +687,9 @@ class BcelAdvice extends Advice {
 		}
 
 		// System.out.println("vars: " + Arrays.asList(exposedState.vars));
-		if (exposedState == null)
+		if (exposedState == null) {
 			return BcelVar.NONE;
+		}
 		int len = exposedState.vars.length;
 		BcelVar[] ret = new BcelVar[len];
 		for (int i = 0; i < len; i++) {
@@ -708,4 +712,15 @@ class BcelAdvice extends Advice {
 	protected void clearLintSuppressions(World inWorld, Collection toClear) {
 		inWorld.getLint().clearSuppressions(toClear);
 	}
+
+	/**
+	 * For testing only
+	 */
+	public BcelAdvice(AdviceKind kind, Pointcut pointcut, Member signature, int extraArgumentFlags, int start, int end,
+			ISourceContext sourceContext, ResolvedType concreteAspect) {
+		this(new AjAttribute.AdviceAttribute(kind, pointcut, extraArgumentFlags, start, end, sourceContext), pointcut, signature,
+				concreteAspect);
+		thrownExceptions = Collections.EMPTY_LIST; // !!! interaction with unit tests
+	}
+
 }

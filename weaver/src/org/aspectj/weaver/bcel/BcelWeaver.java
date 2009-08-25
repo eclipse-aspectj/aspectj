@@ -14,6 +14,7 @@
 package org.aspectj.weaver.bcel;
 
 import java.io.ByteArrayInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -43,9 +44,6 @@ import java.util.zip.ZipOutputStream;
 
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
-import org.aspectj.asm.AsmManager;
-import org.aspectj.asm.IHierarchy;
-import org.aspectj.asm.IProgramElement;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -100,49 +98,49 @@ import org.aspectj.weaver.tools.TraceFactory;
 public class BcelWeaver {
 
 	public static final String CLOSURE_CLASS_PREFIX = "$Ajc";
-
 	public static final String SYNTHETIC_CLASS_POSTFIX = "$ajc";
 
-	private final BcelWorld world;
+	private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelWeaver.class);
+
+	private transient final BcelWorld world;
 	private final CrosscuttingMembersSet xcutSet;
 
 	private boolean inReweavableMode = false;
 
-	private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelWeaver.class);
+	// private Map /*String,UnwovenClassFile*/sourceJavaClasses = new HashMap();
+	// private Map /*String,UnwovenClassFile*/resources = new HashMap();
+	private transient List /* UnwovenClassFile */addedClasses = new ArrayList();
+	private transient List /* String */deletedTypenames = new ArrayList();
+	private transient List shadowMungerList = null; // setup by prepareForWeave
+	private transient List typeMungerList = null; // setup by prepareForWeave
+	private transient List lateTypeMungerList = null; // setup by prepareForWeave
+	private transient List declareParentsList = null; // setup by prepareForWeave
 
-	public BcelWeaver(BcelWorld world) {
-		super();
-		if (trace.isTraceEnabled())
-			trace.enter("<init>", this, world);
-		this.world = world;
-		this.xcutSet = world.getCrosscuttingMembersSet();
-		if (trace.isTraceEnabled())
-			trace.exit("<init>");
-	}
-
-	// ---- fields
-	// private Map sourceJavaClasses = new HashMap(); /* String ->
-	// UnwovenClassFile */
-	private List addedClasses = new ArrayList(); /* List<UnwovenClassFile> */
-	private List deletedTypenames = new ArrayList(); /* List<String> */
-	// private Map resources = new HashMap(); /* String -> UnwovenClassFile */
 	private Manifest manifest = null;
 	private boolean needToReweaveWorld = false;
 
 	private boolean isBatchWeave = true;
-	private List shadowMungerList = null; // setup by prepareForWeave
-	private List typeMungerList = null; // setup by prepareForWeave
-	private List lateTypeMungerList = null; // setup by prepareForWeave
-	private List declareParentsList = null; // setup by prepareForWeave
 
 	private ZipOutputStream zipOutputStream;
 	private CustomMungerFactory customMungerFactory;
 
-	// ----
+	// ---
+
+	public BcelWeaver(BcelWorld world) {
+		super();
+		if (trace.isTraceEnabled()) {
+			trace.enter("<init>", this, world);
+		}
+		this.world = world;
+		this.xcutSet = world.getCrosscuttingMembersSet();
+		if (trace.isTraceEnabled()) {
+			trace.exit("<init>");
+		}
+	}
 
 	// only called for testing
-	public void setShadowMungers(List l) {
-		shadowMungerList = l;
+	public void setShadowMungers(List shadowMungers) {
+		shadowMungerList = shadowMungers;
 	}
 
 	/**
@@ -152,8 +150,9 @@ public class BcelWeaver {
 	 * @return aspect
 	 */
 	public ResolvedType addLibraryAspect(String aspectName) {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("addLibraryAspect", this, aspectName);
+		}
 
 		// 1 - resolve as is
 		UnresolvedType unresolvedT = UnresolvedType.forName(aspectName);
@@ -202,8 +201,9 @@ public class BcelWeaver {
 			// => mainly for nothing for LTW - pbly for something in incremental
 			// build...
 			xcutSet.addOrReplaceAspect(type);
-			if (trace.isTraceEnabled())
+			if (trace.isTraceEnabled()) {
 				trace.exit("addLibraryAspect", type);
+			}
 			if (type.getSuperclass().isAspect()) {
 				// If the supertype includes ITDs and the user has not included
 				// that aspect in the aop.xml, they will
@@ -220,8 +220,9 @@ public class BcelWeaver {
 		} else {
 			// FIXME AV - better warning upon no such aspect from aop.xml
 			RuntimeException ex = new RuntimeException("Cannot register non aspect: " + type.getName() + " , " + aspectName);
-			if (trace.isTraceEnabled())
+			if (trace.isTraceEnabled()) {
 				trace.exit("addLibraryAspect", ex);
+			}
 			throw ex;
 		}
 	}
@@ -251,8 +252,9 @@ public class BcelWeaver {
 		try {
 			while (true) {
 				ZipEntry entry = inStream.getNextEntry();
-				if (entry == null)
+				if (entry == null) {
 					break;
+				}
 
 				if (entry.isDirectory() || !entry.getName().endsWith(".class")) {
 					continue;
@@ -505,8 +507,9 @@ public class BcelWeaver {
 	}
 
 	public void prepareForWeave() {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("prepareForWeave", this);
+		}
 		needToReweaveWorld = xcutSet.hasChangedSinceLastReset();
 
 		// update mungers
@@ -523,8 +526,9 @@ public class BcelWeaver {
 
 		for (Iterator i = deletedTypenames.iterator(); i.hasNext();) {
 			String name = (String) i.next();
-			if (xcutSet.deleteAspect(UnresolvedType.forName(name)))
+			if (xcutSet.deleteAspect(UnresolvedType.forName(name))) {
 				needToReweaveWorld = true;
+			}
 		}
 
 		shadowMungerList = xcutSet.getShadowMungers();
@@ -560,20 +564,24 @@ public class BcelWeaver {
 			public int compare(Object o1, Object o2) {
 				ShadowMunger sm1 = (ShadowMunger) o1;
 				ShadowMunger sm2 = (ShadowMunger) o2;
-				if (sm1.getSourceLocation() == null)
+				if (sm1.getSourceLocation() == null) {
 					return (sm2.getSourceLocation() == null ? 0 : 1);
-				if (sm2.getSourceLocation() == null)
+				}
+				if (sm2.getSourceLocation() == null) {
 					return -1;
+				}
 
 				return (sm2.getSourceLocation().getOffset() - sm1.getSourceLocation().getOffset());
 			}
 		});
 
-		if (inReweavableMode)
+		if (inReweavableMode) {
 			world.showMessage(IMessage.INFO, WeaverMessages.format(WeaverMessages.REWEAVABLE_MODE), null, null);
+		}
 
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("prepareForWeave");
+		}
 	}
 
 	private void addCustomMungers() {
@@ -588,8 +596,9 @@ public class BcelWeaver {
 						shadowMungerList.addAll(shadowMungers);
 					}
 					Collection/* ConcreteTypeMunger */typeMungers = customMungerFactory.createCustomTypeMungers(type);
-					if (typeMungers != null)
+					if (typeMungers != null) {
 						typeMungerList.addAll(typeMungers);
+					}
 				}
 			}
 		}
@@ -657,12 +666,15 @@ public class BcelWeaver {
 
 	private Pointcut shareEntriesFromMap(Pointcut p, Map pcMap) {
 		// some things cant be shared...
-		if (p instanceof NameBindingPointcut)
+		if (p instanceof NameBindingPointcut) {
 			return p;
-		if (p instanceof IfPointcut)
+		}
+		if (p instanceof IfPointcut) {
 			return p;
-		if (p instanceof ConcreteCflowPointcut)
+		}
+		if (p instanceof ConcreteCflowPointcut) {
 			return p;
+		}
 		if (p instanceof AndPointcut) {
 			AndPointcut apc = (AndPointcut) p;
 			Pointcut left = shareEntriesFromMap(apc.getLeft(), pcMap);
@@ -697,10 +709,12 @@ public class BcelWeaver {
 	// join point kinds in
 	// common.
 	private void validateBindings(Pointcut dnfPointcut, Pointcut userPointcut, int numFormals, String[] names) {
-		if (numFormals == 0)
+		if (numFormals == 0) {
 			return; // nothing to check
-		if (dnfPointcut.couldMatchKinds() == Shadow.NO_SHADOW_KINDS_BITS)
+		}
+		if (dnfPointcut.couldMatchKinds() == Shadow.NO_SHADOW_KINDS_BITS) {
 			return; // cant have problems if you dont match!
+		}
 		if (dnfPointcut instanceof OrPointcut) {
 			OrPointcut orBasedDNFPointcut = (OrPointcut) dnfPointcut;
 			Pointcut[] leftBindings = new Pointcut[numFormals];
@@ -720,15 +734,17 @@ public class BcelWeaver {
 			Pointcut[] newRightBindings = new Pointcut[numFormals];
 			validateOrBranch((OrPointcut) left, userPointcut, numFormals, names, leftBindings, newRightBindings);
 		} else {
-			if (left.couldMatchKinds() != Shadow.NO_SHADOW_KINDS_BITS)
+			if (left.couldMatchKinds() != Shadow.NO_SHADOW_KINDS_BITS) {
 				validateSingleBranch(left, userPointcut, numFormals, names, leftBindings);
+			}
 		}
 		if (right instanceof OrPointcut) {
 			Pointcut[] newLeftBindings = new Pointcut[numFormals];
 			validateOrBranch((OrPointcut) right, userPointcut, numFormals, names, newLeftBindings, rightBindings);
 		} else {
-			if (right.couldMatchKinds() != Shadow.NO_SHADOW_KINDS_BITS)
+			if (right.couldMatchKinds() != Shadow.NO_SHADOW_KINDS_BITS) {
 				validateSingleBranch(right, userPointcut, numFormals, names, rightBindings);
+			}
 		}
 		int kindsInCommon = left.couldMatchKinds() & right.couldMatchKinds();
 		if (kindsInCommon != Shadow.NO_SHADOW_KINDS_BITS && couldEverMatchSameJoinPoints(left, right)) {
@@ -745,8 +761,9 @@ public class BcelWeaver {
 					ambiguousNames.add(names[i]);
 				}
 			}
-			if (!ambiguousNames.isEmpty())
+			if (!ambiguousNames.isEmpty()) {
 				raiseAmbiguityInDisjunctionError(userPointcut, ambiguousNames);
+			}
 		}
 	}
 
@@ -785,8 +802,9 @@ public class BcelWeaver {
 			NotPointcut not = (NotPointcut) pc;
 			if (not.getNegatedPointcut() instanceof NameBindingPointcut) {
 				NameBindingPointcut nnbp = (NameBindingPointcut) not.getNegatedPointcut();
-				if (!nnbp.getBindingAnnotationTypePatterns().isEmpty() && !nnbp.getBindingTypePatterns().isEmpty())
+				if (!nnbp.getBindingAnnotationTypePatterns().isEmpty() && !nnbp.getBindingTypePatterns().isEmpty()) {
 					raiseNegationBindingError(userPointcut);
+				}
 			}
 		} else if (pc instanceof AndPointcut) {
 			AndPointcut and = (AndPointcut) pc;
@@ -838,19 +856,23 @@ public class BcelWeaver {
 
 		if (left instanceof OrPointcut) {
 			OrPointcut leftOrPointcut = (OrPointcut) left;
-			if (couldEverMatchSameJoinPoints(leftOrPointcut.getLeft(), right))
+			if (couldEverMatchSameJoinPoints(leftOrPointcut.getLeft(), right)) {
 				return true;
-			if (couldEverMatchSameJoinPoints(leftOrPointcut.getRight(), right))
+			}
+			if (couldEverMatchSameJoinPoints(leftOrPointcut.getRight(), right)) {
 				return true;
+			}
 			return false;
 		}
 
 		if (right instanceof OrPointcut) {
 			OrPointcut rightOrPointcut = (OrPointcut) right;
-			if (couldEverMatchSameJoinPoints(left, rightOrPointcut.getLeft()))
+			if (couldEverMatchSameJoinPoints(left, rightOrPointcut.getLeft())) {
 				return true;
-			if (couldEverMatchSameJoinPoints(left, rightOrPointcut.getRight()))
+			}
+			if (couldEverMatchSameJoinPoints(left, rightOrPointcut.getRight())) {
 				return true;
+			}
 			return false;
 		}
 
@@ -858,29 +880,34 @@ public class BcelWeaver {
 		WithinPointcut leftWithin = (WithinPointcut) findFirstPointcutIn(left, WithinPointcut.class);
 		WithinPointcut rightWithin = (WithinPointcut) findFirstPointcutIn(right, WithinPointcut.class);
 		if ((leftWithin != null) && (rightWithin != null)) {
-			if (!leftWithin.couldEverMatchSameJoinPointsAs(rightWithin))
+			if (!leftWithin.couldEverMatchSameJoinPointsAs(rightWithin)) {
 				return false;
+			}
 		}
 		// look for kinded
 		KindedPointcut leftKind = (KindedPointcut) findFirstPointcutIn(left, KindedPointcut.class);
 		KindedPointcut rightKind = (KindedPointcut) findFirstPointcutIn(right, KindedPointcut.class);
 		if ((leftKind != null) && (rightKind != null)) {
-			if (!leftKind.couldEverMatchSameJoinPointsAs(rightKind))
+			if (!leftKind.couldEverMatchSameJoinPointsAs(rightKind)) {
 				return false;
+			}
 		}
 		return true;
 	}
 
 	private Pointcut findFirstPointcutIn(Pointcut toSearch, Class toLookFor) {
-		if (toSearch instanceof NotPointcut)
+		if (toSearch instanceof NotPointcut) {
 			return null;
-		if (toLookFor.isInstance(toSearch))
+		}
+		if (toLookFor.isInstance(toSearch)) {
 			return toSearch;
+		}
 		if (toSearch instanceof AndPointcut) {
 			AndPointcut apc = (AndPointcut) toSearch;
 			Pointcut left = findFirstPointcutIn(apc.getLeft(), toLookFor);
-			if (left != null)
+			if (left != null) {
 				return left;
+			}
 			return findFirstPointcutIn(apc.getRight(), toLookFor);
 		}
 		return null;
@@ -1124,8 +1151,9 @@ public class BcelWeaver {
 
 	// variation of "weave" that sources class files from an external source.
 	public Collection weave(IClassFileProvider input) throws IOException {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("weave", this, input);
+		}
 		ContextToken weaveToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING, "");
 		Collection wovenClassNames = new ArrayList();
 		IWeaveRequestor requestor = input.getRequestor();
@@ -1253,8 +1281,9 @@ public class BcelWeaver {
 					// error will be reported again from
 					// the eclipse source type) - pr113531
 					ReferenceTypeDelegate theDelegate = ((ReferenceType) theType).getDelegate();
-					if (theDelegate.getClass().getName().endsWith("EclipseSourceType"))
+					if (theDelegate.getClass().getName().endsWith("EclipseSourceType")) {
 						continue;
+					}
 
 					throw new BCException("Can't find bcel delegate for " + className + " type=" + theType.getClass());
 				}
@@ -1281,8 +1310,9 @@ public class BcelWeaver {
 
 					// TODO urgh - put a method on the interface to check this,
 					// string compare is hideous
-					if (theDelegate.getClass().getName().endsWith("EclipseSourceType"))
+					if (theDelegate.getClass().getName().endsWith("EclipseSourceType")) {
 						continue;
+					}
 
 					throw new BCException("Can't find bcel delegate for " + className + " type=" + theType.getClass());
 				}
@@ -1292,13 +1322,14 @@ public class BcelWeaver {
 		}
 		CompilationAndWeavingContext.leavingPhase(classToken);
 
-		addedClasses = new ArrayList();
-		deletedTypenames = new ArrayList();
+		addedClasses.clear();
+		deletedTypenames.clear();
 
 		requestor.weaveCompleted();
 		CompilationAndWeavingContext.leavingPhase(weaveToken);
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("weave", wovenClassNames);
+		}
 		return wovenClassNames;
 	}
 
@@ -1321,13 +1352,16 @@ public class BcelWeaver {
 			}
 
 			public boolean equals(Object obj) {
-				if (!(obj instanceof AdviceLocation))
+				if (!(obj instanceof AdviceLocation)) {
 					return false;
+				}
 				AdviceLocation other = (AdviceLocation) obj;
-				if (this.lineNo != other.lineNo)
+				if (this.lineNo != other.lineNo) {
 					return false;
-				if (!this.inAspect.equals(other.inAspect))
+				}
+				if (!this.inAspect.equals(other.inAspect)) {
 					return false;
+				}
 				return true;
 			}
 
@@ -1448,9 +1482,10 @@ public class BcelWeaver {
 							if (!xcutSet.containsAspect(rtx)) {
 								world.showMessage(IMessage.ERROR, WeaverMessages.format(
 										WeaverMessages.REWEAVABLE_ASPECT_NOT_REGISTERED, requiredTypeName, className), null, null);
-							} else if (!world.getMessageHandler().isIgnoring(IMessage.INFO))
+							} else if (!world.getMessageHandler().isIgnoring(IMessage.INFO)) {
 								world.showMessage(IMessage.INFO, WeaverMessages.format(WeaverMessages.VERIFIED_REWEAVABLE_TYPE,
 										requiredTypeName, rtx.getSourceLocation().getSourceFile()), null, null);
+							}
 							alreadyConfirmedReweavableState.add(requiredTypeName);
 						}
 					}
@@ -1533,8 +1568,9 @@ public class BcelWeaver {
 	 * algorithm is optimal ??
 	 */
 	public void weaveParentTypeMungers(ResolvedType onType) {
-		if (onType.isRawType())
+		if (onType.isRawType()) {
 			onType = onType.getGenericType();
+		}
 		onType.clearInterTypeMungers();
 
 		List decpToRepeat = new ArrayList();
@@ -1670,7 +1706,7 @@ public class BcelWeaver {
 		List newParents = p.findMatchingNewParents(onType, true);
 		if (!newParents.isEmpty()) {
 			didSomething = true;
-			BcelObjectType classType = BcelWorld.getBcelObjectType(onType);
+			BcelWorld.getBcelObjectType(onType);
 			// System.err.println("need to do declare parents for: " + onType);
 			for (Iterator j = newParents.iterator(); j.hasNext();) {
 				ResolvedType newParent = (ResolvedType) j.next();
@@ -1697,8 +1733,9 @@ public class BcelWeaver {
 	public void weaveNormalTypeMungers(ResolvedType onType) {
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_TYPE_MUNGERS, onType
 				.getName());
-		if (onType.isRawType() || onType.isParameterizedType())
+		if (onType.isRawType() || onType.isParameterizedType()) {
 			onType = onType.getGenericType();
+		}
 		for (Iterator i = typeMungerList.iterator(); i.hasNext();) {
 			ConcreteTypeMunger m = (ConcreteTypeMunger) i.next();
 			if (!m.isLateMunger() && m.matches(onType)) {
@@ -1721,8 +1758,9 @@ public class BcelWeaver {
 
 	private LazyClassGen weave(UnwovenClassFile classFile, BcelObjectType classType, boolean dump) throws IOException {
 		if (classType.isSynthetic()) { // Don't touch synthetic classes
-			if (dump)
+			if (dump) {
 				dumpUnchanged(classFile);
+			}
 			return null;
 		}
 
@@ -1748,16 +1786,19 @@ public class BcelWeaver {
 			try {
 				boolean isChanged = false;
 
-				if (mightNeedToWeave)
+				if (mightNeedToWeave) {
 					isChanged = BcelClassWeaver.weave(world, clazz, shadowMungers, typeMungers, lateTypeMungerList,
 							inReweavableMode);
+				}
 
-				if (mightNeedBridgeMethods)
+				if (mightNeedBridgeMethods) {
 					isChanged = BcelClassWeaver.calculateAnyRequiredBridgeMethods(world, clazz) || isChanged;
+				}
 
 				if (isChanged) {
-					if (dump)
+					if (dump) {
 						dump(classFile, clazz);
+					}
 					return clazz;
 				}
 			} catch (RuntimeException re) {
@@ -1784,32 +1825,19 @@ public class BcelWeaver {
 		}
 		world.demote();
 		// this is very odd return behavior trying to keep everyone happy
-/*
-		// can we remove it from the model now? we know it contains no relationship endpoints...
-		AsmManager asm = world.getModelAsAsmManager();
-		if (asm != null) {
-			IHierarchy model = asm.getHierarchy();
-			if (!classType.isAspect()) {
-
-				String pkgname = classType.getResolvedTypeX().getPackageName();
-				String tname = classType.getResolvedTypeX().getSimpleBaseName();
-				IProgramElement typeElement = model.findElementForType(pkgname, tname);
-				if (typeElement != null) {
-					Set deleted = new HashSet();
-					deleted.add(asm.getCanonicalFilePath(typeElement.getSourceLocation().getSourceFile()));
-
-					model.updateHandleMap(deleted);
-					IProgramElement parent = typeElement.getParent();
-					// parent may have children: PACKAGE DECL, IMPORT-REFEFERENCE, TYPE_DECL
-					if (parent != null) {
-						typeElement.getParent().removeChild(typeElement);
-						// System.out.println("Removing " + classType.getResolvedTypeX().getName() + "? "
-						// + );
-					}
-				}
-			}
-		}
-*/
+		/*
+		 * // can we remove it from the model now? we know it contains no relationship endpoints... AsmManager asm =
+		 * world.getModelAsAsmManager(); if (asm != null) { IHierarchy model = asm.getHierarchy(); if (!classType.isAspect()) {
+		 * 
+		 * String pkgname = classType.getResolvedTypeX().getPackageName(); String tname =
+		 * classType.getResolvedTypeX().getSimpleBaseName(); IProgramElement typeElement = model.findElementForType(pkgname, tname);
+		 * if (typeElement != null) { Set deleted = new HashSet();
+		 * deleted.add(asm.getCanonicalFilePath(typeElement.getSourceLocation().getSourceFile()));
+		 * 
+		 * model.updateHandleMap(deleted); IProgramElement parent = typeElement.getParent(); // parent may have children: PACKAGE
+		 * DECL, IMPORT-REFEFERENCE, TYPE_DECL if (parent != null) { typeElement.getParent().removeChild(typeElement); //
+		 * System.out.println("Removing " + classType.getResolvedTypeX().getName() + "? " // + ); } } } }
+		 */
 		if (dump) {
 			dumpUnchanged(classFile);
 			return clazz;
@@ -1867,8 +1895,9 @@ public class BcelWeaver {
 	}
 
 	private List fastMatch(List list, ResolvedType type) {
-		if (list == null)
+		if (list == null) {
 			return Collections.EMPTY_LIST;
+		}
 
 		// here we do the coarsest grained fast match with no kind constraints
 		// this will remove all obvious non-matches and see if we need to do any
@@ -1901,13 +1930,19 @@ public class BcelWeaver {
 	}
 
 	public void tidyUp() {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("tidyUp", this);
+		}
 		shadowMungerList = null; // setup by prepareForWeave
 		typeMungerList = null; // setup by prepareForWeave
 		lateTypeMungerList = null; // setup by prepareForWeave
 		declareParentsList = null; // setup by prepareForWeave
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("tidyUp");
+		}
+	}
+
+	public void write(DataOutputStream dos) throws IOException {
+		xcutSet.write(dos);
 	}
 }
