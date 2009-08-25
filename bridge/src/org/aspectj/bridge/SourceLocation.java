@@ -35,6 +35,15 @@ public class SourceLocation implements ISourceLocation, java.io.Serializable {
 	/** used when SourceLocation is not available */
 	public static final ISourceLocation UNKNOWN = new SourceLocation(ISourceLocation.NO_FILE, 0, 0, 0);
 
+	private final File sourceFile;
+	private final int startLine;
+	private final int column;
+	private final int endLine;
+	private int offset;
+	private final String context;
+	private boolean noColumn;
+	private String sourceFileName;
+
 	/** @throws IllegalArgumentException if the input would not be a valid line */
 	public static final void validLine(int line) {
 		if (line < 0) {
@@ -52,15 +61,6 @@ public class SourceLocation implements ISourceLocation, java.io.Serializable {
 			throw new IllegalArgumentException("column too large: " + column);
 		}
 	}
-
-	private final File sourceFile;
-	private final int startLine;
-	private final int column;
-	private final int endLine;
-	private int offset;
-	private final String context;
-	private boolean noColumn;
-	private String sourceFileName;
 
 	/**
 	 * Same as SourceLocation(file, line, line, 0), except that column is not rendered during toString()
