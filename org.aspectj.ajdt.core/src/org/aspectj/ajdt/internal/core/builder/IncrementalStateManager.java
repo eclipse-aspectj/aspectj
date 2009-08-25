@@ -11,11 +11,16 @@
  * ******************************************************************/
 package org.aspectj.ajdt.internal.core.builder;
 
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
@@ -37,9 +42,34 @@ public class IncrementalStateManager {
 	private static Hashtable incrementalStates = new Hashtable();
 
 	public static void recordSuccessfulBuild(String buildConfig, AjState state) {
-		if (!recordIncrementalStates)
+		if (!recordIncrementalStates) {
 			return;
+		}
 		incrementalStates.put(buildConfig, state);
+		// persist();
+	}
+
+	/**
+	 * Store states on disk
+	 */
+	public static void persist() {
+		// check serialization works
+		Set entries = incrementalStates.entrySet();
+		for (Iterator iterator = entries.iterator(); iterator.hasNext();) {
+			Map.Entry entry = (Map.Entry) iterator.next();
+			System.out.println("Name " + entry.getKey());
+			File f = new File("c:/temp/foo.ajstate");
+			try {
+				AjState state = (AjState) entry.getValue();
+				DataOutputStream dos = new DataOutputStream(new FileOutputStream(f));
+				state.write(dos);
+				dos.close();
+			} catch (FileNotFoundException e) {
+				throw new RuntimeException(e);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 	public static boolean removeIncrementalStateInformationFor(String buildConfig) {
@@ -67,22 +97,25 @@ public class IncrementalStateManager {
 
 	public static AjState findStateManagingOutputLocation(File location) {
 		Collection allStates = incrementalStates.values();
-		if (debugIncrementalStates)
+		if (debugIncrementalStates) {
 			System.err.println("> findStateManagingOutputLocation(" + location + ") has " + allStates.size()
 					+ " states to look through");
+		}
 		for (Iterator iter = allStates.iterator(); iter.hasNext();) {
 			AjState element = (AjState) iter.next();
 			AjBuildConfig ajbc = element.getBuildConfig();
 			if (ajbc == null) {
 				// FIXME asc why can it ever be null?
-				if (debugIncrementalStates)
+				if (debugIncrementalStates) {
 					System.err.println("  No build configuration for state " + element);
+				}
 				continue;
 			}
 			File outputDir = ajbc.getOutputDir();
 			if (outputDir != null && outputDir.equals(location)) {
-				if (debugIncrementalStates)
+				if (debugIncrementalStates) {
 					System.err.println("< findStateManagingOutputLocation(" + location + ") returning " + element);
+				}
 				return element;
 			}
 			CompilationResultDestinationManager outputManager = ajbc.getCompilationResultDestinationManager();
@@ -91,22 +124,25 @@ public class IncrementalStateManager {
 				for (Iterator iterator = outputDirs.iterator(); iterator.hasNext();) {
 					File dir = (File) iterator.next();
 					if (dir.equals(location)) {
-						if (debugIncrementalStates)
+						if (debugIncrementalStates) {
 							System.err.println("< findStateManagingOutputLocation(" + location + ") returning " + element);
+						}
 						return element;
 					}
 				}
 			}
 			if (outputDir == null && outputManager == null) {
 				// FIXME why can it ever be null? due to using outjar?
-				if (debugIncrementalStates)
+				if (debugIncrementalStates) {
 					System.err.println("  output directory and output location manager for " + ajbc + " are null");
+				}
 				continue;
 			}
 
 		}
-		if (debugIncrementalStates)
+		if (debugIncrementalStates) {
 			System.err.println("< findStateManagingOutputLocation(" + location + ") returning null");
+		}
 		return null;
 	}
 

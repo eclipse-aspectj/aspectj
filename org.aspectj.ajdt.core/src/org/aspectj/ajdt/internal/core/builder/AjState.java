@@ -13,6 +13,7 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
@@ -62,6 +63,8 @@ import org.aspectj.weaver.bcel.UnwovenClassFile;
  */
 public class AjState implements CompilerConfigurationChangeFlags {
 
+	// --- static state, no need to write out
+
 	// SECRETAPI configures whether we use state instead of lastModTime - see pr245566
 	public static boolean CHECK_STATE_FIRST = true;
 
@@ -70,13 +73,19 @@ public class AjState implements CompilerConfigurationChangeFlags {
 
 	public static boolean FORCE_INCREMENTAL_DURING_TESTING = false;
 
-	private final AjBuildManager buildManager;
-	private boolean couldBeSubsequentIncrementalBuild = false;
-	private INameEnvironment nameEnvironment;
-	//
-	// private IHierarchy structureModel;
-	// private IRelationshipMap relmap;
-	private AsmManager structureModel;
+	static int PATHID_CLASSPATH = 0;
+	static int PATHID_ASPECTPATH = 1;
+	static int PATHID_INPATH = 2;
+
+	private static int CLASS_FILE_NO_CHANGES = 0;
+	private static int CLASS_FILE_CHANGED_THAT_NEEDS_INCREMENTAL_BUILD = 1;
+	private static int CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD = 2;
+
+	private static final char[][] EMPTY_CHAR_ARRAY = new char[0][];
+
+	// --- non static, but transient state - no need to write out, doesn't need reinitializing
+
+	// State recreated for each build:
 
 	/**
 	 * When looking at changes on the classpath, this set accumulates files in our state instance that affected by those changes.
@@ -84,15 +93,39 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 */
 	private final Set affectedFiles = new HashSet();
 
+	// these are references created on a particular compile run - when looping round in
+	// addAffectedSourceFiles(), if some have been created then we look at which source files
+	// touch upon those and get them recompiled.
+	private StringSet qualifiedStrings = new StringSet(3);
+
+	private StringSet simpleStrings = new StringSet(3);
+
+	private Set addedFiles;
+	private Set deletedFiles;
+	private Set /* BinarySourceFile */addedBinaryFiles;
+	private Set /* BinarySourceFile */deletedBinaryFiles;
+	// For a particular build run, this set records the changes to classesFromName
+	public final Set deltaAddedClasses = new HashSet();
+
+	// --- non static, but transient state - no need to write out, DOES need reinitializing when read AjState instance reloaded
+
+	private final AjBuildManager buildManager;
+
+	private INameEnvironment nameEnvironment;
+
+	// --- normal state that must be written out
+
+	private boolean couldBeSubsequentIncrementalBuild = false;
+	private boolean batchBuildRequiredThisTime = false;
+	private AjBuildConfig buildConfig;
+
 	private long lastSuccessfulFullBuildTime = -1;
 	private final Hashtable /* File, long */structuralChangesSinceLastFullBuild = new Hashtable();
 
 	private long lastSuccessfulBuildTime = -1;
 	private long currentBuildTime = -1;
 
-	private AjBuildConfig buildConfig;
-
-	private boolean batchBuildRequiredThisTime = false;
+	private AsmManager structureModel;
 
 	/**
 	 * Keeps a list of (FQN,Filename) pairs (as ClassFile objects) for types that resulted from the compilation of the given File.
@@ -168,9 +201,6 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 */
 	private final Map/* <String, File> */classesFromName = new HashMap();
 
-	// For a particular build run, this set records the changes to classesFromName
-	public final Set deltaAddedClasses = new HashSet();
-
 	/**
 	 * Populated by AjBuildManager to record the aspects with the file name in which they're contained. This is later used when
 	 * writing the outxml file in AjBuildManager. Need to record the file name because want to write an outxml file for each of the
@@ -182,20 +212,14 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	private Set/* File */compiledSourceFiles = new HashSet();
 	private final Map/* String,File sourcelocation */resources = new HashMap();
 
-	// these are references created on a particular compile run - when looping round in
-	// addAffectedSourceFiles(), if some have been created then we look at which source files
-	// touch upon those and get them recompiled.
-	private StringSet qualifiedStrings = new StringSet(3);
-
-	private StringSet simpleStrings = new StringSet(3);
-
-	private Set addedFiles;
-	private Set deletedFiles;
-	private Set /* BinarySourceFile */addedBinaryFiles;
-	private Set /* BinarySourceFile */deletedBinaryFiles;
+	SoftHashMap/* <baseDir,SoftHashMap<theFile,className>> */fileToClassNameMap = new SoftHashMap();
 
 	private BcelWeaver weaver;
 	private BcelWorld world;
+
+	// --- below here is unsorted state
+
+	// ---
 
 	public AjState(AjBuildManager buildManager) {
 		this.buildManager = buildManager;
@@ -208,10 +232,12 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	void successfulCompile(AjBuildConfig config, boolean wasFullBuild) {
 		buildConfig = config;
 		lastSuccessfulBuildTime = currentBuildTime;
-		if (stateListener != null)
+		if (stateListener != null) {
 			stateListener.buildSuccessful(wasFullBuild);
-		if (wasFullBuild)
+		}
+		if (wasFullBuild) {
 			lastSuccessfulFullBuildTime = currentBuildTime;
+		}
 	}
 
 	/**
@@ -221,33 +247,37 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		currentBuildTime = System.currentTimeMillis();
 
 		if (!maybeIncremental()) {
-			if (listenerDefined())
+			if (listenerDefined()) {
 				getListener().recordDecision(
 						"Preparing for build: not going to be incremental because either not in AJDT or incremental deactivated");
+			}
 			return false;
 		}
 
 		if (this.batchBuildRequiredThisTime) {
 			this.batchBuildRequiredThisTime = false;
-			if (listenerDefined())
+			if (listenerDefined()) {
 				getListener().recordDecision(
 						"Preparing for build: not going to be incremental this time because batch build explicitly forced");
+			}
 			return false;
 		}
 
 		if (lastSuccessfulBuildTime == -1 || buildConfig == null) {
 			structuralChangesSinceLastFullBuild.clear();
-			if (listenerDefined())
+			if (listenerDefined()) {
 				getListener().recordDecision(
 						"Preparing for build: not going to be incremental because no successful previous full build");
+			}
 			return false;
 		}
 
 		// we don't support incremental with an outjar yet
 		if (newBuildConfig.getOutputJar() != null) {
 			structuralChangesSinceLastFullBuild.clear();
-			if (listenerDefined())
+			if (listenerDefined()) {
 				getListener().recordDecision("Preparing for build: not going to be incremental because outjar being used");
+			}
 			return false;
 		}
 
@@ -266,10 +296,11 @@ public class AjState implements CompilerConfigurationChangeFlags {
 				stateListener.pathChangeDetected();
 			}
 			structuralChangesSinceLastFullBuild.clear();
-			if (listenerDefined())
+			if (listenerDefined()) {
 				getListener()
 						.recordDecision(
 								"Preparing for build: not going to be incremental because path change detected (one of classpath/aspectpath/inpath/injars)");
+			}
 			return false;
 		}
 
@@ -308,8 +339,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		boolean couldStillBeIncremental = processDeletedFiles(deletedFiles);
 
 		if (!couldStillBeIncremental) {
-			if (listenerDefined())
+			if (listenerDefined()) {
 				getListener().recordDecision("Preparing for build: not going to be incremental because an aspect was deleted");
+			}
 			return false;
 		}
 
@@ -362,8 +394,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			// not our job to account for new and deleted files
 			for (Iterator i = buildConfig.getFiles().iterator(); i.hasNext();) {
 				File file = (File) i.next();
-				if (!file.exists())
+				if (!file.exists()) {
 					continue;
+				}
 
 				long modTime = file.lastModified();
 				// System.out.println("check: " + file + " mod " + modTime + " build " + lastBuildTime);
@@ -389,8 +422,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		for (Iterator i = buildConfig.getBinaryFiles().iterator(); i.hasNext();) {
 			AjBuildConfig.BinarySourceFile bsfile = (AjBuildConfig.BinarySourceFile) i.next();
 			File file = bsfile.binSrc;
-			if (!file.exists())
+			if (!file.exists()) {
 				continue;
+			}
 
 			long modTime = file.lastModified();
 			// System.out.println("check: " + file + " mod " + modTime + " build " + lastBuildTime);
@@ -401,12 +435,6 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		}
 		return ret;
 	}
-
-	private static int CLASS_FILE_NO_CHANGES = 0;
-
-	private static int CLASS_FILE_CHANGED_THAT_NEEDS_INCREMENTAL_BUILD = 1;
-
-	private static int CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD = 2;
 
 	public static final FileFilter classFileFilter = new FileFilter() {
 		public boolean accept(File pathname) {
@@ -572,9 +600,10 @@ public class AjState implements CompilerConfigurationChangeFlags {
 							}
 							isTypeWeReferTo(classFile);
 						} else {
-							if (listenerDefined())
+							if (listenerDefined()) {
 								getListener().recordDecision(
 										"ClassFileChangeChecking: change detected in " + classFile + " but it is not structural");
+							}
 						}
 					} else {
 						// No state object to ask, so it only matters if we know which type depends on this file
@@ -631,8 +660,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 
 		public Object get(Object key) {
 			SoftReferenceKnownKey value = (SoftReferenceKnownKey) map.get(key);
-			if (value == null)
+			if (value == null) {
 				return null;
+			}
 			if (value.get() == null) {
 				// it got GC'd
 				map.remove(value.key);
@@ -664,16 +694,15 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		public Object remove(Object k) {
 			processQueue();
 			SoftReferenceKnownKey value = (SoftReferenceKnownKey) map.remove(k);
-			if (value == null)
+			if (value == null) {
 				return null;
+			}
 			if (value.get() != null) {
 				return value.get();
 			}
 			return null;
 		}
 	}
-
-	SoftHashMap/* <baseDir,SoftHashMap<theFile,className>> */fileToClassNameMap = new SoftHashMap();
 
 	/**
 	 * If a class file has changed in a path on our classpath, it may not be for a type that any of our source files care about.
@@ -781,10 +810,11 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		// long lastModTime = file.lastModified();
 		Long l = (Long) structuralChangesSinceLastFullBuild.get(file.getAbsolutePath());
 		long strucModTime = -1;
-		if (l != null)
+		if (l != null) {
 			strucModTime = l.longValue();
-		else
+		} else {
 			strucModTime = this.lastSuccessfulFullBuildTime;
+		}
 		// we now have:
 		// 'strucModTime'-> the last time the class was structurally changed
 		return (strucModTime > lastSuccessfulBuildTime);
@@ -813,10 +843,6 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		return (this.lastSuccessfulFullBuildTime > lastSuccessfulBuildTime);
 	}
 
-	static int PATHID_CLASSPATH = 0;
-	static int PATHID_ASPECTPATH = 1;
-	static int PATHID_INPATH = 2;
-
 	/**
 	 * Determine if something has changed on the classpath/inpath/aspectpath and a full build is required rather than an incremental
 	 * one.
@@ -835,25 +861,30 @@ public class AjState implements CompilerConfigurationChangeFlags {
 
 			List oldClasspath = previousConfig.getClasspath();
 			List newClasspath = newConfig.getClasspath();
-			if (stateListener != null)
+			if (stateListener != null) {
 				stateListener.aboutToCompareClasspaths(oldClasspath, newClasspath);
-			if (classpathChangedAndNeedsFullBuild(oldClasspath, newClasspath, true, oldOutputLocs, alreadyAnalysedPaths))
+			}
+			if (classpathChangedAndNeedsFullBuild(oldClasspath, newClasspath, true, oldOutputLocs, alreadyAnalysedPaths)) {
 				return true;
+			}
 
 			List oldAspectpath = previousConfig.getAspectpath();
 			List newAspectpath = newConfig.getAspectpath();
-			if (changedAndNeedsFullBuild(oldAspectpath, newAspectpath, true, oldOutputLocs, alreadyAnalysedPaths, PATHID_ASPECTPATH))
+			if (changedAndNeedsFullBuild(oldAspectpath, newAspectpath, true, oldOutputLocs, alreadyAnalysedPaths, PATHID_ASPECTPATH)) {
 				return true;
+			}
 
 			List oldInPath = previousConfig.getInpath();
 			List newInPath = newConfig.getInpath();
-			if (changedAndNeedsFullBuild(oldInPath, newInPath, false, oldOutputLocs, alreadyAnalysedPaths, PATHID_INPATH))
+			if (changedAndNeedsFullBuild(oldInPath, newInPath, false, oldOutputLocs, alreadyAnalysedPaths, PATHID_INPATH)) {
 				return true;
+			}
 
 			List oldInJars = previousConfig.getInJars();
 			List newInJars = newConfig.getInJars();
-			if (changedAndNeedsFullBuild(oldInJars, newInJars, false, oldOutputLocs, alreadyAnalysedPaths, PATHID_INPATH))
+			if (changedAndNeedsFullBuild(oldInJars, newInJars, false, oldOutputLocs, alreadyAnalysedPaths, PATHID_INPATH)) {
 				return true;
+			}
 		} else if (newConfig.getClasspathElementsWithModifiedContents() != null) {
 			// Although the classpath entries themselves are the same as before, the contents of one of the
 			// directories on the classpath has changed - rather than go digging around to find it, let's ask
@@ -912,11 +943,12 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	}
 
 	private File getOutputLocationFor(AjBuildConfig config, File aResourceFile) {
-		List outputLocs = new ArrayList();
+		new ArrayList();
 		if (config.getCompilationResultDestinationManager() != null) {
 			File outputLoc = config.getCompilationResultDestinationManager().getOutputLocationForResource(aResourceFile);
-			if (outputLoc != null)
+			if (outputLoc != null) {
 				return outputLoc;
+			}
 		}
 		// Is there a default location?
 		if (config.getOutputDir() != null) {
@@ -1025,8 +1057,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 					if (!alreadyAnalysedPaths.contains(f.getAbsolutePath())) { // Do not check paths more than once
 						alreadyAnalysedPaths.add(f.getAbsolutePath());
 						int classFileChanges = classFileChangedInDirSinceLastBuildRequiringFullBuild(f, PATHID_CLASSPATH);
-						if (classFileChanges == CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD)
+						if (classFileChanges == CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD) {
 							return true;
+						}
 					}
 				}
 			}
@@ -1050,8 +1083,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			if (addedFiles != null) {
 				for (Iterator fIter = addedFiles.iterator(); fIter.hasNext();) {
 					Object o = fIter.next();
-					if (!thisTime.contains(o))
+					if (!thisTime.contains(o)) {
 						thisTime.add(o);
+					}
 				}
 				// thisTime.addAll(addedFiles);
 			}
@@ -1088,8 +1122,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			for (Iterator iter = addedOrModified.iterator(); iter.hasNext();) {
 				AjBuildConfig.BinarySourceFile bsf = (AjBuildConfig.BinarySourceFile) iter.next();
 				UnwovenClassFile ucf = createUnwovenClassFile(bsf);
-				if (ucf == null)
+				if (ucf == null) {
 					continue;
+				}
 				List ucfs = new ArrayList();
 				ucfs.add(ucf);
 				recordTypeChanged(ucf.getClassName());
@@ -1472,8 +1507,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			// ignore local types since they're only visible inside a single method
 			if (!(reader.isLocal() || reader.isAnonymous())) {
 				if (hasStructuralChanges(reader, existingStructure)) {
-					if (world.forDEBUG_structuralChangesCode)
+					if (world.forDEBUG_structuralChangesCode) {
 						System.err.println("Detected a structural change in " + thisTime.getFilename());
+					}
 					structuralChangesSinceLastFullBuild.put(thisTime.getFilename(), new Long(currentBuildTime));
 					recordTypeChanged(new String(reader.getName()).replace('/', '.'));
 				}
@@ -1482,8 +1518,6 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			recordTypeChanged(thisTime.getClassName());
 		}
 	}
-
-	private static final char[][] EMPTY_CHAR_ARRAY = new char[0][];
 
 	/**
 	 * Compare the class structure of the new intermediate (unwoven) class with the existingResolvedType of the same class that we
@@ -1550,8 +1584,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		if (existingIfs == null) {
 			existingIfs = EMPTY_CHAR_ARRAY;
 		}
-		if (existingIfs.length != newIfsAsChars.length)
+		if (existingIfs.length != newIfsAsChars.length) {
 			return true;
+		}
 		new_interface_loop: for (int i = 0; i < newIfsAsChars.length; i++) {
 			for (int j = 0; j < existingIfs.length; j++) {
 				if (CharOperation.equals(existingIfs[j], newIfsAsChars[i])) {
@@ -1580,8 +1615,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		// //}
 		// }
 		IBinaryField[] existingFs = existingType.binFields;
-		if (newFields.length != existingFs.length)
+		if (newFields.length != existingFs.length) {
 			return true;
+		}
 		new_field_loop: for (int i = 0; i < newFields.length; i++) {
 			IBinaryField field = newFields[i];
 			char[] fieldName = field.getName();
@@ -1644,8 +1680,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		// // }
 		// }
 		IBinaryMethod[] existingMs = existingType.binMethods;
-		if (newMethods.length != existingMs.length)
+		if (newMethods.length != existingMs.length) {
 			return true;
+		}
 		new_method_loop: for (int i = 0; i < newMethods.length; i++) {
 			IBinaryMethod method = newMethods[i];
 			char[] methodName = method.getSelector();
@@ -1713,29 +1750,34 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		for (Iterator iter = l.iterator(); iter.hasNext();) {
 			Object el = iter.next();
 			sb.append(el);
-			if (iter.hasNext())
+			if (iter.hasNext()) {
 				sb.append(",");
+			}
 		}
 		sb.append("}");
 		return sb.toString();
 	}
 
 	protected void addAffectedSourceFiles(Set addTo, Set lastTimeSources) {
-		if (qualifiedStrings.elementSize == 0 && simpleStrings.elementSize == 0)
+		if (qualifiedStrings.elementSize == 0 && simpleStrings.elementSize == 0) {
 			return;
-		if (listenerDefined())
+		}
+		if (listenerDefined()) {
 			getListener().recordDecision(
 					"Examining whether any other files now need compilation based on just compiling: '"
 							+ stringifyList(lastTimeSources) + "'");
+		}
 		// the qualifiedStrings are of the form 'p1/p2' & the simpleStrings are just 'X'
 		char[][][] qualifiedNames = ReferenceCollection.internQualifiedNames(qualifiedStrings);
 		// if a well known qualified name was found then we can skip over these
-		if (qualifiedNames.length < qualifiedStrings.elementSize)
+		if (qualifiedNames.length < qualifiedStrings.elementSize) {
 			qualifiedNames = null;
+		}
 		char[][] simpleNames = ReferenceCollection.internSimpleNames(simpleStrings);
 		// if a well known name was found then we can skip over these
-		if (simpleNames.length < simpleStrings.elementSize)
+		if (simpleNames.length < simpleStrings.elementSize) {
 			simpleNames = null;
+		}
 
 		// System.err.println("simple: " + simpleStrings);
 		// System.err.println("qualif: " + qualifiedStrings);
@@ -1792,8 +1834,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		}
 
 		int memberIndex = typeName.indexOf('$');
-		if (memberIndex > 0)
+		if (memberIndex > 0) {
 			typeName = typeName.substring(0, memberIndex);
+		}
 		simpleStrings.add(typeName);
 	}
 
@@ -2011,5 +2054,13 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 */
 	public void recordAspectClassFile(String aspectFile) {
 		aspectClassFiles.add(aspectFile);
+	}
+
+	public void write(DataOutputStream dos) throws IOException {
+		// weaver
+		weaver.write(dos);
+		// world
+		// model
+		// local state
 	}
 }
