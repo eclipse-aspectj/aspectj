@@ -305,12 +305,6 @@ public class ProgramElement implements IProgramElement {
 		return s;
 	}
 
-	public String getBytecodeSignature() {
-		String s = (String) kvpairs.get("bytecodeSignature");
-		// if (s==null) return UNDEFINED;
-		return s;
-	}
-
 	public void setBytecodeName(String s) {
 		if (kvpairs == Collections.EMPTY_MAP)
 			kvpairs = new HashMap();
@@ -318,9 +312,36 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setBytecodeSignature(String s) {
-		if (kvpairs == Collections.EMPTY_MAP)
-			kvpairs = new HashMap();
+		initMap();
+		// Different kinds of format here. The one worth compressing starts with a '(':
+		// (La/b/c/D;Le/f/g/G;)Ljava/lang/String;
+		// maybe want to avoid generics initially.
+		// boolean worthCompressing = s.charAt(0) == '(' && s.indexOf('<') == -1 && s.indexOf('P') == -1; // starts parentheses and
+		// no
+		// // generics
+		// if (worthCompressing) {
+		// kvpairs.put("bytecodeSignatureCompressed", asm.compress(s));
+		// } else {
 		kvpairs.put("bytecodeSignature", s);
+		// }
+	}
+
+	public String getBytecodeSignature() {
+		String s = (String) kvpairs.get("bytecodeSignature");
+		// if (s == null) {
+		// List compressed = (List) kvpairs.get("bytecodeSignatureCompressed");
+		// if (compressed != null) {
+		// return asm.decompress(compressed, '/');
+		// }
+		// }
+		// if (s==null) return UNDEFINED;
+		return s;
+	}
+
+	private void initMap() {
+		if (kvpairs == Collections.EMPTY_MAP) {
+			kvpairs = new HashMap();
+		}
 	}
 
 	public String getSourceSignature() {
@@ -566,18 +587,20 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public String getHandleIdentifier(boolean create) {
+		String h = handle;
 		if (null == handle && create) {
 			if (asm == null && name.equals("<build to view structure>")) {
-				handle = "<build to view structure>";
+				h = "<build to view structure>";
 			} else {
 				try {
-					handle = asm.getHandleProvider().createHandleIdentifier(this);
+					h = asm.getHandleProvider().createHandleIdentifier(this);
 				} catch (ArrayIndexOutOfBoundsException aioobe) {
 					throw new RuntimeException("AIOOBE whilst building handle for " + this, aioobe);
 				}
 			}
 		}
-		return handle;
+		setHandleIdentifier(h);
+		return h;
 	}
 
 	public void setHandleIdentifier(String handle) {

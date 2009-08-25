@@ -83,9 +83,11 @@ public class AsmManager implements IStructureModel {
 	// below to the AjState for a compilation and recover it if switching
 	// between projects.
 	protected IHierarchy hierarchy;
-	
-	/* Map from String > String - it maps absolute paths for 
-	 * inpath dirs/jars to workspace relative paths suitable for handle inclusion */
+
+	/*
+	 * Map from String > String - it maps absolute paths for inpath dirs/jars to workspace relative paths suitable for handle
+	 * inclusion
+	 */
 	protected Map inpathMap;
 	private IRelationshipMap mapper;
 	private IElementHandleProvider handleProvider;
@@ -654,16 +656,16 @@ public class AsmManager implements IStructureModel {
 
 	}
 
-	private String getTypeNameFromHandle(String handle,Map cache) {
-		String typename = (String)cache.get(handle);
-		if (typename!=null) {
+	private String getTypeNameFromHandle(String handle, Map cache) {
+		String typename = (String) cache.get(handle);
+		if (typename != null) {
 			return typename;
 		}
 		// inpath handle - but for which type?
 		// let's do it the slow way, we can optimize this with a cache perhaps
 		int hasPackage = handle.indexOf('<');
-		int typeLocation = handle.indexOf('['); 
-		if (typeLocation==-1) {
+		int typeLocation = handle.indexOf('[');
+		if (typeLocation == -1) {
 			typeLocation = handle.indexOf('}');
 		}
 		if (typeLocation == -1) {
@@ -671,15 +673,16 @@ public class AsmManager implements IStructureModel {
 			return "";
 		}
 		StringBuffer qualifiedTypeNameFromHandle = new StringBuffer();
-		if (hasPackage!=-1) {
-			qualifiedTypeNameFromHandle.append(handle.substring(hasPackage+1,handle.indexOf('(',hasPackage)));
+		if (hasPackage != -1) {
+			qualifiedTypeNameFromHandle.append(handle.substring(hasPackage + 1, handle.indexOf('(', hasPackage)));
 			qualifiedTypeNameFromHandle.append('.');
 		}
-		qualifiedTypeNameFromHandle.append(handle.substring(typeLocation+1));
+		qualifiedTypeNameFromHandle.append(handle.substring(typeLocation + 1));
 		typename = qualifiedTypeNameFromHandle.toString();
-		cache.put(handle,typename);
+		cache.put(handle, typename);
 		return typename;
 	}
+
 	/**
 	 * two kinds of relationships
 	 * 
@@ -726,7 +729,7 @@ public class AsmManager implements IStructureModel {
 			if (isPhantomHandle(hid)) {
 				// inpath handle - but for which type?
 				// TODO promote cache for reuse during one whole model update
-				if (!getTypeNameFromHandle(hid,handleToTypenameCache).equals(typename)) {
+				if (!getTypeNameFromHandle(hid, handleToTypenameCache).equals(typename)) {
 					continue;
 				}
 			}
@@ -805,7 +808,7 @@ public class AsmManager implements IStructureModel {
 					// they need removing
 					for (Iterator targetsIter = targets.iterator(); targetsIter.hasNext();) {
 						String targethid = (String) targetsIter.next();
-						if (isPhantomHandle(hid) && !getTypeNameFromHandle(hid,handleToTypenameCache).equals(typename)) {
+						if (isPhantomHandle(hid) && !getTypeNameFromHandle(hid, handleToTypenameCache).equals(typename)) {
 							continue;
 						}
 						// Does this point to the same type?
@@ -910,13 +913,13 @@ public class AsmManager implements IStructureModel {
 		}
 		return (type.equals(containingType));
 	}
-	
+
 	/**
 	 * @param handle a JDT like handle, following the form described in AsmRelationshipProvider.findOrFakeUpNode
 	 * @return true if the handle contains ';' - the char indicating that it is a phantom handle
 	 */
 	private boolean isPhantomHandle(String handle) {
-		return handle.indexOf(HandleProviderDelimiter.PHANTOM.getDelimiter())!=-1;
+		return handle.indexOf(HandleProviderDelimiter.PHANTOM.getDelimiter()) != -1;
 	}
 
 	/**
@@ -1307,7 +1310,208 @@ public class AsmManager implements IStructureModel {
 	}
 
 	public String getHandleElementForInpath(String binaryPath) {
-		return (String)inpathMap.get(new File(binaryPath));
+		return (String) inpathMap.get(new File(binaryPath));
 	}
 
+	private List pieces = new ArrayList();
+
+	private Object intern(String substring) {
+		int lastIdx = -1;
+		if ((lastIdx = substring.lastIndexOf('/')) != -1) {
+			String pkg = substring.substring(0, lastIdx);
+			String type = substring.substring(lastIdx + 1);
+			pkg = internOneThing(pkg);
+			type = internOneThing(type);
+			return new String[] { pkg, type };
+		} else {
+			return internOneThing(substring);
+		}
+	}
+
+	private String internOneThing(String substring) {
+		// simple name
+		for (int p = 0, max = pieces.size(); p < max; p++) {
+			String s = (String) pieces.get(p);
+			if (s.equals(substring)) {
+				return s;
+			}
+		}
+		pieces.add(substring);
+		return substring;
+	}
+
+	/**
+	 * What we can rely on: <br>
+	 * - it is a method signature of the form (La/B;Lc/D;)LFoo;<br>
+	 * - there are no generics<br>
+	 * 
+	 * What we must allow for: - may use primitive refs (single chars rather than L)
+	 */
+/*
+	public List compress(String s) {
+		int openParen = 0;
+		int closeParen = s.indexOf(')');
+		int pos = 1;
+		List compressed = new ArrayList();
+		// do the parens
+		while (pos < closeParen) {
+			char ch = s.charAt(pos);
+			if (ch == 'L') {
+				int idx = s.indexOf(';', pos);
+				compressed.add(intern(s.substring(pos + 1, idx)));
+				pos = idx + 1;
+			} else if (ch == '[') {
+				int x = pos;
+				while (s.charAt(++pos) == '[')
+					;
+				// now pos will point at something not an array
+				compressed.add(intern(s.substring(x, pos))); // intern the [[[[[[
+				char ch2 = s.charAt(pos);
+				if (ch2 == 'L') {
+					int idx = s.indexOf(';', pos);
+					compressed.add(intern(s.substring(pos + 1, idx)));
+					pos = idx + 1;
+				} else if (ch2 == 'T') {
+					int idx = s.indexOf(';');
+					compressed.add(intern(s.substring(pos, idx + 1))); // should be TT;
+					pos = idx + 1;
+				} else {
+					compressed.add(toCharacter(s.charAt(pos)));
+					pos++;
+				}
+			} else {
+				// it is a primitive ref (SVBCZJ)
+				compressed.add(toCharacter(ch));
+				pos++;
+			}
+		}
+		// do the return type
+		pos++;
+		char ch = s.charAt(pos);
+		if (ch == 'L') {
+			int idx = s.indexOf(';', pos);
+			compressed.add(intern(s.substring(pos, idx)));
+		} else if (ch == '[') {
+			int x = pos;
+			while (s.charAt(++pos) == '[')
+				;
+			// now pos will point at something not an array
+			compressed.add(intern(s.substring(x, pos))); // intern the [[[[[[
+			char ch2 = s.charAt(pos);
+			if (ch2 == 'L') {
+				int idx = s.indexOf(';', pos);
+				compressed.add(intern(s.substring(pos + 1, idx)));
+				pos = idx + 1;
+			} else if (ch2 == 'T') {
+				int idx = s.indexOf(';');
+				compressed.add(intern(s.substring(pos, idx + 1))); // should be TT;
+				pos = idx + 2;
+			} else {
+				compressed.add(toCharacter(s.charAt(pos)));
+				pos++;
+			}
+		} else {
+			// it is a primitive ref (SVBCZJ)
+			compressed.add(new Character(ch));
+		}
+		return compressed;
+
+		// char delimiter = '/';
+		// int pos = -1;
+		// List compressed = new ArrayList();
+		// int start = 0;
+		// while ((pos = s.indexOf(delimiter, start)) != -1) {
+		// String part = s.substring(start, pos);
+		// int alreadyRecorded = pieces.indexOf(part);
+		// if (alreadyRecorded != -1) {
+		// compressed.add(new Integer(alreadyRecorded));
+		// } else {
+		// compressed.add(new Integer(pieces.size()));
+		// pieces.add(part);
+		// }
+		// start = pos + 1;
+		// }
+		// // last piece
+		// String part = s.substring(start, s.length());
+		// int alreadyRecorded = pieces.indexOf(part);
+		// if (alreadyRecorded != -1) {
+		// compressed.add(youkirtyounew Integer(alreadyRecorded));
+		// } else {
+		// compressed.add(new Integer(pieces.size()));
+		// pieces.add(part);
+		// }
+		// return compressed;
+	}
+
+	static final Character charB = new Character('B');
+	static final Character charS = new Character('S');
+	static final Character charI = new Character('I');
+	static final Character charF = new Character('F');
+	static final Character charD = new Character('D');
+	static final Character charJ = new Character('J');
+	static final Character charC = new Character('C');
+	static final Character charV = new Character('V');
+	static final Character charZ = new Character('Z');
+
+	private Character toCharacter(char ch) {
+		switch (ch) {
+		case 'B':
+			return charB;
+		case 'S':
+			return charS;
+		case 'I':
+			return charI;
+		case 'F':
+			return charF;
+		case 'D':
+			return charD;
+		case 'J':
+			return charJ;
+		case 'C':
+			return charC;
+		case 'V':
+			return charV;
+		case 'Z':
+			return charZ;
+		default:
+			throw new IllegalStateException(new Character(ch).toString());
+		}
+	}
+
+	public String decompress(List refs, char delimiter) {
+		StringBuilder result = new StringBuilder();
+		result.append("(");
+		for (int i = 0, max = refs.size() - 1; i < max; i++) {
+			result.append(unintern(refs.get(i)));
+		}
+		result.append(")");
+		result.append(unintern(refs.get(refs.size() - 1)));
+		return result.toString();
+	}
+
+	private String unintern(Object o) {
+		if (o instanceof Character) {
+			return ((Character) o).toString();
+		} else if (o instanceof String[]) {
+			String[] strings = (String[]) o;
+			StringBuilder sb = new StringBuilder();
+			sb.append('L');
+			sb.append(strings[0]).append('/').append(strings[1]);
+			sb.append(';');
+			return sb.toString();
+		} else { // String
+			String so = (String) o;
+			if (so.endsWith(";")) {
+				// will be TT;
+				return so;
+			} else {
+				StringBuilder sb = new StringBuilder();
+				sb.append('L');
+				sb.append(so);
+				sb.append(';');
+				return sb.toString();
+			}
+		}
+	}
+	*/
 }

@@ -31,10 +31,6 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 
 	private final AsmManager asm;
 
-	// Need to keep our own count of the number of initializers
-	// because this information cannot be gained from the ipe.
-	private int initializerCounter = 0;
-
 	private static final char[] empty = new char[] {};
 	private static final char[] countDelim = new char[] { HandleProviderDelimiter.COUNT.getDelimiter() };
 
@@ -46,7 +42,6 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 	}
 
 	public String createHandleIdentifier(IProgramElement ipe) {
-
 		// AjBuildManager.setupModel --> top of the tree is either
 		// <root> or the .lst file
 		if (ipe == null || (ipe.getKind().equals(IProgramElement.Kind.FILE_JAVA) && ipe.getName().equals("<root>"))) {
@@ -284,7 +279,74 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 				return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
 			}
 		} else if (ipe.getKind().equals(IProgramElement.Kind.INITIALIZER)) {
-			return String.valueOf(++initializerCounter).toCharArray();
+			// return String.valueOf(++initializerCounter).toCharArray();
+			// Look at any peer advice
+			int count = 1;
+			List kids = ipe.getParent().getChildren();
+			String ipeSig = ipe.getBytecodeSignature();
+			// remove return type from the signature - it should not be included in the comparison
+			int idx = 0;
+			if (ipeSig != null && ((idx = ipeSig.indexOf(")")) != -1)) {
+				ipeSig = ipeSig.substring(0, idx);
+			}
+			if (ipeSig != null) {
+				if (ipeSig.indexOf("Lorg/aspectj/lang") != -1) {
+					if (ipeSig.endsWith("Lorg/aspectj/lang/JoinPoint$StaticPart;")) {
+						ipeSig = ipeSig.substring(0, ipeSig.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
+					}
+					if (ipeSig.endsWith("Lorg/aspectj/lang/JoinPoint;")) {
+						ipeSig = ipeSig.substring(0, ipeSig.lastIndexOf("Lorg/aspectj/lang/JoinPoint;"));
+					}
+					if (ipeSig.endsWith("Lorg/aspectj/lang/JoinPoint$StaticPart;")) {
+						ipeSig = ipeSig.substring(0, ipeSig.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
+					}
+				}
+			}
+			for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
+				IProgramElement object = (IProgramElement) iterator.next();
+				if (object.equals(ipe)) {
+					break;
+				}
+				if (object.getKind() == ipe.getKind()) {
+					if (object.getName().equals(ipe.getName())) {
+						String sig1 = object.getBytecodeSignature();
+						if (sig1 != null && (idx = sig1.indexOf(")")) != -1) {
+							sig1 = sig1.substring(0, idx);
+						}
+						// this code needs a speed overhaul... and some proper tests
+						// Two static parts because one may be enclosing jpsp (269522)
+						if (sig1 != null) {
+							if (sig1.indexOf("Lorg/aspectj/lang") != -1) {
+								if (sig1.endsWith("Lorg/aspectj/lang/JoinPoint$StaticPart;")) {
+									sig1 = sig1.substring(0, sig1.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
+								}
+								if (sig1.endsWith("Lorg/aspectj/lang/JoinPoint;")) {
+									sig1 = sig1.substring(0, sig1.lastIndexOf("Lorg/aspectj/lang/JoinPoint;"));
+								}
+								if (sig1.endsWith("Lorg/aspectj/lang/JoinPoint$StaticPart;")) {
+									sig1 = sig1.substring(0, sig1.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
+								}
+							}
+						}
+
+						if (sig1 == null && ipeSig == null || (sig1 != null && sig1.equals(ipeSig))) {
+							String existingHandle = object.getHandleIdentifier();
+							int suffixPosition = existingHandle.indexOf('!');
+							if (suffixPosition != -1) {
+								count = new Integer(existingHandle.substring(suffixPosition + 1)).intValue() + 1;
+							} else {
+								if (count == 1) {
+									count = 2;
+								}
+							}
+						}
+					}
+				}
+			}
+			// if (count > 1) {
+			return new Integer(count).toString().toCharArray();
+			// return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
+			// }
 		} else if (ipe.getKind().equals(IProgramElement.Kind.CODE)) {
 			int index = CharOperation.lastIndexOf('!', byteCodeName);
 			if (index != -1) {
@@ -419,8 +481,6 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 	}
 
 	public void initialize() {
-		// reset the initializer count. This ensures we return the
-		// same handle as JDT for initializers.
-		initializerCounter = 0;
+		// nop
 	}
 }
