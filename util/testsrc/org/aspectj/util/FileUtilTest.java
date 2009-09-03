@@ -617,7 +617,7 @@ public class FileUtilTest extends TestCase {
     void checkPipe(String data) {
         StringBufferInputStream in = new StringBufferInputStream(data);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        FileUtil.Pipe pipe = new FileUtil.Pipe(in, out);
+        FileUtil.Pipe pipe = new FileUtil.Pipe(in, out, 100l, true, true);
         pipe.run();
         assertTrue(data.equals(out.toString()));
         assertTrue(null == pipe.getThrown());
@@ -634,7 +634,7 @@ public class FileUtilTest extends TestCase {
             }
         };
         
-        FileUtil.Pipe pipe = new FileUtil.Pipe(in, out);
+        FileUtil.Pipe pipe = new FileUtil.Pipe(in, out, 100l, true, true);
         pipe.run();
         assertEquals("totalWritten", 0, pipe.totalWritten());
         assertTrue(thrown == pipe.getThrown());
@@ -676,7 +676,7 @@ public class FileUtilTest extends TestCase {
             boolean set;
         }
         final Result result = new Result();
-        FileUtil.Pipe pipe = new FileUtil.Pipe(in, out) {
+        FileUtil.Pipe pipe = new FileUtil.Pipe(in, out, 100l, true, true) {
             protected void completing(
                 long totalWritten,
                 Throwable thrown) {
