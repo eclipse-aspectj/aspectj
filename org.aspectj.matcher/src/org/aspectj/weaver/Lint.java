@@ -186,6 +186,12 @@ public class Lint {
 		} catch (IOException ioe) {
 			MessageUtil.error(world.getMessageHandler(), WeaverMessages.format(WeaverMessages.XLINTDEFAULT_LOAD_PROBLEM, ioe
 					.getMessage()));
+		} finally {
+			try {
+				s.close();
+			} catch (IOException ioe) {
+				// ...
+			}
 		}
 
 	}
