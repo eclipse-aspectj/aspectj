@@ -164,13 +164,23 @@ public class Lint {
 	public void setFromProperties(File file) {
 		if (trace.isTraceEnabled())
 			trace.enter("setFromProperties", this, file);
+		InputStream s = null;
 		try {
-			InputStream s = new FileInputStream(file);
+			s = new FileInputStream(file);
 			setFromProperties(s);
 		} catch (IOException ioe) {
 			MessageUtil.error(world.getMessageHandler(), WeaverMessages.format(WeaverMessages.XLINT_LOAD_ERROR, file.getPath(), ioe
 					.getMessage()));
+		} finally {
+			if (s != null) {
+				try {
+					s.close();
+				} catch (IOException e) {
+					// ignore
+				}
+			}
 		}
+
 		if (trace.isTraceEnabled())
 			trace.exit("setFromProperties");
 	}
