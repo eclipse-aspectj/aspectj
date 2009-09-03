@@ -200,7 +200,7 @@ public class Lint {
 			try {
 				s.close();
 			} catch (IOException ioe) {
-				// ...
+				// ignore
 			}
 		}
 
