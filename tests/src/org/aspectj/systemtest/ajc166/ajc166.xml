@@ -2,11 +2,14 @@
 
 <suite>
 
+  <ajc-test dir="bugs166/pr288049" title="itd decanno">
+     <compile files="org/tests/AClass.java org/tests/ASubClass.java org/tests/DeclareAnns.aj" options="-1.5"/>
+  </ajc-test>
+  
   <ajc-test dir="bugs166/pr288635" title="munger cce">
      <compile files="org/tests/atann/AddAnnotations.aj org/tests/atann/AddITDDoMethod.aj org/tests/atann/InterceptTraceds.aj org/tests/atann/TestClass.java org/tests/atann/Traced.java" options="-1.5"/>
      <run class="org.tests.atann.TestClass"/>
   </ajc-test>
-  
    
   <ajc-test dir="bugs166/pr286375" title="npe on bad aspect decl">
      <compile files="DatabaseOperationMonitor.java" options="-1.5" outjar="wibble.jar"/>
