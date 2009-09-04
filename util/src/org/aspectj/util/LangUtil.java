@@ -35,11 +35,10 @@ import java.util.StringTokenizer;
  */
 public class LangUtil {
 
-	// /** map from String version to String class implemented in that version
-	// or later */
-	// private static final Map VM_CLASSES;
-
 	public static final String EOL;
+
+	private static double vmVersion;
+
 	static {
 		StringWriter buf = new StringWriter();
 		PrintWriter writer = new PrintWriter(buf);
@@ -54,69 +53,44 @@ public class LangUtil {
 		} catch (Throwable t) {
 		}
 		EOL = eol;
-
-		// HashMap map = new HashMap();
-		// map.put("1.2", "java.lang.ref.Reference");
-		// map.put("1.3", "java.lang.reflect.Proxy");
-		// map.put("1.4", "java.nio.Buffer");
-		// map.put("1.5", "java.lang.annotation.Annotation");
-		//        
-		// VM_CLASSES = Collections.unmodifiableMap(map);
 	}
-
-	// /**
-	// * Detect whether Java version is supported.
-	// * @param version String "1.2" or "1.3" or "1.4"
-	// * @return true if the currently-running VM supports the version
-	// * @throws IllegalArgumentException if version is not known
-	// */
-	// public static final boolean supportsJava(String version) {
-	// LangUtil.throwIaxIfNull(version, "version");
-	// String className = (String) VM_CLASSES.get(version);
-	// if (null == className) {
-	// throw new IllegalArgumentException("unknown version: " + version);
-	// }
-	// try {
-	// Class.forName(className);
-	// return true;
-	// } catch (Throwable t) {
-	// return false;
-	// }
-	// }
-
-	private static boolean is13VMOrGreater = true;
-	private static boolean is14VMOrGreater = true;
-	private static boolean is15VMOrGreater = false;
-	private static boolean is16VMOrGreater = false;
 
 	static {
 		String vm = System.getProperty("java.version"); // JLS 20.18.7
-		if (vm == null)
+		if (vm == null) {
 			vm = System.getProperty("java.runtime.version");
-		if (vm == null)
+		}
+		if (vm == null) {
 			vm = System.getProperty("java.vm.version");
-		if (vm.startsWith("1.3")) {
-			is14VMOrGreater = false;
-		} else if (vm.startsWith("1.5") || vm.startsWith("1.6")) {
-			is15VMOrGreater = true;
-			is16VMOrGreater = true;
+		}
+
+		String versionString = vm.substring(0, 3);
+		try {
+			Double temp = new Double(Double.parseDouble(versionString));
+			vmVersion = temp.floatValue();
+		} catch (Exception e) {
+			vmVersion = 1.4;
 		}
 	}
 
 	public static boolean is13VMOrGreater() {
-		return is13VMOrGreater;
+		return 1.3 <= vmVersion;
 	}
 
 	public static boolean is14VMOrGreater() {
-		return is14VMOrGreater;
+		return 1.4 <= vmVersion;
 	}
 
 	public static boolean is15VMOrGreater() {
-		return is15VMOrGreater;
+		return 1.5 <= vmVersion;
 	}
 
 	public static boolean is16VMOrGreater() {
-		return is16VMOrGreater;
+		return 1.6 <= vmVersion;
+	}
+
+	public static boolean is17VMOrGreater() {
+		return 1.7 <= vmVersion;
 	}
 
 	/**
@@ -132,8 +106,7 @@ public class LangUtil {
 	}
 
 	/**
-	 * Shorthand for
-	 * "if not null or not assignable, throw IllegalArgumentException"
+	 * Shorthand for "if not null or not assignable, throw IllegalArgumentException"
 	 * 
 	 * @param c the Class to check - use null to ignore type check
 	 * @throws IllegalArgumentException "null {name}" if o is null
@@ -156,8 +129,7 @@ public class LangUtil {
 	}
 
 	/**
-	 * Shorthand for
-	 * "if not null or not assignable, throw IllegalArgumentException"
+	 * Shorthand for "if not null or not assignable, throw IllegalArgumentException"
 	 * 
 	 * @throws IllegalArgumentException "null {name}" if o is null
 	 */
@@ -240,8 +212,7 @@ public class LangUtil {
 	}
 
 	/**
-	 * Split string as classpath, delimited at File.pathSeparator. Entries are
-	 * not trimmed, but empty entries are ignored.
+	 * Split string as classpath, delimited at File.pathSeparator. Entries are not trimmed, but empty entries are ignored.
 	 * 
 	 * @param classpath the String to split - may be null or empty
 	 * @return String[] of classpath entries
@@ -262,8 +233,7 @@ public class LangUtil {
 	}
 
 	/**
-	 * Get System property as boolean, but use default value where the system
-	 * property is not set.
+	 * Get System property as boolean, but use default value where the system property is not set.
 	 * 
 	 * @return true if value is set to true, false otherwise
 	 */
@@ -282,10 +252,9 @@ public class LangUtil {
 	}
 
 	/**
-	 * Splits <code>input</code>, removing delimiter and trimming any white
-	 * space. Returns an empty collection if the input is null. If delimiter is
-	 * null or empty or if the input contains no delimiters, the input itself is
-	 * returned after trimming white space.
+	 * Splits <code>input</code>, removing delimiter and trimming any white space. Returns an empty collection if the input is null.
+	 * If delimiter is null or empty or if the input contains no delimiters, the input itself is returned after trimming white
+	 * space.
 	 * 
 	 * @param input <code>String</code> to split.
 	 * @param delim <code>String</code> separators for input.
@@ -309,8 +278,7 @@ public class LangUtil {
 	}
 
 	/**
-	 * Splits strings into a <code>List</code> using a
-	 * <code>StringTokenizer</code>.
+	 * Splits strings into a <code>List</code> using a <code>StringTokenizer</code>.
 	 * 
 	 * @param text <code>String</code> to split.
 	 */
@@ -413,8 +381,8 @@ public class LangUtil {
 	}
 
 	/**
-	 * Extract options and arguments to input option list, returning remainder.
-	 * The input options will be nullified if not found. e.g.,
+	 * Extract options and arguments to input option list, returning remainder. The input options will be nullified if not found.
+	 * e.g.,
 	 * 
 	 * <pre>
 	 * String[] options = new String[][] { new String[] { &quot;-verbose&quot; }, new String[] { &quot;-classpath&quot;, null } };
@@ -424,10 +392,8 @@ public class LangUtil {
 	 * </pre>
 	 * 
 	 * @param args the String[] input options
-	 * @param options the String[][]options to find in the input args - not null
-	 *            for each String[] component the first subcomponent is the
-	 *            option itself, and there is one String subcomponent for each
-	 *            additional argument.
+	 * @param options the String[][]options to find in the input args - not null for each String[] component the first subcomponent
+	 *        is the option itself, and there is one String subcomponent for each additional argument.
 	 * @return String[] of args remaining after extracting options to extracted
 	 */
 	public static String[] extractOptions(String[] args, String[][] options) {
@@ -668,13 +634,10 @@ public class LangUtil {
 	// }
 
 	/**
-	 * Convert arrays safely. The number of elements in the result will be 1
-	 * smaller for each element that is null or not assignable. This will use
-	 * sink if it has exactly the right size. The result will always have the
-	 * same component type as sink.
+	 * Convert arrays safely. The number of elements in the result will be 1 smaller for each element that is null or not
+	 * assignable. This will use sink if it has exactly the right size. The result will always have the same component type as sink.
 	 * 
-	 * @return an array with the same component type as sink containing any
-	 *         assignable elements in source (in the same order).
+	 * @return an array with the same component type as sink containing any assignable elements in source (in the same order).
 	 * @throws IllegalArgumentException if either is null
 	 */
 	public static Object[] safeCopy(Object[] source, Object[] sink) {
@@ -720,8 +683,7 @@ public class LangUtil {
 	}
 
 	/**
-	 * @return a String with the unqualified class name of the object (or
-	 *         "null")
+	 * @return a String with the unqualified class name of the object (or "null")
 	 */
 	public static String unqualifiedClassName(Object o) {
 		return LangUtil.unqualifiedClassName(null == o ? null : o.getClass());
@@ -804,8 +766,7 @@ public class LangUtil {
 	}
 
 	/**
-	 * Renders exception <code>t</code> after unwrapping and eliding any test
-	 * packages.
+	 * Renders exception <code>t</code> after unwrapping and eliding any test packages.
 	 * 
 	 * @param t <code>Throwable</code> to print.
 	 * @see #maxStackTrace
@@ -815,8 +776,7 @@ public class LangUtil {
 	}
 
 	/**
-	 * Renders exception <code>t</code>, unwrapping, optionally eliding and
-	 * limiting total number of lines.
+	 * Renders exception <code>t</code>, unwrapping, optionally eliding and limiting total number of lines.
 	 * 
 	 * @param t <code>Throwable</code> to print.
 	 * @param elide true to limit to 100 lines and elide test packages
@@ -834,8 +794,8 @@ public class LangUtil {
 	}
 
 	/**
-	 * Trim ending lines from a StringBuffer, clipping to maxLines and further
-	 * removing any number of trailing lines accepted by checker.
+	 * Trim ending lines from a StringBuffer, clipping to maxLines and further removing any number of trailing lines accepted by
+	 * checker.
 	 * 
 	 * @param checker returns true if trailing line should be elided.
 	 * @param stack StringBuffer with lines to elide
@@ -934,8 +894,7 @@ public class LangUtil {
 	}
 
 	/**
-	 * Replacement for Arrays.asList(..) which gacks on null and returns a List
-	 * in which remove is an unsupported operation.
+	 * Replacement for Arrays.asList(..) which gacks on null and returns a List in which remove is an unsupported operation.
 	 * 
 	 * @param array the Object[] to convert (may be null)
 	 * @return the List corresponding to array (never null)
@@ -997,8 +956,7 @@ public class LangUtil {
 	/**
 	 * @param input ignored if null
 	 * @param sink the StringBuffer to add input to - return false if null
-	 * @param delimiter the String to append to input when added - ignored if
-	 *            empty
+	 * @param delimiter the String to append to input when added - ignored if empty
 	 * @return true if input + delimiter added to sink
 	 */
 	private static boolean addIfNotEmpty(String input, StringBuffer sink, String delimiter) {
@@ -1013,8 +971,7 @@ public class LangUtil {
 	}
 
 	/**
-	 * Create or initialize a process controller to run a process in another VM
-	 * asynchronously.
+	 * Create or initialize a process controller to run a process in another VM asynchronously.
 	 * 
 	 * @param controller the ProcessController to initialize, if not null
 	 * @param classpath
@@ -1129,15 +1086,12 @@ public class LangUtil {
 	}
 
 	/**
-	 * Handle an external process asynchrously. <code>start()</code> launches a
-	 * main thread to wait for the process and pipes streams (in child threads)
-	 * through to the corresponding streams (e.g., the process System.err to
-	 * this System.err). This can complete normally, by exception, or on demand
-	 * by a client. Clients can implement <code>doCompleting(..)</code> to get
-	 * notice when the process completes.
+	 * Handle an external process asynchrously. <code>start()</code> launches a main thread to wait for the process and pipes
+	 * streams (in child threads) through to the corresponding streams (e.g., the process System.err to this System.err). This can
+	 * complete normally, by exception, or on demand by a client. Clients can implement <code>doCompleting(..)</code> to get notice
+	 * when the process completes.
 	 * <p>
-	 * The following sample code creates a process with a completion callback
-	 * starts it, and some time later retries the process.
+	 * The following sample code creates a process with a completion callback starts it, and some time later retries the process.
 	 * 
 	 * <pre>
 	 * LangUtil.ProcessController controller = new LangUtil.ProcessController() {
@@ -1156,14 +1110,12 @@ public class LangUtil {
 	 * }
 	 * </pre>
 	 * 
-	 * <u>warning</u>: Currently this does not close the input or output
-	 * streams, since doing so prevents their use later.
+	 * <u>warning</u>: Currently this does not close the input or output streams, since doing so prevents their use later.
 	 */
 	public static class ProcessController {
 		/*
-		 * XXX not verified thread-safe, but should be. Known problems: - user
-		 * stops (completed = true) then exception thrown from destroying
-		 * process (stop() expects !completed) ...
+		 * XXX not verified thread-safe, but should be. Known problems: - user stops (completed = true) then exception thrown from
+		 * destroying process (stop() expects !completed) ...
 		 */
 		private String[] command;
 		private String[] envp;
@@ -1189,9 +1141,8 @@ public class LangUtil {
 		}
 
 		/**
-		 * Permit re-running using the same command if this is not started or if
-		 * completed. Can also call this when done with results to release
-		 * references associated with results (e.g., stack traces).
+		 * Permit re-running using the same command if this is not started or if completed. Can also call this when done with
+		 * results to release references associated with results (e.g., stack traces).
 		 */
 		public final void reinit() {
 			if (!init) {
@@ -1264,8 +1215,7 @@ public class LangUtil {
 		/**
 		 * Start running the process and pipes asynchronously.
 		 * 
-		 * @return Thread started or null if unable to start thread (results
-		 *         available via <code>getThrown()</code>, etc.)
+		 * @return Thread started or null if unable to start thread (results available via <code>getThrown()</code>, etc.)
 		 */
 		public final Thread start() {
 			if (!init) {
@@ -1317,10 +1267,8 @@ public class LangUtil {
 		}
 
 		/**
-		 * Destroy any process, stop any pipes. This waits for the pipes to
-		 * clear (reading until no more input is available), but does not wait
-		 * for the input stream for the pipe to close (i.e., not waiting for
-		 * end-of-file on input stream).
+		 * Destroy any process, stop any pipes. This waits for the pipes to clear (reading until no more input is available), but
+		 * does not wait for the input stream for the pipe to close (i.e., not waiting for end-of-file on input stream).
 		 */
 		public final synchronized void stop() {
 			if (completed) {
@@ -1353,13 +1301,10 @@ public class LangUtil {
 		}
 
 		/**
-		 * Get any Throwable thrown. Note that the process can complete normally
-		 * (with a valid return value), at the same time the pipes throw
-		 * exceptions, and that this may return some exceptions even if the
-		 * process is not complete.
+		 * Get any Throwable thrown. Note that the process can complete normally (with a valid return value), at the same time the
+		 * pipes throw exceptions, and that this may return some exceptions even if the process is not complete.
 		 * 
-		 * @return null if not complete or Thrown containing exceptions thrown
-		 *         by the process and streams.
+		 * @return null if not complete or Thrown containing exceptions thrown by the process and streams.
 		 */
 		public final Thrown getThrown() { // cache this
 			return makeThrown(null);
@@ -1370,14 +1315,11 @@ public class LangUtil {
 		}
 
 		/**
-		 * Subclasses implement this to get synchronous notice of completion.
-		 * All pipes and processes should be complete at this time. To get the
-		 * exceptions thrown for the pipes, use <code>getThrown()</code>. If
-		 * there is an exception, the process completed abruptly (including
-		 * side-effects of the user halting the process). If
-		 * <code>userStopped()</code> is true, then some client asked that the
-		 * process be destroyed using <code>stop()</code>. Otherwise, the result
-		 * code should be the result value returned by the process.
+		 * Subclasses implement this to get synchronous notice of completion. All pipes and processes should be complete at this
+		 * time. To get the exceptions thrown for the pipes, use <code>getThrown()</code>. If there is an exception, the process
+		 * completed abruptly (including side-effects of the user halting the process). If <code>userStopped()</code> is true, then
+		 * some client asked that the process be destroyed using <code>stop()</code>. Otherwise, the result code should be the
+		 * result value returned by the process.
 		 * 
 		 * @param thrown same as <code>getThrown().fromProcess</code>.
 		 * @param result same as <code>getResult()</code>
@@ -1389,8 +1331,7 @@ public class LangUtil {
 		}
 
 		/**
-		 * Handle termination (on-demand, abrupt, or normal) by destroying
-		 * and/or halting process and pipes.
+		 * Handle termination (on-demand, abrupt, or normal) by destroying and/or halting process and pipes.
 		 * 
 		 * @param thrown ignored if null
 		 * @param result ignored if Integer.MIN_VALUE
