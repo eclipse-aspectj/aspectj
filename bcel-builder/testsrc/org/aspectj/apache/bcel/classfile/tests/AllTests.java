@@ -15,24 +15,11 @@ package org.aspectj.apache.bcel.classfile.tests;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.aspectj.apache.bcel.classfile.tests.AnnotationAccessFlagTest;
-import org.aspectj.apache.bcel.classfile.tests.AnnotationDefaultAttributeTest;
-import org.aspectj.apache.bcel.classfile.tests.ElementValueGenTest;
-import org.aspectj.apache.bcel.classfile.tests.EnclosingMethodAttributeTest;
-import org.aspectj.apache.bcel.classfile.tests.EnumAccessFlagTest;
-import org.aspectj.apache.bcel.classfile.tests.FieldAnnotationsTest;
-import org.aspectj.apache.bcel.classfile.tests.GeneratingAnnotatedClassesTest;
-import org.aspectj.apache.bcel.classfile.tests.LocalVariableTypeTableTest;
-import org.aspectj.apache.bcel.classfile.tests.MethodAnnotationsTest;
-import org.aspectj.apache.bcel.classfile.tests.RuntimeVisibleAnnotationAttributeTest;
-import org.aspectj.apache.bcel.classfile.tests.RuntimeVisibleParameterAnnotationAttributeTest;
-import org.aspectj.apache.bcel.classfile.tests.VarargsTest;
-
 public class AllTests {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Tests for BCEL");
-		//$JUnit-BEGIN$
+		// $JUnit-BEGIN$
 		suite.addTestSuite(Fundamentals.class);
 		suite.addTestSuite(RuntimeVisibleParameterAnnotationAttributeTest.class);
 		suite.addTestSuite(AnnotationDefaultAttributeTest.class);
@@ -40,6 +27,7 @@ public class AllTests {
 		suite.addTestSuite(MethodAnnotationsTest.class);
 		suite.addTestSuite(RuntimeVisibleAnnotationAttributeTest.class);
 		suite.addTestSuite(ClassloaderRepositoryTest.class);
+		suite.addTestSuite(NonCachingClassLoaderRepositoryTest.class);
 		suite.addTestSuite(EnumAccessFlagTest.class);
 		suite.addTestSuite(LocalVariableTypeTableTest.class);
 		suite.addTestSuite(VarargsTest.class);
@@ -54,7 +42,7 @@ public class AllTests {
 		suite.addTestSuite(GenericSignatureParsingTest.class);
 		suite.addTestSuite(GenericsErasureTesting.class);
 		suite.addTestSuite(AnonymousClassTest.class);
-		//$JUnit-END$
+		// $JUnit-END$
 		return suite;
 	}
 }

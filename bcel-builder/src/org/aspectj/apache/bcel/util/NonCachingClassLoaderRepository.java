@@ -70,177 +70,193 @@ import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 
 /**
- * The repository maintains information about which classes have
- * been loaded.
- *
- * It loads its data from the ClassLoader implementation
- * passed into its constructor.
- *
+ * The repository maintains information about which classes have been loaded.
+ * 
+ * It loads its data from the ClassLoader implementation passed into its constructor.
+ * 
  * @see org.aspectj.apache.bcel.Repository
- *
- * @version $Id: NonCachingClassLoaderRepository.java,v 1.4 2008/08/26 15:02:51 aclement Exp $
+ * 
+ * @version $Id: NonCachingClassLoaderRepository.java,v 1.5 2009/09/04 18:42:08 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  * 
  */
-public class NonCachingClassLoaderRepository
-  implements Repository
-{  
-  private static java.lang.ClassLoader bootClassLoader = null;
+public class NonCachingClassLoaderRepository implements Repository {
+	private static java.lang.ClassLoader bootClassLoader = null;
 
-  private ClassLoaderReference loaderRef;
-  private Map loadedClasses =
-    new SoftHashMap(); // CLASSNAME X JAVACLASS
-  
+	private final ClassLoaderReference loaderRef;
+	private final Map loadedClasses = new SoftHashMap(); // CLASSNAME X JAVACLASS
+
 	public static class SoftHashMap extends AbstractMap {
-		  private Map map;
-		  private ReferenceQueue rq = new ReferenceQueue(); 
-		  
-	      public SoftHashMap(Map map) { this.map = map; }
-		  public SoftHashMap() { this(new HashMap()); }
-		  public SoftHashMap(Map map, boolean b) { this(map); }
-		
-		  class SpecialValue extends SoftReference {
-			  private final Object key;
-			  SpecialValue(Object k,Object v) {
-			    super(v,rq);
-			    this.key = k;
-			  }
-		  }  
+		private Map map;
+		private ReferenceQueue rq = new ReferenceQueue();
 
-		  private void processQueue() {
+		public SoftHashMap(Map map) {
+			this.map = map;
+		}
+
+		public SoftHashMap() {
+			this(new HashMap());
+		}
+
+		public SoftHashMap(Map map, boolean b) {
+			this(map);
+		}
+
+		class SpecialValue extends SoftReference {
+			private final Object key;
+
+			SpecialValue(Object k, Object v) {
+				super(v, rq);
+				this.key = k;
+			}
+		}
+
+		private void processQueue() {
 			SpecialValue sv = null;
-			while ((sv = (SpecialValue)rq.poll())!=null) {
+			while ((sv = (SpecialValue) rq.poll()) != null) {
 				map.remove(sv.key);
 			}
-		  }
-		
-		  public Object get(Object key) {
-			SpecialValue value = (SpecialValue)map.get(key);
-			if (value==null) return null;
-			if (value.get()==null) {
+		}
+
+		public Object get(Object key) {
+			SpecialValue value = (SpecialValue) map.get(key);
+			if (value == null)
+				return null;
+			if (value.get() == null) {
 				// it got GC'd
 				map.remove(value.key);
 				return null;
 			} else {
 				return value.get();
 			}
-		  }
+		}
 
-		  public Object put(Object k, Object v) {
+		public Object put(Object k, Object v) {
 			processQueue();
-			return map.put(k, new SpecialValue(k,v));
-		  }
+			return map.put(k, new SpecialValue(k, v));
+		}
 
-		  public Set entrySet() {
+		public Set entrySet() {
 			return map.entrySet();
-		  }
-		
-		  public void clear() {
+		}
+
+		public void clear() {
 			processQueue();
 			Set keys = map.keySet();
 			for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
 				Object name = iterator.next();
 				map.remove(name);
 			}
-		  }
-		
-		  public int size() {
+		}
+
+		public int size() {
 			processQueue();
 			return map.size();
-		  }
-		
-		  public Object remove(Object k) {
+		}
+
+		public Object remove(Object k) {
 			processQueue();
-			SpecialValue value = (SpecialValue)map.remove(k);
-			if (value==null) return null;
-			if (value.get()!=null) {
+			SpecialValue value = (SpecialValue) map.remove(k);
+			if (value == null)
+				return null;
+			if (value.get() != null) {
 				return value.get();
 			}
 			return null;
-		  }
-	  }
+		}
+	}
 
-    public NonCachingClassLoaderRepository(java.lang.ClassLoader loader) {
-        this.loaderRef = new DefaultClassLoaderReference((loader != null) ? loader : getBootClassLoader());
-    }
+	public NonCachingClassLoaderRepository(java.lang.ClassLoader loader) {
+		this.loaderRef = new DefaultClassLoaderReference((loader != null) ? loader : getBootClassLoader());
+	}
 
-    public NonCachingClassLoaderRepository(ClassLoaderReference loaderRef) {
-        this.loaderRef = loaderRef;
-    }
+	public NonCachingClassLoaderRepository(ClassLoaderReference loaderRef) {
+		this.loaderRef = loaderRef;
+	}
 
-  private static synchronized java.lang.ClassLoader getBootClassLoader() {
-	  if (bootClassLoader == null) {
-		  bootClassLoader = new URLClassLoader(new URL[0]);
-	  }
-	  return bootClassLoader;
-  }
-  
-  /**
-   * Store a new JavaClass into this Repository.
-   */
-  public void storeClass( JavaClass clazz ) {
-    loadedClasses.put( clazz.getClassName(),
-		       clazz );
-    clazz.setRepository( this );
-  }
+	private static synchronized java.lang.ClassLoader getBootClassLoader() {
+		if (bootClassLoader == null) {
+			bootClassLoader = new URLClassLoader(new URL[0]);
+		}
+		return bootClassLoader;
+	}
 
-  /**
-   * Remove class from repository
-   */
-  public void removeClass(JavaClass clazz) {
-    loadedClasses.remove(clazz.getClassName());
-  }
+	/**
+	 * Store a new JavaClass into this Repository.
+	 */
+	public void storeClass(JavaClass clazz) {
+		synchronized (loadedClasses) {
+			loadedClasses.put(clazz.getClassName(), clazz);
+		}
+		clazz.setRepository(this);
+	}
 
-  /**
-   * Find an already defined JavaClass.
-   */
-  public JavaClass findClass( String className ) {
-    if ( loadedClasses.containsKey( className )) {
-      return (JavaClass) loadedClasses.get( className );
-    } else {
-      return null;
-    }
-  }
+	/**
+	 * Remove class from repository
+	 */
+	public void removeClass(JavaClass clazz) {
+		synchronized (loadedClasses) {
+			loadedClasses.remove(clazz.getClassName());
+		}
+	}
 
-  /**
-   * Lookup a JavaClass object from the Class Name provided.
-   */
-  public JavaClass loadClass( String className ) 
-    throws ClassNotFoundException
-  {
-    String classFile = className.replace('.', '/');
+	/**
+	 * Find an already defined JavaClass.
+	 */
+	public JavaClass findClass(String className) {
+		synchronized (loadedClasses) {
+			if (loadedClasses.containsKey(className)) {
+				return (JavaClass) loadedClasses.get(className);
+			} else {
+				return null;
+			}
+		}
+	}
 
-    JavaClass RC = findClass( className );
-    if (RC != null) { return RC; }
+	/**
+	 * Clear all entries from cache.
+	 */
+	public void clear() {
+		synchronized (loadedClasses) {
+			loadedClasses.clear();
+		}
+	}
 
-    try {
-      InputStream is = 
-          loaderRef.getClassLoader().getResourceAsStream(classFile + ".class");
-	    
-      if(is == null) {
-	throw new ClassNotFoundException(className + " not found.");
-      }
+	/**
+	 * Lookup a JavaClass object from the Class Name provided.
+	 */
+	public JavaClass loadClass(String className) throws ClassNotFoundException {
 
-      ClassParser parser = new ClassParser( is, className );
-      RC = parser.parse();
-	    
-      storeClass( RC );
+		JavaClass javaClass = findClass(className);
+		if (javaClass != null) {
+			return javaClass;
+		}
 
-      return RC;
-    } catch (IOException e) {
-      throw new ClassNotFoundException( e.toString() );
-    }
-  }
+		javaClass = loadJavaClass(className);
+		storeClass(javaClass);
 
-  public JavaClass loadClass(Class clazz) throws ClassNotFoundException {
-    return loadClass(clazz.getName());
-  }
+		return javaClass;
+	}
 
-  /** Clear all entries from cache.
-   */
-  public void clear() {
-    loadedClasses.clear();
-  }
+	public JavaClass loadClass(Class clazz) throws ClassNotFoundException {
+		return loadClass(clazz.getName());
+	}
+
+	private JavaClass loadJavaClass(String className) throws ClassNotFoundException {
+		String classFile = className.replace('.', '/');
+		try {
+			InputStream is = loaderRef.getClassLoader().getResourceAsStream(classFile + ".class");
+
+			if (is == null) {
+				throw new ClassNotFoundException(className + " not found.");
+			}
+
+			ClassParser parser = new ClassParser(is, className);
+			return parser.parse();
+		} catch (IOException e) {
+			throw new ClassNotFoundException(e.toString());
+		}
+	}
+
 }
-
