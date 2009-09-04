@@ -946,6 +946,9 @@ public abstract class World implements Dump.INode {
 		 * generic type.
 		 */
 		public ResolvedType put(String key, ResolvedType type) {
+			if (!type.isCacheable()) {
+				return type;
+			}
 			if (type.isParameterizedType() && type.isParameterizedWithTypeVariable()) {
 				if (debug)
 					System.err

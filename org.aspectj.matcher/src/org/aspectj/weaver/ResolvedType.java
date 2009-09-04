@@ -80,6 +80,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	public abstract ResolvedMember[] getDeclaredPointcuts();
 
+	public boolean isCacheable() {
+		return true;
+	}
+
 	/**
 	 * Returns a ResolvedType object representing the superclass of this type, or null. If this represents a java.lang.Object, a
 	 * primitive type, or void, this method returns null.
