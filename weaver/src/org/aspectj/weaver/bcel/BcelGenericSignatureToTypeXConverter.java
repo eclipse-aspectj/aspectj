@@ -214,8 +214,9 @@ public class BcelGenericSignatureToTypeXConverter {
 	}
 
 	private static void fixUpCircularDependencies(ResolvedType aTypeX, Map typeVariableResolutions) {
-		if (!(aTypeX instanceof ReferenceType))
+		if (!(aTypeX instanceof ReferenceType)) {
 			return;
+		}
 
 		ReferenceType rt = (ReferenceType) aTypeX;
 		TypeVariable[] typeVars = rt.getTypeVariables();
@@ -243,6 +244,10 @@ public class BcelGenericSignatureToTypeXConverter {
 
 		public ResolvedType resolve(World world) {
 			return this;
+		}
+
+		public boolean isCacheable() {
+			return false;
 		}
 	}
 
