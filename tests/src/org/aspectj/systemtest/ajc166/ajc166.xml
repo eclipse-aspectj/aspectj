@@ -1,7 +1,28 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 
 <suite>
+
+  <ajc-test dir="bugs166/pr288635" title="munger cce">
+     <compile files="org/tests/atann/AddAnnotations.aj org/tests/atann/AddITDDoMethod.aj org/tests/atann/InterceptTraceds.aj org/tests/atann/TestClass.java org/tests/atann/Traced.java" options="-1.5"/>
+     <run class="org.tests.atann.TestClass"/>
+  </ajc-test>
+  
    
+  <ajc-test dir="bugs166/pr286375" title="npe on bad aspect decl">
+     <compile files="DatabaseOperationMonitor.java" options="-1.5" outjar="wibble.jar"/>
+     <compile files="" inpath="wibble.jar" options="-1.5"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs166/pr287597" title="anno modifier ordering - 1">
+     <compile files="A.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="foo"/>
+     </compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs166/pr287613" title="dec anno compound expressions">
+     <compile files="DeclareAnnot.java" options="-1.5"/>
+  </ajc-test>
+  
   <ajc-test dir="bugs166/pr284862" title="npe hasmember">
      <compile files="InterfaceToAdd.java AnnotatedMethodImpl.aj AspectToMatch.aj AnnotatedMethodInterface.java Entity.java EntityClass.java PresentAnnotation.java SearchAnnotation.java" options="-1.5 -XhasMember"/>
   </ajc-test>

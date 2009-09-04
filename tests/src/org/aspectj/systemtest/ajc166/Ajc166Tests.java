@@ -18,6 +18,22 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc166Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testMungerCCE_288635() {
+		runTest("munger cce");
+	}
+
+	// public void testNPEonBadAspectDecl_286375() {
+	// runTest("npe on bad aspect decl");
+	// }
+	//
+	// public void testAnnoModifierOrdering_287597_1() {
+	// runTest("anno modifier ordering - 1");
+	// }
+	//
+	// public void testDeclareAnnoCompoundExpression_287613() {
+	// runTest("dec anno compound expressions");
+	// }
+
 	public void testHasMember_284862() {
 		runTest("npe hasmember");
 	}
