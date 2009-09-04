@@ -47,6 +47,7 @@ import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberImpl;
@@ -1430,7 +1431,7 @@ public class BcelShadow extends Shadow {
 		// check the ITD'd dooberries
 		List mungers = relevantType.resolve(world).getInterTypeMungers();
 		for (Iterator iter = mungers.iterator(); iter.hasNext();) {
-			BcelTypeMunger typeMunger = (BcelTypeMunger) iter.next();
+			ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) iter.next();
 			if (typeMunger.getMunger() instanceof NewMethodTypeMunger || typeMunger.getMunger() instanceof NewConstructorTypeMunger) {
 				ResolvedMember fakerm = typeMunger.getSignature();
 				if (fakerm.getName().equals(getSignature().getName())
@@ -1454,7 +1455,8 @@ public class BcelShadow extends Shadow {
 			// check the ITD'd dooberries
 			List mungers = relevantType.resolve(world).getInterTypeMungers();
 			for (Iterator iter = mungers.iterator(); iter.hasNext();) {
-				BcelTypeMunger typeMunger = (BcelTypeMunger) iter.next();
+				Object munger = iter.next();
+				ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) munger;
 				if (typeMunger.getMunger() instanceof NewMethodTypeMunger
 						|| typeMunger.getMunger() instanceof NewConstructorTypeMunger) {
 					ResolvedMember fakerm = typeMunger.getSignature();
