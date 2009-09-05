@@ -53,6 +53,30 @@ import org.aspectj.util.FileUtil;
  */
 public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
 
+	/*
+public void testIncrementalAspectWhitespace() throws Exception {
+		AjdeInteractionTestbed.VERBOSE = true;
+		String p = "xxx";
+		initialiseProject(p);
+		configureNonStandardCompileOptions(p, "-showWeaveInfo");
+		configureShowWeaveInfoMessages(p, true);
+		build(p);
+
+		List weaveMessages = getWeavingMessages(p);
+		if (weaveMessages.size() != 0) {
+			for (Iterator iterator = weaveMessages.iterator(); iterator.hasNext();) {
+				Object object = iterator.next();
+				System.out.println(object);
+			}
+		}
+		checkWasFullBuild();
+		assertNoErrors(p);
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+		assertNoErrors(p);
+	}*/
+
 	public void testIncrementalGenericItds_pr280676() throws Exception {
 		String p = "pr280676";
 		initialiseProject(p);
@@ -762,8 +786,26 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("Unexpected compiler error", 0, l.size());
 	}
 
-	public void testImports_pr263487() {
+	public void testIncrementalAnnoStyle_pr286341() {
 		AjdeInteractionTestbed.VERBOSE = true;
+		String base = "pr286341_base";
+		initialiseProject(base);
+		build(base);
+		checkWasFullBuild();
+		String p = "pr286341";
+		initialiseProject(p);
+		configureAspectPath(p, getProjectRelativePath(base, "bin"));
+		addClasspathEntry(p, getProjectRelativePath(base, "bin"));
+		build(p);
+		checkWasFullBuild();
+		assertNoErrors(p);
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+		assertNoErrors(p);
+	}
+
+	public void testImports_pr263487() {
 		String p2 = "importProb2";
 		initialiseProject(p2);
 		build(p2);
