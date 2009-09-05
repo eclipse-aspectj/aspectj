@@ -650,6 +650,7 @@ public class BcelWeaver {
 					}
 				}
 			}
+			newP.m_ignoreUnboundBindingForNames = p.m_ignoreUnboundBindingForNames;
 			munger.setPointcut(newP);
 		}
 		// now that we have optimized individual pointcuts, optimize
@@ -660,7 +661,9 @@ public class BcelWeaver {
 		for (Iterator iter = shadowMungers.iterator(); iter.hasNext();) {
 			ShadowMunger munger = (ShadowMunger) iter.next();
 			Pointcut p = munger.getPointcut();
-			munger.setPointcut(shareEntriesFromMap(p, pcMap));
+			Pointcut newP = shareEntriesFromMap(p, pcMap);
+			newP.m_ignoreUnboundBindingForNames = p.m_ignoreUnboundBindingForNames;
+			munger.setPointcut(newP);
 		}
 	}
 
