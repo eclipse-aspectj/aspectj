@@ -42,9 +42,9 @@ public class BcelAnnotation extends AbstractAnnotationAJ {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Set /* of String */getTargets() {
+	public Set<String> getTargets() {
 		if (!type.equals(UnresolvedType.AT_TARGET)) {
-			return Collections.EMPTY_SET;
+			return Collections.emptySet();
 		}
 		List values = bcelAnnotation.getValues();
 		ElementNameValuePairGen envp = (ElementNameValuePairGen) values.get(0);
