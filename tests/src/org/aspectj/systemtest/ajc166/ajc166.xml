@@ -2,6 +2,11 @@
 
 <suite>
 
+  <ajc-test dir="bugs166/pr288712" title="verifyerror anno style">
+    <compile files="answers/Answer2h.java figures/FigureElement.java figures/Line.java figures/Point.java figures/ShapeFigureElement.java Main.java" options="-1.5"/>
+    <run class="Main"/>
+  </ajc-test>
+  
   <ajc-test dir="bugs166/pr288049" title="itd decanno">
      <compile files="org/tests/AClass.java org/tests/ASubClass.java org/tests/DeclareAnns.aj" options="-1.5"/>
   </ajc-test>
