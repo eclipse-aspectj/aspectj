@@ -18,9 +18,9 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc166Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
-	// public void testITDannos_288049() {
-	// runTest("itd decanno");
-	// }
+	public void testITDannos_288049() {
+		runTest("itd decanno");
+	}
 
 	public void testVerifyErrorAnnoStyle_288712() {
 		runTest("verifyerror anno style");
