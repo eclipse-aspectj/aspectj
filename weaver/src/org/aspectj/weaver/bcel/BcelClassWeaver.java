@@ -111,7 +111,7 @@ class BcelClassWeaver implements IClassWeaver {
 	// --------------------------------------------
 
 	private final LazyClassGen clazz;
-	private final List shadowMungers;
+	private final List<ShadowMunger> shadowMungers;
 	private final List typeMungers;
 	private final List lateTypeMungers;
 
@@ -1394,8 +1394,15 @@ class BcelClassWeaver implements IClassWeaver {
 			DeclareAnnotation declA = (DeclareAnnotation) iter.next();
 
 			// Error if an exact type pattern was specified
-			if ((declA.isExactPattern() || (declA.getSignaturePattern().getDeclaringType() instanceof ExactTypePattern))
-					&& (!declA.getSignaturePattern().getName().isAny() || (declA.getKind() == DeclareAnnotation.AT_CONSTRUCTOR))) {
+			boolean shouldCheck = declA.isExactPattern()
+					|| declA.getSignaturePattern().getDeclaringType() instanceof ExactTypePattern;
+			if (shouldCheck && declA.getKind() != DeclareAnnotation.AT_CONSTRUCTOR) {
+				ExactTypePattern declaringTypePattern = (ExactTypePattern) declA.getSignaturePattern().getDeclaringType();
+				if (declA.getSignaturePattern().getName().isAny() || declaringTypePattern.isIncludeSubtypes()) {
+					shouldCheck = false;
+				}
+			}
+			if (shouldCheck) {
 
 				// Quickly check if an ITD supplies the 'missing' member
 				boolean itdMatch = false;
@@ -3032,8 +3039,7 @@ class BcelClassWeaver implements IClassWeaver {
 			ContextToken shadowMatchToken = CompilationAndWeavingContext.enteringPhase(
 					CompilationAndWeavingContext.MATCHING_SHADOW, shadow);
 			boolean isMatched = false;
-			for (Iterator i = shadowMungers.iterator(); i.hasNext();) {
-				ShadowMunger munger = (ShadowMunger) i.next();
+			for (ShadowMunger munger : shadowMungers) {
 				ContextToken mungerMatchToken = CompilationAndWeavingContext.enteringPhase(
 						CompilationAndWeavingContext.MATCHING_POINTCUT, munger.getPointcut());
 				if (munger.match(shadow, world)) {
@@ -3100,7 +3106,7 @@ class BcelClassWeaver implements IClassWeaver {
 		return clazz;
 	}
 
-	public List getShadowMungers() {
+	public List<ShadowMunger> getShadowMungers() {
 		return shadowMungers;
 	}
 
