@@ -2240,10 +2240,18 @@ public class BcelShadow extends Shadow {
 				var.appendLoad(advice, fact);
 			}
 			// ??? we don't actually need to push NULL for the closure if we take care
-			advice.append(munger.getAdviceArgSetup(this, null,
-					(munger.getConcreteAspect().isAnnotationStyleAspect() && munger.getDeclaringAspect() != null && munger
-							.getDeclaringAspect().resolve(world).isAnnotationStyleAspect()) ? this.loadThisJoinPoint()
-							: new InstructionList(InstructionConstants.ACONST_NULL)));
+			boolean isAnnoStyleConcreteAspect = munger.getConcreteAspect().isAnnotationStyleAspect();
+			boolean isAnnoStyleDeclaringAspect = munger.getDeclaringAspect() != null ? munger.getDeclaringAspect().resolve(world)
+					.isAnnotationStyleAspect() : false;
+
+			InstructionList iList = null;
+			if (isAnnoStyleConcreteAspect && isAnnoStyleDeclaringAspect) {
+				iList = this.loadThisJoinPoint();
+				iList.append(Utility.createConversion(getFactory(), LazyClassGen.tjpType, LazyClassGen.proceedingTjpType));
+			} else {
+				iList = new InstructionList(InstructionConstants.ACONST_NULL);
+			}
+			advice.append(munger.getAdviceArgSetup(this, null, iList));
 			// adviceMethodInvocation =
 			advice.append(Utility.createInvoke(fact, localAdviceMethod)); // (fact, getWorld(), munger.getSignature()));
 			advice.append(Utility.createConversion(getFactory(), BcelWorld.makeBcelType(mungerSig.getReturnType()),
@@ -2496,7 +2504,7 @@ public class BcelShadow extends Shadow {
 						ret.append(InstructionFactory.createArrayLoad(Type.OBJECT));
 						ret.append(Utility.createConversion(fact, Type.OBJECT, callbackMethod.getArgumentTypes()[0]));
 					} else {
-						int position = (hasThis() && pointcutBindsThis ? 1 : 0);
+						int position = (hasThis()/* && pointcutBindsThis */? 1 : 0);
 						ret.append(InstructionFactory.createLoad(objectArrayType, theObjectArrayLocalNumber));
 						ret.append(Utility.createConstant(fact, position));
 						ret.append(InstructionFactory.createArrayLoad(Type.OBJECT));
