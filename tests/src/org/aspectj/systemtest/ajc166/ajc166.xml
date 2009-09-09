@@ -14,9 +14,24 @@
     <run class="Main"/>
   </ajc-test>
   
+  <ajc-test dir="bugs166/pr288635" title="munger cce - 2">
+     <compile files="AddAnnotation.java MakeItd.java InterceptTraceds.java TestClass.java Anno.java" options="-1.5 -XterminateAfterCompilation"/>
+     <run class="TestClass" ltw="aop1.xml">
+       <stdout>
+         <line text="Executing execution(int TestClass.doAnother()) on level debug"/>
+       </stdout>
+     </run>
+  </ajc-test>
+  
   <ajc-test dir="bugs166/pr288635" title="munger cce">
      <compile files="org/tests/atann/AddAnnotations.aj org/tests/atann/AddITDDoMethod.aj org/tests/atann/InterceptTraceds.aj org/tests/atann/TestClass.java org/tests/atann/Traced.java" options="-1.5"/>
-     <run class="org.tests.atann.TestClass"/>
+     <run class="org.tests.atann.TestClass">
+       <stdout>
+         <line text="Executing execution(String org.tests.atann.TestClass.doAnnotated()) on level debug"/>
+         <line text="Executing execution(int org.tests.atann.TestClass.doITDAnnotation()) on level debug"/>
+         <line text="Executing execution(int org.tests.atann.TestClass.doAnother()) on level debug"/>
+       </stdout>
+     </run>
   </ajc-test>
    
   <ajc-test dir="bugs166/pr286375" title="npe on bad aspect decl">

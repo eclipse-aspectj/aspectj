@@ -1,0 +1,11 @@
+<aspectj>
+<aspects>
+  <aspect name="AddAnnotation"/>
+  <aspect name="MakeItd"/>
+  <aspect name="InterceptTraceds"/>
+</aspects>
+  <weaver options="-showWeaveInfo -verbose">
+    <dump within="*" beforeandafter="true"/> 
+  </weaver>
+</aspectj>
+

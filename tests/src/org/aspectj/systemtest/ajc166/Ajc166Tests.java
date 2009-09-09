@@ -30,6 +30,10 @@ public class Ajc166Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("munger cce");
 	}
 
+	public void testMungerCCE_288635_2() {
+		runTest("munger cce - 2");
+	}
+
 	public void testNPEonBadAspectDecl_286375() {
 		runTest("npe on bad aspect decl");
 	}
