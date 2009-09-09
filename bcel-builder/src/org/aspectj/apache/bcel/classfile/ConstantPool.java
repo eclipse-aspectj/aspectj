@@ -20,9 +20,9 @@ public class ConstantPool implements Node {
 	private Constant[] pool;
     private int        poolSize; // number of entries in the pool (could be < pool.length as the array is resized in 'chunks')
 	
-    private Map utf8Cache = new HashMap();
-  	private Map methodCache = new HashMap();
-    private Map fieldCache = new HashMap();
+    private Map<String, Integer> utf8Cache = new HashMap<String, Integer>();
+  	private Map<String, Integer> methodCache = new HashMap<String, Integer>();
+    private Map<String, Integer> fieldCache = new HashMap<String, Integer>();
     
     public int getSize() { return poolSize; }
     
@@ -236,7 +236,7 @@ public class ConstantPool implements Node {
     
     
     public int lookupUtf8(String string) {
-    	Integer pos = (Integer) utf8Cache.get(string);
+    	Integer pos = utf8Cache.get(string);
     	if (pos!=null) return pos.intValue();
     	for (int i=1;i<poolSize;i++) {
     		Constant c = pool[i];
@@ -327,7 +327,7 @@ public class ConstantPool implements Node {
 	  public int lookupFieldref(String searchClassname, String searchFieldname, String searchSignature) {
 		  searchClassname = searchClassname.replace('.','/');
 		  String k = new StringBuffer().append(searchClassname).append(searchFieldname).append(searchSignature).toString();
-		  Integer pos = (Integer) fieldCache.get(k);
+		  Integer pos = fieldCache.get(k);
 	      if (pos!=null) return pos.intValue();
 		  for (int i=1;i<poolSize;i++) {
 	  		Constant c = pool[i];
@@ -600,7 +600,7 @@ default: // Never reached
   	  
 	  public int lookupMethodref(String searchClassname, String searchMethodName, String searchSignature) {  
 		  String key = new StringBuffer().append(searchClassname).append(searchMethodName).append(searchSignature).toString();
-		  Integer cached = (Integer)methodCache.get(key);
+		  Integer cached = methodCache.get(key);
 		  if (cached!=null) return cached.intValue();
 		  searchClassname = searchClassname.replace('.','/');
 		  for (int i=1;i<poolSize;i++) {

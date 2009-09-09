@@ -111,7 +111,7 @@ import org.aspectj.apache.bcel.verifier.exc.LocalVariableInfoInconsistentExcepti
  * More detailed information is to be found at the do_verify()
  * method's documentation.
  *
- * @version $Id: Pass2Verifier.java,v 1.3 2008/08/28 00:02:14 aclement Exp $
+ * @version $Id: Pass2Verifier.java,v 1.4 2009/09/09 19:56:20 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #do_verify()
  */
@@ -214,7 +214,7 @@ public final class Pass2Verifier extends PassVerifier implements Constants{
 	 * @throws ClassConstraintException otherwise.
 	 */
 	private void every_class_has_an_accessible_superclass(){
-		HashSet hs = new HashSet(); // save class names to detect circular inheritance
+		HashSet<String> hs = new HashSet<String>(); // save class names to detect circular inheritance
 		JavaClass jc = Repository.lookupClass(myOwner.getClassName());
 		int supidx = -1;
 
@@ -258,7 +258,7 @@ public final class Pass2Verifier extends PassVerifier implements Constants{
 	 * @see #every_class_has_an_accessible_superclass()
 	 */
 	private void final_methods_are_not_overridden(){
-		HashMap hashmap = new HashMap();
+		HashMap<String, String> hashmap = new HashMap<String, String>();
 		JavaClass jc = Repository.lookupClass(myOwner.getClassName());
 		
 		int supidx = -1;
@@ -319,11 +319,11 @@ public final class Pass2Verifier extends PassVerifier implements Constants{
 		private Class CONST_Methodref;
 		private Class CONST_InterfaceMethodref;
         */
-		private Class CONST_String;
-		private Class CONST_Integer;
-		private Class CONST_Float;
-		private Class CONST_Long;
-		private Class CONST_Double;
+		private Class<ConstantString> CONST_String;
+		private Class<ConstantInteger> CONST_Integer;
+		private Class<ConstantFloat> CONST_Float;
+		private Class<ConstantLong> CONST_Long;
+		private Class<ConstantDouble> CONST_Double;
 		private Class CONST_NameAndType;
 		private Class CONST_Utf8;
 
@@ -332,9 +332,9 @@ public final class Pass2Verifier extends PassVerifier implements Constants{
 		private final int cplen; // == cp.getLength() -- to save computing power.
 		private DescendingVisitor carrier;
 
-		private HashSet field_names = new HashSet();
-		private HashSet field_names_and_desc = new HashSet();
-		private HashSet method_names_and_desc = new HashSet();
+		private HashSet<String> field_names = new HashSet<String>();
+		private HashSet<String> field_names_and_desc = new HashSet<String>();
+		private HashSet<String> method_names_and_desc = new HashSet<String>();
 
 		private CPESSC_Visitor(JavaClass _jc){
 			jc = _jc;

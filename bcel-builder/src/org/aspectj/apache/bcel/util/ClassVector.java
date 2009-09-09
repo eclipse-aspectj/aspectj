@@ -60,15 +60,15 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  * Utility class implementing a (typesafe) collection of JavaClass
  * objects. Contains the most important methods of a Vector.
  *
- * @version $Id: ClassVector.java,v 1.3 2008/05/28 23:52:53 aclement Exp $
+ * @version $Id: ClassVector.java,v 1.4 2009/09/09 19:56:20 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A> 
  * @see ClassQueue
 */
 public class ClassVector implements java.io.Serializable {
-  protected ArrayList vec = new ArrayList();
+  protected ArrayList<JavaClass> vec = new ArrayList<JavaClass>();
   
   public void      addElement(JavaClass clazz) { vec.add(clazz); }
-  public JavaClass elementAt(int index)        { return (JavaClass)vec.get(index); }
+  public JavaClass elementAt(int index)        { return vec.get(index); }
   public void      removeElementAt(int index)  { vec.remove(index); }
 
   public JavaClass[] toArray() {

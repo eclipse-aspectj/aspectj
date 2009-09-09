@@ -64,7 +64,7 @@ import java.util.List;
 /** 
  * Abstract super class for fields and methods.
  *
- * @version $Id: FieldOrMethod.java,v 1.7 2008/06/06 04:24:20 aclement Exp $
+ * @version $Id: FieldOrMethod.java,v 1.8 2009/09/09 19:56:20 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldOrMethod extends Modifiers implements Cloneable, Node {
@@ -173,7 +173,7 @@ public abstract class FieldOrMethod extends Modifiers implements Cloneable, Node
 	// remain there.
     if (annotations==null) { 
   		// Find attributes that contain annotation data
-  		List accumulatedAnnotations = new ArrayList();
+  		List<AnnotationGen> accumulatedAnnotations = new ArrayList<AnnotationGen>();
   		for (int i = 0; i < attributes.length; i++) {
 			Attribute attribute = attributes[i];
 			if (attribute instanceof RuntimeAnnotations) {				
@@ -184,7 +184,7 @@ public abstract class FieldOrMethod extends Modifiers implements Cloneable, Node
   		if (accumulatedAnnotations.size()==0) {
   			annotations = AnnotationGen.NO_ANNOTATIONS;
   		} else {
-  			annotations = (AnnotationGen[])accumulatedAnnotations.toArray(new AnnotationGen[]{});
+  			annotations = accumulatedAnnotations.toArray(new AnnotationGen[]{});
   		}
   	}
   	return annotations;

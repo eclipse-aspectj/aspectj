@@ -63,13 +63,13 @@ import java.util.*;
  * [It's used an an operand stack substitute.]
  * Elements of this stack are org.aspectj.apache.bcel.generic.Type objects.
  *
- * @version $Id: OperandStack.java,v 1.2 2008/05/28 23:53:02 aclement Exp $
+ * @version $Id: OperandStack.java,v 1.3 2009/09/09 19:56:20 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class OperandStack{
 
 	/** We hold the stack information here. */
-	private ArrayList stack = new ArrayList();
+	private ArrayList<Type> stack = new ArrayList<Type>();
 
 	/** The maximum number of stack slots this OperandStack instance may hold. */
 	private int maxStack;
@@ -96,7 +96,7 @@ public class OperandStack{
 	 */
 	protected Object clone(){
 		OperandStack newstack = new OperandStack(this.maxStack);
-		newstack.stack = (ArrayList) this.stack.clone();
+		newstack.stack = (ArrayList<Type>) this.stack.clone();
 		return newstack;
 	}
 
@@ -104,7 +104,7 @@ public class OperandStack{
 	 * Clears the stack.
 	 */
 	public void clear(){
-		stack = new ArrayList();
+		stack = new ArrayList<Type>();
 	}
 
 	/**
@@ -153,14 +153,14 @@ public class OperandStack{
    * iff i==0 the top element is returned. The element is not popped off the stack!
    */
 	public Type peek(int i){
-		return (Type) stack.get(size()-i-1);
+		return stack.get(size()-i-1);
 	}
 
 	/**
 	 * Returns the element on top of the stack. The element is popped off the stack.
 	 */
 	public Type pop(){
-		Type e = (Type) stack.remove(size()-1);
+		Type e = stack.remove(size()-1);
 		return e;
 	}
 

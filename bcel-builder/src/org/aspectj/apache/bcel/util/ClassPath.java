@@ -62,7 +62,7 @@ import java.io.*;
  * Responsible for loading (class) files from the CLASSPATH. Inspired by
  * sun.tools.ClassPath.
  *
- * @version $Id: ClassPath.java,v 1.4 2008/05/28 23:52:53 aclement Exp $
+ * @version $Id: ClassPath.java,v 1.5 2009/09/09 19:56:20 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class ClassPath implements Serializable {
@@ -83,7 +83,7 @@ public class ClassPath implements Serializable {
   public ClassPath(String class_path) {
     this.class_path = class_path;
 
-    ArrayList vec = new ArrayList();
+    ArrayList<PathEntry> vec = new ArrayList<PathEntry>();
 
     for(StringTokenizer tok=new StringTokenizer(class_path,
 						System.getProperty("path.separator"));
@@ -137,7 +137,7 @@ public class ClassPath implements Serializable {
     return false;
   }
 
-  private static final void getPathComponents(String path, ArrayList list) {
+  private static final void getPathComponents(String path, ArrayList<String> list) {
     if(path != null) {
       StringTokenizer tok = new StringTokenizer(path, File.pathSeparator);
 
@@ -161,16 +161,16 @@ public class ClassPath implements Serializable {
     String boot_path  = System.getProperty("sun.boot.class.path");
     String ext_path   = System.getProperty("java.ext.dirs");
 
-    ArrayList list = new ArrayList();
+    ArrayList<String> list = new ArrayList<String>();
 
     getPathComponents(class_path, list);
     getPathComponents(boot_path, list);
 
-    ArrayList dirs = new ArrayList();
+    ArrayList<String> dirs = new ArrayList<String>();
     getPathComponents(ext_path, dirs);
 
-    for(Iterator e = dirs.iterator(); e.hasNext(); ) {
-      File     ext_dir    = new File((String)e.next());
+    for(Iterator<String> e = dirs.iterator(); e.hasNext(); ) {
+      File     ext_dir    = new File(e.next());
       String[] extensions = ext_dir.list(new FilenameFilter() {
 	public boolean accept(File dir, String name) {
 	  name = name.toLowerCase();
@@ -185,8 +185,8 @@ public class ClassPath implements Serializable {
 
     StringBuffer buf = new StringBuffer();
 
-    for(Iterator e = list.iterator(); e.hasNext(); ) {
-      buf.append((String)e.next());
+    for(Iterator<String> e = list.iterator(); e.hasNext(); ) {
+      buf.append(e.next());
 
       if(e.hasNext())
 	buf.append(File.pathSeparatorChar);

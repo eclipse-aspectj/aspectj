@@ -12,7 +12,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 
 public abstract class RuntimeParameterAnnotations extends Attribute {
 	
-	private List /*Annotation[]*/ parameterAnnotations;
+	private List /*Annotation[]*/<AnnotationGen[]> parameterAnnotations;
 	private boolean visible;
 	
 
@@ -25,13 +25,13 @@ public abstract class RuntimeParameterAnnotations extends Attribute {
             int nameIdx, int len, ConstantPool cpool) {
 		super(attrid,nameIdx,len,cpool);
 		this.visible = visible; 
-		parameterAnnotations = new ArrayList();
+		parameterAnnotations = new ArrayList<AnnotationGen[]>();
 	}
 	
 	public RuntimeParameterAnnotations(byte attrid,boolean visible,int nameIdx,int len,byte[] data,ConstantPool cpool) {
 		super(attrid,nameIdx,len,cpool);
 		this.visible = visible;
-		parameterAnnotations = new ArrayList();
+		parameterAnnotations = new ArrayList<AnnotationGen[]>();
 		annotation_data = data;
 	}
 	
@@ -45,7 +45,7 @@ public abstract class RuntimeParameterAnnotations extends Attribute {
 	}
 	  
 	/** Return a list of Annotation[] - each list entry contains the annotations for one parameter */
-	public List /*Annotation[]*/ getParameterAnnotations() {
+	public List /*Annotation[]*/<AnnotationGen[]> getParameterAnnotations() {
 		if (!inflated) inflate();
 		return parameterAnnotations;
 	}
@@ -60,7 +60,7 @@ public abstract class RuntimeParameterAnnotations extends Attribute {
 		if (parameterIndex>=parameterAnnotations.size()) {
 			return AnnotationGen.NO_ANNOTATIONS;
 		}
-		return (AnnotationGen[])parameterAnnotations.get(parameterIndex);
+		return parameterAnnotations.get(parameterIndex);
 	}
 	
 	public boolean areVisible() {
@@ -97,7 +97,7 @@ public abstract class RuntimeParameterAnnotations extends Attribute {
 		} else {
 			dos.writeByte(parameterAnnotations.size());
 			for (int i=0; i<parameterAnnotations.size(); i++) {
-				AnnotationGen[] annotations = (AnnotationGen[])parameterAnnotations.get(i);
+				AnnotationGen[] annotations = parameterAnnotations.get(i);
 				dos.writeShort(annotations.length);
 				for (int j=0; j<annotations.length;j++) {
 					annotations[j].dump(dos);

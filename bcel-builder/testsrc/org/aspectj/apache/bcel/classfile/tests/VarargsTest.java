@@ -78,8 +78,8 @@ public class VarargsTest extends BcelTestCase {
 	// helper methods
 	
 	public void checkValue(AnnotationGen a,String name,String tostring) {
-		for (Iterator i = a.getValues().iterator(); i.hasNext();) {
-			ElementNameValuePairGen element = (ElementNameValuePairGen) i.next();
+		for (Iterator<ElementNameValuePairGen> i = a.getValues().iterator(); i.hasNext();) {
+			ElementNameValuePairGen element = i.next();
 			if (element.getNameString().equals(name)) {
 				if (!element.getValue().stringifyValue().equals(tostring)) {
 					fail("Expected element "+name+" to have value "+tostring+" but it had value "+element.getValue().stringifyValue());

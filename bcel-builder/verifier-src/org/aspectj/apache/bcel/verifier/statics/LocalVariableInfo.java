@@ -64,15 +64,15 @@ import java.util.Hashtable;
  * a given slot (== index). This information
  * often changes in course of byte code offsets.
  *
- * @version $Id: LocalVariableInfo.java,v 1.2 2008/05/28 23:52:54 aclement Exp $
+ * @version $Id: LocalVariableInfo.java,v 1.3 2009/09/09 19:56:20 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class LocalVariableInfo{
 
 	/** The types database. KEY: String representing the offset integer. */
-	private Hashtable types = new Hashtable();
+	private Hashtable<String, Type> types = new Hashtable<String, Type>();
 	/** The names database. KEY: String representing the offset integer. */
-	private Hashtable names = new Hashtable();
+	private Hashtable<String, String> names = new Hashtable<String, String>();
 
 	/**
 	 * Adds a name of a local variable and a certain slot to our 'names'
@@ -98,7 +98,7 @@ public class LocalVariableInfo{
 	 * variable slot at the given bytecode offset.
 	 */
 	public Type getType(int offset){
-		return (Type) types.get(Integer.toString(offset));
+		return types.get(Integer.toString(offset));
 	}
 	/**
 	 * Returns the name of the local variable that uses this local
@@ -109,7 +109,7 @@ public class LocalVariableInfo{
 	 * variable slot at the given bytecode offset.
 	 */
 	public String getName(int offset){
-		return (String) (names.get(Integer.toString(offset)));
+		return (names.get(Integer.toString(offset)));
 	}
 	/**
 	 * Adds some information about this local variable (slot).

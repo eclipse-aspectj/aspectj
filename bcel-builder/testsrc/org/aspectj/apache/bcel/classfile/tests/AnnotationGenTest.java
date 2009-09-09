@@ -66,7 +66,7 @@ public class AnnotationGenTest extends BcelTestCase {
 		
 		ObjectType t = new ObjectType("SimpleAnnotation");
 		
-		List elements = new ArrayList();
+		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
 		elements.add(nvGen);
 		
 		// Build an annotation of type 'SimpleAnnotation' with 'id=4' as the only value :)
@@ -97,13 +97,13 @@ public class AnnotationGenTest extends BcelTestCase {
 
         ObjectType t = new ObjectType("SimpleAnnotation");
 
-        List elements = new ArrayList();
+        List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
         elements.add(nvGen);
 
         // Build a RV annotation of type 'SimpleAnnotation' with 'id=4' as the only value :)
         AnnotationGen a = new AnnotationGen(t,elements,true,cp);
 
-        Vector v = new Vector();
+        Vector<AnnotationGen> v = new Vector<AnnotationGen>();
         v.add(a);
         Attribute[] attributes = Utility.getAnnotationAttributes(cp, v);
         boolean foundRV = false;
@@ -121,7 +121,7 @@ public class AnnotationGenTest extends BcelTestCase {
         // Build a RIV annotation of type 'SimpleAnnotation' with 'id=4' as the only value :)
         AnnotationGen a2 = new AnnotationGen(t,elements,false,cp);
 
-        Vector v2 = new Vector();
+        Vector<AnnotationGen> v2 = new Vector<AnnotationGen>();
         v2.add(a2);
         Attribute[] attributes2 = Utility.getAnnotationAttributes(cp, v2);
         boolean foundRIV = false;
@@ -141,7 +141,7 @@ public class AnnotationGenTest extends BcelTestCase {
 	private void checkSerialize(AnnotationGen a,ConstantPool cpg) {
 		try {
 		  String beforeName = a.getTypeName();
-		  List beforeValues = a.getValues();
+		  List<ElementNameValuePairGen> beforeValues = a.getValues();
 		  ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		  DataOutputStream dos = new DataOutputStream(baos);
 		  a.dump(dos);
@@ -157,7 +157,7 @@ public class AnnotationGenTest extends BcelTestCase {
 		  dis.close();
 		  
 		  String afterName = annAfter.getTypeName();
-		  List afterValues = annAfter.getValues();
+		  List<ElementNameValuePairGen> afterValues = annAfter.getValues();
 		  
 		  if (!beforeName.equals(afterName)) {
 		  	fail("Deserialization failed: before type='"+beforeName+"' after type='"+afterName+"'");
@@ -166,8 +166,8 @@ public class AnnotationGenTest extends BcelTestCase {
 		  	fail("Different numbers of element name value pairs?? "+a.getValues().size()+"!="+annAfter.getValues().size());
 		  }
 		  for (int i=0;i<a.getValues().size();i++) {
-			ElementNameValuePairGen beforeElement = (ElementNameValuePairGen) a.getValues().get(i);
-			ElementNameValuePairGen afterElement = (ElementNameValuePairGen) annAfter.getValues().get(i);
+			ElementNameValuePairGen beforeElement = a.getValues().get(i);
+			ElementNameValuePairGen afterElement = annAfter.getValues().get(i);
 			if (!beforeElement.getNameString().equals(afterElement.getNameString())) {
 				fail("Different names?? "+beforeElement.getNameString()+"!="+afterElement.getNameString());
 			}

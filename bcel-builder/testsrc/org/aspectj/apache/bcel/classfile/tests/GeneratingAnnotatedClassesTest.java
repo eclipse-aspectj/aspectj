@@ -90,8 +90,8 @@ public class GeneratingAnnotatedClassesTest extends BcelTestCase {
 				as[0].getTypeName().equals("SimpleAnnotation"));
 		assertTrue("Name of annotation 2 should be SimpleAnnotation but it is "+as[1].getTypeName(),
 				as[1].getTypeName().equals("SimpleAnnotation"));
-		List vals = as[0].getValues();
-		ElementNameValuePairGen nvp = (ElementNameValuePairGen) vals.get(0);
+		List<ElementNameValuePairGen> vals = as[0].getValues();
+		ElementNameValuePairGen nvp = vals.get(0);
 		assertTrue("Name of element in SimpleAnnotation should be 'id' but it is "+
 				nvp.getNameString(),nvp.getNameString().equals("id"));
 		ElementValueGen ev = nvp.getValue();
@@ -237,7 +237,7 @@ public class GeneratingAnnotatedClassesTest extends BcelTestCase {
 				annotations.length==1);
 		AnnotationGen a = annotations[0];
 		assertTrue("That annotation should only have one value but has "+a.getValues().size(),a.getValues().size()==1);
-		ElementNameValuePairGen nvp = (ElementNameValuePairGen)a.getValues().get(0);
+		ElementNameValuePairGen nvp = a.getValues().get(0);
 		ElementValueGen value = (ElementValueGen)nvp.getValue();
 		assertTrue("Value should be ArrayElementValueGen but is "+value,value instanceof ArrayElementValueGen);
 		ArrayElementValueGen arrayValue = (ArrayElementValueGen)value;
@@ -262,10 +262,10 @@ public class GeneratingAnnotatedClassesTest extends BcelTestCase {
 		AnnotationGen[] annotations = cgen.getAnnotations();
 		assertTrue("Expected one annotation but found "+annotations.length,
 				annotations.length==1);
-		List l = annotations[0].getValues();
+		List<ElementNameValuePairGen> l = annotations[0].getValues();
 		boolean found = false;
-		for (Iterator iter = l.iterator(); iter.hasNext();) {
-			ElementNameValuePairGen element = (ElementNameValuePairGen) iter.next();
+		for (Iterator<ElementNameValuePairGen> iter = l.iterator(); iter.hasNext();) {
+			ElementNameValuePairGen element = iter.next();
 			if (element.getNameString().equals("dval")) {
 				if (((SimpleElementValueGen)element.getValue()).stringifyValue().equals("33.4")) 
 					found = true;
@@ -579,7 +579,7 @@ public class GeneratingAnnotatedClassesTest extends BcelTestCase {
 
 		ObjectType t = new ObjectType("SimpleAnnotation");
 
-		List elements = new ArrayList();
+		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
 		elements.add(nvGen);
 
 		AnnotationGen a = new AnnotationGen(t, elements,true, cp);
@@ -590,7 +590,7 @@ public class GeneratingAnnotatedClassesTest extends BcelTestCase {
 		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.STRING,cp,aFruit);
 		ElementNameValuePairGen nvGen = new ElementNameValuePairGen("fruit",evg,cp);
 		ObjectType t = new ObjectType("SimpleStringAnnotation");
-		List elements = new ArrayList();
+		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
 		elements.add(nvGen);
 		return new AnnotationGen(t,elements,true,cp);
 	}
@@ -601,7 +601,7 @@ public class GeneratingAnnotatedClassesTest extends BcelTestCase {
 		ArrayElementValueGen array = new ArrayElementValueGen(cp);
 		array.addElement(new AnnotationElementValueGen(a,cp)); 
 		ElementNameValuePairGen nvp = new ElementNameValuePairGen("value",array,cp);
-		List elements = new ArrayList();
+		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
 		elements.add(nvp);
 		return new AnnotationGen(new ObjectType("CombinedAnnotation"),elements,true,cp);
 	}
@@ -614,7 +614,7 @@ public class GeneratingAnnotatedClassesTest extends BcelTestCase {
 
 		ObjectType t = new ObjectType("SimpleAnnotation");
 
-		List elements = new ArrayList();
+		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
 		elements.add(nvGen);
 
 		AnnotationGen a = new AnnotationGen(t, elements,false, cp);

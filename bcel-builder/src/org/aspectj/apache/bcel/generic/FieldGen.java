@@ -73,7 +73,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
  * one can do is to add a constant value attribute to a field (which must of
  * course be compatible with the declared type).
  *
- * @version $Id: FieldGen.java,v 1.5 2008/05/28 23:52:59 aclement Exp $
+ * @version $Id: FieldGen.java,v 1.6 2009/09/09 19:56:20 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Field
  */
@@ -113,9 +113,9 @@ public class FieldGen extends FieldGenOrMethodGen {
 	    setValue(((ConstantValue)attrs[i]).getConstantValueIndex());
       } else if (attrs[i] instanceof RuntimeAnnotations) {
 		RuntimeAnnotations runtimeAnnotations = (RuntimeAnnotations)attrs[i];
-		List l = runtimeAnnotations.getAnnotations();
-		for (Iterator it = l.iterator(); it.hasNext();) {
-			AnnotationGen element = (AnnotationGen) it.next();
+		List<AnnotationGen> l = runtimeAnnotations.getAnnotations();
+		for (Iterator<AnnotationGen> it = l.iterator(); it.hasNext();) {
+			AnnotationGen element = it.next();
 			addAnnotation(new AnnotationGen(element,cp,false));
 		}
       } else {

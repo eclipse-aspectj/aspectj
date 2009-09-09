@@ -76,7 +76,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
  * 
  * A list is finally dumped to a byte code array with <a href="#getByteCode()">getByteCode</a>.
  * 
- * @version $Id: InstructionList.java,v 1.7 2008/08/28 00:04:04 aclement Exp $
+ * @version $Id: InstructionList.java,v 1.8 2009/09/09 19:56:20 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Instruction
  * @see InstructionHandle
@@ -685,7 +685,7 @@ public class InstructionList implements Serializable {
 			return;
 		}
 
-		ArrayList target_vec = new ArrayList();
+		ArrayList<InstructionHandle> target_vec = new ArrayList<InstructionHandle>();
 
 		for (InstructionHandle ih = first; ih != null; ih = ih.next) {
 			ih.getInstruction().dispose(); // e.g. BranchInstructions release their targets
@@ -696,11 +696,11 @@ public class InstructionList implements Serializable {
 			next = ih.next;
 			length--;
 
-			Set targeters = ih.getTargeters();
+			Set<InstructionTargeter> targeters = ih.getTargeters();
 			boolean isOK = false;
-			Iterator tIter = targeters.iterator();
+			Iterator<InstructionTargeter> tIter = targeters.iterator();
 			while (tIter.hasNext()) {
-				InstructionTargeter instructionTargeter = (InstructionTargeter) tIter.next();
+				InstructionTargeter instructionTargeter = tIter.next();
 				if (instructionTargeter.getClass().getName().endsWith("ShadowRange")
 						|| instructionTargeter.getClass().getName().endsWith("ExceptionRange")
 						|| instructionTargeter.getClass().getName().endsWith("LineNumberTag")) {
@@ -983,7 +983,7 @@ public class InstructionList implements Serializable {
 	 */
 	public Instruction[] getInstructions() {
 		ByteSequence bytes = new ByteSequence(getByteCode());
-		ArrayList instructions = new ArrayList();
+		ArrayList<Instruction> instructions = new ArrayList<Instruction>();
 
 		try {
 			while (bytes.available() > 0) {
@@ -1068,7 +1068,7 @@ public class InstructionList implements Serializable {
 	 * @return complete, i.e., deep copy of this list
 	 */
 	public InstructionList copy() {
-		HashMap map = new HashMap();
+		HashMap<InstructionHandle, InstructionHandle> map = new HashMap<InstructionHandle, InstructionHandle>();
 		InstructionList il = new InstructionList();
 
 		/*
@@ -1102,14 +1102,14 @@ public class InstructionList implements Serializable {
 				InstructionHandle itarget = bi.getTarget(); // old target
 
 				// New target is in hash map
-				bc.setTarget((InstructionHandle) map.get(itarget));
+				bc.setTarget(map.get(itarget));
 
 				if (bi instanceof InstructionSelect) { // Either LOOKUPSWITCH or TABLESWITCH
 					InstructionHandle[] itargets = ((InstructionSelect) bi).getTargets();
 					InstructionHandle[] ctargets = ((InstructionSelect) bc).getTargets();
 
 					for (int j = 0; j < itargets.length; j++) { // Update all targets
-						ctargets[j] = (InstructionHandle) map.get(itargets[j]);
+						ctargets[j] = map.get(itargets[j]);
 					}
 				}
 			}

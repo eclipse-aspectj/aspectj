@@ -57,16 +57,16 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		ConstantPool pool = clazz.getConstantPool();
 		Attribute[] rvaAttr = findAttribute("RuntimeVisibleAnnotations",clazz);
 		RuntimeVisibleAnnotations rva = (RuntimeVisibleAnnotations) rvaAttr[0];
-		List anns = rva.getAnnotations();
+		List<AnnotationGen> anns = rva.getAnnotations();
 		assertTrue("Should be one annotation but found "+anns.size(),
 				   anns.size()==1);
-		AnnotationGen ann = (AnnotationGen) anns.get(0);
+		AnnotationGen ann = anns.get(0);
 		assertTrue("Should be called 'SimpleAnnotation' but was called "+ann.getTypeName(),
 				ann.getTypeName().equals("SimpleAnnotation"));
-		List l = ann.getValues();
+		List<ElementNameValuePairGen> l = ann.getValues();
 		assertTrue("Should be one value for annotation 'SimpleAnnotation' but found "+l.size(),
 				l.size()==1);
-		ElementNameValuePairGen envp = (ElementNameValuePairGen)l.get(0);
+		ElementNameValuePairGen envp = l.get(0);
 		assertTrue("Name of element in SimpleAnnotation should be 'id' but it is "+envp.getNameString(),
 				envp.getNameString().equals("id"));
 		SimpleElementValueGen evalue = (SimpleElementValueGen)envp.getValue();
@@ -140,9 +140,9 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		AnnotationGen ann = anns[0];
 		assertTrue("should be called 'AnnotationStringElement' but was called "+ann.getTypeName(),
 				ann.getTypeName().equals("AnnotationStringElement"));
-		List l = ann.getValues();
+		List<ElementNameValuePairGen> l = ann.getValues();
 		assertTrue("Should be one value but there were "+l.size(),l.size()==1);
-		ElementNameValuePairGen nvp = (ElementNameValuePairGen)l.get(0);
+		ElementNameValuePairGen nvp = l.get(0);
 		assertTrue("Name of element should be 'stringval' but was "+nvp.getNameString(),
 				nvp.getNameString().equals("stringval"));
 		SimpleElementValueGen ev = (SimpleElementValueGen)nvp.getValue();
@@ -183,10 +183,10 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		AnnotationGen ann = anns[0];
 		assertTrue("Should be called 'ComplexAnnotation' but was called "+ann.getTypeName(),
 				ann.getTypeName().equals("ComplexAnnotation"));
-		List l = ann.getValues();
+		List<ElementNameValuePairGen> l = ann.getValues();
 		assertTrue("Should be eight values for annotation 'ComplexAnnotation' but found "+l.size(),
 				l.size()==8);
-		List names = RuntimeVisibleAnnotationAttributeTest.getListOfAnnotationNames(ann);
+		List<String> names = RuntimeVisibleAnnotationAttributeTest.getListOfAnnotationNames(ann);
 		assertTrue("Cant find expected element ",names.contains("ival"));
 		assertTrue("Cant find expected element ",names.contains("dval"));
 		assertTrue("Cant find expected element ",names.contains("zval"));
@@ -208,8 +208,8 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 	}
 
 	private void checkValue(AnnotationGen a,String name,String tostring) {
-		for (Iterator i = a.getValues().iterator(); i.hasNext();) {
-			ElementNameValuePairGen element = (ElementNameValuePairGen) i.next();
+		for (Iterator<ElementNameValuePairGen> i = a.getValues().iterator(); i.hasNext();) {
+			ElementNameValuePairGen element = i.next();
 			if (element.getNameString().equals(name)) {
 				if (!element.getValue().stringifyValue().equals(tostring)) {
 					fail("Expected element "+name+" to have value "+tostring+" but it had value "+element.getValue().stringifyValue());
@@ -261,9 +261,9 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		AnnotationGen ann = anns[0];
 		assertTrue("should be called 'AnnotationClassElement' but was called "+ann.getTypeName(),
 				ann.getTypeName().equals("AnnotationClassElement"));
-		List l = ann.getValues();
+		List<ElementNameValuePairGen> l = ann.getValues();
 		assertTrue("Should be one value but there were "+l.size(),l.size()==1);
-		ElementNameValuePairGen nvp = (ElementNameValuePairGen)l.get(0);
+		ElementNameValuePairGen nvp = l.get(0);
 		assertTrue("Name of element should be 'clz' but was "+nvp.getNameString(),
 				nvp.getNameString().equals("clz"));
 		ClassElementValueGen ev = (ClassElementValueGen)nvp.getValue();
@@ -303,9 +303,9 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		AnnotationGen ann = anns[0];
 		assertTrue("should be called 'AnnotationEnumElement' but was called "+ann.getTypeName(),
 				ann.getTypeName().equals("AnnotationEnumElement"));
-		List l = ann.getValues();
+		List<ElementNameValuePairGen> l = ann.getValues();
 		assertTrue("Should be one value but there were "+l.size(),l.size()==1);
-		ElementNameValuePairGen nvp = (ElementNameValuePairGen)l.get(0);
+		ElementNameValuePairGen nvp = l.get(0);
 		assertTrue("Name of element should be 'enumval' but was "+nvp.getNameString(),
 				nvp.getNameString().equals("enumval"));
 		ElementValueGen ev = nvp.getValue();
@@ -352,9 +352,9 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 	private void checkCombinedAnnotation(AnnotationGen ann) {
 		assertTrue("should be called 'CombinedAnnotation' but was called "+ann.getTypeName(),
 				ann.getTypeName().equals("CombinedAnnotation"));
-		List l = ann.getValues();
+		List<ElementNameValuePairGen> l = ann.getValues();
 		assertTrue("Should be one value but there were "+l.size(),l.size()==1);
-		ElementNameValuePairGen nvp = (ElementNameValuePairGen)l.get(0);
+		ElementNameValuePairGen nvp = l.get(0);
 		assertTrue("Name of element should be 'value' but was "+nvp.getNameString(),
 				nvp.getNameString().equals("value"));
 		ElementValueGen ev = nvp.getValue();
@@ -369,9 +369,9 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		AnnotationElementValueGen inner_ev = (AnnotationElementValueGen)evs[0];
 		AnnotationGen a = inner_ev.getAnnotation();
 		assertTrue("Should be SimpleAnnotation but is "+a.getTypeName(),a.getTypeName().equals("SimpleAnnotation"));
-		List envps = a.getValues();
+		List<ElementNameValuePairGen> envps = a.getValues();
 		assertTrue("Should be one name value pair but found "+envps.size(),envps.size()==1);
-		ElementNameValuePairGen envp = (ElementNameValuePairGen) envps.get(0);
+		ElementNameValuePairGen envp = envps.get(0);
 		assertTrue("Name should be 'id' but it is "+envp.getNameString(),envp.getNameString().equals("id"));
 		assertTrue("Value of 'id' should be 4 but it is "+envp.getValue().stringifyValue(),
 				envp.getValue().stringifyValue().equals("4"));
@@ -382,11 +382,11 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		super.tearDown();
 	}
 
-	public static List getListOfAnnotationNames(AnnotationGen a) {
-	  	List l = a.getValues();
-	    List names = new ArrayList();
-	    for (Iterator i = l.iterator(); i.hasNext();) {
-			ElementNameValuePairGen element = (ElementNameValuePairGen) i.next();
+	public static List<String> getListOfAnnotationNames(AnnotationGen a) {
+	  	List<ElementNameValuePairGen> l = a.getValues();
+	    List<String> names = new ArrayList<String>();
+	    for (Iterator<ElementNameValuePairGen> i = l.iterator(); i.hasNext();) {
+			ElementNameValuePairGen element = i.next();
 			names.add(element.getNameString());
 		}
 	    return names;

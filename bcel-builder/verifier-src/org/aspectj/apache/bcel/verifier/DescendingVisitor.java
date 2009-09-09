@@ -105,13 +105,13 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnot
  * class supplies the traversal strategy, other classes can make use
  * of it.
  *
- * @version $Id: DescendingVisitor.java,v 1.2 2008/05/28 23:53:00 aclement Exp $
+ * @version $Id: DescendingVisitor.java,v 1.3 2009/09/09 19:56:20 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A> 
  */
 public class DescendingVisitor implements ClassVisitor {
   private JavaClass clazz;
   private ClassVisitor   visitor;
-  private Stack     stack = new Stack();
+  private Stack<Object>     stack = new Stack<Object>();
 
   /** @return container of current entitity, i.e., predecessor during traversal
    */

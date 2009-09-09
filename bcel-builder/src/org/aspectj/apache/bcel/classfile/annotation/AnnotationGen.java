@@ -28,7 +28,7 @@ public class AnnotationGen {
 	public static final AnnotationGen[] NO_ANNOTATIONS = new AnnotationGen[0];
 	
 	private int typeIndex;
-	private List /* ElementNameValuePairGen */ evs;
+	private List /* ElementNameValuePairGen */<ElementNameValuePairGen> evs;
 	private ConstantPool cpool;
 	private boolean isRuntimeVisible = false;
 	
@@ -54,10 +54,10 @@ public class AnnotationGen {
 		evs = copyValues(a.getValues(),cpool,copyPoolEntries);
 	}
 	
-	private List copyValues(List in,ConstantPool cpool,boolean copyPoolEntries) {
-		List out = new ArrayList();
-		for (Iterator iter = in.iterator(); iter.hasNext();) {
-			ElementNameValuePairGen nvp = (ElementNameValuePairGen) iter.next();
+	private List<ElementNameValuePairGen> copyValues(List<ElementNameValuePairGen> in,ConstantPool cpool,boolean copyPoolEntries) {
+		List<ElementNameValuePairGen> out = new ArrayList<ElementNameValuePairGen>();
+		for (Iterator<ElementNameValuePairGen> iter = in.iterator(); iter.hasNext();) {
+			ElementNameValuePairGen nvp = iter.next();
 			out.add(new ElementNameValuePairGen(nvp,cpool,copyPoolEntries));
 		}
 		return out;
@@ -65,7 +65,7 @@ public class AnnotationGen {
 	
 	private AnnotationGen(ConstantPool cpool) {
 		this.cpool = cpool;
-		this.evs=new ArrayList();
+		this.evs=new ArrayList<ElementNameValuePairGen>();
 	}
 	
 	/**
@@ -81,7 +81,7 @@ public class AnnotationGen {
 ////		return a;
 //	}
 	
-	public AnnotationGen(ObjectType type,List /*ElementNameValuePairGen*/ elements,boolean vis,ConstantPool cpool) {
+	public AnnotationGen(ObjectType type,List /*ElementNameValuePairGen*/<ElementNameValuePairGen> elements,boolean vis,ConstantPool cpool) {
 		this.cpool = cpool;
 		if (type!=null)  this.typeIndex = cpool.addUtf8(type.getSignature()); // Only null for funky *temporary* FakeAnnotation objects
 		evs = elements;
@@ -105,13 +105,13 @@ public class AnnotationGen {
 		dos.writeShort(typeIndex);	// u2 index of type name in cpool
 		dos.writeShort(evs.size()); // u2 element_value pair count
 		for (int i = 0 ; i<evs.size();i++) {
-			ElementNameValuePairGen envp = (ElementNameValuePairGen) evs.get(i);
+			ElementNameValuePairGen envp = evs.get(i);
 			envp.dump(dos);
 		}
 	}
 	
 	public void addElementNameValuePair(ElementNameValuePairGen evp) {
-		if (evs == null) evs = new ArrayList();
+		if (evs == null) evs = new ArrayList<ElementNameValuePairGen>();
 		evs.add(evp);
 	}
 	
@@ -133,7 +133,7 @@ public class AnnotationGen {
 	/**
 	 * Returns list of ElementNameValuePair objects
 	 */
-	public List getValues() {
+	public List<ElementNameValuePairGen> getValues() {
 		return evs;
 	}
 	
@@ -172,7 +172,7 @@ public class AnnotationGen {
      */
 	public boolean hasNameValuePair(String n, String v) {
 		for (int i=0;i<evs.size();i++) {
-			ElementNameValuePairGen pair = (ElementNameValuePairGen)evs.get(i);
+			ElementNameValuePairGen pair = evs.get(i);
 			if (pair.getNameString().equals(n)) {
 				if (pair.getValue().stringifyValue().equals(v)) return true;
 			}
@@ -185,7 +185,7 @@ public class AnnotationGen {
      */
 	public boolean hasNamedValue(String n) {
 		for (int i=0;i<evs.size();i++) {
-			ElementNameValuePairGen pair = (ElementNameValuePairGen)evs.get(i);
+			ElementNameValuePairGen pair = evs.get(i);
 			if (pair.getNameString().equals(n)) return true;
 		}
 		return false;

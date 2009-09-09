@@ -14,7 +14,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 
 public abstract class RuntimeAnnotations extends Attribute {
 
-	private List /*Annotation*/ annotations;
+	private List /*Annotation*/<AnnotationGen> annotations;
 	private boolean visible;
 	
 	// Keep just a byte stream of the data until someone actually asks for it
@@ -26,17 +26,17 @@ public abstract class RuntimeAnnotations extends Attribute {
 							  ConstantPool cpool) {
 		super(attrid,nameIdx,len,cpool);
 		this.visible = visible; 
-		annotations = new ArrayList();
+		annotations = new ArrayList<AnnotationGen>();
 	}
 	
 	public RuntimeAnnotations(byte attrid,boolean visible,int nameIdx,int len,byte[] data,ConstantPool cpool) {
 		super(attrid,nameIdx,len,cpool);
 		this.visible = visible;
-		annotations = new ArrayList();
+		annotations = new ArrayList<AnnotationGen>();
 		annotation_data = data;
 	}
 	
-	public List getAnnotations() {
+	public List<AnnotationGen> getAnnotations() {
 		if (!inflated) inflate();
 		return annotations;
 	}
@@ -55,8 +55,8 @@ public abstract class RuntimeAnnotations extends Attribute {
 			dos.write(annotation_data,0,length);
 		} else {
 			dos.writeShort(annotations.size());
-			for (Iterator i = annotations.iterator(); i.hasNext();) {
-				AnnotationGen ann = (AnnotationGen) i.next();
+			for (Iterator<AnnotationGen> i = annotations.iterator(); i.hasNext();) {
+				AnnotationGen ann = i.next();
 				ann.dump(dos);
 			}
 		}

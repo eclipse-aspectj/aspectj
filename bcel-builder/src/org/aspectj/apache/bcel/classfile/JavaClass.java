@@ -79,7 +79,7 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
  * The intent of this class is to represent a parsed or otherwise existing class file. Those interested in programatically
  * generating classes should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
  * 
- * @version $Id: JavaClass.java,v 1.14 2008/10/20 18:31:01 aclement Exp $
+ * @version $Id: JavaClass.java,v 1.15 2009/09/09 19:56:20 aclement Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -329,7 +329,7 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	public AnnotationGen[] getAnnotations() {
 		if (annotationsOutOfDate) {
 			// Find attributes that contain annotation data
-			List accumulatedAnnotations = new ArrayList();
+			List<AnnotationGen> accumulatedAnnotations = new ArrayList<AnnotationGen>();
 			for (int i = 0; i < attributes.length; i++) {
 				Attribute attribute = attributes[i];
 				if (attribute instanceof RuntimeAnnotations) {
@@ -337,7 +337,7 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 					accumulatedAnnotations.addAll(runtimeAnnotations.getAnnotations());
 				}
 			}
-			annotations = (AnnotationGen[]) accumulatedAnnotations.toArray(new AnnotationGen[] {});
+			annotations = accumulatedAnnotations.toArray(new AnnotationGen[] {});
 			annotationsOutOfDate = false;
 		}
 		return annotations;
@@ -601,6 +601,7 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	/**
 	 * @return String representing class contents.
 	 */
+	@Override
 	public String toString() {
 		String access = Utility.accessToString(modifiers, true);
 		access = access.equals("") ? "" : access + " ";
@@ -683,8 +684,8 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 		}
 
 		c.constant_pool = constant_pool.copy();
-		c.interfaces = (int[]) interfaces.clone();
-		c.interface_names = (String[]) interface_names.clone();
+		c.interfaces = interfaces.clone();
+		c.interface_names = interface_names.clone();
 
 		c.fields = new Field[fields.length];
 		for (int i = 0; i < fields.length; i++) {

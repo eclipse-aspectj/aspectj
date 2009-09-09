@@ -76,7 +76,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  * 
  * @see org.aspectj.apache.bcel.Repository
  * 
- * @version $Id: NonCachingClassLoaderRepository.java,v 1.5 2009/09/04 18:42:08 aclement Exp $
+ * @version $Id: NonCachingClassLoaderRepository.java,v 1.6 2009/09/09 19:56:20 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
  * 
@@ -85,13 +85,13 @@ public class NonCachingClassLoaderRepository implements Repository {
 	private static java.lang.ClassLoader bootClassLoader = null;
 
 	private final ClassLoaderReference loaderRef;
-	private final Map loadedClasses = new SoftHashMap(); // CLASSNAME X JAVACLASS
+	private final Map<String, JavaClass> loadedClasses = new SoftHashMap(); // CLASSNAME X JAVACLASS
 
 	public static class SoftHashMap extends AbstractMap {
-		private Map map;
+		private Map<Object, SpecialValue> map;
 		private ReferenceQueue rq = new ReferenceQueue();
 
-		public SoftHashMap(Map map) {
+		public SoftHashMap(Map<Object, SpecialValue> map) {
 			this.map = map;
 		}
 
@@ -119,8 +119,9 @@ public class NonCachingClassLoaderRepository implements Repository {
 			}
 		}
 
+		@Override
 		public Object get(Object key) {
-			SpecialValue value = (SpecialValue) map.get(key);
+			SpecialValue value = map.get(key);
 			if (value == null)
 				return null;
 			if (value.get() == null) {
@@ -132,32 +133,37 @@ public class NonCachingClassLoaderRepository implements Repository {
 			}
 		}
 
+		@Override
 		public Object put(Object k, Object v) {
 			processQueue();
 			return map.put(k, new SpecialValue(k, v));
 		}
 
+		@Override
 		public Set entrySet() {
 			return map.entrySet();
 		}
 
+		@Override
 		public void clear() {
 			processQueue();
-			Set keys = map.keySet();
-			for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+			Set<Object> keys = map.keySet();
+			for (Iterator<Object> iterator = keys.iterator(); iterator.hasNext();) {
 				Object name = iterator.next();
 				map.remove(name);
 			}
 		}
 
+		@Override
 		public int size() {
 			processQueue();
 			return map.size();
 		}
 
+		@Override
 		public Object remove(Object k) {
 			processQueue();
-			SpecialValue value = (SpecialValue) map.remove(k);
+			SpecialValue value = map.remove(k);
 			if (value == null)
 				return null;
 			if (value.get() != null) {
@@ -207,7 +213,7 @@ public class NonCachingClassLoaderRepository implements Repository {
 	public JavaClass findClass(String className) {
 		synchronized (loadedClasses) {
 			if (loadedClasses.containsKey(className)) {
-				return (JavaClass) loadedClasses.get(className);
+				return loadedClasses.get(className);
 			} else {
 				return null;
 			}

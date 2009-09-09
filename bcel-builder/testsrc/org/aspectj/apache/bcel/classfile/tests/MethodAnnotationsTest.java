@@ -77,7 +77,7 @@ public class MethodAnnotationsTest extends BcelTestCase {
 		assertTrue("Expected annotation to have name "+name+" but it had name "+a.getTypeName(),
 				a.getTypeName().equals(name));
 		assertTrue("Expected annotation to have one element but it had "+a.getValues().size(),a.getValues().size()==1);
-		ElementNameValuePairGen envp = (ElementNameValuePairGen)a.getValues().get(0);
+		ElementNameValuePairGen envp = a.getValues().get(0);
 		assertTrue("Expected element name "+elementname+" but was "+envp.getNameString(),
 				elementname.equals(envp.getNameString()));
 		assertTrue("Expected element value "+elementvalue+" but was "+envp.getValue().stringifyValue(),
@@ -88,8 +88,8 @@ public class MethodAnnotationsTest extends BcelTestCase {
 	// helper methods
 	
 	public void checkValue(AnnotationGen a,String name,String tostring) {
-		for (Iterator i = a.getValues().iterator(); i.hasNext();) {
-			ElementNameValuePairGen element = (ElementNameValuePairGen) i.next();
+		for (Iterator<ElementNameValuePairGen> i = a.getValues().iterator(); i.hasNext();) {
+			ElementNameValuePairGen element = i.next();
 			if (element.getNameString().equals(name)) {
 				if (!element.getValue().stringifyValue().equals(tostring)) {
 					fail("Expected element "+name+" to have value "+tostring+" but it had value "+element.getValue().stringifyValue());

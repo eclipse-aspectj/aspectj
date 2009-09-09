@@ -67,7 +67,7 @@ import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
  * Super class for FieldGen and MethodGen objects, since they have some methods
  * in common!
  * 
- * @version $Id: FieldGenOrMethodGen.java,v 1.4 2008/05/28 23:52:59 aclement Exp $
+ * @version $Id: FieldGenOrMethodGen.java,v 1.5 2009/09/09 19:56:20 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldGenOrMethodGen extends Modifiers implements Cloneable {
@@ -75,8 +75,8 @@ public abstract class FieldGenOrMethodGen extends Modifiers implements Cloneable
 	protected String name;
 	protected Type type;
 	protected ConstantPool cp;
-	private ArrayList/*<Attribute>*/ attributeList    = new ArrayList();
-	private ArrayList annotationList = new ArrayList();
+	private ArrayList/*<Attribute>*/<Attribute> attributeList    = new ArrayList<Attribute>();
+	private ArrayList<AnnotationGen> annotationList = new ArrayList<AnnotationGen>();
 
 	protected FieldGenOrMethodGen() {
 	}
@@ -129,7 +129,7 @@ public abstract class FieldGenOrMethodGen extends Modifiers implements Cloneable
 		annotationList.clear();
 	}
 
-	public List/*<Attribute>*/ getAttributes() {
+	public List/*<Attribute>*/<Attribute> getAttributes() {
 		return attributeList;
 	}
 	

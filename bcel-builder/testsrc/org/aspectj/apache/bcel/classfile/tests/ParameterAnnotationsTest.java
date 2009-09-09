@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
@@ -259,7 +260,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		//    attributes vanish !
 		clg = new ClassGen(jc2);
 		mg = new MethodGen(m,clg.getClassName(),clg.getConstantPool());
-		List as = mg.getAttributes();
+		List<Attribute> as = mg.getAttributes();
 		assertTrue("Should be 2 (RIPA and RVPA) but there are "+mg.getAttributes().size(),mg.getAttributes().size()==2);
 		List l = mg.getAnnotationsOnParameter(0);
 		assertTrue("Should be 2 annotations on first parameter but there is only "+l.size()+":"+l.toString(),
@@ -550,7 +551,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 
 		ObjectType t = new ObjectType("SimpleAnnotation");
 
-		List elements = new ArrayList();
+		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
 		elements.add(nvGen);
 
 		AnnotationGen a = new AnnotationGen(t, elements,true, cp);
@@ -563,7 +564,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		ArrayElementValueGen array = new ArrayElementValueGen(cp);
 		array.addElement(new AnnotationElementValueGen(a,cp)); 
 		ElementNameValuePairGen nvp = new ElementNameValuePairGen("value",array,cp);
-		List elements = new ArrayList();
+		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
 		elements.add(nvp);
 		return new AnnotationGen(new ObjectType("CombinedAnnotation"),elements,true,cp);
 	}
@@ -576,7 +577,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 
 		ObjectType t = new ObjectType("SimpleAnnotation");
 
-		List elements = new ArrayList();
+		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
 		elements.add(nvGen);
 
 		AnnotationGen a = new AnnotationGen(t, elements,false, cp);

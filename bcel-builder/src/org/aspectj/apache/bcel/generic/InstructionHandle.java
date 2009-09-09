@@ -68,7 +68,7 @@ import org.aspectj.apache.bcel.classfile.Utility;
  * doubly-linked list. From the outside only the next and the previous instruction (handle) are accessible. One can traverse the
  * list via an Enumeration returned by InstructionList.elements().
  * 
- * @version $Id: InstructionHandle.java,v 1.6 2008/08/28 00:03:46 aclement Exp $
+ * @version $Id: InstructionHandle.java,v 1.7 2009/09/09 19:56:20 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Instruction
  * @see BranchHandle
@@ -78,7 +78,7 @@ public class InstructionHandle implements java.io.Serializable {
 	InstructionHandle next, prev; // Will be set from the outside
 	Instruction instruction;
 	protected int i_position = -1; // byte code offset of instruction
-	private HashSet targeters;
+	private HashSet<InstructionTargeter> targeters;
 
 	public final InstructionHandle getNext() {
 		return next;
@@ -172,7 +172,7 @@ public class InstructionHandle implements java.io.Serializable {
 	 */
 	public void addTargeter(InstructionTargeter t) {
 		if (targeters == null) {
-			targeters = new HashSet();
+			targeters = new HashSet<InstructionTargeter>();
 		}
 
 		// if(!targeters.contains(t))
@@ -193,7 +193,7 @@ public class InstructionHandle implements java.io.Serializable {
 		return t;
 	}
 
-	public Set getTargeters() {
+	public Set<InstructionTargeter> getTargeters() {
 		if (targeters == null || targeters.size() == 0) {
 			return Collections.EMPTY_SET;
 		}

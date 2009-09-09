@@ -77,7 +77,7 @@ import java.util.ArrayList;
  * That means, if you really want a new verification run of a certain
  * pass you must use a new instance of a given PassVerifier.
  *
- * @version $Id: PassVerifier.java,v 1.2 2008/05/28 23:53:00 aclement Exp $
+ * @version $Id: PassVerifier.java,v 1.3 2009/09/09 19:56:20 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see org.aspectj.apache.bcel.verifier.Verifier
  * @see #verify()
@@ -85,7 +85,7 @@ import java.util.ArrayList;
 public abstract class PassVerifier{
 
 	/** The (warning) messages. */
-	private ArrayList messages = new ArrayList(); //Type of elements: String
+	private ArrayList<String> messages = new ArrayList<String>(); //Type of elements: String
 	
 	/** The VerificationResult cache. */
 	private VerificationResult verificationResult = null;
@@ -136,7 +136,7 @@ public abstract class PassVerifier{
 		verify(); // create messages if not already done (cached!)
 		String[] ret = new String[messages.size()];
 		for (int i=0; i<messages.size(); i++){
-			ret[i] = (String) messages.get(i);
+			ret[i] = messages.get(i);
 		}
 		return ret;
 	}

@@ -81,22 +81,22 @@ public class BcelTestCase extends TestCase {
 	
 	protected Attribute[] findAttribute(String name, JavaClass clazz) {
 		Attribute[] all = clazz.getAttributes();
-		List chosenAttrsList = new ArrayList();
+		List<Attribute> chosenAttrsList = new ArrayList<Attribute>();
 		for (int i = 0; i < all.length; i++) {
 			if (verbose) System.err.println("Attribute: "+all[i].getName());
 			if (all[i].getName().equals(name)) chosenAttrsList.add(all[i]);
 		}
-		return (Attribute[])chosenAttrsList.toArray(new Attribute[]{});
+		return chosenAttrsList.toArray(new Attribute[]{});
 	}
 	
 	protected Attribute findAttribute(String name, Attribute[] all) {
-		List chosenAttrsList = new ArrayList();
+		List<Attribute> chosenAttrsList = new ArrayList<Attribute>();
 		for (int i = 0; i < all.length; i++) {
 			if (verbose) System.err.println("Attribute: "+all[i].getName());
 			if (all[i].getName().equals(name)) chosenAttrsList.add(all[i]);
 		}
 		assertTrue("Should be one match: "+chosenAttrsList.size(),chosenAttrsList.size()==1);
-		return (Attribute)chosenAttrsList.get(0);
+		return chosenAttrsList.get(0);
 	}
 
 	
@@ -128,7 +128,7 @@ public class BcelTestCase extends TestCase {
 		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.STRING,cp,aFruit);
 		ElementNameValuePairGen nvGen = new ElementNameValuePairGen("fruit",evg,cp);
 		ObjectType t = new ObjectType("SimpleStringAnnotation");
-		List elements = new ArrayList();
+		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
 		elements.add(nvGen);
 		return new AnnotationGen(t,elements,visibility,cp);
 	}

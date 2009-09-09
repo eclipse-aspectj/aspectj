@@ -59,15 +59,15 @@ import java.util.ArrayList;
 /**
  * A small utility class representing a set of basic int values.
  *
- * @version $Id: IntList.java,v 1.2 2008/05/28 23:52:53 aclement Exp $
+ * @version $Id: IntList.java,v 1.3 2009/09/09 19:56:20 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class IntList{
 	/** The int are stored as Integer objects here. */
-	private ArrayList theList;
+	private ArrayList<Integer> theList;
 	/** This constructor creates an empty list. */
 	IntList(){
-		theList = new ArrayList();
+		theList = new ArrayList<Integer>();
 	}
 	/** Adds an element to the list. */
 	void add(int i){

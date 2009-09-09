@@ -69,7 +69,7 @@ import org.aspectj.apache.bcel.generic.Type;
  * for a method in the class. See JVM specification for details.
  * A method has access flags, a name, a signature and a number of attributes.
  *
- * @version $Id: Method.java,v 1.7 2008/08/26 15:01:15 aclement Exp $
+ * @version $Id: Method.java,v 1.8 2009/09/09 19:56:20 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class Method extends FieldOrMethod {
@@ -232,7 +232,7 @@ public final class Method extends FieldOrMethod {
 	boolean foundSome = false;
 	// Build a list of annotation arrays, one per argument
 	if (parameterAnnotationsInvis!=null || parameterAnnotationsVis!=null) {
-		List annotationsForEachParameter = new ArrayList();
+		List<AnnotationGen[]> annotationsForEachParameter = new ArrayList<AnnotationGen[]>();
 		AnnotationGen[] visibleOnes = null;
 		AnnotationGen[] invisibleOnes = null;
 		for (int i=0; i<parameterCount; i++) {
@@ -258,7 +258,7 @@ public final class Method extends FieldOrMethod {
 	  		annotationsForEachParameter.add(complete);
 		}
 		if (foundSome) {
-			unpackedParameterAnnotations = (AnnotationGen[][])annotationsForEachParameter.toArray(new AnnotationGen[][]{});
+			unpackedParameterAnnotations = annotationsForEachParameter.toArray(new AnnotationGen[][]{});
 			return;
 		}
 	}

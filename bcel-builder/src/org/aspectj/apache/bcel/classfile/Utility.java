@@ -63,8 +63,10 @@ import java.util.List;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeParameterAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
 import org.aspectj.apache.bcel.util.ByteSequence;
@@ -72,7 +74,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 /**
  * Utility functions that do not really belong to any class in particular.
  *
- * @version $Id: Utility.java,v 1.7 2008/05/30 17:29:13 aclement Exp $
+ * @version $Id: Utility.java,v 1.8 2009/09/09 19:56:20 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  * modified: Andy Clement  2-mar-05  Removed unnecessary static and optimized
@@ -593,7 +595,7 @@ public abstract class Utility {
    * @param cp The constant pool gen where we can create the necessary name refs
    * @param vec A list of AnnotationGen objects
    */
-  public static Attribute[] getAnnotationAttributes(ConstantPool cp,List vec) {
+  public static Attribute[] getAnnotationAttributes(ConstantPool cp,List<AnnotationGen> vec) {
   	
   	if (vec.size()==0) return null;
   	
@@ -603,7 +605,7 @@ public abstract class Utility {
   	
   		//  put the annotations in the right output stream
   		for (int i=0; i<vec.size(); i++) {
-  			AnnotationGen a = (AnnotationGen)vec.get(i);
+  			AnnotationGen a = vec.get(i);
   			if (a.isRuntimeVisible()) countVisible++;
   			else			   countInvisible++;
   		}
@@ -618,7 +620,7 @@ public abstract class Utility {
 
   		// put the annotations in the right output stream
   		for (int i=0; i<vec.size(); i++) {
-  			AnnotationGen a = (AnnotationGen)vec.get(i);
+  			AnnotationGen a = vec.get(i);
   			if (a.isRuntimeVisible()) a.dump(rvaDos);
   			else			   a.dump(riaDos);
   		}
@@ -635,7 +637,7 @@ public abstract class Utility {
     if (rvaData.length>2) rvaIndex = cp.addUtf8("RuntimeVisibleAnnotations");
     if (riaData.length>2) riaIndex = cp.addUtf8("RuntimeInvisibleAnnotations");
 
-  	List newAttributes = new ArrayList();
+  	List<RuntimeAnnotations> newAttributes = new ArrayList<RuntimeAnnotations>();
   	if (rvaData.length>2) {
   		newAttributes.add(
   		  new RuntimeVisibleAnnotations(rvaIndex,rvaData.length,rvaData,cp));
@@ -645,7 +647,7 @@ public abstract class Utility {
   		  new RuntimeInvisibleAnnotations(riaIndex,riaData.length,riaData,cp));
   	}
 
-  	return (Attribute[])newAttributes.toArray(new Attribute[]{});
+  	return newAttributes.toArray(new Attribute[]{});
   	} catch (IOException e) {
   		System.err.println("IOException whilst processing annotations");
 		e.printStackTrace();
@@ -721,7 +723,7 @@ public abstract class Utility {
   	    if (totalVisCount>0)   rvaIndex = cp.addUtf8("RuntimeVisibleParameterAnnotations");
   	    if (totalInvisCount>0) riaIndex = cp.addUtf8("RuntimeInvisibleParameterAnnotations");
 
-  	    List newAttributes = new ArrayList();
+  	    List<RuntimeParameterAnnotations> newAttributes = new ArrayList<RuntimeParameterAnnotations>();
 
   	    if (totalVisCount>0) {
   		    newAttributes.add(
@@ -734,7 +736,7 @@ public abstract class Utility {
   	    	    new RuntimeInvisibleParameterAnnotations(riaIndex,riaData.length,riaData,cp));
   	    }
 
-  	    return (Attribute[])newAttributes.toArray(new Attribute[]{});
+  	    return newAttributes.toArray(new Attribute[]{});
   	} catch (IOException e) {
   		System.err.println("IOException whilst processing parameter annotations");
 		e.printStackTrace();

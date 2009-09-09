@@ -55,13 +55,14 @@ package org.aspectj.apache.bcel.verifier.structurals;
  */
 
 import org.aspectj.apache.bcel.generic.*;
+
 import java.util.HashSet;
 import java.util.Hashtable;
 
 /**
  * This class allows easy access to ExceptionHandler objects.
  *
- * @version $Id: ExceptionHandlers.java,v 1.2 2008/05/28 23:53:02 aclement Exp $
+ * @version $Id: ExceptionHandlers.java,v 1.3 2009/09/09 19:56:20 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class ExceptionHandlers{
@@ -69,21 +70,21 @@ public class ExceptionHandlers{
 	 * The ExceptionHandler instances.
 	 * Key: InstructionHandle objects, Values: HashSet<ExceptionHandler> instances.
 	 */
-	private Hashtable exceptionhandlers;
+	private Hashtable<InstructionHandle, HashSet<ExceptionHandler>> exceptionhandlers;
 	 
 	/**
 	 * Constructor. Creates a new ExceptionHandlers instance.
 	 */
 	public ExceptionHandlers(MethodGen mg){
-		exceptionhandlers = new Hashtable();
+		exceptionhandlers = new Hashtable<InstructionHandle, HashSet<ExceptionHandler>>();
 		CodeExceptionGen[] cegs = mg.getExceptionHandlers();
 		for (int i=0; i<cegs.length; i++){
 			ExceptionHandler eh = new ExceptionHandler(cegs[i].getCatchType(), cegs[i].getHandlerPC());
 			for (InstructionHandle ih=cegs[i].getStartPC(); ih != cegs[i].getEndPC().getNext(); ih=ih.getNext()){
-				HashSet hs;
-				hs = (HashSet) exceptionhandlers.get(ih);
+				HashSet<ExceptionHandler> hs;
+				hs = exceptionhandlers.get(ih);
 				if (hs == null){
-					hs = new HashSet();
+					hs = new HashSet<ExceptionHandler>();
 					exceptionhandlers.put(ih, hs);
 				}
 				hs.add(eh);
@@ -96,7 +97,7 @@ public class ExceptionHandlers{
 	 * handlers that protect the instruction ih.
 	 */
 	public ExceptionHandler[] getExceptionHandlers(InstructionHandle ih){
-		HashSet hs = (HashSet) exceptionhandlers.get(ih);
+		HashSet hs = exceptionhandlers.get(ih);
 		if (hs == null) return new ExceptionHandler[0];
 		else{
 			ExceptionHandler[] ret = new ExceptionHandler[hs.size()];

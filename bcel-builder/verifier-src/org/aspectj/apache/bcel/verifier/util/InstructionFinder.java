@@ -81,7 +81,7 @@ import org.apache.regexp.*;
       ...
     }
 </pre>
- * @version $Id: InstructionFinder.java,v 1.3 2008/08/28 00:02:14 aclement Exp $
+ * @version $Id: InstructionFinder.java,v 1.4 2009/09/09 19:56:20 aclement Exp $
  * @author  <A HREF="http://www.berlin.de/~markus.dahm/">M. Dahm</A>
  * @see Instruction
  * @see InstructionList
@@ -90,7 +90,7 @@ public class InstructionFinder {
   private static final int OFFSET     = 32767; // char + OFFSET is outside of LATIN-1
   private static final int NO_OPCODES = 256;   // Potential number, some are not used
 
-  private static final HashMap map = new HashMap(); // Map<String,Pattern>
+  private static final HashMap<String, String> map = new HashMap<String, String>(); // Map<String,Pattern>
 
   private InstructionList     il;
   private String              il_string;    // instruction list as string
@@ -126,7 +126,7 @@ public class InstructionFinder {
    * @return encoded string for a pattern such as "BranchInstruction".
    */
   private static final String mapName(String pattern) {
-    String result = (String)map.get(pattern);
+    String result = map.get(pattern);
 
     if(result != null)
       return result;
@@ -212,7 +212,7 @@ public class InstructionFinder {
    * @return iterator of matches where e.nextElement() returns an array of instruction handles
    * describing the matched area 
    */
-  public final Iterator search(String pattern, InstructionHandle from,
+  public final Iterator<InstructionHandle[]> search(String pattern, InstructionHandle from,
 			       CodeConstraint constraint)
   {
     String search = compilePattern(pattern);
@@ -230,7 +230,7 @@ public class InstructionFinder {
 				  " not found in instruction list.");
     try {
       RE regex = new RE(search);
-      ArrayList matches = new ArrayList();
+      ArrayList<InstructionHandle[]> matches = new ArrayList<InstructionHandle[]>();
 
       while(start < il_string.length() && regex.match(il_string, start)) {
 	int startExpr = regex.getParenStart(0); 
@@ -260,7 +260,7 @@ public class InstructionFinder {
    * returns an array of instruction handles describing the matched
    * area
    */
-  public final Iterator search(String pattern) {
+  public final Iterator<InstructionHandle[]> search(String pattern) {
     return search(pattern, il.getStart(), null);
   }
 
@@ -272,7 +272,7 @@ public class InstructionFinder {
    * @return  iterator of matches where e.nextElement() returns an array of instruction handles
    * describing the matched area
    */
-  public final Iterator search(String pattern, InstructionHandle from) {
+  public final Iterator<InstructionHandle[]> search(String pattern, InstructionHandle from) {
     return search(pattern, from, null);
   }
 
@@ -284,7 +284,7 @@ public class InstructionFinder {
    * @param constraint constraints to be checked on matching code
    * @return instruction handle or `null' if the match failed
    */
-  public final Iterator search(String pattern, CodeConstraint constraint) {
+  public final Iterator<InstructionHandle[]> search(String pattern, CodeConstraint constraint) {
     return search(pattern, il.getStart(), constraint);
   }
 
@@ -373,9 +373,9 @@ public class InstructionFinder {
 
     // Compile strings
 
-    for(Iterator i = map.keySet().iterator(); i.hasNext(); ) {
-      String key   = (String)i.next();
-      String value = (String)map.get(key);
+    for(Iterator<String> i = map.keySet().iterator(); i.hasNext(); ) {
+      String key   = i.next();
+      String value = map.get(key);
 
       char ch = value.charAt(1); // Omit already precompiled patterns
       if(ch < OFFSET) {

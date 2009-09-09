@@ -85,7 +85,7 @@ import org.aspectj.apache.bcel.verifier.InstructionWalker;
  * Factory creates il.append() statements, and sets instruction targets. A helper class for BCELifier.
  * 
  * @see BCELifier
- * @version $Id: BCELFactory.java,v 1.4 2008/08/28 00:02:14 aclement Exp $
+ * @version $Id: BCELFactory.java,v 1.5 2009/09/09 19:56:20 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 class BCELFactory extends org.aspectj.apache.bcel.verifier.EmptyInstVisitor {
@@ -99,7 +99,7 @@ class BCELFactory extends org.aspectj.apache.bcel.verifier.EmptyInstVisitor {
 		_out = out;
 	}
 
-	private final HashMap branch_map = new HashMap(); // Map<Instruction, InstructionHandle>
+	private final HashMap<Instruction, InstructionHandle> branch_map = new HashMap<Instruction, InstructionHandle>(); // Map<Instruction, InstructionHandle>
 
 	public void start() {
 		if (!_mg.isAbstract() && !_mg.isNative()) {
@@ -258,7 +258,7 @@ class BCELFactory extends org.aspectj.apache.bcel.verifier.EmptyInstVisitor {
 	}
 
 	// Memorize BranchInstructions that need an update
-	private final ArrayList branches = new ArrayList();
+	private final ArrayList<InstructionBranch> branches = new ArrayList<InstructionBranch>();
 
 	public void visitBranchInstruction(InstructionBranch bi) {
 		BranchHandle bh = (BranchHandle) branch_map.get(bi);
@@ -320,8 +320,8 @@ class BCELFactory extends org.aspectj.apache.bcel.verifier.EmptyInstVisitor {
 	}
 
 	private void updateBranchTargets() {
-		for (Iterator i = branches.iterator(); i.hasNext();) {
-			InstructionBranch bi = (InstructionBranch) i.next();
+		for (Iterator<InstructionBranch> i = branches.iterator(); i.hasNext();) {
+			InstructionBranch bi = i.next();
 			BranchHandle bh = (BranchHandle) branch_map.get(bi);
 			int pos = bh.getPosition();
 			String name = bi.getName() + "_" + pos;

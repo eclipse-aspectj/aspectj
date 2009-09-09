@@ -63,7 +63,7 @@ import org.aspectj.apache.bcel.generic.InstructionHandle;
  * to information like control flow successors and
  * such.
  *
- * @version $Id: InstructionContext.java,v 1.2 2008/05/28 23:53:03 aclement Exp $
+ * @version $Id: InstructionContext.java,v 1.3 2009/09/09 19:56:20 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public interface InstructionContext{
@@ -109,7 +109,7 @@ public interface InstructionContext{
 	 * @return true -  if and only if the "outgoing" frame situation
 	 * changed from the one before execute()ing.
 	 */
-	boolean execute(Frame inFrame, ArrayList executionPredecessors, InstConstraintVisitor icv, ExecutionVisitor ev);
+	boolean execute(Frame inFrame, ArrayList<InstructionContext> executionPredecessors, InstConstraintVisitor icv, ExecutionVisitor ev);
 
 	/**
 	 * This method returns the outgoing execution frame situation;
@@ -118,7 +118,7 @@ public interface InstructionContext{
 	 *
 	 * @see #execute(Frame, ArrayList, InstConstraintVisitor, ExecutionVisitor)
 	 */
-	Frame getOutFrame(ArrayList executionPredecessors);
+	Frame getOutFrame(ArrayList<InstructionContext> executionPredecessors);
 	
 	/**
 	 * Returns the InstructionHandle this InstructionContext is wrapped around.

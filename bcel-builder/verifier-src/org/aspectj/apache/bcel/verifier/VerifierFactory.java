@@ -64,7 +64,7 @@ import java.util.Vector;
  * operate on. That means, for every class (represented by a unique fully qualified
  * class name) there is exactly one Verifier.
  *
- * @version $Id: VerifierFactory.java,v 1.2 2008/05/28 23:53:00 aclement Exp $
+ * @version $Id: VerifierFactory.java,v 1.3 2009/09/09 19:56:20 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see org.aspectj.apache.bcel.verifier.Verifier
  */
@@ -73,12 +73,12 @@ public class VerifierFactory{
 	/**
 	 * The HashMap that holds the data about the already-constructed Verifier instances.
 	 */
-	private static HashMap hashMap = new HashMap();
+	private static HashMap<String, Verifier> hashMap = new HashMap<String, Verifier>();
 
 	/**
 	 * The VerifierFactoryObserver instances that observe the VerifierFactory.
 	 */
-	private static Vector observers = new Vector();
+	private static Vector<VerifierFactoryObserver> observers = new Vector<VerifierFactoryObserver>();
 
 	/**
 	 * The VerifierFactory is not instantiable.
@@ -93,7 +93,7 @@ public class VerifierFactory{
 	public static Verifier getVerifier(String fully_qualified_classname){
 		// fully_qualified_classname = fully_qualified_classname;
 		
-		Verifier v = (Verifier) (hashMap.get(fully_qualified_classname));
+		Verifier v = (hashMap.get(fully_qualified_classname));
 		if (v==null){
 			v = new Verifier(fully_qualified_classname);
 			hashMap.put(fully_qualified_classname, v);
@@ -108,9 +108,9 @@ public class VerifierFactory{
 	 */
 	private static void notify(String fully_qualified_classname){
 		// notify the observers
-		Iterator i = observers.iterator();
+		Iterator<VerifierFactoryObserver> i = observers.iterator();
 		while (i.hasNext()){
-			VerifierFactoryObserver vfo = (VerifierFactoryObserver) i.next();
+			VerifierFactoryObserver vfo = i.next();
 			vfo.update(fully_qualified_classname);
 		}
 	}
@@ -124,7 +124,7 @@ public class VerifierFactory{
 	 */
 	public static Verifier[] getVerifiers(){
 		Verifier[] vs = new Verifier[hashMap.values().size()];
-		return (Verifier[]) (hashMap.values().toArray(vs));	// Because vs is big enough, vs is used to store the values into and returned!
+		return (hashMap.values().toArray(vs));	// Because vs is big enough, vs is used to store the values into and returned!
 	}
 
 	/**
