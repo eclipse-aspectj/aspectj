@@ -84,7 +84,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
  * Template class for building up a java class. May be initialized with an existing java class (file).
  * 
  * @see JavaClass
- * @version $Id: ClassGen.java,v 1.12 2009/09/09 22:18:20 aclement Exp $
+ * @version $Id: ClassGen.java,v 1.13 2009/09/09 23:13:20 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  *         Upgraded, Andy Clement 9th Mar 06 - calculates SUID
@@ -200,7 +200,7 @@ public class ClassGen extends Modifiers implements Cloneable {
 	 * Look for attributes representing annotations and unpack them.
 	 */
 	private AnnotationGen[] unpackAnnotations(Attribute[] attrs) {
-		List /* AnnotationGen */<AnnotationGen> annotationGenObjs = new ArrayList<AnnotationGen>();
+		List<AnnotationGen> annotationGenObjs = new ArrayList<AnnotationGen>();
 		for (int i = 0; i < attrs.length; i++) {
 			Attribute attr = attrs[i];
 			if (attr instanceof RuntimeVisibleAnnotations) {
