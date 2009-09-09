@@ -14,6 +14,7 @@
 package org.aspectj.weaver.bcel;
 
 import java.lang.reflect.Modifier;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -73,10 +74,12 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		super(munger, aspectType);
 	}
 
+	@Override
 	public String toString() {
 		return "(BcelTypeMunger " + getMunger() + ")";
 	}
 
+	@Override
 	public boolean shouldOverwrite() {
 		return false;
 	}
@@ -789,8 +792,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			return false;
 		}
 
-		// If we are processing the intended ITD target type (might be an
-		// interface)
+		// If we are processing the intended ITD target type (might be an interface)
 		if (onType.equals(gen.getType())) {
 			ResolvedMember mangledInterMethod = AjcMemberMaker.interMethod(unMangledInterMethod, aspectType, onInterface);
 
@@ -809,8 +811,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			if (weaver.getWorld().isInJava5Mode()) {
 				AnnotationAJ annotationsOnRealMember[] = null;
 				ResolvedType toLookOn = aspectType;
-				if (aspectType.isRawType())
+				if (aspectType.isRawType()) {
 					toLookOn = aspectType.getGenericType();
+				}
 				ResolvedMember realMember = getRealMemberForITDFromAspect(toLookOn, memberHoldingAnyAnnotations, false);
 				// 266602 - consider it missing to mean that the corresponding aspect had errors
 				if (realMember == null) {
@@ -819,13 +822,14 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				} else {
 					annotationsOnRealMember = realMember.getAnnotations();
 				}
-
+				Set<ResolvedType> addedAnnotations = new HashSet<ResolvedType>();
 				if (annotationsOnRealMember != null) {
 					for (int i = 0; i < annotationsOnRealMember.length; i++) {
 						AnnotationAJ annotationX = annotationsOnRealMember[i];
 						AnnotationGen a = ((BcelAnnotation) annotationX).getBcelAnnotation();
 						AnnotationGen ag = new AnnotationGen(a, weaver.getLazyClassGen().getConstantPool(), true);
 						newMethod.addAnnotation(new BcelAnnotation(ag, weaver.getWorld()));
+						addedAnnotations.add(annotationX.getType());
 					}
 				}
 				if (realMember != null) {
@@ -844,15 +848,19 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 						}
 					}
 				}
-				// the below loop fixes the very special (and very stupid)
-				// case where an aspect declares an annotation
-				// on an ITD it declared on itself.
-				List allDecams = weaver.getWorld().getDeclareAnnotationOnMethods();
-				for (Iterator i = allDecams.iterator(); i.hasNext();) {
-					DeclareAnnotation decaMC = (DeclareAnnotation) i.next();
-					if (decaMC.matches(unMangledInterMethod, weaver.getWorld())
-							&& newMethod.getEnclosingClass().getType() == aspectType) {
-						newMethod.addAnnotation(decaMC.getAnnotationX());
+				// the code below was originally added to cope with the case where an aspect declares an annotation on an ITD
+				// declared within itself (an unusual situation). However, it also addresses the case where we may not find the
+				// annotation on the real representation of the ITD. This can happen in a load-time weaving situation where
+				// we couldn't add the annotation in time - and so here we recheck the declare annotations. Not quite ideal but
+				// works. pr288635
+				List<DeclareAnnotation> allDecams = w.getDeclareAnnotationOnMethods();
+				for (DeclareAnnotation declareAnnotationMC : allDecams) {
+					if (declareAnnotationMC.matches(unMangledInterMethod, w)) {
+						// && newMethod.getEnclosingClass().getType() == aspectType) {
+						AnnotationAJ annotation = declareAnnotationMC.getAnnotation();
+						if (!addedAnnotations.contains(annotation.getType())) {
+							newMethod.addAnnotation(annotation);
+						}
 					}
 				}
 			}
@@ -1568,7 +1576,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			for (Iterator i = allDecams.iterator(); i.hasNext();) {
 				DeclareAnnotation decaMC = (DeclareAnnotation) i.next();
 				if (decaMC.matches(explicitConstructor, weaver.getWorld()) && mg.getEnclosingClass().getType() == aspectType) {
-					mg.addAnnotation(decaMC.getAnnotationX());
+					mg.addAnnotation(decaMC.getAnnotation());
 				}
 			}
 		}
@@ -1897,10 +1905,12 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		gen.addMethodGen(bridgeMethod);
 	}
 
+	@Override
 	public ConcreteTypeMunger parameterizedFor(ResolvedType target) {
 		return new BcelTypeMunger(munger.parameterizedFor(target), aspectType);
 	}
 
+	@Override
 	public ConcreteTypeMunger parameterizeWith(Map m, World w) {
 		return new BcelTypeMunger(munger.parameterizeWith(m, w), aspectType);
 	}
@@ -1913,6 +1923,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		return munger.getTypeVariableAliases();
 	}
 
+	@Override
 	public boolean equals(Object other) {
 		if (!(other instanceof BcelTypeMunger))
 			return false;
@@ -1929,6 +1940,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 	private volatile int hashCode = 0;
 
+	@Override
 	public int hashCode() {
 		if (hashCode == 0) {
 			int result = 17;
