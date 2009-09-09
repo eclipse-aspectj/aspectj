@@ -79,37 +79,33 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
  * The intent of this class is to represent a parsed or otherwise existing class file. Those interested in programatically
  * generating classes should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
  * 
- * @version $Id: JavaClass.java,v 1.15 2009/09/09 19:56:20 aclement Exp $
+ * @version $Id: JavaClass.java,v 1.16 2009/09/09 21:26:54 aclement Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class JavaClass extends Modifiers implements Cloneable, Node {
-	private String file_name;
-	private String package_name;
-	private String source_file_name;
-	private int class_name_index;
-	private int superclass_name_index;
-	private String class_name;
-	private String superclass_name;
-	private int major, minor; // Compiler version
-	private ConstantPool constant_pool; // Constant pool
-	private int[] interfaces; // implemented interfaces
-	private String[] interface_names;
-	private Field[] fields; // Fields, i.e., variables of class
-	private Method[] methods; // methods defined in the class
-	private Attribute[] attributes; // attributes defined in the class
-	private AnnotationGen[] annotations; // annotations defined on the class
+	private static final String[] NO_INTERFACE_NAMES = new String[0];
+
+	private String fileName;
+	private String packageName;
+	private String sourcefileName;
+	private int classnameIdx;
+	private int superclassnameIdx;
+	private String classname;
+	private String superclassname;
+	private int major, minor;
+	private ConstantPool cpool;
+	private int[] interfaces;
+	private String[] interfacenames;
+	private Field[] fields;
+	private Method[] methods;
+	private Attribute[] attributes;
+	private AnnotationGen[] annotations;
+
 	private boolean isGeneric = false;
 	private boolean isAnonymous = false;
 	private boolean isNested = false;
 	private boolean computedNestedTypeStatus = false;
-
-	public static final byte HEAP = 1;
-	public static final byte FILE = 2;
-	public static final byte ZIP = 3;
-
-	static boolean debug = false; // Debugging on/off
-	static char sep = '/'; // directory separator
 
 	// Annotations are collected from certain attributes, don't do it more than necessary!
 	private boolean annotationsOutOfDate = true;
@@ -118,8 +114,6 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	private String signatureAttributeString = null;
 	private Signature signatureAttribute = null;
 	private boolean searchedForSignatureAttribute = false;
-
-	private static final String[] NO_INTERFACE_NAMES = new String[] {};
 
 	/**
 	 * In cases where we go ahead and create something, use the default SyntheticRepository, because we don't know any better.
@@ -157,13 +151,13 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 			methods = new Method[0]; // TODO create a constant for no methods
 		}
 
-		this.class_name_index = class_name_index;
-		this.superclass_name_index = superclass_name_index;
-		this.file_name = file_name;
+		this.classnameIdx = class_name_index;
+		this.superclassnameIdx = superclass_name_index;
+		this.fileName = file_name;
 		this.major = major;
 		this.minor = minor;
 		this.modifiers = access_flags;
-		this.constant_pool = constant_pool;
+		this.cpool = constant_pool;
 		this.interfaces = interfaces;
 		this.fields = fields;
 		this.methods = methods;
@@ -172,36 +166,36 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 
 		// Get source file name if available
 		SourceFile sfAttribute = AttributeUtils.getSourceFileAttribute(attributes);
-		source_file_name = sfAttribute == null ? "<Unknown>" : sfAttribute.getSourceFileName();
+		sourcefileName = sfAttribute == null ? "<Unknown>" : sfAttribute.getSourceFileName();
 
 		/*
 		 * According to the specification the following entries must be of type `ConstantClass' but we check that anyway via the
 		 * `ConstPool.getConstant' method.
 		 */
-		class_name = constant_pool.getConstantString(class_name_index, Constants.CONSTANT_Class);
-		class_name = Utility.compactClassName(class_name, false);
+		classname = constant_pool.getConstantString(class_name_index, Constants.CONSTANT_Class);
+		classname = Utility.compactClassName(classname, false);
 
-		int index = class_name.lastIndexOf('.');
+		int index = classname.lastIndexOf('.');
 		if (index < 0) {
-			package_name = "";
+			packageName = "";
 		} else {
-			package_name = class_name.substring(0, index);
+			packageName = classname.substring(0, index);
 		}
 
 		if (superclass_name_index > 0) { // May be zero -> class is java.lang.Object
-			superclass_name = constant_pool.getConstantString(superclass_name_index, Constants.CONSTANT_Class);
-			superclass_name = Utility.compactClassName(superclass_name, false);
+			superclassname = constant_pool.getConstantString(superclass_name_index, Constants.CONSTANT_Class);
+			superclassname = Utility.compactClassName(superclassname, false);
 		} else {
-			superclass_name = "java.lang.Object";
+			superclassname = "java.lang.Object";
 		}
 
 		if (interfaces.length == 0) {
-			interface_names = NO_INTERFACE_NAMES;
+			interfacenames = NO_INTERFACE_NAMES;
 		} else {
-			interface_names = new String[interfaces.length];
+			interfacenames = new String[interfaces.length];
 			for (int i = 0; i < interfaces.length; i++) {
 				String str = constant_pool.getConstantString(interfaces[i], Constants.CONSTANT_Class);
-				interface_names[i] = Utility.compactClassName(str, false);
+				interfacenames[i] = Utility.compactClassName(str, false);
 			}
 		}
 	}
@@ -214,15 +208,6 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	 */
 	public void accept(ClassVisitor v) {
 		v.visitJavaClass(this);
-	}
-
-	/*
-	 * Print debug information depending on `JavaClass.debug'
-	 */
-	static final void Debug(String str) {
-		if (debug) {
-			System.out.println(str);
-		}
 	}
 
 	/**
@@ -293,11 +278,11 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 		file.writeShort(minor);
 		file.writeShort(major);
 
-		constant_pool.dump(file);
+		cpool.dump(file);
 
 		file.writeShort(modifiers);
-		file.writeShort(class_name_index);
-		file.writeShort(superclass_name_index);
+		file.writeShort(classnameIdx);
+		file.writeShort(superclassnameIdx);
 
 		file.writeShort(interfaces.length);
 		for (int i = 0; i < interfaces.length; i++) {
@@ -347,28 +332,28 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	 * @return Class name.
 	 */
 	public String getClassName() {
-		return class_name;
+		return classname;
 	}
 
 	/**
 	 * @return Package name.
 	 */
 	public String getPackageName() {
-		return package_name;
+		return packageName;
 	}
 
 	/**
 	 * @return Class name index.
 	 */
 	public int getClassNameIndex() {
-		return class_name_index;
+		return classnameIdx;
 	}
 
 	/**
 	 * @return Constant pool.
 	 */
 	public ConstantPool getConstantPool() {
-		return constant_pool;
+		return cpool;
 	}
 
 	/**
@@ -383,14 +368,14 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	 * @return File name of class, aka SourceFile attribute value
 	 */
 	public String getFileName() {
-		return file_name;
+		return fileName;
 	}
 
 	/**
 	 * @return Names of implemented interfaces.
 	 */
 	public String[] getInterfaceNames() {
-		return interface_names;
+		return interfacenames;
 	}
 
 	/**
@@ -463,40 +448,21 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	 * @return sbsolute path to file where this class was read from
 	 */
 	public String getSourceFileName() {
-		return source_file_name;
+		return sourcefileName;
 	}
 
 	/**
 	 * @return Superclass name.
 	 */
 	public String getSuperclassName() {
-		return superclass_name;
+		return superclassname;
 	}
 
 	/**
 	 * @return Class name index.
 	 */
 	public int getSuperclassNameIndex() {
-		return superclass_name_index;
-	}
-
-	static {
-		// Debugging ... on/off
-		String debug = System.getProperty("JavaClass.debug");
-
-		if (debug != null) {
-			JavaClass.debug = new Boolean(debug).booleanValue();
-		}
-
-		// Get path separator either / or \ usually
-		String sep = System.getProperty("file.separator");
-
-		if (sep != null) {
-			try {
-				JavaClass.sep = sep.charAt(0);
-			} catch (StringIndexOutOfBoundsException e) {
-			} // Never reached
-		}
+		return superclassnameIdx;
 	}
 
 	/**
@@ -511,21 +477,21 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	 * @param class_name .
 	 */
 	public void setClassName(String class_name) {
-		this.class_name = class_name;
+		this.classname = class_name;
 	}
 
 	/**
 	 * @param class_name_index .
 	 */
 	public void setClassNameIndex(int class_name_index) {
-		this.class_name_index = class_name_index;
+		this.classnameIdx = class_name_index;
 	}
 
 	/**
 	 * @param constant_pool .
 	 */
 	public void setConstantPool(ConstantPool constant_pool) {
-		this.constant_pool = constant_pool;
+		this.cpool = constant_pool;
 	}
 
 	/**
@@ -539,14 +505,14 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	 * Set File name of class, aka SourceFile attribute value
 	 */
 	public void setFileName(String file_name) {
-		this.file_name = file_name;
+		this.fileName = file_name;
 	}
 
 	/**
 	 * @param interface_names .
 	 */
 	public void setInterfaceNames(String[] interface_names) {
-		this.interface_names = interface_names;
+		this.interfacenames = interface_names;
 	}
 
 	/**
@@ -581,21 +547,21 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	 * Set absolute path to file this class was read from.
 	 */
 	public void setSourceFileName(String source_file_name) {
-		this.source_file_name = source_file_name;
+		this.sourcefileName = source_file_name;
 	}
 
 	/**
 	 * @param superclass_name .
 	 */
 	public void setSuperclassName(String superclass_name) {
-		this.superclass_name = superclass_name;
+		this.superclassname = superclass_name;
 	}
 
 	/**
 	 * @param superclass_name_index .
 	 */
 	public void setSuperclassNameIndex(int superclass_name_index) {
-		this.superclass_name_index = superclass_name_index;
+		this.superclassnameIdx = superclass_name_index;
 	}
 
 	/**
@@ -606,15 +572,15 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 		String access = Utility.accessToString(modifiers, true);
 		access = access.equals("") ? "" : access + " ";
 
-		StringBuffer buf = new StringBuffer(access + Utility.classOrInterface(modifiers) + " " + class_name + " extends "
-				+ Utility.compactClassName(superclass_name, false) + '\n');
+		StringBuffer buf = new StringBuffer(access + Utility.classOrInterface(modifiers) + " " + classname + " extends "
+				+ Utility.compactClassName(superclassname, false) + '\n');
 		int size = interfaces.length;
 
 		if (size > 0) {
 			buf.append("implements\t\t");
 
 			for (int i = 0; i < size; i++) {
-				buf.append(interface_names[i]);
+				buf.append(interfacenames[i]);
 				if (i < size - 1) {
 					buf.append(", ");
 				}
@@ -623,11 +589,11 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 			buf.append('\n');
 		}
 
-		buf.append("filename\t\t" + file_name + '\n');
-		buf.append("compiled from\t\t" + source_file_name + '\n');
+		buf.append("filename\t\t" + fileName + '\n');
+		buf.append("compiled from\t\t" + sourcefileName + '\n');
 		buf.append("compiler version\t" + major + "." + minor + '\n');
 		buf.append("access flags\t\t" + modifiers + '\n');
-		buf.append("constant pool\t\t" + constant_pool.getLength() + " entries\n");
+		buf.append("constant pool\t\t" + cpool.getLength() + " entries\n");
 		buf.append("ACC_SUPER flag\t\t" + isSuper() + "\n");
 
 		if (attributes.length > 0) {
@@ -683,21 +649,21 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 		} catch (CloneNotSupportedException e) {
 		}
 
-		c.constant_pool = constant_pool.copy();
+		c.cpool = cpool.copy();
 		c.interfaces = interfaces.clone();
-		c.interface_names = interface_names.clone();
+		c.interfacenames = interfacenames.clone();
 
 		c.fields = new Field[fields.length];
 		for (int i = 0; i < fields.length; i++) {
-			c.fields[i] = fields[i].copy(c.constant_pool);
+			c.fields[i] = fields[i].copy(c.cpool);
 		}
 
 		c.methods = new Method[methods.length];
 		for (int i = 0; i < methods.length; i++) {
-			c.methods[i] = methods[i].copy(c.constant_pool);
+			c.methods[i] = methods[i].copy(c.cpool);
 		}
 
-		c.attributes = AttributeUtils.copy(attributes, c.constant_pool);
+		c.attributes = AttributeUtils.copy(attributes, c.cpool);
 
 		// J5SUPPORT: As the annotations exist as attributes against the class, copying
 		// the attributes will copy the annotations across, so we don't have to
@@ -734,7 +700,7 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 				InnerClass[] innerClasses = ((InnerClasses) attributes[i]).getInnerClasses();
 				for (int j = 0; j < innerClasses.length; j++) {
 					boolean innerClassAttributeRefersToMe = false;
-					String inner_class_name = constant_pool.getConstantString(innerClasses[j].getInnerClassIndex(),
+					String inner_class_name = cpool.getConstantString(innerClasses[j].getInnerClassIndex(),
 							Constants.CONSTANT_Class);
 					inner_class_name = Utility.compactClassName(inner_class_name);
 					if (inner_class_name.equals(getClassName())) {

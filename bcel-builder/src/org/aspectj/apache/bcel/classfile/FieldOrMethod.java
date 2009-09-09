@@ -53,155 +53,165 @@ package org.aspectj.apache.bcel.classfile;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-import  org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
-
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/** 
+import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
+
+/**
  * Abstract super class for fields and methods.
- *
- * @version $Id: FieldOrMethod.java,v 1.8 2009/09/09 19:56:20 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * 
+ * @version $Id: FieldOrMethod.java,v 1.9 2009/09/09 21:26:54 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldOrMethod extends Modifiers implements Cloneable, Node {
-  protected int           nameIndex;      
-  protected int           signatureIndex;
-  protected Attribute[] attributes;
-  
-  protected ConstantPool  cpool;
-  private String  name; // lazily initialized
-  private String  signature; // lazily initialized
-  private AnnotationGen[]  annotations;  // lazily initialized 
-  private String  signatureAttributeString = null;
-  private boolean searchedForSignatureAttribute = false;
-  
-  
-  
-  protected FieldOrMethod() {}
-  
-  /**
-   * Initialize from another object. Note that both objects use the same
-   * references (shallow copy). Use clone() for a physical copy.
-   */
-  protected FieldOrMethod(FieldOrMethod c) {
-    this(c.getModifiers(), c.getNameIndex(), c.getSignatureIndex(),c.getAttributes(), c.getConstantPool());
-  }
+	protected int nameIndex;
+	protected int signatureIndex;
+	protected Attribute[] attributes;
 
-  protected FieldOrMethod(DataInputStream file, ConstantPool cpool) throws IOException {
-    this(file.readUnsignedShort(), file.readUnsignedShort(), file.readUnsignedShort(), null, cpool);
-    attributes = AttributeUtils.readAttributes(file,cpool);
-  }
+	protected ConstantPool cpool;
+	private String name; // lazily initialized
+	private String signature; // lazily initialized
+	private AnnotationGen[] annotations; // lazily initialized
+	private String signatureAttributeString = null;
+	private boolean searchedForSignatureAttribute = false;
 
-  protected FieldOrMethod(int accessFlags, int nameIndex, int signatureIndex, Attribute[] attributes, ConstantPool cpool) {
-    this.modifiers     = accessFlags;
-    this.nameIndex       = nameIndex;
-    this.signatureIndex  = signatureIndex;
-    this.cpool           = cpool;
-    this.attributes      = attributes;
-  }
-
-  
-    /**
-   * @param attributes Collection of object attributes.
-   */
-  public void setAttributes(Attribute[] attributes) {
-    this.attributes  = attributes;
-  }
-
-  
-  
-  public final void dump(DataOutputStream file) throws IOException {
-    file.writeShort(modifiers);
-    file.writeShort(nameIndex);
-    file.writeShort(signatureIndex);
-    AttributeUtils.writeAttributes(attributes,file);
-  }
-
-  public final Attribute[] getAttributes() { return attributes; }
-  public final ConstantPool getConstantPool() { return cpool; }
-  public final int getNameIndex() { return nameIndex; }
-  public final int getSignatureIndex() { return signatureIndex; }    
-
-  public final String getName() {
-	if (name==null) {
-		ConstantUtf8  c = (ConstantUtf8)cpool.getConstant(nameIndex,Constants.CONSTANT_Utf8);
-		name = c.getBytes();
+	protected FieldOrMethod() {
 	}
-	return name;
-  }
 
-  public final String getSignature() {
-    if (signature==null) {
-    	ConstantUtf8  c = (ConstantUtf8)cpool.getConstant(signatureIndex,Constants.CONSTANT_Utf8);
-    	signature = c.getBytes();
-    }
-    return signature;
-  }
+	/**
+	 * Initialize from another object. Note that both objects use the same references (shallow copy). Use clone() for a physical
+	 * copy.
+	 */
+	protected FieldOrMethod(FieldOrMethod c) {
+		this(c.getModifiers(), c.getNameIndex(), c.getSignatureIndex(), c.getAttributes(), c.getConstantPool());
+	}
 
-  /**
-   * This will return the contents of a signature attribute attached to a member, or if there
-   * is none it will return the same as 'getSignature()'.  Signature attributes are attached
-   * to members that were declared generic.
-   */
-  public final String getDeclaredSignature() {
-    if (getGenericSignature()!=null) return getGenericSignature();
-	return getSignature();  
-  }
-  
-  /**
-   * @return deep copy of this field
-   */
-  protected FieldOrMethod copy_(ConstantPool constant_pool) {
-    FieldOrMethod c = null;
+	protected FieldOrMethod(DataInputStream file, ConstantPool cpool) throws IOException {
+		this(file.readUnsignedShort(), file.readUnsignedShort(), file.readUnsignedShort(), null, cpool);
+		attributes = AttributeUtils.readAttributes(file, cpool);
+	}
 
-    try {
-      c = (FieldOrMethod)clone();
-    } catch(CloneNotSupportedException e) {}
+	protected FieldOrMethod(int accessFlags, int nameIndex, int signatureIndex, Attribute[] attributes, ConstantPool cpool) {
+		this.modifiers = accessFlags;
+		this.nameIndex = nameIndex;
+		this.signatureIndex = signatureIndex;
+		this.cpool = cpool;
+		this.attributes = attributes;
+	}
 
-    c.cpool    = constant_pool;
-    c.attributes = AttributeUtils.copy(attributes,constant_pool);
-    return c;
-  }
-  
-  public AnnotationGen[] getAnnotations() {
-	// Ensure we have unpacked any attributes that contain annotations.
-	// We don't remove these annotation attributes from the attributes list, they
-	// remain there.
-    if (annotations==null) { 
-  		// Find attributes that contain annotation data
-  		List<AnnotationGen> accumulatedAnnotations = new ArrayList<AnnotationGen>();
-  		for (int i = 0; i < attributes.length; i++) {
-			Attribute attribute = attributes[i];
-			if (attribute instanceof RuntimeAnnotations) {				
-				RuntimeAnnotations runtimeAnnotations = (RuntimeAnnotations)attribute;
-				accumulatedAnnotations.addAll(runtimeAnnotations.getAnnotations());
+	/**
+	 * @param attributes Collection of object attributes.
+	 */
+	public void setAttributes(Attribute[] attributes) {
+		this.attributes = attributes;
+	}
+
+	public final void dump(DataOutputStream file) throws IOException {
+		file.writeShort(modifiers);
+		file.writeShort(nameIndex);
+		file.writeShort(signatureIndex);
+		AttributeUtils.writeAttributes(attributes, file);
+	}
+
+	public final Attribute[] getAttributes() {
+		return attributes;
+	}
+
+	public final ConstantPool getConstantPool() {
+		return cpool;
+	}
+
+	public final int getNameIndex() {
+		return nameIndex;
+	}
+
+	public final int getSignatureIndex() {
+		return signatureIndex;
+	}
+
+	public final String getName() {
+		if (name == null) {
+			ConstantUtf8 c = (ConstantUtf8) cpool.getConstant(nameIndex, Constants.CONSTANT_Utf8);
+			name = c.getBytes();
+		}
+		return name;
+	}
+
+	public final String getSignature() {
+		if (signature == null) {
+			ConstantUtf8 c = (ConstantUtf8) cpool.getConstant(signatureIndex, Constants.CONSTANT_Utf8);
+			signature = c.getBytes();
+		}
+		return signature;
+	}
+
+	/**
+	 * This will return the contents of a signature attribute attached to a member, or if there is none it will return the same as
+	 * 'getSignature()'. Signature attributes are attached to members that were declared generic.
+	 */
+	public final String getDeclaredSignature() {
+		if (getGenericSignature() != null)
+			return getGenericSignature();
+		return getSignature();
+	}
+
+	/**
+	 * @return deep copy of this field
+	 */
+	protected FieldOrMethod copy_(ConstantPool constant_pool) {
+		FieldOrMethod c = null;
+
+		try {
+			c = (FieldOrMethod) clone();
+		} catch (CloneNotSupportedException e) {
+		}
+
+		c.cpool = constant_pool;
+		c.attributes = AttributeUtils.copy(attributes, constant_pool);
+		return c;
+	}
+
+	public AnnotationGen[] getAnnotations() {
+		// Ensure we have unpacked any attributes that contain annotations.
+		// We don't remove these annotation attributes from the attributes list, they
+		// remain there.
+		if (annotations == null) {
+			// Find attributes that contain annotation data
+			List<AnnotationGen> accumulatedAnnotations = new ArrayList<AnnotationGen>();
+			for (int i = 0; i < attributes.length; i++) {
+				Attribute attribute = attributes[i];
+				if (attribute instanceof RuntimeAnnotations) {
+					RuntimeAnnotations runtimeAnnotations = (RuntimeAnnotations) attribute;
+					accumulatedAnnotations.addAll(runtimeAnnotations.getAnnotations());
+				}
+			}
+			if (accumulatedAnnotations.size() == 0) {
+				annotations = AnnotationGen.NO_ANNOTATIONS;
+			} else {
+				annotations = accumulatedAnnotations.toArray(new AnnotationGen[] {});
 			}
 		}
-  		if (accumulatedAnnotations.size()==0) {
-  			annotations = AnnotationGen.NO_ANNOTATIONS;
-  		} else {
-  			annotations = accumulatedAnnotations.toArray(new AnnotationGen[]{});
-  		}
-  	}
-  	return annotations;
-  }
-  
-  /**
-   * Hunts for a signature attribute on the member and returns its contents.  So where the 'regular' signature
-   * may be (Ljava/util/Vector;)V the signature attribute may in fact say 'Ljava/lang/Vector<Ljava/lang/String>;'
-   * Coded for performance - searches for the attribute only when requested - only searches for it once.
-   */
-  public final String getGenericSignature() {
-	if (!searchedForSignatureAttribute) {
-	  Signature sig = AttributeUtils.getSignatureAttribute(attributes); 
-	  signatureAttributeString = (sig==null?null:sig.getSignature());
-	  searchedForSignatureAttribute=true;
+		return annotations;
 	}
-	return signatureAttributeString;
-  }
-  
+
+	/**
+	 * Hunts for a signature attribute on the member and returns its contents. So where the 'regular' signature may be
+	 * (Ljava/util/Vector;)V the signature attribute may in fact say 'Ljava/lang/Vector<Ljava/lang/String>;' Coded for performance -
+	 * searches for the attribute only when requested - only searches for it once.
+	 */
+	public final String getGenericSignature() {
+		if (!searchedForSignatureAttribute) {
+			Signature sig = AttributeUtils.getSignatureAttribute(attributes);
+			signatureAttributeString = (sig == null ? null : sig.getSignature());
+			searchedForSignatureAttribute = true;
+		}
+		return signatureAttributeString;
+	}
+
 }

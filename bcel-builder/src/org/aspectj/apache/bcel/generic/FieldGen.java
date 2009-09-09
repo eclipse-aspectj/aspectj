@@ -68,169 +68,170 @@ import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
 
-/** 
- * Template class for building up a field.  The only extraordinary thing
- * one can do is to add a constant value attribute to a field (which must of
- * course be compatible with the declared type).
- *
- * @version $Id: FieldGen.java,v 1.6 2009/09/09 19:56:20 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+/**
+ * Template class for building up a field. The only extraordinary thing one can do is to add a constant value attribute to a field
+ * (which must of course be compatible with the declared type).
+ * 
+ * @version $Id: FieldGen.java,v 1.7 2009/09/09 21:26:54 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Field
  */
 public class FieldGen extends FieldGenOrMethodGen {
-  private Object value = null;
+	private Object value = null;
 
-  /**
-   * Declare a field. If it is static (isStatic() == true) and has a
-   * basic type like int or String it may have an initial value
-   * associated with it as defined by setInitValue().
-   *
-   * @param access_flags access qualifiers
-   * @param type  field type
-   * @param name field name
-   * @param cp constant pool
-   */
-  public FieldGen(int access_flags, Type type, String name, ConstantPool cp) {
-    setModifiers(access_flags);
-    setType(type);
-    setName(name);
-    setConstantPool(cp);
-  }
+	/**
+	 * Declare a field. If it is static (isStatic() == true) and has a basic type like int or String it may have an initial value
+	 * associated with it as defined by setInitValue().
+	 * 
+	 * @param modifiers access qualifiers
+	 * @param type field type
+	 * @param name field name
+	 * @param cpool constant pool
+	 */
+	public FieldGen(int modifiers, Type type, String name, ConstantPool cpool) {
+		setModifiers(modifiers);
+		setType(type);
+		setName(name);
+		setConstantPool(cpool);
+	}
 
-  /**
-   * Instantiate from existing field.
-   *
-   * @param field Field object
-   * @param cp constant pool (must contain the same entries as the field's constant pool)
-   */
-  public FieldGen(Field field, ConstantPool cp) {
-    this(field.getModifiers(), Type.getType(field.getSignature()), field.getName(), cp);
+	/**
+	 * Instantiate from existing field.
+	 * 
+	 * @param field Field object
+	 * @param cp constant pool (must contain the same entries as the field's constant pool)
+	 */
+	public FieldGen(Field field, ConstantPool cp) {
+		this(field.getModifiers(), Type.getType(field.getSignature()), field.getName(), cp);
 
-    Attribute[] attrs = field.getAttributes();
+		Attribute[] attrs = field.getAttributes();
 
-    for(int i=0; i < attrs.length; i++) {
-      if(attrs[i] instanceof ConstantValue) {
-	    setValue(((ConstantValue)attrs[i]).getConstantValueIndex());
-      } else if (attrs[i] instanceof RuntimeAnnotations) {
-		RuntimeAnnotations runtimeAnnotations = (RuntimeAnnotations)attrs[i];
-		List<AnnotationGen> l = runtimeAnnotations.getAnnotations();
-		for (Iterator<AnnotationGen> it = l.iterator(); it.hasNext();) {
-			AnnotationGen element = it.next();
-			addAnnotation(new AnnotationGen(element,cp,false));
+		for (int i = 0; i < attrs.length; i++) {
+			if (attrs[i] instanceof ConstantValue) {
+				setValue(((ConstantValue) attrs[i]).getConstantValueIndex());
+			} else if (attrs[i] instanceof RuntimeAnnotations) {
+				RuntimeAnnotations runtimeAnnotations = (RuntimeAnnotations) attrs[i];
+				List<AnnotationGen> l = runtimeAnnotations.getAnnotations();
+				for (Iterator<AnnotationGen> it = l.iterator(); it.hasNext();) {
+					AnnotationGen element = it.next();
+					addAnnotation(new AnnotationGen(element, cp, false));
+				}
+			} else {
+				addAttribute(attrs[i]);
+			}
 		}
-      } else {
-	    addAttribute(attrs[i]);
-      }
-    }
-  }
+	}
 
-  private void setValue(int index) {
-    ConstantPool cp  = this.cp;
-    Constant     c   = cp.getConstant(index);
-    value = ((ConstantObject)c).getConstantValue(cp);
-  }
+	private void setValue(int index) {
+		ConstantPool cp = this.cp;
+		Constant c = cp.getConstant(index);
+		value = ((ConstantObject) c).getConstantValue(cp);
+	}
 
+	public void wipeValue() {
+		value = null;
+	}
 
-  public void wipeValue() {
-    value = null;
-  }
+	private void checkType(Type atype) {
+		if (type == null)
+			throw new ClassGenException("You haven't defined the type of the field yet");
 
-  private void checkType(Type atype) {
-    if(type == null)
-      throw new ClassGenException("You haven't defined the type of the field yet");
-    
-    if(!isFinal())
-      throw new ClassGenException("Only final fields may have an initial value!");
+		if (!isFinal())
+			throw new ClassGenException("Only final fields may have an initial value!");
 
-    if(!type.equals(atype))
-      throw new ClassGenException("Types are not compatible: " + type + " vs. " + atype);
-  }
+		if (!type.equals(atype))
+			throw new ClassGenException("Types are not compatible: " + type + " vs. " + atype);
+	}
 
-  /**
-   * Get field object after having set up all necessary values.
-   */
-  public Field getField() {
-    String      signature       = getSignature();
-    int         name_index      = cp.addUtf8(name);
-    int         signature_index = cp.addUtf8(signature);
+	/**
+	 * Get field object after having set up all necessary values.
+	 */
+	public Field getField() {
+		String signature = getSignature();
+		int name_index = cp.addUtf8(name);
+		int signature_index = cp.addUtf8(signature);
 
-    if(value != null) {
-      checkType(type);
-      int index = addConstant();
-      addAttribute(new ConstantValue(cp.addUtf8("ConstantValue"),
-				     2, index, cp));
-    }
-    
-     addAnnotationsAsAttribute(cp);
+		if (value != null) {
+			checkType(type);
+			int index = addConstant();
+			addAttribute(new ConstantValue(cp.addUtf8("ConstantValue"), 2, index, cp));
+		}
 
-    return new Field(modifiers, name_index, signature_index, getAttributesImmutable(), cp);
-  }
+		addAnnotationsAsAttribute(cp);
 
-  private int addConstant() {
-    switch(type.getType()) {
-    case Constants.T_INT: case Constants.T_CHAR: case Constants.T_BYTE:
-    case Constants.T_BOOLEAN: case Constants.T_SHORT:
-      return cp.addInteger(((Integer)value).intValue());
-      
-    case Constants.T_FLOAT:
-      return cp.addFloat(((Float)value).floatValue());
+		return new Field(modifiers, name_index, signature_index, getAttributesImmutable(), cp);
+	}
 
-    case Constants.T_DOUBLE:
-      return cp.addDouble(((Double)value).doubleValue());
+	private int addConstant() {
+		switch (type.getType()) {
+		case Constants.T_INT:
+		case Constants.T_CHAR:
+		case Constants.T_BYTE:
+		case Constants.T_BOOLEAN:
+		case Constants.T_SHORT:
+			return cp.addInteger(((Integer) value).intValue());
 
-    case Constants.T_LONG:
-      return cp.addLong(((Long)value).longValue());
+		case Constants.T_FLOAT:
+			return cp.addFloat(((Float) value).floatValue());
 
-    case Constants.T_REFERENCE:
-      return cp.addString(((String)value));
+		case Constants.T_DOUBLE:
+			return cp.addDouble(((Double) value).doubleValue());
 
-    default:
-      throw new RuntimeException("Oops: Unhandled : " + type.getType());
-    }
-  }
+		case Constants.T_LONG:
+			return cp.addLong(((Long) value).longValue());
 
-  public String  getSignature()  { return type.getSignature(); }
+		case Constants.T_REFERENCE:
+			return cp.addString(((String) value));
 
+		default:
+			throw new RuntimeException("Oops: Unhandled : " + type.getType());
+		}
+	}
 
-  public String getInitialValue() {
-    if(value != null) {
-      return value.toString();
-    } else
-      return null;
-  }
+	@Override
+	public String getSignature() {
+		return type.getSignature();
+	}
 
-  /**
-   * Return string representation close to declaration format,
-   * `public static final short MAX = 100', e.g..
-   *
-   * @return String representation of field
-   */
-  public final String toString() {
-    String name, signature, access; // Short cuts to constant pool
+	public String getInitialValue() {
+		if (value != null) {
+			return value.toString();
+		} else
+			return null;
+	}
 
-    access    = Utility.accessToString(modifiers);
-    access    = access.equals("")? "" : (access + " ");
-    signature = type.toString();
-    name      = getName();
+	/**
+	 * Return string representation close to declaration format, `public static final short MAX = 100', e.g..
+	 * 
+	 * @return String representation of field
+	 */
+	@Override
+	public final String toString() {
+		String name, signature, access; // Short cuts to constant pool
 
-    StringBuffer buf = new StringBuffer(access + signature + " " + name);
-    String value = getInitialValue();
+		access = Utility.accessToString(modifiers);
+		access = access.equals("") ? "" : (access + " ");
+		signature = type.toString();
+		name = getName();
 
-    if(value != null)
-      buf.append(" = " + value);
-    
-    
-    // TODO: Add attributes and annotations to the string
+		StringBuffer buf = new StringBuffer(access + signature + " " + name);
+		String value = getInitialValue();
 
-    return buf.toString();
-  }
+		if (value != null)
+			buf.append(" = " + value);
 
-  /** @return deep copy of this field
-   */
-  public FieldGen copy(ConstantPool cp) {
-    FieldGen fg = (FieldGen)clone();
+		// TODO: Add attributes and annotations to the string
 
-    fg.setConstantPool(cp);
-    return fg;
-  }
+		return buf.toString();
+	}
+
+	/**
+	 * @return deep copy of this field
+	 */
+	public FieldGen copy(ConstantPool cp) {
+		FieldGen fg = (FieldGen) clone();
+
+		fg.setConstantPool(cp);
+		return fg;
+	}
 }

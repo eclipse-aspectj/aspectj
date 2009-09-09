@@ -57,110 +57,64 @@ package org.aspectj.apache.bcel.classfile;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 
 /**
- * This class represents a (PC offset, line number) pair, i.e., a line number in
- * the source that corresponds to a relative address in the byte code. This
- * is used for debugging purposes.
- *
- * @version $Id: LineNumber.java,v 1.5 2008/05/28 23:53:02 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
- * @see     LineNumberTable
+ * This class represents a (PC offset, line number) pair, i.e., a line number in the source that corresponds to a relative address
+ * in the byte code. This is used for debugging purposes.
+ * 
+ * @version $Id: LineNumber.java,v 1.6 2009/09/09 21:26:54 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author Andy Clement
+ * @see LineNumberTable
  */
-public final class LineNumber implements Cloneable, Node, Serializable {
-  private int start_pc;    // Program Counter (PC) corresponds to line
-  private int line_number; // number in source file
+public final class LineNumber implements Node {
+	private int startPC;
+	private int lineNumber;
 
-  /**
-   * Initialize from another object.
-   */
-  public LineNumber(LineNumber c) {
-    this(c.getStartPC(), c.getLineNumber());
-  }
+	public LineNumber(LineNumber c) {
+		this(c.getStartPC(), c.getLineNumber());
+	}
 
-  /**
-   * Construct object from file stream.
-   * @param file Input stream
-   * @throws IOException
-   */
-  LineNumber(DataInputStream file) throws IOException
-  {
-    this(file.readUnsignedShort(), file.readUnsignedShort());
-  }
+	LineNumber(DataInputStream file) throws IOException {
+		this(file.readUnsignedShort(), file.readUnsignedShort());
+	}
 
-  /**
-   * @param start_pc Program Counter (PC) corresponds to
-   * @param line_number line number in source file
-   */
-  public LineNumber(int start_pc, int line_number)
-  {
-    this.start_pc    = start_pc;
-    this.line_number = line_number;
-  }
+	public LineNumber(int startPC, int lineNumber) {
+		this.startPC = startPC;
+		this.lineNumber = lineNumber;
+	}
 
-  /**
-   * Called by objects that are traversing the nodes of the tree implicitely
-   * defined by the contents of a Java class. I.e., the hierarchy of methods,
-   * fields, attributes, etc. spawns a tree of objects.
-   *
-   * @param v Visitor object
-   */
-  public void accept(ClassVisitor v) {
-    v.visitLineNumber(this);
-  }    
+	public void accept(ClassVisitor v) {
+		v.visitLineNumber(this);
+	}
 
-  /**
-   * Dump line number/pc pair to file stream in binary format.
-   *
-   * @param file Output file stream
-   * @throws IOException
-   */ 
-  public final void dump(DataOutputStream file) throws IOException
-  {
-    file.writeShort(start_pc);
-    file.writeShort(line_number);
+	public final void dump(DataOutputStream file) throws IOException {
+		file.writeShort(startPC);
+		file.writeShort(lineNumber);
+	}
 
-  }    
-  /**
-   * @return Corresponding source line
-   */
-  public final int getLineNumber() { return line_number; }    
+	public final int getLineNumber() {
+		return lineNumber;
+	}
 
-  /**
-   * @return PC in code
-   */  
-  public final int getStartPC() { return start_pc; }    
+	public final int getStartPC() {
+		return startPC;
+	}
 
-  /**
-   * @param line_number.
-   */
-  public final void setLineNumber(int line_number) {
-    this.line_number = line_number;
-  }    
+	// public final void setLineNumber(int line_number) {
+	// this.lineNumber = line_number;
+	// }
+	//
+	// public final void setStartPC(int start_pc) {
+	// this.startPC = start_pc;
+	// }
 
-  /**
-   * @param start_pc.
-   */
-  public final void setStartPC(int start_pc) {
-    this.start_pc = start_pc;
-  }    
+	@Override
+	public final String toString() {
+		return "LineNumber(" + startPC + ", " + lineNumber + ")";
+	}
 
-  /**
-   * @return String representation
-   */ 
-  public final String toString() {
-    return "LineNumber(" + start_pc + ", " + line_number + ")";
-  }    
-
-  /**
-   * @return deep copy of this object
-   */
-  public LineNumber copy() {
-    try {
-      return (LineNumber)clone();
-    } catch(CloneNotSupportedException e) {}
-
-    return null;
-  }
+	public LineNumber copy() {
+		return new LineNumber(this);
+	}
 }

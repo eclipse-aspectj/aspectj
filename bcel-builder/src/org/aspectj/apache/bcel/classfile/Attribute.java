@@ -54,142 +54,162 @@ package org.aspectj.apache.bcel.classfile;
  * <http://www.apache.org/>.
  */
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
+
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
 
-import java.io.*;
-
 /**
- * Abstract super class for <em>Attribute</em> objects. Currently the
- * <em>ConstantValue</em>, <em>SourceFile</em>, <em>Code</em>,
- * <em>Exceptiontable</em>, <em>LineNumberTable</em>, 
- * <em>LocalVariableTable</em>, <em>InnerClasses</em> and
- * <em>Synthetic</em> attributes are supported. The
- * <em>Unknown</em> attribute stands for non-standard-attributes.
- *
- * @version $Id: Attribute.java,v 1.4 2008/08/26 14:59:38 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
- * @see     ConstantValue
- * @see     SourceFile
- * @see     Code
- * @see     Unknown
- * @see     ExceptionTable
- * @see     LineNumberTable
- * @see     LocalVariableTable 
- * @see     InnerClasses
- * @see     Synthetic
- * @see     Deprecated
- * @see     Signature
-*/
+ * Abstract super class for <em>Attribute</em> objects. Currently the <em>ConstantValue</em>, <em>SourceFile</em>, <em>Code</em>,
+ * <em>Exceptiontable</em>, <em>LineNumberTable</em>, <em>LocalVariableTable</em>, <em>InnerClasses</em> and <em>Synthetic</em>
+ * attributes are supported. The <em>Unknown</em> attribute stands for non-standard-attributes.
+ * 
+ * @version $Id: Attribute.java,v 1.5 2009/09/09 21:26:54 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @see ConstantValue
+ * @see SourceFile
+ * @see Code
+ * @see Unknown
+ * @see ExceptionTable
+ * @see LineNumberTable
+ * @see LocalVariableTable
+ * @see InnerClasses
+ * @see Synthetic
+ * @see Deprecated
+ * @see Signature
+ */
 public abstract class Attribute implements Cloneable, Node, Serializable {
 	public final static Attribute[] NoAttributes = new Attribute[0];
 
-	
-	protected byte         tag;       // Tag to distinguish subclasses
-	protected int          nameIndex; // Points to attribute name in constant pool
-	protected int          length;    // Content length of attribute field
+	protected byte tag; // Tag to distinguish subclasses
+	protected int nameIndex; // Points to attribute name in constant pool
+	protected int length; // Content length of attribute field
 	protected ConstantPool constantPool;
-  
-	
-    protected Attribute(byte tag, int nameIndex, int length, ConstantPool constantPool) {
-      this.tag           = tag;
-      this.nameIndex     = nameIndex;
-      this.length        = length;
-      this.constantPool  = constantPool;
-    }
 
-    
-    /** Dump attribute to file stream in binary format */
-    public void dump(DataOutputStream file) throws IOException {
-      file.writeShort(nameIndex);
-      file.writeInt(length);
-    }
+	protected Attribute(byte tag, int nameIndex, int length, ConstantPool constantPool) {
+		this.tag = tag;
+		this.nameIndex = nameIndex;
+		this.length = length;
+		this.constantPool = constantPool;
+	}
 
+	/** Dump attribute to file stream in binary format */
+	public void dump(DataOutputStream file) throws IOException {
+		file.writeShort(nameIndex);
+		file.writeInt(length);
+	}
 
-  public static final Attribute readAttribute(DataInputStream file, ConstantPool cpool) throws IOException {
-    byte tag       = Constants.ATTR_UNKNOWN; // Unknown attribute
-    int idx        = file.readUnsignedShort();
-    String name    = cpool.getConstantUtf8(idx).getBytes();
-    int len        = file.readInt();
+	public static final Attribute readAttribute(DataInputStream file, ConstantPool cpool) throws IOException {
+		byte tag = Constants.ATTR_UNKNOWN; // Unknown attribute
+		int idx = file.readUnsignedShort();
+		String name = cpool.getConstantUtf8(idx).getBytes();
+		int len = file.readInt();
 
-    // Compare strings to find known attribute
-    for (byte i=0; i < Constants.KNOWN_ATTRIBUTES; i++) {
-      if (name.equals(Constants.ATTRIBUTE_NAMES[i])) { tag = i; break; }
-    }
-    switch(tag) {
-    	case Constants.ATTR_UNKNOWN:		return new Unknown(idx, len, file, cpool);
-    	case Constants.ATTR_CONSTANT_VALUE: return new ConstantValue(idx, len, file, cpool);
-    	case Constants.ATTR_SOURCE_FILE:	return new SourceFile(idx, len, file, cpool);
-    	case Constants.ATTR_CODE:	  		return new Code(idx, len, file, cpool);
-    	case Constants.ATTR_EXCEPTIONS:		return new ExceptionTable(idx, len, file, cpool);
-    	case Constants.ATTR_LINE_NUMBER_TABLE:    return new LineNumberTable(idx, len, file, cpool);
-    	case Constants.ATTR_LOCAL_VARIABLE_TABLE: return new LocalVariableTable(idx, len, file, cpool);
-    	case Constants.ATTR_INNER_CLASSES:  return new InnerClasses(idx, len, file, cpool);
-    	case Constants.ATTR_SYNTHETIC:      return new Synthetic(idx, len, file, cpool);
-    	case Constants.ATTR_DEPRECATED:     return new Deprecated(idx, len, file, cpool);
-    	case Constants.ATTR_PMG:            return new PMGClass(idx, len, file, cpool);
-    	case Constants.ATTR_SIGNATURE:      return new Signature(idx, len, file, cpool);
-    	case Constants.ATTR_STACK_MAP:      return new StackMap(idx, len, file, cpool);
-    	case Constants.ATTR_RUNTIME_VISIBLE_ANNOTATIONS:
-    		return new RuntimeVisibleAnnotations(idx,len,file,cpool);
-    	case Constants.ATTR_RUNTIME_INVISIBLE_ANNOTATIONS:
-    		return new RuntimeInvisibleAnnotations(idx,len,file,cpool);
-    	case Constants.ATTR_RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS:
-    		return new RuntimeVisibleParameterAnnotations(idx,len,file,cpool);
-    	case Constants.ATTR_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS:
-    		return new RuntimeInvisibleParameterAnnotations(idx,len,file,cpool);
-    	case Constants.ATTR_ANNOTATION_DEFAULT:
-    		return new AnnotationDefault(idx,len,file,cpool);
-    	case Constants.ATTR_LOCAL_VARIABLE_TYPE_TABLE:
-    		return new LocalVariableTypeTable(idx,len,file,cpool);
-    	case Constants.ATTR_ENCLOSING_METHOD:
-    		return new EnclosingMethod(idx,len,file,cpool);
-    	default: throw new IllegalStateException();
-    } 
-  }    
+		// Compare strings to find known attribute
+		for (byte i = 0; i < Constants.KNOWN_ATTRIBUTES; i++) {
+			if (name.equals(Constants.ATTRIBUTE_NAMES[i])) {
+				tag = i;
+				break;
+			}
+		}
+		switch (tag) {
+		case Constants.ATTR_UNKNOWN:
+			return new Unknown(idx, len, file, cpool);
+		case Constants.ATTR_CONSTANT_VALUE:
+			return new ConstantValue(idx, len, file, cpool);
+		case Constants.ATTR_SOURCE_FILE:
+			return new SourceFile(idx, len, file, cpool);
+		case Constants.ATTR_CODE:
+			return new Code(idx, len, file, cpool);
+		case Constants.ATTR_EXCEPTIONS:
+			return new ExceptionTable(idx, len, file, cpool);
+		case Constants.ATTR_LINE_NUMBER_TABLE:
+			return new LineNumberTable(idx, len, file, cpool);
+		case Constants.ATTR_LOCAL_VARIABLE_TABLE:
+			return new LocalVariableTable(idx, len, file, cpool);
+		case Constants.ATTR_INNER_CLASSES:
+			return new InnerClasses(idx, len, file, cpool);
+		case Constants.ATTR_SYNTHETIC:
+			return new Synthetic(idx, len, file, cpool);
+		case Constants.ATTR_DEPRECATED:
+			return new Deprecated(idx, len, file, cpool);
+		case Constants.ATTR_SIGNATURE:
+			return new Signature(idx, len, file, cpool);
+		case Constants.ATTR_STACK_MAP:
+			return new StackMap(idx, len, file, cpool);
+		case Constants.ATTR_RUNTIME_VISIBLE_ANNOTATIONS:
+			return new RuntimeVisibleAnnotations(idx, len, file, cpool);
+		case Constants.ATTR_RUNTIME_INVISIBLE_ANNOTATIONS:
+			return new RuntimeInvisibleAnnotations(idx, len, file, cpool);
+		case Constants.ATTR_RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS:
+			return new RuntimeVisibleParameterAnnotations(idx, len, file, cpool);
+		case Constants.ATTR_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS:
+			return new RuntimeInvisibleParameterAnnotations(idx, len, file, cpool);
+		case Constants.ATTR_ANNOTATION_DEFAULT:
+			return new AnnotationDefault(idx, len, file, cpool);
+		case Constants.ATTR_LOCAL_VARIABLE_TYPE_TABLE:
+			return new LocalVariableTypeTable(idx, len, file, cpool);
+		case Constants.ATTR_ENCLOSING_METHOD:
+			return new EnclosingMethod(idx, len, file, cpool);
+		default:
+			throw new IllegalStateException();
+		}
+	}
 
-  public String getName() {
-	  return constantPool.getConstantUtf8(nameIndex).getBytes();
-  }
+	public String getName() {
+		return constantPool.getConstantUtf8(nameIndex).getBytes();
+	}
 
-  public final int getLength()    { return length; }    
+	public final int getLength() {
+		return length;
+	}
 
-  public final int getNameIndex() { return nameIndex; }    
-  
-  public final byte  getTag()     { return tag; }    
+	public final int getNameIndex() {
+		return nameIndex;
+	}
 
-  public final ConstantPool getConstantPool() { return constantPool; }    
-  
-  /**
-   * Use copy() if you want to have a deep copy(), ie. with all references
-   * copied correctly.
-   *
-   * @return shallow copy of this attribute
-   */
-  public Object clone() {
-    Object o = null;
+	public final byte getTag() {
+		return tag;
+	}
 
-    try {
-      o = super.clone();
-    } catch(CloneNotSupportedException e) {
-      e.printStackTrace(); // Never occurs
-    }
+	public final ConstantPool getConstantPool() {
+		return constantPool;
+	}
 
-    return o;
-  }
+	/**
+	 * Use copy() if you want to have a deep copy(), ie. with all references copied correctly.
+	 * 
+	 * @return shallow copy of this attribute
+	 */
+	@Override
+	public Object clone() {
+		Object o = null;
 
-  /**
-   * @return deep copy of this attribute
-   */
-  public abstract Attribute copy(ConstantPool constant_pool);
+		try {
+			o = super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace(); // Never occurs
+		}
 
-  public String toString() {
-    return Constants.ATTRIBUTE_NAMES[tag];
-  }
+		return o;
+	}
 
-  public abstract void accept(ClassVisitor v);    
+	/**
+	 * @return deep copy of this attribute
+	 */
+	public abstract Attribute copy(ConstantPool constant_pool);
+
+	@Override
+	public String toString() {
+		return Constants.ATTRIBUTE_NAMES[tag];
+	}
+
+	public abstract void accept(ClassVisitor v);
 
 }
