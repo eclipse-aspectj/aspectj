@@ -55,27 +55,28 @@ package org.aspectj.apache.bcel.generic;
  */
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import org.aspectj.apache.bcel.classfile.Modifiers;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.Modifiers;
 import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
 
 /**
- * Super class for FieldGen and MethodGen objects, since they have some methods
- * in common!
+ * Super class for FieldGen and MethodGen objects, since they have some methods in common!
  * 
- * @version $Id: FieldGenOrMethodGen.java,v 1.5 2009/09/09 19:56:20 aclement Exp $
+ * @version $Id: FieldGenOrMethodGen.java,v 1.6 2009/09/09 22:18:20 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldGenOrMethodGen extends Modifiers implements Cloneable {
-	
+
 	protected String name;
 	protected Type type;
 	protected ConstantPool cp;
-	private ArrayList/*<Attribute>*/<Attribute> attributeList    = new ArrayList<Attribute>();
+	private ArrayList/* <Attribute> */<Attribute> attributeList = new ArrayList<Attribute>();
 	private ArrayList<AnnotationGen> annotationList = new ArrayList<AnnotationGen>();
 
 	protected FieldGenOrMethodGen() {
@@ -129,10 +130,10 @@ public abstract class FieldGenOrMethodGen extends Modifiers implements Cloneable
 		annotationList.clear();
 	}
 
-	public List/*<Attribute>*/<Attribute> getAttributes() {
+	public List/* <Attribute> */<Attribute> getAttributes() {
 		return attributeList;
 	}
-	
+
 	public Attribute[] getAttributesImmutable() {
 		Attribute[] attributes = new Attribute[attributeList.size()];
 		attributeList.toArray(attributes);
@@ -140,12 +141,12 @@ public abstract class FieldGenOrMethodGen extends Modifiers implements Cloneable
 	}
 
 	protected void addAnnotationsAsAttribute(ConstantPool cp) {
-	  	Attribute[] attrs = Utility.getAnnotationAttributes(cp,annotationList);
-	  	if (attrs!=null) {
-	      for (int i = 0; i < attrs.length; i++) {
-			  addAttribute(attrs[i]);
-		  }
-	  	}
+		Collection<RuntimeAnnotations> attrs = Utility.getAnnotationAttributes(cp, annotationList);
+		if (attrs != null) {
+			for (Attribute attr : attrs) {
+				addAttribute(attr);
+			}
+		}
 	}
 
 	public AnnotationGen[] getAnnotations() {
@@ -157,6 +158,7 @@ public abstract class FieldGenOrMethodGen extends Modifiers implements Cloneable
 	public abstract String getSignature();
 
 	// OPTIMIZE clone any use???
+	@Override
 	public Object clone() {
 		try {
 			return super.clone();

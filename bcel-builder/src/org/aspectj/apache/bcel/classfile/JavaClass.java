@@ -61,15 +61,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
 import org.aspectj.apache.bcel.generic.Type;
-import org.aspectj.apache.bcel.util.ClassQueue;
-import org.aspectj.apache.bcel.util.ClassVector;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 
 /**
@@ -79,7 +80,7 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
  * The intent of this class is to represent a parsed or otherwise existing class file. Those interested in programatically
  * generating classes should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
  * 
- * @version $Id: JavaClass.java,v 1.16 2009/09/09 21:26:54 aclement Exp $
+ * @version $Id: JavaClass.java,v 1.17 2009/09/09 22:18:20 aclement Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -789,13 +790,18 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 			return true;
 		}
 
-		JavaClass[] super_interfaces = getAllInterfaces();
+		Collection<JavaClass> superInterfaces = getAllInterfaces();
 
-		for (int i = 0; i < super_interfaces.length; i++) {
-			if (super_interfaces[i].equals(inter)) {
+		for (JavaClass superInterface : superInterfaces) {
+			if (superInterface.equals(inter)) {
 				return true;
 			}
 		}
+		// for (int i = 0; i < super_interfaces.length; i++) {
+		// if (super_interfaces[i].equals(inter)) {
+		// return true;
+		// }
+		// }
 
 		return false;
 	}
@@ -821,13 +827,11 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	 */
 	public JavaClass[] getSuperClasses() {
 		JavaClass clazz = this;
-		ClassVector vec = new ClassVector();
-
+		List<JavaClass> vec = new ArrayList<JavaClass>();
 		for (clazz = clazz.getSuperClass(); clazz != null; clazz = clazz.getSuperClass()) {
-			vec.addElement(clazz);
+			vec.add(clazz);
 		}
-
-		return vec.toArray();
+		return vec.toArray(new JavaClass[vec.size()]);
 	}
 
 	/**
@@ -852,33 +856,33 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	/**
 	 * Get all interfaces implemented by this JavaClass (transitively).
 	 */
-	// OPTIMIZE get rid of ClassQueue and ClassVector
-	public JavaClass[] getAllInterfaces() {
-		ClassQueue queue = new ClassQueue();
-		ClassVector vec = new ClassVector();
+	public Collection<JavaClass> getAllInterfaces() {
+		Queue<JavaClass> queue = new LinkedList<JavaClass>();
+		List<JavaClass> interfaceList = new ArrayList<JavaClass>();
 
-		queue.enqueue(this);
+		queue.add(this);
 
-		while (!queue.empty()) {
-			JavaClass clazz = queue.dequeue();
+		while (!queue.isEmpty()) {
+			JavaClass clazz = queue.remove();
 
 			JavaClass souper = clazz.getSuperClass();
 			JavaClass[] interfaces = clazz.getInterfaces();
 
 			if (clazz.isInterface()) {
-				vec.addElement(clazz);
+				interfaceList.add(clazz);
 			} else {
 				if (souper != null) {
-					queue.enqueue(souper);
+					queue.add(souper);
 				}
 			}
 
 			for (int i = 0; i < interfaces.length; i++) {
-				queue.enqueue(interfaces[i]);
+				queue.add(interfaces[i]);
 			}
 		}
 
-		return vec.toArray();
+		return interfaceList;
+		// return interfaceList.toArray(new JavaClass[interfaceList.size()]);
 	}
 
 	/**

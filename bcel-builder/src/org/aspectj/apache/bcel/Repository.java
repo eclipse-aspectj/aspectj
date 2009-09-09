@@ -67,7 +67,7 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
  * @see org.aspectj.apache.bcel.util.Repository
  * @see org.aspectj.apache.bcel.util.SyntheticRepository
  * 
- * @version $Id: Repository.java,v 1.5 2008/08/28 15:36:59 aclement Exp $
+ * @version $Id: Repository.java,v 1.6 2009/09/09 22:18:20 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class Repository {
@@ -166,29 +166,30 @@ public abstract class Repository {
 	// getRepository().removeClass(clazz);
 	// }
 
-	/**
-	 * @return list of super classes of clazz in ascending order, i.e., Object is always the last element
-	 */
-	public static JavaClass[] getSuperClasses(JavaClass clazz) {
-		return clazz.getSuperClasses();
-	}
-
-	/**
-	 * @return list of super classes of clazz in ascending order, i.e., Object is always the last element. return "null", if class
-	 *         cannot be found.
-	 */
-	public static JavaClass[] getSuperClasses(String class_name) {
-		JavaClass jc = lookupClass(class_name);
-		return jc == null ? null : getSuperClasses(jc);
-	}
-
-	/**
-	 * @return all interfaces implemented by class and its super classes and the interfaces that those interfaces extend, and so on.
-	 *         (Some people call this a transitive hull).
-	 */
-	public static JavaClass[] getInterfaces(JavaClass clazz) {
-		return clazz.getAllInterfaces();
-	}
+	// /**
+	// * @return list of super classes of clazz in ascending order, i.e., Object is always the last element
+	// */
+	// public static JavaClass[] getSuperClasses(JavaClass clazz) {
+	// return clazz.getSuperClasses();
+	// }
+	//
+	// /**
+	// * @return list of super classes of clazz in ascending order, i.e., Object is always the last element. return "null", if class
+	// * cannot be found.
+	// */
+	// public static JavaClass[] getSuperClasses(String class_name) {
+	// JavaClass jc = lookupClass(class_name);
+	// return jc == null ? null : getSuperClasses(jc);
+	// }
+	//
+	// /**
+	// * @return all interfaces implemented by class and its super classes and the interfaces that those interfaces extend, and so
+	// on.
+	// * (Some people call this a transitive hull).
+	// */
+	// public static JavaClass[] getInterfaces(JavaClass clazz) {
+	// return clazz.getAllInterfaces();
+	// }
 
 	// /**
 	// * @return all interfaces implemented by class and its super classes and the interfaces that extend those interfaces, and so
