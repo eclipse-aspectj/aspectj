@@ -43,9 +43,8 @@ public abstract class Advice extends ShadowMunger {
 
 	protected boolean hasMatchedAtLeastOnce = false;
 
-	protected List/* Lint.Kind */suppressedLintKinds = null; // based on
-	// annotations on
-	// this advice
+	// based on annotations on this advice
+	protected List<Lint.Kind> suppressedLintKinds = null;
 
 	public ISourceLocation lastReportedMonitorExitJoinpointLocation = null;
 
@@ -106,6 +105,7 @@ public abstract class Advice extends ShadowMunger {
 		}
 	}
 
+	@Override
 	public boolean match(Shadow shadow, World world) {
 		if (super.match(shadow, world)) {
 			if (shadow.getKind() == Shadow.ExceptionHandler) {
@@ -380,6 +380,7 @@ public abstract class Advice extends ShadowMunger {
 		}
 	}
 
+	@Override
 	public Pointcut getPointcut() {
 		return pointcut;
 	}
@@ -390,6 +391,7 @@ public abstract class Advice extends ShadowMunger {
 	 * @param fromType is guaranteed to be a non-abstract aspect
 	 * @param clause has been concretized at a higher level
 	 */
+	@Override
 	public ShadowMunger concretize(ResolvedType fromType, World world, PerClause clause) {
 		// assert !fromType.isAbstract();
 		Pointcut p = pointcut.concretize(fromType, getDeclaringType(), signature.getArity(), this);
@@ -414,6 +416,7 @@ public abstract class Advice extends ShadowMunger {
 
 	// ---- from object
 
+	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("(").append(getKind()).append(extraParametersToString());
@@ -430,6 +433,7 @@ public abstract class Advice extends ShadowMunger {
 	}
 
 	// XXX this perhaps ought to take account of the other fields in advice ...
+	@Override
 	public boolean equals(Object other) {
 		if (!(other instanceof Advice)) {
 			return false;
@@ -448,6 +452,7 @@ public abstract class Advice extends ShadowMunger {
 
 	private volatile int hashCode = 0;
 
+	@Override
 	public int hashCode() {
 		if (hashCode == 0) {
 			int result = 17;

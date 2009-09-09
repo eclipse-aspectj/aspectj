@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.IVerificationRequired;
 import org.aspectj.weaver.tools.Trace;
@@ -40,19 +41,19 @@ public class CrosscuttingMembersSet {
 	private transient World world;
 
 	// FIXME AV - ? we may need a sequencedHashMap there to ensure source based precedence for @AJ advice
-	private final Map /* ResolvedType (the aspect) > CrosscuttingMembers */members = new HashMap();
+	private final Map /* ResolvedType (the aspect) > CrosscuttingMembers */<ResolvedType, CrosscuttingMembers> members = new HashMap<ResolvedType, CrosscuttingMembers>();
 
 	// List of things to be verified once the type system is 'complete'
-	private transient List /* IVerificationRequired */verificationList = null;
+	private transient List /* IVerificationRequired */<IVerificationRequired> verificationList = null;
 
-	private List /* ShadowMunger */shadowMungers = null;
+	private List<ShadowMunger> shadowMungers = null;
 	private List typeMungers = null;
 	private List lateTypeMungers = null;
 	private List declareSofts = null;
 	private List declareParents = null;
 	private List declareAnnotationOnTypes = null;
 	private List declareAnnotationOnFields = null;
-	private List declareAnnotationOnMethods = null; // includes constructors
+	private List<DeclareAnnotation> declareAnnotationOnMethods = null; // includes constructors
 	private List declareDominates = null;
 	private boolean changedSinceLastReset = false;
 
@@ -75,7 +76,7 @@ public class CrosscuttingMembersSet {
 		}
 
 		boolean change = false;
-		CrosscuttingMembers xcut = (CrosscuttingMembers) members.get(aspectType);
+		CrosscuttingMembers xcut = members.get(aspectType);
 		if (xcut == null) {
 			members.put(aspectType, aspectType.collectCrosscuttingMembers(inWeavingPhase));
 			clearCaches();
@@ -105,17 +106,17 @@ public class CrosscuttingMembersSet {
 
 	private boolean addOrReplaceDescendantsOf(ResolvedType aspectType, boolean inWeavePhase) {
 		// System.err.println("Looking at descendants of "+aspectType.getName());
-		Set knownAspects = members.keySet();
-		Set toBeReplaced = new HashSet();
-		for (Iterator it = knownAspects.iterator(); it.hasNext();) {
-			ResolvedType candidateDescendant = (ResolvedType) it.next();
+		Set<ResolvedType> knownAspects = members.keySet();
+		Set<ResolvedType> toBeReplaced = new HashSet<ResolvedType>();
+		for (Iterator<ResolvedType> it = knownAspects.iterator(); it.hasNext();) {
+			ResolvedType candidateDescendant = it.next();
 			if ((candidateDescendant != aspectType) && (aspectType.isAssignableFrom(candidateDescendant))) {
 				toBeReplaced.add(candidateDescendant);
 			}
 		}
 		boolean change = false;
-		for (Iterator it = toBeReplaced.iterator(); it.hasNext();) {
-			ResolvedType next = (ResolvedType) it.next();
+		for (Iterator<ResolvedType> it = toBeReplaced.iterator(); it.hasNext();) {
+			ResolvedType next = it.next();
 			boolean thisChange = addOrReplaceAspect(next, inWeavePhase);
 			change = change || thisChange;
 		}
@@ -126,7 +127,7 @@ public class CrosscuttingMembersSet {
 		if (!members.containsKey(aspectType)) {
 			return;
 		}
-		CrosscuttingMembers xcut = (CrosscuttingMembers) members.get(aspectType);
+		CrosscuttingMembers xcut = members.get(aspectType);
 		xcut.addDeclares(aspectType.collectDeclares(true));
 	}
 
@@ -161,8 +162,8 @@ public class CrosscuttingMembersSet {
 	public List getShadowMungers() {
 		if (shadowMungers == null) {
 			ArrayList ret = new ArrayList();
-			for (Iterator i = members.values().iterator(); i.hasNext();) {
-				ret.addAll(((CrosscuttingMembers) i.next()).getShadowMungers());
+			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
+				ret.addAll(i.next().getShadowMungers());
 			}
 			shadowMungers = ret;
 		}
@@ -172,8 +173,8 @@ public class CrosscuttingMembersSet {
 	public List getTypeMungers() {
 		if (typeMungers == null) {
 			ArrayList ret = new ArrayList();
-			for (Iterator i = members.values().iterator(); i.hasNext();) {
-				ret.addAll(((CrosscuttingMembers) i.next()).getTypeMungers());
+			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
+				ret.addAll(i.next().getTypeMungers());
 			}
 			typeMungers = ret;
 		}
@@ -183,8 +184,8 @@ public class CrosscuttingMembersSet {
 	public List getLateTypeMungers() {
 		if (lateTypeMungers == null) {
 			ArrayList ret = new ArrayList();
-			for (Iterator i = members.values().iterator(); i.hasNext();) {
-				ret.addAll(((CrosscuttingMembers) i.next()).getLateTypeMungers());
+			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
+				ret.addAll(i.next().getLateTypeMungers());
 			}
 			lateTypeMungers = ret;
 		}
@@ -194,8 +195,8 @@ public class CrosscuttingMembersSet {
 	public List getDeclareSofts() {
 		if (declareSofts == null) {
 			Set ret = new HashSet();
-			for (Iterator i = members.values().iterator(); i.hasNext();) {
-				ret.addAll(((CrosscuttingMembers) i.next()).getDeclareSofts());
+			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
+				ret.addAll(i.next().getDeclareSofts());
 			}
 			declareSofts = new ArrayList();
 			declareSofts.addAll(ret);
@@ -206,8 +207,8 @@ public class CrosscuttingMembersSet {
 	public List getDeclareParents() {
 		if (declareParents == null) {
 			Set ret = new HashSet();
-			for (Iterator i = members.values().iterator(); i.hasNext();) {
-				ret.addAll(((CrosscuttingMembers) i.next()).getDeclareParents());
+			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
+				ret.addAll(i.next().getDeclareParents());
 			}
 			declareParents = new ArrayList();
 			declareParents.addAll(ret);
@@ -219,8 +220,8 @@ public class CrosscuttingMembersSet {
 	public List getDeclareAnnotationOnTypes() {
 		if (declareAnnotationOnTypes == null) {
 			Set ret = new HashSet();
-			for (Iterator i = members.values().iterator(); i.hasNext();) {
-				ret.addAll(((CrosscuttingMembers) i.next()).getDeclareAnnotationOnTypes());
+			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
+				ret.addAll(i.next().getDeclareAnnotationOnTypes());
 			}
 			declareAnnotationOnTypes = new ArrayList();
 			declareAnnotationOnTypes.addAll(ret);
@@ -231,8 +232,8 @@ public class CrosscuttingMembersSet {
 	public List getDeclareAnnotationOnFields() {
 		if (declareAnnotationOnFields == null) {
 			Set ret = new HashSet();
-			for (Iterator i = members.values().iterator(); i.hasNext();) {
-				ret.addAll(((CrosscuttingMembers) i.next()).getDeclareAnnotationOnFields());
+			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
+				ret.addAll(i.next().getDeclareAnnotationOnFields());
 			}
 			declareAnnotationOnFields = new ArrayList();
 			declareAnnotationOnFields.addAll(ret);
@@ -243,13 +244,13 @@ public class CrosscuttingMembersSet {
 	/**
 	 * Return an amalgamation of the declare @method/@constructor statements.
 	 */
-	public List getDeclareAnnotationOnMethods() {
+	public List<DeclareAnnotation> getDeclareAnnotationOnMethods() {
 		if (declareAnnotationOnMethods == null) {
-			Set ret = new HashSet();
-			for (Iterator i = members.values().iterator(); i.hasNext();) {
-				ret.addAll(((CrosscuttingMembers) i.next()).getDeclareAnnotationOnMethods());
+			Set<DeclareAnnotation> ret = new HashSet<DeclareAnnotation>();
+			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
+				ret.addAll(i.next().getDeclareAnnotationOnMethods());
 			}
-			declareAnnotationOnMethods = new ArrayList();
+			declareAnnotationOnMethods = new ArrayList<DeclareAnnotation>();
 			declareAnnotationOnMethods.addAll(ret);
 		}
 		return declareAnnotationOnMethods;
@@ -258,8 +259,8 @@ public class CrosscuttingMembersSet {
 	public List getDeclareDominates() {
 		if (declareDominates == null) {
 			ArrayList ret = new ArrayList();
-			for (Iterator i = members.values().iterator(); i.hasNext();) {
-				ret.addAll(((CrosscuttingMembers) i.next()).getDeclareDominates());
+			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
+				ret.addAll(i.next().getDeclareDominates());
 			}
 			declareDominates = ret;
 		}
@@ -267,10 +268,10 @@ public class CrosscuttingMembersSet {
 	}
 
 	public ResolvedType findAspectDeclaringParents(DeclareParents p) {
-		Set keys = this.members.keySet();
-		for (Iterator iter = keys.iterator(); iter.hasNext();) {
-			ResolvedType element = (ResolvedType) iter.next();
-			for (Iterator i = ((CrosscuttingMembers) members.get(element)).getDeclareParents().iterator(); i.hasNext();) {
+		Set<ResolvedType> keys = this.members.keySet();
+		for (Iterator<ResolvedType> iter = keys.iterator(); iter.hasNext();) {
+			ResolvedType element = iter.next();
+			for (Iterator i = members.get(element).getDeclareParents().iterator(); i.hasNext();) {
 				DeclareParents dp = (DeclareParents) i.next();
 				if (dp.equals(p)) {
 					return element;
@@ -295,7 +296,7 @@ public class CrosscuttingMembersSet {
 	 */
 	public void recordNecessaryCheck(IVerificationRequired verification) {
 		if (verificationList == null) {
-			verificationList = new ArrayList();
+			verificationList = new ArrayList<IVerificationRequired>();
 		}
 		verificationList.add(verification);
 	}
@@ -307,8 +308,8 @@ public class CrosscuttingMembersSet {
 		if (verificationList == null) {
 			return;
 		}
-		for (Iterator iter = verificationList.iterator(); iter.hasNext();) {
-			IVerificationRequired element = (IVerificationRequired) iter.next();
+		for (Iterator<IVerificationRequired> iter = verificationList.iterator(); iter.hasNext();) {
+			IVerificationRequired element = iter.next();
 			element.verify();
 		}
 		verificationList = null;

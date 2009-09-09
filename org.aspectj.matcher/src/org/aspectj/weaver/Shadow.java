@@ -44,7 +44,7 @@ public abstract class Shadow {
 	private Member matchingSignature;
 	private ResolvedMember resolvedSignature;
 	protected final Shadow enclosingShadow;
-	protected List mungers = Collections.EMPTY_LIST;
+	protected List<ShadowMunger> mungers = Collections.emptyList();
 
 	public int shadowId = nextShadowID++; // every time we build a shadow, it gets a new id
 
@@ -59,7 +59,7 @@ public abstract class Shadow {
 
 	public abstract World getIWorld();
 
-	public List /* ShadowMunger */getMungers() {
+	public List<ShadowMunger> getMungers() {
 		return mungers;
 	}
 

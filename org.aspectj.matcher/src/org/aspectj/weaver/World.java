@@ -36,6 +36,7 @@ import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.context.PinpointingMessageHandler;
 import org.aspectj.util.IStructureModel;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
+import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.TypePattern;
@@ -657,7 +658,7 @@ public abstract class World implements Dump.INode {
 		return crosscuttingMembersSet.getDeclareAnnotationOnFields();
 	}
 
-	public List getDeclareAnnotationOnMethods() {
+	public List<DeclareAnnotation> getDeclareAnnotationOnMethods() {
 		return crosscuttingMembersSet.getDeclareAnnotationOnMethods();
 	}
 
@@ -1173,6 +1174,7 @@ public abstract class World implements Dump.INode {
 				aspect2 = a2;
 			}
 
+			@Override
 			public boolean equals(Object obj) {
 				if (!(obj instanceof PrecedenceCacheKey))
 					return false;
@@ -1180,6 +1182,7 @@ public abstract class World implements Dump.INode {
 				return (aspect1 == other.aspect1 && aspect2 == other.aspect2);
 			}
 
+			@Override
 			public int hashCode() {
 				return aspect1.hashCode() + aspect2.hashCode();
 			}

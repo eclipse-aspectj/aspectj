@@ -30,7 +30,7 @@ import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 
 public class Lint {
-	/* private */Map kinds = new HashMap();
+	Map<String, Lint.Kind> kinds = new HashMap<String, Lint.Kind>();
 	/* private */World world;
 
 	public final Kind invalidAbsoluteTypeName = new Kind("invalidAbsoluteTypeName", "no match for this type name: {0}");
@@ -155,8 +155,7 @@ public class Lint {
 	}
 
 	private void setAll(IMessage.Kind messageKind) {
-		for (Iterator i = kinds.values().iterator(); i.hasNext();) {
-			Kind kind = (Kind) i.next();
+		for (Kind kind : kinds.values()) {
 			kind.setKind(messageKind);
 		}
 	}
@@ -215,7 +214,7 @@ public class Lint {
 	public void setFromProperties(Properties properties) {
 		for (Iterator i = properties.entrySet().iterator(); i.hasNext();) {
 			Map.Entry entry = (Map.Entry) i.next();
-			Kind kind = (Kind) kinds.get(entry.getKey());
+			Kind kind = kinds.get(entry.getKey());
 			if (kind == null) {
 				MessageUtil.error(world.getMessageHandler(), WeaverMessages.format(WeaverMessages.XLINT_KEY_ERROR, entry.getKey()));
 			} else {
@@ -224,12 +223,12 @@ public class Lint {
 		}
 	}
 
-	public Collection allKinds() {
+	public Collection<Kind> allKinds() {
 		return kinds.values();
 	}
 
 	public Kind getLintKind(String name) {
-		return (Kind) kinds.get(name);
+		return kinds.get(name);
 	}
 
 	// temporarily suppress the given lint messages
@@ -244,17 +243,13 @@ public class Lint {
 
 	// remove any suppression of lint warnings in place
 	public void clearAllSuppressions() {
-		for (Iterator iter = kinds.values().iterator(); iter.hasNext();) {
-			Kind k = (Kind) iter.next();
+		for (Kind k : kinds.values()) {
 			k.setSuppressed(false);
 		}
 	}
 
-	public void clearSuppressions(Collection lintKind) {
-		if (lintKind.isEmpty())
-			return;
-		for (Iterator iter = lintKind.iterator(); iter.hasNext();) {
-			Kind k = (Kind) iter.next();
+	public void clearSuppressions(Collection<Lint.Kind> lintKinds) {
+		for (Kind k : lintKinds) {
 			k.setSuppressed(false);
 		}
 	}
@@ -272,7 +267,7 @@ public class Lint {
 	}
 
 	public Kind fromKey(String lintkey) {
-		return (Lint.Kind) kinds.get(lintkey);
+		return kinds.get(lintkey);
 	}
 
 	public class Kind {

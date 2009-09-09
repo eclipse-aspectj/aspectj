@@ -39,7 +39,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	 */
 	protected ResolvedMember backingGenericMember = null;
 
-	protected Set annotationTypes = null;
+	protected Set<UnresolvedType> annotationTypes = null;
 	protected ResolvedType[][] parameterAnnotationTypes = null;
 
 	// Some members are 'created' to represent other things (for example ITDs).
@@ -231,16 +231,19 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 
 	// ----
 
+	@Override
 	public final int getModifiers(World world) {
 		return modifiers;
 	}
 
+	@Override
 	public final int getModifiers() {
 		return modifiers;
 	}
 
 	// ----
 
+	@Override
 	public final UnresolvedType[] getExceptions(World world) {
 		return getExceptions();
 	}
@@ -302,9 +305,10 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			}
 			return backingGenericMember.getAnnotationTypes();
 		}
-		if (annotationTypes == null)
+		if (annotationTypes == null) {
 			return null;
-		return (ResolvedType[]) annotationTypes.toArray(new ResolvedType[] {});
+		}
+		return annotationTypes.toArray(new ResolvedType[] {});
 	}
 
 	public String getAnnotationDefaultValue() {
@@ -312,6 +316,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 				"You should resolve this member and call getAnnotationDefaultValue() on the result...");
 	}
 
+	@Override
 	public AnnotationAJ[] getAnnotations() {
 		if (backingGenericMember != null)
 			return backingGenericMember.getAnnotations();
@@ -319,8 +324,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	}
 
 	public void setAnnotationTypes(UnresolvedType[] annotationtypes) {
-		if (annotationTypes == null)
-			annotationTypes = new HashSet();
+		if (annotationTypes == null) {
+			annotationTypes = new HashSet<UnresolvedType>();
+		}
 		for (int i = 0; i < annotationtypes.length; i++) {
 			UnresolvedType typeX = annotationtypes[i];
 			annotationTypes.add(typeX);
@@ -343,8 +349,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	public void addAnnotation(AnnotationAJ annotation) {
 		// FIXME asc only allows for annotation types, not instances - should
 		// it?
-		if (annotationTypes == null)
-			annotationTypes = new HashSet();
+		if (annotationTypes == null) {
+			annotationTypes = new HashSet<UnresolvedType>();
+		}
 		annotationTypes.add(annotation.getType());
 	}
 
@@ -509,6 +516,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 
 	// OPTIMIZE dont like how resolve(world) on ResolvedMemberImpl does
 	// something different to world.resolve(member)
+	@Override
 	public ResolvedMember resolve(World world) {
 		// make sure all the pieces of a resolvedmember really are resolved
 		try {
@@ -519,9 +527,10 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			}
 			world.setTypeVariableLookupScope(this);
 			if (annotationTypes != null) {
-				Set r = new HashSet();
-				for (Iterator iter = annotationTypes.iterator(); iter.hasNext();) {
-					UnresolvedType element = (UnresolvedType) iter.next();
+				Set<UnresolvedType> r = new HashSet<UnresolvedType>();
+				for (UnresolvedType element : annotationTypes) {
+					// for (Iterator iter = annotationTypes.iterator(); iter.hasNext();) {
+					// UnresolvedType element = (UnresolvedType) iter.next();
 					r.add(world.resolve(element));
 				}
 				annotationTypes = r;
@@ -556,6 +565,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		parameterNames = pnames;
 	}
 
+	@Override
 	public final String[] getParameterNames(World world) {
 		return getParameterNames();
 	}
@@ -638,6 +648,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	/**
 	 * Get the UnresolvedType for the return type, taking generic signature into account
 	 */
+	@Override
 	public UnresolvedType getGenericReturnType() {
 		return getReturnType();
 	}
@@ -645,6 +656,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	/**
 	 * Get the TypeXs of the parameter types, taking generic signature into account
 	 */
+	@Override
 	public UnresolvedType[] getGenericParameterTypes() {
 		return getParameterTypes();
 	}

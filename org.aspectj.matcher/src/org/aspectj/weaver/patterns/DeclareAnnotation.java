@@ -290,7 +290,7 @@ public class DeclareAnnotation extends Declare {
 		}
 	}
 
-	public AnnotationAJ getAnnotationX() {
+	public AnnotationAJ getAnnotation() {
 		ensureAnnotationDiscovered();
 		return annotation;
 	}

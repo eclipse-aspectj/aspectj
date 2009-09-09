@@ -17,7 +17,7 @@ public abstract class AbstractAnnotationAJ implements AnnotationAJ {
 
 	protected final ResolvedType type;
 
-	private Set supportedTargets = null; // @target meta annotation
+	private Set<String> supportedTargets = null; // @target meta annotation
 
 	public AbstractAnnotationAJ(ResolvedType type) {
 		this.type = type;
@@ -84,7 +84,7 @@ public abstract class AbstractAnnotationAJ implements AnnotationAJ {
 		if (supportedTargets == null) {
 			AnnotationAJ atTargetAnnotation = retrieveAnnotationOnAnnotation(UnresolvedType.AT_TARGET);
 			if (atTargetAnnotation == null) {
-				supportedTargets = Collections.EMPTY_SET;
+				supportedTargets = Collections.emptySet();
 			} else {
 				supportedTargets = atTargetAnnotation.getTargets();
 			}
@@ -97,8 +97,8 @@ public abstract class AbstractAnnotationAJ implements AnnotationAJ {
 	public final String getValidTargets() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("{");
-		for (Iterator iter = supportedTargets.iterator(); iter.hasNext();) {
-			String evalue = (String) iter.next();
+		for (Iterator<String> iter = supportedTargets.iterator(); iter.hasNext();) {
+			String evalue = iter.next();
 			sb.append(evalue);
 			if (iter.hasNext()) {
 				sb.append(",");

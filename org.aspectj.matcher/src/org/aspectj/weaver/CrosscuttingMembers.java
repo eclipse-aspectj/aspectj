@@ -47,18 +47,18 @@ public class CrosscuttingMembers {
 
 	private PerClause perClause;
 
-	private List shadowMungers = new ArrayList(4);
-	private List typeMungers = new ArrayList(4);
-	private List lateTypeMungers = new ArrayList(0);
+	private List<ShadowMunger> shadowMungers = new ArrayList<ShadowMunger>(4);
+	private List<ConcreteTypeMunger> typeMungers = new ArrayList<ConcreteTypeMunger>(4);
+	private List<ConcreteTypeMunger> lateTypeMungers = new ArrayList<ConcreteTypeMunger>(0);
 
-	private Set declareParents = new HashSet();
-	private Set declareSofts = new HashSet();
-	private List declareDominates = new ArrayList(4);
+	private Set<DeclareParents> declareParents = new HashSet<DeclareParents>();
+	private Set<DeclareSoft> declareSofts = new HashSet<DeclareSoft>();
+	private List<Declare> declareDominates = new ArrayList<Declare>(4);
 
 	// These are like declare parents type mungers
-	private Set declareAnnotationsOnType = new HashSet();
-	private Set declareAnnotationsOnField = new HashSet();
-	private Set declareAnnotationsOnMethods = new HashSet();
+	private Set<DeclareAnnotation> declareAnnotationsOnType = new HashSet<DeclareAnnotation>();
+	private Set<DeclareAnnotation> declareAnnotationsOnField = new HashSet<DeclareAnnotation>();
+	private Set<DeclareAnnotation> declareAnnotationsOnMethods = new HashSet<DeclareAnnotation>();
 	// declareAnnotationsOnMethods includes constructors too
 
 	private boolean shouldConcretizeIfNeeded = true;
@@ -81,9 +81,9 @@ public class CrosscuttingMembers {
 		shadowMungers.add(m);
 	}
 
-	public void addShadowMungers(Collection c) {
-		for (Iterator i = c.iterator(); i.hasNext();) {
-			addShadowMunger((ShadowMunger) i.next());
+	public void addShadowMungers(Collection<ShadowMunger> c) {
+		for (ShadowMunger munger : c) {
+			addShadowMunger(munger);
 		}
 	}
 
@@ -94,7 +94,7 @@ public class CrosscuttingMembers {
 		addConcreteShadowMunger(m.concretize(inAspect, world, perClause));
 	}
 
-	public void addTypeMungers(Collection c) {
+	public void addTypeMungers(Collection<ConcreteTypeMunger> c) {
 		typeMungers.addAll(c);
 	}
 
@@ -105,7 +105,7 @@ public class CrosscuttingMembers {
 		typeMungers.add(m);
 	}
 
-	public void addLateTypeMungers(Collection c) {
+	public void addLateTypeMungers(Collection<ConcreteTypeMunger> c) {
 		lateTypeMungers.addAll(c);
 	}
 
@@ -177,8 +177,8 @@ public class CrosscuttingMembers {
 		}
 		// Check we haven't already got a munger for this:
 		String signatureToLookFor = typeToExpose.getSignature();
-		for (Iterator iterator = typeMungers.iterator(); iterator.hasNext();) {
-			ConcreteTypeMunger cTM = (ConcreteTypeMunger) iterator.next();
+		for (Iterator<ConcreteTypeMunger> iterator = typeMungers.iterator(); iterator.hasNext();) {
+			ConcreteTypeMunger cTM = iterator.next();
 			ResolvedTypeMunger rTM = cTM.getMunger();
 			if (rTM != null && rTM instanceof ExposeTypeMunger) {
 				String exposedType = ((ExposeTypeMunger) rTM).getExposedTypeSignature();
@@ -205,10 +205,9 @@ public class CrosscuttingMembers {
 		addTypeMunger(world.getWeavingSupport().concreteTypeMunger(new PrivilegedAccessMunger(member), inAspect));
 	}
 
-	public Collection getCflowEntries() {
-		ArrayList ret = new ArrayList();
-		for (Iterator i = shadowMungers.iterator(); i.hasNext();) {
-			ShadowMunger m = (ShadowMunger) i.next();
+	public Collection<ShadowMunger> getCflowEntries() {
+		List<ShadowMunger> ret = new ArrayList<ShadowMunger>();
+		for (ShadowMunger m : shadowMungers) {
 			if (m instanceof Advice) {
 				Advice a = (Advice) m;
 				if (a.getKind().isCflow()) {
@@ -246,10 +245,9 @@ public class CrosscuttingMembers {
 
 		if (careAboutShadowMungers) {
 			// bug 129163: use set equality rather than list equality
-			Set theseShadowMungers = new HashSet();
-			Set theseInlinedAroundMungers = new HashSet();
-			for (Iterator iter = shadowMungers.iterator(); iter.hasNext();) {
-				ShadowMunger munger = (ShadowMunger) iter.next();
+			Set<ShadowMunger> theseShadowMungers = new HashSet<ShadowMunger>();
+			Set<ShadowMunger> theseInlinedAroundMungers = new HashSet<ShadowMunger>();
+			for (ShadowMunger munger : shadowMungers) {
 				if (munger instanceof Advice) {
 					Advice adviceMunger = (Advice) munger;
 					// bug 154054: if we're around advice that has been inlined
@@ -264,12 +262,11 @@ public class CrosscuttingMembers {
 					theseShadowMungers.add(munger);
 				}
 			}
-			Set tempSet = new HashSet();
+			Set<ShadowMunger> tempSet = new HashSet<ShadowMunger>();
 			tempSet.addAll(other.shadowMungers);
-			Set otherShadowMungers = new HashSet();
-			Set otherInlinedAroundMungers = new HashSet();
-			for (Iterator iter = tempSet.iterator(); iter.hasNext();) {
-				ShadowMunger munger = (ShadowMunger) iter.next();
+			Set<ShadowMunger> otherShadowMungers = new HashSet<ShadowMunger>();
+			Set<ShadowMunger> otherInlinedAroundMungers = new HashSet<ShadowMunger>();
+			for (ShadowMunger munger : tempSet) {
 				if (munger instanceof Advice) {
 					Advice adviceMunger = (Advice) munger;
 					// bug 154054: if we're around advice that has been inlined
@@ -294,10 +291,9 @@ public class CrosscuttingMembers {
 			// bug 158573 - if there are no changes then preserve whether
 			// or not a particular shadowMunger has matched something.
 			if (!changed) {
-				for (Iterator iter = shadowMungers.iterator(); iter.hasNext();) {
-					ShadowMunger munger = (ShadowMunger) iter.next();
+				for (ShadowMunger munger : shadowMungers) {
 					int i = other.shadowMungers.indexOf(munger);
-					ShadowMunger otherMunger = (ShadowMunger) other.shadowMungers.get(i);
+					ShadowMunger otherMunger = other.shadowMungers.get(i);
 					if (munger instanceof Advice) {
 						((Advice) otherMunger).setHasMatchedSomething(((Advice) munger).hasMatchedSomething());
 					}
@@ -314,10 +310,10 @@ public class CrosscuttingMembers {
 		// if we dont care about shadow mungers then ignore those
 		// typeMungers which are created to help with the implementation
 		// of shadowMungers
-		Set theseTypeMungers = new HashSet();
-		Set otherTypeMungers = new HashSet();
+		Set<Object> theseTypeMungers = new HashSet<Object>();
+		Set<Object> otherTypeMungers = new HashSet<Object>();
 		if (!careAboutShadowMungers) {
-			for (Iterator iter = typeMungers.iterator(); iter.hasNext();) {
+			for (Iterator<ConcreteTypeMunger> iter = typeMungers.iterator(); iter.hasNext();) {
 				Object o = iter.next();
 				if (o instanceof ConcreteTypeMunger) {
 					ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) o;
@@ -329,7 +325,7 @@ public class CrosscuttingMembers {
 				}
 			}
 
-			for (Iterator iter = other.typeMungers.iterator(); iter.hasNext();) {
+			for (Iterator<ConcreteTypeMunger> iter = other.typeMungers.iterator(); iter.hasNext();) {
 				Object o = iter.next();
 				if (o instanceof ConcreteTypeMunger) {
 					ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) o;
@@ -353,11 +349,10 @@ public class CrosscuttingMembers {
 		} else {
 			boolean shouldOverwriteThis = false;
 			boolean foundInequality = false;
-			for (Iterator iter = theseTypeMungers.iterator(); iter.hasNext() && !foundInequality;) {
+			for (Iterator<Object> iter = theseTypeMungers.iterator(); iter.hasNext() && !foundInequality;) {
 				Object thisOne = iter.next();
 				boolean foundInOtherSet = false;
-				for (Iterator iterator = otherTypeMungers.iterator(); iterator.hasNext();) {
-					Object otherOne = iterator.next();
+				for (Object otherOne : otherTypeMungers) {
 					if (thisOne instanceof ConcreteTypeMunger) {
 						if (((ConcreteTypeMunger) thisOne).shouldOverwrite()) {
 							shouldOverwriteThis = true;
@@ -406,16 +401,16 @@ public class CrosscuttingMembers {
 			// the up front comparison
 			if (!careAboutShadowMungers) {
 				// this means we are in front end compilation and if the differences are purely mixin parents, we can continue OK
-				Set trimmedThis = new HashSet();
-				for (Iterator iterator = declareParents.iterator(); iterator.hasNext();) {
-					DeclareParents decp = (DeclareParents) iterator.next();
+				Set<DeclareParents> trimmedThis = new HashSet<DeclareParents>();
+				for (Iterator<DeclareParents> iterator = declareParents.iterator(); iterator.hasNext();) {
+					DeclareParents decp = iterator.next();
 					if (!decp.isMixin()) {
 						trimmedThis.add(decp);
 					}
 				}
-				Set trimmedOther = new HashSet();
-				for (Iterator iterator = other.declareParents.iterator(); iterator.hasNext();) {
-					DeclareParents decp = (DeclareParents) iterator.next();
+				Set<DeclareParents> trimmedOther = new HashSet<DeclareParents>();
+				for (Iterator<DeclareParents> iterator = other.declareParents.iterator(); iterator.hasNext();) {
+					DeclareParents decp = iterator.next();
 					if (!decp.isMixin()) {
 						trimmedOther.add(decp);
 					}
@@ -454,14 +449,14 @@ public class CrosscuttingMembers {
 		return changed;
 	}
 
-	private boolean equivalent(Set theseInlinedAroundMungers, Set otherInlinedAroundMungers) {
+	private boolean equivalent(Set<ShadowMunger> theseInlinedAroundMungers, Set<ShadowMunger> otherInlinedAroundMungers) {
 		if (theseInlinedAroundMungers.size() != otherInlinedAroundMungers.size()) {
 			return false;
 		}
-		for (Iterator iter = theseInlinedAroundMungers.iterator(); iter.hasNext();) {
+		for (Iterator<ShadowMunger> iter = theseInlinedAroundMungers.iterator(); iter.hasNext();) {
 			Advice thisAdvice = (Advice) iter.next();
 			boolean foundIt = false;
-			for (Iterator iterator = otherInlinedAroundMungers.iterator(); iterator.hasNext();) {
+			for (Iterator<ShadowMunger> iterator = otherInlinedAroundMungers.iterator(); iterator.hasNext();) {
 				Advice otherAdvice = (Advice) iterator.next();
 				if (thisAdvice.equals(otherAdvice)) {
 					if (thisAdvice.getSignature() instanceof ResolvedMemberImpl) {
@@ -500,42 +495,42 @@ public class CrosscuttingMembers {
 		}
 	}
 
-	public List getDeclareDominates() {
+	public List<Declare> getDeclareDominates() {
 		return declareDominates;
 	}
 
-	public Collection getDeclareParents() {
+	public Collection<DeclareParents> getDeclareParents() {
 		return declareParents;
 	}
 
-	public Collection getDeclareSofts() {
+	public Collection<DeclareSoft> getDeclareSofts() {
 		return declareSofts;
 	}
 
-	public List getShadowMungers() {
+	public List<ShadowMunger> getShadowMungers() {
 		return shadowMungers;
 	}
 
-	public List getTypeMungers() {
+	public List<ConcreteTypeMunger> getTypeMungers() {
 		return typeMungers;
 	}
 
-	public List getLateTypeMungers() {
+	public List<ConcreteTypeMunger> getLateTypeMungers() {
 		return lateTypeMungers;
 	}
 
-	public Collection getDeclareAnnotationOnTypes() {
+	public Collection<DeclareAnnotation> getDeclareAnnotationOnTypes() {
 		return declareAnnotationsOnType;
 	}
 
-	public Collection getDeclareAnnotationOnFields() {
+	public Collection<DeclareAnnotation> getDeclareAnnotationOnFields() {
 		return declareAnnotationsOnField;
 	}
 
 	/**
 	 * includes declare @method and @constructor
 	 */
-	public Collection getDeclareAnnotationOnMethods() {
+	public Collection<DeclareAnnotation> getDeclareAnnotationOnMethods() {
 		return declareAnnotationsOnMethods;
 	}
 
