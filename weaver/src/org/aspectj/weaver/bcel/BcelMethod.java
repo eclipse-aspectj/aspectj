@@ -104,6 +104,7 @@ class BcelMethod extends ResolvedMemberImpl {
 
 	}
 
+	@Override
 	public String[] getParameterNames() {
 		determineParameterNames();
 		return super.getParameterNames();
@@ -140,13 +141,12 @@ class BcelMethod extends ResolvedMemberImpl {
 								|| typename.startsWith("org.aspectj.lang.annotation.After")) {
 							AnnotationGen a = ((BcelAnnotation) annotationX).getBcelAnnotation();
 							if (a != null) {
-								List values = a.getValues();
-								for (Iterator iterator = values.iterator(); iterator.hasNext();) {
-									ElementNameValuePairGen nvPair = (ElementNameValuePairGen) iterator.next();
+								List<ElementNameValuePairGen> values = a.getValues();
+								for (ElementNameValuePairGen nvPair : values) {
 									if (nvPair.getNameString().equals("argNames")) {
 										String argNames = nvPair.getValue().stringifyValue();
 										StringTokenizer argNameTokenizer = new StringTokenizer(argNames, " ,");
-										List argsList = new ArrayList();
+										List<String> argsList = new ArrayList<String>();
 										while (argNameTokenizer.hasMoreTokens()) {
 											argsList.add(argNameTokenizer.nextToken());
 										}
@@ -154,7 +154,7 @@ class BcelMethod extends ResolvedMemberImpl {
 										while (argsList.size() < requiredCount) {
 											argsList.add("arg" + argsList.size());
 										}
-										setParameterNames((String[]) argsList.toArray(new String[] {}));
+										setParameterNames(argsList.toArray(new String[] {}));
 										return;
 									}
 								}
@@ -236,6 +236,7 @@ class BcelMethod extends ResolvedMemberImpl {
 	// return null;
 	// }
 
+	@Override
 	public String getAnnotationDefaultValue() {
 		Attribute[] attrs = method.getAttributes();
 		for (int i = 0; i < attrs.length; i++) {
@@ -251,25 +252,29 @@ class BcelMethod extends ResolvedMemberImpl {
 	// for testing - use with the method above
 	public String[] getAttributeNames(boolean onlyIncludeAjOnes) {
 		Attribute[] as = method.getAttributes();
-		List names = new ArrayList();
+		List<String> names = new ArrayList<String>();
 		// String[] strs = new String[as.length];
 		for (int j = 0; j < as.length; j++) {
-			if (!onlyIncludeAjOnes || as[j].getName().startsWith(AjAttribute.AttributePrefix))
+			if (!onlyIncludeAjOnes || as[j].getName().startsWith(AjAttribute.AttributePrefix)) {
 				names.add(as[j].getName());
+			}
 		}
-		return (String[]) names.toArray(new String[] {});
+		return names.toArray(new String[] {});
 	}
 
+	@Override
 	public boolean isAjSynthetic() {
 		return (bitflags & IS_AJ_SYNTHETIC) != 0;
 	}
 
 	// FIXME ??? needs an isSynthetic method
 
+	@Override
 	public ShadowMunger getAssociatedShadowMunger() {
 		return associatedShadowMunger;
 	}
 
+	@Override
 	public AjAttribute.EffectiveSignatureAttribute getEffectiveSignature() {
 		return effectiveSignature;
 	}
@@ -294,6 +299,7 @@ class BcelMethod extends ResolvedMemberImpl {
 		}
 	}
 
+	@Override
 	public ISourceLocation getSourceLocation() {
 		ISourceLocation ret = super.getSourceLocation();
 		if ((ret == null || ret.getLine() == 0) && hasDeclarationLineNumberInfo()) {
@@ -307,6 +313,7 @@ class BcelMethod extends ResolvedMemberImpl {
 		return ret;
 	}
 
+	@Override
 	public MemberKind getKind() {
 		if (associatedShadowMunger != null) {
 			return ADVICE;
@@ -315,6 +322,7 @@ class BcelMethod extends ResolvedMemberImpl {
 		}
 	}
 
+	@Override
 	public boolean hasAnnotation(UnresolvedType ofType) {
 		ensureAnnotationsRetrieved();
 		for (Iterator iter = annotationTypes.iterator(); iter.hasNext();) {
@@ -325,6 +333,7 @@ class BcelMethod extends ResolvedMemberImpl {
 		return false;
 	}
 
+	@Override
 	public AnnotationAJ[] getAnnotations() {
 		ensureAnnotationsRetrieved();
 		if ((bitflags & HAS_ANNOTATIONS) != 0) {
@@ -334,6 +343,7 @@ class BcelMethod extends ResolvedMemberImpl {
 		}
 	}
 
+	@Override
 	public ResolvedType[] getAnnotationTypes() {
 		ensureAnnotationsRetrieved();
 		ResolvedType[] ret = new ResolvedType[annotationTypes.size()];
@@ -341,6 +351,7 @@ class BcelMethod extends ResolvedMemberImpl {
 		return ret;
 	}
 
+	@Override
 	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
 		ensureAnnotationsRetrieved();
 		if ((bitflags & HAS_ANNOTATIONS) == 0)
@@ -352,6 +363,7 @@ class BcelMethod extends ResolvedMemberImpl {
 		return null;
 	}
 
+	@Override
 	public void addAnnotation(AnnotationAJ annotation) {
 		ensureAnnotationsRetrieved();
 		if ((bitflags & HAS_ANNOTATIONS) == 0) {
@@ -448,11 +460,13 @@ class BcelMethod extends ResolvedMemberImpl {
 		}
 	}
 
+	@Override
 	public AnnotationAJ[][] getParameterAnnotations() {
 		ensureParameterAnnotationsRetrieved();
 		return parameterAnnotations;
 	}
 
+	@Override
 	public ResolvedType[][] getParameterAnnotationTypes() {
 		ensureParameterAnnotationsRetrieved();
 		return parameterAnnotationTypes;
@@ -462,11 +476,13 @@ class BcelMethod extends ResolvedMemberImpl {
 	 * A method can be parameterized if it has one or more generic parameters. A generic parameter (type variable parameter) is
 	 * identified by the prefix "T"
 	 */
+	@Override
 	public boolean canBeParameterized() {
 		unpackGenericSignature();
 		return (bitflags & CAN_BE_PARAMETERIZED) != 0;
 	}
 
+	@Override
 	public UnresolvedType[] getGenericParameterTypes() {
 		unpackGenericSignature();
 		return genericParameterTypes;
@@ -475,6 +491,7 @@ class BcelMethod extends ResolvedMemberImpl {
 	/**
 	 * Return the parameterized/generic return type or the normal return type if the method is not generic.
 	 */
+	@Override
 	public UnresolvedType getGenericReturnType() {
 		unpackGenericSignature();
 		return genericReturnType;
@@ -556,6 +573,7 @@ class BcelMethod extends ResolvedMemberImpl {
 		}
 	}
 
+	@Override
 	public void evictWeavingState() {
 		if (method != null) {
 			unpackGenericSignature();
@@ -568,6 +586,7 @@ class BcelMethod extends ResolvedMemberImpl {
 		}
 	}
 
+	@Override
 	public boolean isSynthetic() {
 		if ((bitflags & KNOW_IF_SYNTHETIC) == 0) {
 			workOutIfSynthetic();
@@ -613,6 +632,7 @@ class BcelMethod extends ResolvedMemberImpl {
 	// which proved expensive. Currently used within
 	// CrosscuttingMembers.replaceWith() to decide if we need
 	// to do a full build
+	@Override
 	public boolean isEquivalentTo(Object other) {
 		if (!(other instanceof BcelMethod))
 			return false;
@@ -626,6 +646,7 @@ class BcelMethod extends ResolvedMemberImpl {
 	 * 
 	 * @return true if this BcelMethod represents the default constructor
 	 */
+	@Override
 	public boolean isDefaultConstructor() {
 		boolean mightBe = !hasDeclarationLineNumberInfo() && name.equals("<init>") && parameterTypes.length == 0;
 		if (mightBe) {

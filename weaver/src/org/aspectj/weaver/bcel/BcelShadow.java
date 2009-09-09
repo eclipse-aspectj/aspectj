@@ -150,12 +150,12 @@ public class BcelShadow extends Shadow {
 	public BcelShadow copyInto(LazyMethodGen recipient, BcelShadow enclosing) {
 		BcelShadow s = new BcelShadow(world, getKind(), getSignature(), recipient, enclosing);
 		if (mungers.size() > 0) {
-			List src = mungers;
-			if (s.mungers == Collections.EMPTY_LIST)
-				s.mungers = new ArrayList();
-			List dest = s.mungers;
-
-			for (Iterator i = src.iterator(); i.hasNext();) {
+			List<ShadowMunger> src = mungers;
+			if (s.mungers == Collections.EMPTY_LIST) {
+				s.mungers = new ArrayList<ShadowMunger>();
+			}
+			List<ShadowMunger> dest = s.mungers;
+			for (Iterator<ShadowMunger> i = src.iterator(); i.hasNext();) {
 				dest.add(i.next());
 			}
 		}
@@ -278,11 +278,11 @@ public class BcelShadow extends Shadow {
 	}
 
 	// records advice that is stopping us doing the lazyTjp optimization
-	private List badAdvice = null;
+	private List<BcelAdvice> badAdvice = null;
 
 	public void addAdvicePreventingLazyTjp(BcelAdvice advice) {
 		if (badAdvice == null)
-			badAdvice = new ArrayList();
+			badAdvice = new ArrayList<BcelAdvice>();
 		badAdvice.add(advice);
 	}
 
@@ -348,8 +348,8 @@ public class BcelShadow extends Shadow {
 			// something stopped us making it a lazy tjp
 			// can't build tjp lazily, no suitable test...
 			int valid = 0;
-			for (Iterator iter = badAdvice.iterator(); iter.hasNext();) {
-				BcelAdvice element = (BcelAdvice) iter.next();
+			for (Iterator<BcelAdvice> iter = badAdvice.iterator(); iter.hasNext();) {
+				BcelAdvice element = iter.next();
 				ISourceLocation sLoc = element.getSourceLocation();
 				if (sLoc != null && sLoc.getLine() > 0)
 					valid++;
@@ -357,8 +357,8 @@ public class BcelShadow extends Shadow {
 			if (valid != 0) {
 				ISourceLocation[] badLocs = new ISourceLocation[valid];
 				int i = 0;
-				for (Iterator iter = badAdvice.iterator(); iter.hasNext();) {
-					BcelAdvice element = (BcelAdvice) iter.next();
+				for (Iterator<BcelAdvice> iter = badAdvice.iterator(); iter.hasNext();) {
+					BcelAdvice element = iter.next();
 					ISourceLocation sLoc = element.getSourceLocation();
 					if (sLoc != null)
 						badLocs[i++] = sLoc;
@@ -854,12 +854,12 @@ public class BcelShadow extends Shadow {
 	private BcelVar thisVar = null;
 	private BcelVar targetVar = null;
 	private BcelVar[] argVars = null;
-	private Map/* <UnresolvedType,BcelVar> */kindedAnnotationVars = null;
-	private Map/* <UnresolvedType,BcelVar> */thisAnnotationVars = null;
-	private Map/* <UnresolvedType,BcelVar> */targetAnnotationVars = null;
+	private Map/* <UnresolvedType,BcelVar> */<ResolvedType, AnnotationAccessVar> kindedAnnotationVars = null;
+	private Map/* <UnresolvedType,BcelVar> */<ResolvedType, TypeAnnotationAccessVar> thisAnnotationVars = null;
+	private Map/* <UnresolvedType,BcelVar> */<ResolvedType, TypeAnnotationAccessVar> targetAnnotationVars = null;
 	private Map/* <UnresolvedType,BcelVar> */[] argAnnotationVars = null;
-	private Map/* <UnresolvedType,BcelVar> */withinAnnotationVars = null;
-	private Map/* <UnresolvedType,BcelVar> */withincodeAnnotationVars = null;
+	private Map/* <UnresolvedType,BcelVar> */<ResolvedType, AnnotationAccessVar> withinAnnotationVars = null;
+	private Map/* <UnresolvedType,BcelVar> */<ResolvedType, AnnotationAccessVar> withincodeAnnotationVars = null;
 	private boolean allArgVarsInitialized = false;
 
 	public Var getThisVar() {
@@ -876,7 +876,7 @@ public class BcelShadow extends Shadow {
 		}
 		initializeThisAnnotationVars(); // FIXME asc Why bother with this if we always return one?
 		// Even if we can't find one, we have to return one as we might have this annotation at runtime
-		Var v = (Var) thisAnnotationVars.get(forAnnotationType);
+		Var v = thisAnnotationVars.get(forAnnotationType);
 		if (v == null)
 			v = new TypeAnnotationAccessVar(forAnnotationType.resolve(world), (BcelVar) getThisVar());
 		return v;
@@ -895,7 +895,7 @@ public class BcelShadow extends Shadow {
 			throw new IllegalStateException("no target");
 		}
 		initializeTargetAnnotationVars(); // FIXME asc why bother with this if we always return one?
-		Var v = (Var) targetAnnotationVars.get(forAnnotationType);
+		Var v = targetAnnotationVars.get(forAnnotationType);
 		// Even if we can't find one, we have to return one as we might have this annotation at runtime
 		if (v == null)
 			v = new TypeAnnotationAccessVar(forAnnotationType.resolve(world), (BcelVar) getTargetVar());
@@ -918,17 +918,17 @@ public class BcelShadow extends Shadow {
 
 	public Var getKindedAnnotationVar(UnresolvedType forAnnotationType) {
 		initializeKindedAnnotationVars();
-		return (Var) kindedAnnotationVars.get(forAnnotationType);
+		return kindedAnnotationVars.get(forAnnotationType);
 	}
 
 	public Var getWithinAnnotationVar(UnresolvedType forAnnotationType) {
 		initializeWithinAnnotationVars();
-		return (Var) withinAnnotationVars.get(forAnnotationType);
+		return withinAnnotationVars.get(forAnnotationType);
 	}
 
 	public Var getWithinCodeAnnotationVar(UnresolvedType forAnnotationType) {
 		initializeWithinCodeAnnotationVars();
-		return (Var) withincodeAnnotationVars.get(forAnnotationType);
+		return withincodeAnnotationVars.get(forAnnotationType);
 	}
 
 	// reflective thisJoinPoint support
@@ -1382,7 +1382,7 @@ public class BcelShadow extends Shadow {
 	public void initializeThisAnnotationVars() {
 		if (thisAnnotationVars != null)
 			return;
-		thisAnnotationVars = new HashMap();
+		thisAnnotationVars = new HashMap<ResolvedType, TypeAnnotationAccessVar>();
 		// populate..
 	}
 
@@ -1394,7 +1394,7 @@ public class BcelShadow extends Shadow {
 				initializeThisAnnotationVars();
 			targetAnnotationVars = thisAnnotationVars;
 		} else {
-			targetAnnotationVars = new HashMap();
+			targetAnnotationVars = new HashMap<ResolvedType, TypeAnnotationAccessVar>();
 			ResolvedType[] rtx = this.getTargetType().resolve(world).getAnnotationTypes(); // what about annotations we havent
 			// gotten yet but we will get in
 			// subclasses?
@@ -1429,9 +1429,8 @@ public class BcelShadow extends Shadow {
 		}
 
 		// check the ITD'd dooberries
-		List mungers = relevantType.resolve(world).getInterTypeMungers();
-		for (Iterator iter = mungers.iterator(); iter.hasNext();) {
-			ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) iter.next();
+		List<ConcreteTypeMunger> mungers = relevantType.resolve(world).getInterTypeMungers();
+		for (ConcreteTypeMunger typeMunger : mungers) {
 			if (typeMunger.getMunger() instanceof NewMethodTypeMunger || typeMunger.getMunger() instanceof NewConstructorTypeMunger) {
 				ResolvedMember fakerm = typeMunger.getSignature();
 				if (fakerm.getName().equals(getSignature().getName())
@@ -1440,6 +1439,13 @@ public class BcelShadow extends Shadow {
 						foundMember = AjcMemberMaker.interConstructor(relevantType, foundMember, typeMunger.getAspectType());
 					} else {
 						foundMember = AjcMemberMaker.interMethod(foundMember, typeMunger.getAspectType(), false);
+				//		ResolvedMember o = AjcMemberMaker.interMethodBody(fakerm, typeMunger.getAspectType());
+				//		// Object os = o.getAnnotations();
+				//		ResolvedMember foundMember2 = findMethod(typeMunger.getAspectType(), o);
+				//		Object os2 = foundMember2.getAnnotations();
+				//		int stop = 1;
+				//		foundMember = foundMember2;
+						// foundMember = AjcMemberMaker.interMethod(foundMember, typeMunger.getAspectType());
 					}
 					// in the above.. what about if it's on an Interface? Can that happen?
 					// then the last arg of the above should be true
@@ -1453,8 +1459,8 @@ public class BcelShadow extends Shadow {
 	protected ResolvedType[] getAnnotations(ResolvedMember foundMember, Member relevantMember, ResolvedType relevantType) {
 		if (foundMember == null) {
 			// check the ITD'd dooberries
-			List mungers = relevantType.resolve(world).getInterTypeMungers();
-			for (Iterator iter = mungers.iterator(); iter.hasNext();) {
+			List<ConcreteTypeMunger> mungers = relevantType.resolve(world).getInterTypeMungers();
+			for (Iterator<ConcreteTypeMunger> iter = mungers.iterator(); iter.hasNext();) {
 				Object munger = iter.next();
 				ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) munger;
 				if (typeMunger.getMunger() instanceof NewMethodTypeMunger
@@ -1493,7 +1499,7 @@ public class BcelShadow extends Shadow {
 		if (kindedAnnotationVars != null) {
 			return;
 		}
-		kindedAnnotationVars = new HashMap();
+		kindedAnnotationVars = new HashMap<ResolvedType, AnnotationAccessVar>();
 
 		ResolvedType[] annotations = null;
 		Member shadowSignature = getSignature();
@@ -1517,9 +1523,10 @@ public class BcelShadow extends Shadow {
 
 			if (annotationHolder == null) {
 				// check the ITD'd dooberries
-				List mungers = relevantType.resolve(world).getInterTypeMungers();
-				for (Iterator iter = mungers.iterator(); iter.hasNext();) {
-					BcelTypeMunger typeMunger = (BcelTypeMunger) iter.next();
+				List<BcelTypeMunger> mungers = relevantType.resolve(world).getInterTypeMungers();
+				for (BcelTypeMunger typeMunger : mungers) {
+					// for (Iterator<ConcreteTypeMunger> iter = mungers.iterator(); iter.hasNext();) {
+					// BcelTypeMunger typeMunger = (BcelTypeMunger) iter.next();
 					if (typeMunger.getMunger() instanceof NewFieldTypeMunger) {
 						ResolvedMember fakerm = typeMunger.getSignature();
 						// if (fakerm.hasAnnotations())
@@ -1536,12 +1543,12 @@ public class BcelShadow extends Shadow {
 
 		} else if (getKind() == Shadow.MethodExecution || getKind() == Shadow.ConstructorExecution
 				|| getKind() == Shadow.AdviceExecution) {
-			// ResolvedMember rm[] = relevantType.getDeclaredMethods();
-			ResolvedMember foundMember = findMethod2(relevantType.getDeclaredMethods(), getSignature());
 
+			ResolvedMember foundMember = findMethod2(relevantType.getDeclaredMethods(), getSignature());
 			annotations = getAnnotations(foundMember, shadowSignature, relevantType);
-			annotationHolder = foundMember;
 			annotationHolder = getRelevantMember(foundMember, annotationHolder, relevantType);
+			UnresolvedType ut = annotationHolder.getDeclaringType();
+			relevantType = ut.resolve(world);
 
 		} else if (getKind() == Shadow.ExceptionHandler) {
 			relevantType = getSignature().getParameterTypes()[0].resolve(world);
@@ -1557,24 +1564,22 @@ public class BcelShadow extends Shadow {
 			throw new BCException("Could not discover annotations for shadow: " + getKind());
 		}
 
-		for (int i = 0; i < annotations.length; i++) {
-			ResolvedType annotationType = annotations[i];
+		for (ResolvedType annotationType : annotations) {
 			AnnotationAccessVar accessVar = new AnnotationAccessVar(getKind(), annotationType.resolve(world), relevantType,
 					annotationHolder);
 			kindedAnnotationVars.put(annotationType, accessVar);
 		}
 	}
 
-	// FIXME asc whats the real diff between this one and the version in findMethod()?
-	ResolvedMember findMethod2(ResolvedMember rm[], Member sig) {
-		ResolvedMember found = null;
-		// String searchString = getSignature().getName()+getSignature().getParameterSignature();
-		for (int i = 0; i < rm.length && found == null; i++) {
-			ResolvedMember member = rm[i];
-			if (member.getName().equals(sig.getName()) && member.getParameterSignature().equals(sig.getParameterSignature()))
-				found = member;
+	private ResolvedMember findMethod2(ResolvedMember members[], Member sig) {
+		String signatureName = sig.getName();
+		String parameterSignature = sig.getParameterSignature();
+		for (ResolvedMember member : members) {
+			if (member.getName().equals(signatureName) && member.getParameterSignature().equals(parameterSignature)) {
+				return member;
+			}
 		}
-		return found;
+		return null;
 	}
 
 	private ResolvedMember findMethod(ResolvedType aspectType, ResolvedMember ajcMethod) {
@@ -1600,7 +1605,7 @@ public class BcelShadow extends Shadow {
 	public void initializeWithinAnnotationVars() {
 		if (withinAnnotationVars != null)
 			return;
-		withinAnnotationVars = new HashMap();
+		withinAnnotationVars = new HashMap<ResolvedType, AnnotationAccessVar>();
 
 		ResolvedType[] annotations = getEnclosingType().resolve(world).getAnnotationTypes();
 		for (int i = 0; i < annotations.length; i++) {
@@ -1613,7 +1618,7 @@ public class BcelShadow extends Shadow {
 	public void initializeWithinCodeAnnotationVars() {
 		if (withincodeAnnotationVars != null)
 			return;
-		withincodeAnnotationVars = new HashMap();
+		withincodeAnnotationVars = new HashMap<ResolvedType, AnnotationAccessVar>();
 
 		// For some shadow we are interested in annotations on the method containing that shadow.
 		ResolvedType[] annotations = getEnclosingMethod().getMemberView().getAnnotationTypes();
@@ -1647,7 +1652,7 @@ public class BcelShadow extends Shadow {
 	 * We also need to bind the return value into a returning parameter, if the advice specified one.
 	 */
 	public void weaveAfterReturning(BcelAdvice munger) {
-		List returns = findReturnInstructions();
+		List<InstructionHandle> returns = findReturnInstructions();
 		boolean hasReturnInstructions = !returns.isEmpty();
 
 		// list of instructions that handle the actual return from the join point
@@ -1668,8 +1673,8 @@ public class BcelShadow extends Shadow {
 
 		if (hasReturnInstructions) {
 			InstructionHandle gotoTarget = advice.getStart();
-			for (Iterator i = returns.iterator(); i.hasNext();) {
-				InstructionHandle ih = (InstructionHandle) i.next();
+			for (Iterator<InstructionHandle> i = returns.iterator(); i.hasNext();) {
+				InstructionHandle ih = i.next();
 				retargetReturnInstruction(munger.hasExtraParameter(), returnValueVar, gotoTarget, ih);
 			}
 		}
@@ -1681,8 +1686,8 @@ public class BcelShadow extends Shadow {
 	/**
 	 * @return a list of all the return instructions in the range of this shadow
 	 */
-	private List findReturnInstructions() {
-		List returns = new ArrayList();
+	private List<InstructionHandle> findReturnInstructions() {
+		List<InstructionHandle> returns = new ArrayList<InstructionHandle>();
 		for (InstructionHandle ih = range.getStart(); ih != range.getEnd(); ih = ih.getNext()) {
 			if (ih.getInstruction().isReturnInstruction()) {
 				returns.add(ih);
@@ -1705,7 +1710,7 @@ public class BcelShadow extends Shadow {
 	 * @param returnInstructions instruction list into which the return instructions should be generated
 	 * @return the variable holding the return value, if needed
 	 */
-	private BcelVar generateReturnInstructions(List returns, InstructionList returnInstructions) {
+	private BcelVar generateReturnInstructions(List<InstructionHandle> returns, InstructionList returnInstructions) {
 		BcelVar returnValueVar = null;
 		if (this.hasANonVoidReturnType()) {
 			// Find the last *correct* return - this is a method with a non-void return type
@@ -1713,7 +1718,7 @@ public class BcelShadow extends Shadow {
 			Instruction newReturnInstruction = null;
 			int i = returns.size() - 1;
 			while (newReturnInstruction == null && i >= 0) {
-				InstructionHandle ih = (InstructionHandle) returns.get(i);
+				InstructionHandle ih = returns.get(i);
 				if (ih.getInstruction().opcode != Constants.RETURN) {
 					newReturnInstruction = Utility.copyInstruction(ih.getInstruction());
 				}
@@ -1723,7 +1728,7 @@ public class BcelShadow extends Shadow {
 			returnValueVar.appendLoad(returnInstructions, getFactory());
 			returnInstructions.append(newReturnInstruction);
 		} else {
-			InstructionHandle lastReturnHandle = (InstructionHandle) returns.get(returns.size() - 1);
+			InstructionHandle lastReturnHandle = returns.get(returns.size() - 1);
 			Instruction newReturnInstruction = Utility.copyInstruction(lastReturnHandle.getInstruction());
 			returnInstructions.append(newReturnInstruction);
 		}
@@ -2137,12 +2142,12 @@ public class BcelShadow extends Shadow {
 		// Parameters are: this if there is one, target if there is one and its different to this, then original arguments
 		// at the shadow, then tjp
 		String extractedShadowMethodName = NameMangler.aroundShadowMethodName(getSignature(), shadowClass.getNewGeneratedNameTag());
-		List parameterNames = new ArrayList();
+		List<String> parameterNames = new ArrayList<String>();
 		LazyMethodGen extractedShadowMethod = extractShadowInstructionsIntoNewMethod(extractedShadowMethodName, Modifier.PRIVATE,
 				munger.getSourceLocation(), parameterNames);
 
-		List argsToCallLocalAdviceMethodWith = new ArrayList();
-		List proceedVarList = new ArrayList();
+		List<BcelVar> argsToCallLocalAdviceMethodWith = new ArrayList<BcelVar>();
+		List<BcelVar> proceedVarList = new ArrayList<BcelVar>();
 		int extraParamOffset = 0;
 
 		// Create the extra parameters that are needed for passing to proceed
@@ -2235,8 +2240,8 @@ public class BcelShadow extends Shadow {
 		InstructionList advice = new InstructionList();
 		// InstructionHandle adviceMethodInvocation;
 		{
-			for (Iterator i = argsToCallLocalAdviceMethodWith.iterator(); i.hasNext();) {
-				BcelVar var = (BcelVar) i.next();
+			for (Iterator<BcelVar> i = argsToCallLocalAdviceMethodWith.iterator(); i.hasNext();) {
+				BcelVar var = i.next();
 				var.appendLoad(advice, fact);
 			}
 			// ??? we don't actually need to push NULL for the closure if we take care
@@ -2355,7 +2360,7 @@ public class BcelShadow extends Shadow {
 				// no parameter names specified
 				argumentName = new StringBuffer("unknown").append(argNumber).toString();
 			} else {
-				argumentName = (String) parameterNames.get(argNumber);
+				argumentName = parameterNames.get(argNumber);
 			}
 			String argumentSignature = args[argNumber].getSignature();
 			LocalVariableTag lvt = new LocalVariableTag(argumentSignature, argumentName, slot, 0);
@@ -2366,7 +2371,7 @@ public class BcelShadow extends Shadow {
 	}
 
 	private InstructionList getRedoneProceedCall(InstructionFactory fact, LazyMethodGen callbackMethod, BcelAdvice munger,
-			LazyMethodGen localAdviceMethod, List argVarList) {
+			LazyMethodGen localAdviceMethod, List<BcelVar> argVarList) {
 		InstructionList ret = new InstructionList();
 		// we have on stack all the arguments for the ADVICE call.
 		// we have in frame somewhere all the arguments for the non-advice call.
@@ -2399,7 +2404,7 @@ public class BcelShadow extends Shadow {
 				// throw new RuntimeException("unimplemented");
 				proceedVars[proceedMap.get(i)].appendLoadAndConvert(ret, fact, stateTypeX);
 			} else {
-				((BcelVar) argVarList.get(i)).appendLoad(ret, fact);
+				argVarList.get(i).appendLoad(ret, fact);
 			}
 		}
 
@@ -2454,7 +2459,7 @@ public class BcelShadow extends Shadow {
 	 * 
 	 */
 	private InstructionList getRedoneProceedCallForAnnotationStyle(InstructionFactory fact, LazyMethodGen callbackMethod,
-			BcelAdvice munger, LazyMethodGen localAdviceMethod, List argVarList, boolean isProceedWithArgs) {
+			BcelAdvice munger, LazyMethodGen localAdviceMethod, List<BcelVar> argVarList, boolean isProceedWithArgs) {
 		InstructionList ret = new InstructionList();
 
 		// store the Object[] array on stack if proceed with args
@@ -2733,7 +2738,7 @@ public class BcelShadow extends Shadow {
 		int linenumber = getSourceLine();
 		// MOVE OUT ALL THE INSTRUCTIONS IN MY SHADOW INTO ANOTHER METHOD!
 		LazyMethodGen callbackMethod = extractShadowInstructionsIntoNewMethod(NameMangler.aroundShadowMethodName(getSignature(),
-				getEnclosingClass().getNewGeneratedNameTag()), 0, munger.getSourceLocation(), new ArrayList());
+				getEnclosingClass().getNewGeneratedNameTag()), 0, munger.getSourceLocation(), new ArrayList<String>());
 
 		BcelVar[] adviceVars = munger.getExposedStateAsBcelVars(true);
 
@@ -3016,7 +3021,7 @@ public class BcelShadow extends Shadow {
 	 * @param adviceSourceLocation source location of the advice affecting the shadow
 	 */
 	LazyMethodGen extractShadowInstructionsIntoNewMethod(String extractedMethodName, int extractedMethodVisibilityModifier,
-			ISourceLocation adviceSourceLocation, List parameterNames) {
+			ISourceLocation adviceSourceLocation, List<String> parameterNames) {
 		// LazyMethodGen.assertGoodBody(range.getBody(), extractedMethodName);
 		if (!getKind().allowsExtraction()) {
 			throw new BCException("Attempt to extract method from a shadow kind (" + getKind()
@@ -3121,7 +3126,7 @@ public class BcelShadow extends Shadow {
 	 * The new method always static. It may take some extra arguments: this, target. If it's argsOnStack, then it must take both
 	 * this/target If it's argsOnFrame, it shares this and target. ??? rewrite this to do less array munging, please
 	 */
-	private LazyMethodGen createShadowMethodGen(String newMethodName, int visibilityModifier, List parameterNames) {
+	private LazyMethodGen createShadowMethodGen(String newMethodName, int visibilityModifier, List<String> parameterNames) {
 		Type[] shadowParameterTypes = BcelWorld.makeBcelTypes(getArgTypes());
 		int modifiers = Modifier.FINAL | Modifier.STATIC | visibilityModifier;
 		if (targetVar != null && targetVar != thisVar) {

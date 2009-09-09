@@ -123,6 +123,7 @@ public class BcelWorld extends World implements Repository {
 		throw new RuntimeException("Shadow.determineRelKind: What the hell is it? " + ak);
 	}
 
+	@Override
 	public void reportMatch(ShadowMunger munger, Shadow shadow) {
 		if (getCrossReferenceHandler() != null) {
 			getCrossReferenceHandler().addCrossReference(munger.getSourceLocation(), // What is being applied
@@ -249,21 +250,20 @@ public class BcelWorld extends World implements Repository {
 		return nice.toString();
 	}
 
-	private static List makeDefaultClasspath(String cp) {
-		List classPath = new ArrayList();
+	private static List<String> makeDefaultClasspath(String cp) {
+		List<String> classPath = new ArrayList<String>();
 		classPath.addAll(getPathEntries(cp));
 		classPath.addAll(getPathEntries(ClassPath.getClassPath()));
 		return classPath;
 
 	}
 
-	private static List getPathEntries(String s) {
-		List ret = new ArrayList();
+	private static List<String> getPathEntries(String s) {
+		List<String> ret = new ArrayList<String>();
 		StringTokenizer tok = new StringTokenizer(s, File.pathSeparator);
-
-		while (tok.hasMoreTokens())
+		while (tok.hasMoreTokens()) {
 			ret.add(tok.nextToken());
-
+		}
 		return ret;
 	}
 
@@ -356,6 +356,7 @@ public class BcelWorld extends World implements Repository {
 		return resolve(fromBcel(t));
 	}
 
+	@Override
 	protected ReferenceTypeDelegate resolveDelegate(ReferenceType ty) {
 		String name = ty.getName();
 		ensureAdvancedConfigurationProcessed();
@@ -554,6 +555,7 @@ public class BcelWorld extends World implements Repository {
 		return MemberImpl.method(declaringType, modifier, name, signature);
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("BcelWorld(");
@@ -620,6 +622,7 @@ public class BcelWorld extends World implements Repository {
 	 * The aim of this method is to make sure a particular type is 'ok'. Some operations on the delegate for a type modify it and
 	 * this method is intended to undo that... see pr85132
 	 */
+	@Override
 	public void validateType(UnresolvedType type) {
 		ResolvedType result = typeMap.get(type.getSignature());
 		if (result == null)
@@ -676,12 +679,12 @@ public class BcelWorld extends World implements Repository {
 		boolean didSomething = false;
 		if (decA.matches(onType)) {
 
-			if (onType.hasAnnotation(decA.getAnnotationX().getType())) {
+			if (onType.hasAnnotation(decA.getAnnotation().getType())) {
 				// already has it
 				return false;
 			}
 
-			AnnotationAJ annoX = decA.getAnnotationX();
+			AnnotationAJ annoX = decA.getAnnotation();
 
 			// check the annotation is suitable for the target
 			boolean isOK = checkTargetOK(decA, onType, annoX);
@@ -717,8 +720,9 @@ public class BcelWorld extends World implements Repository {
 	protected void weaveInterTypeDeclarations(ResolvedType onType) {
 
 		List declareParentsList = getCrosscuttingMembersSet().getDeclareParents();
-		if (onType.isRawType())
+		if (onType.isRawType()) {
 			onType = onType.getGenericType();
+		}
 		onType.clearInterTypeMungers();
 
 		List decpToRepeat = new ArrayList();
@@ -771,10 +775,12 @@ public class BcelWorld extends World implements Repository {
 		}
 	}
 
+	@Override
 	public IWeavingSupport getWeavingSupport() {
 		return bcelWeavingSupport;
 	}
 
+	@Override
 	public void reportCheckerMatch(Checker checker, Shadow shadow) {
 		IMessage iMessage = new Message(checker.getMessage(), shadow.toString(), checker.isError() ? IMessage.ERROR
 				: IMessage.WARNING, shadow.getSourceLocation(), null, new ISourceLocation[] { checker.getSourceLocation() }, true,
@@ -839,10 +845,12 @@ public class BcelWorld extends World implements Repository {
 		this.isXmlConfiguredWorld = b;
 	}
 
+	@Override
 	public boolean isXmlConfigured() {
 		return isXmlConfiguredWorld && xmlConfiguration != null;
 	}
 
+	@Override
 	public boolean isAspectIncluded(ResolvedType aspectType) {
 		if (!isXmlConfigured()) {
 			return true;
@@ -850,6 +858,7 @@ public class BcelWorld extends World implements Repository {
 		return xmlConfiguration.specifiesInclusionOfAspect(aspectType.getName());
 	}
 
+	@Override
 	public TypePattern getAspectScope(ResolvedType declaringType) {
 		return xmlConfiguration.getScopeFor(declaringType.getName());
 	}

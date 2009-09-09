@@ -16,7 +16,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
@@ -29,7 +28,7 @@ public class UnwovenClassFile implements IUnwovenClassFile {
 	protected byte[] bytes;
 	// protected JavaClass javaClass = null;
 	// protected byte[] writtenBytes = null;
-	protected List /* ChildClass */writtenChildClasses = Collections.EMPTY_LIST;
+	protected List<ChildClass> writtenChildClasses = Collections.emptyList();
 	protected String className = null;
 
 	public UnwovenClassFile(String filename, byte[] bytes) {
@@ -94,7 +93,7 @@ public class UnwovenClassFile implements IUnwovenClassFile {
 		// writtenBytes = bytes;
 	}
 
-	private void writeChildClasses(List childClasses) throws IOException {
+	private void writeChildClasses(List<ChildClass> childClasses) throws IOException {
 		// ??? we only really need to delete writtenChildClasses whose
 		// ??? names aren't in childClasses; however, it's unclear
 		// ??? how much that will affect performance
@@ -102,10 +101,8 @@ public class UnwovenClassFile implements IUnwovenClassFile {
 
 		childClasses.removeAll(writtenChildClasses); // XXX is this right
 
-		for (Iterator iter = childClasses.iterator(); iter.hasNext();) {
-			ChildClass childClass = (ChildClass) iter.next();
+		for (ChildClass childClass : childClasses) {
 			writeChildClassFile(childClass.name, childClass.bytes);
-
 		}
 
 		writtenChildClasses = childClasses;
@@ -119,8 +116,7 @@ public class UnwovenClassFile implements IUnwovenClassFile {
 	}
 
 	protected void deleteAllChildClasses() {
-		for (Iterator iter = writtenChildClasses.iterator(); iter.hasNext();) {
-			ChildClass childClass = (ChildClass) iter.next();
+		for (ChildClass childClass : writtenChildClasses) {
 			deleteChildClassFile(childClass.name);
 		}
 	}
@@ -154,6 +150,7 @@ public class UnwovenClassFile implements IUnwovenClassFile {
 		return className;
 	}
 
+	@Override
 	public String toString() {
 		return "UnwovenClassFile(" + filename + ", " + getClassName() + ")";
 	}
@@ -170,6 +167,7 @@ public class UnwovenClassFile implements IUnwovenClassFile {
 			this.bytes = bytes;
 		}
 
+		@Override
 		public boolean equals(Object other) {
 			if (!(other instanceof ChildClass))
 				return false;
@@ -177,10 +175,12 @@ public class UnwovenClassFile implements IUnwovenClassFile {
 			return o.name.equals(name) && unchanged(o.bytes, bytes);
 		}
 
+		@Override
 		public int hashCode() {
 			return name.hashCode();
 		}
 
+		@Override
 		public String toString() {
 			return "(ChildClass " + name + ")";
 		}

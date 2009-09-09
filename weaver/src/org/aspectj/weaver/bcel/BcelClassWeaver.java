@@ -915,10 +915,10 @@ class BcelClassWeaver implements IClassWeaver {
 
 							if (annotationsToAdd == null)
 								annotationsToAdd = new ArrayList();
-							AnnotationGen a = ((BcelAnnotation) decaM.getAnnotationX()).getBcelAnnotation();
+							AnnotationGen a = ((BcelAnnotation) decaM.getAnnotation()).getBcelAnnotation();
 							AnnotationGen ag = new AnnotationGen(a, clazz.getConstantPool(), true);
 							annotationsToAdd.add(ag);
-							mg.addAnnotation(decaM.getAnnotationX());
+							mg.addAnnotation(decaM.getAnnotation());
 
 							AsmRelationshipProvider.addDeclareAnnotationMethodRelationship(decaM.getSourceLocation(), clazz
 									.getName(), mg.getMemberView(), world.getModelAsAsmManager());// getMethod());
@@ -957,11 +957,11 @@ class BcelClassWeaver implements IClassWeaver {
 								if (annotationsToAdd == null) {
 									annotationsToAdd = new ArrayList();
 								}
-								AnnotationGen a = ((BcelAnnotation) decaM.getAnnotationX()).getBcelAnnotation();
+								AnnotationGen a = ((BcelAnnotation) decaM.getAnnotation()).getBcelAnnotation();
 								// create copy to get the annotation type into the right constant pool
 								AnnotationGen ag = new AnnotationGen(a, clazz.getConstantPool(), true);
 								annotationsToAdd.add(ag);
-								mg.addAnnotation(decaM.getAnnotationX());
+								mg.addAnnotation(decaM.getAnnotation());
 								AsmRelationshipProvider.addDeclareAnnotationMethodRelationship(decaM.getSourceLocation(), clazz
 										.getName(), mg.getMemberView(), world.getModelAsAsmManager());// getMethod());
 								isChanged = true;
@@ -1124,7 +1124,7 @@ class BcelClassWeaver implements IClassWeaver {
 					LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz, fieldMunger);
 					if (doesAlreadyHaveAnnotation(annotationHolder, itdIsActually, decaF, reportedErrors))
 						continue; // skip this one...
-					annotationHolder.addAnnotation(decaF.getAnnotationX());
+					annotationHolder.addAnnotation(decaF.getAnnotation());
 					AsmRelationshipProvider.addDeclareAnnotationRelationship(world.getModelAsAsmManager(), decaF
 							.getSourceLocation(), itdIsActually.getSourceLocation());
 					isChanged = true;
@@ -1147,7 +1147,7 @@ class BcelClassWeaver implements IClassWeaver {
 						LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz, fieldMunger);
 						if (doesAlreadyHaveAnnotation(annotationHolder, itdIsActually, decaF, reportedErrors))
 							continue; // skip this one...
-						annotationHolder.addAnnotation(decaF.getAnnotationX());
+						annotationHolder.addAnnotation(decaF.getAnnotation());
 						AsmRelationshipProvider.addDeclareAnnotationRelationship(world.getModelAsAsmManager(), decaF
 								.getSourceLocation(), itdIsActually.getSourceLocation());
 						isChanged = true;
@@ -1182,7 +1182,7 @@ class BcelClassWeaver implements IClassWeaver {
 							|| doesAlreadyHaveAnnotation(annotationHolder, unMangledInterMethod, decaMC, reportedErrors)) {
 						continue; // skip this one...
 					}
-					annotationHolder.addAnnotation(decaMC.getAnnotationX());
+					annotationHolder.addAnnotation(decaMC.getAnnotation());
 					isChanged = true;
 					AsmRelationshipProvider.addDeclareAnnotationRelationship(asmManager, decaMC.getSourceLocation(),
 							unMangledInterMethod.getSourceLocation());
@@ -1205,8 +1205,8 @@ class BcelClassWeaver implements IClassWeaver {
 						LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz, methodctorMunger);
 						if (doesAlreadyHaveAnnotation(annotationHolder, unMangledInterMethod, decaMC, reportedErrors))
 							continue; // skip this one...
-						annotationHolder.addAnnotation(decaMC.getAnnotationX());
-						unMangledInterMethod.addAnnotation(decaMC.getAnnotationX());
+						annotationHolder.addAnnotation(decaMC.getAnnotation());
+						unMangledInterMethod.addAnnotation(decaMC.getAnnotation());
 						AsmRelationshipProvider.addDeclareAnnotationRelationship(asmManager, decaMC.getSourceLocation(),
 								unMangledInterMethod.getSourceLocation());
 						isChanged = true;
@@ -1223,7 +1223,7 @@ class BcelClassWeaver implements IClassWeaver {
 	private boolean dontAddTwice(DeclareAnnotation decaF, AnnotationAJ[] dontAddMeTwice) {
 		for (int i = 0; i < dontAddMeTwice.length; i++) {
 			AnnotationAJ ann = dontAddMeTwice[i];
-			if (ann != null && decaF.getAnnotationX().getTypeName().equals(ann.getTypeName())) {
+			if (ann != null && decaF.getAnnotation().getTypeName().equals(ann.getTypeName())) {
 				// dontAddMeTwice[i] = null; // incase it really has been added
 				// twice!
 				return true;
@@ -1284,7 +1284,7 @@ class BcelClassWeaver implements IClassWeaver {
 					// go through all the declare @field statements
 					for (Iterator iter = decaFs.iterator(); iter.hasNext();) {
 						DeclareAnnotation decaF = (DeclareAnnotation) iter.next();
-						if (decaF.getAnnotationX() == null) {
+						if (decaF.getAnnotation() == null) {
 							return false;
 						}
 						if (decaF.matches(aBcelField, world)) {
@@ -1298,7 +1298,7 @@ class BcelClassWeaver implements IClassWeaver {
 									continue;
 								}
 
-								if (decaF.getAnnotationX().isRuntimeVisible()) { // isAnnotationWithRuntimeRetention
+								if (decaF.getAnnotation().isRuntimeVisible()) { // isAnnotationWithRuntimeRetention
 									// (
 									// clazz
 									// .
@@ -1319,13 +1319,13 @@ class BcelClassWeaver implements IClassWeaver {
 									// myGen.addAnnotation(ag);
 									// Field newField = myGen.getField();
 
-									aBcelField.addAnnotation(decaF.getAnnotationX());
+									aBcelField.addAnnotation(decaF.getAnnotation());
 									// clazz.replaceField(fields[fieldCounter],
 									// newField);
 									// fields[fieldCounter]=newField;
 
 								} else {
-									aBcelField.addAnnotation(decaF.getAnnotationX());
+									aBcelField.addAnnotation(decaF.getAnnotation());
 								}
 							}
 
@@ -1363,7 +1363,7 @@ class BcelClassWeaver implements IClassWeaver {
 									unusedDecafs.remove(decaF);
 									continue; // skip this one...
 								}
-								aBcelField.addAnnotation(decaF.getAnnotationX());
+								aBcelField.addAnnotation(decaF.getAnnotation());
 								AsmRelationshipProvider.addDeclareAnnotationFieldRelationship(world.getModelAsAsmManager(), decaF
 										.getSourceLocation(), clazz.getName(), aBcelField);
 								isChanged = true;

@@ -88,7 +88,7 @@ public final class LazyMethodGen implements Traceable {
 	private String[] declaredExceptions;
 	private InstructionList body; // leaving null for abstracts
 	private List attributes;
-	private List newAnnotations;
+	private List<AnnotationAJ> newAnnotations;
 	private AnnotationAJ[][] newParameterAnnotations;
 	private final LazyClassGen enclosingClass;
 	private BcelMethod memberView;
@@ -269,8 +269,9 @@ public final class LazyMethodGen implements Traceable {
 		initialize();
 		if (memberView == null) {
 			// If member view is null, we manage them in newAnnotations
-			if (newAnnotations == null)
-				newAnnotations = new ArrayList();
+			if (newAnnotations == null) {
+				newAnnotations = new ArrayList<AnnotationAJ>();
+			}
 			newAnnotations.add(ax);
 		} else {
 			memberView.addAnnotation(ax);
@@ -306,22 +307,21 @@ public final class LazyMethodGen implements Traceable {
 		}
 	}
 
-	public boolean hasAnnotation(UnresolvedType annotationTypeX) {
+	public boolean hasAnnotation(UnresolvedType annotationType) {
 		initialize();
 		if (memberView == null) {
 			// Check local annotations first
 			if (newAnnotations != null) {
-				for (Iterator iter = newAnnotations.iterator(); iter.hasNext();) {
-					AnnotationAJ element = (AnnotationAJ) iter.next();
-					if (element.getTypeSignature().equals(annotationTypeX.getSignature())) {
+				for (AnnotationAJ annotation : newAnnotations) {
+					if (annotation.getTypeSignature().equals(annotationType.getSignature())) {
 						return true;
 					}
 				}
 			}
 			memberView = new BcelMethod(getEnclosingClass().getBcelObjectType(), getMethod());
-			return memberView.hasAnnotation(annotationTypeX);
+			return memberView.hasAnnotation(annotationType);
 		}
-		return memberView.hasAnnotation(annotationTypeX);
+		return memberView.hasAnnotation(annotationType);
 	}
 
 	private void initialize() {
@@ -491,6 +491,7 @@ public final class LazyMethodGen implements Traceable {
 
 	// =============================
 
+	@Override
 	public String toString() {
 		BcelObjectType bot = enclosingClass.getBcelObjectType();
 		WeaverVersionInfo weaverVersion = (bot == null ? WeaverVersionInfo.CURRENT : bot.getWeaverVersionAttribute());

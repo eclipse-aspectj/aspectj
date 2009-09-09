@@ -81,7 +81,7 @@ public final class LazyClassGen {
 
 	int highestLineNumber = 0; // ---- JSR 45 info
 
-	private final SortedMap /* <String, InlinedSourceFileInfo> */inlinedFiles = new TreeMap();
+	private final SortedMap<String, InlinedSourceFileInfo> inlinedFiles = new TreeMap<String, InlinedSourceFileInfo>();
 
 	private boolean regenerateGenericSignatureAttribute = false;
 
@@ -91,10 +91,10 @@ public final class LazyClassGen {
 	private final World world;
 	private final String packageName = null;
 
-	private final List /* BcelField */fields = new ArrayList();
-	private final List /* LazyMethodGen */methodGens = new ArrayList();
-	private final List /* LazyClassGen */classGens = new ArrayList();
-	private final List /* AnnotationGen */annotations = new ArrayList();
+	private final List fields = new ArrayList();
+	private final List<LazyMethodGen> methodGens = new ArrayList<LazyMethodGen>();
+	private final List<LazyClassGen> classGens = new ArrayList<LazyClassGen>();
+	private final List<AnnotationGen> annotations = new ArrayList<AnnotationGen>();
 	private int childCounter = 0;
 
 	private final InstructionFactory fact;
@@ -133,8 +133,7 @@ public final class LazyClassGen {
 
 	void calculateSourceDebugExtensionOffsets() {
 		int i = roundUpToHundreds(highestLineNumber);
-		for (Iterator iter = inlinedFiles.values().iterator(); iter.hasNext();) {
-			InlinedSourceFileInfo element = (InlinedSourceFileInfo) iter.next();
+		for (InlinedSourceFileInfo element : inlinedFiles.values()) {
 			element.offset = i;
 			i = roundUpToHundreds(i + element.highestLineNumber);
 		}
@@ -145,7 +144,7 @@ public final class LazyClassGen {
 	}
 
 	int getSourceDebugExtensionOffset(String fullpath) {
-		return ((InlinedSourceFileInfo) inlinedFiles.get(fullpath)).offset;
+		return inlinedFiles.get(fullpath).offset;
 	}
 
 	// private Unknown getSourceDebugExtensionAttribute() {
@@ -417,24 +416,13 @@ public final class LazyClassGen {
 		return world;
 	}
 
-	public List getMethodGens() {
+	public List<LazyMethodGen> getMethodGens() {
 		return methodGens; // ???Collections.unmodifiableList(methodGens);
 	}
 
-	public List/* BcelField */getFieldGens() {
+	public List<BcelField> getFieldGens() {
 		return fields;
-		// return myGen.getFields();
 	}
-
-	// public Field getField(String name) {
-	// Field[] allFields = myGen.getFields();
-	// if (allFields==null) return null;
-	// for (int i = 0; i < allFields.length; i++) {
-	// Field field = allFields[i];
-	// if (field.getName().equals(name)) return field;
-	// }
-	// return null;
-	// }
 
 	private void writeBack(BcelWorld world) {
 		if (getConstantPool().getSize() > Short.MAX_VALUE) {
@@ -443,8 +431,7 @@ public final class LazyClassGen {
 		}
 
 		if (annotations.size() > 0) {
-			for (Iterator iter = annotations.iterator(); iter.hasNext();) {
-				AnnotationGen element = (AnnotationGen) iter.next();
+			for (AnnotationGen element : annotations) {
 				myGen.addAnnotation(element);
 			}
 			// Attribute[] annAttributes =
@@ -487,11 +474,11 @@ public final class LazyClassGen {
 
 		int len = methodGens.size();
 		myGen.setMethods(Method.NoMethods);
-		for (int i = 0; i < len; i++) {
-			LazyMethodGen gen = (LazyMethodGen) methodGens.get(i);
+		for (LazyMethodGen gen : methodGens) {
 			// we skip empty clinits
-			if (isEmptyClinit(gen))
+			if (isEmptyClinit(gen)) {
 				continue;
+			}
 			myGen.addMethod(gen.getMethod());
 		}
 
@@ -735,8 +722,8 @@ public final class LazyClassGen {
 	}
 
 	// non-recursive, may be a bug, ha ha.
-	private List getClassGens() {
-		List ret = new ArrayList();
+	private List<LazyClassGen> getClassGens() {
+		List<LazyClassGen> ret = new ArrayList<LazyClassGen>();
 		ret.add(this);
 		ret.addAll(classGens);
 		return ret;
@@ -745,9 +732,8 @@ public final class LazyClassGen {
 	public List getChildClasses(BcelWorld world) {
 		if (classGens.isEmpty())
 			return Collections.EMPTY_LIST;
-		List ret = new ArrayList();
-		for (Iterator i = classGens.iterator(); i.hasNext();) {
-			LazyClassGen clazz = (LazyClassGen) i.next();
+		List<UnwovenClassFile.ChildClass> ret = new ArrayList<UnwovenClassFile.ChildClass>();
+		for (LazyClassGen clazz : classGens) {
 			byte[] bytes = clazz.getJavaClass(world).getBytes();
 			String name = clazz.getName();
 			int index = name.lastIndexOf('$');
@@ -758,6 +744,7 @@ public final class LazyClassGen {
 		return ret;
 	}
 
+	@Override
 	public String toString() {
 		return toShortString();
 	}
@@ -888,8 +875,7 @@ public final class LazyClassGen {
 	}
 
 	public LazyMethodGen getStaticInitializer() {
-		for (Iterator i = methodGens.iterator(); i.hasNext();) {
-			LazyMethodGen gen = (LazyMethodGen) i.next();
+		for (LazyMethodGen gen : methodGens) {
 			// OPTIMIZE persist kind of member into the gen object? for clinit
 			if (gen.getName().equals("<clinit>"))
 				return gen;

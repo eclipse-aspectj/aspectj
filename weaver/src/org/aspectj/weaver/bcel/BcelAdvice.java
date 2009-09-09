@@ -35,6 +35,7 @@ import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.IEclipseSourceContext;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
@@ -101,6 +102,7 @@ class BcelAdvice extends Advice {
 		return adviceSignature;
 	}
 
+	@Override
 	public ShadowMunger concretize(ResolvedType fromType, World world, PerClause clause) {
 		suppressLintWarnings(world);
 		ShadowMunger ret = super.concretize(fromType, world, clause);
@@ -119,6 +121,7 @@ class BcelAdvice extends Advice {
 		return ret;
 	}
 
+	@Override
 	public ShadowMunger parameterizeWith(ResolvedType declaringType, Map typeVariableMap) {
 		Pointcut pc = getPointcut().parameterizeWith(typeVariableMap, declaringType.getWorld());
 
@@ -133,6 +136,7 @@ class BcelAdvice extends Advice {
 		return ret;
 	}
 
+	@Override
 	public boolean match(Shadow shadow, World world) {
 		suppressLintWarnings(world);
 		boolean ret = super.match(shadow, world);
@@ -140,6 +144,7 @@ class BcelAdvice extends Advice {
 		return ret;
 	}
 
+	@Override
 	public void specializeOn(Shadow shadow) {
 		if (getKind() == AdviceKind.Around) {
 			((BcelShadow) shadow).initializeForAroundClosure();
@@ -218,6 +223,7 @@ class BcelAdvice extends Advice {
 		return boType.getLazyClassGen().isWoven();
 	}
 
+	@Override
 	public boolean implementOn(Shadow s) {
 		hasMatchedAtLeastOnce = true;
 		BcelShadow shadow = (BcelShadow) s;
@@ -375,6 +381,7 @@ class BcelAdvice extends Advice {
 
 	private Collection thrownExceptions = null;
 
+	@Override
 	public Collection getThrownExceptions() {
 		if (thrownExceptions == null) {
 			// ??? can we really lump in Around here, how does this interact with Throwable
@@ -400,6 +407,7 @@ class BcelAdvice extends Advice {
 	 * 
 	 * @return
 	 */
+	@Override
 	public boolean mustCheckExceptions() {
 		if (getConcreteAspect() == null) {
 			return true;
@@ -408,6 +416,7 @@ class BcelAdvice extends Advice {
 	}
 
 	// only call me after prepare has been called
+	@Override
 	public boolean hasDynamicTests() {
 		// if (hasExtraParameter() && getKind() == AdviceKind.AfterReturning) {
 		// UnresolvedType extraParameterType = getExtraParameterType();
@@ -602,6 +611,7 @@ class BcelAdvice extends Advice {
 		return new InstructionList(Utility.createInvoke(shadow.getFactory(), shadow.getWorld(), getOriginalSignature()));
 	}
 
+	@Override
 	public Member getOriginalSignature() {
 		Member sig = getSignature();
 		if (sig instanceof ResolvedMember) {
@@ -703,13 +713,13 @@ class BcelAdvice extends Advice {
 			if (signature instanceof BcelMethod) {
 				this.suppressedLintKinds = Utility.getSuppressedWarnings(signature.getAnnotations(), inWorld.getLint());
 			} else {
-				this.suppressedLintKinds = Collections.EMPTY_LIST;
+				this.suppressedLintKinds = Collections.emptyList();
 			}
 		}
 		inWorld.getLint().suppressKinds(suppressedLintKinds);
 	}
 
-	protected void clearLintSuppressions(World inWorld, Collection toClear) {
+	protected void clearLintSuppressions(World inWorld, Collection<Lint.Kind> toClear) {
 		inWorld.getLint().clearSuppressions(toClear);
 	}
 

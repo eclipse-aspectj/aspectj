@@ -41,6 +41,7 @@ import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationTargetKind;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.BindingScope;
+import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
@@ -84,8 +85,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	private ResolvedMember[] privilegedAccess = null;
 	private WeaverStateInfo weaverState = null;
 	private PerClause perClause = null;
-	private List typeMungers = Collections.EMPTY_LIST;
-	private List declares = Collections.EMPTY_LIST;
+	private List<ConcreteTypeMunger> typeMungers = Collections.emptyList();
+	private List<Declare> declares = Collections.emptyList();
 
 	private GenericSignature.FormalTypeParameter[] formalsForResolution = null;
 	private String declaredSignature = null;
@@ -354,7 +355,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		bitflag |= UNPACKED_AJATTRIBUTES;
 		IMessageHandler msgHandler = getResolvedTypeX().getWorld().getMessageHandler();
 		// Pass in empty list that can store things for readAj5 to process
-		List l = Utility.readAjAttributes(className, javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),
+		List<AjAttribute> l = Utility.readAjAttributes(className, javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),
 				getResolvedTypeX().getWorld(), AjAttribute.WeaverVersionInfo.UNKNOWN);
 		List pointcuts = new ArrayList();
 		typeMungers = new ArrayList();
@@ -383,11 +384,10 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 	}
 
-	private AjAttribute.Aspect processAttributes(List attributeList, List pointcuts, boolean fromAnnotations) {
+	private AjAttribute.Aspect processAttributes(List<AjAttribute> attributeList, List<ResolvedPointcutDefinition> pointcuts,
+			boolean fromAnnotations) {
 		AjAttribute.Aspect deferredAspectAttribute = null;
-		for (Iterator iter = attributeList.iterator(); iter.hasNext();) {
-			AjAttribute a = (AjAttribute) iter.next();
-			// System.err.println("unpacking: " + this + " and " + a);
+		for (AjAttribute a : attributeList) {
 			if (a instanceof AjAttribute.Aspect) {
 				if (fromAnnotations) {
 					deferredAspectAttribute = (AjAttribute.Aspect) a;
@@ -629,16 +629,15 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		bitflag |= DISCOVERED_ANNOTATION_TARGET_KINDS;
 		annotationTargetKinds = null; // null means we have no idea or the
 		// @Target annotation hasn't been used
-		List targetKinds = new ArrayList();
+		List<AnnotationTargetKind> targetKinds = new ArrayList<AnnotationTargetKind>();
 		if (isAnnotation()) {
 			AnnotationAJ[] annotationsOnThisType = getAnnotations();
 			for (int i = 0; i < annotationsOnThisType.length; i++) {
 				AnnotationAJ a = annotationsOnThisType[i];
 				if (a.getTypeName().equals(UnresolvedType.AT_TARGET.getName())) {
-					Set targets = a.getTargets();
+					Set<String> targets = a.getTargets();
 					if (targets != null) {
-						for (Iterator iterator = targets.iterator(); iterator.hasNext();) {
-							String targetKind = (String) iterator.next();
+						for (String targetKind : targets) {
 							if (targetKind.equals("ANNOTATION_TYPE")) {
 								targetKinds.add(AnnotationTargetKind.ANNOTATION_TYPE);
 							} else if (targetKind.equals("CONSTRUCTOR")) {
@@ -662,7 +661,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			}
 			if (!targetKinds.isEmpty()) {
 				annotationTargetKinds = new AnnotationTargetKind[targetKinds.size()];
-				return (AnnotationTargetKind[]) targetKinds.toArray(annotationTargetKinds);
+				return targetKinds.toArray(annotationTargetKinds);
 			}
 		}
 		return annotationTargetKinds;

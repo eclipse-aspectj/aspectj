@@ -64,12 +64,12 @@ import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 public class Utility {
 
-	public static List readAjAttributes(String classname, Attribute[] as, ISourceContext context, World w,
+	public static List<AjAttribute> readAjAttributes(String classname, Attribute[] as, ISourceContext context, World w,
 			AjAttribute.WeaverVersionInfo version) {
-		List l = new ArrayList();
+		List<AjAttribute> l = new ArrayList<AjAttribute>();
 
 		// first pass, look for version
-		List forSecondPass = new ArrayList();
+		List<Unknown> forSecondPass = new ArrayList<Unknown>();
 		for (int i = as.length - 1; i >= 0; i--) {
 			Attribute a = as[i];
 			if (a instanceof Unknown) {
@@ -86,25 +86,26 @@ public class Utility {
 												+ " is version " + version.toString());
 							}
 						}
-						forSecondPass.add(a);
+						forSecondPass.add(u);
 					}
 				}
 			}
 		}
 
+		// FIXASC why going backwards? is it important
 		for (int i = forSecondPass.size() - 1; i >= 0; i--) {
-			Unknown a = (Unknown) forSecondPass.get(i);
+			Unknown a = forSecondPass.get(i);
 			String name = a.getName();
 			AjAttribute attr = AjAttribute.read(version, name, a.getBytes(), context, w);
-			if (attr != null)
+			if (attr != null) {
 				l.add(attr);
+			}
 		}
 		return l;
 	}
 
 	/*
-	 * Ensure we report a nice source location - particular in the case where
-	 * the source info is missing (binary weave).
+	 * Ensure we report a nice source location - particular in the case where the source info is missing (binary weave).
 	 */
 	public static String beautifyLocation(ISourceLocation isl) {
 		StringBuffer nice = new StringBuffer();
@@ -237,7 +238,7 @@ public class Utility {
 
 	// Lookup table, for converting between pairs of types, it gives
 	// us the method name in the Conversions class
-	private static Hashtable validBoxing = new Hashtable();
+	private static Hashtable<String, String> validBoxing = new Hashtable<String, String>();
 
 	static {
 		validBoxing.put("Ljava/lang/Byte;B", "byteObject");
@@ -298,7 +299,7 @@ public class Utility {
 			// before the call...
 			Type from = BcelWorld.makeBcelType(fromType);
 			Type to = BcelWorld.makeBcelType(toType);
-			String name = (String) validBoxing.get(toType.getSignature() + fromType.getSignature());
+			String name = validBoxing.get(toType.getSignature() + fromType.getSignature());
 			if (toType.isPrimitiveType()) {
 				il.append(fact.createInvoke("org.aspectj.runtime.internal.Conversions", name, to, new Type[] { Type.OBJECT },
 						Constants.INVOKESTATIC));
@@ -459,8 +460,7 @@ public class Utility {
 	}
 
 	/**
-	 * replace an instruction handle with another instruction, in this case, a
-	 * branch instruction.
+	 * replace an instruction handle with another instruction, in this case, a branch instruction.
 	 * 
 	 * @param ih the instruction handle to replace.
 	 * @param branchInstruction the branch instruction to replace ih with
@@ -474,10 +474,8 @@ public class Utility {
 	}
 
 	/**
-	 * delete an instruction handle and retarget all targeters of the deleted
-	 * instruction to the next instruction. Obviously, this should not be used
-	 * to delete a control transfer instruction unless you know what you're
-	 * doing.
+	 * delete an instruction handle and retarget all targeters of the deleted instruction to the next instruction. Obviously, this
+	 * should not be used to delete a control transfer instruction unless you know what you're doing.
 	 * 
 	 * @param ih the instruction handle to delete.
 	 * @param enclosingMethod where to find ih's instruction list.
@@ -487,8 +485,7 @@ public class Utility {
 	}
 
 	/**
-	 * delete an instruction handle and retarget all targeters of the deleted
-	 * instruction to the provided target.
+	 * delete an instruction handle and retarget all targeters of the deleted instruction to the provided target.
 	 * 
 	 * @param ih the instruction handle to delete
 	 * @param retargetTo the instruction handle to retarget targeters of ih to.
@@ -514,11 +511,9 @@ public class Utility {
 	/**
 	 * Fix for Bugzilla #39479, #40109 patch contributed by Andy Clement
 	 * 
-	 * Need to manually copy Select instructions - if we rely on the the 'fresh'
-	 * object created by copy(), the InstructionHandle array 'targets' inside
-	 * the Select object will not have been deep copied, so modifying targets in
-	 * fresh will modify the original Select - not what we want ! (It is a bug
-	 * in BCEL to do with cloning Select objects).
+	 * Need to manually copy Select instructions - if we rely on the the 'fresh' object created by copy(), the InstructionHandle
+	 * array 'targets' inside the Select object will not have been deep copied, so modifying targets in fresh will modify the
+	 * original Select - not what we want ! (It is a bug in BCEL to do with cloning Select objects).
 	 * 
 	 * <pre>
 	 * declare error:
@@ -622,8 +617,7 @@ public class Utility {
 	}
 
 	/**
-	 * Checks for suppression specified on the member or on the declaring type
-	 * of that member
+	 * Checks for suppression specified on the member or on the declaring type of that member
 	 */
 	public static boolean isSuppressing(Member member, String lintkey) {
 		boolean isSuppressing = Utils.isSuppressing(member.getAnnotations(), lintkey);
@@ -636,11 +630,12 @@ public class Utility {
 		return false;
 	}
 
-	public static List/* Lint.Kind */getSuppressedWarnings(AnnotationAJ[] anns, Lint lint) {
-		if (anns == null)
+	public static List<Lint.Kind> getSuppressedWarnings(AnnotationAJ[] anns, Lint lint) {
+		if (anns == null) {
 			return Collections.EMPTY_LIST;
+		}
 		// Go through the annotation types
-		List suppressedWarnings = new ArrayList();
+		List<Lint.Kind> suppressedWarnings = new ArrayList<Lint.Kind>();
 		boolean found = false;
 		for (int i = 0; !found && i < anns.length; i++) {
 			// Check for the SuppressAjWarnings annotation
@@ -651,7 +646,7 @@ public class Utility {
 				// 1. there are no values specified (i.e. @SuppressAjWarnings)
 				// 2. there are values specified (i.e. @SuppressAjWarnings("A")
 				// or @SuppressAjWarnings({"A","B"})
-				List vals = ((BcelAnnotation) anns[i]).getBcelAnnotation().getValues();
+				List<ElementNameValuePairGen> vals = ((BcelAnnotation) anns[i]).getBcelAnnotation().getValues();
 				if (vals == null || vals.isEmpty()) { // (1)
 					suppressedWarnings.addAll(lint.allKinds());
 				} else { // (2)

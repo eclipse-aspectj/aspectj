@@ -85,7 +85,7 @@ import org.aspectj.weaver.patterns.TypePattern;
  */
 public class AtAjAttributes {
 
-	private final static List EMPTY_LIST = new ArrayList();
+	private final static List<AjAttribute> NO_ATTRIBUTES = Collections.emptyList();
 	private final static String[] EMPTY_STRINGS = new String[0];
 	private final static String VALUE = "value";
 	private final static String ARGNAMES = "argNames";
@@ -102,7 +102,7 @@ public class AtAjAttributes {
 		/**
 		 * The list of AjAttribute.XXX that we are populating from the @AJ read
 		 */
-		List ajAttributes = new ArrayList();
+		List<AjAttribute> ajAttributes = new ArrayList<AjAttribute>();
 
 		/**
 		 * The resolved type (class) for which we are reading @AJ for (be it class, method, field annotations)
@@ -189,8 +189,9 @@ public class AtAjAttributes {
 			IMessageHandler msgHandler, boolean isCodeStyleAspect) {
 		boolean ignoreThisClass = javaClass.getClassName().charAt(0) == 'o'
 				&& javaClass.getClassName().startsWith("org.aspectj.lang.annotation");
-		if (ignoreThisClass)
-			return EMPTY_LIST;
+		if (ignoreThisClass) {
+			return NO_ATTRIBUTES;
+		}
 		boolean containsPointcut = false;
 		boolean containsAnnotationClassReference = false;
 		Constant[] cpool = javaClass.getConstantPool().getConstantPool();
@@ -215,7 +216,7 @@ public class AtAjAttributes {
 			}
 		}
 		if (!containsAnnotationClassReference)
-			return EMPTY_LIST;
+			return NO_ATTRIBUTES;
 
 		AjAttributeStruct struct = new AjAttributeStruct(type, context, msgHandler);
 		Attribute[] attributes = javaClass.getAttributes();
@@ -244,13 +245,13 @@ public class AtAjAttributes {
 			msgHandler.handleMessage(new Message("Found @DeclarePrecedence on a non @Aspect type '" + type.getName() + "'",
 					IMessage.WARNING, null, type.getSourceLocation()));
 			// bypass what we have read
-			return EMPTY_LIST;
+			return NO_ATTRIBUTES;
 		}
 
 		// the following block will not detect @Pointcut in non @Aspect types
 		// for optimization purpose
 		if (!(hasAtAspectAnnotation || isCodeStyleAspect) && !containsPointcut) {
-			return EMPTY_LIST;
+			return NO_ATTRIBUTES;
 		}
 
 		// FIXME AV - turn on when ajcMightHaveAspect
@@ -898,8 +899,8 @@ public class AtAjAttributes {
 		// supplied as just the class return value of the annotated method
 		ElementNameValuePairGen interfaceListSpecified = getAnnotationElement(declareMixinAnnotation, "interfaces");
 
-		List newParents = new ArrayList(1);
-		List newInterfaceTypes = new ArrayList(1);
+		List<TypePattern> newParents = new ArrayList<TypePattern>(1);
+		List<ResolvedType> newInterfaceTypes = new ArrayList<ResolvedType>(1);
 		if (interfaceListSpecified != null) {
 			ArrayElementValueGen arrayOfInterfaceTypes = (ArrayElementValueGen) interfaceListSpecified.getValue();
 			int numberOfTypes = arrayOfInterfaceTypes.getElementValuesArraySize();
@@ -1524,7 +1525,7 @@ public class AtAjAttributes {
 			throw new UnreadableDebugInfoException();
 		}
 
-		List bindings = new ArrayList();
+		List<FormalBinding> bindings = new ArrayList<FormalBinding>();
 		for (int i = 0; i < argumentNames.length; i++) {
 			String argumentName = argumentNames[i];
 			UnresolvedType argumentType = UnresolvedType.forSignature(method.getArgumentTypes()[i].getSignature());
@@ -1546,7 +1547,7 @@ public class AtAjAttributes {
 			}
 		}
 
-		return (FormalBinding[]) bindings.toArray(new FormalBinding[] {});
+		return bindings.toArray(new FormalBinding[] {});
 	}
 
 	// FIXME alex deal with exclude index
@@ -1659,8 +1660,8 @@ public class AtAjAttributes {
 	 * Return the argNames set for an annotation or null if it is not specified.
 	 */
 	private static String getArgNamesValue(AnnotationGen anno) {
-		for (Iterator iterator1 = anno.getValues().iterator(); iterator1.hasNext();) {
-			ElementNameValuePairGen element = (ElementNameValuePairGen) iterator1.next();
+		List<ElementNameValuePairGen> elements = anno.getValues();
+		for (ElementNameValuePairGen element : elements) {
 			if (ARGNAMES.equals(element.getNameString())) {
 				return element.getValue().stringifyValue();
 			}
@@ -1693,7 +1694,7 @@ public class AtAjAttributes {
 		}
 
 		final int startAtStackIndex = method.isStatic() ? 0 : 1;
-		final List arguments = new ArrayList();
+		final List<MethodArgument> arguments = new ArrayList<MethodArgument>();
 		LocalVariableTable lt = method.getLocalVariableTable();
 		if (lt != null) {
 			for (int j = 0; j < lt.getLocalVariableTable().length; j++) {
@@ -1708,7 +1709,7 @@ public class AtAjAttributes {
 			// No debug info, do we have an annotation value we can rely on?
 			if (argNamesFromAnnotation != null) {
 				StringTokenizer st = new StringTokenizer(argNamesFromAnnotation, " ,");
-				List args = new ArrayList();
+				List<String> args = new ArrayList<String>();
 				while (st.hasMoreTokens()) {
 					args.add(st.nextToken());
 				}
@@ -1729,7 +1730,7 @@ public class AtAjAttributes {
 							+ shortString.toString() + "'", methodStruct);
 					return EMPTY_STRINGS;
 				}
-				return (String[]) args.toArray(new String[] {});
+				return args.toArray(new String[] {});
 			}
 		}
 
@@ -1753,9 +1754,8 @@ public class AtAjAttributes {
 		});
 		String[] argumentNames = new String[arguments.size()];
 		int i = 0;
-		for (Iterator iterator = arguments.iterator(); iterator.hasNext(); i++) {
-			MethodArgument methodArgument = (MethodArgument) iterator.next();
-			argumentNames[i] = methodArgument.name;
+		for (MethodArgument methodArgument : arguments) {
+			argumentNames[i++] = methodArgument.name;
 		}
 		return argumentNames;
 	}
@@ -1795,6 +1795,7 @@ public class AtAjAttributes {
 			m_binding = binding;
 		}
 
+		@Override
 		public Pointcut getPointcut() {
 			if (m_lazyPointcut == null && m_pointcutUnresolved != null) {
 				m_lazyPointcut = m_pointcutUnresolved.resolve(m_binding);
@@ -1851,11 +1852,11 @@ public class AtAjAttributes {
 		}
 	}
 
-	private static void reportError(String message, IMessageHandler handler, ISourceLocation sourceLocation) {
-		if (!handler.isIgnoring(IMessage.ERROR)) {
-			handler.handleMessage(new Message(message, sourceLocation, true));
-		}
-	}
+	// private static void reportError(String message, IMessageHandler handler, ISourceLocation sourceLocation) {
+	// if (!handler.isIgnoring(IMessage.ERROR)) {
+	// handler.handleMessage(new Message(message, sourceLocation, true));
+	// }
+	// }
 
 	/**
 	 * Report a warning
