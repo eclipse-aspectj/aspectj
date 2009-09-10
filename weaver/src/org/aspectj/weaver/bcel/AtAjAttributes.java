@@ -198,7 +198,7 @@ public class AtAjAttributes {
 		for (int i = 0; i < cpool.length; i++) {
 			Constant constant = cpool[i];
 			if (constant != null && constant.getTag() == Constants.CONSTANT_Utf8) {
-				String constantValue = ((ConstantUtf8) constant).getBytes();
+				String constantValue = ((ConstantUtf8) constant).getValue();
 				if (constantValue.length() > 28 && constantValue.charAt(1) == 'o') {
 					if (constantValue.startsWith("Lorg/aspectj/lang/annotation")) {
 						containsAnnotationClassReference = true;
