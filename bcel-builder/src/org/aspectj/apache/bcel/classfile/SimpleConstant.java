@@ -1,5 +1,3 @@
-package org.aspectj.apache.bcel.classfile;
-
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -53,89 +51,8 @@ package org.aspectj.apache.bcel.classfile;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-import java.io.DataInputStream;
-import java.io.IOException;
+package org.aspectj.apache.bcel.classfile;
 
-import org.aspectj.apache.bcel.generic.Type;
-
-/**
- * This class represents the field info structure, i.e., the representation for a variable in the class. See JVM specification for
- * details.
- * 
- * @version $Id: Field.java,v 1.5 2009/09/10 15:35:05 aclement Exp $
- * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
- */
-public final class Field extends FieldOrMethod {
-
-	public static final Field[] NoFields = new Field[0];
-
-	private Type fieldType = null; // lazily initialized
-
-	private Field() {
-	}
-
-	public Field(Field c) {
-		super(c);
-	}
-
-	Field(DataInputStream dis, ConstantPool cpool) throws IOException {
-		super(dis, cpool);
-	}
-
-	public Field(int modifiers, int nameIndex, int signatureIndex, Attribute[] attributes, ConstantPool cpool) {
-		super(modifiers, nameIndex, signatureIndex, attributes, cpool);
-	}
-
-	public void accept(ClassVisitor v) {
-		v.visitField(this);
-	}
-
-	/**
-	 * @return constant value associated with this field (may be null)
-	 */
-	public final ConstantValue getConstantValue() {
-		return AttributeUtils.getConstantValueAttribute(attributes);
-	}
-
-	/**
-	 * Return string representation close to declaration format, eg: 'public static final short MAX = 100'
-	 */
-	@Override
-	public final String toString() {
-		// Get names from constant pool
-		StringBuffer buf = new StringBuffer(Utility.accessToString(modifiers));
-		if (buf.length() > 0) {
-			buf.append(" ");
-		}
-		String signature = Utility.signatureToString(getSignature());
-
-		buf.append(signature).append(" ").append(getName());
-
-		ConstantValue cv = getConstantValue();
-		if (cv != null) {
-			buf.append(" = ").append(cv);
-		}
-
-		// append all attributes that are *not* "ConstantValue"
-		for (Attribute a : attributes) {
-			if (!(a instanceof ConstantValue)) {
-				buf.append(" [").append(a.toString()).append("]");
-			}
-		}
-
-		return buf.toString();
-	}
-
-	/** deep copy of this field */
-	public final Field copy(ConstantPool constant_pool) {
-		return (Field) copy_(constant_pool);
-	}
-
-	/** return the type of the field */
-	public Type getType() {
-		if (fieldType == null) {
-			fieldType = Type.getReturnType(getSignature());
-		}
-		return fieldType;
-	}
+public interface SimpleConstant {
+	public String getStringValue();
 }

@@ -127,7 +127,7 @@ public class LocalVariableTypeTable extends Attribute {
     for(int i=0; i < local_variable_type_table_length; i++)
       c.local_variable_type_table[i] = local_variable_type_table[i].copy();
 
-    c.constantPool = constant_pool;
+    c.cpool = constant_pool;
     return c;
   }
 

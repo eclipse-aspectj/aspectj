@@ -68,7 +68,7 @@ import org.aspectj.apache.bcel.Constants;
  * This class is derived from <em>Attribute</em> and represents a reference to a <href="http://wwwipd.ira.uka.de/~pizza/gj/">GJ</a>
  * attribute.
  * 
- * @version $Id: Signature.java,v 1.9 2008/10/20 18:31:01 aclement Exp $
+ * @version $Id: Signature.java,v 1.10 2009/09/10 15:35:04 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Attribute
  */
@@ -113,6 +113,7 @@ public final class Signature extends Attribute {
 	 * 
 	 * @param v Visitor object
 	 */
+	@Override
 	public void accept(ClassVisitor v) {
 		System.err.println("Visiting non-standard Signature object");
 		v.visitSignature(this);
@@ -124,6 +125,7 @@ public final class Signature extends Attribute {
 	 * @param file Output file stream
 	 * @throws IOException
 	 */
+	@Override
 	public final void dump(DataOutputStream file) throws IOException {
 		super.dump(file);
 		file.writeShort(signature_index);
@@ -147,8 +149,8 @@ public final class Signature extends Attribute {
 	 * @return GJ signature.
 	 */
 	public final String getSignature() {
-		ConstantUtf8 c = (ConstantUtf8) constantPool.getConstant(signature_index, Constants.CONSTANT_Utf8);
-		return c.getBytes();
+		ConstantUtf8 c = (ConstantUtf8) cpool.getConstant(signature_index, Constants.CONSTANT_Utf8);
+		return c.getValue();
 	}
 
 	/**
@@ -290,6 +292,7 @@ public final class Signature extends Attribute {
 	/**
 	 * @return String representation
 	 */
+	@Override
 	public final String toString() {
 		String s = getSignature();
 
@@ -299,6 +302,7 @@ public final class Signature extends Attribute {
 	/**
 	 * @return deep copy of this attribute
 	 */
+	@Override
 	public Attribute copy(ConstantPool constant_pool) {
 		return (Signature) clone();
 	}

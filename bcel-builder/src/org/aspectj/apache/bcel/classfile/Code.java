@@ -69,7 +69,7 @@ import  java.io.*;
  * is used for debugging purposes and <em>LocalVariableTable</em> which 
  * contains information about the local variables.
  *
- * @version $Id: Code.java,v 1.6 2008/08/26 14:59:45 aclement Exp $
+ * @version $Id: Code.java,v 1.7 2009/09/10 15:35:05 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Attribute
  * @see     CodeException
@@ -306,13 +306,13 @@ public final class Code extends Attribute {
     buf = new StringBuffer("Code(max_stack = " + maxStack +
 			   ", max_locals = " + maxLocals +
 			   ", code_length = " + code.length + ")\n" +
-			   Utility.codeToString(code, constantPool, 0, -1, verbose));
+			   Utility.codeToString(code, cpool, 0, -1, verbose));
 
     if(exceptionTable.length > 0) {
       buf.append("\nException handler(s) = \n" + "From\tTo\tHandler\tType\n");
 
       for(int i=0; i < exceptionTable.length; i++)
-	buf.append(exceptionTable[i].toString(constantPool, verbose) + "\n");
+	buf.append(exceptionTable[i].toString(cpool, verbose) + "\n");
     }
 
     if(attributes.length > 0) {
@@ -338,7 +338,7 @@ public final class Code extends Attribute {
   public Attribute copy(ConstantPool constant_pool) {
     Code c = (Code)clone();
     c.code          = (byte[])code.clone();
-    c.constantPool = constant_pool;
+    c.cpool = constant_pool;
   
     c.exceptionTable = new CodeException[exceptionTable.length];
     for(int i=0; i < exceptionTable.length; i++)
@@ -361,14 +361,14 @@ public final class Code extends Attribute {
 	  codeString.append("Code(max_stack = ").append(maxStack);
 	  codeString.append(", max_locals = ").append(maxLocals);
 	  codeString.append(", code_length = ").append(code.length).append(")\n");
-	  codeString.append(Utility.codeToString(code, constantPool, 0, -1,true));
+	  codeString.append(Utility.codeToString(code, cpool, 0, -1,true));
 	  if (exceptionTable.length>0) {
 		  codeString.append("\n").append("Exception entries =  ").append(exceptionTable.length).append("\n");
 		  for (int i = 0; i < exceptionTable.length; i++) {
 			CodeException exc = exceptionTable[i];
 			int type = exc.getCatchType();
 			String name = "finally";
-			if (type!=0) name = this.constantPool.getConstantString(type,Constants.CONSTANT_Class);
+			if (type!=0) name = this.cpool.getConstantString(type,Constants.CONSTANT_Class);
 			codeString.append(name).append("[");
 			codeString.append(exc.getStartPC()).append(">").append(exc.getEndPC()).append("]\n");
 		  }

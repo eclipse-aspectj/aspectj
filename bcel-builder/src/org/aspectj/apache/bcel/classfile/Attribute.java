@@ -70,7 +70,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnot
  * <em>Exceptiontable</em>, <em>LineNumberTable</em>, <em>LocalVariableTable</em>, <em>InnerClasses</em> and <em>Synthetic</em>
  * attributes are supported. The <em>Unknown</em> attribute stands for non-standard-attributes.
  * 
- * @version $Id: Attribute.java,v 1.5 2009/09/09 21:26:54 aclement Exp $
+ * @version $Id: Attribute.java,v 1.6 2009/09/10 15:35:05 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see ConstantValue
  * @see SourceFile
@@ -88,27 +88,26 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
 	public final static Attribute[] NoAttributes = new Attribute[0];
 
 	protected byte tag; // Tag to distinguish subclasses
-	protected int nameIndex; // Points to attribute name in constant pool
-	protected int length; // Content length of attribute field
-	protected ConstantPool constantPool;
+	protected int nameIndex;
+	protected int length;
+	protected ConstantPool cpool;
 
-	protected Attribute(byte tag, int nameIndex, int length, ConstantPool constantPool) {
+	protected Attribute(byte tag, int nameIndex, int length, ConstantPool cpool) {
 		this.tag = tag;
 		this.nameIndex = nameIndex;
 		this.length = length;
-		this.constantPool = constantPool;
+		this.cpool = cpool;
 	}
 
-	/** Dump attribute to file stream in binary format */
 	public void dump(DataOutputStream file) throws IOException {
 		file.writeShort(nameIndex);
 		file.writeInt(length);
 	}
 
 	public static final Attribute readAttribute(DataInputStream file, ConstantPool cpool) throws IOException {
-		byte tag = Constants.ATTR_UNKNOWN; // Unknown attribute
+		byte tag = Constants.ATTR_UNKNOWN;
 		int idx = file.readUnsignedShort();
-		String name = cpool.getConstantUtf8(idx).getBytes();
+		String name = cpool.getConstantUtf8(idx).getValue();
 		int len = file.readInt();
 
 		// Compare strings to find known attribute
@@ -163,7 +162,7 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
 	}
 
 	public String getName() {
-		return constantPool.getConstantUtf8(nameIndex).getBytes();
+		return cpool.getConstantUtf8(nameIndex).getValue();
 	}
 
 	public final int getLength() {
@@ -179,7 +178,7 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
 	}
 
 	public final ConstantPool getConstantPool() {
-		return constantPool;
+		return cpool;
 	}
 
 	/**

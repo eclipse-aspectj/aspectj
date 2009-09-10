@@ -73,7 +73,7 @@ import com.sun.org.apache.bcel.internal.generic.LDC;
  * @see LDC
  * @see INVOKEVIRTUAL
  * 
- * @version $Id: InstructionCP.java,v 1.3 2008/08/28 00:05:49 aclement Exp $
+ * @version $Id: InstructionCP.java,v 1.4 2009/09/10 15:35:06 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class InstructionCP extends Instruction {
@@ -84,6 +84,7 @@ public class InstructionCP extends Instruction {
 		this.index = index;
 	}
 
+	@Override
 	public void dump(DataOutputStream out) throws IOException {
 		if (opcode == LDC_W && index < 256) {
 			out.writeByte(LDC);
@@ -101,6 +102,7 @@ public class InstructionCP extends Instruction {
 		}
 	}
 
+	@Override
 	public int getLength() {
 		if (opcode == LDC_W && index < 256) {
 			return 2;
@@ -118,6 +120,7 @@ public class InstructionCP extends Instruction {
 	 * @param verbose long/short format switch
 	 * @return mnemonic for instruction
 	 */
+	@Override
 	public String toString(boolean verbose) {
 		return super.toString(verbose) + " " + index;
 	}
@@ -139,10 +142,12 @@ public class InstructionCP extends Instruction {
 	/**
 	 * @return index in constant pool referred by this instruction.
 	 */
+	@Override
 	public final int getIndex() {
 		return index;
 	}
 
+	@Override
 	public void setIndex(int index) {
 		this.index = index;
 		if (this.index > 255 && opcode == LDC) {
@@ -151,6 +156,7 @@ public class InstructionCP extends Instruction {
 		}
 	}
 
+	@Override
 	public Type getType(ConstantPool cpg) {
 		switch (cpg.getConstant(index).getTag()) {
 		case CONSTANT_String:
@@ -179,6 +185,7 @@ public class InstructionCP extends Instruction {
 		}
 	}
 
+	@Override
 	public Object getValue(ConstantPool cpg) {
 		org.aspectj.apache.bcel.classfile.Constant c = cpg.getConstant(index);
 
@@ -186,25 +193,26 @@ public class InstructionCP extends Instruction {
 		case org.aspectj.apache.bcel.Constants.CONSTANT_String:
 			int i = ((org.aspectj.apache.bcel.classfile.ConstantString) c).getStringIndex();
 			c = cpg.getConstant(i);
-			return ((org.aspectj.apache.bcel.classfile.ConstantUtf8) c).getBytes();
+			return ((org.aspectj.apache.bcel.classfile.ConstantUtf8) c).getValue();
 
 		case org.aspectj.apache.bcel.Constants.CONSTANT_Float:
-			return new Float(((org.aspectj.apache.bcel.classfile.ConstantFloat) c).getBytes());
+			return new Float(((org.aspectj.apache.bcel.classfile.ConstantFloat) c).getValue());
 
 		case org.aspectj.apache.bcel.Constants.CONSTANT_Integer:
-			return new Integer(((org.aspectj.apache.bcel.classfile.ConstantInteger) c).getBytes());
+			return new Integer(((org.aspectj.apache.bcel.classfile.ConstantInteger) c).getValue());
 
 			// from ldc2_w:
 		case org.aspectj.apache.bcel.Constants.CONSTANT_Long:
-			return new Long(((org.aspectj.apache.bcel.classfile.ConstantLong) c).getBytes());
+			return new Long(((org.aspectj.apache.bcel.classfile.ConstantLong) c).getValue());
 
 		case org.aspectj.apache.bcel.Constants.CONSTANT_Double:
-			return new Double(((org.aspectj.apache.bcel.classfile.ConstantDouble) c).getBytes());
+			return new Double(((org.aspectj.apache.bcel.classfile.ConstantDouble) c).getValue());
 		default: // Never reached
 			throw new RuntimeException("Unknown or invalid constant type at " + index);
 		}
 	}
 
+	@Override
 	public Class[] getExceptions() {
 		return org.aspectj.apache.bcel.ExceptionConstants.EXCS_STRING_RESOLUTION;
 	}

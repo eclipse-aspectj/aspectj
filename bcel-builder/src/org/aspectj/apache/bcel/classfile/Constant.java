@@ -57,7 +57,6 @@ package org.aspectj.apache.bcel.classfile;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 
 import org.aspectj.apache.bcel.Constants;
 
@@ -65,26 +64,16 @@ import org.aspectj.apache.bcel.Constants;
  * Abstract superclass for classes to represent the different constant types in the constant pool of a class file. The classes keep
  * closely to the JVM specification.
  * 
- * @version $Id: Constant.java,v 1.4 2009/09/10 03:59:33 aclement Exp $
+ * @version $Id: Constant.java,v 1.5 2009/09/10 15:35:04 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
-public abstract class Constant implements Cloneable, Node, Serializable {
+public abstract class Constant implements Cloneable, Node {
 
 	protected byte tag;
 
 	Constant(byte tag) {
 		this.tag = tag;
 	}
-
-	/**
-	 * Visitor pattern
-	 */
-	public abstract void accept(ClassVisitor v);
-
-	/**
-	 * Serialize the constant to an output stream
-	 */
-	public abstract void dump(DataOutputStream dataOutputStream) throws IOException;
 
 	public final byte getTag() {
 		return tag;
@@ -95,9 +84,12 @@ public abstract class Constant implements Cloneable, Node, Serializable {
 		return Constants.CONSTANT_NAMES[tag] + "[" + tag + "]";
 	}
 
-	/**
-	 * @return deep copy of this constant
-	 */
+	public abstract void accept(ClassVisitor v);
+
+	public abstract void dump(DataOutputStream dataOutputStream) throws IOException;
+
+	public abstract Object getValue();
+
 	public Constant copy() {
 		try {
 			return (Constant) super.clone();
@@ -112,33 +104,34 @@ public abstract class Constant implements Cloneable, Node, Serializable {
 		return super.clone();
 	}
 
-	static final Constant readConstant(DataInputStream file) throws IOException, ClassFormatException {
-		byte b = file.readByte();
+	static final Constant readConstant(DataInputStream dis) throws IOException, ClassFormatException {
+		byte b = dis.readByte();
 		switch (b) {
 		case Constants.CONSTANT_Class:
-			return new ConstantClass(file);
+			return new ConstantClass(dis);
 		case Constants.CONSTANT_NameAndType:
-			return new ConstantNameAndType(file);
+			return new ConstantNameAndType(dis);
 		case Constants.CONSTANT_Utf8:
-			return new ConstantUtf8(file);
+			return new ConstantUtf8(dis);
 		case Constants.CONSTANT_Fieldref:
-			return new ConstantFieldref(file);
+			return new ConstantFieldref(dis);
 		case Constants.CONSTANT_Methodref:
-			return new ConstantMethodref(file);
+			return new ConstantMethodref(dis);
 		case Constants.CONSTANT_InterfaceMethodref:
-			return new ConstantInterfaceMethodref(file);
+			return new ConstantInterfaceMethodref(dis);
 		case Constants.CONSTANT_String:
-			return new ConstantString(file);
+			return new ConstantString(dis);
 		case Constants.CONSTANT_Integer:
-			return new ConstantInteger(file);
+			return new ConstantInteger(dis);
 		case Constants.CONSTANT_Float:
-			return new ConstantFloat(file);
+			return new ConstantFloat(dis);
 		case Constants.CONSTANT_Long:
-			return new ConstantLong(file);
+			return new ConstantLong(dis);
 		case Constants.CONSTANT_Double:
-			return new ConstantDouble(file);
+			return new ConstantDouble(dis);
 		default:
 			throw new ClassFormatException("Invalid byte tag in constant pool: " + b);
 		}
 	}
+
 }

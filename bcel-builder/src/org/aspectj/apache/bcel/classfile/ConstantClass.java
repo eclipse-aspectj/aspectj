@@ -64,11 +64,11 @@ import org.aspectj.apache.bcel.Constants;
  * This class is derived from the abstract <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class and
  * represents a reference to a (external) class.
  * 
- * @version $Id: ConstantClass.java,v 1.4 2009/09/10 03:59:33 aclement Exp $
+ * @version $Id: ConstantClass.java,v 1.5 2009/09/10 15:35:05 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author Andy Clement
  */
-public final class ConstantClass extends Constant implements ConstantObject {
+public final class ConstantClass extends Constant {
 	private int nameIndex;
 
 	public ConstantClass(ConstantClass c) {
@@ -100,14 +100,13 @@ public final class ConstantClass extends Constant implements ConstantObject {
 		return nameIndex;
 	}
 
-	public final void setNameIndex(int nameIndex) {
-		this.nameIndex = nameIndex;
+	@Override
+	public Integer getValue() {
+		return nameIndex;
 	}
 
-	public String getConstantValue(ConstantPool cp) {
-		return cp.getConstantUtf8(nameIndex).getBytes();
-		// Constant c = cp.getConstant(nameIndex, Constants.CONSTANT_Utf8);
-		// return ((ConstantUtf8) c).getBytes();
+	public String getClassname(ConstantPool cpool) {
+		return cpool.getConstantUtf8(nameIndex).getValue();
 	}
 
 	@Override

@@ -60,9 +60,11 @@ public class ConstantPool implements Node {
 	}
 
 	public Constant getConstant(int index) {
-		if (index >= pool.length || index < 0)
-			throw new ClassFormatException("Invalid constant pool reference: " + index + ". Constant pool size is: " + pool.length);
-		return pool[index];
+		try {
+			return pool[index];
+		} catch (ArrayIndexOutOfBoundsException aioobe) {
+			throw new ClassFormatException("Index " + index + " into constant pool (size:" + poolSize + ") is invalid");
+		}
 	}
 
 	/**
@@ -110,7 +112,7 @@ public class ConstantPool implements Node {
 		}
 		// Finally get the string from the constant pool
 		c = getConstant(i, Constants.CONSTANT_Utf8);
-		return ((ConstantUtf8) c).getBytes();
+		return ((ConstantUtf8) c).getValue();
 	}
 
 	/**
@@ -124,29 +126,21 @@ public class ConstantPool implements Node {
 		case Constants.CONSTANT_Class:
 			i = ((ConstantClass) c).getNameIndex();
 			c = getConstant(i, Constants.CONSTANT_Utf8);
-			str = Utility.compactClassName(((ConstantUtf8) c).getBytes(), false);
+			str = Utility.compactClassName(((ConstantUtf8) c).getValue(), false);
 			break;
 
 		case Constants.CONSTANT_String:
 			i = ((ConstantString) c).getStringIndex();
 			c = getConstant(i, Constants.CONSTANT_Utf8);
-			str = "\"" + escape(((ConstantUtf8) c).getBytes()) + "\"";
+			str = "\"" + escape(((ConstantUtf8) c).getValue()) + "\"";
 			break;
 
 		case Constants.CONSTANT_Utf8:
-			str = ((ConstantUtf8) c).getBytes();
-			break;
 		case Constants.CONSTANT_Double:
-			str = Double.toString(((ConstantDouble) c).getBytes());
-			break;
 		case Constants.CONSTANT_Float:
-			str = Float.toString(((ConstantFloat) c).getBytes());
-			break;
 		case Constants.CONSTANT_Long:
-			str = Long.toString(((ConstantLong) c).getBytes());
-			break;
 		case Constants.CONSTANT_Integer:
-			str = Integer.toString(((ConstantInteger) c).getBytes());
+			str = ((SimpleConstant) c).getStringValue();
 			break;
 
 		case Constants.CONSTANT_NameAndType:
@@ -218,25 +212,17 @@ public class ConstantPool implements Node {
 				pool[i].dump(file);
 	}
 
-	public ConstantUtf8 getConstantUtf8(int idx) {
-		try {
-			Constant c = pool[idx];
-			if (c == null) {
-				throw new ClassFormatException("Constant pool at index " + idx + " is null.");
-			}
-			if (c.tag != Constants.CONSTANT_Utf8) {
-				throw new ClassFormatException("Expected UTF8Constant " + " at index " + idx + " and got " + c);
-			}
-			return (ConstantUtf8) c;
-		} catch (ArrayIndexOutOfBoundsException aioobe) {
-			throw new ClassFormatException("Index " + idx + " into constant pool (size:" + poolSize + ") is invalid");
-		}
+	public ConstantUtf8 getConstantUtf8(int index) {
+		Constant c = getConstant(index);
+		assert c != null;
+		assert c.tag == Constants.CONSTANT_Utf8;
+		return (ConstantUtf8) c;
 	}
 
 	public String getConstantString_CONSTANTClass(int index) {
 		ConstantClass c = (ConstantClass) getConstant(index, Constants.CONSTANT_Class);
 		index = c.getNameIndex();
-		return ((ConstantUtf8) getConstant(index, Constants.CONSTANT_Utf8)).getBytes();
+		return ((ConstantUtf8) getConstant(index, Constants.CONSTANT_Utf8)).getValue();
 	}
 
 	public int getLength() {
@@ -257,7 +243,7 @@ public class ConstantPool implements Node {
 		for (int i = 1; i < poolSize; i++) {
 			if (pool[i] instanceof ConstantInteger) {
 				ConstantInteger c = (ConstantInteger) pool[i];
-				if (c.getBytes() == n)
+				if (c.getValue() == n)
 					return i;
 			}
 		}
@@ -272,7 +258,7 @@ public class ConstantPool implements Node {
 		for (int i = 1; i < poolSize; i++) {
 			Constant c = pool[i];
 			if (c != null && c.tag == Constants.CONSTANT_Utf8) {
-				if (((ConstantUtf8) c).getBytes().equals(string)) {
+				if (((ConstantUtf8) c).getValue().equals(string)) {
 					utf8Cache.put(string, i);
 					return i;
 				}
@@ -286,7 +272,7 @@ public class ConstantPool implements Node {
 			Constant c = pool[i];
 			if (c != null && c.tag == Constants.CONSTANT_Class) {
 				int cIndex = ((ConstantClass) c).getNameIndex();
-				String cName = ((ConstantUtf8) pool[cIndex]).getBytes();
+				String cName = ((ConstantUtf8) pool[cIndex]).getValue();
 				if (cName.equals(classname))
 					return i;
 			}
@@ -376,15 +362,15 @@ public class ConstantPool implements Node {
 				// check the class
 				int cIndex = cfr.getClassIndex();
 				ConstantClass cc = (ConstantClass) pool[cIndex];
-				String cName = ((ConstantUtf8) pool[cc.getNameIndex()]).getBytes();
+				String cName = ((ConstantUtf8) pool[cc.getNameIndex()]).getValue();
 				if (!cName.equals(searchClassname))
 					continue;
 
 				// check the name and type
-				String name = ((ConstantUtf8) pool[cnat.getNameIndex()]).getBytes();
+				String name = ((ConstantUtf8) pool[cnat.getNameIndex()]).getValue();
 				if (!name.equals(searchFieldname))
 					continue; // not this one
-				String typeSignature = ((ConstantUtf8) pool[cnat.getSignatureIndex()]).getBytes();
+				String typeSignature = ((ConstantUtf8) pool[cnat.getSignatureIndex()]).getValue();
 				if (!typeSignature.equals(searchSignature))
 					continue;
 				fieldCache.put(k, new Integer(i));
@@ -411,10 +397,10 @@ public class ConstantPool implements Node {
 			Constant c = pool[i];
 			if (c != null && c.tag == Constants.CONSTANT_NameAndType) {
 				ConstantNameAndType cnat = (ConstantNameAndType) c;
-				String name = ((ConstantUtf8) pool[cnat.getNameIndex()]).getBytes();
+				String name = ((ConstantUtf8) pool[cnat.getNameIndex()]).getValue();
 				if (!name.equals(searchName))
 					continue; // not this one
-				String typeSignature = ((ConstantUtf8) pool[cnat.getSignatureIndex()]).getBytes();
+				String typeSignature = ((ConstantUtf8) pool[cnat.getSignatureIndex()]).getValue();
 				if (!typeSignature.equals(searchTypeSignature))
 					continue;
 				return i;
@@ -439,7 +425,7 @@ public class ConstantPool implements Node {
 			Constant c = pool[i];
 			if (c != null && c.tag == Constants.CONSTANT_Float) {
 				ConstantFloat cf = (ConstantFloat) c;
-				if (Float.floatToIntBits(cf.getBytes()) == bits)
+				if (Float.floatToIntBits(cf.getValue()) == bits)
 					return i;
 			}
 		}
@@ -463,7 +449,7 @@ public class ConstantPool implements Node {
 			Constant c = pool[i];
 			if (c != null && c.tag == Constants.CONSTANT_Double) {
 				ConstantDouble cf = (ConstantDouble) c;
-				if (Double.doubleToLongBits(cf.getBytes()) == bits)
+				if (Double.doubleToLongBits(cf.getValue()) == bits)
 					return i;
 			}
 		}
@@ -487,7 +473,7 @@ public class ConstantPool implements Node {
 			if (c != null && c.tag == Constants.CONSTANT_String) {
 				ConstantString cs = (ConstantString) c;
 				ConstantUtf8 cu8 = (ConstantUtf8) pool[cs.getStringIndex()];
-				if (cu8.getBytes().equals(s))
+				if (cu8.getValue().equals(s))
 					return i;
 			}
 		}
@@ -511,7 +497,7 @@ public class ConstantPool implements Node {
 			Constant c = pool[i];
 			if (c != null && c.tag == Constants.CONSTANT_Long) {
 				ConstantLong cf = (ConstantLong) c;
-				if (cf.getBytes() == l)
+				if (cf.getValue() == l)
 					return i;
 			}
 		}
@@ -526,14 +512,14 @@ public class ConstantPool implements Node {
 			ConstantString s = (ConstantString) c;
 			ConstantUtf8 u8 = (ConstantUtf8) constants[s.getStringIndex()];
 
-			return addString(u8.getBytes());
+			return addString(u8.getValue());
 		}
 
 		case Constants.CONSTANT_Class: {
 			ConstantClass s = (ConstantClass) c;
 			ConstantUtf8 u8 = (ConstantUtf8) constants[s.getNameIndex()];
 
-			return addClass(u8.getBytes());
+			return addClass(u8.getValue());
 		}
 
 		case Constants.CONSTANT_NameAndType: {
@@ -541,23 +527,23 @@ public class ConstantPool implements Node {
 			ConstantUtf8 u8 = (ConstantUtf8) constants[n.getNameIndex()];
 			ConstantUtf8 u8_2 = (ConstantUtf8) constants[n.getSignatureIndex()];
 
-			return addNameAndType(u8.getBytes(), u8_2.getBytes());
+			return addNameAndType(u8.getValue(), u8_2.getValue());
 		}
 
 		case Constants.CONSTANT_Utf8:
-			return addUtf8(((ConstantUtf8) c).getBytes());
+			return addUtf8(((ConstantUtf8) c).getValue());
 
 		case Constants.CONSTANT_Double:
-			return addDouble(((ConstantDouble) c).getBytes());
+			return addDouble(((ConstantDouble) c).getValue());
 
 		case Constants.CONSTANT_Float:
-			return addFloat(((ConstantFloat) c).getBytes());
+			return addFloat(((ConstantFloat) c).getValue());
 
 		case Constants.CONSTANT_Long:
-			return addLong(((ConstantLong) c).getBytes());
+			return addLong(((ConstantLong) c).getValue());
 
 		case Constants.CONSTANT_Integer:
-			return addInteger(((ConstantInteger) c).getBytes());
+			return addInteger(((ConstantInteger) c).getValue());
 
 		case Constants.CONSTANT_InterfaceMethodref:
 		case Constants.CONSTANT_Methodref:
@@ -566,13 +552,13 @@ public class ConstantPool implements Node {
 			ConstantClass clazz = (ConstantClass) constants[m.getClassIndex()];
 			ConstantNameAndType n = (ConstantNameAndType) constants[m.getNameAndTypeIndex()];
 			ConstantUtf8 u8 = (ConstantUtf8) constants[clazz.getNameIndex()];
-			String class_name = u8.getBytes().replace('/', '.');
+			String class_name = u8.getValue().replace('/', '.');
 
 			u8 = (ConstantUtf8) constants[n.getNameIndex()];
-			String name = u8.getBytes();
+			String name = u8.getValue();
 
 			u8 = (ConstantUtf8) constants[n.getSignatureIndex()];
-			String signature = u8.getBytes();
+			String signature = u8.getValue();
 
 			switch (c.getTag()) {
 			case Constants.CONSTANT_InterfaceMethodref:
@@ -632,16 +618,16 @@ public class ConstantPool implements Node {
 				ConstantInterfaceMethodref cfr = (ConstantInterfaceMethodref) c;
 
 				ConstantClass cc = (ConstantClass) pool[cfr.getClassIndex()];
-				String cName = ((ConstantUtf8) pool[cc.getNameIndex()]).getBytes();
+				String cName = ((ConstantUtf8) pool[cc.getNameIndex()]).getValue();
 				if (!cName.equals(searchClassname))
 					continue;
 
 				// check the name and type
 				ConstantNameAndType cnat = (ConstantNameAndType) pool[cfr.getNameAndTypeIndex()];
-				String name = ((ConstantUtf8) pool[cnat.getNameIndex()]).getBytes();
+				String name = ((ConstantUtf8) pool[cnat.getNameIndex()]).getValue();
 				if (!name.equals(searchMethodName))
 					continue; // not this one
-				String typeSignature = ((ConstantUtf8) pool[cnat.getSignatureIndex()]).getBytes();
+				String typeSignature = ((ConstantUtf8) pool[cnat.getSignatureIndex()]).getValue();
 				if (!typeSignature.equals(searchSignature))
 					continue;
 				return i;
@@ -665,15 +651,15 @@ public class ConstantPool implements Node {
 				// check the class
 				int cIndex = cfr.getClassIndex();
 				ConstantClass cc = (ConstantClass) pool[cIndex];
-				String cName = ((ConstantUtf8) pool[cc.getNameIndex()]).getBytes();
+				String cName = ((ConstantUtf8) pool[cc.getNameIndex()]).getValue();
 				if (!cName.equals(searchClassname))
 					continue;
 
 				// check the name and type
-				String name = ((ConstantUtf8) pool[cnat.getNameIndex()]).getBytes();
+				String name = ((ConstantUtf8) pool[cnat.getNameIndex()]).getValue();
 				if (!name.equals(searchMethodName))
 					continue; // not this one
-				String typeSignature = ((ConstantUtf8) pool[cnat.getSignatureIndex()]).getBytes();
+				String typeSignature = ((ConstantUtf8) pool[cnat.getSignatureIndex()]).getValue();
 				if (!typeSignature.equals(searchSignature))
 					continue;
 				methodCache.put(key, new Integer(i));

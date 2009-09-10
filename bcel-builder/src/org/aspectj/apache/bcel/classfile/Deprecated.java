@@ -62,7 +62,7 @@ import  java.io.*;
  * deprecated method.
  * It is instantiated from the <em>Attribute.readAttribute()</em> method.
  *
- * @version $Id: Deprecated.java,v 1.3 2008/05/28 23:53:01 aclement Exp $
+ * @version $Id: Deprecated.java,v 1.4 2009/09/10 15:35:04 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Attribute
  */
@@ -163,7 +163,7 @@ public final class Deprecated extends Attribute {
     if(bytes != null)
       c.bytes = (byte[])bytes.clone();
 
-    c.constantPool = constant_pool;
+    c.cpool = constant_pool;
     return c;
   }
 }

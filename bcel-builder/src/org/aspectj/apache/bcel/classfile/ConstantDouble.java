@@ -64,11 +64,11 @@ import org.aspectj.apache.bcel.Constants;
  * This class is derived from the abstract <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class and
  * represents a reference to a Double object.
  * 
- * @version $Id: ConstantDouble.java,v 1.4 2009/09/10 03:59:33 aclement Exp $
+ * @version $Id: ConstantDouble.java,v 1.5 2009/09/10 15:35:04 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author Andy Clement
  */
-public final class ConstantDouble extends Constant implements ConstantObject {
+public final class ConstantDouble extends Constant implements SimpleConstant {
 	private double value;
 
 	public ConstantDouble(double value) {
@@ -77,7 +77,7 @@ public final class ConstantDouble extends Constant implements ConstantObject {
 	}
 
 	public ConstantDouble(ConstantDouble c) {
-		this(c.getBytes());
+		this(c.getValue());
 	}
 
 	ConstantDouble(DataInputStream file) throws IOException {
@@ -95,16 +95,17 @@ public final class ConstantDouble extends Constant implements ConstantObject {
 		file.writeDouble(value);
 	}
 
-	public final double getBytes() {
-		return value;
-	}
-
 	@Override
 	public final String toString() {
 		return super.toString() + "(bytes = " + value + ")";
 	}
 
-	public Double getConstantValue(ConstantPool cp) {
-		return new Double(value);
+	@Override
+	public Double getValue() {
+		return value;
+	}
+
+	public String getStringValue() {
+		return Double.toString(value);
 	}
 }

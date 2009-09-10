@@ -54,94 +54,70 @@ package org.aspectj.apache.bcel.classfile;
  * <http://www.apache.org/>.
  */
 
-import  org.aspectj.apache.bcel.Constants;
-import  java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-/** 
- * This class is derived from the abstract 
- * <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class 
- * and represents a reference to a String object.
- *
- * @version $Id: ConstantString.java,v 1.3 2008/05/28 23:53:02 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
- * @see     Constant
+import org.aspectj.apache.bcel.Constants;
+
+/**
+ * This class is derived from the abstract <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class and
+ * represents a reference to a String object.
+ * 
+ * @version $Id: ConstantString.java,v 1.4 2009/09/10 15:35:04 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @see Constant
  */
-public final class ConstantString extends Constant implements ConstantObject {
-  private int string_index; // Identical to ConstantClass except for this name
+public final class ConstantString extends Constant {
+	private int stringIndex;
 
-  /**
-   * Initialize from another object.
-   */
-  public ConstantString(ConstantString c) {
-    this(c.getStringIndex());
-  }    
-  /** 
-   * Initialize instance from file data.
-   *
-   * @param file Input stream
-   * @throws IOException
-   */
-  ConstantString(DataInputStream file) throws IOException
-  {    
-    this(file.readUnsignedShort());
-  }    
-  /**
-   * @param string_index Index of Constant_Utf8 in constant pool
-   */
-  public ConstantString(int string_index)
-  {    
-    super(Constants.CONSTANT_String);
-    this.string_index = string_index;
-  }    
-  /**
-   * Called by objects that are traversing the nodes of the tree implicitely
-   * defined by the contents of a Java class. I.e., the hierarchy of methods,
-   * fields, attributes, etc. spawns a tree of objects.
-   *
-   * @param v Visitor object
-   */
-  public void accept(ClassVisitor v) {
-    v.visitConstantString(this);
-  }    
-  /**
-   * Dump constant field reference to file stream in binary format.
-   *
-   * @param file Output file stream
-   * @throws IOException
-   */ 
-  public final void dump(DataOutputStream file) throws IOException
-  {
-    file.writeByte(tag);
-    file.writeShort(string_index);
-  }    
-  /**
-   * @return Index in constant pool of the string (ConstantUtf8).
-   */  
-  public final int getStringIndex() { return string_index; }    
-  /**
-   * @param string_index.
-   */
-  public final void setStringIndex(int string_index) {
-    this.string_index = string_index;
-  }    
-  /**
-   * @return String representation.
-   */
-  public final String toString()
-  {
-    return super.toString() + "(string_index = " + string_index + ")";
-  }    
+	public ConstantString(ConstantString c) {
+		this(c.getStringIndex());
+	}
 
-  /** @return String object
-   */
-  public Object getConstantValue(ConstantPool cp) {
-    Constant c = cp.getConstant(string_index, Constants.CONSTANT_Utf8);
-    return ((ConstantUtf8)c).getBytes();
-  }
+	ConstantString(DataInputStream file) throws IOException {
+		this(file.readUnsignedShort());
+	}
 
-  /** @return dereferenced string
-   */
-  public String getBytes(ConstantPool cp) {
-    return (String)getConstantValue(cp);
-  }
+	public ConstantString(int stringIndex) {
+		super(Constants.CONSTANT_String);
+		this.stringIndex = stringIndex;
+	}
+
+	@Override
+	public void accept(ClassVisitor v) {
+		v.visitConstantString(this);
+	}
+
+	@Override
+	public final void dump(DataOutputStream file) throws IOException {
+		file.writeByte(tag);
+		file.writeShort(stringIndex);
+	}
+
+	// OPTIMIZE fix duplication in these next two methods
+	/**
+	 * @return the index of the string in the constant pool
+	 */
+	@Override
+	public Integer getValue() {
+		return stringIndex;
+	}
+
+	public final int getStringIndex() {
+		return stringIndex;
+	}
+
+	@Override
+	public final String toString() {
+		return super.toString() + "(string_index = " + stringIndex + ")";
+	}
+
+	/**
+	 * @return the string, as dereferenced using the internal index into the supplied constant pool
+	 */
+	public String getString(ConstantPool cpool) {
+		Constant c = cpool.getConstant(stringIndex, Constants.CONSTANT_Utf8);
+		return ((ConstantUtf8) c).getValue();
+	}
 }

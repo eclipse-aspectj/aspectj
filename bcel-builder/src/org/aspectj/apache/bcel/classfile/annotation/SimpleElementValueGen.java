@@ -93,49 +93,49 @@ public class SimpleElementValueGen extends ElementValueGen {
 		if (type != PRIMITIVE_BYTE)
 			throw new RuntimeException("Dont call getValueByte() on a non BYTE ElementValue");
 		ConstantInteger c = (ConstantInteger) cpGen.getConstant(idx, Constants.CONSTANT_Integer);
-		return (byte) c.getBytes();
+		return (byte) c.getIntValue();
 	}
 
 	public char getValueChar() {
 		if (type != PRIMITIVE_CHAR)
 			throw new RuntimeException("Dont call getValueChar() on a non CHAR ElementValue");
 		ConstantInteger c = (ConstantInteger) cpGen.getConstant(idx, Constants.CONSTANT_Integer);
-		return (char) c.getBytes();
+		return (char) c.getIntValue();
 	}
 
 	public long getValueLong() {
 		if (type != PRIMITIVE_LONG)
 			throw new RuntimeException("Dont call getValueLong() on a non LONG ElementValue");
 		ConstantLong j = (ConstantLong) cpGen.getConstant(idx);
-		return j.getBytes();
+		return j.getValue();
 	}
 
 	public float getValueFloat() {
 		if (type != PRIMITIVE_FLOAT)
 			throw new RuntimeException("Dont call getValueFloat() on a non FLOAT ElementValue");
 		ConstantFloat f = (ConstantFloat) cpGen.getConstant(idx);
-		return f.getBytes();
+		return f.getValue();
 	}
 
 	public double getValueDouble() {
 		if (type != PRIMITIVE_DOUBLE)
 			throw new RuntimeException("Dont call getValueDouble() on a non DOUBLE ElementValue");
 		ConstantDouble d = (ConstantDouble) cpGen.getConstant(idx);
-		return d.getBytes();
+		return d.getValue();
 	}
 
 	public boolean getValueBoolean() {
 		if (type != PRIMITIVE_BOOLEAN)
 			throw new RuntimeException("Dont call getValueBoolean() on a non BOOLEAN ElementValue");
 		ConstantInteger bo = (ConstantInteger) cpGen.getConstant(idx);
-		return (bo.getBytes() != 0);
+		return (bo.getValue() != 0);
 	}
 
 	public short getValueShort() {
 		if (type != PRIMITIVE_SHORT)
 			throw new RuntimeException("Dont call getValueShort() on a non SHORT ElementValue");
 		ConstantInteger s = (ConstantInteger) cpGen.getConstant(idx);
-		return (short) s.getBytes();
+		return (short) s.getIntValue();
 	}
 
 	/**
@@ -202,14 +202,14 @@ public class SimpleElementValueGen extends ElementValueGen {
 		if (type != STRING)
 			throw new RuntimeException("Dont call getValueString() on a non STRING ElementValue");
 		ConstantUtf8 c = (ConstantUtf8) cpGen.getConstant(idx);
-		return c.getBytes();
+		return c.getValue();
 	}
 
 	public int getValueInt() {
 		if (type != PRIMITIVE_INT)
 			throw new RuntimeException("Dont call getValueString() on a non STRING ElementValue");
 		ConstantInteger c = (ConstantInteger) cpGen.getConstant(idx);
-		return c.getBytes();
+		return c.getValue();
 	}
 
 	// Whatever kind of value it is, return it as a string
@@ -218,34 +218,34 @@ public class SimpleElementValueGen extends ElementValueGen {
 		switch (type) {
 		case PRIMITIVE_INT:
 			ConstantInteger c = (ConstantInteger) cpGen.getConstant(idx);
-			return Integer.toString(c.getBytes());
+			return Integer.toString(c.getValue());
 		case PRIMITIVE_LONG:
 			ConstantLong j = (ConstantLong) cpGen.getConstant(idx);
-			return Long.toString(j.getBytes());
+			return Long.toString(j.getValue());
 		case PRIMITIVE_DOUBLE:
 			ConstantDouble d = (ConstantDouble) cpGen.getConstant(idx);
-			return Double.toString(d.getBytes());
+			return d.getValue().toString();
 		case PRIMITIVE_FLOAT:
 			ConstantFloat f = (ConstantFloat) cpGen.getConstant(idx);
-			return Float.toString(f.getBytes());
+			return Float.toString(f.getValue());
 		case PRIMITIVE_SHORT:
 			ConstantInteger s = (ConstantInteger) cpGen.getConstant(idx);
-			return Integer.toString(s.getBytes());
+			return Integer.toString(s.getValue());
 		case PRIMITIVE_BYTE:
 			ConstantInteger b = (ConstantInteger) cpGen.getConstant(idx);
-			return Integer.toString(b.getBytes());
+			return Integer.toString(b.getValue());
 		case PRIMITIVE_CHAR:
 			ConstantInteger ch = (ConstantInteger) cpGen.getConstant(idx);
-			return new Character((char) ch.getBytes()).toString();
+			return new Character((char) ch.getIntValue()).toString();
 		case PRIMITIVE_BOOLEAN:
 			ConstantInteger bo = (ConstantInteger) cpGen.getConstant(idx);
-			if (bo.getBytes() == 0)
+			if (bo.getValue() == 0)
 				return "false";
 			else
 				return "true";
 		case STRING:
 			ConstantUtf8 cu8 = (ConstantUtf8) cpGen.getConstant(idx);
-			return cu8.getBytes();
+			return cu8.getValue();
 
 		default:
 			throw new RuntimeException("SimpleElementValueGen class does not know how to stringify type " + type);

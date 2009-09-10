@@ -54,91 +54,64 @@ package org.aspectj.apache.bcel.classfile;
  * <http://www.apache.org/>.
  */
 
-import  org.aspectj.apache.bcel.Constants;
-import  java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-/** 
- * This class is derived from the abstract 
- * <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class 
- * and represents a reference to a Utf8 encoded string.
- *
- * @version $Id: ConstantUtf8.java,v 1.3 2008/05/28 23:53:01 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
- * @see     Constant
+import org.aspectj.apache.bcel.Constants;
+
+/**
+ * This class is derived from the abstract <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class and
+ * represents a reference to a Utf8 encoded string.
+ * 
+ * @version $Id: ConstantUtf8.java,v 1.4 2009/09/10 15:35:05 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @see Constant
  */
-public final class ConstantUtf8 extends Constant {
-  private String bytes;
-  
-  /**
-   * Initialize from another object.
-   */
-  public ConstantUtf8(ConstantUtf8 c) {
-    this(c.getBytes());
-  }    
-  
-  /**
-   * Initialize instance from file data.
-   *
-   * @param file Input stream
-   * @throws IOException
-   */
-  ConstantUtf8(DataInputStream file) throws IOException
-  {    
-    super(Constants.CONSTANT_Utf8);
-    bytes=file.readUTF();
-  }    
+public final class ConstantUtf8 extends Constant implements SimpleConstant {
+	private String string;
 
-  public ConstantUtf8(String bytes)
-  {
-    super(Constants.CONSTANT_Utf8);
+	public ConstantUtf8(ConstantUtf8 c) {
+		this(c.getValue());
+	}
 
-    if(bytes == null)
-      throw new IllegalArgumentException("bytes must not be null!");
-    this.bytes  = bytes;
-  }    
+	ConstantUtf8(DataInputStream file) throws IOException {
+		super(Constants.CONSTANT_Utf8);
+		string = file.readUTF();
+	}
 
-  /**
-   * Called by objects that are traversing the nodes of the tree implicitely
-   * defined by the contents of a Java class. I.e., the hierarchy of methods,
-   * fields, attributes, etc. spawns a tree of objects.
-   *
-   * @param v Visitor object
-   */
-  public void accept(ClassVisitor v) {
-    v.visitConstantUtf8(this);
-  }
+	public ConstantUtf8(String string) {
+		super(Constants.CONSTANT_Utf8);
+		assert string != null;
+		this.string = string;
+	}
 
-  /**
-   * Dump String in Utf8 format to file stream.
-   *
-   * @param file Output file stream
-   * @throws IOException
-   */ 
-  public final void dump(DataOutputStream file) throws IOException
-  {
-    file.writeByte(tag);
-    file.writeUTF(bytes);
-  }
+	@Override
+	public void accept(ClassVisitor v) {
+		v.visitConstantUtf8(this);
+	}
 
-  /**
-   * @return Data converted to string.
-   */  
-  public final String getBytes() {
-	  return bytes; 
-  }    
+	@Override
+	public final void dump(DataOutputStream file) throws IOException {
+		file.writeByte(tag);
+		file.writeUTF(string);
+	}
 
-  /**
-   * @param bytes.
-   */
-  public final void setBytes(String bytes) {
-    this.bytes = bytes;
-  }    
+	public final void setBytes(String bytes) {
+		this.string = bytes;
+	}
 
-  /**
-   * @return String representation
-   */
-  public final String toString()
-  {
-    return super.toString() + "(\"" + Utility.replace(bytes, "\n", "\\n") + "\")";
-  }    
+	@Override
+	public final String toString() {
+		return super.toString() + "(\"" + Utility.replace(string, "\n", "\\n") + "\")";
+	}
+
+	@Override
+	public String getValue() {
+		return string;
+	}
+
+	public String getStringValue() {
+		return string;
+	}
 }

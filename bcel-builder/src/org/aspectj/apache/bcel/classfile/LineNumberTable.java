@@ -65,7 +65,7 @@ import org.aspectj.apache.bcel.Constants;
  * This class represents a table of line numbers for debugging purposes. This attribute is used by the <em>Code</em> attribute. It
  * contains pairs of PCs and line numbers.
  * 
- * @version $Id: LineNumberTable.java,v 1.6 2009/09/09 21:26:54 aclement Exp $
+ * @version $Id: LineNumberTable.java,v 1.7 2009/09/10 15:35:05 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Code changes: asc Feb06 Made unpacking lazy
  */
@@ -266,7 +266,7 @@ public final class LineNumberTable extends Attribute {
 		for (int i = 0; i < tableLength; i++) {
 			newTable.table[i] = table[i].copy();
 		}
-		newTable.constantPool = constant_pool;
+		newTable.cpool = constant_pool;
 		return newTable;
 	}
 

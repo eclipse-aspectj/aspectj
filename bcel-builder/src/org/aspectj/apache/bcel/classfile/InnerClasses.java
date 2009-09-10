@@ -63,7 +63,7 @@ import  java.io.*;
  * to the source file of this class.
  * It is instantiated from the <em>Attribute.readAttribute()</em> method.
  *
- * @version $Id: InnerClasses.java,v 1.3 2008/05/28 23:53:02 aclement Exp $
+ * @version $Id: InnerClasses.java,v 1.4 2009/09/10 15:35:05 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Attribute
  */
@@ -160,7 +160,7 @@ public final class InnerClasses extends Attribute {
     StringBuffer buf = new StringBuffer();
 
     for(int i=0; i < number_of_classes; i++)
-      buf.append(inner_classes[i].toString(constantPool) + "\n");
+      buf.append(inner_classes[i].toString(cpool) + "\n");
 
     return buf.toString();
   }
@@ -175,7 +175,7 @@ public final class InnerClasses extends Attribute {
     for(int i=0; i < number_of_classes; i++)
       c.inner_classes[i] = inner_classes[i].copy();
 
-    c.constantPool = constant_pool;
+    c.cpool = constant_pool;
     return c;
   }
 }

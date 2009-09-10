@@ -38,7 +38,7 @@ public class EnclosingMethodAttributeTest extends BcelTestCase {
 		Attribute[] encMethodAttrs = findAttribute("EnclosingMethod", clazz);
 		assertTrue("Expected 1 EnclosingMethod attribute but found " + encMethodAttrs.length, encMethodAttrs.length == 1);
 		EnclosingMethod em = (EnclosingMethod) encMethodAttrs[0];
-		String enclosingClassName = em.getEnclosingClass().getConstantValue(pool);
+		String enclosingClassName = em.getEnclosingClass().getClassname(pool);
 		String enclosingMethodName = em.getEnclosingMethod().getName(pool);
 		assertTrue("Expected class name to be 'AttributeTestClassEM01' but was " + enclosingClassName, enclosingClassName
 				.equals("AttributeTestClassEM01"));
@@ -56,7 +56,7 @@ public class EnclosingMethodAttributeTest extends BcelTestCase {
 		Attribute[] encMethodAttrs = findAttribute("EnclosingMethod", clazz);
 		assertTrue("Expected 1 EnclosingMethod attribute but found " + encMethodAttrs.length, encMethodAttrs.length == 1);
 		EnclosingMethod em = (EnclosingMethod) encMethodAttrs[0];
-		String enclosingClassName = em.getEnclosingClass().getConstantValue(pool);
+		String enclosingClassName = em.getEnclosingClass().getClassname(pool);
 		assertTrue("The class is not within a method, so method_index should be null, but it is " + em.getEnclosingMethodIndex(),
 				em.getEnclosingMethodIndex() == 0);
 		assertTrue("Expected class name to be 'AttributeTestClassEM02' but was " + enclosingClassName, enclosingClassName
@@ -82,7 +82,7 @@ public class EnclosingMethodAttributeTest extends BcelTestCase {
 		SyntheticRepository repos2 = createRepos(".");
 		JavaClass clazz2 = repos2.loadClass("AttributeTestClassEM02$1");
 		EnclosingMethod em = (EnclosingMethod) encMethodAttrs[0];
-		String enclosingClassName = em.getEnclosingClass().getConstantValue(pool);
+		String enclosingClassName = em.getEnclosingClass().getClassname(pool);
 		assertTrue("The class is not within a method, so method_index should be null, but it is " + em.getEnclosingMethodIndex(),
 				em.getEnclosingMethodIndex() == 0);
 		assertTrue("Expected class name to be 'AttributeTestClassEM02' but was " + enclosingClassName, enclosingClassName

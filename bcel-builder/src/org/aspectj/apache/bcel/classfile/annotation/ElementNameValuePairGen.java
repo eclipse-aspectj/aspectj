@@ -59,7 +59,7 @@ public class ElementNameValuePairGen {
 	}
 
 	public final String getNameString() {
-		return cpool.getConstantUtf8(nameIdx).getBytes();
+		return cpool.getConstantUtf8(nameIdx).getValue();
 	}
 
 	public final ElementValueGen getValue() {

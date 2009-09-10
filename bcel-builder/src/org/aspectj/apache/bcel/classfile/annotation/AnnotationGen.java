@@ -107,7 +107,7 @@ public class AnnotationGen {
 
 	public String getTypeSignature() {
 		ConstantUtf8 utf8 = (ConstantUtf8) cpool.getConstant(typeIndex);
-		return utf8.getBytes();
+		return utf8.getValue();
 	}
 
 	public String getTypeName() {

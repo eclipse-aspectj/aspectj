@@ -66,7 +66,7 @@ import  java.io.*;
  * within the Code attribute of a method. See CLDC specification
  * §5.3.1.2
  *
- * @version $Id: StackMap.java,v 1.4 2008/08/26 15:01:37 aclement Exp $
+ * @version $Id: StackMap.java,v 1.5 2009/09/10 15:35:04 aclement Exp $
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see     Code
  * @see     StackMapEntry
@@ -166,7 +166,7 @@ public final class StackMap extends Attribute {
     for(int i=0; i < map_length; i++)
       c.map[i] = map[i].copy();
 
-    c.constantPool = constant_pool;
+    c.cpool = constant_pool;
     return c;
   }
 

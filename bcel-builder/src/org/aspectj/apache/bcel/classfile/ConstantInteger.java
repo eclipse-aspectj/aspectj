@@ -1,4 +1,3 @@
-
 package org.aspectj.apache.bcel.classfile;
 
 /* ====================================================================
@@ -55,94 +54,66 @@ package org.aspectj.apache.bcel.classfile;
  * <http://www.apache.org/>.
  */
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-import  org.aspectj.apache.bcel.Constants;
-import  java.io.*;
+import org.aspectj.apache.bcel.Constants;
 
-/** 
- * This class is derived from the abstract 
- * <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class 
- * and represents a reference to an int object.
- *
- * @version $Id: ConstantInteger.java,v 1.3 2008/05/28 23:53:02 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
- * @see     Constant
+/**
+ * This class is derived from the abstract <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class and
+ * represents a reference to an int object.
+ * 
+ * @version $Id: ConstantInteger.java,v 1.4 2009/09/10 15:35:05 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @see Constant
  */
-public final class ConstantInteger extends Constant implements ConstantObject {
-  private int bytes;
+public final class ConstantInteger extends Constant implements SimpleConstant {
+	private int intValue;
 
-  /** 
-   * @param bytes Data
-   */
-  public ConstantInteger(int bytes)
-  {    
-    super(Constants.CONSTANT_Integer);
-    this.bytes = bytes;
-  }
+	public ConstantInteger(int intValue) {
+		super(Constants.CONSTANT_Integer);
+		this.intValue = intValue;
+	}
 
-  /**
-   * Initialize from another object.
-   */
-  public ConstantInteger(ConstantInteger c) {
-    this(c.getBytes());
-  }
+	public ConstantInteger(ConstantInteger c) {
+		this(c.getValue());
+	}
 
-  /** 
-   * Initialize instance from file data.
-   *
-   * @param file Input stream
-   * @throws IOException
-   */
-  ConstantInteger(DataInputStream file) throws IOException
-  {    
-    this(file.readInt());
-  }
+	ConstantInteger(DataInputStream file) throws IOException {
+		this(file.readInt());
+	}
 
-  /**
-   * Called by objects that are traversing the nodes of the tree implicitely
-   * defined by the contents of a Java class. I.e., the hierarchy of methods,
-   * fields, attributes, etc. spawns a tree of objects.
-   *
-   * @param v Visitor object
-   */
-  public void accept(ClassVisitor v) {
-    v.visitConstantInteger(this);
-  }
+	@Override
+	public void accept(ClassVisitor v) {
+		v.visitConstantInteger(this);
+	}
 
-  /**
-   * Dump constant integer to file stream in binary format.
-   *
-   * @param file Output file stream
-   * @throws IOException
-   */ 
-  public final void dump(DataOutputStream file) throws IOException
-  {
-    file.writeByte(tag);
-    file.writeInt(bytes);
-  }
+	@Override
+	public final void dump(DataOutputStream file) throws IOException {
+		file.writeByte(tag);
+		file.writeInt(intValue);
+	}
 
-  /**
-   * @return data, i.e., 4 bytes.
-   */  
-  public final int getBytes() { return bytes; }
+	public final void setBytes(int bytes) {
+		this.intValue = bytes;
+	}
 
-  /**
-   * @param bytes.
-   */
-  public final void setBytes(int bytes) {
-    this.bytes = bytes;
-  }
+	@Override
+	public final String toString() {
+		return super.toString() + "(bytes = " + intValue + ")";
+	}
 
-  /**
-   * @return String representation.
-   */
-  public final String toString() {
-    return super.toString() + "(bytes = " + bytes + ")";
-  }    
+	@Override
+	public Integer getValue() {
+		return intValue;
+	}
 
-  /** @return Integer object
-   */
-  public Object getConstantValue(ConstantPool cp) {
-    return new Integer(bytes);
-  }
+	public int getIntValue() {
+		return intValue;
+	}
+
+	public String getStringValue() {
+		return Integer.toString(intValue);
+	}
 }

@@ -111,7 +111,7 @@ import org.aspectj.apache.bcel.verifier.exc.StaticCodeInstructionOperandConstrai
  * This PassVerifier verifies a class file according to pass 3, static part as described in The Java Virtual Machine Specification,
  * 2nd edition. More detailed information is to be found at the do_verify() method's documentation.
  * 
- * @version $Id: Pass3aVerifier.java,v 1.4 2008/08/28 00:02:13 aclement Exp $
+ * @version $Id: Pass3aVerifier.java,v 1.5 2009/09/10 15:35:06 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #do_verify()
  */
@@ -151,6 +151,7 @@ public final class Pass3aVerifier extends PassVerifier {
 	 * 
 	 * @throws InvalidMethodException if the method to verify does not exist.
 	 */
+	@Override
 	public VerificationResult do_verify() {
 		if (myOwner.doPass2().equals(VerificationResult.VR_OK)) {
 			// Okay, class file was loaded correctly by Pass 1
@@ -482,6 +483,7 @@ public final class Pass3aVerifier extends PassVerifier {
 		/**
 		 * Assures the generic preconditions of a LoadClass instance. The referenced class is loaded and pass2-verified.
 		 */
+		@Override
 		public void visitLoadClass(Instruction o) {
 			ObjectType t = o.getLoadClassType(cpg);
 			if (t != null) {// null means "no class is loaded"
@@ -503,6 +505,7 @@ public final class Pass3aVerifier extends PassVerifier {
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
 		// LDC and LDC_W (LDC_W is a subclass of LDC in BCEL's model)
+		@Override
 		public void visitLDC(Instruction o) {
 			indexValid(o, o.getIndex());
 			Constant c = cpg.getConstant(o.getIndex());
@@ -515,6 +518,7 @@ public final class Pass3aVerifier extends PassVerifier {
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
 		// LDC2_W
+		@Override
 		public void visitLDC2_W(Instruction o) {
 			indexValid(o, o.getIndex());
 			Constant c = cpg.getConstant(o.getIndex());
@@ -571,6 +575,7 @@ public final class Pass3aVerifier extends PassVerifier {
 		}
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
+		@Override
 		public void visitInvokeInstruction(InvokeInstruction o) {
 			indexValid(o, o.getIndex());
 			if (o.getOpcode() == Constants.INVOKEVIRTUAL || o.getOpcode() == Constants.INVOKESPECIAL
@@ -582,10 +587,10 @@ public final class Pass3aVerifier extends PassVerifier {
 					// Constants are okay due to pass2.
 					ConstantNameAndType cnat = (ConstantNameAndType) cpg.getConstant(((ConstantMethodref) c).getNameAndTypeIndex());
 					ConstantUtf8 cutf8 = (ConstantUtf8) cpg.getConstant(cnat.getNameIndex());
-					if (cutf8.getBytes().equals(Constants.CONSTRUCTOR_NAME) && !(o.getOpcode() == Constants.INVOKESPECIAL)) {
+					if (cutf8.getValue().equals(Constants.CONSTRUCTOR_NAME) && !(o.getOpcode() == Constants.INVOKESPECIAL)) {
 						constraintViolated(o, "Only INVOKESPECIAL is allowed to invoke instance initialization methods.");
 					}
-					if (!cutf8.getBytes().equals(Constants.CONSTRUCTOR_NAME) && cutf8.getBytes().startsWith("<")) {
+					if (!cutf8.getValue().equals(Constants.CONSTRUCTOR_NAME) && cutf8.getValue().startsWith("<")) {
 						constraintViolated(
 								o,
 								"No method with a name beginning with '<' other than the instance initialization methods may be called by the method invocation instructions.");
@@ -604,7 +609,7 @@ public final class Pass3aVerifier extends PassVerifier {
 				// Invoked method must not be <init> or <clinit>
 				ConstantNameAndType cnat = (ConstantNameAndType) cpg.getConstant(((ConstantInterfaceMethodref) c)
 						.getNameAndTypeIndex());
-				String name = ((ConstantUtf8) cpg.getConstant(cnat.getNameIndex())).getBytes();
+				String name = ((ConstantUtf8) cpg.getConstant(cnat.getNameIndex())).getValue();
 				if (name.equals(Constants.CONSTRUCTOR_NAME)) {
 					constraintViolated(o, "Method to invoke must not be '" + Constants.CONSTRUCTOR_NAME + "'.");
 				}
@@ -647,6 +652,7 @@ public final class Pass3aVerifier extends PassVerifier {
 		}
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
+		@Override
 		public void visitINSTANCEOF(Instruction o) {
 			indexValid(o, o.getIndex());
 			Constant c = cpg.getConstant(o.getIndex());
@@ -656,6 +662,7 @@ public final class Pass3aVerifier extends PassVerifier {
 		}
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
+		@Override
 		public void visitCHECKCAST(Instruction o) {
 			indexValid(o, o.getIndex());
 			Constant c = cpg.getConstant(o.getIndex());
@@ -665,6 +672,7 @@ public final class Pass3aVerifier extends PassVerifier {
 		}
 
 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
+		@Override
 		public void visitNEW(Instruction o) {
 			indexValid(o, o.getIndex());
 			Constant c = cpg.getConstant(o.getIndex());
@@ -672,7 +680,7 @@ public final class Pass3aVerifier extends PassVerifier {
 				constraintViolated(o, "Expecting a CONSTANT_Class operand, but found a '" + c + "'.");
 			} else {
 				ConstantUtf8 cutf8 = (ConstantUtf8) cpg.getConstant(((ConstantClass) c).getNameIndex());
-				Type t = Type.getType("L" + cutf8.getBytes() + ";");
+				Type t = Type.getType("L" + cutf8.getValue() + ";");
 				if (t instanceof ArrayType) {
 					constraintViolated(o, "NEW must not be used to create an array.");
 				}
