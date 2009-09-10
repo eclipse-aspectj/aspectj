@@ -54,89 +54,57 @@ package org.aspectj.apache.bcel.classfile;
  * <http://www.apache.org/>.
  */
 
-import  org.aspectj.apache.bcel.Constants;
-import  java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-/** 
- * This class is derived from the abstract 
- * <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class 
- * and represents a reference to a Double object.
- *
- * @version $Id: ConstantDouble.java,v 1.3 2008/05/28 23:53:01 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
- * @see     Constant
+import org.aspectj.apache.bcel.Constants;
+
+/**
+ * This class is derived from the abstract <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class and
+ * represents a reference to a Double object.
+ * 
+ * @version $Id: ConstantDouble.java,v 1.4 2009/09/10 03:59:33 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author Andy Clement
  */
 public final class ConstantDouble extends Constant implements ConstantObject {
-  private double bytes;
+	private double value;
 
-  /** 
-   * @param bytes Data
-   */
-  public ConstantDouble(double bytes) {    
-    super(Constants.CONSTANT_Double);
-    this.bytes = bytes;
-  }    
+	public ConstantDouble(double value) {
+		super(Constants.CONSTANT_Double);
+		this.value = value;
+	}
 
-  /**
-   * Initialize from another object.
-   */
-  public ConstantDouble(ConstantDouble c) {
-    this(c.getBytes());
-  }    
+	public ConstantDouble(ConstantDouble c) {
+		this(c.getBytes());
+	}
 
-  /** 
-   * Initialize instance from file data.
-   *
-   * @param file Input stream
-   * @throws IOException
-   */
-  ConstantDouble(DataInputStream file) throws IOException
-  {    
-    this(file.readDouble());
-  }    
+	ConstantDouble(DataInputStream file) throws IOException {
+		this(file.readDouble());
+	}
 
-  /**
-   * Called by objects that are traversing the nodes of the tree implicitely
-   * defined by the contents of a Java class. I.e., the hierarchy of methods,
-   * fields, attributes, etc. spawns a tree of objects.
-   *
-   * @param v Visitor object
-   */
-  public void accept(ClassVisitor v) {
-    v.visitConstantDouble(this);
-  }    
-  /**
-   * Dump constant double to file stream in binary format.
-   *
-   * @param file Output file stream
-   * @throws IOException
-   */ 
-  public final void dump(DataOutputStream file) throws IOException
-  {
-    file.writeByte(tag);
-    file.writeDouble(bytes);
-  }    
-  /**
-   * @return data, i.e., 8 bytes.
-   */  
-  public final double getBytes() { return bytes; }    
-  /**
-   * @param bytes.
-   */
-  public final void setBytes(double bytes) {
-    this.bytes = bytes;
-  }    
-  /**
-   * @return String representation.
-   */
-  public final String toString()
-  {
-    return super.toString() + "(bytes = " + bytes + ")";
-  }    
+	@Override
+	public void accept(ClassVisitor v) {
+		v.visitConstantDouble(this);
+	}
 
-  /** @return Double object
-   */
-  public Object getConstantValue(ConstantPool cp) {
-    return new Double(bytes);
-  }
+	@Override
+	public final void dump(DataOutputStream file) throws IOException {
+		file.writeByte(tag);
+		file.writeDouble(value);
+	}
+
+	public final double getBytes() {
+		return value;
+	}
+
+	@Override
+	public final String toString() {
+		return super.toString() + "(bytes = " + value + ")";
+	}
+
+	public Double getConstantValue(ConstantPool cp) {
+		return new Double(value);
+	}
 }

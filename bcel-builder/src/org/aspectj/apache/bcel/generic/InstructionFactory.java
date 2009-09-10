@@ -55,6 +55,7 @@ package org.aspectj.apache.bcel.generic;
  */
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.Utility;
 
 /** 
  * Instances of this class may be used, e.g., to generate typed
@@ -62,7 +63,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
  * byte code generating backend of a compiler. You can subclass it to
  * add your own create methods.
  *
- * @version $Id: InstructionFactory.java,v 1.5 2008/08/28 00:03:24 aclement Exp $
+ * @version $Id: InstructionFactory.java,v 1.6 2009/09/10 03:59:34 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Constants
  */
@@ -95,7 +96,7 @@ public class InstructionFactory implements InstructionConstants {
   public InvokeInstruction createInvoke(String class_name, String name, Type ret_type,
 					Type[] arg_types, short kind) {
     
-    String signature  = Type.getMethodSignature(ret_type, arg_types);
+    String signature  = Utility.toMethodSignature(ret_type, arg_types);
     
     int    index;
     if (kind == Constants.INVOKEINTERFACE)

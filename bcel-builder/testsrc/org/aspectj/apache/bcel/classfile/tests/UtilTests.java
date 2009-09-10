@@ -40,7 +40,7 @@ public class UtilTests extends TestCase {
 	}
 	
 	public void testTypeUtilMethods1() {
-	String s = Type.getMethodSignature(Type.DOUBLE,new Type[]{Type.INT,Type.STRING,Type.SHORT});
+	String s = Utility.toMethodSignature(Type.DOUBLE,new Type[]{Type.INT,Type.STRING,Type.SHORT});
 	System.err.println(s);
 	}
 	

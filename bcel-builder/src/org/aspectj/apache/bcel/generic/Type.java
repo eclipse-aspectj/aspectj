@@ -56,6 +56,7 @@ package org.aspectj.apache.bcel.generic;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.aspectj.apache.bcel.Constants;
@@ -66,14 +67,14 @@ import org.aspectj.apache.bcel.classfile.Utility;
  * Abstract super class for all possible java types, namely basic types such as int, object types like String and array types, e.g.
  * int[]
  * 
- * @version $Id: Type.java,v 1.11 2009/09/09 19:56:20 aclement Exp $
+ * @version $Id: Type.java,v 1.12 2009/09/10 03:59:34 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  *         modified: AndyClement 2-mar-05: Removed unnecessary static and optimized
  */
-public abstract class Type implements java.io.Serializable {
+public abstract class Type {
 	protected byte type;
-	protected String signature; // signature for the type
+	protected String signature;
 
 	/* Predefined constants */
 	public static final BasicType VOID = new BasicType(Constants.T_VOID);
@@ -142,16 +143,10 @@ public abstract class Type implements java.io.Serializable {
 		signature = s;
 	}
 
-	/**
-	 * @return signature for given type.
-	 */
 	public String getSignature() {
 		return signature;
 	}
 
-	/**
-	 * @return type as defined in Constants
-	 */
 	public byte getType() {
 		return type;
 	}
@@ -178,24 +173,6 @@ public abstract class Type implements java.io.Serializable {
 	public String toString() {
 		return ((this.equals(Type.NULL) || (type >= Constants.T_UNKNOWN))) ? signature : Utility
 				.signatureToString(signature, false);
-	}
-
-	/**
-	 * Convert type to Java method signature, e.g. int[] f(java.lang.String x) becomes (Ljava/lang/String;)[I
-	 * 
-	 * @param return_type what the method returns
-	 * @param arg_types what are the argument types
-	 * @return method signature for given type(s).
-	 */
-	public static String getMethodSignature(Type return_type, Type[] arg_types) {
-		StringBuffer buf = new StringBuffer("(");
-		int length = (arg_types == null) ? 0 : arg_types.length;
-		for (int i = 0; i < length; i++) {
-			buf.append(arg_types[i].getSignature());
-		}
-		buf.append(')');
-		buf.append(return_type.getSignature());
-		return buf.toString();
 	}
 
 	public static final Type getType(String signature) {
@@ -314,7 +291,7 @@ public abstract class Type implements java.io.Serializable {
 	 */
 	public static Type getReturnType(String signature) {
 		try {
-			// Read return type after `)'
+			// Read return type after ')'
 			int index = signature.lastIndexOf(')') + 1;
 			return getType(signature.substring(index));
 		} catch (StringIndexOutOfBoundsException e) { // Should never occur
@@ -330,7 +307,7 @@ public abstract class Type implements java.io.Serializable {
 	 */
 	// OPTIMIZE crap impl
 	public static Type[] getArgumentTypes(String signature) {
-		ArrayList<Type> vec = new ArrayList<Type>();
+		List<Type> argumentTypes = new ArrayList<Type>();
 		int index;
 		Type[] types;
 
@@ -342,15 +319,15 @@ public abstract class Type implements java.io.Serializable {
 
 			while (signature.charAt(index) != ')') {
 				TypeHolder th = getTypeInternal(signature.substring(index));
-				vec.add(th.getType());
+				argumentTypes.add(th.getType());
 				index += th.getConsumed(); // update position
 			}
 		} catch (StringIndexOutOfBoundsException e) { // Should never occur
 			throw new ClassFormatException("Invalid method signature: " + signature);
 		}
 
-		types = new Type[vec.size()];
-		vec.toArray(types);
+		types = new Type[argumentTypes.size()];
+		argumentTypes.toArray(types);
 		return types;
 	}
 

@@ -70,12 +70,13 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnn
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeParameterAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
+import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.apache.bcel.util.ByteSequence;
 
 /**
  * Utility functions that do not really belong to any class in particular.
  * 
- * @version $Id: Utility.java,v 1.9 2009/09/09 22:18:20 aclement Exp $
+ * @version $Id: Utility.java,v 1.10 2009/09/10 03:59:33 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  *         modified: Andy Clement 2-mar-05 Removed unnecessary static and optimized
@@ -200,7 +201,7 @@ public abstract class Utility {
 	public static final String compactClassName(String str, String prefix, boolean chopit) {
 		int len = prefix.length();
 
-		str = str.replace('/', '.'); // Is '/' on all systems, even DOS
+		str = str.replace('/', '.');
 
 		if (chopit) {
 			// If string starts with 'prefix' and contains no further dots
@@ -237,37 +238,9 @@ public abstract class Utility {
 	/**
 	 * This method converts such a string into a Java type declaration like 'void main(String[])' and throws a
 	 * 'ClassFormatException' when the parsed type is invalid.
-	 * 
-	 * @param signature Method signature
-	 * @param name Method name
-	 * @param access Method access rights
-	 * @return Java type declaration
-	 * @throws ClassFormatException
 	 */
 	public static final String methodSignatureToString(String signature, String name, String access, boolean chopit,
 			LocalVariableTable vars) throws ClassFormatException {
-		//	  
-		//	  
-		// if (signature.charAt(0)!='(')
-		// throw new ClassFormatException("Invalid method signature: " + signature);
-		//	
-		// // Break the signature into two pieces: ([PARAMS])[RETURNTYPE]
-		// int lastBracketPos = signature.lastIndexOf(")");
-		// String parameters = signature.substring(1,lastBracketPos);
-		// String returnType = signature.substring(lastBracketPos+1);
-		//
-		// // e.g. parameters="Ljava/util/List<Ljava/lang/String;>;"
-		// // returnType="V"
-		//
-		// // Break signature into its parts
-		// // dont want lots of substringing so lets use an index
-		// int posn=0;
-		// StringBuffer piece;
-		// while (posn<parameters.length()) {
-		// piece = new StringBuffer();
-		// posn+=getSignatureFrom(parameters,piece);
-		// }
-		//	
 		StringBuffer buf = new StringBuffer("(");
 		String type;
 		int index;
@@ -371,10 +344,6 @@ public abstract class Utility {
 	/**
 	 * This method converts this string into a Java type declaration such as 'String[]' and throws a `ClassFormatException' when the
 	 * parsed type is invalid.
-	 * 
-	 * @param signature Class signature
-	 * @param chopit Flag that determines whether chopping is executed or not
-	 * @return Java type declaration
 	 */
 	public static final ResultHolder signatureToStringInternal(String signature, boolean chopit) {
 		int processedChars = 1; // This is the default, read just one char
@@ -392,12 +361,12 @@ public abstract class Utility {
 				return ResultHolder.INT;
 			case 'J':
 				return ResultHolder.LONG;
-
 			case 'L': { // Full class name
-				int index = signature.indexOf(';'); // Look for closing `;'
-				// Jump to the correct ';'
-				if (index != -1 && signature.length() > index + 1 && signature.charAt(index + 1) == '>')
+				int index = signature.indexOf(';'); // Look for closing ';'
+
+				if (index != -1 && signature.length() > index + 1 && signature.charAt(index + 1) == '>') {
 					index = index + 2;
+				}
 
 				if (index < 0)
 					throw new ClassFormatException("Invalid signature: " + signature);
@@ -460,10 +429,10 @@ public abstract class Utility {
 	 */
 	public static final byte typeOfMethodSignature(String signature) throws ClassFormatException {
 		int index;
-
 		try {
-			if (signature.charAt(0) != '(')
+			if (signature.charAt(0) != '(') {
 				throw new ClassFormatException("Invalid method signature: " + signature);
+			}
 			index = signature.lastIndexOf(')') + 1;
 			return typeOfSignature(signature.substring(index));
 		} catch (StringIndexOutOfBoundsException e) {
@@ -575,11 +544,11 @@ public abstract class Utility {
 	 * Converts a list of AnnotationGen objects into a set of attributes that can be attached to the class file.
 	 * 
 	 * @param cp The constant pool gen where we can create the necessary name refs
-	 * @param vec A list of AnnotationGen objects
+	 * @param annotations A list of AnnotationGen objects
 	 */
-	public static Collection<RuntimeAnnotations> getAnnotationAttributes(ConstantPool cp, List<AnnotationGen> vec) {
+	public static Collection<RuntimeAnnotations> getAnnotationAttributes(ConstantPool cp, List<AnnotationGen> annotations) {
 
-		if (vec.size() == 0)
+		if (annotations.size() == 0)
 			return null;
 
 		try {
@@ -587,12 +556,12 @@ public abstract class Utility {
 			int countInvisible = 0;
 
 			// put the annotations in the right output stream
-			for (int i = 0; i < vec.size(); i++) {
-				AnnotationGen a = vec.get(i);
-				if (a.isRuntimeVisible())
+			for (AnnotationGen a : annotations) {
+				if (a.isRuntimeVisible()) {
 					countVisible++;
-				else
+				} else {
 					countInvisible++;
+				}
 			}
 
 			ByteArrayOutputStream rvaBytes = new ByteArrayOutputStream();
@@ -604,8 +573,7 @@ public abstract class Utility {
 			riaDos.writeShort(countInvisible);
 
 			// put the annotations in the right output stream
-			for (int i = 0; i < vec.size(); i++) {
-				AnnotationGen a = vec.get(i);
+			for (AnnotationGen a : annotations) {
 				if (a.isRuntimeVisible())
 					a.dump(rvaDos);
 				else
@@ -1088,5 +1056,23 @@ public abstract class Utility {
 	// private helpers
 	private static final int pow2(int n) {
 		return 1 << n;
+	}
+
+	/**
+	 * Convert type to Java method signature, e.g. int[] f(java.lang.String x) becomes (Ljava/lang/String;)[I
+	 * 
+	 * @param returnType what the method returns
+	 * @param argTypes what are the argument types
+	 * @return method signature for given type(s).
+	 */
+	public static String toMethodSignature(Type returnType, Type[] argTypes) {
+		StringBuffer buf = new StringBuffer("(");
+		int length = (argTypes == null) ? 0 : argTypes.length;
+		for (int i = 0; i < length; i++) {
+			buf.append(argTypes[i].getSignature());
+		}
+		buf.append(')');
+		buf.append(returnType.getSignature());
+		return buf.toString();
 	}
 }

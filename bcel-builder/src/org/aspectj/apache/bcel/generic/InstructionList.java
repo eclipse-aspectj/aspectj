@@ -76,7 +76,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
  * 
  * A list is finally dumped to a byte code array with <a href="#getByteCode()">getByteCode</a>.
  * 
- * @version $Id: InstructionList.java,v 1.8 2009/09/09 19:56:20 aclement Exp $
+ * @version $Id: InstructionList.java,v 1.9 2009/09/10 03:59:33 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Instruction
  * @see InstructionHandle
@@ -84,27 +84,16 @@ import org.aspectj.apache.bcel.util.ByteSequence;
  */
 public class InstructionList implements Serializable {
 	private InstructionHandle start = null, end = null;
-	private int length = 0; // number of elements in list
-	private int[] byte_positions; // byte code offsets corresponding to instructions
+	private int length = 0;
+	private int[] positions; // byte code offsets corresponding to instructions
 
-	/**
-	 * Create (empty) instruction list.
-	 */
 	public InstructionList() {
 	}
 
-	/**
-	 * Create instruction list containing one instruction.
-	 * 
-	 * @param i initial instruction
-	 */
 	public InstructionList(Instruction i) {
 		append(i);
 	}
 
-	/**
-	 * Test for empty list.
-	 */
 	public boolean isEmpty() {
 		return start == null;
 	} // && end == null
@@ -158,7 +147,7 @@ public class InstructionList implements Serializable {
 	 */
 	public InstructionHandle findHandle(int pos) {
 		InstructionHandle[] ihs = getInstructionHandles();
-		return findHandle(ihs, byte_positions, length, pos);
+		return findHandle(ihs, positions, length, pos);
 	}
 
 	public InstructionHandle[] getInstructionsAsArray() {
@@ -166,11 +155,11 @@ public class InstructionList implements Serializable {
 	}
 
 	public InstructionHandle findHandle(int pos, InstructionHandle[] instructionArray) {
-		return findHandle(instructionArray, byte_positions, length, pos);
+		return findHandle(instructionArray, positions, length, pos);
 	}
 
 	public InstructionHandle findHandle(int pos, InstructionHandle[] instructionArray, boolean useClosestApproximationIfNoExactFound) {
-		return findHandle(instructionArray, byte_positions, length, pos, useClosestApproximationIfNoExactFound);
+		return findHandle(instructionArray, positions, length, pos, useClosestApproximationIfNoExactFound);
 	}
 
 	/**
@@ -213,8 +202,8 @@ public class InstructionList implements Serializable {
 			throw new ClassGenException(e.toString());
 		}
 
-		byte_positions = new int[count]; // Trim to proper size
-		System.arraycopy(pos, 0, byte_positions, 0, count);
+		positions = new int[count]; // Trim to proper size
+		System.arraycopy(pos, 0, positions, 0, count);
 
 		/*
 		 * Pass 2: Look for BranchInstruction and update their targets, i.e., convert offsets to instruction handles.
@@ -945,8 +934,8 @@ public class InstructionList implements Serializable {
 			index += i.getLength();
 		}
 
-		byte_positions = new int[count]; // Trim to proper size
-		System.arraycopy(pos, 0, byte_positions, 0, count);
+		positions = new int[count]; // Trim to proper size
+		System.arraycopy(pos, 0, positions, 0, count);
 	}
 
 	/**
@@ -998,6 +987,7 @@ public class InstructionList implements Serializable {
 		return result;
 	}
 
+	@Override
 	public String toString() {
 		return toString(true);
 	}
@@ -1061,7 +1051,7 @@ public class InstructionList implements Serializable {
 	 * @return array containing all instruction's offset in byte code
 	 */
 	public int[] getInstructionPositions() {
-		return byte_positions;
+		return positions;
 	}
 
 	/**

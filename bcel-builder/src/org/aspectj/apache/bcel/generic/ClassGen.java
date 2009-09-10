@@ -63,14 +63,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.Field;
-import org.aspectj.apache.bcel.classfile.FieldOrMethod;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Modifiers;
@@ -81,149 +79,103 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
 
 /**
- * Template class for building up a java class. May be initialized with an existing java class (file).
+ * Template class for building up a java class. May be initialized with an existing java class.
  * 
  * @see JavaClass
- * @version $Id: ClassGen.java,v 1.13 2009/09/09 23:13:20 aclement Exp $
+ * @version $Id: ClassGen.java,v 1.14 2009/09/10 03:59:34 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  *         Upgraded, Andy Clement 9th Mar 06 - calculates SUID
  */
 public class ClassGen extends Modifiers implements Cloneable {
 
-	private String class_name, super_class_name, file_name;
-	private int class_name_index = -1, superclass_name_index = -1;
-	private int major = Constants.MAJOR_1_1, minor = Constants.MINOR_1_1;
-
-	private ConstantPool cp;
-
-	private List<Field> field_vec = new ArrayList<Field>();
-	private List<Method> method_vec = new ArrayList<Method>();
+	private String classname;
+	private String superclassname;
+	private String filename;
+	private int classnameIndex = -1;
+	private int superclassnameIndex = -1;
+	private int major = Constants.MAJOR_1_1;
+	private int minor = Constants.MINOR_1_1;
+	private ConstantPool cpool;
+	private List<Field> fieldsList = new ArrayList<Field>();
+	private List<Method> methodsList = new ArrayList<Method>();
 	private List<Attribute> attributesList = new ArrayList<Attribute>();
-	private List<String> interface_vec = new ArrayList<String>();
+	private List<String> interfaceList = new ArrayList<String>();
 	private List<AnnotationGen> annotationsList = new ArrayList<AnnotationGen>();
 
-	/**
-	 * Convenience constructor to set up some important values initially.
-	 * 
-	 * @param class_name fully qualified class name
-	 * @param super_class_name fully qualified superclass name
-	 * @param file_name source file name
-	 * @param access_flags access qualifiers
-	 * @param interfaces implemented interfaces
-	 * @param cp constant pool to use
-	 */
-	public ClassGen(String class_name, String super_class_name, String file_name, int access_flags, String[] interfaces,
-			ConstantPool cp) {
-		this.class_name = class_name;
-		this.super_class_name = super_class_name;
-		this.file_name = file_name;
-		this.modifiers = access_flags;
-		this.cp = cp;
-
-		// Put everything needed by default into the constant pool and the vectors
-		if (file_name != null) {
-			addAttribute(new SourceFile(cp.addUtf8("SourceFile"), 2, cp.addUtf8(file_name), cp));
+	public ClassGen(String classname, String superclassname, String filename, int modifiers, String[] interfacenames,
+			ConstantPool cpool) {
+		this.classname = classname;
+		this.superclassname = superclassname;
+		this.filename = filename;
+		this.modifiers = modifiers;
+		this.cpool = cpool;
+		if (filename != null) {
+			addAttribute(new SourceFile(cpool.addUtf8("SourceFile"), 2, cpool.addUtf8(filename), cpool));
 		}
-
-		class_name_index = cp.addClass(class_name);
-		superclass_name_index = cp.addClass(super_class_name);
-
-		if (interfaces != null) {
-			for (int i = 0; i < interfaces.length; i++)
-				addInterface(interfaces[i]);
+		this.classnameIndex = cpool.addClass(classname);
+		this.superclassnameIndex = cpool.addClass(superclassname);
+		if (interfacenames != null) {
+			for (String interfacename : interfacenames) {
+				addInterface(interfacename);
+			}
 		}
 	}
 
-	/**
-	 * Convenience constructor to set up some important values initially.
-	 * 
-	 * @param class_name fully qualified class name
-	 * @param super_class_name fully qualified superclass name
-	 * @param file_name source file name
-	 * @param access_flags access qualifiers
-	 * @param interfaces implemented interfaces
-	 */
-	public ClassGen(String class_name, String super_class_name, String file_name, int access_flags, String[] interfaces) {
-		this(class_name, super_class_name, file_name, access_flags, interfaces, new ConstantPool());
+	public ClassGen(String classname, String superclassname, String filename, int modifiers, String[] interfacenames) {
+		this(classname, superclassname, filename, modifiers, interfacenames, new ConstantPool());
 	}
 
-	/**
-	 * Initialize with existing class.
-	 * 
-	 * @param clazz JavaClass object (e.g. read from file)
-	 */
 	public ClassGen(JavaClass clazz) {
-		class_name_index = clazz.getClassNameIndex();
-		superclass_name_index = clazz.getSuperclassNameIndex();
-		class_name = clazz.getClassName();
-		super_class_name = clazz.getSuperclassName();
-		file_name = clazz.getSourceFileName();
+		classnameIndex = clazz.getClassNameIndex();
+		superclassnameIndex = clazz.getSuperclassNameIndex();
+		classname = clazz.getClassName();
+		superclassname = clazz.getSuperclassName();
+		filename = clazz.getSourceFileName();
 		modifiers = clazz.getModifiers();
-		cp = clazz.getConstantPool().copy();
+		cpool = clazz.getConstantPool().copy();
 		major = clazz.getMajor();
 		minor = clazz.getMinor();
 
-		Attribute[] attributes = clazz.getAttributes();
-		// J5TODO: Could make unpacking lazy, done on first reference
-		AnnotationGen[] annotations = unpackAnnotations(attributes);
 		Method[] methods = clazz.getMethods();
 		Field[] fields = clazz.getFields();
 		String[] interfaces = clazz.getInterfaceNames();
 
-		for (int i = 0; i < interfaces.length; i++)
+		for (int i = 0; i < interfaces.length; i++) {
 			addInterface(interfaces[i]);
-
-		// Attribute[] attrs = attributes.getAttributes();
-		for (int i = 0; i < attributes.length; i++) {
-			// Dont add attributes for annotations as those will have been unpacked
-			if (annotations.length == 0) {
-				addAttribute(attributes[i]);
-			} else if (!attributes[i].getName().equals("RuntimeVisibleAnnotations")
-					&& !attributes[i].getName().equals("RuntimeInvisibleAnnotations")) {
-				addAttribute(attributes[i]);
-			}
-		}
-		for (int i = 0; i < annotations.length; i++)
-			addAnnotation(annotations[i]);
-
-		for (int i = 0; i < methods.length; i++) {
-			Method m = methods[i];
-			addMethod(m);
 		}
 
-		for (int i = 0; i < fields.length; i++)
-			addField(fields[i]);
-	}
-
-	/**
-	 * Look for attributes representing annotations and unpack them.
-	 */
-	private AnnotationGen[] unpackAnnotations(Attribute[] attrs) {
-		List<AnnotationGen> annotationGenObjs = new ArrayList<AnnotationGen>();
-		for (int i = 0; i < attrs.length; i++) {
-			Attribute attr = attrs[i];
+		// OPTIMIZE Could make unpacking lazy, done on first reference
+		Attribute[] attributes = clazz.getAttributes();
+		for (Attribute attr : attributes) {
 			if (attr instanceof RuntimeVisibleAnnotations) {
 				RuntimeVisibleAnnotations rva = (RuntimeVisibleAnnotations) attr;
 				List<AnnotationGen> annos = rva.getAnnotations();
-				for (Iterator<AnnotationGen> iter = annos.iterator(); iter.hasNext();) {
-					AnnotationGen a = iter.next();
-					annotationGenObjs.add(new AnnotationGen(a, getConstantPool(), false));
+				for (AnnotationGen a : annos) {
+					annotationsList.add(new AnnotationGen(a, cpool, false));
 				}
 			} else if (attr instanceof RuntimeInvisibleAnnotations) {
 				RuntimeInvisibleAnnotations ria = (RuntimeInvisibleAnnotations) attr;
 				List<AnnotationGen> annos = ria.getAnnotations();
-				for (Iterator<AnnotationGen> iter = annos.iterator(); iter.hasNext();) {
-					AnnotationGen a = iter.next();
-					annotationGenObjs.add(new AnnotationGen(a, getConstantPool(), false));
+				for (AnnotationGen anno : annos) {
+					annotationsList.add(new AnnotationGen(anno, cpool, false));
 				}
+			} else {
+				attributesList.add(attr);
 			}
 		}
-		return annotationGenObjs.toArray(new AnnotationGen[] {});
+
+		for (int i = 0; i < methods.length; i++) {
+			addMethod(methods[i]);
+		}
+
+		for (int i = 0; i < fields.length; i++) {
+			addField(fields[i]);
+		}
 	}
 
 	/**
-	 * @return the (finally) built up Java class object.
+	 * @return build and return a JavaClass
 	 */
 	public JavaClass getJavaClass() {
 		int[] interfaces = getInterfaces();
@@ -236,72 +188,41 @@ public class ClassGen extends Modifiers implements Cloneable {
 		} else {
 			// TODO: Sometime later, trash any attributes called 'RuntimeVisibleAnnotations' or 'RuntimeInvisibleAnnotations'
 			attributes = new ArrayList<Attribute>();
-			attributes.addAll(Utility.getAnnotationAttributes(cp, annotationsList));
+			attributes.addAll(Utility.getAnnotationAttributes(cpool, annotationsList));
 			attributes.addAll(attributesList);
 		}
 
 		// Must be last since the above calls may still add something to it
-		ConstantPool cp = this.cp.getFinalConstantPool();
+		ConstantPool cp = this.cpool.getFinalConstantPool();
 
-		return new JavaClass(class_name_index, superclass_name_index, file_name, major, minor, modifiers, cp, interfaces, fields,
+		return new JavaClass(classnameIndex, superclassnameIndex, filename, major, minor, modifiers, cp, interfaces, fields,
 				methods, attributes.toArray(new Attribute[attributes.size()]));// OPTIMIZE avoid toArray()?
 	}
 
-	/**
-	 * Add an interface to this class, i.e., this class has to implement it.
-	 * 
-	 * @param name interface to implement (fully qualified class name)
-	 */
 	public void addInterface(String name) {
-		interface_vec.add(name);
+		interfaceList.add(name);
 	}
 
-	/**
-	 * Remove an interface from this class.
-	 * 
-	 * @param name interface to remove (fully qualified name)
-	 */
 	public void removeInterface(String name) {
-		interface_vec.remove(name);
+		interfaceList.remove(name);
 	}
 
-	/**
-	 * @return major version number of class file
-	 */
 	public int getMajor() {
 		return major;
 	}
 
-	/**
-	 * Set major version number of class file, default value is 45 (JDK 1.1)
-	 * 
-	 * @param major major version number
-	 */
 	public void setMajor(int major) {
 		this.major = major;
 	}
 
-	/**
-	 * Set minor version number of class file, default value is 3 (JDK 1.1)
-	 * 
-	 * @param minor minor version number
-	 */
 	public void setMinor(int minor) {
 		this.minor = minor;
 	}
 
-	/**
-	 * @return minor version number of class file
-	 */
 	public int getMinor() {
 		return minor;
 	}
 
-	/**
-	 * Add an attribute to this class.
-	 * 
-	 * @param a attribute to add
-	 */
 	public void addAttribute(Attribute a) {
 		attributesList.add(a);
 	}
@@ -310,13 +231,8 @@ public class ClassGen extends Modifiers implements Cloneable {
 		annotationsList.add(a);
 	}
 
-	/**
-	 * Add a method to this class.
-	 * 
-	 * @param m method to add
-	 */
 	public void addMethod(Method m) {
-		method_vec.add(m);
+		methodsList.add(m);
 	}
 
 	/**
@@ -329,10 +245,10 @@ public class ClassGen extends Modifiers implements Cloneable {
 	public void addEmptyConstructor(int access_flags) {
 		InstructionList il = new InstructionList();
 		il.append(InstructionConstants.THIS); // Push `this'
-		il.append(new InvokeInstruction(Constants.INVOKESPECIAL, cp.addMethodref(super_class_name, "<init>", "()V")));
+		il.append(new InvokeInstruction(Constants.INVOKESPECIAL, cpool.addMethodref(superclassname, "<init>", "()V")));
 		il.append(InstructionConstants.RETURN);
 
-		MethodGen mg = new MethodGen(access_flags, Type.VOID, Type.NO_ARGS, null, "<init>", class_name, il, cp);
+		MethodGen mg = new MethodGen(access_flags, Type.VOID, Type.NO_ARGS, null, "<init>", classname, il, cpool);
 		mg.setMaxStack(1);
 		mg.setMaxLocals();
 		addMethod(mg.getMethod());
@@ -344,44 +260,37 @@ public class ClassGen extends Modifiers implements Cloneable {
 	 * @param f field to add
 	 */
 	public void addField(Field f) {
-		field_vec.add(f);
+		fieldsList.add(f);
 	}
 
 	public boolean containsField(Field f) {
-		return field_vec.contains(f);
+		return fieldsList.contains(f);
 	}
 
 	/**
-	 * @return field object with given name, or null
+	 * @return field object with given name, or null if not found
 	 */
 	public Field containsField(String name) {
-		for (Iterator<Field> e = field_vec.iterator(); e.hasNext();) {
-			Field f = e.next();
-			if (f.getName().equals(name))
-				return f;
+		for (Field field : fieldsList) {
+			if (field.getName().equals(name)) {
+				return field;
+			}
 		}
-
 		return null;
 	}
 
 	/**
-	 * @return method object with given name and signature, or null
+	 * @return method object with given name and signature, or null if not found
 	 */
 	public Method containsMethod(String name, String signature) {
-		for (Iterator<Method> e = method_vec.iterator(); e.hasNext();) {
-			Method m = e.next();
-			if (m.getName().equals(name) && m.getSignature().equals(signature))
-				return m;
+		for (Method method : methodsList) {
+			if (method.getName().equals(name) && method.getSignature().equals(signature)) {
+				return method;
+			}
 		}
-
 		return null;
 	}
 
-	/**
-	 * Remove an attribute from this class.
-	 * 
-	 * @param a attribute to remove
-	 */
 	public void removeAttribute(Attribute a) {
 		attributesList.remove(a);
 	}
@@ -390,13 +299,8 @@ public class ClassGen extends Modifiers implements Cloneable {
 		annotationsList.remove(a);
 	}
 
-	/**
-	 * Remove a method from this class.
-	 * 
-	 * @param m method to remove
-	 */
 	public void removeMethod(Method m) {
-		method_vec.remove(m);
+		methodsList.remove(m);
 	}
 
 	/**
@@ -406,12 +310,12 @@ public class ClassGen extends Modifiers implements Cloneable {
 		if (new_ == null)
 			throw new ClassGenException("Replacement method must not be null");
 
-		int i = method_vec.indexOf(old);
+		int i = methodsList.indexOf(old);
 
 		if (i < 0)
-			method_vec.add(new_);
+			methodsList.add(new_);
 		else
-			method_vec.set(i, new_);
+			methodsList.set(i, new_);
 	}
 
 	/**
@@ -421,92 +325,87 @@ public class ClassGen extends Modifiers implements Cloneable {
 		if (new_ == null)
 			throw new ClassGenException("Replacement method must not be null");
 
-		int i = field_vec.indexOf(old);
+		int i = fieldsList.indexOf(old);
 
 		if (i < 0)
-			field_vec.add(new_);
+			fieldsList.add(new_);
 		else
-			field_vec.set(i, new_);
+			fieldsList.set(i, new_);
 	}
 
-	/**
-	 * Remove a field to this class.
-	 * 
-	 * @param f field to remove
-	 */
 	public void removeField(Field f) {
-		field_vec.remove(f);
+		fieldsList.remove(f);
 	}
 
 	public String getClassName() {
-		return class_name;
+		return classname;
 	}
 
 	public String getSuperclassName() {
-		return super_class_name;
+		return superclassname;
 	}
 
 	public String getFileName() {
-		return file_name;
+		return filename;
 	}
 
 	public void setClassName(String name) {
-		class_name = name.replace('/', '.');
-		class_name_index = cp.addClass(name);
+		classname = name.replace('/', '.');
+		classnameIndex = cpool.addClass(name);
 	}
 
 	public void setSuperclassName(String name) {
-		super_class_name = name.replace('/', '.');
-		superclass_name_index = cp.addClass(name);
+		superclassname = name.replace('/', '.');
+		superclassnameIndex = cpool.addClass(name);
 	}
 
 	public Method[] getMethods() {
-		Method[] methods = new Method[method_vec.size()];
-		method_vec.toArray(methods);
+		Method[] methods = new Method[methodsList.size()];
+		methodsList.toArray(methods);
 		return methods;
 	}
 
 	public void setMethods(Method[] methods) {
-		method_vec.clear();
+		methodsList.clear();
 		for (int m = 0; m < methods.length; m++)
 			addMethod(methods[m]);
 	}
 
 	public void setFields(Field[] fs) {
-		field_vec.clear();
+		fieldsList.clear();
 		for (int m = 0; m < fs.length; m++)
 			addField(fs[m]);
 	}
 
 	public void setMethodAt(Method method, int pos) {
-		method_vec.set(pos, method);
+		methodsList.set(pos, method);
 	}
 
 	public Method getMethodAt(int pos) {
-		return method_vec.get(pos);
+		return methodsList.get(pos);
 	}
 
 	public String[] getInterfaceNames() {
-		int size = interface_vec.size();
+		int size = interfaceList.size();
 		String[] interfaces = new String[size];
 
-		interface_vec.toArray(interfaces);
+		interfaceList.toArray(interfaces);
 		return interfaces;
 	}
 
 	public int[] getInterfaces() {
-		int size = interface_vec.size();
+		int size = interfaceList.size();
 		int[] interfaces = new int[size];
 
 		for (int i = 0; i < size; i++)
-			interfaces[i] = cp.addClass(interface_vec.get(i));
+			interfaces[i] = cpool.addClass(interfaceList.get(i));
 
 		return interfaces;
 	}
 
 	public Field[] getFields() {
-		Field[] fields = new Field[field_vec.size()];
-		field_vec.toArray(fields);
+		Field[] fields = new Field[fieldsList.size()];
+		fieldsList.toArray(fields);
 		return fields;
 	}
 
@@ -522,29 +421,29 @@ public class ClassGen extends Modifiers implements Cloneable {
 	}
 
 	public ConstantPool getConstantPool() {
-		return cp;
+		return cpool;
 	}
 
 	public void setConstantPool(ConstantPool constant_pool) {
-		cp = constant_pool;
+		cpool = constant_pool;
 	}
 
 	public void setClassNameIndex(int class_name_index) {
-		this.class_name_index = class_name_index;
-		class_name = cp.getConstantString(class_name_index, Constants.CONSTANT_Class).replace('/', '.');
+		this.classnameIndex = class_name_index;
+		classname = cpool.getConstantString(class_name_index, Constants.CONSTANT_Class).replace('/', '.');
 	}
 
 	public void setSuperclassNameIndex(int superclass_name_index) {
-		this.superclass_name_index = superclass_name_index;
-		super_class_name = cp.getConstantString(superclass_name_index, Constants.CONSTANT_Class).replace('/', '.');
+		this.superclassnameIndex = superclass_name_index;
+		superclassname = cpool.getConstantString(superclass_name_index, Constants.CONSTANT_Class).replace('/', '.');
 	}
 
 	public int getSuperclassNameIndex() {
-		return superclass_name_index;
+		return superclassnameIndex;
 	}
 
 	public int getClassNameIndex() {
-		return class_name_index;
+		return classnameIndex;
 	}
 
 	@Override
@@ -557,18 +456,10 @@ public class ClassGen extends Modifiers implements Cloneable {
 		}
 	}
 
-	// J5SUPPORT:
-
-	/**
-	 * Returns true if this class represents an annotation type
-	 */
 	public final boolean isAnnotation() {
 		return (modifiers & Constants.ACC_ANNOTATION) != 0;
 	}
 
-	/**
-	 * Returns true if this class represents an enum type
-	 */
 	public final boolean isEnum() {
 		return (modifiers & Constants.ACC_ENUM) != 0;
 	}
@@ -578,8 +469,6 @@ public class ClassGen extends Modifiers implements Cloneable {
 	 */
 	public long getSUID() {
 		try {
-			Field[] fields = getFields();
-			Method[] methods = getMethods();
 
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(baos);
@@ -596,7 +485,7 @@ public class ClassGen extends Modifiers implements Cloneable {
 			if (isAbstract()) {
 				// if an interface then abstract is only set if it has methods
 				if (isInterface()) {
-					if (methods.length > 0)
+					if (methodsList.size() > 0)
 						classmods |= Constants.ACC_ABSTRACT;
 				} else {
 					classmods |= Constants.ACC_ABSTRACT;
@@ -606,7 +495,6 @@ public class ClassGen extends Modifiers implements Cloneable {
 			dos.writeInt(classmods);
 
 			// 3. ordered list of interfaces
-			List<FieldOrMethod> list = new ArrayList<FieldOrMethod>();
 			String[] names = getInterfaceNames();
 			if (names != null) {
 				Arrays.sort(names);
@@ -618,41 +506,39 @@ public class ClassGen extends Modifiers implements Cloneable {
 			// (relevant modifiers are ACC_PUBLIC, ACC_PRIVATE,
 			// ACC_PROTECTED, ACC_STATIC, ACC_FINAL, ACC_VOLATILE,
 			// ACC_TRANSIENT)
-			list.clear();
-			for (int i = 0; i < fields.length; i++) {
-				Field field = fields[i];
-				if (!(field.isPrivate() && field.isStatic()) && !(field.isPrivate() && field.isTransient()))
-					list.add(field);
+			List<Field> relevantFields = new ArrayList<Field>();
+			for (Field field : fieldsList) {
+				if (!(field.isPrivate() && field.isStatic()) && !(field.isPrivate() && field.isTransient())) {
+					relevantFields.add(field);
+				}
 			}
-			Collections.sort(list, new FieldComparator());
+			Collections.sort(relevantFields, new FieldComparator());
 			int relevantFlags = Constants.ACC_PUBLIC | Constants.ACC_PRIVATE | Constants.ACC_PROTECTED | Constants.ACC_STATIC
 					| Constants.ACC_FINAL | Constants.ACC_VOLATILE | Constants.ACC_TRANSIENT;
-			for (Iterator<FieldOrMethod> iter = list.iterator(); iter.hasNext();) {
-				Field f = (Field) iter.next();
+			for (Field f : relevantFields) {
 				dos.writeUTF(f.getName());
 				dos.writeInt(relevantFlags & f.getModifiers());
 				dos.writeUTF(f.getType().getSignature());
 			}
 
 			// some up front method processing: discover clinit, init and ordinary methods of interest:
-			list.clear(); // now used for methods
-			List<Method> ctors = new ArrayList<Method>();
+			List<Method> relevantMethods = new ArrayList<Method>();
+			List<Method> relevantCtors = new ArrayList<Method>();
 			boolean hasClinit = false;
-			for (int i = 0; i < methods.length; i++) {
-				Method m = methods[i];
+			for (Method m : methodsList) {
 				boolean couldBeInitializer = m.getName().charAt(0) == '<';
 				if (couldBeInitializer && m.getName().equals("<clinit>")) {
 					hasClinit = true;
 				} else if (couldBeInitializer && m.getName().equals("<init>")) {
 					if (!m.isPrivate())
-						ctors.add(m);
+						relevantCtors.add(m);
 				} else {
 					if (!m.isPrivate())
-						list.add(m);
+						relevantMethods.add(m);
 				}
 			}
-			Collections.sort(ctors, new ConstructorComparator());
-			Collections.sort(list, new MethodComparator());
+			Collections.sort(relevantCtors, new ConstructorComparator());
+			Collections.sort(relevantMethods, new MethodComparator());
 
 			// 5. If a class initializer exists, write out the following:
 			// 1. The name of the method, <clinit>.
@@ -672,16 +558,14 @@ public class ClassGen extends Modifiers implements Cloneable {
 					| Constants.ACC_STRICT;
 
 			// 6. sorted non-private constructors
-			for (Iterator<Method> iter = ctors.iterator(); iter.hasNext();) {
-				Method m = iter.next();
-				dos.writeUTF(m.getName()); // <init>
-				dos.writeInt(relevantFlags & m.getModifiers());
-				dos.writeUTF(m.getSignature().replace('/', '.'));
+			for (Method ctor : relevantCtors) {
+				dos.writeUTF(ctor.getName()); // <init>
+				dos.writeInt(relevantFlags & ctor.getModifiers());
+				dos.writeUTF(ctor.getSignature().replace('/', '.'));
 			}
 
 			// 7. sorted non-private methods
-			for (Iterator<FieldOrMethod> iter = list.iterator(); iter.hasNext();) {
-				Method m = (Method) iter.next();
+			for (Method m : relevantMethods) {
 				dos.writeUTF(m.getName());
 				dos.writeInt(relevantFlags & m.getModifiers());
 				dos.writeUTF(m.getSignature().replace('/', '.'));
@@ -705,33 +589,31 @@ public class ClassGen extends Modifiers implements Cloneable {
 			// (long)(sha[6]&0xff) << 48 | (long)(sha[7]&0xff) << 56);
 			return suid;
 		} catch (Exception e) {
-			System.err.println("Unable to calculate suid for " + getClassName());
 			e.printStackTrace();
 			throw new RuntimeException("Unable to calculate suid for " + getClassName() + ": " + e.toString());
 		}
 	}
 
-	private static class FieldComparator implements Comparator {
-		public int compare(Object arg0, Object arg1) {
-			return ((Field) arg0).getName().compareTo(((Field) arg1).getName());
+	private static class FieldComparator implements Comparator<Field> {
+		public int compare(Field f0, Field f1) {
+			return f0.getName().compareTo(f1.getName());
 		}
 	}
 
-	private static class ConstructorComparator implements Comparator {
-		public int compare(Object arg0, Object arg1) {
+	private static class ConstructorComparator implements Comparator<Method> {
+		public int compare(Method m0, Method m1) {
 			// can ignore the name...
-			return ((Method) arg0).getSignature().compareTo(((Method) arg1).getSignature());
+			return (m0).getSignature().compareTo(m1.getSignature());
 		}
 	}
 
-	private static class MethodComparator implements Comparator {
-		public int compare(Object arg0, Object arg1) {
-			Method m1 = (Method) arg0;
-			Method m2 = (Method) arg1;
-			int result = m1.getName().compareTo(m2.getName());
-			if (result != 0)
-				return result;
-			return m1.getSignature().compareTo(m2.getSignature());
+	private static class MethodComparator implements Comparator<Method> {
+		public int compare(Method m0, Method m1) {
+			int result = m0.getName().compareTo(m1.getName());
+			if (result == 0) {
+				result = m0.getSignature().compareTo(m1.getSignature());
+			}
+			return result;
 		}
 	}
 
@@ -745,10 +627,10 @@ public class ClassGen extends Modifiers implements Cloneable {
 	}
 
 	public Attribute getAttribute(String attributeName) {
-		for (Iterator<Attribute> iter = attributesList.iterator(); iter.hasNext();) {
-			Attribute attr = iter.next();
-			if (attr.getName().equals(attributeName))
+		for (Attribute attr : attributesList) {
+			if (attr.getName().equals(attributeName)) {
 				return attr;
+			}
 		}
 		return null;
 	}

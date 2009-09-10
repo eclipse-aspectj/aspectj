@@ -54,85 +54,91 @@ package org.aspectj.apache.bcel.classfile;
  * <http://www.apache.org/>.
  */
 
-import  org.aspectj.apache.bcel.Constants;
-import  java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
+
+import org.aspectj.apache.bcel.Constants;
 
 /**
- * Abstract superclass for classes to represent the different constant types
- * in the constant pool of a class file. The classes keep closely to
- * the JVM specification.
- *
- * @version $Id: Constant.java,v 1.3 2008/05/28 23:53:01 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * Abstract superclass for classes to represent the different constant types in the constant pool of a class file. The classes keep
+ * closely to the JVM specification.
+ * 
+ * @version $Id: Constant.java,v 1.4 2009/09/10 03:59:33 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class Constant implements Cloneable, Node, Serializable {
-  /* In fact this tag is redundant since we can distinguish different
-   * `Constant' objects by their type, i.e., via `instanceof'. In some
-   * places we will use the tag for switch()es anyway.
-   *
-   * First, we want match the specification as closely as possible. Second we
-   * need the tag as an index to select the corresponding class name from the 
-   * `CONSTANT_NAMES' array.
-   */
-  protected byte tag;
 
-  Constant(byte tag) { this.tag = tag; }
+	protected byte tag;
 
-  /**
-   * Called by objects that are traversing the nodes of the tree implicitely
-   * defined by the contents of a Java class. I.e., the hierarchy of methods,
-   * fields, attributes, etc. spawns a tree of objects.
-   *
-   * @param v Visitor object
-   */
-  public abstract void accept(ClassVisitor v);    
+	Constant(byte tag) {
+		this.tag = tag;
+	}
 
-  public abstract void dump(DataOutputStream file) throws IOException;    
+	/**
+	 * Visitor pattern
+	 */
+	public abstract void accept(ClassVisitor v);
 
-  /**
-   * @return Tag of constant, i.e., its type. No setTag() method to avoid
-   * confusion.
-   */
-  public final byte getTag() { return tag; }
+	/**
+	 * Serialize the constant to an output stream
+	 */
+	public abstract void dump(DataOutputStream dataOutputStream) throws IOException;
 
-  /**
-   * @return String representation.
-   */  
-  public String toString() {
-    return Constants.CONSTANT_NAMES[tag] + "[" + tag + "]";
-  }    
+	public final byte getTag() {
+		return tag;
+	}
 
-  /**
-   * @return deep copy of this constant
-   */
-  public Constant copy() {
-    try {
-      return (Constant)super.clone();
-    } catch(CloneNotSupportedException e) {}
+	@Override
+	public String toString() {
+		return Constants.CONSTANT_NAMES[tag] + "[" + tag + "]";
+	}
 
-    return null;
-  }
+	/**
+	 * @return deep copy of this constant
+	 */
+	public Constant copy() {
+		try {
+			return (Constant) super.clone();
+		} catch (CloneNotSupportedException e) {
+		}
 
-  public Object clone() throws CloneNotSupportedException {
-    return super.clone();
-  }
+		return null;
+	}
 
-  static final Constant readConstant(DataInputStream file) throws IOException, ClassFormatException {
-    byte b = file.readByte();
-    switch(b) {
-	    case Constants.CONSTANT_Class:              return new ConstantClass(file);
-	    case Constants.CONSTANT_NameAndType:        return new ConstantNameAndType(file);
-	    case Constants.CONSTANT_Utf8:               return new ConstantUtf8(file);
-	    case Constants.CONSTANT_Fieldref:           return new ConstantFieldref(file);
-	    case Constants.CONSTANT_Methodref:          return new ConstantMethodref(file);
-	    case Constants.CONSTANT_InterfaceMethodref: return new ConstantInterfaceMethodref(file);
-	    case Constants.CONSTANT_String:             return new ConstantString(file);
-	    case Constants.CONSTANT_Integer:            return new ConstantInteger(file);
-	    case Constants.CONSTANT_Float:              return new ConstantFloat(file);
-	    case Constants.CONSTANT_Long:               return new ConstantLong(file);
-	    case Constants.CONSTANT_Double:             return new ConstantDouble(file);
-	    default:                          
-	      throw new ClassFormatException("Invalid byte tag in constant pool: " + b);
-    }
-  }    
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
+	static final Constant readConstant(DataInputStream file) throws IOException, ClassFormatException {
+		byte b = file.readByte();
+		switch (b) {
+		case Constants.CONSTANT_Class:
+			return new ConstantClass(file);
+		case Constants.CONSTANT_NameAndType:
+			return new ConstantNameAndType(file);
+		case Constants.CONSTANT_Utf8:
+			return new ConstantUtf8(file);
+		case Constants.CONSTANT_Fieldref:
+			return new ConstantFieldref(file);
+		case Constants.CONSTANT_Methodref:
+			return new ConstantMethodref(file);
+		case Constants.CONSTANT_InterfaceMethodref:
+			return new ConstantInterfaceMethodref(file);
+		case Constants.CONSTANT_String:
+			return new ConstantString(file);
+		case Constants.CONSTANT_Integer:
+			return new ConstantInteger(file);
+		case Constants.CONSTANT_Float:
+			return new ConstantFloat(file);
+		case Constants.CONSTANT_Long:
+			return new ConstantLong(file);
+		case Constants.CONSTANT_Double:
+			return new ConstantDouble(file);
+		default:
+			throw new ClassFormatException("Invalid byte tag in constant pool: " + b);
+		}
+	}
 }

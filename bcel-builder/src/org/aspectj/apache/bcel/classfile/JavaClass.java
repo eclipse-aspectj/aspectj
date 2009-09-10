@@ -80,12 +80,17 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
  * The intent of this class is to represent a parsed or otherwise existing class file. Those interested in programatically
  * generating classes should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
  * 
- * @version $Id: JavaClass.java,v 1.17 2009/09/09 22:18:20 aclement Exp $
+ * @version $Id: JavaClass.java,v 1.18 2009/09/10 03:59:33 aclement Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class JavaClass extends Modifiers implements Cloneable, Node {
-	private static final String[] NO_INTERFACE_NAMES = new String[0];
+
+	private static final String[] NoInterfaceNames = new String[0];
+	private static final Field[] NoFields = new Field[0];
+	private static final Method[] NoMethod = new Method[0];
+	private static final int[] NoInterfaceIndices = new int[0];
+	private static final Attribute[] NoAttributes = new Attribute[0];
 
 	private String fileName;
 	private String packageName;
@@ -121,48 +126,23 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	 */
 	private transient org.aspectj.apache.bcel.util.Repository repository = null;
 
-	/**
-	 * Constructor gets all contents as arguments.
-	 * 
-	 * @param class_name_index Index into constant pool referencing a ConstantClass that represents this class.
-	 * @param superclass_name_index Index into constant pool referencing a ConstantClass that represents this class's superclass.
-	 * @param file_name File name
-	 * @param major Major compiler version
-	 * @param minor Minor compiler version
-	 * @param access_flags Access rights defined by bit flags
-	 * @param constant_pool Array of constants
-	 * @param interfaces Implemented interfaces
-	 * @param fields Class fields
-	 * @param methods Class methods
-	 * @param attributes Class attributes
-	 * @param source Read from file or generated in memory?
-	 */
-	public JavaClass(int class_name_index, int superclass_name_index, String file_name, int major, int minor, int access_flags,
-			ConstantPool constant_pool, int[] interfaces, Field[] fields, Method[] methods, Attribute[] attributes) {
+	public JavaClass(int classnameIndex, int superclassnameIndex, String filename, int major, int minor, int access_flags,
+			ConstantPool cpool, int[] interfaces, Field[] fields, Method[] methods, Attribute[] attributes) {
 		if (interfaces == null) {
-			interfaces = new int[0];
-		}
-		if (attributes == null) {
-			this.attributes = Attribute.NoAttributes;
-		}
-		if (fields == null) {
-			fields = new Field[0]; // TODO create a constant for no fields
-		}
-		if (methods == null) {
-			methods = new Method[0]; // TODO create a constant for no methods
+			interfaces = NoInterfaceIndices;
 		}
 
-		this.classnameIdx = class_name_index;
-		this.superclassnameIdx = superclass_name_index;
-		this.fileName = file_name;
+		this.classnameIdx = classnameIndex;
+		this.superclassnameIdx = superclassnameIndex;
+		this.fileName = filename;
 		this.major = major;
 		this.minor = minor;
 		this.modifiers = access_flags;
-		this.cpool = constant_pool;
+		this.cpool = cpool;
 		this.interfaces = interfaces;
-		this.fields = fields;
-		this.methods = methods;
-		this.attributes = attributes;
+		this.fields = (fields == null ? NoFields : fields);
+		this.methods = (methods == null ? NoMethod : methods);
+		this.attributes = (attributes == null ? NoAttributes : attributes);
 		annotationsOutOfDate = true;
 
 		// Get source file name if available
@@ -173,7 +153,7 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 		 * According to the specification the following entries must be of type `ConstantClass' but we check that anyway via the
 		 * `ConstPool.getConstant' method.
 		 */
-		classname = constant_pool.getConstantString(class_name_index, Constants.CONSTANT_Class);
+		classname = cpool.getConstantString(classnameIndex, Constants.CONSTANT_Class);
 		classname = Utility.compactClassName(classname, false);
 
 		int index = classname.lastIndexOf('.');
@@ -183,19 +163,19 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 			packageName = classname.substring(0, index);
 		}
 
-		if (superclass_name_index > 0) { // May be zero -> class is java.lang.Object
-			superclassname = constant_pool.getConstantString(superclass_name_index, Constants.CONSTANT_Class);
+		if (superclassnameIndex > 0) { // May be zero -> class is java.lang.Object
+			superclassname = cpool.getConstantString(superclassnameIndex, Constants.CONSTANT_Class);
 			superclassname = Utility.compactClassName(superclassname, false);
 		} else {
 			superclassname = "java.lang.Object";
 		}
 
 		if (interfaces.length == 0) {
-			interfacenames = NO_INTERFACE_NAMES;
+			interfacenames = NoInterfaceNames;
 		} else {
 			interfacenames = new String[interfaces.length];
 			for (int i = 0; i < interfaces.length; i++) {
-				String str = constant_pool.getConstantString(interfaces[i], Constants.CONSTANT_Class);
+				String str = cpool.getConstantString(interfaces[i], Constants.CONSTANT_Class);
 				interfacenames[i] = Utility.compactClassName(str, false);
 			}
 		}
@@ -343,16 +323,10 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 		return packageName;
 	}
 
-	/**
-	 * @return Class name index.
-	 */
 	public int getClassNameIndex() {
 		return classnameIdx;
 	}
 
-	/**
-	 * @return Constant pool.
-	 */
 	public ConstantPool getConstantPool() {
 		return cpool;
 	}
@@ -386,9 +360,6 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 		return interfaces;
 	}
 
-	/**
-	 * @return Major number of class file version.
-	 */
 	public int getMajor() {
 		return major;
 	}
@@ -419,7 +390,6 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	public Method getMethod(java.lang.reflect.Constructor c) {
 		for (int i = 0; i < methods.length; i++) {
 			Method method = methods[i];
-
 			if (method.getName().equals("<init>") && c.getModifiers() == method.getModifiers()
 					&& Type.getSignature(c).equals(method.getSignature())) {
 				return method;
@@ -430,9 +400,10 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	}
 
 	public Field getField(java.lang.reflect.Field field) {
-		for (int i = 0; i < fields.length; i++) {
-			if (fields[i].getName().equals(field.getName())) {
-				return fields[i];
+		String fieldName = field.getName();
+		for (Field f : fields) {
+			if (f.getName().equals(fieldName)) {
+				return f;
 			}
 		}
 		return null;
@@ -523,23 +494,14 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 		this.interfaces = interfaces;
 	}
 
-	/**
-	 * @param major .
-	 */
 	public void setMajor(int major) {
 		this.major = major;
 	}
 
-	/**
-	 * @param methods .
-	 */
 	public void setMethods(Method[] methods) {
 		this.methods = methods;
 	}
 
-	/**
-	 * @param minor .
-	 */
 	public void setMinor(int minor) {
 		this.minor = minor;
 	}
