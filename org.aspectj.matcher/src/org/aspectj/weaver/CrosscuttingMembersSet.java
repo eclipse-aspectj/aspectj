@@ -48,11 +48,11 @@ public class CrosscuttingMembersSet {
 
 	private List<ShadowMunger> shadowMungers = null;
 	private List typeMungers = null;
-	private List lateTypeMungers = null;
+	private List<ConcreteTypeMunger> lateTypeMungers = null;
 	private List declareSofts = null;
 	private List declareParents = null;
-	private List declareAnnotationOnTypes = null;
-	private List declareAnnotationOnFields = null;
+	private List<DeclareAnnotation> declareAnnotationOnTypes = null;
+	private List<DeclareAnnotation> declareAnnotationOnFields = null;
 	private List<DeclareAnnotation> declareAnnotationOnMethods = null; // includes constructors
 	private List declareDominates = null;
 	private boolean changedSinceLastReset = false;
@@ -181,9 +181,9 @@ public class CrosscuttingMembersSet {
 		return typeMungers;
 	}
 
-	public List getLateTypeMungers() {
+	public List<ConcreteTypeMunger> getLateTypeMungers() {
 		if (lateTypeMungers == null) {
-			ArrayList ret = new ArrayList();
+			List<ConcreteTypeMunger> ret = new ArrayList<ConcreteTypeMunger>();
 			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
 				ret.addAll(i.next().getLateTypeMungers());
 			}
@@ -217,25 +217,25 @@ public class CrosscuttingMembersSet {
 	}
 
 	// DECAT Merge multiple together
-	public List getDeclareAnnotationOnTypes() {
+	public List<DeclareAnnotation> getDeclareAnnotationOnTypes() {
 		if (declareAnnotationOnTypes == null) {
-			Set ret = new HashSet();
+			Set<DeclareAnnotation> ret = new HashSet<DeclareAnnotation>();
 			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
 				ret.addAll(i.next().getDeclareAnnotationOnTypes());
 			}
-			declareAnnotationOnTypes = new ArrayList();
+			declareAnnotationOnTypes = new ArrayList<DeclareAnnotation>();
 			declareAnnotationOnTypes.addAll(ret);
 		}
 		return declareAnnotationOnTypes;
 	}
 
-	public List getDeclareAnnotationOnFields() {
+	public List<DeclareAnnotation> getDeclareAnnotationOnFields() {
 		if (declareAnnotationOnFields == null) {
-			Set ret = new HashSet();
+			Set<DeclareAnnotation> ret = new HashSet<DeclareAnnotation>();
 			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
 				ret.addAll(i.next().getDeclareAnnotationOnFields());
 			}
-			declareAnnotationOnFields = new ArrayList();
+			declareAnnotationOnFields = new ArrayList<DeclareAnnotation>();
 			declareAnnotationOnFields.addAll(ret);
 		}
 		return declareAnnotationOnFields;

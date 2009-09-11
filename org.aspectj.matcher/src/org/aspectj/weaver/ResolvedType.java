@@ -165,6 +165,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	// ---- things from object
 
+	@Override
 	public final boolean equals(Object other) {
 		if (other instanceof ResolvedType) {
 			return this == other;
@@ -301,7 +302,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			// as those are used for @AJ ITD and we precisely want to skip those
 			boolean shouldSkip = false;
 			for (int j = 0; j < resolvedType.interTypeMungers.size(); j++) {
-				ConcreteTypeMunger munger = (ConcreteTypeMunger) resolvedType.interTypeMungers.get(j);
+				ConcreteTypeMunger munger = resolvedType.interTypeMungers.get(j);
 				if (munger.getMunger() != null && munger.getMunger().getKind() == ResolvedTypeMunger.Parent
 						&& ((NewParentTypeMunger) munger.getMunger()).getNewParent().equals(iface) // pr171953
 				) {
@@ -902,14 +903,17 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			this.typeKind = TypeKind.PRIMITIVE;
 		}
 
+		@Override
 		public final int getSize() {
 			return size;
 		}
 
+		@Override
 		public final int getModifiers() {
 			return Modifier.PUBLIC | Modifier.FINAL;
 		}
 
+		@Override
 		public final boolean isPrimitiveType() {
 			return true;
 		}
@@ -918,6 +922,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			return false;
 		}
 
+		@Override
 		public final boolean isAssignableFrom(ResolvedType other) {
 			if (!other.isPrimitiveType()) {
 				if (!world.isInJava5Mode())
@@ -927,10 +932,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			return assignTable[((Primitive) other).index][index];
 		}
 
+		@Override
 		public final boolean isAssignableFrom(ResolvedType other, boolean allowMissing) {
 			return isAssignableFrom(other);
 		}
 
+		@Override
 		public final boolean isCoerceableFrom(ResolvedType other) {
 			if (this == other)
 				return true;
@@ -941,11 +948,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			return true;
 		}
 
+		@Override
 		public ResolvedType resolve(World world) {
 			this.world = world;
 			return super.resolve(world);
 		}
 
+		@Override
 		public final boolean needsNoConversionFrom(ResolvedType other) {
 			if (!other.isPrimitiveType())
 				return false;
@@ -979,26 +988,32 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 		// ----
 
+		@Override
 		public final ResolvedMember[] getDeclaredFields() {
 			return ResolvedMember.NONE;
 		}
 
+		@Override
 		public final ResolvedMember[] getDeclaredMethods() {
 			return ResolvedMember.NONE;
 		}
 
+		@Override
 		public final ResolvedType[] getDeclaredInterfaces() {
 			return ResolvedType.NONE;
 		}
 
+		@Override
 		public final ResolvedMember[] getDeclaredPointcuts() {
 			return ResolvedMember.NONE;
 		}
 
+		@Override
 		public final ResolvedType getSuperclass() {
 			return null;
 		}
 
+		@Override
 		public ISourceContext getSourceContext() {
 			return null;
 		}
@@ -1013,10 +1028,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// public final String toString() {
 		// return "<missing>";
 		// }
+		@Override
 		public final String getName() {
 			return MISSING_NAME;
 		}
 
+		@Override
 		public final boolean isMissing() {
 			return true;
 		}
@@ -1025,46 +1042,57 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			return false;
 		}
 
+		@Override
 		public final ResolvedMember[] getDeclaredFields() {
 			return ResolvedMember.NONE;
 		}
 
+		@Override
 		public final ResolvedMember[] getDeclaredMethods() {
 			return ResolvedMember.NONE;
 		}
 
+		@Override
 		public final ResolvedType[] getDeclaredInterfaces() {
 			return ResolvedType.NONE;
 		}
 
+		@Override
 		public final ResolvedMember[] getDeclaredPointcuts() {
 			return ResolvedMember.NONE;
 		}
 
+		@Override
 		public final ResolvedType getSuperclass() {
 			return null;
 		}
 
+		@Override
 		public final int getModifiers() {
 			return 0;
 		}
 
+		@Override
 		public final boolean isAssignableFrom(ResolvedType other) {
 			return false;
 		}
 
+		@Override
 		public final boolean isAssignableFrom(ResolvedType other, boolean allowMissing) {
 			return false;
 		}
 
+		@Override
 		public final boolean isCoerceableFrom(ResolvedType other) {
 			return false;
 		}
 
+		@Override
 		public boolean needsNoConversionFrom(ResolvedType other) {
 			return false;
 		}
 
+		@Override
 		public ISourceContext getSourceContext() {
 			return null;
 		}
@@ -1153,9 +1181,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return ret;
 	}
 
-	protected List interTypeMungers = new ArrayList(0);
+	protected List<ConcreteTypeMunger> interTypeMungers = new ArrayList<ConcreteTypeMunger>();
 
-	public List getInterTypeMungers() {
+	public List<ConcreteTypeMunger> getInterTypeMungers() {
 		return interTypeMungers;
 	}
 
@@ -1209,16 +1237,16 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			if (!superMunger.getSignature().isAbstract())
 				continue;
 
-			for (Iterator iter = getInterTypeMungers().iterator(); iter.hasNext();) {
-				ConcreteTypeMunger myMunger = (ConcreteTypeMunger) iter.next();
+			for (ConcreteTypeMunger myMunger : getInterTypeMungers()) {
 				if (conflictingSignature(myMunger.getSignature(), superMunger.getSignature())) {
 					iter1.remove();
 					continue outer;
 				}
 			}
 
-			if (!superMunger.getSignature().isPublic())
+			if (!superMunger.getSignature().isPublic()) {
 				continue;
+			}
 
 			for (Iterator iter = getMethods(); iter.hasNext();) {
 				ResolvedMember method = (ResolvedMember) iter.next();
@@ -2013,6 +2041,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * Iff I am a parameterized type, and any of my parameters are type variable references, return a version with those type
 	 * parameters replaced in accordance with the passed bindings.
 	 */
+	@Override
 	public UnresolvedType parameterize(Map typeBindings) {
 		if (!isParameterizedType())
 			return this;// throw new IllegalStateException(
