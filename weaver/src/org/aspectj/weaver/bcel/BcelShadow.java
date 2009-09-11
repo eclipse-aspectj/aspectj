@@ -128,7 +128,7 @@ public class BcelShadow extends Shadow {
 	private final BcelWorld world;
 	private final LazyMethodGen enclosingMethod;
 
-	// SECRETAPI - for testing, this will tell us if the optimization succeeded *on the last shadow processed*
+	// TESTING this will tell us if the optimisation succeeded *on the last shadow processed*
 	public static boolean appliedLazyTjpOptimization;
 
 	// Some instructions have a target type that will vary
@@ -164,6 +164,7 @@ public class BcelShadow extends Shadow {
 
 	// ---- overridden behaviour
 
+	@Override
 	public World getIWorld() {
 		return world;
 	}
@@ -266,12 +267,12 @@ public class BcelShadow extends Shadow {
 	private void retargetFrom(InstructionHandle old, InstructionHandle fresh) {
 		InstructionTargeter[] sources = old.getTargetersArray();
 		if (sources != null) {
-			for (int i = sources.length - 1; i >= 0; i--) {
-				if (sources[i] instanceof ExceptionRange) {
-					ExceptionRange it = (ExceptionRange) sources[i];
+			for (InstructionTargeter targeter : sources) {
+				if (targeter instanceof ExceptionRange) {
+					ExceptionRange it = (ExceptionRange) targeter;
 					it.updateTarget(old, fresh, it.getBody());
 				} else {
-					sources[i].updateTarget(old, fresh);
+					targeter.updateTarget(old, fresh);
 				}
 			}
 		}
@@ -286,6 +287,7 @@ public class BcelShadow extends Shadow {
 		badAdvice.add(advice);
 	}
 
+	@Override
 	protected void prepareForMungers() {
 		// if we're a constructor call, we need to remove the new:dup or the new:dup_x1:swap,
 		// and store all our
@@ -337,8 +339,7 @@ public class BcelShadow extends Shadow {
 		isThisJoinPointLazy = true;// world.isXlazyTjp(); // lazy is default now
 
 		badAdvice = null;
-		for (Iterator iter = mungers.iterator(); iter.hasNext();) {
-			ShadowMunger munger = (ShadowMunger) iter.next();
+		for (ShadowMunger munger : mungers) {
 			munger.specializeOn(this);
 		}
 
@@ -452,6 +453,7 @@ public class BcelShadow extends Shadow {
 	}
 
 	// overrides
+	@Override
 	public UnresolvedType getEnclosingType() {
 		return getEnclosingClass().getType();
 	}
@@ -862,6 +864,7 @@ public class BcelShadow extends Shadow {
 	private Map/* <UnresolvedType,BcelVar> */<ResolvedType, AnnotationAccessVar> withincodeAnnotationVars = null;
 	private boolean allArgVarsInitialized = false;
 
+	@Override
 	public Var getThisVar() {
 		if (!hasThis()) {
 			throw new IllegalStateException("no this");
@@ -870,6 +873,7 @@ public class BcelShadow extends Shadow {
 		return thisVar;
 	}
 
+	@Override
 	public Var getThisAnnotationVar(UnresolvedType forAnnotationType) {
 		if (!hasThis()) {
 			throw new IllegalStateException("no this");
@@ -882,6 +886,7 @@ public class BcelShadow extends Shadow {
 		return v;
 	}
 
+	@Override
 	public Var getTargetVar() {
 		if (!hasTarget()) {
 			throw new IllegalStateException("no target");
@@ -890,6 +895,7 @@ public class BcelShadow extends Shadow {
 		return targetVar;
 	}
 
+	@Override
 	public Var getTargetAnnotationVar(UnresolvedType forAnnotationType) {
 		if (!hasTarget()) {
 			throw new IllegalStateException("no target");
@@ -902,11 +908,13 @@ public class BcelShadow extends Shadow {
 		return v;
 	}
 
+	@Override
 	public Var getArgVar(int i) {
 		ensureInitializedArgVar(i);
 		return argVars[i];
 	}
 
+	@Override
 	public Var getArgAnnotationVar(int i, UnresolvedType forAnnotationType) {
 		initializeArgAnnotationVars();
 
@@ -916,16 +924,19 @@ public class BcelShadow extends Shadow {
 		return v;
 	}
 
+	@Override
 	public Var getKindedAnnotationVar(UnresolvedType forAnnotationType) {
 		initializeKindedAnnotationVars();
 		return kindedAnnotationVars.get(forAnnotationType);
 	}
 
+	@Override
 	public Var getWithinAnnotationVar(UnresolvedType forAnnotationType) {
 		initializeWithinAnnotationVars();
 		return withinAnnotationVars.get(forAnnotationType);
 	}
 
+	@Override
 	public Var getWithinCodeAnnotationVar(UnresolvedType forAnnotationType) {
 		initializeWithinCodeAnnotationVars();
 		return withincodeAnnotationVars.get(forAnnotationType);
@@ -939,10 +950,12 @@ public class BcelShadow extends Shadow {
 
 	// private BcelVar thisEnclosingJoinPointStaticPartVar = null;
 
+	@Override
 	public final Var getThisJoinPointStaticPartVar() {
 		return getThisJoinPointStaticPartBcelVar();
 	}
 
+	@Override
 	public final Var getThisEnclosingJoinPointStaticPartVar() {
 		return getThisEnclosingJoinPointStaticPartBcelVar();
 	}
@@ -965,6 +978,7 @@ public class BcelShadow extends Shadow {
 		}
 	}
 
+	@Override
 	public Var getThisJoinPointVar() {
 		requireThisJoinPoint(false, false);
 		return thisJoinPointVar;
@@ -1133,6 +1147,7 @@ public class BcelShadow extends Shadow {
 	}
 
 	// ??? need to better understand all the enclosing variants
+	@Override
 	public Member getEnclosingCodeSignature() {
 		if (getKind().isEnclosingKind()) {
 			return getSignature();
@@ -1439,12 +1454,12 @@ public class BcelShadow extends Shadow {
 						foundMember = AjcMemberMaker.interConstructor(relevantType, foundMember, typeMunger.getAspectType());
 					} else {
 						foundMember = AjcMemberMaker.interMethod(foundMember, typeMunger.getAspectType(), false);
-				//		ResolvedMember o = AjcMemberMaker.interMethodBody(fakerm, typeMunger.getAspectType());
-				//		// Object os = o.getAnnotations();
-				//		ResolvedMember foundMember2 = findMethod(typeMunger.getAspectType(), o);
-				//		Object os2 = foundMember2.getAnnotations();
-				//		int stop = 1;
-				//		foundMember = foundMember2;
+						// ResolvedMember o = AjcMemberMaker.interMethodBody(fakerm, typeMunger.getAspectType());
+						// // Object os = o.getAnnotations();
+						// ResolvedMember foundMember2 = findMethod(typeMunger.getAspectType(), o);
+						// Object os2 = foundMember2.getAnnotations();
+						// int stop = 1;
+						// foundMember = foundMember2;
 						// foundMember = AjcMemberMaker.interMethod(foundMember, typeMunger.getAspectType());
 					}
 					// in the above.. what about if it's on an Interface? Can that happen?
@@ -1523,10 +1538,8 @@ public class BcelShadow extends Shadow {
 
 			if (annotationHolder == null) {
 				// check the ITD'd dooberries
-				List<BcelTypeMunger> mungers = relevantType.resolve(world).getInterTypeMungers();
-				for (BcelTypeMunger typeMunger : mungers) {
-					// for (Iterator<ConcreteTypeMunger> iter = mungers.iterator(); iter.hasNext();) {
-					// BcelTypeMunger typeMunger = (BcelTypeMunger) iter.next();
+				List<ConcreteTypeMunger> mungers = relevantType.resolve(world).getInterTypeMungers();
+				for (ConcreteTypeMunger typeMunger : mungers) {
 					if (typeMunger.getMunger() instanceof NewFieldTypeMunger) {
 						ResolvedMember fakerm = typeMunger.getSignature();
 						// if (fakerm.hasAnnotations())
@@ -2028,6 +2041,7 @@ public class BcelShadow extends Shadow {
 
 		// this is the same for both per and non-per
 		weaveAfter(new BcelAdvice(null, null, null, 0, 0, 0, null, null) {
+			@Override
 			public InstructionList getAdviceInstructions(BcelShadow s, BcelVar extraArgVar, InstructionHandle ifNoAdvice) {
 				InstructionList exitInstructions = new InstructionList();
 				if (munger.hasDynamicTests()) {
@@ -2669,12 +2683,14 @@ public class BcelShadow extends Shadow {
 	private static class UsesThisVisitor extends AbstractPatternNodeVisitor {
 		boolean usesThis = false;
 
+		@Override
 		public Object visit(ThisOrTargetPointcut node, Object data) {
 			if (node.isThis() && node.isBinding())
 				usesThis = true;
 			return node;
 		}
 
+		@Override
 		public Object visit(AndPointcut node, Object data) {
 			if (!usesThis)
 				node.getLeft().accept(this, data);
@@ -2683,12 +2699,14 @@ public class BcelShadow extends Shadow {
 			return node;
 		}
 
+		@Override
 		public Object visit(NotPointcut node, Object data) {
 			if (!usesThis)
 				node.getNegatedPointcut().accept(this, data);
 			return node;
 		}
 
+		@Override
 		public Object visit(OrPointcut node, Object data) {
 			if (!usesThis)
 				node.getLeft().accept(this, data);
@@ -2701,12 +2719,14 @@ public class BcelShadow extends Shadow {
 	private static class UsesTargetVisitor extends AbstractPatternNodeVisitor {
 		boolean usesTarget = false;
 
+		@Override
 		public Object visit(ThisOrTargetPointcut node, Object data) {
 			if (!node.isThis() && node.isBinding())
 				usesTarget = true;
 			return node;
 		}
 
+		@Override
 		public Object visit(AndPointcut node, Object data) {
 			if (!usesTarget)
 				node.getLeft().accept(this, data);
@@ -2715,12 +2735,14 @@ public class BcelShadow extends Shadow {
 			return node;
 		}
 
+		@Override
 		public Object visit(NotPointcut node, Object data) {
 			if (!usesTarget)
 				node.getNegatedPointcut().accept(this, data);
 			return node;
 		}
 
+		@Override
 		public Object visit(OrPointcut node, Object data) {
 			if (!usesTarget)
 				node.getLeft().accept(this, data);
@@ -3260,6 +3282,7 @@ public class BcelShadow extends Shadow {
 		return getEnclosingClass().getFactory();
 	}
 
+	@Override
 	public ISourceLocation getSourceLocation() {
 		int sourceLine = getSourceLine();
 		if (sourceLine == 0 || sourceLine == -1) {

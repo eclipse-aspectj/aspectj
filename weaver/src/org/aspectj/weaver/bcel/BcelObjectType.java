@@ -310,18 +310,18 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		return typeVars;
 	}
 
-	// Aspect related
-	public Collection getTypeMungers() {
+	public Collection<ConcreteTypeMunger> getTypeMungers() {
 		return typeMungers;
 	}
 
-	public Collection getDeclares() {
+	public Collection<Declare> getDeclares() {
 		return declares;
 	}
 
-	public Collection getPrivilegedAccesses() {
-		if (privilegedAccess == null)
-			return Collections.EMPTY_LIST;
+	public Collection<ResolvedMember> getPrivilegedAccesses() {
+		if (privilegedAccess == null) {
+			return Collections.emptyList();
+		}
 		return Arrays.asList(privilegedAccess);
 	}
 
@@ -825,6 +825,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		return isGenericType;
 	}
 
+	@Override
 	public String toString() {
 		return (javaClass == null ? "BcelObjectType" : "BcelObjectTypeFor:" + className);
 	}
@@ -884,6 +885,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		return hasBeenWoven;
 	}
 
+	@Override
 	public boolean copySourceContext() {
 		return false;
 	}

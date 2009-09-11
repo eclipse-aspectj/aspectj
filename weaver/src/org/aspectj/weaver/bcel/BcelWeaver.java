@@ -1354,6 +1354,7 @@ public class BcelWeaver {
 				this.inAspect = advice.getDeclaringAspect();
 			}
 
+			@Override
 			public boolean equals(Object obj) {
 				if (!(obj instanceof AdviceLocation)) {
 					return false;
@@ -1368,6 +1369,7 @@ public class BcelWeaver {
 				return true;
 			}
 
+			@Override
 			public int hashCode() {
 				return 37 + 17 * lineNo + 17 * inAspect.hashCode();
 			}
@@ -1768,7 +1770,7 @@ public class BcelWeaver {
 		}
 
 		List<ShadowMunger> shadowMungers = fastMatch(shadowMungerList, classType.getResolvedTypeX());
-		List typeMungers = classType.getResolvedTypeX().getInterTypeMungers();
+		List<ConcreteTypeMunger> typeMungers = classType.getResolvedTypeX().getInterTypeMungers();
 
 		classType.getResolvedTypeX().checkInterTypeMungers();
 
