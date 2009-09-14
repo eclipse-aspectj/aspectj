@@ -240,7 +240,7 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		// Damage the line number table, entry 2 (Line7:5) so it points to an invalid (not on an instruction boundary) position of 6
 		Field ff = LineNumber.class.getDeclaredField("startPC");
 		ff.setAccessible(true);
-		ff.set(oneWeWant.getLineNumberTable().getLineNumberTable()[2], 6);
+		ff.set(oneWeWant.getLineNumberTable().getLineNumberTable()[2], new Integer(6));
 		// oneWeWant.getLineNumberTable().getLineNumberTable()[2].setStartPC(6);
 
 		// Should be 'rounded down' when transforming it into a MethodGen, new position will be '5'
@@ -354,6 +354,7 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(Ajc154Tests.class);
 	}
 
+	@Override
 	protected File getSpecFile() {
 		return new File("../tests/src/org/aspectj/systemtest/ajc154/ajc154.xml");
 	}
