@@ -197,6 +197,10 @@ public class ConstantPool implements Node {
 		return constantToString(c);
 	}
 
+	public String constantToString(int index) {
+		return constantToString(getConstant(index));
+	}
+
 	public void accept(ClassVisitor v) {
 		v.visitConstantPool(this);
 	}

@@ -80,7 +80,7 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
  * The intent of this class is to represent a parsed or otherwise existing class file. Those interested in programatically
  * generating classes should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
  * 
- * @version $Id: JavaClass.java,v 1.18 2009/09/10 03:59:33 aclement Exp $
+ * @version $Id: JavaClass.java,v 1.19 2009/09/14 20:29:10 aclement Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -387,7 +387,7 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 		return null;
 	}
 
-	public Method getMethod(java.lang.reflect.Constructor c) {
+	public Method getMethod(java.lang.reflect.Constructor<?> c) {
 		for (int i = 0; i < methods.length; i++) {
 			Method method = methods[i];
 			if (method.getName().equals("<init>") && c.getModifiers() == method.getModifiers()

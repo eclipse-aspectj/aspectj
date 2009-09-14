@@ -56,104 +56,93 @@ package org.aspectj.apache.bcel;
 
 /**
  * Exception constants.
- *
- * @version $Id: ExceptionConstants.java,v 1.4 2009/09/09 19:56:20 aclement Exp $
- * @author  <A HREF="http://www.inf.fu-berlin.de/~ehaase">E. Haase</A>
+ * 
+ * @version $Id: ExceptionConstants.java,v 1.5 2009/09/14 20:29:10 aclement Exp $
+ * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase">E. Haase</A>
  */
 public interface ExceptionConstants {
-  /** The mother of all exceptions
-   */
-  public static final Class<Throwable> THROWABLE = Throwable.class;
+	/**
+	 * The mother of all exceptions
+	 */
+	public static final Class<Throwable> THROWABLE = Throwable.class;
 
-  /** Super class of any run-time exception
-   */
-  public static final Class<RuntimeException> RUNTIME_EXCEPTION = RuntimeException.class;
+	/**
+	 * Super class of any run-time exception
+	 */
+	public static final Class<RuntimeException> RUNTIME_EXCEPTION = RuntimeException.class;
 
-  /** Super class of any linking exception (aka Linkage Error)
-   */
-  public static final Class<LinkageError> LINKING_EXCEPTION = LinkageError.class;
+	/**
+	 * Super class of any linking exception (aka Linkage Error)
+	 */
+	public static final Class<LinkageError> LINKING_EXCEPTION = LinkageError.class;
 
-  /** Linking Exceptions
-   */
-  public static final Class<ClassCircularityError> CLASS_CIRCULARITY_ERROR         = ClassCircularityError.class;
-  public static final Class<ClassFormatError> CLASS_FORMAT_ERROR	            = ClassFormatError.class;
-  public static final Class<ExceptionInInitializerError> EXCEPTION_IN_INITIALIZER_ERROR  = ExceptionInInitializerError.class;
-  public static final Class<IncompatibleClassChangeError> INCOMPATIBLE_CLASS_CHANGE_ERROR = IncompatibleClassChangeError.class;
-  public static final Class<AbstractMethodError> ABSTRACT_METHOD_ERROR           = AbstractMethodError.class;
-  public static final Class ILLEGAL_ACCESS_ERROR            = IllegalAccessError.class;
-  public static final Class<InstantiationError> INSTANTIATION_ERROR             = InstantiationError.class;
-  public static final Class<NoSuchFieldError> NO_SUCH_FIELD_ERROR             = NoSuchFieldError.class;
-  public static final Class<NoSuchMethodError> NO_SUCH_METHOD_ERROR            = NoSuchMethodError.class;
-  public static final Class<NoClassDefFoundError> NO_CLASS_DEF_FOUND_ERROR        = NoClassDefFoundError.class;
-  public static final Class<UnsatisfiedLinkError> UNSATISFIED_LINK_ERROR          = UnsatisfiedLinkError.class;
-  public static final Class<VerifyError> VERIFY_ERROR                    = VerifyError.class;
+	/**
+	 * Linking Exceptions
+	 */
+	public static final Class<ClassCircularityError> CLASS_CIRCULARITY_ERROR = ClassCircularityError.class;
+	public static final Class<ClassFormatError> CLASS_FORMAT_ERROR = ClassFormatError.class;
+	public static final Class<ExceptionInInitializerError> EXCEPTION_IN_INITIALIZER_ERROR = ExceptionInInitializerError.class;
+	public static final Class<IncompatibleClassChangeError> INCOMPATIBLE_CLASS_CHANGE_ERROR = IncompatibleClassChangeError.class;
+	public static final Class<AbstractMethodError> ABSTRACT_METHOD_ERROR = AbstractMethodError.class;
+	public static final Class ILLEGAL_ACCESS_ERROR = IllegalAccessError.class;
+	public static final Class<InstantiationError> INSTANTIATION_ERROR = InstantiationError.class;
+	public static final Class<NoSuchFieldError> NO_SUCH_FIELD_ERROR = NoSuchFieldError.class;
+	public static final Class<NoSuchMethodError> NO_SUCH_METHOD_ERROR = NoSuchMethodError.class;
+	public static final Class<NoClassDefFoundError> NO_CLASS_DEF_FOUND_ERROR = NoClassDefFoundError.class;
+	public static final Class<UnsatisfiedLinkError> UNSATISFIED_LINK_ERROR = UnsatisfiedLinkError.class;
+	public static final Class<VerifyError> VERIFY_ERROR = VerifyError.class;
 
-  /* UnsupportedClassVersionError is new in JDK 1.2 */
-  //public static final Class UnsupportedClassVersionError = UnsupportedClassVersionError.class;
+	/* UnsupportedClassVersionError is new in JDK 1.2 */
+	// public static final Class UnsupportedClassVersionError = UnsupportedClassVersionError.class;
+	/**
+	 * Run-Time Exceptions
+	 */
+	public static final Class<NullPointerException> NULL_POINTER_EXCEPTION = NullPointerException.class;
+	public static final Class<ArrayIndexOutOfBoundsException> ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION = ArrayIndexOutOfBoundsException.class;
+	public static final Class<ArithmeticException> ARITHMETIC_EXCEPTION = ArithmeticException.class;
+	public static final Class NEGATIVE_ARRAY_SIZE_EXCEPTION = NegativeArraySizeException.class;
+	public static final Class<ClassCastException> CLASS_CAST_EXCEPTION = ClassCastException.class;
+	public static final Class<IllegalMonitorStateException> ILLEGAL_MONITOR_STATE = IllegalMonitorStateException.class;
 
-  /** Run-Time Exceptions 
-   */
-  public static final Class<NullPointerException> NULL_POINTER_EXCEPTION              = NullPointerException.class;
-  public static final Class<ArrayIndexOutOfBoundsException> ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION = ArrayIndexOutOfBoundsException.class;
-  public static final Class<ArithmeticException> ARITHMETIC_EXCEPTION                = ArithmeticException.class;
-  public static final Class NEGATIVE_ARRAY_SIZE_EXCEPTION       = NegativeArraySizeException.class;
-  public static final Class<ClassCastException> CLASS_CAST_EXCEPTION                = ClassCastException.class;
-  public static final Class<IllegalMonitorStateException> ILLEGAL_MONITOR_STATE               = IllegalMonitorStateException.class;
+	/**
+	 * Pre-defined exception arrays according to chapters 5.1-5.4 of the Java Virtual Machine Specification
+	 */
+	public static final Class[] EXCS_CLASS_AND_INTERFACE_RESOLUTION = { NO_CLASS_DEF_FOUND_ERROR, CLASS_FORMAT_ERROR, VERIFY_ERROR,
+			ABSTRACT_METHOD_ERROR, EXCEPTION_IN_INITIALIZER_ERROR, ILLEGAL_ACCESS_ERROR }; // Chapter 5.1
+	public static final Class[] EXCS_CLASS_AND_INTERFACE_RESOLUTION_MULTIANEWARRAY = { NO_CLASS_DEF_FOUND_ERROR,
+			CLASS_FORMAT_ERROR, VERIFY_ERROR, ABSTRACT_METHOD_ERROR, EXCEPTION_IN_INITIALIZER_ERROR, ILLEGAL_ACCESS_ERROR,
+			NEGATIVE_ARRAY_SIZE_EXCEPTION, ILLEGAL_ACCESS_ERROR };
+	public static final Class[] EXCS_CLASS_AND_INTERFACE_RESOLUTION_ANEWARRAY = { NO_CLASS_DEF_FOUND_ERROR, CLASS_FORMAT_ERROR,
+			VERIFY_ERROR, ABSTRACT_METHOD_ERROR, EXCEPTION_IN_INITIALIZER_ERROR, ILLEGAL_ACCESS_ERROR,
+			NEGATIVE_ARRAY_SIZE_EXCEPTION }; // Chapter 5.1
+	public static final Class[] EXCS_CLASS_AND_INTERFACE_RESOLUTION_CHECKCAST = { NO_CLASS_DEF_FOUND_ERROR, CLASS_FORMAT_ERROR,
+			VERIFY_ERROR, ABSTRACT_METHOD_ERROR, EXCEPTION_IN_INITIALIZER_ERROR, ILLEGAL_ACCESS_ERROR, CLASS_CAST_EXCEPTION }; // Chapter
+	// 5.1
+	public static final Class[] EXCS_CLASS_AND_INTERFACE_RESOLUTION_FOR_ALLOCATIONS = { NO_CLASS_DEF_FOUND_ERROR,
+			CLASS_FORMAT_ERROR, VERIFY_ERROR, ABSTRACT_METHOD_ERROR, EXCEPTION_IN_INITIALIZER_ERROR, ILLEGAL_ACCESS_ERROR,
+			INSTANTIATION_ERROR, ILLEGAL_ACCESS_ERROR };
 
-  /** Pre-defined exception arrays according to chapters 5.1-5.4 of the Java Virtual
-   * Machine Specification 
-   */
-  public static final Class[] EXCS_CLASS_AND_INTERFACE_RESOLUTION = {
-    NO_CLASS_DEF_FOUND_ERROR, CLASS_FORMAT_ERROR, VERIFY_ERROR,	ABSTRACT_METHOD_ERROR,
-    EXCEPTION_IN_INITIALIZER_ERROR, ILLEGAL_ACCESS_ERROR
-  }; // Chapter 5.1
-  public static final Class[] EXCS_CLASS_AND_INTERFACE_RESOLUTION_MULTIANEWARRAY = {
-	    NO_CLASS_DEF_FOUND_ERROR, CLASS_FORMAT_ERROR, VERIFY_ERROR,	ABSTRACT_METHOD_ERROR,
-	    EXCEPTION_IN_INITIALIZER_ERROR, ILLEGAL_ACCESS_ERROR,NEGATIVE_ARRAY_SIZE_EXCEPTION,ILLEGAL_ACCESS_ERROR
-	  };
-  public static final Class[] EXCS_CLASS_AND_INTERFACE_RESOLUTION_ANEWARRAY = {
-	    NO_CLASS_DEF_FOUND_ERROR, CLASS_FORMAT_ERROR, VERIFY_ERROR,	ABSTRACT_METHOD_ERROR,
-	    EXCEPTION_IN_INITIALIZER_ERROR, ILLEGAL_ACCESS_ERROR,NEGATIVE_ARRAY_SIZE_EXCEPTION
-  }; // Chapter 5.1
-  public static final Class[] EXCS_CLASS_AND_INTERFACE_RESOLUTION_CHECKCAST = {
-	    NO_CLASS_DEF_FOUND_ERROR, CLASS_FORMAT_ERROR, VERIFY_ERROR,	ABSTRACT_METHOD_ERROR,
-	    EXCEPTION_IN_INITIALIZER_ERROR, ILLEGAL_ACCESS_ERROR,CLASS_CAST_EXCEPTION
-  }; // Chapter 5.1
-  public static final Class[] EXCS_CLASS_AND_INTERFACE_RESOLUTION_FOR_ALLOCATIONS= {
-	    NO_CLASS_DEF_FOUND_ERROR, CLASS_FORMAT_ERROR, VERIFY_ERROR,	ABSTRACT_METHOD_ERROR,
-	    EXCEPTION_IN_INITIALIZER_ERROR, ILLEGAL_ACCESS_ERROR, INSTANTIATION_ERROR,ILLEGAL_ACCESS_ERROR
-	  };
+	public static final Class[] EXCS_FIELD_AND_METHOD_RESOLUTION = { NO_SUCH_FIELD_ERROR, ILLEGAL_ACCESS_ERROR,
+			NO_SUCH_METHOD_ERROR }; // Chapter 5.2
 
-  public static final Class[] EXCS_FIELD_AND_METHOD_RESOLUTION = {
-    NO_SUCH_FIELD_ERROR, ILLEGAL_ACCESS_ERROR, NO_SUCH_METHOD_ERROR
-  }; // Chapter 5.2
+	public static final Class[] EXCS_FIELD_AND_METHOD_RESOLUTION_GETFIELD_PUTFIELD = { NO_SUCH_FIELD_ERROR, ILLEGAL_ACCESS_ERROR,
+			NO_SUCH_METHOD_ERROR, INCOMPATIBLE_CLASS_CHANGE_ERROR, NULL_POINTER_EXCEPTION };
 
-  public static final Class[] EXCS_FIELD_AND_METHOD_RESOLUTION_GETFIELD_PUTFIELD = {
-    NO_SUCH_FIELD_ERROR, ILLEGAL_ACCESS_ERROR, NO_SUCH_METHOD_ERROR,INCOMPATIBLE_CLASS_CHANGE_ERROR,NULL_POINTER_EXCEPTION
-  }; 
-  
-  public static final Class[] EXCS_FIELD_AND_METHOD_RESOLUTION_GETSTATIC_PUTSTATIC = {
-	    NO_SUCH_FIELD_ERROR, ILLEGAL_ACCESS_ERROR, NO_SUCH_METHOD_ERROR,INCOMPATIBLE_CLASS_CHANGE_ERROR
-  };
+	public static final Class[] EXCS_FIELD_AND_METHOD_RESOLUTION_GETSTATIC_PUTSTATIC = { NO_SUCH_FIELD_ERROR, ILLEGAL_ACCESS_ERROR,
+			NO_SUCH_METHOD_ERROR, INCOMPATIBLE_CLASS_CHANGE_ERROR };
 
-  public static final Class[] EXCS_INTERFACE_METHOD_RESOLUTION_INVOKEINTERFACE = {
-	  INCOMPATIBLE_CLASS_CHANGE_ERROR,ILLEGAL_ACCESS_ERROR,ABSTRACT_METHOD_ERROR,UNSATISFIED_LINK_ERROR
-  };
-  public static final Class[] EXCS_INTERFACE_METHOD_RESOLUTION_INVOKESPECIAL_INVOKEVIRTUAL = {
-	  INCOMPATIBLE_CLASS_CHANGE_ERROR,NULL_POINTER_EXCEPTION,ABSTRACT_METHOD_ERROR,UNSATISFIED_LINK_ERROR
-  };
+	public static final Class[] EXCS_INTERFACE_METHOD_RESOLUTION_INVOKEINTERFACE = { INCOMPATIBLE_CLASS_CHANGE_ERROR,
+			ILLEGAL_ACCESS_ERROR, ABSTRACT_METHOD_ERROR, UNSATISFIED_LINK_ERROR };
+	public static final Class[] EXCS_INTERFACE_METHOD_RESOLUTION_INVOKESPECIAL_INVOKEVIRTUAL = { INCOMPATIBLE_CLASS_CHANGE_ERROR,
+			NULL_POINTER_EXCEPTION, ABSTRACT_METHOD_ERROR, UNSATISFIED_LINK_ERROR };
 
-  public static final Class[] EXCS_INTERFACE_METHOD_RESOLUTION_INVOKESTATIC = {
-	  INCOMPATIBLE_CLASS_CHANGE_ERROR,UNSATISFIED_LINK_ERROR
-  };
+	public static final Class[] EXCS_INTERFACE_METHOD_RESOLUTION_INVOKESTATIC = { INCOMPATIBLE_CLASS_CHANGE_ERROR,
+			UNSATISFIED_LINK_ERROR };
 
+	public static final Class[] EXCS_INTERFACE_METHOD_RESOLUTION = new Class[0]; // Chapter 5.3 (as below)
+	public static final Class[] EXCS_STRING_RESOLUTION = new Class[0];
+	// Chapter 5.4 (no errors but the ones that _always_ could happen! How stupid.)
 
-  public static final Class[] EXCS_INTERFACE_METHOD_RESOLUTION = new Class[0]; // Chapter 5.3 (as below)
-  public static final Class[] EXCS_STRING_RESOLUTION           = new Class[0];
-  // Chapter 5.4 (no errors but the ones that _always_ could happen! How stupid.)
-
-  public static final Class[] EXCS_ARRAY_EXCEPTION = {
-    NULL_POINTER_EXCEPTION, ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION
-  };
+	public static final Class[] EXCS_ARRAY_EXCEPTION = { NULL_POINTER_EXCEPTION, ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION };
 
 }

@@ -73,7 +73,7 @@ import com.sun.org.apache.bcel.internal.generic.LDC;
  * @see LDC
  * @see INVOKEVIRTUAL
  * 
- * @version $Id: InstructionCP.java,v 1.4 2009/09/10 15:35:06 aclement Exp $
+ * @version $Id: InstructionCP.java,v 1.5 2009/09/14 20:29:10 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class InstructionCP extends Instruction {
@@ -212,8 +212,4 @@ public class InstructionCP extends Instruction {
 		}
 	}
 
-	@Override
-	public Class[] getExceptions() {
-		return org.aspectj.apache.bcel.ExceptionConstants.EXCS_STRING_RESOLUTION;
-	}
 }

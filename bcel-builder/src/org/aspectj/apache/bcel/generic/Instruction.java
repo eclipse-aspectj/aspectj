@@ -67,14 +67,11 @@ import com.sun.org.apache.bcel.internal.generic.BranchInstruction;
 /**
  * Abstract super class for all Java byte codes.
  * 
- * @version $Id: Instruction.java,v 1.7 2008/08/28 00:06:23 aclement Exp $
+ * @version $Id: Instruction.java,v 1.8 2009/09/14 20:29:10 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class Instruction implements Cloneable, Serializable, Constants {
 	public short opcode = -1;
-
-	private Instruction() {
-	}
 
 	public Instruction(short opcode) {
 		this.opcode = opcode;
@@ -270,6 +267,7 @@ public class Instruction implements Cloneable, Serializable, Constants {
 	void dispose() {
 	}
 
+	@Override
 	public boolean equals(Object that) {
 		if (!(that instanceof Instruction)) {
 			return false;
@@ -291,6 +289,7 @@ public class Instruction implements Cloneable, Serializable, Constants {
 		return false;
 	}
 
+	@Override
 	public int hashCode() {
 		int result = 17 + opcode * 37;
 		if (isConstantInstruction()) {
@@ -362,16 +361,7 @@ public class Instruction implements Cloneable, Serializable, Constants {
 		return false;
 	}
 
-	public java.lang.Class[] getExceptions() {
-		// fixme
-		return Constants.instExcs[opcode];
-	}
-
 	public boolean containsTarget(InstructionHandle ih) {
-		throw new IllegalStateException("Dont ask!!");
-	}
-
-	public void updateTarget(InstructionHandle old_ih, InstructionHandle new_ih) {
 		throw new IllegalStateException("Dont ask!!");
 	}
 
@@ -389,12 +379,10 @@ public class Instruction implements Cloneable, Serializable, Constants {
 
 	public boolean isStackProducer() {
 		return Constants.stackEntriesProduced[opcode] != 0;
-		// return ((Constants.instFlags[opcode]&STACK_PRODUCER)!=0);
 	}
 
 	public boolean isStackConsumer() {
 		return Constants.CONSUME_STACK[opcode] != 0;
-		// return ((Constants.instFlags[opcode]&STACK_CONSUMER)!=0);
 	}
 
 	public boolean isIndexedInstruction() {
@@ -442,6 +430,7 @@ public class Instruction implements Cloneable, Serializable, Constants {
 		}
 	}
 
+	@Override
 	public String toString() {
 		return toString(true);
 	}

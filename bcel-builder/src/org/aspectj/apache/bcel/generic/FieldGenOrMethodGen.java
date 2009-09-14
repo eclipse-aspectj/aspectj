@@ -68,16 +68,16 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
 /**
  * Super class for FieldGen and MethodGen objects, since they have some methods in common!
  * 
- * @version $Id: FieldGenOrMethodGen.java,v 1.6 2009/09/09 22:18:20 aclement Exp $
+ * @version $Id: FieldGenOrMethodGen.java,v 1.7 2009/09/14 20:29:10 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
-public abstract class FieldGenOrMethodGen extends Modifiers implements Cloneable {
+public abstract class FieldGenOrMethodGen extends Modifiers {
 
 	protected String name;
 	protected Type type;
 	protected ConstantPool cp;
-	private ArrayList/* <Attribute> */<Attribute> attributeList = new ArrayList<Attribute>();
-	private ArrayList<AnnotationGen> annotationList = new ArrayList<AnnotationGen>();
+	private ArrayList<Attribute> attributeList = new ArrayList<Attribute>();
+	protected ArrayList<AnnotationGen> annotationList = new ArrayList<AnnotationGen>();
 
 	protected FieldGenOrMethodGen() {
 	}
@@ -118,6 +118,10 @@ public abstract class FieldGenOrMethodGen extends Modifiers implements Cloneable
 		attributeList.clear();
 	}
 
+	public List<AnnotationGen> getAnnotations() {
+		return annotationList;
+	}
+
 	public void addAnnotation(AnnotationGen ag) {
 		annotationList.add(ag);
 	}
@@ -130,7 +134,7 @@ public abstract class FieldGenOrMethodGen extends Modifiers implements Cloneable
 		annotationList.clear();
 	}
 
-	public List/* <Attribute> */<Attribute> getAttributes() {
+	public List<Attribute> getAttributes() {
 		return attributeList;
 	}
 
@@ -149,22 +153,6 @@ public abstract class FieldGenOrMethodGen extends Modifiers implements Cloneable
 		}
 	}
 
-	public AnnotationGen[] getAnnotations() {
-		AnnotationGen[] annotations = new AnnotationGen[annotationList.size()];
-		annotationList.toArray(annotations);
-		return annotations;
-	}
-
 	public abstract String getSignature();
 
-	// OPTIMIZE clone any use???
-	@Override
-	public Object clone() {
-		try {
-			return super.clone();
-		} catch (CloneNotSupportedException e) {
-			System.err.println(e);
-			return null;
-		}
-	}
 }

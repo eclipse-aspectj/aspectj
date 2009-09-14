@@ -72,7 +72,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
  * Template class for building up a field. The only extraordinary thing one can do is to add a constant value attribute to a field
  * (which must of course be compatible with the declared type).
  * 
- * @version $Id: FieldGen.java,v 1.7 2009/09/09 21:26:54 aclement Exp $
+ * @version $Id: FieldGen.java,v 1.8 2009/09/14 20:29:10 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Field
  */
@@ -148,8 +148,8 @@ public class FieldGen extends FieldGenOrMethodGen {
 	 */
 	public Field getField() {
 		String signature = getSignature();
-		int name_index = cp.addUtf8(name);
-		int signature_index = cp.addUtf8(signature);
+		int nameIndex = cp.addUtf8(name);
+		int signatureIndex = cp.addUtf8(signature);
 
 		if (value != null) {
 			checkType(type);
@@ -159,7 +159,7 @@ public class FieldGen extends FieldGenOrMethodGen {
 
 		addAnnotationsAsAttribute(cp);
 
-		return new Field(modifiers, name_index, signature_index, getAttributesImmutable(), cp);
+		return new Field(modifiers, nameIndex, signatureIndex, getAttributesImmutable(), cp);
 	}
 
 	private int addConstant() {
@@ -194,44 +194,27 @@ public class FieldGen extends FieldGenOrMethodGen {
 	}
 
 	public String getInitialValue() {
-		if (value != null) {
-			return value.toString();
-		} else
-			return null;
+		return (value == null ? null : value.toString());
 	}
 
 	/**
 	 * Return string representation close to declaration format, `public static final short MAX = 100', e.g..
-	 * 
-	 * @return String representation of field
 	 */
 	@Override
 	public final String toString() {
-		String name, signature, access; // Short cuts to constant pool
-
-		access = Utility.accessToString(modifiers);
+		String access = Utility.accessToString(modifiers);
 		access = access.equals("") ? "" : (access + " ");
-		signature = type.toString();
-		name = getName();
+		String signature = type.toString();
+		String name = getName();
 
-		StringBuffer buf = new StringBuffer(access + signature + " " + name);
+		StringBuffer buf = new StringBuffer(access).append(signature).append(" ").append(name);
 		String value = getInitialValue();
 
-		if (value != null)
-			buf.append(" = " + value);
-
+		if (value != null) {
+			buf.append(" = ").append(value);
+		}
 		// TODO: Add attributes and annotations to the string
-
 		return buf.toString();
 	}
 
-	/**
-	 * @return deep copy of this field
-	 */
-	public FieldGen copy(ConstantPool cp) {
-		FieldGen fg = (FieldGen) clone();
-
-		fg.setConstantPool(cp);
-		return fg;
-	}
 }

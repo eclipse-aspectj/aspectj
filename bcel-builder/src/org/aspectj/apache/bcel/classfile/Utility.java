@@ -59,7 +59,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.apache.bcel.Constants;
@@ -76,7 +75,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 /**
  * Utility functions that do not really belong to any class in particular.
  * 
- * @version $Id: Utility.java,v 1.10 2009/09/10 03:59:33 aclement Exp $
+ * @version $Id: Utility.java,v 1.11 2009/09/14 20:29:10 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  *         modified: Andy Clement 2-mar-05 Removed unnecessary static and optimized
@@ -615,10 +614,7 @@ public abstract class Utility {
 	 * RuntimeInvisibleParameterAnnotations
 	 */
 	// OPTIMIZE looks heavyweight?
-	public static Attribute[] getParameterAnnotationAttributes(ConstantPool cp, List[] /*
-																						 * Array of lists, array size depends on
-																						 * #params
-																						 */vec) {
+	public static Attribute[] getParameterAnnotationAttributes(ConstantPool cp, List<AnnotationGen>[] vec) {
 
 		int visCount[] = new int[vec.length];
 		int totalVisCount = 0;
@@ -627,10 +623,9 @@ public abstract class Utility {
 		try {
 
 			for (int i = 0; i < vec.length; i++) {
-				List l = vec[i];
+				List<AnnotationGen> l = vec[i];
 				if (l != null) {
-					for (Iterator iter = l.iterator(); iter.hasNext();) {
-						AnnotationGen element = (AnnotationGen) iter.next();
+					for (AnnotationGen element : l) {
 						if (element.isRuntimeVisible()) {
 							visCount[i]++;
 							totalVisCount++;
@@ -650,9 +645,8 @@ public abstract class Utility {
 			for (int i = 0; i < vec.length; i++) {
 				rvaDos.writeShort(visCount[i]);
 				if (visCount[i] > 0) {
-					List l = vec[i];
-					for (Iterator iter = l.iterator(); iter.hasNext();) {
-						AnnotationGen element = (AnnotationGen) iter.next();
+					List<AnnotationGen> l = vec[i];
+					for (AnnotationGen element : l) {
 						if (element.isRuntimeVisible())
 							element.dump(rvaDos);
 					}
@@ -668,9 +662,8 @@ public abstract class Utility {
 			for (int i = 0; i < vec.length; i++) {
 				riaDos.writeShort(invisCount[i]);
 				if (invisCount[i] > 0) {
-					List l = vec[i];
-					for (Iterator iter = l.iterator(); iter.hasNext();) {
-						AnnotationGen element = (AnnotationGen) iter.next();
+					List<AnnotationGen> l = vec[i];
+					for (AnnotationGen element : l) {
 						if (!element.isRuntimeVisible())
 							element.dump(riaDos);
 					}
@@ -963,8 +956,7 @@ public abstract class Utility {
 			buf.append("\t");
 		case Constants.INSTANCEOF:
 			index = bytes.readUnsignedShort();
-			buf.append("\t<" + constant_pool.constantToString(index, Constants.CONSTANT_Class) + ">"
-					+ (verbose ? " (" + index + ")" : ""));
+			buf.append("\t<" + constant_pool.constantToString(index) + ">" + (verbose ? " (" + index + ")" : ""));
 			break;
 
 		// Operands are references to methods in constant pool
@@ -972,15 +964,14 @@ public abstract class Utility {
 		case Constants.INVOKESTATIC:
 		case Constants.INVOKEVIRTUAL:
 			index = bytes.readUnsignedShort();
-			buf.append("\t" + constant_pool.constantToString(index, Constants.CONSTANT_Methodref)
-					+ (verbose ? " (" + index + ")" : ""));
+			buf.append("\t" + constant_pool.constantToString(index) + (verbose ? " (" + index + ")" : ""));
 			break;
 
 		case Constants.INVOKEINTERFACE:
 			index = bytes.readUnsignedShort();
 			int nargs = bytes.readUnsignedByte(); // historical, redundant
-			buf.append("\t" + constant_pool.constantToString(index, Constants.CONSTANT_InterfaceMethodref)
-					+ (verbose ? " (" + index + ")\t" : "") + nargs + "\t" + bytes.readUnsignedByte()); // Last byte is a reserved
+			buf.append("\t" + constant_pool.constantToString(index) + (verbose ? " (" + index + ")\t" : "") + nargs + "\t"
+					+ bytes.readUnsignedByte()); // Last byte is a reserved
 			// space
 			break;
 
@@ -988,14 +979,12 @@ public abstract class Utility {
 		case Constants.LDC_W:
 		case Constants.LDC2_W:
 			index = bytes.readUnsignedShort();
-			buf.append("\t\t" + constant_pool.constantToString(index, constant_pool.getConstant(index).getTag())
-					+ (verbose ? " (" + index + ")" : ""));
+			buf.append("\t\t" + constant_pool.constantToString(index) + (verbose ? " (" + index + ")" : ""));
 			break;
 
 		case Constants.LDC:
 			index = bytes.readUnsignedByte();
-			buf.append("\t\t" + constant_pool.constantToString(index, constant_pool.getConstant(index).getTag())
-					+ (verbose ? " (" + index + ")" : ""));
+			buf.append("\t\t" + constant_pool.constantToString(index) + (verbose ? " (" + index + ")" : ""));
 			break;
 
 		// Array of references

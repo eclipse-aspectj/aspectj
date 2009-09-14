@@ -59,7 +59,7 @@ import org.aspectj.apache.bcel.generic.Type;
 /**
  * Constants for the project, mostly defined in the JVM specification.
  * 
- * @version $Id: Constants.java,v 1.5 2008/08/27 23:58:58 aclement Exp $
+ * @version $Id: Constants.java,v 1.6 2009/09/14 20:29:10 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface Constants {
@@ -470,7 +470,7 @@ public interface Constants {
 	public static final Type[] types = new Type[256];
 	public static final long[] instFlags = new long[256];
 
-	public static final Class[][] instExcs = new Class[256][];
+	public static final Class<Throwable>[][] instExcs = new Class[256][];
 
 	static final Clinit _unused = new Clinit();
 
@@ -696,8 +696,8 @@ public interface Constants {
 			instExcs[INSTANCEOF] = ExceptionConstants.EXCS_CLASS_AND_INTERFACE_RESOLUTION;
 			instFlags[MULTIANEWARRAY] = CP_INST | LOADCLASS_INST | EXCEPTION_THROWER | INDEXED;
 			instExcs[MULTIANEWARRAY] = ExceptionConstants.EXCS_CLASS_AND_INTERFACE_RESOLUTION_ANEWARRAY; // fixme i think this is a
-																											// stackproducer, old
-																											// bcel says no...
+			// stackproducer, old
+			// bcel says no...
 
 			instFlags[GETFIELD] = EXCEPTION_THROWER | CP_INST | LOADCLASS_INST | INDEXED;
 			instExcs[GETFIELD] = ExceptionConstants.EXCS_FIELD_AND_METHOD_RESOLUTION_GETFIELD_PUTFIELD;

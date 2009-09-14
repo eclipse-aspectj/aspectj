@@ -85,7 +85,7 @@ import org.aspectj.apache.bcel.verifier.InstructionWalker;
  * Factory creates il.append() statements, and sets instruction targets. A helper class for BCELifier.
  * 
  * @see BCELifier
- * @version $Id: BCELFactory.java,v 1.5 2009/09/09 19:56:20 aclement Exp $
+ * @version $Id: BCELFactory.java,v 1.6 2009/09/14 20:29:10 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 class BCELFactory extends org.aspectj.apache.bcel.verifier.EmptyInstVisitor {
@@ -99,7 +99,8 @@ class BCELFactory extends org.aspectj.apache.bcel.verifier.EmptyInstVisitor {
 		_out = out;
 	}
 
-	private final HashMap<Instruction, InstructionHandle> branch_map = new HashMap<Instruction, InstructionHandle>(); // Map<Instruction, InstructionHandle>
+	private final HashMap<Instruction, InstructionHandle> branch_map = new HashMap<Instruction, InstructionHandle>(); // Map<Instruction,
+																														// InstructionHandle>
 
 	public void start() {
 		if (!_mg.isAbstract() && !_mg.isNative()) {
@@ -134,7 +135,7 @@ class BCELFactory extends org.aspectj.apache.bcel.verifier.EmptyInstVisitor {
 		short opcode = i.getOpcode();
 
 		if (InstructionConstants.INSTRUCTIONS[opcode] != null && !i.isConstantInstruction() && !i.isReturnInstruction()) { // Handled
-																															// below
+			// below
 			_out.println("il.append(InstructionConstants." + i.getName().toUpperCase() + ");");
 			return true;
 		}
@@ -154,6 +155,7 @@ class BCELFactory extends org.aspectj.apache.bcel.verifier.EmptyInstVisitor {
 		}
 	}
 
+	@Override
 	public void visitArrayInstruction(Instruction i) {
 		short opcode = i.getOpcode();
 		Type type = i.getType(_cp);
@@ -173,6 +175,7 @@ class BCELFactory extends org.aspectj.apache.bcel.verifier.EmptyInstVisitor {
 				+ BCELifier.printType(type) + ", " + "Constants." + Constants.OPCODE_NAMES[opcode].toUpperCase() + "));");
 	}
 
+	@Override
 	public void visitInvokeInstruction(InvokeInstruction i) {
 		short opcode = i.getOpcode();
 		String class_name = i.getClassName(_cp);
@@ -185,6 +188,7 @@ class BCELFactory extends org.aspectj.apache.bcel.verifier.EmptyInstVisitor {
 				+ Constants.OPCODE_NAMES[opcode].toUpperCase() + "));");
 	}
 
+	@Override
 	public void visitAllocationInstruction(Instruction i) {
 		Type type;
 
@@ -204,7 +208,6 @@ class BCELFactory extends org.aspectj.apache.bcel.verifier.EmptyInstVisitor {
 
 		case Constants.MULTIANEWARRAY:
 			dim = ((MULTIANEWARRAY) i).getDimensions();
-
 		case Constants.ANEWARRAY:
 		case Constants.NEWARRAY:
 			_out.println("il.append(_factory.createNewArray(" + BCELifier.printType(type) + ", (short) " + dim + "));");
@@ -227,30 +230,36 @@ class BCELFactory extends org.aspectj.apache.bcel.verifier.EmptyInstVisitor {
 		_out.println("il.append(new PUSH(_cp, " + embed + "));");
 	}
 
+	@Override
 	public void visitLDC(Instruction i) {
 		createConstant(i.getValue(_cp));
 	}
 
+	@Override
 	public void visitLDC2_W(Instruction i) {
 		createConstant(i.getValue(_cp));
 	}
 
+	@Override
 	public void visitConstantPushInstruction(Instruction i) {
 		createConstant(i.getValue());
 	}
 
+	@Override
 	public void visitINSTANCEOF(Instruction i) {
 		Type type = i.getType(_cp);
 
 		_out.println("il.append(new INSTANCEOF(_cp.addClass(" + BCELifier.printType(type) + ")));");
 	}
 
+	@Override
 	public void visitCHECKCAST(Instruction i) {
 		Type type = i.getType(_cp);
 
 		_out.println("il.append(_factory.createCheckCast(" + BCELifier.printType(type) + "));");
 	}
 
+	@Override
 	public void visitReturnInstruction(Instruction i) {
 		Type type = i.getType(_cp);
 
@@ -260,6 +269,7 @@ class BCELFactory extends org.aspectj.apache.bcel.verifier.EmptyInstVisitor {
 	// Memorize BranchInstructions that need an update
 	private final ArrayList<InstructionBranch> branches = new ArrayList<InstructionBranch>();
 
+	@Override
 	public void visitBranchInstruction(InstructionBranch bi) {
 		BranchHandle bh = (BranchHandle) branch_map.get(bi);
 		int pos = bh.getPosition();
@@ -315,6 +325,7 @@ class BCELFactory extends org.aspectj.apache.bcel.verifier.EmptyInstVisitor {
 		}
 	}
 
+	@Override
 	public void visitRET(RET i) {
 		_out.println("il.append(new RET(" + i.getIndex() + ")));");
 	}
