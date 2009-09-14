@@ -203,15 +203,16 @@ final class BcelField extends ResolvedMemberImpl {
 		if (!annotationsAdded)
 			return field;
 		FieldGen fg = new FieldGen(field, cpg);
-		AnnotationGen[] alreadyHas = fg.getAnnotations();
+		List<AnnotationGen> alreadyHas = fg.getAnnotations();
 		if (annotations != null) {
 			for (int i = 0; i < annotations.length; i++) {
 				AnnotationAJ array_element = annotations[i];
 				boolean alreadyHasIt = false;
-				for (int j = 0; j < alreadyHas.length; j++) {
-					AnnotationGen gen = alreadyHas[j];
-					if (gen.getTypeName().equals(array_element.getTypeName()))
+				for (AnnotationGen gen : alreadyHas) {
+					if (gen.getTypeName().equals(array_element.getTypeName())) {
 						alreadyHasIt = true;
+						break;
+					}
 				}
 				if (!alreadyHasIt)
 					fg.addAnnotation(new AnnotationGen(((BcelAnnotation) array_element).getBcelAnnotation(), cpg, true));
