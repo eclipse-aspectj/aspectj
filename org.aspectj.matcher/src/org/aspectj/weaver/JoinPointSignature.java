@@ -91,7 +91,7 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.getAnnotationOfType(ofType);
 	}
 
-	public void setAnnotationTypes(UnresolvedType[] annotationtypes) {
+	public void setAnnotationTypes(ResolvedType[] annotationtypes) {
 		realMember.setAnnotationTypes(annotationtypes);
 	}
 
@@ -309,6 +309,7 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.getJoinPointSignatures(world);
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(getReturnType().getName());
@@ -355,6 +356,7 @@ public class JoinPointSignature implements ResolvedMember {
 		realMember.resetReturnTypeToObjectArray();
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof JoinPointSignature))
 			return false;
@@ -366,6 +368,7 @@ public class JoinPointSignature implements ResolvedMember {
 		return true;
 	}
 
+	@Override
 	public int hashCode() {
 		return 17 + (37 * realMember.hashCode()) + (37 * substituteDeclaringType.hashCode());
 	}

@@ -113,6 +113,7 @@ public class ReferenceType extends ResolvedType {
 		this.derivativeTypes.add(dependent);
 	}
 
+	@Override
 	public String getSignatureForAttribute() {
 		if (genericType == null || typeParameters == null)
 			return getSignature();
@@ -127,10 +128,12 @@ public class ReferenceType extends ResolvedType {
 		typeKind = TypeKind.GENERIC;
 	}
 
+	@Override
 	public boolean isClass() {
 		return delegate.isClass();
 	}
 
+	@Override
 	public boolean isGenericType() {
 		return !isParameterizedType() && !isRawType() && delegate.isGeneric();
 	}
@@ -140,10 +143,12 @@ public class ReferenceType extends ResolvedType {
 		return (sig == null) ? "" : sig;
 	}
 
+	@Override
 	public AnnotationAJ[] getAnnotations() {
 		return delegate.getAnnotations();
 	}
 
+	@Override
 	public void addAnnotation(AnnotationAJ annotationX) {
 		if (annotations == null) {
 			annotations = new AnnotationAJ[1];
@@ -184,6 +189,7 @@ public class ReferenceType extends ResolvedType {
 		}
 	}
 
+	@Override
 	public ResolvedType[] getAnnotationTypes() {
 		if (delegate == null) {
 			throw new BCException("Unexpected null delegate for type " + this.getName());
@@ -200,6 +206,7 @@ public class ReferenceType extends ResolvedType {
 		}
 	}
 
+	@Override
 	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
 		AnnotationAJ[] axs = delegate.getAnnotations();
 		if (axs == null) {
@@ -221,26 +228,32 @@ public class ReferenceType extends ResolvedType {
 		return null;
 	}
 
+	@Override
 	public boolean isAspect() {
 		return delegate.isAspect();
 	}
 
+	@Override
 	public boolean isAnnotationStyleAspect() {
 		return delegate.isAnnotationStyleAspect();
 	}
 
+	@Override
 	public boolean isEnum() {
 		return delegate.isEnum();
 	}
 
+	@Override
 	public boolean isAnnotation() {
 		return delegate.isAnnotation();
 	}
 
+	@Override
 	public boolean isAnonymous() {
 		return delegate.isAnonymous();
 	}
 
+	@Override
 	public boolean isNested() {
 		return delegate.isNested();
 	}
@@ -253,19 +266,23 @@ public class ReferenceType extends ResolvedType {
 		return delegate.getRetentionPolicy();
 	}
 
+	@Override
 	public boolean isAnnotationWithRuntimeRetention() {
 		return delegate.isAnnotationWithRuntimeRetention();
 	}
 
+	@Override
 	public boolean canAnnotationTargetType() {
 		return delegate.canAnnotationTargetType();
 	}
 
+	@Override
 	public AnnotationTargetKind[] getAnnotationTargetKinds() {
 		return delegate.getAnnotationTargetKinds();
 	}
 
 	// true iff the statement "this = (ThisType) other" would compile
+	@Override
 	public boolean isCoerceableFrom(ResolvedType o) {
 		ResolvedType other = o.resolve(world);
 
@@ -359,6 +376,7 @@ public class ReferenceType extends ResolvedType {
 		return false;
 	}
 
+	@Override
 	public boolean isAssignableFrom(ResolvedType other) {
 		return isAssignableFrom(other, false);
 	}
@@ -366,6 +384,7 @@ public class ReferenceType extends ResolvedType {
 	// TODO rewrite this method - it is a terrible mess
 
 	// true iff the statement "this = other" would compile.
+	@Override
 	public boolean isAssignableFrom(ResolvedType other, boolean allowMissing) {
 		if (other.isPrimitiveType()) {
 			if (!world.isInJava5Mode())
@@ -524,25 +543,30 @@ public class ReferenceType extends ResolvedType {
 		return false;
 	}
 
+	@Override
 	public ISourceContext getSourceContext() {
 		return delegate.getSourceContext();
 	}
 
+	@Override
 	public ISourceLocation getSourceLocation() {
 		ISourceContext isc = delegate.getSourceContext();
 		return isc.makeSourceLocation(new Position(startPos, endPos));
 	}
 
+	@Override
 	public boolean isExposedToWeaver() {
 		return (delegate == null) || delegate.isExposedToWeaver(); // ??? where
 		// does this
 		// belong
 	}
 
+	@Override
 	public WeaverStateInfo getWeaverState() {
 		return delegate.getWeaverState();
 	}
 
+	@Override
 	public ResolvedMember[] getDeclaredFields() {
 		if (parameterizedFields != null)
 			return parameterizedFields;
@@ -563,6 +587,7 @@ public class ReferenceType extends ResolvedType {
 	 * Find out from the generic signature the true signature of any interfaces I implement. If I am parameterized, these may then
 	 * need to be parameterized before returning.
 	 */
+	@Override
 	public ResolvedType[] getDeclaredInterfaces() {
 		if (parameterizedInterfaces != null)
 			return parameterizedInterfaces;
@@ -682,6 +707,7 @@ public class ReferenceType extends ResolvedType {
 		return -1;
 	}
 
+	@Override
 	public ResolvedMember[] getDeclaredMethods() {
 		if (parameterizedMethods != null)
 			return parameterizedMethods;
@@ -698,6 +724,7 @@ public class ReferenceType extends ResolvedType {
 		}
 	}
 
+	@Override
 	public ResolvedMember[] getDeclaredPointcuts() {
 		if (parameterizedPointcuts != null)
 			return parameterizedPointcuts;
@@ -729,10 +756,12 @@ public class ReferenceType extends ResolvedType {
 		return parameters;
 	}
 
+	@Override
 	public UnresolvedType getRawType() {
 		return super.getRawType().resolve(world);
 	}
 
+	@Override
 	public TypeVariable[] getTypeVariables() {
 		if (this.typeVariables == null) {
 			this.typeVariables = delegate.getTypeVariables();
@@ -743,6 +772,7 @@ public class ReferenceType extends ResolvedType {
 		return this.typeVariables;
 	}
 
+	@Override
 	public PerClause getPerClause() {
 		PerClause pclause = delegate.getPerClause();
 		if (isParameterizedType()) { // could cache the result here...
@@ -752,10 +782,11 @@ public class ReferenceType extends ResolvedType {
 		return pclause;
 	}
 
-	public Collection getDeclares() {
+	@Override
+	public Collection<Declare> getDeclares() {
 		if (parameterizedDeclares != null)
 			return parameterizedDeclares;
-		Collection declares = null;
+		Collection<Declare> declares = null;
 		if (ajMembersNeedParameterization()) {
 			Collection genericDeclares = delegate.getDeclares();
 			parameterizedDeclares = new ArrayList();
@@ -768,13 +799,13 @@ public class ReferenceType extends ResolvedType {
 		} else {
 			declares = delegate.getDeclares();
 		}
-		for (Iterator iter = declares.iterator(); iter.hasNext();) {
-			Declare d = (Declare) iter.next();
+		for (Declare d : declares) {
 			d.setDeclaringType(this);
 		}
 		return declares;
 	}
 
+	@Override
 	public Collection getTypeMungers() {
 		return delegate.getTypeMungers();
 	}
@@ -800,14 +831,17 @@ public class ReferenceType extends ResolvedType {
 	// return ret;
 	// }
 
+	@Override
 	public Collection getPrivilegedAccesses() {
 		return delegate.getPrivilegedAccesses();
 	}
 
+	@Override
 	public int getModifiers() {
 		return delegate.getModifiers();
 	}
 
+	@Override
 	public ResolvedType getSuperclass() {
 		if (newSuperclass != null) {
 			if (this.isParameterizedType() && newSuperclass.isParameterizedType()) {
@@ -879,6 +913,7 @@ public class ReferenceType extends ResolvedType {
 		this.startPos = startPos;
 	}
 
+	@Override
 	public boolean doesNotExposeShadowMungers() {
 		return delegate.doesNotExposeShadowMungers();
 	}
@@ -903,6 +938,7 @@ public class ReferenceType extends ResolvedType {
 		signatureErasure = null;
 	}
 
+	@Override
 	public ResolvedType getGenericType() {
 		if (isGenericType())
 			return this;
@@ -941,6 +977,7 @@ public class ReferenceType extends ResolvedType {
 		return ret.toString();
 	}
 
+	@Override
 	public void ensureConsistent() {
 		annotations = null;
 		annotationTypes = null;
@@ -948,6 +985,7 @@ public class ReferenceType extends ResolvedType {
 		newInterfaces = null;
 	}
 
+	@Override
 	public void addParent(ResolvedType newParent) {
 		if (newParent.isClass()) {
 			newSuperclass = newParent;

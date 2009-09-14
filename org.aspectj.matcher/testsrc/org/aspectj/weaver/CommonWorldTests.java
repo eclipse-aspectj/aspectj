@@ -40,6 +40,7 @@ public abstract class CommonWorldTests extends TestCase {
 
 	private World world;
 
+	@Override
 	public void setUp() {
 		world = getWorld();
 	}
@@ -160,7 +161,9 @@ public abstract class CommonWorldTests extends TestCase {
 	}
 
 	protected void mungersTest(ResolvedType ty, ShadowMunger[] x) {
-		TestUtil.assertSetEquals(ty + " mungers:", x, ty.getDeclaredShadowMungersArray());
+		List l = (List) ty.getDeclaredShadowMungers();
+		ShadowMunger[] array = (ShadowMunger[]) l.toArray(new ShadowMunger[l.size()]);
+		TestUtil.assertSetEquals(ty + " mungers:", x, array);
 	}
 
 	protected void interfaceTest(ResolvedType type, ResolvedType[] expectedInterfaces) {

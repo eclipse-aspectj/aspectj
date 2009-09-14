@@ -14,6 +14,7 @@ package org.aspectj.weaver;
 
 import java.util.Collection;
 
+import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
 
 /**
@@ -24,7 +25,7 @@ import org.aspectj.weaver.patterns.PerClause;
 public interface ReferenceTypeDelegate {
 
 	public boolean isAspect();
-	
+
 	/**
 	 * @return true if the type is an annotation style aspect (a type marked @Aspect)
 	 */
@@ -85,7 +86,7 @@ public interface ReferenceTypeDelegate {
 	 */
 	public PerClause getPerClause();
 
-	public Collection getDeclares();
+	public Collection<Declare> getDeclares();
 
 	public Collection getTypeMungers();
 

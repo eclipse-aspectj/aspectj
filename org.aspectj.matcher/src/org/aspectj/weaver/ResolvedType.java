@@ -62,8 +62,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * Returns an iterator through ResolvedType objects representing all the direct supertypes of this type. That is, through the
 	 * superclass, if any, and all declared interfaces.
 	 */
-	public final Iterator getDirectSupertypes() {
-		Iterator ifacesIterator = Iterators.array(getDeclaredInterfaces());
+	public final Iterator<ResolvedType> getDirectSupertypes() {
+		Iterator<ResolvedType> ifacesIterator = Iterators.array(getDeclaredInterfaces());
 		ResolvedType superclass = getSuperclass();
 		if (superclass == null) {
 			return ifacesIterator;
@@ -85,20 +85,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	/**
-	 * Returns a ResolvedType object representing the superclass of this type, or null. If this represents a java.lang.Object, a
-	 * primitive type, or void, this method returns null.
+	 * @return the superclass of this type, or null (if this represents a jlObject, primitive, or void)
 	 */
 	public abstract ResolvedType getSuperclass();
 
-	/**
-	 * Returns the modifiers for this type.
-	 * <p/>
-	 * See {@link Class#getModifiers()} for a description of the weirdness of this methods on primitives and arrays.
-	 * 
-	 * @param world the {@link World} in which the lookup is made.
-	 * @return an int representing the modifiers for this type
-	 * @see java.lang.reflect.Modifier
-	 */
 	public abstract int getModifiers();
 
 	// return true if this resolved type couldn't be found (but we know it's
@@ -133,7 +123,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	// This set contains pairs of types whose signatures are concatenated
 	// together, this means with a fast lookup we can tell if two types
 	// are equivalent.
-	protected static Set validBoxing = new HashSet();
+	protected static Set<String> validBoxing = new HashSet<String>();
 
 	static {
 		validBoxing.add("Ljava/lang/Byte;B");
@@ -188,16 +178,16 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * <p/>
 	 * We keep a hashSet of interfaces that we've visited so we don't spiral out into 2^n land.
 	 */
-	public Iterator getFields() {
-		final Iterators.Filter dupFilter = Iterators.dupFilter();
-		Iterators.Getter typeGetter = new Iterators.Getter() {
-			public Iterator get(Object o) {
-				return dupFilter.filter(((ResolvedType) o).getDirectSupertypes());
+	public Iterator<ResolvedMember> getFields() {
+		final Iterators.Filter<ResolvedType> dupFilter = Iterators.dupFilter();
+		Iterators.Getter<ResolvedType, ResolvedType> typeGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
+			public Iterator<ResolvedType> get(ResolvedType o) {
+				return dupFilter.filter((o).getDirectSupertypes());
 			}
 		};
-		Iterators.Getter fieldGetter = new Iterators.Getter() {
-			public Iterator get(Object o) {
-				return Iterators.array(((ResolvedType) o).getDeclaredFields());
+		Iterators.Getter<ResolvedType, ResolvedMember> fieldGetter = new Iterators.Getter<ResolvedType, ResolvedMember>() {
+			public Iterator<ResolvedMember> get(ResolvedType o) {
+				return Iterators.array((o).getDeclaredFields());
 			}
 		};
 		return Iterators.mapOver(Iterators.recur(this, typeGetter), fieldGetter);
@@ -216,26 +206,26 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * We keep a hashSet of interfaces that we've visited so we don't spiral out into 2^n land. NOTE: Take a look at the javadoc on
 	 * getMethodsWithoutIterator() to see if you are sensitive to a quirk in getMethods()
 	 */
-	public Iterator getMethods() {
-		final Iterators.Filter dupFilter = Iterators.dupFilter();
-		Iterators.Getter ifaceGetter = new Iterators.Getter() {
-			public Iterator get(Object o) {
-				return dupFilter.filter(Iterators.array(((ResolvedType) o).getDeclaredInterfaces()));
+	public Iterator<ResolvedMember> getMethods() {
+		final Iterators.Filter<ResolvedType> dupFilter = Iterators.dupFilter();
+		Iterators.Getter<ResolvedType, ResolvedType> ifaceGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
+			public Iterator<ResolvedType> get(ResolvedType o) {
+				return dupFilter.filter(Iterators.array(o.getDeclaredInterfaces()));
 			}
 		};
-		Iterators.Getter methodGetter = new Iterators.Getter() {
-			public Iterator get(Object o) {
-				return Iterators.array(((ResolvedType) o).getDeclaredMethods());
+		Iterators.Getter<ResolvedType, ResolvedMember> methodGetter = new Iterators.Getter<ResolvedType, ResolvedMember>() {
+			public Iterator<ResolvedMember> get(ResolvedType o) {
+				return Iterators.array((o).getDeclaredMethods());
 			}
 		};
-		return Iterators.mapOver(Iterators.append(new Iterator() {
+		return Iterators.mapOver(Iterators.append(new Iterator<ResolvedType>() {
 			ResolvedType curr = ResolvedType.this;
 
 			public boolean hasNext() {
 				return curr != null;
 			}
 
-			public Object next() {
+			public ResolvedType next() {
 				ResolvedType ret = curr;
 				curr = curr.getSuperclass();
 				return ret;
@@ -253,31 +243,30 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * return methods declared on *this* class twice, once at the start and once at the end - I couldn't debug that problem, so
 	 * created this alternative.
 	 */
-	public List getMethodsWithoutIterator(boolean includeITDs, boolean allowMissing) {
-		List methods = new ArrayList();
-		Set knowninterfaces = new HashSet();
+	public List<ResolvedMember> getMethodsWithoutIterator(boolean includeITDs, boolean allowMissing) {
+		List<ResolvedMember> methods = new ArrayList<ResolvedMember>();
+		Set<ResolvedType> knowninterfaces = new HashSet<ResolvedType>();
 		addAndRecurse(knowninterfaces, methods, this, includeITDs, allowMissing, false);
 		return methods;
 	}
 
-	public List getMethodsWithoutIterator(boolean includeITDs, boolean allowMissing, boolean genericsAware) {
-		List methods = new ArrayList();
-		Set knowninterfaces = new HashSet();
+	public List<ResolvedMember> getMethodsWithoutIterator(boolean includeITDs, boolean allowMissing, boolean genericsAware) {
+		List<ResolvedMember> methods = new ArrayList<ResolvedMember>();
+		Set<ResolvedType> knowninterfaces = new HashSet<ResolvedType>();
 		addAndRecurse(knowninterfaces, methods, this, includeITDs, allowMissing, genericsAware);
 		return methods;
 	}
 
-	private void addAndRecurse(Set knowninterfaces, List collector, ResolvedType resolvedType, boolean includeITDs,
-			boolean allowMissing, boolean genericsAware) {
+	private void addAndRecurse(Set<ResolvedType> knowninterfaces, List<ResolvedMember> collector, ResolvedType resolvedType,
+			boolean includeITDs, boolean allowMissing, boolean genericsAware) {
 		// Add the methods declared on this type
 		collector.addAll(Arrays.asList(resolvedType.getDeclaredMethods()));
 		// now add all the inter-typed members too
 		if (includeITDs && resolvedType.interTypeMungers != null) {
-			for (Iterator i = interTypeMungers.iterator(); i.hasNext();) {
-				ConcreteTypeMunger tm = (ConcreteTypeMunger) i.next();
-				ResolvedMember rm = tm.getSignature();
+			for (ConcreteTypeMunger typeTransformer : interTypeMungers) {
+				ResolvedMember rm = typeTransformer.getSignature();
 				if (rm != null) { // new parent type munger can have null signature
-					collector.add(tm.getSignature());
+					collector.add(typeTransformer.getSignature());
 				}
 			}
 		}
@@ -335,8 +324,21 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * described in JVM spec 2ed 5.4.3.2
 	 */
-	public ResolvedMember lookupField(Member m) {
-		return lookupMember(m, getFields());
+	public ResolvedMember lookupField(Member field) {
+		Iterator<ResolvedMember> i = getFields();
+		while (i.hasNext()) {
+			ResolvedMember resolvedMember = i.next();
+			if (matches(resolvedMember, field)) {
+				return resolvedMember;
+			}
+			if (resolvedMember.hasBackingGenericMember() && field.getName().equals(resolvedMember.getName())) {
+				// might be worth checking the member behind the parameterized member (see pr137496)
+				if (matches(resolvedMember.getBackingGenericMember(), field)) {
+					return resolvedMember;
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -402,31 +404,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * return null if not found
 	 */
-	private ResolvedMember lookupMember(Member m, Iterator i) {
-		while (i.hasNext()) {
-			ResolvedMember f = (ResolvedMember) i.next();
-			if (matches(f, m))
-				return f;
-			if (f.hasBackingGenericMember() && m.getName().equals(f.getName())) { // might
-				// be
-				// worth
-				// checking
-				// the
-				// method
-				// behind
-				// the
-				// parameterized method (see pr137496)
-				if (matches(f.getBackingGenericMember(), m))
-					return f;
-			}
-		}
-		return null; // ResolvedMember.Missing;
-		// throw new BCException("can't find " + m);
-	}
-
-	/**
-	 * return null if not found
-	 */
 	private ResolvedMember lookupMember(Member m, ResolvedMember[] a) {
 		for (int i = 0; i < a.length; i++) {
 			ResolvedMember f = a[i];
@@ -452,7 +429,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			toSearch = getFields();
 		}
 		while (toSearch.hasNext()) {
-			ResolvedMember candidate = (ResolvedMemberImpl) toSearch.next();
+			ResolvedMember candidate = (ResolvedMember) toSearch.next();
 			if (ignoreGenerics) {
 				if (candidate.hasBackingGenericMember()) {
 					candidate = candidate.getBackingGenericMember();
@@ -540,18 +517,18 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * <p/>
 	 * We keep a hashSet of interfaces that we've visited so we don't spiral out into 2^n land.
 	 */
-	public Iterator getPointcuts() {
-		final Iterators.Filter dupFilter = Iterators.dupFilter();
+	public Iterator<ResolvedMember> getPointcuts() {
+		final Iterators.Filter<ResolvedType> dupFilter = Iterators.dupFilter();
 		// same order as fields
-		Iterators.Getter typeGetter = new Iterators.Getter() {
-			public Iterator get(Object o) {
-				return dupFilter.filter(((ResolvedType) o).getDirectSupertypes());
+		Iterators.Getter<ResolvedType, ResolvedType> typeGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
+			public Iterator<ResolvedType> get(ResolvedType o) {
+				return dupFilter.filter(o.getDirectSupertypes());
 			}
 		};
-		Iterators.Getter pointcutGetter = new Iterators.Getter() {
-			public Iterator get(Object o) {
+		Iterators.Getter<ResolvedType, ResolvedMember> pointcutGetter = new Iterators.Getter<ResolvedType, ResolvedMember>() {
+			public Iterator<ResolvedMember> get(ResolvedType o) {
 				// System.err.println("getting for " + o);
-				return Iterators.array(((ResolvedType) o).getDeclaredPointcuts());
+				return Iterators.array(o.getDeclaredPointcuts());
 			}
 		};
 		return Iterators.mapOver(Iterators.recur(this, typeGetter), pointcutGetter);
@@ -601,12 +578,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return crosscuttingMembers;
 	}
 
-	public final Collection collectDeclares(boolean includeAdviceLike) {
+	public final List<Declare> collectDeclares(boolean includeAdviceLike) {
 		if (!this.isAspect()) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 
-		ArrayList ret = new ArrayList();
+		List<Declare> ret = new ArrayList<Declare>();
 		// if (this.isAbstract()) {
 		// for (Iterator i = getDeclares().iterator(); i.hasNext();) {
 		// Declare dec = (Declare) i.next();
@@ -617,16 +594,16 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 		if (!this.isAbstract()) {
 			// ret.addAll(getDeclares());
-			final Iterators.Filter dupFilter = Iterators.dupFilter();
-			Iterators.Getter typeGetter = new Iterators.Getter() {
-				public Iterator get(Object o) {
-					return dupFilter.filter(((ResolvedType) o).getDirectSupertypes());
+			final Iterators.Filter<ResolvedType> dupFilter = Iterators.dupFilter();
+			Iterators.Getter<ResolvedType, ResolvedType> typeGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
+				public Iterator<ResolvedType> get(ResolvedType o) {
+					return dupFilter.filter((o).getDirectSupertypes());
 				}
 			};
-			Iterator typeIterator = Iterators.recur(this, typeGetter);
+			Iterator<ResolvedType> typeIterator = Iterators.recur(this, typeGetter);
 
 			while (typeIterator.hasNext()) {
-				ResolvedType ty = (ResolvedType) typeIterator.next();
+				ResolvedType ty = typeIterator.next();
 				// System.out.println("super: " + ty + ", " + );
 				for (Iterator i = ty.getDeclares().iterator(); i.hasNext();) {
 					Declare dec = (Declare) i.next();
@@ -643,21 +620,22 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return ret;
 	}
 
-	private final Collection collectShadowMungers() {
-		if (!this.isAspect() || this.isAbstract() || this.doesNotExposeShadowMungers())
-			return Collections.EMPTY_LIST;
+	private final List<ShadowMunger> collectShadowMungers() {
+		if (!this.isAspect() || this.isAbstract() || this.doesNotExposeShadowMungers()) {
+			return Collections.emptyList();
+		}
 
-		ArrayList acc = new ArrayList();
-		final Iterators.Filter dupFilter = Iterators.dupFilter();
-		Iterators.Getter typeGetter = new Iterators.Getter() {
-			public Iterator get(Object o) {
-				return dupFilter.filter(((ResolvedType) o).getDirectSupertypes());
+		List<ShadowMunger> acc = new ArrayList<ShadowMunger>();
+		final Iterators.Filter<ResolvedType> dupFilter = Iterators.dupFilter();
+		Iterators.Getter<ResolvedType, ResolvedType> typeGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
+			public Iterator<ResolvedType> get(ResolvedType o) {
+				return dupFilter.filter((o).getDirectSupertypes());
 			}
 		};
-		Iterator typeIterator = Iterators.recur(this, typeGetter);
+		Iterator<ResolvedType> typeIterator = Iterators.recur(this, typeGetter);
 
 		while (typeIterator.hasNext()) {
-			ResolvedType ty = (ResolvedType) typeIterator.next();
+			ResolvedType ty = typeIterator.next();
 			acc.addAll(ty.getDeclaredShadowMungers());
 		}
 
@@ -769,22 +747,24 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return Modifier.isFinal(getModifiers());
 	}
 
-	protected Map /* Type variable name -> UnresolvedType */getMemberParameterizationMap() {
-		if (!isParameterizedType())
-			return Collections.EMPTY_MAP;
+	protected Map<String, UnresolvedType> getMemberParameterizationMap() {
+		if (!isParameterizedType()) {
+			return Collections.emptyMap();
+		}
 		TypeVariable[] tvs = getGenericType().getTypeVariables();
-		Map parameterizationMap = new HashMap();
+		Map<String, UnresolvedType> parameterizationMap = new HashMap<String, UnresolvedType>();
 		for (int i = 0; i < tvs.length; i++) {
 			parameterizationMap.put(tvs[i].getName(), typeParameters[i]);
 		}
 		return parameterizationMap;
 	}
 
-	public Collection getDeclaredAdvice() {
-		List l = new ArrayList();
+	public List<ShadowMunger> getDeclaredAdvice() {
+		List<ShadowMunger> l = new ArrayList<ShadowMunger>();
 		ResolvedMember[] methods = getDeclaredMethods();
-		if (isParameterizedType())
+		if (isParameterizedType()) {
 			methods = getGenericType().getDeclaredMethods();
+		}
 		Map typeVariableMap = getAjMemberParameterizationMap();
 		for (int i = 0, len = methods.length; i < len; i++) {
 			ShadowMunger munger = methods[i].getAssociatedShadowMunger();
@@ -820,9 +800,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return l;
 	}
 
-	public Collection getDeclaredShadowMungers() {
-		Collection c = getDeclaredAdvice();
-		return c;
+	public List<ShadowMunger> getDeclaredShadowMungers() {
+		return getDeclaredAdvice();
 	}
 
 	// ---- only for testing!
@@ -833,11 +812,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	public ResolvedMember[] getDeclaredJavaMethods() {
 		return filterInJavaVisible(getDeclaredMethods());
-	}
-
-	public ShadowMunger[] getDeclaredShadowMungersArray() {
-		List l = (List) getDeclaredShadowMungers();
-		return (ShadowMunger[]) l.toArray(new ShadowMunger[l.size()]);
 	}
 
 	private ResolvedMember[] filterInJavaVisible(ResolvedMember[] ms) {
@@ -1187,12 +1161,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return interTypeMungers;
 	}
 
-	public List getInterTypeParentMungers() {
-		List l = new ArrayList();
-		for (Iterator iter = interTypeMungers.iterator(); iter.hasNext();) {
-			ConcreteTypeMunger element = (ConcreteTypeMunger) iter.next();
-			if (element.getMunger() instanceof NewParentTypeMunger)
+	public List<ConcreteTypeMunger> getInterTypeParentMungers() {
+		List<ConcreteTypeMunger> l = new ArrayList<ConcreteTypeMunger>();
+		for (ConcreteTypeMunger element : interTypeMungers) {
+			if (element.getMunger() instanceof NewParentTypeMunger) {
 				l.add(element);
+			}
 		}
 		return l;
 	}
@@ -1200,37 +1174,37 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * ??? This method is O(N*M) where N = number of methods and M is number of inter-type declarations in my super
 	 */
-	public List getInterTypeMungersIncludingSupers() {
-		ArrayList ret = new ArrayList();
+	public List<ConcreteTypeMunger> getInterTypeMungersIncludingSupers() {
+		ArrayList<ConcreteTypeMunger> ret = new ArrayList<ConcreteTypeMunger>();
 		collectInterTypeMungers(ret);
 		return ret;
 	}
 
-	public List getInterTypeParentMungersIncludingSupers() {
-		ArrayList ret = new ArrayList();
+	public List<ConcreteTypeMunger> getInterTypeParentMungersIncludingSupers() {
+		ArrayList<ConcreteTypeMunger> ret = new ArrayList<ConcreteTypeMunger>();
 		collectInterTypeParentMungers(ret);
 		return ret;
 	}
 
-	private void collectInterTypeParentMungers(List collector) {
-		for (Iterator iter = getDirectSupertypes(); iter.hasNext();) {
-			ResolvedType superType = (ResolvedType) iter.next();
+	private void collectInterTypeParentMungers(List<ConcreteTypeMunger> collector) {
+		for (Iterator<ResolvedType> iter = getDirectSupertypes(); iter.hasNext();) {
+			ResolvedType superType = iter.next();
 			superType.collectInterTypeParentMungers(collector);
 		}
 		collector.addAll(getInterTypeParentMungers());
 	}
 
-	protected void collectInterTypeMungers(List collector) {
-		for (Iterator iter = getDirectSupertypes(); iter.hasNext();) {
-			ResolvedType superType = (ResolvedType) iter.next();
+	protected void collectInterTypeMungers(List<ConcreteTypeMunger> collector) {
+		for (Iterator<ResolvedType> iter = getDirectSupertypes(); iter.hasNext();) {
+			ResolvedType superType = iter.next();
 			if (superType == null) {
 				throw new BCException("UnexpectedProblem: a supertype in the hierarchy for " + this.getName() + " is null");
 			}
 			superType.collectInterTypeMungers(collector);
 		}
 
-		outer: for (Iterator iter1 = collector.iterator(); iter1.hasNext();) {
-			ConcreteTypeMunger superMunger = (ConcreteTypeMunger) iter1.next();
+		outer: for (Iterator<ConcreteTypeMunger> iter1 = collector.iterator(); iter1.hasNext();) {
+			ConcreteTypeMunger superMunger = iter1.next();
 			if (superMunger.getSignature() == null)
 				continue;
 
@@ -1248,8 +1222,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				continue;
 			}
 
-			for (Iterator iter = getMethods(); iter.hasNext();) {
-				ResolvedMember method = (ResolvedMember) iter.next();
+			for (Iterator<ResolvedMember> iter = getMethods(); iter.hasNext();) {
+				ResolvedMember method = iter.next();
 				if (conflictingSignature(method, superMunger.getSignature())) {
 					iter1.remove();
 					continue outer;
@@ -1878,8 +1852,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// ??? horribly inefficient
 		// for (Iterator i =
 		// System.err.println("lookup " + member + " in " + interTypeMungers);
-		for (Iterator i = interTypeMungers.iterator(); i.hasNext();) {
-			ConcreteTypeMunger m = (ConcreteTypeMunger) i.next();
+		for (ConcreteTypeMunger m : interTypeMungers) {
 			ResolvedMember ret = m.getMatchingSyntheticMember(member);
 			if (ret != null) {
 				// System.err.println("   found: " + ret);

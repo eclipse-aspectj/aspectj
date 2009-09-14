@@ -46,7 +46,7 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 
 	public ResolvedType[] getAnnotationTypes();
 
-	public void setAnnotationTypes(UnresolvedType[] annotationtypes);
+	public void setAnnotationTypes(ResolvedType[] annotationtypes);
 
 	public void addAnnotation(AnnotationAJ annotation);
 

@@ -39,7 +39,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	 */
 	protected ResolvedMember backingGenericMember = null;
 
-	protected Set<UnresolvedType> annotationTypes = null;
+	protected Set<ResolvedType> annotationTypes = null;
 	protected ResolvedType[][] parameterAnnotationTypes = null;
 
 	// Some members are 'created' to represent other things (for example ITDs).
@@ -123,11 +123,10 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			// }
 		}
 
-		List declaringTypes = new ArrayList();
+		List<ResolvedType> declaringTypes = new ArrayList<ResolvedType>();
 		accumulateTypesInBetween(originalDeclaringType, firstDefiningType, declaringTypes);
-		Set memberSignatures = new HashSet();
-		for (Iterator iter = declaringTypes.iterator(); iter.hasNext();) {
-			ResolvedType declaringType = (ResolvedType) iter.next();
+		Set<ResolvedMember> memberSignatures = new HashSet<ResolvedMember>();
+		for (ResolvedType declaringType : declaringTypes) {
 			ResolvedMember member = firstDefiningMember.withSubstituteDeclaringType(declaringType);
 			memberSignatures.add(member);
 		}
@@ -137,7 +136,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			// include the signature for
 			// every type between the firstDefiningMember and the root defining
 			// member.
-			Iterator superTypeIterator = firstDefiningType.getDirectSupertypes();
+			Iterator<ResolvedType> superTypeIterator = firstDefiningType.getDirectSupertypes();
 			List typesAlreadyVisited = new ArrayList();
 			accumulateMembersMatching(firstDefiningMember, superTypeIterator, typesAlreadyVisited, memberSignatures, false);
 		}
@@ -160,13 +159,13 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	/**
 	 * Build a list containing every type between subtype and supertype, inclusively.
 	 */
-	private static void accumulateTypesInBetween(ResolvedType subType, ResolvedType superType, List types) {
+	private static void accumulateTypesInBetween(ResolvedType subType, ResolvedType superType, List<ResolvedType> types) {
 		types.add(subType);
 		if (subType == superType) {
 			return;
 		} else {
-			for (Iterator iter = subType.getDirectSupertypes(); iter.hasNext();) {
-				ResolvedType parent = (ResolvedType) iter.next();
+			for (Iterator<ResolvedType> iter = subType.getDirectSupertypes(); iter.hasNext();) {
+				ResolvedType parent = iter.next();
 				if (superType.isAssignableFrom(parent)) {
 					accumulateTypesInBetween(parent, superType, types);
 				}
@@ -178,22 +177,21 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	 * We have a resolved member, possibly with type parameter references as parameters or return type. We need to find all its
 	 * ancestor members. When doing this, a type parameter matches regardless of bounds (bounds can be narrowed down the hierarchy).
 	 */
-	private static void accumulateMembersMatching(ResolvedMemberImpl memberToMatch, Iterator typesToLookIn,
-			List typesAlreadyVisited, Set foundMembers, boolean ignoreGenerics) {
+	private static void accumulateMembersMatching(ResolvedMemberImpl memberToMatch, Iterator<ResolvedType> typesToLookIn,
+			List<ResolvedType> typesAlreadyVisited, Set<ResolvedMember> foundMembers, boolean ignoreGenerics) {
 		while (typesToLookIn.hasNext()) {
-			ResolvedType toLookIn = (ResolvedType) typesToLookIn.next();
+			ResolvedType toLookIn = typesToLookIn.next();
 			if (!typesAlreadyVisited.contains(toLookIn)) {
 				typesAlreadyVisited.add(toLookIn);
 				ResolvedMemberImpl foundMember = (ResolvedMemberImpl) toLookIn.lookupResolvedMember(memberToMatch, true,
 						ignoreGenerics);
 				if (foundMember != null && isVisibleTo(memberToMatch, foundMember)) {
-					List declaringTypes = new ArrayList();
+					List<ResolvedType> declaringTypes = new ArrayList<ResolvedType>();
 					// declaring type can be unresolved if the member can from
 					// an ITD...
 					ResolvedType resolvedDeclaringType = foundMember.getDeclaringType().resolve(toLookIn.getWorld());
 					accumulateTypesInBetween(toLookIn, resolvedDeclaringType, declaringTypes);
-					for (Iterator iter = declaringTypes.iterator(); iter.hasNext();) {
-						ResolvedType declaringType = (ResolvedType) iter.next();
+					for (ResolvedType declaringType : declaringTypes) {
 						// typesAlreadyVisited.add(declaringType);
 						ResolvedMember member = foundMember.withSubstituteDeclaringType(declaringType);
 						foundMembers.add(member);
@@ -323,12 +321,12 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		return super.getAnnotations();
 	}
 
-	public void setAnnotationTypes(UnresolvedType[] annotationtypes) {
+	public void setAnnotationTypes(ResolvedType[] annotationtypes) {
 		if (annotationTypes == null) {
-			annotationTypes = new HashSet<UnresolvedType>();
+			annotationTypes = new HashSet<ResolvedType>();
 		}
 		for (int i = 0; i < annotationtypes.length; i++) {
-			UnresolvedType typeX = annotationtypes[i];
+			ResolvedType typeX = annotationtypes[i];
 			annotationTypes.add(typeX);
 		}
 	}
@@ -350,7 +348,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		// FIXME asc only allows for annotation types, not instances - should
 		// it?
 		if (annotationTypes == null) {
-			annotationTypes = new HashSet<UnresolvedType>();
+			annotationTypes = new HashSet<ResolvedType>();
 		}
 		annotationTypes.add(annotation.getType());
 	}
@@ -526,15 +524,15 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 				}
 			}
 			world.setTypeVariableLookupScope(this);
-			if (annotationTypes != null) {
-				Set<UnresolvedType> r = new HashSet<UnresolvedType>();
-				for (UnresolvedType element : annotationTypes) {
-					// for (Iterator iter = annotationTypes.iterator(); iter.hasNext();) {
-					// UnresolvedType element = (UnresolvedType) iter.next();
-					r.add(world.resolve(element));
-				}
-				annotationTypes = r;
-			}
+			// if (annotationTypes != null) {
+			// Set<ResolvedType> r = new HashSet<ResolvedType>();
+			// for (UnresolvedType element : annotationTypes) {
+			// // for (Iterator iter = annotationTypes.iterator(); iter.hasNext();) {
+			// // UnresolvedType element = (UnresolvedType) iter.next();
+			// r.add(world.resolve(element));
+			// }
+			// annotationTypes = r;
+			// }
 			declaringType = declaringType.resolve(world);
 			if (declaringType.isRawType())
 				declaringType = ((ReferenceType) declaringType).getGenericType();
@@ -682,7 +680,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		if (isParameterized && (typeVariables.length != typeParameters.length)) {
 			throw new IllegalStateException("Wrong number of type parameters supplied");
 		}
-		Map typeMap = new HashMap();
+		Map<String, UnresolvedType> typeMap = new HashMap<String, UnresolvedType>();
 		boolean typeParametersSupplied = typeParameters != null && typeParameters.length > 0;
 		if (typeVariables != null) {
 			// If no 'replacements' were supplied in the typeParameters array

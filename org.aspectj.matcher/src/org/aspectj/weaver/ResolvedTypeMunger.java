@@ -23,7 +23,6 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,9 +51,9 @@ public abstract class ResolvedTypeMunger {
 	// across the intertype declaration to the right type variables in the generic
 	// type upon which the itd is being made.
 	// might need serializing the class file for binary weaving.
-	protected List /* String */typeVariableAliases;
+	protected List<String> typeVariableAliases;
 
-	private Set /* resolvedMembers */superMethodsCalled = Collections.EMPTY_SET;
+	private Set<ResolvedMember> superMethodsCalled = Collections.emptySet();
 
 	private ISourceLocation location; // Lost during serialize/deserialize !
 
@@ -131,6 +130,7 @@ public abstract class ResolvedTypeMunger {
 
 	// ----
 
+	@Override
 	public String toString() {
 		return "ResolvedTypeMunger(" + getKind() + ", " + getSignature() + ")";
 		// .superMethodsCalled + ")";
@@ -157,9 +157,8 @@ public abstract class ResolvedTypeMunger {
 		}
 	}
 
-	protected static Set readSuperMethodsCalled(VersionedDataInputStream s) throws IOException {
-
-		Set ret = new HashSet();
+	protected static Set<ResolvedMember> readSuperMethodsCalled(VersionedDataInputStream s) throws IOException {
+		Set<ResolvedMember> ret = new HashSet<ResolvedMember>();
 		int n = s.readInt();
 		if (n < 0)
 			throw new BCException("Problem deserializing type munger");
@@ -176,12 +175,11 @@ public abstract class ResolvedTypeMunger {
 			return;
 		}
 
-		List ret = new ArrayList(superMethodsCalled);
+		List<ResolvedMember> ret = new ArrayList<ResolvedMember>(superMethodsCalled);
 		Collections.sort(ret);
 		int n = ret.size();
 		s.writeInt(n);
-		for (Iterator i = ret.iterator(); i.hasNext();) {
-			ResolvedMember m = (ResolvedMember) i.next();
+		for (ResolvedMember m : ret) {
 			m.write(s);
 		}
 
@@ -264,6 +262,7 @@ public abstract class ResolvedTypeMunger {
 			throw new BCException("bad kind: " + key);
 		}
 
+		@Override
 		public String toString() {
 			// we want MethodDelegate to appear as Method in WeaveInfo messages
 			// TODO we may want something for fieldhost ?
@@ -298,11 +297,11 @@ public abstract class ResolvedTypeMunger {
 
 	public static final String SUPER_DISPATCH_NAME = "superDispatch";
 
-	public void setSuperMethodsCalled(Set c) {
+	public void setSuperMethodsCalled(Set<ResolvedMember> c) {
 		this.superMethodsCalled = c;
 	}
 
-	public Set getSuperMethodsCalled() {
+	public Set<ResolvedMember> getSuperMethodsCalled() {
 		return superMethodsCalled;
 	}
 
@@ -334,11 +333,11 @@ public abstract class ResolvedTypeMunger {
 		}
 	}
 
-	protected static List readInTypeAliases(VersionedDataInputStream s) throws IOException {
+	protected static List<String> readInTypeAliases(VersionedDataInputStream s) throws IOException {
 		if (s.getMajorVersion() >= AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
 			int count = s.readInt();
 			if (count != 0) {
-				List aliases = new ArrayList();
+				List<String> aliases = new ArrayList<String>();
 				for (int i = 0; i < count; i++) {
 					aliases.add(s.readUTF());
 				}
@@ -354,14 +353,13 @@ public abstract class ResolvedTypeMunger {
 			s.writeInt(0);
 		} else {
 			s.writeInt(typeVariableAliases.size());
-			for (Iterator iter = typeVariableAliases.iterator(); iter.hasNext();) {
-				String element = (String) iter.next();
+			for (String element : typeVariableAliases) {
 				s.writeUTF(element);
 			}
 		}
 	}
 
-	public List getTypeVariableAliases() {
+	public List<String> getTypeVariableAliases() {
 		return typeVariableAliases;
 	}
 

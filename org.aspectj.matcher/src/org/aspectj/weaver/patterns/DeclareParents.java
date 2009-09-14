@@ -68,10 +68,12 @@ public class DeclareParents extends Declare {
 		return true;
 	}
 
+	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
 
+	@Override
 	public Declare parameterizeWith(Map typeVariableBindingMap, World w) {
 		DeclareParents ret = new DeclareParents(child.parameterizeWith(typeVariableBindingMap, w), parents.parameterizeWith(
 				typeVariableBindingMap, w), isExtends);
@@ -79,6 +81,7 @@ public class DeclareParents extends Declare {
 		return ret;
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("declare parents: ");
@@ -89,6 +92,7 @@ public class DeclareParents extends Declare {
 		return buf.toString();
 	}
 
+	@Override
 	public boolean equals(Object other) {
 		if (!(other instanceof DeclareParents))
 			return false;
@@ -97,6 +101,7 @@ public class DeclareParents extends Declare {
 	}
 
 	// ??? cache this
+	@Override
 	public int hashCode() {
 		int result = 23;
 		result = 37 * result + child.hashCode();
@@ -104,6 +109,7 @@ public class DeclareParents extends Declare {
 		return result;
 	}
 
+	@Override
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Declare.PARENTS);
 		child.write(s);
@@ -144,6 +150,7 @@ public class DeclareParents extends Declare {
 		return false;
 	}
 
+	@Override
 	public void resolve(IScope scope) {
 		// ScopeWithTypeVariables resolutionScope = new ScopeWithTypeVariables(typeVariablesInScope,scope);
 		child = child.resolveBindings(scope, Bindings.NONE, false, false);
@@ -169,6 +176,7 @@ public class DeclareParents extends Declare {
 		return this.isExtends;
 	}
 
+	@Override
 	public boolean isAdviceLike() {
 		return false;
 	}
@@ -333,13 +341,13 @@ public class DeclareParents extends Declare {
 		return true;
 	}
 
-	public List/* <ResolvedType> */findMatchingNewParents(ResolvedType onType, boolean reportErrors) {
+	public List<ResolvedType> findMatchingNewParents(ResolvedType onType, boolean reportErrors) {
 		if (onType.isRawType())
 			onType = onType.getGenericType();
 		if (!match(onType))
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 
-		List ret = new ArrayList();
+		List<ResolvedType> ret = new ArrayList<ResolvedType>();
 		for (int i = 0; i < parents.size(); i++) {
 			ResolvedType t = maybeGetNewParent(onType, parents.get(i), onType.getWorld(), reportErrors);
 			if (t != null)
@@ -349,6 +357,7 @@ public class DeclareParents extends Declare {
 		return ret;
 	}
 
+	@Override
 	public String getNameSuffix() {
 		return "parents";
 	}
