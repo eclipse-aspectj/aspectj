@@ -367,10 +367,10 @@ public class AtAjAttributes {
 	 * @param msgHandler
 	 * @return list of AjAttributes
 	 */
-	public static List readAj5MethodAttributes(Method method, BcelMethod bMethod, ResolvedType type,
+	public static List<AjAttribute> readAj5MethodAttributes(Method method, BcelMethod bMethod, ResolvedType type,
 			ResolvedPointcutDefinition preResolvedPointcut, ISourceContext context, IMessageHandler msgHandler) {
 		if (method.getName().startsWith(NameMangler.PREFIX))
-			return Collections.EMPTY_LIST; // already dealt with by ajc...
+			return Collections.emptyList(); // already dealt with by ajc...
 
 		AjAttributeMethodStruct struct = new AjAttributeMethodStruct(method, bMethod, type, context, msgHandler);
 		Attribute[] attributes = method.getAttributes();
@@ -775,8 +775,7 @@ public class AtAjAttributes {
 
 					// then iterate on field interface hierarchy (not object)
 					boolean hasAtLeastOneMethod = false;
-					ResolvedMember[] methods = (ResolvedMember[]) fieldType.getMethodsWithoutIterator(true, false).toArray(
-							new ResolvedMember[0]);
+					ResolvedMember[] methods = fieldType.getMethodsWithoutIterator(true, false).toArray(new ResolvedMember[0]);
 					for (int i = 0; i < methods.length; i++) {
 						ResolvedMember method = methods[i];
 						if (method.isAbstract()) {
@@ -967,8 +966,7 @@ public class AtAjAttributes {
 			ResolvedType typeForDelegation = (ResolvedType) iterator.next();
 			// TODO check for overlapping interfaces. Eg. A implements I, I extends J - if they specify interfaces={I,J} we dont
 			// want to do any methods twice
-			ResolvedMember[] methods = (ResolvedMember[]) typeForDelegation.getMethodsWithoutIterator(true, false).toArray(
-					new ResolvedMember[0]);
+			ResolvedMember[] methods = typeForDelegation.getMethodsWithoutIterator(true, false).toArray(new ResolvedMember[0]);
 			for (int i = 0; i < methods.length; i++) {
 				ResolvedMember method = methods[i];
 				if (method.isAbstract()) {

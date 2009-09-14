@@ -14,7 +14,6 @@ package org.aspectj.weaver.bcel;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.apache.bcel.classfile.Attribute;
@@ -103,24 +102,28 @@ final class BcelField extends ResolvedMemberImpl {
 
 	}
 
+	@Override
 	public boolean isAjSynthetic() {
 		return isAjSynthetic; // || getName().startsWith(NameMangler.PREFIX);
 	}
 
+	@Override
 	public boolean isSynthetic() {
 		return isSynthetic;
 	}
 
+	@Override
 	public boolean hasAnnotation(UnresolvedType ofType) {
 		ensureAnnotationTypesRetrieved();
-		for (Iterator iter = annotationTypes.iterator(); iter.hasNext();) {
-			ResolvedType aType = (ResolvedType) iter.next();
-			if (aType.equals(ofType))
+		for (ResolvedType aType : annotationTypes) {
+			if (aType.equals(ofType)) {
 				return true;
+			}
 		}
 		return false;
 	}
 
+	@Override
 	public ResolvedType[] getAnnotationTypes() {
 		ensureAnnotationTypesRetrieved();
 		ResolvedType[] ret = new ResolvedType[annotationTypes.size()];
@@ -128,11 +131,13 @@ final class BcelField extends ResolvedMemberImpl {
 		return ret;
 	}
 
+	@Override
 	public AnnotationAJ[] getAnnotations() {
 		ensureAnnotationTypesRetrieved();
 		return annotations;
 	}
 
+	@Override
 	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
 		ensureAnnotationTypesRetrieved();
 		for (int i = 0; i < annotations.length; i++) {
@@ -146,10 +151,10 @@ final class BcelField extends ResolvedMemberImpl {
 		if (annotationTypes == null) {
 			AnnotationGen annos[] = field.getAnnotations();
 			if (annos == null || annos.length == 0) {
-				annotationTypes = Collections.EMPTY_SET;
+				annotationTypes = Collections.emptySet();
 				annotations = AnnotationAJ.EMPTY_ARRAY;
 			} else {
-				annotationTypes = new HashSet();
+				annotationTypes = new HashSet<ResolvedType>();
 				annotations = new AnnotationAJ[annos.length];
 				for (int i = 0; i < annos.length; i++) {
 					AnnotationGen annotation = annos[i];
@@ -160,6 +165,7 @@ final class BcelField extends ResolvedMemberImpl {
 		}
 	}
 
+	@Override
 	public void addAnnotation(AnnotationAJ annotation) {
 		ensureAnnotationTypesRetrieved();
 		// Add it to the set of annotations
@@ -170,7 +176,7 @@ final class BcelField extends ResolvedMemberImpl {
 		annotations = ret;
 
 		if (annotationTypes == Collections.EMPTY_SET) {
-			annotationTypes = new HashSet();
+			annotationTypes = new HashSet<ResolvedType>();
 		}
 		// Add it to the set of annotation types
 		String typename = annotation.getTypeSignature();
@@ -182,6 +188,7 @@ final class BcelField extends ResolvedMemberImpl {
 	 * Unpack the generic signature attribute if there is one and we haven't already done so, then find the true field type of this
 	 * field (eg. List<String>).
 	 */
+	@Override
 	public UnresolvedType getGenericReturnType() {
 		unpackGenericSignature();
 		return genericFieldType;
@@ -252,6 +259,7 @@ final class BcelField extends ResolvedMemberImpl {
 		}
 	}
 
+	@Override
 	public void evictWeavingState() {
 		if (field != null) {
 			unpackGenericSignature();

@@ -939,8 +939,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					annotationsOnRealMember = realMember.getAnnotations();
 
 					if (annotationsOnRealMember != null) {
-						for (int i = 0; i < annotationsOnRealMember.length; i++) {
-							AnnotationAJ annotationX = annotationsOnRealMember[i];
+						for (AnnotationAJ annotationX : annotationsOnRealMember) {
 							AnnotationGen a = ((BcelAnnotation) annotationX).getBcelAnnotation();
 							AnnotationGen ag = new AnnotationGen(a, classWeaver.getLazyClassGen().getConstantPool(), true);
 							mg.addAnnotation(new BcelAnnotation(ag, classWeaver.getWorld()));
@@ -999,28 +998,33 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				// Work out if we need a bridge method for the new method added to the topmostimplementor.
 
 				// Check if the munger being processed is a parameterized form of the original munger
-				if (munger.getDeclaredSignature() != null) {
-					boolean needsbridging = false;
-					ResolvedMember mungerSignature = munger.getSignature();
-					ResolvedMember toBridgeTo = munger.getDeclaredSignature().parameterizedWith(null,
-							mungerSignature.getDeclaringType().resolve(getWorld()), false, munger.getTypeVariableAliases());
-					if (!toBridgeTo.getReturnType().getErasureSignature().equals(
-							mungerSignature.getReturnType().getErasureSignature()))
-						needsbridging = true;
-					UnresolvedType[] originalParams = toBridgeTo.getParameterTypes();
-					UnresolvedType[] newParams = mungerSignature.getParameterTypes();
-					for (int ii = 0; ii < originalParams.length; ii++) {
-						if (!originalParams[ii].getErasureSignature().equals(newParams[ii].getErasureSignature()))
-							needsbridging = true;
-					}
-					if (needsbridging) {
-						createBridge(classWeaver, unMangledInterMethod, classGen, toBridgeTo);
-					}
-				}
+				createBridgeIfNecessary(classWeaver, munger, unMangledInterMethod, classGen);
+
 				return true;
 			}
 		} else {
 			return false;
+		}
+	}
+
+	private void createBridgeIfNecessary(BcelClassWeaver classWeaver, NewMethodTypeMunger munger,
+			ResolvedMember unMangledInterMethod, LazyClassGen classGen) {
+		if (munger.getDeclaredSignature() != null) {
+			boolean needsbridging = false;
+			ResolvedMember mungerSignature = munger.getSignature();
+			ResolvedMember toBridgeTo = munger.getDeclaredSignature().parameterizedWith(null,
+					mungerSignature.getDeclaringType().resolve(getWorld()), false, munger.getTypeVariableAliases());
+			if (!toBridgeTo.getReturnType().getErasureSignature().equals(mungerSignature.getReturnType().getErasureSignature()))
+				needsbridging = true;
+			UnresolvedType[] originalParams = toBridgeTo.getParameterTypes();
+			UnresolvedType[] newParams = mungerSignature.getParameterTypes();
+			for (int ii = 0; ii < originalParams.length; ii++) {
+				if (!originalParams[ii].getErasureSignature().equals(newParams[ii].getErasureSignature()))
+					needsbridging = true;
+			}
+			if (needsbridging) {
+				createBridge(classWeaver, unMangledInterMethod, classGen, toBridgeTo);
+			}
 		}
 	}
 

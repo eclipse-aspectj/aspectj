@@ -16,7 +16,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -183,34 +182,29 @@ class BcelMethod extends ResolvedMemberImpl {
 
 	private void unpackAjAttributes(World world) {
 		associatedShadowMunger = null;
-		List as = Utility.readAjAttributes(getDeclaringType().getClassName(), method.getAttributes(), getSourceContext(world),
-				world, bcelObjectType.getWeaverVersionAttribute());
+		List<AjAttribute> as = Utility.readAjAttributes(getDeclaringType().getClassName(), method.getAttributes(),
+				getSourceContext(world), world, bcelObjectType.getWeaverVersionAttribute());
 		processAttributes(world, as);
 		as = AtAjAttributes.readAj5MethodAttributes(method, this, world.resolve(getDeclaringType()), preResolvedPointcut,
 				getSourceContext(world), world.getMessageHandler());
 		processAttributes(world, as);
 	}
 
-	private void processAttributes(World world, List as) {
-		for (Iterator iter = as.iterator(); iter.hasNext();) {
-			AjAttribute a = (AjAttribute) iter.next();
-			if (a instanceof AjAttribute.MethodDeclarationLineNumberAttribute) {
-				declarationLineNumber = (AjAttribute.MethodDeclarationLineNumberAttribute) a;
-			} else if (a instanceof AjAttribute.AdviceAttribute) {
-				associatedShadowMunger = ((AjAttribute.AdviceAttribute) a).reify(this, world);
-				// return;
-			} else if (a instanceof AjAttribute.AjSynthetic) {
+	private void processAttributes(World world, List<AjAttribute> as) {
+		for (AjAttribute attr : as) {
+			if (attr instanceof AjAttribute.MethodDeclarationLineNumberAttribute) {
+				declarationLineNumber = (AjAttribute.MethodDeclarationLineNumberAttribute) attr;
+			} else if (attr instanceof AjAttribute.AdviceAttribute) {
+				associatedShadowMunger = ((AjAttribute.AdviceAttribute) attr).reify(this, world);
+			} else if (attr instanceof AjAttribute.AjSynthetic) {
 				bitflags |= IS_AJ_SYNTHETIC;
-				// isAjSynthetic = true;
-			} else if (a instanceof AjAttribute.EffectiveSignatureAttribute) {
-				// System.out.println("found effective: " + this);
-				effectiveSignature = (AjAttribute.EffectiveSignatureAttribute) a;
-			} else if (a instanceof AjAttribute.PointcutDeclarationAttribute) {
-				// this is an @AspectJ annotated advice method, with pointcut
-				// pre-resolved by ajc
-				preResolvedPointcut = ((AjAttribute.PointcutDeclarationAttribute) a).reify();
+			} else if (attr instanceof AjAttribute.EffectiveSignatureAttribute) {
+				effectiveSignature = (AjAttribute.EffectiveSignatureAttribute) attr;
+			} else if (attr instanceof AjAttribute.PointcutDeclarationAttribute) {
+				// this is an @AspectJ annotated advice method, with pointcut pre-resolved by ajc
+				preResolvedPointcut = ((AjAttribute.PointcutDeclarationAttribute) attr).reify();
 			} else {
-				throw new BCException("weird method attribute " + a);
+				throw new BCException("weird method attribute " + attr);
 			}
 		}
 	}
@@ -266,8 +260,6 @@ class BcelMethod extends ResolvedMemberImpl {
 	public boolean isAjSynthetic() {
 		return (bitflags & IS_AJ_SYNTHETIC) != 0;
 	}
-
-	// FIXME ??? needs an isSynthetic method
 
 	@Override
 	public ShadowMunger getAssociatedShadowMunger() {
@@ -325,10 +317,10 @@ class BcelMethod extends ResolvedMemberImpl {
 	@Override
 	public boolean hasAnnotation(UnresolvedType ofType) {
 		ensureAnnotationsRetrieved();
-		for (Iterator iter = annotationTypes.iterator(); iter.hasNext();) {
-			ResolvedType aType = (ResolvedType) iter.next();
-			if (aType.equals(ofType))
+		for (ResolvedType aType : annotationTypes) {
+			if (aType.equals(ofType)) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -380,8 +372,9 @@ class BcelMethod extends ResolvedMemberImpl {
 		bitflags |= HAS_ANNOTATIONS;
 
 		// Add it to the set of annotation types
-		if (annotationTypes == Collections.EMPTY_SET)
-			annotationTypes = new HashSet();
+		if (annotationTypes == Collections.EMPTY_SET) {
+			annotationTypes = new HashSet<ResolvedType>();
+		}
 		annotationTypes.add(UnresolvedType.forName(annotation.getTypeName()).resolve(bcelObjectType.getWorld()));
 		// FIXME asc looks like we are managing two 'bunches' of annotations,
 		// one
@@ -422,7 +415,7 @@ class BcelMethod extends ResolvedMemberImpl {
 
 		AnnotationGen annos[] = method.getAnnotations();
 		if (annos.length != 0) {
-			annotationTypes = new HashSet();
+			annotationTypes = new HashSet<ResolvedType>();
 			annotations = new AnnotationAJ[annos.length];
 			for (int i = 0; i < annos.length; i++) {
 				AnnotationGen annotation = annos[i];
@@ -431,7 +424,7 @@ class BcelMethod extends ResolvedMemberImpl {
 			}
 			bitflags |= HAS_ANNOTATIONS;
 		} else {
-			annotationTypes = Collections.EMPTY_SET;
+			annotationTypes = Collections.emptySet();
 		}
 	}
 
