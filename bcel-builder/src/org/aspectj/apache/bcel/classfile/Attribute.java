@@ -60,17 +60,17 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisParamAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisParamAnnos;
 
 /**
  * Abstract super class for <em>Attribute</em> objects. Currently the <em>ConstantValue</em>, <em>SourceFile</em>, <em>Code</em>,
  * <em>Exceptiontable</em>, <em>LineNumberTable</em>, <em>LocalVariableTable</em>, <em>InnerClasses</em> and <em>Synthetic</em>
  * attributes are supported. The <em>Unknown</em> attribute stands for non-standard-attributes.
  * 
- * @version $Id: Attribute.java,v 1.6 2009/09/10 15:35:05 aclement Exp $
+ * @version $Id: Attribute.java,v 1.7 2009/09/15 19:40:12 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see ConstantValue
  * @see SourceFile
@@ -143,13 +143,13 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
 		case Constants.ATTR_STACK_MAP:
 			return new StackMap(idx, len, file, cpool);
 		case Constants.ATTR_RUNTIME_VISIBLE_ANNOTATIONS:
-			return new RuntimeVisibleAnnotations(idx, len, file, cpool);
+			return new RuntimeVisAnnos(idx, len, file, cpool);
 		case Constants.ATTR_RUNTIME_INVISIBLE_ANNOTATIONS:
-			return new RuntimeInvisibleAnnotations(idx, len, file, cpool);
+			return new RuntimeInvisAnnos(idx, len, file, cpool);
 		case Constants.ATTR_RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS:
-			return new RuntimeVisibleParameterAnnotations(idx, len, file, cpool);
+			return new RuntimeVisParamAnnos(idx, len, file, cpool);
 		case Constants.ATTR_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS:
-			return new RuntimeInvisibleParameterAnnotations(idx, len, file, cpool);
+			return new RuntimeInvisParamAnnos(idx, len, file, cpool);
 		case Constants.ATTR_ANNOTATION_DEFAULT:
 			return new AnnotationDefault(idx, len, file, cpool);
 		case Constants.ATTR_LOCAL_VARIABLE_TYPE_TABLE:
@@ -181,28 +181,29 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
 		return cpool;
 	}
 
-	/**
-	 * Use copy() if you want to have a deep copy(), ie. with all references copied correctly.
-	 * 
-	 * @return shallow copy of this attribute
-	 */
-	@Override
-	public Object clone() {
-		Object o = null;
+	// /**
+	// * Use copy() if you want to have a deep copy(), ie. with all references copied correctly.
+	// *
+	// * @return shallow copy of this attribute
+	// */
+	// @Override
+	// public Object clone() {
+	// Object o = null;
+	//
+	// try {
+	// o = super.clone();
+	// } catch (CloneNotSupportedException e) {
+	// e.printStackTrace(); // Never occurs
+	// }
+	//
+	// return o;
+	// }
 
-		try {
-			o = super.clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace(); // Never occurs
-		}
-
-		return o;
-	}
-
-	/**
-	 * @return deep copy of this attribute
-	 */
-	public abstract Attribute copy(ConstantPool constant_pool);
+	//
+	// /**
+	// * @return deep copy of this attribute
+	// */
+	// public abstract Attribute copy(ConstantPool constant_pool);
 
 	@Override
 	public String toString() {

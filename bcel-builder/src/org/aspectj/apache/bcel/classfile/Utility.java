@@ -63,19 +63,19 @@ import java.util.List;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeParameterAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisParamAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeParamAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisParamAnnos;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.apache.bcel.util.ByteSequence;
 
 /**
  * Utility functions that do not really belong to any class in particular.
  * 
- * @version $Id: Utility.java,v 1.11 2009/09/14 20:29:10 aclement Exp $
+ * @version $Id: Utility.java,v 1.12 2009/09/15 19:40:13 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  *         modified: Andy Clement 2-mar-05 Removed unnecessary static and optimized
@@ -396,18 +396,16 @@ public abstract class Utility {
 
 				brackets = new StringBuffer(); // Accumulate []'s
 				// Count opening brackets and look for optional size argument
-				for (n = 0; signature.charAt(n) == '['; n++)
+				for (n = 0; signature.charAt(n) == '['; n++) {
 					brackets.append("[]");
+				}
 				consumedChars = n;
-				// The rest of the string denotes a `<field_type>'
+				// The rest of the string denotes a '<field_type>'
 				ResultHolder restOfIt = signatureToStringInternal(signature.substring(n), chopit);
-
-				// type = signatureToString(signature.substring(n), chopit);
 
 				consumedChars += restOfIt.getConsumedChars();
 				return new ResultHolder(restOfIt.getResult() + brackets.toString(), consumedChars);
 			}
-
 			case 'V':
 				return ResultHolder.VOID;
 
@@ -545,7 +543,7 @@ public abstract class Utility {
 	 * @param cp The constant pool gen where we can create the necessary name refs
 	 * @param annotations A list of AnnotationGen objects
 	 */
-	public static Collection<RuntimeAnnotations> getAnnotationAttributes(ConstantPool cp, List<AnnotationGen> annotations) {
+	public static Collection<RuntimeAnnos> getAnnotationAttributes(ConstantPool cp, List<AnnotationGen> annotations) {
 
 		if (annotations.size() == 0)
 			return null;
@@ -593,12 +591,12 @@ public abstract class Utility {
 			if (riaData.length > 2)
 				riaIndex = cp.addUtf8("RuntimeInvisibleAnnotations");
 
-			List<RuntimeAnnotations> newAttributes = new ArrayList<RuntimeAnnotations>();
+			List<RuntimeAnnos> newAttributes = new ArrayList<RuntimeAnnos>();
 			if (rvaData.length > 2) {
-				newAttributes.add(new RuntimeVisibleAnnotations(rvaIndex, rvaData.length, rvaData, cp));
+				newAttributes.add(new RuntimeVisAnnos(rvaIndex, rvaData.length, rvaData, cp));
 			}
 			if (riaData.length > 2) {
-				newAttributes.add(new RuntimeInvisibleAnnotations(riaIndex, riaData.length, riaData, cp));
+				newAttributes.add(new RuntimeInvisAnnos(riaIndex, riaData.length, riaData, cp));
 			}
 
 			return newAttributes;
@@ -682,14 +680,14 @@ public abstract class Utility {
 			if (totalInvisCount > 0)
 				riaIndex = cp.addUtf8("RuntimeInvisibleParameterAnnotations");
 
-			List<RuntimeParameterAnnotations> newAttributes = new ArrayList<RuntimeParameterAnnotations>();
+			List<RuntimeParamAnnos> newAttributes = new ArrayList<RuntimeParamAnnos>();
 
 			if (totalVisCount > 0) {
-				newAttributes.add(new RuntimeVisibleParameterAnnotations(rvaIndex, rvaData.length, rvaData, cp));
+				newAttributes.add(new RuntimeVisParamAnnos(rvaIndex, rvaData.length, rvaData, cp));
 			}
 
 			if (totalInvisCount > 0) {
-				newAttributes.add(new RuntimeInvisibleParameterAnnotations(riaIndex, riaData.length, riaData, cp));
+				newAttributes.add(new RuntimeInvisParamAnnos(riaIndex, riaData.length, riaData, cp));
 			}
 
 			return newAttributes.toArray(new Attribute[] {});

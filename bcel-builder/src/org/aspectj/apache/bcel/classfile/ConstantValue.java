@@ -64,7 +64,7 @@ import org.aspectj.apache.bcel.Constants;
  * This class is derived from <em>Attribute</em> and represents a constant value, i.e., a default value for initializing a class
  * field. This class is instantiated by the <em>Attribute.readAttribute()</em> method.
  * 
- * @version $Id: ConstantValue.java,v 1.4 2009/09/10 15:35:04 aclement Exp $
+ * @version $Id: ConstantValue.java,v 1.5 2009/09/15 19:40:12 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Attribute
  */
@@ -176,14 +176,14 @@ public final class ConstantValue extends Attribute {
 
 		return buf;
 	}
-
-	/**
-	 * @return deep copy of this attribute
-	 */
-	@Override
-	public Attribute copy(ConstantPool constant_pool) {
-		ConstantValue c = (ConstantValue) clone();
-		c.cpool = constant_pool;
-		return c;
-	}
+	//
+	// /**
+	// * @return deep copy of this attribute
+	// */
+	// @Override
+	// public Attribute copy(ConstantPool constant_pool) {
+	// ConstantValue c = (ConstantValue) clone();
+	// c.cpool = constant_pool;
+	// return c;
+	// }
 }

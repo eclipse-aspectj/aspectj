@@ -1,9 +1,9 @@
 package org.aspectj.apache.bcel.classfile;
 
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisParamAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisParamAnnos;
 
 /* ====================================================================
  * The Apache Software License, Version 1.1
@@ -65,7 +65,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnot
  * 
  * Implemented by wish of <A HREF="http://www.inf.fu-berlin.de/~bokowski">Boris Bokowski</A>.
  * 
- * @version $Id: ClassVisitor.java,v 1.3 2009/09/10 03:59:33 aclement Exp $
+ * @version $Id: ClassVisitor.java,v 1.4 2009/09/15 19:40:13 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface ClassVisitor {
@@ -135,13 +135,13 @@ public interface ClassVisitor {
 
 	public void visitEnclosingMethod(EnclosingMethod obj);
 
-	public void visitRuntimeVisibleAnnotations(RuntimeVisibleAnnotations obj);
+	public void visitRuntimeVisibleAnnotations(RuntimeVisAnnos obj);
 
-	public void visitRuntimeInvisibleAnnotations(RuntimeInvisibleAnnotations obj);
+	public void visitRuntimeInvisibleAnnotations(RuntimeInvisAnnos obj);
 
-	public void visitRuntimeVisibleParameterAnnotations(RuntimeVisibleParameterAnnotations obj);
+	public void visitRuntimeVisibleParameterAnnotations(RuntimeVisParamAnnos obj);
 
-	public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisibleParameterAnnotations obj);
+	public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisParamAnnos obj);
 
 	public void visitAnnotationDefault(AnnotationDefault obj);
 

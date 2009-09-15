@@ -17,7 +17,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
 
 /**
  * This attribute is attached to a method and indicates the default 
@@ -25,13 +25,13 @@ import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
  */
 public class AnnotationDefault extends Attribute {
 	
-	private ElementValueGen value;
+	private ElementValue value;
 
 	public AnnotationDefault(int nameIndex, int len, DataInputStream dis, ConstantPool cpool) throws IOException {
-		this(nameIndex, len, ElementValueGen.readElementValue(dis,cpool), cpool);
+		this(nameIndex, len, ElementValue.readElementValue(dis,cpool), cpool);
 	}
 
-	private AnnotationDefault(int nameIndex, int len, ElementValueGen value, ConstantPool cpool) {
+	private AnnotationDefault(int nameIndex, int len, ElementValue value, ConstantPool cpool) {
 	    super(Constants.ATTR_ANNOTATION_DEFAULT, nameIndex, len, cpool);
 	    this.value = value;
 	}
@@ -42,7 +42,7 @@ public class AnnotationDefault extends Attribute {
 		// return (EnclosingMethod)clone();
 	}
 	
-	public final ElementValueGen getElementValue() { return value; }  
+	public final ElementValue getElementValue() { return value; }  
 	
     public final void dump(DataOutputStream dos) throws IOException {
 	    super.dump(dos);

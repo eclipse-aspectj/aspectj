@@ -69,7 +69,7 @@ import java.util.StringTokenizer;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnos;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 
@@ -80,7 +80,7 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
  * The intent of this class is to represent a parsed or otherwise existing class file. Those interested in programatically
  * generating classes should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
  * 
- * @version $Id: JavaClass.java,v 1.21 2009/09/15 16:39:56 aclement Exp $
+ * @version $Id: JavaClass.java,v 1.22 2009/09/15 19:40:14 aclement Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -289,8 +289,8 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 			List<AnnotationGen> accumulatedAnnotations = new ArrayList<AnnotationGen>();
 			for (int i = 0; i < attributes.length; i++) {
 				Attribute attribute = attributes[i];
-				if (attribute instanceof RuntimeAnnotations) {
-					RuntimeAnnotations runtimeAnnotations = (RuntimeAnnotations) attribute;
+				if (attribute instanceof RuntimeAnnos) {
+					RuntimeAnnos runtimeAnnotations = (RuntimeAnnos) attribute;
 					accumulatedAnnotations.addAll(runtimeAnnotations.getAnnotations());
 				}
 			}

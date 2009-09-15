@@ -60,15 +60,15 @@ import java.util.List;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisParamAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisParamAnnos;
 import org.aspectj.apache.bcel.generic.Type;
 
 /**
  * This class represents the method info structure, i.e., the representation for a method in the class. See JVM specification for
  * details. A method has access flags, a name, a signature and a number of attributes.
  * 
- * @version $Id: Method.java,v 1.10 2009/09/15 03:33:52 aclement Exp $
+ * @version $Id: Method.java,v 1.11 2009/09/15 19:40:12 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class Method extends FieldOrMethod {
@@ -206,18 +206,18 @@ public final class Method extends FieldOrMethod {
 			return;
 		}
 
-		RuntimeVisibleParameterAnnotations parameterAnnotationsVis = null;
-		RuntimeInvisibleParameterAnnotations parameterAnnotationsInvis = null;
+		RuntimeVisParamAnnos parameterAnnotationsVis = null;
+		RuntimeInvisParamAnnos parameterAnnotationsInvis = null;
 
 		// Find attributes that contain annotation data
 		Attribute[] attrs = getAttributes();
 
 		for (int i = 0; i < attrs.length; i++) {
 			Attribute attribute = attrs[i];
-			if (attribute instanceof RuntimeVisibleParameterAnnotations) {
-				parameterAnnotationsVis = (RuntimeVisibleParameterAnnotations) attribute;
-			} else if (attribute instanceof RuntimeInvisibleParameterAnnotations) {
-				parameterAnnotationsInvis = (RuntimeInvisibleParameterAnnotations) attribute;
+			if (attribute instanceof RuntimeVisParamAnnos) {
+				parameterAnnotationsVis = (RuntimeVisParamAnnos) attribute;
+			} else if (attribute instanceof RuntimeInvisParamAnnos) {
+				parameterAnnotationsInvis = (RuntimeInvisParamAnnos) attribute;
 			}
 		}
 

@@ -68,7 +68,7 @@ import org.aspectj.apache.bcel.Constants;
  * org.aspectj.apache.bcel.classfile.AttributeReader)">Attribute.addAttributeReader</a>.
  * 
  * 
- * @version $Id: Unknown.java,v 1.5 2009/09/10 15:35:05 aclement Exp $
+ * @version $Id: Unknown.java,v 1.6 2009/09/15 19:40:12 aclement Exp $
  * @see org.aspectj.apache.bcel.classfile.Attribute
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -202,14 +202,14 @@ public final class Unknown extends Attribute {
 	/**
 	 * @return deep copy of this attribute
 	 */
-	@Override
-	public Attribute copy(ConstantPool constant_pool) {
-		Unknown c = (Unknown) clone();
-
-		if (bytes != null)
-			c.bytes = bytes.clone();
-
-		c.cpool = constant_pool;
-		return c;
-	}
+	// @Override
+	// public Attribute copy(ConstantPool constant_pool) {
+	// Unknown c = (Unknown) clone();
+	//
+	// if (bytes != null)
+	// c.bytes = bytes.clone();
+	//
+	// c.cpool = constant_pool;
+	// return c;
+	// }
 }

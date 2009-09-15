@@ -23,7 +23,7 @@ import org.aspectj.apache.bcel.classfile.ConstantLong;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 
-public class SimpleElementValueGen extends ElementValueGen {
+public class SimpleElementValue extends ElementValue {
 
 	// For primitive types and string type, this points to the value entry in the cpGen
 	// For 'class' this points to the class entry in the cpGen
@@ -36,47 +36,47 @@ public class SimpleElementValueGen extends ElementValueGen {
 	 * Protected ctor used for deserialization, doesn't *put* an entry in the constant pool, assumes the one at the supplied index
 	 * is correct.
 	 */
-	protected SimpleElementValueGen(int type, int idx, ConstantPool cpGen) {
+	protected SimpleElementValue(int type, int idx, ConstantPool cpGen) {
 		super(type, cpGen);
 		this.idx = idx;
 	}
 
-	public SimpleElementValueGen(int type, ConstantPool cpGen, int value) {
+	public SimpleElementValue(int type, ConstantPool cpGen, int value) {
 		super(type, cpGen);
 		idx = cpGen.addInteger(value);
 	}
 
-	public SimpleElementValueGen(int type, ConstantPool cpGen, long value) {
+	public SimpleElementValue(int type, ConstantPool cpGen, long value) {
 		super(type, cpGen);
 		idx = cpGen.addLong(value);
 	}
 
-	public SimpleElementValueGen(int type, ConstantPool cpGen, double value) {
+	public SimpleElementValue(int type, ConstantPool cpGen, double value) {
 		super(type, cpGen);
 		idx = cpGen.addDouble(value);
 	}
 
-	public SimpleElementValueGen(int type, ConstantPool cpGen, float value) {
+	public SimpleElementValue(int type, ConstantPool cpGen, float value) {
 		super(type, cpGen);
 		idx = cpGen.addFloat(value);
 	}
 
-	public SimpleElementValueGen(int type, ConstantPool cpGen, short value) {
+	public SimpleElementValue(int type, ConstantPool cpGen, short value) {
 		super(type, cpGen);
 		idx = cpGen.addInteger(value);
 	}
 
-	public SimpleElementValueGen(int type, ConstantPool cpGen, byte value) {
+	public SimpleElementValue(int type, ConstantPool cpGen, byte value) {
 		super(type, cpGen);
 		idx = cpGen.addInteger(value);
 	}
 
-	public SimpleElementValueGen(int type, ConstantPool cpGen, char value) {
+	public SimpleElementValue(int type, ConstantPool cpGen, char value) {
 		super(type, cpGen);
 		idx = cpGen.addInteger(value);
 	}
 
-	public SimpleElementValueGen(int type, ConstantPool cpGen, boolean value) {
+	public SimpleElementValue(int type, ConstantPool cpGen, boolean value) {
 		super(type, cpGen);
 		if (value)
 			idx = cpGen.addInteger(1);
@@ -84,7 +84,7 @@ public class SimpleElementValueGen extends ElementValueGen {
 			idx = cpGen.addInteger(0);
 	}
 
-	public SimpleElementValueGen(int type, ConstantPool cpGen, String value) {
+	public SimpleElementValue(int type, ConstantPool cpGen, String value) {
 		super(type, cpGen);
 		idx = cpGen.addUtf8(value);
 	}
@@ -92,49 +92,49 @@ public class SimpleElementValueGen extends ElementValueGen {
 	public byte getValueByte() {
 		if (type != PRIMITIVE_BYTE)
 			throw new RuntimeException("Dont call getValueByte() on a non BYTE ElementValue");
-		ConstantInteger c = (ConstantInteger) cpGen.getConstant(idx, Constants.CONSTANT_Integer);
+		ConstantInteger c = (ConstantInteger) cpool.getConstant(idx, Constants.CONSTANT_Integer);
 		return (byte) c.getIntValue();
 	}
 
 	public char getValueChar() {
 		if (type != PRIMITIVE_CHAR)
 			throw new RuntimeException("Dont call getValueChar() on a non CHAR ElementValue");
-		ConstantInteger c = (ConstantInteger) cpGen.getConstant(idx, Constants.CONSTANT_Integer);
+		ConstantInteger c = (ConstantInteger) cpool.getConstant(idx, Constants.CONSTANT_Integer);
 		return (char) c.getIntValue();
 	}
 
 	public long getValueLong() {
 		if (type != PRIMITIVE_LONG)
 			throw new RuntimeException("Dont call getValueLong() on a non LONG ElementValue");
-		ConstantLong j = (ConstantLong) cpGen.getConstant(idx);
+		ConstantLong j = (ConstantLong) cpool.getConstant(idx);
 		return j.getValue();
 	}
 
 	public float getValueFloat() {
 		if (type != PRIMITIVE_FLOAT)
 			throw new RuntimeException("Dont call getValueFloat() on a non FLOAT ElementValue");
-		ConstantFloat f = (ConstantFloat) cpGen.getConstant(idx);
+		ConstantFloat f = (ConstantFloat) cpool.getConstant(idx);
 		return f.getValue();
 	}
 
 	public double getValueDouble() {
 		if (type != PRIMITIVE_DOUBLE)
 			throw new RuntimeException("Dont call getValueDouble() on a non DOUBLE ElementValue");
-		ConstantDouble d = (ConstantDouble) cpGen.getConstant(idx);
+		ConstantDouble d = (ConstantDouble) cpool.getConstant(idx);
 		return d.getValue();
 	}
 
 	public boolean getValueBoolean() {
 		if (type != PRIMITIVE_BOOLEAN)
 			throw new RuntimeException("Dont call getValueBoolean() on a non BOOLEAN ElementValue");
-		ConstantInteger bo = (ConstantInteger) cpGen.getConstant(idx);
+		ConstantInteger bo = (ConstantInteger) cpool.getConstant(idx);
 		return (bo.getValue() != 0);
 	}
 
 	public short getValueShort() {
 		if (type != PRIMITIVE_SHORT)
 			throw new RuntimeException("Dont call getValueShort() on a non SHORT ElementValue");
-		ConstantInteger s = (ConstantInteger) cpGen.getConstant(idx);
+		ConstantInteger s = (ConstantInteger) cpool.getConstant(idx);
 		return (short) s.getIntValue();
 	}
 
@@ -142,7 +142,7 @@ public class SimpleElementValueGen extends ElementValueGen {
 	 * The boolean controls whether we copy info from the 'old' constant pool to the 'new'. You need to use this ctor if the
 	 * annotation is being copied from one file to another.
 	 */
-	public SimpleElementValueGen(SimpleElementValueGen value, ConstantPool cpool, boolean copyPoolEntries) {
+	public SimpleElementValue(SimpleElementValue value, ConstantPool cpool, boolean copyPoolEntries) {
 		super(value.getElementValueType(), cpool);
 		if (!copyPoolEntries) {
 			// J5ASSERT: Could assert value.stringifyValue() is the same as
@@ -187,13 +187,6 @@ public class SimpleElementValueGen extends ElementValueGen {
 		}
 	}
 
-	/**
-	 * Return immutable variant
-	 */
-	public ElementValueGen getElementValue() {
-		return new SimpleElementValueGen(type, idx, cpGen);
-	}
-
 	public int getIndex() {
 		return idx;
 	}
@@ -201,14 +194,14 @@ public class SimpleElementValueGen extends ElementValueGen {
 	public String getValueString() {
 		if (type != STRING)
 			throw new RuntimeException("Dont call getValueString() on a non STRING ElementValue");
-		ConstantUtf8 c = (ConstantUtf8) cpGen.getConstant(idx);
+		ConstantUtf8 c = (ConstantUtf8) cpool.getConstant(idx);
 		return c.getValue();
 	}
 
 	public int getValueInt() {
 		if (type != PRIMITIVE_INT)
 			throw new RuntimeException("Dont call getValueString() on a non STRING ElementValue");
-		ConstantInteger c = (ConstantInteger) cpGen.getConstant(idx);
+		ConstantInteger c = (ConstantInteger) cpool.getConstant(idx);
 		return c.getValue();
 	}
 
@@ -217,34 +210,34 @@ public class SimpleElementValueGen extends ElementValueGen {
 	public String stringifyValue() {
 		switch (type) {
 		case PRIMITIVE_INT:
-			ConstantInteger c = (ConstantInteger) cpGen.getConstant(idx);
+			ConstantInteger c = (ConstantInteger) cpool.getConstant(idx);
 			return Integer.toString(c.getValue());
 		case PRIMITIVE_LONG:
-			ConstantLong j = (ConstantLong) cpGen.getConstant(idx);
+			ConstantLong j = (ConstantLong) cpool.getConstant(idx);
 			return Long.toString(j.getValue());
 		case PRIMITIVE_DOUBLE:
-			ConstantDouble d = (ConstantDouble) cpGen.getConstant(idx);
+			ConstantDouble d = (ConstantDouble) cpool.getConstant(idx);
 			return d.getValue().toString();
 		case PRIMITIVE_FLOAT:
-			ConstantFloat f = (ConstantFloat) cpGen.getConstant(idx);
+			ConstantFloat f = (ConstantFloat) cpool.getConstant(idx);
 			return Float.toString(f.getValue());
 		case PRIMITIVE_SHORT:
-			ConstantInteger s = (ConstantInteger) cpGen.getConstant(idx);
+			ConstantInteger s = (ConstantInteger) cpool.getConstant(idx);
 			return Integer.toString(s.getValue());
 		case PRIMITIVE_BYTE:
-			ConstantInteger b = (ConstantInteger) cpGen.getConstant(idx);
+			ConstantInteger b = (ConstantInteger) cpool.getConstant(idx);
 			return Integer.toString(b.getValue());
 		case PRIMITIVE_CHAR:
-			ConstantInteger ch = (ConstantInteger) cpGen.getConstant(idx);
+			ConstantInteger ch = (ConstantInteger) cpool.getConstant(idx);
 			return new Character((char) ch.getIntValue()).toString();
 		case PRIMITIVE_BOOLEAN:
-			ConstantInteger bo = (ConstantInteger) cpGen.getConstant(idx);
+			ConstantInteger bo = (ConstantInteger) cpool.getConstant(idx);
 			if (bo.getValue() == 0)
 				return "false";
 			else
 				return "true";
 		case STRING:
-			ConstantUtf8 cu8 = (ConstantUtf8) cpGen.getConstant(idx);
+			ConstantUtf8 cu8 = (ConstantUtf8) cpool.getConstant(idx);
 			return cu8.getValue();
 
 		default:

@@ -63,12 +63,12 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.Modifiers;
 import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnos;
 
 /**
  * Super class for FieldGen and MethodGen objects, since they have some methods in common!
  * 
- * @version $Id: FieldGenOrMethodGen.java,v 1.7 2009/09/14 20:29:10 aclement Exp $
+ * @version $Id: FieldGenOrMethodGen.java,v 1.8 2009/09/15 19:40:14 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldGenOrMethodGen extends Modifiers {
@@ -145,7 +145,7 @@ public abstract class FieldGenOrMethodGen extends Modifiers {
 	}
 
 	protected void addAnnotationsAsAttribute(ConstantPool cp) {
-		Collection<RuntimeAnnotations> attrs = Utility.getAnnotationAttributes(cp, annotationList);
+		Collection<RuntimeAnnos> attrs = Utility.getAnnotationAttributes(cp, annotationList);
 		if (attrs != null) {
 			for (Attribute attr : attrs) {
 				addAttribute(attr);

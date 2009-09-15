@@ -17,12 +17,12 @@ import java.io.IOException;
 
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 
-public class ElementNameValuePairGen {
+public class NameValuePair {
 	private int nameIdx;
-	private ElementValueGen value;
+	private ElementValue value;
 	private ConstantPool cpool;
 
-	public ElementNameValuePairGen(ElementNameValuePairGen pair, ConstantPool cpool, boolean copyPoolEntries) {
+	public NameValuePair(NameValuePair pair, ConstantPool cpool, boolean copyPoolEntries) {
 		this.cpool = cpool;
 		// J5ASSERT:
 		// Could assert nvp.getNameString() points to the same thing as cpool.getConstant(nvp.getNameIndex())
@@ -34,16 +34,16 @@ public class ElementNameValuePairGen {
 		} else {
 			nameIdx = pair.getNameIndex();
 		}
-		value = ElementValueGen.copy(pair.getValue(), cpool, copyPoolEntries);
+		value = ElementValue.copy(pair.getValue(), cpool, copyPoolEntries);
 	}
 
-	protected ElementNameValuePairGen(int idx, ElementValueGen value, ConstantPool cpool) {
+	protected NameValuePair(int idx, ElementValue value, ConstantPool cpool) {
 		this.nameIdx = idx;
 		this.value = value;
 		this.cpool = cpool;
 	}
 
-	public ElementNameValuePairGen(String name, ElementValueGen value, ConstantPool cpool) {
+	public NameValuePair(String name, ElementValue value, ConstantPool cpool) {
 		this.nameIdx = cpool.addUtf8(name);
 		this.value = value;
 		this.cpool = cpool;
@@ -62,7 +62,7 @@ public class ElementNameValuePairGen {
 		return cpool.getConstantUtf8(nameIdx).getValue();
 	}
 
-	public final ElementValueGen getValue() {
+	public final ElementValue getValue() {
 		return value;
 	}
 

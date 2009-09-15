@@ -66,13 +66,13 @@ import org.aspectj.apache.bcel.classfile.ConstantValue;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnos;
 
 /**
  * Template class for building up a field. The only extraordinary thing one can do is to add a constant value attribute to a field
  * (which must of course be compatible with the declared type).
  * 
- * @version $Id: FieldGen.java,v 1.8 2009/09/14 20:29:10 aclement Exp $
+ * @version $Id: FieldGen.java,v 1.9 2009/09/15 19:40:14 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Field
  */
@@ -109,8 +109,8 @@ public class FieldGen extends FieldGenOrMethodGen {
 		for (int i = 0; i < attrs.length; i++) {
 			if (attrs[i] instanceof ConstantValue) {
 				setValue(((ConstantValue) attrs[i]).getConstantValueIndex());
-			} else if (attrs[i] instanceof RuntimeAnnotations) {
-				RuntimeAnnotations runtimeAnnotations = (RuntimeAnnotations) attrs[i];
+			} else if (attrs[i] instanceof RuntimeAnnos) {
+				RuntimeAnnos runtimeAnnotations = (RuntimeAnnos) attrs[i];
 				List<AnnotationGen> l = runtimeAnnotations.getAnnotations();
 				for (Iterator<AnnotationGen> it = l.iterator(); it.hasNext();) {
 					AnnotationGen element = it.next();

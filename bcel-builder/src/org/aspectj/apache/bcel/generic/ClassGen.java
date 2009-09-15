@@ -75,14 +75,14 @@ import org.aspectj.apache.bcel.classfile.Modifiers;
 import org.aspectj.apache.bcel.classfile.SourceFile;
 import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisAnnos;
 
 /**
  * Template class for building up a java class. May be initialized with an existing java class.
  * 
  * @see JavaClass
- * @version $Id: ClassGen.java,v 1.14 2009/09/10 03:59:34 aclement Exp $
+ * @version $Id: ClassGen.java,v 1.15 2009/09/15 19:40:14 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  *         Upgraded, Andy Clement 9th Mar 06 - calculates SUID
@@ -148,14 +148,14 @@ public class ClassGen extends Modifiers implements Cloneable {
 		// OPTIMIZE Could make unpacking lazy, done on first reference
 		Attribute[] attributes = clazz.getAttributes();
 		for (Attribute attr : attributes) {
-			if (attr instanceof RuntimeVisibleAnnotations) {
-				RuntimeVisibleAnnotations rva = (RuntimeVisibleAnnotations) attr;
+			if (attr instanceof RuntimeVisAnnos) {
+				RuntimeVisAnnos rva = (RuntimeVisAnnos) attr;
 				List<AnnotationGen> annos = rva.getAnnotations();
 				for (AnnotationGen a : annos) {
 					annotationsList.add(new AnnotationGen(a, cpool, false));
 				}
-			} else if (attr instanceof RuntimeInvisibleAnnotations) {
-				RuntimeInvisibleAnnotations ria = (RuntimeInvisibleAnnotations) attr;
+			} else if (attr instanceof RuntimeInvisAnnos) {
+				RuntimeInvisAnnos ria = (RuntimeInvisAnnos) attr;
 				List<AnnotationGen> annos = ria.getAnnotations();
 				for (AnnotationGen anno : annos) {
 					annotationsList.add(new AnnotationGen(anno, cpool, false));

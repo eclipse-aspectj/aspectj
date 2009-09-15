@@ -19,19 +19,19 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 import org.aspectj.apache.bcel.generic.ObjectType;
 
-public class ClassElementValueGen extends ElementValueGen {
+public class ClassElementValue extends ElementValue {
 
 	// For primitive types and string type, this points to the value entry in the cpool
 	// For 'class' this points to the class entry in the cpool
 	private int idx;
 
-	protected ClassElementValueGen(int typeIdx, ConstantPool cpool) {
-		super(ElementValueGen.CLASS, cpool);
+	protected ClassElementValue(int typeIdx, ConstantPool cpool) {
+		super(ElementValue.CLASS, cpool);
 		this.idx = typeIdx;
 	}
 
-	public ClassElementValueGen(ObjectType t, ConstantPool cpool) {
-		super(ElementValueGen.CLASS, cpool);
+	public ClassElementValue(ObjectType t, ConstantPool cpool) {
+		super(ElementValue.CLASS, cpool);
 		// this.idx = cpool.addClass(t);
 		idx = cpool.addUtf8(t.getSignature());
 	}
@@ -42,7 +42,7 @@ public class ClassElementValueGen extends ElementValueGen {
 	// public ElementValueGen getElementValue() {
 	// return new ClassElementValueGen(type,idx,cpGen);
 	// }
-	public ClassElementValueGen(ClassElementValueGen value, ConstantPool cpool, boolean copyPoolEntries) {
+	public ClassElementValue(ClassElementValue value, ConstantPool cpool, boolean copyPoolEntries) {
 		super(CLASS, cpool);
 		if (copyPoolEntries) {
 			// idx = cpool.addClass(value.getClassString());

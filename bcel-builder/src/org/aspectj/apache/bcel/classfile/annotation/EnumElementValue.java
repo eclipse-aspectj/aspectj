@@ -20,7 +20,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 import org.aspectj.apache.bcel.generic.ObjectType;
 
-public class EnumElementValueGen extends ElementValueGen {
+public class EnumElementValue extends ElementValue {
 
 	// For enum types, these two indices point to the type and value
 	private int typeIdx;
@@ -30,8 +30,8 @@ public class EnumElementValueGen extends ElementValueGen {
 	 * This ctor assumes the constant pool already contains the right type and value - as indicated by typeIdx and valueIdx. This
 	 * ctor is used for deserialization
 	 */
-	protected EnumElementValueGen(int typeIdx, int valueIdx, ConstantPool cpool) {
-		super(ElementValueGen.ENUM_CONSTANT, cpool);
+	protected EnumElementValue(int typeIdx, int valueIdx, ConstantPool cpool) {
+		super(ElementValue.ENUM_CONSTANT, cpool);
 		if (type != ENUM_CONSTANT)
 			throw new RuntimeException("Only element values of type enum can be built with this ctor");
 		this.typeIdx = typeIdx;
@@ -46,13 +46,13 @@ public class EnumElementValueGen extends ElementValueGen {
 	// return new EnumElementValueGen(type,typeIdx,valueIdx,cpGen);
 	// }
 
-	public EnumElementValueGen(ObjectType t, String value, ConstantPool cpool) {
-		super(ElementValueGen.ENUM_CONSTANT, cpool);
+	public EnumElementValue(ObjectType t, String value, ConstantPool cpool) {
+		super(ElementValue.ENUM_CONSTANT, cpool);
 		typeIdx = cpool.addUtf8(t.getSignature());// was addClass(t);
 		valueIdx = cpool.addUtf8(value);// was addString(value);
 	}
 
-	public EnumElementValueGen(EnumElementValueGen value, ConstantPool cpool, boolean copyPoolEntries) {
+	public EnumElementValue(EnumElementValue value, ConstantPool cpool, boolean copyPoolEntries) {
 		super(ENUM_CONSTANT, cpool);
 		if (copyPoolEntries) {
 			typeIdx = cpool.addUtf8(value.getEnumTypeString());// was addClass(value.getEnumTypeString());
@@ -76,9 +76,9 @@ public class EnumElementValueGen extends ElementValueGen {
 	@Override
 	public String stringifyValue() {
 		StringBuffer sb = new StringBuffer();
-		ConstantUtf8 cu8 = (ConstantUtf8) cpGen.getConstant(typeIdx, Constants.CONSTANT_Utf8);
+		ConstantUtf8 cu8 = (ConstantUtf8) cpool.getConstant(typeIdx, Constants.CONSTANT_Utf8);
 		sb.append(cu8.getValue());
-		cu8 = (ConstantUtf8) cpGen.getConstant(valueIdx, Constants.CONSTANT_Utf8);
+		cu8 = (ConstantUtf8) cpool.getConstant(valueIdx, Constants.CONSTANT_Utf8);
 		sb.append(cu8.getValue());
 		return sb.toString();
 	}

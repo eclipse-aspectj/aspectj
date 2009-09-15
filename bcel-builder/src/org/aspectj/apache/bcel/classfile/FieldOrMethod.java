@@ -61,12 +61,12 @@ import java.util.List;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnos;
 
 /**
  * Abstract super class for fields and methods.
  * 
- * @version $Id: FieldOrMethod.java,v 1.11 2009/09/15 03:33:52 aclement Exp $
+ * @version $Id: FieldOrMethod.java,v 1.12 2009/09/15 19:40:12 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldOrMethod extends Modifiers implements Node {
@@ -170,8 +170,8 @@ public abstract class FieldOrMethod extends Modifiers implements Node {
 			List<AnnotationGen> accumulatedAnnotations = new ArrayList<AnnotationGen>();
 			for (int i = 0; i < attributes.length; i++) {
 				Attribute attribute = attributes[i];
-				if (attribute instanceof RuntimeAnnotations) {
-					RuntimeAnnotations runtimeAnnotations = (RuntimeAnnotations) attribute;
+				if (attribute instanceof RuntimeAnnos) {
+					RuntimeAnnos runtimeAnnotations = (RuntimeAnnos) attribute;
 					accumulatedAnnotations.addAll(runtimeAnnotations.getAnnotations());
 				}
 			}

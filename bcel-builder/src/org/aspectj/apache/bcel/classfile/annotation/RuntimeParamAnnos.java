@@ -10,7 +10,7 @@ import java.util.List;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 
-public abstract class RuntimeParameterAnnotations extends Attribute {
+public abstract class RuntimeParamAnnos extends Attribute {
 	
 	private List /*Annotation[]*/<AnnotationGen[]> parameterAnnotations;
 	private boolean visible;
@@ -21,14 +21,14 @@ public abstract class RuntimeParameterAnnotations extends Attribute {
 	private byte[] annotation_data;
 
 	  
-	public RuntimeParameterAnnotations(byte attrid, boolean visible,
+	public RuntimeParamAnnos(byte attrid, boolean visible,
             int nameIdx, int len, ConstantPool cpool) {
 		super(attrid,nameIdx,len,cpool);
 		this.visible = visible; 
 		parameterAnnotations = new ArrayList<AnnotationGen[]>();
 	}
 	
-	public RuntimeParameterAnnotations(byte attrid,boolean visible,int nameIdx,int len,byte[] data,ConstantPool cpool) {
+	public RuntimeParamAnnos(byte attrid,boolean visible,int nameIdx,int len,byte[] data,ConstantPool cpool) {
 		super(attrid,nameIdx,len,cpool);
 		this.visible = visible;
 		parameterAnnotations = new ArrayList<AnnotationGen[]>();

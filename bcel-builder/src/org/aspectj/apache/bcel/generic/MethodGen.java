@@ -73,8 +73,8 @@ import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeParameterAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeParamAnnos;
 
 /**
  * Template class for building up a method. This is done by defining exception handlers, adding thrown exceptions, local variables
@@ -84,7 +84,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeParameterAnnotations;
  * While generating code it may be necessary to insert NOP operations. You can use the `removeNOPs' method to get rid off them. The
  * resulting method object can be obtained via the `getMethod()' method.
  * 
- * @version $Id: MethodGen.java,v 1.14 2009/09/14 20:29:10 aclement Exp $
+ * @version $Id: MethodGen.java,v 1.15 2009/09/15 19:40:14 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author <A HREF="http://www.vmeng.com/beard">Patrick C. Beard</A> [setMaxStack()]
  * @see InstructionList
@@ -329,8 +329,8 @@ public class MethodGen extends FieldGenOrMethodGen {
 				String[] names = ((ExceptionTable) a).getExceptionNames();
 				for (int j = 0; j < names.length; j++)
 					addException(names[j]);
-			} else if (a instanceof RuntimeAnnotations) {
-				RuntimeAnnotations runtimeAnnotations = (RuntimeAnnotations) a;
+			} else if (a instanceof RuntimeAnnos) {
+				RuntimeAnnos runtimeAnnotations = (RuntimeAnnos) a;
 				List<AnnotationGen> l = runtimeAnnotations.getAnnotations();
 				annotationList.addAll(l);
 				// for (Iterator<AnnotationGen> it = l.iterator(); it.hasNext();) {
@@ -1040,11 +1040,11 @@ public class MethodGen extends FieldGenOrMethodGen {
 		}
 		// Find attributes that contain parameter annotation data
 		List<Attribute> attrs = getAttributes();
-		RuntimeParameterAnnotations paramAnnVisAttr = null;
-		RuntimeParameterAnnotations paramAnnInvisAttr = null;
+		RuntimeParamAnnos paramAnnVisAttr = null;
+		RuntimeParamAnnos paramAnnInvisAttr = null;
 
 		for (Attribute attribute : attrs) {
-			if (attribute instanceof RuntimeParameterAnnotations) {
+			if (attribute instanceof RuntimeParamAnnos) {
 
 				if (!hasParameterAnnotations) {
 					param_annotations = new List[parameterTypes.length];
@@ -1054,7 +1054,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 				}
 
 				hasParameterAnnotations = true;
-				RuntimeParameterAnnotations rpa = (RuntimeParameterAnnotations) attribute;
+				RuntimeParamAnnos rpa = (RuntimeParamAnnos) attribute;
 				if (rpa.areVisible())
 					paramAnnVisAttr = rpa;
 				else

@@ -54,149 +54,146 @@ package org.aspectj.apache.bcel.classfile;
  * <http://www.apache.org/>.
  */
 
-import  org.aspectj.apache.bcel.Constants;
-import  java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-/** 
- * This class represents the table of exceptions that are thrown by a
- * method. This attribute may be used once per method.  The name of
- * this class is <em>ExceptionTable</em> for historical reasons; The
- * Java Virtual Machine Specification, Second Edition defines this
- * attribute using the name <em>Exceptions</em> (which is inconsistent
- * with the other classes).
- *
- * @version $Id: ExceptionTable.java,v 1.4 2009/09/10 15:35:05 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
- * @see     Code
+import org.aspectj.apache.bcel.Constants;
+
+/**
+ * This class represents the table of exceptions that are thrown by a method. This attribute may be used once per method. The name
+ * of this class is <em>ExceptionTable</em> for historical reasons; The Java Virtual Machine Specification, Second Edition defines
+ * this attribute using the name <em>Exceptions</em> (which is inconsistent with the other classes).
+ * 
+ * @version $Id: ExceptionTable.java,v 1.5 2009/09/15 19:40:12 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @see Code
  */
 public final class ExceptionTable extends Attribute {
-  private int   number_of_exceptions;  // Table of indices into
-  private int[] exception_index_table; // constant pool
+	private int number_of_exceptions; // Table of indices into
+	private int[] exception_index_table; // constant pool
 
-  /**
-   * Initialize from another object. Note that both objects use the same
-   * references (shallow copy). Use copy() for a physical copy.
-   */
-  public ExceptionTable(ExceptionTable c) {
-    this(c.getNameIndex(), c.getLength(), c.getExceptionIndexTable(),
-	 c.getConstantPool());
-  }
+	/**
+	 * Initialize from another object. Note that both objects use the same references (shallow copy). Use copy() for a physical
+	 * copy.
+	 */
+	public ExceptionTable(ExceptionTable c) {
+		this(c.getNameIndex(), c.getLength(), c.getExceptionIndexTable(), c.getConstantPool());
+	}
 
-  /**
-   * @param name_index Index in constant pool
-   * @param length Content length in bytes
-   * @param exception_index_table Table of indices in constant pool
-   * @param constant_pool Array of constants
-   */
-  public ExceptionTable(int        name_index, int length, 
-			int[]      exception_index_table,
-			ConstantPool constant_pool)
-  {
-    super(Constants.ATTR_EXCEPTIONS, name_index, length, constant_pool);
-    setExceptionIndexTable(exception_index_table);
-  }
+	/**
+	 * @param name_index Index in constant pool
+	 * @param length Content length in bytes
+	 * @param exception_index_table Table of indices in constant pool
+	 * @param constant_pool Array of constants
+	 */
+	public ExceptionTable(int name_index, int length, int[] exception_index_table, ConstantPool constant_pool) {
+		super(Constants.ATTR_EXCEPTIONS, name_index, length, constant_pool);
+		setExceptionIndexTable(exception_index_table);
+	}
 
-  /**
-   * Construct object from file stream.
-   * @param name_index Index in constant pool
-   * @param length Content length in bytes
-   * @param file Input stream
-   * @param constant_pool Array of constants
-   * @throws IOException
-   */
-  ExceptionTable(int name_index, int length, DataInputStream file,
-		 ConstantPool constant_pool) throws IOException
-  {
-    this(name_index, length, (int[])null, constant_pool);
+	/**
+	 * Construct object from file stream.
+	 * 
+	 * @param name_index Index in constant pool
+	 * @param length Content length in bytes
+	 * @param file Input stream
+	 * @param constant_pool Array of constants
+	 * @throws IOException
+	 */
+	ExceptionTable(int name_index, int length, DataInputStream file, ConstantPool constant_pool) throws IOException {
+		this(name_index, length, (int[]) null, constant_pool);
 
-    number_of_exceptions  = file.readUnsignedShort();
-    exception_index_table = new int[number_of_exceptions];
+		number_of_exceptions = file.readUnsignedShort();
+		exception_index_table = new int[number_of_exceptions];
 
-    for(int i=0; i < number_of_exceptions; i++)
-      exception_index_table[i] = file.readUnsignedShort();
-  }
+		for (int i = 0; i < number_of_exceptions; i++)
+			exception_index_table[i] = file.readUnsignedShort();
+	}
 
-  /**
-   * Called by objects that are traversing the nodes of the tree implicitely
-   * defined by the contents of a Java class. I.e., the hierarchy of methods,
-   * fields, attributes, etc. spawns a tree of objects.
-   *
-   * @param v Visitor object
-   */
-  public void accept(ClassVisitor v) {
-    v.visitExceptionTable(this);
-  }
+	/**
+	 * Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class. I.e., the
+	 * hierarchy of methods, fields, attributes, etc. spawns a tree of objects.
+	 * 
+	 * @param v Visitor object
+	 */
+	@Override
+	public void accept(ClassVisitor v) {
+		v.visitExceptionTable(this);
+	}
 
-  /**
-   * Dump exceptions attribute to file stream in binary format.
-   *
-   * @param file Output file stream
-   * @throws IOException
-   */ 
-  public final void dump(DataOutputStream file) throws IOException
-  {
-    super.dump(file);
-    file.writeShort(number_of_exceptions);
-    for(int i=0; i < number_of_exceptions; i++)
-      file.writeShort(exception_index_table[i]);
-  }
+	/**
+	 * Dump exceptions attribute to file stream in binary format.
+	 * 
+	 * @param file Output file stream
+	 * @throws IOException
+	 */
+	@Override
+	public final void dump(DataOutputStream file) throws IOException {
+		super.dump(file);
+		file.writeShort(number_of_exceptions);
+		for (int i = 0; i < number_of_exceptions; i++)
+			file.writeShort(exception_index_table[i]);
+	}
 
-  /**
-   * @return Array of indices into constant pool of thrown exceptions.
-   */  
-  public final int[] getExceptionIndexTable() {return exception_index_table;}
-  /**
-   * @return Length of exception table.
-   */  
-  public final int getNumberOfExceptions() { return number_of_exceptions; }
+	/**
+	 * @return Array of indices into constant pool of thrown exceptions.
+	 */
+	public final int[] getExceptionIndexTable() {
+		return exception_index_table;
+	}
 
-  /**
-   * @return class names of thrown exceptions
-   */
-  public final String[] getExceptionNames() {
-    String[] names = new String[number_of_exceptions];
-    for(int i=0; i < number_of_exceptions; i++)
-      names[i] = cpool.getConstantString(exception_index_table[i],
-						 Constants.CONSTANT_Class).
-	replace('/', '.');
-    return names;
-  }
+	/**
+	 * @return Length of exception table.
+	 */
+	public final int getNumberOfExceptions() {
+		return number_of_exceptions;
+	}
 
-  /**
-   * @param exception_index_table.
-   * Also redefines number_of_exceptions according to table length.
-   */
-  public final void setExceptionIndexTable(int[] exception_index_table) {
-    this.exception_index_table = exception_index_table;
-    number_of_exceptions       = (exception_index_table == null)? 0 :
-      exception_index_table.length;
-  }
-  /**
-   * @return String representation, i.e., a list of thrown exceptions.
-   */ 
-  public final String toString() {
-    StringBuffer buf = new StringBuffer("");
-    String       str;
+	/**
+	 * @return class names of thrown exceptions
+	 */
+	public final String[] getExceptionNames() {
+		String[] names = new String[number_of_exceptions];
+		for (int i = 0; i < number_of_exceptions; i++)
+			names[i] = cpool.getConstantString(exception_index_table[i], Constants.CONSTANT_Class).replace('/', '.');
+		return names;
+	}
 
-    for(int i=0; i < number_of_exceptions; i++) {
-      str = cpool.getConstantString(exception_index_table[i],
-					    Constants.CONSTANT_Class);
-      buf.append(Utility.compactClassName(str, false));
+	/**
+	 * @param exception_index_table. Also redefines number_of_exceptions according to table length.
+	 */
+	public final void setExceptionIndexTable(int[] exception_index_table) {
+		this.exception_index_table = exception_index_table;
+		number_of_exceptions = (exception_index_table == null) ? 0 : exception_index_table.length;
+	}
 
-      if(i < number_of_exceptions - 1)
-	buf.append(", ");
-    }
+	/**
+	 * @return String representation, i.e., a list of thrown exceptions.
+	 */
+	@Override
+	public final String toString() {
+		StringBuffer buf = new StringBuffer("");
+		String str;
 
-    return buf.toString();    
-  }
+		for (int i = 0; i < number_of_exceptions; i++) {
+			str = cpool.getConstantString(exception_index_table[i], Constants.CONSTANT_Class);
+			buf.append(Utility.compactClassName(str, false));
 
-  /**
-   * @return deep copy of this attribute
-   */
-  public Attribute copy(ConstantPool constant_pool) {
-    ExceptionTable c = (ExceptionTable)clone();
-    c.exception_index_table = (int[])exception_index_table.clone();
-    c.cpool = constant_pool;
-    return c;
-  }
+			if (i < number_of_exceptions - 1)
+				buf.append(", ");
+		}
+
+		return buf.toString();
+	}
+
+	// /**
+	// * @return deep copy of this attribute
+	// */
+	// public Attribute copy(ConstantPool constant_pool) {
+	// ExceptionTable c = (ExceptionTable)clone();
+	// c.exception_index_table = (int[])exception_index_table.clone();
+	// c.cpool = constant_pool;
+	// return c;
+	// }
 }

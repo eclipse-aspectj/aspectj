@@ -36,17 +36,6 @@ public class AttributeUtils {
 		}
 	}
 
-	public static Attribute[] copy(Attribute[] attributes, ConstantPool constant_pool) {
-		if (attributes == null || attributes.length == 0) {
-			return Attribute.NoAttributes;
-		}
-		Attribute[] attrs = new Attribute[attributes.length];
-		for (int i = 0; i < attributes.length; i++) {
-			attrs[i] = attributes[i].copy(constant_pool);
-		}
-		return attrs;
-	}
-
 	public static Signature getSignatureAttribute(Attribute[] attributes) {
 		for (int i = 0; i < attributes.length; i++) {
 			if (attributes[i].tag == Constants.ATTR_SIGNATURE) {

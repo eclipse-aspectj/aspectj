@@ -9,24 +9,24 @@ import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.ClassVisitor;
 
-public class RuntimeInvisibleAnnotations extends RuntimeAnnotations {
+public class RuntimeVisAnnos extends RuntimeAnnos {
 	
-	  public RuntimeInvisibleAnnotations(int nameIdx, int len, ConstantPool cpool) { 
-	    super(Constants.ATTR_RUNTIME_INVISIBLE_ANNOTATIONS, false, nameIdx, len, cpool);
+	  public RuntimeVisAnnos(int nameIdx, int len, ConstantPool cpool) { 
+	    super(Constants.ATTR_RUNTIME_VISIBLE_ANNOTATIONS, true, nameIdx, len, cpool);
 	  } 
 
-	  public RuntimeInvisibleAnnotations(int nameIdx, int len, 
+	  public RuntimeVisAnnos(int nameIdx, int len, 
 	  		DataInputStream dis,ConstantPool cpool) throws IOException {
 	    this(nameIdx, len, cpool);
 	    readAnnotations(dis,cpool);
 	  }
-	  
-	  public RuntimeInvisibleAnnotations(int nameIndex, int len, byte[] rvaData,ConstantPool cpool) {
-		super(Constants.ATTR_RUNTIME_INVISIBLE_ANNOTATIONS,false,nameIndex,len,rvaData,cpool);
-	  }
 
-	  public void accept(ClassVisitor v) {
-	  	v.visitRuntimeInvisibleAnnotations(this);
+	public RuntimeVisAnnos(int nameIndex, int len, byte[] rvaData,ConstantPool cpool) {
+		super(Constants.ATTR_RUNTIME_VISIBLE_ANNOTATIONS,true,nameIndex,len,rvaData,cpool);
+	}
+
+	public void accept(ClassVisitor v) {
+	  	v.visitRuntimeVisibleAnnotations(this);
 	  }
 
 	  public final void dump(DataOutputStream dos) throws IOException {

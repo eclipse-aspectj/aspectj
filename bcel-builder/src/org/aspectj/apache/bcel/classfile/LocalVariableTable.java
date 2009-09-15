@@ -64,7 +64,7 @@ import org.aspectj.apache.bcel.Constants;
 /**
  * This class represents collection of local variables in a method. This attribute is contained in the <em>Code</em> attribute.
  * 
- * @version $Id: LocalVariableTable.java,v 1.7 2009/09/10 15:35:04 aclement Exp $
+ * @version $Id: LocalVariableTable.java,v 1.8 2009/09/15 19:40:12 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Code
  * @see LocalVariable Updates: Andy 14Feb06 - Made unpacking of the data lazy, depending on someone actually asking for it.
@@ -120,6 +120,7 @@ public class LocalVariableTable extends Attribute {
 	 * 
 	 * @param v Visitor object
 	 */
+	@Override
 	public void accept(ClassVisitor v) {
 		unpack();
 		v.visitLocalVariableTable(this);
@@ -131,6 +132,7 @@ public class LocalVariableTable extends Attribute {
 	 * @param file Output file stream
 	 * @throws IOException
 	 */
+	@Override
 	public final void dump(DataOutputStream file) throws IOException {
 		super.dump(file);
 		if (isInPackedState) {
@@ -173,6 +175,7 @@ public class LocalVariableTable extends Attribute {
 	/**
 	 * @return String representation.
 	 */
+	@Override
 	public final String toString() {
 		StringBuffer buf = new StringBuffer("");
 		unpack();
@@ -189,18 +192,17 @@ public class LocalVariableTable extends Attribute {
 	/**
 	 * @return deep copy of this attribute
 	 */
-	public Attribute copy(ConstantPool constant_pool) {
-		unpack();
-		LocalVariableTable c = (LocalVariableTable) clone();
-
-		c.localVariableTable = new LocalVariable[localVariableTableLength];
-		for (int i = 0; i < localVariableTableLength; i++)
-			c.localVariableTable[i] = localVariableTable[i].copy();
-
-		c.cpool = constant_pool;
-		return c;
-	}
-
+	// public Attribute copy(ConstantPool constant_pool) {
+	// unpack();
+	// LocalVariableTable c = (LocalVariableTable) clone();
+	//
+	// c.localVariableTable = new LocalVariable[localVariableTableLength];
+	// for (int i = 0; i < localVariableTableLength; i++)
+	// c.localVariableTable[i] = localVariableTable[i].copy();
+	//
+	// c.cpool = constant_pool;
+	// return c;
+	// }
 	public final int getTableLength() {
 		unpack();
 		return localVariableTableLength;
