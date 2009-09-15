@@ -80,7 +80,7 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
  * The intent of this class is to represent a parsed or otherwise existing class file. Those interested in programatically
  * generating classes should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
  * 
- * @version $Id: JavaClass.java,v 1.19 2009/09/14 20:29:10 aclement Exp $
+ * @version $Id: JavaClass.java,v 1.20 2009/09/15 03:33:52 aclement Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -599,40 +599,6 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 		}
 
 		return buf.toString();
-	}
-
-	/**
-	 * @return deep copy of this class
-	 */
-	public JavaClass copy() {
-		JavaClass c = null;
-
-		try {
-			c = (JavaClass) clone();
-		} catch (CloneNotSupportedException e) {
-		}
-
-		c.cpool = cpool.copy();
-		c.interfaces = interfaces.clone();
-		c.interfacenames = interfacenames.clone();
-
-		c.fields = new Field[fields.length];
-		for (int i = 0; i < fields.length; i++) {
-			c.fields[i] = fields[i].copy(c.cpool);
-		}
-
-		c.methods = new Method[methods.length];
-		for (int i = 0; i < methods.length; i++) {
-			c.methods[i] = methods[i].copy(c.cpool);
-		}
-
-		c.attributes = AttributeUtils.copy(attributes, c.cpool);
-
-		// J5SUPPORT: As the annotations exist as attributes against the class, copying
-		// the attributes will copy the annotations across, so we don't have to
-		// also copy them individually.
-
-		return c;
 	}
 
 	public final boolean isSuper() {

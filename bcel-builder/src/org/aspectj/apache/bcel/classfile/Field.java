@@ -62,7 +62,7 @@ import org.aspectj.apache.bcel.generic.Type;
  * This class represents the field info structure, i.e., the representation for a variable in the class. See JVM specification for
  * details.
  * 
- * @version $Id: Field.java,v 1.5 2009/09/10 15:35:05 aclement Exp $
+ * @version $Id: Field.java,v 1.6 2009/09/15 03:33:52 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class Field extends FieldOrMethod {
@@ -124,11 +124,6 @@ public final class Field extends FieldOrMethod {
 		}
 
 		return buf.toString();
-	}
-
-	/** deep copy of this field */
-	public final Field copy(ConstantPool constant_pool) {
-		return (Field) copy_(constant_pool);
 	}
 
 	/** return the type of the field */

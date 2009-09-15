@@ -66,10 +66,10 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
 /**
  * Abstract super class for fields and methods.
  * 
- * @version $Id: FieldOrMethod.java,v 1.10 2009/09/10 15:35:05 aclement Exp $
+ * @version $Id: FieldOrMethod.java,v 1.11 2009/09/15 03:33:52 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
-public abstract class FieldOrMethod extends Modifiers implements Cloneable, Node {
+public abstract class FieldOrMethod extends Modifiers implements Node {
 	protected int nameIndex;
 	protected int signatureIndex;
 	protected Attribute[] attributes;
@@ -159,22 +159,6 @@ public abstract class FieldOrMethod extends Modifiers implements Cloneable, Node
 		if (getGenericSignature() != null)
 			return getGenericSignature();
 		return getSignature();
-	}
-
-	/**
-	 * @return deep copy of this field
-	 */
-	protected FieldOrMethod copy_(ConstantPool constant_pool) {
-		FieldOrMethod c = null;
-
-		try {
-			c = (FieldOrMethod) clone();
-		} catch (CloneNotSupportedException e) {
-		}
-
-		c.cpool = constant_pool;
-		c.attributes = AttributeUtils.copy(attributes, constant_pool);
-		return c;
 	}
 
 	public AnnotationGen[] getAnnotations() {

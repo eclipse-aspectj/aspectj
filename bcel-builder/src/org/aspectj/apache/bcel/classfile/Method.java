@@ -68,13 +68,12 @@ import org.aspectj.apache.bcel.generic.Type;
  * This class represents the method info structure, i.e., the representation for a method in the class. See JVM specification for
  * details. A method has access flags, a name, a signature and a number of attributes.
  * 
- * @version $Id: Method.java,v 1.9 2009/09/10 15:35:05 aclement Exp $
+ * @version $Id: Method.java,v 1.10 2009/09/15 03:33:52 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class Method extends FieldOrMethod {
 
 	public static final AnnotationGen[][] NO_PARAMETER_ANNOTATIONS = new AnnotationGen[][] {};
-	public static final AnnotationGen[] NO_ANNOTATIONS = new AnnotationGen[] {};
 
 	public static final Method[] NoMethods = new Method[0];
 
@@ -183,13 +182,6 @@ public final class Method extends FieldOrMethod {
 	}
 
 	/**
-	 * Return a deep copy of this method
-	 */
-	public final Method copy(ConstantPool constant_pool) {
-		return (Method) copy_(constant_pool);
-	}
-
-	/**
 	 * @return return type of method
 	 */
 	public Type getReturnType() {
@@ -248,7 +240,7 @@ public final class Method extends FieldOrMethod {
 					count += invisibleOnes.length;
 				}
 
-				AnnotationGen[] complete = NO_ANNOTATIONS;
+				AnnotationGen[] complete = AnnotationGen.NO_ANNOTATIONS;
 				if (count != 0) {
 					complete = new AnnotationGen[visibleOnes.length + invisibleOnes.length];
 					System.arraycopy(visibleOnes, 0, complete, 0, visibleOnes.length);
@@ -267,8 +259,9 @@ public final class Method extends FieldOrMethod {
 
 	public AnnotationGen[] getAnnotationsOnParameter(int i) {
 		ensureParameterAnnotationsUnpacked();
-		if (unpackedParameterAnnotations == NO_PARAMETER_ANNOTATIONS)
-			return NO_ANNOTATIONS;
+		if (unpackedParameterAnnotations == NO_PARAMETER_ANNOTATIONS) {
+			return AnnotationGen.NO_ANNOTATIONS;
+		}
 		return unpackedParameterAnnotations[i];
 	}
 
