@@ -23,9 +23,9 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
-import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
@@ -141,10 +141,10 @@ public class BcelTestCase extends TestCase {
 	}
 
 	public AnnotationGen createFruitAnnotation(ConstantPool cp, String aFruit, boolean visibility) {
-		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.STRING, cp, aFruit);
-		ElementNameValuePairGen nvGen = new ElementNameValuePairGen("fruit", evg, cp);
+		SimpleElementValue evg = new SimpleElementValue(ElementValue.STRING, cp, aFruit);
+		NameValuePair nvGen = new NameValuePair("fruit", evg, cp);
 		ObjectType t = new ObjectType("SimpleStringAnnotation");
-		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
+		List<NameValuePair> elements = new ArrayList<NameValuePair>();
 		elements.add(nvGen);
 		return new AnnotationGen(t, elements, visibility, cp);
 	}

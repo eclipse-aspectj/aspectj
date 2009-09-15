@@ -24,12 +24,12 @@ import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.Utility;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
 import org.aspectj.apache.bcel.generic.ClassGen;
 import org.aspectj.apache.bcel.generic.ObjectType;
 
@@ -54,17 +54,17 @@ public class AnnotationGenTest extends BcelTestCase {
 		ConstantPool cp = cg.getConstantPool();
 
 		// Create the simple primitive value '4' of type 'int'
-		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_INT, cp, 4);
+		SimpleElementValue evg = new SimpleElementValue(ElementValue.PRIMITIVE_INT, cp, 4);
 
 		// Give it a name, call it 'id'
-		ElementNameValuePairGen nvGen = new ElementNameValuePairGen("id", evg, cp);
+		NameValuePair nvGen = new NameValuePair("id", evg, cp);
 
 		// Check it looks right
 		assertTrue("Should include string 'id=4' but says: " + nvGen.toString(), nvGen.toString().indexOf("id=4") != -1);
 
 		ObjectType t = new ObjectType("SimpleAnnotation");
 
-		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
+		List<NameValuePair> elements = new ArrayList<NameValuePair>();
 		elements.add(nvGen);
 
 		// Build an annotation of type 'SimpleAnnotation' with 'id=4' as the only value :)
@@ -81,17 +81,17 @@ public class AnnotationGenTest extends BcelTestCase {
 		ConstantPool cp = cg.getConstantPool();
 
 		// Create the simple primitive value '4' of type 'int'
-		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_INT, cp, 4);
+		SimpleElementValue evg = new SimpleElementValue(ElementValue.PRIMITIVE_INT, cp, 4);
 
 		// Give it a name, call it 'id'
-		ElementNameValuePairGen nvGen = new ElementNameValuePairGen("id", evg, cp);
+		NameValuePair nvGen = new NameValuePair("id", evg, cp);
 
 		// Check it looks right
 		assertTrue("Should include string 'id=4' but says: " + nvGen.toString(), nvGen.toString().indexOf("id=4") != -1);
 
 		ObjectType t = new ObjectType("SimpleAnnotation");
 
-		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
+		List<NameValuePair> elements = new ArrayList<NameValuePair>();
 		elements.add(nvGen);
 
 		// Build a RV annotation of type 'SimpleAnnotation' with 'id=4' as the only value :)
@@ -99,11 +99,11 @@ public class AnnotationGenTest extends BcelTestCase {
 
 		Vector<AnnotationGen> v = new Vector<AnnotationGen>();
 		v.add(a);
-		Collection<RuntimeAnnotations> attributes = Utility.getAnnotationAttributes(cp, v);
+		Collection<RuntimeAnnos> attributes = Utility.getAnnotationAttributes(cp, v);
 		boolean foundRV = false;
 		for (Attribute attribute : attributes) {
-			if (attribute instanceof RuntimeVisibleAnnotations) {
-				assertTrue(((RuntimeAnnotations) attribute).areVisible());
+			if (attribute instanceof RuntimeVisAnnos) {
+				assertTrue(((RuntimeAnnos) attribute).areVisible());
 				foundRV = true;
 
 			}
@@ -115,13 +115,13 @@ public class AnnotationGenTest extends BcelTestCase {
 
 		Vector<AnnotationGen> v2 = new Vector<AnnotationGen>();
 		v2.add(a2);
-		Collection<RuntimeAnnotations> attributes2 = Utility.getAnnotationAttributes(cp, v2);
+		Collection<RuntimeAnnos> attributes2 = Utility.getAnnotationAttributes(cp, v2);
 		boolean foundRIV = false;
 		for (Attribute attribute : attributes2) {
 			// for (int i = 0; i < attributes2.length; i++) {
 			// Attribute attribute = attributes2[i];
-			if (attribute instanceof RuntimeInvisibleAnnotations) {
-				assertFalse(((RuntimeAnnotations) attribute).areVisible());
+			if (attribute instanceof RuntimeInvisAnnos) {
+				assertFalse(((RuntimeAnnos) attribute).areVisible());
 				foundRIV = true;
 			}
 		}
@@ -134,7 +134,7 @@ public class AnnotationGenTest extends BcelTestCase {
 	private void checkSerialize(AnnotationGen a, ConstantPool cpg) {
 		try {
 			String beforeName = a.getTypeName();
-			List<ElementNameValuePairGen> beforeValues = a.getValues();
+			List<NameValuePair> beforeValues = a.getValues();
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(baos);
 			a.dump(dos);
@@ -150,7 +150,7 @@ public class AnnotationGenTest extends BcelTestCase {
 			dis.close();
 
 			String afterName = annAfter.getTypeName();
-			List<ElementNameValuePairGen> afterValues = annAfter.getValues();
+			List<NameValuePair> afterValues = annAfter.getValues();
 
 			if (!beforeName.equals(afterName)) {
 				fail("Deserialization failed: before type='" + beforeName + "' after type='" + afterName + "'");
@@ -159,8 +159,8 @@ public class AnnotationGenTest extends BcelTestCase {
 				fail("Different numbers of element name value pairs?? " + a.getValues().size() + "!=" + annAfter.getValues().size());
 			}
 			for (int i = 0; i < a.getValues().size(); i++) {
-				ElementNameValuePairGen beforeElement = a.getValues().get(i);
-				ElementNameValuePairGen afterElement = annAfter.getValues().get(i);
+				NameValuePair beforeElement = a.getValues().get(i);
+				NameValuePair afterElement = annAfter.getValues().get(i);
 				if (!beforeElement.getNameString().equals(afterElement.getNameString())) {
 					fail("Different names?? " + beforeElement.getNameString() + "!=" + afterElement.getNameString());
 				}

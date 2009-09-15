@@ -18,10 +18,10 @@ import java.io.IOException;
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.generic.ClassGen;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
-import org.aspectj.apache.bcel.classfile.annotation.ClassElementValueGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
-import org.aspectj.apache.bcel.classfile.annotation.EnumElementValueGen;
-import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.ClassElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.EnumElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
 import org.aspectj.apache.bcel.generic.ObjectType;
 
 public class ElementValueGenTest extends BcelTestCase {
@@ -42,7 +42,7 @@ public class ElementValueGenTest extends BcelTestCase {
 		ClassGen cg = createClassGen("HelloWorld");
 		ConstantPool cp = cg.getConstantPool();
 		
-		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_INT,cp,555);
+		SimpleElementValue evg = new SimpleElementValue(ElementValue.PRIMITIVE_INT,cp,555);
 		// Creation of an element like that should leave a new entry in the cpool
 		assertTrue("Should have the same index in the constantpool but "+evg.getIndex()+"!="+cp.lookupInteger(555),
 				evg.getIndex()==cp.lookupInteger(555));
@@ -53,7 +53,7 @@ public class ElementValueGenTest extends BcelTestCase {
 		ClassGen cg = createClassGen("HelloWorld");
 		ConstantPool cp = cg.getConstantPool();
 		
-		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_FLOAT,cp,111.222f);
+		SimpleElementValue evg = new SimpleElementValue(ElementValue.PRIMITIVE_FLOAT,cp,111.222f);
 		// Creation of an element like that should leave a new entry in the cpool
 		assertTrue("Should have the same index in the constantpool but "+evg.getIndex()+"!="+cp.lookupFloat(111.222f),
 				evg.getIndex()==cp.lookupFloat(111.222f));
@@ -64,7 +64,7 @@ public class ElementValueGenTest extends BcelTestCase {
 		ClassGen cg = createClassGen("HelloWorld");
 		ConstantPool cp = cg.getConstantPool();
 		
-		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_DOUBLE,cp,333.44);
+		SimpleElementValue evg = new SimpleElementValue(ElementValue.PRIMITIVE_DOUBLE,cp,333.44);
 		// Creation of an element like that should leave a new entry in the cpool
 		int idx = cp.lookupDouble(333.44);
 		assertTrue("Should have the same index in the constantpool but "+evg.getIndex()+"!="+idx,
@@ -76,7 +76,7 @@ public class ElementValueGenTest extends BcelTestCase {
 		ClassGen cg = createClassGen("HelloWorld");
 		ConstantPool cp = cg.getConstantPool();
 		
-		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_LONG,cp,3334455L);
+		SimpleElementValue evg = new SimpleElementValue(ElementValue.PRIMITIVE_LONG,cp,3334455L);
 		// Creation of an element like that should leave a new entry in the cpool
 		int idx = cp.lookupLong(3334455L);
 		assertTrue("Should have the same index in the constantpool but "+evg.getIndex()+"!="+idx,
@@ -88,7 +88,7 @@ public class ElementValueGenTest extends BcelTestCase {
 		ClassGen cg = createClassGen("HelloWorld");
 		ConstantPool cp = cg.getConstantPool();
 		
-		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_CHAR,cp,(char)'t');
+		SimpleElementValue evg = new SimpleElementValue(ElementValue.PRIMITIVE_CHAR,cp,(char)'t');
 		// Creation of an element like that should leave a new entry in the cpool
 		int idx = cp.lookupInteger((char)'t');
 		assertTrue("Should have the same index in the constantpool but "+evg.getIndex()+"!="+idx,
@@ -100,7 +100,7 @@ public class ElementValueGenTest extends BcelTestCase {
 		ClassGen cg = createClassGen("HelloWorld");
 		ConstantPool cp = cg.getConstantPool();
 		
-		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_CHAR,cp,(byte)'z');
+		SimpleElementValue evg = new SimpleElementValue(ElementValue.PRIMITIVE_CHAR,cp,(byte)'z');
 		// Creation of an element like that should leave a new entry in the cpool
 		int idx = cp.lookupInteger((byte)'z');
 		assertTrue("Should have the same index in the constantpool but "+evg.getIndex()+"!="+idx,
@@ -112,7 +112,7 @@ public class ElementValueGenTest extends BcelTestCase {
 		ClassGen cg = createClassGen("HelloWorld");
 		ConstantPool cp = cg.getConstantPool();
 		
-		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_BOOLEAN,cp,true);
+		SimpleElementValue evg = new SimpleElementValue(ElementValue.PRIMITIVE_BOOLEAN,cp,true);
 		// Creation of an element like that should leave a new entry in the cpool
 		int idx = cp.lookupInteger(1); // 1 == true
 		assertTrue("Should have the same index in the constantpool but "+evg.getIndex()+"!="+idx,
@@ -124,7 +124,7 @@ public class ElementValueGenTest extends BcelTestCase {
 		ClassGen cg = createClassGen("HelloWorld");
 		ConstantPool cp = cg.getConstantPool();
 		
-		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_SHORT,cp,(short)42);
+		SimpleElementValue evg = new SimpleElementValue(ElementValue.PRIMITIVE_SHORT,cp,(short)42);
 		// Creation of an element like that should leave a new entry in the cpool
 		int idx = cp.lookupInteger(42); 
 		assertTrue("Should have the same index in the constantpool but "+evg.getIndex()+"!="+idx,
@@ -141,7 +141,7 @@ public class ElementValueGenTest extends BcelTestCase {
 		ClassGen cg = createClassGen("HelloWorld");
 		ConstantPool cp = cg.getConstantPool();
 		
-		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.STRING,cp,"hello");
+		SimpleElementValue evg = new SimpleElementValue(ElementValue.STRING,cp,"hello");
 		// Creation of an element like that should leave a new entry in the cpool
 		assertTrue("Should have the same index in the constantpool but "+evg.getIndex()+"!="+cp.lookupUtf8("hello"),
 				evg.getIndex()==cp.lookupUtf8("hello"));
@@ -158,7 +158,7 @@ public class ElementValueGenTest extends BcelTestCase {
 
 		ObjectType enumType = new ObjectType("SimpleEnum"); // Supports rainbow :)
 		
-		EnumElementValueGen evg = new EnumElementValueGen(enumType,"Red",cp);
+		EnumElementValue evg = new EnumElementValue(enumType,"Red",cp);
 		// Creation of an element like that should leave a new entry in the cpool
 		assertTrue("The new ElementValue value index should match the contents of the constantpool but "+
 				evg.getValueIndex()+"!="+cp.lookupUtf8("Red"),
@@ -180,7 +180,7 @@ public class ElementValueGenTest extends BcelTestCase {
 		
 		ObjectType classType = new ObjectType("java.lang.Integer");
 		
-		ClassElementValueGen evg = new ClassElementValueGen(classType,cp);
+		ClassElementValue evg = new ClassElementValue(classType,cp);
 		
 		assertTrue("Unexpected value for contained class: '"+evg.getClassString()+"'",
 				evg.getClassString().indexOf("Integer")!=-1);
@@ -192,7 +192,7 @@ public class ElementValueGenTest extends BcelTestCase {
 	////
 	// Helper methods
 	
-	private void checkSerialize(ElementValueGen evgBefore,ConstantPool cpg) {
+	private void checkSerialize(ElementValue evgBefore,ConstantPool cpg) {
 		try {
 		  String beforeValue = evgBefore.stringifyValue();
 		  ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -205,7 +205,7 @@ public class ElementValueGenTest extends BcelTestCase {
 		  
 		  ByteArrayInputStream bais = new ByteArrayInputStream(bs);
 		  DataInputStream dis = new DataInputStream(bais);
-		  ElementValueGen evgAfter = ElementValueGen.readElementValue(dis,cpg);
+		  ElementValue evgAfter = ElementValue.readElementValue(dis,cpg);
 		  
 		  dis.close();
 		  String afterValue = evgAfter.stringifyValue();

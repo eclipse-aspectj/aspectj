@@ -19,7 +19,7 @@ import java.util.Iterator;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 
 
@@ -78,8 +78,8 @@ public class VarargsTest extends BcelTestCase {
 	// helper methods
 	
 	public void checkValue(AnnotationGen a,String name,String tostring) {
-		for (Iterator<ElementNameValuePairGen> i = a.getValues().iterator(); i.hasNext();) {
-			ElementNameValuePairGen element = i.next();
+		for (Iterator<NameValuePair> i = a.getValues().iterator(); i.hasNext();) {
+			NameValuePair element = i.next();
 			if (element.getNameString().equals(name)) {
 				if (!element.getValue().stringifyValue().equals(tostring)) {
 					fail("Expected element "+name+" to have value "+tostring+" but it had value "+element.getValue().stringifyValue());

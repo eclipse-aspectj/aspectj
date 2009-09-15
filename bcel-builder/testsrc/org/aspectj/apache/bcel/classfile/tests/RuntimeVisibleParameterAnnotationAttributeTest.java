@@ -20,8 +20,8 @@ import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisParamAnnos;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 
 
@@ -41,8 +41,8 @@ public class RuntimeVisibleParameterAnnotationAttributeTest extends BcelTestCase
 		for (int i = 0; i < methods.length; i++) {
 			Method m = methods[i];
 			if (m.getName().equals("foo")) {
-				RuntimeVisibleParameterAnnotations paramAnns = 
-					(RuntimeVisibleParameterAnnotations) findAttribute("RuntimeVisibleParameterAnnotations",m.getAttributes());
+				RuntimeVisParamAnnos paramAnns = 
+					(RuntimeVisParamAnnos) findAttribute("RuntimeVisibleParameterAnnotations",m.getAttributes());
 				assertTrue("foo takes two parameters, not "+paramAnns.getParameterAnnotations().size(),
 						paramAnns.getParameterAnnotations().size()==2);
 
@@ -55,8 +55,8 @@ public class RuntimeVisibleParameterAnnotationAttributeTest extends BcelTestCase
 				
 			}
 			if (m.getName().equals("main")) {
-				RuntimeVisibleParameterAnnotations paramAnns = 
-					(RuntimeVisibleParameterAnnotations) findAttribute("RuntimeVisibleParameterAnnotations",m.getAttributes());
+				RuntimeVisParamAnnos paramAnns = 
+					(RuntimeVisParamAnnos) findAttribute("RuntimeVisibleParameterAnnotations",m.getAttributes());
 				assertTrue("main takes one parameter, not "+paramAnns.getParameterAnnotations().size(),
 						paramAnns.getParameterAnnotations().size()==1);
 
@@ -113,7 +113,7 @@ public class RuntimeVisibleParameterAnnotationAttributeTest extends BcelTestCase
 		assertTrue("Expected annotation to have name "+name+" but it had name "+a.getTypeName(),
 				a.getTypeName().equals(name));
 		assertTrue("Expected annotation to have one element but it had "+a.getValues().size(),a.getValues().size()==1);
-		ElementNameValuePairGen envp = a.getValues().get(0);
+		NameValuePair envp = a.getValues().get(0);
 		assertTrue("Expected element name "+elementname+" but was "+envp.getNameString(),
 				elementname.equals(envp.getNameString()));
 		assertTrue("Expected element value "+elementvalue+" but was "+envp.getValue().stringifyValue(),
@@ -124,8 +124,8 @@ public class RuntimeVisibleParameterAnnotationAttributeTest extends BcelTestCase
 	// helper methods
 	
 	public void checkValue(AnnotationGen a,String name,String tostring) {
-		for (Iterator<ElementNameValuePairGen> i = a.getValues().iterator(); i.hasNext();) {
-			ElementNameValuePairGen element = i.next();
+		for (Iterator<NameValuePair> i = a.getValues().iterator(); i.hasNext();) {
+			NameValuePair element = i.next();
 			if (element.getNameString().equals(name)) {
 				if (!element.getValue().stringifyValue().equals(tostring)) {
 					fail("Expected element "+name+" to have value "+tostring+" but it had value "+element.getValue().stringifyValue());

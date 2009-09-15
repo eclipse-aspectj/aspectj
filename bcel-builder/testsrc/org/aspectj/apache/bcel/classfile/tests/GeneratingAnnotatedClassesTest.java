@@ -18,12 +18,12 @@ import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.classfile.annotation.AnnotationElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValueGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
-import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
 import org.aspectj.apache.bcel.generic.ArrayType;
 import org.aspectj.apache.bcel.generic.ClassGen;
 import org.aspectj.apache.bcel.generic.InstructionBranch;
@@ -78,13 +78,13 @@ public class GeneratingAnnotatedClassesTest extends BcelTestCase {
 				"SimpleAnnotation"));
 		assertTrue("Name of annotation 2 should be SimpleAnnotation but it is " + as[1].getTypeName(), as[1].getTypeName().equals(
 				"SimpleAnnotation"));
-		List<ElementNameValuePairGen> vals = as[0].getValues();
-		ElementNameValuePairGen nvp = vals.get(0);
+		List<NameValuePair> vals = as[0].getValues();
+		NameValuePair nvp = vals.get(0);
 		assertTrue("Name of element in SimpleAnnotation should be 'id' but it is " + nvp.getNameString(), nvp.getNameString()
 				.equals("id"));
-		ElementValueGen ev = nvp.getValue();
+		ElementValue ev = nvp.getValue();
 		assertTrue("Type of element value should be int but it is " + ev.getElementValueType(),
-				ev.getElementValueType() == ElementValueGen.PRIMITIVE_INT);
+				ev.getElementValueType() == ElementValue.PRIMITIVE_INT);
 		assertTrue("Value of element should be 4 but it is " + ev.stringifyValue(), ev.stringifyValue().equals("4"));
 		assertTrue(createTestdataFile("HelloWorld.class").delete());
 	}
@@ -214,16 +214,16 @@ public class GeneratingAnnotatedClassesTest extends BcelTestCase {
 		assertTrue("Expected one annotation but found " + annotations.length, annotations.length == 1);
 		AnnotationGen a = annotations[0];
 		assertTrue("That annotation should only have one value but has " + a.getValues().size(), a.getValues().size() == 1);
-		ElementNameValuePairGen nvp = a.getValues().get(0);
-		ElementValueGen value = nvp.getValue();
-		assertTrue("Value should be ArrayElementValueGen but is " + value, value instanceof ArrayElementValueGen);
-		ArrayElementValueGen arrayValue = (ArrayElementValueGen) value;
+		NameValuePair nvp = a.getValues().get(0);
+		ElementValue value = nvp.getValue();
+		assertTrue("Value should be ArrayElementValueGen but is " + value, value instanceof ArrayElementValue);
+		ArrayElementValue arrayValue = (ArrayElementValue) value;
 		assertTrue("Array value should be size one but is " + arrayValue.getElementValuesArraySize(), arrayValue
 				.getElementValuesArraySize() == 1);
-		ElementValueGen innerValue = arrayValue.getElementValuesArray()[0];
+		ElementValue innerValue = arrayValue.getElementValuesArray()[0];
 		assertTrue("Value in the array should be AnnotationElementValueGen but is " + innerValue,
-				innerValue instanceof AnnotationElementValueGen);
-		AnnotationElementValueGen innerAnnotationValue = (AnnotationElementValueGen) innerValue;
+				innerValue instanceof AnnotationElementValue);
+		AnnotationElementValue innerAnnotationValue = (AnnotationElementValue) innerValue;
 		assertTrue("Should be called LSimpleAnnotation; but is called: " + innerAnnotationValue.getAnnotation().getTypeName(),
 				innerAnnotationValue.getAnnotation().getTypeSignature().equals("LSimpleAnnotation;"));
 	}
@@ -238,12 +238,12 @@ public class GeneratingAnnotatedClassesTest extends BcelTestCase {
 		// Check annotations are correctly preserved
 		AnnotationGen[] annotations = cgen.getAnnotations();
 		assertTrue("Expected one annotation but found " + annotations.length, annotations.length == 1);
-		List<ElementNameValuePairGen> l = annotations[0].getValues();
+		List<NameValuePair> l = annotations[0].getValues();
 		boolean found = false;
-		for (Iterator<ElementNameValuePairGen> iter = l.iterator(); iter.hasNext();) {
-			ElementNameValuePairGen element = iter.next();
+		for (Iterator<NameValuePair> iter = l.iterator(); iter.hasNext();) {
+			NameValuePair element = iter.next();
 			if (element.getNameString().equals("dval")) {
-				if (((SimpleElementValueGen) element.getValue()).stringifyValue().equals("33.4"))
+				if (((SimpleElementValue) element.getValue()).stringifyValue().equals("33.4"))
 					found = true;
 			}
 		}
@@ -518,13 +518,13 @@ public class GeneratingAnnotatedClassesTest extends BcelTestCase {
 	}
 
 	public AnnotationGen createSimpleVisibleAnnotation(ConstantPool cp) {
-		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_INT, cp, 4);
+		SimpleElementValue evg = new SimpleElementValue(ElementValue.PRIMITIVE_INT, cp, 4);
 
-		ElementNameValuePairGen nvGen = new ElementNameValuePairGen("id", evg, cp);
+		NameValuePair nvGen = new NameValuePair("id", evg, cp);
 
 		ObjectType t = new ObjectType("SimpleAnnotation");
 
-		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
+		List<NameValuePair> elements = new ArrayList<NameValuePair>();
 		elements.add(nvGen);
 
 		AnnotationGen a = new AnnotationGen(t, elements, true, cp);
@@ -532,10 +532,10 @@ public class GeneratingAnnotatedClassesTest extends BcelTestCase {
 	}
 
 	public AnnotationGen createFruitAnnotation(ConstantPool cp, String aFruit) {
-		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.STRING, cp, aFruit);
-		ElementNameValuePairGen nvGen = new ElementNameValuePairGen("fruit", evg, cp);
+		SimpleElementValue evg = new SimpleElementValue(ElementValue.STRING, cp, aFruit);
+		NameValuePair nvGen = new NameValuePair("fruit", evg, cp);
 		ObjectType t = new ObjectType("SimpleStringAnnotation");
-		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
+		List<NameValuePair> elements = new ArrayList<NameValuePair>();
 		elements.add(nvGen);
 		return new AnnotationGen(t, elements, true, cp);
 	}
@@ -543,22 +543,22 @@ public class GeneratingAnnotatedClassesTest extends BcelTestCase {
 	public AnnotationGen createCombinedAnnotation(ConstantPool cp) {
 		// Create an annotation instance
 		AnnotationGen a = createSimpleVisibleAnnotation(cp);
-		ArrayElementValueGen array = new ArrayElementValueGen(cp);
-		array.addElement(new AnnotationElementValueGen(a, cp));
-		ElementNameValuePairGen nvp = new ElementNameValuePairGen("value", array, cp);
-		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
+		ArrayElementValue array = new ArrayElementValue(cp);
+		array.addElement(new AnnotationElementValue(a, cp));
+		NameValuePair nvp = new NameValuePair("value", array, cp);
+		List<NameValuePair> elements = new ArrayList<NameValuePair>();
 		elements.add(nvp);
 		return new AnnotationGen(new ObjectType("CombinedAnnotation"), elements, true, cp);
 	}
 
 	public AnnotationGen createSimpleInvisibleAnnotation(ConstantPool cp) {
-		SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_INT, cp, 4);
+		SimpleElementValue evg = new SimpleElementValue(ElementValue.PRIMITIVE_INT, cp, 4);
 
-		ElementNameValuePairGen nvGen = new ElementNameValuePairGen("id", evg, cp);
+		NameValuePair nvGen = new NameValuePair("id", evg, cp);
 
 		ObjectType t = new ObjectType("SimpleAnnotation");
 
-		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
+		List<NameValuePair> elements = new ArrayList<NameValuePair>();
 		elements.add(nvGen);
 
 		AnnotationGen a = new AnnotationGen(t, elements, false, cp);

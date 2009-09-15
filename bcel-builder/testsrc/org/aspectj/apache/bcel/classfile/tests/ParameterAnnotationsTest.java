@@ -18,12 +18,12 @@ import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.classfile.annotation.AnnotationElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValueGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
-import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
 import org.aspectj.apache.bcel.generic.ArrayType;
 import org.aspectj.apache.bcel.generic.ClassGen;
 import org.aspectj.apache.bcel.generic.InstructionBranch;
@@ -544,14 +544,14 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 
 	
 	public AnnotationGen createSimpleVisibleAnnotation(ConstantPool cp) {
-		SimpleElementValueGen evg = new SimpleElementValueGen(
-				ElementValueGen.PRIMITIVE_INT, cp, 4);
+		SimpleElementValue evg = new SimpleElementValue(
+				ElementValue.PRIMITIVE_INT, cp, 4);
 
-		ElementNameValuePairGen nvGen = new ElementNameValuePairGen("id", evg,cp);
+		NameValuePair nvGen = new NameValuePair("id", evg,cp);
 
 		ObjectType t = new ObjectType("SimpleAnnotation");
 
-		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
+		List<NameValuePair> elements = new ArrayList<NameValuePair>();
 		elements.add(nvGen);
 
 		AnnotationGen a = new AnnotationGen(t, elements,true, cp);
@@ -561,23 +561,23 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 	public AnnotationGen createCombinedAnnotation(ConstantPool cp) {
 		// Create an annotation instance
 		AnnotationGen a = createSimpleVisibleAnnotation(cp);
-		ArrayElementValueGen array = new ArrayElementValueGen(cp);
-		array.addElement(new AnnotationElementValueGen(a,cp)); 
-		ElementNameValuePairGen nvp = new ElementNameValuePairGen("value",array,cp);
-		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
+		ArrayElementValue array = new ArrayElementValue(cp);
+		array.addElement(new AnnotationElementValue(a,cp)); 
+		NameValuePair nvp = new NameValuePair("value",array,cp);
+		List<NameValuePair> elements = new ArrayList<NameValuePair>();
 		elements.add(nvp);
 		return new AnnotationGen(new ObjectType("CombinedAnnotation"),elements,true,cp);
 	}
 	
 	public AnnotationGen createSimpleInvisibleAnnotation(ConstantPool cp) {
-		SimpleElementValueGen evg = new SimpleElementValueGen(
-				ElementValueGen.PRIMITIVE_INT, cp, 4);
+		SimpleElementValue evg = new SimpleElementValue(
+				ElementValue.PRIMITIVE_INT, cp, 4);
 
-		ElementNameValuePairGen nvGen = new ElementNameValuePairGen("id", evg,cp);
+		NameValuePair nvGen = new NameValuePair("id", evg,cp);
 
 		ObjectType t = new ObjectType("SimpleAnnotation");
 
-		List<ElementNameValuePairGen> elements = new ArrayList<ElementNameValuePairGen>();
+		List<NameValuePair> elements = new ArrayList<NameValuePair>();
 		elements.add(nvGen);
 
 		AnnotationGen a = new AnnotationGen(t, elements,false, cp);

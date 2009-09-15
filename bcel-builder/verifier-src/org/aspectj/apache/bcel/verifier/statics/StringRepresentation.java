@@ -88,10 +88,10 @@ import org.aspectj.apache.bcel.classfile.SourceFile;
 import org.aspectj.apache.bcel.classfile.StackMap;
 import org.aspectj.apache.bcel.classfile.Synthetic;
 import org.aspectj.apache.bcel.classfile.Unknown;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisParamAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisParamAnnos;
 import org.aspectj.apache.bcel.verifier.exc.AssertionViolatedException;
 
 /**
@@ -106,7 +106,7 @@ import org.aspectj.apache.bcel.verifier.exc.AssertionViolatedException;
  * Note that this class also serves as a placeholder for more sophisticated message
  * handling in future versions of JustIce.
  * 
- * @version $Id: StringRepresentation.java,v 1.3 2008/08/28 00:02:14 aclement Exp $
+ * @version $Id: StringRepresentation.java,v 1.4 2009/09/15 19:40:22 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class StringRepresentation extends org.aspectj.apache.bcel.verifier.EmptyClassVisitor{
@@ -258,10 +258,10 @@ public class StringRepresentation extends org.aspectj.apache.bcel.verifier.Empty
 		tostring = toString(obj);
 	}
 
-	public void visitRuntimeVisibleAnnotations(RuntimeVisibleAnnotations obj) {tostring = toString(obj);}
-	public void visitRuntimeInvisibleAnnotations(RuntimeInvisibleAnnotations obj)  {tostring = toString(obj);}
-	public void visitRuntimeVisibleParameterAnnotations(RuntimeVisibleParameterAnnotations obj) {tostring = toString(obj);}
-	public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisibleParameterAnnotations obj) {tostring = toString(obj);}
+	public void visitRuntimeVisibleAnnotations(RuntimeVisAnnos obj) {tostring = toString(obj);}
+	public void visitRuntimeInvisibleAnnotations(RuntimeInvisAnnos obj)  {tostring = toString(obj);}
+	public void visitRuntimeVisibleParameterAnnotations(RuntimeVisParamAnnos obj) {tostring = toString(obj);}
+	public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisParamAnnos obj) {tostring = toString(obj);}
 	public void visitAnnotationDefault(AnnotationDefault obj) {tostring = toString(obj);}
 	public void visitLocalVariableTypeTable(LocalVariableTypeTable obj)    {tostring = toString(obj);}
 	

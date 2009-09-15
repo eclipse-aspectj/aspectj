@@ -19,7 +19,7 @@ import java.util.Iterator;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
 import org.aspectj.apache.bcel.generic.ClassGen;
 import org.aspectj.apache.bcel.generic.FieldGen;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
@@ -116,7 +116,7 @@ public class FieldAnnotationsTest extends BcelTestCase {
 		assertTrue("Expected annotation to have name "+name+" but it had name "+a.getTypeName(),
 				a.getTypeName().equals(name));
 		assertTrue("Expected annotation to have one element but it had "+a.getValues().size(),a.getValues().size()==1);
-		ElementNameValuePairGen envp = a.getValues().get(0);
+		NameValuePair envp = a.getValues().get(0);
 		assertTrue("Expected element name "+elementname+" but was "+envp.getNameString(),
 				elementname.equals(envp.getNameString()));
 		assertTrue("Expected element value "+elementvalue+" but was "+envp.getValue().stringifyValue(),
@@ -127,8 +127,8 @@ public class FieldAnnotationsTest extends BcelTestCase {
 	// helper methods
 	
 	public void checkValue(AnnotationGen a,String name,String tostring) {
-		for (Iterator<ElementNameValuePairGen> i = a.getValues().iterator(); i.hasNext();) {
-			ElementNameValuePairGen element = i.next();
+		for (Iterator<NameValuePair> i = a.getValues().iterator(); i.hasNext();) {
+			NameValuePair element = i.next();
 			if (element.getNameString().equals(name)) {
 				if (!element.getValue().stringifyValue().equals(tostring)) {
 					fail("Expected element "+name+" to have value "+tostring+" but it had value "+element.getValue().stringifyValue());

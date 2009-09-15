@@ -90,10 +90,10 @@ import org.aspectj.apache.bcel.classfile.StackMapEntry;
 import org.aspectj.apache.bcel.classfile.Synthetic;
 import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.classfile.ClassVisitor;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisParamAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisParamAnnos;
 
 /**
  * Visitor with empty method bodies, can be extended and used in conjunction with the
@@ -102,7 +102,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnot
  * By courtesy of David Spencer.
  *
  * @see DescendingVisitor
- * @version $Id: EmptyClassVisitor.java,v 1.2 2008/05/28 23:53:00 aclement Exp $
+ * @version $Id: EmptyClassVisitor.java,v 1.3 2009/09/15 19:40:22 aclement Exp $
  * 
  */
 public class EmptyClassVisitor implements ClassVisitor {
@@ -143,10 +143,10 @@ public class EmptyClassVisitor implements ClassVisitor {
   
   // J5SUPPORT:
   public void visitEnclosingMethod(EnclosingMethod obj) {}
-  public void visitRuntimeVisibleAnnotations(RuntimeVisibleAnnotations attribute) {}
-  public void visitRuntimeInvisibleAnnotations(RuntimeInvisibleAnnotations attribute) {}
-  public void visitRuntimeVisibleParameterAnnotations(RuntimeVisibleParameterAnnotations attribute) {}
-  public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisibleParameterAnnotations attribute) {}
+  public void visitRuntimeVisibleAnnotations(RuntimeVisAnnos attribute) {}
+  public void visitRuntimeInvisibleAnnotations(RuntimeInvisAnnos attribute) {}
+  public void visitRuntimeVisibleParameterAnnotations(RuntimeVisParamAnnos attribute) {}
+  public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisParamAnnos attribute) {}
   public void visitAnnotationDefault(AnnotationDefault attribute) {}
   public void visitLocalVariableTypeTable(LocalVariableTypeTable obj) {}
   	 

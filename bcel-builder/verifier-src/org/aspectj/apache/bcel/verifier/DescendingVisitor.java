@@ -94,10 +94,10 @@ import org.aspectj.apache.bcel.classfile.StackMapEntry;
 import org.aspectj.apache.bcel.classfile.Synthetic;
 import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.classfile.ClassVisitor;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisibleParameterAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleAnnotations;
-import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnotations;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisParamAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisParamAnnos;
 
 /**
  * Traverses a JavaClass with another Visitor object 'piggy-backed'
@@ -105,7 +105,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisibleParameterAnnot
  * class supplies the traversal strategy, other classes can make use
  * of it.
  *
- * @version $Id: DescendingVisitor.java,v 1.3 2009/09/09 19:56:20 aclement Exp $
+ * @version $Id: DescendingVisitor.java,v 1.4 2009/09/15 19:40:22 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A> 
  */
 public class DescendingVisitor implements ClassVisitor {
@@ -380,25 +380,25 @@ public class DescendingVisitor implements ClassVisitor {
   	stack.pop();
   }
   
-  public void visitRuntimeVisibleAnnotations(RuntimeVisibleAnnotations attribute) {
+  public void visitRuntimeVisibleAnnotations(RuntimeVisAnnos attribute) {
   	stack.push(attribute);
   	attribute.accept(visitor);
   	stack.pop();
   }
   
-  public void visitRuntimeInvisibleAnnotations(RuntimeInvisibleAnnotations attribute) {
+  public void visitRuntimeInvisibleAnnotations(RuntimeInvisAnnos attribute) {
   	stack.push(attribute);
   	attribute.accept(visitor);
   	stack.pop();
   }
   
-  public void visitRuntimeVisibleParameterAnnotations(RuntimeVisibleParameterAnnotations attribute) {
+  public void visitRuntimeVisibleParameterAnnotations(RuntimeVisParamAnnos attribute) {
   	stack.push(attribute);
   	attribute.accept(visitor);
   	stack.pop();
   }
   
-  public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisibleParameterAnnotations attribute) {
+  public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisParamAnnos attribute) {
   	stack.push(attribute);
   	attribute.accept(visitor);
   	stack.pop();
