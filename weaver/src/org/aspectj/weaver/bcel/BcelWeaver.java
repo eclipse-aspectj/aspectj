@@ -1762,17 +1762,26 @@ public class BcelWeaver {
 	}
 
 	private LazyClassGen weave(UnwovenClassFile classFile, BcelObjectType classType, boolean dump) throws IOException {
+
 		if (classType.isSynthetic()) { // Don't touch synthetic classes
 			if (dump) {
 				dumpUnchanged(classFile);
 			}
 			return null;
 		}
+		ReferenceType resolvedClassType = classType.getResolvedTypeX();
 
-		List<ShadowMunger> shadowMungers = fastMatch(shadowMungerList, classType.getResolvedTypeX());
+		if (world.isXmlConfigured() && world.getXmlConfiguration().excludesType(resolvedClassType)) {
+			if (dump) {
+				dumpUnchanged(classFile);
+			}
+			return null;
+		}
+
+		List<ShadowMunger> shadowMungers = fastMatch(shadowMungerList, resolvedClassType);
 		List<ConcreteTypeMunger> typeMungers = classType.getResolvedTypeX().getInterTypeMungers();
 
-		classType.getResolvedTypeX().checkInterTypeMungers();
+		resolvedClassType.checkInterTypeMungers();
 
 		// Decide if we need to do actual weaving for this class
 		boolean mightNeedToWeave = shadowMungers.size() > 0 || typeMungers.size() > 0 || classType.isAspect()
@@ -1781,7 +1790,7 @@ public class BcelWeaver {
 		// May need bridge methods if on 1.5 and something in our hierarchy is
 		// affected by ITDs
 		boolean mightNeedBridgeMethods = world.isInJava5Mode() && !classType.isInterface()
-				&& classType.getResolvedTypeX().getInterTypeMungersIncludingSupers().size() > 0;
+				&& resolvedClassType.getInterTypeMungersIncludingSupers().size() > 0;
 
 		LazyClassGen clazz = null;
 		if (mightNeedToWeave || mightNeedBridgeMethods) {

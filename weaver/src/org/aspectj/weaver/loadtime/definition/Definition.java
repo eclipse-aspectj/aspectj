@@ -23,59 +23,50 @@ import java.util.Map;
  */
 public class Definition {
 
-	private final StringBuffer m_weaverOptions;
-
-	private final List m_dumpPatterns;
-
-	private boolean m_dumpBefore;
-
+	private final StringBuffer weaverOptions;
+	private final List<String> dumpPatterns;
+	private boolean dumpBefore;
 	private boolean perClassloaderDumpDir;
-
-	private final List m_includePatterns;
-
-	private final List m_excludePatterns;
-
-	private final List m_aspectClassNames;
-
-	private final List m_aspectExcludePatterns;
-
-	private final List m_aspectIncludePatterns;
-
-	private final List m_concreteAspects;
+	private final List<String> includePatterns;
+	private final List<String> excludePatterns;
+	private final List<String> aspectClassNames;
+	private final List<String> aspectExcludePatterns;
+	private final List<String> aspectIncludePatterns;
+	private final List<Definition.ConcreteAspect> concreteAspects;
 
 	/**
 	 * When aspects are defined, they can specify a scope type pattern and then will only apply to types matching that pattern.
 	 */
-	private final Map scopedAspects;
+	private final Map<String, String> scopedAspects;
 
 	public Definition() {
-		m_weaverOptions = new StringBuffer();
-		m_dumpBefore = false;
+		weaverOptions = new StringBuffer();
+		dumpBefore = false;
 		perClassloaderDumpDir = false;
-		m_dumpPatterns = new ArrayList(0);
-		m_includePatterns = new ArrayList(0);
-		m_excludePatterns = new ArrayList(0);
-		m_aspectClassNames = new ArrayList();
-		m_aspectExcludePatterns = new ArrayList(0);
-		m_aspectIncludePatterns = new ArrayList(0);
-		m_concreteAspects = new ArrayList(0);
-		scopedAspects = new HashMap();
+		dumpPatterns = new ArrayList<String>();
+		includePatterns = new ArrayList<String>();
+		excludePatterns = new ArrayList<String>();
+		aspectClassNames = new ArrayList<String>();
+		aspectExcludePatterns = new ArrayList<String>();
+		aspectIncludePatterns = new ArrayList<String>();
+		concreteAspects = new ArrayList<Definition.ConcreteAspect>();
+		scopedAspects = new HashMap<String, String>();
 	}
 
 	public String getWeaverOptions() {
-		return m_weaverOptions.toString();
+		return weaverOptions.toString();
 	}
 
-	public List getDumpPatterns() {
-		return m_dumpPatterns;
+	public List<String> getDumpPatterns() {
+		return dumpPatterns;
 	}
 
 	public void setDumpBefore(boolean b) {
-		m_dumpBefore = b;
+		dumpBefore = b;
 	}
 
 	public boolean shouldDumpBefore() {
-		return m_dumpBefore;
+		return dumpBefore;
 	}
 
 	public void setCreateDumpDirPerClassloader(boolean b) {
@@ -86,35 +77,35 @@ public class Definition {
 		return perClassloaderDumpDir;
 	}
 
-	public List getIncludePatterns() {
-		return m_includePatterns;
+	public List<String> getIncludePatterns() {
+		return includePatterns;
 	}
 
-	public List getExcludePatterns() {
-		return m_excludePatterns;
+	public List<String> getExcludePatterns() {
+		return excludePatterns;
 	}
 
-	public List getAspectClassNames() {
-		return m_aspectClassNames;
+	public List<String> getAspectClassNames() {
+		return aspectClassNames;
 	}
 
-	public List getAspectExcludePatterns() {
-		return m_aspectExcludePatterns;
+	public List<String> getAspectExcludePatterns() {
+		return aspectExcludePatterns;
 	}
 
-	public List getAspectIncludePatterns() {
-		return m_aspectIncludePatterns;
+	public List<String> getAspectIncludePatterns() {
+		return aspectIncludePatterns;
 	}
 
-	public List getConcreteAspects() {
-		return m_concreteAspects;
+	public List<Definition.ConcreteAspect> getConcreteAspects() {
+		return concreteAspects;
 	}
 
 	public static class ConcreteAspect {
 		public final String name;
 		public final String extend;
 		public final String precedence;
-		public final List pointcuts;
+		public final List<Definition.Pointcut> pointcuts;
 		public final String perclause;
 
 		public ConcreteAspect(String name, String extend) {
@@ -133,7 +124,7 @@ public class Definition {
 				this.extend = extend;
 			}
 			this.precedence = precedence;
-			this.pointcuts = new ArrayList();
+			this.pointcuts = new ArrayList<Definition.Pointcut>();
 			this.perclause = perclause;
 		}
 	}
@@ -149,7 +140,7 @@ public class Definition {
 	}
 
 	public void appendWeaverOptions(String option) {
-		m_weaverOptions.append(option.trim()).append(' ');
+		weaverOptions.append(option.trim()).append(' ');
 	}
 
 	public void addScopedAspect(String name, String scopePattern) {
@@ -157,7 +148,7 @@ public class Definition {
 	}
 
 	public String getScopeForAspect(String name) {
-		return (String) scopedAspects.get(name);
+		return scopedAspects.get(name);
 	}
 
 }

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -76,6 +77,7 @@ import org.aspectj.weaver.loadtime.definition.DocumentParser;
 import org.aspectj.weaver.model.AsmRelationshipProvider;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
+import org.aspectj.weaver.patterns.ParserException;
 import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.tools.Trace;
@@ -719,19 +721,19 @@ public class BcelWorld extends World implements Repository {
 	// weaving.
 	protected void weaveInterTypeDeclarations(ResolvedType onType) {
 
-		List declareParentsList = getCrosscuttingMembersSet().getDeclareParents();
+		List<DeclareParents> declareParentsList = getCrosscuttingMembersSet().getDeclareParents();
 		if (onType.isRawType()) {
 			onType = onType.getGenericType();
 		}
 		onType.clearInterTypeMungers();
 
-		List decpToRepeat = new ArrayList();
+		List<DeclareParents> decpToRepeat = new ArrayList<DeclareParents>();
 
 		boolean aParentChangeOccurred = false;
 		boolean anAnnotationChangeOccurred = false;
 		// First pass - apply all decp mungers
-		for (Iterator i = declareParentsList.iterator(); i.hasNext();) {
-			DeclareParents decp = (DeclareParents) i.next();
+		for (Iterator<DeclareParents> i = declareParentsList.iterator(); i.hasNext();) {
+			DeclareParents decp = i.next();
 			boolean typeChanged = applyDeclareParents(decp, onType);
 			if (typeChanged) {
 				aParentChangeOccurred = true;
@@ -753,9 +755,9 @@ public class BcelWorld extends World implements Repository {
 
 		while ((aParentChangeOccurred || anAnnotationChangeOccurred) && !decpToRepeat.isEmpty()) {
 			anAnnotationChangeOccurred = aParentChangeOccurred = false;
-			List decpToRepeatNextTime = new ArrayList();
-			for (Iterator iter = decpToRepeat.iterator(); iter.hasNext();) {
-				DeclareParents decp = (DeclareParents) iter.next();
+			List<DeclareParents> decpToRepeatNextTime = new ArrayList<DeclareParents>();
+			for (Iterator<DeclareParents> iter = decpToRepeat.iterator(); iter.hasNext();) {
+				DeclareParents decp = iter.next();
 				boolean typeChanged = applyDeclareParents(decp, onType);
 				if (typeChanged) {
 					aParentChangeOccurred = true;
@@ -808,35 +810,32 @@ public class BcelWorld extends World implements Repository {
 		return (AsmManager) getModel(); // For now... always an AsmManager in a bcel environment
 	}
 
+	void raiseError(String message) {
+		getMessageHandler().handleMessage(MessageUtil.error(message));
+	}
+
 	/**
 	 * These are aop.xml files that can be used to alter the aspects that actually apply from those passed in - and also their scope
 	 * of application to other files in the system.
 	 * 
 	 * @param xmlFiles list of File objects representing any aop.xml files passed in to configure the build process
 	 */
-	public void setXmlFiles(List xmlFiles) {
+	public void setXmlFiles(List<File> xmlFiles) {
 		if (!isXmlConfiguredWorld && !xmlFiles.isEmpty()) {
-			getMessageHandler().handleMessage(
-					MessageUtil
-							.error("xml configuration files only supported by the compiler when -xmlConfigured option specified"));
+			raiseError("xml configuration files only supported by the compiler when -xmlConfigured option specified");
 			return;
 		}
 		if (!xmlFiles.isEmpty()) {
 			xmlConfiguration = new WeavingXmlConfig(this);
 		}
-		for (Iterator iterator = xmlFiles.iterator(); iterator.hasNext();) {
-			File xmlfile = (File) iterator.next();
+		for (File xmlfile : xmlFiles) {
 			try {
 				Definition d = DocumentParser.parse(xmlfile.toURI().toURL());
 				xmlConfiguration.add(d);
 			} catch (MalformedURLException e) {
-				getMessageHandler().handleMessage(
-						MessageUtil.error("Unexpected problem processing XML config file '" + xmlfile.getName() + "' :"
-								+ e.getMessage()));
+				raiseError("Unexpected problem processing XML config file '" + xmlfile.getName() + "' :" + e.getMessage());
 			} catch (Exception e) {
-				getMessageHandler().handleMessage(
-						MessageUtil.error("Unexpected problem processing XML config file '" + xmlfile.getName() + "' :"
-								+ e.getMessage()));
+				raiseError("Unexpected problem processing XML config file '" + xmlfile.getName() + "' :" + e.getMessage());
 			}
 		}
 	}
@@ -848,6 +847,10 @@ public class BcelWorld extends World implements Repository {
 	@Override
 	public boolean isXmlConfigured() {
 		return isXmlConfiguredWorld && xmlConfiguration != null;
+	}
+
+	public WeavingXmlConfig getXmlConfiguration() {
+		return xmlConfiguration;
 	}
 
 	@Override
@@ -873,10 +876,14 @@ public class BcelWorld extends World implements Repository {
 	static class WeavingXmlConfig {
 
 		private boolean initialized = false; // Lazily done
-		private List/* Definition */definitions = new ArrayList();
+		private List<Definition> definitions = new ArrayList<Definition>();
 
-		private List/* <String> */resolvedIncludedAspects = new ArrayList();
-		private Map/* <String,TypePattern> */scopes = new HashMap();
+		private List<String> resolvedIncludedAspects = new ArrayList<String>();
+		private Map<String, TypePattern> scopes = new HashMap<String, TypePattern>();
+		private List<String> includedFastMatchPatterns = Collections.emptyList();
+		private List<TypePattern> includedPatterns = Collections.emptyList();
+		private List<String> excludedFastMatchPatterns = Collections.emptyList();
+		private List<TypePattern> excludedPatterns = Collections.emptyList();
 
 		private BcelWorld world;
 
@@ -891,13 +898,11 @@ public class BcelWorld extends World implements Repository {
 		public void ensureInitialized() {
 			if (!initialized) {
 				try {
-					resolvedIncludedAspects = new ArrayList();
+					resolvedIncludedAspects = new ArrayList<String>();
 					// Process the definitions into something more optimal
-					for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
-						Definition definition = (Definition) iterator.next();
-						List/* String */aspectNames = definition.getAspectClassNames();
-						for (Iterator iterator2 = aspectNames.iterator(); iterator2.hasNext();) {
-							String name = (String) iterator2.next();
+					for (Definition definition : definitions) {
+						List<String> aspectNames = definition.getAspectClassNames();
+						for (String name : aspectNames) {
 							resolvedIncludedAspects.add(name);
 							// TODO check for existence?
 							// ResolvedType resolvedAspect = resolve(UnresolvedType.forName(name));
@@ -927,6 +932,43 @@ public class BcelWorld extends World implements Repository {
 								}
 							}
 						}
+						try {
+							List<String> includePatterns = definition.getIncludePatterns();
+							if (includePatterns.size() > 0) {
+								includedPatterns = new ArrayList<TypePattern>();
+								includedFastMatchPatterns = new ArrayList<String>();
+							}
+							for (String includePattern : includePatterns) {
+								if (includePattern.endsWith("..*")) {
+									// from 'blah.blah.blah..*' leave the 'blah.blah.blah.'
+									includedFastMatchPatterns.add(includePattern
+											.substring(0, includePattern.length() - 2));
+								} else {
+									TypePattern includedPattern = new PatternParser(includePattern).parseTypePattern();
+									includedPatterns.add(includedPattern);
+								}
+							}
+							List<String> excludePatterns = definition.getExcludePatterns();
+							if (excludePatterns.size() > 0) {
+								excludedPatterns = new ArrayList<TypePattern>();
+								excludedFastMatchPatterns = new ArrayList<String>();
+							}
+							for (String excludePattern : excludePatterns) {
+								if (excludePattern.endsWith("..*")) {
+									// from 'blah.blah.blah..*' leave the 'blah.blah.blah.'
+									excludedFastMatchPatterns.add(excludePattern
+											.substring(0, excludePattern.length() - 2));
+								} else {
+									TypePattern excludedPattern = new PatternParser(excludePattern).parseTypePattern();
+									excludedPatterns.add(excludedPattern);
+								}
+							}
+						} catch (ParserException pe) {
+							// TODO definitions should remember which file they came from, for inclusion in this message
+							world.getMessageHandler().handleMessage(
+									MessageUtil.error("Unable to parse type pattern: " + pe.getMessage()));
+
+						}
 					}
 				} finally {
 					initialized = true;
@@ -940,7 +982,38 @@ public class BcelWorld extends World implements Repository {
 		}
 
 		public TypePattern getScopeFor(String name) {
-			return (TypePattern) scopes.get(name);
+			return scopes.get(name);
+		}
+
+		// Can't quite follow the same rules for exclusion as used for loadtime weaving:
+		// "The set of types to be woven are those types matched by at least one weaver include element and not matched by any
+		// weaver
+		// exclude element. If there are no weaver include statements then all non-excluded types are included."
+		// Since if the weaver is seeing it during this kind of build, the type is implicitly included. So all we should check
+		// for is exclusion
+		public boolean excludesType(ResolvedType type) {
+			String typename = type.getName();
+			boolean excluded = false;
+			for (String excludedPattern : excludedFastMatchPatterns) {
+				if (typename.startsWith(excludedPattern)) {
+					excluded = true;
+					break;
+				}
+			}
+			if (!excluded) {
+				for (TypePattern excludedPattern : excludedPatterns) {
+					if (excludedPattern.matchesStatically(type)) {
+						excluded = true;
+						break;
+					}
+				}
+			}
+			if (excluded && !world.getMessageHandler().isIgnoring(IMessage.INFO)) {
+				world.getMessageHandler().handleMessage(
+						MessageUtil.info("Type '" + typename + "' excluded from weaving due to xml configuration"));
+
+			}
+			return excluded;
 		}
 	}
 
