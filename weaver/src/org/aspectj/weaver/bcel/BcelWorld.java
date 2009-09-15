@@ -1008,11 +1008,6 @@ public class BcelWorld extends World implements Repository {
 					}
 				}
 			}
-			if (excluded && !world.getMessageHandler().isIgnoring(IMessage.INFO)) {
-				world.getMessageHandler().handleMessage(
-						MessageUtil.info("Type '" + typename + "' excluded from weaving due to xml configuration"));
-
-			}
 			return excluded;
 		}
 	}

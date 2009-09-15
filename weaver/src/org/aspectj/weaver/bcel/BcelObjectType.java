@@ -29,8 +29,8 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
-import org.aspectj.apache.bcel.classfile.annotation.EnumElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.EnumElementValue;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.GenericSignature;
@@ -599,8 +599,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 					if (ax.getTypeName().equals(UnresolvedType.AT_RETENTION.getName())) {
 						List values = ((BcelAnnotation) ax).getBcelAnnotation().getValues();
 						for (Iterator it = values.iterator(); it.hasNext();) {
-							ElementNameValuePairGen element = (ElementNameValuePairGen) it.next();
-							EnumElementValueGen v = (EnumElementValueGen) element.getValue();
+							NameValuePair element = (NameValuePair) it.next();
+							EnumElementValue v = (EnumElementValue) element.getValue();
 							retentionPolicy = v.getEnumValueString();
 							return retentionPolicy;
 						}

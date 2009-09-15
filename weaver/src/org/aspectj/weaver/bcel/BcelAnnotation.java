@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValueGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
-import org.aspectj.apache.bcel.classfile.annotation.EnumElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.EnumElementValue;
 import org.aspectj.weaver.AbstractAnnotationAJ;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
@@ -46,13 +46,13 @@ public class BcelAnnotation extends AbstractAnnotationAJ {
 		if (!type.equals(UnresolvedType.AT_TARGET)) {
 			return Collections.emptySet();
 		}
-		List<ElementNameValuePairGen> values = bcelAnnotation.getValues();
-		ElementNameValuePairGen envp = values.get(0);
-		ArrayElementValueGen aev = (ArrayElementValueGen) envp.getValue();
-		ElementValueGen[] evs = aev.getElementValuesArray();
+		List<NameValuePair> values = bcelAnnotation.getValues();
+		NameValuePair envp = values.get(0);
+		ArrayElementValue aev = (ArrayElementValue) envp.getValue();
+		ElementValue[] evs = aev.getElementValuesArray();
 		Set<String> targets = new HashSet<String>();
 		for (int i = 0; i < evs.length; i++) {
-			EnumElementValueGen ev = (EnumElementValueGen) evs[i];
+			EnumElementValue ev = (EnumElementValue) evs[i];
 			targets.add(ev.getEnumValueString());
 		}
 		return targets;
@@ -81,10 +81,10 @@ public class BcelAnnotation extends AbstractAnnotationAJ {
 	public String stringify() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("@").append(type.getClassName());
-		List<ElementNameValuePairGen> values = bcelAnnotation.getValues();
+		List<NameValuePair> values = bcelAnnotation.getValues();
 		if (values != null && values.size() != 0) {
 			sb.append("(");
-			for (ElementNameValuePairGen nvPair : values) {
+			for (NameValuePair nvPair : values) {
 				sb.append(nvPair.getNameString()).append("=").append(nvPair.getValue().stringifyValue());
 			}
 			sb.append(")");
@@ -111,11 +111,11 @@ public class BcelAnnotation extends AbstractAnnotationAJ {
 	 * {@inheritDoc}
 	 */
 	public String getStringFormOfValue(String name) {
-		List<ElementNameValuePairGen> annotationValues = this.bcelAnnotation.getValues();
+		List<NameValuePair> annotationValues = this.bcelAnnotation.getValues();
 		if (annotationValues == null || annotationValues.size() == 0) {
 			return null;
 		} else {
-			for (ElementNameValuePairGen nvPair : annotationValues) {
+			for (NameValuePair nvPair : annotationValues) {
 				if (nvPair.getNameString().equals(name)) {
 					return nvPair.getValue().stringifyValue();
 				}

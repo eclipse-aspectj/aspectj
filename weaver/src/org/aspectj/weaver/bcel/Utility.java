@@ -27,10 +27,10 @@ import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Unknown;
-import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValueGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
-import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
 import org.aspectj.apache.bcel.generic.ArrayType;
 import org.aspectj.apache.bcel.generic.BasicType;
 import org.aspectj.apache.bcel.generic.Instruction;
@@ -646,16 +646,16 @@ public class Utility {
 				// 1. there are no values specified (i.e. @SuppressAjWarnings)
 				// 2. there are values specified (i.e. @SuppressAjWarnings("A")
 				// or @SuppressAjWarnings({"A","B"})
-				List<ElementNameValuePairGen> vals = ((BcelAnnotation) anns[i]).getBcelAnnotation().getValues();
+				List<NameValuePair> vals = ((BcelAnnotation) anns[i]).getBcelAnnotation().getValues();
 				if (vals == null || vals.isEmpty()) { // (1)
 					suppressedWarnings.addAll(lint.allKinds());
 				} else { // (2)
 					// We know the value is an array value
-					ArrayElementValueGen array = (ArrayElementValueGen) ((ElementNameValuePairGen) vals.get(0)).getValue();
-					ElementValueGen[] values = array.getElementValuesArray();
+					ArrayElementValue array = (ArrayElementValue) ((NameValuePair) vals.get(0)).getValue();
+					ElementValue[] values = array.getElementValuesArray();
 					for (int j = 0; j < values.length; j++) {
 						// We know values in the array are strings
-						SimpleElementValueGen value = (SimpleElementValueGen) values[j];
+						SimpleElementValue value = (SimpleElementValue) values[j];
 						Lint.Kind lintKind = lint.getLintKind(value.getValueString());
 						if (lintKind != null)
 							suppressedWarnings.add(lintKind);

@@ -29,7 +29,7 @@ import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.GenericSignature;
@@ -140,8 +140,8 @@ class BcelMethod extends ResolvedMemberImpl {
 								|| typename.startsWith("org.aspectj.lang.annotation.After")) {
 							AnnotationGen a = ((BcelAnnotation) annotationX).getBcelAnnotation();
 							if (a != null) {
-								List<ElementNameValuePairGen> values = a.getValues();
-								for (ElementNameValuePairGen nvPair : values) {
+								List<NameValuePair> values = a.getValues();
+								for (NameValuePair nvPair : values) {
 									if (nvPair.getNameString().equals("argNames")) {
 										String argNames = nvPair.getValue().stringifyValue();
 										StringTokenizer argNameTokenizer = new StringTokenizer(argNames, " ,");

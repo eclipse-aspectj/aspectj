@@ -15,8 +15,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
-import org.aspectj.apache.bcel.classfile.annotation.EnumElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.EnumElementValue;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.Type;
@@ -61,8 +61,8 @@ class AnnotationAccessFieldVar extends BcelVar {
 				List vals = annotation.getValues();
 				boolean doneAndDusted = false;
 				for (Iterator iterator = vals.iterator(); iterator.hasNext();) {
-					ElementNameValuePairGen object = (ElementNameValuePairGen) iterator.next();
-					EnumElementValueGen v = (EnumElementValueGen) object.getValue();
+					NameValuePair object = (NameValuePair) iterator.next();
+					EnumElementValue v = (EnumElementValue) object.getValue();
 					String s = v.getEnumTypeString();
 					ResolvedType rt = toType.getWorld().resolve(UnresolvedType.forSignature(s));
 					if (rt.equals(toType)) {

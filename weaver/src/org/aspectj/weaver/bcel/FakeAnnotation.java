@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
 
 /**
  * For implementing declare @type interacting with declare @parents during compilation - we need to be 
@@ -48,7 +48,7 @@ public class FakeAnnotation extends AnnotationGen {
 		return sig;
 	}
 
-	public void addElementNameValuePair(ElementNameValuePairGen evp) {
+	public void addElementNameValuePair(NameValuePair evp) {
 		// doesnt need to know about name/value pairs
 	}
 
