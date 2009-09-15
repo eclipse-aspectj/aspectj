@@ -23,9 +23,9 @@ import java.util.Map;
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementNameValuePairGen;
-import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
-import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.ObjectType;
@@ -51,10 +51,9 @@ import org.aspectj.weaver.patterns.PerSingleton;
 /**
  * Generates bytecode for concrete-aspect.
  * <p>
- * The concrete aspect is @AspectJ code generated. As it is build during aop.xml
- * definitions registration we perform the type munging for perclause, ie.
- * aspectOf() artifact directly, instead of waiting for it to go thru the weaver
- * (that we are in the middle of configuring).
+ * The concrete aspect is @AspectJ code generated. As it is build during aop.xml definitions registration we perform the type
+ * munging for perclause, ie. aspectOf() artifact directly, instead of waiting for it to go thru the weaver (that we are in the
+ * middle of configuring).
  * 
  * @author Alexandre Vasseur
  * @author Andy Clement
@@ -293,8 +292,7 @@ public class ConcreteAspectCodeGen {
 	}
 
 	/**
-	 * Rebuild the XML snip that defines this concrete aspect, for log error
-	 * purpose
+	 * Rebuild the XML snip that defines this concrete aspect, for log error purpose
 	 * 
 	 * @return string repr.
 	 */
@@ -388,17 +386,16 @@ public class ConcreteAspectCodeGen {
 		} else {
 			// List elems = new ArrayList();
 			List elems = new ArrayList();
-			elems.add(new ElementNameValuePairGen("value", new SimpleElementValueGen(ElementValueGen.STRING, cg.getConstantPool(),
-					perclauseString), cg.getConstantPool()));
+			elems.add(new NameValuePair("value",
+					new SimpleElementValue(ElementValue.STRING, cg.getConstantPool(), perclauseString), cg.getConstantPool()));
 			AnnotationGen ag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/Aspect"), elems, true, cg
 					.getConstantPool());
 			cg.addAnnotation(ag);
 		}
 		if (concreteAspect.precedence != null) {
-			SimpleElementValueGen svg = new SimpleElementValueGen(ElementValueGen.STRING, cg.getConstantPool(),
-					concreteAspect.precedence);
+			SimpleElementValue svg = new SimpleElementValue(ElementValue.STRING, cg.getConstantPool(), concreteAspect.precedence);
 			List elems = new ArrayList();
-			elems.add(new ElementNameValuePairGen("value", svg, cg.getConstantPool()));
+			elems.add(new NameValuePair("value", svg, cg.getConstantPool()));
 			AnnotationGen agprec = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/DeclarePrecedence"), elems, true,
 					cg.getConstantPool());
 			cg.addAnnotation(agprec);
@@ -417,10 +414,9 @@ public class ConcreteAspectCodeGen {
 			Definition.Pointcut abstractPc = (Definition.Pointcut) it.next();
 			// TODO AV - respect visibility instead of opening up as public?
 			LazyMethodGen mg = new LazyMethodGen(Modifier.PUBLIC, Type.VOID, abstractPc.name, EMPTY_TYPES, EMPTY_STRINGS, cg);
-			SimpleElementValueGen svg = new SimpleElementValueGen(ElementValueGen.STRING, cg.getConstantPool(),
-					abstractPc.expression);
+			SimpleElementValue svg = new SimpleElementValue(ElementValue.STRING, cg.getConstantPool(), abstractPc.expression);
 			List elems = new ArrayList();
-			elems.add(new ElementNameValuePairGen("value", svg, cg.getConstantPool()));
+			elems.add(new NameValuePair("value", svg, cg.getConstantPool()));
 			AnnotationGen mag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/Pointcut"), elems, true, cg
 					.getConstantPool());
 			AnnotationAJ max = new BcelAnnotation(mag, world);

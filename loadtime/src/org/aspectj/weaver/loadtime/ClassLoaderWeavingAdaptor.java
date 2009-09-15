@@ -400,6 +400,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		kind.signal(infos, null, null);
 	}
 
+	@Override
 	public String getContextId() {
 		return weavingContext.getId();
 	}
@@ -448,8 +449,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		// exclude if in any of the exclude list - note that the user defined name matters for that to happen
 		for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
 			Definition definition = (Definition) iterator.next();
-			for (Iterator aspects = definition.getConcreteAspects().iterator(); aspects.hasNext();) {
-				Definition.ConcreteAspect concreteAspect = (Definition.ConcreteAspect) aspects.next();
+			for (Definition.ConcreteAspect concreteAspect : definition.getConcreteAspects()) {
 				if (acceptAspect(concreteAspect.name)) {
 					info("define aspect " + concreteAspect.name);
 					ConcreteAspectCodeGen gen = new ConcreteAspectCodeGen(concreteAspect, weaver.getWorld());
@@ -600,6 +600,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		}
 	}
 
+	@Override
 	protected boolean accept(String className, byte[] bytes) {
 		// avoid ResolvedType if not needed
 		if (m_excludeTypePattern.isEmpty() && m_includeTypePattern.isEmpty()) {
@@ -708,6 +709,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		return accept;
 	}
 
+	@Override
 	protected boolean shouldDump(String className, boolean before) {
 		// Don't dump before weaving unless asked to
 		if (before && !m_dumpBefore) {
@@ -732,6 +734,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		return false;
 	}
 
+	@Override
 	protected String getDumpDir() {
 		if (dumpDirPerClassloader) {
 			StringBuffer dir = new StringBuffer();
