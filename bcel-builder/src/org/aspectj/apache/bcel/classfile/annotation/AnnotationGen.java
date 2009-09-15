@@ -32,12 +32,6 @@ public class AnnotationGen {
 	private ConstantPool cpool;
 	private boolean isRuntimeVisible = false;
 
-	/**
-	 * Here we are taking a fixed annotation of type Annotation and building a modifiable AnnotationGen object. If the pool passed
-	 * in is for a different class file, then copyPoolEntries should have been passed as true as that will force us to do a deep
-	 * copy of the annotation and move the cpool entries across. We need to copy the type and the element name value pairs and the
-	 * visibility.
-	 */
 	public AnnotationGen(AnnotationGen a, ConstantPool cpool, boolean copyPoolEntries) {
 		this.cpool = cpool;
 		if (copyPoolEntries) {

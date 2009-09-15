@@ -80,7 +80,7 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
  * The intent of this class is to represent a parsed or otherwise existing class file. Those interested in programatically
  * generating classes should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
  * 
- * @version $Id: JavaClass.java,v 1.20 2009/09/15 03:33:52 aclement Exp $
+ * @version $Id: JavaClass.java,v 1.21 2009/09/15 16:39:56 aclement Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -240,9 +240,6 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 
 	/**
 	 * Dump Java class to output stream in binary format.
-	 * 
-	 * @param file Output stream
-	 * @exception IOException
 	 */
 	public void dump(OutputStream file) throws IOException {
 		dump(new DataOutputStream(file));
@@ -250,9 +247,6 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 
 	/**
 	 * Dump Java class to output stream in binary format.
-	 * 
-	 * @param file Output stream
-	 * @exception IOException
 	 */
 	public void dump(DataOutputStream file) throws IOException {
 		file.writeInt(0xcafebabe);
@@ -285,9 +279,6 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 		file.close();
 	}
 
-	/**
-	 * @return Attributes of the class.
-	 */
 	public Attribute[] getAttributes() {
 		return attributes;
 	}
