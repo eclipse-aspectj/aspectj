@@ -354,7 +354,7 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(Ajc154Tests.class);
 	}
 
-	@Override
+	
 	protected File getSpecFile() {
 		return new File("../tests/src/org/aspectj/systemtest/ajc154/ajc154.xml");
 	}
