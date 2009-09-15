@@ -11,7 +11,7 @@
  * ******************************************************************/
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import org.aspectj.apache.bcel.classfile.annotation.ElementValueGen;
+import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
@@ -153,13 +153,13 @@ public class EclipseAnnotationConvertor {
 			Constant c = defaultValue.constant;
 			if (c instanceof IntConstant) {
 				IntConstant iConstant = (IntConstant) c;
-				return new SimpleAnnotationValue(ElementValueGen.PRIMITIVE_INT, new Integer(iConstant.intValue()));
+				return new SimpleAnnotationValue(ElementValue.PRIMITIVE_INT, new Integer(iConstant.intValue()));
 			} else if (c instanceof BooleanConstant) {
 				BooleanConstant iConstant = (BooleanConstant) c;
-				return new SimpleAnnotationValue(ElementValueGen.PRIMITIVE_BOOLEAN, new Boolean(iConstant.booleanValue()));
+				return new SimpleAnnotationValue(ElementValue.PRIMITIVE_BOOLEAN, new Boolean(iConstant.booleanValue()));
 			} else if (c instanceof StringConstant) {
 				StringConstant sConstant = (StringConstant) c;
-				return new SimpleAnnotationValue(ElementValueGen.STRING, sConstant.stringValue());
+				return new SimpleAnnotationValue(ElementValue.STRING, sConstant.stringValue());
 			}
 		}
 		return null;
