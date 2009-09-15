@@ -867,12 +867,12 @@ public abstract class World implements Dump.INode {
 		public final static int USE_WEAK_REFS = 1; // Collected asap
 		public final static int USE_SOFT_REFS = 2; // Collected when short on
 		// memory
-		List addedSinceLastDemote;
+		List<String> addedSinceLastDemote;
 
 		public int policy = USE_SOFT_REFS;
 
 		// Map of types that never get thrown away
-		final Map /* String -> ResolvedType */tMap = new HashMap();
+		final Map<String, ResolvedType> tMap = new HashMap<String, ResolvedType>();
 
 		// Map of types that may be ejected from the cache if we need space
 		final Map expendableMap = Collections.synchronizedMap(new WeakHashMap());
@@ -888,7 +888,7 @@ public abstract class World implements Dump.INode {
 		private static Trace trace = TraceFactory.getTraceFactory().getTrace(World.TypeMap.class);
 
 		TypeMap(World w) {
-			addedSinceLastDemote = new ArrayList();
+			addedSinceLastDemote = new ArrayList<String>();
 			this.w = w;
 			memoryProfiling = false;// !w.getMessageHandler().isIgnoring(Message.
 			// INFO);
@@ -907,15 +907,10 @@ public abstract class World implements Dump.INode {
 				return 0;
 			}
 			int demotionCounter = 0;
-			Iterator iter = addedSinceLastDemote.iterator();
-			do {
-				if (!iter.hasNext()) {
-					break;
-				}
-				String key = (String) iter.next();
-				ResolvedType type = (ResolvedType) tMap.get(key);
+			for (String key : addedSinceLastDemote) {
+				ResolvedType type = tMap.get(key);
 				if (type != null && !type.isAspect() && !type.equals(UnresolvedType.OBJECT) && !type.isPrimitiveType()) {
-					List typeMungers = type.getInterTypeMungers();
+					List<ConcreteTypeMunger> typeMungers = type.getInterTypeMungers();
 					if (typeMungers == null || typeMungers.size() == 0) {
 						tMap.remove(key);
 						if (!expendableMap.containsKey(key)) {
@@ -928,7 +923,7 @@ public abstract class World implements Dump.INode {
 						demotionCounter++;
 					}
 				}
-			} while (true);
+			}
 			if (debugDemotion) {
 				System.out.println("Demoted " + demotionCounter + " types.  Types remaining in fixed set #" + tMap.keySet().size());
 			}
@@ -1008,7 +1003,7 @@ public abstract class World implements Dump.INode {
 					addedSinceLastDemote.add(key);
 				}
 
-				return (ResolvedType) tMap.put(key, type);
+				return tMap.put(key, type);
 			}
 		}
 
@@ -1035,7 +1030,7 @@ public abstract class World implements Dump.INode {
 		 */
 		public ResolvedType get(String key) {
 			checkq();
-			ResolvedType ret = (ResolvedType) tMap.get(key);
+			ResolvedType ret = tMap.get(key);
 			if (ret == null) {
 				if (policy == USE_WEAK_REFS) {
 					WeakReference ref = (WeakReference) expendableMap.get(key);
@@ -1043,9 +1038,9 @@ public abstract class World implements Dump.INode {
 						ret = (ResolvedType) ref.get();
 					}
 				} else if (policy == USE_SOFT_REFS) {
-					SoftReference ref = (SoftReference) expendableMap.get(key);
+					SoftReference<ResolvedType> ref = (SoftReference) expendableMap.get(key);
 					if (ref != null) {
-						ret = (ResolvedType) ref.get();
+						ret = ref.get();
 					}
 				} else {
 					return (ResolvedType) expendableMap.get(key);
@@ -1056,7 +1051,7 @@ public abstract class World implements Dump.INode {
 
 		/** Remove a type from the map */
 		public ResolvedType remove(String key) {
-			ResolvedType ret = (ResolvedType) tMap.remove(key);
+			ResolvedType ret = tMap.remove(key);
 			if (ret == null) {
 				if (policy == USE_WEAK_REFS) {
 					WeakReference wref = (WeakReference) expendableMap.remove(key);

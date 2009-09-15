@@ -22,8 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
+import org.aspectj.weaver.patterns.DeclareSoft;
 import org.aspectj.weaver.patterns.IVerificationRequired;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
@@ -47,14 +49,14 @@ public class CrosscuttingMembersSet {
 	private transient List /* IVerificationRequired */<IVerificationRequired> verificationList = null;
 
 	private List<ShadowMunger> shadowMungers = null;
-	private List typeMungers = null;
+	private List<ConcreteTypeMunger> typeMungers = null;
 	private List<ConcreteTypeMunger> lateTypeMungers = null;
-	private List declareSofts = null;
+	private List<DeclareSoft> declareSofts = null;
 	private List<DeclareParents> declareParents = null;
 	private List<DeclareAnnotation> declareAnnotationOnTypes = null;
 	private List<DeclareAnnotation> declareAnnotationOnFields = null;
 	private List<DeclareAnnotation> declareAnnotationOnMethods = null; // includes constructors
-	private List declareDominates = null;
+	private List<Declare> declareDominates = null;
 	private boolean changedSinceLastReset = false;
 
 	public CrosscuttingMembersSet(World world) {
@@ -159,9 +161,9 @@ public class CrosscuttingMembersSet {
 		declareDominates = null;
 	}
 
-	public List getShadowMungers() {
+	public List<ShadowMunger> getShadowMungers() {
 		if (shadowMungers == null) {
-			ArrayList ret = new ArrayList();
+			List<ShadowMunger> ret = new ArrayList<ShadowMunger>();
 			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
 				ret.addAll(i.next().getShadowMungers());
 			}
@@ -170,9 +172,9 @@ public class CrosscuttingMembersSet {
 		return shadowMungers;
 	}
 
-	public List getTypeMungers() {
+	public List<ConcreteTypeMunger> getTypeMungers() {
 		if (typeMungers == null) {
-			ArrayList ret = new ArrayList();
+			List<ConcreteTypeMunger> ret = new ArrayList<ConcreteTypeMunger>();
 			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
 				ret.addAll(i.next().getTypeMungers());
 			}
@@ -192,13 +194,13 @@ public class CrosscuttingMembersSet {
 		return lateTypeMungers;
 	}
 
-	public List getDeclareSofts() {
+	public List<DeclareSoft> getDeclareSofts() {
 		if (declareSofts == null) {
-			Set ret = new HashSet();
+			Set<DeclareSoft> ret = new HashSet<DeclareSoft>();
 			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
 				ret.addAll(i.next().getDeclareSofts());
 			}
-			declareSofts = new ArrayList();
+			declareSofts = new ArrayList<DeclareSoft>();
 			declareSofts.addAll(ret);
 		}
 		return declareSofts;
@@ -256,9 +258,9 @@ public class CrosscuttingMembersSet {
 		return declareAnnotationOnMethods;
 	}
 
-	public List getDeclareDominates() {
+	public List<Declare> getDeclareDominates() {
 		if (declareDominates == null) {
-			ArrayList ret = new ArrayList();
+			List<Declare> ret = new ArrayList<Declare>();
 			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
 				ret.addAll(i.next().getDeclareDominates());
 			}
