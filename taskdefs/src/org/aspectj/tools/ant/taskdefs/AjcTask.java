@@ -320,6 +320,7 @@ public class AjcTask extends MatchingTask {
 	private Path extdirs;
 	private Path aspectpath;
 	private Path argfiles;
+	private Path inxmlfiles;
 	private List ignored;
 	private Path sourceRoots;
 	private File xweaveDir;
@@ -390,6 +391,7 @@ public class AjcTask extends MatchingTask {
 		adapterArguments = null;
 		adapterFiles = new ArrayList();
 		argfiles = null;
+		inxmlfiles= null;
 		executing = false;
 		aspectpath = null;
 		bootclasspath = null;
@@ -994,6 +996,21 @@ public class AjcTask extends MatchingTask {
 		return argfiles.createPath();
 	}
 
+	public void setInxmlref(Reference ref) {
+		createArgfiles().setRefid(ref);
+	}
+
+	public void setInxml(Path path) { // ajc-only eajc-also docDone
+		inxmlfiles = incPath(inxmlfiles, path);
+	}
+
+	public Path createInxml() {
+		if (inxmlfiles == null) {
+			inxmlfiles = new Path(project);
+		}
+		return inxmlfiles.createPath();
+	}
+
 	// ------------------------------ run
 
 	/**
@@ -1434,6 +1451,16 @@ public class AjcTask extends MatchingTask {
 				if (check(argfile, files[i], false, location)) {
 					list.add("-argfile");
 					list.add(argfile.getAbsolutePath());
+				}
+			}
+		}
+		if (inxmlfiles != null) {
+			String[] files = inxmlfiles.list();
+			for (int i = 0; i < files.length; i++) {
+				File inxmlfile = project.resolveFile(files[i]);
+				if (check(inxmlfile, files[i], false, location)) {
+					list.add("-xmlConfigured");
+					list.add(inxmlfile.getAbsolutePath());
 				}
 			}
 		}
