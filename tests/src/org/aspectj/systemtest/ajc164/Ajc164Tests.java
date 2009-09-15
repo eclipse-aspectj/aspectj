@@ -219,6 +219,16 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("aop config - 3");
 	}
 
+	// excluding types from weaving
+	public void testAopConfig4() {
+		runTest("aop config - 4");
+	}
+
+	// excluding types from weaving
+	public void testAopConfig5() {
+		runTest("aop config - 5");
+	}
+
 	public void testAjcThisNotRead() {
 		runTest("ajcthis not read");
 	}

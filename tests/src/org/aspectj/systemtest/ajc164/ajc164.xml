@@ -158,6 +158,28 @@
       </compile>
     </ajc-test>
     
+    <ajc-test dir="features164/aopconfig/one" title="aop config - 4">
+      <!-- excluding a type -->
+      <compile files="A.java A2.java B.java B2.java case4.xml" options="-1.5 -Xlint:ignore -xmlConfigured -showWeaveInfo">
+      	<message kind="weave" text="Join point 'staticinitialization(void A.&lt;clinit&gt;())' in Type 'A' (A.java:1) advised by before advice from 'A2' (A2.java:2)"/>
+      	<message kind="weave" text="Join point 'staticinitialization(void A.&lt;clinit&gt;())' in Type 'A' (A.java:1) advised by before advice from 'A' (A.java:2)"/>
+      	<message kind="weave" text="Join point 'staticinitialization(void A2.&lt;clinit&gt;())' in Type 'A2' (A2.java:1) advised by before advice from 'A2' (A2.java:2)"/>
+      	<message kind="weave" text="Join point 'staticinitialization(void A2.&lt;clinit&gt;())' in Type 'A2' (A2.java:1) advised by before advice from 'A' (A.java:2)"/>
+      	<message kind="weave" text="Join point 'staticinitialization(void B.&lt;clinit&gt;())' in Type 'B' (B.java:1) advised by before advice from 'A2' (A2.java:2)"/>
+      	<message kind="weave" text="Join point 'staticinitialization(void B.&lt;clinit&gt;())' in Type 'B' (B.java:1) advised by before advice from 'A' (A.java:2)"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="features164/aopconfig/one" title="aop config - 5">
+      <!-- excluding a type -->
+      <compile files="A.java A2.java B.java B2.java case5.xml" options="-1.5 -Xlint:ignore -xmlConfigured -showWeaveInfo">
+      	<message kind="weave" text="Join point 'staticinitialization(void A.&lt;clinit&gt;())' in Type 'A' (A.java:1) advised by before advice from 'A2' (A2.java:2)"/>
+      	<message kind="weave" text="Join point 'staticinitialization(void A.&lt;clinit&gt;())' in Type 'A' (A.java:1) advised by before advice from 'A' (A.java:2)"/>
+      	<message kind="weave" text="Join point 'staticinitialization(void A2.&lt;clinit&gt;())' in Type 'A2' (A2.java:1) advised by before advice from 'A2' (A2.java:2)"/>
+      	<message kind="weave" text="Join point 'staticinitialization(void A2.&lt;clinit&gt;())' in Type 'A2' (A2.java:1) advised by before advice from 'A' (A.java:2)"/>
+      </compile>
+    </ajc-test>
+    
     <ajc-test dir="bugs164/pr263310" title="inner handles">
       <compile files="HandleTestingAspect.java" options="-1.5 -emacssym -Xlint:ignore"/>
     </ajc-test>

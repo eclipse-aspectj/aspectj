@@ -1,0 +1,10 @@
+<!-- B2 is exluded from being woven -->
+<aspectj>
+<aspects>
+  <aspect name="A"/>
+  <aspect name="A2"/>
+</aspects>
+<weaver>
+  <exclude within="B*"/>
+</weaver>
+</aspectj>
