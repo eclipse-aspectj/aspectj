@@ -50,7 +50,7 @@ public class CrosscuttingMembersSet {
 	private List typeMungers = null;
 	private List<ConcreteTypeMunger> lateTypeMungers = null;
 	private List declareSofts = null;
-	private List declareParents = null;
+	private List<DeclareParents> declareParents = null;
 	private List<DeclareAnnotation> declareAnnotationOnTypes = null;
 	private List<DeclareAnnotation> declareAnnotationOnFields = null;
 	private List<DeclareAnnotation> declareAnnotationOnMethods = null; // includes constructors
@@ -204,13 +204,13 @@ public class CrosscuttingMembersSet {
 		return declareSofts;
 	}
 
-	public List getDeclareParents() {
+	public List<DeclareParents> getDeclareParents() {
 		if (declareParents == null) {
-			Set ret = new HashSet();
+			Set<DeclareParents> ret = new HashSet<DeclareParents>();
 			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
 				ret.addAll(i.next().getDeclareParents());
 			}
-			declareParents = new ArrayList();
+			declareParents = new ArrayList<DeclareParents>();
 			declareParents.addAll(ret);
 		}
 		return declareParents;
