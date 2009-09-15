@@ -1396,5 +1396,15 @@ public abstract class World implements Dump.INode {
 	protected boolean isExpendable(ResolvedType type) {
 		return (!type.equals(UnresolvedType.OBJECT) && (!type.isExposedToWeaver()) && (!type.isPrimitiveType()));
 	}
+	
+
+	// map from aspect > excluded types
+	// memory issue here?
+	private Map<ResolvedType,Set<ResolvedType>> exclusionMap = new HashMap<ResolvedType,Set<ResolvedType>>();
+
+
+	public Map<ResolvedType,Set<ResolvedType>> getExclusionMap() {
+		return exclusionMap;
+	}
 
 }

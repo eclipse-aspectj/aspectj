@@ -16,9 +16,14 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.weaver.patterns.PerClause;
@@ -67,7 +72,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		this.end = end;
 		this.sourceContext = sourceContext;
 	}
-
+	
 	/**
 	 * All overriding methods should call super
 	 */
@@ -75,8 +80,24 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		if (world.isXmlConfigured() && world.isAspectIncluded(declaringType)) {
 			TypePattern scoped = world.getAspectScope(declaringType);
 			if (scoped != null) {
-				boolean b = scoped.matches(shadow.getEnclosingType().resolve(world), TypePattern.STATIC).alwaysTrue();
+				// Check the 'cached' exclusion map 
+				Set<ResolvedType> excludedTypes = world.getExclusionMap().get(declaringType);
+				ResolvedType type = shadow.getEnclosingType().resolve(world);
+				if (excludedTypes!=null && excludedTypes.contains(type)) {
+					return false;
+				}
+				boolean b = scoped.matches(type, TypePattern.STATIC).alwaysTrue();
 				if (!b) {
+					if (!world.getMessageHandler().isIgnoring(IMessage.INFO)) {
+						world.getMessageHandler().handleMessage(MessageUtil.info("Type '"+type.getName()+"' not woven by aspect '"+declaringType.getName()+"' due to scope exclusion in XML definition"));
+					}
+					if (excludedTypes==null) {
+						excludedTypes = new HashSet<ResolvedType>();
+						excludedTypes.add(type);
+						world.getExclusionMap().put(declaringType,excludedTypes);
+					} else {
+						excludedTypes.add(type);
+					}					
 					return false;
 				}
 			}
