@@ -64,7 +64,7 @@ import org.aspectj.apache.bcel.Constants;
  * This class is derived from the abstract <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class and
  * represents a reference to a Double object.
  * 
- * @version $Id: ConstantDouble.java,v 1.5 2009/09/10 15:35:04 aclement Exp $
+ * @version $Id: ConstantDouble.java,v 1.6 2009/09/16 00:43:49 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author Andy Clement
  */
@@ -74,10 +74,6 @@ public final class ConstantDouble extends Constant implements SimpleConstant {
 	public ConstantDouble(double value) {
 		super(Constants.CONSTANT_Double);
 		this.value = value;
-	}
-
-	public ConstantDouble(ConstantDouble c) {
-		this(c.getValue());
 	}
 
 	ConstantDouble(DataInputStream file) throws IOException {

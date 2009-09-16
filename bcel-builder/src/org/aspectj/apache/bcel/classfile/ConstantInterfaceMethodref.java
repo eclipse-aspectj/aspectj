@@ -62,14 +62,10 @@ import org.aspectj.apache.bcel.Constants;
 /**
  * This class represents a constant pool reference to an interface method.
  * 
- * @version $Id: ConstantInterfaceMethodref.java,v 1.4 2009/09/10 15:35:04 aclement Exp $
+ * @version $Id: ConstantInterfaceMethodref.java,v 1.5 2009/09/16 00:43:49 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class ConstantInterfaceMethodref extends ConstantCP {
-
-	public ConstantInterfaceMethodref(ConstantInterfaceMethodref c) {
-		super(Constants.CONSTANT_InterfaceMethodref, c.getClassIndex(), c.getNameAndTypeIndex());
-	}
 
 	ConstantInterfaceMethodref(DataInputStream file) throws IOException {
 		super(Constants.CONSTANT_InterfaceMethodref, file);

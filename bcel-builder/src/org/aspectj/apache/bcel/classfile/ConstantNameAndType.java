@@ -64,20 +64,13 @@ import org.aspectj.apache.bcel.Constants;
  * This class is derived from the abstract <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class and
  * represents a reference to the name and signature of a field or method.
  * 
- * @version $Id: ConstantNameAndType.java,v 1.4 2009/09/10 15:35:05 aclement Exp $
+ * @version $Id: ConstantNameAndType.java,v 1.5 2009/09/16 00:43:49 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Constant
  */
 public final class ConstantNameAndType extends Constant {
 	private int name_index; // Name of field/method
 	private int signature_index; // and its signature.
-
-	/**
-	 * Initialize from another object.
-	 */
-	public ConstantNameAndType(ConstantNameAndType c) {
-		this(c.getNameIndex(), c.getSignatureIndex());
-	}
 
 	/**
 	 * Initialize instance from file data.
@@ -151,23 +144,6 @@ public final class ConstantNameAndType extends Constant {
 		return cp.constantToString(getSignatureIndex(), Constants.CONSTANT_Utf8);
 	}
 
-	/**
-	 * @param name_index.
-	 */
-	public final void setNameIndex(int name_index) {
-		this.name_index = name_index;
-	}
-
-	/**
-	 * @param signature_index.
-	 */
-	public final void setSignatureIndex(int signature_index) {
-		this.signature_index = signature_index;
-	}
-
-	/**
-	 * @return String representation
-	 */
 	@Override
 	public final String toString() {
 		return super.toString() + "(name_index = " + name_index + ", signature_index = " + signature_index + ")";

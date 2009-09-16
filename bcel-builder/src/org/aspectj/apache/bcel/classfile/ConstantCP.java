@@ -62,7 +62,7 @@ import org.aspectj.apache.bcel.Constants;
 /**
  * Abstract super class for Fieldref and Methodref constants.
  * 
- * @version $Id: ConstantCP.java,v 1.4 2009/09/10 15:35:05 aclement Exp $
+ * @version $Id: ConstantCP.java,v 1.5 2009/09/16 00:43:49 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see ConstantFieldref
  * @see ConstantMethodref
@@ -71,10 +71,6 @@ import org.aspectj.apache.bcel.Constants;
 public abstract class ConstantCP extends Constant {
 
 	protected int classIndex, nameAndTypeIndex;
-
-	public ConstantCP(ConstantCP c) {
-		this(c.getTag(), c.getClassIndex(), c.getNameAndTypeIndex());
-	}
 
 	ConstantCP(byte tag, DataInputStream file) throws IOException {
 		this(tag, file.readUnsignedShort(), file.readUnsignedShort());

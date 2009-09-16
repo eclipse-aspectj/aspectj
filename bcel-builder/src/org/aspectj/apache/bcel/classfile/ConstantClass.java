@@ -64,16 +64,12 @@ import org.aspectj.apache.bcel.Constants;
  * This class is derived from the abstract <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class and
  * represents a reference to a (external) class.
  * 
- * @version $Id: ConstantClass.java,v 1.5 2009/09/10 15:35:05 aclement Exp $
+ * @version $Id: ConstantClass.java,v 1.6 2009/09/16 00:43:49 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author Andy Clement
  */
 public final class ConstantClass extends Constant {
 	private int nameIndex;
-
-	public ConstantClass(ConstantClass c) {
-		this(c.getNameIndex());
-	}
 
 	ConstantClass(DataInputStream file) throws IOException {
 		super(Constants.CONSTANT_Class);

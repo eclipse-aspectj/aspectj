@@ -64,7 +64,7 @@ import org.aspectj.apache.bcel.Constants;
  * This class is derived from the abstract <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class and
  * represents a reference to a float object.
  * 
- * @version $Id: ConstantFloat.java,v 1.4 2009/09/10 15:35:05 aclement Exp $
+ * @version $Id: ConstantFloat.java,v 1.5 2009/09/16 00:43:49 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Constant
  */
@@ -74,10 +74,6 @@ public final class ConstantFloat extends Constant implements SimpleConstant {
 	public ConstantFloat(float floatValue) {
 		super(Constants.CONSTANT_Float);
 		this.floatValue = floatValue;
-	}
-
-	public ConstantFloat(ConstantFloat c) {
-		this(c.getValue());
 	}
 
 	ConstantFloat(DataInputStream file) throws IOException {
@@ -102,14 +98,6 @@ public final class ConstantFloat extends Constant implements SimpleConstant {
 
 	public final String getStringValue() {
 		return Float.toString(floatValue);
-	}
-
-	public final float getFloatValue() {
-		return floatValue;
-	}
-
-	public final void setBytes(float bytes) {
-		this.floatValue = bytes;
 	}
 
 	@Override

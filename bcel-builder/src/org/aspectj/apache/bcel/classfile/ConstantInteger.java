@@ -64,7 +64,7 @@ import org.aspectj.apache.bcel.Constants;
  * This class is derived from the abstract <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class and
  * represents a reference to an int object.
  * 
- * @version $Id: ConstantInteger.java,v 1.4 2009/09/10 15:35:05 aclement Exp $
+ * @version $Id: ConstantInteger.java,v 1.5 2009/09/16 00:43:49 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Constant
  */
@@ -74,10 +74,6 @@ public final class ConstantInteger extends Constant implements SimpleConstant {
 	public ConstantInteger(int intValue) {
 		super(Constants.CONSTANT_Integer);
 		this.intValue = intValue;
-	}
-
-	public ConstantInteger(ConstantInteger c) {
-		this(c.getValue());
 	}
 
 	ConstantInteger(DataInputStream file) throws IOException {
@@ -93,10 +89,6 @@ public final class ConstantInteger extends Constant implements SimpleConstant {
 	public final void dump(DataOutputStream file) throws IOException {
 		file.writeByte(tag);
 		file.writeInt(intValue);
-	}
-
-	public final void setBytes(int bytes) {
-		this.intValue = bytes;
 	}
 
 	@Override
