@@ -69,7 +69,11 @@ public abstract class ExtensibleURLClassLoader extends URLClassLoader {
 		byte[] b = null;
 		ClassPathManager.ClassFile classFile = classPath.find(UnresolvedType.forName(name));
 		if (classFile != null) {
-			b = FileUtil.readAsByteArray(classFile.getInputStream());
+			try {
+				b = FileUtil.readAsByteArray(classFile.getInputStream());
+			} finally {
+				classFile.close();
+			}
 		}
 		return b;
 	}
