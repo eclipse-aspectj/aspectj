@@ -390,18 +390,22 @@ public class BcelWorld extends World implements Repository {
 			}
 		}
 
+		ClassPathManager.ClassFile file = null;
 		try {
-			ClassPathManager.ClassFile file = classPath.find(UnresolvedType.forName(name));
+			file = classPath.find(UnresolvedType.forName(name));
 			if (file == null)
 				return null;
 
 			ClassParser parser = new ClassParser(file.getInputStream(), file.getPath());
 
 			JavaClass jc = parser.parse();
-			file.close();
 			return jc;
 		} catch (IOException ioe) {
 			return null;
+		} finally {
+			if (file != null) {
+				file.close();			
+			}
 		}
 	}
 
