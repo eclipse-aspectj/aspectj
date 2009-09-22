@@ -18,6 +18,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc166Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testBinaryDecpSuperRewrite_290087() {
+		runTest("binary decp super rewrite");
+	}
+
 	public void testITDannos_288049() {
 		runTest("itd decanno");
 	}

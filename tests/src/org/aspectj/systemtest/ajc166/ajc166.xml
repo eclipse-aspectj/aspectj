@@ -39,6 +39,13 @@
      <compile files="" inpath="wibble.jar" options="-1.5"/>
   </ajc-test>
   
+  
+  <ajc-test dir="bugs166/pr290087" title="binary decp super rewrite">
+     <compile files="Bean.java BeanChild.java GenericParent.java" options="-1.5" outjar="base.jar"/>
+     <compile files="Interface.java InterfaceParent.java BeanHasInterface.java" inpath="base.jar" options="-1.5"/>
+     <run class="BeanChild"/>
+  </ajc-test>
+  
   <ajc-test dir="bugs166/pr287597" title="anno modifier ordering - 1">
      <compile files="A.java" options="-1.5 -showWeaveInfo">
        <message kind="weave" text="foo"/>
