@@ -131,10 +131,11 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		// TAG: WeavingMessage
 		if (changed && worthReporting && munger != null && !weaver.getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
 			String tName = weaver.getLazyClassGen().getType().getSourceLocation().getSourceFile().getName();
-			if (tName.indexOf("no debug info available") != -1)
+			if (tName.indexOf("no debug info available") != -1) {
 				tName = "no debug info available";
-			else
+			} else {
 				tName = getShortname(weaver.getLazyClassGen().getType().getSourceLocation().getSourceFile().getPath());
+			}
 			String fName = getShortname(getAspectType().getSourceLocation().getSourceFile().getPath());
 			if (munger.getKind().equals(ResolvedTypeMunger.Parent)) {
 				// This message could come out of AjLookupEnvironment.addParent
@@ -214,16 +215,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			ResolvedMember superMethod = (ResolvedMember) iter.next();
 			if (!superMethod.getName().equals("<init>")) {
 				LazyMethodGen subMethod = findMatchingMethod(newParentTarget, superMethod);
-				if (subMethod != null && !subMethod.isBridgeMethod()) { // FIXME
-					// asc
-					// is
-					// this
-					// safe
-					// for
-					// all
-					// bridge
-					// methods
-					// ?
+				// FIXME asc is this safe for all bridge methods?
+				if (subMethod != null && !subMethod.isBridgeMethod()) {
 					if (!(subMethod.isSynthetic() && superMethod.isSynthetic())) {
 						if (!(subMethod.isStatic() && subMethod.getName().startsWith("access$"))) { // ignore generated
 							// accessors
@@ -237,13 +230,15 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				}
 			}
 		}
-		if (!cont)
+		if (!cont) {
 			return false; // A rule was violated and an error message already
-		// reported
+			// reported
+		}
 
 		if (newParent.isClass()) { // Changing the supertype
-			if (!attemptToModifySuperCalls(weaver, newParentTarget, newParent))
+			if (!attemptToModifySuperCalls(weaver, newParentTarget, newParent)) {
 				return false;
+			}
 			newParentTarget.setSuperClass(newParent);
 		} else { // Adding a new interface
 			newParentTarget.addInterface(newParent, getSourceLocation());
@@ -459,17 +454,19 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	 * The main part of implementing declare parents extends. Modify super ctor calls to target the new type.
 	 */
 	public boolean attemptToModifySuperCalls(BcelClassWeaver weaver, LazyClassGen newParentTarget, ResolvedType newParent) {
-		String currentParent = newParentTarget.getSuperClass().getName();// getName();
-		if (newParent.getGenericType() != null)
+		ResolvedType currentParentType = newParentTarget.getSuperClass();
+		if (currentParentType.getGenericType() != null) {
+			currentParentType = currentParentType.getGenericType();
+		}
+		String currentParent = currentParentType.getName();
+		if (newParent.getGenericType() != null) {
 			newParent = newParent.getGenericType(); // target new super calls at
-		// the generic type if its
-		// raw or parameterized
-		List mgs = newParentTarget.getMethodGens();
+		}
+		// the generic type if its raw or parameterized
+		List<LazyMethodGen> mgs = newParentTarget.getMethodGens();
 
 		// Look for ctors to modify
-		for (Iterator iter = mgs.iterator(); iter.hasNext();) {
-			LazyMethodGen aMethod = (LazyMethodGen) iter.next();
-
+		for (LazyMethodGen aMethod : mgs) {
 			if (aMethod.getName().equals("<init>")) {
 				InstructionList insList = aMethod.getBody();
 				InstructionHandle handle = insList.getStart();
@@ -479,9 +476,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 						InvokeInstruction invokeSpecial = (InvokeInstruction) handle.getInstruction();
 						if (invokeSpecial.getClassName(cpg).equals(currentParent)
 								&& invokeSpecial.getMethodName(cpg).equals("<init>")) {
-							// System.err.println(
-							// "Transforming super call '<init>"
-							// +sp.getSignature(cpg)+"'");
+							// System.err.println("Transforming super call '<init>" + invokeSpecial.getSignature(cpg) + "'");
 
 							// 1. Check there is a ctor in the new parent with
 							// the same signature
@@ -489,8 +484,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 							if (newCtor == null) {
 
-								// 2. Check ITDCs to see if the necessary ctor
-								// is provided that way
+								// 2. Check ITDCs to see if the necessary ctor is provided that way
 								boolean satisfiedByITDC = false;
 								for (Iterator ii = newParentTarget.getType().getInterTypeMungersIncludingSupers().iterator(); ii
 										.hasNext()
@@ -534,12 +528,14 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		sb.append("(");
 		for (int i = 0; i < ctorArgs.length; i++) {
 			String argtype = ctorArgs[i].toString();
-			if (argtype.lastIndexOf(".") != -1)
+			if (argtype.lastIndexOf(".") != -1) {
 				sb.append(argtype.substring(argtype.lastIndexOf(".") + 1));
-			else
+			} else {
 				sb.append(argtype);
-			if (i + 1 < ctorArgs.length)
+			}
+			if (i + 1 < ctorArgs.length) {
 				sb.append(",");
+			}
 		}
 		sb.append(")");
 		return sb.toString();
@@ -550,8 +546,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		for (int i = 0; i < mems.length; i++) {
 			ResolvedMember rm = mems[i];
 			if (rm.getName().equals("<init>")) {
-				if (rm.getSignature().equals(signature))
+				if (rm.getSignature().equals(signature)) {
 					return rm;
+				}
 			}
 		}
 		return null;
@@ -562,8 +559,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		ResolvedMember member = munger.getMember();
 
 		ResolvedType onType = weaver.getWorld().resolve(member.getDeclaringType(), munger.getSourceLocation());
-		if (onType.isRawType())
+		if (onType.isRawType()) {
 			onType = onType.getGenericType();
+		}
 
 		// System.out.println("munging: " + gen + " with " + member);
 		if (onType.equals(gen.getType())) {
@@ -930,12 +928,14 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				if (classWeaver.getWorld().isInJava5Mode()) {
 					AnnotationAJ annotationsOnRealMember[] = null;
 					ResolvedType toLookOn = aspectType;
-					if (aspectType.isRawType())
+					if (aspectType.isRawType()) {
 						toLookOn = aspectType.getGenericType();
+					}
 					ResolvedMember realMember = getRealMemberForITDFromAspect(toLookOn, memberHoldingAnyAnnotations, false);
-					if (realMember == null)
+					if (realMember == null) {
 						throw new BCException("Couldn't find ITD holder member '" + memberHoldingAnyAnnotations + "' on aspect "
 								+ aspectType);
+					}
 					annotationsOnRealMember = realMember.getAnnotations();
 
 					if (annotationsOnRealMember != null) {
@@ -1014,13 +1014,15 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			ResolvedMember mungerSignature = munger.getSignature();
 			ResolvedMember toBridgeTo = munger.getDeclaredSignature().parameterizedWith(null,
 					mungerSignature.getDeclaringType().resolve(getWorld()), false, munger.getTypeVariableAliases());
-			if (!toBridgeTo.getReturnType().getErasureSignature().equals(mungerSignature.getReturnType().getErasureSignature()))
+			if (!toBridgeTo.getReturnType().getErasureSignature().equals(mungerSignature.getReturnType().getErasureSignature())) {
 				needsbridging = true;
+			}
 			UnresolvedType[] originalParams = toBridgeTo.getParameterTypes();
 			UnresolvedType[] newParams = mungerSignature.getParameterTypes();
 			for (int ii = 0; ii < originalParams.length; ii++) {
-				if (!originalParams[ii].getErasureSignature().equals(newParams[ii].getErasureSignature()))
+				if (!originalParams[ii].getErasureSignature().equals(newParams[ii].getErasureSignature())) {
 					needsbridging = true;
+				}
 			}
 			if (needsbridging) {
 				createBridge(classWeaver, unMangledInterMethod, classGen, toBridgeTo);
@@ -1123,8 +1125,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			ResolvedMember member = localMethods[i];
 			if (member.getName().equals(localMethodName)) {
 				// Check the params
-				if (member.getParameterSignature().equals(localParameterSig))
+				if (member.getParameterSignature().equals(localParameterSig)) {
 					alreadyDone = true;
+				}
 			}
 		}
 
@@ -1431,8 +1434,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			if (member.getName().equals(lookingFor.getName())) {
 				UnresolvedType[] memberParams = member.getGenericParameterTypes();
 				if (memberParams.length == lookingForParams.length) {
-					if (debug)
+					if (debug) {
 						System.err.println("Reviewing potential candidates: " + member);
+					}
 					boolean matchOK = true;
 					// If not related to a ctor ITD then the name is enough to
 					// confirm we have the
@@ -1444,32 +1448,39 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 							ResolvedType pMember = memberParams[j].resolve(world);
 							ResolvedType pLookingFor = lookingForParams[j].resolve(world);
 
-							if (pMember.isTypeVariableReference())
+							if (pMember.isTypeVariableReference()) {
 								pMember = ((TypeVariableReference) pMember).getTypeVariable().getFirstBound().resolve(world);
-							if (pMember.isParameterizedType() || pMember.isGenericType())
+							}
+							if (pMember.isParameterizedType() || pMember.isGenericType()) {
 								pMember = pMember.getRawType().resolve(aspectType.getWorld());
+							}
 
-							if (pLookingFor.isTypeVariableReference())
+							if (pLookingFor.isTypeVariableReference()) {
 								pLookingFor = ((TypeVariableReference) pLookingFor).getTypeVariable().getFirstBound()
 										.resolve(world);
-							if (pLookingFor.isParameterizedType() || pLookingFor.isGenericType())
+							}
+							if (pLookingFor.isParameterizedType() || pLookingFor.isGenericType()) {
 								pLookingFor = pLookingFor.getRawType().resolve(world);
+							}
 
-							if (debug)
+							if (debug) {
 								System.err.println("Comparing parameter " + j + "   member=" + pMember + "   lookingFor="
 										+ pLookingFor);
+							}
 							if (!pMember.equals(pLookingFor)) {
 								matchOK = false;
 							}
 						}
 					}
-					if (matchOK)
+					if (matchOK) {
 						realMember = member;
+					}
 				}
 			}
 		}
-		if (debug && realMember == null)
+		if (debug && realMember == null) {
 			System.err.println("Didn't find a match");
+		}
 		return realMember;
 	}
 
@@ -1483,10 +1494,11 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				// superMethod.getDeclaringType() + ", " + gen.getType());
 				boolean isSuper = !superMethod.getDeclaringType().equals(gen.getType());
 				String dispatchName;
-				if (isSuper)
+				if (isSuper) {
 					dispatchName = NameMangler.superDispatchMethod(onType, superMethod.getName());
-				else
+				} else {
 					dispatchName = NameMangler.protectedDispatchMethod(onType, superMethod.getName());
+				}
 				superMethod = superMethod.resolve(weaver.getWorld());
 				LazyMethodGen dispatcher = makeDispatcher(gen, dispatchName, superMethod, weaver.getWorld(), isSuper);
 
@@ -1517,8 +1529,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 		ResolvedMember newConstructorMember = newConstructorTypeMunger.getSyntheticConstructor();
 		ResolvedType onType = newConstructorMember.getDeclaringType().resolve(weaver.getWorld());
-		if (onType.isRawType())
+		if (onType.isRawType()) {
 			onType = onType.getGenericType();
+		}
 
 		if (onType.isAnnotation()) {
 			signalError(WeaverMessages.ITDC_ON_ANNOTATION_NOT_ALLOWED, weaver, onType);
@@ -1530,8 +1543,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			return false;
 		}
 
-		if (!onType.equals(currentClass.getType()))
+		if (!onType.equals(currentClass.getType())) {
 			return false;
+		}
 
 		ResolvedMember explicitConstructor = newConstructorTypeMunger.getExplicitConstructor();
 		// int declaredParameterCount =
@@ -1662,15 +1676,17 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		Type returnType = BcelWorld.makeBcelType(superMethod.getReturnType());
 
 		int modifiers = Modifier.PUBLIC;
-		if (onGen.isInterface())
+		if (onGen.isInterface()) {
 			modifiers |= Modifier.ABSTRACT;
+		}
 
 		LazyMethodGen mg = new LazyMethodGen(modifiers, returnType, dispatchName, paramTypes, UnresolvedType.getNames(superMethod
 				.getExceptions()), onGen);
 		InstructionList body = mg.getBody();
 
-		if (onGen.isInterface())
+		if (onGen.isInterface()) {
 			return mg;
+		}
 
 		// assert (!superMethod.isStatic())
 		InstructionFactory fact = onGen.getFactory();
@@ -1699,8 +1715,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		ResolvedMember field = munger.getSignature();
 
 		ResolvedType onType = weaver.getWorld().resolve(field.getDeclaringType(), munger.getSourceLocation());
-		if (onType.isRawType())
+		if (onType.isRawType()) {
 			onType = onType.getGenericType();
+		}
 
 		boolean onInterface = onType.isInterface();
 
@@ -1775,8 +1792,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		} else if (onInterface && gen.getType().isTopmostImplementor(onType)) {
 			// wew know that we can't be static since we don't allow statics on
 			// interfaces
-			if (field.isStatic())
+			if (field.isStatic()) {
 				throw new RuntimeException("unimplemented");
+			}
 			weaver.addInitializer(this);
 			// System.err.println("impl body on " + gen.getType() + " for " +
 			// munger);
@@ -1823,8 +1841,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 						munger.getSignature().getDeclaringType().resolve(getWorld()), false, munger.getTypeVariableAliases());
 				boolean needsbridging = false;
 				if (!toBridgeTo.getReturnType().getErasureSignature().equals(
-						munger.getSignature().getReturnType().getErasureSignature()))
+						munger.getSignature().getReturnType().getErasureSignature())) {
 					needsbridging = true;
+				}
 				if (needsbridging) {
 					ResolvedMember bridgingGetter = AjcMemberMaker.interFieldInterfaceGetter(toBridgeTo, gen.getType(), aspectType);
 					createBridgeMethodForITDF(weaver, gen, itdfieldGetter, bridgingGetter);
@@ -1920,8 +1939,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof BcelTypeMunger))
+		if (!(other instanceof BcelTypeMunger)) {
 			return false;
+		}
 		BcelTypeMunger o = (BcelTypeMunger) other;
 		return ((o.getMunger() == null) ? (getMunger() == null) : o.getMunger().equals(getMunger()))
 				&& ((o.getAspectType() == null) ? (getAspectType() == null) : o.getAspectType().equals(getAspectType()));
