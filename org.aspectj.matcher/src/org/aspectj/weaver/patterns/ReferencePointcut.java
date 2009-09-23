@@ -151,8 +151,9 @@ public class ReferencePointcut extends Pointcut {
 		if (pointcutDef == null && onType == null) {
 			while (true) {
 				UnresolvedType declaringType = searchType.getDeclaringType();
-				if (declaringType == null)
+				if (declaringType == null) {
 					break;
+				}
 				searchType = declaringType.resolve(scope.getWorld());
 				pointcutDef = searchType.findPointcut(name);
 				if (pointcutDef != null) {
@@ -291,8 +292,9 @@ public class ReferencePointcut extends Pointcut {
 
 			}
 
-			if (declaringType == null)
+			if (declaringType == null) {
 				declaringType = searchStart;
+			}
 			pointcutDec = declaringType.findPointcut(name);
 			boolean foundMatchingPointcut = (pointcutDec != null && pointcutDec.isPrivate());
 			if (!foundMatchingPointcut) {
@@ -323,8 +325,9 @@ public class ReferencePointcut extends Pointcut {
 			IntMap newBindings = new IntMap();
 			for (int i = 0, len = arguments.size(); i < len; i++) {
 				TypePattern p = arguments.get(i);
-				if (p == TypePattern.NO)
+				if (p == TypePattern.NO) {
 					continue;
+				}
 				// we are allowed to bind to pointcuts which use subtypes as this is type safe
 				// this will be checked in ReferencePointcut.resolveBindings(). Can't check it here
 				// as we don't know about any new parents added via decp.
@@ -381,10 +384,12 @@ public class ReferencePointcut extends Pointcut {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof ReferencePointcut))
+		if (!(other instanceof ReferencePointcut)) {
 			return false;
-		if (this == other)
+		}
+		if (this == other) {
 			return true;
+		}
 		ReferencePointcut o = (ReferencePointcut) other;
 		return o.name.equals(name) && o.arguments.equals(arguments)
 				&& ((o.onType == null) ? (onType == null) : o.onType.equals(onType));
