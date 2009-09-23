@@ -2,6 +2,51 @@
 
 <suite>
 
+  <ajc-test dir="bugs166/pr286473" title="parents ltw - binary">
+    <compile files="Anno.java Top.java Middle.java Bottom.java" outjar="code.jar" options="-1.5 -Xlint:ignore"/>
+    <compile files="Mark.java LTWTest.java" inpath="code.jar" options="-1.5 -showWeaveInfo">
+    	<message kind="weave" text="Type 'Mark$IMarker' (Mark.java) has intertyped method from 'Mark' (Mark.java:'java.lang.String Mark$IMarker.markMethod()')"/>
+		<message kind="weave" text="Extending interface set for type 'Top' (Top.java) to include 'Mark$IMarker' (Mark.java)"/>
+		<message kind="weave" text="Type 'Top' (Top.java) has intertyped method from 'Mark' (Mark.java:'java.lang.String Mark$IMarker.markMethod()')"/>
+    </compile>
+    <run class="LTWTest">
+      <stdout>
+        <line text="Bottom.getMethods()"/>
+        <line text="bottom : Bottom"/>
+        <line text="markMethod : Top"/>
+        <line text="middle : Middle"/>
+      </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs166/pr286473" title="parents ltw - ltw">
+    <compile files="Anno.java Top.java Middle.java Bottom.java" outjar="code.jar" options="-1.5 -Xlint:ignore"/>
+    <compile files="Mark.java LTWTest.java" classpath="code.jar" options="-1.5">
+    </compile>
+    <run class="LTWTest" ltw="aop.xml">
+      <stderr>
+        <line text="Extending interface set for type 'Top' (Top.java) to include 'Mark$IMarker' (Mark.java)"/>
+        <line text="Type 'Top' (Top.java) has intertyped method from 'Mark' (Mark.java:'java.lang.String Mark$IMarker.markMethod()')"/>
+        <line text="Type 'Mark$IMarker' (Mark.java) has intertyped method from 'Mark' (Mark.java:'java.lang.String Mark$IMarker.markMethod()')"/>
+<!--
+        <line text="Extending interface set for type 'Bottom' (Bottom.java) to include 'Mark$IMarker' (Mark.java)"/>
+        <line text="Type 'Bottom' (Bottom.java) has intertyped method from 'Mark' (Mark.java:'java.lang.String Mark$IMarker.markMethod()')"/>
+        <line text="Type 'Mark$IMarker' (Mark.java) has intertyped method from 'Mark' (Mark.java:'java.lang.String Mark$IMarker.markMethod()')"/>
+        <line text="Extending interface set for type 'Middle' (Middle.java) to include 'Mark$IMarker' (Mark.java)"/>
+        <line text="Type 'Middle' (Middle.java) has intertyped method from 'Mark' (Mark.java:'java.lang.String Mark$IMarker.markMethod()')"/>
+        <line text="Extending interface set for type 'Top' (Top.java) to include 'Mark$IMarker' (Mark.java)"/>
+        <line text="Type 'Top' (Top.java) has intertyped method from 'Mark' (Mark.java:'java.lang.String Mark$IMarker.markMethod()')"/>
+        -->
+      </stderr>
+      <stdout>
+        <line text="Bottom.getMethods()"/>
+        <line text="bottom : Bottom"/>
+        <line text="markMethod : Top"/>
+        <line text="middle : Middle"/>
+      </stdout>
+    </run>
+  </ajc-test>
+
   <ajc-test dir="bugs166/pr290227" title="npe for javac built">
     <compile files="" inpath="javacCode.jar" options="-1.5 -Xlint:ignore"/>
   </ajc-test>

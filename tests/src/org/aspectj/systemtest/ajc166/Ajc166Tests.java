@@ -18,6 +18,14 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc166Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testParentsLTW_286473_binary() {
+		runTest("parents ltw - binary");
+	}
+
+	public void testParentsLTW_286473_ltw() {
+		runTest("parents ltw - ltw");
+	}
+
 	public void testNpeForJavacBuilt_290227() {
 		runTest("npe for javac built");
 	}
