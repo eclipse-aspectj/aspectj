@@ -2,6 +2,10 @@
 
 <suite>
 
+  <ajc-test dir="bugs166/pr290227" title="npe for javac built">
+    <compile files="" inpath="javacCode.jar" options="-1.5 -Xlint:ignore"/>
+  </ajc-test>
+  
   <ajc-test dir="bugs166/pr288049" title="itd decanno">
      <compile files="org/othtests/MyClass.java org/othtests/MySubClass.java org/othtests/AddSomeAnnotation.java" options="-1.5 -showWeaveInfo">
      <message kind="weave" text="'public java.lang.String org.othtests.MySubClass.doOne()' (MySubClass.java:5) is annotated with"/>
