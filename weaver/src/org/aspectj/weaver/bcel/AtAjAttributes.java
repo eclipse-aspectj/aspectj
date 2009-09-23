@@ -32,8 +32,8 @@ import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.ClassElementValue;
-import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisAnnos;
 import org.aspectj.apache.bcel.generic.Type;
@@ -215,8 +215,9 @@ public class AtAjAttributes {
 				}
 			}
 		}
-		if (!containsAnnotationClassReference)
+		if (!containsAnnotationClassReference) {
 			return NO_ATTRIBUTES;
+		}
 
 		AjAttributeStruct struct = new AjAttributeStruct(type, context, msgHandler);
 		Attribute[] attributes = javaClass.getAttributes();
@@ -292,8 +293,9 @@ public class AtAjAttributes {
 
 		for (int i = 0; i < javaClass.getMethods().length; i++) {
 			Method method = javaClass.getMethods()[i];
-			if (method.getName().startsWith(NameMangler.PREFIX))
+			if (method.getName().startsWith(NameMangler.PREFIX)) {
 				continue; // already dealt with by ajc...
+			}
 			// FIXME alex optimize, this method struct will gets recreated for
 			// advice extraction
 			AjAttributeMethodStruct mstruct = null;
@@ -327,8 +329,9 @@ public class AtAjAttributes {
 		Field[] fs = javaClass.getFields();
 		for (int i = 0; i < fs.length; i++) {
 			Field field = fs[i];
-			if (field.getName().startsWith(NameMangler.PREFIX))
+			if (field.getName().startsWith(NameMangler.PREFIX)) {
 				continue; // already dealt with by ajc...
+			}
 			// FIXME alex optimize, this method struct will gets recreated for
 			// advice extraction
 			AjAttributeFieldStruct fstruct = new AjAttributeFieldStruct(field, null, type, context, msgHandler);
@@ -369,8 +372,9 @@ public class AtAjAttributes {
 	 */
 	public static List<AjAttribute> readAj5MethodAttributes(Method method, BcelMethod bMethod, ResolvedType type,
 			ResolvedPointcutDefinition preResolvedPointcut, ISourceContext context, IMessageHandler msgHandler) {
-		if (method.getName().startsWith(NameMangler.PREFIX))
+		if (method.getName().startsWith(NameMangler.PREFIX)) {
 			return Collections.emptyList(); // already dealt with by ajc...
+		}
 
 		AjAttributeMethodStruct struct = new AjAttributeMethodStruct(method, bMethod, type, context, msgHandler);
 		Attribute[] attributes = method.getAttributes();
@@ -1023,8 +1027,9 @@ public class AtAjAttributes {
 					// pc.resolve(binding);
 				} else {
 					pc = parsePointcut(beforeAdvice.getValue().stringifyValue(), struct, false);
-					if (pc == null)
+					if (pc == null) {
 						return false;// parse error
+					}
 					pc = pc.resolve(binding);
 				}
 				setIgnoreUnboundBindingNames(pc, bindings);
@@ -1074,8 +1079,9 @@ public class AtAjAttributes {
 					pc = preResolvedPointcut.getPointcut();
 				} else {
 					pc = parsePointcut(afterAdvice.getValue().stringifyValue(), struct, false);
-					if (pc == null)
+					if (pc == null) {
 						return false;// parse error
+					}
 					pc.resolve(binding);
 				}
 				setIgnoreUnboundBindingNames(pc, bindings);
@@ -1164,8 +1170,9 @@ public class AtAjAttributes {
 				pc = preResolvedPointcut.getPointcut();
 			} else {
 				pc = parsePointcut(pointcut, struct, false);
-				if (pc == null)
+				if (pc == null) {
 					return false;// parse error
+				}
 				pc.resolve(binding);
 			}
 			setIgnoreUnboundBindingNames(pc, bindings);
@@ -1253,8 +1260,9 @@ public class AtAjAttributes {
 				pc = preResolvedPointcut.getPointcut();
 			} else {
 				pc = parsePointcut(pointcut, struct, false);
-				if (pc == null)
+				if (pc == null) {
 					return false;// parse error
+				}
 				pc.resolve(binding);
 			}
 			setIgnoreUnboundBindingNames(pc, bindings);
@@ -1302,8 +1310,9 @@ public class AtAjAttributes {
 					pc = preResolvedPointcut.getPointcut();
 				} else {
 					pc = parsePointcut(aroundAdvice.getValue().stringifyValue(), struct, false);
-					if (pc == null)
+					if (pc == null) {
 						return false;// parse error
+					}
 					pc.resolve(binding);
 				}
 				setIgnoreUnboundBindingNames(pc, bindings);
@@ -1328,8 +1337,9 @@ public class AtAjAttributes {
 	 */
 	private static boolean handlePointcutAnnotation(RuntimeAnnos runtimeAnnotations, AjAttributeMethodStruct struct) {
 		AnnotationGen pointcut = getAnnotation(runtimeAnnotations, AjcMemberMaker.POINTCUT_ANNOTATION);
-		if (pointcut == null)
+		if (pointcut == null) {
 			return false;
+		}
 		NameValuePair pointcutExpr = getAnnotationElement(pointcut, VALUE);
 
 		// semantic check: the method must return void, or be
@@ -1387,8 +1397,9 @@ public class AtAjAttributes {
 				// since for it to be resolved, we will need other pointcuts to
 				// be registered as well
 				pc = parsePointcut(pointcutExpr.getValue().stringifyValue(), struct, true);
-				if (pc == null)
+				if (pc == null) {
 					return false;// parse error
+				}
 				pc.setLocation(struct.context, -1, -1);// FIXME AVASM !! bMethod
 				// is null here..
 				// } else {
@@ -1669,10 +1680,11 @@ public class AtAjAttributes {
 
 	private static String lastbit(String fqname) {
 		int i = fqname.lastIndexOf(".");
-		if (i == -1)
+		if (i == -1) {
 			return fqname;
-		else
+		} else {
 			return fqname.substring(i + 1);
+		}
 	}
 
 	/**
@@ -1718,8 +1730,9 @@ public class AtAjAttributes {
 						shortString.append("(");
 						for (int i = 0; i < method.getArgumentTypes().length; i++) {
 							shortString.append(lastbit(method.getArgumentTypes()[i].toString()));
-							if ((i + 1) < method.getArgumentTypes().length)
+							if ((i + 1) < method.getArgumentTypes().length) {
 								shortString.append(",");
+							}
 
 						}
 						shortString.append(")");
@@ -1795,6 +1808,9 @@ public class AtAjAttributes {
 
 		@Override
 		public Pointcut getPointcut() {
+			if (m_lazyPointcut == null && m_pointcutUnresolved == null) {
+				m_lazyPointcut = Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
+			}
 			if (m_lazyPointcut == null && m_pointcutUnresolved != null) {
 				m_lazyPointcut = m_pointcutUnresolved.resolve(m_binding);
 				m_lazyPointcut.copyLocationFrom(m_pointcutUnresolved);
