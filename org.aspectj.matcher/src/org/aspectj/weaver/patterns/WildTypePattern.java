@@ -101,8 +101,9 @@ public class WildTypePattern extends TypePattern {
 		this.dim = dim;
 		ellipsisCount = 0;
 		for (int i = 0; i < namePatterns.length; i++) {
-			if (namePatterns[i] == NamePattern.ELLIPSIS)
+			if (namePatterns[i] == NamePattern.ELLIPSIS) {
 				ellipsisCount++;
+			}
 		}
 		setLocation(namePatterns[0].getSourceContext(), namePatterns[0].getStart(), namePatterns[namePatterns.length - 1].getEnd());
 	}
@@ -154,10 +155,12 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	// called by parser after parsing a type pattern, must bump dim as well as setting flag
+	@Override
 	public void setIsVarArgs(boolean isVarArgs) {
 		this.isVarArgs = isVarArgs;
-		if (isVarArgs)
+		if (isVarArgs) {
 			this.dim += 1;
+		}
 	}
 
 	/*
@@ -165,15 +168,18 @@ public class WildTypePattern extends TypePattern {
 	 * 
 	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
 	 */
+	@Override
 	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
-		if (super.couldEverMatchSameTypesAs(other))
+		if (super.couldEverMatchSameTypesAs(other)) {
 			return true;
+		}
 		// false is necessary but not sufficient
 		UnresolvedType otherType = other.getExactType();
 		if (!ResolvedType.isMissing(otherType)) {
 			if (namePatterns.length > 0) {
-				if (!namePatterns[0].matches(otherType.getName()))
+				if (!namePatterns[0].matches(otherType.getName())) {
 					return false;
+				}
 			}
 		}
 		if (other instanceof WildTypePattern) {
@@ -196,10 +202,12 @@ public class WildTypePattern extends TypePattern {
 		int startIndex = 0;
 		while (true) {
 			int breakIndex = s.indexOf('.', startIndex); // what about /
-			if (convertDollar && (breakIndex == -1))
+			if (convertDollar && (breakIndex == -1)) {
 				breakIndex = s.indexOf('$', startIndex); // we treat $ like . here
-			if (breakIndex == -1)
+			}
+			if (breakIndex == -1) {
 				break;
+			}
 			char[] name = s.substring(startIndex, breakIndex).toCharArray();
 			ret.add(name);
 			startIndex = breakIndex + 1;
@@ -211,10 +219,12 @@ public class WildTypePattern extends TypePattern {
 	/**
 	 * @see org.aspectj.weaver.TypePattern#matchesExactly(IType)
 	 */
+	@Override
 	protected boolean matchesExactly(ResolvedType type) {
 		return matchesExactly(type, type);
 	}
 
+	@Override
 	protected boolean matchesExactly(ResolvedType type, ResolvedType annotatedType) {
 		String targetTypeName = type.getName();
 
@@ -231,8 +241,9 @@ public class WildTypePattern extends TypePattern {
 	// type variables we need to make sure we match against them too
 	private boolean matchesParameters(ResolvedType aType, MatchKind staticOrDynamic) {
 		if (!isGeneric && typeParameters.size() > 0) {
-			if (!aType.isParameterizedType())
+			if (!aType.isParameterizedType()) {
 				return false;
+			}
 			// we have to match type parameters
 			return typeParameters.matches(aType.getResolvedTypeParameters(), staticOrDynamic).alwaysTrue();
 		}
@@ -242,8 +253,9 @@ public class WildTypePattern extends TypePattern {
 	// we've matched against the base (or raw) type, but if this type pattern specifies bounds because
 	// it is a ? extends or ? super deal then we have to match them too.
 	private boolean matchesBounds(ResolvedType aType, MatchKind staticOrDynamic) {
-		if (!(aType instanceof BoundedReferenceType))
+		if (!(aType instanceof BoundedReferenceType)) {
 			return true;
+		}
 		BoundedReferenceType boundedRT = (BoundedReferenceType) aType;
 		if (upperBound == null && boundedRT.getUpperBound() != null) {
 			// for upper bound, null can also match against Object - but anything else and we're out.
@@ -251,20 +263,24 @@ public class WildTypePattern extends TypePattern {
 				return false;
 			}
 		}
-		if (lowerBound == null && boundedRT.getLowerBound() != null)
+		if (lowerBound == null && boundedRT.getLowerBound() != null) {
 			return false;
+		}
 		if (upperBound != null) {
 			// match ? extends
-			if (aType.isGenericWildcard() && boundedRT.isSuper())
+			if (aType.isGenericWildcard() && boundedRT.isSuper()) {
 				return false;
-			if (boundedRT.getUpperBound() == null)
+			}
+			if (boundedRT.getUpperBound() == null) {
 				return false;
+			}
 			return upperBound.matches((ResolvedType) boundedRT.getUpperBound(), staticOrDynamic).alwaysTrue();
 		}
 		if (lowerBound != null) {
 			// match ? super
-			if (!(boundedRT.isGenericWildcard() && boundedRT.isSuper()))
+			if (!(boundedRT.isGenericWildcard() && boundedRT.isSuper())) {
 				return false;
+			}
 			return lowerBound.matches((ResolvedType) boundedRT.getLowerBound(), staticOrDynamic).alwaysTrue();
 		}
 		return true;
@@ -277,6 +293,7 @@ public class WildTypePattern extends TypePattern {
 		return dim;
 	}
 
+	@Override
 	public boolean isArray() {
 		return dim > 1;
 	}
@@ -324,8 +341,9 @@ public class WildTypePattern extends TypePattern {
 				return false;
 			}
 			for (int i = 0, len = knownMatches.length; i < len; i++) {
-				if (knownMatches[i].equals(targetTypeName))
+				if (knownMatches[i].equals(targetTypeName)) {
 					return true;
+				}
 			}
 		} else {
 			for (int i = 0, len = knownMatches.length; i < len; i++) {
@@ -367,10 +385,12 @@ public class WildTypePattern extends TypePattern {
 		int startIndex = 0;
 		while (true) {
 			int breakIndex = s.indexOf('.', startIndex); // what about /
-			if (convertDollar && (breakIndex == -1))
+			if (convertDollar && (breakIndex == -1)) {
 				breakIndex = s.indexOf('$', startIndex); // we treat $ like . here
-			if (breakIndex == -1)
+			}
+			if (breakIndex == -1) {
 				break;
+			}
 			char[] name = s.substring(startIndex, breakIndex).toCharArray();
 			ret.add(name);
 			startIndex = breakIndex + 1;
@@ -383,12 +403,14 @@ public class WildTypePattern extends TypePattern {
 		int namesIndex = 0;
 		int patternsIndex = 0;
 
-		if ((!namePatterns[patternsLength - 1].isAny()) && isAnonymous)
+		if ((!namePatterns[patternsLength - 1].isAny()) && isAnonymous) {
 			return false;
+		}
 
 		if (ellipsisCount == 0) {
-			if (namesLength != patternsLength)
+			if (namesLength != patternsLength) {
 				return false;
+			}
 			while (patternsIndex < patternsLength) {
 				if (!namePatterns[patternsIndex++].matches((char[]) ret.get(namesIndex++))) {
 					return false;
@@ -396,8 +418,9 @@ public class WildTypePattern extends TypePattern {
 			}
 			return true;
 		} else if (ellipsisCount == 1) {
-			if (namesLength < patternsLength - 1)
+			if (namesLength < patternsLength - 1) {
 				return false;
+			}
 			while (patternsIndex < patternsLength) {
 				NamePattern p = namePatterns[patternsIndex++];
 				if (p == NamePattern.ELLIPSIS) {
@@ -420,12 +443,14 @@ public class WildTypePattern extends TypePattern {
 
 	private static boolean outOfStar(final NamePattern[] pattern, final char[][] target, int pi, int ti, int pLeft, int tLeft,
 			final int starsLeft) {
-		if (pLeft > tLeft)
+		if (pLeft > tLeft) {
 			return false;
+		}
 		while (true) {
 			// invariant: if (tLeft > 0) then (ti < target.length && pi < pattern.length)
-			if (tLeft == 0)
+			if (tLeft == 0) {
 				return true;
+			}
 			if (pLeft == 0) {
 				return (starsLeft > 0);
 			}
@@ -454,11 +479,13 @@ public class WildTypePattern extends TypePattern {
 		}
 		while (true) {
 			// invariant: if (tLeft > 0) then (ti < target.length)
-			if (pLeft > tLeft)
+			if (pLeft > tLeft) {
 				return false;
+			}
 			if (patternChar.matches(target[ti])) {
-				if (outOfStar(pattern, target, pi + 1, ti + 1, pLeft - 1, tLeft - 1, starsLeft))
+				if (outOfStar(pattern, target, pi + 1, ti + 1, pLeft - 1, tLeft - 1, starsLeft)) {
 					return true;
+				}
 			}
 			ti++;
 			tLeft--;
@@ -468,6 +495,7 @@ public class WildTypePattern extends TypePattern {
 	/**
 	 * @see org.aspectj.weaver.TypePattern#matchesInstanceof(IType)
 	 */
+	@Override
 	public FuzzyBoolean matchesInstanceof(ResolvedType type) {
 		// XXX hack to let unmatched types just silently remain so
 		if (maybeGetSimpleName() != null) {
@@ -487,8 +515,9 @@ public class WildTypePattern extends TypePattern {
 		}
 		// System.err.println("extract from : " + Arrays.asList(namePatterns));
 		int len = namePatterns.length;
-		if (len == 1 && !annotationPattern.isAny())
+		if (len == 1 && !annotationPattern.isAny()) {
 			return null; // can't extract
+		}
 		NamePattern ret = namePatterns[len - 1];
 		NamePattern[] newNames = new NamePattern[len - 1];
 		System.arraycopy(namePatterns, 0, newNames, 0, len - 1);
@@ -538,16 +567,19 @@ public class WildTypePattern extends TypePattern {
 		for (int i = 0, len = namePatterns.length; i < len; i++) {
 			NamePattern p = namePatterns[i];
 			String simpleName = p.maybeGetSimpleName();
-			if (simpleName == null)
+			if (simpleName == null) {
 				return null;
-			if (i > 0)
+			}
+			if (i > 0) {
 				buf.append(".");
+			}
 			buf.append(simpleName);
 		}
 		// System.out.println(buf);
 		return buf.toString();
 	}
 
+	@Override
 	public TypePattern parameterizeWith(Map typeVariableMap, World w) {
 		NamePattern[] newNamePatterns = new NamePattern[namePatterns.length];
 		for (int i = 0; i < namePatterns.length; i++) {
@@ -594,6 +626,7 @@ public class WildTypePattern extends TypePattern {
 	 * 
 	 * We will be replaced by what we return
 	 */
+	@Override
 	public TypePattern resolveBindings(IScope scope, Bindings bindings, boolean allowBinding, boolean requireExactType) {
 		if (isNamePatternStar()) {
 			TypePattern anyPattern = maybeResolveToAnyPattern(scope, bindings, allowBinding, requireExactType);
@@ -609,8 +642,9 @@ public class WildTypePattern extends TypePattern {
 		}
 
 		TypePattern bindingTypePattern = maybeResolveToBindingTypePattern(scope, bindings, allowBinding, requireExactType);
-		if (bindingTypePattern != null)
+		if (bindingTypePattern != null) {
 			return bindingTypePattern;
+		}
 
 		annotationPattern = annotationPattern.resolveBindings(scope, bindings, allowBinding);
 
@@ -621,11 +655,13 @@ public class WildTypePattern extends TypePattern {
 		}
 
 		// resolve any bounds
-		if (upperBound != null)
+		if (upperBound != null) {
 			upperBound = upperBound.resolveBindings(scope, bindings, allowBinding, requireExactType);
-		if (lowerBound != null)
+		}
+		if (lowerBound != null) {
 			lowerBound = lowerBound.resolveBindings(scope, bindings, allowBinding, requireExactType);
-		// amc - additional interface bounds only needed if we support type vars again.
+			// amc - additional interface bounds only needed if we support type vars again.
+		}
 
 		String fullyQualifiedName = maybeGetCleanName();
 		if (fullyQualifiedName != null) {
@@ -714,8 +750,9 @@ public class WildTypePattern extends TypePattern {
 		UnresolvedType type = null;
 		while (ResolvedType.isMissing(type = scope.lookupType(typeName, location))) {
 			int lastDot = typeName.lastIndexOf('.');
-			if (lastDot == -1)
+			if (lastDot == -1) {
 				break;
+			}
 			typeName = typeName.substring(0, lastDot) + '$' + typeName.substring(lastDot + 1);
 		}
 		return type;
@@ -729,16 +766,18 @@ public class WildTypePattern extends TypePattern {
 	 */
 	private ResolvedType lookupTypeInWorldIncludingPrefixes(World world, String typeName, String[] prefixes) {
 		ResolvedType ret = lookupTypeInWorld(world, typeName);
-		if (!ret.isMissing())
+		if (!ret.isMissing()) {
 			return ret;
+		}
 		ResolvedType retWithPrefix = ret;
 		int counter = 0;
 		while (retWithPrefix.isMissing() && (counter < prefixes.length)) {
 			retWithPrefix = lookupTypeInWorld(world, prefixes[counter] + typeName);
 			counter++;
 		}
-		if (!retWithPrefix.isMissing())
+		if (!retWithPrefix.isMissing()) {
 			return retWithPrefix;
+		}
 		return ret;
 	}
 
@@ -747,8 +786,9 @@ public class WildTypePattern extends TypePattern {
 		ResolvedType ret = world.resolve(ut, true);
 		while (ret.isMissing()) {
 			int lastDot = typeName.lastIndexOf('.');
-			if (lastDot == -1)
+			if (lastDot == -1) {
 				break;
+			}
 			typeName = typeName.substring(0, lastDot) + '$' + typeName.substring(lastDot + 1);
 			ret = world.resolve(UnresolvedType.forName(typeName), true);
 		}
@@ -767,8 +807,9 @@ public class WildTypePattern extends TypePattern {
 			// this must be a generic wildcard with bounds
 			ret = resolveGenericWildcard(scope, aType);
 		} else {
-			if (dim != 0)
+			if (dim != 0) {
 				aType = UnresolvedType.makeArray(aType, dim);
+			}
 			ret = new ExactTypePattern(aType, includeSubtypes, isVarArgs);
 		}
 		ret.setAnnotationTypePattern(annotationPattern);
@@ -777,13 +818,16 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	private TypePattern resolveGenericWildcard(IScope scope, UnresolvedType aType) {
-		if (!aType.getSignature().equals(GENERIC_WILDCARD_SIGNATURE_CHARACTER))
+		if (!aType.getSignature().equals(GENERIC_WILDCARD_SIGNATURE_CHARACTER)) {
 			throw new IllegalStateException("Can only have bounds for a generic wildcard");
+		}
 		boolean canBeExact = true;
-		if ((upperBound != null) && ResolvedType.isMissing(upperBound.getExactType()))
+		if ((upperBound != null) && ResolvedType.isMissing(upperBound.getExactType())) {
 			canBeExact = false;
-		if ((lowerBound != null) && ResolvedType.isMissing(lowerBound.getExactType()))
+		}
+		if ((lowerBound != null) && ResolvedType.isMissing(lowerBound.getExactType())) {
 			canBeExact = false;
+		}
 		if (canBeExact) {
 			ResolvedType type = null;
 			if (upperBound != null) {
@@ -816,8 +860,9 @@ public class WildTypePattern extends TypePattern {
 
 	private TypePattern resolveParameterizedType(IScope scope, UnresolvedType aType, boolean requireExactType) {
 		ResolvedType rt = aType.resolve(scope.getWorld());
-		if (!verifyTypeParameters(rt, scope, requireExactType))
+		if (!verifyTypeParameters(rt, scope, requireExactType)) {
 			return TypePattern.NO; // messages already isued
+		}
 		// Only if the type is exact *and* the type parameters are exact should we create an
 		// ExactTypePattern for this WildTypePattern
 		if (typeParameters.areAllExactWithNoSubtypesAllowed()) {
@@ -831,12 +876,14 @@ public class WildTypePattern extends TypePattern {
 				rt = rt.getGenericType();
 			}
 			ResolvedType type = TypeFactory.createParameterizedType(rt, typeParameterTypes, scope.getWorld());
-			if (isGeneric)
+			if (isGeneric) {
 				type = type.getGenericType();
+			}
 			// UnresolvedType tx = UnresolvedType.forParameterizedTypes(aType,typeParameterTypes);
 			// UnresolvedType type = scope.getWorld().resolve(tx,true);
-			if (dim != 0)
+			if (dim != 0) {
 				type = ResolvedType.makeArray(type, dim);
+			}
 			return new ExactTypePattern(type, includeSubtypes, isVarArgs);
 		} else {
 			// AMC... just leave it as a wild type pattern then?
@@ -895,28 +942,34 @@ public class WildTypePattern extends TypePattern {
 		if (upperBound == null && lowerBound == null && additionalInterfaceBounds == null) {
 			// no bounds to worry about...
 			ResolvedType rType = tvrType.resolve(scope.getWorld());
-			if (dim != 0)
+			if (dim != 0) {
 				rType = ResolvedType.makeArray(rType, dim);
+			}
 			return new ExactTypePattern(rType, includeSubtypes, isVarArgs);
 		} else {
 			// we have to set bounds on the TypeVariable held by tvrType before resolving it
 			boolean canCreateExactTypePattern = true;
-			if (upperBound != null && ResolvedType.isMissing(upperBound.getExactType()))
+			if (upperBound != null && ResolvedType.isMissing(upperBound.getExactType())) {
 				canCreateExactTypePattern = false;
-			if (lowerBound != null && ResolvedType.isMissing(lowerBound.getExactType()))
+			}
+			if (lowerBound != null && ResolvedType.isMissing(lowerBound.getExactType())) {
 				canCreateExactTypePattern = false;
+			}
 			if (additionalInterfaceBounds != null) {
 				for (int i = 0; i < additionalInterfaceBounds.length; i++) {
-					if (ResolvedType.isMissing(additionalInterfaceBounds[i].getExactType()))
+					if (ResolvedType.isMissing(additionalInterfaceBounds[i].getExactType())) {
 						canCreateExactTypePattern = false;
+					}
 				}
 			}
 			if (canCreateExactTypePattern) {
 				TypeVariable tv = tvrType.getTypeVariable();
-				if (upperBound != null)
+				if (upperBound != null) {
 					tv.setUpperBound(upperBound.getExactType());
-				if (lowerBound != null)
+				}
+				if (lowerBound != null) {
 					tv.setLowerBound(lowerBound.getExactType());
+				}
 				if (additionalInterfaceBounds != null) {
 					UnresolvedType[] ifBounds = new UnresolvedType[additionalInterfaceBounds.length];
 					for (int i = 0; i < ifBounds.length; i++) {
@@ -925,8 +978,9 @@ public class WildTypePattern extends TypePattern {
 					tv.setAdditionalInterfaceBounds(ifBounds);
 				}
 				ResolvedType rType = tvrType.resolve(scope.getWorld());
-				if (dim != 0)
+				if (dim != 0) {
 					rType = ResolvedType.makeArray(rType, dim);
+				}
 				return new ExactTypePattern(rType, includeSubtypes, isVarArgs);
 			}
 			return this; // leave as wild type pattern then
@@ -966,10 +1020,11 @@ public class WildTypePattern extends TypePattern {
 			// issue message "does not match because wrong no of type params"
 			String msg = WeaverMessages.format(WeaverMessages.INCORRECT_NUMBER_OF_TYPE_ARGUMENTS, genericType.getName(),
 					new Integer(tvs.length));
-			if (requireExactType)
+			if (requireExactType) {
 				scope.message(MessageUtil.error(msg, getSourceLocation()));
-			else
+			} else {
 				scope.message(MessageUtil.warn(msg, getSourceLocation()));
+			}
 			return false;
 		}
 
@@ -1029,14 +1084,16 @@ public class WildTypePattern extends TypePattern {
 					if (continueCheck && !tvs[i].canBeBoundTo(ut.resolve(scope.getWorld()))) {
 						// issue message that type parameter does not meet specification
 						String parameterName = ut.getName();
-						if (ut.isTypeVariableReference())
+						if (ut.isTypeVariableReference()) {
 							parameterName = ((TypeVariableReference) ut).getTypeVariable().getDisplayName();
+						}
 						String msg = WeaverMessages.format(WeaverMessages.VIOLATES_TYPE_VARIABLE_BOUNDS, parameterName,
 								new Integer(i + 1), tvs[i].getDisplayName(), genericType.getName());
-						if (requireExactType)
+						if (requireExactType) {
 							scope.message(MessageUtil.error(msg, sLoc));
-						else
+						} else {
 							scope.message(MessageUtil.warn(msg, sLoc));
+						}
 					}
 				}
 			}
@@ -1080,6 +1137,7 @@ public class WildTypePattern extends TypePattern {
 	// return true;
 	// }
 
+	@Override
 	public boolean isStar() {
 		boolean annPatternStar = annotationPattern == AnnotationTypePattern.ANY;
 		return (isNamePatternStar() && annPatternStar);
@@ -1117,6 +1175,7 @@ public class WildTypePattern extends TypePattern {
 	// this.knownNames = prematch(enclosingType.getImportedNames());
 	// }
 
+	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		if (annotationPattern != AnnotationTypePattern.ANY) {
@@ -1129,8 +1188,9 @@ public class WildTypePattern extends TypePattern {
 			if (name == null) {
 				buf.append(".");
 			} else {
-				if (i > 0)
+				if (i > 0) {
 					buf.append(".");
+				}
 				buf.append(name.toString());
 			}
 		}
@@ -1147,66 +1207,85 @@ public class WildTypePattern extends TypePattern {
 			buf.append(typeParameters.toString());
 			buf.append(">");
 		}
-		if (includeSubtypes)
+		if (includeSubtypes) {
 			buf.append('+');
-		if (isVarArgs)
+		}
+		if (isVarArgs) {
 			buf.append("...");
+		}
 		if (annotationPattern != AnnotationTypePattern.ANY) {
 			buf.append(')');
 		}
 		return buf.toString();
 	}
 
+	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof WildTypePattern))
+		if (!(other instanceof WildTypePattern)) {
 			return false;
+		}
 		WildTypePattern o = (WildTypePattern) other;
 		int len = o.namePatterns.length;
-		if (len != this.namePatterns.length)
+		if (len != this.namePatterns.length) {
 			return false;
-		if (this.includeSubtypes != o.includeSubtypes)
+		}
+		if (this.includeSubtypes != o.includeSubtypes) {
 			return false;
-		if (this.dim != o.dim)
+		}
+		if (this.dim != o.dim) {
 			return false;
-		if (this.isVarArgs != o.isVarArgs)
+		}
+		if (this.isVarArgs != o.isVarArgs) {
 			return false;
+		}
 		if (this.upperBound != null) {
-			if (o.upperBound == null)
+			if (o.upperBound == null) {
 				return false;
-			if (!this.upperBound.equals(o.upperBound))
+			}
+			if (!this.upperBound.equals(o.upperBound)) {
 				return false;
+			}
 		} else {
-			if (o.upperBound != null)
+			if (o.upperBound != null) {
 				return false;
+			}
 		}
 		if (this.lowerBound != null) {
-			if (o.lowerBound == null)
+			if (o.lowerBound == null) {
 				return false;
-			if (!this.lowerBound.equals(o.lowerBound))
+			}
+			if (!this.lowerBound.equals(o.lowerBound)) {
 				return false;
+			}
 		} else {
-			if (o.lowerBound != null)
+			if (o.lowerBound != null) {
 				return false;
+			}
 		}
-		if (!typeParameters.equals(o.typeParameters))
+		if (!typeParameters.equals(o.typeParameters)) {
 			return false;
+		}
 		for (int i = 0; i < len; i++) {
-			if (!o.namePatterns[i].equals(this.namePatterns[i]))
+			if (!o.namePatterns[i].equals(this.namePatterns[i])) {
 				return false;
+			}
 		}
 		return (o.annotationPattern.equals(this.annotationPattern));
 	}
 
+	@Override
 	public int hashCode() {
 		int result = 17;
 		for (int i = 0, len = namePatterns.length; i < len; i++) {
 			result = 37 * result + namePatterns[i].hashCode();
 		}
 		result = 37 * result + annotationPattern.hashCode();
-		if (upperBound != null)
+		if (upperBound != null) {
 			result = 37 * result + upperBound.hashCode();
-		if (lowerBound != null)
+		}
+		if (lowerBound != null) {
 			result = 37 * result + lowerBound.hashCode();
+		}
 		return result;
 	}
 
@@ -1215,6 +1294,7 @@ public class WildTypePattern extends TypePattern {
 	/**
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(DataOutputStream)
 	 */
+	@Override
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(TypePattern.WILD);
 		s.writeByte(VERSION);
@@ -1235,11 +1315,13 @@ public class WildTypePattern extends TypePattern {
 		// generics info, new in M3
 		s.writeBoolean(isGeneric);
 		s.writeBoolean(upperBound != null);
-		if (upperBound != null)
+		if (upperBound != null) {
 			upperBound.write(s);
+		}
 		s.writeBoolean(lowerBound != null);
-		if (lowerBound != null)
+		if (lowerBound != null) {
 			lowerBound.write(s);
+		}
 		s.writeInt(additionalInterfaceBounds == null ? 0 : additionalInterfaceBounds.length);
 		if (additionalInterfaceBounds != null) {
 			for (int i = 0; i < additionalInterfaceBounds.length; i++) {
@@ -1308,6 +1390,7 @@ public class WildTypePattern extends TypePattern {
 		return ret;
 	}
 
+	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
