@@ -33,11 +33,13 @@ public class TypeFactory {
 		if (!aBaseType.isGenericType()) {
 			// try and find the generic type...
 			if (someTypeParameters != null && someTypeParameters.length > 0) {
-				if (!aBaseType.isRawType())
+				if (!aBaseType.isRawType()) {
 					throw new IllegalStateException("Expecting raw type, not: " + aBaseType);
+				}
 				baseType = baseType.getGenericType();
-				if (baseType == null)
+				if (baseType == null) {
 					throw new IllegalStateException("Raw type does not have generic type set");
+				}
 			} // else if someTypeParameters is null, then the base type is allowed to be non-generic, it's an inner
 		}
 		ResolvedType[] resolvedParameters = inAWorld.resolve(someTypeParameters);
@@ -114,8 +116,9 @@ public class TypeFactory {
 				while (startOfParams != -1) {
 					erasureSig.delete(startOfParams, endOfParams + 1);
 					startOfParams = locateFirstBracket(erasureSig);
-					if (startOfParams != -1)
+					if (startOfParams != -1) {
 						endOfParams = locateMatchingEndBracket(erasureSig, startOfParams);
+					}
 				}
 
 				String signatureErasure = "L" + erasureSig.toString().substring(1);
@@ -124,10 +127,11 @@ public class TypeFactory {
 				// if the signature is 'PMyInterface<String>$MyOtherType;' then there are none...
 				String lastType = null;
 				int nestedTypePosition = signature.indexOf("$", endOfParams); // don't look for $ INSIDE the parameters
-				if (nestedTypePosition != -1)
+				if (nestedTypePosition != -1) {
 					lastType = signature.substring(nestedTypePosition + 1);
-				else
+				} else {
 					lastType = new String(signature);
+				}
 				startOfParams = lastType.indexOf("<");
 				endOfParams = locateMatchingEndBracket(lastType, startOfParams);
 				UnresolvedType[] typeParams = UnresolvedType.NONE;
@@ -157,8 +161,9 @@ public class TypeFactory {
 			return new UnresolvedTypeVariableReferenceType(new TypeVariable(typeVariableName));
 		} else if (firstChar == '[') {
 			int dims = 0;
-			while (signature.charAt(dims) == '[')
+			while (signature.charAt(dims) == '[') {
 				dims++;
+			}
 			UnresolvedType componentType = createTypeFromSignature(signature.substring(dims));
 			return new UnresolvedType(signature, signature.substring(0, dims) + componentType.getErasureSignature());
 		} else if (signature.length() == 1) { // could be a primitive
@@ -187,31 +192,37 @@ public class TypeFactory {
 	}
 
 	private static int locateMatchingEndBracket(String signature, int startOfParams) {
-		if (startOfParams == -1)
+		if (startOfParams == -1) {
 			return -1;
+		}
 		int count = 1;
 		int idx = startOfParams;
 		while (count > 0 && idx < signature.length()) {
 			idx++;
-			if (signature.charAt(idx) == '<')
+			if (signature.charAt(idx) == '<') {
 				count++;
-			if (signature.charAt(idx) == '>')
+			}
+			if (signature.charAt(idx) == '>') {
 				count--;
+			}
 		}
 		return idx;
 	}
 
 	private static int locateMatchingEndBracket(StringBuffer signature, int startOfParams) {
-		if (startOfParams == -1)
+		if (startOfParams == -1) {
 			return -1;
+		}
 		int count = 1;
 		int idx = startOfParams;
 		while (count > 0 && idx < signature.length()) {
 			idx++;
-			if (signature.charAt(idx) == '<')
+			if (signature.charAt(idx) == '<') {
 				count++;
-			if (signature.charAt(idx) == '>')
+			}
+			if (signature.charAt(idx) == '>') {
 				count--;
+			}
 		}
 		return idx;
 	}
@@ -219,8 +230,9 @@ public class TypeFactory {
 	private static int locateFirstBracket(StringBuffer signature) {
 		int idx = 0;
 		while (idx < signature.length()) {
-			if (signature.charAt(idx) == '<')
+			if (signature.charAt(idx) == '<') {
 				return idx;
+			}
 			idx++;
 		}
 		return -1;

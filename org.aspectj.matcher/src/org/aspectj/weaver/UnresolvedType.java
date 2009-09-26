@@ -186,9 +186,11 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	/**
 	 * Equality is checked based on the underlying signature. {@link ResolvedType} objects' equals is by reference.
 	 */
+	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof UnresolvedType))
+		if (!(other instanceof UnresolvedType)) {
 			return false;
+		}
 		return signature.equals(((UnresolvedType) other).signature);
 	}
 
@@ -196,6 +198,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	 * Equality is checked based on the underlying signature, so the hash code of a particular type is the hash code of its
 	 * signature string.
 	 */
+	@Override
 	public final int hashCode() {
 		return signature.hashCode();
 	}
@@ -215,8 +218,9 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		this.signature = signature;
 		this.signatureErasure = signatureErasure;
 		this.typeParameters = typeParams;
-		if (typeParams != null)
+		if (typeParams != null) {
 			this.typeKind = TypeKind.PARAMETERIZED;
+		}
 	}
 
 	// ---- Things we can do without a world
@@ -230,8 +234,9 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
 	public static UnresolvedType makeArray(UnresolvedType base, int dims) {
 		StringBuffer sig = new StringBuffer();
-		for (int i = 0; i < dims; i++)
+		for (int i = 0; i < dims; i++) {
 			sig.append("[");
+		}
 		sig.append(base.getSignature());
 		return UnresolvedType.forSignature(sig.toString());
 	}
@@ -484,10 +489,11 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	public String getBaseName() {
 		String name = getName();
 		if (isParameterizedType() || isGenericType()) {
-			if (typeParameters == null)
+			if (typeParameters == null) {
 				return name;
-			else
+			} else {
 				return name.substring(0, name.indexOf("<"));
+			}
 		} else {
 			return name;
 		}
@@ -548,8 +554,9 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	 * For parameterized types, return the signature for the raw type
 	 */
 	public String getErasureSignature() {
-		if (signatureErasure == null)
+		if (signatureErasure == null) {
 			return signature;
+		}
 		return signatureErasure;
 	}
 
@@ -577,8 +584,9 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	 * @return the outermost enclosing UnresolvedType object or this.
 	 */
 	public UnresolvedType getOutermostType() {
-		if (isArray() || isPrimitiveType())
+		if (isArray() || isPrimitiveType()) {
 			return this;
+		}
 		String sig = getErasureSignature();
 		int dollar = sig.indexOf('$');
 		if (dollar != -1) {
@@ -605,6 +613,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	/**
 	 * Returns a java language string representation of this type.
 	 */
+	@Override
 	public String toString() {
 		return getName(); // + " - " + getKind();
 	}
@@ -668,16 +677,20 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 					StringBuffer innerBuff = new StringBuffer();
 					while (paramNestLevel > 0) {
 						c = signature.charAt(++i);
-						if (c == '<')
+						if (c == '<') {
 							paramNestLevel++;
-						if (c == '>')
+						}
+						if (c == '>') {
 							paramNestLevel--;
-						if (paramNestLevel > 0)
+						}
+						if (paramNestLevel > 0) {
 							innerBuff.append(c);
+						}
 						if (c == ';' && paramNestLevel == 1) {
 							nameBuff.append(signatureToName(innerBuff.toString()));
-							if (signature.charAt(i + 1) != '>')
+							if (signature.charAt(i + 1) != '>') {
 								nameBuff.append(',');
+							}
 							innerBuff = new StringBuffer();
 						}
 					}
@@ -713,28 +726,39 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	}
 
 	private static String nameToSignature(String name) {
-		if (name.equals("byte"))
+		if (name.equals("byte")) {
 			return "B";
-		if (name.equals("char"))
+		}
+		if (name.equals("char")) {
 			return "C";
-		if (name.equals("double"))
+		}
+		if (name.equals("double")) {
 			return "D";
-		if (name.equals("float"))
+		}
+		if (name.equals("float")) {
 			return "F";
-		if (name.equals("int"))
+		}
+		if (name.equals("int")) {
 			return "I";
-		if (name.equals("long"))
+		}
+		if (name.equals("long")) {
 			return "J";
-		if (name.equals("short"))
+		}
+		if (name.equals("short")) {
 			return "S";
-		if (name.equals("boolean"))
+		}
+		if (name.equals("boolean")) {
 			return "Z";
-		if (name.equals("void"))
+		}
+		if (name.equals("void")) {
 			return "V";
-		if (name.equals("?"))
+		}
+		if (name.equals("?")) {
 			return name;
-		if (name.endsWith("[]"))
+		}
+		if (name.endsWith("[]")) {
 			return "[" + nameToSignature(name.substring(0, name.length() - 2));
+		}
 		if (name.length() != 0) {
 			// lots more tests could be made here...
 
@@ -763,16 +787,19 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 						StringBuffer innerBuff = new StringBuffer();
 						while (nestLevel > 0) {
 							c = name.charAt(++i);
-							if (c == '<')
+							if (c == '<') {
 								nestLevel++;
-							if (c == '>')
+							}
+							if (c == '>') {
 								nestLevel--;
+							}
 							if (c == ',' && nestLevel == 1) {
 								nameBuff.append(nameToSignature(innerBuff.toString()));
 								innerBuff = new StringBuffer();
 							} else {
-								if (nestLevel > 0)
+								if (nestLevel > 0) {
 									innerBuff.append(c);
+								}
 							}
 						}
 						nameBuff.append(nameToSignature(innerBuff.toString()));
@@ -789,8 +816,9 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 				nameBuff.append(";");
 				return nameBuff.toString();
 			}
-		} else
+		} else {
 			throw new BCException("Bad type name: " + name);
+		}
 	}
 
 	public void write(DataOutputStream s) throws IOException {
@@ -817,8 +845,9 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
 	public static UnresolvedType[] readArray(DataInputStream s) throws IOException {
 		int len = s.readShort();
-		if (len == 0)
+		if (len == 0) {
 			return UnresolvedType.NONE;
+		}
 		UnresolvedType[] types = new UnresolvedType[len];
 		for (int i = 0; i < len; i++) {
 			types[i] = UnresolvedType.read(s);
@@ -892,6 +921,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		public final static TypeKind TYPE_VARIABLE = new TypeKind("type_variable"); // a type variable
 		public final static TypeKind WILDCARD = new TypeKind("wildcard"); // a generic wildcard type
 
+		@Override
 		public String toString() {
 			return type;
 		}
@@ -905,12 +935,14 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
 	public TypeVariable getTypeVariableNamed(String name) {
 		TypeVariable[] vars = getTypeVariables();
-		if (vars == null || vars.length == 0)
+		if (vars == null || vars.length == 0) {
 			return null;
+		}
 		for (int i = 0; i < vars.length; i++) {
 			TypeVariable aVar = vars[i];
-			if (aVar.getName().equals(name))
+			if (aVar.getName().equals(name)) {
 				return aVar;
+			}
 		}
 		return null;
 	}

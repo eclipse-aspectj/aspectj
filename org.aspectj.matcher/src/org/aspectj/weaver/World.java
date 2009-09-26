@@ -144,8 +144,9 @@ public abstract class World implements Dump.INode {
 	 */
 	protected World() {
 		super();
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("<init>", this);
+		}
 		Dump.registerNode(this.getClass(), this);
 		typeMap.put("B", ResolvedType.BYTE);
 		typeMap.put("S", ResolvedType.SHORT);
@@ -157,8 +158,9 @@ public abstract class World implements Dump.INode {
 		typeMap.put("Z", ResolvedType.BOOLEAN);
 		typeMap.put("V", ResolvedType.VOID);
 		precedenceCalculator = new AspectPrecedenceCalculator(this);
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("<init>");
+		}
 	}
 
 	/**
@@ -219,8 +221,9 @@ public abstract class World implements Dump.INode {
 	 * signatures.
 	 */
 	public ResolvedType[] resolve(UnresolvedType[] types) {
-		if (types == null)
+		if (types == null) {
 			return new ResolvedType[0];
+		}
 
 		ResolvedType[] ret = new ResolvedType[types.length];
 		for (int i = 0; i < types.length; i++) {
@@ -335,8 +338,9 @@ public abstract class World implements Dump.INode {
 	 * them there. Resolved types are also told their world which is needed for the special autoboxing resolved types.
 	 */
 	public ResolvedType resolve(ResolvedType ty) {
-		if (ty.isTypeVariableReference())
+		if (ty.isTypeVariableReference()) {
 			return ty; // until type variables have proper sigs...
+		}
 		ResolvedType resolved = typeMap.get(ty.getSignature());
 		if (resolved == null) {
 			typeMap.put(ty.getSignature(), ty);
@@ -368,8 +372,9 @@ public abstract class World implements Dump.INode {
 		if (ty.isParameterizedType()) {
 			// ======= parameterized types ================
 			ResolvedType rt = resolveGenericTypeFor(ty, allowMissing);
-			if (rt.isMissing())
+			if (rt.isMissing()) {
 				return rt;
+			}
 			ReferenceType genericType = (ReferenceType) rt;
 			ReferenceType parameterizedType = TypeFactory.createParameterizedType(genericType, ty.typeParameters, this);
 			return parameterizedType;
@@ -386,16 +391,18 @@ public abstract class World implements Dump.INode {
 			// ======= simple and raw types ===============
 			String erasedSignature = ty.getErasureSignature();
 			ReferenceType simpleOrRawType = new ReferenceType(erasedSignature, this);
-			if (ty.needsModifiableDelegate())
+			if (ty.needsModifiableDelegate()) {
 				simpleOrRawType.setNeedsModifiableDelegate(true);
+			}
 			ReferenceTypeDelegate delegate = resolveDelegate(simpleOrRawType);
 			// 117854
 			// if (delegate == null) return ResolvedType.MISSING;
-			if (delegate == null)
+			if (delegate == null) {
 				return new MissingResolvedTypeWithKnownSignature(ty.getSignature(), erasedSignature, this);// ResolvedType
-			// .
-			// MISSING
-			// ;
+				// .
+				// MISSING
+				// ;
+			}
 
 			if (delegate.isGeneric() && behaveInJava5Way) {
 				// ======== raw type ===========
@@ -428,8 +435,9 @@ public abstract class World implements Dump.INode {
 			rawType = resolve(UnresolvedType.forSignature(rawSignature), allowMissing);
 			typeMap.put(rawSignature, rawType);
 		}
-		if (rawType.isMissing())
+		if (rawType.isMissing()) {
 			return rawType;
+		}
 
 		// Does the raw type know its generic form? (It will if we created the
 		// raw type from a source type, it won't if its been created just
@@ -544,8 +552,9 @@ public abstract class World implements Dump.INode {
 	 */
 	public ResolvedMember resolve(Member member) {
 		ResolvedType declaring = member.getDeclaringType().resolve(this);
-		if (declaring.isRawType())
+		if (declaring.isRawType()) {
 			declaring = declaring.getGenericType();
+		}
 		ResolvedMember ret;
 		if (member.getKind() == Member.FIELD) {
 			ret = declaring.lookupField(member);
@@ -553,8 +562,9 @@ public abstract class World implements Dump.INode {
 			ret = declaring.lookupMethod(member);
 		}
 
-		if (ret != null)
+		if (ret != null) {
 			return ret;
+		}
 
 		return declaring.lookupSyntheticMember(member);
 	}
@@ -739,14 +749,16 @@ public abstract class World implements Dump.INode {
 	public boolean isIgnoringUnusedDeclaredThrownException() {
 		// the 0x800000 is CompilerOptions.UnusedDeclaredThrownException
 		// which is ASTNode.bit24
-		if ((errorThreshold & 0x800000) != 0 || (warningThreshold & 0x800000) != 0)
+		if ((errorThreshold & 0x800000) != 0 || (warningThreshold & 0x800000) != 0) {
 			return false;
+		}
 		return true;
 	}
 
 	public void performExtraConfiguration(String config) {
-		if (config == null)
+		if (config == null) {
 			return;
+		}
 		// Bunch of name value pairs to split
 		extraConfiguration = new Properties();
 		int pos = -1;
@@ -819,12 +831,15 @@ public abstract class World implements Dump.INode {
 	}
 
 	public void setOptionalJoinpoints(String jps) {
-		if (jps == null)
+		if (jps == null) {
 			return;
-		if (jps.indexOf("arrayconstruction") != -1)
+		}
+		if (jps.indexOf("arrayconstruction") != -1) {
 			optionalJoinpoint_ArrayConstruction = true;
-		if (jps.indexOf("synchronization") != -1)
+		}
+		if (jps.indexOf("synchronization") != -1) {
 			optionalJoinpoint_Synchronization = true;
+		}
 	}
 
 	public boolean isJoinpointArrayConstructionEnabled() {
@@ -843,10 +858,11 @@ public abstract class World implements Dump.INode {
 	// the old runtime?
 	public boolean isTargettingAspectJRuntime12() {
 		boolean b = false; // pr116679
-		if (!isInJava5Mode())
+		if (!isInJava5Mode()) {
 			b = true;
-		else
+		} else {
 			b = getTargetAspectjRuntimeLevel().equals(org.aspectj.weaver.Constants.RUNTIME_LEVEL_12);
+		}
 		// System.err.println("Asked if targetting runtime 1.2 , returning: "+b);
 		return b;
 	}
@@ -946,50 +962,57 @@ public abstract class World implements Dump.INode {
 				return type;
 			}
 			if (type.isParameterizedType() && type.isParameterizedWithTypeVariable()) {
-				if (debug)
+				if (debug) {
 					System.err
 							.println("Not putting a parameterized type that utilises member declared type variables into the typemap: key="
 									+ key + " type=" + type);
+				}
 				return type;
 			}
 			if (type.isTypeVariableReference()) {
-				if (debug)
+				if (debug) {
 					System.err.println("Not putting a type variable reference type into the typemap: key=" + key + " type=" + type);
+				}
 				return type;
 			}
 			// this test should be improved - only avoid putting them in if one
 			// of the
 			// bounds is a member type variable
 			if (type instanceof BoundedReferenceType) {
-				if (debug)
+				if (debug) {
 					System.err.println("Not putting a bounded reference type into the typemap: key=" + key + " type=" + type);
+				}
 				return type;
 			}
 			if (type instanceof MissingResolvedTypeWithKnownSignature) {
-				if (debug)
+				if (debug) {
 					System.err.println("Not putting a missing type into the typemap: key=" + key + " type=" + type);
+				}
 				return type;
 			}
 
 			if ((type instanceof ReferenceType) && (((ReferenceType) type).getDelegate() == null) && w.isExpendable(type)) {
-				if (debug)
+				if (debug) {
 					System.err.println("Not putting expendable ref type with null delegate into typemap: key=" + key + " type="
 							+ type);
+				}
 				return type;
 			}
 
 			if (w.isExpendable(type)) {
 				// Dont use reference queue for tracking if not profiling...
 				if (policy == USE_WEAK_REFS) {
-					if (memoryProfiling)
+					if (memoryProfiling) {
 						expendableMap.put(key, new WeakReference(type, rq));
-					else
+					} else {
 						expendableMap.put(key, new WeakReference(type));
+					}
 				} else if (policy == USE_SOFT_REFS) {
-					if (memoryProfiling)
+					if (memoryProfiling) {
 						expendableMap.put(key, new SoftReference(type, rq));
-					else
+					} else {
 						expendableMap.put(key, new SoftReference(type));
+					}
 				} else {
 					expendableMap.put(key, type);
 				}
@@ -1008,8 +1031,9 @@ public abstract class World implements Dump.INode {
 		}
 
 		public void report() {
-			if (!memoryProfiling)
+			if (!memoryProfiling) {
 				return;
+			}
 			checkq();
 			w.getMessageHandler().handleMessage(
 					MessageUtil.info("MEMORY: world expendable type map reached maximum size of #" + maxExpendableMapSize
@@ -1019,10 +1043,12 @@ public abstract class World implements Dump.INode {
 		}
 
 		public void checkq() {
-			if (!memoryProfiling)
+			if (!memoryProfiling) {
 				return;
-			while (rq.poll() != null)
+			}
+			while (rq.poll() != null) {
 				collectedTypes++;
+			}
 		}
 
 		/**
@@ -1055,12 +1081,14 @@ public abstract class World implements Dump.INode {
 			if (ret == null) {
 				if (policy == USE_WEAK_REFS) {
 					WeakReference wref = (WeakReference) expendableMap.remove(key);
-					if (wref != null)
+					if (wref != null) {
 						ret = (ResolvedType) wref.get();
+					}
 				} else if (policy == USE_SOFT_REFS) {
 					SoftReference wref = (SoftReference) expendableMap.remove(key);
-					if (wref != null)
+					if (wref != null) {
 						ret = (ResolvedType) wref.get();
+					}
 				} else {
 					ret = (ResolvedType) expendableMap.remove(key);
 				}
@@ -1121,8 +1149,9 @@ public abstract class World implements Dump.INode {
 					DeclarePrecedence d = (DeclarePrecedence) i.next();
 					int thisOrder = d.compare(firstAspect, secondAspect);
 					if (thisOrder != 0) {
-						if (orderer == null)
+						if (orderer == null) {
 							orderer = d;
+						}
 						if (order != 0 && order != thisOrder) {
 							ISourceLocation[] isls = new ISourceLocation[2];
 							isls[0] = orderer.getSourceLocation();
@@ -1145,17 +1174,20 @@ public abstract class World implements Dump.INode {
 		}
 
 		public int compareByPrecedenceAndHierarchy(ResolvedType firstAspect, ResolvedType secondAspect) {
-			if (firstAspect.equals(secondAspect))
+			if (firstAspect.equals(secondAspect)) {
 				return 0;
+			}
 
 			int ret = compareByPrecedence(firstAspect, secondAspect);
-			if (ret != 0)
+			if (ret != 0) {
 				return ret;
+			}
 
-			if (firstAspect.isAssignableFrom(secondAspect))
+			if (firstAspect.isAssignableFrom(secondAspect)) {
 				return -1;
-			else if (secondAspect.isAssignableFrom(firstAspect))
+			} else if (secondAspect.isAssignableFrom(firstAspect)) {
 				return +1;
+			}
 
 			return 0;
 		}
@@ -1171,8 +1203,9 @@ public abstract class World implements Dump.INode {
 
 			@Override
 			public boolean equals(Object obj) {
-				if (!(obj instanceof PrecedenceCacheKey))
+				if (!(obj instanceof PrecedenceCacheKey)) {
 					return false;
+				}
 				PrecedenceCacheKey other = (PrecedenceCacheKey) obj;
 				return (aspect1 == other.aspect1 && aspect2 == other.aspect2);
 			}
@@ -1313,11 +1346,13 @@ public abstract class World implements Dump.INode {
 	}
 
 	public void setSynchronizationPointcutsInUse() {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("setSynchronizationPointcutsInUse", this);
+		}
 		synchronizationPointcutsInUse = true;
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("setSynchronizationPointcutsInUse");
+		}
 	}
 
 	public boolean areSynchronizationPointcutsInUse() {
@@ -1330,14 +1365,16 @@ public abstract class World implements Dump.INode {
 	 * @param designatorHandler handler for the new pointcut
 	 */
 	public void registerPointcutHandler(PointcutDesignatorHandler designatorHandler) {
-		if (pointcutDesignators == null)
+		if (pointcutDesignators == null) {
 			pointcutDesignators = new HashSet();
+		}
 		pointcutDesignators.add(designatorHandler);
 	}
 
 	public Set getRegisteredPointcutHandlers() {
-		if (pointcutDesignators == null)
+		if (pointcutDesignators == null) {
 			return Collections.EMPTY_SET;
+		}
 		return pointcutDesignators;
 	}
 
