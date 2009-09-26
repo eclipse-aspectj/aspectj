@@ -82,7 +82,7 @@ import org.aspectj.weaver.patterns.ThisOrTargetPointcut;
  *       consideration, not ours.  This object will NOT be cached in another
  *       local, but will always come from frame zero.
  * 
- *   * non-expressionKind advice is execution advice
+ *   * non-expressionKind advice is execution advice 
  *     * may have a this.
  *     * target is same as this, and is exposed that way to advice
  *       (i.e., target will not be cached, will always come from frame zero)
@@ -181,8 +181,9 @@ public class BcelShadow extends Shadow {
 				depth++;
 			} else if (inst.opcode == Constants.NEW) {
 				depth--;
-				if (depth == 0)
+				if (depth == 0) {
 					break;
+				}
 			} else if (inst.opcode == Constants.DUP_X2) {
 				// This code seen in the wild (by Brad):
 				// 40: new #12; //class java/lang/StringBuffer
@@ -282,8 +283,9 @@ public class BcelShadow extends Shadow {
 	private List<BcelAdvice> badAdvice = null;
 
 	public void addAdvicePreventingLazyTjp(BcelAdvice advice) {
-		if (badAdvice == null)
+		if (badAdvice == null) {
 			badAdvice = new ArrayList<BcelAdvice>();
+		}
 		badAdvice.add(advice);
 	}
 
@@ -300,8 +302,9 @@ public class BcelShadow extends Shadow {
 		// this up, every ShadowRange would have three instructionHandle points, the start of
 		// the arg-setup code, the start of the running code, and the end of the running code.
 		if (getKind() == ConstructorCall) {
-			if (!world.isJoinpointArrayConstructionEnabled() || !this.getSignature().getDeclaringType().isArray())
+			if (!world.isJoinpointArrayConstructionEnabled() || !this.getSignature().getDeclaringType().isArray()) {
 				deleteNewAndDup(); // no new/dup for new array construction
+			}
 			initializeArgVars();
 		} else if (getKind() == PreInitialization) { // pr74952
 			ShadowRange range = getRange();
@@ -352,8 +355,9 @@ public class BcelShadow extends Shadow {
 			for (Iterator<BcelAdvice> iter = badAdvice.iterator(); iter.hasNext();) {
 				BcelAdvice element = iter.next();
 				ISourceLocation sLoc = element.getSourceLocation();
-				if (sLoc != null && sLoc.getLine() > 0)
+				if (sLoc != null && sLoc.getLine() > 0) {
 					valid++;
+				}
 			}
 			if (valid != 0) {
 				ISourceLocation[] badLocs = new ISourceLocation[valid];
@@ -361,8 +365,9 @@ public class BcelShadow extends Shadow {
 				for (Iterator<BcelAdvice> iter = badAdvice.iterator(); iter.hasNext();) {
 					BcelAdvice element = iter.next();
 					ISourceLocation sLoc = element.getSourceLocation();
-					if (sLoc != null)
+					if (sLoc != null) {
 						badLocs[i++] = sLoc;
+					}
 				}
 				world.getLint().multipleAdviceStoppingLazyTjp
 						.signal(new String[] { this.toString() }, getSourceLocation(), badLocs);
@@ -426,8 +431,9 @@ public class BcelShadow extends Shadow {
 		// if the kind of join point for which we are a shadow represents
 		// a method or constructor execution, then the best source line is
 		// the one from the enclosingMethod declarationLineNumber if available.
-		if (sourceline != -1)
+		if (sourceline != -1) {
 			return sourceline;
+		}
 		Kind kind = getKind();
 		if ((kind == MethodExecution) || (kind == ConstructorExecution) || (kind == AdviceExecution)
 				|| (kind == StaticInitialization) || (kind == PreInitialization) || (kind == Initialization)) {
@@ -447,8 +453,9 @@ public class BcelShadow extends Shadow {
 			}
 		}
 		sourceline = Utility.getSourceLine(range.getStart());
-		if (sourceline < 0)
+		if (sourceline < 0) {
 			sourceline = 0;
+		}
 		return sourceline;
 	}
 
@@ -632,8 +639,9 @@ public class BcelShadow extends Shadow {
 	}
 
 	public static BcelShadow makeMethodExecution(BcelWorld world, LazyMethodGen enclosingMethod, boolean lazyInit) {
-		if (!lazyInit)
+		if (!lazyInit) {
 			return makeMethodExecution(world, enclosingMethod);
+		}
 
 		BcelShadow s = new BcelShadow(world, MethodExecution, enclosingMethod.getMemberView(), enclosingMethod, null);
 
@@ -641,8 +649,9 @@ public class BcelShadow extends Shadow {
 	}
 
 	public void init() {
-		if (range != null)
+		if (range != null) {
 			return;
+		}
 
 		final InstructionList body = enclosingMethod.getBody();
 		ShadowRange r = new ShadowRange(body);
@@ -881,8 +890,9 @@ public class BcelShadow extends Shadow {
 		initializeThisAnnotationVars(); // FIXME asc Why bother with this if we always return one?
 		// Even if we can't find one, we have to return one as we might have this annotation at runtime
 		Var v = thisAnnotationVars.get(forAnnotationType);
-		if (v == null)
+		if (v == null) {
 			v = new TypeAnnotationAccessVar(forAnnotationType.resolve(world), (BcelVar) getThisVar());
+		}
 		return v;
 	}
 
@@ -903,8 +913,9 @@ public class BcelShadow extends Shadow {
 		initializeTargetAnnotationVars(); // FIXME asc why bother with this if we always return one?
 		Var v = targetAnnotationVars.get(forAnnotationType);
 		// Even if we can't find one, we have to return one as we might have this annotation at runtime
-		if (v == null)
+		if (v == null) {
 			v = new TypeAnnotationAccessVar(forAnnotationType.resolve(world), (BcelVar) getTargetVar());
+		}
 		return v;
 	}
 
@@ -919,8 +930,9 @@ public class BcelShadow extends Shadow {
 		initializeArgAnnotationVars();
 
 		Var v = (Var) argAnnotationVars[i].get(forAnnotationType);
-		if (v == null)
+		if (v == null) {
 			v = new TypeAnnotationAccessVar(forAnnotationType.resolve(world), (BcelVar) getArgVar(i));
+		}
 		return v;
 	}
 
@@ -985,8 +997,9 @@ public class BcelShadow extends Shadow {
 	}
 
 	void initializeThisJoinPoint() {
-		if (thisJoinPointVar == null)
+		if (thisJoinPointVar == null) {
 			return;
+		}
 
 		if (isThisJoinPointLazy) {
 			isThisJoinPointLazy = checkLazyTjp();
@@ -996,8 +1009,9 @@ public class BcelShadow extends Shadow {
 			appliedLazyTjpOptimization = true;
 			createThisJoinPoint(); // make sure any state needed is initialized, but throw the instructions out
 
-			if (lazyTjpConsumers == 1)
+			if (lazyTjpConsumers == 1) {
 				return; // special case only one lazyTjpUser
+			}
 
 			InstructionFactory fact = getFactory();
 			InstructionList il = new InstructionList();
@@ -1209,19 +1223,22 @@ public class BcelShadow extends Shadow {
 	 */
 
 	private void initializeThisVar() {
-		if (thisVar != null)
+		if (thisVar != null) {
 			return;
+		}
 		thisVar = new BcelVar(getThisType().resolve(world), 0);
 		thisVar.setPositionInAroundState(0);
 	}
 
 	public void initializeTargetVar() {
 		InstructionFactory fact = getFactory();
-		if (targetVar != null)
+		if (targetVar != null) {
 			return;
+		}
 		if (getKind().isTargetSameAsThis()) {
-			if (hasThis())
+			if (hasThis()) {
 				initializeThisVar();
+			}
 			targetVar = thisVar;
 		} else {
 			initializeArgVars(); // gotta pop off the args before we find the target
@@ -1259,8 +1276,9 @@ public class BcelShadow extends Shadow {
 			// A load instruction may tell us the real type of what the clone() call is on
 			if (searchPtr.getInstruction().isLoadInstruction()) {
 				LocalVariableTag lvt = LazyMethodGen.getLocalVariableTag(searchPtr, searchPtr.getInstruction().getIndex());
-				if (lvt != null)
+				if (lvt != null) {
 					return UnresolvedType.forSignature(lvt.getType());
+				}
 			}
 			// A field access instruction may tell us the real type of what the clone() call is on
 			if (searchPtr.getInstruction() instanceof FieldInstruction) {
@@ -1387,26 +1405,31 @@ public class BcelShadow extends Shadow {
 
 	public void initializeForAroundClosure() {
 		initializeArgVars();
-		if (hasTarget())
+		if (hasTarget()) {
 			initializeTargetVar();
-		if (hasThis())
+		}
+		if (hasThis()) {
 			initializeThisVar();
-		// System.out.println("initialized: " + this + " thisVar = " + thisVar);
+			// System.out.println("initialized: " + this + " thisVar = " + thisVar);
+		}
 	}
 
 	public void initializeThisAnnotationVars() {
-		if (thisAnnotationVars != null)
+		if (thisAnnotationVars != null) {
 			return;
+		}
 		thisAnnotationVars = new HashMap<ResolvedType, TypeAnnotationAccessVar>();
 		// populate..
 	}
 
 	public void initializeTargetAnnotationVars() {
-		if (targetAnnotationVars != null)
+		if (targetAnnotationVars != null) {
 			return;
+		}
 		if (getKind().isTargetSameAsThis()) {
-			if (hasThis())
+			if (hasThis()) {
 				initializeThisAnnotationVars();
+			}
 			targetAnnotationVars = thisAnnotationVars;
 		} else {
 			targetAnnotationVars = new HashMap<ResolvedType, TypeAnnotationAccessVar>();
@@ -1422,8 +1445,9 @@ public class BcelShadow extends Shadow {
 	}
 
 	public void initializeArgAnnotationVars() {
-		if (argAnnotationVars != null)
+		if (argAnnotationVars != null) {
 			return;
+		}
 		int numArgs = getArgCount();
 		argAnnotationVars = new Map[numArgs];
 		for (int i = 0; i < argAnnotationVars.length; i++) {
@@ -1599,8 +1623,9 @@ public class BcelShadow extends Shadow {
 		ResolvedMember decMethods[] = aspectType.getDeclaredMethods();
 		for (int i = 0; i < decMethods.length; i++) {
 			ResolvedMember member = decMethods[i];
-			if (member.equals(ajcMethod))
+			if (member.equals(ajcMethod)) {
 				return member;
+			}
 		}
 		return null;
 	}
@@ -1616,8 +1641,9 @@ public class BcelShadow extends Shadow {
 	}
 
 	public void initializeWithinAnnotationVars() {
-		if (withinAnnotationVars != null)
+		if (withinAnnotationVars != null) {
 			return;
+		}
 		withinAnnotationVars = new HashMap<ResolvedType, AnnotationAccessVar>();
 
 		ResolvedType[] annotations = getEnclosingType().resolve(world).getAnnotationTypes();
@@ -1629,8 +1655,9 @@ public class BcelShadow extends Shadow {
 	}
 
 	public void initializeWithinCodeAnnotationVars() {
-		if (withincodeAnnotationVars != null)
+		if (withincodeAnnotationVars != null) {
 			return;
+		}
 		withincodeAnnotationVars = new HashMap<ResolvedType, AnnotationAccessVar>();
 
 		// For some shadow we are interested in annotations on the method containing that shadow.
@@ -1836,8 +1863,9 @@ public class BcelShadow extends Shadow {
 		// a good optimization would be not to generate anything here
 		// if the shadow is GUARANTEED empty (i.e., there's NOTHING, not even
 		// a shadow, inside me).
-		if (getRange().getStart().getNext() == getRange().getEnd())
+		if (getRange().getStart().getNext() == getRange().getEnd()) {
 			return;
+		}
 		InstructionFactory fact = getFactory();
 		InstructionList handler = new InstructionList();
 		BcelVar exceptionVar = genTempVar(catchType);
@@ -1886,8 +1914,9 @@ public class BcelShadow extends Shadow {
 		// a good optimization would be not to generate anything here
 		// if the shadow is GUARANTEED empty (i.e., there's NOTHING, not even
 		// a shadow, inside me).
-		if (getRange().getStart().getNext() == getRange().getEnd())
+		if (getRange().getStart().getNext() == getRange().getEnd()) {
 			return;
+		}
 
 		InstructionFactory fact = getFactory();
 		InstructionList handler = new InstructionList();
@@ -1957,8 +1986,9 @@ public class BcelShadow extends Shadow {
 	 */
 	public void weavePerTypeWithinAspectInitialization(final BcelAdvice munger, UnresolvedType t) {
 
-		if (t.resolve(world).isInterface())
+		if (t.resolve(world).isInterface()) {
 			return; // Don't initialize statics in
+		}
 		final InstructionFactory fact = getFactory();
 
 		InstructionList entryInstructions = new InstructionList();
@@ -2007,8 +2037,9 @@ public class BcelShadow extends Shadow {
 
 				if (cflowStateVars.length == 0) {
 					// This should be getting managed by a counter - lets make sure.
-					if (!cflowField.getType().getName().endsWith("CFlowCounter"))
+					if (!cflowField.getType().getName().endsWith("CFlowCounter")) {
 						throw new RuntimeException("Incorrectly attempting counter operation on stacked cflow");
+					}
 					entrySuccessInstructions.append(Utility.createGet(fact, cflowField));
 					// arrayVar.appendLoad(entrySuccessInstructions, fact);
 					entrySuccessInstructions.append(fact.createInvoke(NameMangler.CFLOW_COUNTER_TYPE, "inc", Type.VOID,
@@ -2094,8 +2125,9 @@ public class BcelShadow extends Shadow {
 		// Member originalSig = mungerSig; // If mungerSig is on a parameterized type, originalSig is the member on the generic type
 		if (mungerSig instanceof ResolvedMember) {
 			ResolvedMember rm = (ResolvedMember) mungerSig;
-			if (rm.hasBackingGenericMember())
+			if (rm.hasBackingGenericMember()) {
 				mungerSig = rm.getBackingGenericMember();
+			}
 		}
 		ResolvedType declaringAspectType = world.resolve(mungerSig.getDeclaringType(), true);
 		if (declaringAspectType.isMissing()) {
@@ -2685,33 +2717,39 @@ public class BcelShadow extends Shadow {
 
 		@Override
 		public Object visit(ThisOrTargetPointcut node, Object data) {
-			if (node.isThis() && node.isBinding())
+			if (node.isThis() && node.isBinding()) {
 				usesThis = true;
+			}
 			return node;
 		}
 
 		@Override
 		public Object visit(AndPointcut node, Object data) {
-			if (!usesThis)
+			if (!usesThis) {
 				node.getLeft().accept(this, data);
-			if (!usesThis)
+			}
+			if (!usesThis) {
 				node.getRight().accept(this, data);
+			}
 			return node;
 		}
 
 		@Override
 		public Object visit(NotPointcut node, Object data) {
-			if (!usesThis)
+			if (!usesThis) {
 				node.getNegatedPointcut().accept(this, data);
+			}
 			return node;
 		}
 
 		@Override
 		public Object visit(OrPointcut node, Object data) {
-			if (!usesThis)
+			if (!usesThis) {
 				node.getLeft().accept(this, data);
-			if (!usesThis)
+			}
+			if (!usesThis) {
 				node.getRight().accept(this, data);
+			}
 			return node;
 		}
 	}
@@ -2721,33 +2759,39 @@ public class BcelShadow extends Shadow {
 
 		@Override
 		public Object visit(ThisOrTargetPointcut node, Object data) {
-			if (!node.isThis() && node.isBinding())
+			if (!node.isThis() && node.isBinding()) {
 				usesTarget = true;
+			}
 			return node;
 		}
 
 		@Override
 		public Object visit(AndPointcut node, Object data) {
-			if (!usesTarget)
+			if (!usesTarget) {
 				node.getLeft().accept(this, data);
-			if (!usesTarget)
+			}
+			if (!usesTarget) {
 				node.getRight().accept(this, data);
+			}
 			return node;
 		}
 
 		@Override
 		public Object visit(NotPointcut node, Object data) {
-			if (!usesTarget)
+			if (!usesTarget) {
 				node.getNegatedPointcut().accept(this, data);
+			}
 			return node;
 		}
 
 		@Override
 		public Object visit(OrPointcut node, Object data) {
-			if (!usesTarget)
+			if (!usesTarget) {
 				node.getLeft().accept(this, data);
-			if (!usesTarget)
+			}
+			if (!usesTarget) {
 				node.getRight().accept(this, data);
+			}
 			return node;
 		}
 	}
@@ -2829,16 +2873,21 @@ public class BcelShadow extends Shadow {
 
 		// initialize the bit flags for this shadow
 		int bitflags = 0x000000;
-		if (getKind().isTargetSameAsThis())
+		if (getKind().isTargetSameAsThis()) {
 			bitflags |= 0x010000;
-		if (hasThis())
+		}
+		if (hasThis()) {
 			bitflags |= 0x001000;
-		if (bindsThis(munger))
+		}
+		if (bindsThis(munger)) {
 			bitflags |= 0x000100;
-		if (hasTarget())
+		}
+		if (hasTarget()) {
 			bitflags |= 0x000010;
-		if (bindsTarget(munger))
+		}
+		if (bindsTarget(munger)) {
 			bitflags |= 0x000001;
+		}
 
 		// ATAJ for @AJ aspect we need to link the closure with the joinpoint instance
 		if (munger.getConcreteAspect() != null && munger.getConcreteAspect().isAnnotationStyleAspect()
@@ -2949,8 +2998,9 @@ public class BcelShadow extends Shadow {
 		IntMap ret = new IntMap();
 		for (int i = 0, len = adviceArgs.length; i < len; i++) {
 			BcelVar v = adviceArgs[i];
-			if (v == null)
+			if (v == null) {
 				continue; // XXX we don't know why this is required
+			}
 			int pos = v.getPositionInAroundState();
 			if (pos >= 0) { // need this test to avoid args bound via cflow
 				ret.put(pos, i);
@@ -3232,10 +3282,12 @@ public class BcelShadow extends Shadow {
 	}
 
 	private boolean samePackage(String p1, String p2) {
-		if (p1 == null)
+		if (p1 == null) {
 			return p2 == null;
-		if (p2 == null)
+		}
+		if (p2 == null) {
 			return false;
+		}
 		return p1.equals(p2);
 	}
 
