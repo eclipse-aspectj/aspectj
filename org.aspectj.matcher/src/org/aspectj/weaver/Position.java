@@ -10,12 +10,11 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver;
 
 public class Position implements IHasPosition {
 	private int start, end;
-	
+
 	public Position(int start, int end) {
 		this.start = start;
 		this.end = end;

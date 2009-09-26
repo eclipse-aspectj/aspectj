@@ -39,8 +39,7 @@ public class AnnotationOnTypeMunger extends ResolvedTypeMunger {
 			return false;
 		AnnotationOnTypeMunger o = (AnnotationOnTypeMunger) other;
 		// TODO does not check equality of annotation values
-		return newAnnotation.getTypeSignature().equals(
-				o.newAnnotation.getTypeSignature());
+		return newAnnotation.getTypeSignature().equals(o.newAnnotation.getTypeSignature());
 	}
 
 	private volatile int hashCode = 0;

@@ -17,11 +17,12 @@ package org.aspectj.weaver;
 public class ExposeTypeMunger extends PrivilegedAccessMunger {
 
 	public ExposeTypeMunger(UnresolvedType typeToExpose) {
-		super(new ResolvedMemberImpl(Member.STATIC_INITIALIZATION, typeToExpose, 0, ResolvedType.VOID, "<clinit>", UnresolvedType.NONE));
+		super(new ResolvedMemberImpl(Member.STATIC_INITIALIZATION, typeToExpose, 0, ResolvedType.VOID, "<clinit>",
+				UnresolvedType.NONE));
 	}
 
 	public String toString() {
-		return "ExposeTypeMunger("+getSignature().getDeclaringType().getName()+")";
+		return "ExposeTypeMunger(" + getSignature().getDeclaringType().getName() + ")";
 	}
 
 	public String getExposedTypeSignature() {

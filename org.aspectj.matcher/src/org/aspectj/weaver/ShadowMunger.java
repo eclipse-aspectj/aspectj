@@ -72,7 +72,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		this.end = end;
 		this.sourceContext = sourceContext;
 	}
-	
+
 	/**
 	 * All overriding methods should call super
 	 */
@@ -80,24 +80,26 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		if (world.isXmlConfigured() && world.isAspectIncluded(declaringType)) {
 			TypePattern scoped = world.getAspectScope(declaringType);
 			if (scoped != null) {
-				// Check the 'cached' exclusion map 
+				// Check the 'cached' exclusion map
 				Set<ResolvedType> excludedTypes = world.getExclusionMap().get(declaringType);
 				ResolvedType type = shadow.getEnclosingType().resolve(world);
-				if (excludedTypes!=null && excludedTypes.contains(type)) {
+				if (excludedTypes != null && excludedTypes.contains(type)) {
 					return false;
 				}
 				boolean b = scoped.matches(type, TypePattern.STATIC).alwaysTrue();
 				if (!b) {
 					if (!world.getMessageHandler().isIgnoring(IMessage.INFO)) {
-						world.getMessageHandler().handleMessage(MessageUtil.info("Type '"+type.getName()+"' not woven by aspect '"+declaringType.getName()+"' due to scope exclusion in XML definition"));
+						world.getMessageHandler().handleMessage(
+								MessageUtil.info("Type '" + type.getName() + "' not woven by aspect '" + declaringType.getName()
+										+ "' due to scope exclusion in XML definition"));
 					}
-					if (excludedTypes==null) {
+					if (excludedTypes == null) {
 						excludedTypes = new HashSet<ResolvedType>();
 						excludedTypes.add(type);
-						world.getExclusionMap().put(declaringType,excludedTypes);
+						world.getExclusionMap().put(declaringType, excludedTypes);
 					} else {
 						excludedTypes.add(type);
-					}					
+					}
 					return false;
 				}
 			}

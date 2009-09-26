@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * ******************************************************************/
- package org.aspectj.weaver;
+package org.aspectj.weaver;
 
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.patterns.FormalBinding;

@@ -10,7 +10,7 @@
  *     Andy Clement           initial implementation
  * ******************************************************************/
 
-package org.aspectj.weaver;	
+package org.aspectj.weaver;
 
 import java.io.DataInputStream;
 import java.io.InputStream;
@@ -22,11 +22,24 @@ import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
  */
 public class VersionedDataInputStream extends DataInputStream {
 	private WeaverVersionInfo version = new WeaverVersionInfo();// assume we are the latest unless something tells us otherwise...
-	public VersionedDataInputStream(InputStream is) { super(is); }
-	
-	public int getMajorVersion() { return version.getMajorVersion(); }
-	public int getMinorVersion() { return version.getMinorVersion(); }
-	public long getBuildstamp() { return version.getBuildstamp(); }
-	
-	public void setVersion(WeaverVersionInfo version) { this.version = version; }
+
+	public VersionedDataInputStream(InputStream is) {
+		super(is);
+	}
+
+	public int getMajorVersion() {
+		return version.getMajorVersion();
+	}
+
+	public int getMinorVersion() {
+		return version.getMinorVersion();
+	}
+
+	public long getBuildstamp() {
+		return version.getBuildstamp();
+	}
+
+	public void setVersion(WeaverVersionInfo version) {
+		this.version = version;
+	}
 }

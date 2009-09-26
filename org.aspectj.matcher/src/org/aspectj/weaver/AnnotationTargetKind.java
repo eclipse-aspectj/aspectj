@@ -23,21 +23,29 @@ public class AnnotationTargetKind extends TypeSafeEnum {
 	public AnnotationTargetKind(String name, int key) {
 		super(name, key);
 	}
-	
-    public static AnnotationTargetKind read(DataInputStream s) throws IOException {
-        int key = s.readByte();
-        switch(key) {
-            case 1: return ANNOTATION_TYPE;
-            case 2: return CONSTRUCTOR;
-            case 3: return FIELD;
-            case 4: return LOCAL_VARIABLE;
-            case 5: return METHOD;
-            case 6: return PACKAGE;
-            case 7: return PARAMETER;
-            case 8: return TYPE;
-        }
-        throw new BCException("weird annotation target kind " + key);
-    }
+
+	public static AnnotationTargetKind read(DataInputStream s) throws IOException {
+		int key = s.readByte();
+		switch (key) {
+		case 1:
+			return ANNOTATION_TYPE;
+		case 2:
+			return CONSTRUCTOR;
+		case 3:
+			return FIELD;
+		case 4:
+			return LOCAL_VARIABLE;
+		case 5:
+			return METHOD;
+		case 6:
+			return PACKAGE;
+		case 7:
+			return PARAMETER;
+		case 8:
+			return TYPE;
+		}
+		throw new BCException("weird annotation target kind " + key);
+	}
 
 	public static final AnnotationTargetKind ANNOTATION_TYPE = new AnnotationTargetKind("ANNOTATION_TYPE", 1);
 	public static final AnnotationTargetKind CONSTRUCTOR = new AnnotationTargetKind("CONSTRUCTOR", 2);

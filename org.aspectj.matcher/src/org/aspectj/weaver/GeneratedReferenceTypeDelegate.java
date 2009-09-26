@@ -26,6 +26,7 @@ public class GeneratedReferenceTypeDelegate extends AbstractReferenceTypeDelegat
 	public GeneratedReferenceTypeDelegate(ReferenceType backing) {
 		super(backing, false);
 	}
+
 	public boolean isAspect() {
 		throw new UnsupportedOperationException("Not supported for GeneratedReferenceTypeDelegate");
 	}

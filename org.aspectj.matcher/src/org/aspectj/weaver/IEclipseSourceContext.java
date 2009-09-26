@@ -10,7 +10,6 @@
  *******************************************************************/
 package org.aspectj.weaver;
 
-
 public interface IEclipseSourceContext extends ISourceContext {
 	public void removeUnnecessaryProblems(Member method, int problemLineNumber);
 }

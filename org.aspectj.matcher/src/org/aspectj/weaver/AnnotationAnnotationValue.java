@@ -9,25 +9,25 @@
  * Contributors: 
  *     Andy Clement IBM     initial implementation 
  * ******************************************************************/
- package org.aspectj.weaver;
+package org.aspectj.weaver;
 
 public class AnnotationAnnotationValue extends AnnotationValue {
 
 	private AnnotationAJ value;
-	
+
 	public AnnotationAnnotationValue(AnnotationAJ value) {
 		super(AnnotationValue.ANNOTATION);
 		this.value = value;
 	}
-	
+
 	public AnnotationAJ getAnnotation() {
 		return value;
 	}
-	
+
 	public String stringify() {
 		return value.stringify();
 	}
-	
+
 	public String toString() {
 		return value.toString();
 	}

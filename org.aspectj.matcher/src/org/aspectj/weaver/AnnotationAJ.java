@@ -91,8 +91,8 @@ public interface AnnotationAJ {
 	public boolean isRuntimeVisible();
 
 	/**
-	 * Determine the string representation of the value of a field.  For example in @SuppressAjWarnings({"adviceDidNotMatch"})
-	 * the return value for getStringFormOfValue("value") would be "[adviceDidNotMatch]".
+	 * Determine the string representation of the value of a field. For example in @SuppressAjWarnings({"adviceDidNotMatch"}) the
+	 * return value for getStringFormOfValue("value") would be "[adviceDidNotMatch]".
 	 * 
 	 * @param name the name of the annotation field being looked up
 	 * @return string representation of the value of that field, may be null if no such field set

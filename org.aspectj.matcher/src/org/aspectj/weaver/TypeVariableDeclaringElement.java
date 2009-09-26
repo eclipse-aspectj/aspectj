@@ -12,11 +12,9 @@
 
 package org.aspectj.weaver;
 
-
 /**
- * Tag interface - methods and types can be declaring elements for
- * type variables. See the TypeVariable class which holds onto 
- * the declaring element
+ * Tag interface - methods and types can be declaring elements for type variables. See the TypeVariable class which holds onto the
+ * declaring element
  */
 public interface TypeVariableDeclaringElement {
 	public TypeVariable getTypeVariableNamed(String name);

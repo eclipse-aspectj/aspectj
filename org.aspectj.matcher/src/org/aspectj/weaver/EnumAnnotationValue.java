@@ -9,27 +9,27 @@
  * Contributors: 
  *     Andy Clement IBM     initial implementation 
  * ******************************************************************/
- package org.aspectj.weaver;
+package org.aspectj.weaver;
 
 public class EnumAnnotationValue extends AnnotationValue {
 
 	private String type;
 	private String value;
-	
-	public EnumAnnotationValue(String type,String value) {
+
+	public EnumAnnotationValue(String type, String value) {
 		super(AnnotationValue.ENUM_CONSTANT);
 		this.type = type;
 		this.value = value;
 	}
-	
+
 	public String getType() {
 		return type;
 	}
-	
+
 	public String stringify() {
 		return value;
-	}	
-	
+	}
+
 	public String toString() {
 		return value;
 	}

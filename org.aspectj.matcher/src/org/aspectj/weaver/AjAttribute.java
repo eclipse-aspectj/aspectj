@@ -27,14 +27,12 @@ import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
 
 /**
- * These attributes are written to and read from .class files (see the JVM
- * spec).
+ * These attributes are written to and read from .class files (see the JVM spec).
  * 
  * <p>
- * Each member or type can have a number of AjAttributes. Each such attribute is
- * in 1-1 correspondence with an Unknown bcel attribute. Creating one of these
- * does NOTHING to the underlying thing, so if you really want to add an
- * attribute to a particular thing, well, you'd better actually do that.
+ * Each member or type can have a number of AjAttributes. Each such attribute is in 1-1 correspondence with an Unknown bcel
+ * attribute. Creating one of these does NOTHING to the underlying thing, so if you really want to add an attribute to a particular
+ * thing, well, you'd better actually do that.
  * 
  * @author Erik Hilsdale
  * @author Jim Hugunin
@@ -137,14 +135,11 @@ public abstract class AjAttribute {
 	// ----
 
 	/**
-	 * Synthetic members should have NO advice put on them or on their contents.
-	 * This attribute is currently unused as we consider all members starting
-	 * with NameMangler.PREFIX to automatically be synthetic. As we use this we
-	 * might find that we want multiple kinds of synthetic. In particular, if we
-	 * want to treat the call to a synthetic getter (say, of an introduced
-	 * field) as a field reference itself, then a method might want a particular
-	 * kind of AjSynthetic attribute that also includes a signature of what it
-	 * stands for.
+	 * Synthetic members should have NO advice put on them or on their contents. This attribute is currently unused as we consider
+	 * all members starting with NameMangler.PREFIX to automatically be synthetic. As we use this we might find that we want
+	 * multiple kinds of synthetic. In particular, if we want to treat the call to a synthetic getter (say, of an introduced field)
+	 * as a field reference itself, then a method might want a particular kind of AjSynthetic attribute that also includes a
+	 * signature of what it stands for.
 	 */
 	public static class AjSynthetic extends AjAttribute {
 		public static final String AttributeName = "org.aspectj.weaver.AjSynthetic";
@@ -478,9 +473,8 @@ public abstract class AjAttribute {
 		private UnresolvedType[] declaredExceptions;
 
 		/**
-		 * @param lexicalPosition must be greater than the lexicalPosition of
-		 *            any advice declared before this one in an aspect,
-		 *            otherwise, it can be any value.
+		 * @param lexicalPosition must be greater than the lexicalPosition of any advice declared before this one in an aspect,
+		 *        otherwise, it can be any value.
 		 */
 		public AdviceAttribute(AdviceKind kind, Pointcut pointcut, int extraArgumentFlags, int start, int end,
 				ISourceContext sourceContext) {

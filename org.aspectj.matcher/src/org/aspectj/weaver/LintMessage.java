@@ -17,23 +17,20 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 
 public class LintMessage extends Message {
-	
+
 	// private Lint.Kind lintKind;
 	private String lintKind;
-	
-	public LintMessage(
-			String message, 
-			IMessage.Kind messageKind, 
-			ISourceLocation location, 
-			ISourceLocation[] extraLocations,
-			Lint.Kind lintKind) {  
-		super(message,"",messageKind,location,null,extraLocations);
+
+	public LintMessage(String message, IMessage.Kind messageKind, ISourceLocation location, ISourceLocation[] extraLocations,
+			Lint.Kind lintKind) {
+		super(message, "", messageKind, location, null, extraLocations);
 		this.lintKind = lintKind.getName();
 	}
-	
-	public LintMessage(String message, String extraDetails, org.aspectj.weaver.Lint.Kind kind2, Kind kind, ISourceLocation sourceLocation, Throwable object, 
-			ISourceLocation[] seeAlsoLocations, boolean declared, int id, int sourceStart, int sourceEnd) {
-		super(message,extraDetails,kind,sourceLocation,object,seeAlsoLocations,declared,id,sourceStart,sourceEnd);
+
+	public LintMessage(String message, String extraDetails, org.aspectj.weaver.Lint.Kind kind2, Kind kind,
+			ISourceLocation sourceLocation, Throwable object, ISourceLocation[] seeAlsoLocations, boolean declared, int id,
+			int sourceStart, int sourceEnd) {
+		super(message, extraDetails, kind, sourceLocation, object, seeAlsoLocations, declared, id, sourceStart, sourceEnd);
 		this.lintKind = kind2.getName();
 	}
 
@@ -43,5 +40,5 @@ public class LintMessage extends Message {
 	public String getLintKind() {
 		return lintKind;
 	}
-	
+
 }

@@ -10,20 +10,19 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver;
 
 /**
- * An IClassWeaver is initialized with a class (a type, really, but let's ignore that for now)
- * and a world, and has one method that actually weaves the contents of the world into the class
- * implementation.
+ * An IClassWeaver is initialized with a class (a type, really, but let's ignore that for now) and a world, and has one method that
+ * actually weaves the contents of the world into the class implementation.
  */
 
 public interface IClassWeaver {
-       
-    /** perform the weaving.
-     * 
-     * @return <code>true</code> if the class is changed by the weaving, <code>false</code> otherwise.
-     */
-    boolean weave();
+
+	/**
+	 * perform the weaving.
+	 * 
+	 * @return <code>true</code> if the class is changed by the weaving, <code>false</code> otherwise.
+	 */
+	boolean weave();
 }

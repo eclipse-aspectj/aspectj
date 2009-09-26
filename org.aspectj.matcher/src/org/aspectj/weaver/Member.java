@@ -24,17 +24,13 @@ public interface Member extends Comparable {
 	public static final Member[] NONE = new Member[0];
 	public static final MemberKind METHOD = new MemberKind("METHOD", 1);
 	public static final MemberKind FIELD = new MemberKind("FIELD", 2);
-	public static final MemberKind CONSTRUCTOR = new MemberKind("CONSTRUCTOR",
-			3);
-	public static final MemberKind STATIC_INITIALIZATION = new MemberKind(
-			"STATIC_INITIALIZATION", 4);
+	public static final MemberKind CONSTRUCTOR = new MemberKind("CONSTRUCTOR", 3);
+	public static final MemberKind STATIC_INITIALIZATION = new MemberKind("STATIC_INITIALIZATION", 4);
 	public static final MemberKind POINTCUT = new MemberKind("POINTCUT", 5);
 	public static final MemberKind ADVICE = new MemberKind("ADVICE", 6);
 	public static final MemberKind HANDLER = new MemberKind("HANDLER", 7);
-	public static final MemberKind MONITORENTER = new MemberKind(
-			"MONITORENTER", 8);
-	public static final MemberKind MONITOREXIT = new MemberKind("MONITOREXIT",
-			9);
+	public static final MemberKind MONITORENTER = new MemberKind("MONITORENTER", 8);
+	public static final MemberKind MONITOREXIT = new MemberKind("MONITOREXIT", 9);
 
 	public static final AnnotationAJ[][] NO_PARAMETER_ANNOTATIONXS = new AnnotationAJ[][] {};
 	public static final ResolvedType[][] NO_PARAMETER_ANNOTATION_TYPES = new ResolvedType[][] {};
@@ -60,9 +56,8 @@ public interface Member extends Comparable {
 	public UnresolvedType[] getParameterTypes();
 
 	/**
-	 * Return full signature, including return type, e.g. "()LFastCar;". For a
-	 * signature without the return type, use getParameterSignature() - it is
-	 * important to choose the right one in the face of covariance.
+	 * Return full signature, including return type, e.g. "()LFastCar;". For a signature without the return type, use
+	 * getParameterSignature() - it is important to choose the right one in the face of covariance.
 	 */
 	public String getSignature();
 
@@ -71,9 +66,8 @@ public interface Member extends Comparable {
 	public int getArity();
 
 	/**
-	 * Return signature without return type, e.g. "()" for a signature *with*
-	 * the return type, use getSignature() - it is important to choose the right
-	 * one in the face of covariance.
+	 * Return signature without return type, e.g. "()" for a signature *with* the return type, use getSignature() - it is important
+	 * to choose the right one in the face of covariance.
 	 */
 	public String getParameterSignature();
 

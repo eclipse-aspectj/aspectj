@@ -13,10 +13,10 @@ package org.aspectj.weaver;
 
 /**
  * Implemented by Types that represent references to type variables
- *
+ * 
  */
 public interface TypeVariableReference {
 
 	TypeVariable getTypeVariable();
-	
+
 }
