@@ -1774,7 +1774,8 @@ public class BcelWeaver {
 		if (world.isXmlConfigured() && world.getXmlConfiguration().excludesType(resolvedClassType)) {
 			if (!world.getMessageHandler().isIgnoring(IMessage.INFO)) {
 				world.getMessageHandler().handleMessage(
-						MessageUtil.info("Type '" + resolvedClassType.getName() + "' not woven due to exclusion via XML weaver exclude section"));
+						MessageUtil.info("Type '" + resolvedClassType.getName()
+								+ "' not woven due to exclusion via XML weaver exclude section"));
 
 			}
 			if (dump) {

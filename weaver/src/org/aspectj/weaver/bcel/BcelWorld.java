@@ -404,7 +404,7 @@ public class BcelWorld extends World implements Repository {
 			return null;
 		} finally {
 			if (file != null) {
-				file.close();			
+				file.close();
 			}
 		}
 	}
@@ -945,8 +945,7 @@ public class BcelWorld extends World implements Repository {
 							for (String includePattern : includePatterns) {
 								if (includePattern.endsWith("..*")) {
 									// from 'blah.blah.blah..*' leave the 'blah.blah.blah.'
-									includedFastMatchPatterns.add(includePattern
-											.substring(0, includePattern.length() - 2));
+									includedFastMatchPatterns.add(includePattern.substring(0, includePattern.length() - 2));
 								} else {
 									TypePattern includedPattern = new PatternParser(includePattern).parseTypePattern();
 									includedPatterns.add(includedPattern);
@@ -960,8 +959,7 @@ public class BcelWorld extends World implements Repository {
 							for (String excludePattern : excludePatterns) {
 								if (excludePattern.endsWith("..*")) {
 									// from 'blah.blah.blah..*' leave the 'blah.blah.blah.'
-									excludedFastMatchPatterns.add(excludePattern
-											.substring(0, excludePattern.length() - 2));
+									excludedFastMatchPatterns.add(excludePattern.substring(0, excludePattern.length() - 2));
 								} else {
 									TypePattern excludedPattern = new PatternParser(excludePattern).parseTypePattern();
 									excludedPatterns.add(excludedPattern);
