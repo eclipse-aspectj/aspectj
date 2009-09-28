@@ -102,20 +102,22 @@ public class MemberImpl implements Member {
 		StringBuffer buf = new StringBuffer();
 		buf.append("(");
 		for (int i = 0, len = paramTypes.length; i < len; i++) {
-			if (paramTypes[i].isParameterizedType() && useRawTypes)
+			if (paramTypes[i].isParameterizedType() && useRawTypes) {
 				buf.append(paramTypes[i].getErasureSignature());
-			else if (paramTypes[i].isTypeVariableReference() && useRawTypes)
+			} else if (paramTypes[i].isTypeVariableReference() && useRawTypes) {
 				buf.append(paramTypes[i].getErasureSignature());
-			else
+			} else {
 				buf.append(paramTypes[i].getSignature());
+			}
 		}
 		buf.append(")");
-		if (returnType.isParameterizedType() && useRawTypes)
+		if (returnType.isParameterizedType() && useRawTypes) {
 			buf.append(returnType.getErasureSignature());
-		else if (returnType.isTypeVariableReference() && useRawTypes)
+		} else if (returnType.isTypeVariableReference() && useRawTypes) {
 			buf.append(returnType.getErasureSignature());
-		else
+		} else {
 			buf.append(returnType.getSignature());
+		}
 		return buf.toString();
 	}
 
@@ -159,11 +161,13 @@ public class MemberImpl implements Member {
 			boolean hasAnyAnglies = sig.indexOf('<') != -1;
 			while (true) {
 				char c = sig.charAt(i);
-				if (c == ')')
+				if (c == ')') {
 					break; // break out when the hit the ')'
+				}
 				int start = i;
-				while (c == '[')
+				while (c == '[') {
 					c = sig.charAt(++i);
+				}
 				if (c == 'L' || c == 'P') {
 					int nextSemicolon = sig.indexOf(';', start);
 					int firstAngly = (hasAnyAnglies ? sig.indexOf('<', start) : -1);
@@ -185,8 +189,9 @@ public class MemberImpl implements Member {
 								genericDepth--;
 								break;
 							case ';':
-								if (genericDepth == 0)
+								if (genericDepth == 0) {
 									endOfSigReached = true;
+								}
 								break;
 							default:
 							}
@@ -267,9 +272,11 @@ public class MemberImpl implements Member {
 		return new ResolvedMemberImpl(HANDLER, inType, Modifier.STATIC, "<catch>", "(" + catchType.getSignature() + ")V");
 	}
 
+	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof Member))
+		if (!(other instanceof Member)) {
 			return false;
+		}
 		Member o = (Member) other;
 		return (getKind() == o.getKind() && getName().equals(o.getName()) && getSignature().equals(o.getSignature()) && getDeclaringType()
 				.equals(o.getDeclaringType()));
@@ -281,6 +288,7 @@ public class MemberImpl implements Member {
 	 */
 	private volatile int hashCode = 0;
 
+	@Override
 	public int hashCode() {
 		if (hashCode == 0) {
 			int result = 17;
@@ -296,11 +304,13 @@ public class MemberImpl implements Member {
 	public int compareTo(Object other) {
 		Member o = (Member) other;
 		int i = getName().compareTo(o.getName());
-		if (i != 0)
+		if (i != 0) {
 			return i;
+		}
 		return getSignature().compareTo(o.getSignature());
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(returnType.getName());
@@ -367,8 +377,9 @@ public class MemberImpl implements Member {
 	}
 
 	public String getParameterSignature() {
-		if (paramSignature != null)
+		if (paramSignature != null) {
 			return paramSignature;
+		}
 		StringBuffer sb = new StringBuffer();
 		sb.append("(");
 		for (int i = 0; i < parameterTypes.length; i++) {
@@ -446,8 +457,9 @@ public class MemberImpl implements Member {
 	}
 
 	private boolean walkUp(Collection acc, ResolvedType curr) {
-		if (acc.contains(curr))
+		if (acc.contains(curr)) {
 			return true;
+		}
 
 		boolean b = false;
 		for (Iterator i = curr.getDirectSupertypes(); i.hasNext();) {
@@ -461,8 +473,9 @@ public class MemberImpl implements Member {
 		if (!b) {
 			b = curr.lookupMemberNoSupers(this) != null;
 		}
-		if (b)
+		if (b) {
 			acc.add(curr);
+		}
 		return b;
 	}
 
@@ -478,8 +491,9 @@ public class MemberImpl implements Member {
 			if (!b && curr.isParameterizedType()) {
 				b = walkUpStatic(acc, curr.getGenericType());
 			}
-			if (b)
+			if (b) {
 				acc.add(curr);
+			}
 			return b;
 		}
 	}
@@ -509,8 +523,9 @@ public class MemberImpl implements Member {
 	 * type can be found (bug 149908)
 	 */
 	private void reportDidntFindMember(World world) {
-		if (reportedCantFindDeclaringType || reportedUnresolvableMember)
+		if (reportedCantFindDeclaringType || reportedUnresolvableMember) {
 			return;
+		}
 		ResolvedType rType = getDeclaringType().resolve(world);
 		if (rType.isMissing()) {
 			world.getLint().cantFindType.signal(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE, rType.getName()), null);
