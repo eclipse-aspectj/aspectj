@@ -28,8 +28,8 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
-import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
 import org.aspectj.apache.bcel.generic.ArrayType;
 import org.aspectj.apache.bcel.generic.BasicType;
@@ -119,8 +119,9 @@ public class Utility {
 				takeFrom = isl.getSourceFile().getPath().lastIndexOf('\\');
 			}
 			nice.append(isl.getSourceFile().getPath().substring(takeFrom + 1));
-			if (isl.getLine() != 0)
+			if (isl.getLine() != 0) {
 				nice.append(":").append(isl.getLine());
+			}
 		}
 		return nice.toString();
 	}
@@ -266,11 +267,13 @@ public class Utility {
 		// XXX I'm sure this test can be simpler but my brain hurts and this
 		// works
 		if (!toType.getWorld().isInJava5Mode()) {
-			if (toType.needsNoConversionFrom(fromType))
+			if (toType.needsNoConversionFrom(fromType)) {
 				return;
+			}
 		} else {
-			if (toType.needsNoConversionFrom(fromType) && !(toType.isPrimitiveType() ^ fromType.isPrimitiveType()))
+			if (toType.needsNoConversionFrom(fromType) && !(toType.isPrimitiveType() ^ fromType.isPrimitiveType())) {
 				return;
+			}
 		}
 		if (toType.equals(ResolvedType.VOID)) {
 			// assert fromType.equals(UnresolvedType.OBJECT)
@@ -345,16 +348,18 @@ public class Utility {
 			return il;
 		}
 
-		if (fromType.equals(toType))
+		if (fromType.equals(toType)) {
 			return il;
+		}
 		if (toType.equals(Type.VOID)) {
 			il.append(InstructionFactory.createPop(fromType.getSize()));
 			return il;
 		}
 
 		if (fromType.equals(Type.VOID)) {
-			if (toType instanceof BasicType)
+			if (toType instanceof BasicType) {
 				throw new BCException("attempting to cast from void to basic type");
+			}
 			il.append(InstructionFactory.createNull(Type.OBJECT));
 			return il;
 		}
@@ -493,14 +498,10 @@ public class Utility {
 	 */
 	public static void deleteInstruction(InstructionHandle ih, InstructionHandle retargetTo, LazyMethodGen enclosingMethod) {
 		InstructionList il = enclosingMethod.getBody();
-		InstructionTargeter[] targeters = ih.getTargetersArray();
-		if (targeters != null) {
-			for (int i = targeters.length - 1; i >= 0; i--) {
-				InstructionTargeter targeter = targeters[i];
-				targeter.updateTarget(ih, retargetTo);
-			}
-			ih.removeAllTargeters();
+		for (InstructionTargeter targeter : ih.getTargetersCopy()) {
+			targeter.updateTarget(ih, retargetTo);
 		}
+		ih.removeAllTargeters();
 		try {
 			il.delete(ih);
 		} catch (TargetLostException e) {
@@ -563,8 +564,9 @@ public class Utility {
 		// arbitrary rule that we will never lookahead more than 100
 		// instructions for a line #
 		while (lookahead++ < 100) {
-			if (ih == null)
+			if (ih == null) {
 				return -1;
+			}
 			Iterator tIter = ih.getTargeters().iterator();
 			while (tIter.hasNext()) {
 				InstructionTargeter t = (InstructionTargeter) tIter.next();
@@ -621,8 +623,9 @@ public class Utility {
 	 */
 	public static boolean isSuppressing(Member member, String lintkey) {
 		boolean isSuppressing = Utils.isSuppressing(member.getAnnotations(), lintkey);
-		if (isSuppressing)
+		if (isSuppressing) {
 			return true;
+		}
 		UnresolvedType type = member.getDeclaringType();
 		if (type instanceof ResolvedType) {
 			return Utils.isSuppressing(((ResolvedType) type).getAnnotations(), lintkey);
@@ -651,14 +654,15 @@ public class Utility {
 					suppressedWarnings.addAll(lint.allKinds());
 				} else { // (2)
 					// We know the value is an array value
-					ArrayElementValue array = (ArrayElementValue) ((NameValuePair) vals.get(0)).getValue();
+					ArrayElementValue array = (ArrayElementValue) (vals.get(0)).getValue();
 					ElementValue[] values = array.getElementValuesArray();
 					for (int j = 0; j < values.length; j++) {
 						// We know values in the array are strings
 						SimpleElementValue value = (SimpleElementValue) values[j];
 						Lint.Kind lintKind = lint.getLintKind(value.getValueString());
-						if (lintKind != null)
+						if (lintKind != null) {
 							suppressedWarnings.add(lintKind);
+						}
 					}
 				}
 			}

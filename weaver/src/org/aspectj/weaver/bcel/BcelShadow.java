@@ -266,15 +266,12 @@ public class BcelShadow extends Shadow {
 	}
 
 	private void retargetFrom(InstructionHandle old, InstructionHandle fresh) {
-		InstructionTargeter[] sources = old.getTargetersArray();
-		if (sources != null) {
-			for (InstructionTargeter targeter : sources) {
-				if (targeter instanceof ExceptionRange) {
-					ExceptionRange it = (ExceptionRange) targeter;
-					it.updateTarget(old, fresh, it.getBody());
-				} else {
-					targeter.updateTarget(old, fresh);
-				}
+		for (InstructionTargeter targeter : old.getTargetersCopy()) {
+			if (targeter instanceof ExceptionRange) {
+				ExceptionRange it = (ExceptionRange) targeter;
+				it.updateTarget(old, fresh, it.getBody());
+			} else {
+				targeter.updateTarget(old, fresh);
 			}
 		}
 	}
@@ -328,9 +325,7 @@ public class BcelShadow extends Shadow {
 			// Now the exception range starts just after our new instruction.
 			// The next bit of code changes the exception range to point at
 			// the store instruction
-			InstructionTargeter[] targeters = start.getTargetersArray();
-			for (int i = 0; i < targeters.length; i++) {
-				InstructionTargeter t = targeters[i];
+			for (InstructionTargeter t: start.getTargetersCopy()) {
 				if (t instanceof ExceptionRange) {
 					ExceptionRange er = (ExceptionRange) t;
 					er.updateTarget(start, insertedInstruction, body);
@@ -412,8 +407,8 @@ public class BcelShadow extends Shadow {
 					}
 				}
 			}
+			}
 		}
-	}
 
 	// ---- getters
 
@@ -817,13 +812,9 @@ public class BcelShadow extends Shadow {
 	}
 
 	public static void retargetAllBranches(InstructionHandle from, InstructionHandle to) {
-		InstructionTargeter[] sources = from.getTargetersArray();
-		if (sources != null) {
-			for (int i = sources.length - 1; i >= 0; i--) {
-				InstructionTargeter source = sources[i];
-				if (source instanceof InstructionBranch) {
-					source.updateTarget(from, to);
-				}
+		for (InstructionTargeter source : from.getTargetersCopy()) {
+			if (source instanceof InstructionBranch) {
+				source.updateTarget(from, to);
 			}
 		}
 	}

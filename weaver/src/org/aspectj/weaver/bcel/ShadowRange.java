@@ -62,6 +62,7 @@ final class ShadowRange extends Range {
 		return shadow.getKind();
 	}
 
+	@Override
 	public String toString() {
 		return shadow.toString();
 	}
@@ -125,37 +126,33 @@ final class ShadowRange extends Range {
 			// instead of the old instruction. We use updateTarget to do this. One goal is
 			// to make sure we remove all targeters from the old guy, so we can successfully
 			// delete it.
-			InstructionTargeter[] sources = oldIh.getTargetersArray();
-			if (sources != null) {
-				for (int j = sources.length - 1; j >= 0; j--) {
-					InstructionTargeter source = sources[j];
-					if (source instanceof LocalVariableTag) {
-						Shadow.Kind kind = getKind();
-						if (kind == Shadow.AdviceExecution || kind == Shadow.ConstructorExecution || kind == Shadow.MethodExecution
-								|| kind == Shadow.PreInitialization || kind == Shadow.Initialization
-								|| kind == Shadow.StaticInitialization) {
-							LocalVariableTag sourceLocalVariableTag = (LocalVariableTag) source;
-							if (sourceLocalVariableTag.getSlot() == 0) {
-								// might be 'this' so should be renamed if being dumped in a static method 277616
-								if (sourceLocalVariableTag.getName().equals("this")) {
-									sourceLocalVariableTag.setName("ajc$this");
-								}
+			for (InstructionTargeter source : oldIh.getTargetersCopy()) {
+				if (source instanceof LocalVariableTag) {
+					Shadow.Kind kind = getKind();
+					if (kind == Shadow.AdviceExecution || kind == Shadow.ConstructorExecution || kind == Shadow.MethodExecution
+							|| kind == Shadow.PreInitialization || kind == Shadow.Initialization
+							|| kind == Shadow.StaticInitialization) {
+						LocalVariableTag sourceLocalVariableTag = (LocalVariableTag) source;
+						if (sourceLocalVariableTag.getSlot() == 0) {
+							// might be 'this' so should be renamed if being dumped in a static method 277616
+							if (sourceLocalVariableTag.getName().equals("this")) {
+								sourceLocalVariableTag.setName("ajc$this");
 							}
-							// if we're extracting a whole block we can do this...
-							source.updateTarget(oldIh, freshIh);
-						} else {
-							// XXX destroying local variable info
-							// but only for a call or get join point, so no big deal
-							source.updateTarget(oldIh, null);
 						}
-					} else if (source instanceof Range) {
-						// exceptions and shadows are just moved
-						((Range) source).updateTarget(oldIh, freshIh, freshBody);
-					} else {
-						// line numbers can be shared,
-						// branches will be copied along with us.
+						// if we're extracting a whole block we can do this...
 						source.updateTarget(oldIh, freshIh);
+					} else {
+						// XXX destroying local variable info
+						// but only for a call or get join point, so no big deal
+						source.updateTarget(oldIh, null);
 					}
+				} else if (source instanceof Range) {
+					// exceptions and shadows are just moved
+					((Range) source).updateTarget(oldIh, freshIh, freshBody);
+				} else {
+					// line numbers can be shared,
+					// branches will be copied along with us.
+					source.updateTarget(oldIh, freshIh);
 				}
 			}
 			// we're now done with the old instruction entirely, and will ignore them through
@@ -225,17 +222,14 @@ final class ShadowRange extends Range {
 			ret = freshBody.append(InstructionFactory.createReturn(freshMethod.getReturnType()));
 		}
 		// and remap all the old targeters of the end handle of the range to the return.
-		InstructionTargeter[] ts = end.getTargetersArray();
-		if (ts != null) { // shouldn't be the case, but let's test for paranoia
-			for (int j = ts.length - 1; j >= 0; j--) {
-				InstructionTargeter t = ts[j];
-				if (t == this)
-					continue;
-				if (!addReturn) {
-					throw new BCException("range has target, but we aren't adding a return");
-				} else {
-					t.updateTarget(end, ret);
-				}
+		for (InstructionTargeter t : end.getTargetersCopy()) {
+			if (t == this) {
+				continue;
+			}
+			if (!addReturn) {
+				throw new BCException("range has target, but we aren't adding a return");
+			} else {
+				t.updateTarget(end, ret);
 			}
 		}
 

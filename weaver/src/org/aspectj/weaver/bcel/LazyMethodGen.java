@@ -428,9 +428,10 @@ public final class LazyMethodGen implements Traceable {
 	}
 
 	public Method getMethod() {
-		if (savedMethod != null)
+		if (savedMethod != null) {
 			return savedMethod; // ??? this relies on gentle treatment of
-		// constant pool
+			// constant pool
+		}
 
 		try {
 			MethodGen gen = pack();
@@ -621,8 +622,9 @@ public final class LazyMethodGen implements Traceable {
 					// don't print empty ranges, that is, ranges who contain no
 					// actual instructions
 					for (InstructionHandle xx = r.getStart(); Range.isRangeHandle(xx); xx = xx.getNext()) {
-						if (xx == r.getEnd())
+						if (xx == r.getEnd()) {
 							continue bodyPrint;
+						}
 					}
 
 					// doesn't handle nested: if (r.getStart().getNext() ==
@@ -630,8 +632,9 @@ public final class LazyMethodGen implements Traceable {
 					if (r.getStart() == ih) {
 						printRangeString(r, depth++);
 					} else {
-						if (r.getEnd() != ih)
+						if (r.getEnd() != ih) {
 							throw new RuntimeException("bad");
+						}
 						printRangeString(r, --depth);
 					}
 				} else {
@@ -749,8 +752,9 @@ public final class LazyMethodGen implements Traceable {
 			InstructionTargeter t = (InstructionTargeter) tIter.next();
 			if (t instanceof LocalVariableTag) {
 				LocalVariableTag lvt = (LocalVariableTag) t;
-				if (lvt.getSlot() == index)
+				if (lvt.getSlot() == index) {
 					return lvt;
+				}
 			}
 		}
 		return null;
@@ -794,8 +798,9 @@ public final class LazyMethodGen implements Traceable {
 	}
 
 	public int getAccessFlagsWithoutSynchronized() {
-		if (isSynchronized())
+		if (isSynchronized()) {
 			return modifiers - Modifier.SYNCHRONIZED;
+		}
 		return modifiers;
 	}
 
@@ -978,10 +983,9 @@ public final class LazyMethodGen implements Traceable {
 		 */
 		InstructionHandle oldInstructionHandle = getBody().getStart();
 		InstructionHandle newInstructionHandle = fresh.getStart();
-		LinkedList exceptionList = new LinkedList();
+		LinkedList<ExceptionRange> exceptionList = new LinkedList<ExceptionRange>();
 
-		// map from localvariabletag to instruction handle
-		Map localVariables = new HashMap();
+		Map<LocalVariableTag, LVPosition> localVariables = new HashMap<LocalVariableTag, LVPosition>();
 
 		int currLine = -1;
 		int lineNumberOffset = (fromFilename == null) ? 0 : getEnclosingClass().getSourceDebugExtensionOffset(fromFilename);
@@ -1004,9 +1008,7 @@ public final class LazyMethodGen implements Traceable {
 
 				// now deal with line numbers
 				// and store up info for local variables
-				Iterator tIter = oldInstructionHandle.getTargeters().iterator();
-				while (tIter.hasNext()) {
-					InstructionTargeter targeter = (InstructionTargeter) tIter.next();// targeters[k];
+				for (InstructionTargeter targeter : oldInstructionHandle.getTargeters()) {
 					if (targeter instanceof LineNumberTag) {
 						int line = ((LineNumberTag) targeter).getLineNumber();
 						if (line != currLine) {
@@ -1015,7 +1017,7 @@ public final class LazyMethodGen implements Traceable {
 						}
 					} else if (targeter instanceof LocalVariableTag) {
 						LocalVariableTag lvt = (LocalVariableTag) targeter;
-						LVPosition p = (LVPosition) localVariables.get(lvt);
+						LVPosition p = localVariables.get(lvt);
 						// If we don't know about it, create a new position and
 						// store
 						// If we do know about it - update its end position
@@ -1100,7 +1102,7 @@ public final class LazyMethodGen implements Traceable {
 		int currLine = -1;
 		int lineNumberOffset = (fromFilename == null) ? 0 : getEnclosingClass().getSourceDebugExtensionOffset(fromFilename);
 		Map<LocalVariableTag, LVPosition> localVariables = new HashMap<LocalVariableTag, LVPosition>();
-		LinkedList exceptionList = new LinkedList();
+		LinkedList<ExceptionRange> exceptionList = new LinkedList<ExceptionRange>();
 		Set<InstructionHandle> forDeletion = new HashSet<InstructionHandle>();
 		Set<BranchHandle> branchInstructions = new HashSet<BranchHandle>();
 		// OPTIMIZE sort out in here: getRange()/insertHandler() and type of
@@ -1127,29 +1129,25 @@ public final class LazyMethodGen implements Traceable {
 					branchInstructions.add((BranchHandle) iHandle);
 				}
 
-				InstructionTargeter[] targeters = iHandle.getTargetersArray();
-				if (targeters != null) {
-					for (int k = targeters.length - 1; k >= 0; k--) {
-						InstructionTargeter targeter = targeters[k];
-						if (targeter instanceof LineNumberTag) {
-							int line = ((LineNumberTag) targeter).getLineNumber();
-							if (line != currLine) {
-								gen.addLineNumber(iHandle, line + lineNumberOffset);
-								currLine = line;
-							}
-						} else if (targeter instanceof LocalVariableTag) {
-							LocalVariableTag lvt = (LocalVariableTag) targeter;
-							LVPosition p = localVariables.get(lvt);
-							// If we don't know about it, create a new position
-							// and store
-							// If we do know about it - update its end position
-							if (p == null) {
-								LVPosition newp = new LVPosition();
-								newp.start = newp.end = iHandle;
-								localVariables.put(lvt, newp);
-							} else {
-								p.end = iHandle;
-							}
+				for (InstructionTargeter targeter : iHandle.getTargetersCopy()) {
+					if (targeter instanceof LineNumberTag) {
+						int line = ((LineNumberTag) targeter).getLineNumber();
+						if (line != currLine) {
+							gen.addLineNumber(iHandle, line + lineNumberOffset);
+							currLine = line;
+						}
+					} else if (targeter instanceof LocalVariableTag) {
+						LocalVariableTag lvt = (LocalVariableTag) targeter;
+						LVPosition p = localVariables.get(lvt);
+						// If we don't know about it, create a new position
+						// and store
+						// If we do know about it - update its end position
+						if (p == null) {
+							LVPosition newp = new LVPosition();
+							newp.start = newp.end = iHandle;
+							localVariables.put(lvt, newp);
+						} else {
+							p.end = iHandle;
 						}
 					}
 				}
@@ -1160,18 +1158,18 @@ public final class LazyMethodGen implements Traceable {
 			handleBranchInstruction(branchHandle, forDeletion);
 		}
 		// now add exception handlers
-		for (Iterator iter = exceptionList.iterator(); iter.hasNext();) {
-			ExceptionRange r = (ExceptionRange) iter.next();
-			if (r.isEmpty())
+		for (ExceptionRange r : exceptionList) {
+			if (r.isEmpty()) {
 				continue;
+			}
 			gen.addExceptionHandler(jumpForward(r.getRealStart(), forDeletion), jumpForward(r.getRealEnd(), forDeletion),
 					jumpForward(r.getHandler(), forDeletion), (r.getCatchType() == null) ? null : (ObjectType) BcelWorld
 							.makeBcelType(r.getCatchType()));
 		}
 
-		for (Iterator iterator = forDeletion.iterator(); iterator.hasNext();) {
+		for (InstructionHandle handle : forDeletion) {
 			try {
-				theBody.delete((InstructionHandle) iterator.next());
+				theBody.delete(handle);
 			} catch (TargetLostException e) {
 				e.printStackTrace();
 			}
@@ -1200,7 +1198,7 @@ public final class LazyMethodGen implements Traceable {
 		wasPackedOptimally = true;
 	}
 
-	private void addLocalVariables(MethodGen gen, Map localVariables) {
+	private void addLocalVariables(MethodGen gen, Map<LocalVariableTag, LVPosition> localVariables) {
 		// now add local variables
 		gen.removeLocalVariables();
 
@@ -1209,23 +1207,22 @@ public final class LazyMethodGen implements Traceable {
 		// bcel we should be able to do without it if we're paranoid enough
 		// through the rest of the compiler.
 
-		Map duplicatedLocalMap = new HashMap();
-		for (Iterator iter = localVariables.keySet().iterator(); iter.hasNext();) {
-			LocalVariableTag tag = (LocalVariableTag) iter.next();
+		Map<InstructionHandle, Set<Integer>> duplicatedLocalMap = new HashMap<InstructionHandle, Set<Integer>>();
+		for (LocalVariableTag tag : localVariables.keySet()) {
 			// have we already added one with the same slot number and start
 			// location?
 			// if so, just continue.
-			LVPosition lvpos = (LVPosition) localVariables.get(tag);
+			LVPosition lvpos = localVariables.get(tag);
 			InstructionHandle start = lvpos.start;
-			Set slots = (Set) duplicatedLocalMap.get(start);
+			Set<Integer> slots = duplicatedLocalMap.get(start);
 			if (slots == null) {
-				slots = new HashSet();
+				slots = new HashSet<Integer>();
 				duplicatedLocalMap.put(start, slots);
 			} else if (slots.contains(new Integer(tag.getSlot()))) {
 				// we already have a var starting at this tag with this slot
 				continue;
 			}
-			slots.add(new Integer(tag.getSlot()));
+			slots.add(Integer.valueOf(tag.getSlot()));
 			Type t = tag.getRealType();
 			if (t == null) {
 				t = BcelWorld.makeBcelType(UnresolvedType.forSignature(tag.getType()));
@@ -1234,12 +1231,13 @@ public final class LazyMethodGen implements Traceable {
 		}
 	}
 
-	private void addExceptionHandlers(MethodGen gen, Map<InstructionHandle, InstructionHandle> map, LinkedList exnList) {
+	private void addExceptionHandlers(MethodGen gen, Map<InstructionHandle, InstructionHandle> map,
+			LinkedList<ExceptionRange> exnList) {
 		// now add exception handlers
-		for (Iterator iter = exnList.iterator(); iter.hasNext();) {
-			ExceptionRange r = (ExceptionRange) iter.next();
-			if (r.isEmpty())
+		for (ExceptionRange r : exnList) {
+			if (r.isEmpty()) {
 				continue;
+			}
 			InstructionHandle rMappedStart = remap(r.getRealStart(), map);
 			InstructionHandle rMappedEnd = remap(r.getRealEnd(), map);
 			InstructionHandle rMappedHandler = remap(r.getHandler(), map);
@@ -1248,7 +1246,8 @@ public final class LazyMethodGen implements Traceable {
 		}
 	}
 
-	private void handleBranchInstruction(Map map, Instruction oldInstruction, Instruction newInstruction) {
+	private void handleBranchInstruction(Map<InstructionHandle, InstructionHandle> map, Instruction oldInstruction,
+			Instruction newInstruction) {
 		InstructionBranch oldBranchInstruction = (InstructionBranch) oldInstruction;
 		InstructionBranch newBranchInstruction = (InstructionBranch) newInstruction;
 		InstructionHandle oldTarget = oldBranchInstruction.getTarget(); // old
@@ -1270,8 +1269,7 @@ public final class LazyMethodGen implements Traceable {
 		}
 	}
 
-	private InstructionHandle jumpForward(InstructionHandle t, Set handlesForDeletion) {
-
+	private InstructionHandle jumpForward(InstructionHandle t, Set<InstructionHandle> handlesForDeletion) {
 		InstructionHandle target = t;
 		if (handlesForDeletion.contains(target)) {
 			do {
@@ -1313,7 +1311,7 @@ public final class LazyMethodGen implements Traceable {
 		}
 	}
 
-	private void handleRangeInstruction(InstructionHandle ih, LinkedList exnList) {
+	private void handleRangeInstruction(InstructionHandle ih, LinkedList<ExceptionRange> exnList) {
 		// we're a range instruction
 		Range r = Range.getRange(ih);
 		if (r instanceof ExceptionRange) {
@@ -1422,10 +1420,10 @@ public final class LazyMethodGen implements Traceable {
 	// but I don't trust the only implementation, TreeSet, to do the right
 	// thing.
 
-	/* private */static void insertHandler(ExceptionRange fresh, LinkedList l) {
+	/* private */static void insertHandler(ExceptionRange fresh, LinkedList<ExceptionRange> l) {
 		// Old implementation, simply: l.add(0,fresh);
-		for (ListIterator iter = l.listIterator(); iter.hasNext();) {
-			ExceptionRange r = (ExceptionRange) iter.next();
+		for (ListIterator<ExceptionRange> iter = l.listIterator(); iter.hasNext();) {
+			ExceptionRange r = iter.next();
 			// int freal = fresh.getRealStart().getPosition();
 			// int rreal = r.getRealStart().getPosition();
 			if (fresh.getPriority() >= r.getPriority()) {
@@ -1478,8 +1476,9 @@ public final class LazyMethodGen implements Traceable {
 	 */
 
 	public void assertGoodBody() {
-		if (true)
+		if (true) {
 			return; // only enable for debugging, consider using cheaper
+		}
 		// toString()
 		assertGoodBody(getBody(), toString()); // definingType.getNameAsIdentifier
 		// () + "." + getName());
@@ -1490,8 +1489,9 @@ public final class LazyMethodGen implements Traceable {
 		if (true) {
 			return; // only to be enabled for debugging
 		}
-		if (il == null)
+		if (il == null) {
 			return;
+		}
 		Set body = new HashSet();
 		Stack<Range> ranges = new Stack<Range>();
 		for (InstructionHandle ih = il.getStart(); ih != null; ih = ih.getNext()) {
@@ -1553,8 +1553,9 @@ public final class LazyMethodGen implements Traceable {
 		if (r.getStart() == ih) {
 			ranges.push(r);
 		} else if (r.getEnd() == ih) {
-			if (ranges.peek() != r)
+			if (ranges.peek() != r) {
 				throw new BCException("bad range inclusion in " + from);
+			}
 			ranges.pop();
 		}
 	}
@@ -1576,15 +1577,17 @@ public final class LazyMethodGen implements Traceable {
 	}
 
 	private static void assertRangeHandle(InstructionHandle ih, String from) {
-		if (!Range.isRangeHandle(ih))
+		if (!Range.isRangeHandle(ih)) {
 			throw new BCException("bad range handle " + ih + " in " + from);
+		}
 	}
 
 	private static void assertTargetedBy(InstructionHandle target, InstructionTargeter targeter, String from) {
 		Iterator tIter = target.getTargeters().iterator();
 		while (tIter.hasNext()) {
-			if (((InstructionTargeter) tIter.next()) == targeter)
+			if (((InstructionTargeter) tIter.next()) == targeter) {
 				return;
+			}
 		}
 		throw new RuntimeException("bad targeting relationship in " + from);
 	}
@@ -1592,22 +1595,26 @@ public final class LazyMethodGen implements Traceable {
 	private static void assertTargets(InstructionTargeter targeter, InstructionHandle target, String from) {
 		if (targeter instanceof Range) {
 			Range r = (Range) targeter;
-			if (r.getStart() == target || r.getEnd() == target)
+			if (r.getStart() == target || r.getEnd() == target) {
 				return;
+			}
 			if (r instanceof ExceptionRange) {
-				if (((ExceptionRange) r).getHandler() == target)
+				if (((ExceptionRange) r).getHandler() == target) {
 					return;
+				}
 			}
 		} else if (targeter instanceof InstructionBranch) {
 			InstructionBranch bi = (InstructionBranch) targeter;
-			if (bi.getTarget() == target)
+			if (bi.getTarget() == target) {
 				return;
+			}
 			if (targeter instanceof InstructionSelect) {
 				InstructionSelect sel = (InstructionSelect) targeter;
 				InstructionHandle[] itargets = sel.getTargets();
 				for (int k = itargets.length - 1; k >= 0; k--) {
-					if (itargets[k] == target)
+					if (itargets[k] == target) {
 						return;
+					}
 				}
 			}
 		} else if (targeter instanceof Tag) {
@@ -1625,13 +1632,15 @@ public final class LazyMethodGen implements Traceable {
 		while (tIter.hasNext()) {
 			InstructionTargeter ts = (InstructionTargeter) tIter.next();
 			if (ts instanceof Range) {
-				if (ret != null)
+				if (ret != null) {
 					throw new BCException("range handle with multiple ranges in " + from);
+				}
 				ret = (Range) ts;
 			}
 		}
-		if (ret == null)
+		if (ret == null) {
 			throw new BCException("range handle with no range in " + from);
+		}
 		return ret;
 	}
 
@@ -1647,33 +1656,38 @@ public final class LazyMethodGen implements Traceable {
 	// ----
 
 	boolean isAdviceMethod() {
-		if (memberView == null)
+		if (memberView == null) {
 			return false;
+		}
 		return memberView.getAssociatedShadowMunger() != null;
 	}
 
 	boolean isAjSynthetic() {
-		if (memberView == null)
+		if (memberView == null) {
 			return true;
+		}
 		return memberView.isAjSynthetic();
 	}
 
 	boolean isSynthetic() {
-		if (memberView == null)
+		if (memberView == null) {
 			return false;
+		}
 		return memberView.isSynthetic();
 	}
 
 	public ISourceLocation getSourceLocation() {
-		if (memberView != null)
+		if (memberView != null) {
 			return memberView.getSourceLocation();
+		}
 		return null;
 	}
 
 	public AjAttribute.EffectiveSignatureAttribute getEffectiveSignature() {
 		// if (memberView == null) return null;
-		if (effectiveSignature != null)
+		if (effectiveSignature != null) {
 			return effectiveSignature;
+		}
 		return memberView.getEffectiveSignature();
 	}
 
@@ -1682,14 +1696,16 @@ public final class LazyMethodGen implements Traceable {
 	}
 
 	public String getSignature() {
-		if (memberView != null)
+		if (memberView != null) {
 			return memberView.getSignature();
+		}
 		return MemberImpl.typesToSignature(BcelWorld.fromBcel(getReturnType()), BcelWorld.fromBcel(getArgumentTypes()), false);
 	}
 
 	public String getParameterSignature() {
-		if (memberView != null)
+		if (memberView != null) {
 			return memberView.getParameterSignature();
+		}
 		return MemberImpl.typesToSignature(BcelWorld.fromBcel(getArgumentTypes()));
 	}
 
