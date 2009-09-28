@@ -551,8 +551,8 @@ public class BcelWorld extends World implements Repository {
 		if (ii.opcode == Constants.INVOKESTATIC) {
 			ResolvedType appearsDeclaredBy = resolve(declaring);
 			// look for the method there
-			for (Iterator iterator = appearsDeclaredBy.getMethods(); iterator.hasNext();) {
-				ResolvedMember method = (ResolvedMember) iterator.next();
+			for (Iterator<ResolvedMember> iterator = appearsDeclaredBy.getMethods(); iterator.hasNext();) {
+				ResolvedMember method = iterator.next();
 				if (method.isStatic()) {
 					if (name.equals(method.getName()) && signature.equals(method.getSignature())) {
 						// we found it
@@ -560,7 +560,6 @@ public class BcelWorld extends World implements Repository {
 						break;
 					}
 				}
-
 			}
 		}
 
