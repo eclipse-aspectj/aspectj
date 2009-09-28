@@ -97,7 +97,9 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	public static final UnresolvedType JAVA_LANG_STRING = forSignature("Ljava/lang/String;");
 	public static final UnresolvedType JAVA_LANG_EXCEPTION = forSignature("Ljava/lang/Exception;");
 	public static final UnresolvedType JAVA_LANG_REFLECT_METHOD = forSignature("Ljava/lang/reflect/Method;");
-	public static final UnresolvedType JAVA_LANG_ANNOTATION = UnresolvedType.forSignature("Ljava.lang.annotation.Annotation;");
+	public static final UnresolvedType JAVA_LANG_REFLECT_FIELD = forSignature("Ljava/lang/reflect/Field;");
+	public static final UnresolvedType JAVA_LANG_REFLECT_CONSTRUCTOR = forSignature("Ljava/lang/reflect/Constructor;");
+	public static final UnresolvedType JAVA_LANG_ANNOTATION = forSignature("Ljava/lang/annotation/Annotation;");
 	public static final UnresolvedType SUPPRESS_AJ_WARNINGS = forSignature("Lorg/aspectj/lang/annotation/SuppressAjWarnings;");
 	public static final UnresolvedType AT_TARGET = forSignature("Ljava/lang/annotation/Target;");
 	public static final UnresolvedType SOMETHING = new UnresolvedType("?");
