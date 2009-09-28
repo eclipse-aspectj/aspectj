@@ -75,7 +75,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 /**
  * Utility functions that do not really belong to any class in particular.
  * 
- * @version $Id: Utility.java,v 1.13 2009/09/28 16:35:18 aclement Exp $
+ * @version $Id: Utility.java,v 1.14 2009/09/28 16:39:46 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  *         modified: Andy Clement 2-mar-05 Removed unnecessary static and optimized
@@ -200,11 +200,9 @@ public abstract class Utility {
 	 * @return Compacted class name
 	 */
 	public static final String compactClassName(String str, String prefix, boolean chopit) {
-		int len = prefix.length();
-
 		str = str.replace('/', '.');
-
 		if (chopit) {
+			int len = prefix.length();
 			// If string starts with 'prefix' and contains no further dots
 			if (str.startsWith(prefix)) {
 				String result = str.substring(len);
@@ -370,21 +368,23 @@ public abstract class Utility {
 			case 'L': { // Full class name
 				int index = signature.indexOf(';'); // Look for closing ';'
 
-				if (index != -1 && signature.length() > index + 1 && signature.charAt(index + 1) == '>') {
-					index = index + 2;
-				}
-
 				if (index < 0) {
 					throw new ClassFormatException("Invalid signature: " + signature);
 				}
 
+				if (signature.length() > index + 1 && signature.charAt(index + 1) == '>') {
+					index = index + 2;
+				}
+
 				int genericStart = signature.indexOf('<');
-				int genericEnd = signature.indexOf('>');
 				if (genericStart != -1) {
+					int genericEnd = signature.indexOf('>');
 					// FIXME asc going to need a lot more work in here for generics
 					ResultHolder rh = signatureToStringInternal(signature.substring(genericStart + 1, genericEnd), chopit);
-					ResultHolder retval = new ResultHolder(compactClassName(signature.substring(1, genericStart) + "<"
-							+ rh.getResult() + ">", chopit), genericEnd + 1);
+					StringBuffer sb = new StringBuffer();
+					sb.append(signature.substring(1, genericStart));
+					sb.append("<").append(rh.getResult()).append(">");
+					ResultHolder retval = new ResultHolder(compactClassName(sb.toString(), chopit), genericEnd + 1);
 					return retval;
 				} else {
 					processedChars = index + 1; // "Lblabla;" `L' and `;' are removed
@@ -408,11 +408,10 @@ public abstract class Utility {
 					brackets.append("[]");
 				}
 				consumedChars = n;
-				// The rest of the string denotes a '<field_type>'
 				ResultHolder restOfIt = signatureToStringInternal(signature.substring(n), chopit);
-
 				consumedChars += restOfIt.getConsumedChars();
-				return new ResultHolder(restOfIt.getResult() + brackets.toString(), consumedChars);
+				brackets.insert(0, restOfIt.getResult());
+				return new ResultHolder(brackets.toString(), consumedChars);
 			}
 			case 'V':
 				return ResultHolder.VOID;

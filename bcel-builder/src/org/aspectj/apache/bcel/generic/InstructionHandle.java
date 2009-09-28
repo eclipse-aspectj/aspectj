@@ -68,7 +68,7 @@ import org.aspectj.apache.bcel.classfile.Utility;
  * doubly-linked list. From the outside only the next and the previous instruction (handle) are accessible. One can traverse the
  * list via an Enumeration returned by InstructionList.elements().
  * 
- * @version $Id: InstructionHandle.java,v 1.7 2009/09/09 19:56:20 aclement Exp $
+ * @version $Id: InstructionHandle.java,v 1.8 2009/09/28 16:39:46 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Instruction
  * @see BranchHandle
@@ -78,7 +78,7 @@ public class InstructionHandle implements java.io.Serializable {
 	InstructionHandle next, prev; // Will be set from the outside
 	Instruction instruction;
 	protected int i_position = -1; // byte code offset of instruction
-	private HashSet<InstructionTargeter> targeters;
+	private Set<InstructionTargeter> targeters = Collections.emptySet();
 
 	public final InstructionHandle getNext() {
 		return next;
@@ -155,9 +155,7 @@ public class InstructionHandle implements java.io.Serializable {
 	 * Remove all targeters, if any.
 	 */
 	public void removeAllTargeters() {
-		if (targeters != null) {
-			targeters.clear();
-		}
+		targeters.clear();
 	}
 
 	/**
@@ -171,33 +169,25 @@ public class InstructionHandle implements java.io.Serializable {
 	 * Denote this handle is being referenced by t.
 	 */
 	public void addTargeter(InstructionTargeter t) {
-		if (targeters == null) {
+		if (targeters == Collections.EMPTY_SET) {
 			targeters = new HashSet<InstructionTargeter>();
 		}
-
-		// if(!targeters.contains(t))
 		targeters.add(t);
 	}
 
 	public boolean hasTargeters() {
-		return targeters != null && targeters.size() > 0;
+		return !targeters.isEmpty();
 	}
 
-	public InstructionTargeter[] getTargetersArray() {
-		if (!hasTargeters()) {
-			return null;
-		}
-
-		InstructionTargeter[] t = new InstructionTargeter[targeters.size()];
-		targeters.toArray(t);
-		return t;
-	}
 
 	public Set<InstructionTargeter> getTargeters() {
-		if (targeters == null || targeters.size() == 0) {
-			return Collections.EMPTY_SET;
-		}
 		return targeters;
+	}
+
+	public Set<InstructionTargeter> getTargetersCopy() {
+		Set<InstructionTargeter> copy = new HashSet<InstructionTargeter>();
+		copy.addAll(targeters);
+		return copy;
 	}
 
 	/**

@@ -60,18 +60,27 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 /**
  * Denotes reference such as java.lang.String.
  * 
- * @version $Id: ObjectType.java,v 1.6 2009/09/28 16:34:37 aclement Exp $
+ * @version $Id: ObjectType.java,v 1.7 2009/09/28 16:39:46 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class ObjectType extends ReferenceType {
-	private String class_name; // Class name of type
+	private String classname;
 
 	/**
 	 * @param class_name fully qualified class name, e.g. java.lang.String
 	 */
 	public ObjectType(String class_name) {
 		super(Constants.T_REFERENCE, toSignature(class_name));// "L" + class_name.replace('.', '/') + ";");
-		this.class_name = class_name;// .replace('/', '.');
+		this.classname = class_name;// .replace('/', '.');
+	}
+
+	/**
+	 * @param classname eg. java.lang.String
+	 * @param signature eg. Ljava/lang/String;
+	 */
+	public ObjectType(String classname, String signature) {
+		super(Constants.T_REFERENCE, signature);
+		this.classname = classname;
 	}
 
 	private static String toSignature(String classname) {
@@ -85,7 +94,7 @@ public class ObjectType extends ReferenceType {
 	 * @return name of referenced class
 	 */
 	public String getClassName() {
-		return class_name;
+		return classname;
 	}
 
 	/**
@@ -93,7 +102,7 @@ public class ObjectType extends ReferenceType {
 	 */
 	@Override
 	public int hashCode() {
-		return class_name.hashCode();
+		return classname.hashCode();
 	}
 
 	/**
@@ -101,14 +110,14 @@ public class ObjectType extends ReferenceType {
 	 */
 	@Override
 	public boolean equals(Object type) {
-		return (type instanceof ObjectType) ? ((ObjectType) type).class_name.equals(class_name) : false;
+		return (type instanceof ObjectType) ? ((ObjectType) type).classname.equals(classname) : false;
 	}
 
 	/**
 	 * If "this" doesn't reference a class, it references an interface or a non-existant entity.
 	 */
 	public boolean referencesClass() {
-		JavaClass jc = Repository.lookupClass(class_name);
+		JavaClass jc = Repository.lookupClass(classname);
 		if (jc == null) {
 			return false;
 		} else {
@@ -120,7 +129,7 @@ public class ObjectType extends ReferenceType {
 	 * If "this" doesn't reference an interface, it references a class or a non-existant entity.
 	 */
 	public boolean referencesInterface() {
-		JavaClass jc = Repository.lookupClass(class_name);
+		JavaClass jc = Repository.lookupClass(classname);
 		if (jc == null) {
 			return false;
 		} else {
@@ -133,19 +142,19 @@ public class ObjectType extends ReferenceType {
 			return false;
 		}
 
-		return Repository.instanceOf(this.class_name, superclass.class_name);
+		return Repository.instanceOf(this.classname, superclass.classname);
 	}
 
 	/**
 	 * Java Virtual Machine Specification edition 2, § 5.4.4 Access Control
 	 */
 	public boolean accessibleTo(ObjectType accessor) {
-		JavaClass jc = Repository.lookupClass(class_name);
+		JavaClass jc = Repository.lookupClass(classname);
 
 		if (jc.isPublic()) {
 			return true;
 		} else {
-			JavaClass acc = Repository.lookupClass(accessor.class_name);
+			JavaClass acc = Repository.lookupClass(accessor.classname);
 			return acc.getPackageName().equals(jc.getPackageName());
 		}
 	}
