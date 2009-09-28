@@ -88,9 +88,6 @@ public class TypeFactory {
 
 	/**
 	 * Used by UnresolvedType.read, creates a type from a full signature.
-	 * 
-	 * @param signature
-	 * @return
 	 */
 	public static UnresolvedType createTypeFromSignature(String signature) {
 		if (signature.equals(ResolvedType.MISSING_NAME)) {
@@ -108,20 +105,20 @@ public class TypeFactory {
 			if (startOfParams == -1) {
 				// Should be an inner type of a parameterized type - could assert there is a '$' in the signature....
 				String signatureErasure = "L" + signature.substring(1);
-				UnresolvedType[] typeParams = new UnresolvedType[0];
-				return new UnresolvedType(signature, signatureErasure, typeParams);
+				return new UnresolvedType(signature, signatureErasure, UnresolvedType.NONE);
 			} else {
-				int endOfParams = locateMatchingEndBracket(signature, startOfParams);// signature.lastIndexOf('>');
+				int endOfParams = locateMatchingEndAngleBracket(signature, startOfParams);
 				StringBuffer erasureSig = new StringBuffer(signature);
+				erasureSig.setCharAt(0, 'L');
 				while (startOfParams != -1) {
 					erasureSig.delete(startOfParams, endOfParams + 1);
 					startOfParams = locateFirstBracket(erasureSig);
 					if (startOfParams != -1) {
-						endOfParams = locateMatchingEndBracket(erasureSig, startOfParams);
+						endOfParams = locateMatchingEndAngleBracket(erasureSig, startOfParams);
 					}
 				}
 
-				String signatureErasure = "L" + erasureSig.toString().substring(1);
+				String signatureErasure = erasureSig.toString();// "L" + erasureSig.substring(1);
 
 				// the type parameters of interest are only those that apply to the 'last type' in the signature
 				// if the signature is 'PMyInterface<String>$MyOtherType;' then there are none...
@@ -133,9 +130,9 @@ public class TypeFactory {
 					lastType = new String(signature);
 				}
 				startOfParams = lastType.indexOf("<");
-				endOfParams = locateMatchingEndBracket(lastType, startOfParams);
 				UnresolvedType[] typeParams = UnresolvedType.NONE;
 				if (startOfParams != -1) {
+					endOfParams = locateMatchingEndAngleBracket(lastType, startOfParams);
 					typeParams = createTypeParams(lastType.substring(startOfParams + 1, endOfParams));
 				}
 				return new UnresolvedType(signature, signatureErasure, typeParams);
@@ -191,36 +188,21 @@ public class TypeFactory {
 		return new UnresolvedType(signature);
 	}
 
-	private static int locateMatchingEndBracket(String signature, int startOfParams) {
+	private static int locateMatchingEndAngleBracket(CharSequence signature, int startOfParams) {
 		if (startOfParams == -1) {
 			return -1;
 		}
 		int count = 1;
 		int idx = startOfParams;
-		while (count > 0 && idx < signature.length()) {
-			idx++;
-			if (signature.charAt(idx) == '<') {
+		int max = signature.length();
+		while (idx < max) {
+			char ch = signature.charAt(++idx);
+			if (ch == '<') {
 				count++;
-			}
-			if (signature.charAt(idx) == '>') {
-				count--;
-			}
-		}
-		return idx;
-	}
-
-	private static int locateMatchingEndBracket(StringBuffer signature, int startOfParams) {
-		if (startOfParams == -1) {
-			return -1;
-		}
-		int count = 1;
-		int idx = startOfParams;
-		while (count > 0 && idx < signature.length()) {
-			idx++;
-			if (signature.charAt(idx) == '<') {
-				count++;
-			}
-			if (signature.charAt(idx) == '>') {
+			} else if (ch == '>') {
+				if (count == 1) {
+					break;
+				}
 				count--;
 			}
 		}
@@ -229,7 +211,8 @@ public class TypeFactory {
 
 	private static int locateFirstBracket(StringBuffer signature) {
 		int idx = 0;
-		while (idx < signature.length()) {
+		int max = signature.length();
+		while (idx < max) {
 			if (signature.charAt(idx) == '<') {
 				return idx;
 			}
@@ -241,7 +224,7 @@ public class TypeFactory {
 	private static UnresolvedType[] createTypeParams(String typeParameterSpecification) {
 		String remainingToProcess = typeParameterSpecification;
 		List types = new ArrayList();
-		while (!remainingToProcess.equals("")) {
+		while (remainingToProcess.length() != 0) {
 			int endOfSig = 0;
 			int anglies = 0;
 			boolean sigFound = false; // OPTIMIZE can this be done better?
