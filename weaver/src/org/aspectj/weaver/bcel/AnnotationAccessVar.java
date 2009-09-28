@@ -92,7 +92,7 @@ public class AnnotationAccessVar extends BcelVar {
 				// annotations for fieldset/fieldget when an ITD is involved are stored against a METHOD
 				((kind == Shadow.FieldGet || kind == Shadow.FieldSet) && member.getKind() == Member.METHOD)) {
 
-			Type jlrMethod = BcelWorld.makeBcelType(UnresolvedType.forSignature("Ljava.lang.reflect.Method;"));
+			Type jlrMethod = BcelWorld.makeBcelType(UnresolvedType.forSignature("Ljava/lang/reflect/Method;"));
 			Type[] paramTypes = BcelWorld.makeBcelTypes(member.getParameterTypes());
 
 			il.append(fact.createConstant(BcelWorld.makeBcelType(containingType)));
@@ -116,7 +116,7 @@ public class AnnotationAccessVar extends BcelVar {
 						Constants.INVOKEVIRTUAL));
 			} else { // init/preinit/ctor-call/ctor-exec
 				buildArray(il, fact, jlClass, paramTypes, 1);
-				Type jlrCtor = BcelWorld.makeBcelType(UnresolvedType.forSignature("Ljava.lang.reflect.Constructor;"));
+				Type jlrCtor = BcelWorld.makeBcelType(UnresolvedType.JAVA_LANG_REFLECT_CONSTRUCTOR);
 				// OPTIMIZE cache result of getDeclaredConstructor and getAnnotation? Might be able to use it again if someone else
 				// needs the same annotations?
 				il.append(fact.createInvoke("java/lang/Class", "getDeclaredConstructor", jlrCtor, new Type[] { jlClassArray },
@@ -126,7 +126,7 @@ public class AnnotationAccessVar extends BcelVar {
 						new Type[] { jlClass }, Constants.INVOKEVIRTUAL));
 			}
 		} else if (kind == Shadow.FieldSet || kind == Shadow.FieldGet) {
-			Type jlrField = BcelWorld.makeBcelType(UnresolvedType.forSignature("Ljava.lang.reflect.Field;"));
+			Type jlrField = BcelWorld.makeBcelType(UnresolvedType.JAVA_LANG_REFLECT_FIELD);
 			il.append(fact.createConstant(BcelWorld.makeBcelType(containingType))); // Stick the target on the stack
 			il.append(fact.createConstant(member.getName())); // Stick what we are after on the stack
 			il.append(fact.createInvoke("java/lang/Class", "getDeclaredField", jlrField, new Type[] { jlString },
@@ -149,8 +149,9 @@ public class AnnotationAccessVar extends BcelVar {
 	private void buildArray(InstructionList il, InstructionFactory fact, Type arrayElementType, Type[] arrayEntries, int dim) {
 		il.append(fact.createConstant(Integer.valueOf(arrayEntries == null ? 0 : arrayEntries.length)));
 		il.append(fact.createNewArray(arrayElementType, (short) dim));
-		if (arrayEntries == null)
+		if (arrayEntries == null) {
 			return;
+		}
 		for (int i = 0; i < arrayEntries.length; i++) {
 			il.append(InstructionFactory.createDup(1));
 			il.append(fact.createConstant(Integer.valueOf(i)));

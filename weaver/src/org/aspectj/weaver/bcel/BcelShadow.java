@@ -325,7 +325,7 @@ public class BcelShadow extends Shadow {
 			// Now the exception range starts just after our new instruction.
 			// The next bit of code changes the exception range to point at
 			// the store instruction
-			for (InstructionTargeter t: start.getTargetersCopy()) {
+			for (InstructionTargeter t : start.getTargetersCopy()) {
 				if (t instanceof ExceptionRange) {
 					ExceptionRange er = (ExceptionRange) t;
 					er.updateTarget(start, insertedInstruction, body);
@@ -407,8 +407,8 @@ public class BcelShadow extends Shadow {
 					}
 				}
 			}
-			}
 		}
+	}
 
 	// ---- getters
 
@@ -454,9 +454,8 @@ public class BcelShadow extends Shadow {
 		return sourceline;
 	}
 
-	// overrides
 	@Override
-	public UnresolvedType getEnclosingType() {
+	public ResolvedType getEnclosingType() {
 		return getEnclosingClass().getType();
 	}
 
