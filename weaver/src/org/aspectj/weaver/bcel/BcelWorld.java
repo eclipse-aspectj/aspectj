@@ -104,17 +104,17 @@ public class BcelWorld extends World implements Repository {
 
 	public IRelationship.Kind determineRelKind(ShadowMunger munger) {
 		AdviceKind ak = ((Advice) munger).getKind();
-		if (ak.getKey() == AdviceKind.Before.getKey())
+		if (ak.getKey() == AdviceKind.Before.getKey()) {
 			return IRelationship.Kind.ADVICE_BEFORE;
-		else if (ak.getKey() == AdviceKind.After.getKey())
+		} else if (ak.getKey() == AdviceKind.After.getKey()) {
 			return IRelationship.Kind.ADVICE_AFTER;
-		else if (ak.getKey() == AdviceKind.AfterThrowing.getKey())
+		} else if (ak.getKey() == AdviceKind.AfterThrowing.getKey()) {
 			return IRelationship.Kind.ADVICE_AFTERTHROWING;
-		else if (ak.getKey() == AdviceKind.AfterReturning.getKey())
+		} else if (ak.getKey() == AdviceKind.AfterReturning.getKey()) {
 			return IRelationship.Kind.ADVICE_AFTERRETURNING;
-		else if (ak.getKey() == AdviceKind.Around.getKey())
+		} else if (ak.getKey() == AdviceKind.Around.getKey()) {
 			return IRelationship.Kind.ADVICE_AROUND;
-		else if (ak.getKey() == AdviceKind.CflowEntry.getKey() || ak.getKey() == AdviceKind.CflowBelowEntry.getKey()
+		} else if (ak.getKey() == AdviceKind.CflowEntry.getKey() || ak.getKey() == AdviceKind.CflowBelowEntry.getKey()
 				|| ak.getKey() == AdviceKind.InterInitializer.getKey() || ak.getKey() == AdviceKind.PerCflowEntry.getKey()
 				|| ak.getKey() == AdviceKind.PerCflowBelowEntry.getKey() || ak.getKey() == AdviceKind.PerThisEntry.getKey()
 				|| ak.getKey() == AdviceKind.PerTargetEntry.getKey() || ak.getKey() == AdviceKind.Softener.getKey()
@@ -158,8 +158,9 @@ public class BcelWorld extends World implements Repository {
 			return;
 		}
 		if (!(aKind.equals(AdviceKind.Before) || aKind.equals(AdviceKind.After) || aKind.equals(AdviceKind.AfterReturning)
-				|| aKind.equals(AdviceKind.AfterThrowing) || aKind.equals(AdviceKind.Around) || aKind.equals(AdviceKind.Softener)))
+				|| aKind.equals(AdviceKind.AfterThrowing) || aKind.equals(AdviceKind.Around) || aKind.equals(AdviceKind.Softener))) {
 			return;
+		}
 
 		// synchronized blocks are implemented with multiple monitor_exit instructions in the bytecode
 		// (one for normal exit from the method, one for abnormal exit), we only want to tell the user
@@ -201,18 +202,23 @@ public class BcelWorld extends World implements Repository {
 	}
 
 	private boolean areTheSame(ISourceLocation locA, ISourceLocation locB) {
-		if (locA == null)
+		if (locA == null) {
 			return locB == null;
-		if (locB == null)
+		}
+		if (locB == null) {
 			return false;
-		if (locA.getLine() != locB.getLine())
+		}
+		if (locA.getLine() != locB.getLine()) {
 			return false;
+		}
 		File fA = locA.getSourceFile();
 		File fB = locA.getSourceFile();
-		if (fA == null)
+		if (fA == null) {
 			return fB == null;
-		if (fB == null)
+		}
+		if (fB == null) {
 			return false;
+		}
 		return fA.getName().equals(fB.getName());
 	}
 
@@ -243,11 +249,13 @@ public class BcelWorld extends World implements Repository {
 				}
 			}
 			nice.append(isl.getSourceFile().getPath().substring(takeFrom + 1));
-			if (isl.getLine() != 0)
+			if (isl.getLine() != 0) {
 				nice.append(":").append(isl.getLine());
+			}
 			// if it's a binary file then also want to give the file name
-			if (isl.getSourceFileName() != null)
+			if (isl.getSourceFileName() != null) {
 				nice.append("(from " + isl.getSourceFileName() + ")");
+			}
 		}
 		return nice.toString();
 	}
@@ -380,12 +388,14 @@ public class BcelWorld extends World implements Repository {
 			try {
 				ensureRepositorySetup();
 				JavaClass jc = delegate.loadClass(name);
-				if (trace.isTraceEnabled())
+				if (trace.isTraceEnabled()) {
 					trace.event("lookupJavaClass", this, new Object[] { name, jc });
+				}
 				return jc;
 			} catch (ClassNotFoundException e) {
-				if (trace.isTraceEnabled())
+				if (trace.isTraceEnabled()) {
 					trace.error("Unable to find class '" + name + "' in repository", e);
+				}
 				return null;
 			}
 		}
@@ -393,8 +403,9 @@ public class BcelWorld extends World implements Repository {
 		ClassPathManager.ClassFile file = null;
 		try {
 			file = classPath.find(UnresolvedType.forName(name));
-			if (file == null)
+			if (file == null) {
 				return null;
+			}
 
 			ClassParser parser = new ClassParser(file.getInputStream(), file.getPath());
 
@@ -505,8 +516,9 @@ public class BcelWorld extends World implements Repository {
 				ut = fromBcel(t);
 			}
 			ResolvedType[] parms = new ResolvedType[dimensions];
-			for (int ii = 0; ii < dimensions; ii++)
+			for (int ii = 0; ii < dimensions; ii++) {
 				parms[ii] = ResolvedType.INT;
+			}
 			retval = MemberImpl.method(ut, Modifier.PUBLIC, ResolvedType.VOID, "<init>", parms);
 
 		} else if (i.opcode == Constants.NEWARRAY) {
@@ -553,10 +565,11 @@ public class BcelWorld extends World implements Repository {
 		}
 
 		if (declaringType == null) {
-			if (declaring.charAt(0) == '[')
+			if (declaring.charAt(0) == '[') {
 				declaringType = UnresolvedType.forSignature(declaring);
-			else
+			} else {
 				declaringType = UnresolvedType.forName(declaring);
+			}
 		}
 		return MemberImpl.method(declaringType, modifier, name, signature);
 	}
@@ -631,10 +644,12 @@ public class BcelWorld extends World implements Repository {
 	@Override
 	public void validateType(UnresolvedType type) {
 		ResolvedType result = typeMap.get(type.getSignature());
-		if (result == null)
+		if (result == null) {
 			return; // We haven't heard of it yet
-		if (!result.isExposedToWeaver())
+		}
+		if (!result.isExposedToWeaver()) {
 			return; // cant need resetting
+		}
 		result.ensureConsistent();
 		// If we want to rebuild it 'from scratch' then:
 		// ClassParser cp = new ClassParser(new
@@ -743,8 +758,9 @@ public class BcelWorld extends World implements Repository {
 				aParentChangeOccurred = true;
 			} else { // Perhaps it would have matched if a 'dec @type' had
 				// modified the type
-				if (!decp.getChild().isStarAnnotation())
+				if (!decp.getChild().isStarAnnotation()) {
 					decpToRepeat.add(decp);
+				}
 			}
 		}
 
