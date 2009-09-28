@@ -75,7 +75,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 /**
  * Utility functions that do not really belong to any class in particular.
  * 
- * @version $Id: Utility.java,v 1.12 2009/09/15 19:40:13 aclement Exp $
+ * @version $Id: Utility.java,v 1.13 2009/09/28 16:35:18 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  *         modified: Andy Clement 2-mar-05 Removed unnecessary static and optimized
@@ -117,8 +117,9 @@ public abstract class Utility {
 			p = pow2(i);
 			if ((access_flags & p) != 0) {
 				// Special case: see comment at top of class...
-				if (for_class && ((p == Constants.ACC_SUPER) || (p == Constants.ACC_INTERFACE)))
+				if (for_class && ((p == Constants.ACC_SUPER) || (p == Constants.ACC_INTERFACE))) {
 					continue;
+				}
 				buf.append(Constants.ACCESS_NAMES[i]).append(" ");
 			}
 		}
@@ -148,9 +149,10 @@ public abstract class Utility {
 		ByteSequence stream = new ByteSequence(code);
 
 		try {
-			for (int i = 0; i < index; i++)
+			for (int i = 0; i < index; i++) {
 				// Skip `index' lines of code
 				codeToString(stream, constant_pool, verbose);
+			}
 
 			for (int i = 0; stream.available() > 0; i++) {
 				if ((length < 0) || (i < length)) {
@@ -246,8 +248,9 @@ public abstract class Utility {
 		int var_index = (access.indexOf("static") >= 0) ? 0 : 1;
 
 		try { // Read all declarations between for `(' and `)'
-			if (signature.charAt(0) != '(')
+			if (signature.charAt(0) != '(') {
 				throw new ClassFormatException("Invalid method signature: " + signature);
+			}
 
 			index = 1; // current string position
 
@@ -259,15 +262,18 @@ public abstract class Utility {
 				if (vars != null) {
 					LocalVariable l = vars.getLocalVariable(var_index);
 
-					if (l != null)
+					if (l != null) {
 						buf.append(" " + l.getName());
-				} else
+					}
+				} else {
 					buf.append(" arg" + var_index);
+				}
 
-				if ("double".equals(param_type) || "long".equals(param_type))
+				if ("double".equals(param_type) || "long".equals(param_type)) {
 					var_index += 2;
-				else
+				} else {
 					var_index++;
+				}
 
 				buf.append(", ");
 				index += rh.getConsumedChars();
@@ -282,8 +288,9 @@ public abstract class Utility {
 			throw new ClassFormatException("Invalid method signature: " + signature);
 		}
 
-		if (buf.length() > 1) // Tack off the extra ", "
+		if (buf.length() > 1) {
 			buf.setLength(buf.length() - 2);
+		}
 
 		buf.append(")");
 
@@ -367,8 +374,9 @@ public abstract class Utility {
 					index = index + 2;
 				}
 
-				if (index < 0)
+				if (index < 0) {
 					throw new ClassFormatException("Invalid signature: " + signature);
+				}
 
 				int genericStart = signature.indexOf('<');
 				int genericEnd = signature.indexOf('>');
@@ -457,13 +465,15 @@ public abstract class Utility {
 			String hex = Integer.toString(b, 0x10);
 
 			// Just one digit, so prepend 0
-			if (b < 0x10)
+			if (b < 0x10) {
 				buf.append('0');
+			}
 
 			buf.append(hex);
 
-			if (i < bytes.length - 1)
+			if (i < bytes.length - 1) {
 				buf.append(' ');
+			}
 		}
 
 		return buf.toString();
@@ -495,13 +505,15 @@ public abstract class Utility {
 		int len = length - str.length();
 		char[] buf = new char[(len < 0) ? 0 : len];
 
-		for (int j = 0; j < buf.length; j++)
+		for (int j = 0; j < buf.length; j++) {
 			buf[j] = fill;
+		}
 
-		if (left_justify)
+		if (left_justify) {
 			return str + new String(buf);
-		else
+		} else {
 			return new String(buf) + str;
+		}
 	}
 
 	/**
@@ -545,8 +557,9 @@ public abstract class Utility {
 	 */
 	public static Collection<RuntimeAnnos> getAnnotationAttributes(ConstantPool cp, List<AnnotationGen> annotations) {
 
-		if (annotations.size() == 0)
+		if (annotations.size() == 0) {
 			return null;
+		}
 
 		try {
 			int countVisible = 0;
@@ -571,10 +584,11 @@ public abstract class Utility {
 
 			// put the annotations in the right output stream
 			for (AnnotationGen a : annotations) {
-				if (a.isRuntimeVisible())
+				if (a.isRuntimeVisible()) {
 					a.dump(rvaDos);
-				else
+				} else {
 					a.dump(riaDos);
+				}
 			}
 
 			rvaDos.close();
@@ -586,10 +600,12 @@ public abstract class Utility {
 			int rvaIndex = -1;
 			int riaIndex = -1;
 
-			if (rvaData.length > 2)
+			if (rvaData.length > 2) {
 				rvaIndex = cp.addUtf8("RuntimeVisibleAnnotations");
-			if (riaData.length > 2)
+			}
+			if (riaData.length > 2) {
 				riaIndex = cp.addUtf8("RuntimeInvisibleAnnotations");
+			}
 
 			List<RuntimeAnnos> newAttributes = new ArrayList<RuntimeAnnos>();
 			if (rvaData.length > 2) {
@@ -645,8 +661,9 @@ public abstract class Utility {
 				if (visCount[i] > 0) {
 					List<AnnotationGen> l = vec[i];
 					for (AnnotationGen element : l) {
-						if (element.isRuntimeVisible())
+						if (element.isRuntimeVisible()) {
 							element.dump(rvaDos);
+						}
 					}
 				}
 			}
@@ -662,8 +679,9 @@ public abstract class Utility {
 				if (invisCount[i] > 0) {
 					List<AnnotationGen> l = vec[i];
 					for (AnnotationGen element : l) {
-						if (!element.isRuntimeVisible())
+						if (!element.isRuntimeVisible()) {
 							element.dump(riaDos);
+						}
 					}
 				}
 			}
@@ -675,10 +693,12 @@ public abstract class Utility {
 			int rvaIndex = -1;
 			int riaIndex = -1;
 
-			if (totalVisCount > 0)
+			if (totalVisCount > 0) {
 				rvaIndex = cp.addUtf8("RuntimeVisibleParameterAnnotations");
-			if (totalInvisCount > 0)
+			}
+			if (totalInvisCount > 0) {
 				riaIndex = cp.addUtf8("RuntimeInvisibleParameterAnnotations");
+			}
 
 			List<RuntimeParamAnnos> newAttributes = new ArrayList<RuntimeParamAnnos>();
 
@@ -820,8 +840,9 @@ public abstract class Utility {
 
 			for (int i = 0; i < no_pad_bytes; i++) {
 				byte b = bytes.readByte();
-				if (b != 0)
+				if (b != 0) {
 					System.err.println("Warning: Padding byte != 0 in " + Constants.OPCODE_NAMES[opcode] + ":" + b);
+				}
 			}
 
 			// Both cases have a field default_offset in common
@@ -845,8 +866,9 @@ public abstract class Utility {
 			for (int i = 0; i < jump_table.length; i++) {
 				jump_table[i] = offset + bytes.readInt();
 				buf.append(jump_table[i]);
-				if (i < jump_table.length - 1)
+				if (i < jump_table.length - 1) {
 					buf.append(", ");
+				}
 			}
 			buf.append(")");
 			break;
@@ -869,8 +891,9 @@ public abstract class Utility {
 				match[i] = bytes.readInt();
 				jump_table[i] = offset + bytes.readInt();
 				buf.append("(" + match[i] + ", " + jump_table[i] + ")");
-				if (i < npairs - 1)
+				if (i < npairs - 1) {
 					buf.append(", ");
+				}
 			}
 			buf.append(")");
 		}
@@ -919,8 +942,9 @@ public abstract class Utility {
 			if (wide) {
 				vindex = bytes.readUnsignedShort();
 				wide = false; // Clear flag
-			} else
+			} else {
 				vindex = bytes.readUnsignedByte();
+			}
 			buf.append("\t\t%" + vindex);
 			break;
 
