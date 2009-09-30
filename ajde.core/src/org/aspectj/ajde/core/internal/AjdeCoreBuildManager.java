@@ -168,27 +168,32 @@ public class AjdeCoreBuildManager {
 	}
 
 	private String formatCollection(Collection options) {
-		if (options == null)
+		if (options == null) {
 			return "<default>";
-		if (options.isEmpty())
+		}
+		if (options.isEmpty()) {
 			return "none";
+		}
 
 		StringBuffer formattedOptions = new StringBuffer();
 		Iterator it = options.iterator();
 		while (it.hasNext()) {
 			String o = it.next().toString();
-			if (formattedOptions.length() > 0)
+			if (formattedOptions.length() > 0) {
 				formattedOptions.append(", ");
+			}
 			formattedOptions.append(o);
 		}
 		return formattedOptions.toString();
 	}
 
 	private String formatMap(Map options) {
-		if (options == null)
+		if (options == null) {
 			return "<default>";
-		if (options.isEmpty())
+		}
+		if (options.isEmpty()) {
 			return "none";
+		}
 
 		return options.toString();
 	}
@@ -223,7 +228,7 @@ public class AjdeCoreBuildManager {
 			}
 			List xmlfiles = compilerConfig.getProjectXmlConfigFiles();
 			if (xmlfiles != null && !xmlfiles.isEmpty()) {
-				args = new String[l.size() + xmlfiles.size()];
+				args = new String[l.size() + xmlfiles.size() + 1];
 				// TODO speedup
 				int p = 0;
 				for (int i = 0; i < l.size(); i++) {
@@ -232,6 +237,7 @@ public class AjdeCoreBuildManager {
 				for (int i = 0; i < xmlfiles.size(); i++) {
 					args[p++] = (String) xmlfiles.get(i);
 				}
+				args[p++] = "-xmlConfigured";
 			} else {
 				args = (String[]) l.toArray(new String[l.size()]);
 			}
