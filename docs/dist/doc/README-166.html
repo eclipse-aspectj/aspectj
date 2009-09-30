@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.6.6 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2009 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 1.6.6 Readme</h1>
+
+<a name="bugsfixed"/>
+<h4>Bugs fixed</h4>
+<p>The complete list of issues resolved for AspectJ 1.6.6 can be found with
+this bugzilla query:
+<ul>
+<li><a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&short_desc=&product=AspectJ&target_milestone=1.6.6&long_desc_type=allwordssubstr&long_desc=&bug_file_loc_type=allwordssubstr&bug_file_loc=&status_whiteboard_type=allwordssubstr&status_whiteboard=&keywords_type=allwords&keywords=&bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&emailtype1=substring&email1=&emailtype2=substring&email2=&bugidtype=include&bug_id=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&cmdtype=doit&order=Reuse+same+sort+as+last+time&field0-0-0=noop&type0-0-0=noop&value0-0-0=">Bugs resolved</a>
+</ul>
+<hr>
+<h2>Changes</h2>
+
+<p><b>Java5</b></p>
+<p>The features of Java5 (generics, autoboxing, covariance, etc) are being exploited in the AspectJ codebase.  This does not in
+any way change the generated code or supported source code, or the dependencies that code has, but it *does* mean that AspectJ 
+requires Java5 in order to run.  The ability to use typed collections has already flushed out a few issues within the codebase,
+improving the quality of AspectJ.</p>
+<!--
+<br>
+<p><b>Supporting aop.xml for batch or IDE compilation</b></p>
+<p>This is a new feature, not totally complete, but in a usable state.  The idea here is to make it easier for users to
+develop the aop.xml configuration files that will later be used for load-time weaving.  If these files are supported for configuring
+compile time weaving (batch or IDE) then they can be developed alongside the codebase against which they will be used.</p>
+<p>The work-in-progress enhancement is <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=124460">https://bugs.eclipse.org/bugs/show_bug.cgi?id=124460</a>.
+AspectJ 1.6.6 supports the inclusion of xml files on the command line:</p>
+<pre><code>ajc Foo.aj -xmlConfigured myaop.xml</code></pre>
+<p>or through iajc.  Within the iajc task include a section like this:</p>
+<pre><code>&lt;inxml&gt;
+  &lt;pathelement="myaop.xml"/&gt;
+&lt;/inxml&gt;
+</code></pre>
+<p>The compiler does not yet support concrete-aspect definitions made in these xml files, but it should respect 
+include/exclude patterns.  It is a work in progress, please provide feedback!  Under AJDT there is a configuration page for aop.xml
+files to be included in a build under ProjectProperties>AspectJBuild>aop.xml management.  Incremental builds based on changes to 
+these files is not yet supported.  IMPORTANT: When switching to using aop.xml files to control compilation, the entire compiler for
+that project switches into the same mode as you would see when load-time weaving.  What does this mean?  It means aspects are 
+opt-in rather than opt-out - if you want an aspect to weave your code, you must define it in an aop.xml file.</p>
+
+<br>
+<p><b>Aspect scoping in aop.xml</b></p>
+<p>This is related to the previous topic.  When a user declares an aspect in an aop.xml they can now specify a scope where it
+should apply.  This enables the aspect developer to have some degree of control over where the aspect can be applied, in addition
+to what they may have captured in pointcuts within the defined aspect.</p>
+<p>Here is an example:</p>
+<pre><code>
+&lt;aspectj&gt;
+&lt;aspects&gt;
+  &lt;aspect name="A" scope="B*"/&gt;
+  &lt;!-- &lt;aspect name="A2"/&gt; --&gt;
+&lt;/aspects&gt;
+&lt;/aspectj&gt;
+</code></pre>
+<p>This XML defines the aspect A but limits where it can be applied to types matching the pattern B*.  It is still a work in
+progress so scopes are only supported at compile time right now, not load-time.  Any feedback appreciated.  Yes, it may look like
+just another way to specify the weaver section include/exclude patterns - but the intention of scope is that it would be set 
+by the aspect developer (aspect library provider) whilst the weaver section would be defined by the aspect consumer.</p>
+-->
+<br>
+<p><b>Closing streams</b></p>
+<p>Some routes through AspectJ were leaving inputstreams open and this has now been fixed.  For example if supplying a user
+written configuration file for Lint options.  Thanks to Michael Pradel for supplying patches to fix these issues.</p>
+
+<br>
+<p><b>Concurrency (281654)</b></p>
+<p>Fix to address a problem seen when using the weaver in a highly concurrent environment.  Thanks to Kristian Rosenvold for
+the patch.</p>
+
+<br>
+<p><b>Incremental compilation</b></p>
+<p>A few fixes to problems seen only on incremental builds, problem areas included:</p><ul>
+<li>problems when fully qualifying the target type in an intertype declaration (269652)
+<li>problems when using annotation style pointcuts and reference pointcuts together (286341)
+</ul>
+
+<br>
+<p><b>JavadocRunner in NetBeans</b></p>
+<p>Fixed by a patch from Joseph A. Levin - thanks!</p>
+
+<br>
+<p><b>Various fixes/enhancements to the structure model to fix issues with feedback on weaving in AJDT</b></p>
+
+<h4>
+<!-- ============================== -->  
+</body>
+</html>
