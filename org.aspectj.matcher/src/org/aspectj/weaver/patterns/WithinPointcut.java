@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
@@ -32,19 +31,19 @@ import org.aspectj.weaver.ast.Test;
 
 public class WithinPointcut extends Pointcut {
 	private TypePattern typePattern;
-	
+
 	public WithinPointcut(TypePattern type) {
 		this.typePattern = type;
 		this.pointcutKind = WITHIN;
 	}
 
-    public TypePattern getTypePattern() {
-        return typePattern;
-    }
+	public TypePattern getTypePattern() {
+		return typePattern;
+	}
 
 	private FuzzyBoolean isWithinType(ResolvedType type) {
 		while (type != null) {
-			if (typePattern.matchesStatically(type)) {			    
+			if (typePattern.matchesStatically(type)) {
 				return FuzzyBoolean.YES;
 			}
 			type = type.getDeclaringType();
@@ -55,43 +54,37 @@ public class WithinPointcut extends Pointcut {
 	public int couldMatchKinds() {
 		return Shadow.ALL_SHADOW_KINDS_BITS;
 	}
-	
-	public Pointcut parameterizeWith(Map typeVariableMap,World w) {
-		WithinPointcut ret = new WithinPointcut(this.typePattern.parameterizeWith(typeVariableMap,w));
+
+	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+		WithinPointcut ret = new WithinPointcut(this.typePattern.parameterizeWith(typeVariableMap, w));
 		ret.copyLocationFrom(this);
 		return ret;
 	}
-	
+
 	public FuzzyBoolean fastMatch(FastMatchInfo info) {
-	    if (typePattern.annotationPattern instanceof AnyAnnotationTypePattern) {
-	        return isWithinType(info.getType());
-	    }
-	    return FuzzyBoolean.MAYBE;
+		if (typePattern.annotationPattern instanceof AnyAnnotationTypePattern) {
+			return isWithinType(info.getType());
+		}
+		return FuzzyBoolean.MAYBE;
 	}
-	   
+
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
-		ResolvedType enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType(),true);
+		ResolvedType enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType(), true);
 		if (enclosingType.isMissing()) {
-			shadow.getIWorld().getLint().cantFindType.signal(
-					new String[] {WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_WITHINPCD,
-											shadow.getEnclosingType().getName())},
-				    shadow.getSourceLocation(),
-				    new ISourceLocation[]{getSourceLocation()});			
-//			IMessage msg = new Message(
-//			    WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_WITHINPCD,
-//			    		              shadow.getEnclosingType().getName()),
-//				shadow.getSourceLocation(),true,new ISourceLocation[]{getSourceLocation()});
-//			shadow.getIWorld().getMessageHandler().handleMessage(msg);
+			shadow.getIWorld().getLint().cantFindType.signal(new String[] { WeaverMessages.format(
+					WeaverMessages.CANT_FIND_TYPE_WITHINPCD, shadow.getEnclosingType().getName()) }, shadow.getSourceLocation(),
+					new ISourceLocation[] { getSourceLocation() });
 		}
 		typePattern.resolve(shadow.getIWorld());
 		return isWithinType(enclosingType);
 	}
-	
+
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.WITHIN);
 		typePattern.write(s);
 		writeLocation(s);
 	}
+
 	public static Pointcut read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		TypePattern type = TypePattern.read(s, context);
 		WithinPointcut ret = new WithinPointcut(type);
@@ -101,15 +94,14 @@ public class WithinPointcut extends Pointcut {
 
 	public void resolveBindings(IScope scope, Bindings bindings) {
 		typePattern = typePattern.resolveBindings(scope, bindings, false, false);
-		
+
 		// look for parameterized type patterns which are not supported...
-		HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor 
-			visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
+		HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
 		typePattern.traverse(visitor, null);
-		if (visitor.wellHasItThen/*?*/()) {
+		if (visitor.wellHasItThen/* ? */()) {
 			scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.WITHIN_PCD_DOESNT_SUPPORT_PARAMETERS),
-				getSourceLocation()));
-		}		
+					getSourceLocation()));
+		}
 	}
 
 	public void postRead(ResolvedType enclosingType) {
@@ -119,17 +111,20 @@ public class WithinPointcut extends Pointcut {
 	public boolean couldEverMatchSameJoinPointsAs(WithinPointcut other) {
 		return typePattern.couldEverMatchSameTypesAs(other.typePattern);
 	}
-	
+
 	public boolean equals(Object other) {
-		if (!(other instanceof WithinPointcut)) return false;
-		WithinPointcut o = (WithinPointcut)other;
+		if (!(other instanceof WithinPointcut)) {
+			return false;
+		}
+		WithinPointcut o = (WithinPointcut) other;
 		return o.typePattern.equals(this.typePattern);
 	}
-    public int hashCode() {
-        int result = 43;
-        result = 37*result + typePattern.hashCode();
-        return result;
-    }
+
+	public int hashCode() {
+		int result = 43;
+		result = 37 * result + typePattern.hashCode();
+		return result;
+	}
 
 	public String toString() {
 		return "within(" + typePattern + ")";
@@ -138,15 +133,14 @@ public class WithinPointcut extends Pointcut {
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		return match(shadow).alwaysTrue() ? Literal.TRUE : Literal.FALSE;
 	}
-	
-	
-	public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType,  IntMap bindings) {
+
+	public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
 		Pointcut ret = new WithinPointcut(typePattern);
 		ret.copyLocationFrom(this);
 		return ret;
 	}
 
-    public Object accept(PatternNodeVisitor visitor, Object data) {
-        return visitor.visit(this, data);
-    }
+	public Object accept(PatternNodeVisitor visitor, Object data) {
+		return visitor.visit(this, data);
+	}
 }
