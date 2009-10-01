@@ -96,8 +96,9 @@ public class ExactTypePattern extends TypePattern {
 	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
 	 */
 	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
-		if (super.couldEverMatchSameTypesAs(other))
+		if (super.couldEverMatchSameTypesAs(other)) {
 			return true;
+		}
 		// false is necessary but not sufficient
 		UnresolvedType otherType = other.getExactType();
 		if (!ResolvedType.isMissing(otherType)) {
@@ -163,8 +164,9 @@ public class ExactTypePattern extends TypePattern {
 	public FuzzyBoolean matchesInstanceof(ResolvedType matchType) {
 		// in our world, Object is assignable from anything
 		annotationPattern.resolve(matchType.getWorld());
-		if (type.equals(ResolvedType.OBJECT))
+		if (type.equals(ResolvedType.OBJECT)) {
 			return FuzzyBoolean.YES.and(annotationPattern.matches(matchType));
+		}
 
 		if (type.resolve(matchType.getWorld()).isAssignableFrom(matchType)) {
 			return FuzzyBoolean.YES.and(annotationPattern.matches(matchType));
@@ -179,17 +181,22 @@ public class ExactTypePattern extends TypePattern {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof ExactTypePattern))
+		if (!(other instanceof ExactTypePattern)) {
 			return false;
-		if (other instanceof BindingTypePattern)
+		}
+		if (other instanceof BindingTypePattern) {
 			return false;
+		}
 		ExactTypePattern o = (ExactTypePattern) other;
-		if (includeSubtypes != o.includeSubtypes)
+		if (includeSubtypes != o.includeSubtypes) {
 			return false;
-		if (isVarArgs != o.isVarArgs)
+		}
+		if (isVarArgs != o.isVarArgs) {
 			return false;
-		if (!typeParameters.equals(o.typeParameters))
+		}
+		if (!typeParameters.equals(o.typeParameters)) {
 			return false;
+		}
 		return (o.type.equals(this.type) && o.annotationPattern.equals(this.annotationPattern));
 	}
 
@@ -226,8 +233,9 @@ public class ExactTypePattern extends TypePattern {
 
 	public static TypePattern readTypePattern150(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		byte version = s.readByte();
-		if (version > EXACT_VERSION)
+		if (version > EXACT_VERSION) {
 			throw new BCException("ExactTypePattern was written by a more recent version of AspectJ");
+		}
 		TypePattern ret = new ExactTypePattern(UnresolvedType.read(s), s.readBoolean(), s.readBoolean());
 		ret.setAnnotationTypePattern(AnnotationTypePattern.read(s, context));
 		ret.setTypeParameters(TypePatternList.read(s, context));
@@ -249,13 +257,16 @@ public class ExactTypePattern extends TypePattern {
 			buff.append(' ');
 		}
 		String typeString = type.toString();
-		if (isVarArgs)
+		if (isVarArgs) {
 			typeString = typeString.substring(0, typeString.lastIndexOf('['));
+		}
 		buff.append(typeString);
-		if (includeSubtypes)
+		if (includeSubtypes) {
 			buff.append('+');
-		if (isVarArgs)
+		}
+		if (isVarArgs) {
 			buff.append("...");
+		}
 		if (annotationPattern != AnnotationTypePattern.ANY) {
 			buff.append(')');
 		}
