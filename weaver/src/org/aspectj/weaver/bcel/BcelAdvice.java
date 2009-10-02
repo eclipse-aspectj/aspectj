@@ -223,18 +223,26 @@ class BcelAdvice extends Advice {
 		return boType.getLazyClassGen().isWoven();
 	}
 
-	@Override
-	public boolean implementOn(Shadow s) {
-		hasMatchedAtLeastOnce = true;
-		BcelShadow shadow = (BcelShadow) s;
-
-		// pr263323 - if the aspect is broken then the delegate will not be usable for weaving
+	private boolean aspectIsBroken() {
 		if (concreteAspect instanceof ReferenceType) {
 			ReferenceTypeDelegate rtDelegate = ((ReferenceType) concreteAspect).getDelegate();
 			if (!(rtDelegate instanceof BcelObjectType)) {
-				return false;
+				return true;
 			}
 		}
+		return false;
+	}
+
+	@Override
+	public boolean implementOn(Shadow s) {
+		hasMatchedAtLeastOnce = true;
+
+		// pr263323 - if the aspect is broken then the delegate will not be usable for weaving
+		if (aspectIsBroken()) {
+			return false;
+		}
+
+		BcelShadow shadow = (BcelShadow) s;
 
 		// remove any unnecessary exceptions if the compiler option is set to
 		// error or warning and if this piece of advice throws exceptions

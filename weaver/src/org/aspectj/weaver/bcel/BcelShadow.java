@@ -2136,32 +2136,8 @@ public class BcelShadow extends Shadow {
 		}
 
 		// specific test for @AJ proceedInInners
-		if (munger.getConcreteAspect().isAnnotationStyleAspect()) {
-			// if we can't find one proceed() we suspect that the call
-			// is happening in an inner class so we don't inline it.
-			// Note: for code style, this is done at Aspect compilation time.
-			boolean canSeeProceedPassedToOther = false;
-			InstructionHandle curr = adviceMethod.getBody().getStart();
-			InstructionHandle end = adviceMethod.getBody().getEnd();
-			ConstantPool cpg = adviceMethod.getEnclosingClass().getConstantPool();
-			while (curr != end) {
-				InstructionHandle next = curr.getNext();
-				Instruction inst = curr.getInstruction();
-				if ((inst instanceof InvokeInstruction)
-						&& ((InvokeInstruction) inst).getSignature(cpg).indexOf("Lorg/aspectj/lang/ProceedingJoinPoint;") > 0) {
-					// we may want to refine to exclude stuff returning jp ?
-					// does code style skip inline if i write dump(thisJoinPoint) ?
-					canSeeProceedPassedToOther = true;// we see one pjp passed around - dangerous
-					break;
-				}
-				curr = next;
-			}
-			if (canSeeProceedPassedToOther) {
-				// remember this decision to avoid re-analysis
-				adviceMethod.setCanInline(false);
-				weaveAroundClosure(munger, hasDynamicTest);
-				return;
-			}
+		if (isAnnotationStylePassingProceedingJoinPointOutOfAdvice(munger, hasDynamicTest, adviceMethod)) {
+			return;
 		}
 
 		// We can't inline around methods if they have around advice on them, this
@@ -2404,6 +2380,41 @@ public class BcelShadow extends Shadow {
 			end.addTargeter(lvt);
 			slot += args[argNumber].getSize();
 		}
+	}
+
+	/**
+	 * Check if the advice method passes a pjp parameter out via an invoke instruction - if so we can't risk inlining.
+	 */
+	private boolean isAnnotationStylePassingProceedingJoinPointOutOfAdvice(BcelAdvice munger, boolean hasDynamicTest,
+			LazyMethodGen adviceMethod) {
+		if (munger.getConcreteAspect().isAnnotationStyleAspect()) {
+			// if we can't find one proceed() we suspect that the call
+			// is happening in an inner class so we don't inline it.
+			// Note: for code style, this is done at Aspect compilation time.
+			boolean canSeeProceedPassedToOther = false;
+			InstructionHandle curr = adviceMethod.getBody().getStart();
+			InstructionHandle end = adviceMethod.getBody().getEnd();
+			ConstantPool cpg = adviceMethod.getEnclosingClass().getConstantPool();
+			while (curr != end) {
+				InstructionHandle next = curr.getNext();
+				Instruction inst = curr.getInstruction();
+				if ((inst instanceof InvokeInstruction)
+						&& ((InvokeInstruction) inst).getSignature(cpg).indexOf("Lorg/aspectj/lang/ProceedingJoinPoint;") > 0) {
+					// we may want to refine to exclude stuff returning jp ?
+					// does code style skip inline if i write dump(thisJoinPoint) ?
+					canSeeProceedPassedToOther = true;// we see one pjp passed around - dangerous
+					break;
+				}
+				curr = next;
+			}
+			if (canSeeProceedPassedToOther) {
+				// remember this decision to avoid re-analysis
+				adviceMethod.setCanInline(false);
+				weaveAroundClosure(munger, hasDynamicTest);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private InstructionList getRedoneProceedCall(InstructionFactory fact, LazyMethodGen callbackMethod, BcelAdvice munger,
