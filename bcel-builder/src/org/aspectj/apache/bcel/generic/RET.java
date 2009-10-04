@@ -53,54 +53,68 @@ package org.aspectj.apache.bcel.generic;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 
-/** 
+/**
  * RET - Return from subroutine
- *
- * <PRE>Stack: ..., -&gt; ..., address</PRE>
- *
- * @version $Id: RET.java,v 1.3 2008/05/28 23:53:00 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * 
+ * <PRE>
+ * Stack: ..., -&gt; ..., address
+ * </PRE>
+ * 
+ * @version $Id: RET.java,v 1.4 2009/10/04 03:21:45 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class RET extends Instruction {
-  private boolean wide;
-  private int     index; // index to local variable containg the return address
+	private boolean wide;
+	private int index; // index to local variable containg the return address
 
+	public RET(int index, boolean wide) {
+		super(Constants.RET);
+		this.index = index;
+		this.wide = wide;
+		// this.wide = index > org.aspectj.apache.bcel.Constants.MAX_BYTE;
+	}
 
-  public RET(int index,boolean wide) {
-    super(Constants.RET);
-    this.index = index;
-    this.wide = wide;
-    //this.wide = index > org.aspectj.apache.bcel.Constants.MAX_BYTE;
-  }
+	public void dump(DataOutputStream out) throws IOException {
+		if (wide) {
+			out.writeByte(org.aspectj.apache.bcel.Constants.WIDE);
+		}
+		out.writeByte(opcode);
+		if (wide) {
+			out.writeShort(index);
+		} else {
+			out.writeByte(index);
+		}
+	}
 
-  public void dump(DataOutputStream out) throws IOException {
-    if (wide) out.writeByte(org.aspectj.apache.bcel.Constants.WIDE);
-    out.writeByte(opcode);
-    if(wide) out.writeShort(index);
-    else out.writeByte(index);
-  }
+	public int getLength() {
+		if (wide) {
+			return 4;
+		} else {
+			return 2;
+		}
+	}
 
-  public int getLength() {
-    if (wide) return 4; else return 2;
-  }
+	public final int getIndex() {
+		return index;
+	}
 
-  public final int getIndex() { return index; }
-  public final void setIndex(int index) { 
-	  this.index = index;
-	  this.wide = index > org.aspectj.apache.bcel.Constants.MAX_BYTE; 
-  }
+	public final void setIndex(int index) {
+		this.index = index;
+		this.wide = index > org.aspectj.apache.bcel.Constants.MAX_BYTE;
+	}
 
-  public String toString(boolean verbose) {
-    return super.toString(verbose) + " " + index;
-  }  
+	public String toString(boolean verbose) {
+		return super.toString(verbose) + " " + index;
+	}
 
-  public Type getType(ConstantPool cp) {
-      return ReturnaddressType.NO_TARGET;
-  }
+	public Type getType(ConstantPool cp) {
+		return ReturnaddressType.NO_TARGET;
+	}
 
 }
