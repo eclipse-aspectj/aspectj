@@ -61,7 +61,7 @@ import org.aspectj.apache.bcel.Constants;
 /**
  * Abstract super class for instructions dealing with local variables.
  * 
- * @version $Id: InstructionLV.java,v 1.4 2008/08/28 00:05:01 aclement Exp $
+ * @version $Id: InstructionLV.java,v 1.5 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class InstructionLV extends Instruction {
@@ -261,6 +261,18 @@ public class InstructionLV extends Instruction {
 
 	private final boolean wide() {
 		return lvar > Constants.MAX_BYTE;
+	}
+
+	public boolean equals(Object other) {
+		if (!(other instanceof InstructionLV)) {
+			return false;
+		}
+		InstructionLV o = (InstructionLV) other;
+		return o.opcode == opcode && o.lvar == lvar;
+	}
+
+	public int hashCode() {
+		return opcode * 37 + lvar;
 	}
 
 }

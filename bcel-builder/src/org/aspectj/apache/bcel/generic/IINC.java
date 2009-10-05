@@ -53,56 +53,69 @@ package org.aspectj.apache.bcel.generic;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 import org.aspectj.apache.bcel.Constants;
 
 /**
  * IINC - Increment local variable by constant
- *
- * @version $Id: IINC.java,v 1.4 2008/05/28 23:52:57 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * 
+ * @version $Id: IINC.java,v 1.5 2009/10/05 17:35:36 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class IINC extends InstructionLV {
-  private int     c;
+	private int c;
 
-  public IINC(int n, int c,boolean w) {
-    super(Constants.IINC,n);
-    this.c=c;
-//    this.wide = w;//((n > org.aspectj.apache.bcel.Constants.MAX_BYTE) || (Math.abs(c) > Byte.MAX_VALUE));
-  }
+	public IINC(int n, int c, boolean w) {
+		super(Constants.IINC, n);
+		this.c = c;
+		// this.wide = w;//((n > org.aspectj.apache.bcel.Constants.MAX_BYTE) || (Math.abs(c) > Byte.MAX_VALUE));
+	}
 
-  private boolean wide() {
-	  return ((lvar > org.aspectj.apache.bcel.Constants.MAX_BYTE) || (Math.abs(c) > Byte.MAX_VALUE));
-  }
+	private boolean wide() {
+		return ((lvar > org.aspectj.apache.bcel.Constants.MAX_BYTE) || (Math.abs(c) > Byte.MAX_VALUE));
+	}
 
-  public void dump(DataOutputStream out) throws IOException {
-	  if (wide()) {
-		  out.writeByte(WIDE);
-	      out.writeByte(opcode);
-	      out.writeShort(lvar);
-	      out.writeShort(c);
-	  } else {
-	      out.writeByte(opcode);
-          out.writeByte(lvar);
-          out.writeByte(c);
-      }
-  }
-  
-  
-  public int getLength() {
-	  if (wide()) return 6; else return 3; // includes wide byte
-  }
+	public void dump(DataOutputStream out) throws IOException {
+		if (wide()) {
+			out.writeByte(WIDE);
+			out.writeByte(opcode);
+			out.writeShort(lvar);
+			out.writeShort(c);
+		} else {
+			out.writeByte(opcode);
+			out.writeByte(lvar);
+			out.writeByte(c);
+		}
+	}
 
-  public String toString(boolean verbose) {
-    return super.toString(verbose) + " " + c;
-  }  
+	public int getLength() {
+		if (wide()) {
+			return 6;
+		} else {
+			return 3; // includes wide byte
+		}
+	}
 
-  public final int getIncrement() { return c; }
+	public String toString(boolean verbose) {
+		return super.toString(verbose) + " " + c;
+	}
 
-//  //fixme promote or stick in a table
-//  public Type getType(ConstantPoolGen cp) {
-//    return Type.INT;
-//  }
+	public final int getIncrement() {
+		return c;
+	}
+
+	public boolean equals(Object other) {
+		if (!(other instanceof IINC)) {
+			return false;
+		}
+		IINC o = (IINC) other;
+		return /* o.opcode == opcode && */o.lvar == lvar && o.c == c;
+	}
+
+	public int hashCode() {
+		return opcode * 37 + lvar * (c + 17);
+	}
 
 }

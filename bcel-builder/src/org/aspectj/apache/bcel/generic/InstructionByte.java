@@ -93,4 +93,16 @@ public class InstructionByte extends Instruction {
 	public final Type getType() {
 		return new ArrayType(BasicType.getType(theByte), 1);
 	}
+
+	public boolean equals(Object other) {
+		if (!(other instanceof InstructionByte)) {
+			return false;
+		}
+		InstructionByte o = (InstructionByte) other;
+		return o.opcode == opcode && o.theByte == theByte;
+	}
+
+	public int hashCode() {
+		return opcode * 37 + theByte;
+	}
 }

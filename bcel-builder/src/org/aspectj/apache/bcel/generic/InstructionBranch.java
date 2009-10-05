@@ -65,7 +65,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
  * about an instruction it doesnt yet know the position if (targetInstruction). targetInstruction (if set) overrides targetIndex
  * 
  * @see InstructionList
- * @version $Id: InstructionBranch.java,v 1.5 2008/08/28 00:03:03 aclement Exp $
+ * @version $Id: InstructionBranch.java,v 1.6 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class InstructionBranch extends Instruction implements InstructionTargeter {
@@ -171,7 +171,7 @@ public class InstructionBranch extends Instruction implements InstructionTargete
 				} else {
 					opcode = GOTO_W;
 				}
-				return 2;
+				return 2; // instruction jump destination grows from a short to a long
 			} else {
 				throw new IllegalStateException("Unable to pack method, jump (with opcode=" + opcode + ") is too far: "
 						+ Math.abs(i));

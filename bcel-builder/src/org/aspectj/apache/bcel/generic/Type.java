@@ -67,7 +67,7 @@ import org.aspectj.apache.bcel.classfile.Utility;
  * Abstract super class for all possible java types, namely basic types such as int, object types like String and array types, e.g.
  * int[]
  * 
- * @version $Id: Type.java,v 1.12 2009/09/10 03:59:34 aclement Exp $
+ * @version $Id: Type.java,v 1.13 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  *         modified: AndyClement 2-mar-05: Removed unnecessary static and optimized
@@ -177,8 +177,9 @@ public abstract class Type {
 
 	public static final Type getType(String signature) {
 		Type t = commonTypes.get(signature);
-		if (t != null)
+		if (t != null) {
 			return t;
+		}
 		byte type = Utility.typeOfSignature(signature);
 		if (type <= Constants.T_VOID) {
 			return BasicType.getType(type);
@@ -212,8 +213,9 @@ public abstract class Type {
 						genericDepth--;
 						break;
 					case ';':
-						if (genericDepth == 0)
+						if (genericDepth == 0) {
 							endOfSigReached = true;
+						}
 						break;
 					default:
 					}
@@ -248,8 +250,9 @@ public abstract class Type {
 		} else { // type == T_REFERENCE
 			// Format is 'Lblahblah;'
 			int index = signature.indexOf(';'); // Look for closing ';'
-			if (index < 0)
+			if (index < 0) {
 				throw new ClassFormatException("Invalid signature: " + signature);
+			}
 
 			// generics awareness
 			int nextAngly = signature.indexOf('<');
@@ -269,8 +272,9 @@ public abstract class Type {
 						genericDepth--;
 						break;
 					case ';':
-						if (genericDepth == 0)
+						if (genericDepth == 0) {
 							endOfSigReached = true;
+						}
 						break;
 					default:
 					}
@@ -312,8 +316,9 @@ public abstract class Type {
 		Type[] types;
 
 		try { // Read all declarations between for `(' and `)'
-			if (signature.charAt(0) != '(')
+			if (signature.charAt(0) != '(') {
 				throw new ClassFormatException("Invalid method signature: " + signature);
+			}
 
 			index = 1; // current string position
 
@@ -337,8 +342,9 @@ public abstract class Type {
 	 */
 	public static int getArgumentSizes(String signature) {
 		int size = 0;
-		if (signature.charAt(0) != '(')
+		if (signature.charAt(0) != '(') {
 			throw new ClassFormatException("Invalid method signature: " + signature);
+		}
 
 		int index = 1; // current string position
 		try {
@@ -375,8 +381,9 @@ public abstract class Type {
 								genericDepth--;
 								break;
 							case ';':
-								if (genericDepth == 0)
+								if (genericDepth == 0) {
 									endOfSigReached = true;
+								}
 								break;
 							default:
 							}

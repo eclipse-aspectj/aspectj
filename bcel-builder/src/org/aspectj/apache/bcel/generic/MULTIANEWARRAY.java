@@ -53,109 +53,131 @@ package org.aspectj.apache.bcel.generic;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-import java.io.*;
-import org.aspectj.apache.bcel.classfile.ConstantPool;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.ExceptionConstants;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 
-/** 
+/**
  * MULTIANEWARRAY - Create new mutidimensional array of references
- * <PRE>Stack: ..., count1, [count2, ...] -&gt; ..., arrayref</PRE>
- *
- * @version $Id: MULTIANEWARRAY.java,v 1.3 2008/05/28 23:52:59 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * 
+ * <PRE>
+ * Stack: ..., count1, [count2, ...] -&gt; ..., arrayref
+ * </PRE>
+ * 
+ * @version $Id: MULTIANEWARRAY.java,v 1.4 2009/10/05 17:35:36 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class MULTIANEWARRAY extends InstructionCP {
-  private short dimensions;
+	private short dimensions;
 
-  public MULTIANEWARRAY(int index, short dimensions) {
-    super(Constants.MULTIANEWARRAY, index);
-    this.dimensions = dimensions;
-  }
+	public MULTIANEWARRAY(int index, short dimensions) {
+		super(Constants.MULTIANEWARRAY, index);
+		this.dimensions = dimensions;
+	}
 
-  /**
-   * Dump instruction as byte code to stream out.
-   * @param out Output stream
-   */
-  public void dump(DataOutputStream out) throws IOException {
-    out.writeByte(opcode);
-    out.writeShort(index);
-    out.writeByte(dimensions);
-  }
+	/**
+	 * Dump instruction as byte code to stream out.
+	 * 
+	 * @param out Output stream
+	 */
+	public void dump(DataOutputStream out) throws IOException {
+		out.writeByte(opcode);
+		out.writeShort(index);
+		out.writeByte(dimensions);
+	}
 
-  /**
-   * Read needed data (i.e., no. dimension) from file.
-   */
-//  protected void initFromFile(ByteSequence bytes, boolean wide)
-//       throws IOException
-//  {
-//    super.initFromFile(bytes, wide);
-//    dimensions = bytes.readByte();
-////    length     = 4;
-//  }
+	/**
+	 * Read needed data (i.e., no. dimension) from file.
+	 */
+	// protected void initFromFile(ByteSequence bytes, boolean wide)
+	// throws IOException
+	// {
+	// super.initFromFile(bytes, wide);
+	// dimensions = bytes.readByte();
+	// // length = 4;
+	// }
 
-  /**
-   * @return number of dimensions to be created
-   */
-  public final short getDimensions() { return dimensions; }
+	/**
+	 * @return number of dimensions to be created
+	 */
+	public final short getDimensions() {
+		return dimensions;
+	}
 
-  /**
-   * @return mnemonic for instruction
-   */
-  public String toString(boolean verbose) {
-    return super.toString(verbose) + " " + index + " " + dimensions;
-  }
+	/**
+	 * @return mnemonic for instruction
+	 */
+	public String toString(boolean verbose) {
+		return super.toString(verbose) + " " + index + " " + dimensions;
+	}
 
-  /**
-   * @return mnemonic for instruction with symbolic references resolved
-   */
-  public String toString(ConstantPool cp) {
-    return super.toString(cp) + " " + dimensions;
-  }
+	/**
+	 * @return mnemonic for instruction with symbolic references resolved
+	 */
+	public String toString(ConstantPool cp) {
+		return super.toString(cp) + " " + dimensions;
+	}
 
-  /**
-   * Also works for instructions whose stack effect depends on the
-   * constant pool entry they reference.
-   * @return Number of words consumed from stack by this instruction
-   */
-  public int consumeStack(ConstantPool cpg) { return dimensions; }
+	/**
+	 * Also works for instructions whose stack effect depends on the constant pool entry they reference.
+	 * 
+	 * @return Number of words consumed from stack by this instruction
+	 */
+	public int consumeStack(ConstantPool cpg) {
+		return dimensions;
+	}
 
-  public Class[] getExceptions() {
-    Class[] cs = new Class[2 + ExceptionConstants.EXCS_CLASS_AND_INTERFACE_RESOLUTION.length];
+	public Class[] getExceptions() {
+		Class[] cs = new Class[2 + ExceptionConstants.EXCS_CLASS_AND_INTERFACE_RESOLUTION.length];
 
-    System.arraycopy(ExceptionConstants.EXCS_CLASS_AND_INTERFACE_RESOLUTION, 0,
-		     cs, 0, ExceptionConstants.EXCS_CLASS_AND_INTERFACE_RESOLUTION.length);
+		System.arraycopy(ExceptionConstants.EXCS_CLASS_AND_INTERFACE_RESOLUTION, 0, cs, 0,
+				ExceptionConstants.EXCS_CLASS_AND_INTERFACE_RESOLUTION.length);
 
-    cs[ExceptionConstants.EXCS_CLASS_AND_INTERFACE_RESOLUTION.length+1] = ExceptionConstants.NEGATIVE_ARRAY_SIZE_EXCEPTION;
-    cs[ExceptionConstants.EXCS_CLASS_AND_INTERFACE_RESOLUTION.length]   = ExceptionConstants.ILLEGAL_ACCESS_ERROR;
+		cs[ExceptionConstants.EXCS_CLASS_AND_INTERFACE_RESOLUTION.length + 1] = ExceptionConstants.NEGATIVE_ARRAY_SIZE_EXCEPTION;
+		cs[ExceptionConstants.EXCS_CLASS_AND_INTERFACE_RESOLUTION.length] = ExceptionConstants.ILLEGAL_ACCESS_ERROR;
 
-    return cs;
-  }
+		return cs;
+	}
 
-  public ObjectType getLoadClassType(ConstantPool cpg) {
-    Type t = getType(cpg);
-    
-    if (t instanceof ArrayType){
-      t = ((ArrayType) t).getBasicType();
-    }
-    
-    return (t instanceof ObjectType)? (ObjectType) t : null;
-  }
+	public ObjectType getLoadClassType(ConstantPool cpg) {
+		Type t = getType(cpg);
 
-//  /**
-//   * Call corresponding visitor method(s). The order is:
-//   * Call visitor methods of implemented interfaces first, then
-//   * call methods according to the class hierarchy in descending order,
-//   * i.e., the most specific visitXXX() call comes last.
-//   *
-//   * @param v Visitor object
-//   */
-//  public void accept(Visitor v) {
-//    v.visitLoadClass(this);
-//    v.visitAllocationInstruction(this);
-//    v.visitExceptionThrower(this);
-//    v.visitTypedInstruction(this);
-//    v.visitCPInstruction(this);
-//    v.visitMULTIANEWARRAY(this);
-//  }
+		if (t instanceof ArrayType) {
+			t = ((ArrayType) t).getBasicType();
+		}
+
+		return (t instanceof ObjectType) ? (ObjectType) t : null;
+	}
+
+	// /**
+	// * Call corresponding visitor method(s). The order is:
+	// * Call visitor methods of implemented interfaces first, then
+	// * call methods according to the class hierarchy in descending order,
+	// * i.e., the most specific visitXXX() call comes last.
+	// *
+	// * @param v Visitor object
+	// */
+	// public void accept(Visitor v) {
+	// v.visitLoadClass(this);
+	// v.visitAllocationInstruction(this);
+	// v.visitExceptionThrower(this);
+	// v.visitTypedInstruction(this);
+	// v.visitCPInstruction(this);
+	// v.visitMULTIANEWARRAY(this);
+	// }
+
+	public boolean equals(Object other) {
+		if (!(other instanceof MULTIANEWARRAY)) {
+			return false;
+		}
+		MULTIANEWARRAY o = (MULTIANEWARRAY) other;
+		return o.opcode == opcode && o.index == index && o.dimensions == dimensions;
+	}
+
+	public int hashCode() {
+		return opcode * 37 + index * (dimensions + 17);
+	}
 }

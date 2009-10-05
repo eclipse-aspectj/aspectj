@@ -14,28 +14,30 @@
 package org.aspectj.apache.bcel.generic;
 
 public final class LocalVariableTag extends Tag {
-	private Type type; // not always known, in which case signature has to be used
 	private final String signature;
 	private String name;
 	private int slot;
-	private final int startPos;
-	boolean remapped = false;
+	private final int startPosition;
+	private boolean remapped = false;
+
+	private int hashCode = 0;
+	private Type type; // not always known, in which case signature has to be used
 
 	// AMC - pr101047, two local vars with the same name can share the same slot, but must in that case
 	// have different start positions.
-	public LocalVariableTag(String sig, String name, int slot, int startPosition) {
-		this.signature = sig;
+	public LocalVariableTag(String signature, String name, int slot, int startPosition) {
+		this.signature = signature;
 		this.name = name;
 		this.slot = slot;
-		this.startPos = startPosition;
+		this.startPosition = startPosition;
 	}
 
-	public LocalVariableTag(Type t, String sig, String name, int slot, int startPosition) {
-		this.type = t;
-		this.signature = sig;
+	public LocalVariableTag(Type type, String signature, String name, int slot, int startPosition) {
+		this.type = type;
+		this.signature = signature;
 		this.name = name;
 		this.slot = slot;
-		this.startPos = startPosition;
+		this.startPosition = startPosition;
 	}
 
 	public String getName() {
@@ -57,6 +59,12 @@ public final class LocalVariableTag extends Tag {
 	public void updateSlot(int newSlot) {
 		this.slot = newSlot;
 		this.remapped = true;
+		this.hashCode = 0;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+		this.hashCode = 0;
 	}
 
 	public boolean isRemapped() {
@@ -68,25 +76,19 @@ public final class LocalVariableTag extends Tag {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof LocalVariableTag))
+		if (!(other instanceof LocalVariableTag)) {
 			return false;
+		}
 		LocalVariableTag o = (LocalVariableTag) other;
-		return o.slot == slot && o.startPos == startPos && o.signature.equals(signature) && o.name.equals(name);
+		return o.slot == slot && o.startPosition == startPosition && o.signature.equals(signature) && o.name.equals(name);
 	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	private int hashCode = 0;
 
 	public int hashCode() {
 		if (hashCode == 0) {
-			int ret = 17;
-			ret = 37 * ret + signature.hashCode();
+			int ret = signature.hashCode();
 			ret = 37 * ret + name.hashCode();
 			ret = 37 * ret + slot;
-			ret = 37 * ret + startPos;
+			ret = 37 * ret + startPosition;
 			hashCode = ret;
 		}
 		return hashCode;

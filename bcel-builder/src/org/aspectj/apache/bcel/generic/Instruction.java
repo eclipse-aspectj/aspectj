@@ -67,7 +67,7 @@ import com.sun.org.apache.bcel.internal.generic.BranchInstruction;
 /**
  * Abstract super class for all Java byte codes.
  * 
- * @version $Id: Instruction.java,v 1.8 2009/09/14 20:29:10 aclement Exp $
+ * @version $Id: Instruction.java,v 1.9 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class Instruction implements Cloneable, Serializable, Constants {
@@ -92,7 +92,9 @@ public class Instruction implements Cloneable, Serializable, Constants {
 	 * @see BranchInstruction
 	 * @return (shallow) copy of an instruction
 	 */
+	// GET RID OF THIS - make it throw an exception and track the callers
 	final public Instruction copy() {
+		// if overridden correctly can just return 'this' here
 		if (InstructionConstants.INSTRUCTIONS[opcode] != null) { // immutable instructions do not need copying
 			return this;
 		} else {
@@ -107,7 +109,7 @@ public class Instruction implements Cloneable, Serializable, Constants {
 	}
 
 	/**
-	 * Read an instruction from (byte code) input stream and return the appropiate object.
+	 * Read an instruction bytecode from an input stream and return the appropriate object.
 	 * 
 	 * @param file file to read from
 	 * @return instruction object being read
@@ -115,7 +117,6 @@ public class Instruction implements Cloneable, Serializable, Constants {
 	public static final Instruction readInstruction(ByteSequence bytes) throws IOException {
 		boolean wide = false;
 		short opcode = (short) bytes.readUnsignedByte();
-		Instruction obj = null;
 
 		if (opcode == Constants.WIDE) {
 			wide = true;
@@ -128,6 +129,7 @@ public class Instruction implements Cloneable, Serializable, Constants {
 			return constantInstruction;
 		}
 
+		Instruction obj = null;
 		try {
 			switch (opcode) {
 			case Constants.BIPUSH:
@@ -257,9 +259,10 @@ public class Instruction implements Cloneable, Serializable, Constants {
 	public int getLength() {
 		// if it is zero, it should have been provided by an overriding implementation of getLength()
 		int len = Constants.iLen[opcode];
-		if (len == 0) {
-			throw new IllegalStateException("Length not right for " + getName().toUpperCase());
-		}
+		assert len != 0;
+		// if (len == 0) {
+		// throw new IllegalStateException("Length not right for " + getName().toUpperCase());
+		// }
 		return len;
 	}
 
@@ -268,38 +271,49 @@ public class Instruction implements Cloneable, Serializable, Constants {
 	}
 
 	@Override
-	public boolean equals(Object that) {
-		if (!(that instanceof Instruction)) {
+	public boolean equals(Object other) {
+		if (this.getClass() != Instruction.class) {
+			throw new RuntimeException("NO WAY " + this.getClass());
+		}
+		if (!(other instanceof Instruction)) {
 			return false;
 		}
-		Instruction i1 = this;
-		Instruction i2 = (Instruction) that;
-		if (i1.opcode == i2.opcode) {
-			if (i1.isConstantInstruction()) {
-				return i1.getValue().equals(i2.getValue());
-			} else if (i1.isIndexedInstruction()) {
-				return i1.getIndex() == i2.getIndex();
-			} else if (i1.opcode == Constants.NEWARRAY) {
-				return ((InstructionByte) i1).getTypecode() == ((InstructionByte) i2).getTypecode();
-			} else {
-				return true;
-			}
-		}
+		return ((Instruction) other).opcode == opcode;
 
-		return false;
+		// IMPLEMENT EQUALS AND HASHCODE IN THE SUBTYPES!
+
+		// Instruction i1 = this;
+		// Instruction i2 = (Instruction) that;
+		// if (i1.opcode == i2.opcode) {
+		// if (i1.isConstantInstruction()) {
+		// return i1.getValue().equals(i2.getValue());
+		// } else if (i1.isIndexedInstruction()) {
+		// return i1.getIndex() == i2.getIndex();
+		// } else if (i1.opcode == Constants.NEWARRAY) {
+		// return ((InstructionByte) i1).getTypecode() == ((InstructionByte) i2).getTypecode();
+		// } else {
+		// return true;
+		// }
+		// }
+		//
+		// return false;
 	}
 
 	@Override
 	public int hashCode() {
-		int result = 17 + opcode * 37;
-		if (isConstantInstruction()) {
-			result = 37 * getValue().hashCode() + result;
-		} else if (isIndexedInstruction()) {
-			result = 37 * getIndex() + result;
-		} else if (opcode == Constants.NEWARRAY) {
-			result = 37 * ((InstructionByte) this).getTypecode() + result;
+		if (this.getClass() != Instruction.class) {
+			throw new RuntimeException("NO WAY " + this.getClass());
 		}
-		return result;
+		return opcode * 37;
+		// int result = 17 + opcode * 37;
+		// if (isConstantInstruction()) {
+		// result = 37 * getValue().hashCode() + result;
+		// } else if (isIndexedInstruction()) {
+		// result = 37 * getIndex() + result;
+		// } else if (opcode == Constants.NEWARRAY) {
+		// result = 37 * ((InstructionByte) this).getTypecode() + result;
+		// }
+		// return result;
 	}
 
 	public Type getType() {
@@ -316,9 +330,10 @@ public class Instruction implements Cloneable, Serializable, Constants {
 	}
 
 	public Number getValue() {
-		if ((instFlags[opcode] & CONSTANT_INST) == 0) {
-			throw new RuntimeException(getName() + " is not a constant instruction");
-		}
+		assert (instFlags[opcode] & CONSTANT_INST) == 0;
+		// if ((instFlags[opcode] & CONSTANT_INST) == 0) {
+		// throw new RuntimeException(getName() + " is not a constant instruction");
+		// }
 		switch (opcode) {
 		case ICONST_M1:
 		case ICONST_0:
@@ -349,6 +364,11 @@ public class Instruction implements Cloneable, Serializable, Constants {
 		return (Constants.instFlags[opcode] & LOAD_INST) != 0;
 	}
 
+	// remove these from here, leave them in the InstructionLV
+	public boolean isASTORE() {
+		return false;
+	}
+
 	public boolean isALOAD() {
 		return false;
 	}
@@ -357,13 +377,9 @@ public class Instruction implements Cloneable, Serializable, Constants {
 		return (Constants.instFlags[opcode] & STORE_INST) != 0;
 	}
 
-	public boolean isASTORE() {
-		return false;
-	}
-
-	public boolean containsTarget(InstructionHandle ih) {
-		throw new IllegalStateException("Dont ask!!");
-	}
+	// public boolean containsTarget(InstructionHandle ih) {
+	// throw new IllegalStateException("Dont ask!!");
+	// }
 
 	public boolean isJsrInstruction() {
 		return (Constants.instFlags[opcode] & JSR_INSTRUCTION) != 0;
@@ -394,10 +410,11 @@ public class Instruction implements Cloneable, Serializable, Constants {
 	}
 
 	public ObjectType getLoadClassType(ConstantPool cpg) {
-		if ((Constants.instFlags[opcode] & Constants.LOADCLASS_INST) == 0) {
-			throw new IllegalStateException("This opcode " + opcode + " does not have the property "
-					+ Long.toHexString(Constants.LOADCLASS_INST));
-		}
+		assert (Constants.instFlags[opcode] & Constants.LOADCLASS_INST) == 0;
+		// if ((Constants.instFlags[opcode] & Constants.LOADCLASS_INST) == 0) {
+		// throw new IllegalStateException("This opcode " + opcode + " does not have the property "
+		// + Long.toHexString(Constants.LOADCLASS_INST));
+		// }
 		Type t = getType(cpg);
 		if (t instanceof ArrayType) {
 			t = ((ArrayType) t).getBasicType();
@@ -409,9 +426,9 @@ public class Instruction implements Cloneable, Serializable, Constants {
 		return (Constants.instFlags[opcode] & RET_INST) != 0;
 	}
 
-	public boolean isGoto() {
-		return opcode == GOTO || opcode == GOTO_W;
-	}
+	// public boolean isGoto() {
+	// return opcode == GOTO || opcode == GOTO_W;
+	// }
 
 	public boolean isLocalVariableInstruction() {
 		return (Constants.instFlags[opcode] & LV_INST) != 0;

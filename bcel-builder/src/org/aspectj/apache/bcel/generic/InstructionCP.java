@@ -60,24 +60,22 @@ import java.io.IOException;
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Constant;
 import org.aspectj.apache.bcel.classfile.ConstantClass;
+import org.aspectj.apache.bcel.classfile.ConstantDouble;
+import org.aspectj.apache.bcel.classfile.ConstantFloat;
+import org.aspectj.apache.bcel.classfile.ConstantInteger;
+import org.aspectj.apache.bcel.classfile.ConstantLong;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
-
-import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
-import com.sun.org.apache.bcel.internal.generic.INVOKEVIRTUAL;
-import com.sun.org.apache.bcel.internal.generic.LDC;
+import org.aspectj.apache.bcel.classfile.ConstantString;
+import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 
 /**
- * Slass for instructions that use an index into the constant pool such as LDC, INVOKEVIRTUAL, etc.
+ * Class for instructions that use an index into the constant pool such as LDC, INVOKEVIRTUAL, etc.
  * 
- * @see ConstantPoolGen
- * @see LDC
- * @see INVOKEVIRTUAL
- * 
- * @version $Id: InstructionCP.java,v 1.5 2009/09/14 20:29:10 aclement Exp $
+ * @version $Id: InstructionCP.java,v 1.6 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class InstructionCP extends Instruction {
-	protected int index; // index to constant pool
+	protected int index;
 
 	public InstructionCP(short opcode, int index) {
 		super(opcode);
@@ -180,36 +178,47 @@ public class InstructionCP extends Instruction {
 			} else {
 				return Type.getType(name);
 			}
-		default: // Never reached
+		default:
 			throw new RuntimeException("Unknown or invalid constant type at " + index);
 		}
 	}
 
 	@Override
-	public Object getValue(ConstantPool cpg) {
-		org.aspectj.apache.bcel.classfile.Constant c = cpg.getConstant(index);
+	public Object getValue(ConstantPool constantPool) {
+		Constant constant = constantPool.getConstant(index);
 
-		switch (c.getTag()) {
-		case org.aspectj.apache.bcel.Constants.CONSTANT_String:
-			int i = ((org.aspectj.apache.bcel.classfile.ConstantString) c).getStringIndex();
-			c = cpg.getConstant(i);
-			return ((org.aspectj.apache.bcel.classfile.ConstantUtf8) c).getValue();
+		switch (constant.getTag()) {
+		case Constants.CONSTANT_String:
+			int i = ((ConstantString) constant).getStringIndex();
+			constant = constantPool.getConstant(i);
+			return ((ConstantUtf8) constant).getValue();
 
-		case org.aspectj.apache.bcel.Constants.CONSTANT_Float:
-			return new Float(((org.aspectj.apache.bcel.classfile.ConstantFloat) c).getValue());
+		case Constants.CONSTANT_Float:
+			return ((ConstantFloat) constant).getValue();
 
-		case org.aspectj.apache.bcel.Constants.CONSTANT_Integer:
-			return new Integer(((org.aspectj.apache.bcel.classfile.ConstantInteger) c).getValue());
+		case Constants.CONSTANT_Integer:
+			return ((ConstantInteger) constant).getValue();
 
-			// from ldc2_w:
-		case org.aspectj.apache.bcel.Constants.CONSTANT_Long:
-			return new Long(((org.aspectj.apache.bcel.classfile.ConstantLong) c).getValue());
+		case Constants.CONSTANT_Long:
+			return ((ConstantLong) constant).getValue();
 
-		case org.aspectj.apache.bcel.Constants.CONSTANT_Double:
-			return new Double(((org.aspectj.apache.bcel.classfile.ConstantDouble) c).getValue());
-		default: // Never reached
+		case Constants.CONSTANT_Double:
+			return ((ConstantDouble) constant).getValue();
+		default:
 			throw new RuntimeException("Unknown or invalid constant type at " + index);
 		}
+	}
+
+	public boolean equals(Object other) {
+		if (!(other instanceof InstructionCP)) {
+			return false;
+		}
+		InstructionCP o = (InstructionCP) other;
+		return o.opcode == opcode && o.index == index;
+	}
+
+	public int hashCode() {
+		return opcode * 37 + index;
 	}
 
 }

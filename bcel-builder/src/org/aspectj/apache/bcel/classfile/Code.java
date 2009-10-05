@@ -68,7 +68,7 @@ import org.aspectj.apache.bcel.Constants;
  * This attribute has attributes itself, namely <em>LineNumberTable</em> which is used for debugging purposes and
  * <em>LocalVariableTable</em> which contains information about the local variables.
  * 
- * @version $Id: Code.java,v 1.8 2009/09/15 19:40:12 aclement Exp $
+ * @version $Id: Code.java,v 1.9 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Attribute
  * @see CodeException
@@ -109,8 +109,9 @@ public final class Code extends Attribute {
 			exceptionTable = NO_EXCEPTIONS;
 		} else {
 			exceptionTable = new CodeException[len];
-			for (int i = 0; i < len; i++)
+			for (int i = 0; i < len; i++) {
 				exceptionTable[i] = new CodeException(file);
+			}
 		}
 
 		// Read all attributes, eg: LineNumberTable, LocalVariableTable
@@ -172,12 +173,14 @@ public final class Code extends Attribute {
 		file.write(code, 0, code.length);
 
 		file.writeShort(exceptionTable.length);
-		for (int i = 0; i < exceptionTable.length; i++)
+		for (int i = 0; i < exceptionTable.length; i++) {
 			exceptionTable[i].dump(file);
+		}
 
 		file.writeShort(attributes.length);
-		for (int i = 0; i < attributes.length; i++)
+		for (int i = 0; i < attributes.length; i++) {
 			attributes[i].dump(file);
+		}
 	}
 
 	/**
@@ -192,9 +195,11 @@ public final class Code extends Attribute {
 	 * @return LineNumberTable of Code, if it has one
 	 */
 	public LineNumberTable getLineNumberTable() {
-		for (int i = 0; i < attributes.length; i++)
-			if (attributes[i].tag == Constants.ATTR_LINE_NUMBER_TABLE)
+		for (int i = 0; i < attributes.length; i++) {
+			if (attributes[i].tag == Constants.ATTR_LINE_NUMBER_TABLE) {
 				return (LineNumberTable) attributes[i];
+			}
+		}
 		return null;
 	}
 
@@ -202,9 +207,11 @@ public final class Code extends Attribute {
 	 * @return LocalVariableTable of Code, if it has one
 	 */
 	public LocalVariableTable getLocalVariableTable() {
-		for (int i = 0; i < attributes.length; i++)
-			if (attributes[i].tag == Constants.ATTR_LOCAL_VARIABLE_TABLE)
+		for (int i = 0; i < attributes.length; i++) {
+			if (attributes[i].tag == Constants.ATTR_LOCAL_VARIABLE_TABLE) {
 				return (LocalVariableTable) attributes[i];
+			}
+		}
 		return null;
 	}
 
@@ -255,8 +262,9 @@ public final class Code extends Attribute {
 	private final int calculateLength() {
 		int len = 0;
 		if (attributes != null) {
-			for (int i = 0; i < attributes.length; i++)
+			for (int i = 0; i < attributes.length; i++) {
 				len += attributes[i].length + 6 /* attribute header size */;
+			}
 		}
 		return len + getInternalLength();
 	}
@@ -309,15 +317,17 @@ public final class Code extends Attribute {
 		if (exceptionTable.length > 0) {
 			buf.append("\nException handler(s) = \n" + "From\tTo\tHandler\tType\n");
 
-			for (int i = 0; i < exceptionTable.length; i++)
+			for (int i = 0; i < exceptionTable.length; i++) {
 				buf.append(exceptionTable[i].toString(cpool, verbose) + "\n");
+			}
 		}
 
 		if (attributes.length > 0) {
 			buf.append("\nAttribute(s) = \n");
 
-			for (int i = 0; i < attributes.length; i++)
+			for (int i = 0; i < attributes.length; i++) {
 				buf.append(attributes[i].toString() + "\n");
+			}
 		}
 
 		return buf.toString();
@@ -366,8 +376,9 @@ public final class Code extends Attribute {
 				CodeException exc = exceptionTable[i];
 				int type = exc.getCatchType();
 				String name = "finally";
-				if (type != 0)
+				if (type != 0) {
 					name = this.cpool.getConstantString(type, Constants.CONSTANT_Class);
+				}
 				codeString.append(name).append("[");
 				codeString.append(exc.getStartPC()).append(">").append(exc.getEndPC()).append("]\n");
 			}

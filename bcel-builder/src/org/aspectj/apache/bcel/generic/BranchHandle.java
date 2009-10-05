@@ -55,77 +55,80 @@ package org.aspectj.apache.bcel.generic;
  */
 
 /**
- * BranchHandle is returned by specialized InstructionList.append() whenever a
- * BranchInstruction is appended. This is useful when the target of this
- * instruction is not known at time of creation and must be set later
- * via setTarget().
- *
+ * BranchHandle is returned by specialized InstructionList.append() whenever a BranchInstruction is appended. This is useful when
+ * the target of this instruction is not known at time of creation and must be set later via setTarget().
+ * 
  * @see InstructionHandle
  * @see Instruction
  * @see InstructionList
- * @version $Id: BranchHandle.java,v 1.4 2008/05/28 23:52:55 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @version $Id: BranchHandle.java,v 1.5 2009/10/05 17:35:36 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class BranchHandle extends InstructionHandle {
-  private InstructionBranch bi; // An alias in fact, but saves lots of casts
+	private InstructionBranch bi; // An alias in fact, but saves lots of casts
 
-  private BranchHandle(InstructionBranch i) {
-    super(i);
-    bi = i;
-  }
+	private BranchHandle(InstructionBranch i) {
+		super(i);
+		bi = i;
+	}
 
-  static final BranchHandle getBranchHandle(InstructionBranch i) {
-      return new BranchHandle(i);
-  }
+	static final BranchHandle getBranchHandle(InstructionBranch i) {
+		return new BranchHandle(i);
+	}
 
-  /* Override InstructionHandle methods: delegate to branch instruction.
-   * Through this overriding all access to the private i_position field should
-   * be prevented.
-   */
-  public int getPosition() { return bi.positionOfThisInstruction; }
+	/*
+	 * Override InstructionHandle methods: delegate to branch instruction. Through this overriding all access to the private
+	 * i_position field should be prevented.
+	 */
+	public int getPosition() {
+		return bi.positionOfThisInstruction;
+	}
 
-  void setPosition(int pos) {
-    i_position = bi.positionOfThisInstruction = pos;
-  }
+	void setPosition(int pos) {
+		this.pos = bi.positionOfThisInstruction = pos;
+	}
 
-  protected int updatePosition(int offset, int max_offset) {
-    int x = bi.updatePosition(offset, max_offset);
-    i_position = bi.positionOfThisInstruction;
-    return x;
-  }
+	/**
+	 * Called by InstructionList.setPositions when setting the position for every instruction. In the presence of variable length
+	 * instructions 'setPositions()' performs multiple passes over the instruction list to calculate the correct (byte) positions
+	 * and offsets by calling this function.
+	 * 
+	 * @param offset additional offset caused by preceding (variable length) instructions
+	 * @param max_offset the maximum offset that may be caused by these instructions
+	 * @return additional offset caused by possible change of this instruction's length
+	 */
+	protected int updatePosition(int offset, int max_offset) {
+		int x = bi.updatePosition(offset, max_offset);
+		pos = bi.positionOfThisInstruction;
+		return x;
+	}
 
-  /**
-   * Pass new target to instruction.
-   */
-  public void setTarget(InstructionHandle ih) {
-    bi.setTarget(ih);
-  }
+	/**
+	 * Pass new target to instruction.
+	 */
+	public void setTarget(InstructionHandle ih) {
+		bi.setTarget(ih);
+	}
 
-  /**
-   * Update target of instruction.
-   */
-  public void updateTarget(InstructionHandle old_ih, InstructionHandle new_ih) {
-    bi.updateTarget(old_ih, new_ih);
-  }
+	/**
+	 * Update target of instruction.
+	 */
+	public void updateTarget(InstructionHandle old_ih, InstructionHandle new_ih) {
+		bi.updateTarget(old_ih, new_ih);
+	}
 
-  /**
-   * @return target of instruction.
-   */
-  public InstructionHandle getTarget() {
-    return bi.getTarget();
-  }
+	/**
+	 * @return target of instruction.
+	 */
+	public InstructionHandle getTarget() {
+		return bi.getTarget();
+	}
 
-  /** 
-   * Set new contents. Old instruction is disposed and may not be used anymore.
-   */
-  public void setInstruction(Instruction i) {
-    super.setInstruction(i);
-
-    if(!(i instanceof InstructionBranch))
-      throw new ClassGenException("Assigning " + i +
-				  " to branch handle which is not a branch instruction");
-
-    bi = (InstructionBranch)i;
-  }
+	/**
+	 * Set new contents. Old instruction is disposed and may not be used anymore.
+	 */
+	public void setInstruction(Instruction i) {
+		super.setInstruction(i);
+		bi = (InstructionBranch) i;
+	}
 }
-

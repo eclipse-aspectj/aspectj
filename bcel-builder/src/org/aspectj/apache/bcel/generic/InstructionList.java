@@ -76,7 +76,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
  * 
  * A list is finally dumped to a byte code array with <a href="#getByteCode()">getByteCode</a>.
  * 
- * @version $Id: InstructionList.java,v 1.9 2009/09/10 03:59:33 aclement Exp $
+ * @version $Id: InstructionList.java,v 1.10 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Instruction
  * @see InstructionHandle
@@ -247,35 +247,34 @@ public class InstructionList implements Serializable {
 	/**
 	 * Append another list after instruction (handle) ih contained in this list. Consumes argument list, i.e., it becomes empty.
 	 * 
-	 * @param ih where to append the instruction list
-	 * @param il Instruction list to append to this one
+	 * @param appendTo where to append the instruction list
+	 * @param appendee Instruction list to append to this one
 	 * @return instruction handle pointing to the <B>first</B> appended instruction
 	 */
-	public InstructionHandle append(InstructionHandle ih, InstructionList il) {
-		if (il == null) {
-			throw new ClassGenException("Appending null InstructionList");
+	public InstructionHandle append(InstructionHandle appendTo, InstructionList appendee) {
+		assert appendee != null;
+
+		if (appendee.isEmpty()) {
+			return appendTo;
 		}
 
-		if (il.isEmpty()) {
-			return ih;
-		}
+		InstructionHandle next = appendTo.next;
+		InstructionHandle ret = appendee.start;
 
-		InstructionHandle next = ih.next, ret = il.start;
+		appendTo.next = appendee.start;
+		appendee.start.prev = appendTo;
 
-		ih.next = il.start;
-		il.start.prev = ih;
-
-		il.end.next = next;
+		appendee.end.next = next;
 
 		if (next != null) {
-			next.prev = il.end;
+			next.prev = appendee.end;
 		} else {
-			end = il.end; // Update end ...
+			end = appendee.end; // Update end ...
 		}
 
-		length += il.length; // Update length
+		length += appendee.length; // Update length
 
-		il.clear();
+		appendee.clear();
 
 		return ret;
 	}
@@ -304,9 +303,7 @@ public class InstructionList implements Serializable {
 	 * @return instruction handle of the <B>first</B> appended instruction
 	 */
 	public InstructionHandle append(InstructionList il) {
-		if (il == null) {
-			throw new ClassGenException("Appending null InstructionList");
-		}
+		assert il != null;
 
 		if (il.isEmpty()) {
 			return null;
@@ -853,41 +850,13 @@ public class InstructionList implements Serializable {
 	 * @param check Perform sanity checks, e.g. if all targeted instructions really belong to this list
 	 */
 	public void setPositions(boolean check) {
-		int max_additional_bytes = 0, additional_bytes = 0;
+		int maxAdditionalBytes = 0;
 		int index = 0, count = 0;
 		int[] pos = new int[length];
 
 		// Pass 0: Sanity checks
 		if (check) {
-			for (InstructionHandle ih = start; ih != null; ih = ih.next) {
-				Instruction i = ih.instruction;
-
-				if (i instanceof InstructionBranch) { // target instruction within list?
-					Instruction inst = ((InstructionBranch) i).getTarget().instruction;
-					if (!contains(inst)) {
-						throw new ClassGenException("Branch target of " + Constants.OPCODE_NAMES[i.opcode] + ":" + inst
-								+ " not in instruction list");
-					}
-
-					if (i instanceof InstructionSelect) {
-						InstructionHandle[] targets = ((InstructionSelect) i).getTargets();
-
-						for (int j = 0; j < targets.length; j++) {
-							inst = targets[j].instruction;
-							if (!contains(inst)) {
-								throw new ClassGenException("Branch target of " + Constants.OPCODE_NAMES[i.opcode] + ":" + inst
-										+ " not in instruction list");
-							}
-						}
-					}
-
-					if (!(ih instanceof BranchHandle)) {
-						throw new ClassGenException("Branch instruction " + Constants.OPCODE_NAMES[i.opcode] + ":" + inst
-								+ " not contained in BranchHandle.");
-					}
-
-				}
-			}
+			checkInstructionList();
 		}
 
 		// Pass 1: Set position numbers and sum up the maximum number of bytes an
@@ -904,38 +873,79 @@ public class InstructionList implements Serializable {
 			switch (i.opcode) {
 			case Constants.JSR:
 			case Constants.GOTO:
-				max_additional_bytes += 2;
+				maxAdditionalBytes += 2;
 				break;
 
 			case Constants.TABLESWITCH:
 			case Constants.LOOKUPSWITCH:
-				max_additional_bytes += 3;
+				maxAdditionalBytes += 3;
 				break;
 			}
 			index += i.getLength();
 		}
 
+		// OPTIMIZE positions will only move around if there have been expanding instructions
+		// if (max_additional_bytes==0...) {
+		//			
+		// }
+
 		/*
 		 * Pass 2: Expand the variable-length (Branch)Instructions depending on the target offset (short or int) and ensure that
 		 * branch targets are within this list.
 		 */
+		int offset = 0;
 		for (InstructionHandle ih = start; ih != null; ih = ih.next) {
-			additional_bytes += ih.updatePosition(additional_bytes, max_additional_bytes);
+			if (ih instanceof BranchHandle) {
+				offset += ((BranchHandle) ih).updatePosition(offset, maxAdditionalBytes);
+			}
 		}
-
-		/*
-		 * Pass 3: Update position numbers (which may have changed due to the preceding expansions), like pass 1.
-		 */
-		index = count = 0;
-		for (InstructionHandle ih = start; ih != null; ih = ih.next) {
-			Instruction i = ih.instruction;
-			ih.setPosition(index);
-			pos[count++] = index;
-			index += i.getLength();
+		if (offset != 0) {
+			/*
+			 * Pass 3: Update position numbers (which may have changed due to the preceding expansions), like pass 1.
+			 */
+			index = count = 0;
+			for (InstructionHandle ih = start; ih != null; ih = ih.next) {
+				Instruction i = ih.instruction;
+				ih.setPosition(index);
+				pos[count++] = index;
+				index += i.getLength();
+			}
 		}
 
 		positions = new int[count]; // Trim to proper size
 		System.arraycopy(pos, 0, positions, 0, count);
+	}
+
+	private void checkInstructionList() {
+		for (InstructionHandle ih = start; ih != null; ih = ih.next) {
+			Instruction i = ih.instruction;
+
+			if (i instanceof InstructionBranch) { // target instruction within list?
+				Instruction inst = ((InstructionBranch) i).getTarget().instruction;
+				if (!contains(inst)) {
+					throw new ClassGenException("Branch target of " + Constants.OPCODE_NAMES[i.opcode] + ":" + inst
+							+ " not in instruction list");
+				}
+
+				if (i instanceof InstructionSelect) {
+					InstructionHandle[] targets = ((InstructionSelect) i).getTargets();
+
+					for (int j = 0; j < targets.length; j++) {
+						inst = targets[j].instruction;
+						if (!contains(inst)) {
+							throw new ClassGenException("Branch target of " + Constants.OPCODE_NAMES[i.opcode] + ":" + inst
+									+ " not in instruction list");
+						}
+					}
+				}
+
+				if (!(ih instanceof BranchHandle)) {
+					throw new ClassGenException("Branch instruction " + Constants.OPCODE_NAMES[i.opcode] + ":" + inst
+							+ " not contained in BranchHandle.");
+				}
+
+			}
+		}
 	}
 
 	/**

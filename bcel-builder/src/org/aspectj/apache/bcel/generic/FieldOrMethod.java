@@ -61,23 +61,15 @@ import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 /**
  * Super class for InvokeInstruction and FieldInstruction, since they have some methods in common!
  * 
- * @version $Id: FieldOrMethod.java,v 1.7 2009/09/10 15:35:06 aclement Exp $
+ * @version $Id: FieldOrMethod.java,v 1.8 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class FieldOrMethod extends InstructionCP {
 
-	// private boolean dontKnowSignature=true;
 	private String signature;
-
-	// private boolean dontKnowName =true;
 	private String name;
-
-	// private boolean dontKnowClassname =true;
 	private String classname;
 
-	/**
-	 * @param index to constant pool
-	 */
 	protected FieldOrMethod(short opcode, int index) {
 		super(opcode, index);
 	}
@@ -89,9 +81,7 @@ public abstract class FieldOrMethod extends InstructionCP {
 		if (signature == null) {
 			ConstantCP cmr = (ConstantCP) cp.getConstant(index);
 			ConstantNameAndType cnat = (ConstantNameAndType) cp.getConstant(cmr.getNameAndTypeIndex());
-
 			signature = ((ConstantUtf8) cp.getConstant(cnat.getSignatureIndex())).getValue();
-			// dontKnowSignature=false;
 		}
 		return signature;
 	}
@@ -104,7 +94,6 @@ public abstract class FieldOrMethod extends InstructionCP {
 			ConstantCP cmr = (ConstantCP) cp.getConstant(index);
 			ConstantNameAndType cnat = (ConstantNameAndType) cp.getConstant(cmr.getNameAndTypeIndex());
 			name = ((ConstantUtf8) cp.getConstant(cnat.getNameIndex())).getValue();
-			// dontKnowName = false;
 		}
 		return name;
 	}
@@ -116,11 +105,11 @@ public abstract class FieldOrMethod extends InstructionCP {
 		if (classname == null) {
 			ConstantCP cmr = (ConstantCP) cp.getConstant(index);
 			String str = cp.getConstantString(cmr.getClassIndex(), CONSTANT_Class);
-			if (str.charAt(0) == '[')
+			if (str.charAt(0) == '[') {
 				classname = str;
-			else
+			} else {
 				classname = str.replace('/', '.');
-			// dontKnowClassname = false;
+			}
 		}
 		return classname;
 	}

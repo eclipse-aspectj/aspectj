@@ -61,72 +61,77 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 
 /**
  * Super class for the INVOKExxx family of instructions.
- *
- * @version $Id: InvokeInstruction.java,v 1.5 2008/05/28 23:52:54 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * 
+ * @version $Id: InvokeInstruction.java,v 1.6 2009/10/05 17:35:36 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class InvokeInstruction extends FieldOrMethod {
 
-  /**
-   * @param index to constant pool
-   */
-  public InvokeInstruction(short opcode, int index) {
-    super(opcode, index);
-  }
+	/**
+	 * @param index to constant pool
+	 */
+	public InvokeInstruction(short opcode, int index) {
+		super(opcode, index);
+	}
 
-  /**
-   * @return mnemonic for instruction with symbolic references resolved
-   */
-  public String toString(ConstantPool cp) {
-    Constant        c   = cp.getConstant(index);
-    StringTokenizer tok = new StringTokenizer(cp.constantToString(c));
+	/**
+	 * @return mnemonic for instruction with symbolic references resolved
+	 */
+	public String toString(ConstantPool cp) {
+		Constant c = cp.getConstant(index);
+		StringTokenizer tok = new StringTokenizer(cp.constantToString(c));
 
-    return Constants.OPCODE_NAMES[opcode] + " " +
-      tok.nextToken().replace('.', '/') + tok.nextToken();
-  }
+		return Constants.OPCODE_NAMES[opcode] + " " + tok.nextToken().replace('.', '/') + tok.nextToken();
+	}
 
-  /**
-   * Also works for instructions whose stack effect depends on the
-   * constant pool entry they reference.
-   * @return Number of words consumed from stack by this instruction
-   */
-  public int consumeStack(ConstantPool cpg) {
-      String signature = getSignature(cpg);
-      int sum = Type.getArgumentSizes(signature);
-      if (opcode!=Constants.INVOKESTATIC) sum+=1;
-      return sum;
-   }
+	/**
+	 * Also works for instructions whose stack effect depends on the constant pool entry they reference.
+	 * 
+	 * @return Number of words consumed from stack by this instruction
+	 */
+	public int consumeStack(ConstantPool cpg) {
+		String signature = getSignature(cpg);
+		int sum = Type.getArgumentSizes(signature);
+		if (opcode != Constants.INVOKESTATIC) {
+			sum += 1;
+		}
+		return sum;
+	}
 
-  /**
-   * Also works for instructions whose stack effect depends on the
-   * constant pool entry they reference.
-   * @return Number of words produced onto stack by this instruction
-   */
-  public int produceStack(ConstantPool cpg) {
-    return getReturnType(cpg).getSize();
-  }
+	/**
+	 * Also works for instructions whose stack effect depends on the constant pool entry they reference.
+	 * 
+	 * @return Number of words produced onto stack by this instruction
+	 */
+	public int produceStack(ConstantPool cpg) {
+		return getReturnType(cpg).getSize();
+	}
 
-  /** @return return type of referenced method.
-   */
-  public Type getType(ConstantPool cpg) {
-    return getReturnType(cpg);
-  }
+	/**
+	 * @return return type of referenced method.
+	 */
+	public Type getType(ConstantPool cpg) {
+		return getReturnType(cpg);
+	}
 
-  /** @return name of referenced method.
-   */
-  public String getMethodName(ConstantPool cpg) {
-    return getName(cpg);
-  }
+	/**
+	 * @return name of referenced method.
+	 */
+	public String getMethodName(ConstantPool cpg) {
+		return getName(cpg);
+	}
 
-  /** @return return type of referenced method.
-   */
-  public Type getReturnType(ConstantPool cpg) {
-    return Type.getReturnType(getSignature(cpg));
-  }
+	/**
+	 * @return return type of referenced method.
+	 */
+	public Type getReturnType(ConstantPool cpg) {
+		return Type.getReturnType(getSignature(cpg));
+	}
 
-  /** @return argument types of referenced method.
-   */
-  public Type[] getArgumentTypes(ConstantPool cpg) {
-    return Type.getArgumentTypes(getSignature(cpg));
-  }
+	/**
+	 * @return argument types of referenced method.
+	 */
+	public Type[] getArgumentTypes(ConstantPool cpg) {
+		return Type.getArgumentTypes(getSignature(cpg));
+	}
 }

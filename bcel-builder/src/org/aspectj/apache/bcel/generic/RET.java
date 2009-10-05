@@ -66,12 +66,12 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
  * Stack: ..., -&gt; ..., address
  * </PRE>
  * 
- * @version $Id: RET.java,v 1.4 2009/10/04 03:21:45 aclement Exp $
+ * @version $Id: RET.java,v 1.5 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class RET extends Instruction {
 	private boolean wide;
-	private int index; // index to local variable containg the return address
+	private int index; // index to local variable containing the return address
 
 	public RET(int index, boolean wide) {
 		super(Constants.RET);
@@ -82,7 +82,7 @@ public class RET extends Instruction {
 
 	public void dump(DataOutputStream out) throws IOException {
 		if (wide) {
-			out.writeByte(org.aspectj.apache.bcel.Constants.WIDE);
+			out.writeByte(Constants.WIDE);
 		}
 		out.writeByte(opcode);
 		if (wide) {
@@ -106,7 +106,7 @@ public class RET extends Instruction {
 
 	public final void setIndex(int index) {
 		this.index = index;
-		this.wide = index > org.aspectj.apache.bcel.Constants.MAX_BYTE;
+		this.wide = index > Constants.MAX_BYTE;
 	}
 
 	public String toString(boolean verbose) {
@@ -115,6 +115,18 @@ public class RET extends Instruction {
 
 	public Type getType(ConstantPool cp) {
 		return ReturnaddressType.NO_TARGET;
+	}
+
+	public boolean equals(Object other) {
+		if (!(other instanceof RET)) {
+			return false;
+		}
+		RET o = (RET) other;
+		return o.opcode == opcode && o.index == index;
+	}
+
+	public int hashCode() {
+		return opcode * 37 + index;
 	}
 
 }

@@ -61,7 +61,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 /**
  * Select - Abstract super class for LOOKUPSWITCH and TABLESWITCH instructions.
  * 
- * @version $Id: InstructionSelect.java,v 1.3 2008/08/28 00:05:41 aclement Exp $
+ * @version $Id: InstructionSelect.java,v 1.4 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see LOOKUPSWITCH
  * @see TABLESWITCH
@@ -78,15 +78,13 @@ public abstract class InstructionSelect extends InstructionBranch {
 	protected short length;
 
 	/**
-	 * (Match, target) pairs for switch. `Match' and `targets' must have the
-	 * same length of course.
+	 * (Match, target) pairs for switch. `Match' and `targets' must have the same length of course.
 	 * 
 	 * @param match array of matching values
 	 * @param targets instruction targets
 	 * @param target default instruction target
 	 */
-	InstructionSelect(short opcode, int[] match, InstructionHandle[] targets,
-			InstructionHandle target) {
+	InstructionSelect(short opcode, int[] match, InstructionHandle[] targets, InstructionHandle target) {
 		super(opcode, target);
 
 		this.targets = targets;
@@ -97,8 +95,7 @@ public abstract class InstructionSelect extends InstructionBranch {
 		this.match = match;
 
 		if ((matchLength = match.length) != targets.length) {
-			throw new ClassGenException(
-					"Match and target array have not the same length");
+			throw new ClassGenException("Match and target array have not the same length");
 		}
 
 		indices = new int[matchLength];
@@ -106,37 +103,30 @@ public abstract class InstructionSelect extends InstructionBranch {
 
 	protected int getTargetOffset(InstructionHandle target) {
 		if (target == null) {
-			throw new ClassGenException("Target of " + super.toString(true)
-					+ " is invalid null handle");
+			throw new ClassGenException("Target of " + super.toString(true) + " is invalid null handle");
 		}
 
 		int t = target.getPosition();
 
 		if (t < 0) {
-			throw new ClassGenException(
-					"Invalid branch target position offset for "
-							+ super.toString(true) + ":" + t + ":" + target);
+			throw new ClassGenException("Invalid branch target position offset for " + super.toString(true) + ":" + t + ":"
+					+ target);
 		}
 
 		return t - positionOfThisInstruction;
 	}
 
 	/**
-	 * Since this is a variable length instruction, it may shift the following
-	 * instructions which then need to update their position.
+	 * Since this is a variable length instruction, it may shift the following instructions which then need to update their
+	 * position.
 	 * 
-	 * Called by InstructionList.setPositions when setting the position for
-	 * every instruction. In the presence of variable length instructions
-	 * `setPositions' performs multiple passes over the instruction list to
-	 * calculate the correct (byte) positions and offsets by calling this
-	 * function.
+	 * Called by InstructionList.setPositions when setting the position for every instruction. In the presence of variable length
+	 * instructions `setPositions' performs multiple passes over the instruction list to calculate the correct (byte) positions and
+	 * offsets by calling this function.
 	 * 
-	 * @param offset additional offset caused by preceding (variable length)
-	 *        instructions
-	 * @param max_offset the maximum offset that may be caused by these
-	 *        instructions
-	 * @return additional offset caused by possible change of this instruction's
-	 *         length
+	 * @param offset additional offset caused by preceding (variable length) instructions
+	 * @param max_offset the maximum offset that may be caused by these instructions
+	 * @return additional offset caused by possible change of this instruction's length
 	 */
 	protected int updatePosition(int offset, int max_offset) {
 		positionOfThisInstruction += offset; // Additional offset caused by
@@ -170,8 +160,7 @@ public abstract class InstructionSelect extends InstructionBranch {
 		out.writeInt(targetIndex);
 	}
 
-	public InstructionSelect(short opcode, ByteSequence bytes)
-			throws IOException {
+	public InstructionSelect(short opcode, ByteSequence bytes) throws IOException {
 		super(opcode);
 		padding = (4 - bytes.getIndex() % 4) % 4; // Compute number of pad bytes
 
@@ -198,8 +187,7 @@ public abstract class InstructionSelect extends InstructionBranch {
 					s = targets[i].getInstruction().toString();
 				}
 
-				buf.append("(" + match[i] + ", " + s + " = {" + indices[i]
-						+ "})");
+				buf.append("(" + match[i] + ", " + s + " = {" + indices[i] + "})");
 			}
 		} else {
 			buf.append(" ...");
@@ -268,14 +256,6 @@ public abstract class InstructionSelect extends InstructionBranch {
 		}
 	}
 
-	public boolean equals(Object other) {
-		return this == other;
-	}
-
-	public int hashCode() {
-		return opcode * 37;
-	}
-
 	/**
 	 * @return array of match indices
 	 */
@@ -288,6 +268,14 @@ public abstract class InstructionSelect extends InstructionBranch {
 	 */
 	public int[] getIndices() {
 		return indices;
+	}
+
+	public boolean equals(Object other) {
+		return this == other;
+	}
+
+	public int hashCode() {
+		return opcode * 37;
 	}
 
 	/**

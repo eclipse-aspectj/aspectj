@@ -53,58 +53,75 @@ package org.aspectj.apache.bcel.generic;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-import org.aspectj.apache.bcel.classfile.ConstantPool;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 
-import java.io.*;
-
-/** 
+/**
  * INVOKEINTERFACE - Invoke interface method
- * <PRE>Stack: ..., objectref, [arg1, [arg2 ...]] -&gt; ...</PRE>
- *
- * @version $Id: INVOKEINTERFACE.java,v 1.3 2008/05/28 23:52:58 aclement Exp $
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * 
+ * <PRE>
+ * Stack: ..., objectref, [arg1, [arg2 ...]] -&gt; ...
+ * </PRE>
+ * 
+ * @version $Id: INVOKEINTERFACE.java,v 1.4 2009/10/05 17:35:36 aclement Exp $
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class INVOKEINTERFACE extends InvokeInstruction {
-  private int nargs; // Number of arguments on stack (number of stack slots), called "count" in vmspec2
+	private int nargs; // Number of arguments on stack (number of stack slots), called "count" in vmspec2
 
+	public INVOKEINTERFACE(int index, int nargs, int zerobyte) {
+		super(Constants.INVOKEINTERFACE, index);
 
-  public INVOKEINTERFACE(int index, int nargs,int zerobyte) {
-    super(Constants.INVOKEINTERFACE, index);
+		if (nargs < 1) {
+			throw new ClassGenException("Number of arguments must be > 0 " + nargs);
+		}
 
-    if(nargs < 1)
-      throw new ClassGenException("Number of arguments must be > 0 " + nargs);
+		this.nargs = nargs;
+	}
 
-    this.nargs = nargs;
-  }
+	/**
+	 * Dump instruction as byte code to stream out.
+	 * 
+	 * @param out Output stream
+	 */
+	public void dump(DataOutputStream out) throws IOException {
+		out.writeByte(opcode);
+		out.writeShort(index);
+		out.writeByte(nargs);
+		out.writeByte(0);
+	}
 
-  /**
-   * Dump instruction as byte code to stream out.
-   * @param out Output stream
-   */
-  public void dump(DataOutputStream out) throws IOException {
-    out.writeByte(opcode);
-    out.writeShort(index);
-    out.writeByte(nargs);
-    out.writeByte(0);
-  }
+	/**
+	 * The <B>count</B> argument according to the Java Language Specification, Second Edition.
+	 */
+	public int getCount() {
+		return nargs;
+	}
 
-  /**
-   * The <B>count</B> argument according to the Java Language Specification,
-   * Second Edition.
-   */
-  public int getCount() { return nargs; }
+	/**
+	 * @return mnemonic for instruction with symbolic references resolved
+	 */
+	public String toString(ConstantPool cp) {
+		return super.toString(cp) + " " + nargs;
+	}
 
+	public int consumeStack(ConstantPool cpg) { // nargs is given in byte-code
+		return nargs; // nargs includes this reference
+	}
 
-  /**
-   * @return mnemonic for instruction with symbolic references resolved
-   */
-  public String toString(ConstantPool cp) {
-    return super.toString(cp) + " " + nargs;
-  }
+	public boolean equals(Object other) {
+		if (!(other instanceof INVOKEINTERFACE)) {
+			return false;
+		}
+		INVOKEINTERFACE o = (INVOKEINTERFACE) other;
+		return o.opcode == opcode && o.index == index && o.nargs == nargs;
+	}
 
-  public int consumeStack(ConstantPool cpg) { // nargs is given in byte-code
-    return nargs;  // nargs includes this reference
-  }
+	public int hashCode() {
+		return opcode * 37 + index * (nargs + 17);
+	}
 
 }

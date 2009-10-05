@@ -68,7 +68,7 @@ import org.aspectj.apache.bcel.classfile.Utility;
  * doubly-linked list. From the outside only the next and the previous instruction (handle) are accessible. One can traverse the
  * list via an Enumeration returned by InstructionList.elements().
  * 
- * @version $Id: InstructionHandle.java,v 1.8 2009/09/28 16:39:46 aclement Exp $
+ * @version $Id: InstructionHandle.java,v 1.9 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Instruction
  * @see BranchHandle
@@ -77,8 +77,16 @@ import org.aspectj.apache.bcel.classfile.Utility;
 public class InstructionHandle implements java.io.Serializable {
 	InstructionHandle next, prev; // Will be set from the outside
 	Instruction instruction;
-	protected int i_position = -1; // byte code offset of instruction
+	protected int pos = -1; // byte code offset of instruction
 	private Set<InstructionTargeter> targeters = Collections.emptySet();
+
+	protected InstructionHandle(Instruction i) {
+		setInstruction(i);
+	}
+
+	static final InstructionHandle getInstructionHandle(Instruction i) {
+		return new InstructionHandle(i);
+	}
 
 	public final InstructionHandle getNext() {
 		return next;
@@ -102,41 +110,19 @@ public class InstructionHandle implements java.io.Serializable {
 		instruction = i;
 	}
 
-	protected InstructionHandle(Instruction i) {
-		setInstruction(i);
-	}
-
-	static final InstructionHandle getInstructionHandle(Instruction i) {
-		return new InstructionHandle(i);
-	}
-
-	/**
-	 * Called by InstructionList.setPositions when setting the position for every instruction. In the presence of variable length
-	 * instructions 'setPositions()' performs multiple passes over the instruction list to calculate the correct (byte) positions
-	 * and offsets by calling this function.
-	 * 
-	 * @param offset additional offset caused by preceding (variable length) instructions
-	 * @param max_offset the maximum offset that may be caused by these instructions
-	 * @return additional offset caused by possible change of this instruction's length
-	 */
-	protected int updatePosition(int offset, int max_offset) {
-		i_position += offset;
-		return 0;
-	}
-
 	/**
 	 * @return the position, i.e., the byte code offset of the contained instruction. This is accurate only after
 	 *         InstructionList.setPositions() has been called.
 	 */
 	public int getPosition() {
-		return i_position;
+		return pos;
 	}
 
 	/**
 	 * Set the position, i.e., the byte code offset of the contained instruction.
 	 */
 	void setPosition(int pos) {
-		i_position = pos;
+		this.pos = pos;
 	}
 
 	/**
@@ -147,7 +133,7 @@ public class InstructionHandle implements java.io.Serializable {
 		next = prev = null;
 		instruction.dispose();
 		instruction = null;
-		i_position = -1;
+		pos = -1;
 		removeAllTargeters();
 	}
 
@@ -179,7 +165,6 @@ public class InstructionHandle implements java.io.Serializable {
 		return !targeters.isEmpty();
 	}
 
-
 	public Set<InstructionTargeter> getTargeters() {
 		return targeters;
 	}
@@ -194,7 +179,7 @@ public class InstructionHandle implements java.io.Serializable {
 	 * @return a (verbose) string representation of the contained instruction.
 	 */
 	public String toString(boolean verbose) {
-		return Utility.format(i_position, 4, false, ' ') + ": " + instruction.toString(verbose);
+		return Utility.format(pos, 4, false, ' ') + ": " + instruction.toString(verbose);
 	}
 
 	public String toString() {

@@ -84,7 +84,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeParamAnnos;
  * While generating code it may be necessary to insert NOP operations. You can use the `removeNOPs' method to get rid off them. The
  * resulting method object can be obtained via the `getMethod()' method.
  * 
- * @version $Id: MethodGen.java,v 1.15 2009/09/15 19:40:14 aclement Exp $
+ * @version $Id: MethodGen.java,v 1.16 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author <A HREF="http://www.vmeng.com/beard">Patrick C. Beard</A> [setMaxStack()]
  * @see InstructionList
@@ -264,8 +264,9 @@ public class MethodGen extends FieldGenOrMethodGen {
 							for (int k = 0; k < ln.length; k++) {
 								LineNumber l = ln[k];
 								int lnum = l.getLineNumber();
-								if (lnum > highestLineNumber)
+								if (lnum > highestLineNumber) {
 									highestLineNumber = lnum;
+								}
 								LineNumberTag lt = new LineNumberTag(lnum);
 								il.findHandle(l.getStartPC(), arrayOfInstructions, true).addTargeter(lt);
 							}
@@ -290,8 +291,9 @@ public class MethodGen extends FieldGenOrMethodGen {
 								byte b = t.getType();
 								if (b != Constants.T_ADDRESS) {
 									int increment = t.getSize();
-									if (l.getIndex() + increment > maxLocals)
+									if (l.getIndex() + increment > maxLocals) {
 										maxLocals = l.getIndex() + increment;
+									}
 								}
 								int end = l.getStartPC() + l.getLength();
 								do {
@@ -311,24 +313,29 @@ public class MethodGen extends FieldGenOrMethodGen {
 								InstructionHandle end = il.findHandle(l.getStartPC() + l.getLength(), arrayOfInstructions);
 								// AMC, this actually gives us the first instruction AFTER the range,
 								// so move back one... (findHandle can't cope with mid-instruction indices)
-								if (end != null)
+								if (end != null) {
 									end = end.getPrev();
+								}
 								// Repair malformed handles
-								if (null == start)
+								if (null == start) {
 									start = il.getStart();
-								if (null == end)
+								}
+								if (null == end) {
 									end = il.getEnd();
+								}
 
 								addLocalVariable(l.getName(), Type.getType(l.getSignature()), l.getIndex(), start, end);
 							}
 						}
-					} else
+					} else {
 						addCodeAttribute(a);
+					}
 				}
 			} else if (a instanceof ExceptionTable) {
 				String[] names = ((ExceptionTable) a).getExceptionNames();
-				for (int j = 0; j < names.length; j++)
+				for (int j = 0; j < names.length; j++) {
 					addException(names[j]);
+				}
 			} else if (a instanceof RuntimeAnnos) {
 				RuntimeAnnos runtimeAnnotations = (RuntimeAnnos) a;
 				List<AnnotationGen> l = runtimeAnnotations.getAnnotations();
@@ -395,10 +402,12 @@ public class MethodGen extends FieldGenOrMethodGen {
 		LocalVariableGen h;
 
 		do {
-			while (vars[i].getIndex() < m)
+			while (vars[i].getIndex() < m) {
 				i++;
-			while (m < vars[j].getIndex())
+			}
+			while (m < vars[j].getIndex()) {
 				j--;
+			}
 
 			if (i <= j) {
 				h = vars[i];
@@ -409,10 +418,12 @@ public class MethodGen extends FieldGenOrMethodGen {
 			}
 		} while (i <= j);
 
-		if (l < j)
+		if (l < j) {
 			sort(vars, l, j);
-		if (i < r)
+		}
+		if (i < r) {
 			sort(vars, i, r);
+		}
 	}
 
 	/*
@@ -427,15 +438,18 @@ public class MethodGen extends FieldGenOrMethodGen {
 		localVariablesList.toArray(lg);
 
 		for (int i = 0; i < size; i++) {
-			if (lg[i].getStart() == null)
+			if (lg[i].getStart() == null) {
 				lg[i].setStart(il.getStart());
+			}
 
-			if (lg[i].getEnd() == null)
+			if (lg[i].getEnd() == null) {
 				lg[i].setEnd(il.getEnd());
+			}
 		}
 
-		if (size > 1)
+		if (size > 1) {
 			sort(lg, 0, size - 1);
+		}
 
 		return lg;
 	}
@@ -448,8 +462,9 @@ public class MethodGen extends FieldGenOrMethodGen {
 		int size = lg.length;
 		LocalVariable[] lv = new LocalVariable[size];
 
-		for (int i = 0; i < size; i++)
+		for (int i = 0; i < size; i++) {
 			lv[i] = lg[i].getLocalVariable(cp);
+		}
 
 		return new LocalVariableTable(cp.addUtf8("LocalVariableTable"), 2 + lv.length * 10, lv, cp);
 	}
@@ -516,8 +531,9 @@ public class MethodGen extends FieldGenOrMethodGen {
 	 */
 	public CodeExceptionGen addExceptionHandler(InstructionHandle start_pc, InstructionHandle end_pc, InstructionHandle handler_pc,
 			ObjectType catch_type) {
-		if ((start_pc == null) || (end_pc == null) || (handler_pc == null))
+		if ((start_pc == null) || (end_pc == null) || (handler_pc == null)) {
 			throw new ClassGenException("Exception handler target is null instruction");
+		}
 
 		CodeExceptionGen c = new CodeExceptionGen(start_pc, end_pc, handler_pc, catch_type);
 		exceptionsList.add(c);
@@ -605,8 +621,9 @@ public class MethodGen extends FieldGenOrMethodGen {
 		int[] ex = new int[size];
 
 		try {
-			for (int i = 0; i < size; i++)
+			for (int i = 0; i < size; i++) {
 				ex[i] = cp.addClass(exceptionsThrown.get(i));
+			}
 		} catch (ArrayIndexOutOfBoundsException e) {
 		}
 
@@ -625,8 +642,9 @@ public class MethodGen extends FieldGenOrMethodGen {
 	}
 
 	public void addParameterAnnotationsAsAttribute(ConstantPool cp) {
-		if (!hasParameterAnnotations)
+		if (!hasParameterAnnotations) {
 			return;
+		}
 		Attribute[] attrs = Utility.getParameterAnnotationAttributes(cp, param_annotations);
 		if (attrs != null) {
 			for (int i = 0; i < attrs.length; i++) {
@@ -674,8 +692,9 @@ public class MethodGen extends FieldGenOrMethodGen {
 		 */
 		byte[] byte_code = null;
 
-		if (il != null)
+		if (il != null) {
 			byte_code = il.getByteCode();
+		}
 
 		LineNumberTable lnt = null;
 		LocalVariableTable lvt = null;
@@ -684,11 +703,13 @@ public class MethodGen extends FieldGenOrMethodGen {
 		/*
 		 * Create LocalVariableTable and LineNumberTable attributes (for debuggers, e.g.)
 		 */
-		if ((localVariablesList.size() > 0) && !stripAttributes)
+		if ((localVariablesList.size() > 0) && !stripAttributes) {
 			addCodeAttribute(lvt = getLocalVariableTable(cp));
+		}
 
-		if ((lineNumbersList.size() > 0) && !stripAttributes)
+		if ((lineNumbersList.size() > 0) && !stripAttributes) {
 			addCodeAttribute(lnt = getLineNumberTable(cp));
+		}
 
 		Attribute[] code_attrs = getCodeAttributes();
 
@@ -696,8 +717,9 @@ public class MethodGen extends FieldGenOrMethodGen {
 		 * Each attribute causes 6 additional header bytes
 		 */
 		int attrs_len = 0;
-		for (int i = 0; i < code_attrs.length; i++)
+		for (int i = 0; i < code_attrs.length; i++) {
 			attrs_len += (code_attrs[i].getLength() + 6);
+		}
 
 		CodeException[] c_exc = getCodeExceptions();
 		int exc_len = c_exc.length * 8; // Every entry takes 8 bytes
@@ -709,8 +731,9 @@ public class MethodGen extends FieldGenOrMethodGen {
 			List<Attribute> attributes = getAttributes();
 			for (int i = 0; i < attributes.size(); i++) {
 				Attribute a = attributes.get(i);
-				if (a instanceof Code)
+				if (a instanceof Code) {
 					removeAttribute(a);
+				}
 			}
 
 			code = new Code(cp.addUtf8("Code"), 8 + byte_code.length + // prologue byte code
@@ -726,21 +749,26 @@ public class MethodGen extends FieldGenOrMethodGen {
 
 		ExceptionTable et = null;
 
-		if (exceptionsThrown.size() > 0)
+		if (exceptionsThrown.size() > 0) {
 			addAttribute(et = getExceptionTable(cp)); // Add `Exceptions' if there are "throws" clauses
+		}
 
 		Method m = new Method(modifiers, name_index, signature_index, getAttributesImmutable(), cp);
 
 		// Undo effects of adding attributes
 		// OPTIMIZE why redo this? is there a better way to clean up?
-		if (lvt != null)
+		if (lvt != null) {
 			removeCodeAttribute(lvt);
-		if (lnt != null)
+		}
+		if (lnt != null) {
 			removeCodeAttribute(lnt);
-		if (code != null)
+		}
+		if (code != null) {
 			removeAttribute(code);
-		if (et != null)
+		}
+		if (et != null) {
 			removeAttribute(et);
+		}
 		// J5TODO: Remove the annotation attributes that may have been added
 		return m;
 	}
@@ -807,10 +835,11 @@ public class MethodGen extends FieldGenOrMethodGen {
 	}
 
 	public String[] getArgumentNames() {
-		if (parameterNames != null)
+		if (parameterNames != null) {
 			return parameterNames.clone();
-		else
+		} else {
 			return new String[0];
+		}
 	}
 
 	public void setArgumentName(int i, String name) {
@@ -838,10 +867,11 @@ public class MethodGen extends FieldGenOrMethodGen {
 	 * Computes max. stack size by performing control flow analysis.
 	 */
 	public void setMaxStack() {
-		if (il != null)
+		if (il != null) {
 			maxStack = getMaxStack(cp, il, getExceptionHandlers());
-		else
+		} else {
 			maxStack = 0;
+		}
 	}
 
 	/**
@@ -851,9 +881,11 @@ public class MethodGen extends FieldGenOrMethodGen {
 		if (il != null) {
 			int max = isStatic() ? 0 : 1;
 
-			if (parameterTypes != null)
-				for (int i = 0; i < parameterTypes.length; i++)
+			if (parameterTypes != null) {
+				for (int i = 0; i < parameterTypes.length; i++) {
 					max += parameterTypes[i].getSize();
+				}
+			}
 
 			for (InstructionHandle ih = il.getStart(); ih != null; ih = ih.getNext()) {
 				Instruction ins = ih.getInstruction();
@@ -861,14 +893,16 @@ public class MethodGen extends FieldGenOrMethodGen {
 				if ((ins instanceof InstructionLV) || (ins instanceof RET)) {
 					int index = ins.getIndex() + ins.getType(cp).getSize();
 
-					if (index > max)
+					if (index > max) {
 						max = index;
+					}
 				}
 			}
 
 			maxLocals = max;
-		} else
+		} else {
 			maxLocals = 0;
+		}
 	}
 
 	public void stripAttributes(boolean flag) {
@@ -890,8 +924,9 @@ public class MethodGen extends FieldGenOrMethodGen {
 		Hashtable<InstructionHandle, BranchTarget> visitedTargets = new Hashtable<InstructionHandle, BranchTarget>();
 
 		public void push(InstructionHandle target, int stackDepth) {
-			if (visited(target))
+			if (visited(target)) {
 				return;
+			}
 
 			branchTargets.push(visit(target, stackDepth));
 		}
@@ -925,17 +960,19 @@ public class MethodGen extends FieldGenOrMethodGen {
 	public static int getMaxStack(ConstantPool cp, InstructionList il, CodeExceptionGen[] et) {
 		BranchStack branchTargets = new BranchStack();
 
-		int stackDepth = 0, maxStackDepth = 0;
+		int stackDepth = 0;
+		int maxStackDepth = 0;
+
 		/*
 		 * Initially, populate the branch stack with the exception handlers, because these aren't (necessarily) branched to
-		 * explicitly. in each case, the stack will have depth 1, containing the exception object.
+		 * explicitly. In each case, the stack will have depth 1, containing the exception object.
 		 */
-		for (int i = 0; i < et.length; i++) {
-			InstructionHandle handler_pc = et[i].getHandlerPC();
-			if (handler_pc != null) {
+		for (int i = 0, max = et.length; i < max; i++) {
+			InstructionHandle handlerPos = et[i].getHandlerPC();
+			if (handlerPos != null) {
 				// it must be at least 1 since there is an exception handler
 				maxStackDepth = 1;
-				branchTargets.push(handler_pc, 1);
+				branchTargets.push(handlerPos, 1);
 			}
 		}
 
@@ -948,8 +985,9 @@ public class MethodGen extends FieldGenOrMethodGen {
 			int delta = prod - con;
 
 			stackDepth += delta;
-			if (stackDepth > maxStackDepth)
+			if (stackDepth > maxStackDepth) {
 				maxStackDepth = stackDepth;
+			}
 
 			// choose the next instruction based on whether current is a branch.
 			if (instruction instanceof InstructionBranch) {
@@ -958,15 +996,17 @@ public class MethodGen extends FieldGenOrMethodGen {
 					// explore all of the select's targets. the default target is handled below.
 					InstructionSelect select = (InstructionSelect) branch;
 					InstructionHandle[] targets = select.getTargets();
-					for (int i = 0; i < targets.length; i++)
+					for (int i = 0; i < targets.length; i++) {
 						branchTargets.push(targets[i], stackDepth);
+					}
 					// nothing to fall through to.
 					ih = null;
 				} else if (!(branch.isIfInstruction())) {
 					// if an instruction that comes back to following PC,
 					// push next instruction, with stack depth reduced by 1.
-					if (opcode == Constants.JSR || opcode == Constants.JSR_W)
+					if (opcode == Constants.JSR || opcode == Constants.JSR_W) {
 						branchTargets.push(ih.getNext(), stackDepth - 1);
+					}
 					ih = null;
 				}
 				// for all branches, the target of the branch is pushed on the branch stack.
@@ -976,12 +1016,14 @@ public class MethodGen extends FieldGenOrMethodGen {
 			} else {
 				// check for instructions that terminate the method.
 				if (opcode == Constants.ATHROW || opcode == Constants.RET
-						|| (opcode >= Constants.IRETURN && opcode <= Constants.RETURN))
+						|| (opcode >= Constants.IRETURN && opcode <= Constants.RETURN)) {
 					ih = null;
+				}
 			}
 			// normal case, go to the next instruction.
-			if (ih != null)
+			if (ih != null) {
 				ih = ih.getNext();
+			}
 			// if we have no more instructions, see if there are any deferred branches to explore.
 			if (ih == null) {
 				BranchTarget bt = branchTargets.pop();
@@ -1009,8 +1051,9 @@ public class MethodGen extends FieldGenOrMethodGen {
 		StringBuffer buf = new StringBuffer(signature);
 
 		if (exceptionsThrown.size() > 0) {
-			for (Iterator<String> e = exceptionsThrown.iterator(); e.hasNext();)
+			for (Iterator<String> e = exceptionsThrown.iterator(); e.hasNext();) {
 				buf.append("\n\t\tthrows " + e.next());
+			}
 		}
 
 		return buf.toString();
@@ -1023,8 +1066,9 @@ public class MethodGen extends FieldGenOrMethodGen {
 	 */
 	public List getAnnotationsOnParameter(int i) {
 		ensureExistingParameterAnnotationsUnpacked();
-		if (!hasParameterAnnotations || i > parameterTypes.length)
+		if (!hasParameterAnnotations || i > parameterTypes.length) {
 			return null;
+		}
 		return param_annotations[i];
 	}
 
@@ -1055,10 +1099,11 @@ public class MethodGen extends FieldGenOrMethodGen {
 
 				hasParameterAnnotations = true;
 				RuntimeParamAnnos rpa = (RuntimeParamAnnos) attribute;
-				if (rpa.areVisible())
+				if (rpa.areVisible()) {
 					paramAnnVisAttr = rpa;
-				else
+				} else {
 					paramAnnInvisAttr = rpa;
+				}
 				for (int j = 0; j < parameterTypes.length; j++) {
 					// This returns Annotation[] ...
 					AnnotationGen[] annos = rpa.getAnnotationsOnParameter(j);
@@ -1071,10 +1116,12 @@ public class MethodGen extends FieldGenOrMethodGen {
 				}
 			}
 		}
-		if (paramAnnVisAttr != null)
+		if (paramAnnVisAttr != null) {
 			removeAttribute(paramAnnVisAttr);
-		if (paramAnnInvisAttr != null)
+		}
+		if (paramAnnInvisAttr != null) {
 			removeAttribute(paramAnnInvisAttr);
+		}
 		haveUnpackedParameterAnnotations = true;
 	}
 
