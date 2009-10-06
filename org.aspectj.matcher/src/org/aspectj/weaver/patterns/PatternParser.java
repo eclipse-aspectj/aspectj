@@ -62,8 +62,9 @@ public class PatternParser {
 
 	public PerClause maybeParsePerClause() {
 		IToken tok = tokenSource.peek();
-		if (tok == IToken.EOF)
+		if (tok == IToken.EOF) {
 			return null;
+		}
 		if (tok.isIdentifier()) {
 			String name = tok.getString();
 			if (name.equals("issingleton")) {
@@ -196,10 +197,11 @@ public class PatternParser {
 		if (!isMethod && !isConstructorPattern) {
 			throw new ParserException("constructor signature pattern", tokenSource.peek(-1));
 		}
-		if (isConstructorPattern)
+		if (isConstructorPattern) {
 			return new DeclareAnnotation(DeclareAnnotation.AT_CONSTRUCTOR, sp);
-		else
+		} else {
 			return new DeclareAnnotation(DeclareAnnotation.AT_METHOD, sp);
+		}
 	}
 
 	public DeclareAnnotation parseDeclareAtField() {
@@ -408,8 +410,9 @@ public class PatternParser {
 	}
 
 	private void assertNoTypeVariables(String[] tvs, String errorMessage, IToken token) {
-		if (tvs != null)
+		if (tvs != null) {
 			throw new ParserException(errorMessage, token);
+		}
 	}
 
 	public Pointcut parseAnnotationPointcut() {
@@ -450,8 +453,9 @@ public class PatternParser {
 
 	private SignaturePattern parseConstructorSignaturePattern() {
 		SignaturePattern ret = parseMethodOrConstructorSignaturePattern();
-		if (ret.getKind() == Member.CONSTRUCTOR)
+		if (ret.getKind() == Member.CONSTRUCTOR) {
 			return ret;
+		}
 
 		throw new ParserException("constructor pattern required, found method pattern", ret);
 	}
@@ -712,11 +716,13 @@ public class PatternParser {
 			}
 			eat(")");
 			boolean isVarArgs = maybeEat("...");
-			if (isVarArgs)
+			if (isVarArgs) {
 				p.setIsVarArgs(isVarArgs);
+			}
 			boolean isIncludeSubtypes = maybeEat("+");
-			if (isIncludeSubtypes)
+			if (isIncludeSubtypes) {
 				p.includeSubtypes = true; // need the test because (A+) should not set subtypes to false!
+			}
 			return p;
 		}
 		int startPos = tokenSource.peek().getStart();
@@ -730,11 +736,17 @@ public class PatternParser {
 	private TypePattern setAnnotationPatternForTypePattern(TypePattern t, AnnotationTypePattern ap,
 			boolean parameterAnnotationsPattern) {
 		TypePattern ret = t;
-		if (parameterAnnotationsPattern)
+		if (parameterAnnotationsPattern) {
 			ap.setForParameterAnnotationMatch();
+		}
 		if (ap != AnnotationTypePattern.ANY) {
 			if (t == TypePattern.ANY) {
-				ret = new WildTypePattern(new NamePattern[] { NamePattern.ANY }, false, 0, false, null);
+				if (t.annotationPattern == AnnotationTypePattern.ANY) {
+					return new AnyWithAnnotationTypePattern(ap);
+				} else {
+					return new AnyWithAnnotationTypePattern(new AndAnnotationTypePattern(ap, t.annotationPattern));
+				}
+				// ret = new WildTypePattern(new NamePattern[] { NamePattern.ANY }, false, 0, false, null);
 			}
 			if (t.annotationPattern == AnnotationTypePattern.ANY) {
 				ret.setAnnotationTypePattern(ap);
@@ -812,7 +824,7 @@ public class PatternParser {
 
 	// Parse annotation values. In an expression in @A(a=b,c=d) this method will be
 	// parsing the a=b,c=d.)
-	public Map/* String,String */<String, String>parseAnnotationValues() {
+	public Map/* String,String */<String, String> parseAnnotationValues() {
 		Map<String, String> values = new HashMap<String, String>();
 		boolean seenDefaultValue = false;
 		do {
@@ -844,13 +856,16 @@ public class PatternParser {
 	}
 
 	public TypePattern parseSingleTypePattern(boolean insideTypeParameters) {
-		if (insideTypeParameters && maybeEat("?"))
+		if (insideTypeParameters && maybeEat("?")) {
 			return parseGenericsWildcardTypePattern();
+		}
 		if (allowHasTypePatterns) {
-			if (maybeEatIdentifier("hasmethod"))
+			if (maybeEatIdentifier("hasmethod")) {
 				return parseHasMethodTypePattern();
-			if (maybeEatIdentifier("hasfield"))
+			}
+			if (maybeEatIdentifier("hasfield")) {
 				return parseHasFieldTypePattern();
+			}
 		}
 
 		List<NamePattern> names = parseDottedNamePattern();
@@ -875,8 +890,9 @@ public class PatternParser {
 		boolean isVarArgs = maybeEat("...");
 
 		// ??? what about the source location of any's????
-		if (names.size() == 1 && names.get(0).isAny() && dim == 0 && !isVarArgs && typeParameters == null)
+		if (names.size() == 1 && names.get(0).isAny() && dim == 0 && !isVarArgs && typeParameters == null) {
 			return TypePattern.ANY;
+		}
 
 		// Notice we increase the dimensions if varargs is set. this is to allow type matching to
 		// succeed later: The actual signature at runtime of a method declared varargs is an array type of
@@ -1031,13 +1047,15 @@ public class PatternParser {
 			int startPos = tokenSource.peek().getStart();
 			String afterDot = null;
 			while (true) {
-				if (previous != null && previous.getString().equals("."))
+				if (previous != null && previous.getString().equals(".")) {
 					justProcessedDot = true;
+				}
 				tok = tokenSource.peek();
 				onADot = (tok.getString().equals("."));
 				if (previous != null) {
-					if (!isAdjacent(previous, tok))
+					if (!isAdjacent(previous, tok)) {
 						break;
+					}
 				}
 				if (tok.getString() == "*" || (tok.isIdentifier() && tok.getString() != "...")) {
 					buf.append(tok.getString());
@@ -1086,11 +1104,12 @@ public class PatternParser {
 			if (afterDot == null) {
 				buf.setLength(0);
 				// no elipsis or dotted name part
-				if (!maybeEat("."))
+				if (!maybeEat(".")) {
 					break;
-				// go on
-				else
+					// go on
+				} else {
 					previous = tokenSource.peek(-1);
+				}
 			} else {
 				buf.setLength(0);
 				buf.append(afterDot);
@@ -1112,22 +1131,29 @@ public class PatternParser {
 		while (true) {
 			tok = tokenSource.peek();
 			// keep going until we hit ')' or '=' or ','
-			if (tok.getString() == ")" && depth == 0)
+			if (tok.getString() == ")" && depth == 0) {
 				break;
-			if (tok.getString() == "=" && depth == 0)
+			}
+			if (tok.getString() == "=" && depth == 0) {
 				break;
-			if (tok.getString() == "," && depth == 0)
+			}
+			if (tok.getString() == "," && depth == 0) {
 				break;
+			}
 
 			// keep track of nested brackets
-			if (tok.getString() == "(")
+			if (tok.getString() == "(") {
 				depth++;
-			if (tok.getString() == ")")
+			}
+			if (tok.getString() == ")") {
 				depth--;
-			if (tok.getString() == "{")
+			}
+			if (tok.getString() == "{") {
 				depth++;
-			if (tok.getString() == "}")
+			}
+			if (tok.getString() == "}") {
 				depth--;
+			}
 
 			if (tok.getString() == "." && !dotOK) {
 				throw new ParserException("dot not expected", tok);
@@ -1136,10 +1162,11 @@ public class PatternParser {
 			tokenSource.next();
 			dotOK = true;
 		}
-		if (buf.length() == 0)
+		if (buf.length() == 0) {
 			return null;
-		else
+		} else {
 			return buf.toString();
+		}
 	}
 
 	public NamePattern parseNamePattern() {
@@ -1150,16 +1177,18 @@ public class PatternParser {
 		while (true) {
 			tok = tokenSource.peek();
 			if (previous != null) {
-				if (!isAdjacent(previous, tok))
+				if (!isAdjacent(previous, tok)) {
 					break;
+				}
 			}
 			if (tok.getString() == "*" || tok.isIdentifier()) {
 				buf.append(tok.getString());
 			} else if (tok.getLiteralKind() != null) {
 				// System.err.println("literal kind: " + tok.getString());
 				String s = tok.getString();
-				if (s.indexOf('.') != -1)
+				if (s.indexOf('.') != -1) {
 					break;
+				}
 				buf.append(s); // ??? so-so
 			} else {
 				break;
@@ -1207,12 +1236,14 @@ public class PatternParser {
 			isForbidden = maybeEat("!");
 			IToken t = tokenSource.next();
 			int flag = ModifiersPattern.getModifierFlag(t.getString());
-			if (flag == -1)
+			if (flag == -1) {
 				break;
-			if (isForbidden)
+			}
+			if (isForbidden) {
 				forbiddenFlags |= flag;
-			else
+			} else {
 				requiredFlags |= flag;
+			}
 		}
 
 		tokenSource.setIndex(start);
@@ -1275,10 +1306,11 @@ public class PatternParser {
 				boolean isForbidden = maybeEat("!");
 				// ???might want an error for a second ! without a paren
 				TypePattern p = parseTypePattern();
-				if (isForbidden)
+				if (isForbidden) {
 					forbidden.add(p);
-				else
+				} else {
 					required.add(p);
+				}
 			} while (maybeEat(","));
 			return new ThrowsPattern(new TypePatternList(required), new TypePatternList(forbidden));
 		}
@@ -1340,14 +1372,16 @@ public class PatternParser {
 	private boolean maybeEatNew(TypePattern returnType) {
 		if (returnType instanceof WildTypePattern) {
 			WildTypePattern p = (WildTypePattern) returnType;
-			if (p.maybeExtractName("new"))
+			if (p.maybeExtractName("new")) {
 				return true;
+			}
 		}
 		int start = tokenSource.getIndex();
 		if (maybeEat(".")) {
 			String id = maybeEatIdentifier();
-			if (id != null && id.equals("new"))
+			if (id != null && id.equals("new")) {
 				return true;
+			}
 			tokenSource.setIndex(start);
 		}
 
@@ -1369,8 +1403,9 @@ public class PatternParser {
 			name = parseNamePattern();
 		} else {
 			name = tryToExtractName(declaringType);
-			if (name == null)
+			if (name == null) {
 				throw new ParserException("name pattern", tokenSource.peek());
+			}
 			if (declaringType.toString().equals("")) {
 				declaringType = TypePattern.ANY;
 			}
@@ -1402,8 +1437,9 @@ public class PatternParser {
 	 * @return
 	 */
 	public TypeVariablePatternList maybeParseTypeVariableList() {
-		if (!maybeEat("<"))
+		if (!maybeEat("<")) {
 			return null;
+		}
 		List<TypeVariablePattern> typeVars = new ArrayList<TypeVariablePattern>();
 		TypeVariablePattern t = parseTypeVariable();
 		typeVars.add(t);
@@ -1419,8 +1455,9 @@ public class PatternParser {
 
 	// of the form execution<T,S,V> - allows identifiers only
 	public String[] maybeParseSimpleTypeVariableList() {
-		if (!maybeEat("<"))
+		if (!maybeEat("<")) {
 			return null;
+		}
 		List<String> typeVarNames = new ArrayList<String>();
 		do {
 			typeVarNames.add(parseIdentifier());
@@ -1432,8 +1469,9 @@ public class PatternParser {
 	}
 
 	public TypePatternList maybeParseTypeParameterList() {
-		if (!maybeEat("<"))
+		if (!maybeEat("<")) {
 			return null;
+		}
 		List<TypePattern> typePats = new ArrayList<TypePattern>();
 		do {
 			TypePattern tp = parseTypePattern(true, false);
@@ -1465,8 +1503,9 @@ public class PatternParser {
 			TypePattern tp = parseTypePattern();
 			boundsList.add(tp);
 		}
-		if (boundsList.size() == 0)
+		if (boundsList.size() == 0) {
 			return null;
+		}
 		TypePattern[] ret = new TypePattern[boundsList.size()];
 		boundsList.toArray(ret);
 		return ret;
@@ -1482,8 +1521,9 @@ public class PatternParser {
 		while (token.getLiteralKind().equals("string")) {
 			result.append(token.getString());
 			boolean plus = maybeEat("+");
-			if (!plus)
+			if (!plus) {
 				break;
+			}
 			token = tokenSource.next();
 			if (token.getLiteralKind() == null) {
 				throw new ParserException("string", token);
@@ -1515,8 +1555,9 @@ public class PatternParser {
 
 	public String parseIdentifier() {
 		IToken token = tokenSource.next();
-		if (token.isIdentifier())
+		if (token.isIdentifier()) {
 			return token.getString();
+		}
 		throw new ParserException("identifier", token);
 	}
 

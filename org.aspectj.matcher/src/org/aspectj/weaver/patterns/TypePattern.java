@@ -112,12 +112,15 @@ public abstract class TypePattern extends PatternNode {
 
 	// answer conservatively...
 	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
-		if (this.includeSubtypes || other.includeSubtypes)
+		if (this.includeSubtypes || other.includeSubtypes) {
 			return true;
-		if (this.annotationPattern != AnnotationTypePattern.ANY)
+		}
+		if (this.annotationPattern != AnnotationTypePattern.ANY) {
 			return true;
-		if (other.annotationPattern != AnnotationTypePattern.ANY)
+		}
+		if (other.annotationPattern != AnnotationTypePattern.ANY) {
 			return true;
+		}
 		return false;
 	}
 
@@ -135,8 +138,9 @@ public abstract class TypePattern extends PatternNode {
 	public final FuzzyBoolean matches(ResolvedType type, MatchKind kind) {
 		// FuzzyBoolean typeMatch = null;
 		// ??? This is part of gracefully handling missing references
-		if (type.isMissing())
+		if (type.isMissing()) {
 			return FuzzyBoolean.NO;
+		}
 
 		if (kind == STATIC) {
 			// typeMatch = FuzzyBoolean.fromBoolean(matchesStatically(type));
@@ -198,24 +202,27 @@ public abstract class TypePattern extends PatternNode {
 		// FuzzyBoolean ret = FuzzyBoolean.NO; // ??? -eh
 		for (Iterator i = superType.getDirectSupertypes(); i.hasNext();) {
 			ResolvedType superSuperType = (ResolvedType) i.next();
-			if (matchesSubtypes(superSuperType, annotatedType))
+			if (matchesSubtypes(superSuperType, annotatedType)) {
 				return true;
+			}
 		}
 		return false;
 	}
 
 	public UnresolvedType resolveExactType(IScope scope, Bindings bindings) {
 		TypePattern p = resolveBindings(scope, bindings, false, true);
-		if (!(p instanceof ExactTypePattern))
+		if (!(p instanceof ExactTypePattern)) {
 			return ResolvedType.MISSING;
+		}
 		return ((ExactTypePattern) p).getType();
 	}
 
 	public UnresolvedType getExactType() {
-		if (this instanceof ExactTypePattern)
+		if (this instanceof ExactTypePattern) {
 			return ((ExactTypePattern) this).getType();
-		else
+		} else {
 			return ResolvedType.MISSING;
+		}
 	}
 
 	protected TypePattern notExactType(IScope s) {
@@ -515,6 +522,16 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 		return b;
 	}
 
+	@Override
+	public TypePattern resolveBindings(IScope scope, Bindings bindings, boolean allowBinding, boolean requireExactType) {
+		if (requireExactType) {
+			scope.getWorld().getMessageHandler().handleMessage(
+					MessageUtil.error(WeaverMessages.format(WeaverMessages.WILDCARD_NOT_ALLOWED), getSourceLocation()));
+			return NO;
+		}
+		return super.resolveBindings(scope, bindings, allowBinding, requireExactType);
+	}
+
 	protected boolean matchesExactly(ResolvedType type, ResolvedType annotatedType) {
 		annotationPattern.resolve(type.getWorld());
 		return annotationPattern.matches(annotatedType).alwaysTrue();
@@ -560,12 +577,13 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 	}
 
 	public String toString() {
-		return annotationPattern + " *";
+		return "(" + annotationPattern + " *)";
 	}
 
 	public boolean equals(Object obj) {
-		if (!(obj instanceof AnyWithAnnotationTypePattern))
+		if (!(obj instanceof AnyWithAnnotationTypePattern)) {
 			return false;
+		}
 		AnyWithAnnotationTypePattern awatp = (AnyWithAnnotationTypePattern) obj;
 		return (annotationPattern.equals(awatp.annotationPattern));
 	}

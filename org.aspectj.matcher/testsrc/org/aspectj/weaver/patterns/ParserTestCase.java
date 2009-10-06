@@ -22,23 +22,6 @@ import java.util.Set;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.patterns.AnnotationPointcut;
-import org.aspectj.weaver.patterns.AnnotationTypePattern;
-import org.aspectj.weaver.patterns.ExactTypePattern;
-import org.aspectj.weaver.patterns.KindedPointcut;
-import org.aspectj.weaver.patterns.ParserException;
-import org.aspectj.weaver.patterns.PatternParser;
-import org.aspectj.weaver.patterns.Pointcut;
-import org.aspectj.weaver.patterns.TestScope;
-import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
-import org.aspectj.weaver.patterns.TypePattern;
-import org.aspectj.weaver.patterns.TypePatternList;
-import org.aspectj.weaver.patterns.TypeVariablePattern;
-import org.aspectj.weaver.patterns.TypeVariablePatternList;
-import org.aspectj.weaver.patterns.WildAnnotationTypePattern;
-import org.aspectj.weaver.patterns.WildTypePattern;
-import org.aspectj.weaver.patterns.WithinAnnotationPointcut;
-import org.aspectj.weaver.patterns.WithinCodeAnnotationPointcut;
 import org.aspectj.weaver.reflect.ReflectionWorld;
 
 /**
@@ -706,12 +689,14 @@ public class ParserTestCase extends PatternsTestCase {
 	}
 
 	private String getValueString(Pointcut pc) {
-		if (!(pc instanceof KindedPointcut))
+		if (!(pc instanceof KindedPointcut)) {
 			fail("Expected KindedPointcut but was " + pc.getClass());
+		}
 		KindedPointcut kpc = (KindedPointcut) pc;
 		AnnotationTypePattern atp = kpc.getSignature().getAnnotationPattern();
-		if (!(atp instanceof WildAnnotationTypePattern))
+		if (!(atp instanceof WildAnnotationTypePattern)) {
 			fail("Expected WildAnnotationTypePattern but was " + atp.getClass());
+		}
 		WildAnnotationTypePattern watp = (WildAnnotationTypePattern) atp;
 		Map m = watp.annotationValues;
 		Set keys = m.keySet();
@@ -722,8 +707,9 @@ public class ParserTestCase extends PatternsTestCase {
 		for (Iterator iterator = orderedKeys.iterator(); iterator.hasNext();) {
 			String object = (String) iterator.next();
 			sb.append(object).append("=").append(m.get(object));
-			if (iterator.hasNext())
+			if (iterator.hasNext()) {
 				sb.append(",");
+			}
 		}
 		return sb.toString();
 	}
