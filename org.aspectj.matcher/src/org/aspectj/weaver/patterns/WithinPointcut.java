@@ -121,9 +121,7 @@ public class WithinPointcut extends Pointcut {
 	}
 
 	public int hashCode() {
-		int result = 43;
-		result = 37 * result + typePattern.hashCode();
-		return result;
+		return typePattern.hashCode();
 	}
 
 	public String toString() {
