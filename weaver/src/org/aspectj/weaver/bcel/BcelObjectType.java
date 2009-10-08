@@ -23,14 +23,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.AttributeUtils;
+import org.aspectj.apache.bcel.classfile.ConstantClass;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.Field;
+import org.aspectj.apache.bcel.classfile.InnerClass;
+import org.aspectj.apache.bcel.classfile.InnerClasses;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.EnumElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.GenericSignature;
@@ -204,12 +209,14 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	 * Must take into account generic signature
 	 */
 	public ResolvedType getSuperclass() {
-		if (isObject)
+		if (isObject) {
 			return null;
+		}
 		ensureGenericSignatureUnpacked();
 		if (superclassSignature == null) {
-			if (superclassName == null)
+			if (superclassName == null) {
 				superclassName = javaClass.getSuperclassName();
+			}
 			superclassSignature = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(superclassName)).getSignature();
 		}
 		World world = getResolvedTypeX().getWorld();
@@ -282,8 +289,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 
 	public TypeVariable[] getTypeVariables() {
-		if (!isGeneric())
+		if (!isGeneric()) {
 			return TypeVariable.NONE;
+		}
 
 		if (typeVars == null) {
 			GenericSignature.ClassSignature classSig = getGenericClassTypeSignature();// cachedGenericClassTypeSignature
@@ -350,8 +358,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	 * Process any org.aspectj.weaver attributes stored against the class.
 	 */
 	private void ensureAspectJAttributesUnpacked() {
-		if ((bitflag & UNPACKED_AJATTRIBUTES) != 0)
+		if ((bitflag & UNPACKED_AJATTRIBUTES) != 0) {
 			return;
+		}
 		bitflag |= UNPACKED_AJATTRIBUTES;
 		IMessageHandler msgHandler = getResolvedTypeX().getWorld().getMessageHandler();
 		// Pass in empty list that can store things for readAj5 to process
@@ -508,10 +517,12 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 
 	public void printWackyStuff(PrintStream out) {
-		if (typeMungers.size() > 0)
+		if (typeMungers.size() > 0) {
 			out.println("  TypeMungers: " + typeMungers);
-		if (declares.size() > 0)
+		}
+		if (declares.size() > 0) {
 			out.println("     declares: " + declares);
+		}
 	}
 
 	/**
@@ -613,8 +624,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 	public boolean canAnnotationTargetType() {
 		AnnotationTargetKind[] targetKinds = getAnnotationTargetKinds();
-		if (targetKinds == null)
+		if (targetKinds == null) {
 			return true;
+		}
 		for (int i = 0; i < targetKinds.length; i++) {
 			if (targetKinds[i].equals(AnnotationTargetKind.TYPE)) {
 				return true;
@@ -624,8 +636,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 
 	public AnnotationTargetKind[] getAnnotationTargetKinds() {
-		if ((bitflag & DISCOVERED_ANNOTATION_TARGET_KINDS) != 0)
+		if ((bitflag & DISCOVERED_ANNOTATION_TARGET_KINDS) != 0) {
 			return annotationTargetKinds;
+		}
 		bitflag |= DISCOVERED_ANNOTATION_TARGET_KINDS;
 		annotationTargetKinds = null; // null means we have no idea or the
 		// @Target annotation hasn't been used
@@ -714,11 +727,13 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 
 	private void ensureGenericSignatureUnpacked() {
-		if ((bitflag & UNPACKED_GENERIC_SIGNATURE) != 0)
+		if ((bitflag & UNPACKED_GENERIC_SIGNATURE) != 0) {
 			return;
+		}
 		bitflag |= UNPACKED_GENERIC_SIGNATURE;
-		if (!getResolvedTypeX().getWorld().isInJava5Mode())
+		if (!getResolvedTypeX().getWorld().isInJava5Mode()) {
 			return;
+		}
 		GenericSignature.ClassSignature cSig = getGenericClassTypeSignature();
 		if (cSig != null) {
 			formalsForResolution = cSig.formalTypeParameters;
@@ -802,8 +817,44 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 
 	public ResolvedType getOuterClass() {
-		if (!isNested())
+		if (!isNested()) {
 			throw new IllegalStateException("Can't get the outer class of a non-nested type");
+		}
+
+		// try finding outer class name from InnerClasses attribute assigned to this class
+		for (Attribute attr : javaClass.getAttributes()) {
+			if (attr instanceof InnerClasses) {
+				// search for InnerClass entry that has current class as inner and some other class as outer
+				InnerClass[] innerClss = ((InnerClasses) attr).getInnerClasses();
+				ConstantPool cpool = javaClass.getConstantPool();
+				for (InnerClass innerCls : innerClss) {
+
+					// skip entries that miss any necessary component, 0 index means "undefined", from JVM Spec 2nd ed. par. 4.7.5
+					if (innerCls.getInnerClassIndex() == 0 || innerCls.getOuterClassIndex() == 0) {
+						continue;
+					}
+
+					// resolve inner class name, check if it matches current class name
+					ConstantClass innerClsInfo = (ConstantClass) cpool.getConstant(innerCls.getInnerClassIndex());
+
+					// class names in constant pool use '/' instead of '.', from JVM Spec 2nd ed. par. 4.2
+					String innerClsName = cpool.getConstantUtf8(innerClsInfo.getNameIndex()).getValue().replace('/', '.');
+
+					if (innerClsName.compareTo(className) == 0) {
+						// resolve outer class name
+						ConstantClass outerClsInfo = (ConstantClass) cpool.getConstant(innerCls.getOuterClassIndex());
+
+						// class names in constant pool use '/' instead of '.', from JVM Spec 2nd ed. par. 4.2
+						String outerClsName = cpool.getConstantUtf8(outerClsInfo.getNameIndex()).getValue().replace('/', '.');
+
+						UnresolvedType outer = UnresolvedType.forName(outerClsName);
+						return outer.resolve(getResolvedTypeX().getWorld());
+					}
+				}
+			}
+		}
+
+		// try finding outer class name by assuming standard class name mangling convention of javac for this class
 		int lastDollar = className.lastIndexOf('$');
 		String superClassName = className.substring(0, lastDollar);
 		UnresolvedType outer = UnresolvedType.forName(superClassName);
@@ -811,13 +862,15 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 
 	private void ensureGenericInfoProcessed() {
-		if ((bitflag & DISCOVERED_DECLARED_SIGNATURE) != 0)
+		if ((bitflag & DISCOVERED_DECLARED_SIGNATURE) != 0) {
 			return;
+		}
 		bitflag |= DISCOVERED_DECLARED_SIGNATURE;
 		Signature sigAttr = AttributeUtils.getSignatureAttribute(javaClass.getAttributes());
 		declaredSignature = (sigAttr == null ? null : sigAttr.getSignature());
-		if (declaredSignature != null)
+		if (declaredSignature != null) {
 			isGenericType = (declaredSignature.charAt(0) == '<');
+		}
 	}
 
 	public boolean isGeneric() {
@@ -834,8 +887,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 	public void evictWeavingState() {
 		// Can't chuck all this away
-		if (getResolvedTypeX().getWorld().couldIncrementalCompileFollow())
+		if (getResolvedTypeX().getWorld().couldIncrementalCompileFollow()) {
 			return;
+		}
 
 		if (javaClass != null) {
 			// Force retrieval of any lazy information
@@ -852,18 +906,21 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			// XnoInline is on, we can chuck away the lazyClassGen since it
 			// won't be required
 			// later.
-			if (getResolvedTypeX().getWorld().isXnoInline())
+			if (getResolvedTypeX().getWorld().isXnoInline()) {
 				lazyClassGen = null;
+			}
 
 			// discard expensive bytecode array containing reweavable info
 			if (weaverState != null) {
 				weaverState.setReweavable(false);
 				weaverState.setUnwovenClassFileData(null);
 			}
-			for (int i = methods.length - 1; i >= 0; i--)
+			for (int i = methods.length - 1; i >= 0; i--) {
 				methods[i].evictWeavingState();
-			for (int i = fields.length - 1; i >= 0; i--)
+			}
+			for (int i = fields.length - 1; i >= 0; i--) {
 				fields[i].evictWeavingState();
+			}
 			javaClass = null;
 			// setSourceContext(SourceContextImpl.UNKNOWN_SOURCE_CONTEXT); //
 			// bit naughty
@@ -875,10 +932,12 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 	public void weavingCompleted() {
 		hasBeenWoven = true;
-		if (getResolvedTypeX().getWorld().isRunMinimalMemory())
+		if (getResolvedTypeX().getWorld().isRunMinimalMemory()) {
 			evictWeavingState();
-		if (getSourceContext() != null && !getResolvedTypeX().isAspect())
+		}
+		if (getSourceContext() != null && !getResolvedTypeX().isAspect()) {
 			getSourceContext().tidy();
+		}
 	}
 
 	public boolean hasBeenWoven() {
