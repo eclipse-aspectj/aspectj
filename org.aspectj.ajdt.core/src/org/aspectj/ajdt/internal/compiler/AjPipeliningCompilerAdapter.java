@@ -155,8 +155,9 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		this.noAtAspectJAnnotationProcessing = noAtAspectJProcessing;
 		this.incrementalCompilationState = incrementalCompilationState;
 
-		if (compiler.options.complianceLevel >= ClassFileConstants.JDK1_5)
+		if (compiler.options.complianceLevel >= ClassFileConstants.JDK1_5) {
 			inJava5Mode = true;
+		}
 		IMessageHandler msgHandler = world.getMessageHandler();
 		// Do we need to reset the message handler or create a new one? (This saves a ton of memory lost on incremental compiles...)
 		if (msgHandler instanceof WeaverMessageHandler) {
@@ -178,8 +179,9 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	 * weaving.
 	 */
 	public void afterDietParsing(CompilationUnitDeclaration[] units) {
-		if (debugPipeline)
+		if (debugPipeline) {
 			System.err.println("> afterDietParsing: there are " + (units == null ? 0 : units.length) + " units to sort");
+		}
 
 		if (!reportedErrors && units != null) {
 			for (int i = 0; i < units.length; i++) {
@@ -194,10 +196,11 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		List aspects = new ArrayList();
 		List nonaspects = new ArrayList();
 		for (int i = 0; i < units.length; i++) {
-			if (containsAnAspect(units[i]))
+			if (containsAnAspect(units[i])) {
 				aspects.add(units[i]);
-			else
+			} else {
 				nonaspects.add(units[i]);
+			}
 		}
 
 		// ...and put them back together, aspects first
@@ -211,27 +214,32 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 
 		// Work out how long to stall the pipeline
 		toWaitFor = aspects.size();
-		if (debugPipeline)
+		if (debugPipeline) {
 			System.err.println("< afterDietParsing: stalling pipeline for " + toWaitFor + " source files");
+		}
 
 		// TESTING
 		if (pipelineTesting) {
-			if (pipelineOutput == null)
+			if (pipelineOutput == null) {
 				pipelineOutput = new Hashtable();
+			}
 			pipelineOutput.put("filesContainingAspects", new Integer(toWaitFor).toString());
 			StringBuffer order = new StringBuffer();
 			order.append("[");
 			for (int i = 0; i < units.length; i++) {
-				if (i != 0)
+				if (i != 0) {
 					order.append(",");
+				}
 				CompilationUnitDeclaration declaration = units[i];
 				String filename = new String(declaration.getFileName());
 				int idx = filename.lastIndexOf('/');
-				if (idx > 0)
+				if (idx > 0) {
 					filename = filename.substring(idx + 1);
+				}
 				idx = filename.lastIndexOf('\\');
-				if (idx > 0)
+				if (idx > 0) {
 					filename = filename.substring(idx + 1);
+				}
 				order.append(filename);
 			}
 			order.append("]");
@@ -246,8 +254,9 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	}
 
 	public void beforeProcessing(CompilationUnitDeclaration unit) {
-		if (debugPipeline)
+		if (debugPipeline) {
 			System.err.println("compiling " + new String(unit.getFileName()));
+		}
 		eWorld.showMessage(IMessage.INFO, "compiling " + new String(unit.getFileName()), null, null);
 		processingToken = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_COMPILATION_UNIT, unit
 				.getFileName());
@@ -266,8 +275,9 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	}
 
 	public void afterResolving(CompilationUnitDeclaration unit) {
-		if (resolvingToken != null)
+		if (resolvingToken != null) {
 			CompilationAndWeavingContext.leavingPhase(resolvingToken);
+		}
 	}
 
 	public void beforeAnalysing(CompilationUnitDeclaration unit) {
@@ -280,8 +290,9 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	}
 
 	public void afterAnalysing(CompilationUnitDeclaration unit) {
-		if (analysingToken != null)
+		if (analysingToken != null) {
 			CompilationAndWeavingContext.leavingPhase(analysingToken);
+		}
 	}
 
 	public void beforeGenerating(CompilationUnitDeclaration unit) {
@@ -290,8 +301,9 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	}
 
 	public void afterGenerating(CompilationUnitDeclaration unit) {
-		if (generatingToken != null)
+		if (generatingToken != null) {
 			CompilationAndWeavingContext.leavingPhase(generatingToken);
+		}
 	}
 
 	public void afterCompiling(CompilationUnitDeclaration[] units) {
@@ -301,8 +313,9 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 				// acceptResult(unit.compilationResult);
 				// } else {
 				try {
-					if (weaveQueuedEntries())
+					if (weaveQueuedEntries()) {
 						droppingBackToFullBuild = true;
+					}
 				} catch (IOException ex) {
 					AbortCompilation ac = new AbortCompilation(null, ex);
 					throw ac;
@@ -331,8 +344,9 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 			// AbortCompilation ac = new AbortCompilation(null,ex);
 			// throw ac;
 		} catch (RuntimeException rEx) {
-			if (rEx instanceof AbortCompilation)
+			if (rEx instanceof AbortCompilation) {
 				throw rEx; // Don't wrap AbortCompilation exceptions!
+			}
 
 			// This will be unwrapped in Compiler.handleInternalException() and the nested
 			// RuntimeException thrown back to the original caller - which is AspectJ
@@ -345,8 +359,9 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		CompilationAndWeavingContext.leavingPhase(processingToken);
 		eWorld.finishedCompilationUnit(unit);
 		InterimCompilationResult intRes = new InterimCompilationResult(unit.compilationResult, outputFileNameProvider);
-		if (unit.compilationResult.hasErrors())
+		if (unit.compilationResult.hasErrors()) {
 			reportedErrors = true;
+		}
 
 		if (intermediateResultsRequestor != null) {
 			intermediateResultsRequestor.acceptResult(intRes);
@@ -362,14 +377,17 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	private void queueForWeaving(InterimCompilationResult intRes) {
 		resultsPendingWeave.add(intRes);
 		if (pipelineStalled) {
-			if (resultsPendingWeave.size() >= toWaitFor)
+			if (resultsPendingWeave.size() >= toWaitFor) {
 				pipelineStalled = false;
+			}
 		}
-		if (pipelineStalled)
+		if (pipelineStalled) {
 			return;
+		}
 		try {
-			if (weaveQueuedEntries())
+			if (weaveQueuedEntries()) {
 				droppingBackToFullBuild = true;
+			}
 		} catch (IOException ex) {
 			AbortCompilation ac = new AbortCompilation(null, ex);
 			throw ac;
@@ -420,29 +438,33 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 
 	/** Return true if we've decided to drop back to a full build (too much has changed) */
 	private boolean weaveQueuedEntries() throws IOException {
-		if (debugPipeline)
+		if (debugPipeline) {
 			System.err.println(">.weaveQueuedEntries()");
+		}
 		for (Iterator iter = resultsPendingWeave.iterator(); iter.hasNext();) {
 			InterimCompilationResult iresult = (InterimCompilationResult) iter.next();
 			for (int i = 0; i < iresult.unwovenClassFiles().length; i++) {
-				weaver.addClassFile(iresult.unwovenClassFiles()[i],false);
+				weaver.addClassFile(iresult.unwovenClassFiles()[i], false);
 			}
 		}
 		ensureWeaverInitialized(); // by doing this only once, are we saying needToReweaveWorld can't change once the aspects have
 		// been stuffed into the weaver?
-		if (weaver.needToReweaveWorld() && !isBatchCompile)
+		if (weaver.needToReweaveWorld() && !isBatchCompile) {
 			return true;
+		}
 		weaver.weave(new WeaverAdapter(this, weaverMessageHandler, progressListener));
 		resultsPendingWeave.clear(); // dont need to do those again
 		this.eWorld.minicleanup();
-		if (debugPipeline)
+		if (debugPipeline) {
 			System.err.println("<.weaveQueuedEntries()");
+		}
 		return false;
 	}
 
 	private void ensureWeaverInitialized() {
-		if (weaverInitialized)
+		if (weaverInitialized) {
 			return;
+		}
 		weaverInitialized = true;
 		weaver.setIsBatchWeave(isBatchCompile);
 		weaver.prepareForWeave();
@@ -495,18 +517,23 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	// }
 
 	private void postWeave() {
-		if (debugPipeline)
+		if (debugPipeline) {
 			System.err.println("> postWeave()");
+		}
 		IMessageHandler imh = weaver.getWorld().getMessageHandler();
-		if (imh instanceof WeaverMessageHandler)
+		if (imh instanceof WeaverMessageHandler) {
 			((WeaverMessageHandler) imh).setCurrentResult(null);
-		if (!droppingBackToFullBuild)
+		}
+		if (!droppingBackToFullBuild) {
 			weaver.allWeavingComplete();
+		}
 		weaver.tidyUp();
-		if (imh instanceof WeaverMessageHandler)
+		if (imh instanceof WeaverMessageHandler) {
 			((WeaverMessageHandler) imh).resetCompiler(null);
-		if (debugPipeline)
+		}
+		if (debugPipeline) {
 			System.err.println("< postWeave()");
+		}
 	}
 
 	/**
@@ -518,13 +545,15 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		if (typeDecls != null) {
 			for (int i = 0; i < typeDecls.length; i++) { // loop through top level types in the file
 				TypeDeclaration declaration = typeDecls[i];
-				if (isAspect(declaration))
+				if (isAspect(declaration)) {
 					return true;
+				}
 				if (declaration.memberTypes != null) {
 					TypeDeclaration[] memberTypes = declaration.memberTypes;
 					for (int j = 0; j < memberTypes.length; j++) { // loop through inner types
-						if (containsAnAspect(memberTypes[j]))
+						if (containsAnAspect(memberTypes[j])) {
 							return true;
+						}
 					}
 				}
 			}
@@ -533,13 +562,15 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	}
 
 	private boolean containsAnAspect(TypeDeclaration tDecl) {
-		if (isAspect(tDecl))
+		if (isAspect(tDecl)) {
 			return true;
+		}
 		if (tDecl.memberTypes != null) {
 			TypeDeclaration[] memberTypes = tDecl.memberTypes;
 			for (int j = 0; j < memberTypes.length; j++) { // loop through inner types
-				if (containsAnAspect(memberTypes[j]))
+				if (containsAnAspect(memberTypes[j])) {
 					return true;
+				}
 			}
 		}
 		return false;
@@ -549,21 +580,24 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 
 	private boolean isAspect(TypeDeclaration declaration) {
 		// avoid an NPE when something else is wrong in this system ... the real problem will be reported elsewhere
-		if (declaration.staticInitializerScope == null)
+		if (declaration.staticInitializerScope == null) {
 			return false;
-		if (declaration instanceof AspectDeclaration)
+		}
+		if (declaration instanceof AspectDeclaration) {
 			return true; // code style
-		else if (declaration.annotations != null) { // check for annotation style
+		} else if (declaration.annotations != null) { // check for annotation style
 			for (int index = 0; index < declaration.annotations.length; index++) {
 				TypeDeclaration
 						.resolveAnnotations(declaration.staticInitializerScope, declaration.annotations, declaration.binding); // force
 				// annotation
 				// resolution
 				Annotation a = declaration.annotations[index];
-				if (a.resolvedType == null)
+				if (a.resolvedType == null) {
 					continue; // another problem is being reported, so don't crash here
-				if (CharOperation.equals(a.resolvedType.signature(), aspectSig))
+				}
+				if (CharOperation.equals(a.resolvedType.signature(), aspectSig)) {
 					return true;
+				}
 			}
 		}
 		return false;
@@ -582,8 +616,9 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	// 
 
 	public static String getPipelineDebugOutput(String key) {
-		if (pipelineOutput == null)
+		if (pipelineOutput == null) {
 			return "";
+		}
 		return (String) pipelineOutput.get(key);
 	}
 
