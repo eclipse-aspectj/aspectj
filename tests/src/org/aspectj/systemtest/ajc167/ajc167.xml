@@ -1,0 +1,26 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+  <ajc-test dir="bugs167/pr288064" title="outer class names - scala">
+     <compile files="Main.java Outer.java Aspect.java" options="-1.5"/>
+     <run class="test.Main">
+       <stdout>
+         <line text="advice"/>
+         <line text="method"/>
+       </stdout>
+     </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs167/pr288064" title="outer class names - scala - ltw">
+     <compile files="Main.java Outer.java" outjar="app.jar" options="-1.5"/>
+     <compile files="Aspect.java" outjar="asp.jar" options="-Xlint:ignore -1.5"/>
+     <run class="test.Main" classpath="app.jar;asp.jar" ltw="aop.xml">
+       <stdout>
+         <line text="advice"/>
+         <line text="method"/>
+       </stdout>
+     </run>
+  </ajc-test>
+   
+</suite>
