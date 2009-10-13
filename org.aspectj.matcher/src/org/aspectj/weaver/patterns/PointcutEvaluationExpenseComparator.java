@@ -25,59 +25,58 @@ public class PointcutEvaluationExpenseComparator implements Comparator {
 	private static final int WITHINCODE = 7;
 	private static final int ATWITHINCODE = 8;
 	private static final int EXE_INIT_PREINIT = 9;
-	private static final int CALL = 10;
-	private static final int ANNOTATION = 11;
-	private static final int THIS_OR_TARGET = 12;
+	private static final int THIS_OR_TARGET = 10;
+	private static final int CALL = 11;
+	private static final int ANNOTATION = 12;
 	private static final int AT_THIS_OR_TARGET = 13;
 	private static final int ARGS = 14;
 	private static final int AT_ARGS = 15;
 	private static final int CFLOW = 16;
 	private static final int IF = 17;
 	private static final int OTHER = 20;
-	
+
 	/**
-	 * Compare 2 pointcuts based on an estimate of how expensive they may be
-	 * to evaluate.
+	 * Compare 2 pointcuts based on an estimate of how expensive they may be to evaluate.
 	 * 
 	 * within
-	 * @within
-	 * staticinitialization  [make sure this has a fast match method]
-	 * adviceexecution
-	 * handler
-	 * get, set
-	 * withincode
-	 * @withincode
-	 * execution, initialization, preinitialization
-	 * call
-	 * @annotation
-	 * this, target
-	 * @this, @target
-	 * args
-	 * @args
-	 * cflow, cflowbelow
-	 * if
+	 * 
+	 * @within staticinitialization [make sure this has a fast match method] adviceexecution handler get, set withincode
+	 * @withincode execution, initialization, preinitialization call
+	 * @annotation this, target
+	 * @this, @target args
+	 * @args cflow, cflowbelow if
 	 */
 	public int compare(Object o1, Object o2) {
 		Pointcut p1 = (Pointcut) o1;
 		Pointcut p2 = (Pointcut) o2;
-		
+
 		// important property for a well-defined comparator
-		if (p1.equals(p2)) return 0;		
+		if (p1.equals(p2)) {
+			return 0;
+		}
 		int result = getScore(p1) - getScore(p2);
 		if (result == 0) {
 			// they have the same evaluation expense, but are not 'equal'
 			// sort by hashCode
 			result = p1.hashCode() - p2.hashCode();
-			if (result == 0) /*not allowed if ne*/ return -1;
+			if (result == 0) {
+				/* not allowed if ne */return -1;
+			}
 		}
 		return result;
 	}
 
 	// a higher score means a more expensive evaluation
 	private int getScore(Pointcut p) {
-		if (p.couldMatchKinds()==Shadow.NO_SHADOW_KINDS_BITS) return MATCHES_NOTHING;
-		if (p instanceof WithinPointcut) return WITHIN;
-		if (p instanceof WithinAnnotationPointcut) return ATWITHIN;
+		if (p.couldMatchKinds() == Shadow.NO_SHADOW_KINDS_BITS) {
+			return MATCHES_NOTHING;
+		}
+		if (p instanceof WithinPointcut) {
+			return WITHIN;
+		}
+		if (p instanceof WithinAnnotationPointcut) {
+			return ATWITHIN;
+		}
 		if (p instanceof KindedPointcut) {
 			KindedPointcut kp = (KindedPointcut) p;
 			Shadow.Kind kind = kp.getKind();
@@ -85,8 +84,8 @@ public class PointcutEvaluationExpenseComparator implements Comparator {
 				return ADVICEEXECUTION;
 			} else if ((kind == Shadow.ConstructorCall) || (kind == Shadow.MethodCall)) {
 				return CALL;
-			} else if ((kind == Shadow.ConstructorExecution) || (kind == Shadow.MethodExecution) ||
-					   (kind == Shadow.Initialization) || (kind == Shadow.PreInitialization)) {
+			} else if ((kind == Shadow.ConstructorExecution) || (kind == Shadow.MethodExecution) || (kind == Shadow.Initialization)
+					|| (kind == Shadow.PreInitialization)) {
 				return EXE_INIT_PREINIT;
 			} else if (kind == Shadow.ExceptionHandler) {
 				return HANDLER;
@@ -94,21 +93,49 @@ public class PointcutEvaluationExpenseComparator implements Comparator {
 				return GET_OR_SET;
 			} else if (kind == Shadow.StaticInitialization) {
 				return STATICINIT;
-			} else return OTHER;
- 		}
-		if (p instanceof AnnotationPointcut) return ANNOTATION;
-		if (p instanceof ArgsPointcut) return ARGS;
-		if (p instanceof ArgsAnnotationPointcut) return AT_ARGS;
-		if (p instanceof CflowPointcut) return CFLOW;
-		if (p instanceof HandlerPointcut) return HANDLER;
-		if (p instanceof IfPointcut) return IF;
-		if (p instanceof ThisOrTargetPointcut) return THIS_OR_TARGET;
-		if (p instanceof ThisOrTargetAnnotationPointcut) return AT_THIS_OR_TARGET;
-		if (p instanceof WithincodePointcut) return WITHINCODE;
-		if (p instanceof WithinCodeAnnotationPointcut) return ATWITHINCODE;
-		if (p instanceof NotPointcut) return getScore(((NotPointcut)p).getNegatedPointcut());
-		if (p instanceof AndPointcut) return getScore(((AndPointcut)p).getLeft());
-		if (p instanceof OrPointcut) return getScore(((OrPointcut)p).getLeft());
-		return OTHER;		
+			} else {
+				return OTHER;
+			}
+		}
+		if (p instanceof AnnotationPointcut) {
+			return ANNOTATION;
+		}
+		if (p instanceof ArgsPointcut) {
+			return ARGS;
+		}
+		if (p instanceof ArgsAnnotationPointcut) {
+			return AT_ARGS;
+		}
+		if (p instanceof CflowPointcut) {
+			return CFLOW;
+		}
+		if (p instanceof HandlerPointcut) {
+			return HANDLER;
+		}
+		if (p instanceof IfPointcut) {
+			return IF;
+		}
+		if (p instanceof ThisOrTargetPointcut) {
+			return THIS_OR_TARGET;
+		}
+		if (p instanceof ThisOrTargetAnnotationPointcut) {
+			return AT_THIS_OR_TARGET;
+		}
+		if (p instanceof WithincodePointcut) {
+			return WITHINCODE;
+		}
+		if (p instanceof WithinCodeAnnotationPointcut) {
+			return ATWITHINCODE;
+		}
+		if (p instanceof NotPointcut) {
+			return getScore(((NotPointcut) p).getNegatedPointcut());
+		}
+		if (p instanceof AndPointcut) {
+			return getScore(((AndPointcut) p).getLeft());
+		}
+		if (p instanceof OrPointcut) {
+			return getScore(((OrPointcut) p).getLeft());
+		}
+		return OTHER;
 	}
 }
