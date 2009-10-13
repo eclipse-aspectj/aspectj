@@ -462,7 +462,9 @@
 		</compile>	        
       	<compile files="Aspect1.aj" options="-Xlint:warning -showWeaveInfo -inpath .">
 	        <message kind="weave" text="void Interface.interfaceMethod()"/>
+	        <!--
 	        <message kind="warning" text="can't determine superclass of missing type Missing"/>
+	        -->
 		</compile>	        
       	<run class="TestWithMissing">
 			<stdout>
