@@ -1707,11 +1707,30 @@ public class AtAjAttributes {
 		final List<MethodArgument> arguments = new ArrayList<MethodArgument>();
 		LocalVariableTable lt = method.getLocalVariableTable();
 		if (lt != null) {
-			for (int j = 0; j < lt.getLocalVariableTable().length; j++) {
-				LocalVariable localVariable = lt.getLocalVariableTable()[j];
+			LocalVariable[] lvt = lt.getLocalVariableTable();
+			for (int j = 0; j < lvt.length; j++) {
+				LocalVariable localVariable = lvt[j];
 				if (localVariable.getStartPC() == 0) {
 					if (localVariable.getIndex() >= startAtStackIndex) {
 						arguments.add(new MethodArgument(localVariable.getName(), localVariable.getIndex()));
+					}
+				}
+			}
+			if (arguments.size() == 0) {
+				// could be cobertura code where some extra bytecode has been stuffed in at the start of the method
+				// but the local variable table hasn't been repaired - for example:
+				// LocalVariable(start_pc = 6, length = 40, index = 0:com.example.ExampleAspect this)
+				// LocalVariable(start_pc = 6, length = 40, index = 1:org.aspectj.lang.ProceedingJoinPoint pjp)
+				// LocalVariable(start_pc = 6, length = 40, index = 2:int __cobertura__line__number__)
+				// LocalVariable(start_pc = 6, length = 40, index = 3:int __cobertura__branch__number__)
+				LocalVariable localVariable = lvt[0];
+				if (localVariable.getStartPC() != 0) {
+					// looks suspicious so let's use this information
+					for (int j = 0; j < lvt.length && arguments.size() < method.getArgumentTypes().length; j++) {
+						localVariable = lvt[j];
+						if (localVariable.getIndex() >= startAtStackIndex) {
+							arguments.add(new MethodArgument(localVariable.getName(), localVariable.getIndex()));
+						}
 					}
 				}
 			}
