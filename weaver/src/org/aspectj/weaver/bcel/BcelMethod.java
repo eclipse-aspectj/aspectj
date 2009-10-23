@@ -111,11 +111,13 @@ class BcelMethod extends ResolvedMemberImpl {
 
 	public int getLineNumberOfFirstInstruction() {
 		LineNumberTable lnt = method.getLineNumberTable();
-		if (lnt == null)
+		if (lnt == null) {
 			return -1;
+		}
 		LineNumber[] lns = lnt.getLineNumberTable();
-		if (lns == null || lns.length == 0)
+		if (lns == null || lns.length == 0) {
 			return -1;
+		}
 		return lns[0].getLineNumber();
 	}
 
@@ -297,10 +299,11 @@ class BcelMethod extends ResolvedMemberImpl {
 		if ((ret == null || ret.getLine() == 0) && hasDeclarationLineNumberInfo()) {
 			// lets see if we can do better
 			ISourceContext isc = getSourceContext();
-			if (isc != null)
+			if (isc != null) {
 				ret = isc.makeSourceLocation(getDeclarationLineNumber(), getDeclarationOffset());
-			else
+			} else {
 				ret = new SourceLocation(null, getDeclarationLineNumber());
+			}
 		}
 		return ret;
 	}
@@ -346,11 +349,13 @@ class BcelMethod extends ResolvedMemberImpl {
 	@Override
 	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
 		ensureAnnotationsRetrieved();
-		if ((bitflags & HAS_ANNOTATIONS) == 0)
+		if ((bitflags & HAS_ANNOTATIONS) == 0) {
 			return null;
+		}
 		for (int i = 0; i < annotations.length; i++) {
-			if (annotations[i].getTypeName().equals(ofType.getName()))
+			if (annotations[i].getTypeName().equals(ofType.getName())) {
 				return annotations[i];
+			}
 		}
 		return null;
 	}
@@ -407,10 +412,12 @@ class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	private void ensureAnnotationsRetrieved() {
-		if (method == null)
+		if (method == null) {
 			return; // must be ok, we have evicted it
-		if ((bitflags & HAVE_DETERMINED_ANNOTATIONS) != 0)
+		}
+		if ((bitflags & HAVE_DETERMINED_ANNOTATIONS) != 0) {
 			return;
+		}
 		bitflags |= HAVE_DETERMINED_ANNOTATIONS;
 
 		AnnotationGen annos[] = method.getAnnotations();
@@ -429,8 +436,9 @@ class BcelMethod extends ResolvedMemberImpl {
 	}
 
 	private void ensureParameterAnnotationsRetrieved() {
-		if (method == null)
+		if (method == null) {
 			return; // must be ok, we have evicted it
+		}
 		AnnotationGen[][] pAnns = method.getParameterAnnotations();
 		if (parameterAnnotationTypes == null || pAnns.length != parameterAnnotationTypes.length) {
 			if (pAnns == Method.NO_PARAMETER_ANNOTATIONS) {
@@ -441,12 +449,18 @@ class BcelMethod extends ResolvedMemberImpl {
 				parameterAnnotations = new AnnotationAJ[annos.length][];
 				parameterAnnotationTypes = new ResolvedType[annos.length][];
 				for (int i = 0; i < annos.length; i++) {
-					parameterAnnotations[i] = new AnnotationAJ[annos[i].length];
-					parameterAnnotationTypes[i] = new ResolvedType[annos[i].length];
-					for (int j = 0; j < annos[i].length; j++) {
-						parameterAnnotations[i][j] = new BcelAnnotation(annos[i][j], bcelObjectType.getWorld());
-						parameterAnnotationTypes[i][j] = bcelObjectType.getWorld().resolve(
-								UnresolvedType.forSignature(annos[i][j].getTypeSignature()));
+					AnnotationGen[] annosOnThisParam = annos[i];
+					if (annos[i].length == 0) {
+						parameterAnnotations[i] = AnnotationAJ.EMPTY_ARRAY;
+						parameterAnnotationTypes[i] = ResolvedType.NONE;
+					} else {
+						parameterAnnotations[i] = new AnnotationAJ[annosOnThisParam.length];
+						parameterAnnotationTypes[i] = new ResolvedType[annosOnThisParam.length];
+						for (int j = 0; j < annosOnThisParam.length; j++) {
+							parameterAnnotations[i][j] = new BcelAnnotation(annosOnThisParam[j], bcelObjectType.getWorld());
+							parameterAnnotationTypes[i][j] = bcelObjectType.getWorld().resolve(
+									UnresolvedType.forSignature(annosOnThisParam[j].getTypeSignature()));
+						}
 					}
 				}
 			}
@@ -590,13 +604,15 @@ class BcelMethod extends ResolvedMemberImpl {
 	// Pre Java5 synthetic is an attribute 'Synthetic', post Java5 it is a
 	// modifier (4096 or 0x1000)
 	private void workOutIfSynthetic() {
-		if ((bitflags & KNOW_IF_SYNTHETIC) != 0)
+		if ((bitflags & KNOW_IF_SYNTHETIC) != 0) {
 			return;
+		}
 		bitflags |= KNOW_IF_SYNTHETIC;
 		JavaClass jc = bcelObjectType.getJavaClass();
 		bitflags &= IS_SYNTHETIC_INVERSE; // unset the bit
-		if (jc == null)
+		if (jc == null) {
 			return; // what the hell has gone wrong?
+		}
 		if (jc.getMajor() < 49/* Java5 */) {
 			// synthetic is an attribute
 			String[] synthetics = getAttributeNames(false);
@@ -627,8 +643,9 @@ class BcelMethod extends ResolvedMemberImpl {
 	// to do a full build
 	@Override
 	public boolean isEquivalentTo(Object other) {
-		if (!(other instanceof BcelMethod))
+		if (!(other instanceof BcelMethod)) {
 			return false;
+		}
 		BcelMethod o = (BcelMethod) other;
 		return getMethod().getCode().getCodeString().equals(o.getMethod().getCode().getCodeString());
 	}
