@@ -2,6 +2,17 @@
 
 <suite>
 
+  <ajc-test dir="bugs167/pr293203" title="anno matching">
+     <compile files="Foo.java" options="-1.5"/>
+     <run class="Foo">
+       <stdout>
+         <line text="advice"/>
+         <line text="advice"/>
+         <line text="advice"/>
+       </stdout>
+     </run>
+  </ajc-test>
+  
   <ajc-test dir="bugs167/pr288064" title="outer class names - scala">
      <compile files="Main.java Outer.java Aspect.java" options="-1.5"/>
      <run class="test.Main">

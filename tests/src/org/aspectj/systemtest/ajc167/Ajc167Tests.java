@@ -18,6 +18,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc167Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testAnnoMatching_pr293203() {
+		runTest("anno matching");
+	}
+
 	public void testScalaOuterClassNames_pr288064() {
 		runTest("outer class names - scala");
 	}
@@ -32,6 +36,7 @@ public class Ajc167Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(Ajc167Tests.class);
 	}
 
+	@Override
 	protected File getSpecFile() {
 		return new File("../tests/src/org/aspectj/systemtest/ajc167/ajc167.xml");
 	}
