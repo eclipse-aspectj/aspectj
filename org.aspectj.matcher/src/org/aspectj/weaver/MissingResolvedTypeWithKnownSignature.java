@@ -39,6 +39,7 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 		super(signature, world);
 	}
 
+	@Override
 	public boolean isMissing() {
 		return true;
 	}
@@ -57,6 +58,7 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 	 * 
 	 * @see org.aspectj.weaver.ResolvedType#getDeclaredFields()
 	 */
+	@Override
 	public ResolvedMember[] getDeclaredFields() {
 		raiseCantFindType(WeaverMessages.CANT_FIND_TYPE_FIELDS);
 		return NO_MEMBERS;
@@ -67,46 +69,37 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 	 * 
 	 * @see org.aspectj.weaver.ResolvedType#getDeclaredMethods()
 	 */
+	@Override
 	public ResolvedMember[] getDeclaredMethods() {
 		raiseCantFindType(WeaverMessages.CANT_FIND_TYPE_METHODS);
 		return NO_MEMBERS;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.ResolvedType#getDeclaredInterfaces()
-	 */
+	@Override
+	public AnnotationAJ[] getAnnotations() {
+		raiseCantFindType(WeaverMessages.CANT_FIND_TYPE_ANNOTATION);
+		return AnnotationAJ.EMPTY_ARRAY;
+	}
+
+	@Override
 	public ResolvedType[] getDeclaredInterfaces() {
 		raiseCantFindType(WeaverMessages.CANT_FIND_TYPE_INTERFACES);
 		return NO_TYPES;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.ResolvedType#getDeclaredPointcuts()
-	 */
+	@Override
 	public ResolvedMember[] getDeclaredPointcuts() {
 		raiseCantFindType(WeaverMessages.CANT_FIND_TYPE_POINTCUTS);
 		return NO_MEMBERS;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.ResolvedType#getSuperclass()
-	 */
+	@Override
 	public ResolvedType getSuperclass() {
 		raiseCantFindType(WeaverMessages.CANT_FIND_TYPE_SUPERCLASS);
 		return ResolvedType.MISSING;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.ResolvedType#getModifiers()
-	 */
+	@Override
 	public int getModifiers() {
 		raiseCantFindType(WeaverMessages.CANT_FIND_TYPE_MODIFIERS);
 		return 0;
@@ -117,6 +110,7 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 	 * 
 	 * @see org.aspectj.weaver.ResolvedType#getSourceContext()
 	 */
+	@Override
 	public ISourceContext getSourceContext() {
 		return new ISourceContext() {
 
@@ -143,16 +137,19 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 	 * 
 	 * @see org.aspectj.weaver.ResolvedType#isAssignableFrom(org.aspectj.weaver.ResolvedType)
 	 */
+	@Override
 	public boolean isAssignableFrom(ResolvedType other) {
 		raiseCantFindType(WeaverMessages.CANT_FIND_TYPE_ASSIGNABLE, other.getName());
 		return false;
 	}
 
+	@Override
 	public boolean isAssignableFrom(ResolvedType other, boolean allowMissing) {
-		if (allowMissing)
+		if (allowMissing) {
 			return false;
-		else
+		} else {
 			return isAssignableFrom(other);
+		}
 	}
 
 	/*
@@ -160,6 +157,7 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 	 * 
 	 * @see org.aspectj.weaver.ResolvedType#isCoerceableFrom(org.aspectj.weaver.ResolvedType)
 	 */
+	@Override
 	public boolean isCoerceableFrom(ResolvedType other) {
 		raiseCantFindType(WeaverMessages.CANT_FIND_TYPE_COERCEABLE, other.getName());
 		return false;
@@ -175,29 +173,35 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 		return false;
 	}
 
+	@Override
 	public List getInterTypeMungers() {
 		return Collections.EMPTY_LIST;
 	}
 
+	@Override
 	public List getInterTypeMungersIncludingSupers() {
 		return Collections.EMPTY_LIST;
 	}
 
+	@Override
 	public List getInterTypeParentMungers() {
 		return Collections.EMPTY_LIST;
 	}
 
+	@Override
 	public List getInterTypeParentMungersIncludingSupers() {
 		return Collections.EMPTY_LIST;
 	}
 
+	@Override
 	protected void collectInterTypeMungers(List collector) {
 		return;
 	}
 
 	public void raiseWarningOnJoinPointSignature(String signature) {
-		if (issuedJoinPointWarning)
+		if (issuedJoinPointWarning) {
 			return;
+		}
 		String message = WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_JOINPOINT, getName(), signature);
 		message += "\n" + CompilationAndWeavingContext.getCurrentContext();
 		world.getLint().cantFindTypeAffectingJoinPointMatch.signal(message, null);
@@ -206,8 +210,9 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 	}
 
 	public void raiseWarningOnMissingInterfaceWhilstFindingMethods() {
-		if (issuedMissingInterfaceWarning)
+		if (issuedMissingInterfaceWarning) {
 			return;
+		}
 		String message = WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_INTERFACE_METHODS, getName(), signature);
 		message += "\n" + CompilationAndWeavingContext.getCurrentContext();
 		world.getLint().cantFindTypeAffectingJoinPointMatch.signal(message, null);
@@ -216,8 +221,9 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 	}
 
 	private void raiseCantFindType(String key) {
-		if (issuedCantFindTypeError)
+		if (issuedCantFindTypeError) {
 			return;
+		}
 		String message = WeaverMessages.format(key, getName());
 		message += "\n" + CompilationAndWeavingContext.getCurrentContext();
 		world.getLint().cantFindType.signal(message, null);
@@ -226,8 +232,9 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 	}
 
 	private void raiseCantFindType(String key, String insert) {
-		if (issuedCantFindTypeError)
+		if (issuedCantFindTypeError) {
 			return;
+		}
 		String message = WeaverMessages.format(key, getName(), insert);
 		message += "\n" + CompilationAndWeavingContext.getCurrentContext();
 		world.getLint().cantFindType.signal(message, null);
