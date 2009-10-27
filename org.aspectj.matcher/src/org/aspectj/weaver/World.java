@@ -65,7 +65,7 @@ public abstract class World implements Dump.INode {
 	protected TypeMap typeMap = new TypeMap(this); // Signature to ResolvedType
 
 	/** New pointcut designators this world supports */
-	private Set pointcutDesignators;
+	private Set<PointcutDesignatorHandler> pointcutDesignators;
 
 	// see pr145963
 	/** Should we create the hierarchy for binary classes and aspects */
@@ -121,11 +121,13 @@ public abstract class World implements Dump.INode {
 	private boolean synchronizationPointcutsInUse = false;
 	// Xset'table options
 	private boolean runMinimalMemory = false;
+	private boolean runMinimalMemorySet = false;
 	private boolean shouldPipelineCompilation = true;
 	private boolean shouldGenerateStackMaps = false;
 	protected boolean bcelRepositoryCaching = xsetBCEL_REPOSITORY_CACHING_DEFAULT.equalsIgnoreCase("true");
 	private boolean fastMethodPacking = false;
 	private boolean completeBinaryTypes = false;
+	private boolean overWeaving = false;
 	public boolean forDEBUG_structuralChangesCode = false;
 	public boolean forDEBUG_bridgingCode = false;
 
@@ -818,9 +820,8 @@ public abstract class World implements Dump.INode {
 	public final static String xsetTYPE_DEMOTION_DEBUG = "typeDemotionDebug";
 	public final static String xsetTYPE_REFS = "useWeakTypeRefs";
 	public final static String xsetBCEL_REPOSITORY_CACHING_DEFAULT = "true";
-	public final static String xsetFAST_PACK_METHODS = "fastPackMethods"; // default
-
-	// TRUE
+	public final static String xsetFAST_PACK_METHODS = "fastPackMethods"; // default true
+	public final static String xsetOVERWEAVING = "overWeaving";
 
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;
@@ -1290,6 +1291,12 @@ public abstract class World implements Dump.INode {
 					typeMap.demotionSystemActive = true;
 				}
 
+				s = p.getProperty(xsetOVERWEAVING, "false");
+				if (s.equalsIgnoreCase("true")) {
+					System.out.println("overWeaving switched ON");
+					overWeaving = true;
+				}
+
 				s = p.getProperty(xsetTYPE_DEMOTION_DEBUG, "false");
 				if (s.equalsIgnoreCase("true")) {
 					typeMap.debugDemotion = true;
@@ -1299,6 +1306,7 @@ public abstract class World implements Dump.INode {
 					typeMap.policy = TypeMap.USE_WEAK_REFS;
 				}
 
+				runMinimalMemorySet = p.getProperty(xsetRUN_MINIMAL_MEMORY) != null;
 				s = p.getProperty(xsetRUN_MINIMAL_MEMORY, "false");
 				runMinimalMemory = s.equalsIgnoreCase("true");
 				// if (runMinimalMemory)
@@ -1320,6 +1328,11 @@ public abstract class World implements Dump.INode {
 	public boolean isRunMinimalMemory() {
 		ensureAdvancedConfigurationProcessed();
 		return runMinimalMemory;
+	}
+
+	public boolean isRunMinimalMemorySet() {
+		ensureAdvancedConfigurationProcessed();
+		return runMinimalMemorySet;
 	}
 
 	public boolean shouldFastPackMethods() {
@@ -1366,20 +1379,24 @@ public abstract class World implements Dump.INode {
 	 */
 	public void registerPointcutHandler(PointcutDesignatorHandler designatorHandler) {
 		if (pointcutDesignators == null) {
-			pointcutDesignators = new HashSet();
+			pointcutDesignators = new HashSet<PointcutDesignatorHandler>();
 		}
 		pointcutDesignators.add(designatorHandler);
 	}
 
-	public Set getRegisteredPointcutHandlers() {
+	public Set<PointcutDesignatorHandler> getRegisteredPointcutHandlers() {
 		if (pointcutDesignators == null) {
-			return Collections.EMPTY_SET;
+			return Collections.emptySet();
 		}
 		return pointcutDesignators;
 	}
 
 	public void reportMatch(ShadowMunger munger, Shadow shadow) {
 
+	}
+
+	public boolean isOverWeaving() {
+		return overWeaving;
 	}
 
 	public void reportCheckerMatch(Checker checker, Shadow shadow) {
