@@ -110,14 +110,16 @@ public class SignaturePattern extends PatternNode {
 			ResolvedType resolvedType = ((ExactAnnotationTypePattern) patternNode).getAnnotationType().resolve(scope.getWorld());
 			if (targetsOtherThanTypeAllowed) {
 				AnnotationTargetKind[] targetKinds = resolvedType.getAnnotationTargetKinds();
-				if (targetKinds == null)
+				if (targetKinds == null) {
 					return;
+				}
 				reportUnmatchedTargetKindMessage(targetKinds, patternNode, scope, true);
 			} else if (!targetsOtherThanTypeAllowed && !resolvedType.canAnnotationTargetType()) {
 				// everything is incorrect since we've already checked whether we have the TYPE target annotation
 				AnnotationTargetKind[] targetKinds = resolvedType.getAnnotationTargetKinds();
-				if (targetKinds == null)
+				if (targetKinds == null) {
 					return;
+				}
 				reportUnmatchedTargetKindMessage(targetKinds, patternNode, scope, false);
 			}
 		} else {
@@ -176,6 +178,7 @@ public class SignaturePattern extends PatternNode {
 			this.parameterTargettingAnnotationsAllowed = parameterTargettingAnnotationsAllowed;
 		}
 
+		@Override
 		public Object visit(WildAnnotationTypePattern node, Object data) {
 			node.getTypePattern().accept(this, data);
 			return node;
@@ -184,12 +187,14 @@ public class SignaturePattern extends PatternNode {
 		/**
 		 * Do the ExactAnnotationTypePatterns have the incorrect target?
 		 */
+		@Override
 		public Object visit(ExactAnnotationTypePattern node, Object data) {
 			ResolvedType resolvedType = node.getAnnotationType().resolve(scope.getWorld());
 			if (targetsOtherThanTypeAllowed) {
 				AnnotationTargetKind[] targetKinds = resolvedType.getAnnotationTargetKinds();
-				if (targetKinds == null)
+				if (targetKinds == null) {
 					return data;
+				}
 				List incorrectTargets = new ArrayList();
 				for (int i = 0; i < targetKinds.length; i++) {
 					if (targetKinds[i].getName().equals(kind.getName())
@@ -198,20 +203,23 @@ public class SignaturePattern extends PatternNode {
 					}
 					incorrectTargets.add(targetKinds[i]);
 				}
-				if (incorrectTargets.isEmpty())
+				if (incorrectTargets.isEmpty()) {
 					return data;
+				}
 				AnnotationTargetKind[] kinds = new AnnotationTargetKind[incorrectTargets.size()];
-				incorrectTargetKinds.put(node, (AnnotationTargetKind[]) incorrectTargets.toArray(kinds));
+				incorrectTargetKinds.put(node, incorrectTargets.toArray(kinds));
 			} else if (!targetsOtherThanTypeAllowed && !resolvedType.canAnnotationTargetType()) {
 				AnnotationTargetKind[] targetKinds = resolvedType.getAnnotationTargetKinds();
-				if (targetKinds == null)
+				if (targetKinds == null) {
 					return data;
+				}
 				// exception here is if parameter annotations are allowed
 				if (parameterTargettingAnnotationsAllowed) {
 					for (int i = 0; i < targetKinds.length; i++) {
 						AnnotationTargetKind annotationTargetKind = targetKinds[i];
-						if (annotationTargetKind.getName().equals("PARAMETER") && node.isForParameterAnnotationMatch())
+						if (annotationTargetKind.getName().equals("PARAMETER") && node.isForParameterAnnotationMatch()) {
 							return data;
+						}
 					}
 				}
 				incorrectTargetKinds.put(node, targetKinds);
@@ -219,24 +227,28 @@ public class SignaturePattern extends PatternNode {
 			return data;
 		}
 
+		@Override
 		public Object visit(ExactTypePattern node, Object data) {
 			ExactAnnotationTypePattern eatp = new ExactAnnotationTypePattern(node.getExactType().resolve(scope.getWorld()), null);
 			eatp.accept(this, data);
 			return data;
 		}
 
+		@Override
 		public Object visit(AndTypePattern node, Object data) {
 			node.getLeft().accept(this, data);
 			node.getRight().accept(this, data);
 			return node;
 		}
 
+		@Override
 		public Object visit(OrTypePattern node, Object data) {
 			node.getLeft().accept(this, data);
 			node.getRight().accept(this, data);
 			return node;
 		}
 
+		@Override
 		public Object visit(AnyWithAnnotationTypePattern node, Object data) {
 			node.getAnnotationPattern().accept(this, data);
 			return node;
@@ -277,12 +289,15 @@ public class SignaturePattern extends PatternNode {
 
 	public boolean matches(Member joinPointSignature, World world, boolean allowBridgeMethods) {
 		// fail (or succeed!) fast tests...
-		if (joinPointSignature == null)
+		if (joinPointSignature == null) {
 			return false;
-		if (kind != joinPointSignature.getKind())
+		}
+		if (kind != joinPointSignature.getKind()) {
 			return false;
-		if (kind == Member.ADVICE)
+		}
+		if (kind == Member.ADVICE) {
 			return true;
+		}
 
 		// do the hard work then...
 		boolean subjectMatch = true;
@@ -381,8 +396,9 @@ public class SignaturePattern extends PatternNode {
 	 * Matches on name, declaring type, field type
 	 */
 	private FuzzyBoolean matchesExactlyField(JoinPointSignature aField, World world) {
-		if (!name.matches(aField.getName()))
+		if (!name.matches(aField.getName())) {
 			return FuzzyBoolean.NO;
+		}
 		ResolvedType fieldDeclaringType = aField.getDeclaringType().resolve(world);
 		if (!declaringType.matchesStatically(fieldDeclaringType)) {
 			return FuzzyBoolean.MAYBE;
@@ -402,14 +418,17 @@ public class SignaturePattern extends PatternNode {
 	 * Matches on name, declaring type, return type, parameter types, throws types
 	 */
 	private FuzzyBoolean matchesExactlyMethod(JoinPointSignature aMethod, World world, boolean subjectMatch) {
-		if (!name.matches(aMethod.getName()))
+		if (!name.matches(aMethod.getName())) {
 			return FuzzyBoolean.NO;
+		}
 		// Check the throws pattern
-		if (subjectMatch && !throwsPattern.matches(aMethod.getExceptions(), world))
+		if (subjectMatch && !throwsPattern.matches(aMethod.getExceptions(), world)) {
 			return FuzzyBoolean.NO;
+		}
 
-		if (!declaringType.matchesStatically(aMethod.getDeclaringType().resolve(world)))
+		if (!declaringType.matchesStatically(aMethod.getDeclaringType().resolve(world))) {
 			return FuzzyBoolean.MAYBE;
+		}
 		if (!returnType.matchesStatically(aMethod.getReturnType().resolve(world))) {
 			// looking bad, but there might be parameterization to consider...
 			if (!returnType.matchesStatically(aMethod.getGenericReturnType().resolve(world))) {
@@ -417,12 +436,14 @@ public class SignaturePattern extends PatternNode {
 				return FuzzyBoolean.MAYBE;
 			}
 		}
-		if (!parameterTypes.canMatchSignatureWithNParameters(aMethod.getParameterTypes().length))
+		if (!parameterTypes.canMatchSignatureWithNParameters(aMethod.getParameterTypes().length)) {
 			return FuzzyBoolean.NO;
+		}
 		ResolvedType[] resolvedParameters = world.resolve(aMethod.getParameterTypes());
 		ResolvedType[][] parameterAnnotationTypes = aMethod.getParameterAnnotationTypes();
-		if (parameterAnnotationTypes == null || parameterAnnotationTypes.length == 0)
+		if (parameterAnnotationTypes == null || parameterAnnotationTypes.length == 0) {
 			parameterAnnotationTypes = null;
+		}
 		if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC, parameterAnnotationTypes).alwaysTrue()) {
 			// It could still be a match based on the generic sig parameter types of a parameterized type
 			if (!parameterTypes.matches(world.resolve(aMethod.getGenericParameterTypes()), TypePattern.STATIC,
@@ -434,8 +455,9 @@ public class SignaturePattern extends PatternNode {
 		}
 
 		// check that varargs specifications match
-		if (!matchesVarArgs(aMethod, world))
+		if (!matchesVarArgs(aMethod, world)) {
 			return FuzzyBoolean.MAYBE;
+		}
 
 		// passed all the guards..
 		return FuzzyBoolean.YES;
@@ -445,17 +467,20 @@ public class SignaturePattern extends PatternNode {
 	 * match on declaring type, parameter types, throws types
 	 */
 	private FuzzyBoolean matchesExactlyConstructor(JoinPointSignature aConstructor, World world) {
-		if (!declaringType.matchesStatically(aConstructor.getDeclaringType().resolve(world)))
+		if (!declaringType.matchesStatically(aConstructor.getDeclaringType().resolve(world))) {
 			return FuzzyBoolean.NO;
+		}
 
-		if (!parameterTypes.canMatchSignatureWithNParameters(aConstructor.getParameterTypes().length))
+		if (!parameterTypes.canMatchSignatureWithNParameters(aConstructor.getParameterTypes().length)) {
 			return FuzzyBoolean.NO;
+		}
 		ResolvedType[] resolvedParameters = world.resolve(aConstructor.getParameterTypes());
 
 		ResolvedType[][] parameterAnnotationTypes = aConstructor.getParameterAnnotationTypes();
 
-		if (parameterAnnotationTypes == null || parameterAnnotationTypes.length == 0)
+		if (parameterAnnotationTypes == null || parameterAnnotationTypes.length == 0) {
 			parameterAnnotationTypes = null;
+		}
 
 		if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC, parameterAnnotationTypes).alwaysTrue()) {
 			// It could still be a match based on the generic sig parameter types of a parameterized type
@@ -467,12 +492,14 @@ public class SignaturePattern extends PatternNode {
 		}
 
 		// check that varargs specifications match
-		if (!matchesVarArgs(aConstructor, world))
+		if (!matchesVarArgs(aConstructor, world)) {
 			return FuzzyBoolean.NO;
+		}
 
 		// Check the throws pattern
-		if (!throwsPattern.matches(aConstructor.getExceptions(), world))
+		if (!throwsPattern.matches(aConstructor.getExceptions(), world)) {
 			return FuzzyBoolean.NO;
+		}
 
 		// passed all the guards..
 		return FuzzyBoolean.YES;
@@ -484,8 +511,9 @@ public class SignaturePattern extends PatternNode {
 	 * straight array.
 	 */
 	private boolean matchesVarArgs(JoinPointSignature aMethodOrConstructor, World inAWorld) {
-		if (parameterTypes.size() == 0)
+		if (parameterTypes.size() == 0) {
 			return true;
+		}
 
 		TypePattern lastPattern = parameterTypes.get(parameterTypes.size() - 1);
 		boolean canMatchVarArgsSignature = lastPattern.isStar() || lastPattern.isVarArgs() || (lastPattern == TypePattern.ELLIPSIS);
@@ -499,8 +527,9 @@ public class SignaturePattern extends PatternNode {
 			}
 		} else {
 			// the method ends with an array type, check that we don't *require* a varargs
-			if (lastPattern.isVarArgs())
+			if (lastPattern.isVarArgs()) {
 				return false;
+			}
 		}
 
 		return true;
@@ -551,8 +580,9 @@ public class SignaturePattern extends PatternNode {
 		ResolvedMember decMethods[] = aspectType.getDeclaredMethods();
 		for (int i = 0; i < decMethods.length; i++) {
 			ResolvedMember member = decMethods[i];
-			if (member.equals(ajcMethod))
+			if (member.equals(ajcMethod)) {
 				return member;
+			}
 		}
 		return null;
 	}
@@ -563,8 +593,9 @@ public class SignaturePattern extends PatternNode {
 		ResolvedType onType = shadowDeclaringType.resolve(world);
 
 		// fastmatch
-		if (declaringType.matchesStatically(onType) && returnTypePattern.matchesStatically(sigReturn))
+		if (declaringType.matchesStatically(onType) && returnTypePattern.matchesStatically(sigReturn)) {
 			return true;
+		}
 
 		Collection declaringTypes = member.getDeclaringTypes(world);
 
@@ -582,18 +613,22 @@ public class SignaturePattern extends PatternNode {
 		for (Iterator i = declaringTypes.iterator(); i.hasNext();) {
 			ResolvedType type = (ResolvedType) i.next();
 			if (declaringType.matchesStatically(type)) {
-				if (!checkReturnType)
+				if (!checkReturnType) {
 					return true;
+				}
 				ResolvedMember rm = type.lookupMethod(member);
-				if (rm == null)
+				if (rm == null) {
 					rm = type.lookupMethodInITDs(member); // It must be in here, or we have *real* problems
-				if (rm == null)
+				}
+				if (rm == null) {
 					continue; // might be currently looking at the generic type and we need to continue searching in case we hit a
+				}
 				// parameterized version of this same type...
 				UnresolvedType returnTypeX = rm.getReturnType();
 				ResolvedType returnType = returnTypeX.resolve(world);
-				if (returnTypePattern.matchesStatically(returnType))
+				if (returnTypePattern.matchesStatically(returnType)) {
 					return true;
+				}
 			}
 		}
 		return false;
@@ -641,6 +676,7 @@ public class SignaturePattern extends PatternNode {
 		return kind;
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 
@@ -683,9 +719,11 @@ public class SignaturePattern extends PatternNode {
 		return buf.toString();
 	}
 
+	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof SignaturePattern))
+		if (!(other instanceof SignaturePattern)) {
 			return false;
+		}
 		SignaturePattern o = (SignaturePattern) other;
 		return o.kind.equals(this.kind) && o.modifiers.equals(this.modifiers) && o.returnType.equals(this.returnType)
 				&& o.declaringType.equals(this.declaringType) && o.name.equals(this.name)
@@ -693,6 +731,7 @@ public class SignaturePattern extends PatternNode {
 				&& o.annotationPattern.equals(this.annotationPattern);
 	}
 
+	@Override
 	public int hashCode() {
 		if (hashcode == -1) {
 			hashcode = 17;
@@ -708,6 +747,7 @@ public class SignaturePattern extends PatternNode {
 		return hashcode;
 	}
 
+	@Override
 	public void write(DataOutputStream s) throws IOException {
 		kind.write(s);
 		modifiers.write(s);
@@ -789,6 +829,7 @@ public class SignaturePattern extends PatternNode {
 		return annotationPattern == AnnotationTypePattern.ANY;
 	}
 
+	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
