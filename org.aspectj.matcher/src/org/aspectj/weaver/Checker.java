@@ -62,10 +62,12 @@ public class Checker extends ShadowMunger {
 		return this.message;
 	}
 
+	@Override
 	public void specializeOn(Shadow shadow) {
 		throw new IllegalStateException("Cannot call specializeOn(...) for a Checker");
 	}
 
+	@Override
 	public boolean implementOn(Shadow shadow) {
 		throw new IllegalStateException("Cannot call implementOn(...) for a Checker");
 	}
@@ -77,6 +79,7 @@ public class Checker extends ShadowMunger {
 	 * @param shadow the shadow which to match against
 	 * @param world the world through which to access message handlers
 	 */
+	@Override
 	public boolean match(Shadow shadow, World world) {
 		if (super.match(shadow, world)) {
 			world.reportCheckerMatch(this, shadow);
@@ -89,15 +92,18 @@ public class Checker extends ShadowMunger {
 		return 0;
 	}
 
+	@Override
 	public boolean mustCheckExceptions() {
 		return true;
 	}
 
+	@Override
 	public Collection getThrownExceptions() {
 		return Collections.EMPTY_LIST;
 	}
 
 	// FIXME this perhaps ought to take account of the other fields in advice (use super.equals?)
+	@Override
 	public boolean equals(Object other) {
 		if (!(other instanceof Checker)) {
 			return false;
@@ -106,6 +112,7 @@ public class Checker extends ShadowMunger {
 		return o.isError == isError && ((o.pointcut == null) ? (pointcut == null) : o.pointcut.equals(pointcut));
 	}
 
+	@Override
 	public int hashCode() {
 		if (hashCode == -1) {
 			int result = 17;
@@ -119,6 +126,7 @@ public class Checker extends ShadowMunger {
 	/**
 	 * Parameterize the Checker by parameterizing the pointcut
 	 */
+	@Override
 	public ShadowMunger parameterizeWith(ResolvedType declaringType, Map typeVariableMap) {
 		Checker ret = new Checker(this.pointcut.parameterizeWith(typeVariableMap, declaringType.getWorld()), this.start, this.end,
 				this.sourceContext, this.message, this.isError);
@@ -128,6 +136,7 @@ public class Checker extends ShadowMunger {
 	/**
 	 * Concretize this Checker by concretizing the pointcut
 	 */
+	@Override
 	public ShadowMunger concretize(ResolvedType theAspect, World world, PerClause clause) {
 		this.pointcut = this.pointcut.concretize(theAspect, getDeclaringType(), 0, this);
 		this.hashCode = -1;
