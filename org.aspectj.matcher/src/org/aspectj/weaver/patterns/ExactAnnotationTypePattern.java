@@ -46,8 +46,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 
 	// OPTIMIZE is annotationtype really unresolved???? surely it is resolved by
 	// now...
-	public ExactAnnotationTypePattern(UnresolvedType annotationType,
-			Map annotationValues) {
+	public ExactAnnotationTypePattern(UnresolvedType annotationType, Map annotationValues) {
 		this.annotationType = annotationType;
 		this.annotationValues = annotationValues;
 		this.resolved = (annotationType instanceof ResolvedType);
@@ -67,8 +66,9 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	}
 
 	public ResolvedType getResolvedAnnotationType() {
-		if (!resolved)
+		if (!resolved) {
 			throw new IllegalStateException("I need to be resolved first!");
+		}
 		return (ResolvedType) annotationType;
 	}
 
@@ -80,6 +80,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		return annotationValues;
 	}
 
+	@Override
 	public FuzzyBoolean fastMatches(AnnotatedElement annotated) {
 		if (annotated.hasAnnotation(annotationType) && annotationValues == null) {
 			return FuzzyBoolean.YES;
@@ -90,16 +91,16 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		}
 	}
 
+	@Override
 	public FuzzyBoolean matches(AnnotatedElement annotated) {
 		return matches(annotated, null);
 	}
 
-	public FuzzyBoolean matches(AnnotatedElement annotated,
-			ResolvedType[] parameterAnnotations) {
+	@Override
+	public FuzzyBoolean matches(AnnotatedElement annotated, ResolvedType[] parameterAnnotations) {
 		if (!isForParameterAnnotationMatch()) {
 			boolean checkSupers = false;
-			if (getResolvedAnnotationType().hasAnnotation(
-					UnresolvedType.AT_INHERITED)) {
+			if (getResolvedAnnotationType().hasAnnotation(UnresolvedType.AT_INHERITED)) {
 				if (annotated instanceof ResolvedType) {
 					checkSupers = true;
 				}
@@ -108,28 +109,17 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 			if (annotated.hasAnnotation(annotationType)) {
 				if (annotationType instanceof ReferenceType) {
 					ReferenceType rt = (ReferenceType) annotationType;
-					if (rt.getRetentionPolicy() != null
-							&& rt.getRetentionPolicy().equals("SOURCE")) {
-						rt
-								.getWorld()
-								.getMessageHandler()
-								.handleMessage(
-										MessageUtil
-												.warn(
-														WeaverMessages
-																.format(
-																		WeaverMessages.NO_MATCH_BECAUSE_SOURCE_RETENTION,
-																		annotationType,
-																		annotated),
-														getSourceLocation()));
+					if (rt.getRetentionPolicy() != null && rt.getRetentionPolicy().equals("SOURCE")) {
+						rt.getWorld().getMessageHandler().handleMessage(
+								MessageUtil.warn(WeaverMessages.format(WeaverMessages.NO_MATCH_BECAUSE_SOURCE_RETENTION,
+										annotationType, annotated), getSourceLocation()));
 						return FuzzyBoolean.NO;
 					}
 				}
 
 				// Are we also matching annotation values?
 				if (annotationValues != null) {
-					AnnotationAJ theAnnotation = annotated
-							.getAnnotationOfType(annotationType);
+					AnnotationAJ theAnnotation = annotated.getAnnotationOfType(annotationType);
 
 					// Check each one
 					Set keys = annotationValues.keySet();
@@ -144,40 +134,35 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 							}
 						} else {
 							// Complex case, look at the default value
-							ResolvedMember[] ms = ((ResolvedType) annotationType)
-									.getDeclaredMethods();
+							ResolvedMember[] ms = ((ResolvedType) annotationType).getDeclaredMethods();
 							boolean foundMatch = false;
 							for (int i = 0; i < ms.length && !foundMatch; i++) {
-								if (ms[i].isAbstract()
-										&& ms[i].getParameterTypes().length == 0
-										&& ms[i].getName().equals(k)) {
+								if (ms[i].isAbstract() && ms[i].getParameterTypes().length == 0 && ms[i].getName().equals(k)) {
 									// we might be onto something
-									String s = ms[i]
-											.getAnnotationDefaultValue();
-									if (s != null && s.equals(v))
+									String s = ms[i].getAnnotationDefaultValue();
+									if (s != null && s.equals(v)) {
 										foundMatch = true;
+									}
 								}
 							}
-							if (!foundMatch)
+							if (!foundMatch) {
 								return FuzzyBoolean.NO;
+							}
 						}
 					}
 				}
 				return FuzzyBoolean.YES;
 			} else if (checkSupers) {
-				ResolvedType toMatchAgainst = ((ResolvedType) annotated)
-						.getSuperclass();
+				ResolvedType toMatchAgainst = ((ResolvedType) annotated).getSuperclass();
 				while (toMatchAgainst != null) {
 					if (toMatchAgainst.hasAnnotation(annotationType)) {
 						// Are we also matching annotation values?
 						if (annotationValues != null) {
-							AnnotationAJ theAnnotation = toMatchAgainst
-									.getAnnotationOfType(annotationType);
+							AnnotationAJ theAnnotation = toMatchAgainst.getAnnotationOfType(annotationType);
 
 							// Check each one
 							Set keys = annotationValues.keySet();
-							for (Iterator keyIter = keys.iterator(); keyIter
-									.hasNext();) {
+							for (Iterator keyIter = keys.iterator(); keyIter.hasNext();) {
 								String k = (String) keyIter.next();
 								String v = (String) annotationValues.get(k);
 								if (theAnnotation.hasNamedValue(k)) {
@@ -188,23 +173,21 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 									}
 								} else {
 									// Complex case, look at the default value
-									ResolvedMember[] ms = ((ResolvedType) annotationType)
-											.getDeclaredMethods();
+									ResolvedMember[] ms = ((ResolvedType) annotationType).getDeclaredMethods();
 									boolean foundMatch = false;
-									for (int i = 0; i < ms.length
-											&& !foundMatch; i++) {
-										if (ms[i].isAbstract()
-												&& ms[i].getParameterTypes().length == 0
+									for (int i = 0; i < ms.length && !foundMatch; i++) {
+										if (ms[i].isAbstract() && ms[i].getParameterTypes().length == 0
 												&& ms[i].getName().equals(k)) {
 											// we might be onto something
-											String s = ms[i]
-													.getAnnotationDefaultValue();
-											if (s != null && s.equals(v))
+											String s = ms[i].getAnnotationDefaultValue();
+											if (s != null && s.equals(v)) {
 												foundMatch = true;
+											}
 										}
 									}
-									if (!foundMatch)
+									if (!foundMatch) {
 										return FuzzyBoolean.NO;
+									}
 								}
 							}
 						}
@@ -215,8 +198,9 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 			}
 		} else {
 			// check parameter annotations
-			if (parameterAnnotations == null)
+			if (parameterAnnotations == null) {
 				return FuzzyBoolean.NO;
+			}
 			for (int i = 0; i < parameterAnnotations.length; i++) {
 				if (annotationType.equals(parameterAnnotations[i])) {
 					// Are we also matching annotation values?
@@ -239,8 +223,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 
 	// this version should be called for @this, @target, @args
 	public FuzzyBoolean matchesRuntimeType(AnnotatedElement annotated) {
-		if (getResolvedAnnotationType().hasAnnotation(
-				UnresolvedType.AT_INHERITED)) {
+		if (getResolvedAnnotationType().hasAnnotation(UnresolvedType.AT_INHERITED)) {
 			// a static match is good enough
 			if (matches(annotated).alwaysTrue()) {
 				return FuzzyBoolean.YES;
@@ -250,6 +233,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		return FuzzyBoolean.MAYBE;
 	}
 
+	@Override
 	public void resolve(World world) {
 		if (!resolved) {
 			annotationType = annotationType.resolve(world);
@@ -260,42 +244,37 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.aspectj.weaver.patterns.AnnotationTypePattern#resolveBindings(org
-	 * .aspectj.weaver.patterns.IScope, org.aspectj.weaver.patterns.Bindings,
-	 * boolean)
+	 * @see org.aspectj.weaver.patterns.AnnotationTypePattern#resolveBindings(org .aspectj.weaver.patterns.IScope,
+	 * org.aspectj.weaver.patterns.Bindings, boolean)
 	 */
-	public AnnotationTypePattern resolveBindings(IScope scope,
-			Bindings bindings, boolean allowBinding) {
-		if (resolved)
+	@Override
+	public AnnotationTypePattern resolveBindings(IScope scope, Bindings bindings, boolean allowBinding) {
+		if (resolved) {
 			return this;
+		}
 		resolved = true;
 		String simpleName = maybeGetSimpleName();
 		if (simpleName != null) {
 			FormalBinding formalBinding = scope.lookupFormal(simpleName);
 			if (formalBinding != null) {
 				if (bindings == null) {
-					scope.message(IMessage.ERROR, this,
-							"negation doesn't allow binding");
+					scope.message(IMessage.ERROR, this, "negation doesn't allow binding");
 					return this;
 				}
 				if (!allowBinding) {
-					scope
-							.message(IMessage.ERROR, this,
-									"name binding only allowed in @pcds, args, this, and target");
+					scope.message(IMessage.ERROR, this, "name binding only allowed in @pcds, args, this, and target");
 					return this;
 				}
 				formalName = simpleName;
 				bindingPattern = true;
-				verifyIsAnnotationType(formalBinding.getType().resolve(
-						scope.getWorld()), scope);
-				BindingAnnotationTypePattern binding = new BindingAnnotationTypePattern(
-						formalBinding);
+				verifyIsAnnotationType(formalBinding.getType().resolve(scope.getWorld()), scope);
+				BindingAnnotationTypePattern binding = new BindingAnnotationTypePattern(formalBinding);
 				binding.copyLocationFrom(this);
 				bindings.register(binding, scope);
 				binding.resolveBinding(scope.getWorld());
-				if (isForParameterAnnotationMatch())
+				if (isForParameterAnnotationMatch()) {
 					binding.setForParameterAnnotationMatch();
+				}
 
 				return binding;
 			}
@@ -308,13 +287,12 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		// We may not have found it if it is in a package, lets look it up...
 		if (ResolvedType.isMissing(annotationType)) {
 			UnresolvedType type = null;
-			while (ResolvedType.isMissing(type = scope.lookupType(cleanname,
-					this))) {
+			while (ResolvedType.isMissing(type = scope.lookupType(cleanname, this))) {
 				int lastDot = cleanname.lastIndexOf('.');
-				if (lastDot == -1)
+				if (lastDot == -1) {
 					break;
-				cleanname = cleanname.substring(0, lastDot) + "$"
-						+ cleanname.substring(lastDot + 1);
+				}
+				cleanname = cleanname.substring(0, lastDot) + "$" + cleanname.substring(lastDot + 1);
 			}
 			annotationType = scope.getWorld().resolve(type, true);
 		}
@@ -323,6 +301,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		return this;
 	}
 
+	@Override
 	public AnnotationTypePattern parameterizeWith(Map typeVariableMap, World w) {
 		UnresolvedType newAnnotationType = annotationType;
 		if (annotationType.isTypeVariableReference()) {
@@ -334,28 +313,28 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		} else if (annotationType.isParameterizedType()) {
 			newAnnotationType = annotationType.parameterize(typeVariableMap);
 		}
-		ExactAnnotationTypePattern ret = new ExactAnnotationTypePattern(
-				newAnnotationType, annotationValues);
+		ExactAnnotationTypePattern ret = new ExactAnnotationTypePattern(newAnnotationType, annotationValues);
 		ret.formalName = formalName;
 		ret.bindingPattern = bindingPattern;
 		ret.copyLocationFrom(this);
-		if (isForParameterAnnotationMatch())
+		if (isForParameterAnnotationMatch()) {
 			ret.setForParameterAnnotationMatch();
+		}
 		return ret;
 	}
 
 	protected String maybeGetSimpleName() {
-		if (formalName != null)
+		if (formalName != null) {
 			return formalName;
+		}
 		String ret = annotationType.getName();
 		return (ret.indexOf('.') == -1) ? ret : null;
 	}
 
 	protected void verifyIsAnnotationType(ResolvedType type, IScope scope) {
 		if (!type.isAnnotation()) {
-			IMessage m = MessageUtil.error(WeaverMessages.format(
-					WeaverMessages.REFERENCE_TO_NON_ANNOTATION_TYPE, type
-							.getName()), getSourceLocation());
+			IMessage m = MessageUtil.error(WeaverMessages.format(WeaverMessages.REFERENCE_TO_NON_ANNOTATION_TYPE, type.getName()),
+					getSourceLocation());
 			scope.getWorld().getMessageHandler().handleMessage(m);
 			resolved = false;
 		}
@@ -366,9 +345,9 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)
+	 * @see org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)
 	 */
+	@Override
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(AnnotationTypePattern.EXACT);
 		s.writeByte(VERSION);
@@ -393,13 +372,11 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		}
 	}
 
-	public static AnnotationTypePattern read(VersionedDataInputStream s,
-			ISourceContext context) throws IOException {
+	public static AnnotationTypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		ExactAnnotationTypePattern ret;
 		byte version = s.readByte();
 		if (version > VERSION) {
-			throw new BCException(
-					"ExactAnnotationTypePattern was written by a newer version of AspectJ");
+			throw new BCException("ExactAnnotationTypePattern was written by a newer version of AspectJ");
 		}
 		boolean isBindingPattern = s.readBoolean();
 		if (isBindingPattern) {
@@ -409,8 +386,9 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		}
 		ret.readLocation(context, s);
 		if (s.getMajorVersion() >= WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ160) {
-			if (s.readBoolean())
+			if (s.readBoolean()) {
 				ret.setForParameterAnnotationMatch();
+			}
 		}
 		if (s.getMajorVersion() >= WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ160M2) {
 			int annotationValueCount = s.readInt();
@@ -432,15 +410,15 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof ExactAnnotationTypePattern))
+		if (!(obj instanceof ExactAnnotationTypePattern)) {
 			return false;
+		}
 		ExactAnnotationTypePattern other = (ExactAnnotationTypePattern) obj;
 		return (other.annotationType.equals(annotationType))
-				&& isForParameterAnnotationMatch() == other
-						.isForParameterAnnotationMatch()
-				&& (annotationValues == null ? other.annotationValues == null
-						: annotationValues.equals(other.annotationValues));
+				&& isForParameterAnnotationMatch() == other.isForParameterAnnotationMatch()
+				&& (annotationValues == null ? other.annotationValues == null : annotationValues.equals(other.annotationValues));
 	}
 
 	/*
@@ -448,21 +426,25 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
+	@Override
 	public int hashCode() {
-		return (((annotationType.hashCode()) * 37 + (isForParameterAnnotationMatch() ? 0
-				: 1)) * 37)
+		return (((annotationType.hashCode()) * 37 + (isForParameterAnnotationMatch() ? 0 : 1)) * 37)
 				+ (annotationValues == null ? 0 : annotationValues.hashCode());
 	}
 
+	@Override
 	public String toString() {
-		if (!resolved && formalName != null)
+		if (!resolved && formalName != null) {
 			return formalName;
+		}
 		String ret = "@" + annotationType.toString();
-		if (formalName != null)
+		if (formalName != null) {
 			ret = ret + " " + formalName;
+		}
 		return ret;
 	}
 
+	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
