@@ -56,17 +56,21 @@ public class DeclareAnnotation extends Declare {
 			s = name;
 		}
 
+		@Override
 		public int hashCode() {
 			return (19 + 37 * id);
 		}
 
+		@Override
 		public boolean equals(Object obj) {
-			if (!(obj instanceof Kind))
+			if (!(obj instanceof Kind)) {
 				return false;
+			}
 			Kind other = (Kind) obj;
 			return other.id == id;
 		}
 
+		@Override
 		public String toString() {
 			return "at_" + s;
 		}
@@ -97,6 +101,7 @@ public class DeclareAnnotation extends Declare {
 		return annotationMethod;
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer ret = new StringBuffer();
 		ret.append("declare @");
@@ -108,10 +113,12 @@ public class DeclareAnnotation extends Declare {
 		return ret.toString();
 	}
 
+	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
 
+	@Override
 	public void resolve(IScope scope) {
 		if (!scope.getWorld().isInJava5Mode()) {
 			String msg = null;
@@ -136,6 +143,7 @@ public class DeclareAnnotation extends Declare {
 		this.containingAspect = scope.getEnclosingType();
 	}
 
+	@Override
 	public Declare parameterizeWith(Map typeVariableBindingMap, World w) {
 		DeclareAnnotation ret;
 		if (this.kind == AT_TYPE) {
@@ -151,6 +159,7 @@ public class DeclareAnnotation extends Declare {
 		return ret;
 	}
 
+	@Override
 	public boolean isAdviceLike() {
 		return false;
 	}
@@ -163,36 +172,46 @@ public class DeclareAnnotation extends Declare {
 		this.annotationMethod = methName;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof DeclareAnnotation))
+		if (!(obj instanceof DeclareAnnotation)) {
 			return false;
+		}
 		DeclareAnnotation other = (DeclareAnnotation) obj;
-		if (!this.kind.equals(other.kind))
+		if (!this.kind.equals(other.kind)) {
 			return false;
-		if (!this.annotationString.equals(other.annotationString))
+		}
+		if (!this.annotationString.equals(other.annotationString)) {
 			return false;
-		if (!this.annotationMethod.equals(other.annotationMethod))
+		}
+		if (!this.annotationMethod.equals(other.annotationMethod)) {
 			return false;
+		}
 		if (this.typePattern != null) {
-			if (!typePattern.equals(other.typePattern))
+			if (!typePattern.equals(other.typePattern)) {
 				return false;
+			}
 		}
 		if (this.sigPattern != null) {
-			if (!sigPattern.equals(other.sigPattern))
+			if (!sigPattern.equals(other.sigPattern)) {
 				return false;
+			}
 		}
 		return true;
 	}
 
+	@Override
 	public int hashCode() {
 		int result = 19;
 		result = 37 * result + kind.hashCode();
 		result = 37 * result + annotationString.hashCode();
 		result = 37 * result + annotationMethod.hashCode();
-		if (typePattern != null)
+		if (typePattern != null) {
 			result = 37 * result + typePattern.hashCode();
-		if (sigPattern != null)
+		}
+		if (sigPattern != null) {
 			result = 37 * result + sigPattern.hashCode();
+		}
 		return result;
 	}
 
@@ -201,15 +220,18 @@ public class DeclareAnnotation extends Declare {
 	 * 
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)
 	 */
+	@Override
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Declare.ANNOTATION);
 		s.writeInt(kind.id);
 		s.writeUTF(annotationString);
 		s.writeUTF(annotationMethod);
-		if (typePattern != null)
+		if (typePattern != null) {
 			typePattern.write(s);
-		if (sigPattern != null)
+		}
+		if (sigPattern != null) {
 			sigPattern.write(s);
+		}
 		writeLocation(s);
 	}
 
@@ -267,8 +289,9 @@ public class DeclareAnnotation extends Declare {
 	 * For @type
 	 */
 	public boolean matches(ResolvedType typeX) {
-		if (!typePattern.matchesStatically(typeX))
+		if (!typePattern.matchesStatically(typeX)) {
 			return false;
+		}
 		if (typeX.getWorld().getLint().typeNotExposedToWeaver.isEnabled() && !typeX.isExposedToWeaver()) {
 			typeX.getWorld().getLint().typeNotExposedToWeaver.signal(typeX.getName(), getSourceLocation());
 		}
@@ -300,8 +323,9 @@ public class DeclareAnnotation extends Declare {
 	 * finds that method and retrieves the annotation
 	 */
 	private void ensureAnnotationDiscovered() {
-		if (annotation != null)
+		if (annotation != null) {
 			return;
+		}
 		for (Iterator iter = containingAspect.getMethods(); iter.hasNext();) {
 			ResolvedMember member = (ResolvedMember) iter.next();
 			if (member.getName().equals(annotationMethod)) {
@@ -330,10 +354,12 @@ public class DeclareAnnotation extends Declare {
 	}
 
 	public boolean isStarredAnnotationPattern() {
-		if (typePattern != null)
+		if (typePattern != null) {
 			return typePattern.isStarAnnotation();
-		if (sigPattern != null)
+		}
+		if (sigPattern != null) {
 			return sigPattern.isStarAnnotation();
+		}
 		throw new RuntimeException("Impossible! what kind of deca is this: " + this);
 	}
 
@@ -391,10 +417,12 @@ public class DeclareAnnotation extends Declare {
 	}
 
 	public String getPatternAsString() {
-		if (sigPattern != null)
+		if (sigPattern != null) {
 			return sigPattern.toString();
-		if (typePattern != null)
+		}
+		if (typePattern != null) {
 			return typePattern.toString();
+		}
 		return "DONT KNOW";
 	}
 
@@ -409,14 +437,16 @@ public class DeclareAnnotation extends Declare {
 		// do something here so we don't iterate over all fields and all methods
 		// in all types exposed to the weaver! So look out for bugs here and
 		// we can update the test as appropriate.
-		if (sigPattern != null)
+		if (sigPattern != null) {
 			return sigPattern.getDeclaringType().matches(type, TypePattern.STATIC).maybeTrue();
+		}
 		return true;
 	}
 
 	/**
 	 * Provide a name suffix so that we can tell the different declare annotations forms apart in the AjProblemReporter
 	 */
+	@Override
 	public String getNameSuffix() {
 		return getKind().toString();
 	}
