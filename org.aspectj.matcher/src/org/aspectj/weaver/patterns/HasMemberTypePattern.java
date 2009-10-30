@@ -29,16 +29,15 @@ import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 
 /**
- * @author colyer
- * Matches types that have a certain method / constructor / field
- * Currently only allowed within declare parents and declare @type
+ * @author colyer Matches types that have a certain method / constructor / field Currently only allowed within declare parents and
+ *         declare @type
  */
 public class HasMemberTypePattern extends TypePattern {
 
 	private SignaturePattern signaturePattern;
-	
+
 	public HasMemberTypePattern(SignaturePattern aSignaturePattern) {
-		super(false,false);
+		super(false, false);
 		this.signaturePattern = aSignaturePattern;
 	}
 
@@ -49,7 +48,7 @@ public class HasMemberTypePattern extends TypePattern {
 			return hasMethod(type);
 		}
 	}
-	
+
 	private final static String declareAtPrefix = "ajc$declare_at";
 
 	private boolean hasField(ResolvedType type) {
@@ -57,26 +56,34 @@ public class HasMemberTypePattern extends TypePattern {
 		World world = type.getWorld();
 		for (Iterator iter = type.getFields(); iter.hasNext();) {
 			Member field = (Member) iter.next();
-			if (field.getName().startsWith(declareAtPrefix)) continue;
+			if (field.getName().startsWith(declareAtPrefix)) {
+				continue;
+			}
 			if (signaturePattern.matches(field, type.getWorld(), false)) {
 				if (field.getDeclaringType().resolve(world) != type) {
-					if (Modifier.isPrivate(field.getModifiers())) continue;
+					if (Modifier.isPrivate(field.getModifiers())) {
+						continue;
+					}
 				}
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	private boolean hasMethod(ResolvedType type) {
 		// TODO what about ITDs
 		World world = type.getWorld();
 		for (Iterator iter = type.getMethods(); iter.hasNext();) {
 			Member method = (Member) iter.next();
-			if (method.getName().startsWith(declareAtPrefix)) continue;
+			if (method.getName().startsWith(declareAtPrefix)) {
+				continue;
+			}
 			if (signaturePattern.matches(method, type.getWorld(), false)) {
 				if (method.getDeclaringType().resolve(world) != type) {
-					if (Modifier.isPrivate(method.getModifiers())) continue;
+					if (Modifier.isPrivate(method.getModifiers())) {
+						continue;
+					}
 				}
 				return true;
 			}
@@ -87,13 +94,15 @@ public class HasMemberTypePattern extends TypePattern {
 			ConcreteTypeMunger munger = (ConcreteTypeMunger) iter.next();
 			Member member = munger.getSignature();
 			if (signaturePattern.matches(member, type.getWorld(), false)) {
-				if (!Modifier.isPublic(member.getModifiers())) continue;
+				if (!Modifier.isPublic(member.getModifiers())) {
+					continue;
+				}
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	protected boolean matchesExactly(ResolvedType type, ResolvedType annotatedType) {
 		return matchesExactly(type);
 	}
@@ -102,8 +111,8 @@ public class HasMemberTypePattern extends TypePattern {
 		throw new UnsupportedOperationException("hasmethod/field do not support instanceof matching");
 	}
 
-	public TypePattern parameterizeWith(Map typeVariableMap,World w) {
-		HasMemberTypePattern ret = new HasMemberTypePattern(signaturePattern.parameterizeWith(typeVariableMap,w));
+	public TypePattern parameterizeWith(Map typeVariableMap, World w) {
+		HasMemberTypePattern ret = new HasMemberTypePattern(signaturePattern.parameterizeWith(typeVariableMap, w));
 		ret.copyLocationFrom(this);
 		return ret;
 	}
@@ -111,23 +120,27 @@ public class HasMemberTypePattern extends TypePattern {
 	public TypePattern resolveBindings(IScope scope, Bindings bindings, boolean allowBinding, boolean requireExactType) {
 		// check that hasmember type patterns are allowed!
 		if (!scope.getWorld().isHasMemberSupportEnabled()) {
-			String msg = WeaverMessages.format(WeaverMessages.HAS_MEMBER_NOT_ENABLED,this.toString());
+			String msg = WeaverMessages.format(WeaverMessages.HAS_MEMBER_NOT_ENABLED, this.toString());
 			scope.message(IMessage.ERROR, this, msg);
 		}
-		signaturePattern.resolveBindings(scope,bindings);
+		signaturePattern.resolveBindings(scope, bindings);
 		return this;
 	}
 
 	public boolean equals(Object obj) {
-		if (!(obj instanceof HasMemberTypePattern)) return false;
-		if (this == obj) return true;
-		return signaturePattern.equals(((HasMemberTypePattern)obj).signaturePattern);
+		if (!(obj instanceof HasMemberTypePattern)) {
+			return false;
+		}
+		if (this == obj) {
+			return true;
+		}
+		return signaturePattern.equals(((HasMemberTypePattern) obj).signaturePattern);
 	}
-	
+
 	public int hashCode() {
 		return signaturePattern.hashCode();
 	}
-	
+
 	public String toString() {
 		StringBuffer buff = new StringBuffer();
 		if (signaturePattern.getKind() == Member.FIELD) {
@@ -139,7 +152,7 @@ public class HasMemberTypePattern extends TypePattern {
 		buff.append(")");
 		return buff.toString();
 	}
-	
+
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(TypePattern.HAS_MEMBER);
 		signaturePattern.write(s);
@@ -149,10 +162,10 @@ public class HasMemberTypePattern extends TypePattern {
 	public static TypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		SignaturePattern sp = SignaturePattern.read(s, context);
 		HasMemberTypePattern ret = new HasMemberTypePattern(sp);
-		ret.readLocation(context,s);
+		ret.readLocation(context, s);
 		return ret;
 	}
-	
+
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
