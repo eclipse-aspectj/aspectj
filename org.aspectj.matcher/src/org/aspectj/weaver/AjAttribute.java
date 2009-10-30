@@ -86,8 +86,9 @@ public abstract class AjAttribute {
 
 	public static AjAttribute read(AjAttribute.WeaverVersionInfo v, String name, byte[] bytes, ISourceContext context, World w) {
 		try {
-			if (bytes == null)
+			if (bytes == null) {
 				bytes = new byte[0];
+			}
 			VersionedDataInputStream s = new VersionedDataInputStream(new ByteArrayInputStream(bytes));
 			s.setVersion(v);
 			if (name.equals(Aspect.AttributeName)) {
@@ -120,8 +121,9 @@ public abstract class AjAttribute {
 				return EffectiveSignatureAttribute.read(s, context);
 			} else {
 				// We have to tell the user about this...
-				if (w == null || w.getMessageHandler() == null)
+				if (w == null || w.getMessageHandler() == null) {
 					throw new BCException("unknown attribute" + name);
+				}
 				w.getMessageHandler().handleMessage(MessageUtil.warn("unknown attribute encountered " + name));
 				return null;
 			}
@@ -144,6 +146,7 @@ public abstract class AjAttribute {
 	public static class AjSynthetic extends AjAttribute {
 		public static final String AttributeName = "org.aspectj.weaver.AjSynthetic";
 
+		@Override
 		public String getNameString() {
 			return AttributeName;
 		}
@@ -152,6 +155,7 @@ public abstract class AjAttribute {
 		public AjSynthetic() {
 		}
 
+		@Override
 		public void write(DataOutputStream s) throws IOException {
 		}
 	}
@@ -159,6 +163,7 @@ public abstract class AjAttribute {
 	public static class TypeMunger extends AjAttribute {
 		public static final String AttributeName = "org.aspectj.weaver.TypeMunger";
 
+		@Override
 		public String getNameString() {
 			return AttributeName;
 		}
@@ -169,6 +174,7 @@ public abstract class AjAttribute {
 			this.munger = munger;
 		}
 
+		@Override
 		public void write(DataOutputStream s) throws IOException {
 			munger.write(s);
 		}
@@ -181,6 +187,7 @@ public abstract class AjAttribute {
 	public static class WeaverState extends AjAttribute {
 		public static final String AttributeName = "org.aspectj.weaver.WeaverState";
 
+		@Override
 		public String getNameString() {
 			return AttributeName;
 		}
@@ -191,6 +198,7 @@ public abstract class AjAttribute {
 			this.kind = kind;
 		}
 
+		@Override
 		public void write(DataOutputStream s) throws IOException {
 			kind.write(s);
 		}
@@ -255,6 +263,7 @@ public abstract class AjAttribute {
 
 		private long buildstamp = Version.NOTIME;
 
+		@Override
 		public String getNameString() {
 			return AttributeName;
 		}
@@ -270,6 +279,7 @@ public abstract class AjAttribute {
 			minor_version = minor;
 		}
 
+		@Override
 		public void write(DataOutputStream s) throws IOException {
 			s.writeShort(CURRENT_VERSION_MAJOR);
 			s.writeShort(CURRENT_VERSION_MINOR);
@@ -318,6 +328,7 @@ public abstract class AjAttribute {
 			return buildstamp;
 		}
 
+		@Override
 		public String toString() {
 			return major_version + "." + minor_version;
 		}
@@ -331,6 +342,7 @@ public abstract class AjAttribute {
 	public static class SourceContextAttribute extends AjAttribute {
 		public static final String AttributeName = "org.aspectj.weaver.SourceContext";
 
+		@Override
 		public String getNameString() {
 			return AttributeName;
 		}
@@ -343,6 +355,7 @@ public abstract class AjAttribute {
 			this.lineBreaks = lineBreaks;
 		}
 
+		@Override
 		public void write(DataOutputStream s) throws IOException {
 			s.writeUTF(sourceFileName);
 			FileUtil.writeIntArray(lineBreaks, s);
@@ -365,6 +378,7 @@ public abstract class AjAttribute {
 
 		public static final String AttributeName = "org.aspectj.weaver.MethodDeclarationLineNumber";
 
+		@Override
 		public String getNameString() {
 			return AttributeName;
 		}
@@ -388,6 +402,7 @@ public abstract class AjAttribute {
 			return offset;
 		}
 
+		@Override
 		public void write(DataOutputStream s) throws IOException {
 			s.writeInt(lineNumber);
 			s.writeInt(offset);
@@ -402,6 +417,7 @@ public abstract class AjAttribute {
 			return new MethodDeclarationLineNumberAttribute(line, offset);
 		}
 
+		@Override
 		public String toString() {
 			return AttributeName + ": " + lineNumber + ":" + offset;
 		}
@@ -410,6 +426,7 @@ public abstract class AjAttribute {
 	public static class PointcutDeclarationAttribute extends AjAttribute {
 		public static final String AttributeName = "org.aspectj.weaver.PointcutDeclaration";
 
+		@Override
 		public String getNameString() {
 			return AttributeName;
 		}
@@ -420,6 +437,7 @@ public abstract class AjAttribute {
 			this.pointcutDef = pointcutDef;
 		}
 
+		@Override
 		public void write(DataOutputStream s) throws IOException {
 			pointcutDef.write(s);
 		}
@@ -432,6 +450,7 @@ public abstract class AjAttribute {
 	public static class DeclareAttribute extends AjAttribute {
 		public static final String AttributeName = "org.aspectj.weaver.Declare";
 
+		@Override
 		public String getNameString() {
 			return AttributeName;
 		}
@@ -442,6 +461,7 @@ public abstract class AjAttribute {
 			this.declare = declare;
 		}
 
+		@Override
 		public void write(DataOutputStream s) throws IOException {
 			declare.write(s);
 		}
@@ -454,6 +474,7 @@ public abstract class AjAttribute {
 	public static class AdviceAttribute extends AjAttribute {
 		public static final String AttributeName = "org.aspectj.weaver.Advice";
 
+		@Override
 		public String getNameString() {
 			return AttributeName;
 		}
@@ -500,8 +521,9 @@ public abstract class AjAttribute {
 			this.end = end;
 			this.sourceContext = sourceContext;
 
-			if (kind != AdviceKind.Around)
+			if (kind != AdviceKind.Around) {
 				throw new IllegalArgumentException("only for around");
+			}
 
 			this.proceedInInners = proceedInInners;
 			this.proceedCallSignatures = proceedCallSignatures;
@@ -520,6 +542,7 @@ public abstract class AjAttribute {
 			}
 		}
 
+		@Override
 		public void write(DataOutputStream s) throws IOException {
 			kind.write(s);
 			pointcut.write(s);
@@ -539,6 +562,7 @@ public abstract class AjAttribute {
 			return world.getWeavingSupport().createAdviceMunger(this, pointcut, signature);
 		}
 
+		@Override
 		public String toString() {
 			return "AdviceAttribute(" + kind + ", " + pointcut + ", " + extraParameterFlags + ", " + start + ")";
 		}
@@ -588,6 +612,7 @@ public abstract class AjAttribute {
 	public static class Aspect extends AjAttribute {
 		public static final String AttributeName = "org.aspectj.weaver.Aspect";
 
+		@Override
 		public String getNameString() {
 			return AttributeName;
 		}
@@ -609,6 +634,7 @@ public abstract class AjAttribute {
 			return perClause;
 		}
 
+		@Override
 		public void write(DataOutputStream s) throws IOException {
 			perClause.write(s);
 		}
@@ -621,6 +647,7 @@ public abstract class AjAttribute {
 	public static class PrivilegedAttribute extends AjAttribute {
 		public static final String AttributeName = "org.aspectj.weaver.Privileged";
 
+		@Override
 		public String getNameString() {
 			return AttributeName;
 		}
@@ -631,6 +658,7 @@ public abstract class AjAttribute {
 			this.accessedMembers = accessedMembers;
 		}
 
+		@Override
 		public void write(DataOutputStream s) throws IOException {
 			ResolvedMemberImpl.writeArray(accessedMembers, s);
 		}
@@ -647,6 +675,7 @@ public abstract class AjAttribute {
 	public static class EffectiveSignatureAttribute extends AjAttribute {
 		public static final String AttributeName = "org.aspectj.weaver.EffectiveSignature";
 
+		@Override
 		public String getNameString() {
 			return AttributeName;
 		}
@@ -661,6 +690,7 @@ public abstract class AjAttribute {
 			this.weaveBody = weaveBody;
 		}
 
+		@Override
 		public void write(DataOutputStream s) throws IOException {
 			effectiveSignature.write(s);
 			shadowKind.write(s);
@@ -676,6 +706,7 @@ public abstract class AjAttribute {
 			return effectiveSignature;
 		}
 
+		@Override
 		public String toString() {
 			return "EffectiveSignatureAttribute(" + effectiveSignature + ", " + shadowKind + ")";
 		}
