@@ -63,6 +63,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 	 * 
 	 * @see org.aspectj.weaver.patterns.AnnotationTypePattern#matches(org.aspectj.weaver.AnnotatedElement)
 	 */
+	@Override
 	public FuzzyBoolean matches(AnnotatedElement annotated) {
 		return matches(annotated, null);
 	}
@@ -195,6 +196,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		}
 	}
 
+	@Override
 	public FuzzyBoolean matches(AnnotatedElement annotated, ResolvedType[] parameterAnnotations) {
 		if (!resolved) {
 			throw new IllegalStateException("Can't match on an unresolved annotation type pattern");
@@ -231,6 +233,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 	 * 
 	 * @see org.aspectj.weaver.patterns.AnnotationTypePattern#resolve(org.aspectj.weaver.World)
 	 */
+	@Override
 	public void resolve(World world) {
 		if (!resolved) {
 			// attempt resolution - this helps with the Spring bug where they resolve() the pointcut in no scope (SPR-5307)
@@ -251,6 +254,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 	/**
 	 * This can modify in place, or return a new TypePattern if the type changes.
 	 */
+	@Override
 	public AnnotationTypePattern resolveBindings(IScope scope, Bindings bindings, boolean allowBinding) {
 		if (!scope.getWorld().isInJava5Mode()) {
 			scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.ANNOTATIONS_NEED_JAVA5), getSourceLocation()));
@@ -282,6 +286,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		}
 	}
 
+	@Override
 	public AnnotationTypePattern parameterizeWith(Map typeVariableMap, World w) {
 		WildAnnotationTypePattern ret = new WildAnnotationTypePattern(typePattern.parameterizeWith(typeVariableMap, w));
 		ret.copyLocationFrom(this);
@@ -296,6 +301,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 	 * 
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)
 	 */
+	@Override
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(AnnotationTypePattern.WILD);
 		s.writeByte(VERSION);
@@ -345,6 +351,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		return ret;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof WildAnnotationTypePattern)) {
 			return false;
@@ -355,15 +362,18 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 				&& (annotationValues == null ? other.annotationValues == null : annotationValues.equals(other.annotationValues));
 	}
 
+	@Override
 	public int hashCode() {
 		return (((17 + 37 * typePattern.hashCode()) * 37 + (isForParameterAnnotationMatch() ? 0 : 1)) * 37)
 				+ (annotationValues == null ? 0 : annotationValues.hashCode());
 	}
 
+	@Override
 	public String toString() {
 		return "@(" + typePattern.toString() + ")";
 	}
 
+	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
