@@ -16,10 +16,11 @@ import java.util.Set;
 
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
-import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.EnumElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
 import org.aspectj.weaver.AbstractAnnotationAJ;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
@@ -35,6 +36,11 @@ public class BcelAnnotation extends AbstractAnnotationAJ {
 
 	public BcelAnnotation(AnnotationGen theBcelAnnotation, World world) {
 		super(UnresolvedType.forSignature(theBcelAnnotation.getTypeSignature()).resolve(world));
+		this.bcelAnnotation = theBcelAnnotation;
+	}
+
+	public BcelAnnotation(AnnotationGen theBcelAnnotation, ResolvedType resolvedAnnotationType) {
+		super(resolvedAnnotationType);
 		this.bcelAnnotation = theBcelAnnotation;
 	}
 
