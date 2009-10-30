@@ -104,8 +104,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		if (unresolved instanceof ResolvedType) {
 			ResolvedType resolved = (ResolvedType) unresolved;
 			return resolved.isMissing();
-		} else
+		} else {
 			return (unresolved == MISSING);
+		}
 	}
 
 	public ResolvedType[] getAnnotationTypes() {
@@ -364,8 +365,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 						}
 						// might be worth checking the method behind the parameterized method (137496)
 						if (method.hasBackingGenericMember() && m.getName().equals(method.getName())) {
-							if (matches(method.getBackingGenericMember(), m))
+							if (matches(method.getBackingGenericMember(), m)) {
 								return method;
+							}
 						}
 					}
 				}
@@ -407,8 +409,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	private ResolvedMember lookupMember(Member m, ResolvedMember[] a) {
 		for (int i = 0; i < a.length; i++) {
 			ResolvedMember f = a[i];
-			if (matches(f, m))
+			if (matches(f, m)) {
 				return f;
+			}
 		}
 		return null;
 	}
@@ -424,8 +427,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		if ((aMember.getKind() == Member.METHOD) || (aMember.getKind() == Member.CONSTRUCTOR)) {
 			toSearch = getMethodsWithoutIterator(true, allowMissing, !ignoreGenerics).iterator();
 		} else {
-			if (aMember.getKind() != Member.FIELD)
+			if (aMember.getKind() != Member.FIELD) {
 				throw new IllegalStateException("I didn't know you would look for members of kind " + aMember.getKind());
+			}
 			toSearch = getFields();
 		}
 		while (toSearch.hasNext()) {
@@ -446,34 +450,40 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	public static boolean matches(Member m1, Member m2) {
-		if (m1 == null)
+		if (m1 == null) {
 			return m2 == null;
-		if (m2 == null)
+		}
+		if (m2 == null) {
 			return false;
+		}
 
 		// Check the names
 		boolean equalNames = m1.getName().equals(m2.getName());
-		if (!equalNames)
+		if (!equalNames) {
 			return false;
+		}
 
 		// Check the signatures
 		boolean equalSignatures = m1.getSignature().equals(m2.getSignature());
-		if (equalSignatures)
+		if (equalSignatures) {
 			return true;
+		}
 
 		// If they aren't the same, we need to allow for covariance ... where
 		// one sig might be ()LCar; and
 		// the subsig might be ()LFastCar; - where FastCar is a subclass of Car
 		boolean equalCovariantSignatures = m1.getParameterSignature().equals(m2.getParameterSignature());
-		if (equalCovariantSignatures)
+		if (equalCovariantSignatures) {
 			return true;
+		}
 
 		return false;
 	}
 
 	public static boolean conflictingSignature(Member m1, Member m2) {
-		if (m1 == null || m2 == null)
+		if (m1 == null || m2 == null) {
 			return false;
+		}
 
 		if (!m1.getName().equals(m2.getName())) {
 			return false;
@@ -490,17 +500,21 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 		UnresolvedType[] p1 = m1.getGenericParameterTypes();
 		UnresolvedType[] p2 = m2.getGenericParameterTypes();
-		if (p1 == null)
+		if (p1 == null) {
 			p1 = m1.getParameterTypes();
-		if (p2 == null)
+		}
+		if (p2 == null) {
 			p2 = m2.getParameterTypes();
+		}
 		int n = p1.length;
-		if (n != p2.length)
+		if (n != p2.length) {
 			return false;
+		}
 
 		for (int i = 0; i < n; i++) {
-			if (!p1[i].equals(p2[i]))
+			if (!p1[i].equals(p2[i])) {
 				return false;
+			}
 		}
 		return true;
 	}
@@ -608,8 +622,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				for (Iterator i = ty.getDeclares().iterator(); i.hasNext();) {
 					Declare dec = (Declare) i.next();
 					if (dec.isAdviceLike()) {
-						if (includeAdviceLike)
+						if (includeAdviceLike) {
 							ret.add(dec);
+						}
 					} else {
 						ret.add(dec);
 					}
@@ -859,8 +874,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	// ---- types
 	public static ResolvedType makeArray(ResolvedType type, int dim) {
-		if (dim == 0)
+		if (dim == 0) {
 			return type;
+		}
 		ResolvedType array = new ArrayReferenceType("[" + type.getSignature(), "[" + type.getErasureSignature(), type.getWorld(),
 				type);
 		return makeArray(array, dim - 1);
@@ -899,8 +915,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		@Override
 		public final boolean isAssignableFrom(ResolvedType other) {
 			if (!other.isPrimitiveType()) {
-				if (!world.isInJava5Mode())
+				if (!world.isInJava5Mode()) {
 					return false;
+				}
 				return validBoxing.contains(this.getSignature() + other.getSignature());
 			}
 			return assignTable[((Primitive) other).index][index];
@@ -913,12 +930,15 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 		@Override
 		public final boolean isCoerceableFrom(ResolvedType other) {
-			if (this == other)
+			if (this == other) {
 				return true;
-			if (!other.isPrimitiveType())
+			}
+			if (!other.isPrimitiveType()) {
 				return false;
-			if (index > 6 || ((Primitive) other).index > 6)
+			}
+			if (index > 6 || ((Primitive) other).index > 6) {
 				return false;
+			}
 			return true;
 		}
 
@@ -930,8 +950,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 		@Override
 		public final boolean needsNoConversionFrom(ResolvedType other) {
-			if (!other.isPrimitiveType())
+			if (!other.isPrimitiveType()) {
 				return false;
+			}
 			return noConvertTable[((Primitive) other).index][index];
 		}
 
@@ -1091,14 +1112,16 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	public ResolvedMember lookupMemberWithSupersAndITDs(Member member) {
 		ResolvedMember ret = lookupMemberNoSupers(member);
-		if (ret != null)
+		if (ret != null) {
 			return ret;
+		}
 
 		ResolvedType supert = getSuperclass();
 		while (ret == null && supert != null) {
 			ret = supert.lookupMemberNoSupers(member);
-			if (ret == null)
+			if (ret == null) {
 				supert = supert.getSuperclass();
+			}
 		}
 
 		return ret;
@@ -1147,8 +1170,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				ResolvedType[] superInterfaces = onType.getDeclaredInterfaces();
 				for (int i = 0; i < superInterfaces.length; i++) {
 					ret = superInterfaces[i].lookupMethodInITDs(member);
-					if (ret != null)
+					if (ret != null) {
 						return ret;
+					}
 				}
 			}
 		}
@@ -1205,11 +1229,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 		outer: for (Iterator<ConcreteTypeMunger> iter1 = collector.iterator(); iter1.hasNext();) {
 			ConcreteTypeMunger superMunger = iter1.next();
-			if (superMunger.getSignature() == null)
+			if (superMunger.getSignature() == null) {
 				continue;
+			}
 
-			if (!superMunger.getSignature().isAbstract())
+			if (!superMunger.getSignature().isAbstract()) {
 				continue;
+			}
 
 			for (ConcreteTypeMunger myMunger : getInterTypeMungers()) {
 				if (conflictingSignature(myMunger.getSignature(), superMunger.getSignature())) {
@@ -1239,8 +1265,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * is declared public. (Compiler limitation) (PR70794)
 	 */
 	public void checkInterTypeMungers() {
-		if (isAbstract())
+		if (isAbstract()) {
 			return;
+		}
 
 		boolean itdProblem = false;
 
@@ -1251,8 +1278,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 		}
 
-		if (itdProblem)
+		if (itdProblem) {
 			return; // If the rules above are broken, return right now
+		}
 
 		for (Iterator iter = getInterTypeMungersIncludingSupers().iterator(); iter.hasNext();) {
 			ConcreteTypeMunger munger = (ConcreteTypeMunger) iter.next();
@@ -1315,14 +1343,16 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * @return the declaring UnresolvedType object, or null.
 	 */
 	public ResolvedType getDeclaringType() {
-		if (isArray())
+		if (isArray()) {
 			return null;
+		}
 		String name = getName();
 		int lastDollar = name.lastIndexOf('$');
 		while (lastDollar > 0) { // allow for classes starting '$' (pr120474)
 			ResolvedType ret = world.resolve(UnresolvedType.forName(name.substring(0, lastDollar)), true);
-			if (!ResolvedType.isMissing(ret))
+			if (!ResolvedType.isMissing(ret)) {
 				return ret;
+			}
 			lastDollar = name.lastIndexOf('$', lastDollar - 1);
 		}
 		return null;
@@ -1346,10 +1376,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	private static boolean samePackage(ResolvedType targetType, ResolvedType fromType) {
 		String p1 = targetType.getPackageName();
 		String p2 = fromType.getPackageName();
-		if (p1 == null)
+		if (p1 == null) {
 			return p2 == null;
-		if (p2 == null)
+		}
+		if (p2 == null) {
 			return false;
+		}
 		return p1.equals(p2);
 	}
 
@@ -1359,10 +1391,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 */
 	private boolean genericTypeEquals(ResolvedType other) {
 		ResolvedType rt = other;
-		if (rt.isParameterizedType() || rt.isRawType())
+		if (rt.isParameterizedType() || rt.isRawType()) {
 			rt.getGenericType();
-		if (((isParameterizedType() || isRawType()) && getGenericType().equals(rt)) || (this.equals(other)))
+		}
+		if (((isParameterizedType() || isRawType()) && getGenericType().equals(rt)) || (this.equals(other))) {
 			return true;
+		}
 		return false;
 	}
 
@@ -1373,28 +1407,34 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * returns null if it can't be found.
 	 */
 	public ResolvedType discoverActualOccurrenceOfTypeInHierarchy(ResolvedType lookingFor) {
-		if (!lookingFor.isGenericType())
+		if (!lookingFor.isGenericType()) {
 			throw new BCException("assertion failed: method should only be called with generic type, but " + lookingFor + " is "
 					+ lookingFor.typeKind);
+		}
 
-		if (this.equals(ResolvedType.OBJECT))
+		if (this.equals(ResolvedType.OBJECT)) {
 			return null;
+		}
 
-		if (genericTypeEquals(lookingFor))
+		if (genericTypeEquals(lookingFor)) {
 			return this;
+		}
 
 		ResolvedType superT = getSuperclass();
-		if (superT.genericTypeEquals(lookingFor))
+		if (superT.genericTypeEquals(lookingFor)) {
 			return superT;
+		}
 
 		ResolvedType[] superIs = getDeclaredInterfaces();
 		for (int i = 0; i < superIs.length; i++) {
 			ResolvedType superI = superIs[i];
-			if (superI.genericTypeEquals(lookingFor))
+			if (superI.genericTypeEquals(lookingFor)) {
 				return superI;
+			}
 			ResolvedType checkTheSuperI = superI.discoverActualOccurrenceOfTypeInHierarchy(lookingFor);
-			if (checkTheSuperI != null)
+			if (checkTheSuperI != null) {
 				return checkTheSuperI;
+			}
 		}
 		return superT.discoverActualOccurrenceOfTypeInHierarchy(lookingFor);
 	}
@@ -1409,13 +1449,16 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		boolean debug = false;
 		ResolvedMember member = munger.getSignature();
 		if (munger.isTargetTypeParameterized()) {
-			if (debug)
+			if (debug) {
 				System.err.println("Processing attempted parameterization of " + munger + " targetting type " + this);
-			if (debug)
+			}
+			if (debug) {
 				System.err.println("  This type is " + this + "  (" + typeKind + ")");
+			}
 			// need to tailor this munger instance for the particular target...
-			if (debug)
+			if (debug) {
 				System.err.println("  Signature that needs parameterizing: " + member);
+			}
 			// Retrieve the generic type
 			ResolvedType onTypeResolved = world.resolve(member.getDeclaringType());
 			ResolvedType onType = onTypeResolved.getGenericType();
@@ -1427,33 +1470,38 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				return munger;
 			}
 			member.resolve(world); // Ensure all parts of the member are resolved
-			if (debug)
+			if (debug) {
 				System.err.println("  Actual target ontype: " + onType + "  (" + onType.typeKind + ")");
+			}
 			// quickly find the targettype in the type hierarchy for this type
 			// (it will be either RAW or PARAMETERIZED)
 			ResolvedType actualTarget = discoverActualOccurrenceOfTypeInHierarchy(onType);
-			if (actualTarget == null)
+			if (actualTarget == null) {
 				throw new BCException("assertion failed: asked " + this + " for occurrence of " + onType + " in its hierarchy??");
+			}
 
 			// only bind the tvars if its a parameterized type or the raw type
 			// (in which case they collapse to bounds) - don't do it
 			// for generic types ;)
 			if (!actualTarget.isGenericType()) {
-				if (debug)
+				if (debug) {
 					System.err.println("Occurrence in " + this + " is actually " + actualTarget + "  (" + actualTarget.typeKind
 							+ ")");
-				// parameterize the signature
-				// ResolvedMember newOne =
-				// member.parameterizedWith(actualTarget.getTypeParameters(),
-				// onType,actualTarget.isParameterizedType());
+					// parameterize the signature
+					// ResolvedMember newOne =
+					// member.parameterizedWith(actualTarget.getTypeParameters(),
+					// onType,actualTarget.isParameterizedType());
+				}
 			}
 			// if (!actualTarget.isRawType())
 			munger = munger.parameterizedFor(actualTarget);
-			if (debug)
+			if (debug) {
 				System.err.println("New sig: " + munger.getSignature());
+			}
 
-			if (debug)
+			if (debug) {
 				System.err.println("=====================================");
+			}
 		}
 		return munger;
 	}
@@ -1674,19 +1722,24 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	// within the target type.
 	private boolean isDuplicateMemberWithinTargetType(ResolvedMember existingMember, ResolvedType targetType,
 			ResolvedMember itdMember) {
-		if ((existingMember.isAbstract() || itdMember.isAbstract()))
+		if ((existingMember.isAbstract() || itdMember.isAbstract())) {
 			return false;
+		}
 		UnresolvedType declaringType = existingMember.getDeclaringType();
-		if (!targetType.equals(declaringType))
+		if (!targetType.equals(declaringType)) {
 			return false;
+		}
 		// now have to test that itdMember is visible from targetType
-		if (itdMember.isPrivate())
+		if (itdMember.isPrivate()) {
 			return false;
-		if (itdMember.isPublic())
+		}
+		if (itdMember.isPublic()) {
 			return true;
+		}
 		// must be in same package to be visible then...
-		if (!targetType.getPackageName().equals(itdMember.getDeclaringType().getPackageName()))
+		if (!targetType.getPackageName().equals(itdMember.getDeclaringType().getPackageName())) {
 			return false;
+		}
 
 		// trying to put two members with the same signature into the exact same
 		// type..., and both visible in that type.
@@ -1754,14 +1807,17 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 		outer: for (int i = 0, leni = childExceptions.length; i < leni; i++) {
 			// System.err.println("checking: " + childExceptions[i]);
-			if (runtimeException.isAssignableFrom(childExceptions[i]))
+			if (runtimeException.isAssignableFrom(childExceptions[i])) {
 				continue;
-			if (error.isAssignableFrom(childExceptions[i]))
+			}
+			if (error.isAssignableFrom(childExceptions[i])) {
 				continue;
+			}
 
 			for (int j = 0, lenj = parentExceptions.length; j < lenj; j++) {
-				if (parentExceptions[j].isAssignableFrom(childExceptions[i]))
+				if (parentExceptions[j].isAssignableFrom(childExceptions[i])) {
 					continue outer;
+				}
 			}
 
 			// this message is now better handled my MethodVerifier in JDT core.
@@ -1797,18 +1853,22 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		if (m2.isProtected() && m2.getName().charAt(0) == 'c') {
 			UnresolvedType declaring = m2.getDeclaringType();
 			if (declaring != null) {
-				if (declaring.getName().equals("java.lang.Object") && m2.getName().equals("clone"))
+				if (declaring.getName().equals("java.lang.Object") && m2.getName().equals("clone")) {
 					return +1;
+				}
 			}
 		}
 
-		if (Modifier.isAbstract(m1.getModifiers()))
+		if (Modifier.isAbstract(m1.getModifiers())) {
 			return -1;
-		if (Modifier.isAbstract(m2.getModifiers()))
+		}
+		if (Modifier.isAbstract(m2.getModifiers())) {
 			return +1;
+		}
 
-		if (m1.getDeclaringType().equals(m2.getDeclaringType()))
+		if (m1.getDeclaringType().equals(m2.getDeclaringType())) {
 			return 0;
+		}
 
 		ResolvedType t1 = m1.getDeclaringType().resolve(world);
 		ResolvedType t2 = m2.getDeclaringType().resolve(world);
@@ -1822,14 +1882,18 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	public static boolean isMoreVisible(int m1, int m2) {
-		if (Modifier.isPrivate(m1))
+		if (Modifier.isPrivate(m1)) {
 			return false;
-		if (isPackage(m1))
+		}
+		if (isPackage(m1)) {
 			return Modifier.isPrivate(m2);
-		if (Modifier.isProtected(m1))
+		}
+		if (Modifier.isProtected(m1)) {
 			return /* private package */(Modifier.isPrivate(m2) || isPackage(m2));
-		if (Modifier.isPublic(m1))
+		}
+		if (Modifier.isPublic(m1)) {
 			return /* private package protected */!Modifier.isPublic(m2);
+		}
 		throw new RuntimeException("bad modifier: " + m1);
 	}
 
@@ -1885,19 +1949,23 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	public void clearInterTypeMungers() {
-		if (isRawType())
+		if (isRawType()) {
 			getGenericType().clearInterTypeMungers();
+		}
 		interTypeMungers = new ArrayList();
 	}
 
 	public boolean isTopmostImplementor(ResolvedType interfaceType) {
-		if (isInterface())
+		if (isInterface()) {
 			return false;
-		if (!interfaceType.isAssignableFrom(this, true))
+		}
+		if (!interfaceType.isAssignableFrom(this, true)) {
 			return false;
+		}
 		// check that I'm truly the topmost implementor
-		if (this.getSuperclass().isMissing())
+		if (this.getSuperclass().isMissing()) {
 			return true; // we don't know anything about supertype, and it can't
+		}
 		// be exposed to weaver
 		if (interfaceType.isAssignableFrom(this.getSuperclass(), true)) {
 			return false;
@@ -1906,21 +1974,25 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	public ResolvedType getTopmostImplementor(ResolvedType interfaceType) {
-		if (isInterface())
+		if (isInterface()) {
 			return null;
-		if (!interfaceType.isAssignableFrom(this))
+		}
+		if (!interfaceType.isAssignableFrom(this)) {
 			return null;
+		}
 		// Check if my super class is an implementor?
 		ResolvedType higherType = this.getSuperclass().getTopmostImplementor(interfaceType);
-		if (higherType != null)
+		if (higherType != null) {
 			return higherType;
+		}
 		return this;
 	}
 
 	public List getExposedPointcuts() {
 		List ret = new ArrayList();
-		if (getSuperclass() != null)
+		if (getSuperclass() != null) {
 			ret.addAll(getSuperclass().getExposedPointcuts());
+		}
 
 		for (Iterator i = Arrays.asList(getDeclaredInterfaces()).iterator(); i.hasNext();) {
 			ResolvedType t = (ResolvedType) i.next();
@@ -1950,8 +2022,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			// System.err.println("adding: " + toAdd);
 			for (Iterator j = acc.iterator(); j.hasNext();) {
 				ResolvedPointcutDefinition existing = (ResolvedPointcutDefinition) j.next();
-				if (existing == toAdd)
+				if (existing == toAdd) {
 					continue;
+				}
 				if (!isVisible(existing.getModifiers(), existing.getDeclaringType().resolve(getWorld()), this)) {
 					// if they intended to override it but it is not visible,
 					// give them a nicer message
@@ -2005,8 +2078,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	public ResolvedType parameterizedWith(UnresolvedType[] typeParameters) {
-		if (!(isGenericType() || isParameterizedType()))
+		if (!(isGenericType() || isParameterizedType())) {
 			return this;
+		}
 		return TypeFactory.createParameterizedType(this.getGenericType(), typeParameters, getWorld());
 	}
 
@@ -2016,8 +2090,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 */
 	@Override
 	public UnresolvedType parameterize(Map typeBindings) {
-		if (!isParameterizedType())
+		if (!isParameterizedType()) {
 			return this;// throw new IllegalStateException(
+		}
 		// "Can't parameterize a type that is not a parameterized type"
 		// );
 		boolean workToDo = false;
@@ -2035,8 +2110,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				if (newTypeParams[i].isTypeVariableReference()) {
 					TypeVariableReferenceType tvrt = (TypeVariableReferenceType) newTypeParams[i];
 					UnresolvedType binding = (UnresolvedType) typeBindings.get(tvrt.getTypeVariable().getName());
-					if (binding != null)
+					if (binding != null) {
 						newTypeParams[i] = binding;
+					}
 				} else if (newTypeParams[i] instanceof BoundedReferenceType) {
 					BoundedReferenceType brType = (BoundedReferenceType) newTypeParams[i];
 					newTypeParams[i] = brType.parameterize(typeBindings);
@@ -2102,10 +2178,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * @return true if it is an exception and it is a checked one, false otherwise.
 	 */
 	public boolean isCheckedException() {
-		if (!isException())
+		if (!isException()) {
 			return false;
-		if (world.getCoreType(UnresolvedType.RUNTIME_EXCEPTION).isAssignableFrom(this))
+		}
+		if (world.getCoreType(UnresolvedType.RUNTIME_EXCEPTION).isAssignableFrom(this)) {
 			return false;
+		}
 		return true;
 	}
 
@@ -2129,20 +2207,23 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		//    	 
 
 		// version from ResolvedTypeX
-		if (this.equals(OBJECT))
+		if (this.equals(OBJECT)) {
 			return true;
+		}
 		if (world.isInJava5Mode()) {
 			if (this.isPrimitiveType() ^ other.isPrimitiveType()) { // If one is
 				// primitive
 				// and the
 				// other
 				// isnt
-				if (validBoxing.contains(this.getSignature() + other.getSignature()))
+				if (validBoxing.contains(this.getSignature() + other.getSignature())) {
 					return true;
+				}
 			}
 		}
-		if (this.isPrimitiveType() || other.isPrimitiveType())
+		if (this.isPrimitiveType() || other.isPrimitiveType()) {
 			return this.isAssignableFrom(other);
+		}
 		return this.isCoerceableFrom(other);
 	}
 
@@ -2272,10 +2353,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	protected boolean ajMembersNeedParameterization() {
-		if (isParameterizedType())
+		if (isParameterizedType()) {
 			return true;
-		if (getSuperclass() != null)
+		}
+		if (getSuperclass() != null) {
 			return getSuperclass().ajMembersNeedParameterization();
+		}
 		return false;
 	}
 
@@ -2284,8 +2367,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		if (myMap.isEmpty()) {
 			// might extend a parameterized aspect that we also need to
 			// consider...
-			if (getSuperclass() != null)
+			if (getSuperclass() != null) {
 				return getSuperclass().getAjMemberParameterizationMap();
+			}
 		}
 		return myMap;
 	}
