@@ -143,8 +143,6 @@ public abstract class TypePattern extends PatternNode {
 		}
 
 		if (kind == STATIC) {
-			// typeMatch = FuzzyBoolean.fromBoolean(matchesStatically(type));
-			// return typeMatch.and(annotationPattern.matches(type));
 			return FuzzyBoolean.fromBoolean(matchesStatically(type));
 		} else if (kind == DYNAMIC) {
 			// System.err.println("matching: " + this + " with " + type);
