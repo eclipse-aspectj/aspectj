@@ -41,6 +41,7 @@ public class HasMemberTypePattern extends TypePattern {
 		this.signaturePattern = aSignaturePattern;
 	}
 
+	@Override
 	protected boolean matchesExactly(ResolvedType type) {
 		if (signaturePattern.getKind() == Member.FIELD) {
 			return hasField(type);
@@ -103,20 +104,24 @@ public class HasMemberTypePattern extends TypePattern {
 		return false;
 	}
 
+	@Override
 	protected boolean matchesExactly(ResolvedType type, ResolvedType annotatedType) {
 		return matchesExactly(type);
 	}
 
+	@Override
 	public FuzzyBoolean matchesInstanceof(ResolvedType type) {
 		throw new UnsupportedOperationException("hasmethod/field do not support instanceof matching");
 	}
 
+	@Override
 	public TypePattern parameterizeWith(Map typeVariableMap, World w) {
 		HasMemberTypePattern ret = new HasMemberTypePattern(signaturePattern.parameterizeWith(typeVariableMap, w));
 		ret.copyLocationFrom(this);
 		return ret;
 	}
 
+	@Override
 	public TypePattern resolveBindings(IScope scope, Bindings bindings, boolean allowBinding, boolean requireExactType) {
 		// check that hasmember type patterns are allowed!
 		if (!scope.getWorld().isHasMemberSupportEnabled()) {
@@ -127,6 +132,7 @@ public class HasMemberTypePattern extends TypePattern {
 		return this;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof HasMemberTypePattern)) {
 			return false;
@@ -137,10 +143,12 @@ public class HasMemberTypePattern extends TypePattern {
 		return signaturePattern.equals(((HasMemberTypePattern) obj).signaturePattern);
 	}
 
+	@Override
 	public int hashCode() {
 		return signaturePattern.hashCode();
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer buff = new StringBuffer();
 		if (signaturePattern.getKind() == Member.FIELD) {
@@ -153,6 +161,7 @@ public class HasMemberTypePattern extends TypePattern {
 		return buff.toString();
 	}
 
+	@Override
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(TypePattern.HAS_MEMBER);
 		signaturePattern.write(s);
@@ -166,6 +175,7 @@ public class HasMemberTypePattern extends TypePattern {
 		return ret;
 	}
 
+	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
