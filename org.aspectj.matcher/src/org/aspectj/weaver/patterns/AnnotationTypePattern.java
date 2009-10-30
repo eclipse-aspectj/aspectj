@@ -30,7 +30,7 @@ public abstract class AnnotationTypePattern extends PatternNode {
 	private boolean isForParameterAnnotationMatch;
 
 	/**
-	 * TODO: write, read, equals & hashcode both in annotation hierarachy and in altered TypePattern hierarchy
+	 * TODO: write, read, equals & hashCode both in annotation hierarchy and in altered TypePattern hierarchy
 	 */
 	protected AnnotationTypePattern() {
 		super();
