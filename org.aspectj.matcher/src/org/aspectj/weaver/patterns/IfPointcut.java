@@ -73,14 +73,17 @@ public class IfPointcut extends Pointcut {
 		this.extraParameterFlags = -1;// allows to keep track of the @Aj style
 	}
 
+	@Override
 	public int couldMatchKinds() {
 		return Shadow.ALL_SHADOW_KINDS_BITS;
 	}
 
+	@Override
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
 
+	@Override
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		if ((extraParameterFlags & Advice.ConstantReference) != 0) {
 			if ((extraParameterFlags & Advice.ConstantValue) != 0) {
@@ -106,6 +109,7 @@ public class IfPointcut extends Pointcut {
 		return residueSource;
 	}
 
+	@Override
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.IF);
 		s.writeBoolean(testMethod != null); // do we have a test method?
@@ -127,10 +131,12 @@ public class IfPointcut extends Pointcut {
 		return ret;
 	}
 
+	@Override
 	public void resolveBindings(IScope scope, Bindings bindings) {
 		// ??? all we need is good error messages in here in cflow contexts
 	}
 
+	@Override
 	public boolean equals(Object other) {
 		if (!(other instanceof IfPointcut)) {
 			return false;
@@ -142,12 +148,14 @@ public class IfPointcut extends Pointcut {
 		return o.testMethod.equals(this.testMethod);
 	}
 
+	@Override
 	public int hashCode() {
 		int result = 17;
 		result = 37 * result + testMethod.hashCode();
 		return result;
 	}
 
+	@Override
 	public String toString() {
 		if (extraParameterFlags < 0) {
 			// @AJ style
@@ -169,6 +177,7 @@ public class IfPointcut extends Pointcut {
 	/**
 	 * At each shadow that matched, the residue can be different.
 	 */
+	@Override
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		if (findingResidue) {
 			return Literal.TRUE;
@@ -308,12 +317,14 @@ public class IfPointcut extends Pointcut {
 	// return this.concretize1(inAspect, bindings);
 	// }
 
+	@Override
 	protected boolean shouldCopyLocationForConcretize() {
 		return false;
 	}
 
 	private IfPointcut partiallyConcretized = null;
 
+	@Override
 	public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
 		// System.err.println("concretize: " + this + " already: " + partiallyConcretized);
 
@@ -425,6 +436,7 @@ public class IfPointcut extends Pointcut {
 	}
 
 	// we can't touch "if" methods
+	@Override
 	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
 		return this;
 	}
@@ -437,6 +449,7 @@ public class IfPointcut extends Pointcut {
 		return ret;
 	}
 
+	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
@@ -448,32 +461,40 @@ public class IfPointcut extends Pointcut {
 			this.pointcutKind = Pointcut.IF_FALSE;
 		}
 
+		@Override
 		public int couldMatchKinds() {
 			return Shadow.NO_SHADOW_KINDS_BITS;
 		}
 
+		@Override
 		public boolean alwaysFalse() {
 			return true;
 		}
 
+		@Override
 		protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 			return Literal.FALSE; // can only get here if an earlier error occurred
 		}
 
+		@Override
 		public FuzzyBoolean fastMatch(FastMatchInfo type) {
 			return FuzzyBoolean.NO;
 		}
 
+		@Override
 		protected FuzzyBoolean matchInternal(Shadow shadow) {
 			return FuzzyBoolean.NO;
 		}
 
+		@Override
 		public void resolveBindings(IScope scope, Bindings bindings) {
 		}
 
+		@Override
 		public void postRead(ResolvedType enclosingType) {
 		}
 
+		@Override
 		public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
 			if (isDeclare(bindings.getEnclosingAdvice())) {
 				// Enforce rule about which designators are supported in declare
@@ -484,15 +505,18 @@ public class IfPointcut extends Pointcut {
 			return makeIfFalsePointcut(state);
 		}
 
+		@Override
 		public void write(DataOutputStream s) throws IOException {
 			s.writeByte(Pointcut.IF_FALSE);
 		}
 
+		@Override
 		public int hashCode() {
 			int result = 17;
 			return result;
 		}
 
+		@Override
 		public String toString() {
 			return "if(false)";
 		}
@@ -511,28 +535,35 @@ public class IfPointcut extends Pointcut {
 			this.pointcutKind = Pointcut.IF_TRUE;
 		}
 
+		@Override
 		public boolean alwaysTrue() {
 			return true;
 		}
 
+		@Override
 		protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 			return Literal.TRUE; // can only get here if an earlier error occurred
 		}
 
+		@Override
 		public FuzzyBoolean fastMatch(FastMatchInfo type) {
 			return FuzzyBoolean.YES;
 		}
 
+		@Override
 		protected FuzzyBoolean matchInternal(Shadow shadow) {
 			return FuzzyBoolean.YES;
 		}
 
+		@Override
 		public void resolveBindings(IScope scope, Bindings bindings) {
 		}
 
+		@Override
 		public void postRead(ResolvedType enclosingType) {
 		}
 
+		@Override
 		public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
 			if (isDeclare(bindings.getEnclosingAdvice())) {
 				// Enforce rule about which designators are supported in declare
@@ -543,15 +574,18 @@ public class IfPointcut extends Pointcut {
 			return makeIfTruePointcut(state);
 		}
 
+		@Override
 		public void write(DataOutputStream s) throws IOException {
 			s.writeByte(IF_TRUE);
 		}
 
+		@Override
 		public int hashCode() {
 			int result = 37;
 			return result;
 		}
 
+		@Override
 		public String toString() {
 			return "if(true)";
 		}
