@@ -66,6 +66,7 @@ public class ExactTypePattern extends TypePattern {
 
 	}
 
+	@Override
 	protected boolean matchesSubtypes(ResolvedType type) {
 		boolean match = super.matchesSubtypes(type);
 		if (match) {
@@ -86,6 +87,7 @@ public class ExactTypePattern extends TypePattern {
 		this.type = type;
 	}
 
+	@Override
 	public boolean isArray() {
 		return type.isArray();
 	}
@@ -95,6 +97,7 @@ public class ExactTypePattern extends TypePattern {
 	 * 
 	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
 	 */
+	@Override
 	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
 		if (super.couldEverMatchSameTypesAs(other)) {
 			return true;
@@ -114,6 +117,7 @@ public class ExactTypePattern extends TypePattern {
 		return true;
 	}
 
+	@Override
 	protected boolean matchesExactly(ResolvedType matchType) {
 		boolean typeMatch = this.type.equals(matchType);
 		if (!typeMatch && (matchType.isParameterizedType() || matchType.isGenericType())) {
@@ -138,6 +142,7 @@ public class ExactTypePattern extends TypePattern {
 		// return false;
 	}
 
+	@Override
 	protected boolean matchesExactly(ResolvedType matchType, ResolvedType annotatedType) {
 		boolean typeMatch = this.type.equals(matchType);
 		if (!typeMatch && (matchType.isParameterizedType() || matchType.isGenericType())) {
@@ -161,6 +166,7 @@ public class ExactTypePattern extends TypePattern {
 	}
 
 	// true if (matchType instanceof this.type)
+	@Override
 	public FuzzyBoolean matchesInstanceof(ResolvedType matchType) {
 		// in our world, Object is assignable from anything
 		annotationPattern.resolve(matchType.getWorld());
@@ -180,6 +186,7 @@ public class ExactTypePattern extends TypePattern {
 		}
 	}
 
+	@Override
 	public boolean equals(Object other) {
 		if (!(other instanceof ExactTypePattern)) {
 			return false;
@@ -200,6 +207,7 @@ public class ExactTypePattern extends TypePattern {
 		return (o.type.equals(this.type) && o.annotationPattern.equals(this.annotationPattern));
 	}
 
+	@Override
 	public int hashCode() {
 		int result = 17;
 		result = 37 * result + type.hashCode();
@@ -212,6 +220,7 @@ public class ExactTypePattern extends TypePattern {
 
 	private static final byte EXACT_VERSION = 1; // rev if changed
 
+	@Override
 	public void write(DataOutputStream out) throws IOException {
 		out.writeByte(TypePattern.EXACT);
 		out.writeByte(EXACT_VERSION);
@@ -249,6 +258,7 @@ public class ExactTypePattern extends TypePattern {
 		return ret;
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer buff = new StringBuffer();
 		if (annotationPattern != AnnotationTypePattern.ANY) {
@@ -273,6 +283,7 @@ public class ExactTypePattern extends TypePattern {
 		return buff.toString();
 	}
 
+	@Override
 	public TypePattern resolveBindings(IScope scope, Bindings bindings, boolean allowBinding, boolean requireExactType) {
 		throw new BCException("trying to re-resolve");
 
@@ -281,6 +292,7 @@ public class ExactTypePattern extends TypePattern {
 	/**
 	 * return a version of this type pattern with all type variables references replaced by the corresponding entry in the map.
 	 */
+	@Override
 	public TypePattern parameterizeWith(Map typeVariableMap, World w) {
 		UnresolvedType newType = type;
 		if (type.isTypeVariableReference()) {
@@ -298,6 +310,7 @@ public class ExactTypePattern extends TypePattern {
 		return ret;
 	}
 
+	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
