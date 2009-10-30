@@ -136,10 +136,12 @@ public class NamePattern extends PatternNode {
 		return matches(other.toCharArray());
 	}
 
+	@Override
 	public String toString() {
 		return new String(pattern);
 	}
 
+	@Override
 	public boolean equals(Object other) {
 		if (other instanceof NamePattern) {
 			NamePattern otherPat = (NamePattern) other;
@@ -159,10 +161,12 @@ public class NamePattern extends PatternNode {
 		return false;
 	}
 
+	@Override
 	public int hashCode() {
 		return hashcode;
 	}
 
+	@Override
 	public void write(DataOutputStream out) throws IOException {
 		out.writeUTF(new String(pattern));
 	}
@@ -196,6 +200,7 @@ public class NamePattern extends PatternNode {
 		return starCount == 1 && pattern.length == 1;
 	}
 
+	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
