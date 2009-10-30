@@ -47,6 +47,7 @@ public abstract class TypePattern extends PatternNode {
 			this.name = name;
 		}
 
+		@Override
 		public String toString() {
 			return name;
 		}
@@ -347,6 +348,7 @@ class EllipsisTypePattern extends TypePattern {
 	 * 
 	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
 	 */
+	@Override
 	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
 		return true;
 	}
@@ -354,10 +356,12 @@ class EllipsisTypePattern extends TypePattern {
 	/**
 	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(IType)
 	 */
+	@Override
 	protected boolean matchesExactly(ResolvedType type) {
 		return false;
 	}
 
+	@Override
 	protected boolean matchesExactly(ResolvedType type, ResolvedType annotatedType) {
 		return false;
 	}
@@ -365,6 +369,7 @@ class EllipsisTypePattern extends TypePattern {
 	/**
 	 * @see org.aspectj.weaver.patterns.TypePattern#matchesInstanceof(IType)
 	 */
+	@Override
 	public FuzzyBoolean matchesInstanceof(ResolvedType type) {
 		return FuzzyBoolean.NO;
 	}
@@ -372,10 +377,12 @@ class EllipsisTypePattern extends TypePattern {
 	/**
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(DataOutputStream)
 	 */
+	@Override
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(ELLIPSIS_KEY);
 	}
 
+	@Override
 	public String toString() {
 		return "..";
 	}
@@ -385,6 +392,7 @@ class EllipsisTypePattern extends TypePattern {
 	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@Override
 	public boolean equals(Object obj) {
 		return (obj instanceof EllipsisTypePattern);
 	}
@@ -394,14 +402,17 @@ class EllipsisTypePattern extends TypePattern {
 	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
+	@Override
 	public int hashCode() {
 		return 17 * 37;
 	}
 
+	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
 
+	@Override
 	public TypePattern parameterizeWith(Map typeVariableMap, World w) {
 		return this;
 	}
@@ -424,6 +435,7 @@ class AnyTypePattern extends TypePattern {
 	 * 
 	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
 	 */
+	@Override
 	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
 		return true;
 	}
@@ -431,10 +443,12 @@ class AnyTypePattern extends TypePattern {
 	/**
 	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(IType)
 	 */
+	@Override
 	protected boolean matchesExactly(ResolvedType type) {
 		return true;
 	}
 
+	@Override
 	protected boolean matchesExactly(ResolvedType type, ResolvedType annotatedType) {
 		return true;
 	}
@@ -442,6 +456,7 @@ class AnyTypePattern extends TypePattern {
 	/**
 	 * @see org.aspectj.weaver.patterns.TypePattern#matchesInstanceof(IType)
 	 */
+	@Override
 	public FuzzyBoolean matchesInstanceof(ResolvedType type) {
 		return FuzzyBoolean.YES;
 	}
@@ -449,6 +464,7 @@ class AnyTypePattern extends TypePattern {
 	/**
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(DataOutputStream)
 	 */
+	@Override
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(ANY_KEY);
 	}
@@ -462,30 +478,37 @@ class AnyTypePattern extends TypePattern {
 	/**
 	 * @see org.aspectj.weaver.patterns.TypePattern#matchesSubtypes(IType)
 	 */
+	@Override
 	protected boolean matchesSubtypes(ResolvedType type) {
 		return true;
 	}
 
+	@Override
 	public boolean isStar() {
 		return true;
 	}
 
+	@Override
 	public String toString() {
 		return "*";
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		return (obj instanceof AnyTypePattern);
 	}
 
+	@Override
 	public int hashCode() {
 		return 37;
 	}
 
+	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
 
+	@Override
 	public TypePattern parameterizeWith(Map arg0, World w) {
 		return this;
 	}
@@ -501,14 +524,17 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 		annotationPattern = atp;
 	}
 
+	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
 
+	@Override
 	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
 		return true;
 	}
 
+	@Override
 	protected boolean matchesExactly(ResolvedType type) {
 		annotationPattern.resolve(type.getWorld());
 		boolean b = false;
@@ -530,11 +556,13 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 		return super.resolveBindings(scope, bindings, allowBinding, requireExactType);
 	}
 
+	@Override
 	protected boolean matchesExactly(ResolvedType type, ResolvedType annotatedType) {
 		annotationPattern.resolve(type.getWorld());
 		return annotationPattern.matches(annotatedType).alwaysTrue();
 	}
 
+	@Override
 	public FuzzyBoolean matchesInstanceof(ResolvedType type) {
 		if (Modifier.isFinal(type.getModifiers())) {
 			return FuzzyBoolean.fromBoolean(matchesExactly(type));
@@ -542,6 +570,7 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 		return FuzzyBoolean.MAYBE;
 	}
 
+	@Override
 	public TypePattern parameterizeWith(Map typeVariableMap, World w) {
 		AnyWithAnnotationTypePattern ret = new AnyWithAnnotationTypePattern(this.annotationPattern.parameterizeWith(
 				typeVariableMap, w));
@@ -549,6 +578,7 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 		return ret;
 	}
 
+	@Override
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(TypePattern.ANY_WITH_ANNO);
 		annotationPattern.write(s);
@@ -566,18 +596,22 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 	// return FuzzyBoolean.YES;
 	// }
 
+	@Override
 	protected boolean matchesSubtypes(ResolvedType type) {
 		return true;
 	}
 
+	@Override
 	public boolean isStar() {
 		return false;
 	}
 
+	@Override
 	public String toString() {
 		return "(" + annotationPattern + " *)";
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof AnyWithAnnotationTypePattern)) {
 			return false;
@@ -586,6 +620,7 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 		return (annotationPattern.equals(awatp.annotationPattern));
 	}
 
+	@Override
 	public int hashCode() {
 		return annotationPattern.hashCode();
 	}
@@ -602,6 +637,7 @@ class NoTypePattern extends TypePattern {
 	 * 
 	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
 	 */
+	@Override
 	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
 		return false;
 	}
@@ -609,10 +645,12 @@ class NoTypePattern extends TypePattern {
 	/**
 	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(IType)
 	 */
+	@Override
 	protected boolean matchesExactly(ResolvedType type) {
 		return false;
 	}
 
+	@Override
 	protected boolean matchesExactly(ResolvedType type, ResolvedType annotatedType) {
 		return false;
 	}
@@ -620,6 +658,7 @@ class NoTypePattern extends TypePattern {
 	/**
 	 * @see org.aspectj.weaver.patterns.TypePattern#matchesInstanceof(IType)
 	 */
+	@Override
 	public FuzzyBoolean matchesInstanceof(ResolvedType type) {
 		return FuzzyBoolean.NO;
 	}
@@ -627,6 +666,7 @@ class NoTypePattern extends TypePattern {
 	/**
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(DataOutputStream)
 	 */
+	@Override
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(NO_KEY);
 	}
@@ -640,14 +680,17 @@ class NoTypePattern extends TypePattern {
 	/**
 	 * @see org.aspectj.weaver.patterns.TypePattern#matchesSubtypes(IType)
 	 */
+	@Override
 	protected boolean matchesSubtypes(ResolvedType type) {
 		return false;
 	}
 
+	@Override
 	public boolean isStar() {
 		return false;
 	}
 
+	@Override
 	public String toString() {
 		return "<nothing>";
 	}// FIXME AV - bad! toString() cannot be parsed back (not idempotent)
@@ -657,6 +700,7 @@ class NoTypePattern extends TypePattern {
 	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@Override
 	public boolean equals(Object obj) {
 		return (obj instanceof NoTypePattern);
 	}
@@ -666,14 +710,17 @@ class NoTypePattern extends TypePattern {
 	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
+	@Override
 	public int hashCode() {
 		return 17 * 37 * 37;
 	}
 
+	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
 
+	@Override
 	public TypePattern parameterizeWith(Map arg0, World w) {
 		return this;
 	}
