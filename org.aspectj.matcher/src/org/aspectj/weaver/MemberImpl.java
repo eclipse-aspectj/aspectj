@@ -510,7 +510,7 @@ public class MemberImpl implements Member {
 	/**
 	 * All the signatures that a join point with this member as its signature has.
 	 */
-	public Iterator getJoinPointSignatures(World inAWorld) {
+	public JoinPointSignatureIterator getJoinPointSignatures(World inAWorld) {
 		if (joinPointSignatures == null) {
 			joinPointSignatures = new JoinPointSignatureIterator(this, inAWorld);
 		}

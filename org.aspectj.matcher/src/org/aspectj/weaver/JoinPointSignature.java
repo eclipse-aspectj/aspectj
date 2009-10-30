@@ -14,7 +14,6 @@ package org.aspectj.weaver;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -305,7 +304,7 @@ public class JoinPointSignature implements ResolvedMember {
 		throw new UnsupportedOperationException("Adrian doesn't think you should be calling this...");
 	}
 
-	public Iterator getJoinPointSignatures(World world) {
+	public JoinPointSignatureIterator getJoinPointSignatures(World world) {
 		return realMember.getJoinPointSignatures(world);
 	}
 
@@ -358,13 +357,16 @@ public class JoinPointSignature implements ResolvedMember {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof JoinPointSignature))
+		if (!(obj instanceof JoinPointSignature)) {
 			return false;
+		}
 		JoinPointSignature other = (JoinPointSignature) obj;
-		if (!realMember.equals(other.realMember))
+		if (!realMember.equals(other.realMember)) {
 			return false;
-		if (!substituteDeclaringType.equals(other.substituteDeclaringType))
+		}
+		if (!substituteDeclaringType.equals(other.substituteDeclaringType)) {
 			return false;
+		}
 		return true;
 	}
 

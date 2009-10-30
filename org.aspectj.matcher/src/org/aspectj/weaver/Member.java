@@ -14,7 +14,6 @@
 package org.aspectj.weaver;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * Abstract representation of a member within a type.
@@ -61,7 +60,7 @@ public interface Member extends Comparable {
 	 */
 	public String getSignature();
 
-	public Iterator getJoinPointSignatures(World world);
+	public JoinPointSignatureIterator getJoinPointSignatures(World world);
 
 	public int getArity();
 
