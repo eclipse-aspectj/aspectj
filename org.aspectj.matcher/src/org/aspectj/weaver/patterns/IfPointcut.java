@@ -109,8 +109,9 @@ public class IfPointcut extends Pointcut {
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.IF);
 		s.writeBoolean(testMethod != null); // do we have a test method?
-		if (testMethod != null)
+		if (testMethod != null) {
 			testMethod.write(s);
+		}
 		s.writeByte(extraParameterFlags);
 		writeLocation(s);
 	}
@@ -131,11 +132,13 @@ public class IfPointcut extends Pointcut {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof IfPointcut))
+		if (!(other instanceof IfPointcut)) {
 			return false;
+		}
 		IfPointcut o = (IfPointcut) other;
-		if (o.testMethod == null)
+		if (o.testMethod == null) {
 			return (this.testMethod == null);
+		}
 		return o.testMethod.equals(this.testMethod);
 	}
 
@@ -174,8 +177,9 @@ public class IfPointcut extends Pointcut {
 		try {
 
 			// Have we already been asked this question?
-			if (shadow.shadowId == ifLastMatchedShadowId)
+			if (shadow.shadowId == ifLastMatchedShadowId) {
 				return ifLastMatchedShadowResidue;
+			}
 
 			Test ret = Literal.TRUE;
 			List args = new ArrayList();
@@ -218,8 +222,9 @@ public class IfPointcut extends Pointcut {
 					// simply return Test.
 					for (int i = 0; i < baseArgsCount; i++) {
 						Var v = myState.get(i);
-						if (v == null)
+						if (v == null) {
 							continue; // pr118149
+						}
 						args.add(v);
 						ret = Test.makeAnd(ret, Test.makeInstanceof(v, pTypes[i].resolve(shadow.getIWorld())));
 					}
