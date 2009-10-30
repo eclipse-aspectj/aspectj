@@ -182,10 +182,12 @@ public class WeavingAdaptor implements IMessageContext {
 	protected void createMessageHandler() {
 		messageHolder = new WeavingAdaptorMessageHolder(new PrintWriter(System.err));
 		messageHandler = messageHolder;
-		if (verbose)
+		if (verbose) {
 			messageHandler.dontIgnore(IMessage.INFO);
-		if (Boolean.getBoolean(SHOW_WEAVE_INFO_PROPERTY))
+		}
+		if (Boolean.getBoolean(SHOW_WEAVE_INFO_PROPERTY)) {
 			messageHandler.dontIgnore(IMessage.WEAVEINFO);
+		}
 		info("AspectJ Weaver Version " + Version.text + " built on " + Version.time_text); //$NON-NLS-1$
 	}
 
@@ -202,20 +204,23 @@ public class WeavingAdaptor implements IMessageContext {
 			ISupportsMessageContext smc = (ISupportsMessageContext) mh;
 			smc.setMessageContext(this);
 		}
-		if (mh != messageHolder)
+		if (mh != messageHolder) {
 			messageHolder.setDelegate(mh);
+		}
 		messageHolder.flushMessages();
 	}
 
 	protected void disable() {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("disable", this);
+		}
 
 		enabled = false;
 		messageHolder.flushMessages();
 
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("disable");
+		}
 	}
 
 	protected void enable() {
@@ -263,12 +268,14 @@ public class WeavingAdaptor implements IMessageContext {
 	 * @exception IOException weave failed
 	 */
 	public byte[] weaveClass(String name, byte[] bytes, boolean mustWeave) throws IOException {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("weaveClass", this, new Object[] { name, bytes });
+		}
 
 		if (!enabled) {
-			if (trace.isTraceEnabled())
+			if (trace.isTraceEnabled()) {
 				trace.exit("weaveClass", false);
+			}
 			return bytes;
 		}
 
@@ -303,8 +310,9 @@ public class WeavingAdaptor implements IMessageContext {
 			delegateForCurrentClass = null;
 		}
 
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("weaveClass", bytes);
+		}
 		return bytes;
 	}
 
@@ -406,8 +414,9 @@ public class WeavingAdaptor implements IMessageContext {
 	// }
 
 	protected void ensureDelegateInitialized(String name, byte[] bytes) {
-		if (delegateForCurrentClass == null)
+		if (delegateForCurrentClass == null) {
 			delegateForCurrentClass = ((BcelWorld) weaver.getWorld()).addSourceObjectType(Utility.makeJavaClass(name, bytes));
+		}
 	}
 
 	/**
@@ -523,8 +532,9 @@ public class WeavingAdaptor implements IMessageContext {
 	protected void dump(String name, byte[] b, boolean before) {
 		String dirName = getDumpDir();
 
-		if (before)
+		if (before) {
 			dirName = dirName + File.separator + "_before";
+		}
 
 		String className = name.replace('.', '/');
 		final File dir;
@@ -615,8 +625,9 @@ public class WeavingAdaptor implements IMessageContext {
 		 */
 
 		public boolean handleMessage(IMessage message) throws AbortException {
-			if (traceMessages)
+			if (traceMessages) {
 				traceMessage(message);
+			}
 
 			super.handleMessage(message);
 
@@ -632,8 +643,9 @@ public class WeavingAdaptor implements IMessageContext {
 			// }
 			// else return delegate.handleMessage(message);
 
-			if (savedMessages != null)
+			if (savedMessages != null) {
 				delegate.handleMessage(message);
+			}
 			return true;
 		}
 
@@ -743,10 +755,11 @@ public class WeavingAdaptor implements IMessageContext {
 		}
 
 		public byte[] getBytes() {
-			if (wovenClass != null)
+			if (wovenClass != null) {
 				return wovenClass.getBytes();
-			else
+			} else {
 				return unwovenClass.getBytes();
+			}
 		}
 
 		public Iterator getClassFileIterator() {
@@ -789,8 +802,9 @@ public class WeavingAdaptor implements IMessageContext {
 
 				public void weaveCompleted() {
 					ResolvedType.resetPrimitives();
-					if (delegateForCurrentClass != null)
+					if (delegateForCurrentClass != null) {
 						delegateForCurrentClass.weavingCompleted();
+					}
 					ResolvedType.resetPrimitives();
 					// bcelWorld.discardType(typeBeingProcessed.getResolvedTypeX()); // work in progress
 				}
