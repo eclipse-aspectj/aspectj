@@ -197,7 +197,7 @@ class BcelMethod extends ResolvedMemberImpl {
 			if (attr instanceof AjAttribute.MethodDeclarationLineNumberAttribute) {
 				declarationLineNumber = (AjAttribute.MethodDeclarationLineNumberAttribute) attr;
 			} else if (attr instanceof AjAttribute.AdviceAttribute) {
-				associatedShadowMunger = ((AjAttribute.AdviceAttribute) attr).reify(this, world);
+				associatedShadowMunger = ((AjAttribute.AdviceAttribute) attr).reify(this, world, (ResolvedType) getDeclaringType());
 			} else if (attr instanceof AjAttribute.AjSynthetic) {
 				bitflags |= IS_AJ_SYNTHETIC;
 			} else if (attr instanceof AjAttribute.EffectiveSignatureAttribute) {
