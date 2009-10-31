@@ -73,6 +73,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 		}
 	}
 
+	@Override
 	public boolean munge(BcelClassWeaver weaver) {
 		m_aspectGen = weaver.getLazyClassGen();
 		m_inlineAccessorBcelMethods = new HashMap(0);
@@ -105,10 +106,12 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 	 * @param member
 	 * @return
 	 */
+	@Override
 	public ResolvedMember getMatchingSyntheticMember(Member member) {
 		return (ResolvedMember) m_inlineAccessorBcelMethods.get(member.getName());
 	}
 
+	@Override
 	public ResolvedMember getSignature() {
 		return null;
 	}
@@ -119,6 +122,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 	 * @param onType
 	 * @return
 	 */
+	@Override
 	public boolean matches(ResolvedType onType) {
 		return aspectType.equals(onType);
 	}
