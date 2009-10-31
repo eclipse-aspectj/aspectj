@@ -2,6 +2,18 @@
 
 <suite>
 
+  <ajc-test dir="bugs167/pr293510" title="execution fastmatch - 1">
+     <compile files="CaseOne.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'method-execution(void pkg.C.m())' in Type 'pkg.C' (CaseOne.java:10) advised by before advice from 'pkg.X' (CaseOne.java:14)"/>
+     </compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs167/pr293510" title="execution fastmatch - 2">
+     <compile files="CaseTwo.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'method-execution(void pkg.C.m())' in Type 'pkg.C' (CaseTwo.java:9) advised by before advice from 'pkg.X' (CaseTwo.java:13)"/>
+     </compile>
+  </ajc-test>
+  
   <ajc-test dir="bugs167/pr293203" title="anno matching">
      <compile files="Foo.java" options="-1.5"/>
      <run class="Foo">
