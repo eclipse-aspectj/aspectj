@@ -1,0 +1,44 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+   
+   <ajc-test dir="features167/overweaving" title="simple">
+     <compile files="A.aj C.java" options="-1.5"/>
+     <compile files="X.aj" options="-1.5 -Xlint:ignore"/>
+     <run class="com.andy.C" ltw="aop.xml">
+       <stdout>
+         <line text="AspectX&gt;&gt;execution(void com.andy.C.main(String[]))"/>
+         <line text="AspectA&gt;&gt;execution(void com.andy.C.main(String[]))"/>
+         <line text="AspectX&gt;&gt;execution(void com.andy.C.run())"/>
+         <line text="hello andy"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features167/overweaving/messy" title="messy">
+     <compile files="A.aj C.java" options="-1.5"/>
+     <compile files="X.aj" options="-1.5 -Xlint:ignore"/>
+     <run class="com.andy.C" ltw="aop.xml">
+       <stdout>
+         <line text="AspectX&gt;&gt;execution(void com.andy.C.main(String[]))"/>
+         <line text="AspectA&gt;&gt;execution(void com.andy.C.main(String[]))"/>
+         <line text="AspectX&gt;&gt;execution(void com.andy.C.run())"/>
+         <line text="hello andy"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features167/overweaving/cflow" title="cflow">
+     <compile files="A.aj C.java" options="-1.5"/>
+     <compile files="X.aj" options="-1.5 -Xlint:ignore"/>
+     <run class="com.andy.C" ltw="aop.xml">
+       <stdout>
+         <line text="AspectX&gt;&gt;execution(void com.andy.C.main(String[]))"/>
+         <line text="AspectA&gt;&gt;execution(void com.andy.C.main(String[]))"/>
+         <line text="AspectX&gt;&gt;execution(void com.andy.C.run())"/>
+         <line text="hello andy"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+</suite>
