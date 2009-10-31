@@ -46,6 +46,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	protected World world;
 
+	private int bits;
+
+	private static int AnnotationBitsInitialized = 0x0001;
+	private static int AnnotationMarkedInherited = 0x0002;
+	private static int MungersAnalyzed = 0x0004;
+	private static int HasParentMunger = 0x0008;
+
 	protected ResolvedType(String signature, World world) {
 		super(signature);
 		this.world = world;
@@ -1508,6 +1515,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	public void addInterTypeMunger(ConcreteTypeMunger munger) {
 		ResolvedMember sig = munger.getSignature();
+		bits = (bits & ~MungersAnalyzed); // clear the bit - as the mungers have changed
 		if (sig == null || munger.getMunger() == null || munger.getMunger().getKind() == ResolvedTypeMunger.PrivilegedAccess) {
 			interTypeMungers.add(munger);
 			return;
@@ -2392,6 +2400,40 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 */
 	public void ensureConsistent() {
 		// Nothing to do for anything except a ReferenceType
+	}
+
+	/**
+	 * For an annotation type, this will return if it is marked with @Inherited
+	 */
+	public boolean isInheritedAnnotation() {
+		ensureAnnotationBitsInitialized();
+		return (bits & AnnotationMarkedInherited) != 0;
+	}
+
+	/*
+	 * Setup the bitflags if they have not already been done.
+	 */
+	private void ensureAnnotationBitsInitialized() {
+		if ((bits & AnnotationBitsInitialized) == 0) {
+			bits |= AnnotationBitsInitialized;
+			// Is it marked @Inherited?
+			if (hasAnnotation(UnresolvedType.AT_INHERITED)) {
+				bits |= AnnotationMarkedInherited;
+			}
+		}
+	}
+
+	private boolean hasNewParentMungers() {
+		if ((bits & MungersAnalyzed) == 0) {
+			bits |= MungersAnalyzed;
+			for (ConcreteTypeMunger munger : interTypeMungers) {
+				ResolvedTypeMunger resolvedTypeMunger = munger.getMunger();
+				if (resolvedTypeMunger != null && resolvedTypeMunger.getKind() == ResolvedTypeMunger.Parent) {
+					bits |= HasParentMunger;
+				}
+			}
+		}
+		return (bits & HasParentMunger) != 0;
 	}
 
 }
