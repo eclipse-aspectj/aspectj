@@ -12,7 +12,6 @@ package org.aspectj.weaver.patterns;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,11 +41,11 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	protected String formalName;
 	protected boolean resolved = false;
 	protected boolean bindingPattern = false;
-	private Map annotationValues;
+	private Map<String, String> annotationValues;
 
 	// OPTIMIZE is annotationtype really unresolved???? surely it is resolved by
 	// now...
-	public ExactAnnotationTypePattern(UnresolvedType annotationType, Map annotationValues) {
+	public ExactAnnotationTypePattern(UnresolvedType annotationType, Map<String, String> annotationValues) {
 		this.annotationType = annotationType;
 		this.annotationValues = annotationValues;
 		this.resolved = (annotationType instanceof ResolvedType);
@@ -122,10 +121,9 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 					AnnotationAJ theAnnotation = annotated.getAnnotationOfType(annotationType);
 
 					// Check each one
-					Set keys = annotationValues.keySet();
-					for (Iterator keyIter = keys.iterator(); keyIter.hasNext();) {
-						String k = (String) keyIter.next();
-						String v = (String) annotationValues.get(k);
+					Set<String> keys = annotationValues.keySet();
+					for (String k : keys) {
+						String v = annotationValues.get(k);
 						if (theAnnotation.hasNamedValue(k)) {
 							// Simple case, value is 'name=value' and the
 							// annotation specified the same thing
@@ -161,10 +159,9 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 							AnnotationAJ theAnnotation = toMatchAgainst.getAnnotationOfType(annotationType);
 
 							// Check each one
-							Set keys = annotationValues.keySet();
-							for (Iterator keyIter = keys.iterator(); keyIter.hasNext();) {
-								String k = (String) keyIter.next();
-								String v = (String) annotationValues.get(k);
+							Set<String> keys = annotationValues.keySet();
+							for (String k : keys) {
+								String v = annotationValues.get(k);
 								if (theAnnotation.hasNamedValue(k)) {
 									// Simple case, value is 'name=value' and
 									// the annotation specified the same thing
@@ -363,11 +360,10 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 			s.writeInt(0);
 		} else {
 			s.writeInt(annotationValues.size());
-			Set key = annotationValues.keySet();
-			for (Iterator keys = key.iterator(); keys.hasNext();) {
-				String k = (String) keys.next();
+			Set<String> keys = annotationValues.keySet();
+			for (String k : keys) {
 				s.writeUTF(k);
-				s.writeUTF((String) annotationValues.get(k));
+				s.writeUTF(annotationValues.get(k));
 			}
 		}
 	}
@@ -393,7 +389,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		if (s.getMajorVersion() >= WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ160M2) {
 			int annotationValueCount = s.readInt();
 			if (annotationValueCount > 0) {
-				Map aValues = new HashMap();
+				Map<String, String> aValues = new HashMap<String, String>();
 				for (int i = 0; i < annotationValueCount; i++) {
 					String key = s.readUTF();
 					String val = s.readUTF();
