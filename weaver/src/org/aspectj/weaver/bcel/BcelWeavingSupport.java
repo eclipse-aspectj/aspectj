@@ -30,10 +30,11 @@ import org.aspectj.weaver.patterns.Pointcut;
  */
 public class BcelWeavingSupport implements IWeavingSupport {
 
-	public Advice createAdviceMunger(AjAttribute.AdviceAttribute attribute, Pointcut pointcut, Member signature) {
+	public Advice createAdviceMunger(AjAttribute.AdviceAttribute attribute, Pointcut pointcut, Member signature,
+			ResolvedType concreteAspect) {
 		// System.err.println("concrete advice: " + signature + " context " +
 		// sourceContext);
-		return new BcelAdvice(attribute, pointcut, signature, null);
+		return new BcelAdvice(attribute, pointcut, signature, concreteAspect);
 	}
 
 	public ConcreteTypeMunger makeCflowStackFieldAdder(ResolvedMember cflowField) {
