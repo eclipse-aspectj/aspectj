@@ -1,0 +1,9 @@
+<aspectj>
+<aspects>
+  <aspect name="X"/>
+</aspects>
+<weaver options="-verbose -Xset:overWeaving=true">
+  <dump within="*" beforeandafter="true"/>
+</weaver>
+
+</aspectj>
