@@ -624,6 +624,7 @@ public class WeavingAdaptor implements IMessageContext {
 		 * IMessageHandler
 		 */
 
+		@Override
 		public boolean handleMessage(IMessage message) throws AbortException {
 			if (traceMessages) {
 				traceMessage(message);
@@ -649,16 +650,19 @@ public class WeavingAdaptor implements IMessageContext {
 			return true;
 		}
 
+		@Override
 		public boolean isIgnoring(Kind kind) {
 			return delegate.isIgnoring(kind);
 		}
 
+		@Override
 		public void dontIgnore(IMessage.Kind kind) {
 			if (null != kind && delegate != null) {
 				delegate.dontIgnore(kind);
 			}
 		}
 
+		@Override
 		public void ignore(Kind kind) {
 			if (null != kind && delegate != null) {
 				delegate.ignore(kind);
@@ -669,6 +673,7 @@ public class WeavingAdaptor implements IMessageContext {
 		 * IMessageHolder
 		 */
 
+		@Override
 		public List getUnmodifiableListView() {
 			// System.err.println("? WeavingAdaptorMessageHolder.getUnmodifiableListView() savedMessages=" + savedMessages);
 			List allMessages = new ArrayList();
@@ -692,6 +697,7 @@ public class WeavingAdaptor implements IMessageContext {
 			this.failKind = IMessage.ERROR;
 		}
 
+		@Override
 		public boolean handleMessage(IMessage message) throws AbortException {
 			// boolean result =
 			super.handleMessage(message);
@@ -701,6 +707,7 @@ public class WeavingAdaptor implements IMessageContext {
 			return true;
 		}
 
+		@Override
 		public boolean isIgnoring(Kind kind) {
 			return ((null != kind) && (ignoring.contains(kind)));
 		}
@@ -708,6 +715,7 @@ public class WeavingAdaptor implements IMessageContext {
 		/**
 		 * Set a message kind to be ignored from now on
 		 */
+		@Override
 		public void ignore(IMessage.Kind kind) {
 			if ((null != kind) && (!ignoring.contains(kind))) {
 				ignoring.add(kind);
@@ -717,12 +725,14 @@ public class WeavingAdaptor implements IMessageContext {
 		/**
 		 * Remove a message kind from the list of those ignored from now on.
 		 */
+		@Override
 		public void dontIgnore(IMessage.Kind kind) {
 			if (null != kind) {
 				ignoring.remove(kind);
 			}
 		}
 
+		@Override
 		protected String render(IMessage message) {
 			return "[" + getContextId() + "] " + super.render(message);
 		}
