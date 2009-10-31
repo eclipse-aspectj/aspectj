@@ -18,10 +18,10 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.patterns.Pointcut.MatchesNothingPointcut;
 
 /**
+ * Performs term rewriting for pointcut expressions.
+ * 
  * @author colyer
- * 
- *         Performs term rewriting for pointcut expressions.
- * 
+ * @author clement
  */
 public class PointcutRewriter {
 
@@ -327,11 +327,11 @@ public class PointcutRewriter {
 	}
 
 	private Pointcut simplifyAnd(AndPointcut apc) {
-		SortedSet nodes = new TreeSet(new PointcutEvaluationExpenseComparator());
+		SortedSet<Pointcut> nodes = new TreeSet<Pointcut>(new PointcutEvaluationExpenseComparator());
 		collectAndNodes(apc, nodes);
 		// look for A and !A, or IfFalse
-		for (Iterator iter = nodes.iterator(); iter.hasNext();) {
-			Pointcut element = (Pointcut) iter.next();
+		for (Iterator<Pointcut> iter = nodes.iterator(); iter.hasNext();) {
+			Pointcut element = iter.next();
 			if (element instanceof NotPointcut) {
 				Pointcut body = ((NotPointcut) element).getNegatedPointcut();
 				if (nodes.contains(body)) {
@@ -352,23 +352,23 @@ public class PointcutRewriter {
 			return Pointcut.makeMatchesNothing(apc.state);
 		}
 		// write out with cheapest on left
-		Iterator iter = nodes.iterator();
-		Pointcut result = (Pointcut) iter.next();
+		Iterator<Pointcut> iter = nodes.iterator();
+		Pointcut result = iter.next();
 		while (iter.hasNext()) {
-			Pointcut right = (Pointcut) iter.next();
+			Pointcut right = iter.next();
 			result = new AndPointcut(result, right);
 		}
 		return result;
 	}
 
 	private Pointcut sortOrs(Pointcut pc) {
-		SortedSet nodes = new TreeSet(new PointcutEvaluationExpenseComparator());
+		SortedSet<Pointcut> nodes = new TreeSet<Pointcut>(new PointcutEvaluationExpenseComparator());
 		collectOrNodes(pc, nodes);
 		// write out with cheapest on left
-		Iterator iter = nodes.iterator();
-		Pointcut result = (Pointcut) iter.next();
+		Iterator<Pointcut> iter = nodes.iterator();
+		Pointcut result = iter.next();
 		while (iter.hasNext()) {
-			Pointcut right = (Pointcut) iter.next();
+			Pointcut right = iter.next();
 			result = new OrPointcut(result, right);
 		}
 		return result;
@@ -403,7 +403,7 @@ public class PointcutRewriter {
 		return pc;
 	}
 
-	private void collectAndNodes(AndPointcut apc, Set nodesSoFar) {
+	private void collectAndNodes(AndPointcut apc, Set<Pointcut> nodesSoFar) {
 		Pointcut left = apc.getLeft();
 		Pointcut right = apc.getRight();
 		if (isAnd(left)) {
@@ -418,7 +418,7 @@ public class PointcutRewriter {
 		}
 	}
 
-	private void collectOrNodes(Pointcut pc, Set nodesSoFar) {
+	private void collectOrNodes(Pointcut pc, Set<Pointcut> nodesSoFar) {
 		if (isOr(pc)) {
 			OrPointcut opc = (OrPointcut) pc;
 			collectOrNodes(opc.getLeft(), nodesSoFar);
