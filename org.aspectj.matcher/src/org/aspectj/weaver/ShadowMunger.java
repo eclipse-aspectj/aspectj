@@ -16,7 +16,6 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -156,6 +155,8 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		return declaringType;
 	}
 
+	public abstract ResolvedType getConcreteAspect();
+
 	/**
 	 * Returns the binarySourceLocation for the given sourcelocation. This isn't cached because it's used when faulting in the
 	 * binary nodes and is called with ISourceLocations for all advice, pointcuts and deows contained within the
@@ -262,6 +263,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 		stream.writeBoolean(checkedIsBinary);
 		pointcut.write(stream);
 	}
+
 	//
 	// public static ShadowMunger read(VersionedDataInputStream stream, World world) throws IOException {
 	// stream.readInt();
@@ -277,4 +279,5 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	// }
 	// newShadowMunger.binaryFile = null;
 	// }
+
 }
