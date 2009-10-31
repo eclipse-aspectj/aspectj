@@ -2061,7 +2061,7 @@ public class BcelShadow extends Shadow {
 		}
 
 		// this is the same for both per and non-per
-		weaveAfter(new BcelAdvice(null, null, null, 0, 0, 0, null, null) {
+		weaveAfter(new BcelAdvice(null, null, null, 0, 0, 0, null, munger.getConcreteAspect()) {
 			@Override
 			public InstructionList getAdviceInstructions(BcelShadow s, BcelVar extraArgVar, InstructionHandle ifNoAdvice) {
 				InstructionList exitInstructions = new InstructionList();
