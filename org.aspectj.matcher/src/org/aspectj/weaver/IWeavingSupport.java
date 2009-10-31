@@ -23,7 +23,8 @@ import org.aspectj.weaver.patterns.Pointcut;
  */
 public interface IWeavingSupport {
 
-	public Advice createAdviceMunger(AjAttribute.AdviceAttribute attribute, Pointcut pointcut, Member signature);
+	public Advice createAdviceMunger(AjAttribute.AdviceAttribute attribute, Pointcut pointcut, Member signature,
+			ResolvedType concreteAspect);
 
 	public abstract ConcreteTypeMunger makeCflowStackFieldAdder(ResolvedMember cflowField);
 
