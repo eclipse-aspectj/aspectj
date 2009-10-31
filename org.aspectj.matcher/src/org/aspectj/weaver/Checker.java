@@ -143,6 +143,11 @@ public class Checker extends ShadowMunger {
 		return this;
 	}
 
+	@Override
+	public ResolvedType getConcreteAspect() {
+		return getDeclaringType();
+	}
+
 	// public void write(DataOutputStream stream) throws IOException {
 	// super.write(stream);
 	// stream.writeBoolean(isError);
