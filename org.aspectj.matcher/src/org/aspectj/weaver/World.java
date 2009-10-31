@@ -37,7 +37,9 @@ import org.aspectj.bridge.context.PinpointingMessageHandler;
 import org.aspectj.util.IStructureModel;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
+import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
+import org.aspectj.weaver.patterns.DeclareSoft;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.tools.PointcutDesignatorHandler;
@@ -582,10 +584,10 @@ public abstract class World implements Dump.INode {
 	 * Create an advice shadow munger for the given advice kind
 	 */
 	public final Advice createAdviceMunger(AdviceKind kind, Pointcut p, Member signature, int extraParameterFlags,
-			IHasSourceLocation loc) {
+			IHasSourceLocation loc, ResolvedType declaringAspect) {
 		AjAttribute.AdviceAttribute attribute = new AjAttribute.AdviceAttribute(kind, p, extraParameterFlags, loc.getStart(), loc
 				.getEnd(), loc.getSourceContext());
-		return getWeavingSupport().createAdviceMunger(attribute, p, signature);
+		return getWeavingSupport().createAdviceMunger(attribute, p, signature, declaringAspect);
 	}
 
 	/**
@@ -658,15 +660,15 @@ public abstract class World implements Dump.INode {
 		return typeVariableLookupScope;
 	}
 
-	public List getDeclareParents() {
+	public List<DeclareParents> getDeclareParents() {
 		return crosscuttingMembersSet.getDeclareParents();
 	}
 
-	public List getDeclareAnnotationOnTypes() {
+	public List<DeclareAnnotation> getDeclareAnnotationOnTypes() {
 		return crosscuttingMembersSet.getDeclareAnnotationOnTypes();
 	}
 
-	public List getDeclareAnnotationOnFields() {
+	public List<DeclareAnnotation> getDeclareAnnotationOnFields() {
 		return crosscuttingMembersSet.getDeclareAnnotationOnFields();
 	}
 
@@ -674,7 +676,7 @@ public abstract class World implements Dump.INode {
 		return crosscuttingMembersSet.getDeclareAnnotationOnMethods();
 	}
 
-	public List getDeclareSoft() {
+	public List<DeclareSoft> getDeclareSoft() {
 		return crosscuttingMembersSet.getDeclareSofts();
 	}
 
@@ -1293,7 +1295,6 @@ public abstract class World implements Dump.INode {
 
 				s = p.getProperty(xsetOVERWEAVING, "false");
 				if (s.equalsIgnoreCase("true")) {
-					System.out.println("overWeaving switched ON");
 					overWeaving = true;
 				}
 
