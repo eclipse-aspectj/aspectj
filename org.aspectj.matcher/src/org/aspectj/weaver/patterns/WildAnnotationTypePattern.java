@@ -38,7 +38,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 
 	private TypePattern typePattern;
 	private boolean resolved = false;
-	Map annotationValues;
+	Map<String, String> annotationValues;
 
 	public WildAnnotationTypePattern(TypePattern typePattern) {
 		super();
@@ -86,7 +86,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		ResolvedMember[] ms = annotationType.getDeclaredMethods();
 		for (Iterator kIter = keys.iterator(); kIter.hasNext();) {
 			String k = (String) kIter.next();
-			String v = (String) annotationValues.get(k);
+			String v = annotationValues.get(k);
 			boolean validKey = false;
 			for (int i = 0; i < ms.length; i++) {
 				ResolvedMember resolvedMember = ms[i];
@@ -317,7 +317,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 			for (Iterator keys = key.iterator(); keys.hasNext();) {
 				String k = (String) keys.next();
 				s.writeUTF(k);
-				s.writeUTF((String) annotationValues.get(k));
+				s.writeUTF(annotationValues.get(k));
 			}
 		}
 	}
@@ -339,7 +339,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		if (s.getMajorVersion() >= WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ160M2) {
 			int annotationValueCount = s.readInt();
 			if (annotationValueCount > 0) {
-				Map aValues = new HashMap();
+				Map<String, String> aValues = new HashMap<String, String>();
 				for (int i = 0; i < annotationValueCount; i++) {
 					String key = s.readUTF();
 					String val = s.readUTF();
