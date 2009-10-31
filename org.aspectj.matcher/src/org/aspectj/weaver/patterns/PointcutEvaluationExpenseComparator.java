@@ -13,7 +13,7 @@ import java.util.Comparator;
 
 import org.aspectj.weaver.Shadow;
 
-public class PointcutEvaluationExpenseComparator implements Comparator {
+public class PointcutEvaluationExpenseComparator implements Comparator<Pointcut> {
 
 	private static final int MATCHES_NOTHING = -1;
 	private static final int WITHIN = 1;
@@ -46,9 +46,7 @@ public class PointcutEvaluationExpenseComparator implements Comparator {
 	 * @this, @target args
 	 * @args cflow, cflowbelow if
 	 */
-	public int compare(Object o1, Object o2) {
-		Pointcut p1 = (Pointcut) o1;
-		Pointcut p2 = (Pointcut) o2;
+	public int compare(Pointcut p1, Pointcut p2) {
 
 		// important property for a well-defined comparator
 		if (p1.equals(p2)) {
