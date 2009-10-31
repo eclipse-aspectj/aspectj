@@ -51,25 +51,24 @@ public abstract class Advice extends ShadowMunger {
 	public static Advice makeCflowEntry(World world, Pointcut entry, boolean isBelow, Member stackField, int nFreeVars,
 			List innerCflowEntries, ResolvedType inAspect) {
 		Advice ret = world.createAdviceMunger(isBelow ? AdviceKind.CflowBelowEntry : AdviceKind.CflowEntry, entry, stackField, 0,
-				entry);
-		// 0);
+				entry, inAspect);
 		ret.innerCflowEntries = innerCflowEntries;
 		ret.nFreeVars = nFreeVars;
-		ret.concreteAspect = inAspect;
 		return ret;
 	}
 
 	public static Advice makePerCflowEntry(World world, Pointcut entry, boolean isBelow, Member stackField, ResolvedType inAspect,
 			List innerCflowEntries) {
 		Advice ret = world.createAdviceMunger(isBelow ? AdviceKind.PerCflowBelowEntry : AdviceKind.PerCflowEntry, entry,
-				stackField, 0, entry);
+				stackField, 0, entry, inAspect);
 		ret.innerCflowEntries = innerCflowEntries;
 		ret.concreteAspect = inAspect;
 		return ret;
 	}
 
 	public static Advice makePerObjectEntry(World world, Pointcut entry, boolean isThis, ResolvedType inAspect) {
-		Advice ret = world.createAdviceMunger(isThis ? AdviceKind.PerThisEntry : AdviceKind.PerTargetEntry, entry, null, 0, entry);
+		Advice ret = world.createAdviceMunger(isThis ? AdviceKind.PerThisEntry : AdviceKind.PerTargetEntry, entry, null, 0, entry,
+				inAspect);
 
 		ret.concreteAspect = inAspect;
 		return ret;
@@ -78,18 +77,15 @@ public abstract class Advice extends ShadowMunger {
 	// PTWIMPL per type within entry advice is what initializes the aspect
 	// instance in the matched type
 	public static Advice makePerTypeWithinEntry(World world, Pointcut p, ResolvedType inAspect) {
-		Advice ret = world.createAdviceMunger(AdviceKind.PerTypeWithinEntry, p, null, 0, p);
+		Advice ret = world.createAdviceMunger(AdviceKind.PerTypeWithinEntry, p, null, 0, p, inAspect);
 		ret.concreteAspect = inAspect;
 		return ret;
 	}
 
 	public static Advice makeSoftener(World world, Pointcut entry, TypePattern exceptionType, ResolvedType inAspect,
 			IHasSourceLocation loc) {
-		Advice ret = world.createAdviceMunger(AdviceKind.Softener, entry, null, 0, loc);
-
+		Advice ret = world.createAdviceMunger(AdviceKind.Softener, entry, null, 0, loc, inAspect);
 		ret.exceptionType = exceptionType;
-		ret.concreteAspect = inAspect;
-		// System.out.println("made ret: " + ret + " with " + exceptionType);
 		return ret;
 	}
 
@@ -405,8 +401,7 @@ public abstract class Advice extends ShadowMunger {
 			p.m_ignoreUnboundBindingForNames = oldP.m_ignoreUnboundBindingForNames;
 		}
 
-		Advice munger = world.getWeavingSupport().createAdviceMunger(attribute, p, signature);
-		munger.concreteAspect = fromType;
+		Advice munger = world.getWeavingSupport().createAdviceMunger(attribute, p, signature, fromType);
 		munger.bindingParameterTypes = bindingParameterTypes;
 		munger.setDeclaringType(getDeclaringType());
 		// System.err.println("concretizing here " + p + " with clause " +
