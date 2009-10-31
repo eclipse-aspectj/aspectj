@@ -558,8 +558,8 @@ public abstract class AjAttribute {
 			}
 		}
 
-		public Advice reify(Member signature, World world) {
-			return world.getWeavingSupport().createAdviceMunger(this, pointcut, signature);
+		public Advice reify(Member signature, World world, ResolvedType concreteAspect) {
+			return world.getWeavingSupport().createAdviceMunger(this, pointcut, signature, concreteAspect);
 		}
 
 		@Override
