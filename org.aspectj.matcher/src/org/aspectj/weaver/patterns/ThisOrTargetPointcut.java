@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver.patterns;
 
 import java.io.DataOutputStream;
@@ -40,63 +39,69 @@ import org.aspectj.weaver.ast.Var;
 /**
  * Corresponds to target or this pcd.
  * 
- * <p>type is initially a WildTypePattern.  If it stays that way, it's a this(Foo) 
- * type deal.
- * however, the resolveBindings method may convert it to a BindingTypePattern, 
- * in which
- * case, it's a this(foo) type deal.
+ * <p>
+ * type is initially a WildTypePattern. If it stays that way, it's a this(Foo) type deal. however, the resolveBindings method may
+ * convert it to a BindingTypePattern, in which case, it's a this(foo) type deal.
  * 
  * @author Erik Hilsdale
  * @author Jim Hugunin
  */
 public class ThisOrTargetPointcut extends NameBindingPointcut {
 	private boolean isThis;
-	private TypePattern type;
+	private TypePattern typePattern;
 	private String declarationText;
 
 	private static final int thisKindSet;
 	private static final int targetKindSet;
-	
+
 	static {
 		int thisFlags = Shadow.ALL_SHADOW_KINDS_BITS;
 		int targFlags = Shadow.ALL_SHADOW_KINDS_BITS;
 		for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
 			Shadow.Kind kind = Shadow.SHADOW_KINDS[i];
-			if (kind.neverHasThis()) thisFlags-=kind.bit;
-			if (kind.neverHasTarget()) targFlags-=kind.bit;
+			if (kind.neverHasThis()) {
+				thisFlags -= kind.bit;
+			}
+			if (kind.neverHasTarget()) {
+				targFlags -= kind.bit;
+			}
 		}
 		thisKindSet = thisFlags;
-		targetKindSet=targFlags;
+		targetKindSet = targFlags;
 	}
-	
-	
+
 	public boolean isBinding() {
-		return (type instanceof BindingTypePattern);
+		return (typePattern instanceof BindingTypePattern);
 	}
 
 	public ThisOrTargetPointcut(boolean isThis, TypePattern type) {
 		this.isThis = isThis;
-		this.type = type;
+		this.typePattern = type;
 		this.pointcutKind = THIS_OR_TARGET;
 		this.declarationText = (isThis ? "this(" : "target(") + type + ")";
 	}
 
-    public TypePattern getType() {
-        return type;
-    }
+	public TypePattern getType() {
+		return typePattern;
+	}
 
-	public boolean isThis() { return isThis; }
+	public boolean isThis() {
+		return isThis;
+	}
 
-	public Pointcut parameterizeWith(Map typeVariableMap,World w) {
-		ThisOrTargetPointcut ret = new ThisOrTargetPointcut(isThis,type.parameterizeWith(typeVariableMap,w));
+	@Override
+	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+		ThisOrTargetPointcut ret = new ThisOrTargetPointcut(isThis, typePattern.parameterizeWith(typeVariableMap, w));
 		ret.copyLocationFrom(this);
 		return ret;
 	}
-	
+
+	@Override
 	public int couldMatchKinds() {
 		return isThis ? thisKindSet : targetKindSet;
 	}
 
+	@Override
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return FuzzyBoolean.MAYBE;
 	}
@@ -104,21 +109,26 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 	private boolean couldMatch(Shadow shadow) {
 		return isThis ? shadow.hasThis() : shadow.hasTarget();
 	}
-    
+
+	@Override
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
-		if (!couldMatch(shadow)) return FuzzyBoolean.NO;
-		UnresolvedType typeToMatch = isThis ? shadow.getThisType() : shadow.getTargetType(); 
-		//if (typeToMatch == ResolvedType.MISSING) return FuzzyBoolean.NO;
-		
-		return type.matches(typeToMatch.resolve(shadow.getIWorld()), TypePattern.DYNAMIC);//AVPT was DYNAMIC
+		if (!couldMatch(shadow)) {
+			return FuzzyBoolean.NO;
+		}
+		UnresolvedType typeToMatch = isThis ? shadow.getThisType() : shadow.getTargetType();
+		// if (typeToMatch == ResolvedType.MISSING) return FuzzyBoolean.NO;
+
+		return typePattern.matches(typeToMatch.resolve(shadow.getIWorld()), TypePattern.DYNAMIC);// AVPT was DYNAMIC
 	}
 
+	@Override
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.THIS_OR_TARGET);
 		s.writeBoolean(isThis);
-		type.write(s);
+		typePattern.write(s);
 		writeLocation(s);
 	}
+
 	public static Pointcut read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		boolean isThis = s.readBoolean();
 		TypePattern type = TypePattern.read(s, context);
@@ -127,94 +137,115 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		return ret;
 	}
 
+	@Override
 	public void resolveBindings(IScope scope, Bindings bindings) {
-		type = type.resolveBindings(scope, bindings, true, true);
-		
+		typePattern = typePattern.resolveBindings(scope, bindings, true, true);
+
 		// look for parameterized type patterns which are not supported...
-		HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor 
-			visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
-		type.traverse(visitor, null);
-		if (visitor.wellHasItThen/*?*/()) {
+		HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
+		typePattern.traverse(visitor, null);
+		if (visitor.wellHasItThen/* ? */()) {
 			scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.THIS_AND_TARGET_DONT_SUPPORT_PARAMETERS),
-				getSourceLocation()));
-		}		
+					getSourceLocation()));
+		}
 		// ??? handle non-formal
 	}
-	
+
+	@Override
 	public void postRead(ResolvedType enclosingType) {
-		type.postRead(enclosingType);
+		typePattern.postRead(enclosingType);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingAnnotationTypePatterns()
 	 */
+	@Override
 	public List getBindingAnnotationTypePatterns() {
 		return Collections.EMPTY_LIST;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingTypePatterns()
 	 */
+	@Override
 	public List getBindingTypePatterns() {
-		if (type instanceof BindingTypePattern) {
+		if (typePattern instanceof BindingTypePattern) {
 			List l = new ArrayList();
-			l.add(type);
+			l.add(typePattern);
 			return l;
-		} else return Collections.EMPTY_LIST;
+		} else {
+			return Collections.EMPTY_LIST;
+		}
 	}
 
-	
+	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof ThisOrTargetPointcut)) return false;
-		ThisOrTargetPointcut o = (ThisOrTargetPointcut)other;
-		return o.isThis == this.isThis && o.type.equals(this.type);
+		if (!(other instanceof ThisOrTargetPointcut)) {
+			return false;
+		}
+		ThisOrTargetPointcut o = (ThisOrTargetPointcut) other;
+		return o.isThis == this.isThis && o.typePattern.equals(this.typePattern);
 	}
-    public int hashCode() {
-        int result = 17;
-        result = 37*result + (isThis ? 0 : 1);
-        result = 37*result + type.hashCode();
-        return result;
-    }
+
+	@Override
+	public int hashCode() {
+		int result = 17;
+		result = 37 * result + (isThis ? 0 : 1);
+		result = 37 * result + typePattern.hashCode();
+		return result;
+	}
+
+	@Override
 	public String toString() {
 		return declarationText;
 	}
 
-	/** 
-	 * Residue is the remainder of the pointcut match that couldn't be
-	 * performed with the purely static information at compile time and
-	 * this method returns the residue of a pointcut at a particular shadow.
+	/**
+	 * Residue is the remainder of the pointcut match that couldn't be performed with the purely static information at compile time
+	 * and this method returns the residue of a pointcut at a particular shadow.
 	 */
+	@Override
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
-		if (!couldMatch(shadow)) return Literal.FALSE;
-		
-		// if no preference is specified, just say TRUE which means no residue
-		if (type == TypePattern.ANY) return Literal.TRUE;
-		
-		Var var = isThis ? shadow.getThisVar() : shadow.getTargetVar();	
+		if (!couldMatch(shadow)) {
+			return Literal.FALSE;
+		}
 
-		return exposeStateForVar(var, type, state, shadow.getIWorld());
+		// if no preference is specified, just say TRUE which means no residue
+		if (typePattern == TypePattern.ANY) {
+			return Literal.TRUE;
+		}
+
+		Var var = isThis ? shadow.getThisVar() : shadow.getTargetVar();
+
+		return exposeStateForVar(var, typePattern, state, shadow.getIWorld());
 	}
 
+	@Override
 	public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
 		if (isDeclare(bindings.getEnclosingAdvice())) {
-		  // Enforce rule about which designators are supported in declare
-		  inAspect.getWorld().showMessage(IMessage.ERROR,
-		  		WeaverMessages.format(WeaverMessages.THIS_OR_TARGET_IN_DECLARE,isThis?"this":"target"),
-				bindings.getEnclosingAdvice().getSourceLocation(), null);
-		  return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
+			// Enforce rule about which designators are supported in declare
+			inAspect.getWorld().showMessage(IMessage.ERROR,
+					WeaverMessages.format(WeaverMessages.THIS_OR_TARGET_IN_DECLARE, isThis ? "this" : "target"),
+					bindings.getEnclosingAdvice().getSourceLocation(), null);
+			return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 		}
-		
-		TypePattern newType = type.remapAdviceFormals(bindings);
+
+		TypePattern newType = typePattern.remapAdviceFormals(bindings);
 		if (inAspect.crosscuttingMembers != null) {
 			inAspect.crosscuttingMembers.exposeType(newType.getExactType());
 		}
-		
+
 		Pointcut ret = new ThisOrTargetPointcut(isThis, newType);
 		ret.copyLocationFrom(this);
 		return ret;
 	}
 
-    public Object accept(PatternNodeVisitor visitor, Object data) {
-        return visitor.visit(this, data);
-    }
+	@Override
+	public Object accept(PatternNodeVisitor visitor, Object data) {
+		return visitor.visit(this, data);
+	}
 }
