@@ -30,6 +30,7 @@ import org.aspectj.weaver.AnnotationTargetKind;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.JoinPointSignature;
+import org.aspectj.weaver.JoinPointSignatureIterator;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.NewFieldTypeMunger;
@@ -49,6 +50,8 @@ public class SignaturePattern extends PatternNode {
 	private ThrowsPattern throwsPattern;
 	private AnnotationTypePattern annotationPattern;
 	private transient int hashcode = -1;
+
+	private transient boolean isExactDeclaringTypePattern = false;
 
 	public SignaturePattern(MemberKind kind, ModifiersPattern modifiers, TypePattern returnType, TypePattern declaringType,
 			NamePattern name, TypePatternList parameterTypes, ThrowsPattern throwsPattern, AnnotationTypePattern annotationPattern) {
@@ -70,6 +73,7 @@ public class SignaturePattern extends PatternNode {
 		if (declaringType != null) {
 			declaringType = declaringType.resolveBindings(scope, bindings, false, false);
 			checkForIncorrectTargetKind(declaringType, scope, false);
+			isExactDeclaringTypePattern = (declaringType instanceof ExactTypePattern);
 		}
 		if (parameterTypes != null) {
 			parameterTypes = parameterTypes.resolveBindings(scope, bindings, false, false);
@@ -302,9 +306,9 @@ public class SignaturePattern extends PatternNode {
 		// do the hard work then...
 		boolean subjectMatch = true;
 		boolean wantsAnnotationMatch = wantToMatchAnnotationPattern();
-		Iterator candidateMatches = joinPointSignature.getJoinPointSignatures(world);
+		JoinPointSignatureIterator candidateMatches = joinPointSignature.getJoinPointSignatures(world);
 		while (candidateMatches.hasNext()) {
-			JoinPointSignature aSig = (JoinPointSignature) candidateMatches.next();
+			JoinPointSignature aSig = candidateMatches.next();
 			// System.out.println(aSig);
 			FuzzyBoolean matchResult = matchesExactly(aSig, world, allowBridgeMethods, subjectMatch);
 			if (matchResult.alwaysTrue()) {
@@ -425,7 +429,6 @@ public class SignaturePattern extends PatternNode {
 		if (subjectMatch && !throwsPattern.matches(aMethod.getExceptions(), world)) {
 			return FuzzyBoolean.NO;
 		}
-
 		if (!declaringType.matchesStatically(aMethod.getDeclaringType().resolve(world))) {
 			return FuzzyBoolean.MAYBE;
 		}
@@ -833,4 +836,9 @@ public class SignaturePattern extends PatternNode {
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
+
+	public boolean isExactDeclaringTypePattern() {
+		return isExactDeclaringTypePattern;
+	}
+
 }
