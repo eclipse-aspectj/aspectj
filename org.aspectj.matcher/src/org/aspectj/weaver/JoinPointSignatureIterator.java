@@ -24,19 +24,19 @@ import java.util.Set;
  * Iterates over the signatures of a join point, calculating new signatures lazily to minimize processing and to avoid unneccessary
  * "can't find type" errors. Iterator can be cached and reused by calling the "reset" method between iterations.
  */
-public class JoinPointSignatureIterator implements Iterator {
+public class JoinPointSignatureIterator implements Iterator<JoinPointSignature> {
 
 	private Member signaturesOfMember;
 	private ResolvedMember firstDefiningMember;
 	ResolvedType firstDefiningType;
 	private World world;
-	private List /* JoinPointSignature */discoveredSignatures = new ArrayList();
-	private List additionalSignatures = Collections.EMPTY_LIST;
-	private Iterator discoveredSignaturesIterator = null;
-	private Iterator superTypeIterator = null;
+	private List discoveredSignatures = new ArrayList();
+	private List<JoinPointSignature> additionalSignatures = Collections.emptyList();
+	private Iterator<JoinPointSignature> discoveredSignaturesIterator = null;
+	private Iterator<ResolvedType> superTypeIterator = null;
 	private boolean isProxy = false;
 	private Set visitedSuperTypes = new HashSet();
-	private List /* SearchPair */yetToBeProcessedSuperMembers = null;// new ArrayList();
+	private List /* SearchPair */yetToBeProcessedSuperMembers = null;
 
 	private boolean iteratingOverDiscoveredSignatures = true;
 	private boolean couldBeFurtherAsYetUndiscoveredSignatures = true;
@@ -49,8 +49,9 @@ public class JoinPointSignatureIterator implements Iterator {
 		this.signaturesOfMember = joinPointSignature;
 		this.world = inAWorld;
 		addSignaturesUpToFirstDefiningMember();
-		if (!shouldWalkUpHierarchy())
+		if (!shouldWalkUpHierarchy()) {
 			couldBeFurtherAsYetUndiscoveredSignatures = false;
+		}
 	}
 
 	public void reset() {
@@ -68,10 +69,11 @@ public class JoinPointSignatureIterator implements Iterator {
 		if (iteratingOverDiscoveredSignatures && discoveredSignaturesIterator.hasNext()) {
 			return true;
 		} else if (couldBeFurtherAsYetUndiscoveredSignatures) {
-			if (additionalSignatures.size() > 0)
+			if (additionalSignatures.size() > 0) {
 				return true;
-			else
+			} else {
 				return findSignaturesFromSupertypes();
+			}
 		} else {
 			return false;
 		}
@@ -82,7 +84,7 @@ public class JoinPointSignatureIterator implements Iterator {
 	 * 
 	 * @see java.util.Iterator#next()
 	 */
-	public Object next() {
+	public JoinPointSignature next() {
 		if (iteratingOverDiscoveredSignatures && discoveredSignaturesIterator.hasNext()) {
 			return discoveredSignaturesIterator.next();
 		} else {
@@ -168,12 +170,15 @@ public class JoinPointSignatureIterator implements Iterator {
 	}
 
 	private boolean shouldWalkUpHierarchy() {
-		if (signaturesOfMember.getKind() == Member.CONSTRUCTOR)
+		if (signaturesOfMember.getKind() == Member.CONSTRUCTOR) {
 			return false;
-		if (signaturesOfMember.getKind() == Member.FIELD)
+		}
+		if (signaturesOfMember.getKind() == Member.FIELD) {
 			return false;
-		if (signaturesOfMember.isStatic())
+		}
+		if (signaturesOfMember.isStatic()) {
 			return false;
+		}
 		return true;
 	}
 
@@ -183,7 +188,7 @@ public class JoinPointSignatureIterator implements Iterator {
 			superTypeIterator = firstDefiningType.getDirectSupertypes();
 		}
 		if (superTypeIterator.hasNext()) {
-			ResolvedType superType = (ResolvedType) superTypeIterator.next();
+			ResolvedType superType = superTypeIterator.next();
 			if (isProxy && (superType.isGenericType() || superType.isParameterizedType())) {
 				superType = (ResolvedType) superType.getRawType();
 			}
@@ -206,7 +211,7 @@ public class JoinPointSignatureIterator implements Iterator {
 					accumulateTypesInBetween(superType, resolvedDeclaringType, declaringTypes);
 					for (Iterator iter = declaringTypes.iterator(); iter.hasNext();) {
 						ResolvedType declaringType = (ResolvedType) iter.next();
-						ResolvedMember member = null;
+						JoinPointSignature member = null;
 						if (isProxy) {
 							if (declaringType.isGenericType() || declaringType.isParameterizedType()) {
 								declaringType = (ResolvedType) declaringType.getRawType();
@@ -216,17 +221,19 @@ public class JoinPointSignatureIterator implements Iterator {
 							member = foundMember.withSubstituteDeclaringType(declaringType);
 						}
 						discoveredSignatures.add(member); // for next time we are reset
-						if (additionalSignatures == Collections.EMPTY_LIST)
+						if (additionalSignatures == Collections.EMPTY_LIST) {
 							additionalSignatures = new ArrayList();
+						}
 						additionalSignatures.add(member); // for this time
 					}
 					// if this was a parameterized type, look in the generic type that backs it too
 					if (!isProxy && superType.isParameterizedType() && (foundMember.backingGenericMember != null)) {
-						ResolvedMember member = new JoinPointSignature(foundMember.backingGenericMember, foundMember.declaringType
-								.resolve(world));
+						JoinPointSignature member = new JoinPointSignature(foundMember.backingGenericMember,
+								foundMember.declaringType.resolve(world));
 						discoveredSignatures.add(member); // for next time we are reset
-						if (additionalSignatures == Collections.EMPTY_LIST)
+						if (additionalSignatures == Collections.EMPTY_LIST) {
 							additionalSignatures = new ArrayList();
+						}
 						additionalSignatures.add(member); // for this time
 					}
 					if (yetToBeProcessedSuperMembers == null) {
@@ -259,8 +266,9 @@ public class JoinPointSignatureIterator implements Iterator {
 	 * @return
 	 */
 	private boolean isVisibleTo(ResolvedMember childMember, ResolvedMember parentMember) {
-		if (childMember.getDeclaringType().equals(parentMember.getDeclaringType()))
+		if (childMember.getDeclaringType().equals(parentMember.getDeclaringType())) {
 			return true;
+		}
 		if (Modifier.isPrivate(parentMember.getModifiers())) {
 			return false;
 		} else {
