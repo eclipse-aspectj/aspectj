@@ -31,13 +31,14 @@ import org.aspectj.weaver.World;
 
 public class ExactTypePattern extends TypePattern {
 	protected UnresolvedType type;
+	protected transient ResolvedType resolvedType;
 
-	public static final Map primitiveTypesMap;
-	public static final Map boxedPrimitivesMap;
-	private static final Map boxedTypesMap;
+	public static final Map<String, Class<?>> primitiveTypesMap;
+	public static final Map<String, Class<?>> boxedPrimitivesMap;
+	private static final Map<String, Class<?>> boxedTypesMap;
 
 	static {
-		primitiveTypesMap = new HashMap();
+		primitiveTypesMap = new HashMap<String, Class<?>>();
 		primitiveTypesMap.put("int", int.class);
 		primitiveTypesMap.put("short", short.class);
 		primitiveTypesMap.put("long", long.class);
@@ -46,7 +47,7 @@ public class ExactTypePattern extends TypePattern {
 		primitiveTypesMap.put("float", float.class);
 		primitiveTypesMap.put("double", double.class);
 
-		boxedPrimitivesMap = new HashMap();
+		boxedPrimitivesMap = new HashMap<String, Class<?>>();
 		boxedPrimitivesMap.put("java.lang.Integer", Integer.class);
 		boxedPrimitivesMap.put("java.lang.Short", Short.class);
 		boxedPrimitivesMap.put("java.lang.Long", Long.class);
@@ -55,7 +56,7 @@ public class ExactTypePattern extends TypePattern {
 		boxedPrimitivesMap.put("java.lang.Float", Float.class);
 		boxedPrimitivesMap.put("java.lang.Double", Double.class);
 
-		boxedTypesMap = new HashMap();
+		boxedTypesMap = new HashMap<String, Class<?>>();
 		boxedTypesMap.put("int", Integer.class);
 		boxedTypesMap.put("short", Short.class);
 		boxedTypesMap.put("long", Long.class);
@@ -126,6 +127,9 @@ public class ExactTypePattern extends TypePattern {
 		if (!typeMatch && matchType.isTypeVariableReference()) {
 			typeMatch = matchesTypeVariable((TypeVariableReferenceType) matchType);
 		}
+		if (!typeMatch) {
+			return false;
+		}
 		annotationPattern.resolve(matchType.getWorld());
 		boolean annMatch = false;
 		if (matchType.temporaryAnnotationTypes != null) {
@@ -163,6 +167,13 @@ public class ExactTypePattern extends TypePattern {
 
 	public UnresolvedType getType() {
 		return type;
+	}
+
+	public ResolvedType getResolvedExactType(World world) {
+		if (resolvedType == null) {
+			resolvedType = world.resolve(type);
+		}
+		return resolvedType;
 	}
 
 	// true if (matchType instanceof this.type)
