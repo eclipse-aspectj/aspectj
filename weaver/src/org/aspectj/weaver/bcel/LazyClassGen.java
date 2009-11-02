@@ -925,7 +925,8 @@ public final class LazyClassGen {
 	}
 
 	// reflective thisJoinPoint support
-	Map/* BcelShadow, Field */tjpFields = new HashMap();
+	private Map<BcelShadow, Field> tjpFields = new HashMap<BcelShadow, Field>();
+	private int tjpFieldsCounter = -1; // -1 means not yet initialized
 	public static final ObjectType proceedingTjpType = new ObjectType("org.aspectj.lang.ProceedingJoinPoint");
 	public static final ObjectType tjpType = new ObjectType("org.aspectj.lang.JoinPoint");
 	public static final ObjectType staticTjpType = new ObjectType("org.aspectj.lang.JoinPoint$StaticPart");
@@ -937,9 +938,9 @@ public final class LazyClassGen {
 	private static final ObjectType classType = new ObjectType("java.lang.Class");
 
 	public Field getTjpField(BcelShadow shadow, final boolean isEnclosingJp) {
-		Field ret = (Field) tjpFields.get(shadow);
-		if (ret != null) {
-			return ret;
+		Field tjpField = tjpFields.get(shadow);
+		if (tjpField != null) {
+			return tjpField;
 		}
 
 		int modifiers = Modifier.STATIC | Modifier.FINAL;
@@ -949,10 +950,8 @@ public final class LazyClassGen {
 		// shadow.getEnclosingMethod().getCanInline())
 
 		// If the enclosing method is around advice, we could inline the join
-		// point
-		// that has led to this shadow. If we do that then the TJP we are
-		// creating
-		// here must be PUBLIC so it is visible to the type in which the
+		// point that has led to this shadow. If we do that then the TJP we are
+		// creating here must be PUBLIC so it is visible to the type in which the
 		// advice is inlined. (PR71377)
 		LazyMethodGen encMethod = shadow.getEnclosingMethod();
 		boolean shadowIsInAroundAdvice = false;
@@ -966,18 +965,42 @@ public final class LazyClassGen {
 			modifiers |= Modifier.PRIVATE;
 		}
 		ObjectType jpType = null;
-		if (world.isTargettingAspectJRuntime12()) { // TAG:SUPPORTING12: We
-			// didn't have different
-			// staticjp types in 1.2
+		// Did not have different static joinpoint types in 1.2
+		if (world.isTargettingAspectJRuntime12()) {
 			jpType = staticTjpType;
 		} else {
 			jpType = isEnclosingJp ? enclosingStaticTjpType : staticTjpType;
 		}
-		FieldGen fGen = new FieldGen(modifiers, jpType, "ajc$tjp_" + tjpFields.size(), getConstantPool());
+		if (tjpFieldsCounter == -1) {
+			// not yet initialized, do it now
+			if (!world.isOverWeaving()) {
+				tjpFieldsCounter = 0;
+			} else {
+				List<BcelField> existingFields = getFieldGens();
+				if (existingFields == null) {
+					tjpFieldsCounter = 0;
+				} else {
+					BcelField lastField = null;
+					// OPTIMIZE: go from last to first?
+					for (BcelField field : existingFields) {
+						if (field.getName().startsWith("ajc$tjp_")) {
+							lastField = field;
+						}
+					}
+					if (lastField == null) {
+						tjpFieldsCounter = 0;
+					} else {
+						tjpFieldsCounter = Integer.parseInt(lastField.getName().substring(8)) + 1;
+						//System.out.println("tjp counter starting at " + tjpFieldsCounter);
+					}
+				}
+			}
+		}
+		FieldGen fGen = new FieldGen(modifiers, jpType, "ajc$tjp_" + tjpFieldsCounter++, getConstantPool());
 		addField(fGen);
-		ret = fGen.getField();
-		tjpFields.put(shadow, ret);
-		return ret;
+		tjpField = fGen.getField();
+		tjpFields.put(shadow, tjpField);
+		return tjpField;
 	}
 
 	// FIXME ATAJ needed only for slow Aspects.aspectOf - keep or remove
@@ -1044,18 +1067,16 @@ public final class LazyClassGen {
 
 		list.append(InstructionFactory.createStore(factoryType, 0));
 
-		List entries = new ArrayList(tjpFields.entrySet());
-		Collections.sort(entries, new Comparator() {
-			public int compare(Object a, Object b) {
-				Map.Entry ae = (Map.Entry) a;
-				Map.Entry be = (Map.Entry) b;
-				return ((Field) ae.getValue()).getName().compareTo(((Field) be.getValue()).getName());
+		List<Map.Entry<BcelShadow, Field>> entries = new ArrayList<Map.Entry<BcelShadow, Field>>(tjpFields.entrySet());
+		Collections.sort(entries, new Comparator<Map.Entry<BcelShadow, Field>>() {
+			public int compare(Map.Entry<BcelShadow, Field> a, Map.Entry<BcelShadow, Field> b) {
+				return (a.getValue()).getName().compareTo((b.getValue()).getName());
 			}
 		});
 
-		for (Iterator i = entries.iterator(); i.hasNext();) {
-			Map.Entry entry = (Map.Entry) i.next();
-			initializeTjp(fact, list, (Field) entry.getValue(), (BcelShadow) entry.getKey());
+		for (Iterator<Map.Entry<BcelShadow, Field>> i = entries.iterator(); i.hasNext();) {
+			Map.Entry<BcelShadow, Field> entry = i.next();
+			initializeTjp(fact, list, entry.getValue(), entry.getKey());
 		}
 
 		return list;
