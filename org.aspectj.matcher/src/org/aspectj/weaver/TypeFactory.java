@@ -90,9 +90,9 @@ public class TypeFactory {
 	 * Used by UnresolvedType.read, creates a type from a full signature.
 	 */
 	public static UnresolvedType createTypeFromSignature(String signature) {
-		if (signature.equals(ResolvedType.MISSING_NAME)) {
-			return ResolvedType.MISSING;
-		}
+		// if (signature.equals(ResolvedType.MISSING_NAME)) {
+		// return ResolvedType.MISSING;
+		// }
 
 		char firstChar = signature.charAt(0);
 		if (firstChar == 'P') {
@@ -138,7 +138,7 @@ public class TypeFactory {
 				return new UnresolvedType(signature, signatureErasure, typeParams);
 			}
 			// can't replace above with convertSigToType - leads to stackoverflow
-		} else if (signature.equals("?") || signature.equals("*")) {
+		} else if ((firstChar == '?' || firstChar == '*') && signature.length() == 1) {
 			return WildcardedUnresolvedType.QUESTIONMARK;
 		} else if (firstChar == '+') {
 			// ? extends ...
@@ -165,6 +165,7 @@ public class TypeFactory {
 			return new UnresolvedType(signature, signature.substring(0, dims) + componentType.getErasureSignature());
 		} else if (signature.length() == 1) { // could be a primitive
 			switch (firstChar) {
+
 			case 'V':
 				return ResolvedType.VOID;
 			case 'Z':
@@ -184,6 +185,9 @@ public class TypeFactory {
 			case 'S':
 				return ResolvedType.SHORT;
 			}
+		} else if (firstChar == '@') {
+			// missing type
+			return ResolvedType.MISSING;
 		}
 		return new UnresolvedType(signature);
 	}
