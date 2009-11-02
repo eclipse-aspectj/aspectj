@@ -50,7 +50,7 @@ public class ReferenceType extends ResolvedType {
 	ResolvedMember[] parameterizedFields = null;
 	ResolvedMember[] parameterizedPointcuts = null;
 	ResolvedType[] parameterizedInterfaces = null;
-	Collection parameterizedDeclares = null;
+	Collection<Declare> parameterizedDeclares = null;
 	Collection parameterizedTypeMungers = null;
 
 	// During matching it can be necessary to temporary mark types as annotated. For example
@@ -803,11 +803,10 @@ public class ReferenceType extends ResolvedType {
 		}
 		Collection<Declare> declares = null;
 		if (ajMembersNeedParameterization()) {
-			Collection genericDeclares = delegate.getDeclares();
-			parameterizedDeclares = new ArrayList();
-			Map parameterizationMap = getAjMemberParameterizationMap();
-			for (Iterator iter = genericDeclares.iterator(); iter.hasNext();) {
-				Declare declareStatement = (Declare) iter.next();
+			Collection<Declare> genericDeclares = delegate.getDeclares();
+			parameterizedDeclares = new ArrayList<Declare>();
+			Map<String, UnresolvedType> parameterizationMap = getAjMemberParameterizationMap();
+			for (Declare declareStatement : genericDeclares) {
 				parameterizedDeclares.add(declareStatement.parameterizeWith(parameterizationMap, world));
 			}
 			declares = parameterizedDeclares;
@@ -821,7 +820,7 @@ public class ReferenceType extends ResolvedType {
 	}
 
 	@Override
-	public Collection getTypeMungers() {
+	public Collection<ConcreteTypeMunger> getTypeMungers() {
 		return delegate.getTypeMungers();
 	}
 
