@@ -1935,14 +1935,28 @@ public class BcelWeaver {
 		// here we do the coarsest grained fast match with no kind constraints
 		// this will remove all obvious non-matches and see if we need to do any
 		// weaving
-		FastMatchInfo info = new FastMatchInfo(type, null);
+		FastMatchInfo info = new FastMatchInfo(type, null, world);
 
 		List<ShadowMunger> result = new ArrayList<ShadowMunger>();
-		for (ShadowMunger munger : list) {
-			Pointcut pointcut = munger.getPointcut();
-			FuzzyBoolean fb = pointcut.fastMatch(info);
-			if (fb.maybeTrue()) {
-				result.add(munger);
+
+		if (world.areInfoMessagesEnabled() && world.isTimingEnabled()) {
+			for (ShadowMunger munger : list) {
+				Pointcut pointcut = munger.getPointcut();
+				long starttime = System.nanoTime();
+				FuzzyBoolean fb = pointcut.fastMatch(info);
+				long endtime = System.nanoTime();
+				world.recordFastMatch(pointcut, endtime - starttime);
+				if (fb.maybeTrue()) {
+					result.add(munger);
+				}
+			}
+		} else {
+			for (ShadowMunger munger : list) {
+				Pointcut pointcut = munger.getPointcut();
+				FuzzyBoolean fb = pointcut.fastMatch(info);
+				if (fb.maybeTrue()) {
+					result.add(munger);
+				}
 			}
 		}
 		return result;
