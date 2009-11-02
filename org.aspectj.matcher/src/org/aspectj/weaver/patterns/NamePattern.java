@@ -133,6 +133,10 @@ public class NamePattern extends PatternNode {
 	}
 
 	public boolean matches(String other) {
+		if (starCount == 1 && pattern.length == 1) {
+			// optimize for wildcard
+			return true;
+		}
 		return matches(other.toCharArray());
 	}
 

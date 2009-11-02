@@ -116,9 +116,12 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 			return FuzzyBoolean.NO;
 		}
 		UnresolvedType typeToMatch = isThis ? shadow.getThisType() : shadow.getTargetType();
-		// if (typeToMatch == ResolvedType.MISSING) return FuzzyBoolean.NO;
-
-		return typePattern.matches(typeToMatch.resolve(shadow.getIWorld()), TypePattern.DYNAMIC);// AVPT was DYNAMIC
+		// optimization for case of this(Object) or target(Object)
+		// works for an ExactTypePattern (and we know there are no annotations to match here of course)
+		if (typePattern.getExactType().equals(ResolvedType.OBJECT)) {
+			return FuzzyBoolean.YES;
+		}
+		return typePattern.matches(typeToMatch.resolve(shadow.getIWorld()), TypePattern.DYNAMIC);
 	}
 
 	@Override
