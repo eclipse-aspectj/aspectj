@@ -70,12 +70,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * superclass, if any, and all declared interfaces.
 	 */
 	public final Iterator<ResolvedType> getDirectSupertypes() {
-		Iterator<ResolvedType> ifacesIterator = Iterators.array(getDeclaredInterfaces());
+		Iterator<ResolvedType> interfacesIterator = Iterators.array(getDeclaredInterfaces());
 		ResolvedType superclass = getSuperclass();
 		if (superclass == null) {
-			return ifacesIterator;
+			return interfacesIterator;
 		} else {
-			return Iterators.snoc(ifacesIterator, superclass);
+			return Iterators.snoc(interfacesIterator, superclass);
 		}
 	}
 
@@ -200,6 +200,67 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		};
 		return Iterators.mapOver(Iterators.recur(this, typeGetter), fieldGetter);
 	}
+
+	/**
+	 * An Iterators.Getter that returns an iterator over all methods declared on some resolved type.
+	 */
+	private static class MethodGetter implements Iterators.Getter<ResolvedType, ResolvedMember> {
+		public Iterator<ResolvedMember> get(ResolvedType type) {
+			return Iterators.array(type.getDeclaredMethods());
+		}
+	}
+
+	/**
+	 * An Iterators.Getter that returns an iterator over all pointcuts declared on some resolved type.
+	 */
+	private static class PointcutGetter implements Iterators.Getter<ResolvedType, ResolvedMember> {
+		public Iterator<ResolvedMember> get(ResolvedType o) {
+			return Iterators.array(o.getDeclaredPointcuts());
+		}
+	}
+
+	// Getter that returns all declared methods for a type through an iterator - including intertype declarations
+	private static class MethodGetterIncludingItds implements Iterators.Getter<ResolvedType, ResolvedMember> {
+		public Iterator<ResolvedMember> get(ResolvedType type) {
+			ResolvedMember[] methods = type.getDeclaredMethods();
+			if (type.interTypeMungers != null) {
+				int additional = 0;
+				for (ConcreteTypeMunger typeTransformer : type.interTypeMungers) {
+					ResolvedMember rm = typeTransformer.getSignature();
+					if (rm != null) { // new parent type munger can have null signature
+						additional++;
+					}
+				}
+				if (additional > 0) {
+					ResolvedMember[] methods2 = new ResolvedMember[methods.length + additional];
+					System.arraycopy(methods, 0, methods2, 0, methods.length);
+					additional = methods.length;
+					for (ConcreteTypeMunger typeTransformer : type.interTypeMungers) {
+						ResolvedMember rm = typeTransformer.getSignature();
+						if (rm != null) { // new parent type munger can have null signature
+							methods2[additional++] = typeTransformer.getSignature();
+						}
+					}
+					methods = methods2;
+				}
+			}
+			return Iterators.array(methods);
+		}
+	}
+
+	/**
+	 * An Iterators.Getter that returns an iterator over all fields declared on some resolved type.
+	 */
+	private static class FieldGetter implements Iterators.Getter<ResolvedType, ResolvedMember> {
+		public Iterator<ResolvedMember> get(ResolvedType type) {
+			return Iterators.array(type.getDeclaredFields());
+		}
+	}
+
+	private final static MethodGetter MethodGetterInstance = new MethodGetter();
+	private final static MethodGetterIncludingItds MethodGetterWithItdsInstance = new MethodGetterIncludingItds();
+	private final static PointcutGetter PointcutGetterInstance = new PointcutGetter();
+	private final static FieldGetter FieldGetterInstance = new FieldGetter();
 
 	/**
 	 * returns an iterator through all of the methods of this type, in order for checking from JVM spec 2ed 5.4.3.3. This means that
@@ -357,11 +418,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * process interfaces multiple times.
 	 */
 	public ResolvedMember lookupMethod(Member m) {
-		List typesTolookat = new ArrayList();
+		List<ResolvedType> typesTolookat = new ArrayList<ResolvedType>();
 		typesTolookat.add(this);
 		int pos = 0;
 		while (pos < typesTolookat.size()) {
-			ResolvedType type = (ResolvedType) typesTolookat.get(pos++);
+			ResolvedType type = typesTolookat.get(pos++);
 			if (!type.isMissing()) {
 				ResolvedMember[] methods = type.getDeclaredMethods();
 				if (methods != null) {
@@ -398,13 +459,14 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return null;
 	}
 
-	public ResolvedMember lookupMethodInITDs(Member m) {
-		if (interTypeMungers != null) {
-			for (Iterator i = interTypeMungers.iterator(); i.hasNext();) {
-				ConcreteTypeMunger tm = (ConcreteTypeMunger) i.next();
-				if (matches(tm.getSignature(), m)) {
-					return tm.getSignature();
-				}
+	/**
+	 * @param member the member to lookup in intertype declarations affecting this type
+	 * @return the real signature defined by any matching intertype declaration, otherwise null
+	 */
+	public ResolvedMember lookupMethodInITDs(Member member) {
+		for (ConcreteTypeMunger typeTransformer : interTypeMungers) {
+			if (matches(typeTransformer.getSignature(), member)) {
+				return typeTransformer.getSignature();
 			}
 		}
 		return null;
@@ -429,7 +491,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * anything about type variables.
 	 */
 	public ResolvedMember lookupResolvedMember(ResolvedMember aMember, boolean allowMissing, boolean ignoreGenerics) {
-		Iterator toSearch = null;
+		Iterator<ResolvedMember> toSearch = null;
 		ResolvedMember found = null;
 		if ((aMember.getKind() == Member.METHOD) || (aMember.getKind() == Member.CONSTRUCTOR)) {
 			toSearch = getMethodsWithoutIterator(true, allowMissing, !ignoreGenerics).iterator();
@@ -440,7 +502,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			toSearch = getFields();
 		}
 		while (toSearch.hasNext()) {
-			ResolvedMember candidate = (ResolvedMember) toSearch.next();
+			ResolvedMember candidate = toSearch.next();
 			if (ignoreGenerics) {
 				if (candidate.hasBackingGenericMember()) {
 					candidate = candidate.getBackingGenericMember();
@@ -557,7 +619,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	public ResolvedPointcutDefinition findPointcut(String name) {
 		// System.err.println("looking for pointcuts " + this);
-		for (Iterator i = getPointcuts(); i.hasNext();) {
+		for (Iterator<ResolvedMember> i = getPointcuts(); i.hasNext();) {
 			ResolvedPointcutDefinition f = (ResolvedPointcutDefinition) i.next();
 			// the resolvedpointcutdefinition can be null if there are other problems that
 			// prevented its resolution
@@ -626,8 +688,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			while (typeIterator.hasNext()) {
 				ResolvedType ty = typeIterator.next();
 				// System.out.println("super: " + ty + ", " + );
-				for (Iterator i = ty.getDeclares().iterator(); i.hasNext();) {
-					Declare dec = (Declare) i.next();
+				for (Iterator<Declare> i = ty.getDeclares().iterator(); i.hasNext();) {
+					Declare dec = i.next();
 					if (dec.isAdviceLike()) {
 						if (includeAdviceLike) {
 							ret.add(dec);
@@ -1535,7 +1597,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// System.err.println("add: " + munger + " to " + this.getClassName() +
 		// " with " + interTypeMungers);
 		if (sig.getKind() == Member.METHOD) {
-			if (clashesWithExistingMember(munger, getMethodsWithoutIterator(false, true))) {
+			if (clashesWithExistingMember(munger, getMethodsWithoutIterator(false, true).iterator())) {
 				return;
 			}
 			if (this.isInterface()) {
@@ -1588,10 +1650,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// mungers. Within it, the munger knows the original declared
 		// signature for the ITD so it can be retrieved.
 		interTypeMungers.add(munger);
-	}
-
-	private boolean clashesWithExistingMember(ConcreteTypeMunger munger, List existingMembersList) {
-		return clashesWithExistingMember(munger, existingMembersList.iterator());
 	}
 
 	/**
@@ -1959,6 +2017,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		if (isRawType()) {
 			getGenericType().clearInterTypeMungers();
 		}
+		// interTypeMungers.clear();
+		// BUG? Why can't this be clear() instead: 293620 c6
 		interTypeMungers = new ArrayList();
 	}
 
