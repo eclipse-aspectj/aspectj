@@ -676,16 +676,16 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return null;
 	}
 
-	public Collection getDeclares() {
-		return Collections.EMPTY_LIST;
+	public Collection<Declare> getDeclares() {
+		return Collections.emptyList();
 	}
 
-	public Collection getTypeMungers() {
-		return Collections.EMPTY_LIST;
+	public Collection<ConcreteTypeMunger> getTypeMungers() {
+		return Collections.emptyList();
 	}
 
-	public Collection getPrivilegedAccesses() {
-		return Collections.EMPTY_LIST;
+	public Collection<ResolvedMember> getPrivilegedAccesses() {
+		return Collections.emptyList();
 	}
 
 	// ---- useful things
@@ -787,7 +787,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		if (isParameterizedType()) {
 			methods = getGenericType().getDeclaredMethods();
 		}
-		Map typeVariableMap = getAjMemberParameterizationMap();
+		Map<String, UnresolvedType> typeVariableMap = getAjMemberParameterizationMap();
 		for (int i = 0, len = methods.length; i < len; i++) {
 			ShadowMunger munger = methods[i].getAssociatedShadowMunger();
 			if (munger != null) {
@@ -804,7 +804,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 							if (ptypes[j] instanceof TypeVariableReferenceType) {
 								TypeVariableReferenceType tvrt = (TypeVariableReferenceType) ptypes[j];
 								if (typeVariableMap.containsKey(tvrt.getTypeVariable().getName())) {
-									newPTypes[j] = (UnresolvedType) typeVariableMap.get(tvrt.getTypeVariable().getName());
+									newPTypes[j] = typeVariableMap.get(tvrt.getTypeVariable().getName());
 								} else {
 									newPTypes[j] = ptypes[j];
 								}
@@ -1107,8 +1107,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public ResolvedMember lookupMemberNoSupers(Member member) {
 		ResolvedMember ret = lookupDirectlyDeclaredMemberNoSupers(member);
 		if (ret == null && interTypeMungers != null) {
-			for (Iterator i = interTypeMungers.iterator(); i.hasNext();) {
-				ConcreteTypeMunger tm = (ConcreteTypeMunger) i.next();
+			for (ConcreteTypeMunger tm : interTypeMungers) {
 				if (matches(tm.getSignature(), member)) {
 					return tm.getSignature();
 				}
@@ -1601,7 +1600,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * 
 	 * @return true if there is a clash
 	 */
-	private boolean clashesWithExistingMember(ConcreteTypeMunger typeTransformer, Iterator existingMembers) {
+	private boolean clashesWithExistingMember(ConcreteTypeMunger typeTransformer, Iterator<ResolvedMember> existingMembers) {
 		ResolvedMember typeTransformerSignature = typeTransformer.getSignature();
 
 		// ResolvedType declaringAspectType = munger.getAspectType();
@@ -1626,7 +1625,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// filled in
 		// }
 		while (existingMembers.hasNext()) {
-			ResolvedMember existingMember = (ResolvedMember) existingMembers.next();
+			ResolvedMember existingMember = existingMembers.next();
 			// don't worry about clashing with bridge methods
 			if (existingMember.isBridgeMethod()) {
 				continue;
@@ -2002,8 +2001,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			ret.addAll(getSuperclass().getExposedPointcuts());
 		}
 
-		for (Iterator i = Arrays.asList(getDeclaredInterfaces()).iterator(); i.hasNext();) {
-			ResolvedType t = (ResolvedType) i.next();
+		for (Iterator<ResolvedType> i = Arrays.asList(getDeclaredInterfaces()).iterator(); i.hasNext();) {
+			ResolvedType t = i.next();
 			addPointcutsResolvingConflicts(ret, Arrays.asList(t.getDeclaredPointcuts()), false);
 		}
 		addPointcutsResolvingConflicts(ret, Arrays.asList(getDeclaredPointcuts()), true);
@@ -2375,8 +2374,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return false;
 	}
 
-	protected Map getAjMemberParameterizationMap() {
-		Map myMap = getMemberParameterizationMap();
+	protected Map<String, UnresolvedType> getAjMemberParameterizationMap() {
+		Map<String, UnresolvedType> myMap = getMemberParameterizationMap();
 		if (myMap.isEmpty()) {
 			// might extend a parameterized aspect that we also need to
 			// consider...
