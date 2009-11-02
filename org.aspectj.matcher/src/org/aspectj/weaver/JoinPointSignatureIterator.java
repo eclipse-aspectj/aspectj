@@ -57,11 +57,6 @@ public class JoinPointSignatureIterator implements Iterator<JoinPointSignature> 
 		iteratingOverDiscoveredSignatures = true;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.util.Iterator#hasNext()
-	 */
 	public boolean hasNext() {
 		if (iteratingOverDiscoveredSignatures && discoveredSignaturesIterator.hasNext()) {
 			return true;
@@ -76,11 +71,6 @@ public class JoinPointSignatureIterator implements Iterator<JoinPointSignature> 
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.util.Iterator#next()
-	 */
 	public JoinPointSignature next() {
 		if (iteratingOverDiscoveredSignatures && discoveredSignaturesIterator.hasNext()) {
 			return discoveredSignaturesIterator.next();
@@ -92,11 +82,6 @@ public class JoinPointSignatureIterator implements Iterator<JoinPointSignature> 
 		throw new NoSuchElementException();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.util.Iterator#remove()
-	 */
 	public void remove() {
 		throw new UnsupportedOperationException("can't remove from JoinPointSignatureIterator");
 	}
