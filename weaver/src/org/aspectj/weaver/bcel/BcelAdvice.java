@@ -722,6 +722,7 @@ class BcelAdvice extends Advice {
 				this.suppressedLintKinds = Utility.getSuppressedWarnings(signature.getAnnotations(), inWorld.getLint());
 			} else {
 				this.suppressedLintKinds = Collections.emptyList();
+				return;
 			}
 		}
 		inWorld.getLint().suppressKinds(suppressedLintKinds);
