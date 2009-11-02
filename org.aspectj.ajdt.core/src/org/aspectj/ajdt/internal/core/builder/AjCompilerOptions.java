@@ -74,6 +74,8 @@ public class AjCompilerOptions extends CompilerOptions {
 	// If true - autoboxing behaves differently ...
 	public boolean behaveInJava5Way = false;
 
+	public boolean timing = false;
+
 	// Specifies the level of the aspectjrt.jar we are targetting
 	public String targetAspectjRuntimeLevel = Constants.RUNTIME_LEVEL_DEFAULT;
 
@@ -112,8 +114,9 @@ public class AjCompilerOptions extends CompilerOptions {
 	 */
 	public AjCompilerOptions(Map settings) {
 		setAspectJWarningDefaults();
-		if (settings == null)
+		if (settings == null) {
 			return;
+		}
 		set(settings);
 	}
 
@@ -161,28 +164,39 @@ public class AjCompilerOptions extends CompilerOptions {
 	public void set(Map optionsMap) {
 		super.set(optionsMap);
 		Object optionValue;
-		if ((optionValue = optionsMap.get(OPTION_ReportUnusedPrivateMember)) != null)
+		if ((optionValue = optionsMap.get(OPTION_ReportUnusedPrivateMember)) != null) {
 			updateSeverity(UnusedPrivateMember, optionValue);
-		if ((optionValue = optionsMap.get(OPTION_ReportInvalidAbsoluteTypeName)) != null)
+		}
+		if ((optionValue = optionsMap.get(OPTION_ReportInvalidAbsoluteTypeName)) != null) {
 			updateSeverity(InvalidAbsoluteTypeName, optionValue);
-		if ((optionValue = optionsMap.get(OPTION_ReportInvalidWildcardTypeName)) != null)
+		}
+		if ((optionValue = optionsMap.get(OPTION_ReportInvalidWildcardTypeName)) != null) {
 			updateSeverity(InvalidWildCardTypeName, optionValue);
-		if ((optionValue = optionsMap.get(OPTION_ReportUnresolvableMember)) != null)
+		}
+		if ((optionValue = optionsMap.get(OPTION_ReportUnresolvableMember)) != null) {
 			updateSeverity(UnresolvableMember, optionValue);
-		if ((optionValue = optionsMap.get(OPTION_ReportTypeNotExposedToWeaver)) != null)
+		}
+		if ((optionValue = optionsMap.get(OPTION_ReportTypeNotExposedToWeaver)) != null) {
 			updateSeverity(TypeNotExposedToWeaver, optionValue);
-		if ((optionValue = optionsMap.get(OPTION_ReportShadowNotInStructure)) != null)
+		}
+		if ((optionValue = optionsMap.get(OPTION_ReportShadowNotInStructure)) != null) {
 			updateSeverity(ShadowNotInStructure, optionValue);
-		if ((optionValue = optionsMap.get(OPTION_ReportUnmatchedSuperTypeInCall)) != null)
+		}
+		if ((optionValue = optionsMap.get(OPTION_ReportUnmatchedSuperTypeInCall)) != null) {
 			updateSeverity(UnmatchedSuperTypeInCall, optionValue);
-		if ((optionValue = optionsMap.get(OPTION_ReportCannotImplementLazyTJP)) != null)
+		}
+		if ((optionValue = optionsMap.get(OPTION_ReportCannotImplementLazyTJP)) != null) {
 			updateSeverity(CannotImplementLazyTJP, optionValue);
-		if ((optionValue = optionsMap.get(OPTION_ReportNeedSerialVersionUIDField)) != null)
+		}
+		if ((optionValue = optionsMap.get(OPTION_ReportNeedSerialVersionUIDField)) != null) {
 			updateSeverity(NeedSerialVersionUIDField, optionValue);
-		if ((optionValue = optionsMap.get(OPTION_ReportIncompatibleSerialVersion)) != null)
+		}
+		if ((optionValue = optionsMap.get(OPTION_ReportIncompatibleSerialVersion)) != null) {
 			updateSeverity(IncompatibleSerialVersion, optionValue);
-		if ((optionValue = optionsMap.get(CompilerOptions.OPTION_ReportSwallowedExceptionInCatchBlock)) != null)
+		}
+		if ((optionValue = optionsMap.get(CompilerOptions.OPTION_ReportSwallowedExceptionInCatchBlock)) != null) {
 			updateSeverity(CompilerOptions.SwallowedExceptionInCatchBlock, optionValue);
+		}
 
 		if ((optionValue = optionsMap.get(OPTION_TerminateAfterCompilation)) != null) {
 			if (ENABLED.equals(optionValue)) {

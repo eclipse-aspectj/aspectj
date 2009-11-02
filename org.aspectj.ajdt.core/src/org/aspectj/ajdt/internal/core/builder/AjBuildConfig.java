@@ -409,6 +409,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		setXconfigurationInfo(global.getXconfigurationInfo());
 		setAddSerialVerUID(global.isAddSerialVerUID());
 		setXmlConfigured(global.isXmlConfigured());
+		setTiming(global.isTiming());
 	}
 
 	void join(Collection local, Collection global) {
@@ -643,6 +644,14 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 
 	public boolean getBehaveInJava5Way() {
 		return options.behaveInJava5Way;
+	}
+
+	public void setTiming(boolean b) {
+		options.timing = b;
+	}
+
+	public boolean isTiming() {
+		return options.timing;
 	}
 
 	public void setTargetAspectjRuntimeLevel(String level) {

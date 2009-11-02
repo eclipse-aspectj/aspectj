@@ -80,7 +80,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
@@ -212,8 +211,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			boolean canIncremental = state.prepareForNextBuild(buildConfig);
 			if (!canIncremental && !isFullBuild) { // retry as batch?
 				CompilationAndWeavingContext.leavingPhase(ct);
-				if (state.listenerDefined())
+				if (state.listenerDefined()) {
 					state.getListener().recordDecision("Falling back to batch compilation");
+				}
 				return performBuild(buildConfig, baseHandler, true);
 			}
 			this.handler = CountingMessageHandler.makeCountingMessageHandler(baseHandler);
@@ -296,10 +296,11 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				}
 				boolean hereWeGoAgain = !(files.isEmpty() && binarySourcesForTheNextCompile.isEmpty());
 				for (int i = 0; (i < 5) && hereWeGoAgain; i++) {
-					if (state.listenerDefined())
+					if (state.listenerDefined()) {
 						state.getListener()
 								.recordInformation("Starting incremental compilation loop " + (i + 1) + " of possibly 5");
-					// System.err.println("XXXX inc: " + files);
+						// System.err.println("XXXX inc: " + files);
+					}
 
 					performCompilation(files);
 					if ((!proceedOnError() && handler.hasErrors())
@@ -309,8 +310,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 					}
 
 					if (state.requiresFullBatchBuild()) {
-						if (state.listenerDefined())
+						if (state.listenerDefined()) {
 							state.getListener().recordInformation(" Dropping back to full build");
+						}
 						return batchBuild(buildConfig, baseHandler);
 					}
 
@@ -323,9 +325,11 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 					// again because in compiling something we found something else we needed to
 					// rebuild. But what case causes this?
 					if (hereWeGoAgain) {
-						if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode())
-							if (AsmManager.attemptIncrementalModelRepairs)
+						if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {
+							if (AsmManager.attemptIncrementalModelRepairs) {
 								state.getStructureModel().processDelta(files, state.getAddedFiles(), state.getDeletedFiles());
+							}
+						}
 					}
 				}
 				if (!files.isEmpty()) {
@@ -380,12 +384,14 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				closeOutputStream(buildConfig.getOutputJar());
 			}
 			ret = !handler.hasErrors();
-			if (getBcelWorld() != null)
+			if (getBcelWorld() != null) {
 				getBcelWorld().tidyUp();
-			if (getWeaver() != null)
+			}
+			if (getWeaver() != null) {
 				getWeaver().tidyUp();
-			// bug 59895, don't release reference to handler as may be needed by a nested call
-			// handler = null;
+				// bug 59895, don't release reference to handler as may be needed by a nested call
+				// handler = null;
+			}
 		}
 		return ret;
 	}
@@ -468,8 +474,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			inStream = new JarInputStream(new FileInputStream(jarFile));
 			while (true) {
 				ZipEntry entry = inStream.getNextEntry();
-				if (entry == null)
+				if (entry == null) {
 					break;
+				}
 
 				String filename = entry.getName();
 				// System.out.println("? copyResourcesFromJarFile() filename='" + filename +"'");
@@ -483,14 +490,16 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				inStream.closeEntry();
 			}
 		} finally {
-			if (inStream != null)
+			if (inStream != null) {
 				inStream.close();
+			}
 		}
 	}
 
 	private void copyResourcesFromDirectory(File dir) throws IOException {
-		if (!COPY_INPATH_DIR_RESOURCES)
+		if (!COPY_INPATH_DIR_RESOURCES) {
 			return;
+		}
 		// Get a list of all files (i.e. everything that isnt a directory)
 		File[] files = FileUtil.listFiles(dir, new FileFilter() {
 			public boolean accept(File f) {
@@ -509,8 +518,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	}
 
 	private void copyResourcesFromFile(File f, String filename, File src) throws IOException {
-		if (!acceptResource(filename, true))
+		if (!acceptResource(filename, true)) {
 			return;
+		}
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(f);
@@ -519,8 +529,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 			writeResource(filename, bytes, src);
 		} finally {
-			if (fis != null)
+			if (fis != null) {
 				fis.close();
+			}
 		}
 	}
 
@@ -629,8 +640,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	}
 
 	private void writeOutxmlFile() throws IOException {
-		if (ignoreOutxml)
+		if (ignoreOutxml) {
 			return;
+		}
 
 		String filename = buildConfig.getOutxmlName();
 		// System.err.println("? AjBuildManager.writeOutxmlFile() outxml=" + filename);
@@ -813,6 +825,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		// cp.addAll(buildConfig.getClasspath());
 		BcelWorld bcelWorld = new BcelWorld(cp, handler, null);
 		bcelWorld.setBehaveInJava5Way(buildConfig.getBehaveInJava5Way());
+		bcelWorld.setTiming(buildConfig.isTiming());
 		bcelWorld.setAddSerialVerUID(buildConfig.isAddSerialVerUID());
 		bcelWorld.setXmlConfigured(buildConfig.isXmlConfigured());
 		bcelWorld.setXmlFiles(buildConfig.getXmlFiles());
@@ -1073,8 +1086,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 							} else {
 								writeZipEntry(classFile, filename);
 							}
-							if (shouldAddAspectName && !classname.endsWith("$ajcMightHaveAspect"))
+							if (shouldAddAspectName && !classname.endsWith("$ajcMightHaveAspect")) {
 								addAspectName(classname, unitResult.getFileName());
+							}
 						} catch (IOException ex) {
 							IMessage message = EclipseAdapterUtils.makeErrorMessage(new String(unitResult.fileName),
 									CANT_WRITE_RESULT, ex);
@@ -1206,8 +1220,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	}
 
 	String makeClasspathString(AjBuildConfig buildConfig) {
-		if (buildConfig == null || buildConfig.getFullClasspath() == null)
+		if (buildConfig == null || buildConfig.getFullClasspath() == null) {
 			return "";
+		}
 		StringBuffer buf = new StringBuffer();
 		boolean first = true;
 		for (Iterator it = buildConfig.getFullClasspath().iterator(); it.hasNext();) {
@@ -1233,8 +1248,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			return null;
 		}
 
-		if (buildConfig == null || buildConfig.getFullClasspath() == null)
+		if (buildConfig == null || buildConfig.getFullClasspath() == null) {
 			return "no classpath specified";
+		}
 
 		String ret = null;
 		for (Iterator it = buildConfig.getFullClasspath().iterator(); it.hasNext();) {
@@ -1279,8 +1295,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			}
 		}
 
-		if (ret != null)
+		if (ret != null) {
 			return ret; // last error found in potentially matching jars...
+		}
 
 		return "couldn't find aspectjrt.jar on classpath, checked: " + makeClasspathString(buildConfig);
 	}
