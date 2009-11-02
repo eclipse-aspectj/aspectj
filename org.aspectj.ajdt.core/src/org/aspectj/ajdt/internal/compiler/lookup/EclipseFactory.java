@@ -129,8 +129,9 @@ public class EclipseFactory {
 	}
 
 	public ResolvedType fromEclipse(ReferenceBinding binding) {
-		if (binding == null)
+		if (binding == null) {
 			return ResolvedType.MISSING;
+		}
 		// ??? this seems terribly inefficient
 		// System.err.println("resolving: " + binding.getClass() + ", name = " + getName(binding));
 		ResolvedType ret = getWorld().resolve(fromBinding(binding));
@@ -139,8 +140,9 @@ public class EclipseFactory {
 	}
 
 	public ResolvedType fromTypeBindingToRTX(TypeBinding tb) {
-		if (tb == null)
+		if (tb == null) {
 			return ResolvedType.MISSING;
+		}
 		ResolvedType ret = getWorld().resolve(fromBinding(tb));
 		return ret;
 	}
@@ -268,8 +270,9 @@ public class EclipseFactory {
 			// Create an unresolved parameterized type. We can't create a resolved one as the
 			// act of resolution here may cause recursion problems since the parameters may
 			// be type variables that we haven't fixed up yet.
-			if (arguments == null)
+			if (arguments == null) {
 				arguments = new UnresolvedType[0];
+			}
 			// StringBuffer parameterizedSig = new StringBuffer();
 			// parameterizedSig.append(ResolvedType.PARAMETERIZED_TYPE_IDENTIFIER);
 			//			
@@ -292,8 +295,9 @@ public class EclipseFactory {
 				tVars[i] = ((TypeVariableReference) fromTypeVariableBinding(eclipseV)).getTypeVariable();
 			}
 			// TODO asc generics - temporary guard....
-			if (!(binding instanceof SourceTypeBinding))
+			if (!(binding instanceof SourceTypeBinding)) {
 				throw new RuntimeException("Cant get the generic sig for " + binding.debugName());
+			}
 			return UnresolvedType.forGenericType(getName(binding), tVars, CharOperation.charToString(((SourceTypeBinding) binding)
 					.genericSignature()));
 		}
@@ -368,15 +372,17 @@ public class EclipseFactory {
 			tv.setDeclaringElementKind(TypeVariable.TYPE);
 			// // tv.setDeclaringElement(fromBinding(aTypeVariableBinding.declaringElement));
 		}
-		if (aTypeVariableBinding.declaringElement instanceof MethodBinding)
+		if (aTypeVariableBinding.declaringElement instanceof MethodBinding) {
 			typeVariablesForThisMember.put(new String(aTypeVariableBinding.sourceName), ret);
+		}
 		typeVariableBindingsInProgress.remove(aTypeVariableBinding);
 		return ret;
 	}
 
 	public UnresolvedType[] fromBindings(TypeBinding[] bindings) {
-		if (bindings == null)
+		if (bindings == null) {
 			return UnresolvedType.NONE;
+		}
 		int len = bindings.length;
 		UnresolvedType[] ret = new UnresolvedType[len];
 		for (int i = 0; i < len; i++) {
@@ -423,8 +429,9 @@ public class EclipseFactory {
 		for (Iterator i = baseTypeMungers.iterator(); i.hasNext();) {
 			ConcreteTypeMunger munger = (ConcreteTypeMunger) i.next();
 			EclipseTypeMunger etm = makeEclipseTypeMunger(munger);
-			if (etm != null)
+			if (etm != null) {
 				ret.add(etm);
+			}
 		}
 		finishedTypeMungers = ret;
 	}
@@ -461,8 +468,9 @@ public class EclipseFactory {
 
 	public ResolvedMember makeResolvedMember(MethodBinding binding, Shadow.Kind shadowKind) {
 		MemberKind memberKind = binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD;
-		if (shadowKind == Shadow.AdviceExecution)
+		if (shadowKind == Shadow.AdviceExecution) {
 			memberKind = Member.ADVICE;
+		}
 		return makeResolvedMember(binding, binding.declaringClass, memberKind);
 	}
 
@@ -524,8 +532,9 @@ public class EclipseFactory {
 
 		// AMC these next two lines shouldn't be needed once we sort out generic types properly in the world map
 		ResolvedType realDeclaringType = world.resolve(fromBinding(declaringType));
-		if (realDeclaringType.isRawType())
+		if (realDeclaringType.isRawType()) {
 			realDeclaringType = realDeclaringType.getGenericType();
+		}
 		ResolvedMemberImpl ret = new EclipseResolvedMember(binding, memberKind, realDeclaringType, binding.modifiers,
 				fromBinding(binding.returnType), new String(binding.selector), fromBindings(binding.parameters),
 				fromBindings(binding.thrownExceptions), this);
@@ -551,8 +560,9 @@ public class EclipseFactory {
 	public ResolvedMember makeResolvedMember(FieldBinding binding, TypeBinding receiverType) {
 		// AMC these next two lines shouldn't be needed once we sort out generic types properly in the world map
 		ResolvedType realDeclaringType = world.resolve(fromBinding(receiverType));
-		if (realDeclaringType.isRawType())
+		if (realDeclaringType.isRawType()) {
 			realDeclaringType = realDeclaringType.getGenericType();
+		}
 		ResolvedMemberImpl ret = new EclipseResolvedMember(binding, Member.FIELD, realDeclaringType, binding.modifiers, world
 				.resolve(fromBinding(binding.type)), new String(binding.name), UnresolvedType.NONE);
 		return ret;
@@ -589,13 +599,15 @@ public class EclipseFactory {
 
 	// return true if this is type variables are in the type arguments
 	private boolean isParameterizedWithTypeVariables(UnresolvedType typeX) {
-		if (!typeX.isParameterizedType())
+		if (!typeX.isParameterizedType()) {
 			return false;
+		}
 		UnresolvedType[] typeArguments = typeX.getTypeParameters();
 		if (typeArguments != null) {
 			for (int i = 0; i < typeArguments.length; i++) {
-				if (typeArguments[i].isTypeVariableReference())
+				if (typeArguments[i].isTypeVariableReference()) {
 					return true;
+				}
 			}
 		}
 		return false;
@@ -608,24 +620,33 @@ public class EclipseFactory {
 
 	private TypeBinding makeTypeBinding1(UnresolvedType typeX) {
 		if (typeX.isPrimitiveType()) {
-			if (typeX == ResolvedType.BOOLEAN)
+			if (typeX == ResolvedType.BOOLEAN) {
 				return TypeBinding.BOOLEAN;
-			if (typeX == ResolvedType.BYTE)
+			}
+			if (typeX == ResolvedType.BYTE) {
 				return TypeBinding.BYTE;
-			if (typeX == ResolvedType.CHAR)
+			}
+			if (typeX == ResolvedType.CHAR) {
 				return TypeBinding.CHAR;
-			if (typeX == ResolvedType.DOUBLE)
+			}
+			if (typeX == ResolvedType.DOUBLE) {
 				return TypeBinding.DOUBLE;
-			if (typeX == ResolvedType.FLOAT)
+			}
+			if (typeX == ResolvedType.FLOAT) {
 				return TypeBinding.FLOAT;
-			if (typeX == ResolvedType.INT)
+			}
+			if (typeX == ResolvedType.INT) {
 				return TypeBinding.INT;
-			if (typeX == ResolvedType.LONG)
+			}
+			if (typeX == ResolvedType.LONG) {
 				return TypeBinding.LONG;
-			if (typeX == ResolvedType.SHORT)
+			}
+			if (typeX == ResolvedType.SHORT) {
 				return TypeBinding.SHORT;
-			if (typeX == ResolvedType.VOID)
+			}
+			if (typeX == ResolvedType.VOID) {
 				return TypeBinding.VOID;
+			}
 			throw new RuntimeException("weird primitive type " + typeX);
 		} else if (typeX.isArray()) {
 			int dim = 0;
@@ -689,8 +710,9 @@ public class EclipseFactory {
 					bound = makeTypeBinding(brt.getLowerBound());
 				}
 				TypeBinding[] otherBounds = null;
-				if (brt.getAdditionalBounds() != null && brt.getAdditionalBounds().length != 0)
+				if (brt.getAdditionalBounds() != null && brt.getAdditionalBounds().length != 0) {
 					otherBounds = makeTypeBindings(brt.getAdditionalBounds());
+				}
 				WildcardBinding wb = lookupEnvironment.createWildcard(baseTypeForParameterizedType,
 						indexOfTypeParameterBeingConverted, bound, otherBounds, boundkind);
 				return wb;
@@ -877,8 +899,9 @@ public class EclipseFactory {
 				.getReturnType()), makeTypeBindings(member.getParameterTypes()), makeReferenceBindings(member.getExceptions()),
 				declaringType);
 
-		if (tvbs != null)
+		if (tvbs != null) {
 			mb.typeVariables = tvbs;
+		}
 		typeVariableToTypeBinding.clear();
 		currentType = null;
 
@@ -959,8 +982,9 @@ public class EclipseFactory {
 		TypeVariableBinding tvBinding = (TypeVariableBinding) typeVariableToTypeBinding.get(tv.getName());
 		if (currentType != null) {
 			TypeVariableBinding tvb = currentType.getTypeVariable(tv.getName().toCharArray());
-			if (tvb != null)
+			if (tvb != null) {
 				return tvb;
+			}
 		}
 		if (tvBinding == null) {
 			Binding declaringElement = null;
@@ -1059,8 +1083,9 @@ public class EclipseFactory {
 			if (!cName.isMissing()) {
 				complexName = (ReferenceType) cName;
 				complexName = (ReferenceType) complexName.getGenericType();
-				if (complexName == null)
+				if (complexName == null) {
 					complexName = new ReferenceType(complexTx, world);
+				}
 			} else {
 				complexName = new ReferenceType(complexTx, world);
 			}
