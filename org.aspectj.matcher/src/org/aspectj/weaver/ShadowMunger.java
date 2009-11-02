@@ -24,6 +24,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.SourceLocation;
+import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.util.PartialOrder;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -103,7 +104,16 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 				}
 			}
 		}
-		return pointcut.match(shadow).maybeTrue();
+		if (world.areInfoMessagesEnabled() && world.isTimingEnabled()) {
+			long starttime = System.nanoTime();
+			FuzzyBoolean isMatch = pointcut.match(shadow);
+			long endtime = System.nanoTime();
+			world.record(pointcut, endtime - starttime);
+			return isMatch.maybeTrue();
+		} else {
+			FuzzyBoolean isMatch = pointcut.match(shadow);
+			return isMatch.maybeTrue();
+		}
 	}
 
 	public int fallbackCompareTo(Object other) {
