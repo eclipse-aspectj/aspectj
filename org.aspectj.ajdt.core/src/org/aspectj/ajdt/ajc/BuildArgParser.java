@@ -136,10 +136,11 @@ public class BuildArgParser extends Main {
 			// Now jump through firey hoops to turn them on/off
 			if (handler instanceof CountingMessageHandler) {
 				IMessageHandler delegate = ((CountingMessageHandler) handler).delegate;
-				if (swi)
+				if (swi) {
 					delegate.dontIgnore(IMessage.WEAVEINFO);
-				else
+				} else {
 					delegate.ignore(IMessage.WEAVEINFO);
+				}
 			}
 
 			boolean incrementalMode = buildConfig.isIncrementalMode() || buildConfig.isIncrementalFileMode();
@@ -405,9 +406,9 @@ public class BuildArgParser extends Main {
 						} else {
 							if (file.isDirectory()) {
 								inPath.add(file);
-							} else
-
+							} else {
 								showWarning("skipping missing, empty or corrupt inpath entry: " + filename);
+							}
 						}
 					}
 					buildConfig.setInPath(inPath);
@@ -428,9 +429,9 @@ public class BuildArgParser extends Main {
 							File dirFile = makeFile(filename);
 							if (dirFile.isDirectory()) {
 								buildConfig.getInJars().add(dirFile);
-							} else
-
+							} else {
 								showWarning("skipping missing, empty or corrupt injar: " + filename);
+							}
 						}
 					}
 
@@ -669,6 +670,7 @@ public class BuildArgParser extends Main {
 					showError("-Xajruntimetarget:<level> only supports a target level of 1.2 or 1.5");
 				}
 			} else if (arg.equals("-timers")) {
+				buildConfig.setTiming(true);
 				// swallow - it is dealt with in Main.runMain()
 			} else if (arg.equals("-1.5")) {
 				buildConfig.setBehaveInJava5Way(true);
@@ -738,8 +740,9 @@ public class BuildArgParser extends Main {
 		protected File makeFile(File dir, String name) {
 			name = name.replace('/', File.separatorChar);
 			File ret = new File(name);
-			if (dir == null || ret.isAbsolute())
+			if (dir == null || ret.isAbsolute()) {
 				return ret;
+			}
 			try {
 				dir = dir.getCanonicalFile();
 			} catch (IOException ioe) {
