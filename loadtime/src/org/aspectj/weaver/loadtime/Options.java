@@ -46,6 +46,7 @@ public class Options {
 	private static final String OPTIONVALUED_Xlint = "-Xlint:";
 	private static final String OPTIONVALUED_joinpoints = "-Xjoinpoints:";
 	private static final String OPTIONVALUED_Xset = "-Xset:";
+	private static final String OPTION_timers = "-timers";
 
 	public static WeaverOption parse(String options, ClassLoader laoder, IMessageHandler imh) {
 		WeaverOption weaverOption = new WeaverOption(imh);
@@ -96,8 +97,9 @@ public class Options {
 			} else if (arg.equalsIgnoreCase(OPTION_hasMember)) {
 				weaverOption.hasMember = true;
 			} else if (arg.startsWith(OPTIONVALUED_joinpoints)) {
-				if (arg.length() > OPTIONVALUED_joinpoints.length())
+				if (arg.length() > OPTIONVALUED_joinpoints.length()) {
 					weaverOption.optionalJoinpoints = arg.substring(OPTIONVALUED_joinpoints.length()).trim();
+				}
 			} else if (arg.equalsIgnoreCase(OPTION_verbose)) {
 				weaverOption.verbose = true;
 			} else if (arg.equalsIgnoreCase(OPTION_debug)) {
@@ -118,6 +120,8 @@ public class Options {
 				if (arg.length() > OPTIONVALUED_Xlint.length()) {
 					weaverOption.xSet = arg.substring(OPTIONVALUED_Xset.length()).trim();
 				}
+			} else if (arg.equalsIgnoreCase(OPTION_timers)) {
+				weaverOption.timers = true;
 			} else {
 				weaverOption.messageHandler.handleMessage(new Message("Cannot configure weaver with option '" + arg
 						+ "': unknown option", IMessage.WARNING, null, null));
@@ -145,6 +149,7 @@ public class Options {
 		boolean java5;
 		boolean lazyTjp;
 		boolean hasMember;
+		boolean timers = false;
 		String optionalJoinpoints;
 		boolean noWarn;
 		boolean proceedOnError;

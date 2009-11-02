@@ -81,10 +81,12 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 	public ClassLoaderWeavingAdaptor() {
 		super();
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("<init>", this);
-		if (trace.isTraceEnabled())
+		}
+		if (trace.isTraceEnabled()) {
 			trace.exit("<init>");
+		}
 	}
 
 	/**
@@ -95,10 +97,12 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 */
 	public ClassLoaderWeavingAdaptor(final ClassLoader deprecatedLoader, final IWeavingContext deprecatedContext) {
 		super();
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("<init>", this, new Object[] { deprecatedLoader, deprecatedContext });
-		if (trace.isTraceEnabled())
+		}
+		if (trace.isTraceEnabled()) {
 			trace.exit("<init>");
+		}
 	}
 
 	class SimpleGeneratedClassHandler implements GeneratedClassHandler {
@@ -126,8 +130,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	}
 
 	protected void initialize(final ClassLoader classLoader, IWeavingContext context) {
-		if (initialized)
+		if (initialized) {
 			return;
+		}
 
 		boolean success = true;
 		// if (trace.isTraceEnabled()) trace.enter("initialize",this,new Object[] { classLoader, context });
@@ -144,8 +149,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		List definitions = weavingContext.getDefinitions(classLoader, this);
 		if (definitions.isEmpty()) {
 			disable(); // TODO maw Needed to ensure messages are flushed
-			if (trace.isTraceEnabled())
+			if (trace.isTraceEnabled()) {
 				trace.exit("initialize", definitions);
+			}
 			return;
 		}
 
@@ -175,8 +181,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		}
 
 		initialized = true;
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("initialize", isEnabled());
+		}
 	}
 
 	/**
@@ -186,8 +193,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * @param loader
 	 */
 	List parseDefinitions(final ClassLoader loader) {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("parseDefinitions", this);
+		}
 
 		List definitions = new ArrayList();
 		try {
@@ -204,8 +212,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			}
 
 			String resourcePath = System.getProperty("org.aspectj.weaver.loadtime.configuration", AOP_XML);
-			if (trace.isTraceEnabled())
+			if (trace.isTraceEnabled()) {
 				trace.event("parseDefinitions", this, resourcePath);
+			}
 
 			StringTokenizer st = new StringTokenizer(resourcePath, ";");
 
@@ -230,8 +239,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 					Set seenBefore = new HashSet();
 					while (xmls.hasMoreElements()) {
 						URL xml = (URL) xmls.nextElement();
-						if (trace.isTraceEnabled())
+						if (trace.isTraceEnabled()) {
 							trace.event("parseDefinitions", this, xml);
+						}
 						if (!seenBefore.contains(xml)) {
 							info("using configuration " + weavingContext.getFile(xml));
 							definitions.add(DocumentParser.parse(xml));
@@ -250,14 +260,16 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			warn("parse definitions failed", e);
 		}
 
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("parseDefinitions", definitions);
+		}
 		return definitions;
 	}
 
 	private boolean registerDefinitions(final BcelWeaver weaver, final ClassLoader loader, List definitions) {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("registerDefinitions", this, definitions);
+		}
 		boolean success = true;
 
 		try {
@@ -273,8 +285,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			warn("register definition failed", (ex instanceof AbortException) ? null : ex);
 		}
 
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("registerDefinitions", success);
+		}
 		return success;
 	}
 
@@ -305,6 +318,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		setMessageHandler(weaverOption.messageHandler);
 		world.setXlazyTjp(weaverOption.lazyTjp);
 		world.setXHasMemberSupportEnabled(weaverOption.hasMember);
+		world.setTiming(weaverOption.timers);
 		world.setOptionalJoinpoints(weaverOption.optionalJoinpoints);
 		world.setPinpointMode(weaverOption.pinpoint);
 		weaver.setReweavableMode(weaverOption.notReWeavable);
@@ -413,8 +427,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * @param definitions
 	 */
 	private boolean registerAspects(final BcelWeaver weaver, final ClassLoader loader, final List definitions) {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("registerAspects", this, new Object[] { weaver, loader, definitions });
+		}
 		boolean success = true;
 
 		// TODO: the exclude aspect allow to exclude aspect defined upper in the CL hierarchy - is it what we want ??
@@ -486,14 +501,16 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			info("no aspects registered. Disabling weaver for class loader " + getClassLoaderName(loader));
 		}
 
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("registerAspects", success);
+		}
 		return success;
 	}
 
 	private boolean weaveAndDefineConceteAspects() {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("weaveAndDefineConceteAspects", this, concreteAspects);
+		}
 		boolean success = true;
 
 		for (Iterator iterator = concreteAspects.iterator(); iterator.hasNext();) {
@@ -510,8 +527,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			}
 		}
 
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("weaveAndDefineConceteAspects", success);
+		}
 		return success;
 	}
 
@@ -755,10 +773,11 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	public String getNamespace() {
 		// System.out.println("ClassLoaderWeavingAdaptor.getNamespace() classloader=" + weavingContext.getClassLoaderName() +
 		// ", namespace=" + namespace);
-		if (namespace == null)
+		if (namespace == null) {
 			return "";
-		else
+		} else {
 			return new String(namespace);
+		}
 	}
 
 	/**
@@ -770,10 +789,11 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	public boolean generatedClassesExistFor(String className) {
 		// System.err.println("? ClassLoaderWeavingAdaptor.generatedClassesExist() classname=" + className + ", size=" +
 		// generatedClasses);
-		if (className == null)
+		if (className == null) {
 			return !generatedClasses.isEmpty();
-		else
+		} else {
 			return generatedClasses.containsKey(className);
+		}
 	}
 
 	/**
@@ -785,8 +805,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	}
 
 	private void defineClass(ClassLoader loader, String name, byte[] bytes) {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("defineClass", this, new Object[] { loader, name, bytes });
+		}
 		Object clazz = null;
 		debug("generating class '" + name + "'");
 
@@ -808,7 +829,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			warn("define generated class failed", e);
 		}
 
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("defineClass", clazz);
+		}
 	}
 }
