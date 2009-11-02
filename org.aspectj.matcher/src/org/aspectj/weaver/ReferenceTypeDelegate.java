@@ -88,9 +88,9 @@ public interface ReferenceTypeDelegate {
 
 	public Collection<Declare> getDeclares();
 
-	public Collection getTypeMungers();
+	public Collection<ConcreteTypeMunger> getTypeMungers();
 
-	public Collection getPrivilegedAccesses();
+	public Collection<ResolvedMember> getPrivilegedAccesses();
 
 	// end of aspect declaration related members
 
