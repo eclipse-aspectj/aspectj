@@ -70,8 +70,9 @@ public final class Iterators {
 					}
 
 					public T next() {
-						if (!hasNext())
+						if (!hasNext()) {
 							throw new NoSuchElementException();
+						}
 						T ret = peek;
 						seen.add(peek);
 						peek = null;
@@ -122,16 +123,18 @@ public final class Iterators {
 		return new Iterator<B>() {
 			Iterator<B> delegate = new Iterator<B>() {
 				public boolean hasNext() {
-					if (!a.hasNext())
+					if (!a.hasNext()) {
 						return false;
+					}
 					A o = a.next();
 					delegate = append1(g.get(o), this);
 					return delegate.hasNext();
 				}
 
 				public B next() {
-					if (!hasNext())
+					if (!hasNext()) {
 						throw new UnsupportedOperationException();
+					}
 					return delegate.next();
 				}
 
@@ -183,8 +186,9 @@ public final class Iterators {
 	 * B is empty, simply returns A, and if A is empty, simply returns B. Do NOT USE if b.hasNext() is not idempotent.
 	 */
 	public static <T> Iterator<T> append(final Iterator<T> a, final Iterator<T> b) {
-		if (!b.hasNext())
+		if (!b.hasNext()) {
 			return a;
+		}
 		return append1(a, b);
 	}
 
@@ -193,18 +197,21 @@ public final class Iterators {
 	 * A is empty, simply returns B. Guaranteed not to call B.hasNext() until A is empty.
 	 */
 	public static <T> Iterator<T> append1(final Iterator<T> a, final Iterator<T> b) {
-		if (!a.hasNext())
+		if (!a.hasNext()) {
 			return b;
+		}
 		return new Iterator<T>() {
 			public boolean hasNext() {
 				return a.hasNext() || b.hasNext();
 			}
 
 			public T next() {
-				if (a.hasNext())
+				if (a.hasNext()) {
 					return a.next();
-				if (b.hasNext())
+				}
+				if (b.hasNext()) {
 					return b.next();
+				}
 				throw new NoSuchElementException();
 			}
 
@@ -226,10 +233,11 @@ public final class Iterators {
 			}
 
 			public T next() {
-				if (first.hasNext())
+				if (first.hasNext()) {
 					return first.next();
-				else if (last1 == null)
+				} else if (last1 == null) {
 					throw new NoSuchElementException();
+				}
 				T ret = last1;
 				last1 = null;
 				return ret;
