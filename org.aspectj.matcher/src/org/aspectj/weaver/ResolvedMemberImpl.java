@@ -127,8 +127,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		accumulateTypesInBetween(originalDeclaringType, firstDefiningType, declaringTypes);
 		Set<ResolvedMember> memberSignatures = new HashSet<ResolvedMember>();
 		for (ResolvedType declaringType : declaringTypes) {
-			ResolvedMember member = firstDefiningMember.withSubstituteDeclaringType(declaringType);
-			memberSignatures.add(member);
+			memberSignatures.add(new JoinPointSignature(firstDefiningMember, declaringType));
 		}
 
 		if (shouldWalkUpHierarchyFor(firstDefiningMember)) {
@@ -137,7 +136,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			// every type between the firstDefiningMember and the root defining
 			// member.
 			Iterator<ResolvedType> superTypeIterator = firstDefiningType.getDirectSupertypes();
-			List typesAlreadyVisited = new ArrayList();
+			List<ResolvedType> typesAlreadyVisited = new ArrayList<ResolvedType>();
 			accumulateMembersMatching(firstDefiningMember, superTypeIterator, typesAlreadyVisited, memberSignatures, false);
 		}
 
@@ -196,8 +195,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 					accumulateTypesInBetween(toLookIn, resolvedDeclaringType, declaringTypes);
 					for (ResolvedType declaringType : declaringTypes) {
 						// typesAlreadyVisited.add(declaringType);
-						ResolvedMember member = foundMember.withSubstituteDeclaringType(declaringType);
-						foundMembers.add(member);
+						foundMembers.add(new JoinPointSignature(foundMember, declaringType));
 					}
 					if (!ignoreGenerics && toLookIn.isParameterizedType() && (foundMember.backingGenericMember != null)) {
 						foundMembers.add(new JoinPointSignature(foundMember.backingGenericMember, foundMember.declaringType
@@ -920,30 +918,17 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	}
 
 	/**
-	 * Returns a copy of this member but with the declaring type swapped. Copy only needs to be shallow.
-	 * 
-	 * @param newDeclaringType
-	 */
-	public JoinPointSignature withSubstituteDeclaringType(ResolvedType newDeclaringType) {
-		JoinPointSignature ret = new JoinPointSignature(this, newDeclaringType);
-		return ret;
-	}
-
-	/**
 	 * Returns true if this member matches the other. The matching takes into account name and parameter types only. When comparing
 	 * parameter types, we allow any type variable to match any other type variable regardless of bounds.
 	 */
 	public boolean matches(ResolvedMember aCandidateMatch, boolean ignoreGenerics) {
-		// if (this.getName().equals("get")) {
-		// System.out.println("In RMI.matches() this=" + this + " candidate=" + aCandidateMatch);
-		// }
 		ResolvedMemberImpl candidateMatchImpl = (ResolvedMemberImpl) aCandidateMatch;
 		if (!getName().equals(aCandidateMatch.getName())) {
 			return false;
 		}
-		UnresolvedType[] myParameterTypes = getGenericParameterTypes();
+		UnresolvedType[] parameterTypes = getGenericParameterTypes();
 		UnresolvedType[] candidateParameterTypes = aCandidateMatch.getGenericParameterTypes();
-		if (myParameterTypes.length != candidateParameterTypes.length) {
+		if (parameterTypes.length != candidateParameterTypes.length) {
 			return false;
 		}
 		boolean b = false;
