@@ -111,7 +111,7 @@ public class BcelWeaver {
 	// private Map /*String,UnwovenClassFile*/resources = new HashMap();
 	private transient List<UnwovenClassFile> addedClasses = new ArrayList<UnwovenClassFile>();
 	private transient List<String> deletedTypenames = new ArrayList<String>();
-	private transient List shadowMungerList = null; // setup by prepareForWeave
+	private transient List<ShadowMunger> shadowMungerList = null; // setup by prepareForWeave
 	private transient List typeMungerList = null; // setup by prepareForWeave
 	private transient List lateTypeMungerList = null; // setup by prepareForWeave
 	private transient List declareParentsList = null; // setup by prepareForWeave
@@ -239,7 +239,9 @@ public class BcelWeaver {
 		} else {
 			addedAspects = addAspectsFromJarFile(inFile);
 		}
-
+		if (world.isOverWeaving()) {
+			return;
+		}
 		for (Iterator<ResolvedType> i = addedAspects.iterator(); i.hasNext();) {
 			ResolvedType aspectX = i.next();
 			xcutSet.addOrReplaceAspect(aspectX);
@@ -519,7 +521,7 @@ public class BcelWeaver {
 			ResolvedType type = world.resolve(name);
 			// System.err.println("added: " + type + " aspect? " +
 			// type.isAspect());
-			if (type.isAspect()) {
+			if (type.isAspect() && !world.isOverWeaving()) {
 				needToReweaveWorld |= xcutSet.addOrReplaceAspect(type);
 			}
 		}
@@ -1459,6 +1461,7 @@ public class BcelWeaver {
 		// If the class is marked reweavable, check any aspects around when it
 		// was built are in this world
 		WeaverStateInfo wsi = classType.getWeaverState();
+		// System.out.println(">> processReweavableStateIfPresent " + className + " wsi=" + wsi);
 		if (wsi != null && wsi.isReweavable()) { // Check all necessary types
 			// are around!
 			world.showMessage(IMessage.INFO, WeaverMessages.format(WeaverMessages.PROCESSING_REWEAVABLE, className, classType
@@ -1479,17 +1482,23 @@ public class BcelWeaver {
 							// world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.MISSING_REWEAVABLE_TYPE,
 							// requiredTypeName, className), classType.getSourceLocation(), null);
 						} else {
-							// weaved in aspect that are not declared in aop.xml
-							// trigger an error for now
-							// may cause headhache for LTW and packaged lib
-							// without aop.xml in
-							// see #104218
-							if (!xcutSet.containsAspect(rtx)) {
-								world.showMessage(IMessage.ERROR, WeaverMessages.format(
-										WeaverMessages.REWEAVABLE_ASPECT_NOT_REGISTERED, requiredTypeName, className), null, null);
-							} else if (!world.getMessageHandler().isIgnoring(IMessage.INFO)) {
-								world.showMessage(IMessage.INFO, WeaverMessages.format(WeaverMessages.VERIFIED_REWEAVABLE_TYPE,
-										requiredTypeName, rtx.getSourceLocation().getSourceFile()), null, null);
+							if (world.isOverWeaving()) {
+								// System.out.println(">> Removing " + requiredTypeName + " from weaving process: "
+								// + xcutSet.deleteAspect(rtx));
+							} else {
+								// weaved in aspect that are not declared in aop.xml
+								// trigger an error for now
+								// may cause headhache for LTW and packaged lib
+								// without aop.xml in
+								// see #104218
+								if (!xcutSet.containsAspect(rtx)) {
+									world.showMessage(IMessage.ERROR, WeaverMessages.format(
+											WeaverMessages.REWEAVABLE_ASPECT_NOT_REGISTERED, requiredTypeName, className), null,
+											null);
+								} else if (!world.getMessageHandler().isIgnoring(IMessage.INFO)) {
+									world.showMessage(IMessage.INFO, WeaverMessages.format(WeaverMessages.VERIFIED_REWEAVABLE_TYPE,
+											requiredTypeName, rtx.getSourceLocation().getSourceFile()), null, null);
+								}
 							}
 							alreadyConfirmedReweavableState.add(requiredTypeName);
 						}
@@ -1500,8 +1509,12 @@ public class BcelWeaver {
 			// classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass
 			// ().getFileName(), wsi.getUnwovenClassFileData()));
 			// new: reweavable default with clever diff
-			classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass().getFileName(), wsi
-					.getUnwovenClassFileData(classType.getJavaClass().getBytes())));
+			if (!world.isOverWeaving()) {
+				classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass().getFileName(), wsi
+						.getUnwovenClassFileData(classType.getJavaClass().getBytes())));
+				// } else {
+				// System.out.println("overweaving " + className);
+			}
 			// } else {
 			// classType.resetState();
 		}
@@ -1914,9 +1927,9 @@ public class BcelWeaver {
 		zipOutputStream.closeEntry();
 	}
 
-	private List<ShadowMunger> fastMatch(List list, ResolvedType type) {
+	private List<ShadowMunger> fastMatch(List<ShadowMunger> list, ResolvedType type) {
 		if (list == null) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 
 		// here we do the coarsest grained fast match with no kind constraints
@@ -1925,10 +1938,9 @@ public class BcelWeaver {
 		FastMatchInfo info = new FastMatchInfo(type, null);
 
 		List<ShadowMunger> result = new ArrayList<ShadowMunger>();
-		Iterator iter = list.iterator();
-		while (iter.hasNext()) {
-			ShadowMunger munger = (ShadowMunger) iter.next();
-			FuzzyBoolean fb = munger.getPointcut().fastMatch(info);
+		for (ShadowMunger munger : list) {
+			Pointcut pointcut = munger.getPointcut();
+			FuzzyBoolean fb = pointcut.fastMatch(info);
 			if (fb.maybeTrue()) {
 				result.add(munger);
 			}
