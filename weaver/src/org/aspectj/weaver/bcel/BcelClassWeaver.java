@@ -555,11 +555,10 @@ class BcelClassWeaver implements IClassWeaver {
 		}
 
 		// tidyup, reduce ongoing memory usage of BcelMethods that hang around
-		for (Iterator i = methodGens.iterator(); i.hasNext();) {
-			LazyMethodGen mg = (LazyMethodGen) i.next();
-			BcelMethod bM = mg.getMemberView();
-			if (bM != null) {
-				bM.wipeJoinpointSignatures();
+		for (LazyMethodGen mg : methodGens) {
+			BcelMethod method = mg.getMemberView();
+			if (method != null) {
+				method.wipeJoinpointSignatures();
 			}
 		}
 
