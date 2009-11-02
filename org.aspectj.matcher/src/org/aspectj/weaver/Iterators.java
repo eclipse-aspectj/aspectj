@@ -14,6 +14,7 @@ package org.aspectj.weaver;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -62,7 +63,8 @@ public final class Iterators {
 							}
 							peek = in.next();
 							if (!seen.contains(peek)) {
-								return fresh = true;
+								fresh = true;
+								return true;
 							} else {
 								peek = null; // garbage collection
 							}
@@ -116,8 +118,89 @@ public final class Iterators {
 		};
 	}
 
+	public static class ArrayIterator implements Iterator<ResolvedType> {
+		private ResolvedType[] array;
+		private int index;
+		private int len;
+		private boolean wantGenerics;
+		private List<String> alreadySeen; // type signatures
+
+		public ArrayIterator(ResolvedType[] array, List<String> alreadySeen, boolean genericsAware) {
+			assert array != null;
+			this.array = array;
+			this.wantGenerics = genericsAware;
+			this.len = array.length;
+			this.index = 0;
+			this.alreadySeen = alreadySeen;
+			moveToNextNewOne();
+		}
+
+		private void moveToNextNewOne() {
+			while (index < len) {
+				ResolvedType interfaceType = array[index];
+				if (!wantGenerics && (interfaceType.isGenericType() || interfaceType.isParameterizedType())) {
+					interfaceType = interfaceType.getRawType();
+				}
+				String signature = interfaceType.getSignature();
+				if (!alreadySeen.contains(signature)) {
+					break;
+				}
+				index++;
+			}
+		}
+
+		public boolean hasNext() {
+			return index < len;
+		}
+
+		public ResolvedType next() {
+			if (index < len) {
+				ResolvedType oo = array[index++];
+				if (!wantGenerics && (oo.isParameterizedType() || oo.isGenericType())) {
+					oo = oo.getRawType();
+				}
+				alreadySeen.add(oo.getSignature());
+				moveToNextNewOne();
+				return oo;
+			} else {
+				throw new NoSuchElementException();
+			}
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	public static Iterator<ResolvedType> array(final ResolvedType[] o, final boolean genericsAware) {
+		return new Iterator<ResolvedType>() {
+			int i = 0;
+			int len = (o == null) ? 0 : o.length;
+
+			public boolean hasNext() {
+				return i < len;
+			}
+
+			public ResolvedType next() {
+				if (i < len) {
+					ResolvedType oo = o[i++];
+					if (!genericsAware && (oo.isParameterizedType() || oo.isGenericType())) {
+						return oo.getRawType();
+					}
+					return oo;
+				} else {
+					throw new NoSuchElementException();
+				}
+			}
+
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
+	}
+
 	/**
-	 * creates an iterator I based on a base iterator A and a getter G. I returns, in order, forall (i in I), G(i).
+	 * creates an iterator I based on a base iterator A and a getter G. I returns, in order, forall (i in A), G(i).
 	 */
 	public static <A, B> Iterator<B> mapOver(final Iterator<A> a, final Getter<A, B> g) {
 		return new Iterator<B>() {
