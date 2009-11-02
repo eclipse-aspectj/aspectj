@@ -154,7 +154,7 @@ public class AjCompiler {
 		return buildManager.getStructureModel();
 	}
 
-	// public AsmManager getStructureModel() {
-	// return buildManager.getStructureModel();
-	// }
+	public AjdeCoreBuildManager getBuildManager() {
+		return buildManager;
+	}
 }

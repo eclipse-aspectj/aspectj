@@ -63,9 +63,9 @@ public class AjdeCoreBuildManager {
 		AsmManager.attemptIncrementalModelRepairs = true;
 	}
 
-	// public AsmManager getStructureModel() {
-	// return ajBuildManager.
-	// }
+	public AjBuildManager getAjBuildManager() {
+		return ajBuildManager;
+	}
 
 	/**
 	 * Execute a full or incremental build
