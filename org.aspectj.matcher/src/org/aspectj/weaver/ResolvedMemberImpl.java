@@ -147,12 +147,15 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	}
 
 	private static boolean shouldWalkUpHierarchyFor(Member aMember) {
-		if (aMember.getKind() == Member.CONSTRUCTOR)
+		if (aMember.getKind() == Member.CONSTRUCTOR) {
 			return false;
-		if (aMember.getKind() == Member.FIELD)
+		}
+		if (aMember.getKind() == Member.FIELD) {
 			return false;
-		if (aMember.isStatic())
+		}
+		if (aMember.isStatic()) {
 			return false;
+		}
 		return true;
 	}
 
@@ -218,8 +221,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	 * @return
 	 */
 	private static boolean isVisibleTo(ResolvedMember childMember, ResolvedMember parentMember) {
-		if (childMember.getDeclaringType().equals(parentMember.getDeclaringType()))
+		if (childMember.getDeclaringType().equals(parentMember.getDeclaringType())) {
 			return true;
+		}
 		if (Modifier.isPrivate(parentMember.getModifiers())) {
 			return false;
 		} else {
@@ -316,8 +320,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 
 	@Override
 	public AnnotationAJ[] getAnnotations() {
-		if (backingGenericMember != null)
+		if (backingGenericMember != null) {
 			return backingGenericMember.getAnnotations();
+		}
 		return super.getAnnotations();
 	}
 
@@ -332,14 +337,16 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	}
 
 	public ResolvedType[][] getParameterAnnotationTypes() {
-		if (parameterAnnotationTypes == null)
+		if (parameterAnnotationTypes == null) {
 			return null;
+		}
 		return parameterAnnotationTypes;
 	}
 
 	public AnnotationAJ[][] getParameterAnnotations() {
-		if (backingGenericMember != null)
+		if (backingGenericMember != null) {
 			return backingGenericMember.getParameterAnnotations();
+		}
 		throw new BCException("Cannot return parameter annotations for a " + this.getClass().getName() + " member");
 		// return super.getParameterAnnotations();
 	}
@@ -474,8 +481,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 
 			if (s.getMajorVersion() >= AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150M4) {
 				boolean isvarargs = s.readBoolean();
-				if (isvarargs)
+				if (isvarargs) {
 					m.setVarargsMethod();
+				}
 			}
 
 			int tvcount = s.readInt();
@@ -534,8 +542,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			// annotationTypes = r;
 			// }
 			declaringType = declaringType.resolve(world);
-			if (declaringType.isRawType())
+			if (declaringType.isRawType()) {
 				declaringType = ((ReferenceType) declaringType).getGenericType();
+			}
 
 			if (parameterTypes != null && parameterTypes.length > 0) {
 				for (int i = 0; i < parameterTypes.length; i++) {
@@ -736,42 +745,43 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		// getDeclaringType().typeKind+")");
 		// }
 		declaringType = declaringType.resolve(w);
-		if (declaringType.isRawType())
+		if (declaringType.isRawType()) {
 			declaringType = ((ResolvedType) declaringType).getGenericType();
-		// TypeVariable[] typeVariables = getDeclaringType().getTypeVariables();
-		// if (isParameterized && (typeVariables.length !=
-		// typeParameters.length)) {
-		// throw new
-		// IllegalStateException("Wrong number of type parameters supplied");
-		// }
-		// Map typeMap = new HashMap();
-		// boolean typeParametersSupplied = typeParameters!=null &&
-		// typeParameters.length>0;
-		// if (typeVariables!=null) {
-		// // If no 'replacements' were supplied in the typeParameters array
-		// then collapse
-		// // type variables to their first bound.
-		// for (int i = 0; i < typeVariables.length; i++) {
-		// UnresolvedType ut =
-		// (!typeParametersSupplied?typeVariables[i].getFirstBound
-		// ():typeParameters[i]);
-		// typeMap.put(typeVariables[i].getName(),ut);
-		// }
-		// }
-		// // For ITDs on generic types that use type variables from the target
-		// type, the aliases
-		// // record the alternative names used throughout the ITD expression
-		// that must map to
-		// // the same value as the type variables real name.
-		// if (aliases!=null) {
-		// int posn = 0;
-		// for (Iterator iter = aliases.iterator(); iter.hasNext();) {
-		// String typeVariableAlias = (String) iter.next();
-		// typeMap.put(typeVariableAlias,(!typeParametersSupplied?typeVariables[
-		// posn].getFirstBound():typeParameters[posn]));
-		// posn++;
-		// }
-		// }
+			// TypeVariable[] typeVariables = getDeclaringType().getTypeVariables();
+			// if (isParameterized && (typeVariables.length !=
+			// typeParameters.length)) {
+			// throw new
+			// IllegalStateException("Wrong number of type parameters supplied");
+			// }
+			// Map typeMap = new HashMap();
+			// boolean typeParametersSupplied = typeParameters!=null &&
+			// typeParameters.length>0;
+			// if (typeVariables!=null) {
+			// // If no 'replacements' were supplied in the typeParameters array
+			// then collapse
+			// // type variables to their first bound.
+			// for (int i = 0; i < typeVariables.length; i++) {
+			// UnresolvedType ut =
+			// (!typeParametersSupplied?typeVariables[i].getFirstBound
+			// ():typeParameters[i]);
+			// typeMap.put(typeVariables[i].getName(),ut);
+			// }
+			// }
+			// // For ITDs on generic types that use type variables from the target
+			// type, the aliases
+			// // record the alternative names used throughout the ITD expression
+			// that must map to
+			// // the same value as the type variables real name.
+			// if (aliases!=null) {
+			// int posn = 0;
+			// for (Iterator iter = aliases.iterator(); iter.hasNext();) {
+			// String typeVariableAlias = (String) iter.next();
+			// typeMap.put(typeVariableAlias,(!typeParametersSupplied?typeVariables[
+			// posn].getFirstBound():typeParameters[posn]));
+			// posn++;
+			// }
+			// }
+		}
 
 		UnresolvedType parameterizedReturnType = parameterize(getGenericReturnType(), m, true, w);
 		UnresolvedType[] parameterizedParameterTypes = new UnresolvedType[getGenericParameterTypes().length];
@@ -806,9 +816,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			return (UnresolvedType) typeVariableMap.get(variableName);
 		} else if (aType.isParameterizedType()) {
 			if (inParameterizedType) {
-				if (w != null)
+				if (w != null) {
 					aType = aType.resolve(w);
-				else {
+				} else {
 					UnresolvedType dType = getDeclaringType();
 					aType = aType.resolve(((ResolvedType) dType).getWorld());
 				}
@@ -983,8 +993,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	// string suitable for
 	// comparison.
 	private String getParameterSigWithBoundsRemoved() {
-		if (myParameterSignatureWithBoundsRemoved != null)
+		if (myParameterSignatureWithBoundsRemoved != null) {
 			return myParameterSignatureWithBoundsRemoved;
+		}
 		StringBuffer sig = new StringBuffer();
 		UnresolvedType[] myParameterTypes = getGenericParameterTypes();
 		for (int i = 0; i < myParameterTypes.length; i++) {
@@ -999,8 +1010,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	 * getParam
 	 */
 	public String getParameterSignatureErased() {
-		if (myParameterSignatureErasure != null)
+		if (myParameterSignatureErasure != null) {
 			return myParameterSignatureErasure;
+		}
 		StringBuffer sig = new StringBuffer();
 		UnresolvedType[] myParameterTypes = getParameterTypes();
 		for (int i = 0; i < myParameterTypes.length; i++) {
@@ -1055,25 +1067,30 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 
 		// modifiers
 		int mods = modifiers;
-		if ((mods & 4096) > 0)
+		if ((mods & 4096) > 0) {
 			mods = mods - 4096; // remove synthetic (added in the ASM case but
+		}
 		// not in the BCEL case...)
-		if ((mods & 512) > 0)
+		if ((mods & 512) > 0) {
 			mods = mods - 512; // remove interface (added in the BCEL case but
+		}
 		// not in the ASM case...)
-		if ((mods & 131072) > 0)
+		if ((mods & 131072) > 0) {
 			mods = mods - 131072; // remove deprecated (added in the ASM case
+		}
 		// but not in the BCEL case...)
 		String modsStr = Modifier.toString(mods);
-		if (modsStr.length() != 0)
+		if (modsStr.length() != 0) {
 			r.append(modsStr).append("(" + mods + ")").append(" ");
+		}
 
 		// type variables
 		if (typeVariables != null && typeVariables.length > 0) {
 			r.append("<");
 			for (int i = 0; i < typeVariables.length; i++) {
-				if (i > 0)
+				if (i > 0) {
 					r.append(",");
+				}
 				TypeVariable t = typeVariables[i];
 				r.append(t.toDebugString());
 			}
@@ -1096,11 +1113,13 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			boolean parameterNamesExist = showParameterNames && parameterNames != null && parameterNames.length == params.length;
 			if (params.length != 0) {
 				for (int i = 0, len = params.length; i < len; i++) {
-					if (i > 0)
+					if (i > 0) {
 						r.append(", ");
+					}
 					r.append(params[i].toDebugString());
-					if (parameterNamesExist)
+					if (parameterNamesExist) {
 						r.append(" ").append(parameterNames[i]);
+					}
 				}
 			}
 			r.append(")");
@@ -1135,22 +1154,27 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	}
 
 	public boolean isCompatibleWith(Member am) {
-		if (kind != METHOD || am.getKind() != METHOD)
+		if (kind != METHOD || am.getKind() != METHOD) {
 			return true;
-		if (!name.equals(am.getName()))
+		}
+		if (!name.equals(am.getName())) {
 			return true;
-		if (!equalTypes(getParameterTypes(), am.getParameterTypes()))
+		}
+		if (!equalTypes(getParameterTypes(), am.getParameterTypes())) {
 			return true;
+		}
 		return getReturnType().equals(am.getReturnType());
 	}
 
 	private static boolean equalTypes(UnresolvedType[] a, UnresolvedType[] b) {
 		int len = a.length;
-		if (len != b.length)
+		if (len != b.length) {
 			return false;
+		}
 		for (int i = 0; i < len; i++) {
-			if (!a[i].equals(b[i]))
+			if (!a[i].equals(b[i])) {
 				return false;
+			}
 		}
 		return true;
 	}
@@ -1159,8 +1183,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		// Check locally...
 		if (typeVariables != null) {
 			for (int i = 0; i < typeVariables.length; i++) {
-				if (typeVariables[i].getName().equals(name))
+				if (typeVariables[i].getName().equals(name)) {
 					return typeVariables[i];
+				}
 			}
 		}
 		// check the declaring type!
