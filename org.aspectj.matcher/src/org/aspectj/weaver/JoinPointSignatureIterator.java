@@ -42,9 +42,6 @@ public class JoinPointSignatureIterator implements Iterator<JoinPointSignature> 
 	private boolean couldBeFurtherAsYetUndiscoveredSignatures = true;
 	private final static UnresolvedType jlrProxy = UnresolvedType.forSignature("Ljava/lang/reflect/Proxy;");
 
-	/**
-	 * 
-	 */
 	public JoinPointSignatureIterator(Member joinPointSignature, World inAWorld) {
 		this.signaturesOfMember = joinPointSignature;
 		this.world = inAWorld;
