@@ -57,8 +57,9 @@ public class StandardPointcutExpressionImpl implements StandardPointcutExpressio
 		this.expression = expression;
 		this.world = inWorld;
 		this.parameters = params;
-		if (this.parameters == null)
+		if (this.parameters == null) {
 			this.parameters = new PointcutParameter[0];
+		}
 	}
 
 	public Pointcut getUnderlyingPointcut() {
@@ -76,7 +77,7 @@ public class StandardPointcutExpressionImpl implements StandardPointcutExpressio
 
 	public boolean couldMatchJoinPointsInType(Class aClass) {
 		ResolvedType matchType = world.resolve(aClass.getName());
-		ReflectionFastMatchInfo info = new ReflectionFastMatchInfo(matchType, null, this.matchContext);
+		ReflectionFastMatchInfo info = new ReflectionFastMatchInfo(matchType, null, this.matchContext, world);
 		return pointcut.fastMatch(info).maybeTrue();
 	}
 
@@ -285,54 +286,65 @@ public class StandardPointcutExpressionImpl implements StandardPointcutExpressio
 			return hasDynamicContent;
 		}
 
+		@Override
 		public Object visit(WithinAnnotationPointcut node, Object data) {
 			hasDynamicContent = true;
 			return null;
 		}
 
+		@Override
 		public Object visit(WithinCodeAnnotationPointcut node, Object data) {
 			hasDynamicContent = true;
 			return null;
 		}
 
+		@Override
 		public Object visit(AnnotationPointcut node, Object data) {
 			hasDynamicContent = true;
 			return null;
 		}
 
+		@Override
 		public Object visit(ArgsAnnotationPointcut node, Object data) {
 			hasDynamicContent = true;
 			return null;
 		}
 
+		@Override
 		public Object visit(ArgsPointcut node, Object data) {
 			hasDynamicContent = true;
 			return null;
 		}
 
+		@Override
 		public Object visit(CflowPointcut node, Object data) {
 			hasDynamicContent = true;
 			return null;
 		}
 
+		@Override
 		public Object visit(IfPointcut node, Object data) {
 			hasDynamicContent = true;
 			return null;
 		}
 
+		@Override
 		public Object visit(NotAnnotationTypePattern node, Object data) {
 			return node.getNegatedPattern().accept(this, data);
 		}
 
+		@Override
 		public Object visit(NotPointcut node, Object data) {
 			return node.getNegatedPointcut().accept(this, data);
 		}
 
+		@Override
 		public Object visit(ThisOrTargetAnnotationPointcut node, Object data) {
 			hasDynamicContent = true;
 			return null;
 		}
 
+		@Override
 		public Object visit(ThisOrTargetPointcut node, Object data) {
 			hasDynamicContent = true;
 			return null;
