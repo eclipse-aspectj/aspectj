@@ -14,6 +14,7 @@
 package org.aspectj.weaver.bcel;
 
 import java.io.PrintStream;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -107,6 +108,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	private boolean isAnnotationStyleAspect = false;// set upon construction
 	private boolean isCodeStyleAspect = false; // not redundant with field
 	// above!
+
+	private WeakReference<ResolvedType> superTypeReference = new WeakReference<ResolvedType>(null);
 
 	private int bitflag = 0x0000;
 
@@ -212,17 +215,22 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		if (isObject) {
 			return null;
 		}
-		ensureGenericSignatureUnpacked();
-		if (superclassSignature == null) {
-			if (superclassName == null) {
-				superclassName = javaClass.getSuperclassName();
+		ResolvedType supertype = superTypeReference.get();
+		if (supertype == null) {
+			ensureGenericSignatureUnpacked();
+			if (superclassSignature == null) {
+				if (superclassName == null) {
+					superclassName = javaClass.getSuperclassName();
+				}
+				superclassSignature = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(superclassName)).getSignature();
 			}
-			superclassSignature = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(superclassName)).getSignature();
+			World world = getResolvedTypeX().getWorld();
+			supertype = world.resolve(UnresolvedType.forSignature(superclassSignature));
+			superTypeReference = new WeakReference<ResolvedType>(supertype);
 		}
-		World world = getResolvedTypeX().getWorld();
-		ResolvedType res = world.resolve(UnresolvedType.forSignature(superclassSignature));
-		return res;
+		return supertype;
 	}
+
 
 	public World getWorld() {
 		return getResolvedTypeX().getWorld();
@@ -294,13 +302,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		}
 
 		if (typeVars == null) {
-			GenericSignature.ClassSignature classSig = getGenericClassTypeSignature();// cachedGenericClassTypeSignature
-			// ;
-			// /
-			// /
-			// javaClass
-			// .
-			// getGenericClassTypeSignature();
+			GenericSignature.ClassSignature classSig = getGenericClassTypeSignature();
 			typeVars = new TypeVariable[classSig.formalTypeParameters.length];
 			for (int i = 0; i < typeVars.length; i++) {
 				GenericSignature.FormalTypeParameter ftp = classSig.formalTypeParameters[i];
@@ -588,7 +590,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			return false;
 		}
 		ensureAnnotationsUnpacked();
-		for (int i = 0; i < annotationTypes.length; i++) {
+		for (int i = 0, max = annotationTypes.length; i < max; i++) {
 			UnresolvedType ax = annotationTypes[i];
 			if (ax == null) {
 				throw new RuntimeException("Annotation entry " + i + " on type " + this.getResolvedTypeX().getName() + " is null!");
@@ -715,7 +717,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 									+ "', failed to resolve type '" + typeSignature + "'");
 						}
 						annotationTypes[i] = rType;
-						annotations[i] = new BcelAnnotation(annotation, w);
+						annotations[i] = new BcelAnnotation(annotation, rType);
 					}
 				}
 			} finally {
