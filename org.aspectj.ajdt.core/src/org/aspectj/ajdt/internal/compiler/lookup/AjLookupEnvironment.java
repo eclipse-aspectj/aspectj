@@ -571,8 +571,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		}
 	}
 
-	private void weaveInterTypeDeclarations(SourceTypeBinding sourceType, Collection typeMungers, Collection declareParents, 
-	Collection declareAnnotationOnTypes, boolean skipInners) {
+	private void weaveInterTypeDeclarations(SourceTypeBinding sourceType, Collection typeMungers, Collection declareParents,
+			Collection declareAnnotationOnTypes, boolean skipInners) {
 
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING_INTERTYPE_DECLARATIONS,
 				sourceType.sourceName);
@@ -1225,7 +1225,6 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	boolean inBinaryTypeCreationAndWeaving = false;
 	boolean processingTheQueue = false;
 
-	@Override
 	public BinaryTypeBinding createBinaryTypeFrom(IBinaryType binaryType, PackageBinding packageBinding,
 			boolean needFieldsAndMethods, AccessRestriction accessRestriction) {
 
