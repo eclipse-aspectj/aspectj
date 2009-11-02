@@ -30,21 +30,21 @@ public class JoinPointSignatureIterator implements Iterator<JoinPointSignature> 
 	private ResolvedMember firstDefiningMember;
 	ResolvedType firstDefiningType;
 	private World world;
-	private List discoveredSignatures = new ArrayList();
+	private List<JoinPointSignature> discoveredSignatures = new ArrayList<JoinPointSignature>();
 	private List<JoinPointSignature> additionalSignatures = Collections.emptyList();
 	private Iterator<JoinPointSignature> discoveredSignaturesIterator = null;
 	private Iterator<ResolvedType> superTypeIterator = null;
 	private boolean isProxy = false;
-	private Set visitedSuperTypes = new HashSet();
-	private List /* SearchPair */yetToBeProcessedSuperMembers = null;
+	private Set<ResolvedType> visitedSuperTypes = new HashSet<ResolvedType>();
+	private List<SearchPair> yetToBeProcessedSuperMembers = null;
 
 	private boolean iteratingOverDiscoveredSignatures = true;
 	private boolean couldBeFurtherAsYetUndiscoveredSignatures = true;
 	private final static UnresolvedType jlrProxy = UnresolvedType.forSignature("Ljava/lang/reflect/Proxy;");
 
-	public JoinPointSignatureIterator(Member joinPointSignature, World inAWorld) {
+	public JoinPointSignatureIterator(Member joinPointSignature, World world) {
 		this.signaturesOfMember = joinPointSignature;
-		this.world = inAWorld;
+		this.world = world;
 		addSignaturesUpToFirstDefiningMember();
 		if (!shouldWalkUpHierarchy()) {
 			couldBeFurtherAsYetUndiscoveredSignatures = false;
@@ -125,12 +125,15 @@ public class JoinPointSignatureIterator implements Iterator<JoinPointSignature> 
 			}
 		}
 
-		List declaringTypes = new ArrayList();
-		accumulateTypesInBetween(originalDeclaringType, firstDefiningType, declaringTypes);
-		for (Iterator iter = declaringTypes.iterator(); iter.hasNext();) {
-			ResolvedType declaringType = (ResolvedType) iter.next();
-			ResolvedMember member = ((ResolvedMemberImpl) firstDefiningMember).withSubstituteDeclaringType(declaringType);
-			discoveredSignatures.add(member);
+		if (originalDeclaringType == firstDefiningType) {
+			// a common case
+			discoveredSignatures.add(new JoinPointSignature(firstDefiningMember, originalDeclaringType));
+		} else {
+			List<ResolvedType> declaringTypes = new ArrayList<ResolvedType>();
+			accumulateTypesInBetween(originalDeclaringType, firstDefiningType, declaringTypes);
+			for (ResolvedType declaringType : declaringTypes) {
+				discoveredSignatures.add(new JoinPointSignature(firstDefiningMember, declaringType));
+			}
 		}
 	}
 
@@ -229,7 +232,7 @@ public class JoinPointSignatureIterator implements Iterator<JoinPointSignature> 
 			}
 		}
 		if (yetToBeProcessedSuperMembers != null && !yetToBeProcessedSuperMembers.isEmpty()) {
-			SearchPair nextUp = (SearchPair) yetToBeProcessedSuperMembers.remove(0);
+			SearchPair nextUp = yetToBeProcessedSuperMembers.remove(0);
 			firstDefiningType = nextUp.type;
 			firstDefiningMember = nextUp.member;
 			superTypeIterator = null;

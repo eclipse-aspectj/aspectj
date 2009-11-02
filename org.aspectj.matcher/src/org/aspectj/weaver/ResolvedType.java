@@ -282,7 +282,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			ResolvedType superType = resolvedType.getSuperclass();
 			if (superType != null && !superType.isMissing()) {
 				if (genericsAware && superType.isParameterizedType()) {
-					superType = (ResolvedType) superType.getRawType();
+					superType = superType.getRawType();
 				}
 				// Recurse if we are not at the top
 				addAndRecurse(knowninterfaces, collector, superType, includeITDs, allowMissing, genericsAware);
@@ -293,7 +293,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		for (int i = 0; i < interfaces.length; i++) {
 			ResolvedType iface = interfaces[i];
 			if (!genericsAware && iface.isParameterizedType()) {
-				iface = (ResolvedType) iface.getRawType();
+				iface = iface.getRawType();
 			}
 			// we need to know if it is an interface from Parent kind munger
 			// as those are used for @AJ ITD and we precisely want to skip those
@@ -2083,6 +2083,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// if (!(isParameterizedType() || isRawType()))
 		// throw new BCException("The type " + getBaseName() + " is not parameterized or raw - it has no generic type");
 		return null;
+	}
+
+	@Override
+	public ResolvedType getRawType() {
+		return super.getRawType().resolve(world);
 	}
 
 	public ResolvedType parameterizedWith(UnresolvedType[] typeParameters) {

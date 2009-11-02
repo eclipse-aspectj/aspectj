@@ -115,8 +115,9 @@ public class ReferenceType extends ResolvedType {
 
 	@Override
 	public String getSignatureForAttribute() {
-		if (genericType == null || typeParameters == null)
+		if (genericType == null || typeParameters == null) {
 			return getSignature();
+		}
 		return makeDeclaredSignature(genericType, typeParameters);
 	}
 
@@ -299,7 +300,7 @@ public class ReferenceType extends ResolvedType {
 		}
 
 		if (this.isRawType() && other.isParameterizedType()) {
-			return this.getGenericType().isCoerceableFrom(((ReferenceType) other.getRawType()));
+			return this.getGenericType().isCoerceableFrom((other.getRawType()));
 		}
 
 		if (!this.isInterface() && !other.isInterface()) {
@@ -314,18 +315,20 @@ public class ReferenceType extends ResolvedType {
 		// always safe
 		for (int ai = 0, alen = a.length; ai < alen; ai++) {
 			for (int bi = 0, blen = b.length; bi < blen; bi++) {
-				if (!b[bi].isCompatibleWith(a[ai]))
+				if (!b[bi].isCompatibleWith(a[ai])) {
 					return false;
+				}
 			}
 		}
 		return true;
 	}
 
 	private final boolean isCoerceableFromParameterizedType(ResolvedType other) {
-		if (!other.isParameterizedType())
+		if (!other.isParameterizedType()) {
 			return false;
-		ResolvedType myRawType = (ResolvedType) getRawType();
-		ResolvedType theirRawType = (ResolvedType) other.getRawType();
+		}
+		ResolvedType myRawType = getRawType();
+		ResolvedType theirRawType = other.getRawType();
 		if (myRawType == theirRawType || myRawType.isCoerceableFrom(theirRawType)) {
 			if (getTypeParameters().length == other.getTypeParameters().length) {
 				// there's a chance it can be done
@@ -337,20 +340,23 @@ public class ReferenceType extends ResolvedType {
 						// coerceable from e.g. List<T>
 						if (myTypeParameters[i].isGenericWildcard()) {
 							BoundedReferenceType wildcard = (BoundedReferenceType) myTypeParameters[i];
-							if (!wildcard.canBeCoercedTo(theirTypeParameters[i]))
+							if (!wildcard.canBeCoercedTo(theirTypeParameters[i])) {
 								return false;
+							}
 						} else if (myTypeParameters[i].isTypeVariableReference()) {
 							TypeVariableReferenceType tvrt = (TypeVariableReferenceType) myTypeParameters[i];
 							TypeVariable tv = tvrt.getTypeVariable();
 							tv.resolve(world);
-							if (!tv.canBeBoundTo(theirTypeParameters[i]))
+							if (!tv.canBeBoundTo(theirTypeParameters[i])) {
 								return false;
+							}
 						} else if (theirTypeParameters[i].isTypeVariableReference()) {
 							TypeVariableReferenceType tvrt = (TypeVariableReferenceType) theirTypeParameters[i];
 							TypeVariable tv = tvrt.getTypeVariable();
 							tv.resolve(world);
-							if (!tv.canBeBoundTo(myTypeParameters[i]))
+							if (!tv.canBeBoundTo(myTypeParameters[i])) {
 								return false;
+							}
 						} else if (theirTypeParameters[i].isGenericWildcard()) {
 							BoundedReferenceType wildcard = (BoundedReferenceType) theirTypeParameters[i];
 							if (!wildcard.canBeCoercedTo(myTypeParameters[i])) {
@@ -387,10 +393,12 @@ public class ReferenceType extends ResolvedType {
 	@Override
 	public boolean isAssignableFrom(ResolvedType other, boolean allowMissing) {
 		if (other.isPrimitiveType()) {
-			if (!world.isInJava5Mode())
+			if (!world.isInJava5Mode()) {
 				return false;
-			if (ResolvedType.validBoxing.contains(this.getSignature() + other.getSignature()))
+			}
+			if (ResolvedType.validBoxing.contains(this.getSignature() + other.getSignature())) {
 				return true;
+			}
 		}
 		if (this == other) {
 			return true;
@@ -400,17 +408,19 @@ public class ReferenceType extends ResolvedType {
 		}
 
 		if ((this.isRawType() || this.isGenericType()) && other.isParameterizedType()) {
-			if (isAssignableFrom((ResolvedType) other.getRawType())) {
+			if (isAssignableFrom(other.getRawType())) {
 				return true;
 			}
 		}
 		if (this.isRawType() && other.isGenericType()) {
-			if (isAssignableFrom((ResolvedType) other.getRawType()))
+			if (isAssignableFrom(other.getRawType())) {
 				return true;
+			}
 		}
 		if (this.isGenericType() && other.isRawType()) {
-			if (isAssignableFrom(other.getGenericType()))
+			if (isAssignableFrom(other.getGenericType())) {
 				return true;
+			}
 		}
 		// if (this.isParameterizedType() && other.isRawType()) {
 		// if (((ReferenceType) this.getRawType()).isAssignableFrom(other.getGenericType())) {
@@ -433,8 +443,9 @@ public class ReferenceType extends ResolvedType {
 						}
 					}
 				}
-				if (wildcardsAllTheWay && !other.isParameterizedType())
+				if (wildcardsAllTheWay && !other.isParameterizedType()) {
 					return true;
+				}
 				// we have to match by parameters one at a time
 				ResolvedType[] theirParameters = other.getResolvedTypeParameters();
 				boolean parametersAssignable = true;
@@ -497,8 +508,9 @@ public class ReferenceType extends ResolvedType {
 				} else {
 					parametersAssignable = false;
 				}
-				if (parametersAssignable)
+				if (parametersAssignable) {
 					return true;
+				}
 			}
 		}
 
@@ -533,12 +545,14 @@ public class ReferenceType extends ResolvedType {
 			}
 		}
 
-		if (allowMissing && other.isMissing())
+		if (allowMissing && other.isMissing()) {
 			return false;
+		}
 
 		for (Iterator i = other.getDirectSupertypes(); i.hasNext();) {
-			if (this.isAssignableFrom((ResolvedType) i.next(), allowMissing))
+			if (this.isAssignableFrom((ResolvedType) i.next(), allowMissing)) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -568,8 +582,9 @@ public class ReferenceType extends ResolvedType {
 
 	@Override
 	public ResolvedMember[] getDeclaredFields() {
-		if (parameterizedFields != null)
+		if (parameterizedFields != null) {
 			return parameterizedFields;
+		}
 		if (isParameterizedType() || isRawType()) {
 			ResolvedMember[] delegateFields = delegate.getDeclaredFields();
 			parameterizedFields = new ResolvedMember[delegateFields.length];
@@ -589,8 +604,9 @@ public class ReferenceType extends ResolvedType {
 	 */
 	@Override
 	public ResolvedType[] getDeclaredInterfaces() {
-		if (parameterizedInterfaces != null)
+		if (parameterizedInterfaces != null) {
 			return parameterizedInterfaces;
+		}
 		ResolvedType[] delegateInterfaces = delegate.getDeclaredInterfaces();
 		if (newInterfaces != null) {
 			ResolvedType[] extraInterfaces = new ResolvedType[delegateInterfaces.length + newInterfaces.length];
@@ -701,16 +717,18 @@ public class ReferenceType extends ResolvedType {
 		TypeVariable[] thisTypesTVars = getGenericType().getTypeVariables();
 		for (int i = 0; i < thisTypesTVars.length; i++) {
 			TypeVariable tv = thisTypesTVars[i];
-			if (tv.getName().equals(tvname))
+			if (tv.getName().equals(tvname)) {
 				return i;
+			}
 		}
 		return -1;
 	}
 
 	@Override
 	public ResolvedMember[] getDeclaredMethods() {
-		if (parameterizedMethods != null)
+		if (parameterizedMethods != null) {
 			return parameterizedMethods;
+		}
 		if (isParameterizedType() || isRawType()) {
 			ResolvedMember[] delegateMethods = delegate.getDeclaredMethods();
 			UnresolvedType[] parameters = getTypesForMemberParameterization();
@@ -726,8 +744,9 @@ public class ReferenceType extends ResolvedType {
 
 	@Override
 	public ResolvedMember[] getDeclaredPointcuts() {
-		if (parameterizedPointcuts != null)
+		if (parameterizedPointcuts != null) {
 			return parameterizedPointcuts;
+		}
 		if (isParameterizedType()) {
 			ResolvedMember[] delegatePointcuts = delegate.getDeclaredPointcuts();
 			parameterizedPointcuts = new ResolvedMember[delegatePointcuts.length];
@@ -757,11 +776,6 @@ public class ReferenceType extends ResolvedType {
 	}
 
 	@Override
-	public UnresolvedType getRawType() {
-		return super.getRawType().resolve(world);
-	}
-
-	@Override
 	public TypeVariable[] getTypeVariables() {
 		if (this.typeVariables == null) {
 			this.typeVariables = delegate.getTypeVariables();
@@ -784,8 +798,9 @@ public class ReferenceType extends ResolvedType {
 
 	@Override
 	public Collection<Declare> getDeclares() {
-		if (parameterizedDeclares != null)
+		if (parameterizedDeclares != null) {
 			return parameterizedDeclares;
+		}
 		Collection<Declare> declares = null;
 		if (ajMembersNeedParameterization()) {
 			Collection genericDeclares = delegate.getDeclares();
@@ -870,8 +885,9 @@ public class ReferenceType extends ResolvedType {
 		// Don't copy from BcelObjectType to EclipseSourceType - the context may
 		// be tidied (result null'd) after previous weaving
 		if (this.delegate != null && this.delegate.copySourceContext()
-				&& this.delegate.getSourceContext() != SourceContextImpl.UNKNOWN_SOURCE_CONTEXT)
+				&& this.delegate.getSourceContext() != SourceContextImpl.UNKNOWN_SOURCE_CONTEXT) {
 			((AbstractReferenceTypeDelegate) delegate).setSourceContext(this.delegate.getSourceContext());
+		}
 		this.delegate = delegate;
 		for (Iterator it = this.derivativeTypes.iterator(); it.hasNext();) {
 			ReferenceType dependent = (ReferenceType) it.next();
@@ -940,8 +956,9 @@ public class ReferenceType extends ResolvedType {
 
 	@Override
 	public ResolvedType getGenericType() {
-		if (isGenericType())
+		if (isGenericType()) {
 			return this;
+		}
 		return genericType;
 	}
 
