@@ -124,7 +124,6 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	}
 
 	// ??? duplicates some of super's code
-	@Override
 	public void completeTypeBindings() {
 		AsmManager.setCompletingTypeBindings(true);
 		ContextToken completeTypeBindingsToken = CompilationAndWeavingContext.enteringPhase(
@@ -572,8 +571,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		}
 	}
 
-	private void weaveInterTypeDeclarations(SourceTypeBinding sourceType, Collection typeMungers, Collection declareParents,
-			Collection declareAnnotationOnTypes, boolean skipInners) {
+	private void weaveInterTypeDeclarations(SourceTypeBinding sourceType, Collection typeMungers, Collection declareParents, 
+	Collection declareAnnotationOnTypes, boolean skipInners) {
 
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING_INTERTYPE_DECLARATIONS,
 				sourceType.sourceName);
@@ -678,7 +677,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			}
 			decpToRepeat.removeAll(forRemoval);
 
-			forRemoval = new ArrayList();
+			forRemoval.clear();
 			for (Iterator i = declareAnnotationOnTypes.iterator(); i.hasNext();) {
 				DeclareAnnotation deca = (DeclareAnnotation) i.next();
 				boolean didSomething = doDeclareAnnotations(deca, sourceType, false);
@@ -705,8 +704,6 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		onType.checkInterTypeMungers();
 		for (Iterator i = onType.getInterTypeMungers().iterator(); i.hasNext();) {
 			EclipseTypeMunger munger = (EclipseTypeMunger) i.next();
-			// System.out.println("applying: " + munger + " to " + new
-			// String(sourceType.sourceName));
 			munger.munge(sourceType, onType);
 		}
 
