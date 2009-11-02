@@ -63,6 +63,7 @@ public class SignaturePattern extends PatternNode {
 		this.parameterTypes = parameterTypes;
 		this.throwsPattern = throwsPattern;
 		this.annotationPattern = annotationPattern;
+		this.isExactDeclaringTypePattern = (declaringType instanceof ExactTypePattern);
 	}
 
 	public SignaturePattern resolveBindings(IScope scope, Bindings bindings) {
