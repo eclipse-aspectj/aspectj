@@ -124,6 +124,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	}
 
 	// ??? duplicates some of super's code
+	@Override
 	public void completeTypeBindings() {
 		AsmManager.setCompletingTypeBindings(true);
 		ContextToken completeTypeBindingsToken = CompilationAndWeavingContext.enteringPhase(
@@ -357,8 +358,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		ReferenceBinding[] memberTypes = sourceType.memberTypes;
 		for (int i = 0, length = memberTypes.length; i < length; i++) {
 			SourceTypeBinding rb = (SourceTypeBinding) memberTypes[i];
-			if (!rb.superclass().equals(sourceType))
+			if (!rb.superclass().equals(sourceType)) {
 				doSupertypesFirst(rb.superclass(), yetToProcess);
+			}
 		}
 
 		buildInterTypeAndPerClause(sourceType.scope);
@@ -483,8 +485,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		boolean couldBeAtAspect = false;
 		if (annotations != null) {
 			for (int i = 0; i < annotations.length && !couldBeAtAspect; i++) {
-				if (annotations[i].toString().equals("@Aspect"))
+				if (annotations[i].toString().equals("@Aspect")) {
 					couldBeAtAspect = true;
+				}
 			}
 		}
 		return couldBeAtAspect;
@@ -521,22 +524,29 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			for (int i = 0; i < decl.annotations.length; i++) {
 				Annotation ann = decl.annotations[i];
 				if (ann.type instanceof SingleTypeReference) {
-					if (CharOperation.equals("Aspect".toCharArray(), ((SingleTypeReference) ann.type).token))
+					if (CharOperation.equals("Aspect".toCharArray(), ((SingleTypeReference) ann.type).token)) {
 						return true;
+					}
 				} else if (ann.type instanceof QualifiedTypeReference) {
 					QualifiedTypeReference qtr = (QualifiedTypeReference) ann.type;
-					if (qtr.tokens.length != 5)
+					if (qtr.tokens.length != 5) {
 						return false;
-					if (!CharOperation.equals("org".toCharArray(), qtr.tokens[0]))
+					}
+					if (!CharOperation.equals("org".toCharArray(), qtr.tokens[0])) {
 						return false;
-					if (!CharOperation.equals("aspectj".toCharArray(), qtr.tokens[1]))
+					}
+					if (!CharOperation.equals("aspectj".toCharArray(), qtr.tokens[1])) {
 						return false;
-					if (!CharOperation.equals("lang".toCharArray(), qtr.tokens[2]))
+					}
+					if (!CharOperation.equals("lang".toCharArray(), qtr.tokens[2])) {
 						return false;
-					if (!CharOperation.equals("annotation".toCharArray(), qtr.tokens[3]))
+					}
+					if (!CharOperation.equals("annotation".toCharArray(), qtr.tokens[3])) {
 						return false;
-					if (!CharOperation.equals("Aspect".toCharArray(), qtr.tokens[4]))
+					}
+					if (!CharOperation.equals("Aspect".toCharArray(), qtr.tokens[4])) {
 						return false;
+					}
 					return true;
 				}
 			}
@@ -553,8 +563,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 
 	private void weaveInterTypeDeclarations(SourceTypeBinding sourceType) {
 		if (!factory.areTypeMungersFinished()) {
-			if (!pendingTypesToWeave.contains(sourceType))
+			if (!pendingTypesToWeave.contains(sourceType)) {
 				pendingTypesToWeave.add(sourceType);
+			}
 		} else {
 			weaveInterTypeDeclarations(sourceType, factory.getTypeMungers(), factory.getDeclareParents(), factory
 					.getDeclareAnnotationOnTypes(), true);
@@ -570,8 +581,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		ResolvedType onType = factory.fromEclipse(sourceType);
 
 		// AMC we shouldn't need this when generic sigs are fixed??
-		if (onType.isRawType())
+		if (onType.isRawType()) {
 			onType = onType.getGenericType();
+		}
 
 		WeaverStateInfo info = onType.getWeaverState();
 
@@ -633,8 +645,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				if (didSomething) {
 					anyNewParents = true;
 				} else {
-					if (!decp.getChild().isStarAnnotation())
+					if (!decp.getChild().isStarAnnotation()) {
 						decpToRepeat.add(decp);
+					}
 				}
 			}
 		}
@@ -645,8 +658,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			if (didSomething) {
 				anyNewAnnotations = true;
 			} else {
-				if (!deca.getTypePattern().isStar())
+				if (!deca.getTypePattern().isStar()) {
 					decaToRepeat.add(deca);
+				}
 			}
 		}
 
@@ -769,8 +783,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				} else {
 					// do not actually do it if the type isn't exposed - this
 					// will correctly reported as a problem elsewhere
-					if (!resolvedSourceType.isExposedToWeaver())
+					if (!resolvedSourceType.isExposedToWeaver()) {
 						return false;
+					}
 					// AsmRelationshipProvider.getDefault().
 					// addDeclareParentsRelationship
 					// (declareParents.getSourceLocation(),
@@ -786,32 +801,42 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	}
 
 	private String stringifyTargets(long bits) {
-		if ((bits & TagBits.AnnotationTargetMASK) == 0)
+		if ((bits & TagBits.AnnotationTargetMASK) == 0) {
 			return "";
+		}
 		Set s = new HashSet();
-		if ((bits & TagBits.AnnotationForAnnotationType) != 0)
+		if ((bits & TagBits.AnnotationForAnnotationType) != 0) {
 			s.add("ANNOTATION_TYPE");
-		if ((bits & TagBits.AnnotationForConstructor) != 0)
+		}
+		if ((bits & TagBits.AnnotationForConstructor) != 0) {
 			s.add("CONSTRUCTOR");
-		if ((bits & TagBits.AnnotationForField) != 0)
+		}
+		if ((bits & TagBits.AnnotationForField) != 0) {
 			s.add("FIELD");
-		if ((bits & TagBits.AnnotationForLocalVariable) != 0)
+		}
+		if ((bits & TagBits.AnnotationForLocalVariable) != 0) {
 			s.add("LOCAL_VARIABLE");
-		if ((bits & TagBits.AnnotationForMethod) != 0)
+		}
+		if ((bits & TagBits.AnnotationForMethod) != 0) {
 			s.add("METHOD");
-		if ((bits & TagBits.AnnotationForPackage) != 0)
+		}
+		if ((bits & TagBits.AnnotationForPackage) != 0) {
 			s.add("PACKAGE");
-		if ((bits & TagBits.AnnotationForParameter) != 0)
+		}
+		if ((bits & TagBits.AnnotationForParameter) != 0) {
 			s.add("PARAMETER");
-		if ((bits & TagBits.AnnotationForType) != 0)
+		}
+		if ((bits & TagBits.AnnotationForType) != 0) {
 			s.add("TYPE");
+		}
 		StringBuffer sb = new StringBuffer();
 		sb.append("{");
 		for (Iterator iter = s.iterator(); iter.hasNext();) {
 			String element = (String) iter.next();
 			sb.append(element);
-			if (iter.hasNext())
+			if (iter.hasNext()) {
 				sb.append(",");
+			}
 		}
 		sb.append("}");
 		return sb.toString();
@@ -819,10 +844,12 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 
 	private boolean doDeclareAnnotations(DeclareAnnotation decA, SourceTypeBinding sourceType, boolean reportProblems) {
 		ResolvedType rtx = factory.fromEclipse(sourceType);
-		if (!decA.matches(rtx))
+		if (!decA.matches(rtx)) {
 			return false;
-		if (!rtx.isExposedToWeaver())
+		}
+		if (!rtx.isExposedToWeaver()) {
 			return false;
+		}
 
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_DECLARE_ANNOTATIONS,
 				sourceType.sourceName);
@@ -882,8 +909,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 					// What does that mean? It means on an incremental compile you
 					// might get away with an
 					// annotation that isn't allowed on a type being put on a type.
-					if (toAdd[0].resolvedType != null) // pr184447
+					if (toAdd[0].resolvedType != null) {
 						abits = toAdd[0].resolvedType.getAnnotationTagBits();
+					}
 				}
 			}
 		} else if (stb != null) {
@@ -896,9 +924,10 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			AbstractMethodDeclaration methodDecl = typeDecl.declarationOf(mbs[0]);
 			toAdd = methodDecl.annotations; // this is what to add
 			toAdd[0] = createAnnotationCopy(toAdd[0]);
-			if (toAdd[0].resolvedType != null) // pr148536
+			if (toAdd[0].resolvedType != null) {
 				abits = toAdd[0].resolvedType.getAnnotationTagBits();
-			// }
+				// }
+			}
 		}
 
 		// This happens if there is another error in the code - that should be reported separately
@@ -964,7 +993,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		}
 
 		Annotation currentAnnotations[] = sourceType.scope.referenceContext.annotations;
-		if (currentAnnotations != null)
+		if (currentAnnotations != null) {
 			for (int i = 0; i < currentAnnotations.length; i++) {
 				Annotation annotation = currentAnnotations[i];
 				String a = CharOperation.toString(annotation.type.getTypeName());
@@ -979,6 +1008,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 					return false;
 				}
 			}
+		}
 
 		if (((abits & TagBits.AnnotationTargetMASK) != 0)) {
 			if ((abits & (TagBits.AnnotationForAnnotationType | TagBits.AnnotationForType)) == 0) {
@@ -1045,8 +1075,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		// String theName = annX.getSignature().getBaseName();
 		char[][] typeName = CharOperation.splitOn('.', name.replace('$', '.').toCharArray()); // pr149293 - not bulletproof...
 		long[] positions = new long[typeName.length];
-		for (int i = 0; i < positions.length; i++)
+		for (int i = 0; i < positions.length; i++) {
 			positions[i] = pos;
+		}
 		TypeReference annType = new QualifiedTypeReference(typeName, positions);
 		NormalAnnotation ann = new NormalAnnotation(annType, pos);
 		ann.resolvedType = tb; // yuck - is this OK in all cases?
@@ -1108,8 +1139,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			String filename = new String(sourceType.getFileName());
 
 			int takefrom = filename.lastIndexOf('/');
-			if (takefrom == -1)
+			if (takefrom == -1) {
 				takefrom = filename.lastIndexOf('\\');
+			}
 			filename = filename.substring(takefrom + 1);
 
 			factory.getWorld().getMessageHandler().handleMessage(
@@ -1128,8 +1160,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 
 	private void addParent(SourceTypeBinding sourceType, ResolvedType parent) {
 		ReferenceBinding parentBinding = (ReferenceBinding) factory.makeTypeBinding(parent);
-		if (parentBinding == null)
+		if (parentBinding == null) {
 			return; // The parent is missing, it will be reported elsewhere.
+		}
 		sourceType.rememberTypeHierarchy();
 		if (parentBinding.isClass()) {
 			sourceType.superclass = parentBinding;
@@ -1195,6 +1228,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	boolean inBinaryTypeCreationAndWeaving = false;
 	boolean processingTheQueue = false;
 
+	@Override
 	public BinaryTypeBinding createBinaryTypeFrom(IBinaryType binaryType, PackageBinding packageBinding,
 			boolean needFieldsAndMethods, AccessRestriction accessRestriction) {
 
