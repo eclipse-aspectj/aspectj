@@ -46,7 +46,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		this.setLocation(typePattern.getSourceContext(), typePattern.start, typePattern.end);
 	}
 
-	public WildAnnotationTypePattern(TypePattern typePattern, Map annotationValues) {
+	public WildAnnotationTypePattern(TypePattern typePattern, Map<String, String> annotationValues) {
 		super();
 		this.typePattern = typePattern;
 		this.annotationValues = annotationValues;
@@ -82,10 +82,10 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		// - the value names are for valid annotation fields
 		// - the specified values are of the correct type
 		// - for enums, check the specified values can be resolved in the specified scope
-		Set keys = annotationValues.keySet();
+		Set<String> keys = annotationValues.keySet();
 		ResolvedMember[] ms = annotationType.getDeclaredMethods();
-		for (Iterator kIter = keys.iterator(); kIter.hasNext();) {
-			String k = (String) kIter.next();
+		for (Iterator<String> kIter = keys.iterator(); kIter.hasNext();) {
+			String k = kIter.next();
 			String v = annotationValues.get(k);
 			boolean validKey = false;
 			for (int i = 0; i < ms.length; i++) {
@@ -313,9 +313,9 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 			s.writeInt(0);
 		} else {
 			s.writeInt(annotationValues.size());
-			Set key = annotationValues.keySet();
-			for (Iterator keys = key.iterator(); keys.hasNext();) {
-				String k = (String) keys.next();
+			Set<String> key = annotationValues.keySet();
+			for (Iterator<String> keys = key.iterator(); keys.hasNext();) {
+				String k = keys.next();
 				s.writeUTF(k);
 				s.writeUTF(annotationValues.get(k));
 			}
