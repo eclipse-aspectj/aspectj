@@ -10,26 +10,27 @@
  *     Jim Hugunin     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver.patterns;
 
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.Shadow.Kind;
-
 
 public class FastMatchInfo {
 	private Kind kind;
 	private ResolvedType type;
+	public World world;
 
-	public FastMatchInfo(ResolvedType type, Shadow.Kind kind) {
+	public FastMatchInfo(ResolvedType type, Shadow.Kind kind, World world) {
 		this.type = type;
 		this.kind = kind;
+		this.world = world;
 	}
-	
+
 	/**
-	 * kind can be null to indicate that all kinds should be considered.
-	 * This is usually done as a first pass
+	 * kind can be null to indicate that all kinds should be considered. This is usually done as a first pass
+	 * 
 	 * @return
 	 */
 	public Kind getKind() {
@@ -39,9 +40,10 @@ public class FastMatchInfo {
 	public ResolvedType getType() {
 		return type;
 	}
-	
+
+	@Override
 	public String toString() {
-		return "FastMatchInfo [type="+type.getName()+"] ["+(kind==null?"AllKinds":"Kind="+kind)+"]";
+		return "FastMatchInfo [type=" + type.getName() + "] [" + (kind == null ? "AllKinds" : "Kind=" + kind) + "]";
 	}
 
 }
