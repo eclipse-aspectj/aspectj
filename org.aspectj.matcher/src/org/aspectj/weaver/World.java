@@ -28,6 +28,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -102,6 +103,9 @@ public abstract class World implements Dump.INode {
 	/** When behaving in a Java 5 way autoboxing is considered */
 	private boolean behaveInJava5Way = false;
 
+	/** Should timing information be reported (as info messages)? */
+	private boolean timing = false;
+
 	/** Determines if this world could be used for multiple compiles */
 	private boolean incrementalCompileCouldFollow = false;
 
@@ -132,6 +136,9 @@ public abstract class World implements Dump.INode {
 	private boolean overWeaving = false;
 	public boolean forDEBUG_structuralChangesCode = false;
 	public boolean forDEBUG_bridgingCode = false;
+	public boolean optimizedMatching = true;
+
+	public boolean infoMessagesEnabled = false;
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(World.class);
 
@@ -624,6 +631,7 @@ public abstract class World implements Dump.INode {
 		} else {
 			this.messageHandler = messageHandler;
 		}
+		infoMessagesEnabled = !messageHandler.isIgnoring(IMessage.INFO);
 	}
 
 	/**
@@ -736,6 +744,10 @@ public abstract class World implements Dump.INode {
 		behaveInJava5Way = b;
 	}
 
+	public void setTiming(boolean b) {
+		timing = b;
+	}
+
 	/**
 	 * Set the error and warning threashold which can be taken from CompilerOptions (see bug 129282)
 	 * 
@@ -787,6 +799,10 @@ public abstract class World implements Dump.INode {
 		ensureAdvancedConfigurationProcessed();
 	}
 
+	public boolean areInfoMessagesEnabled() {
+		return infoMessagesEnabled;
+	}
+
 	/**
 	 * may return null
 	 */
@@ -824,9 +840,14 @@ public abstract class World implements Dump.INode {
 	public final static String xsetBCEL_REPOSITORY_CACHING_DEFAULT = "true";
 	public final static String xsetFAST_PACK_METHODS = "fastPackMethods"; // default true
 	public final static String xsetOVERWEAVING = "overWeaving";
+	public final static String xsetOPTIMIZED_MATCHING = "optimizedMatching";
 
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;
+	}
+
+	public boolean isTimingEnabled() {
+		return timing;
 	}
 
 	public void setTargetAspectjRuntimeLevel(String s) {
@@ -1321,6 +1342,12 @@ public abstract class World implements Dump.INode {
 				s = p.getProperty(xsetDEBUG_BRIDGING, "false");
 				forDEBUG_bridgingCode = s.equalsIgnoreCase("true");
 
+				s = p.getProperty(xsetOPTIMIZED_MATCHING, "true");
+				optimizedMatching = s.equalsIgnoreCase("true");
+				if (optimizedMatching) {
+					getMessageHandler().handleMessage(MessageUtil.info("[optimizedMatching=false] optimized matching turned off"));
+				}
+
 			}
 			checkedAdvancedConfiguration = true;
 		}
@@ -1460,4 +1487,112 @@ public abstract class World implements Dump.INode {
 		return exclusionMap;
 	}
 
+	private TimeCollector timeCollector = null;
+
+	/**
+	 * Record the time spent matching a pointcut - this will accumulate over the lifetime of this world/weaver and be reported every
+	 * 25000 join points.
+	 */
+	public void record(Pointcut pointcut, long timetaken) {
+		if (timeCollector == null) {
+			timeCollector = new TimeCollector(this);
+		}
+		timeCollector.record(pointcut, timetaken);
+	}
+
+	/**
+	 * Record the time spent fastmatching a pointcut - this will accumulate over the lifetime of this world/weaver and be reported
+	 * every 250 types.
+	 */
+	public void recordFastMatch(Pointcut pointcut, long timetaken) {
+		if (timeCollector == null) {
+			timeCollector = new TimeCollector(this);
+		}
+		timeCollector.recordFastMatch(pointcut, timetaken);
+	}
+
+	private static class TimeCollector {
+		private World world;
+		long joinpointCount;
+		long typeCount;
+		long perJoinpointCount;
+		Map<String, Long> joinpointsPerPointcut = new HashMap<String, Long>();
+		Map<String, Long> timePerPointcut = new HashMap<String, Long>();
+		Map<String, Long> fastMatchTimesPerPointcut = new HashMap<String, Long>();
+
+		TimeCollector(World world) {
+			try {
+				this.perJoinpointCount = Integer.parseInt(System.getProperty("org.aspectj.timing.perjoinpoints", "25000"));
+			} catch (Throwable t) {
+				System.err.println("Problem reading property 'org.aspectj.timing.perjoinpoints':" + t.toString());
+				this.perJoinpointCount = 25000;
+			}
+			this.world = world;
+			this.joinpointCount = 0;
+			this.typeCount = 0;
+			this.joinpointsPerPointcut = new HashMap<String, Long>();
+			this.timePerPointcut = new HashMap<String, Long>();
+		}
+
+		void record(Pointcut pointcut, long timetakenInNs) {
+			joinpointCount++;
+			String pointcutText = pointcut.toString();
+			Long jpcounter = joinpointsPerPointcut.get(pointcutText);
+			if (jpcounter == null) {
+				jpcounter = 1L;
+			} else {
+				jpcounter++;
+			}
+			joinpointsPerPointcut.put(pointcutText, jpcounter);
+
+			Long time = timePerPointcut.get(pointcutText);
+			if (time == null) {
+				time = timetakenInNs;
+			} else {
+				time += timetakenInNs;
+			}
+			timePerPointcut.put(pointcutText, time);
+			if ((joinpointCount % perJoinpointCount) == 0) {
+				long totalTime = 0L;
+				for (String p : joinpointsPerPointcut.keySet()) {
+					totalTime += timePerPointcut.get(p);
+				}
+				world.getMessageHandler().handleMessage(
+						MessageUtil.info("Pointcut matching cost (total=" + (totalTime / 1000000) + "ms):"));
+				for (String p : joinpointsPerPointcut.keySet()) {
+					StringBuffer sb = new StringBuffer();
+					sb.append("Time:" + (timePerPointcut.get(p) / 1000000) + "ms (jps:#" + joinpointsPerPointcut.get(p)
+							+ ") matching against " + p);
+					world.getMessageHandler().handleMessage(MessageUtil.info(sb.toString()));
+				}
+				world.getMessageHandler().handleMessage(MessageUtil.info("---"));
+			}
+		}
+
+		void recordFastMatch(Pointcut pointcut, long timetakenInNs) {
+			typeCount++;
+			String pointcutText = pointcut.toString();
+			Long time = fastMatchTimesPerPointcut.get(pointcutText);
+			if (time == null) {
+				time = timetakenInNs;
+			} else {
+				time += timetakenInNs;
+			}
+			fastMatchTimesPerPointcut.put(pointcutText, time);
+			if ((typeCount % 250) == 0) {
+				long totalTime = 0L;
+				for (String p : fastMatchTimesPerPointcut.keySet()) {
+					totalTime += fastMatchTimesPerPointcut.get(p);
+				}
+				world.getMessageHandler().handleMessage(
+						MessageUtil.info("Pointcut fast matching cost (total=" + (totalTime / 1000000) + "ms):"));
+				for (String p : fastMatchTimesPerPointcut.keySet()) {
+					StringBuffer sb = new StringBuffer();
+					sb.append("Time:" + (fastMatchTimesPerPointcut.get(p) / 1000000) + "ms fast matching against " + p);
+					world.getMessageHandler().handleMessage(MessageUtil.info(sb.toString()));
+				}
+				world.getMessageHandler().handleMessage(MessageUtil.info("---"));
+			}
+		}
+	}
 }
