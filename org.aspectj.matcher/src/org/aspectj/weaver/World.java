@@ -1344,7 +1344,7 @@ public abstract class World implements Dump.INode {
 
 				s = p.getProperty(xsetOPTIMIZED_MATCHING, "true");
 				optimizedMatching = s.equalsIgnoreCase("true");
-				if (optimizedMatching) {
+				if (!optimizedMatching) {
 					getMessageHandler().handleMessage(MessageUtil.info("[optimizedMatching=false] optimized matching turned off"));
 				}
 
