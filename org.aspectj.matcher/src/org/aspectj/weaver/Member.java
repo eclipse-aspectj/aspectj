@@ -87,7 +87,7 @@ public interface Member extends Comparable {
 
 	public AnnotationAJ[] getAnnotations();
 
-	public Collection/* ResolvedType */getDeclaringTypes(World world);
+	public Collection<ResolvedType> getDeclaringTypes(World world);
 
 	public String[] getParameterNames(World world);
 

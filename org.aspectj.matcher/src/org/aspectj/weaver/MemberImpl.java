@@ -440,9 +440,9 @@ public class MemberImpl implements Member {
 
 	// ---- fields 'n' stuff
 
-	public Collection/* ResolvedType */getDeclaringTypes(World world) {
+	public Collection<ResolvedType> getDeclaringTypes(World world) {
 		ResolvedType myType = getDeclaringType().resolve(world);
-		Collection ret = new HashSet();
+		Collection<ResolvedType> ret = new HashSet<ResolvedType>();
 		if (kind == CONSTRUCTOR) {
 			// this is wrong if the member doesn't exist, but that doesn't
 			// matter
@@ -456,14 +456,14 @@ public class MemberImpl implements Member {
 		return ret;
 	}
 
-	private boolean walkUp(Collection acc, ResolvedType curr) {
+	private boolean walkUp(Collection<ResolvedType> acc, ResolvedType curr) {
 		if (acc.contains(curr)) {
 			return true;
 		}
 
 		boolean b = false;
-		for (Iterator i = curr.getDirectSupertypes(); i.hasNext();) {
-			b |= walkUp(acc, (ResolvedType) i.next());
+		for (Iterator<ResolvedType> i = curr.getDirectSupertypes(); i.hasNext();) {
+			b |= walkUp(acc, i.next());
 		}
 
 		if (!b && curr.isParameterizedType()) {
