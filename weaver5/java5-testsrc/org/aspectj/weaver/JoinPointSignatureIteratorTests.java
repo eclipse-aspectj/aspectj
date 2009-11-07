@@ -46,7 +46,7 @@ public class JoinPointSignatureIteratorTests extends TestCase {
 		// and one is not. The aim of the test here is that the join point signatures generated for both
 		// should be the same because of the use of a proxy.
 
-		List l = proxy.getMethodsWithoutIterator(false, false);
+		List l = proxy.getMethodsWithoutIterator(false, false, false);
 		for (Object object : l) {
 			ResolvedMember rm = (ResolvedMember) object;
 			if (expectedResults.containsKey(rm.toString())) {
