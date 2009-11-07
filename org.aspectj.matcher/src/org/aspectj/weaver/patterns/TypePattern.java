@@ -259,6 +259,10 @@ public abstract class TypePattern extends PatternNode {
 	public void postRead(ResolvedType enclosingType) {
 	}
 
+	public boolean isEllipsis() {
+		return false;
+	}
+
 	public boolean isStar() {
 		return false;
 	}
@@ -330,6 +334,20 @@ public abstract class TypePattern extends PatternNode {
 		return includeSubtypes;
 	}
 
+	/**
+     * For quickly recognizing the pattern '!void'
+     */
+	public boolean isBangVoid() {
+		return false;
+	}
+
+    /**
+     * for quickly recognizing the pattern 'void'
+     */
+	public boolean isVoid() {
+		return false;
+	}
+
 }
 
 class EllipsisTypePattern extends TypePattern {
@@ -380,6 +398,11 @@ class EllipsisTypePattern extends TypePattern {
 	@Override
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(ELLIPSIS_KEY);
+	}
+
+	@Override
+	public boolean isEllipsis() {
+		return true;
 	}
 
 	@Override
