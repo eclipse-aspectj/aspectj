@@ -353,37 +353,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 	}
 
-	public static class SuperClassWalker implements Iterator<ResolvedType> {
-
-		private ResolvedType curr;
-		private SuperInterfaceWalker iwalker;
-		private boolean wantGenerics;
-
-		public SuperClassWalker(ResolvedType type, SuperInterfaceWalker iwalker, boolean genericsAware) {
-			this.curr = type;
-			this.iwalker = iwalker;
-			this.wantGenerics = genericsAware;
-		}
-
-		public boolean hasNext() {
-			return curr != null;
-		}
-
-		public ResolvedType next() {
-			ResolvedType ret = curr;
-			if (!wantGenerics && ret.isParameterizedOrGenericType()) {
-				ret = ret.getRawType();
-			}
-			iwalker.push(ret); // tell the interface walker about another class whose interfaces need visiting
-			curr = curr.getSuperclass();
-			return ret;
-		}
-
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-	}
-
 	/**
 	 * returns an iterator through all of the methods of this type, in order for checking from JVM spec 2ed 5.4.3.3. This means that
 	 * the order is
@@ -432,13 +401,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * Return a list of methods, first those declared on this class, then those declared on the superclass (recurse) and then those
 	 * declared on the superinterfaces. This is expensive - use the getMethods() method if you can!
 	 */
-	public List<ResolvedMember> getMethodsWithoutIterator(boolean includeITDs, boolean allowMissing) {
-		List<ResolvedMember> methods = new ArrayList<ResolvedMember>();
-		Set<String> knowninterfaces = new HashSet<String>();
-		addAndRecurse(knowninterfaces, methods, this, includeITDs, allowMissing, false);
-		return methods;
-	}
-
 	public List<ResolvedMember> getMethodsWithoutIterator(boolean includeITDs, boolean allowMissing, boolean genericsAware) {
 		List<ResolvedMember> methods = new ArrayList<ResolvedMember>();
 		Set<String> knowninterfaces = new HashSet<String>();
@@ -1770,7 +1732,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		sig = munger.getSignature(); // possibly changed when type parms filled in
 
 		if (sig.getKind() == Member.METHOD) {
-			if (clashesWithExistingMember(munger, getMethodsWithoutIterator(false, true).iterator())) {
+			if (clashesWithExistingMember(munger, getMethodsWithoutIterator(false, true, false).iterator())) {
 				return;
 			}
 			if (this.isInterface()) {
@@ -2184,6 +2146,37 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// }
 
 		return null;
+	}
+
+	static class SuperClassWalker implements Iterator<ResolvedType> {
+
+		private ResolvedType curr;
+		private SuperInterfaceWalker iwalker;
+		private boolean wantGenerics;
+
+		public SuperClassWalker(ResolvedType type, SuperInterfaceWalker iwalker, boolean genericsAware) {
+			this.curr = type;
+			this.iwalker = iwalker;
+			this.wantGenerics = genericsAware;
+		}
+
+		public boolean hasNext() {
+			return curr != null;
+		}
+
+		public ResolvedType next() {
+			ResolvedType ret = curr;
+			if (!wantGenerics && ret.isParameterizedOrGenericType()) {
+				ret = ret.getRawType();
+			}
+			iwalker.push(ret); // tell the interface walker about another class whose interfaces need visiting
+			curr = curr.getSuperclass();
+			return ret;
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	static class SuperInterfaceWalker implements Iterator<ResolvedType> {

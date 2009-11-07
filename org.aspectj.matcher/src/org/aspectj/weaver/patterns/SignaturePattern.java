@@ -200,7 +200,7 @@ public class SignaturePattern extends PatternNode {
 				if (targetKinds == null) {
 					return data;
 				}
-				List incorrectTargets = new ArrayList();
+				List<AnnotationTargetKind> incorrectTargets = new ArrayList<AnnotationTargetKind>();
 				for (int i = 0; i < targetKinds.length; i++) {
 					if (targetKinds[i].getName().equals(kind.getName())
 							|| (targetKinds[i].getName().equals("PARAMETER") && node.isForParameterAnnotationMatch())) {
@@ -465,6 +465,10 @@ public class SignaturePattern extends PatternNode {
 
 		// passed all the guards..
 		return FuzzyBoolean.YES;
+	}
+
+	private ResolvedType[] getResolvedParameters(World world, UnresolvedType[] unresolvedParams) {
+		return world.resolve(unresolvedParams);
 	}
 
 	/**
