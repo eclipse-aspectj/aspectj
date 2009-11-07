@@ -345,7 +345,7 @@ public class IfPointcut extends Pointcut {
 			ResolvedPointcutDefinition def = bindings.peekEnclosingDefinition();
 			if (def != null) {
 				ResolvedType aspect = inAspect.getWorld().resolve(def.getDeclaringType());
-				for (Iterator memberIter = aspect.getMethods(); memberIter.hasNext();) {
+				for (Iterator memberIter = aspect.getMethods(true, true); memberIter.hasNext();) {
 					ResolvedMember method = (ResolvedMember) memberIter.next();
 					if (def.getName().equals(method.getName())
 							&& def.getParameterTypes().length == method.getParameterTypes().length) {

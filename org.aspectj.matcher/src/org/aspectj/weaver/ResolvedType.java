@@ -211,8 +211,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * @param wantGenerics is true if the caller would like all generics information, otherwise those methods are collapsed to their
 	 *        erasure
 	 */
-	public Iterator<ResolvedMember> getMethods(boolean wantGenerics) {
-		return Iterators.mapOver(getHierarchy(wantGenerics, false), MethodGetterInstance);
+	public Iterator<ResolvedMember> getMethods(boolean wantGenerics, boolean wantDeclaredParents) {
+		return Iterators.mapOver(getHierarchy(wantGenerics, wantDeclaredParents), MethodGetterInstance);
 	}
 
 	public Iterator<ResolvedMember> getMethodsIncludingIntertypeDeclarations(boolean wantGenerics) {
@@ -351,50 +351,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			// needs to visit are only accumulated whilst the superClassesIterator is in progress
 			return Iterators.append1(superClassesIterator, superInterfaceWalker);
 		}
-	}
-
-	/**
-	 * returns an iterator through all of the methods of this type, in order for checking from JVM spec 2ed 5.4.3.3. This means that
-	 * the order is
-	 * <p/>
-	 * <ul>
-	 * <li>methods from current class</li>
-	 * <li>recur into superclass, all the way up, not touching interfaces</li>
-	 * <li>recur into all superinterfaces, in some unspecified order</li>
-	 * </ul>
-	 * <p/>
-	 * We keep a hashSet of interfaces that we've visited so we don't spiral out into 2^n land. NOTE: Take a look at the javadoc on
-	 * getMethodsWithoutIterator() to see if you are sensitive to a quirk in getMethods()
-	 */
-	public Iterator<ResolvedMember> getMethods() {
-		final Iterators.Filter<ResolvedType> dupFilter = Iterators.dupFilter();
-		Iterators.Getter<ResolvedType, ResolvedType> ifaceGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
-			public Iterator<ResolvedType> get(ResolvedType o) {
-				return dupFilter.filter(Iterators.array(o.getDeclaredInterfaces()));
-			}
-		};
-		Iterators.Getter<ResolvedType, ResolvedMember> methodGetter = new Iterators.Getter<ResolvedType, ResolvedMember>() {
-			public Iterator<ResolvedMember> get(ResolvedType o) {
-				return Iterators.array((o).getDeclaredMethods());
-			}
-		};
-		return Iterators.mapOver(Iterators.append(new Iterator<ResolvedType>() {
-			ResolvedType curr = ResolvedType.this;
-
-			public boolean hasNext() {
-				return curr != null;
-			}
-
-			public ResolvedType next() {
-				ResolvedType ret = curr;
-				curr = curr.getSuperclass();
-				return ret;
-			}
-
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-		}, Iterators.recur(this, ifaceGetter)), methodGetter);
 	}
 
 	/**
@@ -1454,7 +1410,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				continue;
 			}
 
-			for (Iterator<ResolvedMember> iter = getMethods(); iter.hasNext();) {
+			for (Iterator<ResolvedMember> iter = getMethods(true, true); iter.hasNext();) {
 				ResolvedMember method = iter.next();
 				if (conflictingSignature(method, superMunger.getSignature())) {
 					iter1.remove();

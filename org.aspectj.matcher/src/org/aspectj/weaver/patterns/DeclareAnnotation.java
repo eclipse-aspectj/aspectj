@@ -326,7 +326,7 @@ public class DeclareAnnotation extends Declare {
 		if (annotation != null) {
 			return;
 		}
-		for (Iterator iter = containingAspect.getMethods(); iter.hasNext();) {
+		for (Iterator iter = containingAspect.getMethods(true, true); iter.hasNext();) {
 			ResolvedMember member = (ResolvedMember) iter.next();
 			if (member.getName().equals(annotationMethod)) {
 				AnnotationAJ[] annos = member.getAnnotations();
@@ -388,7 +388,7 @@ public class DeclareAnnotation extends Declare {
 	 */
 	public ResolvedType getAnnotationType() {
 		if (annotationType == null) {
-			for (Iterator iter = containingAspect.getMethods(); iter.hasNext();) {
+			for (Iterator iter = containingAspect.getMethods(true, true); iter.hasNext();) {
 				ResolvedMember member = (ResolvedMember) iter.next();
 				if (member.getName().equals(annotationMethod)) {
 					ResolvedType[] annoTypes = member.getAnnotationTypes();

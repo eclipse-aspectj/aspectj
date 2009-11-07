@@ -75,7 +75,7 @@ public class HasMemberTypePattern extends TypePattern {
 	private boolean hasMethod(ResolvedType type) {
 		// TODO what about ITDs
 		World world = type.getWorld();
-		for (Iterator iter = type.getMethods(); iter.hasNext();) {
+		for (Iterator iter = type.getMethods(true, true); iter.hasNext();) {
 			Member method = (Member) iter.next();
 			if (method.getName().startsWith(declareAtPrefix)) {
 				continue;
