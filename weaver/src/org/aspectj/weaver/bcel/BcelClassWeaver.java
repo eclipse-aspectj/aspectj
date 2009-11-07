@@ -2521,7 +2521,7 @@ class BcelClassWeaver implements IClassWeaver {
 		// we want to match ajsynthetic constructors...
 		if (startsAngly && mg.getName().equals("<init>")) {
 			return matchInit(mg, shadowAccumulator);
-		} else if (!shouldWeaveBody(mg)) { // .isAjSynthetic()) {
+		} else if (!shouldWeaveBody(mg)) {
 			return false;
 		} else {
 			if (startsAngly && mg.getName().equals("<clinit>")) {
@@ -3067,11 +3067,8 @@ class BcelClassWeaver implements IClassWeaver {
 	private static boolean captureLowLevelContext = false;
 
 	private boolean match(BcelShadow shadow, List<BcelShadow> shadowAccumulator) {
-		// System.err.println("match: " + shadow);
-		if (captureLowLevelContext) { // duplicate blocks - one with context
-			// capture, one without, seems faster
-			// than multiple
-			// 'ifs()'
+		// Duplicate blocks - one with context one without, seems faster than multiple 'ifs'
+		if (captureLowLevelContext) {
 			ContextToken shadowMatchToken = CompilationAndWeavingContext.enteringPhase(
 					CompilationAndWeavingContext.MATCHING_SHADOW, shadow);
 			boolean isMatched = false;
