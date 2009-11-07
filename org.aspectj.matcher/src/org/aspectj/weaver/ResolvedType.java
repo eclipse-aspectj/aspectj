@@ -380,55 +380,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 	}
 
-	static class SuperInterfaceWalker implements Iterator<ResolvedType> {
-
-		private Getter<ResolvedType, ResolvedType> ifaceGetter;
-		Iterator<ResolvedType> delegate = null;
-		public Queue<ResolvedType> toPersue = new LinkedList<ResolvedType>();
-		public Set<ResolvedType> visited = new HashSet<ResolvedType>();
-
-		SuperInterfaceWalker(Iterators.Getter<ResolvedType, ResolvedType> ifaceGetter) {
-			this.ifaceGetter = ifaceGetter;
-		}
-
-		SuperInterfaceWalker(Iterators.Getter<ResolvedType, ResolvedType> ifaceGetter, ResolvedType interfaceType) {
-			this.ifaceGetter = ifaceGetter;
-			this.delegate = Iterators.one(interfaceType);
-		}
-
-		public boolean hasNext() {
-			if (delegate == null || !delegate.hasNext()) {
-				// either we set it up or we have run out, is there anything else to look at?
-				if (toPersue.isEmpty()) {
-					return false;
-				}
-				do {
-					ResolvedType next = toPersue.remove();
-					visited.add(next);
-					delegate = ifaceGetter.get(next); // retrieve interfaces from a class or another interface
-				} while (!delegate.hasNext() && !toPersue.isEmpty());
-			}
-			return delegate.hasNext();
-		}
-
-		public void push(ResolvedType ret) {
-			toPersue.add(ret);
-		}
-
-		public ResolvedType next() {
-			ResolvedType next = delegate.next();
-			if (!visited.contains(next)) {
-				visited.add(next);
-				toPersue.add(next); // pushes on interfaces already visited?
-			}
-			return next;
-		}
-
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-	}
-
 	/**
 	 * returns an iterator through all of the methods of this type, in order for checking from JVM spec 2ed 5.4.3.3. This means that
 	 * the order is
@@ -475,9 +426,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	/**
 	 * Return a list of methods, first those declared on this class, then those declared on the superclass (recurse) and then those
-	 * declared on the superinterfaces. The getMethods() call above doesn't quite work the same as it will (through the iterator)
-	 * return methods declared on *this* class twice, once at the start and once at the end - I couldn't debug that problem, so
-	 * created this alternative.
+	 * declared on the superinterfaces. This is expensive - use the getMethods() method if you can!
 	 */
 	public List<ResolvedMember> getMethodsWithoutIterator(boolean includeITDs, boolean allowMissing) {
 		List<ResolvedMember> methods = new ArrayList<ResolvedMember>();
@@ -2241,6 +2190,55 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// }
 
 		return null;
+	}
+
+	static class SuperInterfaceWalker implements Iterator<ResolvedType> {
+
+		private Getter<ResolvedType, ResolvedType> ifaceGetter;
+		Iterator<ResolvedType> delegate = null;
+		public Queue<ResolvedType> toPersue = new LinkedList<ResolvedType>();
+		public Set<ResolvedType> visited = new HashSet<ResolvedType>();
+
+		SuperInterfaceWalker(Iterators.Getter<ResolvedType, ResolvedType> ifaceGetter) {
+			this.ifaceGetter = ifaceGetter;
+		}
+
+		SuperInterfaceWalker(Iterators.Getter<ResolvedType, ResolvedType> ifaceGetter, ResolvedType interfaceType) {
+			this.ifaceGetter = ifaceGetter;
+			this.delegate = Iterators.one(interfaceType);
+		}
+
+		public boolean hasNext() {
+			if (delegate == null || !delegate.hasNext()) {
+				// either we set it up or we have run out, is there anything else to look at?
+				if (toPersue.isEmpty()) {
+					return false;
+				}
+				do {
+					ResolvedType next = toPersue.remove();
+					visited.add(next);
+					delegate = ifaceGetter.get(next); // retrieve interfaces from a class or another interface
+				} while (!delegate.hasNext() && !toPersue.isEmpty());
+			}
+			return delegate.hasNext();
+		}
+
+		public void push(ResolvedType ret) {
+			toPersue.add(ret);
+		}
+
+		public ResolvedType next() {
+			ResolvedType next = delegate.next();
+			if (!visited.contains(next)) {
+				visited.add(next);
+				toPersue.add(next); // pushes on interfaces already visited?
+			}
+			return next;
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	public void clearInterTypeMungers() {
