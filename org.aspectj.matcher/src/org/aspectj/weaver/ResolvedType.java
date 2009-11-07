@@ -205,6 +205,28 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	/**
+	 * returns an iterator through all of the methods of this type, in order for checking from JVM spec 2ed 5.4.3.3. This means that
+	 * the order is
+	 * <p/>
+	 * <ul>
+	 * <li>methods from current class</li>
+	 * <li>recur into superclass, all the way up, not touching interfaces</li>
+	 * <li>recur into all superinterfaces, in some unspecified order (but those 'closest' to this type are first)</li>
+	 * </ul>
+	 * <p/>
+	 * 
+	 * @param wantGenerics is true if the caller would like all generics information, otherwise those methods are collapsed to their
+	 *        erasure
+	 */
+	public Iterator<ResolvedMember> getMethods(boolean wantGenerics) {
+		return Iterators.mapOver(getHierarchy(wantGenerics, false), MethodGetterInstance);
+	}
+
+	public Iterator<ResolvedMember> getMethodsIncludingIntertypeDeclarations(boolean wantGenerics) {
+		return Iterators.mapOver(getHierarchy(wantGenerics, false), MethodGetterWithItdsInstance);
+	}
+
+	/**
 	 * An Iterators.Getter that returns an iterator over all methods declared on some resolved type.
 	 */
 	private static class MethodGetter implements Iterators.Getter<ResolvedType, ResolvedMember> {
@@ -478,6 +500,20 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return methods;
 	}
 
+	/**
+	 * Return a list of the types in the hierarchy of this type, starting with this type. The order in the list is the superclasses
+	 * followed by the super interfaces.
+	 * 
+	 * @param genericsAware should the list include parameterized/generic types (if not, they will be collapsed to raw)?
+	 * @return list of resolvedtypes in this types hierarchy, including this type first
+	 */
+	public List<ResolvedType> getHierarchyWithoutIterator(boolean includeITDs, boolean allowMissing, boolean genericsAware) {
+		List<ResolvedType> types = new ArrayList<ResolvedType>();
+		Set<String> visited = new HashSet<String>();
+		recurseHierarchy(visited, types, this, includeITDs, allowMissing, genericsAware);
+		return types;
+	}
+
 	private void addAndRecurse(Set<ResolvedType> knowninterfaces, List<ResolvedMember> collector, ResolvedType resolvedType,
 			boolean includeITDs, boolean allowMissing, boolean genericsAware) {
 		// Add the methods declared on this type
@@ -530,6 +566,56 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 					}
 				} else {
 					addAndRecurse(knowninterfaces, collector, iface, includeITDs, allowMissing, genericsAware);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Recurse up a type hierarchy, first the superclasses then the super interfaces.
+	 */
+	private void recurseHierarchy(Set<String> knowninterfaces, List<ResolvedType> collector, ResolvedType resolvedType,
+			boolean includeITDs, boolean allowMissing, boolean genericsAware) {
+		collector.add(resolvedType);
+		if (!resolvedType.isInterface() && !resolvedType.equals(ResolvedType.OBJECT)) {
+			ResolvedType superType = resolvedType.getSuperclass();
+			if (superType != null && !superType.isMissing()) {
+				if (!genericsAware && (superType.isParameterizedType() || superType.isGenericType())) {
+					superType = superType.getRawType();
+				}
+				// Recurse if we are not at the top
+				recurseHierarchy(knowninterfaces, collector, superType, includeITDs, allowMissing, genericsAware);
+			}
+		}
+		// Go through the interfaces on the way back down
+		ResolvedType[] interfaces = resolvedType.getDeclaredInterfaces();
+		for (int i = 0; i < interfaces.length; i++) {
+			ResolvedType iface = interfaces[i];
+			if (!genericsAware && (iface.isParameterizedType() || iface.isGenericType())) {
+				iface = iface.getRawType();
+			}
+			// we need to know if it is an interface from Parent kind munger
+			// as those are used for @AJ ITD and we precisely want to skip those
+			boolean shouldSkip = false;
+			for (int j = 0; j < resolvedType.interTypeMungers.size(); j++) {
+				ConcreteTypeMunger munger = resolvedType.interTypeMungers.get(j);
+				if (munger.getMunger() != null && munger.getMunger().getKind() == ResolvedTypeMunger.Parent
+						&& ((NewParentTypeMunger) munger.getMunger()).getNewParent().equals(iface) // pr171953
+				) {
+					shouldSkip = true;
+					break;
+				}
+			}
+
+			// Do not do interfaces more than once
+			if (!shouldSkip && !knowninterfaces.contains(iface.getSignature())) {
+				knowninterfaces.add(iface.getSignature());
+				if (allowMissing && iface.isMissing()) {
+					if (iface instanceof MissingResolvedTypeWithKnownSignature) {
+						((MissingResolvedTypeWithKnownSignature) iface).raiseWarningOnMissingInterfaceWhilstFindingMethods();
+					}
+				} else {
+					recurseHierarchy(knowninterfaces, collector, iface, includeITDs, allowMissing, genericsAware);
 				}
 			}
 		}
@@ -1743,8 +1829,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// generic type
 		// is discovered and the tvar is collapsed to a bound?
 		munger = fillInAnyTypeParameters(munger);
-		sig = munger.getSignature(); // possibly changed when type parms filled
-		// in
+		sig = munger.getSignature(); // possibly changed when type parms filled in
 
 		// System.err.println("add: " + munger + " to " + this.getClassName() +
 		// " with " + interTypeMungers);
