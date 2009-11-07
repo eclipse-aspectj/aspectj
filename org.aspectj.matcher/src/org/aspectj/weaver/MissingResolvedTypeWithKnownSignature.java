@@ -221,6 +221,9 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 	}
 
 	private void raiseCantFindType(String key) {
+		if (!world.getLint().cantFindType.isEnabled()) {
+			return;
+		}
 		if (issuedCantFindTypeError) {
 			return;
 		}
