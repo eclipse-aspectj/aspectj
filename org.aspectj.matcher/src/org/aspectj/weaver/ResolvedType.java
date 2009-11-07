@@ -288,6 +288,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * @param wantDeclaredParents true if the caller even wants those parents introduced via declare parents
 	 * @return an iterator over all types in the hierarchy of this type
 	 */
+	public Iterator<ResolvedType> getHierarchy() {
+		return getHierarchy(false, false);
+	}
+
 	public Iterator<ResolvedType> getHierarchy(final boolean wantGenerics, final boolean wantDeclaredParents) {
 
 		final Iterators.Getter<ResolvedType, ResolvedType> interfaceGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
