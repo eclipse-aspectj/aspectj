@@ -434,14 +434,14 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 */
 	public List<ResolvedMember> getMethodsWithoutIterator(boolean includeITDs, boolean allowMissing) {
 		List<ResolvedMember> methods = new ArrayList<ResolvedMember>();
-		Set<ResolvedType> knowninterfaces = new HashSet<ResolvedType>();
+		Set<String> knowninterfaces = new HashSet<String>();
 		addAndRecurse(knowninterfaces, methods, this, includeITDs, allowMissing, false);
 		return methods;
 	}
 
 	public List<ResolvedMember> getMethodsWithoutIterator(boolean includeITDs, boolean allowMissing, boolean genericsAware) {
 		List<ResolvedMember> methods = new ArrayList<ResolvedMember>();
-		Set<ResolvedType> knowninterfaces = new HashSet<ResolvedType>();
+		Set<String> knowninterfaces = new HashSet<String>();
 		addAndRecurse(knowninterfaces, methods, this, includeITDs, allowMissing, genericsAware);
 		return methods;
 	}
@@ -460,7 +460,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return types;
 	}
 
-	private void addAndRecurse(Set<ResolvedType> knowninterfaces, List<ResolvedMember> collector, ResolvedType resolvedType,
+	private void addAndRecurse(Set<String> knowninterfaces, List<ResolvedMember> collector, ResolvedType resolvedType,
 			boolean includeITDs, boolean allowMissing, boolean genericsAware) {
 		// Add the methods declared on this type
 		collector.addAll(Arrays.asList(resolvedType.getDeclaredMethods()));
@@ -476,7 +476,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		if (!resolvedType.equals(ResolvedType.OBJECT)) {
 			ResolvedType superType = resolvedType.getSuperclass();
 			if (superType != null && !superType.isMissing()) {
-				if (genericsAware && superType.isParameterizedType()) {
+				if (!genericsAware && superType.isParameterizedOrGenericType()) {
 					superType = superType.getRawType();
 				}
 				// Recurse if we are not at the top
@@ -487,7 +487,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		ResolvedType[] interfaces = resolvedType.getDeclaredInterfaces();
 		for (int i = 0; i < interfaces.length; i++) {
 			ResolvedType iface = interfaces[i];
-			if (!genericsAware && iface.isParameterizedType()) {
+			if (!genericsAware && iface.isParameterizedOrGenericType()) {
 				iface = iface.getRawType();
 			}
 			// we need to know if it is an interface from Parent kind munger
@@ -504,8 +504,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			}
 
 			// Do not do interfaces more than once
-			if (!shouldSkip && !knowninterfaces.contains(iface)) {
-				knowninterfaces.add(iface);
+			if (!shouldSkip && !knowninterfaces.contains(iface.getSignature())) {
+				knowninterfaces.add(iface.getSignature());
 				if (allowMissing && iface.isMissing()) {
 					if (iface instanceof MissingResolvedTypeWithKnownSignature) {
 						((MissingResolvedTypeWithKnownSignature) iface).raiseWarningOnMissingInterfaceWhilstFindingMethods();
@@ -792,21 +792,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				return dupFilter.filter(o.getDirectSupertypes());
 			}
 		};
-		Iterators.Getter<ResolvedType, ResolvedMember> pointcutGetter = new Iterators.Getter<ResolvedType, ResolvedMember>() {
-			public Iterator<ResolvedMember> get(ResolvedType o) {
-				// System.err.println("getting for " + o);
-				return Iterators.array(o.getDeclaredPointcuts());
-			}
-		};
-		return Iterators.mapOver(Iterators.recur(this, typeGetter), pointcutGetter);
+		return Iterators.mapOver(Iterators.recur(this, typeGetter), PointcutGetterInstance);
 	}
 
 	public ResolvedPointcutDefinition findPointcut(String name) {
-		// System.err.println("looking for pointcuts " + this);
 		for (Iterator<ResolvedMember> i = getPointcuts(); i.hasNext();) {
 			ResolvedPointcutDefinition f = (ResolvedPointcutDefinition) i.next();
-			// the resolvedpointcutdefinition can be null if there are other problems that
-			// prevented its resolution
+			// the ResolvedPointcutDefinition can be null if there are other problems that prevented its resolution
 			if (f != null && name.equals(f.getName())) {
 				return f;
 			}
@@ -1777,8 +1769,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		munger = fillInAnyTypeParameters(munger);
 		sig = munger.getSignature(); // possibly changed when type parms filled in
 
-		// System.err.println("add: " + munger + " to " + this.getClassName() +
-		// " with " + interTypeMungers);
 		if (sig.getKind() == Member.METHOD) {
 			if (clashesWithExistingMember(munger, getMethodsWithoutIterator(false, true).iterator())) {
 				return;
