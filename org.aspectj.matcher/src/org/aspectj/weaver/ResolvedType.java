@@ -66,8 +66,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		this.world = world;
 	}
 
-	// ---- things that don't require a world
-
 	/**
 	 * Returns an iterator through ResolvedType objects representing all the direct supertypes of this type. That is, through the
 	 * superclass, if any, and all declared interfaces.
@@ -193,15 +191,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		final Iterators.Filter<ResolvedType> dupFilter = Iterators.dupFilter();
 		Iterators.Getter<ResolvedType, ResolvedType> typeGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
 			public Iterator<ResolvedType> get(ResolvedType o) {
-				return dupFilter.filter((o).getDirectSupertypes());
+				return dupFilter.filter(o.getDirectSupertypes());
 			}
 		};
-		Iterators.Getter<ResolvedType, ResolvedMember> fieldGetter = new Iterators.Getter<ResolvedType, ResolvedMember>() {
-			public Iterator<ResolvedMember> get(ResolvedType o) {
-				return Iterators.array((o).getDeclaredFields());
-			}
-		};
-		return Iterators.mapOver(Iterators.recur(this, typeGetter), fieldGetter);
+		return Iterators.mapOver(Iterators.recur(this, typeGetter), FieldGetterInstance);
 	}
 
 	/**
@@ -286,50 +279,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	private final static MethodGetterIncludingItds MethodGetterWithItdsInstance = new MethodGetterIncludingItds();
 	private final static PointcutGetter PointcutGetterInstance = new PointcutGetter();
 	private final static FieldGetter FieldGetterInstance = new FieldGetter();
-
-	/**
-	 * returns an iterator through all of the methods of this type, in order for checking from JVM spec 2ed 5.4.3.3. This means that
-	 * the order is
-	 * <p/>
-	 * <ul>
-	 * <li>methods from current class</li>
-	 * <li>recur into superclass, all the way up, not touching interfaces</li>
-	 * <li>recur into all superinterfaces, in some unspecified order</li>
-	 * </ul>
-	 * <p/>
-	 * We keep a hashSet of interfaces that we've visited so we don't spiral out into 2^n land. NOTE: Take a look at the javadoc on
-	 * getMethodsWithoutIterator() to see if you are sensitive to a quirk in getMethods()
-	 */
-	public Iterator<ResolvedMember> getMethods() {
-		final Iterators.Filter<ResolvedType> dupFilter = Iterators.dupFilter();
-		Iterators.Getter<ResolvedType, ResolvedType> ifaceGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
-			public Iterator<ResolvedType> get(ResolvedType o) {
-				return dupFilter.filter(Iterators.array(o.getDeclaredInterfaces()));
-			}
-		};
-		Iterators.Getter<ResolvedType, ResolvedMember> methodGetter = new Iterators.Getter<ResolvedType, ResolvedMember>() {
-			public Iterator<ResolvedMember> get(ResolvedType o) {
-				return Iterators.array((o).getDeclaredMethods());
-			}
-		};
-		return Iterators.mapOver(Iterators.append(new Iterator<ResolvedType>() {
-			ResolvedType curr = ResolvedType.this;
-
-			public boolean hasNext() {
-				return curr != null;
-			}
-
-			public ResolvedType next() {
-				ResolvedType ret = curr;
-				curr = curr.getSuperclass();
-				return ret;
-			}
-
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-		}, Iterators.recur(this, ifaceGetter)), methodGetter);
-	}
 
 	/**
 	 * Return an iterator over the types in this types hierarchy - starting with this type first, then all superclasses up to Object
@@ -478,6 +427,50 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		public void remove() {
 			throw new UnsupportedOperationException();
 		}
+	}
+
+	/**
+	 * returns an iterator through all of the methods of this type, in order for checking from JVM spec 2ed 5.4.3.3. This means that
+	 * the order is
+	 * <p/>
+	 * <ul>
+	 * <li>methods from current class</li>
+	 * <li>recur into superclass, all the way up, not touching interfaces</li>
+	 * <li>recur into all superinterfaces, in some unspecified order</li>
+	 * </ul>
+	 * <p/>
+	 * We keep a hashSet of interfaces that we've visited so we don't spiral out into 2^n land. NOTE: Take a look at the javadoc on
+	 * getMethodsWithoutIterator() to see if you are sensitive to a quirk in getMethods()
+	 */
+	public Iterator<ResolvedMember> getMethods() {
+		final Iterators.Filter<ResolvedType> dupFilter = Iterators.dupFilter();
+		Iterators.Getter<ResolvedType, ResolvedType> ifaceGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
+			public Iterator<ResolvedType> get(ResolvedType o) {
+				return dupFilter.filter(Iterators.array(o.getDeclaredInterfaces()));
+			}
+		};
+		Iterators.Getter<ResolvedType, ResolvedMember> methodGetter = new Iterators.Getter<ResolvedType, ResolvedMember>() {
+			public Iterator<ResolvedMember> get(ResolvedType o) {
+				return Iterators.array((o).getDeclaredMethods());
+			}
+		};
+		return Iterators.mapOver(Iterators.append(new Iterator<ResolvedType>() {
+			ResolvedType curr = ResolvedType.this;
+
+			public boolean hasNext() {
+				return curr != null;
+			}
+
+			public ResolvedType next() {
+				ResolvedType ret = curr;
+				curr = curr.getSuperclass();
+				return ret;
+			}
+
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		}, Iterators.recur(this, ifaceGetter)), methodGetter);
 	}
 
 	/**
