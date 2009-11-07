@@ -779,7 +779,8 @@ public class AtAjAttributes {
 
 					// then iterate on field interface hierarchy (not object)
 					boolean hasAtLeastOneMethod = false;
-					ResolvedMember[] methods = fieldType.getMethodsWithoutIterator(true, false).toArray(new ResolvedMember[0]);
+					ResolvedMember[] methods = fieldType.getMethodsWithoutIterator(true, false, false).toArray(
+							new ResolvedMember[0]);
 					for (int i = 0; i < methods.length; i++) {
 						ResolvedMember method = methods[i];
 						if (method.isAbstract()) {
@@ -970,7 +971,8 @@ public class AtAjAttributes {
 			ResolvedType typeForDelegation = (ResolvedType) iterator.next();
 			// TODO check for overlapping interfaces. Eg. A implements I, I extends J - if they specify interfaces={I,J} we dont
 			// want to do any methods twice
-			ResolvedMember[] methods = typeForDelegation.getMethodsWithoutIterator(true, false).toArray(new ResolvedMember[0]);
+			ResolvedMember[] methods = typeForDelegation.getMethodsWithoutIterator(true, false, false).toArray(
+					new ResolvedMember[0]);
 			for (int i = 0; i < methods.length; i++) {
 				ResolvedMember method = methods[i];
 				if (method.isAbstract()) {

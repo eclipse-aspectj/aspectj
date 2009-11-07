@@ -153,7 +153,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 				ResolvedType callee = m_aspectGen.getWorld().resolve(UnresolvedType.forName(invoke.getClassName(cpg)));
 
 				// look in the whole method list and not just declared for super calls and alike
-				List methods = callee.getMethodsWithoutIterator(false, true);
+				List methods = callee.getMethodsWithoutIterator(false, true, false);
 				for (Iterator iter = methods.iterator(); iter.hasNext();) {
 					ResolvedMember resolvedMember = (ResolvedMember) iter.next();
 					if (invoke.getName(cpg).equals(resolvedMember.getName())

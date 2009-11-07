@@ -210,7 +210,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		cont = enforceDecpRule1_abstractMethodsImplemented(weaver, munger.getSourceLocation(), newParentTarget, newParent);
 		cont = enforceDecpRule2_cantExtendFinalClass(weaver, munger.getSourceLocation(), newParentTarget, newParent) && cont;
 
-		List methods = newParent.getMethodsWithoutIterator(false, true);
+		List methods = newParent.getMethodsWithoutIterator(false, true, false);
 		for (Iterator iter = methods.iterator(); iter.hasNext();) {
 			ResolvedMember superMethod = (ResolvedMember) iter.next();
 			if (!superMethod.getName().equals("<init>")) {
@@ -258,7 +258,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			// classes
 			// or
 			// interfaces
-			List methods = newParent.getMethodsWithoutIterator(false, true);
+			List methods = newParent.getMethodsWithoutIterator(false, true, false);
 			for (Iterator i = methods.iterator(); i.hasNext();) {
 				ResolvedMember o = (ResolvedMember) i.next();
 				if (o.isAbstract() && !o.getName().startsWith("ajc$interField")) { // Ignore
@@ -269,7 +269,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					// prefixed
 					// methods
 					ResolvedMember discoveredImpl = null;
-					List newParentTargetMethods = newParentTarget.getType().getMethodsWithoutIterator(false, true);
+					List newParentTargetMethods = newParentTarget.getType().getMethodsWithoutIterator(false, true, false);
 					for (Iterator ii = newParentTargetMethods.iterator(); ii.hasNext() && discoveredImpl == null;) {
 						ResolvedMember gen2 = (ResolvedMember) ii.next();
 						if (gen2.getName().equals(o.getName()) && !gen2.isAbstract()) {
