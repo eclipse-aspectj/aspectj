@@ -90,9 +90,9 @@ public class HasMemberTypePattern extends TypePattern {
 			}
 		}
 		// try itds before we give up
-		List mungers = type.getInterTypeMungersIncludingSupers();
-		for (Iterator iter = mungers.iterator(); iter.hasNext();) {
-			ConcreteTypeMunger munger = (ConcreteTypeMunger) iter.next();
+		List<ConcreteTypeMunger> mungers = type.getInterTypeMungersIncludingSupers();
+		for (Iterator<ConcreteTypeMunger> iter = mungers.iterator(); iter.hasNext();) {
+			ConcreteTypeMunger munger = iter.next();
 			Member member = munger.getSignature();
 			if (signaturePattern.matches(member, type.getWorld(), false)) {
 				if (!Modifier.isPublic(member.getModifiers())) {

@@ -118,17 +118,17 @@ public final class Iterators {
 		};
 	}
 
-	public static class ArrayIterator implements Iterator<ResolvedType> {
+	public static class ResolvedTypeArrayIterator implements Iterator<ResolvedType> {
 		private ResolvedType[] array;
 		private int index;
 		private int len;
 		private boolean wantGenerics;
 		private List<String> alreadySeen; // type signatures
 
-		public ArrayIterator(ResolvedType[] array, List<String> alreadySeen, boolean genericsAware) {
+		public ResolvedTypeArrayIterator(ResolvedType[] array, List<String> alreadySeen, boolean wantGenerics) {
 			assert array != null;
 			this.array = array;
-			this.wantGenerics = genericsAware;
+			this.wantGenerics = wantGenerics;
 			this.len = array.length;
 			this.index = 0;
 			this.alreadySeen = alreadySeen;
@@ -138,7 +138,7 @@ public final class Iterators {
 		private void moveToNextNewOne() {
 			while (index < len) {
 				ResolvedType interfaceType = array[index];
-				if (!wantGenerics && (interfaceType.isGenericType() || interfaceType.isParameterizedType())) {
+				if (!wantGenerics && interfaceType.isParameterizedOrGenericType()) {
 					interfaceType = interfaceType.getRawType();
 				}
 				String signature = interfaceType.getSignature();

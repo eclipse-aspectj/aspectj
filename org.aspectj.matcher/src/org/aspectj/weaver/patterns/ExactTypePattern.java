@@ -32,6 +32,8 @@ import org.aspectj.weaver.World;
 public class ExactTypePattern extends TypePattern {
 	protected UnresolvedType type;
 	protected transient ResolvedType resolvedType;
+	public boolean checked = false;
+	public boolean isVoid = false;
 
 	public static final Map<String, Class<?>> primitiveTypesMap;
 	public static final Map<String, Class<?>> boxedPrimitivesMap;
@@ -174,6 +176,15 @@ public class ExactTypePattern extends TypePattern {
 			resolvedType = world.resolve(type);
 		}
 		return resolvedType;
+	}
+
+	@Override
+	public boolean isVoid() {
+		if (!checked) {
+			isVoid = this.type.getSignature().equals("V");
+			checked = true;
+		}
+		return isVoid;
 	}
 
 	// true if (matchType instanceof this.type)

@@ -101,7 +101,6 @@ public class KindedPointcut extends Pointcut {
 
 	@Override
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
-		long time = System.nanoTime();
 		if (shadow.getKind() != kind) {
 			return FuzzyBoolean.NO;
 		}
@@ -116,7 +115,6 @@ public class KindedPointcut extends Pointcut {
 		if (!signature.matches(shadow.getMatchingSignature(), shadow.getIWorld(), this.kind == Shadow.MethodCall)) {
 
 			if (kind == Shadow.MethodCall) {
-				long t2 = System.nanoTime();
 				warnOnConfusingSig(shadow);
 				// warnOnBridgeMethod(shadow);
 			}

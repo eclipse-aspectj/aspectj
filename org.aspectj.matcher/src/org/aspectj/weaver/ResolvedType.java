@@ -21,8 +21,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 import org.aspectj.bridge.IMessage;
@@ -30,6 +32,7 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.Iterators.Getter;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
 
@@ -304,6 +307,155 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				throw new UnsupportedOperationException();
 			}
 		}, Iterators.recur(this, ifaceGetter)), methodGetter);
+	}
+
+	/**
+	 * Return an iterator over the types in this types hierarchy - starting with this type first, then all superclasses up to Object
+	 * and then all interfaces (starting with those 'nearest' this type).
+	 * 
+	 * @param wantGenerics true if the caller wants full generic information
+	 * @param wantDeclaredParents true if the caller even wants those parents introduced via declare parents
+	 * @return an iterator over all types in the hierarchy of this type
+	 */
+	public Iterator<ResolvedType> getHierarchy(final boolean wantGenerics, final boolean wantDeclaredParents) {
+
+		final Iterators.Getter<ResolvedType, ResolvedType> interfaceGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
+			List<String> alreadySeen = new ArrayList<String>(); // Strings are signatures (ResolvedType.getSignature())
+
+			public Iterator<ResolvedType> get(ResolvedType type) {
+				ResolvedType[] interfaces = type.getDeclaredInterfaces();
+
+				// remove interfaces introduced by declare parents
+				// relatively expensive but hopefully uncommon
+				if (!wantDeclaredParents && type.hasNewParentMungers()) {
+					// Throw away interfaces from that array if they were decp'd onto here
+					List<Integer> forRemoval = new ArrayList<Integer>();
+					for (ConcreteTypeMunger munger : type.interTypeMungers) {
+						if (munger.getMunger() != null) {
+							ResolvedTypeMunger m = munger.getMunger();
+							if (m.getKind() == ResolvedTypeMunger.Parent) {
+								ResolvedType newType = ((NewParentTypeMunger) m).getNewParent();
+								if (!wantGenerics && newType.isParameterizedOrGenericType()) {
+									newType = newType.getRawType();
+								}
+								for (int ii = 0; ii < interfaces.length; ii++) {
+									ResolvedType iface = interfaces[ii];
+									if (!wantGenerics && iface.isParameterizedOrGenericType()) {
+										iface = iface.getRawType();
+									}
+									if (newType.getSignature().equals(iface.getSignature())) { // pr171953
+										forRemoval.add(ii);
+									}
+								}
+							}
+						}
+					}
+					// Found some to remove from those we are going to iterate over
+					if (forRemoval.size() > 0) {
+						ResolvedType[] interfaces2 = new ResolvedType[interfaces.length - forRemoval.size()];
+						int p = 0;
+						for (int ii = 0; ii < interfaces.length; ii++) {
+							if (!forRemoval.contains(ii)) {
+								interfaces2[p++] = interfaces[ii];
+							}
+						}
+						interfaces = interfaces2;
+					}
+				}
+				return new Iterators.ResolvedTypeArrayIterator(interfaces, alreadySeen, wantGenerics);
+			}
+		};
+
+		// If this type is an interface, there are only interfaces to walk
+		if (this.isInterface()) {
+			return new SuperInterfaceWalker(interfaceGetter, this);
+		} else {
+			SuperInterfaceWalker superInterfaceWalker = new SuperInterfaceWalker(interfaceGetter);
+			Iterator<ResolvedType> superClassesIterator = new SuperClassWalker(this, superInterfaceWalker, wantGenerics);
+			// append() will check if the second iterator is empty before appending - but the types which the superInterfaceWalker
+			// needs to visit are only accumulated whilst the superClassesIterator is in progress
+			return Iterators.append1(superClassesIterator, superInterfaceWalker);
+		}
+	}
+
+	public static class SuperClassWalker implements Iterator<ResolvedType> {
+
+		private ResolvedType curr;
+		private SuperInterfaceWalker iwalker;
+		private boolean wantGenerics;
+
+		public SuperClassWalker(ResolvedType type, SuperInterfaceWalker iwalker, boolean genericsAware) {
+			this.curr = type;
+			this.iwalker = iwalker;
+			this.wantGenerics = genericsAware;
+		}
+
+		public boolean hasNext() {
+			return curr != null;
+		}
+
+		public ResolvedType next() {
+			ResolvedType ret = curr;
+			if (!wantGenerics && ret.isParameterizedOrGenericType()) {
+				ret = ret.getRawType();
+			}
+			iwalker.push(ret); // tell the interface walker about another class whose interfaces need visiting
+			curr = curr.getSuperclass();
+			return ret;
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	static class SuperInterfaceWalker implements Iterator<ResolvedType> {
+
+		private Getter<ResolvedType, ResolvedType> ifaceGetter;
+		Iterator<ResolvedType> delegate = null;
+		public Queue<ResolvedType> toPersue = new LinkedList<ResolvedType>();
+		public Set<ResolvedType> visited = new HashSet<ResolvedType>();
+
+		SuperInterfaceWalker(Iterators.Getter<ResolvedType, ResolvedType> ifaceGetter) {
+			this.ifaceGetter = ifaceGetter;
+		}
+
+		SuperInterfaceWalker(Iterators.Getter<ResolvedType, ResolvedType> ifaceGetter, ResolvedType interfaceType) {
+			this.ifaceGetter = ifaceGetter;
+			this.delegate = Iterators.one(interfaceType);
+		}
+
+		public boolean hasNext() {
+			if (delegate == null || !delegate.hasNext()) {
+				// either we set it up or we have run out, is there anything else to look at?
+				if (toPersue.isEmpty()) {
+					return false;
+				}
+				do {
+					ResolvedType next = toPersue.remove();
+					visited.add(next);
+					delegate = ifaceGetter.get(next); // retrieve interfaces from a class or another interface
+				} while (!delegate.hasNext() && !toPersue.isEmpty());
+			}
+			return delegate.hasNext();
+		}
+
+		public void push(ResolvedType ret) {
+			toPersue.add(ret);
+		}
+
+		public ResolvedType next() {
+			ResolvedType next = delegate.next();
+			if (!visited.contains(next)) {
+				visited.add(next);
+				toPersue.add(next); // pushes on interfaces already visited?
+			}
+			return next;
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	/**

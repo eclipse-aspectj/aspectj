@@ -601,7 +601,7 @@ public class SignaturePattern extends PatternNode {
 			return true;
 		}
 
-		Collection declaringTypes = member.getDeclaringTypes(world);
+		Collection<ResolvedType> declaringTypes = member.getDeclaringTypes(world);
 
 		boolean checkReturnType = true;
 		// XXX Possible enhancement? Doesn't seem to speed things up
@@ -614,8 +614,7 @@ public class SignaturePattern extends PatternNode {
 		// Sometimes that list includes types that don't explicitly declare the member we are after -
 		// they are on the list because their supertype is on the list, that's why we use
 		// lookupMethod rather than lookupMemberNoSupers()
-		for (Iterator i = declaringTypes.iterator(); i.hasNext();) {
-			ResolvedType type = (ResolvedType) i.next();
+		for (ResolvedType type : declaringTypes) {
 			if (declaringType.matchesStatically(type)) {
 				if (!checkReturnType) {
 					return true;

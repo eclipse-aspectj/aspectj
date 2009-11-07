@@ -168,6 +168,10 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		return typeKind == TypeKind.PARAMETERIZED;
 	}
 
+	public boolean isParameterizedOrGenericType() {
+		return typeKind == TypeKind.GENERIC || typeKind == TypeKind.PARAMETERIZED;
+	}
+
 	public boolean isTypeVariableReference() {
 		return typeKind == TypeKind.TYPE_VARIABLE;
 	}

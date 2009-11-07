@@ -12,6 +12,7 @@ package org.aspectj.weaver.patterns;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -75,7 +76,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		return annotationType;
 	}
 
-	public Map getAnnotationValues() {
+	public Map<String, String> getAnnotationValues() {
 		return annotationValues;
 	}
 
@@ -99,7 +100,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	public FuzzyBoolean matches(AnnotatedElement annotated, ResolvedType[] parameterAnnotations) {
 		if (!isForParameterAnnotationMatch()) {
 			boolean checkSupers = false;
-			if (getResolvedAnnotationType().hasAnnotation(UnresolvedType.AT_INHERITED)) {
+			if (getResolvedAnnotationType().isInheritedAnnotation()) {
 				if (annotated instanceof ResolvedType) {
 					checkSupers = true;
 				}
@@ -220,7 +221,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 
 	// this version should be called for @this, @target, @args
 	public FuzzyBoolean matchesRuntimeType(AnnotatedElement annotated) {
-		if (getResolvedAnnotationType().hasAnnotation(UnresolvedType.AT_INHERITED)) {
+		if (getResolvedAnnotationType().isInheritedAnnotation()) {
 			// a static match is good enough
 			if (matches(annotated).alwaysTrue()) {
 				return FuzzyBoolean.YES;
@@ -234,8 +235,8 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	public void resolve(World world) {
 		if (!resolved) {
 			annotationType = annotationType.resolve(world);
+			resolved = true;
 		}
-		resolved = true;
 	}
 
 	/*
@@ -360,8 +361,9 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 			s.writeInt(0);
 		} else {
 			s.writeInt(annotationValues.size());
-			Set<String> keys = annotationValues.keySet();
-			for (String k : keys) {
+			Set<String> key = annotationValues.keySet();
+			for (Iterator<String> keys = key.iterator(); keys.hasNext();) {
+				String k = keys.next();
 				s.writeUTF(k);
 				s.writeUTF(annotationValues.get(k));
 			}
