@@ -551,7 +551,7 @@ public class BcelWorld extends World implements Repository {
 		if (ii.opcode == Constants.INVOKESTATIC) {
 			ResolvedType appearsDeclaredBy = resolve(declaring);
 			// look for the method there
-			for (Iterator<ResolvedMember> iterator = appearsDeclaredBy.getMethods(); iterator.hasNext();) {
+			for (Iterator<ResolvedMember> iterator = appearsDeclaredBy.getMethods(true, true); iterator.hasNext();) {
 				ResolvedMember method = iterator.next();
 				if (method.isStatic()) {
 					if (name.equals(method.getName()) && signature.equals(method.getSignature())) {

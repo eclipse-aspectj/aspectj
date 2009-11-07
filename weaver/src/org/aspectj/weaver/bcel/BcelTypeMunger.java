@@ -1135,7 +1135,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		if (!alreadyDone) {
 			// Use the iterator form of 'getMethods()' so we do as little work
 			// as necessary
-			for (Iterator iter = onType.getSuperclass().getMethods(); iter.hasNext() && !quitRightNow;) {
+			for (Iterator iter = onType.getSuperclass().getMethods(true, true); iter.hasNext() && !quitRightNow;) {
 				ResolvedMember aMethod = (ResolvedMember) iter.next();
 				if (aMethod.getName().equals(localMethodName) && aMethod.getParameterSignature().equals(localParameterSig)) {
 					// check the return types, if they are different we need a
