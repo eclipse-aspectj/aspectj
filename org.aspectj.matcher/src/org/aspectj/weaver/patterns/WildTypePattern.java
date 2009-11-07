@@ -347,9 +347,12 @@ public class WildTypePattern extends TypePattern {
 			}
 		} else {
 			for (int i = 0, len = knownMatches.length; i < len; i++) {
-				String knownPrefix = knownMatches[i] + "$";
-				if (targetTypeName.startsWith(knownPrefix)) {
-					int pos = lastIndexOfDotOrDollar(knownMatches[i]);
+				String knownMatch = knownMatches[i];
+				// String knownPrefix = knownMatches[i] + "$";
+				// if (targetTypeName.startsWith(knownPrefix)) {
+				if (targetTypeName.startsWith(knownMatch) && targetTypeName.length() > knownMatch.length()
+						&& targetTypeName.charAt(knownMatch.length()) == '$') {
+					int pos = lastIndexOfDotOrDollar(knownMatch);
 					if (innerMatchesExactly(targetTypeName.substring(pos + 1), isAnonymous, isNested)) {
 						return true;
 					}
@@ -374,14 +377,18 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	private int lastIndexOfDotOrDollar(String string) {
-		int dot = string.lastIndexOf('.');
-		int dollar = string.lastIndexOf('$');
-		return Math.max(dot, dollar);
+		for (int pos = string.length() - 1; pos > -1; pos--) {
+			char ch = string.charAt(pos);
+			if (ch == '.' || ch == '$') {
+				return pos;
+			}
+		}
+		return -1;
 	}
 
 	private boolean innerMatchesExactly(String s, boolean isAnonymous, boolean convertDollar /* isNested */) {
 
-		List ret = new ArrayList();
+		List<char[]> ret = new ArrayList<char[]>();
 		int startIndex = 0;
 		while (true) {
 			int breakIndex = s.indexOf('.', startIndex); // what about /
@@ -412,7 +419,7 @@ public class WildTypePattern extends TypePattern {
 				return false;
 			}
 			while (patternsIndex < patternsLength) {
-				if (!namePatterns[patternsIndex++].matches((char[]) ret.get(namesIndex++))) {
+				if (!namePatterns[patternsIndex++].matches(ret.get(namesIndex++))) {
 					return false;
 				}
 			}
@@ -426,7 +433,7 @@ public class WildTypePattern extends TypePattern {
 				if (p == NamePattern.ELLIPSIS) {
 					namesIndex = namesLength - (patternsLength - patternsIndex);
 				} else {
-					if (!p.matches((char[]) ret.get(namesIndex++))) {
+					if (!p.matches(ret.get(namesIndex++))) {
 						return false;
 					}
 				}
@@ -434,8 +441,8 @@ public class WildTypePattern extends TypePattern {
 			return true;
 		} else {
 			// System.err.print("match(\"" + Arrays.asList(namePatterns) + "\", \"" + Arrays.asList(names) + "\") -> ");
-			boolean b = outOfStar(namePatterns, (char[][]) ret.toArray(new char[ret.size()][]), 0, 0, patternsLength
-					- ellipsisCount, namesLength, ellipsisCount);
+			boolean b = outOfStar(namePatterns, ret.toArray(new char[ret.size()][]), 0, 0, patternsLength - ellipsisCount,
+					namesLength, ellipsisCount);
 			// System.err.println(b);
 			return b;
 		}
