@@ -1720,8 +1720,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkType(w, "com.foo.CCC");
 		// Type CCC implements an interface that extends another interface
 		checkType(w, "com.foo.CCC");
-
-		checkType(w, "GenericMethodInterface");
+	    checkType(w, "GenericMethodInterface");
+		checkType(w, "GenericInterfaceChain");
 
 		// Some random classes from rt.jar that did reveal some problems:
 		checkType(w, "java.lang.StringBuffer");
@@ -1845,15 +1845,15 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		}
 	}
 
-	private void checkTypeHierarchy(World w, String name, boolean genericsAware) {
+	private void checkTypeHierarchy(World w, String name, boolean wantGenerics) {
 		ResolvedType typeA = w.resolve(name);
 		assertFalse(typeA.isMissing());
-		List<String> viaIteratorList = exhaustTypeIterator(typeA.getHierarchy(genericsAware, false));
-		List<ResolvedType> typeDirectlyList = typeA.getHierarchyWithoutIterator(true, true, genericsAware);
+		List<String> viaIteratorList = exhaustTypeIterator(typeA.getHierarchy(wantGenerics, false));
+		List<ResolvedType> typeDirectlyList = typeA.getHierarchyWithoutIterator(true, true, wantGenerics);
 		assertFalse(viaIteratorList.isEmpty());
 		List<String> directlyList = new ArrayList<String>();
-		for (ResolvedType method : typeDirectlyList) {
-			String n = method.getName();
+		for (ResolvedType type : typeDirectlyList) {
+			String n = type.getName();
 			if (!directlyList.contains(n)) {
 				directlyList.add(n);
 			}
@@ -1861,7 +1861,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		Collections.sort(viaIteratorList);
 		Collections.sort(directlyList);
 		compareTypeLists(viaIteratorList, directlyList);
-		// System.out.println(typeListsToString(viaIteratorList, directlyList));
+		System.out.println("ShouldBeGenerics?" + wantGenerics + "\n" + typeListsToString(viaIteratorList, directlyList));
 	}
 
 	private void compare(List<ResolvedMember> viaIteratorList, List<ResolvedMember> directlyList, String typename) {
