@@ -41,7 +41,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public static final ResolvedType[] EMPTY_RESOLVED_TYPE_ARRAY = new ResolvedType[0];
 	public static final String PARAMETERIZED_TYPE_IDENTIFIER = "P";
 
-	// Set during a type pattern match call - this currently used to hold the
+	// Set temporarily during a type pattern match call - this currently used to hold the
 	// annotations that may be attached to a type when it used as a parameter
 	public ResolvedType[] temporaryAnnotationTypes;
 	private ResolvedType[] resolvedTypeParams;
@@ -99,8 +99,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	public abstract int getModifiers();
 
-	// return true if this resolved type couldn't be found (but we know it's
-	// name maybe)
+	// return true if this resolved type couldn't be found (but we know it's name maybe)
 	public boolean isMissing() {
 		return false;
 	}
@@ -394,7 +393,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				}
 			}
 		}
-		if (!resolvedType.equals(ResolvedType.OBJECT)) {
+		// BUG? interface type superclass is Object - is that correct?
+		if (!resolvedType.isInterface() && !resolvedType.equals(ResolvedType.OBJECT)) {
 			ResolvedType superType = resolvedType.getSuperclass();
 			if (superType != null && !superType.isMissing()) {
 				if (!genericsAware && superType.isParameterizedOrGenericType()) {
@@ -1691,10 +1691,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		sig = munger.getSignature(); // possibly changed when type parms filled in
 
 		if (sig.getKind() == Member.METHOD) {
-			if (clashesWithExistingMember(munger, getMethodsWithoutIterator(false, true, false).iterator())) {
+		    // OPTIMIZE can this be sped up?
+			if (clashesWithExistingMember(munger, getMethods(true, false))) { // ITDs checked below
 				return;
 			}
 			if (this.isInterface()) {
+				// OPTIMIZE this set of methods are always the same - must we keep creating them as a list?
 				if (clashesWithExistingMember(munger, Arrays.asList(world.getCoreType(OBJECT).getDeclaredMethods()).iterator())) {
 					return;
 				}
@@ -1745,6 +1747,15 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// signature for the ITD so it can be retrieved.
 		interTypeMungers.add(munger);
 	}
+
+//	private void printIterator(String string, Iterator<ResolvedMember> iterator) {
+//		System.out.println(">" + string);
+//		while (iterator.hasNext()) {
+//			ResolvedMember rm = iterator.next();
+//			System.out.println(" " + rm);
+//		}
+//		System.out.println("<" + string);
+//	}
 
 	/**
 	 * Compare the type transformer with the existing members. A clash may not be an error (the ITD may be the 'default
