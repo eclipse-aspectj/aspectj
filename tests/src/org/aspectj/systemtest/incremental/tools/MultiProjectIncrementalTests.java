@@ -1701,12 +1701,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	 * process typically looks for a method in the declaring type.
 	 */
 	public void testOptimizedMemberLookup() {
-		// AjdeInteractionTestbed.VERBOSE = true;
-
-		// Build a simple project
 		String p = "oml";
 		initialiseProject(p);
 		build(p);
+
 		AjdeCoreBuildManager buildManager = getCompilerForProjectWithName(p).getBuildManager();
 		AjBuildManager ajBuildManager = buildManager.getAjBuildManager();
 		World w = ajBuildManager.getWorld();
@@ -1735,8 +1733,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkType(w, "B");
 		checkType(w, "C");
 
-		// checkRtJar(w);
-		//
+		// checkRtJar(w); // only works if the JDK path is setup ok in checkRtJar
+
 		// speedCheck(w);
 	}
 
@@ -1786,8 +1784,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 					n = n.substring(0, n.length() - 6);
 					ResolvedType typeA = w.resolve(n);
 					assertFalse(typeA.isMissing());
-					List<ResolvedMember> viaIteratorList = getThemAll(typeA.getMethods(true));
-					viaIteratorList = getThemAll(typeA.getMethods(false));
+					List<ResolvedMember> viaIteratorList = getThemAll(typeA.getMethods(true, true));
+					viaIteratorList = getThemAll(typeA.getMethods(false, true));
 				}
 			}
 			zf.close();
@@ -1830,11 +1828,11 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkMethods(w, name, false);
 	}
 
-	private void checkMethods(World w, String name, boolean genericsAware) {
+	private void checkMethods(World w, String name, boolean wantGenerics) {
 		ResolvedType typeA = w.resolve(name);
 		assertFalse(typeA.isMissing());
-		List<ResolvedMember> viaIteratorList = getThemAll(typeA.getMethods(genericsAware));
-		List<ResolvedMember> directlyList = typeA.getMethodsWithoutIterator(true, true, genericsAware);
+		List<ResolvedMember> viaIteratorList = getThemAll(typeA.getMethods(wantGenerics, true));
+		List<ResolvedMember> directlyList = typeA.getMethodsWithoutIterator(true, true, wantGenerics);
 		Collections.sort(viaIteratorList, new ResolvedMemberComparator());
 		Collections.sort(directlyList, new ResolvedMemberComparator());
 		compare(viaIteratorList, directlyList, name);
