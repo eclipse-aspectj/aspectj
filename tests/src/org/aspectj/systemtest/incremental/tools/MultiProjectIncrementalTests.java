@@ -15,6 +15,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -22,10 +25,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.aspectj.ajde.core.ICompilerConfiguration;
 import org.aspectj.ajde.core.TestOutputLocationManager;
+import org.aspectj.ajde.core.internal.AjdeCoreBuildManager;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
+import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
 import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
 import org.aspectj.asm.AsmManager;
@@ -39,6 +46,9 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
 import org.aspectj.tools.ajc.Ajc;
 import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.World;
 
 /**
  * The superclass knows all about talking through Ajde to the compiler. The superclass isn't in charge of knowing how to simulate
@@ -54,28 +64,14 @@ import org.aspectj.util.FileUtil;
 public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
 
 	/*
-public void testIncrementalAspectWhitespace() throws Exception {
-		AjdeInteractionTestbed.VERBOSE = true;
-		String p = "xxx";
-		initialiseProject(p);
-		configureNonStandardCompileOptions(p, "-showWeaveInfo");
-		configureShowWeaveInfoMessages(p, true);
-		build(p);
-
-		List weaveMessages = getWeavingMessages(p);
-		if (weaveMessages.size() != 0) {
-			for (Iterator iterator = weaveMessages.iterator(); iterator.hasNext();) {
-				Object object = iterator.next();
-				System.out.println(object);
-			}
-		}
-		checkWasFullBuild();
-		assertNoErrors(p);
-		alter(p, "inc1");
-		build(p);
-		checkWasntFullBuild();
-		assertNoErrors(p);
-	}*/
+	 * public void testIncrementalAspectWhitespace() throws Exception { AjdeInteractionTestbed.VERBOSE = true; String p = "xxx";
+	 * initialiseProject(p); configureNonStandardCompileOptions(p, "-showWeaveInfo"); configureShowWeaveInfoMessages(p, true);
+	 * build(p);
+	 * 
+	 * List weaveMessages = getWeavingMessages(p); if (weaveMessages.size() != 0) { for (Iterator iterator =
+	 * weaveMessages.iterator(); iterator.hasNext();) { Object object = iterator.next(); System.out.println(object); } }
+	 * checkWasFullBuild(); assertNoErrors(p); alter(p, "inc1"); build(p); checkWasntFullBuild(); assertNoErrors(p); }
+	 */
 
 	public void testIncrementalGenericItds_pr280676() throws Exception {
 		String p = "pr280676";
@@ -171,12 +167,12 @@ public void testIncrementalAspectWhitespace() throws Exception {
 		IProgramElement decpPE = getModelFor(p).getHierarchy().findElementForHandle(
 				"=pr286539<p.q.r{Aspect.java}Asp`declare parents");
 		assertNotNull(decpPE);
-		String s = (String) (((List) decpPE.getParentTypes()).get(0));
+		String s = (String) ((decpPE.getParentTypes()).get(0));
 		assertEquals("p.q.r.Int", s);
 
 		decpPE = getModelFor(p).getHierarchy().findElementForHandle("=pr286539<p.q.r{Aspect.java}Asp`declare parents!2");
 		assertNotNull(decpPE);
-		s = (String) (((List) decpPE.getParentTypes()).get(0));
+		s = (String) ((decpPE.getParentTypes()).get(0));
 		assertEquals("p.q.r.Int", s);
 
 		IProgramElement decaPE = getModelFor(p).getHierarchy().findElementForHandle(
@@ -409,6 +405,7 @@ public void testIncrementalAspectWhitespace() throws Exception {
 			super(testProjectPath);
 		}
 
+		@Override
 		public void reportFileWrite(String outputfile, int filetype) {
 			super.reportFileWrite(outputfile, filetype);
 			writeCount++;
@@ -416,6 +413,7 @@ public void testIncrementalAspectWhitespace() throws Exception {
 			// System.out.println("Written " + outputfile + " " + filetype);
 		}
 
+		@Override
 		public void reportFileRemove(String outputfile, int filetype) {
 			super.reportFileRemove(outputfile, filetype);
 			removeCount++;
@@ -1236,12 +1234,14 @@ public void testIncrementalAspectWhitespace() throws Exception {
 	}
 
 	public static void dumptree(IProgramElement node, int indent) {
-		for (int i = 0; i < indent; i++)
+		for (int i = 0; i < indent; i++) {
 			System.out.print(" ");
+		}
 		String loc = "";
 		if (node != null) {
-			if (node.getSourceLocation() != null)
+			if (node.getSourceLocation() != null) {
 				loc = Integer.toString(node.getSourceLocation().getLine());
+			}
 		}
 		// System.out.println(node + "  [" + (node == null ? "null" : node.getKind().toString()) + "] " + loc);
 		System.out.println(node + "  [" + (node == null ? "null" : node.getKind().toString()) + "] " + loc
@@ -1695,6 +1695,244 @@ public void testIncrementalAspectWhitespace() throws Exception {
 	}
 
 	/**
+	 * This test is verifying the behaviour of the code that iterates through the type hierarchy for some type. There are two ways
+	 * to do it - an approach that grabs all the information up front or an approach that works through iterators and only processes
+	 * as much data as necessary to satisfy the caller. The latter approach could be much faster - especially if the matching
+	 * process typically looks for a method in the declaring type.
+	 */
+	public void testOptimizedMemberLookup() {
+		// AjdeInteractionTestbed.VERBOSE = true;
+
+		// Build a simple project
+		String p = "oml";
+		initialiseProject(p);
+		build(p);
+		AjdeCoreBuildManager buildManager = getCompilerForProjectWithName(p).getBuildManager();
+		AjBuildManager ajBuildManager = buildManager.getAjBuildManager();
+		World w = ajBuildManager.getWorld();
+		// Type A has no hierarchy (well, Object) and defines 3 methods
+		checkType(w, "com.foo.A");
+		// Type B extends B2. Two methods in B2, three in B
+		checkType(w, "com.foo.B");
+		// Type C implements an interface
+		checkType(w, "com.foo.C");
+		// Type CC extends a class that implements an interface
+		checkType(w, "com.foo.CC");
+		// Type CCC implements an interface that extends another interface
+		checkType(w, "com.foo.CCC");
+		// Type CCC implements an interface that extends another interface
+		checkType(w, "com.foo.CCC");
+
+		checkType(w, "GenericMethodInterface");
+
+		// Some random classes from rt.jar that did reveal some problems:
+		checkType(w, "java.lang.StringBuffer");
+		checkType(w, "com.sun.corba.se.impl.encoding.CDRInputObject");
+		checkTypeHierarchy(w, "com.sun.corba.se.impl.interceptors.PIHandlerImpl$RequestInfoStack", true);
+		checkType(w, "com.sun.corba.se.impl.interceptors.PIHandlerImpl$RequestInfoStack");
+		checkType(w, "DeclareWarningAndInterfaceMethodCW");
+		checkType(w, "ICanGetSomething");
+		checkType(w, "B");
+		checkType(w, "C");
+
+		// checkRtJar(w);
+		//
+		// speedCheck(w);
+	}
+
+	private void checkRtJar(World w) {
+		System.out.println("Processing everything in rt.jar: ~16000 classes");
+		try {
+			ZipFile zf = new ZipFile("c:/jvms/jdk1.6.0_06/jre/lib/rt.jar");
+			Enumeration e = zf.entries();
+			int count = 1;
+			while (e.hasMoreElements()) {
+				ZipEntry ze = (ZipEntry) e.nextElement();
+				String n = ze.getName();
+				if (n.endsWith(".class")) {
+					n = n.replace('/', '.');
+					n = n.substring(0, n.length() - 6);
+					if ((count % 100) == 0) {
+						System.out.print(count + " ");
+					}
+					if ((count % 1000) == 0) {
+						System.out.println();
+					}
+					checkType(w, n);
+					count++;
+				}
+			}
+			zf.close();
+		} catch (IOException t) {
+			t.printStackTrace();
+			fail(t.toString());
+		}
+		System.out.println();
+	}
+
+	/**
+	 * Compare time taken to grab them all and look at them and iterator through them all.
+	 */
+	private void speedCheck(World w) {
+		long stime = System.currentTimeMillis();
+		try {
+			ZipFile zf = new ZipFile("c:/jvms/jdk1.6.0_06/jre/lib/rt.jar");
+			Enumeration e = zf.entries();
+			while (e.hasMoreElements()) {
+				ZipEntry ze = (ZipEntry) e.nextElement();
+				String n = ze.getName();
+				if (n.endsWith(".class")) {
+					n = n.replace('/', '.');
+					n = n.substring(0, n.length() - 6);
+					ResolvedType typeA = w.resolve(n);
+					assertFalse(typeA.isMissing());
+					List<ResolvedMember> viaIteratorList = getThemAll(typeA.getMethods(true));
+					viaIteratorList = getThemAll(typeA.getMethods(false));
+				}
+			}
+			zf.close();
+		} catch (IOException t) {
+			t.printStackTrace();
+			fail(t.toString());
+		}
+		long etime = System.currentTimeMillis();
+		System.out.println("Time taken for 'iterator' approach: " + (etime - stime) + "ms");
+		stime = System.currentTimeMillis();
+		try {
+			ZipFile zf = new ZipFile("c:/jvms/jdk1.6.0_06/jre/lib/rt.jar");
+			Enumeration e = zf.entries();
+			while (e.hasMoreElements()) {
+				ZipEntry ze = (ZipEntry) e.nextElement();
+				String n = ze.getName();
+				if (n.endsWith(".class")) {
+					n = n.replace('/', '.');
+					n = n.substring(0, n.length() - 6);
+					ResolvedType typeA = w.resolve(n);
+					assertFalse(typeA.isMissing());
+					List<ResolvedMember> viaIteratorList = typeA.getMethodsWithoutIterator(false, true, true);
+					viaIteratorList = typeA.getMethodsWithoutIterator(false, true, false);
+				}
+			}
+			zf.close();
+		} catch (IOException t) {
+			t.printStackTrace();
+			fail(t.toString());
+		}
+		etime = System.currentTimeMillis();
+		System.out.println("Time taken for 'grab all up front' approach: " + (etime - stime) + "ms");
+
+	}
+
+	private void checkType(World w, String name) {
+		checkTypeHierarchy(w, name, true);
+		checkTypeHierarchy(w, name, false);
+		checkMethods(w, name, true);
+		checkMethods(w, name, false);
+	}
+
+	private void checkMethods(World w, String name, boolean genericsAware) {
+		ResolvedType typeA = w.resolve(name);
+		assertFalse(typeA.isMissing());
+		List<ResolvedMember> viaIteratorList = getThemAll(typeA.getMethods(genericsAware));
+		List<ResolvedMember> directlyList = typeA.getMethodsWithoutIterator(true, true, genericsAware);
+		Collections.sort(viaIteratorList, new ResolvedMemberComparator());
+		Collections.sort(directlyList, new ResolvedMemberComparator());
+		compare(viaIteratorList, directlyList, name);
+		// System.out.println(toString(viaIteratorList, directlyList, genericsAware));
+	}
+
+	private static class ResolvedMemberComparator implements Comparator<ResolvedMember> {
+		public int compare(ResolvedMember o1, ResolvedMember o2) {
+			return o1.toString().compareTo(o2.toString());
+		}
+	}
+
+	private void checkTypeHierarchy(World w, String name, boolean genericsAware) {
+		ResolvedType typeA = w.resolve(name);
+		assertFalse(typeA.isMissing());
+		List<String> viaIteratorList = exhaustTypeIterator(typeA.getHierarchy(genericsAware, false));
+		List<ResolvedType> typeDirectlyList = typeA.getHierarchyWithoutIterator(true, true, genericsAware);
+		assertFalse(viaIteratorList.isEmpty());
+		List<String> directlyList = new ArrayList<String>();
+		for (ResolvedType method : typeDirectlyList) {
+			String n = method.getName();
+			if (!directlyList.contains(n)) {
+				directlyList.add(n);
+			}
+		}
+		Collections.sort(viaIteratorList);
+		Collections.sort(directlyList);
+		compareTypeLists(viaIteratorList, directlyList);
+		// System.out.println(typeListsToString(viaIteratorList, directlyList));
+	}
+
+	private void compare(List<ResolvedMember> viaIteratorList, List<ResolvedMember> directlyList, String typename) {
+		assertEquals(typename + "\n" + toString(directlyList), typename + "\n" + toString(viaIteratorList));
+	}
+
+	private void compareTypeLists(List<String> viaIteratorList, List<String> directlyList) {
+		assertEquals(typeListToString(directlyList), typeListToString(viaIteratorList));
+	}
+
+	private String toString(List<ResolvedMember> list) {
+		StringBuffer sb = new StringBuffer();
+		for (ResolvedMember m : list) {
+			sb.append(m).append("\n");
+		}
+		return sb.toString();
+	}
+
+	private String typeListToString(List<String> list) {
+		StringBuffer sb = new StringBuffer();
+		for (String m : list) {
+			sb.append(m).append("\n");
+		}
+		return sb.toString();
+	}
+
+	private String toString(List<ResolvedMember> one, List<ResolvedMember> two, boolean shouldIncludeGenerics) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("Through iterator\n");
+		for (ResolvedMember m : one) {
+			sb.append(m).append("\n");
+		}
+		sb.append("Directly retrieved\n");
+		for (ResolvedMember m : one) {
+			sb.append(m).append("\n");
+		}
+		return sb.toString();
+	}
+
+	private String typeListsToString(List<String> one, List<String> two) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("Through iterator\n");
+		for (String m : one) {
+			sb.append(">" + m).append("\n");
+		}
+		sb.append("Directly retrieved\n");
+		for (String m : one) {
+			sb.append(">" + m).append("\n");
+		}
+		return sb.toString();
+	}
+
+	private List<ResolvedMember> getThemAll(Iterator<ResolvedMember> methods) {
+		List<ResolvedMember> allOfThem = new ArrayList<ResolvedMember>();
+		while (methods.hasNext()) {
+			allOfThem.add(methods.next());
+		}
+		return allOfThem;
+	}
+
+	private List<String> exhaustTypeIterator(Iterator<ResolvedType> types) {
+		List<String> allOfThem = new ArrayList<String>();
+		while (types.hasNext()) {
+			allOfThem.add(types.next().getName());
+		}
+		return allOfThem;
+	}
+
+	/**
 	 * Setup up two simple projects and build them in turn - check the structure model is right after each build
 	 */
 	public void testBuildingTwoProjectsAndVerifyingModel() {
@@ -1987,8 +2225,9 @@ public void testIncrementalAspectWhitespace() throws Exception {
 	public void testPr114875() {
 		// temporary problem with this on linux, think it is a filesystem
 		// lastmodtime issue
-		if (System.getProperty("os.name", "").toLowerCase().equals("linux"))
+		if (System.getProperty("os.name", "").toLowerCase().equals("linux")) {
 			return;
+		}
 		initialiseProject("pr114875");
 		build("pr114875");
 		alter("pr114875", "inc1");
@@ -2380,8 +2619,9 @@ public void testIncrementalAspectWhitespace() throws Exception {
 		boolean found = false;
 		for (Iterator iterator = files.iterator(); iterator.hasNext();) {
 			String object = (String) iterator.next();
-			if (object.indexOf(typeNameSubstring) != -1)
+			if (object.indexOf(typeNameSubstring) != -1) {
 				found = true;
+			}
 		}
 		assertTrue("Did not find '" + typeNameSubstring + "' in list of compiled files", found);
 	}
@@ -3335,13 +3575,15 @@ public void testIncrementalAspectWhitespace() throws Exception {
 		List output = null;
 		IRelationshipMap map = model.getRelationshipMap();
 		List/* IRelationship */rels = map.get(advice);
-		if (rels == null)
+		if (rels == null) {
 			fail("Did not find any related elements!");
+		}
 		for (Iterator iter = rels.iterator(); iter.hasNext();) {
 			IRelationship element = (IRelationship) iter.next();
 			List/* String */targets = element.getTargets();
-			if (output == null)
+			if (output == null) {
 				output = new ArrayList();
+			}
 			output.addAll(targets);
 		}
 		return output;
@@ -3354,15 +3596,17 @@ public void testIncrementalAspectWhitespace() throws Exception {
 	private IProgramElement findAdvice(IProgramElement ipe, int whichOne) {
 		if (ipe.getKind() == IProgramElement.Kind.ADVICE) {
 			whichOne = whichOne - 1;
-			if (whichOne == 0)
+			if (whichOne == 0) {
 				return ipe;
+			}
 		}
 		List kids = ipe.getChildren();
 		for (Iterator iter = kids.iterator(); iter.hasNext();) {
 			IProgramElement kid = (IProgramElement) iter.next();
 			IProgramElement found = findAdvice(kid, whichOne);
-			if (found != null)
+			if (found != null) {
 				return found;
+			}
 		}
 		return null;
 	}
@@ -3380,15 +3624,17 @@ public void testIncrementalAspectWhitespace() throws Exception {
 	 */
 	private IProgramElement findCode(IProgramElement ipe, int linenumber) {
 		if (ipe.getKind() == IProgramElement.Kind.CODE) {
-			if (linenumber == -1 || ipe.getSourceLocation().getLine() == linenumber)
+			if (linenumber == -1 || ipe.getSourceLocation().getLine() == linenumber) {
 				return ipe;
+			}
 		}
 		List kids = ipe.getChildren();
 		for (Iterator iter = kids.iterator(); iter.hasNext();) {
 			IProgramElement kid = (IProgramElement) iter.next();
 			IProgramElement found = findCode(kid, linenumber);
-			if (found != null)
+			if (found != null) {
 				return found;
+			}
 		}
 		return null;
 	}
@@ -3403,12 +3649,14 @@ public void testIncrementalAspectWhitespace() throws Exception {
 	private IProgramElement checkForNode(AsmManager model, String packageName, String typeName, boolean shouldBeFound) {
 		IProgramElement ipe = model.getHierarchy().findElementForType(packageName, typeName);
 		if (shouldBeFound) {
-			if (ipe == null)
+			if (ipe == null) {
 				printModel(model);
+			}
 			assertTrue("Should have been able to find '" + packageName + "." + typeName + "' in the asm", ipe != null);
 		} else {
-			if (ipe != null)
+			if (ipe != null) {
 				printModel(model);
+			}
 			assertTrue("Should have NOT been able to find '" + packageName + "." + typeName + "' in the asm", ipe == null);
 		}
 		return ipe;
@@ -3423,8 +3671,9 @@ public void testIncrementalAspectWhitespace() throws Exception {
 	}
 
 	private static void log(String msg) {
-		if (VERBOSE)
+		if (VERBOSE) {
 			System.out.println(msg);
+		}
 	}
 
 	private File getProjectRelativePath(String p, String filename) {
