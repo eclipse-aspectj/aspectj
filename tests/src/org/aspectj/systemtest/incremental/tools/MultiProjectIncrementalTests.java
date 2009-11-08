@@ -1720,7 +1720,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkType(w, "com.foo.CCC");
 		// Type CCC implements an interface that extends another interface
 		checkType(w, "com.foo.CCC");
-	    checkType(w, "GenericMethodInterface");
+		checkType(w, "GenericMethodInterface");
 		checkType(w, "GenericInterfaceChain");
 
 		// Some random classes from rt.jar that did reveal some problems:
@@ -1861,7 +1861,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		Collections.sort(viaIteratorList);
 		Collections.sort(directlyList);
 		compareTypeLists(viaIteratorList, directlyList);
-		System.out.println("ShouldBeGenerics?" + wantGenerics + "\n" + typeListsToString(viaIteratorList, directlyList));
+		// System.out.println("ShouldBeGenerics?" + wantGenerics + "\n" + typeListsToString(viaIteratorList, directlyList));
 	}
 
 	private void compare(List<ResolvedMember> viaIteratorList, List<ResolvedMember> directlyList, String typename) {
