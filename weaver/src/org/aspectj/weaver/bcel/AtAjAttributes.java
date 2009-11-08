@@ -779,10 +779,14 @@ public class AtAjAttributes {
 
 					// then iterate on field interface hierarchy (not object)
 					boolean hasAtLeastOneMethod = false;
-					ResolvedMember[] methods = fieldType.getMethodsWithoutIterator(true, false, false).toArray(
-							new ResolvedMember[0]);
-					for (int i = 0; i < methods.length; i++) {
-						ResolvedMember method = methods[i];
+					Iterator<ResolvedMember> methodIterator = fieldType.getMethodsIncludingIntertypeDeclarations(false, true);
+					while (methodIterator.hasNext()) {
+						ResolvedMember method = methodIterator.next();
+
+						// ResolvedMember[] methods = fieldType.getMethodsWithoutIterator(true, false, false).toArray(
+						// new ResolvedMember[0]);
+						// for (int i = 0; i < methods.length; i++) {
+						// ResolvedMember method = methods[i];
 						if (method.isAbstract()) {
 							// moved to be detected at weave time if the target
 							// doesnt implement the methods
