@@ -609,6 +609,7 @@ public class ReferenceType extends ResolvedType {
 		}
 		ResolvedType[] delegateInterfaces = delegate.getDeclaredInterfaces();
 		if (newInterfaces != null) {
+			// OPTIMIZE does this part of the method trigger often?
 			ResolvedType[] extraInterfaces = new ResolvedType[delegateInterfaces.length + newInterfaces.length];
 			System.arraycopy(delegateInterfaces, 0, extraInterfaces, 0, delegateInterfaces.length);
 			System.arraycopy(newInterfaces, 0, extraInterfaces, delegateInterfaces.length, newInterfaces.length);

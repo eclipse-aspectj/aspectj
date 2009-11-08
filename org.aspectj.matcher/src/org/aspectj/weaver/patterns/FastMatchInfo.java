@@ -17,6 +17,9 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.Shadow.Kind;
 
+/**
+ * Represents a type that pointcuts may match. Fast match for a pointcut should quickly say NO if it can.
+ */
 public class FastMatchInfo {
 	private Kind kind;
 	private ResolvedType type;

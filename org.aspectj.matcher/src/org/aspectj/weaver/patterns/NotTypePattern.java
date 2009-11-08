@@ -34,6 +34,8 @@ import org.aspectj.weaver.World;
  */
 public class NotTypePattern extends TypePattern {
 	private TypePattern negatedPattern;
+	private boolean isBangVoid = false; // is this '!void'
+	private boolean checked = false;
 
 	public NotTypePattern(TypePattern pattern) {
 		super(false, false); // ??? we override all methods that care about includeSubtypes
@@ -104,6 +106,15 @@ public class NotTypePattern extends TypePattern {
 		}
 		negatedPattern = negatedPattern.resolveBindings(scope, bindings, false, false);
 		return this;
+	}
+
+	@Override
+	public boolean isBangVoid() {
+		if (!checked) {
+			isBangVoid = negatedPattern.getExactType().isVoid();
+			checked = true;
+		}
+		return isBangVoid;
 	}
 
 	@Override

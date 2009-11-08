@@ -152,6 +152,11 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		return typeKind == TypeKind.PRIMITIVE;
 	}
 
+	public boolean isVoid() {
+		// OPTIMIZE promote to bitflag?
+		return signature.equals("V");
+	}
+
 	public boolean isSimpleType() {
 		return typeKind == TypeKind.SIMPLE;
 	}

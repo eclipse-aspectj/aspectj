@@ -420,6 +420,32 @@ public class SignaturePattern extends PatternNode {
 	}
 
 	/**
+	 * Quickly detect if the joinpoint absolutely cannot match becaused the method parameters at the joinpoint cannot match against
+	 * this signature pattern.
+	 * 
+	 * @param methodJoinpoint the joinpoint to quickly match against
+	 * @return true if it is impossible for the joinpoint to match this signature
+	 */
+	private boolean parametersCannotMatch(JoinPointSignature methodJoinpoint) {
+		int patternParameterCount = parameterTypes.size();
+		int joinpointParameterCount = methodJoinpoint.getParameterTypes().length;
+		boolean isVarargs = methodJoinpoint.isVarargsMethod();
+
+		// Quick rule: pattern specifies zero parameters, and joinpoint has parameters *OR*
+		if (patternParameterCount == 0 && joinpointParameterCount > 0) { // varargs may allow this...
+			return true;
+		}
+
+		// Quick rule: pattern doesn't specify ellipsis and there are a different number of parameters on the
+		// method join point as compared with the pattern
+		if (parameterTypes.ellipsisCount == 0 && patternParameterCount != joinpointParameterCount) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Matches on name, declaring type, return type, parameter types, throws types
 	 */
 	private FuzzyBoolean matchesExactlyMethod(JoinPointSignature aMethod, World world, boolean subjectMatch) {

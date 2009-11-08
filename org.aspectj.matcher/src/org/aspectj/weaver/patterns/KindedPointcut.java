@@ -12,8 +12,11 @@
 
 package org.aspectj.weaver.patterns;
 
+import static org.aspectj.util.FuzzyBoolean.MAYBE;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.aspectj.bridge.ISourceLocation;
@@ -90,9 +93,93 @@ public class KindedPointcut extends Pointcut {
 
 	@Override
 	public FuzzyBoolean fastMatch(FastMatchInfo info) {
+		// info.getKind()==null means all kinds
 		if (info.getKind() != null) {
 			if (info.getKind() != kind) {
 				return FuzzyBoolean.NO;
+			}
+		}
+
+		// KindedPointcut represents these join points:
+		// method-execution/ctor-execution/method-call/ctor-call/field-get/field-set/advice-execution/static-initialization
+		// initialization/pre-initialization
+
+		// Check if the global fastmatch flag is on - the flag can be removed (and this made default) once it proves stable!
+		if (info.world.optimizedMatching) {
+
+			// For now, just consider MethodExecution and Initialization
+			if ((kind == Shadow.MethodExecution || kind == Shadow.Initialization) && info.getKind() == null) {
+				boolean fastMatchingOnAspect = info.getType().isAspect();
+				// an Aspect may define ITDs, and although our signature declaring type pattern may not match on the
+				// aspect, the ITDs may have a different signature as we iterate through the members of the aspect. Let's not
+				// try and work through that here and just say MAYBE
+				if (fastMatchingOnAspect) {
+					return MAYBE;
+				}
+				// Aim here is to do the same test as is done for signature pattern declaring type pattern matching
+				if (this.getSignature().isExactDeclaringTypePattern()) {
+					ExactTypePattern typePattern = (ExactTypePattern) this.getSignature().getDeclaringType();
+					// Interface checks are more expensive, they could be anywhere...
+					ResolvedType patternExactType = typePattern.getResolvedExactType(info.world);
+					if (patternExactType.isInterface()) {
+						ResolvedType curr = info.getType();
+						Iterator<ResolvedType> hierarchyWalker = curr.getHierarchy(true, true);
+						boolean found = false;
+						while (hierarchyWalker.hasNext()) {
+							curr = hierarchyWalker.next();
+							if (typePattern.matchesStatically(curr)) {
+								found = true;
+								break;
+							}
+						}
+						if (!found) {
+							return FuzzyBoolean.NO;
+						}
+					} else if (patternExactType.isClass()) {
+						ResolvedType curr = info.getType();
+						do {
+							if (typePattern.matchesStatically(curr)) {
+								break;
+							}
+							curr = curr.getSuperclass();
+						} while (curr != null);
+						if (curr == null) {
+							return FuzzyBoolean.NO;
+						}
+					}
+				} else if (this.getSignature().getDeclaringType() instanceof AnyWithAnnotationTypePattern) {
+					// aim here is to say NO if the annotation is not possible in the hierarchy here
+					ResolvedType type = info.getType();
+					AnnotationTypePattern annotationTypePattern = ((AnyWithAnnotationTypePattern) getSignature().getDeclaringType())
+							.getAnnotationPattern();
+					if (annotationTypePattern instanceof ExactAnnotationTypePattern) {
+						ExactAnnotationTypePattern exactAnnotationTypePattern = (ExactAnnotationTypePattern) annotationTypePattern;
+						if (exactAnnotationTypePattern.getAnnotationValues() == null
+								|| exactAnnotationTypePattern.getAnnotationValues().size() == 0) {
+							ResolvedType annotationType = exactAnnotationTypePattern.getAnnotationType().resolve(info.world);
+							if (type.hasAnnotation(annotationType)) {
+								return FuzzyBoolean.MAYBE;
+							}
+							if (annotationType.isInheritedAnnotation()) {
+								// ok - we may be picking it up from further up the hierarchy (but only a super*class*)
+								ResolvedType toMatchAgainst = type.getSuperclass();
+								boolean found = false;
+								while (toMatchAgainst != null) {
+									if (toMatchAgainst.hasAnnotation(annotationType)) {
+										found = true;
+										break;
+									}
+									toMatchAgainst = toMatchAgainst.getSuperclass();
+								}
+								if (!found) {
+									return FuzzyBoolean.NO;
+								}
+							} else {
+								return FuzzyBoolean.NO;
+							}
+						}
+					}
+				}
 			}
 		}
 
