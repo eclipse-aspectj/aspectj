@@ -590,7 +590,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return null;
 	}
 
-	// DO ALL CALLERS DO THEIR OWN SEARCHING FOR ITDs?
+	// Bug (1) Do callers expect ITDs to be involved in the lookup? or do they do their own walk over ITDs?
 	/**
 	 * Looks for the first member in the hierarchy matching aMember. This method differs from lookupMember(Member) in that it takes
 	 * into account parameters which are type variables - which clearly an unresolved Member cannot do since it does not know
@@ -613,7 +613,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 					candidate = candidate.getBackingGenericMember();
 				}
 			}
-
+			// OPTIMIZE speed up matches? optimize order of checks
 			if (candidate.matches(aMember, eraseGenerics)) {
 				found = candidate;
 				break;
@@ -2186,6 +2186,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 		public ResolvedType next() {
 			ResolvedType next = delegate.next();
+			// BUG should check for generics and erase?
 			if (!visited.contains(next)) {
 				visited.add(next);
 				toPersue.add(next); // pushes on interfaces already visited?
@@ -2197,7 +2198,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			throw new UnsupportedOperationException();
 		}
 	}
-
+	
 	public void clearInterTypeMungers() {
 		if (isRawType()) {
 			getGenericType().clearInterTypeMungers();
