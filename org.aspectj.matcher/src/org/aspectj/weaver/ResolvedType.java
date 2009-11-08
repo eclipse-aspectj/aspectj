@@ -215,8 +215,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return Iterators.mapOver(getHierarchy(wantGenerics, wantDeclaredParents), MethodGetterInstance);
 	}
 
-	public Iterator<ResolvedMember> getMethodsIncludingIntertypeDeclarations(boolean wantGenerics) {
-		return Iterators.mapOver(getHierarchy(wantGenerics, false), MethodGetterWithItdsInstance);
+	public Iterator<ResolvedMember> getMethodsIncludingIntertypeDeclarations(boolean wantGenerics, boolean wantDeclaredParents) {
+		return Iterators.mapOver(getHierarchy(wantGenerics, wantDeclaredParents), MethodGetterWithItdsInstance);
 	}
 
 	/**
@@ -237,6 +237,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 	}
 
+	// OPTIMIZE could cache the result of discovering ITDs
+
 	// Getter that returns all declared methods for a type through an iterator - including intertype declarations
 	private static class MethodGetterIncludingItds implements Iterators.Getter<ResolvedType, ResolvedMember> {
 		public Iterator<ResolvedMember> get(ResolvedType type) {
@@ -245,6 +247,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				int additional = 0;
 				for (ConcreteTypeMunger typeTransformer : type.interTypeMungers) {
 					ResolvedMember rm = typeTransformer.getSignature();
+					// BUG won't this include fields? When we are looking for methods
 					if (rm != null) { // new parent type munger can have null signature
 						additional++;
 					}
@@ -587,31 +590,31 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return null;
 	}
 
+	// DO ALL CALLERS DO THEIR OWN SEARCHING FOR ITDs?
 	/**
 	 * Looks for the first member in the hierarchy matching aMember. This method differs from lookupMember(Member) in that it takes
 	 * into account parameters which are type variables - which clearly an unresolved Member cannot do since it does not know
 	 * anything about type variables.
 	 */
-	public ResolvedMember lookupResolvedMember(ResolvedMember aMember, boolean allowMissing, boolean ignoreGenerics) {
+	public ResolvedMember lookupResolvedMember(ResolvedMember aMember, boolean allowMissing, boolean eraseGenerics) {
 		Iterator<ResolvedMember> toSearch = null;
 		ResolvedMember found = null;
 		if ((aMember.getKind() == Member.METHOD) || (aMember.getKind() == Member.CONSTRUCTOR)) {
-			toSearch = getMethodsWithoutIterator(true, allowMissing, !ignoreGenerics).iterator();
+			// toSearch = getMethodsWithoutIterator(true, allowMissing, !eraseGenerics).iterator();
+			toSearch = getMethodsIncludingIntertypeDeclarations(!eraseGenerics, true);
 		} else {
-			if (aMember.getKind() != Member.FIELD) {
-				throw new IllegalStateException("I didn't know you would look for members of kind " + aMember.getKind());
-			}
+			assert aMember.getKind() == Member.FIELD;
 			toSearch = getFields();
 		}
 		while (toSearch.hasNext()) {
 			ResolvedMember candidate = toSearch.next();
-			if (ignoreGenerics) {
+			if (eraseGenerics) {
 				if (candidate.hasBackingGenericMember()) {
 					candidate = candidate.getBackingGenericMember();
 				}
 			}
 
-			if (candidate.matches(aMember, ignoreGenerics)) {
+			if (candidate.matches(aMember, eraseGenerics)) {
 				found = candidate;
 				break;
 			}
