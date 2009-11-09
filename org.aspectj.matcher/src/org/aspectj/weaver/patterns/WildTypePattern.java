@@ -1147,7 +1147,7 @@ public class WildTypePattern extends TypePattern {
 	@Override
 	public boolean isStar() {
 		boolean annPatternStar = annotationPattern == AnnotationTypePattern.ANY;
-		return (isNamePatternStar() && annPatternStar);
+		return (isNamePatternStar() && annPatternStar && dim == 0);
 	}
 
 	private boolean isNamePatternStar() {
