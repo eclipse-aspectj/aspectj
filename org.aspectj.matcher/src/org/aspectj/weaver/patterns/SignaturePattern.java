@@ -47,6 +47,10 @@ public class SignaturePattern extends PatternNode {
 	private TypePattern declaringType;
 	private NamePattern name;
 	private TypePatternList parameterTypes;
+	private int bits = 0x0000;
+	private static final int PARAMETER_ANNOTATION_MATCHING = 0x0001;
+	private static final int CHECKED_FOR_PARAMETER_ANNOTATION_MATCHING = 0x0002;
+
 	private ThrowsPattern throwsPattern;
 	private AnnotationTypePattern annotationPattern;
 	private transient int hashcode = -1;
@@ -456,24 +460,47 @@ public class SignaturePattern extends PatternNode {
 		if (subjectMatch && !throwsPattern.matches(aMethod.getExceptions(), world)) {
 			return FuzzyBoolean.NO;
 		}
-		if (!declaringType.matchesStatically(aMethod.getDeclaringType().resolve(world))) {
-			return FuzzyBoolean.MAYBE;
-		}
-		if (!returnType.matchesStatically(aMethod.getReturnType().resolve(world))) {
-			// looking bad, but there might be parameterization to consider...
-			if (!returnType.matchesStatically(aMethod.getGenericReturnType().resolve(world))) {
-				// ok, it's bad.
+
+		// '*' trivially matches everything, no need to check further
+		if (!declaringType.isStar()) {
+			if (!declaringType.matchesStatically(aMethod.getDeclaringType().resolve(world))) {
 				return FuzzyBoolean.MAYBE;
 			}
 		}
+
+		// '*' would match any return value
+		if (!returnType.isStar()) {
+			if (!returnType.matchesStatically(aMethod.getReturnType().resolve(world))) {
+				// looking bad, but there might be parameterization to consider...
+				if (!returnType.matchesStatically(aMethod.getGenericReturnType().resolve(world))) {
+					// ok, it's bad.
+					return FuzzyBoolean.MAYBE;
+				}
+			}
+		}
+
+		// The most simple case: pattern is (..) will match anything
+		if (parameterTypes.size() == 1 && parameterTypes.get(0).isEllipsis()) {
+			return FuzzyBoolean.YES;
+		}
+
 		if (!parameterTypes.canMatchSignatureWithNParameters(aMethod.getParameterTypes().length)) {
 			return FuzzyBoolean.NO;
 		}
+
+		// OPTIMIZE both resolution of these types and their annotations should be deferred - just pass down a world and do it lower
+		// down
 		ResolvedType[] resolvedParameters = world.resolve(aMethod.getParameterTypes());
-		ResolvedType[][] parameterAnnotationTypes = aMethod.getParameterAnnotationTypes();
-		if (parameterAnnotationTypes == null || parameterAnnotationTypes.length == 0) {
-			parameterAnnotationTypes = null;
+
+		// Only fetch the parameter annotations if the pointcut is going to be matching on them
+		ResolvedType[][] parameterAnnotationTypes = null;
+		if (isMatchingParameterAnnotations()) {
+			parameterAnnotationTypes = aMethod.getParameterAnnotationTypes();
+			if (parameterAnnotationTypes != null && parameterAnnotationTypes.length == 0) {
+				parameterAnnotationTypes = null;
+			}
 		}
+
 		if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC, parameterAnnotationTypes).alwaysTrue()) {
 			// It could still be a match based on the generic sig parameter types of a parameterized type
 			if (!parameterTypes.matches(world.resolve(aMethod.getGenericParameterTypes()), TypePattern.STATIC,
@@ -491,6 +518,58 @@ public class SignaturePattern extends PatternNode {
 
 		// passed all the guards..
 		return FuzzyBoolean.YES;
+	}
+
+	/**
+	 * Determine if any pattern in the parameter type pattern list is attempting to match on parameter annotations.
+	 * 
+	 * @return true if a parameter type pattern wants to match on a parameter annotation
+	 */
+	private boolean isMatchingParameterAnnotations() {
+		if ((bits & CHECKED_FOR_PARAMETER_ANNOTATION_MATCHING) == 0) {
+			bits |= CHECKED_FOR_PARAMETER_ANNOTATION_MATCHING;
+			for (int tp = 0, max = parameterTypes.size(); tp < max; tp++) {
+				TypePattern typePattern = parameterTypes.get(tp);
+				if (isParameterAnnotationMatching(typePattern)) {
+					bits |= PARAMETER_ANNOTATION_MATCHING;
+				}
+			}
+		}
+		return (bits & PARAMETER_ANNOTATION_MATCHING) != 0;
+	}
+
+	/**
+	 * Walk the simple structure of a type pattern and determine if any leaf node is involved in parameter annotation matching.
+	 */
+	private boolean isParameterAnnotationMatching(TypePattern tp) {
+		if (tp instanceof OrTypePattern) {
+			OrTypePattern orAtp = (OrTypePattern) tp;
+			return (isParameterAnnotationMatching(orAtp.getLeft()) || isParameterAnnotationMatching(orAtp.getRight()));
+		} else if (tp instanceof AndTypePattern) {
+			AndTypePattern andAtp = (AndTypePattern) tp;
+			return (isParameterAnnotationMatching(andAtp.getLeft()) || isParameterAnnotationMatching(andAtp.getRight()));
+		} else if (tp instanceof NotTypePattern) {
+			NotTypePattern notAtp = (NotTypePattern) tp;
+			return (isParameterAnnotationMatching(notAtp.getNegatedPattern()));
+		} else {
+			AnnotationTypePattern atp = tp.getAnnotationPattern();
+			return isParameterAnnotationMatching(atp);
+		}
+	}
+
+	private boolean isParameterAnnotationMatching(AnnotationTypePattern tp) {
+		if (tp instanceof OrAnnotationTypePattern) {
+			OrAnnotationTypePattern orAtp = (OrAnnotationTypePattern) tp;
+			return (isParameterAnnotationMatching(orAtp.getLeft()) || isParameterAnnotationMatching(orAtp.getRight()));
+		} else if (tp instanceof AndAnnotationTypePattern) {
+			AndAnnotationTypePattern andAtp = (AndAnnotationTypePattern) tp;
+			return (isParameterAnnotationMatching(andAtp.getLeft()) || isParameterAnnotationMatching(andAtp.getRight()));
+		} else if (tp instanceof NotAnnotationTypePattern) {
+			NotAnnotationTypePattern notAtp = (NotAnnotationTypePattern) tp;
+			return (isParameterAnnotationMatching(notAtp.negatedPattern));
+		} else {
+			return tp.isForParameterAnnotationMatch();
+		}
 	}
 
 	private ResolvedType[] getResolvedParameters(World world, UnresolvedType[] unresolvedParams) {

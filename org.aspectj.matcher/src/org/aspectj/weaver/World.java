@@ -137,8 +137,10 @@ public abstract class World implements Dump.INode {
 	public boolean forDEBUG_structuralChangesCode = false;
 	public boolean forDEBUG_bridgingCode = false;
 	public boolean optimizedMatching = true;
+	protected long timersPerJoinpoint;
+	protected long timersPerType;
 
-	public boolean infoMessagesEnabled = false;
+	public int infoMessagesEnabled = 0; // 0=uninitialized, 1=no, 2=yes
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(World.class);
 
@@ -631,7 +633,6 @@ public abstract class World implements Dump.INode {
 		} else {
 			this.messageHandler = messageHandler;
 		}
-		infoMessagesEnabled = !messageHandler.isIgnoring(IMessage.INFO);
 	}
 
 	/**
@@ -800,7 +801,10 @@ public abstract class World implements Dump.INode {
 	}
 
 	public boolean areInfoMessagesEnabled() {
-		return infoMessagesEnabled;
+		if (infoMessagesEnabled == 0) {
+			infoMessagesEnabled = (messageHandler.isIgnoring(IMessage.INFO) ? 1 : 2);
+		}
+		return infoMessagesEnabled == 2;
 	}
 
 	/**
@@ -841,6 +845,8 @@ public abstract class World implements Dump.INode {
 	public final static String xsetFAST_PACK_METHODS = "fastPackMethods"; // default true
 	public final static String xsetOVERWEAVING = "overWeaving";
 	public final static String xsetOPTIMIZED_MATCHING = "optimizedMatching";
+	public final static String xsetTIMERS_PER_JOINPOINT = "timersPerJoinpoint";
+	public final static String xsetTIMERS_PER_FASTMATCH_CALL = "timersPerFastMatchCall";
 
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;
@@ -1348,6 +1354,22 @@ public abstract class World implements Dump.INode {
 					getMessageHandler().handleMessage(MessageUtil.info("[optimizedMatching=false] optimized matching turned off"));
 				}
 
+				s = p.getProperty(xsetTIMERS_PER_JOINPOINT, "25000");
+				try {
+					timersPerJoinpoint = Integer.parseInt(s);
+				} catch (Exception e) {
+					getMessageHandler().handleMessage(MessageUtil.error("unable to process timersPerJoinpoint value of " + s));
+					timersPerJoinpoint = 25000;
+				}
+
+				s = p.getProperty(xsetTIMERS_PER_FASTMATCH_CALL, "250");
+				try {
+					timersPerType = Integer.parseInt(s);
+				} catch (Exception e) {
+					getMessageHandler().handleMessage(MessageUtil.error("unable to process timersPerType value of " + s));
+					timersPerType = 250;
+				}
+
 			}
 			checkedAdvancedConfiguration = true;
 		}
@@ -1495,6 +1517,7 @@ public abstract class World implements Dump.INode {
 	 */
 	public void record(Pointcut pointcut, long timetaken) {
 		if (timeCollector == null) {
+			ensureAdvancedConfigurationProcessed();
 			timeCollector = new TimeCollector(this);
 		}
 		timeCollector.record(pointcut, timetaken);
@@ -1506,6 +1529,7 @@ public abstract class World implements Dump.INode {
 	 */
 	public void recordFastMatch(Pointcut pointcut, long timetaken) {
 		if (timeCollector == null) {
+			ensureAdvancedConfigurationProcessed();
 			timeCollector = new TimeCollector(this);
 		}
 		timeCollector.recordFastMatch(pointcut, timetaken);
@@ -1516,17 +1540,15 @@ public abstract class World implements Dump.INode {
 		long joinpointCount;
 		long typeCount;
 		long perJoinpointCount;
+		long perTypes;
 		Map<String, Long> joinpointsPerPointcut = new HashMap<String, Long>();
 		Map<String, Long> timePerPointcut = new HashMap<String, Long>();
 		Map<String, Long> fastMatchTimesPerPointcut = new HashMap<String, Long>();
+		Map<String, Long> fastMatchTypesPerPointcut = new HashMap<String, Long>();
 
 		TimeCollector(World world) {
-			try {
-				this.perJoinpointCount = Integer.parseInt(System.getProperty("org.aspectj.timing.perjoinpoints", "25000"));
-			} catch (Throwable t) {
-				System.err.println("Problem reading property 'org.aspectj.timing.perjoinpoints':" + t.toString());
-				this.perJoinpointCount = 25000;
-			}
+			this.perJoinpointCount = world.timersPerJoinpoint;
+			this.perTypes = world.timersPerType;
 			this.world = world;
 			this.joinpointCount = 0;
 			this.typeCount = 0;
@@ -1558,7 +1580,7 @@ public abstract class World implements Dump.INode {
 					totalTime += timePerPointcut.get(p);
 				}
 				world.getMessageHandler().handleMessage(
-						MessageUtil.info("Pointcut matching cost (total=" + (totalTime / 1000000) + "ms):"));
+						MessageUtil.info("Pointcut matching cost (total=" + (totalTime / 1000000) + "ms for "+joinpointCount+" joinpoint match calls):"));
 				for (String p : joinpointsPerPointcut.keySet()) {
 					StringBuffer sb = new StringBuffer();
 					sb.append("Time:" + (timePerPointcut.get(p) / 1000000) + "ms (jps:#" + joinpointsPerPointcut.get(p)
@@ -1572,6 +1594,14 @@ public abstract class World implements Dump.INode {
 		void recordFastMatch(Pointcut pointcut, long timetakenInNs) {
 			typeCount++;
 			String pointcutText = pointcut.toString();
+			Long typecounter = fastMatchTypesPerPointcut.get(pointcutText);
+			if (typecounter == null) {
+				typecounter = 1L;
+			} else {
+				typecounter++;
+			}
+			fastMatchTypesPerPointcut.put(pointcutText, typecounter);
+
 			Long time = fastMatchTimesPerPointcut.get(pointcutText);
 			if (time == null) {
 				time = timetakenInNs;
@@ -1579,16 +1609,17 @@ public abstract class World implements Dump.INode {
 				time += timetakenInNs;
 			}
 			fastMatchTimesPerPointcut.put(pointcutText, time);
-			if ((typeCount % 250) == 0) {
+			if ((typeCount % perTypes) == 0) {
 				long totalTime = 0L;
 				for (String p : fastMatchTimesPerPointcut.keySet()) {
 					totalTime += fastMatchTimesPerPointcut.get(p);
 				}
 				world.getMessageHandler().handleMessage(
-						MessageUtil.info("Pointcut fast matching cost (total=" + (totalTime / 1000000) + "ms):"));
+						MessageUtil.info("Pointcut fast matching cost (total=" + (totalTime / 1000000) + "ms for " + typeCount
+								+ " fast match calls):"));
 				for (String p : fastMatchTimesPerPointcut.keySet()) {
 					StringBuffer sb = new StringBuffer();
-					sb.append("Time:" + (fastMatchTimesPerPointcut.get(p) / 1000000) + "ms fast matching against " + p);
+					sb.append("Time:" + (fastMatchTimesPerPointcut.get(p) / 1000000) + "ms (types:#"+fastMatchTypesPerPointcut.get(p)+") fast matching against " + p);
 					world.getMessageHandler().handleMessage(MessageUtil.info(sb.toString()));
 				}
 				world.getMessageHandler().handleMessage(MessageUtil.info("---"));

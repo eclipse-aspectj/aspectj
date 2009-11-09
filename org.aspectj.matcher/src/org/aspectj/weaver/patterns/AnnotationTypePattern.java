@@ -147,4 +147,8 @@ class EllipsisAnnotationTypePattern extends AnnotationTypePattern {
 		return this;
 	}
 
+	@Override
+	public void setForParameterAnnotationMatch() {
+	}
+
 }
