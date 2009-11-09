@@ -129,7 +129,6 @@ public class AjcTask extends MatchingTask {
 		ajc.setProject(javac.getProject());
 		ajc.setLocation(javac.getLocation());
 		ajc.setTaskName("javac-iajc");
-
 		ajc.setDebug(javac.getDebug());
 		ajc.setDeprecation(javac.getDeprecation());
 		ajc.setFailonerror(javac.getFailonerror());
@@ -301,6 +300,7 @@ public class AjcTask extends MatchingTask {
 	}
 	// ---------------------------- state and Ant interface thereto
 	private boolean verbose;
+	private boolean timers;
 	private boolean listFileArgs;
 	private boolean failonerror;
 	private boolean fork;
@@ -391,7 +391,7 @@ public class AjcTask extends MatchingTask {
 		adapterArguments = null;
 		adapterFiles = new ArrayList();
 		argfiles = null;
-		inxmlfiles= null;
+		inxmlfiles = null;
 		executing = false;
 		aspectpath = null;
 		bootclasspath = null;
@@ -420,6 +420,7 @@ public class AjcTask extends MatchingTask {
 		srcdir = null;
 		tmpOutjar = null;
 		verbose = false;
+		timers = false;
 		xweaveDir = null;
 		xdoneSignal = null;
 		logCommand = false;
@@ -494,13 +495,15 @@ public class AjcTask extends MatchingTask {
 	}
 
 	public void setXNoWeave(boolean b) {
-		if (logger != null)
+		if (logger != null) {
 			logger.warning("the noweave option is no longer required and is being ignored");
+		}
 	}
 
 	public void setNoWeave(boolean b) {
-		if (logger != null)
+		if (logger != null) {
 			logger.warning("the noweave option is no longer required and is being ignored");
+		}
 	}
 
 	public void setXNotReweavable(boolean notReweavable) {
@@ -599,6 +602,11 @@ public class AjcTask extends MatchingTask {
 	public void setVerbose(boolean verbose) {
 		cmd.addFlag("-verbose", verbose);
 		this.verbose = verbose;
+	}
+
+	public void setTimers(boolean timers) {
+		cmd.addFlag("-timers", timers);
+		this.timers = timers;
 	}
 
 	public void setListFileArgs(boolean listFileArgs) {
