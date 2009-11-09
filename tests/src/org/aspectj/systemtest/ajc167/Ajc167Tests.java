@@ -18,6 +18,15 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc167Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testTimers_1() {
+		runTest("timers - 1");
+	}
+
+	// Test harness parse of -Xset:a=b,c=d will see c=d as a second option
+	// public void testTimers_2() {
+	// runTest("timers - 2");
+	// }
+
 	public void testAnnoMatching_pr293203() {
 		runTest("anno matching");
 	}

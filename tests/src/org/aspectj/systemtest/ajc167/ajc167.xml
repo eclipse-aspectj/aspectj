@@ -2,6 +2,44 @@
 
 <suite>
 
+  <ajc-test dir="features167/timers/one" title="timers - 1">
+    <compile files="Code.java Code2.java" outjar="code.jar" options="-1.5 -Xlint:ignore"/>
+    <compile files="Asp.java" options="-1.5 -Xlint:ignore" outjar="asp.jar"/>
+    <run class="Code2" ltw="aop.xml" classpath="code.jar;asp.jar">
+      <stderr>
+        <line text="info AspectJ"/>
+        <line text="info register"/>
+        <line text="info using"/>
+        <line text="info register"/>
+        <line text="info processing"/>
+        <line text="info Pointcut fast"/>
+        <line text="info Time"/>
+        <line text="info ---"/>
+        <line text="info Pointcut match"/>
+        <line text="info Time"/>
+        <line text="info ---"/>
+      </stderr>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="features167/timers/one" title="timers - 2">
+    <compile files="Code.java Code2.java Asp.java" options="-1.5 -timers -Xset:timersPerJoinpoint=8,timersPerFastMatchCall=3">
+<!--        <line text="info AspectJ"/>
+        <line text="info register"/>
+        <line text="info using"/>
+        <line text="info register"/>
+        <line text="info processing"/>
+        <line text="info Pointcut fast"/>
+        <line text="info Time"/>
+        <line text="info -"/>
+        <line text="info Pointcut match"/>
+        <line text="info Time"/>
+        <line text="info -"/>
+        -->
+        </compile>
+  </ajc-test>
+
+
   <ajc-test dir="bugs167/pr293510" title="execution fastmatch - 1">
      <compile files="CaseOne.java" options="-1.5 -showWeaveInfo">
        <message kind="weave" text="Join point 'method-execution(void pkg.C.m())' in Type 'pkg.C' (CaseOne.java:10) advised by before advice from 'pkg.X' (CaseOne.java:14)"/>
