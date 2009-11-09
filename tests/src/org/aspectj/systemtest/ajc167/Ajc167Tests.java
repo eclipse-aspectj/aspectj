@@ -45,7 +45,6 @@ public class Ajc167Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(Ajc167Tests.class);
 	}
 
-	@Override
 	protected File getSpecFile() {
 		return new File("../tests/src/org/aspectj/systemtest/ajc167/ajc167.xml");
 	}
