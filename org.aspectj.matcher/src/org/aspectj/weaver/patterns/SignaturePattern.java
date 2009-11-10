@@ -34,6 +34,7 @@ import org.aspectj.weaver.JoinPointSignatureIterator;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.NewFieldTypeMunger;
+import org.aspectj.weaver.ResolvableTypeList;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
@@ -431,18 +432,25 @@ public class SignaturePattern extends PatternNode {
 	 * @return true if it is impossible for the joinpoint to match this signature
 	 */
 	private boolean parametersCannotMatch(JoinPointSignature methodJoinpoint) {
+		if (methodJoinpoint.isVarargsMethod()) {
+			// just give up early (for now)
+			return false;
+		}
 		int patternParameterCount = parameterTypes.size();
 		int joinpointParameterCount = methodJoinpoint.getParameterTypes().length;
 		boolean isVarargs = methodJoinpoint.isVarargsMethod();
 
 		// Quick rule: pattern specifies zero parameters, and joinpoint has parameters *OR*
-		if (patternParameterCount == 0 && joinpointParameterCount > 0) { // varargs may allow this...
+		if (patternParameterCount == 0 && joinpointParameterCount > 0) { // varargs may allow this
 			return true;
 		}
 
 		// Quick rule: pattern doesn't specify ellipsis and there are a different number of parameters on the
 		// method join point as compared with the pattern
 		if (parameterTypes.ellipsisCount == 0 && patternParameterCount != joinpointParameterCount) {
+			if (patternParameterCount > 0 && parameterTypes.get(patternParameterCount - 1).isVarArgs()) {
+				return false;
+			}
 			return true;
 		}
 
@@ -453,6 +461,10 @@ public class SignaturePattern extends PatternNode {
 	 * Matches on name, declaring type, return type, parameter types, throws types
 	 */
 	private FuzzyBoolean matchesExactlyMethod(JoinPointSignature aMethod, World world, boolean subjectMatch) {
+		if (parametersCannotMatch(aMethod)) {
+			// System.err.println("Parameter types pattern " + parameterTypes + " pcount: " + aMethod.getParameterTypes().length);
+			return FuzzyBoolean.NO;
+		}
 		if (!name.matches(aMethod.getName())) {
 			return FuzzyBoolean.NO;
 		}
@@ -470,11 +482,28 @@ public class SignaturePattern extends PatternNode {
 
 		// '*' would match any return value
 		if (!returnType.isStar()) {
-			if (!returnType.matchesStatically(aMethod.getReturnType().resolve(world))) {
-				// looking bad, but there might be parameterization to consider...
-				if (!returnType.matchesStatically(aMethod.getGenericReturnType().resolve(world))) {
-					// ok, it's bad.
-					return FuzzyBoolean.MAYBE;
+			boolean b = returnType.isBangVoid();
+			if (b) {
+				String s = aMethod.getReturnType().getSignature();
+				if (s.length() == 1 && s.charAt(0) == 'V') {
+					// it is void, so not a match
+					return FuzzyBoolean.NO;
+				}
+			} else {
+				if (returnType.isVoid()) {
+					String s = aMethod.getReturnType().getSignature();
+					if (s.length() != 1 || s.charAt(0) != 'V') {
+						// it is not void, so not a match
+						return FuzzyBoolean.NO;
+					}
+				} else {
+					if (!returnType.matchesStatically(aMethod.getReturnType().resolve(world))) {
+						// looking bad, but there might be parameterization to consider...
+						if (!returnType.matchesStatically(aMethod.getGenericReturnType().resolve(world))) {
+							// ok, it's bad.
+							return FuzzyBoolean.MAYBE;
+						}
+					}
 				}
 			}
 		}
@@ -490,8 +519,9 @@ public class SignaturePattern extends PatternNode {
 
 		// OPTIMIZE both resolution of these types and their annotations should be deferred - just pass down a world and do it lower
 		// down
-		ResolvedType[] resolvedParameters = world.resolve(aMethod.getParameterTypes());
+		// ResolvedType[] resolvedParameters = world.resolve(aMethod.getParameterTypes());
 
+		ResolvableTypeList rtl = new ResolvableTypeList(world, aMethod.getParameterTypes());
 		// Only fetch the parameter annotations if the pointcut is going to be matching on them
 		ResolvedType[][] parameterAnnotationTypes = null;
 		if (isMatchingParameterAnnotations()) {
@@ -501,9 +531,9 @@ public class SignaturePattern extends PatternNode {
 			}
 		}
 
-		if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC, parameterAnnotationTypes).alwaysTrue()) {
+		if (!parameterTypes.matches(rtl, TypePattern.STATIC, parameterAnnotationTypes).alwaysTrue()) {
 			// It could still be a match based on the generic sig parameter types of a parameterized type
-			if (!parameterTypes.matches(world.resolve(aMethod.getGenericParameterTypes()), TypePattern.STATIC,
+			if (!parameterTypes.matches(new ResolvableTypeList(world, aMethod.getGenericParameterTypes()), TypePattern.STATIC,
 					parameterAnnotationTypes).alwaysTrue()) {
 				return FuzzyBoolean.MAYBE;
 				// It could STILL be a match based on the erasure of the parameter types??
