@@ -11,11 +11,11 @@
         <line text="info register"/>
         <line text="info using"/>
         <line text="info register"/>
-        <line text="info processing"/>
-        <line text="info Pointcut fast"/>
+        <line text="info Pointcut match"/>
         <line text="info Time"/>
         <line text="info ---"/>
-        <line text="info Pointcut match"/>
+        <line text="info processing"/>
+        <line text="info Pointcut fast"/>
         <line text="info Time"/>
         <line text="info ---"/>
       </stderr>
