@@ -22,6 +22,7 @@ import java.util.Map;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.ResolvableTypeList;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
@@ -249,6 +250,159 @@ public class TypePatternList extends PatternNode {
 				ff = patternChar.matches(target[ti], kind);
 			} finally {
 				target[ti].temporaryAnnotationTypes = null;
+			}
+
+			if (ff.maybeTrue()) {
+				FuzzyBoolean xx = outOfStar(pattern, target, pi + 1, ti + 1, pLeft - 1, tLeft - 1, starsLeft, kind,
+						parameterAnnotations);
+				if (xx.maybeTrue()) {
+					return ff.and(xx);
+				}
+			}
+			ti++;
+			tLeft--;
+		}
+	}
+	
+	public FuzzyBoolean matches(ResolvableTypeList types, TypePattern.MatchKind kind, ResolvedType[][] parameterAnnotations) {
+		int nameLength = types.length;
+		int patternLength = typePatterns.length;
+
+		int nameIndex = 0;
+		int patternIndex = 0;
+
+		if (ellipsisCount == 0) {
+			if (nameLength != patternLength) {
+				return FuzzyBoolean.NO;
+			}
+			FuzzyBoolean finalReturn = FuzzyBoolean.YES;
+			while (patternIndex < patternLength) {
+				ResolvedType t = types.getResolved(nameIndex);
+				FuzzyBoolean ret = null;
+				try {
+					if (parameterAnnotations != null) {
+						t.temporaryAnnotationTypes = parameterAnnotations[nameIndex];
+					}
+					ret = typePatterns[patternIndex].matches(t, kind);
+				} finally {
+					t.temporaryAnnotationTypes = null;
+				}
+				patternIndex++;
+				nameIndex++;
+				if (ret == FuzzyBoolean.NO) {
+					return ret;
+				}
+				if (ret == FuzzyBoolean.MAYBE) {
+					finalReturn = ret;
+				}
+			}
+			return finalReturn;
+		} else if (ellipsisCount == 1) {
+			if (nameLength < patternLength - 1) {
+				return FuzzyBoolean.NO;
+			}
+			FuzzyBoolean finalReturn = FuzzyBoolean.YES;
+			while (patternIndex < patternLength) {
+				TypePattern p = typePatterns[patternIndex++];
+				if (p == TypePattern.ELLIPSIS) {
+					nameIndex = nameLength - (patternLength - patternIndex);
+				} else {
+					ResolvedType t = types.getResolved(nameIndex);
+					FuzzyBoolean ret = null;
+					try {
+						if (parameterAnnotations != null) {
+							t.temporaryAnnotationTypes = parameterAnnotations[nameIndex];
+						}
+						ret = p.matches(t, kind);
+					} finally {
+						t.temporaryAnnotationTypes = null;
+					}
+					nameIndex++;
+					if (ret == FuzzyBoolean.NO) {
+						return ret;
+					}
+					if (ret == FuzzyBoolean.MAYBE) {
+						finalReturn = ret;
+					}
+				}
+			}
+			return finalReturn;
+		} else {
+			// System.err.print("match(" + arguments + ", " + types + ") -> ");
+			FuzzyBoolean b = outOfStar(typePatterns, types, 0, 0, patternLength - ellipsisCount, nameLength, ellipsisCount, kind,
+					parameterAnnotations);
+			// System.err.println(b);
+			return b;
+		}
+	}
+
+	private static FuzzyBoolean outOfStar(final TypePattern[] pattern, ResolvableTypeList target, int pi, int ti, int pLeft,
+			int tLeft, final int starsLeft, TypePattern.MatchKind kind, ResolvedType[][] parameterAnnotations) {
+		if (pLeft > tLeft) {
+			return FuzzyBoolean.NO;
+		}
+		FuzzyBoolean finalReturn = FuzzyBoolean.YES;
+		while (true) {
+			// invariant: if (tLeft > 0) then (ti < target.length && pi < pattern.length)
+			if (tLeft == 0) {
+				return finalReturn;
+			}
+			if (pLeft == 0) {
+				if (starsLeft > 0) {
+					return finalReturn;
+				} else {
+					return FuzzyBoolean.NO;
+				}
+			}
+			if (pattern[pi] == TypePattern.ELLIPSIS) {
+				return inStar(pattern, target, pi + 1, ti, pLeft, tLeft, starsLeft - 1, kind, parameterAnnotations);
+			}
+			FuzzyBoolean ret = null;
+			ResolvedType type = target.getResolved(ti);
+			try {
+				if (parameterAnnotations != null) {
+					type.temporaryAnnotationTypes = parameterAnnotations[ti];
+				}
+				ret = pattern[pi].matches(type, kind);
+			} finally {
+				type.temporaryAnnotationTypes = null;
+			}
+			if (ret == FuzzyBoolean.NO) {
+				return ret;
+			}
+			if (ret == FuzzyBoolean.MAYBE) {
+				finalReturn = ret;
+			}
+			pi++;
+			ti++;
+			pLeft--;
+			tLeft--;
+		}
+	}
+
+	private static FuzzyBoolean inStar(final TypePattern[] pattern, ResolvableTypeList target, int pi, int ti, final int pLeft,
+			int tLeft, int starsLeft, TypePattern.MatchKind kind, ResolvedType[][] parameterAnnotations) {
+		// invariant: pLeft > 0, so we know we'll run out of stars and find a real char in pattern
+		TypePattern patternChar = pattern[pi];
+		while (patternChar == TypePattern.ELLIPSIS) {
+			starsLeft--;
+			patternChar = pattern[++pi];
+		}
+		while (true) {
+			// invariant: if (tLeft > 0) then (ti < target.length)
+			if (pLeft > tLeft) {
+				return FuzzyBoolean.NO;
+			}
+
+			ResolvedType type = target.getResolved(ti);
+			FuzzyBoolean ff = null;
+			try {
+				if (parameterAnnotations != null) {
+					type.temporaryAnnotationTypes = parameterAnnotations[ti];
+				}
+				ff = patternChar.matches(type, kind);
+			} finally {
+				type.temporaryAnnotationTypes = null;
 			}
 
 			if (ff.maybeTrue()) {
