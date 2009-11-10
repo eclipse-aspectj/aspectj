@@ -18,9 +18,9 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc167Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
-	public void testTimers_1() {
-		runTest("timers - 1");
-	}
+	// public void testTimers_1() {
+	// runTest("timers - 1");
+	// }
 
 	// Test harness parse of -Xset:a=b,c=d will see c=d as a second option
 	// public void testTimers_2() {
@@ -45,6 +45,7 @@ public class Ajc167Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(Ajc167Tests.class);
 	}
 
+	@Override
 	protected File getSpecFile() {
 		return new File("../tests/src/org/aspectj/systemtest/ajc167/ajc167.xml");
 	}
