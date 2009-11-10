@@ -2,5 +2,5 @@
   <aspects>
    <aspect name="Asp"/>
   </aspects>
-  <weaver options="-timers -verbose -Xset:timersPerJoinpoint=8,timersPerType=3"/>
+  <weaver options="-timers -verbose -Xset:timersPerJoinpoint=2,timersPerFastMatchCall=3"/>
 </aspectj>
