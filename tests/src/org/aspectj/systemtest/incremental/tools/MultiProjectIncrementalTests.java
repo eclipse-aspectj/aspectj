@@ -405,6 +405,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			super(testProjectPath);
 		}
 
+		@Override
 		public void reportFileWrite(String outputfile, int filetype) {
 			super.reportFileWrite(outputfile, filetype);
 			writeCount++;
@@ -412,7 +413,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			// System.out.println("Written " + outputfile + " " + filetype);
 		}
 
-
+		@Override
 		public void reportFileRemove(String outputfile, int filetype) {
 			super.reportFileRemove(outputfile, filetype);
 			removeCount++;
@@ -1699,7 +1700,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	 * as much data as necessary to satisfy the caller. The latter approach could be much faster - especially if the matching
 	 * process typically looks for a method in the declaring type.
 	 */
-	public void testOptimizedMemberLookup() {
+	public void xtestOptimizedMemberLookup() {
 		String p = "oml";
 		initialiseProject(p);
 		build(p);
