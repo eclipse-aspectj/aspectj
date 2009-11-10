@@ -258,6 +258,14 @@ public class WeavingAdaptor implements IMessageContext {
 		return weaveClass(name, bytes, false);
 	}
 
+	// Track if the weaver is already running on this thread - don't allow re-entrant calls
+	private ThreadLocal<Boolean> weaverRunning = new ThreadLocal<Boolean>() {
+		@Override
+		protected Boolean initialValue() {
+			return Boolean.FALSE;
+		}
+	};
+
 	/**
 	 * Weave a class using aspects previously supplied to the adaptor.
 	 * 
@@ -268,52 +276,61 @@ public class WeavingAdaptor implements IMessageContext {
 	 * @exception IOException weave failed
 	 */
 	public byte[] weaveClass(String name, byte[] bytes, boolean mustWeave) throws IOException {
-		if (trace.isTraceEnabled()) {
-			trace.enter("weaveClass", this, new Object[] { name, bytes });
-		}
-
-		if (!enabled) {
-			if (trace.isTraceEnabled()) {
-				trace.exit("weaveClass", false);
-			}
+		if (weaverRunning.get()) {
+			// System.out.println("AJC: avoiding re-entrant call to transform " + name);
 			return bytes;
 		}
-
 		try {
-			delegateForCurrentClass = null;
-			name = name.replace('/', '.');
-			if (couldWeave(name, bytes)) {
-				if (accept(name, bytes)) {
-					// TODO @AspectJ problem
-					// Annotation style aspects need to be included regardless in order to get
-					// a valid aspectOf()/hasAspect() generated in them. However - if they are excluded
-					// (via include/exclude in aop.xml) they really should only get aspectOf()/hasAspect()
-					// and not be included in the full set of aspects being applied by 'this' weaver
-					debug("weaving '" + name + "'");
-					bytes = getWovenBytes(name, bytes);
-				} else if (shouldWeaveAnnotationStyleAspect(name, bytes)) {
-					if (mustWeave) {
-						if (bcelWorld.getLint().mustWeaveXmlDefinedAspects.isEnabled()) {
-							bcelWorld.getLint().mustWeaveXmlDefinedAspects.signal(name, null);
-						}
-					}
-					// an @AspectJ aspect needs to be at least munged by the aspectOf munger
-					debug("weaving '" + name + "'");
-					bytes = getAtAspectJAspectBytes(name, bytes);
-				} else {
-					debug("not weaving '" + name + "'");
-				}
-			} else {
-				debug("cannot weave '" + name + "'");
+			weaverRunning.set(true);
+			if (trace.isTraceEnabled()) {
+				trace.enter("weaveClass", this, new Object[] { name, bytes });
 			}
-		} finally {
-			delegateForCurrentClass = null;
-		}
 
-		if (trace.isTraceEnabled()) {
-			trace.exit("weaveClass", bytes);
+			if (!enabled) {
+				if (trace.isTraceEnabled()) {
+					trace.exit("weaveClass", false);
+				}
+				return bytes;
+			}
+
+			try {
+				delegateForCurrentClass = null;
+				name = name.replace('/', '.');
+				if (couldWeave(name, bytes)) {
+					if (accept(name, bytes)) {
+						// TODO @AspectJ problem
+						// Annotation style aspects need to be included regardless in order to get
+						// a valid aspectOf()/hasAspect() generated in them. However - if they are excluded
+						// (via include/exclude in aop.xml) they really should only get aspectOf()/hasAspect()
+						// and not be included in the full set of aspects being applied by 'this' weaver
+						debug("weaving '" + name + "'");
+						bytes = getWovenBytes(name, bytes);
+					} else if (shouldWeaveAnnotationStyleAspect(name, bytes)) {
+						if (mustWeave) {
+							if (bcelWorld.getLint().mustWeaveXmlDefinedAspects.isEnabled()) {
+								bcelWorld.getLint().mustWeaveXmlDefinedAspects.signal(name, null);
+							}
+						}
+						// an @AspectJ aspect needs to be at least munged by the aspectOf munger
+						debug("weaving '" + name + "'");
+						bytes = getAtAspectJAspectBytes(name, bytes);
+					} else {
+						debug("not weaving '" + name + "'");
+					}
+				} else {
+					debug("cannot weave '" + name + "'");
+				}
+			} finally {
+				delegateForCurrentClass = null;
+			}
+
+			if (trace.isTraceEnabled()) {
+				trace.exit("weaveClass", bytes);
+			}
+			return bytes;
+		} finally {
+			weaverRunning.set(false);
 		}
-		return bytes;
 	}
 
 	/**
