@@ -137,8 +137,8 @@ public abstract class World implements Dump.INode {
 	public boolean forDEBUG_structuralChangesCode = false;
 	public boolean forDEBUG_bridgingCode = false;
 	public boolean optimizedMatching = true;
-	protected long timersPerJoinpoint;
-	protected long timersPerType;
+	protected long timersPerJoinpoint = 25000;
+	protected long timersPerType = 250;
 
 	public int infoMessagesEnabled = 0; // 0=uninitialized, 1=no, 2=yes
 
@@ -1580,7 +1580,8 @@ public abstract class World implements Dump.INode {
 					totalTime += timePerPointcut.get(p);
 				}
 				world.getMessageHandler().handleMessage(
-						MessageUtil.info("Pointcut matching cost (total=" + (totalTime / 1000000) + "ms for "+joinpointCount+" joinpoint match calls):"));
+						MessageUtil.info("Pointcut matching cost (total=" + (totalTime / 1000000) + "ms for " + joinpointCount
+								+ " joinpoint match calls):"));
 				for (String p : joinpointsPerPointcut.keySet()) {
 					StringBuffer sb = new StringBuffer();
 					sb.append("Time:" + (timePerPointcut.get(p) / 1000000) + "ms (jps:#" + joinpointsPerPointcut.get(p)
@@ -1619,7 +1620,8 @@ public abstract class World implements Dump.INode {
 								+ " fast match calls):"));
 				for (String p : fastMatchTimesPerPointcut.keySet()) {
 					StringBuffer sb = new StringBuffer();
-					sb.append("Time:" + (fastMatchTimesPerPointcut.get(p) / 1000000) + "ms (types:#"+fastMatchTypesPerPointcut.get(p)+") fast matching against " + p);
+					sb.append("Time:" + (fastMatchTimesPerPointcut.get(p) / 1000000) + "ms (types:#"
+							+ fastMatchTypesPerPointcut.get(p) + ") fast matching against " + p);
 					world.getMessageHandler().handleMessage(MessageUtil.info(sb.toString()));
 				}
 				world.getMessageHandler().handleMessage(MessageUtil.info("---"));
