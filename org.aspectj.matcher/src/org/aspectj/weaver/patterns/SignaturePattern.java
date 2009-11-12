@@ -465,6 +465,7 @@ public class SignaturePattern extends PatternNode {
 			// System.err.println("Parameter types pattern " + parameterTypes + " pcount: " + aMethod.getParameterTypes().length);
 			return FuzzyBoolean.NO;
 		}
+		// OPTIMIZE only for exact match do the pattern match now? Otherwise defer it until other fast checks complete?
 		if (!name.matches(aMethod.getName())) {
 			return FuzzyBoolean.NO;
 		}
