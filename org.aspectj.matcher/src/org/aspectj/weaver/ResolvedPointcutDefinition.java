@@ -47,6 +47,7 @@ public class ResolvedPointcutDefinition extends ResolvedMemberImpl {
 
 	// ----
 
+	@Override
 	public void write(DataOutputStream s) throws IOException {
 		getDeclaringType().write(s);
 		s.writeInt(getModifiers());
@@ -62,6 +63,7 @@ public class ResolvedPointcutDefinition extends ResolvedMemberImpl {
 		return rpd;
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("pointcut ");
@@ -70,8 +72,9 @@ public class ResolvedPointcutDefinition extends ResolvedMemberImpl {
 		buf.append(getName());
 		buf.append("(");
 		for (int i = 0; i < getParameterTypes().length; i++) {
-			if (i > 0)
+			if (i > 0) {
 				buf.append(", ");
+			}
 			buf.append(getParameterTypes()[i].toString());
 		}
 		buf.append(")");
@@ -84,6 +87,7 @@ public class ResolvedPointcutDefinition extends ResolvedMemberImpl {
 		return pointcut;
 	}
 
+	@Override
 	public boolean isAjSynthetic() {
 		return true;
 	}
@@ -91,6 +95,7 @@ public class ResolvedPointcutDefinition extends ResolvedMemberImpl {
 	/**
 	 * Called when asking a parameterized super-aspect for its pointcuts.
 	 */
+	@Override
 	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
 			boolean isParameterized) {
 		TypeVariable[] typeVariables = getDeclaringType().resolve(newDeclaringType.getWorld()).getTypeVariables();
