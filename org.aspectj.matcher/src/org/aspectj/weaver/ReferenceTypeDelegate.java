@@ -115,4 +115,11 @@ public interface ReferenceTypeDelegate {
 
 	public boolean copySourceContext();
 
+	/**
+	 * TODO Caching of methods besides getDeclaredInterfaces() may also be dependent on this flag - which?
+	 * 
+	 * @return true if something the result of getDeclaredInterfaces() can be cached by the caller
+	 */
+	public boolean isCacheable();
+
 }

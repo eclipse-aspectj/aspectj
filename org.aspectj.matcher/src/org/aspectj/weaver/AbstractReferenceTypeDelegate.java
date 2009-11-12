@@ -41,6 +41,10 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 		return !isAspect() && !isInterface();
 	}
 
+	public boolean isCacheable() {
+		return false;
+	}
+
 	/**
 	 * Designed to be overriden by EclipseType to disable collection of shadow mungers during pre-weave compilation phase
 	 */
