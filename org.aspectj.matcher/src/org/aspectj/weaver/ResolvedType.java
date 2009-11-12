@@ -1691,7 +1691,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		sig = munger.getSignature(); // possibly changed when type parms filled in
 
 		if (sig.getKind() == Member.METHOD) {
-		    // OPTIMIZE can this be sped up?
+			// OPTIMIZE can this be sped up?
 			if (clashesWithExistingMember(munger, getMethods(true, false))) { // ITDs checked below
 				return;
 			}
@@ -2272,13 +2272,16 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	private void addPointcutsResolvingConflicts(List acc, List added, boolean isOverriding) {
 		for (Iterator i = added.iterator(); i.hasNext();) {
 			ResolvedPointcutDefinition toAdd = (ResolvedPointcutDefinition) i.next();
-			// System.err.println("adding: " + toAdd);
 			for (Iterator j = acc.iterator(); j.hasNext();) {
 				ResolvedPointcutDefinition existing = (ResolvedPointcutDefinition) j.next();
 				if (existing == toAdd) {
 					continue;
 				}
-				if (!isVisible(existing.getModifiers(), existing.getDeclaringType().resolve(getWorld()), this)) {
+				ResolvedType pointcutDeclaringType = existing.getDeclaringType().resolve(getWorld());
+				if (pointcutDeclaringType == null) {
+					throw new BCException("Pointcut declaring type is unexpectedly null.  Pointcut is " + existing.toString());
+				}
+				if (!isVisible(existing.getModifiers(), pointcutDeclaringType, this)) {
 					// if they intended to override it but it is not visible,
 					// give them a nicer message
 					if (existing.isAbstract() && conflictingSignature(existing, toAdd)) {
