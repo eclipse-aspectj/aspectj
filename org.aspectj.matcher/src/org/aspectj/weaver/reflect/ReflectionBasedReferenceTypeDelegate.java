@@ -79,11 +79,13 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	public ReferenceType buildGenericType() {
 		throw new UnsupportedOperationException("Shouldn't be asking for generic type at 1.4 source level or lower");
 	}
+
 	public boolean isAspect() {
 		// we could do better than this in Java 5 by looking at the annotations
 		// on the type...
 		return false;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -94,14 +96,16 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 		// on the type...
 		return false;
 	}
-	
+
 	public boolean isInterface() {
 		return this.myClass.isInterface();
 	}
+
 	public boolean isEnum() {
 		// cant be an enum in Java 1.4 or prior
 		return false;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -111,10 +115,12 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 		// cant be an annotation in Java 1.4 or prior
 		return false;
 	}
-public boolean isAnnotation() {
+
+	public boolean isAnnotation() {
 		// cant be an annotation in Java 1.4 or prior
 		return false;
 	}
+
 	public String getRetentionPolicy() {
 		// cant be an annotation in Java 1.4 or prior
 		return null;
@@ -127,6 +133,7 @@ public boolean isAnnotation() {
 	public AnnotationTargetKind[] getAnnotationTargetKinds() {
 		return null;
 	}
+
 	public boolean isClass() {
 		return !this.myClass.isInterface() && !this.myClass.isPrimitive() && !this.myClass.isArray();
 	}
@@ -233,6 +240,10 @@ public boolean isAnnotation() {
 			this.interfaces = rInterfaces;
 		}
 		return interfaces;
+	}
+
+	public boolean isCacheable() {
+		return true;
 	}
 
 	/*
