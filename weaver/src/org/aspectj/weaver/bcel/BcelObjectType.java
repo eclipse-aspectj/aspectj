@@ -110,6 +110,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	// above!
 
 	private WeakReference<ResolvedType> superTypeReference = new WeakReference<ResolvedType>(null);
+	private WeakReference<ResolvedType[]> superInterfaceReferences = new WeakReference<ResolvedType[]>(null);
 
 	private int bitflag = 0x0000;
 
@@ -134,7 +135,6 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	 * that's a bigger piece of work. XXX
 	 */
 
-	// ------------------ construction and initialization
 	BcelObjectType(ReferenceType resolvedTypeX, JavaClass javaClass, boolean exposedToWeaver) {
 		super(resolvedTypeX, exposedToWeaver);
 		this.javaClass = javaClass;
@@ -167,6 +167,11 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		this.javaClass = newclass;
 		resetState();
 		initializeFromJavaclass();
+	}
+
+	@Override
+	public boolean isCacheable() {
+		return true;
 	}
 
 	private void initializeFromJavaclass() {
@@ -240,29 +245,35 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	 * is used to work out the types - this gets around the results of erasure when the class was originally compiled.
 	 */
 	public ResolvedType[] getDeclaredInterfaces() {
-		ensureGenericSignatureUnpacked();
-		ResolvedType[] interfaceTypes = null;
-		if (interfaceSignatures == null) {
-			String[] names = javaClass.getInterfaceNames();
-			if (names.length == 0) {
-				interfaceSignatures = NO_INTERFACE_SIGS;
-				interfaceTypes = ResolvedType.NONE;
+
+		ResolvedType[] cachedInterfaceTypes = superInterfaceReferences.get();
+		if (cachedInterfaceTypes == null) {
+			ensureGenericSignatureUnpacked();
+			ResolvedType[] interfaceTypes = null;
+			if (interfaceSignatures == null) {
+				String[] names = javaClass.getInterfaceNames();
+				if (names.length == 0) {
+					interfaceSignatures = NO_INTERFACE_SIGS;
+					interfaceTypes = ResolvedType.NONE;
+				} else {
+					interfaceSignatures = new String[names.length];
+					interfaceTypes = new ResolvedType[names.length];
+					for (int i = 0, len = names.length; i < len; i++) {
+						interfaceTypes[i] = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(names[i]));
+						interfaceSignatures[i] = interfaceTypes[i].getSignature();
+					}
+				}
 			} else {
-				interfaceSignatures = new String[names.length];
-				interfaceTypes = new ResolvedType[names.length];
-				for (int i = 0, len = names.length; i < len; i++) {
-					interfaceTypes[i] = getResolvedTypeX().getWorld().resolve(UnresolvedType.forName(names[i]));
-					interfaceSignatures[i] = interfaceTypes[i].getSignature();
+				interfaceTypes = new ResolvedType[interfaceSignatures.length];
+				for (int i = 0, len = interfaceSignatures.length; i < len; i++) {
+					interfaceTypes[i] = getResolvedTypeX().getWorld().resolve(UnresolvedType.forSignature(interfaceSignatures[i]));
 				}
 			}
+			superInterfaceReferences = new WeakReference<ResolvedType[]>(interfaceTypes);
+			return interfaceTypes;
 		} else {
-			interfaceTypes = new ResolvedType[interfaceSignatures.length];
-			for (int i = 0, len = interfaceSignatures.length; i < len; i++) {
-				interfaceTypes[i] = getResolvedTypeX().getWorld().resolve(UnresolvedType.forSignature(interfaceSignatures[i]));
-			}
+			return cachedInterfaceTypes;
 		}
-
-		return interfaceTypes;
 	}
 
 	public ResolvedMember[] getDeclaredMethods() {
