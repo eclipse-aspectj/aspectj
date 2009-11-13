@@ -318,7 +318,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		setMessageHandler(weaverOption.messageHandler);
 		world.setXlazyTjp(weaverOption.lazyTjp);
 		world.setXHasMemberSupportEnabled(weaverOption.hasMember);
-		world.setTiming(weaverOption.timers);
+		world.setTiming(weaverOption.timers, true);
 		world.setOptionalJoinpoints(weaverOption.optionalJoinpoints);
 		world.setPinpointMode(weaverOption.pinpoint);
 		weaver.setReweavableMode(weaverOption.notReWeavable);
