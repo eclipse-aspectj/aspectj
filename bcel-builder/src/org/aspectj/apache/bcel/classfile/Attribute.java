@@ -70,7 +70,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisParamAnnos;
  * <em>Exceptiontable</em>, <em>LineNumberTable</em>, <em>LocalVariableTable</em>, <em>InnerClasses</em> and <em>Synthetic</em>
  * attributes are supported. The <em>Unknown</em> attribute stands for non-standard-attributes.
  * 
- * @version $Id: Attribute.java,v 1.7 2009/09/15 19:40:12 aclement Exp $
+ * @version $Id: Attribute.java,v 1.8 2009/11/13 17:40:59 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see ConstantValue
  * @see SourceFile
@@ -104,6 +104,7 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
 		file.writeInt(length);
 	}
 
+	// OPTIMIZE how about just reading them in and storing them until we need to decode what they really are?
 	public static final Attribute readAttribute(DataInputStream file, ConstantPool cpool) throws IOException {
 		byte tag = Constants.ATTR_UNKNOWN;
 		int idx = file.readUnsignedShort();
