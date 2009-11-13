@@ -385,7 +385,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			}
 			ret = !handler.hasErrors();
 			if (getBcelWorld() != null) {
-				getBcelWorld().tidyUp();
+				BcelWorld bcelWorld = getBcelWorld();
+				bcelWorld.reportTimers();
+				bcelWorld.tidyUp();
 			}
 			if (getWeaver() != null) {
 				getWeaver().tidyUp();
@@ -825,7 +827,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		// cp.addAll(buildConfig.getClasspath());
 		BcelWorld bcelWorld = new BcelWorld(cp, handler, null);
 		bcelWorld.setBehaveInJava5Way(buildConfig.getBehaveInJava5Way());
-		bcelWorld.setTiming(buildConfig.isTiming());
+		bcelWorld.setTiming(buildConfig.isTiming(), false);
 		bcelWorld.setAddSerialVerUID(buildConfig.isAddSerialVerUID());
 		bcelWorld.setXmlConfigured(buildConfig.isXmlConfigured());
 		bcelWorld.setXmlFiles(buildConfig.getXmlFiles());
