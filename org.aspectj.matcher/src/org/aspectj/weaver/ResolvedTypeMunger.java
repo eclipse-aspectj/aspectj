@@ -57,15 +57,19 @@ public abstract class ResolvedTypeMunger {
 
 	private ISourceLocation location; // Lost during serialize/deserialize !
 
+	private ResolvedType onType = null;
+
 	public ResolvedTypeMunger(Kind kind, ResolvedMember signature) {
 		this.kind = kind;
 		this.signature = signature;
 		UnresolvedType declaringType = signature != null ? signature.getDeclaringType() : null;
 		if (declaringType != null) {
-			if (declaringType.isRawType())
+			if (declaringType.isRawType()) {
 				throw new IllegalStateException("Use generic type, not raw type");
-			if (declaringType.isParameterizedType())
+			}
+			if (declaringType.isParameterizedType()) {
 				throw new IllegalStateException("Use generic type, not parameterized type");
+			}
 		}
 		// boolean aChangeOccurred = false;
 		//		
@@ -100,9 +104,12 @@ public abstract class ResolvedTypeMunger {
 	// }
 
 	public boolean matches(ResolvedType matchType, ResolvedType aspectType) {
-		ResolvedType onType = matchType.getWorld().resolve(signature.getDeclaringType());
-		if (onType.isRawType())
-			onType = onType.getGenericType();
+		if (onType == null) {
+			onType = matchType.getWorld().resolve(signature.getDeclaringType());
+			if (onType.isRawType()) {
+				onType = onType.getGenericType();
+			}
+		}
 		// System.err.println("matching: " + this + " to " + matchType + " onType = " + onType);
 		if (matchType.equals(onType)) {
 			if (!onType.isExposedToWeaver()) {
@@ -160,8 +167,9 @@ public abstract class ResolvedTypeMunger {
 	protected static Set<ResolvedMember> readSuperMethodsCalled(VersionedDataInputStream s) throws IOException {
 		Set<ResolvedMember> ret = new HashSet<ResolvedMember>();
 		int n = s.readInt();
-		if (n < 0)
+		if (n < 0) {
 			throw new BCException("Problem deserializing type munger");
+		}
 		for (int i = 0; i < n; i++) {
 			ret.add(ResolvedMemberImpl.readResolvedMember(s, null));
 		}
@@ -187,8 +195,9 @@ public abstract class ResolvedTypeMunger {
 
 	protected static ISourceLocation readSourceLocation(VersionedDataInputStream s) throws IOException {
 		// Location persistence for type mungers was added after 1.2.1 was shipped...
-		if (s.getMajorVersion() < AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150)
+		if (s.getMajorVersion() < AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
 			return null;
+		}
 		SourceLocation ret = null;
 		ObjectInputStream ois = null;
 		try {
@@ -213,8 +222,9 @@ public abstract class ResolvedTypeMunger {
 			return null;
 		} catch (ClassNotFoundException e) {
 		} finally {
-			if (ois != null)
+			if (ois != null) {
 				ois.close();
+			}
 		}
 		return ret;
 	}
