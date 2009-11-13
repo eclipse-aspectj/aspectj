@@ -378,8 +378,8 @@ public class BcelWorld extends World implements Repository {
 		}
 	}
 
-	public BcelObjectType buildBcelDelegate(ReferenceType resolvedTypeX, JavaClass jc, boolean exposedToWeaver) {
-		BcelObjectType ret = new BcelObjectType(resolvedTypeX, jc, exposedToWeaver);
+	public BcelObjectType buildBcelDelegate(ReferenceType type, JavaClass jc, boolean exposedToWeaver) {
+		BcelObjectType ret = new BcelObjectType(type, jc, exposedToWeaver);
 		return ret;
 	}
 
@@ -438,7 +438,6 @@ public class BcelWorld extends World implements Repository {
 
 		if (nameTypeX == null) {
 			if (jc.isGeneric() && isInJava5Mode()) {
-
 				nameTypeX = ReferenceType.fromTypeX(UnresolvedType.forRawTypeName(jc.getClassName()), this);
 				ret = buildBcelDelegate(nameTypeX, jc, true);
 				ReferenceType genericRefType = new ReferenceType(UnresolvedType.forGenericTypeSignature(signature, ret
