@@ -3072,39 +3072,52 @@ class BcelClassWeaver implements IClassWeaver {
 			ContextToken shadowMatchToken = CompilationAndWeavingContext.enteringPhase(
 					CompilationAndWeavingContext.MATCHING_SHADOW, shadow);
 			boolean isMatched = false;
-			for (ShadowMunger munger : shadowMungers) {
-				ContextToken mungerMatchToken = CompilationAndWeavingContext.enteringPhase(
-						CompilationAndWeavingContext.MATCHING_POINTCUT, munger.getPointcut());
-				if (munger.match(shadow, world)) {
-					shadow.addMunger(munger);
-					isMatched = true;
-					if (shadow.getKind() == Shadow.StaticInitialization) {
-						clazz.warnOnAddedStaticInitializer(shadow, munger.getSourceLocation());
-					}
-				}
-				CompilationAndWeavingContext.leavingPhase(mungerMatchToken);
-			}
 
-			if (isMatched) {
-				shadowAccumulator.add(shadow);
+			Shadow.Kind shadowKind = shadow.getKind();
+			List<ShadowMunger> candidateMungers = perKindShadowMungers[shadowKind.getKey()];
+
+			// System.out.println("Candidates " + candidateMungers);
+			if (candidateMungers != null) {
+				for (ShadowMunger munger : candidateMungers) {
+
+					ContextToken mungerMatchToken = CompilationAndWeavingContext.enteringPhase(
+							CompilationAndWeavingContext.MATCHING_POINTCUT, munger.getPointcut());
+					if (munger.match(shadow, world)) {
+						shadow.addMunger(munger);
+						isMatched = true;
+						if (shadow.getKind() == Shadow.StaticInitialization) {
+							clazz.warnOnAddedStaticInitializer(shadow, munger.getSourceLocation());
+						}
+					}
+					CompilationAndWeavingContext.leavingPhase(mungerMatchToken);
+				}
+
+				if (isMatched) {
+					shadowAccumulator.add(shadow);
+				}
 			}
 			CompilationAndWeavingContext.leavingPhase(shadowMatchToken);
 			return isMatched;
 		} else {
 			boolean isMatched = false;
-			int max = shadowMungers.size();
-			for (int i = 0; i < max; i++) {
-				ShadowMunger munger = shadowMungers.get(i);
-				if (munger.match(shadow, world)) {
-					shadow.addMunger(munger);
-					isMatched = true;
-					if (shadow.getKind() == Shadow.StaticInitialization) {
-						clazz.warnOnAddedStaticInitializer(shadow, munger.getSourceLocation());
+
+			Shadow.Kind shadowKind = shadow.getKind();
+			List<ShadowMunger> candidateMungers = perKindShadowMungers[shadowKind.getKey()];
+
+			// System.out.println("Candidates at " + shadowKind + " are " + candidateMungers);
+			if (candidateMungers != null) {
+				for (ShadowMunger munger : candidateMungers) {
+					if (munger.match(shadow, world)) {
+						shadow.addMunger(munger);
+						isMatched = true;
+						if (shadow.getKind() == Shadow.StaticInitialization) {
+							clazz.warnOnAddedStaticInitializer(shadow, munger.getSourceLocation());
+						}
 					}
 				}
-			}
-			if (isMatched) {
-				shadowAccumulator.add(shadow);
+				if (isMatched) {
+					shadowAccumulator.add(shadow);
+				}
 			}
 			return isMatched;
 		}
