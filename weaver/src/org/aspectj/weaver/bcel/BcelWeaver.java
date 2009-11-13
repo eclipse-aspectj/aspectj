@@ -1256,7 +1256,7 @@ public class BcelWeaver {
 			typesToProcess.add(clf.getClassName());
 		}
 		while (typesToProcess.size() > 0) {
-			weaveParentsFor(typesToProcess, typesToProcess.get(0));
+			weaveParentsFor(typesToProcess, typesToProcess.get(0), null);
 		}
 
 		for (Iterator<UnwovenClassFile> i = input.getClassFileIterator(); i.hasNext();) {
@@ -1429,29 +1429,33 @@ public class BcelWeaver {
 	 * A>B>C and only give A and C to the weaver, it may choose to weave them in either order - but you'll probably have other
 	 * problems if you are supplying partial hierarchies like that !
 	 */
-	private void weaveParentsFor(List<String> typesForWeaving, String typeToWeave) {
-		// Look at the supertype first
-		ResolvedType rtx = world.resolve(typeToWeave);
-		ResolvedType superType = rtx.getSuperclass();
+	private void weaveParentsFor(List<String> typesForWeaving, String typeToWeave, ResolvedType resolvedTypeToWeave) {
+		if (resolvedTypeToWeave == null) {
+			// resolve it if the caller could not pass in the resolved type
+			resolvedTypeToWeave = world.resolve(typeToWeave);
+		}
+		ResolvedType superclassType = resolvedTypeToWeave.getSuperclass();
+		String superclassTypename = (superclassType == null ? null : superclassType.getName());
 
-		if (superType != null && typesForWeaving.contains(superType.getName())) {
-			weaveParentsFor(typesForWeaving, superType.getName());
+		if (superclassType != null && !superclassType.isTypeHierarchyComplete() && superclassType.isExposedToWeaver()) { // typesForWeaving.contains(superclassTypename))																							// {
+			weaveParentsFor(typesForWeaving, superclassTypename, superclassType);
 		}
 
-		// Then look at the superinterface list
-		ResolvedType[] interfaceTypes = rtx.getDeclaredInterfaces();
-		for (int i = 0; i < interfaceTypes.length; i++) {
-			ResolvedType rtxI = interfaceTypes[i];
-			if (typesForWeaving.contains(rtxI.getName())) {
-				weaveParentsFor(typesForWeaving, rtxI.getName());
+		ResolvedType[] interfaceTypes = resolvedTypeToWeave.getDeclaredInterfaces();
+		for (ResolvedType resolvedSuperInterface : interfaceTypes) {
+			if (!resolvedSuperInterface.isTypeHierarchyComplete()) {
+				String interfaceTypename = resolvedSuperInterface.getName();
+				if (resolvedSuperInterface.isExposedToWeaver()) { // typesForWeaving.contains(interfaceTypename)) {
+					weaveParentsFor(typesForWeaving, interfaceTypename, resolvedSuperInterface);
+				}
 			}
 		}
-		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_DECLARE_PARENTS, rtx
-				.getName());
-		weaveParentTypeMungers(rtx); // Now do this type
+		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_DECLARE_PARENTS,
+				resolvedTypeToWeave.getName());
+		weaveParentTypeMungers(resolvedTypeToWeave);
 		CompilationAndWeavingContext.leavingPhase(tok);
-		typesForWeaving.remove(typeToWeave); // and remove it from the list of
-		// those to process
+		typesForWeaving.remove(typeToWeave);
+		resolvedTypeToWeave.tagAsTypeHierarchyComplete();
 	}
 
 	public void prepareToProcessReweavableState() {
