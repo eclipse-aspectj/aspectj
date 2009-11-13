@@ -358,9 +358,15 @@ public class EclipseFactory {
 		// Dont set any bounds here, you'll get in a recursive mess
 		// TODO -- what about lower bounds??
 		UnresolvedType superclassType = fromBinding(aTypeVariableBinding.superclass());
-		UnresolvedType[] superinterfaces = new UnresolvedType[aTypeVariableBinding.superInterfaces.length];
-		for (int i = 0; i < superinterfaces.length; i++) {
-			superinterfaces[i] = fromBinding(aTypeVariableBinding.superInterfaces[i]);
+		UnresolvedType[] superinterfaces = null;
+		if (aTypeVariableBinding == null || aTypeVariableBinding.superInterfaces == null) {
+			// sign of another bug that will be reported elsewhere
+			superinterfaces = UnresolvedType.NONE;
+		} else {
+			superinterfaces = new UnresolvedType[aTypeVariableBinding.superInterfaces.length];
+			for (int i = 0; i < superinterfaces.length; i++) {
+				superinterfaces[i] = fromBinding(aTypeVariableBinding.superInterfaces[i]);
+			}
 		}
 		tv.setUpperBound(superclassType);
 		tv.setAdditionalInterfaceBounds(superinterfaces);
