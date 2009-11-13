@@ -103,12 +103,17 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p);
 		List errors = getErrorMessages(p);
 		// Build errors:
-		// error at \src\p\Foo.aj:8::94 The target type for the intertype declaration is not generic
-		// error at \src\p\Foo.aj:12::154 The target type for the intertype declaration is not generic
-		// error at \src\p\A.java:0::0 Inconsistent classfile encountered: The undefined type parameter N is referenced from within
-		// Foo
-		assertEquals(3, errors.size());
-		// *cough* third error, hmmm
+		// error at N:\temp\ajcSandbox\aspectj16_3\ajcTest60379.tmp\pr280676_2\src\p\A.java:8:0::0 a.ls cannot be resolved or is not
+		// a field
+		// error at N:\temp\ajcSandbox\aspectj16_3\ajcTest60379.tmp\pr280676_2\src\p\Foo.aj:8:0::0 Type parameters can not be
+		// specified in the ITD target type - the target type p.A is not generic.
+		// error at N:\temp\ajcSandbox\aspectj16_3\ajcTest60379.tmp\pr280676_2\src\p\Foo.aj:12:0::0 Type parameters can not be
+		// specified in the ITD target type - the target type p.A is not generic.
+		// error at N:\temp\ajcSandbox\aspectj16_3\ajcTest60379.tmp\pr280676_2\src\p\Foo.aj:8:0::0 Type parameters can not be
+		// specified in the ITD target type - the target type p.A is not generic.
+		// error at N:\temp\ajcSandbox\aspectj16_3\ajcTest60379.tmp\pr280676_2\src\p\Foo.aj:12:0::0 Type parameters can not be
+		// specified in the ITD target type - the target type p.A is not generic.
+		assertEquals(5, errors.size());
 	}
 
 	public void testAdviceHandles_pr284771() throws Exception {
