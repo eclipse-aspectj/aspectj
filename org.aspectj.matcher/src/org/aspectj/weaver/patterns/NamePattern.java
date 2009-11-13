@@ -62,7 +62,6 @@ public class NamePattern extends PatternNode {
 			if (len1 > len2 + 1) {
 				return false;
 			}
-
 			int i2 = 0;
 			for (int i1 = 0; i1 < len1; i1++) {
 				char c1 = a1[i1];
@@ -74,8 +73,6 @@ public class NamePattern extends PatternNode {
 			}
 			return true;
 		} else {
-			// String pattern = new String(a1);
-			// String target = new String(a2);
 			// System.err.print("match(\"" + pattern + "\", \"" + target + "\") -> ");
 			boolean b = outOfStar(a1, a2, 0, 0, len1 - starCount, len2, starCount);
 			// System.err.println(b);
