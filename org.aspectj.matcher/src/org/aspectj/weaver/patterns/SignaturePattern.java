@@ -436,22 +436,25 @@ public class SignaturePattern extends PatternNode {
 			// just give up early (for now)
 			return false;
 		}
+
 		int patternParameterCount = parameterTypes.size();
-		int joinpointParameterCount = methodJoinpoint.getParameterTypes().length;
-		boolean isVarargs = methodJoinpoint.isVarargsMethod();
 
-		// Quick rule: pattern specifies zero parameters, and joinpoint has parameters *OR*
-		if (patternParameterCount == 0 && joinpointParameterCount > 0) { // varargs may allow this
-			return true;
-		}
+		if (patternParameterCount == 0 || parameterTypes.ellipsisCount == 0) {
+			boolean equalCount = patternParameterCount == methodJoinpoint.getParameterTypes().length;
 
-		// Quick rule: pattern doesn't specify ellipsis and there are a different number of parameters on the
-		// method join point as compared with the pattern
-		if (parameterTypes.ellipsisCount == 0 && patternParameterCount != joinpointParameterCount) {
-			if (patternParameterCount > 0 && parameterTypes.get(patternParameterCount - 1).isVarArgs()) {
-				return false;
+			// Quick rule: pattern specifies zero parameters, and joinpoint has parameters *OR*
+			if (patternParameterCount == 0 && !equalCount) {
+				return true;
 			}
-			return true;
+
+			// Quick rule: pattern doesn't specify ellipsis and there are a different number of parameters on the
+			// method join point as compared with the pattern
+			if (parameterTypes.ellipsisCount == 0 && !equalCount) {
+				if (patternParameterCount > 0 && parameterTypes.get(patternParameterCount - 1).isVarArgs()) {
+					return false;
+				}
+				return true;
+			}
 		}
 
 		return false;
