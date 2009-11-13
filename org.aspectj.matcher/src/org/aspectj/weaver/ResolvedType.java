@@ -55,6 +55,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	private static int AnnotationMarkedInherited = 0x0002;
 	private static int MungersAnalyzed = 0x0004;
 	private static int HasParentMunger = 0x0008;
+	private static int TypeHierarchyCompleteBit = 0x0010;
 
 	protected ResolvedType(String signature, World world) {
 		super(signature);
@@ -1748,14 +1749,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		interTypeMungers.add(munger);
 	}
 
-//	private void printIterator(String string, Iterator<ResolvedMember> iterator) {
-//		System.out.println(">" + string);
-//		while (iterator.hasNext()) {
-//			ResolvedMember rm = iterator.next();
-//			System.out.println(" " + rm);
-//		}
-//		System.out.println("<" + string);
-//	}
 
 	/**
 	 * Compare the type transformer with the existing members. A clash may not be an error (the ITD may be the 'default
@@ -2198,7 +2191,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			throw new UnsupportedOperationException();
 		}
 	}
-	
+
 	public void clearInterTypeMungers() {
 		if (isRawType()) {
 			getGenericType().clearInterTypeMungers();
@@ -2687,6 +2680,14 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			}
 		}
 		return (bits & HasParentMunger) != 0;
+	}
+
+	public void tagAsTypeHierarchyComplete() {
+		bits |= TypeHierarchyCompleteBit;
+	}
+
+	public boolean isTypeHierarchyComplete() {
+		return (bits & TypeHierarchyCompleteBit) != 0;
 	}
 
 }
