@@ -12,6 +12,7 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -570,9 +571,7 @@ public class ReferenceType extends ResolvedType {
 
 	@Override
 	public boolean isExposedToWeaver() {
-		return (delegate == null) || delegate.isExposedToWeaver(); // ??? where
-		// does this
-		// belong
+		return (delegate == null) || delegate.isExposedToWeaver();
 	}
 
 	@Override
@@ -649,7 +648,21 @@ public class ReferenceType extends ResolvedType {
 			}
 			return parameterizedInterfaces;
 		}
+		if (delegate.isCacheable()) {
+			parameterizedInterfaces = delegateInterfaces;
+		}
+
 		return delegateInterfaces;
+	}
+
+	private String toString(ResolvedType[] delegateInterfaces) {
+		StringBuffer sb = new StringBuffer();
+		if (delegateInterfaces != null) {
+			for (ResolvedType rt : delegateInterfaces) {
+				sb.append(rt).append(" ");
+			}
+		}
+		return sb.toString();
 	}
 
 	/**
@@ -856,15 +869,23 @@ public class ReferenceType extends ResolvedType {
 		return delegate.getModifiers();
 	}
 
+	WeakReference<ResolvedType> superclassReference = new WeakReference<ResolvedType>(null);
+
 	@Override
 	public ResolvedType getSuperclass() {
+		ResolvedType ret = null;// superclassReference.get();
+		if (ret != null) {
+			return ret;
+		}
 		if (newSuperclass != null) {
 			if (this.isParameterizedType() && newSuperclass.isParameterizedType()) {
 				return newSuperclass.parameterize(getMemberParameterizationMap()).resolve(getWorld());
 			}
+			if (delegate.isCacheable()) {
+				superclassReference = new WeakReference<ResolvedType>(ret);
+			}
 			return newSuperclass;
 		}
-		ResolvedType ret = null;
 		try {
 			world.setTypeVariableLookupScope(this);
 			ret = delegate.getSuperclass();
@@ -873,6 +894,9 @@ public class ReferenceType extends ResolvedType {
 		}
 		if (this.isParameterizedType() && ret.isParameterizedType()) {
 			ret = ret.parameterize(getMemberParameterizationMap()).resolve(getWorld());
+		}
+		if (delegate.isCacheable()) {
+			superclassReference = new WeakReference<ResolvedType>(ret);
 		}
 		return ret;
 	}
@@ -911,6 +935,7 @@ public class ReferenceType extends ResolvedType {
 		parameterizedInterfaces = null;
 		parameterizedMethods = null;
 		parameterizedPointcuts = null;
+		superclassReference = new WeakReference<ResolvedType>(null);
 	}
 
 	public int getEndPos() {
@@ -1000,12 +1025,15 @@ public class ReferenceType extends ResolvedType {
 		annotationTypes = null;
 		newSuperclass = null;
 		newInterfaces = null;
+		parameterizedInterfaces = null;
+		superclassReference = new WeakReference<ResolvedType>(null);
 	}
 
 	@Override
 	public void addParent(ResolvedType newParent) {
 		if (newParent.isClass()) {
 			newSuperclass = newParent;
+			superclassReference = new WeakReference<ResolvedType>(null);
 		} else {
 			if (newInterfaces == null) {
 				newInterfaces = new ResolvedType[1];
@@ -1023,8 +1051,8 @@ public class ReferenceType extends ResolvedType {
 				System.arraycopy(newInterfaces, 0, newNewInterfaces, 1, newInterfaces.length);
 				newNewInterfaces[0] = newParent;
 				newInterfaces = newNewInterfaces;
-				parameterizedInterfaces = null;// invalidate cached info
 			}
+			parameterizedInterfaces = null;// invalidate cached info
 		}
 	}
 }
