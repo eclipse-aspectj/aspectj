@@ -911,7 +911,7 @@ public abstract class World implements Dump.INode {
 
 		private static boolean debug = false;
 
-		private boolean demotionSystemActive = false;
+		private boolean demotionSystemActive = true;
 		private boolean debugDemotion = false;
 
 		// Strategy for entries in the expendable map
@@ -1321,9 +1321,9 @@ public abstract class World implements Dump.INode {
 							MessageUtil.info("[completeBinaryTypes=true] Completion of binary types activated"));
 				}
 
-				s = p.getProperty(xsetTYPE_DEMOTION, "false");
-				if (s.equalsIgnoreCase("true")) {
-					typeMap.demotionSystemActive = true;
+				s = p.getProperty(xsetTYPE_DEMOTION, "true"); // default is ON
+				if (s.equalsIgnoreCase("false")) {
+					typeMap.demotionSystemActive = false;
 				}
 
 				s = p.getProperty(xsetOVERWEAVING, "false");
