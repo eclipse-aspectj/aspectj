@@ -50,7 +50,7 @@ public class ReferenceType extends ResolvedType {
 	ResolvedMember[] parameterizedMethods = null;
 	ResolvedMember[] parameterizedFields = null;
 	ResolvedMember[] parameterizedPointcuts = null;
-	ResolvedType[] parameterizedInterfaces = null;
+	WeakReference<ResolvedType[]> parameterizedInterfaces = new WeakReference<ResolvedType[]>(null);
 	Collection<Declare> parameterizedDeclares = null;
 	Collection parameterizedTypeMungers = null;
 
@@ -603,8 +603,9 @@ public class ReferenceType extends ResolvedType {
 	 */
 	@Override
 	public ResolvedType[] getDeclaredInterfaces() {
-		if (parameterizedInterfaces != null) {
-			return parameterizedInterfaces;
+		ResolvedType[] interfaces = parameterizedInterfaces.get();
+		if (interfaces != null) {
+			return interfaces;
 		}
 		ResolvedType[] delegateInterfaces = delegate.getDeclaredInterfaces();
 		if (newInterfaces != null) {
@@ -617,41 +618,42 @@ public class ReferenceType extends ResolvedType {
 		if (isParameterizedType()) {
 			// UnresolvedType[] paramTypes =
 			// getTypesForMemberParameterization();
-			parameterizedInterfaces = new ResolvedType[delegateInterfaces.length];
+			interfaces = new ResolvedType[delegateInterfaces.length];
 			for (int i = 0; i < delegateInterfaces.length; i++) {
 				// We may have to sub/super set the set of parametertypes if the
 				// implemented interface
 				// needs more or less than this type does. (pr124803/pr125080)
 
 				if (delegateInterfaces[i].isParameterizedType()) {
-					parameterizedInterfaces[i] = delegateInterfaces[i].parameterize(getMemberParameterizationMap()).resolve(world);
+					interfaces[i] = delegateInterfaces[i].parameterize(getMemberParameterizationMap()).resolve(world);
 				} else {
-					parameterizedInterfaces[i] = delegateInterfaces[i];
+					interfaces[i] = delegateInterfaces[i];
 				}
 			}
-			return parameterizedInterfaces;
+			parameterizedInterfaces = new WeakReference<ResolvedType[]>(interfaces);
+			return interfaces;
 		} else if (isRawType()) {
 			UnresolvedType[] paramTypes = getTypesForMemberParameterization();
-			parameterizedInterfaces = new ResolvedType[delegateInterfaces.length];
-			for (int i = 0; i < parameterizedInterfaces.length; i++) {
-				parameterizedInterfaces[i] = delegateInterfaces[i];
-				if (parameterizedInterfaces[i].isGenericType()) {
+			interfaces = new ResolvedType[delegateInterfaces.length];
+			for (int i = 0,max=interfaces.length; i < max; i++) {
+				interfaces[i] = delegateInterfaces[i];
+				if (interfaces[i].isGenericType()) {
 					// a generic supertype of a raw type is replaced by its raw
 					// equivalent
-					parameterizedInterfaces[i] = parameterizedInterfaces[i].getRawType().resolve(getWorld());
-				} else if (parameterizedInterfaces[i].isParameterizedType()) {
+					interfaces[i] = interfaces[i].getRawType().resolve(getWorld());
+				} else if (interfaces[i].isParameterizedType()) {
 					// a parameterized supertype collapses any type vars to
 					// their upper bounds
-					UnresolvedType[] toUseForParameterization = determineThoseTypesToUse(parameterizedInterfaces[i], paramTypes);
-					parameterizedInterfaces[i] = parameterizedInterfaces[i].parameterizedWith(toUseForParameterization);
+					UnresolvedType[] toUseForParameterization = determineThoseTypesToUse(interfaces[i], paramTypes);
+					interfaces[i] = interfaces[i].parameterizedWith(toUseForParameterization);
 				}
 			}
-			return parameterizedInterfaces;
+			parameterizedInterfaces = new WeakReference<ResolvedType[]>(interfaces);
+			return interfaces;
 		}
 		if (delegate.isCacheable()) {
-			parameterizedInterfaces = delegateInterfaces;
+			parameterizedInterfaces = new WeakReference<ResolvedType[]>(delegateInterfaces);
 		}
-
 		return delegateInterfaces;
 	}
 
@@ -932,7 +934,7 @@ public class ReferenceType extends ResolvedType {
 
 	private void clearParameterizationCaches() {
 		parameterizedFields = null;
-		parameterizedInterfaces = null;
+		parameterizedInterfaces.clear();
 		parameterizedMethods = null;
 		parameterizedPointcuts = null;
 		superclassReference = new WeakReference<ResolvedType>(null);
@@ -1025,7 +1027,7 @@ public class ReferenceType extends ResolvedType {
 		annotationTypes = null;
 		newSuperclass = null;
 		newInterfaces = null;
-		parameterizedInterfaces = null;
+		parameterizedInterfaces.clear();
 		superclassReference = new WeakReference<ResolvedType>(null);
 	}
 
@@ -1052,7 +1054,7 @@ public class ReferenceType extends ResolvedType {
 				newNewInterfaces[0] = newParent;
 				newInterfaces = newNewInterfaces;
 			}
-			parameterizedInterfaces = null;// invalidate cached info
+			parameterizedInterfaces.clear();
 		}
 	}
 }

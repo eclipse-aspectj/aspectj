@@ -27,8 +27,8 @@ public class MemberImpl implements Member {
 	protected UnresolvedType returnType;
 	protected UnresolvedType declaringType;
 	protected UnresolvedType[] parameterTypes;
-	private final String signature;
-	private String paramSignature;
+	private final String erasedSignature; // eg. (Ljava/util/Set;V)Ljava/lang/String;
+	private String paramSignature; // eg. (Ljava/util/Set<Ljava/lang/String;>;V)  // no return type
 
 	// OPTIMIZE move out of the member!
 	private boolean reportedCantFindDeclaringType = false;
@@ -39,25 +39,28 @@ public class MemberImpl implements Member {
 	 */
 	private JoinPointSignatureIterator joinPointSignatures = null;
 
-	public MemberImpl(MemberKind kind, UnresolvedType declaringType, int modifiers, String name, String signature) {
+	/**
+	 * Construct a MemberImpl using an erased signature for the parameters and return type (member method/ctor) or type (member field)
+	 */
+	public MemberImpl(MemberKind kind, UnresolvedType declaringType, int modifiers, String name, String erasedSignature) {
 		this.kind = kind;
 		this.declaringType = declaringType;
 		this.modifiers = modifiers;
 		this.name = name;
-		this.signature = signature;
+		this.erasedSignature = erasedSignature;
 		if (kind == FIELD) {
-			this.returnType = UnresolvedType.forSignature(signature);
+			this.returnType = UnresolvedType.forSignature(erasedSignature);
 			this.parameterTypes = UnresolvedType.NONE;
 		} else {
-			Object[] returnAndParams = signatureToTypes(signature, false);
+			Object[] returnAndParams = signatureToTypes(erasedSignature);
 			this.returnType = (UnresolvedType) returnAndParams[0];
 			this.parameterTypes = (UnresolvedType[]) returnAndParams[1];
-			// always safe not to do this ?!?
-			// String oldsig=new String(signature);
-			// signature = typesToSignature(returnType,parameterTypes,true);
 		}
 	}
 
+	/**
+	 * Construct a MemberImpl using real type information for the parameters and return type (member method/ctor) or type (member field)
+	 */
 	public MemberImpl(MemberKind kind, UnresolvedType declaringType, int modifiers, UnresolvedType returnType, String name,
 			UnresolvedType[] parameterTypes) {
 		this.kind = kind;
@@ -67,10 +70,22 @@ public class MemberImpl implements Member {
 		this.name = name;
 		this.parameterTypes = parameterTypes;
 		if (kind == FIELD) {
-			this.signature = returnType.getErasureSignature();
+			this.erasedSignature = returnType.getErasureSignature();
 		} else {
-			this.signature = typesToSignature(returnType, parameterTypes, true);
+			this.erasedSignature = typesToSignature(returnType, parameterTypes, true);
+			
+			// Check parameter recovery by collapsing types to the string then rebuilding them from that
+			// this will check we are capable of having WeakRefs to the parameter types
+//			String nonErasedSignature = getParameterSignature()+getReturnType().getSignature();
+//			Object[] returnAndParams = signatureToTypes(nonErasedSignature);
+//			UnresolvedType[] recoveredParams = (UnresolvedType[]) returnAndParams[1];
+//			for (int jj=0;jj<parameterTypes.length;jj++) {
+//				if (!parameterTypes[jj].getSignature().equals(recoveredParams[jj].getSignature())) {
+//					throw new RuntimeException(parameterTypes[jj].getSignature()+"  !=   "+recoveredParams[jj].getSignature()+"   "+paramSignature);
+//				}
+//			}
 		}
+		
 	}
 
 	public ResolvedMember resolve(World world) {
@@ -80,41 +95,22 @@ public class MemberImpl implements Member {
 	// ---- utility methods
 
 	/**
-	 * returns an Object[] pair of UnresolvedType, UnresolvedType[] representing return type, argument types parsed from the JVM
-	 * bytecode signature of a method. Yes, this should actually return a nice statically-typed pair object, but we don't have one
-	 * of those.
-	 * 
-	 * <blockquote>
-	 * 
-	 * <pre>
-	 *   UnresolvedType.signatureToTypes(&quot;()[Z&quot;)[0].equals(Type.forSignature(&quot;[Z&quot;))
-	 *   UnresolvedType.signatureToTypes(&quot;(JJ)I&quot;)[1]
-	 *      .equals(UnresolvedType.forSignatures(new String[] {&quot;J&quot;, &quot;J&quot;}))
-	 * </pre>
-	 * 
-	 * </blockquote>
-	 * 
-	 * @param signature the JVM bytecode method signature string we want to break apart
-	 * @return a pair of UnresolvedType, UnresolvedType[] representing the return types and parameter types.
+	 * Build a signature based on the return type and parameter types.  For example: "(Ljava/util/Set<Ljava/lang/String;>;)V"
+	 * or "(Ljava/util/Set;)V".  The latter form shows what happens when the generics are erased
 	 */
-	// OPTIMIZE move static util methods out into a memberutils class
-	public static String typesToSignature(UnresolvedType returnType, UnresolvedType[] paramTypes, boolean useRawTypes) {
-		StringBuffer buf = new StringBuffer();
+	public static String typesToSignature(UnresolvedType returnType, UnresolvedType[] paramTypes, boolean eraseGenerics) {
+		StringBuilder buf = new StringBuilder();
 		buf.append("(");
-		for (int i = 0, len = paramTypes.length; i < len; i++) {
-			if (paramTypes[i].isParameterizedType() && useRawTypes) {
-				buf.append(paramTypes[i].getErasureSignature());
-			} else if (paramTypes[i].isTypeVariableReference() && useRawTypes) {
-				buf.append(paramTypes[i].getErasureSignature());
+		for (UnresolvedType paramType: paramTypes) {
+			if (eraseGenerics && (paramType.isParameterizedType() || paramType.isTypeVariableReference())) {
+					buf.append(paramType.getErasureSignature());
 			} else {
-				buf.append(paramTypes[i].getSignature());
+				buf.append(paramType.getSignature());				
 			}
 		}
 		buf.append(")");
-		if (returnType.isParameterizedType() && useRawTypes) {
-			buf.append(returnType.getErasureSignature());
-		} else if (returnType.isTypeVariableReference() && useRawTypes) {
-			buf.append(returnType.getErasureSignature());
+		if (eraseGenerics && (returnType.isParameterizedType() || returnType.isTypeVariableReference())) {
+			buf.append(returnType.getErasureSignature());			
 		} else {
 			buf.append(returnType.getSignature());
 		}
@@ -150,10 +146,10 @@ public class MemberImpl implements Member {
 	 * 
 	 * </blockquote>
 	 * 
-	 * @param signature the JVM bytecode method signature string we want to break apart
+	 * @param erasedSignature the JVM bytecode method signature string we want to break apart
 	 * @return a pair of UnresolvedType, UnresolvedType[] representing the return types and parameter types.
 	 */
-	private static Object[] signatureToTypes(String sig, boolean keepParameterizationInfo) {
+	private static Object[] signatureToTypes(String sig) {
 		boolean hasParameters = sig.charAt(1) != ')';
 		if (hasParameters) {
 			List l = new ArrayList();
@@ -204,7 +200,7 @@ public class MemberImpl implements Member {
 				} else if (c == 'T') { // assumed 'reference' to a type
 					// variable, so just "Tname;"
 					int nextSemicolon = sig.indexOf(';', start);
-					String nextbit = sig.substring(start, nextSemicolon);
+					String nextbit = sig.substring(start, nextSemicolon+1);
 					l.add(UnresolvedType.forSignature(nextbit));
 					i = nextSemicolon + 1;
 				} else {
@@ -226,16 +222,10 @@ public class MemberImpl implements Member {
 		return field(declaring, mods, UnresolvedType.forSignature(signature), name);
 	}
 
-	// public static Member field(UnresolvedType declaring, int mods, String
-	// name, UnresolvedType type) {
-	// return new MemberImpl(FIELD, declaring, mods, type, name,
-	// UnresolvedType.NONE);
-	// }
 	// OPTIMIZE do we need to call this? unless necessary the signatureToTypes()
-	// call smacks of laziness on the behalf of the caller
-	// of this method
+	// call smacks of laziness on the behalf of the caller of this method
 	public static MemberImpl method(UnresolvedType declaring, int mods, String name, String signature) {
-		Object[] pair = signatureToTypes(signature, false);
+		Object[] pair = signatureToTypes(signature);
 		return method(declaring, mods, (UnresolvedType) pair[0], name, (UnresolvedType[]) pair[1]);
 	}
 
@@ -250,7 +240,7 @@ public class MemberImpl implements Member {
 	}
 
 	public static Member pointcut(UnresolvedType declaring, String name, String signature) {
-		Object[] pair = signatureToTypes(signature, false);
+		Object[] pair = signatureToTypes(signature);
 		return pointcut(declaring, 0, (UnresolvedType) pair[0], name, (UnresolvedType[]) pair[1]);
 	}
 
@@ -261,7 +251,7 @@ public class MemberImpl implements Member {
 	public static MemberImpl method(UnresolvedType declTy, int mods, UnresolvedType rTy, String name, UnresolvedType[] paramTys) {
 		return new MemberImpl(
 		// ??? this calls <clinit> a method
-				name.equals("<init>") ? CONSTRUCTOR : METHOD, declTy, mods, rTy, name, paramTys);
+		name.equals("<init>") ? CONSTRUCTOR : METHOD, declTy, mods, rTy, name, paramTys);
 	}
 
 	private static Member pointcut(UnresolvedType declTy, int mods, UnresolvedType rTy, String name, UnresolvedType[] paramTys) {
@@ -369,7 +359,7 @@ public class MemberImpl implements Member {
 	}
 
 	public String getSignature() {
-		return signature;
+		return erasedSignature;
 	}
 
 	public int getArity() {
