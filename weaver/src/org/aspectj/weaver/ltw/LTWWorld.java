@@ -206,7 +206,7 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 		if (isRunMinimalMemorySet()) {
 			return super.isRunMinimalMemory();
 		}
-		return true;
+		return false;
 	}
 
 	// One type is completed at a time, if multiple need doing then they
