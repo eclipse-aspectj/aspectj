@@ -115,7 +115,8 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 
 	public String getDeclaredGenericSignature() {
 		if (this.genericSignature == null && isGeneric()) {
-
+			// BUG? what the hell is this doing - see testcode in MemberTestCase15.testMemberSignatureCreation() and run it
+			// off a Reflection World 
 		}
 		return genericSignature;
 	}
