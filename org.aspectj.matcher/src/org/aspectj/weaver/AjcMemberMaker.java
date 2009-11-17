@@ -235,7 +235,7 @@ public class AjcMemberMaker {
 
 	public static ResolvedMember privilegedAccessMethodForFieldGet(UnresolvedType aspectType, Member field) {
 		String sig;
-		if (field.isStatic()) {
+		if (Modifier.isStatic(field.getModifiers())) {
 			sig = "()" + field.getReturnType().getSignature();
 		} else {
 			sig = "(" + field.getDeclaringType().getSignature() + ")" + field.getReturnType().getSignature();
@@ -248,7 +248,7 @@ public class AjcMemberMaker {
 
 	public static ResolvedMember privilegedAccessMethodForFieldSet(UnresolvedType aspectType, Member field) {
 		String sig;
-		if (field.isStatic()) {
+		if (Modifier.isStatic(field.getModifiers())) {
 			sig = "(" + field.getReturnType().getSignature() + ")V";
 		} else {
 			sig = "(" + field.getDeclaringType().getSignature() + field.getReturnType().getSignature() + ")V";
@@ -272,7 +272,7 @@ public class AjcMemberMaker {
 
 	public static ResolvedMember inlineAccessMethodForMethod(UnresolvedType aspectType, ResolvedMember method) {
 		UnresolvedType[] paramTypes = method.getParameterTypes();
-		if (!method.isStatic()) {
+		if (!Modifier.isStatic(method.getModifiers())) {
 			paramTypes = UnresolvedType.insert(method.getDeclaringType(), paramTypes);
 		}
 		return new ResolvedMemberImpl(Member.METHOD, aspectType,
@@ -286,7 +286,7 @@ public class AjcMemberMaker {
 
 	public static ResolvedMember inlineAccessMethodForFieldGet(UnresolvedType aspectType, Member field) {
 		String sig;
-		if (field.isStatic()) {
+		if (Modifier.isStatic(field.getModifiers())) {
 			sig = "()" + field.getReturnType().getSignature();
 		} else {
 			sig = "(" + field.getDeclaringType().getSignature() + ")" + field.getReturnType().getSignature();
@@ -299,7 +299,7 @@ public class AjcMemberMaker {
 
 	public static ResolvedMember inlineAccessMethodForFieldSet(UnresolvedType aspectType, Member field) {
 		String sig;
-		if (field.isStatic()) {
+		if (Modifier.isStatic(field.getModifiers())) {
 			sig = "(" + field.getReturnType().getSignature() + ")V";
 		} else {
 			sig = "(" + field.getDeclaringType().getSignature() + field.getReturnType().getSignature() + ")V";
@@ -390,7 +390,7 @@ public class AjcMemberMaker {
 	public static ResolvedMember interFieldSetDispatcher(ResolvedMember field, UnresolvedType aspectType) {
 		ResolvedMember rm = new ResolvedMemberImpl(Member.METHOD, aspectType, PUBLIC_STATIC, ResolvedType.VOID, NameMangler
 				.interFieldSetDispatcher(aspectType, field.getDeclaringType(), field.getName()),
-				field.isStatic() ? new UnresolvedType[] { field.getReturnType() } : new UnresolvedType[] {
+				Modifier.isStatic(field.getModifiers()) ? new UnresolvedType[] { field.getReturnType() } : new UnresolvedType[] {
 						field.getDeclaringType(), field.getReturnType() });
 		rm.setTypeVariables(field.getTypeVariables());
 		return rm;
@@ -402,7 +402,7 @@ public class AjcMemberMaker {
 	public static ResolvedMember interFieldGetDispatcher(ResolvedMember field, UnresolvedType aspectType) {
 		ResolvedMember rm = new ResolvedMemberImpl(Member.METHOD, aspectType, PUBLIC_STATIC, field.getReturnType(), NameMangler
 				.interFieldGetDispatcher(aspectType, field.getDeclaringType(), field.getName()),
-				field.isStatic() ? UnresolvedType.NONE : new UnresolvedType[] { field.getDeclaringType() }, UnresolvedType.NONE);
+				Modifier.isStatic(field.getModifiers()) ? UnresolvedType.NONE : new UnresolvedType[] { field.getDeclaringType() }, UnresolvedType.NONE);
 		rm.setTypeVariables(field.getTypeVariables());
 		return rm;
 	}
