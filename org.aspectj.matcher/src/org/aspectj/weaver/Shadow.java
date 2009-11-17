@@ -14,6 +14,7 @@ package org.aspectj.weaver;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -70,7 +71,7 @@ public abstract class Shadow {
 		if (getKind().neverHasThis()) {
 			return false;
 		} else if (getKind().isEnclosingKind()) {
-			return !getSignature().isStatic();
+			return !Modifier.isStatic(getSignature().getModifiers());
 		} else if (enclosingShadow == null) {
 			return false;
 		} else {
@@ -109,7 +110,7 @@ public abstract class Shadow {
 		} else if (getKind().isTargetSameAsThis()) {
 			return hasThis();
 		} else {
-			return !getSignature().isStatic();
+			return !Modifier.isStatic(getSignature().getModifiers());
 		}
 	}
 
