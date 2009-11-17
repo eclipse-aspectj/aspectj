@@ -196,13 +196,17 @@ public final class LazyMethodGen implements Traceable {
 		}
 	}
 
+	private boolean isAbstractOrNative(int modifiers) {
+		return Modifier.isAbstract(modifiers) || Modifier.isNative(modifiers);
+	}
+
 	public LazyMethodGen(BcelMethod m, LazyClassGen enclosingClass) {
 		savedMethod = m.getMethod();
 		this.enclosingClass = enclosingClass;
-		if (!(m.isAbstract() || m.isNative()) && savedMethod.getCode() == null) {
+		if (!isAbstractOrNative(m.getModifiers()) && savedMethod.getCode() == null) {
 			throw new RuntimeException("bad non-abstract method with no code: " + m + " on " + enclosingClass);
 		}
-		if ((m.isAbstract() || m.isNative()) && savedMethod.getCode() != null) {
+		if (isAbstractOrNative(m.getModifiers()) && savedMethod.getCode() != null) {
 			throw new RuntimeException("bad abstract method with code: " + m + " on " + enclosingClass);
 		}
 		// this.memberView = new BcelMethod(enclosingClass.getBcelObjectType(),
