@@ -280,10 +280,6 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.isStatic();
 	}
 
-	public boolean isInterface() {
-		return realMember.isInterface();
-	}
-
 	public boolean isPrivate() {
 		return realMember.isPrivate();
 	}

@@ -72,8 +72,6 @@ public interface Member extends Comparable {
 
 	public boolean isStatic();
 
-	public boolean isInterface();
-
 	public boolean isPrivate();
 
 	/**
