@@ -22,15 +22,11 @@ import org.aspectj.weaver.Member;
 import org.aspectj.weaver.TestUtils;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.patterns.Bindings;
-import org.aspectj.weaver.patterns.FormalBinding;
-import org.aspectj.weaver.patterns.PatternParser;
-import org.aspectj.weaver.patterns.SignaturePattern;
-import org.aspectj.weaver.patterns.TestScope;
 import org.aspectj.weaver.reflect.ReflectionWorld;
 
 public class SignaturePatternTestCase extends PatternsTestCase {
 
+	@Override
 	public World getWorld() {
 		return new ReflectionWorld(true, this.getClass().getClassLoader());
 	}
@@ -65,7 +61,53 @@ public class SignaturePatternTestCase extends PatternsTestCase {
 		checkMatch(makeMethodPat("* *(..) throws *..IOException, !*..Clone*"), NONE, BOTH);
 		checkMatch(makeMethodPat("* *(..) throws !*..IOException"), NO_EXCEPTIONS, M);
 	}
+/*
+	public void testInstanceMethodMatchSpeed() throws IOException {
+		// Member objectToString = TestUtils.methodFromString("java.lang.String java.lang.Object.toString()");
+		Member objectToString = TestUtils.methodFromString(
+				"java.lang.String java.lang.String.replaceFirst(java.lang.String,java.lang.String)").resolve(world);
+		SignaturePattern signaturePattern = makeMethodPat("* *(..))");
+		signaturePattern = signaturePattern.resolveBindings(new TestScope(world, new FormalBinding[0]), new Bindings(0));
+		for (int i = 0; i < 1000; i++) {
+			boolean matches = signaturePattern.matches(objectToString, world, false);
+		}
+		long stime = System.currentTimeMillis();
+		for (int i = 0; i < 2000000; i++) {
+			boolean matches = signaturePattern.matches(objectToString, world, false);
+		}
+		long etime = System.currentTimeMillis();
+		System.out.println("Took " + (etime - stime) + "ms for 2,000,000");// 4081
 
+		signaturePattern = makeMethodPat("* *())");
+		signaturePattern = signaturePattern.resolveBindings(new TestScope(world, new FormalBinding[0]), new Bindings(0));
+		for (int i = 0; i < 1000; i++) {
+			boolean matches = signaturePattern.matches(objectToString, world, false);
+		}
+		stime = System.currentTimeMillis();
+		for (int i = 0; i < 2000000; i++) {
+			boolean matches = signaturePattern.matches(objectToString, world, false);
+		}
+		etime = System.currentTimeMillis();
+		System.out.println("Took " + (etime - stime) + "ms for 2,000,000");// 4081
+	}
+
+	public void testInstanceMethodMatchSpeed2() throws IOException {
+		// Member objectToString = TestUtils.methodFromString("java.lang.String java.lang.Object.toString()");
+		Member objectToString = TestUtils.methodFromString(
+				"java.lang.String java.lang.String.replaceFirst(java.lang.String,java.lang.String)").resolve(world);
+		SignaturePattern signaturePattern = makeMethodPat("!void *(..))");
+		signaturePattern = signaturePattern.resolveBindings(new TestScope(world, new FormalBinding[0]), new Bindings(0));
+		for (int i = 0; i < 1000; i++) {
+			boolean matches = signaturePattern.matches(objectToString, world, false);
+		}
+		long stime = System.currentTimeMillis();
+		for (int i = 0; i < 2000000; i++) {
+			boolean matches = signaturePattern.matches(objectToString, world, false);
+		}
+		long etime = System.currentTimeMillis();
+		System.out.println("Took " + (etime - stime) + "ms for 2,000,000");// 4081
+	}
+*/
 	public void testInstanceMethodMatch() throws IOException {
 		Member objectToString = TestUtils.methodFromString("java.lang.String java.lang.Object.toString()");
 		Member integerToString = TestUtils.methodFromString("java.lang.String java.lang.Integer.toString()");
