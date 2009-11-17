@@ -625,10 +625,6 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		return Modifier.isProtected(modifiers);
 	}
 
-	public boolean isNative() {
-		return Modifier.isNative(modifiers);
-	}
-
 	public boolean isDefault() {
 		return !(isPublic() || isProtected() || isPrivate());
 	}
