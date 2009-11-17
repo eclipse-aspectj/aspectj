@@ -119,7 +119,7 @@ public class WorldTestCase extends CommonWorldTests {
 		assertNotNull("iterator doesn't have clone", clone);
 		// AV: JRockit Object.clone() is not native.. corrupted test here:
 		// modifiersTest(clone, Modifier.PROTECTED | Modifier.NATIVE);
-		assertTrue("should be protected" + clone.toString(), clone.isProtected());
+		assertTrue("should be protected" + clone.toString(), Modifier.isProtected(clone.getModifiers()));
 		exceptionsTest(clone, UnresolvedType.forNames(new String[] { "java.lang.CloneNotSupportedException" }));
 
 		interfacesTest(iter, ResolvedType.NONE);
