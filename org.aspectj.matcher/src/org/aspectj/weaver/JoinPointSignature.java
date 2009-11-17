@@ -169,11 +169,7 @@ public class JoinPointSignature implements ResolvedMember {
 	public boolean isProtected() {
 		return realMember.isProtected();
 	}
-
-	public boolean isNative() {
-		return realMember.isNative();
-	}
-
+	
 	public boolean isDefault() {
 		return realMember.isDefault();
 	}

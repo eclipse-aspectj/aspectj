@@ -34,25 +34,21 @@ public interface Member extends Comparable {
 	public static final AnnotationAJ[][] NO_PARAMETER_ANNOTATIONXS = new AnnotationAJ[][] {};
 	public static final ResolvedType[][] NO_PARAMETER_ANNOTATION_TYPES = new ResolvedType[][] {};
 
+	/**
+	 * @return the kind of member from those listed as MemberKind instances
+	 */
 	public MemberKind getKind();
-
-	public ResolvedMember resolve(World world);
-
-	public int compareTo(Object other);
-
-	public UnresolvedType getDeclaringType();
-
-	public UnresolvedType getReturnType();
-
-	public UnresolvedType getGenericReturnType();
-
-	public UnresolvedType[] getGenericParameterTypes();
-
-	public UnresolvedType getType();
 
 	public String getName();
 
+	public UnresolvedType getDeclaringType();
+
 	public UnresolvedType[] getParameterTypes();
+	public UnresolvedType[] getGenericParameterTypes();
+
+	public UnresolvedType getType();
+	public UnresolvedType getReturnType();
+	public UnresolvedType getGenericReturnType();
 
 	/**
 	 * Return full signature, including return type, e.g. "()LFastCar;". For a signature without the return type, use
@@ -92,4 +88,9 @@ public interface Member extends Comparable {
 	public String[] getParameterNames(World world);
 
 	public UnresolvedType[] getExceptions(World world);
+
+	public ResolvedMember resolve(World world);
+
+	public int compareTo(Object other);
+
 }
