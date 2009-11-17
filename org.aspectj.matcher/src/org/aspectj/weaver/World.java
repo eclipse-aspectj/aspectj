@@ -911,7 +911,7 @@ public abstract class World implements Dump.INode {
 
 		private static boolean debug = false;
 
-		private boolean demotionSystemActive = true;
+		private boolean demotionSystemActive;
 		private boolean debugDemotion = false;
 
 		// Strategy for entries in the expendable map
@@ -940,6 +940,7 @@ public abstract class World implements Dump.INode {
 		private static Trace trace = TraceFactory.getTraceFactory().getTrace(World.TypeMap.class);
 
 		TypeMap(World w) {
+			demotionSystemActive = w.isDemotionActive();
 			addedSinceLastDemote = new ArrayList<String>();
 			this.w = w;
 			memoryProfiling = false;// !w.getMessageHandler().isIgnoring(Message.
@@ -1258,6 +1259,10 @@ public abstract class World implements Dump.INode {
 
 	// --- with java5 we can get into a recursive mess if we aren't careful when
 	// resolving types (*cough* java.lang.Enum) ---
+
+	public boolean isDemotionActive() {
+		return false;
+	}
 
 	// --- this first map is for java15 delegates which may try and recursively
 	// access the same type variables.
