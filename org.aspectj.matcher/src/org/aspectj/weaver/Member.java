@@ -72,8 +72,6 @@ public interface Member extends Comparable {
 
 	public boolean isStatic();
 
-	public boolean isPrivate();
-
 	/**
 	 * Returns true iff the member is generic (NOT parameterized)
 	 */

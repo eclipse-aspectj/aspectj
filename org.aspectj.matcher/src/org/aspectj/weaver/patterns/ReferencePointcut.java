@@ -296,7 +296,7 @@ public class ReferencePointcut extends Pointcut {
 				declaringType = searchStart;
 			}
 			pointcutDec = declaringType.findPointcut(name);
-			boolean foundMatchingPointcut = (pointcutDec != null && pointcutDec.isPrivate());
+			boolean foundMatchingPointcut = (pointcutDec != null && Modifier.isPrivate(pointcutDec.getModifiers()));
 			if (!foundMatchingPointcut) {
 				pointcutDec = searchStart.findPointcut(name);
 				if (pointcutDec == null) {

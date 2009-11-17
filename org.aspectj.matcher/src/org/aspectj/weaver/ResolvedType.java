@@ -1893,7 +1893,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			return false;
 		}
 		// now have to test that itdMember is visible from targetType
-		if (itdMember.isPrivate()) {
+		if (Modifier.isPrivate(itdMember.getModifiers())) {
 			return false;
 		}
 		if (itdMember.isPublic()) {

@@ -626,7 +626,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	}
 
 	public boolean isDefault() {
-		return !(isPublic() || isProtected() || isPrivate());
+		int mods = getModifiers();
+		return !(Modifier.isPublic(mods) || Modifier.isProtected(mods) || Modifier.isPrivate(mods));
 	}
 
 	public boolean isVisible(ResolvedType fromType) {
