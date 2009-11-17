@@ -840,7 +840,7 @@ public class BcelShadow extends Shadow {
 	 */
 	public boolean arg0HoldsThis() {
 		if (getKind().isEnclosingKind()) {
-			return !getSignature().isStatic();
+			return !Modifier.isStatic(getSignature().getModifiers());
 		} else if (enclosingShadow == null) {
 			// XXX this is mostly right
 			// this doesn't do the right thing for calls in the pre part of introduced constructors.
