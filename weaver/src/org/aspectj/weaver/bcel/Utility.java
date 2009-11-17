@@ -128,11 +128,11 @@ public class Utility {
 
 	public static Instruction createSuperInvoke(InstructionFactory fact, BcelWorld world, Member signature) {
 		short kind;
-		if (signature.isInterface()) {
+		if (Modifier.isInterface(signature.getModifiers())) {
 			throw new RuntimeException("bad");
-		} else if (signature.isPrivate() || signature.getName().equals("<init>")) {
+		} else if (Modifier.isPrivate(signature.getModifiers()) || signature.getName().equals("<init>")) {
 			throw new RuntimeException("unimplemented, possibly bad");
-		} else if (signature.isStatic()) {
+		} else if (Modifier.isStatic(signature.getModifiers())) {
 			throw new RuntimeException("bad");
 		} else {
 			kind = Constants.INVOKESPECIAL;
@@ -145,11 +145,12 @@ public class Utility {
 	// XXX don't need the world now
 	public static Instruction createInvoke(InstructionFactory fact, BcelWorld world, Member signature) {
 		short kind;
-		if (signature.isInterface()) {
+		int signatureModifiers = signature.getModifiers();
+		if (Modifier.isInterface(signatureModifiers)) {
 			kind = Constants.INVOKEINTERFACE;
-		} else if (signature.isStatic()) {
+		} else if (Modifier.isStatic(signatureModifiers)) {
 			kind = Constants.INVOKESTATIC;
-		} else if (signature.isPrivate() || signature.getName().equals("<init>")) {
+		} else if (Modifier.isPrivate(signatureModifiers) || signature.getName().equals("<init>")) {
 			kind = Constants.INVOKESPECIAL;
 		} else {
 			kind = Constants.INVOKEVIRTUAL;
@@ -165,7 +166,7 @@ public class Utility {
 
 	public static Instruction createGet(InstructionFactory fact, Member signature) {
 		short kind;
-		if (signature.isStatic()) {
+		if (Modifier.isStatic(signature.getModifiers())) {
 			kind = Constants.GETSTATIC;
 		} else {
 			kind = Constants.GETFIELD;

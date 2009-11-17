@@ -619,7 +619,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		InstructionFactory fact = gen.getFactory();
 		Type fieldType = BcelWorld.makeBcelType(field.getType());
 
-		if (field.isStatic()) {
+		if (Modifier.isStatic(field.getModifiers())) {
 			il.append(InstructionFactory.createLoad(fieldType, 0));
 			il.append(fact.createFieldAccess(gen.getClassName(), field.getName(), fieldType, Constants.PUTSTATIC));
 		} else {
@@ -1792,7 +1792,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		} else if (onInterface && gen.getType().isTopmostImplementor(onType)) {
 			// wew know that we can't be static since we don't allow statics on
 			// interfaces
-			if (field.isStatic()) {
+			if (Modifier.isStatic(field.getModifiers())) {
 				throw new RuntimeException("unimplemented");
 			}
 			weaver.addInitializer(this);

@@ -681,18 +681,19 @@ class BcelClassWeaver implements IClassWeaver {
 	 * @return true if there is an overrides rather than a 'hides' relationship
 	 */
 	static boolean isVisibilityOverride(int methodMods, ResolvedMember inheritedMethod, boolean inSamePackage) {
-		if (inheritedMethod.isStatic()) {
+		int inheritedModifiers = inheritedMethod.getModifiers();
+		if (Modifier.isStatic(inheritedModifiers)) {
 			return false;
 		}
-		if (methodMods == inheritedMethod.getModifiers()) {
+		if (methodMods == inheritedModifiers) {
 			return true;
 		}
 
-		if (inheritedMethod.isPrivate()) {
+		if (Modifier.isPrivate(inheritedModifiers)) {
 			return false;
 		}
 
-		boolean isPackageVisible = !inheritedMethod.isPrivate() && !inheritedMethod.isProtected() && !inheritedMethod.isPublic();
+		boolean isPackageVisible = !Modifier.isPrivate(inheritedModifiers) && !Modifier.isProtected(inheritedModifiers) && !Modifier.isPublic(inheritedModifiers);
 		if (isPackageVisible && !inSamePackage) {
 			return false;
 		}

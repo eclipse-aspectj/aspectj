@@ -15,6 +15,8 @@
 
 package org.aspectj.weaver;
 
+import java.lang.reflect.Modifier;
+
 import junit.framework.TestCase;
 
 import org.aspectj.testing.util.TestUtil;
@@ -145,16 +147,16 @@ public class MemberTestCase extends TestCase {
     }
 
     private void isStaticTest(Member m, boolean b) {
-        assertEquals(m + " is static", b, m.isStatic());
+        assertEquals(m + " is static", b, Modifier.isStatic(m.getModifiers()));
     }
     private void isConstructorTest(Member m, boolean b) {
         assertEquals(m + " is constructor", b, m.getKind() == Member.CONSTRUCTOR);
     }
     private void isPrivateTest(Member m, boolean b) {
-        assertEquals(m + " is private", b, m.isPrivate());
+        assertEquals(m + " is private", b, Modifier.isPrivate(m.getModifiers()));
     }
     private void isInterfaceTest(Member m, boolean b) {
-        assertEquals(m + " is interface", b, m.isInterface());
+        assertEquals(m + " is interface", b, Modifier.isInterface(m.getModifiers()));
     }
     private void returnTypeTest(Member m, UnresolvedType returnType) {
         assertEquals(m + " return type", returnType, m.getReturnType());
