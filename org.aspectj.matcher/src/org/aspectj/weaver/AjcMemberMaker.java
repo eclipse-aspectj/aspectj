@@ -229,7 +229,7 @@ public class AjcMemberMaker {
 
 	public static ResolvedMember privilegedAccessMethodForMethod(UnresolvedType aspectType, ResolvedMember method) {
 		return new ResolvedMemberImpl(Member.METHOD, method.getDeclaringType(), Modifier.PUBLIC
-				| (method.isStatic() ? Modifier.STATIC : 0), method.getReturnType(), NameMangler.privilegedAccessMethodForMethod(
+				| (Modifier.isStatic(method.getModifiers()) ? Modifier.STATIC : 0), method.getReturnType(), NameMangler.privilegedAccessMethodForMethod(
 				method.getName(), method.getDeclaringType(), aspectType), method.getParameterTypes(), method.getExceptions());
 	}
 
@@ -373,7 +373,7 @@ public class AjcMemberMaker {
 
 	public static ResolvedMember interFieldInitializer(ResolvedMember field, UnresolvedType aspectType) {
 		return new ResolvedMemberImpl(Member.METHOD, aspectType, PUBLIC_STATIC, NameMangler.interFieldInitializer(aspectType, field
-				.getDeclaringType(), field.getName()), field.isStatic() ? "()V" : "(" + field.getDeclaringType().getSignature()
+				.getDeclaringType(), field.getName()), Modifier.isStatic(field.getModifiers()) ? "()V" : "(" + field.getDeclaringType().getSignature()
 				+ ")V");
 	}
 
@@ -522,7 +522,7 @@ public class AjcMemberMaker {
 	 */
 	public static ResolvedMember interMethodDispatcher(ResolvedMember meth, UnresolvedType aspectType) {
 		UnresolvedType[] paramTypes = meth.getParameterTypes();
-		if (!meth.isStatic()) {
+		if (!Modifier.isStatic(meth.getModifiers())) {
 			paramTypes = UnresolvedType.insert(meth.getDeclaringType(), paramTypes);
 		}
 
@@ -539,7 +539,7 @@ public class AjcMemberMaker {
 	 */
 	public static ResolvedMember interMethodBody(ResolvedMember meth, UnresolvedType aspectType) {
 		UnresolvedType[] paramTypes = meth.getParameterTypes();
-		if (!meth.isStatic()) {
+		if (!Modifier.isStatic(meth.getModifiers())) {
 			paramTypes = UnresolvedType.insert(meth.getDeclaringType(), paramTypes);
 		}
 
