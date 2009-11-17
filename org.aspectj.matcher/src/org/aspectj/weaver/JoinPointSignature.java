@@ -165,10 +165,6 @@ public class JoinPointSignature implements ResolvedMember {
 	public boolean isPublic() {
 		return realMember.isPublic();
 	}
-
-	public boolean isProtected() {
-		return realMember.isProtected();
-	}
 	
 	public boolean isDefault() {
 		return realMember.isDefault();

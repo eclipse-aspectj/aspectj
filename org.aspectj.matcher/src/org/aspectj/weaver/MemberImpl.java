@@ -437,7 +437,7 @@ public class MemberImpl implements Member {
 			// this is wrong if the member doesn't exist, but that doesn't
 			// matter
 			ret.add(myType);
-		} else if (isStatic() || kind == FIELD) {
+		} else if (Modifier.isStatic(modifiers) || kind == FIELD) {
 			walkUpStatic(ret, myType);
 		} else {
 			walkUp(ret, myType);

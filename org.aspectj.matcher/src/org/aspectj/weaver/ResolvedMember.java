@@ -94,8 +94,6 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 
 	public boolean isPublic();
 
-	public boolean isProtected();
-
 	public boolean isDefault();
 
 	public boolean isVisible(ResolvedType fromType);

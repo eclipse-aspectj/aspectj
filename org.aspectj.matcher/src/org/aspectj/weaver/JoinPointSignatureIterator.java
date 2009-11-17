@@ -163,7 +163,7 @@ public class JoinPointSignatureIterator implements Iterator<JoinPointSignature> 
 		if (signaturesOfMember.getKind() == Member.FIELD) {
 			return false;
 		}
-		if (signaturesOfMember.isStatic()) {
+		if (Modifier.isStatic(signaturesOfMember.getModifiers())) {
 			return false;
 		}
 		return true;

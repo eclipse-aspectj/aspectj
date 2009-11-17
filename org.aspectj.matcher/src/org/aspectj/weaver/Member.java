@@ -21,6 +21,7 @@ import java.util.Collection;
 public interface Member extends Comparable {
 
 	public static final Member[] NONE = new Member[0];
+	
 	public static final MemberKind METHOD = new MemberKind("METHOD", 1);
 	public static final MemberKind FIELD = new MemberKind("FIELD", 2);
 	public static final MemberKind CONSTRUCTOR = new MemberKind("CONSTRUCTOR", 3);

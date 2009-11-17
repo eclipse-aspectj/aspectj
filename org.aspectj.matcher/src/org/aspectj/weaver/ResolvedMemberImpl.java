@@ -152,7 +152,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		if (aMember.getKind() == Member.FIELD) {
 			return false;
 		}
-		if (aMember.isStatic()) {
+		if (Modifier.isStatic(aMember.getModifiers())) {
 			return false;
 		}
 		return true;
@@ -619,10 +619,6 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 
 	public boolean isPublic() {
 		return Modifier.isPublic(modifiers);
-	}
-
-	public boolean isProtected() {
-		return Modifier.isProtected(modifiers);
 	}
 
 	public boolean isDefault() {
