@@ -19,6 +19,7 @@ public class AllTestsAspectJ167 {
 		TestSuite suite = new TestSuite("AspectJ 1.6.7 tests");
 		// $JUnit-BEGIN$
 		suite.addTest(Ajc167Tests.suite());
+	//	suite.addTest(OverweavingTests.suite());
 		// $JUnit-END$
 		return suite;
 	}
