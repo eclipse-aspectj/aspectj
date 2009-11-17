@@ -168,7 +168,7 @@ class BcelMethod extends ResolvedMemberImpl {
 		} else {
 			UnresolvedType[] paramTypes = getParameterTypes();
 			String[] paramNames = new String[len];
-			int index = isStatic() ? 0 : 1;
+			int index = Modifier.isStatic(modifiers) ? 0 : 1;
 			for (int i = 0; i < len; i++) {
 				LocalVariable lv = varTable.getLocalVariable(index);
 				if (lv == null) {
