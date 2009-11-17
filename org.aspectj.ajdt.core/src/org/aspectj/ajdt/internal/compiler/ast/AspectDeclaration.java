@@ -867,7 +867,7 @@ public class AspectDeclaration extends TypeDeclaration {
 				new BodyGenerator() {
 					public void generate(CodeStream codeStream) {
 						// body starts here
-						if (field.isStatic()) {
+						if (Modifier.isStatic(field.getModifiers())) {
 							codeStream.getstatic(fieldBinding);
 						} else {
 							codeStream.aload_0();
@@ -907,7 +907,7 @@ public class AspectDeclaration extends TypeDeclaration {
 
 						AstUtil.generateParameterLoads(accessMethod.parameters, codeStream);
 
-						if (method.isStatic()) {
+						if (Modifier.isStatic(method.getModifiers())) {
 							codeStream.invokestatic(factory.makeMethodBinding(method));
 						} else {
 							codeStream.invokevirtual(factory.makeMethodBinding(method));
