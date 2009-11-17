@@ -1991,11 +1991,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 			return false;
 		}
-		if (parent.isStatic() && !child.isStatic()) {
+		boolean parentStatic = Modifier.isStatic(parent.getModifiers());
+		boolean childStatic = Modifier.isStatic(child.getModifiers());
+		if (parentStatic && !childStatic) {
 			world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.ITD_OVERRIDDEN_STATIC, child, parent), child
 					.getSourceLocation(), null);
 			return false;
-		} else if (child.isStatic() && !parent.isStatic()) {
+		} else if (childStatic && !parentStatic) {
 			world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.ITD_OVERIDDING_STATIC, child, parent), child
 					.getSourceLocation(), null);
 			return false;
@@ -2013,7 +2015,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// assumptions
 		// about what will have gotten through the compiler based on the normal
 		// java rules. clone goes against these...
-		if (m2.isProtected() && m2.getName().charAt(0) == 'c') {
+		if (Modifier.isProtected(m2.getModifiers()) && m2.getName().charAt(0) == 'c') {
 			UnresolvedType declaring = m2.getDeclaringType();
 			if (declaring != null) {
 				if (declaring.getName().equals("java.lang.Object") && m2.getName().equals("clone")) {
