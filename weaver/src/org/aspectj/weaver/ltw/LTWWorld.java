@@ -66,6 +66,10 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 			concurrentMapClass = null;
 		}
 	}
+	
+	public boolean isDemotionActive() {
+		return true;
+	}
 
 	/**
 	 * Build a World from a ClassLoader, for LTW support
