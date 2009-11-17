@@ -580,7 +580,7 @@ class BcelClassWeaver implements IClassWeaver {
 			// we can't be overriding a static method
 			return null;
 		}
-		if (methodThatMightBeGettingOverridden.isPrivate()) {
+		if (Modifier.isPrivate(methodThatMightBeGettingOverridden.getModifiers())) {
 			// we can't be overriding a private method
 			return null;
 		}
