@@ -883,7 +883,7 @@ public class AspectDeclaration extends TypeDeclaration {
 				new BodyGenerator() {
 					public void generate(CodeStream codeStream) {
 						// body starts here
-						if (field.isStatic()) {
+						if (Modifier.isStatic(field.getModifiers())) {
 							codeStream.load(fieldBinding.type, 0);
 							codeStream.putstatic(fieldBinding);
 						} else {
