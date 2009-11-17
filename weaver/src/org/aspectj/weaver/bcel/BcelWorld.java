@@ -552,7 +552,7 @@ public class BcelWorld extends World implements Repository {
 			// look for the method there
 			for (Iterator<ResolvedMember> iterator = appearsDeclaredBy.getMethods(true, true); iterator.hasNext();) {
 				ResolvedMember method = iterator.next();
-				if (method.isStatic()) {
+				if (Modifier.isStatic(method.getModifiers())) {
 					if (name.equals(method.getName()) && signature.equals(method.getSignature())) {
 						// we found it
 						declaringType = method.getDeclaringType();

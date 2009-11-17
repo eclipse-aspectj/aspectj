@@ -354,14 +354,14 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	private boolean enforceDecpRule3_visibilityChanges(BcelClassWeaver weaver, ResolvedType newParent, ResolvedMember superMethod,
 			LazyMethodGen subMethod) {
 		boolean cont = true;
-		if (superMethod.isPublic()) {
+		if (Modifier.isPublic(superMethod.getModifiers())) {
 			if (subMethod.isProtected() || subMethod.isDefault() || subMethod.isPrivate()) {
 				weaver.getWorld().getMessageHandler().handleMessage(
 						MessageUtil.error("Cannot reduce the visibility of the inherited method '" + superMethod + "' from "
 								+ newParent.getName(), superMethod.getSourceLocation()));
 				cont = false;
 			}
-		} else if (superMethod.isProtected()) {
+		} else if (Modifier.isProtected(superMethod.getModifiers())) {
 			if (subMethod.isDefault() || subMethod.isPrivate()) {
 				weaver.getWorld().getMessageHandler().handleMessage(
 						MessageUtil.error("Cannot reduce the visibility of the inherited method '" + superMethod + "' from "

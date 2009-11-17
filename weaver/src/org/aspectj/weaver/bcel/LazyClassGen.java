@@ -320,7 +320,7 @@ public final class LazyClassGen {
 		ResolvedMember[] fields = type.getDeclaredFields();
 		for (int i = 0; i < fields.length; i++) {
 			ResolvedMember field = fields[i];
-			if (field.getName().equals("serialVersionUID") && field.isStatic() && field.getType().equals(ResolvedType.LONG)) {
+			if (field.getName().equals("serialVersionUID") && Modifier.isStatic(field.getModifiers()) && field.getType().equals(ResolvedType.LONG)) {
 				return true;
 			}
 		}

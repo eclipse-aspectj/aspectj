@@ -178,7 +178,7 @@ public class Utility {
 
 	public static Instruction createSet(InstructionFactory fact, Member signature) {
 		short kind;
-		if (signature.isStatic()) {
+		if (Modifier.isStatic(signature.getModifiers())) {
 			kind = Constants.PUTSTATIC;
 		} else {
 			kind = Constants.PUTFIELD;
