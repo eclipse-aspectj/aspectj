@@ -2272,21 +2272,24 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				if (existing == toAdd) {
 					continue;
 				}
-				ResolvedType pointcutDeclaringType = existing.getDeclaringType().resolve(getWorld());
-				if (pointcutDeclaringType == null) {
-					throw new BCException("Pointcut declaring type is unexpectedly null.  Pointcut is " + existing.toString());
+				UnresolvedType pointcutDeclaringTypeUT = existing.getDeclaringType();
+				if (pointcutDeclaringTypeUT == null) {
+					System.err.println("DEBUG>>> Pointcut declaring type is unexpectedly null.  Pointcut is " + existing.toString());
 				}
-				if (!isVisible(existing.getModifiers(), pointcutDeclaringType, this)) {
-					// if they intended to override it but it is not visible,
-					// give them a nicer message
-					if (existing.isAbstract() && conflictingSignature(existing, toAdd)) {
-						getWorld().showMessage(
-								IMessage.ERROR,
-								WeaverMessages.format(WeaverMessages.POINTCUT_NOT_VISIBLE, existing.getDeclaringType().getName()
-										+ "." + existing.getName() + "()", this.getName()), toAdd.getSourceLocation(), null);
-						j.remove();
+				if (pointcutDeclaringTypeUT!=null) {
+					ResolvedType pointcutDeclaringType = pointcutDeclaringTypeUT.resolve(getWorld());
+					if (!isVisible(existing.getModifiers(), pointcutDeclaringType, this)) {
+						// if they intended to override it but it is not visible,
+						// give them a nicer message
+						if (existing.isAbstract() && conflictingSignature(existing, toAdd)) {
+							getWorld().showMessage(
+									IMessage.ERROR,
+									WeaverMessages.format(WeaverMessages.POINTCUT_NOT_VISIBLE, existing.getDeclaringType().getName()
+											+ "." + existing.getName() + "()", this.getName()), toAdd.getSourceLocation(), null);
+							j.remove();
+						}
+						continue;
 					}
-					continue;
 				}
 				if (conflictingSignature(existing, toAdd)) {
 					if (isOverriding) {
