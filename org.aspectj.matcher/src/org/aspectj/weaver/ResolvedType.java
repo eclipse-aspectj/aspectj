@@ -2275,7 +2275,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				UnresolvedType pointcutDeclaringTypeUT = existing.getDeclaringType();
 				if (pointcutDeclaringTypeUT == null) {
 					System.err.println("DEBUG>>> Pointcut declaring type is unexpectedly null.  Pointcut is " + existing.toString());
-				}
+				} 
 				if (pointcutDeclaringTypeUT!=null) {
 					ResolvedType pointcutDeclaringType = pointcutDeclaringTypeUT.resolve(getWorld());
 					if (!isVisible(existing.getModifiers(), pointcutDeclaringType, this)) {
