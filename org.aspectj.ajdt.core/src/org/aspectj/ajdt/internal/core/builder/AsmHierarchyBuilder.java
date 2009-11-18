@@ -283,17 +283,19 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return addToNode;
 	}
 
+	@Override
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
 		String name = new String(typeDeclaration.name);
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
-		if (typeDeclaration instanceof AspectDeclaration)
+		if (typeDeclaration instanceof AspectDeclaration) {
 			kind = IProgramElement.Kind.ASPECT;
-		else if (TypeDeclaration.kind(typeDeclaration.modifiers) == TypeDeclaration.INTERFACE_DECL)
+		} else if (TypeDeclaration.kind(typeDeclaration.modifiers) == TypeDeclaration.INTERFACE_DECL) {
 			kind = IProgramElement.Kind.INTERFACE;
-		else if (TypeDeclaration.kind(typeDeclaration.modifiers) == TypeDeclaration.ENUM_DECL)
+		} else if (TypeDeclaration.kind(typeDeclaration.modifiers) == TypeDeclaration.ENUM_DECL) {
 			kind = IProgramElement.Kind.ENUM;
-		else if (TypeDeclaration.kind(typeDeclaration.modifiers) == TypeDeclaration.ANNOTATION_TYPE_DECL)
+		} else if (TypeDeclaration.kind(typeDeclaration.modifiers) == TypeDeclaration.ANNOTATION_TYPE_DECL) {
 			kind = IProgramElement.Kind.ANNOTATION;
+		}
 
 		boolean isAnnotationStyleAspect = false;
 		// @AJ support
@@ -351,6 +353,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return true;
 	}
 
+	@Override
 	public void endVisit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
 		// Is there a package declaration to insert into the model?
 		if (packageDecl != null) {
@@ -376,19 +379,21 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	}
 
 	// ??? share impl with visit(TypeDeclaration, ..) ?
+	@Override
 	public boolean visit(TypeDeclaration memberTypeDeclaration, ClassScope scope) {
 		String name = new String(memberTypeDeclaration.name);
 
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
 		int typeDeclarationKind = TypeDeclaration.kind(memberTypeDeclaration.modifiers);
-		if (memberTypeDeclaration instanceof AspectDeclaration)
+		if (memberTypeDeclaration instanceof AspectDeclaration) {
 			kind = IProgramElement.Kind.ASPECT;
-		else if (typeDeclarationKind == TypeDeclaration.INTERFACE_DECL)
+		} else if (typeDeclarationKind == TypeDeclaration.INTERFACE_DECL) {
 			kind = IProgramElement.Kind.INTERFACE;
-		else if (typeDeclarationKind == TypeDeclaration.ENUM_DECL)
+		} else if (typeDeclarationKind == TypeDeclaration.ENUM_DECL) {
 			kind = IProgramElement.Kind.ENUM;
-		else if (typeDeclarationKind == TypeDeclaration.ANNOTATION_TYPE_DECL)
+		} else if (typeDeclarationKind == TypeDeclaration.ANNOTATION_TYPE_DECL) {
 			kind = IProgramElement.Kind.ANNOTATION;
+		}
 
 		boolean isAnnotationStyleAspect = false;
 		// @AJ support
@@ -421,10 +426,12 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return true;
 	}
 
+	@Override
 	public void endVisit(TypeDeclaration memberTypeDeclaration, ClassScope scope) {
 		stack.pop();
 	}
 
+	@Override
 	public boolean visit(TypeDeclaration memberTypeDeclaration, BlockScope scope) {
 		String fullName = "<undefined>";
 		if (memberTypeDeclaration.allocation != null && memberTypeDeclaration.allocation.type != null) {
@@ -442,12 +449,13 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		}
 
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
-		if (TypeDeclaration.kind(memberTypeDeclaration.modifiers) == TypeDeclaration.INTERFACE_DECL)
+		if (TypeDeclaration.kind(memberTypeDeclaration.modifiers) == TypeDeclaration.INTERFACE_DECL) {
 			kind = IProgramElement.Kind.INTERFACE;
-		else if (TypeDeclaration.kind(memberTypeDeclaration.modifiers) == TypeDeclaration.ENUM_DECL)
+		} else if (TypeDeclaration.kind(memberTypeDeclaration.modifiers) == TypeDeclaration.ENUM_DECL) {
 			kind = IProgramElement.Kind.ENUM;
-		else if (TypeDeclaration.kind(memberTypeDeclaration.modifiers) == TypeDeclaration.ANNOTATION_TYPE_DECL)
+		} else if (TypeDeclaration.kind(memberTypeDeclaration.modifiers) == TypeDeclaration.ANNOTATION_TYPE_DECL) {
 			kind = IProgramElement.Kind.ANNOTATION;
+		}
 
 		// @AJ support
 		boolean isAnnotationStyleAspect = false;
@@ -489,6 +497,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return true;
 	}
 
+	@Override
 	public void endVisit(TypeDeclaration memberTypeDeclaration, BlockScope scope) {
 		stack.pop();
 	}
@@ -510,6 +519,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// return (IProgramElement) stack.peek();
 	// }
 
+	@Override
 	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
 		IProgramElement peNode = null;
 		// For intertype decls, use the modifiers from the original signature,
@@ -545,7 +555,15 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			}
 			if (decl instanceof DeclareAnnotation) {
 				ResolvedType annotationType = ((DeclareAnnotation) decl).getAnnotationType();
-				peNode.setAnnotationType(annotationType.getName());
+				if (annotationType == null) {
+					String s = ((DeclareAnnotation) decl).getAnnotationString();
+					if (s != null && s.length() > 0) {
+						s = s.substring(1);
+					}
+					peNode.setAnnotationType(s);
+				} else {
+					peNode.setAnnotationType(annotationType.getName());
+				}
 			}
 		}
 		if (methodDeclaration.returnType != null) {
@@ -557,15 +575,17 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				InterTypeFieldDeclaration itfd = (InterTypeFieldDeclaration) methodDeclaration;
 				if (itfd.getRealFieldType() != null) {
 					peNode.setCorrespondingType(new String(itfd.getRealFieldType().readableName()));
-				} else
+				} else {
 					peNode.setCorrespondingType(null);
+				}
 
 				// was peNode.setCorrespondingType(methodDeclaration.returnType.toString());
 			} else {
-				if (methodDeclaration.returnType.resolvedType != null)
+				if (methodDeclaration.returnType.resolvedType != null) {
 					peNode.setCorrespondingType(new String(methodDeclaration.returnType.resolvedType.readableName()));
-				else
+				} else {
 					peNode.setCorrespondingType(null);
+				}
 			}
 		} else {
 			peNode.setCorrespondingType(null);
@@ -637,11 +657,13 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	private List genNamedPointcuts(MethodDeclaration methodDeclaration) {
 		List pointcuts = new ArrayList();
 		if (methodDeclaration instanceof AdviceDeclaration) {
-			if (((AdviceDeclaration) methodDeclaration).pointcutDesignator != null)
+			if (((AdviceDeclaration) methodDeclaration).pointcutDesignator != null) {
 				addAllNamed(((AdviceDeclaration) methodDeclaration).pointcutDesignator.getPointcut(), pointcuts);
+			}
 		} else if (methodDeclaration instanceof PointcutDeclaration) {
-			if (((PointcutDeclaration) methodDeclaration).pointcutDesignator != null)
+			if (((PointcutDeclaration) methodDeclaration).pointcutDesignator != null) {
 				addAllNamed(((PointcutDeclaration) methodDeclaration).pointcutDesignator.getPointcut(), pointcuts);
+			}
 		}
 		return pointcuts;
 	}
@@ -651,8 +673,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	 * @param pointcuts accumulator for named pointcuts
 	 */
 	private void addAllNamed(Pointcut pointcut, List pointcuts) {
-		if (pointcut == null)
+		if (pointcut == null) {
 			return;
+		}
 		if (pointcut instanceof ReferencePointcut) {
 			ReferencePointcut rp = (ReferencePointcut) pointcut;
 			pointcuts.add(rp);
@@ -687,8 +710,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		methodDeclaration.printReturnType(0, output).append(methodDeclaration.selector).append('(');
 		if (methodDeclaration.arguments != null) {
 			for (int i = 0; i < methodDeclaration.arguments.length; i++) {
-				if (i > 0)
+				if (i > 0) {
 					output.append(", "); //$NON-NLS-1$
+				}
 				methodDeclaration.arguments[i].print(0, output);
 			}
 		}
@@ -696,8 +720,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		if (methodDeclaration.thrownExceptions != null) {
 			output.append(" throws "); //$NON-NLS-1$
 			for (int i = 0; i < methodDeclaration.thrownExceptions.length; i++) {
-				if (i > 0)
+				if (i > 0) {
 					output.append(", "); //$NON-NLS-1$
+				}
 				methodDeclaration.thrownExceptions[i].print(0, output);
 			}
 		}
@@ -742,10 +767,12 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		((IProgramElement) stack.peek()).addChild(peNode);
 	}
 
+	@Override
 	public void endVisit(MethodDeclaration methodDeclaration, ClassScope scope) {
 		stack.pop();
 	}
 
+	@Override
 	public boolean visit(ImportReference importRef, CompilationUnitScope scope) {
 		int dotIndex = importRef.toString().lastIndexOf('.');
 		String currPackageImport = "";
@@ -782,6 +809,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return (ProgramElement) element.getChildren().get(hasPackageDeclaration ? 1 : 0);
 	}
 
+	@Override
 	public void endVisit(ImportReference importRef, CompilationUnitScope scope) {
 		int dotIndex = importRef.toString().lastIndexOf('.');
 		String currPackageImport = "";
@@ -802,6 +830,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return output.toString();
 	}
 
+	@Override
 	public boolean visit(FieldDeclaration fieldDeclaration, MethodScope scope) {
 		IProgramElement peNode = null;
 		if (fieldDeclaration.type == null) { // The field represents an enum
@@ -822,6 +851,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return true;
 	}
 
+	@Override
 	public void endVisit(FieldDeclaration fieldDeclaration, MethodScope scope) {
 		stack.pop();
 	}
@@ -830,8 +860,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	 * Checks if comments should be added to the model before generating.
 	 */
 	protected String generateJavadocComment(ASTNode astNode) {
-		if (buildConfig != null && !buildConfig.isGenerateJavadocsInModelMode())
+		if (buildConfig != null && !buildConfig.isGenerateJavadocsInModelMode()) {
 			return null;
+		}
 
 		// StringBuffer sb = new StringBuffer(); // !!! specify length?
 		// boolean completed = false;
@@ -853,8 +884,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 					astNode.sourceStart);
 			while (comment.length > 2) {
 				int star = CharOperation.indexOf('*', comment);
-				if (star == -1)
+				if (star == -1) {
 					return null;
+				}
 				// looking for '/**' and not '//' or '//*'
 				if (star != 0 && (comment[star - 1] == '/') && (comment[star + 1] == '*')
 						&& (star - 2 < 0 || comment[star - 2] != '/')) {
@@ -925,6 +957,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// stack.pop();
 	// }
 
+	@Override
 	public boolean visit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {
 		if ((constructorDeclaration.bits & ASTNode.IsDefaultConstructor) != 0) {
 			stack.push(null); // a little weird but does the job
@@ -935,8 +968,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		if (constructorDeclaration.arguments != null) {
 			for (int i = 0; i < constructorDeclaration.arguments.length; i++) {
 				argumentsSignature.append(constructorDeclaration.arguments[i].type);
-				if (i + 1 < constructorDeclaration.arguments.length)
+				if (i + 1 < constructorDeclaration.arguments.length) {
 					argumentsSignature.append(",");
+				}
 			}
 		}
 		argumentsSignature.append(")");
@@ -971,6 +1005,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return true;
 	}
 
+	@Override
 	public void endVisit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {
 		stack.pop();
 	}
@@ -995,8 +1030,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		output.append(constructorDeclaration.selector).append('(');
 		if (constructorDeclaration.arguments != null) {
 			for (int i = 0; i < constructorDeclaration.arguments.length; i++) {
-				if (i > 0)
+				if (i > 0) {
 					output.append(", "); //$NON-NLS-1$
+				}
 				constructorDeclaration.arguments[i].print(0, output);
 			}
 		}
@@ -1004,8 +1040,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		if (constructorDeclaration.thrownExceptions != null) {
 			output.append(" throws "); //$NON-NLS-1$
 			for (int i = 0; i < constructorDeclaration.thrownExceptions.length; i++) {
-				if (i > 0)
+				if (i > 0) {
 					output.append(", "); //$NON-NLS-1$
+				}
 				constructorDeclaration.thrownExceptions[i].print(0, output);
 			}
 		}
@@ -1033,9 +1070,11 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	 */
 	private Initializer inInitializer = null;
 
+	@Override
 	public boolean visit(Initializer initializer, MethodScope scope) {
-		if (initializer == inInitializer)
+		if (initializer == inInitializer) {
 			return false;
+		}
 		inInitializer = initializer;
 
 		IProgramElement peNode = new ProgramElement(activeStructureModel, "...", IProgramElement.Kind.INITIALIZER,
@@ -1091,12 +1130,15 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// various ASTNode types. They have no common ancestor in the
 	// hierarchy!!
 	protected int getEndLine(ASTNode n) {
-		if (n instanceof AbstractVariableDeclaration)
+		if (n instanceof AbstractVariableDeclaration) {
 			return getEndLine((AbstractVariableDeclaration) n);
-		if (n instanceof AbstractMethodDeclaration)
+		}
+		if (n instanceof AbstractMethodDeclaration) {
 			return getEndLine((AbstractMethodDeclaration) n);
-		if (n instanceof TypeDeclaration)
+		}
+		if (n instanceof TypeDeclaration) {
 			return getEndLine((TypeDeclaration) n);
+		}
 		return Util.getLineNumber(n.sourceEnd, lineseps, 0, lineseps.length - 1);
 		// return ProblemHandler.searchLineNumber(lineseps,
 		// currCompilationResult.lineSeparatorPositions,
