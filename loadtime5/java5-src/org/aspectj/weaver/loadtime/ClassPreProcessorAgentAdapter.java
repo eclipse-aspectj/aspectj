@@ -48,13 +48,10 @@ public class ClassPreProcessorAgentAdapter implements ClassFileTransformer {
 	 */
 	public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain,
 			byte[] bytes) throws IllegalClassFormatException {
-		if (classBeingRedefined == null) {
-			return s_preProcessor.preProcess(className, bytes, loader);
-		} else {
-			// FIXME av for now we skip hotswap. We should think more about that
-			new Exception("AspectJ5 does not weave hotswapped class (" + className + ")").printStackTrace();
-			return bytes;
+		if (classBeingRedefined != null) {
+			System.err.println("INFO: (Enh120375):  AspectJ attempting reweave of '"+className+"'");
 		}
+		return s_preProcessor.preProcess(className, bytes, loader);
 	}
 
 }
