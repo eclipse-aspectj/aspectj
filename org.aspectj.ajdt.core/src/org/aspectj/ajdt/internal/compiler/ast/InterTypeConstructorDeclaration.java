@@ -175,7 +175,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 
 		// Use the factory to build a semi-correct resolvedmember - then patch it up with
 		// reset calls. This is SAFE
-		ResolvedMember preIntroducedConstructorRM = world.makeResolvedMember(binding);
+		ResolvedMemberImpl preIntroducedConstructorRM = world.makeResolvedMember(binding);
 		preIntroducedConstructorRM.resetName(NameMangler.preIntroducedConstructor(aspectTypeX, targetTypeX));
 		preIntroducedConstructorRM.resetModifiers(Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL);
 		preIntroducedConstructorRM.resetReturnTypeToObjectArray();
@@ -290,7 +290,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 			return null; // We encountered a problem building the scope, don't continue - error already reported
 
 		// This signature represents what we want consumers of the targetted type to 'see'
-		ResolvedMember signature = world.makeResolvedMemberForITD(binding, onTypeBinding, interTypeScope.getRecoveryAliases());
+		ResolvedMemberImpl signature = world.makeResolvedMemberForITD(binding, onTypeBinding, interTypeScope.getRecoveryAliases());
 		signature.resetKind(Member.CONSTRUCTOR);
 		signature.resetName("<init>");
 		int resetModifiers = declaredModifiers;

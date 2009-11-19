@@ -42,6 +42,7 @@ import org.aspectj.weaver.Constants;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
@@ -199,7 +200,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		// This signature represents what we want consumers of the targetted type to 'see'
 		// must use the factory method to build it since there may be typevariables from the binding
 		// referred to in the parameters/returntype
-		ResolvedMember sig = factory.makeResolvedMemberForITD(binding, onTypeBinding, interTypeScope.getRecoveryAliases());
+		ResolvedMemberImpl sig = factory.makeResolvedMemberForITD(binding, onTypeBinding, interTypeScope.getRecoveryAliases());
 		sig.resetName(new String(declaredSelector));
 		int resetModifiers = declaredModifiers;
 		if (binding.isVarargs())

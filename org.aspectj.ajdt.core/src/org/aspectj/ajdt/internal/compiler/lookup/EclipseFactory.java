@@ -468,11 +468,11 @@ public class EclipseFactory {
 		return finishedTypeMungers;
 	}
 
-	public ResolvedMember makeResolvedMember(MethodBinding binding) {
+	public ResolvedMemberImpl makeResolvedMember(MethodBinding binding) {
 		return makeResolvedMember(binding, binding.declaringClass);
 	}
 
-	public ResolvedMember makeResolvedMember(MethodBinding binding, Shadow.Kind shadowKind) {
+	public ResolvedMemberImpl makeResolvedMember(MethodBinding binding, Shadow.Kind shadowKind) {
 		MemberKind memberKind = binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD;
 		if (shadowKind == Shadow.AdviceExecution) {
 			memberKind = Member.ADVICE;
@@ -499,11 +499,11 @@ public class EclipseFactory {
 	 * typevariables whilst the compiler was resolving types - this only happens if it is a generic itd that shares type variables
 	 * with its target type.
 	 */
-	public ResolvedMember makeResolvedMemberForITD(MethodBinding binding, TypeBinding declaringType, Map /*
+	public ResolvedMemberImpl makeResolvedMemberForITD(MethodBinding binding, TypeBinding declaringType, Map /*
 																										 * TypeVariableBinding >
 																										 * original alias name
 																										 */recoveryAliases) {
-		ResolvedMember result = null;
+		ResolvedMemberImpl result = null;
 		try {
 			typeVariablesForAliasRecovery = recoveryAliases;
 			result = makeResolvedMember(binding, declaringType);
@@ -513,11 +513,11 @@ public class EclipseFactory {
 		return result;
 	}
 
-	public ResolvedMember makeResolvedMember(MethodBinding binding, TypeBinding declaringType) {
+	public ResolvedMemberImpl makeResolvedMember(MethodBinding binding, TypeBinding declaringType) {
 		return makeResolvedMember(binding, declaringType, binding.isConstructor() ? Member.CONSTRUCTOR : Member.METHOD);
 	}
 
-	public ResolvedMember makeResolvedMember(MethodBinding binding, TypeBinding declaringType, MemberKind memberKind) {
+	public ResolvedMemberImpl makeResolvedMember(MethodBinding binding, TypeBinding declaringType, MemberKind memberKind) {
 		// System.err.println("member for: " + binding + ", " + new String(binding.declaringClass.sourceName));
 
 		// Convert the type variables and store them
