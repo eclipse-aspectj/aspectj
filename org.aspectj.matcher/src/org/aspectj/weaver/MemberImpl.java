@@ -24,8 +24,8 @@ public class MemberImpl implements Member {
 	protected MemberKind kind;
 	protected int modifiers;
 	protected String name;
-	protected UnresolvedType returnType;
 	protected UnresolvedType declaringType;
+	protected UnresolvedType returnType;
 	protected UnresolvedType[] parameterTypes;
 	private final String erasedSignature; // eg. (Ljava/util/Set;V)Ljava/lang/String;
 	private String paramSignature; // eg. (Ljava/util/Set<Ljava/lang/String;>;V)  // no return type
