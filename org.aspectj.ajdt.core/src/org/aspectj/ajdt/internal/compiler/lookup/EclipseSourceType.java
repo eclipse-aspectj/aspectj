@@ -241,7 +241,9 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 				if (amd instanceof PointcutDeclaration) {
 					PointcutDeclaration d = (PointcutDeclaration) amd;
 					ResolvedPointcutDefinition df = d.makeResolvedPointcutDefinition(factory);
-					declaredPointcuts.add(df);
+					if (df!=null) {
+						declaredPointcuts.add(df);
+					}
 				} else if (amd instanceof InterTypeDeclaration) {
 					// these are handled in a separate pass
 					continue;
