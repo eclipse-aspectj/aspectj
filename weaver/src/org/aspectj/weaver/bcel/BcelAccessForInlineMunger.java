@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.aspectj.weaver.bcel;
 
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -256,8 +257,8 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 				il.append(InstructionFactory.createLoad(type, register));
 				register += type.getSize();
 			}
-			il.append(Utility.createInvoke(factory, resolvedMember.isStatic() ? Constants.INVOKESTATIC : Constants.INVOKESPECIAL,
-					resolvedMember));
+			il.append(Utility.createInvoke(factory, Modifier.isStatic(resolvedMember.getModifiers()) ? Constants.INVOKESTATIC
+					: Constants.INVOKESPECIAL, resolvedMember));
 			il.append(InstructionFactory.createReturn(BcelWorld.makeBcelType(inlineAccessor.getReturnType())));
 
 			m_inlineAccessorBcelMethods.put(accessor, new BcelMethod(m_aspectGen.getBcelObjectType(), method.getMethod()));
@@ -334,7 +335,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 			m_inlineAccessorMethodGens.add(method);
 
 			InstructionList il = method.getBody();
-			if (resolvedMember.isStatic()) {
+			if (Modifier.isStatic(resolvedMember.getModifiers())) {
 				// field accessed is static so no "this" as accessor sole parameter
 			} else {
 				il.append(InstructionConstants.ALOAD_0);
@@ -374,7 +375,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 			m_inlineAccessorMethodGens.add(method);
 
 			InstructionList il = method.getBody();
-			if (resolvedMember.isStatic()) {
+			if (Modifier.isStatic(resolvedMember.getModifiers())) {
 				// field accessed is static so sole parameter is field value to be set
 				il.append(InstructionFactory.createLoad(BcelWorld.makeBcelType(resolvedMember.getReturnType()), 0));
 			} else {
