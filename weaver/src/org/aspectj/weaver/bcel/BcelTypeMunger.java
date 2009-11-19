@@ -598,7 +598,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		LazyMethodGen mg = makeMethodGen(gen, accessMethod);
 		InstructionList il = new InstructionList();
 		InstructionFactory fact = gen.getFactory();
-		if (field.isStatic()) {
+		if (Modifier.isStatic(field.getModifiers())) {
 			il.append(fact.createFieldAccess(gen.getClassName(), field.getName(), BcelWorld.makeBcelType(field.getType()),
 					Constants.GETSTATIC));
 		} else {
@@ -641,7 +641,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 		int pos = 0;
 
-		if (!method.isStatic()) {
+		if (!Modifier.isStatic(method.getModifiers())) {
 			il.append(InstructionConstants.ALOAD_0);
 			pos++;
 		}
@@ -856,7 +856,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				InstructionFactory fact = classGen.getFactory();
 				int pos = 0;
 
-				if (!unMangledInterMethod.isStatic()) {
+				if (!Modifier.isStatic(unMangledInterMethod.getModifiers())) {
 					body.append(InstructionFactory.createThis());
 					pos++;
 				}
@@ -1063,7 +1063,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		body = bridgeMethod.getBody();
 		fact = classGen.getFactory();
 		pos = 0;
-		if (!bridgingSetter.isStatic()) {
+		if (!Modifier.isStatic(bridgingSetter.getModifiers())) {
 			body.append(InstructionFactory.createThis());
 			pos++;
 		}
@@ -1193,7 +1193,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		body = bridgeMethod.getBody();
 		fact = clazz.getFactory();
 
-		if (!unMangledInterMethod.isStatic()) {
+		if (!Modifier.isStatic(unMangledInterMethod.getModifiers())) {
 			body.append(InstructionFactory.createThis());
 			pos++;
 		}
@@ -1341,7 +1341,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 						return false;
 					}
 				}
-				if (rm.isStatic()) {
+				if (Modifier.isStatic(rm.getModifiers())) {
 					if (rm.getArity() != 0) {
 						body.append(InstructionConstants.ALOAD_0);
 					}
@@ -1820,7 +1820,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			LazyMethodGen mg = makeMethodGen(gen, itdfieldGetter);
 			InstructionList il = new InstructionList();
 			InstructionFactory fact = gen.getFactory();
-			if (field.isStatic()) {
+			if (Modifier.isStatic(field.getModifiers())) {
 				il.append(fact.createFieldAccess(gen.getClassName(), fg.getName(), fieldType, Constants.GETSTATIC));
 			} else {
 				il.append(InstructionConstants.ALOAD_0);
@@ -1899,7 +1899,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		fact = gen.getFactory();
 		int pos = 0;
 
-		if (!bridgingSetter.isStatic()) {
+		if (!Modifier.isStatic(bridgingSetter.getModifiers())) {
 			body.append(InstructionFactory.createThis());
 			pos++;
 		}
