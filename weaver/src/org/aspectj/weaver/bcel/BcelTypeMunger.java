@@ -67,7 +67,6 @@ import org.aspectj.weaver.model.AsmRelationshipProvider;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.Pointcut;
 
-//XXX addLazyMethodGen is probably bad everywhere
 public class BcelTypeMunger extends ConcreteTypeMunger {
 
 	public BcelTypeMunger(ResolvedTypeMunger munger, ResolvedType aspectType) {
@@ -1933,7 +1932,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	 * Returns a list of type variable aliases used in this munger. For example, if the ITD is 'int I<A,B>.m(List<A> las,List<B>
 	 * lbs) {}' then this returns a list containing the strings "A" and "B".
 	 */
-	public List /* String */getTypeVariableAliases() {
+	public List<String> getTypeVariableAliases() {
 		return munger.getTypeVariableAliases();
 	}
 
