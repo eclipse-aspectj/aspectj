@@ -414,12 +414,13 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	 */
 	private boolean enforceDecpRule5_cantChangeFromStaticToNonstatic(BcelClassWeaver weaver, ISourceLocation mungerLoc,
 			ResolvedMember superMethod, LazyMethodGen subMethod) {
-		if (superMethod.isStatic() && !subMethod.isStatic()) {
+		boolean superMethodStatic = Modifier.isStatic(superMethod.getModifiers());
+		if (superMethodStatic && !subMethod.isStatic()) {
 			error(weaver, "This instance method " + subMethod.getName() + subMethod.getParameterSignature()
 					+ " cannot override the static method from " + superMethod.getDeclaringType().getName(), subMethod
 					.getSourceLocation(), new ISourceLocation[] { mungerLoc });
 			return false;
-		} else if (!superMethod.isStatic() && subMethod.isStatic()) {
+		} else if (!superMethodStatic && subMethod.isStatic()) {
 			error(weaver, "The static method " + subMethod.getName() + subMethod.getParameterSignature()
 					+ " cannot hide the instance method from " + superMethod.getDeclaringType().getName(), subMethod
 					.getSourceLocation(), new ISourceLocation[] { mungerLoc });
@@ -963,7 +964,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				InstructionFactory fact = classGen.getFactory();
 				int pos = 0;
 
-				if (!mangledInterMethod.isStatic()) {
+				if (!Modifier.isStatic(mangledInterMethod.getModifiers())) {
 					body.append(InstructionFactory.createThis());
 					pos++;
 				}
@@ -1375,7 +1376,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 			// args
 			int pos = 0;
-			if (!introduced.isStatic()) { // skip 'this' (?? can this really
+			if (!Modifier.isStatic(introduced.getModifiers())) { // skip 'this' (?? can this really
 				// happen)
 				// body.append(InstructionFactory.createThis());
 				pos++;
@@ -1852,7 +1853,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			ResolvedMember itdfieldSetter = AjcMemberMaker.interFieldInterfaceSetter(field, gen.getType(), aspectType);
 			LazyMethodGen mg1 = makeMethodGen(gen, itdfieldSetter);
 			InstructionList il1 = new InstructionList();
-			if (field.isStatic()) {
+			if (Modifier.isStatic(field.getModifiers())) {
 				il1.append(InstructionFactory.createLoad(fieldType, 0));
 				il1.append(fact.createFieldAccess(gen.getClassName(), fg.getName(), fieldType, Constants.PUTSTATIC));
 			} else {
