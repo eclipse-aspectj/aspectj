@@ -101,9 +101,6 @@ class BcelClassWeaver implements IClassWeaver {
 		BcelClassWeaver classWeaver = new BcelClassWeaver(world, clazz, shadowMungers, typeMungers, lateTypeMungers);
 		classWeaver.setReweavableMode(inReweavableMode);
 		boolean b = classWeaver.weave();
-		// System.out.println(clazz.getClassName() + ", " +
-		// clazz.getType().getWeaverState());
-		// clazz.print();
 		return b;
 	}
 
@@ -259,7 +256,7 @@ class BcelClassWeaver implements IClassWeaver {
 			onType = onType.getGenericType();
 		}
 
-		if (m.getSignature().isStatic()) {
+		if (Modifier.isStatic(m.getSignature().getModifiers())) {
 			addedClassInitializers.add(cm);
 		} else {
 			if (onType == ty.getResolvedTypeX()) {
@@ -417,8 +414,11 @@ class BcelClassWeaver implements IClassWeaver {
 		clazz.addMethodGen(bridgeMethod);
 	}
 
-	// ----
-
+	/**
+	 * Weave a class and indicate through the return value whether the class was modified.
+	 * 
+	 * @return true if the class was modified
+	 */
 	public boolean weave() {
 		if (clazz.isWoven() && !clazz.isReweavable()) {
 			world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.ALREADY_WOVEN, clazz.getType().getName()), ty
@@ -576,7 +576,7 @@ class BcelClassWeaver implements IClassWeaver {
 	private static ResolvedMember isOverriding(ResolvedType typeToCheck, ResolvedMember methodThatMightBeGettingOverridden,
 			String mname, String mrettype, int mmods, boolean inSamePackage, UnresolvedType[] methodParamsArray) {
 		// Check if we can be an override...
-		if (methodThatMightBeGettingOverridden.isStatic()) {
+		if (Modifier.isStatic(methodThatMightBeGettingOverridden.getModifiers())) {
 			// we can't be overriding a static method
 			return null;
 		}
@@ -693,7 +693,8 @@ class BcelClassWeaver implements IClassWeaver {
 			return false;
 		}
 
-		boolean isPackageVisible = !Modifier.isPrivate(inheritedModifiers) && !Modifier.isProtected(inheritedModifiers) && !Modifier.isPublic(inheritedModifiers);
+		boolean isPackageVisible = !Modifier.isPrivate(inheritedModifiers) && !Modifier.isProtected(inheritedModifiers)
+				&& !Modifier.isPublic(inheritedModifiers);
 		if (isPackageVisible && !inSamePackage) {
 			return false;
 		}
