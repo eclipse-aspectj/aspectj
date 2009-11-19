@@ -2,6 +2,14 @@
 
 <suite>
 
+  <ajc-test dir="bugs167/pr293457" title="hierarchy builder npe">
+     <compile files="com/citi/gdos/smart/applib/service/cache/CachingIntroduction.aj org/springmodules/cache/annotations/Cacheable.java" options="-1.5 -emacssym">
+     <message kind="warning" text="no match for this type name: Setter"/>
+     <message kind="error" text="Setter cannot be resolved to a type"/>
+     <message kind="error" text="The attribute modelId is undefined for the"/>
+     </compile>
+  </ajc-test>
+  
   <ajc-test dir="features167/timers/one" title="timers - 1">
     <compile files="Code.java Code2.java" outjar="code.jar" options="-1.5 -Xlint:ignore"/>
     <compile files="Asp.java" options="-1.5 -Xlint:ignore" outjar="asp.jar"/>

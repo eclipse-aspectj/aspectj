@@ -18,6 +18,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc167Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testHierarchyBuilderNPE_pr293457() {
+		runTest("hierarchy builder npe");
+	}
+	
 	public void testTimers_1() {
 		runTest("timers - 1");
 	}
