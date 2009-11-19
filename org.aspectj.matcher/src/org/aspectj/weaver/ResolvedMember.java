@@ -166,14 +166,6 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	 */
 	public boolean matches(ResolvedMember aCandidateMatch, boolean ignoreGenerics);
 
-	public void resetName(String newName);
-
-	public void resetKind(MemberKind newKind);
-
-	public void resetModifiers(int newModifiers);
-
-	public void resetReturnTypeToObjectArray();
-
 	public void evictWeavingState();
 
 	public ResolvedMember parameterizedWith(Map m, World w);

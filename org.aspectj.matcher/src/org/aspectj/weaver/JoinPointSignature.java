@@ -319,22 +319,6 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.toDebugString();
 	}
 
-	public void resetName(String newName) {
-		realMember.resetName(newName);
-	}
-
-	public void resetKind(MemberKind newKind) {
-		realMember.resetKind(newKind);
-	}
-
-	public void resetModifiers(int newModifiers) {
-		realMember.resetModifiers(newModifiers);
-	}
-
-	public void resetReturnTypeToObjectArray() {
-		realMember.resetReturnTypeToObjectArray();
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof JoinPointSignature)) {
