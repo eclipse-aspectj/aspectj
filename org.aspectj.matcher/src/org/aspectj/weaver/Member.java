@@ -71,8 +71,6 @@ public interface Member extends Comparable {
 
 	public int getModifiers();
 
-	public boolean isStatic();
-
 	/**
 	 * Returns true iff the member is generic (NOT parameterized)
 	 */

@@ -272,10 +272,6 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.isCompatibleWith(am);
 	}
 
-	public boolean isStatic() {
-		return realMember.isStatic();
-	}
-
 	public boolean canBeParameterized() {
 		return realMember.canBeParameterized();
 	}

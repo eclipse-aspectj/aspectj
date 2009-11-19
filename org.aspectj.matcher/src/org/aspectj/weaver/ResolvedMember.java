@@ -80,11 +80,11 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 
 	public ISourceLocation getSourceLocation();
 
+	public int getStart();
+	
 	public int getEnd();
 
 	public ISourceContext getSourceContext();
-
-	public int getStart();
 
 	public void setPosition(int sourceStart, int sourceEnd);
 
