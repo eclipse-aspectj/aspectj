@@ -2237,21 +2237,19 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	public List getExposedPointcuts() {
-		List ret = new ArrayList();
+		List<ResolvedMember> ret = new ArrayList<ResolvedMember>();
 		if (getSuperclass() != null) {
 			ret.addAll(getSuperclass().getExposedPointcuts());
 		}
-
-		for (Iterator<ResolvedType> i = Arrays.asList(getDeclaredInterfaces()).iterator(); i.hasNext();) {
-			ResolvedType t = i.next();
-			addPointcutsResolvingConflicts(ret, Arrays.asList(t.getDeclaredPointcuts()), false);
+		
+		for (ResolvedType type: getDeclaredInterfaces()) {
+			addPointcutsResolvingConflicts(ret, Arrays.asList(type.getDeclaredPointcuts()), false);
 		}
+		
 		addPointcutsResolvingConflicts(ret, Arrays.asList(getDeclaredPointcuts()), true);
-		for (Iterator i = ret.iterator(); i.hasNext();) {
-			ResolvedPointcutDefinition inherited = (ResolvedPointcutDefinition) i.next();
-			// System.err.println("looking at: " + inherited + " in " + this);
-			// System.err.println("            " + inherited.isAbstract() +
-			// " in " + this.isAbstract());
+		
+		for (ResolvedMember member: ret) {
+			ResolvedPointcutDefinition inherited = (ResolvedPointcutDefinition) member;
 			if (inherited != null && inherited.isAbstract()) {
 				if (!this.isAbstract()) {
 					getWorld().showMessage(IMessage.ERROR,
@@ -2260,22 +2258,18 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				}
 			}
 		}
-
 		return ret;
 	}
 
-	private void addPointcutsResolvingConflicts(List acc, List added, boolean isOverriding) {
+	private void addPointcutsResolvingConflicts(List<ResolvedMember> acc, List<ResolvedMember> added, boolean isOverriding) {
 		for (Iterator i = added.iterator(); i.hasNext();) {
 			ResolvedPointcutDefinition toAdd = (ResolvedPointcutDefinition) i.next();
 			for (Iterator j = acc.iterator(); j.hasNext();) {
 				ResolvedPointcutDefinition existing = (ResolvedPointcutDefinition) j.next();
-				if (existing == toAdd) {
+				if (toAdd==null || existing == toAdd) {
 					continue;
 				}
 				UnresolvedType pointcutDeclaringTypeUT = existing.getDeclaringType();
-				if (pointcutDeclaringTypeUT == null) {
-					System.err.println("DEBUG>>> Pointcut declaring type is unexpectedly null.  Pointcut is " + existing.toString());
-				} 
 				if (pointcutDeclaringTypeUT!=null) {
 					ResolvedType pointcutDeclaringType = pointcutDeclaringTypeUT.resolve(getWorld());
 					if (!isVisible(existing.getModifiers(), pointcutDeclaringType, this)) {
