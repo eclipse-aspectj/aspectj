@@ -85,7 +85,7 @@ public final class LazyMethodGen implements Traceable {
 	private Type[] argumentTypes;
 	// private final String[] argumentNames;
 	private String[] declaredExceptions;
-	private InstructionList body; // leaving null for abstracts
+	private InstructionList body;
 	private List<Attribute> attributes;
 	private List<AnnotationAJ> newAnnotations;
 	private AnnotationAJ[][] newParameterAnnotations;
@@ -1481,12 +1481,9 @@ public final class LazyMethodGen implements Traceable {
 
 	public void assertGoodBody() {
 		if (true) {
-			return; // only enable for debugging, consider using cheaper
+			return; // only enable for debugging
 		}
-		// toString()
-		assertGoodBody(getBody(), toString()); // definingType.getNameAsIdentifier
-		// () + "." + getName());
-		// //toString());
+		assertGoodBody(getBody(), toString());
 	}
 
 	public static void assertGoodBody(InstructionList il, String from) {
