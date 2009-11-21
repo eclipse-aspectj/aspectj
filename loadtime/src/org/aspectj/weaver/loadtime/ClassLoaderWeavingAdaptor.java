@@ -129,7 +129,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		}
 	}
 
-	protected void initialize(final ClassLoader classLoader, IWeavingContext context) {
+	public void initialize(final ClassLoader classLoader, IWeavingContext context) {
 		if (initialized) {
 			return;
 		}
