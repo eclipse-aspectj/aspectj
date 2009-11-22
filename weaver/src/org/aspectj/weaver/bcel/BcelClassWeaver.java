@@ -628,10 +628,6 @@ class BcelClassWeaver implements IClassWeaver {
 				}
 				UnresolvedType parameterType2 = methodParamsArray[p];
 
-				boolean b2 = !parameterType.resolve(w).equals(parameterType2.resolve(w));
-				if (b != b2) {
-					int stop = 1;
-				}
 				if (b) { // !parameterType.resolve(w).equals(parameterType2.resolve(w))) {
 					sameParams = false;
 				}
@@ -2109,7 +2105,7 @@ class BcelClassWeaver implements IClassWeaver {
 	 * 
 	 * @param donor the method from which we will copy (and adjust frame and jumps) instructions.
 	 * @param recipient the method the instructions will go into. Used to get the frame size so we can allocate new frame locations
-	 *        for locals in donor.
+	 *            for locals in donor.
 	 * @param frameEnv an environment to map from donor frame to recipient frame, initially populated with argument locations.
 	 * @param fact an instruction factory for recipient
 	 */
@@ -2785,17 +2781,17 @@ class BcelClassWeaver implements IClassWeaver {
 			if (canMatch(Shadow.ConstructorCall)) {
 				if (i.opcode == Constants.ANEWARRAY) {
 					// ANEWARRAY arrayInstruction = (ANEWARRAY)i;
-					ObjectType arrayType = i.getLoadClassType(clazz.getConstantPool());
+					// ObjectType arrayType = i.getLoadClassType(clazz.getConstantPool());
 					BcelShadow ctorCallShadow = BcelShadow.makeArrayConstructorCall(world, mg, ih, enclosingShadow);
 					match(ctorCallShadow, shadowAccumulator);
 				} else if (i.opcode == Constants.NEWARRAY) {
 					// NEWARRAY arrayInstruction = (NEWARRAY)i;
-					Type arrayType = i.getType();
+					// Type arrayType = i.getType();
 					BcelShadow ctorCallShadow = BcelShadow.makeArrayConstructorCall(world, mg, ih, enclosingShadow);
 					match(ctorCallShadow, shadowAccumulator);
 				} else if (i instanceof MULTIANEWARRAY) {
-					MULTIANEWARRAY arrayInstruction = (MULTIANEWARRAY) i;
-					ObjectType arrayType = arrayInstruction.getLoadClassType(clazz.getConstantPool());
+					// MULTIANEWARRAY arrayInstruction = (MULTIANEWARRAY) i;
+					// ObjectType arrayType = arrayInstruction.getLoadClassType(clazz.getConstantPool());
 					BcelShadow ctorCallShadow = BcelShadow.makeArrayConstructorCall(world, mg, ih, enclosingShadow);
 					match(ctorCallShadow, shadowAccumulator);
 				}
