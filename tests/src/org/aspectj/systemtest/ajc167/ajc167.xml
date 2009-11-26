@@ -2,6 +2,11 @@
 
 <suite>
 
+  <ajc-test dir="bugs167/pr296040" title="broken generated code">
+     <compile files="ErrorClass.java" options="-1.5" classpath="gc10rc4.jar"/>
+     <run class="ErrorClass"/>
+  </ajc-test>
+  
   <ajc-test dir="bugs167/pr293457" title="hierarchy builder npe">
      <compile files="com/citi/gdos/smart/applib/service/cache/CachingIntroduction.aj org/springmodules/cache/annotations/Cacheable.java" options="-1.5 -emacssym">
      <message kind="warning" text="no match for this type name: Setter"/>

@@ -18,6 +18,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc167Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testBrokenGeneratedCode_296040() {
+		runTest("broken generated code");
+	}
+	
 	public void testHierarchyBuilderNPE_pr293457() {
 		runTest("hierarchy builder npe");
 	}
