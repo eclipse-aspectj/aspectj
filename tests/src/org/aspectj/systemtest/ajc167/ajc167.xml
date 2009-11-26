@@ -2,6 +2,14 @@
 
 <suite>
 
+
+  <ajc-test dir="bugs167/pr296054" title="npe on broken code">
+     <compile files="Demo.java AnnotAspect.aj" options="-1.5 -emacssym">
+       <message kind="error" text="The value for"/>
+       <message kind="error" text="cannot convert"/>
+     </compile>
+  </ajc-test>
+  
   <ajc-test dir="bugs167/pr296040" title="broken generated code">
      <compile files="ErrorClass.java" options="-1.5" classpath="gc10rc4.jar"/>
      <run class="ErrorClass"/>

@@ -18,6 +18,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc167Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testNpeOnBrokenCode_296054() {
+		runTest("npe on broken code");
+	}
+	
 	public void testBrokenGeneratedCode_296040() {
 		runTest("broken generated code");
 	}
