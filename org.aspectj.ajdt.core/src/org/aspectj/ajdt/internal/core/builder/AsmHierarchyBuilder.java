@@ -283,7 +283,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return addToNode;
 	}
 
-	@Override
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
 		String name = new String(typeDeclaration.name);
 		IProgramElement.Kind kind = IProgramElement.Kind.CLASS;
@@ -353,7 +352,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return true;
 	}
 
-	@Override
 	public void endVisit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
 		// Is there a package declaration to insert into the model?
 		if (packageDecl != null) {
@@ -379,7 +377,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	}
 
 	// ??? share impl with visit(TypeDeclaration, ..) ?
-	@Override
 	public boolean visit(TypeDeclaration memberTypeDeclaration, ClassScope scope) {
 		String name = new String(memberTypeDeclaration.name);
 
@@ -426,12 +423,10 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return true;
 	}
 
-	@Override
 	public void endVisit(TypeDeclaration memberTypeDeclaration, ClassScope scope) {
 		stack.pop();
 	}
 
-	@Override
 	public boolean visit(TypeDeclaration memberTypeDeclaration, BlockScope scope) {
 		String fullName = "<undefined>";
 		if (memberTypeDeclaration.allocation != null && memberTypeDeclaration.allocation.type != null) {
@@ -497,7 +492,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return true;
 	}
 
-	@Override
 	public void endVisit(TypeDeclaration memberTypeDeclaration, BlockScope scope) {
 		stack.pop();
 	}
@@ -519,7 +513,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// return (IProgramElement) stack.peek();
 	// }
 
-	@Override
 	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
 		IProgramElement peNode = null;
 		// For intertype decls, use the modifiers from the original signature,
@@ -767,12 +760,10 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		((IProgramElement) stack.peek()).addChild(peNode);
 	}
 
-	@Override
 	public void endVisit(MethodDeclaration methodDeclaration, ClassScope scope) {
 		stack.pop();
 	}
 
-	@Override
 	public boolean visit(ImportReference importRef, CompilationUnitScope scope) {
 		int dotIndex = importRef.toString().lastIndexOf('.');
 		String currPackageImport = "";
@@ -809,7 +800,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return (ProgramElement) element.getChildren().get(hasPackageDeclaration ? 1 : 0);
 	}
 
-	@Override
 	public void endVisit(ImportReference importRef, CompilationUnitScope scope) {
 		int dotIndex = importRef.toString().lastIndexOf('.');
 		String currPackageImport = "";
@@ -830,7 +820,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return output.toString();
 	}
 
-	@Override
 	public boolean visit(FieldDeclaration fieldDeclaration, MethodScope scope) {
 		IProgramElement peNode = null;
 		if (fieldDeclaration.type == null) { // The field represents an enum
@@ -851,7 +840,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return true;
 	}
 
-	@Override
 	public void endVisit(FieldDeclaration fieldDeclaration, MethodScope scope) {
 		stack.pop();
 	}
@@ -957,7 +945,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// stack.pop();
 	// }
 
-	@Override
 	public boolean visit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {
 		if ((constructorDeclaration.bits & ASTNode.IsDefaultConstructor) != 0) {
 			stack.push(null); // a little weird but does the job
@@ -1005,7 +992,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		return true;
 	}
 
-	@Override
 	public void endVisit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {
 		stack.pop();
 	}
@@ -1070,7 +1056,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	 */
 	private Initializer inInitializer = null;
 
-	@Override
 	public boolean visit(Initializer initializer, MethodScope scope) {
 		if (initializer == inInitializer) {
 			return false;
