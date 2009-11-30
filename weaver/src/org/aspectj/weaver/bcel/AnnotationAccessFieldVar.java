@@ -15,8 +15,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.EnumElementValue;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.Type;
@@ -44,6 +45,7 @@ class AnnotationAccessFieldVar extends BcelVar {
 		this.annoFieldOfInterest = annoFieldOfInterest;
 	}
 
+	@Override
 	public void appendLoadAndConvert(InstructionList il, InstructionFactory fact, ResolvedType toType) {
 		// Only possible to do annotation field value extraction at
 		// MethodExecution
@@ -62,12 +64,27 @@ class AnnotationAccessFieldVar extends BcelVar {
 				boolean doneAndDusted = false;
 				for (Iterator iterator = vals.iterator(); iterator.hasNext();) {
 					NameValuePair object = (NameValuePair) iterator.next();
-					EnumElementValue v = (EnumElementValue) object.getValue();
-					String s = v.getEnumTypeString();
-					ResolvedType rt = toType.getWorld().resolve(UnresolvedType.forSignature(s));
-					if (rt.equals(toType)) {
-						il.append(fact.createGetStatic(rt.getName(), v.getEnumValueString(), Type.getType(rt.getSignature())));
+					Object o = object.getValue();
+					if (o instanceof EnumElementValue) {
+						EnumElementValue v = (EnumElementValue) object.getValue();
+						String s = v.getEnumTypeString();
+						ResolvedType rt = toType.getWorld().resolve(UnresolvedType.forSignature(s));
+						if (rt.equals(toType)) {
+							il.append(fact.createGetStatic(rt.getName(), v.getEnumValueString(), Type.getType(rt.getSignature())));
+							doneAndDusted = true;
+						}
+					} else if (o instanceof SimpleElementValue) {
+						// FIXASC types other than String will go bang bang at runtime
+						SimpleElementValue v = (SimpleElementValue) object.getValue();
+						il.append(fact.createConstant(v.getValueString()));
 						doneAndDusted = true;
+						// String s = v.getEnumTypeString();
+						// ResolvedType rt = toType.getWorld().resolve(UnresolvedType.forSignature(s));
+						// if (rt.equals(toType)) {
+						// il.append(fact.createGetStatic(rt.getName(), v.getEnumValueString(), Type.getType(rt.getSignature())));
+						// doneAndDusted = true;
+						// }
+						int stop = 1;
 					}
 				}
 				if (!doneAndDusted) {
@@ -91,6 +108,7 @@ class AnnotationAccessFieldVar extends BcelVar {
 		}
 	}
 
+	@Override
 	public void insertLoad(InstructionList il, InstructionFactory fact) {
 		// Only possible to do annotation field value extraction at
 		// MethodExecution
@@ -100,6 +118,7 @@ class AnnotationAccessFieldVar extends BcelVar {
 		appendLoadAndConvert(il, fact, annoFieldOfInterest);
 	}
 
+	@Override
 	public String toString() {
 		return super.toString();
 	}

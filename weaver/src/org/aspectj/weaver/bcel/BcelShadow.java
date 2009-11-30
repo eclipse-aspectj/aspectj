@@ -1592,7 +1592,7 @@ public class BcelShadow extends Shadow {
 		}
 
 		for (ResolvedType annotationType : annotations) {
-			AnnotationAccessVar accessVar = new AnnotationAccessVar(getKind(), annotationType.resolve(world), relevantType,
+			AnnotationAccessVar accessVar = new AnnotationAccessVar(this, getKind(), annotationType.resolve(world), relevantType,
 					annotationHolder);
 			kindedAnnotationVars.put(annotationType, accessVar);
 		}
@@ -1640,7 +1640,7 @@ public class BcelShadow extends Shadow {
 		for (int i = 0; i < annotations.length; i++) {
 			ResolvedType ann = annotations[i];
 			Kind k = Shadow.StaticInitialization;
-			withinAnnotationVars.put(ann, new AnnotationAccessVar(k, ann, getEnclosingType(), null));
+			withinAnnotationVars.put(ann, new AnnotationAccessVar(this, k, ann, getEnclosingType(), null));
 		}
 	}
 
@@ -1656,7 +1656,8 @@ public class BcelShadow extends Shadow {
 			ResolvedType ann = annotations[i];
 			Kind k = (getEnclosingMethod().getMemberView().getKind() == Member.CONSTRUCTOR ? Shadow.ConstructorExecution
 					: Shadow.MethodExecution);
-			withincodeAnnotationVars.put(ann, new AnnotationAccessVar(k, ann, getEnclosingType(), getEnclosingCodeSignature()));
+			withincodeAnnotationVars.put(ann,
+					new AnnotationAccessVar(this, k, ann, getEnclosingType(), getEnclosingCodeSignature()));
 		}
 	}
 

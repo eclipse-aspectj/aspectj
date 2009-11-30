@@ -320,7 +320,8 @@ public final class LazyClassGen {
 		ResolvedMember[] fields = type.getDeclaredFields();
 		for (int i = 0; i < fields.length; i++) {
 			ResolvedMember field = fields[i];
-			if (field.getName().equals("serialVersionUID") && Modifier.isStatic(field.getModifiers()) && field.getType().equals(ResolvedType.LONG)) {
+			if (field.getName().equals("serialVersionUID") && Modifier.isStatic(field.getModifiers())
+					&& field.getType().equals(ResolvedType.LONG)) {
 				return true;
 			}
 		}
@@ -926,10 +927,13 @@ public final class LazyClassGen {
 
 	// reflective thisJoinPoint support
 	private Map<BcelShadow, Field> tjpFields = new HashMap<BcelShadow, Field>();
+	Map<CacheKey, Field> annotationCachingFieldCache = new HashMap<CacheKey, Field>();
 	private int tjpFieldsCounter = -1; // -1 means not yet initialized
+	private int annoFieldsCounter = 0;
 	public static final ObjectType proceedingTjpType = new ObjectType("org.aspectj.lang.ProceedingJoinPoint");
 	public static final ObjectType tjpType = new ObjectType("org.aspectj.lang.JoinPoint");
 	public static final ObjectType staticTjpType = new ObjectType("org.aspectj.lang.JoinPoint$StaticPart");
+	public static final ObjectType typeForAnnotation = new ObjectType("java.lang.annotation.Annotation");
 	public static final ObjectType enclosingStaticTjpType = new ObjectType("org.aspectj.lang.JoinPoint$EnclosingStaticPart");
 	private static final ObjectType sigType = new ObjectType("org.aspectj.lang.Signature");
 	// private static final ObjectType slType =
@@ -991,7 +995,7 @@ public final class LazyClassGen {
 						tjpFieldsCounter = 0;
 					} else {
 						tjpFieldsCounter = Integer.parseInt(lastField.getName().substring(8)) + 1;
-						//System.out.println("tjp counter starting at " + tjpFieldsCounter);
+						// System.out.println("tjp counter starting at " + tjpFieldsCounter);
 					}
 				}
 			}
@@ -1001,6 +1005,54 @@ public final class LazyClassGen {
 		tjpField = fGen.getField();
 		tjpFields.put(shadow, tjpField);
 		return tjpField;
+	}
+
+	/**
+	 * Create a field in the type containing the shadow where the annotation retrieved during binding can be stored - for later fast
+	 * access.
+	 * 
+	 * @param shadow the shadow at which the @annotation result is being cached
+	 * @return a field
+	 */
+	public Field getAnnotationCachingField(BcelShadow shadow, ResolvedType toType) {
+		// Multiple annotation types at a shadow. A different field would be required for each
+		CacheKey cacheKey = new CacheKey(shadow, toType);
+		Field field = annotationCachingFieldCache.get(cacheKey);
+		if (field == null) {
+			// private static Annotation ajc$anno$<nnn>
+			StringBuilder sb = new StringBuilder();
+			sb.append(NameMangler.ANNOTATION_CACHE_FIELD_NAME);
+			sb.append(annoFieldsCounter++);
+			FieldGen annotationCacheField = new FieldGen(Modifier.PRIVATE | Modifier.STATIC, typeForAnnotation, sb.toString(), cp);
+			addField(annotationCacheField);
+			field = annotationCacheField.getField();
+			annotationCachingFieldCache.put(cacheKey, field);
+		}
+		return field;
+	}
+
+	static class CacheKey {
+		private BcelShadow shadow;
+		private ResolvedType annotationType;
+
+		CacheKey(BcelShadow shadow, ResolvedType annotationType) {
+			this.shadow = shadow;
+			this.annotationType = annotationType;
+		}
+
+		@Override
+		public int hashCode() {
+			return shadow.hashCode() * 37 + annotationType.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (!(other instanceof CacheKey)) {
+				return false;
+			}
+			CacheKey oCacheKey = (CacheKey) other;
+			return shadow.equals(oCacheKey.shadow) && annotationType.equals(oCacheKey.annotationType);
+		}
 	}
 
 	// FIXME ATAJ needed only for slow Aspects.aspectOf - keep or remove

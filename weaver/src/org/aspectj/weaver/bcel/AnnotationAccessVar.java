@@ -13,9 +13,12 @@
 package org.aspectj.weaver.bcel;
 
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.generic.Instruction;
+import org.aspectj.apache.bcel.generic.InstructionBranch;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
+import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.Type;
@@ -32,12 +35,15 @@ import org.aspectj.weaver.ast.Var;
  */
 public class AnnotationAccessVar extends BcelVar {
 
+	private BcelShadow shadow;
 	private Kind kind; // What kind of shadow are we at?
 	private UnresolvedType containingType; // The type upon which we want to ask for 'member'
 	private Member member; // Holds the member that has the annotations (for method/field join points)
 
-	public AnnotationAccessVar(Kind kind, ResolvedType annotationType, UnresolvedType theTargetIsStoredHere, Member sig) {
+	public AnnotationAccessVar(BcelShadow shadow, Kind kind, ResolvedType annotationType, UnresolvedType theTargetIsStoredHere,
+			Member sig) {
 		super(annotationType, 0);
+		this.shadow = shadow;
 		this.kind = kind;
 		this.containingType = theTargetIsStoredHere;
 		this.member = sig;
@@ -47,30 +53,37 @@ public class AnnotationAccessVar extends BcelVar {
 		return kind;
 	}
 
+	@Override
 	public String toString() {
 		return "AnnotationAccessVar(" + getType() + ")";
 	}
 
+	@Override
 	public Instruction createLoad(InstructionFactory fact) {
 		throw new IllegalStateException("unimplemented");
 	}
 
+	@Override
 	public Instruction createStore(InstructionFactory fact) {
 		throw new IllegalStateException("unimplemented");
 	}
 
+	@Override
 	public InstructionList createCopyFrom(InstructionFactory fact, int oldSlot) {
 		throw new IllegalStateException("unimplemented");
 	}
 
+	@Override
 	public void appendLoad(InstructionList il, InstructionFactory fact) {
 		il.append(createLoadInstructions(getType(), fact));
 	}
 
+	@Override
 	public void appendLoadAndConvert(InstructionList il, InstructionFactory fact, ResolvedType toType) {
 		il.append(createLoadInstructions(toType, fact));
 	}
 
+	@Override
 	public void insertLoad(InstructionList il, InstructionFactory fact) {
 		il.insert(createLoadInstructions(getType(), fact));
 	}
@@ -93,9 +106,10 @@ public class AnnotationAccessVar extends BcelVar {
 				((kind == Shadow.FieldGet || kind == Shadow.FieldSet) && member.getKind() == Member.METHOD)) {
 
 			Type jlrMethod = BcelWorld.makeBcelType(UnresolvedType.forSignature("Ljava/lang/reflect/Method;"));
+			Type jlAnnotation = BcelWorld.makeBcelType(UnresolvedType.forSignature("Ljava/lang/annotation/Annotation;"));
 			Type[] paramTypes = BcelWorld.makeBcelTypes(member.getParameterTypes());
 
-			il.append(fact.createConstant(BcelWorld.makeBcelType(containingType)));
+			// il.append(fact.createConstant(BcelWorld.makeBcelType(containingType)));
 
 			if (kind == Shadow.MethodCall
 					|| kind == Shadow.MethodExecution
@@ -105,16 +119,34 @@ public class AnnotationAccessVar extends BcelVar {
 					((kind == Shadow.FieldGet || kind == Shadow.FieldSet) && member.getKind() == Member.METHOD)
 					|| ((kind == Shadow.ConstructorCall || kind == Shadow.ConstructorExecution) && member.getKind() == Member.METHOD)) {
 
+				// Need to look at the cached annotation before going to fetch it again
+				Field annotationCachingField = shadow.getEnclosingClass().getAnnotationCachingField(shadow, toType);
+
+				// Basic idea here is to check if the cached field is null, if it is then initialize it, otherwise use it
+				il.append(fact
+						.createGetStatic(shadow.getEnclosingClass().getName(), annotationCachingField.getName(), jlAnnotation));
+				il.append(InstructionConstants.DUP);
+				InstructionBranch ifNonNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
+				il.append(ifNonNull);
+				il.append(InstructionConstants.POP);
+				il.append(fact.createConstant(BcelWorld.makeBcelType(containingType)));
+
 				il.append(fact.createConstant(member.getName()));
 				buildArray(il, fact, jlClass, paramTypes, 1);
-				// OPTIMIZE cache result of getDeclaredMethod and getAnnotation? Might be able to use it again if someone else needs
-				// the same annotations?
+				// OPTIMIZE cache result of getDeclaredMethod?
 				il.append(fact.createInvoke("java/lang/Class", "getDeclaredMethod", jlrMethod,
 						new Type[] { jlString, jlClassArray }, Constants.INVOKEVIRTUAL));
 				il.append(pushConstant);// fact.createConstant(new ObjectType(toType.getName())));
 				il.append(fact.createInvoke("java/lang/reflect/Method", "getAnnotation", jlaAnnotation, new Type[] { jlClass },
 						Constants.INVOKEVIRTUAL));
+				il.append(InstructionConstants.DUP);
+				il.append(fact
+						.createPutStatic(shadow.getEnclosingClass().getName(), annotationCachingField.getName(), jlAnnotation));
+				InstructionHandle ifNullElse = il.append(InstructionConstants.NOP);
+				ifNonNull.setTarget(ifNullElse);
+
 			} else { // init/preinit/ctor-call/ctor-exec
+				il.append(fact.createConstant(BcelWorld.makeBcelType(containingType)));
 				buildArray(il, fact, jlClass, paramTypes, 1);
 				Type jlrCtor = BcelWorld.makeBcelType(UnresolvedType.JAVA_LANG_REFLECT_CONSTRUCTOR);
 				// OPTIMIZE cache result of getDeclaredConstructor and getAnnotation? Might be able to use it again if someone else
@@ -201,6 +233,7 @@ public class AnnotationAccessVar extends BcelVar {
 	 * @param valueType The type from the annotation that is of interest
 	 * @return a variable that represents access to that annotation value
 	 */
+	@Override
 	public Var getAccessorForValue(ResolvedType valueType) {
 		return new AnnotationAccessFieldVar(this, valueType);
 	}
