@@ -8,16 +8,16 @@ public class CaseFive {
     o.a();
   }
 
-  @Anno("hello") public void a() {}
+  @Anno(4) public void a() {}
 
 }
 
 @Retention(RetentionPolicy.RUNTIME)
-@interface Anno { String value(); }
+@interface Anno { int value(); }
 
 aspect X {
 
-  before(String l): execution(@Anno * *(..)) && @annotation(Anno(l)) {
+  before(int l): execution(@Anno * *(..)) && @annotation(Anno(l)) {
     System.out.println(l);
   }
 }

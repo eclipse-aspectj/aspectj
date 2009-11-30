@@ -18,18 +18,35 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc167Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testOptimizingAnnotationStringValueBinding() {
+		runTest("optimizing string anno value binding");
+	}
+
+	public void testOptimizingAnnotationBinding() {
+		runTest("optimizing annotation binding");
+	}
+
+	public void testOptimizingAnnotationBindingPerfTest() {
+		runTest("optimizing annotation binding - 2");
+	}
+/*
+	public void testPerThisLTW_295092() {
+		runTest("perthis ltw");
+	}
+*/
+
 	public void testNpeOnBrokenCode_296054() {
 		runTest("npe on broken code");
 	}
-	
+
 	public void testBrokenGeneratedCode_296040() {
 		runTest("broken generated code");
 	}
-	
+
 	public void testHierarchyBuilderNPE_pr293457() {
 		runTest("hierarchy builder npe");
 	}
-	
+
 	public void testTimers_1() {
 		runTest("timers - 1");
 	}

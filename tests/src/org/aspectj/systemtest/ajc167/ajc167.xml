@@ -3,6 +3,31 @@
 <suite>
 
 
+  <ajc-test dir="bugs167/pr296501" title="optimizing string anno value binding">
+     <compile files="StringBinding.java" options="-1.5"/>
+     <run class="StringBinding">
+       <stdout>
+         <line text="hello world"/>
+       </stdout>
+     </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs167/pr296484" title="optimizing annotation binding">
+     <compile files="AnnoBinding.java" options="-1.5"/>
+     <run class="AnnoBinding"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs167/pr296484" title="optimizing annotation binding - 2">
+     <compile files="Perf.java" options="-1.5"/>
+     <run class="Perf"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs167/pr295092" title="perthis ltw">
+     <compile files="AbstractAspect.aj" options="-1.5" outjar="aspects.jar"/>
+     <compile files="Wibble.java"/>
+     <run class="Wibble" ltw="aop.xml" classpath="aspects.jar"/>
+  </ajc-test>
+
   <ajc-test dir="bugs167/pr296054" title="npe on broken code">
      <compile files="Demo.java AnnotAspect.aj" options="-1.5 -emacssym">
        <message kind="error" text="The value for"/>
