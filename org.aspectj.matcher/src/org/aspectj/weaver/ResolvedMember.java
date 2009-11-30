@@ -144,22 +144,6 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 
 	public TypeVariable[] getTypeVariables();
 
-	// /**
-	// * If this member is defined by a parameterized super-type, return the
-	// erasure
-	// * of that member.
-	// * For example:
-	// * interface I<T> { T foo(T aTea); }
-	// * class C implements I<String> {
-	// * String foo(String aString) { return "something"; }
-	// * }
-	// * The resolved member for C.foo has signature String foo(String). The
-	// * erasure of that member is Object foo(Object) -- use upper bound of type
-	// * variable.
-	// * A type is a supertype of itself.
-	// */
-	// public ResolvedMember getErasure();
-
 	/**
 	 * Returns true if this member matches the other. The matching takes into account name and parameter types only. When comparing
 	 * parameter types, we allow any type variable to match any other type variable regardless of bounds.

@@ -2266,7 +2266,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			ResolvedPointcutDefinition toAdd = (ResolvedPointcutDefinition) i.next();
 			for (Iterator j = acc.iterator(); j.hasNext();) {
 				ResolvedPointcutDefinition existing = (ResolvedPointcutDefinition) j.next();
-				if (toAdd==null || existing == toAdd) {
+				if (toAdd==null || existing==null || existing == toAdd) {
 					continue;
 				}
 				UnresolvedType pointcutDeclaringTypeUT = existing.getDeclaringType();

@@ -58,6 +58,8 @@ public class NameMangler {
 
 	public static final String INITFAILURECAUSE_FIELD_NAME = PREFIX + "initFailureCause";
 
+	public static final String ANNOTATION_CACHE_FIELD_NAME = PREFIX + "anno$";
+
 	public static boolean isSyntheticMethod(String methodName, boolean declaredInAspect) {
 		if (methodName.startsWith(PREFIX)) {
 			// it's synthetic unless it is an advice method
@@ -179,8 +181,10 @@ public class NameMangler {
 	 * This field goes on the class the field is declared onto
 	 */
 	public static String interFieldClassField(int modifiers, UnresolvedType aspectType, UnresolvedType classType, String name) {
-		if (Modifier.isPublic(modifiers))
+		// return name;
+		if (Modifier.isPublic(modifiers)) {
 			return name;
+		}
 		// ??? might want to handle case where aspect and class are in same package similar to public
 		return makeName("interField", makeVisibilityName(modifiers, aspectType), name);
 	}
@@ -221,8 +225,9 @@ public class NameMangler {
 	 * interface)
 	 */
 	public static String interMethod(int modifiers, UnresolvedType aspectType, UnresolvedType classType, String name) {
-		if (Modifier.isPublic(modifiers))
+		if (Modifier.isPublic(modifiers)) {
 			return name;
+		}
 		// ??? might want to handle case where aspect and class are in same package similar to public
 		return makeName("interMethodDispatch2", makeVisibilityName(modifiers, aspectType), name);
 	}
@@ -326,12 +331,13 @@ public class NameMangler {
 	public static String getExtractableName(Member shadowSignature) {
 		String name = shadowSignature.getName();
 		MemberKind kind = shadowSignature.getKind();
-		if (kind == Member.CONSTRUCTOR)
+		if (kind == Member.CONSTRUCTOR) {
 			return "init$";
-		else if (kind == Member.STATIC_INITIALIZATION)
+		} else if (kind == Member.STATIC_INITIALIZATION) {
 			return "clinit$";
-		else
+		} else {
 			return name;
+		}
 	}
 
 	public static String proceedMethodName(String adviceMethodName) {
