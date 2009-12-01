@@ -209,6 +209,11 @@ public class ReferenceType extends ResolvedType {
 	}
 
 	@Override
+	public String getNameAsIdentifier() {
+		return getRawName().replace('.', '_');
+	}
+
+	@Override
 	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
 		AnnotationAJ[] axs = delegate.getAnnotations();
 		if (axs == null) {
@@ -635,7 +640,7 @@ public class ReferenceType extends ResolvedType {
 		} else if (isRawType()) {
 			UnresolvedType[] paramTypes = getTypesForMemberParameterization();
 			interfaces = new ResolvedType[delegateInterfaces.length];
-			for (int i = 0,max=interfaces.length; i < max; i++) {
+			for (int i = 0, max = interfaces.length; i < max; i++) {
 				interfaces[i] = delegateInterfaces[i];
 				if (interfaces[i].isGenericType()) {
 					// a generic supertype of a raw type is replaced by its raw
