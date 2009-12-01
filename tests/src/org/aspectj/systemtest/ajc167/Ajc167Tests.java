@@ -18,6 +18,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc167Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testGenericAspectSignatures_296533() {
+		runTest("generic aspect signatures");
+	}
+
 	public void testOptimizingAnnotationStringValueBinding() {
 		runTest("optimizing string anno value binding");
 	}
@@ -29,11 +33,10 @@ public class Ajc167Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testOptimizingAnnotationBindingPerfTest() {
 		runTest("optimizing annotation binding - 2");
 	}
-/*
-	public void testPerThisLTW_295092() {
-		runTest("perthis ltw");
-	}
-*/
+
+	/*
+	 * public void testPerThisLTW_295092() { runTest("perthis ltw"); }
+	 */
 
 	public void testNpeOnBrokenCode_296054() {
 		runTest("npe on broken code");

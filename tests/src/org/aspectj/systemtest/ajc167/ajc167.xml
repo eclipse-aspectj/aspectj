@@ -3,6 +3,16 @@
 <suite>
 
 
+  <ajc-test dir="bugs167/pr296533" title="generic aspect signatures">
+     <compile files="testing/AbstractCache.aj testing/Resource.java testing/ResourceCache.aj testing/ResourceManager.java testing/TestRunner.java" options="-1.5"/>
+     <run class="testing.TestRunner">
+       <stdout>
+         <line text="Cache hits: 5"/>
+         <line text="Cache hits: 2"/>
+       </stdout>
+     </run>
+  </ajc-test>
+
   <ajc-test dir="bugs167/pr296501" title="optimizing string anno value binding">
      <compile files="StringBinding.java" options="-1.5"/>
      <run class="StringBinding">
