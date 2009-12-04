@@ -1780,115 +1780,118 @@ public class BcelWeaver {
 
 	private LazyClassGen weave(UnwovenClassFile classFile, BcelObjectType classType, boolean dump) throws IOException {
 
-		if (classType.isSynthetic()) { // Don't touch synthetic classes
-			if (dump) {
-				dumpUnchanged(classFile);
-			}
-			return null;
-		}
-		ReferenceType resolvedClassType = classType.getResolvedTypeX();
-
-		if (world.isXmlConfigured() && world.getXmlConfiguration().excludesType(resolvedClassType)) {
-			if (!world.getMessageHandler().isIgnoring(IMessage.INFO)) {
-				world.getMessageHandler().handleMessage(
-						MessageUtil.info("Type '" + resolvedClassType.getName()
-								+ "' not woven due to exclusion via XML weaver exclude section"));
-
-			}
-			if (dump) {
-				dumpUnchanged(classFile);
-			}
-			return null;
-		}
-
-		List<ShadowMunger> shadowMungers = fastMatch(shadowMungerList, resolvedClassType);
-		List<ConcreteTypeMunger> typeMungers = classType.getResolvedTypeX().getInterTypeMungers();
-
-		resolvedClassType.checkInterTypeMungers();
-
-		// Decide if we need to do actual weaving for this class
-		boolean mightNeedToWeave = shadowMungers.size() > 0 || typeMungers.size() > 0 || classType.isAspect()
-				|| world.getDeclareAnnotationOnMethods().size() > 0 || world.getDeclareAnnotationOnFields().size() > 0;
-
-		// May need bridge methods if on 1.5 and something in our hierarchy is
-		// affected by ITDs
-		boolean mightNeedBridgeMethods = world.isInJava5Mode() && !classType.isInterface()
-				&& resolvedClassType.getInterTypeMungersIncludingSupers().size() > 0;
-
-		LazyClassGen clazz = null;
-		if (mightNeedToWeave || mightNeedBridgeMethods) {
-			clazz = classType.getLazyClassGen();
-			// System.err.println("got lazy gen: " + clazz + ", " +
-			// clazz.getWeaverState());
-			try {
-				boolean isChanged = false;
-
-				if (mightNeedToWeave) {
-					isChanged = BcelClassWeaver.weave(world, clazz, shadowMungers, typeMungers, lateTypeMungerList,
-							inReweavableMode);
+		try {
+			if (classType.isSynthetic()) { // Don't touch synthetic classes
+				if (dump) {
+					dumpUnchanged(classFile);
 				}
-
-				if (mightNeedBridgeMethods) {
-					isChanged = BcelClassWeaver.calculateAnyRequiredBridgeMethods(world, clazz) || isChanged;
+				return null;
+			}
+			ReferenceType resolvedClassType = classType.getResolvedTypeX();
+	
+			if (world.isXmlConfigured() && world.getXmlConfiguration().excludesType(resolvedClassType)) {
+				if (!world.getMessageHandler().isIgnoring(IMessage.INFO)) {
+					world.getMessageHandler().handleMessage(
+							MessageUtil.info("Type '" + resolvedClassType.getName()
+									+ "' not woven due to exclusion via XML weaver exclude section"));
+	
 				}
-
-				if (isChanged) {
-					if (dump) {
-						dump(classFile, clazz);
+				if (dump) {
+					dumpUnchanged(classFile);
+				}
+				return null;
+			}
+	
+			List<ShadowMunger> shadowMungers = fastMatch(shadowMungerList, resolvedClassType);
+			List<ConcreteTypeMunger> typeMungers = classType.getResolvedTypeX().getInterTypeMungers();
+	
+			resolvedClassType.checkInterTypeMungers();
+	
+			// Decide if we need to do actual weaving for this class
+			boolean mightNeedToWeave = shadowMungers.size() > 0 || typeMungers.size() > 0 || classType.isAspect()
+					|| world.getDeclareAnnotationOnMethods().size() > 0 || world.getDeclareAnnotationOnFields().size() > 0;
+	
+			// May need bridge methods if on 1.5 and something in our hierarchy is
+			// affected by ITDs
+			boolean mightNeedBridgeMethods = world.isInJava5Mode() && !classType.isInterface()
+					&& resolvedClassType.getInterTypeMungersIncludingSupers().size() > 0;
+	
+			LazyClassGen clazz = null;
+			if (mightNeedToWeave || mightNeedBridgeMethods) {
+				clazz = classType.getLazyClassGen();
+				// System.err.println("got lazy gen: " + clazz + ", " +
+				// clazz.getWeaverState());
+				try {
+					boolean isChanged = false;
+	
+					if (mightNeedToWeave) {
+						isChanged = BcelClassWeaver.weave(world, clazz, shadowMungers, typeMungers, lateTypeMungerList,
+								inReweavableMode);
 					}
+	
+					if (mightNeedBridgeMethods) {
+						isChanged = BcelClassWeaver.calculateAnyRequiredBridgeMethods(world, clazz) || isChanged;
+					}
+	
+					if (isChanged) {
+						if (dump) {
+							dump(classFile, clazz);
+						}
+						return clazz;
+					}
+				} catch (RuntimeException re) {
+					String classDebugInfo = null;
+					try {
+						classDebugInfo = clazz.toLongString();
+					} catch (Exception e) {
+						// recover from crash whilst producing debug string
+						classDebugInfo = clazz.getClassName();
+					}
+					String messageText = "trouble in: \n" + classDebugInfo;
+					getWorld().getMessageHandler().handleMessage(new Message(messageText, IMessage.ABORT, re, null));
+				} catch (Error re) {
+					String classDebugInfo = null;
+					try {
+						classDebugInfo = clazz.toLongString();
+					} catch (Exception e) {
+						// recover from crash whilst producing debug string
+						classDebugInfo = clazz.getClassName();
+					}
+					String messageText = "trouble in: \n" + classDebugInfo;
+					getWorld().getMessageHandler().handleMessage(new Message(messageText, IMessage.ABORT, re, null));
+				}
+			}
+			// this is very odd return behavior trying to keep everyone happy
+			/*
+			 * // can we remove it from the model now? we know it contains no relationship endpoints... AsmManager asm =
+			 * world.getModelAsAsmManager(); if (asm != null) { IHierarchy model = asm.getHierarchy(); if (!classType.isAspect()) {
+			 * 
+			 * String pkgname = classType.getResolvedTypeX().getPackageName(); String tname =
+			 * classType.getResolvedTypeX().getSimpleBaseName(); IProgramElement typeElement = model.findElementForType(pkgname, tname);
+			 * if (typeElement != null) { Set deleted = new HashSet();
+			 * deleted.add(asm.getCanonicalFilePath(typeElement.getSourceLocation().getSourceFile()));
+			 * 
+			 * model.updateHandleMap(deleted); IProgramElement parent = typeElement.getParent(); // parent may have children: PACKAGE
+			 * DECL, IMPORT-REFEFERENCE, TYPE_DECL if (parent != null) { typeElement.getParent().removeChild(typeElement); //
+			 * System.out.println("Removing " + classType.getResolvedTypeX().getName() + "? " // + ); } } } }
+			 */
+			if (dump) {
+				dumpUnchanged(classFile);
+				return clazz;
+			} else {
+				// ATAJ: the class was not weaved, but since it gets there early it
+				// may have new generated inner classes
+				// attached to it to support LTW perX aspectOf support (see
+				// BcelPerClauseAspectAdder)
+				// that aggressively defines the inner <aspect>$mayHaveAspect
+				// interface.
+				if (clazz != null && !clazz.getChildClasses(world).isEmpty()) {
 					return clazz;
 				}
-			} catch (RuntimeException re) {
-				String classDebugInfo = null;
-				try {
-					classDebugInfo = clazz.toLongString();
-				} catch (Exception e) {
-					// recover from crash whilst producing debug string
-					classDebugInfo = clazz.getClassName();
-				}
-				String messageText = "trouble in: \n" + classDebugInfo;
-				getWorld().getMessageHandler().handleMessage(new Message(messageText, IMessage.ABORT, re, null));
-			} catch (Error re) {
-				String classDebugInfo = null;
-				try {
-					classDebugInfo = clazz.toLongString();
-				} catch (Exception e) {
-					// recover from crash whilst producing debug string
-					classDebugInfo = clazz.getClassName();
-				}
-				String messageText = "trouble in: \n" + classDebugInfo;
-				getWorld().getMessageHandler().handleMessage(new Message(messageText, IMessage.ABORT, re, null));
+				return null;
 			}
-		}
-		world.demote();
-		// this is very odd return behavior trying to keep everyone happy
-		/*
-		 * // can we remove it from the model now? we know it contains no relationship endpoints... AsmManager asm =
-		 * world.getModelAsAsmManager(); if (asm != null) { IHierarchy model = asm.getHierarchy(); if (!classType.isAspect()) {
-		 * 
-		 * String pkgname = classType.getResolvedTypeX().getPackageName(); String tname =
-		 * classType.getResolvedTypeX().getSimpleBaseName(); IProgramElement typeElement = model.findElementForType(pkgname, tname);
-		 * if (typeElement != null) { Set deleted = new HashSet();
-		 * deleted.add(asm.getCanonicalFilePath(typeElement.getSourceLocation().getSourceFile()));
-		 * 
-		 * model.updateHandleMap(deleted); IProgramElement parent = typeElement.getParent(); // parent may have children: PACKAGE
-		 * DECL, IMPORT-REFEFERENCE, TYPE_DECL if (parent != null) { typeElement.getParent().removeChild(typeElement); //
-		 * System.out.println("Removing " + classType.getResolvedTypeX().getName() + "? " // + ); } } } }
-		 */
-		if (dump) {
-			dumpUnchanged(classFile);
-			return clazz;
-		} else {
-			// ATAJ: the class was not weaved, but since it gets there early it
-			// may have new generated inner classes
-			// attached to it to support LTW perX aspectOf support (see
-			// BcelPerClauseAspectAdder)
-			// that aggressively defines the inner <aspect>$mayHaveAspect
-			// interface.
-			if (clazz != null && !clazz.getChildClasses(world).isEmpty()) {
-				return clazz;
-			}
-			return null;
+		} finally {
+			world.demote();
 		}
 	}
 
