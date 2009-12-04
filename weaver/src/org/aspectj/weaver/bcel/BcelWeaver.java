@@ -1875,7 +1875,7 @@ public class BcelWeaver {
 			 * DECL, IMPORT-REFEFERENCE, TYPE_DECL if (parent != null) { typeElement.getParent().removeChild(typeElement); //
 			 * System.out.println("Removing " + classType.getResolvedTypeX().getName() + "? " // + ); } } } }
 			 */
-			if (dump) {
+			if (dump) { 
 				dumpUnchanged(classFile);
 				return clazz;
 			} else {
