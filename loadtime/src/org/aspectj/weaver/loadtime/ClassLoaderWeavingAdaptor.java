@@ -678,6 +678,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			}
 			// goes on if this include did not match ("OR"ed)
 		}
+		this.bcelWorld.demote();
 		return accept;
 	}
 
