@@ -70,7 +70,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisParamAnnos;
  * <em>Exceptiontable</em>, <em>LineNumberTable</em>, <em>LocalVariableTable</em>, <em>InnerClasses</em> and <em>Synthetic</em>
  * attributes are supported. The <em>Unknown</em> attribute stands for non-standard-attributes.
  * 
- * @version $Id: Attribute.java,v 1.8 2009/11/13 17:40:59 aclement Exp $
+ * @version $Id: Attribute.java,v 1.9 2009/12/09 18:01:31 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see ConstantValue
  * @see SourceFile
@@ -181,30 +181,6 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
 	public final ConstantPool getConstantPool() {
 		return cpool;
 	}
-
-	// /**
-	// * Use copy() if you want to have a deep copy(), ie. with all references copied correctly.
-	// *
-	// * @return shallow copy of this attribute
-	// */
-	// @Override
-	// public Object clone() {
-	// Object o = null;
-	//
-	// try {
-	// o = super.clone();
-	// } catch (CloneNotSupportedException e) {
-	// e.printStackTrace(); // Never occurs
-	// }
-	//
-	// return o;
-	// }
-
-	//
-	// /**
-	// * @return deep copy of this attribute
-	// */
-	// public abstract Attribute copy(ConstantPool constant_pool);
 
 	@Override
 	public String toString() {
