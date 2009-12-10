@@ -270,12 +270,14 @@ public class ConcreteAspectCodeGen {
 	// hierarchy that have not been
 	// concretized.
 	private void getOutstandingAbstractMethodsHelper(ResolvedType type, Map collector) {
-		if (type == null)
+		if (type == null) {
 			return;
+		}
 		// Get to the top
 		if (!type.equals(ResolvedType.OBJECT)) {
-			if (type.getSuperclass() != null)
+			if (type.getSuperclass() != null) {
 				getOutstandingAbstractMethodsHelper(type.getSuperclass(), collector);
+			}
 		}
 		ResolvedMember[] rms = type.getDeclaredMethods();
 		if (rms != null) {
@@ -309,8 +311,9 @@ public class ConcreteAspectCodeGen {
 
 	private boolean hasPointcutAnnotation(ResolvedMember member) {
 		AnnotationAJ[] as = member.getAnnotations();
-		if (as == null || as.length == 0)
+		if (as == null || as.length == 0) {
 			return false;
+		}
 		for (int i = 0; i < as.length; i++) {
 			if (as[i].getTypeSignature().equals("Lorg/aspectj/lang/annotation/Pointcut;")) {
 				return true;
@@ -440,7 +443,7 @@ public class ConcreteAspectCodeGen {
 		// register the fresh new class into the world repository as it does not
 		// exist on the classpath anywhere
 		JavaClass jc = cg.getJavaClass((BcelWorld) world);
-		((BcelWorld) world).addSourceObjectType(jc);
+		((BcelWorld) world).addSourceObjectType(jc, true);
 
 		return jc.getBytes();
 	}

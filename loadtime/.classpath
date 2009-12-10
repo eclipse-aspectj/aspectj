@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="/lib/bcel/bcel.jar" sourcepath="/lib/bcel/bcel-src.zip"/>
 	<classpathentry kind="lib" path="/lib/ext/jrockit/jrockit.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.aspectj.matcher"/>
+	<classpathentry kind="lib" path="/lib/aspectj/lib/aspectjrt.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

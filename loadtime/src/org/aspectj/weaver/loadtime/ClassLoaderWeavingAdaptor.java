@@ -63,10 +63,21 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	private List m_dumpTypePattern = new ArrayList();
 	private boolean m_dumpBefore = false;
 	private boolean dumpDirPerClassloader = false;
-	private List m_includeTypePattern = new ArrayList();
-	private List m_excludeTypePattern = new ArrayList();
-	private List m_includeStartsWith = new ArrayList();
-	private List m_excludeStartsWith = new ArrayList();
+
+	private boolean hasExcludes = false;
+	private List<TypePattern> excludeTypePattern = new ArrayList<TypePattern>(); // anything
+	private List<String> excludeStartsWith = new ArrayList<String>(); // com.foo..*
+	private List<String> excludeStarDotDotStar = new ArrayList<String>(); // *..*CGLIB*
+	private List<String> excludeExactName = new ArrayList<String>(); // com.foo.Bar
+	private List<String> excludeEndsWith = new ArrayList<String>(); // com.foo.Bar
+	private List<String[]> excludeSpecial = new ArrayList<String[]>();
+
+	private boolean hasIncludes = false;
+	private List<TypePattern> includeTypePattern = new ArrayList<TypePattern>();
+	private List<String> m_includeStartsWith = new ArrayList<String>();
+	private List<String> includeExactName = new ArrayList<String>();
+	private boolean includeStar = false;
+
 	private List m_aspectExcludeTypePattern = new ArrayList();
 	private List m_aspectExcludeStartsWith = new ArrayList();
 	private List m_aspectIncludeTypePattern = new ArrayList();
@@ -135,7 +146,6 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		}
 
 		boolean success = true;
-		// if (trace.isTraceEnabled()) trace.enter("initialize",this,new Object[] { classLoader, context });
 
 		this.weavingContext = context;
 		if (weavingContext == null) {
@@ -155,9 +165,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			return;
 		}
 
-		bcelWorld = new LTWWorld(classLoader, weavingContext, // TODO when the world works in terms of the context, we can remove
-				// the loader...
-				getMessageHandler(), null);
+		// TODO when the world works in terms of the context, we can remove the loader
+		bcelWorld = new LTWWorld(classLoader, weavingContext, getMessageHandler(), null);
 
 		weaver = new BcelWeaver(bcelWorld);
 
@@ -371,6 +380,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 				bcelWorld.getLint().loadDefaultProperties();
 			} else {
 				bcelWorld.getLint().setAll(weaverOption.lint);
+				if (weaverOption.lint.equals("ignore")) {
+					bcelWorld.setAllLintIgnored();
+				}
 			}
 		}
 		// TODO proceedOnError option
@@ -474,7 +486,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 						break;
 					}
 
-					((BcelWorld) weaver.getWorld()).addSourceObjectType(Utility.makeJavaClass(concreteAspect.name, gen.getBytes()));
+					((BcelWorld) weaver.getWorld()).addSourceObjectType(Utility.makeJavaClass(concreteAspect.name, gen.getBytes()),
+							true);
 
 					concreteAspects.add(gen);
 
@@ -534,7 +547,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	}
 
 	/**
-	 * Register the include / exclude filters We duplicate simple patterns in startWith filters that will allow faster matching
+	 * Register the include / exclude filters. We duplicate simple patterns in startWith filters that will allow faster matching
 	 * without ResolvedType
 	 * 
 	 * @param weaver
@@ -546,38 +559,120 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
 			Definition definition = (Definition) iterator.next();
 			for (Iterator iterator1 = definition.getIncludePatterns().iterator(); iterator1.hasNext();) {
+				hasIncludes = true;
 				String include = (String) iterator1.next();
-				TypePattern includePattern = new PatternParser(include).parseTypePattern();
-				m_includeTypePattern.add(includePattern);
 				fastMatchInfo = looksLikeStartsWith(include);
 				if (fastMatchInfo != null) {
 					m_includeStartsWith.add(fastMatchInfo);
+				} else if (include.equals("*")) {
+					includeStar = true;
+				} else if ((fastMatchInfo = looksLikeExactName(include)) != null) {
+					includeExactName.add(fastMatchInfo);
+				} else {
+					TypePattern includePattern = new PatternParser(include).parseTypePattern();
+					includeTypePattern.add(includePattern);
 				}
 			}
 			for (Iterator iterator1 = definition.getExcludePatterns().iterator(); iterator1.hasNext();) {
+				hasExcludes = true;
 				String exclude = (String) iterator1.next();
-				TypePattern excludePattern = new PatternParser(exclude).parseTypePattern();
-				m_excludeTypePattern.add(excludePattern);
 				fastMatchInfo = looksLikeStartsWith(exclude);
 				if (fastMatchInfo != null) {
-					m_excludeStartsWith.add(fastMatchInfo);
+					excludeStartsWith.add(fastMatchInfo);
+				} else if ((fastMatchInfo = looksLikeStarDotDotStarExclude(exclude)) != null) {
+					excludeStarDotDotStar.add(fastMatchInfo);
+				} else if ((fastMatchInfo = looksLikeExactName(exclude)) != null) {
+					excludeExactName.add(exclude);
+				} else if ((fastMatchInfo = looksLikeEndsWith(exclude)) != null) {
+					excludeEndsWith.add(fastMatchInfo);
+				} else if (exclude
+						.equals("org.codehaus.groovy..* && !org.codehaus.groovy.grails.web.servlet.mvc.SimpleGrailsController*")) {
+					// TODO need a more sophisticated analysis here, to allow for similar situations
+					excludeSpecial.add(new String[] { "org.codehaus.groovy.",
+							"org.codehaus.groovy.grails.web.servlet.mvc.SimpleGrailsController" });
+					// for the related test:
+					// } else if (exclude.equals("testdata..* && !testdata.sub.Oran*")) {
+					// excludeSpecial.add(new String[] { "testdata.", "testdata.sub.Oran" });
+				} else {
+					TypePattern excludePattern = new PatternParser(exclude).parseTypePattern();
+					excludeTypePattern.add(excludePattern);
 				}
 			}
 		}
 	}
 
 	/**
-	 * Checks if the type pattern can be handled as a startswith check
+	 * Checks if the pattern looks like "*..*XXXX*" and if so returns XXXX. This will enable fast name matching of CGLIB exclusion
 	 * 
-	 * TODO AV - enhance to support "char.sss" ie FQN direclty (match iff equals) we could also add support for "*..*charss"
-	 * endsWith style?
-	 * 
-	 * @param typePattern
-	 * @return null if not possible, or the startWith sequence to test against
+	 */
+	private String looksLikeStarDotDotStarExclude(String typePattern) {
+		if (!typePattern.startsWith("*..*")) {
+			return null;
+		}
+		if (!typePattern.endsWith("*")) {
+			return null;
+		}
+		String subPattern = typePattern.substring(4, typePattern.length() - 1);
+		if (hasStarDot(subPattern, 0)) {
+			return null;
+		}
+		return subPattern.replace('$', '.');
+	}
+
+	/**
+	 * Checks if the pattern looks like "com.foo.Bar" - an exact name
+	 */
+	private String looksLikeExactName(String typePattern) {
+		if (hasSpaceAnnotationPlus(typePattern, 0) || typePattern.indexOf("*") != -1) {
+			return null;
+		}
+		return typePattern.replace('$', '.');
+	}
+
+	/**
+	 * Checks if the pattern looks like "*Exception"
+	 */
+	private String looksLikeEndsWith(String typePattern) {
+		if (typePattern.charAt(0) != '*') {
+			return null;
+		}
+		if (hasSpaceAnnotationPlus(typePattern, 1) || hasStarDot(typePattern, 1)) {
+			return null;
+		}
+		return typePattern.substring(1).replace('$', '.');
+	}
+
+	/**
+	 * Determine if something in the string is going to affect our ability to optimize. Checks for: ' ' '@' '+'
+	 */
+	private boolean hasSpaceAnnotationPlus(String string, int pos) {
+		for (int i = pos, max = string.length(); i < max; i++) {
+			char ch = string.charAt(i);
+			if (ch == ' ' || ch == '@' || ch == '+') {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Determine if something in the string is going to affect our ability to optimize. Checks for: '*' '.'
+	 */
+	private boolean hasStarDot(String string, int pos) {
+		for (int i = pos, max = string.length(); i < max; i++) {
+			char ch = string.charAt(i);
+			if (ch == '*' || ch == '.') {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Checks if the type pattern looks like "com.foo..*"
 	 */
 	private String looksLikeStartsWith(String typePattern) {
-		if (typePattern.indexOf('@') >= 0 || typePattern.indexOf('+') >= 0 || typePattern.indexOf(' ') >= 0
-				|| typePattern.charAt(typePattern.length() - 1) != '*') {
+		if (hasSpaceAnnotationPlus(typePattern, 0) || typePattern.charAt(typePattern.length() - 1) != '*') {
 			return null;
 		}
 		// now must looks like with "charsss..*" or "cha.rss..*" etc
@@ -586,9 +681,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		int length = typePattern.length();
 		if (typePattern.endsWith("..*") && length > 3) {
 			if (typePattern.indexOf("..") == length - 3 // no ".." before last sequence
-					&& typePattern.indexOf('*') == length - 1) { // no "*" before last sequence
-				return typePattern.substring(0, length - 2).replace('$', '.');
-				// ie "charsss." or "char.rss." etc
+					&& typePattern.indexOf('*') == length - 1) { // no earlier '*'
+				return typePattern.substring(0, length - 2).replace('$', '.'); // "charsss." or "char.rss." etc
 			}
 		}
 		return null;
@@ -618,67 +712,120 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		}
 	}
 
+	/**
+	 * Determine whether a type should be accepted for weaving, by checking it against any includes/excludes.
+	 * 
+	 * @param className the name of the type to possibly accept
+	 * @param bytes the bytecode for the type (in case we need to look inside, eg. annotations)
+	 * @return true if it should be accepted for weaving
+	 */
 	@Override
 	protected boolean accept(String className, byte[] bytes) {
-		// avoid ResolvedType if not needed
-		if (m_excludeTypePattern.isEmpty() && m_includeTypePattern.isEmpty()) {
+
+		if (!hasExcludes && !hasIncludes) {
 			return true;
 		}
 
 		// still try to avoid ResolvedType if we have simple patterns
 		String fastClassName = className.replace('/', '.').replace('$', '.');
-		for (int i = 0; i < m_excludeStartsWith.size(); i++) {
-			if (fastClassName.startsWith((String) m_excludeStartsWith.get(i))) {
+		for (String excludeStartsWithString : excludeStartsWith) {
+			if (fastClassName.startsWith(excludeStartsWithString)) {
 				return false;
+			}
+		}
+
+		// Fast exclusion of patterns like: "*..*CGLIB*"
+		if (!excludeStarDotDotStar.isEmpty()) {
+			for (String namePiece : excludeStarDotDotStar) {
+				int index = fastClassName.lastIndexOf('.');
+				if (fastClassName.indexOf(namePiece, index + 1) != -1) {
+					return false;
+				}
+			}
+		}
+
+		if (!excludeEndsWith.isEmpty()) {
+			for (String lastPiece : excludeEndsWith) {
+				if (fastClassName.endsWith(lastPiece)) {
+					return false;
+				}
+			}
+		}
+
+		// Fast exclusion of exact names
+		if (!excludeExactName.isEmpty()) {
+			for (String name : excludeExactName) {
+				if (fastClassName.equals(name)) {
+					return false;
+				}
+			}
+		}
+
+		if (!excludeSpecial.isEmpty()) {
+			for (String[] entry : excludeSpecial) {
+				String excludeThese = entry[0];
+				String exceptThese = entry[1];
+				if (fastClassName.startsWith(excludeThese) && !fastClassName.startsWith(exceptThese)) {
+					return false;
+				}
 			}
 		}
 
 		/*
 		 * Bug 120363 If we have an exclude pattern that cannot be matched using "starts with" then we cannot fast accept
 		 */
-		if (m_excludeTypePattern.isEmpty()) {
-			boolean fastAccept = false;// defaults to false if no fast include
-			for (int i = 0; i < m_includeStartsWith.size(); i++) {
-				fastAccept = fastClassName.startsWith((String) m_includeStartsWith.get(i));
-				if (fastAccept) {
-					break;
+		boolean didSomeIncludeMatching = false;
+		if (excludeTypePattern.isEmpty()) {
+			if (includeStar) {
+				return true;
+			}
+			if (!includeExactName.isEmpty()) {
+				didSomeIncludeMatching = true;
+				for (String exactname : includeExactName) {
+					if (fastClassName.equals(exactname)) {
+						return true;
+					}
 				}
 			}
-		}
-
-		// needs further analysis
-		// TODO AV - needs refactoring
-		// during LTW this calling resolve at that stage is BAD as we do have the bytecode from the classloader hook
-		// but still go thru resolve that will do a getResourcesAsStream on disk
-		// this is also problematic for jit stub which are not on disk - as often underlying infra
-		// does returns null or some other info for getResourceAsStream (f.e. WLS 9 CR248491)
-		// Instead I parse the given bytecode. But this also means it will be parsed again in
-		// new WeavingClassFileProvider() from WeavingAdaptor.getWovenBytes()...
-
-		ensureDelegateInitialized(className, bytes);
-		ResolvedType classInfo = delegateForCurrentClass.getResolvedTypeX();// BAD:
-		// weaver.getWorld().resolve(UnresolvedType.forName(
-		// className), true);
-
-		// exclude are "AND"ed
-		for (Iterator iterator = m_excludeTypePattern.iterator(); iterator.hasNext();) {
-			TypePattern typePattern = (TypePattern) iterator.next();
-			if (typePattern.matchesStatically(classInfo)) {
-				// exclude match - skip
-				return false;
+			boolean fastAccept = false;// defaults to false if no fast include
+			for (int i = 0; i < m_includeStartsWith.size(); i++) {
+				didSomeIncludeMatching = true;
+				fastAccept = fastClassName.startsWith(m_includeStartsWith.get(i));
+				if (fastAccept) {
+					return true;
+				}
+			}
+			// We may have processed all patterns now... check that and return
+			if (includeTypePattern.isEmpty()) {
+				return !didSomeIncludeMatching;
 			}
 		}
-		// include are "OR"ed
-		boolean accept = true;// defaults to true if no include
-		for (Iterator iterator = m_includeTypePattern.iterator(); iterator.hasNext();) {
-			TypePattern typePattern = (TypePattern) iterator.next();
-			accept = typePattern.matchesStatically(classInfo);
-			if (accept) {
-				break;
+
+		boolean accept;
+		try {
+			ensureDelegateInitialized(className, bytes);
+
+			ResolvedType classInfo = delegateForCurrentClass.getResolvedTypeX();
+
+			// exclude are "AND"ed
+			for (TypePattern typePattern : excludeTypePattern) {
+				if (typePattern.matchesStatically(classInfo)) {
+					// exclude match - skip
+					return false;
+				}
 			}
-			// goes on if this include did not match ("OR"ed)
+			// include are "OR"ed
+			accept = !didSomeIncludeMatching; // only true if no includes at all
+			for (TypePattern typePattern : includeTypePattern) {
+				accept = typePattern.matchesStatically(classInfo);
+				if (accept) {
+					break;
+				}
+				// goes on if this include did not match ("OR"ed)
+			}
+		} finally {
+			this.bcelWorld.demote();
 		}
-		this.bcelWorld.demote();
 		return accept;
 	}
 
