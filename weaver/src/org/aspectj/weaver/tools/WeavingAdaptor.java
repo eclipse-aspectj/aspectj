@@ -53,7 +53,6 @@ import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
-import org.aspectj.weaver.bcel.Utility;
 
 // OPTIMIZE add guards for all the debug/info/etc
 /**
@@ -84,7 +83,7 @@ public class WeavingAdaptor implements IMessageContext {
 	private boolean abortOnError = false;
 	protected GeneratedClassHandler generatedClassHandler;
 	protected Map generatedClasses = new HashMap(); /* String -> UnwovenClassFile */
-	protected BcelObjectType delegateForCurrentClass; // lazily initialized, should be used to prevent parsing bytecode multiple
+	public BcelObjectType delegateForCurrentClass; // lazily initialized, should be used to prevent parsing bytecode multiple
 	// times
 
 	private boolean haveWarnedOnJavax = false;
@@ -293,6 +292,8 @@ public class WeavingAdaptor implements IMessageContext {
 				return bytes;
 			}
 
+			boolean debugOn = !messageHandler.isIgnoring(Message.DEBUG);
+
 			try {
 				delegateForCurrentClass = null;
 				name = name.replace('/', '.');
@@ -303,21 +304,27 @@ public class WeavingAdaptor implements IMessageContext {
 						// a valid aspectOf()/hasAspect() generated in them. However - if they are excluded
 						// (via include/exclude in aop.xml) they really should only get aspectOf()/hasAspect()
 						// and not be included in the full set of aspects being applied by 'this' weaver
-						debug("weaving '" + name + "'");
-						bytes = getWovenBytes(name, bytes);
-					} else if (shouldWeaveAnnotationStyleAspect(name, bytes)) {
-						if (mustWeave) {
-							if (bcelWorld.getLint().mustWeaveXmlDefinedAspects.isEnabled()) {
-								bcelWorld.getLint().mustWeaveXmlDefinedAspects.signal(name, null);
-							}
+						if (debugOn) {
+							debug("weaving '" + name + "'");
 						}
-						// an @AspectJ aspect needs to be at least munged by the aspectOf munger
-						debug("weaving '" + name + "'");
-						bytes = getAtAspectJAspectBytes(name, bytes);
-					} else {
+						bytes = getWovenBytes(name, bytes);
+						// temporarily out - searching for @Aspect annotated types is a slow thing to do - we should
+						// expect the user to name them if they want them woven - just like code style
+						// } else if (shouldWeaveAnnotationStyleAspect(name, bytes)) {
+						// if (mustWeave) {
+						// if (bcelWorld.getLint().mustWeaveXmlDefinedAspects.isEnabled()) {
+						// bcelWorld.getLint().mustWeaveXmlDefinedAspects.signal(name, null);
+						// }
+						// }
+						// // an @AspectJ aspect needs to be at least munged by the aspectOf munger
+						// if (debugOn) {
+						// debug("weaving '" + name + "'");
+						// }
+						// bytes = getAtAspectJAspectBytes(name, bytes);
+					} else if (debugOn) {
 						debug("not weaving '" + name + "'");
 					}
-				} else {
+				} else if (debugOn) {
 					debug("cannot weave '" + name + "'");
 				}
 			} finally {
@@ -351,43 +358,45 @@ public class WeavingAdaptor implements IMessageContext {
 	}
 
 	private boolean shouldWeaveName(String name) {
-		if ((weavingSpecialTypes & INITIALIZED) == 0) {
-			weavingSpecialTypes |= INITIALIZED;
-			// initialize it
-			Properties p = weaver.getWorld().getExtraConfiguration();
-			if (p != null) {
-				boolean b = p.getProperty(World.xsetWEAVE_JAVA_PACKAGES, "false").equalsIgnoreCase("true");
-				if (b) {
-					weavingSpecialTypes |= WEAVE_JAVA_PACKAGE;
-				}
-				b = p.getProperty(World.xsetWEAVE_JAVAX_PACKAGES, "false").equalsIgnoreCase("true");
-				if (b) {
-					weavingSpecialTypes |= WEAVE_JAVAX_PACKAGE;
+		if ("osj".indexOf(name.charAt(0)) != -1) {
+			if ((weavingSpecialTypes & INITIALIZED) == 0) {
+				weavingSpecialTypes |= INITIALIZED;
+				// initialize it
+				Properties p = weaver.getWorld().getExtraConfiguration();
+				if (p != null) {
+					boolean b = p.getProperty(World.xsetWEAVE_JAVA_PACKAGES, "false").equalsIgnoreCase("true");
+					if (b) {
+						weavingSpecialTypes |= WEAVE_JAVA_PACKAGE;
+					}
+					b = p.getProperty(World.xsetWEAVE_JAVAX_PACKAGES, "false").equalsIgnoreCase("true");
+					if (b) {
+						weavingSpecialTypes |= WEAVE_JAVAX_PACKAGE;
+					}
 				}
 			}
-		}
-		if (name.startsWith("org.aspectj.")) {
-			return false;
-		}
-		if (name.startsWith("sun.reflect.")) {// JDK reflect
-			return false;
-		}
-		if (name.startsWith("javax.")) {
-			if ((weavingSpecialTypes & WEAVE_JAVAX_PACKAGE) != 0) {
-				return true;
-			} else {
-				if (!haveWarnedOnJavax) {
-					haveWarnedOnJavax = true;
-					warn("javax.* types are not being woven because the weaver option '-Xset:weaveJavaxPackages=true' has not been specified");
-				}
+			if (name.startsWith("org.aspectj.")) {
 				return false;
 			}
-		}
-		if (name.startsWith("java.")) {
-			if ((weavingSpecialTypes & WEAVE_JAVA_PACKAGE) != 0) {
-				return true;
-			} else {
+			if (name.startsWith("sun.reflect.")) {// JDK reflect
 				return false;
+			}
+			if (name.startsWith("javax.")) {
+				if ((weavingSpecialTypes & WEAVE_JAVAX_PACKAGE) != 0) {
+					return true;
+				} else {
+					if (!haveWarnedOnJavax) {
+						haveWarnedOnJavax = true;
+						warn("javax.* types are not being woven because the weaver option '-Xset:weaveJavaxPackages=true' has not been specified");
+					}
+					return false;
+				}
+			}
+			if (name.startsWith("java.")) {
+				if ((weavingSpecialTypes & WEAVE_JAVA_PACKAGE) != 0) {
+					return true;
+				} else {
+					return false;
+				}
 			}
 		}
 		// boolean should = !(name.startsWith("org.aspectj.")
@@ -432,7 +441,8 @@ public class WeavingAdaptor implements IMessageContext {
 
 	protected void ensureDelegateInitialized(String name, byte[] bytes) {
 		if (delegateForCurrentClass == null) {
-			delegateForCurrentClass = ((BcelWorld) weaver.getWorld()).addSourceObjectType(Utility.makeJavaClass(name, bytes));
+			BcelWorld world = (BcelWorld) weaver.getWorld();
+			delegateForCurrentClass = world.addSourceObjectType(name, bytes, false);
 		}
 	}
 

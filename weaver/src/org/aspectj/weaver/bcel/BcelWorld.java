@@ -374,12 +374,12 @@ public class BcelWorld extends World implements Repository {
 		if (jc == null) {
 			return null;
 		} else {
-			return buildBcelDelegate(ty, jc, false);
+			return buildBcelDelegate(ty, jc, false, false);
 		}
 	}
 
-	public BcelObjectType buildBcelDelegate(ReferenceType type, JavaClass jc, boolean exposedToWeaver) {
-		BcelObjectType ret = new BcelObjectType(type, jc, exposedToWeaver);
+	public BcelObjectType buildBcelDelegate(ReferenceType type, JavaClass jc, boolean artificial, boolean exposedToWeaver) {
+		BcelObjectType ret = new BcelObjectType(type, jc, artificial, exposedToWeaver);
 		return ret;
 	}
 
@@ -420,11 +420,22 @@ public class BcelWorld extends World implements Repository {
 		}
 	}
 
-	public BcelObjectType addSourceObjectType(JavaClass jc) {
+	// public BcelObjectType addSourceObjectType(JavaClass jc) {
+	// return addSourceObjectType(jc.getClassName(), jc, -1);
+	// }
+
+	public BcelObjectType addSourceObjectType(JavaClass jc, boolean artificial) {
+		return addSourceObjectType(jc.getClassName(), jc, artificial);
+	}
+
+	public BcelObjectType addSourceObjectType(String classname, JavaClass jc, boolean artificial) {
 		BcelObjectType ret = null;
+		if (!jc.getClassName().equals(classname)) {
+			throw new RuntimeException(jc.getClassName() + "!=" + classname);
+		}
 		String signature = UnresolvedType.forName(jc.getClassName()).getSignature();
 
-		Object fromTheMap = typeMap.get(signature);
+		ResolvedType fromTheMap = typeMap.get(signature);
 
 		if (fromTheMap != null && !(fromTheMap instanceof ReferenceType)) {
 			// what on earth is it then? See pr 112243
@@ -439,7 +450,7 @@ public class BcelWorld extends World implements Repository {
 		if (nameTypeX == null) {
 			if (jc.isGeneric() && isInJava5Mode()) {
 				nameTypeX = ReferenceType.fromTypeX(UnresolvedType.forRawTypeName(jc.getClassName()), this);
-				ret = buildBcelDelegate(nameTypeX, jc, true);
+				ret = buildBcelDelegate(nameTypeX, jc, artificial, true);
 				ReferenceType genericRefType = new ReferenceType(UnresolvedType.forGenericTypeSignature(signature, ret
 						.getDeclaredGenericSignature()), this);
 				nameTypeX.setDelegate(ret);
@@ -448,11 +459,63 @@ public class BcelWorld extends World implements Repository {
 				typeMap.put(signature, nameTypeX);
 			} else {
 				nameTypeX = new ReferenceType(signature, this);
-				ret = buildBcelDelegate(nameTypeX, jc, true);
+				ret = buildBcelDelegate(nameTypeX, jc, artificial, true);
 				typeMap.put(signature, nameTypeX);
 			}
 		} else {
-			ret = buildBcelDelegate(nameTypeX, jc, true);
+			ret = buildBcelDelegate(nameTypeX, jc, artificial, true);
+		}
+		return ret;
+	}
+
+	public BcelObjectType addSourceObjectType(String classname, byte[] bytes, boolean artificial) {
+		BcelObjectType ret = null;
+		String signature = UnresolvedType.forName(classname).getSignature();
+
+		ResolvedType fromTheMap = typeMap.get(signature);
+
+		if (fromTheMap != null && !(fromTheMap instanceof ReferenceType)) {
+			// what on earth is it then? See pr 112243
+			StringBuffer exceptionText = new StringBuffer();
+			exceptionText.append("Found invalid (not a ReferenceType) entry in the type map. ");
+			exceptionText.append("Signature=[" + signature + "] Found=[" + fromTheMap + "] Class=[" + fromTheMap.getClass() + "]");
+			throw new BCException(exceptionText.toString());
+		}
+
+		ReferenceType nameTypeX = (ReferenceType) fromTheMap;
+
+		if (nameTypeX == null) {
+			JavaClass jc = Utility.makeJavaClass(classname, bytes);
+			if (jc.isGeneric() && isInJava5Mode()) {
+				nameTypeX = ReferenceType.fromTypeX(UnresolvedType.forRawTypeName(jc.getClassName()), this);
+				ret = buildBcelDelegate(nameTypeX, jc, artificial, true);
+				ReferenceType genericRefType = new ReferenceType(UnresolvedType.forGenericTypeSignature(signature, ret
+						.getDeclaredGenericSignature()), this);
+				nameTypeX.setDelegate(ret);
+				genericRefType.setDelegate(ret);
+				nameTypeX.setGenericType(genericRefType);
+				typeMap.put(signature, nameTypeX);
+			} else {
+				nameTypeX = new ReferenceType(signature, this);
+				ret = buildBcelDelegate(nameTypeX, jc, artificial, true);
+				typeMap.put(signature, nameTypeX);
+			}
+		} else {
+			Object o = nameTypeX.getDelegate();
+			if (!(o instanceof BcelObjectType)) {
+				throw new IllegalStateException("For " + classname + " should be BcelObjectType, but is " + o.getClass());
+			}
+			ret = (BcelObjectType) o;
+			// byte[] bs = ret.javaClass.getBytes();
+			// if (bs.length != bytes.length) {
+			// throw new RuntimeException("Shit");
+			// }
+			if (ret.isArtificial()) {
+				// System.out.println("Rebuilding " + nameTypeX.getName());
+				ret = buildBcelDelegate(nameTypeX, Utility.makeJavaClass(classname, bytes), artificial, true);
+			} else {
+				ret.setExposedToWeaver(true);
+			}
 		}
 		return ret;
 	}
@@ -1026,6 +1089,10 @@ public class BcelWorld extends World implements Repository {
 			}
 			return excluded;
 		}
+	}
+
+	public TypeMap getTypeMap() {
+		return typeMap;
 	}
 
 }

@@ -68,6 +68,7 @@ import org.aspectj.weaver.patterns.PerClause;
 
 public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	public JavaClass javaClass;
+	private boolean artificial; // Was the BcelObject built from an artificial set of bytes? Or from the real ondisk stuff?
 	private LazyClassGen lazyClassGen = null; // set lazily if it's an aspect
 
 	private int modifiers;
@@ -135,9 +136,10 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	 * that's a bigger piece of work. XXX
 	 */
 
-	BcelObjectType(ReferenceType resolvedTypeX, JavaClass javaClass, boolean exposedToWeaver) {
+	BcelObjectType(ReferenceType resolvedTypeX, JavaClass javaClass, boolean artificial, boolean exposedToWeaver) {
 		super(resolvedTypeX, exposedToWeaver);
 		this.javaClass = javaClass;
+		this.artificial = artificial;
 		initializeFromJavaclass();
 
 		// ATAJ: set the delegate right now for @AJ pointcut, else it is done
@@ -163,8 +165,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	}
 
 	// repeat initialization
-	public void setJavaClass(JavaClass newclass) {
+	public void setJavaClass(JavaClass newclass, boolean artificial) {
 		this.javaClass = newclass;
+		this.artificial = artificial;
 		resetState();
 		initializeFromJavaclass();
 	}
@@ -473,6 +476,10 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 	public JavaClass getJavaClass() {
 		return javaClass;
+	}
+
+	public boolean isArtificial() {
+		return artificial;
 	}
 
 	public void resetState() {
@@ -933,6 +940,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 				fields[i].evictWeavingState();
 			}
 			javaClass = null;
+
+			this.artificial = true;
 			// setSourceContext(SourceContextImpl.UNKNOWN_SOURCE_CONTEXT); //
 			// bit naughty
 			// interfaces=null; // force reinit - may get us the right
@@ -958,5 +967,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	@Override
 	public boolean copySourceContext() {
 		return false;
+	}
+
+	public void setExposedToWeaver(boolean b) {
+		exposedToWeaver = b;
 	}
 }

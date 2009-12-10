@@ -186,10 +186,10 @@ public class BcelWeaver {
 			if (wsi != null && wsi.isReweavable()) {
 				BcelObjectType classType = getClassType(type.getName());
 				JavaClass wovenJavaClass = classType.getJavaClass();
-				JavaClass unwovenJavaClass = Utility.makeJavaClass(wovenJavaClass.getFileName(), wsi
-						.getUnwovenClassFileData(wovenJavaClass.getBytes()));
+				byte[] bytes = wsi.getUnwovenClassFileData(wovenJavaClass.getBytes());
+				JavaClass unwovenJavaClass = Utility.makeJavaClass(wovenJavaClass.getFileName(), bytes);
 				world.storeClass(unwovenJavaClass);
-				classType.setJavaClass(unwovenJavaClass);
+				classType.setJavaClass(unwovenJavaClass, true);
 				// classType.setJavaClass(Utility.makeJavaClass(classType.
 				// getJavaClass().getFileName(),
 				// wsi.getUnwovenClassFileData(classType.getJavaClass().getBytes(
@@ -263,11 +263,12 @@ public class BcelWeaver {
 				}
 
 				// FIXME ASC performance? of this alternative soln.
+				int size = (int) entry.getSize();
 				ClassParser parser = new ClassParser(new ByteArrayInputStream(FileUtil.readAsByteArray(inStream)), entry.getName());
 				JavaClass jc = parser.parse();
 				inStream.closeEntry();
 
-				ResolvedType type = world.addSourceObjectType(jc).getResolvedTypeX();
+				ResolvedType type = world.addSourceObjectType(jc, false).getResolvedTypeX();
 				type.setBinaryPath(inFile.getAbsolutePath());
 				if (type.isAspect()) {
 					addedAspects.add(type);
@@ -301,7 +302,7 @@ public class BcelWeaver {
 	private void addIfAspect(byte[] bytes, String name, List<ResolvedType> toList, File dir) throws IOException {
 		ClassParser parser = new ClassParser(new ByteArrayInputStream(bytes), name);
 		JavaClass jc = parser.parse();
-		ResolvedType type = world.addSourceObjectType(jc).getResolvedTypeX();
+		ResolvedType type = world.addSourceObjectType(jc, false).getResolvedTypeX();
 		String typeName = type.getName().replace('.', File.separatorChar);
 		int end = name.lastIndexOf(typeName + ".class");
 		String binaryPath = null;
@@ -454,7 +455,7 @@ public class BcelWeaver {
 		// classFile)) {
 		// // throw new RuntimeException(classFile.getClassName());
 		// }
-		ReferenceType type = world.addSourceObjectType(classFile.getJavaClass()).getResolvedTypeX();
+		ReferenceType type = world.addSourceObjectType(classFile.getJavaClass(), false).getResolvedTypeX();
 		if (fromInpath) {
 			type.setBinaryPath(classFile.getFilename());
 		}
@@ -1437,7 +1438,8 @@ public class BcelWeaver {
 		ResolvedType superclassType = resolvedTypeToWeave.getSuperclass();
 		String superclassTypename = (superclassType == null ? null : superclassType.getName());
 
-		if (superclassType != null && !superclassType.isTypeHierarchyComplete() && superclassType.isExposedToWeaver()) { // typesForWeaving.contains(superclassTypename))																							// {
+		if (superclassType != null && !superclassType.isTypeHierarchyComplete() && superclassType.isExposedToWeaver()) { // typesForWeaving.contains(superclassTypename))
+			// // {
 			weaveParentsFor(typesForWeaving, superclassTypename, superclassType);
 		}
 
@@ -1514,8 +1516,9 @@ public class BcelWeaver {
 			// ().getFileName(), wsi.getUnwovenClassFileData()));
 			// new: reweavable default with clever diff
 			if (!world.isOverWeaving()) {
-				classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass().getFileName(), wsi
-						.getUnwovenClassFileData(classType.getJavaClass().getBytes())));
+
+				byte[] bytes = wsi.getUnwovenClassFileData(classType.getJavaClass().getBytes());
+				classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass().getFileName(), bytes), true);
 				// } else {
 				// System.out.println("overweaving " + className);
 			}
@@ -1788,34 +1791,34 @@ public class BcelWeaver {
 				return null;
 			}
 			ReferenceType resolvedClassType = classType.getResolvedTypeX();
-	
+
 			if (world.isXmlConfigured() && world.getXmlConfiguration().excludesType(resolvedClassType)) {
 				if (!world.getMessageHandler().isIgnoring(IMessage.INFO)) {
 					world.getMessageHandler().handleMessage(
 							MessageUtil.info("Type '" + resolvedClassType.getName()
 									+ "' not woven due to exclusion via XML weaver exclude section"));
-	
+
 				}
 				if (dump) {
 					dumpUnchanged(classFile);
 				}
 				return null;
 			}
-	
+
 			List<ShadowMunger> shadowMungers = fastMatch(shadowMungerList, resolvedClassType);
 			List<ConcreteTypeMunger> typeMungers = classType.getResolvedTypeX().getInterTypeMungers();
-	
+
 			resolvedClassType.checkInterTypeMungers();
-	
+
 			// Decide if we need to do actual weaving for this class
 			boolean mightNeedToWeave = shadowMungers.size() > 0 || typeMungers.size() > 0 || classType.isAspect()
 					|| world.getDeclareAnnotationOnMethods().size() > 0 || world.getDeclareAnnotationOnFields().size() > 0;
-	
+
 			// May need bridge methods if on 1.5 and something in our hierarchy is
 			// affected by ITDs
 			boolean mightNeedBridgeMethods = world.isInJava5Mode() && !classType.isInterface()
 					&& resolvedClassType.getInterTypeMungersIncludingSupers().size() > 0;
-	
+
 			LazyClassGen clazz = null;
 			if (mightNeedToWeave || mightNeedBridgeMethods) {
 				clazz = classType.getLazyClassGen();
@@ -1823,16 +1826,16 @@ public class BcelWeaver {
 				// clazz.getWeaverState());
 				try {
 					boolean isChanged = false;
-	
+
 					if (mightNeedToWeave) {
 						isChanged = BcelClassWeaver.weave(world, clazz, shadowMungers, typeMungers, lateTypeMungerList,
 								inReweavableMode);
 					}
-	
+
 					if (mightNeedBridgeMethods) {
 						isChanged = BcelClassWeaver.calculateAnyRequiredBridgeMethods(world, clazz) || isChanged;
 					}
-	
+
 					if (isChanged) {
 						if (dump) {
 							dump(classFile, clazz);
@@ -1867,15 +1870,15 @@ public class BcelWeaver {
 			 * world.getModelAsAsmManager(); if (asm != null) { IHierarchy model = asm.getHierarchy(); if (!classType.isAspect()) {
 			 * 
 			 * String pkgname = classType.getResolvedTypeX().getPackageName(); String tname =
-			 * classType.getResolvedTypeX().getSimpleBaseName(); IProgramElement typeElement = model.findElementForType(pkgname, tname);
-			 * if (typeElement != null) { Set deleted = new HashSet();
+			 * classType.getResolvedTypeX().getSimpleBaseName(); IProgramElement typeElement = model.findElementForType(pkgname,
+			 * tname); if (typeElement != null) { Set deleted = new HashSet();
 			 * deleted.add(asm.getCanonicalFilePath(typeElement.getSourceLocation().getSourceFile()));
 			 * 
-			 * model.updateHandleMap(deleted); IProgramElement parent = typeElement.getParent(); // parent may have children: PACKAGE
-			 * DECL, IMPORT-REFEFERENCE, TYPE_DECL if (parent != null) { typeElement.getParent().removeChild(typeElement); //
-			 * System.out.println("Removing " + classType.getResolvedTypeX().getName() + "? " // + ); } } } }
+			 * model.updateHandleMap(deleted); IProgramElement parent = typeElement.getParent(); // parent may have children:
+			 * PACKAGE DECL, IMPORT-REFEFERENCE, TYPE_DECL if (parent != null) { typeElement.getParent().removeChild(typeElement);
+			 * // System.out.println("Removing " + classType.getResolvedTypeX().getName() + "? " // + ); } } } }
 			 */
-			if (dump) { 
+			if (dump) {
 				dumpUnchanged(classFile);
 				return clazz;
 			} else {

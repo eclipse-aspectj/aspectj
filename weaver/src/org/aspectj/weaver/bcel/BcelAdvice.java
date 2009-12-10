@@ -104,9 +104,13 @@ class BcelAdvice extends Advice {
 
 	@Override
 	public ShadowMunger concretize(ResolvedType fromType, World world, PerClause clause) {
-		suppressLintWarnings(world);
+		if (!world.areAllLintIgnored()) {
+			suppressLintWarnings(world);
+		}
 		ShadowMunger ret = super.concretize(fromType, world, clause);
-		clearLintSuppressions(world, this.suppressedLintKinds);
+		if (!world.areAllLintIgnored()) {
+			clearLintSuppressions(world, this.suppressedLintKinds);
+		}
 		IfFinder ifinder = new IfFinder();
 		ret.getPointcut().accept(ifinder, null);
 		boolean hasGuardTest = ifinder.hasIf && getKind() != AdviceKind.Around;
@@ -138,10 +142,14 @@ class BcelAdvice extends Advice {
 
 	@Override
 	public boolean match(Shadow shadow, World world) {
-		suppressLintWarnings(world);
-		boolean ret = super.match(shadow, world);
-		clearLintSuppressions(world, this.suppressedLintKinds);
-		return ret;
+		if (world.areAllLintIgnored()) {
+			return super.match(shadow, world);
+		} else {
+			suppressLintWarnings(world);
+			boolean ret = super.match(shadow, world);
+			clearLintSuppressions(world, this.suppressedLintKinds);
+			return ret;
+		}
 	}
 
 	@Override
@@ -167,9 +175,13 @@ class BcelAdvice extends Advice {
 		}
 
 		World world = shadow.getIWorld();
-		suppressLintWarnings(world);
+		if (!world.areAllLintIgnored()) {
+			suppressLintWarnings(world);
+		}
 		runtimeTest = getPointcut().findResidue(shadow, exposedState);
-		clearLintSuppressions(world, this.suppressedLintKinds);
+		if (!world.areAllLintIgnored()) {
+			clearLintSuppressions(world, this.suppressedLintKinds);
+		}
 
 		// these initializations won't be performed by findResidue, but need to be
 		// so that the joinpoint is primed for weaving
