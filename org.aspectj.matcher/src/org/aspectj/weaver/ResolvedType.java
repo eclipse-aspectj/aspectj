@@ -1749,7 +1749,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		interTypeMungers.add(munger);
 	}
 
-
 	/**
 	 * Compare the type transformer with the existing members. A clash may not be an error (the ITD may be the 'default
 	 * implementation') so returning false is not always a sign of an error.
@@ -2204,21 +2203,23 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	public boolean isTopmostImplementor(ResolvedType interfaceType) {
+		boolean b = true;
 		if (isInterface()) {
-			return false;
-		}
-		if (!interfaceType.isAssignableFrom(this, true)) {
-			return false;
-		}
+			b = false;
+		} else if (!interfaceType.isAssignableFrom(this, true)) {
+			b = false;
+		} else
 		// check that I'm truly the topmost implementor
 		if (this.getSuperclass().isMissing()) {
-			return true; // we don't know anything about supertype, and it can't
-		}
+			b = true; // we don't know anything about supertype, and it can't
+		} else
 		// be exposed to weaver
 		if (interfaceType.isAssignableFrom(this.getSuperclass(), true)) {
-			return false;
+			b = false;
 		}
-		return true;
+		// System.out.println("is " + getName() + " topmostimplementor of " + interfaceType + "? " + b);
+		// System.err.println("Was topmostimplementor? "+interfaceType.getName()+" "+b);
+		return b;
 	}
 
 	public ResolvedType getTopmostImplementor(ResolvedType interfaceType) {
@@ -2241,14 +2242,14 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		if (getSuperclass() != null) {
 			ret.addAll(getSuperclass().getExposedPointcuts());
 		}
-		
-		for (ResolvedType type: getDeclaredInterfaces()) {
+
+		for (ResolvedType type : getDeclaredInterfaces()) {
 			addPointcutsResolvingConflicts(ret, Arrays.asList(type.getDeclaredPointcuts()), false);
 		}
-		
+
 		addPointcutsResolvingConflicts(ret, Arrays.asList(getDeclaredPointcuts()), true);
-		
-		for (ResolvedMember member: ret) {
+
+		for (ResolvedMember member : ret) {
 			ResolvedPointcutDefinition inherited = (ResolvedPointcutDefinition) member;
 			if (inherited != null && inherited.isAbstract()) {
 				if (!this.isAbstract()) {
@@ -2266,11 +2267,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			ResolvedPointcutDefinition toAdd = (ResolvedPointcutDefinition) i.next();
 			for (Iterator j = acc.iterator(); j.hasNext();) {
 				ResolvedPointcutDefinition existing = (ResolvedPointcutDefinition) j.next();
-				if (toAdd==null || existing==null || existing == toAdd) {
+				if (toAdd == null || existing == null || existing == toAdd) {
 					continue;
 				}
 				UnresolvedType pointcutDeclaringTypeUT = existing.getDeclaringType();
-				if (pointcutDeclaringTypeUT!=null) {
+				if (pointcutDeclaringTypeUT != null) {
 					ResolvedType pointcutDeclaringType = pointcutDeclaringTypeUT.resolve(getWorld());
 					if (!isVisible(existing.getModifiers(), pointcutDeclaringType, this)) {
 						// if they intended to override it but it is not visible,
@@ -2278,7 +2279,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 						if (existing.isAbstract() && conflictingSignature(existing, toAdd)) {
 							getWorld().showMessage(
 									IMessage.ERROR,
-									WeaverMessages.format(WeaverMessages.POINTCUT_NOT_VISIBLE, existing.getDeclaringType().getName()
+									WeaverMessages.format(WeaverMessages.POINTCUT_NOT_VISIBLE, existing.getDeclaringType()
+											.getName()
 											+ "." + existing.getName() + "()", this.getName()), toAdd.getSourceLocation(), null);
 							j.remove();
 						}

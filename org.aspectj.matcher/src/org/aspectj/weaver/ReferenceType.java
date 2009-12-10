@@ -406,9 +406,11 @@ public class ReferenceType extends ResolvedType {
 				return true;
 			}
 		}
+
 		if (this == other) {
 			return true;
 		}
+
 		if (this.getSignature().equals(ResolvedType.OBJECT.getSignature())) {
 			return true;
 		}
@@ -428,11 +430,6 @@ public class ReferenceType extends ResolvedType {
 				return true;
 			}
 		}
-		// if (this.isParameterizedType() && other.isRawType()) {
-		// if (((ReferenceType) this.getRawType()).isAssignableFrom(other.getGenericType())) {
-		// return true;
-		// }
-		// }
 
 		if (this.isParameterizedType()) {
 			// look at wildcards...
@@ -555,8 +552,15 @@ public class ReferenceType extends ResolvedType {
 			return false;
 		}
 
-		for (Iterator i = other.getDirectSupertypes(); i.hasNext();) {
-			if (this.isAssignableFrom((ResolvedType) i.next(), allowMissing)) {
+		ResolvedType[] interfaces = other.getDeclaredInterfaces();
+		for (ResolvedType intface : interfaces) {
+			if (this.isAssignableFrom(intface, allowMissing)) {
+				return true;
+			}
+		}
+		ResolvedType superclass = other.getSuperclass();
+		if (superclass != null) {
+			if (this.isAssignableFrom(superclass, allowMissing)) {
 				return true;
 			}
 		}

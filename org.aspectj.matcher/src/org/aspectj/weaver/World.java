@@ -583,6 +583,16 @@ public abstract class World implements Dump.INode {
 		return declaring.lookupSyntheticMember(member);
 	}
 
+	private boolean allLintIgnored = false;
+
+	public void setAllLintIgnored() {
+		allLintIgnored = true;
+	}
+
+	public boolean areAllLintIgnored() {
+		return allLintIgnored;
+	}
+
 	public abstract IWeavingSupport getWeavingSupport();
 
 	/**
@@ -907,7 +917,7 @@ public abstract class World implements Dump.INode {
 	 * Map of types in the world, can have 'references' to expendable ones which can be garbage collected to recover memory. An
 	 * expendable type is a reference type that is not exposed to the weaver (ie just pulled in for type resolution purposes).
 	 */
-	protected static class TypeMap {
+	public static class TypeMap {
 
 		private static boolean debug = false;
 
@@ -945,6 +955,16 @@ public abstract class World implements Dump.INode {
 			this.w = w;
 			memoryProfiling = false;// !w.getMessageHandler().isIgnoring(Message.
 			// INFO);
+		}
+
+		// For testing
+		public Map getExpendableMap() {
+			return expendableMap;
+		}
+
+		// For testing
+		public Map getMainMap() {
+			return tMap;
 		}
 
 		/**
