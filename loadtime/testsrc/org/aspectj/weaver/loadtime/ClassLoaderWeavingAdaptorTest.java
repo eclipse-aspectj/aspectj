@@ -459,7 +459,7 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 	}
 
 	@Aspect
-	class AnAspect {
+	static class AnAspect {
 
 	}
 
