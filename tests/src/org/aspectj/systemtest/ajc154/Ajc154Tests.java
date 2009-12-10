@@ -13,7 +13,6 @@ package org.aspectj.systemtest.ajc154;
 import java.io.File;
 import java.lang.reflect.Field;
 
-import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 
 import org.aspectj.apache.bcel.classfile.ConstantPool;
@@ -47,22 +46,22 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// public void testAfterThrowingAnnotationStyle_pr211674_2() { runTest("after throwing annotation style problem - 2");}
 
 	// crappy solution - see the bug
-	public void testCflowLtwProblem_pr166647_1() {
-		try {
-			runTest("ltw and cflow problem");
-		} catch (AssertionFailedError afe) {
-			// this is OK.... sadly
-			// at least lets check we warned the user it was going to happen:
-			String stderr = (getLastRunResult() == null ? "" : getLastRunResult().getStdErr());
-			// Expected line:
-			// [WeavingURLClassLoader] warning XML Defined aspects must be woven in cases where cflow pointcuts are involved.
-			// Currently the include/exclude patterns exclude 'x.Aspect2' [Xlint:mustWeaveXmlDefinedAspects]
-			assertTrue("Did not see warning about needing to weave xml defined aspects", stderr
-					.indexOf("warning XML Defined aspects must be woven in cases where cflow pointcuts are involved.") != -1);
-			assertTrue("Xlint warning was expected '[Xlint:mustWeaveXmlDefinedAspects]'", stderr
-					.indexOf("[Xlint:mustWeaveXmlDefinedAspects]") != -1);
-		}
-	}
+	// public void testCflowLtwProblem_pr166647_1() {
+	// try {
+	// runTest("ltw and cflow problem");
+	// } catch (AssertionFailedError afe) {
+	// // this is OK.... sadly
+	// // at least lets check we warned the user it was going to happen:
+	// String stderr = (getLastRunResult() == null ? "" : getLastRunResult().getStdErr());
+	// // Expected line:
+	// // [WeavingURLClassLoader] warning XML Defined aspects must be woven in cases where cflow pointcuts are involved.
+	// // Currently the include/exclude patterns exclude 'x.Aspect2' [Xlint:mustWeaveXmlDefinedAspects]
+	// assertTrue("Did not see warning about needing to weave xml defined aspects", stderr
+	// .indexOf("warning XML Defined aspects must be woven in cases where cflow pointcuts are involved.") != -1);
+	// assertTrue("Xlint warning was expected '[Xlint:mustWeaveXmlDefinedAspects]'", stderr
+	// .indexOf("[Xlint:mustWeaveXmlDefinedAspects]") != -1);
+	// }
+	// }
 
 	// Testing some issues with declare at type
 	public void testDeclareAtTypeProblems_pr211052_1() {
@@ -219,8 +218,9 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		Method oneWeWant = null;
 		for (int i = 0; i < meths.length && oneWeWant == null; i++) {
 			Method method = meths[i];
-			if (method.getName().equals("main"))
+			if (method.getName().equals("main")) {
 				oneWeWant = meths[i];
+			}
 		}
 
 		/**
@@ -263,8 +263,9 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		Method oneWeWant = null;
 		for (int i = 0; i < meths.length && oneWeWant == null; i++) {
 			Method method = meths[i];
-			if (method.getName().equals("main"))
+			if (method.getName().equals("main")) {
 				oneWeWant = meths[i];
+			}
 		}
 		// see previous test for dump of main method
 
@@ -354,7 +355,6 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(Ajc154Tests.class);
 	}
 
-	
 	protected File getSpecFile() {
 		return new File("../tests/src/org/aspectj/systemtest/ajc154/ajc154.xml");
 	}
@@ -431,8 +431,9 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		}
 
 		public FuzzyBoolean matchesStatically(MatchingContext matchContext) {
-			if (this.simulateDynamicTest)
+			if (this.simulateDynamicTest) {
 				return FuzzyBoolean.MAYBE;
+			}
 			if (this.beanNamePattern.equals(matchContext.getBinding("beanName"))) {
 				return FuzzyBoolean.YES;
 			} else {

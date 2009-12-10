@@ -24,11 +24,11 @@ import org.aspectj.util.FileUtil;
 public class AtAjLTWTests extends XMLBasedAjcTestCase {
 
 	public static Test suite() {
-	    return XMLBasedAjcTestCase.loadSuite(org.aspectj.systemtest.ajc150.ataspectj.AtAjLTWTests.class);
+		return XMLBasedAjcTestCase.loadSuite(org.aspectj.systemtest.ajc150.ataspectj.AtAjLTWTests.class);
 	}
 
 	protected File getSpecFile() {
-	  return new File("../tests/src/org/aspectj/systemtest/ajc150/ataspectj/ltw.xml");
+		return new File("../tests/src/org/aspectj/systemtest/ajc150/ataspectj/ltw.xml");
 	}
 
 	public void testRunThemAllWithJavacCompiledAndLTW() {
@@ -43,194 +43,195 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
 		runTest("AjcLTW PerClauseTest -Xreweavable");
 	}
 
-    public void testJavaCAjcLTWPerClauseTest() {
-        runTest("JavaCAjcLTW PerClauseTest");
-    }
+	public void testJavaCAjcLTWPerClauseTest() {
+		runTest("JavaCAjcLTW PerClauseTest");
+	}
 
-    public void testAjcLTWAroundInlineMungerTest_XterminateAfterCompilation() {
-        runTest("AjcLTW AroundInlineMungerTest -XterminateAfterCompilation");
-    }
+	public void testAjcLTWAroundInlineMungerTest_XterminateAfterCompilation() {
+		runTest("AjcLTW AroundInlineMungerTest -XterminateAfterCompilation");
+	}
 
-    public void testAjcLTWAroundInlineMungerTest_Xreweavable() {
-        runTest("AjcLTW AroundInlineMungerTest");
-    }
+	public void testAjcLTWAroundInlineMungerTest_Xreweavable() {
+		runTest("AjcLTW AroundInlineMungerTest");
+	}
 
-    public void testAjcLTWAroundInlineMungerTest() {
-        runTest("AjcLTW AroundInlineMungerTest");
-    }
+	public void testAjcLTWAroundInlineMungerTest() {
+		runTest("AjcLTW AroundInlineMungerTest");
+	}
 
-    public void testAjcLTWAroundInlineMungerTest_XnoInline_Xreweavable() {
-        runTest("AjcLTW AroundInlineMungerTest -XnoInline -Xreweavable");
-    }
+	public void testAjcLTWAroundInlineMungerTest_XnoInline_Xreweavable() {
+		runTest("AjcLTW AroundInlineMungerTest -XnoInline -Xreweavable");
+	}
 
-    public void testAjcLTWAroundInlineMungerTest2() {
-        runTest("AjcLTW AroundInlineMungerTest2");
-    }
+	public void testAjcLTWAroundInlineMungerTest2() {
+		runTest("AjcLTW AroundInlineMungerTest2");
+	}
 
-    public void testLTWDumpNone() {
-        runTest("LTW DumpTest none");
+	public void testLTWDumpNone() {
+		runTest("LTW DumpTest none");
 
-        File f = new File("_ajdump/ataspectj/DumpTest.class");
-        assertFalse(f.exists());
-        f = new File("_ajdump/_before/ataspectj/DumpTestTheDump.class");
-        assertFalse(f.exists());
-        f = new File("_ajdump/ataspectj/DumpTestTheDump.class");
-        assertFalse(f.exists());
-    }
+		File f = new File("_ajdump/ataspectj/DumpTest.class");
+		assertFalse(f.exists());
+		f = new File("_ajdump/_before/ataspectj/DumpTestTheDump.class");
+		assertFalse(f.exists());
+		f = new File("_ajdump/ataspectj/DumpTestTheDump.class");
+		assertFalse(f.exists());
+	}
 
-    public void testLTWDump() {
-        runTest("LTW DumpTest");
-        
-        File f = new File("_ajdump/ataspectj/DumpTest.class");
-        assertFalse(f.exists());
-        f = new File("_ajdump/_before/ataspectj/DumpTestTheDump.class");
-        assertFalse(f.exists());
-        f = new File("_ajdump/ataspectj/DumpTestTheDump.class");
-        assertTrue(f.exists());
-        
-        // tidy up...
-        f = new File("_ajdump");
-        FileUtil.deleteContents(f);
-        f.delete();
-    }
+	public void testLTWDump() {
+		runTest("LTW DumpTest");
 
-    public void testLTWDumpBeforeAndAfter() {
-        runTest("LTW DumpTest before and after");
-        
-        // before
-        File f = new File("_ajdump/_before/com/foo/bar");
-        CountingFilenameFilter cff = new CountingFilenameFilter(".class");
-        f.listFiles(cff);
-        assertEquals("Expected dump file in " + f.getAbsolutePath(),1,cff.getCount());
+		File f = new File("_ajdump/ataspectj/DumpTest.class");
+		assertFalse(f.exists());
+		f = new File("_ajdump/_before/ataspectj/DumpTestTheDump.class");
+		assertFalse(f.exists());
+		f = new File("_ajdump/ataspectj/DumpTestTheDump.class");
+		assertTrue(f.exists());
 
-        // after
-        f = new File("_ajdump/com/foo/bar");
-        cff = new CountingFilenameFilter(".class");
-        f.listFiles(cff);
-        assertEquals("Expected dump file in " + f.getAbsolutePath(),1,cff.getCount());
-        
-        // tidy up...
-        f = new File("_ajdump");
-        FileUtil.deleteContents(f);
-        f.delete();
-    }
+		// tidy up...
+		f = new File("_ajdump");
+		FileUtil.deleteContents(f);
+		f.delete();
+	}
 
-    public void testLTWDumpClosure() {
-        runTest("LTW DumpTest closure");
+	public void testLTWDumpBeforeAndAfter() {
+		runTest("LTW DumpTest before and after");
 
-        File f = new File("_ajdump/ataspectj/DumpTestTheDump$AjcClosure1.class");
-        assertTrue("Missing dump file " + f.getAbsolutePath(),f.exists());
-        
-        // tidy up...
-        f = new File("_ajdump");
-        FileUtil.deleteContents(f);
-        f.delete();
-    }
+		// before
+		File f = new File("_ajdump/_before/com/foo/bar");
+		CountingFilenameFilter cff = new CountingFilenameFilter(".class");
+		f.listFiles(cff);
+		assertEquals("Expected dump file in " + f.getAbsolutePath(), 1, cff.getCount());
 
-    public void testLTWDumpProxy() {
-        runTest("LTW DumpTest proxy");
+		// after
+		f = new File("_ajdump/com/foo/bar");
+		cff = new CountingFilenameFilter(".class");
+		f.listFiles(cff);
+		assertEquals("Expected dump file in " + f.getAbsolutePath(), 1, cff.getCount());
 
-        // The working directory is different because this test must be forked
-        File dir = new File("../tests/java5/ataspectj");
-        File f = new File(dir,"_ajdump/_before");
-        CountingFilenameFilter cff = new CountingFilenameFilter(".class");
-        f.listFiles(cff);
-        assertEquals("Expected dump file in " + f.getAbsolutePath(),1,cff.getCount());
-        f = new File(dir,"_ajdump");
-        cff = new CountingFilenameFilter(".class");
-        f.listFiles(cff);
-        assertEquals(1,cff.getCount());
-        
-        // tidy up...
-        f = new File(dir,"_ajdump");
-        FileUtil.deleteContents(f);
-        f.delete();
-    }
+		// tidy up...
+		f = new File("_ajdump");
+		FileUtil.deleteContents(f);
+		f.delete();
+	}
 
-    public void testLTWDumpJSP () {
-        runTest("LTW DumpTest JSP");
+	public void testLTWDumpClosure() {
+		runTest("LTW DumpTest closure");
 
-        // The working directory is different because this test must be forked
-        File f = new File("_ajdump/_before/com/ibm/_jsp");
-        CountingFilenameFilter cff = new CountingFilenameFilter(".class");
-        f.listFiles(cff);
-        assertEquals("Expected dump file in " + f.getAbsolutePath(),1,cff.getCount());
-        f = new File("_ajdump/com/ibm/_jsp");
-        cff = new CountingFilenameFilter(".class");
-        f.listFiles(cff);
-        assertEquals(1,cff.getCount());
-        
-        // tidy up...
-        f = new File("_ajdump");
-        FileUtil.deleteContents(f);
-        f.delete();
-    }
-    
-    public void testAjcAspect1LTWAspect2_Xreweavable() {
-        runTest("Ajc Aspect1 LTW Aspect2 -Xreweavable");
-    }
+		File f = new File("_ajdump/ataspectj/DumpTestTheDump$AjcClosure1.class");
+		assertTrue("Missing dump file " + f.getAbsolutePath(), f.exists());
 
-    public void testLTWLogSilent() {
-        runTest("LTW Log silent");
-    }
+		// tidy up...
+		f = new File("_ajdump");
+		FileUtil.deleteContents(f);
+		f.delete();
+	}
 
-    public void testLTWLogVerbose() {
-        runTest("LTW Log verbose");
-    }
+	public void testLTWDumpProxy() {
+		runTest("LTW DumpTest proxy");
 
-    public void testLTWLogVerboseAndShow() {
-        runTest("LTW Log verbose and showWeaveInfo");
-    }
+		// The working directory is different because this test must be forked
+		File dir = new File("../tests/java5/ataspectj");
+		File f = new File(dir, "_ajdump/_before");
+		CountingFilenameFilter cff = new CountingFilenameFilter(".class");
+		f.listFiles(cff);
+		assertEquals("Expected dump file in " + f.getAbsolutePath(), 1, cff.getCount());
+		f = new File(dir, "_ajdump");
+		cff = new CountingFilenameFilter(".class");
+		f.listFiles(cff);
+		assertEquals(1, cff.getCount());
 
-    public void testLTWLogMessageHandlerClass() {
-        runTest("LTW Log messageHandlerClass");
-    }
+		// tidy up...
+		f = new File(dir, "_ajdump");
+		FileUtil.deleteContents(f);
+		f.delete();
+	}
 
-    public void testLTWUnweavable() {
-        // actually test that we do LTW proxy and jit classes
-        runTest("LTW Unweavable");
-    }
+	public void testLTWDumpJSP() {
+		runTest("LTW DumpTest JSP");
 
-    public void testLTWDecp() {
-        runTest("LTW Decp");
-    }
+		// The working directory is different because this test must be forked
+		File f = new File("_ajdump/_before/com/ibm/_jsp");
+		CountingFilenameFilter cff = new CountingFilenameFilter(".class");
+		f.listFiles(cff);
+		assertEquals("Expected dump file in " + f.getAbsolutePath(), 1, cff.getCount());
+		f = new File("_ajdump/com/ibm/_jsp");
+		cff = new CountingFilenameFilter(".class");
+		f.listFiles(cff);
+		assertEquals(1, cff.getCount());
 
-    public void testLTWDecp2() {
-        runTest("LTW Decp2");
-    }
+		// tidy up...
+		f = new File("_ajdump");
+		FileUtil.deleteContents(f);
+		f.delete();
+	}
 
-    public void testCompileTimeAspectsDeclaredToLTWWeaver() {
-        runTest("Compile time aspects declared to ltw weaver");
-    }
+	public void testAjcAspect1LTWAspect2_Xreweavable() {
+		runTest("Ajc Aspect1 LTW Aspect2 -Xreweavable");
+	}
 
-    public void testConcreteAtAspect() {
-        runTest("Concrete@Aspect");
-    }
+	public void testLTWLogSilent() {
+		runTest("LTW Log silent");
+	}
 
-    public void testConcreteAspect() {
-        runTest("ConcreteAspect");
-    }
+	public void testLTWLogVerbose() {
+		runTest("LTW Log verbose");
+	}
 
-    public void testConcretePrecedenceAspect() {
-        runTest("ConcretePrecedenceAspect");
-    }
+	public void testLTWLogVerboseAndShow() {
+		runTest("LTW Log verbose and showWeaveInfo");
+	}
 
-    public void testAspectOfWhenAspectNotInInclude() {
-        runTest("AspectOfWhenAspectNotInInclude");
-    }
+	public void testLTWLogMessageHandlerClass() {
+		runTest("LTW Log messageHandlerClass");
+	}
 
-    public void testAspectOfWhenAspectExcluded_pr152873() {
-        runTest("AspectOfWhenAspectExcluded");
-    }
-    public void testAspectOfWhenNonAspectExcluded_pr152873() {
-    	runTest("AspectOfWhenNonAspectExcluded");
-    }
+	public void testLTWUnweavable() {
+		// actually test that we do LTW proxy and jit classes
+		runTest("LTW Unweavable");
+	}
 
-    public void testAppContainer() {
-        runTest("AppContainer");
-    }
+	public void testLTWDecp() {
+		runTest("LTW Decp");
+	}
 
-    public void testCflowBelowStack() {
-        runTest("CflowBelowStack");
-    }
+	public void testLTWDecp2() {
+		runTest("LTW Decp2");
+	}
+
+	public void testCompileTimeAspectsDeclaredToLTWWeaver() {
+		runTest("Compile time aspects declared to ltw weaver");
+	}
+
+	public void testConcreteAtAspect() {
+		runTest("Concrete@Aspect");
+	}
+
+	public void testConcreteAspect() {
+		runTest("ConcreteAspect");
+	}
+
+	public void testConcretePrecedenceAspect() {
+		runTest("ConcretePrecedenceAspect");
+	}
+
+	// public void testAspectOfWhenAspectNotInInclude() {
+	// runTest("AspectOfWhenAspectNotInInclude");
+	// }
+	//
+	// public void testAspectOfWhenAspectExcluded_pr152873() {
+	// runTest("AspectOfWhenAspectExcluded");
+	// }
+
+	public void testAspectOfWhenNonAspectExcluded_pr152873() {
+		runTest("AspectOfWhenNonAspectExcluded");
+	}
+
+	public void testAppContainer() {
+		runTest("AppContainer");
+	}
+
+	public void testCflowBelowStack() {
+		runTest("CflowBelowStack");
+	}
 }
