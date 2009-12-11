@@ -376,15 +376,7 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 	// --- infrastructure ---
 
 	private TypeMap accessTypeMap(TestClassLoaderWeavingAdaptor adaptor) {
-		try {
-			BcelWorld world = adaptor.getWorld();
-			Field f = World.class.getDeclaredField("typeMap");
-			f.setAccessible(true);
-			TypeMap typeMap = (TypeMap) f.get(world);
-			return typeMap;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		return adaptor.getWorld().getTypeMap();
 	}
 
 	public TestClassLoaderWeavingAdaptor getAdaptor(String includePattern, String excludePattern) {
