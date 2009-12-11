@@ -931,7 +931,7 @@ public abstract class World implements Dump.INode {
 		// memory
 		List<String> addedSinceLastDemote;
 
-		public int policy = USE_SOFT_REFS;
+		public int policy = USE_WEAK_REFS;
 
 		// Map of types that never get thrown away
 		final Map<String, ResolvedType> tMap = new HashMap<String, ResolvedType>();
