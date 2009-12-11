@@ -2181,8 +2181,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		public ResolvedType next() {
 			ResolvedType next = delegate.next();
 			// BUG should check for generics and erase?
-			if (!visited.contains(next)) {
-				visited.add(next);
+//			if (!visited.contains(next)) {
+//				visited.add(next);
+			if (visited.add(next)) {
 				toPersue.add(next); // pushes on interfaces already visited?
 			}
 			return next;
@@ -2208,17 +2209,15 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			b = false;
 		} else if (!interfaceType.isAssignableFrom(this, true)) {
 			b = false;
-		} else
-		// check that I'm truly the topmost implementor
-		if (this.getSuperclass().isMissing()) {
-			b = true; // we don't know anything about supertype, and it can't
-		} else
-		// be exposed to weaver
-		if (interfaceType.isAssignableFrom(this.getSuperclass(), true)) {
-			b = false;
+		} else {
+			ResolvedType superclass = this.getSuperclass();
+			if (superclass.isMissing()) {
+				b = true; // we don't know anything about supertype, and it can't be exposed to weaver
+			} else if (interfaceType.isAssignableFrom(superclass, true)) { // check that I'm truly the topmost implementor
+				b = false;
+			}
 		}
 		// System.out.println("is " + getName() + " topmostimplementor of " + interfaceType + "? " + b);
-		// System.err.println("Was topmostimplementor? "+interfaceType.getName()+" "+b);
 		return b;
 	}
 

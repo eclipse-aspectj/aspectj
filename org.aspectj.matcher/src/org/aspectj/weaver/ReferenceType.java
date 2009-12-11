@@ -415,17 +415,20 @@ public class ReferenceType extends ResolvedType {
 			return true;
 		}
 
-		if ((this.isRawType() || this.isGenericType()) && other.isParameterizedType()) {
+		boolean thisRaw = this.isRawType();
+		boolean thisGeneric = this.isGenericType();
+		
+		if ((thisRaw || thisGeneric) && other.isParameterizedType()) {
 			if (isAssignableFrom(other.getRawType())) {
 				return true;
 			}
 		}
-		if (this.isRawType() && other.isGenericType()) {
+		if (thisRaw && other.isGenericType()) {
 			if (isAssignableFrom(other.getRawType())) {
 				return true;
 			}
 		}
-		if (this.isGenericType() && other.isRawType()) {
+		if (thisGeneric && other.isRawType()) {
 			if (isAssignableFrom(other.getGenericType())) {
 				return true;
 			}
