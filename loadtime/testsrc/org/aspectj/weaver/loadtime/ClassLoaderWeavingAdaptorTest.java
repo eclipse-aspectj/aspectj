@@ -66,312 +66,312 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 	/**
 	 * Testing fast excludes of the pattern "com.foo..*". World should not have any new types in it after rejection.
 	 */
-	public void testFastExclusionOne() throws Exception {
-		TestClassLoaderWeavingAdaptor adaptor = getAdaptor(null, "testdata..*");
-
-		String orangesSub = "testdata.sub.Oranges";
-		JavaClass orangesClass = getClassFrom(orangesSub);
-		byte[] orangesBytes = orangesClass.getBytes();
-
-		boolean accepted = adaptor.accept(orangesSub, orangesBytes);
-		assertFalse("Should not be accepted", accepted);
-		TypeMap map = accessTypeMap(adaptor);
-
-		// The aspect
-		assertEquals(1, map.getExpendableMap().size());
-
-		// primitives, void and jlObject
-		assertEquals(10, map.getMainMap().size());
-
-		// Important thing here is that the rejection of testdata.sub.Oranges did not require it to be loaded into the world at all
-	}
-
-	/**
-	 * Testing fast includes of the pattern "*". World should not have any new types in it after inclusion.
-	 */
-	public void testFastInclusionOne() throws Exception {
-		TestClassLoaderWeavingAdaptor adaptor = getAdaptor("*", null);
-
-		String orangesSub = "testdata.sub.Oranges";
-		JavaClass orangesClass = getClassFrom(orangesSub);
-		byte[] orangesBytes = orangesClass.getBytes();
-
-		boolean accepted = adaptor.accept(orangesSub, orangesBytes);
-		assertTrue("Should be accepted", accepted);
-		TypeMap map = accessTypeMap(adaptor);
-
-		// The aspect
-		assertEquals(1, map.getExpendableMap().size());
-
-		// primitives, void and jlObject
-		assertEquals(10, map.getMainMap().size());
-
-		// Important thing here is that the rejection of testdata.sub.Oranges did not require it to be loaded into the world at all
-	}
-
-	/**
-	 * Testing fast excludes of the pattern "*Oranges". World should not have any new types in it after rejection.
-	 */
-	public void testFastExclusionTwo() throws Exception {
-		TestClassLoaderWeavingAdaptor adaptor = getAdaptor(null, "*Oranges");
-
-		String oranges = "testdata.Oranges";
-		JavaClass orangesClass = getClassFrom(oranges);
-		byte[] orangesBytes = orangesClass.getBytes();
-
-		boolean accepted = adaptor.accept(oranges, orangesBytes);
-		assertFalse("Should not be accepted", accepted);
-		TypeMap map = accessTypeMap(adaptor);
-
-		// The aspect
-		assertEquals(1, map.getExpendableMap().size());
-		// primitives, void and jlObject
-		assertEquals(10, map.getMainMap().size());
-
-		String orangesSub = "testdata.sub.Oranges";
-
-		JavaClass orangesSubClass = getClassFrom(orangesSub);
-		byte[] orangesSubBytes = orangesSubClass.getBytes();
-
-		accepted = adaptor.accept(orangesSub, orangesSubBytes);
-		assertFalse("Should not be accepted", accepted);
-		map = accessTypeMap(adaptor);
-
-		// The aspect
-		assertEquals(1, map.getExpendableMap().size());
-		// primitives, void and jlObject
-		assertEquals(10, map.getMainMap().size());
-	}
-
-	/**
-	 * Testing fast excludes of the pattern "*..*Oranges*". World should not have any new types in it after rejection.
-	 */
-	public void testFastExclusionThree() throws Exception {
-		TestClassLoaderWeavingAdaptor adaptor = getAdaptor(null, "*..*ran*");
-
-		String oranges = "testdata.Oranges";
-		JavaClass orangesClass = getClassFrom(oranges);
-		byte[] orangesBytes = orangesClass.getBytes();
-
-		boolean accepted = adaptor.accept(oranges, orangesBytes);
-		assertFalse("Should not be accepted", accepted);
-		TypeMap map = accessTypeMap(adaptor);
-
-		// The aspect
-		assertEquals(1, map.getExpendableMap().size());
-
-		// primitives, void and jlObject
-		assertEquals(10, map.getMainMap().size());
-
-		String orangesSub = "testdata.sub.Oranges";
-		JavaClass orangesSubClass = getClassFrom(orangesSub);
-		byte[] orangesSubBytes = orangesSubClass.getBytes();
-
-		accepted = adaptor.accept(orangesSub, orangesSubBytes);
-		assertFalse("Should not be accepted", accepted);
-		map = accessTypeMap(adaptor);
-
-		// The aspect
-		assertEquals(1, map.getExpendableMap().size());
-		// primitives, void and jlObject
-		assertEquals(10, map.getMainMap().size());
-
-		String apples = "testdata.Apples";
-		JavaClass applesClass = getClassFrom(apples);
-		byte[] applesBytes = applesClass.getBytes();
-
-		accepted = adaptor.accept(apples, applesBytes);
-		assertTrue("Should be accepted", accepted);
-		map = accessTypeMap(adaptor);
-
-		// The aspect and the Apples type
-		assertEquals(1, map.getExpendableMap().size());
-		// primitives, void and jlObject
-		assertEquals(10, map.getMainMap().size());
-	}
-
-	/**
-	 * Testing fast inclusion checking of exact include names eg. "testdata.sub.Oranges"
-	 */
-	public void testFastInclusionTwo() throws Exception {
-		TestClassLoaderWeavingAdaptor adaptor = getAdaptor("testdata.sub.Oranges", null);
-
-		String oranges = "testdata.Oranges";
-		JavaClass orangesClass = getClassFrom(oranges);
-		byte[] orangesBytes = orangesClass.getBytes();
-
-		boolean accepted = adaptor.accept(oranges, orangesBytes);
-		assertFalse("Should not be accepted", accepted);
-		TypeMap map = accessTypeMap(adaptor);
-
-		// The aspect
-		assertEquals(1, map.getExpendableMap().size());
-
-		// primitives, void and jlObject
-		assertEquals(10, map.getMainMap().size());
-
-		String orangesSub = "testdata.sub.Oranges";
-		JavaClass orangesSubClass = getClassFrom(orangesSub);
-		byte[] orangesSubBytes = orangesSubClass.getBytes();
-
-		accepted = adaptor.accept(orangesSub, orangesSubBytes);
-		assertTrue("Should be accepted", accepted);
-		map = accessTypeMap(adaptor);
-
-		// The aspect
-		assertEquals(1, map.getExpendableMap().size());
-		// primitives, void and jlObject
-		assertEquals(10, map.getMainMap().size());
-
-		String apples = "testdata.Apples";
-		JavaClass applesClass = getClassFrom(apples);
-		byte[] applesBytes = applesClass.getBytes();
-
-		accepted = adaptor.accept(apples, applesBytes);
-		assertFalse("Should not be accepted", accepted);
-		map = accessTypeMap(adaptor);
-
-		// The aspect and the Apples type
-		assertEquals(1, map.getExpendableMap().size());
-		// primitives, void and jlObject
-		assertEquals(10, map.getMainMap().size());
-	}
-
-	/**
-	 * Testing fast excludes of the pattern groovy related pattern -
-	 */
-	// public void testFastExclusionFour() throws Exception {
-	// TestClassLoaderWeavingAdaptor adaptor = getAdaptor("*", "testdata..* && !testdata.sub.Oran*");
-	//
-	// String oranges = "testdata.Oranges";
-	// JavaClass orangesClass = getClassFrom(oranges);
-	// byte[] orangesBytes = orangesClass.getBytes();
-	//
-	// boolean accepted = adaptor.accept(oranges, orangesBytes);
-	// assertFalse("Should not be accepted", accepted);
-	// TypeMap map = accessTypeMap(adaptor);
-	//
-	// // The aspect
-	// assertEquals(1, map.getExpendableMap().size());
-	//
-	// // primitives, void and jlObject
-	// assertEquals(10, map.getMainMap().size());
-	//
-	// String orangesSub = "testdata.sub.Oranges";
-	// JavaClass orangesSubClass = getClassFrom(orangesSub);
-	// byte[] orangesSubBytes = orangesSubClass.getBytes();
-	//
-	// accepted = adaptor.accept(orangesSub, orangesSubBytes);
-	// assertTrue("Should be accepted", accepted);
-	// map = accessTypeMap(adaptor);
-	//
-	// // The aspect
-	// assertEquals(1, map.getExpendableMap().size());
-	// // primitives, void and jlObject
-	// assertEquals(10, map.getMainMap().size());
-	// }
-
-	public void testAcceptanceSpeedStarDotDotStar() throws Exception {
-		URLClassLoader loader = new URLClassLoader(new URL[] { new File("../loadtime/bin").toURI().toURL() }, null);
-
-		JavaClass jc = getClassFrom("../loadtime/bin", "org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$TestOne");
-		byte[] bs = jc.getBytes();
-		jc = getClassFrom("../loadtime/bin", "org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$TestOneCGLIB");
-		byte[] bs2 = jc.getBytes();
-		// InputStream is = loader.getResourceAsStream("org.aspectj.weaver.loadtime.ClassLoaderWeaverAdaptorTests$TestOne");
-		assertNotNull(bs);
-		TestWeavingContext wc = new TestWeavingContext(loader);
-		Definition d = new Definition();
-		d.getExcludePatterns().add("*..*CGLIB*");
-		d.getAspectClassNames().add("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$AnAspect");
-		wc.addDefinition(d);
-		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
-		adaptor.initialize(loader, wc);
-		boolean exist = adaptor.generatedClassesExistFor("Junk");
-		assertFalse("There should be no generated classes", exist);
-
-		// before:
-		// Acceptance 331ms
-		// Rejection 3368ms
-
-		// after:
-		// Acceptance 343ms
-		// Rejection 80ms
-
-		long stime = System.currentTimeMillis();
-		for (int i = 0; i < 100000; i++) {
-			boolean b = adaptor.accept("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$TestOne", bs);
-			assertTrue("Should be accepted", b);
-		}
-		long etime = System.currentTimeMillis();
-		System.out.println("Acceptance " + (etime - stime) + "ms");
-		stime = System.currentTimeMillis();
-		for (int i = 0; i < 100000; i++) {
-			adaptor.delegateForCurrentClass = null;
-			boolean b = adaptor.accept("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$TestOneCGLIB", bs2);
-			assertFalse("Should not be accepting CGLIB", b);
-		}
-		etime = System.currentTimeMillis();
-		System.out.println("Rejection " + (etime - stime) + "ms");
-
-	}
-
-	// TODO
-	// shouldn't add it to the type patterns if we are going to fast handle it
-	// include for exact name, what does it mean?
-	// excludes="!xxxx" should also be fast matched...
-
-	public void testAcceptanceSpeedExactName() throws Exception {
-		URLClassLoader loader = new URLClassLoader(new URL[] { new File("../loadtime/bin").toURI().toURL() }, null);
-
-		JavaClass jc = getClassFrom("../loadtime/bin", "org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$TestOne");
-		byte[] bs = jc.getBytes();
-		jc = getClassFrom("../loadtime/bin", "org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$TestOneCGLIB");
-		byte[] bs2 = jc.getBytes();
-		// InputStream is = loader.getResourceAsStream("org.aspectj.weaver.loadtime.ClassLoaderWeaverAdaptorTests$TestOne");
-		assertNotNull(bs);
-		TestWeavingContext wc = new TestWeavingContext(loader);
-		Definition d = new Definition();
-		d.getExcludePatterns().add("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest.TestOneCGLIB");
-		d.getAspectClassNames().add("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$AnAspect");
-		wc.addDefinition(d);
-		TestClassLoaderWeavingAdaptor adaptor = new TestClassLoaderWeavingAdaptor();
-		adaptor.initialize(loader, wc);
-		boolean exist = adaptor.generatedClassesExistFor("Junk");
-		assertFalse("There should be no generated classes", exist);
-
-		// before:
-		// Acceptance 331ms
-		// Rejection 3160ms
-
-		// after:
-		// Acceptance 379ms
-		// Rejection 103ms
-
-		long stime = System.currentTimeMillis();
-		for (int i = 0; i < 100000; i++) {
-			boolean b = adaptor.accept("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$TestOne", bs);
-			assertTrue("Should be accepted", b);
-		}
-		long etime = System.currentTimeMillis();
-		System.out.println("Acceptance " + (etime - stime) + "ms");
-		stime = System.currentTimeMillis();
-		for (int i = 0; i < 100000; i++) {
-			adaptor.delegateForCurrentClass = null;
-			boolean b = adaptor.accept("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$TestOneCGLIB", bs2);
-			assertFalse("Should not be accepting CGLIB", b);
-		}
-		etime = System.currentTimeMillis();
-		System.out.println("Rejection " + (etime - stime) + "ms");
-		BcelWorld world = adaptor.getWorld();
-		Field f = World.class.getDeclaredField("typeMap");
-		f.setAccessible(true);
-		TypeMap typeMap = (TypeMap) f.get(world);
-		System.out.println(typeMap.getExpendableMap().size());
-		System.out.println(typeMap.getMainMap().size());
-		printExpendableMap(typeMap.getExpendableMap());
-		printMainMap(typeMap.getMainMap());
-	}
+//	public void testFastExclusionOne() throws Exception {
+//		TestClassLoaderWeavingAdaptor adaptor = getAdaptor(null, "testdata..*");
+//
+//		String orangesSub = "testdata.sub.Oranges";
+//		JavaClass orangesClass = getClassFrom(orangesSub);
+//		byte[] orangesBytes = orangesClass.getBytes();
+//
+//		boolean accepted = adaptor.accept(orangesSub, orangesBytes);
+//		assertFalse("Should not be accepted", accepted);
+//		TypeMap map = accessTypeMap(adaptor);
+//
+//		// The aspect
+//		assertEquals(1, map.getExpendableMap().size());
+//
+//		// primitives, void and jlObject
+//		assertEquals(10, map.getMainMap().size());
+//
+//		// Important thing here is that the rejection of testdata.sub.Oranges did not require it to be loaded into the world at all
+//	}
+//
+//	/**
+//	 * Testing fast includes of the pattern "*". World should not have any new types in it after inclusion.
+//	 */
+//	public void testFastInclusionOne() throws Exception {
+//		TestClassLoaderWeavingAdaptor adaptor = getAdaptor("*", null);
+//
+//		String orangesSub = "testdata.sub.Oranges";
+//		JavaClass orangesClass = getClassFrom(orangesSub);
+//		byte[] orangesBytes = orangesClass.getBytes();
+//
+//		boolean accepted = adaptor.accept(orangesSub, orangesBytes);
+//		assertTrue("Should be accepted", accepted);
+//		TypeMap map = accessTypeMap(adaptor);
+//
+//		// The aspect
+//		assertEquals(1, map.getExpendableMap().size());
+//
+//		// primitives, void and jlObject
+//		assertEquals(10, map.getMainMap().size());
+//
+//		// Important thing here is that the rejection of testdata.sub.Oranges did not require it to be loaded into the world at all
+//	}
+//
+//	/**
+//	 * Testing fast excludes of the pattern "*Oranges". World should not have any new types in it after rejection.
+//	 */
+//	public void testFastExclusionTwo() throws Exception {
+//		TestClassLoaderWeavingAdaptor adaptor = getAdaptor(null, "*Oranges");
+//
+//		String oranges = "testdata.Oranges";
+//		JavaClass orangesClass = getClassFrom(oranges);
+//		byte[] orangesBytes = orangesClass.getBytes();
+//
+//		boolean accepted = adaptor.accept(oranges, orangesBytes);
+//		assertFalse("Should not be accepted", accepted);
+//		TypeMap map = accessTypeMap(adaptor);
+//
+//		// The aspect
+//		assertEquals(1, map.getExpendableMap().size());
+//		// primitives, void and jlObject
+//		assertEquals(10, map.getMainMap().size());
+//
+//		String orangesSub = "testdata.sub.Oranges";
+//
+//		JavaClass orangesSubClass = getClassFrom(orangesSub);
+//		byte[] orangesSubBytes = orangesSubClass.getBytes();
+//
+//		accepted = adaptor.accept(orangesSub, orangesSubBytes);
+//		assertFalse("Should not be accepted", accepted);
+//		map = accessTypeMap(adaptor);
+//
+//		// The aspect
+//		assertEquals(1, map.getExpendableMap().size());
+//		// primitives, void and jlObject
+//		assertEquals(10, map.getMainMap().size());
+//	}
+//
+//	/**
+//	 * Testing fast excludes of the pattern "*..*Oranges*". World should not have any new types in it after rejection.
+//	 */
+//	public void testFastExclusionThree() throws Exception {
+//		TestClassLoaderWeavingAdaptor adaptor = getAdaptor(null, "*..*ran*");
+//
+//		String oranges = "testdata.Oranges";
+//		JavaClass orangesClass = getClassFrom(oranges);
+//		byte[] orangesBytes = orangesClass.getBytes();
+//
+//		boolean accepted = adaptor.accept(oranges, orangesBytes);
+//		assertFalse("Should not be accepted", accepted);
+//		TypeMap map = accessTypeMap(adaptor);
+//
+//		// The aspect
+//		assertEquals(1, map.getExpendableMap().size());
+//
+//		// primitives, void and jlObject
+//		assertEquals(10, map.getMainMap().size());
+//
+//		String orangesSub = "testdata.sub.Oranges";
+//		JavaClass orangesSubClass = getClassFrom(orangesSub);
+//		byte[] orangesSubBytes = orangesSubClass.getBytes();
+//
+//		accepted = adaptor.accept(orangesSub, orangesSubBytes);
+//		assertFalse("Should not be accepted", accepted);
+//		map = accessTypeMap(adaptor);
+//
+//		// The aspect
+//		assertEquals(1, map.getExpendableMap().size());
+//		// primitives, void and jlObject
+//		assertEquals(10, map.getMainMap().size());
+//
+//		String apples = "testdata.Apples";
+//		JavaClass applesClass = getClassFrom(apples);
+//		byte[] applesBytes = applesClass.getBytes();
+//
+//		accepted = adaptor.accept(apples, applesBytes);
+//		assertTrue("Should be accepted", accepted);
+//		map = accessTypeMap(adaptor);
+//
+//		// The aspect and the Apples type
+//		assertEquals(1, map.getExpendableMap().size());
+//		// primitives, void and jlObject
+//		assertEquals(10, map.getMainMap().size());
+//	}
+//
+//	/**
+//	 * Testing fast inclusion checking of exact include names eg. "testdata.sub.Oranges"
+//	 */
+//	public void testFastInclusionTwo() throws Exception {
+//		TestClassLoaderWeavingAdaptor adaptor = getAdaptor("testdata.sub.Oranges", null);
+//
+//		String oranges = "testdata.Oranges";
+//		JavaClass orangesClass = getClassFrom(oranges);
+//		byte[] orangesBytes = orangesClass.getBytes();
+//
+//		boolean accepted = adaptor.accept(oranges, orangesBytes);
+//		assertFalse("Should not be accepted", accepted);
+//		TypeMap map = accessTypeMap(adaptor);
+//
+//		// The aspect
+//		assertEquals(1, map.getExpendableMap().size());
+//
+//		// primitives, void and jlObject
+//		assertEquals(10, map.getMainMap().size());
+//
+//		String orangesSub = "testdata.sub.Oranges";
+//		JavaClass orangesSubClass = getClassFrom(orangesSub);
+//		byte[] orangesSubBytes = orangesSubClass.getBytes();
+//
+//		accepted = adaptor.accept(orangesSub, orangesSubBytes);
+//		assertTrue("Should be accepted", accepted);
+//		map = accessTypeMap(adaptor);
+//
+//		// The aspect
+//		assertEquals(1, map.getExpendableMap().size());
+//		// primitives, void and jlObject
+//		assertEquals(10, map.getMainMap().size());
+//
+//		String apples = "testdata.Apples";
+//		JavaClass applesClass = getClassFrom(apples);
+//		byte[] applesBytes = applesClass.getBytes();
+//
+//		accepted = adaptor.accept(apples, applesBytes);
+//		assertFalse("Should not be accepted", accepted);
+//		map = accessTypeMap(adaptor);
+//
+//		// The aspect and the Apples type
+//		assertEquals(1, map.getExpendableMap().size());
+//		// primitives, void and jlObject
+//		assertEquals(10, map.getMainMap().size());
+//	}
+//
+//	/**
+//	 * Testing fast excludes of the pattern groovy related pattern -
+//	 */
+//	// public void testFastExclusionFour() throws Exception {
+//	// TestClassLoaderWeavingAdaptor adaptor = getAdaptor("*", "testdata..* && !testdata.sub.Oran*");
+//	//
+//	// String oranges = "testdata.Oranges";
+//	// JavaClass orangesClass = getClassFrom(oranges);
+//	// byte[] orangesBytes = orangesClass.getBytes();
+//	//
+//	// boolean accepted = adaptor.accept(oranges, orangesBytes);
+//	// assertFalse("Should not be accepted", accepted);
+//	// TypeMap map = accessTypeMap(adaptor);
+//	//
+//	// // The aspect
+//	// assertEquals(1, map.getExpendableMap().size());
+//	//
+//	// // primitives, void and jlObject
+//	// assertEquals(10, map.getMainMap().size());
+//	//
+//	// String orangesSub = "testdata.sub.Oranges";
+//	// JavaClass orangesSubClass = getClassFrom(orangesSub);
+//	// byte[] orangesSubBytes = orangesSubClass.getBytes();
+//	//
+//	// accepted = adaptor.accept(orangesSub, orangesSubBytes);
+//	// assertTrue("Should be accepted", accepted);
+//	// map = accessTypeMap(adaptor);
+//	//
+//	// // The aspect
+//	// assertEquals(1, map.getExpendableMap().size());
+//	// // primitives, void and jlObject
+//	// assertEquals(10, map.getMainMap().size());
+//	// }
+//
+//	public void testAcceptanceSpeedStarDotDotStar() throws Exception {
+//		URLClassLoader loader = new URLClassLoader(new URL[] { new File("../loadtime/bin").toURI().toURL() }, null);
+//
+//		JavaClass jc = getClassFrom("../loadtime/bin", "org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$TestOne");
+//		byte[] bs = jc.getBytes();
+//		jc = getClassFrom("../loadtime/bin", "org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$TestOneCGLIB");
+//		byte[] bs2 = jc.getBytes();
+//		// InputStream is = loader.getResourceAsStream("org.aspectj.weaver.loadtime.ClassLoaderWeaverAdaptorTests$TestOne");
+//		assertNotNull(bs);
+//		TestWeavingContext wc = new TestWeavingContext(loader);
+//		Definition d = new Definition();
+//		d.getExcludePatterns().add("*..*CGLIB*");
+//		d.getAspectClassNames().add("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$AnAspect");
+//		wc.addDefinition(d);
+//		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
+//		adaptor.initialize(loader, wc);
+//		boolean exist = adaptor.generatedClassesExistFor("Junk");
+//		assertFalse("There should be no generated classes", exist);
+//
+//		// before:
+//		// Acceptance 331ms
+//		// Rejection 3368ms
+//
+//		// after:
+//		// Acceptance 343ms
+//		// Rejection 80ms
+//
+//		long stime = System.currentTimeMillis();
+//		for (int i = 0; i < 100000; i++) {
+//			boolean b = adaptor.accept("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$TestOne", bs);
+//			assertTrue("Should be accepted", b);
+//		}
+//		long etime = System.currentTimeMillis();
+//		System.out.println("Acceptance " + (etime - stime) + "ms");
+//		stime = System.currentTimeMillis();
+//		for (int i = 0; i < 100000; i++) {
+//			adaptor.delegateForCurrentClass = null;
+//			boolean b = adaptor.accept("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$TestOneCGLIB", bs2);
+//			assertFalse("Should not be accepting CGLIB", b);
+//		}
+//		etime = System.currentTimeMillis();
+//		System.out.println("Rejection " + (etime - stime) + "ms");
+//
+//	}
+//
+//	// TODO
+//	// shouldn't add it to the type patterns if we are going to fast handle it
+//	// include for exact name, what does it mean?
+//	// excludes="!xxxx" should also be fast matched...
+//
+//	public void testAcceptanceSpeedExactName() throws Exception {
+//		URLClassLoader loader = new URLClassLoader(new URL[] { new File("../loadtime/bin").toURI().toURL() }, null);
+//
+//		JavaClass jc = getClassFrom("../loadtime/bin", "org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$TestOne");
+//		byte[] bs = jc.getBytes();
+//		jc = getClassFrom("../loadtime/bin", "org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$TestOneCGLIB");
+//		byte[] bs2 = jc.getBytes();
+//		// InputStream is = loader.getResourceAsStream("org.aspectj.weaver.loadtime.ClassLoaderWeaverAdaptorTests$TestOne");
+//		assertNotNull(bs);
+//		TestWeavingContext wc = new TestWeavingContext(loader);
+//		Definition d = new Definition();
+//		d.getExcludePatterns().add("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest.TestOneCGLIB");
+//		d.getAspectClassNames().add("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$AnAspect");
+//		wc.addDefinition(d);
+//		TestClassLoaderWeavingAdaptor adaptor = new TestClassLoaderWeavingAdaptor();
+//		adaptor.initialize(loader, wc);
+//		boolean exist = adaptor.generatedClassesExistFor("Junk");
+//		assertFalse("There should be no generated classes", exist);
+//
+//		// before:
+//		// Acceptance 331ms
+//		// Rejection 3160ms
+//
+//		// after:
+//		// Acceptance 379ms
+//		// Rejection 103ms
+//
+//		long stime = System.currentTimeMillis();
+//		for (int i = 0; i < 100000; i++) {
+//			boolean b = adaptor.accept("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$TestOne", bs);
+//			assertTrue("Should be accepted", b);
+//		}
+//		long etime = System.currentTimeMillis();
+//		System.out.println("Acceptance " + (etime - stime) + "ms");
+//		stime = System.currentTimeMillis();
+//		for (int i = 0; i < 100000; i++) {
+//			adaptor.delegateForCurrentClass = null;
+//			boolean b = adaptor.accept("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$TestOneCGLIB", bs2);
+//			assertFalse("Should not be accepting CGLIB", b);
+//		}
+//		etime = System.currentTimeMillis();
+//		System.out.println("Rejection " + (etime - stime) + "ms");
+//		BcelWorld world = adaptor.getWorld();
+//		Field f = World.class.getDeclaredField("typeMap");
+//		f.setAccessible(true);
+//		TypeMap typeMap = (TypeMap) f.get(world);
+//		System.out.println(typeMap.getExpendableMap().size());
+//		System.out.println(typeMap.getMainMap().size());
+//		printExpendableMap(typeMap.getExpendableMap());
+//		printMainMap(typeMap.getMainMap());
+//	}
 
 	// --- infrastructure ---
 
