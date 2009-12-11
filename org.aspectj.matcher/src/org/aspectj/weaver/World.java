@@ -1703,4 +1703,8 @@ public abstract class World implements Dump.INode {
 			}
 		}
 	}
+	
+	public TypeMap getTypeMap() {
+		return typeMap;	
+	}
 }
