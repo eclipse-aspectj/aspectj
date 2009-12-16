@@ -57,6 +57,7 @@ public abstract class AjAttribute {
 			ByteArrayOutputStream b0 = new ByteArrayOutputStream();
 			DataOutputStream s0 = new DataOutputStream(b0);
 			write(s0);
+			s0.close();
 			return b0.toByteArray();
 		} catch (IOException e) {
 			// shouldn't happen with ByteArrayOutputStreams
@@ -77,6 +78,7 @@ public abstract class AjAttribute {
 			s0.writeShort(nameIndex);
 			s0.writeInt(bytes.length);
 			s0.write(bytes);
+			s0.close();
 			return b0.toByteArray();
 		} catch (IOException e) {
 			// shouldn't happen with ByteArrayOutputStreams
