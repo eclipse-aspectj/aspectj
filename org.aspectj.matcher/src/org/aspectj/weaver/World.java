@@ -1703,8 +1703,13 @@ public abstract class World implements Dump.INode {
 			}
 		}
 	}
-	
+
 	public TypeMap getTypeMap() {
-		return typeMap;	
+		return typeMap;
 	}
+
+	public static void reset() {
+		ResolvedType.resetPrimitives();
+	}
+
 }
