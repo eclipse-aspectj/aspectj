@@ -141,6 +141,67 @@ public class Java15PointcutExpressionTest extends TestCase {
 
 	}
 	
+	private static final Set<PointcutPrimitive> DEFAULT_SUPPORTED_PRIMITIVES = new HashSet<PointcutPrimitive>();
+
+	 static {
+	  DEFAULT_SUPPORTED_PRIMITIVES.add(PointcutPrimitive.EXECUTION);
+	  DEFAULT_SUPPORTED_PRIMITIVES.add(PointcutPrimitive.ARGS);
+	  DEFAULT_SUPPORTED_PRIMITIVES.add(PointcutPrimitive.REFERENCE);
+	  DEFAULT_SUPPORTED_PRIMITIVES.add(PointcutPrimitive.THIS);
+	  DEFAULT_SUPPORTED_PRIMITIVES.add(PointcutPrimitive.TARGET);
+	  DEFAULT_SUPPORTED_PRIMITIVES.add(PointcutPrimitive.WITHIN);
+	  DEFAULT_SUPPORTED_PRIMITIVES.add(PointcutPrimitive.AT_ANNOTATION);
+	  DEFAULT_SUPPORTED_PRIMITIVES.add(PointcutPrimitive.AT_WITHIN);
+	  DEFAULT_SUPPORTED_PRIMITIVES.add(PointcutPrimitive.AT_ARGS);
+	  DEFAULT_SUPPORTED_PRIMITIVES.add(PointcutPrimitive.AT_TARGET);
+	 }
+
+	public void testPerformanceOfPointcutParsing() {
+		String expression = "execution(public * rewards.internal.*.*Repository+.*(..))";
+		long stime1 = System.currentTimeMillis();
+		PointcutParser parser = PointcutParser.getPointcutParserSupportingSpecifiedPrimitivesAndUsingContextClassloaderForResolution(DEFAULT_SUPPORTED_PRIMITIVES);
+		long stime2 = System.currentTimeMillis();
+		PointcutExpression pointcutExpression = parser.parsePointcutExpression(expression, null, new PointcutParameter[0]);
+		long etime = System.currentTimeMillis();
+		System.out.println("Time to get a parser "+(stime2-stime1)+"ms");
+		System.out.println("Time taken to parse expression is "+(etime-stime2)+"ms");
+	}
+	
+
+	public void testPerformanceOfPointcutParsingWithBean() {
+		String expression = "execution(public * rewards.internal.*.*Repository+.*(..))";
+		PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
+		BeanDesignatorHandler beanHandler = new BeanDesignatorHandler();
+		parser.registerPointcutDesignatorHandler(beanHandler);
+		long stime = System.currentTimeMillis();
+		PointcutExpression pointcutExpression = parser.parsePointcutExpression(expression, null, new PointcutParameter[0]);
+		long etime = System.currentTimeMillis();
+		System.out.println("Time taken to parse expression is "+(etime-stime)+"ms");
+	}
+	
+	private class BeanDesignatorHandler implements PointcutDesignatorHandler {
+
+		private String askedToParse;
+		public boolean simulateDynamicTest = false;
+		
+		public String getDesignatorName() {
+			return "bean";
+		}
+	
+		/* (non-Javadoc)
+		 * @see org.aspectj.weaver.tools.PointcutDesignatorHandler#parse(java.lang.String)
+		 */
+		public ContextBasedMatcher parse(String expression) {
+			this.askedToParse = expression;
+			return null;
+//			return new BeanPointcutExpression(expression,this.simulateDynamicTest);
+		}
+		
+		public String getExpressionLastAskedToParse() {
+			return this.askedToParse;
+		}
+	}
+	
 
 	/**
 	 * Test matching of pointcuts against expressions.  A reflection world is being used on the backend here (not a Bcel one).
