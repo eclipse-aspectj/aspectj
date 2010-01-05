@@ -815,6 +815,24 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 				}
 			}
 			// include are "OR"ed
+			if (includeStar) {
+				return true;
+			}
+			if (!includeExactName.isEmpty()) {
+				didSomeIncludeMatching = true;
+				for (String exactname : includeExactName) {
+					if (fastClassName.equals(exactname)) {
+						return true;
+					}
+				}
+			}
+			for (int i = 0; i < m_includeStartsWith.size(); i++) {
+				didSomeIncludeMatching = true;
+				boolean fastaccept = fastClassName.startsWith(m_includeStartsWith.get(i));
+				if (fastaccept) {
+					return true;
+				}
+			}
 			accept = !didSomeIncludeMatching; // only true if no includes at all
 			for (TypePattern typePattern : includeTypePattern) {
 				accept = typePattern.matchesStatically(classInfo);
