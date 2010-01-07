@@ -1,4 +1,5 @@
 package org.aspectj.loadtime;
+
 /*******************************************************************************
  * Copyright (c) 2005 Contributors.
  * All rights reserved.
@@ -17,7 +18,6 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import org.aspectj.weaver.loadtime.AjTest;
-import org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest;
 import org.aspectj.weaver.loadtime.WeavingContextTest;
 import org.aspectj.weaver.loadtime.WeavingURLClassLoaderTest;
 import org.aspectj.weaver.loadtime.test.DocumentParserTest;
@@ -27,20 +27,20 @@ import org.aspectj.weaver.loadtime.test.DocumentParserTest;
  */
 public class LoadtimeModuleTests extends TestCase {
 
-    public static Test suite() {
-        TestSuite suite = new TestSuite(LoadtimeModuleTests.class.getName());
+	public static Test suite() {
+		TestSuite suite = new TestSuite(LoadtimeModuleTests.class.getName());
 
-        suite.addTestSuite(DocumentParserTest.class);
-        suite.addTestSuite(AjTest.class);
-        suite.addTestSuite(ClassLoaderWeavingAdaptorTest.class);
-        //        suite.addTestSuite(JRockitAgentTest.class);
-        suite.addTestSuite(WeavingContextTest.class);
-        suite.addTestSuite(WeavingURLClassLoaderTest.class);
-        return suite;
-    }
+		suite.addTestSuite(DocumentParserTest.class);
+		suite.addTestSuite(AjTest.class);
+		// suite.addTestSuite(ClassLoaderWeavingAdaptorTest.class);
+		// suite.addTestSuite(JRockitAgentTest.class);
+		suite.addTestSuite(WeavingContextTest.class);
+		suite.addTestSuite(WeavingURLClassLoaderTest.class);
+		return suite;
+	}
 
-    public static void main(String args[]) throws Throwable {
-        TestRunner.run(suite());
-    }
+	public static void main(String args[]) throws Throwable {
+		TestRunner.run(suite());
+	}
 
 }
