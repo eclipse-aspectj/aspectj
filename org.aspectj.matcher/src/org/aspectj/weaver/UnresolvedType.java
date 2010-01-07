@@ -638,7 +638,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	/**
 	 * Returns a resolved version of this type according to a particular world.
 	 * 
-	 * @param world thie {@link World} within which to resolve.
+	 * @param world the {@link World} within which to resolve.
 	 * @return a resolved type representing this type in the appropriate world.
 	 */
 	public ResolvedType resolve(World world) {
