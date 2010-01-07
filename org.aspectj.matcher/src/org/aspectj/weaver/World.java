@@ -357,11 +357,40 @@ public abstract class World implements Dump.INode {
 		}
 		ResolvedType resolved = typeMap.get(ty.getSignature());
 		if (resolved == null) {
-			typeMap.put(ty.getSignature(), ty);
+			resolved = ensureRawTypeIfNecessary(ty);
+			typeMap.put(ty.getSignature(), resolved);
 			resolved = ty;
 		}
 		resolved.world = this;
 		return resolved;
+	}
+
+	/**
+	 * When the world is operating in 1.5 mode, the TypeMap should only contain RAW types and never directly generic types. The RAW
+	 * type will contain a reference to the generic type.
+	 * 
+	 * @param type a possibly generic type for which the raw needs creating as it is not currently in the world
+	 * @return a type suitable for putting into the world
+	 */
+	private ResolvedType ensureRawTypeIfNecessary(ResolvedType type) {
+		if (!isInJava5Mode()) {
+			// Don't care, not running in 1.5 mode
+			return type;
+		}
+		if (type.isRawType()) {
+			return type;
+		}
+		// Key requirement here is if it is generic, create a RAW entry to be put in the map that points to it
+		if (type instanceof ReferenceType && ((ReferenceType) type).getDelegate() != null && type.isGenericType()) {
+			ReferenceType rawType = new ReferenceType(type.getSignature(), this);
+			rawType.typeKind = UnresolvedType.TypeKind.RAW;
+			ReferenceTypeDelegate delegate = ((ReferenceType) type).getDelegate();
+			rawType.setDelegate(delegate);
+			rawType.setGenericType((ReferenceType) type);
+			return rawType;
+		}
+		// probably parameterized...
+		return type;
 	}
 
 	/**
