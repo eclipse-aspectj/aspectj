@@ -23,7 +23,6 @@ import junit.framework.TestCase;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
-import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.World.TypeMap;
 import org.aspectj.weaver.bcel.BcelWorld;
@@ -466,7 +465,8 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 	// }
 
 	public void testAcceptanceSpeedStarDotDotStar() throws Exception {
-		URLClassLoader loader = new URLClassLoader(new URL[] { new File("../loadtime/bin").toURI().toURL() }, null);
+		URLClassLoader loader = new URLClassLoader(new URL[] { new File("../loadtime/bin").toURI().toURL(),
+				new File("../loadtime/testdata/anaspect.jar").toURI().toURL() }, null);
 
 		JavaClass jc = getClassFrom("../loadtime/bin", "org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$TestOne");
 		byte[] bs = jc.getBytes();
@@ -477,7 +477,7 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 		TestWeavingContext wc = new TestWeavingContext(loader);
 		Definition d = new Definition();
 		d.getExcludePatterns().add("*..*CGLIB*");
-		d.getAspectClassNames().add("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$AnAspect");
+		d.getAspectClassNames().add("AnAspect");
 		wc.addDefinition(d);
 		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
 		adaptor.initialize(loader, wc);
@@ -516,7 +516,8 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 	// excludes="!xxxx" should also be fast matched...
 
 	public void testAcceptanceSpeedExactName() throws Exception {
-		URLClassLoader loader = new URLClassLoader(new URL[] { new File("../loadtime/bin").toURI().toURL() }, null);
+		URLClassLoader loader = new URLClassLoader(new URL[] { new File("../loadtime/bin").toURI().toURL(),
+				new File("../loadtime/testdata/anaspect.jar").toURI().toURL() }, null);
 
 		JavaClass jc = getClassFrom("../loadtime/bin", "org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$TestOne");
 		byte[] bs = jc.getBytes();
@@ -527,7 +528,7 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 		TestWeavingContext wc = new TestWeavingContext(loader);
 		Definition d = new Definition();
 		d.getExcludePatterns().add("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest.TestOneCGLIB");
-		d.getAspectClassNames().add("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$AnAspect");
+		d.getAspectClassNames().add("AnAspect");
 		wc.addDefinition(d);
 		TestClassLoaderWeavingAdaptor adaptor = new TestClassLoaderWeavingAdaptor();
 		adaptor.initialize(loader, wc);
@@ -580,11 +581,12 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 
 	public TestClassLoaderWeavingAdaptor getAdaptor(Definition... definitions) {
 		try {
-			URLClassLoader loader = new URLClassLoader(new URL[] { new File("../loadtime/bin").toURI().toURL() }, null);
+			URLClassLoader loader = new URLClassLoader(new URL[] { new File("../loadtime/bin").toURI().toURL(),
+					new File("../loadtime/testdata/anaspect.jar").toURI().toURL() }, null);
 			TestWeavingContext wc = new TestWeavingContext(loader);
 			for (Definition definition : definitions) {
 				// need some random aspect or the weaver will shut down!
-				definition.getAspectClassNames().add("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$AnAspect");
+				definition.getAspectClassNames().add("AnAspect");
 				wc.addDefinition(definition);
 			}
 			TestClassLoaderWeavingAdaptor adaptor = new TestClassLoaderWeavingAdaptor();
@@ -597,7 +599,8 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 
 	public TestClassLoaderWeavingAdaptor getAdaptor(String[] includePatterns, String[] excludePatterns) {
 		try {
-			URLClassLoader loader = new URLClassLoader(new URL[] { new File("../loadtime/bin").toURI().toURL() }, null);
+			URLClassLoader loader = new URLClassLoader(new URL[] { new File("../loadtime/bin").toURI().toURL(),
+					new File("../loadtime/testdata/anaspect.jar").toURI().toURL() }, null);
 			TestWeavingContext wc = new TestWeavingContext(loader);
 			Definition d = new Definition();
 			if (includePatterns != null) {
@@ -611,7 +614,7 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 				}
 			}
 			// need some random aspect or the weaver will shut down!
-			d.getAspectClassNames().add("org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptorTest$AnAspect");
+			d.getAspectClassNames().add("AnAspect");
 			wc.addDefinition(d);
 			TestClassLoaderWeavingAdaptor adaptor = new TestClassLoaderWeavingAdaptor();
 			adaptor.initialize(loader, wc);
@@ -661,10 +664,11 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 		return SyntheticRepository.getInstance(cp);
 	}
 
-	@Aspect
-	static class AnAspect {
-
-	}
+	//
+	// @Aspect
+	// static class AnAspect {
+	//
+	// }
 
 	class TestOne {
 
