@@ -18,6 +18,9 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc167Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	// public void testGenericsItds_298665() {
+	// runTest("itd generics");
+	// }
 	public void testGenericAspectSignatures_296533() {
 		runTest("generic aspect signatures");
 	}
@@ -30,9 +33,10 @@ public class Ajc167Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("optimizing annotation binding");
 	}
 
-	public void testOptimizingAnnotationBindingPerfTest() {
-		runTest("optimizing annotation binding - 2");
-	}
+	// bit flakey - can depend on machine load
+	// public void testOptimizingAnnotationBindingPerfTest() {
+	// runTest("optimizing annotation binding - 2");
+	// }
 
 	/*
 	 * public void testPerThisLTW_295092() { runTest("perthis ltw"); }
