@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.6.8 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2009 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 1.6.8 Readme</h1>
+
+<p>The first sentence in the 1.6.7 readme was 'AspectJ 1.6.7 includes some radical internal changes.'</p>
+<p>Unfortunately not enough testing was done on 1.6.7 and two nasty issues were found that really needed addressing. Fixes for
+these issues are all that is new in 1.6.8.</p>
+
+<h2>Incorrect treatment of some aop.xml include/exclude patterns</h2>
+
+<p>See <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=298786">Bug 298786</a></p>
+<p>Basically, if a certain combination of includes and excludes were specified in the within section, then the weaver 
+would fail to merge them correctly.  The conditions for the failure are: </p>
+<ul>
+<li>you need an exclude pattern that the weaver is not optimizing for (basically a pattern that could not be matched based upon
+the typename alone, eg. based on whether the type has an annotation)
+<li>you need two include patterns - one that is being optimized and one that is not
+</ul>
+<p>
+These three meet that spec:</p>
+<code><pre>
+    &lt;include within="*"/&gt;
+    &lt;include within="@Foo *"/&gt;
+    &lt;exclude within="*Funk*y*"/&gt;
+</pre></code>
+
+<p>The include="*" can be optimized.  The include="@Foo *" is not optimized.  The exclude="*Funk*y*" is not
+optimized (this one could be but isn't right now as it includes multiple wildcards).</p>
+
+<p>With that configuration any types that the include="*" would have accepted are
+not accepted.</p>
+
+<h2>Stack overflow problem in ReferenceType.isAssignableFrom()</h2>
+
+<p>See <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=298908">Bug 298908</a></p>
+<p>This is actually a problem AspectJ has had for a long time, but has always proved elusive to recreate.  It turns out
+that it is memory related and the more aggressive policy in 1.6.7 causes it to occur much more frequently.</p>
+
+<p>The stack trace when this is hit looks like:</p>
+
+<code><pre>
+	...
+	at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:393)
+	at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:427)
+	at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:393)
+	at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:427)
+	at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:393)
+	at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:427)
+	at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:393)
+	at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:427)
+	at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:393)
+	at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:427)
+	at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:393)
+	...
+</pre></code>
+
+<p>The weaver has changed over the 1.5 and 1.6 releases and is now reaching a point where it really shrinks quite
+small when not in use (maybe in a loadtime environment you have finished loading all your classes).  The aim is that
+it can rebuild any required state that is needed later.  With the move in 1.6.7 from Soft to Weak references, things are 
+being discarded much sooner and this is exercising the state rebuilding code that wasn't used that often prior to 1.6.7.</p>
+
+<p>The problem is actually because the call on a generic type to get the raw type was actually broken
+and returning the generic type.  This then loops forever trying to get the raw type from the generic type.  This happens because
+the world should store only raw types (which point to their generic form) but there was a bug in state rebuilding that instead
+put the generic type directly in the world.</p>
+
+<hr>
+Thanks to everyone who helped get to the bottom of these problems.
+
+<h4>
+<!-- ============================== -->  
+</body>
+</html>
