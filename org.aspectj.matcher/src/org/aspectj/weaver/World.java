@@ -1389,9 +1389,9 @@ public abstract class World implements Dump.INode {
 				if (s.equalsIgnoreCase("true")) {
 					typeMap.debugDemotion = true;
 				}
-				s = p.getProperty(xsetTYPE_REFS, "false");
-				if (s.equalsIgnoreCase("true")) {
-					typeMap.policy = TypeMap.USE_WEAK_REFS;
+				s = p.getProperty(xsetTYPE_REFS, "true");
+				if (s.equalsIgnoreCase("false")) {
+					typeMap.policy = TypeMap.USE_SOFT_REFS;
 				}
 
 				runMinimalMemorySet = p.getProperty(xsetRUN_MINIMAL_MEMORY) != null;
