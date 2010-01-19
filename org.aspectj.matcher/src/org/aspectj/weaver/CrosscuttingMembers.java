@@ -145,8 +145,9 @@ public class CrosscuttingMembers {
 			// FIXME asc perf Possible Improvement. Investigate why this is
 			// called twice in a weave ?
 			DeclareAnnotation da = (DeclareAnnotation) declare;
-			if (da.getAspect() == null)
+			if (da.getAspect() == null) {
 				da.setAspect(inAspect);
+			}
 			if (da.isDeclareAtType()) {
 				declareAnnotationsOnType.add(da);
 			} else if (da.isDeclareAtField()) {
@@ -166,8 +167,9 @@ public class CrosscuttingMembers {
 	}
 
 	public void exposeType(UnresolvedType typeToExpose) {
-		if (ResolvedType.isMissing(typeToExpose))
+		if (ResolvedType.isMissing(typeToExpose)) {
 			return;
+		}
 		if (typeToExpose.isParameterizedType() || typeToExpose.isRawType()) {
 			if (typeToExpose instanceof ResolvedType) {
 				typeToExpose = ((ResolvedType) typeToExpose).getGenericType();
@@ -182,8 +184,9 @@ public class CrosscuttingMembers {
 			ResolvedTypeMunger rTM = cTM.getMunger();
 			if (rTM != null && rTM instanceof ExposeTypeMunger) {
 				String exposedType = ((ExposeTypeMunger) rTM).getExposedTypeSignature();
-				if (exposedType.equals(signatureToLookFor))
+				if (exposedType.equals(signatureToLookFor)) {
 					return; // dont need to bother
+				}
 			}
 		}
 		addTypeMunger(world.getWeavingSupport().concreteTypeMunger(new ExposeTypeMunger(typeToExpose), inAspect));
@@ -194,15 +197,10 @@ public class CrosscuttingMembers {
 		// new PrivilegedAccessMunger(member), inAspect));
 	}
 
-	public void addPrivilegedAccesses(Collection accessedMembers) {
-		for (Iterator i = accessedMembers.iterator(); i.hasNext();) {
-			addPrivilegedAccess((ResolvedMember) i.next());
+	public void addPrivilegedAccesses(Collection<ResolvedMember> accessedMembers) {
+		for (ResolvedMember member : accessedMembers) {
+			addTypeMunger(world.getWeavingSupport().concreteTypeMunger(new PrivilegedAccessMunger(member), inAspect));
 		}
-	}
-
-	private void addPrivilegedAccess(ResolvedMember member) {
-		// System.err.println("add priv access: " + member);
-		addTypeMunger(world.getWeavingSupport().concreteTypeMunger(new PrivilegedAccessMunger(member), inAspect));
 	}
 
 	public Collection<ShadowMunger> getCflowEntries() {
@@ -370,8 +368,9 @@ public class CrosscuttingMembers {
 						}
 					}
 				}
-				if (!foundInOtherSet)
+				if (!foundInOtherSet) {
 					foundInequality = true;
+				}
 			}
 			if (foundInequality) {
 				// System.out.println("type munger change");
