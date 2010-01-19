@@ -113,10 +113,20 @@ public class NameMangler {
 		return makeName("privMethod", aspectType.getNameAsIdentifier(), objectType.getNameAsIdentifier(), name);
 	}
 
+	/**
+	 * Create the old style (<1.6.9) format getter name which includes the aspect requesting access and the type containing the
+	 * field in the name of the type. At 1.6.9 and above the name is simply ajc$get$<fieldname>
+	 */
 	public static String privilegedAccessMethodForFieldGet(String name, UnresolvedType objectType, UnresolvedType aspectType) {
-		return makeName("privFieldGet", aspectType.getNameAsIdentifier(), objectType.getNameAsIdentifier(), name);
+		StringBuilder nameBuilder = new StringBuilder();
+		nameBuilder.append(makeName("privFieldGet", aspectType.getNameAsIdentifier(), objectType.getNameAsIdentifier(), name));
+		return nameBuilder.toString();
 	}
 
+	/**
+	 * Create the old style (<1.6.9) format setter name which includes the aspect requesting access and the type containing the
+	 * field in the name of the type. At 1.6.9 and above the name is simply ajc$set$<fieldname>
+	 */
 	public static String privilegedAccessMethodForFieldSet(String name, UnresolvedType objectType, UnresolvedType aspectType) {
 		return makeName("privFieldSet", aspectType.getNameAsIdentifier(), objectType.getNameAsIdentifier(), name);
 	}
@@ -185,7 +195,7 @@ public class NameMangler {
 		if (Modifier.isPublic(modifiers)) {
 			return name;
 		}
-		// ??? might want to handle case where aspect and class are in same package similar to public
+		// // ??? might want to handle case where aspect and class are in same package similar to public
 		return makeName("interField", makeVisibilityName(modifiers, aspectType), name);
 	}
 
