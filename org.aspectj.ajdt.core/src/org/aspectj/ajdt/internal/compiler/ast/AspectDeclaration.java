@@ -286,8 +286,12 @@ public class AspectDeclaration extends TypeDeclaration {
 		classFile.extraAttributes.add(new EclipseAttributeAdapter(new AjAttribute.Aspect(perClause)));
 
 		if (binding.privilegedHandler != null) {
-			ResolvedMember[] members = ((PrivilegedHandler) binding.privilegedHandler).getMembers();
-			classFile.extraAttributes.add(new EclipseAttributeAdapter(new AjAttribute.PrivilegedAttribute(members)));
+		    // Only build the attribute if necessary
+			PrivilegedHandler privilegedHandler= (PrivilegedHandler)binding.privilegedHandler;
+			ResolvedMember[] members = privilegedHandler.getMembers();
+			if (members.length>0) {
+				classFile.extraAttributes.add(new EclipseAttributeAdapter(new AjAttribute.PrivilegedAttribute(members)));
+			}
 		}
 
 		// XXX need to get this attribute on anyone with a pointcut for good errors
