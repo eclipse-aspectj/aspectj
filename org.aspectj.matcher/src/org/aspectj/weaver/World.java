@@ -133,6 +133,7 @@ public abstract class World implements Dump.INode {
 	private boolean shouldGenerateStackMaps = false;
 	protected boolean bcelRepositoryCaching = xsetBCEL_REPOSITORY_CACHING_DEFAULT.equalsIgnoreCase("true");
 	private boolean fastMethodPacking = false;
+	private int itdVersion = 2; // defaults to 2nd generation itds
 	private boolean completeBinaryTypes = false;
 	private boolean overWeaving = false;
 	public boolean forDEBUG_structuralChangesCode = false;
@@ -892,6 +893,10 @@ public abstract class World implements Dump.INode {
 	public final static String xsetOPTIMIZED_MATCHING = "optimizedMatching";
 	public final static String xsetTIMERS_PER_JOINPOINT = "timersPerJoinpoint";
 	public final static String xsetTIMERS_PER_FASTMATCH_CALL = "timersPerFastMatchCall";
+	public final static String xsetITD_VERSION = "itdVersion";
+	public final static String xsetITD_VERSION_ORIGINAL = "1";
+	public final static String xsetITD_VERSION_2NDGEN = "2";
+	public final static String xsetITD_VERSION_DEFAULT = xsetITD_VERSION_2NDGEN;
 
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;
@@ -1359,6 +1364,14 @@ public abstract class World implements Dump.INode {
 									.info("[bcelRepositoryCaching=false] AspectJ will not use a bcel cache for class information"));
 				}
 
+				// ITD Versions
+				// 1 is the first version in use up to AspectJ 1.6.8
+				// 2 is from 1.6.9 onwards
+				s = p.getProperty(xsetITD_VERSION, xsetITD_VERSION_DEFAULT);
+				if (s.equals(xsetITD_VERSION_ORIGINAL)) {
+					itdVersion = 1;
+				}
+
 				s = p.getProperty(xsetFAST_PACK_METHODS, "true");
 				fastMethodPacking = s.equalsIgnoreCase("true");
 
@@ -1739,6 +1752,16 @@ public abstract class World implements Dump.INode {
 
 	public static void reset() {
 		ResolvedType.resetPrimitives();
+	}
+
+	/**
+	 * Returns the version of ITD that this world wants to create. The default is the new style (2) but in some cases where there
+	 * might be a clash, the old style can be used. It is set through the option -Xset:itdVersion=1
+	 * 
+	 * @return the ITD version this world wants to create - 1=oldstyle 2=new, transparent style
+	 */
+	public int getItdVersion() {
+		return itdVersion;
 	}
 
 }
