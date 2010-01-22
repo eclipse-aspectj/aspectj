@@ -11,7 +11,7 @@ public class TheWholeShow {
   public static void main(String[] args) {
     Field[] twsFields = TheWholeShow.class.getDeclaredFields();
     for (Field f : twsFields) {
-      if (!f.getName().equals("f") && !f.getName().equals("x")  && !f.getName().startsWith("ajc$interField$")) {
+      if (!f.getName().equals("f") && !f.getName().equals("x")  && !f.getName().startsWith("y") && !f.getName().equals("z")) {
         if (!f.isSynthetic()) {
           System.err.println("Found non-synthetic field: " + f.getName());
           throw new IllegalStateException("Found non-synthetic field: " + f.getName());
