@@ -500,9 +500,9 @@ public class EclipseFactory {
 	 * with its target type.
 	 */
 	public ResolvedMemberImpl makeResolvedMemberForITD(MethodBinding binding, TypeBinding declaringType, Map /*
-																										 * TypeVariableBinding >
-																										 * original alias name
-																										 */recoveryAliases) {
+																											 * TypeVariableBinding >
+																											 * original alias name
+																											 */recoveryAliases) {
 		ResolvedMemberImpl result = null;
 		try {
 			typeVariablesForAliasRecovery = recoveryAliases;
@@ -1139,6 +1139,10 @@ public class EclipseFactory {
 	public void minicleanup() {
 		this.typexToBinding.clear();
 		this.rawTypeXToBinding.clear();
+	}
+
+	public int getItdVersion() {
+		return world.getItdVersion();
 	}
 
 }

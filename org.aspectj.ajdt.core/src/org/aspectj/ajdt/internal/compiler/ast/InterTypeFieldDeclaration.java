@@ -16,6 +16,9 @@ import java.lang.reflect.Modifier;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
+import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedFieldBinding;
+import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedHandler;
+import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
@@ -31,6 +34,9 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.weaver.AjAttribute;
@@ -76,8 +82,9 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 
 	public void resolveOnType(ClassScope classScope) {
 		super.resolveOnType(classScope);
-		if (ignoreFurtherInvestigation)
+		if (ignoreFurtherInvestigation) {
 			return;
+		}
 		if (Modifier.isStatic(declaredModifiers) && onTypeBinding.isInterface()) {
 			scope.problemReporter().signalError(sourceStart, sourceEnd, "static inter-type field on interface not supported");
 			ignoreFurtherInvestigation = true;
@@ -91,10 +98,12 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 	}
 
 	public void resolve(ClassScope upperScope) {
-		if (munger == null)
+		if (munger == null) {
 			ignoreFurtherInvestigation = true;
-		if (ignoreFurtherInvestigation)
+		}
+		if (ignoreFurtherInvestigation) {
 			return;
+		}
 
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(upperScope);
 		ResolvedMember sig = munger.getSignature();
@@ -226,17 +235,21 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 		resolveOnType(classScope);
 
-		if (ignoreFurtherInvestigation)
+		if (ignoreFurtherInvestigation) {
 			return null;
+		}
 
 		binding = classScope.referenceContext.binding.resolveTypesFor(binding);
-		if (ignoreFurtherInvestigation)
+		if (ignoreFurtherInvestigation) {
 			return null;
+		}
 
-		if (isTargetAnnotation(classScope, "field"))
+		if (isTargetAnnotation(classScope, "field")) {
 			return null; // Error message output in isTargetAnnotation
-		if (isTargetEnum(classScope, "field"))
+		}
+		if (isTargetEnum(classScope, "field")) {
 			return null; // Error message output in isTargetEnum
+		}
 
 		if (!Modifier.isStatic(declaredModifiers)) {
 			super.binding.parameters = new TypeBinding[] { onTypeBinding, };
@@ -249,8 +262,9 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 			declaringType = declaringType.getGenericType();
 		}
 
-		if (interTypeScope == null)
+		if (interTypeScope == null) {
 			return null; // We encountered a problem building the scope, don't continue - error already reported
+		}
 
 		// Build a half correct resolvedmember (makeResolvedMember understands tvars) then build a fully correct sig from it
 		ResolvedMember sigtemp = world.makeResolvedMemberForITD(binding, onTypeBinding, interTypeScope.getRecoveryAliases());
@@ -277,8 +291,9 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 	}
 
 	public void generateCode(ClassScope classScope, ClassFile classFile) {
-		if (ignoreFurtherInvestigation)
+		if (ignoreFurtherInvestigation) {
 			return;
+		}
 
 		classFile.extraAttributes.add(new EclipseAttributeAdapter(makeAttribute()));
 		super.generateCode(classScope, classFile);
@@ -314,8 +329,25 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		CodeStream codeStream = classFile.codeStream;
 		codeStream.reset(this, classFile);
 
-		FieldBinding classField = world.makeFieldBinding(AjcMemberMaker.interFieldClassField(sig, aspectType), munger
-				.getTypeVariableAliases());
+		NewFieldTypeMunger fieldMunger = (NewFieldTypeMunger) munger;
+
+        // Force use of version 1 if there is a field with that name on the type already
+		if (world.getItdVersion() == 1) {
+			fieldMunger.version = NewFieldTypeMunger.VersionOne;
+		} else {
+			if (!onTypeBinding.isInterface()) {
+				FieldBinding[] existingFields = onTypeBinding.fields();
+				for (int f = 0; f < existingFields.length; f++) {
+					FieldBinding fieldBinding = existingFields[f];
+					if (CharOperation.equals(fieldBinding.name, sig.getName().toCharArray())) {
+						fieldMunger.version = NewFieldTypeMunger.VersionOne;
+					}
+				}
+			}
+		}
+
+		FieldBinding classField = world.makeFieldBinding(AjcMemberMaker.interFieldClassField(sig, aspectType,
+				fieldMunger.version == NewFieldTypeMunger.VersionTwo), munger.getTypeVariableAliases());
 
 		codeStream.initializeMaxLocals(binding);
 		if (isGetter) {
@@ -356,6 +388,28 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 	}
 
 	private void generateClassReadBody(MethodBinding binding, FieldBinding field, CodeStream codeStream) {
+		if (field.isPrivate() || !field.canBeSeenBy(binding.declaringClass.fPackage)) {
+
+			PrivilegedHandler handler = (PrivilegedHandler) Scope.findPrivilegedHandler(binding.declaringClass);
+			if (handler == null) {
+				// one is now required!
+				ReferenceBinding typebinding = binding.declaringClass;
+				if (typebinding instanceof ReferenceBinding) {
+					SourceTypeBinding sourceBinding = (SourceTypeBinding) typebinding;
+					handler = new PrivilegedHandler((AspectDeclaration) sourceBinding.scope.referenceContext);
+					sourceBinding.privilegedHandler = handler;
+				}
+			}
+			PrivilegedFieldBinding fBinding = (PrivilegedFieldBinding) handler.getPrivilegedAccessField(field, null);
+
+			if (field.isStatic()) {
+				codeStream.invokestatic(fBinding.reader);
+			} else {
+				codeStream.aload_0();
+				codeStream.invokestatic(fBinding.reader);
+			}
+			return;
+		}
 		if (field.isStatic()) {
 			codeStream.getstatic(field);
 		} else {
@@ -365,6 +419,20 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 	}
 
 	private void generateClassWriteBody(MethodBinding binding, FieldBinding field, CodeStream codeStream) {
+		if (field.isPrivate() || !field.canBeSeenBy(binding.declaringClass.fPackage)) {
+			PrivilegedFieldBinding fBinding = (PrivilegedFieldBinding) Scope.findPrivilegedHandler(binding.declaringClass)
+					.getPrivilegedAccessField(field, null);
+
+			if (field.isStatic()) {
+				codeStream.load(field.type, 0);
+				codeStream.invokestatic(fBinding.writer);
+			} else {
+				codeStream.aload_0();
+				codeStream.load(field.type, 1);
+				codeStream.invokestatic(fBinding.writer);
+			}
+			return;
+		}
 		if (field.isStatic()) {
 			codeStream.load(field.type, 0);
 			codeStream.putstatic(field);

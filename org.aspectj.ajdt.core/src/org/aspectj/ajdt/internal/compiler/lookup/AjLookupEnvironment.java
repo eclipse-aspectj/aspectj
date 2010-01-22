@@ -697,7 +697,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 							+ " should be recompiled with ajc-1.1.1 for best results", onType.getSourceLocation(), null);
 					needOldStyleWarning = false;
 				}
-				onType.addInterTypeMunger(munger);
+				onType.addInterTypeMunger(munger, true);
 			}
 		}
 

@@ -52,9 +52,10 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 		}
 		targetTypeX = munger.getSignature().getDeclaringType().resolve(world.getWorld());
 		// AMC, needed until generic and raw have distinct sigs...
-		if (targetTypeX.isParameterizedType() || targetTypeX.isRawType())
+		if (targetTypeX.isParameterizedType() || targetTypeX.isRawType()) {
 			targetTypeX = targetTypeX.getGenericType();
-		// targetBinding = (ReferenceBinding)world.makeTypeBinding(targetTypeX);
+			// targetBinding = (ReferenceBinding)world.makeTypeBinding(targetTypeX);
+		}
 	}
 
 	public static boolean supportsKind(ResolvedTypeMunger.Kind kind) {
@@ -70,25 +71,31 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 	 */
 	public boolean munge(SourceTypeBinding sourceType, ResolvedType onType) {
 		ResolvedType rt = onType;
-		if (rt.isRawType() || rt.isParameterizedType())
+		if (rt.isRawType() || rt.isParameterizedType()) {
 			rt = rt.getGenericType();
+		}
 		boolean isExactTargetType = rt.equals(targetTypeX);
 		if (!isExactTargetType) {
 			// might be the topmost implementor of an interface we care about
-			if (munger.getKind() != ResolvedTypeMunger.Method)
+			if (munger.getKind() != ResolvedTypeMunger.Method) {
 				return false;
-			if (onType.isInterface())
+			}
+			if (onType.isInterface()) {
 				return false;
-			if (!munger.needsAccessToTopmostImplementor())
+			}
+			if (!munger.needsAccessToTopmostImplementor()) {
 				return false;
+			}
 			// so we do need access, and this type could be it...
-			if (!onType.isTopmostImplementor(targetTypeX))
+			if (!onType.isTopmostImplementor(targetTypeX)) {
 				return false;
+			}
 			// we are the topmost implementor of an interface type that needs munging
 			// but we only care about public methods here (we only do this at all to
 			// drive the JDT MethodVerifier correctly)
-			if (!Modifier.isPublic(munger.getSignature().getModifiers()))
+			if (!Modifier.isPublic(munger.getSignature().getModifiers())) {
 				return false;
+			}
 		}
 		// System.out.println("munging: " + sourceType);
 		// System.out.println("match: " + world.fromEclipse(sourceType) +
@@ -131,11 +138,13 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 		if (sourceType.isInterface()) {
 			boolean isAbstract = (binding.modifiers & ClassFileConstants.AccAbstract) != 0;
 			binding.modifiers = (binding.modifiers & (ClassFileConstants.AccPublic | ClassFileConstants.AccProtected | ClassFileConstants.AccPrivate));
-			if (isAbstract)
+			if (isAbstract) {
 				binding.modifiers |= ClassFileConstants.AccAbstract;
+			}
 		}
-		if (munger.getSignature().isVarargsMethod())
+		if (munger.getSignature().isVarargsMethod()) {
 			binding.modifiers |= ClassFileConstants.AccVarargs;
+		}
 		findOrCreateInterTypeMemberFinder(sourceType).addInterTypeMethod(binding);
 		return true;
 	}
@@ -150,13 +159,15 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 				String name = new String(tv.sourceName);
 				TypeVariableBinding[] tv2 = sourceMethod.binding.typeVariables;
 				for (int j = 0; j < tv2.length; j++) {
-					if (new String(tv2[j].sourceName).equals(name))
+					if (new String(tv2[j].sourceName).equals(name)) {
 						typeVariables[i].declaringElement = binding;
+					}
 				}
 			}
 			for (int i = 0; i < typeVariables.length; i++) {
-				if (typeVariables[i].declaringElement == null)
+				if (typeVariables[i].declaringElement == null) {
 					throw new RuntimeException("Declaring element not set");
+				}
 
 			}
 			// classScope.referenceContext.binding.addMethod(binding);
@@ -174,7 +185,12 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 			// classScope.referenceContext.binding.addField(binding);
 		} else {
 			InterTypeFieldBinding binding = new InterTypeFieldBinding(world, munger, aspectType, sourceMethod);
-			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeField(binding);
+			InterTypeMemberFinder finder = findOrCreateInterTypeMemberFinder(sourceType);
+			// Downgrade this field munger if name is already 'claimed'
+			if (finder.definesField(munger.getSignature().getName())) {
+				munger.version = NewFieldTypeMunger.VersionOne;
+			}
+			finder.addInterTypeField(binding);
 		}
 	}
 
