@@ -427,7 +427,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			} else if (a instanceof AjAttribute.DeclareAttribute) {
 				declares.add(((AjAttribute.DeclareAttribute) a).getDeclare());
 			} else if (a instanceof AjAttribute.PrivilegedAttribute) {
-				privilegedAccess = ((AjAttribute.PrivilegedAttribute) a).getAccessedMembers();
+				AjAttribute.PrivilegedAttribute privAttribute = (AjAttribute.PrivilegedAttribute) a;
+				privilegedAccess = privAttribute.getAccessedMembers();
 			} else if (a instanceof AjAttribute.SourceContextAttribute) {
 				if (getResolvedTypeX().getSourceContext() instanceof SourceContextImpl) {
 					AjAttribute.SourceContextAttribute sca = (AjAttribute.SourceContextAttribute) a;
@@ -971,5 +972,10 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 	public void setExposedToWeaver(boolean b) {
 		exposedToWeaver = b;
+	}
+
+	@Override
+	public int getCompilerVersion() {
+		return wvInfo.getMajorVersion();
 	}
 }

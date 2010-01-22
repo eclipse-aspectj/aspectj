@@ -1689,7 +1689,7 @@ public class BcelWeaver {
 				didSomething = true;
 				ResolvedTypeMunger newAnnotationTM = new AnnotationOnTypeMunger(annoX);
 				newAnnotationTM.setSourceLocation(decA.getSourceLocation());
-				onType.addInterTypeMunger(new BcelTypeMunger(newAnnotationTM, decA.getAspect().resolve(world)));
+				onType.addInterTypeMunger(new BcelTypeMunger(newAnnotationTM, decA.getAspect().resolve(world)), false);
 				decA.copyAnnotationTo(onType);
 			}
 		}
@@ -1749,7 +1749,7 @@ public class BcelWeaver {
 					newParentMunger.setIsMixin(true);
 				}
 				newParentMunger.setSourceLocation(p.getSourceLocation());
-				onType.addInterTypeMunger(new BcelTypeMunger(newParentMunger, xcutSet.findAspectDeclaringParents(p)));
+				onType.addInterTypeMunger(new BcelTypeMunger(newParentMunger, xcutSet.findAspectDeclaringParents(p)), false);
 			}
 		}
 		return didSomething;
@@ -1764,7 +1764,7 @@ public class BcelWeaver {
 		for (Iterator i = typeMungerList.iterator(); i.hasNext();) {
 			ConcreteTypeMunger m = (ConcreteTypeMunger) i.next();
 			if (!m.isLateMunger() && m.matches(onType)) {
-				onType.addInterTypeMunger(m);
+				onType.addInterTypeMunger(m, false);
 			}
 		}
 		CompilationAndWeavingContext.leavingPhase(tok);

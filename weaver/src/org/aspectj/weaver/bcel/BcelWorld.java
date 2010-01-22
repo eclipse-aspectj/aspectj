@@ -748,7 +748,7 @@ public class BcelWorld extends World implements Repository {
 				ResolvedTypeMunger newParentMunger = new NewParentTypeMunger(newParent);
 				newParentMunger.setSourceLocation(p.getSourceLocation());
 				onType.addInterTypeMunger(new BcelTypeMunger(newParentMunger, getCrosscuttingMembersSet()
-						.findAspectDeclaringParents(p)));
+						.findAspectDeclaringParents(p)), false);
 			}
 		}
 		return didSomething;
@@ -775,7 +775,7 @@ public class BcelWorld extends World implements Repository {
 				didSomething = true;
 				ResolvedTypeMunger newAnnotationTM = new AnnotationOnTypeMunger(annoX);
 				newAnnotationTM.setSourceLocation(decA.getSourceLocation());
-				onType.addInterTypeMunger(new BcelTypeMunger(newAnnotationTM, decA.getAspect().resolve(this)));
+				onType.addInterTypeMunger(new BcelTypeMunger(newAnnotationTM, decA.getAspect().resolve(this)), false);
 				decA.copyAnnotationTo(onType);
 			}
 		}

@@ -63,6 +63,7 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.model.AsmRelationshipProvider;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -567,8 +568,10 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		if (onType.equals(gen.getType())) {
 			if (member.getKind() == Member.FIELD) {
 				// System.out.println("matched: " + gen);
-				addFieldGetter(gen, member, AjcMemberMaker.privilegedAccessMethodForFieldGet(aspectType, member));
-				addFieldSetter(gen, member, AjcMemberMaker.privilegedAccessMethodForFieldSet(aspectType, member));
+				addFieldGetter(gen, member, AjcMemberMaker
+						.privilegedAccessMethodForFieldGet(aspectType, member, munger.shortSyntax));
+				addFieldSetter(gen, member, AjcMemberMaker
+						.privilegedAccessMethodForFieldSet(aspectType, member, munger.shortSyntax));
 				return true;
 			} else if (member.getKind() == Member.METHOD) {
 				addMethodDispatch(gen, member, AjcMemberMaker.privilegedAccessMethodForMethod(aspectType, member));
@@ -1764,7 +1767,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				gen.addMethodGen(mg1);
 			} else {
 				weaver.addInitializer(this);
-				FieldGen fg = makeFieldGen(gen, AjcMemberMaker.interFieldClassField(field, aspectType));
+				ResolvedMember newField = AjcMemberMaker.interFieldClassField(field, aspectType,
+						munger.version == NewFieldTypeMunger.VersionTwo);
+				FieldGen fg = makeFieldGen(gen, newField);
 
 				if (annotationsOnRealMember != null) {
 					for (int i = 0; i < annotationsOnRealMember.length; i++) {
