@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
@@ -198,8 +199,12 @@ public class CrosscuttingMembers {
 	}
 
 	public void addPrivilegedAccesses(Collection<ResolvedMember> accessedMembers) {
+		int version = inAspect.getCompilerVersion();
 		for (ResolvedMember member : accessedMembers) {
-			addTypeMunger(world.getWeavingSupport().concreteTypeMunger(new PrivilegedAccessMunger(member), inAspect));
+			PrivilegedAccessMunger privilegedAccessMunger = new PrivilegedAccessMunger(member,
+					version >= WeaverVersionInfo.WEAVER_VERSION_AJ169);
+			ConcreteTypeMunger concreteTypeMunger = world.getWeavingSupport().concreteTypeMunger(privilegedAccessMunger, inAspect);
+			addTypeMunger(concreteTypeMunger);
 		}
 	}
 

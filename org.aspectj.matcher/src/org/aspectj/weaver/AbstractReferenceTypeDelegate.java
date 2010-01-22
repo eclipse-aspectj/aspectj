@@ -19,6 +19,7 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.GenericSignature;
 import org.aspectj.util.GenericSignatureParser;
 import org.aspectj.util.GenericSignature.ClassSignature;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDelegate {
 
@@ -133,6 +134,10 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 
 	public boolean copySourceContext() {
 		return true;
+	}
+
+	public int getCompilerVersion() {
+		return WeaverVersionInfo.getCurrentWeaverMajorVersion();
 	}
 
 }

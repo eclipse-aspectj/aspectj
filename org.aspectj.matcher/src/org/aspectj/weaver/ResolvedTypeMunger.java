@@ -36,6 +36,7 @@ import org.aspectj.util.TypeSafeEnum;
  * is the thing that is used on the eclipse side and serialized into a ConcreteTypeMunger.
  */
 public abstract class ResolvedTypeMunger {
+
 	protected Kind kind;
 	protected ResolvedMember signature;
 

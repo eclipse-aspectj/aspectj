@@ -175,12 +175,55 @@ public class CrosscuttingMembersSet {
 	public List<ConcreteTypeMunger> getTypeMungers() {
 		if (typeMungers == null) {
 			List<ConcreteTypeMunger> ret = new ArrayList<ConcreteTypeMunger>();
-			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
-				ret.addAll(i.next().getTypeMungers());
+			for (CrosscuttingMembers xmembers : members.values()) {
+				// With 1.6.9 there is a change that enables use of more optimal accessors (accessors for private fields).
+				// Here is where we determine if two aspects are asking for access to the same field. If they are
+				// and
+				// In the new style multiple aspects can share the same privileged accessors, so here we check if
+				// two aspects are asking for access to the same field. If they are then we don't add a duplicate
+				// accessor.
+				for (ConcreteTypeMunger mungerToAdd : xmembers.getTypeMungers()) {
+					ResolvedTypeMunger resolvedMungerToAdd = mungerToAdd.getMunger();
+					if (isNewStylePrivilegedAccessMunger(resolvedMungerToAdd)) {
+						String newFieldName = resolvedMungerToAdd.getSignature().getName();
+						boolean alreadyExists = false;
+						for (ConcreteTypeMunger existingMunger : ret) {
+							ResolvedTypeMunger existing = existingMunger.getMunger();
+							if (isNewStylePrivilegedAccessMunger(existing)) {
+								String existingFieldName = existing.getSignature().getName();
+								if (existingFieldName.equals(newFieldName)
+										&& existing.getSignature().getDeclaringType().equals(
+												resolvedMungerToAdd.getSignature().getDeclaringType())) {
+									alreadyExists = true;
+									break;
+								}
+							}
+						}
+						if (!alreadyExists) {
+							ret.add(mungerToAdd);
+						}
+					} else {
+						ret.add(mungerToAdd);
+					}
+				}
 			}
 			typeMungers = ret;
 		}
 		return typeMungers;
+	}
+
+	/**
+	 * Determine if the type munger is: (1) for privileged access (2) for a normally non visible field (3) is from an aspect wanting
+	 * 'old style' (ie. long) accessor names
+	 */
+	private boolean isNewStylePrivilegedAccessMunger(ResolvedTypeMunger typeMunger) {
+		boolean b = (typeMunger != null && typeMunger.getKind() == ResolvedTypeMunger.PrivilegedAccess && typeMunger.getSignature()
+				.getKind() == Member.FIELD);
+		if (!b) {
+			return b;
+		}
+		PrivilegedAccessMunger privAccessMunger = (PrivilegedAccessMunger) typeMunger;
+		return privAccessMunger.shortSyntax;
 	}
 
 	public List<ConcreteTypeMunger> getLateTypeMungers() {

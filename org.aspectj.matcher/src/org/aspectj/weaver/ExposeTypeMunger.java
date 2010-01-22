@@ -18,7 +18,7 @@ public class ExposeTypeMunger extends PrivilegedAccessMunger {
 
 	public ExposeTypeMunger(UnresolvedType typeToExpose) {
 		super(new ResolvedMemberImpl(Member.STATIC_INITIALIZATION, typeToExpose, 0, ResolvedType.VOID, "<clinit>",
-				UnresolvedType.NONE));
+				UnresolvedType.NONE), false);
 	}
 
 	public String toString() {

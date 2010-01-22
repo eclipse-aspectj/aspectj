@@ -14,6 +14,7 @@ package org.aspectj.weaver;
 
 import java.util.Collection;
 
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
 
@@ -121,5 +122,13 @@ public interface ReferenceTypeDelegate {
 	 * @return true if something the result of getDeclaredInterfaces() can be cached by the caller
 	 */
 	public boolean isCacheable();
+
+	/**
+	 * If known, return the compiler/weaver version used to build this delegate. Default is the most recent level as specified in
+	 * {@link WeaverVersionInfo}.
+	 * 
+	 * @return the major version
+	 */
+	public int getCompilerVersion();
 
 }

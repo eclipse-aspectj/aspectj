@@ -246,14 +246,18 @@ public abstract class AjAttribute {
 		public final static short WEAVER_VERSION_MINOR_AJ160 = 0;
 
 		// These are the weaver major/minor numbers for AspectJ 1.6.1
-		public final static short WEAVER_VERSION_MAJOR_AJ161 = 6; // annotation
-		// value
-		// binding
+		// added annotation value binding
+		public final static short WEAVER_VERSION_MAJOR_AJ161 = 6;
 		public final static short WEAVER_VERSION_MINOR_AJ161 = 0;
 
+		// 1.6.9 adds new style ITDs. This is used to see what version of AJ was used to
+		// build the ITDs so we know id the generated get/set dispatchers are using old
+		// or new style (new style will be get/setters for private ITD fields)
+		public final static short WEAVER_VERSION_AJ169 = 1609;
+
 		// These are the weaver major/minor versions for *this* weaver
-		private final static short CURRENT_VERSION_MAJOR = WEAVER_VERSION_MAJOR_AJ161;
-		private final static short CURRENT_VERSION_MINOR = WEAVER_VERSION_MINOR_AJ161;
+		private final static short CURRENT_VERSION_MAJOR = WEAVER_VERSION_AJ169;
+		private final static short CURRENT_VERSION_MINOR = 0;
 
 		public final static WeaverVersionInfo UNKNOWN = new WeaverVersionInfo(WEAVER_VERSION_MAJOR_UNKNOWN,
 				WEAVER_VERSION_MINOR_UNKNOWN);
@@ -647,12 +651,8 @@ public abstract class AjAttribute {
 	}
 
 	public static class PrivilegedAttribute extends AjAttribute {
-		public static final String AttributeName = "org.aspectj.weaver.Privileged";
 
-		@Override
-		public String getNameString() {
-			return AttributeName;
-		}
+		public static final String AttributeName = "org.aspectj.weaver.Privileged";
 
 		private final ResolvedMember[] accessedMembers;
 
@@ -669,8 +669,14 @@ public abstract class AjAttribute {
 			return accessedMembers;
 		}
 
-		public static PrivilegedAttribute read(VersionedDataInputStream s, ISourceContext context) throws IOException {
-			return new PrivilegedAttribute(ResolvedMemberImpl.readResolvedMemberArray(s, context));
+		public static PrivilegedAttribute read(VersionedDataInputStream stream, ISourceContext context) throws IOException {
+			PrivilegedAttribute pa = new PrivilegedAttribute(ResolvedMemberImpl.readResolvedMemberArray(stream, context));
+			return pa;
+		}
+
+		@Override
+		public String getNameString() {
+			return AttributeName;
 		}
 	}
 

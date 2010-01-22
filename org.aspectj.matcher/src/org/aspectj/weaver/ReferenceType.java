@@ -136,6 +136,11 @@ public class ReferenceType extends ResolvedType {
 	}
 
 	@Override
+	public int getCompilerVersion() {
+		return delegate.getCompilerVersion();
+	}
+
+	@Override
 	public boolean isGenericType() {
 		return !isParameterizedType() && !isRawType() && delegate.isGeneric();
 	}

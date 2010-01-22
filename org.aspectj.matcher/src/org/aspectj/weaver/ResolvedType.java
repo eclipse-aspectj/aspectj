@@ -32,6 +32,7 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.Iterators.Getter;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
@@ -1672,7 +1673,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return munger;
 	}
 
-	public void addInterTypeMunger(ConcreteTypeMunger munger) {
+	/**
+	 * Add an intertype munger to this type. isDuringCompilation tells us if we should be checking for an error scenario where two
+	 * ITD fields are trying to use the same name. When this happens during compilation one of them is altered to get mangled name
+	 * but when it happens during weaving it is too late and we need to put out an error asking them to recompile.
+	 */
+	public void addInterTypeMunger(ConcreteTypeMunger munger, boolean isDuringCompilation) {
 		ResolvedMember sig = munger.getSignature();
 		bits = (bits & ~MungersAnalyzed); // clear the bit - as the mungers have changed
 		if (sig == null || munger.getMunger() == null || munger.getMunger().getKind() == ResolvedTypeMunger.PrivilegedAccess) {
@@ -1705,6 +1711,44 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		} else if (sig.getKind() == Member.FIELD) {
 			if (clashesWithExistingMember(munger, Arrays.asList(getDeclaredFields()).iterator())) {
 				return;
+			}
+			// Cannot cope with two version '2' style mungers for the same field on the same type
+			// Must error and request the user recompile at least one aspect with the
+			// -Xset:itdStyle=1 option
+			if (!isDuringCompilation) {
+				ResolvedTypeMunger thisRealMunger = munger.getMunger();
+				if (thisRealMunger instanceof NewFieldTypeMunger) {
+					NewFieldTypeMunger newFieldTypeMunger = (NewFieldTypeMunger) thisRealMunger;
+					if (newFieldTypeMunger.version == NewFieldTypeMunger.VersionTwo) {
+						String thisRealMungerSignatureName = newFieldTypeMunger.getSignature().getName();
+						for (ConcreteTypeMunger typeMunger : interTypeMungers) {
+							if (typeMunger.getMunger() instanceof NewFieldTypeMunger) {
+								if (typeMunger.getSignature().getKind() == Member.FIELD) {
+									NewFieldTypeMunger existing = (NewFieldTypeMunger) typeMunger.getMunger();
+									if (existing.getSignature().getName().equals(thisRealMungerSignatureName)
+											&& existing.version == NewFieldTypeMunger.VersionTwo
+											// this check ensures no problem for a clash with an ITD on an interface
+											&& existing.getSignature().getDeclaringType().equals(
+													newFieldTypeMunger.getSignature().getDeclaringType())) {
+
+										// report error on the aspect
+										StringBuffer sb = new StringBuffer();
+										sb
+												.append("Cannot handle two aspects both attempting to use new style ITDs for the same named field ");
+										sb
+												.append("on the same target type.  Please recompile at least one aspect with '-Xset:itdVersion=1'.");
+										sb.append(" Aspects involved: " + munger.getAspectType().getName() + " and "
+												+ typeMunger.getAspectType().getName() + ".");
+										sb.append(" Field is named '" + existing.getSignature().getName() + "'");
+										getWorld().getMessageHandler().handleMessage(
+												new Message(sb.toString(), getSourceLocation(), true));
+										return;
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		} else {
 			if (clashesWithExistingMember(munger, Arrays.asList(getDeclaredMethods()).iterator())) {
@@ -2181,8 +2225,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		public ResolvedType next() {
 			ResolvedType next = delegate.next();
 			// BUG should check for generics and erase?
-//			if (!visited.contains(next)) {
-//				visited.add(next);
+			// if (!visited.contains(next)) {
+			// visited.add(next);
 			if (visited.add(next)) {
 				toPersue.add(next); // pushes on interfaces already visited?
 			}
@@ -2690,4 +2734,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return (bits & TypeHierarchyCompleteBit) != 0;
 	}
 
+	/**
+	 * return the weaver version used to build this type - defaults to the most recent version unless discovered otherwise.
+	 * 
+	 * @return the (major) version, {@link WeaverVersionInfo}
+	 */
+	public int getCompilerVersion() {
+		return WeaverVersionInfo.getCurrentWeaverMajorVersion();
+	}
 }

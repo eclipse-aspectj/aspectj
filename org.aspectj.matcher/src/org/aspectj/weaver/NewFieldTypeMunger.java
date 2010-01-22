@@ -19,11 +19,24 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
+/**
+ * Code that created version one style ITD type mungers will be using direct field access from the dispatchers
+ * 
+ * @author Andy
+ * 
+ */
 public class NewFieldTypeMunger extends ResolvedTypeMunger {
+
+	public static final int VersionOne = 1;
+	public static final int VersionTwo = 2; // new style ITDs
+
+	public int version = VersionOne;
 
 	public NewFieldTypeMunger(ResolvedMember signature, Set superMethodsCalled, List typeVariableAliases) {
 		super(Field, signature);
+		this.version = VersionTwo;
 		this.typeVariableAliases = typeVariableAliases;
 		signature.setAnnotatedElsewhere(true);
 		this.setSuperMethodsCalled(superMethodsCalled);
@@ -39,6 +52,7 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 		writeSuperMethodsCalled(s);
 		writeSourceLocation(s);
 		writeOutTypeAliases(s);
+		s.writeInt(version);
 	}
 
 	public static ResolvedTypeMunger readField(VersionedDataInputStream s, ISourceContext context) throws IOException {
@@ -47,9 +61,15 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 		Set superMethodsCalled = readSuperMethodsCalled(s);
 		sloc = readSourceLocation(s);
 		List aliases = readInTypeAliases(s);
-		ResolvedTypeMunger munger = new NewFieldTypeMunger(fieldSignature, superMethodsCalled, aliases);
+		NewFieldTypeMunger munger = new NewFieldTypeMunger(fieldSignature, superMethodsCalled, aliases);
 		if (sloc != null)
 			munger.setSourceLocation(sloc);
+		if (s.getMajorVersion() >= WeaverVersionInfo.WEAVER_VERSION_AJ169) {
+			// there is a version int
+			munger.version = s.readInt();
+		} else {
+			munger.version = VersionOne;
+		}
 		return munger;
 	}
 
