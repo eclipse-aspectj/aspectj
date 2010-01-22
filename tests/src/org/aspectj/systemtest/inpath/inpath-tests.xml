@@ -166,6 +166,7 @@
         <compile files="X.java" classpath="helloworld.jar">
         	<message kind="warning" line="3"/>
         	<message kind="warning" line="7"/>
+        	<message kind="warning" text="needed for privileged"/>
         </compile>
     </ajc-test>
 	

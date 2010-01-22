@@ -90,6 +90,7 @@
 		<compile files="Test.java, Util.java"/>
         <run class="Test"/>
 		<compile files="Test.java, Util.java, ITDField.aj" options="-Xlint:error">
+			<message kind="error" line="1"/> <!-- two messages about new getter/setter affecting suid for private itd field -->
             <message kind="error" line="3"/>
 		</compile>
 	</ajc-test>
