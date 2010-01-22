@@ -45,8 +45,9 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	public FieldBinding getField(SourceTypeBinding sourceTypeBinding, char[] fieldName, InvocationSite site, Scope scope) {
 		FieldBinding retField = sourceTypeBinding.getFieldBase(fieldName, true); // XXX may need to get the correct value for second
 		// parameter in the future (see #55341)
-		if (interTypeFields.isEmpty())
+		if (interTypeFields.isEmpty()) {
 			return retField;
+		}
 		int fieldLength = fieldName.length;
 
 		for (int i = 0, len = interTypeFields.size(); i < len; i++) {
@@ -61,13 +62,16 @@ public class InterTypeMemberFinder implements IMemberFinder {
 
 	private FieldBinding resolveConflicts(SourceTypeBinding sourceTypeBinding, FieldBinding retField, FieldBinding field,
 			InvocationSite site, Scope scope) {
-		if (retField == null)
+		if (retField == null) {
 			return field;
+		}
 		if (site != null) {
-			if (!field.canBeSeenBy(sourceTypeBinding, site, scope))
+			if (!field.canBeSeenBy(sourceTypeBinding, site, scope)) {
 				return retField;
-			if (!retField.canBeSeenBy(sourceTypeBinding, site, scope))
+			}
+			if (!retField.canBeSeenBy(sourceTypeBinding, site, scope)) {
 				return field;
+			}
 		}
 		// XXX need dominates check on aspects
 		return new ProblemFieldBinding(retField.declaringClass, retField.name, IProblem.AmbiguousField);// ProblemReporter.Ambiguous);
@@ -153,11 +157,13 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	// }
 	// //
 	private boolean isVisible(MethodBinding m1, ReferenceBinding s) {
-		if (m1.declaringClass == s)
+		if (m1.declaringClass == s) {
 			return true;
+		}
 
-		if (m1.isPublic())
+		if (m1.isPublic()) {
 			return true;
+		}
 
 		// don't need to handle protected
 		// if (m1.isProtected()) {
@@ -259,8 +265,9 @@ public class InterTypeMemberFinder implements IMemberFinder {
 			}
 		}
 
-		if (ret.isEmpty())
+		if (ret.isEmpty()) {
 			return Binding.NO_METHODS;
+		}
 		return (MethodBinding[]) ret.toArray(new MethodBinding[ret.size()]);
 	}
 
@@ -286,8 +293,9 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		// ", " + new String(selector));
 
 		MethodBinding[] orig = sourceTypeBinding.getMethodsBase(selector);
-		if (interTypeMethods.isEmpty())
+		if (interTypeMethods.isEmpty()) {
 			return orig;
+		}
 
 		List ret = new ArrayList(Arrays.asList(orig));
 		// System.err.println("declared method: " + ret + " inters = " + interTypeMethods);
@@ -300,8 +308,9 @@ public class InterTypeMemberFinder implements IMemberFinder {
 			}
 		}
 
-		if (ret.isEmpty())
+		if (ret.isEmpty()) {
 			return Binding.NO_METHODS;
+		}
 
 		// System.err.println("method: " + ret);
 
@@ -442,6 +451,24 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		}
 
 		interTypeMethods.add(binding);
+	}
+
+	/**
+	 * @param name the name of the field
+	 * @return true if already know about an intertype field declaration for that field
+	 */
+	public boolean definesField(String name) {
+		List l = interTypeFields;
+		if (l.size() > 0) {
+			char[] nameChars = name.toCharArray();
+			for (int i = 0; i < l.size(); i++) {
+				FieldBinding fieldBinding = (FieldBinding) interTypeFields.get(i);
+				if (CharOperation.equals(fieldBinding.name, nameChars)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 }
