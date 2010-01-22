@@ -14,6 +14,7 @@ import org.aspectj.systemtest.ajc164.AllTestsAspectJ164;
 import org.aspectj.systemtest.ajc165.AllTestsAspectJ165;
 import org.aspectj.systemtest.ajc166.AllTestsAspectJ166;
 import org.aspectj.systemtest.ajc167.AllTestsAspectJ167;
+import org.aspectj.systemtest.ajc169.AllTestsAspectJ169;
 
 public class AllTests16 {
 
@@ -29,6 +30,7 @@ public class AllTests16 {
 		suite.addTest(AllTestsAspectJ165.suite());
 		suite.addTest(AllTestsAspectJ166.suite());
 		suite.addTest(AllTestsAspectJ167.suite());
+		suite.addTest(AllTestsAspectJ169.suite());
 		suite.addTest(AllTests15.suite());
 		// $JUnit-END$
 		return suite;

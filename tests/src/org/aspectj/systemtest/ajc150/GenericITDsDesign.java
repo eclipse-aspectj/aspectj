@@ -26,11 +26,10 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelTypeMunger;
 import org.aspectj.weaver.bcel.BcelWorld;
 
-
 public class GenericITDsDesign extends XMLBasedAjcTestCase {
 
 	private World recentWorld;
-	
+
 	public static Test suite() {
 		return XMLBasedAjcTestCase.loadSuite(GenericITDsDesign.class);
 	}
@@ -39,236 +38,213 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 		return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
 	}
 
-
 	private void verifyDebugString(ResolvedMember theMember, String string) {
-		assertTrue("Expected '"+string+"' but found "+theMember.toDebugString(),
-				theMember.toDebugString().equals(string));
+		assertTrue("Expected '" + string + "' but found " + theMember.toDebugString(), theMember.toDebugString().equals(string));
 	}
 
-	public static JavaClass getClassFromDisk(Ajc ajc,String classname) {
+	public static JavaClass getClassFromDisk(Ajc ajc, String classname) {
 		try {
-		ClassPath cp = 
-			new ClassPath(ajc.getSandboxDirectory() + File.pathSeparator + System.getProperty("java.class.path"));
-	    SyntheticRepository sRepos =  SyntheticRepository.getInstance(cp);
+			ClassPath cp = new ClassPath(ajc.getSandboxDirectory() + File.pathSeparator + System.getProperty("java.class.path"));
+			SyntheticRepository sRepos = SyntheticRepository.getInstance(cp);
 			return sRepos.loadClass(classname);
 		} catch (ClassNotFoundException e) {
-			fail("Couldn't find class "+classname+" in the sandbox directory.");
+			fail("Couldn't find class " + classname + " in the sandbox directory.");
 		}
 		return null;
 	}
-	
-	public static Signature getClassSignature(Ajc ajc,String classname) {
-		JavaClass clazz = getClassFromDisk(ajc,classname);
+
+	public static Signature getClassSignature(Ajc ajc, String classname) {
+		JavaClass clazz = getClassFromDisk(ajc, classname);
 		Signature sigAttr = null;
 		Attribute[] attrs = clazz.getAttributes();
 		for (int i = 0; i < attrs.length; i++) {
 			Attribute attribute = attrs[i];
-			if (attribute.getName().equals("Signature")) sigAttr = (Signature)attribute;
+			if (attribute.getName().equals("Signature"))
+				sigAttr = (Signature) attribute;
 		}
 		return sigAttr;
 	}
+
 	// Check the signature attribute on a class is correct
-	public static void verifyClassSignature(Ajc ajc,String classname,String sig) {
-		Signature sigAttr = getClassSignature(ajc,classname);
-		assertTrue("Failed to find signature attribute for class "+classname,sigAttr!=null);
-		assertTrue("Expected signature to be '"+sig+"' but was '"+sigAttr.getSignature()+"'",
-				sigAttr.getSignature().equals(sig));		
+	public static void verifyClassSignature(Ajc ajc, String classname, String sig) {
+		Signature sigAttr = getClassSignature(ajc, classname);
+		assertTrue("Failed to find signature attribute for class " + classname, sigAttr != null);
+		assertTrue("Expected signature to be '" + sig + "' but was '" + sigAttr.getSignature() + "'", sigAttr.getSignature()
+				.equals(sig));
 	}
-		
-	public List /*BcelTypeMunger*/ getTypeMunger(String classname) {
-		ClassPath cp = 
-			new ClassPath(ajc.getSandboxDirectory() + File.pathSeparator + 
-					      System.getProperty("java.class.path"));
+
+	public List /* BcelTypeMunger */getTypeMunger(String classname) {
+		ClassPath cp = new ClassPath(ajc.getSandboxDirectory() + File.pathSeparator + System.getProperty("java.class.path"));
 		recentWorld = new BcelWorld(cp.toString());
-		ReferenceType resolvedType = (ReferenceType)recentWorld.resolve(classname);
+		ReferenceType resolvedType = (ReferenceType) recentWorld.resolve(classname);
 		CrosscuttingMembers cmembers = resolvedType.collectCrosscuttingMembers(true);
 		List tmungers = cmembers.getTypeMungers();
 		return tmungers;
 	}
-	
-	private BcelTypeMunger getMungerFromLine(String classname,int linenumber) {
+
+	private BcelTypeMunger getMungerFromLine(String classname, int linenumber) {
 		List allMungers = getTypeMunger(classname);
 		for (Iterator iter = allMungers.iterator(); iter.hasNext();) {
 			BcelTypeMunger element = (BcelTypeMunger) iter.next();
-			if (element.getMunger().getSourceLocation().getLine()==linenumber) return element;
+			if (element.getMunger().getSourceLocation().getLine() == linenumber)
+				return element;
 		}
 		for (Iterator iter = allMungers.iterator(); iter.hasNext();) {
 			BcelTypeMunger element = (BcelTypeMunger) iter.next();
-			System.err.println("Line: "+element.getMunger().getSourceLocation().getLine()+"  > "+element);
+			System.err.println("Line: " + element.getMunger().getSourceLocation().getLine() + "  > " + element);
 		}
-		fail("Couldn't find a type munger from line "+linenumber+" in class "+classname);
+		fail("Couldn't find a type munger from line " + linenumber + " in class " + classname);
 		return null;
 	}
 
 	public Hashtable getMeTheFields(String classname) {
-		JavaClass theClass = getClassFromDisk(ajc,classname);
+		JavaClass theClass = getClassFromDisk(ajc, classname);
 		Hashtable retval = new Hashtable();
 		org.aspectj.apache.bcel.classfile.Field[] fs = theClass.getFields();
 		for (int i = 0; i < fs.length; i++) {
 			Field field = fs[i];
-			retval.put(field.getName(),field);
+			retval.put(field.getName(), field);
 		}
 		return retval;
 	}
-	
-	/* 
-		test plan:
-		  1. Serializing and recovering 'default bounds' type variable info:
-		     a. methods
-		     b. fields
-		     c. ctors
-		  2. Serializing and recovering 'extends' with a class bounded type variable info: 
-		     a. methods
-		     b. fields
-		     c. ctors
-		  3. Serializing and recovering 'extends' with an interface bounded type variable info:
-		     a. methods
-		     b. fields
-		     c. ctors
-		  4. Multiple interface bounds
-		     a. methods
-		     b. fields
-		     c. ctors
-		  5. wildcard bounds '? extends/? super'
-		     a. methods
-		     b. fields
-		     c. ctors
-		  6. using type variables in an ITD from the containing aspect, no bounds
-		     a. methods
-		     b. fields
-		     c. ctors
-		  
-	
-	*/ 
-	
-	
+
+	/*
+	 * test plan: 1. Serializing and recovering 'default bounds' type variable info: a. methods b. fields c. ctors 2. Serializing
+	 * and recovering 'extends' with a class bounded type variable info: a. methods b. fields c. ctors 3. Serializing and recovering
+	 * 'extends' with an interface bounded type variable info: a. methods b. fields c. ctors 4. Multiple interface bounds a. methods
+	 * b. fields c. ctors 5. wildcard bounds '? extends/? super' a. methods b. fields c. ctors 6. using type variables in an ITD
+	 * from the containing aspect, no bounds a. methods b. fields c. ctors
+	 */
+
 	// Verify: a) After storing it in a class file and recovering it (through deserialization), we can see the type
-	//            variable and that the parameter refers to the type variable.
+	// variable and that the parameter refers to the type variable.
 	public void testDesignA() {
-		runTest("generic itds - design A"); 
-		BcelTypeMunger theBcelMunger = getMungerFromLine("X",5);
+		runTest("generic itds - design A");
+		BcelTypeMunger theBcelMunger = getMungerFromLine("X", 5);
 		ResolvedType typeC = recentWorld.resolve("C");
 		ResolvedTypeMunger rtMunger = theBcelMunger.getMunger();
 		ResolvedMember theMember = rtMunger.getSignature();
 		// Let's check all parts of the member
-		assertTrue("Declaring type should be C: "+theMember,
-				theMember.getDeclaringType().equals(typeC));
-		
+		assertTrue("Declaring type should be C: " + theMember, theMember.getDeclaringType().equals(typeC));
+
 		TypeVariable tVar = theMember.getTypeVariables()[0];
-		TypeVariableReference tvrt = (TypeVariableReference)theMember.getParameterTypes()[0];
-		
-		theMember.resolve(recentWorld); // resolution will join the type variables together (i.e. make them refer to the same instance)
-		
+		TypeVariableReference tvrt = (TypeVariableReference) theMember.getParameterTypes()[0];
+
+		theMember.resolve(recentWorld); // resolution will join the type variables together (i.e. make them refer to the same
+		// instance)
+
 		tVar = theMember.getTypeVariables()[0];
-		tvrt = (TypeVariableReference)theMember.getParameterTypes()[0];
-		
-		assertTrue("Post resolution, the type variable in the parameter should be identical to the type variable declared on the member",
-				tVar==tvrt.getTypeVariable());
+		tvrt = (TypeVariableReference) theMember.getParameterTypes()[0];
+
+		assertTrue(
+				"Post resolution, the type variable in the parameter should be identical to the type variable declared on the member",
+				tVar == tvrt.getTypeVariable());
 	}
-	
+
 	// Verify: bounds are preserved and accessible after serialization
 	public void testDesignB() {
-		runTest("generic itds - design B"); 
-		BcelTypeMunger theBcelMunger = getMungerFromLine("X",7);
+		runTest("generic itds - design B");
+		BcelTypeMunger theBcelMunger = getMungerFromLine("X", 7);
 		ResolvedTypeMunger rtMunger = theBcelMunger.getMunger();
 		ResolvedMember theMember = rtMunger.getSignature();
-		verifyDebugString(theMember,"<T extends java.lang.Number> void C.m0(T)");
-		
-		theBcelMunger = getMungerFromLine("X",9);
+		verifyDebugString(theMember, "<T extends java.lang.Number> void C.m0(T)");
+
+		theBcelMunger = getMungerFromLine("X", 9);
 		rtMunger = theBcelMunger.getMunger();
 		theMember = rtMunger.getSignature();
-		verifyDebugString(theMember,"<Q extends I> void C.m1(Q)");
-		
-		theBcelMunger = getMungerFromLine("X",11);
+		verifyDebugString(theMember, "<Q extends I> void C.m1(Q)");
+
+		theBcelMunger = getMungerFromLine("X", 11);
 		rtMunger = theBcelMunger.getMunger();
 		theMember = rtMunger.getSignature();
-		verifyDebugString(theMember,"<R extends java.lang.Number,I> void C.m2(R)");
+		verifyDebugString(theMember, "<R extends java.lang.Number,I> void C.m2(R)");
 	}
-	
-	// Verify: a) multiple type variables work. 
-	//         b) type variables below the 'top level' (e.g. List<A>) are preserved.
+
+	// Verify: a) multiple type variables work.
+	// b) type variables below the 'top level' (e.g. List<A>) are preserved.
 	public void testDesignC() {
-		runTest("generic itds - design C"); 
-		BcelTypeMunger theBcelMunger = getMungerFromLine("X",9);
-		//System.err.println(theBcelMunger.getMunger().getSignature().toDebugString());
-		verifyDebugString(theBcelMunger.getMunger().getSignature(),"<T extends java.lang.Number,Q extends I> void C.m0(T, Q)");
-		
-		theBcelMunger = getMungerFromLine("X",11);
+		runTest("generic itds - design C");
+		BcelTypeMunger theBcelMunger = getMungerFromLine("X", 9);
+		// System.err.println(theBcelMunger.getMunger().getSignature().toDebugString());
+		verifyDebugString(theBcelMunger.getMunger().getSignature(), "<T extends java.lang.Number,Q extends I> void C.m0(T, Q)");
+
+		theBcelMunger = getMungerFromLine("X", 11);
 		System.err.println(theBcelMunger.getMunger().getSignature().toDebugString());
-		verifyDebugString(theBcelMunger.getMunger().getSignature(),"<A,B,C> java.util.List<A> C.m1(B, java.util.Collection<C>)");
+		verifyDebugString(theBcelMunger.getMunger().getSignature(), "<A,B,C> java.util.List<A> C.m1(B, java.util.Collection<C>)");
 	}
-	
+
 	// Verify: a) sharing type vars with some target type results in the correct variable names in the serialized form
 	public void testDesignD() {
-		runTest("generic itds - design D"); 
-		BcelTypeMunger theBcelMunger = getMungerFromLine("X",9);
+		runTest("generic itds - design D");
+		BcelTypeMunger theBcelMunger = getMungerFromLine("X", 9);
 		// System.err.println(theBcelMunger.getMunger().getSignature().toDebugString());
-		verifyDebugString(theBcelMunger.getMunger().getSignature(),"void C.m0(R)");
-		
-		theBcelMunger = getMungerFromLine("X",11);
+		verifyDebugString(theBcelMunger.getMunger().getSignature(), "void C.m0(R)");
+
+		theBcelMunger = getMungerFromLine("X", 11);
 		// System.err.println(theBcelMunger.getMunger().getSignature().toDebugString());
-		verifyDebugString(theBcelMunger.getMunger().getSignature(),"java.util.List<Q> C.m0(Q, int, java.util.List<java.util.List<Q>>)");
+		verifyDebugString(theBcelMunger.getMunger().getSignature(),
+				"java.util.List<Q> C.m0(Q, int, java.util.List<java.util.List<Q>>)");
 	}
-	
+
 	// Verify: a) for fields, sharing type vars with some target type results in the correct entries in the class file
 	public void testDesignE() {
-		runTest("generic itds - design E"); 
-		BcelTypeMunger theBcelMunger = getMungerFromLine("X",9);
-		verifyDebugString(theBcelMunger.getMunger().getSignature(),"java.util.List<Z> C.ln");
-		assertTrue("Expected to find \"Z\": "+theBcelMunger.getTypeVariableAliases(),theBcelMunger.getTypeVariableAliases().contains("Z"));
-		
-		theBcelMunger = getMungerFromLine("X",11);
-		verifyDebugString(theBcelMunger.getMunger().getSignature(),"Q C.n");
-		assertTrue("Expected to find \"Q\": "+theBcelMunger.getTypeVariableAliases(),theBcelMunger.getTypeVariableAliases().contains("Q"));
+		runTest("generic itds - design E");
+		BcelTypeMunger theBcelMunger = getMungerFromLine("X", 9);
+		verifyDebugString(theBcelMunger.getMunger().getSignature(), "java.util.List<Z> C.ln");
+		assertTrue("Expected to find \"Z\": " + theBcelMunger.getTypeVariableAliases(), theBcelMunger.getTypeVariableAliases()
+				.contains("Z"));
+
+		theBcelMunger = getMungerFromLine("X", 11);
+		verifyDebugString(theBcelMunger.getMunger().getSignature(), "Q C.n");
+		assertTrue("Expected to find \"Q\": " + theBcelMunger.getTypeVariableAliases(), theBcelMunger.getTypeVariableAliases()
+				.contains("Q"));
 	}
-	
+
 	// Verifying what gets into a class targetted with a field ITD
 	public void testDesignF() {
-	  runTest("generic itds - design F");	
-	  Hashtable fields = getMeTheFields("C");
-      
-      // Declared in src as: List C.list1;         and       List<Z> C<Z>.list2;
-      Field list1 = (Field)fields.get("ajc$interField$$list1");
-      assertTrue("Field list1 should be of type 'Ljava/util/List;' but is "+list1.getSignature(),
-    		  list1.getSignature().equals("Ljava/util/List;"));
-      Field list2 = (Field)fields.get("ajc$interField$$list1");
-      assertTrue("Field list2 should be of type 'Ljava/util/List;' but is "+list2.getSignature(),
-    		  list2.getSignature().equals("Ljava/util/List;"));
-      
-      // Declared in src as: String C.field1;      and      Q C<Q>.field2;
-      // bound for second field collapses to Object
-      Field field1 = (Field)fields.get("ajc$interField$$field1");
-      assertTrue("Field list1 should be of type 'Ljava/lang/String;' but is "+field1.getSignature(),
-    		  field1.getSignature().equals("Ljava/lang/String;"));
-      Field field2 = (Field)fields.get("ajc$interField$$field2");
-      assertTrue("Field list2 should be of type 'Ljava/lang/Object;' but is "+field2.getSignature(),
-    		  field2.getSignature().equals("Ljava/lang/Object;"));
+		runTest("generic itds - design F");
+		Hashtable fields = getMeTheFields("C");
+
+		// Declared in src as: List C.list1; and List<Z> C<Z>.list2;
+		Field list1 = (Field) fields.get("list1");// ajc$interField$$list1");
+		assertTrue("Field list1 should be of type 'Ljava/util/List;' but is " + list1.getSignature(), list1.getSignature().equals(
+				"Ljava/util/List;"));
+		Field list2 = (Field) fields.get("list2");// ajc$interField$$list1");
+		assertTrue("Field list2 should be of type 'Ljava/util/List;' but is " + list2.getSignature(), list2.getSignature().equals(
+				"Ljava/util/List;"));
+
+		// Declared in src as: String C.field1; and Q C<Q>.field2;
+		// bound for second field collapses to Object
+		Field field1 = (Field) fields.get("field1");// ajc$interField$$field1");
+		assertTrue("Field list1 should be of type 'Ljava/lang/String;' but is " + field1.getSignature(), field1.getSignature()
+				.equals("Ljava/lang/String;"));
+		Field field2 = (Field) fields.get("field2");// ajc$interField$$field2");
+		assertTrue("Field list2 should be of type 'Ljava/lang/Object;' but is " + field2.getSignature(), field2.getSignature()
+				.equals("Ljava/lang/Object;"));
 	}
-	
 
 	// Verifying what gets into a class when an interface it implements was targetted with a field ITD
 	public void testDesignG() {
-      runTest("generic itds - design G");
-	  Hashtable fields = getMeTheFields("C");
-     
-      // The ITDs are targetting an interface.  That interface is generic and is parameterized with
-      // 'String' when implemented in the class C.  This means the fields that make it into C should
-      // be parameterized with String also.
-	  
-	  //   List<Z> I<Z>.ln;                 and					Q I<Q>.n;
-//      Field field1 = (Field)fields.get("ajc$interField$X$I$ln");
-//      assertTrue("Field list1 should be of type 'Ljava/util/List;' but is "+field1.getSignature(),
-//    		  field1.getSignature().equals("Ljava/util/List;"));
-//      Field field2 = (Field)fields.get("ajc$interField$X$I$n");
-//      assertTrue("Field list2 should be of type 'Ljava/lang/String;' but is "+field2.getSignature(),
-//    		  field2.getSignature().equals("Ljava/lang/String;"));
+		runTest("generic itds - design G");
+		Hashtable fields = getMeTheFields("C");
+
+		// The ITDs are targetting an interface. That interface is generic and is parameterized with
+		// 'String' when implemented in the class C. This means the fields that make it into C should
+		// be parameterized with String also.
+
+		// List<Z> I<Z>.ln; and Q I<Q>.n;
+		// Field field1 = (Field)fields.get("ajc$interField$X$I$ln");
+		// assertTrue("Field list1 should be of type 'Ljava/util/List;' but is "+field1.getSignature(),
+		// field1.getSignature().equals("Ljava/util/List;"));
+		// Field field2 = (Field)fields.get("ajc$interField$X$I$n");
+		// assertTrue("Field list2 should be of type 'Ljava/lang/String;' but is "+field2.getSignature(),
+		// field2.getSignature().equals("Ljava/lang/String;"));
 	}
 
-	
-//	// Verify: a) sharing type vars with some target type results in the correct variable names in the serialized form
-//	public void testDesignE() {
-//		runTest("generic itds - design E");
-//		
-//	}
-		
+	// // Verify: a) sharing type vars with some target type results in the correct variable names in the serialized form
+	// public void testDesignE() {
+	// runTest("generic itds - design E");
+	//		
+	// }
+
 }
