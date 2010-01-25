@@ -981,6 +981,9 @@ public class AtAjAttributes {
 				ResolvedMember method = methods[i];
 				if (method.isAbstract()) {
 					hasAtLeastOneMethod = true;
+					if (method.hasBackingGenericMember()) {
+						method = method.getBackingGenericMember();
+					}
 					MethodDelegateTypeMunger mdtm = new MethodDelegateTypeMunger(method, struct.enclosingType, "",
 							targetTypePattern, struct.method.getName(), struct.method.getSignature());
 					mdtm.setFieldType(methodReturnType);
