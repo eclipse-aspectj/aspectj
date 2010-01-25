@@ -18,6 +18,14 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testPr298388() {
+		runTest("declare mixin and generics");
+	}
+
+	public void testPr292584() {
+		runTest("annotation around advice verifyerror");
+	}
+
 	// ---
 
 	public static Test suite() {
@@ -26,7 +34,7 @@ public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	@Override
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc167/ajc167.xml");
+		return new File("../tests/src/org/aspectj/systemtest/ajc169/ajc169.xml");
 	}
 
 }

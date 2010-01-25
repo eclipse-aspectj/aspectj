@@ -2,4 +2,27 @@
 
 <suite>
    
+   <ajc-test dir="bugs169/pr298388" title="declare mixin and generics">
+     <compile files="PR298388.java" options="-1.5"/>
+     <run class="PR298388">
+       <stdout>
+         <line text="done"/>
+       </stdout>
+     </run>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr295491" title="model annotation npe">
+     <compile files="SpringConfigurableMixin.java" options="-1.5 -emacssym"/>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr292584" title="annotation around advice verifyerror">
+     <compile files="AbstractAspect.java,ClassWithJoinPoint.java,ConcreteAspect.java" options="-1.5"/>
+     <run class="ClassWithJoinPoint">
+       <stdout>
+         <line text="Testing annotation style (should print &quot;true&quot;):"/>
+         <line text="true"/>
+       </stdout>
+     </run>
+  </ajc-test>
+  
 </suite>
