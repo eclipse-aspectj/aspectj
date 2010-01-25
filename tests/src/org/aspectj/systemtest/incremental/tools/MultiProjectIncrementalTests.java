@@ -472,6 +472,53 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals(0, warnings.size());
 	}
 
+	public void testExtendingITDAspectOnClasspath_PR298704() throws Exception {
+		String base = "pr298704_baseaspects";
+		String test = "pr298704_testaspects";
+		initialiseProject(base);
+		initialiseProject(test);
+		configureNewProjectDependency(test, base);
+
+		build(base);
+		build(test);
+		checkWasFullBuild();
+		assertNoErrors(test);
+
+		IRelationshipMap irm = getModelFor(test).getRelationshipMap();
+		assertEquals(6, irm.getEntries().size());
+		// Hid:1:(targets=1)
+		// =pr298704_testaspects/binaries<it.uniba.di.cdg.penelope.ui.mvp(AbstractViewEnhancerAspect.class}AbstractViewEnhancerAspect)IManagedView.presenters
+		// (declared on) =pr298704_testaspects<test{ViewEnhancerIntegrationTest.java[ViewEnhancerIntegrationTest[MockView
+		// Hid:2:(targets=5) =pr298704_testaspects<test{ViewEnhancerIntegrationTest.java[ViewEnhancerIntegrationTest[MockView
+		// (aspect declarations)
+		// =pr298704_testaspects<test{ViewEnhancerIntegrationTest.java[ViewEnhancerIntegrationTest}ViewEnhancerAspect
+		// Hid:3:(targets=5) =pr298704_testaspects<test{ViewEnhancerIntegrationTest.java[ViewEnhancerIntegrationTest[MockView
+		// (aspect declarations)
+		// =pr298704_testaspects/binaries<it.uniba.di.cdg.penelope.ui.mvp(AbstractViewEnhancerAspect.class}AbstractViewEnhancerAspect)IManagedView.presenters
+		// Hid:4:(targets=5) =pr298704_testaspects<test{ViewEnhancerIntegrationTest.java[ViewEnhancerIntegrationTest[MockView
+		// (aspect declarations)
+		// =pr298704_testaspects/binaries<it.uniba.di.cdg.penelope.ui.mvp(AbstractViewEnhancerAspect.class}AbstractViewEnhancerAspect)IManagedView.fire)QObject;
+		// Hid:5:(targets=5) =pr298704_testaspects<test{ViewEnhancerIntegrationTest.java[ViewEnhancerIntegrationTest[MockView
+		// (aspect declarations)
+		// =pr298704_testaspects/binaries<it.uniba.di.cdg.penelope.ui.mvp(AbstractViewEnhancerAspect.class}AbstractViewEnhancerAspect)IManagedView.registerPresenter)QIPresenter;
+		// Hid:6:(targets=5) =pr298704_testaspects<test{ViewEnhancerIntegrationTest.java[ViewEnhancerIntegrationTest[MockView
+		// (aspect declarations)
+		// =pr298704_testaspects/binaries<it.uniba.di.cdg.penelope.ui.mvp(AbstractViewEnhancerAspect.class}AbstractViewEnhancerAspect)IManagedView.unregisterPresenter)QIPresenter;
+		// Hid:7:(targets=1)
+		// =pr298704_testaspects/binaries<it.uniba.di.cdg.penelope.ui.mvp(AbstractViewEnhancerAspect.class}AbstractViewEnhancerAspect)IManagedView.registerPresenter)QIPresenter;
+		// (declared on) =pr298704_testaspects<test{ViewEnhancerIntegrationTest.java[ViewEnhancerIntegrationTest[MockView
+		// Hid:8:(targets=1)
+		// =pr298704_testaspects/binaries<it.uniba.di.cdg.penelope.ui.mvp(AbstractViewEnhancerAspect.class}AbstractViewEnhancerAspect)IManagedView.unregisterPresenter)QIPresenter;
+		// (declared on) =pr298704_testaspects<test{ViewEnhancerIntegrationTest.java[ViewEnhancerIntegrationTest[MockView
+		// Hid:9:(targets=1)
+		// =pr298704_testaspects/binaries<it.uniba.di.cdg.penelope.ui.mvp(AbstractViewEnhancerAspect.class}AbstractViewEnhancerAspect)IManagedView.fire)QObject;
+		// (declared on) =pr298704_testaspects<test{ViewEnhancerIntegrationTest.java[ViewEnhancerIntegrationTest[MockView
+		// Hid:10:(targets=1)
+		// =pr298704_testaspects<test{ViewEnhancerIntegrationTest.java[ViewEnhancerIntegrationTest}ViewEnhancerAspect (declared on)
+		// =pr298704_testaspects<test{ViewEnhancerIntegrationTest.java[ViewEnhancerIntegrationTest[MockView
+
+	}
+
 	public void testPR265729() {
 		AjdeInteractionTestbed.VERBOSE = true;
 		String lib = "pr265729_lib";
