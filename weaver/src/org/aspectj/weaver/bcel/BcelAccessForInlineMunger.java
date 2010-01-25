@@ -258,7 +258,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 				register += type.getSize();
 			}
 			il.append(Utility.createInvoke(factory, Modifier.isStatic(resolvedMember.getModifiers()) ? Constants.INVOKESTATIC
-					: Constants.INVOKESPECIAL, resolvedMember));
+					: Constants.INVOKEVIRTUAL, resolvedMember));
 			il.append(InstructionFactory.createReturn(BcelWorld.makeBcelType(inlineAccessor.getReturnType())));
 
 			m_inlineAccessorBcelMethods.put(accessor, new BcelMethod(m_aspectGen.getBcelObjectType(), method.getMethod()));
