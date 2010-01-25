@@ -124,6 +124,7 @@ public class AsmRelationshipProvider {
 		if (model == null) {
 			return;
 		}
+
 		if (World.createInjarHierarchy && isBinaryAspect(originatingAspect)) {
 			createHierarchy(model, typeTransformer, originatingAspect);
 		}
@@ -139,6 +140,28 @@ public class AsmRelationshipProvider {
 						typeTransformer.getSourceLocation().getLine());
 				if (closer != null) {
 					sourceNode = closer;
+				}
+				if (sourceNode == null) {
+					// This can be caused by the aspect defining the type munger actually being on the classpath and not the
+					// inpath or aspectpath. Rather than NPE at the next line, let's have another go at faulting it in.
+					// This inner loop is a small duplicate of the outer loop that attempts to find something closer than
+					// the type declaration
+					if (World.createInjarHierarchy) {
+						createHierarchy(model, typeTransformer, originatingAspect);
+						if (typeTransformer.getSourceLocation() != null && typeTransformer.getSourceLocation().getOffset() != -1
+								&& !isMixinRelated(typeTransformer)) {
+							sourceNode = model.getHierarchy().findElementForType(originatingAspect.getPackageName(),
+									originatingAspect.getClassName());
+							IProgramElement closer2 = model.getHierarchy().findCloserMatchForLineNumber(sourceNode,
+									typeTransformer.getSourceLocation().getLine());
+							if (closer2 != null) {
+								sourceNode = closer2;
+							}
+						} else {
+							sourceNode = model.getHierarchy().findElementForType(originatingAspect.getPackageName(),
+									originatingAspect.getClassName());
+						}
+					}
 				}
 				sourceHandle = sourceNode.getHandleIdentifier();
 			} else {
