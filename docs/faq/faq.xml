@@ -165,7 +165,7 @@
         </question>
         <answer>
           <para>Since AspectJ 1.5.2, source code and documentation is available under the
-            <ulink url="http://eclipse.org/legal/epl-v10.html">Eclipse Public License 1.0</ulink>.
+            <ulink url="http://www.eclipse.org/org/documents/epl-v10.php">Eclipse Public License 1.0</ulink>.
           </para>
           <para>AspectJ 1.1 through 1.5.1 source code and documentation is available under the
             <ulink url="http://eclipse.org/legal/cpl-v10.html">Common Public License 1.0</ulink>.
@@ -176,12 +176,11 @@
             that precludes for-profit or commercial
               redistribution.  
           </para>
-          <para>Most users only want to use AspectJ to build programs they distribute.
-          There are no restrictions here.  When you distribute your program, be sure to
-          include all the runtime classes from the aspectjrt.jar for that version of AspectJ.
-          When distributing only the runtime classes, you need not provide any notice that 
-          the program was compiled with AspectJ or includes binaries from the AspectJ project,
-          except as necessary to preserve the warranty disclaimers in our license.
+          <para>The runtime jar aspectjrt.jar and its distribution are also covered by the 
+          <ulink url="http://www.eclipse.org/org/documents/epl-v10.php">Eclipse Public License</ulink>.
+          </para>
+          <para>For answers to common licensing questions, see the 
+          <ulink url="http://www.eclipse.org/legal/eplfaq.php">Eclipse Public License FAQ</ulink>.
           </para>
           <para>
           </para>
