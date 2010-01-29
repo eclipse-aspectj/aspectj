@@ -107,6 +107,7 @@ public class Definition {
 		public final String precedence;
 		public final List<Definition.Pointcut> pointcuts;
 		public final String perclause;
+		public List<Definition.DeclareErrorOrWarning> deows;
 
 		public ConcreteAspect(String name, String extend) {
 			this(name, extend, null, null);
@@ -125,6 +126,7 @@ public class Definition {
 			}
 			this.precedence = precedence;
 			this.pointcuts = new ArrayList<Definition.Pointcut>();
+			this.deows = new ArrayList<Definition.DeclareErrorOrWarning>();
 			this.perclause = perclause;
 		}
 	}
@@ -136,6 +138,18 @@ public class Definition {
 		public Pointcut(String name, String expression) {
 			this.name = name;
 			this.expression = expression;
+		}
+	}
+
+	public static class DeclareErrorOrWarning {
+		public final boolean isError;
+		public final String pointcut;
+		public final String message;
+
+		public DeclareErrorOrWarning(boolean isError, String pointcut, String message) {
+			this.isError = isError;
+			this.pointcut = pointcut;
+			this.message = message;
 		}
 	}
 
