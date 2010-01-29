@@ -26,6 +26,7 @@ import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
+import org.aspectj.apache.bcel.generic.FieldGen;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.ObjectType;
@@ -47,6 +48,7 @@ import org.aspectj.weaver.bcel.LazyMethodGen;
 import org.aspectj.weaver.loadtime.definition.Definition;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.PerSingleton;
+
 
 /**
  * Generates bytecode for concrete-aspect.
@@ -176,14 +178,14 @@ public class ConcreteAspectCodeGen {
 			return false;
 		}
 
-		// extends must be abstract
-		if (!parent.isAbstract()) {
+		// extends must be abstract (allow for special case of Object where just using aspect for deows)
+		if (!(parent.isAbstract() || parent.equals(ResolvedType.OBJECT))) {
 			reportError("Attempt to concretize a non-abstract aspect: " + stringify());
 			return false;
 		}
 
-		// m_parent must be aspect
-		if (!parent.isAspect()) {
+		// m_parent must be aspect (allow for special case of Object where just using aspect for deows)
+		if (!(parent.isAspect() || parent.equals(ResolvedType.OBJECT))) {
 			reportError("Attempt to concretize a non aspect: " + stringify());
 			return false;
 		}
@@ -428,6 +430,31 @@ public class ConcreteAspectCodeGen {
 			InstructionList body = mg.getBody();
 			body.append(InstructionConstants.RETURN);
 			cg.addMethodGen(mg);
+		}
+
+		if (concreteAspect.deows.size() > 0) {
+
+			int counter = 1;
+			for (Definition.DeclareErrorOrWarning deow : concreteAspect.deows) {
+
+				// Building this:
+
+				// @DeclareWarning("call(* javax.sql..*(..)) && !within(org.xyz.daos..*)")
+				// static final String aMessage = "Only DAOs should be calling JDBC.";
+
+				FieldGen field = new FieldGen(Modifier.FINAL, ObjectType.STRING, "rule" + (counter++), cg.getConstantPool());
+				SimpleElementValue svg = new SimpleElementValue(ElementValue.STRING, cg.getConstantPool(), deow.pointcut);
+				List elems = new ArrayList();
+				elems.add(new NameValuePair("value", svg, cg.getConstantPool()));
+				AnnotationGen mag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/Declare"
+						+ (deow.isError ? "Error" : "Warning")), elems, true, cg.getConstantPool());
+				field.addAnnotation(mag);
+
+				field.setValue(deow.message);
+				cg.addField(field, null);
+
+
+			}
 		}
 
 		// handle the perClause
