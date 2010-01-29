@@ -72,7 +72,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnos;
  * Template class for building up a field. The only extraordinary thing one can do is to add a constant value attribute to a field
  * (which must of course be compatible with the declared type).
  * 
- * @version $Id: FieldGen.java,v 1.9 2009/09/15 19:40:14 aclement Exp $
+ * @version $Id: FieldGen.java,v 1.10 2010/01/29 20:28:37 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Field
  */
@@ -122,10 +122,15 @@ public class FieldGen extends FieldGenOrMethodGen {
 		}
 	}
 
-	private void setValue(int index) {
+// TODO setting the constant value is a mess...
+	public void setValue(int index) {
 		ConstantPool cp = this.cp;
 		Constant c = cp.getConstant(index);
 		value = ((ConstantObject) c).getConstantValue(cp);
+	}
+
+	public void setValue(String constantString) {
+		value = constantString;
 	}
 
 	public void wipeValue() {
@@ -195,6 +200,10 @@ public class FieldGen extends FieldGenOrMethodGen {
 
 	public String getInitialValue() {
 		return (value == null ? null : value.toString());
+	}
+
+	public void setInitialStringValue(String value) {
+		this.value = value;
 	}
 
 	/**
