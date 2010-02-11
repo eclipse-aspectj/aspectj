@@ -926,8 +926,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 								MessageUtil.error("ITD target " + rt.getName() + " doesn't appear to implement " + onType.getName()
 										+ " why did we consider it the top most implementor? ITD is " + this.getSignature(), sloc));
 					}
-				}
-				if (!rtx.isExposedToWeaver()) {
+				} else if (!rtx.isExposedToWeaver()) {
 					ISourceLocation sLoc = munger.getSourceLocation();
 					classWeaver.getWorld().getMessageHandler().handleMessage(
 							MessageUtil.error(WeaverMessages.format(WeaverMessages.ITD_NON_EXPOSED_IMPLEMENTOR, rtx,
