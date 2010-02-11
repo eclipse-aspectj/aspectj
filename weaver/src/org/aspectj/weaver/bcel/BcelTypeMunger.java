@@ -909,6 +909,24 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			// out that it was the top most implementor (see pr49657)
 			if (!classGen.getType().isTopmostImplementor(onType)) {
 				ResolvedType rtx = classGen.getType().getTopmostImplementor(onType);
+				if (rtx == null) {
+					// pr302460
+					// null means there is something wrong with what we are looking at
+					ResolvedType rt = classGen.getType();
+					if (rt.isInterface()) {
+						ISourceLocation sloc = munger.getSourceLocation();
+						classWeaver.getWorld().getMessageHandler().handleMessage(
+								MessageUtil.error("ITD target " + rt.getName()
+										+ " is an interface but has been incorrectly determined to be the topmost implementor of "
+										+ onType.getName() + ". ITD is " + this.getSignature(), sloc));
+					}
+					if (!onType.isAssignableFrom(rt)) {
+						ISourceLocation sloc = munger.getSourceLocation();
+						classWeaver.getWorld().getMessageHandler().handleMessage(
+								MessageUtil.error("ITD target " + rt.getName() + " doesn't appear to implement " + onType.getName()
+										+ " why did we consider it the top most implementor? ITD is " + this.getSignature(), sloc));
+					}
+				}
 				if (!rtx.isExposedToWeaver()) {
 					ISourceLocation sLoc = munger.getSourceLocation();
 					classWeaver.getWorld().getMessageHandler().handleMessage(
