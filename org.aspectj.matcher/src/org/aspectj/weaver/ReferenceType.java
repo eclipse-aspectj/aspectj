@@ -31,6 +31,8 @@ import org.aspectj.weaver.patterns.PerClause;
  */
 public class ReferenceType extends ResolvedType {
 
+	public static final ReferenceType[] EMPTY_ARRAY = new ReferenceType[0];
+
 	/**
 	 * For generic types, this list holds references to all the derived raw and parameterized versions. We need this so that if the
 	 * generic delegate is swapped during incremental compilation, the delegate of the derivatives is swapped also.
