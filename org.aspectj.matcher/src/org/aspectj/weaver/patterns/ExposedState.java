@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver.patterns;
 
 import java.util.Arrays;
@@ -22,6 +21,7 @@ import org.aspectj.weaver.ast.Expr;
 import org.aspectj.weaver.ast.Var;
 
 public class ExposedState {
+	public static final boolean[] NO_ERRONEOUS_VARS = new boolean[0];
 	public Var[] vars;
 	private boolean[] erroneousVars;
 	private Expr aspectInstance;
@@ -29,37 +29,45 @@ public class ExposedState {
 
 	public ExposedState(int size) {
 		super();
-		vars = new Var[size];
-		erroneousVars = new boolean[size];
+		if (size == 0) {
+			vars = Var.NONE;
+			erroneousVars = NO_ERRONEOUS_VARS;
+		} else {
+			vars = new Var[size];
+			erroneousVars = new boolean[size];
+
+		}
 	}
 
 	public ExposedState(Member signature) {
 		// XXX there maybe something about target for non-static sigs
 		this(signature.getParameterTypes().length);
 		expectedVarTypes = new UnresolvedType[signature.getParameterTypes().length];
-		if (expectedVarTypes.length>0) {
+		if (expectedVarTypes.length > 0) {
 			for (int i = 0; i < signature.getParameterTypes().length; i++) {
 				expectedVarTypes[i] = signature.getParameterTypes()[i];
 			}
 		}
-		
+
 	}
-	
+
 	public boolean isFullySetUp() {
 		for (int i = 0; i < vars.length; i++) {
-			if (vars[i]==null) return false;
+			if (vars[i] == null)
+				return false;
 		}
 		return true;
 	}
 
 	public void set(int i, Var var) {
 		// check the type is OK if we can... these are the same rules as in matchesInstanceOf() processing
-		if (expectedVarTypes!=null) {
+		if (expectedVarTypes != null) {
 			ResolvedType expected = expectedVarTypes[i].resolve(var.getType().getWorld());
 			if (!expected.equals(ResolvedType.OBJECT)) {
 				if (!expected.isAssignableFrom(var.getType())) {
 					if (!var.getType().isCoerceableFrom(expected)) {
-//						throw new BCException("Expected type "+expectedVarTypes[i]+" in slot "+i+" but attempt to put "+var.getType()+" into it");
+						// throw new
+						// BCException("Expected type "+expectedVarTypes[i]+" in slot "+i+" but attempt to put "+var.getType()+" into it");
 						return;
 					}
 				}
@@ -67,31 +75,33 @@ public class ExposedState {
 		}
 		vars[i] = var;
 	}
-    public Var get(int i) {
-        return vars[i];
-    }
-    public int size() {
-        return vars.length;
-    }
 
-    public Expr getAspectInstance() {
-        return aspectInstance;
-    }
+	public Var get(int i) {
+		return vars[i];
+	}
 
-    public void setAspectInstance(Expr aspectInstance) {
-        this.aspectInstance = aspectInstance;
-    }
+	public int size() {
+		return vars.length;
+	}
+
+	public Expr getAspectInstance() {
+		return aspectInstance;
+	}
+
+	public void setAspectInstance(Expr aspectInstance) {
+		this.aspectInstance = aspectInstance;
+	}
 
 	public String toString() {
-		return "ExposedState(#Vars="+vars.length+",Vars=" + Arrays.asList(vars) + ",AspectInstance=" + aspectInstance + ")";
+		return "ExposedState(#Vars=" + vars.length + ",Vars=" + Arrays.asList(vars) + ",AspectInstance=" + aspectInstance + ")";
 	}
 
 	// Set to true if we have reported an error message against it,
 	// prevents us blowing up in later code gen.
 	public void setErroneousVar(int formalIndex) {
-		erroneousVars[formalIndex]=true;
+		erroneousVars[formalIndex] = true;
 	}
-	
+
 	public boolean isErroneousVar(int formalIndex) {
 		return erroneousVars[formalIndex];
 	}

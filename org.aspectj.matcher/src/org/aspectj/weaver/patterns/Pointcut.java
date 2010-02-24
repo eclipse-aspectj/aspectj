@@ -78,7 +78,9 @@ public abstract class Pointcut extends PatternNode {
 	 * ATAJ the name of the formal for which we don't want any warning when unbound since we consider them as implicitly bound. f.e.
 	 * JoinPoint for @AJ advices
 	 */
-	public String[] m_ignoreUnboundBindingForNames = new String[0];
+	public String[] m_ignoreUnboundBindingForNames = EMPTY_STRING_ARRAY;
+
+	public static final String[] EMPTY_STRING_ARRAY = new String[0];
 
 	public static final State SYMBOLIC = new State("symbolic", 0);
 	public static final State RESOLVED = new State("resolved", 1);
@@ -90,7 +92,7 @@ public abstract class Pointcut extends PatternNode {
 
 	protected int lastMatchedShadowId;
 	private FuzzyBoolean lastMatchedShadowResult;
-	private String[] typeVariablesInScope = new String[0];
+	private String[] typeVariablesInScope = EMPTY_STRING_ARRAY;
 
 	protected boolean hasBeenParameterized = false;
 
