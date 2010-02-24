@@ -22,9 +22,9 @@ public class GenericSignature {
 	 * structure holding a parsed class signature
 	 */
 	public static class ClassSignature {
-		public FormalTypeParameter[] formalTypeParameters = new FormalTypeParameter[0];
+		public FormalTypeParameter[] formalTypeParameters = FormalTypeParameter.NONE;
 		public ClassTypeSignature superclassSignature;
-		public ClassTypeSignature[] superInterfaceSignatures = new ClassTypeSignature[0];
+		public ClassTypeSignature[] superInterfaceSignatures = ClassTypeSignature.NONE;
 
 		public String toString() {
 			StringBuffer ret = new StringBuffer();
@@ -78,6 +78,7 @@ public class GenericSignature {
 	 * structure capturing a FormalTypeParameter from the Signature grammar
 	 */
 	public static class FormalTypeParameter {
+		public static final FormalTypeParameter[] NONE = new FormalTypeParameter[0];
 		public String identifier;
 		public FieldTypeSignature classBound;
 		public FieldTypeSignature[] interfaceBounds;
@@ -133,6 +134,8 @@ public class GenericSignature {
 	}
 
 	public static class ClassTypeSignature extends FieldTypeSignature {
+
+		public static final ClassTypeSignature[] NONE = new ClassTypeSignature[0];
 		public String classSignature;
 		public SimpleClassTypeSignature outerType;
 		public SimpleClassTypeSignature[] nestedTypes;
