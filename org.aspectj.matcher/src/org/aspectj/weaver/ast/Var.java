@@ -15,6 +15,7 @@ package org.aspectj.weaver.ast;
 import org.aspectj.weaver.ResolvedType;
 
 public class Var extends Expr {
+	public static final Var[] NONE = new Var[0];
 	ResolvedType variableType;
 
 	public Var(ResolvedType variableType) {
