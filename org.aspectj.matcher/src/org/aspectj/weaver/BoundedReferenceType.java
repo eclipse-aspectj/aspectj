@@ -31,7 +31,7 @@ public class BoundedReferenceType extends ReferenceType {
 
 	private ResolvedType upperBound;
 
-	protected ReferenceType[] additionalInterfaceBounds = new ReferenceType[0];
+	protected ReferenceType[] additionalInterfaceBounds = ReferenceType.EMPTY_ARRAY;
 
 	protected boolean isExtends = true;
 
