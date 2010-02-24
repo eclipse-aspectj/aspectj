@@ -561,7 +561,11 @@ class BcelMethod extends ResolvedMemberImpl {
 						+ " with generic signature " + gSig + " the following error was detected: " + e.getMessage());
 			}
 			GenericSignature.TypeSignature[] paramTypeSigs = mSig.parameters;
-			genericParameterTypes = new UnresolvedType[paramTypeSigs.length];
+			if (paramTypeSigs.length == 0) {
+				genericParameterTypes = UnresolvedType.NONE;
+			} else {
+				genericParameterTypes = new UnresolvedType[paramTypeSigs.length];
+			}
 			for (int i = 0; i < paramTypeSigs.length; i++) {
 				try {
 					genericParameterTypes[i] = BcelGenericSignatureToTypeXConverter.typeSignature2TypeX(paramTypeSigs[i], formals,
