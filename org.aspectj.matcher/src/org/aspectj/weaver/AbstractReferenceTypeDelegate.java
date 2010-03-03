@@ -140,4 +140,8 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 		return WeaverVersionInfo.getCurrentWeaverMajorVersion();
 	}
 
+	public void ensureConsistent() {
+
+	}
+
 }

@@ -131,4 +131,9 @@ public interface ReferenceTypeDelegate {
 	 */
 	public int getCompilerVersion();
 
+	/**
+	 * Implementations need to clear state
+	 */
+	public void ensureConsistent();
+
 }

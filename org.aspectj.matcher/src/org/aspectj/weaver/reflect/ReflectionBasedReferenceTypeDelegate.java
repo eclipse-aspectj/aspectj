@@ -409,4 +409,8 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	public int getCompilerVersion() {
 		return WeaverVersionInfo.getCurrentWeaverMajorVersion();
 	}
+
+	public void ensureConsistent() {
+
+	}
 }
