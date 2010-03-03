@@ -27,6 +27,7 @@ public abstract class Declare extends PatternNode {
 	public static final byte DOMINATES = 4;
 	public static final byte ANNOTATION = 5;
 	public static final byte PARENTSMIXIN = 6;
+	public static final byte TYPE_ERROR_OR_WARNING = 7;
 
 	// set when reading declare from aspect
 	private ResolvedType declaringType;
@@ -46,6 +47,8 @@ public abstract class Declare extends PatternNode {
 			return DeclareAnnotation.read(s, context);
 		case PARENTSMIXIN:
 			return DeclareParentsMixin.read(s, context);
+		case TYPE_ERROR_OR_WARNING:
+			return DeclareTypeErrorOrWarning.read(s, context);
 		default:
 			throw new RuntimeException("unimplemented");
 		}
