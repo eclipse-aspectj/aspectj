@@ -424,7 +424,7 @@ public class ReferenceType extends ResolvedType {
 
 		boolean thisRaw = this.isRawType();
 		boolean thisGeneric = this.isGenericType();
-		
+
 		if ((thisRaw || thisGeneric) && other.isParameterizedType()) {
 			if (isAssignableFrom(other.getRawType())) {
 				return true;
@@ -1048,6 +1048,9 @@ public class ReferenceType extends ResolvedType {
 		newInterfaces = null;
 		parameterizedInterfaces.clear();
 		superclassReference = new WeakReference<ResolvedType>(null);
+		if (delegate != null) {
+			delegate.ensureConsistent();
+		}
 	}
 
 	@Override
