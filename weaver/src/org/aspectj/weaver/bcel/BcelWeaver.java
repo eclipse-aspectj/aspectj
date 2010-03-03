@@ -83,6 +83,7 @@ import org.aspectj.weaver.patterns.BindingTypePattern;
 import org.aspectj.weaver.patterns.ConcreteCflowPointcut;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
+import org.aspectj.weaver.patterns.DeclareTypeErrorOrWarning;
 import org.aspectj.weaver.patterns.FastMatchInfo;
 import org.aspectj.weaver.patterns.IfPointcut;
 import org.aspectj.weaver.patterns.KindedPointcut;
@@ -1516,11 +1517,9 @@ public class BcelWeaver {
 			// ().getFileName(), wsi.getUnwovenClassFileData()));
 			// new: reweavable default with clever diff
 			if (!world.isOverWeaving()) {
-
 				byte[] bytes = wsi.getUnwovenClassFileData(classType.getJavaClass().getBytes());
 				classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass().getFileName(), bytes), true);
-				// } else {
-				// System.out.println("overweaving " + className);
+				classType.getResolvedTypeX().ensureConsistent();
 			}
 			// } else {
 			// classType.resetState();
@@ -1832,6 +1831,8 @@ public class BcelWeaver {
 								inReweavableMode);
 					}
 
+				//	checkDeclareTypeErrorOrWarning(world, classType);
+
 					if (mightNeedBridgeMethods) {
 						isChanged = BcelClassWeaver.calculateAnyRequiredBridgeMethods(world, clazz) || isChanged;
 					}
@@ -1863,6 +1864,8 @@ public class BcelWeaver {
 					String messageText = "trouble in: \n" + classDebugInfo;
 					getWorld().getMessageHandler().handleMessage(new Message(messageText, IMessage.ABORT, re, null));
 				}
+//			} else {
+//				checkDeclareTypeErrorOrWarning(world, classType);
 			}
 			// this is very odd return behavior trying to keep everyone happy
 			/*
@@ -1899,6 +1902,22 @@ public class BcelWeaver {
 	}
 
 	// ---- writing
+
+/*	private void checkDeclareTypeErrorOrWarning(BcelWorld world2, BcelObjectType classType) {
+		List<DeclareTypeErrorOrWarning> dteows = world.getDeclareTypeEows();
+		for (DeclareTypeErrorOrWarning dteow : dteows) {
+			if (dteow.getTypePattern().matchesStatically(classType.getResolvedTypeX())) {
+				if (dteow.isError()) {
+					world.getMessageHandler().handleMessage(
+							MessageUtil.error(dteow.getMessage(), classType.getResolvedTypeX().getSourceLocation()));
+				} else {
+					world.getMessageHandler().handleMessage(
+							MessageUtil.warn(dteow.getMessage(), classType.getResolvedTypeX().getSourceLocation()));
+				}
+			}
+		}
+	}
+*/
 
 	private void dumpUnchanged(UnwovenClassFile classFile) throws IOException {
 		if (zipOutputStream != null) {
