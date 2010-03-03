@@ -978,4 +978,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	public int getCompilerVersion() {
 		return wvInfo.getMajorVersion();
 	}
+
+	public void ensureConsistent() {
+		superTypeReference.clear();
+		superInterfaceReferences.clear();
+	}
 }
