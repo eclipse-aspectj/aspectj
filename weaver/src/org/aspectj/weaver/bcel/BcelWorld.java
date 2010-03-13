@@ -865,7 +865,7 @@ public class BcelWorld extends World implements Repository {
 
 	@Override
 	public void reportCheckerMatch(Checker checker, Shadow shadow) {
-		IMessage iMessage = new Message(checker.getMessage(), shadow.toString(), checker.isError() ? IMessage.ERROR
+		IMessage iMessage = new Message(checker.getMessage(shadow), shadow.toString(), checker.isError() ? IMessage.ERROR
 				: IMessage.WARNING, shadow.getSourceLocation(), null, new ISourceLocation[] { checker.getSourceLocation() }, true,
 				0, -1, -1);
 
