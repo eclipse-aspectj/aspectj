@@ -2,6 +2,38 @@
 
 <suite>
    
+   <ajc-test dir="bugs169/pr48080" title="inserts in messages">
+     <compile files="Warnings.java" options="-1.5">
+       <message kind="warning" text="UNKNOWN_KEY{}foobar"/>
+       <message kind="warning" text="{}wibble"/>
+       <message kind="warning" text="signature name for method is m"/>
+       <message kind="warning" text="joinpoint declaring type is p.A"/>
+       <message kind="warning" text="joinpoint signature is void p.A.m()"/>
+       <message kind="warning" text="joinpoint line is '23'"/>
+       <message kind="warning" text="joinpoint kind is method-execution"/>
+       <message kind="warning" text="joinpoint kind is 'method-execution'"/>
+       <message kind="warning" text="joinpoint is method-execution(void p.A.m())"/>
+       <message kind="warning" text="joinpoint location is"/>
+       <message kind="warning" text="signature name for field is i"/>
+       <message kind="warning" text="joinpoint signature is int p.A.i"/>
+       <message kind="warning" text="aspect is p.Checker"/>
+       <message kind="warning" text="advice sourcelocation is"/>
+       <message kind="warning" text="test 18{}23"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr299062" title="verifyerror on atAj">
+     <compile files="Test.java Work.java SmartAspect.java Idempotent.java" options="-1.5"/>
+     <run class="Test">
+     </run>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr298665" title="ambiguous method">
+     <compile files="Main.java" options="-1.5"/>
+     <run class="Main">
+     </run>
+  </ajc-test>
+  
    <ajc-test dir="bugs169/pr298388" title="declare mixin and generics">
      <compile files="PR298388.java" options="-1.5"/>
      <run class="PR298388">
@@ -23,6 +55,36 @@
          <line text="true"/>
        </stdout>
      </run>
+  </ajc-test>
+  
+  <!-- declare type warning -->
+  
+  <ajc-test dir="bugs169/pr291206" title="declare type warning - 1">
+     <compile files="One.java" options="-1.5">
+       <message kind="warning" line="8" text="Nothing should be"/>
+     </compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr291206" title="declare type warning - 2">
+     <compile files="Two.java" options="-1.5 -XhasMember">
+       <message kind="warning" line="7" text="Missing foo()"/>
+       <message kind="warning" line="13" text="Missing foo()"/>
+     </compile>
+  </ajc-test>
+  
+  <!-- testing build of model with one of these in -->
+  <ajc-test dir="bugs169/pr291206" title="declare type warning - 3">
+     <compile files="Two.java" options="-1.5 -XhasMember -emacssym">
+       <message kind="warning" line="7" text="Missing foo()"/>
+       <message kind="warning" line="13" text="Missing foo()"/>
+     </compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr291206" title="declare type error - 1">
+     <compile files="Three.java" options="-1.5 -XhasMember">
+       <message kind="error" line="7" text="Missing foo()"/>
+       <message kind="error" line="13" text="Missing foo()"/>
+     </compile>
   </ajc-test>
   
 </suite>

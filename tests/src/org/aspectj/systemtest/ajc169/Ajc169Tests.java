@@ -18,6 +18,34 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	/*public void testAmbiguousMethod() {
+		runTest("ambiguous method");
+	}*/
+
+	public void testChecker() {
+		runTest("inserts in messages");
+	}
+/*
+	public void testVerifyError() {
+		runTest("verifyerror on atAj");
+	}
+
+	public void testDeclareTypeWarning1() {
+		runTest("declare type warning - 1");
+	}
+
+	public void testDeclareTypeWarning2() {
+		runTest("declare type warning - 2");
+	}
+
+	public void testDeclareTypeWarning3() {
+		runTest("declare type warning - 3");
+	}
+
+	public void testDeclareTypeError1() {
+		runTest("declare type error - 1");
+	}*/
+
 	public void testPr298388() {
 		runTest("declare mixin and generics");
 	}
