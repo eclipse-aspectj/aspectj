@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -58,8 +59,8 @@ public class Checker extends ShadowMunger {
 		return isError;
 	}
 
-	public String getMessage() {
-		return this.message;
+	public String getMessage(Shadow shadow) {
+		return format(this.message, shadow);
 	}
 
 	@Override
@@ -160,4 +161,104 @@ public class Checker extends ShadowMunger {
 	// checker.message = stream.readUTF();
 	// return checker;
 	// }
+
+	// Return the next non-escaped (with a '\') open curly
+	private int nextCurly(String string, int pos) {
+		do {
+			int curlyIndex = string.indexOf('{', pos);
+			if (curlyIndex == -1) {
+				return -1;
+			}
+			if (curlyIndex == 0) {
+				return 0;
+			}
+			if (string.charAt(curlyIndex - 1) != '\\') {
+				return curlyIndex;
+			}
+			pos = curlyIndex + 1;
+		} while (pos < string.length());
+		return -1;
+	}
+
+	private String format(String msg, Shadow shadow) {
+		int pos = 0;
+		int curlyIndex = nextCurly(msg, 0);
+		if (curlyIndex == -1) {
+			// was there an escaped one?
+			if (msg.indexOf('{') != -1) {
+				return msg.replace("\\{", "{");
+			} else {
+				return msg;
+			}
+		}
+		StringBuffer ret = new StringBuffer();
+		while (curlyIndex >= 0) {
+			if (curlyIndex > 0) {
+				ret.append(msg.substring(pos, curlyIndex).replace("\\{", "{"));
+			}
+			int endCurly = msg.indexOf('}', curlyIndex);
+			if (endCurly == -1) {
+				// wasn't closed properly - ignore it
+				ret.append('{');
+				pos = curlyIndex + 1;
+			} else {
+				ret.append(getValue(msg.substring(curlyIndex + 1, endCurly), shadow));
+			}
+			pos = endCurly + 1;
+			curlyIndex = nextCurly(msg, pos);
+		}
+		ret.append(msg.substring(pos, msg.length()));
+		return ret.toString();
+	}
+
+	/**
+	 * @param buf the buffer in which to insert the substitution
+	 * @param shadow shadow from which to draw context info
+	 * @param c the substitution character
+	 */
+	private String getValue(String key, Shadow shadow) {
+		if (key.equalsIgnoreCase("joinpoint")) {
+			return shadow.toString();
+		} else if (key.equalsIgnoreCase("joinpoint.kind")) {
+			return shadow.getKind().getName();
+		} else if (key.equalsIgnoreCase("joinpoint.signature")) {
+			return shadow.getSignature().toString();
+		} else if (key.equalsIgnoreCase("joinpoint.signature.declaringtype")) {
+			return shadow.getSignature().getDeclaringType().toString();
+		} else if (key.equalsIgnoreCase("joinpoint.signature.name")) {
+			return shadow.getSignature().getName();
+		} else if (key.equalsIgnoreCase("joinpoint.sourcelocation.sourcefile")) {
+			ISourceLocation loc = shadow.getSourceLocation();
+			if ((loc != null) && (loc.getSourceFile() != null)) {
+				return loc.getSourceFile().toString();
+			} else {
+				return "UNKNOWN";
+			}
+		} else if (key.equalsIgnoreCase("joinpoint.sourcelocation.line")) {
+			ISourceLocation loc = shadow.getSourceLocation();
+			if (loc != null) {
+				return Integer.toString(loc.getLine());
+			} else {
+				return "-1";
+			}
+		} else if (key.equalsIgnoreCase("advice.aspecttype")) {
+			return getDeclaringType().getName();
+		} else if (key.equalsIgnoreCase("advice.sourcelocation.line")) {
+			ISourceLocation loc = getSourceLocation();
+			if ((loc != null) && (loc.getSourceFile() != null)) {
+				return Integer.toString(loc.getLine());
+			} else {
+				return "-1";
+			}
+		} else if (key.equalsIgnoreCase("advice.sourcelocation.sourcefile")) {
+			ISourceLocation loc = getSourceLocation();
+			if ((loc != null) && (loc.getSourceFile() != null)) {
+				return loc.getSourceFile().toString();
+			} else {
+				return "UNKNOWN";
+			}
+		} else {
+			return "UNKNOWN_KEY{" + key + "}";
+		}
+	}
 }
