@@ -938,6 +938,11 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			// on the weaver type temporarily
 			ResolvedType theTargetType = factory.fromEclipse(sourceType);
 			TypeBinding theAnnotationType = toAdd[0].resolvedType;
+			// The annotation type may be null if it could not be resolved (eg. the relevant import has not been added yet)
+			// In this case an error will be put out about the annotation but not if we crash here
+			if (theAnnotationType == null) {
+				return false;
+			}
 			String sig = new String(theAnnotationType.signature());
 			UnresolvedType bcelAnnotationType = UnresolvedType.forSignature(sig);
 			String name = bcelAnnotationType.getName();
