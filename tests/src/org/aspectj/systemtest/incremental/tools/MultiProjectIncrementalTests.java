@@ -836,6 +836,23 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("Unexpected compiler error", 0, l.size());
 	}
 
+	public void testDeclareAnnotationNPE_298504() {
+		AjdeInteractionTestbed.VERBOSE = true;
+		String p = "pr298504";
+		initialiseProject(p);
+		build(p);
+		List l = getErrorMessages(p);
+		assertTrue(l.toString().indexOf("ManagedResource cannot be resolved to a type") != -1);
+		// checkWasFullBuild();
+		alter(p, "inc1");
+		build(p);
+		// checkWasntFullBuild();
+		l = getCompilerErrorMessages(p);
+		assertTrue(l.toString().indexOf("NullPointerException") == -1);
+		l = getErrorMessages(p);
+		assertTrue(l.toString().indexOf("ManagedResource cannot be resolved to a type") != -1);
+	}
+
 	public void testIncrementalAnnoStyle_pr286341() {
 		AjdeInteractionTestbed.VERBOSE = true;
 		String base = "pr286341_base";
