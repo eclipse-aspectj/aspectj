@@ -18,33 +18,69 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
-	/*public void testAmbiguousMethod() {
-		runTest("ambiguous method");
-	}*/
+	public void testTypePatternCategories_44365_Class() {
+		runTest("type category type patterns - class");
+	}
+
+	public void testTypePatternCategories_44365_Interface() {
+		runTest("type category type patterns - interface");
+	}
+
+	public void testTypePatternCategories_44365_Enum() {
+		runTest("type category type patterns - enum");
+	}
+
+	public void testTypePatternCategories_44365_Annotation() {
+		runTest("type category type patterns - annotation");
+	}
+
+	public void testTypePatternCategories_44365_Anonymous() {
+		runTest("type category type patterns - anonymous");
+	}
+
+	public void testTypePatternCategories_44365_Inner() {
+		runTest("type category type patterns - inner");
+	}
+
+	public void testTypePatternCategories_44365_Inner_2() {
+		runTest("type category type patterns - inner - 2");
+	}
+
+	public void testTypePatternCategories_44365_Inner_3() {
+		runTest("type category type patterns - inner - 3");
+	}
+
+	public void testTypePatternCategories_44365_Aspect() {
+		runTest("type category type patterns - aspect");
+	}
+
+	public void testTypePatternCategories_44365_e1() {
+		runTest("type category type patterns - e1");
+	}
+
+	public void testTypePatternCategories_44365_e2() {
+		runTest("type category type patterns - e2");
+	}
+
+	/*
+	 * public void testAmbiguousMethod() { runTest("ambiguous method"); }
+	 */
 
 	public void testChecker() {
 		runTest("inserts in messages");
 	}
-/*
-	public void testVerifyError() {
-		runTest("verifyerror on atAj");
-	}
 
-	public void testDeclareTypeWarning1() {
-		runTest("declare type warning - 1");
-	}
-
-	public void testDeclareTypeWarning2() {
-		runTest("declare type warning - 2");
-	}
-
-	public void testDeclareTypeWarning3() {
-		runTest("declare type warning - 3");
-	}
-
-	public void testDeclareTypeError1() {
-		runTest("declare type error - 1");
-	}*/
+	/*
+	 * public void testVerifyError() { runTest("verifyerror on atAj"); }
+	 * 
+	 * public void testDeclareTypeWarning1() { runTest("declare type warning - 1"); }
+	 * 
+	 * public void testDeclareTypeWarning2() { runTest("declare type warning - 2"); }
+	 * 
+	 * public void testDeclareTypeWarning3() { runTest("declare type warning - 3"); }
+	 * 
+	 * public void testDeclareTypeError1() { runTest("declare type error - 1"); }
+	 */
 
 	public void testPr298388() {
 		runTest("declare mixin and generics");

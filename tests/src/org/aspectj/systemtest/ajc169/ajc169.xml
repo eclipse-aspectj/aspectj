@@ -1,7 +1,75 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 
 <suite>
+
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - class">
+     <compile files="SimpleClass.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'staticinitialization(void SimpleClass.&lt;clinit&gt;())' in Type 'SimpleClass'"/>
+       <message kind="weave" text="Join point 'staticinitialization(void Bar.&lt;clinit&gt;())' in Type 'Bar'"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - interface">
+     <compile files="SimpleInterface.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'staticinitialization(void Foo.&lt;clinit&gt;())' in Type 'Foo'"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - enum">
+     <compile files="SimpleEnum.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'staticinitialization(void Foo.&lt;clinit&gt;())' in Type 'Foo'"/>
+     </compile>
+  </ajc-test>
    
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - annotation">
+     <compile files="SimpleAnnotation.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'staticinitialization(void WibbleAnno.&lt;clinit&gt;())' in Type 'WibbleAnno'"/>
+     </compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr44365" title="type category type patterns - anonymous">
+     <compile files="SimpleAnonymous.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'staticinitialization(void Bar$1.&lt;clinit&gt;())' in Type 'Bar$1'"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - inner">
+     <compile files="SimpleInner.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'staticinitialization(void Bar$Inner.&lt;clinit&gt;())' in Type 'Bar$Inner'"/>
+       <message kind="weave" text="Join point 'staticinitialization(void Bar$1.&lt;clinit&gt;())' in Type 'Bar$1'"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - inner - 2">
+     <compile files="SimpleInner2.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'staticinitialization(void Bar$Inner.&lt;clinit&gt;())' in Type 'Bar$Inner'"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - inner - 3">
+     <compile files="SimpleInner3.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'method-execution(void Bar$Inner.foo())' in Type 'Bar$Inner' (SimpleInner3.java:12) advised"/>
+     </compile>
+  </ajc-test>
+   
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - aspect">
+     <compile files="SimpleAspect.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'staticinitialization(void X.&lt;clinit&gt;())' in Type 'X'"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - e1">
+     <compile files="Errors1.java" options="-1.5 -showWeaveInfo">
+       <message kind="error" text="Syntax error on token &quot;&amp;&amp;&quot;, &quot;ClassType"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - e2">
+     <compile files="Errors5.java" options="-1.5 -showWeaveInfo">
+       <message kind="error" text="Syntax error on token &quot;)&quot;, &quot;(&quot; expected"/>
+     </compile>
+  </ajc-test>
+
    <ajc-test dir="bugs169/pr48080" title="inserts in messages">
      <compile files="Warnings.java" options="-1.5">
        <message kind="warning" text="UNKNOWN_KEY{}foobar"/>
