@@ -58,6 +58,10 @@ public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("type category type patterns - e1");
 	}
 
+	public void testTypePatternCategories_44365_e3() {
+		runTest("type category type patterns - e3");
+	}
+
 	public void testTypePatternCategories_44365_e2() {
 		runTest("type category type patterns - e2");
 	}

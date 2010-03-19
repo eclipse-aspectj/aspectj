@@ -60,13 +60,19 @@
   
    <ajc-test dir="bugs169/pr44365" title="type category type patterns - e1">
      <compile files="Errors1.java" options="-1.5 -showWeaveInfo">
-       <message kind="error" text="Syntax error on token &quot;&amp;&amp;&quot;, &quot;ClassType"/>
+       <message kind="error" text="Syntax error on token &quot;(&quot;, &quot;)"/>
      </compile>
   </ajc-test>
   
    <ajc-test dir="bugs169/pr44365" title="type category type patterns - e2">
      <compile files="Errors5.java" options="-1.5 -showWeaveInfo">
        <message kind="error" text="Syntax error on token &quot;)&quot;, &quot;(&quot; expected"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - e3">
+     <compile files="Errors2.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'method-execution(void Errors2.is(java.lang.String))' in Type"/>
      </compile>
   </ajc-test>
 
