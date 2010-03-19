@@ -983,7 +983,7 @@ public class PatternParser {
 			}
 		}
 		if (typeIsPattern == null) {
-			throw new ParserException("ClassType/AspectType/InterfaceType/InnerType/EnumType/AnnotationType/AnonymousType", token);
+			return null;
 		}
 		if (!maybeEat(")")) {
 			throw new ParserException(")", tokenSource.peek());
