@@ -512,6 +512,11 @@ public class DumpPointcutVisitor implements PatternNodeVisitor {
 		return null;
 	}
 
+	public Object visit(TypeCategoryTypePattern node, Object data) {
+		append(node);
+		return null;
+	}
+
 	public static void check(String s) {
 		check(Pointcut.fromString(s), false);
 	}

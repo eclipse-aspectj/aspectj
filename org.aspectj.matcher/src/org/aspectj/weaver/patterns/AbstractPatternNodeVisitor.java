@@ -464,4 +464,8 @@ public abstract class AbstractPatternNodeVisitor implements PatternNodeVisitor {
 	public Object visit(HasMemberTypePattern node, Object data) {
 		return node;
 	}
+
+	public Object visit(TypeCategoryTypePattern node, Object data) {
+		return node;
+	}
 }

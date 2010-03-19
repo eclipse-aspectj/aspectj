@@ -868,6 +868,42 @@ public class PatternParser {
 			}
 		}
 
+		// // Check for a type category
+		// IToken token = tokenSource.peek();
+		// if (token.isIdentifier()) {
+		// String category = token.getString();
+		// TypeCategoryTypePattern typeIsPattern = null;
+		// if (category.equals("isClass")) {
+		// typeIsPattern = new TypeCategoryTypePattern(TypeCategoryTypePattern.CLASS);
+		// } else if (category.equals("isAspect")) {
+		// typeIsPattern = new TypeCategoryTypePattern(TypeCategoryTypePattern.ASPECT);
+		// } else if (category.equals("isInterface")) {
+		// typeIsPattern = new TypeCategoryTypePattern(TypeCategoryTypePattern.INTERFACE);
+		// } else if (category.equals("isInner")) {
+		// typeIsPattern = new TypeCategoryTypePattern(TypeCategoryTypePattern.INNER);
+		// } else if (category.equals("isAnonymous")) {
+		// typeIsPattern = new TypeCategoryTypePattern(TypeCategoryTypePattern.ANONYMOUS);
+		// } else if (category.equals("isEnum")) {
+		// typeIsPattern = new TypeCategoryTypePattern(TypeCategoryTypePattern.ENUM);
+		// } else if (category.equals("isAnnotation")) {
+		// typeIsPattern = new TypeCategoryTypePattern(TypeCategoryTypePattern.ANNOTATION);
+		// }
+		// if (typeIsPattern != null) {
+		// tokenSource.next();
+		// typeIsPattern.setLocation(tokenSource.getSourceContext(), token.getStart(), token.getEnd());
+		// return typeIsPattern;
+		// }
+		// }
+		if (maybeEatIdentifier("is")) {
+			int pos = tokenSource.getIndex() - 1;
+			TypePattern typeIsPattern = parseIsTypePattern();
+			if (typeIsPattern != null) {
+				return typeIsPattern;
+			}
+			// rewind as if we never tried to parse it as a typeIs
+			tokenSource.setIndex(pos);
+		}
+
 		List<NamePattern> names = parseDottedNamePattern();
 
 		int dim = 0;
@@ -913,6 +949,75 @@ public class PatternParser {
 		ret.setLocation(sourceContext, startPos, endPos);
 		return ret;
 	}
+
+	/**
+	 * Attempt to parse a typeIs(<category>) construct. If it cannot be parsed we just return null and that should cause the caller
+	 * to reset their position and attempt to consume it in another way. This means we won't have problems here: execution(*
+	 * typeIs(..)) because someone has decided to call a method the same as our construct.
+	 * 
+	 * @return a TypeIsTypePattern or null if could not be parsed
+	 */
+	public TypePattern parseIsTypePattern() {
+		int startPos = tokenSource.peek(-1).getStart(); // that will be the start of the 'typeIs'
+		if (!maybeEatAdjacent("(")) {
+			return null;
+		}
+		IToken token = tokenSource.next();
+		TypeCategoryTypePattern typeIsPattern = null;
+		if (token.isIdentifier()) {
+			String category = token.getString();
+			if (category.equals("ClassType")) {
+				typeIsPattern = new TypeCategoryTypePattern(TypeCategoryTypePattern.CLASS);
+			} else if (category.equals("AspectType")) {
+				typeIsPattern = new TypeCategoryTypePattern(TypeCategoryTypePattern.ASPECT);
+			} else if (category.equals("InterfaceType")) {
+				typeIsPattern = new TypeCategoryTypePattern(TypeCategoryTypePattern.INTERFACE);
+			} else if (category.equals("InnerType")) {
+				typeIsPattern = new TypeCategoryTypePattern(TypeCategoryTypePattern.INNER);
+			} else if (category.equals("AnonymousType")) {
+				typeIsPattern = new TypeCategoryTypePattern(TypeCategoryTypePattern.ANONYMOUS);
+			} else if (category.equals("EnumType")) {
+				typeIsPattern = new TypeCategoryTypePattern(TypeCategoryTypePattern.ENUM);
+			} else if (category.equals("AnnotationType")) {
+				typeIsPattern = new TypeCategoryTypePattern(TypeCategoryTypePattern.ANNOTATION);
+			}
+		}
+		if (typeIsPattern == null) {
+			throw new ParserException("ClassType/AspectType/InterfaceType/InnerType/EnumType/AnnotationType/AnonymousType", token);
+		}
+		if (!maybeEat(")")) {
+			throw new ParserException(")", tokenSource.peek());
+		}
+		int endPos = tokenSource.peek(-1).getEnd();
+		typeIsPattern.setLocation(tokenSource.getSourceContext(), startPos, endPos);
+		return typeIsPattern;
+	}
+
+	// if (names.size() == 1 && !names.get(0).isAny()) {
+	// if (maybeEatAdjacent("(")) {
+	// if (maybeEat(")")) {
+	// // likely to be one of isClass()/isInterface()/isInner()/isAnonymous()/isAspect()
+	// if (names.size() == 1) {
+	// NamePattern np = names.get(0);
+	// String simpleName = np.maybeGetSimpleName();
+	// if (simpleName != null) {
+
+	// return new TypeCategoryTypePattern(TypeCategoryTypePattern.ANNOTATION, np);
+	// } else {
+	// throw new ParserException(
+	// "not a supported type category, supported are isClass/isInterface/isEnum/isAnnotation/isInner/isAnonymous",
+	// tokenSource.peek(-3));
+	// }
+	// }
+	// int stop = 1;
+	// // return new WildTypePattern(names, includeSubtypes, dim + (isVarArgs ? 1 : 0), endPos, isVarArgs,
+	// // typeParameters);
+	// }
+	// } else {
+	// throw new ParserException("category type pattern is missing closing parentheses", tokenSource.peek(-2));
+	// }
+	// }
+	// }
 
 	public TypePattern parseHasFieldTypePattern() {
 		int startPos = tokenSource.peek(-1).getStart();

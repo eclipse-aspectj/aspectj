@@ -300,6 +300,7 @@ public abstract class TypePattern extends PatternNode {
 	public static final byte NO_KEY = 9;
 	public static final byte ANY_WITH_ANNO = 10;
 	public static final byte HAS_MEMBER = 11;
+	public static final byte TYPE_CATEGORY = 12;
 
 	public static TypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		byte key = s.readByte();
@@ -326,6 +327,8 @@ public abstract class TypePattern extends PatternNode {
 			return AnyWithAnnotationTypePattern.read(s, context);
 		case HAS_MEMBER:
 			return HasMemberTypePattern.read(s, context);
+		case TYPE_CATEGORY:
+			return TypeCategoryTypePattern.read(s, context);
 		}
 		throw new BCException("unknown TypePattern kind: " + key);
 	}
@@ -335,15 +338,15 @@ public abstract class TypePattern extends PatternNode {
 	}
 
 	/**
-     * For quickly recognizing the pattern '!void'
-     */
+	 * For quickly recognizing the pattern '!void'
+	 */
 	public boolean isBangVoid() {
 		return false;
 	}
 
-    /**
-     * for quickly recognizing the pattern 'void'
-     */
+	/**
+	 * for quickly recognizing the pattern 'void'
+	 */
 	public boolean isVoid() {
 		return false;
 	}
