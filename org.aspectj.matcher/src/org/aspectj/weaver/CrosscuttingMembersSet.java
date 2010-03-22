@@ -26,6 +26,7 @@ import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.DeclareSoft;
+import org.aspectj.weaver.patterns.DeclareTypeErrorOrWarning;
 import org.aspectj.weaver.patterns.IVerificationRequired;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
@@ -56,6 +57,7 @@ public class CrosscuttingMembersSet {
 	private List<DeclareAnnotation> declareAnnotationOnTypes = null;
 	private List<DeclareAnnotation> declareAnnotationOnFields = null;
 	private List<DeclareAnnotation> declareAnnotationOnMethods = null; // includes constructors
+	private List<DeclareTypeErrorOrWarning> declareTypeEows = null;
 	private List<Declare> declareDominates = null;
 	private boolean changedSinceLastReset = false;
 
@@ -299,6 +301,21 @@ public class CrosscuttingMembersSet {
 			declareAnnotationOnMethods.addAll(ret);
 		}
 		return declareAnnotationOnMethods;
+	}
+
+	/**
+	 * Return an amalgamation of the declare type eow statements
+	 */
+	public List<DeclareTypeErrorOrWarning> getDeclareTypeEows() {
+		if (declareTypeEows == null) {
+			Set<DeclareTypeErrorOrWarning> ret = new HashSet<DeclareTypeErrorOrWarning>();
+			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
+				ret.addAll(i.next().getDeclareTypeErrorOrWarning());
+			}
+			declareTypeEows = new ArrayList<DeclareTypeErrorOrWarning>();
+			declareTypeEows.addAll(ret);
+		}
+		return declareTypeEows;
 	}
 
 	public List<Declare> getDeclareDominates() {

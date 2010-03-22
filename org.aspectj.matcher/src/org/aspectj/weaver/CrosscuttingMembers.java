@@ -27,6 +27,7 @@ import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.DeclareSoft;
+import org.aspectj.weaver.patterns.DeclareTypeErrorOrWarning;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.PointcutRewriter;
@@ -61,6 +62,8 @@ public class CrosscuttingMembers {
 	private Set<DeclareAnnotation> declareAnnotationsOnField = new HashSet<DeclareAnnotation>();
 	private Set<DeclareAnnotation> declareAnnotationsOnMethods = new HashSet<DeclareAnnotation>();
 	// declareAnnotationsOnMethods includes constructors too
+
+	private Set<DeclareTypeErrorOrWarning> declareTypeEow = new HashSet<DeclareTypeErrorOrWarning>();
 
 	private boolean shouldConcretizeIfNeeded = true;
 
@@ -156,6 +159,8 @@ public class CrosscuttingMembers {
 			} else if (da.isDeclareAtMethod() || da.isDeclareAtConstuctor()) {
 				declareAnnotationsOnMethods.add(da);
 			}
+		} else if (declare instanceof DeclareTypeErrorOrWarning) {
+			declareTypeEow.add((DeclareTypeErrorOrWarning) declare);
 		} else {
 			throw new RuntimeException("unimplemented");
 		}
@@ -536,6 +541,10 @@ public class CrosscuttingMembers {
 	 */
 	public Collection<DeclareAnnotation> getDeclareAnnotationOnMethods() {
 		return declareAnnotationsOnMethods;
+	}
+
+	public Collection<DeclareTypeErrorOrWarning> getDeclareTypeErrorOrWarning() {
+		return declareTypeEow;
 	}
 
 	public Map getCflowBelowFields() {
