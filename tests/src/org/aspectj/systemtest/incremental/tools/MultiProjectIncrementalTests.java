@@ -202,6 +202,26 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("p.q.r.Foo", decaPE.getAnnotationType());
 	}
 
+	public void testQualifiedInnerTypeRefs_269082() throws Exception {
+		String p = "pr269082";
+		initialiseProject(p);
+		build(p);
+		printModel(p);
+
+		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
+
+		IProgramElement ipe = findElementAtLine(root, 7);
+		assertEquals("=pr269082<a{ClassUsingInner.java[ClassUsingInner~foo~QMyInner;~QObject;~QString;", ipe.getHandleIdentifier());
+
+		ipe = findElementAtLine(root, 9);
+		assertEquals("=pr269082<a{ClassUsingInner.java[ClassUsingInner~goo~QClassUsingInner.MyInner;~QObject;~QString;", ipe
+				.getHandleIdentifier());
+
+		ipe = findElementAtLine(root, 11);
+		assertEquals("=pr269082<a{ClassUsingInner.java[ClassUsingInner~hoo~Qa.ClassUsingInner.MyInner;~QObject;~QString;", ipe
+				.getHandleIdentifier());
+	}
+
 	// just simple incremental build - no code change, just the aspect touched
 	public void testIncrementalFqItds_280380() throws Exception {
 		String p = "pr280380";
