@@ -18,6 +18,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	//public void testStaticallyAnalyzableIf_292262_1() {
+	//	runTest("if with statically recognizable code");
+	//}
+
 	public void testTypePatternCategories_44365_Class() {
 		runTest("type category type patterns - class");
 	}

@@ -2,6 +2,12 @@
 
 <suite>
 
+   <ajc-test dir="bugs169/pr292262" title="if with statically recognizable code">
+     <compile files="A.java">
+       <message kind="weave" text="Join point 'staticinitialization(void SimpleClass.&lt;clinit&gt;())' in Type 'SimpleClass'"/>
+     </compile>
+  </ajc-test>
+  
    <ajc-test dir="bugs169/pr44365" title="type category type patterns - class">
      <compile files="SimpleClass.java" options="-1.5 -showWeaveInfo">
        <message kind="weave" text="Join point 'staticinitialization(void SimpleClass.&lt;clinit&gt;())' in Type 'SimpleClass'"/>
