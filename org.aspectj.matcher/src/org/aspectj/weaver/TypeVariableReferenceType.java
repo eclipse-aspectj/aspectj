@@ -38,7 +38,7 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 
 	public ReferenceTypeDelegate getDelegate() {
 		if (delegate == null)
-			setDelegate(new ReferenceTypeReferenceTypeDelegate((ReferenceType) typeVariable.getFirstBound()));
+			setDelegate(new BoundedReferenceTypeDelegate((ReferenceType) typeVariable.getFirstBound()));
 		return delegate;
 	}
 

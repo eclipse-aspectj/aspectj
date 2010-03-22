@@ -1,21 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 2005 Contributors.
+ * Copyright (c) 2010 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.weaver;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
-
-import org.aspectj.weaver.patterns.PerClause;
 
 /**
  * A BoundedReferenceType is the result of a generics wildcard expression ? extends String, ? super Foo etc..
@@ -24,6 +17,9 @@ import org.aspectj.weaver.patterns.PerClause;
  * signature strings.
  * 
  * The bound may be a type variable (e.g. ? super T)
+ * 
+ * @author Adrian Colyer
+ * @author Andy Clement
  */
 public class BoundedReferenceType extends ReferenceType {
 
@@ -55,7 +51,7 @@ public class BoundedReferenceType extends ReferenceType {
 			lowerBound = aBound;
 			upperBound = world.resolve(UnresolvedType.OBJECT);
 		}
-		setDelegate(new ReferenceTypeReferenceTypeDelegate((ReferenceType) getUpperBound()));
+		setDelegate(new BoundedReferenceTypeDelegate((ReferenceType) getUpperBound()));
 	}
 
 	public BoundedReferenceType(ReferenceType aBound, boolean isExtends, World world, ReferenceType[] additionalInterfaces) {
@@ -88,7 +84,7 @@ public class BoundedReferenceType extends ReferenceType {
 	protected BoundedReferenceType(String sig, String sigErasure, World world) {
 		super(sig, sigErasure, world);
 		upperBound = world.resolve(UnresolvedType.OBJECT);
-		setDelegate(new ReferenceTypeReferenceTypeDelegate((ReferenceType) getUpperBound()));
+		setDelegate(new BoundedReferenceTypeDelegate((ReferenceType) getUpperBound()));
 	}
 
 	public ReferenceType[] getInterfaceBounds() {
@@ -176,129 +172,5 @@ public class BoundedReferenceType extends ReferenceType {
 
 	public boolean isGenericWildcard() {
 		return true;
-	}
-
-	protected static class ReferenceTypeReferenceTypeDelegate extends AbstractReferenceTypeDelegate {
-
-		public ReferenceTypeReferenceTypeDelegate(ReferenceType backing) {
-			super(backing, false);
-		}
-
-		public boolean isAspect() {
-			return resolvedTypeX.isAspect();
-		}
-
-		public boolean isAnnotationStyleAspect() {
-			return resolvedTypeX.isAnnotationStyleAspect();
-		}
-
-		public boolean isInterface() {
-			return resolvedTypeX.isInterface();
-		}
-
-		public boolean isEnum() {
-			return resolvedTypeX.isEnum();
-		}
-
-		public boolean isAnnotation() {
-			return resolvedTypeX.isAnnotation();
-		}
-
-		public boolean isAnnotationWithRuntimeRetention() {
-			return resolvedTypeX.isAnnotationWithRuntimeRetention();
-		}
-
-		public boolean isAnonymous() {
-			return resolvedTypeX.isAnonymous();
-		}
-
-		public boolean isNested() {
-			return resolvedTypeX.isNested();
-		}
-
-		public ResolvedType getOuterClass() {
-			return resolvedTypeX.getOuterClass();
-		}
-
-		public String getRetentionPolicy() {
-			return resolvedTypeX.getRetentionPolicy();
-		}
-
-		public boolean canAnnotationTargetType() {
-			return resolvedTypeX.canAnnotationTargetType();
-		}
-
-		public AnnotationTargetKind[] getAnnotationTargetKinds() {
-			return resolvedTypeX.getAnnotationTargetKinds();
-		}
-
-		public boolean isGeneric() {
-			return resolvedTypeX.isGenericType();
-		}
-
-		public String getDeclaredGenericSignature() {
-			return resolvedTypeX.getDeclaredGenericSignature();
-		}
-
-		public boolean hasAnnotation(UnresolvedType ofType) {
-			return resolvedTypeX.hasAnnotation(ofType);
-		}
-
-		public AnnotationAJ[] getAnnotations() {
-			return resolvedTypeX.getAnnotations();
-		}
-
-		public ResolvedType[] getAnnotationTypes() {
-			return resolvedTypeX.getAnnotationTypes();
-		}
-
-		public ResolvedMember[] getDeclaredFields() {
-			return resolvedTypeX.getDeclaredFields();
-		}
-
-		public ResolvedType[] getDeclaredInterfaces() {
-			return resolvedTypeX.getDeclaredInterfaces();
-		}
-
-		public ResolvedMember[] getDeclaredMethods() {
-			return resolvedTypeX.getDeclaredMethods();
-		}
-
-		public ResolvedMember[] getDeclaredPointcuts() {
-			return resolvedTypeX.getDeclaredPointcuts();
-		}
-
-		public PerClause getPerClause() {
-			return resolvedTypeX.getPerClause();
-		}
-
-		public Collection getDeclares() {
-			return resolvedTypeX.getDeclares();
-		}
-
-		public Collection getTypeMungers() {
-			return resolvedTypeX.getTypeMungers();
-		}
-
-		public Collection getPrivilegedAccesses() {
-			return Collections.EMPTY_LIST;
-		}
-
-		public int getModifiers() {
-			return resolvedTypeX.getModifiers();
-		}
-
-		public ResolvedType getSuperclass() {
-			return resolvedTypeX.getSuperclass();
-		}
-
-		public WeaverStateInfo getWeaverState() {
-			return null;
-		}
-
-		public TypeVariable[] getTypeVariables() {
-			return resolvedTypeX.getTypeVariables();
-		}
-
 	}
 }
