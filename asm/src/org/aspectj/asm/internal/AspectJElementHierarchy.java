@@ -31,6 +31,7 @@ import org.aspectj.bridge.SourceLocation;
 
 /**
  * @author Mik Kersten
+ * @author Andy Clement
  */
 public class AspectJElementHierarchy implements IHierarchy {
 
@@ -40,6 +41,8 @@ public class AspectJElementHierarchy implements IHierarchy {
 	protected IProgramElement root = null;
 	protected String configFile = null;
 
+	// Access to the handleMap and typeMap are now synchronized - at least the find methods and the updateHandleMap function
+	// see pr305788
 	private Map fileMap = null;
 	private Map handleMap = new HashMap();
 	private Map typeMap = null;
@@ -107,8 +110,9 @@ public class AspectJElementHierarchy implements IHierarchy {
 				return node;
 			} else {
 				IProgramElement childSearch = findElementForSignature(node, kind, signature);
-				if (childSearch != null)
+				if (childSearch != null) {
 					return childSearch;
+				}
 			}
 		}
 		return null;
@@ -122,8 +126,9 @@ public class AspectJElementHierarchy implements IHierarchy {
 				return node;
 			} else {
 				IProgramElement childSearch = findElementForLabel(node, kind, label);
-				if (childSearch != null)
+				if (childSearch != null) {
 					return childSearch;
+				}
 			}
 		}
 		return null;
@@ -138,26 +143,28 @@ public class AspectJElementHierarchy implements IHierarchy {
 	 */
 	public IProgramElement findElementForType(String packageName, String typeName) {
 
-		// Build a cache key and check the cache
-		StringBuffer keyb = (packageName == null) ? new StringBuffer() : new StringBuffer(packageName);
-		keyb.append(".").append(typeName);
-		String key = keyb.toString();
-		IProgramElement cachedValue = (IProgramElement) typeMap.get(key);
-		if (cachedValue != null) {
-			return cachedValue;
-		}
+		synchronized (this) {
+			// Build a cache key and check the cache
+			StringBuffer keyb = (packageName == null) ? new StringBuffer() : new StringBuffer(packageName);
+			keyb.append(".").append(typeName);
+			String key = keyb.toString();
+			IProgramElement cachedValue = (IProgramElement) typeMap.get(key);
+			if (cachedValue != null) {
+				return cachedValue;
+			}
 
-		List packageNodes = findMatchingPackages(packageName);
+			List packageNodes = findMatchingPackages(packageName);
 
-		for (Iterator iterator = packageNodes.iterator(); iterator.hasNext();) {
-			IProgramElement pkg = (IProgramElement) iterator.next();
-			// this searches each file for a class
-			for (Iterator it = pkg.getChildren().iterator(); it.hasNext();) {
-				IProgramElement fileNode = (IProgramElement) it.next();
-				IProgramElement cNode = findClassInNodes(fileNode.getChildren(), typeName, typeName);
-				if (cNode != null) {
-					typeMap.put(key, cNode);
-					return cNode;
+			for (Iterator iterator = packageNodes.iterator(); iterator.hasNext();) {
+				IProgramElement pkg = (IProgramElement) iterator.next();
+				// this searches each file for a class
+				for (Iterator it = pkg.getChildren().iterator(); it.hasNext();) {
+					IProgramElement fileNode = (IProgramElement) it.next();
+					IProgramElement cNode = findClassInNodes(fileNode.getChildren(), typeName, typeName);
+					if (cNode != null) {
+						typeMap.put(key, cNode);
+						return cNode;
+					}
 				}
 			}
 		}
@@ -278,10 +285,11 @@ public class AspectJElementHierarchy implements IHierarchy {
 		for (Iterator j = nodes.iterator(); j.hasNext();) {
 			IProgramElement classNode = (IProgramElement) j.next();
 			if (baseName.equals(classNode.getName())) {
-				if (innerName == null)
+				if (innerName == null) {
 					return classNode;
-				else
+				} else {
 					return findClassInNodes(classNode.getChildren(), innerName, typeName);
+				}
 			} else if (name.equals(classNode.getName())) {
 				return classNode;
 			} else if (typeName.equals(classNode.getBytecodeSignature())) {
@@ -490,8 +498,9 @@ public class AspectJElementHierarchy implements IHierarchy {
 	private boolean hasMoreSpecificChild(IProgramElement node, String sourceFilePath, int lineNumber, int offSet) {
 		for (Iterator it = node.getChildren().iterator(); it.hasNext();) {
 			IProgramElement child = (IProgramElement) it.next();
-			if (matches(child, sourceFilePath, lineNumber, offSet))
+			if (matches(child, sourceFilePath, lineNumber, offSet)) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -513,17 +522,20 @@ public class AspectJElementHierarchy implements IHierarchy {
 	// findElementForHandle() to mirror behaviour before pr141730
 	public IProgramElement findElementForHandleOrCreate(String handle, boolean create) {
 		// try the cache first...
-		IProgramElement ipe = (IProgramElement) handleMap.get(handle);
-		if (ipe != null) {
-			return ipe;
-		}
+		IProgramElement ipe = null;
+		synchronized (this) {
+			ipe = (IProgramElement) handleMap.get(handle);
+			if (ipe != null) {
+				return ipe;
+			}
 
-		ipe = findElementForHandle(root, handle);
-		if (ipe == null && create) {
-			ipe = createFileStructureNode(getFilename(handle));
-		}
-		if (ipe != null) {
-			cache(handle, ipe);
+			ipe = findElementForHandle(root, handle);
+			if (ipe == null && create) {
+				ipe = createFileStructureNode(getFilename(handle));
+			}
+			if (ipe != null) {
+				cache(handle, ipe);
+			}
 		}
 		return ipe;
 	}
@@ -538,8 +550,9 @@ public class AspectJElementHierarchy implements IHierarchy {
 				if (handle.startsWith(nodeHid)) {
 					// it must be down here if it is anywhere
 					IProgramElement childSearch = findElementForHandle(node, handle);
-					if (childSearch != null)
+					if (childSearch != null) {
 						return childSearch;
+					}
 				}
 			}
 		}
@@ -589,36 +602,42 @@ public class AspectJElementHierarchy implements IHierarchy {
 	public void updateHandleMap(Set deletedFiles) {
 		// Only delete the entries we need to from the handle map - for performance reasons
 		List forRemoval = new ArrayList();
-		Set k = handleMap.keySet();
-		for (Iterator iter = k.iterator(); iter.hasNext();) {
-			String handle = (String) iter.next();
-			IProgramElement ipe = (IProgramElement) handleMap.get(handle);
-			if (deletedFiles.contains(getCanonicalFilePath(ipe)))
-				forRemoval.add(handle);
+		Set k = null;
+		synchronized (this) {
+			k = handleMap.keySet();
+			for (Iterator iter = k.iterator(); iter.hasNext();) {
+				String handle = (String) iter.next();
+				IProgramElement ipe = (IProgramElement) handleMap.get(handle);
+				if (deletedFiles.contains(getCanonicalFilePath(ipe))) {
+					forRemoval.add(handle);
+				}
+			}
+			for (Iterator iter = forRemoval.iterator(); iter.hasNext();) {
+				String handle = (String) iter.next();
+				handleMap.remove(handle);
+			}
+			forRemoval.clear();
+			k = typeMap.keySet();
+			for (Iterator iter = k.iterator(); iter.hasNext();) {
+				String typeName = (String) iter.next();
+				IProgramElement ipe = (IProgramElement) typeMap.get(typeName);
+				if (deletedFiles.contains(getCanonicalFilePath(ipe))) {
+					forRemoval.add(typeName);
+				}
+			}
+			for (Iterator iter = forRemoval.iterator(); iter.hasNext();) {
+				String typeName = (String) iter.next();
+				typeMap.remove(typeName);
+			}
+			forRemoval.clear();
 		}
-		for (Iterator iter = forRemoval.iterator(); iter.hasNext();) {
-			String handle = (String) iter.next();
-			handleMap.remove(handle);
-		}
-		forRemoval.clear();
-		k = typeMap.keySet();
-		for (Iterator iter = k.iterator(); iter.hasNext();) {
-			String typeName = (String) iter.next();
-			IProgramElement ipe = (IProgramElement) typeMap.get(typeName);
-			if (deletedFiles.contains(getCanonicalFilePath(ipe)))
-				forRemoval.add(typeName);
-		}
-		for (Iterator iter = forRemoval.iterator(); iter.hasNext();) {
-			String typeName = (String) iter.next();
-			typeMap.remove(typeName);
-		}
-		forRemoval.clear();
 		k = fileMap.keySet();
 		for (Iterator iter = k.iterator(); iter.hasNext();) {
 			String filePath = (String) iter.next();
 			IProgramElement ipe = (IProgramElement) fileMap.get(filePath);
-			if (deletedFiles.contains(getCanonicalFilePath(ipe)))
+			if (deletedFiles.contains(getCanonicalFilePath(ipe))) {
 				forRemoval.add(filePath);
+			}
 		}
 		for (Iterator iter = forRemoval.iterator(); iter.hasNext();) {
 			String filePath = (String) iter.next();
