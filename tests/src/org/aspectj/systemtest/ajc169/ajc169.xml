@@ -2,6 +2,22 @@
 
 <suite>
 
+   <ajc-test dir="bugs169/pr307120" title="advising privileged access member">
+     <compile files="A.java Test.java" options="-showWeaveInfo">
+       <message kind="weave" text="Type 'A' (A.java) has intertyped method from 'Test'"/> <!-- getFoo and getGoo -->
+       <message kind="weave" text="Join point 'field-get(int A.goo)' in Type 'Test'"/>
+       <message kind="weave" text="Join point 'field-get(int A.foo)' in Type 'Test'"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr307120" title="advising privileged access member - 2">
+     <compile files="Test.java A.java" options="-showWeaveInfo">
+       <message kind="weave" text="Type 'A' (A.java) has intertyped method from 'Test'"/> <!-- getFoo and getGoo -->
+       <message kind="weave" text="Join point 'field-get(int A.goo)' in Type 'Test'"/>
+       <message kind="weave" text="Join point 'field-get(int A.foo)' in Type 'Test'"/>
+     </compile>
+  </ajc-test>
+  
    <ajc-test dir="bugs169/pr292262" title="if with statically recognizable code">
      <compile files="A.java">
        <message kind="weave" text="Join point 'staticinitialization(void SimpleClass.&lt;clinit&gt;())' in Type 'SimpleClass'"/>

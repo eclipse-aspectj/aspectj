@@ -18,10 +18,22 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+//	public void testAmbiguousMethod_298665() {
+//		runTest("ambiguous method");
+//	}
+	
 	// public void testStaticallyAnalyzableIf_292262_1() {
 	// runTest("if with statically recognizable code");
 	// }
 
+	public void testAdvisingPrivilegedAccessMember_307120() {
+		runTest("advising privileged access member");
+	}
+
+	public void testAdvisingPrivilegedAccessMember_307120_2() {
+		runTest("advising privileged access member - 2");
+	}
+	
 	public void testTypePatternCategories_44365_Class() {
 		runTest("type category type patterns - class");
 	}
@@ -70,9 +82,6 @@ public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("type category type patterns - e2");
 	}
 
-	// public void testAmbiguousMethod_298665() {
-	// runTest("ambiguous method");
-	// }
 
 	public void testChecker() {
 		runTest("inserts in messages");
