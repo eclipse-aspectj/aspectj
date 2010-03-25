@@ -30,6 +30,9 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.PrivilegedAccessMunger;
+import org.aspectj.weaver.ReferenceType;
+import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
@@ -63,6 +66,14 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 		checkWeaveAccess(key.getDeclaringType(), location);
 		if (!baseField.alwaysNeedsAccessMethod(true))
 			accessors.put(key, ret);
+		// 307120
+		ResolvedType rt = inAspect.factory.fromEclipse(baseField.declaringClass);
+		if (rt!=null) {
+			ReferenceTypeDelegate rtd = ((ReferenceType)rt).getDelegate();
+			if (rtd instanceof EclipseSourceType) {
+				rt.addInterTypeMunger(new EclipseTypeMunger(inAspect.factory,new PrivilegedAccessMunger(key, true),inAspect.typeX,null), true);
+			}
+		}
 		return ret;
 	}
 
@@ -89,9 +100,16 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 			ret = inAspect.factory.makeMethodBinding(AjcMemberMaker.privilegedAccessMethodForMethod(inAspect.typeX, key));
 		}
 		checkWeaveAccess(key.getDeclaringType(), location);
-		// System.err.println(ret);
-		// Thread.dumpStack();
 		accessors.put(key, ret);
+//		if (!baseMethod.isConstructor()) {
+//			ResolvedType rt = inAspect.factory.fromEclipse(baseMethod.declaringClass);
+//			if (rt!=null) {
+//				ReferenceTypeDelegate rtd = ((ReferenceType)rt).getDelegate();
+//				if (rtd instanceof EclipseSourceType) {
+//					rt.addInterTypeMunger(new EclipseTypeMunger(inAspect.factory,new PrivilegedAccessMunger(key, true),inAspect.typeX,null), true);
+//				}
+//			}
+//		}
 		return ret;
 	}
 
