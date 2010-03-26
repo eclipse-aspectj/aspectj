@@ -2,6 +2,13 @@
 
 <suite>
 
+   <ajc-test dir="bugs169/pr307147" title="advising privileged access method">
+     <compile files="B.java Test2.java" options="-showWeaveInfo">
+       <message kind="weave" text="Type 'B' (B.java) has intertyped method from 'Test'"/>
+       <message kind="weave" text="Join point 'field-get(int A.goo)' in Type 'Test'"/>
+     </compile>
+  </ajc-test>
+  
    <ajc-test dir="bugs169/pr307120" title="advising privileged access member">
      <compile files="A.java Test.java" options="-showWeaveInfo">
        <message kind="weave" text="Type 'A' (A.java) has intertyped method from 'Test'"/> <!-- getFoo and getGoo -->
