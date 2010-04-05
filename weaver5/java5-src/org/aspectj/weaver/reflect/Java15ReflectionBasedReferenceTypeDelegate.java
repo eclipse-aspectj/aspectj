@@ -69,11 +69,13 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 		this.typeConverter = new JavaLangTypeToResolvedTypeConverter(aWorld);
 	}
 
+	@Override
 	public ReferenceType buildGenericType() {
 		return (ReferenceType) UnresolvedType.forGenericTypeVariables(getResolvedTypeX().getSignature(), getTypeVariables())
 				.resolve(getWorld());
 	}
 
+	@Override
 	public AnnotationAJ[] getAnnotations() {
 		// AMC - we seem not to need to implement this method...
 		// throw new UnsupportedOperationException(
@@ -83,6 +85,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 		return super.getAnnotations();
 	}
 
+	@Override
 	public ResolvedType[] getAnnotationTypes() {
 		if (annotations == null) {
 			annotations = annotationFinder.getAnnotations(getBaseClass(), getWorld());
@@ -90,17 +93,20 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 		return annotations;
 	}
 
+	@Override
 	public boolean hasAnnotation(UnresolvedType ofType) {
 		ResolvedType[] myAnns = getAnnotationTypes();
 		ResolvedType toLookFor = ofType.resolve(getWorld());
 		for (int i = 0; i < myAnns.length; i++) {
-			if (myAnns[i] == toLookFor)
+			if (myAnns[i] == toLookFor) {
 				return true;
+			}
 		}
 		return false;
 	}
 
 	// use the MAP to ensure that any aj-synthetic fields are filtered out
+	@Override
 	public ResolvedMember[] getDeclaredFields() {
 		if (fields == null) {
 			Field[] reflectFields = this.myType.getDeclaredFields();
@@ -113,14 +119,16 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 		return fields;
 	}
 
+	@Override
 	public String getDeclaredGenericSignature() {
 		if (this.genericSignature == null && isGeneric()) {
 			// BUG? what the hell is this doing - see testcode in MemberTestCase15.testMemberSignatureCreation() and run it
-			// off a Reflection World 
+			// off a Reflection World
 		}
 		return genericSignature;
 	}
 
+	@Override
 	public ResolvedType[] getDeclaredInterfaces() {
 		if (superInterfaces == null) {
 			Type[] genericInterfaces = getBaseClass().getGenericInterfaces();
@@ -130,22 +138,26 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 	}
 
 	// If the superclass is null, return Object - same as bcel does
+	@Override
 	public ResolvedType getSuperclass() {
 		if (superclass == null && getBaseClass() != Object.class) {// superclass
 			// of Object
 			// is null
 			Type t = this.getBaseClass().getGenericSuperclass();
-			if (t != null)
+			if (t != null) {
 				superclass = typeConverter.fromType(t);
-			if (t == null)
+			}
+			if (t == null) {
 				superclass = getWorld().resolve(UnresolvedType.OBJECT);
+			}
 		}
 		return superclass;
 	}
 
+	@Override
 	public TypeVariable[] getTypeVariables() {
-		TypeVariable[] workInProgressSetOfVariables = (TypeVariable[]) getResolvedTypeX().getWorld()
-				.getTypeVariablesCurrentlyBeingProcessed(getBaseClass());
+		TypeVariable[] workInProgressSetOfVariables = getResolvedTypeX().getWorld().getTypeVariablesCurrentlyBeingProcessed(
+				getBaseClass());
 		if (workInProgressSetOfVariables != null) {
 			return workInProgressSetOfVariables;
 		}
@@ -162,12 +174,11 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 			for (int i = 0; i < tVars.length; i++) {
 				TypeVariableReferenceType tvrt = ((TypeVariableReferenceType) typeConverter.fromType(tVars[i]));
 				TypeVariable tv = tvrt.getTypeVariable();
-				rTypeVariables[i].setUpperBound(tv.getUpperBound());
-				rTypeVariables[i].setAdditionalInterfaceBounds(tv.getAdditionalInterfaceBounds());
+				rTypeVariables[i].setSuperclass(tv.getSuperclass());
+				rTypeVariables[i].setAdditionalInterfaceBounds(tv.getSuperInterfaces());
 				rTypeVariables[i].setDeclaringElement(tv.getDeclaringElement());
 				rTypeVariables[i].setDeclaringElementKind(tv.getDeclaringElementKind());
 				rTypeVariables[i].setRank(tv.getRank());
-				rTypeVariables[i].setLowerBound(tv.getLowerBound());
 			}
 			this.typeVariables = rTypeVariables;
 			this.getResolvedTypeX().getWorld().forgetTypeVariablesCurrentlyBeingProcessed(getBaseClass());
@@ -177,6 +188,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 
 	// overrides super method since by using the MAP we can filter out advice
 	// methods that really shouldn't be seen in this list
+	@Override
 	public ResolvedMember[] getDeclaredMethods() {
 		if (methods == null) {
 			Method[] reflectMethods = this.myType.getDeclaredMethods();
@@ -198,8 +210,9 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 	 */
 	public ResolvedType getGenericResolvedType() {
 		ResolvedType rt = getResolvedTypeX();
-		if (rt.isParameterizedType() || rt.isRawType())
+		if (rt.isParameterizedType() || rt.isRawType()) {
 			return rt.getGenericType();
+		}
 		return rt;
 	}
 
@@ -234,6 +247,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 		return ret;
 	}
 
+	@Override
 	public ResolvedMember[] getDeclaredPointcuts() {
 		if (pointcuts == null) {
 			Pointcut[] pcs = this.myType.getDeclaredPointcuts();
@@ -306,20 +320,23 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 		return null;
 	}
 
+	@Override
 	public boolean isAnnotation() {
 		return getBaseClass().isAnnotation();
 	}
 
+	@Override
 	public boolean isAnnotationStyleAspect() {
 		return getBaseClass().isAnnotationPresent(Aspect.class);
 	}
 
+	@Override
 	public boolean isAnnotationWithRuntimeRetention() {
-		if (!isAnnotation())
+		if (!isAnnotation()) {
 			return false;
+		}
 		if (getBaseClass().isAnnotationPresent(Retention.class)) {
-			Retention retention = (Retention) getBaseClass().getAnnotation(
-					Retention.class);
+			Retention retention = (Retention) getBaseClass().getAnnotation(Retention.class);
 			RetentionPolicy policy = retention.value();
 			return policy == RetentionPolicy.RUNTIME;
 		} else {
@@ -327,14 +344,17 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 		}
 	}
 
+	@Override
 	public boolean isAspect() {
 		return this.myType.isAspect();
 	}
 
+	@Override
 	public boolean isEnum() {
 		return getBaseClass().isEnum();
 	}
 
+	@Override
 	public boolean isGeneric() {
 		// return false; // for now
 		return getBaseClass().getTypeParameters().length > 0;
