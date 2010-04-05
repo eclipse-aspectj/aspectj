@@ -368,7 +368,7 @@ public class EclipseFactory {
 				superinterfaces[i] = fromBinding(aTypeVariableBinding.superInterfaces[i]);
 			}
 		}
-		tv.setUpperBound(superclassType);
+		tv.setSuperclass(superclassType);
 		tv.setAdditionalInterfaceBounds(superinterfaces);
 		tv.setRank(aTypeVariableBinding.rank);
 		if (aTypeVariableBinding.declaringElement instanceof MethodBinding) {
@@ -1002,12 +1002,14 @@ public class EclipseFactory {
 			// }
 			tvBinding = new TypeVariableBinding(tv.getName().toCharArray(), declaringElement, tv.getRank());
 			typeVariableToTypeBinding.put(tv.getName(), tvBinding);
-			tvBinding.superclass = (ReferenceBinding) makeTypeBinding(tv.getUpperBound());
+			if (tv.getSuperclass() != null) {
+				tvBinding.superclass = (ReferenceBinding) makeTypeBinding(tv.getSuperclass());
+			}
 			tvBinding.firstBound = makeTypeBinding(tv.getFirstBound());
-			if (tv.getAdditionalInterfaceBounds() == null) {
+			if (tv.getSuperInterfaces() == null) {
 				tvBinding.superInterfaces = TypeVariableBinding.NO_SUPERINTERFACES;
 			} else {
-				TypeBinding tbs[] = makeTypeBindings(tv.getAdditionalInterfaceBounds());
+				TypeBinding tbs[] = makeTypeBindings(tv.getSuperInterfaces());
 				ReferenceBinding[] rbs = new ReferenceBinding[tbs.length];
 				for (int i = 0; i < tbs.length; i++) {
 					rbs[i] = (ReferenceBinding) tbs[i];
