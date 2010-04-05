@@ -253,7 +253,7 @@ public abstract class AjAttribute {
 		// 1.6.9 adds new style ITDs. This is used to see what version of AJ was used to
 		// build the ITDs so we know id the generated get/set dispatchers are using old
 		// or new style (new style will be get/setters for private ITD fields)
-		public final static short WEAVER_VERSION_AJ169 = 1609;
+		public final static short WEAVER_VERSION_AJ169 = 7;
 
 		// These are the weaver major/minor versions for *this* weaver
 		private final static short CURRENT_VERSION_MAJOR = WEAVER_VERSION_AJ169;
