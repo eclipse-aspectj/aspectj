@@ -34,6 +34,7 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(GenericITDsDesign.class);
 	}
 
+	@Override
 	protected File getSpecFile() {
 		return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
 	}
@@ -59,8 +60,9 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 		Attribute[] attrs = clazz.getAttributes();
 		for (int i = 0; i < attrs.length; i++) {
 			Attribute attribute = attrs[i];
-			if (attribute.getName().equals("Signature"))
+			if (attribute.getName().equals("Signature")) {
 				sigAttr = (Signature) attribute;
+			}
 		}
 		return sigAttr;
 	}
@@ -86,8 +88,9 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 		List allMungers = getTypeMunger(classname);
 		for (Iterator iter = allMungers.iterator(); iter.hasNext();) {
 			BcelTypeMunger element = (BcelTypeMunger) iter.next();
-			if (element.getMunger().getSourceLocation().getLine() == linenumber)
+			if (element.getMunger().getSourceLocation().getLine() == linenumber) {
 				return element;
+			}
 		}
 		for (Iterator iter = allMungers.iterator(); iter.hasNext();) {
 			BcelTypeMunger element = (BcelTypeMunger) iter.next();
@@ -169,7 +172,7 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 		verifyDebugString(theBcelMunger.getMunger().getSignature(), "<T extends java.lang.Number,Q extends I> void C.m0(T, Q)");
 
 		theBcelMunger = getMungerFromLine("X", 11);
-		System.err.println(theBcelMunger.getMunger().getSignature().toDebugString());
+		// System.err.println(theBcelMunger.getMunger().getSignature().toDebugString());
 		verifyDebugString(theBcelMunger.getMunger().getSignature(), "<A,B,C> java.util.List<A> C.m1(B, java.util.Collection<C>)");
 	}
 

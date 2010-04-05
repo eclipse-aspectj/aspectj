@@ -224,6 +224,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 	// just simple incremental build - no code change, just the aspect touched
 	public void testIncrementalFqItds_280380() throws Exception {
+
 		String p = "pr280380";
 		initialiseProject(p);
 		build(p);
@@ -233,6 +234,26 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// should not be an error about f.AClass not being found
 		assertNoErrors(p);
 		// printModel(p);
+	}
+
+	public void testIncrementalAdvisingItdJoinpointsAccessingPrivFields_307120() throws Exception {
+		String p = "pr307120";
+		initialiseProject(p);
+		build(p);
+		// Hid:1:(targets=1) =pr307120<{Test.java}Test)A.getFoo?field-get(int A.foo) (advised by) =pr307120<{Test.java}Test&before
+		// Hid:2:(targets=1) =pr307120<{A.java[A (aspect declarations) =pr307120<{Test.java}Test)A.getFoo
+		// Hid:3:(targets=1) =pr307120<{Test.java}Test&before (advises) =pr307120<{Test.java}Test)A.getFoo?field-get(int A.foo)
+		// Hid:4:(targets=1) =pr307120<{Test.java}Test)A.getFoo (declared on) =pr307120<{A.java[A
+		alter(p, "inc1");
+		assertEquals(4, getRelationshipCount(p));
+		build(p);
+		// Hid:1:(targets=1) =pr307120<{A.java[A (aspect declarations) =pr307120<{Test.java}Test)A.getFoo
+		// Hid:2:(targets=1) =pr307120<{Test.java}Test)A.getFoo (declared on) =pr307120<{A.java[A
+		// These two are missing without the fix:
+		// Hid:1:(targets=1) =pr307120<{Test.java}Test)A.getFoo?field-get(int A.foo) (advised by) =pr307120<{Test.java}Test&before
+		// Hid:7:(targets=1) =pr307120<{Test.java}Test&before (advises) =pr307120<{Test.java}Test)A.getFoo?field-get(int A.foo)
+		assertNoErrors(p);
+		assertEquals(4, getRelationshipCount(p));
 	}
 
 	// modified aspect so target is fully qualified on the incremental change
@@ -405,7 +426,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	public void testOutputLocationCallbacksFileAdd() {
-		AjdeInteractionTestbed.VERBOSE = true;
 		String p = "pr268827_ol2";
 		initialiseProject(p);
 		CustomOLM olm = new CustomOLM(getProjectRelativePath(p, ".").toString());
@@ -1431,6 +1451,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// assertEquals("=AspectPathTwo/binaries<(Asp2.class}Asp2&before", findElementAtLine(root, 16).getHandleIdentifier());
 	}
 
+	/** @return the number of relationship pairs */
 	private void printModel(String projectName) throws Exception {
 		dumptree(getModelFor(projectName).getHierarchy().getRoot(), 0);
 		PrintWriter pw = new PrintWriter(System.out);
