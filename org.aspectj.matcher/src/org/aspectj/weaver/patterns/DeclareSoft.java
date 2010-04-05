@@ -34,10 +34,12 @@ public class DeclareSoft extends Declare {
 		this.pointcut = pointcut;
 	}
 
+	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
 
+	@Override
 	public Declare parameterizeWith(Map typeVariableBindingMap, World w) {
 		DeclareSoft ret = new DeclareSoft(exception.parameterizeWith(typeVariableBindingMap, w), pointcut.parameterizeWith(
 				typeVariableBindingMap, w));
@@ -45,6 +47,7 @@ public class DeclareSoft extends Declare {
 		return ret;
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("declare soft: ");
@@ -55,13 +58,16 @@ public class DeclareSoft extends Declare {
 		return buf.toString();
 	}
 
+	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof DeclareSoft))
+		if (!(other instanceof DeclareSoft)) {
 			return false;
+		}
 		DeclareSoft o = (DeclareSoft) other;
 		return o.pointcut.equals(pointcut) && o.exception.equals(exception);
 	}
 
+	@Override
 	public int hashCode() {
 		int result = 19;
 		result = 37 * result + pointcut.hashCode();
@@ -69,6 +75,7 @@ public class DeclareSoft extends Declare {
 		return result;
 	}
 
+	@Override
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(Declare.SOFT);
 		exception.write(s);
@@ -90,6 +97,7 @@ public class DeclareSoft extends Declare {
 		return exception;
 	}
 
+	@Override
 	public void resolve(IScope scope) {
 		exception = exception.resolveBindings(scope, null, false, true);
 		ResolvedType excType = exception.getExactType().resolve(scope.getWorld());
@@ -97,7 +105,8 @@ public class DeclareSoft extends Declare {
 			if (excType.isTypeVariableReference()) {
 				TypeVariableReferenceType typeVariableRT = (TypeVariableReferenceType) excType;
 				// a declare soft in a generic abstract aspect, we need to check the upper bound
-				excType = typeVariableRT.getUpperBound().resolve(scope.getWorld());
+				// WIBBLE
+				excType = typeVariableRT.getTypeVariable().getFirstBound().resolve(scope.getWorld());
 			}
 			if (!scope.getWorld().getCoreType(UnresolvedType.THROWABLE).isAssignableFrom(excType)) {
 				scope.getWorld()
@@ -118,10 +127,12 @@ public class DeclareSoft extends Declare {
 		pointcut = pointcut.resolve(scope);
 	}
 
+	@Override
 	public boolean isAdviceLike() {
 		return false;
 	}
 
+	@Override
 	public String getNameSuffix() {
 		return "soft";
 	}

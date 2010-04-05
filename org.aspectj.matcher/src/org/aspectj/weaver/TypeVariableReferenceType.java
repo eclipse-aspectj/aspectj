@@ -1,24 +1,23 @@
 /* *******************************************************************
- * Copyright (c) 2005 Contributors.
+ * Copyright (c) 2005-2010 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *   Adrian Colyer			Initial implementation
+ * http://eclipse.org/legal/epl-v10.html
  * ******************************************************************/
 package org.aspectj.weaver;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.Map;
 
 /**
- * Represents a type variable in a type or generic method declaration
+ * ReferenceType representing a type variable. The delegate for this reference type is the upperbound on the type variable (so
+ * Object if not otherwise specified).
+ * 
+ * @author Adrian Colyer
+ * @author Andy Clement
  */
-public class TypeVariableReferenceType extends BoundedReferenceType implements TypeVariableReference {
+public class TypeVariableReferenceType extends ReferenceType implements TypeVariableReference {
 
 	private TypeVariable typeVariable;
 	private boolean resolvedIfBounds = false;
@@ -29,60 +28,32 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 	// at the right time). Wonder if we can fix it up late?
 	boolean fixedUp = false;
 
-	public TypeVariableReferenceType(TypeVariable aTypeVariable, World aWorld) {
-		super(aTypeVariable.getGenericSignature(), aTypeVariable.getErasureSignature(), aWorld);
-		this.typeVariable = aTypeVariable;
-		this.isExtends = false;
-		this.isSuper = false;
+	public TypeVariableReferenceType(TypeVariable typeVariable, World world) {
+		super(typeVariable.getGenericSignature(), typeVariable.getErasureSignature(), world);
+		this.typeVariable = typeVariable;
+		// setDelegate(new BoundedReferenceTypeDelegate(backing));
+		// this.isExtends = false;
+		// this.isSuper = false;
 	}
 
+	/**
+	 * For a TypeVariableReferenceType the delegate is the delegate for the first bound.
+	 */
+	@Override
 	public ReferenceTypeDelegate getDelegate() {
-		if (delegate == null)
-			setDelegate(new BoundedReferenceTypeDelegate((ReferenceType) typeVariable.getFirstBound()));
-		return delegate;
-	}
-
-	public UnresolvedType getUpperBound() {
-		if (typeVariable == null)
-			return super.getUpperBound();
-		return typeVariable.getUpperBound();
-	}
-
-	public UnresolvedType getFirstBound() {
-		if (typeVariable == null)
-			return super.getUpperBound();
-		return typeVariable.getFirstBound();
-	}
-
-	public UnresolvedType getLowerBound() {
-		return typeVariable.getLowerBound();
-	}
-
-	private void setAdditionalInterfaceBoundsFromTypeVar() {
-		if (typeVariable.getAdditionalInterfaceBounds() == null) {
-			return;
-		} else {
-			UnresolvedType[] ifBounds = typeVariable.getAdditionalInterfaceBounds();
-			additionalInterfaceBounds = new ReferenceType[ifBounds.length];
-			for (int i = 0; i < ifBounds.length; i++) {
-				additionalInterfaceBounds[i] = (ReferenceType) ifBounds[i].resolve(getWorld());
-			}
+		if (this.delegate == null) {
+			setDelegate(new BoundedReferenceTypeDelegate((ReferenceType) typeVariable.getFirstBound().resolve(world)));
 		}
+		return this.delegate;
 	}
 
+	@Override
 	public UnresolvedType parameterize(Map typeBindings) {
 		UnresolvedType ut = (UnresolvedType) typeBindings.get(getName());
-		if (ut != null)
+		if (ut != null) {
 			return world.resolve(ut);
-		return this;
-	}
-
-	public ReferenceType[] getAdditionalBounds() {
-		if (!resolvedIfBounds) {
-			setAdditionalInterfaceBoundsFromTypeVar();
-			resolvedIfBounds = true;
 		}
-		return super.getAdditionalBounds();
+		return this;
 	}
 
 	public TypeVariable getTypeVariable() {
@@ -90,33 +61,38 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 		return typeVariable;
 	}
 
+	@Override
 	public boolean isTypeVariableReference() {
 		return true;
 	}
 
+	@Override
 	public String toString() {
 		return typeVariable.getName();
 	}
 
+	@Override
 	public boolean isGenericWildcard() {
 		return false;
 	}
 
-	// public ResolvedType resolve(World world) {
-	// return super.resolve(world);
-	// }
-
+	@Override
 	public boolean isAnnotation() {
-		World world = ((ReferenceType) getUpperBound()).getWorld();
-		ResolvedType annotationType = ResolvedType.ANNOTATION.resolve(world);
-		if (getUpperBound() != null && ((ReferenceType) getUpperBound()).isAnnotation())
+		ReferenceType upper = (ReferenceType) typeVariable.getUpperBound();
+		if (upper.isAnnotation()) {
 			return true;
-		ReferenceType[] ifBounds = getAdditionalBounds();
+		}
+		World world = upper.getWorld();
+		typeVariable.resolve(world);
+		ResolvedType annotationType = ResolvedType.ANNOTATION.resolve(world);
+		UnresolvedType[] ifBounds = typeVariable.getSuperInterfaces();// AdditionalBounds();
 		for (int i = 0; i < ifBounds.length; i++) {
-			if (ifBounds[i].isAnnotation())
+			if (((ReferenceType) ifBounds[i]).isAnnotation()) {
 				return true;
-			if (ifBounds[i] == annotationType)
+			}
+			if (ifBounds[i].equals(annotationType)) {
 				return true; // annotation itself does not have the annotation flag set in Java!
+			}
 		}
 		return false;
 	}
@@ -125,6 +101,7 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 	 * return the signature for a *REFERENCE* to a type variable, which is simply: Tname; there is no bounds info included, that is
 	 * in the signature of the type variable itself
 	 */
+	@Override
 	public String getSignature() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("T");
@@ -133,19 +110,15 @@ public class TypeVariableReferenceType extends BoundedReferenceType implements T
 		return sb.toString();
 	}
 
-	public void write(DataOutputStream s) throws IOException {
-		super.write(s);
-		// TypeVariableDeclaringElement tvde = typeVariable.getDeclaringElement();
-		// if (tvde == null) {
-		// s.writeInt(TypeVariable.UNKNOWN);
-		// } else {
-		// s.writeInt(typeVariable.getDeclaringElementKind());
-		// if (typeVariable.getDeclaringElementKind() == TypeVariable.TYPE) {
-		// ((UnresolvedType)tvde).write(s);
-		// } else if (typeVariable.getDeclaringElementKind() == TypeVariable.METHOD){
-		// // it's a method
-		// ((ResolvedMember)tvde).write(s);
-		// }
-		// }
+	/**
+	 * @return the name of the type variable
+	 */
+	public String getTypeVariableName() {
+		return typeVariable.getName();
 	}
+
+	public ReferenceType getUpperBound() {
+		return (ReferenceType) typeVariable.resolve(world).getUpperBound();
+	}
+
 }

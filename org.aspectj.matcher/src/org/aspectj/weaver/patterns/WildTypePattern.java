@@ -972,10 +972,7 @@ public class WildTypePattern extends TypePattern {
 			if (canCreateExactTypePattern) {
 				TypeVariable tv = tvrType.getTypeVariable();
 				if (upperBound != null) {
-					tv.setUpperBound(upperBound.getExactType());
-				}
-				if (lowerBound != null) {
-					tv.setLowerBound(lowerBound.getExactType());
+					tv.setSuperclass(upperBound.getExactType());
 				}
 				if (additionalInterfaceBounds != null) {
 					UnresolvedType[] ifBounds = new UnresolvedType[additionalInterfaceBounds.length];

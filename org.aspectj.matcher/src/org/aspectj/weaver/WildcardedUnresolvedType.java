@@ -23,9 +23,7 @@ public class WildcardedUnresolvedType extends UnresolvedType {
 	// TODO does not cope with extra bounds '? extends A & B & C'
 
 	public static final int UNBOUND = 0;
-
 	public static final int EXTENDS = 1;
-
 	public static final int SUPER = 2;
 
 	public static final WildcardedUnresolvedType QUESTIONMARK = new WildcardedUnresolvedType("*", UnresolvedType.OBJECT, null);
@@ -41,10 +39,12 @@ public class WildcardedUnresolvedType extends UnresolvedType {
 		this.typeKind = TypeKind.WILDCARD;
 		this.upperBound = upperBound;
 		this.lowerBound = lowerBound;
-		if (signature.charAt(0) == '-')
+		if (signature.charAt(0) == '-') {
 			boundKind = SUPER;
-		if (signature.charAt(0) == '+')
+		}
+		if (signature.charAt(0) == '+') {
 			boundKind = EXTENDS;
+		}
 	}
 
 	public UnresolvedType getUpperBound() {

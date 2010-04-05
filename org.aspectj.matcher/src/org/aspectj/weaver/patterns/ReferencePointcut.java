@@ -138,7 +138,7 @@ public class ReferencePointcut extends Pointcut {
 			searchType = scope.getEnclosingType();
 		}
 		if (searchType.isTypeVariableReference()) {
-			searchType = ((TypeVariableReference) searchType).getTypeVariable().getUpperBound().resolve(scope.getWorld());
+			searchType = ((TypeVariableReference) searchType).getTypeVariable().getFirstBound().resolve(scope.getWorld());
 		}
 
 		arguments.resolveBindings(scope, bindings, true, true);

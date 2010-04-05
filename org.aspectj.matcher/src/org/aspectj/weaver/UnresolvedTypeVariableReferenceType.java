@@ -1,13 +1,10 @@
 /* *******************************************************************
- * Copyright (c) 2005 Contributors.
+ * Copyright (c) 2005-2010 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *   Adrian Colyer			Initial implementation
+ * http://eclipse.org/legal/epl-v10.html
  * ******************************************************************/
 package org.aspectj.weaver;
 
@@ -15,8 +12,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 /**
- * @author colyer Represents a type variable encountered in the Eclipse Source world, which when resolved will turn into a
- *         TypeVariableReferenceType
+ * @author Adrian Colyer
+ * @author Andy Clement
  */
 public class UnresolvedTypeVariableReferenceType extends UnresolvedType implements TypeVariableReference {
 
@@ -39,6 +36,7 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType implemen
 		this.typeKind = TypeKind.TYPE_VARIABLE;
 	}
 
+	@Override
 	public ResolvedType resolve(World world) {
 		TypeVariableDeclaringElement typeVariableScope = world.getTypeVariableLookupScope();
 		TypeVariable resolvedTypeVariable = null;
@@ -64,6 +62,7 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType implemen
 		return tvrt;
 	}
 
+	@Override
 	public boolean isTypeVariableReference() {
 		return true;
 	}
@@ -72,11 +71,7 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType implemen
 		return typeVariable;
 	}
 
-	// public String getName() {
-	// if (typeVariable == null) return "<type variable not set!>";
-	// return typeVariable.getDisplayName();
-	// }
-
+	@Override
 	public String toString() {
 		if (typeVariable == null) {
 			return "<type variable not set!>";
@@ -85,14 +80,17 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType implemen
 		}
 	}
 
+	@Override
 	public String toDebugString() {
 		return typeVariable.getName();
 	}
 
+	@Override
 	public void write(DataOutputStream s) throws IOException {
 		super.write(s);
 	}
 
+	@Override
 	public String getErasureSignature() {
 		return typeVariable.getFirstBound().getSignature();
 	}

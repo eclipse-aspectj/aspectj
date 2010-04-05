@@ -282,7 +282,7 @@ public abstract class World implements Dump.INode {
 			// fault in generic wildcard, can't be done earlier because of init
 			// issues
 			// TODO ought to be shared single instance representing this
-			ResolvedType something = new BoundedReferenceType("*", "Ljava/lang/Object", this);
+			ResolvedType something = getWildcard();
 			typeMap.put("?", something);
 			return something;
 		}
@@ -314,6 +314,16 @@ public abstract class World implements Dump.INode {
 		} else {
 			return result;
 		}
+	}
+
+    // Only need one representation of '?' in a world - can be shared
+	private BoundedReferenceType wildcard;
+
+	private BoundedReferenceType getWildcard() {
+		if (wildcard == null) {
+			wildcard = new BoundedReferenceType(this);
+		}
+		return wildcard;
 	}
 
 	/**
@@ -541,7 +551,7 @@ public abstract class World implements Dump.INode {
 			ret = new BoundedReferenceType(lowerBound, false, this);
 		} else {
 			// must be ? on its own!
-			ret = new BoundedReferenceType("*", "Ljava/lang/Object", this);
+			ret = getWildcard();
 		}
 		return ret;
 	}
@@ -725,6 +735,10 @@ public abstract class World implements Dump.INode {
 	public List<DeclareAnnotation> getDeclareAnnotationOnMethods() {
 		return crosscuttingMembersSet.getDeclareAnnotationOnMethods();
 	}
+
+	// public List<DeclareTypeErrorOrWarning> getDeclareTypeEows() {
+	// return crosscuttingMembersSet.getDeclareTypeEows();
+	// }
 
 	public List<DeclareSoft> getDeclareSoft() {
 		return crosscuttingMembersSet.getDeclareSofts();
