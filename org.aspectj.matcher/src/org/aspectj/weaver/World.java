@@ -41,6 +41,7 @@ import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.DeclareSoft;
+import org.aspectj.weaver.patterns.DeclareTypeErrorOrWarning;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.tools.PointcutDesignatorHandler;
@@ -736,9 +737,9 @@ public abstract class World implements Dump.INode {
 		return crosscuttingMembersSet.getDeclareAnnotationOnMethods();
 	}
 
-	// public List<DeclareTypeErrorOrWarning> getDeclareTypeEows() {
-	// return crosscuttingMembersSet.getDeclareTypeEows();
-	// }
+	public List<DeclareTypeErrorOrWarning> getDeclareTypeEows() {
+		return crosscuttingMembersSet.getDeclareTypeEows();
+	}
 
 	public List<DeclareSoft> getDeclareSoft() {
 		return crosscuttingMembersSet.getDeclareSofts();

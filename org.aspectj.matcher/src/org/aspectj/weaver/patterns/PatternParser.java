@@ -256,8 +256,36 @@ public class PatternParser {
 		return new DeclareSoft(p, pointcut);
 	}
 
+	/**
+	 * Attempt to parse a pointcut, if that fails then try again for a type pattern.
+	 * 
+	 * @param isError true if it is declare error rather than declare warning
+	 * @return the new declare
+	 */
 	private Declare parseErrorOrWarning(boolean isError) {
-		Pointcut pointcut = parsePointcut();
+		Pointcut pointcut = null;
+		int index = tokenSource.getIndex();
+		try {
+			pointcut = parsePointcut();
+		} catch (ParserException pe) {
+			try {
+				tokenSource.setIndex(index);
+				boolean oldValue = allowHasTypePatterns;
+				TypePattern typePattern = null;
+				try {
+					allowHasTypePatterns = true;
+					typePattern = parseTypePattern();
+				} finally {
+					allowHasTypePatterns = oldValue;
+				}
+				eat(":");
+				String message = parsePossibleStringSequence(true);
+				return new DeclareTypeErrorOrWarning(isError, typePattern, message);
+			} catch (ParserException pe2) {
+				// deliberately throw the original problem
+				throw pe;
+			}
+		}
 		eat(":");
 		String message = parsePossibleStringSequence(true);
 		return new DeclareErrorOrWarning(isError, pointcut, message);

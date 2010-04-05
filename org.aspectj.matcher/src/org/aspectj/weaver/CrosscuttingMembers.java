@@ -454,6 +454,10 @@ public class CrosscuttingMembers {
 			changed = true;
 			declareAnnotationsOnMethods = other.declareAnnotationsOnMethods;
 		}
+		if (!declareTypeEow.equals(other.declareTypeEow)) {
+			changed = true;
+			declareTypeEow = other.declareTypeEow;
+		}
 
 		return changed;
 	}
