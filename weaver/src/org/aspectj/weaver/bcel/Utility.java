@@ -83,7 +83,7 @@ public class Utility {
 								throw new BCException(
 										"Unable to continue, this version of AspectJ supports classes built with weaver version "
 												+ WeaverVersionInfo.toCurrentVersionString() + " but the class " + classname
-												+ " is version " + version.toString());
+												+ " is version " + version.toString() + ".  Please update your AspectJ.");
 							}
 						}
 						forSecondPass.add(u);
