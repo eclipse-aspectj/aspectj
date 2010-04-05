@@ -617,6 +617,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		boolean needOldStyleWarning = (info != null && info.isOldStyle());
 
 		onType.clearInterTypeMungers();
+		onType.ensureConsistent();
 
 		// FIXME asc perf Could optimize here, after processing the expected set
 		// of types we may bring
