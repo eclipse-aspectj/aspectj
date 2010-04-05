@@ -14,7 +14,7 @@
 <!--     Adrian Colyer / George Harley eclipse plugin targets                  -->
 <!-- ========================================================================= -->
 
-<project name="build" default="all" basedir=".">
+<project name="build" default="all" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:maven="antlib:org.apache.maven.artifact.ant">
 
     <target name="all"     depends="aspectj">
         <antcall target="eclipse.plugins"/>
@@ -251,6 +251,45 @@
 	        	files="${aspectj.tools.modules},${aspectj.test.modules}"/>
 	    </subant>
 	</target>
+
+<!--
+<target name="ivy.init" unless="ivy.initialized">
+  <property name="ivy.lib.dir" value="n:/apache-ivy-2.1.0/lib"/>
+  <property name="ivy.settings.file" value="n:/workspaces/aspectj16_3/build/ivysettings.xml"/>
+                <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant">
+               <classpath>
+                       <path location="${ivy.lib.dir}/ivy.jar"/>
+	                                <path location="${ivy.lib.dir}/org.springframework.build.aws.ivy.jar"/>
+	                                <path location="${ivy.lib.dir}/commons-codec.jar"/>
+                       <path location="${ivy.lib.dir}/commons-httpclient.jar"/>
+                       <path location="${ivy.lib.dir}/commons-logging.jar"/>
+                       <path location="${ivy.lib.dir}/jets3t.jar"/>
+	                                <path location="${ivy.lib.dir}"/>
+	                        </classpath>
+       </taskdef>
+
+	                <ivy:settings file="${ivy.settings.file}"/>
+	                <property name="ivy.initialized" value="true"/>
+	        </target>
+-->
+
+  <target name="maven.init" >
+    <property name="org.apache.maven.ant.version" value="2.0.10"/>
+<property name="org.springframework.build.aws.maven.version" value="2.0.0.RELEASE"/>
+<!--
+    <ivy:cachepath resolveId="maven.ant.tasks.classpath" pathid="maven.ant.tasks.classpath"
+       organisation="org.apache.maven" module="com.springsource.org.apache.maven.ant"
+       revision="${org.apache.maven.ant.version}" conf="runtime" type="jar" inline="true" log="download-only"/>
+-->
+<!--
+         <taskdef resource="org/apache/maven/artifact/ant/antlib.xml" uri="antlib:org.apache.maven.artifact.ant"
+                           classpathref="maven.ant.tasks.classpath"/>
+-->
+          <maven:install-provider groupId="org.springframework.build.aws" artifactId="org.springframework.build.aws.maven"
+                           version="${org.springframework.build.aws.maven.version}"/>
+  </target>
+
+
 	                	    
     <target name="junitreport" depends="init,init-taskdefs"
         if="junitreport.available">
@@ -695,6 +734,7 @@ To use testing client jar in tests,
     </target>
 	
 
+
 	<target name="repo" depends="init" description="deploy maven repo">
 		<property name="repo.url" value="scp://simonegianni.it/home/mavenrsync/repo"/>
 		<property name="repo.id" value="simonegianni-rsync"/>
@@ -749,12 +789,59 @@ To use testing client jar in tests,
 		
 	</target>
 
+<!--
+ant -propertyfile XXX publishtomaven
+-->
+  <target name="publishtomaven" depends="maven.init">
+    <property name="build.root" value="n:/workspaces/aspectj16_3/aj-build"/>
+
+    <property name="adjusted.release.type" value="snapshot"/>
+    <property name="maven.central.repository" value="s3://maven.springframework.org/${adjusted.release.type}"/>
+
+    <property name="bin.jars.folder" value="${build.root}/dist/tools/lib"/>
+    <property name="src.jars.folder" value="${build.root}/src"/>
+ <!--
+    <property name="jar.output.file" value="n:/workspaces/aspectj16_3/aj-build/dist/tools/lib/aspectjrt-1.6.9.BUILD-20100310.175000.jar"/>
+    <property name="local.pom.output.file" value="n:/workspaces/aspectj16_3/aj-build/dist/tools/lib/aspectjrt.pom"/>
+-->
+    <!-- ASPECTJRT -->
+    <maven:deploy file="${bin.jars.folder}/aspectjrt.jar">
+      <remoteRepository url="${maven.central.repository}">
+        <authentication username="${accessKey}" passphrase="${secretKey}"/>
+      </remoteRepository>
+      <pom file="${bin.jars.folder}/aspectjrt.pom"/>
+      <attach file="${src.jars.folder}/aspectjrt1.6.9-src.jar" classifier="sources"/>
+    </maven:deploy>
+
+    <!-- ASPECTJTOOLS -->
+    <maven:deploy file="${bin.jars.folder}/aspectjtools.jar">
+      <remoteRepository url="${maven.central.repository}">
+        <authentication username="${accessKey}" passphrase="${secretKey}"/>
+      </remoteRepository>
+      <pom file="${bin.jars.folder}/aspectjtools.pom"/>
+      <attach file="${src.jars.folder}/aspectjtools1.6.9-src.jar" classifier="sources"/>
+    </maven:deploy>
+
+    <!-- ASPECTJWEAVER -->
+    <maven:deploy file="${bin.jars.folder}/aspectjweaver.jar">
+      <remoteRepository url="${maven.central.repository}">
+        <authentication username="${accessKey}" passphrase="${secretKey}"/>
+      </remoteRepository>
+      <pom file="${bin.jars.folder}/aspectjweaver.pom"/>
+      <attach file="${src.jars.folder}/aspectjweaver1.6.9-src.jar" classifier="sources"/>
+    </maven:deploy>
+
+  </target>
+
+  <target name="repo2" depends="maven.init">
+  </target>
+
 	<target name="mavenDeployJar">
 		<!-- 
 		  Currently only an exec is usable, see http://jira.codehaus.org/browse/MANTTASKS-71 
 		  this mean you need to have maven installed on your system.
 		-->
-		<exec executable="mvn" failonerror="true">
+		<exec executable="n:/tools/apache-maven-2.0.9/bin/mvn.bat" failonerror="true">
 			<arg line="--batch-mode"/>
 			<arg line="deploy:deploy-file"/>
 			<arg line="-Durl=${repo.url}"/>
@@ -776,7 +863,7 @@ To use testing client jar in tests,
 		     failonerror is set to false because deploy:deploy-file goes NPE for some obscure reason
 		     on recent versions, see http://jira.codehaus.org/browse/MDEPLOY-48
 		     -->
-		<exec executable="mvn" failonerror="false">
+		<exec executable="n:/tools/apache-maven-2.0.9/bin/mvn.bat" failonerror="false">
 			<arg line="--batch-mode"/>
 			<arg line="deploy:deploy-file"/>
 			<arg line="-Durl=${repo.url}"/>
