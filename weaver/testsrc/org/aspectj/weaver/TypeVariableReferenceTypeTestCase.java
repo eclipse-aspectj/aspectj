@@ -11,13 +11,13 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
-import org.aspectj.weaver.bcel.BcelWorld;
-
 import junit.framework.TestCase;
+
+import org.aspectj.weaver.bcel.BcelWorld;
 
 /**
  * @author colyer
- *
+ * 
  */
 public class TypeVariableReferenceTypeTestCase extends TestCase {
 
@@ -27,23 +27,24 @@ public class TypeVariableReferenceTypeTestCase extends TestCase {
 	BoundedReferenceType superClass;
 	BoundedReferenceType extendsWithExtras;
 	BcelWorld world;
-	
+
 	public void testConstructionByNameAndVariable() {
-		TypeVariable tv = new TypeVariable("T",javaLangClass);
-		TypeVariableReferenceType tvrt = new TypeVariableReferenceType(tv,world);
-		assertEquals("T",tvrt.getTypeVariable().getName());
-		assertEquals(javaLangClass,tvrt.getUpperBound());
+		TypeVariable tv = new TypeVariable("T", javaLangClass);
+		TypeVariableReferenceType tvrt = new TypeVariableReferenceType(tv, world);
+		assertEquals("T", tvrt.getTypeVariable().getName());
+		assertEquals(javaLangClass, tvrt.getTypeVariable().getUpperBound());
 	}
-	
+
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		world = new BcelWorld();
 		javaLangClass = (ReferenceType) world.resolve(UnresolvedType.forName("java/lang/Class"));
 		javaLangObject = (ReferenceType) world.resolve(UnresolvedType.OBJECT);
-		extendsClass = new BoundedReferenceType(javaLangClass,true,world);
-		superClass = new BoundedReferenceType(javaLangClass,false,world);
-		extendsWithExtras = new BoundedReferenceType(javaLangClass,true,world,
-				new ReferenceType[] {(ReferenceType)world.resolve(UnresolvedType.forName("java/util/List"))});
+		extendsClass = new BoundedReferenceType(javaLangClass, true, world);
+		superClass = new BoundedReferenceType(javaLangClass, false, world);
+		extendsWithExtras = new BoundedReferenceType(javaLangClass, true, world, new ReferenceType[] { (ReferenceType) world
+				.resolve(UnresolvedType.forName("java/util/List")) });
 	}
 
 }
