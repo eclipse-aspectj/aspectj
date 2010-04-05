@@ -1831,7 +1831,7 @@ public class BcelWeaver {
 								inReweavableMode);
 					}
 
-				//	checkDeclareTypeErrorOrWarning(world, classType);
+					checkDeclareTypeErrorOrWarning(world, classType);
 
 					if (mightNeedBridgeMethods) {
 						isChanged = BcelClassWeaver.calculateAnyRequiredBridgeMethods(world, clazz) || isChanged;
@@ -1864,8 +1864,8 @@ public class BcelWeaver {
 					String messageText = "trouble in: \n" + classDebugInfo;
 					getWorld().getMessageHandler().handleMessage(new Message(messageText, IMessage.ABORT, re, null));
 				}
-//			} else {
-//				checkDeclareTypeErrorOrWarning(world, classType);
+			} else {
+				 checkDeclareTypeErrorOrWarning(world, classType);
 			}
 			// this is very odd return behavior trying to keep everyone happy
 			/*
@@ -1903,7 +1903,7 @@ public class BcelWeaver {
 
 	// ---- writing
 
-/*	private void checkDeclareTypeErrorOrWarning(BcelWorld world2, BcelObjectType classType) {
+	private void checkDeclareTypeErrorOrWarning(BcelWorld world2, BcelObjectType classType) {
 		List<DeclareTypeErrorOrWarning> dteows = world.getDeclareTypeEows();
 		for (DeclareTypeErrorOrWarning dteow : dteows) {
 			if (dteow.getTypePattern().matchesStatically(classType.getResolvedTypeX())) {
@@ -1917,7 +1917,6 @@ public class BcelWeaver {
 			}
 		}
 	}
-*/
 
 	private void dumpUnchanged(UnwovenClassFile classFile) throws IOException {
 		if (zipOutputStream != null) {
