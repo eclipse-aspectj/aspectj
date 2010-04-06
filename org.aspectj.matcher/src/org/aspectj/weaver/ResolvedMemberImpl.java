@@ -1022,7 +1022,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 				toBuffer.append("...");
 			} else {
 				alreadyUsedTypeVars.add(aType);
-				appendSigWithTypeVarBoundsRemoved(typeVariableRT.getTypeVariable().getUpperBound(), toBuffer, alreadyUsedTypeVars);
+				appendSigWithTypeVarBoundsRemoved(typeVariableRT.getTypeVariable().getFirstBound(), toBuffer, alreadyUsedTypeVars);
 			}
 			// toBuffer.append("T;");
 		} else if (aType.isParameterizedType()) {
