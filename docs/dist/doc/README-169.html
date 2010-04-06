@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.6.9 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2010 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 1.6.9 Readme</h1>
+
+<h2>Features of 1.6.9 milestone 1</h2>
+
+<h3>Message inserts for declare warning/error messages</h3>
+
+<p>It is now possible to use joinpoint context in the messages attached to declare warning and declare error constructs.  Some
+examples:</p>
+
+<code><pre>
+declare warning: execution(* A.m(..)): "joinpoint is {joinpoint}";
+declare warning: execution(* A.m(..)): "joinpoint kind is '{joinpoint.kind}'";
+declare warning: get(int *) && within(A): "joinpoint signature is {joinpoint.signature}";
+declare warning: execution(* A.m(..)): "joinpoint declaring type is {joinpoint.signature.declaringType}";
+declare warning: execution(* A.m(..)): "signature name for method is {joinpoint.signature.name}";
+declare warning: execution(* A.m(..)): "joinpoint location is {joinpoint.sourcelocation.sourcefile}:{joinpoint.sourcelocation.line}";
+declare warning: execution(* A.m(..)): "joinpoint line is '{joinpoint.sourcelocation.line}'";
+
+declare warning: get(int *): "warning is from aspect {advice.aspecttype}";
+declare warning: execution(* A.m(..)): "warning sourcelocation is {advice.sourcelocation.sourcefile}:{advice.sourcelocation.line}";
+</pre></code>
+
+<p>The syntax is to enclose the relevant key within curly brackets within the message.  Please raise an enhancement request 
+if you need other keys - the set supported so far are all those shown in the example above.</p>
+
+
+<h3>declare warning/error for type patterns</h3>
+
+<p>It is now possible to use a type pattern with declare warning and declare error.  For example:</p>
+
+<code><pre>
+declare warning: I+ && !hasfield(int i): "Implementations of I are expected to have a int field called i";
+</pre></code>
+
+<h3>Type category type patterns</h3>
+
+<p>This is the ability to narrow the types of interest so that interfaces can be ignored, or inner
+types, or classes or aspects.  There is now a new is() construct that enables this:</p>
+
+<code><pre>
+execution(* (!is(InnerType)).m(..)) {}
+!within(* && is(InnerType)) {}
+</pre></code>
+
+<p>Options for use in is() are: ClassType, AspectType, InterfaceType, InnerType, AnonymousType, EnumType, AnonymousType.</p>
+<p>Note: It is important to understand that "!within(is(InnerType))" and "within(!is(InnerType))" are not the same.  The latter one is
+unlikely to be what you want to use.  For example here:
+<code><pre>
+class Boo {
+  void foo() {}
+  class Bar {
+    void foo() {}
+  }
+}
+</pre></code>
+<p>Bar.foo() will match within(!is(InnerType)) because within considers all surrounding types (so although Bar doesn't match the
+pattern, the surrounding Boo will match it).  Bar.foo() will not match !within(is(InnerType)) because Bar will match the pattern
+and then the result of that match will be negated.</p>
+
+<h3>Intertype fields preserve visibility and name</h3>
+
+<p>Some users always expect this:</p>
+
+<code><pre>
+class C {
+}
+
+aspect X {
+  private int C.someField;
+}
+</pre></code>
+
+<p>To cause a private field called 'someField' to be added to C.  This is conceptually what happens during compilation but if any
+user then later attempts to access someField via reflection or runs a javap against the class file, they will see that isn't
+what happens in practice.  A public member is added with a mangled name.  For code attempting to access someField built with ajc,
+the visibility of the declaration will, of course, be respected.  But for frameworks accessing the code later (typically through
+reflection), it can cause confusion.  With AspectJ 1.6.9 the name and visibility are now preserved.  Compile time semantics
+remain the same, it is only the weaving process that has changed to produce slightly different output.</p>
+<p>Here is the output of javap when that is built with 1.6.8:</p>
+<code><pre>
+class C extends java.lang.Object{
+    public int ajc$interField$X$someField;
+    C();
+}
+</pre></code>
+<p>Here is the output of javap when that is built with 1.6.9:</p>
+<code><pre>
+class C extends java.lang.Object{
+    private int someField;
+    C();
+    public static int ajc$get$someField(C);
+    public static void ajc$set$someField(C, int);
+}
+</pre></code>
+<p>The name 'someField' is preserved.  The visibility is also preserved but because of that we also need to generate some accessors
+to get at the field.</p> 
+
+<h3>AspectJ snapshots in a maven repo</h3>
+
+<p>To ease how AspectJ development builds can be consumed, they are now placed into a maven repo.  When a new version of AspectJ
+is put into AJDT it is also put into the maven.springframework.org repo.  
+The maven compatible repo is <code>maven.springframework.org/snapshot/org/aspectj</code> - and if you browse to it you will 
+see it currently contains 1.6.9 dev builds under the name 1.6.9.BUILD-SNAPSHOT.
+
+The repo is added with this magic:</p>
+
+<code><pre>
+&lt;repository&gt;
+    &lt;id&gt;maven.springframework.org&lt;/id&gt;
+    &lt;name&gt;SpringSource snapshots&lt;/name&gt;
+    &lt;url&gt;http://maven.springframework.org/snapshot&lt;/url&gt;
+&lt;/repository&gt;
+</pre></code>
+<p>
+and then the version to depend upon is:
+
+1.6.9.BUILD-SNAPSHOT</p>
+
+ <hr>
+
+<h4>
+<!-- ============================== -->  
+</body>
+</html>
