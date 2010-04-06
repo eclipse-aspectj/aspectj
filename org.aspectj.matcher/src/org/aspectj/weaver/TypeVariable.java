@@ -152,9 +152,9 @@ public class TypeVariable {
 
 		if (superclass != null) {
 			ResolvedType rt = superclass.resolve(world);
-			if (!superclass.isTypeVariableReference() && rt.isInterface()) {
-				throw new IllegalStateException("Why is the type an interface? " + rt);
-			}
+			// if (!superclass.isTypeVariableReference() && rt.isInterface()) {
+			// throw new IllegalStateException("Why is the type an interface? " + rt);
+			// }
 			superclass = rt;
 		}
 		firstbound = getFirstBound().resolve(world);
