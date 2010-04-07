@@ -30,6 +30,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifie
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.MemberKind;
@@ -159,7 +160,17 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 				cachedAnnotationTypes = new ResolvedType[annos.length];
 				for (int i = 0; i < annos.length; i++) {
 					Annotation type = annos[i];
-					cachedAnnotationTypes[i] = w.resolve(UnresolvedType.forSignature(new String(type.resolvedType.signature())));
+					TypeBinding typebinding = type.resolvedType;
+					// If there was a problem resolving the annotation (the import couldn't be found) then that can manifest
+					// here as typebinding == null. Normally errors are reported prior to weaving (so weaving is avoided and
+					// the null is not encountered) but the use of hasfield/hasmethod can cause early attempts to look at
+					// annotations and if we NPE here then the real error will not get reported.
+					if (typebinding == null) {
+						// Give up now - expect proper error to be reported
+						cachedAnnotationTypes = ResolvedType.EMPTY_RESOLVED_TYPE_ARRAY;
+						return cachedAnnotationTypes;
+					}
+					cachedAnnotationTypes[i] = w.resolve(UnresolvedType.forSignature(new String(typebinding.signature())));
 				}
 			}
 		}
@@ -210,17 +221,17 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 
 					// Grab the set of bindings with matching selector
 					MethodBinding[] mb = ((MethodBinding) realBinding).declaringClass.getMethods(methodBinding.selector);
-					if (mb!=null) {
-					for (int m = 0, max = mb.length; m < max; m++) {
-						MethodBinding candidate = mb[m];
-						if (candidate instanceof InterTypeMethodBinding) {
-							if (InterTypeMemberFinder.matches(mb[m], methodBinding)) {
-								InterTypeMethodBinding intertypeMethodBinding = (InterTypeMethodBinding) candidate;
-								Annotation[] annos = intertypeMethodBinding.sourceMethod.annotations;
-								return annos;
+					if (mb != null) {
+						for (int m = 0, max = mb.length; m < max; m++) {
+							MethodBinding candidate = mb[m];
+							if (candidate instanceof InterTypeMethodBinding) {
+								if (InterTypeMemberFinder.matches(mb[m], methodBinding)) {
+									InterTypeMethodBinding intertypeMethodBinding = (InterTypeMethodBinding) candidate;
+									Annotation[] annos = intertypeMethodBinding.sourceMethod.annotations;
+									return annos;
+								}
 							}
 						}
-					}
 					}
 					return null; // give up! kind of assuming here that the code has other problems (and they will be reported)
 				}
