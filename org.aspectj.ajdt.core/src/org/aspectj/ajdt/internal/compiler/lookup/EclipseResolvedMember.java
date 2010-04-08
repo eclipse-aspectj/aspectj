@@ -34,10 +34,13 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.MemberKind;
+import org.aspectj.weaver.ReferenceType;
+import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.BcelObjectType;
 
 /**
  * In the pipeline world, we can be weaving before all types have come through from compilation. In some cases this means the weaver
@@ -83,37 +86,74 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 	}
 
 	public AnnotationAJ[] getAnnotations() {
-		// long abits =
-		realBinding.getAnnotationTagBits(); // ensure resolved
-		Annotation[] annos = getEclipseAnnotations();
-		if (annos == null) {
+		if (isTypeDeclarationAvailable()) {
+			// long abits =
+			realBinding.getAnnotationTagBits(); // ensure resolved
+			Annotation[] annos = getEclipseAnnotations();
+			if (annos == null) {
+				return null;
+			}
+			AnnotationAJ[] annoAJs = new AnnotationAJ[annos.length];
+			for (int i = 0; i < annos.length; i++) {
+				annoAJs[i] = EclipseAnnotationConvertor.convertEclipseAnnotation(annos[i], w, eclipseFactory);
+			}
+			return annoAJs;
+		} else {
+			UnresolvedType declaringType = this.getDeclaringType();
+			if (declaringType instanceof ReferenceType) {
+				ReferenceType referenceDeclaringType = (ReferenceType)declaringType;
+				if (referenceDeclaringType.getDelegate() instanceof BcelObjectType) {
+					// worth a look!
+					ResolvedMember field = ((ResolvedType)declaringType).lookupField(this);
+					if (field!=null) {
+						return field.getAnnotations();						
+					}
+				}
+			}
 			return null;
 		}
-		AnnotationAJ[] annoAJs = new AnnotationAJ[annos.length];
-		for (int i = 0; i < annos.length; i++) {
-			annoAJs[i] = EclipseAnnotationConvertor.convertEclipseAnnotation(annos[i], w, eclipseFactory);
-		}
-		return annoAJs;
 	}
 
 	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
-		// long abits =
-		realBinding.getAnnotationTagBits(); // ensure resolved
-		Annotation[] annos = getEclipseAnnotations();
-		if (annos == null)
-			return null;
-		for (int i = 0; i < annos.length; i++) {
-			Annotation anno = annos[i];
-			UnresolvedType ut = UnresolvedType.forSignature(new String(anno.resolvedType.signature()));
-			if (w.resolve(ut).equals(ofType)) {
-				// Found the one
-				return EclipseAnnotationConvertor.convertEclipseAnnotation(anno, w, eclipseFactory);
+		if (isTypeDeclarationAvailable()) {
+			// long abits =
+			realBinding.getAnnotationTagBits(); // ensure resolved
+			Annotation[] annos = getEclipseAnnotations();
+			if (annos == null)
+				return null;
+			for (int i = 0; i < annos.length; i++) {
+				Annotation anno = annos[i];
+				UnresolvedType ut = UnresolvedType.forSignature(new String(anno.resolvedType.signature()));
+				if (w.resolve(ut).equals(ofType)) {
+					// Found the one
+					return EclipseAnnotationConvertor.convertEclipseAnnotation(anno, w, eclipseFactory);
+				}
+			}
+		} else {		
+			UnresolvedType declaringType = this.getDeclaringType();
+			if (declaringType instanceof ReferenceType) {
+				ReferenceType referenceDeclaringType = (ReferenceType)declaringType;
+				if (referenceDeclaringType.getDelegate() instanceof BcelObjectType) {
+					// worth a look!
+					ResolvedMember field = ((ResolvedType)declaringType).lookupField(this);
+					if (field!=null) {
+						return field.getAnnotationOfType(ofType);						
+					}
+				}
 			}
 		}
 		return null;
 	}
 
 	public String getAnnotationDefaultValue() {
+		// Andy, if you are debugging in here and your problem is some kind of incremental build failure where a match on
+		// a member annotation value is failing then you should look at bug 307120.  Under that bug you discovered that
+		// for privileged field accesses from ITDs, an EclipseResolvedMember may be created (inside the privileged munger - see
+		// PrivilegedHandler) and then later when the annotations are looked up on it, that fails because we can't find the
+		// declaration for the member.  This is because on the incremental build the member will likely represent something
+		// inside a binary type (BinaryTypeBinding) - and when that happens we should not look on the type declaration but
+		// instead on the delegate for the declaringClass because it will likely be a BcelObjectType with the right stuff
+		// in it - see the other checks on BcelObjectType in this class.
 		if (realBinding instanceof MethodBinding) {
 			AbstractMethodDeclaration methodDecl = getTypeDeclaration().declarationOf((MethodBinding) realBinding);
 			if (methodDecl instanceof AnnotationMethodDeclaration) {
@@ -153,24 +193,40 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 		if (cachedAnnotationTypes == null) {
 			// long abits =
 			realBinding.getAnnotationTagBits(); // ensure resolved
-			Annotation[] annos = getEclipseAnnotations();
-			if (annos == null) {
-				cachedAnnotationTypes = ResolvedType.EMPTY_RESOLVED_TYPE_ARRAY;
-			} else {
-				cachedAnnotationTypes = new ResolvedType[annos.length];
-				for (int i = 0; i < annos.length; i++) {
-					Annotation type = annos[i];
-					TypeBinding typebinding = type.resolvedType;
-					// If there was a problem resolving the annotation (the import couldn't be found) then that can manifest
-					// here as typebinding == null. Normally errors are reported prior to weaving (so weaving is avoided and
-					// the null is not encountered) but the use of hasfield/hasmethod can cause early attempts to look at
-					// annotations and if we NPE here then the real error will not get reported.
-					if (typebinding == null) {
-						// Give up now - expect proper error to be reported
-						cachedAnnotationTypes = ResolvedType.EMPTY_RESOLVED_TYPE_ARRAY;
-						return cachedAnnotationTypes;
+			if (isTypeDeclarationAvailable()) {
+				Annotation[] annos = getEclipseAnnotations();
+				if (annos == null) {
+					cachedAnnotationTypes = ResolvedType.EMPTY_RESOLVED_TYPE_ARRAY;
+				} else {
+					cachedAnnotationTypes = new ResolvedType[annos.length];
+					for (int i = 0; i < annos.length; i++) {
+						Annotation type = annos[i];
+						TypeBinding typebinding = type.resolvedType;
+						// If there was a problem resolving the annotation (the import couldn't be found) then that can manifest
+						// here as typebinding == null. Normally errors are reported prior to weaving (so weaving is avoided and
+						// the null is not encountered) but the use of hasfield/hasmethod can cause early attempts to look at
+						// annotations and if we NPE here then the real error will not get reported.
+						if (typebinding == null) {
+							// Give up now - expect proper error to be reported
+							cachedAnnotationTypes = ResolvedType.EMPTY_RESOLVED_TYPE_ARRAY;
+							return cachedAnnotationTypes;
+						}
+						cachedAnnotationTypes[i] = w.resolve(UnresolvedType.forSignature(new String(typebinding.signature())));
 					}
-					cachedAnnotationTypes[i] = w.resolve(UnresolvedType.forSignature(new String(typebinding.signature())));
+				}
+			} else {
+				// annotations may be accessible through the declaringClass if there is a bcel object behind it...
+				cachedAnnotationTypes = ResolvedType.EMPTY_RESOLVED_TYPE_ARRAY;
+				UnresolvedType declaringType = this.getDeclaringType();
+				if (declaringType instanceof ReferenceType) {
+					ReferenceType referenceDeclaringType = (ReferenceType)declaringType;
+					if (referenceDeclaringType.getDelegate() instanceof BcelObjectType) {
+						// worth a look!
+						ResolvedMember field = ((ResolvedType)declaringType).lookupField(this);
+						if (field!=null) {
+							cachedAnnotationTypes = field.getAnnotationTypes();						
+						}
+					}
 				}
 			}
 		}
@@ -208,9 +264,18 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 		return argumentNames;
 	}
 
+	/**
+	 * Discover the (eclipse form) annotations on this resolved member.  This is done by going to the type declaration,
+	 * looking up the member (field/method) then grabbing the annotations.
+	 * 
+	 * @return an array of (eclipse form) annotations on this member
+	 */
 	private Annotation[] getEclipseAnnotations() {
 		TypeDeclaration tDecl = getTypeDeclaration();
-		if (tDecl != null) {// if the code is broken then tDecl may be null
+		// two possible reasons for it being null:
+		// 1. code is broken
+		// 2. this resolvedmember is an EclipseResolvedMember created up front to represent a privileged'd accessed member
+		if (tDecl != null) {
 			if (realBinding instanceof MethodBinding) {
 				MethodBinding methodBinding = (MethodBinding) realBinding;
 				AbstractMethodDeclaration methodDecl = tDecl.declarationOf(methodBinding);
@@ -243,7 +308,15 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 		}
 		return null;
 	}
+	
+	private boolean isTypeDeclarationAvailable() {
+		return getTypeDeclaration()!=null;
+	}
 
+	/**
+	 * @return the type declaration that contained this member, or NULL if it is not available (eg. this isn't currently related to
+	 * a SOURCE-FORM artifact, it is instead related to a BINARY-FORM artifact)
+	 */
 	private TypeDeclaration getTypeDeclaration() {
 		if (realBinding instanceof MethodBinding) {
 			MethodBinding mb = (MethodBinding) realBinding;
