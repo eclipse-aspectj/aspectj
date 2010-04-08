@@ -256,6 +256,27 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals(4, getRelationshipCount(p));
 	}
 
+	// More sophisticated variant of above.
+	public void testIncrementalAdvisingItdJoinpointsAccessingPrivFields_307120_2() throws Exception {
+		String p = "pr307120_2";
+		initialiseProject(p);
+		build(p);
+		assertNoErrors(p);
+		//		Hid:2:(targets=1) =pr307120_2<{TargetAugmenter.java}TargetAugmenter)Target.setIt)QString; (declared on) =pr307120_2<{Target.java[Target
+		//		Hid:8:(targets=1) =pr307120_2<{TargetAugmenter.java}TargetAugmenter)Target.getIt (declared on) =pr307120_2<{Target.java[Target
+		//		Hid:5:(targets=2) =pr307120_2<{Target.java[Target (aspect declarations) =pr307120_2<{TargetAugmenter.java}TargetAugmenter)Target.getIt
+		//		Hid:6:(targets=2) =pr307120_2<{Target.java[Target (aspect declarations) =pr307120_2<{TargetAugmenter.java}TargetAugmenter)Target.setIt)QString;		
+		//		Hid:1:(targets=1) =pr307120_2<{TargetAugmenter.java}TargetAugmenter)Target.setIt)QString;?field-set(java.lang.String Target.it) (advised by) =pr307120_2<{Advisor.java}Advisor&around&QObject;&QObject;
+		//		Hid:3:(targets=1) =pr307120_2<{TargetAugmenter.java}TargetAugmenter)Target.getIt?field-get(java.lang.String Target.it) (advised by) =pr307120_2<{Advisor.java}Advisor&around&QObject;
+		//		Hid:4:(targets=1) =pr307120_2<{Advisor.java}Advisor&around&QObject; (advises) =pr307120_2<{TargetAugmenter.java}TargetAugmenter)Target.getIt?field-get(java.lang.String Target.it)
+		//		Hid:7:(targets=1) =pr307120_2<{Advisor.java}Advisor&around&QObject;&QObject; (advises) =pr307120_2<{TargetAugmenter.java}TargetAugmenter)Target.setIt)QString;?field-set(java.lang.String Target.it)
+		assertEquals(8, getRelationshipCount(p));
+		alter(p, "inc1");
+		build(p);
+		assertEquals(8, getRelationshipCount(p));		
+		assertNoErrors(p);
+	}
+
 	// modified aspect so target is fully qualified on the incremental change
 	public void testIncrementalFqItds_280380_2() throws Exception {
 		String p = "pr280380";
