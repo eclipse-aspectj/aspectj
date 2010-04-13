@@ -671,8 +671,13 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	 */
 	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
 			boolean isParameterized, List aliases) {
+		// PR308773
+		// this check had problems for the inner type of a generic type because the inner type can be represented
+		// by a 'simple type' if it is only sharing type variables with the outer and has none of its own.  To avoid the
+		// check going bang in this case we check for $ (crap...) - we can't check the outer because the declaring type
+		// is considered unresolved...		
 		if (// isParameterized && <-- might need this bit...
-		!getDeclaringType().isGenericType()) {
+		!getDeclaringType().isGenericType()  && getDeclaringType().getName().indexOf("$")==-1) {
 			throw new IllegalStateException("Can't ask to parameterize a member of non-generic type: " + getDeclaringType()
 					+ "  kind(" + getDeclaringType().typeKind + ")");
 		}
