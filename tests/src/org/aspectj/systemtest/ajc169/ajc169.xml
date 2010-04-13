@@ -2,6 +2,10 @@
 
 <suite>
 
+   <ajc-test dir="bugs169/pr308773" title="subtle generics problem">
+     <compile files="Aspy.aj Zzz.java Top.java Middle.java" options="-1.5"/>
+  </ajc-test>
+  
    <ajc-test dir="bugs169/pr307147" title="advising privileged access method">
      <compile files="B.java Test2.java" options="-showWeaveInfo">
        <message kind="weave" text="Type 'B' (B.java) has intertyped method from 'Test'"/>
