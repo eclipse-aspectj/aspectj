@@ -34,9 +34,9 @@ public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("pipelining and generics");
 	}
 
-	/*
-	 * public void testCrashParamAnnos_309440() { runTest("crash param annos"); }
-	 */
+	public void testCrashParamAnnos_309440() {
+		runTest("crash param annos");
+	}
 
 	// 1.6.9 M1 below here
 	public void testSubtleGenericsIssue_308773() {
