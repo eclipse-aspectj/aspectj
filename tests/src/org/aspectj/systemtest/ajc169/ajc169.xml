@@ -21,6 +21,11 @@
      </compile>
   </ajc-test>
   
+   <ajc-test dir="bugs169/pr309440" title="crash param annos">
+     <compile files="foobar/ExportMode.java" classpath="jsr305.jar" options="-1.6"/>
+     <compile files="foobar/CrashAspectJCompiler.java" classpath="jsr305.jar" options="-1.6"/>
+  </ajc-test>
+  
    <ajc-test dir="bugs169/pr307120" title="advising privileged access member - 2">
      <compile files="Test.java A.java" options="-showWeaveInfo">
        <message kind="weave" text="Type 'A' (A.java) has intertyped method from 'Test'"/> <!-- getFoo and getGoo -->
