@@ -3,7 +3,9 @@
 <suite>
 
    <ajc-test dir="bugs169/pr309336" title="pipelining and generics">
-     <compile files="NoSystemStreams.aj UseOperators.java Operators.java" options="-1.5"/>
+     <compile files="NoSystemStreams.aj UseOperators.java Operators.java" options="-1.5">
+       <message kind="warning" text="No system.out"/>
+     </compile>
   </ajc-test>
   
    <ajc-test dir="bugs169/pr308773" title="subtle generics problem">
