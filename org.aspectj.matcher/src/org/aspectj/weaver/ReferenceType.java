@@ -418,27 +418,22 @@ public class ReferenceType extends ResolvedType {
 			return true;
 		}
 
-		if (this.getSignature().equals(ResolvedType.OBJECT.getSignature())) {
+		if (this.getSignature().equals("Ljava/lang/Object;")) {
 			return true;
 		}
 
-		boolean thisRaw = this.isRawType();
-		boolean thisGeneric = this.isGenericType();
+		if (!isTypeVariableReference() && other.getSignature().equals("Ljava/lang/Object;")) {
+			return false;
+		}
 
-		if ((thisRaw || thisGeneric) && other.isParameterizedType()) {
-			if (isAssignableFrom(other.getRawType())) {
-				return true;
-			}
+		boolean thisRaw = this.isRawType();
+		if (thisRaw && other.isParameterizedOrGenericType()) {
+			return isAssignableFrom(other.getRawType());
 		}
-		if (thisRaw && other.isGenericType()) {
-			if (isAssignableFrom(other.getRawType())) {
-				return true;
-			}
-		}
-		if (thisGeneric && other.isRawType()) {
-			if (isAssignableFrom(other.getGenericType())) {
-				return true;
-			}
+
+		boolean thisGeneric = this.isGenericType();
+		if (thisGeneric && other.isParameterizedOrRawType()) {
+			return isAssignableFrom(other.getGenericType());
 		}
 
 		if (this.isParameterizedType()) {
@@ -527,19 +522,8 @@ public class ReferenceType extends ResolvedType {
 			}
 		}
 
-		if (isTypeVariableReference() && !other.isTypeVariableReference()) { // eg
-			// .
-			// this
-			// =
-			// T
-			// other
-			// =
-			// Ljava
-			// /
-			// lang
-			// /
-			// Object
-			// ;
+		// eg this=T other=Ljava/lang/Object;
+		if (isTypeVariableReference() && !other.isTypeVariableReference()) {
 			TypeVariable aVar = ((TypeVariableReference) this).getTypeVariable();
 			return aVar.resolve(world).canBeBoundTo(other);
 		}
@@ -564,13 +548,25 @@ public class ReferenceType extends ResolvedType {
 
 		ResolvedType[] interfaces = other.getDeclaredInterfaces();
 		for (ResolvedType intface : interfaces) {
-			if (this.isAssignableFrom(intface, allowMissing)) {
+			boolean b;
+			if (thisRaw && intface.isParameterizedOrGenericType()) {
+				b = this.isAssignableFrom(intface.getRawType(), allowMissing);
+			} else {
+				b = this.isAssignableFrom(intface, allowMissing);
+			}
+			if (b) {
 				return true;
 			}
 		}
 		ResolvedType superclass = other.getSuperclass();
 		if (superclass != null) {
-			if (this.isAssignableFrom(superclass, allowMissing)) {
+			boolean b;
+			if (thisRaw && superclass.isParameterizedOrGenericType()) {
+				b = this.isAssignableFrom(superclass.getRawType(), allowMissing);
+			} else {
+				b = this.isAssignableFrom(superclass, allowMissing);
+			}
+			if (b) {
 				return true;
 			}
 		}
