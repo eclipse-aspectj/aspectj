@@ -11,11 +11,14 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import junit.framework.TestCase;
 
+import org.aspectj.util.PartialOrder;
 import org.aspectj.weaver.bcel.BcelWorld;
 
 // test cases for Adrian's additions to ReferenceType
@@ -60,6 +63,7 @@ public class ReferenceTypeTestCase extends TestCase {
 
 	BcelWorld world;
 
+	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		world = new BcelWorld();
@@ -555,7 +559,121 @@ public class ReferenceTypeTestCase extends TestCase {
 		arrayListOfString = (ArrayList<String>) listOfSomething;
 		assertFalse(ajArrayListOfString.isAssignableFrom(ajListOfSomething));
 		assertTrue(ajArrayListOfString.isCoerceableFrom(ajListOfSomething));
+	}
 
+	// copy of the real one in BcelClassWeaver
+	public static class IfaceInitList implements PartialOrder.PartialComparable {
+		final ResolvedType onType;
+		List<ConcreteTypeMunger> list = new ArrayList<ConcreteTypeMunger>();
+
+		IfaceInitList(ResolvedType onType) {
+			this.onType = onType;
+		}
+
+		public int compareTo(Object other) {
+			IfaceInitList o = (IfaceInitList) other;
+			if (onType.isAssignableFrom(o.onType)) {
+				return +1;
+			} else if (o.onType.isAssignableFrom(onType)) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
+
+		public int fallbackCompareTo(Object other) {
+			return 0;
+		}
+	}
+
+	public void testExpensiveAssignableChecks_309336() {
+		List objects = new ArrayList();
+		ReferenceType rcb = resolve("Lorg/aspectj/weaver/ReferenceTypeTestCase$Foo;");
+		ReferenceType i = (ReferenceType) rcb.getDeclaredInterfaces()[0];
+		while (i != null && i.isInterface()) {
+			objects.add(Math.abs(new Random(12).nextInt(objects.size() + 1)), new IfaceInitList(i));
+			ResolvedType[] rt = i.getDeclaredInterfaces();
+			i = rt == null || rt.length == 0 ? null : (ReferenceType) rt[0];
+		}
+		for (int loop = 0; loop < 10; loop++) {
+			// ReferenceType.r = 0;
+			long stime = System.nanoTime();
+			for (int j = 0; j < 10; j++) {
+				List objects2 = new ArrayList();
+				objects2.addAll(objects);
+				PartialOrder.sort(objects2);
+			}
+			long etime = System.nanoTime();
+			System.err.println("Took " + ((etime - stime) / 1000000) + "ms: calls ");// + ReferenceType.r);
+		}
+		// could do with asserting something... basically we are just checking we didn't run out of memory doing the sorts above!
+	}
+
+	public interface Operator14<T, E1 extends Throwable, E2 extends Throwable, E3 extends Throwable, E4 extends Throwable, E5 extends Throwable, E6 extends Throwable, E7 extends Throwable, E8 extends Throwable, E9 extends Throwable, E10 extends Throwable, E11 extends Throwable, E12 extends Throwable, E13 extends Throwable, E14 extends Throwable> {
+		T execute(String aArg) throws E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E13, E14, RemoteException;
+	}
+
+	public interface Operator13<T, E1 extends Throwable, E2 extends Throwable, E3 extends Throwable, E4 extends Throwable, E5 extends Throwable, E6 extends Throwable, E7 extends Throwable, E8 extends Throwable, E9 extends Throwable, E10 extends Throwable, E11 extends Throwable, E12 extends Throwable, E13 extends Throwable>
+			extends Operator14<T, E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E13, E13> {
+	}
+
+	public interface Operator12<T, E1 extends Throwable, E2 extends Throwable, E3 extends Throwable, E4 extends Throwable, E5 extends Throwable, E6 extends Throwable, E7 extends Throwable, E8 extends Throwable, E9 extends Throwable, E10 extends Throwable, E11 extends Throwable, E12 extends Throwable>
+			extends Operator13<T, E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E12> {
+	}
+
+	public interface Operator11<T, E1 extends Throwable, E2 extends Throwable, E3 extends Throwable, E4 extends Throwable, E5 extends Throwable, E6 extends Throwable, E7 extends Throwable, E8 extends Throwable, E9 extends Throwable, E10 extends Throwable, E11 extends Throwable>
+			extends Operator12<T, E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, E11> {
+	}
+
+	public interface Operator10<T, E1 extends Throwable, E2 extends Throwable, E3 extends Throwable, E4 extends Throwable, E5 extends Throwable, E6 extends Throwable, E7 extends Throwable, E8 extends Throwable, E9 extends Throwable, E10 extends Throwable>
+			extends Operator11<T, E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E10> {
+
+	}
+
+	public interface Operator9<T, E1 extends Throwable, E2 extends Throwable, E3 extends Throwable, E4 extends Throwable, E5 extends Throwable, E6 extends Throwable, E7 extends Throwable, E8 extends Throwable, E9 extends Throwable>
+			extends Operator10<T, E1, E2, E3, E4, E5, E6, E7, E8, E9, E9> {
+	}
+
+	public interface Operator8<T, E1 extends Throwable, E2 extends Throwable, E3 extends Throwable, E4 extends Throwable, E5 extends Throwable, E6 extends Throwable, E7 extends Throwable, E8 extends Throwable>
+			extends Operator9<T, E1, E2, E3, E4, E5, E6, E7, E8, E8> {
+	}
+
+	public interface Operator7<T, E1 extends Throwable, E2 extends Throwable, E3 extends Throwable, E4 extends Throwable, E5 extends Throwable, E6 extends Throwable, E7 extends Throwable>
+			extends Operator8<T, E1, E2, E3, E4, E5, E6, E7, E7> {
+	}
+
+	public interface Operator6<T, E1 extends Throwable, E2 extends Throwable, E3 extends Throwable, E4 extends Throwable, E5 extends Throwable, E6 extends Throwable>
+			extends Operator7<T, E1, E2, E3, E4, E5, E6, E6> {
+
+	}
+
+	public interface Operator5<T, E1 extends Throwable, E2 extends Throwable, E3 extends Throwable, E4 extends Throwable, E5 extends Throwable>
+			extends Operator6<T, E1, E2, E3, E4, E5, E5> {
+	}
+
+	public interface Operator4<T, E1 extends Throwable, E2 extends Throwable, E3 extends Throwable, E4 extends Throwable> extends
+			Operator5<T, E1, E2, E3, E4, E4> {
+	}
+
+	public interface Operator3<T, E1 extends Throwable, E2 extends Throwable, E3 extends Throwable> extends
+			Operator4<T, E1, E2, E3, E3> {
+	}
+
+	public interface Operator2<T, E1 extends Throwable, E2 extends Throwable> extends Operator3<T, E1, E2, E2> {
+
+	}
+
+	public interface Operator1<T, E1 extends Throwable> extends Operator2<T, E1, E1> {
+	}
+
+	public interface Operator<T> extends Operator1<T, RuntimeException> {
+	}
+
+	class Foo implements Operator<String> {
+		public String execute(String aArg) throws NullPointerException, RemoteException {
+			System.out.println("Doh!");
+			return aArg;
+		}
 	}
 
 	// public void testAssignable_method_m5() {
