@@ -170,6 +170,8 @@ public class Main {
 	/** ReflectionFactory identifier for command (compiler) */
 	protected String commandName;
 
+	protected ICommand command;
+
 	/** client-set message sink */
 	private IMessageHolder clientHolder;
 
@@ -196,6 +198,10 @@ public class Main {
 	// for unit testing...
 	void setController(CommandController controller) {
 		this.controller = controller;
+	}
+
+	public void setCommand(ICommand command) {
+		this.command = command;
 	}
 
 	/**
@@ -346,7 +352,9 @@ public class Main {
 		if (0 < holder.numMessages(IMessage.ERROR, true)) {
 			return;
 		}
-		ICommand command = ReflectionFactory.makeCommand(commandName, holder);
+		if (command == null) {
+			command = ReflectionFactory.makeCommand(commandName, holder);
+		}
 		if (0 < holder.numMessages(IMessage.ERROR, true)) {
 			return;
 		}
