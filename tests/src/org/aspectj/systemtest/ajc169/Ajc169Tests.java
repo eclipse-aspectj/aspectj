@@ -29,7 +29,11 @@ public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// public void testAdvisingPrivilegedAccessMethod_307147() {
 	// runTest("advising privileged access method");
 	// }
+
 	/*
+	public void testPipeliningAndGenerics_309336() {
+		runTest("pipelining and generics");
+	}
 	public void testCrashParamAnnos_309440() {
 		runTest("crash param annos");
 	}

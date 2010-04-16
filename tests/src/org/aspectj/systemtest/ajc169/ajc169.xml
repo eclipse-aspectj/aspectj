@@ -2,6 +2,10 @@
 
 <suite>
 
+   <ajc-test dir="bugs169/pr309336" title="pipelining and generics">
+     <compile files="NoSystemStreams.aj UseOperators.java Operators.java" options="-1.5"/>
+  </ajc-test>
+  
    <ajc-test dir="bugs169/pr308773" title="subtle generics problem">
      <compile files="Aspy.aj Zzz.java Top.java Middle.java" options="-1.5"/>
   </ajc-test>
@@ -178,7 +182,7 @@
   </ajc-test>
   
   <ajc-test dir="bugs169/pr291206" title="declare type warning - 2">
-     <compile files="Two.java" options="-1.5 -XhasMember">
+     <compile files="Two.java" options="-1.5">
        <message kind="warning" line="7" text="Missing foo()"/>
        <message kind="warning" line="13" text="Missing foo()"/>
      </compile>
@@ -186,14 +190,14 @@
   
   <!-- testing build of model with one of these in -->
   <ajc-test dir="bugs169/pr291206" title="declare type warning - 3">
-     <compile files="Two.java" options="-1.5 -XhasMember -emacssym">
+     <compile files="Two.java" options="-1.5 -emacssym">
        <message kind="warning" line="7" text="Missing foo()"/>
        <message kind="warning" line="13" text="Missing foo()"/>
      </compile>
   </ajc-test>
   
   <ajc-test dir="bugs169/pr291206" title="declare type error - 1">
-     <compile files="Three.java" options="-1.5 -XhasMember">
+     <compile files="Three.java" options="-1.5">
        <message kind="error" line="7" text="Missing foo()"/>
        <message kind="error" line="13" text="Missing foo()"/>
      </compile>
