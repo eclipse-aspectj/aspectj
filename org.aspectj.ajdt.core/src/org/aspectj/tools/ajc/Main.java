@@ -655,8 +655,7 @@ public class Main {
 			super(verbose);
 			this.logStream = logStream;
 		}
-
-		@Override
+ 
 		protected PrintStream getStreamFor(IMessage.Kind kind) {
 			if (IMessage.WARNING.isSameOrLessThan(kind)) {
 				return logStream;
