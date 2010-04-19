@@ -366,7 +366,7 @@
 	</ajc-test>
 	
 	<ajc-test dir="java5/reflection" title="reflection on itds">
-		<compile files="InterTypeDeclarations.aj,ReflectOnCodeStyleITDs.java" options="-1.5 -Xlint:ignore"></compile>
+		<compile files="InterTypeDeclarations.aj,ReflectOnCodeStyleITDs.java" options="-1.5 -Xlint:ignore -makeAjReflectable"></compile>
 		<run class="ReflectOnCodeStyleITDs" classpath="../lib/bcel/bcel.jar">
 		  <stdout>
 		  	<line text="public C.new(int, int, int)"/>
@@ -431,7 +431,7 @@
 	
 	
 	<ajc-test dir="java5/reflection" pr="114322" title="reflection on abstract ITDs (Billing example)">
-		<compile files="ReflectBilling.java,Billing.aj" options="-1.5"/>
+		<compile files="ReflectBilling.java,Billing.aj" options="-1.5 -makeAjReflectable"/>
 		<run class="ReflectBilling">
 			<stdout>
 				<line text="public void Customer.addCharge(long)"/>

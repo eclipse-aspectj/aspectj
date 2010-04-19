@@ -180,7 +180,7 @@
     </ajc-test>
     
     <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for itds">
-        <compile files="ITDTest.aj" options="-1.5, -outxml -Xlint:ignore">
+        <compile files="ITDTest.aj" options="-1.5, -outxml -Xlint:ignore -makeAjReflectable">
         </compile>
         <run class="a.b.c.ITDTest" ltw=""/>
     </ajc-test>    

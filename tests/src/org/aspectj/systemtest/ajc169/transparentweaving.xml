@@ -48,11 +48,11 @@
    </ajc-test>
    
    <ajc-test dir="features169/transparent" title="declare at on private itd">
-     <compile files="OneDeclareAt.java" options="-1.5"/>
+     <compile files="OneDeclareAt.java" options="-1.5 -makeAjReflectable"/>
    </ajc-test>
    
    <ajc-test dir="features169/transparent" title="declare at two">
-     <compile files="DeclareAtTwo.java" options="-1.5"/>
+     <compile files="DeclareAtTwo.java" options="-1.5 -makeAjReflectable"/>
    </ajc-test>
    
    <ajc-test dir="features169/transparent" title="three">

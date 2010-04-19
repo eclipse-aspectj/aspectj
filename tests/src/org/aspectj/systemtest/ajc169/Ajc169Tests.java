@@ -30,6 +30,14 @@ public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// runTest("advising privileged access method");
 	// }
 
+	public void testItdMarkerAnnotations_309743() {
+		runTest("itd marker annotations - 1");
+	}
+	
+	public void testItdMarkerAnnotations_309743_2() {
+		runTest("itd marker annotations - 2");
+	}
+	
 	public void testPipeliningAndGenerics_309336() {
 		runTest("pipelining and generics");
 	}

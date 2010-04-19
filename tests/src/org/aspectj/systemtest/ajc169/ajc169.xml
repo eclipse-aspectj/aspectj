@@ -2,6 +2,24 @@
 
 <suite>
 
+   <ajc-test dir="bugs169/pr309743" title="itd marker annotations - 1">
+     <compile files="A.java" options="-1.5"/>
+     <run class="A">
+       <stdout>
+         <line text="foo"/>
+       </stdout>
+     </run>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr309743" title="itd marker annotations - 2">
+     <compile files="B.java" options="-1.5"/>
+     <run class="B">
+       <stdout>
+         <line text="boo"/>
+       </stdout>
+     </run>
+  </ajc-test>
+  
    <ajc-test dir="bugs169/pr309336" title="pipelining and generics">
      <compile files="NoSystemStreams.aj UseOperators.java Operators.java" options="-1.5">
        <message kind="warning" text="No system.out"/>
