@@ -453,6 +453,8 @@ public class BuildArgParser extends Main {
 
 					args.remove(args.get(nextArgIndex));
 				}
+			} else if (arg.equals("-makeAjReflectable")) {
+				buildConfig.setMakeReflectable(true);				
 			} else if (arg.equals("-sourceroots")) {
 				if (args.size() > nextArgIndex) {
 					List sourceRoots = new ArrayList();

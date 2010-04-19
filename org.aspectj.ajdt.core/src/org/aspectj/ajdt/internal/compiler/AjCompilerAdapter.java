@@ -50,6 +50,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	private boolean isXTerminateAfterCompilation;
 	private boolean proceedOnError;
 	private boolean inJava5Mode;
+	private boolean reflectable;
 	private boolean noAtAspectJAnnotationProcessing;
 	private IIntermediateResultsRequestor intermediateResultsRequestor;
 	private IProgressListener progressListener;
@@ -85,6 +86,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 			IOutputClassFileNameProvider outputFileNameProvider, IBinarySourceProvider binarySourceProvider,
 			Map fullBinarySourceEntries, /* fileName |-> List<UnwovenClassFile> */
 			boolean isXterminateAfterCompilation, boolean proceedOnError, boolean noAtAspectJProcessing,
+			boolean reflectable,
 			AjState incrementalCompilationState) {
 		this.compiler = compiler;
 		this.isBatchCompile = isBatchCompile;
@@ -97,6 +99,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 		this.proceedOnError = proceedOnError;
 		this.binarySourceSetForFullWeave = fullBinarySourceEntries;
 		this.eWorld = eFactory;
+		this.reflectable= reflectable;
 		this.inJava5Mode = false;
 		this.noAtAspectJAnnotationProcessing = noAtAspectJProcessing;
 		this.incrementalCompilationState = incrementalCompilationState;
@@ -129,7 +132,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 		if (inJava5Mode && !noAtAspectJAnnotationProcessing) {
 			ContextToken tok = CompilationAndWeavingContext.enteringPhase(
 					CompilationAndWeavingContext.ADDING_AT_ASPECTJ_ANNOTATIONS, unit.getFileName());
-			AddAtAspectJAnnotationsVisitor atAspectJVisitor = new AddAtAspectJAnnotationsVisitor(unit);
+			AddAtAspectJAnnotationsVisitor atAspectJVisitor = new AddAtAspectJAnnotationsVisitor(unit,reflectable);
 			unit.traverse(atAspectJVisitor, unit.scope);
 			CompilationAndWeavingContext.leavingPhase(tok);
 		}

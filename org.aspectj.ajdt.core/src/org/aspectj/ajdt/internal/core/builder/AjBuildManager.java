@@ -1383,14 +1383,14 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 					this, // IOutputFilenameProvider
 					this, // IBinarySourceProvider
 					state.getBinarySourceMap(), buildConfig.isTerminateAfterCompilation(), buildConfig.getProceedOnError(),
-					buildConfig.isNoAtAspectJAnnotationProcessing(), state);
+					buildConfig.isNoAtAspectJAnnotationProcessing(), buildConfig.isMakeReflectable(), state);
 		} else {
 			return new AjCompilerAdapter(forCompiler, batchCompile, getBcelWorld(), getWeaver(), factory,
 					getInterimResultRequestor(), progressListener,
 					this, // IOutputFilenameProvider
 					this, // IBinarySourceProvider
 					state.getBinarySourceMap(), buildConfig.isTerminateAfterCompilation(), buildConfig.getProceedOnError(),
-					buildConfig.isNoAtAspectJAnnotationProcessing(), state);
+					buildConfig.isNoAtAspectJAnnotationProcessing(), buildConfig.isMakeReflectable(), state);
 		}
 	}
 

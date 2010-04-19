@@ -82,6 +82,7 @@ public class AjCompilerOptions extends CompilerOptions {
 	public String xConfigurationInfo;
 	public boolean addSerialVerUID = false;
 	public boolean xmlConfigured = false;
+	public boolean makeReflectable = false;
 
 	// these next four not exposed by IDEs
 	public boolean generateModel = false;

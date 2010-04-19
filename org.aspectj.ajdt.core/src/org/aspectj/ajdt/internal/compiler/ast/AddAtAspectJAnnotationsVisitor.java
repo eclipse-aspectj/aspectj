@@ -28,10 +28,12 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope
  */
 public class AddAtAspectJAnnotationsVisitor extends ASTVisitor {
 
+	private boolean makeReflectable;
 	// private CompilationUnitDeclaration unit;
 
-	public AddAtAspectJAnnotationsVisitor(CompilationUnitDeclaration unit) {
+	public AddAtAspectJAnnotationsVisitor(CompilationUnitDeclaration unit, boolean makeReflectable) {
 		// this.unit = unit;
+		this.makeReflectable= makeReflectable;
 	}
 
 	public boolean visit(TypeDeclaration localTypeDeclaration, BlockScope scope) {
@@ -63,7 +65,9 @@ public class AddAtAspectJAnnotationsVisitor extends ASTVisitor {
 		} else if (methodDeclaration instanceof DeclareDeclaration) {
 			((DeclareDeclaration) methodDeclaration).addAtAspectJAnnotations();
 		} else if (methodDeclaration instanceof InterTypeDeclaration) {
-			((InterTypeDeclaration) methodDeclaration).addAtAspectJAnnotations();
+			if (makeReflectable) {
+				((InterTypeDeclaration) methodDeclaration).addAtAspectJAnnotations();
+			}
 		}
 		return false;
 	}

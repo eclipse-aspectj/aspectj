@@ -410,6 +410,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		setAddSerialVerUID(global.isAddSerialVerUID());
 		setXmlConfigured(global.isXmlConfigured());
 		setTiming(global.isTiming());
+		setMakeReflectable(global.isMakeReflectable());
 	}
 
 	void join(Collection local, Collection global) {
@@ -565,9 +566,17 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	public void setXmlConfigured(boolean b) {
 		options.xmlConfigured = b;
 	}
+	
+	public void setMakeReflectable(boolean b) {
+		options.makeReflectable = b;
+	}
 
 	public boolean isXmlConfigured() {
 		return options.xmlConfigured;
+	}
+	
+	public boolean isMakeReflectable() {
+		return options.makeReflectable;
 	}
 
 	public boolean isXNotReweavable() {

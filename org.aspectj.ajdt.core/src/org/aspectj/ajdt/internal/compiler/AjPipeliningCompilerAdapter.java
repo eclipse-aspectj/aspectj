@@ -96,6 +96,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	private boolean isXTerminateAfterCompilation;
 	private boolean proceedOnError;
 	private boolean inJava5Mode;
+	private boolean makeReflectable;
 	private boolean noAtAspectJAnnotationProcessing;
 	private IIntermediateResultsRequestor intermediateResultsRequestor;
 	private IProgressListener progressListener;
@@ -138,7 +139,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 			EclipseFactory eFactory, IIntermediateResultsRequestor intRequestor, IProgressListener progressListener,
 			IOutputClassFileNameProvider outputFileNameProvider, IBinarySourceProvider binarySourceProvider,
 			Map fullBinarySourceEntries, /* fileName |-> List<UnwovenClassFile> */
-			boolean isXterminateAfterCompilation, boolean proceedOnError, boolean noAtAspectJProcessing,
+			boolean isXterminateAfterCompilation, boolean proceedOnError, boolean noAtAspectJProcessing, boolean makeReflectable,
 			AjState incrementalCompilationState) {
 		this.compiler = compiler;
 		this.isBatchCompile = isBatchCompile;
@@ -152,6 +153,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		this.binarySourceSetForFullWeave = fullBinarySourceEntries;
 		this.eWorld = eFactory;
 		this.inJava5Mode = false;
+		this.makeReflectable = makeReflectable;
 		this.noAtAspectJAnnotationProcessing = noAtAspectJProcessing;
 		this.incrementalCompilationState = incrementalCompilationState;
 
@@ -263,7 +265,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		if (inJava5Mode && !noAtAspectJAnnotationProcessing) {
 			ContextToken tok = CompilationAndWeavingContext.enteringPhase(
 					CompilationAndWeavingContext.ADDING_AT_ASPECTJ_ANNOTATIONS, unit.getFileName());
-			AddAtAspectJAnnotationsVisitor atAspectJVisitor = new AddAtAspectJAnnotationsVisitor(unit);
+			AddAtAspectJAnnotationsVisitor atAspectJVisitor = new AddAtAspectJAnnotationsVisitor(unit,makeReflectable);
 			unit.traverse(atAspectJVisitor, unit.scope);
 			CompilationAndWeavingContext.leavingPhase(tok);
 		}
