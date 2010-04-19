@@ -11,7 +11,7 @@
 
 <!--
 	<typedef name="s3" classname="org.springframework.aws.ivy.S3Resolver"/>
-	<macrodef name="s3repo">
+	<macrodef name="s3repo"> 
 		<attribute name="bucket"/>
 		<attribute name="artifact.type"/>
 		<attribute name="release.type"/>
