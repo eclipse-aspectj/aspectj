@@ -30,6 +30,10 @@ public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// runTest("advising privileged access method");
 	// }
 
+	public void testRogueError_310043() {
+		runTest("rogue error");
+	}
+	
 	public void testItdMarkerAnnotations_309743() {
 		runTest("itd marker annotations - 1");
 	}
