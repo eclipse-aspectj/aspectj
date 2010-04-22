@@ -28,7 +28,7 @@ public class MemberImpl implements Member {
 	protected UnresolvedType returnType;
 	protected UnresolvedType[] parameterTypes;
 	private final String erasedSignature; // eg. (Ljava/util/Set;V)Ljava/lang/String;
-	private String paramSignature; // eg. (Ljava/util/Set<Ljava/lang/String;>;V)  // no return type
+	private String paramSignature; // eg. (Ljava/util/Set<Ljava/lang/String;>;V) // no return type
 
 	// OPTIMIZE move out of the member!
 	private boolean reportedCantFindDeclaringType = false;
@@ -40,7 +40,8 @@ public class MemberImpl implements Member {
 	private JoinPointSignatureIterator joinPointSignatures = null;
 
 	/**
-	 * Construct a MemberImpl using an erased signature for the parameters and return type (member method/ctor) or type (member field)
+	 * Construct a MemberImpl using an erased signature for the parameters and return type (member method/ctor) or type (member
+	 * field)
 	 */
 	public MemberImpl(MemberKind kind, UnresolvedType declaringType, int modifiers, String name, String erasedSignature) {
 		this.kind = kind;
@@ -59,7 +60,8 @@ public class MemberImpl implements Member {
 	}
 
 	/**
-	 * Construct a MemberImpl using real type information for the parameters and return type (member method/ctor) or type (member field)
+	 * Construct a MemberImpl using real type information for the parameters and return type (member method/ctor) or type (member
+	 * field)
 	 */
 	public MemberImpl(MemberKind kind, UnresolvedType declaringType, int modifiers, UnresolvedType returnType, String name,
 			UnresolvedType[] parameterTypes) {
@@ -73,19 +75,20 @@ public class MemberImpl implements Member {
 			this.erasedSignature = returnType.getErasureSignature();
 		} else {
 			this.erasedSignature = typesToSignature(returnType, parameterTypes, true);
-			
+
 			// Check parameter recovery by collapsing types to the string then rebuilding them from that
 			// this will check we are capable of having WeakRefs to the parameter types
-//			String nonErasedSignature = getParameterSignature()+getReturnType().getSignature();
-//			Object[] returnAndParams = signatureToTypes(nonErasedSignature);
-//			UnresolvedType[] recoveredParams = (UnresolvedType[]) returnAndParams[1];
-//			for (int jj=0;jj<parameterTypes.length;jj++) {
-//				if (!parameterTypes[jj].getSignature().equals(recoveredParams[jj].getSignature())) {
-//					throw new RuntimeException(parameterTypes[jj].getSignature()+"  !=   "+recoveredParams[jj].getSignature()+"   "+paramSignature);
-//				}
-//			}
+			// String nonErasedSignature = getParameterSignature()+getReturnType().getSignature();
+			// Object[] returnAndParams = signatureToTypes(nonErasedSignature);
+			// UnresolvedType[] recoveredParams = (UnresolvedType[]) returnAndParams[1];
+			// for (int jj=0;jj<parameterTypes.length;jj++) {
+			// if (!parameterTypes[jj].getSignature().equals(recoveredParams[jj].getSignature())) {
+			// throw new
+			// RuntimeException(parameterTypes[jj].getSignature()+"  !=   "+recoveredParams[jj].getSignature()+"   "+paramSignature);
+			// }
+			// }
 		}
-		
+
 	}
 
 	public ResolvedMember resolve(World world) {
@@ -95,22 +98,22 @@ public class MemberImpl implements Member {
 	// ---- utility methods
 
 	/**
-	 * Build a signature based on the return type and parameter types.  For example: "(Ljava/util/Set<Ljava/lang/String;>;)V"
-	 * or "(Ljava/util/Set;)V".  The latter form shows what happens when the generics are erased
+	 * Build a signature based on the return type and parameter types. For example: "(Ljava/util/Set<Ljava/lang/String;>;)V" or
+	 * "(Ljava/util/Set;)V". The latter form shows what happens when the generics are erased
 	 */
 	public static String typesToSignature(UnresolvedType returnType, UnresolvedType[] paramTypes, boolean eraseGenerics) {
 		StringBuilder buf = new StringBuilder();
 		buf.append("(");
-		for (UnresolvedType paramType: paramTypes) {
+		for (UnresolvedType paramType : paramTypes) {
 			if (eraseGenerics && (paramType.isParameterizedType() || paramType.isTypeVariableReference())) {
-					buf.append(paramType.getErasureSignature());
+				buf.append(paramType.getErasureSignature());
 			} else {
-				buf.append(paramType.getSignature());				
+				buf.append(paramType.getSignature());
 			}
 		}
 		buf.append(")");
 		if (eraseGenerics && (returnType.isParameterizedType() || returnType.isTypeVariableReference())) {
-			buf.append(returnType.getErasureSignature());			
+			buf.append(returnType.getErasureSignature());
 		} else {
 			buf.append(returnType.getSignature());
 		}
@@ -200,7 +203,7 @@ public class MemberImpl implements Member {
 				} else if (c == 'T') { // assumed 'reference' to a type
 					// variable, so just "Tname;"
 					int nextSemicolon = sig.indexOf(';', start);
-					String nextbit = sig.substring(start, nextSemicolon+1);
+					String nextbit = sig.substring(start, nextSemicolon + 1);
 					l.add(UnresolvedType.forSignature(nextbit));
 					i = nextSemicolon + 1;
 				} else {
@@ -251,7 +254,7 @@ public class MemberImpl implements Member {
 	public static MemberImpl method(UnresolvedType declTy, int mods, UnresolvedType rTy, String name, UnresolvedType[] paramTys) {
 		return new MemberImpl(
 		// ??? this calls <clinit> a method
-		name.equals("<init>") ? CONSTRUCTOR : METHOD, declTy, mods, rTy, name, paramTys);
+				name.equals("<init>") ? CONSTRUCTOR : METHOD, declTy, mods, rTy, name, paramTys);
 	}
 
 	private static Member pointcut(UnresolvedType declTy, int mods, UnresolvedType rTy, String name, UnresolvedType[] paramTys) {
@@ -263,13 +266,24 @@ public class MemberImpl implements Member {
 	}
 
 	@Override
-	public boolean equals(Object other) {
+	public final boolean equals(Object other) {
 		if (!(other instanceof Member)) {
 			return false;
 		}
 		Member o = (Member) other;
 		return (getKind() == o.getKind() && getName().equals(o.getName()) && getSignature().equals(o.getSignature()) && getDeclaringType()
 				.equals(o.getDeclaringType()));
+	}
+
+	/**
+	 * @return true if this member equals the one supplied in every respect other than the declaring type
+	 */
+	public final boolean equalsApartFromDeclaringType(Object other) {
+		if (!(other instanceof Member)) {
+			return false;
+		}
+		Member o = (Member) other;
+		return (getKind() == o.getKind() && getName().equals(o.getName()) && getSignature().equals(o.getSignature()));
 	}
 
 	/**

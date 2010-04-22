@@ -1771,11 +1771,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 					// System.err.println("       compare: " + c);
 					if (c < 0) {
 						// the existing munger dominates the new munger
-						checkLegalOverride(munger.getSignature(), existingMunger.getSignature());
+						checkLegalOverride(munger.getSignature(), existingMunger.getSignature(), 0x11, null);
 						return;
 					} else if (c > 0) {
 						// the new munger dominates the existing one
-						checkLegalOverride(existingMunger.getSignature(), munger.getSignature());
+						checkLegalOverride(existingMunger.getSignature(), munger.getSignature(), 0x11, null);
 						i.remove();
 						break;
 					} else {
@@ -1841,11 +1841,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 					// System.err.println("   c: " + c);
 					if (c < 0) {
 						// existingMember dominates munger
-						checkLegalOverride(typeTransformerSignature, existingMember);
+						checkLegalOverride(typeTransformerSignature, existingMember, 0x10, typeTransformer.getAspectType());
 						return true;
 					} else if (c > 0) {
 						// munger dominates existingMember
-						checkLegalOverride(existingMember, typeTransformerSignature);
+						checkLegalOverride(existingMember, typeTransformerSignature, 0x01, typeTransformer.getAspectType());
 						// interTypeMungers.add(munger);
 						// ??? might need list of these overridden abstracts
 						continue;
@@ -1953,13 +1953,43 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	/**
+	 * @param transformerPosition which parameter is the type transformer (0x10 for first, 0x01 for second, 0x11 for both, 0x00 for
+	 *        neither)
+	 * @param aspectType the declaring type of aspect defining the *first* type transformer
 	 * @return true if the override is legal note: calling showMessage with two locations issues TWO messages, not ONE message with
 	 *         an additional source location.
 	 */
-	public boolean checkLegalOverride(ResolvedMember parent, ResolvedMember child) {
+	public boolean checkLegalOverride(ResolvedMember parent, ResolvedMember child, int transformerPosition, ResolvedType aspectType) {
 		// System.err.println("check: " + child.getDeclaringType() +
 		// " overrides " + parent.getDeclaringType());
 		if (Modifier.isFinal(parent.getModifiers())) {
+			// If the ITD matching is occurring due to pulling in a BinaryTypeBinding then this check can incorrectly
+			// signal an error because the ITD transformer being examined here will exactly match the member it added
+			// during the first round of compilation. This situation can only occur if the ITD is on an interface whilst
+			// the class is the top most implementor. If the ITD is on the same type that received it during compilation,
+			// this method won't be called as the previous check for precedence level will return 0.
+
+			if (transformerPosition == 0x10 && aspectType != null) {
+				ResolvedType nonItdDeclaringType = child.getDeclaringType().resolve(world);
+				WeaverStateInfo wsi = nonItdDeclaringType.getWeaverState();
+				if (wsi != null) {
+					List<ConcreteTypeMunger> transformersOnThisType = wsi.getTypeMungers(nonItdDeclaringType);
+					if (transformersOnThisType != null) {
+						for (ConcreteTypeMunger transformer : transformersOnThisType) {
+							// relatively crude check - is the ITD
+							// for the same as the existingmember
+							// and does it come
+							// from the same aspect
+							if (transformer.aspectType.equals(aspectType)) {
+								if (parent.equalsApartFromDeclaringType(transformer.getSignature())) {
+									return true;
+								}
+							}
+						}
+					}
+				}
+			}
+
 			world.showMessage(Message.ERROR, WeaverMessages.format(WeaverMessages.CANT_OVERRIDE_FINAL_MEMBER, parent), child
 					.getSourceLocation(), null);
 			return false;
@@ -2332,7 +2362,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				}
 				if (conflictingSignature(existing, toAdd)) {
 					if (isOverriding) {
-						checkLegalOverride(existing, toAdd);
+						checkLegalOverride(existing, toAdd, 0x00, null);
 						j.remove();
 					} else {
 						getWorld().showMessage(

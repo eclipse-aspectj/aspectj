@@ -20,6 +20,8 @@ import java.util.Map;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute.EffectiveSignatureAttribute;
 
+import sun.security.krb5.Realm;
+
 /**
  * @author colyer Instances of this class are created by ResolvedMember.getSignatures() when collating all of the signatures for a
  *         member. We need to create entries in the set for the "gaps" in the hierarchy. For example:
@@ -165,7 +167,7 @@ public class JoinPointSignature implements ResolvedMember {
 	public boolean isPublic() {
 		return realMember.isPublic();
 	}
-	
+
 	public boolean isDefault() {
 		return realMember.isDefault();
 	}
@@ -369,5 +371,9 @@ public class JoinPointSignature implements ResolvedMember {
 
 	public boolean isDefaultConstructor() {
 		return realMember.isDefaultConstructor();
+	}
+
+	public boolean equalsApartFromDeclaringType(Object other) {
+		return realMember.equalsApartFromDeclaringType(other);
 	}
 }

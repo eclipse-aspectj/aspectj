@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Some methods need a temporary type munger (because ConcreteTypeMunger is abstract - dont ask...).
  * 
- * TODO ought to remove the need for this or at least sort out the two methods that are in it, they look wierd...
+ * TODO ought to remove the need for this or at least sort out the two methods that are in it, they look weird...
  * 
  * @author AndyClement
  */
@@ -24,10 +24,12 @@ public class TemporaryTypeMunger extends ConcreteTypeMunger {
 		super(munger, aspectType);
 	}
 
+	@Override
 	public ConcreteTypeMunger parameterizeWith(Map parameterizationMap, World world) {
 		throw new UnsupportedOperationException("Cannot be called on a TemporaryTypeMunger");
 	}
 
+	@Override
 	public ConcreteTypeMunger parameterizedFor(ResolvedType targetType) {
 		throw new UnsupportedOperationException("Cannot be called on a TemporaryTypeMunger");
 	}

@@ -81,7 +81,7 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	public ISourceLocation getSourceLocation();
 
 	public int getStart();
-	
+
 	public int getEnd();
 
 	public ISourceContext getSourceContext();
@@ -122,6 +122,8 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	 * Get the TypeXs of the parameter types, taking generic signature into account
 	 */
 	public UnresolvedType[] getGenericParameterTypes();
+
+	public boolean equalsApartFromDeclaringType(Object other);
 
 	// return a resolved member in which all type variables in the signature of
 	// this
