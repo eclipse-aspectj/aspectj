@@ -206,7 +206,14 @@ public class CrosscuttingMembers {
 	public void addPrivilegedAccesses(Collection<ResolvedMember> accessedMembers) {
 		int version = inAspect.getCompilerVersion();
 		for (ResolvedMember member : accessedMembers) {
-			PrivilegedAccessMunger privilegedAccessMunger = new PrivilegedAccessMunger(member,
+			// Looking it up ensures we get the annotations - the accessedMembers are just retrieved from the attribute and
+			// don't have that information
+			ResolvedMember resolvedMember = world.resolve(member);
+			if (resolvedMember == null) {
+				// can happen for ITDs - are there many privileged access ITDs??
+				resolvedMember = member;
+			}
+			PrivilegedAccessMunger privilegedAccessMunger = new PrivilegedAccessMunger(resolvedMember,
 					version >= WeaverVersionInfo.WEAVER_VERSION_AJ169);
 			ConcreteTypeMunger concreteTypeMunger = world.getWeavingSupport().concreteTypeMunger(privilegedAccessMunger, inAspect);
 			addTypeMunger(concreteTypeMunger);

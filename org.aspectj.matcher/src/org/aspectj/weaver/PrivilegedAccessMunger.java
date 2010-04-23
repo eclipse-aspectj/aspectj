@@ -33,6 +33,7 @@ public class PrivilegedAccessMunger extends ResolvedTypeMunger {
 		this.shortSyntax = shortSyntax;
 	}
 
+	@Override
 	public void write(DataOutputStream s) throws IOException {
 		throw new RuntimeException("should not be serialized");
 	}
@@ -41,28 +42,34 @@ public class PrivilegedAccessMunger extends ResolvedTypeMunger {
 		return getSignature();
 	}
 
+	@Override
 	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedType aspectType) {
 		ResolvedMember ret;
 		// assert if shortSyntax then aspectType.getCompilerVersion()>=169
 		if (getSignature().getKind() == Member.FIELD) {
 			ret = AjcMemberMaker.privilegedAccessMethodForFieldGet(aspectType, getSignature(), shortSyntax);
-			if (ResolvedType.matches(ret, member))
+			if (ResolvedType.matches(ret, member)) {
 				return getSignature();
+			}
 			ret = AjcMemberMaker.privilegedAccessMethodForFieldSet(aspectType, getSignature(), shortSyntax);
-			if (ResolvedType.matches(ret, member))
+			if (ResolvedType.matches(ret, member)) {
 				return getSignature();
+			}
 		} else {
 			// System.err.println("sig: " + getSignature());
 			ret = AjcMemberMaker.privilegedAccessMethodForMethod(aspectType, getSignature());
-			if (ResolvedType.matches(ret, member))
+			if (ResolvedType.matches(ret, member)) {
 				return getSignature();
+			}
 		}
 		return null;
 	}
 
+	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof PrivilegedAccessMunger))
+		if (!(other instanceof PrivilegedAccessMunger)) {
 			return false;
+		}
 		PrivilegedAccessMunger o = (PrivilegedAccessMunger) other;
 		return kind.equals(o.kind)
 				&& ((o.signature == null) ? (signature == null) : signature.equals(o.signature))
@@ -71,6 +78,7 @@ public class PrivilegedAccessMunger extends ResolvedTypeMunger {
 						.equals(o.typeVariableAliases));
 	}
 
+	@Override
 	public int hashCode() {
 		int result = 17;
 		result = 37 * result + kind.hashCode();
@@ -80,6 +88,7 @@ public class PrivilegedAccessMunger extends ResolvedTypeMunger {
 		return result;
 	}
 
+	@Override
 	public boolean existsToSupportShadowMunging() {
 		return true;
 	}
