@@ -149,7 +149,7 @@
 		<compile files="Test.java, Util.java"/>
         <run class="Test"/>
 		<compile files="Test.java, Util.java, PrivilegedAspect.aj" options="-Xlint:warning">
-            <message kind="warning" line="1"/>
+            <message kind="warning" line="0"/>
 		</compile>
         <run class="Util" options="-fail"/>
 	</ajc-test>
