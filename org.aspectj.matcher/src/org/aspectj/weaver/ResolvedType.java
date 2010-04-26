@@ -1012,6 +1012,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	// ---- fields
 
 	public static final ResolvedType[] NONE = new ResolvedType[0];
+	public static final ResolvedType[] EMPTY_ARRAY = NONE;
 
 	public static final Primitive BYTE = new Primitive("B", 1, 0);
 	public static final Primitive CHAR = new Primitive("C", 1, 1);

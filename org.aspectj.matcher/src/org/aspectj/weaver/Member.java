@@ -1,27 +1,26 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- *               2005 Contributors
+ * Copyright (c) 2002-2010
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation
- *     AMC      extracted as interface 
  * ******************************************************************/
 package org.aspectj.weaver;
 
 import java.util.Collection;
 
 /**
- * Abstract representation of a member within a type.
+ * Abstract representation of a member (field/constructor/method) within a type.
+ * 
+ * @author PARC
+ * @author Adrian Colyer
+ * @author Andy Clement
  */
-public interface Member extends Comparable {
+public interface Member extends Comparable<Member> {
 
 	public static final Member[] NONE = new Member[0];
-	
+
 	public static final MemberKind METHOD = new MemberKind("METHOD", 1);
 	public static final MemberKind FIELD = new MemberKind("FIELD", 2);
 	public static final MemberKind CONSTRUCTOR = new MemberKind("CONSTRUCTOR", 3);
@@ -45,10 +44,13 @@ public interface Member extends Comparable {
 	public UnresolvedType getDeclaringType();
 
 	public UnresolvedType[] getParameterTypes();
+
 	public UnresolvedType[] getGenericParameterTypes();
 
 	public UnresolvedType getType();
+
 	public UnresolvedType getReturnType();
+
 	public UnresolvedType getGenericReturnType();
 
 	/**
@@ -86,6 +88,6 @@ public interface Member extends Comparable {
 
 	public ResolvedMember resolve(World world);
 
-	public int compareTo(Object other);
+	public int compareTo(Member other);
 
 }

@@ -155,7 +155,7 @@ public class MemberImpl implements Member {
 	private static Object[] signatureToTypes(String sig) {
 		boolean hasParameters = sig.charAt(1) != ')';
 		if (hasParameters) {
-			List l = new ArrayList();
+			List<UnresolvedType> l = new ArrayList<UnresolvedType>();
 			int i = 1;
 			boolean hasAnyAnglies = sig.indexOf('<') != -1;
 			while (true) {
@@ -211,7 +211,7 @@ public class MemberImpl implements Member {
 					l.add(UnresolvedType.forSignature(sig.substring(start, i)));
 				}
 			}
-			UnresolvedType[] paramTypes = (UnresolvedType[]) l.toArray(new UnresolvedType[l.size()]);
+			UnresolvedType[] paramTypes = l.toArray(new UnresolvedType[l.size()]);
 			UnresolvedType returnType = UnresolvedType.forSignature(sig.substring(i + 1, sig.length()));
 			return new Object[] { returnType, paramTypes };
 		} else {
@@ -305,8 +305,8 @@ public class MemberImpl implements Member {
 		return hashCode;
 	}
 
-	public int compareTo(Object other) {
-		Member o = (Member) other;
+	public int compareTo(Member other) {
+		Member o = other;
 		int i = getName().compareTo(o.getName());
 		if (i != 0) {
 			return i;
@@ -483,14 +483,14 @@ public class MemberImpl implements Member {
 		return b;
 	}
 
-	private boolean walkUpStatic(Collection acc, ResolvedType curr) {
+	private boolean walkUpStatic(Collection<ResolvedType> acc, ResolvedType curr) {
 		if (curr.lookupMemberNoSupers(this) != null) {
 			acc.add(curr);
 			return true;
 		} else {
 			boolean b = false;
-			for (Iterator i = curr.getDirectSupertypes(); i.hasNext();) {
-				b |= walkUpStatic(acc, (ResolvedType) i.next());
+			for (Iterator<ResolvedType> i = curr.getDirectSupertypes(); i.hasNext();) {
+				b |= walkUpStatic(acc, i.next());
 			}
 			if (!b && curr.isParameterizedType()) {
 				b = walkUpStatic(acc, curr.getGenericType());

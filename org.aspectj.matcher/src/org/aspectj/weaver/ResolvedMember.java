@@ -126,9 +126,7 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	public boolean equalsApartFromDeclaringType(Object other);
 
 	// return a resolved member in which all type variables in the signature of
-	// this
-	// member have been replaced with the given bindings.
-	// the isParameterized flag tells us whether we are creating a raw type
+	// this member have been replaced with the given bindings. the isParameterized flag tells us whether we are creating a raw type
 	// version or not
 	// if isParameterized List<T> will turn into List<String> (for example),
 	// but if !isParameterized List<T> will turn into List.
@@ -140,7 +138,7 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 	// this is used for processing ITDs that share type variables with their
 	// target generic type
 	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
-			boolean isParameterized, List aliases);
+			boolean isParameterized, List<String> aliases);
 
 	public void setTypeVariables(TypeVariable[] types);
 
@@ -154,7 +152,7 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 
 	public void evictWeavingState();
 
-	public ResolvedMember parameterizedWith(Map m, World w);
+	public ResolvedMember parameterizedWith(Map<String, UnresolvedType> m, World w);
 
 	public boolean isDefaultConstructor();
 

@@ -38,6 +38,8 @@ import org.aspectj.weaver.AjAttribute.EffectiveSignatureAttribute;
  */
 public class JoinPointSignature implements ResolvedMember {
 
+	public static final JoinPointSignature[] EMPTY_ARRAY = new JoinPointSignature[0];
+
 	private ResolvedMember realMember;
 	private ResolvedType substituteDeclaringType;
 
@@ -200,7 +202,7 @@ public class JoinPointSignature implements ResolvedMember {
 	}
 
 	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
-			boolean isParameterized, List aliases) {
+			boolean isParameterized, List<String> aliases) {
 		return realMember.parameterizedWith(typeParameters, newDeclaringType, isParameterized, aliases);
 	}
 
@@ -224,7 +226,7 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.resolve(world);
 	}
 
-	public int compareTo(Object other) {
+	public int compareTo(Member other) {
 		return realMember.compareTo(other);
 	}
 
