@@ -468,11 +468,11 @@ public class AtAjAttributes {
 	 * @param msgHandler
 	 * @return list of AjAttributes, always empty for now
 	 */
-	public static List readAj5FieldAttributes(Field field, BcelField bField, ResolvedType type, ISourceContext context,
-			IMessageHandler msgHandler) {
+	public static List<AjAttribute> readAj5FieldAttributes(Field field, BcelField bField, ResolvedType type,
+			ISourceContext context, IMessageHandler msgHandler) {
 		// Note: field annotation are for ITD and DEOW - processed at class
 		// level directly
-		return Collections.EMPTY_LIST;
+		return Collections.emptyList();
 	}
 
 	/**

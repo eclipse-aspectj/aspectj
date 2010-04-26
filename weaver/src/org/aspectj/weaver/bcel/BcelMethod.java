@@ -14,8 +14,6 @@ package org.aspectj.weaver.bcel;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -63,8 +61,6 @@ class BcelMethod extends ResolvedMemberImpl {
 	private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
 
 	private AjAttribute.MethodDeclarationLineNumberAttribute declarationLineNumber;
-	private AnnotationAJ[] annotations = null;
-	private AnnotationAJ[][] parameterAnnotations = null;
 	private final BcelObjectType bcelObjectType;
 
 	private int bitflags;
@@ -342,9 +338,7 @@ class BcelMethod extends ResolvedMemberImpl {
 	@Override
 	public ResolvedType[] getAnnotationTypes() {
 		ensureAnnotationsRetrieved();
-		ResolvedType[] ret = new ResolvedType[annotationTypes.size()];
-		annotationTypes.toArray(ret);
-		return ret;
+		return annotationTypes;
 	}
 
 	@Override
@@ -367,6 +361,8 @@ class BcelMethod extends ResolvedMemberImpl {
 		if ((bitflags & HAS_ANNOTATIONS) == 0) {
 			annotations = new AnnotationAJ[1];
 			annotations[0] = annotation;
+			annotationTypes = new ResolvedType[1];
+			annotationTypes[0] = annotation.getType();
 		} else {
 			// Add it to the set of annotations
 			int len = annotations.length;
@@ -374,18 +370,12 @@ class BcelMethod extends ResolvedMemberImpl {
 			System.arraycopy(annotations, 0, ret, 0, len);
 			ret[len] = annotation;
 			annotations = ret;
+			ResolvedType[] newAnnotationTypes = new ResolvedType[len + 1];
+			System.arraycopy(annotationTypes, 0, newAnnotationTypes, 0, len);
+			newAnnotationTypes[len] = annotation.getType();
+			annotationTypes = newAnnotationTypes;
 		}
 		bitflags |= HAS_ANNOTATIONS;
-
-		// Add it to the set of annotation types
-		if (annotationTypes == Collections.EMPTY_SET) {
-			annotationTypes = new HashSet<ResolvedType>();
-		}
-		annotationTypes.add(UnresolvedType.forName(annotation.getTypeName()).resolve(bcelObjectType.getWorld()));
-		// FIXME asc looks like we are managing two 'bunches' of annotations,
-		// one
-		// here and one in the real 'method' - should we reduce it to one layer?
-		// method.addAnnotation(annotation.getBcelAnnotation());
 	}
 
 	public static final AnnotationAJ[] NO_PARAMETER_ANNOTATIONS = new AnnotationAJ[] {};
@@ -420,19 +410,20 @@ class BcelMethod extends ResolvedMemberImpl {
 			return;
 		}
 		bitflags |= HAVE_DETERMINED_ANNOTATIONS;
-
 		AnnotationGen annos[] = method.getAnnotations();
-		if (annos.length != 0) {
-			annotationTypes = new HashSet<ResolvedType>();
-			annotations = new AnnotationAJ[annos.length];
-			for (int i = 0; i < annos.length; i++) {
+		if (annos.length == 0) {
+			annotationTypes = ResolvedType.NONE;
+			annotations = AnnotationAJ.EMPTY_ARRAY;
+		} else {
+			int annoCount = annos.length;
+			annotationTypes = new ResolvedType[annoCount];
+			annotations = new AnnotationAJ[annoCount];
+			for (int i = 0; i < annoCount; i++) {
 				AnnotationGen annotation = annos[i];
-				annotationTypes.add(bcelObjectType.getWorld().resolve(UnresolvedType.forSignature(annotation.getTypeSignature())));
 				annotations[i] = new BcelAnnotation(annotation, bcelObjectType.getWorld());
+				annotationTypes[i] = annotations[i].getType();
 			}
 			bitflags |= HAS_ANNOTATIONS;
-		} else {
-			annotationTypes = Collections.emptySet();
 		}
 	}
 

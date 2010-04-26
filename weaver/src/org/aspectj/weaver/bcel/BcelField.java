@@ -12,8 +12,6 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
 import org.aspectj.apache.bcel.classfile.Attribute;
@@ -27,6 +25,7 @@ import org.aspectj.util.GenericSignatureParser;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
@@ -75,10 +74,11 @@ final class BcelField extends ResolvedMemberImpl {
 	private void unpackAttributes(World world) {
 		Attribute[] attrs = field.getAttributes();
 		if (attrs != null && attrs.length > 0) {
-			List<AjAttribute> as = Utility.readAjAttributes(getDeclaringType().getClassName(), attrs, getSourceContext(world),
-					world, (bcelObjectType != null ? bcelObjectType.getWeaverVersionAttribute() : WeaverVersionInfo.CURRENT));
-			as.addAll(AtAjAttributes.readAj5FieldAttributes(field, this, world.resolve(getDeclaringType()),
-					getSourceContext(world), world.getMessageHandler()));
+			ISourceContext sourceContext = getSourceContext(world);
+			List<AjAttribute> as = Utility.readAjAttributes(getDeclaringType().getClassName(), attrs, sourceContext, world,
+					(bcelObjectType != null ? bcelObjectType.getWeaverVersionAttribute() : WeaverVersionInfo.CURRENT));
+			as.addAll(AtAjAttributes.readAj5FieldAttributes(field, this, world.resolve(getDeclaringType()), sourceContext, world
+					.getMessageHandler()));
 
 			for (AjAttribute a : as) {
 				if (a instanceof AjAttribute.AjSynthetic) {
@@ -91,8 +91,9 @@ final class BcelField extends ResolvedMemberImpl {
 		isAjSynthetic = false;
 
 		for (int i = attrs.length - 1; i >= 0; i--) {
-			if (attrs[i] instanceof Synthetic)
+			if (attrs[i] instanceof Synthetic) {
 				isSynthetic = true;
+			}
 		}
 
 		// in 1.5, synthetic is a modifier, not an attribute
@@ -126,9 +127,7 @@ final class BcelField extends ResolvedMemberImpl {
 	@Override
 	public ResolvedType[] getAnnotationTypes() {
 		ensureAnnotationTypesRetrieved();
-		ResolvedType[] ret = new ResolvedType[annotationTypes.size()];
-		annotationTypes.toArray(ret);
-		return ret;
+		return annotationTypes;
 	}
 
 	@Override
@@ -141,8 +140,9 @@ final class BcelField extends ResolvedMemberImpl {
 	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
 		ensureAnnotationTypesRetrieved();
 		for (int i = 0; i < annotations.length; i++) {
-			if (annotations[i].getTypeName().equals(ofType.getName()))
+			if (annotations[i].getTypeName().equals(ofType.getName())) {
 				return annotations[i];
+			}
 		}
 		return null;
 	}
@@ -150,16 +150,17 @@ final class BcelField extends ResolvedMemberImpl {
 	private void ensureAnnotationTypesRetrieved() {
 		if (annotationTypes == null) {
 			AnnotationGen annos[] = field.getAnnotations();
-			if (annos == null || annos.length == 0) {
-				annotationTypes = Collections.emptySet();
+			if (annos.length == 0) {
+				annotationTypes = ResolvedType.EMPTY_ARRAY;
 				annotations = AnnotationAJ.EMPTY_ARRAY;
 			} else {
-				annotationTypes = new HashSet<ResolvedType>();
-				annotations = new AnnotationAJ[annos.length];
-				for (int i = 0; i < annos.length; i++) {
-					AnnotationGen annotation = annos[i];
-					annotationTypes.add(world.resolve(UnresolvedType.forSignature(annotation.getTypeSignature())));
-					annotations[i] = new BcelAnnotation(annotation, world);
+				int annosCount = annos.length;
+				annotationTypes = new ResolvedType[annosCount];
+				annotations = new AnnotationAJ[annosCount];
+				for (int i = 0; i < annosCount; i++) {
+					AnnotationGen anno = annos[i];
+					annotations[i] = new BcelAnnotation(anno, world);
+					annotationTypes[i] = annotations[i].getType();
 				}
 			}
 		}
@@ -168,19 +169,18 @@ final class BcelField extends ResolvedMemberImpl {
 	@Override
 	public void addAnnotation(AnnotationAJ annotation) {
 		ensureAnnotationTypesRetrieved();
-		// Add it to the set of annotations
+
 		int len = annotations.length;
 		AnnotationAJ[] ret = new AnnotationAJ[len + 1];
 		System.arraycopy(annotations, 0, ret, 0, len);
 		ret[len] = annotation;
 		annotations = ret;
 
-		if (annotationTypes == Collections.EMPTY_SET) {
-			annotationTypes = new HashSet<ResolvedType>();
-		}
-		// Add it to the set of annotation types
-		String typename = annotation.getTypeSignature();
-		annotationTypes.add(UnresolvedType.forSignature(typename).resolve(world));
+		ResolvedType[] newAnnotationTypes = new ResolvedType[len + 1];
+		System.arraycopy(annotationTypes, 0, newAnnotationTypes, 0, len);
+		newAnnotationTypes[len] = annotation.getType();
+		annotationTypes = newAnnotationTypes;
+
 		annotationsAdded = true;
 	}
 
@@ -200,8 +200,9 @@ final class BcelField extends ResolvedMemberImpl {
 
 	// FIXME asc badly performing code ftw !
 	public Field getField(ConstantPool cpg) {
-		if (!annotationsAdded)
+		if (!annotationsAdded) {
 			return field;
+		}
 		FieldGen fg = new FieldGen(field, cpg);
 		List<AnnotationGen> alreadyHas = fg.getAnnotations();
 		if (annotations != null) {
@@ -214,8 +215,9 @@ final class BcelField extends ResolvedMemberImpl {
 						break;
 					}
 				}
-				if (!alreadyHasIt)
+				if (!alreadyHasIt) {
 					fg.addAnnotation(new AnnotationGen(((BcelAnnotation) array_element).getBcelAnnotation(), cpg, true));
+				}
 			}
 		}
 		field = fg.getField();
