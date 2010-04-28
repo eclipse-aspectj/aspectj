@@ -78,8 +78,9 @@ public class ProgramElement implements IProgramElement {
 		}
 		this.name = name;
 		this.kind = kind;
-		if (children != null)
+		if (children != null) {
 			setChildren(children);
+		}
 	}
 
 	public ProgramElement(AsmManager asm, String name, IProgramElement.Kind kind, ISourceLocation sourceLocation, int modifiers,
@@ -133,22 +134,25 @@ public class ProgramElement implements IProgramElement {
 
 	public void setDeclaringType(String t) {
 		if (t != null && t.length() > 0) {
-			if (kvpairs == Collections.EMPTY_MAP)
+			if (kvpairs == Collections.EMPTY_MAP) {
 				kvpairs = new HashMap();
+			}
 			kvpairs.put("declaringType", t);
 		}
 	}
 
 	public String getDeclaringType() {
 		String dt = (String) kvpairs.get("declaringType");
-		if (dt == null)
+		if (dt == null) {
 			return ""; // assumption that not having one means "" is at HtmlDecorator line 111
+		}
 		return dt;
 	}
 
 	public String getPackageName() {
-		if (kind == Kind.PACKAGE)
+		if (kind == Kind.PACKAGE) {
 			return getName();
+		}
 		if (getParent() == null) {
 			return "";
 		}
@@ -179,8 +183,9 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setMessage(IMessage message) {
-		if (kvpairs == Collections.EMPTY_MAP)
+		if (kvpairs == Collections.EMPTY_MAP) {
 			kvpairs = new HashMap();
+		}
 		kvpairs.put("message", message);
 		// this.message = message;
 	}
@@ -198,13 +203,15 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setRunnable(boolean value) {
-		if (kvpairs == Collections.EMPTY_MAP)
+		if (kvpairs == Collections.EMPTY_MAP) {
 			kvpairs = new HashMap();
-		if (value)
+		}
+		if (value) {
 			kvpairs.put("isRunnable", "true");
-		else
+		} else {
 			kvpairs.remove("isRunnable");
-		// this.runnable = value;
+			// this.runnable = value;
+		}
 	}
 
 	public boolean isRunnable() {
@@ -218,13 +225,15 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setImplementor(boolean value) {
-		if (kvpairs == Collections.EMPTY_MAP)
+		if (kvpairs == Collections.EMPTY_MAP) {
 			kvpairs = new HashMap();
-		if (value)
+		}
+		if (value) {
 			kvpairs.put("isImplementor", "true");
-		else
+		} else {
 			kvpairs.remove("isImplementor");
-		// this.implementor = value;
+			// this.implementor = value;
+		}
 	}
 
 	public boolean isOverrider() {
@@ -233,13 +242,15 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setOverrider(boolean value) {
-		if (kvpairs == Collections.EMPTY_MAP)
+		if (kvpairs == Collections.EMPTY_MAP) {
 			kvpairs = new HashMap();
-		if (value)
+		}
+		if (value) {
 			kvpairs.put("isOverrider", "true");
-		else
+		} else {
 			kvpairs.remove("isOverrider");
-		// this.overrider = value;
+			// this.overrider = value;
+		}
 	}
 
 	public List getRelations() {
@@ -249,8 +260,9 @@ public class ProgramElement implements IProgramElement {
 
 	public void setRelations(List relations) {
 		if (relations.size() > 0) {
-			if (kvpairs == Collections.EMPTY_MAP)
+			if (kvpairs == Collections.EMPTY_MAP) {
 				kvpairs = new HashMap();
+			}
 			kvpairs.put("relations", relations);
 			// this.relations = relations;
 		}
@@ -261,40 +273,52 @@ public class ProgramElement implements IProgramElement {
 		// return formalComment;
 	}
 
+	@Override
 	public String toString() {
 		return toLabelString();
 	}
 
 	private static List genModifiers(int modifiers) {
 		List modifiersList = new ArrayList();
-		if ((modifiers & AccStatic) != 0)
+		if ((modifiers & AccStatic) != 0) {
 			modifiersList.add(IProgramElement.Modifiers.STATIC);
-		if ((modifiers & AccFinal) != 0)
+		}
+		if ((modifiers & AccFinal) != 0) {
 			modifiersList.add(IProgramElement.Modifiers.FINAL);
-		if ((modifiers & AccSynchronized) != 0)
+		}
+		if ((modifiers & AccSynchronized) != 0) {
 			modifiersList.add(IProgramElement.Modifiers.SYNCHRONIZED);
-		if ((modifiers & AccVolatile) != 0)
+		}
+		if ((modifiers & AccVolatile) != 0) {
 			modifiersList.add(IProgramElement.Modifiers.VOLATILE);
-		if ((modifiers & AccTransient) != 0)
+		}
+		if ((modifiers & AccTransient) != 0) {
 			modifiersList.add(IProgramElement.Modifiers.TRANSIENT);
-		if ((modifiers & AccNative) != 0)
+		}
+		if ((modifiers & AccNative) != 0) {
 			modifiersList.add(IProgramElement.Modifiers.NATIVE);
-		if ((modifiers & AccAbstract) != 0)
+		}
+		if ((modifiers & AccAbstract) != 0) {
 			modifiersList.add(IProgramElement.Modifiers.ABSTRACT);
+		}
 		return modifiersList;
 	}
 
 	public static IProgramElement.Accessibility genAccessibility(int modifiers) {
-		if ((modifiers & AccPublic) != 0)
+		if ((modifiers & AccPublic) != 0) {
 			return IProgramElement.Accessibility.PUBLIC;
-		if ((modifiers & AccPrivate) != 0)
+		}
+		if ((modifiers & AccPrivate) != 0) {
 			return IProgramElement.Accessibility.PRIVATE;
-		if ((modifiers & AccProtected) != 0)
+		}
+		if ((modifiers & AccProtected) != 0) {
 			return IProgramElement.Accessibility.PROTECTED;
-		if ((modifiers & AccPrivileged) != 0)
+		}
+		if ((modifiers & AccPrivileged) != 0) {
 			return IProgramElement.Accessibility.PRIVILEGED;
-		else
+		} else {
 			return IProgramElement.Accessibility.PACKAGE;
+		}
 	}
 
 	public String getBytecodeName() {
@@ -306,8 +330,9 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setBytecodeName(String s) {
-		if (kvpairs == Collections.EMPTY_MAP)
+		if (kvpairs == Collections.EMPTY_MAP) {
 			kvpairs = new HashMap();
+		}
 		kvpairs.put("bytecodeName", s);
 	}
 
@@ -349,8 +374,9 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setSourceSignature(String string) {
-		if (kvpairs == Collections.EMPTY_MAP)
+		if (kvpairs == Collections.EMPTY_MAP) {
 			kvpairs = new HashMap();
+		}
 		// System.err.println(name+" SourceSig=>"+string);
 		kvpairs.put("sourceSignature", string);
 		// sourceSignature = string;
@@ -361,15 +387,17 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setCorrespondingType(String s) {
-		if (kvpairs == Collections.EMPTY_MAP)
+		if (kvpairs == Collections.EMPTY_MAP) {
 			kvpairs = new HashMap();
+		}
 		kvpairs.put("returnType", s);
 		// this.returnType = s;
 	}
 
 	public void setParentTypes(List ps) {
-		if (kvpairs == Collections.EMPTY_MAP)
+		if (kvpairs == Collections.EMPTY_MAP) {
 			kvpairs = new HashMap();
+		}
 		kvpairs.put("parentTypes", ps);
 	}
 
@@ -400,14 +428,15 @@ public class ProgramElement implements IProgramElement {
 
 	public String getCorrespondingType(boolean getFullyQualifiedType) {
 		String returnType = (String) kvpairs.get("returnType");
-		if (returnType == null)
+		if (returnType == null) {
 			returnType = "";
+		}
 		if (getFullyQualifiedType) {
 			return returnType;
 		}
 		int index = returnType.lastIndexOf(".");
 		if (index != -1) {
-			return returnType.substring(index);
+			return returnType.substring(index + 1);
 		}
 		return returnType;
 	}
@@ -422,23 +451,26 @@ public class ProgramElement implements IProgramElement {
 
 	public void setChildren(List children) {
 		this.children = children;
-		if (children == null)
+		if (children == null) {
 			return;
+		}
 		for (Iterator it = children.iterator(); it.hasNext();) {
 			((IProgramElement) it.next()).setParent(this);
 		}
 	}
 
 	public void addChild(IProgramElement child) {
-		if (children == null || children == Collections.EMPTY_LIST)
+		if (children == null || children == Collections.EMPTY_LIST) {
 			children = new ArrayList();
+		}
 		children.add(child);
 		child.setParent(this);
 	}
 
 	public void addChild(int position, IProgramElement child) {
-		if (children == null || children == Collections.EMPTY_LIST)
+		if (children == null || children == Collections.EMPTY_LIST) {
 			children = new ArrayList();
+		}
 		children.add(position, child);
 		child.setParent(this);
 	}
@@ -467,14 +499,17 @@ public class ProgramElement implements IProgramElement {
 		HierarchyWalker walker = new HierarchyWalker() {
 			private int depth = 0;
 
+			@Override
 			public void preProcess(IProgramElement node) {
-				for (int i = 0; i < depth; i++)
+				for (int i = 0; i < depth; i++) {
 					buffer.append(' ');
+				}
 				buffer.append(node.toString());
 				buffer.append('\n');
 				depth += 2;
 			}
 
+			@Override
 			public void postProcess(IProgramElement node) {
 				depth -= 2;
 			}
@@ -522,8 +557,9 @@ public class ProgramElement implements IProgramElement {
 						sb.append(arg);
 					}
 				}
-				if (it.hasNext())
+				if (it.hasNext()) {
 					sb.append(",");
+				}
 			}
 			sb.append(')');
 		}
@@ -613,10 +649,12 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setParameterNames(List list) {
-		if (list == null || list.size() == 0)
+		if (list == null || list.size() == 0) {
 			return;
-		if (kvpairs == Collections.EMPTY_MAP)
+		}
+		if (kvpairs == Collections.EMPTY_MAP) {
 			kvpairs = new HashMap();
+		}
 		kvpairs.put("parameterNames", list);
 		// parameterNames = list;
 	}
@@ -669,22 +707,25 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setDetails(String string) {
-		if (kvpairs == Collections.EMPTY_MAP)
+		if (kvpairs == Collections.EMPTY_MAP) {
 			kvpairs = new HashMap();
+		}
 		kvpairs.put("details", string);
 	}
 
 	public void setFormalComment(String txt) {
 		if (txt != null && txt.length() > 0) {
-			if (kvpairs == Collections.EMPTY_MAP)
+			if (kvpairs == Collections.EMPTY_MAP) {
 				kvpairs = new HashMap();
+			}
 			kvpairs.put("formalComment", txt);
 		}
 	}
 
 	public void setExtraInfo(ExtraInformation info) {
-		if (kvpairs == Collections.EMPTY_MAP)
+		if (kvpairs == Collections.EMPTY_MAP) {
 			kvpairs = new HashMap();
+		}
 		kvpairs.put("ExtraInformation", info);
 	}
 
