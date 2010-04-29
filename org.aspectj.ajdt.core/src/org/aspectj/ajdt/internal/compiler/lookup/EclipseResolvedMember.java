@@ -33,6 +33,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
@@ -75,12 +76,14 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 
 	public boolean hasAnnotation(UnresolvedType ofType) {
 		ResolvedType[] annotationTypes = getAnnotationTypes();
-		if (annotationTypes == null)
+		if (annotationTypes == null) {
 			return false;
+		}
 		for (int i = 0; i < annotationTypes.length; i++) {
 			ResolvedType type = annotationTypes[i];
-			if (type.equals(ofType))
+			if (type.equals(ofType)) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -101,12 +104,12 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 		} else {
 			UnresolvedType declaringType = this.getDeclaringType();
 			if (declaringType instanceof ReferenceType) {
-				ReferenceType referenceDeclaringType = (ReferenceType)declaringType;
+				ReferenceType referenceDeclaringType = (ReferenceType) declaringType;
 				if (referenceDeclaringType.getDelegate() instanceof BcelObjectType) {
 					// worth a look!
-					ResolvedMember field = ((ResolvedType)declaringType).lookupField(this);
-					if (field!=null) {
-						return field.getAnnotations();						
+					ResolvedMember field = ((ResolvedType) declaringType).lookupField(this);
+					if (field != null) {
+						return field.getAnnotations();
 					}
 				}
 			}
@@ -119,8 +122,9 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 			// long abits =
 			realBinding.getAnnotationTagBits(); // ensure resolved
 			Annotation[] annos = getEclipseAnnotations();
-			if (annos == null)
+			if (annos == null) {
 				return null;
+			}
 			for (int i = 0; i < annos.length; i++) {
 				Annotation anno = annos[i];
 				UnresolvedType ut = UnresolvedType.forSignature(new String(anno.resolvedType.signature()));
@@ -129,15 +133,15 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 					return EclipseAnnotationConvertor.convertEclipseAnnotation(anno, w, eclipseFactory);
 				}
 			}
-		} else {		
+		} else {
 			UnresolvedType declaringType = this.getDeclaringType();
 			if (declaringType instanceof ReferenceType) {
-				ReferenceType referenceDeclaringType = (ReferenceType)declaringType;
+				ReferenceType referenceDeclaringType = (ReferenceType) declaringType;
 				if (referenceDeclaringType.getDelegate() instanceof BcelObjectType) {
 					// worth a look!
-					ResolvedMember field = ((ResolvedType)declaringType).lookupField(this);
-					if (field!=null) {
-						return field.getAnnotationOfType(ofType);						
+					ResolvedMember field = ((ResolvedType) declaringType).lookupField(this);
+					if (field != null) {
+						return field.getAnnotationOfType(ofType);
 					}
 				}
 			}
@@ -147,10 +151,10 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 
 	public String getAnnotationDefaultValue() {
 		// Andy, if you are debugging in here and your problem is some kind of incremental build failure where a match on
-		// a member annotation value is failing then you should look at bug 307120.  Under that bug you discovered that
+		// a member annotation value is failing then you should look at bug 307120. Under that bug you discovered that
 		// for privileged field accesses from ITDs, an EclipseResolvedMember may be created (inside the privileged munger - see
 		// PrivilegedHandler) and then later when the annotations are looked up on it, that fails because we can't find the
-		// declaration for the member.  This is because on the incremental build the member will likely represent something
+		// declaration for the member. This is because on the incremental build the member will likely represent something
 		// inside a binary type (BinaryTypeBinding) - and when that happens we should not look on the type declaration but
 		// instead on the delegate for the declaringClass because it will likely be a BcelObjectType with the right stuff
 		// in it - see the other checks on BcelObjectType in this class.
@@ -159,8 +163,9 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 			if (methodDecl instanceof AnnotationMethodDeclaration) {
 				AnnotationMethodDeclaration annoMethodDecl = (AnnotationMethodDeclaration) methodDecl;
 				Expression e = annoMethodDecl.defaultValue;
-				if (e.resolvedType == null)
+				if (e.resolvedType == null) {
 					e.resolve(methodDecl.scope);
+				}
 				// TODO does not cope with many cases...
 				if (e instanceof QualifiedNameReference) {
 
@@ -219,12 +224,19 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 				cachedAnnotationTypes = ResolvedType.EMPTY_RESOLVED_TYPE_ARRAY;
 				UnresolvedType declaringType = this.getDeclaringType();
 				if (declaringType instanceof ReferenceType) {
-					ReferenceType referenceDeclaringType = (ReferenceType)declaringType;
+					ReferenceType referenceDeclaringType = (ReferenceType) declaringType;
 					if (referenceDeclaringType.getDelegate() instanceof BcelObjectType) {
 						// worth a look!
-						ResolvedMember field = ((ResolvedType)declaringType).lookupField(this);
-						if (field!=null) {
-							cachedAnnotationTypes = field.getAnnotationTypes();						
+						if (this.getKind() == Member.METHOD) {
+							ResolvedMember method = ((ResolvedType) declaringType).lookupMethod(this);
+							if (method != null) {
+								cachedAnnotationTypes = method.getAnnotationTypes();
+							}
+						} else {
+							ResolvedMember field = ((ResolvedType) declaringType).lookupField(this);
+							if (field != null) {
+								cachedAnnotationTypes = field.getAnnotationTypes();
+							}
 						}
 					}
 				}
@@ -234,8 +246,9 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 	}
 
 	public String[] getParameterNames() {
-		if (argumentNames != null)
+		if (argumentNames != null) {
 			return argumentNames;
+		}
 		if (realBinding instanceof FieldBinding) {
 			argumentNames = NO_ARGS;
 		} else {
@@ -265,8 +278,8 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 	}
 
 	/**
-	 * Discover the (eclipse form) annotations on this resolved member.  This is done by going to the type declaration,
-	 * looking up the member (field/method) then grabbing the annotations.
+	 * Discover the (eclipse form) annotations on this resolved member. This is done by going to the type declaration, looking up
+	 * the member (field/method) then grabbing the annotations.
 	 * 
 	 * @return an array of (eclipse form) annotations on this member
 	 */
@@ -308,14 +321,14 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 		}
 		return null;
 	}
-	
+
 	private boolean isTypeDeclarationAvailable() {
-		return getTypeDeclaration()!=null;
+		return getTypeDeclaration() != null;
 	}
 
 	/**
 	 * @return the type declaration that contained this member, or NULL if it is not available (eg. this isn't currently related to
-	 * a SOURCE-FORM artifact, it is instead related to a BINARY-FORM artifact)
+	 *         a SOURCE-FORM artifact, it is instead related to a BINARY-FORM artifact)
 	 */
 	private TypeDeclaration getTypeDeclaration() {
 		if (realBinding instanceof MethodBinding) {
@@ -324,8 +337,9 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 				SourceTypeBinding stb = (SourceTypeBinding) mb.declaringClass;
 				if (stb != null) {
 					ClassScope cScope = stb.scope;
-					if (cScope != null)
+					if (cScope != null) {
 						return cScope.referenceContext;
+					}
 				}
 			}
 		} else if (realBinding instanceof FieldBinding) {
@@ -334,8 +348,9 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 				SourceTypeBinding stb = (SourceTypeBinding) fb.declaringClass;
 				if (stb != null) {
 					ClassScope cScope = stb.scope;
-					if (cScope != null)
+					if (cScope != null) {
 						return cScope.referenceContext;
+					}
 				}
 			}
 		}
