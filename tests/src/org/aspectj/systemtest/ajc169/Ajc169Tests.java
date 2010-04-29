@@ -18,9 +18,9 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
-	// public void testAmbiguousMethod_298665() {
-	// runTest("ambiguous method");
-	// }
+	public void testAmbiguousMethod_298665() {
+		runTest("ambiguous method");
+	}
 
 	// public void testStaticallyAnalyzableIf_292262_1() {
 	// runTest("if with statically recognizable code");
@@ -33,15 +33,15 @@ public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testRogueError_310043() {
 		runTest("rogue error");
 	}
-	
+
 	public void testItdMarkerAnnotations_309743() {
 		runTest("itd marker annotations - 1");
 	}
-	
+
 	public void testItdMarkerAnnotations_309743_2() {
 		runTest("itd marker annotations - 2");
 	}
-	
+
 	public void testPipeliningAndGenerics_309336() {
 		runTest("pipelining and generics");
 	}
