@@ -1140,8 +1140,7 @@ public class AsmManager implements IStructureModel {
 			}
 		}
 		if (!deleteOK) {
-			throw new RuntimeException("Unable to delete the node from the model.  trying to delete node for handle "
-					+ progElem.getHandleIdentifier());
+			System.err.println("unexpectedly failed to delete node from model.  hid=" + progElem.getHandleIdentifier());
 		}
 	}
 
