@@ -80,7 +80,7 @@ public class BoundedReferenceType extends ReferenceType {
 		super("*", "Ljava/lang/Object;", world);
 		this.kind = UNBOUND;
 		upperBound = world.resolve(UnresolvedType.OBJECT);
-		setDelegate(new BoundedReferenceTypeDelegate((ReferenceType)upperBound));
+		setDelegate(new BoundedReferenceTypeDelegate((ReferenceType) upperBound));
 	}
 
 	public UnresolvedType getUpperBound() {
@@ -120,7 +120,7 @@ public class BoundedReferenceType extends ReferenceType {
 	}
 
 	public boolean isExtends() {
-		return (this.kind == EXTENDS && !getUpperBound().getSignature().equals("Ljava/lang/Object;"));
+		return this.kind == EXTENDS;
 	}
 
 	public boolean isSuper() {
