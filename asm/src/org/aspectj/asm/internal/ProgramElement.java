@@ -273,7 +273,6 @@ public class ProgramElement implements IProgramElement {
 		// return formalComment;
 	}
 
-	@Override
 	public String toString() {
 		return toLabelString();
 	}
@@ -499,7 +498,6 @@ public class ProgramElement implements IProgramElement {
 		HierarchyWalker walker = new HierarchyWalker() {
 			private int depth = 0;
 
-			@Override
 			public void preProcess(IProgramElement node) {
 				for (int i = 0; i < depth; i++) {
 					buffer.append(' ');
@@ -509,7 +507,6 @@ public class ProgramElement implements IProgramElement {
 				depth += 2;
 			}
 
-			@Override
 			public void postProcess(IProgramElement node) {
 				depth -= 2;
 			}
