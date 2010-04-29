@@ -2,9 +2,20 @@
 
 <suite>
 
+   <ajc-test dir="bugs169/pr307009" title="declare soft and call - 1">
+   	<compile files="Test.java Test2.java Ann.java Bug.aj" options="-1.5 -showWeaveInfo">
+   		<message kind="weave" text="Softening exceptions in type 'Test' (Test.java:4) as defined by aspect 'Bug' (Bug.aj:3)"/>
+   	</compile>
+   </ajc-test>
+
+   <ajc-test dir="bugs169/pr307009" title="declare soft and call - 2">
+   	<compile files="Test2.java Test.java Ann.java Bug.aj" options="-1.5 -showWeaveInfo">
+   		<message kind="weave" text="Softening exceptions in type 'Test' (Test.java:4) as defined by aspect 'Bug' (Bug.aj:3)"/>
+   	</compile>
+   </ajc-test>
+   
    <ajc-test dir="bugs169/pr310043" title="rogue error">
    	<compile files="B.java" classpath="code.jar" aspectpath="code.jar"/>
-
    </ajc-test>
    
    <ajc-test dir="bugs169/pr309743" title="itd marker annotations - 1">

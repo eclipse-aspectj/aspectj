@@ -18,6 +18,14 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testDeclareSoftCall_307009_1() {
+		runTest("declare soft and call - 1");
+	}
+
+	public void testDeclareSoftCall_307009_2() {
+		runTest("declare soft and call - 2");
+	}
+
 	public void testAmbiguousMethod_298665() {
 		runTest("ambiguous method");
 	}
