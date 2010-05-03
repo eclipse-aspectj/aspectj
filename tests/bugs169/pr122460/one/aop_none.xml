@@ -1,0 +1,7 @@
+<aspectj>
+<aspects>
+ <aspect name="a.A" scope="!*"/>
+</aspects>
+<weaver>
+</weaver>
+</aspectj>
