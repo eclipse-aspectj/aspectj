@@ -2,6 +2,39 @@
 
 <suite>
 
+  <ajc-test dir="bugs169/pr122460/one" title="scoping ltw - 3">
+     <compile files="A.java" options="-1.5 -Xlint:ignore" outjar="aspects.jar"/>
+     <compile files="Code.java Runner.java"/>
+     <run class="code.Code" ltw="aop_none.xml" classpath="aspects.jar">
+     <stdout>
+     <line text="running"/>
+     </stdout>
+     </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr122460/one" title="scoping ltw - 1">
+     <compile files="A.java" options="-1.5 -Xlint:ignore" outjar="aspects.jar"/>
+     <compile files="Code.java Runner.java"/>
+     <run class="code.Code" ltw="aop.xml" classpath="aspects.jar">
+     <stdout>
+     <line text="intercepted class code.Code"/>
+     <line text="intercepted class runner.Runner"/>
+     <line text="running"/>
+     </stdout>
+     </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr122460/one" title="scoping ltw - 2">
+     <compile files="A.java" options="-1.5 -Xlint:ignore" outjar="aspects.jar"/>
+     <compile files="Code.java Runner.java"/>
+     <run class="code.Code" ltw="aop_codeonly.xml" classpath="aspects.jar">
+     <stdout>
+     <line text="intercepted class code.Code"/>
+     <line text="running"/>
+     </stdout>
+     </run>
+  </ajc-test>
+  
    <ajc-test dir="bugs169/pr307009" title="declare soft and call - 1">
    	<compile files="Test.java Test2.java Ann.java Bug.aj" options="-1.5 -showWeaveInfo">
    		<message kind="weave" text="Softening exceptions in type 'Test' (Test.java:4) as defined by aspect 'Bug' (Bug.aj:3)"/>

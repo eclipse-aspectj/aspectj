@@ -18,6 +18,21 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	// control test - weaves everything
+	public void testScopingLTW_122460_1() {
+		runTest("scoping ltw - 1");
+	}
+
+	// scoped to one type
+	public void testScopingLTW_122460_2() {
+		runTest("scoping ltw - 2");
+	}
+
+	// scope is '!*' - nothing woven
+	public void testScopingLTW_122460_3() {
+		runTest("scoping ltw - 3");
+	}
+
 	public void testDeclareSoftCall_307009_1() {
 		runTest("declare soft and call - 1");
 	}
