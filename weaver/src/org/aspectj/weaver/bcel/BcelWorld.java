@@ -907,7 +907,7 @@ public class BcelWorld extends World implements Repository {
 			return;
 		}
 		if (!xmlFiles.isEmpty()) {
-			xmlConfiguration = new WeavingXmlConfig(this);
+			xmlConfiguration = new WeavingXmlConfig(this, WeavingXmlConfig.MODE_COMPILE);
 		}
 		for (File xmlfile : xmlFiles) {
 			try {
@@ -919,6 +919,17 @@ public class BcelWorld extends World implements Repository {
 				raiseError("Unexpected problem processing XML config file '" + xmlfile.getName() + "' :" + e.getMessage());
 			}
 		}
+	}
+
+	/**
+	 * Add a scoped aspects where the scoping was defined in an aop.xml file and this world is being used in a LTW configuration
+	 */
+	public void addScopedAspect(String name, String scope) {
+		this.isXmlConfiguredWorld = true;
+		if (xmlConfiguration == null) {
+			xmlConfiguration = new WeavingXmlConfig(this, WeavingXmlConfig.MODE_LTW);
+		}
+		xmlConfiguration.addScopedAspect(name, scope);
 	}
 
 	public void setXmlConfigured(boolean b) {
@@ -956,11 +967,18 @@ public class BcelWorld extends World implements Repository {
 	 */
 	static class WeavingXmlConfig {
 
+		final static int MODE_COMPILE = 1;
+		final static int MODE_LTW = 2;
+
+		private int mode;
+
 		private boolean initialized = false; // Lazily done
 		private List<Definition> definitions = new ArrayList<Definition>();
 
 		private List<String> resolvedIncludedAspects = new ArrayList<String>();
 		private Map<String, TypePattern> scopes = new HashMap<String, TypePattern>();
+
+		// these are not set for LTW mode (exclusion of these fast match patterns is handled before the weaver/world are used)
 		private List<String> includedFastMatchPatterns = Collections.emptyList();
 		private List<TypePattern> includedPatterns = Collections.emptyList();
 		private List<String> excludedFastMatchPatterns = Collections.emptyList();
@@ -968,12 +986,31 @@ public class BcelWorld extends World implements Repository {
 
 		private BcelWorld world;
 
-		public WeavingXmlConfig(BcelWorld bcelWorld) {
+		public WeavingXmlConfig(BcelWorld bcelWorld, int mode) {
 			this.world = bcelWorld;
+			this.mode = mode;
 		}
 
 		public void add(Definition d) {
 			definitions.add(d);
+		}
+
+		public void addScopedAspect(String aspectName, String scope) {
+			ensureInitialized();
+			resolvedIncludedAspects.add(aspectName);
+			try {
+				TypePattern scopePattern = new PatternParser(scope).parseTypePattern();
+				scopePattern.resolve(world);
+				scopes.put(aspectName, scopePattern);
+				if (!world.getMessageHandler().isIgnoring(IMessage.INFO)) {
+					world.getMessageHandler().handleMessage(
+							MessageUtil.info("Aspect '" + aspectName + "' is scoped to apply against types matching pattern '"
+									+ scopePattern.toString() + "'"));
+				}
+			} catch (Exception e) {
+				world.getMessageHandler().handleMessage(
+						MessageUtil.error("Unable to parse scope as type pattern.  Scope was '" + scope + "': " + e.getMessage()));
+			}
 		}
 
 		public void ensureInitialized() {
@@ -1071,6 +1108,9 @@ public class BcelWorld extends World implements Repository {
 		// Since if the weaver is seeing it during this kind of build, the type is implicitly included. So all we should check
 		// for is exclusion
 		public boolean excludesType(ResolvedType type) {
+			if (mode == MODE_LTW) {
+				return false;
+			}
 			String typename = type.getName();
 			boolean excluded = false;
 			for (String excludedPattern : excludedFastMatchPatterns) {
@@ -1089,6 +1129,7 @@ public class BcelWorld extends World implements Repository {
 			}
 			return excluded;
 		}
+
 	}
 
 	public TypeMap getTypeMap() {
