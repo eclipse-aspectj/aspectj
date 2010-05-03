@@ -17,6 +17,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 import org.aspectj.weaver.bcel.BcelWeakClassLoaderReference;
+import org.aspectj.weaver.loadtime.definition.Definition;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 import org.aspectj.weaver.tools.WeavingAdaptor;
@@ -34,8 +35,8 @@ public class DefaultWeavingContext implements IWeavingContext {
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(DefaultWeavingContext.class);
 
 	/**
-	 * Construct a new WeavingContext to use the specified ClassLoader
-	 * This is the constructor which should be used.
+	 * Construct a new WeavingContext to use the specified ClassLoader This is the constructor which should be used.
+	 * 
 	 * @param loader
 	 */
 	public DefaultWeavingContext(ClassLoader loader) {
@@ -62,11 +63,11 @@ public class DefaultWeavingContext implements IWeavingContext {
 	 */
 	public String getClassLoaderName() {
 		ClassLoader loader = getClassLoader();
-    	return ((loader!=null)?loader.getClass().getName()+"@"+Integer.toHexString(System.identityHashCode(loader)):"null");
+		return ((loader != null) ? loader.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(loader))
+				: "null");
 	}
-	
 
-	public ClassLoader getClassLoader() { 
+	public ClassLoader getClassLoader() {
 		return loaderRef.getClassLoader();
 	}
 
@@ -74,55 +75,63 @@ public class DefaultWeavingContext implements IWeavingContext {
 	 * @return filename
 	 */
 	public String getFile(URL url) {
-    	return url.getFile();
+		return url.getFile();
 	}
 
 	/**
-	 * @return unqualifiedclassname@hashcode 
+	 * @return unqualifiedclassname@hashcode
 	 */
-	public String getId () {
+	public String getId() {
 		if (shortName == null) {
-			shortName = getClassLoaderName().replace('$','.');
+			shortName = getClassLoaderName().replace('$', '.');
 			int index = shortName.lastIndexOf(".");
-			if (index!=-1) {
+			if (index != -1) {
 				shortName = shortName.substring(index + 1);
 			}
 		}
 		return shortName;
 	}
-	
-	public String getSuffix () {
+
+	public String getSuffix() {
 		return getClassLoaderName();
 	}
 
 	public boolean isLocallyDefined(String classname) {
-        String asResource = classname.replace('.', '/').concat(".class");
-        ClassLoader loader = getClassLoader();
-        URL localURL = loader.getResource(asResource);
-        if (localURL == null) return false;
+		String asResource = classname.replace('.', '/').concat(".class");
+		ClassLoader loader = getClassLoader();
+		URL localURL = loader.getResource(asResource);
+		if (localURL == null) {
+			return false;
+		}
 
 		boolean isLocallyDefined = true;
-		
-        ClassLoader parent = loader.getParent();
-        if (parent != null) {
-            URL parentURL = parent.getResource(asResource);
-            if (localURL.equals(parentURL)) isLocallyDefined =  false;
-        } 
-        return isLocallyDefined;
+
+		ClassLoader parent = loader.getParent();
+		if (parent != null) {
+			URL parentURL = parent.getResource(asResource);
+			if (localURL.equals(parentURL)) {
+				isLocallyDefined = false;
+			}
+		}
+		return isLocallyDefined;
 	}
 
 	/**
 	 * Simply call weaving adaptor back to parse aop.xml
-	 *
+	 * 
 	 * @param weaver
 	 * @param loader
 	 */
-	public List getDefinitions(final ClassLoader loader, final WeavingAdaptor adaptor) {
-	        if (trace.isTraceEnabled()) trace.enter("getDefinitions", this, new Object[] { "goo", adaptor });
-	
-	        List definitions = ((ClassLoaderWeavingAdaptor)adaptor).parseDefinitions(loader);
-	        
-	        if (trace.isTraceEnabled()) trace.exit("getDefinitions",definitions);
-			return definitions;
-	    }
+	public List<Definition> getDefinitions(final ClassLoader loader, final WeavingAdaptor adaptor) {
+		if (trace.isTraceEnabled()) {
+			trace.enter("getDefinitions", this, new Object[] { "goo", adaptor });
+		}
+
+		List<Definition> definitions = ((ClassLoaderWeavingAdaptor) adaptor).parseDefinitions(loader);
+
+		if (trace.isTraceEnabled()) {
+			trace.exit("getDefinitions", definitions);
+		}
+		return definitions;
+	}
 }

@@ -78,10 +78,10 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	private List<String> includeExactName = new ArrayList<String>();
 	private boolean includeStar = false;
 
-	private List m_aspectExcludeTypePattern = new ArrayList();
-	private List m_aspectExcludeStartsWith = new ArrayList();
-	private List m_aspectIncludeTypePattern = new ArrayList();
-	private List m_aspectIncludeStartsWith = new ArrayList();
+	private List<TypePattern> m_aspectExcludeTypePattern = new ArrayList<TypePattern>();
+	private List<String> m_aspectExcludeStartsWith = new ArrayList<String>();
+	private List<TypePattern> m_aspectIncludeTypePattern = new ArrayList<TypePattern>();
+	private List<String> m_aspectIncludeStartsWith = new ArrayList<String>();
 
 	private StringBuffer namespace;
 	private IWeavingContext weavingContext;
@@ -201,12 +201,12 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * @param weaver
 	 * @param loader
 	 */
-	List parseDefinitions(final ClassLoader loader) {
+	List<Definition> parseDefinitions(final ClassLoader loader) {
 		if (trace.isTraceEnabled()) {
 			trace.enter("parseDefinitions", this);
 		}
 
-		List definitions = new ArrayList();
+		List<Definition> definitions = new ArrayList<Definition>();
 		try {
 			info("register classloader " + getClassLoaderName(loader));
 			// TODO av underoptimized: we will parse each XML once per CL that see it
@@ -242,12 +242,12 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 						error("malformed definition url: " + nextDefinition);
 					}
 				} else {
-					Enumeration xmls = weavingContext.getResources(nextDefinition);
+					Enumeration<URL> xmls = weavingContext.getResources(nextDefinition);
 					// System.out.println("? registerDefinitions: found-aop.xml=" + xmls.hasMoreElements() + ", loader=" + loader);
 
-					Set seenBefore = new HashSet();
+					Set<URL> seenBefore = new HashSet<URL>();
 					while (xmls.hasMoreElements()) {
-						URL xml = (URL) xmls.nextElement();
+						URL xml = xmls.nextElement();
 						if (trace.isTraceEnabled()) {
 							trace.event("parseDefinitions", this, xml);
 						}
@@ -275,7 +275,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		return definitions;
 	}
 
-	private boolean registerDefinitions(final BcelWeaver weaver, final ClassLoader loader, List definitions) {
+	private boolean registerDefinitions(final BcelWeaver weaver, final ClassLoader loader, List<Definition> definitions) {
 		if (trace.isTraceEnabled()) {
 			trace.enter("registerDefinitions", this, definitions);
 		}
@@ -388,12 +388,10 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		// TODO proceedOnError option
 	}
 
-	private void registerAspectExclude(final BcelWeaver weaver, final ClassLoader loader, final List definitions) {
+	private void registerAspectExclude(final BcelWeaver weaver, final ClassLoader loader, final List<Definition> definitions) {
 		String fastMatchInfo = null;
-		for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
-			Definition definition = (Definition) iterator.next();
-			for (Iterator iterator1 = definition.getAspectExcludePatterns().iterator(); iterator1.hasNext();) {
-				String exclude = (String) iterator1.next();
+		for (Definition definition : definitions) {
+			for (String exclude : definition.getAspectExcludePatterns()) {
 				TypePattern excludePattern = new PatternParser(exclude).parseTypePattern();
 				m_aspectExcludeTypePattern.add(excludePattern);
 				fastMatchInfo = looksLikeStartsWith(exclude);
@@ -404,12 +402,10 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		}
 	}
 
-	private void registerAspectInclude(final BcelWeaver weaver, final ClassLoader loader, final List definitions) {
+	private void registerAspectInclude(final BcelWeaver weaver, final ClassLoader loader, final List<Definition> definitions) {
 		String fastMatchInfo = null;
-		for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
-			Definition definition = (Definition) iterator.next();
-			for (Iterator iterator1 = definition.getAspectIncludePatterns().iterator(); iterator1.hasNext();) {
-				String include = (String) iterator1.next();
+		for (Definition definition : definitions) {
+			for (String include : definition.getAspectIncludePatterns()) {
 				TypePattern includePattern = new PatternParser(include).parseTypePattern();
 				m_aspectIncludeTypePattern.add(includePattern);
 				fastMatchInfo = looksLikeStartsWith(include);
@@ -438,7 +434,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * @param loader
 	 * @param definitions
 	 */
-	private boolean registerAspects(final BcelWeaver weaver, final ClassLoader loader, final List definitions) {
+	private boolean registerAspects(final BcelWeaver weaver, final ClassLoader loader, final List<Definition> definitions) {
 		if (trace.isTraceEnabled()) {
 			trace.enter("registerAspects", this, new Object[] { weaver, loader, definitions });
 		}
@@ -449,21 +445,25 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 		// iterate aspectClassNames
 		// exclude if in any of the exclude list
-		for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
-			Definition definition = (Definition) iterator.next();
-			for (Iterator aspects = definition.getAspectClassNames().iterator(); aspects.hasNext();) {
-				String aspectClassName = (String) aspects.next();
+		for (Definition definition : definitions) {
+			for (String aspectClassName : definition.getAspectClassNames()) {
 				if (acceptAspect(aspectClassName)) {
 					info("register aspect " + aspectClassName);
 					// System.err.println("? ClassLoaderWeavingAdaptor.registerAspects() aspectName=" + aspectClassName +
 					// ", loader=" + loader + ", bundle=" + weavingContext.getClassLoaderName());
-					/* ResolvedType aspect = */weaver.addLibraryAspect(aspectClassName);
+					// ResolvedType aspect =
+					weaver.addLibraryAspect(aspectClassName);
 
 					// generate key for SC
 					if (namespace == null) {
 						namespace = new StringBuffer(aspectClassName);
 					} else {
-						namespace = namespace.append(";" + aspectClassName);
+						namespace = namespace.append(";").append(aspectClassName);
+					}
+
+					String definedScope = definition.getScopeForAspect(aspectClassName);
+					if (definedScope != null) {
+						((BcelWorld) weaver.getWorld()).addScopedAspect(aspectClassName, definedScope);
 					}
 				} else {
 					// warn("aspect excluded: " + aspectClassName);
@@ -474,8 +474,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 		// iterate concreteAspects
 		// exclude if in any of the exclude list - note that the user defined name matters for that to happen
-		for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
-			Definition definition = (Definition) iterator.next();
+		for (Definition definition : definitions) {
 			for (Definition.ConcreteAspect concreteAspect : definition.getConcreteAspects()) {
 				if (acceptAspect(concreteAspect.name)) {
 					info("define aspect " + concreteAspect.name);
@@ -859,13 +858,13 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		// EXCLUDE: if one match then reject
 		String fastClassName = aspectClassName.replace('/', '.').replace('.', '$');
 		for (int i = 0; i < m_aspectExcludeStartsWith.size(); i++) {
-			if (fastClassName.startsWith((String) m_aspectExcludeStartsWith.get(i))) {
+			if (fastClassName.startsWith(m_aspectExcludeStartsWith.get(i))) {
 				return false;
 			}
 		}
 		// INCLUDE: if one match then accept
 		for (int i = 0; i < m_aspectIncludeStartsWith.size(); i++) {
-			if (fastClassName.startsWith((String) m_aspectIncludeStartsWith.get(i))) {
+			if (fastClassName.startsWith(m_aspectIncludeStartsWith.get(i))) {
 				return true;
 			}
 		}
