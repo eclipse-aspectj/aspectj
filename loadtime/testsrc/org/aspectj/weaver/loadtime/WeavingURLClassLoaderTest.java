@@ -83,6 +83,20 @@ public class WeavingURLClassLoaderTest extends TestCase {
 		}
 	}
 
+	public void testGarbageName() {
+		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH, "");
+		setSystemProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH, WOVEN_JAR);
+		WeavingURLClassLoader loader = new WeavingURLClassLoader(getClass().getClassLoader());
+
+		try {
+			loader.loadClass("[Lorg.springframework.webflow.config.FlowLocation;Editor");
+		} catch (ClassNotFoundException cnfe) {
+			// success!
+		} catch (Exception ex) {
+			fail(ex.toString());
+		}
+	}
+
 	/*
 	 * We get an exception because the class was not built reweavable
 	 */
@@ -490,10 +504,11 @@ public class WeavingURLClassLoaderTest extends TestCase {
 			method.invoke(null, params);
 		} catch (InvocationTargetException ex) {
 			Throwable targetException = ex.getTargetException();
-			if (targetException instanceof RuntimeException)
+			if (targetException instanceof RuntimeException) {
 				throw (RuntimeException) ex.getTargetException();
-			else
+			} else {
 				throw new RuntimeException(ex.getTargetException().toString());
+			}
 		} catch (Exception ex) {
 			throw new RuntimeException(ex.toString());
 		}
@@ -523,10 +538,11 @@ public class WeavingURLClassLoaderTest extends TestCase {
 		for (Enumeration enu = savedProperties.keys(); enu.hasMoreElements();) {
 			String key = (String) enu.nextElement();
 			String value = savedProperties.getProperty(key);
-			if (value == NULL)
+			if (value == NULL) {
 				systemProperties.remove(key);
-			else
+			} else {
 				systemProperties.setProperty(key, value);
+			}
 		}
 	}
 
