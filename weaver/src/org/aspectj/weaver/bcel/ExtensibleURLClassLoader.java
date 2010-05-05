@@ -19,6 +19,7 @@ import java.net.URLClassLoader;
 import java.security.CodeSource;
 
 import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.UnresolvedType;
 
 public abstract class ExtensibleURLClassLoader extends URLClassLoader {
@@ -64,7 +65,16 @@ public abstract class ExtensibleURLClassLoader extends URLClassLoader {
 
 	protected byte[] getBytes(String name) throws IOException {
 		byte[] b = null;
-		ClassPathManager.ClassFile classFile = classPath.find(UnresolvedType.forName(name));
+		UnresolvedType unresolvedType = null;
+		try {
+			unresolvedType = UnresolvedType.forName(name);
+		} catch (BCException bce) {
+			if (bce.getMessage().indexOf("nameToSignature") == -1) {
+				bce.printStackTrace(System.err);
+			}
+			return null;
+		}
+		ClassPathManager.ClassFile classFile = classPath.find(unresolvedType);
 		if (classFile != null) {
 			try {
 				b = FileUtil.readAsByteArray(classFile.getInputStream());
