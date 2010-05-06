@@ -321,7 +321,7 @@ public class AsmRelationshipProvider {
 				((sl.getColumn() == 0) ? ISourceLocation.NO_COLUMN : sl.getColumn()), sl.getContext(), sourceFileName);
 		return sLoc;
 	}
-
+	
 	private static ISourceLocation createSourceLocation(String sourcefilename, ResolvedType aspect, ISourceLocation sl) {
 		ISourceLocation sLoc = new SourceLocation(getBinaryFile(aspect), sl.getLine(), sl.getEndLine(),
 				((sl.getColumn() == 0) ? ISourceLocation.NO_COLUMN : sl.getColumn()), sl.getContext(), sourcefilename);
@@ -600,7 +600,7 @@ public class AsmRelationshipProvider {
 				if (sLoc == null) {
 					sLoc = rpcd.getSourceLocation();
 				}
-				ISourceLocation pointcutLocation = createSourceLocation(sourcefilename, aspect, sLoc);
+				ISourceLocation pointcutLocation = (sLoc == null ? null : createSourceLocation(sourcefilename, aspect, sLoc));
 				ProgramElement pointcutElement = new ProgramElement(model, pointcut.getName(), IProgramElement.Kind.POINTCUT,
 						pointcutLocation, pointcut.getModifiers(), NO_COMMENT, Collections.EMPTY_LIST);
 				containingAspect.addChild(pointcutElement);
@@ -997,8 +997,9 @@ public class AsmRelationshipProvider {
 		IHierarchy hierarchy = model.getHierarchy();
 
 		IProgramElement typeElem = hierarchy.findElementForType(pkg, type);
-		if (typeElem == null)
+		if (typeElem == null) {
 			return;
+		}
 
 		StringBuffer parmString = new StringBuffer("(");
 		UnresolvedType[] args = affectedMethod.getParameterTypes();
@@ -1007,8 +1008,9 @@ public class AsmRelationshipProvider {
 			String s = args[i].getName();// Utility.signatureToString(args[i].
 			// getName()getSignature(), false);
 			parmString.append(s);
-			if ((i + 1) < args.length)
+			if ((i + 1) < args.length) {
 				parmString.append(",");
+			}
 		}
 		parmString.append(")");
 		IProgramElement methodElem = null;
@@ -1016,26 +1018,30 @@ public class AsmRelationshipProvider {
 		if (affectedMethod.getName().startsWith("<init>")) {
 			// its a ctor
 			methodElem = hierarchy.findElementForSignature(typeElem, IProgramElement.Kind.CONSTRUCTOR, type + parmString);
-			if (methodElem == null && args.length == 0)
+			if (methodElem == null && args.length == 0) {
 				methodElem = typeElem; // assume default ctor
+			}
 		} else {
 			// its a method
 			methodElem = hierarchy.findElementForSignature(typeElem, IProgramElement.Kind.METHOD, affectedMethod.getName()
 					+ parmString);
 		}
 
-		if (methodElem == null)
+		if (methodElem == null) {
 			return;
+		}
 
 		try {
 			String targetHandle = methodElem.getHandleIdentifier();
-			if (targetHandle == null)
+			if (targetHandle == null) {
 				return;
+			}
 
 			IProgramElement sourceNode = hierarchy.findElementForSourceLine(sourceLocation);
 			String sourceHandle = sourceNode.getHandleIdentifier();
-			if (sourceHandle == null)
+			if (sourceHandle == null) {
 				return;
+			}
 
 			IRelationshipMap mapper = model.getRelationshipMap();
 			IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATES, false, true);
