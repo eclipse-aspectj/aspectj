@@ -161,9 +161,9 @@ public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("declare mixin and generics");
 	}
 
-	public void testPr292584() {
-		runTest("annotation around advice verifyerror");
-	}
+	// public void testPr292584() {
+	// runTest("annotation around advice verifyerror");
+	// }
 
 	// ---
 
