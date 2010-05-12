@@ -127,8 +127,9 @@ public class CflowPointcut extends Pointcut {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof CflowPointcut))
+		if (!(other instanceof CflowPointcut)) {
 			return false;
+		}
 		CflowPointcut o = (CflowPointcut) other;
 		return o.entry.equals(entry) && o.isBelow == isBelow;
 	}
@@ -257,8 +258,9 @@ public class CflowPointcut extends Pointcut {
 				// advice
 				// ??? this means that we will store some state that we won't
 				// actually use, optimize this later
-				if (!bindings.hasKey(freeVar))
+				if (!bindings.hasKey(freeVar)) {
 					continue;
+				}
 
 				int formalIndex = bindings.get(freeVar);
 
@@ -327,10 +329,11 @@ public class CflowPointcut extends Pointcut {
 	private Object getCflowfield(CrosscuttingMembers xcut, Pointcut pcutkey, ResolvedType concreteAspect, String stackOrCounter) {
 		String key = getKey(pcutkey, concreteAspect, stackOrCounter);
 		Object o = null;
-		if (isBelow)
+		if (isBelow) {
 			o = xcut.getCflowBelowFields().get(key);
-		else
+		} else {
 			o = xcut.getCflowFields().get(key);
+		}
 		// System.err.println("Retrieving for key "+key+" returning "+o);
 		return o;
 	}
