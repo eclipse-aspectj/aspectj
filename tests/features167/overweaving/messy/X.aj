@@ -1,6 +1,6 @@
 aspect X {
 before(): execution(* *(..)) {
-  System.out.println("AspectX>>"+thisJoinPointStaticPart);
+  System.out.println("X:"+thisJoinPointStaticPart);
 }
 }
 

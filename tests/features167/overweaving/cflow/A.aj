@@ -10,7 +10,7 @@ aspect A {
   public void C.m() {}
 
   before(): execution(* C.main(..)) {
-    System.out.println("AspectA>>"+thisJoinPointStaticPart);
+    System.out.println("A:"+thisJoinPointStaticPart);
   }
 
 }

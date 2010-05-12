@@ -2,6 +2,28 @@
 
 <suite>
    
+   <ajc-test dir="features167/overweaving/messy2" title="really messy">
+     <compile files="A.aj Class1.java" options="-1.5"/>
+     <compile files="B.aj" options="-1.5 -Xlint:ignore"/>
+     <compile files="Class2.java" options="-1.5 -Xlint:ignore"/>
+     <run class="Class1" ltw="aop.xml">
+       <stdout>
+       <!-- should be advised by both, but was *already* advised by A during first weave -->
+         <line text="B:execution(void Class1.main(String[]))"/>
+         <line text="A:execution(void Class1.main(String[]))"/>
+         <line text="Class1.main"/>
+       </stdout>
+     </run>
+     
+     <run class="Class2" ltw="aop.xml">
+       <stdout>
+         <line text="A:execution(void Class2.main(String[]))"/>
+         <line text="B:execution(void Class2.main(String[]))"/>
+         <line text="Class2.main"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
    <ajc-test dir="features167/overweaving" title="simple">
      <compile files="A.aj C.java" options="-1.5"/>
      <compile files="X.aj" options="-1.5 -Xlint:ignore"/>
@@ -20,9 +42,9 @@
      <compile files="X.aj" options="-1.5 -Xlint:ignore"/>
      <run class="com.andy.C" ltw="aop.xml">
        <stdout>
-         <line text="AspectX&gt;&gt;execution(void com.andy.C.main(String[]))"/>
-         <line text="AspectA&gt;&gt;execution(void com.andy.C.main(String[]))"/>
-         <line text="AspectX&gt;&gt;execution(void com.andy.C.run())"/>
+         <line text="X:execution(void com.andy.C.main(String[]))"/>
+         <line text="A:execution(void com.andy.C.main(String[]))"/>
+         <line text="X:execution(void com.andy.C.run())"/>
          <line text="hello andy"/>
        </stdout>
      </run>
@@ -33,9 +55,9 @@
      <compile files="X.aj" options="-1.5 -Xlint:ignore"/>
      <run class="com.andy.C" ltw="aop.xml">
        <stdout>
-         <line text="AspectX&gt;&gt;execution(void com.andy.C.main(String[]))"/>
-         <line text="AspectA&gt;&gt;execution(void com.andy.C.main(String[]))"/>
-         <line text="AspectX&gt;&gt;execution(void com.andy.C.run())"/>
+         <line text="X:execution(void com.andy.C.main(String[]))"/>
+         <line text="A:execution(void com.andy.C.main(String[]))"/>
+         <line text="X:execution(void com.andy.C.run())"/>
          <line text="hello andy"/>
        </stdout>
      </run>

@@ -22,6 +22,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class OverweavingTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testComplex() {
+		runTest("really messy");
+	}
+
 	public void testSimple() {
 		runTest("simple");
 	}
