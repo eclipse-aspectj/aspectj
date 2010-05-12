@@ -48,7 +48,7 @@ public class WeaverStateInfo {
 	private boolean reweavableCompressedMode; // If true, unwovenClassFile is uncompressed on read
 	private boolean reweavableDiffMode; // if true, unwovenClassFile is written and read as a diff
 
-	private Set /* String */aspectsAffectingType; // These must exist in the world for reweaving to be valid
+	private Set<String> aspectsAffectingType; // These must exist in the world for reweaving to be valid
 	private byte[] unwovenClassFile; // Original 'untouched' class file
 	private static boolean reweavableDefault = true; // ajh02: changed from false;
 	private static boolean reweavableCompressedModeDefault = false;
@@ -160,8 +160,9 @@ public class WeaverStateInfo {
 		}
 
 		byte weaverStateInfoKind = EXTENDED;
-		if (reweavable)
+		if (reweavable) {
 			weaverStateInfoKind |= REWEAVABLE_BIT;
+		}
 
 		if (reweavableDiffMode) {
 			s.write(key); // put key in so we can replace it with the diff later
@@ -185,7 +186,7 @@ public class WeaverStateInfo {
 	}
 
 	public String toString() {
-		return "WeaverStateInfo(" + typeMungers + ", " + oldStyle + ")";
+		return "WeaverStateInfo(aspectsAffectingType=" + aspectsAffectingType + "," + typeMungers + ", " + oldStyle + ")";
 	}
 
 	public List getTypeMungers(ResolvedType onType) {
@@ -264,15 +265,17 @@ public class WeaverStateInfo {
 					bytesToGo -= amount;
 				}
 				zis.closeEntry();
-				if (bytesToGo != 0)
+				if (bytesToGo != 0) {
 					throw new IOException("ERROR whilst reading compressed reweavable data, expected " + unwovenClassFileSize
 							+ " bytes, only found " + current);
+				}
 			} else {
 				classData = new byte[unwovenClassFileSize];
 				int bytesread = s.read(classData);
-				if (bytesread != unwovenClassFileSize)
+				if (bytesread != unwovenClassFileSize) {
 					throw new IOException("ERROR whilst reading reweavable data, expected " + unwovenClassFileSize
 							+ " bytes, only found " + bytesread);
+				}
 			}
 
 			// if it was diffMode we'll have to remember to apply the diff if someone
@@ -334,18 +337,20 @@ public class WeaverStateInfo {
 
 	private static final int findEndOfKey(byte[] wovenClassFile) {
 		// looks through the classfile backwards (as the attributes are all near the end)
-		for (int i = wovenClassFile.length - 1; i > 0; i--)
+		for (int i = wovenClassFile.length - 1; i > 0; i--) {
 			if (endOfKeyHere(wovenClassFile, i)) {
 				return i + 1;
 			}
+		}
 		throw new RuntimeException("key not found in wovenClassFile"); // should never happen
 	}
 
 	private static final boolean endOfKeyHere(byte lookIn[], int i) {
-		for (int j = 0; j < key.length; j++)
+		for (int j = 0; j < key.length; j++) {
 			if (key[key.length - 1 - j] != lookIn[i - j]) {
 				return false;
 			}
+		}
 		return true;
 	}
 
@@ -471,6 +476,19 @@ public class WeaverStateInfo {
 				s.write(wsi.unwovenClassFile);
 			}
 		}
+	}
+
+	/**
+	 * @return true if the supplied aspect is already in the list of those affecting this type
+	 */
+	public boolean isAspectAlreadyApplied(ResolvedType someAspect) {
+		String someAspectName = someAspect.getName();
+		for (String aspect : aspectsAffectingType) {
+			if (aspect.equals(someAspectName)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
