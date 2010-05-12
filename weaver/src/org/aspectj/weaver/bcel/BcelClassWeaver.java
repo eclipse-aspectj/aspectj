@@ -422,6 +422,7 @@ class BcelClassWeaver implements IClassWeaver {
 			isChanged = true;
 		}
 
+		WeaverStateInfo typeWeaverState = (world.isOverWeaving() ? getLazyClassGen().getType().getWeaverState() : null);
 		// start by munging all typeMungers
 		for (ConcreteTypeMunger o : typeMungers) {
 			if (!(o instanceof BcelTypeMunger)) {
@@ -429,6 +430,10 @@ class BcelClassWeaver implements IClassWeaver {
 				continue;
 			}
 			BcelTypeMunger munger = (BcelTypeMunger) o;
+
+			if (typeWeaverState != null && typeWeaverState.isAspectAlreadyApplied(munger.getAspectType())) {
+				continue;
+			}
 			boolean typeMungerAffectedType = munger.munge(this);
 			if (typeMungerAffectedType) {
 				isChanged = true;

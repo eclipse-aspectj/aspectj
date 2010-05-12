@@ -1997,7 +1997,7 @@ public class BcelWeaver {
 		} else {
 			for (ShadowMunger munger : list) {
 				if (typeWeaverState != null) { // will only be null if overweaving is ON and there is weaverstate
-					ResolvedType declaringAspect = munger.getDeclaringType();
+					ResolvedType declaringAspect = munger.getConcreteAspect();// getDeclaringType();
 					if (typeWeaverState.isAspectAlreadyApplied(declaringAspect)) {
 						continue;
 					}
