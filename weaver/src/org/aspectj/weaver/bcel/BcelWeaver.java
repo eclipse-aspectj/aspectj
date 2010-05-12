@@ -1865,7 +1865,7 @@ public class BcelWeaver {
 					getWorld().getMessageHandler().handleMessage(new Message(messageText, IMessage.ABORT, re, null));
 				}
 			} else {
-				 checkDeclareTypeErrorOrWarning(world, classType);
+				checkDeclareTypeErrorOrWarning(world, classType);
 			}
 			// this is very odd return behavior trying to keep everyone happy
 			/*
@@ -1955,10 +1955,20 @@ public class BcelWeaver {
 		zipOutputStream.closeEntry();
 	}
 
+	/**
+	 * Perform a fast match of the specified list of shadowmungers against the specified type. A subset of those that might match is
+	 * returned.
+	 * 
+	 * @param list list of all shadow mungers that might match
+	 * @param type the target type
+	 * @return a list of shadow mungers that might match with those that cannot (according to fast match rules) removed
+	 */
 	private List<ShadowMunger> fastMatch(List<ShadowMunger> list, ResolvedType type) {
 		if (list == null) {
 			return Collections.emptyList();
 		}
+		boolean isOverweaving = world.isOverWeaving();
+		WeaverStateInfo typeWeaverState = (isOverweaving ? type.getWeaverState() : null);
 
 		// here we do the coarsest grained fast match with no kind constraints
 		// this will remove all obvious non-matches and see if we need to do any
@@ -1969,6 +1979,12 @@ public class BcelWeaver {
 
 		if (world.areInfoMessagesEnabled() && world.isTimingEnabled()) {
 			for (ShadowMunger munger : list) {
+				if (typeWeaverState != null) { // will only be null if overweaving is ON and there is weaverstate
+					ResolvedType declaringAspect = munger.getDeclaringType();
+					if (typeWeaverState.isAspectAlreadyApplied(declaringAspect)) {
+						continue;
+					}
+				}
 				Pointcut pointcut = munger.getPointcut();
 				long starttime = System.nanoTime();
 				FuzzyBoolean fb = pointcut.fastMatch(info);
@@ -1980,6 +1996,12 @@ public class BcelWeaver {
 			}
 		} else {
 			for (ShadowMunger munger : list) {
+				if (typeWeaverState != null) { // will only be null if overweaving is ON and there is weaverstate
+					ResolvedType declaringAspect = munger.getDeclaringType();
+					if (typeWeaverState.isAspectAlreadyApplied(declaringAspect)) {
+						continue;
+					}
+				}
 				Pointcut pointcut = munger.getPointcut();
 				FuzzyBoolean fb = pointcut.fastMatch(info);
 				if (fb.maybeTrue()) {

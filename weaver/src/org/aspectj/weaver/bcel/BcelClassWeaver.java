@@ -111,6 +111,9 @@ class BcelClassWeaver implements IClassWeaver {
 	private final List<ConcreteTypeMunger> typeMungers;
 	private final List lateTypeMungers;
 
+	private List<ShadowMunger>[] indexedShadowMungers;
+	private boolean canMatchBodyShadows = false;
+
 	private final BcelObjectType ty; // alias of clazz.getType()
 	private final BcelWorld world; // alias of ty.getWorld()
 	private final ConstantPool cpg; // alias of clazz.getConstantPoolGen()
@@ -139,7 +142,6 @@ class BcelClassWeaver implements IClassWeaver {
 	private BcelClassWeaver(BcelWorld world, LazyClassGen clazz, List<ShadowMunger> shadowMungers,
 			List<ConcreteTypeMunger> typeMungers, List lateTypeMungers) {
 		super();
-		// assert world == clazz.getType().getWorld()
 		this.world = world;
 		this.clazz = clazz;
 		this.shadowMungers = shadowMungers;
@@ -149,7 +151,7 @@ class BcelClassWeaver implements IClassWeaver {
 		this.cpg = clazz.getConstantPool();
 		this.fact = clazz.getFactory();
 
-		fastMatchShadowMungers(shadowMungers);
+		indexShadowMungers();
 
 		initializeSuperInitializerMap(ty.getResolvedTypeX());
 		if (!checkedXsetForLowLevelContextCapturing) {
@@ -167,50 +169,8 @@ class BcelClassWeaver implements IClassWeaver {
 		}
 	}
 
-	private List<ShadowMunger>[] perKindShadowMungers;
-	private boolean canMatchBodyShadows = false;
-
-	// private boolean canMatchInitialization = false;
-	private void fastMatchShadowMungers(List<ShadowMunger> shadowMungers) {
-		// beware the annoying property that SHADOW_KINDS[i].getKey == (i+1) !
-
-		perKindShadowMungers = new List[Shadow.MAX_SHADOW_KIND + 1];
-		for (int i = 0; i < perKindShadowMungers.length; i++) {
-			perKindShadowMungers[i] = new ArrayList<ShadowMunger>(0);
-		}
-		for (ShadowMunger munger : shadowMungers) {
-			int couldMatchKinds = munger.getPointcut().couldMatchKinds();
-			for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
-				Shadow.Kind kind = Shadow.SHADOW_KINDS[i];
-				if (kind.isSet(couldMatchKinds)) {
-					perKindShadowMungers[kind.getKey()].add(munger);
-				}
-			}
-
-			// Set couldMatchKinds = munger.getPointcut().couldMatchKinds();
-			// for (Iterator kindIterator = couldMatchKinds.iterator();
-			// kindIterator.hasNext();) {
-			// Shadow.Kind aKind = (Shadow.Kind) kindIterator.next();
-			// perKindShadowMungers[aKind.getKey()].add(munger);
-			// }
-		}
-
-		// if (!perKindShadowMungers[Shadow.Initialization.getKey()].isEmpty())
-		// canMatchInitialization = true;
-
-		for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
-			Shadow.Kind kind = Shadow.SHADOW_KINDS[i];
-			if (!kind.isEnclosingKind() && !perKindShadowMungers[i + 1].isEmpty()) {
-				canMatchBodyShadows = true;
-			}
-			if (perKindShadowMungers[i + 1].isEmpty()) {
-				perKindShadowMungers[i + 1] = null;
-			}
-		}
-	}
-
 	private boolean canMatch(Shadow.Kind kind) {
-		return perKindShadowMungers[kind.getKey()] != null;
+		return indexedShadowMungers[kind.getKey()] != null;
 	}
 
 	// private void fastMatchShadowMungers(List shadowMungers, ArrayList
@@ -231,6 +191,30 @@ class BcelClassWeaver implements IClassWeaver {
 			if (ty.getResolvedTypeX().isTopmostImplementor(superInterfaces[i])) {
 				if (addSuperInitializer(superInterfaces[i])) {
 					initializeSuperInitializerMap(superInterfaces[i]);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Process the shadow mungers into array 'buckets', each bucket represents a shadow kind and contains a list of shadowmungers
+	 * that could potentially apply at that shadow kind.
+	 */
+	private void indexShadowMungers() {
+		// beware the annoying property that SHADOW_KINDS[i].getKey == (i+1) !
+		indexedShadowMungers = new List[Shadow.MAX_SHADOW_KIND + 1];
+		for (ShadowMunger shadowMunger : shadowMungers) {
+			int couldMatchKinds = shadowMunger.getPointcut().couldMatchKinds();
+			for (Shadow.Kind kind : Shadow.SHADOW_KINDS) {
+				if (kind.isSet(couldMatchKinds)) {
+					byte k = kind.getKey();
+					if (indexedShadowMungers[k] == null) {
+						indexedShadowMungers[k] = new ArrayList<ShadowMunger>();
+						if (!kind.isEnclosingKind()) {
+							canMatchBodyShadows = true;
+						}
+					}
+					indexedShadowMungers[k].add(shadowMunger);
 				}
 			}
 		}
@@ -2105,7 +2089,7 @@ class BcelClassWeaver implements IClassWeaver {
 	 * 
 	 * @param donor the method from which we will copy (and adjust frame and jumps) instructions.
 	 * @param recipient the method the instructions will go into. Used to get the frame size so we can allocate new frame locations
-	 *            for locals in donor.
+	 *        for locals in donor.
 	 * @param frameEnv an environment to map from donor frame to recipient frame, initially populated with argument locations.
 	 * @param fact an instruction factory for recipient
 	 */
@@ -3072,7 +3056,7 @@ class BcelClassWeaver implements IClassWeaver {
 			boolean isMatched = false;
 
 			Shadow.Kind shadowKind = shadow.getKind();
-			List<ShadowMunger> candidateMungers = perKindShadowMungers[shadowKind.getKey()];
+			List<ShadowMunger> candidateMungers = indexedShadowMungers[shadowKind.getKey()];
 
 			// System.out.println("Candidates " + candidateMungers);
 			if (candidateMungers != null) {
@@ -3100,7 +3084,7 @@ class BcelClassWeaver implements IClassWeaver {
 			boolean isMatched = false;
 
 			Shadow.Kind shadowKind = shadow.getKind();
-			List<ShadowMunger> candidateMungers = perKindShadowMungers[shadowKind.getKey()];
+			List<ShadowMunger> candidateMungers = indexedShadowMungers[shadowKind.getKey()];
 
 			// System.out.println("Candidates at " + shadowKind + " are " + candidateMungers);
 			if (candidateMungers != null) {
@@ -3148,10 +3132,6 @@ class BcelClassWeaver implements IClassWeaver {
 
 	public LazyClassGen getLazyClassGen() {
 		return clazz;
-	}
-
-	public List<ShadowMunger> getShadowMungers() {
-		return shadowMungers;
 	}
 
 	public BcelWorld getWorld() {

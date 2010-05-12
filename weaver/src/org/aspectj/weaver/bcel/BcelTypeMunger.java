@@ -63,7 +63,6 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.model.AsmRelationshipProvider;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -88,6 +87,13 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.MUNGING_WITH, this);
 		boolean changed = false;
 		boolean worthReporting = true;
+
+		if (weaver.getWorld().isOverWeaving()) {
+			WeaverStateInfo typeWeaverState = weaver.getLazyClassGen().getType().getWeaverState();
+			if (typeWeaverState != null && typeWeaverState.isAspectAlreadyApplied(getAspectType())) {
+				return false;
+			}
+		}
 
 		if (munger.getKind() == ResolvedTypeMunger.Field) {
 			changed = mungeNewField(weaver, (NewFieldTypeMunger) munger);
