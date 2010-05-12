@@ -56,20 +56,33 @@ public class LangUtil {
 	}
 
 	static {
-		String vm = System.getProperty("java.version"); // JLS 20.18.7
-		if (vm == null) {
-			vm = System.getProperty("java.runtime.version");
-		}
-		if (vm == null) {
-			vm = System.getProperty("java.vm.version");
-		}
-
-		String versionString = vm.substring(0, 3);
 		try {
-			Double temp = new Double(Double.parseDouble(versionString));
-			vmVersion = temp.floatValue();
-		} catch (Exception e) {
-			vmVersion = 1.4;
+			String vm = System.getProperty("java.version"); // JLS 20.18.7
+			if (vm == null) {
+				vm = System.getProperty("java.runtime.version");
+			}
+			if (vm == null) {
+				vm = System.getProperty("java.vm.version");
+			}
+			if (vm == null) {
+				new RuntimeException(
+						"System properties appear damaged, cannot find: java.version/java.runtime.version/java.vm.version")
+						.printStackTrace(System.err);
+				vmVersion = 1.5;
+			} else {
+				try {
+					String versionString = vm.substring(0, 3);
+					Double temp = new Double(Double.parseDouble(versionString));
+					vmVersion = temp.floatValue();
+				} catch (Exception e) {
+					vmVersion = 1.4;
+				}
+			}
+		} catch (Throwable t) {
+			new RuntimeException(
+					"System properties appear damaged, cannot find: java.version/java.runtime.version/java.vm.version", t)
+					.printStackTrace(System.err);
+			vmVersion = 1.5;
 		}
 	}
 
@@ -760,8 +773,9 @@ public class LangUtil {
 	 * @return "({UnqualifiedExceptionClass}) {message}"
 	 */
 	public static String renderExceptionShort(Throwable e) {
-		if (null == e)
+		if (null == e) {
 			return "(Throwable) null";
+		}
 		return "(" + LangUtil.unqualifiedClassName(e) + ") " + e.getMessage();
 	}
 
@@ -783,8 +797,9 @@ public class LangUtil {
 	 * @see StringChecker#TEST_PACKAGES
 	 */
 	public static String renderException(Throwable t, boolean elide) {
-		if (null == t)
+		if (null == t) {
 			return "null throwable";
+		}
 		t = unwrapException(t);
 		StringBuffer stack = stackToString(t, false);
 		if (elide) {
