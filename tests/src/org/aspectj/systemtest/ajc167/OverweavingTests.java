@@ -17,10 +17,29 @@ import junit.framework.Test;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
+ * Testing whether AspectJ can overweave. Overweaving is where we attempt to weave something that has already been woven. The simple
+ * rule followed is that aspects that applied to the type before are not applied this time around (if they are visible to the
+ * weaver).
  * 
  * @author Andy Clement
  */
 public class OverweavingTests extends org.aspectj.testing.XMLBasedAjcTestCase {
+
+	public void testGetSet1() {
+		runTest("getset - 1"); // testing what should happen for get/set
+	}
+
+	public void testGetSet2() {
+		runTest("getset - 2"); // testing what actually happens when overweaving
+	}
+
+	public void testCalls1() {
+		runTest("calls - 1"); // testing what should happen for calls
+	}
+
+	public void testCalls2() {
+		runTest("calls - 2"); // testing what actually happens when overweaving
+	}
 
 	public void testComplex() {
 		runTest("really messy");

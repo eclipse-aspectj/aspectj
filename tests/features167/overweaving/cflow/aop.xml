@@ -4,7 +4,6 @@
   <aspect name="com.andy.A"/>
 </aspects>
 <weaver options="-verbose -Xset:overWeaving=true">
-  <dump within="*" beforeandafter="true"/>
 </weaver>
 
 </aspectj>
