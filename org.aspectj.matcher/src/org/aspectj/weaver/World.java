@@ -317,7 +317,7 @@ public abstract class World implements Dump.INode {
 		}
 	}
 
-    // Only need one representation of '?' in a world - can be shared
+	// Only need one representation of '?' in a world - can be shared
 	private BoundedReferenceType wildcard;
 
 	private BoundedReferenceType getWildcard() {
@@ -1366,6 +1366,7 @@ public abstract class World implements Dump.INode {
 	}
 
 	public void ensureAdvancedConfigurationProcessed() {
+
 		// Check *once* whether the user has switched asm support off
 		if (!checkedAdvancedConfiguration) {
 			Properties p = getExtraConfiguration();
@@ -1458,6 +1459,16 @@ public abstract class World implements Dump.INode {
 					timersPerType = 250;
 				}
 
+			}
+			try{
+			  String value = System.getProperty("aspectj.overweaving", "false");
+			  if (value.equalsIgnoreCase("true")) {
+				System.out.println("ASPECTJ: aspectj.overweaving=true: overweaving switched ON");
+				overWeaving = true;
+			  }
+			} catch (Throwable t) {
+			  System.err.println("ASPECTJ: Unable to read system properties");
+			  t.printStackTrace();
 			}
 			checkedAdvancedConfiguration = true;
 		}
