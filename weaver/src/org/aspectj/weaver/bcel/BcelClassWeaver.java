@@ -3048,8 +3048,11 @@ class BcelClassWeaver implements IClassWeaver {
 				if (world.isOverWeaving()) {
 					String s = invoke.getClassName(mg.getConstantPool());
 					// skip all the inc/dec/isValid/etc
-					if (s.equals("org.aspectj.runtime.internal.CFlowCounter")
-							|| s.equals("org.aspectj.runtime.internal.CFlowStack")) {
+					if (s.length() > 4
+							&& s.charAt(4) == 'a'
+							&& (s.equals("org.aspectj.runtime.internal.CFlowCounter")
+									|| s.equals("org.aspectj.runtime.internal.CFlowStack") || s
+									.equals("org.aspectj.runtime.reflect.Factory"))) {
 						proceed = false;
 					} else {
 						if (methodName.equals("aspectOf")) {
