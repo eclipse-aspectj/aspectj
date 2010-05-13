@@ -4,7 +4,7 @@ public class HelloWorld extends java.lang.Object:
   private static final org.aspectj.lang.JoinPoint$StaticPart ajc$tjp_2 [Synthetic]
   private static final org.aspectj.lang.JoinPoint$StaticPart ajc$tjp_3 [Synthetic]
   public void <init>():
-                    ALOAD_0     // LHelloWorld; this   (line 5)
+                    ALOAD_0     // LHelloWorld; ajc$this   (line 5)
                     INVOKESPECIAL java.lang.Object.<init> ()V
                     GETSTATIC HelloWorld.ajc$tjp_0 Lorg/aspectj/lang/JoinPoint$StaticPart;
                     ALOAD_0
@@ -67,64 +67,7 @@ public class HelloWorld extends java.lang.Object:
   end public static void main(String[])
 
   static void <clinit>():
-                    NEW org.aspectj.runtime.reflect.Factory
-                    DUP
-                    LDC "HelloWorld.java"
-                    LDC "HelloWorld"
-                    INVOKESTATIC java.lang.Class.forName (Ljava/lang/String;)Ljava/lang/Class;
-                    INVOKESPECIAL org.aspectj.runtime.reflect.Factory.<init> (Ljava/lang/String;Ljava/lang/Class;)V
-                    ASTORE_0
-                    ALOAD_0
-                    LDC "constructor-execution"
-                    ALOAD_0
-                    LDC "1"
-                    LDC "HelloWorld"
-                    LDC ""
-                    LDC ""
-                    LDC ""
-                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeConstructorSig (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/aspectj/lang/reflect/ConstructorSignature;
-                    ICONST_5
-                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeSJP (Ljava/lang/String;Lorg/aspectj/lang/Signature;I)Lorg/aspectj/lang/JoinPoint$StaticPart;
-                    PUTSTATIC HelloWorld.ajc$tjp_0 Lorg/aspectj/lang/JoinPoint$StaticPart;
-                    ALOAD_0
-                    LDC "field-get"
-                    ALOAD_0
-                    LDC "19"
-                    LDC "out"
-                    LDC "java.lang.System"
-                    LDC "java.io.PrintStream"
-                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeFieldSig (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/aspectj/lang/reflect/FieldSignature;
-                    BIPUSH 8
-                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeSJP (Ljava/lang/String;Lorg/aspectj/lang/Signature;I)Lorg/aspectj/lang/JoinPoint$StaticPart;
-                    PUTSTATIC HelloWorld.ajc$tjp_1 Lorg/aspectj/lang/JoinPoint$StaticPart;
-                    ALOAD_0
-                    LDC "method-call"
-                    ALOAD_0
-                    LDC "1"
-                    LDC "println"
-                    LDC "java.io.PrintStream"
-                    LDC "java.lang.String:"
-                    LDC "arg0:"
-                    LDC ""
-                    LDC "void"
-                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeMethodSig (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/aspectj/lang/reflect/MethodSignature;
-                    BIPUSH 9
-                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeSJP (Ljava/lang/String;Lorg/aspectj/lang/Signature;I)Lorg/aspectj/lang/JoinPoint$StaticPart;
-                    PUTSTATIC HelloWorld.ajc$tjp_2 Lorg/aspectj/lang/JoinPoint$StaticPart;
-                    ALOAD_0
-                    LDC "method-execution"
-                    ALOAD_0
-                    LDC "9"
-                    LDC "main"
-                    LDC "HelloWorld"
-                    LDC "[Ljava.lang.String;:"
-                    LDC "args:"
-                    LDC ""
-                    LDC "void"
-                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeMethodSig (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/aspectj/lang/reflect/MethodSignature;
-                    BIPUSH 8
-                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeSJP (Ljava/lang/String;Lorg/aspectj/lang/Signature;I)Lorg/aspectj/lang/JoinPoint$StaticPart;
-                    PUTSTATIC HelloWorld.ajc$tjp_3 Lorg/aspectj/lang/JoinPoint$StaticPart;
+                    INVOKESTATIC HelloWorld.ajc$preClinit ()V
     staticinitialization(void HelloWorld.<clinit>())
     |               RETURN
     staticinitialization(void HelloWorld.<clinit>())
@@ -291,6 +234,68 @@ public class HelloWorld extends java.lang.Object:
                     POP
                     RETURN
   end static final void main_aroundBody14(String[], org.aspectj.lang.JoinPoint)
+
+  private static void ajc$preClinit():
+                    NEW org.aspectj.runtime.reflect.Factory
+                    DUP
+                    LDC "HelloWorld.java"
+                    LDC "HelloWorld"
+                    INVOKESTATIC java.lang.Class.forName (Ljava/lang/String;)Ljava/lang/Class;
+                    INVOKESPECIAL org.aspectj.runtime.reflect.Factory.<init> (Ljava/lang/String;Ljava/lang/Class;)V
+                    ASTORE_0
+                    ALOAD_0
+                    LDC "constructor-execution"
+                    ALOAD_0
+                    LDC "1"
+                    LDC "HelloWorld"
+                    LDC ""
+                    LDC ""
+                    LDC ""
+                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeConstructorSig (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/aspectj/lang/reflect/ConstructorSignature;
+                    ICONST_5
+                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeSJP (Ljava/lang/String;Lorg/aspectj/lang/Signature;I)Lorg/aspectj/lang/JoinPoint$StaticPart;
+                    PUTSTATIC HelloWorld.ajc$tjp_0 Lorg/aspectj/lang/JoinPoint$StaticPart;
+                    ALOAD_0
+                    LDC "field-get"
+                    ALOAD_0
+                    LDC "19"
+                    LDC "out"
+                    LDC "java.lang.System"
+                    LDC "java.io.PrintStream"
+                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeFieldSig (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/aspectj/lang/reflect/FieldSignature;
+                    BIPUSH 8
+                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeSJP (Ljava/lang/String;Lorg/aspectj/lang/Signature;I)Lorg/aspectj/lang/JoinPoint$StaticPart;
+                    PUTSTATIC HelloWorld.ajc$tjp_1 Lorg/aspectj/lang/JoinPoint$StaticPart;
+                    ALOAD_0
+                    LDC "method-call"
+                    ALOAD_0
+                    LDC "1"
+                    LDC "println"
+                    LDC "java.io.PrintStream"
+                    LDC "java.lang.String:"
+                    LDC "arg0:"
+                    LDC ""
+                    LDC "void"
+                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeMethodSig (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/aspectj/lang/reflect/MethodSignature;
+                    BIPUSH 9
+                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeSJP (Ljava/lang/String;Lorg/aspectj/lang/Signature;I)Lorg/aspectj/lang/JoinPoint$StaticPart;
+                    PUTSTATIC HelloWorld.ajc$tjp_2 Lorg/aspectj/lang/JoinPoint$StaticPart;
+                    ALOAD_0
+                    LDC "method-execution"
+                    ALOAD_0
+                    LDC "9"
+                    LDC "main"
+                    LDC "HelloWorld"
+                    LDC "[Ljava.lang.String;:"
+                    LDC "args:"
+                    LDC ""
+                    LDC "void"
+                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeMethodSig (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/aspectj/lang/reflect/MethodSignature;
+                    BIPUSH 8
+                    INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeSJP (Ljava/lang/String;Lorg/aspectj/lang/Signature;I)Lorg/aspectj/lang/JoinPoint$StaticPart;
+                    PUTSTATIC HelloWorld.ajc$tjp_3 Lorg/aspectj/lang/JoinPoint$StaticPart;
+                    RETURN
+  end private static void ajc$preClinit()
 end public class HelloWorld
 
 public class HelloWorld$AjcClosure1 extends org.aspectj.runtime.internal.AroundClosure:

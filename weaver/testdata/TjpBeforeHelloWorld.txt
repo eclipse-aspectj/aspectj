@@ -61,6 +61,13 @@ public class HelloWorld extends java.lang.Object:
   end public static void main(String[])
 
   static void <clinit>():
+                    INVOKESTATIC HelloWorld.ajc$preClinit ()V
+    staticinitialization(void HelloWorld.<clinit>())
+    |               RETURN
+    staticinitialization(void HelloWorld.<clinit>())
+  end static void <clinit>()
+
+  private static void ajc$preClinit():
                     NEW org.aspectj.runtime.reflect.Factory
                     DUP
                     LDC "HelloWorld.java"
@@ -119,8 +126,6 @@ public class HelloWorld extends java.lang.Object:
                     BIPUSH 8
                     INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeSJP (Ljava/lang/String;Lorg/aspectj/lang/Signature;I)Lorg/aspectj/lang/JoinPoint$StaticPart;
                     PUTSTATIC HelloWorld.ajc$tjp_3 Lorg/aspectj/lang/JoinPoint$StaticPart;
-    staticinitialization(void HelloWorld.<clinit>())
-    |               RETURN
-    staticinitialization(void HelloWorld.<clinit>())
-  end static void <clinit>()
+                    RETURN
+  end private static void ajc$preClinit()
 end public class HelloWorld
