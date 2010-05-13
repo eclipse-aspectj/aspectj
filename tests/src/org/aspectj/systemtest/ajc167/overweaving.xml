@@ -2,7 +2,6 @@
 
 <suite>
    
-   
     <ajc-test dir="features167/overweaving/getset" title="getset - 1">
      <compile files="A.aj B.aj Class1.java Class2.java" options="-1.5"/>
      <run class="Class1">
@@ -47,6 +46,30 @@
        </stdout>
      </run>
    </ajc-test>
+     
+    <ajc-test dir="features167/overweaving/getsettjp" title="getset - tjp - 1">
+     <compile files="A.aj Class1.java" options="-1.5"/>
+     <compile files="B.aj" options="-1.5 -Xlint:ignore"/>
+     <compile files="Class2.java" options="-1.5 -Xlint:ignore"/>
+     <run class="Class1" ltw="aop.xml">
+       <stdout>
+       <!-- should be advised by both, but was *already* advised by A during first weave -->
+         <line text="B:set(String Class1.message)"/>
+         <line text="A:get(PrintStream java.lang.System.out)"/>
+         <line text="A:get(String Class1.message)"/>
+         <line text="Class1.main"/>
+       </stdout>
+     </run>
+     
+     <run class="Class2" ltw="aop.xml">
+       <stdout>
+         <line text="B:set(String Class2.message)"/>
+         <line text="A:get(PrintStream java.lang.System.out)"/>
+         <line text="A:get(String Class2.message)"/>
+         <line text="Class2.main"/>
+       </stdout>
+     </run>
+   </ajc-test>
    
     <ajc-test dir="features167/overweaving/calls" title="calls - 1">
      <compile files="A.aj B.aj Class1.java Class2.java" options="-1.5"/>
@@ -68,6 +91,28 @@
    </ajc-test>
    
     <ajc-test dir="features167/overweaving/calls" title="calls - 2">
+     <compile files="A.aj Class1.java" options="-1.5"/>
+     <compile files="B.aj" options="-1.5 -Xlint:ignore"/>
+     <compile files="Class2.java" options="-1.5 -Xlint:ignore"/>
+     <run class="Class1" ltw="aop.xml">
+       <stdout>
+       <!-- should be advised by both, but was *already* advised by A during first weave -->
+         <line text="A:call(void java.io.PrintStream.println(String))"/>
+         <line text="B:call(void java.io.PrintStream.println(String))"/>
+         <line text="Class1.main"/>
+       </stdout>
+     </run>
+     
+     <run class="Class2" ltw="aop.xml">
+       <stdout>
+         <line text="B:call(void java.io.PrintStream.println(String))"/>
+         <line text="A:call(void java.io.PrintStream.println(String))"/>
+         <line text="Class2.main"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+    <ajc-test dir="features167/overweaving/callstjp" title="calls - tjp - 1">
      <compile files="A.aj Class1.java" options="-1.5"/>
      <compile files="B.aj" options="-1.5 -Xlint:ignore"/>
      <compile files="Class2.java" options="-1.5 -Xlint:ignore"/>

@@ -33,12 +33,20 @@ public class OverweavingTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("getset - 2"); // testing what actually happens when overweaving
 	}
 
+	public void testGetSetTjp1() {
+		runTest("getset - tjp - 1");
+	}
+
 	public void testCalls1() {
 		runTest("calls - 1"); // testing what should happen for calls
 	}
 
 	public void testCalls2() {
 		runTest("calls - 2"); // testing what actually happens when overweaving
+	}
+
+	public void testCallsTjp1() {
+		runTest("calls - tjp - 1");
 	}
 
 	public void testComplex() {
