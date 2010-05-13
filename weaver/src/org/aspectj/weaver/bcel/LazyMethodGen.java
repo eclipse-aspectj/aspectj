@@ -1735,4 +1735,8 @@ public final class LazyMethodGen implements Traceable {
 		return toShortString();
 	}
 
+	public ConstantPool getConstantPool() {
+		return enclosingClass.getConstantPool();
+	}
+
 }

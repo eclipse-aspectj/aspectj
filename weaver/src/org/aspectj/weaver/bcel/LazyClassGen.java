@@ -909,20 +909,29 @@ public final class LazyClassGen {
 		return clinit;
 	}
 
+	/**
+	 * Retrieve the ajc$preClinit method - this method captures any initialization AspectJ wants to ensure happens in a class. It is
+	 * called from the static initializer. Maintaining this separation enables overweaving to ignore join points added due to
+	 * earlier weaves. If the ajc$preClinit method cannot be found, it is created and a call to it is placed in the real static
+	 * initializer (the call is placed at the start of the static initializer).
+	 * 
+	 * @return the LazyMethodGen representing the ajc$ clinit
+	 */
 	public LazyMethodGen getAjcPreClinit() {
-		for (Iterator i = methodGens.iterator(); i.hasNext();) {
-			LazyMethodGen gen = (LazyMethodGen) i.next();
-			if (gen.getName().equals(NameMangler.AJC_PRE_CLINIT_NAME)) {
-				return gen;
+		if (this.isInterface()) {
+			throw new IllegalStateException();
+		}
+		for (LazyMethodGen methodGen : methodGens) {
+			if (methodGen.getName().equals(NameMangler.AJC_PRE_CLINIT_NAME)) {
+				return methodGen;
 			}
 		}
-		LazyMethodGen ajcClinit = new LazyMethodGen(Modifier.STATIC, Type.VOID, NameMangler.AJC_PRE_CLINIT_NAME, new Type[0],
-				NO_STRINGS, this);
-		ajcClinit.getBody().insert(InstructionConstants.RETURN);
-		methodGens.add(ajcClinit);
-
-		getStaticInitializer().getBody().insert(Utility.createInvoke(getFactory(), ajcClinit));
-		return ajcClinit;
+		LazyMethodGen ajcPreClinit = new LazyMethodGen(Modifier.PRIVATE | Modifier.STATIC, Type.VOID,
+				NameMangler.AJC_PRE_CLINIT_NAME, Type.NO_ARGS, NO_STRINGS, this);
+		ajcPreClinit.getBody().insert(InstructionConstants.RETURN);
+		methodGens.add(ajcPreClinit);
+		getStaticInitializer().getBody().insert(Utility.createInvoke(fact, ajcPreClinit));
+		return ajcPreClinit;
 	}
 
 	// reflective thisJoinPoint support
@@ -1092,8 +1101,11 @@ public final class LazyClassGen {
 			il.append(InstructionFactory.PUSH(getConstantPool(), calculatedSerialVersionUID));
 			il.append(getFactory().createFieldAccess(getClassName(), "serialVersionUID", BasicType.LONG, Constants.PUTSTATIC));
 		}
-
-		getStaticInitializer().getBody().insert(il);
+		if (this.isInterface()) { // Cannot sneak stuff into another static method in an interface
+			getStaticInitializer().getBody().insert(il);
+		} else {
+			getAjcPreClinit().getBody().insert(il);
+		}
 	}
 
 	private InstructionList initializeAllTjps() {

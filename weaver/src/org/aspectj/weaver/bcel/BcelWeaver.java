@@ -1,16 +1,11 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002-2010 Contributors
  * All rights reserved.
  * This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     PARC     initial implementation
- *     Alexandre Vasseur    support for @AJ aspects
  * ******************************************************************/
-
 package org.aspectj.weaver.bcel;
 
 import java.io.ByteArrayInputStream;
@@ -96,6 +91,12 @@ import org.aspectj.weaver.patterns.WithinPointcut;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 
+/**
+ * 
+ * @author PARC
+ * @author Andy Clement
+ * @author Alexandre Vasseur
+ */
 public class BcelWeaver {
 
 	public static final String CLOSURE_CLASS_PREFIX = "$Ajc";
@@ -108,14 +109,14 @@ public class BcelWeaver {
 
 	private boolean inReweavableMode = false;
 
-	// private Map /*String,UnwovenClassFile*/sourceJavaClasses = new HashMap();
-	// private Map /*String,UnwovenClassFile*/resources = new HashMap();
 	private transient List<UnwovenClassFile> addedClasses = new ArrayList<UnwovenClassFile>();
 	private transient List<String> deletedTypenames = new ArrayList<String>();
-	private transient List<ShadowMunger> shadowMungerList = null; // setup by prepareForWeave
-	private transient List typeMungerList = null; // setup by prepareForWeave
-	private transient List lateTypeMungerList = null; // setup by prepareForWeave
-	private transient List declareParentsList = null; // setup by prepareForWeave
+
+	// These four are setup by prepareForWeave
+	private transient List<ShadowMunger> shadowMungerList = null;
+	private transient List typeMungerList = null;
+	private transient List lateTypeMungerList = null;
+	private transient List declareParentsList = null;
 
 	private Manifest manifest = null;
 	private boolean needToReweaveWorld = false;
@@ -124,8 +125,6 @@ public class BcelWeaver {
 
 	private ZipOutputStream zipOutputStream;
 	private CustomMungerFactory customMungerFactory;
-
-	// ---
 
 	public BcelWeaver(BcelWorld world) {
 		super();
@@ -137,11 +136,6 @@ public class BcelWeaver {
 		if (trace.isTraceEnabled()) {
 			trace.exit("<init>");
 		}
-	}
-
-	// only called for testing
-	public void setShadowMungers(List shadowMungers) {
-		shadowMungerList = shadowMungers;
 	}
 
 	/**
@@ -230,8 +224,7 @@ public class BcelWeaver {
 
 	/**
 	 * 
-	 * @param inFile File path to class directory or zip/jar class archive
-	 * @throws IOException
+	 * @param inFile directory containing classes or zip/jar class archive
 	 */
 	public void addLibraryJarFile(File inFile) throws IOException {
 		List<ResolvedType> addedAspects = null;
@@ -243,9 +236,8 @@ public class BcelWeaver {
 		if (world.isOverWeaving()) {
 			return;
 		}
-		for (Iterator<ResolvedType> i = addedAspects.iterator(); i.hasNext();) {
-			ResolvedType aspectX = i.next();
-			xcutSet.addOrReplaceAspect(aspectX);
+		for (ResolvedType addedAspect : addedAspects) {
+			xcutSet.addOrReplaceAspect(addedAspect);
 		}
 	}
 
@@ -282,32 +274,50 @@ public class BcelWeaver {
 		return addedAspects;
 	}
 
-	private List<ResolvedType> addAspectsFromDirectory(File dir) throws FileNotFoundException, IOException {
+	/**
+	 * Look for .class files that represent aspects in the supplied directory - return the list of accumulated aspects.
+	 * 
+	 * @param directory the directory in which to look for Aspect .class files
+	 * @return the list of discovered aspects
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	private List<ResolvedType> addAspectsFromDirectory(File directory) throws FileNotFoundException, IOException {
 		List<ResolvedType> addedAspects = new ArrayList<ResolvedType>();
-		File[] classFiles = FileUtil.listFiles(dir, new FileFilter() {
-
+		File[] classFiles = FileUtil.listFiles(directory, new FileFilter() {
 			public boolean accept(File pathname) {
 				return pathname.getName().endsWith(".class");
 			}
-
 		});
-		for (int i = 0; i < classFiles.length; i++) {
-			FileInputStream fis = new FileInputStream(classFiles[i]);
-			byte[] bytes = FileUtil.readAsByteArray(fis);
-			addIfAspect(bytes, classFiles[i].getAbsolutePath(), addedAspects, dir);
+		for (File classFile : classFiles) {
+			FileInputStream fis = new FileInputStream(classFile);
+			byte[] classBytes = FileUtil.readAsByteArray(fis);
+			ResolvedType aspectType = isAspect(classBytes, classFile.getAbsolutePath(), directory);
+			if (aspectType != null) {
+				addedAspects.add(aspectType);
+			}
 			fis.close();
 		}
 		return addedAspects;
 	}
 
-	private void addIfAspect(byte[] bytes, String name, List<ResolvedType> toList, File dir) throws IOException {
-		ClassParser parser = new ClassParser(new ByteArrayInputStream(bytes), name);
+	/**
+	 * Determine if the supplied bytes represent an aspect, if they do then create a ResolvedType instance for the aspect and return
+	 * it, otherwise return null
+	 * 
+	 * @param classbytes the classbytes that might represent an aspect
+	 * @param name the name of the class
+	 * @param directory directory which contained the class file
+	 * @return a ResolvedType if the classbytes represent an aspect, otherwise null
+	 */
+	private ResolvedType isAspect(byte[] classbytes, String name, File dir) throws IOException {
+		ClassParser parser = new ClassParser(new ByteArrayInputStream(classbytes), name);
 		JavaClass jc = parser.parse();
 		ResolvedType type = world.addSourceObjectType(jc, false).getResolvedTypeX();
 		String typeName = type.getName().replace('.', File.separatorChar);
 		int end = name.lastIndexOf(typeName + ".class");
 		String binaryPath = null;
-		// if end is -1 then something wierd happened, the class file is not in
+		// if end is -1 then something weird happened, the class file is not in
 		// the correct place, something like
 		// bin/A.class when the declaration for A specifies it is in a package.
 		if (end == -1) {
@@ -316,9 +326,7 @@ public class BcelWeaver {
 			binaryPath = name.substring(0, end - 1);
 		}
 		type.setBinaryPath(binaryPath);
-		if (type.isAspect()) {
-			toList.add(type);
-		}
+		return (type.isAspect() ? type : null);
 	}
 
 	// // The ANT copy task should be used to copy resources across.
@@ -424,25 +432,6 @@ public class BcelWeaver {
 		return addedClassFiles;
 	}
 
-	// public void addResource(String name, File inPath, File outDir) throws
-	// IOException {
-	//
-	// /* Eliminate CVS files. Relative paths use "/" */
-	// if (!name.startsWith("CVS/") && (-1 == name.indexOf("/CVS/")) &&
-	// !name.endsWith("/CVS")) {
-	// // System.err.println("? addResource('" + name + "')");
-	// // BufferedInputStream inStream = new BufferedInputStream(new
-	// FileInputStream(inPath));
-	// // byte[] bytes = new byte[(int)inPath.length()];
-	// // inStream.read(bytes);
-	// // inStream.close();
-	// byte[] bytes = FileUtil.readAsByteArray(inPath);
-	// UnwovenClassFile resourceFile = new UnwovenClassFile(new File(outDir,
-	// name).getAbsolutePath(), bytes);
-	// addResource(name,resourceFile);
-	// }
-	// }
-
 	public boolean needToReweaveWorld() {
 		return needToReweaveWorld;
 	}
@@ -452,10 +441,6 @@ public class BcelWeaver {
 	 */
 	public ReferenceType addClassFile(UnwovenClassFile classFile, boolean fromInpath) {
 		addedClasses.add(classFile);
-		// if (null != sourceJavaClasses.put(classFile.getClassName(),
-		// classFile)) {
-		// // throw new RuntimeException(classFile.getClassName());
-		// }
 		ReferenceType type = world.addSourceObjectType(classFile.getJavaClass(), false).getResolvedTypeX();
 		if (fromInpath) {
 			type.setBinaryPath(classFile.getFilename());
@@ -489,20 +474,8 @@ public class BcelWeaver {
 
 	public void deleteClassFile(String typename) {
 		deletedTypenames.add(typename);
-		// sourceJavaClasses.remove(typename);
 		world.deleteSourceObjectType(UnresolvedType.forName(typename));
 	}
-
-	// public void addResource (String name, UnwovenClassFile resourceFile) {
-	// /* bug-44190 Change error to warning and copy first resource */
-	// if (!resources.containsKey(name)) {
-	// resources.put(name, resourceFile);
-	// }
-	// else {
-	// world.showMessage(IMessage.WARNING, "duplicate resource: '" + name + "'",
-	// null, null);
-	// }
-	// }
 
 	// ---- weave preparation
 
@@ -618,10 +591,9 @@ public class BcelWeaver {
 	 * remember their match decision on the last shadow, this makes matching faster when many pointcuts share common elements, or
 	 * even when one single pointcut has one common element (which can be a side-effect of DNF rewriting).
 	 */
-	private void rewritePointcuts(List/* ShadowMunger */shadowMungers) {
+	private void rewritePointcuts(List<ShadowMunger> shadowMungers) {
 		PointcutRewriter rewriter = new PointcutRewriter();
-		for (Iterator iter = shadowMungers.iterator(); iter.hasNext();) {
-			ShadowMunger munger = (ShadowMunger) iter.next();
+		for (ShadowMunger munger : shadowMungers) {
 			Pointcut p = munger.getPointcut();
 			Pointcut newP = rewriter.rewrite(p);
 			// validateBindings now whilst we still have around the pointcut
@@ -959,56 +931,6 @@ public class BcelWeaver {
 				.getSourceLocation(), null);
 	}
 
-	// public void dumpUnwoven(File file) throws IOException {
-	// BufferedOutputStream os = FileUtil.makeOutputStream(file);
-	// this.zipOutputStream = new ZipOutputStream(os);
-	// dumpUnwoven();
-	// /* BUG 40943*/
-	// dumpResourcesToOutJar();
-	// zipOutputStream.close(); //this flushes and closes the acutal file
-	// }
-	//    
-	//    
-	// public void dumpUnwoven() throws IOException {
-	// Collection filesToDump = new HashSet(sourceJavaClasses.values());
-	// for (Iterator i = filesToDump.iterator(); i.hasNext(); ) {
-	// UnwovenClassFile classFile = (UnwovenClassFile)i.next();
-	// dumpUnchanged(classFile);
-	// }
-	// }
-
-	// public void dumpResourcesToOutPath() throws IOException {
-	// // System.err.println("? dumpResourcesToOutPath() resources=" +
-	// resources.keySet());
-	// Iterator i = resources.keySet().iterator();
-	// while (i.hasNext()) {
-	// UnwovenClassFile res = (UnwovenClassFile)resources.get(i.next());
-	// dumpUnchanged(res);
-	// }
-	// //resources = new HashMap();
-	// }
-	//
-	/* BUG #40943 */
-	// public void dumpResourcesToOutJar() throws IOException {
-	// // System.err.println("? dumpResourcesToOutJar() resources=" +
-	// resources.keySet());
-	// Iterator i = resources.keySet().iterator();
-	// while (i.hasNext()) {
-	// String name = (String)i.next();
-	// UnwovenClassFile res = (UnwovenClassFile)resources.get(name);
-	// writeZipEntry(name,res.getBytes());
-	// }
-	// resources = new HashMap();
-	// }
-	//    
-	// // halfway house for when the jar is managed outside of the weaver, but
-	// the resources
-	// // to be copied are known in the weaver.
-	// public void dumpResourcesToOutJar(ZipOutputStream zos) throws IOException
-	// {
-	// this.zipOutputStream = zos;
-	// dumpResourcesToOutJar();
-	// }
 	public void addManifest(Manifest newManifest) {
 		// System.out.println("? addManifest() newManifest=" + newManifest);
 		if (manifest == null) {
@@ -1016,13 +938,12 @@ public class BcelWeaver {
 		}
 	}
 
-	private static final String WEAVER_MANIFEST_VERSION = "1.0";
-	private static final Attributes.Name CREATED_BY = new Name("Created-By");
-	private static final String WEAVER_CREATED_BY = "AspectJ Compiler";
-
 	public Manifest getManifest(boolean shouldCreate) {
-
 		if (manifest == null && shouldCreate) {
+			String WEAVER_MANIFEST_VERSION = "1.0";
+			Attributes.Name CREATED_BY = new Name("Created-By");
+			String WEAVER_CREATED_BY = "AspectJ Compiler";
+
 			manifest = new Manifest();
 
 			Attributes attributes = manifest.getMainAttributes();
@@ -1035,7 +956,7 @@ public class BcelWeaver {
 
 	// ---- weaving
 
-	// Used by some test cases only...
+	// FOR TESTING
 	public Collection<String> weave(File file) throws IOException {
 		OutputStream os = FileUtil.makeOutputStream(file);
 		this.zipOutputStream = new ZipOutputStream(os);
@@ -1082,80 +1003,6 @@ public class BcelWeaver {
 		return c;
 	}
 
-	// public Collection weave() throws IOException {
-	// prepareForWeave();
-	// Collection filesToWeave;
-	//    	
-	// if (needToReweaveWorld) {
-	// filesToWeave = sourceJavaClasses.values();
-	// } else {
-	// filesToWeave = addedClasses;
-	// }
-	//    	
-	// Collection wovenClassNames = new ArrayList();
-	// world.showMessage(IMessage.INFO, "might need to weave " + filesToWeave +
-	// "(world=" + needToReweaveWorld + ")", null, null);
-	//    	
-	//    	
-	// //System.err.println("typeMungers: " + typeMungerList);
-	//    	
-	// prepareToProcessReweavableState();
-	// // clear all state from files we'll be reweaving
-	// for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {
-	// UnwovenClassFile classFile = (UnwovenClassFile)i.next();
-	// String className = classFile.getClassName();
-	// BcelObjectType classType = getClassType(className);
-	// processReweavableStateIfPresent(className, classType);
-	// }
-	//    	
-	//    	
-	//    	
-	// //XXX this isn't quite the right place for this...
-	// for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {
-	// UnwovenClassFile classFile = (UnwovenClassFile)i.next();
-	// String className = classFile.getClassName();
-	// addTypeMungers(className);
-	// }
-	//    	
-	// // first weave into aspects
-	// for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {
-	// UnwovenClassFile classFile = (UnwovenClassFile)i.next();
-	// String className = classFile.getClassName();
-	// BcelObjectType classType =
-	// BcelWorld.getBcelObjectType(world.resolve(className));
-	// if (classType.isAspect()) {
-	// weave(classFile, classType);
-	// wovenClassNames.add(className);
-	// }
-	// }
-	//
-	// // then weave into non-aspects
-	// for (Iterator i = filesToWeave.iterator(); i.hasNext(); ) {
-	// UnwovenClassFile classFile = (UnwovenClassFile)i.next();
-	// String className = classFile.getClassName();
-	// BcelObjectType classType =
-	// BcelWorld.getBcelObjectType(world.resolve(className));
-	// if (! classType.isAspect()) {
-	// weave(classFile, classType);
-	// wovenClassNames.add(className);
-	// }
-	// }
-	//        
-	// if (zipOutputStream != null && !needToReweaveWorld) {
-	// Collection filesToDump = new HashSet(sourceJavaClasses.values());
-	// filesToDump.removeAll(filesToWeave);
-	// for (Iterator i = filesToDump.iterator(); i.hasNext(); ) {
-	// UnwovenClassFile classFile = (UnwovenClassFile)i.next();
-	// dumpUnchanged(classFile);
-	// }
-	// }
-	//        
-	// addedClasses = new ArrayList();
-	// deletedTypenames = new ArrayList();
-	//		
-	// return wovenClassNames;
-	// }
-
 	// variation of "weave" that sources class files from an external source.
 	public Collection<String> weave(IClassFileProvider input) throws IOException {
 		if (trace.isTraceEnabled()) {
@@ -1168,8 +1015,7 @@ public class BcelWeaver {
 		for (Iterator<UnwovenClassFile> i = input.getClassFileIterator(); i.hasNext();) {
 			UnwovenClassFile classFile = i.next();
 			if (world.getModel() != null /* AsmManager.isCreatingModel() */&& !isBatchWeave) {
-				// remove all relationships where this file being woven is the
-				// target of the relationship
+				// remove all relationships where this file being woven is the target of the relationship
 				world.getModelAsAsmManager().removeRelationshipsTargettingThisType(classFile.getClassName());
 			}
 		}
@@ -1774,7 +1620,7 @@ public class BcelWeaver {
 		return weave(classFile, classType, false);
 	}
 
-	// non-private for testing
+	// FOR TESTING
 	LazyClassGen weave(UnwovenClassFile classFile, BcelObjectType classType) throws IOException {
 		LazyClassGen ret = weave(classFile, classType, true);
 		return ret;
@@ -2040,5 +1886,10 @@ public class BcelWeaver {
 
 	public void write(DataOutputStream dos) throws IOException {
 		xcutSet.write(dos);
+	}
+
+	// only called for testing
+	public void setShadowMungers(List shadowMungers) {
+		shadowMungerList = shadowMungers;
 	}
 }

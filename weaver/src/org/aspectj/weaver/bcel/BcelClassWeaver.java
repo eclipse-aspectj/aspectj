@@ -92,10 +92,6 @@ class BcelClassWeaver implements IClassWeaver {
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelClassWeaver.class);
 
-	/**
-	 * This is called from {@link BcelWeaver} to perform the per-class weaving process.
-	 * 
-	 */
 	public static boolean weave(BcelWorld world, LazyClassGen clazz, List<ShadowMunger> shadowMungers,
 			List<ConcreteTypeMunger> typeMungers, List lateTypeMungers, boolean inReweavableMode) {
 		BcelClassWeaver classWeaver = new BcelClassWeaver(world, clazz, shadowMungers, typeMungers, lateTypeMungers);
@@ -2503,7 +2499,7 @@ class BcelClassWeaver implements IClassWeaver {
 	private boolean match(LazyMethodGen mg) {
 		BcelShadow enclosingShadow;
 		List<BcelShadow> shadowAccumulator = new ArrayList<BcelShadow>();
-
+		boolean isOverweaving = world.isOverWeaving();
 		boolean startsAngly = mg.getName().charAt(0) == '<';
 		// we want to match ajsynthetic constructors...
 		if (startsAngly && mg.getName().equals("<init>")) {
@@ -2520,6 +2516,10 @@ class BcelClassWeaver implements IClassWeaver {
 			} else {
 				AjAttribute.EffectiveSignatureAttribute effective = mg.getEffectiveSignature();
 				if (effective == null) {
+					// Don't want ajc$preClinit to be considered for matching
+					if (isOverweaving && mg.getName().startsWith(NameMangler.PREFIX)) {
+						return false;
+					}
 					enclosingShadow = BcelShadow.makeMethodExecution(world, mg, !canMatchBodyShadows);
 				} else if (effective.isWeaveBody()) {
 					ResolvedMember rm = effective.getEffectiveSignature();
@@ -3043,7 +3043,23 @@ class BcelClassWeaver implements IClassWeaver {
 			}
 		} else {
 			if (canMatch(Shadow.MethodCall)) {
-				match(BcelShadow.makeMethodCall(world, mg, ih, enclosingShadow), shadowAccumulator);
+				boolean proceed = true;
+				// overweaving needs to ignore some calls added by the previous weave
+				if (world.isOverWeaving()) {
+					String s = invoke.getClassName(mg.getConstantPool());
+					// skip all the inc/dec/isValid/etc
+					if (s.equals("org.aspectj.runtime.internal.CFlowCounter")
+							|| s.equals("org.aspectj.runtime.internal.CFlowStack")) {
+						proceed = false;
+					} else {
+						if (methodName.equals("aspectOf")) {
+							proceed = false;
+						}
+					}
+				}
+				if (proceed) {
+					match(BcelShadow.makeMethodCall(world, mg, ih, enclosingShadow), shadowAccumulator);
+				}
 			}
 		}
 	}
