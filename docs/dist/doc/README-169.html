@@ -20,6 +20,56 @@ All rights reserved.
 
 <h1>AspectJ 1.6.9 Readme</h1>
 
+<h2>Features of 1.6.9 milestone 2</h2>
+
+<p>Mostly bug fixes, some important fixes around the use of Method ITDs with private fields
+ (bug <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=307120">307120</a>)</p>
+
+<h3>Transparent weaving: <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=309743">309743</a></h3>
+<p>In a further step towards transparent weaving, support for the AjType reflection system is now being made optional.
+This means if intending to use the AjTypeSystem to reflect on woven code, then the code must be built with the 
+option -makeAjReflectable. This change is being made because the reflection supporting metadata that 
+enables the AjTypeSystem to work can break other tools that are just using regular reflection on the classes.  These 
+days many more users are processing classes using standard reflection than are using AjTypeSystem.  The related bugzilla
+discussing this issue is <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=309743">309743</a>.</p>
+
+<h3>Overweaving: <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=293450">293450</a></h3>
+
+<p>Preliminary support for overweaving was added in AspectJ 1.6.7, but now in AspectJ 1.6.9m2 it is much more reliable.
+Basically it is an alternative to reweaving when needing to weave a class multiple times.  Overweaving can cope with
+'other tools' modifying the bytecode in between AspectJ weaves, whereas reweaving cannot.  More details are in the related
+bugzilla <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=293450">293450</a> and in this 
+<a href="http://andrewclement.blogspot.com/2010/05/aspectj-overweaving.html">blog article</a>.  A weaver is switched
+into overweaving mode by the option -Xset:overWeaving=true - which can be specified on the command line or in the weaver
+options section of aop.xml.  There is still more work to be done on this feature - any feedback is welcome.</p>
+
+<h3>AOP Scoping: <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=124460">124460</a></h3>
+
+<p>Another feature that had preliminary support a while ago is aspect scoping in aop.xml.  This has also been improved in 
+AspectJ1.6.9m2.  For those not aware of it, it is the ability to specify a scope against aspects defined in your loadtime
+weaving aop.xml file.  A scope effectively enables the user to limit the applicability of your aspect to some subset of all those 
+types included by the weaver include section.  Why is it needed?  It can be useful when taking an aspect that did not
+originally scope itself properly (using a within clause) and needing to limit its effect in a load time weaving context. 
+ Think of it as a within
+pattern that you can put into the aop.xml that augments all the pointcuts defined in the original aspect.</p>
+
+<p>Here is an example:</p>
+<code><pre>
+&lt;aspectj&gt;
+  &lt;aspects&gt;
+    &lt;aspect name="X"/&gt;
+    &lt;aspect name="Y" scope="com.foo..*"/&gt;
+  &lt;/aspects&gt;
+  &lt;weaver&gt;
+    &lt;include within="com..*"/&gt;
+  &lt;/weaver&gt;
+&lt;/aspectj&gt;
+</pre></code>
+<p>In this example the weaver include section specifies all the types in com..* should be woven and the 
+aspects to be used are X and Y.  The new 'scope' setting on aspect Y's definition allows finer control, and specifies that
+Y should in fact only be applied to com.foo..* types.</p>
+
+<hr>
 <h2>Features of 1.6.9 milestone 1</h2>
 
 <h3>Message inserts for declare warning/error messages</h3>
