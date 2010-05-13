@@ -52,16 +52,16 @@
      <compile files="A.aj B.aj Class1.java Class2.java" options="-1.5"/>
      <run class="Class1">
        <stdout>
-         <line text="A:call(void java.io.PrintStream.println(String))"/>
          <line text="B:call(void java.io.PrintStream.println(String))"/>
+         <line text="A:call(void java.io.PrintStream.println(String))"/>
          <line text="Class1.main"/>
        </stdout>
      </run>
      
      <run class="Class2">
        <stdout>
-         <line text="A:call(void java.io.PrintStream.println(String))"/>
          <line text="B:call(void java.io.PrintStream.println(String))"/>
+         <line text="A:call(void java.io.PrintStream.println(String))"/>
          <line text="Class2.main"/>
        </stdout>
      </run>
@@ -82,8 +82,8 @@
      
      <run class="Class2" ltw="aop.xml">
        <stdout>
-         <line text="A:call(void java.io.PrintStream.println(String))"/>
          <line text="B:call(void java.io.PrintStream.println(String))"/>
+         <line text="A:call(void java.io.PrintStream.println(String))"/>
          <line text="Class2.main"/>
        </stdout>
      </run>
@@ -104,8 +104,8 @@
      
      <run class="Class2" ltw="aop.xml">
        <stdout>
-         <line text="A:execution(void Class2.main(String[]))"/>
          <line text="B:execution(void Class2.main(String[]))"/>
+         <line text="A:execution(void Class2.main(String[]))"/>
          <line text="Class2.main"/>
        </stdout>
      </run>
