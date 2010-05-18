@@ -10,7 +10,6 @@
  *     Xerox/PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.util;
 
 import java.io.*;
@@ -24,14 +23,21 @@ public class TypeSafeEnum {
 		if (key > Byte.MAX_VALUE || key < Byte.MIN_VALUE) {
 			throw new IllegalArgumentException("key doesn't fit into a byte: " + key);
 		}
-		this.key = (byte)key;
+		this.key = (byte) key;
 	}
-	
-	public String toString() { return name; }
-	
-	public String getName() { return name; }
-	public byte getKey() { return key; }
-	
+
+	public String toString() {
+		return name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public byte getKey() {
+		return key;
+	}
+
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(key);
 	}
