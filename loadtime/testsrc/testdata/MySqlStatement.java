@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 
-public class MySqlStatement implements Statement {
+public abstract class MySqlStatement implements Statement {
 
 	public void addBatch(String sql) throws SQLException {
 	}
