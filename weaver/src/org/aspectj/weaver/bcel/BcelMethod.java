@@ -182,7 +182,8 @@ class BcelMethod extends ResolvedMemberImpl {
 		associatedShadowMunger = null;
 		ResolvedType resolvedDeclaringType = getDeclaringType().resolve(world);
 		List<AjAttribute> as = Utility.readAjAttributes(resolvedDeclaringType.getClassName(), method.getAttributes(),
-				resolvedDeclaringType.getSourceContext(), world, bcelObjectType.getWeaverVersionAttribute());
+				resolvedDeclaringType.getSourceContext(), world, bcelObjectType.getWeaverVersionAttribute(),
+				new BcelConstantPoolReader(method.getConstantPool()));
 		processAttributes(world, as);
 		as = AtAjAttributes.readAj5MethodAttributes(method, this, resolvedDeclaringType, preResolvedPointcut, resolvedDeclaringType
 				.getSourceContext(), world.getMessageHandler());

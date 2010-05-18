@@ -53,6 +53,7 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ConstantPoolReader;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.Member;
@@ -65,7 +66,7 @@ import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 public class Utility {
 
 	public static List<AjAttribute> readAjAttributes(String classname, Attribute[] as, ISourceContext context, World w,
-			AjAttribute.WeaverVersionInfo version) {
+			AjAttribute.WeaverVersionInfo version, ConstantPoolReader dataDecompressor) {
 		List<AjAttribute> l = new ArrayList<AjAttribute>();
 
 		// first pass, look for version
@@ -78,7 +79,8 @@ public class Utility {
 				if (name.charAt(0) == 'o') { // 'o'rg.aspectj
 					if (name.startsWith(AjAttribute.AttributePrefix)) {
 						if (name.endsWith(WeaverVersionInfo.AttributeName)) {
-							version = (AjAttribute.WeaverVersionInfo) AjAttribute.read(version, name, u.getBytes(), context, w);
+							version = (AjAttribute.WeaverVersionInfo) AjAttribute.read(version, name, u.getBytes(), context, w,
+									dataDecompressor);
 							if (version.getMajorVersion() > WeaverVersionInfo.getCurrentWeaverMajorVersion()) {
 								throw new BCException(
 										"Unable to continue, this version of AspectJ supports classes built with weaver version "
@@ -96,7 +98,7 @@ public class Utility {
 		for (int i = forSecondPass.size() - 1; i >= 0; i--) {
 			Unknown a = forSecondPass.get(i);
 			String name = a.getName();
-			AjAttribute attr = AjAttribute.read(version, name, a.getBytes(), context, w);
+			AjAttribute attr = AjAttribute.read(version, name, a.getBytes(), context, w, dataDecompressor);
 			if (attr != null) {
 				l.add(attr);
 			}
@@ -699,7 +701,7 @@ public class Utility {
 
 	public static Attribute bcelAttribute(AjAttribute a, ConstantPool pool) {
 		int nameIndex = pool.addUtf8(a.getNameString());
-		byte[] bytes = a.getBytes();
+		byte[] bytes = a.getBytes(new BcelConstantPoolWriter(pool));
 		int length = bytes.length;
 
 		return new Unknown(nameIndex, length, bytes, pool);

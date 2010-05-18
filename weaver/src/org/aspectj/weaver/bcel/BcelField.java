@@ -76,7 +76,8 @@ final class BcelField extends ResolvedMemberImpl {
 		if (attrs != null && attrs.length > 0) {
 			ISourceContext sourceContext = getSourceContext(world);
 			List<AjAttribute> as = Utility.readAjAttributes(getDeclaringType().getClassName(), attrs, sourceContext, world,
-					(bcelObjectType != null ? bcelObjectType.getWeaverVersionAttribute() : WeaverVersionInfo.CURRENT));
+					(bcelObjectType != null ? bcelObjectType.getWeaverVersionAttribute() : WeaverVersionInfo.CURRENT),
+					new BcelConstantPoolReader(field.getConstantPool()));
 			as.addAll(AtAjAttributes.readAj5FieldAttributes(field, this, world.resolve(getDeclaringType()), sourceContext, world
 					.getMessageHandler()));
 
