@@ -9,7 +9,6 @@
 package org.aspectj.weaver.bcel;
 
 import java.io.ByteArrayInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -54,6 +53,7 @@ import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationOnTypeMunger;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.CrosscuttingMembersSet;
 import org.aspectj.weaver.CustomMungerFactory;
@@ -1884,7 +1884,7 @@ public class BcelWeaver {
 		}
 	}
 
-	public void write(DataOutputStream dos) throws IOException {
+	public void write(CompressingDataOutputStream dos) throws IOException {
 		xcutSet.write(dos);
 	}
 

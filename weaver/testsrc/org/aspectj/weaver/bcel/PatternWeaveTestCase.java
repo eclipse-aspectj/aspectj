@@ -14,11 +14,11 @@ package org.aspectj.weaver.bcel;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.VersionedDataInputStream;
@@ -106,7 +106,7 @@ public class PatternWeaveTestCase extends WeaveTestCase {
 
 	public void checkSerialize(Pointcut p) throws IOException {
 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
-		DataOutputStream out = new DataOutputStream(bo);
+		CompressingDataOutputStream out = new CompressingDataOutputStream(bo);
 		p.write(out);
 		out.close();
 
