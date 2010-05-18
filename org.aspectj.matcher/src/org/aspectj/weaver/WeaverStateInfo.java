@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -39,16 +38,18 @@ import org.aspectj.bridge.IMessage;
  * previously woven <String> The fully qualified name of each type Int: Length of class file data (i.e. the unwovenclassfile)
  * Byte[]: The class file data, compressed if REWEAVABLE_COMPRESSION_BIT set.
  */
-
 public class WeaverStateInfo {
-	private List/* Entry */typeMungers;
+	private List<Entry> typeMungers;
 	private boolean oldStyle;
 
 	private boolean reweavable;
 	private boolean reweavableCompressedMode; // If true, unwovenClassFile is uncompressed on read
 	private boolean reweavableDiffMode; // if true, unwovenClassFile is written and read as a diff
 
-	private Set<String> aspectsAffectingType; // These must exist in the world for reweaving to be valid
+	// These must exist in the world for reweaving to be valid.
+	// It is a set of signatures 'La/b/c/D;'
+	private Set<String> aspectsAffectingType;
+
 	private byte[] unwovenClassFile; // Original 'untouched' class file
 	private static boolean reweavableDefault = true; // ajh02: changed from false;
 	private static boolean reweavableCompressedModeDefault = false;
@@ -67,17 +68,17 @@ public class WeaverStateInfo {
 	}
 
 	public WeaverStateInfo(boolean reweavable) {
-		this(new ArrayList(), false, reweavable, reweavableCompressedModeDefault, reweavableDiffModeDefault);
+		this(new ArrayList<Entry>(), false, reweavable, reweavableCompressedModeDefault, reweavableDiffModeDefault);
 	}
 
-	private WeaverStateInfo(List typeMungers, boolean oldStyle, boolean reweavableMode, boolean reweavableCompressedMode,
+	private WeaverStateInfo(List<Entry> typeMungers, boolean oldStyle, boolean reweavableMode, boolean reweavableCompressedMode,
 			boolean reweavableDiffMode) {
 		this.typeMungers = typeMungers;
 		this.oldStyle = oldStyle;
 		this.reweavable = reweavableMode;
 		this.reweavableCompressedMode = reweavableCompressedMode;
 		this.reweavableDiffMode = reweavableMode ? reweavableDiffMode : false;
-		this.aspectsAffectingType = new HashSet();
+		this.aspectsAffectingType = new HashSet<String>();
 		this.unwovenClassFile = null;
 	}
 
@@ -119,15 +120,32 @@ public class WeaverStateInfo {
 		case WOVEN:
 			return new WeaverStateInfo(Collections.EMPTY_LIST, true, isReweavable, isReweavableCompressed, isReweavableDiff);
 		case EXTENDED:
+			boolean isCompressed = false;
+			if (s.isAtLeast169()) {
+				isCompressed = s.readBoolean();
+			}
+
 			int n = s.readShort();
 			List l = new ArrayList();
 			for (int i = 0; i < n; i++) {
-				UnresolvedType aspectType = UnresolvedType.read(s);
+				// conditional on version
+				UnresolvedType aspectType = null;
+				if (isCompressed) {
+					int cpIndex = s.readShort();
+					String signature = s.readUtf8(cpIndex);
+					if (signature.charAt(0) == '@') { // '@missing@'
+						aspectType = ResolvedType.MISSING;
+					} else {
+						aspectType = UnresolvedType.forSignature(signature);
+					}
+				} else {
+					aspectType = UnresolvedType.read(s);
+				}
 				ResolvedTypeMunger typeMunger = ResolvedTypeMunger.read(s, context);
 				l.add(new Entry(aspectType, typeMunger));
 			}
 			WeaverStateInfo wsi = new WeaverStateInfo(l, false, isReweavable, isReweavableCompressed, isReweavableDiff);
-			readAnyReweavableData(wsi, s);
+			readAnyReweavableData(wsi, s, isCompressed);
 			return wsi;
 		}
 		throw new RuntimeException("bad WeaverState.Kind: " + b + ".  File was :"
@@ -171,14 +189,20 @@ public class WeaverStateInfo {
 
 		s.writeByte(weaverStateInfoKind);
 
+		// Tag whether the remainder of the data is subject to cp compression
+		s.writeBoolean(s.canCompress());
+
 		int n = typeMungers.size();
 		s.writeShort(n);
-		for (int i = 0; i < n; i++) {
-			Entry e = (Entry) typeMungers.get(i);
-			e.aspectType.write(s);
+		for (Entry e : typeMungers) {
+			if (s.canCompress()) {
+				s.writeCompressedSignature(e.aspectType.getSignature());
+			} else {
+				e.aspectType.write(s);
+			}
 			e.typeMunger.write(s);
 		}
-		writeAnyReweavableData(this, s);
+		writeAnyReweavableData(this, s, s.canCompress());
 	}
 
 	public void addConcreteMunger(ConcreteTypeMunger munger) {
@@ -192,8 +216,7 @@ public class WeaverStateInfo {
 	public List getTypeMungers(ResolvedType onType) {
 		World world = onType.getWorld();
 		List ret = new ArrayList();
-		for (Iterator i = typeMungers.iterator(); i.hasNext();) {
-			Entry entry = (Entry) i.next();
+		for (Entry entry : typeMungers) {
 			ResolvedType aspectType = world.resolve(entry.aspectType, true);
 			if (aspectType.isMissing()) {
 				world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.ASPECT_NEEDED, entry.aspectType, onType),
@@ -230,24 +253,34 @@ public class WeaverStateInfo {
 		reweavable = rw;
 	}
 
-	public void addAspectsAffectingType(Collection /* String */aspects) {
+	public void addAspectsAffectingType(Collection<String> aspects) {
 		aspectsAffectingType.addAll(aspects);
 	}
 
-	public void addAspectAffectingType(String aspectType) {
-		aspectsAffectingType.add(aspectType);
+	public void addAspectAffectingType(String aspectSignature) {
+		aspectsAffectingType.add(aspectSignature);
 	}
 
-	public Set /* String */getAspectsAffectingType() {
+	public Set<String> getAspectsAffectingType() {
 		return this.aspectsAffectingType;
 	}
 
-	private static void readAnyReweavableData(WeaverStateInfo wsi, DataInputStream s) throws IOException {
+	private static void readAnyReweavableData(WeaverStateInfo wsi, VersionedDataInputStream s, boolean compressed)
+			throws IOException {
 		if (wsi.isReweavable()) {
 			// Load list of aspects that need to exist in the world for reweaving to be 'legal'
 			int numberAspectsAffectingType = s.readShort();
 			for (int i = 0; i < numberAspectsAffectingType; i++) {
-				wsi.addAspectAffectingType(s.readUTF());
+				String str = null;
+				if (compressed) {
+					str = s.readSignature();
+				} else {
+					str = s.readUTF();
+					StringBuilder sb = new StringBuilder();
+					sb.append("L").append(str.replace('.', '/')).append(";");
+					str = sb.toString();
+				}
+				wsi.addAspectAffectingType(str);
 			}
 
 			int unwovenClassFileSize = s.readInt();
@@ -457,18 +490,19 @@ public class WeaverStateInfo {
 		return bos.toByteArray();
 	}
 
-	private static void writeAnyReweavableData(WeaverStateInfo wsi, DataOutputStream s) throws IOException {
+	private static void writeAnyReweavableData(WeaverStateInfo wsi, CompressingDataOutputStream s, boolean compress)
+			throws IOException {
 		if (wsi.isReweavable()) {
 			// Write out list of aspects that must exist next time we try and weave this class
 			s.writeShort(wsi.aspectsAffectingType.size());
-			if (wsi.aspectsAffectingType.size() > 0) {
-				for (Iterator iter = wsi.aspectsAffectingType.iterator(); iter.hasNext();) {
-					String type = (String) iter.next();
+			for (String type : wsi.aspectsAffectingType) {
+				if (compress) {
+					s.writeCompressedSignature(type);
+				} else {
 					s.writeUTF(type);
 				}
 			}
 			byte[] data = wsi.unwovenClassFile;
-
 			// if we're not in diffMode, write the unwovenClassFile now,
 			// otherwise we'll insert it as a diff later
 			if (!wsi.reweavableDiffMode) {
@@ -482,9 +516,9 @@ public class WeaverStateInfo {
 	 * @return true if the supplied aspect is already in the list of those affecting this type
 	 */
 	public boolean isAspectAlreadyApplied(ResolvedType someAspect) {
-		String someAspectName = someAspect.getName();
-		for (String aspect : aspectsAffectingType) {
-			if (aspect.equals(someAspectName)) {
+		String someAspectSignature = someAspect.getSignature();
+		for (String aspectSignature : aspectsAffectingType) {
+			if (aspectSignature.equals(someAspectSignature)) {
 				return true;
 			}
 		}
