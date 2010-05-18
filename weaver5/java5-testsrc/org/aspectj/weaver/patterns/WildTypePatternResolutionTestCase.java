@@ -13,12 +13,12 @@ package org.aspectj.weaver.patterns;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import junit.framework.TestCase;
 
 import org.aspectj.weaver.BoundedReferenceType;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.TypeFactory;
 import org.aspectj.weaver.UnresolvedType;
@@ -387,7 +387,7 @@ public class WildTypePatternResolutionTestCase extends TestCase {
 	private TypePattern writeAndRead(TypePattern etp) {
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			DataOutputStream dos = new DataOutputStream(baos);
+			CompressingDataOutputStream dos = new CompressingDataOutputStream(baos);
 			etp.write(dos);
 			dos.flush();
 			dos.close();
