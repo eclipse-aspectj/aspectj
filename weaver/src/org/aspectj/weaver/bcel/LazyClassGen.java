@@ -875,7 +875,7 @@ public final class LazyClassGen {
 		return myType.getWeaverState().isReweavable();
 	}
 
-	public Set getAspectsAffectingType() {
+	public Set<String> getAspectsAffectingType() {
 		if (myType.getWeaverState() == null) {
 			return null;
 		}
