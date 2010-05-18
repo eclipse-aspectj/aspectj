@@ -55,7 +55,7 @@ public class VersionedDataInputStream extends DataInputStream {
 		this.version = version;
 	}
 
-	public String accessUtf8(int cpIndex) {
+	public String readUtf8(int cpIndex) {
 		if (constantPoolReader == null) {
 			throw new IllegalStateException();
 		}
@@ -74,10 +74,10 @@ public class VersionedDataInputStream extends DataInputStream {
 	}
 
 	public String readPath() throws IOException {
-		return accessUtf8(readShort());
+		return readUtf8(readShort());
 	}
-	
+
 	public String readSignature() throws IOException {
-		return accessUtf8(readShort());
+		return readUtf8(readShort());
 	}
 }
