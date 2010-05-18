@@ -12,12 +12,12 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
@@ -134,7 +134,7 @@ public class PerSingleton extends PerClause {
 		return ret;
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		SINGLETON.write(s);
 		writeLocation(s);
 	}
@@ -158,8 +158,9 @@ public class PerSingleton extends PerClause {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof PerSingleton))
+		if (!(other instanceof PerSingleton)) {
 			return false;
+		}
 		PerSingleton pc = (PerSingleton) other;
 		return ((pc.inAspect == null) ? (inAspect == null) : pc.inAspect.equals(inAspect));
 	}

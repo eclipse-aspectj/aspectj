@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +45,7 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 		return AjcMemberMaker.interFieldInitializer(signature, aspectType);
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		kind.write(s);
 		signature.write(s);
 		writeSuperMethodsCalled(s);
@@ -62,8 +61,9 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 		sloc = readSourceLocation(s);
 		List aliases = readInTypeAliases(s);
 		NewFieldTypeMunger munger = new NewFieldTypeMunger(fieldSignature, superMethodsCalled, aliases);
-		if (sloc != null)
+		if (sloc != null) {
 			munger.setSourceLocation(sloc);
+		}
 		if (s.getMajorVersion() >= WeaverVersionInfo.WEAVER_VERSION_AJ169) {
 			// there is a version int
 			munger.version = s.readInt();
@@ -76,21 +76,26 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedType aspectType) {
 		// ??? might give a field where a method is expected
 		ResolvedType onType = aspectType.getWorld().resolve(getSignature().getDeclaringType());
-		if (onType.isRawType())
+		if (onType.isRawType()) {
 			onType = onType.getGenericType();
+		}
 
 		ResolvedMember ret = AjcMemberMaker.interFieldGetDispatcher(getSignature(), aspectType);
-		if (ResolvedType.matches(ret, member))
+		if (ResolvedType.matches(ret, member)) {
 			return getSignature();
+		}
 		ret = AjcMemberMaker.interFieldSetDispatcher(getSignature(), aspectType);
-		if (ResolvedType.matches(ret, member))
+		if (ResolvedType.matches(ret, member)) {
 			return getSignature();
+		}
 		ret = AjcMemberMaker.interFieldInterfaceGetter(getSignature(), onType, aspectType);
-		if (ResolvedType.matches(ret, member))
+		if (ResolvedType.matches(ret, member)) {
 			return getSignature();
+		}
 		ret = AjcMemberMaker.interFieldInterfaceSetter(getSignature(), onType, aspectType);
-		if (ResolvedType.matches(ret, member))
+		if (ResolvedType.matches(ret, member)) {
 			return getSignature();
+		}
 		return super.getMatchingSyntheticMember(member, aspectType);
 	}
 
@@ -99,8 +104,9 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 	 */
 	public ResolvedTypeMunger parameterizedFor(ResolvedType target) {
 		ResolvedType genericType = target;
-		if (target.isRawType() || target.isParameterizedType())
+		if (target.isRawType() || target.isParameterizedType()) {
 			genericType = genericType.getGenericType();
+		}
 		ResolvedMember parameterizedSignature = null;
 		// If we are parameterizing it for a generic type, we just need to 'swap the letters' from the ones used
 		// in the original ITD declaration to the ones used in the actual target type declaration.

@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.util.FuzzyBoolean;
@@ -31,8 +30,9 @@ public class PerTypeWithinTargetTypeMunger extends ResolvedTypeMunger {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof PerTypeWithinTargetTypeMunger))
+		if (!(other instanceof PerTypeWithinTargetTypeMunger)) {
 			return false;
+		}
 		PerTypeWithinTargetTypeMunger o = (PerTypeWithinTargetTypeMunger) other;
 		return ((o.testPointcut == null) ? (testPointcut == null) : testPointcut.equals(o.testPointcut))
 				&& ((o.aspectType == null) ? (aspectType == null) : aspectType.equals(o.aspectType));
@@ -50,7 +50,7 @@ public class PerTypeWithinTargetTypeMunger extends ResolvedTypeMunger {
 		return hashCode;
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		throw new RuntimeException("shouldn't be serialized");
 	}
 

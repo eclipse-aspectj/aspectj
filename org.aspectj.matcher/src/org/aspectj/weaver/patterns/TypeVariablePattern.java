@@ -11,48 +11,48 @@
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 
 /**
- * @author colyer
- * Represents a type variable as declared as part of a type declaration, parameter declaration,
- * or type parameter specification.
- * <p>For example:</p>
- * <ul>
- * <li>&lt;T&gt; T genericMethod(T t) {...}</li>
- * <li>static &lt;T extends Foo&gt; T staticGenericMethod(T t) {...}</li>
- * <li>Foo&lt;T extends Bar &amp; IGoo&gt;
- * </ul>
+ * @author colyer Represents a type variable as declared as part of a type declaration, parameter declaration, or type parameter
+ *         specification.
+ *         <p>
+ *         For example:
+ *         </p>
+ *         <ul>
+ *         <li>&lt;T&gt; T genericMethod(T t) {...}</li>
+ *         <li>static &lt;T extends Foo&gt; T staticGenericMethod(T t) {...}</li>
+ *         <li>Foo&lt;T extends Bar &amp; IGoo&gt;
+ *         </ul>
  */
 public class TypeVariablePattern extends PatternNode {
 
 	private static final String anything = "?";
-	
-	private String name;  // eg. "T"
+
+	private String name; // eg. "T"
 	private TypePattern upperBound; // default is object unless of the form T extends Bar
 	private TypePattern[] interfaceBounds; // additional upper bounds (must be interfaces) arising from
-	                                                    // declarations of the form T extends Bar & IGoo, IDoo
+	// declarations of the form T extends Bar & IGoo, IDoo
 	private TypePattern lowerBound; // only set if type variable is of the form T super Bar
-	
+
 	/**
-	 * Create a named type variable with upper bound Object and no lower bounds.
-	 * Use this constructor for the simple "T" case
+	 * Create a named type variable with upper bound Object and no lower bounds. Use this constructor for the simple "T" case
 	 */
 	public TypeVariablePattern(String variableName) {
 		this.name = variableName;
-		this.upperBound = new ExactTypePattern(UnresolvedType.OBJECT,false,false);
+		this.upperBound = new ExactTypePattern(UnresolvedType.OBJECT, false, false);
 		this.lowerBound = null;
 		this.interfaceBounds = null;
 	}
-	
+
 	/**
-	 * Create a named type variable with the given upper bound and no lower bounds
-	 * Use this constructor for the T extends Foo case
+	 * Create a named type variable with the given upper bound and no lower bounds Use this constructor for the T extends Foo case
+	 * 
 	 * @param variableName
 	 * @param upperBound
 	 */
@@ -62,45 +62,49 @@ public class TypeVariablePattern extends PatternNode {
 		this.lowerBound = null;
 		this.interfaceBounds = null;
 	}
-	
+
 	public TypeVariablePattern(String variableName, TypePattern upperLimit, TypePattern[] interfaceBounds, TypePattern lowerBound) {
 		this.name = variableName;
 		this.upperBound = upperLimit;
-		if (upperBound == null) upperBound = new ExactTypePattern(UnresolvedType.OBJECT,false,false);
+		if (upperBound == null) {
+			upperBound = new ExactTypePattern(UnresolvedType.OBJECT, false, false);
+		}
 		this.interfaceBounds = interfaceBounds;
 		this.lowerBound = lowerBound;
 	}
 
 	public Object accept(PatternNodeVisitor visitor, Object data) {
-		return visitor.visit(this,data);
+		return visitor.visit(this, data);
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public boolean isAnythingPattern() {
 		return name.equals(anything);
 	}
-	
+
 	public TypePattern getRawTypePattern() {
 		return upperBound;
 	}
-	
+
 	public TypePattern getUpperBound() {
 		return upperBound;
 	}
-	
-	public boolean hasLowerBound() { return (lowerBound != null); }
-	
+
+	public boolean hasLowerBound() {
+		return (lowerBound != null);
+	}
+
 	public TypePattern getLowerBound() {
 		return lowerBound;
 	}
-	
+
 	public boolean hasAdditionalInterfaceBounds() {
 		return (interfaceBounds != null);
 	}
-	
+
 	public TypePattern[] getAdditionalInterfaceBounds() {
 		if (interfaceBounds != null) {
 			return interfaceBounds;
@@ -108,42 +112,64 @@ public class TypeVariablePattern extends PatternNode {
 			return new TypePattern[0];
 		}
 	}
-	
+
 	public boolean equals(Object obj) {
-		if (!(obj instanceof TypeVariablePattern)) return false;
-		TypeVariablePattern other = (TypeVariablePattern) obj;
-		if (!name.equals(other.name)) return false;
-		if (!upperBound.equals(other.upperBound)) return false;
-		if (lowerBound != null) {
-			if (other.lowerBound == null) return false;
-			if (!lowerBound.equals(other.lowerBound)) return false;
-		} else {
-			if (other.lowerBound != null) return false;
+		if (!(obj instanceof TypeVariablePattern)) {
+			return false;
 		}
-		if (interfaceBounds != null) {
-			if (other.interfaceBounds == null) return false;
-			if (interfaceBounds.length != other.interfaceBounds.length) return false;
-			for (int i = 0; i < interfaceBounds.length; i++) {
-				if (!interfaceBounds[i].equals(other.interfaceBounds[i])) return false;
+		TypeVariablePattern other = (TypeVariablePattern) obj;
+		if (!name.equals(other.name)) {
+			return false;
+		}
+		if (!upperBound.equals(other.upperBound)) {
+			return false;
+		}
+		if (lowerBound != null) {
+			if (other.lowerBound == null) {
+				return false;
+			}
+			if (!lowerBound.equals(other.lowerBound)) {
+				return false;
 			}
 		} else {
-			if (other.interfaceBounds != null) return false;
+			if (other.lowerBound != null) {
+				return false;
+			}
+		}
+		if (interfaceBounds != null) {
+			if (other.interfaceBounds == null) {
+				return false;
+			}
+			if (interfaceBounds.length != other.interfaceBounds.length) {
+				return false;
+			}
+			for (int i = 0; i < interfaceBounds.length; i++) {
+				if (!interfaceBounds[i].equals(other.interfaceBounds[i])) {
+					return false;
+				}
+			}
+		} else {
+			if (other.interfaceBounds != null) {
+				return false;
+			}
 		}
 		return true;
 	}
-	
+
 	public int hashCode() {
 		int hashCode = 17 + (37 * name.hashCode());
 		hashCode = hashCode * 37 + upperBound.hashCode();
-		if (lowerBound != null) hashCode = hashCode * 37 + lowerBound.hashCode();
+		if (lowerBound != null) {
+			hashCode = hashCode * 37 + lowerBound.hashCode();
+		}
 		if (interfaceBounds != null) {
 			for (int i = 0; i < interfaceBounds.length; i++) {
-				hashCode = 37*hashCode + interfaceBounds[i].hashCode();
+				hashCode = 37 * hashCode + interfaceBounds[i].hashCode();
 			}
 		}
 		return hashCode;
 	}
-	
+
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(name);
@@ -152,7 +178,9 @@ public class TypeVariablePattern extends PatternNode {
 			sb.append(" & ");
 			for (int i = 0; i < interfaceBounds.length; i++) {
 				sb.append(interfaceBounds[i].toString());
-				if (i < interfaceBounds.length) sb.append(",");
+				if (i < interfaceBounds.length) {
+					sb.append(",");
+				}
 			}
 		}
 		if (lowerBound != null) {
@@ -161,16 +189,18 @@ public class TypeVariablePattern extends PatternNode {
 		}
 		return sb.toString();
 	}
-	
+
 	private String getExtendsClause() {
 		if (upperBound instanceof ExactTypePattern) {
 			ExactTypePattern bound = (ExactTypePattern) upperBound;
-			if (bound.type == UnresolvedType.OBJECT) return "";
+			if (bound.type == UnresolvedType.OBJECT) {
+				return "";
+			}
 		}
 		return " extends " + upperBound.toString();
 	}
-	
-	public void write(DataOutputStream s) throws IOException {
+
+	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeUTF(name);
 		upperBound.write(s);
 		if (interfaceBounds == null) {
@@ -182,10 +212,12 @@ public class TypeVariablePattern extends PatternNode {
 			}
 		}
 		s.writeBoolean(hasLowerBound());
-		if (hasLowerBound()) lowerBound.write(s);
-		writeLocation(s);		
+		if (hasLowerBound()) {
+			lowerBound.write(s);
+		}
+		writeLocation(s);
 	}
-	
+
 	public static TypeVariablePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		TypeVariablePattern tv = null;
 		String name = s.readUTF();
@@ -200,10 +232,12 @@ public class TypeVariablePattern extends PatternNode {
 		}
 		boolean hasLowerBound = s.readBoolean();
 		TypePattern lowerBound = null;
-		if (hasLowerBound) lowerBound = TypePattern.read(s,context);
-		tv = new TypeVariablePattern(name,upperBound,additionalInterfaceBounds,lowerBound);
+		if (hasLowerBound) {
+			lowerBound = TypePattern.read(s, context);
+		}
+		tv = new TypeVariablePattern(name, upperBound, additionalInterfaceBounds, lowerBound);
 		tv.readLocation(context, s);
 		return tv;
 	}
-	
+
 }

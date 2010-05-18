@@ -12,13 +12,13 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.PerObjectInterfaceTypeMunger;
 import org.aspectj.weaver.ResolvedType;
@@ -42,10 +42,12 @@ public class PerObject extends PerClause {
 		int targFlags = Shadow.ALL_SHADOW_KINDS_BITS;
 		for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
 			Shadow.Kind kind = Shadow.SHADOW_KINDS[i];
-			if (kind.neverHasThis())
+			if (kind.neverHasThis()) {
 				thisFlags -= kind.bit;
-			if (kind.neverHasTarget())
+			}
+			if (kind.neverHasTarget()) {
 				targFlags -= kind.bit;
+			}
 		}
 		thisKindSet = thisFlags;
 		targetKindSet = targFlags;
@@ -73,10 +75,11 @@ public class PerObject extends PerClause {
 		// System.err.println("matches " + this + " ? " + shadow + ", " +
 		// shadow.hasTarget());
 		// ??? could probably optimize this better by testing could match
-		if (isThis)
+		if (isThis) {
 			return FuzzyBoolean.fromBoolean(shadow.hasThis());
-		else
+		} else {
 			return FuzzyBoolean.fromBoolean(shadow.hasTarget());
+		}
 	}
 
 	public void resolveBindings(IScope scope, Bindings bindings) {
@@ -105,8 +108,9 @@ public class PerObject extends PerClause {
 		PerObject ret = new PerObject(entry, isThis);
 
 		ret.inAspect = inAspect;
-		if (inAspect.isAbstract())
+		if (inAspect.isAbstract()) {
 			return ret;
+		}
 
 		World world = inAspect.getWorld();
 
@@ -136,7 +140,7 @@ public class PerObject extends PerClause {
 		return ret;
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		PEROBJECT.write(s);
 		entry.write(s);
 		s.writeBoolean(isThis);
@@ -170,8 +174,9 @@ public class PerObject extends PerClause {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof PerObject))
+		if (!(other instanceof PerObject)) {
 			return false;
+		}
 		PerObject pc = (PerObject) other;
 		return (pc.isThis && isThis) && ((pc.inAspect == null) ? (inAspect == null) : pc.inAspect.equals(inAspect))
 				&& ((pc.entry == null) ? (entry == null) : pc.entry.equals(entry));

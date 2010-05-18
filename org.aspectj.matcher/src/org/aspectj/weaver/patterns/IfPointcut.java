@@ -12,7 +12,6 @@
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,6 +24,7 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedMember;
@@ -110,7 +110,7 @@ public class IfPointcut extends Pointcut {
 	}
 
 	@Override
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.IF);
 		s.writeBoolean(testMethod != null); // do we have a test method?
 		if (testMethod != null) {
@@ -506,7 +506,7 @@ public class IfPointcut extends Pointcut {
 		}
 
 		@Override
-		public void write(DataOutputStream s) throws IOException {
+		public void write(CompressingDataOutputStream s) throws IOException {
 			s.writeByte(Pointcut.IF_FALSE);
 		}
 
@@ -575,7 +575,7 @@ public class IfPointcut extends Pointcut {
 		}
 
 		@Override
-		public void write(DataOutputStream s) throws IOException {
+		public void write(CompressingDataOutputStream s) throws IOException {
 			s.writeByte(IF_TRUE);
 		}
 

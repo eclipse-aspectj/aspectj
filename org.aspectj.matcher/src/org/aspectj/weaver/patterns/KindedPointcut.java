@@ -14,7 +14,6 @@ package org.aspectj.weaver.patterns;
 
 import static org.aspectj.util.FuzzyBoolean.MAYBE;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
@@ -23,6 +22,7 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Checker;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
@@ -323,7 +323,7 @@ public class KindedPointcut extends Pointcut {
 	}
 
 	@Override
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.KINDED);
 		kind.write(s);
 		signature.write(s);

@@ -41,7 +41,7 @@ public abstract class AjAttribute {
 
 	public static final String AttributePrefix = "org.aspectj.weaver";
 
-	protected abstract void write(DataOutputStream s) throws IOException;
+	protected abstract void write(CompressingDataOutputStream s) throws IOException;
 
 	public abstract String getNameString();
 
@@ -55,7 +55,7 @@ public abstract class AjAttribute {
 	public byte[] getBytes() {
 		try {
 			ByteArrayOutputStream b0 = new ByteArrayOutputStream();
-			DataOutputStream s0 = new DataOutputStream(b0);
+			CompressingDataOutputStream s0 = new CompressingDataOutputStream(b0);
 			write(s0);
 			s0.close();
 			return b0.toByteArray();
@@ -158,7 +158,7 @@ public abstract class AjAttribute {
 		}
 
 		@Override
-		public void write(DataOutputStream s) throws IOException {
+		public void write(CompressingDataOutputStream s) throws IOException {
 		}
 	}
 
@@ -177,7 +177,7 @@ public abstract class AjAttribute {
 		}
 
 		@Override
-		public void write(DataOutputStream s) throws IOException {
+		public void write(CompressingDataOutputStream s) throws IOException {
 			munger.write(s);
 		}
 
@@ -201,7 +201,7 @@ public abstract class AjAttribute {
 		}
 
 		@Override
-		public void write(DataOutputStream s) throws IOException {
+		public void write(CompressingDataOutputStream s) throws IOException {
 			kind.write(s);
 		}
 
@@ -286,7 +286,7 @@ public abstract class AjAttribute {
 		}
 
 		@Override
-		public void write(DataOutputStream s) throws IOException {
+		public void write(CompressingDataOutputStream s) throws IOException {
 			s.writeShort(CURRENT_VERSION_MAJOR);
 			s.writeShort(CURRENT_VERSION_MINOR);
 			s.writeLong(Version.getTime()); // build used to construct the
@@ -362,7 +362,7 @@ public abstract class AjAttribute {
 		}
 
 		@Override
-		public void write(DataOutputStream s) throws IOException {
+		public void write(CompressingDataOutputStream s) throws IOException {
 			s.writeUTF(sourceFileName);
 			FileUtil.writeIntArray(lineBreaks, s);
 		}
@@ -409,7 +409,7 @@ public abstract class AjAttribute {
 		}
 
 		@Override
-		public void write(DataOutputStream s) throws IOException {
+		public void write(CompressingDataOutputStream s) throws IOException {
 			s.writeInt(lineNumber);
 			s.writeInt(offset);
 		}
@@ -444,7 +444,7 @@ public abstract class AjAttribute {
 		}
 
 		@Override
-		public void write(DataOutputStream s) throws IOException {
+		public void write(CompressingDataOutputStream s) throws IOException {
 			pointcutDef.write(s);
 		}
 
@@ -468,7 +468,7 @@ public abstract class AjAttribute {
 		}
 
 		@Override
-		public void write(DataOutputStream s) throws IOException {
+		public void write(CompressingDataOutputStream s) throws IOException {
 			declare.write(s);
 		}
 
@@ -549,7 +549,7 @@ public abstract class AjAttribute {
 		}
 
 		@Override
-		public void write(DataOutputStream s) throws IOException {
+		public void write(CompressingDataOutputStream s) throws IOException {
 			kind.write(s);
 			pointcut.write(s);
 			s.writeByte(extraParameterFlags);
@@ -641,7 +641,7 @@ public abstract class AjAttribute {
 		}
 
 		@Override
-		public void write(DataOutputStream s) throws IOException {
+		public void write(CompressingDataOutputStream s) throws IOException {
 			perClause.write(s);
 		}
 
@@ -661,7 +661,7 @@ public abstract class AjAttribute {
 		}
 
 		@Override
-		public void write(DataOutputStream s) throws IOException {
+		public void write(CompressingDataOutputStream s) throws IOException {
 			ResolvedMemberImpl.writeArray(accessedMembers, s);
 		}
 
@@ -699,7 +699,7 @@ public abstract class AjAttribute {
 		}
 
 		@Override
-		public void write(DataOutputStream s) throws IOException {
+		public void write(CompressingDataOutputStream s) throws IOException {
 			effectiveSignature.write(s);
 			shadowKind.write(s);
 			s.writeBoolean(weaveBody);

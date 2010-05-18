@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
@@ -21,6 +20,7 @@ import java.util.Map;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedType;
@@ -395,11 +395,8 @@ class EllipsisTypePattern extends TypePattern {
 		return FuzzyBoolean.NO;
 	}
 
-	/**
-	 * @see org.aspectj.weaver.patterns.PatternNode#write(DataOutputStream)
-	 */
 	@Override
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(ELLIPSIS_KEY);
 	}
 
@@ -487,11 +484,8 @@ class AnyTypePattern extends TypePattern {
 		return FuzzyBoolean.YES;
 	}
 
-	/**
-	 * @see org.aspectj.weaver.patterns.PatternNode#write(DataOutputStream)
-	 */
 	@Override
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(ANY_KEY);
 	}
 
@@ -605,7 +599,7 @@ class AnyWithAnnotationTypePattern extends TypePattern {
 	}
 
 	@Override
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(TypePattern.ANY_WITH_ANNO);
 		annotationPattern.write(s);
 		writeLocation(s);
@@ -689,11 +683,8 @@ class NoTypePattern extends TypePattern {
 		return FuzzyBoolean.NO;
 	}
 
-	/**
-	 * @see org.aspectj.weaver.patterns.PatternNode#write(DataOutputStream)
-	 */
 	@Override
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(NO_KEY);
 	}
 

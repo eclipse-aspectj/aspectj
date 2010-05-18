@@ -14,19 +14,14 @@ package org.aspectj.weaver.patterns;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.patterns.Bindings;
-import org.aspectj.weaver.patterns.PatternParser;
-import org.aspectj.weaver.patterns.TestScope;
-import org.aspectj.weaver.patterns.TypePattern;
-import org.aspectj.weaver.patterns.TypePatternList;
 import org.aspectj.weaver.reflect.ReflectionWorld;
 
 /**
@@ -161,7 +156,7 @@ public class TypePatternListTestCase extends PatternsTestCase {
 	private void checkSerialization(String string) throws IOException {
 		TypePatternList p = makeArgumentsPattern(string);
 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
-		DataOutputStream out = new DataOutputStream(bo);
+		CompressingDataOutputStream out = new CompressingDataOutputStream(bo);
 		p.write(out);
 		out.close();
 

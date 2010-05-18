@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,7 +47,7 @@ public class ResolvedPointcutDefinition extends ResolvedMemberImpl {
 	// ----
 
 	@Override
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		getDeclaringType().write(s);
 		s.writeInt(getModifiers());
 		s.writeUTF(getName());

@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -379,7 +378,7 @@ public class CrosscuttingMembersSet {
 
 	public int serializationVersion = 1;
 
-	public void write(DataOutputStream stream) throws IOException {
+	public void write(CompressingDataOutputStream stream) throws IOException {
 		// stream.writeInt(serializationVersion);
 		stream.writeInt(shadowMungers.size());
 		for (Iterator iterator = shadowMungers.iterator(); iterator.hasNext();) {

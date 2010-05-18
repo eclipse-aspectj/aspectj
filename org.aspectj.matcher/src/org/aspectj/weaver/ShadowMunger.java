@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver;
 
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -259,7 +258,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	 */
 	public abstract boolean mustCheckExceptions();
 
-	public void write(DataOutputStream stream) throws IOException {
+	public void write(CompressingDataOutputStream stream) throws IOException {
 		stream.writeInt(VERSION_1);
 		stream.writeInt(shadowMungerKind); // determines real subclass
 		stream.writeInt(start);

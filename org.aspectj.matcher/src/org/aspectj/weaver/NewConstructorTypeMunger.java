@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -35,8 +34,9 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof NewConstructorTypeMunger))
+		if (!(other instanceof NewConstructorTypeMunger)) {
 			return false;
+		}
 		NewConstructorTypeMunger o = (NewConstructorTypeMunger) other;
 		return ((syntheticConstructor == null) ? (o.syntheticConstructor == null) : syntheticConstructor
 				.equals(o.syntheticConstructor))
@@ -46,8 +46,9 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 
 	// pr262218 - equivalence ignores the explicit constructor since that won't have yet been set for an EclipseTypeMunger
 	public boolean equivalentTo(Object other) {
-		if (!(other instanceof NewConstructorTypeMunger))
+		if (!(other instanceof NewConstructorTypeMunger)) {
 			return false;
+		}
 		NewConstructorTypeMunger o = (NewConstructorTypeMunger) other;
 		return ((syntheticConstructor == null) ? (o.syntheticConstructor == null) : syntheticConstructor
 				.equals(o.syntheticConstructor));
@@ -70,7 +71,7 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 	// return AjcMemberMaker.interMethodBody(signature, aspectType);
 	// }
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		kind.write(s);
 		signature.write(s);
 		syntheticConstructor.write(s);
@@ -90,8 +91,9 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 		List typeVarAliases = readInTypeAliases(s);
 		ResolvedTypeMunger munger = new NewConstructorTypeMunger(sig, syntheticCtor, explicitCtor, superMethodsCalled,
 				typeVarAliases);
-		if (sloc != null)
+		if (sloc != null) {
 			munger.setSourceLocation(sloc);
+		}
 		return munger;
 	}
 
@@ -111,8 +113,9 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 
 	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedType aspectType) {
 		ResolvedMember ret = getSyntheticConstructor();
-		if (ResolvedType.matches(ret, member))
+		if (ResolvedType.matches(ret, member)) {
 			return getSignature();
+		}
 		return super.getMatchingSyntheticMember(member, aspectType);
 	}
 
@@ -128,8 +131,9 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 	 */
 	public ResolvedTypeMunger parameterizedFor(ResolvedType target) {
 		ResolvedType genericType = target;
-		if (target.isRawType() || target.isParameterizedType())
+		if (target.isRawType() || target.isParameterizedType()) {
 			genericType = genericType.getGenericType();
+		}
 		ResolvedMember parameterizedSignature = null;
 		// If we are parameterizing it for a generic type, we just need to 'swap the letters' from the ones used
 		// in the original ITD declaration to the ones used in the actual target type declaration.

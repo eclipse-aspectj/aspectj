@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvableTypeList;
@@ -263,7 +263,7 @@ public class TypePatternList extends PatternNode {
 			tLeft--;
 		}
 	}
-	
+
 	public FuzzyBoolean matches(ResolvableTypeList types, TypePattern.MatchKind kind, ResolvedType[][] parameterAnnotations) {
 		int nameLength = types.length;
 		int patternLength = typePatterns.length;
@@ -497,7 +497,7 @@ public class TypePatternList extends PatternNode {
 	}
 
 	@Override
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeShort(typePatterns.length);
 		for (int i = 0; i < typePatterns.length; i++) {
 			typePatterns[i].write(s);

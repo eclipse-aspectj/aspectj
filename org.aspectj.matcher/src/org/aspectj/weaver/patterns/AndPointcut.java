@@ -10,14 +10,13 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedType;
@@ -27,10 +26,10 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Test;
 
 public class AndPointcut extends Pointcut {
-	Pointcut left, right;  // exposed for testing
+	Pointcut left, right; // exposed for testing
 
 	private int couldMatchKinds;
-	
+
 	public AndPointcut(Pointcut left, Pointcut right) {
 		super();
 		this.left = left;
@@ -39,7 +38,7 @@ public class AndPointcut extends Pointcut {
 		setLocation(left.getSourceContext(), left.getStart(), right.getEnd());
 		couldMatchKinds = left.couldMatchKinds() & right.couldMatchKinds();
 	}
-	
+
 	public int couldMatchKinds() {
 		return couldMatchKinds;
 	}
@@ -47,63 +46,65 @@ public class AndPointcut extends Pointcut {
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
 		return left.fastMatch(type).and(right.fastMatch(type));
 	}
-	
+
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		FuzzyBoolean leftMatch = left.match(shadow);
-		if (leftMatch.alwaysFalse()) return leftMatch;
+		if (leftMatch.alwaysFalse()) {
+			return leftMatch;
+		}
 		return leftMatch.and(right.match(shadow));
 	}
-	
+
 	public String toString() {
 		return "(" + left.toString() + " && " + right.toString() + ")";
 	}
-	
-	public boolean equals(Object other) { 
-		if (!(other instanceof AndPointcut)) return false;
-		AndPointcut o = (AndPointcut)other;
+
+	public boolean equals(Object other) {
+		if (!(other instanceof AndPointcut)) {
+			return false;
+		}
+		AndPointcut o = (AndPointcut) other;
 		return o.left.equals(left) && o.right.equals(right);
 	}
-    
-    public int hashCode() {
-        int result = 19;
-        result = 37*result + left.hashCode();
-        result = 37*result + right.hashCode();
-        return result;
-    }
+
+	public int hashCode() {
+		int result = 19;
+		result = 37 * result + left.hashCode();
+		result = 37 * result + right.hashCode();
+		return result;
+	}
 
 	public void resolveBindings(IScope scope, Bindings bindings) {
 		left.resolveBindings(scope, bindings);
 		right.resolveBindings(scope, bindings);
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.AND);
 		left.write(s);
 		right.write(s);
 		writeLocation(s);
 	}
-	
+
 	public static Pointcut read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		AndPointcut ret = new AndPointcut(Pointcut.read(s, context), Pointcut.read(s, context));
 		ret.readLocation(context, s);
 		return ret;
 	}
 
-
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		return Test.makeAnd(left.findResidue(shadow, state), right.findResidue(shadow, state));
 	}
 
 	public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
-		AndPointcut ret =  new AndPointcut(left.concretize(inAspect, declaringType, bindings),
-										   right.concretize(inAspect, declaringType, bindings));
+		AndPointcut ret = new AndPointcut(left.concretize(inAspect, declaringType, bindings), right.concretize(inAspect,
+				declaringType, bindings));
 		ret.copyLocationFrom(this);
 		return ret;
 	}
-	
-	public Pointcut parameterizeWith(Map typeVariableMap,World w) {
-		AndPointcut ret =  new AndPointcut(left.parameterizeWith(typeVariableMap,w),
-				   						    right.parameterizeWith(typeVariableMap,w));
+
+	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+		AndPointcut ret = new AndPointcut(left.parameterizeWith(typeVariableMap, w), right.parameterizeWith(typeVariableMap, w));
 		ret.copyLocationFrom(this);
 		return ret;
 	}
@@ -116,14 +117,14 @@ public class AndPointcut extends Pointcut {
 		return right;
 	}
 
-    public Object accept(PatternNodeVisitor visitor, Object data) {
-        return visitor.visit(this, data);
-    }
-	
+	public Object accept(PatternNodeVisitor visitor, Object data) {
+		return visitor.visit(this, data);
+	}
+
 	public Object traverse(PatternNodeVisitor visitor, Object data) {
-		Object ret = accept(visitor,data);
-		left.traverse(visitor,ret);
-		right.traverse(visitor,ret);
+		Object ret = accept(visitor, data);
+		left.traverse(visitor, ret);
+		right.traverse(visitor, ret);
 		return ret;
 	}
 }

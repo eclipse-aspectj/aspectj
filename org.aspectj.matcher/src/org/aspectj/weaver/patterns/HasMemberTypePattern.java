@@ -11,7 +11,6 @@
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
@@ -20,6 +19,7 @@ import java.util.Map;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
@@ -162,7 +162,7 @@ public class HasMemberTypePattern extends TypePattern {
 	}
 
 	@Override
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(TypePattern.HAS_MEMBER);
 		signaturePattern.write(s);
 		writeLocation(s);

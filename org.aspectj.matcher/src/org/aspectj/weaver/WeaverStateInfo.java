@@ -154,7 +154,7 @@ public class WeaverStateInfo {
 	 * be inserted. When the key is replaced with the diff, the 'kind' byte moves to the front of the attribute - thats why in the
 	 * read logic you'll see it expecting the kind as the first byte.
 	 */
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		if (oldStyle || reweavableCompressedMode) {
 			throw new RuntimeException("shouldn't be writing this");
 		}

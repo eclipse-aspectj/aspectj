@@ -14,10 +14,10 @@ package org.aspectj.weaver.patterns;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
@@ -248,7 +248,7 @@ public class TypePatternTestCase extends PatternsTestCase {
 	private void checkSerialization(String string) throws IOException {
 		TypePattern p = makeTypePattern(string);
 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
-		DataOutputStream out = new DataOutputStream(bo);
+		CompressingDataOutputStream out = new CompressingDataOutputStream(bo);
 		p.write(out);
 		out.close();
 

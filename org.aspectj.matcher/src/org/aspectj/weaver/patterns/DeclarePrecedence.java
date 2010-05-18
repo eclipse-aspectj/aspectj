@@ -12,12 +12,12 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import org.aspectj.bridge.IMessage;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
@@ -55,8 +55,9 @@ public class DeclarePrecedence extends Declare {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof DeclarePrecedence))
+		if (!(other instanceof DeclarePrecedence)) {
 			return false;
+		}
 		DeclarePrecedence o = (DeclarePrecedence) other;
 		return o.patterns.equals(patterns);
 	}
@@ -65,7 +66,7 @@ public class DeclarePrecedence extends Declare {
 		return patterns.hashCode();
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(Declare.DOMINATES);
 		patterns.write(s);
 		writeLocation(s);
@@ -106,8 +107,9 @@ public class DeclarePrecedence extends Declare {
 				continue;
 			}
 			ResolvedType exactType = pi.getExactType().resolve(scope.getWorld());
-			if (exactType.isMissing())
+			if (exactType.isMissing()) {
 				continue;
+			}
 
 			// Cannot do a dec prec specifying a non-aspect types unless suffixed with a '+'
 			if (!exactType.isAspect() && !exactType.isAnnotationStyleAspect() && !pi.isIncludeSubtypes()
@@ -118,11 +120,13 @@ public class DeclarePrecedence extends Declare {
 			}
 
 			for (int j = 0; j < patterns.size(); j++) {
-				if (j == i)
+				if (j == i) {
 					continue;
+				}
 				TypePattern pj = patterns.get(j);
-				if (pj.isStar())
+				if (pj.isStar()) {
 					continue;
+				}
 				if (pj.matchesStatically(exactType)) {
 					scope.getWorld().showMessage(IMessage.ERROR,
 							WeaverMessages.format(WeaverMessages.TWO_PATTERN_MATCHES_IN_PRECEDENCE, exactType.getName()),
@@ -156,10 +160,11 @@ public class DeclarePrecedence extends Declare {
 				}
 			}
 		}
-		if (knownMatch == -1)
+		if (knownMatch == -1) {
 			return starMatch;
-		else
+		} else {
 			return knownMatch;
+		}
 	}
 
 	public int compare(ResolvedType aspect1, ResolvedType aspect2) {
@@ -169,15 +174,17 @@ public class DeclarePrecedence extends Declare {
 
 		// System.out.println("a1: " + aspect1 + ", " + aspect2 + " = " + index1 + ", " + index2);
 
-		if (index1 == -1 || index2 == -1)
+		if (index1 == -1 || index2 == -1) {
 			return 0;
+		}
 
-		if (index1 == index2)
+		if (index1 == index2) {
 			return 0;
-		else if (index1 > index2)
+		} else if (index1 > index2) {
 			return -1;
-		else
+		} else {
 			return +1;
+		}
 	}
 
 	public boolean isAdviceLike() {

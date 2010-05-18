@@ -8,7 +8,6 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -379,7 +378,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		return (modifiers & 4096) != 0; // do we know better?
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		getKind().write(s);
 		getDeclaringType().write(s);
 		s.writeInt(modifiers);
@@ -460,7 +459,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 		return sb.toString();
 	}
 
-	public static void writeArray(ResolvedMember[] members, DataOutputStream s) throws IOException {
+	public static void writeArray(ResolvedMember[] members, CompressingDataOutputStream s) throws IOException {
 		s.writeInt(members.length);
 		for (int i = 0, len = members.length; i < len; i++) {
 			members[i].write(s);

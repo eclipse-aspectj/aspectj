@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -24,6 +23,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.CrosscuttingMembers;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
@@ -87,7 +87,7 @@ public class CflowPointcut extends Pointcut {
 		return FuzzyBoolean.MAYBE;
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.CFLOW);
 		entry.write(s);
 		s.writeBoolean(isBelow);

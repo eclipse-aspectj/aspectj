@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -21,6 +20,7 @@ import java.util.Map;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberImpl;
@@ -80,8 +80,9 @@ public class ConcreteCflowPointcut extends Pointcut {
 
 	// used by weaver when validating bindings
 	public int[] getUsedFormalSlots() {
-		if (slots == null)
+		if (slots == null) {
 			return new int[0];
+		}
 		int[] indices = new int[slots.size()];
 		for (int i = 0; i < indices.length; i++) {
 			indices[i] = ((Slot) slots.get(i)).formalIndex;
@@ -89,7 +90,7 @@ public class ConcreteCflowPointcut extends Pointcut {
 		return indices;
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		throw new RuntimeException("unimplemented");
 	}
 
@@ -102,8 +103,9 @@ public class ConcreteCflowPointcut extends Pointcut {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof ConcreteCflowPointcut))
+		if (!(other instanceof ConcreteCflowPointcut)) {
 			return false;
+		}
 		ConcreteCflowPointcut o = (ConcreteCflowPointcut) other;
 		return o.cflowField.equals(this.cflowField);
 	}
@@ -161,8 +163,9 @@ public class ConcreteCflowPointcut extends Pointcut {
 		}
 
 		public boolean equals(Object other) {
-			if (!(other instanceof Slot))
+			if (!(other instanceof Slot)) {
 				return false;
+			}
 
 			Slot o = (Slot) other;
 			return o.formalIndex == this.formalIndex && o.arrayIndex == this.arrayIndex && o.formalType.equals(this.formalType);

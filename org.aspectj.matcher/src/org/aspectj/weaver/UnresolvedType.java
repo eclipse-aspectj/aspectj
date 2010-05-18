@@ -15,7 +15,6 @@
 package org.aspectj.weaver;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -836,7 +835,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		}
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public final void write(CompressingDataOutputStream s) throws IOException {
 		s.writeUTF(getSignature());
 	}
 
@@ -850,7 +849,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		}
 	}
 
-	public static void writeArray(UnresolvedType[] types, DataOutputStream s) throws IOException {
+	public static void writeArray(UnresolvedType[] types, CompressingDataOutputStream s) throws IOException {
 		int len = types.length;
 		s.writeShort(len);
 		for (int i = 0; i < len; i++) {

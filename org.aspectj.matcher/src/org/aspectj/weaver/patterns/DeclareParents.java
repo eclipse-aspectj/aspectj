@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +22,7 @@ import java.util.Map;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
@@ -46,8 +46,9 @@ public class DeclareParents extends Declare {
 		this.child = child;
 		this.parents = parents;
 		this.isExtends = isExtends;
-		if (child instanceof WildTypePattern)
+		if (child instanceof WildTypePattern) {
 			isWildChild = true;
+		}
 	}
 
 	// public String[] getTypeParameterNames() {
@@ -59,8 +60,9 @@ public class DeclareParents extends Declare {
 	// }
 
 	public boolean match(ResolvedType typeX) {
-		if (!child.matchesStatically(typeX))
+		if (!child.matchesStatically(typeX)) {
 			return false;
+		}
 		if (typeX.getWorld().getLint().typeNotExposedToWeaver.isEnabled() && !typeX.isExposedToWeaver()) {
 			typeX.getWorld().getLint().typeNotExposedToWeaver.signal(typeX.getName(), getSourceLocation());
 		}
@@ -94,8 +96,9 @@ public class DeclareParents extends Declare {
 
 	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof DeclareParents))
+		if (!(other instanceof DeclareParents)) {
 			return false;
+		}
 		DeclareParents o = (DeclareParents) other;
 		return o.child.equals(child) && o.parents.equals(parents);
 	}
@@ -110,7 +113,7 @@ public class DeclareParents extends Declare {
 	}
 
 	@Override
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(Declare.PARENTS);
 		child.write(s);
 		parents.write(s);
@@ -136,16 +139,18 @@ public class DeclareParents extends Declare {
 
 	public boolean parentsIncludeInterface(World w) {
 		for (int i = 0; i < parents.size(); i++) {
-			if (parents.get(i).getExactType().resolve(w).isInterface())
+			if (parents.get(i).getExactType().resolve(w).isInterface()) {
 				return true;
+			}
 		}
 		return false;
 	}
 
 	public boolean parentsIncludeClass(World w) {
 		for (int i = 0; i < parents.size(); i++) {
-			if (parents.get(i).getExactType().resolve(w).isClass())
+			if (parents.get(i).getExactType().resolve(w).isClass()) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -182,8 +187,9 @@ public class DeclareParents extends Declare {
 	}
 
 	private ResolvedType maybeGetNewParent(ResolvedType targetType, TypePattern typePattern, World world, boolean reportErrors) {
-		if (typePattern == TypePattern.NO)
+		if (typePattern == TypePattern.NO) {
 			return null; // already had an error here
+		}
 
 		// isWildChild = (child instanceof WildTypePattern);
 		UnresolvedType iType = typePattern.getExactType();
@@ -199,12 +205,14 @@ public class DeclareParents extends Declare {
 		if (parentType.isParameterizedType() || parentType.isRawType()) {
 			// Let's take a look at the parents we already have
 			boolean isOK = verifyNoInheritedAlternateParameterization(targetType, parentType, world);
-			if (!isOK)
+			if (!isOK) {
 				return null;
+			}
 		}
 
-		if (parentType.isAssignableFrom(targetType))
+		if (parentType.isAssignableFrom(targetType)) {
 			return null; // already a parent
+		}
 
 		// Enum types that are targetted for decp through a wild type pattern get linted
 		if (reportErrors && isWildChild && targetType.isEnum()) {
@@ -264,8 +272,9 @@ public class DeclareParents extends Declare {
 			return null;
 		}
 
-		if (parentType.isAssignableFrom(targetType))
+		if (parentType.isAssignableFrom(targetType)) {
 			return null; // already a parent
+		}
 
 		if (targetType.isAssignableFrom(parentType)) {
 			world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.CANT_EXTEND_SELF, targetType.getName()), this
@@ -305,8 +314,9 @@ public class DeclareParents extends Declare {
 	 */
 	private boolean verifyNoInheritedAlternateParameterization(ResolvedType typeToVerify, ResolvedType newParent, World world) {
 
-		if (typeToVerify.equals(ResolvedType.OBJECT))
+		if (typeToVerify.equals(ResolvedType.OBJECT)) {
 			return true;
+		}
 
 		ResolvedType newParentGenericType = newParent.getGenericType();
 		Iterator iter = typeToVerify.getDirectSupertypes();
@@ -342,16 +352,19 @@ public class DeclareParents extends Declare {
 	}
 
 	public List<ResolvedType> findMatchingNewParents(ResolvedType onType, boolean reportErrors) {
-		if (onType.isRawType())
+		if (onType.isRawType()) {
 			onType = onType.getGenericType();
-		if (!match(onType))
+		}
+		if (!match(onType)) {
 			return Collections.emptyList();
+		}
 
 		List<ResolvedType> ret = new ArrayList<ResolvedType>();
 		for (int i = 0; i < parents.size(); i++) {
 			ResolvedType t = maybeGetNewParent(onType, parents.get(i), onType.getWorld(), reportErrors);
-			if (t != null)
+			if (t != null) {
 				ret.add(t);
+			}
 		}
 
 		return ret;

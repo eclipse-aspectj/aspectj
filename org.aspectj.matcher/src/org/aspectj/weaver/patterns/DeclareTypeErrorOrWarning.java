@@ -12,10 +12,10 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
@@ -43,10 +43,11 @@ public class DeclareTypeErrorOrWarning extends Declare {
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("declare ");
-		if (isError)
+		if (isError) {
 			buf.append("error: ");
-		else
+		} else {
 			buf.append("warning: ");
+		}
 		buf.append(typePattern);
 		buf.append(": ");
 		buf.append("\"");
@@ -56,8 +57,9 @@ public class DeclareTypeErrorOrWarning extends Declare {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof DeclareTypeErrorOrWarning))
+		if (!(other instanceof DeclareTypeErrorOrWarning)) {
 			return false;
+		}
 		DeclareTypeErrorOrWarning o = (DeclareTypeErrorOrWarning) other;
 		return (o.isError == isError) && o.typePattern.equals(typePattern) && o.message.equals(message);
 	}
@@ -73,7 +75,7 @@ public class DeclareTypeErrorOrWarning extends Declare {
 		return visitor.visit(this, data);
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(Declare.TYPE_ERROR_OR_WARNING);
 		s.writeBoolean(isError);
 		typePattern.write(s);
@@ -123,10 +125,11 @@ public class DeclareTypeErrorOrWarning extends Declare {
 	public String getName() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("declare type ");
-		if (isError)
+		if (isError) {
 			buf.append("error");
-		else
+		} else {
 			buf.append("warning");
+		}
 		return buf.toString();
 	}
 }

@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +58,7 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 		}
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		kind.write(s);
 		signature.write(s);
 		writeSuperMethodsCalled(s);
@@ -75,15 +74,17 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 		List typeVarAliases = readInTypeAliases(s);
 
 		ResolvedTypeMunger munger = new NewMethodTypeMunger(rmImpl, superMethodsCalled, typeVarAliases);
-		if (sloc != null)
+		if (sloc != null) {
 			munger.setSourceLocation(sloc);
+		}
 		return munger;
 	}
 
 	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedType aspectType) {
 		ResolvedMember ret = AjcMemberMaker.interMethodDispatcher(getSignature(), aspectType);
-		if (ResolvedType.matches(ret, member))
+		if (ResolvedType.matches(ret, member)) {
 			return getSignature();
+		}
 		return super.getMatchingSyntheticMember(member, aspectType);
 	}
 
@@ -92,8 +93,9 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 	 */
 	public ResolvedTypeMunger parameterizedFor(ResolvedType target) {
 		ResolvedType genericType = target;
-		if (target.isRawType() || target.isParameterizedType())
+		if (target.isRawType() || target.isParameterizedType()) {
 			genericType = genericType.getGenericType();
+		}
 		ResolvedMember parameterizedSignature = null;
 		// If we are parameterizing it for a generic type, we just need to 'swap the letters' from the ones used
 		// in the original ITD declaration to the ones used in the actual target type declaration.

@@ -14,11 +14,11 @@ package org.aspectj.weaver.patterns;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import junit.framework.TestCase;
 
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.VersionedDataInputStream;
 
 public class DeclareErrorOrWarningTestCase extends TestCase {
@@ -50,7 +50,7 @@ public class DeclareErrorOrWarningTestCase extends TestCase {
 
 	private void checkSerialization(Declare declare) throws IOException {
 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
-		DataOutputStream out = new DataOutputStream(bo);
+		CompressingDataOutputStream out = new CompressingDataOutputStream(bo);
 		declare.write(out);
 		out.close();
 

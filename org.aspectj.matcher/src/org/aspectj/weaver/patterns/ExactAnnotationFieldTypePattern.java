@@ -11,7 +11,6 @@
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -19,6 +18,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
@@ -127,7 +127,7 @@ public class ExactAnnotationFieldTypePattern extends ExactAnnotationTypePattern 
 	}
 
 	@Override
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(AnnotationTypePattern.EXACTFIELD);
 		s.writeUTF(formalName);
 		annotationType.write(s);

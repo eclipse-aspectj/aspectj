@@ -11,7 +11,6 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -112,7 +111,7 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.isSynthetic();
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		realMember.write(s);
 	}
 

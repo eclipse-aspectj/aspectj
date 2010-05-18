@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -22,6 +21,7 @@ import org.aspectj.bridge.Message;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.PerTypeWithinTargetTypeMunger;
@@ -86,8 +86,9 @@ public class PerTypeWithin extends PerClause {
 		// in a pertypewithin aspect - the JPs only exist in the static
 		// initializer and can't
 		// call the localAspectOf() method.
-		if (enclosingType.isInterface())
+		if (enclosingType.isInterface()) {
 			return FuzzyBoolean.NO;
+		}
 
 		typePattern.resolve(shadow.getIWorld());
 		return isWithinType(enclosingType);
@@ -137,8 +138,9 @@ public class PerTypeWithin extends PerClause {
 		PerTypeWithin ret = new PerTypeWithin(typePattern);
 		ret.copyLocationFrom(this);
 		ret.inAspect = inAspect;
-		if (inAspect.isAbstract())
+		if (inAspect.isAbstract()) {
 			return ret;
+		}
 
 		World world = inAspect.getWorld();
 
@@ -178,7 +180,7 @@ public class PerTypeWithin extends PerClause {
 
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		PERTYPEWITHIN.write(s);
 		typePattern.write(s);
 		writeLocation(s);
@@ -213,8 +215,9 @@ public class PerTypeWithin extends PerClause {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof PerTypeWithin))
+		if (!(other instanceof PerTypeWithin)) {
 			return false;
+		}
 		PerTypeWithin pc = (PerTypeWithin) other;
 		return ((pc.inAspect == null) ? (inAspect == null) : pc.inAspect.equals(inAspect))
 				&& ((pc.typePattern == null) ? (typePattern == null) : pc.typePattern.equals(typePattern));

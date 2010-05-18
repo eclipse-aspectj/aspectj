@@ -12,14 +12,13 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
+import java.io.IOException;
+
 import org.aspectj.weaver.patterns.PerFromSuper;
 import org.aspectj.weaver.patterns.PerObject;
 import org.aspectj.weaver.patterns.PerThisOrTargetPointcutVisitor;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.TypePattern;
-
-import java.io.DataOutputStream;
-import java.io.IOException;
 
 public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {
 
@@ -28,8 +27,9 @@ public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {
 	private TypePattern lazyTestTypePattern;
 
 	public boolean equals(Object other) {
-		if (other == null || !(other instanceof PerObjectInterfaceTypeMunger))
+		if (other == null || !(other instanceof PerObjectInterfaceTypeMunger)) {
 			return false;
+		}
 		PerObjectInterfaceTypeMunger o = (PerObjectInterfaceTypeMunger) other;
 		return ((testPointcut == null) ? (o.testPointcut == null) : testPointcut.equals(o.testPointcut))
 				&& ((lazyTestTypePattern == null) ? (o.lazyTestTypePattern == null) : lazyTestTypePattern
@@ -71,7 +71,7 @@ public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {
 		return lazyTestTypePattern;
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		throw new RuntimeException("shouldn't be serialized");
 	}
 
@@ -84,8 +84,9 @@ public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {
 	}
 
 	public boolean matches(ResolvedType matchType, ResolvedType aspectType) {
-		if (matchType.isInterface())
+		if (matchType.isInterface()) {
 			return false;
+		}
 		return getTestTypePattern(aspectType).matchesStatically(matchType);
 	}
 

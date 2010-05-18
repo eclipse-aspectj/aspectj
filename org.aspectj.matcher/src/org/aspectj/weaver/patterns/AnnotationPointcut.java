@@ -10,7 +10,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +22,7 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
@@ -160,8 +160,9 @@ public class AnnotationPointcut extends NameBindingPointcut {
 		ResolvedMember decMethods[] = aspectType.getDeclaredMethods();
 		for (int i = 0; i < decMethods.length; i++) {
 			ResolvedMember member = decMethods[i];
-			if (member.equals(ajcMethod))
+			if (member.equals(ajcMethod)) {
 				return member;
+			}
 		}
 		return null;
 	}
@@ -230,18 +231,20 @@ public class AnnotationPointcut extends NameBindingPointcut {
 			// "]  shadow=["+shadow+" at "+shadow.getSourceLocation()+
 			// "]    pointcut is at ["+getSourceLocation()+"]");
 			if (var == null) {
-				if (matchInternal(shadow).alwaysTrue())
+				if (matchInternal(shadow).alwaysTrue()) {
 					return Literal.TRUE;
-				else
+				} else {
 					return Literal.FALSE;
+				}
 			}
 			state.set(btp.getFormalIndex(), var);
 		}
 
-		if (matchInternal(shadow).alwaysTrue())
+		if (matchInternal(shadow).alwaysTrue()) {
 			return Literal.TRUE;
-		else
+		} else {
 			return Literal.FALSE;
+		}
 	}
 
 	/*
@@ -254,8 +257,9 @@ public class AnnotationPointcut extends NameBindingPointcut {
 			List l = new ArrayList();
 			l.add(annotationTypePattern);
 			return l;
-		} else
+		} else {
 			return Collections.EMPTY_LIST;
+		}
 	}
 
 	/*
@@ -272,7 +276,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	 * 
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)
 	 */
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.ANNOTATION);
 		annotationTypePattern.write(s);
 		writeLocation(s);
@@ -286,8 +290,9 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof AnnotationPointcut))
+		if (!(other instanceof AnnotationPointcut)) {
 			return false;
+		}
 		AnnotationPointcut o = (AnnotationPointcut) other;
 		return o.annotationTypePattern.equals(this.annotationTypePattern);
 	}

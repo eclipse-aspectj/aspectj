@@ -13,7 +13,6 @@
 package org.aspectj.weaver.patterns;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +20,7 @@ import java.util.Map;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.TypeVariableReference;
@@ -243,7 +243,7 @@ public class ExactTypePattern extends TypePattern {
 	private static final byte EXACT_VERSION = 1; // rev if changed
 
 	@Override
-	public void write(DataOutputStream out) throws IOException {
+	public void write(CompressingDataOutputStream out) throws IOException {
 		out.writeByte(TypePattern.EXACT);
 		out.writeByte(EXACT_VERSION);
 		type.write(out);

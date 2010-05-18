@@ -11,11 +11,11 @@
  * ******************************************************************/
 package org.aspectj.weaver.internal.tools;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
@@ -157,7 +157,7 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut {
 	 * 
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)
 	 */
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		throw new UnsupportedOperationException("can't write custom pointcut designator expressions to stream");
 	}
 

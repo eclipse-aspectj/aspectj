@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -22,6 +21,7 @@ import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Checker;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.PoliceExtensionUse;
@@ -396,7 +396,7 @@ public abstract class Pointcut extends PatternNode {
 		}
 
 		@Override
-		public void write(DataOutputStream s) throws IOException {
+		public void write(CompressingDataOutputStream s) throws IOException {
 			s.writeByte(NONE);
 		}
 

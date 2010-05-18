@@ -8,7 +8,6 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 /**
@@ -314,7 +313,7 @@ public class TypeVariable {
 		return declaringElementKind;
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		// name, upperbound, additionalInterfaceBounds, lowerbound
 		s.writeUTF(name);
 		superclass.write(s);

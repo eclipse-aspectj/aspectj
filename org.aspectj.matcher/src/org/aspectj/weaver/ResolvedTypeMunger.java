@@ -177,7 +177,7 @@ public abstract class ResolvedTypeMunger {
 		return ret;
 	}
 
-	protected void writeSuperMethodsCalled(DataOutputStream s) throws IOException {
+	protected void writeSuperMethodsCalled(CompressingDataOutputStream s) throws IOException {
 
 		if (superMethodsCalled == null || superMethodsCalled.size() == 0) {
 			s.writeInt(0);
@@ -243,7 +243,7 @@ public abstract class ResolvedTypeMunger {
 		oos.close();
 	}
 
-	public abstract void write(DataOutputStream s) throws IOException;
+	public abstract void write(CompressingDataOutputStream s) throws IOException;
 
 	public Kind getKind() {
 		return kind;

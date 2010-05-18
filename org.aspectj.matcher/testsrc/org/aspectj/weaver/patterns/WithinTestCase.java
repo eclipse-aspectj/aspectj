@@ -14,10 +14,10 @@ package org.aspectj.weaver.patterns;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TestShadow;
@@ -25,11 +25,6 @@ import org.aspectj.weaver.TestUtils;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.patterns.Bindings;
-import org.aspectj.weaver.patterns.FormalBinding;
-import org.aspectj.weaver.patterns.IScope;
-import org.aspectj.weaver.patterns.Pointcut;
-import org.aspectj.weaver.patterns.SimpleScope;
 import org.aspectj.weaver.reflect.ReflectionWorld;
 
 public class WithinTestCase extends PatternsTestCase {
@@ -112,7 +107,7 @@ public class WithinTestCase extends PatternsTestCase {
 
 	private void checkSerialization(Pointcut p) throws IOException {
 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
-		DataOutputStream out = new DataOutputStream(bo);
+		CompressingDataOutputStream out = new CompressingDataOutputStream(bo);
 		p.write(out);
 		out.close();
 

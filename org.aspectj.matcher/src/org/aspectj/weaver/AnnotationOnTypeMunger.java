@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 /**
@@ -26,7 +25,7 @@ public class AnnotationOnTypeMunger extends ResolvedTypeMunger {
 		newAnnotation = anno;
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		throw new RuntimeException("unimplemented");
 	}
 
@@ -35,8 +34,9 @@ public class AnnotationOnTypeMunger extends ResolvedTypeMunger {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof AnnotationOnTypeMunger))
+		if (!(other instanceof AnnotationOnTypeMunger)) {
 			return false;
+		}
 		AnnotationOnTypeMunger o = (AnnotationOnTypeMunger) other;
 		// TODO does not check equality of annotation values
 		return newAnnotation.getTypeSignature().equals(o.newAnnotation.getTypeSignature());

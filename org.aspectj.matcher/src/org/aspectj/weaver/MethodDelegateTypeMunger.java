@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.weaver.patterns.TypePattern;
@@ -78,8 +77,9 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof MethodDelegateTypeMunger))
+		if (!(other instanceof MethodDelegateTypeMunger)) {
 			return false;
+		}
 		MethodDelegateTypeMunger o = (MethodDelegateTypeMunger) other;
 		return ((o.aspect == null) ? (aspect == null) : aspect.equals(o.aspect))
 				&& ((o.typePattern == null) ? (typePattern == null) : typePattern.equals(o.typePattern))
@@ -127,7 +127,7 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 		return implClassName;
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		kind.write(s);
 		signature.write(s);
 		aspect.write(s);
@@ -210,8 +210,9 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 		}
 
 		public boolean equals(Object other) {
-			if (!(other instanceof FieldHostTypeMunger))
+			if (!(other instanceof FieldHostTypeMunger)) {
 				return false;
+			}
 			FieldHostTypeMunger o = (FieldHostTypeMunger) other;
 			return ((o.aspect == null) ? (aspect == null) : aspect.equals(o.aspect))
 					&& ((o.typePattern == null) ? (typePattern == null) : typePattern.equals(o.typePattern));
@@ -224,7 +225,7 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 			return result;
 		}
 
-		public void write(DataOutputStream s) throws IOException {
+		public void write(CompressingDataOutputStream s) throws IOException {
 			kind.write(s);
 			signature.write(s);
 			aspect.write(s);

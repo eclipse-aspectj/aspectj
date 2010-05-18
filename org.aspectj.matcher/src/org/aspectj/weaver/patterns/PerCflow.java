@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -23,6 +22,7 @@ import java.util.Map;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.CrosscuttingMembers;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
@@ -83,8 +83,9 @@ public class PerCflow extends PerClause {
 	public PerClause concretize(ResolvedType inAspect) {
 		PerCflow ret = new PerCflow(entry, isBelow);
 		ret.inAspect = inAspect;
-		if (inAspect.isAbstract())
+		if (inAspect.isAbstract()) {
 			return ret;
+		}
 
 		Member cflowStackField = new ResolvedMemberImpl(Member.FIELD, inAspect, Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL,
 				UnresolvedType.forName(NameMangler.CFLOW_STACK_TYPE), NameMangler.PERCFLOW_FIELD_NAME, UnresolvedType.NONE);
@@ -121,7 +122,7 @@ public class PerCflow extends PerClause {
 		return ret;
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		PERCFLOW.write(s);
 		entry.write(s);
 		s.writeBoolean(isBelow);
@@ -147,14 +148,16 @@ public class PerCflow extends PerClause {
 	}
 
 	public String toDeclarationString() {
-		if (isBelow)
+		if (isBelow) {
 			return "percflowbelow(" + entry + ")";
+		}
 		return "percflow(" + entry + ")";
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof PerCflow))
+		if (!(other instanceof PerCflow)) {
 			return false;
+		}
 		PerCflow pc = (PerCflow) other;
 		return (pc.isBelow && isBelow) && ((pc.inAspect == null) ? (inAspect == null) : pc.inAspect.equals(inAspect))
 				&& ((pc.entry == null) ? (entry == null) : pc.entry.equals(entry));

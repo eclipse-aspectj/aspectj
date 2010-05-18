@@ -12,13 +12,13 @@
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.AnnotationAJ;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
@@ -221,7 +221,7 @@ public class DeclareAnnotation extends Declare {
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)
 	 */
 	@Override
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(Declare.ANNOTATION);
 		s.writeInt(kind.id);
 		s.writeUTF(annotationString);

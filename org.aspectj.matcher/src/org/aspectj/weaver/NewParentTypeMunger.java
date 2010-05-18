@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class NewParentTypeMunger extends ResolvedTypeMunger {
@@ -25,7 +24,7 @@ public class NewParentTypeMunger extends ResolvedTypeMunger {
 		this.isMixin = false;
 	}
 
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		throw new RuntimeException("unimplemented");
 	}
 

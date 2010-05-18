@@ -10,13 +10,12 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver.patterns;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
@@ -31,15 +30,18 @@ public class DeclareErrorOrWarning extends Declare {
 		this.pointcut = pointcut;
 		this.message = message;
 	}
-	
+
 	/**
 	 * returns "declare warning: <message>" or "declare error: <message>"
 	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("declare ");
-		if (isError) buf.append("error: ");
-		else buf.append("warning: ");
+		if (isError) {
+			buf.append("error: ");
+		} else {
+			buf.append("warning: ");
+		}
 		buf.append(pointcut);
 		buf.append(": ");
 		buf.append("\"");
@@ -47,27 +49,27 @@ public class DeclareErrorOrWarning extends Declare {
 		buf.append("\";");
 		return buf.toString();
 	}
-	
-	public boolean equals(Object other) { 
-		if (!(other instanceof DeclareErrorOrWarning)) return false;
-		DeclareErrorOrWarning o = (DeclareErrorOrWarning)other;
-		return (o.isError == isError) &&
-			o.pointcut.equals(pointcut) &&
-			o.message.equals(message);
+
+	public boolean equals(Object other) {
+		if (!(other instanceof DeclareErrorOrWarning)) {
+			return false;
+		}
+		DeclareErrorOrWarning o = (DeclareErrorOrWarning) other;
+		return (o.isError == isError) && o.pointcut.equals(pointcut) && o.message.equals(message);
 	}
-    
-    public int hashCode() {
-        int result = isError ? 19 : 23;
-        result = 37*result + pointcut.hashCode();
-        result = 37*result + message.hashCode();
-        return result;
-    }
+
+	public int hashCode() {
+		int result = isError ? 19 : 23;
+		result = 37 * result + pointcut.hashCode();
+		result = 37 * result + message.hashCode();
+		return result;
+	}
 
 	public Object accept(PatternNodeVisitor visitor, Object data) {
-		return visitor.visit(this,data);
+		return visitor.visit(this, data);
 	}
-	
-	public void write(DataOutputStream s) throws IOException {
+
+	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(Declare.ERROR_OR_WARNING);
 		s.writeBoolean(isError);
 		pointcut.write(s);
@@ -76,15 +78,10 @@ public class DeclareErrorOrWarning extends Declare {
 	}
 
 	public static Declare read(VersionedDataInputStream s, ISourceContext context) throws IOException {
-		Declare ret = new DeclareErrorOrWarning(
-			s.readBoolean(),
-			Pointcut.read(s, context),
-			s.readUTF()
-		);
+		Declare ret = new DeclareErrorOrWarning(s.readBoolean(), Pointcut.read(s, context), s.readUTF());
 		ret.readLocation(context, s);
 		return ret;
 	}
-
 
 	public boolean isError() {
 		return isError;
@@ -97,17 +94,17 @@ public class DeclareErrorOrWarning extends Declare {
 	public Pointcut getPointcut() {
 		return pointcut;
 	}
-	
-    public void resolve(IScope scope) {
-    	pointcut = pointcut.resolve(scope);  	
-    }
-    
-    public Declare parameterizeWith(Map typeVariableBindingMap,World w) {
-    	Declare ret = new DeclareErrorOrWarning(isError,pointcut.parameterizeWith(typeVariableBindingMap,w),message);
-    	ret.copyLocationFrom(this);
-    	return ret;
-    }
-    
+
+	public void resolve(IScope scope) {
+		pointcut = pointcut.resolve(scope);
+	}
+
+	public Declare parameterizeWith(Map typeVariableBindingMap, World w) {
+		Declare ret = new DeclareErrorOrWarning(isError, pointcut.parameterizeWith(typeVariableBindingMap, w), message);
+		ret.copyLocationFrom(this);
+		return ret;
+	}
+
 	public boolean isAdviceLike() {
 		return true;
 	}
@@ -115,15 +112,18 @@ public class DeclareErrorOrWarning extends Declare {
 	public String getNameSuffix() {
 		return "eow";
 	}
-	
+
 	/**
 	 * returns "declare warning" or "declare error"
 	 */
 	public String getName() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("declare ");
-		if (isError) buf.append("error");
-		else buf.append("warning");	
+		if (isError) {
+			buf.append("error");
+		} else {
+			buf.append("warning");
+		}
 		return buf.toString();
 	}
 }

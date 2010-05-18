@@ -8,8 +8,6 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 
 /**
  * @author Adrian Colyer
@@ -83,11 +81,6 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType implemen
 	@Override
 	public String toDebugString() {
 		return typeVariable.getName();
-	}
-
-	@Override
-	public void write(DataOutputStream s) throws IOException {
-		super.write(s);
 	}
 
 	@Override

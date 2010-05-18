@@ -13,7 +13,6 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +55,7 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 
 	public boolean isSynthetic();
 
-	public void write(DataOutputStream s) throws IOException;
+	public void write(CompressingDataOutputStream s) throws IOException;
 
 	public ISourceContext getSourceContext(World world);
 

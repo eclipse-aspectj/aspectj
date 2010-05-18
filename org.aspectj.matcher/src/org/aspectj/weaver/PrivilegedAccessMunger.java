@@ -12,7 +12,6 @@
 
 package org.aspectj.weaver;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 /**
@@ -34,7 +33,7 @@ public class PrivilegedAccessMunger extends ResolvedTypeMunger {
 	}
 
 	@Override
-	public void write(DataOutputStream s) throws IOException {
+	public void write(CompressingDataOutputStream s) throws IOException {
 		throw new RuntimeException("should not be serialized");
 	}
 
