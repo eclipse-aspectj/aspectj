@@ -52,10 +52,10 @@ public abstract class AjAttribute {
 	/**
 	 * Just writes the contents
 	 */
-	public byte[] getBytes() {
+	public byte[] getBytes(ConstantPoolWriter compressor) {
 		try {
 			ByteArrayOutputStream b0 = new ByteArrayOutputStream();
-			CompressingDataOutputStream s0 = new CompressingDataOutputStream(b0);
+			CompressingDataOutputStream s0 = new CompressingDataOutputStream(b0, compressor);
 			write(s0);
 			s0.close();
 			return b0.toByteArray();
@@ -67,10 +67,12 @@ public abstract class AjAttribute {
 
 	/**
 	 * Writes the full attribute, i.e. name_index, length, and contents
+	 * 
+	 * @param constantPool
 	 */
-	public byte[] getAllBytes(short nameIndex) {
+	public byte[] getAllBytes(short nameIndex, ConstantPoolWriter dataCompressor) {
 		try {
-			byte[] bytes = getBytes();
+			byte[] bytes = getBytes(dataCompressor);
 
 			ByteArrayOutputStream b0 = new ByteArrayOutputStream();
 			DataOutputStream s0 = new DataOutputStream(b0);
@@ -86,12 +88,13 @@ public abstract class AjAttribute {
 		}
 	}
 
-	public static AjAttribute read(AjAttribute.WeaverVersionInfo v, String name, byte[] bytes, ISourceContext context, World w) {
+	public static AjAttribute read(AjAttribute.WeaverVersionInfo v, String name, byte[] bytes, ISourceContext context, World w,
+			ConstantPoolReader dataDecompressor) {
 		try {
 			if (bytes == null) {
 				bytes = new byte[0];
 			}
-			VersionedDataInputStream s = new VersionedDataInputStream(new ByteArrayInputStream(bytes));
+			VersionedDataInputStream s = new VersionedDataInputStream(new ByteArrayInputStream(bytes), dataDecompressor);
 			s.setVersion(v);
 			if (name.equals(Aspect.AttributeName)) {
 				return new Aspect(PerClause.readPerClause(s, context));
