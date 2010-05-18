@@ -13,7 +13,6 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
@@ -53,6 +52,7 @@ import org.aspectj.org.eclipse.jdt.internal.core.builder.ReferenceCollection;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.StringSet;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
@@ -2056,7 +2056,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		aspectClassFiles.add(aspectFile);
 	}
 
-	public void write(DataOutputStream dos) throws IOException {
+	public void write(CompressingDataOutputStream dos) throws IOException {
 		// weaver
 		weaver.write(dos);
 		// world

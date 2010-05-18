@@ -11,7 +11,6 @@
  * ******************************************************************/
 package org.aspectj.ajdt.internal.core.builder;
 
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -24,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
+import org.aspectj.weaver.CompressingDataOutputStream;
 
 /**
  * Central point for all things incremental... - keeps track of the state recorded for each different config file - allows limited
@@ -61,7 +61,7 @@ public class IncrementalStateManager {
 			File f = new File("c:/temp/foo.ajstate");
 			try {
 				AjState state = (AjState) entry.getValue();
-				DataOutputStream dos = new DataOutputStream(new FileOutputStream(f));
+				CompressingDataOutputStream dos = new CompressingDataOutputStream(new FileOutputStream(f));
 				state.write(dos);
 				dos.close();
 			} catch (FileNotFoundException e) {
