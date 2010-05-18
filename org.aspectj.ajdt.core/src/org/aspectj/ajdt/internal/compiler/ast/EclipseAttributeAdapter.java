@@ -10,11 +10,11 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.ajdt.internal.compiler.ast;
 
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.org.eclipse.jdt.internal.compiler.IAttribute;
+import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.ConstantPool;
 
 public class EclipseAttributeAdapter implements IAttribute {
 	AjAttribute attr;
@@ -27,8 +27,8 @@ public class EclipseAttributeAdapter implements IAttribute {
 		return attr.getNameChars();
 	}
 
-	public byte[] getAllBytes(short nameIndex) {
-		return attr.getAllBytes(nameIndex);
+	public byte[] getAllBytes(short nameIndex, ConstantPool constantPool) {
+		return attr.getAllBytes(nameIndex, new EclipseConstantPoolWriter(constantPool));
 	}
 
 }
