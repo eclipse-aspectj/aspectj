@@ -11,13 +11,13 @@
 package org.aspectj.systemtest.ajc169;
 
 import java.io.File;
-import org.aspectj.apache.bcel.classfile.Method;
 import java.lang.reflect.Modifier;
 
 import junit.framework.Test;
 
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
@@ -113,8 +113,13 @@ public class TransparentWeavingTests extends org.aspectj.testing.XMLBasedAjcTest
 	public void testTwoItdsOnTarget() throws Exception {
 		runTest("two itds on target");
 		// Aspect X gets the field, aspect Y gets a mangled one
-		checkForField("TwoItdsOnTarget", Modifier.PRIVATE, "x");
-		checkForField("TwoItdsOnTarget", Modifier.PUBLIC, "ajc$interField$Y$x");
+		if (hasField("TwoItdsOnTarget", "ajc$interField$Y$x")) {
+			checkForField("TwoItdsOnTarget", Modifier.PRIVATE, "x");
+			checkForField("TwoItdsOnTarget", Modifier.PUBLIC, "ajc$interField$Y$x");
+		} else {
+			checkForField("TwoItdsOnTarget", Modifier.PRIVATE, "x");
+			checkForField("TwoItdsOnTarget", Modifier.PUBLIC, "ajc$interField$X$x");
+		}
 	}
 
 	public void testTwoItdsOnTargetThatAlreadyHasIt() throws Exception {
@@ -127,8 +132,13 @@ public class TransparentWeavingTests extends org.aspectj.testing.XMLBasedAjcTest
 	public void testInteractingOldAndNew() throws Exception {
 		runTest("interacting old and new");
 		int SYNTHETIC = 0x00001000; // 4096
-		checkForField("InteractingOldAndNew", Modifier.PRIVATE, "i");
-		checkForField("InteractingOldAndNew", Modifier.PUBLIC, "ajc$interField$Y$i");
+		if (hasField("InteractingOldAndNew", "ajc$interField$Y$i")) {
+			checkForField("InteractingOldAndNew", Modifier.PRIVATE, "i");
+			checkForField("InteractingOldAndNew", Modifier.PUBLIC, "ajc$interField$Y$i");
+		} else {
+			checkForField("InteractingOldAndNew", Modifier.PRIVATE, "i");
+			checkForField("InteractingOldAndNew", Modifier.PUBLIC, "ajc$interField$X$i");
+		}
 		checkForMethod("InteractingOldAndNew", Modifier.PUBLIC | Modifier.STATIC, "main");
 		checkForMethod("InteractingOldAndNew", Modifier.PUBLIC | Modifier.STATIC | SYNTHETIC, "ajc$get$i");
 		checkForMethod("InteractingOldAndNew", Modifier.PUBLIC | Modifier.STATIC | SYNTHETIC, "ajc$set$i");
@@ -147,6 +157,23 @@ public class TransparentWeavingTests extends org.aspectj.testing.XMLBasedAjcTest
 	}
 
 	// ---
+
+	private boolean hasField(String clazzname, String name) {
+		try {
+			JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), clazzname);
+			Field[] fs = jc.getFields();
+			StringBuffer fields = new StringBuffer();
+			for (Field f : fs) {
+				fields.append(f.getName()).append(" ");
+				if (f.getName().equals(name)) {
+					return true;
+				}
+			}
+		} catch (Exception e) {
+			return false;
+		}
+		return false;
+	}
 
 	private Field checkForField(String clazzname, int modifiers, String name) throws Exception {
 		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), clazzname);
