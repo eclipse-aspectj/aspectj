@@ -1319,42 +1319,40 @@ public class BcelWeaver {
 			// are around!
 			world.showMessage(IMessage.INFO, WeaverMessages.format(WeaverMessages.PROCESSING_REWEAVABLE, className, classType
 					.getSourceLocation().getSourceFile()), null, null);
-			Set aspectsPreviouslyInWorld = wsi.getAspectsAffectingType();
-			if (aspectsPreviouslyInWorld != null) {
-				// keep track of them just to ensure unique missing aspect error
-				// reporting
-				Set<String> alreadyConfirmedReweavableState = new HashSet<String>();
-				for (Iterator iter = aspectsPreviouslyInWorld.iterator(); iter.hasNext();) {
-					String requiredTypeName = (String) iter.next();
-					if (!alreadyConfirmedReweavableState.contains(requiredTypeName)) {
-						ResolvedType rtx = world.resolve(UnresolvedType.forName(requiredTypeName), true);
-						boolean exists = !rtx.isMissing();
-						if (!exists) {
-							world.getLint().missingAspectForReweaving.signal(new String[] { requiredTypeName, className },
-									classType.getSourceLocation(), null);
-							// world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.MISSING_REWEAVABLE_TYPE,
-							// requiredTypeName, className), classType.getSourceLocation(), null);
+			Set<String> aspectsPreviouslyInWorld = wsi.getAspectsAffectingType();
+			// keep track of them just to ensure unique missing aspect error
+			// reporting
+			Set<String> alreadyConfirmedReweavableState = new HashSet<String>();
+			for (String requiredTypeSignature : aspectsPreviouslyInWorld) {
+				// for (Iterator iter = aspectsPreviouslyInWorld.iterator(); iter.hasNext();) {
+				// String requiredTypeName = (String) iter.next();
+				if (!alreadyConfirmedReweavableState.contains(requiredTypeSignature)) {
+					ResolvedType rtx = world.resolve(UnresolvedType.forSignature(requiredTypeSignature), true);
+					boolean exists = !rtx.isMissing();
+					if (!exists) {
+						world.getLint().missingAspectForReweaving.signal(new String[] { rtx.getName(), className }, classType
+								.getSourceLocation(), null);
+						// world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.MISSING_REWEAVABLE_TYPE,
+						// requiredTypeName, className), classType.getSourceLocation(), null);
+					} else {
+						if (world.isOverWeaving()) {
+							// System.out.println(">> Removing " + requiredTypeName + " from weaving process: "
+							// + xcutSet.deleteAspect(rtx));
 						} else {
-							if (world.isOverWeaving()) {
-								// System.out.println(">> Removing " + requiredTypeName + " from weaving process: "
-								// + xcutSet.deleteAspect(rtx));
-							} else {
-								// weaved in aspect that are not declared in aop.xml
-								// trigger an error for now
-								// may cause headhache for LTW and packaged lib
-								// without aop.xml in
-								// see #104218
-								if (!xcutSet.containsAspect(rtx)) {
-									world.showMessage(IMessage.ERROR, WeaverMessages.format(
-											WeaverMessages.REWEAVABLE_ASPECT_NOT_REGISTERED, requiredTypeName, className), null,
-											null);
-								} else if (!world.getMessageHandler().isIgnoring(IMessage.INFO)) {
-									world.showMessage(IMessage.INFO, WeaverMessages.format(WeaverMessages.VERIFIED_REWEAVABLE_TYPE,
-											requiredTypeName, rtx.getSourceLocation().getSourceFile()), null, null);
-								}
+							// weaved in aspect that are not declared in aop.xml
+							// trigger an error for now
+							// may cause headhache for LTW and packaged lib
+							// without aop.xml in
+							// see #104218
+							if (!xcutSet.containsAspect(rtx)) {
+								world.showMessage(IMessage.ERROR, WeaverMessages.format(
+										WeaverMessages.REWEAVABLE_ASPECT_NOT_REGISTERED, rtx.getName(), className), null, null);
+							} else if (!world.getMessageHandler().isIgnoring(IMessage.INFO)) {
+								world.showMessage(IMessage.INFO, WeaverMessages.format(WeaverMessages.VERIFIED_REWEAVABLE_TYPE, rtx
+										.getName(), rtx.getSourceLocation().getSourceFile()), null, null);
 							}
-							alreadyConfirmedReweavableState.add(requiredTypeName);
 						}
+						alreadyConfirmedReweavableState.add(requiredTypeSignature);
 					}
 				}
 			}

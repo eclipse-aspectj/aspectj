@@ -434,7 +434,7 @@ class BcelClassWeaver implements IClassWeaver {
 			if (typeMungerAffectedType) {
 				isChanged = true;
 				if (inReweavableMode || clazz.getType().isAspect()) {
-					aspectsAffectingType.add(munger.getAspectType().getName());
+					aspectsAffectingType.add(munger.getAspectType().getSignature());
 				}
 			}
 		}
@@ -510,7 +510,7 @@ class BcelClassWeaver implements IClassWeaver {
 					if (typeMungerAffectedType) {
 						isChanged = true;
 						if (inReweavableMode || clazz.getType().isAspect()) {
-							aspectsAffectingType.add(munger.getAspectType().getName());
+							aspectsAffectingType.add(munger.getAspectType().getSignature());
 						}
 					}
 				}
@@ -1512,7 +1512,7 @@ class BcelClassWeaver implements IClassWeaver {
 				if (munger instanceof BcelAdvice) {
 					BcelAdvice bcelAdvice = (BcelAdvice) munger;
 					if (bcelAdvice.getConcreteAspect() != null) {
-						aspectsAffectingType.add(bcelAdvice.getConcreteAspect().getName());
+						aspectsAffectingType.add(bcelAdvice.getConcreteAspect().getSignature());
 					}
 				} else {
 					// It is a 'Checker' - we don't need to remember aspects
