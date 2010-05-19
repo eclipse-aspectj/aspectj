@@ -36,7 +36,7 @@ public class ReadingAttributes extends TestCase {
 			System.out.println(attrs[i].getName());
 			if (attrs[i].getName().endsWith("WeaverState")) {
 				Unknown u = (Unknown) attrs[i];
-				VersionedDataInputStream vdis = new VersionedDataInputStream(new ByteArrayInputStream(u.getBytes()));
+				VersionedDataInputStream vdis = new VersionedDataInputStream(new ByteArrayInputStream(u.getBytes()), null);
 				// WeaverStateInfo wsi =
 				WeaverStateInfo.read(vdis, null);
 				// System.out.println(wsi);

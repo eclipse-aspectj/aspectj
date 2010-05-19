@@ -27,6 +27,7 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
+import org.aspectj.weaver.patterns.ConstantPoolSimulator;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.SimpleScope;
 
@@ -172,12 +173,13 @@ public class PointcutResidueTestCase extends WeaveTestCase {
 
 	public void checkSerialize(Pointcut p) throws IOException {
 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
-		CompressingDataOutputStream out = new CompressingDataOutputStream(bo);
+		ConstantPoolSimulator cps = new ConstantPoolSimulator();
+		CompressingDataOutputStream out = new CompressingDataOutputStream(bo, cps);
 		p.write(out);
 		out.close();
 
 		ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
-		VersionedDataInputStream in = new VersionedDataInputStream(bi);
+		VersionedDataInputStream in = new VersionedDataInputStream(bi, cps);
 		Pointcut newP = Pointcut.read(in, null);
 
 		assertEquals("write/read", p, newP);
