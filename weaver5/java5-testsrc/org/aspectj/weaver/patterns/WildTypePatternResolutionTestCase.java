@@ -387,12 +387,13 @@ public class WildTypePatternResolutionTestCase extends TestCase {
 	private TypePattern writeAndRead(TypePattern etp) {
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			CompressingDataOutputStream dos = new CompressingDataOutputStream(baos);
+			ConstantPoolSimulator cps = new ConstantPoolSimulator();
+			CompressingDataOutputStream dos = new CompressingDataOutputStream(baos, cps);
 			etp.write(dos);
 			dos.flush();
 			dos.close();
 			ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-			VersionedDataInputStream in = new VersionedDataInputStream(bais);
+			VersionedDataInputStream in = new VersionedDataInputStream(bais, cps);
 			in.setVersion(new WeaverVersionInfo());
 			TypePattern ret = TypePattern.read(in, null);
 			return ret;
