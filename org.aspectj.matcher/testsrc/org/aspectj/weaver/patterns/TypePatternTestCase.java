@@ -248,12 +248,13 @@ public class TypePatternTestCase extends PatternsTestCase {
 	private void checkSerialization(String string) throws IOException {
 		TypePattern p = makeTypePattern(string);
 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
-		CompressingDataOutputStream out = new CompressingDataOutputStream(bo);
+		ConstantPoolSimulator cps = new ConstantPoolSimulator();
+		CompressingDataOutputStream out = new CompressingDataOutputStream(bo, cps);
 		p.write(out);
 		out.close();
 
 		ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
-		VersionedDataInputStream in = new VersionedDataInputStream(bi);
+		VersionedDataInputStream in = new VersionedDataInputStream(bi, cps);
 		TypePattern newP = TypePattern.read(in, null);
 
 		assertEquals("write/read", p, newP);

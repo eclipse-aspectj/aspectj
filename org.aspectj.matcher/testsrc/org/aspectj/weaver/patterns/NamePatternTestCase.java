@@ -90,12 +90,13 @@ public class NamePatternTestCase extends TestCase {
 
 	private void checkSerialization(NamePattern p) throws IOException {
 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
-		CompressingDataOutputStream out = new CompressingDataOutputStream(bo);
+		ConstantPoolSimulator cps = new ConstantPoolSimulator();
+		CompressingDataOutputStream out = new CompressingDataOutputStream(bo, cps);
 		p.write(out);
 		out.close();
 
 		ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
-		VersionedDataInputStream in = new VersionedDataInputStream(bi);
+		VersionedDataInputStream in = new VersionedDataInputStream(bi, cps);
 		NamePattern newP = NamePattern.read(in);
 
 		assertEquals("write/read", p, newP);

@@ -152,12 +152,13 @@ public class SignaturePatternMatchSpeedTestCase extends PatternsTestCase {
 
 	private void checkSerialization(SignaturePattern p) throws IOException {
 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
-		CompressingDataOutputStream out = new CompressingDataOutputStream(bo);
+		ConstantPoolSimulator cps = new ConstantPoolSimulator();
+		CompressingDataOutputStream out = new CompressingDataOutputStream(bo, cps);
 		p.write(out);
 		out.close();
 
 		ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
-		VersionedDataInputStream in = new VersionedDataInputStream(bi);
+		VersionedDataInputStream in = new VersionedDataInputStream(bi, cps);
 		SignaturePattern newP = SignaturePattern.read(in, null);
 
 		assertEquals("write/read", p, newP);

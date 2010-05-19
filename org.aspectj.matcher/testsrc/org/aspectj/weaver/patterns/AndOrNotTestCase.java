@@ -81,12 +81,13 @@ public class AndOrNotTestCase extends PatternsTestCase {
 	private void checkSerialization(String string) throws IOException {
 		Pointcut p = makePointcut(string);
 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
-		CompressingDataOutputStream out = new CompressingDataOutputStream(bo);
+		ConstantPoolSimulator cps = new ConstantPoolSimulator();
+		CompressingDataOutputStream out = new CompressingDataOutputStream(bo, cps);
 		p.write(out);
 		out.close();
 
 		ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
-		VersionedDataInputStream in = new VersionedDataInputStream(bi);
+		VersionedDataInputStream in = new VersionedDataInputStream(bi, cps);
 		Pointcut newP = Pointcut.read(in, null);
 
 		assertEquals("write/read", p, newP);
