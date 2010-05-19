@@ -366,12 +366,33 @@ public abstract class AjAttribute {
 
 		@Override
 		public void write(CompressingDataOutputStream s) throws IOException {
-			s.writeUTF(sourceFileName);
-			FileUtil.writeIntArray(lineBreaks, s);
+			if (s.canCompress()) {
+				s.writeCompressedPath(sourceFileName);
+			} else {
+				s.writeUTF(sourceFileName);
+			}
+			s.writeInt(lineBreaks.length);
+			int previous = 0;
+			for (int i = 0, max = lineBreaks.length; i < max; i++) {
+				s.writeShort(lineBreaks[i] - previous);
+				previous = lineBreaks[i];
+			}
 		}
 
 		public static SourceContextAttribute read(VersionedDataInputStream s) throws IOException {
-			return new SourceContextAttribute(s.readUTF(), FileUtil.readIntArray(s));
+			String sourceFileName = s.isAtLeast169() ? s.readPath() : s.readUTF();
+			int lineBreaks = s.readInt();
+			int[] lines = new int[lineBreaks];
+			int previous = 0;
+			for (int i = 0; i < lineBreaks; i++) {
+				if (s.isAtLeast169()) {
+					lines[i] = s.readShort() + previous;
+					previous = lines[i];
+				} else {
+					lines[i] = s.readInt();
+				}
+			}
+			return new SourceContextAttribute(sourceFileName, lines);
 		}
 
 		public int[] getLineBreaks() {

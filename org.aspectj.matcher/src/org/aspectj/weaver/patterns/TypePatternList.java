@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
@@ -492,8 +493,30 @@ public class TypePatternList extends PatternNode {
 			arguments[i] = TypePattern.read(s, context);
 		}
 		TypePatternList ret = new TypePatternList(arguments);
-		ret.readLocation(context, s);
+		if (!s.isAtLeast169()) {
+			ret.readLocation(context, s);
+		}
 		return ret;
+	}
+
+	@Override
+	public int getEnd() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public ISourceContext getSourceContext() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public ISourceLocation getSourceLocation() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public int getStart() {
+		throw new IllegalStateException();
 	}
 
 	@Override
@@ -502,7 +525,7 @@ public class TypePatternList extends PatternNode {
 		for (int i = 0; i < typePatterns.length; i++) {
 			typePatterns[i].write(s);
 		}
-		writeLocation(s);
+		// writeLocation(s);
 	}
 
 	public TypePattern[] getTypePatterns() {

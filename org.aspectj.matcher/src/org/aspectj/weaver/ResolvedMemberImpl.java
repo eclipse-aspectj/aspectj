@@ -380,10 +380,28 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 
 	public void write(CompressingDataOutputStream s) throws IOException {
 		getKind().write(s);
-		getDeclaringType().write(s);
+		s.writeBoolean(s.canCompress()); // boolean indicates if parts of this are compressed references
+
+		// write out the signature of the declaring type of this member
+		if (s.canCompress()) {
+			s.writeCompressedSignature(getDeclaringType().getSignature());
+		} else {
+			getDeclaringType().write(s);
+		}
+
+		// write out the modifiers
 		s.writeInt(modifiers);
-		s.writeUTF(getName());
-		s.writeUTF(getSignature());
+
+		// write out the name and the signature of this member
+		if (s.canCompress()) {
+			s.writeCompressedName(getName());
+			s.writeCompressedSignature(getSignature());
+		} else {
+			s.writeUTF(getName());
+			s.writeUTF(getSignature());
+		}
+
+		// write out the array clauses
 		UnresolvedType.writeArray(getExceptions(), s);
 
 		s.writeInt(getStart());
@@ -392,24 +410,33 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 
 		// Write out any type variables...
 		if (typeVariables == null) {
-			s.writeInt(0);
+			s.writeByte(0);
 		} else {
-			s.writeInt(typeVariables.length);
+			s.writeByte(typeVariables.length);
 			for (int i = 0; i < typeVariables.length; i++) {
 				typeVariables[i].write(s);
 			}
 		}
 		String gsig = getGenericSignature();
+
+		// change this to a byte: 255=false 0>254 means true and encodes the number of parameters
 		if (getSignature().equals(gsig)) {
-			s.writeBoolean(false);
+			s.writeByte(0xff);
 		} else {
-			s.writeBoolean(true);
-			s.writeInt(parameterTypes.length);
+			s.writeByte(parameterTypes.length);
 			for (int i = 0; i < parameterTypes.length; i++) {
-				UnresolvedType array_element = parameterTypes[i];
-				array_element.write(s);
+				if (s.canCompress()) {
+					s.writeCompressedSignature(parameterTypes[i].getSignature());
+				} else {
+					UnresolvedType array_element = parameterTypes[i];
+					array_element.write(s);
+				}
 			}
-			returnType.write(s);
+			if (s.canCompress()) {
+				s.writeCompressedSignature(returnType.getSignature());
+			} else {
+				returnType.write(s);
+			}
 		}
 	}
 
@@ -469,8 +496,13 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	public static ResolvedMemberImpl readResolvedMember(VersionedDataInputStream s, ISourceContext sourceContext)
 			throws IOException {
 
-		ResolvedMemberImpl m = new ResolvedMemberImpl(MemberKind.read(s), UnresolvedType.read(s), s.readInt(), s.readUTF(), s
-				.readUTF());
+		MemberKind mk = MemberKind.read(s);
+		boolean compressed = (s.isAtLeast169() ? s.readBoolean() : false);
+		UnresolvedType declaringType = compressed ? UnresolvedType.forSignature(s.readUtf8(s.readShort())) : UnresolvedType.read(s);
+		int modifiers = s.readInt();
+		String name = compressed ? s.readUtf8(s.readShort()) : s.readUTF();
+		String signature = compressed ? s.readUtf8(s.readShort()) : s.readUTF();
+		ResolvedMemberImpl m = new ResolvedMemberImpl(mk, declaringType, modifiers, name, signature);
 		m.checkedExceptions = UnresolvedType.readArray(s);
 
 		m.start = s.readInt();
@@ -486,7 +518,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 				}
 			}
 
-			int tvcount = s.readInt();
+			int tvcount = s.isAtLeast169() ? s.readByte() : s.readInt();
 			if (tvcount != 0) {
 				m.typeVariables = new TypeVariable[tvcount];
 				for (int i = 0; i < tvcount; i++) {
@@ -495,14 +527,26 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 				}
 			}
 			if (s.getMajorVersion() >= AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150M4) {
-				boolean hasAGenericSignature = s.readBoolean();
+				int pcount = -1;
+				boolean hasAGenericSignature = false;
+				if (s.isAtLeast169()) {
+					pcount = s.readByte();
+					hasAGenericSignature = (pcount >= 0 && pcount < 255);
+				} else {
+					hasAGenericSignature = s.readBoolean();
+				}
 				if (hasAGenericSignature) {
-					int ps = s.readInt();
+					int ps = (s.isAtLeast169() ? pcount : s.readInt());
 					UnresolvedType[] params = new UnresolvedType[ps];
 					for (int i = 0; i < params.length; i++) {
-						params[i] = TypeFactory.createTypeFromSignature(s.readUTF());
+						if (compressed) {
+							params[i] = TypeFactory.createTypeFromSignature(s.readSignature());
+						} else {
+							params[i] = TypeFactory.createTypeFromSignature(s.readUTF());
+						}
 					}
-					UnresolvedType rt = TypeFactory.createTypeFromSignature(s.readUTF());
+					UnresolvedType rt = compressed ? TypeFactory.createTypeFromSignature(s.readSignature()) : TypeFactory
+							.createTypeFromSignature(s.readUTF());
 					m.parameterTypes = params;
 					m.returnType = rt;
 				}

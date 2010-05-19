@@ -30,10 +30,6 @@ public class VersionedDataInputStream extends DataInputStream {
 
 	private ConstantPoolReader constantPoolReader;
 
-	public VersionedDataInputStream(InputStream is) {
-		super(is);
-	}
-
 	public VersionedDataInputStream(InputStream is, ConstantPoolReader constantPoolReader) {
 		super(is);
 		this.constantPoolReader = constantPoolReader;
@@ -79,5 +75,9 @@ public class VersionedDataInputStream extends DataInputStream {
 
 	public String readSignature() throws IOException {
 		return readUtf8(readShort());
+	}
+
+	public UnresolvedType readSignatureAsUnresolvedType() throws IOException {
+		return UnresolvedType.forSignature(readUtf8(readShort()));
 	}
 }

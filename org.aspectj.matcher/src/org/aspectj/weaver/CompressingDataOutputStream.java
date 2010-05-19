@@ -32,10 +32,6 @@ public class CompressingDataOutputStream extends DataOutputStream {
 		this.constantPoolWriter = constantPoolWriter;
 	}
 
-	public CompressingDataOutputStream(ByteArrayOutputStream baos) {
-		super(baos);
-	}
-
 	public CompressingDataOutputStream(FileOutputStream fos) {
 		super(fos);
 	}

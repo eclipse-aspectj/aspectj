@@ -167,7 +167,12 @@ public abstract class ResolvedTypeMunger {
 
 	protected static Set<ResolvedMember> readSuperMethodsCalled(VersionedDataInputStream s) throws IOException {
 		Set<ResolvedMember> ret = new HashSet<ResolvedMember>();
-		int n = s.readInt();
+		int n = -1;
+		if (s.isAtLeast169()) {
+			n = s.readByte();
+		} else {
+			n = s.readInt();
+		}
 		if (n < 0) {
 			throw new BCException("Problem deserializing type munger");
 		}
@@ -177,21 +182,18 @@ public abstract class ResolvedTypeMunger {
 		return ret;
 	}
 
-	protected void writeSuperMethodsCalled(CompressingDataOutputStream s) throws IOException {
-
+	protected final void writeSuperMethodsCalled(CompressingDataOutputStream s) throws IOException {
 		if (superMethodsCalled == null || superMethodsCalled.size() == 0) {
-			s.writeInt(0);
+			s.writeByte(0);
 			return;
 		}
-
 		List<ResolvedMember> ret = new ArrayList<ResolvedMember>(superMethodsCalled);
 		Collections.sort(ret);
 		int n = ret.size();
-		s.writeInt(n);
+		s.writeByte(n);
 		for (ResolvedMember m : ret) {
 			m.write(s);
 		}
-
 	}
 
 	protected static ISourceLocation readSourceLocation(VersionedDataInputStream s) throws IOException {
@@ -204,15 +206,29 @@ public abstract class ResolvedTypeMunger {
 		try {
 			// This logic copes with the location missing from the attribute - an EOFException will
 			// occur on the next line and we ignore it.
-			ois = new ObjectInputStream(s);
-			Boolean validLocation = (Boolean) ois.readObject();
-			if (validLocation.booleanValue()) {
-				File f = (File) ois.readObject();
-				Integer ii = (Integer) ois.readObject();
-				Integer offset = (Integer) ois.readObject();
-				ret = new SourceLocation(f, ii.intValue());
-				ret.setOffset(offset.intValue());
+			byte b = 0;
+			// if we aren't on 1.6.9 or we are on 1.6.9 but not compressed, then read as object stream
+			if (!s.isAtLeast169() || (b = s.readByte()) == 0) {
+				ois = new ObjectInputStream(s);
+				boolean validLocation = (Boolean) ois.readObject();
+				if (validLocation) {
+					File f = (File) ois.readObject();
+					Integer ii = (Integer) ois.readObject();
+					Integer offset = (Integer) ois.readObject();
+					ret = new SourceLocation(f, ii.intValue());
+					ret.setOffset(offset.intValue());
+				}
+			} else {
+				boolean validLocation = b == 2;
+				if (validLocation) {
+					String path = s.readUtf8(s.readShort());
+					File f = new File(path);
+					ret = new SourceLocation(f, s.readInt());
+					int offset = s.readInt();
+					ret.setOffset(offset);
+				}
 			}
+
 		} catch (EOFException eof) {
 			return null; // This exception occurs if processing an 'old style' file where the
 			// type munger attributes don't include the source location.
@@ -230,17 +246,26 @@ public abstract class ResolvedTypeMunger {
 		return ret;
 	}
 
-	protected void writeSourceLocation(DataOutputStream s) throws IOException {
-		ObjectOutputStream oos = new ObjectOutputStream(s);
-		// oos.writeObject(location);
-		oos.writeObject(new Boolean(location != null));
-		if (location != null) {
-			oos.writeObject(location.getSourceFile());
-			oos.writeObject(new Integer(location.getLine()));
-			oos.writeObject(new Integer(location.getOffset()));
+	protected final void writeSourceLocation(CompressingDataOutputStream s) throws IOException {
+		if (s.canCompress()) {
+			s.writeByte(1 + (location == null ? 0 : 1)); // 1==compressed no location 2==compressed with location
+			if (location != null) {
+				s.writeCompressedPath(location.getSourceFile().getPath());
+				s.writeInt(location.getLine());
+				s.writeInt(location.getOffset());
+			}
+		} else {
+			s.writeByte(0);
+			ObjectOutputStream oos = new ObjectOutputStream(s);
+			oos.writeObject(new Boolean(location != null));
+			if (location != null) {
+				oos.writeObject(location.getSourceFile());
+				oos.writeObject(new Integer(location.getLine()));
+				oos.writeObject(new Integer(location.getOffset()));
+			}
+			oos.flush();
+			oos.close();
 		}
-		oos.flush();
-		oos.close();
 	}
 
 	public abstract void write(CompressingDataOutputStream s) throws IOException;
@@ -346,7 +371,12 @@ public abstract class ResolvedTypeMunger {
 
 	protected static List<String> readInTypeAliases(VersionedDataInputStream s) throws IOException {
 		if (s.getMajorVersion() >= AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
-			int count = s.readInt();
+			int count = -1;
+			if (s.isAtLeast169()) {
+				count = s.readByte();
+			} else {
+				count = s.readInt();
+			}
 			if (count != 0) {
 				List<String> aliases = new ArrayList<String>();
 				for (int i = 0; i < count; i++) {
@@ -358,12 +388,12 @@ public abstract class ResolvedTypeMunger {
 		return null;
 	}
 
-	protected void writeOutTypeAliases(DataOutputStream s) throws IOException {
+	protected final void writeOutTypeAliases(DataOutputStream s) throws IOException {
 		// Write any type variable aliases
 		if (typeVariableAliases == null || typeVariableAliases.size() == 0) {
-			s.writeInt(0);
+			s.writeByte(0);
 		} else {
-			s.writeInt(typeVariableAliases.size());
+			s.writeByte(typeVariableAliases.size());
 			for (String element : typeVariableAliases) {
 				s.writeUTF(element);
 			}
