@@ -482,7 +482,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		alter(p, "inc1");
 		build(p);
 		// error is: inter-type declaration from X conflicts with existing member: void A.<init>()
-		List ms = getErrorMessages(p);
+		// List ms =
+		getErrorMessages(p);
 		assertEquals(4, getErrorMessages(p).size());
 		// Why 4 errors? I believe the problem is:
 		// 2 errors are reported when there is a clash - one against the aspect, one against the affected target type.

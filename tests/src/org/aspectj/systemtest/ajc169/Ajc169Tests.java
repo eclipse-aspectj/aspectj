@@ -18,6 +18,24 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testClassFileSize_312839_1() {
+		runTest("class file size - 1");
+		// 2531 (0x404): 1.6.9.M2 size of Class.class
+		// 2494 (0x3DF): first little stab, compressing aspectnames attached to type mungers
+		// 2370 (0x363): changed read/write sourcelocation to write path rather than File object:
+		// 2358 (0x357): aspects affecting type compressed (weaverstate reweavable info)
+		// 2102 (0x257): changed read/write sourcelocation in type munger to NOT use object streams
+		// 2053 (0x1EF): changed path in sourcelocation read/write to be constant pool (so shared between both mungers)
+		// 2019: changed resolvedMemberImpl name/signature to be compressed refs
+		// 1954 (0x18C)
+
+		// Aspect size (X.class) down from 6459 to 4722
+		// 4551: changed exact type pattern writing to use constant pool, and
+		// changed typepatternlist to not both writing/reading location
+		
+		// TODO actually test something :)
+	}
+
 	// control test - weaves everything
 	public void testScopingLTW_122460_1() {
 		runTest("scoping ltw - 1");
