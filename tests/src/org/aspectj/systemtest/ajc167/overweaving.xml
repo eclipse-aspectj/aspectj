@@ -47,7 +47,7 @@
      </run>
    </ajc-test>
      
-    <ajc-test dir="features167/overweaving/getsettjp" title="getset - tjp - 1">
+    <ajc-test dir="features167/overweaving/getsetTJP" title="getset - tjp - 1">
      <compile files="A.aj Class1.java" options="-1.5"/>
      <compile files="B.aj" options="-1.5 -Xlint:ignore"/>
      <compile files="Class2.java" options="-1.5 -Xlint:ignore"/>
@@ -112,7 +112,7 @@
      </run>
    </ajc-test>
    
-    <ajc-test dir="features167/overweaving/callstjp" title="calls - tjp - 1">
+    <ajc-test dir="features167/overweaving/callsTJP" title="calls - tjp - 1">
      <compile files="A.aj Class1.java" options="-1.5"/>
      <compile files="B.aj" options="-1.5 -Xlint:ignore"/>
      <compile files="Class2.java" options="-1.5 -Xlint:ignore"/>
