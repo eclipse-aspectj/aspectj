@@ -408,7 +408,9 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		setOutxmlName(global.getOutxmlName());
 		setXconfigurationInfo(global.getXconfigurationInfo());
 		setAddSerialVerUID(global.isAddSerialVerUID());
-		setXmlConfigured(global.isXmlConfigured());
+		if (!isXmlConfigured() && global.isXmlConfigured()) {
+			setXmlConfigured(global.isXmlConfigured());
+		}
 		setTiming(global.isTiming());
 		setMakeReflectable(global.isMakeReflectable());
 	}
@@ -566,7 +568,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	public void setXmlConfigured(boolean b) {
 		options.xmlConfigured = b;
 	}
-	
+
 	public void setMakeReflectable(boolean b) {
 		options.makeReflectable = b;
 	}
@@ -574,7 +576,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	public boolean isXmlConfigured() {
 		return options.xmlConfigured;
 	}
-	
+
 	public boolean isMakeReflectable() {
 		return options.makeReflectable;
 	}
