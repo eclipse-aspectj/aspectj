@@ -47,7 +47,6 @@ public class PointcutEvaluationExpenseComparator implements Comparator<Pointcut>
 	 * @args cflow, cflowbelow if
 	 */
 	public int compare(Pointcut p1, Pointcut p2) {
-
 		// important property for a well-defined comparator
 		if (p1.equals(p2)) {
 			return 0;
@@ -56,9 +55,14 @@ public class PointcutEvaluationExpenseComparator implements Comparator<Pointcut>
 		if (result == 0) {
 			// they have the same evaluation expense, but are not 'equal'
 			// sort by hashCode
-			result = p1.hashCode() - p2.hashCode();
-			if (result == 0) {
-				/* not allowed if ne */return -1;
+			int p1code = p1.hashCode();
+			int p2code = p2.hashCode();
+			if (p1code == p2code) {
+				return 0;
+			} else if (p1code < p2code) {
+				return -1;
+			} else {
+				return +1;
 			}
 		}
 		return result;
@@ -129,10 +133,22 @@ public class PointcutEvaluationExpenseComparator implements Comparator<Pointcut>
 			return getScore(((NotPointcut) p).getNegatedPointcut());
 		}
 		if (p instanceof AndPointcut) {
-			return getScore(((AndPointcut) p).getLeft());
+			int leftScore = getScore(((AndPointcut) p).getLeft());
+			int rightScore = getScore(((AndPointcut) p).getRight());
+			if (leftScore < rightScore) {
+				return leftScore;
+			} else {
+				return rightScore;
+			}
 		}
 		if (p instanceof OrPointcut) {
-			return getScore(((OrPointcut) p).getLeft());
+			int leftScore = getScore(((OrPointcut) p).getLeft());
+			int rightScore = getScore(((OrPointcut) p).getRight());
+			if (leftScore > rightScore) {
+				return leftScore;
+			} else {
+				return rightScore;
+			}
 		}
 		return OTHER;
 	}

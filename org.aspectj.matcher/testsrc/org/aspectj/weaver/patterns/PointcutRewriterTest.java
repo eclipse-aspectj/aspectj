@@ -18,14 +18,38 @@ import junit.framework.TestCase;
 import org.aspectj.weaver.Shadow;
 
 /**
- * @author colyer
+ * Testing the pointcut rewriter.
  * 
- *         TODO To change the template for this generated type comment go to Window - Preferences - Java - Code Style - Code
- *         Templates
+ * @author Adrian Colyer
+ * @author Andy Clement
  */
 public class PointcutRewriterTest extends TestCase {
 
 	private PointcutRewriter prw;
+
+	public void testComplexRewrite1() {
+		Pointcut p = getPointcut("(persingleton(org.eclipse.ajdt.internal.ui.ras.UIFFDC) && ((handler(java.lang.Throwable+) && args(arg1)) && ((within(org.eclipse.ajdt..*) && (!within(org.eclipse.ajdt.internal.ui.lazystart..*) && (!within(org.eclipse.ajdt.internal.ui.dialogs.OpenTypeSelectionDialog2) && !(within(org.eclipse.ajdt.internal.ui.editor.AspectJBreakpointRulerAction) && handler(org.eclipse.jface.text.BadLocationException))))) && (!(within(org.eclipse.ajdt.core.ras.FFDC+) || handler(org.eclipse.core.runtime.OperationCanceledException)) && !this(java.lang.Object)))))");
+		checkMultipleRewrite(p);
+		p = getPointcut("((((((((((!within(org.eclipse.ajdt.internal.ui.lazystart..*) && !within(org.eclipse.ajdt.internal.ui.dialogs.OpenTypeSelectionDialog2)) && !within(org.eclipse.ajdt.core.ras.FFDC+)) && within(org.eclipse.ajdt..*)) && !within(org.eclipse.ajdt.internal.ui.editor.AspectJBreakpointRulerAction)) && handler(java.lang.Throwable+)) && !handler(org.eclipse.core.runtime.OperationCanceledException)) && !this(java.lang.Object)) && args(arg1)) && persingleton(org.eclipse.ajdt.internal.ui.ras.UIFFDC)) || (((((((((!within(org.eclipse.ajdt.internal.ui.lazystart..*) && !within(org.eclipse.ajdt.internal.ui.dialogs.OpenTypeSelectionDialog2)) && !within(org.eclipse.ajdt.core.ras.FFDC+)) && within(org.eclipse.ajdt..*)) && !handler(org.eclipse.jface.text.BadLocationException)) && handler(java.lang.Throwable+)) && !handler(org.eclipse.core.runtime.OperationCanceledException)) && !this(java.lang.Object)) && args(arg1)) && persingleton(org.eclipse.ajdt.internal.ui.ras.UIFFDC)))");
+		checkMultipleRewrite(p);
+		p = getPointcut("(persingleton(Oranges) && ((handler(Apples+) && args(arg1)) && ((within(foo..*) && (!within(org.eclipse.ajdt.internal.ui.lazystart..*) && (!within(org.eclipse.ajdt.internal.ui.dialogs.OpenTypeSelectionDialog2) && !(within(org.eclipse.ajdt.internal.ui.editor.AspectJBreakpointRulerAction) && handler(org.eclipse.jface.text.BadLocationException))))) && (!(within(org.eclipse.ajdt.core.ras.FFDC+) || handler(org.eclipse.core.runtime.OperationCanceledException)) && !this(java.lang.Object)))))");
+		checkMultipleRewrite(p);
+		p = getPointcut("(((handler(Apples+)) && ((within(foo..*) && (!within(org.eclipse.ajdt.internal.ui.lazystart..*) && (!within(org.eclipse.ajdt.internal.ui.dialogs.OpenTypeSelectionDialog2) && !(within(org.eclipse.ajdt.internal.ui.editor.AspectJBreakpointRulerAction) && handler(org.eclipse.jface.text.BadLocationException))))) && (!(within(org.eclipse.ajdt.core.ras.FFDC+) || handler(org.eclipse.core.runtime.OperationCanceledException)) && !this(java.lang.Object)))))");
+		checkMultipleRewrite(p);
+		p = getPointcut("within(xxx..*) && within(XXY) && within(org.eclipse.AspectJBreakpoint)");
+		checkMultipleRewrite(p);
+	}
+
+	/**
+	 * Rewrites a pointcut twice and checks the format is stable
+	 */
+	private void checkMultipleRewrite(Pointcut p) {
+		Pointcut rewrittenPointcut = prw.rewrite(p, false);
+		String rewrite = rewrittenPointcut.toString();
+		Pointcut rewriteOfRewrittenPointcut = prw.rewrite(rewrittenPointcut, false);
+		String rewriteOfRewritten = rewriteOfRewrittenPointcut.toString();
+		assertEquals(rewrite, rewriteOfRewritten);
+	}
 
 	public void testDistributeNot() {
 		Pointcut plain = getPointcut("this(Foo)");
@@ -417,9 +441,10 @@ public class PointcutRewriterTest extends TestCase {
 
 	public void testOrderingInAnd() {
 		Pointcut bigLongPC = getPointcut("cflow(this(Foo)) && @args(X) && args(X) && @this(Foo) && @target(Boo) && this(Moo) && target(Boo) && @annotation(Moo) && @withincode(Boo) && withincode(new(..)) && set(* *)&& @within(Foo) && within(Foo)");
+		checkMultipleRewrite(bigLongPC);
 		Pointcut rewritten = prw.rewrite(bigLongPC);
 		assertEquals(
-				"((((((((((((within(Foo) && @within(Foo)) && set(* *)) && withincode(new(..))) && @withincode(Boo)) && target(Boo)) && this(Moo)) && @annotation(Moo)) && @target(Boo)) && @this(Foo)) && args(X)) && @args(X)) && cflow(this(Foo)))",
+				"((((((((((((within(Foo) && @within(Foo)) && set(* *)) && withincode(new(..))) && @withincode(Boo)) && target(Boo)) && this(Moo)) && @annotation(Moo)) && @this(Foo)) && @target(Boo)) && args(X)) && @args(X)) && cflow(this(Foo)))",
 				rewritten.toString());
 	}
 
