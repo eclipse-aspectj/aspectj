@@ -275,10 +275,12 @@ public class WeavingAdaptor implements IMessageContext {
 	 * @exception IOException weave failed
 	 */
 	public byte[] weaveClass(String name, byte[] bytes, boolean mustWeave) throws IOException {
-		if (trace==null) {
+		if (trace == null) {
 			// Pr231945: we are likely to be under tomcat and ENABLE_CLEAR_REFERENCES hasn't been set
-			System.err.println("AspectJ Weaver cannot continue to weave, static state has been cleared.  Are you under Tomcat? In order to weave '"+name+
-					"' during shutdown, 'org.apache.catalina.loader.WebappClassLoader.ENABLE_CLEAR_REFERENCES=false' must be set (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=231945).");
+			System.err
+					.println("AspectJ Weaver cannot continue to weave, static state has been cleared.  Are you under Tomcat? In order to weave '"
+							+ name
+							+ "' during shutdown, 'org.apache.catalina.loader.WebappClassLoader.ENABLE_CLEAR_REFERENCES=false' must be set (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=231945).");
 			return bytes;
 		}
 		if (weaverRunning.get()) {

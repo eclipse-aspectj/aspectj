@@ -376,8 +376,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		List<AjAttribute> l = null;
 		try {
 			l = Utility.readAjAttributes(className, javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),
-					getResolvedTypeX().getWorld(), AjAttribute.WeaverVersionInfo.UNKNOWN, new BcelConstantPoolReader(
-							javaClass.getConstantPool()));
+					getResolvedTypeX().getWorld(), AjAttribute.WeaverVersionInfo.UNKNOWN, new BcelConstantPoolReader(javaClass
+							.getConstantPool()));
 		} catch (RuntimeException re) {
 			throw new RuntimeException("Problem processing attributes in " + javaClass.getFileName(), re);
 		}
@@ -942,7 +942,6 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 				fields[i].evictWeavingState();
 			}
 			javaClass = null;
-
 			this.artificial = true;
 			// setSourceContext(SourceContextImpl.UNKNOWN_SOURCE_CONTEXT); //
 			// bit naughty

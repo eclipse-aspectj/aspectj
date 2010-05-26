@@ -471,7 +471,6 @@ public class BcelWorld extends World implements Repository {
 	public BcelObjectType addSourceObjectType(String classname, byte[] bytes, boolean artificial) {
 		BcelObjectType ret = null;
 		String signature = UnresolvedType.forName(classname).getSignature();
-
 		ResolvedType fromTheMap = typeMap.get(signature);
 
 		if (fromTheMap != null && !(fromTheMap instanceof ReferenceType)) {
@@ -508,9 +507,11 @@ public class BcelWorld extends World implements Repository {
 			ret = (BcelObjectType) o;
 			// byte[] bs = ret.javaClass.getBytes();
 			// if (bs.length != bytes.length) {
-			// throw new RuntimeException("Shit");
+			// throw new RuntimeException("");
 			// }
-			if (ret.isArtificial()) {
+			// If the type is already exposed to the weaver (ret.isExposedToWeaver()) then this is likely
+			// to be a hotswap reweave so build a new delegate, dont accidentally use the old data
+			if (ret.isArtificial() || ret.isExposedToWeaver()) {
 				// System.out.println("Rebuilding " + nameTypeX.getName());
 				ret = buildBcelDelegate(nameTypeX, Utility.makeJavaClass(classname, bytes), artificial, true);
 			} else {
