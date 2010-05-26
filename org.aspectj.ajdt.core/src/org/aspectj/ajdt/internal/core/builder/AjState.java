@@ -513,12 +513,14 @@ public class AjState implements CompilerConfigurationChangeFlags {
 				if (state.isAspect(classFile)) {
 					if (state.hasStructuralChangedSince(classFile, lastSuccessfulBuildTime) || isTypeWeReferTo(classFile)) {
 						// further improvements possible
-						if (listenerDefined()) {
-							getListener().recordDecision(
-									"ClassFileChangeChecking: aspect found that has structurally changed or that this project depends upon : "
-											+ classFile);
+						if (pathid != PATHID_CLASSPATH) {
+							if (listenerDefined()) {
+								getListener().recordDecision(
+										"ClassFileChangeChecking: aspect found that has structurally changed or that this project depends upon : "
+												+ classFile);
+							}
+							return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
 						}
-						return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
 					} else {
 						// it is an aspect but we don't refer to it:
 						// - for CLASSPATH I think this is OK, we can continue and try an
@@ -564,12 +566,14 @@ public class AjState implements CompilerConfigurationChangeFlags {
 						if (state.isAspect(classFile)) {
 							if (state.hasStructuralChangedSince(classFile, lastSuccessfulBuildTime) || isTypeWeReferTo(classFile)) {
 								// further improvements possible
-								if (listenerDefined()) {
-									getListener().recordDecision(
-											"ClassFileChangeChecking: aspect found that has structurally changed or that this project depends upon : "
-													+ classFile);
+								if (pathid != PATHID_CLASSPATH) {
+									if (listenerDefined()) {
+										getListener().recordDecision(
+												"ClassFileChangeChecking: aspect found that has structurally changed or that this project depends upon : "
+														+ classFile);
+									}
+									return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
 								}
-								return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
 							} else {
 								// it is an aspect but we don't refer to it:
 								// - for CLASSPATH I think this is OK, we can continue and try an
@@ -2057,10 +2061,10 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	}
 
 	public void write(CompressingDataOutputStream dos) throws IOException {
+		// model
 		// weaver
 		weaver.write(dos);
 		// world
-		// model
 		// local state
 	}
 }
