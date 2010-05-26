@@ -58,7 +58,7 @@ public class IncrementalStateManager {
 		for (Iterator iterator = entries.iterator(); iterator.hasNext();) {
 			Map.Entry entry = (Map.Entry) iterator.next();
 			System.out.println("Name " + entry.getKey());
-			File f = new File("c:/temp/foo.ajstate");
+			File f = new File("n:/temp/foo.ajstate");
 			try {
 				AjState state = (AjState) entry.getValue();
 				CompressingDataOutputStream dos = new CompressingDataOutputStream(new FileOutputStream(f));
