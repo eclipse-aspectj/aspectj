@@ -728,7 +728,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		AjdeInteractionTestbed.VERBOSE = true;
 		String p = "xmlone";
 		initialiseProject(p);
-		configureNonStandardCompileOptions(p, "-showWeaveInfo -xmlConfigured");
+		configureNonStandardCompileOptions(p, "-showWeaveInfo");// -xmlConfigured");
 		configureShowWeaveInfoMessages(p, true);
 		addXmlConfigFile(p, getProjectRelativePath(p, "p/aop.xml").toString());
 		build(p);
@@ -1699,6 +1699,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// prod the build of the second project with some extra info to tell it
 		// more precisely about the change:
 		addClasspathEntryChanged(p2, getProjectRelativePath(p1, "bin").toString());
+		configureAspectPath(p2, getProjectRelativePath(p1, "bin"));
 		build(p2);
 		checkWasFullBuild();
 
