@@ -54,6 +54,7 @@ public abstract class Advice extends ShadowMunger {
 				entry, inAspect);
 		ret.innerCflowEntries = innerCflowEntries;
 		ret.nFreeVars = nFreeVars;
+		ret.setDeclaringType(inAspect); // correct?
 		return ret;
 	}
 
