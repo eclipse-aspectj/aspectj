@@ -27,6 +27,7 @@ public abstract class Advice extends ShadowMunger {
 	protected AjAttribute.AdviceAttribute attribute;
 	protected transient AdviceKind kind; // alias for attribute.getKind()
 	protected Member signature;
+	private boolean isAnnotationStyle;
 
 	// not necessarily declaring aspect, this is a semantics change from 1.0
 	protected ResolvedType concreteAspect; // null until after concretize
@@ -93,6 +94,7 @@ public abstract class Advice extends ShadowMunger {
 	public Advice(AjAttribute.AdviceAttribute attribute, Pointcut pointcut, Member signature) {
 		super(pointcut, attribute.getStart(), attribute.getEnd(), attribute.getSourceContext(), ShadowMungerAdvice);
 		this.attribute = attribute;
+		this.isAnnotationStyle = signature != null && !signature.getName().startsWith("ajc$");
 		this.kind = attribute.getKind(); // alias
 		this.signature = signature;
 		if (signature != null) {
@@ -476,6 +478,10 @@ public abstract class Advice extends ShadowMunger {
 	// for testing only
 	public void setLexicalPosition(int lexicalPosition) {
 		start = lexicalPosition;
+	}
+
+	public boolean isAnnotationStyle() {
+		return isAnnotationStyle;
 	}
 
 	public ResolvedType getConcreteAspect() {
