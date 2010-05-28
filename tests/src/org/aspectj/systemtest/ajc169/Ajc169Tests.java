@@ -18,6 +18,14 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testValidateBranchRecursion_314840() {
+		runTest("validate branch recursion");
+	}
+
+	public void testClashingDeclareAnnos_313026_1() {
+		runTest("clashing declare annos");
+	}
+
 	public void testClassFileSize_312839_1() {
 		runTest("class file size - 1");
 		// 2531 (0x404): 1.6.9.M2 size of Class.class
@@ -32,7 +40,7 @@ public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		// Aspect size (X.class) down from 6459 to 4722
 		// 4551: changed exact type pattern writing to use constant pool, and
 		// changed typepatternlist to not both writing/reading location
-		
+
 		// TODO actually test something :)
 	}
 

@@ -2,6 +2,19 @@
 
 <suite>
 
+  <ajc-test dir="bugs169/pr314840" title="validate branch recursion">
+     <compile files="Arguments.aj Test1.java Test2.java Test.java" options="-1.5"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr313026/one" title="clashing declare annos">
+     <compile files="Target.java Asp.java Bsp.java Wibble.java Precedence1.java" options="-1.5 -Xlint:ignore"/>
+     <run class="Target">
+       <stdout>
+         <line text="@Wibble(value=abc)"/>
+       </stdout>
+     </run>
+  </ajc-test>
+  
   <ajc-test dir="bugs169/pr312839/one" title="class file size - 1">
      <compile files="Class.java X.aj" options="-1.5"/>
      <run class="com.wibble.foo.Class">
