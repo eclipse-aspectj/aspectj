@@ -298,6 +298,7 @@ public class CrosscuttingMembersSet {
 			}
 			declareAnnotationOnMethods = new ArrayList<DeclareAnnotation>();
 			declareAnnotationOnMethods.addAll(ret);
+			//world.sortDeclareAnnotations(declareAnnotationOnMethods);
 		}
 		return declareAnnotationOnMethods;
 	}
