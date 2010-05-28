@@ -609,8 +609,9 @@ public class BcelWeaver {
 					// an @AJ aspect (it could have been inherited from a code
 					// style aspect) then
 					// evaluate the alternative set of formals. pr125699
-					if (advice.getConcreteAspect().isAnnotationStyleAspect() && advice.getDeclaringAspect() != null
-							&& advice.getDeclaringAspect().resolve(world).isAnnotationStyleAspect()) {
+					if ((advice.getConcreteAspect().isAnnotationStyleAspect() && advice.getDeclaringAspect() != null && advice
+							.getDeclaringAspect().resolve(world).isAnnotationStyleAspect())
+							|| advice.isAnnotationStyle()) {
 						numFormals = advice.getBaseParameterCount();
 						int numArgs = advice.getSignature().getParameterTypes().length;
 						if (numFormals > 0) {
