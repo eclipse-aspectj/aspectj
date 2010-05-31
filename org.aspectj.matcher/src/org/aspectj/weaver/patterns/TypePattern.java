@@ -351,6 +351,10 @@ public abstract class TypePattern extends PatternNode {
 		return false;
 	}
 
+	public boolean hasFailedResolution() {
+		return false;
+	}
+
 }
 
 class EllipsisTypePattern extends TypePattern {

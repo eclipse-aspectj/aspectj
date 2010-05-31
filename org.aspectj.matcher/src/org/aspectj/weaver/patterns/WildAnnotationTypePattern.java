@@ -201,7 +201,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		if (!resolved) {
 			throw new IllegalStateException("Can't match on an unresolved annotation type pattern");
 		}
-		if (annotationValues != null) {
+		if (annotationValues != null && !typePattern.hasFailedResolution()) {
 			// PVAL improve this restriction, would allow '*(value=Color.RED)'
 			throw new IllegalStateException("Cannot use annotationvalues with a wild annotation pattern");
 		}

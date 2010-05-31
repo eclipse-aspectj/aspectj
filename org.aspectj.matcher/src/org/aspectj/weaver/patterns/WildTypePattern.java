@@ -76,6 +76,7 @@ public class WildTypePattern extends TypePattern {
 	private static final String GENERIC_WILDCARD_CHARACTER = "?"; // signature of ? is *
 	private static final String GENERIC_WILDCARD_SIGNATURE_CHARACTER = "*"; // signature of ? is *
 	private NamePattern[] namePatterns;
+	private boolean failedResolution = false;
 	int ellipsisCount;
 	String[] importedPrefixes;
 	String[] knownMatches;
@@ -915,6 +916,7 @@ public class WildTypePattern extends TypePattern {
 			// Only put the lint warning out if we can't find it in the world
 			if (typeFoundInWholeWorldSearch.isMissing()) {
 				scope.getWorld().getLint().invalidAbsoluteTypeName.signal(nameWeLookedFor, getSourceLocation());
+				this.failedResolution = true;
 			}
 		}
 		importedPrefixes = scope.getImportedPrefixes();
@@ -1394,6 +1396,10 @@ public class WildTypePattern extends TypePattern {
 	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
+	}
+
+	public boolean hasFailedResolution() {
+		return failedResolution;
 	}
 
 }
