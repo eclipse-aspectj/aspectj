@@ -2,6 +2,12 @@
 
 <suite>
 
+  <ajc-test dir="bugs169/pr314965" title="anno typo">
+     <compile files="MinimalExample.java" options="-1.5">
+       <message kind="warning" text="no match for this type name: AnnotationWithParamAndTypo [Xlint:invalidAbsoluteTypeName]"/>
+     </compile>
+  </ajc-test>
+  
   <ajc-test dir="bugs169/pr314840" title="validate branch recursion">
      <compile files="Arguments.aj Test1.java Test2.java Test.java" options="-1.5"/>
   </ajc-test>
