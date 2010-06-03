@@ -112,8 +112,9 @@ public class AspectDeclaration extends TypeDeclaration {
 	}
 
 	public void checkSpec(ClassScope scope) {
-		if (ignoreFurtherInvestigation)
+		if (ignoreFurtherInvestigation) {
 			return;
+		}
 		if (dominatesPattern != null) {
 			scope.problemReporter().signalError(
 					dominatesPattern.getStart(),
@@ -203,12 +204,14 @@ public class AspectDeclaration extends TypeDeclaration {
 		Annotation atAspectAnnotation = AtAspectJAnnotationFactory.createAspectAnnotation(perClause.toDeclarationString(),
 				declarationSourceStart);
 		Annotation privilegedAnnotation = null;
-		if (isPrivileged)
+		if (isPrivileged) {
 			privilegedAnnotation = AtAspectJAnnotationFactory.createPrivilegedAnnotation(declarationSourceStart);
+		}
 		Annotation[] toAdd = new Annotation[isPrivileged ? 2 : 1];
 		toAdd[0] = atAspectAnnotation;
-		if (isPrivileged)
+		if (isPrivileged) {
 			toAdd[1] = privilegedAnnotation;
+		}
 		if (annotations == null) {
 			annotations = toAdd;
 		} else {
@@ -221,8 +224,9 @@ public class AspectDeclaration extends TypeDeclaration {
 
 	public void generateCode(ClassFile enclosingClassFile) {
 		if (ignoreFurtherInvestigation) {
-			if (binding == null)
+			if (binding == null) {
 				return;
+			}
 			ClassFile.createProblemType(this, scope.referenceCompilationUnit().compilationResult);
 			return;
 		}
@@ -265,8 +269,9 @@ public class AspectDeclaration extends TypeDeclaration {
 			}
 		}
 
-		if (EclipseFactory.DEBUG)
+		if (EclipseFactory.DEBUG) {
 			System.out.println(toString());
+		}
 
 		super.generateCode(enclosingClassFile);
 	}
@@ -276,8 +281,9 @@ public class AspectDeclaration extends TypeDeclaration {
 	}
 
 	protected void generateAttributes(ClassFile classFile) {
-		if (!isAbstract())
+		if (!isAbstract()) {
 			generatePerSupportMembers(classFile);
+		}
 
 		generateInlineAccessMembers(classFile);
 
@@ -286,10 +292,10 @@ public class AspectDeclaration extends TypeDeclaration {
 		classFile.extraAttributes.add(new EclipseAttributeAdapter(new AjAttribute.Aspect(perClause)));
 
 		if (binding.privilegedHandler != null) {
-		    // Only build the attribute if necessary
-			PrivilegedHandler privilegedHandler= (PrivilegedHandler)binding.privilegedHandler;
+			// Only build the attribute if necessary
+			PrivilegedHandler privilegedHandler = (PrivilegedHandler) binding.privilegedHandler;
 			ResolvedMember[] members = privilegedHandler.getMembers();
-			if (members.length>0) {
+			if (members.length > 0) {
 				classFile.extraAttributes.add(new EclipseAttributeAdapter(new AjAttribute.PrivilegedAttribute(members)));
 			}
 		}
@@ -307,8 +313,9 @@ public class AspectDeclaration extends TypeDeclaration {
 	private void addVersionAttributeIfNecessary(ClassFile classFile) {
 		for (Iterator iter = classFile.extraAttributes.iterator(); iter.hasNext();) {
 			EclipseAttributeAdapter element = (EclipseAttributeAdapter) iter.next();
-			if (CharOperation.equals(element.getNameChars(), weaverVersionChars))
+			if (CharOperation.equals(element.getNameChars(), weaverVersionChars)) {
 				return;
+			}
 		}
 		classFile.extraAttributes.add(new EclipseAttributeAdapter(new AjAttribute.WeaverVersionInfo()));
 	}
@@ -327,12 +334,14 @@ public class AspectDeclaration extends TypeDeclaration {
 	}
 
 	private void generatePerSupportMembers(ClassFile classFile) {
-		if (isAbstract())
+		if (isAbstract()) {
 			return;
+		}
 
 		// XXX otherwise we need to have this (error handling?)
-		if (aspectOfMethod == null)
+		if (aspectOfMethod == null) {
 			return;
+		}
 		if (perClause == null) {
 			System.err.println("has null perClause: " + this);
 			return;
@@ -426,15 +435,17 @@ public class AspectDeclaration extends TypeDeclaration {
 		// body starts here
 		gen.generate(codeStream);
 		// body ends here
-		if (codeStream.pcToSourceMapSize == 0)
+		if (codeStream.pcToSourceMapSize == 0) {
 			codeStream.recordPositionsFrom(0, 1);
+		}
 		boolean b = ((codeStream.generateAttributes & ClassFileConstants.ATTR_VARS) != 0 ? true : false); // pr148693
 		if (codeStream.maxLocals == 0) {
 			codeStream.generateAttributes &= ~ClassFileConstants.ATTR_VARS;
 		}
 		classFile.completeCodeAttribute(codeAttributeOffset);
-		if (b)
+		if (b) {
 			codeStream.generateAttributes |= ClassFileConstants.ATTR_VARS;
+		}
 
 		attributeNumber++;
 		classFile.completeMethodInfo(methodAttributeOffset, attributeNumber);
@@ -972,8 +983,9 @@ public class AspectDeclaration extends TypeDeclaration {
 
 		// aspectAttribute = new AjAttribute.Aspect(perClause);
 
-		if (ignoreFurtherInvestigation)
+		if (ignoreFurtherInvestigation) {
 			return; // ???
+		}
 
 		if (!isAbstract()) {
 			if (perClause.getKind() == PerClause.SINGLETON) {
@@ -1015,8 +1027,9 @@ public class AspectDeclaration extends TypeDeclaration {
 		}
 
 		checkSpec(classScope);
-		if (ignoreFurtherInvestigation)
+		if (ignoreFurtherInvestigation) {
 			return;
+		}
 
 		buildPerClause(scope);
 
@@ -1024,12 +1037,14 @@ public class AspectDeclaration extends TypeDeclaration {
 			for (int i = 0; i < methods.length; i++) {
 				if (methods[i] instanceof InterTypeDeclaration) {
 					EclipseTypeMunger m = ((InterTypeDeclaration) methods[i]).build(classScope);
-					if (m != null)
+					if (m != null) {
 						concreteName.typeMungers.add(m);
+					}
 				} else if (methods[i] instanceof DeclareDeclaration) {
 					Declare d = ((DeclareDeclaration) methods[i]).build(classScope);
-					if (d != null)
+					if (d != null) {
 						concreteName.declares.add(d);
+					}
 				}
 			}
 		}
@@ -1086,8 +1101,9 @@ public class AspectDeclaration extends TypeDeclaration {
 		if (superInterfaces != null && superInterfaces.length > 0) {
 			output.append((TypeDeclaration.kind(this.modifiers) == TypeDeclaration.INTERFACE_DECL) ? " extends " : " implements ");//$NON-NLS-2$ //$NON-NLS-1$
 			for (int i = 0; i < superInterfaces.length; i++) {
-				if (i > 0)
+				if (i > 0) {
 					output.append(", "); //$NON-NLS-1$
+				}
 				superInterfaces[i].print(0, output);
 			}
 		}
