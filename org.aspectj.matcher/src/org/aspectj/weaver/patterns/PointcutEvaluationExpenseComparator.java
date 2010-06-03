@@ -108,7 +108,7 @@ public class PointcutEvaluationExpenseComparator implements Comparator<Pointcut>
 		if (p instanceof ArgsAnnotationPointcut) {
 			return AT_ARGS;
 		}
-		if (p instanceof CflowPointcut) {
+		if (p instanceof CflowPointcut || p instanceof ConcreteCflowPointcut) {
 			return CFLOW;
 		}
 		if (p instanceof HandlerPointcut) {
