@@ -18,17 +18,23 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+//	public void testClashingDeclareAnnos_313026_1() {
+//		runTest("clashing declare annos");
+//	}
+
+	public void testInfiniteLoop_pr315651() {
+		runTest("infinite loop");
+	}
+	
 	public void testAnnoType_pr314965() {
 		runTest("anno typo");
 	}
+	
 
 	public void testValidateBranchRecursion_314840() {
 		runTest("validate branch recursion");
 	}
 
-	public void testClashingDeclareAnnos_313026_1() {
-		runTest("clashing declare annos");
-	}
 	
 	public void testClassFileSize_312839_1() {
 		runTest("class file size - 1");

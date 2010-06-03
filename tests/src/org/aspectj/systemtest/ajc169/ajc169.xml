@@ -2,6 +2,11 @@
 
 <suite>
 
+  <ajc-test dir="bugs169/pr315651" title="infinite loop">
+     <compile files="test/Profiling.aj test/Main.java" options="-1.5"/>
+     <run class="test.Main"/>
+  </ajc-test>
+
   <ajc-test dir="bugs169/pr314965" title="anno typo">
      <compile files="MinimalExample.java" options="-1.5">
        <message kind="warning" text="no match for this type name: AnnotationWithParamAndTypo [Xlint:invalidAbsoluteTypeName]"/>
