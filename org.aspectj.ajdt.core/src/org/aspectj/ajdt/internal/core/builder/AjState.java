@@ -511,16 +511,32 @@ public class AjState implements CompilerConfigurationChangeFlags {
 				// if it is an aspect we may or may not be in trouble depending on whether (a) we depend on it (b) it is on the
 				// classpath or the aspectpath
 				if (state.isAspect(classFile)) {
-					if (state.hasStructuralChangedSince(classFile, lastSuccessfulBuildTime) || isTypeWeReferTo(classFile)) {
-						// further improvements possible
-						if (pathid != PATHID_CLASSPATH) {
+					boolean hasStructuralChanges = state.hasStructuralChangedSince(classFile, lastSuccessfulBuildTime);
+					if (hasStructuralChanges || isTypeWeReferTo(classFile)) {
+						if (hasStructuralChanges) {
 							if (listenerDefined()) {
 								getListener().recordDecision(
-										"ClassFileChangeChecking: aspect found that has structurally changed or that this project depends upon : "
-												+ classFile);
+										"ClassFileChangeChecking: aspect found that has structurally changed : " + classFile);
 							}
 							return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
+						} else {
+							// must be 'isTypeWeReferTo()'
+							if (pathid == PATHID_CLASSPATH) {
+								if (listenerDefined()) {
+									getListener().recordDecision(
+											"ClassFileChangeChecking: aspect found that this project refers to : " + classFile
+													+ " but only referred to via classpath");
+								}
+							} else {
+								if (listenerDefined()) {
+									getListener().recordDecision(
+											"ClassFileChangeChecking: aspect found that this project refers to : " + classFile
+													+ " from either inpath/aspectpath, switching to full build");
+								}
+								return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
+							}
 						}
+
 					} else {
 						// it is an aspect but we don't refer to it:
 						// - for CLASSPATH I think this is OK, we can continue and try an
@@ -566,14 +582,12 @@ public class AjState implements CompilerConfigurationChangeFlags {
 						if (state.isAspect(classFile)) {
 							if (state.hasStructuralChangedSince(classFile, lastSuccessfulBuildTime) || isTypeWeReferTo(classFile)) {
 								// further improvements possible
-								if (pathid != PATHID_CLASSPATH) {
-									if (listenerDefined()) {
-										getListener().recordDecision(
-												"ClassFileChangeChecking: aspect found that has structurally changed or that this project depends upon : "
-														+ classFile);
-									}
-									return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
+								if (listenerDefined()) {
+									getListener().recordDecision(
+											"ClassFileChangeChecking: aspect found that has structurally changed or that this project depends upon : "
+													+ classFile);
 								}
+								return CLASS_FILE_CHANGED_THAT_NEEDS_FULL_BUILD;
 							} else {
 								// it is an aspect but we don't refer to it:
 								// - for CLASSPATH I think this is OK, we can continue and try an
@@ -2061,10 +2075,10 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	}
 
 	public void write(CompressingDataOutputStream dos) throws IOException {
-		// model
 		// weaver
 		weaver.write(dos);
 		// world
+		// model
 		// local state
 	}
 }
