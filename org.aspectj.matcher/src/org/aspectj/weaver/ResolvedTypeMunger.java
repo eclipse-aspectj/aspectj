@@ -294,6 +294,8 @@ public abstract class ResolvedTypeMunger {
 				return FieldHost;
 			case 11:
 				return MethodDelegate2;
+			case 12:
+				return InnerClass;
 			}
 			throw new BCException("bad kind: " + key);
 		}
@@ -315,21 +317,17 @@ public abstract class ResolvedTypeMunger {
 	public static final Kind Field = new Kind("Field", 1);
 	public static final Kind Method = new Kind("Method", 2);
 	public static final Kind Constructor = new Kind("Constructor", 5);
-
 	// not serialized, only created during concretization of aspects
 	public static final Kind PerObjectInterface = new Kind("PerObjectInterface", 3);
 	public static final Kind PrivilegedAccess = new Kind("PrivilegedAccess", 4);
-
 	public static final Kind Parent = new Kind("Parent", 6);
-	public static final Kind PerTypeWithinInterface = new Kind("PerTypeWithinInterface", 7); // PTWIMPL not serialized, used during
-	// concretization of aspects
-
+	// PTWIMPL not serialized, used during concretization of aspects
+	public static final Kind PerTypeWithinInterface = new Kind("PerTypeWithinInterface", 7);
 	public static final Kind AnnotationOnType = new Kind("AnnotationOnType", 8); // not serialized
-
 	public static final Kind MethodDelegate = new Kind("MethodDelegate", 9);// serialized, @AJ ITDs
 	public static final Kind FieldHost = new Kind("FieldHost", 10);// serialized, @AJ ITDs
-
 	public static final Kind MethodDelegate2 = new Kind("MethodDelegate2", 11);// serialized, @AJ ITDs
+	public static final Kind InnerClass = new Kind("InnerClass", 12);
 
 	public static final String SUPER_DISPATCH_NAME = "superDispatch";
 
@@ -402,6 +400,10 @@ public abstract class ResolvedTypeMunger {
 
 	public List<String> getTypeVariableAliases() {
 		return typeVariableAliases;
+	}
+
+	protected void setTypeVariableAliases(List<String> typeVariableAliases) {
+		this.typeVariableAliases = typeVariableAliases;
 	}
 
 	public boolean hasTypeVariableAliases() {
