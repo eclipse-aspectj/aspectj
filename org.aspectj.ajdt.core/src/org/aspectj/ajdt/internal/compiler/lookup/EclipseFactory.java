@@ -87,6 +87,7 @@ public class EclipseFactory {
 	private final LookupEnvironment lookupEnvironment;
 	private final boolean xSerializableAspects;
 	private final World world;
+	public PushinCollector pushinCollector;
 	public Collection finishedTypeMungers = null;
 
 	// We can get clashes if we don't treat raw types differently - we end up looking
@@ -110,6 +111,7 @@ public class EclipseFactory {
 		this.lookupEnvironment = lookupEnvironment;
 		this.buildManager = buildManager;
 		this.world = buildManager.getWorld();
+		this.pushinCollector = PushinCollector.createInstance(this.world);
 		this.xSerializableAspects = buildManager.buildConfig.isXserializableAspects();
 	}
 
@@ -117,6 +119,7 @@ public class EclipseFactory {
 		this.lookupEnvironment = lookupEnvironment;
 		this.world = world;
 		this.xSerializableAspects = xSer;
+		this.pushinCollector = PushinCollector.createInstance(this.world);
 		this.buildManager = null;
 	}
 

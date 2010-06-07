@@ -34,7 +34,7 @@ import org.aspectj.weaver.World;
 public class EclipseTypeMunger extends ConcreteTypeMunger {
 	private ResolvedType targetTypeX;
 	// protected ReferenceBinding targetBinding = null;
-	private AbstractMethodDeclaration sourceMethod;
+	public AbstractMethodDeclaration sourceMethod;
 	private EclipseFactory world;
 	private ISourceLocation sourceLocation;
 

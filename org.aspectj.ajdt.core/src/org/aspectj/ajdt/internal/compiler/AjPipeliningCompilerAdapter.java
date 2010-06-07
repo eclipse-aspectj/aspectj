@@ -20,6 +20,9 @@ import java.util.Map;
 
 import org.aspectj.ajdt.internal.compiler.ast.AddAtAspectJAnnotationsVisitor;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.InterTypeConstructorDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.InterTypeFieldDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.InterTypeMethodDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.ValidateAtAspectJAnnotationsVisitor;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.core.builder.AjState;
@@ -31,6 +34,7 @@ import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.Compiler;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
@@ -39,6 +43,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.weaver.bcel.UnwovenClassFile;
 
 /**
  * Adapts standard JDT Compiler to add in AspectJ specific behaviours. This version implements pipelining - where files are compiled
@@ -103,7 +108,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	private IOutputClassFileNameProvider outputFileNameProvider;
 	private IBinarySourceProvider binarySourceProvider;
 	private WeaverMessageHandler weaverMessageHandler;
-	private Map /* fileName > List<UnwovenClassFile> */binarySourceSetForFullWeave = new HashMap();
+	private Map<String, List<UnwovenClassFile>> binarySourceSetForFullWeave = new HashMap<String, List<UnwovenClassFile>>();
 
 	private ContextToken processingToken = null;
 	private ContextToken resolvingToken = null;
@@ -113,7 +118,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	private AjState incrementalCompilationState;
 
 	// Maintains a list of whats weaving - whilst the pipeline is stalled, this accumulates aspects.
-	List /* InterimResult */resultsPendingWeave = new ArrayList();
+	List<InterimCompilationResult> resultsPendingWeave = new ArrayList<InterimCompilationResult>();
 
 	// pipelining info
 	private boolean pipelineStalled = true;
@@ -195,8 +200,8 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		}
 
 		// Break the units into two lists...
-		List aspects = new ArrayList();
-		List nonaspects = new ArrayList();
+		List<CompilationUnitDeclaration> aspects = new ArrayList<CompilationUnitDeclaration>();
+		List<CompilationUnitDeclaration> nonaspects = new ArrayList<CompilationUnitDeclaration>();
 		for (int i = 0; i < units.length; i++) {
 			if (containsAnAspect(units[i])) {
 				aspects.add(units[i]);
@@ -207,11 +212,11 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 
 		// ...and put them back together, aspects first
 		int posn = 0;
-		for (Iterator iter = aspects.iterator(); iter.hasNext();) {
-			units[posn++] = (CompilationUnitDeclaration) iter.next();
+		for (CompilationUnitDeclaration aspect : aspects) {
+			units[posn++] = aspect;
 		}
-		for (Iterator iter = nonaspects.iterator(); iter.hasNext();) {
-			units[posn++] = (CompilationUnitDeclaration) iter.next();
+		for (CompilationUnitDeclaration nonaspect : nonaspects) {
+			units[posn++] = nonaspect;
 		}
 
 		// Work out how long to stall the pipeline
@@ -250,7 +255,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	}
 
 	public void beforeCompiling(ICompilationUnit[] sourceUnits) {
-		resultsPendingWeave = new ArrayList();
+		resultsPendingWeave = new ArrayList<InterimCompilationResult>();
 		reportedErrors = false;
 		droppingBackToFullBuild = false;
 	}
@@ -265,7 +270,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		if (inJava5Mode && !noAtAspectJAnnotationProcessing) {
 			ContextToken tok = CompilationAndWeavingContext.enteringPhase(
 					CompilationAndWeavingContext.ADDING_AT_ASPECTJ_ANNOTATIONS, unit.getFileName());
-			AddAtAspectJAnnotationsVisitor atAspectJVisitor = new AddAtAspectJAnnotationsVisitor(unit,makeReflectable);
+			AddAtAspectJAnnotationsVisitor atAspectJVisitor = new AddAtAspectJAnnotationsVisitor(unit, makeReflectable);
 			unit.traverse(atAspectJVisitor, unit.scope);
 			CompilationAndWeavingContext.leavingPhase(tok);
 		}
@@ -300,11 +305,63 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	public void beforeGenerating(CompilationUnitDeclaration unit) {
 		generatingToken = CompilationAndWeavingContext.enteringPhase(
 				CompilationAndWeavingContext.GENERATING_UNWOVEN_CODE_FOR_COMPILATION_UNIT, unit.getFileName());
+		if (eWorld.pushinCollector != null) {
+			if (unit.types != null && unit.types.length > 0) {
+				for (int t = 0; t < unit.types.length; t++) {
+					TypeDeclaration type = unit.types[t];
+					if (type.methods != null) {
+						for (int m = 0; m < type.methods.length; m++) {
+							AbstractMethodDeclaration md = type.methods[m];
+							if (md instanceof InterTypeMethodDeclaration) {
+								InterTypeMethodDeclaration itmd = ((InterTypeMethodDeclaration) md);
+								ITDMethodPrinter printer = new ITDMethodPrinter(itmd, md.scope);
+								String s = printer.print();
+								eWorld.pushinCollector.recordInterTypeMethodDeclarationCode(md, s, getDeclarationLineNumber(md));
+							} else if (md instanceof InterTypeFieldDeclaration) {
+								ITDFieldPrinter printer = new ITDFieldPrinter(((InterTypeFieldDeclaration) md), md.scope);
+								String s = printer.print();
+								eWorld.pushinCollector.recordInterTypeFieldDeclarationCode(md, s, getDeclarationLineNumber(md));
+							} else if (md instanceof InterTypeConstructorDeclaration) {
+								ITDConstructorPrinter printer = new ITDConstructorPrinter(((InterTypeConstructorDeclaration) md),
+										md.scope);
+								String s = printer.print();
+								eWorld.pushinCollector.recordInterTypeConstructorDeclarationCode(md, s,
+										getDeclarationLineNumber(md));
+								// } else if (md instanceof DeclareAnnotationDeclaration) {
+								// DeclareAnnotationDeclaration dad = (DeclareAnnotationDeclaration) md;
+								// String value = new DeclareAnnotationsPrinter(dad, dad.scope).print();
+								// eWorld.pushinCollector.recordDeclareAnnotationDeclarationCode(md, value);
+							}
+						}
+					}
+				}
+			}
+			eWorld.pushinCollector.setOutputFileNameProvider(outputFileNameProvider);
+		}
+	}
+
+	/**
+	 * @return the line number for this declaration in the source code
+	 */
+	private int getDeclarationLineNumber(AbstractMethodDeclaration md) {
+		int sourceStart = md.sourceStart;
+		int[] separators = md.compilationResult.lineSeparatorPositions;
+		int declarationStartLine = 1;
+		for (int i = 0; i < separators.length; i++) {
+			if (sourceStart < separators[i]) {
+				break;
+			}
+			declarationStartLine++;
+		}
+		return declarationStartLine;
 	}
 
 	public void afterGenerating(CompilationUnitDeclaration unit) {
 		if (generatingToken != null) {
 			CompilationAndWeavingContext.leavingPhase(generatingToken);
+		}
+		if (eWorld.pushinCollector != null) {
+			eWorld.pushinCollector.dump(unit);
 		}
 	}
 
@@ -416,12 +473,12 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	// helper methods...
 	// ==================================================================================
 
-	private List getBinarySourcesFrom(Map binarySourceEntries) {
+	private List<InterimCompilationResult> getBinarySourcesFrom(Map<String, List<UnwovenClassFile>> binarySourceEntries) {
 		// Map is fileName |-> List<UnwovenClassFile>
-		List ret = new ArrayList();
-		for (Iterator binIter = binarySourceEntries.keySet().iterator(); binIter.hasNext();) {
-			String sourceFileName = (String) binIter.next();
-			List unwovenClassFiles = (List) binarySourceEntries.get(sourceFileName);
+		List<InterimCompilationResult> ret = new ArrayList<InterimCompilationResult>();
+		for (Iterator<String> binIter = binarySourceEntries.keySet().iterator(); binIter.hasNext();) {
+			String sourceFileName = binIter.next();
+			List<UnwovenClassFile> unwovenClassFiles = binarySourceEntries.get(sourceFileName);
 			// XXX - see bugs 57432,58679 - final parameter on next call should be "compiler.options.maxProblemsPerUnit"
 			CompilationResult result = new CompilationResult(sourceFileName.toCharArray(), 0, 0, Integer.MAX_VALUE);
 			result.noSourceAvailable();
@@ -610,7 +667,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	 * SECRET: FOR TESTING - this can be used to collect information that tests can verify.
 	 */
 	public static boolean pipelineTesting = false;
-	public static Hashtable pipelineOutput = null;
+	public static Hashtable<String, String> pipelineOutput = null;
 
 	// Keys into pipelineOutput:
 	// compileOrder "[XXX,YYY]" a list of the order in which files will be woven (aspects should be first)
@@ -621,12 +678,12 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		if (pipelineOutput == null) {
 			return "";
 		}
-		return (String) pipelineOutput.get(key);
+		return pipelineOutput.get(key);
 	}
 
 	private final static boolean debugPipeline = false;
 
-	public List getResultsPendingWeave() {
+	public List<InterimCompilationResult> getResultsPendingWeave() {
 		return resultsPendingWeave;
 	}
 

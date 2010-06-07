@@ -85,8 +85,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 			EclipseFactory eFactory, IIntermediateResultsRequestor intRequestor, IProgressListener progressListener,
 			IOutputClassFileNameProvider outputFileNameProvider, IBinarySourceProvider binarySourceProvider,
 			Map fullBinarySourceEntries, /* fileName |-> List<UnwovenClassFile> */
-			boolean isXterminateAfterCompilation, boolean proceedOnError, boolean noAtAspectJProcessing,
-			boolean reflectable,
+			boolean isXterminateAfterCompilation, boolean proceedOnError, boolean noAtAspectJProcessing, boolean reflectable,
 			AjState incrementalCompilationState) {
 		this.compiler = compiler;
 		this.isBatchCompile = isBatchCompile;
@@ -99,13 +98,14 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 		this.proceedOnError = proceedOnError;
 		this.binarySourceSetForFullWeave = fullBinarySourceEntries;
 		this.eWorld = eFactory;
-		this.reflectable= reflectable;
+		this.reflectable = reflectable;
 		this.inJava5Mode = false;
 		this.noAtAspectJAnnotationProcessing = noAtAspectJProcessing;
 		this.incrementalCompilationState = incrementalCompilationState;
 
-		if (compiler.options.complianceLevel >= ClassFileConstants.JDK1_5)
+		if (compiler.options.complianceLevel >= ClassFileConstants.JDK1_5) {
 			inJava5Mode = true;
+		}
 
 		IMessageHandler msgHandler = world.getMessageHandler();
 		// Do we need to reset the message handler or create a new one? (This saves a ton of memory lost on incremental compiles...)
@@ -132,7 +132,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 		if (inJava5Mode && !noAtAspectJAnnotationProcessing) {
 			ContextToken tok = CompilationAndWeavingContext.enteringPhase(
 					CompilationAndWeavingContext.ADDING_AT_ASPECTJ_ANNOTATIONS, unit.getFileName());
-			AddAtAspectJAnnotationsVisitor atAspectJVisitor = new AddAtAspectJAnnotationsVisitor(unit,reflectable);
+			AddAtAspectJAnnotationsVisitor atAspectJVisitor = new AddAtAspectJAnnotationsVisitor(unit, reflectable);
 			unit.traverse(atAspectJVisitor, unit.scope);
 			CompilationAndWeavingContext.leavingPhase(tok);
 		}
@@ -144,8 +144,9 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	}
 
 	public void afterResolving(CompilationUnitDeclaration unit) {
-		if (resolvingToken != null)
+		if (resolvingToken != null) {
 			CompilationAndWeavingContext.leavingPhase(resolvingToken);
+		}
 	}
 
 	public void beforeAnalysing(CompilationUnitDeclaration unit) {
@@ -158,8 +159,9 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	}
 
 	public void afterAnalysing(CompilationUnitDeclaration unit) {
-		if (analysingToken != null)
+		if (analysingToken != null) {
 			CompilationAndWeavingContext.leavingPhase(analysingToken);
+		}
 	}
 
 	public void beforeGenerating(CompilationUnitDeclaration unit) {
@@ -168,8 +170,9 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	}
 
 	public void afterGenerating(CompilationUnitDeclaration unit) {
-		if (generatingToken != null)
+		if (generatingToken != null) {
 			CompilationAndWeavingContext.leavingPhase(generatingToken);
+		}
 	}
 
 	public void afterCompiling(CompilationUnitDeclaration[] units) {
@@ -195,8 +198,9 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 			AbortCompilation ac = new AbortCompilation(null, ex);
 			throw ac;
 		} catch (RuntimeException rEx) {
-			if (rEx instanceof AbortCompilation)
+			if (rEx instanceof AbortCompilation) {
 				throw rEx; // Don't wrap AbortCompilation exceptions!
+			}
 
 			// This will be unwrapped in Compiler.handleInternalException() and the nested
 			// RuntimeException thrown back to the original caller - which is AspectJ
@@ -209,8 +213,9 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 		CompilationAndWeavingContext.leavingPhase(processingToken);
 		eWorld.finishedCompilationUnit(unit);
 		InterimCompilationResult intRes = new InterimCompilationResult(unit.compilationResult, outputFileNameProvider);
-		if (unit.compilationResult.hasErrors())
+		if (unit.compilationResult.hasErrors()) {
 			reportedErrors = true;
+		}
 
 		if (intermediateResultsRequestor != null) {
 			intermediateResultsRequestor.acceptResult(intRes);
@@ -292,7 +297,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 		for (Iterator iter = resultsPendingWeave.iterator(); iter.hasNext();) {
 			InterimCompilationResult iresult = (InterimCompilationResult) iter.next();
 			for (int i = 0; i < iresult.unwovenClassFiles().length; i++) {
-				weaver.addClassFile(iresult.unwovenClassFiles()[i],false);
+				weaver.addClassFile(iresult.unwovenClassFiles()[i], false);
 			}
 		}
 
@@ -326,8 +331,9 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 			weaver.allWeavingComplete();
 			weaver.tidyUp();
 			IMessageHandler imh = weaver.getWorld().getMessageHandler();
-			if (imh instanceof WeaverMessageHandler)
+			if (imh instanceof WeaverMessageHandler) {
 				((WeaverMessageHandler) imh).resetCompiler(null);
+			}
 		}
 	}
 

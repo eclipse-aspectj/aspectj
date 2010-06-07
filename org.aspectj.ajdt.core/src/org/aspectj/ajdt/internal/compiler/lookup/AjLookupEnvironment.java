@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.aspectj.ajdt.internal.compiler.CommonPrinter;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.asm.AsmManager;
@@ -643,6 +644,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			if (!decp.isMixin()) {
 				boolean didSomething = doDeclareParents(decp, sourceType);
 				if (didSomething) {
+					if (factory.pushinCollector != null) {
+						factory.pushinCollector.tagAsMunged(sourceType, decp.getParents().get(0));
+					}
 					anyNewParents = true;
 				} else {
 					if (!decp.getChild().isStarAnnotation()) {
@@ -656,6 +660,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			DeclareAnnotation deca = (DeclareAnnotation) i.next();
 			boolean didSomething = doDeclareAnnotations(deca, sourceType, true);
 			if (didSomething) {
+
 				anyNewAnnotations = true;
 			} else {
 				if (!deca.getTypePattern().isStar()) {
@@ -672,6 +677,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				DeclareParents decp = (DeclareParents) i.next();
 				boolean didSomething = doDeclareParents(decp, sourceType);
 				if (didSomething) {
+					if (factory.pushinCollector != null) {
+						factory.pushinCollector.tagAsMunged(sourceType, decp.getParents().get(0));
+					}
 					anyNewParents = true;
 					forRemoval.add(decp);
 				}
@@ -683,6 +691,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				DeclareAnnotation deca = (DeclareAnnotation) i.next();
 				boolean didSomething = doDeclareAnnotations(deca, sourceType, false);
 				if (didSomething) {
+					if (factory.pushinCollector != null) {
+						factory.pushinCollector.tagAsMunged(sourceType, deca.getAnnotationString());
+					}
 					anyNewAnnotations = true;
 					forRemoval.add(deca);
 				}
@@ -705,7 +716,11 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		onType.checkInterTypeMungers();
 		for (Iterator i = onType.getInterTypeMungers().iterator(); i.hasNext();) {
 			EclipseTypeMunger munger = (EclipseTypeMunger) i.next();
-			munger.munge(sourceType, onType);
+			if (munger.munge(sourceType, onType)) {
+				if (factory.pushinCollector != null) {
+					factory.pushinCollector.tagAsMunged(sourceType, munger.getSourceMethod());
+				}
+			}
 		}
 
 		// Call if you would like to do source weaving of declare
@@ -884,6 +899,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		Annotation[] toAdd = null;
 		long abits = 0;
 
+		AbstractMethodDeclaration methodDecl = null;
 		// Might have to retrieve the annotation through BCEL and construct an
 		// eclipse one for it.
 		if (stb instanceof BinaryTypeBinding) {
@@ -919,7 +935,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			MethodBinding[] mbs = stb.getMethods(decA.getAnnotationMethod().toCharArray());
 			abits = mbs[0].getAnnotationTagBits(); // ensure resolved
 			TypeDeclaration typeDecl = ((SourceTypeBinding) mbs[0].declaringClass).scope.referenceContext;
-			AbstractMethodDeclaration methodDecl = typeDecl.declarationOf(mbs[0]);
+			methodDecl = typeDecl.declarationOf(mbs[0]);
 			toAdd = methodDecl.annotations; // this is what to add
 			toAdd[0] = createAnnotationCopy(toAdd[0]);
 			if (toAdd[0].resolvedType != null) {
@@ -1063,6 +1079,10 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		}
 		sourceType.scope.referenceContext.annotations = newset;
 		CompilationAndWeavingContext.leavingPhase(tok);
+		if (factory.pushinCollector != null) {
+			factory.pushinCollector.tagAsMunged(sourceType, new CommonPrinter((methodDecl == null ? null : methodDecl.scope))
+					.printAnnotation(toAdd[0]).toString());
+		}
 		return true;
 	}
 
