@@ -1,0 +1,67 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+   <ajc-test dir="features169/itdInnerTypes" title="choice">
+     <compile files="Choice.java" options="-1.5"/>
+     <run class="Choice">
+       <stdout>
+       <line text="null"/>
+       </stdout></run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="field access">
+     <compile files="FieldAccess.java" options="-1.5"/>
+     <run class="FieldAccess">
+       <stdout>
+       <line text="42"/>
+       </stdout></run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="method access">
+     <compile files="MethodCall.java" options="-1.5"/>
+     <run class="MethodCall">
+       <stdout>
+       <line text="42"/>
+       </stdout></run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="only static">
+     <compile files="OnlyStatic.java" options="-1.5">
+     	<message kind="error" line="5" text="Intertype declared member types can only be static (compiler limitation)"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="on interface">
+     <compile files="OnInterface.java" options="-1.5">
+     	<message kind="error" line="5" text="Cannot declare new member type on 'OnInterface'. New member types can only be specified on classes (compiler limitation)"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="on enum">
+     <compile files="OnEnum.java" options="-1.5">
+     	<message kind="error" line="6" text="Cannot declare new member type on 'EEE'. New member types can only be specified on classes (compiler limitation)"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="on annotation">
+     <compile files="OnAnnotation.java" options="-1.5">
+     	<message kind="error" line="8" text="Cannot declare new member type on 'Anno'. New member types can only be specified on classes (compiler limitation)"/>
+     </compile>
+   </ajc-test>
+   
+   <!-- 
+   <ajc-test dir="features169/itdInnerTypes" title="simplest 3">
+     <compile files="Simplest3.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="simplest 2">
+     <compile files="Simplest2.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="simplest">
+     <compile files="Simplest.java" options="-1.5"/>
+   </ajc-test>
+   -->
+   
+</suite>

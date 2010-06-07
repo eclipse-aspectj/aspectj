@@ -20,6 +20,7 @@ public class AllTestsAspectJ169 {
 		// $JUnit-BEGIN$
 		suite.addTest(Ajc169Tests.suite());
 		suite.addTest(TransparentWeavingTests.suite());
+		suite.addTest(IntertypeTests.suite());
 		// $JUnit-END$
 		return suite;
 	}
