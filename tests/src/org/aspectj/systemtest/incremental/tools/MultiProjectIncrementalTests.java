@@ -1532,7 +1532,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	public void testAspectPath_pr274558() throws Exception {
-		AjdeInteractionTestbed.VERBOSE = true;
 		String base = "bug274558depending";
 		String depending = "bug274558base";
 		// addSourceFolderForSourceFile(bug2, getProjectRelativePath(bug2, "src/C.java"), "src");
@@ -1688,7 +1687,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p1);
 		build(p2);
 
-		AjdeInteractionTestbed.VERBOSE = true;
 		alter(p1, "inc1");
 		build(p1); // Modify the aspect Asp2 to include staticinitialization()
 		// advice
@@ -1745,7 +1743,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 	// Make simple changes to a project, adding a class
 	public void testSimpleChanges() {
-		AjdeInteractionTestbed.VERBOSE = true;
 		initialiseProject("P1");
 		build("P1"); // This first build will be batch
 		alter("P1", "inc1"); // adds a single class
@@ -1790,7 +1787,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	public void testBuildingBrokenCode_pr240360() {
-		AjdeInteractionTestbed.VERBOSE = true;
 		initialiseProject("pr240360");
 		// configureNonStandardCompileOptions("pr240360","-proceedOnError");
 		build("pr240360");
@@ -2486,7 +2482,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	public void testPr220255_InfiniteBuildHasMember() {
-		AjdeInteractionTestbed.VERBOSE = true;
 		initialiseProject("pr220255");
 		configureNonStandardCompileOptions("pr220255", "-XhasMember");
 		build("pr220255");
