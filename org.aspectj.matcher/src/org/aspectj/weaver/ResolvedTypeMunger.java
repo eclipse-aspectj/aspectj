@@ -56,7 +56,7 @@ public abstract class ResolvedTypeMunger {
 
 	private Set<ResolvedMember> superMethodsCalled = Collections.emptySet();
 
-	private ISourceLocation location; // Lost during serialize/deserialize !
+	private ISourceLocation location;
 
 	private ResolvedType onType = null;
 
@@ -106,7 +106,7 @@ public abstract class ResolvedTypeMunger {
 
 	public boolean matches(ResolvedType matchType, ResolvedType aspectType) {
 		if (onType == null) {
-			onType = matchType.getWorld().resolve(signature.getDeclaringType());
+			onType = matchType.getWorld().resolve(getDeclaringType());
 			if (onType.isRawType()) {
 				onType = onType.getGenericType();
 			}
@@ -160,6 +160,8 @@ public abstract class ResolvedTypeMunger {
 			return MethodDelegateTypeMunger.FieldHostTypeMunger.readFieldHost(s, context);
 		} else if (kind == MethodDelegate2) {
 			return MethodDelegateTypeMunger.readMethod(s, context, true);
+		} else if (kind == InnerClass) {
+			return NewMemberClassTypeMunger.read(s, context);
 		} else {
 			throw new RuntimeException("unimplemented");
 		}
@@ -488,6 +490,10 @@ public abstract class ResolvedTypeMunger {
 
 	public ResolvedTypeMunger parameterizeWith(Map m, World w) {
 		throw new BCException("Dont call parameterizeWith() on a type munger of this kind: " + this.getClass());
+	}
+
+	public UnresolvedType getDeclaringType() {
+		return getSignature().getDeclaringType();
 	}
 
 }
