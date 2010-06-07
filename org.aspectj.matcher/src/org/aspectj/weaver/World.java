@@ -1460,15 +1460,15 @@ public abstract class World implements Dump.INode {
 				}
 
 			}
-			try{
-			  String value = System.getProperty("aspectj.overweaving", "false");
-			  if (value.equalsIgnoreCase("true")) {
-				System.out.println("ASPECTJ: aspectj.overweaving=true: overweaving switched ON");
-				overWeaving = true;
-			  }
+			try {
+				String value = System.getProperty("aspectj.overweaving", "false");
+				if (value.equalsIgnoreCase("true")) {
+					System.out.println("ASPECTJ: aspectj.overweaving=true: overweaving switched ON");
+					overWeaving = true;
+				}
 			} catch (Throwable t) {
-			  System.err.println("ASPECTJ: Unable to read system properties");
-			  t.printStackTrace();
+				System.err.println("ASPECTJ: Unable to read system properties");
+				t.printStackTrace();
 			}
 			checkedAdvancedConfiguration = true;
 		}
