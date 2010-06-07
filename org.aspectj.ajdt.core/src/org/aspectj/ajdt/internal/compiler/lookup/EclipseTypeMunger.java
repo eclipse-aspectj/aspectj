@@ -9,22 +9,25 @@
  * Contributors: 
  *     PARC     initial implementation 
  * ******************************************************************/
-
 package org.aspectj.ajdt.internal.compiler.lookup;
 
 import java.lang.reflect.Modifier;
 import java.util.Map;
 
+import org.aspectj.asm.internal.CharOperation;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.aspectj.weaver.NewFieldTypeMunger;
+import org.aspectj.weaver.NewMemberClassTypeMunger;
 import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
@@ -43,14 +46,22 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 		super(munger, aspectType);
 		this.world = world;
 		this.sourceMethod = sourceMethod;
+		// A null sourceMethod can be because of binary weaving
 		if (sourceMethod != null) {
 			this.sourceLocation = new EclipseSourceLocation(sourceMethod.compilationResult, sourceMethod.sourceStart,
 					sourceMethod.sourceEnd);
 			// Piece of magic that tells type mungers where they came from.
 			// Won't be persisted unless ResolvedTypeMunger.persistSourceLocation is true.
 			munger.setSourceLocation(sourceLocation);
+
+			// use a different ctor for type level inter type decls I think
+			// } else {
+			// this.sourceLocation = aspectType.getSourceLocation();
+			// munger.setSourceLocation(sourceLocation);
 		}
-		targetTypeX = munger.getSignature().getDeclaringType().resolve(world.getWorld());
+		// was
+		targetTypeX = munger.getDeclaringType().resolve(world.getWorld());
+		// targetTypeX = munger.getSignature().getDeclaringType().resolve(world.getWorld());
 		// AMC, needed until generic and raw have distinct sigs...
 		if (targetTypeX.isParameterizedType() || targetTypeX.isRawType()) {
 			targetTypeX = targetTypeX.getGenericType();
@@ -59,7 +70,8 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 	}
 
 	public static boolean supportsKind(ResolvedTypeMunger.Kind kind) {
-		return kind == ResolvedTypeMunger.Field || kind == ResolvedTypeMunger.Method || kind == ResolvedTypeMunger.Constructor;
+		return kind == ResolvedTypeMunger.Field || kind == ResolvedTypeMunger.Method || kind == ResolvedTypeMunger.Constructor
+				|| kind == ResolvedTypeMunger.InnerClass;
 	}
 
 	public String toString() {
@@ -106,6 +118,8 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 			return mungeNewMethod(sourceType, onType, (NewMethodTypeMunger) munger, isExactTargetType);
 		} else if (munger.getKind() == ResolvedTypeMunger.Constructor) {
 			mungeNewConstructor(sourceType, (NewConstructorTypeMunger) munger);
+		} else if (munger.getKind() == ResolvedTypeMunger.InnerClass) {
+			mungeNewInnerClass(sourceType, onType, (NewMemberClassTypeMunger) munger, isExactTargetType);
 		} else {
 			throw new RuntimeException("unimplemented: " + munger.getKind());
 		}
@@ -146,6 +160,27 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 			binding.modifiers |= ClassFileConstants.AccVarargs;
 		}
 		findOrCreateInterTypeMemberFinder(sourceType).addInterTypeMethod(binding);
+		return true;
+	}
+
+	private boolean mungeNewInnerClass(SourceTypeBinding sourceType, ResolvedType onType, NewMemberClassTypeMunger munger,
+			boolean isExactTargetType) {
+		ReferenceBinding binding = new InterTypeMemberClassBinding(world, munger, aspectType, onType, munger.getMemberTypeName(),
+				sourceType);
+
+		SourceTypeBinding stb = (SourceTypeBinding) world.makeTypeBinding(aspectType);
+		ReferenceBinding found = null;
+		for (int i = 0; i < stb.memberTypes.length; i++) {
+			ReferenceBinding rb = stb.memberTypes[i];
+			char[] sn = rb.sourceName;
+			if (CharOperation.equals(munger.getMemberTypeName().toCharArray(), sn)) {
+				binding = rb;
+			}
+		}
+		// TODO adjust modifier?
+		// TODO deal with itd of it onto an interface
+
+		findOrCreateInterTypeMemberClassFinder(sourceType).addInterTypeMemberType(binding);
 		return true;
 	}
 
@@ -207,6 +242,17 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 			finder = new InterTypeMemberFinder();
 			sourceType.memberFinder = finder;
 			finder.sourceTypeBinding = sourceType;
+		}
+		return finder;
+	}
+
+	private IntertypeMemberTypeFinder findOrCreateInterTypeMemberClassFinder(SourceTypeBinding sourceType) {
+		IntertypeMemberTypeFinder finder = (IntertypeMemberTypeFinder) sourceType.typeFinder;
+		if (finder == null) {
+			finder = new IntertypeMemberTypeFinder();
+			sourceType.typeFinder = finder;
+			finder.targetTypeBinding = sourceType;
+			sourceType.tagBits &= ~TagBits.HasNoMemberTypes; // ensure it thinks it has one
 		}
 		return finder;
 	}

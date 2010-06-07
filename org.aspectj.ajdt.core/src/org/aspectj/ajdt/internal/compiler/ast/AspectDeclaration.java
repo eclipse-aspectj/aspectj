@@ -1048,6 +1048,16 @@ public class AspectDeclaration extends TypeDeclaration {
 				}
 			}
 		}
+		if (memberTypes != null) {
+			for (int i = 0; i < memberTypes.length; i++) {
+				if (memberTypes[i] instanceof IntertypeMemberClassDeclaration) {
+					EclipseTypeMunger m = ((IntertypeMemberClassDeclaration) memberTypes[i]).build(classScope);
+					if (m != null) {
+						concreteName.typeMungers.add(m);
+					}
+				}
+			}
+		}
 
 		concreteName.getDeclaredPointcuts();
 	}
