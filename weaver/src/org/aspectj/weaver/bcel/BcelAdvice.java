@@ -371,12 +371,12 @@ class BcelAdvice extends Advice {
 
 	// ---- implementations
 
-	private Collection collectCheckedExceptions(UnresolvedType[] excs) {
+	private Collection<ResolvedType> collectCheckedExceptions(UnresolvedType[] excs) {
 		if (excs == null || excs.length == 0) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 
-		Collection ret = new ArrayList();
+		Collection<ResolvedType> ret = new ArrayList<ResolvedType>();
 		World world = concreteAspect.getWorld();
 		ResolvedType runtimeException = world.getCoreType(UnresolvedType.RUNTIME_EXCEPTION);
 		ResolvedType error = world.getCoreType(UnresolvedType.ERROR);
@@ -399,10 +399,10 @@ class BcelAdvice extends Advice {
 		return ret;
 	}
 
-	private Collection thrownExceptions = null;
+	private Collection<ResolvedType> thrownExceptions = null;
 
 	@Override
-	public Collection getThrownExceptions() {
+	public Collection<ResolvedType> getThrownExceptions() {
 		if (thrownExceptions == null) {
 			// ??? can we really lump in Around here, how does this interact with Throwable
 			if (concreteAspect != null && concreteAspect.getWorld() != null && // null tests for test harness
@@ -410,12 +410,12 @@ class BcelAdvice extends Advice {
 				World world = concreteAspect.getWorld();
 				ResolvedMember m = world.resolve(signature);
 				if (m == null) {
-					thrownExceptions = Collections.EMPTY_LIST;
+					thrownExceptions = Collections.emptyList();
 				} else {
 					thrownExceptions = collectCheckedExceptions(m.getExceptions());
 				}
 			} else {
-				thrownExceptions = Collections.EMPTY_LIST;
+				thrownExceptions = Collections.emptyList();
 			}
 		}
 		return thrownExceptions;
@@ -751,7 +751,7 @@ class BcelAdvice extends Advice {
 			ISourceContext sourceContext, ResolvedType concreteAspect) {
 		this(new AjAttribute.AdviceAttribute(kind, pointcut, extraArgumentFlags, start, end, sourceContext), pointcut, signature,
 				concreteAspect);
-		thrownExceptions = Collections.EMPTY_LIST; // !!! interaction with unit tests
+		thrownExceptions = Collections.emptyList(); // !!! interaction with unit tests
 	}
 
 }
