@@ -43,6 +43,7 @@ import org.aspectj.weaver.Constants;
 import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.WeaverMessages;
 
+@SuppressWarnings("unchecked")
 public class BuildArgParser extends Main {
 
 	private static final String BUNDLE_NAME = "org.aspectj.ajdt.ajc.messages";
@@ -454,7 +455,7 @@ public class BuildArgParser extends Main {
 					args.remove(args.get(nextArgIndex));
 				}
 			} else if (arg.equals("-makeAjReflectable")) {
-				buildConfig.setMakeReflectable(true);				
+				buildConfig.setMakeReflectable(true);
 			} else if (arg.equals("-sourceroots")) {
 				if (args.size() > nextArgIndex) {
 					List sourceRoots = new ArrayList();
@@ -569,6 +570,13 @@ public class BuildArgParser extends Main {
 				}
 			} else if (arg.startsWith("-Xset:")) {
 				buildConfig.setXconfigurationInfo(arg.substring(6));
+			} else if (arg.startsWith("-aspectj.pushin=")) {
+			    // a little dirty but this should never be used in the IDE
+				try {
+					System.setProperty("aspectj.pushin", arg.substring(16));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			} else if (arg.startsWith("-XnotReweavable")) {
 				buildConfig.setXnotReweavable(true);
 			} else if (arg.equals("-XnoInline")) {
