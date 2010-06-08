@@ -53,9 +53,11 @@ public class PushinCollector {
 	private final static String OPTION_PKGDIRS = "packageDirs";
 	private final static String OPTION_DEBUG = "debug";
 	private final static String OPTION_LINENUMS = "lineNums";
+	private final static String OPTION_DUMPUNCHANGED = "dumpUnchanged";
 
 	private World world;
 	private boolean debug = false;
+	private boolean dumpUnchanged = false;
 	private IOutputClassFileNameProvider outputFileNameProvider;
 	private String specifiedOutputDirectory;
 	private boolean includePackageDirs;
@@ -82,6 +84,7 @@ public class PushinCollector {
 		includePackageDirs = configuration.getProperty(OPTION_PKGDIRS, "true").equalsIgnoreCase("true");
 		includeLineNumberComments = configuration.getProperty(OPTION_LINENUMS, "false").equalsIgnoreCase("true");
 		debug = configuration.getProperty(OPTION_DEBUG, "false").equalsIgnoreCase("true");
+		dumpUnchanged = configuration.getProperty(OPTION_DUMPUNCHANGED, "false").equalsIgnoreCase("true");
 		String specifiedSuffix = configuration.getProperty(OPTION_SUFFIX, "pushedin");
 		if (specifiedSuffix.length() > 0) {
 			StringBuilder sb = new StringBuilder();
@@ -131,6 +134,7 @@ public class PushinCollector {
 		// Process all types working from end to start as whatever we do (insert-wise) will affect locations later in the file
 		StringBuffer sourceContents = new StringBuffer();
 		// put the whole original file in the buffer
+		boolean changed = false;
 		sourceContents.append(compilationUnitDeclaration.compilationResult.compilationUnit.getContents());
 		for (int t = types.length - 1; t >= 0; t--) {
 			SourceTypeBinding sourceTypeBinding = compilationUnitDeclaration.scope.topLevelTypes[t];
@@ -140,7 +144,7 @@ public class PushinCollector {
 				}
 				continue;
 			}
-
+			changed = true;
 			int bodyEnd = sourceTypeBinding.scope.referenceContext.bodyEnd; // last '}' of the type
 			List<AbstractMethodDeclaration> declarations = newDeclarations.get(sourceTypeBinding);
 			if (declarations != null) {
@@ -197,16 +201,18 @@ public class PushinCollector {
 				}
 			}
 		}
-		try {
-			if (debug) {
-				System.out.println("Pushed in output file being written to " + outputFileLocation);
-				System.out.println(sourceContents);
+		if (changed || (!changed && dumpUnchanged)) {
+			try {
+				if (debug) {
+					System.out.println("Pushed in output file being written to " + outputFileLocation);
+					System.out.println(sourceContents);
+				}
+				FileWriter fos = new FileWriter(new File(outputFileLocation));
+				fos.write(sourceContents.toString());
+				fos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			FileWriter fos = new FileWriter(new File(outputFileLocation));
-			fos.write(sourceContents.toString());
-			fos.close();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
