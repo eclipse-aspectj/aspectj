@@ -95,6 +95,7 @@ public class PushinCollector {
 		}
 		if (debug) {
 			System.out.println("Configured to create pushin side files:" + configuration);
+			System.out.println("dumpUnchanged=" + dumpUnchanged + "\nincludePackageDirs=" + includePackageDirs);
 		}
 
 	}
