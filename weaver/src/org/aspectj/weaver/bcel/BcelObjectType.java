@@ -40,6 +40,7 @@ import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.GenericSignature;
+import org.aspectj.util.GenericSignature.FormalTypeParameter;
 import org.aspectj.weaver.AbstractReferenceTypeDelegate;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
@@ -381,9 +382,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		} catch (RuntimeException re) {
 			throw new RuntimeException("Problem processing attributes in " + javaClass.getFileName(), re);
 		}
-		List pointcuts = new ArrayList();
-		typeMungers = new ArrayList();
-		declares = new ArrayList();
+		List<ResolvedPointcutDefinition> pointcuts = new ArrayList<ResolvedPointcutDefinition>();
+		typeMungers = new ArrayList<ConcreteTypeMunger>();
+		declares = new ArrayList<Declare>();
 		processAttributes(l, pointcuts, false);
 		l = AtAjAttributes.readAj5ClassAttributes(((BcelWorld) getResolvedTypeX().getWorld()).getModelAsAsmManager(), javaClass,
 				getResolvedTypeX(), getResolvedTypeX().getSourceContext(), msgHandler, isCodeStyleAspect);
@@ -392,7 +393,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		if (pointcuts.size() == 0) {
 			this.pointcuts = ResolvedPointcutDefinition.NO_POINTCUTS;
 		} else {
-			this.pointcuts = (ResolvedPointcutDefinition[]) pointcuts.toArray(new ResolvedPointcutDefinition[pointcuts.size()]);
+			this.pointcuts = pointcuts.toArray(new ResolvedPointcutDefinition[pointcuts.size()]);
 		}
 
 		resolveAnnotationDeclares(l);
@@ -452,14 +453,12 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	/**
 	 * Extra processing step needed because declares that come from annotations are not pre-resolved. We can't do the resolution
 	 * until *after* the pointcuts have been resolved.
-	 * 
-	 * @param attributeList
 	 */
-	private void resolveAnnotationDeclares(List attributeList) {
+	private void resolveAnnotationDeclares(List<AjAttribute> attributeList) {
 		FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
 		IScope bindingScope = new BindingScope(getResolvedTypeX(), getResolvedTypeX().getSourceContext(), bindings);
-		for (Iterator iter = attributeList.iterator(); iter.hasNext();) {
-			AjAttribute a = (AjAttribute) iter.next();
+		for (Iterator<AjAttribute> iter = attributeList.iterator(); iter.hasNext();) {
+			AjAttribute a = iter.next();
 			if (a instanceof AjAttribute.DeclareAttribute) {
 				Declare decl = (((AjAttribute.DeclareAttribute) a).getDeclare());
 				if (decl instanceof DeclareErrorOrWarning) {
@@ -628,9 +627,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 				for (int i = annotations.length - 1; i >= 0; i--) {
 					AnnotationAJ ax = annotations[i];
 					if (ax.getTypeName().equals(UnresolvedType.AT_RETENTION.getName())) {
-						List values = ((BcelAnnotation) ax).getBcelAnnotation().getValues();
-						for (Iterator it = values.iterator(); it.hasNext();) {
-							NameValuePair element = (NameValuePair) it.next();
+						List<NameValuePair> values = ((BcelAnnotation) ax).getBcelAnnotation().getValues();
+						for (Iterator<NameValuePair> it = values.iterator(); it.hasNext();) {
+							NameValuePair element = it.next();
 							EnumElementValue v = (EnumElementValue) element.getValue();
 							retentionPolicy = v.getEnumValueString();
 							return retentionPolicy;
@@ -762,7 +761,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 				// proceeding with resolution.
 				GenericSignature.FormalTypeParameter[] extraFormals = getFormalTypeParametersFromOuterClass();
 				if (extraFormals.length > 0) {
-					List allFormals = new ArrayList();
+					List<FormalTypeParameter> allFormals = new ArrayList<FormalTypeParameter>();
 					for (int i = 0; i < formalsForResolution.length; i++) {
 						allFormals.add(formalsForResolution[i]);
 					}

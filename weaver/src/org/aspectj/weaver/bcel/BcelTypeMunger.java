@@ -49,6 +49,7 @@ import org.aspectj.weaver.MethodDelegateTypeMunger;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.aspectj.weaver.NewFieldTypeMunger;
+import org.aspectj.weaver.NewMemberClassTypeMunger;
 import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.NewParentTypeMunger;
 import org.aspectj.weaver.PerObjectInterfaceTypeMunger;
@@ -99,6 +100,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			changed = mungeNewField(weaver, (NewFieldTypeMunger) munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.Method) {
 			changed = mungeNewMethod(weaver, (NewMethodTypeMunger) munger);
+		} else if (munger.getKind() == ResolvedTypeMunger.InnerClass) {
+			changed = mungeNewMemberType(weaver, (NewMemberClassTypeMunger) munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.MethodDelegate2) {
 			changed = mungeMethodDelegate(weaver, (MethodDelegateTypeMunger) munger);
 		} else if (munger.getKind() == ResolvedTypeMunger.FieldHost) {
@@ -175,12 +178,17 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				// hidden
 			} else {
 				ResolvedMember declaredSig = munger.getSignature();
+				String fromString = fName + ":'" + declaredSig + "'";
 				// if (declaredSig==null) declaredSig= munger.getSignature();
+				String kindString = munger.getKind().toString().toLowerCase();
+				if (kindString.equals("innerclass")) {
+					kindString = "member class";
+					fromString = fName;
+				}
 				weaver.getWorld().getMessageHandler().handleMessage(
 						WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ITD, new String[] {
-								weaver.getLazyClassGen().getType().getName(), tName, munger.getKind().toString().toLowerCase(),
-								getAspectType().getName(), fName + ":'" + declaredSig + "'" }, weaver.getLazyClassGen()
-								.getClassName(), getAspectType().getName()));
+								weaver.getLazyClassGen().getType().getName(), tName, kindString, getAspectType().getName(),
+								fromString }, weaver.getLazyClassGen().getClassName(), getAspectType().getName()));
 			}
 		}
 
@@ -761,6 +769,15 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	// matched or not
 	private boolean couldMatch(BcelObjectType bcelObjectType, Pointcut pointcut) {
 		return !bcelObjectType.isInterface();
+	}
+
+	private boolean mungeNewMemberType(BcelClassWeaver classWeaver, NewMemberClassTypeMunger munger) {
+		World world = classWeaver.getWorld();
+		ResolvedType onType = world.resolve(munger.getTargetType());
+		if (onType.isRawType()) {
+			onType = onType.getGenericType();
+		}
+		return onType.equals(classWeaver.getLazyClassGen().getType());
 	}
 
 	private boolean mungeNewMethod(BcelClassWeaver classWeaver, NewMethodTypeMunger munger) {

@@ -114,7 +114,7 @@ public class BcelWeaver {
 
 	// These four are setup by prepareForWeave
 	private transient List<ShadowMunger> shadowMungerList = null;
-	private transient List typeMungerList = null;
+	private transient List<ConcreteTypeMunger> typeMungerList = null;
 	private transient List lateTypeMungerList = null;
 	private transient List declareParentsList = null;
 
@@ -568,11 +568,11 @@ public class BcelWeaver {
 				String name = jc.getClassName();
 				ResolvedType type = world.resolve(name);
 				if (type.isAspect()) {
-					Collection/* ShadowMunger */shadowMungers = customMungerFactory.createCustomShadowMungers(type);
+					Collection<ShadowMunger> shadowMungers = customMungerFactory.createCustomShadowMungers(type);
 					if (shadowMungers != null) {
 						shadowMungerList.addAll(shadowMungers);
 					}
-					Collection/* ConcreteTypeMunger */typeMungers = customMungerFactory.createCustomTypeMungers(type);
+					Collection<ConcreteTypeMunger> typeMungers = customMungerFactory.createCustomTypeMungers(type);
 					if (typeMungers != null) {
 						typeMungerList.addAll(typeMungers);
 					}
@@ -1605,8 +1605,7 @@ public class BcelWeaver {
 		if (onType.isRawType() || onType.isParameterizedType()) {
 			onType = onType.getGenericType();
 		}
-		for (Iterator i = typeMungerList.iterator(); i.hasNext();) {
-			ConcreteTypeMunger m = (ConcreteTypeMunger) i.next();
+		for (ConcreteTypeMunger m : typeMungerList) {
 			if (!m.isLateMunger() && m.matches(onType)) {
 				onType.addInterTypeMunger(m, false);
 			}

@@ -67,7 +67,7 @@ public class Utility {
 
 	public static List<AjAttribute> readAjAttributes(String classname, Attribute[] as, ISourceContext context, World w,
 			AjAttribute.WeaverVersionInfo version, ConstantPoolReader dataDecompressor) {
-		List<AjAttribute> l = new ArrayList<AjAttribute>();
+		List<AjAttribute> attributes = new ArrayList<AjAttribute>();
 
 		// first pass, look for version
 		List<Unknown> forSecondPass = new ArrayList<Unknown>();
@@ -100,10 +100,10 @@ public class Utility {
 			String name = a.getName();
 			AjAttribute attr = AjAttribute.read(version, name, a.getBytes(), context, w, dataDecompressor);
 			if (attr != null) {
-				l.add(attr);
+				attributes.add(attr);
 			}
 		}
-		return l;
+		return attributes;
 	}
 
 	/*

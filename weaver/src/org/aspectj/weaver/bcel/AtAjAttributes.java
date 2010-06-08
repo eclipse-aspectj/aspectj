@@ -185,8 +185,8 @@ public class AtAjAttributes {
 	 * @param msgHandler
 	 * @return list of AjAttributes
 	 */
-	public static List readAj5ClassAttributes(AsmManager model, JavaClass javaClass, ReferenceType type, ISourceContext context,
-			IMessageHandler msgHandler, boolean isCodeStyleAspect) {
+	public static List<AjAttribute> readAj5ClassAttributes(AsmManager model, JavaClass javaClass, ReferenceType type,
+			ISourceContext context, IMessageHandler msgHandler, boolean isCodeStyleAspect) {
 		boolean ignoreThisClass = javaClass.getClassName().charAt(0) == 'o'
 				&& javaClass.getClassName().startsWith("org.aspectj.lang.annotation");
 		if (ignoreThisClass) {

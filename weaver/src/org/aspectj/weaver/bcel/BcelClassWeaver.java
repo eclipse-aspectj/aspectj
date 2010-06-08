@@ -309,8 +309,8 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 
 	private boolean alreadyDefined(LazyClassGen clazz, LazyMethodGen mg) {
-		for (Iterator i = clazz.getMethodGens().iterator(); i.hasNext();) {
-			LazyMethodGen existing = (LazyMethodGen) i.next();
+		for (Iterator<LazyMethodGen> i = clazz.getMethodGens().iterator(); i.hasNext();) {
+			LazyMethodGen existing = i.next();
 			if (signaturesMatch(mg, existing)) {
 				if (!mg.isAbstract() && existing.isAbstract()) {
 					i.remove();
@@ -787,14 +787,14 @@ class BcelClassWeaver implements IClassWeaver {
 		boolean didSomething = false; // set if we build any bridge methods
 
 		// So what methods do we have right now in this class?
-		List /* LazyMethodGen */methods = clazz.getMethodGens();
+		List<LazyMethodGen> methods = clazz.getMethodGens();
 
 		// Keep a set of all methods from this type - it'll help us to check if
 		// bridge methods
 		// have already been created, we don't want to do it twice!
-		Set methodsSet = new HashSet();
+		Set<String> methodsSet = new HashSet<String>();
 		for (int i = 0; i < methods.size(); i++) {
-			LazyMethodGen aMethod = (LazyMethodGen) methods.get(i);
+			LazyMethodGen aMethod = methods.get(i);
 			methodsSet.add(aMethod.getName() + aMethod.getSignature()); // e.g.
 			// "foo(Ljava/lang/String;)V"
 		}
@@ -803,7 +803,7 @@ class BcelClassWeaver implements IClassWeaver {
 		for (int i = 0; i < methods.size(); i++) {
 
 			// This is the local method that we *might* have to bridge to
-			LazyMethodGen bridgeToCandidate = (LazyMethodGen) methods.get(i);
+			LazyMethodGen bridgeToCandidate = methods.get(i);
 			if (bridgeToCandidate.isBridgeMethod()) {
 				continue; // Doh!
 			}
@@ -1189,11 +1189,11 @@ class BcelClassWeaver implements IClassWeaver {
 			// for (Iterator iter = itdsForMethodAndConstructor.iterator(); iter.hasNext();) {
 			// BcelTypeMunger methodctorMunger = (BcelTypeMunger) iter.next();
 			ResolvedMember unMangledInterMethod = methodctorMunger.getSignature();
-			List worthRetrying = new ArrayList();
+			List<DeclareAnnotation> worthRetrying = new ArrayList<DeclareAnnotation>();
 			boolean modificationOccured = false;
 
-			for (Iterator iter2 = decaMCs.iterator(); iter2.hasNext();) {
-				DeclareAnnotation decaMC = (DeclareAnnotation) iter2.next();
+			for (Iterator<DeclareAnnotation> iter2 = decaMCs.iterator(); iter2.hasNext();) {
+				DeclareAnnotation decaMC = iter2.next();
 				if (decaMC.matches(unMangledInterMethod, world)) {
 					LazyMethodGen annotationHolder = locateAnnotationHolderForMethodCtorMunger(clazz, methodctorMunger);
 					if (annotationHolder == null
@@ -1216,9 +1216,9 @@ class BcelClassWeaver implements IClassWeaver {
 
 			while (!worthRetrying.isEmpty() && modificationOccured) {
 				modificationOccured = false;
-				List forRemoval = new ArrayList();
-				for (Iterator iter2 = worthRetrying.iterator(); iter2.hasNext();) {
-					DeclareAnnotation decaMC = (DeclareAnnotation) iter2.next();
+				List<DeclareAnnotation> forRemoval = new ArrayList<DeclareAnnotation>();
+				for (Iterator<DeclareAnnotation> iter2 = worthRetrying.iterator(); iter2.hasNext();) {
+					DeclareAnnotation decaMC = iter2.next();
 					if (decaMC.matches(unMangledInterMethod, world)) {
 						LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz, methodctorMunger);
 						if (doesAlreadyHaveAnnotation(annotationHolder, unMangledInterMethod, decaMC, reportedErrors)) {
@@ -1278,7 +1278,7 @@ class BcelClassWeaver implements IClassWeaver {
 		}
 
 		boolean isChanged = false;
-		List itdFields = getITDSubset(clazz, ResolvedTypeMunger.Field);
+		List<ConcreteTypeMunger> itdFields = getITDSubset(clazz, ResolvedTypeMunger.Field);
 		if (itdFields != null) {
 			isChanged = weaveAtFieldRepeatedly(allDecafs, itdFields, reportedProblems);
 		}
@@ -1488,7 +1488,7 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 
 	private boolean doesAlreadyHaveAnnotation(LazyMethodGen rm, ResolvedMember itdfieldsig, DeclareAnnotation deca,
-			List reportedProblems) {
+			List<Integer> reportedProblems) {
 		if (rm != null && rm.hasAnnotation(deca.getAnnotationType())) {
 			if (world.getLint().elementAlreadyAnnotated.isEnabled()) {
 				Integer uniqueID = new Integer(rm.hashCode() * deca.hashCode());
@@ -1690,7 +1690,7 @@ class BcelClassWeaver implements IClassWeaver {
 				// search for 'returns' and make them jump to the
 				// aload_<n>,monitorexit
 				InstructionHandle walker = body.getStart();
-				List rets = new ArrayList();
+				List<InstructionHandle> rets = new ArrayList<InstructionHandle>();
 				while (walker != null) {
 					if (walker.getInstruction().isReturnInstruction()) {
 						rets.add(walker);
@@ -1702,8 +1702,8 @@ class BcelClassWeaver implements IClassWeaver {
 					// the load instruction
 					// (so we never jump over the monitorexit logic)
 
-					for (Iterator iter = rets.iterator(); iter.hasNext();) {
-						InstructionHandle element = (InstructionHandle) iter.next();
+					for (Iterator<InstructionHandle> iter = rets.iterator(); iter.hasNext();) {
+						InstructionHandle element = iter.next();
 						InstructionList monitorExitBlock = new InstructionList();
 						monitorExitBlock.append(InstructionFactory.createLoad(enclosingClassType, slotForLockObject));
 						monitorExitBlock.append(InstructionConstants.MONITOREXIT);
@@ -2010,7 +2010,7 @@ class BcelClassWeaver implements IClassWeaver {
 
 			// search for 'returns' and make them to the aload_<n>,monitorexit
 			InstructionHandle walker = body.getStart();
-			List rets = new ArrayList();
+			List<InstructionHandle> rets = new ArrayList<InstructionHandle>();
 			while (walker != null) { // !walker.equals(body.getEnd())) {
 				if (walker.getInstruction().isReturnInstruction()) {
 					rets.add(walker);
@@ -2022,8 +2022,8 @@ class BcelClassWeaver implements IClassWeaver {
 				// load instruction
 				// (so we never jump over the monitorexit logic)
 
-				for (Iterator iter = rets.iterator(); iter.hasNext();) {
-					InstructionHandle element = (InstructionHandle) iter.next();
+				for (Iterator<InstructionHandle> iter = rets.iterator(); iter.hasNext();) {
+					InstructionHandle element = iter.next();
 					// System.err.println("Adding monitor exit block at "+element
 					// );
 					InstructionList monitorExitBlock = new InstructionList();
@@ -2557,7 +2557,7 @@ class BcelClassWeaver implements IClassWeaver {
 		}
 	}
 
-	private boolean matchInit(LazyMethodGen mg, List shadowAccumulator) {
+	private boolean matchInit(LazyMethodGen mg, List<BcelShadow> shadowAccumulator) {
 		BcelShadow enclosingShadow;
 		// XXX the enclosing join point is wrong for things before ignoreMe.
 		InstructionHandle superOrThisCall = findSuperOrThisCall(mg);
@@ -3000,7 +3000,7 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 
 	private void matchInvokeInstruction(LazyMethodGen mg, InstructionHandle ih, InvokeInstruction invoke,
-			BcelShadow enclosingShadow, List shadowAccumulator) {
+			BcelShadow enclosingShadow, List<BcelShadow> shadowAccumulator) {
 		String methodName = invoke.getName(cpg);
 		if (methodName.startsWith(NameMangler.PREFIX)) {
 			Member jpSig = world.makeJoinPointSignatureForMethodInvocation(clazz, invoke);
