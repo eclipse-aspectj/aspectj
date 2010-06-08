@@ -28,66 +28,70 @@ import org.aspectj.weaver.CustomMungerFactory;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.IfPointcut;
 import org.aspectj.weaver.patterns.Pointcut;
 
 public class CustomMungerExtensionTest extends AjdeInteractionTestbed {
-	
-	 File oldSandBoxDir;
 
-	 protected void setUp() throws Exception {
-             super.setUp();
-             oldSandBoxDir = sandboxDir;
-             sandboxDir = new File("../tests");
-     }
+	File oldSandBoxDir;
 
-     protected void tearDown() throws Exception {
-             super.tearDown();
-             sandboxDir = oldSandBoxDir;
-     }
-	
+	protected void setUp() throws Exception {
+		super.setUp();
+		oldSandBoxDir = sandboxDir;
+		sandboxDir = new File("../tests");
+	}
+
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		sandboxDir = oldSandBoxDir;
+	}
+
 	public void testExtension() {
 		String testFileDir = "bugs/pointcutdoctor-bug193065";
 		AjCompiler compiler = getCompilerForProjectWithName(testFileDir);
 		compiler.setCustomMungerFactory(new DumbCustomMungerFactory());
 
 		doBuild(testFileDir);
-		
-		CustomMungerFactory factory = (CustomMungerFactory)compiler.getCustomMungerFactory();
-		assertTrue(factory.getAllCreatedCustomShadowMungers().size()>0);
-		for (Iterator i = factory.getAllCreatedCustomShadowMungers().iterator(); i.hasNext();)
-			assertTrue(((DumbShadowMunger)i.next()).called);
-		
-		assertTrue(factory.getAllCreatedCustomTypeMungers().size()>0);
-		for (Iterator i = factory.getAllCreatedCustomTypeMungers().iterator(); i.hasNext();)
-			assertTrue(((DumbTypeMunger)i.next()).called);
+
+		CustomMungerFactory factory = (CustomMungerFactory) compiler.getCustomMungerFactory();
+		assertTrue(factory.getAllCreatedCustomShadowMungers().size() > 0);
+		for (Iterator<ShadowMunger> i = factory.getAllCreatedCustomShadowMungers().iterator(); i.hasNext();) {
+			assertTrue(((DumbShadowMunger) i.next()).called);
+		}
+
+		assertTrue(factory.getAllCreatedCustomTypeMungers().size() > 0);
+		for (Iterator<ConcreteTypeMunger> i = factory.getAllCreatedCustomTypeMungers().iterator(); i.hasNext();) {
+			assertTrue(((DumbTypeMunger) i.next()).called);
+		}
 	}
-	
+
 	class DumbCustomMungerFactory implements CustomMungerFactory {
-		Collection allShadowMungers = new ArrayList();
-		Collection allTypeMungers = new ArrayList();
-		public Collection createCustomShadowMungers(ResolvedType aspectType) {
-			List/* ShadowMunger */ mungers = new ArrayList/*ShadowMunger*/(); 
+		Collection<ShadowMunger> allShadowMungers = new ArrayList<ShadowMunger>();
+		Collection<ConcreteTypeMunger> allTypeMungers = new ArrayList<ConcreteTypeMunger>();
+
+		public Collection<ShadowMunger> createCustomShadowMungers(ResolvedType aspectType) {
+			List<ShadowMunger> mungers = new ArrayList<ShadowMunger>();
 			Pointcut pointcut = new IfPointcut("abc");
 			mungers.add(new DumbShadowMunger(new DeclareErrorOrWarning(false, pointcut, "")));
 			allShadowMungers.addAll(mungers);
 			return mungers;
 		}
 
-		public Collection createCustomTypeMungers(ResolvedType aspectType) {
-			List/*ConcreteTypeMunger*/ mungers = new ArrayList/*ShadowMunger*/(); 
+		public Collection<ConcreteTypeMunger> createCustomTypeMungers(ResolvedType aspectType) {
+			List<ConcreteTypeMunger> mungers = new ArrayList<ConcreteTypeMunger>();
 			mungers.add(new DumbTypeMunger(null, aspectType));
 			allTypeMungers.addAll(mungers);
 			return mungers;
 		}
 
-		public Collection getAllCreatedCustomShadowMungers() {
+		public Collection<ShadowMunger> getAllCreatedCustomShadowMungers() {
 			return allShadowMungers;
 		}
 
-		public Collection getAllCreatedCustomTypeMungers() {
+		public Collection<ConcreteTypeMunger> getAllCreatedCustomTypeMungers() {
 			return allTypeMungers;
 		}
 	}
@@ -119,14 +123,13 @@ public class CustomMungerExtensionTest extends AjdeInteractionTestbed {
 		public ConcreteTypeMunger parameterizedFor(ResolvedType targetType) {
 			return null;
 		}
-		
+
 		public boolean matches(ResolvedType onType) {
 			called = true;
 			return false;
 		}
 
-		public ConcreteTypeMunger parameterizeWith(Map parameterizationMap,
-				World world) {
+		public ConcreteTypeMunger parameterizeWith(Map parameterizationMap, World world) {
 			// TODO Auto-generated method stub
 			return null;
 		}

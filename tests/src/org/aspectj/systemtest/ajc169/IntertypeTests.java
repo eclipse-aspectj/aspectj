@@ -7,13 +7,16 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc169;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.PrintWriter;
 
 import junit.framework.Test;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
+import org.aspectj.asm.AsmManager;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
@@ -34,6 +37,33 @@ public class IntertypeTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	public void testRooScenario() throws Exception {
 		runTest("choice");
+	}
+
+	public void testRooScenario2() throws Exception {
+		runTest("choice2");
+	}
+
+	public void testRooScenarioWeaveInfo() throws Exception {
+		runTest("choice - weaveinfo");
+	}
+
+	public void testModel() throws Exception {
+		runTest("choice - model");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintWriter pw = new PrintWriter(baos);
+		AsmManager.dumptree(pw, AsmManager.lastActiveStructureModel.getHierarchy().getRoot(), 0);
+		pw.write(AsmManager.lastActiveStructureModel.getRelationshipMap().toString());
+		pw.flush();
+		String model = baos.toString();
+		assertTrue(model.indexOf("<{Choice.java[Choice=[aspect declarations], <{Choice.java}X[Keys=[declared on]") != -1);
+	}
+
+	public void testGenerics1() throws Exception {
+		runTest("choice - generics 1");
+	}
+
+	public void testGenerics2() throws Exception {
+		runTest("choice - generics 2");
 	}
 
 	// compiler limitation tests

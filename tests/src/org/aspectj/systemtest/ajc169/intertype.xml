@@ -2,9 +2,37 @@
 
 <suite>
 
+   <ajc-test dir="features169/itdInnerTypes" title="choice - generics 1">
+     <compile files="ChoiceGenerics1.java" options="-1.5"/>
+   </ajc-test>
+
+   <ajc-test dir="features169/itdInnerTypes" title="choice - generics 2">
+     <compile files="ChoiceGenerics2.java" options="-1.5">
+       <message kind="error" text="Type mismatch: cannot convert from String to Integer"/>
+     </compile>
+   </ajc-test>
+   
    <ajc-test dir="features169/itdInnerTypes" title="choice">
      <compile files="Choice.java" options="-1.5"/>
      <run class="Choice">
+       <stdout>
+       <line text="null"/>
+       </stdout></run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="choice - weaveinfo">
+     <compile files="Choice.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Type 'Choice' (Choice.java) has intertyped member class from 'X' (Choice.java)"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="choice - model">
+     <compile files="Choice.java" options="-1.5 -emacssym"/>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="choice2">
+     <compile files="Choice2.java" options="-1.5"/>
+     <run class="Choice2">
        <stdout>
        <line text="null"/>
        </stdout></run>
