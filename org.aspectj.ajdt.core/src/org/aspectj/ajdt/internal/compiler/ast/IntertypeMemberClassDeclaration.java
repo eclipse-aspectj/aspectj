@@ -15,8 +15,10 @@ import java.lang.reflect.Modifier;
 import java.util.Collections;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseSourceLocation;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
@@ -24,8 +26,10 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.NewMemberClassTypeMunger;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.ResolvedTypeMunger;
 
 /**
  * Represents an intertype member class declaration.
@@ -38,6 +42,7 @@ public class IntertypeMemberClassDeclaration extends TypeDeclaration {
 	// The target type for this inner class
 	private TypeReference onType;
 	private ReferenceBinding onTypeResolvedBinding;
+	private NewMemberClassTypeMunger newMemberClassTypeMunger;
 	protected InterTypeScope interTypeScope;
 	// When set to true, the scope hierarchy for the field/method declaration has been correctly modified to include an intertype
 	// scope which resolves things relative to the targeted type.
@@ -45,6 +50,10 @@ public class IntertypeMemberClassDeclaration extends TypeDeclaration {
 
 	public IntertypeMemberClassDeclaration(CompilationResult compilationResult) {
 		super(compilationResult);
+	}
+
+	public ResolvedTypeMunger getMunger() {
+		return newMemberClassTypeMunger;
 	}
 
 	@Override
@@ -67,6 +76,21 @@ public class IntertypeMemberClassDeclaration extends TypeDeclaration {
 	@Override
 	public void resolve(CompilationUnitScope upperScope) {
 		throw new IllegalStateException();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void generateAttributes(ClassFile classFile) {
+		// classFile.extraAttributes.add(new EclipseAttributeAdapter(makeAttribute()));
+		super.generateAttributes(classFile);
+	}
+
+	public AjAttribute getAttribute() {
+		// if there were problems then there is nothing to return
+		if (newMemberClassTypeMunger == null) {
+			return null;
+		}
+		return new AjAttribute.TypeMunger(newMemberClassTypeMunger);
 	}
 
 	/**
@@ -221,7 +245,8 @@ public class IntertypeMemberClassDeclaration extends TypeDeclaration {
 
 		// TODO [inner] use the interTypeScope.getRecoveryAliases
 		// TODO [inner] should mark it in the aspect as unreachable - it is not to be considered part of the aspect
-		NewMemberClassTypeMunger newMemberClassTypeMunger = new NewMemberClassTypeMunger(declaringType, new String(this.name));
+		newMemberClassTypeMunger = new NewMemberClassTypeMunger(declaringType, new String(this.name));
+		newMemberClassTypeMunger.setSourceLocation(new EclipseSourceLocation(compilationResult, sourceStart, sourceEnd));
 		ResolvedType aspectType = world.fromEclipse(classScope.referenceContext.binding);
 		return new EclipseTypeMunger(world, newMemberClassTypeMunger, aspectType, null);
 	}

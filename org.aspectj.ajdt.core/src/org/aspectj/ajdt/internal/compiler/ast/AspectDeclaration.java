@@ -280,6 +280,7 @@ public class AspectDeclaration extends TypeDeclaration {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void generateAttributes(ClassFile classFile) {
 		if (!isAbstract()) {
 			generatePerSupportMembers(classFile);
@@ -297,6 +298,17 @@ public class AspectDeclaration extends TypeDeclaration {
 			ResolvedMember[] members = privilegedHandler.getMembers();
 			if (members.length > 0) {
 				classFile.extraAttributes.add(new EclipseAttributeAdapter(new AjAttribute.PrivilegedAttribute(members)));
+			}
+		}
+		if (memberTypes != null) {
+			for (int i = 0; i < memberTypes.length; i++) {
+				if (memberTypes[i] instanceof IntertypeMemberClassDeclaration) {
+					IntertypeMemberClassDeclaration itdMemberClassDeclaration = (IntertypeMemberClassDeclaration) memberTypes[i];
+					AjAttribute attribute = itdMemberClassDeclaration.getAttribute();
+					if (attribute != null) {
+						classFile.extraAttributes.add(new EclipseAttributeAdapter(attribute));
+					}
+				}
 			}
 		}
 

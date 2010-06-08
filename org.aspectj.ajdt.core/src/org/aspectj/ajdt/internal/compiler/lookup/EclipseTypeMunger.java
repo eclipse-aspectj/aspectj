@@ -169,7 +169,7 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 				sourceType);
 
 		SourceTypeBinding stb = (SourceTypeBinding) world.makeTypeBinding(aspectType);
-		ReferenceBinding found = null;
+		// ReferenceBinding found = null;
 		for (int i = 0; i < stb.memberTypes.length; i++) {
 			ReferenceBinding rb = stb.memberTypes[i];
 			char[] sn = rb.sourceName;
