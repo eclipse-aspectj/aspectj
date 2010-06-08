@@ -161,7 +161,7 @@ public abstract class ResolvedTypeMunger {
 		} else if (kind == MethodDelegate2) {
 			return MethodDelegateTypeMunger.readMethod(s, context, true);
 		} else if (kind == InnerClass) {
-			return NewMemberClassTypeMunger.read(s, context);
+			return NewMemberClassTypeMunger.readInnerClass(s, context);
 		} else {
 			throw new RuntimeException("unimplemented");
 		}

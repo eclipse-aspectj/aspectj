@@ -42,10 +42,10 @@ public class NewMemberClassTypeMunger extends ResolvedTypeMunger {
 		writeOutTypeAliases(stream);
 	}
 
-	public static ResolvedTypeMunger read(VersionedDataInputStream stream, ISourceContext context) throws IOException {
+	public static ResolvedTypeMunger readInnerClass(VersionedDataInputStream stream, ISourceContext context) throws IOException {
 		/* int version = */stream.readInt();
-		String memberTypeName = stream.readUTF();
 		UnresolvedType targetType = UnresolvedType.read(stream);
+		String memberTypeName = stream.readUTF();
 		ISourceLocation sourceLocation = readSourceLocation(stream);
 		List<String> typeVarAliases = readInTypeAliases(stream);
 
@@ -53,6 +53,10 @@ public class NewMemberClassTypeMunger extends ResolvedTypeMunger {
 		newInstance.setTypeVariableAliases(typeVarAliases);
 		newInstance.setSourceLocation(sourceLocation);
 		return newInstance;
+	}
+
+	public UnresolvedType getTargetType() {
+		return targetType;
 	}
 
 	public UnresolvedType getDeclaringType() {

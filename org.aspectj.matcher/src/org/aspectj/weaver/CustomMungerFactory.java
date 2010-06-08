@@ -38,15 +38,15 @@ public interface CustomMungerFactory {
 	 * @param aspectType
 	 * @return a Collection&lt;ShadowMunger&gt; of custom shadow mungers for the given aspect
 	 */
-	public Collection/* ShadowMunger */createCustomShadowMungers(ResolvedType aspectType);
+	public Collection<ShadowMunger> createCustomShadowMungers(ResolvedType aspectType);
 
 	/**
 	 * @param aspectType
 	 * @return a Collection&lt;ConcreteTypeMunger&gt; of custom type mungers for the given aspect
 	 */
-	public Collection/* ConcreteTypeMunger */createCustomTypeMungers(ResolvedType aspectType);
+	public Collection<ConcreteTypeMunger> createCustomTypeMungers(ResolvedType aspectType);
 
-	public Collection/* ShadowMunger */getAllCreatedCustomShadowMungers();
+	public Collection<ShadowMunger> getAllCreatedCustomShadowMungers();
 
-	public Collection/* ConcreteTypeMunger */getAllCreatedCustomTypeMungers();
+	public Collection<ConcreteTypeMunger> getAllCreatedCustomTypeMungers();
 }

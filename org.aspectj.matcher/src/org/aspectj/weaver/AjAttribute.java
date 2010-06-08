@@ -94,6 +94,7 @@ public abstract class AjAttribute {
 			if (bytes == null) {
 				bytes = new byte[0];
 			}
+
 			VersionedDataInputStream s = new VersionedDataInputStream(new ByteArrayInputStream(bytes), dataDecompressor);
 			s.setVersion(v);
 			if (name.equals(Aspect.AttributeName)) {
