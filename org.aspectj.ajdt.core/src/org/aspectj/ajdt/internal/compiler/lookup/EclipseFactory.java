@@ -16,7 +16,6 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -65,6 +64,7 @@ import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.TypeFactory;
 import org.aspectj.weaver.TypeVariable;
@@ -75,6 +75,8 @@ import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
 import org.aspectj.weaver.WildcardedUnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
+import org.aspectj.weaver.patterns.DeclareAnnotation;
+import org.aspectj.weaver.patterns.DeclareParents;
 
 /**
  * @author Jim Hugunin
@@ -88,7 +90,7 @@ public class EclipseFactory {
 	private final boolean xSerializableAspects;
 	private final World world;
 	public PushinCollector pushinCollector;
-	public Collection finishedTypeMungers = null;
+	public List<ConcreteTypeMunger> finishedTypeMungers = null;
 
 	// We can get clashes if we don't treat raw types differently - we end up looking
 	// up a raw and getting the generic type (pr115788)
@@ -101,6 +103,10 @@ public class EclipseFactory {
 	public static EclipseFactory fromLookupEnvironment(LookupEnvironment env) {
 		AjLookupEnvironment aenv = (AjLookupEnvironment) env;
 		return aenv.factory;
+	}
+
+	public LookupEnvironment getLookupEnvironment() {
+		return this.lookupEnvironment;
 	}
 
 	public static EclipseFactory fromScopeLookupEnvironment(Scope scope) {
@@ -404,19 +410,19 @@ public class EclipseFactory {
 		return new EmptyStatement(location.getStart(), location.getEnd());
 	}
 
-	public Collection getDeclareParents() {
+	public List<DeclareParents> getDeclareParents() {
 		return getWorld().getDeclareParents();
 	}
 
-	public Collection getDeclareAnnotationOnTypes() {
+	public List<DeclareAnnotation> getDeclareAnnotationOnTypes() {
 		return getWorld().getDeclareAnnotationOnTypes();
 	}
 
-	public Collection getDeclareAnnotationOnFields() {
+	public List<DeclareAnnotation> getDeclareAnnotationOnFields() {
 		return getWorld().getDeclareAnnotationOnFields();
 	}
 
-	public Collection getDeclareAnnotationOnMethods() {
+	public List<DeclareAnnotation> getDeclareAnnotationOnMethods() {
 		return getWorld().getDeclareAnnotationOnMethods();
 	}
 
@@ -426,8 +432,8 @@ public class EclipseFactory {
 
 	public void finishTypeMungers() {
 		// make sure that type mungers are
-		Collection ret = new ArrayList();
-		Collection baseTypeMungers = getWorld().getCrosscuttingMembersSet().getTypeMungers();
+		List<ConcreteTypeMunger> ret = new ArrayList<ConcreteTypeMunger>();
+		List<ConcreteTypeMunger> baseTypeMungers = getWorld().getCrosscuttingMembersSet().getTypeMungers();
 
 		// XXX by Andy: why do we mix up the mungers here? it means later we know about two sets
 		// and the late ones are a subset of the complete set? (see pr114436)
@@ -435,11 +441,14 @@ public class EclipseFactory {
 		// baseTypeMungers.addAll(getWorld().getCrosscuttingMembersSet().getLateTypeMungers());
 		debug_mungerCount = baseTypeMungers.size();
 
-		for (Iterator i = baseTypeMungers.iterator(); i.hasNext();) {
-			ConcreteTypeMunger munger = (ConcreteTypeMunger) i.next();
+		for (ConcreteTypeMunger munger : baseTypeMungers) {
 			EclipseTypeMunger etm = makeEclipseTypeMunger(munger);
 			if (etm != null) {
-				ret.add(etm);
+				if (munger.getMunger().getKind() == ResolvedTypeMunger.InnerClass) {
+					ret.add(0, etm);
+				} else {
+					ret.add(etm);
+				}
 			}
 		}
 		finishedTypeMungers = ret;
@@ -466,7 +475,7 @@ public class EclipseFactory {
 		}
 	}
 
-	public Collection getTypeMungers() {
+	public List<ConcreteTypeMunger> getTypeMungers() {
 		// ??? assert finishedTypeMungers != null
 		return finishedTypeMungers;
 	}
