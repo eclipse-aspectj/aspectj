@@ -47,4 +47,9 @@ public class IntertypeMemberTypeFinder implements ITypeFinder {
 		return null;
 	}
 
+	public ReferenceBinding[] getMemberTypes() {
+		ReferenceBinding[] array = new ReferenceBinding[intertypeMemberTypes.size()];
+		return intertypeMemberTypes.toArray(array);
+	}
+
 }
