@@ -14,6 +14,7 @@ package org.aspectj.weaver;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -214,6 +215,29 @@ public class CrosscuttingMembersSet {
 	}
 
 	/**
+	 * Retrieve a subset of all known mungers, those of a specific kind.
+	 * 
+	 * @param kind the kind of munger requested
+	 * @return a list of those mungers (list is empty if none found)
+	 */
+	public List<ConcreteTypeMunger> getTypeMungersOfKind(ResolvedTypeMunger.Kind kind) {
+		List<ConcreteTypeMunger> collected = null;
+		for (ConcreteTypeMunger typeMunger : typeMungers) {
+			if (typeMunger.getMunger() != null && typeMunger.getMunger().getKind() == kind) {
+				if (collected == null) {
+					collected = new ArrayList<ConcreteTypeMunger>();
+				}
+				collected.add(typeMunger);
+			}
+		}
+		if (collected == null) {
+			return Collections.emptyList();
+		} else {
+			return collected;
+		}
+	}
+
+	/**
 	 * Determine if the type munger is: (1) for privileged access (2) for a normally non visible field (3) is from an aspect wanting
 	 * 'old style' (ie. long) accessor names
 	 */
@@ -298,7 +322,7 @@ public class CrosscuttingMembersSet {
 			}
 			declareAnnotationOnMethods = new ArrayList<DeclareAnnotation>();
 			declareAnnotationOnMethods.addAll(ret);
-			//world.sortDeclareAnnotations(declareAnnotationOnMethods);
+			// world.sortDeclareAnnotations(declareAnnotationOnMethods);
 		}
 		return declareAnnotationOnMethods;
 	}
