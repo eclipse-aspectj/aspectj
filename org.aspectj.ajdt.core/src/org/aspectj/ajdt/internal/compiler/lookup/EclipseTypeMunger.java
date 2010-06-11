@@ -14,16 +14,18 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 
-import org.aspectj.asm.internal.CharOperation;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.UnresolvedReferenceBinding;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.aspectj.weaver.NewFieldTypeMunger;
@@ -165,22 +167,29 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 
 	private boolean mungeNewInnerClass(SourceTypeBinding sourceType, ResolvedType onType, NewMemberClassTypeMunger munger,
 			boolean isExactTargetType) {
-		ReferenceBinding binding = new InterTypeMemberClassBinding(world, munger, aspectType, onType, munger.getMemberTypeName(),
-				sourceType);
 
-		SourceTypeBinding stb = (SourceTypeBinding) world.makeTypeBinding(aspectType);
-		// ReferenceBinding found = null;
-		for (int i = 0; i < stb.memberTypes.length; i++) {
-			ReferenceBinding rb = stb.memberTypes[i];
-			char[] sn = rb.sourceName;
-			if (CharOperation.equals(munger.getMemberTypeName().toCharArray(), sn)) {
-				binding = rb;
+		SourceTypeBinding aspectTypeBinding = (SourceTypeBinding) world.makeTypeBinding(aspectType);
+
+		char[] mungerMemberTypeName = ("$" + munger.getMemberTypeName()).toCharArray();
+		ReferenceBinding innerTypeBinding = null;
+		for (ReferenceBinding innerType : aspectTypeBinding.memberTypes) {
+			char[] compounded = CharOperation.concatWith(innerType.compoundName, '.');
+			if (org.aspectj.org.eclipse.jdt.core.compiler.CharOperation.endsWith(compounded, mungerMemberTypeName)) {
+				innerTypeBinding = innerType;
+				break;
 			}
 		}
+		// may be unresolved if the aspect type binding was a BinaryTypeBinding
+		if (innerTypeBinding instanceof UnresolvedReferenceBinding) {
+			innerTypeBinding = BinaryTypeBinding.resolveType(innerTypeBinding, world.getLookupEnvironment(), true);
+		}
+		// rb = new InterTypeMemberClassBinding(world, munger, aspectType, aspectTypeBinding, onType, munger.getMemberTypeName(),
+		// sourceType);
+
 		// TODO adjust modifier?
 		// TODO deal with itd of it onto an interface
 
-		findOrCreateInterTypeMemberClassFinder(sourceType).addInterTypeMemberType(binding);
+		findOrCreateInterTypeMemberClassFinder(sourceType).addInterTypeMemberType(innerTypeBinding);
 		return true;
 	}
 
