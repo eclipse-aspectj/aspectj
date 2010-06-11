@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002-2010 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -7,9 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     PARC     initial implementation 
+ *     PARC, Andy Clement (SpringSource)
  * ******************************************************************/
-
 package org.aspectj.ajdt.internal.compiler.ast;
 
 import java.lang.reflect.Modifier;
@@ -19,12 +18,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.aspectj.ajdt.internal.compiler.ast.AccessForInlineVisitor.SuperAccessMethodPair;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseScope;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseSourceType;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
 import org.aspectj.ajdt.internal.compiler.lookup.HelperInterfaceBinding;
 import org.aspectj.ajdt.internal.compiler.lookup.InlineAccessFieldBinding;
+import org.aspectj.ajdt.internal.compiler.lookup.IntertypeMemberTypeFinder;
 import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedHandler;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
@@ -47,10 +48,13 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBin
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.UnresolvedReferenceBinding;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.NameMangler;
+import org.aspectj.weaver.NewMemberClassTypeMunger;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
@@ -63,8 +67,12 @@ import org.aspectj.weaver.patterns.PerFromSuper;
 import org.aspectj.weaver.patterns.PerSingleton;
 import org.aspectj.weaver.patterns.TypePattern;
 
-// (we used to...) making all aspects member types avoids a nasty hierarchy pain
-// switched from MemberTypeDeclaration to TypeDeclaration
+/**
+ * Represents an aspect declaration.
+ * 
+ * @author PARC
+ * @author Andy Clement
+ */
 public class AspectDeclaration extends TypeDeclaration {
 	// public IAjDeclaration[] ajDeclarations;
 
@@ -73,24 +81,18 @@ public class AspectDeclaration extends TypeDeclaration {
 	public ResolvedMember aspectOfMethod;
 	public ResolvedMember ptwGetWithinTypeNameMethod;
 	public ResolvedMember hasAspectMethod;
-
-	public Map accessForInline = new HashMap();
-	public Map superAccessForInline = new HashMap();
-
+	public Map<ResolvedMember, Binding> accessForInline = new HashMap<ResolvedMember, Binding>();
+	public Map<ResolvedMember, AccessForInlineVisitor.SuperAccessMethodPair> superAccessForInline = new HashMap<ResolvedMember, AccessForInlineVisitor.SuperAccessMethodPair>();
 	public boolean isPrivileged;
-	private int declaredModifiers;
-
 	public EclipseSourceType concreteName;
-
 	public ReferenceType typeX;
-
 	public EclipseFactory factory; // ??? should use this consistently
-
 	public int adviceCounter = 1; // Used as a part of the generated name for advice methods
 	public int declareCounter = 1; // Used as a part of the generated name for methods representing declares
-
 	// for better error messages in 1.0 to 1.1 transition
 	public TypePattern dominatesPattern;
+
+	private int declaredModifiers;
 
 	public AspectDeclaration(CompilationResult compilationResult) {
 		super(compilationResult);
@@ -322,6 +324,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	/**
 	 * A pointcut might have already added the attribute, let's not add it again.
 	 */
+	@SuppressWarnings("unchecked")
 	private void addVersionAttributeIfNecessary(ClassFile classFile) {
 		for (Iterator iter = classFile.extraAttributes.iterator(); iter.hasNext();) {
 			EclipseAttributeAdapter element = (EclipseAttributeAdapter) iter.next();
@@ -335,13 +338,13 @@ public class AspectDeclaration extends TypeDeclaration {
 	private static char[] weaverVersionChars = "org.aspectj.weaver.WeaverVersion".toCharArray();
 
 	private void generateInlineAccessMembers(ClassFile classFile) {
-		for (Iterator i = superAccessForInline.values().iterator(); i.hasNext();) {
-			AccessForInlineVisitor.SuperAccessMethodPair pair = (AccessForInlineVisitor.SuperAccessMethodPair) i.next();
+		for (Iterator<SuperAccessMethodPair> i = superAccessForInline.values().iterator(); i.hasNext();) {
+			AccessForInlineVisitor.SuperAccessMethodPair pair = i.next();
 			generateSuperAccessMethod(classFile, pair.accessMethod, pair.originalMethod);
 		}
-		for (Iterator i = accessForInline.entrySet().iterator(); i.hasNext();) {
-			Map.Entry e = (Map.Entry) i.next();
-			generateInlineAccessMethod(classFile, (Binding) e.getValue(), (ResolvedMember) e.getKey());
+		for (Iterator<Map.Entry<ResolvedMember, Binding>> i = accessForInline.entrySet().iterator(); i.hasNext();) {
+			Map.Entry<ResolvedMember, Binding> e = i.next();
+			generateInlineAccessMethod(classFile, e.getValue(), e.getKey());
 		}
 	}
 
@@ -402,8 +405,8 @@ public class AspectDeclaration extends TypeDeclaration {
 		generateMethod(classFile, methodBinding, null, gen);
 	}
 
-	protected List makeEffectiveSignatureAttribute(ResolvedMember sig, Shadow.Kind kind, boolean weaveBody) {
-		List l = new ArrayList(1);
+	protected List<EclipseAttributeAdapter> makeEffectiveSignatureAttribute(ResolvedMember sig, Shadow.Kind kind, boolean weaveBody) {
+		List<EclipseAttributeAdapter> l = new ArrayList<EclipseAttributeAdapter>(1);
 		l.add(new EclipseAttributeAdapter(new AjAttribute.EffectiveSignatureAttribute(sig, kind, weaveBody)));
 		return l;
 	}
@@ -415,10 +418,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	 * methods are able to masquerade as any join point (a field set, field get or method call). The effective signature attribute
 	 * is 'unwrapped' in BcelClassWeaver.matchInvokeInstruction()
 	 */
-	private void generateMethod(ClassFile classFile, MethodBinding methodBinding, List additionalAttributes/*
-																											 * ResolvedMember
-																											 * realMember
-																											 */, BodyGenerator gen) {
+	private void generateMethod(ClassFile classFile, MethodBinding methodBinding, List additionalAttributes, BodyGenerator gen) {
 		// EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		classFile.generateMethodInfoHeader(methodBinding);
 		int methodAttributeOffset = classFile.contentsOffset;
@@ -1032,6 +1032,21 @@ public class AspectDeclaration extends TypeDeclaration {
 		return perClause;
 	}
 
+	public void processIntertypeMemberTypes(ClassScope classScope) {
+		factory = EclipseFactory.fromScopeLookupEnvironment(scope);
+		if (memberTypes != null) {
+			for (int i = 0; i < memberTypes.length; i++) {
+				if (memberTypes[i] instanceof IntertypeMemberClassDeclaration) {
+					EclipseTypeMunger m = ((IntertypeMemberClassDeclaration) memberTypes[i]).build(classScope);
+					if (m != null) {
+						mungeNewInnerClass(m, factory);
+						concreteName.typeMungers.add(m);
+					}
+				}
+			}
+		}
+	}
+
 	public void buildInterTypeAndPerClause(ClassScope classScope) {
 		factory = EclipseFactory.fromScopeLookupEnvironment(scope);
 		if (isPrivileged) {
@@ -1056,16 +1071,6 @@ public class AspectDeclaration extends TypeDeclaration {
 					Declare d = ((DeclareDeclaration) methods[i]).build(classScope);
 					if (d != null) {
 						concreteName.declares.add(d);
-					}
-				}
-			}
-		}
-		if (memberTypes != null) {
-			for (int i = 0; i < memberTypes.length; i++) {
-				if (memberTypes[i] instanceof IntertypeMemberClassDeclaration) {
-					EclipseTypeMunger m = ((IntertypeMemberClassDeclaration) memberTypes[i]).build(classScope);
-					if (m != null) {
-						concreteName.typeMungers.add(m);
 					}
 				}
 			}
@@ -1109,6 +1114,61 @@ public class AspectDeclaration extends TypeDeclaration {
 	//		s += "\n" + tabString(tab) + "}"; //$NON-NLS-2$ //$NON-NLS-1$
 	// return s;
 	// }
+
+	// very similar to code in EclipseTypeMunger
+	private void mungeNewInnerClass(EclipseTypeMunger m, EclipseFactory world) {
+
+		NewMemberClassTypeMunger munger = (NewMemberClassTypeMunger) m.getMunger();
+
+		// private boolean mungeNewInnerClass(SourceTypeBinding sourceType, ResolvedType onType, NewMemberClassTypeMunger munger,
+		// boolean isExactTargetType) {
+
+		SourceTypeBinding aspectTypeBinding = (SourceTypeBinding) world.makeTypeBinding(m.getAspectType());
+
+		char[] mungerMemberTypeName = ("$" + munger.getMemberTypeName()).toCharArray();
+		ReferenceBinding innerTypeBinding = null;
+		for (ReferenceBinding innerType : aspectTypeBinding.memberTypes) {
+			char[] compounded = CharOperation.concatWith(innerType.compoundName, '.');
+			if (org.aspectj.org.eclipse.jdt.core.compiler.CharOperation.endsWith(compounded, mungerMemberTypeName)) {
+				innerTypeBinding = innerType;
+				break;
+			}
+		}
+		// may be unresolved if the aspect type binding was a BinaryTypeBinding
+		if (innerTypeBinding instanceof UnresolvedReferenceBinding) {
+			innerTypeBinding = BinaryTypeBinding.resolveType(innerTypeBinding, world.getLookupEnvironment(), true);
+		}
+		if (innerTypeBinding == null) {
+			throw new IllegalStateException("Could not find inner type binding for '" + munger.getMemberTypeName() + "'");
+		}
+
+		// TODO adjust modifier?
+		// TODO deal with itd of it onto an interface
+
+		SourceTypeBinding targetSourceTypeBinding = (SourceTypeBinding) world.makeTypeBinding(munger.getTargetType());
+		ReferenceBinding[] existingMemberTypes = targetSourceTypeBinding.memberTypes();
+		for (int i = 0; i < existingMemberTypes.length; i++) {
+			char[] compounded = CharOperation.concatWith(existingMemberTypes[i].compoundName, '.');
+			if (CharOperation.endsWith(compounded, mungerMemberTypeName)) {
+				scope.problemReporter().signalError(sourceStart(), sourceEnd(),
+						"target type already declares a member type with the name '" + munger.getMemberTypeName() + "'");
+				return;
+			}
+		}
+
+		findOrCreateInterTypeMemberClassFinder(targetSourceTypeBinding).addInterTypeMemberType(innerTypeBinding);
+	}
+
+	private IntertypeMemberTypeFinder findOrCreateInterTypeMemberClassFinder(SourceTypeBinding sourceType) {
+		IntertypeMemberTypeFinder finder = (IntertypeMemberTypeFinder) sourceType.typeFinder;
+		if (finder == null) {
+			finder = new IntertypeMemberTypeFinder();
+			sourceType.typeFinder = finder;
+			finder.targetTypeBinding = sourceType;
+			sourceType.tagBits &= ~TagBits.HasNoMemberTypes; // ensure it thinks it has one
+		}
+		return finder;
+	}
 
 	public StringBuffer printHeader(int indent, StringBuffer output) {
 		// since all aspects are made public we want to print the

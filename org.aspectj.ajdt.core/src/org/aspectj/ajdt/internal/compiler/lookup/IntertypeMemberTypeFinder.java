@@ -11,8 +11,8 @@
  * ******************************************************************/
 package org.aspectj.ajdt.internal.compiler.lookup;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ITypeFinder;
@@ -32,7 +32,7 @@ public class IntertypeMemberTypeFinder implements ITypeFinder {
 	public SourceTypeBinding targetTypeBinding;
 
 	// The new types declared onto the target
-	private List<ReferenceBinding> intertypeMemberTypes = new ArrayList<ReferenceBinding>();
+	private Set<ReferenceBinding> intertypeMemberTypes = new HashSet<ReferenceBinding>();
 
 	public void addInterTypeMemberType(ReferenceBinding binding) {
 		intertypeMemberTypes.add(binding);

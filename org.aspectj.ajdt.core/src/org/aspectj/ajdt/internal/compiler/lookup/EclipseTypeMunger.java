@@ -165,6 +165,7 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 		return true;
 	}
 
+	// very similar to code in AspectDeclaration
 	private boolean mungeNewInnerClass(SourceTypeBinding sourceType, ResolvedType onType, NewMemberClassTypeMunger munger,
 			boolean isExactTargetType) {
 

@@ -62,6 +62,7 @@ import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
@@ -88,7 +89,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	public EclipseFactory factory = null;
 
 	// private boolean builtInterTypesAndPerClauses = false;
-	private final List pendingTypesToWeave = new ArrayList();
+	private final List<SourceTypeBinding> pendingTypesToWeave = new ArrayList<SourceTypeBinding>();
 
 	// Q: What are dangerousInterfaces?
 	// A: An interface is considered dangerous if an ITD has been made upon it
@@ -175,28 +176,39 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		// need to build inter-type declarations for all AspectDeclarations at
 		// this point
 		// this MUST be done in order from super-types to subtypes
-		List typesToProcess = new ArrayList();
+		List<SourceTypeBinding> typesToProcess = new ArrayList<SourceTypeBinding>();
+		List<SourceTypeBinding> aspectsToProcess = new ArrayList<SourceTypeBinding>();
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			CompilationUnitScope cus = units[i].scope;
 			SourceTypeBinding[] stbs = cus.topLevelTypes;
 			for (int j = 0; j < stbs.length; j++) {
 				SourceTypeBinding stb = stbs[j];
 				typesToProcess.add(stb);
+				TypeDeclaration typeDeclaration = stb.scope.referenceContext;
+				if (typeDeclaration instanceof AspectDeclaration) {
+					aspectsToProcess.add(stb);
+				}
 			}
 		}
 		factory.getWorld().getCrosscuttingMembersSet().reset();
+
+		// Need to do these before the other ITDs
+		for (SourceTypeBinding aspectToProcess : aspectsToProcess) {
+			processInterTypeMemberTypes(aspectToProcess.scope);
+		}
+
 		while (typesToProcess.size() > 0) {
 			// removes types from the list as they are processed...
-			collectAllITDsAndDeclares((SourceTypeBinding) typesToProcess.get(0), typesToProcess);
+			collectAllITDsAndDeclares(typesToProcess.get(0), typesToProcess);
 		}
 
 		factory.finishTypeMungers();
 
 		// now do weaving
-		Collection typeMungers = factory.getTypeMungers();
+		List<ConcreteTypeMunger> typeMungers = factory.getTypeMungers();
 
-		Collection declareParents = factory.getDeclareParents();
-		Collection declareAnnotationOnTypes = factory.getDeclareAnnotationOnTypes();
+		List<DeclareParents> declareParents = factory.getDeclareParents();
+		List<DeclareAnnotation> declareAnnotationOnTypes = factory.getDeclareAnnotationOnTypes();
 
 		doPendingWeaves();
 
@@ -238,15 +250,12 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			while (typesToProcess.size() > 0) {
 				// A side effect of weaveIntertypes() is that the processed type
 				// is removed from the collection
-				weaveIntertypes(typesToProcess, (SourceTypeBinding) typesToProcess.get(0), typeMungers, declareParents,
-						declareAnnotationOnTypes);
+				weaveIntertypes(typesToProcess, typesToProcess.get(0), typeMungers, declareParents, declareAnnotationOnTypes);
 			}
 
 		} else {
 			// Order isn't important
 			for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
-				// System.err.println("Working on "+new
-				// String(units[i].getFileName()));
 				weaveInterTypeDeclarations(units[i].scope, typeMungers, declareParents, declareAnnotationOnTypes);
 			}
 		}
@@ -375,8 +384,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	 * problems if you supply 'pieces' of a hierarchy, i.e. the bottom and the top, but not the middle - but what the hell are you
 	 * doing if you do that?
 	 */
-	private void weaveIntertypes(List typesToProcess, SourceTypeBinding typeToWeave, Collection typeMungers,
-			Collection declareParents, Collection declareAnnotationOnTypes) {
+	private void weaveIntertypes(List<SourceTypeBinding> typesToProcess, SourceTypeBinding typeToWeave,
+			List<ConcreteTypeMunger> typeMungers, List<DeclareParents> declareParents,
+			List<DeclareAnnotation> declareAnnotationOnTypes) {
 		// Look at the supertype first
 		ReferenceBinding superType = typeToWeave.superclass();
 		if (typesToProcess.contains(superType) && superType instanceof SourceTypeBinding) {
@@ -493,6 +503,18 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		return couldBeAtAspect;
 	}
 
+	/**
+	 * Applies any intertype member type declarations up front.
+	 */
+	private void processInterTypeMemberTypes(ClassScope classScope) {
+		TypeDeclaration dec = classScope.referenceContext;
+		if (dec instanceof AspectDeclaration) {
+			((AspectDeclaration) dec).processIntertypeMemberTypes(classScope);
+		}
+		// if we are going to support nested aspects making itd member types, copy the logic from the end of
+		// buildInterTypeAndPerClause() which walks members
+	}
+
 	private void buildInterTypeAndPerClause(ClassScope s) {
 		TypeDeclaration dec = s.referenceContext;
 		if (dec instanceof AspectDeclaration) {
@@ -554,8 +576,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		return false;
 	}
 
-	private void weaveInterTypeDeclarations(CompilationUnitScope unit, Collection typeMungers, Collection declareParents,
-			Collection declareAnnotationOnTypes) {
+	private void weaveInterTypeDeclarations(CompilationUnitScope unit, List<ConcreteTypeMunger> typeMungers,
+			List<DeclareParents> declareParents, List<DeclareAnnotation> declareAnnotationOnTypes) {
 		for (int i = 0, length = unit.topLevelTypes.length; i < length; i++) {
 			weaveInterTypeDeclarations(unit.topLevelTypes[i], typeMungers, declareParents, declareAnnotationOnTypes, false);
 		}
@@ -565,6 +587,50 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		if (!factory.areTypeMungersFinished()) {
 			if (!pendingTypesToWeave.contains(sourceType)) {
 				pendingTypesToWeave.add(sourceType);
+
+// inner type ITD support - may need this for some incremental cases...
+				// List<ConcreteTypeMunger> ctms = factory.getWorld().getCrosscuttingMembersSet().getTypeMungersOfKind(
+				// ResolvedTypeMunger.InnerClass);
+				// // List<ConcreteTypeMunger> innerTypeMungers = new ArrayList<ConcreteTypeMunger>();
+				// // for (ConcreteTypeMunger ctm : ctms) {
+				// // if (ctm.getMunger() != null && ctm.getMunger().getKind() == ResolvedTypeMunger.InnerClass) {
+				// // innerTypeMungers.add(ctm);
+				// // }
+				// // }
+				// // that includes the innertype one...
+				// // doPendingWeaves at this level is about applying inner class
+				// BinaryTypeBinding t = (BinaryTypeBinding) sourceType;
+				// for (ConcreteTypeMunger ctm : innerTypeMungers) {
+				// NewMemberClassTypeMunger nmctm = (NewMemberClassTypeMunger) ctm.getMunger();
+				// ReferenceBinding[] rbs = t.memberTypes;
+				// UnresolvedType ut = factory.fromBinding(t);
+				// if (ut.equals(nmctm.getTargetType())) {
+				// // got a match here
+				// SourceTypeBinding aspectTypeBinding = (SourceTypeBinding) factory.makeTypeBinding(ctm.getAspectType());
+				//
+				// char[] mungerMemberTypeName = ("$" + nmctm.getMemberTypeName()).toCharArray();
+				// ReferenceBinding innerTypeBinding = null;
+				// for (ReferenceBinding innerType : aspectTypeBinding.memberTypes) {
+				// char[] compounded = CharOperation.concatWith(innerType.compoundName, '.');
+				// if (org.aspectj.org.eclipse.jdt.core.compiler.CharOperation.endsWith(compounded, mungerMemberTypeName)) {
+				// innerTypeBinding = innerType;
+				// break;
+				// }
+				// }
+				// // may be unresolved if the aspect type binding was a BinaryTypeBinding
+				// if (innerTypeBinding instanceof UnresolvedReferenceBinding) {
+				// innerTypeBinding = BinaryTypeBinding
+				// .resolveType(innerTypeBinding, factory.getLookupEnvironment(), true);
+				// }
+				// t.memberTypes(); // cause initialization
+				// t.memberTypes = new ReferenceBinding[] { innerTypeBinding };
+				//
+				// int stop = 1;
+				// // The inner type from the aspect should be put into the membertypebindings for this
+				//
+				// }
+				// }
+
 			}
 		} else {
 			weaveInterTypeDeclarations(sourceType, factory.getTypeMungers(), factory.getDeclareParents(), factory
@@ -572,8 +638,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		}
 	}
 
-	private void weaveInterTypeDeclarations(SourceTypeBinding sourceType, Collection typeMungers, Collection declareParents,
-			Collection declareAnnotationOnTypes, boolean skipInners) {
+	private void weaveInterTypeDeclarations(SourceTypeBinding sourceType, List<ConcreteTypeMunger> typeMungers,
+			List<DeclareParents> declareParents, List<DeclareAnnotation> declareAnnotationOnTypes, boolean skipInners) {
 
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING_INTERTYPE_DECLARATIONS,
 				sourceType.sourceName);
@@ -629,7 +695,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		// messages...
 
 		List decpToRepeat = new ArrayList();
-		List decaToRepeat = new ArrayList();
+		List<DeclareAnnotation> decaToRepeat = new ArrayList<DeclareAnnotation>();
 		boolean anyNewParents = false;
 		boolean anyNewAnnotations = false;
 
@@ -656,11 +722,10 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			}
 		}
 
-		for (Iterator i = declareAnnotationOnTypes.iterator(); i.hasNext();) {
-			DeclareAnnotation deca = (DeclareAnnotation) i.next();
+		for (Iterator<DeclareAnnotation> i = declareAnnotationOnTypes.iterator(); i.hasNext();) {
+			DeclareAnnotation deca = i.next();
 			boolean didSomething = doDeclareAnnotations(deca, sourceType, true);
 			if (didSomething) {
-
 				anyNewAnnotations = true;
 			} else {
 				if (!deca.getTypePattern().isStar()) {
@@ -701,7 +766,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			decaToRepeat.removeAll(forRemoval);
 		}
 
-		for (Iterator i = typeMungers.iterator(); i.hasNext();) {
+		for (Iterator<ConcreteTypeMunger> i = typeMungers.iterator(); i.hasNext();) {
 			EclipseTypeMunger munger = (EclipseTypeMunger) i.next();
 			if (munger.matches(onType)) {
 				if (needOldStyleWarning) {
@@ -710,15 +775,27 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 					needOldStyleWarning = false;
 				}
 				onType.addInterTypeMunger(munger, true);
+				if (munger.getMunger()!=null && munger.getMunger().getKind() == ResolvedTypeMunger.InnerClass) {
+					// Must do these right now, because if we do an ITD member afterwards it may attempt to reference the
+					// type being applied (the call above 'addInterTypeMunger' will fail for these ITDs if it needed
+					// it to be in place)
+					if (munger.munge(sourceType, onType)) {
+						if (factory.pushinCollector != null) {
+							factory.pushinCollector.tagAsMunged(sourceType, munger.getSourceMethod());
+						}
+					}
+				}
 			}
 		}
 
 		onType.checkInterTypeMungers();
 		for (Iterator i = onType.getInterTypeMungers().iterator(); i.hasNext();) {
 			EclipseTypeMunger munger = (EclipseTypeMunger) i.next();
-			if (munger.munge(sourceType, onType)) {
-				if (factory.pushinCollector != null) {
-					factory.pushinCollector.tagAsMunged(sourceType, munger.getSourceMethod());
+			if (munger.getMunger()==null || munger.getMunger().getKind() != ResolvedTypeMunger.InnerClass) {
+				if (munger.munge(sourceType, onType)) {
+					if (factory.pushinCollector != null) {
+						factory.pushinCollector.tagAsMunged(sourceType, munger.getSourceMethod());
+					}
 				}
 			}
 		}
