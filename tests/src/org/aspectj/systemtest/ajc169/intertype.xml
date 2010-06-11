@@ -1,7 +1,133 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 
 <suite>
-
+   
+   <ajc-test dir="features169/itdInnerTypes/eleven" title="already has it">
+     <compile files="Target.java Aspect1.java" options="-1.5">
+     <message kind="error" text="target type already declares a member type with the name 'Inner'"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="construction4">
+     <compile files="Construction4.java" options="-1.5"/>
+     <run class="Construction4">
+       <stdout>
+       <line text="abc"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="construction3">
+     <compile files="Construction3.java" options="-1.5"/>
+     <run class="Construction3">
+       <stdout>
+       <line text="abc"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/ten" title="construction2">
+     <compile files="Construction.java Aspect1.java Aspect2.java" options="-1.5"/>
+     <run class="Construction">
+       <stdout>
+       <line text="abcde"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="construction">
+     <compile files="Construction.java" options="-1.5"/>
+     <run class="Construction">
+       <stdout>
+       <line text="done"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/nine" title="vote - itd mixture 2">
+     <compile files="Underscorer.aj Vote.java Runner.java RelatedType.java" options="-1.5"/>
+     <run class="a.b.c.Runner">
+       <stdout>
+       <line text="wibble"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Underscorer$_$choice)"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/eight" title="vote - itd mixture">
+     <compile files="Underscorer.aj Vote.java Runner.java RelatedType.java" options="-1.5"/>
+     <run class="a.b.c.Runner">
+       <stdout>
+       <line text="wibble"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Underscorer$_$choice)"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/seven" title="vote - method reference">
+     <compile files="Underscorer.aj Vote.java Runner.java RelatedType.java" options="-1.5"/>
+     <run class="a.b.c.Runner">
+       <stdout>
+       <line text="wibble"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Underscorer$_$choice)"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/six" title="vote - field reference">
+     <compile files="Vote.java Vote_Amender.aj Runner.java RelatedType.java" options="-1.5"/>
+     <run class="a.b.c.Runner">
+       <stdout>
+       <line text="wibble"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote_Amender$_$choice)"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/five" title="vote - inner inner">
+     <compile files="Vote.java Vote_Amender.aj Runner.java RelatedType.java" options="-1.5"/>
+     <run class="a.b.c.Runner">
+       <stdout>
+       <line text="wibble"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote_Amender$_$choice)"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/four" title="vote - reference via annotation - two">
+     <compile files="Vote.java Vote_Amender.aj Runner.java RelatedType.java" options="-1.5"/>
+     <run class="a.b.c.Runner">
+       <stdout>
+       <line text="wibble"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote_Amender$_$choice)"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/three" title="vote - reference via annotation">
+     <compile files="Vote.java Vote_Amender.aj Runner.java RelatedType.java" options="-1.5"/>
+     <run class="a.b.c.Runner">
+       <stdout>
+       <line text="wibble"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote_Amender$_)"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/two" title="vote - construction">
+     <compile files="Vote.java Vote_Amender.aj Runner.java" options="-1.5"/>
+     <run class="a.b.c.Runner">
+       <stdout>
+       <line text="wibble"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/one" title="vote - basic">
+     <compile files="Vote.java Vote_Amender.aj Runner.java" options="-1.5"/>
+     <run class="a.b.c.Runner"/>
+   </ajc-test>
+   
    <ajc-test dir="features169/itdInnerTypes" title="choice - generics 1">
      <compile files="ChoiceGenerics1.java" options="-1.5"/>
    </ajc-test>

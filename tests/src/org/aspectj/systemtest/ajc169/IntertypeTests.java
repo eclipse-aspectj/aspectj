@@ -22,9 +22,87 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 /**
  * Tests exploring intertype declared inner types and the new intertype syntax.
  * 
+ * Some design notes.<br>
+ * <p>
+ * Supporting inner types is not quite as straightforward as for the other kinds of ITD like methods, fields and constructors. When
+ * 'resolving' methods/fields/constructors they may refer to intertyped inner types, these means they must be in place early on -
+ * ahead of any member resolution. In order to achieve this they are done really early (for both the cases of pulling in a
+ * binarytypebinding - see AjLookupEnvironment.weaveInterTypeDeclarations(), and for sourcetypebindings
+ * AjLookupEnvironment.completeTypeBindings() where it calls processInterTypeMemberTypes).
+ * <p>
+ * The logic in AjLookupEnvironment.weaveInterTypeDeclarations() is temporarily disabled because I can't write a testcase that
+ * requires it! It should be an incremental build where a class is loaded as a binary type binding on a secondary (incremental)
+ * compile and that class needs the inner class applying.
+ * <p>
+ * Eclipse polices the names of inner types when loading binary type data. The name of the inner is actually maintained as the
+ * aspect name (so an inner type of Foo in an aspect Bar will be called Bar$Foo). The compiler looks after 'attaching' the inner
+ * type to the target type binding when required.
+ * 
  * @author Andy Clement
  */
 public class IntertypeTests extends org.aspectj.testing.XMLBasedAjcTestCase {
+
+	public void testErrorTargettingTypeThatAlreadyHasIt() {
+		runTest("already has it");
+	}
+
+	public void testConstruction4() {
+		runTest("construction4");
+	}
+
+	public void testConstruction3() {
+		runTest("construction3");
+	}
+
+	public void testConstruction2() {
+		runTest("construction2");
+	}
+
+	public void testConstruction() {
+		runTest("construction");
+	}
+
+	// now the itd and the itd member class are in different aspects
+	public void testVoteItdMixture2() {
+		runTest("vote - itd mixture 2");
+	}
+
+	// This test is necessary because it verifies what happens when other ITDs are around
+	// in addition to the itd member class. In order to apply the other ITDs the methods in a target
+	// may get resolved. When they are resolved their types (return,etc) are resolved. If this
+	// happens before the innertype has been added to the target and the types involved reference that
+	// member type, then a failure will occur.
+	public void testVoteItdMixture() {
+		runTest("vote - itd mixture");
+	}
+
+	public void testVoteMethodReference() {
+		runTest("vote - method reference");
+	}
+
+	public void testVoteFieldReference() {
+		runTest("vote - field reference");
+	}
+
+	public void testVoteInnerInner() {
+		runTest("vote - inner inner");
+	}
+
+	public void testVoteReferenceViaAnnotation2() {
+		runTest("vote - reference via annotation - two");
+	}
+
+	public void testVoteReferenceViaAnnotation() {
+		runTest("vote - reference via annotation");
+	}
+
+	public void testVoteConstruction() {
+		runTest("vote - construction");
+	}
+
+	public void testVoteBasic() {
+		runTest("vote - basic");
+	}
 
 	// inter type declared classes - working scenarios
 	public void testFieldAccess() throws Exception {

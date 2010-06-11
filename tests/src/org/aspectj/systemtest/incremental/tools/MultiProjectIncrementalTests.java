@@ -63,6 +63,56 @@ import org.aspectj.weaver.World;
  */
 public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
 
+	public void testIncrementalITDInners3() throws Exception {
+		AjdeInteractionTestbed.VERBOSE = true;
+		String p = "prInner3";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		// touch the aspect making the ITD member type
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+		// touch the aspect making the ITD that depends on the member type
+		alter(p, "inc2");
+		build(p);
+		checkWasntFullBuild();
+		// touch the type affected by the ITDs
+		alter(p, "inc3");
+		build(p);
+		checkWasntFullBuild();
+	}
+
+	// mixing ITDs with inner type intertypes
+	public void testIncrementalITDInners2() throws Exception {
+		String p = "prInner2";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		// touch the aspect making the ITD member type
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+		// touch the aspect making the ITD that depends on the member type
+		alter(p, "inc2");
+		build(p);
+		checkWasntFullBuild();
+		// touch the type affected by the ITDs
+		alter(p, "inc3");
+		build(p);
+		checkWasntFullBuild();
+	}
+
+	public void testIncrementalITDInners() throws Exception {
+		String p = "prInner";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+	}
+
 	/*
 	 * public void testIncrementalAspectWhitespace() throws Exception { AjdeInteractionTestbed.VERBOSE = true; String p = "xxx";
 	 * initialiseProject(p); configureNonStandardCompileOptions(p, "-showWeaveInfo"); configureShowWeaveInfoMessages(p, true);
