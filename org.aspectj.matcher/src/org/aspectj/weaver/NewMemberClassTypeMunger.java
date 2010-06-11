@@ -23,7 +23,7 @@ import org.aspectj.bridge.ISourceLocation;
 public class NewMemberClassTypeMunger extends ResolvedTypeMunger {
 
 	private UnresolvedType targetType;
-	private String memberTypeName;
+	private String memberTypeName; // short (last part of) name
 	private int version = 1; // 1.6.9m2
 
 	public NewMemberClassTypeMunger(UnresolvedType targetType, String memberTypeName) {
@@ -67,4 +67,24 @@ public class NewMemberClassTypeMunger extends ResolvedTypeMunger {
 		return memberTypeName;
 	}
 
+	public int hashCode() {
+		int result = 17;
+		result = 37 * result + kind.hashCode();
+		result = 37 * result + memberTypeName.hashCode();
+		result = 37 * result + targetType.hashCode();
+		result = 37 * result + ((typeVariableAliases == null) ? 0 : typeVariableAliases.hashCode());
+		return result;
+	}
+
+	public boolean equals(Object other) {
+		if (!(other instanceof NewMemberClassTypeMunger)) {
+			return false;
+		}
+		NewMemberClassTypeMunger o = (NewMemberClassTypeMunger) other;
+		return ((kind == null) ? (o.kind == null) : kind.equals(o.kind))
+				&& memberTypeName.equals(o.memberTypeName)
+				&& targetType.equals(o.targetType)
+				&& ((typeVariableAliases == null) ? (o.typeVariableAliases == null) : typeVariableAliases
+						.equals(o.typeVariableAliases));
+	}
 }
