@@ -28,41 +28,38 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
 /**
- * Handles the translation of java.lang.reflect.Type objects into
- * AspectJ UnresolvedTypes.
- *
+ * Handles the translation of java.lang.reflect.Type objects into AspectJ UnresolvedTypes.
+ * 
  */
 public class JavaLangTypeToResolvedTypeConverter {
 
 	// Used to prevent recursion - we record what we are working on and return it if asked again *whilst* working on it
-	private Map<Type,TypeVariableReferenceType> typeVariablesInProgress 
-				= new HashMap<Type,TypeVariableReferenceType>();
+	private Map<Type, TypeVariableReferenceType> typeVariablesInProgress = new HashMap<Type, TypeVariableReferenceType>();
 	private final World world;
 
 	public JavaLangTypeToResolvedTypeConverter(World aWorld) {
 		this.world = aWorld;
 	}
-	
+
 	private World getWorld() {
 		return this.world;
 	}
-	
+
 	public ResolvedType fromType(Type aType) {
 		if (aType instanceof Class) {
-			Class clazz = (Class)aType;
+			Class clazz = (Class) aType;
 			String name = clazz.getName();
 			/**
 			 * getName() can return:
 			 * 
-			 * 1. If this class object represents a reference type that is not an array type 
-			 *    then the binary name of the class is returned
-			 * 2. If this class object represents a primitive type or void, then the 
-			 *    name returned is a String equal to the Java language keyword corresponding to the primitive type or void.
-			 * 3. If this class object represents a class of arrays, then the internal form 
-			 *    of the name consists of the name of the element type preceded by one or more '[' characters representing the depth of the array nesting.
+			 * 1. If this class object represents a reference type that is not an array type then the binary name of the class is
+			 * returned 2. If this class object represents a primitive type or void, then the name returned is a String equal to the
+			 * Java language keyword corresponding to the primitive type or void. 3. If this class object represents a class of
+			 * arrays, then the internal form of the name consists of the name of the element type preceded by one or more '['
+			 * characters representing the depth of the array nesting.
 			 */
 			if (clazz.isArray()) {
-				UnresolvedType ut = UnresolvedType.forSignature(name.replace('.','/'));
+				UnresolvedType ut = UnresolvedType.forSignature(name.replace('.', '/'));
 				return getWorld().resolve(ut);
 			} else {
 				return getWorld().resolve(name);
@@ -72,30 +69,47 @@ public class JavaLangTypeToResolvedTypeConverter {
 			ResolvedType baseType = fromType(pt.getRawType());
 			Type[] args = pt.getActualTypeArguments();
 			ResolvedType[] resolvedArgs = fromTypes(args);
+/*			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < resolvedArgs.length; i++) {
+				sb.append(resolvedArgs[i]).append(" ");
+			}
+			for (int i = 0; i < resolvedArgs.length; i++) {
+				if (resolvedArgs[i] == null) {
+					String ss = "";
+					try {
+						ss = aType.toString();
+					} catch (Exception e) {
+					}
+					throw new IllegalStateException("Parameterized type problem.  basetype=" + baseType + " arguments="
+							+ sb.toString() + " ss=" + ss);
+				}
+			}
+*/
 			return TypeFactory.createParameterizedType(baseType, resolvedArgs, getWorld());
 		} else if (aType instanceof java.lang.reflect.TypeVariable) {
-			if (typeVariablesInProgress.get(aType)!=null) // check if we are already working on this type
+			if (typeVariablesInProgress.get(aType) != null) {
 				return typeVariablesInProgress.get(aType);
+			}
 
 			java.lang.reflect.TypeVariable tv = (java.lang.reflect.TypeVariable) aType;
 			TypeVariable rt_tv = new TypeVariable(tv.getName());
-			TypeVariableReferenceType tvrt = new TypeVariableReferenceType(rt_tv,getWorld());
-			
-			typeVariablesInProgress.put(aType,tvrt); // record what we are working on, for recursion case
-			
+			TypeVariableReferenceType tvrt = new TypeVariableReferenceType(rt_tv, getWorld());
+
+			typeVariablesInProgress.put(aType, tvrt); // record what we are working on, for recursion case
+
 			Type[] bounds = tv.getBounds();
 			ResolvedType[] resBounds = fromTypes(bounds);
 			ResolvedType upperBound = resBounds[0];
 			ResolvedType[] additionalBounds = new ResolvedType[0];
 			if (resBounds.length > 1) {
 				additionalBounds = new ResolvedType[resBounds.length - 1];
-				System.arraycopy(resBounds,1,additionalBounds,0,additionalBounds.length);
+				System.arraycopy(resBounds, 1, additionalBounds, 0, additionalBounds.length);
 			}
 			rt_tv.setUpperBound(upperBound);
 			rt_tv.setAdditionalInterfaceBounds(additionalBounds);
-			
+
 			typeVariablesInProgress.remove(aType); // we have finished working on it
-			
+
 			return tvrt;
 		} else if (aType instanceof WildcardType) {
 			WildcardType wildType = (WildcardType) aType;
@@ -108,15 +122,15 @@ public class JavaLangTypeToResolvedTypeConverter {
 			} else {
 				bound = fromType(lowerBounds[0]);
 			}
-			return new BoundedReferenceType((ReferenceType)bound,isExtends,getWorld());
+			return new BoundedReferenceType((ReferenceType) bound, isExtends, getWorld());
 		} else if (aType instanceof GenericArrayType) {
 			GenericArrayType gt = (GenericArrayType) aType;
 			Type componentType = gt.getGenericComponentType();
-			return UnresolvedType.makeArray(fromType(componentType),1).resolve(getWorld());
+			return UnresolvedType.makeArray(fromType(componentType), 1).resolve(getWorld());
 		}
 		return ResolvedType.MISSING;
 	}
-	
+
 	public ResolvedType[] fromTypes(Type[] types) {
 		ResolvedType[] ret = new ResolvedType[types.length];
 		for (int i = 0; i < ret.length; i++) {
@@ -125,5 +139,4 @@ public class JavaLangTypeToResolvedTypeConverter {
 		return ret;
 	}
 
-	
 }
