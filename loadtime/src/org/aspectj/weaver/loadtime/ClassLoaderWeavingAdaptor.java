@@ -451,6 +451,15 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 					info("register aspect " + aspectClassName);
 					// System.err.println("? ClassLoaderWeavingAdaptor.registerAspects() aspectName=" + aspectClassName +
 					// ", loader=" + loader + ", bundle=" + weavingContext.getClassLoaderName());
+					String requiredType = definition.getAspectRequires(aspectClassName);
+					if (requiredType != null) {
+						// This aspect expresses that it requires a type to be around, otherwise it should 'switch off'
+						((BcelWorld) weaver.getWorld()).addAspectRequires(aspectClassName, requiredType);
+					}
+					String definedScope = definition.getScopeForAspect(aspectClassName);
+					if (definedScope != null) {
+						((BcelWorld) weaver.getWorld()).addScopedAspect(aspectClassName, definedScope);
+					}
 					// ResolvedType aspect =
 					weaver.addLibraryAspect(aspectClassName);
 
@@ -461,10 +470,6 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 						namespace = namespace.append(";").append(aspectClassName);
 					}
 
-					String definedScope = definition.getScopeForAspect(aspectClassName);
-					if (definedScope != null) {
-						((BcelWorld) weaver.getWorld()).addScopedAspect(aspectClassName, definedScope);
-					}
 				} else {
 					// warn("aspect excluded: " + aspectClassName);
 					lint("aspectExcludedByConfiguration", new String[] { aspectClassName, getClassLoaderName(loader) });
