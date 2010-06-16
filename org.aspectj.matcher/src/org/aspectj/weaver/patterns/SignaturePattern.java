@@ -137,10 +137,10 @@ public class SignaturePattern extends PatternNode {
 					parameterTargettingAnnotationsAllowed);
 			patternNode.traverse(visitor, null);
 			if (visitor.containedIncorrectTargetKind()) {
-				Set keys = visitor.getIncorrectTargetKinds().keySet();
-				for (Iterator iter = keys.iterator(); iter.hasNext();) {
-					PatternNode node = (PatternNode) iter.next();
-					AnnotationTargetKind[] targetKinds = (AnnotationTargetKind[]) visitor.getIncorrectTargetKinds().get(node);
+				Set<ExactAnnotationTypePattern> keys = visitor.getIncorrectTargetKinds().keySet();
+				for (Iterator<ExactAnnotationTypePattern> iter = keys.iterator(); iter.hasNext();) {
+					PatternNode node = iter.next();
+					AnnotationTargetKind[] targetKinds = visitor.getIncorrectTargetKinds().get(node);
 					reportUnmatchedTargetKindMessage(targetKinds, node, scope, false);
 				}
 			}
@@ -173,7 +173,7 @@ public class SignaturePattern extends PatternNode {
 	private class TypePatternVisitor extends AbstractPatternNodeVisitor {
 
 		private IScope scope;
-		private Map incorrectTargetKinds /* PatternNode -> AnnotationTargetKind[] */= new HashMap();
+		private Map<ExactAnnotationTypePattern, AnnotationTargetKind[]> incorrectTargetKinds = new HashMap<ExactAnnotationTypePattern, AnnotationTargetKind[]>();
 		private boolean targetsOtherThanTypeAllowed;
 		private boolean parameterTargettingAnnotationsAllowed;
 
@@ -268,7 +268,7 @@ public class SignaturePattern extends PatternNode {
 			return (incorrectTargetKinds.size() != 0);
 		}
 
-		public Map getIncorrectTargetKinds() {
+		public Map<ExactAnnotationTypePattern, AnnotationTargetKind[]> getIncorrectTargetKinds() {
 			return incorrectTargetKinds;
 		}
 	}
@@ -606,10 +606,6 @@ public class SignaturePattern extends PatternNode {
 		}
 	}
 
-	private ResolvedType[] getResolvedParameters(World world, UnresolvedType[] unresolvedParams) {
-		return world.resolve(unresolvedParams);
-	}
-
 	/**
 	 * match on declaring type, parameter types, throws types
 	 */
@@ -700,9 +696,8 @@ public class SignaturePattern extends PatternNode {
 			// FIXME asc duplicate of code in AnnotationPointcut.matchInternal()? same fixmes apply here.
 			// ResolvedMember [] mems = member.getDeclaringType().resolve(world).getDeclaredFields(); // FIXME asc should include
 			// supers with getInterTypeMungersIncludingSupers?
-			List mungers = member.getDeclaringType().resolve(world).getInterTypeMungers();
-			for (Iterator iter = mungers.iterator(); iter.hasNext();) {
-				ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) iter.next();
+			List<ConcreteTypeMunger> mungers = member.getDeclaringType().resolve(world).getInterTypeMungers();
+			for (ConcreteTypeMunger typeMunger : mungers) {
 				if (typeMunger.getMunger() instanceof NewFieldTypeMunger) {
 					ResolvedMember fakerm = typeMunger.getSignature();
 					ResolvedMember ajcMethod = AjcMemberMaker.interFieldInitializer(fakerm, typeMunger.getAspectType());
