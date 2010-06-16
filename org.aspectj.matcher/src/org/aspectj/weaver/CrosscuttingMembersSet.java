@@ -75,7 +75,7 @@ public class CrosscuttingMembersSet {
 	 */
 	public boolean addOrReplaceAspect(ResolvedType aspectType, boolean inWeavingPhase) {
 
-		if (!world.isAspectIncluded(aspectType)) {
+		if (!world.isAspectIncluded(aspectType) || world.hasUnsatisfiedDependency(aspectType)) {
 			return false;
 		}
 
