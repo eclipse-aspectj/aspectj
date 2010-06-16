@@ -2,6 +2,52 @@
 
 <suite>
 
+  <ajc-test dir="bugs169/pr310506" title="optional aspects">
+     <compile files="Anno.java" outjar="anno.jar" options="-1.5"/>
+     <compile files="AspectA.java" classpath="anno.jar" outjar="aspect.jar" options="-Xlint:ignore -1.5"/>
+     <compile files="AspectB.java" outjar="aspect2.jar" options="-Xlint:ignore -1.5"/>
+     <compile files="Code.java" classpath="code.jar;aspect.jar;aspect2.jar" options="-1.5"/>
+     <file deletefile="anno.jar"/>
+     <run class="Code" ltw="META-INF/aop.xml" classpath=".;aspect.jar;aspect2.jar">
+     <stderr>
+     <line text="AspectJ Weaver Version"/>
+     <line text="register classloader"/>
+     <line text="using configuration"/>
+     <line text="register aspect"/>
+     <line text="deactivating aspect"/>
+     <line text="register aspect"/>     
+     <line text="processing reweavable"/>
+     </stderr>
+     <stdout>
+     <line text="staticinitialization"/>
+     <line text="abcde"/>
+     </stdout>
+     </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr310506" title="optional aspects 2">
+     <compile files="Anno.java" outjar="anno.jar" options="-1.5"/>
+     <compile files="AspectA.java" classpath="anno.jar" outjar="aspect.jar" options="-Xlint:ignore -1.5"/>
+     <compile files="AspectB.java" outjar="aspect2.jar" options="-Xlint:ignore -1.5"/>
+     <compile files="Code.java Code2.java" classpath="anno.jar;code.jar;aspect.jar;aspect2.jar" options="-1.5"/>
+     <run class="Code2" ltw="META-INF/aop.xml" classpath=".;aspect.jar;aspect2.jar">
+     <stderr>
+     <line text="AspectJ Weaver Version"/>
+     <line text="register classloader"/>
+     <line text="using configuration"/>
+     <line text="register aspect"/>
+     <line text="register aspect"/>     
+     <line text="processing reweavable"/>
+     <line text="processing reweavable"/>
+     </stderr>
+     <stdout>
+     <line text="staticinitialization"/>
+     <line text="A"/>
+     <line text="abcde"/>
+     </stdout>
+     </run>
+  </ajc-test>
+
   <ajc-test dir="bugs169/pr315651" title="infinite loop">
      <compile files="test/Profiling.aj test/Main.java" options="-1.5"/>
      <run class="test.Main"/>

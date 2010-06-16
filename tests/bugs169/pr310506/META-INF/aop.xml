@@ -1,0 +1,7 @@
+<aspectj>
+  <aspects>
+    <aspect name="AspectA" requires="a.b.c.Anno"/>
+    <aspect name="AspectB"/>
+  </aspects>
+  <weaver options="-verbose"/>
+</aspectj>
