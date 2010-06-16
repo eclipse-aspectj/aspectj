@@ -39,6 +39,11 @@ public class Definition {
 	 */
 	private final Map<String, String> scopedAspects;
 
+	/**
+	 * Some aspects (from aspect libraries) will describe a type that must be around for them to function properly
+	 */
+	private final Map<String, String> requiredTypesForAspects;
+
 	public Definition() {
 		weaverOptions = new StringBuffer();
 		dumpBefore = false;
@@ -51,6 +56,7 @@ public class Definition {
 		aspectIncludePatterns = new ArrayList<String>();
 		concreteAspects = new ArrayList<Definition.ConcreteAspect>();
 		scopedAspects = new HashMap<String, String>();
+		requiredTypesForAspects = new HashMap<String, String>();
 	}
 
 	public String getWeaverOptions() {
@@ -163,6 +169,14 @@ public class Definition {
 
 	public String getScopeForAspect(String name) {
 		return scopedAspects.get(name);
+	}
+
+	public void setAspectRequires(String name, String requiredType) {
+		requiredTypesForAspects.put(name, requiredType);
+	}
+
+	public String getAspectRequires(String name) {
+		return requiredTypesForAspects.get(name);
 	}
 
 }

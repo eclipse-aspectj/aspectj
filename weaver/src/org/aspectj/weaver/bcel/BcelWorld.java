@@ -959,6 +959,45 @@ public class BcelWorld extends World implements Repository {
 		return xmlConfiguration.getScopeFor(declaringType.getName());
 	}
 
+	@Override
+	public boolean hasUnsatisfiedDependency(ResolvedType aspectType) {
+		if (!aspectRequiredTypesProcessed) {
+			if (aspectRequiredTypes != null) {
+				List<String> forRemoval = new ArrayList<String>();
+				for (Map.Entry<String, String> entry : aspectRequiredTypes.entrySet()) {
+					ResolvedType rt = this.resolve(UnresolvedType.forName(entry.getValue()));
+					if (!rt.isMissing()) {
+						forRemoval.add(entry.getKey());
+					} else {
+						if (!getMessageHandler().isIgnoring(IMessage.INFO)) {
+							getMessageHandler().handleMessage(
+									MessageUtil.info("deactivating aspect '" + aspectType.getName() + "' as it requires type '"
+											+ rt.getName() + "' which cannot be found on the classpath"));
+						}
+					}
+				}
+				for (String key : forRemoval) {
+					aspectRequiredTypes.remove(key);
+				}
+			}
+			aspectRequiredTypesProcessed = true;
+		}
+		if (aspectRequiredTypes == null) {
+			return false;
+		}
+		return aspectRequiredTypes.containsKey(aspectType.getName());
+	}
+
+	private boolean aspectRequiredTypesProcessed = false;
+	private Map<String, String> aspectRequiredTypes = null;
+
+	public void addAspectRequires(String name, String requiredType) {
+		if (aspectRequiredTypes == null) {
+			aspectRequiredTypes = new HashMap<String, String>();
+		}
+		aspectRequiredTypes.put(name, requiredType);
+	}
+
 	/**
 	 * A WeavingXmlConfig is initially a collection of definitions from XML files - once the world is ready and weaving is running
 	 * it will initialize and transform those definitions into an optimized set of values (eg. resolve type patterns and string

@@ -107,6 +107,7 @@ aspect
 <!ATTLIST aspect
     name CDATA #REQUIRED
     scope CDATA #IMPLIED
+    requires CDATA #IMPLIED
 >
 <!--*****************************************************************************************************************************
 exclude

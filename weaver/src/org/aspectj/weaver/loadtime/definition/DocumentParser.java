@@ -56,6 +56,7 @@ public class DocumentParser extends DefaultHandler {
 	private final static String CONCRETE_ASPECT_ELEMENT = "concrete-aspect";
 	private final static String NAME_ATTRIBUTE = "name";
 	private final static String SCOPE_ATTRIBUTE = "scope";
+	private final static String REQUIRES_ATTRIBUTE = "requires";
 	private final static String EXTEND_ATTRIBUTE = "extends";
 	private final static String PRECEDENCE_ATTRIBUTE = "precedence";
 	private final static String PERCLAUSE_ATTRIBUTE = "perclause";
@@ -147,10 +148,14 @@ public class DocumentParser extends DefaultHandler {
 		if (ASPECT_ELEMENT.equals(qName)) {
 			String name = attributes.getValue(NAME_ATTRIBUTE);
 			String scopePattern = replaceXmlAnd(attributes.getValue(SCOPE_ATTRIBUTE));
+			String requiredType = attributes.getValue(REQUIRES_ATTRIBUTE);
 			if (!isNull(name)) {
 				m_definition.getAspectClassNames().add(name);
 				if (scopePattern != null) {
 					m_definition.addScopedAspect(name, scopePattern);
+				}
+				if (requiredType != null) {
+					m_definition.setAspectRequires(name, requiredType);
 				}
 			}
 		} else if (WEAVER_ELEMENT.equals(qName)) {
