@@ -1562,6 +1562,16 @@ public abstract class World implements Dump.INode {
 		return true;
 	}
 
+    /**
+     * Determine if the named aspect requires a particular type around in order to
+     * be useful.  The type is named in the aop.xml file against the aspect.
+     *
+     * @return true if there is a type missing that this aspect really needed around
+     */
+	public boolean hasUnsatisfiedDependency(ResolvedType aspectType) {
+		return false;
+	}
+
 	public TypePattern getAspectScope(ResolvedType declaringType) {
 		return null;
 	}
