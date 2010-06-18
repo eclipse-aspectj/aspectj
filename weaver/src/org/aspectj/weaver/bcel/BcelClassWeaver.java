@@ -482,12 +482,11 @@ class BcelClassWeaver implements IClassWeaver {
 		}
 
 		// now we weave all but the initialization shadows
-		for (Iterator i = methodGens.iterator(); i.hasNext();) {
-			LazyMethodGen mg = (LazyMethodGen) i.next();
-			if (!mg.hasBody()) {
+		for (LazyMethodGen methodGen : methodGens) {
+			if (!methodGen.hasBody()) {
 				continue;
 			}
-			implement(mg);
+			implement(methodGen);
 		}
 
 		// if we matched any initialization shadows, we inline and weave
@@ -885,7 +884,7 @@ class BcelClassWeaver implements IClassWeaver {
 	 * Weave any declare @method/@ctor statements into the members of the supplied class
 	 */
 	private boolean weaveDeclareAtMethodCtor(LazyClassGen clazz) {
-		List reportedProblems = new ArrayList();
+		List<Integer> reportedProblems = new ArrayList<Integer>();
 
 		List<DeclareAnnotation> allDecams = world.getDeclareAnnotationOnMethods();
 		if (allDecams.isEmpty()) {
@@ -1004,7 +1003,7 @@ class BcelClassWeaver implements IClassWeaver {
 
 				}
 			}
-			checkUnusedDeclareAtTypes(unusedDecams, false);
+			checkUnusedDeclareAts(unusedDecams, false);
 		}
 		return isChanged;
 	}
@@ -1122,16 +1121,16 @@ class BcelClassWeaver implements IClassWeaver {
 	 * will iterate over the fields repeatedly until everything has been applied.
 	 * 
 	 */
-	private boolean weaveAtFieldRepeatedly(List decaFs, List itdFields, List reportedErrors) {
+	private boolean weaveAtFieldRepeatedly(List<DeclareAnnotation> decaFs, List itdFields, List<Integer> reportedErrors) {
 		boolean isChanged = false;
 		for (Iterator iter = itdFields.iterator(); iter.hasNext();) {
 			BcelTypeMunger fieldMunger = (BcelTypeMunger) iter.next();
 			ResolvedMember itdIsActually = fieldMunger.getSignature();
-			List worthRetrying = new ArrayList();
+			List<DeclareAnnotation> worthRetrying = new ArrayList<DeclareAnnotation>();
 			boolean modificationOccured = false;
 
-			for (Iterator iter2 = decaFs.iterator(); iter2.hasNext();) {
-				DeclareAnnotation decaF = (DeclareAnnotation) iter2.next();
+			for (Iterator<DeclareAnnotation> iter2 = decaFs.iterator(); iter2.hasNext();) {
+				DeclareAnnotation decaF = iter2.next();
 
 				if (decaF.matches(itdIsActually, world)) {
 					LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz, fieldMunger);
@@ -1155,9 +1154,9 @@ class BcelClassWeaver implements IClassWeaver {
 
 			while (!worthRetrying.isEmpty() && modificationOccured) {
 				modificationOccured = false;
-				List forRemoval = new ArrayList();
-				for (Iterator iter2 = worthRetrying.iterator(); iter2.hasNext();) {
-					DeclareAnnotation decaF = (DeclareAnnotation) iter2.next();
+				List<DeclareAnnotation> forRemoval = new ArrayList<DeclareAnnotation>();
+				for (Iterator<DeclareAnnotation> iter2 = worthRetrying.iterator(); iter2.hasNext();) {
+					DeclareAnnotation decaF = iter2.next();
 					if (decaF.matches(itdIsActually, world)) {
 						LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz, fieldMunger);
 						if (doesAlreadyHaveAnnotation(annotationHolder, itdIsActually, decaF, reportedErrors)) {
@@ -1182,7 +1181,7 @@ class BcelClassWeaver implements IClassWeaver {
 	 * (List<BcelTypeMunger>. It will iterate over the fields repeatedly until everything has been applied.
 	 */
 	private boolean weaveAtMethodOnITDSRepeatedly(List<DeclareAnnotation> decaMCs,
-			List<ConcreteTypeMunger> itdsForMethodAndConstructor, List reportedErrors) {
+			List<ConcreteTypeMunger> itdsForMethodAndConstructor, List<Integer> reportedErrors) {
 		boolean isChanged = false;
 		AsmManager asmManager = world.getModelAsAsmManager();
 		for (ConcreteTypeMunger methodctorMunger : itdsForMethodAndConstructor) {
@@ -1270,7 +1269,7 @@ class BcelClassWeaver implements IClassWeaver {
 		// decafs and check that to see if an error needs to be reported - this
 		// would be expensive so lets skip it for now
 
-		List reportedProblems = new ArrayList();
+		List<Integer> reportedProblems = new ArrayList<Integer>();
 
 		List<DeclareAnnotation> allDecafs = world.getDeclareAnnotationOnFields();
 		if (allDecafs.isEmpty()) {
@@ -1372,9 +1371,9 @@ class BcelClassWeaver implements IClassWeaver {
 					while (!worthRetrying.isEmpty() && modificationOccured) {
 						modificationOccured = false;
 						// lets have another go
-						List forRemoval = new ArrayList();
-						for (Iterator iter = worthRetrying.iterator(); iter.hasNext();) {
-							DeclareAnnotation decaF = (DeclareAnnotation) iter.next();
+						List<DeclareAnnotation> forRemoval = new ArrayList<DeclareAnnotation>();
+						for (Iterator<DeclareAnnotation> iter = worthRetrying.iterator(); iter.hasNext();) {
+							DeclareAnnotation decaF = iter.next();
 							if (decaF.matches(aBcelField, world)) {
 								// below code is for recursive things
 								if (doesAlreadyHaveAnnotation(aBcelField, decaF, reportedProblems)) {
@@ -1399,7 +1398,7 @@ class BcelClassWeaver implements IClassWeaver {
 					}
 				}
 			}
-			checkUnusedDeclareAtTypes(unusedDecafs, true);
+			checkUnusedDeclareAts(unusedDecafs, true);
 		}
 		return isChanged;
 	}
@@ -1410,35 +1409,47 @@ class BcelClassWeaver implements IClassWeaver {
 	 * This method is passed some set of declare statements that didn't match and a flag indicating whether the set contains declare @field
 	 * or declare @method/ctor entries.
 	 */
-	private void checkUnusedDeclareAtTypes(Set unusedDecaTs, boolean isDeclareAtField) {
-		for (Iterator iter = unusedDecaTs.iterator(); iter.hasNext();) {
-			DeclareAnnotation declA = (DeclareAnnotation) iter.next();
+	private void checkUnusedDeclareAts(Set<DeclareAnnotation> unusedDecaTs, boolean isDeclareAtField) {
+		for (DeclareAnnotation declA : unusedDecaTs) {
 
 			// Error if an exact type pattern was specified
-			boolean shouldCheck = declA.isExactPattern()
-					|| declA.getSignaturePattern().getDeclaringType() instanceof ExactTypePattern;
+			boolean shouldCheck = declA.isExactPattern() || declA.getSignaturePattern().getExactDeclaringTypes().size() != 0;// !=
+																																// null;//
+																																// instanceof
+			// ExactTypePattern;
+
 			if (shouldCheck && declA.getKind() != DeclareAnnotation.AT_CONSTRUCTOR) {
-				ExactTypePattern declaringTypePattern = (ExactTypePattern) declA.getSignaturePattern().getDeclaringType();
-				if (declA.getSignaturePattern().getName().isAny() || declaringTypePattern.isIncludeSubtypes()) {
+				if (declA.getSignaturePattern().isMatchOnAnyName()/* getName().isAny() */) {
 					shouldCheck = false;
+				} else {
+					List<ExactTypePattern> declaringTypePatterns = declA.getSignaturePattern().getExactDeclaringTypes();
+					if (declaringTypePatterns.size() == 0) {
+						shouldCheck = false;
+					} else {
+						for (ExactTypePattern exactTypePattern : declaringTypePatterns) {
+							if (exactTypePattern.isIncludeSubtypes()) {
+								shouldCheck = false;
+								break;
+							}
+						}
+					}
 				}
 			}
 			if (shouldCheck) {
-
 				// Quickly check if an ITD supplies the 'missing' member
 				boolean itdMatch = false;
-				List lst = clazz.getType().getInterTypeMungers();
-				for (Iterator iterator = lst.iterator(); iterator.hasNext() && !itdMatch;) {
-					ConcreteTypeMunger element = (ConcreteTypeMunger) iterator.next();
+				List<ConcreteTypeMunger> lst = clazz.getType().getInterTypeMungers();
+				for (Iterator<ConcreteTypeMunger> iterator = lst.iterator(); iterator.hasNext() && !itdMatch;) {
+					ConcreteTypeMunger element = iterator.next();
 					if (element.getMunger() instanceof NewFieldTypeMunger) {
 						NewFieldTypeMunger nftm = (NewFieldTypeMunger) element.getMunger();
-						itdMatch = declA.getSignaturePattern().matches(nftm.getSignature(), world, false);
+						itdMatch = declA.matches(nftm.getSignature(), world);
 					} else if (element.getMunger() instanceof NewMethodTypeMunger) {
 						NewMethodTypeMunger nmtm = (NewMethodTypeMunger) element.getMunger();
-						itdMatch = declA.getSignaturePattern().matches(nmtm.getSignature(), world, false);
+						itdMatch = declA.matches(nmtm.getSignature(), world);
 					} else if (element.getMunger() instanceof NewConstructorTypeMunger) {
 						NewConstructorTypeMunger nctm = (NewConstructorTypeMunger) element.getMunger();
-						itdMatch = declA.getSignaturePattern().matches(nctm.getSignature(), world, false);
+						itdMatch = declA.matches(nctm.getSignature(), world);
 					}
 				}
 				if (!itdMatch) {
@@ -1471,7 +1482,7 @@ class BcelClassWeaver implements IClassWeaver {
 	/**
 	 * Check if a resolved member (field/method/ctor) already has an annotation, if it does then put out a warning and return true
 	 */
-	private boolean doesAlreadyHaveAnnotation(ResolvedMember rm, DeclareAnnotation deca, List reportedProblems) {
+	private boolean doesAlreadyHaveAnnotation(ResolvedMember rm, DeclareAnnotation deca, List<Integer> reportedProblems) {
 		if (rm.hasAnnotation(deca.getAnnotationType())) {
 			if (world.getLint().elementAlreadyAnnotated.isEnabled()) {
 				Integer uniqueID = new Integer(rm.hashCode() * deca.hashCode());
@@ -2824,7 +2835,8 @@ class BcelClassWeaver implements IClassWeaver {
 		return false;
 	}
 
-	private void matchSetInstruction(LazyMethodGen mg, InstructionHandle ih, BcelShadow enclosingShadow, List shadowAccumulator) {
+	private void matchSetInstruction(LazyMethodGen mg, InstructionHandle ih, BcelShadow enclosingShadow,
+			List<BcelShadow> shadowAccumulator) {
 		FieldInstruction fi = (FieldInstruction) ih.getInstruction();
 		Member field = BcelWorld.makeFieldJoinPointSignature(clazz, fi);
 
@@ -2856,7 +2868,8 @@ class BcelClassWeaver implements IClassWeaver {
 		}
 	}
 
-	private void matchGetInstruction(LazyMethodGen mg, InstructionHandle ih, BcelShadow enclosingShadow, List shadowAccumulator) {
+	private void matchGetInstruction(LazyMethodGen mg, InstructionHandle ih, BcelShadow enclosingShadow,
+			List<BcelShadow> shadowAccumulator) {
 		FieldInstruction fi = (FieldInstruction) ih.getInstruction();
 		Member field = BcelWorld.makeFieldJoinPointSignature(clazz, fi);
 
