@@ -2,6 +2,60 @@
 
 <suite>
 
+  <ajc-test dir="bugs169/pr287613" title="compound declare patterns - method - 2">
+  	 <compile files="DAMethod2.java" options="-1.5 -showWeaveInfo">
+  	 	<message kind="weave" text="'public void Person.foo()' (DAMethod2.java:11) is annotated with @Annot method annotation from 'DAMethod2' (DAMethod2.java:26)"/>
+  	 	<message kind="weave" text="public boolean Person.bar()' (DAMethod2.java:13) is annotated with @Annot method annotation from 'DAMethod2' (DAMethod2.java:26)"/>
+  	 	<message kind="weave" text="public boolean Person.isSet()' (DAMethod2.java:17) is annotated with @Annot method annotation from 'DAMethod2' (DAMethod2.java:26)"/>
+  	 	<message kind="weave" text="public void Person.isNotReturningBoolean()' (DAMethod2.java:19) is annotated with @Annot method annotation from 'DAMethod2' (DAMethod2.java:26)"/>
+  	 	<message kind="weave" text="'public void Person.getin()' (DAMethod2.java:21) is annotated with @Annot method annotation from 'DAMethod2' (DAMethod2.java:28)"/>
+  	 </compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr287613" title="compound declare patterns - method - 1">
+  	 <compile files="DAMethod1.java" options="-1.5 -showWeaveInfo">
+  	 	<message kind="weave" text="'public java.lang.String Person.getString()' (DAMethod1.java:9) is annotated with @Annot method annotation from 'DAMethod1' (DAMethod1.java:15)"/>
+  	 	<message kind="weave" text="'public boolean Person.isSet()' (DAMethod1.java:10) is annotated with @Annot method annotation from 'DAMethod1' (DAMethod1.java:15)"/>
+  	 </compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr315820" title="multiple annos running - 1">
+  	 <compile files="MultiAnno2.java" options="-1.5"/>
+  	 <run class="MultiAnno2">
+  	 <stdout>
+  	 <line text="XXX"/>
+  	 </stdout>
+  	 </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr315820" title="multiple annos parsing">
+  	 <compile files="MultiAnno.java" options="-1.5"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr287613" title="compound declare patterns - fields - 2">
+  	 <compile files="Target.java" options="-1.5"/>
+  	 <run class="Target">
+  	 <stdout>
+  	 <line text="Field one"/>
+  	 <line text="@Annot1()"/>
+  	 <line text="@Annot1()"/>
+  	 <line text="Field two"/>
+  	 <line text="@Annot2()"/>
+  	 <line text="no annotations"/>
+  	 <line text="Field three"/>
+  	 <line text="@Annot3()"/>
+  	 <line text="@Annot3()"/>
+  	 </stdout></run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr287613" title="compound declare patterns - fields - 1">
+  	 <compile files="DeclareAnnot.java" options="-1.5"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr287613" title="compound declare patterns - methodctor - 1">
+  	 <compile files="DeclareAnnotMethodCtor.java" options="-1.5"/>
+  </ajc-test>
+  
   <ajc-test dir="bugs169/pr310506" title="optional aspects">
      <compile files="Anno.java" outjar="anno.jar" options="-1.5"/>
      <compile files="AspectA.java" classpath="anno.jar" outjar="aspect.jar" options="-Xlint:ignore -1.5"/>

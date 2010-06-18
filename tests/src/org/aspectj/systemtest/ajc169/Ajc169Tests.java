@@ -18,6 +18,34 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	// public void testMultiAnnosRunning_pr315820_1() {
+	// runTest("multiple annos running - 1");
+	// }
+
+	public void testMultiAnnosParsing_pr315820() {
+		runTest("multiple annos parsing");
+	}
+
+	public void testDeclareAnnot_pr287613_5() {
+		runTest("compound declare patterns - method - 2");
+	}
+
+	public void testDeclareAnnot_pr287613_4() {
+		runTest("compound declare patterns - method - 1");
+	}
+
+	public void testDeclareAnnot_pr287613_3() {
+		runTest("compound declare patterns - methodctor - 1");
+	}
+
+	public void testDeclareAnnot_pr287613_2() {
+		runTest("compound declare patterns - fields - 2");
+	}
+
+	public void testDeclareAnnot_pr287613() {
+		runTest("compound declare patterns - fields - 1");
+	}
+
 	public void testOptionalAspects_pr310506() {
 		runTest("optional aspects");
 	}
