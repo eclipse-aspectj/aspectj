@@ -55,6 +55,7 @@ import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
 import org.aspectj.weaver.patterns.DeclareSoft;
+import org.aspectj.weaver.patterns.ISignaturePattern;
 import org.aspectj.weaver.patterns.PatternNode;
 import org.aspectj.weaver.patterns.SignaturePattern;
 import org.aspectj.weaver.patterns.TypePattern;
@@ -63,6 +64,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 /**
  * Internal class for converting internal compiler ASTs into public ASTs.
  */
+@SuppressWarnings("unchecked")
 public class AjASTConverter extends ASTConverter {
 
 	public AjASTConverter(Map options, boolean resolveBindings, IProgressMonitor monitor) {
@@ -612,6 +614,18 @@ public class AjASTConverter extends ASTConverter {
 		}
 		pointcutDesi.setSourceRange(pointcut.getStart(), (pointcut.getEnd() - pointcut.getStart() + 1));
 		return pointcutDesi;
+	}
+
+	public org.aspectj.org.eclipse.jdt.core.dom.PatternNode convert(ISignaturePattern patternNode) {
+		org.aspectj.org.eclipse.jdt.core.dom.PatternNode pNode = null;
+		if (patternNode instanceof SignaturePattern) {
+			SignaturePattern sigPat = (SignaturePattern) patternNode;
+			pNode = new org.aspectj.org.eclipse.jdt.core.dom.SignaturePattern(this.ast, sigPat.toString());
+			pNode.setSourceRange(sigPat.getStart(), (sigPat.getEnd() - sigPat.getStart() + 1));
+		} else {
+			throw new IllegalStateException("Not yet implemented for " + patternNode.getClass());
+		}
+		return pNode;
 	}
 
 	public org.aspectj.org.eclipse.jdt.core.dom.PatternNode convert(PatternNode patternNode) {
@@ -2776,8 +2790,9 @@ public class AjASTConverter extends ASTConverter {
 		int end = positions[1];
 		if (positions[1] > 0) { // Javadoc comments have positive end position
 			Javadoc docComment = this.docParser.parse(positions);
-			if (docComment == null)
+			if (docComment == null) {
 				return null;
+			}
 			comment = docComment;
 		} else {
 			end = -end;
@@ -3083,8 +3098,9 @@ public class AjASTConverter extends ASTConverter {
 					org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference typeRef = null;
 					if (compilerNode instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.JavadocAllocationExpression) {
 						typeRef = ((org.aspectj.org.eclipse.jdt.internal.compiler.ast.JavadocAllocationExpression) compilerNode).type;
-						if (typeRef != null)
+						if (typeRef != null) {
 							recordNodes(name, compilerNode);
+						}
 					} else if (compilerNode instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.JavadocMessageSend) {
 						org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression expression = ((org.aspectj.org.eclipse.jdt.internal.compiler.ast.JavadocMessageSend) compilerNode).receiver;
 						if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference) {
@@ -3109,8 +3125,9 @@ public class AjASTConverter extends ASTConverter {
 						if (expression instanceof JavadocArgumentExpression) {
 							JavadocArgumentExpression argExpr = (JavadocArgumentExpression) expression;
 							org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference typeRef = argExpr.argument.type;
-							if (this.ast.apiLevel >= AST.JLS3)
+							if (this.ast.apiLevel >= AST.JLS3) {
 								param.setVarargs(argExpr.argument.isVarArgs());
+							}
 							recordNodes(param.getType(), typeRef);
 							if (param.getType().isSimpleType()) {
 								recordName(((SimpleType) param.getType()).getName(), typeRef);
