@@ -17,7 +17,6 @@ package org.aspectj.weaver.patterns;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,7 +41,7 @@ public class PatternParser {
 	private boolean allowHasTypePatterns = false;
 
 	/** extension handlers used in weaver tools API only */
-	private Set pointcutDesignatorHandlers = Collections.EMPTY_SET;
+	private Set<PointcutDesignatorHandler> pointcutDesignatorHandlers = Collections.emptySet();
 	private World world;
 
 	/**
@@ -55,7 +54,7 @@ public class PatternParser {
 	}
 
 	/** only used by weaver tools API */
-	public void setPointcutDesignatorHandlers(Set handlers, World world) {
+	public void setPointcutDesignatorHandlers(Set<PointcutDesignatorHandler> handlers, World world) {
 		this.pointcutDesignatorHandlers = handlers;
 		this.world = world;
 	}
@@ -183,21 +182,9 @@ public class PatternParser {
 	}
 
 	public DeclareAnnotation parseDeclareAtMethod(boolean isMethod) {
-		if (maybeEat("(")) {
-			DeclareAnnotation da = parseDeclareAtMethod(isMethod);
-			eat(")", "missing ')' - unbalanced parentheses around signature pattern in declare @"
-					+ (isMethod ? "method" : "constructor"));
-			return da;
-		}
-		SignaturePattern sp = parseMethodOrConstructorSignaturePattern();
-		boolean isConstructorPattern = (sp.getKind() == Member.CONSTRUCTOR);
-		if (isMethod && isConstructorPattern) {
-			throw new ParserException("method signature pattern", tokenSource.peek(-1));
-		}
-		if (!isMethod && !isConstructorPattern) {
-			throw new ParserException("constructor signature pattern", tokenSource.peek(-1));
-		}
-		if (isConstructorPattern) {
+		ISignaturePattern sp = parseCompoundMethodOrConstructorSignaturePattern(isMethod);// parseMethodOrConstructorSignaturePattern();
+
+		if (!isMethod) {
 			return new DeclareAnnotation(DeclareAnnotation.AT_CONSTRUCTOR, sp);
 		} else {
 			return new DeclareAnnotation(DeclareAnnotation.AT_METHOD, sp);
@@ -205,13 +192,45 @@ public class PatternParser {
 	}
 
 	public DeclareAnnotation parseDeclareAtField() {
-		if (maybeEat("(")) {
-			DeclareAnnotation da = parseDeclareAtField();
-			eat(")", "missing ')' - unbalanced parentheses around field signature pattern in declare @field");
-			return da;
+		ISignaturePattern compoundFieldSignaturePattern = parseCompoundFieldSignaturePattern();
+		return new DeclareAnnotation(DeclareAnnotation.AT_FIELD, compoundFieldSignaturePattern);
+	}
+
+	public ISignaturePattern parseCompoundFieldSignaturePattern() {
+		ISignaturePattern atomicFieldSignaturePattern = parseMaybeParenthesizedFieldSignaturePattern();
+
+		while (isEitherAndOrOr()) {
+			if (maybeEat("&&")) {
+				atomicFieldSignaturePattern = new AndSignaturePattern(atomicFieldSignaturePattern,
+						parseMaybeParenthesizedFieldSignaturePattern());
+			}
+			if (maybeEat("||")) {
+				atomicFieldSignaturePattern = new OrSignaturePattern(atomicFieldSignaturePattern,
+						parseMaybeParenthesizedFieldSignaturePattern());
+			}
 		}
-		SignaturePattern fieldSigPattern = parseFieldSignaturePattern();
-		return new DeclareAnnotation(DeclareAnnotation.AT_FIELD, fieldSigPattern);
+		return atomicFieldSignaturePattern;
+	}
+
+	private boolean isEitherAndOrOr() {
+		String tokenstring = tokenSource.peek().getString();
+		return tokenstring.equals("&&") || tokenstring.equals("||");
+	}
+
+	public ISignaturePattern parseCompoundMethodOrConstructorSignaturePattern(boolean isMethod) {
+		ISignaturePattern atomicMethodCtorSignaturePattern = parseMaybeParenthesizedMethodOrConstructorSignaturePattern(isMethod);
+
+		while (isEitherAndOrOr()) {
+			if (maybeEat("&&")) {
+				atomicMethodCtorSignaturePattern = new AndSignaturePattern(atomicMethodCtorSignaturePattern,
+						parseMaybeParenthesizedMethodOrConstructorSignaturePattern(isMethod));
+			}
+			if (maybeEat("||")) {
+				atomicMethodCtorSignaturePattern = new OrSignaturePattern(atomicMethodCtorSignaturePattern,
+						parseMaybeParenthesizedMethodOrConstructorSignaturePattern(isMethod));
+			}
+		}
+		return atomicMethodCtorSignaturePattern;
 	}
 
 	public DeclarePrecedence parseDominates() {
@@ -421,8 +440,7 @@ public class PatternParser {
 			boolean matchedByExtensionDesignator = false;
 			// see if a registered handler wants to parse it, otherwise
 			// treat as a reference pointcut
-			for (Iterator iter = this.pointcutDesignatorHandlers.iterator(); iter.hasNext();) {
-				PointcutDesignatorHandler pcd = (PointcutDesignatorHandler) iter.next();
+			for (PointcutDesignatorHandler pcd : pointcutDesignatorHandlers) {
 				if (pcd.getDesignatorName().equals(kind)) {
 					p = parseDesignatorPointcut(pcd);
 					matchedByExtensionDesignator = true;
@@ -1519,6 +1537,51 @@ public class PatternParser {
 		}
 
 		return false;
+	}
+
+	public ISignaturePattern parseMaybeParenthesizedFieldSignaturePattern() {
+		boolean negated = tokenSource.peek().getString().equals("!") && tokenSource.peek(1).getString().equals("(");
+		if (negated) {
+			eat("!");
+		}
+		ISignaturePattern result = null;
+		if (maybeEat("(")) {
+			result = parseCompoundFieldSignaturePattern();
+			eat(")", "missing ')' - unbalanced parentheses around field signature pattern in declare @field");
+			if (negated) {
+				result = new NotSignaturePattern(result);
+			}
+		} else {
+			result = parseFieldSignaturePattern();
+		}
+		return result;
+	}
+
+	public ISignaturePattern parseMaybeParenthesizedMethodOrConstructorSignaturePattern(boolean isMethod) {
+		boolean negated = tokenSource.peek().getString().equals("!") && tokenSource.peek(1).getString().equals("(");
+		if (negated) {
+			eat("!");
+		}
+		ISignaturePattern result = null;
+		if (maybeEat("(")) {
+			result = parseCompoundMethodOrConstructorSignaturePattern(isMethod);
+			eat(")", "missing ')' - unbalanced parentheses around method/ctor signature pattern in declare annotation");
+			if (negated) {
+				result = new NotSignaturePattern(result);
+			}
+		} else {
+			SignaturePattern sp = parseMethodOrConstructorSignaturePattern();
+			boolean isConstructorPattern = (sp.getKind() == Member.CONSTRUCTOR);
+			if (isMethod && isConstructorPattern) {
+				throw new ParserException("method signature pattern", tokenSource.peek(-1));
+			}
+			if (!isMethod && !isConstructorPattern) {
+				throw new ParserException("constructor signature pattern", tokenSource.peek(-1));
+			}
+			result = sp;
+		}
+
+		return result;
 	}
 
 	public SignaturePattern parseFieldSignaturePattern() {

@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 
@@ -63,7 +64,7 @@ public abstract class Declare extends PatternNode {
 	 * Returns a version of this declare element in which all references to type variables are replaced with their bindings given in
 	 * the map.
 	 */
-	public abstract Declare parameterizeWith(Map typeVariableBindingMap, World w);
+	public abstract Declare parameterizeWith(Map<String, UnresolvedType> typeVariableBindingMap, World w);
 
 	/**
 	 * Indicates if this declare should be treated like advice. If true, the declare will have no effect in an abstract aspect. It

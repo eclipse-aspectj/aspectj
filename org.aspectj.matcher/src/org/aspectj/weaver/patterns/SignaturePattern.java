@@ -15,6 +15,7 @@ package org.aspectj.weaver.patterns;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,7 +42,7 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 
-public class SignaturePattern extends PatternNode {
+public class SignaturePattern extends PatternNode implements ISignaturePattern {
 	private MemberKind kind;
 	private ModifiersPattern modifiers;
 	private TypePattern returnType;
@@ -289,7 +290,7 @@ public class SignaturePattern extends PatternNode {
 	 * return a copy of this signature pattern in which every type variable reference is replaced by the corresponding entry in the
 	 * map.
 	 */
-	public SignaturePattern parameterizeWith(Map typeVariableMap, World w) {
+	public SignaturePattern parameterizeWith(Map<String, UnresolvedType> typeVariableMap, World w) {
 		SignaturePattern ret = new SignaturePattern(kind, modifiers, returnType.parameterizeWith(typeVariableMap, w), declaringType
 				.parameterizeWith(typeVariableMap, w), name, parameterTypes.parameterizeWith(typeVariableMap, w), throwsPattern
 				.parameterizeWith(typeVariableMap, w), annotationPattern.parameterizeWith(typeVariableMap, w));
@@ -902,6 +903,7 @@ public class SignaturePattern extends PatternNode {
 	}
 
 	public static SignaturePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
+		// ISignaturePattern kind should already have been read by the time this read is entered
 		MemberKind kind = MemberKind.read(s);
 		ModifiersPattern modifiers = ModifiersPattern.read(s);
 		TypePattern returnType = TypePattern.read(s, context);
@@ -977,6 +979,24 @@ public class SignaturePattern extends PatternNode {
 
 	public boolean isExactDeclaringTypePattern() {
 		return isExactDeclaringTypePattern;
+	}
+
+	public boolean isMatchOnAnyName() {
+		return getName().isAny();
+	}
+
+	public List<ExactTypePattern> getExactDeclaringTypes() {
+		if (declaringType instanceof ExactTypePattern) {
+			List<ExactTypePattern> l = new ArrayList<ExactTypePattern>();
+			l.add((ExactTypePattern) declaringType);
+			return l;
+		} else {
+			return Collections.emptyList();
+		}
+	}
+
+	public boolean couldEverMatch(ResolvedType type) {
+		return declaringType.matches(type, TypePattern.STATIC).maybeTrue();
 	}
 
 }

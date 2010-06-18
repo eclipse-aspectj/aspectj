@@ -52,15 +52,15 @@ import org.aspectj.weaver.reflect.ReflectionWorld;
 public class StandardPointcutParser {
 
 	private World world;
-	private final Set supportedPrimitives;
-	private final Set pointcutDesignators = new HashSet();
+	private final Set<PointcutPrimitive> supportedPrimitives;
+	private final Set<PointcutDesignatorHandler> pointcutDesignators = new HashSet<PointcutDesignatorHandler>();
 
 	/**
 	 * @return a Set containing every PointcutPrimitive except if, cflow, and cflowbelow (useful for passing to PointcutParser
 	 *         constructor).
 	 */
-	public static Set getAllSupportedPointcutPrimitives() {
-		Set primitives = new HashSet();
+	public static Set<PointcutPrimitive> getAllSupportedPointcutPrimitives() {
+		Set<PointcutPrimitive> primitives = new HashSet<PointcutPrimitive>();
 		primitives.add(PointcutPrimitive.ADVICE_EXECUTION);
 		primitives.add(PointcutPrimitive.ARGS);
 		primitives.add(PointcutPrimitive.CALL);
@@ -189,8 +189,9 @@ public class StandardPointcutParser {
 	 */
 	public void registerPointcutDesignatorHandler(PointcutDesignatorHandler designatorHandler) {
 		this.pointcutDesignators.add(designatorHandler);
-		if (world != null)
+		if (world != null) {
 			world.registerPointcutHandler(designatorHandler);
+		}
 	}
 
 	/**
@@ -243,7 +244,7 @@ public class StandardPointcutParser {
 		return pcExpr;
 	}
 
-	protected Pointcut resolvePointcutExpression(String expression, Class inScope, PointcutParameter[] formalParameters) {
+	protected Pointcut resolvePointcutExpression(String expression, Class<?> inScope, PointcutParameter[] formalParameters) {
 		try {
 			PatternParser parser = new PatternParser(expression);
 			parser.setPointcutDesignatorHandlers(pointcutDesignators, world);
@@ -257,7 +258,7 @@ public class StandardPointcutParser {
 		}
 	}
 
-	protected Pointcut concretizePointcutExpression(Pointcut pc, Class inScope, PointcutParameter[] formalParameters) {
+	protected Pointcut concretizePointcutExpression(Pointcut pc, Class<?> inScope, PointcutParameter[] formalParameters) {
 		ResolvedType declaringTypeForResolution = null;
 		if (inScope != null) {
 			declaringTypeForResolution = getWorld().resolve(inScope.getName());
@@ -307,8 +308,9 @@ public class StandardPointcutParser {
 	}
 
 	private IScope buildResolutionScope(Class inScope, PointcutParameter[] formalParameters) {
-		if (formalParameters == null)
+		if (formalParameters == null) {
 			formalParameters = new PointcutParameter[0];
+		}
 		FormalBinding[] formalBindings = new FormalBinding[formalParameters.length];
 		for (int i = 0; i < formalBindings.length; i++) {
 			formalBindings[i] = new FormalBinding(toUnresolvedType(formalParameters[i].getType()), formalParameters[i].getName(), i);
@@ -356,8 +358,9 @@ public class StandardPointcutParser {
 			validateAgainstSupportedPrimitives(((AndPointcut) pc).getRight(), expression);
 			break;
 		case Pointcut.ARGS:
-			if (!supportedPrimitives.contains(PointcutPrimitive.ARGS))
+			if (!supportedPrimitives.contains(PointcutPrimitive.ARGS)) {
 				throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.ARGS);
+			}
 			break;
 		case Pointcut.CFLOW:
 			CflowPointcut cfp = (CflowPointcut) pc;
@@ -367,8 +370,9 @@ public class StandardPointcutParser {
 				throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.CFLOW);
 			}
 		case Pointcut.HANDLER:
-			if (!supportedPrimitives.contains(PointcutPrimitive.HANDLER))
+			if (!supportedPrimitives.contains(PointcutPrimitive.HANDLER)) {
 				throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.HANDLER);
+			}
 			break;
 		case Pointcut.IF:
 		case Pointcut.IF_FALSE:
@@ -393,12 +397,14 @@ public class StandardPointcutParser {
 			}
 			break;
 		case Pointcut.WITHIN:
-			if (!supportedPrimitives.contains(PointcutPrimitive.WITHIN))
+			if (!supportedPrimitives.contains(PointcutPrimitive.WITHIN)) {
 				throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.WITHIN);
+			}
 			break;
 		case Pointcut.WITHINCODE:
-			if (!supportedPrimitives.contains(PointcutPrimitive.WITHIN_CODE))
+			if (!supportedPrimitives.contains(PointcutPrimitive.WITHIN_CODE)) {
 				throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.WITHIN_CODE);
+			}
 			break;
 		case Pointcut.ATTHIS_OR_TARGET:
 			isThis = ((ThisOrTargetAnnotationPointcut) pc).isThis();
@@ -409,24 +415,29 @@ public class StandardPointcutParser {
 			}
 			break;
 		case Pointcut.ATARGS:
-			if (!supportedPrimitives.contains(PointcutPrimitive.AT_ARGS))
+			if (!supportedPrimitives.contains(PointcutPrimitive.AT_ARGS)) {
 				throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.AT_ARGS);
+			}
 			break;
 		case Pointcut.ANNOTATION:
-			if (!supportedPrimitives.contains(PointcutPrimitive.AT_ANNOTATION))
+			if (!supportedPrimitives.contains(PointcutPrimitive.AT_ANNOTATION)) {
 				throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.AT_ANNOTATION);
+			}
 			break;
 		case Pointcut.ATWITHIN:
-			if (!supportedPrimitives.contains(PointcutPrimitive.AT_WITHIN))
+			if (!supportedPrimitives.contains(PointcutPrimitive.AT_WITHIN)) {
 				throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.AT_WITHIN);
+			}
 			break;
 		case Pointcut.ATWITHINCODE:
-			if (!supportedPrimitives.contains(PointcutPrimitive.AT_WITHINCODE))
+			if (!supportedPrimitives.contains(PointcutPrimitive.AT_WITHINCODE)) {
 				throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.AT_WITHINCODE);
+			}
 			break;
 		case Pointcut.REFERENCE:
-			if (!supportedPrimitives.contains(PointcutPrimitive.REFERENCE))
+			if (!supportedPrimitives.contains(PointcutPrimitive.REFERENCE)) {
 				throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.REFERENCE);
+			}
 			break;
 		case Pointcut.USER_EXTENSION:
 			// always ok...
@@ -440,29 +451,37 @@ public class StandardPointcutParser {
 	private void validateKindedPointcut(KindedPointcut pc, String expression) {
 		Shadow.Kind kind = pc.getKind();
 		if ((kind == Shadow.MethodCall) || (kind == Shadow.ConstructorCall)) {
-			if (!supportedPrimitives.contains(PointcutPrimitive.CALL))
+			if (!supportedPrimitives.contains(PointcutPrimitive.CALL)) {
 				throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.CALL);
+			}
 		} else if ((kind == Shadow.MethodExecution) || (kind == Shadow.ConstructorExecution)) {
-			if (!supportedPrimitives.contains(PointcutPrimitive.EXECUTION))
+			if (!supportedPrimitives.contains(PointcutPrimitive.EXECUTION)) {
 				throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.EXECUTION);
+			}
 		} else if (kind == Shadow.AdviceExecution) {
-			if (!supportedPrimitives.contains(PointcutPrimitive.ADVICE_EXECUTION))
+			if (!supportedPrimitives.contains(PointcutPrimitive.ADVICE_EXECUTION)) {
 				throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.ADVICE_EXECUTION);
+			}
 		} else if (kind == Shadow.FieldGet) {
-			if (!supportedPrimitives.contains(PointcutPrimitive.GET))
+			if (!supportedPrimitives.contains(PointcutPrimitive.GET)) {
 				throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.GET);
+			}
 		} else if (kind == Shadow.FieldSet) {
-			if (!supportedPrimitives.contains(PointcutPrimitive.SET))
+			if (!supportedPrimitives.contains(PointcutPrimitive.SET)) {
 				throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.SET);
+			}
 		} else if (kind == Shadow.Initialization) {
-			if (!supportedPrimitives.contains(PointcutPrimitive.INITIALIZATION))
+			if (!supportedPrimitives.contains(PointcutPrimitive.INITIALIZATION)) {
 				throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.INITIALIZATION);
+			}
 		} else if (kind == Shadow.PreInitialization) {
-			if (!supportedPrimitives.contains(PointcutPrimitive.PRE_INITIALIZATION))
+			if (!supportedPrimitives.contains(PointcutPrimitive.PRE_INITIALIZATION)) {
 				throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.PRE_INITIALIZATION);
+			}
 		} else if (kind == Shadow.StaticInitialization) {
-			if (!supportedPrimitives.contains(PointcutPrimitive.STATIC_INITIALIZATION))
+			if (!supportedPrimitives.contains(PointcutPrimitive.STATIC_INITIALIZATION)) {
 				throw new UnsupportedPointcutPrimitiveException(expression, PointcutPrimitive.STATIC_INITIALIZATION);
+			}
 		}
 	}
 
