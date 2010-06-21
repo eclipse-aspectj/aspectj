@@ -20,10 +20,45 @@ All rights reserved.
 
 <h1>AspectJ 1.6.9 Readme</h1>
 
-<h2>Features of 1.6.9 milestone 2</h2>
+<p>The full list of resolved issues in 1.6.9 is available <a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.6.9;target_milestone=1.6.9M1;target_milestone=1.6.9M2;target_milestone=1.6.9RC1">here</a></h2>
 
-<p>Mostly bug fixes, some important fixes around the use of Method ITDs with private fields
- (bug <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=307120">307120</a>)</p>
+<h2>Features</h2>
+
+<h3>declare annotation supports compound signature patterns: <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=287613">287613</a></h3>
+<p>Until now it wasn't possible to express a compound pattern in any of the declare annotation constructs that
+take a member signature.  For example, if you wanted to attach an annotation to all your getter like methods, you needed
+two constructs</p>
+<pre><code>
+declare @method: * is*(): @FooBar;
+declare @method: * get*(): @FooBar;
+</code></pre>
+<p>Now AspectJ allows compound patterns for declare @method/@constructor/@field.</p>
+<pre><code>
+declare @method: (* is*()) || (* get*()): @FooBar;
+</code></pre>
+
+<h3>'Optional' aspects: <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=310506">310506</a></h3>
+
+<p>It is not uncommon to ship a library aspect separately to a jar upon which it depends.  In the case of Spring there is
+an aspect library containing a multitude of aspects that attach different technologies (transactions/persistence/etc) to your
+application.  Normally an aspect will fail with a "can't find type" style message if a weaver is told to use it and yet it
+references some missing dependency.  This can be annoying and require you to include jars on your classpath (or in your maven
+configuration) that you don't actually use, they are *only* there to avoid problems with the aspect.  In 1.6.9 you can add
+a setting to these aspects in the aop.xml that makes them optional.  The setting mentions a type and if that type cannot be found
+the aspect immediately shuts itself down.  This basically means that the aspect is only going to do its job if the type being
+mentioned in the setting is around.  This enables the aspect library to be on the aspect path but any aspects within it to 
+switch-off if there is nothing for them to do.
+</p>
+<p>Here is an example, 'AspectA' will switch itself off if the type 'a.b.c.Anno' cannot be found:</p>
+<code><pre>
+ &lt;aspect name="AspectA" requires="a.b.c.Anno"/&gt;
+</pre></code>
+
+<h3>Reduction in class file sizes: <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=312839">312839</a></h3>
+
+<p>More details here: <a href="http://andrewclement.blogspot.com/2010/05/aspectj-size-is-important.html">http://andrewclement.blogspot.com/2010/05/aspectj-size-is-important.html</a>
+but basically some work has been done to improve the serialized form of aspects.  As an example, a compiled Roo petclinic sample (which
+uses lots of aspects and ITDs) is down from 1Meg (AspectJ 1.6.9m2) to 630k (AspectJ 1.6.9rc1).</p>
 
 <h3>Transparent weaving: <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=309743">309743</a></h3>
 <p>In a further step towards transparent weaving, support for the AjType reflection system is now being made optional.
@@ -68,9 +103,6 @@ pattern that you can put into the aop.xml that augments all the pointcuts define
 <p>In this example the weaver include section specifies all the types in com..* should be woven and the 
 aspects to be used are X and Y.  The new 'scope' setting on aspect Y's definition allows finer control, and specifies that
 Y should in fact only be applied to com.foo..* types.</p>
-
-<hr>
-<h2>Features of 1.6.9 milestone 1</h2>
 
 <h3>Message inserts for declare warning/error messages</h3>
 
