@@ -37,6 +37,25 @@ declare @method: * get*(): @FooBar;
 declare @method: (* is*()) || (* get*()): @FooBar;
 </code></pre>
 
+<h3>Intertype declaration of member types</h3>
+
+<p>It is now possible to ITD member types.  The syntax is as would be expected.  This example introduces a new member type called
+Inner into type Foo:</p>
+<pre><code>public class Foo {
+	public static void main(String[] args) {
+		new Inner().run();
+	}
+}
+
+aspect Magic {
+	public static class Foo.Inner {
+		public void run() {
+			System.out.println("Inner.run() executing");
+		}
+	}
+}</code></pre>
+<p>Only static member types are supported.</p>
+
 <h3>'Optional' aspects: <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=310506">310506</a></h3>
 
 <p>It is not uncommon to ship a library aspect separately to a jar upon which it depends.  In the case of Spring there is
