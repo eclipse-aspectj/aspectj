@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     PARC     initial implementation
+ *     PARC     initial implementation 
  *     Mik Kersten	2004-07-26 extended to allow overloading of 
  * 					hierarchy builder
  * ******************************************************************/
@@ -43,6 +43,8 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ProblemReasons;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
@@ -601,16 +603,15 @@ public class EclipseFactory {
 
 		if (ret == null) {
 			ret = makeTypeBinding1(typeX);
-			if (!(typeX instanceof BoundedReferenceType) && !(typeX instanceof UnresolvedTypeVariableReferenceType)) {
-				if (typeX.isRawType()) {
-					rawTypeXToBinding.put(typeX, ret);
-				} else {
-					typexToBinding.put(typeX, ret);
+			if (ret != null) {// && !(ret instanceof ProblemReferenceBinding)) {
+				if (!(typeX instanceof BoundedReferenceType) && !(typeX instanceof UnresolvedTypeVariableReferenceType)) {
+					if (typeX.isRawType()) {
+						rawTypeXToBinding.put(typeX, ret);
+					} else {
+						typexToBinding.put(typeX, ret);
+					}
 				}
 			}
-		}
-		if (ret == null) {
-			System.out.println("can't find: " + typeX);
 		}
 		return ret;
 	}
@@ -746,6 +747,9 @@ public class EclipseFactory {
 	private ReferenceBinding lookupBinding(String sname) {
 		char[][] name = CharOperation.splitOn('.', sname.toCharArray());
 		ReferenceBinding rb = lookupEnvironment.getType(name);
+		if (rb == null && !sname.equals(UnresolvedType.MISSING_NAME)) {
+			return new ProblemReferenceBinding(name, null, ProblemReasons.NotFound);
+		}
 		return rb;
 	}
 
