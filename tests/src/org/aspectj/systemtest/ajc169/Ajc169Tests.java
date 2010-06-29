@@ -18,6 +18,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc169Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testMessyDecp_318241() {
+		runTest("messy decp");
+	}
+
 	// public void testMultiAnnosRunning_pr315820_1() {
 	// runTest("multiple annos running - 1");
 	// }

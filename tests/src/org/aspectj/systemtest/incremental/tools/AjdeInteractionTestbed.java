@@ -122,7 +122,7 @@ public class AjdeInteractionTestbed extends TestCase {
 	}
 
 	public static void configureInPath(String projectName, File inpath) {
-		Set s = new HashSet();
+		Set<File> s = new HashSet<File>();
 		s.add(inpath);
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setInpath(s);
@@ -230,12 +230,14 @@ public class AjdeInteractionTestbed extends TestCase {
 		collectUpFiles(projectBase, projectBase, filesForCompilation);
 		boolean changed = false;
 		for (int i = 0; i < filesForCompilation.size(); i++) {
-			if (!currentFiles.contains(filesForCompilation.get(i)))
+			if (!currentFiles.contains(filesForCompilation.get(i))) {
 				changed = true;
+			}
 		}
 		for (int i = 0; i < currentFiles.size(); i++) {
-			if (!filesForCompilation.contains(currentFiles.get(i)))
+			if (!filesForCompilation.contains(currentFiles.get(i))) {
 				changed = true;
+			}
 		}
 		if (changed) {
 			((MultiProjTestCompilerConfiguration) icc).setProjectSourceFiles(filesForCompilation);
@@ -250,12 +252,14 @@ public class AjdeInteractionTestbed extends TestCase {
 		collectUpXmlFiles(projectBase, projectBase, collector);
 		boolean changed = false;
 		for (int i = 0; i < collector.size(); i++) {
-			if (!currentXmlFiles.contains(collector.get(i)))
+			if (!currentXmlFiles.contains(collector.get(i))) {
 				changed = true;
+			}
 		}
 		for (int i = 0; i < currentXmlFiles.size(); i++) {
-			if (!collector.contains(currentXmlFiles.get(i)))
+			if (!collector.contains(currentXmlFiles.get(i))) {
 				changed = true;
+			}
 		}
 		if (changed) {
 			((MultiProjTestCompilerConfiguration) icc).setProjectXmlConfigFiles(collector);
@@ -264,8 +268,9 @@ public class AjdeInteractionTestbed extends TestCase {
 
 	private void collectUpFiles(File location, File base, List collectionPoint) {
 		String contents[] = location.list();
-		if (contents == null)
+		if (contents == null) {
 			return;
+		}
 		for (int i = 0; i < contents.length; i++) {
 			String string = contents[i];
 			File f = new File(location, string);
@@ -288,8 +293,9 @@ public class AjdeInteractionTestbed extends TestCase {
 
 	private void collectUpXmlFiles(File location, File base, List collectionPoint) {
 		String contents[] = location.list();
-		if (contents == null)
+		if (contents == null) {
 			return;
+		}
 		for (int i = 0; i < contents.length; i++) {
 			String string = contents[i];
 			File f = new File(location, string);
@@ -314,25 +320,25 @@ public class AjdeInteractionTestbed extends TestCase {
 		MultiProjTestMessageHandler handler = (MultiProjTestMessageHandler) compiler.getMessageHandler();
 		if (handler.hasErrorMessages()) {
 			System.err.println("Build errors:");
-			for (Iterator iter = handler.getErrorMessages().iterator(); iter.hasNext();) {
-				IMessage element = (IMessage) iter.next();
+			for (Iterator<IMessage> iter = handler.getErrorMessages().iterator(); iter.hasNext();) {
+				IMessage element = iter.next();
 				System.err.println(element);
 			}
 			System.err.println("---------");
 		}
 	}
 
-	public List getErrorMessages(String projectName) {
+	public List<IMessage> getErrorMessages(String projectName) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		return ((MultiProjTestMessageHandler) compiler.getMessageHandler()).getErrorMessages();
 	}
 
-	public List getWarningMessages(String projectName) {
+	public List<IMessage> getWarningMessages(String projectName) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		return ((MultiProjTestMessageHandler) compiler.getMessageHandler()).getWarningMessages();
 	}
 
-	public List getWeavingMessages(String projectName) {
+	public List<IMessage> getWeavingMessages(String projectName) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		return ((MultiProjTestMessageHandler) compiler.getMessageHandler()).getWeavingMessages();
 	}
@@ -344,11 +350,12 @@ public class AjdeInteractionTestbed extends TestCase {
 
 	public void checkForError(String projectName, String anError) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
-		List messages = ((MultiProjTestMessageHandler) compiler.getMessageHandler()).getErrorMessages();
-		for (Iterator iter = messages.iterator(); iter.hasNext();) {
-			IMessage element = (IMessage) iter.next();
-			if (element.getMessage().indexOf(anError) != -1)
+		List<IMessage> messages = ((MultiProjTestMessageHandler) compiler.getMessageHandler()).getErrorMessages();
+		for (Iterator<IMessage> iter = messages.iterator(); iter.hasNext();) {
+			IMessage element = iter.next();
+			if (element.getMessage().indexOf(anError) != -1) {
 				return;
+			}
 		}
 		fail("Didn't find the error message:\n'" + anError + "'.\nErrors that occurred:\n" + messages);
 	}
@@ -368,8 +375,9 @@ public class AjdeInteractionTestbed extends TestCase {
 	 */
 	public String printCompiledAndWovenFiles(String projectName) {
 		StringBuffer sb = new StringBuffer();
-		if (getCompiledFiles(projectName).size() == 0 && getWovenClasses(projectName).size() == 0)
+		if (getCompiledFiles(projectName).size() == 0 && getWovenClasses(projectName).size() == 0) {
 			sb.append("No files were compiled or woven\n");
+		}
 		for (Iterator iter = getCompiledFiles(projectName).iterator(); iter.hasNext();) {
 			Object element = iter.next();
 			sb.append("compiled: " + element + "\n");
@@ -397,8 +405,9 @@ public class AjdeInteractionTestbed extends TestCase {
 		for (Iterator iter = woven.iterator(); iter.hasNext();) {
 			System.out.println("    :" + iter.next());
 		}
-		if (wasFullBuild())
+		if (wasFullBuild()) {
 			System.out.println("It was a batch (full) build");
+		}
 		System.out.println("=============================================");
 	}
 
@@ -406,12 +415,14 @@ public class AjdeInteractionTestbed extends TestCase {
 	 * Check we compiled/wove the right number of files, passing '-1' indicates you don't care about that number.
 	 */
 	public void checkCompileWeaveCount(String projectName, int expCompile, int expWoven) {
-		if (expCompile != -1 && getCompiledFiles(projectName).size() != expCompile)
+		if (expCompile != -1 && getCompiledFiles(projectName).size() != expCompile) {
 			fail("Expected compilation of " + expCompile + " files but compiled " + getCompiledFiles(projectName).size() + "\n"
 					+ printCompiledAndWovenFiles(projectName));
-		if (expWoven != -1 && getWovenClasses(projectName).size() != expWoven)
+		}
+		if (expWoven != -1 && getWovenClasses(projectName).size() != expWoven) {
 			fail("Expected weaving of " + expWoven + " files but wove " + getWovenClasses(projectName).size() + "\n"
 					+ printCompiledAndWovenFiles(projectName));
+		}
 	}
 
 	public void checkWasntFullBuild() {
@@ -433,7 +444,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		return ((MultiProjTestBuildProgressMonitor) compiler.getBuildProgressMonitor()).getTimeTaken();
 	}
 
-	public List getCompiledFiles(String projectName) {
+	public List<String> getCompiledFiles(String projectName) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		return ((MultiProjTestBuildProgressMonitor) compiler.getBuildProgressMonitor()).getCompiledFiles();
 	}
@@ -443,7 +454,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		return compiler.getModel();
 	}
 
-	public List getWovenClasses(String projectName) {
+	public List<String> getWovenClasses(String projectName) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		return ((MultiProjTestBuildProgressMonitor) compiler.getBuildProgressMonitor()).getWovenClasses();
 	}
@@ -451,13 +462,15 @@ public class AjdeInteractionTestbed extends TestCase {
 	// Infrastructure below here
 
 	private static void log(String msg) {
-		if (VERBOSE)
+		if (VERBOSE) {
 			System.out.println(msg);
+		}
 	}
 
 	private static void lognoln(String msg) {
-		if (VERBOSE)
+		if (VERBOSE) {
 			System.out.print(msg);
+		}
 	}
 
 	/** Return the *full* path to this file which is taken relative to the project dir */
@@ -486,8 +499,9 @@ public class AjdeInteractionTestbed extends TestCase {
 			informedAboutKindOfBuild = false;
 			decisions = new StringBuffer();
 			fullBuildOccurred = false;
-			if (detectedDeletions != null)
+			if (detectedDeletions != null) {
 				detectedDeletions.clear();
+			}
 		}
 
 		public boolean pathChange = false;
@@ -517,8 +531,9 @@ public class AjdeInteractionTestbed extends TestCase {
 		}
 
 		public static boolean wasFullBuild() {
-			if (!informedAboutKindOfBuild)
+			if (!informedAboutKindOfBuild) {
 				throw new RuntimeException("I never heard about what kind of build it was!!");
+			}
 			return fullBuildOccurred;
 		}
 

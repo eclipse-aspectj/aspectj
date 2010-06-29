@@ -2,6 +2,11 @@
 
 <suite>
 
+  <ajc-test dir="bugs169/pr318241" title="messy decp">
+    <compile files="PkItd.aj Two.aj SomeClass.java Pk.java SomeAnnotation.java" options="-1.5">
+    </compile>
+  </ajc-test>
+
   <ajc-test dir="bugs169/pr287613" title="compound declare patterns - method - 2">
   	 <compile files="DAMethod2.java" options="-1.5 -showWeaveInfo">
   	 	<message kind="weave" text="'public void Person.foo()' (DAMethod2.java:11) is annotated with @Annot method annotation from 'DAMethod2' (DAMethod2.java:26)"/>
