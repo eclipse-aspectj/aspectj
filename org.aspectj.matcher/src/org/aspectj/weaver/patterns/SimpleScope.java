@@ -12,9 +12,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
@@ -53,7 +50,7 @@ public class SimpleScope implements IScope {
 		}
 
 		// Check for a primitive
-		if (Character.isLowerCase(name.charAt(0))) {
+		if (name.length() < 8 && Character.isLowerCase(name.charAt(0))) {
 			// could be a primitive
 			int len = name.length();
 			if (len == 3) {
