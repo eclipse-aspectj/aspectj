@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002,2010 Contributors
  * All rights reserved.
  * This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v1.0
@@ -85,6 +85,7 @@ import org.aspectj.weaver.patterns.Pointcut;
  * Supports viewing eclipse TypeDeclarations/SourceTypeBindings as a ResolvedType
  * 
  * @author Jim Hugunin
+ * @author Andy Clement
  */
 public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	private static final char[] pointcutSig = "Lorg/aspectj/lang/annotation/Pointcut;".toCharArray();
@@ -101,13 +102,13 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	private final SourceTypeBinding binding;
 	private final TypeDeclaration declaration;
 	private final CompilationUnitDeclaration unit;
-	private boolean annotationsResolved = false;
-	private ResolvedType[] resolvedAnnotations = null;
+	private boolean annotationsFullyResolved = false;
+	private boolean annotationTypesAreResolved = false;
+	private ResolvedType[] annotationTypes = null;
 
 	private boolean discoveredAnnotationTargetKinds = false;
 	private AnnotationTargetKind[] annotationTargetKinds;
 	private AnnotationAJ[] annotations = null;
-	private final static ResolvedType[] NO_ANNOTATION_TYPES = new ResolvedType[0];
 
 	protected EclipseFactory eclipseWorld() {
 		return factory;
@@ -587,27 +588,34 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		return annotationTargetKinds;
 	}
 
-	public boolean hasAnnotation(UnresolvedType ofType) {
-
-		// Make sure they are resolved
-		if (!annotationsResolved) {
-			TypeDeclaration.resolveAnnotations(declaration.staticInitializerScope, declaration.annotations, binding);
-			annotationsResolved = true;
-		}
-		Annotation[] as = declaration.annotations;
-		if (as == null) {
-			return false;
-		}
-		for (int i = 0; i < as.length; i++) {
-			Annotation annotation = as[i];
-			if (annotation.resolvedType == null) {
-				// Something has gone wrong - probably we have a 1.4 rt.jar
-				// around
-				// which will result in a separate error message.
-				return false;
+	/**
+	 * Ensure the annotation types have been resolved, where resolved means the eclipse type bindings have been converted to their
+	 * ResolvedType representations. This does not deeply resolve the annotations, it only does the type names.
+	 */
+	private void ensureAnnotationTypesResolved() {
+		if (!annotationTypesAreResolved) {
+			Annotation[] as = declaration.annotations;
+			if (as == null) {
+				annotationTypes = ResolvedType.NONE;
+			} else {
+				annotationTypes = new ResolvedType[as.length];
+				for (int a = 0; a < as.length; a++) {
+					TypeBinding tb = as[a].type.resolveType(declaration.staticInitializerScope);
+					if (tb == null) {
+						annotationTypes[a] = ResolvedType.MISSING;
+					} else {
+						annotationTypes[a] = factory.fromTypeBindingToRTX(tb);
+					}
+				}
 			}
-			String tname = CharOperation.charToString(annotation.resolvedType.constantPoolName());
-			if (UnresolvedType.forName(tname).equals(ofType)) {
+			annotationTypesAreResolved = true;
+		}
+	}
+
+	public boolean hasAnnotation(UnresolvedType ofType) {
+		ensureAnnotationTypesResolved();
+		for (int a = 0, max = annotationTypes.length; a < max; a++) {
+			if (ofType.equals(annotationTypes[a])) {
 				return true;
 			}
 		}
@@ -633,7 +641,10 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		if (annotations != null) {
 			return annotations; // only do this once
 		}
-		getAnnotationTypes(); // forces resolution and sets resolvedAnnotations
+		if (!annotationsFullyResolved) {
+			TypeDeclaration.resolveAnnotations(declaration.staticInitializerScope, declaration.annotations, binding);
+			annotationsFullyResolved = true;
+		}
 		Annotation[] as = declaration.annotations;
 		if (as == null || as.length == 0) {
 			annotations = AnnotationAJ.EMPTY_ARRAY;
@@ -844,29 +855,9 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		}
 	}
 
-	// ---------------------------------
-
 	public ResolvedType[] getAnnotationTypes() {
-		if (resolvedAnnotations != null) {
-			return resolvedAnnotations;
-		}
-		// Make sure they are resolved
-		if (!annotationsResolved) {
-			TypeDeclaration.resolveAnnotations(declaration.staticInitializerScope, declaration.annotations, binding);
-			annotationsResolved = true;
-		}
-
-		if (declaration.annotations == null) {
-			resolvedAnnotations = NO_ANNOTATION_TYPES;// new ResolvedType[0];
-		} else {
-			resolvedAnnotations = new ResolvedType[declaration.annotations.length];
-			Annotation[] as = declaration.annotations;
-			for (int i = 0; i < as.length; i++) {
-				Annotation annotation = as[i];
-				resolvedAnnotations[i] = factory.fromTypeBindingToRTX(annotation.type.resolvedType);
-			}
-		}
-		return resolvedAnnotations;
+		ensureAnnotationTypesResolved();
+		return annotationTypes;
 	}
 
 	public PerClause getPerClause() {
