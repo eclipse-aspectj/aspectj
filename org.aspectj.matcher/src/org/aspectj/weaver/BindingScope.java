@@ -17,42 +17,52 @@ import org.aspectj.weaver.patterns.SimpleScope;
  * BindingScope that knows the enclosingType, which is needed for pointcut reference resolution
  * 
  * @author Alexandre Vasseur
+ * @author Andy Clement
  */
 public class BindingScope extends SimpleScope {
-	private final ResolvedType m_enclosingType;
-	private final ISourceContext m_sourceContext;
+	private final ResolvedType enclosingType;
+	private final ISourceContext sourceContext;
+	private boolean importsUpdated = false;
 
 	public BindingScope(ResolvedType type, ISourceContext sourceContext, FormalBinding[] bindings) {
 		super(type.getWorld(), bindings);
-		m_enclosingType = type;
-		m_sourceContext = sourceContext;
+		this.enclosingType = type;
+		this.sourceContext = sourceContext;
 	}
 
 	public ResolvedType getEnclosingType() {
-		return m_enclosingType;
+		return enclosingType;
 	}
 
 	public ISourceLocation makeSourceLocation(IHasPosition location) {
-		return m_sourceContext.makeSourceLocation(location);
+		return sourceContext.makeSourceLocation(location);
 	}
 
 	public UnresolvedType lookupType(String name, IHasPosition location) {
 		// bug 126560
-		if (m_enclosingType != null) {
+		if (enclosingType != null && !importsUpdated) {
 			// add the package we're in to the list of imported
 			// prefixes so that we can find types in the same package
-			String pkgName = m_enclosingType.getPackageName();
+			String pkgName = enclosingType.getPackageName();
 			if (pkgName != null && !pkgName.equals("")) {
-				String[] currentImports = getImportedPrefixes();
-				String[] newImports = new String[currentImports.length + 1];
-				for (int i = 0; i < currentImports.length; i++) {
-					newImports[i] = currentImports[i];
+				String[] existingImports = getImportedPrefixes();
+				String pkgNameWithDot = pkgName.concat(".");
+				boolean found = false;
+				for (String existingImport : existingImports) {
+					if (existingImport.equals(pkgNameWithDot)) {
+						found = true;
+						break;
+					}
 				}
-				newImports[currentImports.length] = pkgName.concat(".");
-				setImportedPrefixes(newImports);
+				if (!found) {
+					String[] newImports = new String[existingImports.length + 1];
+					System.arraycopy(existingImports, 0, newImports, 0, existingImports.length);
+					newImports[existingImports.length] = pkgNameWithDot;
+					setImportedPrefixes(newImports);
+				}
 			}
+			importsUpdated = true;
 		}
 		return super.lookupType(name, location);
 	}
-
 }

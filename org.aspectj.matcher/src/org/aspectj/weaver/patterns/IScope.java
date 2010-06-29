@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver.patterns;
 
 import org.aspectj.bridge.IMessage;
@@ -22,30 +21,39 @@ import org.aspectj.weaver.World;
 
 public interface IScope {
 
-    /** returns the type corresponding to the name in this scope
-     *  returns ResolvedType.MISSING if no such type exists and reports a problem
-     */
-    UnresolvedType lookupType(String name, IHasPosition location);
+	/**
+	 * @return the type corresponding to the name in this scope, or ResolvedType.MISSING if no such type exists
+	 */
+	UnresolvedType lookupType(String name, IHasPosition location);
 
 	World getWorld();
 
 	ResolvedType getEnclosingType();
 
-    // these next three are used to create {@link BindingTypePattern} objects.
+	// these next three are used to create {@link BindingTypePattern} objects.
 	IMessageHandler getMessageHandler();
-    /** returns the formal associated with the name, or null if no such formal exists */
-    FormalBinding lookupFormal(String name);
-    /** returns the formal with the index.  Throws ArrayOutOfBounds exception if out of bounds */
+
+	/**
+	 * @return the formal associated with the name, or null if no such formal exists
+	 */
+	FormalBinding lookupFormal(String name);
+
+	/**
+	 * @return the formal with the index. Throws ArrayOutOfBounds exception if out of bounds
+	 */
 	FormalBinding getFormal(int i);
-	
+
 	int getFormalCount();
 
 	String[] getImportedPrefixes();
+
 	String[] getImportedNames();
-	
+
 	void message(IMessage.Kind kind, IHasPosition location, String message);
+
 	void message(IMessage.Kind kind, IHasPosition location1, IHasPosition location2, String message);
-	void message(IMessage  aMessage);
-	
-	//ISourceLocation makeSourceLocation(ILocation location);
+
+	void message(IMessage aMessage);
+
+	// ISourceLocation makeSourceLocation(ILocation location);
 }

@@ -199,7 +199,7 @@ public class WildTypePattern extends TypePattern {
 	// part of the declared type name (generated code often uses $s in type
 	// names). More work required on our part to get this right...
 	public static char[][] splitNames(String s, boolean convertDollar) {
-		List ret = new ArrayList();
+		List<char[]> ret = new ArrayList<char[]>();
 		int startIndex = 0;
 		while (true) {
 			int breakIndex = s.indexOf('.', startIndex); // what about /
@@ -214,7 +214,7 @@ public class WildTypePattern extends TypePattern {
 			startIndex = breakIndex + 1;
 		}
 		ret.add(s.substring(startIndex).toCharArray());
-		return (char[][]) ret.toArray(new char[ret.size()][]);
+		return ret.toArray(new char[ret.size()][]);
 	}
 
 	/**
@@ -1154,12 +1154,12 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	/**
-	 * returns those possible matches which I match exactly the last element of
+	 * @return those possible matches which I match exactly the last element of
 	 */
 	private String[] preMatch(String[] possibleMatches) {
 		// if (namePatterns.length != 1) return CollectionUtil.NO_STRINGS;
 
-		List ret = new ArrayList();
+		List<String> ret = new ArrayList<String>();
 		for (int i = 0, len = possibleMatches.length; i < len; i++) {
 			char[][] names = splitNames(possibleMatches[i], true); // ??? not most efficient
 			if (namePatterns[0].matches(names[names.length - 1])) {
@@ -1173,7 +1173,7 @@ public class WildTypePattern extends TypePattern {
 				}
 			}
 		}
-		return (String[]) ret.toArray(new String[ret.size()]);
+		return ret.toArray(new String[ret.size()]);
 	}
 
 	// public void postRead(ResolvedType enclosingType) {

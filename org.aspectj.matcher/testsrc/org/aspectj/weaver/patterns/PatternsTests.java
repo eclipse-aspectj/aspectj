@@ -12,23 +12,6 @@
 
 package org.aspectj.weaver.patterns;
 
-import org.aspectj.weaver.patterns.AndOrNotTestCase;
-import org.aspectj.weaver.patterns.ArgsTestCase;
-import org.aspectj.weaver.patterns.BindingTestCase;
-import org.aspectj.weaver.patterns.DeclareErrorOrWarningTestCase;
-import org.aspectj.weaver.patterns.ModifiersPatternTestCase;
-import org.aspectj.weaver.patterns.NamePatternParserTestCase;
-import org.aspectj.weaver.patterns.NamePatternTestCase;
-import org.aspectj.weaver.patterns.ParserTestCase;
-import org.aspectj.weaver.patterns.PatternsTests;
-import org.aspectj.weaver.patterns.PointcutRewriterTest;
-import org.aspectj.weaver.patterns.SignaturePatternTestCase;
-import org.aspectj.weaver.patterns.ThisOrTargetTestCase;
-import org.aspectj.weaver.patterns.TypePatternListTestCase;
-import org.aspectj.weaver.patterns.TypePatternTestCase;
-import org.aspectj.weaver.patterns.VisitorTestCase;
-import org.aspectj.weaver.patterns.WithinTestCase;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -49,6 +32,7 @@ public class PatternsTests extends TestCase {
 		suite.addTestSuite(ThisOrTargetTestCase.class);
 		suite.addTestSuite(TypePatternListTestCase.class);
 		suite.addTestSuite(TypePatternTestCase.class);
+		suite.addTestSuite(SimpleScopeTests.class);
 		suite.addTestSuite(WithinTestCase.class);
 		suite.addTestSuite(ArgsTestCase.class);
 		// suite.addTestSuite(AnnotationPatternTestCase.class);

@@ -105,15 +105,15 @@ public class TypePatternTestCase extends PatternsTestCase {
 	}
 
 	public void testImportMatchWithInners() {
-		checkImportMatch("*Entry", new String[] { "java.util.", "java.util.Map$" }, ZERO_STRINGS, "java.util.Map$Entry", true);
-
-		checkImportMatch("java.util.Map.*Entry", ZERO_STRINGS, ZERO_STRINGS, "java.util.Map$Entry", true);
-
-		checkImportMatch("*Entry", new String[] { "java.util.", }, ZERO_STRINGS, "java.util.Map$Entry", false);
-
-		checkImportMatch("*.Entry", new String[] { "java.util.", }, ZERO_STRINGS, "java.util.Map$Entry", true);
-
-		checkImportMatch("Map.*", new String[] { "java.util.", }, ZERO_STRINGS, "java.util.Map$Entry", true);
+		// checkImportMatch("*Entry", new String[] { "java.util.", "java.util.Map$" }, ZERO_STRINGS, "java.util.Map$Entry", true);
+		//
+		// checkImportMatch("java.util.Map.*Entry", ZERO_STRINGS, ZERO_STRINGS, "java.util.Map$Entry", true);
+		//
+		// checkImportMatch("*Entry", new String[] { "java.util.", }, ZERO_STRINGS, "java.util.Map$Entry", false);
+		//
+		// checkImportMatch("*.Entry", new String[] { "java.util.", }, ZERO_STRINGS, "java.util.Map$Entry", true);
+		//
+		// checkImportMatch("Map.*", new String[] { "java.util.", }, ZERO_STRINGS, "java.util.Map$Entry", true);
 
 		checkImportMatch("Map.*", ZERO_STRINGS, new String[] { "java.util.Map" }, "java.util.Map$Entry", true);
 	}

@@ -12,6 +12,9 @@
 
 package org.aspectj.weaver.patterns;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
@@ -24,15 +27,14 @@ import org.aspectj.weaver.World;
 
 public class SimpleScope implements IScope {
 
+	private static final String[] NoStrings = new String[0];
+	private static final String[] javaLangPrefixArray = new String[] { "java.lang.", };
+
+	private String[] importedPrefixes = javaLangPrefixArray;
+	private String[] importedNames = NoStrings;
 	private World world;
 	private ResolvedType enclosingType;
 	protected FormalBinding[] bindings;
-
-	private String[] importedPrefixes = javaLangPrefixArray;
-	private String[] importedNames = ZERO_STRINGS;
-	private static final String[] ZERO_STRINGS = new String[0];
-
-	private static final String[] javaLangPrefixArray = new String[] { "java.lang.", };
 
 	public SimpleScope(World world, FormalBinding[] bindings) {
 		super();
@@ -40,22 +42,57 @@ public class SimpleScope implements IScope {
 		this.bindings = bindings;
 	}
 
-	// ---- impl
-
-	// XXX doesn't report any problems
 	public UnresolvedType lookupType(String name, IHasPosition location) {
 		for (int i = 0; i < importedNames.length; i++) {
 			String importedName = importedNames[i];
-			// // make sure we're matching against the
-			// // type name rather than part of it
+			// make sure we're matching against the type name rather than part of it
 			// if (importedName.endsWith("." + name)) {
 			if (importedName.endsWith(name)) {
 				return world.resolve(importedName);
 			}
 		}
 
-		for (int i = 0; i < importedPrefixes.length; i++) {
-			String importedPrefix = importedPrefixes[i];
+		// Check for a primitive
+		if (Character.isLowerCase(name.charAt(0))) {
+			// could be a primitive
+			int len = name.length();
+			if (len == 3) {
+				if (name.equals("int")) {
+					return ResolvedType.INT;
+				}
+			} else if (len == 4) {
+				if (name.equals("void")) {
+					return ResolvedType.VOID;
+				} else if (name.equals("byte")) {
+					return ResolvedType.BYTE;
+				} else if (name.equals("char")) {
+					return ResolvedType.CHAR;
+				} else if (name.equals("long")) {
+					return ResolvedType.LONG;
+				}
+			} else if (len == 5) {
+				if (name.equals("float")) {
+					return ResolvedType.FLOAT;
+				} else if (name.equals("short")) {
+					return ResolvedType.SHORT;
+				}
+			} else if (len == 6) {
+				if (name.equals("double")) {
+					return ResolvedType.DOUBLE;
+				}
+			} else if (len == 7) {
+				if (name.equals("boolean")) {
+					return ResolvedType.BOOLEAN;
+				}
+			}
+		}
+
+		// Is it fully qualified?
+		if (name.indexOf('.') != -1) {
+			return world.resolve(UnresolvedType.forName(name), true);
+		}
+
+		for (String importedPrefix : importedPrefixes) {
 			ResolvedType tryType = world.resolve(UnresolvedType.forName(importedPrefix + name), true);
 			if (!tryType.isMissing()) {
 				return tryType;
@@ -71,8 +108,9 @@ public class SimpleScope implements IScope {
 
 	public FormalBinding lookupFormal(String name) {
 		for (int i = 0, len = bindings.length; i < len; i++) {
-			if (bindings[i].getName().equals(name))
+			if (bindings[i].getName().equals(name)) {
 				return bindings[i];
+			}
 		}
 		return null;
 	}
@@ -110,8 +148,6 @@ public class SimpleScope implements IScope {
 		return bindings;
 	}
 
-	// ---- fields
-
 	public ISourceLocation makeSourceLocation(IHasPosition location) {
 		return new SourceLocation(ISourceLocation.NO_FILE, 0);
 	}
@@ -123,7 +159,6 @@ public class SimpleScope implements IScope {
 
 	public void message(IMessage.Kind kind, IHasPosition location, String message) {
 		getMessageHandler().handleMessage(new Message(message, kind, null, makeSourceLocation(location)));
-
 	}
 
 	public void message(IMessage aMessage) {
