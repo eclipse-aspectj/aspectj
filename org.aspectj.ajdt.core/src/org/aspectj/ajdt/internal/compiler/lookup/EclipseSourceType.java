@@ -593,7 +593,9 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	 * ResolvedType representations. This does not deeply resolve the annotations, it only does the type names.
 	 */
 	private void ensureAnnotationTypesResolved() {
-		if (!annotationTypesAreResolved) {
+		// may need to re-resolve if new annotations have been added
+		int declarationAnnoCount = (declaration.annotations == null ? 0 : declaration.annotations.length);
+		if (!annotationTypesAreResolved || declarationAnnoCount != annotationTypes.length) {
 			Annotation[] as = declaration.annotations;
 			if (as == null) {
 				annotationTypes = ResolvedType.NONE;
