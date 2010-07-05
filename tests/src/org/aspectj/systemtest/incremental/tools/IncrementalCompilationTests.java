@@ -53,7 +53,7 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 	}
 
 	// changing method return type parameterization
-	public void testModifiedGenericParameterTypeShouldTriggerError_318884_3() throws Exception {
+	public void testModifiedMethodReturnTypeGenericTypeParameterShouldTriggerError_318884_3() throws Exception {
 		String p = "pr318884_3";
 		initialiseProject(p);
 		build(p);
@@ -67,7 +67,7 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 	}
 
 	// changing method parameter type parameterization
-	public void testModifiedGenericParameterTypeShouldTriggerError_318884_4() throws Exception {
+	public void testModifiedMethodParameterGenericTypeParameterShouldTriggerError_318884_4() throws Exception {
 		String p = "pr318884_4";
 		initialiseProject(p);
 		build(p);
@@ -83,7 +83,7 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 	}
 
 	// changing constructor parameter type parameterization
-	public void testModifiedGenericParameterTypeShouldTriggerError_318884_5() throws Exception {
+	public void testModifiedConstructorParameterGenericTypeParameterShouldTriggerError_318884_5() throws Exception {
 		String p = "pr318884_5";
 		initialiseProject(p);
 		build(p);
@@ -94,5 +94,19 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		checkWasntFullBuild();
 		assertEquals(1, getErrorMessages(p).size());
 		assertContains("The constructor B(List<String>) is undefined", getErrorMessages(p).get(0));
+	}
+
+	// changing field type parameterization
+	public void testModifiedFieldTypeGenericTypeParameterShouldTriggerError_318884_6() throws Exception {
+		String p = "pr318884_6";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		checkCompileWeaveCount(p, 2, 2);
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+		assertEquals(1, getErrorMessages(p).size());
+		assertContains("Type mismatch: cannot convert from element type Integer to String", getErrorMessages(p).get(0));
 	}
 }
