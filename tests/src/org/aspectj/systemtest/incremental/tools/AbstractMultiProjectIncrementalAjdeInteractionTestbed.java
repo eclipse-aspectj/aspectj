@@ -203,4 +203,11 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 					+ " in the aop.xml file but found " + aspectCount + " occurrences");
 		}
 	}
+
+	protected void assertContains(String expectedSubstring, Object object) {
+		String actualString = object.toString();
+		if (actualString.indexOf(expectedSubstring) == -1) {
+			fail("Expected to find '" + expectedSubstring + "' in '" + actualString + "'");
+		}
+	}
 }

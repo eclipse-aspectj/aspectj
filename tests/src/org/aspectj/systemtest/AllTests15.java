@@ -12,6 +12,7 @@ import org.aspectj.systemtest.ajc151.AllTestsAspectJ151;
 import org.aspectj.systemtest.ajc152.AllTestsAspectJ152;
 import org.aspectj.systemtest.ajc153.AllTestsAspectJ153;
 import org.aspectj.systemtest.ajc154.AllTestsAspectJ154;
+import org.aspectj.systemtest.incremental.tools.IncrementalCompilationTests;
 import org.aspectj.systemtest.incremental.tools.IncrementalOutputLocationManagerTests;
 import org.aspectj.systemtest.incremental.tools.IncrementalPerformanceTests;
 import org.aspectj.systemtest.incremental.tools.MoreOutputLocationManagerTests;
@@ -37,6 +38,7 @@ public class AllTests15 {
 		 * issues and are excluded on the build machine so moving them here loses nothing for the moment.
 		 */
 		suite.addTestSuite(MultiProjectIncrementalTests.class);
+		suite.addTestSuite(IncrementalCompilationTests.class);
 		suite.addTestSuite(IncrementalPerformanceTests.class);
 		suite.addTestSuite(MoreOutputLocationManagerTests.class);
 		suite.addTestSuite(IncrementalOutputLocationManagerTests.class);
