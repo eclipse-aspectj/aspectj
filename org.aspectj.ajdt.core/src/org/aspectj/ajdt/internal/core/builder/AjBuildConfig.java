@@ -46,9 +46,9 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	private CompilationResultDestinationManager compilationResultDestinationManager = null;
 	private List/* File */sourceRoots = new ArrayList();
 	private List/* File */changedFiles;
-	private List/* File */files = new ArrayList();
-	private List/* File */xmlfiles = new ArrayList();
-	private List /* File */binaryFiles = new ArrayList(); // .class files in indirs...
+	private List<File> files = new ArrayList<File>();
+	private List<File> xmlfiles = new ArrayList<File>();
+	private List<BinarySourceFile> binaryFiles = new ArrayList<BinarySourceFile>(); // .class files in indirs...
 	private List/* File */inJars = new ArrayList();
 	private List/* File */inPath = new ArrayList();
 	private Map/* String->File */sourcePathResources = new HashMap();
@@ -117,11 +117,11 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	 * 
 	 * @return all source files that should be compiled.
 	 */
-	public List/* File */getFiles() {
+	public List<File> getFiles() {
 		return files;
 	}
 
-	public List/* File */getXmlFiles() {
+	public List<File> getXmlFiles() {
 		return xmlfiles;
 	}
 
@@ -129,7 +129,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	 * returned files includes all .class files found in a directory on the inpath, but does not include .class files contained
 	 * within jars.
 	 */
-	public List/* BinarySourceFile */getBinaryFiles() {
+	public List<BinarySourceFile> getBinaryFiles() {
 		return binaryFiles;
 	}
 
@@ -145,11 +145,11 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		this.compilationResultDestinationManager = mgr;
 	}
 
-	public void setFiles(List files) {
+	public void setFiles(List<File> files) {
 		this.files = files;
 	}
 
-	public void setXmlFiles(List xmlfiles) {
+	public void setXmlFiles(List<File> xmlfiles) {
 		this.xmlfiles = xmlfiles;
 	}
 
@@ -217,7 +217,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		inPath = dirsOrJars;
 
 		// remember all the class files in directories on the inpath
-		binaryFiles = new ArrayList();
+		binaryFiles = new ArrayList<BinarySourceFile>();
 		FileFilter filter = new FileFilter() {
 			public boolean accept(File pathname) {
 				return pathname.getPath().endsWith(".class");

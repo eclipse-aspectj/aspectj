@@ -34,6 +34,7 @@ import java.util.Set;
 
 import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
 import org.aspectj.ajdt.internal.compiler.InterimCompilationResult;
+import org.aspectj.ajdt.internal.core.builder.AjBuildConfig.BinarySourceFile;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
@@ -91,7 +92,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * When looking at changes on the classpath, this set accumulates files in our state instance that affected by those changes.
 	 * Then if we can do an incremental build - these must be compiled.
 	 */
-	private final Set affectedFiles = new HashSet();
+	private final Set<File> affectedFiles = new HashSet<File>();
 
 	// these are references created on a particular compile run - when looping round in
 	// addAffectedSourceFiles(), if some have been created then we look at which source files
@@ -100,10 +101,10 @@ public class AjState implements CompilerConfigurationChangeFlags {
 
 	private StringSet simpleStrings = new StringSet(3);
 
-	private Set addedFiles;
-	private Set deletedFiles;
-	private Set /* BinarySourceFile */addedBinaryFiles;
-	private Set /* BinarySourceFile */deletedBinaryFiles;
+	private Set<File> addedFiles;
+	private Set<File> deletedFiles;
+	private Set<BinarySourceFile> addedBinaryFiles;
+	private Set<BinarySourceFile> deletedBinaryFiles;
 	// For a particular build run, this set records the changes to classesFromName
 	public final Set deltaAddedClasses = new HashSet();
 
@@ -151,7 +152,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * 
 	 * Refered to during addAffectedSourceFiles when calculating incremental compilation set.
 	 */
-	private final Map/* <File, ReferenceCollection> */references = new HashMap();
+	private final Map<File, ReferenceCollection> references = new HashMap<File, ReferenceCollection>();
 
 	/**
 	 * Holds UnwovenClassFiles (byte[]s) originating from the given file source. This could be a jar file, a directory, or an
@@ -316,24 +317,24 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		}
 
 		if ((newBuildConfig.getChanged() & PROJECTSOURCEFILES_CHANGED) == 0) {
-			addedFiles = Collections.EMPTY_SET;
-			deletedFiles = Collections.EMPTY_SET;
+			addedFiles = Collections.emptySet();
+			deletedFiles = Collections.emptySet();
 		} else {
-			Set oldFiles = new HashSet(buildConfig.getFiles());
-			Set newFiles = new HashSet(newBuildConfig.getFiles());
+			Set<File> oldFiles = new HashSet<File>(buildConfig.getFiles());
+			Set<File> newFiles = new HashSet<File>(newBuildConfig.getFiles());
 
-			addedFiles = new HashSet(newFiles);
+			addedFiles = new HashSet<File>(newFiles);
 			addedFiles.removeAll(oldFiles);
-			deletedFiles = new HashSet(oldFiles);
+			deletedFiles = new HashSet<File>(oldFiles);
 			deletedFiles.removeAll(newFiles);
 		}
 
-		Set oldBinaryFiles = new HashSet(buildConfig.getBinaryFiles());
-		Set newBinaryFiles = new HashSet(newBuildConfig.getBinaryFiles());
+		Set<BinarySourceFile> oldBinaryFiles = new HashSet<BinarySourceFile>(buildConfig.getBinaryFiles());
+		Set<BinarySourceFile> newBinaryFiles = new HashSet<BinarySourceFile>(newBuildConfig.getBinaryFiles());
 
-		addedBinaryFiles = new HashSet(newBinaryFiles);
+		addedBinaryFiles = new HashSet<BinarySourceFile>(newBinaryFiles);
 		addedBinaryFiles.removeAll(oldBinaryFiles);
-		deletedBinaryFiles = new HashSet(oldBinaryFiles);
+		deletedBinaryFiles = new HashSet<BinarySourceFile>(oldBinaryFiles);
 		deletedBinaryFiles.removeAll(newBinaryFiles);
 
 		boolean couldStillBeIncremental = processDeletedFiles(deletedFiles);
@@ -383,17 +384,17 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		return getModifiedFiles(lastSuccessfulBuildTime);
 	}
 
-	Collection getModifiedFiles(long lastBuildTime) {
-		Set ret = new HashSet();
+	Collection<File> getModifiedFiles(long lastBuildTime) {
+		Set<File> ret = new HashSet<File>();
 
 		// Check if the build configuration knows what files have changed...
-		List/* File */modifiedFiles = buildConfig.getModifiedFiles();
+		List<File> modifiedFiles = buildConfig.getModifiedFiles();
 
 		if (modifiedFiles == null) {
 			// do not know, so need to go looking
 			// not our job to account for new and deleted files
-			for (Iterator i = buildConfig.getFiles().iterator(); i.hasNext();) {
-				File file = (File) i.next();
+			for (Iterator<File> i = buildConfig.getFiles().iterator(); i.hasNext();) {
+				File file = i.next();
 				if (!file.exists()) {
 					continue;
 				}
@@ -769,9 +770,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			simpleNames = ReferenceCollection.internSimpleNames(simpleNames, true);
 		}
 		int newlyAffectedFiles = 0;
-		for (Iterator i = references.entrySet().iterator(); i.hasNext();) {
-			Map.Entry entry = (Map.Entry) i.next();
-			ReferenceCollection refs = (ReferenceCollection) entry.getValue();
+		for (Iterator<Map.Entry<File, ReferenceCollection>> i = references.entrySet().iterator(); i.hasNext();) {
+			Map.Entry<File, ReferenceCollection> entry = i.next();
+			ReferenceCollection refs = entry.getValue();
 			if (refs != null && refs.includes(qualifiedNames, simpleNames)) {
 				if (listenerDefined()) {
 					getListener().recordDecision(
@@ -1481,7 +1482,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	private void recordClassFile(UnwovenClassFile thisTime, File lastTime) {
 		if (simpleStrings == null) {
 			// batch build
-			// record resolved type for structural comparisions in future increments
+			// record resolved type for structural comparisons in future increments
 			// this records a second reference to a structure already held in memory
 			// by the world.
 			ResolvedType rType = world.resolve(thisTime.getClassName());
@@ -1545,8 +1546,6 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * classfilereader, rather than on a ResolvedType. There are accessors for inner types and funky fields that the compiler
 	 * creates to support the language - for non-static inner types it also mangles ctors to be prefixed with an instance of the
 	 * surrounding type.
-	 * 
-	 * Warning : long but boring method implementation...
 	 * 
 	 * @param reader
 	 * @param existingType
@@ -1679,8 +1678,8 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		// sb.append("(L").append(new String(enclosingTypeName)).append(";");
 		// skippableDescriptorPrefix = sb.toString().toCharArray();
 		// }
-		//		
-		//		
+		//
+		//
 		// // remove the aspectOf, hasAspect, clinit and ajc$XXX methods
 		// // from those we compare with the existing methods - bug 129163
 		// List nonGenMethods = new ArrayList();
@@ -1734,6 +1733,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 						if (!modifiersEqual(method.getModifiers(), existingMs[j].getModifiers())) {
 							return true;
 						}
+						if (exceptionClausesDiffer(existingMs[j], method)) {
+							return true;
+						}
 						continue new_method_loop;
 					}
 				}
@@ -1741,6 +1743,31 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			return true; // (no match found)
 		}
 
+		return false;
+	}
+
+	/**
+	 * For two methods, discover if there has been a change in the exception types specified.
+	 * 
+	 * @return true if the exception types have changed
+	 */
+	private boolean exceptionClausesDiffer(IBinaryMethod lastMethod, IBinaryMethod newMethod) {
+		char[][] previousExceptionTypeNames = lastMethod.getExceptionTypeNames();
+		char[][] newExceptionTypeNames = newMethod.getExceptionTypeNames();
+		int pLength = previousExceptionTypeNames.length;
+		int nLength = newExceptionTypeNames.length;
+		if (pLength != nLength) {
+			return true;
+		}
+		if (pLength == 0) {
+			return false;
+		}
+		// TODO could be insensitive to an order change
+		for (int i = 0; i < pLength; i++) {
+			if (!CharOperation.equals(previousExceptionTypeNames[i], newExceptionTypeNames[i])) {
+				return true;
+			}
+		}
 		return false;
 	}
 

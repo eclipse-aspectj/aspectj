@@ -146,11 +146,11 @@ public class BuildArgParser extends Main {
 
 			boolean incrementalMode = buildConfig.isIncrementalMode() || buildConfig.isIncrementalFileMode();
 
-			List xmlfileList = new ArrayList();
+			List<File> xmlfileList = new ArrayList<File>();
 			xmlfileList.addAll(parser.getXmlFiles());
 
-			List fileList = new ArrayList();
-			List files = parser.getFiles();
+			List<File> fileList = new ArrayList<File>();
+			List<File> files = parser.getFiles();
 			if (!LangUtil.isEmpty(files)) {
 				if (incrementalMode) {
 					MessageUtil.error(handler, "incremental mode only handles source files using -sourceroots");
@@ -159,7 +159,7 @@ public class BuildArgParser extends Main {
 				}
 			}
 
-			List javaArgList = new ArrayList();
+			List<String> javaArgList = new ArrayList<String>();
 			// disable all special eclipse warnings by default - why???
 			// ??? might want to instead override getDefaultOptions()
 			javaArgList.add("-warn:none");
@@ -171,7 +171,7 @@ public class BuildArgParser extends Main {
 			javaArgList.add("-bootclasspath");
 			javaArgList.add(System.getProperty("user.dir"));
 			javaArgList.addAll(parser.getUnparsedArgs());
-			super.configure((String[]) javaArgList.toArray(new String[javaArgList.size()]));
+			super.configure(javaArgList.toArray(new String[javaArgList.size()]));
 
 			if (!proceed) {
 				buildConfig.doNotProceed();
@@ -571,7 +571,7 @@ public class BuildArgParser extends Main {
 			} else if (arg.startsWith("-Xset:")) {
 				buildConfig.setXconfigurationInfo(arg.substring(6));
 			} else if (arg.startsWith("-aspectj.pushin=")) {
-			    // a little dirty but this should never be used in the IDE
+				// a little dirty but this should never be used in the IDE
 				try {
 					System.setProperty("aspectj.pushin", arg.substring(16));
 				} catch (Exception e) {

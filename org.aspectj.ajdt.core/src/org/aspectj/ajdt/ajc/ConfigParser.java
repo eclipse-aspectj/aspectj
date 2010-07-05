@@ -25,16 +25,16 @@ import java.util.List;
 public class ConfigParser {
 	Location location;
 	protected File relativeDirectory = null;
-	protected List files = new LinkedList();
-	protected List xmlfiles = new ArrayList();
+	protected List<File> files = new LinkedList<File>();
+	protected List<File> xmlfiles = new ArrayList<File>();
 	private boolean fileParsed = false;
 	protected static String CONFIG_MSG = "build config error: ";
 
-	public List getFiles() {
+	public List<File> getFiles() {
 		return files;
 	}
 
-	public List getXmlFiles() {
+	public List<File> getXmlFiles() {
 		return xmlfiles;
 	}
 
@@ -73,8 +73,9 @@ public class ConfigParser {
 			while ((line = stream.readLine()) != null) {
 				lineNum += 1;
 				line = stripWhitespaceAndComments(line);
-				if (line.length() == 0)
+				if (line.length() == 0) {
 					continue;
+				}
 				args.add(new Arg(line, new CPSourceLocation(configFile, lineNum)));
 			}
 			stream.close();
@@ -95,10 +96,11 @@ public class ConfigParser {
 
 	String stripSingleLineComment(String s, String commentString) {
 		int commentStart = s.indexOf(commentString);
-		if (commentStart == -1)
+		if (commentStart == -1) {
 			return s;
-		else
+		} else {
 			return s.substring(0, commentStart);
+		}
 	}
 
 	String stripWhitespaceAndComments(String s) {
@@ -155,8 +157,9 @@ public class ConfigParser {
 	}
 
 	void addFiles(File dir, FileFilter filter) {
-		if (dir == null)
+		if (dir == null) {
 			dir = new File(System.getProperty("user.dir"));
+		}
 
 		if (!dir.isDirectory()) {
 			showError("can't find " + dir.getPath());
@@ -189,8 +192,9 @@ public class ConfigParser {
 	}
 
 	void parseArgs(LinkedList args) {
-		while (args.size() > 0)
+		while (args.size() > 0) {
 			parseOneArg(args);
+		}
 	}
 
 	protected Arg removeArg(LinkedList args) {
@@ -204,8 +208,9 @@ public class ConfigParser {
 
 	protected String removeStringArg(LinkedList args) {
 		Arg arg = removeArg(args);
-		if (arg == null)
+		if (arg == null) {
 			return null;
+		}
 		return arg.getValue();
 	}
 
@@ -217,10 +222,12 @@ public class ConfigParser {
 	}
 
 	boolean isSourceFileName(String s) {
-		if (s.endsWith(".java"))
+		if (s.endsWith(".java")) {
 			return true;
-		if (s.endsWith(".aj"))
+		}
+		if (s.endsWith(".aj")) {
 			return true;
+		}
 		// if (s.endsWith(".ajava")) {
 		// showWarning(".ajava is deprecated, replace with .aj or .java: " + s);
 		// return true;
@@ -362,14 +369,16 @@ public class ConfigParser {
 		}
 
 		public int getLine() {
-			if (location == null)
+			if (location == null) {
 				return -1;
+			}
 			return location.getLine();
 		}
 
 		public File getFile() {
-			if (location == null)
+			if (location == null) {
 				return null;
+			}
 			return location.getFile();
 		}
 	}
