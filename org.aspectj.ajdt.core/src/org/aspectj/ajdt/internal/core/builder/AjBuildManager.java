@@ -649,12 +649,12 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		String filename = buildConfig.getOutxmlName();
 		// System.err.println("? AjBuildManager.writeOutxmlFile() outxml=" + filename);
 
-		Map outputDirsAndAspects = findOutputDirsForAspects();
-		Set outputDirs = outputDirsAndAspects.entrySet();
-		for (Iterator iterator = outputDirs.iterator(); iterator.hasNext();) {
-			Map.Entry entry = (Map.Entry) iterator.next();
-			File outputDir = (File) entry.getKey();
-			List aspects = (List) entry.getValue();
+		Map<File, List<String>> outputDirsAndAspects = findOutputDirsForAspects();
+		Set<Map.Entry<File, List<String>>> outputDirs = outputDirsAndAspects.entrySet();
+		for (Iterator<Map.Entry<File, List<String>>> iterator = outputDirs.iterator(); iterator.hasNext();) {
+			Map.Entry<File, List<String>> entry = iterator.next();
+			File outputDir = entry.getKey();
+			List<String> aspects = entry.getValue();
 			ByteArrayOutputStream baos = getOutxmlContents(aspects);
 			if (zos != null) {
 				ZipEntry newEntry = new ZipEntry(filename);
@@ -697,9 +697,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	 * Returns a map where the keys are File objects corresponding to all the output directories and the values are a list of
 	 * aspects which are sent to that ouptut directory
 	 */
-	private Map /* File --> List (String) */findOutputDirsForAspects() {
-		Map outputDirsToAspects = new HashMap();
-		Map aspectNamesToFileNames = state.getAspectNamesToFileNameMap();
+	private Map<File, List<String>> findOutputDirsForAspects() {
+		Map<File, List<String>> outputDirsToAspects = new HashMap<File, List<String>>();
+		Map<String, char[]> aspectNamesToFileNames = state.getAspectNamesToFileNameMap();
 		if (buildConfig.getCompilationResultDestinationManager() == null
 				|| buildConfig.getCompilationResultDestinationManager().getAllOutputLocations().size() == 1) {
 			// we only have one output directory...which simplifies things
@@ -707,11 +707,10 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			if (buildConfig.getCompilationResultDestinationManager() != null) {
 				outputDir = buildConfig.getCompilationResultDestinationManager().getDefaultOutputLocation();
 			}
-			List aspectNames = new ArrayList();
+			List<String> aspectNames = new ArrayList<String>();
 			if (aspectNamesToFileNames != null) {
-				Set keys = aspectNamesToFileNames.keySet();
-				for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
-					String name = (String) iterator.next();
+				Set<String> keys = aspectNamesToFileNames.keySet();
+				for (String name : keys) {
 					aspectNames.add(name);
 				}
 			}
@@ -720,17 +719,17 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			List outputDirs = buildConfig.getCompilationResultDestinationManager().getAllOutputLocations();
 			for (Iterator iterator = outputDirs.iterator(); iterator.hasNext();) {
 				File outputDir = (File) iterator.next();
-				outputDirsToAspects.put(outputDir, new ArrayList());
+				outputDirsToAspects.put(outputDir, new ArrayList<String>());
 			}
-			Set entrySet = aspectNamesToFileNames.entrySet();
-			for (Iterator iterator = entrySet.iterator(); iterator.hasNext();) {
-				Map.Entry entry = (Map.Entry) iterator.next();
-				String aspectName = (String) entry.getKey();
-				char[] fileName = (char[]) entry.getValue();
+			Set<Map.Entry<String, char[]>> entrySet = aspectNamesToFileNames.entrySet();
+			for (Iterator<Map.Entry<String, char[]>> iterator = entrySet.iterator(); iterator.hasNext();) {
+				Map.Entry<String, char[]> entry = iterator.next();
+				String aspectName = entry.getKey();
+				char[] fileName = entry.getValue();
 				File outputDir = buildConfig.getCompilationResultDestinationManager().getOutputLocationForClass(
 						new File(new String(fileName)));
 				if (!outputDirsToAspects.containsKey(outputDir)) {
-					outputDirsToAspects.put(outputDir, new ArrayList());
+					outputDirsToAspects.put(outputDir, new ArrayList<String>());
 				}
 				((List) outputDirsToAspects.get(outputDir)).add(aspectName);
 			}
@@ -792,7 +791,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		// state.setRelationshipMap(AsmManager.getDefault().getRelationshipMap());
 	}
 
-	//    
+	//
 	// private void dumplist(List l) {
 	// System.err.println("---- "+l.size());
 	// for (int i =0 ;i<l.size();i++) System.err.println(i+"\t "+l.get(i));
@@ -973,7 +972,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		return System.getProperty("user.dir"); //$NON-NLS-1$
 	}
 
-	public void performCompilation(Collection files) {
+	public void performCompilation(Collection<File> files) {
 		if (progressListener != null) {
 			compiledCount = 0;
 			sourceFileCount = files.size();
@@ -983,8 +982,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		// Translate from strings to File objects
 		String[] filenames = new String[files.size()];
 		int idx = 0;
-		for (Iterator fIterator = files.iterator(); fIterator.hasNext();) {
-			File f = (File) fIterator.next();
+		for (Iterator<File> fIterator = files.iterator(); fIterator.hasNext();) {
+			File f = fIterator.next();
 			filenames[idx++] = f.getPath();
 		}
 
@@ -1185,7 +1184,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	// ClassFile classFile = (ClassFile) classFiles.nextElement();
 	// String filename = new String(classFile.fileName());
 	// filename = filename.replace('/', File.separatorChar) + ".class";
-	//				
+	//
 	// File destinationPath = buildConfig.getOutputDir();
 	// if (destinationPath == null) {
 	// filename = new File(filename).getName();
@@ -1193,7 +1192,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	// } else {
 	// filename = new File(destinationPath, filename).getPath();
 	// }
-	//				
+	//
 	// //System.out.println("classfile: " + filename);
 	// unwovenClassFiles.add(new UnwovenClassFile(filename, classFile.getBytes()));
 	// }
@@ -1210,7 +1209,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	// state.noteClassesFromFile(null, sourceFileName, Collections.EMPTY_LIST);
 	// }
 	// }
-	//    
+	//
 
 	private void setBuildConfig(AjBuildConfig buildConfig) {
 		this.buildConfig = buildConfig;
