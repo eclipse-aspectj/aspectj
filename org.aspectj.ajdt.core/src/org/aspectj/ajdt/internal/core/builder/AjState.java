@@ -1636,12 +1636,25 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			char[] fieldName = field.getName();
 			for (int j = 0; j < existingFs.length; j++) {
 				if (CharOperation.equals(existingFs[j].getName(), fieldName)) {
-					if (!modifiersEqual(field.getModifiers(), existingFs[j].getModifiers())) {
+					IBinaryField existing = existingFs[j];
+					if (!modifiersEqual(field.getModifiers(), existing.getModifiers())) {
 						return true;
 					}
-					if (!CharOperation.equals(existingFs[j].getTypeName(), field.getTypeName())) {
+					if (!CharOperation.equals(existing.getTypeName(), field.getTypeName())) {
 						return true;
 					}
+
+					char[] existingGSig = existing.getGenericSignature();
+					char[] fieldGSig = field.getGenericSignature();
+					if ((existingGSig == null && fieldGSig != null) || (existingGSig != null && fieldGSig == null)) {
+						return true;
+					}
+					if (existingGSig != null) {
+						if (!CharOperation.equals(existingGSig, fieldGSig)) {
+							return true;
+						}
+					}
+
 					continue new_field_loop;
 				}
 			}
