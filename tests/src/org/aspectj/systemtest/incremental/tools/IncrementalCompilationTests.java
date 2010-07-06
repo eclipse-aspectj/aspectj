@@ -125,8 +125,8 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 	}
 
 	// removing constructor from a static inner class
-	public void testInnerClassChanges_318884_8() throws Exception {
-		String p = "pr318884_8";
+	public void testInnerClassChanges_318884_9() throws Exception {
+		String p = "pr318884_9";
 		initialiseProject(p);
 		build(p);
 		checkWasFullBuild();
@@ -136,5 +136,20 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		checkWasntFullBuild();
 		assertEquals(1, getErrorMessages(p).size());
 		assertContains("The constructor B.C(String) is undefined", getErrorMessages(p).get(0));
+	}
+
+	// removing class
+	public void testInnerClassChanges_318884_10() throws Exception {
+		AjdeInteractionTestbed.VERBOSE = true;
+		String p = "pr318884_10";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		checkCompileWeaveCount(p, 2, 2);
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+		assertEquals(2, getErrorMessages(p).size());
+		assertContains("B cannot be resolved to a type", getErrorMessages(p).get(0));
 	}
 }
