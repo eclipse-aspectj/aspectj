@@ -462,7 +462,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		if (buildConfig.getSourcePathResources() != null) {
 			for (Iterator i = buildConfig.getSourcePathResources().keySet().iterator(); i.hasNext();) {
 				String resource = (String) i.next();
-				File from = (File) buildConfig.getSourcePathResources().get(resource);
+				File from = buildConfig.getSourcePathResources().get(resource);
 				copyResourcesFromFile(from, resource, from);
 			}
 		}
@@ -874,7 +874,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		// ??? incremental issues
 		for (Iterator i = buildConfig.getInJars().iterator(); i.hasNext();) {
 			File inJar = (File) i.next();
-			List unwovenClasses = bcelWeaver.addJarFile(inJar, outputDir, false);
+			List<UnwovenClassFile> unwovenClasses = bcelWeaver.addJarFile(inJar, outputDir, false);
 			state.recordBinarySource(inJar.getPath(), unwovenClasses);
 		}
 

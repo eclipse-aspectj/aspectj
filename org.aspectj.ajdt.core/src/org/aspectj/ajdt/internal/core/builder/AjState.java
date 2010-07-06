@@ -14,7 +14,6 @@
 package org.aspectj.ajdt.internal.core.builder;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.ref.ReferenceQueue;
@@ -46,6 +45,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatExcepti
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryField;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryMethod;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryNestedType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
@@ -106,7 +106,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	private Set<BinarySourceFile> addedBinaryFiles;
 	private Set<BinarySourceFile> deletedBinaryFiles;
 	// For a particular build run, this set records the changes to classesFromName
-	public final Set deltaAddedClasses = new HashSet();
+	public final Set<String> deltaAddedClasses = new HashSet<String>();
 
 	// --- non static, but transient state - no need to write out, DOES need reinitializing when read AjState instance reloaded
 
@@ -121,7 +121,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	private AjBuildConfig buildConfig;
 
 	private long lastSuccessfulFullBuildTime = -1;
-	private final Hashtable /* File, long */structuralChangesSinceLastFullBuild = new Hashtable();
+	private final Hashtable<String, Long> structuralChangesSinceLastFullBuild = new Hashtable<String, Long>();
 
 	private long lastSuccessfulBuildTime = -1;
 	private long currentBuildTime = -1;
@@ -141,7 +141,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * 
 	 * Populated in noteResult and used in processDeletedFiles
 	 */
-	private final Set/* <File> */sourceFilesDefiningAspects = new HashSet();
+	private final Set<File> sourceFilesDefiningAspects = new HashSet<File>();
 
 	/**
 	 * Populated in noteResult to record the set of types that should be recompiled if the given file is modified or deleted.
@@ -180,13 +180,13 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	/**
 	 * A list of the .class files created by this state that contain aspects.
 	 */
-	private final List/* <String> */aspectClassFiles = new ArrayList();
+	private final List<String> aspectClassFiles = new ArrayList<String>();
 
 	/**
 	 * Holds structure information on types as they were at the end of the last build. It would be nice to get rid of this too, but
 	 * can't see an easy way to do that right now.
 	 */
-	private final Map/* FQN,CompactStructureRepresentation */resolvedTypeStructuresFromLastBuild = new HashMap();
+	private final Map<String, CompactTypeStructureRepresentation> resolvedTypeStructuresFromLastBuild = new HashMap<String, CompactTypeStructureRepresentation>();
 
 	/**
 	 * Populated in noteResult to record the set of UnwovenClassFiles (intermediate results) that originated from compilation of the
@@ -196,7 +196,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * 
 	 * Passed into StatefulNameEnvironment during incremental compilation to support findType lookups.
 	 */
-	private final Map<String, File> classesFromName = new HashMap();
+	private final Map<String, File> classesFromName = new HashMap<String, File>();
 
 	/**
 	 * Populated by AjBuildManager to record the aspects with the file name in which they're contained. This is later used when
@@ -206,7 +206,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 */
 	private Map<String, char[]> aspectsFromFileNames;
 
-	private Set/* File */compiledSourceFiles = new HashSet();
+	private Set<File> compiledSourceFiles = new HashSet<File>();
 	private final Map<String, File> resources = new HashMap<String, File>();
 
 	SoftHashMap/* <baseDir,SoftHashMap<theFile,className>> */fileToClassNameMap = new SoftHashMap();
@@ -355,21 +355,19 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * 
 	 * @return false if we discovered an aspect declaration
 	 */
-	private boolean processDeletedFiles(Set deletedFiles) {
-		for (Iterator iter = deletedFiles.iterator(); iter.hasNext();) {
-			File aDeletedFile = (File) iter.next();
-			if (this.sourceFilesDefiningAspects.contains(aDeletedFile)) {
+	private boolean processDeletedFiles(Set<File> deletedFiles) {
+		for (File deletedFile : deletedFiles) {
+			if (this.sourceFilesDefiningAspects.contains(deletedFile)) {
 				removeAllResultsOfLastBuild();
 				if (stateListener != null) {
-					stateListener.detectedAspectDeleted(aDeletedFile);
+					stateListener.detectedAspectDeleted(deletedFile);
 				}
 				return false;
 			}
-			List/* ClassFile */classes = fullyQualifiedTypeNamesResultingFromCompilationUnit.get(aDeletedFile);
+			List<ClassFile> classes = fullyQualifiedTypeNamesResultingFromCompilationUnit.get(deletedFile);
 			if (classes != null) {
-				for (Iterator iterator = classes.iterator(); iterator.hasNext();) {
-					ClassFile element = (ClassFile) iterator.next();
-					resolvedTypeStructuresFromLastBuild.remove(element.fullyQualifiedTypeName);
+				for (ClassFile cf : classes) {
+					resolvedTypeStructuresFromLastBuild.remove(cf.fullyQualifiedTypeName);
 				}
 			}
 		}
@@ -409,15 +407,15 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		return ret;
 	}
 
-	private Collection getModifiedBinaryFiles() {
+	private Collection<BinarySourceFile> getModifiedBinaryFiles() {
 		return getModifiedBinaryFiles(lastSuccessfulBuildTime);
 	}
 
-	Collection getModifiedBinaryFiles(long lastBuildTime) {
-		List ret = new ArrayList();
+	Collection<BinarySourceFile> getModifiedBinaryFiles(long lastBuildTime) {
+		List<BinarySourceFile> ret = new ArrayList<BinarySourceFile>();
 		// not our job to account for new and deleted files
-		for (Iterator i = buildConfig.getBinaryFiles().iterator(); i.hasNext();) {
-			AjBuildConfig.BinarySourceFile bsfile = (AjBuildConfig.BinarySourceFile) i.next();
+		for (Iterator<BinarySourceFile> i = buildConfig.getBinaryFiles().iterator(); i.hasNext();) {
+			AjBuildConfig.BinarySourceFile bsfile = i.next();
 			File file = bsfile.binSrc;
 			if (!file.exists()) {
 				continue;
@@ -432,12 +430,6 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		}
 		return ret;
 	}
-
-	public static final FileFilter classFileFilter = new FileFilter() {
-		public boolean accept(File pathname) {
-			return pathname.getName().endsWith(".class");
-		}
-	};
 
 	private void recordDecision(String decision) {
 		getListener().recordDecision(decision);
@@ -499,10 +491,10 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			}
 		}
 
-		List classFiles = FileUtil.listClassFiles(dir);
+		List<File> classFiles = FileUtil.listClassFiles(dir);
 
-		for (Iterator iterator = classFiles.iterator(); iterator.hasNext();) {
-			File classFile = (File) iterator.next();
+		for (Iterator<File> iterator = classFiles.iterator(); iterator.hasNext();) {
+			File classFile = iterator.next();
 			if (CHECK_STATE_FIRST && state != null) {
 				// Next section reworked based on bug 270033:
 				// if it is an aspect we may or may not be in trouble depending on whether (a) we depend on it (b) it is on the
@@ -638,6 +630,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		return aspectClassFiles.contains(file.getAbsolutePath());
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static class SoftHashMap extends AbstractMap {
 
 		private final Map map;
@@ -660,6 +653,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 
 			private final Object key;
 
+			@SuppressWarnings("unchecked")
 			SoftReferenceKnownKey(Object k, Object v) {
 				super(v, rq);
 				this.key = k;
@@ -823,7 +817,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 */
 	private boolean hasStructuralChangedSince(File file, long lastSuccessfulBuildTime) {
 		// long lastModTime = file.lastModified();
-		Long l = (Long) structuralChangesSinceLastFullBuild.get(file.getAbsolutePath());
+		Long l = structuralChangesSinceLastFullBuild.get(file.getAbsolutePath());
 		long strucModTime = -1;
 		if (l != null) {
 			strucModTime = l.longValue();
@@ -839,10 +833,10 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * Determine if anything has changed since a given time.
 	 */
 	private boolean hasAnyStructuralChangesSince(long lastSuccessfulBuildTime) {
-		Set entries = structuralChangesSinceLastFullBuild.entrySet();
-		for (Iterator iterator = entries.iterator(); iterator.hasNext();) {
-			Map.Entry entry = (Map.Entry) iterator.next();
-			Long l = (Long) entry.getValue();
+		Set<Map.Entry<String, Long>> entries = structuralChangesSinceLastFullBuild.entrySet();
+		for (Iterator<Map.Entry<String, Long>> iterator = entries.iterator(); iterator.hasNext();) {
+			Map.Entry<String, Long> entry = iterator.next();
+			Long l = entry.getValue();
 			if (l != null) {
 				long lvalue = l.longValue();
 				if (lvalue > lastSuccessfulBuildTime) {
@@ -870,12 +864,12 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		int changes = newConfig.getChanged();
 
 		if ((changes & (CLASSPATH_CHANGED | ASPECTPATH_CHANGED | INPATH_CHANGED | OUTPUTDESTINATIONS_CHANGED | INJARS_CHANGED)) != 0) {
-			List oldOutputLocs = getOutputLocations(previousConfig);
+			List<File> oldOutputLocs = getOutputLocations(previousConfig);
 
-			Set alreadyAnalysedPaths = new HashSet();
+			Set<String> alreadyAnalysedPaths = new HashSet<String>();
 
-			List oldClasspath = previousConfig.getClasspath();
-			List newClasspath = newConfig.getClasspath();
+			List<String> oldClasspath = previousConfig.getClasspath();
+			List<String> newClasspath = newConfig.getClasspath();
 			if (stateListener != null) {
 				stateListener.aboutToCompareClasspaths(oldClasspath, newClasspath);
 			}
@@ -883,20 +877,20 @@ public class AjState implements CompilerConfigurationChangeFlags {
 				return true;
 			}
 
-			List oldAspectpath = previousConfig.getAspectpath();
-			List newAspectpath = newConfig.getAspectpath();
+			List<File> oldAspectpath = previousConfig.getAspectpath();
+			List<File> newAspectpath = newConfig.getAspectpath();
 			if (changedAndNeedsFullBuild(oldAspectpath, newAspectpath, true, oldOutputLocs, alreadyAnalysedPaths, PATHID_ASPECTPATH)) {
 				return true;
 			}
 
-			List oldInPath = previousConfig.getInpath();
-			List newInPath = newConfig.getInpath();
+			List<File> oldInPath = previousConfig.getInpath();
+			List<File> newInPath = newConfig.getInpath();
 			if (changedAndNeedsFullBuild(oldInPath, newInPath, false, oldOutputLocs, alreadyAnalysedPaths, PATHID_INPATH)) {
 				return true;
 			}
 
-			List oldInJars = previousConfig.getInJars();
-			List newInJars = newConfig.getInJars();
+			List<File> oldInJars = previousConfig.getInJars();
+			List<File> newInJars = newConfig.getInJars();
 			if (changedAndNeedsFullBuild(oldInJars, newInJars, false, oldOutputLocs, alreadyAnalysedPaths, PATHID_INPATH)) {
 				return true;
 			}
@@ -906,9 +900,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			// the compiler configuration. This will allow for projects with long classpaths where classpaths
 			// are also capturing project dependencies - when a project we depend on is rebuilt, we can just check
 			// it as a standalone element on our classpath rather than going through them all
-			List/* String */modifiedCpElements = newConfig.getClasspathElementsWithModifiedContents();
-			for (Iterator iterator = modifiedCpElements.iterator(); iterator.hasNext();) {
-				File cpElement = new File((String) iterator.next());
+			List<String> modifiedCpElements = newConfig.getClasspathElementsWithModifiedContents();
+			for (Iterator<String> iterator = modifiedCpElements.iterator(); iterator.hasNext();) {
+				File cpElement = new File(iterator.next());
 				if (cpElement.exists() && !cpElement.isDirectory()) {
 					if (cpElement.lastModified() > lastSuccessfulBuildTime) {
 						return true;
@@ -958,7 +952,6 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	}
 
 	private File getOutputLocationFor(AjBuildConfig config, File aResourceFile) {
-		new ArrayList();
 		if (config.getCompilationResultDestinationManager() != null) {
 			File outputLoc = config.getCompilationResultDestinationManager().getOutputLocationForResource(aResourceFile);
 			if (outputLoc != null) {
@@ -983,8 +976,8 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * @param outputLocs the output locations that should be ignored if they occur on the paths being compared
 	 * @return true if a change is detected that requires a full build
 	 */
-	private boolean changedAndNeedsFullBuild(List oldPath, List newPath, boolean checkClassFiles, List outputLocs,
-			Set alreadyAnalysedPaths, int pathid) {
+	private boolean changedAndNeedsFullBuild(List oldPath, List newPath, boolean checkClassFiles, List<File> outputLocs,
+			Set<String> alreadyAnalysedPaths, int pathid) {
 		if (oldPath.size() != newPath.size()) {
 			return true;
 		}
@@ -1010,8 +1003,8 @@ public class AjState implements CompilerConfigurationChangeFlags {
 				// that should save a massive amount of processing for incremental builds in a multi project scenario
 
 				boolean foundMatch = false;
-				for (Iterator iterator = outputLocs.iterator(); !foundMatch && iterator.hasNext();) {
-					File dir = (File) iterator.next();
+				for (Iterator<File> iterator = outputLocs.iterator(); !foundMatch && iterator.hasNext();) {
+					File dir = iterator.next();
 					if (f.equals(dir)) {
 						foundMatch = true;
 					}
@@ -1041,8 +1034,8 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 * @param outputLocs the output locations that should be ignored if they occur on the paths being compared
 	 * @return true if a change is detected that requires a full build
 	 */
-	private boolean classpathChangedAndNeedsFullBuild(List oldPath, List newPath, boolean checkClassFiles, List outputLocs,
-			Set alreadyAnalysedPaths) {
+	private boolean classpathChangedAndNeedsFullBuild(List<String> oldPath, List<String> newPath, boolean checkClassFiles,
+			List<File> outputLocs, Set<String> alreadyAnalysedPaths) {
 		if (oldPath.size() != newPath.size()) {
 			return true;
 		}
@@ -1050,7 +1043,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			if (!oldPath.get(i).equals(newPath.get(i))) {
 				return true;
 			}
-			File f = new File((String) oldPath.get(i));
+			File f = new File(oldPath.get(i));
 			if (f.exists() && !f.isDirectory() && (f.lastModified() >= lastSuccessfulBuildTime)) {
 				return true;
 			}
@@ -1062,8 +1055,8 @@ public class AjState implements CompilerConfigurationChangeFlags {
 				// that should save a massive amount of processing for incremental builds in a multi project scenario
 
 				boolean foundMatch = false;
-				for (Iterator iterator = outputLocs.iterator(); !foundMatch && iterator.hasNext();) {
-					File dir = (File) iterator.next();
+				for (Iterator<File> iterator = outputLocs.iterator(); !foundMatch && iterator.hasNext();) {
+					File dir = iterator.next();
 					if (f.equals(dir)) {
 						foundMatch = true;
 					}
@@ -1082,7 +1075,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		return false;
 	}
 
-	public Set getFilesToCompile(boolean firstPass) {
+	public Set<File> getFilesToCompile(boolean firstPass) {
 		Set<File> thisTime = new HashSet<File>();
 		if (firstPass) {
 			compiledSourceFiles = new HashSet<File>();
@@ -1162,10 +1155,9 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 */
 	private void removeAllResultsOfLastBuild() {
 		// remove all binarySourceFiles, and all classesFromName...
-		for (Iterator iter = this.inputClassFilesBySource.values().iterator(); iter.hasNext();) {
-			List cfs = (List) iter.next();
-			for (Iterator iterator = cfs.iterator(); iterator.hasNext();) {
-				ClassFile cf = (ClassFile) iterator.next();
+		for (Iterator<List<ClassFile>> iter = this.inputClassFilesBySource.values().iterator(); iter.hasNext();) {
+			List<ClassFile> cfs = iter.next();
+			for (ClassFile cf : cfs) {
 				cf.deleteFromFileSystem(buildConfig);
 			}
 		}
@@ -1195,16 +1187,14 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		if (deletedFiles == null) {
 			return;
 		}
-		for (Iterator i = deletedFiles.iterator(); i.hasNext();) {
-			File deletedFile = (File) i.next();
+		for (File deletedFile : deletedFiles) {
 			addDependentsOf(deletedFile);
 
-			List cfs = this.fullyQualifiedTypeNamesResultingFromCompilationUnit.get(deletedFile);
+			List<ClassFile> cfs = this.fullyQualifiedTypeNamesResultingFromCompilationUnit.get(deletedFile);
 			this.fullyQualifiedTypeNamesResultingFromCompilationUnit.remove(deletedFile);
 
 			if (cfs != null) {
-				for (Iterator iter = cfs.iterator(); iter.hasNext();) {
-					ClassFile cf = (ClassFile) iter.next();
+				for (ClassFile cf : cfs) {
 					deleteClassFile(cf);
 				}
 			}
@@ -1386,24 +1376,22 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	 */
 	private void deleteTypesThatWereInThisCompilationUnitLastTimeRoundButHaveBeenDeletedInThisIncrement(File sourceFile,
 			UnwovenClassFile[] unwovenClassFiles) {
-		List classFiles = this.fullyQualifiedTypeNamesResultingFromCompilationUnit.get(sourceFile);
+		List<ClassFile> classFiles = this.fullyQualifiedTypeNamesResultingFromCompilationUnit.get(sourceFile);
 		if (classFiles != null) {
 			for (int i = 0; i < unwovenClassFiles.length; i++) {
 				// deleting also deletes types from the weaver... don't do this if they are
 				// still present this time around...
 				removeFromClassFilesIfPresent(unwovenClassFiles[i].getClassName(), classFiles);
 			}
-			for (Iterator iter = classFiles.iterator(); iter.hasNext();) {
-				ClassFile cf = (ClassFile) iter.next();
+			for (ClassFile cf : classFiles) {
 				deleteClassFile(cf);
 			}
 		}
 	}
 
-	private void removeFromClassFilesIfPresent(String className, List classFiles) {
+	private void removeFromClassFilesIfPresent(String className, List<ClassFile> classFiles) {
 		ClassFile victim = null;
-		for (Iterator iter = classFiles.iterator(); iter.hasNext();) {
-			ClassFile cf = (ClassFile) iter.next();
+		for (ClassFile cf : classFiles) {
 			if (cf.fullyQualifiedTypeName.equals(className)) {
 				victim = cf;
 				break;
@@ -1441,8 +1429,8 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		if (cr != null) {
 			Map compiledTypes = cr.compiledTypes;
 			if (compiledTypes != null) {
-				for (Iterator iterator = compiledTypes.keySet().iterator(); iterator.hasNext();) {
-					char[] className = (char[]) iterator.next();
+				for (Iterator<char[]> iterator = compiledTypes.keySet().iterator(); iterator.hasNext();) {
+					char[] className = iterator.next();
 					String typeName = new String(className).replace('/', '.');
 					if (typeName.indexOf(BcelWeaver.SYNTHETIC_CLASS_POSTFIX) == -1) {
 						ResolvedType rt = world.resolve(typeName);
@@ -1494,7 +1482,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			return;
 		}
 
-		CompactTypeStructureRepresentation existingStructure = (CompactTypeStructureRepresentation) this.resolvedTypeStructuresFromLastBuild
+		CompactTypeStructureRepresentation existingStructure = this.resolvedTypeStructuresFromLastBuild
 				.get(thisTime.getClassName());
 		ResolvedType newResolvedType = world.resolve(thisTime.getClassName());
 		if (!newResolvedType.isMissing()) {
@@ -1766,6 +1754,24 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			return true; // (no match found)
 		}
 
+		// check for differences in inner types
+		// TODO could make order insensitive
+		IBinaryNestedType[] binaryNestedTypes = reader.getMemberTypes();
+		IBinaryNestedType[] existingBinaryNestedTypes = existingType.getMemberTypes();
+		if ((binaryNestedTypes == null && existingBinaryNestedTypes != null)
+				|| (binaryNestedTypes != null && existingBinaryNestedTypes == null)) {
+			return true;
+		}
+		if (binaryNestedTypes != null) {
+			int bnLength = binaryNestedTypes.length;
+			for (int m = 0; m < bnLength; m++) {
+				IBinaryNestedType bnt = binaryNestedTypes[m];
+				IBinaryNestedType existingBnt = existingBinaryNestedTypes[m];
+				if (!CharOperation.equals(bnt.getName(), existingBnt.getName())) {
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 
@@ -1812,10 +1818,10 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	// return ret;
 	// }
 
-	private String stringifyList(Set l) {
+	private String stringifySet(Set<?> l) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("{");
-		for (Iterator iter = l.iterator(); iter.hasNext();) {
+		for (Iterator<?> iter = l.iterator(); iter.hasNext();) {
 			Object el = iter.next();
 			sb.append(el);
 			if (iter.hasNext()) {
@@ -1826,14 +1832,14 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		return sb.toString();
 	}
 
-	protected void addAffectedSourceFiles(Set addTo, Set lastTimeSources) {
+	protected void addAffectedSourceFiles(Set<File> addTo, Set<File> lastTimeSources) {
 		if (qualifiedStrings.elementSize == 0 && simpleStrings.elementSize == 0) {
 			return;
 		}
 		if (listenerDefined()) {
 			getListener().recordDecision(
 					"Examining whether any other files now need compilation based on just compiling: '"
-							+ stringifyList(lastTimeSources) + "'");
+							+ stringifySet(lastTimeSources) + "'");
 		}
 		// the qualifiedStrings are of the form 'p1/p2' & the simpleStrings are just 'X'
 		char[][][] qualifiedNames = ReferenceCollection.internQualifiedNames(qualifiedStrings);
@@ -1850,11 +1856,11 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		// System.err.println("simple: " + simpleStrings);
 		// System.err.println("qualif: " + qualifiedStrings);
 
-		for (Iterator i = references.entrySet().iterator(); i.hasNext();) {
-			Map.Entry entry = (Map.Entry) i.next();
-			ReferenceCollection refs = (ReferenceCollection) entry.getValue();
+		for (Iterator<Map.Entry<File, ReferenceCollection>> i = references.entrySet().iterator(); i.hasNext();) {
+			Map.Entry<File, ReferenceCollection> entry = i.next();
+			ReferenceCollection refs = entry.getValue();
 			if (refs != null && refs.includes(qualifiedNames, simpleNames)) {
-				File file = (File) entry.getKey();
+				File file = entry.getKey();
 				if (file.exists()) {
 					if (!lastTimeSources.contains(file)) { // ??? O(n**2)
 						if (listenerDefined()) {
@@ -1909,15 +1915,12 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	}
 
 	protected void addDependentsOf(File sourceFile) {
-		List cfs = this.fullyQualifiedTypeNamesResultingFromCompilationUnit.get(sourceFile);
-
+		List<ClassFile> cfs = this.fullyQualifiedTypeNamesResultingFromCompilationUnit.get(sourceFile);
 		if (cfs != null) {
-			for (Iterator iter = cfs.iterator(); iter.hasNext();) {
-				ClassFile cf = (ClassFile) iter.next();
+			for (ClassFile cf : cfs) {
 				recordTypeChanged(cf.fullyQualifiedTypeName);
 			}
 		}
-
 	}
 
 	public void setStructureModel(AsmManager structureModel) {
@@ -1975,15 +1978,14 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	}
 
 	public void clearBinarySourceFiles() {
-		this.binarySourceFiles = new HashMap();
+		this.binarySourceFiles = new HashMap<String, List<UnwovenClassFile>>();
 	}
 
-	public void recordBinarySource(String fromPathName, List unwovenClassFiles) {
+	public void recordBinarySource(String fromPathName, List<UnwovenClassFile> unwovenClassFiles) {
 		this.binarySourceFiles.put(fromPathName, unwovenClassFiles);
 		if (this.maybeIncremental()) {
-			List simpleClassFiles = new LinkedList();
-			for (Iterator iter = unwovenClassFiles.iterator(); iter.hasNext();) {
-				UnwovenClassFile ucf = (UnwovenClassFile) iter.next();
+			List<ClassFile> simpleClassFiles = new LinkedList<ClassFile>();
+			for (UnwovenClassFile ucf : unwovenClassFiles) {
 				ClassFile cf = getClassFileFor(ucf);
 				simpleClassFiles.add(cf);
 			}
@@ -1999,7 +2001,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		return new ClassFile(ucf.getClassName(), new File(ucf.getFilename()));
 	}
 
-	public Map getBinarySourceMap() {
+	public Map<String, List<UnwovenClassFile>> getBinarySourceMap() {
 		return this.binarySourceFiles;
 	}
 
@@ -2018,14 +2020,14 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	/**
 	 * @return Returns the addedFiles.
 	 */
-	public Set getAddedFiles() {
+	public Set<File> getAddedFiles() {
 		return this.addedFiles;
 	}
 
 	/**
 	 * @return Returns the deletedFiles.
 	 */
-	public Set getDeletedFiles() {
+	public Set<File> getDeletedFiles() {
 		return this.deletedFiles;
 	}
 
@@ -2085,7 +2087,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	}
 
 	public void initializeAspectNamesToFileNameMap() {
-		this.aspectsFromFileNames = new HashMap();
+		this.aspectsFromFileNames = new HashMap<String, char[]>();
 	}
 
 	// Will allow us to record decisions made during incremental processing, hopefully aid in debugging
@@ -2098,7 +2100,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	}
 
 	public IBinaryType checkPreviousBuild(String name) {
-		return (IBinaryType) resolvedTypeStructuresFromLastBuild.get(name);
+		return resolvedTypeStructuresFromLastBuild.get(name);
 	}
 
 	public AjBuildManager getAjBuildManager() {

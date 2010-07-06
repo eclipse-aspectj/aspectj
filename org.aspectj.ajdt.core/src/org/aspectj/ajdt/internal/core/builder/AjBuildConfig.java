@@ -44,18 +44,18 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	private File outputJar;
 	private String outxmlName;
 	private CompilationResultDestinationManager compilationResultDestinationManager = null;
-	private List/* File */sourceRoots = new ArrayList();
-	private List/* File */changedFiles;
+	private List<File> sourceRoots = new ArrayList<File>();
+	private List<File> changedFiles;
 	private List<File> files = new ArrayList<File>();
 	private List<File> xmlfiles = new ArrayList<File>();
 	private List<BinarySourceFile> binaryFiles = new ArrayList<BinarySourceFile>(); // .class files in indirs...
-	private List/* File */inJars = new ArrayList();
-	private List/* File */inPath = new ArrayList();
-	private Map/* String->File */sourcePathResources = new HashMap();
-	private List/* File */aspectpath = new ArrayList();
-	private List/* String */classpath = new ArrayList();
-	private List/* String */bootclasspath = new ArrayList();
-	private List/* String */cpElementsWithModifiedContents = new ArrayList();
+	private List<File> inJars = new ArrayList<File>();
+	private List<File> inPath = new ArrayList<File>();
+	private Map<String, File> sourcePathResources = new HashMap<String, File>();
+	private List<File> aspectpath = new ArrayList<File>();
+	private List<String> classpath = new ArrayList<String>();
+	private List<String> bootclasspath = new ArrayList<String>();
+	private List<String> cpElementsWithModifiedContents = new ArrayList<String>();
 
 	private File configFile;
 	private String lintMode = AJLINT_DEFAULT;
@@ -164,19 +164,19 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	/**
 	 * This does not include -bootclasspath but includes -extdirs and -classpath
 	 */
-	public List getClasspath() { // XXX setters don't respect javadoc contract...
+	public List<String> getClasspath() {
 		return classpath;
 	}
 
-	public void setClasspath(List classpath) {
+	public void setClasspath(List<String> classpath) {
 		this.classpath = classpath;
 	}
 
-	public List getBootclasspath() {
+	public List<String> getBootclasspath() {
 		return bootclasspath;
 	}
 
-	public void setBootclasspath(List bootclasspath) {
+	public void setBootclasspath(List<String> bootclasspath) {
 		this.bootclasspath = bootclasspath;
 	}
 
@@ -188,16 +188,16 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		return outxmlName;
 	}
 
-	public List/* File */getInpath() {
+	public List<File> getInpath() {
 		// Elements of the list are either archives (jars/zips) or directories
 		return inPath;
 	}
 
-	public List/* File */getInJars() {
+	public List<File> getInJars() {
 		return inJars;
 	}
 
-	public Map getSourcePathResources() {
+	public Map<String, File> getSourcePathResources() {
 		return sourcePathResources;
 	}
 
@@ -209,11 +209,11 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		this.outxmlName = name;
 	}
 
-	public void setInJars(List sourceJars) {
+	public void setInJars(List<File> sourceJars) {
 		this.inJars = sourceJars;
 	}
 
-	public void setInPath(List dirsOrJars) {
+	public void setInPath(List<File> dirsOrJars) {
 		inPath = dirsOrJars;
 
 		// remember all the class files in directories on the inpath
@@ -223,8 +223,8 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 				return pathname.getPath().endsWith(".class");
 			}
 		};
-		for (Iterator iter = dirsOrJars.iterator(); iter.hasNext();) {
-			File inpathElement = (File) iter.next();
+		for (Iterator<File> iter = dirsOrJars.iterator(); iter.hasNext();) {
+			File inpathElement = iter.next();
 			if (inpathElement.isDirectory()) {
 				File[] files = FileUtil.listFiles(inpathElement, filter);
 				for (int i = 0; i < files.length; i++) {
@@ -234,11 +234,11 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		}
 	}
 
-	public List getSourceRoots() {
+	public List<File> getSourceRoots() {
 		return sourceRoots;
 	}
 
-	public void setSourceRoots(List sourceRootDir) {
+	public void setSourceRoots(List<File> sourceRootDir) {
 		this.sourceRoots = sourceRootDir;
 	}
 
@@ -270,17 +270,17 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	 * @return List (String) classpath of bootclasspath, injars, inpath, aspectpath entries, specified classpath (extdirs, and
 	 *         classpath), and output dir or jar
 	 */
-	public List getFullClasspath() {
-		List full = new ArrayList();
+	public List<String> getFullClasspath() {
+		List<String> full = new ArrayList<String>();
 		full.addAll(getBootclasspath()); // XXX Is it OK that boot classpath overrides inpath/injars/aspectpath?
-		for (Iterator i = inJars.iterator(); i.hasNext();) {
-			full.add(((File) i.next()).getAbsolutePath());
+		for (Iterator<File> i = inJars.iterator(); i.hasNext();) {
+			full.add((i.next()).getAbsolutePath());
 		}
-		for (Iterator i = inPath.iterator(); i.hasNext();) {
-			full.add(((File) i.next()).getAbsolutePath());
+		for (Iterator<File> i = inPath.iterator(); i.hasNext();) {
+			full.add((i.next()).getAbsolutePath());
 		}
-		for (Iterator i = aspectpath.iterator(); i.hasNext();) {
-			full.add(((File) i.next()).getAbsolutePath());
+		for (Iterator<File> i = aspectpath.iterator(); i.hasNext();) {
+			full.add((i.next()).getAbsolutePath());
 		}
 		full.addAll(getClasspath());
 		// if (null != outputDir) {
@@ -299,11 +299,11 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		this.lintSpecFile = lintSpecFile;
 	}
 
-	public List getAspectpath() {
+	public List<File> getAspectpath() {
 		return aspectpath;
 	}
 
-	public void setAspectpath(List aspectpath) {
+	public void setAspectpath(List<File> aspectpath) {
 		this.aspectpath = aspectpath;
 	}
 
@@ -415,6 +415,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		setMakeReflectable(global.isMakeReflectable());
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	void join(Collection local, Collection global) {
 		for (Iterator iter = global.iterator(); iter.hasNext();) {
 			Object next = iter.next();
@@ -424,25 +425,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		}
 	}
 
-	/**
-	 * Join some global options into a local set of options - globals will override locals.
-	 * 
-	 * @param local
-	 * @param global
-	 */
-	void join(Map local, Map global) {
-		for (Iterator iter = global.keySet().iterator(); iter.hasNext();) {
-			Object key = iter.next();
-			// if (override || (null == local.get(key))) { //
-			Object value = global.get(key);
-			if (null != value) {
-				local.put(key, value);
-			}
-			// }
-		}
-	}
-
-	public void setSourcePathResources(Map map) {
+	public void setSourcePathResources(Map<String, File> map) {
 		sourcePathResources = map;
 	}
 
@@ -475,7 +458,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		}
 
 		if (lintValue != null) {
-			Map lintOptions = new HashMap();
+			Map<String, String> lintOptions = new HashMap<String, String>();
 			lintOptions.put(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName, lintValue);
 			lintOptions.put(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName, lintValue);
 			lintOptions.put(AjCompilerOptions.OPTION_ReportUnresolvableMember, lintValue);
@@ -692,19 +675,19 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		return this.changes;
 	}
 
-	public void setModifiedFiles(List projectSourceFilesChanged) {
+	public void setModifiedFiles(List<File> projectSourceFilesChanged) {
 		this.changedFiles = projectSourceFilesChanged;
 	}
 
-	public List getModifiedFiles() {
+	public List<File> getModifiedFiles() {
 		return this.changedFiles;
 	}
 
-	public void setClasspathElementsWithModifiedContents(List cpElementsWithModifiedContents) {
+	public void setClasspathElementsWithModifiedContents(List<String> cpElementsWithModifiedContents) {
 		this.cpElementsWithModifiedContents = cpElementsWithModifiedContents;
 	}
 
-	public List getClasspathElementsWithModifiedContents() {
+	public List<String> getClasspathElementsWithModifiedContents() {
 		return this.cpElementsWithModifiedContents;
 	}
 }

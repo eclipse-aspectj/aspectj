@@ -294,8 +294,8 @@ public class BuildArgParser extends Main {
 		return Arrays.asList(FileUtil.listFiles(dir, FileUtil.aspectjSourceFileFilter));
 	}
 
-	public List getBootclasspath(AjcConfigParser parser) {
-		List ret = new ArrayList();
+	public List<String> getBootclasspath(AjcConfigParser parser) {
+		List<String> ret = new ArrayList<String>();
 
 		if (parser.bootclasspath == null) {
 			addClasspath(System.getProperty("sun.boot.class.path", ""), ret);
@@ -358,7 +358,7 @@ public class BuildArgParser extends Main {
 		}
 	}
 
-	private void addClasspath(String classpath, List classpathCollector) {
+	private void addClasspath(String classpath, List<String> classpathCollector) {
 		StringTokenizer tokenizer = new StringTokenizer(classpath, File.pathSeparator);
 		while (tokenizer.hasMoreTokens()) {
 			classpathCollector.add(tokenizer.nextToken());

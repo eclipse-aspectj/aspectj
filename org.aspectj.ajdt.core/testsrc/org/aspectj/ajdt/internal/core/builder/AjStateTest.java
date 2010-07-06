@@ -16,111 +16,107 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-
 public class AjStateTest extends TestCase {
 
-    private AjState aRightState;
-    private AjBuildConfig oldConfig;
-    private AjBuildConfig newConfig;
-    
-    public void testNoChange() {
-    	aRightState.setCouldBeSubsequentIncrementalBuild(true);
-        assertTrue("Can do incremental",aRightState.prepareForNextBuild(newConfig));
-    }
-    
-    public void testAddEntryToClasspath() {
-        newConfig.getClasspath().add("anotherEntry");
-        assertFalse("Can do incremental",aRightState.prepareForNextBuild(newConfig));
-    }
-    
-    public void testRemoveEntryFromClasspath() {
-        newConfig.getClasspath().remove(0);
-        assertFalse("Can do incremental",aRightState.prepareForNextBuild(newConfig));               
-    }
-    
-    public void testReorderClasspath() {
-        Object o = newConfig.getClasspath().remove(0);
-        newConfig.getClasspath().add(o);
-        assertFalse("Can do incremental",aRightState.prepareForNextBuild(newConfig));                       
-    }
+	private AjState aRightState;
+	private AjBuildConfig oldConfig;
+	private AjBuildConfig newConfig;
 
-    public void testAddEntryToAspectpath() {
-        newConfig.getAspectpath().add(new File("anotherEntry.jar"));
-        assertFalse("Can do incremental",aRightState.prepareForNextBuild(newConfig));
-    }
-    
-    public void testRemoveEntryFromAspectpath() {
-        newConfig.getAspectpath().remove(0);
-        assertFalse("Can do incremental",aRightState.prepareForNextBuild(newConfig));               
-    }
-    
-    public void testReorderAspectpath() {
-        Object o = newConfig.getClasspath().remove(0);
-        newConfig.getAspectpath().add(o);
-        assertFalse("Can do incremental",aRightState.prepareForNextBuild(newConfig));                       
-    }
+	public void testNoChange() {
+		aRightState.setCouldBeSubsequentIncrementalBuild(true);
+		assertTrue("Can do incremental", aRightState.prepareForNextBuild(newConfig));
+	}
 
-    public void testAddEntryToInpath() {
-        newConfig.getInpath().add(new File("anotherEntry"));
-        assertFalse("Can do incremental",aRightState.prepareForNextBuild(newConfig));
-    }
-    
-    public void testRemoveEntryFromInpath() {
-        newConfig.getInpath().remove(0);
-        assertFalse("Can do incremental",aRightState.prepareForNextBuild(newConfig));               
-    }
-    
-    public void testReorderInpath() {
-        Object o = newConfig.getClasspath().remove(0);
-        newConfig.getInpath().add(o);
-        assertFalse("Can do incremental",aRightState.prepareForNextBuild(newConfig));                       
-    }
-    
-    public void testAddEntryToInjars() {
-        newConfig.getInJars().add(new File("anotherEntry.jar"));
-        assertFalse("Can do incremental",aRightState.prepareForNextBuild(newConfig));
-    }
-    
-    public void testRemoveEntryFromInjars() {
-        newConfig.getInJars().remove(0);
-        assertFalse("Can do incremental",aRightState.prepareForNextBuild(newConfig));               
-    }
-    
-    public void testReorderInjars() {
-        Object o = newConfig.getClasspath().remove(0);
-        newConfig.getInJars().add(o);
-        assertFalse("Can do incremental",aRightState.prepareForNextBuild(newConfig));                       
-    }
-    
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
-        aRightState = new AjState(null);
-        oldConfig = new AjBuildConfig();
-        newConfig = new AjBuildConfig();
-        List cp = new ArrayList();
-        cp.add("adir");
-        cp.add("ajar.jar");
-        oldConfig.setClasspath(cp);
-        newConfig.setClasspath(new ArrayList(cp));
-        List ap = new ArrayList();
-        ap.add(new File("aLib.jar"));
-        ap.add(new File("anotherLib.jar"));
-        oldConfig.setAspectpath(ap);
-        newConfig.setAspectpath(new ArrayList(ap));
-        List ip = new ArrayList();
-        ip.add(new File("adir"));
-        ip.add(new File("ajar.jar"));
-        oldConfig.setInPath(ip);
-        newConfig.setInPath(new ArrayList(ip));
-        List ij = new ArrayList();
-        ij.add(new File("aLib.jar"));
-        ij.add(new File("anotherLib.jar"));
-        oldConfig.setInJars(ij);
-        newConfig.setInJars(new ArrayList(ij));
-        aRightState.prepareForNextBuild(oldConfig);
-        aRightState.successfulCompile(oldConfig,true);
-    }
+	public void testAddEntryToClasspath() {
+		newConfig.getClasspath().add("anotherEntry");
+		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
+	}
+
+	public void testRemoveEntryFromClasspath() {
+		newConfig.getClasspath().remove(0);
+		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
+	}
+
+	public void testReorderClasspath() {
+		String o = newConfig.getClasspath().remove(0);
+		newConfig.getClasspath().add(o);
+		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
+	}
+
+	public void testAddEntryToAspectpath() {
+		newConfig.getAspectpath().add(new File("anotherEntry.jar"));
+		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
+	}
+
+	public void testRemoveEntryFromAspectpath() {
+		newConfig.getAspectpath().remove(0);
+		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
+	}
+
+	public void testReorderAspectpath() {
+		String o = newConfig.getClasspath().remove(0);
+		newConfig.getAspectpath().add(new File(o));
+		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
+	}
+
+	public void testAddEntryToInpath() {
+		newConfig.getInpath().add(new File("anotherEntry"));
+		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
+	}
+
+	public void testRemoveEntryFromInpath() {
+		newConfig.getInpath().remove(0);
+		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
+	}
+
+	public void testReorderInpath() {
+		String o = newConfig.getClasspath().remove(0);
+		newConfig.getInpath().add(new File(o));
+		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
+	}
+
+	public void testAddEntryToInjars() {
+		newConfig.getInJars().add(new File("anotherEntry.jar"));
+		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
+	}
+
+	public void testRemoveEntryFromInjars() {
+		newConfig.getInJars().remove(0);
+		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
+	}
+
+	public void testReorderInjars() {
+		String o = newConfig.getClasspath().remove(0);
+		newConfig.getInJars().add(new File(o));
+		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
+	}
+
+	protected void setUp() throws Exception {
+		super.setUp();
+		aRightState = new AjState(null);
+		oldConfig = new AjBuildConfig();
+		newConfig = new AjBuildConfig();
+		List<String> cp = new ArrayList<String>();
+		cp.add("adir");
+		cp.add("ajar.jar");
+		oldConfig.setClasspath(cp);
+		newConfig.setClasspath(new ArrayList<String>(cp));
+		List<File> ap = new ArrayList<File>();
+		ap.add(new File("aLib.jar"));
+		ap.add(new File("anotherLib.jar"));
+		oldConfig.setAspectpath(ap);
+		newConfig.setAspectpath(new ArrayList<File>(ap));
+		List<File> ip = new ArrayList<File>();
+		ip.add(new File("adir"));
+		ip.add(new File("ajar.jar"));
+		oldConfig.setInPath(ip);
+		newConfig.setInPath(new ArrayList<File>(ip));
+		List<File> ij = new ArrayList<File>();
+		ij.add(new File("aLib.jar"));
+		ij.add(new File("anotherLib.jar"));
+		oldConfig.setInJars(ij);
+		newConfig.setInJars(new ArrayList<File>(ij));
+		aRightState.prepareForNextBuild(oldConfig);
+		aRightState.successfulCompile(oldConfig, true);
+	}
 }
