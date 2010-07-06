@@ -109,4 +109,32 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		assertEquals(1, getErrorMessages(p).size());
 		assertContains("Type mismatch: cannot convert from element type Integer to String", getErrorMessages(p).get(0));
 	}
+
+	// removing static inner class
+	public void testInnerClassChanges_318884_7() throws Exception {
+		String p = "pr318884_7";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		checkCompileWeaveCount(p, 2, 3);
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+		assertEquals(1, getErrorMessages(p).size());
+		assertContains("B.C cannot be resolved to a type", getErrorMessages(p).get(0));
+	}
+
+	// removing constructor from a static inner class
+	public void testInnerClassChanges_318884_8() throws Exception {
+		String p = "pr318884_8";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		checkCompileWeaveCount(p, 2, 3);
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+		assertEquals(1, getErrorMessages(p).size());
+		assertContains("The constructor B.C(String) is undefined", getErrorMessages(p).get(0));
+	}
 }
