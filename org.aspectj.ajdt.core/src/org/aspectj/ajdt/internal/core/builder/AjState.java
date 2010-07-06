@@ -64,8 +64,6 @@ import org.aspectj.weaver.bcel.UnwovenClassFile;
  */
 public class AjState implements CompilerConfigurationChangeFlags {
 
-	// --- static state, no need to write out
-
 	// SECRETAPI configures whether we use state instead of lastModTime - see pr245566
 	public static boolean CHECK_STATE_FIRST = true;
 
@@ -84,8 +82,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 
 	private static final char[][] EMPTY_CHAR_ARRAY = new char[0][];
 
-	// --- non static, but transient state - no need to write out, doesn't need reinitializing
-
+	// now follows non static, but transient state - no need to write out, doesn't need reinitializing
 	// State recreated for each build:
 
 	/**
@@ -108,45 +105,37 @@ public class AjState implements CompilerConfigurationChangeFlags {
 	// For a particular build run, this set records the changes to classesFromName
 	public final Set<String> deltaAddedClasses = new HashSet<String>();
 
-	// --- non static, but transient state - no need to write out, DOES need reinitializing when read AjState instance reloaded
+	// now follows non static, but transient state - no need to write out, DOES need reinitializing when read AjState instance
+	// reloaded
 
 	private final AjBuildManager buildManager;
-
 	private INameEnvironment nameEnvironment;
 
-	// --- normal state that must be written out
+	// now follows normal state that must be written out
 
 	private boolean couldBeSubsequentIncrementalBuild = false;
 	private boolean batchBuildRequiredThisTime = false;
 	private AjBuildConfig buildConfig;
-
 	private long lastSuccessfulFullBuildTime = -1;
 	private final Hashtable<String, Long> structuralChangesSinceLastFullBuild = new Hashtable<String, Long>();
-
 	private long lastSuccessfulBuildTime = -1;
 	private long currentBuildTime = -1;
-
 	private AsmManager structureModel;
 
 	/**
-	 * Keeps a list of (FQN,Filename) pairs (as ClassFile objects) for types that resulted from the compilation of the given File.
-	 * Note :- the ClassFile objects contain no byte code, they are simply a Filename,typename pair.
-	 * 
-	 * Populated in noteResult and used in addDependentsOf(File)
+	 * For a given source file, records the ClassFiles (which contain a fully qualified name and a file name) that were created when
+	 * the source file was compiled. Populated in noteResult and used in addDependentsOf(File)
 	 */
 	private final Map<File, List<ClassFile>> fullyQualifiedTypeNamesResultingFromCompilationUnit = new HashMap<File, List<ClassFile>>();
 
 	/**
-	 * Source files defining aspects
-	 * 
-	 * Populated in noteResult and used in processDeletedFiles
+	 * Source files defining aspects Populated in noteResult and used in processDeletedFiles
 	 */
 	private final Set<File> sourceFilesDefiningAspects = new HashSet<File>();
 
 	/**
 	 * Populated in noteResult to record the set of types that should be recompiled if the given file is modified or deleted.
-	 * 
-	 * Refered to during addAffectedSourceFiles when calculating incremental compilation set.
+	 * Referred to during addAffectedSourceFiles when calculating incremental compilation set.
 	 */
 	private final Map<File, ReferenceCollection> references = new HashMap<File, ReferenceCollection>();
 
@@ -1378,12 +1367,17 @@ public class AjState implements CompilerConfigurationChangeFlags {
 			UnwovenClassFile[] unwovenClassFiles) {
 		List<ClassFile> classFiles = this.fullyQualifiedTypeNamesResultingFromCompilationUnit.get(sourceFile);
 		if (classFiles != null) {
+
 			for (int i = 0; i < unwovenClassFiles.length; i++) {
 				// deleting also deletes types from the weaver... don't do this if they are
 				// still present this time around...
 				removeFromClassFilesIfPresent(unwovenClassFiles[i].getClassName(), classFiles);
 			}
 			for (ClassFile cf : classFiles) {
+				recordTypeChanged(cf.fullyQualifiedTypeName);
+				resolvedTypeStructuresFromLastBuild.remove(cf.fullyQualifiedTypeName);
+				// }
+				// for (ClassFile cf : classFiles) {
 				deleteClassFile(cf);
 			}
 		}
@@ -2046,6 +2040,12 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		public ClassFile(String fqn, File location) {
 			this.fullyQualifiedTypeName = fqn;
 			this.locationOnDisk = location;
+		}
+
+		public String toString() {
+			StringBuilder s = new StringBuilder();
+			s.append("ClassFile(type=").append(fullyQualifiedTypeName).append(",location=").append(locationOnDisk).append(")");
+			return s.toString();
 		}
 
 		public void deleteFromFileSystem(AjBuildConfig buildConfig) {
