@@ -116,8 +116,9 @@ public class AsmElementFormatter {
 						kindOfDP = "implements ";
 						try {
 							ResolvedType rtx = tx.resolve(((AjLookupEnvironment) declare.scope.environment()).factory.getWorld());
-							if (!rtx.isInterface())
+							if (!rtx.isInterface()) {
 								kindOfDP = "extends ";
+							}
 						} catch (Throwable t) {
 							// What can go wrong???? who knows!
 						}
@@ -128,8 +129,9 @@ public class AsmElementFormatter {
 						typename = typename.substring(typename.lastIndexOf(".") + 1);
 					}
 					details.append(typename);
-					if ((i + 1) < newParents.length)
+					if ((i + 1) < newParents.length) {
 						details.append(",");
+					}
 				}
 				node.setDetails(kindOfDP + details.toString());
 
@@ -185,7 +187,7 @@ public class AsmElementFormatter {
 				// StringBuffer argumentsSignature = new StringBuffer("fubar");
 				// argumentsSignature.append("(");
 				// if (methodDeclaration.arguments!=null && methodDeclaration.arguments.length>1) {
-				//		
+				//
 				// for (int i = 1;i<methodDeclaration.arguments.length;i++) {
 				// argumentsSignature.append(methodDeclaration.arguments[i]);
 				// if (i+1<methodDeclaration.arguments.length) argumentsSignature.append(",");
@@ -252,8 +254,9 @@ public class AsmElementFormatter {
 		String tpList = "";
 		for (int i = 0; i < list.size(); i++) {
 			tpList += genTypePatternLabel(list.get(i));
-			if (i < list.size() - 1)
+			if (i < list.size() - 1) {
 				tpList += ", ";
+			}
 		}
 		return tpList;
 	}
@@ -416,9 +419,9 @@ public class AsmElementFormatter {
 			pe.setParameterNames(Collections.EMPTY_LIST);
 			pe.setParameterSignatures(Collections.EMPTY_LIST, Collections.EMPTY_LIST);
 		} else {
-			List names = new ArrayList();
-			List paramSigs = new ArrayList();
-			List paramSourceRefs = new ArrayList();
+			List<String> names = new ArrayList<String>();
+			List<char[]> paramSigs = new ArrayList<char[]>();
+			List<String> paramSourceRefs = new ArrayList<String>();
 			boolean problemWithSourceRefs = false;
 			for (int i = 0; i < argArray.length; i++) {
 				String argName = new String(argArray[i].name);
@@ -454,8 +457,9 @@ public class AsmElementFormatter {
 
 	// TODO: fix this way of determing ajc-added arguments, make subtype of Argument with extra info
 	private boolean acceptArgument(String name, String type) {
-		if (name.charAt(0) != 'a' && type.charAt(0) != 'o')
+		if (name.charAt(0) != 'a' && type.charAt(0) != 'o') {
 			return true;
+		}
 		return !name.startsWith("ajc$this_") && !type.equals("org.aspectj.lang.JoinPoint.StaticPart")
 				&& !type.equals("org.aspectj.lang.JoinPoint") && !type.equals("org.aspectj.runtime.internal.AroundClosure");
 	}
@@ -467,8 +471,9 @@ public class AsmElementFormatter {
 
 		if (!ResolvedType.isMissing(typeX)) {
 			label = typeX.getName();
-			if (tp.isIncludeSubtypes())
+			if (tp.isIncludeSubtypes()) {
 				label += "+";
+			}
 		} else {
 			label = TYPE_PATTERN_LITERAL;
 		}
