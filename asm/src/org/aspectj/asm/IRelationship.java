@@ -22,7 +22,7 @@ public interface IRelationship extends Serializable {
 
 	public String getName();
 
-	public List/* String */getTargets();
+	public List<String> getTargets();
 
 	public String getSourceHandle();
 

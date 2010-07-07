@@ -53,13 +53,11 @@ public class ProgramElement implements IProgramElement {
 	protected String name;
 	private Kind kind;
 	protected IProgramElement parent = null;
-	protected List children = Collections.EMPTY_LIST;
+	protected List<IProgramElement> children = Collections.emptyList();
 	public Map kvpairs = Collections.EMPTY_MAP;
 	protected ISourceLocation sourceLocation = null;
 	public int modifiers;
 	private String handle = null;
-
-	// --- ctors
 
 	public AsmManager getModel() {
 		return asm;
@@ -67,11 +65,10 @@ public class ProgramElement implements IProgramElement {
 
 	/** Used during de-externalization */
 	public ProgramElement() {
-		int stop = 1;
 	}
 
 	/** Use to create program element nodes that do not correspond to source locations */
-	public ProgramElement(AsmManager asm, String name, Kind kind, List children) {
+	public ProgramElement(AsmManager asm, String name, Kind kind, List<IProgramElement> children) {
 		this.asm = asm;
 		if (asm == null && !name.equals("<build to view structure>")) {
 			throw new RuntimeException();
@@ -84,7 +81,7 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public ProgramElement(AsmManager asm, String name, IProgramElement.Kind kind, ISourceLocation sourceLocation, int modifiers,
-			String comment, List children) {
+			String comment, List<IProgramElement> children) {
 		this(asm, name, kind, children);
 		this.sourceLocation = sourceLocation;
 		setFormalComment(comment);
@@ -277,8 +274,8 @@ public class ProgramElement implements IProgramElement {
 		return toLabelString();
 	}
 
-	private static List genModifiers(int modifiers) {
-		List modifiersList = new ArrayList();
+	private static List<IProgramElement.Modifiers> genModifiers(int modifiers) {
+		List<IProgramElement.Modifiers> modifiersList = new ArrayList<IProgramElement.Modifiers>();
 		if ((modifiers & AccStatic) != 0) {
 			modifiersList.add(IProgramElement.Modifiers.STATIC);
 		}
@@ -448,19 +445,19 @@ public class ProgramElement implements IProgramElement {
 		return children;
 	}
 
-	public void setChildren(List children) {
+	public void setChildren(List<IProgramElement> children) {
 		this.children = children;
 		if (children == null) {
 			return;
 		}
-		for (Iterator it = children.iterator(); it.hasNext();) {
-			((IProgramElement) it.next()).setParent(this);
+		for (Iterator<IProgramElement> it = children.iterator(); it.hasNext();) {
+			(it.next()).setParent(this);
 		}
 	}
 
 	public void addChild(IProgramElement child) {
 		if (children == null || children == Collections.EMPTY_LIST) {
-			children = new ArrayList();
+			children = new ArrayList<IProgramElement>();
 		}
 		children.add(child);
 		child.setParent(this);
@@ -468,7 +465,7 @@ public class ProgramElement implements IProgramElement {
 
 	public void addChild(int position, IProgramElement child) {
 		if (children == null || children == Collections.EMPTY_LIST) {
-			children = new ArrayList();
+			children = new ArrayList<IProgramElement>();
 		}
 		children.add(position, child);
 		child.setParent(this);
@@ -640,12 +637,12 @@ public class ProgramElement implements IProgramElement {
 		this.handle = handle;
 	}
 
-	public List getParameterNames() {
-		List parameterNames = (List) kvpairs.get("parameterNames");
+	public List<String> getParameterNames() {
+		List<String> parameterNames = (List<String>) kvpairs.get("parameterNames");
 		return parameterNames;
 	}
 
-	public void setParameterNames(List list) {
+	public void setParameterNames(List<String> list) {
 		if (list == null || list.size() == 0) {
 			return;
 		}
@@ -656,21 +653,21 @@ public class ProgramElement implements IProgramElement {
 		// parameterNames = list;
 	}
 
-	public List getParameterTypes() {
-		List l = getParameterSignatures();
+	public List<char[]> getParameterTypes() {
+		List<char[]> l = getParameterSignatures();
 		if (l == null || l.isEmpty()) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
-		List params = new ArrayList();
-		for (Iterator iter = l.iterator(); iter.hasNext();) {
-			char[] param = (char[]) iter.next();
+		List<char[]> params = new ArrayList<char[]>();
+		for (Iterator<char[]> iter = l.iterator(); iter.hasNext();) {
+			char[] param = iter.next();
 			params.add(NameConvertor.convertFromSignature(param));
 		}
 		return params;
 	}
 
-	public List getParameterSignatures() {
-		List parameters = (List) kvpairs.get("parameterSigs");
+	public List<char[]> getParameterSignatures() {
+		List<char[]> parameters = (List<char[]>) kvpairs.get("parameterSigs");
 		return parameters;
 	}
 

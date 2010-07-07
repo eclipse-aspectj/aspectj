@@ -27,9 +27,9 @@ import org.aspectj.bridge.ISourceLocation;
  */
 public interface IProgramElement extends Serializable {
 
-	public List/* IProgramElement */getChildren();
+	public List<IProgramElement> getChildren();
 
-	public void setChildren(List children);
+	public void setChildren(List<IProgramElement> children);
 
 	public void addChild(IProgramElement child);
 
@@ -152,9 +152,9 @@ public interface IProgramElement extends Serializable {
 
 	public String toLabelString(boolean getFullyQualifiedArgTypes);
 
-	public List getParameterNames();
+	public List<String> getParameterNames();
 
-	public void setParameterNames(List list);
+	public void setParameterNames(List<String> list);
 
 	public List getParameterSignatures();
 
@@ -329,8 +329,9 @@ public interface IProgramElement extends Serializable {
 
 		public static Kind getKindForString(String kindString) {
 			for (int i = 0; i < ALL.length; i++) {
-				if (ALL[i].toString().equals(kindString))
+				if (ALL[i].toString().equals(kindString)) {
 					return ALL[i];
+				}
 			}
 			return ERROR;
 		}
@@ -345,8 +346,8 @@ public interface IProgramElement extends Serializable {
 			return name;
 		}
 
-		public static List getNonAJMemberKinds() {
-			List list = new ArrayList();
+		public static List<Kind> getNonAJMemberKinds() {
+			List<Kind> list = new ArrayList<Kind>();
 			list.add(METHOD);
 			list.add(ENUM_VALUE);
 			list.add(FIELD);

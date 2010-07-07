@@ -73,7 +73,7 @@ public class AsmManager implements IStructureModel {
 
 	private static boolean completingTypeBindings = false;
 
-	private final List structureListeners = new ArrayList();
+	private final List<IHierarchyListener> structureListeners = new ArrayList<IHierarchyListener>();
 
 	// The model is 'manipulated' by the AjBuildManager.setupModel() code which
 	// trashes all the
@@ -95,7 +95,7 @@ public class AsmManager implements IStructureModel {
 	private final CanonicalFilePathMap canonicalFilePathMap = new CanonicalFilePathMap();
 	// Record the Set<File> for which the model has been modified during the
 	// last incremental build
-	private final Set lastBuildChanges = new HashSet();
+	private final Set<File> lastBuildChanges = new HashSet<File>();
 
 	// Record the Set<File> of aspects that wove the files listed in lastBuildChanges
 	final Set aspectsWeavingInLastBuild = new HashSet();
@@ -148,22 +148,22 @@ public class AsmManager implements IStructureModel {
 			return null;
 		}
 
-		HashMap annotations = new HashMap();
+		HashMap<Integer, List<IProgramElement>> annotations = new HashMap<Integer, List<IProgramElement>>();
 		IProgramElement node = hierarchy.findElementForSourceFile(sourceFile);
 		if (node == IHierarchy.NO_STRUCTURE) {
 			return null;
 		} else {
 			IProgramElement fileNode = node;
-			ArrayList peNodes = new ArrayList();
+			ArrayList<IProgramElement> peNodes = new ArrayList<IProgramElement>();
 			getAllStructureChildren(fileNode, peNodes, showSubMember, showMemberAndType);
-			for (Iterator it = peNodes.iterator(); it.hasNext();) {
-				IProgramElement peNode = (IProgramElement) it.next();
-				List entries = new ArrayList();
+			for (Iterator<IProgramElement> it = peNodes.iterator(); it.hasNext();) {
+				IProgramElement peNode = it.next();
+				List<IProgramElement> entries = new ArrayList<IProgramElement>();
 				entries.add(peNode);
 				ISourceLocation sourceLoc = peNode.getSourceLocation();
 				if (null != sourceLoc) {
 					Integer hash = new Integer(sourceLoc.getLine());
-					List existingEntry = (List) annotations.get(hash);
+					List<IProgramElement> existingEntry = annotations.get(hash);
 					if (existingEntry != null) {
 						entries.addAll(existingEntry);
 					}
@@ -174,14 +174,14 @@ public class AsmManager implements IStructureModel {
 		}
 	}
 
-	private void getAllStructureChildren(IProgramElement node, List result, boolean showSubMember, boolean showMemberAndType) {
-		List children = node.getChildren();
+	private void getAllStructureChildren(IProgramElement node, List<IProgramElement> result, boolean showSubMember,
+			boolean showMemberAndType) {
+		List<IProgramElement> children = node.getChildren();
 		if (node.getChildren() == null) {
 			return;
 		}
-		for (Iterator it = children.iterator(); it.hasNext();) {
-			IProgramElement next = (IProgramElement) it.next();
-			List rels = mapper.get(next);
+		for (IProgramElement next : children) {
+			List<IRelationship> rels = mapper.get(next);
 			if (next != null
 					&& ((next.getKind() == IProgramElement.Kind.CODE && showSubMember) || (next.getKind() != IProgramElement.Kind.CODE && showMemberAndType))
 					&& rels != null && rels.size() > 0) {
@@ -208,8 +208,8 @@ public class AsmManager implements IStructureModel {
 	}
 
 	private void notifyListeners() {
-		for (Iterator it = structureListeners.iterator(); it.hasNext();) {
-			((IHierarchyListener) it.next()).elementsUpdated(hierarchy);
+		for (IHierarchyListener listener : structureListeners) {
+			listener.elementsUpdated(hierarchy);
 		}
 	}
 
@@ -297,26 +297,26 @@ public class AsmManager implements IStructureModel {
 		// // guards to ensure correctness and liveness
 		// private boolean cacheInUse = false;
 		// private boolean stopRequested = false;
-		//		
+		//
 		// private synchronized boolean isCacheInUse() {
 		// return cacheInUse;
 		// }
-		//		
+		//
 		// private synchronized void setCacheInUse(boolean val) {
 		// cacheInUse = val;
 		// if (val) {
 		// notifyAll();
 		// }
 		// }
-		//		
+		//
 		// private synchronized boolean isStopRequested() {
 		// return stopRequested;
 		// }
-		//		
+		//
 		// private synchronized void requestStop() {
 		// stopRequested = true;
 		// }
-		//		
+		//
 		// /**
 		// * Begin prepopulating the map by adding an entry from
 		// * file.getPath -> file.getCanonicalPath for each file in
@@ -351,7 +351,7 @@ public class AsmManager implements IStructureModel {
 		// }
 		// }.start();
 		// }
-		//		
+		//
 		// /**
 		// * Stop pre-populating the cache - our customers are ready to use it.
 		// * If there are any cache misses from this point on, we'll populate
@@ -552,7 +552,7 @@ public class AsmManager implements IStructureModel {
 
 		boolean modelModified = false;
 
-		Set deletedNodes = new HashSet();
+		Set<String> deletedNodes = new HashSet<String>();
 		for (Iterator iter = files.iterator(); iter.hasNext();) {
 			File fileForCompilation = (File) iter.next();
 			String correctedPath = getCanonicalFilePath(fileForCompilation);
@@ -595,7 +595,7 @@ public class AsmManager implements IStructureModel {
 
 		Set filesToRemoveFromStructureModel = new HashSet(filesToBeCompiled);
 		filesToRemoveFromStructureModel.addAll(files_deleted);
-		Set deletedNodes = new HashSet();
+		Set<String> deletedNodes = new HashSet<String>();
 		for (Iterator iter = filesToRemoveFromStructureModel.iterator(); iter.hasNext();) {
 			File fileForCompilation = (File) iter.next();
 			String correctedPath = getCanonicalFilePath(fileForCompilation);
@@ -738,7 +738,7 @@ public class AsmManager implements IStructureModel {
 		// type (since it will be readded
 		// when the type is woven)
 		Set sourcehandlesSet = mapper.getEntries();
-		List relationshipsToRemove = new ArrayList();
+		List<IRelationship> relationshipsToRemove = new ArrayList<IRelationship>();
 		for (Iterator keyiter = sourcehandlesSet.iterator(); keyiter.hasNext();) {
 			String hid = (String) keyiter.next();
 			if (isPhantomHandle(hid)) {
@@ -752,18 +752,17 @@ public class AsmManager implements IStructureModel {
 			if (sourceElement == null || sameType(hid, sourceElement, typeNode)) {
 				// worth continuing as there may be a relationship to remove
 				relationshipsToRemove.clear();
-				List relationships = mapper.get(hid);
-				for (Iterator reliter = relationships.iterator(); reliter.hasNext();) {
-					IRelationship rel = (IRelationship) reliter.next();
-					if (rel.getKind() == IRelationship.Kind.USES_POINTCUT) {
+				List<IRelationship> relationships = mapper.get(hid);
+				for (IRelationship relationship : relationships) {
+					if (relationship.getKind() == IRelationship.Kind.USES_POINTCUT) {
 						continue; // these relationships are added at compile
 					}
 					// time, argh
-					if (rel.isAffects()) {
+					if (relationship.isAffects()) {
 						continue; // we want 'affected by' relationships - (e.g.
 					}
 					// advised by)
-					relationshipsToRemove.add(rel); // all the relationships can
+					relationshipsToRemove.add(relationship); // all the relationships can
 					// be removed, regardless of
 					// the target(s)
 				}
@@ -1002,12 +1001,12 @@ public class AsmManager implements IStructureModel {
 						nonExistingHandles.add(hid); // Speed up a bit you swine
 					} else {
 						// Ok, so the source is valid, what about the targets?
-						List relationships = mapper.get(hid);
-						List relationshipsToRemove = new ArrayList();
+						List<IRelationship> relationships = mapper.get(hid);
+						List<IRelationship> relationshipsToRemove = new ArrayList<IRelationship>();
 						// Iterate through the relationships against this source
 						// handle
-						for (Iterator reliter = relationships.iterator(); reliter.hasNext();) {
-							IRelationship rel = (IRelationship) reliter.next();
+						for (Iterator<IRelationship> reliter = relationships.iterator(); reliter.hasNext();) {
+							IRelationship rel = reliter.next();
 							List targets = rel.getTargets();
 							List targetsToRemove = new ArrayList();
 

@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2003 Contributors.
+ * Copyright (c) 2003,2010 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -8,12 +8,12 @@
  *  
  * Contributors: 
  *     Mik Kersten     initial implementation 
+ *     Andy Clement
  * ******************************************************************/
 package org.aspectj.asm;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.aspectj.asm.internal.ProgramElement;
@@ -21,8 +21,10 @@ import org.aspectj.bridge.ISourceLocation;
 
 /**
  * @author Mik Kersten
+ * @author Andy Clement
  */
 public interface IHierarchy extends Serializable {
+
 	public static final IProgramElement NO_STRUCTURE = new ProgramElement(null, "<build to view structure>",
 			IProgramElement.Kind.ERROR, null);
 
@@ -32,11 +34,11 @@ public interface IHierarchy extends Serializable {
 
 	public void setRoot(IProgramElement root);
 
-	public void addToFileMap(Object key, Object value);
+	public void addToFileMap(String canonicalFilePath, IProgramElement compilationUnitProgramElement);
 
-	public boolean removeFromFileMap(Object key);
+	public boolean removeFromFileMap(String canonicalFilePath);
 
-	public void setFileMap(HashMap fileMap);
+	public void setFileMap(HashMap<String, IProgramElement> fileMap);
 
 	public Object findInFileMap(Object key);
 

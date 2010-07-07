@@ -142,12 +142,16 @@ public class NameConvertor {
 	 */
 	public static char[] createShortName(char[] c, boolean haveFullyQualifiedAtLeastOneThing, boolean needsFullyQualifiedFirstEntry) {
 		if (c[0] == '[') {
-			char[] ret = CharOperation.concat(new char[] { '\\', '[' }, createShortName(CharOperation.subarray(c, 1, c.length),
-					haveFullyQualifiedAtLeastOneThing, needsFullyQualifiedFirstEntry));
+			char[] ret = CharOperation.concat(
+					new char[] { '\\', '[' },
+					createShortName(CharOperation.subarray(c, 1, c.length), haveFullyQualifiedAtLeastOneThing,
+							needsFullyQualifiedFirstEntry));
 			return ret;
 		} else if (c[0] == '+') {
-			char[] ret = CharOperation.concat(new char[] { '+' }, createShortName(CharOperation.subarray(c, 1, c.length),
-					haveFullyQualifiedAtLeastOneThing, needsFullyQualifiedFirstEntry));
+			char[] ret = CharOperation.concat(
+					new char[] { '+' },
+					createShortName(CharOperation.subarray(c, 1, c.length), haveFullyQualifiedAtLeastOneThing,
+							needsFullyQualifiedFirstEntry));
 			return ret;
 		} else if (c[0] == '*') {
 			return c; // c is *>;
@@ -195,8 +199,8 @@ public class NameConvertor {
 					BACKSLASH_LESSTHAN);
 			return CharOperation.concat(inclLT, createShortName(second, true, false));
 		} else if (smallest == gt) {
-			char[] inclLT = CharOperation.concat(createShortName(first, haveFullyQualifiedAtLeastOneThing,
-					needsFullyQualifiedFirstEntry), GREATER_THAN);
+			char[] inclLT = CharOperation.concat(
+					createShortName(first, haveFullyQualifiedAtLeastOneThing, needsFullyQualifiedFirstEntry), GREATER_THAN);
 			return CharOperation.concat(inclLT, createShortName(second, true, false));
 		} else {
 			// if c = 'Ljava/lang/Sting;LMyClass;' then first = 'Ljava/lang/String'
@@ -211,8 +215,6 @@ public class NameConvertor {
 	// public static char[] getTypeName(char[] name) {
 	// return getTypeName(name, false);
 	// }
-
-	private static final char[] WILDCARD = new char[] { '+' };
 
 	/**
 	 * Convert a typename into its handle form. There are various cases to consider here - many are discussed in pr249216. The flag
