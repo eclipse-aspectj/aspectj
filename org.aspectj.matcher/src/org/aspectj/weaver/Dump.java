@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2004 IBM Corporation
+ * Copyright (c) 2004,2010 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -7,23 +7,19 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Matthew Webster 
+ *     Matthew Webster, IBM
  * ******************************************************************/
 package org.aspectj.weaver;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
-import java.util.WeakHashMap;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHolder;
@@ -33,9 +29,7 @@ import org.aspectj.weaver.tools.TraceFactory;
 import org.aspectj.weaver.tools.Traceable;
 
 /**
- * @author websterm
- * 
- *         To change the template for this generated type comment go to Window>Preferences>Java>Code Generation>Code and Comments
+ * @author Matthew Webster
  */
 public class Dump {
 
@@ -61,10 +55,11 @@ public class Dump {
 	private PrintStream print;
 
 	private static String[] savedCommandLine;
-	private static List savedFullClasspath;
+	private static List<String> savedFullClasspath;
 	private static IMessageHolder savedMessageHolder;
 
-	private static Map nodes = new WeakHashMap();
+	// private static Map<INode, WeakReference<INode>> nodes = Collections
+	// .synchronizedMap(new WeakHashMap<INode, WeakReference<INode>>());
 	private static String lastDumpFileName = UNKNOWN_FILENAME;
 
 	private static boolean preserveOnNextReset = false;
@@ -83,7 +78,7 @@ public class Dump {
 			preserveOnNextReset = false;
 			return;
 		} else {
-			nodes.clear();
+			// nodes.clear();
 			savedMessageHolder = null;
 		}
 	}
@@ -99,8 +94,9 @@ public class Dump {
 			fileName = dump.getFileName();
 			dump.dumpDefault();
 		} finally {
-			if (dump != null)
+			if (dump != null) {
 				dump.close();
+			}
 		}
 		return fileName;
 	}
@@ -110,8 +106,9 @@ public class Dump {
 	}
 
 	public static String dumpWithException(IMessageHolder messageHolder, Throwable th) {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("dumpWithException", null, new Object[] { messageHolder, th });
+		}
 
 		String fileName = UNKNOWN_FILENAME;
 		Dump dump = null;
@@ -120,12 +117,14 @@ public class Dump {
 			fileName = dump.getFileName();
 			dump.dumpException(messageHolder, th);
 		} finally {
-			if (dump != null)
+			if (dump != null) {
 				dump.close();
+			}
 		}
 
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("dumpWithException", fileName);
+		}
 		return fileName;
 	}
 
@@ -134,8 +133,9 @@ public class Dump {
 	}
 
 	public static String dumpOnExit(IMessageHolder messageHolder, boolean reset) {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("dumpOnExit", null, messageHolder);
+		}
 		String fileName = UNKNOWN_FILENAME;
 
 		if (!shouldDumpOnExit(messageHolder)) {
@@ -147,28 +147,34 @@ public class Dump {
 				fileName = dump.getFileName();
 				dump.dumpDefault(messageHolder);
 			} finally {
-				if (dump != null)
+				if (dump != null) {
 					dump.close();
+				}
 			}
 		}
 
-		if (reset)
+		if (reset) {
 			messageHolder.clearMessages();
+		}
 
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("dumpOnExit", fileName);
+		}
 		return fileName;
 	}
 
 	private static boolean shouldDumpOnExit(IMessageHolder messageHolder) {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("shouldDumpOnExit", null, messageHolder);
-		if (trace.isTraceEnabled())
+		}
+		if (trace.isTraceEnabled()) {
 			trace.event("shouldDumpOnExit", null, conditionKind);
+		}
 		boolean result = (messageHolder == null) || messageHolder.hasAnyMessage(conditionKind, true);
 
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("shouldDumpOnExit", result);
+		}
 		return result;
 	}
 
@@ -184,8 +190,9 @@ public class Dump {
 	}
 
 	public static boolean setDumpDirectory(String directoryName) {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("setDumpDirectory", null, directoryName);
+		}
 		boolean success = false;
 
 		File newDirectory = new File(directoryName);
@@ -194,8 +201,9 @@ public class Dump {
 			success = true;
 		}
 
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("setDumpDirectory", success);
+		}
 		return success;
 
 	}
@@ -205,16 +213,16 @@ public class Dump {
 	}
 
 	public static boolean setDumpOnExit(IMessage.Kind condition) {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.event("setDumpOnExit", null, condition);
+		}
 
 		conditionKind = condition;
 		return true;
 	}
 
 	public static boolean setDumpOnExit(String condition) {
-		for (Iterator i = IMessage.KINDS.iterator(); i.hasNext();) {
-			IMessage.Kind kind = (IMessage.Kind) i.next();
+		for (IMessage.Kind kind : IMessage.KINDS) {
 			if (kind.toString().equals(condition)) {
 				return setDumpOnExit(kind);
 			}
@@ -230,15 +238,12 @@ public class Dump {
 		return lastDumpFileName;
 	}
 
-	/*
-	 * Dump registration
-	 */
 	public static void saveCommandLine(String[] args) {
 		savedCommandLine = new String[args.length];
 		System.arraycopy(args, 0, savedCommandLine, 0, args.length);
 	}
 
-	public static void saveFullClasspath(List list) {
+	public static void saveFullClasspath(List<String> list) {
 		savedFullClasspath = list;
 	}
 
@@ -246,22 +251,23 @@ public class Dump {
 		savedMessageHolder = holder;
 	}
 
-	public static void registerNode(Class module, INode newNode) {
-		if (trace.isTraceEnabled())
-			trace.enter("registerNode", null, new Object[] { module, newNode });
+	// public static void registerNode(Class<?> module, INode newNode) {
+	// if (trace.isTraceEnabled()) {
+	// trace.enter("registerNode", null, new Object[] { module, newNode });
+	// }
+	//
+	// // TODO surely this should preserve the module???? it never has....
+	// nodes.put(newNode, new WeakReference<INode>(newNode));
+	//
+	// if (trace.isTraceEnabled()) {
+	// trace.exit("registerNode", nodes.size());
+	// }
+	// }
 
-		nodes.put(newNode, new WeakReference(newNode));
-
-		if (trace.isTraceEnabled())
-			trace.exit("registerNode", nodes.size());
-	}
-
-	/*
-	 * Dump methods
-	 */
 	private Dump(String reason) {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("<init>", this, reason);
+		}
 
 		this.reason = reason;
 
@@ -269,8 +275,9 @@ public class Dump {
 		dumpAspectJProperties();
 		dumpDumpConfiguration();
 
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("<init>", this);
+		}
 	}
 
 	public String getFileName() {
@@ -287,37 +294,32 @@ public class Dump {
 		dumpFullClasspath();
 		dumpCompilerMessages(holder);
 
-		dumpNodes();
+		// dumpNodes();
 	}
 
-	private void dumpNodes() {
-
-		/*
-		 * Dump registered nodes
-		 */
-		IVisitor dumpVisitor = new IVisitor() {
-
-			public void visitObject(Object obj) {
-				println(formatObj(obj));
-			}
-
-			public void visitList(List list) {
-				println(list);
-			}
-		};
-		Set keys = nodes.keySet();
-		for (Iterator i = keys.iterator(); i.hasNext();) {
-			Object module = i.next();
-			// INode dumpNode = (INode)nodes.get(module);
-			INode dumpNode = (INode) module;
-			println("---- " + formatObj(dumpNode) + " ----");
-			try {
-				dumpNode.accept(dumpVisitor);
-			} catch (Exception ex) {
-				trace.error(formatObj(dumpNode).toString(), ex);
-			}
-		}
-	}
+	// private void dumpNodes() {
+	//
+	// IVisitor dumpVisitor = new IVisitor() {
+	//
+	// public void visitObject(Object obj) {
+	// println(formatObj(obj));
+	// }
+	//
+	// public void visitList(List list) {
+	// println(list);
+	// }
+	// };
+	//
+	// Set<INode> keys = nodes.keySet();
+	// for (INode dumpNode : keys) {
+	// println("---- " + formatObj(dumpNode) + " ----");
+	// try {
+	// dumpNode.accept(dumpVisitor);
+	// } catch (Exception ex) {
+	// trace.error(formatObj(dumpNode).toString(), ex);
+	// }
+	// }
+	// }
 
 	private void dumpException(IMessageHolder messageHolder, Throwable th) {
 		println("---- Exception Information ---");
@@ -341,8 +343,7 @@ public class Dump {
 	private void dumpFullClasspath() {
 		println("---- Full Classpath ---");
 		if (savedFullClasspath != null && savedFullClasspath.size() > 0) {
-			for (Iterator iter = savedFullClasspath.iterator(); iter.hasNext();) {
-				String fileName = (String) iter.next();
+			for (String fileName : savedFullClasspath) {
 				File file = new File(fileName);
 				println(file);
 			}
@@ -364,12 +365,12 @@ public class Dump {
 
 	private void dumpCompilerMessages(IMessageHolder messageHolder) {
 		println("---- Compiler Messages ---");
-		if (messageHolder != null)
-			for (Iterator i = messageHolder.getUnmodifiableListView().iterator(); i.hasNext();) {
-				IMessage message = (IMessage) i.next();
+		if (messageHolder != null) {
+			for (Iterator<IMessage> i = messageHolder.getUnmodifiableListView().iterator(); i.hasNext();) {
+				IMessage message = i.next();
 				println(message.toString());
 			}
-		else {
+		} else {
 			println(NULL_OR_EMPTY);
 		}
 	}
@@ -378,8 +379,9 @@ public class Dump {
 	 * Dump output
 	 */
 	private void openDump() {
-		if (print != null)
+		if (print != null) {
 			return;
+		}
 
 		Date now = new Date();
 		fileName = FILENAME_PREFIX + "." + new SimpleDateFormat("yyyyMMdd").format(now) + "."
@@ -441,10 +443,11 @@ public class Dump {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void println(List list) {
-		if (list == null || list.isEmpty())
+		if (list == null || list.isEmpty()) {
 			println(NULL_OR_EMPTY);
-		else
+		} else {
 			for (Iterator i = list.iterator(); i.hasNext();) {
 				Object o = i.next();
 				if (o instanceof Exception) {
@@ -453,6 +456,7 @@ public class Dump {
 					println(o.toString());
 				}
 			}
+		}
 	}
 
 	private static Object formatObj(Object obj) {
@@ -460,39 +464,41 @@ public class Dump {
 		/* These classes have a safe implementation of toString() */
 		if (obj == null || obj instanceof String || obj instanceof Number || obj instanceof Boolean || obj instanceof Exception
 				|| obj instanceof Character || obj instanceof Class || obj instanceof File || obj instanceof StringBuffer
-				|| obj instanceof URL)
+				|| obj instanceof URL) {
 			return obj;
-		else
+		} else {
 			try {
 
 				/* Classes can provide an alternative implementation of toString() */
 				if (obj instanceof Traceable) {
 					Traceable t = (Traceable) obj;
 					return t.toTraceString();
-				}
-
-				/* Use classname@hashcode */
-				else
+				} else {
 					return obj.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(obj));
+				}
 
 				/* Object.hashCode() can be override and may thow an exception */
 			} catch (Exception ex) {
 				return obj.getClass().getName() + "@FFFFFFFF";
 			}
+		}
 	}
 
 	static {
 		String exceptionName = System.getProperty("org.aspectj.weaver.Dump.exception", "true");
-		if (!exceptionName.equals("false"))
+		if (!exceptionName.equals("false")) {
 			setDumpOnException(true);
+		}
 
 		String conditionName = System.getProperty(DUMP_CONDITION_PROPERTY);
-		if (conditionName != null)
+		if (conditionName != null) {
 			setDumpOnExit(conditionName);
+		}
 
 		String directoryName = System.getProperty(DUMP_DIRECTORY_PROPERTY);
-		if (directoryName != null)
+		if (directoryName != null) {
 			setDumpDirectory(directoryName);
+		}
 	}
 
 	public interface INode {

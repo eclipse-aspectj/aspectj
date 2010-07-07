@@ -29,11 +29,11 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
-import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.context.PinpointingMessageHandler;
 import org.aspectj.util.IStructureModel;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
@@ -163,7 +163,7 @@ public abstract class World implements Dump.INode {
 		if (trace.isTraceEnabled()) {
 			trace.enter("<init>", this);
 		}
-		Dump.registerNode(this.getClass(), this);
+		// Dump.registerNode(this.getClass(), this);
 		typeMap.put("B", ResolvedType.BYTE);
 		typeMap.put("S", ResolvedType.SHORT);
 		typeMap.put("I", ResolvedType.INT);
@@ -529,8 +529,8 @@ public abstract class World implements Dump.INode {
 	private ReferenceType makeGenericTypeFrom(ReferenceTypeDelegate delegate, ReferenceType rawType) {
 		String genericSig = delegate.getDeclaredGenericSignature();
 		if (genericSig != null) {
-			return new ReferenceType(UnresolvedType.forGenericTypeSignature(rawType.getSignature(), delegate
-					.getDeclaredGenericSignature()), this);
+			return new ReferenceType(UnresolvedType.forGenericTypeSignature(rawType.getSignature(),
+					delegate.getDeclaredGenericSignature()), this);
 		} else {
 			return new ReferenceType(UnresolvedType.forGenericTypeVariables(rawType.getSignature(), delegate.getTypeVariables()),
 					this);
@@ -646,8 +646,8 @@ public abstract class World implements Dump.INode {
 	 */
 	public final Advice createAdviceMunger(AdviceKind kind, Pointcut p, Member signature, int extraParameterFlags,
 			IHasSourceLocation loc, ResolvedType declaringAspect) {
-		AjAttribute.AdviceAttribute attribute = new AjAttribute.AdviceAttribute(kind, p, extraParameterFlags, loc.getStart(), loc
-				.getEnd(), loc.getSourceContext());
+		AjAttribute.AdviceAttribute attribute = new AjAttribute.AdviceAttribute(kind, p, extraParameterFlags, loc.getStart(),
+				loc.getEnd(), loc.getSourceContext());
 		return getWeavingSupport().createAdviceMunger(attribute, p, signature, declaringAspect);
 	}
 
@@ -1562,12 +1562,12 @@ public abstract class World implements Dump.INode {
 		return true;
 	}
 
-    /**
-     * Determine if the named aspect requires a particular type around in order to
-     * be useful.  The type is named in the aop.xml file against the aspect.
-     *
-     * @return true if there is a type missing that this aspect really needed around
-     */
+	/**
+	 * Determine if the named aspect requires a particular type around in order to be useful. The type is named in the aop.xml file
+	 * against the aspect.
+	 * 
+	 * @return true if there is a type missing that this aspect really needed around
+	 */
 	public boolean hasUnsatisfiedDependency(ResolvedType aspectType) {
 		return false;
 	}

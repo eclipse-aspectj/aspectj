@@ -36,8 +36,7 @@ import org.aspectj.weaver.tools.PointcutParameter;
 import org.aspectj.weaver.tools.ShadowMatch;
 
 /**
- * @author colyer
- * Implementation of ShadowMatch for reflection based worlds.
+ * @author colyer Implementation of ShadowMatch for reflection based worlds.
  */
 public class ShadowMatchImpl implements ShadowMatch {
 
@@ -47,20 +46,28 @@ public class ShadowMatchImpl implements ShadowMatch {
 	private PointcutParameter[] params;
 	private Member withinCode;
 	private Member subject;
-	private Class withinType;
+	private Class<?> withinType;
 	private MatchingContext matchContext = new DefaultMatchingContext();
-	
+
 	public ShadowMatchImpl(FuzzyBoolean match, Test test, ExposedState state, PointcutParameter[] params) {
 		this.match = match;
 		this.residualTest = test;
 		this.state = state;
 		this.params = params;
 	}
-	
-	public void setWithinCode(Member aMember) { this.withinCode = aMember; }
-	public void setSubject(Member aMember) { this.subject = aMember; }
-	public void setWithinType(Class aClass) { this.withinType = aClass; }
-		
+
+	public void setWithinCode(Member aMember) {
+		this.withinCode = aMember;
+	}
+
+	public void setSubject(Member aMember) {
+		this.subject = aMember;
+	}
+
+	public void setWithinType(Class<?> aClass) {
+		this.withinType = aClass;
+	}
+
 	public boolean alwaysMatches() {
 		return match.alwaysTrue();
 	}
@@ -74,15 +81,19 @@ public class ShadowMatchImpl implements ShadowMatch {
 	}
 
 	public JoinPointMatch matchesJoinPoint(Object thisObject, Object targetObject, Object[] args) {
-		if (neverMatches()) return JoinPointMatchImpl.NO_MATCH;
-		if (new RuntimeTestEvaluator(residualTest,thisObject,targetObject,args,this.matchContext).matches()) {
-			return new JoinPointMatchImpl(getPointcutParameters(thisObject,targetObject,args));
+		if (neverMatches()) {
+			return JoinPointMatchImpl.NO_MATCH;
+		}
+		if (new RuntimeTestEvaluator(residualTest, thisObject, targetObject, args, this.matchContext).matches()) {
+			return new JoinPointMatchImpl(getPointcutParameters(thisObject, targetObject, args));
 		} else {
 			return JoinPointMatchImpl.NO_MATCH;
 		}
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.tools.ShadowMatch#setMatchingContext(org.aspectj.weaver.tools.MatchingContext)
 	 */
 	public void setMatchingContext(MatchingContext aMatchContext) {
@@ -93,8 +104,9 @@ public class ShadowMatchImpl implements ShadowMatch {
 		Var[] vars = state.vars;
 		PointcutParameterImpl[] bindings = new PointcutParameterImpl[params.length];
 		for (int i = 0; i < bindings.length; i++) {
-			bindings[i] = new PointcutParameterImpl(params[i].getName(),params[i].getType());
-			bindings[i].setBinding(((ReflectionVar)vars[i]).getBindingAtJoinPoint(thisObject, targetObject, args,subject,withinCode,withinType));
+			bindings[i] = new PointcutParameterImpl(params[i].getName(), params[i].getType());
+			bindings[i].setBinding(((ReflectionVar) vars[i]).getBindingAtJoinPoint(thisObject, targetObject, args, subject,
+					withinCode, withinType));
 		}
 		return bindings;
 	}
@@ -107,55 +119,52 @@ public class ShadowMatchImpl implements ShadowMatch {
 		private final Object targetObject;
 		private final Object[] args;
 		private final MatchingContext matchContext;
-		
-		
-		public RuntimeTestEvaluator(Test aTest,Object thisObject, Object targetObject, Object[] args, MatchingContext context) {
+
+		public RuntimeTestEvaluator(Test aTest, Object thisObject, Object targetObject, Object[] args, MatchingContext context) {
 			this.test = aTest;
 			this.thisObject = thisObject;
 			this.targetObject = targetObject;
 			this.args = args;
 			this.matchContext = context;
 		}
-		
+
 		public boolean matches() {
 			test.accept(this);
 			return matches;
 		}
-		
+
 		public void visit(And e) {
-			boolean leftMatches = 
-				new RuntimeTestEvaluator(e.getLeft(),thisObject,targetObject,args,matchContext).matches();
+			boolean leftMatches = new RuntimeTestEvaluator(e.getLeft(), thisObject, targetObject, args, matchContext).matches();
 			if (!leftMatches) {
 				matches = false;
 			} else {
-				matches = new RuntimeTestEvaluator(e.getRight(),thisObject,targetObject,args,matchContext).matches();
-			}			
+				matches = new RuntimeTestEvaluator(e.getRight(), thisObject, targetObject, args, matchContext).matches();
+			}
 		}
 
-		public void visit(Instanceof i) {
-			ReflectionVar v = (ReflectionVar) i.getVar();
-			Object value = v.getBindingAtJoinPoint(thisObject,targetObject, args);
+		public void visit(Instanceof instanceofTest) {
+			ReflectionVar v = (ReflectionVar) instanceofTest.getVar();
+			Object value = v.getBindingAtJoinPoint(thisObject, targetObject, args);
 			World world = v.getType().getWorld();
-			ResolvedType desiredType = i.getType().resolve(world);
+			ResolvedType desiredType = instanceofTest.getType().resolve(world);
 			ResolvedType actualType = world.resolve(value.getClass().getName());
 			matches = desiredType.isAssignableFrom(actualType);
 		}
-		
+
 		public void visit(MatchingContextBasedTest matchingContextTest) {
 			matches = matchingContextTest.matches(this.matchContext);
 		}
 
 		public void visit(Not not) {
-			matches = ! new RuntimeTestEvaluator(not.getBody(),thisObject,targetObject,args,matchContext).matches();
+			matches = !new RuntimeTestEvaluator(not.getBody(), thisObject, targetObject, args, matchContext).matches();
 		}
 
 		public void visit(Or or) {
-			boolean leftMatches = 
-				new RuntimeTestEvaluator(or.getLeft(),thisObject,targetObject,args,matchContext).matches();
+			boolean leftMatches = new RuntimeTestEvaluator(or.getLeft(), thisObject, targetObject, args, matchContext).matches();
 			if (leftMatches) {
 				matches = true;
 			} else {
-				matches = new RuntimeTestEvaluator(or.getRight(),thisObject,targetObject,args,matchContext).matches();
+				matches = new RuntimeTestEvaluator(or.getRight(), thisObject, targetObject, args, matchContext).matches();
 			}
 		}
 
@@ -172,18 +181,18 @@ public class ShadowMatchImpl implements ShadowMatch {
 		}
 
 		public void visit(FieldGetCall fieldGetCall) {
-			throw new UnsupportedOperationException("Can't evaluate fieldGetCall test at runtime");			
+			throw new UnsupportedOperationException("Can't evaluate fieldGetCall test at runtime");
 		}
 
 		public void visit(HasAnnotation hasAnnotation) {
 			ReflectionVar v = (ReflectionVar) hasAnnotation.getVar();
-			Object value = v.getBindingAtJoinPoint(thisObject,targetObject, args);
+			Object value = v.getBindingAtJoinPoint(thisObject, targetObject, args);
 			World world = v.getType().getWorld();
 			ResolvedType actualVarType = world.resolve(value.getClass().getName());
 			ResolvedType requiredAnnotationType = hasAnnotation.getAnnotationType().resolve(world);
 			matches = actualVarType.hasAnnotation(requiredAnnotationType);
 		}
-		
+
 	}
 
 }
