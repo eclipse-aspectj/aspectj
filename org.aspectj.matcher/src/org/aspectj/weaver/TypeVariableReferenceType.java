@@ -20,7 +20,6 @@ import java.util.Map;
 public class TypeVariableReferenceType extends ReferenceType implements TypeVariableReference {
 
 	private TypeVariable typeVariable;
-	private boolean resolvedIfBounds = false;
 
 	// If 'fixedUp' then the type variable in here is a reference to the real one that may
 	// exist either on a member or a type. Not fixedUp means that we unpacked a generic
