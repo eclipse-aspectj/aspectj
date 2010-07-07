@@ -14,7 +14,6 @@ package org.aspectj.weaver.bcel;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,7 +54,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 	 * Wrapper member cache, key is wrapper name. This structure is queried when regular shadow matching in the advice body
 	 * (call/get/set) occurs
 	 */
-	private Map m_inlineAccessorBcelMethods;
+	private Map<String, ResolvedMember> m_inlineAccessorBcelMethods;
 
 	/**
 	 * The aspect we act for
@@ -65,7 +64,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 	/**
 	 * The wrapper method we need to add. Those are added at the end of the munging
 	 */
-	private Set m_inlineAccessorMethodGens;
+	private Set<LazyMethodGen> inlineAccessorMethodGens;
 
 	public BcelAccessForInlineMunger(ResolvedType aspectType) {
 		super(null, aspectType);
@@ -77,25 +76,23 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 	@Override
 	public boolean munge(BcelClassWeaver weaver) {
 		m_aspectGen = weaver.getLazyClassGen();
-		m_inlineAccessorBcelMethods = new HashMap(0);
-		m_inlineAccessorMethodGens = new HashSet();
+		m_inlineAccessorBcelMethods = new HashMap<String, ResolvedMember>(0);
+		inlineAccessorMethodGens = new HashSet<LazyMethodGen>();
 
 		// look for all @Around advices
-		for (Iterator iterator = m_aspectGen.getMethodGens().iterator(); iterator.hasNext();) {
-			LazyMethodGen methodGen = (LazyMethodGen) iterator.next();
+		for (LazyMethodGen methodGen : m_aspectGen.getMethodGens()) {
 			if (methodGen.hasAnnotation(UnresolvedType.forName("org/aspectj/lang/annotation/Around"))) {
 				openAroundAdvice(methodGen);
 			}
 		}
 
 		// add the accessors
-		for (Iterator iterator = m_inlineAccessorMethodGens.iterator(); iterator.hasNext();) {
-			LazyMethodGen lazyMethodGen = (LazyMethodGen) iterator.next();
+		for (LazyMethodGen lazyMethodGen : inlineAccessorMethodGens) {
 			m_aspectGen.addMethodGen(lazyMethodGen);
 		}
 
 		// flush some
-		m_inlineAccessorMethodGens = null;
+		inlineAccessorMethodGens = null;
 		// we keep m_inlineAccessorsResolvedMembers for shadow matching
 
 		return true;
@@ -109,7 +106,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 	 */
 	@Override
 	public ResolvedMember getMatchingSyntheticMember(Member member) {
-		return (ResolvedMember) m_inlineAccessorBcelMethods.get(member.getName());
+		return m_inlineAccessorBcelMethods.get(member.getName());
 	}
 
 	@Override
@@ -154,9 +151,8 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 				ResolvedType callee = m_aspectGen.getWorld().resolve(UnresolvedType.forName(invoke.getClassName(cpg)));
 
 				// look in the whole method list and not just declared for super calls and alike
-				List methods = callee.getMethodsWithoutIterator(false, true, false);
-				for (Iterator iter = methods.iterator(); iter.hasNext();) {
-					ResolvedMember resolvedMember = (ResolvedMember) iter.next();
+				List<ResolvedMember> methods = callee.getMethodsWithoutIterator(false, true, false);
+				for (ResolvedMember resolvedMember : methods) {
 					if (invoke.getName(cpg).equals(resolvedMember.getName())
 							&& invoke.getSignature(cpg).equals(resolvedMember.getSignature()) && !resolvedMember.isPublic()) {
 						if ("<init>".equals(invoke.getName(cpg))) {
@@ -174,14 +170,14 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 								// && aspectType.getSuperclass().getName().equals(resolvedMember.getDeclaringType().getName())) {
 								ResolvedMember accessor = createOrGetInlineAccessorForSuperDispatch(resolvedMember);
 								InvokeInstruction newInst = factory.createInvoke(aspectType.getName(), accessor.getName(),
-										BcelWorld.makeBcelType(accessor.getReturnType()), BcelWorld.makeBcelTypes(accessor
-												.getParameterTypes()), Constants.INVOKEVIRTUAL);
+										BcelWorld.makeBcelType(accessor.getReturnType()),
+										BcelWorld.makeBcelTypes(accessor.getParameterTypes()), Constants.INVOKEVIRTUAL);
 								curr.setInstruction(newInst);
 							} else {
 								ResolvedMember accessor = createOrGetInlineAccessorForMethod(resolvedMember);
 								InvokeInstruction newInst = factory.createInvoke(aspectType.getName(), accessor.getName(),
-										BcelWorld.makeBcelType(accessor.getReturnType()), BcelWorld.makeBcelTypes(accessor
-												.getParameterTypes()), Constants.INVOKESTATIC);
+										BcelWorld.makeBcelType(accessor.getReturnType()),
+										BcelWorld.makeBcelTypes(accessor.getParameterTypes()), Constants.INVOKESTATIC);
 								curr.setInstruction(newInst);
 							}
 						}
@@ -202,9 +198,9 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 						} else {
 							accessor = createOrGetInlineAccessorForFieldSet(resolvedMember);
 						}
-						InvokeInstruction newInst = factory.createInvoke(aspectType.getName(), accessor.getName(), BcelWorld
-								.makeBcelType(accessor.getReturnType()), BcelWorld.makeBcelTypes(accessor.getParameterTypes()),
-								Constants.INVOKESTATIC);
+						InvokeInstruction newInst = factory.createInvoke(aspectType.getName(), accessor.getName(),
+								BcelWorld.makeBcelType(accessor.getReturnType()),
+								BcelWorld.makeBcelTypes(accessor.getParameterTypes()), Constants.INVOKESTATIC);
 						curr.setInstruction(newInst);
 
 						break;// ok we found a matching callee member and swapped the instruction with the accessor
@@ -232,7 +228,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 	private ResolvedMember createOrGetInlineAccessorForMethod(ResolvedMember resolvedMember) {
 		String accessor = NameMangler.inlineAccessMethodForMethod(resolvedMember.getName(), resolvedMember.getDeclaringType(),
 				aspectType);
-		ResolvedMember inlineAccessor = (ResolvedMember) m_inlineAccessorBcelMethods.get(accessor);
+		ResolvedMember inlineAccessor = m_inlineAccessorBcelMethods.get(accessor);
 		if (inlineAccessor == null) {
 			// add static method to aspect
 			inlineAccessor = AjcMemberMaker.inlineAccessMethodForMethod(aspectType, resolvedMember);
@@ -247,7 +243,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 			method.addAttribute(Utility.bcelAttribute(new AjAttribute.EffectiveSignatureAttribute(resolvedMember,
 					Shadow.MethodCall, false), m_aspectGen.getConstantPool()));
 
-			m_inlineAccessorMethodGens.add(method);
+			inlineAccessorMethodGens.add(method);
 
 			InstructionList il = method.getBody();
 			int register = 0;
@@ -274,7 +270,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 	 */
 	private ResolvedMember createOrGetInlineAccessorForSuperDispatch(ResolvedMember resolvedMember) {
 		String accessor = NameMangler.superDispatchMethod(aspectType, resolvedMember.getName());
-		ResolvedMember inlineAccessor = (ResolvedMember) m_inlineAccessorBcelMethods.get(accessor);
+		ResolvedMember inlineAccessor = m_inlineAccessorBcelMethods.get(accessor);
 		if (inlineAccessor == null) {
 			// add super accessor method to class:
 			inlineAccessor = AjcMemberMaker.superAccessMethod(aspectType, resolvedMember);
@@ -289,7 +285,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 			method.addAttribute(Utility.bcelAttribute(new AjAttribute.EffectiveSignatureAttribute(resolvedMember,
 					Shadow.MethodCall, false), m_aspectGen.getConstantPool()));
 
-			m_inlineAccessorMethodGens.add(method);
+			inlineAccessorMethodGens.add(method);
 
 			InstructionList il = method.getBody();
 			il.append(InstructionConstants.ALOAD_0);
@@ -317,7 +313,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 	private ResolvedMember createOrGetInlineAccessorForFieldGet(ResolvedMember resolvedMember) {
 		String accessor = NameMangler.inlineAccessMethodForFieldGet(resolvedMember.getName(), resolvedMember.getDeclaringType(),
 				aspectType);
-		ResolvedMember inlineAccessor = (ResolvedMember) m_inlineAccessorBcelMethods.get(accessor);
+		ResolvedMember inlineAccessor = m_inlineAccessorBcelMethods.get(accessor);
 		if (inlineAccessor == null) {
 			// add static method to aspect
 			inlineAccessor = AjcMemberMaker.inlineAccessMethodForFieldGet(aspectType, resolvedMember);
@@ -332,7 +328,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 			method.addAttribute(Utility.bcelAttribute(new AjAttribute.EffectiveSignatureAttribute(resolvedMember, Shadow.FieldGet,
 					false), m_aspectGen.getConstantPool()));
 
-			m_inlineAccessorMethodGens.add(method);
+			inlineAccessorMethodGens.add(method);
 
 			InstructionList il = method.getBody();
 			if (Modifier.isStatic(resolvedMember.getModifiers())) {
@@ -357,7 +353,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 	private ResolvedMember createOrGetInlineAccessorForFieldSet(ResolvedMember resolvedMember) {
 		String accessor = NameMangler.inlineAccessMethodForFieldSet(resolvedMember.getName(), resolvedMember.getDeclaringType(),
 				aspectType);
-		ResolvedMember inlineAccessor = (ResolvedMember) m_inlineAccessorBcelMethods.get(accessor);
+		ResolvedMember inlineAccessor = m_inlineAccessorBcelMethods.get(accessor);
 		if (inlineAccessor == null) {
 			// add static method to aspect
 			inlineAccessor = AjcMemberMaker.inlineAccessMethodForFieldSet(aspectType, resolvedMember);
@@ -372,7 +368,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 			method.addAttribute(Utility.bcelAttribute(new AjAttribute.EffectiveSignatureAttribute(resolvedMember, Shadow.FieldSet,
 					false), m_aspectGen.getConstantPool()));
 
-			m_inlineAccessorMethodGens.add(method);
+			inlineAccessorMethodGens.add(method);
 
 			InstructionList il = method.getBody();
 			if (Modifier.isStatic(resolvedMember.getModifiers())) {

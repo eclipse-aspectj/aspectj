@@ -156,13 +156,14 @@ public class AtAjAttributes {
 	private static class AjAttributeFieldStruct extends AjAttributeStruct {
 
 		final Field field;
-		final BcelField bField;
+
+		// final BcelField bField;
 
 		public AjAttributeFieldStruct(Field field, BcelField bField, ResolvedType type, ISourceContext sourceContext,
 				IMessageHandler messageHandler) {
 			super(type, sourceContext, messageHandler);
 			this.field = field;
-			this.bField = bField;
+			// this.bField = bField;
 		}
 	}
 
@@ -413,8 +414,8 @@ public class AtAjAttributes {
 				msgHandler.handleMessage(new Message(WeaverMessages.format(WeaverMessages.RETURNING_FORMAL_NOT_DECLARED_IN_ADVICE,
 						e.getFormalName()), IMessage.ERROR, null, bMethod.getSourceLocation()));
 			} catch (ThrownFormalNotDeclaredInAdviceSignatureException e) {
-				msgHandler.handleMessage(new Message(WeaverMessages.format(WeaverMessages.THROWN_FORMAL_NOT_DECLARED_IN_ADVICE, e
-						.getFormalName()), IMessage.ERROR, null, bMethod.getSourceLocation()));
+				msgHandler.handleMessage(new Message(WeaverMessages.format(WeaverMessages.THROWN_FORMAL_NOT_DECLARED_IN_ADVICE,
+						e.getFormalName()), IMessage.ERROR, null, bMethod.getSourceLocation()));
 			}
 		}
 		hasAtAspectJAnnotation = hasAtAspectJAnnotation || hasAtAspectJAnnotationMustReturnVoid;
@@ -692,7 +693,7 @@ public class AtAjAttributes {
 					FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
 					IScope binding = new BindingScope(struct.enclosingType, struct.context, bindings);
 					// first add the declare implements like
-					List parents = new ArrayList(1);
+					List<TypePattern> parents = new ArrayList<TypePattern>(1);
 					parents.add(parent);
 					DeclareParents dp = new DeclareParents(typePattern, parents, false);
 					dp.resolve(binding); // resolves the parent and child parts
@@ -967,12 +968,12 @@ public class AtAjAttributes {
 
 		// The factory method for building the implementation is the
 		// one attached to the annotation:
-		Method implementationFactory = struct.method;
+		// Method implementationFactory = struct.method;
 
 		boolean hasAtLeastOneMethod = false;
 
-		for (Iterator iterator = newInterfaceTypes.iterator(); iterator.hasNext();) {
-			ResolvedType typeForDelegation = (ResolvedType) iterator.next();
+		for (Iterator<ResolvedType> iterator = newInterfaceTypes.iterator(); iterator.hasNext();) {
+			ResolvedType typeForDelegation = iterator.next();
 			// TODO check for overlapping interfaces. Eg. A implements I, I extends J - if they specify interfaces={I,J} we dont
 			// want to do any methods twice
 			ResolvedMember[] methods = typeForDelegation.getMethodsWithoutIterator(true, false, false).toArray(
@@ -1043,8 +1044,8 @@ public class AtAjAttributes {
 				}
 				setIgnoreUnboundBindingNames(pc, bindings);
 
-				ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber(), struct.bMethod
-						.getDeclarationOffset());
+				ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber(),
+						struct.bMethod.getDeclarationOffset());
 				struct.ajAttributes.add(new AjAttribute.AdviceAttribute(AdviceKind.Before, pc, extraArgument, sl.getOffset(), sl
 						.getOffset() + 1,// FIXME AVASM
 						struct.context));
@@ -1095,8 +1096,8 @@ public class AtAjAttributes {
 				}
 				setIgnoreUnboundBindingNames(pc, bindings);
 
-				ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber(), struct.bMethod
-						.getDeclarationOffset());
+				ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber(),
+						struct.bMethod.getDeclarationOffset());
 				struct.ajAttributes.add(new AjAttribute.AdviceAttribute(AdviceKind.After, pc, extraArgument, sl.getOffset(), sl
 						.getOffset() + 1,// FIXME AVASM
 						struct.context));
@@ -1186,8 +1187,8 @@ public class AtAjAttributes {
 			}
 			setIgnoreUnboundBindingNames(pc, bindings);
 
-			ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber(), struct.bMethod
-					.getDeclarationOffset());
+			ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber(),
+					struct.bMethod.getDeclarationOffset());
 			struct.ajAttributes.add(new AjAttribute.AdviceAttribute(AdviceKind.AfterReturning, pc, extraArgument, sl.getOffset(),
 					sl.getOffset() + 1,// FIXME AVASM
 					struct.context));
@@ -1276,8 +1277,8 @@ public class AtAjAttributes {
 			}
 			setIgnoreUnboundBindingNames(pc, bindings);
 
-			ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber(), struct.bMethod
-					.getDeclarationOffset());
+			ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber(),
+					struct.bMethod.getDeclarationOffset());
 			struct.ajAttributes.add(new AjAttribute.AdviceAttribute(AdviceKind.AfterThrowing, pc, extraArgument, sl.getOffset(), sl
 					.getOffset() + 1, struct.context));
 			return true;
@@ -1326,8 +1327,8 @@ public class AtAjAttributes {
 				}
 				setIgnoreUnboundBindingNames(pc, bindings);
 
-				ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber(), struct.bMethod
-						.getDeclarationOffset());
+				ISourceLocation sl = struct.context.makeSourceLocation(struct.bMethod.getDeclarationLineNumber(),
+						struct.bMethod.getDeclarationOffset());
 				struct.ajAttributes.add(new AjAttribute.AdviceAttribute(AdviceKind.Around, pc, extraArgument, sl.getOffset(), sl
 						.getOffset() + 1,// FIXME AVASM
 						struct.context));
@@ -1648,8 +1649,7 @@ public class AtAjAttributes {
 	 */
 	private static AnnotationGen getAnnotation(RuntimeAnnos rvs, UnresolvedType annotationType) {
 		final String annotationTypeName = annotationType.getName();
-		for (Iterator iterator = rvs.getAnnotations().iterator(); iterator.hasNext();) {
-			AnnotationGen rv = (AnnotationGen) iterator.next();
+		for (AnnotationGen rv : rvs.getAnnotations()) {
 			if (annotationTypeName.equals(rv.getTypeName())) {
 				return rv;
 			}
@@ -1665,8 +1665,7 @@ public class AtAjAttributes {
 	 * @return annotation NVP
 	 */
 	private static NameValuePair getAnnotationElement(AnnotationGen annotation, String elementName) {
-		for (Iterator iterator1 = annotation.getValues().iterator(); iterator1.hasNext();) {
-			NameValuePair element = (NameValuePair) iterator1.next();
+		for (NameValuePair element : annotation.getValues()) {
 			if (elementName.equals(element.getNameString())) {
 				return element;
 			}
@@ -1778,10 +1777,8 @@ public class AtAjAttributes {
 		}
 
 		// sort by index
-		Collections.sort(arguments, new Comparator() {
-			public int compare(Object o, Object o1) {
-				MethodArgument mo = (MethodArgument) o;
-				MethodArgument mo1 = (MethodArgument) o1;
+		Collections.sort(arguments, new Comparator<MethodArgument>() {
+			public int compare(MethodArgument mo, MethodArgument mo1) {
 				if (mo.indexOnStack == mo1.indexOnStack) {
 					return 0;
 				} else if (mo.indexOnStack > mo1.indexOnStack) {
@@ -1866,14 +1863,14 @@ public class AtAjAttributes {
 	private static void setIgnoreUnboundBindingNames(Pointcut pointcut, FormalBinding[] bindings) {
 		// register ImplicitBindings as to be ignored since unbound
 		// TODO is it likely to fail in a bad way if f.e. this(jp) etc ?
-		List ignores = new ArrayList();
+		List<String> ignores = new ArrayList<String>();
 		for (int i = 0; i < bindings.length; i++) {
 			FormalBinding formalBinding = bindings[i];
 			if (formalBinding instanceof FormalBinding.ImplicitFormalBinding) {
 				ignores.add(formalBinding.getName());
 			}
 		}
-		pointcut.m_ignoreUnboundBindingForNames = (String[]) ignores.toArray(new String[ignores.size()]);
+		pointcut.m_ignoreUnboundBindingForNames = ignores.toArray(new String[ignores.size()]);
 	}
 
 	/**

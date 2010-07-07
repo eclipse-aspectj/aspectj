@@ -51,6 +51,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
@@ -60,11 +61,10 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.SignatureUtils;
 import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.UnresolvedType.TypeKind;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
-import org.aspectj.weaver.UnresolvedType.TypeKind;
 import org.aspectj.weaver.bcel.asm.AsmDetector;
 import org.aspectj.weaver.bcel.asm.StackMapAdder;
 
@@ -293,8 +293,8 @@ public final class LazyClassGen {
 				serialVersionUIDRequiresInitialization = true;
 				// warn about what we've done?
 				if (world.getLint().calculatingSerialVersionUID.isEnabled()) {
-					world.getLint().calculatingSerialVersionUID.signal(new String[] { getClassName(),
-							Long.toString(calculatedSerialVersionUID) + "L" }, null, null);
+					world.getLint().calculatingSerialVersionUID.signal(
+							new String[] { getClassName(), Long.toString(calculatedSerialVersionUID) + "L" }, null, null);
 				}
 			}
 		}
@@ -651,8 +651,8 @@ public final class LazyClassGen {
 		// create an empty myGen so that we can give back a return value that
 		// doesn't upset the
 		// rest of the process.
-		myGen = new ClassGen(myGen.getClassName(), myGen.getSuperclassName(), myGen.getFileName(), myGen.getModifiers(), myGen
-				.getInterfaceNames());
+		myGen = new ClassGen(myGen.getClassName(), myGen.getSuperclassName(), myGen.getFileName(), myGen.getModifiers(),
+				myGen.getInterfaceNames());
 		// raise an error against this compilation unit.
 		getWorld().showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.CLASS_TOO_BIG, this.getClassName()),
 				new SourceLocation(new File(myGen.getFileName()), 0), null);
@@ -741,9 +741,9 @@ public final class LazyClassGen {
 		return ret;
 	}
 
-	public List getChildClasses(BcelWorld world) {
+	public List<UnwovenClassFile.ChildClass> getChildClasses(BcelWorld world) {
 		if (classGens.isEmpty()) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 		List<UnwovenClassFile.ChildClass> ret = new ArrayList<UnwovenClassFile.ChildClass>();
 		for (LazyClassGen clazz : classGens) {

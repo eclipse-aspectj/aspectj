@@ -54,8 +54,9 @@ abstract class Range implements InstructionTargeter {
 		// System.err.println("  looking for " + end);
 		while (ih != end) {
 			// System.err.println("    ih " + ih);
-			if (!Range.isRangeHandle(ih))
+			if (!Range.isRangeHandle(ih)) {
 				return false;
+			}
 			ih = ih.getNext();
 		}
 		return true;
@@ -143,16 +144,18 @@ abstract class Range implements InstructionTargeter {
 	}
 
 	static InstructionHandle genStart(InstructionList body, InstructionHandle ih) {
-		if (ih == null)
+		if (ih == null) {
 			return genStart(body);
+		}
 		InstructionHandle freshIh = body.insert(ih, Range.RANGEINSTRUCTION);
 		setLineNumberFromNext(freshIh);
 		return freshIh;
 	}
 
 	static InstructionHandle genEnd(InstructionList body, InstructionHandle ih) {
-		if (ih == null)
+		if (ih == null) {
 			return genEnd(body);
+		}
 		return body.append(ih, Range.RANGEINSTRUCTION);
 	}
 
@@ -168,8 +171,9 @@ abstract class Range implements InstructionTargeter {
 
 	protected void updateTarget(InstructionHandle old_ih, InstructionHandle new_ih, InstructionList new_il) {
 		old_ih.removeTargeter(this);
-		if (new_ih != null)
+		if (new_ih != null) {
 			new_ih.addTargeter(this);
+		}
 		body = new_il;
 
 		if (old_ih == start) {
@@ -181,23 +185,26 @@ abstract class Range implements InstructionTargeter {
 	}
 
 	public static final boolean isRangeHandle(InstructionHandle ih) {
-		if (ih == null)
+		if (ih == null) {
 			return false;
+		}
 		return ih.getInstruction() == Range.RANGEINSTRUCTION;
 	}
 
 	protected static final Range getRange(InstructionHandle ih) {
 		// assert isRangeHandle(ih)
 		Range ret = null;
-		Iterator tIter = ih.getTargeters().iterator();
+		Iterator<InstructionTargeter> tIter = ih.getTargeters().iterator();
 		while (tIter.hasNext()) {
-			InstructionTargeter targeter = (InstructionTargeter) tIter.next();
+			InstructionTargeter targeter = tIter.next();
 			if (targeter instanceof Range) {
 				Range r = (Range) targeter;
-				if (r.getStart() != ih && r.getEnd() != ih)
+				if (r.getStart() != ih && r.getEnd() != ih) {
 					continue;
-				if (ret != null)
+				}
+				if (ret != null) {
 					throw new BCException("multiple ranges on same range handle: " + ret + ",  " + targeter);
+				}
 				ret = r;
 			}
 		}

@@ -51,6 +51,7 @@ import org.aspectj.apache.bcel.generic.TargetLostException;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ConstantPoolReader;
@@ -61,7 +62,6 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.Utils;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 public class Utility {
 
@@ -140,8 +140,8 @@ public class Utility {
 			kind = Constants.INVOKESPECIAL;
 		}
 
-		return fact.createInvoke(signature.getDeclaringType().getName(), signature.getName(), BcelWorld.makeBcelType(signature
-				.getReturnType()), BcelWorld.makeBcelTypes(signature.getParameterTypes()), kind);
+		return fact.createInvoke(signature.getDeclaringType().getName(), signature.getName(),
+				BcelWorld.makeBcelType(signature.getReturnType()), BcelWorld.makeBcelTypes(signature.getParameterTypes()), kind);
 	}
 
 	// XXX don't need the world now
@@ -174,8 +174,8 @@ public class Utility {
 			kind = Constants.GETFIELD;
 		}
 
-		return fact.createFieldAccess(signature.getDeclaringType().getName(), signature.getName(), BcelWorld.makeBcelType(signature
-				.getReturnType()), kind);
+		return fact.createFieldAccess(signature.getDeclaringType().getName(), signature.getName(),
+				BcelWorld.makeBcelType(signature.getReturnType()), kind);
 	}
 
 	public static Instruction createSet(InstructionFactory fact, Member signature) {
@@ -186,8 +186,8 @@ public class Utility {
 			kind = Constants.PUTFIELD;
 		}
 
-		return fact.createFieldAccess(signature.getDeclaringType().getName(), signature.getName(), BcelWorld.makeBcelType(signature
-				.getReturnType()), kind);
+		return fact.createFieldAccess(signature.getDeclaringType().getName(), signature.getName(),
+				BcelWorld.makeBcelType(signature.getReturnType()), kind);
 	}
 
 	public static Instruction createInstanceof(InstructionFactory fact, ReferenceType t) {
@@ -220,8 +220,8 @@ public class Utility {
 	 * @return
 	 */
 	public static Instruction createInvoke(InstructionFactory fact, short kind, Member member) {
-		return fact.createInvoke(member.getDeclaringType().getName(), member.getName(), BcelWorld.makeBcelType(member
-				.getReturnType()), BcelWorld.makeBcelTypes(member.getParameterTypes()), kind);
+		return fact.createInvoke(member.getDeclaringType().getName(), member.getName(),
+				BcelWorld.makeBcelType(member.getReturnType()), BcelWorld.makeBcelTypes(member.getParameterTypes()), kind);
 	}
 
 	private static String[] argNames = new String[] { "arg0", "arg1", "arg2", "arg3", "arg4" };
@@ -549,7 +549,7 @@ public class Utility {
 	// tail recursion...
 	// public static int getSourceLine(InstructionHandle ih) {
 	// if (ih == null) return -1;
-	//		
+	//
 	// InstructionTargeter[] ts = ih.getTargeters();
 	// if (ts != null) {
 	// for (int j = ts.length - 1; j >= 0; j--) {
@@ -570,9 +570,9 @@ public class Utility {
 			if (ih == null) {
 				return -1;
 			}
-			Iterator tIter = ih.getTargeters().iterator();
+			Iterator<InstructionTargeter> tIter = ih.getTargeters().iterator();
 			while (tIter.hasNext()) {
-				InstructionTargeter t = (InstructionTargeter) tIter.next();
+				InstructionTargeter t = tIter.next();
 				if (t instanceof LineNumberTag) {
 					return ((LineNumberTag) t).getLineNumber();
 				}
@@ -638,7 +638,7 @@ public class Utility {
 
 	public static List<Lint.Kind> getSuppressedWarnings(AnnotationAJ[] anns, Lint lint) {
 		if (anns == null) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 		// Go through the annotation types
 		List<Lint.Kind> suppressedWarnings = new ArrayList<Lint.Kind>();

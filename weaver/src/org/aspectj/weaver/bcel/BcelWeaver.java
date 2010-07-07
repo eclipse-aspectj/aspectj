@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
+import java.util.jar.Attributes.Name;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.jar.Attributes.Name;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -115,7 +115,7 @@ public class BcelWeaver {
 	// These four are setup by prepareForWeave
 	private transient List<ShadowMunger> shadowMungerList = null;
 	private transient List<ConcreteTypeMunger> typeMungerList = null;
-	private transient List lateTypeMungerList = null;
+	private transient List<ConcreteTypeMunger> lateTypeMungerList = null;
 	private transient List declareParentsList = null;
 
 	private Manifest manifest = null;
@@ -928,8 +928,8 @@ public class BcelWeaver {
 	 * @param userPointcut
 	 */
 	private void raiseUnboundFormalError(String name, Pointcut userPointcut) {
-		world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.UNBOUND_FORMAL, name), userPointcut
-				.getSourceLocation(), null);
+		world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.UNBOUND_FORMAL, name),
+				userPointcut.getSourceLocation(), null);
 	}
 
 	public void addManifest(Manifest newManifest) {
@@ -1331,8 +1331,8 @@ public class BcelWeaver {
 					ResolvedType rtx = world.resolve(UnresolvedType.forSignature(requiredTypeSignature), true);
 					boolean exists = !rtx.isMissing();
 					if (!exists) {
-						world.getLint().missingAspectForReweaving.signal(new String[] { rtx.getName(), className }, classType
-								.getSourceLocation(), null);
+						world.getLint().missingAspectForReweaving.signal(new String[] { rtx.getName(), className },
+								classType.getSourceLocation(), null);
 						// world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.MISSING_REWEAVABLE_TYPE,
 						// requiredTypeName, className), classType.getSourceLocation(), null);
 					} else {
@@ -1349,8 +1349,8 @@ public class BcelWeaver {
 								world.showMessage(IMessage.ERROR, WeaverMessages.format(
 										WeaverMessages.REWEAVABLE_ASPECT_NOT_REGISTERED, rtx.getName(), className), null, null);
 							} else if (!world.getMessageHandler().isIgnoring(IMessage.INFO)) {
-								world.showMessage(IMessage.INFO, WeaverMessages.format(WeaverMessages.VERIFIED_REWEAVABLE_TYPE, rtx
-										.getName(), rtx.getSourceLocation().getSourceFile()), null, null);
+								world.showMessage(IMessage.INFO, WeaverMessages.format(WeaverMessages.VERIFIED_REWEAVABLE_TYPE,
+										rtx.getName(), rtx.getSourceLocation().getSourceFile()), null, null);
 							}
 						}
 						alreadyConfirmedReweavableState.add(requiredTypeSignature);
@@ -1416,12 +1416,12 @@ public class BcelWeaver {
 	}
 
 	public UnwovenClassFile[] getClassFilesFor(LazyClassGen clazz) {
-		List childClasses = clazz.getChildClasses(world);
+		List<UnwovenClassFile.ChildClass> childClasses = clazz.getChildClasses(world);
 		UnwovenClassFile[] ret = new UnwovenClassFile[1 + childClasses.size()];
 		ret[0] = new UnwovenClassFile(clazz.getFileName(), clazz.getClassName(), clazz.getJavaClassBytesIncludingReweavable(world));
 		int index = 1;
-		for (Iterator iter = childClasses.iterator(); iter.hasNext();) {
-			UnwovenClassFile.ChildClass element = (UnwovenClassFile.ChildClass) iter.next();
+		for (Iterator<UnwovenClassFile.ChildClass> iter = childClasses.iterator(); iter.hasNext();) {
+			UnwovenClassFile.ChildClass element = iter.next();
 			UnwovenClassFile childClass = new UnwovenClassFile(clazz.getFileName() + "$" + element.name, element.bytes);
 			ret[index++] = childClass;
 		}
@@ -1525,10 +1525,11 @@ public class BcelWeaver {
 				// TAG: WeavingMessage
 				if (!getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
 					getWorld().getMessageHandler().handleMessage(
-							WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ANNOTATES, new String[] {
-									onType.toString(), Utility.beautifyLocation(onType.getSourceLocation()),
-									decA.getAnnotationString(), "type", decA.getAspect().toString(),
-									Utility.beautifyLocation(decA.getSourceLocation()) }));
+							WeaveMessage.constructWeavingMessage(
+									WeaveMessage.WEAVEMESSAGE_ANNOTATES,
+									new String[] { onType.toString(), Utility.beautifyLocation(onType.getSourceLocation()),
+											decA.getAnnotationString(), "type", decA.getAspect().toString(),
+											Utility.beautifyLocation(decA.getSourceLocation()) }));
 				}
 				didSomething = true;
 				ResolvedTypeMunger newAnnotationTM = new AnnotationOnTypeMunger(annoX);
@@ -1551,13 +1552,15 @@ public class BcelWeaver {
 				if (outputProblems) {
 					if (decA.isExactPattern()) {
 						world.getMessageHandler().handleMessage(
-								MessageUtil.error(WeaverMessages.format(WeaverMessages.INCORRECT_TARGET_FOR_DECLARE_ANNOTATION,
-										onType.getName(), annoX.getTypeName(), annoX.getValidTargets()), decA.getSourceLocation()));
+								MessageUtil.error(
+										WeaverMessages.format(WeaverMessages.INCORRECT_TARGET_FOR_DECLARE_ANNOTATION,
+												onType.getName(), annoX.getTypeName(), annoX.getValidTargets()),
+										decA.getSourceLocation()));
 					} else {
 						if (world.getLint().invalidTargetForAnnotation.isEnabled()) {
 							world.getLint().invalidTargetForAnnotation.signal(new String[] { onType.getName(), annoX.getTypeName(),
-									annoX.getValidTargets() }, decA.getSourceLocation(), new ISourceLocation[] { onType
-									.getSourceLocation() });
+									annoX.getValidTargets() }, decA.getSourceLocation(),
+									new ISourceLocation[] { onType.getSourceLocation() });
 						}
 					}
 				}
@@ -1600,8 +1603,8 @@ public class BcelWeaver {
 	}
 
 	public void weaveNormalTypeMungers(ResolvedType onType) {
-		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_TYPE_MUNGERS, onType
-				.getName());
+		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_TYPE_MUNGERS,
+				onType.getName());
 		if (onType.isRawType() || onType.isParameterizedType()) {
 			onType = onType.getGenericType();
 		}
@@ -1779,9 +1782,10 @@ public class BcelWeaver {
 		if (zipOutputStream != null) {
 			String mainClassName = classFile.getJavaClass().getClassName();
 			writeZipEntry(getEntryName(mainClassName), clazz.getJavaClass(world).getBytes());
-			if (!clazz.getChildClasses(world).isEmpty()) {
-				for (Iterator i = clazz.getChildClasses(world).iterator(); i.hasNext();) {
-					UnwovenClassFile.ChildClass c = (UnwovenClassFile.ChildClass) i.next();
+			List<UnwovenClassFile.ChildClass> childClasses = clazz.getChildClasses(world);
+			if (!childClasses.isEmpty()) {
+				for (Iterator<UnwovenClassFile.ChildClass> i = childClasses.iterator(); i.hasNext();) {
+					UnwovenClassFile.ChildClass c = i.next();
 					writeZipEntry(getEntryName(mainClassName + "$" + c.name), c.bytes);
 				}
 			}

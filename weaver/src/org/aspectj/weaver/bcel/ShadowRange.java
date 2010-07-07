@@ -190,9 +190,9 @@ final class ShadowRange extends Range {
 		// now go through again and update variable slots that have been altered as a result
 		// of remapping...
 		for (InstructionHandle newIh = freshBody.getStart(); newIh != freshBody.getEnd(); newIh = newIh.getNext()) {
-			Iterator tIter = newIh.getTargeters().iterator();
+			Iterator<InstructionTargeter> tIter = newIh.getTargeters().iterator();
 			while (tIter.hasNext()) {
-				InstructionTargeter source = (InstructionTargeter) tIter.next();
+				InstructionTargeter source = tIter.next();
 				if (source instanceof LocalVariableTag) {
 					LocalVariableTag lvt = (LocalVariableTag) source;
 					if (!lvt.isRemapped() && remap.hasKey(lvt.getSlot())) {

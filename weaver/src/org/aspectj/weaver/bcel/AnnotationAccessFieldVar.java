@@ -60,10 +60,10 @@ class AnnotationAccessFieldVar extends BcelVar {
 		for (int i = 0; i < annos.length; i++) {
 			AnnotationGen annotation = ((BcelAnnotation) annos[i]).getBcelAnnotation();
 			if (annotation.getTypeSignature().equals(annotationOfInterestSignature)) {
-				List vals = annotation.getValues();
+				List<NameValuePair> vals = annotation.getValues();
 				boolean doneAndDusted = false;
-				for (Iterator iterator = vals.iterator(); iterator.hasNext();) {
-					NameValuePair object = (NameValuePair) iterator.next();
+				for (Iterator<NameValuePair> iterator = vals.iterator(); iterator.hasNext();) {
+					NameValuePair object = iterator.next();
 					Object o = object.getValue();
 					if (o instanceof EnumElementValue) {
 						EnumElementValue v = (EnumElementValue) object.getValue();
@@ -84,12 +84,11 @@ class AnnotationAccessFieldVar extends BcelVar {
 						// il.append(fact.createGetStatic(rt.getName(), v.getEnumValueString(), Type.getType(rt.getSignature())));
 						// doneAndDusted = true;
 						// }
-						int stop = 1;
 					}
 				}
 				if (!doneAndDusted) {
-					ResolvedMember[] annotationFields = toType.getWorld().resolve(
-							UnresolvedType.forSignature(annotation.getTypeSignature())).getDeclaredMethods();
+					ResolvedMember[] annotationFields = toType.getWorld()
+							.resolve(UnresolvedType.forSignature(annotation.getTypeSignature())).getDeclaredMethods();
 
 					// ResolvedMember[] fs = rt.getDeclaredFields();
 					for (int ii = 0; ii < annotationFields.length; ii++) {

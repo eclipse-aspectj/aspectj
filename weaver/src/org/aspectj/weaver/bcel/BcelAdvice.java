@@ -91,8 +91,8 @@ class BcelAdvice extends Advice {
 					if (bm.getMethod() != null && bm.getMethod().getAnnotations() != null) {
 						return adviceSignature;
 					}
-					ResolvedMemberImpl simplermember = new ResolvedMemberImpl(bm.getKind(), bm.getDeclaringType(), bm
-							.getModifiers(), bm.getReturnType(), bm.getName(), bm.getParameterTypes());// ,bm.getExceptions(),bm.getBackingGenericMember()
+					ResolvedMemberImpl simplermember = new ResolvedMemberImpl(bm.getKind(), bm.getDeclaringType(),
+							bm.getModifiers(), bm.getReturnType(), bm.getName(), bm.getParameterTypes());// ,bm.getExceptions(),bm.getBackingGenericMember()
 					// );
 					simplermember.setParameterNames(bm.getParameterNames());
 					return simplermember;
@@ -126,7 +126,7 @@ class BcelAdvice extends Advice {
 	}
 
 	@Override
-	public ShadowMunger parameterizeWith(ResolvedType declaringType, Map typeVariableMap) {
+	public ShadowMunger parameterizeWith(ResolvedType declaringType, Map<String, UnresolvedType> typeVariableMap) {
 		Pointcut pc = getPointcut().parameterizeWith(typeVariableMap, declaringType.getWorld());
 
 		BcelAdvice ret = null;
@@ -274,8 +274,8 @@ class BcelAdvice extends Advice {
 				if (resolvedMember instanceof BcelMethod && shadow.getEnclosingShadow() instanceof BcelShadow) {
 					Member enclosingMember = shadow.getEnclosingShadow().getSignature();
 					if (enclosingMember instanceof BcelMethod) {
-						removeUnnecessaryProblems((BcelMethod) enclosingMember, ((BcelMethod) resolvedMember)
-								.getDeclarationLineNumber());
+						removeUnnecessaryProblems((BcelMethod) enclosingMember,
+								((BcelMethod) resolvedMember).getDeclarationLineNumber());
 					}
 				}
 			}
@@ -283,8 +283,8 @@ class BcelAdvice extends Advice {
 
 		if (shadow.getIWorld().isJoinpointSynchronizationEnabled() && shadow.getKind() == Shadow.MethodExecution
 				&& (s.getSignature().getModifiers() & Modifier.SYNCHRONIZED) != 0) {
-			shadow.getIWorld().getLint().advisingSynchronizedMethods.signal(new String[] { shadow.toString() }, shadow
-					.getSourceLocation(), new ISourceLocation[] { getSourceLocation() });
+			shadow.getIWorld().getLint().advisingSynchronizedMethods.signal(new String[] { shadow.toString() },
+					shadow.getSourceLocation(), new ISourceLocation[] { getSourceLocation() });
 		}
 
 		// FIXME AV - see #75442, this logic is not enough so for now comment it out until we fix the bug
@@ -334,8 +334,8 @@ class BcelAdvice extends Advice {
 			LazyClassGen enclosingClass = shadow.getEnclosingClass();
 			if (enclosingClass != null && enclosingClass.isInterface() && shadow.getEnclosingMethod().getName().charAt(0) == '<') {
 				// Do not add methods with bodies to an interface (252198, 163005)
-				shadow.getWorld().getLint().cannotAdviseJoinpointInInterfaceWithAroundAdvice.signal(shadow.toString(), shadow
-						.getSourceLocation());
+				shadow.getWorld().getLint().cannotAdviseJoinpointInInterfaceWithAroundAdvice.signal(shadow.toString(),
+						shadow.getSourceLocation());
 				return false;
 			}
 			if (!canInline(s)) {
@@ -384,8 +384,9 @@ class BcelAdvice extends Advice {
 		for (int i = 0, len = excs.length; i < len; i++) {
 			ResolvedType t = world.resolve(excs[i], true);
 			if (t.isMissing()) {
-				world.getLint().cantFindType.signal(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_EXCEPTION_TYPE, excs[i]
-						.getName()), getSourceLocation());
+				world.getLint().cantFindType
+						.signal(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_EXCEPTION_TYPE, excs[i].getName()),
+								getSourceLocation());
 				// IMessage msg = new Message(
 				// WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_EXCEPTION_TYPE,excs[i].getName()),
 				// "",IMessage.ERROR,getSourceLocation(),null,null);
@@ -468,8 +469,8 @@ class BcelAdvice extends Advice {
 		if (hasExtraParameter() && getKind() == AdviceKind.AfterReturning) {
 			UnresolvedType extraParameterType = getExtraParameterType();
 			if (!extraParameterType.equals(UnresolvedType.OBJECT) && !extraParameterType.isPrimitiveType()) {
-				il.append(BcelRenderer.renderTest(fact, world, Test.makeInstanceof(extraArgVar, getExtraParameterType().resolve(
-						world)), null, ifNoAdvice, null));
+				il.append(BcelRenderer.renderTest(fact, world,
+						Test.makeInstanceof(extraArgVar, getExtraParameterType().resolve(world)), null, ifNoAdvice, null));
 			}
 		}
 		il.append(getAdviceArgSetup(shadow, extraArgVar, null));
@@ -522,7 +523,7 @@ class BcelAdvice extends Advice {
 		// BcelWorld.makeBcelType(targetAspectField.getType()),
 		// Constants.GETSTATIC));
 		// }
-		//        
+		//
 		// System.err.println("BcelAdvice: " + exposedState);
 
 		if (exposedState.getAspectInstance() != null) {
@@ -551,9 +552,12 @@ class BcelAdvice extends Advice {
 						// make sure we are in an around, since we deal with the closure, not the arg here
 						if (getKind() != AdviceKind.Around) {
 							previousIsClosure = false;
-							getConcreteAspect().getWorld().getMessageHandler().handleMessage(
-									new Message("use of ProceedingJoinPoint is allowed only on around advice (" + "arg " + i
-											+ " in " + toString() + ")", this.getSourceLocation(), true));
+							getConcreteAspect()
+									.getWorld()
+									.getMessageHandler()
+									.handleMessage(
+											new Message("use of ProceedingJoinPoint is allowed only on around advice (" + "arg "
+													+ i + " in " + toString() + ")", this.getSourceLocation(), true));
 							// try to avoid verify error and pass in null
 							il.append(InstructionConstants.ACONST_NULL);
 						} else {
@@ -586,9 +590,12 @@ class BcelAdvice extends Advice {
 						extraVar.appendLoadAndConvert(il, fact, getExtraParameterType().resolve(world));
 					} else {
 						previousIsClosure = false;
-						getConcreteAspect().getWorld().getMessageHandler().handleMessage(
-								new Message("use of ProceedingJoinPoint is allowed only on around advice (" + "arg " + i + " in "
-										+ toString() + ")", this.getSourceLocation(), true));
+						getConcreteAspect()
+								.getWorld()
+								.getMessageHandler()
+								.handleMessage(
+										new Message("use of ProceedingJoinPoint is allowed only on around advice (" + "arg " + i
+												+ " in " + toString() + ")", this.getSourceLocation(), true));
 						// try to avoid verify error and pass in null
 						il.append(InstructionConstants.ACONST_NULL);
 					}

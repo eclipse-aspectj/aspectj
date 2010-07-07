@@ -93,7 +93,7 @@ class BcelClassWeaver implements IClassWeaver {
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelClassWeaver.class);
 
 	public static boolean weave(BcelWorld world, LazyClassGen clazz, List<ShadowMunger> shadowMungers,
-			List<ConcreteTypeMunger> typeMungers, List lateTypeMungers, boolean inReweavableMode) {
+			List<ConcreteTypeMunger> typeMungers, List<ConcreteTypeMunger> lateTypeMungers, boolean inReweavableMode) {
 		BcelClassWeaver classWeaver = new BcelClassWeaver(world, clazz, shadowMungers, typeMungers, lateTypeMungers);
 		classWeaver.setReweavableMode(inReweavableMode);
 		boolean b = classWeaver.weave();
@@ -105,7 +105,7 @@ class BcelClassWeaver implements IClassWeaver {
 	private final LazyClassGen clazz;
 	private final List<ShadowMunger> shadowMungers;
 	private final List<ConcreteTypeMunger> typeMungers;
-	private final List lateTypeMungers;
+	private final List<ConcreteTypeMunger> lateTypeMungers;
 
 	private List<ShadowMunger>[] indexedShadowMungers;
 	private boolean canMatchBodyShadows = false;
@@ -136,7 +136,7 @@ class BcelClassWeaver implements IClassWeaver {
 	private final List<BcelShadow> initializationShadows = new ArrayList<BcelShadow>();
 
 	private BcelClassWeaver(BcelWorld world, LazyClassGen clazz, List<ShadowMunger> shadowMungers,
-			List<ConcreteTypeMunger> typeMungers, List lateTypeMungers) {
+			List<ConcreteTypeMunger> typeMungers, List<ConcreteTypeMunger> lateTypeMungers) {
 		super();
 		this.world = world;
 		this.clazz = clazz;
@@ -334,8 +334,8 @@ class BcelClassWeaver implements IClassWeaver {
 			mods = mods - Modifier.ABSTRACT;
 		}
 
-		LazyMethodGen ret = new LazyMethodGen(mods, BcelWorld.makeBcelType(member.getReturnType()), member.getName(), BcelWorld
-				.makeBcelTypes(member.getParameterTypes()), UnresolvedType.getNames(member.getExceptions()), gen);
+		LazyMethodGen ret = new LazyMethodGen(mods, BcelWorld.makeBcelType(member.getReturnType()), member.getName(),
+				BcelWorld.makeBcelTypes(member.getParameterTypes()), UnresolvedType.getNames(member.getExceptions()), gen);
 
 		// 43972 : Static crosscutting makes interfaces unusable for javac
 		// ret.makeSynthetic();
@@ -355,8 +355,8 @@ class BcelClassWeaver implements IClassWeaver {
 
 		if (whatToBridgeTo == null) {
 			whatToBridgeTo = new ResolvedMemberImpl(Member.METHOD, whatToBridgeToMethodGen.getEnclosingClass().getType(),
-					whatToBridgeToMethodGen.getAccessFlags(), whatToBridgeToMethodGen.getName(), whatToBridgeToMethodGen
-							.getSignature());
+					whatToBridgeToMethodGen.getAccessFlags(), whatToBridgeToMethodGen.getName(),
+					whatToBridgeToMethodGen.getSignature());
 		}
 		// The bridge method in this type will have the same signature as the one in the supertype
 		LazyMethodGen bridgeMethod = makeBridgeMethod(clazz, theBridgeMethod);
@@ -401,8 +401,8 @@ class BcelClassWeaver implements IClassWeaver {
 	 */
 	public boolean weave() {
 		if (clazz.isWoven() && !clazz.isReweavable()) {
-			world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.ALREADY_WOVEN, clazz.getType().getName()), ty
-					.getSourceLocation(), null);
+			world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.ALREADY_WOVEN, clazz.getType().getName()),
+					ty.getSourceLocation(), null);
 			return false;
 		}
 
@@ -854,8 +854,8 @@ class BcelClassWeaver implements IClassWeaver {
 					System.err.println("Bridging:checking superinterface " + interfaces[j]);
 				}
 				ResolvedType interfaceType = world.resolve(interfaces[j]);
-				overriddenMethod = checkForOverride(interfaceType, name, psig, rsig, bridgeToCandidate.getAccessFlags(), clazz
-						.getPackageName(), bm);
+				overriddenMethod = checkForOverride(interfaceType, name, psig, rsig, bridgeToCandidate.getAccessFlags(),
+						clazz.getPackageName(), bm);
 				if (overriddenMethod != null) {
 					String key = new StringBuffer().append(overriddenMethod.getName())
 							.append(overriddenMethod.getSignatureErased()).toString(); // pr
@@ -937,8 +937,8 @@ class BcelClassWeaver implements IClassWeaver {
 							annotationsToAdd.add(ag);
 							mg.addAnnotation(decaM.getAnnotation());
 
-							AsmRelationshipProvider.addDeclareAnnotationMethodRelationship(decaM.getSourceLocation(), clazz
-									.getName(), mg.getMemberView(), world.getModelAsAsmManager());// getMethod());
+							AsmRelationshipProvider.addDeclareAnnotationMethodRelationship(decaM.getSourceLocation(),
+									clazz.getName(), mg.getMemberView(), world.getModelAsAsmManager());// getMethod());
 							reportMethodCtorWeavingMessage(clazz, mg.getMemberView(), decaM, mg.getDeclarationLineNumber());
 							isChanged = true;
 							modificationOccured = true;
@@ -979,8 +979,8 @@ class BcelClassWeaver implements IClassWeaver {
 								AnnotationGen ag = new AnnotationGen(a, clazz.getConstantPool(), true);
 								annotationsToAdd.add(ag);
 								mg.addAnnotation(decaM.getAnnotation());
-								AsmRelationshipProvider.addDeclareAnnotationMethodRelationship(decaM.getSourceLocation(), clazz
-										.getName(), mg.getMemberView(), world.getModelAsAsmManager());// getMethod());
+								AsmRelationshipProvider.addDeclareAnnotationMethodRelationship(decaM.getSourceLocation(),
+										clazz.getName(), mg.getMemberView(), world.getModelAsAsmManager());// getMethod());
 								isChanged = true;
 								modificationOccured = true;
 								forRemoval.add(decaM);
@@ -1047,10 +1047,11 @@ class BcelClassWeaver implements IClassWeaver {
 				}
 			}
 			getWorld().getMessageHandler().handleMessage(
-					WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ANNOTATES, new String[] { sig.toString(),
-							loc.toString(), decaM.getAnnotationString(),
-							methodName.startsWith("<init>") ? "constructor" : "method", decaM.getAspect().toString(),
-							Utility.beautifyLocation(decaM.getSourceLocation()) }));
+					WeaveMessage.constructWeavingMessage(
+							WeaveMessage.WEAVEMESSAGE_ANNOTATES,
+							new String[] { sig.toString(), loc.toString(), decaM.getAnnotationString(),
+									methodName.startsWith("<init>") ? "constructor" : "method", decaM.getAspect().toString(),
+									Utility.beautifyLocation(decaM.getSourceLocation()) }));
 		}
 	}
 
@@ -1138,8 +1139,8 @@ class BcelClassWeaver implements IClassWeaver {
 						continue; // skip this one...
 					}
 					annotationHolder.addAnnotation(decaF.getAnnotation());
-					AsmRelationshipProvider.addDeclareAnnotationRelationship(world.getModelAsAsmManager(), decaF
-							.getSourceLocation(), itdIsActually.getSourceLocation());
+					AsmRelationshipProvider.addDeclareAnnotationRelationship(world.getModelAsAsmManager(),
+							decaF.getSourceLocation(), itdIsActually.getSourceLocation());
 					isChanged = true;
 					modificationOccured = true;
 
@@ -1163,8 +1164,8 @@ class BcelClassWeaver implements IClassWeaver {
 							continue; // skip this one...
 						}
 						annotationHolder.addAnnotation(decaF.getAnnotation());
-						AsmRelationshipProvider.addDeclareAnnotationRelationship(world.getModelAsAsmManager(), decaF
-								.getSourceLocation(), itdIsActually.getSourceLocation());
+						AsmRelationshipProvider.addDeclareAnnotationRelationship(world.getModelAsAsmManager(),
+								decaF.getSourceLocation(), itdIsActually.getSourceLocation());
 						isChanged = true;
 						modificationOccured = true;
 						forRemoval.add(decaF);
@@ -1348,8 +1349,8 @@ class BcelClassWeaver implements IClassWeaver {
 								}
 							}
 
-							AsmRelationshipProvider.addDeclareAnnotationFieldRelationship(world.getModelAsAsmManager(), decaF
-									.getSourceLocation(), clazz.getName(), aBcelField);
+							AsmRelationshipProvider.addDeclareAnnotationFieldRelationship(world.getModelAsAsmManager(),
+									decaF.getSourceLocation(), clazz.getName(), aBcelField);
 							reportFieldAnnotationWeavingMessage(clazz, fields, fieldCounter, decaF);
 							isChanged = true;
 							modificationOccured = true;
@@ -1384,8 +1385,8 @@ class BcelClassWeaver implements IClassWeaver {
 									continue; // skip this one...
 								}
 								aBcelField.addAnnotation(decaF.getAnnotation());
-								AsmRelationshipProvider.addDeclareAnnotationFieldRelationship(world.getModelAsAsmManager(), decaF
-										.getSourceLocation(), clazz.getName(), aBcelField);
+								AsmRelationshipProvider.addDeclareAnnotationFieldRelationship(world.getModelAsAsmManager(),
+										decaF.getSourceLocation(), clazz.getName(), aBcelField);
 								isChanged = true;
 								modificationOccured = true;
 								forRemoval.add(decaF);
@@ -1455,11 +1456,11 @@ class BcelClassWeaver implements IClassWeaver {
 				if (!itdMatch) {
 					IMessage message = null;
 					if (isDeclareAtField) {
-						message = new Message("The field '" + declA.getSignaturePattern().toString() + "' does not exist", declA
-								.getSourceLocation(), true);
+						message = new Message("The field '" + declA.getSignaturePattern().toString() + "' does not exist",
+								declA.getSourceLocation(), true);
 					} else {
-						message = new Message("The method '" + declA.getSignaturePattern().toString() + "' does not exist", declA
-								.getSourceLocation(), true);
+						message = new Message("The method '" + declA.getSignaturePattern().toString() + "' does not exist",
+								declA.getSourceLocation(), true);
 					}
 					world.getMessageHandler().handleMessage(message);
 				}
@@ -1472,10 +1473,11 @@ class BcelClassWeaver implements IClassWeaver {
 		if (!getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
 			BcelField theField = (BcelField) fields.get(fieldCounter);
 			world.getMessageHandler().handleMessage(
-					WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ANNOTATES, new String[] {
-							theField.getFieldAsIs().toString() + "' of type '" + clazz.getName(), clazz.getFileName(),
-							decaF.getAnnotationString(), "field", decaF.getAspect().toString(),
-							Utility.beautifyLocation(decaF.getSourceLocation()) }));
+					WeaveMessage.constructWeavingMessage(
+							WeaveMessage.WEAVEMESSAGE_ANNOTATES,
+							new String[] { theField.getFieldAsIs().toString() + "' of type '" + clazz.getName(),
+									clazz.getFileName(), decaF.getAnnotationString(), "field", decaF.getAspect().toString(),
+									Utility.beautifyLocation(decaF.getSourceLocation()) }));
 		}
 	}
 
@@ -1489,8 +1491,8 @@ class BcelClassWeaver implements IClassWeaver {
 				if (!reportedProblems.contains(uniqueID)) {
 					reportedProblems.add(uniqueID);
 					world.getLint().elementAlreadyAnnotated.signal(new String[] { rm.toString(),
-							deca.getAnnotationType().toString() }, rm.getSourceLocation(), new ISourceLocation[] { deca
-							.getSourceLocation() });
+							deca.getAnnotationType().toString() }, rm.getSourceLocation(),
+							new ISourceLocation[] { deca.getSourceLocation() });
 				}
 			}
 			return true;
@@ -1507,8 +1509,8 @@ class BcelClassWeaver implements IClassWeaver {
 					reportedProblems.add(uniqueID);
 					reportedProblems.add(new Integer(itdfieldsig.hashCode() * deca.hashCode()));
 					world.getLint().elementAlreadyAnnotated.signal(new String[] { itdfieldsig.toString(),
-							deca.getAnnotationType().toString() }, rm.getSourceLocation(), new ISourceLocation[] { deca
-							.getSourceLocation() });
+							deca.getAnnotationType().toString() }, rm.getSourceLocation(),
+							new ISourceLocation[] { deca.getSourceLocation() });
 				}
 			}
 			return true;
@@ -1621,7 +1623,7 @@ class BcelClassWeaver implements IClassWeaver {
 	// return new BcelVar(typeX.resolve(world),
 	// genTempVarIndex(typeX.getSize()));
 	// }
-	//	 
+	//
 	// private int genTempVarIndex(int size) {
 	// return enclosingMethod.allocateLocal(size);
 	// }
@@ -1670,7 +1672,7 @@ class BcelClassWeaver implements IClassWeaver {
 				// will ensure monitorexit is called. Content on the finally
 				// block seems to
 				// be always:
-				// 
+				//
 				// E1: ALOAD_1
 				// MONITOREXIT
 				// ATHROW
@@ -1788,7 +1790,7 @@ class BcelClassWeaver implements IClassWeaver {
 				// 32: dup <-- partTwo (branch target)
 				// 33: astore_0
 				// 34: monitorenter
-				//			
+				//
 				// plus exceptiontable entry!
 				// 8 13 20 Class java/lang/ClassNotFoundException
 				Type classType = BcelWorld.makeBcelType(synchronizedMethod.getEnclosingClass().getType());
@@ -1833,8 +1835,8 @@ class BcelClassWeaver implements IClassWeaver {
 				InstructionHandle catchInstruction = prepend.getEnd();
 				prepend.append(InstructionFactory.createDup(1));
 
-				prepend.append(fact.createPutStatic(synchronizedMethod.getEnclosingClass().getType().getName(), fieldname, Type
-						.getType(Class.class)));
+				prepend.append(fact.createPutStatic(synchronizedMethod.getEnclosingClass().getType().getName(), fieldname,
+						Type.getType(Class.class)));
 				prepend.append(InstructionFactory.createBranchInstruction(Constants.GOTO, parttwo.getStart()));
 
 				// start of catch block
@@ -1842,8 +1844,8 @@ class BcelClassWeaver implements IClassWeaver {
 				catchBlockForLiteralLoadingFail.append(fact.createNew((ObjectType) Type.getType(NoClassDefFoundError.class)));
 				catchBlockForLiteralLoadingFail.append(InstructionFactory.createDup_1(1));
 				catchBlockForLiteralLoadingFail.append(InstructionFactory.SWAP);
-				catchBlockForLiteralLoadingFail.append(fact.createInvoke("java.lang.Throwable", "getMessage", Type
-						.getType(String.class), new Type[] {}, Constants.INVOKEVIRTUAL));
+				catchBlockForLiteralLoadingFail.append(fact.createInvoke("java.lang.Throwable", "getMessage",
+						Type.getType(String.class), new Type[] {}, Constants.INVOKEVIRTUAL));
 				catchBlockForLiteralLoadingFail.append(fact.createInvoke("java.lang.NoClassDefFoundError", "<init>", Type.VOID,
 						new Type[] { Type.getType(String.class) }, Constants.INVOKESPECIAL));
 				catchBlockForLiteralLoadingFail.append(InstructionFactory.ATHROW);
@@ -1871,7 +1873,7 @@ class BcelClassWeaver implements IClassWeaver {
 				// will ensure monitorexit is called. Content on the finally
 				// block seems to
 				// be always:
-				// 
+				//
 				// E1: ALOAD_1
 				// MONITOREXIT
 				// ATHROW
@@ -1965,8 +1967,8 @@ class BcelClassWeaver implements IClassWeaver {
 
 				synchronizedMethod.getBody().append(finallyBlock);
 				synchronizedMethod.addExceptionHandler(tryPosition, catchPosition, finallyStart, null/* ==finally */, false);
-				synchronizedMethod.addExceptionHandler(tryInstruction, catchInstruction, catchBlockStart, (ObjectType) Type
-						.getType(ClassNotFoundException.class), true);
+				synchronizedMethod.addExceptionHandler(tryInstruction, catchInstruction, catchBlockStart,
+						(ObjectType) Type.getType(ClassNotFoundException.class), true);
 				synchronizedMethod.addExceptionHandler(finallyStart, finallyStart.getNext(), finallyStart, null, false);
 			}
 		} else {
@@ -1992,7 +1994,7 @@ class BcelClassWeaver implements IClassWeaver {
 			// will ensure monitorexit is called. Content on the finally block
 			// seems to
 			// be always:
-			// 
+			//
 			// E1: ALOAD_1
 			// MONITOREXIT
 			// ATHROW
@@ -2211,8 +2213,8 @@ class BcelClassWeaver implements IClassWeaver {
 							LocalVariableTag lvTag = (LocalVariableTag) old;
 							LocalVariableTag lvTagFresh = (LocalVariableTag) fresh;
 							if (lvTag.getSlot() == 0) {
-								fresh = new LocalVariableTag(lvTag.getRealType().getSignature(), "ajc$aspectInstance", frameEnv
-										.get(lvTag.getSlot()), 0);
+								fresh = new LocalVariableTag(lvTag.getRealType().getSignature(), "ajc$aspectInstance",
+										frameEnv.get(lvTag.getSlot()), 0);
 							} else {
 								// // Do not move it - when copying the code from the aspect to the affected target, 'this' is
 								// // going to change from aspect to affected type. So just fix the type
@@ -2268,7 +2270,7 @@ class BcelClassWeaver implements IClassWeaver {
 	// InstructionList newList = new InstructionList();
 	//
 	// Map srcToDest = new HashMap();
-	//			
+	//
 	// // first pass: copy the instructions directly, populate the srcToDest
 	// map,
 	// // fix frame instructions
@@ -2313,7 +2315,7 @@ class BcelClassWeaver implements IClassWeaver {
 	// }
 	// srcToDest.put(src, dest);
 	// }
-	//			
+	//
 	// // second pass: retarget branch instructions, copy ranges and tags
 	// Map tagMap = new HashMap();
 	// for (InstructionHandle dest = newList.getStart(), src =
@@ -2321,7 +2323,7 @@ class BcelClassWeaver implements IClassWeaver {
 	// dest != null;
 	// dest = dest.getNext(), src = src.getNext()) {
 	// Instruction inst = dest.getInstruction();
-	//				
+	//
 	// // retarget branches
 	// if (inst instanceof InstructionBranch) {
 	// InstructionBranch branch = (InstructionBranch) inst;
@@ -2344,7 +2346,7 @@ class BcelClassWeaver implements IClassWeaver {
 	// }
 	// }
 	// }
-	//				
+	//
 	// //copy over tags and range attributes
 	// Iterator tIter = src.getTargeters().iterator();
 	//
@@ -2987,8 +2989,8 @@ class BcelClassWeaver implements IClassWeaver {
 						annotations = theRealMember.getAnnotationTypes();
 					}
 				} else if (rm.getKind() == Member.CONSTRUCTOR) {
-					ResolvedMember realThing = AjcMemberMaker.postIntroducedConstructor(memberHostType.resolve(world), rm
-							.getDeclaringType(), rm.getParameterTypes());
+					ResolvedMember realThing = AjcMemberMaker.postIntroducedConstructor(memberHostType.resolve(world),
+							rm.getDeclaringType(), rm.getParameterTypes());
 					ResolvedMember resolvedDooberry = world.resolve(realThing);
 					// AMC temp guard for M4
 					if (resolvedDooberry == null) {
