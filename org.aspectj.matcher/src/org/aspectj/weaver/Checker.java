@@ -32,6 +32,7 @@ public class Checker extends ShadowMunger {
 	private String message;
 	private volatile int hashCode = -1;
 
+	@SuppressWarnings("unused")
 	private Checker() {
 	}
 
@@ -99,8 +100,8 @@ public class Checker extends ShadowMunger {
 	}
 
 	@Override
-	public Collection getThrownExceptions() {
-		return Collections.EMPTY_LIST;
+	public Collection<ResolvedType> getThrownExceptions() {
+		return Collections.emptyList();
 	}
 
 	// FIXME this perhaps ought to take account of the other fields in advice (use super.equals?)
@@ -128,7 +129,7 @@ public class Checker extends ShadowMunger {
 	 * Parameterize the Checker by parameterizing the pointcut
 	 */
 	@Override
-	public ShadowMunger parameterizeWith(ResolvedType declaringType, Map typeVariableMap) {
+	public ShadowMunger parameterizeWith(ResolvedType declaringType, Map<String, UnresolvedType> typeVariableMap) {
 		Checker ret = new Checker(this.pointcut.parameterizeWith(typeVariableMap, declaringType.getWorld()), this.start, this.end,
 				this.sourceContext, this.message, this.isError);
 		return ret;

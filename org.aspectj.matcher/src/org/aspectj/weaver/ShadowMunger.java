@@ -243,12 +243,12 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	 */
 	public abstract boolean implementOn(Shadow shadow);
 
-	public abstract ShadowMunger parameterizeWith(ResolvedType declaringType, Map typeVariableMap);
+	public abstract ShadowMunger parameterizeWith(ResolvedType declaringType, Map<String, UnresolvedType> typeVariableMap);
 
 	/**
 	 * @return a Collection of ResolvedTypes for all checked exceptions that might be thrown by this munger
 	 */
-	public abstract Collection getThrownExceptions();
+	public abstract Collection<ResolvedType> getThrownExceptions();
 
 	/**
 	 * Does the munger have to check that its exception are accepted by the shadow ? It is not the case for annotation style around
