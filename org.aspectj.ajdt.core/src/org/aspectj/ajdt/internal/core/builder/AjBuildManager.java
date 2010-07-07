@@ -997,11 +997,11 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		}
 
 		if (environment == null || environmentNeedsRebuilding) {
-			List cps = buildConfig.getFullClasspath();
+			List<String> cps = buildConfig.getFullClasspath();
 			Dump.saveFullClasspath(cps);
 			String[] classpaths = new String[cps.size()];
 			for (int i = 0; i < cps.size(); i++) {
-				classpaths[i] = (String) cps.get(i);
+				classpaths[i] = cps.get(i);
 			}
 			environment = new StatefulNameEnvironment(getLibraryAccess(classpaths, filenames), state.getClassNameToFileMap(), state);
 			state.setNameEnvironment(environment);
