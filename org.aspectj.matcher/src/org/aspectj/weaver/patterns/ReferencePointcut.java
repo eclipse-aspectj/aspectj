@@ -37,7 +37,6 @@ import org.aspectj.weaver.ast.Test;
 
 /**
  */
-
 // XXX needs check that arguments contains no WildTypePatterns
 public class ReferencePointcut extends Pointcut {
 	public UnresolvedType onType;
@@ -48,7 +47,7 @@ public class ReferencePointcut extends Pointcut {
 	/**
 	 * if this is non-null then when the pointcut is concretized the result will be parameterized too.
 	 */
-	private Map typeVariableMap;
+	private Map<String, UnresolvedType> typeVariableMap;
 
 	// public ResolvedPointcut binding;
 
@@ -198,7 +197,7 @@ public class ReferencePointcut extends Pointcut {
 			if (onType.isParameterizedType()) {
 				// build a type map mapping type variable names in the generic type to
 				// the type parameters presented
-				typeVariableMap = new HashMap();
+				typeVariableMap = new HashMap<String, UnresolvedType>();
 				ResolvedType underlyingGenericType = ((ResolvedType) onType).getGenericType();
 				TypeVariable[] tVars = underlyingGenericType.getTypeVariables();
 				ResolvedType[] typeParams = ((ResolvedType) onType).getResolvedTypeParameters();
@@ -256,8 +255,11 @@ public class ReferencePointcut extends Pointcut {
 	public Pointcut concretize1(ResolvedType searchStart, ResolvedType declaringType, IntMap bindings) {
 		if (concretizing) {
 			// Thread.currentThread().dumpStack();
-			searchStart.getWorld().getMessageHandler().handleMessage(
-					MessageUtil.error(WeaverMessages.format(WeaverMessages.CIRCULAR_POINTCUT, this), getSourceLocation()));
+			searchStart
+					.getWorld()
+					.getMessageHandler()
+					.handleMessage(
+							MessageUtil.error(WeaverMessages.format(WeaverMessages.CIRCULAR_POINTCUT, this), getSourceLocation()));
 			Pointcut p = Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 			p.sourceContext = sourceContext;
 			return p;
@@ -300,10 +302,13 @@ public class ReferencePointcut extends Pointcut {
 			if (!foundMatchingPointcut) {
 				pointcutDec = searchStart.findPointcut(name);
 				if (pointcutDec == null) {
-					searchStart.getWorld().getMessageHandler().handleMessage(
-							MessageUtil.error(
-									WeaverMessages.format(WeaverMessages.CANT_FIND_POINTCUT, name, searchStart.getName()),
-									getSourceLocation()));
+					searchStart
+							.getWorld()
+							.getMessageHandler()
+							.handleMessage(
+									MessageUtil.error(
+											WeaverMessages.format(WeaverMessages.CANT_FIND_POINTCUT, name, searchStart.getName()),
+											getSourceLocation()));
 					return Pointcut.makeMatchesNothing(Pointcut.CONCRETE);
 				}
 			}
@@ -339,7 +344,7 @@ public class ReferencePointcut extends Pointcut {
 			if (searchStart.isParameterizedType()) {
 				// build a type map mapping type variable names in the generic type to
 				// the type parameters presented
-				typeVariableMap = new HashMap();
+				typeVariableMap = new HashMap<String, UnresolvedType>();
 				ResolvedType underlyingGenericType = searchStart.getGenericType();
 				TypeVariable[] tVars = underlyingGenericType.getTypeVariables();
 				ResolvedType[] typeParams = searchStart.getResolvedTypeParameters();
@@ -371,7 +376,7 @@ public class ReferencePointcut extends Pointcut {
 	 * do this at the point in time this method will be called, so we make a version that will parameterize the pointcut it
 	 * ultimately resolves to.
 	 */
-	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+	public Pointcut parameterizeWith(Map<String, UnresolvedType> typeVariableMap, World w) {
 		ReferencePointcut ret = new ReferencePointcut(onType, name, arguments);
 		ret.onTypeSymbolic = onTypeSymbolic;
 		ret.typeVariableMap = typeVariableMap;

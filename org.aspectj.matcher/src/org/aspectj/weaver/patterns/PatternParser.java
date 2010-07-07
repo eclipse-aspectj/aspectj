@@ -1,6 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- *               2005 Contributors
+ * Copyright (c) 2002,2010
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -9,7 +8,8 @@
  *  
  * Contributors: 
  *     PARC     initial implementation
- *     Adrian Colyer many updates since.... 
+ *     Adrian Colyer, IBM
+ *     Andy Clement, IBM, SpringSource
  * ******************************************************************/
 
 package org.aspectj.weaver.patterns;
@@ -31,7 +31,12 @@ import org.aspectj.weaver.internal.tools.PointcutDesignatorHandlerBasedPointcut;
 import org.aspectj.weaver.tools.ContextBasedMatcher;
 import org.aspectj.weaver.tools.PointcutDesignatorHandler;
 
-//XXX doesn't handle errors for extra tokens very well (sometimes ignores)
+/**
+ * @author PARC
+ * @author Adrian Colyer
+ * @author Andy Clement
+ */
+// XXX doesn't handle errors for extra tokens very well (sometimes ignores)
 public class PatternParser {
 
 	private ITokenSource tokenSource;
@@ -140,8 +145,8 @@ public class PatternParser {
 			ret = parseSoft();
 		} else {
 			throw new ParserException(
-					"expected one of error, warning, parents, soft, precedence, @type, @method, @constructor, @field", tokenSource
-							.peek(-1));
+					"expected one of error, warning, parents, soft, precedence, @type, @method, @constructor, @field",
+					tokenSource.peek(-1));
 		}
 		int endPos = tokenSource.peek(-1).getEnd();
 		ret.setLocation(sourceContext, startPos, endPos);
@@ -326,7 +331,7 @@ public class PatternParser {
 	private Pointcut parseNotOrPointcut() {
 		Pointcut p = parseAtomicPointcut();
 		if (maybeEat("&&")) {
-			p = new AndPointcut(p, parsePointcut());
+			p = new AndPointcut(p, parseNotOrPointcut());
 		}
 		return p;
 	}
@@ -1108,7 +1113,7 @@ public class PatternParser {
 	// if (maybeEat("&&")) {
 	// ap = new AndAnnotationTypePattern(ap, parseNotOrAnnotationPattern());
 	// }
-	//		
+	//
 	// if (maybeEat("||")) {
 	// ap = new OrAnnotationTypePattern(ap, parseAnnotationTypePattern());
 	// }
