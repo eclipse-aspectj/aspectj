@@ -26,6 +26,7 @@ import java.io.IOException;
 public class CompressingDataOutputStream extends DataOutputStream {
 
 	private ConstantPoolWriter constantPoolWriter;
+	public boolean compressionEnabled = true;
 
 	public CompressingDataOutputStream(ByteArrayOutputStream baos, ConstantPoolWriter constantPoolWriter) {
 		super(baos);
@@ -37,7 +38,7 @@ public class CompressingDataOutputStream extends DataOutputStream {
 	}
 
 	public boolean canCompress() {
-		return constantPoolWriter != null;
+		return constantPoolWriter != null && compressionEnabled;
 	}
 
 	/**

@@ -63,6 +63,24 @@ public class WeaverStateInfo {
 	private static byte[] key = { -51, 34, 105, 56, -34, 65, 45, 78, -26, 125, 114, 97, 98, 1, -1, -42 };
 	private boolean unwovenClassFileIsADiff = false;
 
+	int compressionEnabled = 0; // 0=dont know, 1=no, 2=yes
+
+	private void checkCompressionEnabled() {
+		if (compressionEnabled == 0) {
+			// work it out!
+			compressionEnabled = 1;
+			try {
+				String value = System.getProperty("aspectj.compression.weaverstateinfo", "false");
+				if (value.equalsIgnoreCase("true")) {
+					System.out.println("ASPECTJ: aspectj.compression.weaverstateinfo=true: compressing weaverstateinfo");
+					compressionEnabled = 2;
+				}
+			} catch (Throwable t) {
+				// nop
+			}
+		}
+	}
+
 	private WeaverStateInfo() {
 		// this(new ArrayList(), false,reweavableDefault,reweavableCompressedModeDefault,reweavableDiffModeDefault);
 	}
@@ -173,6 +191,7 @@ public class WeaverStateInfo {
 	 * read logic you'll see it expecting the kind as the first byte.
 	 */
 	public void write(CompressingDataOutputStream s) throws IOException {
+		checkCompressionEnabled();
 		if (oldStyle || reweavableCompressedMode) {
 			throw new RuntimeException("shouldn't be writing this");
 		}
@@ -190,19 +209,24 @@ public class WeaverStateInfo {
 		s.writeByte(weaverStateInfoKind);
 
 		// Tag whether the remainder of the data is subject to cp compression
-		s.writeBoolean(s.canCompress());
+		try {
+			s.compressionEnabled = compressionEnabled == 2;
+			s.writeBoolean(s.canCompress());
 
-		int n = typeMungers.size();
-		s.writeShort(n);
-		for (Entry e : typeMungers) {
-			if (s.canCompress()) {
-				s.writeCompressedSignature(e.aspectType.getSignature());
-			} else {
-				e.aspectType.write(s);
+			int n = typeMungers.size();
+			s.writeShort(n);
+			for (Entry e : typeMungers) {
+				if (s.canCompress()) {
+					s.writeCompressedSignature(e.aspectType.getSignature());
+				} else {
+					e.aspectType.write(s);
+				}
+				e.typeMunger.write(s);
 			}
-			e.typeMunger.write(s);
+			writeAnyReweavableData(this, s, s.canCompress());
+		} finally {
+			s.compressionEnabled = true;
 		}
-		writeAnyReweavableData(this, s, s.canCompress());
 	}
 
 	public void addConcreteMunger(ConcreteTypeMunger munger) {
@@ -276,9 +300,9 @@ public class WeaverStateInfo {
 					str = s.readSignature();
 				} else {
 					str = s.readUTF();
-					StringBuilder sb = new StringBuilder();
-					sb.append("L").append(str.replace('.', '/')).append(";");
-					str = sb.toString();
+					// StringBuilder sb = new StringBuilder();
+					// sb.append("L").append(str.replace('.', '/')).append(";");
+					// str = sb.toString();
 				}
 				wsi.addAspectAffectingType(str);
 			}
