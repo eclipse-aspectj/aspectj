@@ -72,8 +72,9 @@ public class SavedModelConsistencyTests extends AjdeCoreTestCase {
 
 		IProgramElement nodePostBuild = model.findElementForSourceLine(testFile.getAbsolutePath(), 5);
 
-		assertTrue("Nodes should be identical: Prebuild kind = " + nodePreBuild.getKind() + "   Postbuild kind = "
-				+ nodePostBuild.getKind(), nodePreBuild.getKind().equals(nodePostBuild.getKind()));
+		assertTrue(
+				"Nodes should be identical: Prebuild kind = " + nodePreBuild.getKind() + "   Postbuild kind = "
+						+ nodePostBuild.getKind(), nodePreBuild.getKind().equals(nodePostBuild.getKind()));
 
 	}
 
@@ -84,7 +85,7 @@ public class SavedModelConsistencyTests extends AjdeCoreTestCase {
 		IHierarchy model = asm.getHierarchy();
 		assertTrue("model exists", model != null);
 
-		final List preBuildKinds = new ArrayList();
+		final List<IProgramElement.Kind> preBuildKinds = new ArrayList<IProgramElement.Kind>();
 		HierarchyWalker walker = new HierarchyWalker() {
 			public void preProcess(IProgramElement node) {
 				preBuildKinds.add(node.getKind());
@@ -96,7 +97,7 @@ public class SavedModelConsistencyTests extends AjdeCoreTestCase {
 		doBuild();
 		assertTrue("Expected no compiler errors but found " + handler.getErrors(), handler.getErrors().isEmpty());
 
-		final List postBuildKinds = new ArrayList();
+		final List<IProgramElement.Kind> postBuildKinds = new ArrayList<IProgramElement.Kind>();
 		HierarchyWalker walker2 = new HierarchyWalker() {
 			public void preProcess(IProgramElement node) {
 				postBuildKinds.add(node.getKind());
@@ -105,8 +106,8 @@ public class SavedModelConsistencyTests extends AjdeCoreTestCase {
 		asm.getHierarchy().getRoot().walk(walker2);
 		assertFalse("Expected there to be build kinds but didn't " + "find any", preBuildKinds.isEmpty());
 
-		assertTrue("Lists should be the same: PRE" + preBuildKinds.toString() + "  POST" + postBuildKinds.toString(), preBuildKinds
-				.equals(postBuildKinds));
+		assertTrue("Lists should be the same: PRE" + preBuildKinds.toString() + "  POST" + postBuildKinds.toString(),
+				preBuildKinds.equals(postBuildKinds));
 
 	}
 
