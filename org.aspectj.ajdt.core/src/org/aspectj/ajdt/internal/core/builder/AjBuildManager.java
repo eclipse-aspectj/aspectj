@@ -287,7 +287,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				// System.err.println("XXXX start inc ");
 				AsmManager.setLastActiveStructureModel(state.getStructureModel());
 				binarySourcesForTheNextCompile = state.getBinaryFilesToCompile(true);
-				Set files = state.getFilesToCompile(true);
+				Set<File> files = state.getFilesToCompile(true);
 				if (buildConfig.isEmacsSymMode() || buildConfig.isGenerateModelMode()) {
 					if (AsmManager.attemptIncrementalModelRepairs) {
 						state.getStructureModel().resetDeltaProcessing();

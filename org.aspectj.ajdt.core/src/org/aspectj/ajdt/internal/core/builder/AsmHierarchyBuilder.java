@@ -301,8 +301,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		if (typeDeclaration.annotations != null) {
 			for (int i = 0; i < typeDeclaration.annotations.length; i++) {
 				Annotation annotation = typeDeclaration.annotations[i];
-				if (Arrays.equals(annotation.type.getTypeBindingPublic(scope).signature(), "Lorg/aspectj/lang/annotation/Aspect;"
-						.toCharArray())) {
+				if (Arrays.equals(annotation.type.getTypeBindingPublic(scope).signature(),
+						"Lorg/aspectj/lang/annotation/Aspect;".toCharArray())) {
 					kind = IProgramElement.Kind.ASPECT;
 					if (!(typeDeclaration instanceof AspectDeclaration)) {
 						isAnnotationStyleAspect = true;
@@ -397,8 +397,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		if (memberTypeDeclaration.annotations != null) {
 			for (int i = 0; i < memberTypeDeclaration.annotations.length; i++) {
 				Annotation annotation = memberTypeDeclaration.annotations[i];
-				if (Arrays.equals(annotation.type.getTypeBindingPublic(scope).signature(), "Lorg/aspectj/lang/annotation/Aspect;"
-						.toCharArray())) {
+				if (Arrays.equals(annotation.type.getTypeBindingPublic(scope).signature(),
+						"Lorg/aspectj/lang/annotation/Aspect;".toCharArray())) {
 					kind = IProgramElement.Kind.ASPECT;
 					if (!(memberTypeDeclaration instanceof AspectDeclaration)) {
 						isAnnotationStyleAspect = true;
@@ -457,8 +457,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		if (memberTypeDeclaration.annotations != null) {
 			for (int i = 0; i < memberTypeDeclaration.annotations.length; i++) {
 				Annotation annotation = memberTypeDeclaration.annotations[i];
-				if (Arrays.equals(annotation.type.getTypeBindingPublic(scope).signature(), "Lorg/aspectj/lang/annotation/Aspect;"
-						.toCharArray())) {
+				if (Arrays.equals(annotation.type.getTypeBindingPublic(scope).signature(),
+						"Lorg/aspectj/lang/annotation/Aspect;".toCharArray())) {
 					kind = IProgramElement.Kind.ASPECT;
 					if (!(memberTypeDeclaration instanceof AspectDeclaration)) {
 						isAnnotationStyleAspect = true;
@@ -540,7 +540,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			Declare decl = dDeclaration.declareDecl;
 			if (decl instanceof DeclareParents) {
 				TypePatternList tpl = ((DeclareParents) decl).getParents();
-				List parents = new ArrayList();
+				List<String> parents = new ArrayList<String>();
 				for (int i = 0; i < tpl.size(); i++) {
 					parents.add(tpl.get(i).getExactType().getName().replaceAll("\\$", "."));
 				}
@@ -738,7 +738,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	// } catch (NullPointerException npe) {
 	// memberName = "<undefined>";
 	// }
-	//			
+	//
 	// peNode.setBytecodeName(memberName);
 	// peNode.setBytecodeSignature(memberBytecodeSignature);
 	// }
@@ -796,7 +796,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 
 	private ProgramElement getImportReferencesRoot() {
 		IProgramElement element = (IProgramElement) stack.peek();
-		boolean hasPackageDeclaration = ((IProgramElement) element.getChildren().get(0)).getKind().isPackageDeclaration();
+		boolean hasPackageDeclaration = (element.getChildren().get(0)).getKind().isPackageDeclaration();
 		return (ProgramElement) element.getChildren().get(hasPackageDeclaration ? 1 : 0);
 	}
 
