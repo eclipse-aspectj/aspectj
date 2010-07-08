@@ -19,7 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
 import org.aspectj.asm.IRelationship.Kind;
@@ -33,20 +32,7 @@ public class RelationshipMap extends HashMap<String, List<IRelationship>> implem
 
 	private static final long serialVersionUID = 496638323566589643L;
 
-	// // As this gets serialized, make the hierarchy transient and
-	// // settable
-	// private transient IHierarchy hierarchy;
-
 	public RelationshipMap() {
-	}
-
-	public RelationshipMap(IHierarchy hierarchy) {
-		// this.hierarchy = hierarchy;
-	}
-
-	public void setHierarchy(IHierarchy hierarchy) {
-		// commented out as field never read !
-		// this.hierarchy = hierarchy;
 	}
 
 	public List<IRelationship> get(String handle) {
@@ -124,20 +110,17 @@ public class RelationshipMap extends HashMap<String, List<IRelationship>> implem
 	}
 
 	public void put(String source, IRelationship relationship) {
-
-		// System.err.println(">> for: " + source + ", put::" + relationship);
-
-		List<IRelationship> list = super.get(source);
-		if (list == null) {
-			list = new ArrayList<IRelationship>();
-			list.add(relationship);
-
-			super.put(source, list);
+		List<IRelationship> existingRelationships = super.get(source);
+		if (existingRelationships == null) {
+			// new entry
+			existingRelationships = new ArrayList<IRelationship>();
+			existingRelationships.add(relationship);
+			super.put(source, existingRelationships);
 		} else {
 			boolean matched = false;
-			for (IRelationship curr : list) {
-				if (curr.getName().equals(relationship.getName()) && curr.getKind() == relationship.getKind()) {
-					curr.getTargets().addAll(relationship.getTargets());
+			for (IRelationship existingRelationship : existingRelationships) {
+				if (existingRelationship.getName().equals(relationship.getName()) && existingRelationship.getKind() == relationship.getKind()) {
+					existingRelationship.getTargets().addAll(relationship.getTargets());
 					matched = true;
 				}
 			}
@@ -146,7 +129,7 @@ public class RelationshipMap extends HashMap<String, List<IRelationship>> implem
 				System.err.println("matched = true");
 			}
 			if (matched) {
-				list.add(relationship); // Is this a bug, will it give us double entries?
+				existingRelationships.add(relationship); // Is this a bug, will it give us double entries?
 			}
 		}
 	}

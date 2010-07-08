@@ -14,6 +14,7 @@ package org.aspectj.asm;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.asm.internal.ProgramElement;
@@ -42,7 +43,7 @@ public interface IHierarchy extends Serializable {
 
 	public Object findInFileMap(Object key);
 
-	public Set getFileMapEntrySet();
+	public Set<Map.Entry<String, IProgramElement>> getFileMapEntrySet();
 
 	public boolean isValid();
 
@@ -104,7 +105,7 @@ public interface IHierarchy extends Serializable {
 
 	public void flushHandleMap();
 
-	public void updateHandleMap(Set deletedFiles);
+	public void updateHandleMap(Set<String> deletedFiles);
 
 	/**
 	 * For a specified node, check if any of the children more accurately represent the specified line.

@@ -67,9 +67,9 @@ public interface IProgramElement extends Serializable {
 
 	public void setParent(IProgramElement parent);
 
-	public void setParentTypes(List parentTypes);
+	public void setParentTypes(List<String> parentTypes);
 
-	public List getParentTypes();
+	public List<String> getParentTypes();
 
 	public String getName();
 
@@ -83,7 +83,7 @@ public interface IProgramElement extends Serializable {
 
 	public void setKind(Kind kind);
 
-	public List getModifiers();
+	public List<IProgramElement.Modifiers> getModifiers();
 
 	public void setModifiers(int i);
 
@@ -156,13 +156,13 @@ public interface IProgramElement extends Serializable {
 
 	public void setParameterNames(List<String> list);
 
-	public List getParameterSignatures();
+	public List<char[]> getParameterSignatures();
 
-	public List getParameterSignaturesSourceRefs();
+	public List<String> getParameterSignaturesSourceRefs();
 
-	public void setParameterSignatures(List list, List paramSourceRefs);
+	public void setParameterSignatures(List<char[]> list, List<String> paramSourceRefs);
 
-	public List getParameterTypes();
+	public List<char[]> getParameterTypes();
 
 	/**
 	 * The format of the string handle is not specified, but is stable across compilation sessions.

@@ -17,14 +17,17 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Maps from a program element handles to a list of relationships between that element and othe program elements. Each element in
+ * Maps from a program element handles to a list of relationships between that element and other program elements. Each element in
  * the list or relationships is uniquely identified by a kind and a relationship name. For example, the advice affecting a
  * particular shadow (e.g. method call) can be retrieved by calling <CODE>get</CODE> on the handle for that method. Symmetrically
  * the method call shadows that an advice affects can be retrieved.
+ * <p>
  * 
+ * <p>
  * The elements can be stored and looked up as IProgramElement(s), in which cases the element corresponding to the handle is looked
  * up in the containment hierarchy.
  * 
+ * <p>
  * put/get methods taking IProgramElement as a parameter are for convenience only. They work identically to calling their
  * counterparts with IProgramElement.getIdentifierHandle()
  * 
@@ -34,14 +37,14 @@ import java.util.Set;
 public interface IRelationshipMap extends Serializable {
 
 	/**
-	 * @return null if the element is not found.
+	 * @return list of relationships or null if the source element has no relationships
 	 */
-	public List<IRelationship> get(IProgramElement source);
+	public List<IRelationship> get(IProgramElement sourceProgramElement);
 
 	/**
-	 * @return null if the element is not found.
+	 * @return list of relationships or null if the source element has no relationships
 	 */
-	public List<IRelationship> get(String handle);
+	public List<IRelationship> get(String sourceHandle);
 
 	/**
 	 * Return a relationship matching the kind and name for the given element.

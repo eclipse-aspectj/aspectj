@@ -41,6 +41,10 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 		this.asm = asm;
 	}
 
+	public void initialize() {
+		// nothing to do
+	}
+
 	public String createHandleIdentifier(IProgramElement ipe) {
 		// AjBuildManager.setupModel --> top of the tree is either
 		// <root> or the .lst file
@@ -124,7 +128,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 			return "";
 		}
 		List sourceRefs = ipe.getParameterSignaturesSourceRefs();
-		List parameterTypes = ipe.getParameterSignatures();
+		List<char[]> parameterTypes = ipe.getParameterSignatures();
 		StringBuffer sb = new StringBuffer();
 		if (sourceRefs != null) {
 			for (int i = 0; i < sourceRefs.size(); i++) {
@@ -133,8 +137,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 				sb.append(sourceRef);
 			}
 		} else {
-			for (Iterator iter = parameterTypes.iterator(); iter.hasNext();) {
-				char[] element = (char[]) iter.next();
+			for (char[] element : parameterTypes) {
 				sb.append(HandleProviderDelimiter.getDelimiter(ipe));
 				sb.append(NameConvertor.createShortName(element, false, false));
 			}
@@ -155,10 +158,9 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 
 		if (ipe.getKind().isInterTypeMember()) {
 			int count = 1;
-			List kids = ipe.getParent().getChildren();
-			int idx = 0;
-			for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
-				IProgramElement object = (IProgramElement) iterator.next();
+			List<IProgramElement> kids = ipe.getParent().getChildren();
+			for (Iterator<IProgramElement> iterator = kids.iterator(); iterator.hasNext();) {
+				IProgramElement object = iterator.next();
 				if (object.equals(ipe)) {
 					break;
 				}
@@ -182,10 +184,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 		} else if (ipe.getKind().isDeclareAnnotation()) {
 			// look at peer declares
 			int count = 1;
-			List kids = ipe.getParent().getChildren();
-			int idx = 0;
-			for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
-				IProgramElement object = (IProgramElement) iterator.next();
+			for (IProgramElement object : ipe.getParent().getChildren()) {
 				if (object.equals(ipe)) {
 					break;
 				}
@@ -214,7 +213,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 		} else if (ipe.getKind().equals(IProgramElement.Kind.ADVICE)) {
 			// Look at any peer advice
 			int count = 1;
-			List kids = ipe.getParent().getChildren();
+			List<IProgramElement> kids = ipe.getParent().getChildren();
 			String ipeSig = ipe.getBytecodeSignature();
 			// remove return type from the signature - it should not be included in the comparison
 			int idx = 0;
@@ -234,8 +233,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 					}
 				}
 			}
-			for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
-				IProgramElement object = (IProgramElement) iterator.next();
+			for (IProgramElement object : kids) {
 				if (object.equals(ipe)) {
 					break;
 				}
@@ -282,7 +280,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 			// return String.valueOf(++initializerCounter).toCharArray();
 			// Look at any peer advice
 			int count = 1;
-			List kids = ipe.getParent().getChildren();
+			List<IProgramElement> kids = ipe.getParent().getChildren();
 			String ipeSig = ipe.getBytecodeSignature();
 			// remove return type from the signature - it should not be included in the comparison
 			int idx = 0;
@@ -302,8 +300,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 					}
 				}
 			}
-			for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
-				IProgramElement object = (IProgramElement) iterator.next();
+			for (IProgramElement object : kids) {
 				if (object.equals(ipe)) {
 					break;
 				}
@@ -355,11 +352,10 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 		} else if (ipe.getKind() == IProgramElement.Kind.CLASS) {
 			// depends on previous children
 			int count = 1;
-			List kids = ipe.getParent().getChildren();
+			List<IProgramElement> kids = ipe.getParent().getChildren();
 			if (ipe.getName().endsWith("{..}")) {
 				// only depends on previous anonymous children, name irrelevant
-				for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
-					IProgramElement object = (IProgramElement) iterator.next();
+				for (IProgramElement object : kids) {
 					if (object.equals(ipe)) {
 						break;
 					}
@@ -379,8 +375,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 					}
 				}
 			} else {
-				for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
-					IProgramElement object = (IProgramElement) iterator.next();
+				for (IProgramElement object : kids) {
 					if (object.equals(ipe)) {
 						break;
 					}
@@ -480,7 +475,4 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 		return false;
 	}
 
-	public void initialize() {
-		// nop
-	}
 }

@@ -12,21 +12,21 @@
 package org.aspectj.asm;
 
 /**
- * When dumping the model out (for debugging/testing), various parts of
- * it can be passed through this filter.  Currently it is used to ensure
- * the source locations we dump out are independent of sandbox directory.
+ * When dumping the model out (for debugging/testing), various parts of it can be passed through this filter. Currently it is used
+ * to ensure the source locations we dump out are independent of sandbox directory.
+ * 
+ * @author Andy Clement
  */
 public interface IModelFilter {
+
 	/**
-	 * Called when about to dump out an absolute file location, enabling
-	 * it to be altered (eg. c:/temp/ajcsSandbox/foo/ajctemp.12323/<BLAH>
-	 * could become TEST_SANDBOX/<BLAH>
+	 * Called when about to dump out an absolute file location, enabling it to be altered (eg.
+	 * c:/temp/ajcsSandbox/foo/ajctemp.12323/<BLAH> could become TEST_SANDBOX/<BLAH>
 	 */
 	String processFilelocation(String loc);
 
 	/**
-	 * When the relationship map is dumped, lines are prefixed with a handle ID.
-	 * Return true if you want these, false if you dont.
+	 * When the relationship map is dumped, lines are prefixed with a handle ID. Return true if you want these, false if you do not.
 	 */
 	boolean wantsHandleIds();
 }

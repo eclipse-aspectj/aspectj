@@ -88,7 +88,7 @@ public class AsmManager implements IStructureModel {
 	 * Map from String > String - it maps absolute paths for inpath dirs/jars to workspace relative paths suitable for handle
 	 * inclusion
 	 */
-	protected Map inpathMap;
+	protected Map<File, String> inpathMap;
 	private IRelationshipMap mapper;
 	private IElementHandleProvider handleProvider;
 
@@ -98,7 +98,7 @@ public class AsmManager implements IStructureModel {
 	private final Set<File> lastBuildChanges = new HashSet<File>();
 
 	// Record the Set<File> of aspects that wove the files listed in lastBuildChanges
-	final Set aspectsWeavingInLastBuild = new HashSet();
+	final Set<File> aspectsWeavingInLastBuild = new HashSet<File>();
 
 	// static {
 	// setReporting("c:/model.nfo",true,true,true,true);
@@ -107,14 +107,14 @@ public class AsmManager implements IStructureModel {
 	private AsmManager() {
 	}
 
-	public static AsmManager createNewStructureModel(Map inpathMap) {
+	public static AsmManager createNewStructureModel(Map<File, String> inpathMap) {
 		if (forceSingletonBehaviour && lastActiveStructureModel != null) {
 			return lastActiveStructureModel;
 		}
 		AsmManager asm = new AsmManager();
 		asm.inpathMap = inpathMap;
 		asm.hierarchy = new AspectJElementHierarchy(asm);
-		asm.mapper = new RelationshipMap(asm.hierarchy);
+		asm.mapper = new RelationshipMap();
 		asm.handleProvider = new JDTLikeHandleProvider(asm);
 		// call initialize on the handleProvider when we create a new ASM
 		// to give handleProviders the chance to reset any state
@@ -255,7 +255,6 @@ public class AsmManager implements IStructureModel {
 				((AspectJElementHierarchy) hierarchy).setAsmManager(this);
 				hierarchyReadOK = true;
 				mapper = (RelationshipMap) s.readObject();
-				((RelationshipMap) mapper).setHierarchy(hierarchy);
 			}
 		} catch (FileNotFoundException fnfe) {
 			// That is OK
@@ -494,23 +493,20 @@ public class AsmManager implements IStructureModel {
 		}
 		System.out.println(node + "  [" + (node == null ? "null" : node.getKind().toString()) + "] " + loc);
 		if (node != null) {
-			for (Iterator i = node.getChildren().iterator(); i.hasNext();) {
-				dumptree((IProgramElement) i.next(), indent + 2);
+			for (IProgramElement child : node.getChildren()) {
+				dumptree(child, indent + 2);
 			}
 		}
 	}
 
 	public void dumprels(Writer w) throws IOException {
 		int ctr = 1;
-		Set entries = mapper.getEntries();
-		for (Iterator iter = entries.iterator(); iter.hasNext();) {
-			String hid = (String) iter.next();
-			List rels = mapper.get(hid);
-			for (Iterator iterator = rels.iterator(); iterator.hasNext();) {
-				IRelationship ir = (IRelationship) iterator.next();
-				List targets = ir.getTargets();
-				for (Iterator iterator2 = targets.iterator(); iterator2.hasNext();) {
-					String thid = (String) iterator2.next();
+		Set<String> entries = mapper.getEntries();
+		for (String hid : entries) {
+			List<IRelationship> rels = mapper.get(hid);
+			for (IRelationship ir : rels) {
+				List<String> targets = ir.getTargets();
+				for (String thid : targets) {
 					StringBuffer sb = new StringBuffer();
 					if (modelFilter == null || modelFilter.wantsHandleIds()) {
 						sb.append("Hid:" + (ctr++) + ":");
@@ -525,15 +521,11 @@ public class AsmManager implements IStructureModel {
 	private void dumprelsStderr(String key) {
 		System.err.println("Relationships dump follows: " + key);
 		int ctr = 1;
-		Set entries = mapper.getEntries();
-		for (Iterator iter = entries.iterator(); iter.hasNext();) {
-			String hid = (String) iter.next();
-			List rels = mapper.get(hid);
-			for (Iterator iterator = rels.iterator(); iterator.hasNext();) {
-				IRelationship ir = (IRelationship) iterator.next();
-				List targets = ir.getTargets();
-				for (Iterator iterator2 = targets.iterator(); iterator2.hasNext();) {
-					String thid = (String) iterator2.next();
+		Set<String> entries = mapper.getEntries();
+		for (String hid : entries) {
+			for (IRelationship ir : mapper.get(hid)) {
+				List<String> targets = ir.getTargets();
+				for (String thid : targets) {
 					System.err.println("Hid:" + (ctr++) + ":(targets=" + targets.size() + ") " + hid + " (" + ir.getName() + ") "
 							+ thid);
 				}
@@ -548,13 +540,12 @@ public class AsmManager implements IStructureModel {
 	/**
 	 * Removes the hierarchy structure for the specified files from the structure model. Returns true if it deleted anything
 	 */
-	public boolean removeStructureModelForFiles(Writer fw, Collection files) throws IOException {
+	public boolean removeStructureModelForFiles(Writer fw, Collection<File> files) throws IOException {
 
 		boolean modelModified = false;
 
 		Set<String> deletedNodes = new HashSet<String>();
-		for (Iterator iter = files.iterator(); iter.hasNext();) {
-			File fileForCompilation = (File) iter.next();
+		for (File fileForCompilation : files) {
 			String correctedPath = getCanonicalFilePath(fileForCompilation);
 			IProgramElement progElem = (IProgramElement) hierarchy.findInFileMap(correctedPath);
 			if (progElem != null) {
@@ -593,11 +584,11 @@ public class AsmManager implements IStructureModel {
 		// Files to delete are: those to be compiled + those that have been
 		// deleted
 
-		Set filesToRemoveFromStructureModel = new HashSet(filesToBeCompiled);
+		Set<File> filesToRemoveFromStructureModel = new HashSet(filesToBeCompiled);
 		filesToRemoveFromStructureModel.addAll(files_deleted);
 		Set<String> deletedNodes = new HashSet<String>();
-		for (Iterator iter = filesToRemoveFromStructureModel.iterator(); iter.hasNext();) {
-			File fileForCompilation = (File) iter.next();
+		for (Iterator<File> iter = filesToRemoveFromStructureModel.iterator(); iter.hasNext();) {
+			File fileForCompilation = iter.next();
 			String correctedPath = getCanonicalFilePath(fileForCompilation);
 			IProgramElement progElem = (IProgramElement) hierarchy.findInFileMap(correctedPath);
 			if (progElem != null) {
@@ -620,7 +611,7 @@ public class AsmManager implements IStructureModel {
 		}
 	}
 
-	public void processDelta(Collection files_tobecompiled, Set files_added, Set files_deleted) {
+	public void processDelta(Collection<File> files_tobecompiled, Set<File> files_added, Set<File> files_deleted) {
 
 		try {
 			Writer fw = null;
@@ -730,17 +721,16 @@ public class AsmManager implements IStructureModel {
 			return;
 		}
 
-		Set sourcesToRemove = new HashSet();
+		Set<String> sourcesToRemove = new HashSet<String>();
 		Map handleToTypenameCache = new HashMap();
 		// Iterate over the source handles in the relationships map, the aim
 		// here is to remove any 'affected by'
 		// relationships where the source of the relationship is the specified
 		// type (since it will be readded
 		// when the type is woven)
-		Set sourcehandlesSet = mapper.getEntries();
+		Set<String> sourcehandlesSet = mapper.getEntries();
 		List<IRelationship> relationshipsToRemove = new ArrayList<IRelationship>();
-		for (Iterator keyiter = sourcehandlesSet.iterator(); keyiter.hasNext();) {
-			String hid = (String) keyiter.next();
+		for (String hid : sourcehandlesSet) {
 			if (isPhantomHandle(hid)) {
 				// inpath handle - but for which type?
 				// TODO promote cache for reuse during one whole model update
@@ -810,12 +800,10 @@ public class AsmManager implements IStructureModel {
 			}
 			// Iterate over the source handles in the relationships map
 			sourcehandlesSet = mapper.getEntries();
-			for (Iterator keyiter = sourcehandlesSet.iterator(); keyiter.hasNext();) {
-				String hid = (String) keyiter.next();
+			for (String hid : sourcehandlesSet) {
 				relationshipsToRemove.clear();
-				List relationships = mapper.get(hid);
-				for (Iterator reliter = relationships.iterator(); reliter.hasNext();) {
-					IRelationship rel = (IRelationship) reliter.next();
+				List<IRelationship> relationships = mapper.get(hid);
+				for (IRelationship rel : relationships) {
 					if (rel.getKind() == IRelationship.Kind.USES_POINTCUT) {
 						continue; // these relationships are added at compile
 					}
@@ -823,13 +811,12 @@ public class AsmManager implements IStructureModel {
 					if (!rel.isAffects()) {
 						continue;
 					}
-					List targets = rel.getTargets();
-					List targetsToRemove = new ArrayList();
+					List<String> targets = rel.getTargets();
+					List<String> targetsToRemove = new ArrayList<String>();
 
 					// find targets that target the type we are interested in,
 					// they need removing
-					for (Iterator targetsIter = targets.iterator(); targetsIter.hasNext();) {
-						String targethid = (String) targetsIter.next();
+					for (String targethid : targets) {
 						if (isPhantomHandle(hid) && !getTypeNameFromHandle(hid, handleToTypenameCache).equals(typename)) {
 							continue;
 						}
@@ -845,8 +832,7 @@ public class AsmManager implements IStructureModel {
 							relationshipsToRemove.add(rel);
 						} else {
 							// Remove all the targets that are no longer valid
-							for (Iterator targsIter = targetsToRemove.iterator(); targsIter.hasNext();) {
-								String togo = (String) targsIter.next();
+							for (String togo : targetsToRemove) {
 								targets.remove(togo);
 							}
 						}
@@ -867,8 +853,7 @@ public class AsmManager implements IStructureModel {
 				}
 			}
 			// Remove sources that have no valid relationships any more
-			for (Iterator srciter = sourcesToRemove.iterator(); srciter.hasNext();) {
-				String hid = (String) srciter.next();
+			for (String hid : sourcesToRemove) {
 				// System.err.println(
 				// "  source handle: all relationships have gone for "+hid);
 				mapper.removeAll(hid);
@@ -973,16 +958,15 @@ public class AsmManager implements IStructureModel {
 
 			// Now sort out the relationships map
 			// IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
-			Set sourcesToRemove = new HashSet();
-			Set nonExistingHandles = new HashSet(); // Cache of handles that we
+			Set<String> sourcesToRemove = new HashSet<String>();
+			Set<String> nonExistingHandles = new HashSet<String>(); // Cache of handles that we
 			// *know* are invalid
 			int srchandlecounter = 0;
 			int tgthandlecounter = 0;
 
 			// Iterate over the source handles in the relationships map
-			Set keyset = mapper.getEntries(); // These are source handles
-			for (Iterator keyiter = keyset.iterator(); keyiter.hasNext();) {
-				String hid = (String) keyiter.next();
+			Set<String> keyset = mapper.getEntries(); // These are source handles
+			for (String hid : keyset) {
 				srchandlecounter++;
 
 				// Do we already know this handle points to nowhere?
@@ -1007,12 +991,12 @@ public class AsmManager implements IStructureModel {
 						// handle
 						for (Iterator<IRelationship> reliter = relationships.iterator(); reliter.hasNext();) {
 							IRelationship rel = reliter.next();
-							List targets = rel.getTargets();
-							List targetsToRemove = new ArrayList();
+							List<String> targets = rel.getTargets();
+							List<String> targetsToRemove = new ArrayList<String>();
 
 							// Iterate through the targets for this relationship
-							for (Iterator targetIter = targets.iterator(); targetIter.hasNext();) {
-								String targethid = (String) targetIter.next();
+							for (Iterator<String> targetIter = targets.iterator(); targetIter.hasNext();) {
+								String targethid = targetIter.next();
 								tgthandlecounter++;
 								// Do we already know it doesn't exist?
 								if (nonExistingHandles.contains(targethid)) {
@@ -1048,8 +1032,7 @@ public class AsmManager implements IStructureModel {
 								} else {
 									// Remove all the targets that are no longer
 									// valid
-									for (Iterator targsIter = targetsToRemove.iterator(); targsIter.hasNext();) {
-										String togo = (String) targsIter.next();
+									for (String togo : targetsToRemove) {
 										targets.remove(togo);
 									}
 									// Should have already been caught above,
@@ -1087,11 +1070,11 @@ public class AsmManager implements IStructureModel {
 								// MEMORY LEAK - we don't remove the
 								// relationships !!
 								for (int i = 0; i < relationshipsToRemove.size(); i++) {
-									IRelationship irel = (IRelationship) relationshipsToRemove.get(i);
+									IRelationship irel = relationshipsToRemove.get(i);
 									verifyAssumption(mapper.remove(hid, irel), "Failed to remove relationship " + irel.getName()
 											+ " for shid " + hid);
 								}
-								List rels = mapper.get(hid);
+								List<IRelationship> rels = mapper.get(hid);
 								if (rels == null || rels.size() == 0) {
 									sourcesToRemove.add(hid);
 								}
@@ -1101,8 +1084,8 @@ public class AsmManager implements IStructureModel {
 				}
 			}
 			// Remove sources that have no valid relationships any more
-			for (Iterator srciter = sourcesToRemove.iterator(); srciter.hasNext();) {
-				String hid = (String) srciter.next();
+			for (Iterator<String> srciter = sourcesToRemove.iterator(); srciter.hasNext();) {
+				String hid = srciter.next();
 				mapper.removeAll(hid);
 				IProgramElement ipe = hierarchy.getElement(hid);
 				if (ipe != null) {
@@ -1130,8 +1113,8 @@ public class AsmManager implements IStructureModel {
 		}
 		boolean deleteOK = false;
 		IProgramElement parent = progElem.getParent();
-		List kids = parent.getChildren();
-		for (int i = 0; i < kids.size(); i++) {
+		List<IProgramElement> kids = parent.getChildren();
+		for (int i = 0, max = kids.size(); i < max; i++) {
 			if (kids.get(i).equals(progElem)) {
 				kids.remove(i);
 				deleteOK = true;
@@ -1164,7 +1147,7 @@ public class AsmManager implements IStructureModel {
 			// boolean deleteOK = false;
 			IProgramElement parent = progElem.getParent();
 			// flightrecorder.append("Parent of it is "+parent+"\n");
-			List kids = parent.getChildren();
+			List<IProgramElement> kids = parent.getChildren();
 			// flightrecorder.append("Which has "+kids.size()+" kids\n");
 			for (int i = 0; i < kids.size(); i++) {
 				// flightrecorder.append("Comparing with "+kids.get(i)+"\n");
@@ -1219,7 +1202,7 @@ public class AsmManager implements IStructureModel {
 	 * A ModelInfo object captures basic information about the structure model. It is used for testing and producing debug info.
 	 */
 	public static class ModelInfo {
-		private final Hashtable nodeTypeCount = new Hashtable();
+		private final Hashtable<String, Integer> nodeTypeCount = new Hashtable<String, Integer>();
 		private final Properties extraProperties = new Properties();
 
 		private ModelInfo(IHierarchy hierarchy, IRelationshipMap relationshipMap) {
@@ -1231,16 +1214,14 @@ public class AsmManager implements IStructureModel {
 
 		private void walkModel(IProgramElement ipe) {
 			countNode(ipe);
-			List kids = ipe.getChildren();
-			for (Iterator iter = kids.iterator(); iter.hasNext();) {
-				IProgramElement nextElement = (IProgramElement) iter.next();
-				walkModel(nextElement);
+			for (IProgramElement child : ipe.getChildren()) {
+				walkModel(child);
 			}
 		}
 
 		private void countNode(IProgramElement ipe) {
 			String node = ipe.getKind().toString();
-			Integer ctr = (Integer) nodeTypeCount.get(node);
+			Integer ctr = nodeTypeCount.get(node);
 			if (ctr == null) {
 				nodeTypeCount.put(node, new Integer(1));
 			} else {
@@ -1252,10 +1233,10 @@ public class AsmManager implements IStructureModel {
 		public String toString() {
 			StringBuffer sb = new StringBuffer();
 			sb.append("Model node summary:\n");
-			Enumeration nodeKeys = nodeTypeCount.keys();
+			Enumeration<String> nodeKeys = nodeTypeCount.keys();
 			while (nodeKeys.hasMoreElements()) {
-				String key = (String) nodeKeys.nextElement();
-				Integer ct = (Integer) nodeTypeCount.get(key);
+				String key = nodeKeys.nextElement();
+				Integer ct = nodeTypeCount.get(key);
 				sb.append(key + "=" + ct + "\n");
 			}
 			sb.append("Model stats:\n");
@@ -1270,11 +1251,8 @@ public class AsmManager implements IStructureModel {
 
 		public Properties getProperties() {
 			Properties p = new Properties();
-			Enumeration nodeKeys = nodeTypeCount.keys();
-			while (nodeKeys.hasMoreElements()) {
-				String key = (String) nodeKeys.nextElement();
-				Integer ct = (Integer) nodeTypeCount.get(key);
-				p.setProperty(key, ct.toString());
+			for (Map.Entry<String, Integer> entry : nodeTypeCount.entrySet()) {
+				p.setProperty(entry.getKey(), entry.getValue().toString());
 			}
 			p.putAll(extraProperties);
 			return p;
@@ -1329,14 +1307,14 @@ public class AsmManager implements IStructureModel {
 	 * @return the Set of files for which the structure model was modified (they may have been removed or otherwise rebuilt). Set is
 	 *         empty for a full build.
 	 */
-	public Set getModelChangesOnLastBuild() {
+	public Set<File> getModelChangesOnLastBuild() {
 		return lastBuildChanges;
 	}
 
 	/**
 	 * @return the Set of aspects that wove files on the last build (either incremental or full build)
 	 */
-	public Set getAspectsWeavingFilesOnLastBuild() {
+	public Set<File> getAspectsWeavingFilesOnLastBuild() {
 		return aspectsWeavingInLastBuild;
 	}
 
@@ -1351,86 +1329,6 @@ public class AsmManager implements IStructureModel {
 	}
 
 	public String getHandleElementForInpath(String binaryPath) {
-		return (String) inpathMap.get(new File(binaryPath));
+		return inpathMap.get(new File(binaryPath));
 	}
-
-	private List pieces = new ArrayList();
-
-	private Object intern(String substring) {
-		int lastIdx = -1;
-		if ((lastIdx = substring.lastIndexOf('/')) != -1) {
-			String pkg = substring.substring(0, lastIdx);
-			String type = substring.substring(lastIdx + 1);
-			pkg = internOneThing(pkg);
-			type = internOneThing(type);
-			return new String[] { pkg, type };
-		} else {
-			return internOneThing(substring);
-		}
-	}
-
-	private String internOneThing(String substring) {
-		// simple name
-		for (int p = 0, max = pieces.size(); p < max; p++) {
-			String s = (String) pieces.get(p);
-			if (s.equals(substring)) {
-				return s;
-			}
-		}
-		pieces.add(substring);
-		return substring;
-	}
-
-	/**
-	 * What we can rely on: <br>
-	 * - it is a method signature of the form (La/B;Lc/D;)LFoo;<br>
-	 * - there are no generics<br>
-	 * 
-	 * What we must allow for: - may use primitive refs (single chars rather than L)
-	 */
-	/*
-	 * public List compress(String s) { int openParen = 0; int closeParen = s.indexOf(')'); int pos = 1; List compressed = new
-	 * ArrayList(); // do the parens while (pos < closeParen) { char ch = s.charAt(pos); if (ch == 'L') { int idx = s.indexOf(';',
-	 * pos); compressed.add(intern(s.substring(pos + 1, idx))); pos = idx + 1; } else if (ch == '[') { int x = pos; while
-	 * (s.charAt(++pos) == '[') ; // now pos will point at something not an array compressed.add(intern(s.substring(x, pos))); //
-	 * intern the [[[[[[ char ch2 = s.charAt(pos); if (ch2 == 'L') { int idx = s.indexOf(';', pos);
-	 * compressed.add(intern(s.substring(pos + 1, idx))); pos = idx + 1; } else if (ch2 == 'T') { int idx = s.indexOf(';');
-	 * compressed.add(intern(s.substring(pos, idx + 1))); // should be TT; pos = idx + 1; } else {
-	 * compressed.add(toCharacter(s.charAt(pos))); pos++; } } else { // it is a primitive ref (SVBCZJ)
-	 * compressed.add(toCharacter(ch)); pos++; } } // do the return type pos++; char ch = s.charAt(pos); if (ch == 'L') { int idx =
-	 * s.indexOf(';', pos); compressed.add(intern(s.substring(pos, idx))); } else if (ch == '[') { int x = pos; while
-	 * (s.charAt(++pos) == '[') ; // now pos will point at something not an array compressed.add(intern(s.substring(x, pos))); //
-	 * intern the [[[[[[ char ch2 = s.charAt(pos); if (ch2 == 'L') { int idx = s.indexOf(';', pos);
-	 * compressed.add(intern(s.substring(pos + 1, idx))); pos = idx + 1; } else if (ch2 == 'T') { int idx = s.indexOf(';');
-	 * compressed.add(intern(s.substring(pos, idx + 1))); // should be TT; pos = idx + 2; } else {
-	 * compressed.add(toCharacter(s.charAt(pos))); pos++; } } else { // it is a primitive ref (SVBCZJ) compressed.add(new
-	 * Character(ch)); } return compressed;
-	 * 
-	 * // char delimiter = '/'; // int pos = -1; // List compressed = new ArrayList(); // int start = 0; // while ((pos =
-	 * s.indexOf(delimiter, start)) != -1) { // String part = s.substring(start, pos); // int alreadyRecorded =
-	 * pieces.indexOf(part); // if (alreadyRecorded != -1) { // compressed.add(new Integer(alreadyRecorded)); // } else { //
-	 * compressed.add(new Integer(pieces.size())); // pieces.add(part); // } // start = pos + 1; // } // // last piece // String
-	 * part = s.substring(start, s.length()); // int alreadyRecorded = pieces.indexOf(part); // if (alreadyRecorded != -1) { //
-	 * compressed.add(youkirtyounew Integer(alreadyRecorded)); // } else { // compressed.add(new Integer(pieces.size())); //
-	 * pieces.add(part); // } // return compressed; }
-	 * 
-	 * static final Character charB = new Character('B'); static final Character charS = new Character('S'); static final Character
-	 * charI = new Character('I'); static final Character charF = new Character('F'); static final Character charD = new
-	 * Character('D'); static final Character charJ = new Character('J'); static final Character charC = new Character('C'); static
-	 * final Character charV = new Character('V'); static final Character charZ = new Character('Z');
-	 * 
-	 * private Character toCharacter(char ch) { switch (ch) { case 'B': return charB; case 'S': return charS; case 'I': return
-	 * charI; case 'F': return charF; case 'D': return charD; case 'J': return charJ; case 'C': return charC; case 'V': return
-	 * charV; case 'Z': return charZ; default: throw new IllegalStateException(new Character(ch).toString()); } }
-	 * 
-	 * public String decompress(List refs, char delimiter) { StringBuilder result = new StringBuilder(); result.append("("); for
-	 * (int i = 0, max = refs.size() - 1; i < max; i++) { result.append(unintern(refs.get(i))); } result.append(")");
-	 * result.append(unintern(refs.get(refs.size() - 1))); return result.toString(); }
-	 * 
-	 * private String unintern(Object o) { if (o instanceof Character) { return ((Character) o).toString(); } else if (o instanceof
-	 * String[]) { String[] strings = (String[]) o; StringBuilder sb = new StringBuilder(); sb.append('L');
-	 * sb.append(strings[0]).append('/').append(strings[1]); sb.append(';'); return sb.toString(); } else { // String String so =
-	 * (String) o; if (so.endsWith(";")) { // will be TT; return so; } else { StringBuilder sb = new StringBuilder();
-	 * sb.append('L'); sb.append(so); sb.append(';'); return sb.toString(); } } }
-	 */
 }

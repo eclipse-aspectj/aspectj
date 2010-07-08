@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2003 Contributors.
+ * Copyright (c) 2003,2010 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -8,7 +8,7 @@
  *  
  * Contributors: 
  *     Mik Kersten     initial implementation 
- *     Andy Clement    Extensions for better IDE representation
+ *     Andy Clement, IBM, SpringSource    Extensions for better IDE representation
  * ******************************************************************/
 
 package org.aspectj.asm.internal;
@@ -28,6 +28,7 @@ import org.aspectj.bridge.ISourceLocation;
 
 /**
  * @author Mik Kersten
+ * @author Andy Clement
  */
 public class ProgramElement implements IProgramElement {
 
@@ -54,7 +55,7 @@ public class ProgramElement implements IProgramElement {
 	private Kind kind;
 	protected IProgramElement parent = null;
 	protected List<IProgramElement> children = Collections.emptyList();
-	public Map kvpairs = Collections.EMPTY_MAP;
+	public Map<String, Object> kvpairs = Collections.emptyMap();
 	protected ISourceLocation sourceLocation = null;
 	public int modifiers;
 	private String handle = null;
@@ -63,7 +64,7 @@ public class ProgramElement implements IProgramElement {
 		return asm;
 	}
 
-	/** Used during de-externalization */
+	/** Used during deserialization */
 	public ProgramElement() {
 	}
 
@@ -89,39 +90,11 @@ public class ProgramElement implements IProgramElement {
 		this.modifiers = modifiers;
 	}
 
-	// /**
-	// * Use to create program element nodes that correspond to source locations.
-	// */
-	// public ProgramElement(
-	// String name,
-	// Kind kind,
-	// int modifiers,
-	// //Accessibility accessibility,
-	// String declaringType,
-	// String packageName,
-	// String comment,
-	// ISourceLocation sourceLocation,
-	// List relations,
-	// List children,
-	// boolean member) {
-	//
-	// this(name, kind, children);
-	// this.sourceLocation = sourceLocation;
-	// this.kind = kind;
-	// this.modifiers = modifiers;
-	// setDeclaringType(declaringType);//this.declaringType = declaringType;
-	// //this.packageName = packageName;
-	// setFormalComment(comment);
-	// // if (comment!=null && comment.length()>0) formalComment = comment;
-	// if (relations!=null && relations.size()!=0) setRelations(relations);
-	// // this.relations = relations;
-	// }
-
 	public int getRawModifiers() {
 		return this.modifiers;
 	}
 
-	public List getModifiers() {
+	public List<IProgramElement.Modifiers> getModifiers() {
 		return genModifiers(this.modifiers);
 	}
 
@@ -131,9 +104,7 @@ public class ProgramElement implements IProgramElement {
 
 	public void setDeclaringType(String t) {
 		if (t != null && t.length() > 0) {
-			if (kvpairs == Collections.EMPTY_MAP) {
-				kvpairs = new HashMap();
-			}
+			fixMap();
 			kvpairs.put("declaringType", t);
 		}
 	}
@@ -180,9 +151,7 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setMessage(IMessage message) {
-		if (kvpairs == Collections.EMPTY_MAP) {
-			kvpairs = new HashMap();
-		}
+		fixMap();
 		kvpairs.put("message", message);
 		// this.message = message;
 	}
@@ -200,9 +169,7 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setRunnable(boolean value) {
-		if (kvpairs == Collections.EMPTY_MAP) {
-			kvpairs = new HashMap();
-		}
+		fixMap();
 		if (value) {
 			kvpairs.put("isRunnable", "true");
 		} else {
@@ -222,9 +189,7 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setImplementor(boolean value) {
-		if (kvpairs == Collections.EMPTY_MAP) {
-			kvpairs = new HashMap();
-		}
+		fixMap();
 		if (value) {
 			kvpairs.put("isImplementor", "true");
 		} else {
@@ -239,9 +204,7 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setOverrider(boolean value) {
-		if (kvpairs == Collections.EMPTY_MAP) {
-			kvpairs = new HashMap();
-		}
+		fixMap();
 		if (value) {
 			kvpairs.put("isOverrider", "true");
 		} else {
@@ -252,14 +215,11 @@ public class ProgramElement implements IProgramElement {
 
 	public List getRelations() {
 		return (List) kvpairs.get("relations");
-		// return relations;
 	}
 
 	public void setRelations(List relations) {
 		if (relations.size() > 0) {
-			if (kvpairs == Collections.EMPTY_MAP) {
-				kvpairs = new HashMap();
-			}
+			fixMap();
 			kvpairs.put("relations", relations);
 			// this.relations = relations;
 		}
@@ -326,14 +286,12 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setBytecodeName(String s) {
-		if (kvpairs == Collections.EMPTY_MAP) {
-			kvpairs = new HashMap();
-		}
+		fixMap();
 		kvpairs.put("bytecodeName", s);
 	}
 
 	public void setBytecodeSignature(String s) {
-		initMap();
+		fixMap();
 		// Different kinds of format here. The one worth compressing starts with a '(':
 		// (La/b/c/D;Le/f/g/G;)Ljava/lang/String;
 		// maybe want to avoid generics initially.
@@ -359,20 +317,12 @@ public class ProgramElement implements IProgramElement {
 		return s;
 	}
 
-	private void initMap() {
-		if (kvpairs == Collections.EMPTY_MAP) {
-			kvpairs = new HashMap();
-		}
-	}
-
 	public String getSourceSignature() {
 		return (String) kvpairs.get("sourceSignature");
 	}
 
 	public void setSourceSignature(String string) {
-		if (kvpairs == Collections.EMPTY_MAP) {
-			kvpairs = new HashMap();
-		}
+		fixMap();
 		// System.err.println(name+" SourceSig=>"+string);
 		kvpairs.put("sourceSignature", string);
 		// sourceSignature = string;
@@ -383,31 +333,26 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setCorrespondingType(String s) {
-		if (kvpairs == Collections.EMPTY_MAP) {
-			kvpairs = new HashMap();
-		}
+		fixMap();
 		kvpairs.put("returnType", s);
 		// this.returnType = s;
 	}
 
-	public void setParentTypes(List ps) {
-		if (kvpairs == Collections.EMPTY_MAP) {
-			kvpairs = new HashMap();
-		}
+	public void setParentTypes(List<String> ps) {
+		fixMap();
 		kvpairs.put("parentTypes", ps);
 	}
 
-	public List getParentTypes() {
-		return (List) (kvpairs == null ? null : kvpairs.get("parentTypes"));
+	@SuppressWarnings("unchecked")
+	public List<String> getParentTypes() {
+		return (List<String>) (kvpairs == null ? null : kvpairs.get("parentTypes"));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void setAnnotationType(String fullyQualifiedAnnotationType) {
-		if (kvpairs == Collections.EMPTY_MAP) {
-			kvpairs = new HashMap();
-		}
+		fixMap();
 		kvpairs.put("annotationType", fullyQualifiedAnnotationType);
 	}
 
@@ -533,14 +478,14 @@ public class ProgramElement implements IProgramElement {
 		StringBuffer sb = new StringBuffer();
 		sb.append(name);
 
-		List ptypes = getParameterTypes();
+		List<char[]> ptypes = getParameterTypes();
 		if (ptypes != null && (!ptypes.isEmpty() || this.kind.equals(IProgramElement.Kind.METHOD))
 				|| this.kind.equals(IProgramElement.Kind.CONSTRUCTOR) || this.kind.equals(IProgramElement.Kind.ADVICE)
 				|| this.kind.equals(IProgramElement.Kind.POINTCUT) || this.kind.equals(IProgramElement.Kind.INTER_TYPE_METHOD)
 				|| this.kind.equals(IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR)) {
 			sb.append('(');
-			for (Iterator it = ptypes.iterator(); it.hasNext();) {
-				char[] arg = (char[]) it.next();
+			for (Iterator<char[]> it = ptypes.iterator(); it.hasNext();) {
+				char[] arg = it.next();
 				if (getFullyQualifiedArgTypes) {
 					sb.append(arg);
 				} else {
@@ -637,6 +582,7 @@ public class ProgramElement implements IProgramElement {
 		this.handle = handle;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<String> getParameterNames() {
 		List<String> parameterNames = (List<String>) kvpairs.get("parameterNames");
 		return parameterNames;
@@ -646,9 +592,7 @@ public class ProgramElement implements IProgramElement {
 		if (list == null || list.size() == 0) {
 			return;
 		}
-		if (kvpairs == Collections.EMPTY_MAP) {
-			kvpairs = new HashMap();
-		}
+		fixMap();
 		kvpairs.put("parameterNames", list);
 		// parameterNames = list;
 	}
@@ -666,13 +610,15 @@ public class ProgramElement implements IProgramElement {
 		return params;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<char[]> getParameterSignatures() {
 		List<char[]> parameters = (List<char[]>) kvpairs.get("parameterSigs");
 		return parameters;
 	}
 
-	public List getParameterSignaturesSourceRefs() {
-		List parameters = (List) kvpairs.get("parameterSigsSourceRefs");
+	@SuppressWarnings("unchecked")
+	public List<String> getParameterSignaturesSourceRefs() {
+		List<String> parameters = (List<String>) kvpairs.get("parameterSigsSourceRefs");
 		return parameters;
 	}
 
@@ -681,10 +627,8 @@ public class ProgramElement implements IProgramElement {
 	 * the source. A singletypereference would be 'String' - whilst a qualifiedtypereference would be 'java.lang.String' - this has
 	 * an effect on the handles.
 	 */
-	public void setParameterSignatures(List list, List sourceRefs) {
-		if (kvpairs == Collections.EMPTY_MAP) {
-			kvpairs = new HashMap();
-		}
+	public void setParameterSignatures(List<char[]> list, List<String> sourceRefs) {
+		fixMap();
 		if (list == null || list.size() == 0) {
 			kvpairs.put("parameterSigs", Collections.EMPTY_LIST);
 		} else {
@@ -701,25 +645,25 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setDetails(String string) {
-		if (kvpairs == Collections.EMPTY_MAP) {
-			kvpairs = new HashMap();
-		}
+		fixMap();
 		kvpairs.put("details", string);
 	}
 
 	public void setFormalComment(String txt) {
 		if (txt != null && txt.length() > 0) {
-			if (kvpairs == Collections.EMPTY_MAP) {
-				kvpairs = new HashMap();
-			}
+			fixMap();
 			kvpairs.put("formalComment", txt);
 		}
 	}
 
-	public void setExtraInfo(ExtraInformation info) {
+	private void fixMap() {
 		if (kvpairs == Collections.EMPTY_MAP) {
-			kvpairs = new HashMap();
+			kvpairs = new HashMap<String, Object>();
 		}
+	}
+
+	public void setExtraInfo(ExtraInformation info) {
+		fixMap();
 		kvpairs.put("ExtraInformation", info);
 	}
 
@@ -733,9 +677,7 @@ public class ProgramElement implements IProgramElement {
 
 	public void setAnnotationStyleDeclaration(boolean b) {
 		if (b) {
-			if (kvpairs == Collections.EMPTY_MAP) {
-				kvpairs = new HashMap();
-			}
+			fixMap();
 			kvpairs.put("annotationStyleDeclaration", "true");
 		}
 	}

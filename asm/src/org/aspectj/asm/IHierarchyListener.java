@@ -10,19 +10,16 @@
  *     Mik Kersten     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.asm;
 
 import java.util.EventListener;
 
-//import org.aspectj.asm.internal.*;
-
 /**
  * Compiler listeners get notified of structure model update events.
- *
+ * 
  * @author Mik Kersten
  */
 public interface IHierarchyListener extends EventListener {
 
-    public void elementsUpdated(IHierarchy rootNode);
+	public void elementsUpdated(IHierarchy rootNode);
 }
