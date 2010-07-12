@@ -18,9 +18,9 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc1610Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
-	// public void testMessyDecp_318241() {
-	// runTest("messy decp");
-	// }
+	public void testLoadingOldCode_319431() {
+		runTest("loading old code");
+	}
 
 	// ---
 
@@ -30,7 +30,7 @@ public class Ajc1610Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	@Override
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc169/ajc169.xml");
+		return new File("../tests/src/org/aspectj/systemtest/ajc1610/ajc1610.xml");
 	}
 
 }
