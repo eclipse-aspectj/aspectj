@@ -27,6 +27,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.aspectj.bridge.IMessage;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 /**
  * WeaverStateInfo represents how a type was processed. It is used by the weaver to determine how a type was previously treated and
@@ -300,9 +301,14 @@ public class WeaverStateInfo {
 					str = s.readSignature();
 				} else {
 					str = s.readUTF();
-					// StringBuilder sb = new StringBuilder();
-					// sb.append("L").append(str.replace('.', '/')).append(";");
-					// str = sb.toString();
+					// Prior to 1.6.9 we were writing out names (com.foo.Bar) rather than signatures (Lcom/foo/Bar;)
+					// From 1.6.9 onwards we write out signatures (pr319431)
+					if (s.getMajorVersion() < WeaverVersionInfo.WEAVER_VERSION_AJ169) {
+						// It is a name, make it a signature
+						StringBuilder sb = new StringBuilder();
+						sb.append("L").append(str.replace('.', '/')).append(";");
+						str = sb.toString();
+					}
 				}
 				wsi.addAspectAffectingType(str);
 			}
