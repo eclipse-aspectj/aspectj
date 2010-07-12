@@ -51,11 +51,11 @@ import org.apache.tools.ant.types.ZipFileSet;
 import org.apache.tools.ant.util.TaskLogger;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
-import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.tools.ajc.Main;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
@@ -484,6 +484,10 @@ public class AjcTask extends MatchingTask {
 
 	public void setXReweavable(boolean reweavable) {
 		cmd.addFlag("-Xreweavable", reweavable);
+	}
+
+	public void setXmlConfigured(boolean xmlConfigured) {
+		cmd.addFlag("-xmlConfigured", xmlConfigured);
 	}
 
 	public void setXJoinpoints(String optionalJoinpoints) {
