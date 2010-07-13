@@ -26,7 +26,7 @@ public abstract class HierarchyWalker {
 	}
 
 	protected void postProcess(IProgramElement node) {
-	}
+	} 
 
 	public IProgramElement process(IProgramElement node) {
 		preProcess(node);
