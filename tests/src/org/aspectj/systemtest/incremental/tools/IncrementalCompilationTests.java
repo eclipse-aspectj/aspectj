@@ -1,14 +1,19 @@
 /********************************************************************
- * Copyright (c) 2010 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * Copyright (c) 2010 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
  *     Andy Clement (SpringSource)         initial implementation
  *******************************************************************/
 package org.aspectj.systemtest.incremental.tools;
+
+import junit.framework.Assert;
+
+import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.internal.AspectJElementHierarchy;
 
 /**
  * Incremental compilation tests. MultiProjectIncrementalTests was getting unwieldy - started this new test class for 1.6.10.
@@ -140,7 +145,6 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 
 	// removing class
 	public void testInnerClassChanges_318884_10() throws Exception {
-		AjdeInteractionTestbed.VERBOSE = true;
 		String p = "pr318884_10";
 		initialiseProject(p);
 		build(p);
@@ -151,5 +155,63 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		checkWasntFullBuild();
 		assertEquals(2, getErrorMessages(p).size());
 		assertContains("B cannot be resolved to a type", getErrorMessages(p).get(0));
+	}
+
+	// deleting unaffected model entries
+	public void testDeletion_278496() throws Exception {
+		String p = "PR278496_1";
+		initialiseProject(p);
+		configureNonStandardCompileOptions(p, "-Xset:minimalModel=true");
+		build(p);
+		checkWasFullBuild();
+		printModel(p);
+		// Here is the model without deletion.  The node for 'Code.java' can safely be deleted as it contains
+		// no types that are the target of relationships.
+		//		PR278496_1  [build configuration file]  hid:=PR278496_1
+		//		  a.b.c  [package]  hid:=PR278496_1<a.b.c
+		//		    Azpect.java  [java source file] 1 hid:=PR278496_1<a.b.c{Azpect.java
+		//		      a.b.c  [package declaration] 1 hid:=PR278496_1<a.b.c{Azpect.java%a.b.c
+		//		        [import reference]  hid:=PR278496_1<a.b.c{Azpect.java#
+		//		      Azpect  [aspect] 3 hid:=PR278496_1<a.b.c{Azpect.java}Azpect
+		//		        before(): <anonymous pointcut>  [advice] 4 hid:=PR278496_1<a.b.c{Azpect.java}Azpect&before
+		//		    Code.java  [java source file] 1 hid:=PR278496_1<a.b.c{Code.java
+		//		      a.b.c  [package declaration] 1 hid:=PR278496_1<a.b.c{Code.java%a.b.c
+		//		        [import reference]  hid:=PR278496_1<a.b.c{Code.java#
+		//		        java.util.ArrayList  [import reference] 3 hid:=PR278496_1<a.b.c{Code.java#java.util.ArrayList
+		//		        java.util.List  [import reference] 2 hid:=PR278496_1<a.b.c{Code.java#java.util.List
+		//		      Code  [class] 5 hid:=PR278496_1<a.b.c{Code.java[Code
+		//		        m()  [method] 6 hid:=PR278496_1<a.b.c{Code.java[Code~m
+		//		    Code2.java  [java source file] 1 hid:=PR278496_1<a.b.c{Code2.java
+		//		      a.b.c  [package declaration] 1 hid:=PR278496_1<a.b.c{Code2.java%a.b.c
+		//		        [import reference]  hid:=PR278496_1<a.b.c{Code2.java#
+		//		        java.util.ArrayList  [import reference] 3 hid:=PR278496_1<a.b.c{Code2.java#java.util.ArrayList
+		//		        java.util.List  [import reference] 2 hid:=PR278496_1<a.b.c{Code2.java#java.util.List
+		//		      Code2  [class] 5 hid:=PR278496_1<a.b.c{Code2.java[Code2
+		//		        m()  [method] 6 hid:=PR278496_1<a.b.c{Code2.java[Code2~m
+		//		Hid:1:(targets=1) =PR278496_1<a.b.c{Azpect.java}Azpect&before (advises) =PR278496_1<a.b.c{Code2.java[Code2
+		//		Hid:2:(targets=1) =PR278496_1<a.b.c{Code2.java[Code2 (advised by) =PR278496_1<a.b.c{Azpect.java}Azpect&before
+
+		// deletion turned on:
+		//		PR278496_1  [build configuration file]  hid:=PR278496_1
+		//		  a.b.c  [package]  hid:<a.b.c
+		//		    Azpect.java  [java source file] 1 hid:<a.b.c{Azpect.java
+		//		      a.b.c  [package declaration] 1 hid:<a.b.c{Azpect.java%a.b.c
+		//		        [import reference]  hid:<a.b.c{Azpect.java#
+		//		      Azpect  [aspect] 3 hid:<a.b.c{Azpect.java}Azpect
+		//		        before(): <anonymous pointcut>  [advice] 4 hid:<a.b.c{Azpect.java}Azpect&before
+		//		    Code2.java  [java source file] 1 hid:<a.b.c{Code2.java
+		//		      a.b.c  [package declaration] 1 hid:<a.b.c{Code2.java%a.b.c
+		//		        [import reference]  hid:<a.b.c{Code2.java#
+		//		        java.util.ArrayList  [import reference] 3 hid:<a.b.c{Code2.java#java.util.ArrayList
+		//		        java.util.List  [import reference] 2 hid:<a.b.c{Code2.java#java.util.List
+		//		      Code2  [class] 5 hid:<a.b.c{Code2.java[Code2
+		//		        m()  [method] 6 hid:<a.b.c{Code2.java[Code2~m
+		//		Hid:1:(targets=1) <a.b.c{Azpect.java}Azpect&before (advises) <a.b.c{Code2.java[Code2
+		//		Hid:2:(targets=1) <a.b.c{Code2.java[Code2 (advised by) <a.b.c{Azpect.java}Azpect&before
+
+		AspectJElementHierarchy model = (AspectJElementHierarchy) getModelFor(p).getHierarchy();
+		// Node for "Code.java" should not be there:
+		IProgramElement ipe = model.findElementForHandleOrCreate("=PR278496_1<a.b.c{Code.java",false);
+		Assert.assertNull(ipe);
 	}
 }

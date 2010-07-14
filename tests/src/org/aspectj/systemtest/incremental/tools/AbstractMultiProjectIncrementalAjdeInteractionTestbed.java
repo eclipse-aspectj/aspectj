@@ -17,12 +17,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.aspectj.ajdt.internal.core.builder.AjState;
+import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
 import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.testing.util.FileUtil;
@@ -30,6 +32,40 @@ import org.aspectj.testing.util.FileUtil;
 public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeInteractionTestbed {
 
 	public static boolean VERBOSE = false;
+
+	public static void dumptree(IProgramElement node, int indent) {
+		for (int i = 0; i < indent; i++) {
+			System.out.print(" ");
+		}
+		String loc = "";
+		if (node != null) {
+			if (node.getSourceLocation() != null) {
+				loc = Integer.toString(node.getSourceLocation().getLine());
+			}
+		}
+		// System.out.println(node + "  [" + (node == null ? "null" : node.getKind().toString()) + "] " + loc);
+		System.out.println(node + "  [" + (node == null ? "null" : node.getKind().toString()) + "] " + loc
+				+ (node == null ? "" : " hid:" + node.getHandleIdentifier()));
+		if (node != null) {
+			// for (int i = 0; i < indent; i++)
+			// System.out.print(" ");
+			// System.out.println("  hid is " + node.getHandleIdentifier());
+			// Map m = ((ProgramElement) node).kvpairs;
+			// if (m != null) {
+			// Set keys = m.keySet();
+			// for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+			// Object object = (Object) iterator.next();
+			//
+			// for (int i = 0; i < indent; i++)
+			// System.out.print(" ");
+			// System.out.println("kvp: " + object + " = " + m.get(object));
+			// }
+			// }
+			for (Iterator i = node.getChildren().iterator(); i.hasNext();) {
+				dumptree((IProgramElement) i.next(), indent + 2);
+			}
+		}
+	}
 
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -209,5 +245,13 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 		if (actualString.indexOf(expectedSubstring) == -1) {
 			fail("Expected to find '" + expectedSubstring + "' in '" + actualString + "'");
 		}
+	}
+
+	/** @return the number of relationship pairs */
+	protected void printModel(String projectName) throws Exception {
+		dumptree(getModelFor(projectName).getHierarchy().getRoot(), 0);
+		PrintWriter pw = new PrintWriter(System.out);
+		getModelFor(projectName).dumprels(pw);
+		pw.flush();
 	}
 }

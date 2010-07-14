@@ -1489,40 +1489,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
 	}
 
-	public static void dumptree(IProgramElement node, int indent) {
-		for (int i = 0; i < indent; i++) {
-			System.out.print(" ");
-		}
-		String loc = "";
-		if (node != null) {
-			if (node.getSourceLocation() != null) {
-				loc = Integer.toString(node.getSourceLocation().getLine());
-			}
-		}
-		// System.out.println(node + "  [" + (node == null ? "null" : node.getKind().toString()) + "] " + loc);
-		System.out.println(node + "  [" + (node == null ? "null" : node.getKind().toString()) + "] " + loc
-				+ (node == null ? "" : " hid:" + node.getHandleIdentifier()));
-		if (node != null) {
-			// for (int i = 0; i < indent; i++)
-			// System.out.print(" ");
-			// System.out.println("  hid is " + node.getHandleIdentifier());
-			// Map m = ((ProgramElement) node).kvpairs;
-			// if (m != null) {
-			// Set keys = m.keySet();
-			// for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
-			// Object object = (Object) iterator.next();
-			//
-			// for (int i = 0; i < indent; i++)
-			// System.out.print(" ");
-			// System.out.println("kvp: " + object + " = " + m.get(object));
-			// }
-			// }
-			for (Iterator i = node.getChildren().iterator(); i.hasNext();) {
-				dumptree((IProgramElement) i.next(), indent + 2);
-			}
-		}
-	}
-
 	public void testIncrementalItdsWithMultipleAspects_pr173729() {
 		initialiseProject("PR173729");
 		build("PR173729");
@@ -1595,14 +1561,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("=bug274558base/binaries<r(DeclaresITD.class}DeclaresITD)InterfaceForITD.x", findElementAtLine(root, 4)
 				.getHandleIdentifier());
 		// assertEquals("=AspectPathTwo/binaries<(Asp2.class}Asp2&before", findElementAtLine(root, 16).getHandleIdentifier());
-	}
-
-	/** @return the number of relationship pairs */
-	private void printModel(String projectName) throws Exception {
-		dumptree(getModelFor(projectName).getHierarchy().getRoot(), 0);
-		PrintWriter pw = new PrintWriter(System.out);
-		getModelFor(projectName).dumprels(pw);
-		pw.flush();
 	}
 
 	public void testAspectPath_pr265693() throws IOException {
