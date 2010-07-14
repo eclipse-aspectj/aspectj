@@ -27,7 +27,7 @@ public class StandardAnnotation extends AbstractAnnotationAJ {
 
 	private final boolean isRuntimeVisible;
 
-	private List /* of AnnotationNVPair */nvPairs = null;
+	private List<AnnotationNameValuePair> nvPairs = null;
 
 	public StandardAnnotation(ResolvedType type, boolean isRuntimeVisible) {
 		super(type);
@@ -49,9 +49,8 @@ public class StandardAnnotation extends AbstractAnnotationAJ {
 		sb.append("@").append(type.getClassName());
 		if (hasNameValuePairs()) {
 			sb.append("(");
-			for (Iterator iter = nvPairs.iterator(); iter.hasNext();) {
-				AnnotationNameValuePair element = (AnnotationNameValuePair) iter.next();
-				sb.append(element.stringify());
+			for (AnnotationNameValuePair nvPair : nvPairs) {
+				sb.append(nvPair.stringify());
 			}
 			sb.append(")");
 		}
@@ -62,11 +61,12 @@ public class StandardAnnotation extends AbstractAnnotationAJ {
 		StringBuffer sb = new StringBuffer();
 		sb.append("ANNOTATION [" + getTypeSignature() + "] [" + (isRuntimeVisible ? "runtimeVisible" : "runtimeInvisible") + "] [");
 		if (nvPairs != null) {
-			for (Iterator iter = nvPairs.iterator(); iter.hasNext();) {
-				AnnotationNameValuePair element = (AnnotationNameValuePair) iter.next();
+			for (Iterator<AnnotationNameValuePair> iter = nvPairs.iterator(); iter.hasNext();) {
+				AnnotationNameValuePair element = iter.next();
 				sb.append(element.toString());
-				if (iter.hasNext())
+				if (iter.hasNext()) {
 					sb.append(",");
+				}
 			}
 		}
 		sb.append("]");
@@ -77,27 +77,13 @@ public class StandardAnnotation extends AbstractAnnotationAJ {
 	 * {@inheritDoc}
 	 */
 	public boolean hasNamedValue(String n) {
-		if (nvPairs == null)
+		if (nvPairs == null) {
 			return false;
-		for (int i = 0; i < nvPairs.size(); i++) {
-			AnnotationNameValuePair pair = (AnnotationNameValuePair) nvPairs.get(i);
-			if (pair.getName().equals(n))
-				return true;
 		}
-		return false;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean hasNameValuePair(String n, String v) {
-		if (nvPairs == null)
-			return false;
 		for (int i = 0; i < nvPairs.size(); i++) {
-			AnnotationNameValuePair pair = (AnnotationNameValuePair) nvPairs.get(i);
+			AnnotationNameValuePair pair = nvPairs.get(i);
 			if (pair.getName().equals(n)) {
-				if (pair.getValue().stringify().equals(v))
-					return true;
+				return true;
 			}
 		}
 		return false;
@@ -106,14 +92,32 @@ public class StandardAnnotation extends AbstractAnnotationAJ {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Set /* <String> */getTargets() {
-		if (!type.equals(UnresolvedType.AT_TARGET)) {
-			return Collections.EMPTY_SET;
+	public boolean hasNameValuePair(String n, String v) {
+		if (nvPairs == null) {
+			return false;
 		}
-		AnnotationNameValuePair nvp = (AnnotationNameValuePair) nvPairs.get(0);
+		for (int i = 0; i < nvPairs.size(); i++) {
+			AnnotationNameValuePair pair = nvPairs.get(i);
+			if (pair.getName().equals(n)) {
+				if (pair.getValue().stringify().equals(v)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Set<String> getTargets() {
+		if (!type.equals(UnresolvedType.AT_TARGET)) {
+			return Collections.emptySet();
+		}
+		AnnotationNameValuePair nvp = nvPairs.get(0);
 		ArrayAnnotationValue aav = (ArrayAnnotationValue) nvp.getValue();
 		AnnotationValue[] avs = aav.getValues();
-		Set targets = new HashSet();
+		Set<String> targets = new HashSet<String>();
 		for (int i = 0; i < avs.length; i++) {
 			AnnotationValue value = avs[i];
 			targets.add(value.stringify());
@@ -121,7 +125,7 @@ public class StandardAnnotation extends AbstractAnnotationAJ {
 		return targets;
 	}
 
-	public List getNameValuePairs() {
+	public List<AnnotationNameValuePair> getNameValuePairs() {
 		return nvPairs;
 	}
 
@@ -131,7 +135,7 @@ public class StandardAnnotation extends AbstractAnnotationAJ {
 
 	public void addNameValuePair(AnnotationNameValuePair pair) {
 		if (nvPairs == null) {
-			nvPairs = new ArrayList();
+			nvPairs = new ArrayList<AnnotationNameValuePair>();
 		}
 		nvPairs.add(pair);
 	}
@@ -141,8 +145,7 @@ public class StandardAnnotation extends AbstractAnnotationAJ {
 	 */
 	public String getStringFormOfValue(String name) {
 		if (hasNameValuePairs()) {
-			for (Iterator iterator = nvPairs.iterator(); iterator.hasNext();) {
-				AnnotationNameValuePair nvPair = (AnnotationNameValuePair) iterator.next();
+			for (AnnotationNameValuePair nvPair : nvPairs) {
 				if (nvPair.getName().equals(name)) {
 					return nvPair.getValue().stringify();
 				}

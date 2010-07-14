@@ -138,7 +138,7 @@ public abstract class AbstractAnnotationAJ implements AnnotationAJ {
 	/**
 	 * {@inheritDoc}
 	 */
-	public abstract Set getTargets();
+	public abstract Set<String> getTargets();
 
 	/**
 	 * {@inheritDoc}
