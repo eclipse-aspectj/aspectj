@@ -17,8 +17,8 @@ import java.util.List;
 
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.GenericSignature;
-import org.aspectj.util.GenericSignatureParser;
 import org.aspectj.util.GenericSignature.ClassSignature;
+import org.aspectj.util.GenericSignatureParser;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDelegate {
@@ -104,7 +104,7 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 	}
 
 	protected GenericSignature.FormalTypeParameter[] getFormalTypeParametersFromOuterClass() {
-		List typeParameters = new ArrayList();
+		List<GenericSignature.FormalTypeParameter> typeParameters = new ArrayList<GenericSignature.FormalTypeParameter>();
 		ResolvedType outerClassType = getOuterClass();
 		if (!(outerClassType instanceof ReferenceType)) {
 			throw new BCException("Whilst processing type '" + this.resolvedTypeX.getSignature()

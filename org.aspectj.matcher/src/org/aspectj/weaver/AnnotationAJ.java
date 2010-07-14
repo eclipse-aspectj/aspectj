@@ -55,7 +55,7 @@ public interface AnnotationAJ {
 	 * @return for the @target annotation, this will return a set of the element-types it can be applied to. For other annotations ,
 	 *         it returns the empty set.
 	 */
-	public Set getTargets();
+	public Set<String> getTargets();
 
 	/**
 	 * @param name the name of the value
