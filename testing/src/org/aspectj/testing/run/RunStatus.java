@@ -11,7 +11,6 @@
  *     Xerox/PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.testing.run;
 
 import java.util.ArrayList;
@@ -27,12 +26,13 @@ import org.aspectj.util.LangUtil;
 
 /**
  * Default implementation of {@link IRunStatus}.
+ * 
  * @author isberg
  */
 public class RunStatus implements IRunStatus {
 	private static int INDEX;
 
-	private final String name = "RunStatus[" + INDEX++ +"]";
+	private final String name = "RunStatus[" + INDEX++ + "]";
 
 	/** true after isCompleted() evaluated true */
 	private boolean evaluated;
@@ -70,20 +70,21 @@ public class RunStatus implements IRunStatus {
 	/** controls runResult() */
 	private IRunValidator validator;
 
-//	public RunStatus() {
-//		reset();
-//		validator = RunValidator.NORMAL;
-//	}
+	// public RunStatus() {
+	// reset();
+	// validator = RunValidator.NORMAL;
+	// }
 
 	public RunStatus(IMessageHolder holder, Runner runner) {
 		reset(holder, runner);
 		validator = RunValidator.NORMAL;
 	}
 
-	//------------------- process controls
+	// ------------------- process controls
 
 	/**
 	 * Set identifier associated with this run, if any
+	 * 
 	 * @throws IllegalArgumentException if id is null
 	 * @throws IllegalStateException if id has already been set
 	 */
@@ -91,14 +92,14 @@ public class RunStatus implements IRunStatus {
 		if (null == id) {
 			throw new IllegalArgumentException("null id");
 		} else if ((null != this.id) && (id != this.id)) {
-			throw new IllegalStateException(
-				"attempt to set id " + this.id + " to " + id);
+			throw new IllegalStateException("attempt to set id " + this.id + " to " + id);
 		}
 		this.id = id;
 	}
 
 	/**
-	 * Set  the current validator.
+	 * Set the current validator.
+	 * 
 	 * @param delegate the RunValidatorI to use when calculating runStatus
 	 * @throws IllegalArgumentException if delegate is null
 	 */
@@ -112,26 +113,25 @@ public class RunStatus implements IRunStatus {
 	}
 
 	/**
-	 * Call before any start() or after isCompleted() would return true
-	 * to reset this to its pre-start state
-	 * @throws IllegalStateException if start() has been called 
-	 * and isCompleted() is not true.
+	 * Call before any start() or after isCompleted() would return true to reset this to its pre-start state
+	 * 
+	 * @throws IllegalStateException if start() has been called and isCompleted() is not true.
 	 */
 	public void reset() {
 		reset((IMessageHolder) null, (Runner) null);
 	}
 
 	/**
-	 * Call before any start() or after isCompleted() would return true
-	 * to reset this to its pre-start state.  Does not affect validator.
+	 * Call before any start() or after isCompleted() would return true to reset this to its pre-start state. Does not affect
+	 * validator.
+	 * 
 	 * @param holder the IMessageHolder to use after resetting.
-	 * @throws IllegalStateException if start() has been called 
-	 * and isCompleted() is not true.
+	 * @throws IllegalStateException if start() has been called and isCompleted() is not true.
 	 */
 	public void reset(IMessageHolder holder, Runner runner) {
-        if (null == runner) {
-            throw new IllegalArgumentException("null runner");
-        }
+		if (null == runner) {
+			throw new IllegalArgumentException("null runner");
+		}
 		if (started && (!isCompleted())) {
 			throw new IllegalStateException("no reset() until isCompleted");
 		}
@@ -150,8 +150,9 @@ public class RunStatus implements IRunStatus {
 		evaluated = false;
 	}
 
-	/** 
+	/**
 	 * Call only once to signal this run has started.
+	 * 
 	 * @throws IllegalStateException if start() has been called
 	 */
 	public void start() {
@@ -163,55 +164,49 @@ public class RunStatus implements IRunStatus {
 		started = true;
 	}
 
-	/** 
-	 * Call this or thrown only once after start() 
-	 * to signal this run has ended.
-	 * If this represents a void process, use VOID.
+	/**
+	 * Call this or thrown only once after start() to signal this run has ended. If this represents a void process, use VOID.
+	 * 
 	 * @param result the Object returned by this run.
-	 * @throws IllegalStateException if start() was not called first
-	 *  or if either completed(Object) or thrown(Throwable) have been called.
+	 * @throws IllegalStateException if start() was not called first or if either completed(Object) or thrown(Throwable) have been
+	 *         called.
 	 */
 	public void finish(Object result) {
 		if (null == result) {
 			throw new IllegalArgumentException("null result");
 		} else if (isCompleted()) {
-			throw new IllegalStateException(
-				"completed then finish " + result);
+			throw new IllegalStateException("completed then finish " + result);
 		}
 		this.result = result;
 	}
 
-	/** 
-	 * Call to signal this run is ending by request.
-	 * If this represents a void process, use VOID.
-	 * If there is no message, use ABORT.
-	 * @param request the Object request to abort,
-	 *         or ABORT if none is available.
-	 * @throws IllegalStateException if start() was not called first
-	 *  or if either completed(Object) or thrown(Throwable) have been called.
+	/**
+	 * Call to signal this run is ending by request. If this represents a void process, use VOID. If there is no message, use ABORT.
+	 * 
+	 * @param request the Object request to abort, or ABORT if none is available.
+	 * @throws IllegalStateException if start() was not called first or if either completed(Object) or thrown(Throwable) have been
+	 *         called.
 	 */
 	public void abort(Object request) {
 		if (null == request) {
 			throw new IllegalArgumentException("null request");
 		} else if (isCompleted()) {
-			throw new IllegalStateException(
-				"completed then abort " + request);
+			throw new IllegalStateException("completed then abort " + request);
 		}
 		this.abortRequest = request;
 	}
 
-	/** 
-	 * Call this or completed only once after start() 
-	 * to signal this run has ended.
-	 * @throws IllegalStateException if start() was not called first
-	 *  or if either completed(Object) or thrown(Throwable) have been called.
+	/**
+	 * Call this or completed only once after start() to signal this run has ended.
+	 * 
+	 * @throws IllegalStateException if start() was not called first or if either completed(Object) or thrown(Throwable) have been
+	 *         called.
 	 */
 	public void thrown(Throwable thrown) {
 		if (null == thrown) {
 			throw new IllegalArgumentException("null thrown");
 		} else if (isCompleted()) {
-			throw new IllegalStateException(
-				"completed then thrown " + thrown);
+			throw new IllegalStateException("completed then thrown " + thrown);
 		}
 		this.thrown = thrown;
 	}
@@ -221,93 +216,93 @@ public class RunStatus implements IRunStatus {
 	}
 
 	/**
-	 * @return true if completed, not aborted, no thrown, no
-	 * messages of kind ERROR, FAIL or ABORT, and
-	 * result object is not IRunStatus.FAIL.
+	 * @return true if completed, not aborted, no thrown, no messages of kind ERROR, FAIL or ABORT, and result object is not
+	 *         IRunStatus.FAIL.
 	 * @see org.aspectj.testing.run.IRunStatus#runResult()
 	 */
 	public boolean runResult() {
 		return validator.runPassed(this);
 	}
-    
-    public boolean hasAnyMessage(IMessage.Kind kind, boolean orGreater, boolean includeChildren) {
-        if (messageHolder.hasAnyMessage(kind, orGreater)) {
-            return true;
-        }
-        if (includeChildren) {
-            IRunStatus[] kids = getChildren();
-            for (int i = 0; i < kids.length; i++) {
-                if (kids[i].hasAnyMessage(kind, orGreater, true)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
-    public IMessage[] getMessages(IMessage.Kind kind, boolean orGreater, boolean includeChildren) {
-        IMessage[] result = getMessages(kind, orGreater);
-        if (!includeChildren) {
-            return result;
-        }
-        ArrayList sink = new ArrayList();
-        if (!LangUtil.isEmpty(result)) {
-            sink.addAll(Arrays.asList(result));
-        }
+	public boolean hasAnyMessage(IMessage.Kind kind, boolean orGreater, boolean includeChildren) {
+		if (messageHolder.hasAnyMessage(kind, orGreater)) {
+			return true;
+		}
+		if (includeChildren) {
+			IRunStatus[] kids = getChildren();
+			for (int i = 0; i < kids.length; i++) {
+				if (kids[i].hasAnyMessage(kind, orGreater, true)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
-        IRunStatus[] kids = getChildren();
-        for (int i = 0; i < kids.length; i++) {
-            result = kids[i].getMessages(kind, orGreater, includeChildren);
-            if (!LangUtil.isEmpty(result)) {
-                sink.addAll(Arrays.asList(result));
-            }
-        }
-        return (IMessage[]) sink.toArray(new IMessage[0]);
-    }
+	public IMessage[] getMessages(IMessage.Kind kind, boolean orGreater, boolean includeChildren) {
+		IMessage[] result = getMessages(kind, orGreater);
+		if (!includeChildren) {
+			return result;
+		}
+		ArrayList sink = new ArrayList();
+		if (!LangUtil.isEmpty(result)) {
+			sink.addAll(Arrays.asList(result));
+		}
 
-	//------------------- process messages
-	/** 
-	 * Call this any time before isCompleted() would return true
-	 * to signal any messages.
+		IRunStatus[] kids = getChildren();
+		for (int i = 0; i < kids.length; i++) {
+			result = kids[i].getMessages(kind, orGreater, includeChildren);
+			if (!LangUtil.isEmpty(result)) {
+				sink.addAll(Arrays.asList(result));
+			}
+		}
+		return (IMessage[]) sink.toArray(new IMessage[0]);
+	}
+
+	// ------------------- process messages
+	/**
+	 * Call this any time before isCompleted() would return true to signal any messages.
+	 * 
 	 * @throws IllegalStateException if isCompleted().
 	 */
 	public boolean handleMessage(IMessage message) {
 		return messageHolder.handleMessage(message);
 	}
+
 	public boolean isIgnoring(IMessage.Kind kind) {
 		return messageHolder.isIgnoring(kind);
 	}
 
-    public void dontIgnore(IMessage.Kind kind) {
-        messageHolder.dontIgnore(kind);
-    }
+	public void dontIgnore(IMessage.Kind kind) {
+		messageHolder.dontIgnore(kind);
+	}
 
-    public void ignore(IMessage.Kind kind) {
-    	messageHolder.ignore(kind);
-    }
-    
-    /**
+	public void ignore(IMessage.Kind kind) {
+		messageHolder.ignore(kind);
+	}
+
+	/**
 	 * @see org.aspectj.bridge.IMessageHolder#hasAnyMessage(org.aspectj.bridge.IMessage.Kind, boolean)
 	 */
 	public boolean hasAnyMessage(IMessage.Kind kind, boolean orGreater) {
-        return messageHolder.hasAnyMessage(kind, orGreater);
+		return messageHolder.hasAnyMessage(kind, orGreater);
 	}
 
-    /**
+	/**
 	 * @see org.aspectj.bridge.IMessageHolder#getMessages(org.aspectj.bridge.IMessage.Kind, boolean)
 	 */
 	public IMessage[] getMessages(IMessage.Kind kind, boolean orGreater) {
 		return messageHolder.getMessages(kind, orGreater);
 	}
-    
-    /**
+
+	/**
 	 * @see org.aspectj.bridge.IMessageHolder#numMessages(org.aspectj.bridge.IMessage.Kind, boolean)
 	 */
 	public int numMessages(IMessage.Kind kind, boolean orGreater) {
 		return messageHolder.numMessages(kind, orGreater);
 	}
 
-	//------------------- process display
+	// ------------------- process display
 	/** @return true if this run has started */
 	public boolean started() {
 		return started;
@@ -316,10 +311,7 @@ public class RunStatus implements IRunStatus {
 	/** @return true if one of the result, abort request, or thrown is available */
 	public boolean isCompleted() {
 		if (!evaluated) {
-			if (started
-				&& ((null != thrown)
-					|| (null != result)
-					|| (null != abortRequest))) {
+			if (started && ((null != thrown) || (null != result) || (null != abortRequest))) {
 				completed = true;
 				evaluated = true;
 			}
@@ -347,13 +339,13 @@ public class RunStatus implements IRunStatus {
 		return thrown;
 	}
 
-    /**
-     * @see org.aspectj.bridge.IMessageHolder#getUnmodifiableListView()
-     */
-    public List getUnmodifiableListView() {
-        return messageHolder.getUnmodifiableListView();
-    }
-    
+	/**
+	 * @see org.aspectj.bridge.IMessageHolder#getUnmodifiableListView()
+	 */
+	public List<IMessage> getUnmodifiableListView() {
+		return messageHolder.getUnmodifiableListView();
+	}
+
 	/** @return any Message[] signalled, or IMessage.NONE if none */
 	public IMessage[] getMessages() {
 		return messageHolder.getMessages(null, IMessageHolder.EQUAL);
@@ -364,24 +356,24 @@ public class RunStatus implements IRunStatus {
 		return id;
 	}
 
-    /**
+	/**
 	 * @see org.aspectj.bridge.IMessageHolder#clearMessages()
-     * @throws UnsupportedOperationException always
+	 * @throws UnsupportedOperationException always
 	 */
 	public void clearMessages() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("use reset");
+		throw new UnsupportedOperationException("use reset");
 	}
 
-	//------------------- subprocess
+	// ------------------- subprocess
 
 	/** get the invoker for any subrunners */
 	public Runner getRunner() {
 		return runner;
 	}
 
-	/** 
-	 * Add a record for a child run
-	 * and install self as parent.
+	/**
+	 * Add a record for a child run and install self as parent.
+	 * 
 	 * @throws IllegalArgumentException if child is null
 	 */
 	public void addChild(IRunStatus child) {
@@ -395,8 +387,8 @@ public class RunStatus implements IRunStatus {
 	}
 
 	/**
-	 * Register this as the run parent.
-	 * (Any run that does addChild(IRunStatus) should register as parent.)
+	 * Register this as the run parent. (Any run that does addChild(IRunStatus) should register as parent.)
+	 * 
 	 * @throws IllegalArgumentException if parent is null
 	 * @throws IllegalStateException if parent exists already
 	 */
@@ -404,13 +396,12 @@ public class RunStatus implements IRunStatus {
 		if (null == parent) {
 			throw new IllegalArgumentException("null parent");
 		} else if (null != this.parent) {
-			throw new IllegalStateException(
-				"adding parent " + parent + " to parent " + this.parent);
+			throw new IllegalStateException("adding parent " + parent + " to parent " + this.parent);
 		}
 		this.parent = parent;
 	}
 
-	/** 
+	/**
 	 * @return the current children of this run, or EMPTY_NEST if none
 	 */
 	public IRunStatus[] getChildren() {
@@ -428,21 +419,19 @@ public class RunStatus implements IRunStatus {
 		return parent;
 	}
 
-   public String toString() { 
+	public String toString() {
 		return BridgeUtil.toShortString(this);
-   }
+	}
 
-   public String toLongString() { 
-        StringBuffer sb = new StringBuffer();
-        sb.append(BridgeUtil.toShortString(this));
+	public String toLongString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(BridgeUtil.toShortString(this));
 		if ((null != children) && (0 < children.size())) {
 			String label = "### --------- " + name;
 			int index = 0;
 			for (Iterator iter = children.iterator(); iter.hasNext();) {
 				IRunStatus childStatus = (IRunStatus) iter.next();
-				String childLabel =
-					"\n" + label + " child[" + index++ +"] " 
-                    + childStatus.getIdentifier();
+				String childLabel = "\n" + label + " child[" + index++ + "] " + childStatus.getIdentifier();
 				sb.append(childLabel + " ---- start\n");
 				sb.append(childStatus.toString());
 				sb.append(childLabel + " ---- end\n");
