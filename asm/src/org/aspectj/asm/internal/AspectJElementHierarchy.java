@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,6 +61,26 @@ public class AspectJElementHierarchy implements IHierarchy {
 	public IProgramElement getRoot() {
 		return root;
 	}
+	
+	public String toSummaryString() {
+		StringBuilder s = new StringBuilder();
+		s.append("FileMap has "+fileMap.size()+" entries\n");
+		s.append("HandleMap has "+handleMap.size()+" entries\n");
+		s.append("TypeMap has "+handleMap.size()+" entries\n");
+		s.append("FileMap:\n");
+		for (Map.Entry<String,IProgramElement> fileMapEntry: fileMap.entrySet()) {
+			s.append(fileMapEntry).append("\n");
+		}
+		s.append("TypeMap:\n");
+		for (Map.Entry<String,IProgramElement> typeMapEntry: typeMap.entrySet()) {
+			s.append(typeMapEntry).append("\n");
+		}
+		s.append("HandleMap:\n");
+		for (Map.Entry<String,IProgramElement> handleMapEntry: handleMap.entrySet()) {
+			s.append(handleMapEntry).append("\n");
+		}
+		return s.toString();
+	}
 
 	public void setRoot(IProgramElement root) {
 		this.root = root;
@@ -101,8 +120,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 	 * @return null if not found
 	 */
 	public IProgramElement findElementForSignature(IProgramElement parent, IProgramElement.Kind kind, String signature) {
-		for (Iterator it = parent.getChildren().iterator(); it.hasNext();) {
-			IProgramElement node = (IProgramElement) it.next();
+		for (IProgramElement node : parent.getChildren()) {
 			if (node.getKind() == kind && signature.equals(node.toSignatureString())) {
 				return node;
 			} else {
@@ -116,9 +134,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 	}
 
 	public IProgramElement findElementForLabel(IProgramElement parent, IProgramElement.Kind kind, String label) {
-
-		for (Iterator it = parent.getChildren().iterator(); it.hasNext();) {
-			IProgramElement node = (IProgramElement) it.next();
+		for (IProgramElement node : parent.getChildren()) {
 			if (node.getKind() == kind && label.equals(node.toLabelString())) {
 				return node;
 			} else {
@@ -150,13 +166,11 @@ public class AspectJElementHierarchy implements IHierarchy {
 				return cachedValue;
 			}
 
-			List packageNodes = findMatchingPackages(packageName);
+			List<IProgramElement> packageNodes = findMatchingPackages(packageName);
 
-			for (Iterator iterator = packageNodes.iterator(); iterator.hasNext();) {
-				IProgramElement pkg = (IProgramElement) iterator.next();
+			for (IProgramElement pkg : packageNodes) {
 				// this searches each file for a class
-				for (Iterator it = pkg.getChildren().iterator(); it.hasNext();) {
-					IProgramElement fileNode = (IProgramElement) it.next();
+				for (IProgramElement fileNode : pkg.getChildren()) {
 					IProgramElement cNode = findClassInNodes(fileNode.getChildren(), typeName, typeName);
 					if (cNode != null) {
 						typeMap.put(key, cNode);
@@ -245,8 +259,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 				}
 				if (possiblePackage.getKind() == IProgramElement.Kind.SOURCE_FOLDER) { // might be 'binaries'
 					if (possiblePackage.getName().equals("binaries")) {
-						for (Iterator iter2 = possiblePackage.getChildren().iterator(); iter2.hasNext();) {
-							IProgramElement possiblePackage2 = (IProgramElement) iter2.next();
+						for (IProgramElement possiblePackage2 : possiblePackage.getChildren()) {
 							if (possiblePackage2.getKind() == IProgramElement.Kind.PACKAGE
 									&& possiblePackage2.getName().equals(packagename)) {
 								result.add(possiblePackage2);
@@ -257,14 +270,14 @@ public class AspectJElementHierarchy implements IHierarchy {
 				}
 			}
 			if (result.isEmpty()) {
-				return Collections.EMPTY_LIST;
+				return Collections.emptyList();
 			} else {
 				return result;
 			}
 		}
 	}
 
-	private IProgramElement findClassInNodes(Collection nodes, String name, String typeName) {
+	private IProgramElement findClassInNodes(Collection<IProgramElement> nodes, String name, String typeName) {
 		String baseName;
 		String innerName;
 		int dollar = name.indexOf('$');
@@ -276,8 +289,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 			innerName = name.substring(dollar + 1);
 		}
 
-		for (Iterator j = nodes.iterator(); j.hasNext();) {
-			IProgramElement classNode = (IProgramElement) j.next();
+		for (IProgramElement classNode : nodes) {
 			if (baseName.equals(classNode.getName())) {
 				if (innerName == null) {
 					return classNode;
@@ -429,8 +441,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 		if (node == null || node.getChildren() == null) {
 			return null;
 		}
-		for (Iterator childrenIter = node.getChildren().iterator(); childrenIter.hasNext();) {
-			IProgramElement child = (IProgramElement) childrenIter.next();
+		for (IProgramElement child : node.getChildren()) {
 			ISourceLocation childLoc = child.getSourceLocation();
 			if (childLoc != null) {
 				if (childLoc.getLine() <= lineno && childLoc.getEndLine() >= lineno) {
@@ -459,8 +470,8 @@ public class AspectJElementHierarchy implements IHierarchy {
 		}
 
 		if (node != null) {
-			for (Iterator it = node.getChildren().iterator(); it.hasNext();) {
-				IProgramElement foundNode = findNodeForSourceLineHelper((IProgramElement) it.next(), sourceFilePath, lineno, offset);
+			for (IProgramElement child : node.getChildren()) {
+				IProgramElement foundNode = findNodeForSourceLineHelper(child, sourceFilePath, lineno, offset);
 				if (foundNode != null) {
 					return foundNode;
 				}
@@ -490,8 +501,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 	}
 
 	private boolean hasMoreSpecificChild(IProgramElement node, String sourceFilePath, int lineNumber, int offSet) {
-		for (Iterator it = node.getChildren().iterator(); it.hasNext();) {
-			IProgramElement child = (IProgramElement) it.next();
+		for (IProgramElement child : node.getChildren()) {
 			if (matches(child, sourceFilePath, lineNumber, offSet)) {
 				return true;
 			}
@@ -522,7 +532,6 @@ public class AspectJElementHierarchy implements IHierarchy {
 			if (ipe != null) {
 				return ipe;
 			}
-
 			ipe = findElementForHandle(root, handle);
 			if (ipe == null && create) {
 				ipe = createFileStructureNode(getFilename(handle));
@@ -535,8 +544,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 	}
 
 	private IProgramElement findElementForHandle(IProgramElement parent, String handle) {
-		for (Iterator it = parent.getChildren().iterator(); it.hasNext();) {
-			IProgramElement node = (IProgramElement) it.next();
+		for (IProgramElement node : parent.getChildren()) {
 			String nodeHid = node.getHandleIdentifier();
 			if (handle.equals(nodeHid)) {
 				return node;
@@ -591,16 +599,44 @@ public class AspectJElementHierarchy implements IHierarchy {
 	public void flushFileMap() {
 		fileMap.clear();
 	}
+	
+	public void forget(IProgramElement compilationUnitNode,IProgramElement typeNode) {
+		String k = null;
+		synchronized (this) {
+			// handle map
+			// type map
+			for (Map.Entry<String,IProgramElement> typeMapEntry: typeMap.entrySet()) {
+				if (typeMapEntry.getValue()==typeNode) {
+					k = typeMapEntry.getKey();
+					break;
+				}
+			}
+			if (k!=null) {
+				typeMap.remove(k);
+			}
+		}
+		
+		if (compilationUnitNode!=null) {
+			k = null;
+			for (Map.Entry<String,IProgramElement> entry: fileMap.entrySet()) {
+				if (entry.getValue()==compilationUnitNode) {
+					k = entry.getKey();break;
+				}
+			}
+			if (k!=null) {
+				fileMap.remove(k);
+			}
+		}
+	}
 
 	// TODO rename this method ... it does more than just the handle map
 	public void updateHandleMap(Set<String> deletedFiles) {
 		// Only delete the entries we need to from the handle map - for performance reasons
 		List<String> forRemoval = new ArrayList<String>();
-		Set k = null;
+		Set<String> k = null;
 		synchronized (this) {
 			k = handleMap.keySet();
-			for (Iterator iter = k.iterator(); iter.hasNext();) {
-				String handle = (String) iter.next();
+			for (String handle : k) {
 				IProgramElement ipe = handleMap.get(handle);
 				if (deletedFiles.contains(getCanonicalFilePath(ipe))) {
 					forRemoval.add(handle);
@@ -611,8 +647,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 			}
 			forRemoval.clear();
 			k = typeMap.keySet();
-			for (Iterator iter = k.iterator(); iter.hasNext();) {
-				String typeName = (String) iter.next();
+			for (String typeName : k) {
 				IProgramElement ipe = typeMap.get(typeName);
 				if (deletedFiles.contains(getCanonicalFilePath(ipe))) {
 					forRemoval.add(typeName);

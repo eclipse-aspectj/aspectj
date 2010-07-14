@@ -119,7 +119,8 @@ public class RelationshipMap extends HashMap<String, List<IRelationship>> implem
 		} else {
 			boolean matched = false;
 			for (IRelationship existingRelationship : existingRelationships) {
-				if (existingRelationship.getName().equals(relationship.getName()) && existingRelationship.getKind() == relationship.getKind()) {
+				if (existingRelationship.getName().equals(relationship.getName())
+						&& existingRelationship.getKind() == relationship.getKind()) {
 					existingRelationship.getTargets().addAll(relationship.getTargets());
 					matched = true;
 				}

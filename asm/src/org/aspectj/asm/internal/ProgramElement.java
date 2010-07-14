@@ -47,9 +47,9 @@ public class ProgramElement implements IProgramElement {
 	private final static int AccVolatile = 0x0040;
 	private final static int AccTransient = 0x0080;
 	private final static int AccNative = 0x0100;
-	private final static int AccInterface = 0x0200;
+	// private final static int AccInterface = 0x0200;
 	private final static int AccAbstract = 0x0400;
-	private final static int AccStrictfp = 0x0800;
+	// private final static int AccStrictfp = 0x0800;
 
 	protected String name;
 	private Kind kind;
@@ -210,18 +210,6 @@ public class ProgramElement implements IProgramElement {
 		} else {
 			kvpairs.remove("isOverrider");
 			// this.overrider = value;
-		}
-	}
-
-	public List getRelations() {
-		return (List) kvpairs.get("relations");
-	}
-
-	public void setRelations(List relations) {
-		if (relations.size() > 0) {
-			fixMap();
-			kvpairs.put("relations", relations);
-			// this.relations = relations;
 		}
 	}
 
@@ -386,7 +374,7 @@ public class ProgramElement implements IProgramElement {
 		return name;
 	}
 
-	public List getChildren() {
+	public List<IProgramElement> getChildren() {
 		return children;
 	}
 
@@ -427,8 +415,7 @@ public class ProgramElement implements IProgramElement {
 
 	public IProgramElement walk(HierarchyWalker walker) {
 		if (children != null) {
-			for (Iterator it = children.iterator(); it.hasNext();) {
-				IProgramElement child = (IProgramElement) it.next();
+			for (IProgramElement child : children) {
 				walker.process(child);
 			}
 		}

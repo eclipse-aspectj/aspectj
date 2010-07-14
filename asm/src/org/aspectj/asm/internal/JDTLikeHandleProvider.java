@@ -127,12 +127,12 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 		if (ipe.getParameterSignatures() == null || ipe.getParameterSignatures().isEmpty()) {
 			return "";
 		}
-		List sourceRefs = ipe.getParameterSignaturesSourceRefs();
+		List<String> sourceRefs = ipe.getParameterSignaturesSourceRefs();
 		List<char[]> parameterTypes = ipe.getParameterSignatures();
 		StringBuffer sb = new StringBuffer();
 		if (sourceRefs != null) {
 			for (int i = 0; i < sourceRefs.size(); i++) {
-				String sourceRef = (String) sourceRefs.get(i);
+				String sourceRef = sourceRefs.get(i);
 				sb.append(HandleProviderDelimiter.getDelimiter(ipe));
 				sb.append(sourceRef);
 			}
