@@ -26,7 +26,7 @@ import org.aspectj.util.LangUtil;
  * @see org.aspectj.tools.ide.SourceLine
  * @see org.aspectj.testing.harness.ErrorLine
  */
-public class SourceLocation implements ISourceLocation, java.io.Serializable {
+public class SourceLocation implements ISourceLocation {
 
 	private static final long serialVersionUID = -5434765814401009794L;
 

@@ -90,11 +90,9 @@ public interface IMessage {
 	/** @return source location associated with this message, or null if none */
 	ISourceLocation getSourceLocation();
 
-	public static final class Kind implements Comparable {
-		public static final Comparator COMPARATOR = new Comparator() {
-			public int compare(Object o1, Object o2) {
-				Kind one = (Kind) o1;
-				Kind two = (Kind) o2;
+	public static final class Kind implements Comparable<IMessage.Kind> {
+		public static final Comparator<IMessage.Kind> COMPARATOR = new Comparator<IMessage.Kind>() {
+			public int compare(IMessage.Kind one, IMessage.Kind two) {
 				if (null == one) {
 					return (null == two ? 0 : -1);
 				} else if (null == two) {
@@ -115,7 +113,7 @@ public interface IMessage {
 			return (0 >= COMPARATOR.compare(this, kind));
 		}
 
-		public int compareTo(Object other) {
+		public int compareTo(IMessage.Kind other) {
 			return COMPARATOR.compare(this, other);
 		}
 
@@ -148,5 +146,5 @@ public interface IMessage {
 	 * being based on a subtype of a defining type.
 	 * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=41952">AspectJ bug 41952</a>
 	 */
-	public List getExtraSourceLocations();
+	public List<ISourceLocation> getExtraSourceLocations();
 }
