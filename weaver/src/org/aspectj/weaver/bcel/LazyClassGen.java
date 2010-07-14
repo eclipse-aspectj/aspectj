@@ -91,7 +91,7 @@ public final class LazyClassGen {
 	private final World world;
 	private final String packageName = null;
 
-	private final List fields = new ArrayList();
+	private final List<BcelField> fields = new ArrayList<BcelField>();
 	private final List<LazyMethodGen> methodGens = new ArrayList<LazyMethodGen>();
 	private final List<LazyClassGen> classGens = new ArrayList<LazyClassGen>();
 	private final List<AnnotationGen> annotations = new ArrayList<AnnotationGen>();
@@ -311,7 +311,7 @@ public final class LazyClassGen {
 
 		ResolvedMember[] fields = myType.getDeclaredFields();
 		for (int i = 0; i < fields.length; i++) {
-			this.fields.add(fields[i]);
+			this.fields.add((BcelField) fields[i]);
 		}
 	}
 
@@ -492,7 +492,7 @@ public final class LazyClassGen {
 		len = fields.size();
 		myGen.setFields(Field.NoFields);
 		for (int i = 0; i < len; i++) {
-			BcelField gen = (BcelField) fields.get(i);
+			BcelField gen = fields.get(i);
 			myGen.addField(gen.getField(cp));
 		}
 
@@ -784,9 +784,9 @@ public final class LazyClassGen {
 	}
 
 	public void print(PrintStream out) {
-		List classGens = getClassGens();
-		for (Iterator iter = classGens.iterator(); iter.hasNext();) {
-			LazyClassGen element = (LazyClassGen) iter.next();
+		List<LazyClassGen> classGens = getClassGens();
+		for (Iterator<LazyClassGen> iter = classGens.iterator(); iter.hasNext();) {
+			LazyClassGen element = iter.next();
 			element.printOne(out);
 			if (iter.hasNext()) {
 				out.println();
@@ -821,9 +821,9 @@ public final class LazyClassGen {
 			out.print("  ");
 			out.println(fields[i]);
 		}
-		List methodGens = getMethodGens();
-		for (Iterator iter = methodGens.iterator(); iter.hasNext();) {
-			LazyMethodGen gen = (LazyMethodGen) iter.next();
+		List<LazyMethodGen> methodGens = getMethodGens();
+		for (Iterator<LazyMethodGen> iter = methodGens.iterator(); iter.hasNext();) {
+			LazyMethodGen gen = iter.next();
 			// we skip empty clinits
 			if (isEmptyClinit(gen)) {
 				continue;
@@ -1420,9 +1420,9 @@ public final class LazyClassGen {
 		}
 	}
 
-	private boolean hasSyntheticAttribute(List attributes) {
+	private boolean hasSyntheticAttribute(List<Attribute> attributes) {
 		for (int i = 0; i < attributes.size(); i++) {
-			if (((Attribute) attributes.get(i)).getName().equals("Synthetic")) {
+			if ((attributes.get(i)).getName().equals("Synthetic")) {
 				return true;
 			}
 		}
@@ -1457,8 +1457,7 @@ public final class LazyClassGen {
 	}
 
 	public LazyMethodGen getLazyMethodGen(String name, String signature, boolean allowMissing) {
-		for (Iterator i = methodGens.iterator(); i.hasNext();) {
-			LazyMethodGen gen = (LazyMethodGen) i.next();
+		for (LazyMethodGen gen : methodGens) {
 			if (gen.getName().equals(name) && gen.getSignature().equals(signature)) {
 				return gen;
 			}
@@ -1540,9 +1539,8 @@ public final class LazyClassGen {
 	 */
 	public String allocateField(String prefix) {
 		int highestAllocated = -1;
-		List/* BcelField */fs = getFieldGens();
-		for (int i = 0; i < fs.size(); i++) {
-			BcelField field = (BcelField) fs.get(i);
+		List<BcelField> fs = getFieldGens();
+		for (BcelField field : fs) {
 			if (field.getName().startsWith(prefix)) {
 				try {
 					int num = Integer.parseInt(field.getName().substring(prefix.length()));

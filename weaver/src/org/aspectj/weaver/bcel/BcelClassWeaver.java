@@ -286,8 +286,8 @@ class BcelClassWeaver implements IClassWeaver {
 			return;
 		}
 
-		for (Iterator i = addedLazyMethodGens.iterator(); i.hasNext();) {
-			LazyMethodGen existing = (LazyMethodGen) i.next();
+		for (Iterator<LazyMethodGen> i = addedLazyMethodGens.iterator(); i.hasNext();) {
+			LazyMethodGen existing = i.next();
 			if (signaturesMatch(mg, existing)) {
 				if (existing.definingType == null) {
 					// this means existing was introduced on the class itself
@@ -495,14 +495,13 @@ class BcelClassWeaver implements IClassWeaver {
 			// infinetly as compiler will have detected and reported
 			// "Recursive constructor invocation"
 			while (inlineSelfConstructors(methodGens)) {
-				;
 			}
 			positionAndImplement(initializationShadows);
 		}
 
 		// now proceed with late type mungers
 		if (lateTypeMungers != null) {
-			for (Iterator i = lateTypeMungers.iterator(); i.hasNext();) {
+			for (Iterator<ConcreteTypeMunger> i = lateTypeMungers.iterator(); i.hasNext();) {
 				BcelTypeMunger munger = (BcelTypeMunger) i.next();
 				if (munger.matches(clazz.getType())) {
 					boolean typeMungerAffectedType = munger.munge(this);
@@ -725,9 +724,10 @@ class BcelClassWeaver implements IClassWeaver {
 			}
 		}
 		// was: List l = typeToCheck.getInterTypeMungers();
-		List l = (typeToCheck.isRawType() ? typeToCheck.getGenericType().getInterTypeMungers() : typeToCheck.getInterTypeMungers());
-		for (Iterator iterator = l.iterator(); iterator.hasNext();) {
-			Object o = iterator.next();
+		List<ConcreteTypeMunger> l = (typeToCheck.isRawType() ? typeToCheck.getGenericType().getInterTypeMungers() : typeToCheck
+				.getInterTypeMungers());
+		for (Iterator<ConcreteTypeMunger> iterator = l.iterator(); iterator.hasNext();) {
+			ConcreteTypeMunger o = iterator.next();
 			// FIXME asc if its not a BcelTypeMunger then its an
 			// EclipseTypeMunger ... do I need to worry about that?
 			if (o instanceof BcelTypeMunger) {
@@ -1536,17 +1536,16 @@ class BcelClassWeaver implements IClassWeaver {
 		return aspectsAffectingType;
 	}
 
-	private boolean inlineSelfConstructors(List methodGens) {
+	private boolean inlineSelfConstructors(List<LazyMethodGen> methodGens) {
 		boolean inlinedSomething = false;
-		for (Iterator i = methodGens.iterator(); i.hasNext();) {
-			LazyMethodGen mg = (LazyMethodGen) i.next();
-			if (!mg.getName().equals("<init>")) {
+		for (LazyMethodGen methodGen : methodGens) {
+			if (!methodGen.getName().equals("<init>")) {
 				continue;
 			}
-			InstructionHandle ih = findSuperOrThisCall(mg);
+			InstructionHandle ih = findSuperOrThisCall(methodGen);
 			if (ih != null && isThisCall(ih)) {
 				LazyMethodGen donor = getCalledMethod(ih);
-				inlineMethod(donor, mg, ih);
+				inlineMethod(donor, methodGen, ih);
 				inlinedSomething = true;
 			}
 		}
@@ -1905,7 +1904,7 @@ class BcelClassWeaver implements IClassWeaver {
 				// search for 'returns' and make them to the
 				// aload_<n>,monitorexit
 				InstructionHandle walker = body.getStart();
-				List rets = new ArrayList();
+				List<InstructionHandle> rets = new ArrayList<InstructionHandle>();
 				while (walker != null) { // !walker.equals(body.getEnd())) {
 					if (walker.getInstruction().isReturnInstruction()) {
 						rets.add(walker);
@@ -1917,8 +1916,7 @@ class BcelClassWeaver implements IClassWeaver {
 					// the load instruction
 					// (so we never jump over the monitorexit logic)
 
-					for (Iterator iter = rets.iterator(); iter.hasNext();) {
-						InstructionHandle element = (InstructionHandle) iter.next();
+					for (InstructionHandle ret : rets) {
 						// System.err.println("Adding monitor exit block at "+
 						// element);
 						InstructionList monitorExitBlock = new InstructionList();
@@ -1928,11 +1926,11 @@ class BcelClassWeaver implements IClassWeaver {
 						// .getInstruction()));
 						// element.setInstruction(InstructionFactory.createLoad(
 						// classType,slotForThis));
-						InstructionHandle monitorExitBlockStart = body.insert(element, monitorExitBlock);
+						InstructionHandle monitorExitBlockStart = body.insert(ret, monitorExitBlock);
 
 						// now move the targeters from the RET to the start of
 						// the monitorexit block
-						for (InstructionTargeter targeter : element.getTargetersCopy()) {
+						for (InstructionTargeter targeter : ret.getTargetersCopy()) {
 							// what kinds are there?
 							if (targeter instanceof LocalVariableTag) {
 								// ignore
@@ -1945,7 +1943,7 @@ class BcelClassWeaver implements IClassWeaver {
 								// monitorExitBlockStart);
 							} else if (targeter instanceof InstructionBranch) {
 								// move it
-								targeter.updateTarget(element, monitorExitBlockStart);
+								targeter.updateTarget(ret, monitorExitBlockStart);
 							} else {
 								throw new BCException("Unexpected targeter encountered during transform: " + targeter);
 							}
@@ -2448,10 +2446,8 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 
 	private void weaveInAddedMethods() {
-		Collections.sort(addedLazyMethodGens, new Comparator() {
-			public int compare(Object a, Object b) {
-				LazyMethodGen aa = (LazyMethodGen) a;
-				LazyMethodGen bb = (LazyMethodGen) b;
+		Collections.sort(addedLazyMethodGens, new Comparator<LazyMethodGen>() {
+			public int compare(LazyMethodGen aa, LazyMethodGen bb) {
 				int i = aa.getName().compareTo(bb.getName());
 				if (i != 0) {
 					return i;
@@ -2607,8 +2603,8 @@ class BcelClassWeaver implements IClassWeaver {
 		// now add interface inits
 		if (!isThisCall(superOrThisCall)) {
 			InstructionHandle curr = enclosingShadow.getRange().getStart();
-			for (Iterator i = addedSuperInitializersAsList.iterator(); i.hasNext();) {
-				IfaceInitList l = (IfaceInitList) i.next();
+			for (Iterator<IfaceInitList> i = addedSuperInitializersAsList.iterator(); i.hasNext();) {
+				IfaceInitList l = i.next();
 
 				Member ifaceInitSig = AjcMemberMaker.interfaceConstructor(l.onType);
 
@@ -2656,7 +2652,7 @@ class BcelClassWeaver implements IClassWeaver {
 	/**
 	 * first sorts the mungers, then gens the initializers in the right order
 	 */
-	private InstructionList genInitInstructions(List list, boolean isStatic) {
+	private InstructionList genInitInstructions(List<ConcreteTypeMunger> list, boolean isStatic) {
 		list = PartialOrder.sort(list);
 		if (list == null) {
 			throw new BCException("circularity in inter-types");
@@ -2664,8 +2660,7 @@ class BcelClassWeaver implements IClassWeaver {
 
 		InstructionList ret = new InstructionList();
 
-		for (Iterator i = list.iterator(); i.hasNext();) {
-			ConcreteTypeMunger cmunger = (ConcreteTypeMunger) i.next();
+		for (ConcreteTypeMunger cmunger : list) {
 			NewFieldTypeMunger munger = (NewFieldTypeMunger) cmunger.getMunger();
 			ResolvedMember initMethod = munger.getInitMethod(cmunger.getAspectType());
 			if (!isStatic) {

@@ -32,6 +32,7 @@ import java.util.StringTokenizer;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.IMessageContext;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessageHolder;
@@ -41,7 +42,6 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.MessageWriter;
 import org.aspectj.bridge.Version;
 import org.aspectj.bridge.WeaveMessage;
-import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.IClassFileProvider;
@@ -443,7 +443,7 @@ public class WeavingAdaptor implements IMessageContext {
 	// spe.printStackTrace();
 	// return false;
 	// }
-	//	    
+	//
 	// return detector.isAspect();
 	// }
 
@@ -603,7 +603,7 @@ public class WeavingAdaptor implements IMessageContext {
 	protected class WeavingAdaptorMessageHolder extends MessageHandler {
 
 		private IMessageHandler delegate;
-		private List savedMessages;
+		private List<IMessage> savedMessages;
 
 		protected boolean traceMessages = Boolean.getBoolean(TRACE_MESSAGES_PROPERTY);
 
@@ -639,11 +639,10 @@ public class WeavingAdaptor implements IMessageContext {
 
 		public void flushMessages() {
 			if (savedMessages == null) {
-				savedMessages = new ArrayList();
+				savedMessages = new ArrayList<IMessage>();
 				savedMessages.addAll(super.getUnmodifiableListView());
 				clearMessages();
-				for (Iterator iter = savedMessages.iterator(); iter.hasNext();) {
-					IMessage message = (IMessage) iter.next();
+				for (IMessage message : savedMessages) {
 					delegate.handleMessage(message);
 				}
 			}
@@ -709,9 +708,9 @@ public class WeavingAdaptor implements IMessageContext {
 		 */
 
 		@Override
-		public List getUnmodifiableListView() {
+		public List<IMessage> getUnmodifiableListView() {
 			// System.err.println("? WeavingAdaptorMessageHolder.getUnmodifiableListView() savedMessages=" + savedMessages);
-			List allMessages = new ArrayList();
+			List<IMessage> allMessages = new ArrayList<IMessage>();
 			allMessages.addAll(savedMessages);
 			allMessages.addAll(super.getUnmodifiableListView());
 			return allMessages;
@@ -720,7 +719,7 @@ public class WeavingAdaptor implements IMessageContext {
 
 	protected class WeavingAdaptorMessageWriter extends MessageWriter {
 
-		private final Set ignoring = new HashSet();
+		private final Set<IMessage.Kind> ignoring = new HashSet<IMessage.Kind>();
 		private final IMessage.Kind failKind;
 
 		public WeavingAdaptorMessageWriter(PrintWriter writer) {
@@ -776,7 +775,7 @@ public class WeavingAdaptor implements IMessageContext {
 	private class WeavingClassFileProvider implements IClassFileProvider {
 
 		private final UnwovenClassFile unwovenClass;
-		private final List unwovenClasses = new ArrayList(); /* List<UnovenClassFile> */
+		private final List<UnwovenClassFile> unwovenClasses = new ArrayList<UnwovenClassFile>();
 		private IUnwovenClassFile wovenClass;
 		private boolean isApplyAtAspectJMungersOnly = false;
 
@@ -807,7 +806,7 @@ public class WeavingAdaptor implements IMessageContext {
 			}
 		}
 
-		public Iterator getClassFileIterator() {
+		public Iterator<UnwovenClassFile> getClassFileIterator() {
 			return unwovenClasses.iterator();
 		}
 

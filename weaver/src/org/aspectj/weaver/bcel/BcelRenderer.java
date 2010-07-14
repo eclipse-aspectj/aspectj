@@ -150,7 +150,7 @@ public final class BcelRenderer implements ITestVisitor, IExprVisitor {
 		InstructionList il = new InstructionList();
 
 		// If it is null jump past the advice call
-		il.append(fact.createBranchInstruction(Constants.IFNULL, fk));
+		il.append(InstructionFactory.createBranchInstruction(Constants.IFNULL, fk));
 
 		// Load up the var again
 		il.append(((BcelVar) hasAnnotation.getVar()).createLoad(fact));
@@ -201,8 +201,9 @@ public final class BcelRenderer implements ITestVisitor, IExprVisitor {
 	}
 
 	public void visit(Literal literal) {
-		if (literal == Literal.FALSE)
+		if (literal == Literal.FALSE) {
 			throw new BCException("visiting a false expression");
+		}
 	}
 
 	public void visit(Call call) {
