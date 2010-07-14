@@ -14,7 +14,6 @@ package org.aspectj.bridge.context;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
@@ -89,13 +88,14 @@ public class CompilationAndWeavingContext {
 			"type munging for @AspectJ aspectOf" };
 
 	// context stacks, one per thread
-	private static Map contextMap = Collections.synchronizedMap(new HashMap());
+	private static Map<Thread, Stack<ContextStackEntry>> contextMap = Collections
+			.synchronizedMap(new HashMap<Thread, Stack<ContextStackEntry>>());
 
 	// single thread mode stack
-	private static Stack contextStack = new Stack();
+	private static Stack<ContextStackEntry> contextStack = new Stack<ContextStackEntry>();
 
 	// formatters, by phase id
-	private static Map formatterMap = new HashMap();
+	private static Map<Integer, ContextFormatter> formatterMap = new HashMap<Integer, ContextFormatter>();
 
 	private static ContextFormatter defaultFormatter = new DefaultFormatter();
 
@@ -132,10 +132,9 @@ public class CompilationAndWeavingContext {
 	 * Returns a string description of what the compiler/weaver is currently doing
 	 */
 	public static String getCurrentContext() {
-		Stack contextStack = getContextStack();
-		Stack explanationStack = new Stack();
-		for (Iterator iter = contextStack.iterator(); iter.hasNext();) {
-			ContextStackEntry entry = (ContextStackEntry) iter.next();
+		Stack<ContextStackEntry> contextStack = getContextStack();
+		Stack<String> explanationStack = new Stack<String>();
+		for (ContextStackEntry entry : contextStack) {
 			Object data = entry.getData();
 			if (data != null) {
 				explanationStack.push(getFormatter(entry).formatEntry(entry.phaseId, data));
@@ -151,9 +150,9 @@ public class CompilationAndWeavingContext {
 	}
 
 	public static ContextToken enteringPhase(int phaseId, Object data) {
-		Stack contextStack = getContextStack();
+		Stack<ContextStackEntry> contextStack = getContextStack();
 		ContextTokenImpl nextToken = nextToken();
-		contextStack.push(new ContextStackEntry(nextToken, phaseId, new WeakReference(data)));
+		contextStack.push(new ContextStackEntry(nextToken, phaseId, new WeakReference<Object>(data)));
 		return nextToken;
 	}
 
@@ -164,8 +163,9 @@ public class CompilationAndWeavingContext {
 		Stack contextStack = getContextStack();
 		while (!contextStack.isEmpty()) {
 			ContextStackEntry entry = (ContextStackEntry) contextStack.pop();
-			if (entry.contextToken == aToken)
+			if (entry.contextToken == aToken) {
 				break;
+			}
 		}
 	}
 
@@ -173,18 +173,19 @@ public class CompilationAndWeavingContext {
 	 * Forget about the context for the current thread
 	 */
 	public static void resetForThread() {
-		if (!multiThreaded)
+		if (!multiThreaded) {
 			return;
+		}
 		contextMap.remove(Thread.currentThread());
 	}
 
-	private static Stack getContextStack() {
+	private static Stack<ContextStackEntry> getContextStack() {
 		if (!multiThreaded) {
 			return contextStack;
 		} else {
-			Stack contextStack = (Stack) contextMap.get(Thread.currentThread());
+			Stack<ContextStackEntry> contextStack = contextMap.get(Thread.currentThread());
 			if (contextStack == null) {
-				contextStack = new Stack();
+				contextStack = new Stack<ContextStackEntry>();
 				contextMap.put(Thread.currentThread(), contextStack);
 			}
 			return contextStack;
@@ -198,7 +199,7 @@ public class CompilationAndWeavingContext {
 	private static ContextFormatter getFormatter(ContextStackEntry entry) {
 		Integer key = new Integer(entry.phaseId);
 		if (formatterMap.containsKey(key)) {
-			return (ContextFormatter) formatterMap.get(key);
+			return formatterMap.get(key);
 		} else {
 			return defaultFormatter;
 		}
@@ -216,9 +217,9 @@ public class CompilationAndWeavingContext {
 	private static class ContextStackEntry {
 		public ContextTokenImpl contextToken;
 		public int phaseId;
-		private WeakReference dataRef;
+		private WeakReference<Object> dataRef;
 
-		public ContextStackEntry(ContextTokenImpl ct, int phase, WeakReference data) {
+		public ContextStackEntry(ContextTokenImpl ct, int phase, WeakReference<Object> data) {
 			this.contextToken = ct;
 			this.phaseId = phase;
 			this.dataRef = data;
