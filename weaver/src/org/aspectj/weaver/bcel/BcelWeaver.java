@@ -38,6 +38,10 @@ import java.util.zip.ZipOutputStream;
 
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.internal.AspectJElementHierarchy;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
@@ -1479,8 +1483,7 @@ public class BcelWeaver {
 				}
 			}
 
-			for (Iterator iter = xcutSet.getDeclareAnnotationOnTypes().iterator(); iter.hasNext();) {
-				DeclareAnnotation decA = (DeclareAnnotation) iter.next();
+			for (DeclareAnnotation decA : xcutSet.getDeclareAnnotationOnTypes()) {
 				boolean typeChanged = applyDeclareAtType(decA, onType, false);
 				if (typeChanged) {
 					anAnnotationChangeOccurred = true;
@@ -1575,14 +1578,12 @@ public class BcelWeaver {
 	 */
 	private boolean applyDeclareParents(DeclareParents p, ResolvedType onType) {
 		boolean didSomething = false;
-		List newParents = p.findMatchingNewParents(onType, true);
+		List<ResolvedType> newParents = p.findMatchingNewParents(onType, true);
 		if (!newParents.isEmpty()) {
 			didSomething = true;
 			BcelWorld.getBcelObjectType(onType);
 			// System.err.println("need to do declare parents for: " + onType);
-			for (Iterator j = newParents.iterator(); j.hasNext();) {
-				ResolvedType newParent = (ResolvedType) j.next();
-
+			for (ResolvedType newParent : newParents) {
 				// We set it here so that the imminent matching for ITDs can
 				// succeed - we
 				// still haven't done the necessary changes to the class file
@@ -1715,19 +1716,50 @@ public class BcelWeaver {
 				checkDeclareTypeErrorOrWarning(world, classType);
 			}
 			// this is very odd return behavior trying to keep everyone happy
-			/*
-			 * // can we remove it from the model now? we know it contains no relationship endpoints... AsmManager asm =
-			 * world.getModelAsAsmManager(); if (asm != null) { IHierarchy model = asm.getHierarchy(); if (!classType.isAspect()) {
-			 * 
-			 * String pkgname = classType.getResolvedTypeX().getPackageName(); String tname =
-			 * classType.getResolvedTypeX().getSimpleBaseName(); IProgramElement typeElement = model.findElementForType(pkgname,
-			 * tname); if (typeElement != null) { Set deleted = new HashSet();
-			 * deleted.add(asm.getCanonicalFilePath(typeElement.getSourceLocation().getSourceFile()));
-			 * 
-			 * model.updateHandleMap(deleted); IProgramElement parent = typeElement.getParent(); // parent may have children:
-			 * PACKAGE DECL, IMPORT-REFEFERENCE, TYPE_DECL if (parent != null) { typeElement.getParent().removeChild(typeElement);
-			 * // System.out.println("Removing " + classType.getResolvedTypeX().getName() + "? " // + ); } } } }
-			 */
+
+			// can we remove it from the model now? we know it contains no relationship endpoints...
+			AsmManager model = world.getModelAsAsmManager();
+			if (world.isMinimalModel() && model != null && !classType.isAspect()) {
+				IHierarchy hierarchy = model.getHierarchy();
+				String pkgname = classType.getResolvedTypeX().getPackageName();
+				String tname = classType.getResolvedTypeX().getSimpleBaseName();
+				IProgramElement typeElement = hierarchy.findElementForType(pkgname, tname);
+				if (typeElement != null) {
+					// Set<String> deleted = new HashSet<String>();
+					// deleted.add(model.getCanonicalFilePath(typeElement.getSourceLocation().getSourceFile()));
+					// hierarchy.updateHandleMap(deleted);
+					IProgramElement parent = typeElement.getParent();
+					// parent may have children: PACKAGE DECL, IMPORT-REFERENCE, TYPE_DECL
+					if (parent != null) {
+						// if it was the only type we should probably remove the others too.
+						parent.removeChild(typeElement);
+						if (parent.getKind().isSourceFile()) {
+							IProgramElement compilationUnit = parent;
+							boolean anyOtherTypeDeclarations = false;
+							for (IProgramElement child : compilationUnit.getChildren()) {
+								IProgramElement.Kind k = child.getKind();
+								if (k.isType()) {
+									anyOtherTypeDeclarations = true;
+									break;
+								}
+							}
+							// If the compilation unit node contained no other types, there is no need to keep it
+							if (!anyOtherTypeDeclarations) {
+								IProgramElement cuParent = parent.getParent();
+								if (cuParent != null) {
+									cuParent.setParent(null);
+									cuParent.removeChild(parent);
+								}
+								// need to update some caches and structures too?
+								((AspectJElementHierarchy) model.getHierarchy()).forget(parent, typeElement);
+							} else {
+								((AspectJElementHierarchy) model.getHierarchy()).forget(null, typeElement);
+							}
+						}
+					}
+				}
+			}
+
 			if (dump) {
 				dumpUnchanged(classFile);
 				return clazz;
