@@ -708,16 +708,18 @@ public class AspectDeclaration extends TypeDeclaration {
 		/*
 		 * Code: Stack=1, Locals=1, Args_size=1 0: aload_0 1: getfield #14; //Field ajc$withinType:Ljava/lang/String; 4: areturn
 		 */
-		generateMethod(classFile, AjcMemberMaker.perTypeWithinGetWithinTypeNameMethod(world.fromBinding(binding), world.getWorld()
-				.isInJava5Mode()), new BodyGenerator() {
-			public void generate(CodeStream codeStream) {
-				ExceptionLabel exc = new ExceptionLabel(codeStream, world.makeTypeBinding(UnresolvedType.JAVA_LANG_EXCEPTION));
-				exc.placeStart();
-				codeStream.aload_0();
-				codeStream.getfield(world.makeFieldBinding(AjcMemberMaker.perTypeWithinWithinTypeField(typeX, typeX)));
-				codeStream.areturn();
-			}
-		});
+		generateMethod(classFile,
+				AjcMemberMaker.perTypeWithinGetWithinTypeNameMethod(world.fromBinding(binding), world.getWorld().isInJava5Mode()),
+				new BodyGenerator() {
+					public void generate(CodeStream codeStream) {
+						ExceptionLabel exc = new ExceptionLabel(codeStream, world
+								.makeTypeBinding(UnresolvedType.JAVA_LANG_EXCEPTION));
+						exc.placeStart();
+						codeStream.aload_0();
+						codeStream.getfield(world.makeFieldBinding(AjcMemberMaker.perTypeWithinWithinTypeField(typeX, typeX)));
+						codeStream.areturn();
+					}
+				});
 	}
 
 	// PTWIMPL Generate getInstance method
@@ -739,12 +741,10 @@ public class AspectDeclaration extends TypeDeclaration {
 				codeStream.aload_1();
 				codeStream.aconst_null();
 				codeStream.aconst_null();
-				codeStream
-						.invokevirtual(new MethodBinding(0, "invoke".toCharArray(), world.makeTypeBinding(UnresolvedType.OBJECT),
-								new TypeBinding[] { world.makeTypeBinding(UnresolvedType.OBJECT),
-										world.makeTypeBinding(UnresolvedType.forSignature("[Ljava/lang/Object;")) },
-								new ReferenceBinding[0], (ReferenceBinding) world
-										.makeTypeBinding(UnresolvedType.JAVA_LANG_REFLECT_METHOD)));
+				codeStream.invokevirtual(new MethodBinding(0, "invoke".toCharArray(), world.makeTypeBinding(UnresolvedType.OBJECT),
+						new TypeBinding[] { world.makeTypeBinding(UnresolvedType.OBJECT),
+								world.makeTypeBinding(UnresolvedType.forSignature("[Ljava/lang/Object;")) },
+						new ReferenceBinding[0], (ReferenceBinding) world.makeTypeBinding(UnresolvedType.JAVA_LANG_REFLECT_METHOD)));
 				codeStream.checkcast(world.makeTypeBinding(typeX));
 				codeStream.astore_2();
 				codeStream.aload_2();
@@ -792,7 +792,7 @@ public class AspectDeclaration extends TypeDeclaration {
 				// codeStream.ifnull(isNull);
 				// codeStream.areturn();
 				// isNull.place();
-				//				
+				//
 				// codeStream.incrStackSize(+1); // the dup trick above confuses the stack counter
 				// codeStream.new_(world.makeTypeBinding(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION));
 				// codeStream.dup();
@@ -1086,7 +1086,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	// public String toStringBody(int tab) {
 	//
 	//		String s = " {"; //$NON-NLS-1$
-	//		
+	//
 	//
 	// if (memberTypes != null) {
 	// for (int i = 0; i < memberTypes.length; i++) {
@@ -1155,7 +1155,14 @@ public class AspectDeclaration extends TypeDeclaration {
 				return;
 			}
 		}
-
+		/*
+		char[][] className = CharOperation.deepCopy(targetSourceTypeBinding.compoundName);
+		className[className.length - 1] = CharOperation.concat(className[className.length - 1], munger.getMemberTypeName()
+				.toCharArray(), '$');
+		// ReferenceBinding existingType = packageBinding.getType0(className[className.length - 1]);
+		innerTypeBinding.compoundName = className;
+		innerTypeBinding.fPackage = targetSourceTypeBinding.fPackage;
+		*/
 		findOrCreateInterTypeMemberClassFinder(targetSourceTypeBinding).addInterTypeMemberType(innerTypeBinding);
 	}
 

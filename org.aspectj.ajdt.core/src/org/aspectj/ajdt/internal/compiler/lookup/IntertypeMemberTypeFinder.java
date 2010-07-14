@@ -36,6 +36,12 @@ public class IntertypeMemberTypeFinder implements ITypeFinder {
 
 	public void addInterTypeMemberType(ReferenceBinding binding) {
 		intertypeMemberTypes.add(binding);
+		// ReferenceBinding[] rbs = targetTypeBinding.memberTypes();
+		// ReferenceBinding[] newRbs = new ReferenceBinding[rbs.length + 1];
+		// System.arraycopy(rbs, 0, newRbs, 1, rbs.length);
+		// newRbs[0] = binding;
+		// (targetTypeBinding).memberTypes = newRbs;
+
 	}
 
 	public ReferenceBinding getMemberType(char[] memberTypeName) {
