@@ -785,7 +785,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		}
 		model.setRoot(new ProgramElement(structureModel, rootLabel, kind, new ArrayList()));
 
-		model.setFileMap(new HashMap());
+		model.setFileMap(new HashMap<String, IProgramElement>());
 		// setStructureModel(model);
 		state.setStructureModel(structureModel);
 		// state.setRelationshipMap(AsmManager.getDefault().getRelationshipMap());
@@ -872,18 +872,16 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			outputDir = buildConfig.getCompilationResultDestinationManager().getDefaultOutputLocation();
 		}
 		// ??? incremental issues
-		for (Iterator i = buildConfig.getInJars().iterator(); i.hasNext();) {
-			File inJar = (File) i.next();
+		for (File inJar : buildConfig.getInJars()) {
 			List<UnwovenClassFile> unwovenClasses = bcelWeaver.addJarFile(inJar, outputDir, false);
 			state.recordBinarySource(inJar.getPath(), unwovenClasses);
 		}
 
-		for (Iterator i = buildConfig.getInpath().iterator(); i.hasNext();) {
-			File inPathElement = (File) i.next();
+		for (File inPathElement : buildConfig.getInpath()) {
 			if (!inPathElement.isDirectory()) {
 				// its a jar file on the inpath
 				// the weaver method can actually handle dirs, but we don't call it, see next block
-				List unwovenClasses = bcelWeaver.addJarFile(inPathElement, outputDir, true);
+				List<UnwovenClassFile> unwovenClasses = bcelWeaver.addJarFile(inPathElement, outputDir, true);
 				state.recordBinarySource(inPathElement.getPath(), unwovenClasses);
 			} else {
 				// add each class file in an in-dir individually, this gives us the best error reporting
@@ -892,7 +890,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				File[] binSrcs = FileUtil.listFiles(inPathElement, binarySourceFilter);
 				for (int j = 0; j < binSrcs.length; j++) {
 					UnwovenClassFile ucf = bcelWeaver.addClassFile(binSrcs[j], inPathElement, outputDir);
-					List ucfl = new ArrayList();
+					List<UnwovenClassFile> ucfl = new ArrayList<UnwovenClassFile>();
 					ucfl.add(ucf);
 					state.recordBinarySource(binSrcs[j].getPath(), ucfl);
 				}
