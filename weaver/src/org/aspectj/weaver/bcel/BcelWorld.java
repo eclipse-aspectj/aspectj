@@ -192,10 +192,11 @@ public class BcelWorld extends World implements Repository {
 		} else {
 			boolean runtimeTest = advice.hasDynamicTests();
 			String joinPointDescription = shadow.toString();
-			msg = WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ADVISES, new String[] { joinPointDescription,
-					advisedType, beautifyLocation(shadow.getSourceLocation()), description, advisingType,
-					beautifyLocation(munger.getSourceLocation()), (runtimeTest ? " [with runtime test]" : "") }, advisedType,
-					advisingType);
+			msg = WeaveMessage
+					.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ADVISES,
+							new String[] { joinPointDescription, advisedType, beautifyLocation(shadow.getSourceLocation()),
+									description, advisingType, beautifyLocation(munger.getSourceLocation()),
+									(runtimeTest ? " [with runtime test]" : "") }, advisedType, advisingType);
 			// Boolean.toString(runtimeTest)});
 		}
 		getMessageHandler().handleMessage(msg);
@@ -451,8 +452,8 @@ public class BcelWorld extends World implements Repository {
 			if (jc.isGeneric() && isInJava5Mode()) {
 				nameTypeX = ReferenceType.fromTypeX(UnresolvedType.forRawTypeName(jc.getClassName()), this);
 				ret = buildBcelDelegate(nameTypeX, jc, artificial, true);
-				ReferenceType genericRefType = new ReferenceType(UnresolvedType.forGenericTypeSignature(signature, ret
-						.getDeclaredGenericSignature()), this);
+				ReferenceType genericRefType = new ReferenceType(UnresolvedType.forGenericTypeSignature(signature,
+						ret.getDeclaredGenericSignature()), this);
 				nameTypeX.setDelegate(ret);
 				genericRefType.setDelegate(ret);
 				nameTypeX.setGenericType(genericRefType);
@@ -488,8 +489,8 @@ public class BcelWorld extends World implements Repository {
 			if (jc.isGeneric() && isInJava5Mode()) {
 				nameTypeX = ReferenceType.fromTypeX(UnresolvedType.forRawTypeName(jc.getClassName()), this);
 				ret = buildBcelDelegate(nameTypeX, jc, artificial, true);
-				ReferenceType genericRefType = new ReferenceType(UnresolvedType.forGenericTypeSignature(signature, ret
-						.getDeclaredGenericSignature()), this);
+				ReferenceType genericRefType = new ReferenceType(UnresolvedType.forGenericTypeSignature(signature,
+						ret.getDeclaredGenericSignature()), this);
 				nameTypeX.setDelegate(ret);
 				genericRefType.setDelegate(ret);
 				nameTypeX.setGenericType(genericRefType);
@@ -528,8 +529,8 @@ public class BcelWorld extends World implements Repository {
 	public static Member makeFieldJoinPointSignature(LazyClassGen cg, FieldInstruction fi) {
 		ConstantPool cpg = cg.getConstantPool();
 		return MemberImpl.field(fi.getClassName(cpg),
-				(fi.opcode == Constants.GETSTATIC || fi.opcode == Constants.PUTSTATIC) ? Modifier.STATIC : 0, fi.getName(cpg), fi
-						.getSignature(cpg));
+				(fi.opcode == Constants.GETSTATIC || fi.opcode == Constants.PUTSTATIC) ? Modifier.STATIC : 0, fi.getName(cpg),
+				fi.getSignature(cpg));
 	}
 
 	public Member makeJoinPointSignatureFromMethod(LazyMethodGen mg, MemberKind kind) {
@@ -539,8 +540,8 @@ public class BcelWorld extends World implements Repository {
 			if (mg.getEnclosingClass().isInterface()) {
 				mods |= Modifier.INTERFACE;
 			}
-			return new ResolvedMemberImpl(kind, UnresolvedType.forName(mg.getClassName()), mods, fromBcel(mg.getReturnType()), mg
-					.getName(), fromBcel(mg.getArgumentTypes()));
+			return new ResolvedMemberImpl(kind, UnresolvedType.forName(mg.getClassName()), mods, fromBcel(mg.getReturnType()),
+					mg.getName(), fromBcel(mg.getArgumentTypes()));
 		} else {
 			return ret;
 		}
@@ -730,13 +731,12 @@ public class BcelWorld extends World implements Repository {
 	 */
 	private boolean applyDeclareParents(DeclareParents p, ResolvedType onType) {
 		boolean didSomething = false;
-		List newParents = p.findMatchingNewParents(onType, true);
+		List<ResolvedType> newParents = p.findMatchingNewParents(onType, true);
 		if (!newParents.isEmpty()) {
 			didSomething = true;
 			BcelObjectType classType = BcelWorld.getBcelObjectType(onType);
 			// System.err.println("need to do declare parents for: " + onType);
-			for (Iterator j = newParents.iterator(); j.hasNext();) {
-				ResolvedType newParent = (ResolvedType) j.next();
+			for (ResolvedType newParent : newParents) {
 
 				// We set it here so that the imminent matching for ITDs can
 				// succeed - we
@@ -827,8 +827,7 @@ public class BcelWorld extends World implements Repository {
 		}
 
 		// Still first pass - apply all dec @type mungers
-		for (Iterator i = getCrosscuttingMembersSet().getDeclareAnnotationOnTypes().iterator(); i.hasNext();) {
-			DeclareAnnotation decA = (DeclareAnnotation) i.next();
+		for (DeclareAnnotation decA : getCrosscuttingMembersSet().getDeclareAnnotationOnTypes()) {
 			boolean typeChanged = applyDeclareAtType(decA, onType, true);
 			if (typeChanged) {
 				anAnnotationChangeOccurred = true;
