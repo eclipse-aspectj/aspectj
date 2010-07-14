@@ -151,23 +151,28 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				// if doing parents munging at compile time only...
 				NewParentTypeMunger parentTM = (NewParentTypeMunger) munger;
 				if (parentTM.isMixin()) {
-					weaver.getWorld().getMessageHandler().handleMessage(
-							WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_MIXIN,
-									new String[] { parentTM.getNewParent().getName(), fName,
-											weaver.getLazyClassGen().getType().getName(), tName }, weaver.getLazyClassGen()
-											.getClassName(), getAspectType().getName()));
+					weaver.getWorld()
+							.getMessageHandler()
+							.handleMessage(
+									WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_MIXIN, new String[] {
+											parentTM.getNewParent().getName(), fName, weaver.getLazyClassGen().getType().getName(),
+											tName }, weaver.getLazyClassGen().getClassName(), getAspectType().getName()));
 				} else {
 					if (parentTM.getNewParent().isInterface()) {
-						weaver.getWorld().getMessageHandler().handleMessage(
-								WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_DECLAREPARENTSIMPLEMENTS,
-										new String[] { weaver.getLazyClassGen().getType().getName(), tName,
-												parentTM.getNewParent().getName(), fName },
-										weaver.getLazyClassGen().getClassName(), getAspectType().getName()));
+						weaver.getWorld()
+								.getMessageHandler()
+								.handleMessage(
+										WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_DECLAREPARENTSIMPLEMENTS,
+												new String[] { weaver.getLazyClassGen().getType().getName(), tName,
+														parentTM.getNewParent().getName(), fName }, weaver.getLazyClassGen()
+														.getClassName(), getAspectType().getName()));
 					} else {
-						weaver.getWorld().getMessageHandler().handleMessage(
-								WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_DECLAREPARENTSEXTENDS, new String[] {
-										weaver.getLazyClassGen().getType().getName(), tName, parentTM.getNewParent().getName(),
-										fName }));
+						weaver.getWorld()
+								.getMessageHandler()
+								.handleMessage(
+										WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_DECLAREPARENTSEXTENDS,
+												new String[] { weaver.getLazyClassGen().getType().getName(), tName,
+														parentTM.getNewParent().getName(), fName }));
 						// TAG: WeavingMessage DECLARE PARENTS: EXTENDS
 						// reportDeclareParentsMessage(WeaveMessage.
 						// WEAVEMESSAGE_DECLAREPARENTSEXTENDS,sourceType,parent);
@@ -185,10 +190,12 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					kindString = "member class";
 					fromString = fName;
 				}
-				weaver.getWorld().getMessageHandler().handleMessage(
-						WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ITD, new String[] {
-								weaver.getLazyClassGen().getType().getName(), tName, kindString, getAspectType().getName(),
-								fromString }, weaver.getLazyClassGen().getClassName(), getAspectType().getName()));
+				weaver.getWorld()
+						.getMessageHandler()
+						.handleMessage(
+								WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ITD, new String[] {
+										weaver.getLazyClassGen().getType().getName(), tName, kindString, getAspectType().getName(),
+										fromString }, weaver.getLazyClassGen().getClassName(), getAspectType().getName()));
 			}
 		}
 
@@ -224,9 +231,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		cont = enforceDecpRule1_abstractMethodsImplemented(weaver, munger.getSourceLocation(), newParentTarget, newParent);
 		cont = enforceDecpRule2_cantExtendFinalClass(weaver, munger.getSourceLocation(), newParentTarget, newParent) && cont;
 
-		List methods = newParent.getMethodsWithoutIterator(false, true, false);
-		for (Iterator iter = methods.iterator(); iter.hasNext();) {
-			ResolvedMember superMethod = (ResolvedMember) iter.next();
+		List<ResolvedMember> methods = newParent.getMethodsWithoutIterator(false, true, false);
+		for (Iterator<ResolvedMember> iter = methods.iterator(); iter.hasNext();) {
+			ResolvedMember superMethod = iter.next();
 			if (!superMethod.getName().equals("<init>")) {
 				LazyMethodGen subMethod = findMatchingMethod(newParentTarget, superMethod);
 				// FIXME asc is this safe for all bridge methods?
@@ -237,8 +244,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 							cont = enforceDecpRule3_visibilityChanges(weaver, newParent, superMethod, subMethod) && cont;
 							cont = enforceDecpRule4_compatibleReturnTypes(weaver, superMethod, subMethod) && cont;
 							cont = enforceDecpRule5_cantChangeFromStaticToNonstatic(weaver, munger.getSourceLocation(),
-									superMethod, subMethod)
-									&& cont;
+									superMethod, subMethod) && cont;
 						}
 					}
 				}
@@ -272,9 +278,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			// classes
 			// or
 			// interfaces
-			List methods = newParent.getMethodsWithoutIterator(false, true, false);
-			for (Iterator i = methods.iterator(); i.hasNext();) {
-				ResolvedMember o = (ResolvedMember) i.next();
+			List<ResolvedMember> methods = newParent.getMethodsWithoutIterator(false, true, false);
+			for (Iterator<ResolvedMember> i = methods.iterator(); i.hasNext();) {
+				ResolvedMember o = i.next();
 				if (o.isAbstract() && !o.getName().startsWith("ajc$interField")) { // Ignore
 					// abstract
 					// methods
@@ -283,9 +289,10 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					// prefixed
 					// methods
 					ResolvedMember discoveredImpl = null;
-					List newParentTargetMethods = newParentTarget.getType().getMethodsWithoutIterator(false, true, false);
-					for (Iterator ii = newParentTargetMethods.iterator(); ii.hasNext() && discoveredImpl == null;) {
-						ResolvedMember gen2 = (ResolvedMember) ii.next();
+					List<ResolvedMember> newParentTargetMethods = newParentTarget.getType().getMethodsWithoutIterator(false, true,
+							false);
+					for (Iterator<ResolvedMember> ii = newParentTargetMethods.iterator(); ii.hasNext() && discoveredImpl == null;) {
+						ResolvedMember gen2 = ii.next();
 						if (gen2.getName().equals(o.getName()) && !gen2.isAbstract()) {
 							String oSig = o.getParameterSignature();
 							// could be a match
@@ -305,8 +312,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 						// didnt find a valid implementation, lets check the
 						// ITDs on this type to see if they satisfy it
 						boolean satisfiedByITD = false;
-						for (Iterator ii = newParentTarget.getType().getInterTypeMungersIncludingSupers().iterator(); ii.hasNext();) {
-							ConcreteTypeMunger m = (ConcreteTypeMunger) ii.next();
+						for (Iterator<ConcreteTypeMunger> ii = newParentTarget.getType().getInterTypeMungersIncludingSupers()
+								.iterator(); ii.hasNext();) {
+							ConcreteTypeMunger m = ii.next();
 							if (m.getMunger() != null && m.getMunger().getKind() == ResolvedTypeMunger.Method) {
 								ResolvedMember sig = m.getSignature();
 								if (!Modifier.isAbstract(sig.getModifiers())) {
@@ -324,8 +332,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 										// parameters
 										// filled in
 									}
-									if (ResolvedType.matches(AjcMemberMaker.interMethod(sig, m.getAspectType(), sig
-											.getDeclaringType().resolve(weaver.getWorld()).isInterface()), o)) {
+									if (ResolvedType.matches(
+											AjcMemberMaker.interMethod(sig, m.getAspectType(),
+													sig.getDeclaringType().resolve(weaver.getWorld()).isInterface()), o)) {
 										satisfiedByITD = true;
 									}
 								}
@@ -370,23 +379,29 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		boolean cont = true;
 		if (Modifier.isPublic(superMethod.getModifiers())) {
 			if (subMethod.isProtected() || subMethod.isDefault() || subMethod.isPrivate()) {
-				weaver.getWorld().getMessageHandler().handleMessage(
-						MessageUtil.error("Cannot reduce the visibility of the inherited method '" + superMethod + "' from "
-								+ newParent.getName(), superMethod.getSourceLocation()));
+				weaver.getWorld()
+						.getMessageHandler()
+						.handleMessage(
+								MessageUtil.error("Cannot reduce the visibility of the inherited method '" + superMethod
+										+ "' from " + newParent.getName(), superMethod.getSourceLocation()));
 				cont = false;
 			}
 		} else if (Modifier.isProtected(superMethod.getModifiers())) {
 			if (subMethod.isDefault() || subMethod.isPrivate()) {
-				weaver.getWorld().getMessageHandler().handleMessage(
-						MessageUtil.error("Cannot reduce the visibility of the inherited method '" + superMethod + "' from "
-								+ newParent.getName(), superMethod.getSourceLocation()));
+				weaver.getWorld()
+						.getMessageHandler()
+						.handleMessage(
+								MessageUtil.error("Cannot reduce the visibility of the inherited method '" + superMethod
+										+ "' from " + newParent.getName(), superMethod.getSourceLocation()));
 				cont = false;
 			}
 		} else if (superMethod.isDefault()) {
 			if (subMethod.isPrivate()) {
-				weaver.getWorld().getMessageHandler().handleMessage(
-						MessageUtil.error("Cannot reduce the visibility of the inherited method '" + superMethod + "' from "
-								+ newParent.getName(), superMethod.getSourceLocation()));
+				weaver.getWorld()
+						.getMessageHandler()
+						.handleMessage(
+								MessageUtil.error("Cannot reduce the visibility of the inherited method '" + superMethod
+										+ "' from " + newParent.getName(), superMethod.getSourceLocation()));
 				cont = false;
 			}
 		}
@@ -408,9 +423,12 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			ResolvedType subType = weaver.getWorld().resolve(subMethod.getReturnType());
 			ResolvedType superType = weaver.getWorld().resolve(superMethod.getReturnType());
 			if (!superType.isAssignableFrom(subType)) {
-				weaver.getWorld().getMessageHandler().handleMessage(
-						MessageUtil.error("The return type is incompatible with " + superMethod.getDeclaringType() + "."
-								+ superMethod.getName() + superMethod.getParameterSignature(), subMethod.getSourceLocation()));
+				weaver.getWorld()
+						.getMessageHandler()
+						.handleMessage(
+								MessageUtil.error("The return type is incompatible with " + superMethod.getDeclaringType() + "."
+										+ superMethod.getName() + superMethod.getParameterSignature(),
+										subMethod.getSourceLocation()));
 				// this just might be a better error message...
 				// "The return type '"+subReturnTypeSig+
 				// "' is incompatible with the overridden method "
@@ -432,13 +450,13 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		boolean superMethodStatic = Modifier.isStatic(superMethod.getModifiers());
 		if (superMethodStatic && !subMethod.isStatic()) {
 			error(weaver, "This instance method " + subMethod.getName() + subMethod.getParameterSignature()
-					+ " cannot override the static method from " + superMethod.getDeclaringType().getName(), subMethod
-					.getSourceLocation(), new ISourceLocation[] { mungerLoc });
+					+ " cannot override the static method from " + superMethod.getDeclaringType().getName(),
+					subMethod.getSourceLocation(), new ISourceLocation[] { mungerLoc });
 			return false;
 		} else if (!superMethodStatic && subMethod.isStatic()) {
 			error(weaver, "The static method " + subMethod.getName() + subMethod.getParameterSignature()
-					+ " cannot hide the instance method from " + superMethod.getDeclaringType().getName(), subMethod
-					.getSourceLocation(), new ISourceLocation[] { mungerLoc });
+					+ " cannot hide the instance method from " + superMethod.getDeclaringType().getName(),
+					subMethod.getSourceLocation(), new ISourceLocation[] { mungerLoc });
 			return false;
 		}
 		return true;
@@ -454,15 +472,12 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	 * overriding.
 	 */
 	private LazyMethodGen findMatchingMethod(LazyClassGen newParentTarget, ResolvedMember m) {
-		LazyMethodGen found = null;
-		List methodGens = newParentTarget.getMethodGens();
-		for (Iterator i = methodGens.iterator(); i.hasNext() && found == null;) {
-			LazyMethodGen gen = (LazyMethodGen) i.next();
+		for (LazyMethodGen gen : newParentTarget.getMethodGens()) {
 			if (gen.getName().equals(m.getName()) && gen.getParameterSignature().equals(m.getParameterSignature())) {
-				found = gen;
+				return gen;
 			}
 		}
-		return found;
+		return null;
 	}
 
 	/**
@@ -501,10 +516,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 								// 2. Check ITDCs to see if the necessary ctor is provided that way
 								boolean satisfiedByITDC = false;
-								for (Iterator ii = newParentTarget.getType().getInterTypeMungersIncludingSupers().iterator(); ii
-										.hasNext()
-										&& !satisfiedByITDC;) {
-									ConcreteTypeMunger m = (ConcreteTypeMunger) ii.next();
+								for (Iterator<ConcreteTypeMunger> ii = newParentTarget.getType()
+										.getInterTypeMungersIncludingSupers().iterator(); ii.hasNext() && !satisfiedByITDC;) {
+									ConcreteTypeMunger m = ii.next();
 									if (m.getMunger() instanceof NewConstructorTypeMunger) {
 										if (m.getSignature().getSignature().equals(invokeSpecial.getSignature(cpg))) {
 											satisfiedByITDC = true;
@@ -514,15 +528,19 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 								if (!satisfiedByITDC) {
 									String csig = createReadableCtorSig(newParent, cpg, invokeSpecial);
-									weaver.getWorld().getMessageHandler().handleMessage(
-											MessageUtil.error("Unable to modify hierarchy for " + newParentTarget.getClassName()
-													+ " - the constructor " + csig + " is missing", this.getSourceLocation()));
+									weaver.getWorld()
+											.getMessageHandler()
+											.handleMessage(
+													MessageUtil.error(
+															"Unable to modify hierarchy for " + newParentTarget.getClassName()
+																	+ " - the constructor " + csig + " is missing",
+															this.getSourceLocation()));
 									return false;
 								}
 							}
 
-							int idx = cpg.addMethodref(newParent.getName(), invokeSpecial.getMethodName(cpg), invokeSpecial
-									.getSignature(cpg));
+							int idx = cpg.addMethodref(newParent.getName(), invokeSpecial.getMethodName(cpg),
+									invokeSpecial.getSignature(cpg));
 							invokeSpecial.setIndex(idx);
 						}
 					}
@@ -582,17 +600,17 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		if (onType.equals(gen.getType())) {
 			if (member.getKind() == Member.FIELD) {
 				// System.out.println("matched: " + gen);
-				addFieldGetter(gen, member, AjcMemberMaker
-						.privilegedAccessMethodForFieldGet(aspectType, member, munger.shortSyntax));
-				addFieldSetter(gen, member, AjcMemberMaker
-						.privilegedAccessMethodForFieldSet(aspectType, member, munger.shortSyntax));
+				addFieldGetter(gen, member,
+						AjcMemberMaker.privilegedAccessMethodForFieldGet(aspectType, member, munger.shortSyntax));
+				addFieldSetter(gen, member,
+						AjcMemberMaker.privilegedAccessMethodForFieldSet(aspectType, member, munger.shortSyntax));
 				return true;
 			} else if (member.getKind() == Member.METHOD) {
 				addMethodDispatch(gen, member, AjcMemberMaker.privilegedAccessMethodForMethod(aspectType, member));
 				return true;
 			} else if (member.getKind() == Member.CONSTRUCTOR) {
-				for (Iterator i = gen.getMethodGens().iterator(); i.hasNext();) {
-					LazyMethodGen m = (LazyMethodGen) i.next();
+				for (Iterator<LazyMethodGen> i = gen.getMethodGens().iterator(); i.hasNext();) {
+					LazyMethodGen m = i.next();
 					if (m.getMemberView() != null && m.getMemberView().getKind() == Member.CONSTRUCTOR) {
 						// m.getMemberView().equals(member)) {
 						m.forcePublic();
@@ -677,9 +695,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	}
 
 	protected LazyMethodGen makeMethodGen(LazyClassGen gen, ResolvedMember member) {
-		LazyMethodGen ret = new LazyMethodGen(member.getModifiers(), BcelWorld.makeBcelType(member.getReturnType()), member
-				.getName(), BcelWorld.makeBcelTypes(member.getParameterTypes()), UnresolvedType.getNames(member.getExceptions()),
-				gen);
+		LazyMethodGen ret = new LazyMethodGen(member.getModifiers(), BcelWorld.makeBcelType(member.getReturnType()),
+				member.getName(), BcelWorld.makeBcelTypes(member.getParameterTypes()), UnresolvedType.getNames(member
+						.getExceptions()), gen);
 
 		// 43972 : Static crosscutting makes interfaces unusable for javac
 		// ret.makeSynthetic();
@@ -687,8 +705,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	}
 
 	protected FieldGen makeFieldGen(LazyClassGen gen, ResolvedMember member) {
-		return new FieldGen(member.getModifiers(), BcelWorld.makeBcelType(member.getReturnType()), member.getName(), gen
-				.getConstantPool());
+		return new FieldGen(member.getModifiers(), BcelWorld.makeBcelType(member.getReturnType()), member.getName(),
+				gen.getConstantPool());
 	}
 
 	private boolean mungePerObjectInterface(BcelClassWeaver weaver, PerObjectInterfaceTypeMunger munger) {
@@ -749,8 +767,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		// e.g.
 		// "public com_blah_SecurityAspect ajc$com_blah_SecurityAspect$localAspectOf()"
 		Type fieldType = BcelWorld.makeBcelType(aspectType);
-		LazyMethodGen mg = new LazyMethodGen(Modifier.PUBLIC | Modifier.STATIC, fieldType, NameMangler
-				.perTypeWithinLocalAspectOf(aspectType), new Type[0], new String[0], gen);
+		LazyMethodGen mg = new LazyMethodGen(Modifier.PUBLIC | Modifier.STATIC, fieldType,
+				NameMangler.perTypeWithinLocalAspectOf(aspectType), new Type[0], new String[0], gen);
 		InstructionList il = new InstructionList();
 		// PTWIMPL ?? Should check if it is null and throw
 		// NoAspectBoundException
@@ -938,22 +956,35 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					ResolvedType rt = classGen.getType();
 					if (rt.isInterface()) {
 						ISourceLocation sloc = munger.getSourceLocation();
-						classWeaver.getWorld().getMessageHandler().handleMessage(
-								MessageUtil.error("ITD target " + rt.getName()
-										+ " is an interface but has been incorrectly determined to be the topmost implementor of "
-										+ onType.getName() + ". ITD is " + this.getSignature(), sloc));
+						classWeaver
+								.getWorld()
+								.getMessageHandler()
+								.handleMessage(
+										MessageUtil.error(
+												"ITD target "
+														+ rt.getName()
+														+ " is an interface but has been incorrectly determined to be the topmost implementor of "
+														+ onType.getName() + ". ITD is " + this.getSignature(), sloc));
 					}
 					if (!onType.isAssignableFrom(rt)) {
 						ISourceLocation sloc = munger.getSourceLocation();
-						classWeaver.getWorld().getMessageHandler().handleMessage(
-								MessageUtil.error("ITD target " + rt.getName() + " doesn't appear to implement " + onType.getName()
-										+ " why did we consider it the top most implementor? ITD is " + this.getSignature(), sloc));
+						classWeaver
+								.getWorld()
+								.getMessageHandler()
+								.handleMessage(
+										MessageUtil.error(
+												"ITD target " + rt.getName() + " doesn't appear to implement " + onType.getName()
+														+ " why did we consider it the top most implementor? ITD is "
+														+ this.getSignature(), sloc));
 					}
 				} else if (!rtx.isExposedToWeaver()) {
 					ISourceLocation sLoc = munger.getSourceLocation();
-					classWeaver.getWorld().getMessageHandler().handleMessage(
-							MessageUtil.error(WeaverMessages.format(WeaverMessages.ITD_NON_EXPOSED_IMPLEMENTOR, rtx,
-									getAspectType().getName()), (sLoc == null ? getAspectType().getSourceLocation() : sLoc)));
+					classWeaver
+							.getWorld()
+							.getMessageHandler()
+							.handleMessage(
+									MessageUtil.error(WeaverMessages.format(WeaverMessages.ITD_NON_EXPOSED_IMPLEMENTOR, rtx,
+											getAspectType().getName()), (sLoc == null ? getAspectType().getSourceLocation() : sLoc)));
 				} else {
 					// XXX what does this state mean?
 					// We have incorrectly identified what is the top most
@@ -1178,8 +1209,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		if (!alreadyDone) {
 			// Use the iterator form of 'getMethods()' so we do as little work
 			// as necessary
-			for (Iterator iter = onType.getSuperclass().getMethods(true, true); iter.hasNext() && !quitRightNow;) {
-				ResolvedMember aMethod = (ResolvedMember) iter.next();
+			for (Iterator<ResolvedMember> iter = onType.getSuperclass().getMethods(true, true); iter.hasNext() && !quitRightNow;) {
+				ResolvedMember aMethod = iter.next();
 				if (aMethod.getName().equals(localMethodName) && aMethod.getParameterSignature().equals(localParameterSig)) {
 					// check the return types, if they are different we need a
 					// bridging method.
@@ -1329,9 +1360,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				return true;
 			}
 
-			LazyMethodGen mg = new LazyMethodGen(introduced.getModifiers() - Modifier.ABSTRACT, bcelReturnType, introduced
-					.getName(), BcelWorld.makeBcelTypes(introduced.getParameterTypes()), BcelWorld
-					.makeBcelTypesAsClassNames(introduced.getExceptions()), gen);
+			LazyMethodGen mg = new LazyMethodGen(introduced.getModifiers() - Modifier.ABSTRACT, bcelReturnType,
+					introduced.getName(), BcelWorld.makeBcelTypes(introduced.getParameterTypes()),
+					BcelWorld.makeBcelTypesAsClassNames(introduced.getExceptions()), gen);
 
 			// annotation copy from annotation on ITD interface
 			if (weaver.getWorld().isInJava5Mode()) {
@@ -1407,8 +1438,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			} else {
 				body.append(fact.createNew(munger.getImplClassName()));
 				body.append(InstructionConstants.DUP);
-				body.append(fact
-						.createInvoke(munger.getImplClassName(), "<init>", Type.VOID, Type.NO_ARGS, Constants.INVOKESPECIAL));
+				body.append(fact.createInvoke(munger.getImplClassName(), "<init>", Type.VOID, Type.NO_ARGS, Constants.INVOKESPECIAL));
 				body.append(Utility.createSet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
 			}
 
@@ -1527,11 +1557,11 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		return realMember;
 	}
 
-	private void addNeededSuperCallMethods(BcelClassWeaver weaver, ResolvedType onType, Set neededSuperCalls) {
+	private void addNeededSuperCallMethods(BcelClassWeaver weaver, ResolvedType onType, Set<ResolvedMember> neededSuperCalls) {
 		LazyClassGen gen = weaver.getLazyClassGen();
 
-		for (Iterator iter = neededSuperCalls.iterator(); iter.hasNext();) {
-			ResolvedMember superMethod = (ResolvedMember) iter.next();
+		for (Iterator<ResolvedMember> iter = neededSuperCalls.iterator(); iter.hasNext();) {
+			ResolvedMember superMethod = iter.next();
 			if (weaver.addDispatchTarget(superMethod)) {
 				// System.err.println("super type: " +
 				// superMethod.getDeclaringType() + ", " + gen.getType());
@@ -1555,10 +1585,10 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		weaver.getWorld().getMessageHandler().handleMessage(msg);
 	}
 
-	private void signalWarning(String msgString, BcelClassWeaver weaver) {
-		IMessage msg = MessageUtil.warn(msgString, getSourceLocation());
-		weaver.getWorld().getMessageHandler().handleMessage(msg);
-	}
+	// private void signalWarning(String msgString, BcelClassWeaver weaver) {
+	// IMessage msg = MessageUtil.warn(msgString, getSourceLocation());
+	// weaver.getWorld().getMessageHandler().handleMessage(msg);
+	// }
 
 	private void signalError(String msgString, BcelClassWeaver weaver) {
 		IMessage msg = MessageUtil.error(msgString, getSourceLocation());
@@ -1624,9 +1654,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			// the below loop fixes the very special (and very stupid)
 			// case where an aspect declares an annotation
 			// on an ITD it declared on itself.
-			List allDecams = weaver.getWorld().getDeclareAnnotationOnMethods();
-			for (Iterator i = allDecams.iterator(); i.hasNext();) {
-				DeclareAnnotation decaMC = (DeclareAnnotation) i.next();
+			List<DeclareAnnotation> allDecams = weaver.getWorld().getDeclareAnnotationOnMethods();
+			for (Iterator<DeclareAnnotation> i = allDecams.iterator(); i.hasNext();) {
+				DeclareAnnotation decaMC = i.next();
 				if (decaMC.matches(explicitConstructor, weaver.getWorld()) && mg.getEnclosingClass().getType() == aspectType) {
 					mg.addAnnotation(decaMC.getAnnotation());
 				}
@@ -1637,9 +1667,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		// TODO could have tagged the type munger when the fact we needed to do this was detected earlier
 		if (mg.getArgumentTypes().length == 0) {
 			LazyMethodGen toRemove = null;
-			List existingMethods = currentClass.getMethodGens();
-			for (Iterator iterator = existingMethods.iterator(); iterator.hasNext() && toRemove == null;) {
-				LazyMethodGen object = (LazyMethodGen) iterator.next();
+			for (LazyMethodGen object : currentClass.getMethodGens()) {
 				if (object.getName().equals("<init>") && object.getArgumentTypes().length == 0) {
 					toRemove = object;
 				}
@@ -1885,8 +1913,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				ResolvedMember toBridgeTo = munger.getDeclaredSignature().parameterizedWith(null,
 						munger.getSignature().getDeclaringType().resolve(getWorld()), false, munger.getTypeVariableAliases());
 				boolean needsbridging = false;
-				if (!toBridgeTo.getReturnType().getErasureSignature().equals(
-						munger.getSignature().getReturnType().getErasureSignature())) {
+				if (!toBridgeTo.getReturnType().getErasureSignature()
+						.equals(munger.getSignature().getReturnType().getErasureSignature())) {
 					needsbridging = true;
 				}
 				if (needsbridging) {
@@ -1915,8 +1943,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				ResolvedMember toBridgeTo = munger.getDeclaredSignature().parameterizedWith(null,
 						munger.getSignature().getDeclaringType().resolve(getWorld()), false, munger.getTypeVariableAliases());
 				boolean needsbridging = false;
-				if (!toBridgeTo.getReturnType().getErasureSignature().equals(
-						munger.getSignature().getReturnType().getErasureSignature())) {
+				if (!toBridgeTo.getReturnType().getErasureSignature()
+						.equals(munger.getSignature().getReturnType().getErasureSignature())) {
 					needsbridging = true;
 				}
 				if (needsbridging) {
