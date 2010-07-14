@@ -14,6 +14,7 @@
 
 package org.aspectj.weaver;
 
+import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
@@ -37,6 +38,7 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.context.PinpointingMessageHandler;
 import org.aspectj.util.IStructureModel;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
+import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.DeclarePrecedence;
@@ -135,6 +137,10 @@ public abstract class World implements Dump.INode {
 	protected boolean bcelRepositoryCaching = xsetBCEL_REPOSITORY_CACHING_DEFAULT.equalsIgnoreCase("true");
 	private boolean fastMethodPacking = false;
 	private int itdVersion = 2; // defaults to 2nd generation itds
+
+	// Minimal Model controls whether model entities that are not involved in relationships are deleted post-build
+	private boolean minimalModel = false;
+
 	private boolean completeBinaryTypes = false;
 	private boolean overWeaving = false;
 	public boolean forDEBUG_structuralChangesCode = false;
@@ -153,7 +159,7 @@ public abstract class World implements Dump.INode {
 	/**
 	 * A list of RuntimeExceptions containing full stack information for every type we couldn't find.
 	 */
-	private List dumpState_cantFindTypeExceptions = null;
+	private List<RuntimeException> dumpState_cantFindTypeExceptions = null;
 
 	/**
 	 * Play God. On the first day, God created the primitive types and put them in the type map.
@@ -351,7 +357,7 @@ public abstract class World implements Dump.INode {
 		// MessageUtil.error(messageHandler,
 		// WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName()));
 		if (dumpState_cantFindTypeExceptions == null) {
-			dumpState_cantFindTypeExceptions = new ArrayList();
+			dumpState_cantFindTypeExceptions = new ArrayList<RuntimeException>();
 		}
 		if (dumpState_cantFindTypeExceptions.size() < 100) { // limit growth
 			dumpState_cantFindTypeExceptions.add(new RuntimeException("Can't find type " + ty.getName()));
@@ -797,6 +803,11 @@ public abstract class World implements Dump.INode {
 		Xpinpoint = b;
 	}
 
+	public boolean isMinimalModel() {
+		ensureAdvancedConfigurationProcessed();
+		return minimalModel;
+	}
+
 	public void setBehaveInJava5Way(boolean b) {
 		behaveInJava5Way = b;
 	}
@@ -912,6 +923,7 @@ public abstract class World implements Dump.INode {
 	public final static String xsetITD_VERSION_ORIGINAL = "1";
 	public final static String xsetITD_VERSION_2NDGEN = "2";
 	public final static String xsetITD_VERSION_DEFAULT = xsetITD_VERSION_2NDGEN;
+	public final static String xsetMINIMAL_MODEL = "minimalModel";
 
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;
@@ -986,7 +998,8 @@ public abstract class World implements Dump.INode {
 		final Map<String, ResolvedType> tMap = new HashMap<String, ResolvedType>();
 
 		// Map of types that may be ejected from the cache if we need space
-		final Map expendableMap = Collections.synchronizedMap(new WeakHashMap());
+		final Map<String, Reference<ResolvedType>> expendableMap = Collections
+				.synchronizedMap(new WeakHashMap<String, Reference<ResolvedType>>());
 
 		private final World w;
 
@@ -994,9 +1007,9 @@ public abstract class World implements Dump.INode {
 		private boolean memoryProfiling = false;
 		private int maxExpendableMapSize = -1;
 		private int collectedTypes = 0;
-		private final ReferenceQueue rq = new ReferenceQueue();
+		private final ReferenceQueue<ResolvedType> rq = new ReferenceQueue<ResolvedType>();
 
-		private static Trace trace = TraceFactory.getTraceFactory().getTrace(World.TypeMap.class);
+		// private static Trace trace = TraceFactory.getTraceFactory().getTrace(World.TypeMap.class);
 
 		TypeMap(World w) {
 			demotionSystemActive = w.isDemotionActive();
@@ -1007,12 +1020,12 @@ public abstract class World implements Dump.INode {
 		}
 
 		// For testing
-		public Map getExpendableMap() {
+		public Map<String, Reference<ResolvedType>> getExpendableMap() {
 			return expendableMap;
 		}
 
 		// For testing
-		public Map getMainMap() {
+		public Map<String, ResolvedType> getMainMap() {
 			return tMap;
 		}
 
@@ -1037,9 +1050,9 @@ public abstract class World implements Dump.INode {
 						tMap.remove(key);
 						if (!expendableMap.containsKey(key)) {
 							if (policy == USE_SOFT_REFS) {
-								expendableMap.put(key, new SoftReference(type));
+								expendableMap.put(key, new SoftReference<ResolvedType>(type));
 							} else {
-								expendableMap.put(key, new WeakReference(type));
+								expendableMap.put(key, new WeakReference<ResolvedType>(type));
 							}
 						}
 						demotionCounter++;
@@ -1109,18 +1122,18 @@ public abstract class World implements Dump.INode {
 				// Dont use reference queue for tracking if not profiling...
 				if (policy == USE_WEAK_REFS) {
 					if (memoryProfiling) {
-						expendableMap.put(key, new WeakReference(type, rq));
+						expendableMap.put(key, new WeakReference<ResolvedType>(type, rq));
 					} else {
-						expendableMap.put(key, new WeakReference(type));
+						expendableMap.put(key, new WeakReference<ResolvedType>(type));
 					}
 				} else if (policy == USE_SOFT_REFS) {
 					if (memoryProfiling) {
-						expendableMap.put(key, new SoftReference(type, rq));
+						expendableMap.put(key, new SoftReference<ResolvedType>(type, rq));
 					} else {
-						expendableMap.put(key, new SoftReference(type));
+						expendableMap.put(key, new SoftReference<ResolvedType>(type));
 					}
-				} else {
-					expendableMap.put(key, type);
+					// } else {
+					// expendableMap.put(key, type);
 				}
 				if (memoryProfiling && expendableMap.size() > maxExpendableMapSize) {
 					maxExpendableMapSize = expendableMap.size();
@@ -1165,17 +1178,17 @@ public abstract class World implements Dump.INode {
 			ResolvedType ret = tMap.get(key);
 			if (ret == null) {
 				if (policy == USE_WEAK_REFS) {
-					WeakReference ref = (WeakReference) expendableMap.get(key);
-					if (ref != null) {
-						ret = (ResolvedType) ref.get();
-					}
-				} else if (policy == USE_SOFT_REFS) {
-					SoftReference<ResolvedType> ref = (SoftReference) expendableMap.get(key);
+					WeakReference<ResolvedType> ref = (WeakReference<ResolvedType>) expendableMap.get(key);
 					if (ref != null) {
 						ret = ref.get();
 					}
-				} else {
-					return (ResolvedType) expendableMap.get(key);
+				} else if (policy == USE_SOFT_REFS) {
+					SoftReference<ResolvedType> ref = (SoftReference<ResolvedType>) expendableMap.get(key);
+					if (ref != null) {
+						ret = ref.get();
+					}
+					// } else {
+					// return (ResolvedType) expendableMap.get(key);
 				}
 			}
 			return ret;
@@ -1186,17 +1199,17 @@ public abstract class World implements Dump.INode {
 			ResolvedType ret = tMap.remove(key);
 			if (ret == null) {
 				if (policy == USE_WEAK_REFS) {
-					WeakReference wref = (WeakReference) expendableMap.remove(key);
+					WeakReference<ResolvedType> wref = (WeakReference<ResolvedType>) expendableMap.remove(key);
 					if (wref != null) {
-						ret = (ResolvedType) wref.get();
+						ret = wref.get();
 					}
 				} else if (policy == USE_SOFT_REFS) {
-					SoftReference wref = (SoftReference) expendableMap.remove(key);
+					SoftReference<ResolvedType> wref = (SoftReference<ResolvedType>) expendableMap.remove(key);
 					if (wref != null) {
-						ret = (ResolvedType) wref.get();
+						ret = wref.get();
 					}
-				} else {
-					ret = (ResolvedType) expendableMap.remove(key);
+					// } else {
+					// ret = (ResolvedType) expendableMap.remove(key);
 				}
 			}
 			return ret;
@@ -1231,11 +1244,11 @@ public abstract class World implements Dump.INode {
 	private static class AspectPrecedenceCalculator {
 
 		private final World world;
-		private final Map cachedResults;
+		private final Map<PrecedenceCacheKey, Integer> cachedResults;
 
 		public AspectPrecedenceCalculator(World forSomeWorld) {
 			world = forSomeWorld;
-			cachedResults = new HashMap();
+			cachedResults = new HashMap<PrecedenceCacheKey, Integer>();
 		}
 
 		/**
@@ -1245,13 +1258,13 @@ public abstract class World implements Dump.INode {
 		public int compareByPrecedence(ResolvedType firstAspect, ResolvedType secondAspect) {
 			PrecedenceCacheKey key = new PrecedenceCacheKey(firstAspect, secondAspect);
 			if (cachedResults.containsKey(key)) {
-				return ((Integer) cachedResults.get(key)).intValue();
+				return (cachedResults.get(key)).intValue();
 			} else {
 				int order = 0;
 				DeclarePrecedence orderer = null; // Records the declare
 				// precedence statement that
 				// gives the first ordering
-				for (Iterator i = world.getCrosscuttingMembersSet().getDeclareDominates().iterator(); i.hasNext();) {
+				for (Iterator<Declare> i = world.getCrosscuttingMembersSet().getDeclareDominates().iterator(); i.hasNext();) {
 					DeclarePrecedence d = (DeclarePrecedence) i.next();
 					int thisOrder = d.compare(firstAspect, secondAspect);
 					if (thisOrder != 0) {
@@ -1276,7 +1289,7 @@ public abstract class World implements Dump.INode {
 		}
 
 		public Integer getPrecedenceIfAny(ResolvedType aspect1, ResolvedType aspect2) {
-			return (Integer) cachedResults.get(new PrecedenceCacheKey(aspect1, aspect2));
+			return cachedResults.get(new PrecedenceCacheKey(aspect1, aspect2));
 		}
 
 		public int compareByPrecedenceAndHierarchy(ResolvedType firstAspect, ResolvedType secondAspect) {
@@ -1338,17 +1351,17 @@ public abstract class World implements Dump.INode {
 	// --- I would rather stash this against a reference type - but we don't
 	// guarantee referencetypes are unique for
 	// so we can't :(
-	private final Map workInProgress1 = new HashMap();
+	private final Map<Class<?>, TypeVariable[]> workInProgress1 = new HashMap<Class<?>, TypeVariable[]>();
 
-	public TypeVariable[] getTypeVariablesCurrentlyBeingProcessed(Class baseClass) {
-		return (TypeVariable[]) workInProgress1.get(baseClass);
+	public TypeVariable[] getTypeVariablesCurrentlyBeingProcessed(Class<?> baseClass) {
+		return workInProgress1.get(baseClass);
 	}
 
-	public void recordTypeVariablesCurrentlyBeingProcessed(Class baseClass, TypeVariable[] typeVariables) {
+	public void recordTypeVariablesCurrentlyBeingProcessed(Class<?> baseClass, TypeVariable[] typeVariables) {
 		workInProgress1.put(baseClass, typeVariables);
 	}
 
-	public void forgetTypeVariablesCurrentlyBeingProcessed(Class baseClass) {
+	public void forgetTypeVariablesCurrentlyBeingProcessed(Class<?> baseClass) {
 		workInProgress1.remove(baseClass);
 	}
 
@@ -1386,6 +1399,11 @@ public abstract class World implements Dump.INode {
 				s = p.getProperty(xsetITD_VERSION, xsetITD_VERSION_DEFAULT);
 				if (s.equals(xsetITD_VERSION_ORIGINAL)) {
 					itdVersion = 1;
+				}
+
+				s = p.getProperty(xsetMINIMAL_MODEL, "false");
+				if (s.equalsIgnoreCase("true")) {
+					minimalModel = true;
 				}
 
 				s = p.getProperty(xsetFAST_PACK_METHODS, "true");
@@ -1576,11 +1594,11 @@ public abstract class World implements Dump.INode {
 		return null;
 	}
 
-	public Map getFixed() {
+	public Map<String, ResolvedType> getFixed() {
 		return typeMap.tMap;
 	}
 
-	public Map getExpendable() {
+	public Map<String, Reference<ResolvedType>> getExpendable() {
 		return typeMap.expendableMap;
 	}
 
