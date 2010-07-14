@@ -142,7 +142,8 @@ public class AsmManager implements IStructureModel {
 	/**
 	 * Constructs map each time it's called.
 	 */
-	public HashMap getInlineAnnotations(String sourceFile, boolean showSubMember, boolean showMemberAndType) {
+	public HashMap<Integer, List<IProgramElement>> getInlineAnnotations(String sourceFile, boolean showSubMember,
+			boolean showMemberAndType) {
 
 		if (!hierarchy.isValid()) {
 			return null;
@@ -287,11 +288,15 @@ public class AsmManager implements IStructureModel {
 	public String getCanonicalFilePath(File f) {
 		return canonicalFilePathMap.get(f);
 	}
+	
+	public CanonicalFilePathMap getCanonicalFilePathMap() {
+		return canonicalFilePathMap;
+	}
 
 	private static class CanonicalFilePathMap {
 		private static final int MAX_SIZE = 4000;
 
-		private final Map pathMap = new HashMap(20);
+		private final Map<String, String> pathMap = new HashMap<String, String>(20);
 
 		// // guards to ensure correctness and liveness
 		// private boolean cacheInUse = false;
@@ -377,7 +382,7 @@ public class AsmManager implements IStructureModel {
 			// "Must take ownership of cache before using by calling " +
 			// "handover()");
 			// }
-			String ret = (String) pathMap.get(f.getPath());
+			String ret = pathMap.get(f.getPath());
 			if (ret == null) {
 				try {
 					ret = f.getCanonicalPath();
@@ -446,7 +451,7 @@ public class AsmManager implements IStructureModel {
 				bw.write("=== END OF RELATIONSHIPS REPORT ==\n");
 			}
 			Properties p = summarizeModel().getProperties();
-			Enumeration pkeyenum = p.keys();
+			Enumeration<Object> pkeyenum = p.keys();
 			bw.write("=== Properties of the model and relationships map =====\n");
 			while (pkeyenum.hasMoreElements()) {
 				String pkey = (String) pkeyenum.nextElement();
@@ -475,8 +480,8 @@ public class AsmManager implements IStructureModel {
 		}
 		w.write(node + "  [" + (node == null ? "null" : node.getKind().toString()) + "] " + loc + "\n");
 		if (node != null) {
-			for (Iterator i = node.getChildren().iterator(); i.hasNext();) {
-				dumptree(w, (IProgramElement) i.next(), indent + 2);
+			for (IProgramElement child : node.getChildren()) {
+				dumptree(w, child, indent + 2);
 			}
 		}
 	}
@@ -569,48 +574,6 @@ public class AsmManager implements IStructureModel {
 		return modelModified;
 	}
 
-	// This code is *SLOW* but it isnt worth fixing until we address the
-	// bugs in binary weaving.
-	public void fixupStructureModel(Writer fw, List filesToBeCompiled, Set files_added, Set files_deleted) throws IOException {
-		// Three kinds of things to worry about:
-		// 1. New files have been added since the last compile
-		// 2. Files have been deleted since the last compile
-		// 3. Files have 'changed' since the last compile (really just those in
-		// config.getFiles())
-
-		// List files = config.getFiles();
-
-		boolean modelModified = false;
-		// Files to delete are: those to be compiled + those that have been
-		// deleted
-
-		Set<File> filesToRemoveFromStructureModel = new HashSet(filesToBeCompiled);
-		filesToRemoveFromStructureModel.addAll(files_deleted);
-		Set<String> deletedNodes = new HashSet<String>();
-		for (Iterator<File> iter = filesToRemoveFromStructureModel.iterator(); iter.hasNext();) {
-			File fileForCompilation = iter.next();
-			String correctedPath = getCanonicalFilePath(fileForCompilation);
-			IProgramElement progElem = (IProgramElement) hierarchy.findInFileMap(correctedPath);
-			if (progElem != null) {
-				// Found it, let's remove it
-				if (dumpDeltaProcessing) {
-					fw.write("Deleting " + progElem + " node for file " + fileForCompilation + "\n");
-				}
-				removeNode(progElem);
-				deletedNodes.add(getCanonicalFilePath(progElem.getSourceLocation().getSourceFile()));
-				if (!hierarchy.removeFromFileMap(correctedPath)) {
-					throw new RuntimeException("Whilst repairing model, couldn't remove entry for file: " + correctedPath
-							+ " from the filemap");
-				}
-				modelModified = true;
-			}
-		}
-		if (modelModified) {
-			hierarchy.flushTypeMap();
-			hierarchy.updateHandleMap(deletedNodes);
-		}
-	}
-
 	public void processDelta(Collection<File> files_tobecompiled, Set<File> files_added, Set<File> files_deleted) {
 
 		try {
@@ -628,8 +591,6 @@ public class AsmManager implements IStructureModel {
 
 			long stime = System.currentTimeMillis();
 
-			// fixupStructureModel(fw,filesToBeCompiled,files_added,files_deleted
-			// );
 			// Let's remove all the files that are deleted on this compile
 			removeStructureModelForFiles(fw, files_deleted);
 			long etime1 = System.currentTimeMillis(); // etime1-stime = time to
@@ -660,8 +621,8 @@ public class AsmManager implements IStructureModel {
 
 	}
 
-	private String getTypeNameFromHandle(String handle, Map cache) {
-		String typename = (String) cache.get(handle);
+	private String getTypeNameFromHandle(String handle, Map<String, String> cache) {
+		String typename = cache.get(handle);
 		if (typename != null) {
 			return typename;
 		}
@@ -722,7 +683,7 @@ public class AsmManager implements IStructureModel {
 		}
 
 		Set<String> sourcesToRemove = new HashSet<String>();
-		Map handleToTypenameCache = new HashMap();
+		Map<String, String> handleToTypenameCache = new HashMap<String, String>();
 		// Iterate over the source handles in the relationships map, the aim
 		// here is to remove any 'affected by'
 		// relationships where the source of the relationship is the specified
@@ -771,8 +732,7 @@ public class AsmManager implements IStructureModel {
 			}
 		}
 		// Remove sources that have no valid relationships any more
-		for (Iterator srciter = sourcesToRemove.iterator(); srciter.hasNext();) {
-			String hid = (String) srciter.next();
+		for (String hid : sourcesToRemove) {
 			// System.err.println(
 			// "  source handle: all relationships have gone for "+hid);
 			mapper.removeAll(hid);
@@ -1240,7 +1200,7 @@ public class AsmManager implements IStructureModel {
 				sb.append(key + "=" + ct + "\n");
 			}
 			sb.append("Model stats:\n");
-			Enumeration ks = extraProperties.keys();
+			Enumeration<Object> ks = extraProperties.keys();
 			while (ks.hasMoreElements()) {
 				String k = (String) ks.nextElement();
 				String v = extraProperties.getProperty(k);

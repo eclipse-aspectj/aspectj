@@ -16,19 +16,22 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
+ * A relationship has a name (e.g. 'declare warning') and some set of affected targets.
+ * 
  * @author Mik Kersten
+ * @author Andy Clement
  */
 public interface IRelationship extends Serializable {
 
 	public String getName();
 
-	public List<String> getTargets();
-
-	public String getSourceHandle();
+	public Kind getKind();
 
 	public void addTarget(String handle);
 
-	public Kind getKind();
+	public List<String> getTargets();
+
+	public String getSourceHandle();
 
 	public boolean hasRuntimeTest();
 
