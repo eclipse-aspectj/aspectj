@@ -164,7 +164,6 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		configureNonStandardCompileOptions(p, "-Xset:minimalModel=true");
 		build(p);
 		checkWasFullBuild();
-		printModel(p);
 		// Here is the model without deletion.  The node for 'Code.java' can safely be deleted as it contains
 		// no types that are the target of relationships.
 		//		PR278496_1  [build configuration file]  hid:=PR278496_1
@@ -213,5 +212,33 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		// Node for "Code.java" should not be there:
 		IProgramElement ipe = model.findElementForHandleOrCreate("=PR278496_1<a.b.c{Code.java",false);
 		Assert.assertNull(ipe);
+	}
+
+	// deleting unaffected model entries
+	public void testDeletion_278496_2() throws Exception {
+		String p = "PR278496_2";
+		initialiseProject(p);
+		configureNonStandardCompileOptions(p, "-Xset:minimalModel=true");
+		build(p);
+		checkWasFullBuild();
+		printModel(p);
+		// Here is the model without deletion.
+		//		PR278496_2  [build configuration file]  hid:=PR278496_2
+		//	    [package]  hid:=PR278496_2<
+		//	    Azpect.java  [java source file] 1 hid:=PR278496_2<{Azpect.java
+		//	        [import reference]  hid:=PR278496_2<{Azpect.java#
+		//	      Azpect  [aspect] 1 hid:=PR278496_2<{Azpect.java}Azpect
+		//	        Code.m()  [inter-type method] 2 hid:=PR278496_2<{Azpect.java}Azpect)Code.m
+		//	    Code.java  [java source file] 1 hid:=PR278496_2<{Code.java
+		//	        [import reference]  hid:=PR278496_2<{Code.java#
+		//	      Code  [class] 1 hid:=PR278496_2<{Code.java[Code
+		//	Hid:1:(targets=1) =PR278496_2<{Azpect.java}Azpect)Code.m (declared on) =PR278496_2<{Code.java[Code
+		//	Hid:2:(targets=1) =PR278496_2<{Code.java[Code (aspect declarations) =PR278496_2<{Azpect.java}Azpect)Code.m
+
+
+		AspectJElementHierarchy model = (AspectJElementHierarchy) getModelFor(p).getHierarchy();
+		// Node for "Code.java" should be there since it is the target of a relationship
+		IProgramElement ipe = model.findElementForHandleOrCreate("=PR278496_1<{Code.java",false);
+		Assert.assertNotNull(ipe);
 	}
 }
