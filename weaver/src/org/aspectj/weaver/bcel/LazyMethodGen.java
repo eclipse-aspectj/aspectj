@@ -51,6 +51,7 @@ import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
@@ -61,7 +62,6 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
-import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.tools.Traceable;
 
 /**
@@ -442,10 +442,15 @@ public final class LazyMethodGen implements Traceable {
 			savedMethod = gen.getMethod();
 			return savedMethod;
 		} catch (ClassGenException e) {
-			enclosingClass.getBcelObjectType().getResolvedTypeX().getWorld().showMessage(
-					IMessage.ERROR,
-					WeaverMessages.format(WeaverMessages.PROBLEM_GENERATING_METHOD, this.getClassName(), this.getName(), e
-							.getMessage()), this.getMemberView() == null ? null : this.getMemberView().getSourceLocation(), null);
+			enclosingClass
+					.getBcelObjectType()
+					.getResolvedTypeX()
+					.getWorld()
+					.showMessage(
+							IMessage.ERROR,
+							WeaverMessages.format(WeaverMessages.PROBLEM_GENERATING_METHOD, this.getClassName(), this.getName(),
+									e.getMessage()),
+							this.getMemberView() == null ? null : this.getMemberView().getSourceLocation(), null);
 			// throw e; PR 70201.... let the normal problem reporting
 			// infrastructure deal with this rather than crashing.
 			body = null;
@@ -574,7 +579,7 @@ public final class LazyMethodGen implements Traceable {
 
 		// label assignment
 		void assignLabels() {
-			LinkedList exnTable = new LinkedList();
+			LinkedList<ExceptionRange> exnTable = new LinkedList<ExceptionRange>();
 			String pendingLabel = null;
 			// boolean hasPendingTargeters = false;
 			int lcounter = 0;
@@ -664,7 +669,7 @@ public final class LazyMethodGen implements Traceable {
 			if (r instanceof ExceptionRange) {
 				ExceptionRange er = (ExceptionRange) r;
 				return er.toString() + " -> " + labelMap.get(er.getHandler());
-				//                
+				//
 				// + " PRI " + er.getPriority();
 			} else {
 				return r.toString();
@@ -752,9 +757,7 @@ public final class LazyMethodGen implements Traceable {
 	}
 
 	static LocalVariableTag getLocalVariableTag(InstructionHandle ih, int index) {
-		Iterator tIter = ih.getTargeters().iterator();
-		while (tIter.hasNext()) {
-			InstructionTargeter t = (InstructionTargeter) tIter.next();
+		for (InstructionTargeter t : ih.getTargeters()) {
 			if (t instanceof LocalVariableTag) {
 				LocalVariableTag lvt = (LocalVariableTag) t;
 				if (lvt.getSlot() == index) {
@@ -766,9 +769,7 @@ public final class LazyMethodGen implements Traceable {
 	}
 
 	static int getLineNumber(InstructionHandle ih, int prevLine) {
-		Iterator tIter = ih.getTargeters().iterator();
-		while (tIter.hasNext()) {
-			InstructionTargeter t = (InstructionTargeter) tIter.next();
+		for (InstructionTargeter t : ih.getTargeters()) {
 			if (t instanceof LineNumberTag) {
 				return ((LineNumberTag) t).getLineNumber();
 			}
@@ -910,8 +911,8 @@ public final class LazyMethodGen implements Traceable {
 			for (int i = 0; i < newParameterAnnotations.length; i++) {
 				AnnotationAJ[] annos = newParameterAnnotations[i];
 				for (int j = 0; j < annos.length; j++) {
-					gen.addParameterAnnotation(i, new AnnotationGen(((BcelAnnotation) annos[j]).getBcelAnnotation(), gen
-							.getConstantPool(), true));
+					gen.addParameterAnnotation(i,
+							new AnnotationGen(((BcelAnnotation) annos[j]).getBcelAnnotation(), gen.getConstantPool(), true));
 				}
 			}
 		}
@@ -1168,8 +1169,8 @@ public final class LazyMethodGen implements Traceable {
 				continue;
 			}
 			gen.addExceptionHandler(jumpForward(r.getRealStart(), forDeletion), jumpForward(r.getRealEnd(), forDeletion),
-					jumpForward(r.getHandler(), forDeletion), (r.getCatchType() == null) ? null : (ObjectType) BcelWorld
-							.makeBcelType(r.getCatchType()));
+					jumpForward(r.getHandler(), forDeletion),
+					(r.getCatchType() == null) ? null : (ObjectType) BcelWorld.makeBcelType(r.getCatchType()));
 		}
 
 		for (InstructionHandle handle : forDeletion) {
@@ -1505,9 +1506,9 @@ public final class LazyMethodGen implements Traceable {
 
 		for (InstructionHandle ih = il.getStart(); ih != null; ih = ih.getNext()) {
 			assertGoodHandle(ih, body, ranges, from);
-			Iterator tIter = ih.getTargeters().iterator();
+			Iterator<InstructionTargeter> tIter = ih.getTargeters().iterator();
 			while (tIter.hasNext()) {
-				assertGoodTargeter((InstructionTargeter) tIter.next(), ih, body, from);
+				assertGoodTargeter(tIter.next(), ih, body, from);
 			}
 		}
 	}
@@ -1627,12 +1628,12 @@ public final class LazyMethodGen implements Traceable {
 
 	private static Range getRangeAndAssertExactlyOne(InstructionHandle ih, String from) {
 		Range ret = null;
-		Iterator tIter = ih.getTargeters().iterator();
+		Iterator<InstructionTargeter> tIter = ih.getTargeters().iterator();
 		if (!tIter.hasNext()) {
 			throw new BCException("range handle with no range in " + from);
 		}
 		while (tIter.hasNext()) {
-			InstructionTargeter ts = (InstructionTargeter) tIter.next();
+			InstructionTargeter ts = tIter.next();
 			if (ts instanceof Range) {
 				if (ret != null) {
 					throw new BCException("range handle with multiple ranges in " + from);

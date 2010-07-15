@@ -609,7 +609,6 @@ class BcelClassWeaver implements IClassWeaver {
 				if (parameterType instanceof UnresolvedTypeVariableReferenceType) {
 					parameterType = ((UnresolvedTypeVariableReferenceType) parameterType).getTypeVariable().getFirstBound();
 				}
-				UnresolvedType parameterType2 = methodParamsArray[p];
 
 				if (b) { // !parameterType.resolve(w).equals(parameterType2.resolve(w))) {
 					sameParams = false;
