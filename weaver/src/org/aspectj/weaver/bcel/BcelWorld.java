@@ -670,6 +670,7 @@ public class BcelWorld extends World implements Repository {
 		// is possible
 		classPath.closeArchives();
 		typeMap.report();
+		typeMap.demote(true);
 		ResolvedType.resetPrimitives();
 	}
 
@@ -1173,6 +1174,10 @@ public class BcelWorld extends World implements Repository {
 
 	public TypeMap getTypeMap() {
 		return typeMap;
+	}
+
+	public boolean isLoadtimeWeaving() {
+		return false;
 	}
 
 }

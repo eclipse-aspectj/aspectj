@@ -377,8 +377,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		List<AjAttribute> l = null;
 		try {
 			l = Utility.readAjAttributes(className, javaClass.getAttributes(), getResolvedTypeX().getSourceContext(),
-					getResolvedTypeX().getWorld(), AjAttribute.WeaverVersionInfo.UNKNOWN, new BcelConstantPoolReader(javaClass
-							.getConstantPool()));
+					getResolvedTypeX().getWorld(), AjAttribute.WeaverVersionInfo.UNKNOWN,
+					new BcelConstantPoolReader(javaClass.getConstantPool()));
 		} catch (RuntimeException re) {
 			throw new RuntimeException("Problem processing attributes in " + javaClass.getFileName(), re);
 		}
@@ -434,8 +434,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 			} else if (a instanceof AjAttribute.SourceContextAttribute) {
 				if (getResolvedTypeX().getSourceContext() instanceof SourceContextImpl) {
 					AjAttribute.SourceContextAttribute sca = (AjAttribute.SourceContextAttribute) a;
-					((SourceContextImpl) getResolvedTypeX().getSourceContext()).configureFromAttribute(sca.getSourceFileName(), sca
-							.getLineBreaks());
+					((SourceContextImpl) getResolvedTypeX().getSourceContext()).configureFromAttribute(sca.getSourceFileName(),
+							sca.getLineBreaks());
 
 					setSourcefilename(sca.getSourceFileName());
 				}
@@ -984,5 +984,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	public void ensureConsistent() {
 		superTypeReference.clear();
 		superInterfaceReferences.clear();
+	}
+
+	public boolean isWeavable() {
+		return true;
 	}
 }

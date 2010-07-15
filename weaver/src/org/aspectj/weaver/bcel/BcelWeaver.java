@@ -64,6 +64,7 @@ import org.aspectj.weaver.CustomMungerFactory;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IUnwovenClassFile;
 import org.aspectj.weaver.IWeaveRequestor;
+import org.aspectj.weaver.MissingResolvedTypeWithKnownSignature;
 import org.aspectj.weaver.NewParentTypeMunger;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
@@ -1745,16 +1746,18 @@ public class BcelWeaver {
 							}
 							// If the compilation unit node contained no other types, there is no need to keep it
 							if (!anyOtherTypeDeclarations) {
-								IProgramElement cuParent = parent.getParent();
+								IProgramElement cuParent = compilationUnit.getParent();
 								if (cuParent != null) {
-									cuParent.setParent(null);
-									cuParent.removeChild(parent);
+									compilationUnit.setParent(null);
+									cuParent.removeChild(compilationUnit);
 								}
 								// need to update some caches and structures too?
 								((AspectJElementHierarchy) model.getHierarchy()).forget(parent, typeElement);
 							} else {
 								((AspectJElementHierarchy) model.getHierarchy()).forget(null, typeElement);
 							}
+						} else {
+							((AspectJElementHierarchy) model.getHierarchy()).forget(null, typeElement);
 						}
 					}
 				}
