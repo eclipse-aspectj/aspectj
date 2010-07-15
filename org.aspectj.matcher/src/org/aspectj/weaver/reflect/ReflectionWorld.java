@@ -151,4 +151,8 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 		return null;
 	}
 
+	public boolean isLoadtimeWeaving() {
+		return true;
+	}
+
 }

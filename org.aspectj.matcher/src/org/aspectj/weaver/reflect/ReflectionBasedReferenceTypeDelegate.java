@@ -20,6 +20,7 @@ import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationTargetKind;
 import org.aspectj.weaver.ISourceContext;
@@ -33,7 +34,6 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeakClassLoaderReference;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.patterns.PerClause;
 
 /**
@@ -412,5 +412,13 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 
 	public void ensureConsistent() {
 
+	}
+
+	public boolean isWeavable() {
+		return false;
+	}
+
+	public boolean hasBeenWoven() {
+		return false;
 	}
 }
