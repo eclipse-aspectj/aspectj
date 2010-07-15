@@ -124,7 +124,7 @@ public class PartialOrder {
 
 		// ??? I don't like creating this data structure, but it does give good
 		// ??? separation of concerns.
-		List sortList = new LinkedList(); // objects.size());
+		List<SortObject> sortList = new LinkedList<SortObject>(); // objects.size());
 		for (Iterator i = objects.iterator(); i.hasNext();) {
 			addNewPartialComparable(sortList, (PartialComparable) i.next());
 		}
