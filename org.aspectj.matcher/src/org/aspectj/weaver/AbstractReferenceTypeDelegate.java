@@ -144,4 +144,11 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 
 	}
 
+	public boolean isWeavable() {
+		return false;
+	}
+
+	public boolean hasBeenWoven() {
+		return false;
+	}
 }

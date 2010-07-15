@@ -136,4 +136,8 @@ public interface ReferenceTypeDelegate {
 	 */
 	public void ensureConsistent();
 
+	public boolean isWeavable();
+
+	public boolean hasBeenWoven();
+
 }

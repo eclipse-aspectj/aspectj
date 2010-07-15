@@ -442,7 +442,8 @@ public abstract class World implements Dump.INode {
 
 		} else if (ty.isGenericType()) {
 			// ======= generic types ======================
-			ReferenceType genericType = (ReferenceType) resolveGenericTypeFor(ty, false);
+			ResolvedType rt = resolveGenericTypeFor(ty, false);
+			ReferenceType genericType = (ReferenceType) rt;
 			return genericType;
 
 		} else if (ty.isGenericWildcard()) {
@@ -1029,6 +1030,10 @@ public abstract class World implements Dump.INode {
 			return tMap;
 		}
 
+		public int demote() {
+			return demote(false);
+		}
+
 		/**
 		 * Go through any types added during the previous file weave. If any are suitable for demotion, then put them in the
 		 * expendable map where GC can claim them at some point later. Demotion means: the type is not an aspect, the type is not
@@ -1037,24 +1042,38 @@ public abstract class World implements Dump.INode {
 		 * 
 		 * @return number of types demoted
 		 */
-		public int demote() {
-			if (!demotionSystemActive) {
+		public int demote(boolean atEndOfCompile) {
+			if (!demotionSystemActive || (!atEndOfCompile && !w.isLoadtimeWeaving())) {
 				return 0;
 			}
 			int demotionCounter = 0;
+			boolean ctw = !w.isLoadtimeWeaving();
 			for (String key : addedSinceLastDemote) {
 				ResolvedType type = tMap.get(key);
 				if (type != null && !type.isAspect() && !type.equals(UnresolvedType.OBJECT) && !type.isPrimitiveType()) {
+					if (type.isParameterizedOrRawType()) {
+						type = type.getGenericType();
+					}
 					List<ConcreteTypeMunger> typeMungers = type.getInterTypeMungers();
 					if (typeMungers == null || typeMungers.size() == 0) {
-						tMap.remove(key);
-						if (!expendableMap.containsKey(key)) {
-							if (policy == USE_SOFT_REFS) {
-								expendableMap.put(key, new SoftReference<ResolvedType>(type));
-							} else {
-								expendableMap.put(key, new WeakReference<ResolvedType>(type));
+						ReferenceTypeDelegate delegate = ((ReferenceType) type).getDelegate();
+						boolean isWeavable = delegate == null ? false : delegate.isWeavable();
+						// boolean hasBeenWoven = delegate == null ? false : delegate.hasBeenWoven();
+						// System.out.println("Might demote " + key + " delegate?" + (delegate == null) + " isWeavable?" + isWeavable);
+						// + " hasBeenWoven?" + hasBeenWoven);
+
+						if (!ctw || !isWeavable) { // || hasBeenWoven) {
+							// System.out.println("Demoting " + key);
+							tMap.remove(key);
+							if (!expendableMap.containsKey(key)) {
+								if (policy == USE_SOFT_REFS) {
+									expendableMap.put(key, new SoftReference<ResolvedType>(type));
+								} else {
+									expendableMap.put(key, new WeakReference<ResolvedType>(type));
+								}
 							}
 						}
+						// }
 						demotionCounter++;
 					}
 				}
@@ -1142,6 +1161,7 @@ public abstract class World implements Dump.INode {
 			} else {
 
 				if (demotionSystemActive) {
+					// System.out.println("Added since last demote " + key);
 					addedSinceLastDemote.add(key);
 				}
 
@@ -1422,9 +1442,11 @@ public abstract class World implements Dump.INode {
 							MessageUtil.info("[completeBinaryTypes=true] Completion of binary types activated"));
 				}
 
-				s = p.getProperty(xsetTYPE_DEMOTION, "true"); // default is ON
+				s = p.getProperty(xsetTYPE_DEMOTION, "true"); // default is: ON (for ltw) OFF (for ctw)
 				if (s.equalsIgnoreCase("false")) {
 					typeMap.demotionSystemActive = false;
+				} else if (s.equalsIgnoreCase("true") && !typeMap.demotionSystemActive) {
+					typeMap.demotionSystemActive = true;
 				}
 
 				s = p.getProperty(xsetOVERWEAVING, "false");
@@ -1817,5 +1839,8 @@ public abstract class World implements Dump.INode {
 	public int getItdVersion() {
 		return itdVersion;
 	}
+
+	// if not loadtime weaving then we are compile time weaving or post-compile time weaving
+	public abstract boolean isLoadtimeWeaving();
 
 }
