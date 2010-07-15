@@ -34,6 +34,7 @@ import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
@@ -185,7 +186,7 @@ public class CflowPointcut extends Pointcut {
 		ResolvedType concreteAspect = bindings.getConcreteAspect();
 
 		CrosscuttingMembers xcut = concreteAspect.crosscuttingMembers;
-		Collection previousCflowEntries = xcut.getCflowEntries();
+		Collection<ShadowMunger> previousCflowEntries = xcut.getCflowEntries();
 
 		entryBindings.pushEnclosingDefinition(CFLOW_MARKER);
 		// This block concretizes the pointcut within the cflow pointcut
@@ -195,7 +196,7 @@ public class CflowPointcut extends Pointcut {
 			entryBindings.popEnclosingDefinitition();
 		}
 
-		List innerCflowEntries = new ArrayList(xcut.getCflowEntries());
+		List<ShadowMunger> innerCflowEntries = new ArrayList<ShadowMunger>(xcut.getCflowEntries());
 		innerCflowEntries.removeAll(previousCflowEntries);
 
 		// Four routes of interest through this code (did I hear someone say

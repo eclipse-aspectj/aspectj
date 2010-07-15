@@ -771,7 +771,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// Declare dec = (Declare) i.next();
 		// if (!dec.isAdviceLike()) ret.add(dec);
 		// }
-		//        
+		//
 		// if (!includeAdviceLike) return ret;
 
 		if (!this.isAbstract()) {
@@ -1479,8 +1479,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			ResolvedType onType = itdMember.getDeclaringType().resolve(world);
 			if (onType.isInterface() && itdMember.isAbstract() && !itdMember.isPublic()) {
 				world.getMessageHandler().handleMessage(
-						new Message(WeaverMessages.format(WeaverMessages.ITD_ABSTRACT_MUST_BE_PUBLIC_ON_INTERFACE, munger
-								.getSignature(), onType), "", Message.ERROR, getSourceLocation(), null,
+						new Message(WeaverMessages.format(WeaverMessages.ITD_ABSTRACT_MUST_BE_PUBLIC_ON_INTERFACE,
+								munger.getSignature(), onType), "", Message.ERROR, getSourceLocation(), null,
 								new ISourceLocation[] { getMungerLocation(munger) }));
 				return true;
 			}
@@ -1633,8 +1633,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			if (onType == null) {
 				// The target is not generic
 				getWorld().getMessageHandler().handleMessage(
-						MessageUtil.error("The target type for the intertype declaration is not generic", munger
-								.getSourceLocation()));
+						MessageUtil.error("The target type for the intertype declaration is not generic",
+								munger.getSourceLocation()));
 				return munger;
 			}
 			member.resolve(world); // Ensure all parts of the member are resolved
@@ -1729,15 +1729,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 									if (existing.getSignature().getName().equals(thisRealMungerSignatureName)
 											&& existing.version == NewFieldTypeMunger.VersionTwo
 											// this check ensures no problem for a clash with an ITD on an interface
-											&& existing.getSignature().getDeclaringType().equals(
-													newFieldTypeMunger.getSignature().getDeclaringType())) {
+											&& existing.getSignature().getDeclaringType()
+													.equals(newFieldTypeMunger.getSignature().getDeclaringType())) {
 
 										// report error on the aspect
 										StringBuffer sb = new StringBuffer();
-										sb
-												.append("Cannot handle two aspects both attempting to use new style ITDs for the same named field ");
-										sb
-												.append("on the same target type.  Please recompile at least one aspect with '-Xset:itdVersion=1'.");
+										sb.append("Cannot handle two aspects both attempting to use new style ITDs for the same named field ");
+										sb.append("on the same target type.  Please recompile at least one aspect with '-Xset:itdVersion=1'.");
 										sb.append(" Aspects involved: " + munger.getAspectType().getName() + " and "
 												+ typeMunger.getAspectType().getName() + ".");
 										sb.append(" Field is named '" + existing.getSignature().getName() + "'");
@@ -1991,8 +1989,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				}
 			}
 
-			world.showMessage(Message.ERROR, WeaverMessages.format(WeaverMessages.CANT_OVERRIDE_FINAL_MEMBER, parent), child
-					.getSourceLocation(), null);
+			world.showMessage(Message.ERROR, WeaverMessages.format(WeaverMessages.CANT_OVERRIDE_FINAL_MEMBER, parent),
+					child.getSourceLocation(), null);
 			return false;
 		}
 
@@ -2015,8 +2013,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 
 		if (incompatibleReturnTypes) {
-			world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.ITD_RETURN_TYPE_MISMATCH, parent, child), child
-					.getSourceLocation(), parent.getSourceLocation());
+			world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.ITD_RETURN_TYPE_MISMATCH, parent, child),
+					child.getSourceLocation(), parent.getSourceLocation());
 			return false;
 		}
 		if (parent.getKind() == Member.POINTCUT) {
@@ -2031,8 +2029,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// System.err.println("check: " + child.getModifiers() +
 		// " more visible " + parent.getModifiers());
 		if (isMoreVisible(parent.getModifiers(), child.getModifiers())) {
-			world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.ITD_VISIBILITY_REDUCTION, parent, child), child
-					.getSourceLocation(), parent.getSourceLocation());
+			world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.ITD_VISIBILITY_REDUCTION, parent, child),
+					child.getSourceLocation(), parent.getSourceLocation());
 			return false;
 		}
 
@@ -2068,12 +2066,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		boolean parentStatic = Modifier.isStatic(parent.getModifiers());
 		boolean childStatic = Modifier.isStatic(child.getModifiers());
 		if (parentStatic && !childStatic) {
-			world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.ITD_OVERRIDDEN_STATIC, child, parent), child
-					.getSourceLocation(), null);
+			world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.ITD_OVERRIDDEN_STATIC, child, parent),
+					child.getSourceLocation(), null);
 			return false;
 		} else if (childStatic && !parentStatic) {
-			world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.ITD_OVERIDDING_STATIC, child, parent), child
-					.getSourceLocation(), null);
+			world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.ITD_OVERIDDING_STATIC, child, parent),
+					child.getSourceLocation(), null);
 			return false;
 		}
 		return true;
@@ -2337,9 +2335,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	private void addPointcutsResolvingConflicts(List<ResolvedMember> acc, List<ResolvedMember> added, boolean isOverriding) {
-		for (Iterator i = added.iterator(); i.hasNext();) {
+		for (Iterator<ResolvedMember> i = added.iterator(); i.hasNext();) {
 			ResolvedPointcutDefinition toAdd = (ResolvedPointcutDefinition) i.next();
-			for (Iterator j = acc.iterator(); j.hasNext();) {
+			for (Iterator<ResolvedMember> j = acc.iterator(); j.hasNext();) {
 				ResolvedPointcutDefinition existing = (ResolvedPointcutDefinition) j.next();
 				if (toAdd == null || existing == null || existing == toAdd) {
 					continue;
@@ -2354,8 +2352,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 							getWorld().showMessage(
 									IMessage.ERROR,
 									WeaverMessages.format(WeaverMessages.POINTCUT_NOT_VISIBLE, existing.getDeclaringType()
-											.getName()
-											+ "." + existing.getName() + "()", this.getName()), toAdd.getSourceLocation(), null);
+											.getName() + "." + existing.getName() + "()", this.getName()),
+									toAdd.getSourceLocation(), null);
 							j.remove();
 						}
 						continue;
@@ -2368,8 +2366,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 					} else {
 						getWorld().showMessage(
 								IMessage.ERROR,
-								WeaverMessages.format(WeaverMessages.CONFLICTING_INHERITED_POINTCUTS, this.getName()
-										+ toAdd.getSignature()), existing.getSourceLocation(), toAdd.getSourceLocation());
+								WeaverMessages.format(WeaverMessages.CONFLICTING_INHERITED_POINTCUTS,
+										this.getName() + toAdd.getSignature()), existing.getSourceLocation(),
+								toAdd.getSourceLocation());
 						j.remove();
 					}
 				}
@@ -2418,7 +2417,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * parameters replaced in accordance with the passed bindings.
 	 */
 	@Override
-	public UnresolvedType parameterize(Map typeBindings) {
+	public UnresolvedType parameterize(Map<String, UnresolvedType> typeBindings) {
 		if (!isParameterizedType()) {
 			return this;// throw new IllegalStateException(
 		}
@@ -2438,7 +2437,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				newTypeParams[i] = typeParameters[i];
 				if (newTypeParams[i].isTypeVariableReference()) {
 					TypeVariableReferenceType tvrt = (TypeVariableReferenceType) newTypeParams[i];
-					UnresolvedType binding = (UnresolvedType) typeBindings.get(tvrt.getTypeVariable().getName());
+					UnresolvedType binding = typeBindings.get(tvrt.getTypeVariable().getName());
 					if (binding != null) {
 						newTypeParams[i] = binding;
 					}
@@ -2533,7 +2532,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// if (this.isPrimitiveType() || other.isPrimitiveType()) return
 		// this.isAssignableFrom(other);
 		// return this.isCoerceableFrom(other);
-		//    	 
+		//
 
 		// version from ResolvedTypeX
 		if (this.equals(OBJECT)) {

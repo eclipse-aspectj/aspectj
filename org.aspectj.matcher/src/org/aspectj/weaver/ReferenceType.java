@@ -15,7 +15,6 @@ package org.aspectj.weaver;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +36,7 @@ public class ReferenceType extends ResolvedType {
 	 * For generic types, this list holds references to all the derived raw and parameterized versions. We need this so that if the
 	 * generic delegate is swapped during incremental compilation, the delegate of the derivatives is swapped also.
 	 */
-	private final List/* ReferenceType */derivativeTypes = new ArrayList();
+	private final List<ReferenceType> derivativeTypes = new ArrayList<ReferenceType>();
 
 	/**
 	 * For parameterized types (or the raw type) - this field points to the actual reference type from which they are derived.
@@ -531,8 +530,8 @@ public class ReferenceType extends ResolvedType {
 		if (other.isTypeVariableReference()) {
 			TypeVariableReferenceType otherType = (TypeVariableReferenceType) other;
 			if (this instanceof TypeVariableReference) {
-				return ((TypeVariableReference) this).getTypeVariable().resolve(world).canBeBoundTo(
-						otherType.getTypeVariable().getFirstBound().resolve(world));// pr171952
+				return ((TypeVariableReference) this).getTypeVariable().resolve(world)
+						.canBeBoundTo(otherType.getTypeVariable().getFirstBound().resolve(world));// pr171952
 				// return
 				// ((TypeVariableReference)this).getTypeVariable()==otherType
 				// .getTypeVariable();
@@ -672,15 +671,15 @@ public class ReferenceType extends ResolvedType {
 		return delegateInterfaces;
 	}
 
-	private String toString(ResolvedType[] delegateInterfaces) {
-		StringBuffer sb = new StringBuffer();
-		if (delegateInterfaces != null) {
-			for (ResolvedType rt : delegateInterfaces) {
-				sb.append(rt).append(" ");
-			}
-		}
-		return sb.toString();
-	}
+	// private String toString(ResolvedType[] delegateInterfaces) {
+	// StringBuffer sb = new StringBuffer();
+	// if (delegateInterfaces != null) {
+	// for (ResolvedType rt : delegateInterfaces) {
+	// sb.append(rt).append(" ");
+	// }
+	// }
+	// return sb.toString();
+	// }
 
 	/**
 	 * Locates the named type variable in the list of those on this generic type and returns the type parameter from the second list
@@ -703,8 +702,7 @@ public class ReferenceType extends ResolvedType {
 	 * class Foo<T extends String,E extends Number> implements SuperInterface<T> {}
 	 * </code> where <code>
 	 * interface SuperInterface<Z> {}
-	 * </code> In that
-	 * example, a use of the 'Foo' raw type should know that it implements the SuperInterface<String>.
+	 * </code> In that example, a use of the 'Foo' raw type should know that it implements the SuperInterface<String>.
 	 */
 	private UnresolvedType[] determineThoseTypesToUse(ResolvedType parameterizedInterface, UnresolvedType[] paramTypes) {
 		// What are the type parameters for the supertype?
@@ -821,7 +819,7 @@ public class ReferenceType extends ResolvedType {
 	public PerClause getPerClause() {
 		PerClause pclause = getDelegate().getPerClause();
 		if (isParameterizedType()) { // could cache the result here...
-			Map parameterizationMap = getAjMemberParameterizationMap();
+			Map<String, UnresolvedType> parameterizationMap = getAjMemberParameterizationMap();
 			pclause = (PerClause) pclause.parameterizeWith(parameterizationMap, world);
 		}
 		return pclause;
@@ -857,7 +855,7 @@ public class ReferenceType extends ResolvedType {
 
 	// GENERICITDFIX
 	// // Map parameterizationMap = getAjMemberParameterizationMap();
-	//		
+	//
 	// // if (parameterizedTypeMungers != null) return parameterizedTypeMungers;
 	// Collection ret = null;
 	// if (ajMembersNeedParameterization()) {
@@ -877,7 +875,7 @@ public class ReferenceType extends ResolvedType {
 	// }
 
 	@Override
-	public Collection getPrivilegedAccesses() {
+	public Collection<ResolvedMember> getPrivilegedAccesses() {
 		return getDelegate().getPrivilegedAccesses();
 	}
 
@@ -891,9 +889,9 @@ public class ReferenceType extends ResolvedType {
 	@Override
 	public ResolvedType getSuperclass() {
 		ResolvedType ret = null;// superclassReference.get();
-		if (ret != null) {
-			return ret;
-		}
+		// if (ret != null) {
+		// return ret;
+		// }
 		if (newSuperclass != null) {
 			if (this.isParameterizedType() && newSuperclass.isParameterizedType()) {
 				return newSuperclass.parameterize(getMemberParameterizationMap()).resolve(getWorld());
@@ -930,8 +928,7 @@ public class ReferenceType extends ResolvedType {
 			((AbstractReferenceTypeDelegate) delegate).setSourceContext(this.delegate.getSourceContext());
 		}
 		this.delegate = delegate;
-		for (Iterator it = this.derivativeTypes.iterator(); it.hasNext();) {
-			ReferenceType dependent = (ReferenceType) it.next();
+		for (ReferenceType dependent : derivativeTypes) {
 			dependent.setDelegate(delegate);
 		}
 

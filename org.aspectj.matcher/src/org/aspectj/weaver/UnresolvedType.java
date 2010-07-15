@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.aspectj.util.GenericSignature;
-import org.aspectj.util.GenericSignatureParser;
 import org.aspectj.util.GenericSignature.ClassSignature;
+import org.aspectj.util.GenericSignatureParser;
 import org.aspectj.weaver.tools.Traceable;
 
 /**
@@ -970,7 +970,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	 * their matching type variable binding.
 	 */
 	// OPTIMIZE methods like this just allow callers to be lazy and not ensure they are working with the right (resolved) subtype
-	public UnresolvedType parameterize(Map typeBindings) {
+	public UnresolvedType parameterize(Map<String, UnresolvedType> typeBindings) {
 		throw new UnsupportedOperationException("unable to parameterize unresolved type: " + signature);
 	}
 }

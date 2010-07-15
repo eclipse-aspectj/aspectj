@@ -30,6 +30,7 @@ import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
@@ -94,13 +95,13 @@ public class PerCflow extends PerClause {
 
 		CrosscuttingMembers xcut = inAspect.crosscuttingMembers;
 
-		Collection previousCflowEntries = xcut.getCflowEntries();
+		Collection<ShadowMunger> previousCflowEntries = xcut.getCflowEntries();
 		Pointcut concreteEntry = entry.concretize(inAspect, inAspect, 0, null); // IntMap
 		// .
 		// EMPTY
 		// )
 		// ;
-		List innerCflowEntries = new ArrayList(xcut.getCflowEntries());
+		List<ShadowMunger> innerCflowEntries = new ArrayList<ShadowMunger>(xcut.getCflowEntries());
 		innerCflowEntries.removeAll(previousCflowEntries);
 
 		xcut.addConcreteShadowMunger(Advice.makePerCflowEntry(world, concreteEntry, isBelow, cflowStackField, inAspect,
@@ -108,8 +109,8 @@ public class PerCflow extends PerClause {
 
 		// ATAJ: add a munger to add the aspectOf(..) to the @AJ aspects
 		if (inAspect.isAnnotationStyleAspect() && !inAspect.isAbstract()) {
-			inAspect.crosscuttingMembers.addLateTypeMunger(inAspect.getWorld().getWeavingSupport().makePerClauseAspect(inAspect,
-					getKind()));
+			inAspect.crosscuttingMembers.addLateTypeMunger(inAspect.getWorld().getWeavingSupport()
+					.makePerClauseAspect(inAspect, getKind()));
 		}
 
 		// ATAJ inline around advice support - don't use a late munger to allow

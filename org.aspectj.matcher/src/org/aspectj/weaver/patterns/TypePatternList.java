@@ -14,7 +14,6 @@ package org.aspectj.weaver.patterns;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -532,8 +531,8 @@ public class TypePatternList extends PatternNode {
 		return typePatterns;
 	}
 
-	public Collection getExactTypes() {
-		ArrayList ret = new ArrayList();
+	public List<UnresolvedType> getExactTypes() {
+		List<UnresolvedType> ret = new ArrayList<UnresolvedType>();
 		for (int i = 0; i < typePatterns.length; i++) {
 			UnresolvedType t = typePatterns[i].getExactType();
 			if (!ResolvedType.isMissing(t)) {

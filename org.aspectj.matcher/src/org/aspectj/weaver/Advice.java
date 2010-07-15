@@ -33,7 +33,7 @@ public abstract class Advice extends ShadowMunger {
 	protected ResolvedType concreteAspect; // null until after concretize
 
 	// Just for Cflow*entry kinds
-	protected List innerCflowEntries = Collections.EMPTY_LIST;
+	protected List<ShadowMunger> innerCflowEntries = Collections.emptyList();
 	protected int nFreeVars;
 
 	protected TypePattern exceptionType; // just for Softener kind
@@ -50,7 +50,7 @@ public abstract class Advice extends ShadowMunger {
 	public ISourceLocation lastReportedMonitorExitJoinpointLocation = null;
 
 	public static Advice makeCflowEntry(World world, Pointcut entry, boolean isBelow, Member stackField, int nFreeVars,
-			List innerCflowEntries, ResolvedType inAspect) {
+			List<ShadowMunger> innerCflowEntries, ResolvedType inAspect) {
 		Advice ret = world.createAdviceMunger(isBelow ? AdviceKind.CflowBelowEntry : AdviceKind.CflowEntry, entry, stackField, 0,
 				entry, inAspect);
 		ret.innerCflowEntries = innerCflowEntries;
@@ -60,7 +60,7 @@ public abstract class Advice extends ShadowMunger {
 	}
 
 	public static Advice makePerCflowEntry(World world, Pointcut entry, boolean isBelow, Member stackField, ResolvedType inAspect,
-			List innerCflowEntries) {
+			List<ShadowMunger> innerCflowEntries) {
 		Advice ret = world.createAdviceMunger(isBelow ? AdviceKind.PerCflowBelowEntry : AdviceKind.PerCflowEntry, entry,
 				stackField, 0, entry, inAspect);
 		ret.innerCflowEntries = innerCflowEntries;
@@ -192,16 +192,16 @@ public abstract class Advice extends ShadowMunger {
 							ResolvedType adviceReturnGenericType = adviceReturnType.getGenericType(); // Set
 							if (shadowReturnGenericType.isAssignableFrom(adviceReturnGenericType)
 									&& world.getLint().uncheckedAdviceConversion.isEnabled()) {
-								world.getLint().uncheckedAdviceConversion.signal(new String[] { shadow.toString(),
-										shadowReturnType.getName(), adviceReturnType.getName() }, shadow.getSourceLocation(),
-										new ISourceLocation[] { getSourceLocation() });
+								world.getLint().uncheckedAdviceConversion.signal(
+										new String[] { shadow.toString(), shadowReturnType.getName(), adviceReturnType.getName() },
+										shadow.getSourceLocation(), new ISourceLocation[] { getSourceLocation() });
 							}
 						} else if (!shadowReturnType.isAssignableFrom(adviceReturnType)) {
 							// System.err.println(this + ", " + sourceContext +
 							// ", " + start);
-							world.showMessage(IMessage.ERROR, WeaverMessages
-									.format(WeaverMessages.INCOMPATIBLE_RETURN_TYPE, shadow), getSourceLocation(), shadow
-									.getSourceLocation());
+							world.showMessage(IMessage.ERROR,
+									WeaverMessages.format(WeaverMessages.INCOMPATIBLE_RETURN_TYPE, shadow), getSourceLocation(),
+									shadow.getSourceLocation());
 							return false;
 						}
 					}

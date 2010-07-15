@@ -117,9 +117,9 @@ public class CrosscuttingMembers {
 		lateTypeMungers.add(m);
 	}
 
-	public void addDeclares(Collection c) {
-		for (Iterator i = c.iterator(); i.hasNext();) {
-			addDeclare((Declare) i.next());
+	public void addDeclares(Collection<Declare> declares) {
+		for (Declare declare : declares) {
+			addDeclare(declare);
 		}
 	}
 
@@ -166,9 +166,9 @@ public class CrosscuttingMembers {
 		}
 	}
 
-	public void exposeTypes(Collection typesToExpose) {
-		for (Iterator i = typesToExpose.iterator(); i.hasNext();) {
-			exposeType((UnresolvedType) i.next());
+	public void exposeTypes(List<UnresolvedType> typesToExpose) {
+		for (UnresolvedType typeToExpose : typesToExpose) {
+			exposeType(typeToExpose);
 		}
 	}
 
