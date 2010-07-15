@@ -20,11 +20,11 @@ import java.util.Map;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.Dump.IVisitor;
 import org.aspectj.weaver.ICrossReferenceHandler;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedType;
-import org.aspectj.weaver.Dump.IVisitor;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.loadtime.IWeavingContext;
 import org.aspectj.weaver.reflect.AnnotationFinder;
@@ -66,7 +66,7 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 			concurrentMapClass = null;
 		}
 	}
-	
+
 	public boolean isDemotionActive() {
 		return true;
 	}
@@ -284,6 +284,10 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 		visitor.visitObject("Class loader parent:");
 		visitor.visitObject(classLoaderParentString);
 		super.accept(visitor);
+	}
+
+	public boolean isLoadtimeWeaving() {
+		return true;
 	}
 
 }
