@@ -221,7 +221,7 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		configureNonStandardCompileOptions(p, "-Xset:minimalModel=true");
 		build(p);
 		checkWasFullBuild();
-		printModel(p);
+		//		printModel(p);
 		// Here is the model without deletion.
 		//		PR278496_2  [build configuration file]  hid:=PR278496_2
 		//	    [package]  hid:=PR278496_2<
@@ -238,7 +238,7 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 
 		AspectJElementHierarchy model = (AspectJElementHierarchy) getModelFor(p).getHierarchy();
 		// Node for "Code.java" should be there since it is the target of a relationship
-		IProgramElement ipe = model.findElementForHandleOrCreate("=PR278496_1<{Code.java",false);
+		IProgramElement ipe = model.findElementForHandleOrCreate("=PR278496_2<{Code.java",false);
 		Assert.assertNotNull(ipe);
 	}
 }
