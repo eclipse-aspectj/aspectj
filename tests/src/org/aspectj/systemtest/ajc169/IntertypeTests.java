@@ -17,6 +17,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
@@ -130,10 +131,12 @@ public class IntertypeTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		PrintWriter pw = new PrintWriter(baos);
 		AsmManager.dumptree(pw, AsmManager.lastActiveStructureModel.getHierarchy().getRoot(), 0);
-		pw.write(AsmManager.lastActiveStructureModel.getRelationshipMap().toString());
+		IRelationshipMap irm = AsmManager.lastActiveStructureModel.getRelationshipMap();
+		pw.write(irm.toString());
 		pw.flush();
 		String model = baos.toString();
-		assertTrue(model.indexOf("<{Choice.java[Choice=[aspect declarations], <{Choice.java}X[Keys=[declared on]") != -1);
+		assertTrue(model.indexOf("<{Choice.java[Choice=[aspect declarations]") != -1);
+		assertTrue(model.indexOf("<{Choice.java}X[Keys=[declared on]") != -1);
 	}
 
 	public void testGenerics1() throws Exception {

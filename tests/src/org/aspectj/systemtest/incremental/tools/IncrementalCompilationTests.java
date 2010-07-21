@@ -210,7 +210,7 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 
 		AspectJElementHierarchy model = (AspectJElementHierarchy) getModelFor(p).getHierarchy();
 		// Node for "Code.java" should not be there:
-		IProgramElement ipe = model.findElementForHandleOrCreate("=PR278496_1<a.b.c{Code.java",false);
+		IProgramElement ipe = model.findElementForHandleOrCreate("=PR278496_1<a.b.c{Code.java", false);
 		Assert.assertNull(ipe);
 	}
 
@@ -235,10 +235,43 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		//	Hid:1:(targets=1) =PR278496_2<{Azpect.java}Azpect)Code.m (declared on) =PR278496_2<{Code.java[Code
 		//	Hid:2:(targets=1) =PR278496_2<{Code.java[Code (aspect declarations) =PR278496_2<{Azpect.java}Azpect)Code.m
 
-
 		AspectJElementHierarchy model = (AspectJElementHierarchy) getModelFor(p).getHierarchy();
 		// Node for "Code.java" should be there since it is the target of a relationship
-		IProgramElement ipe = model.findElementForHandleOrCreate("=PR278496_2<{Code.java",false);
+		IProgramElement ipe = model.findElementForHandleOrCreate("=PR278496_2<{Code.java", false);
+		Assert.assertNotNull(ipe);
+	}
+
+	public void testDeletionInnerAspects_278496_4() throws Exception {
+		String p = "PR278496_4";
+		initialiseProject(p);
+		configureNonStandardCompileOptions(p, "-Xset:minimalModel=true");
+		build(p);
+		checkWasFullBuild();
+		printModel(p);
+		// Here is the model without deletion.
+		//		PR278496_4  [build configuration file]  hid:=PR278496_4
+		//		  foo  [package]  hid:=PR278496_4<foo
+		//		    MyOtherClass.java  [java source file] 1 hid:=PR278496_4<foo{MyOtherClass.java
+		//		      foo  [package declaration] 1 hid:=PR278496_4<foo{MyOtherClass.java%foo
+		//		        [import reference]  hid:=PR278496_4<foo{MyOtherClass.java#
+		//		      MyOtherClass  [class] 2 hid:=PR278496_4<foo{MyOtherClass.java[MyOtherClass
+		//		        MyInnerClass  [class] 4 hid:=PR278496_4<foo{MyOtherClass.java[MyOtherClass[MyInnerClass
+		//		          MyInnerInnerAspect  [aspect] 6 hid:=PR278496_4<foo{MyOtherClass.java[MyOtherClass[MyInnerClass}MyInnerInnerAspect
+		//		            before(): <anonymous pointcut>  [advice] 8 hid:=PR278496_4<foo{MyOtherClass.java[MyOtherClass[MyInnerClass}MyInnerInnerAspect&before
+		//		    MyClass.java  [java source file] 1 hid:=PR278496_4<foo{MyClass.java
+		//		      foo  [package declaration] 1 hid:=PR278496_4<foo{MyClass.java%foo
+		//		        [import reference]  hid:=PR278496_4<foo{MyClass.java#
+		//		      MyClass  [class] 9 hid:=PR278496_4<foo{MyClass.java[MyClass
+		//		        main(java.lang.String[])  [method] 12 hid:=PR278496_4<foo{MyClass.java[MyClass~main~\[QString;
+		//		        method1()  [method] 16 hid:=PR278496_4<foo{MyClass.java[MyClass~method1
+		//		        method2()  [method] 18 hid:=PR278496_4<foo{MyClass.java[MyClass~method2
+		//		Hid:1:(targets=1) =PR278496_4<foo{MyClass.java[MyClass~method1 (advised by) =PR278496_4<foo{MyOtherClass.java[MyOtherClass[MyInnerClass}MyInnerInnerAspect&before
+		//		Hid:2:(targets=1) =PR278496_4<foo{MyOtherClass.java[MyOtherClass[MyInnerClass}MyInnerInnerAspect&before (advises) =PR278496_4<foo{MyClass.java[MyClass~method1
+
+		AspectJElementHierarchy model = (AspectJElementHierarchy) getModelFor(p).getHierarchy();
+
+		IProgramElement ipe = model.findElementForHandleOrCreate(
+				"=PR278496_4<foo{MyOtherClass.java[MyOtherClass[MyInnerClass}MyInnerInnerAspect", false);
 		Assert.assertNotNull(ipe);
 	}
 }
