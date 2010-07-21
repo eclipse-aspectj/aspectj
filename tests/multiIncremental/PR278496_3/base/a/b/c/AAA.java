@@ -1,0 +1,7 @@
+package a.b.c;
+
+public class AAA {
+  AAA aaa = new AAA();
+  BBB bbb = new BBB();
+  CCC ccc = new CCC();
+}
