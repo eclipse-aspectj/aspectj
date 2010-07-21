@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
-import java.util.jar.Attributes.Name;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.jar.Attributes.Name;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -64,7 +64,6 @@ import org.aspectj.weaver.CustomMungerFactory;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IUnwovenClassFile;
 import org.aspectj.weaver.IWeaveRequestor;
-import org.aspectj.weaver.MissingResolvedTypeWithKnownSignature;
 import org.aspectj.weaver.NewParentTypeMunger;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
@@ -933,8 +932,8 @@ public class BcelWeaver {
 	 * @param userPointcut
 	 */
 	private void raiseUnboundFormalError(String name, Pointcut userPointcut) {
-		world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.UNBOUND_FORMAL, name),
-				userPointcut.getSourceLocation(), null);
+		world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.UNBOUND_FORMAL, name), userPointcut
+				.getSourceLocation(), null);
 	}
 
 	public void addManifest(Manifest newManifest) {
@@ -1336,8 +1335,8 @@ public class BcelWeaver {
 					ResolvedType rtx = world.resolve(UnresolvedType.forSignature(requiredTypeSignature), true);
 					boolean exists = !rtx.isMissing();
 					if (!exists) {
-						world.getLint().missingAspectForReweaving.signal(new String[] { rtx.getName(), className },
-								classType.getSourceLocation(), null);
+						world.getLint().missingAspectForReweaving.signal(new String[] { rtx.getName(), className }, classType
+								.getSourceLocation(), null);
 						// world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.MISSING_REWEAVABLE_TYPE,
 						// requiredTypeName, className), classType.getSourceLocation(), null);
 					} else {
@@ -1354,8 +1353,8 @@ public class BcelWeaver {
 								world.showMessage(IMessage.ERROR, WeaverMessages.format(
 										WeaverMessages.REWEAVABLE_ASPECT_NOT_REGISTERED, rtx.getName(), className), null, null);
 							} else if (!world.getMessageHandler().isIgnoring(IMessage.INFO)) {
-								world.showMessage(IMessage.INFO, WeaverMessages.format(WeaverMessages.VERIFIED_REWEAVABLE_TYPE,
-										rtx.getName(), rtx.getSourceLocation().getSourceFile()), null, null);
+								world.showMessage(IMessage.INFO, WeaverMessages.format(WeaverMessages.VERIFIED_REWEAVABLE_TYPE, rtx
+										.getName(), rtx.getSourceLocation().getSourceFile()), null, null);
 							}
 						}
 						alreadyConfirmedReweavableState.add(requiredTypeSignature);
@@ -1529,11 +1528,10 @@ public class BcelWeaver {
 				// TAG: WeavingMessage
 				if (!getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
 					getWorld().getMessageHandler().handleMessage(
-							WeaveMessage.constructWeavingMessage(
-									WeaveMessage.WEAVEMESSAGE_ANNOTATES,
-									new String[] { onType.toString(), Utility.beautifyLocation(onType.getSourceLocation()),
-											decA.getAnnotationString(), "type", decA.getAspect().toString(),
-											Utility.beautifyLocation(decA.getSourceLocation()) }));
+							WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ANNOTATES, new String[] {
+									onType.toString(), Utility.beautifyLocation(onType.getSourceLocation()),
+									decA.getAnnotationString(), "type", decA.getAspect().toString(),
+									Utility.beautifyLocation(decA.getSourceLocation()) }));
 				}
 				didSomething = true;
 				ResolvedTypeMunger newAnnotationTM = new AnnotationOnTypeMunger(annoX);
@@ -1556,15 +1554,13 @@ public class BcelWeaver {
 				if (outputProblems) {
 					if (decA.isExactPattern()) {
 						world.getMessageHandler().handleMessage(
-								MessageUtil.error(
-										WeaverMessages.format(WeaverMessages.INCORRECT_TARGET_FOR_DECLARE_ANNOTATION,
-												onType.getName(), annoX.getTypeName(), annoX.getValidTargets()),
-										decA.getSourceLocation()));
+								MessageUtil.error(WeaverMessages.format(WeaverMessages.INCORRECT_TARGET_FOR_DECLARE_ANNOTATION,
+										onType.getName(), annoX.getTypeName(), annoX.getValidTargets()), decA.getSourceLocation()));
 					} else {
 						if (world.getLint().invalidTargetForAnnotation.isEnabled()) {
 							world.getLint().invalidTargetForAnnotation.signal(new String[] { onType.getName(), annoX.getTypeName(),
-									annoX.getValidTargets() }, decA.getSourceLocation(),
-									new ISourceLocation[] { onType.getSourceLocation() });
+									annoX.getValidTargets() }, decA.getSourceLocation(), new ISourceLocation[] { onType
+									.getSourceLocation() });
 						}
 					}
 				}
@@ -1605,8 +1601,8 @@ public class BcelWeaver {
 	}
 
 	public void weaveNormalTypeMungers(ResolvedType onType) {
-		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_TYPE_MUNGERS,
-				onType.getName());
+		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_TYPE_MUNGERS, onType
+				.getName());
 		if (onType.isRawType() || onType.isParameterizedType()) {
 			onType = onType.getGenericType();
 		}
@@ -1725,7 +1721,8 @@ public class BcelWeaver {
 				String pkgname = classType.getResolvedTypeX().getPackageName();
 				String tname = classType.getResolvedTypeX().getSimpleBaseName();
 				IProgramElement typeElement = hierarchy.findElementForType(pkgname, tname);
-				if (typeElement != null) {
+				if (typeElement != null && !hasInnerAspect(typeElement)) {
+
 					// Set<String> deleted = new HashSet<String>();
 					// deleted.add(model.getCanonicalFilePath(typeElement.getSourceLocation().getSourceFile()));
 					// hierarchy.updateHandleMap(deleted);
@@ -1784,6 +1781,22 @@ public class BcelWeaver {
 	}
 
 	// ---- writing
+
+	private boolean hasInnerAspect(IProgramElement typeNode) {
+		for (IProgramElement child : typeNode.getChildren()) {
+			IProgramElement.Kind kind = child.getKind();
+			if (kind == IProgramElement.Kind.ASPECT) {
+				return true;
+			}
+			if (kind.isType()) {
+				boolean b = hasInnerAspect(child);
+				if (b) {
+					return b;
+				}
+			}
+		}
+		return false;
+	}
 
 	private void checkDeclareTypeErrorOrWarning(BcelWorld world2, BcelObjectType classType) {
 		List<DeclareTypeErrorOrWarning> dteows = world.getDeclareTypeEows();
