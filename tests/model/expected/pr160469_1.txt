@@ -15,10 +15,10 @@
           before(): beanCreation..  [advice] TEST_SANDBOX\aspects.jar!pkg\AbstractBeanConfigurerAspect.class:11:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
-(targets=1) /binaries<pkg(AbstractBeanConfigurerAspect.class}AbstractBeanConfigurerAspect&before (advises) <test{Simple.java[Simple~Simple
-(targets=2) <test{Simple.java[Simple~Simple (advised by) /binaries<pkg(AbstractBeanConfigurerAspect.class}AbstractBeanConfigurerAspect&afterReturning
-(targets=2) <test{Simple.java[Simple~Simple (advised by) /binaries<pkg(AbstractBeanConfigurerAspect.class}AbstractBeanConfigurerAspect&before
-(targets=1) /binaries<pkg(AbstractBeanConfigurerAspect.class}AbstractBeanConfigurerAspect&afterReturning (advises) <test{Simple.java[Simple~Simple
+(targets=1) /binaries<pkg(AbstractBeanConfigurerAspect.class'AbstractBeanConfigurerAspect&before (advises) <test{Simple.java[Simple~Simple
+(targets=2) <test{Simple.java[Simple~Simple (advised by) /binaries<pkg(AbstractBeanConfigurerAspect.class'AbstractBeanConfigurerAspect&afterReturning
+(targets=2) <test{Simple.java[Simple~Simple (advised by) /binaries<pkg(AbstractBeanConfigurerAspect.class'AbstractBeanConfigurerAspect&before
+(targets=1) /binaries<pkg(AbstractBeanConfigurerAspect.class'AbstractBeanConfigurerAspect&afterReturning (advises) <test{Simple.java[Simple~Simple
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 import reference=1

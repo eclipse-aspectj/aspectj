@@ -13,8 +13,8 @@
           declare warning: "There should be n.."  [declare warning] TEST_SANDBOX\simple.jar!\AspectInDefaultPackage.class:4:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
-(targets=1) <{C.java[C~method1?field-get(java.io.PrintStream java.lang.System.out) (matches declare) /binaries<(AspectInDefaultPackage.class}AspectInDefaultPackage`declare warning
-(targets=1) /binaries<(AspectInDefaultPackage.class}AspectInDefaultPackage`declare warning (matched by) <{C.java[C~method1?field-get(java.io.PrintStream java.lang.System.out)
+(targets=1) /binaries<(AspectInDefaultPackage.class'AspectInDefaultPackage`declare warning (matched by) <{C.java[C~method1?field-get(java.io.PrintStream java.lang.System.out)
+(targets=1) <{C.java[C~method1?field-get(java.io.PrintStream java.lang.System.out) (matches declare) /binaries<(AspectInDefaultPackage.class'AspectInDefaultPackage`declare warning
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 method=1

@@ -14,8 +14,8 @@
         before(): p..  [advice] TEST_SANDBOX\pr77269b.aj:20:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
-(targets=1) <*pr77269b.aj}A&before (advises) <*pr77269b.aj[Test~testMethod[C~m
-(targets=1) <*pr77269b.aj[Test~testMethod[C~m (advised by) <*pr77269b.aj}A&before
+(targets=1) <*pr77269b.aj'A&before (advises) <*pr77269b.aj[Test~testMethod[C~m
+(targets=1) <*pr77269b.aj[Test~testMethod[C~m (advised by) <*pr77269b.aj'A&before
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 method=3

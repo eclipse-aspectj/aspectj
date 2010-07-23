@@ -10,8 +10,8 @@
         main()  [method] TEST_SANDBOX\MyFoo.java:9:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
-(targets=1) <foo{MyFoo.java[MyFoo~callMain?method-call(void foo.MyFoo.main()) (advised by) {MyBar.class
 (targets=1) {MyBar.class (advises) <foo{MyFoo.java[MyFoo~callMain?method-call(void foo.MyFoo.main())
+(targets=1) <foo{MyFoo.java[MyFoo~callMain?method-call(void foo.MyFoo.main()) (advised by) {MyBar.class
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 method=2

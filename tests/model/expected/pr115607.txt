@@ -9,8 +9,8 @@
         declare @type: Simple : @I  [declare @type] TEST_SANDBOX\pr115607.java:6:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
-(targets=1) <{pr115607.java}pr115607`declare \@type (annotates) <{pr115607.java[Simple
-(targets=1) <{pr115607.java[Simple (annotated by) <{pr115607.java}pr115607`declare \@type
+(targets=1) <{pr115607.java[Simple (annotated by) <{pr115607.java'pr115607`declare \@type
+(targets=1) <{pr115607.java'pr115607`declare \@type (annotates) <{pr115607.java[Simple
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 import reference=1

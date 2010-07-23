@@ -16,10 +16,10 @@
         badMethod()  [method] TEST_SANDBOX\C.java:8:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
-(targets=1) <{C.java[C~badMethod (matches declare) <{A.java[A^error
+(targets=1) <{A.java[A^error (matched by) <{C.java[C~badMethod
 (targets=1) <{C.java[C~warningMethod (matches declare) <{A.java[A^warning
 (targets=1) <{A.java[A^warning (matched by) <{C.java[C~warningMethod
-(targets=1) <{A.java[A^error (matched by) <{C.java[C~badMethod
+(targets=1) <{C.java[C~badMethod (matches declare) <{A.java[A^error
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 method=2
