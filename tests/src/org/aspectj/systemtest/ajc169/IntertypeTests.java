@@ -136,7 +136,7 @@ public class IntertypeTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		pw.flush();
 		String model = baos.toString();
 		assertTrue(model.indexOf("<{Choice.java[Choice=[aspect declarations]") != -1);
-		assertTrue(model.indexOf("<{Choice.java}X[Keys=[declared on]") != -1);
+		assertTrue(model.indexOf("<{Choice.java'X[Keys=[declared on]") != -1);
 	}
 
 	public void testGenerics1() throws Exception {

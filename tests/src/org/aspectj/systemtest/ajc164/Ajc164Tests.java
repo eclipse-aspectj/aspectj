@@ -88,11 +88,11 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		ipe = top.findElementForType("demo", "Orange");
 		assertNotNull(ipe);
 		assertEquals("<demo{Orange.java[Orange", ipe.getHandleIdentifier());
-		IRelationship ir = (IRelationship) model.getRelationshipMap().get(ipe).get(0);
-		String itdMethodHandle = (String) ir.getTargets().get(0);
+		IRelationship ir = model.getRelationshipMap().get(ipe).get(0);
+		String itdMethodHandle = ir.getTargets().get(0);
 		// handle when all source: <{Aspect.java}Aspect)Orange.getColor
 		// assertEquals("/binaries<{Aspect.java}Aspect)Orange.getColor", itdMethodHandle);
-		assertEquals("/binaries<(Aspect.class}Aspect)Orange.getColor", itdMethodHandle);
+		assertEquals("/binaries<(Aspect.class'Aspect)Orange.getColor", itdMethodHandle);
 		IProgramElement itdpe = model.getHierarchy().findElementForHandle(itdMethodHandle);
 		assertEquals("java.awt.Color", itdpe.getCorrespondingType(true));
 
@@ -102,11 +102,11 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		ipe = top.findElementForType("demo", "Strawberry");
 		assertNotNull(ipe);
 		assertEquals("<demo{Strawberry.java[Strawberry", ipe.getHandleIdentifier());
-		ir = (IRelationship) model.getRelationshipMap().get(ipe).get(0);
-		String itdFieldHandle = (String) ir.getTargets().get(0);
+		ir = model.getRelationshipMap().get(ipe).get(0);
+		String itdFieldHandle = ir.getTargets().get(0);
 		// source handle <{Aspect.java}Aspect)Strawberry.color
 		// assertEquals("/binaries<{Aspect.java}Aspect)Strawberry.color", itdFieldHandle);
-		assertEquals("/binaries<(Aspect.class}Aspect)Strawberry.color", itdFieldHandle);
+		assertEquals("/binaries<(Aspect.class'Aspect,Strawberry.color", itdFieldHandle);
 		IProgramElement itdfpe = model.getHierarchy().findElementForHandle(itdMethodHandle);
 		assertEquals("java.awt.Color", itdfpe.getCorrespondingType(true));
 
@@ -115,11 +115,11 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		ipe = top.findElementForType("demo", "Fruit");
 		assertNotNull(ipe);
 		assertEquals("<demo{Fruit.java[Fruit", ipe.getHandleIdentifier());
-		ir = (IRelationship) model.getRelationshipMap().get(ipe).get(0);
-		String itdCtorHandle = (String) ir.getTargets().get(0);
+		ir = model.getRelationshipMap().get(ipe).get(0);
+		String itdCtorHandle = ir.getTargets().get(0);
 		// source handle <{Aspect.java}Aspect)Fruit.Fruit_new)QColor;)QString;
 		// assertEquals("/binaries<{Aspect.java}Aspect)Fruit.Fruit_new)QColor;)QString;", itdCtorHandle);
-		assertEquals("/binaries<(Aspect.class}Aspect)Fruit.Fruit_new)QColor;)QString;", itdCtorHandle);
+		assertEquals("/binaries<(Aspect.class'Aspect)Fruit.Fruit_new)QColor;)QString;", itdCtorHandle);
 		IProgramElement itdcpe = model.getHierarchy().findElementForHandle(itdCtorHandle);
 		List ptypes = itdcpe.getParameterTypes();
 		assertEquals("java.awt.Color", new String((char[]) ptypes.get(0)));
@@ -187,7 +187,7 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		IProgramElement ipe = null;
 		ipe = findElementAtLine(top.getRoot(), 13);
-		assertEquals("<p{HandleTestingAspect.java}HandleTestingAspect[InnerClass}InnerInnerAspect|1", ipe.getHandleIdentifier());
+		assertEquals("<p{HandleTestingAspect.java'HandleTestingAspect[InnerClass'InnerInnerAspect|1", ipe.getHandleIdentifier());
 		// ipe = findElementAtLine(top.getRoot(), 29);
 		// assertEquals("<x*OverrideOptions.aj}OverrideOptions&around!2",
 		// ipe.getHandleIdentifier());
@@ -198,9 +198,9 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		IProgramElement ipe = null;
 		ipe = findElementAtLine(top.getRoot(), 22);
-		assertEquals("<x*OverrideOptions.aj}OverrideOptions&around", ipe.getHandleIdentifier());
+		assertEquals("<x*OverrideOptions.aj'OverrideOptions&around", ipe.getHandleIdentifier());
 		ipe = findElementAtLine(top.getRoot(), 29);
-		assertEquals("<x*OverrideOptions.aj}OverrideOptions&around!2", ipe.getHandleIdentifier());
+		assertEquals("<x*OverrideOptions.aj'OverrideOptions&around!2", ipe.getHandleIdentifier());
 	}
 
 	// Only one of two aspects named

@@ -271,7 +271,7 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		AspectJElementHierarchy model = (AspectJElementHierarchy) getModelFor(p).getHierarchy();
 
 		IProgramElement ipe = model.findElementForHandleOrCreate(
-				"=PR278496_4<foo{MyOtherClass.java[MyOtherClass[MyInnerClass}MyInnerInnerAspect", false);
+				"=PR278496_4<foo{MyOtherClass.java[MyOtherClass[MyInnerClass'MyInnerInnerAspect", false);
 		Assert.assertNotNull(ipe);
 	}
 }

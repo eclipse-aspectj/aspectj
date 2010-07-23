@@ -45,25 +45,25 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 		runTest("aspect handle");
 		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		IProgramElement pe = top.findElementForType("pkg", "A1");
-		String expected = "<pkg*A1.aj}A1";
+		String expected = "<pkg*A1.aj'A1";
 		String found = pe.getHandleIdentifier();
 		assertEquals("handleIdentifier - expected " + expected + ", but found " + found, expected, found);
 	}
 
 	public void testAdviceHandle() {
 		runTest("advice handle");
-		compareHandles(IProgramElement.Kind.ADVICE, "before(): <anonymous pointcut>", "<pkg*A2.aj}A2&before");
+		compareHandles(IProgramElement.Kind.ADVICE, "before(): <anonymous pointcut>", "<pkg*A2.aj'A2&before");
 	}
 
 	public void testPointcutHandle() {
 		runTest("pointcut handle");
-		compareHandles(IProgramElement.Kind.POINTCUT, "p()", "<pkg*A4.aj}A4+p");
+		compareHandles(IProgramElement.Kind.POINTCUT, "p()", "<pkg*A4.aj'A4\"p");
 	}
 
 	public void testGetIPEWithAspectHandle() {
 		runTest("get IProgramElement with aspect handle");
 		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
-		String handle = "<pkg*A1.aj}A1";
+		String handle = "<pkg*A1.aj'A1";
 		IProgramElement ipe = top.getElement(handle);
 		assertNotNull("should have found ipe with handle " + handle, ipe);
 		IProgramElement ipe2 = top.getElement(handle);
@@ -72,49 +72,49 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 
 	public void testAdviceHandleWithCrossCutting() {
 		runTest("advice handle with crosscutting");
-		compareHandles(IProgramElement.Kind.ADVICE, "before(): <anonymous pointcut>", "<pkg*A3.aj}A3&before");
+		compareHandles(IProgramElement.Kind.ADVICE, "before(): <anonymous pointcut>", "<pkg*A3.aj'A3&before");
 	}
 
 	public void testPointcutHandleWithArgs() {
 		runTest("pointcut handle with args");
-		compareHandles(IProgramElement.Kind.POINTCUT, "p(java.lang.Integer)", "<*A6.aj}A6+p+QInteger;");
+		compareHandles(IProgramElement.Kind.POINTCUT, "p(java.lang.Integer)", "<*A6.aj'A6\"p\"QInteger;");
 	}
 
 	public void testAdviceHandleWithArgs() {
 		runTest("advice handle with args");
 		compareHandles(IProgramElement.Kind.ADVICE, "afterReturning(java.lang.Integer): p..",
-				"<pkg*A8.aj}A8&afterReturning&QInteger;");
+				"<pkg*A8.aj'A8&afterReturning&QInteger;");
 	}
 
 	public void testFieldITD() {
 		runTest("field itd handle");
-		compareHandles(IProgramElement.Kind.INTER_TYPE_FIELD, "C.x", "<pkg*A9.aj}A9)C.x");
+		compareHandles(IProgramElement.Kind.INTER_TYPE_FIELD, "C.x", "<pkg*A9.aj'A9,C.x");
 	}
 
 	public void testMethodITD() {
 		runTest("method itd handle");
-		compareHandles(IProgramElement.Kind.INTER_TYPE_METHOD, "C.method()", "<pkg*A9.aj}A9)C.method");
+		compareHandles(IProgramElement.Kind.INTER_TYPE_METHOD, "C.method()", "<pkg*A9.aj'A9)C.method");
 	}
 
 	public void testMethodITDWithArgs() {
 		runTest("method itd with args handle");
-		compareHandles(IProgramElement.Kind.INTER_TYPE_METHOD, "C.methodWithArgs(int)", "<pkg*A9.aj}A9)C.methodWithArgs)I");
+		compareHandles(IProgramElement.Kind.INTER_TYPE_METHOD, "C.methodWithArgs(int)", "<pkg*A9.aj'A9)C.methodWithArgs)I");
 	}
 
 	public void testConstructorITDWithArgs() {
 		runTest("constructor itd with args");
 		compareHandles(IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR, "C.C(int,java.lang.String)",
-				"<pkg*A13.aj}A13)C.C_new)I)QString;");
+				"<pkg*A13.aj'A13)C.C_new)I)QString;");
 	}
 
 	public void testDeclareParentsHandle() {
 		runTest("declare parents handle");
-		compareHandles(IProgramElement.Kind.DECLARE_PARENTS, "declare parents: implements C2", "<pkg*A7.aj}A7`declare parents");
+		compareHandles(IProgramElement.Kind.DECLARE_PARENTS, "declare parents: implements C2", "<pkg*A7.aj'A7`declare parents");
 	}
 
 	public void testTwoDeclareParents() {
 		runTest("two declare parents in same file");
-		compareHandles(IProgramElement.Kind.DECLARE_PARENTS, "declare parents: extends C5", "<pkg*A7.aj}A7`declare parents!2");
+		compareHandles(IProgramElement.Kind.DECLARE_PARENTS, "declare parents: extends C5", "<pkg*A7.aj'A7`declare parents!2");
 	}
 
 	public void testMethodCallHandle() {
@@ -126,28 +126,28 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 		// AJDT: =AJHandleProject/src<pkg*A.aj}A`declare \@type
 		runTest("declare @type");
 		compareHandles(IProgramElement.Kind.DECLARE_ANNOTATION_AT_TYPE, "declare @type: pkg.C : @MyAnnotation",
-				"<pkg*A12.aj}A`declare \\@type");
+				"<pkg*A12.aj'A`declare \\@type");
 	}
 
 	public void testDeclareAtField() {
 		// AJDT: =AJHandleProject/src<pkg*A.aj}A`declare \@field
 		runTest("declare @field");
 		compareHandles(IProgramElement.Kind.DECLARE_ANNOTATION_AT_FIELD, "declare @field: int pkg.C.someField : @MyAnnotation",
-				"<pkg*A12.aj}A`declare \\@field");
+				"<pkg*A12.aj'A`declare \\@field");
 	}
 
 	public void testDeclareAtMethod() {
 		// AJDT: =AJHandleProject/src<pkg*A.aj}A`declare \@method
 		runTest("declare @method");
 		compareHandles(IProgramElement.Kind.DECLARE_ANNOTATION_AT_METHOD,
-				"declare @method: public void pkg.C.method1() : @MyAnnotation", "<pkg*A12.aj}A`declare \\@method");
+				"declare @method: public void pkg.C.method1() : @MyAnnotation", "<pkg*A12.aj'A`declare \\@method");
 	}
 
 	public void testDeclareAtConstructor() {
 		// AJDT: =AJHandleProject/src<pkg*A.aj}A`declare \@constructor
 		runTest("declare @constructor");
 		compareHandles(IProgramElement.Kind.DECLARE_ANNOTATION_AT_CONSTRUCTOR, "declare @constructor: pkg.C.new() : @MyAnnotation",
-				"<pkg*A12.aj}A`declare \\@constructor");
+				"<pkg*A12.aj'A`declare \\@constructor");
 	}
 
 	// what about 2 pieces of before advice with the same
@@ -169,8 +169,8 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 				}
 			}
 		}
-		String expected1 = "<pkg*A5.aj}A5&before";
-		String expected2 = "<pkg*A5.aj}A5&before!2";
+		String expected1 = "<pkg*A5.aj'A5&before";
+		String expected2 = "<pkg*A5.aj'A5&before!2";
 		boolean b = expected1.equals(handle1);
 		if (b) {
 			assertEquals("handleIdentifier - expected " + expected2 + ", but found " + handle2, expected2, handle2);
@@ -183,12 +183,12 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 	public void testDeclareWarningHandle() {
 		runTest("declare warning handle");
 		compareHandles(IProgramElement.Kind.DECLARE_WARNING, "declare warning: \"Illegal call.\"",
-				"<pkg*A11.aj}A11`declare warning");
+				"<pkg*A11.aj'A11`declare warning");
 	}
 
 	public void testTwoDeclareWarningHandles() {
 		runTest("two declare warning handles");
-		compareHandles(IProgramElement.Kind.DECLARE_WARNING, "declare warning: \"blah\"", "<pkg*A11.aj}A11`declare warning!2");
+		compareHandles(IProgramElement.Kind.DECLARE_WARNING, "declare warning: \"blah\"", "<pkg*A11.aj'A11`declare warning!2");
 	}
 
 	// this is to ensure the logic for not including '1' in the count
@@ -197,9 +197,9 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 	public void testTenDeclareWarningHandles() {
 		runTest("ten declare warning handles");
 		compareHandles(IProgramElement.Kind.DECLARE_WARNING, "declare warning: \"warning 1\"",
-				"<*DeclareWarnings.aj}DeclareWarnings`declare warning");
+				"<*DeclareWarnings.aj'DeclareWarnings`declare warning");
 		compareHandles(IProgramElement.Kind.DECLARE_WARNING, "declare warning: \"warning 10\"",
-				"<*DeclareWarnings.aj}DeclareWarnings`declare warning!10");
+				"<*DeclareWarnings.aj'DeclareWarnings`declare warning!10");
 
 	}
 

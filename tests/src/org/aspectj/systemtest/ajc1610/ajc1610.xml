@@ -2,6 +2,11 @@
 
 <suite>
 
+  <ajc-test dir="bugs1610/prx" title="duplicate annotation">
+    <compile files="A.java" options="-1.5">
+    </compile>
+  </ajc-test>
+  
   <ajc-test dir="bugs1610/pr319431" title="loading old code">
     <compile files="Azpect2.java" inpath="builtWith168.jar" options="-1.5">
     </compile>

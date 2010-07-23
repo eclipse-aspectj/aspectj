@@ -141,11 +141,12 @@ public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		IRelationshipMap irm = AsmManager.lastActiveStructureModel.getRelationshipMap();
 		Set entries = irm.getEntries();
 		boolean gotSomethingValid = false;
-		String expected = "<recursivepackage{RecursiveCatcher.java}RecursiveCatcher~recursiveCall~I?method-call(void recursivepackage.RecursiveCatcher.recursiveCall(int))";
+		String expected = "<recursivepackage{RecursiveCatcher.java'RecursiveCatcher~recursiveCall~I?method-call(void recursivepackage.RecursiveCatcher.recursiveCall(int))";
 		for (Iterator iterator = entries.iterator(); iterator.hasNext();) {
 			String str = (String) iterator.next();
-			if (str.indexOf(expected) != -1)
+			if (str.indexOf(expected) != -1) {
 				gotSomethingValid = true;
+			}
 		}
 		if (!gotSomethingValid) {
 			fail("Did not find a relationship with the expected data in '" + expected + "'");

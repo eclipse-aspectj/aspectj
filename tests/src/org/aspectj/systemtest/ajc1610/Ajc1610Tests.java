@@ -18,6 +18,12 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc1610Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	// Interesting new behaviour on AspectJ 1.6.9 - probably due to initial inner type changes.  
+	// Looks a real error (creating two annotations the same on a type is a bad thing)
+	//	public void testDuplicateAnnotations() {
+	//		runTest("duplicate annotation");
+	//	}
+
 	public void testLoadingOldCode_319431() {
 		runTest("loading old code");
 	}
