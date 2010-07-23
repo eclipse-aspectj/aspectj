@@ -33,19 +33,20 @@ public class HandleProviderDelimiter {
 	// equivalent
 	public static final HandleProviderDelimiter PACKAGEFRAGMENTROOT = new HandleProviderDelimiter('/');
 	public static final HandleProviderDelimiter PACKAGEDECLARATION = new HandleProviderDelimiter('%'); // now
-																										// used
+	// used
 	public static final HandleProviderDelimiter LOCALVARIABLE = new HandleProviderDelimiter('@');
 	public static final HandleProviderDelimiter TYPE_PARAMETER = new HandleProviderDelimiter(']');
 
 	// AspectJ specific ones
 	public static final HandleProviderDelimiter ASPECT_CU = new HandleProviderDelimiter('*');
 	public static final HandleProviderDelimiter ADVICE = new HandleProviderDelimiter('&');
-	public static final HandleProviderDelimiter ASPECT_TYPE = new HandleProviderDelimiter('}');
+	public static final HandleProviderDelimiter ASPECT_TYPE = new HandleProviderDelimiter('\'');
 	public static final HandleProviderDelimiter CODEELEMENT = new HandleProviderDelimiter('?');
+	public static final HandleProviderDelimiter ITD_FIELD = new HandleProviderDelimiter(',');
 	public static final HandleProviderDelimiter ITD = new HandleProviderDelimiter(')');
 	public static final HandleProviderDelimiter DECLARE = new HandleProviderDelimiter('`');
-	public static final HandleProviderDelimiter POINTCUT = new HandleProviderDelimiter('+');
-	
+	public static final HandleProviderDelimiter POINTCUT = new HandleProviderDelimiter('"');
+
 	public static final HandleProviderDelimiter PHANTOM = new HandleProviderDelimiter(',');
 
 	private static char empty = ' ';
@@ -56,17 +57,15 @@ public class HandleProviderDelimiter {
 	}
 
 	/**
-	 * Returns the delimiter for the HandleProviderDelimiter, for example ASPECT
-	 * returns '*' and METHOD returns '~'
+	 * Returns the delimiter for the HandleProviderDelimiter, for example ASPECT returns '*' and METHOD returns '~'
 	 */
 	public char getDelimiter() {
 		return delim;
 	}
 
 	/**
-	 * Returns the delimiter for the given IProgramElement for example if the
-	 * IProgramElement is an aspect returns '*' and if the IProgramElement is a
-	 * method returns '~'
+	 * Returns the delimiter for the given IProgramElement for example if the IProgramElement is an aspect returns '*' and if the
+	 * IProgramElement is a method returns '~'
 	 */
 	public static char getDelimiter(IProgramElement ipe) {
 		IProgramElement.Kind kind = ipe.getKind();
@@ -97,8 +96,10 @@ public class HandleProviderDelimiter {
 			}
 		} else if (kind.equals(IProgramElement.Kind.INITIALIZER)) {
 			return INITIALIZER.getDelimiter();
-		} else if (kind.equals(IProgramElement.Kind.INTER_TYPE_FIELD) || kind.equals(IProgramElement.Kind.INTER_TYPE_METHOD)
-				|| kind.equals(IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR) || kind.equals(IProgramElement.Kind.INTER_TYPE_PARENT)) {
+		} else if (kind.equals(IProgramElement.Kind.INTER_TYPE_FIELD)) {
+			return ITD_FIELD.getDelimiter();
+		} else if (kind.equals(IProgramElement.Kind.INTER_TYPE_METHOD) || kind.equals(IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR)
+				|| kind.equals(IProgramElement.Kind.INTER_TYPE_PARENT)) {
 			return ITD.getDelimiter();
 		} else if (kind.equals(IProgramElement.Kind.CONSTRUCTOR) || kind.equals(IProgramElement.Kind.METHOD)) {
 			return METHOD.getDelimiter();
