@@ -155,15 +155,15 @@ public final class BcelRenderer implements ITestVisitor, IExprVisitor {
 		// Load up the var again
 		il.append(((BcelVar) hasAnnotation.getVar()).createLoad(fact));
 
-		Member getClass = MemberImpl.method(UnresolvedType.OBJECT, 0, UnresolvedType.JAVA_LANG_CLASS, "getClass",
+		Member getClass = MemberImpl.method(UnresolvedType.OBJECT, 0, UnresolvedType.JL_CLASS, "getClass",
 				UnresolvedType.NONE);
 		il.append(Utility.createInvoke(fact, world, getClass));
 		// aload annotationClass
 		il.append(fact.createConstant(new ObjectType(hasAnnotation.getAnnotationType().getName())));
 		// int annClassIndex = fact.getConstantPool().addClass(hasAnnotation.getAnnotationType().getSignature());
 		// il.append(new LDC_W(annClassIndex));
-		Member isAnnotationPresent = MemberImpl.method(UnresolvedType.JAVA_LANG_CLASS, 0, ResolvedType.BOOLEAN,
-				"isAnnotationPresent", new UnresolvedType[] { UnresolvedType.JAVA_LANG_CLASS });
+		Member isAnnotationPresent = MemberImpl.method(UnresolvedType.JL_CLASS, 0, ResolvedType.BOOLEAN,
+				"isAnnotationPresent", new UnresolvedType[] { UnresolvedType.JL_CLASS });
 		il.append(Utility.createInvoke(fact, world, isAnnotationPresent));
 		il.append(createJumpBasedOnBooleanOnStack());
 		instructions.insert(il);

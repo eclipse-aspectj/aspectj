@@ -92,8 +92,8 @@ public class AnnotationAccessVar extends BcelVar {
 
 		InstructionList il = new InstructionList();
 
-		Type jlClass = BcelWorld.makeBcelType(UnresolvedType.JAVA_LANG_CLASS);
-		Type jlString = BcelWorld.makeBcelType(UnresolvedType.JAVA_LANG_STRING);
+		Type jlClass = BcelWorld.makeBcelType(UnresolvedType.JL_CLASS);
+		Type jlString = BcelWorld.makeBcelType(UnresolvedType.JL_STRING);
 		Type jlClassArray = BcelWorld.makeBcelType(UnresolvedType.JAVA_LANG_CLASS_ARRAY);
 		Type jlaAnnotation = BcelWorld.makeBcelType(UnresolvedType.JAVA_LANG_ANNOTATION);
 
