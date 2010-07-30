@@ -555,7 +555,7 @@ public class AspectDeclaration extends TypeDeclaration {
 				BranchLabel instanceFound = new BranchLabel(codeStream);
 
 				ExceptionLabel anythingGoesWrong = new ExceptionLabel(codeStream, world
-						.makeTypeBinding(UnresolvedType.JAVA_LANG_EXCEPTION));
+						.makeTypeBinding(UnresolvedType.JL_EXCEPTION));
 				anythingGoesWrong.placeStart();
 				codeStream.aload_0();
 				codeStream.invokestatic(world.makeMethodBindingForCall(AjcMemberMaker.perTypeWithinGetInstance(typeX)));
@@ -650,7 +650,7 @@ public class AspectDeclaration extends TypeDeclaration {
 		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, hasAspectMethod, new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
-				ExceptionLabel goneBang = new ExceptionLabel(codeStream, world.makeTypeBinding(UnresolvedType.JAVA_LANG_EXCEPTION));
+				ExceptionLabel goneBang = new ExceptionLabel(codeStream, world.makeTypeBinding(UnresolvedType.JL_EXCEPTION));
 				BranchLabel noInstanceExists = new BranchLabel(codeStream);
 				BranchLabel leave = new BranchLabel(codeStream);
 				goneBang.placeStart();
@@ -713,7 +713,7 @@ public class AspectDeclaration extends TypeDeclaration {
 				new BodyGenerator() {
 					public void generate(CodeStream codeStream) {
 						ExceptionLabel exc = new ExceptionLabel(codeStream, world
-								.makeTypeBinding(UnresolvedType.JAVA_LANG_EXCEPTION));
+								.makeTypeBinding(UnresolvedType.JL_EXCEPTION));
 						exc.placeStart();
 						codeStream.aload_0();
 						codeStream.getfield(world.makeFieldBinding(AjcMemberMaker.perTypeWithinWithinTypeField(typeX, typeX)));
@@ -727,7 +727,7 @@ public class AspectDeclaration extends TypeDeclaration {
 		final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		generateMethod(classFile, AjcMemberMaker.perTypeWithinGetInstance(world.fromBinding(binding)), new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
-				ExceptionLabel exc = new ExceptionLabel(codeStream, world.makeTypeBinding(UnresolvedType.JAVA_LANG_EXCEPTION));
+				ExceptionLabel exc = new ExceptionLabel(codeStream, world.makeTypeBinding(UnresolvedType.JL_EXCEPTION));
 				exc.placeStart();
 				codeStream.aload_0();
 				codeStream.ldc(NameMangler.perTypeWithinLocalAspectOf(typeX));
@@ -736,7 +736,7 @@ public class AspectDeclaration extends TypeDeclaration {
 						world.makeTypeBinding(UnresolvedType.forSignature("Ljava/lang/reflect/Method;")), // return type
 						new TypeBinding[] { world.makeTypeBinding(UnresolvedType.forSignature("Ljava/lang/String;")),
 								world.makeTypeBinding(UnresolvedType.forSignature("[Ljava/lang/Class;")) },
-						new ReferenceBinding[0], (ReferenceBinding) world.makeTypeBinding(UnresolvedType.JAVA_LANG_CLASS)));
+						new ReferenceBinding[0], (ReferenceBinding) world.makeTypeBinding(UnresolvedType.JL_CLASS)));
 				codeStream.astore_1();
 				codeStream.aload_1();
 				codeStream.aconst_null();
