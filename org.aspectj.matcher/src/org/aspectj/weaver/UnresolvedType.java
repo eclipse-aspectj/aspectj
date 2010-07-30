@@ -19,66 +19,22 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.aspectj.util.GenericSignature;
-import org.aspectj.util.GenericSignature.ClassSignature;
 import org.aspectj.util.GenericSignatureParser;
+import org.aspectj.util.GenericSignature.ClassSignature;
 import org.aspectj.weaver.tools.Traceable;
 
 /**
- * A UnresolvedType represents a type to the weaver. It has a basic signature that knows nothing about type variables, type
- * parameters, etc.. UnresolvedTypes are resolved in some World (a repository of types). When a UnresolvedType is resolved it turns
- * into a ResolvedType which may be a primitive type, or a ReferenceType. ReferenceTypes may refer to simple, generic, parameterized
- * or type-variable based reference types. A ReferenceType is backed by a delegate that provides information about the type based on
- * some repository (currently either BCEL or an EclipseSourceType, but in the future we probably need to support java.lang.reflect
- * based delegates too).
- * 
+ * A UnresolvedType represents a type to the weaver. UnresolvedTypes are resolved in some World (a type repository). When a
+ * UnresolvedType is resolved it turns into a ResolvedType which may be a primitive type, or a ReferenceType. ReferenceTypes may
+ * refer to simple, generic, parameterized or type-variable based reference types. A ReferenceType is backed by a delegate that
+ * provides information about the type based on some repository (for example an Eclipse based delegate, a bytecode based delegate or
+ * a reflection based delegate).
+ * <p>
  * Every UnresolvedType has a signature, the unique key for the type in the world.
- * 
- * 
- * TypeXs are fully aware of their complete type information (there is no erasure in the UnresolvedType world). To achieve this, the
- * signature of TypeXs combines the basic Java signature and the generic signature information into one complete signature.
- * 
- * The format of a UnresolvedType signature is as follows:
- * 
- * a simple (non-generic, non-parameterized) type has the as its signature the Java signature. e.g. Ljava/lang/String;
- * 
- * a generic type has signature: TypeParamsOpt ClassSig SuperClassSig SuperIntfListOpt
- * 
- * following the Generic signature grammar in the JVM spec., but with the addition of the ClassSignature (which is not in the
- * generic signature). In addition type variable names are replaced by a simple number which represents their declaration order in
- * the type declaration.
- * 
- * e.g. public class Foo<T extends Number> would have signature: <1:Ljava/lang/Number>Lorg.xyz.Foo;Ljava/lang/Object;
- * 
- * A parameterized type is a distinct type in the world with its own signature following the grammar:
- * 
- * TypeParamsOpt ClassSig<ParamSigList>;
- * 
- * but with the L for the class sig replaced by "P". For example List<String> has signature
- * 
- * Pjava/util/List<Ljava/lang/String>;
- * 
- * and List<T> in the following class : class Foo<T> { List<T> lt; }
- * 
- * has signature: <1:>Pjava/util/List<T1;>;
- * 
- * A typex that represents a type variable has its own unique signature, following the grammar for a FormalTypeParameter in the JVM
- * spec.
- * 
- * A generic typex has its true signature and also an erasure signature. Both of these are keys pointing to the same UnresolvedType
- * in the world. For example List has signature:
- * 
- * <1:>Ljava/util/List;Ljava/lang/Object;
- * 
- * and the erasure signature
- * 
- * Ljava/util/List;
- * 
- * Generics wildcards introduce their own special signatures for type parameters. The wildcard ? has signature * The wildcard ?
- * extends Foo has signature +LFoo; The wildcard ? super Foo has signature -LFoo;
  */
 public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
-	// common types referred to by the weaver
+	// common type structures
 	public static final UnresolvedType[] NONE = new UnresolvedType[0];
 	public static final UnresolvedType OBJECT = forSignature("Ljava/lang/Object;");
 	public static final UnresolvedType OBJECTARRAY = forSignature("[Ljava/lang/Object;");
@@ -91,10 +47,10 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	public static final UnresolvedType AT_RETENTION = forSignature("Ljava/lang/annotation/Retention;");
 	public static final UnresolvedType ENUM = forSignature("Ljava/lang/Enum;");
 	public static final UnresolvedType ANNOTATION = forSignature("Ljava/lang/annotation/Annotation;");
-	public static final UnresolvedType JAVA_LANG_CLASS = forSignature("Ljava/lang/Class;");
+	public static final UnresolvedType JL_CLASS = forSignature("Ljava/lang/Class;");
 	public static final UnresolvedType JAVA_LANG_CLASS_ARRAY = forSignature("[Ljava/lang/Class;");
-	public static final UnresolvedType JAVA_LANG_STRING = forSignature("Ljava/lang/String;");
-	public static final UnresolvedType JAVA_LANG_EXCEPTION = forSignature("Ljava/lang/Exception;");
+	public static final UnresolvedType JL_STRING = forSignature("Ljava/lang/String;");
+	public static final UnresolvedType JL_EXCEPTION = forSignature("Ljava/lang/Exception;");
 	public static final UnresolvedType JAVA_LANG_REFLECT_METHOD = forSignature("Ljava/lang/reflect/Method;");
 	public static final UnresolvedType JAVA_LANG_REFLECT_FIELD = forSignature("Ljava/lang/reflect/Field;");
 	public static final UnresolvedType JAVA_LANG_REFLECT_CONSTRUCTOR = forSignature("Ljava/lang/reflect/Constructor;");
@@ -106,18 +62,20 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	public static final UnresolvedType JOINPOINT_STATICPART = forSignature("Lorg/aspectj/lang/JoinPoint$StaticPart;");
 	public static final UnresolvedType JOINPOINT_ENCLOSINGSTATICPART = forSignature("Lorg/aspectj/lang/JoinPoint$EnclosingStaticPart;");
 
-	// this doesn't belong here and will get moved to ResolvedType later in the refactoring
+	// A type is considered missing if we have a signature for it but cannot find the delegate
 	public static final String MISSING_NAME = "@missing@";
 
 	// OPTIMIZE I dont think you can ask something unresolved what kind of type it is, how can it always know? Push down into
-	// resolvedtype
-	// that will force references to resolvedtypes to be correct rather than relying on unresolvedtypes to answer questions
+	// resolvedtype that will force references to resolvedtypes to be correct rather than relying on unresolvedtypes to answer questions
 	protected TypeKind typeKind = TypeKind.SIMPLE; // what kind of type am I?
 
-	/**
-	 * THE SIGNATURE - see the comments above for how this is defined
-	 */
 	protected String signature;
+
+	/**
+	 * The erasure of the signature. Contains only the Java signature of the type with all supertype, superinterface, type variable,
+	 * and parameter information removed.
+	 */
+	protected String signatureErasure;
 
 	/**
 	 * Calculated on first request - the package name (java.lang for type java.lang.String)
@@ -128,12 +86,6 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	 * Calculated on first request - the class name (String for type java.lang.String)
 	 */
 	private String className;
-
-	/**
-	 * The erasure of the signature. Contains only the Java signature of the type with all supertype, superinterface, type variable,
-	 * and parameter information removed.
-	 */
-	protected String signatureErasure;
 
 	/**
 	 * Iff isParameterized(), then these are the type parameters
@@ -198,7 +150,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	}
 
 	/**
-	 * Equality is checked based on the underlying signature. {@link ResolvedType} objects' equals is by reference.
+	 * Equality is checked based on the underlying signature.
 	 */
 	@Override
 	public boolean equals(Object other) {
@@ -237,22 +189,13 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		}
 	}
 
-	// ---- Things we can do without a world
+	// The operations supported by an UnresolvedType are those that do not require a world
 
 	/**
 	 * This is the size of this type as used in JVM.
 	 */
 	public int getSize() {
 		return 1;
-	}
-
-	public static UnresolvedType makeArray(UnresolvedType base, int dims) {
-		StringBuffer sig = new StringBuffer();
-		for (int i = 0; i < dims; i++) {
-			sig.append("[");
-		}
-		sig.append(base.getSignature());
-		return UnresolvedType.forSignature(sig.toString());
 	}
 
 	/**
@@ -398,7 +341,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	 * 
 	 * </blockquote>
 	 * 
-	 * Types may equivalently be produced by this or by {@link #forName(String)}.
+	 * Types may equivalently be produced by this or by {@link #forName(String)}. This method should not be passed P signatures.
 	 * 
 	 * <blockquote>
 	 * 
@@ -413,6 +356,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	 * @return a type object represnting that JVM bytecode signature.
 	 */
 	public static UnresolvedType forSignature(String signature) {
+		assert !(signature.startsWith("L") && signature.indexOf("<") != -1);
 		switch (signature.charAt(0)) {
 		case 'B':
 			return ResolvedType.BYTE;
@@ -740,51 +684,49 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	}
 
 	private static String nameToSignature(String name) {
-		if (name.equals("byte")) {
-			return "B";
-		}
-		if (name.equals("char")) {
-			return "C";
-		}
-		if (name.equals("double")) {
-			return "D";
-		}
-		if (name.equals("float")) {
-			return "F";
-		}
-		if (name.equals("int")) {
-			return "I";
-		}
-		if (name.equals("long")) {
-			return "J";
-		}
-		if (name.equals("short")) {
-			return "S";
-		}
-		if (name.equals("boolean")) {
-			return "Z";
-		}
-		if (name.equals("void")) {
-			return "V";
-		}
-		if (name.equals("?")) {
-			return name;
+		int len = name.length();
+		if (len < 8) {
+			if (name.equals("byte")) {
+				return "B";
+			}
+			if (name.equals("char")) {
+				return "C";
+			}
+			if (name.equals("double")) {
+				return "D";
+			}
+			if (name.equals("float")) {
+				return "F";
+			}
+			if (name.equals("int")) {
+				return "I";
+			}
+			if (name.equals("long")) {
+				return "J";
+			}
+			if (name.equals("short")) {
+				return "S";
+			}
+			if (name.equals("boolean")) {
+				return "Z";
+			}
+			if (name.equals("void")) {
+				return "V";
+			}
+			if (name.equals("?")) {
+				return name;
+			}
 		}
 		if (name.endsWith("[]")) {
 			return "[" + nameToSignature(name.substring(0, name.length() - 2));
 		}
-		if (name.length() != 0) {
-			// lots more tests could be made here...
-
+		if (len != 0) {
 			// check if someone is calling us with something that is a signature already
-			if (name.charAt(0) == '[') {
-				throw new BCException("Do not call nameToSignature with something that looks like a signature (descriptor): '"
-						+ name + "'");
-			}
+			assert name.charAt(0) != '[';
 
 			if (name.indexOf("<") == -1) {
-				// not parameterised
-				return "L" + name.replace('.', '/') + ";";
+				// not parameterized
+				return new StringBuilder("L").append(name.replace('.', '/')).append(';').toString();
 			} else {
 				StringBuffer nameBuff = new StringBuffer();
 				int nestLevel = 0;
@@ -835,38 +777,25 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		}
 	}
 
+	/**
+	 * Write out an UnresolvedType - the signature should be enough.
+	 */
 	public final void write(CompressingDataOutputStream s) throws IOException {
 		s.writeUTF(getSignature());
 	}
 
+	/**
+	 * Read in an UnresolvedType - just read the signature and rebuild the UnresolvedType.
+	 */
 	public static UnresolvedType read(DataInputStream s) throws IOException {
 		String sig = s.readUTF();
 		if (sig.equals(MISSING_NAME)) {
 			return ResolvedType.MISSING;
 		} else {
-			UnresolvedType ret = UnresolvedType.forSignature(sig);
-			return ret;
+			// TODO isn't it a shame to build these (this method is expensive) and then chuck them away on resolution?
+			// TODO review callers and see if they are immediately resolving it, maybe we can do something more optimal if they are
+			return UnresolvedType.forSignature(sig);
 		}
-	}
-
-	public static void writeArray(UnresolvedType[] types, CompressingDataOutputStream s) throws IOException {
-		int len = types.length;
-		s.writeShort(len);
-		for (int i = 0; i < len; i++) {
-			types[i].write(s);
-		}
-	}
-
-	public static UnresolvedType[] readArray(DataInputStream s) throws IOException {
-		int len = s.readShort();
-		if (len == 0) {
-			return UnresolvedType.NONE;
-		}
-		UnresolvedType[] types = new UnresolvedType[len];
-		for (int i = 0; i < len; i++) {
-			types[i] = UnresolvedType.read(s);
-		}
-		return types;
 	}
 
 	public String getNameAsIdentifier() {
@@ -883,40 +812,8 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		}
 	}
 
-	public String getPackageName() {
-		if (packageName == null) {
-			String name = getName();
-			if (name.indexOf("<") != -1) {
-				name = name.substring(0, name.indexOf("<"));
-			}
-			int index = name.lastIndexOf('.');
-			if (index == -1) {
-				packageName = "";
-			} else {
-				packageName = name.substring(0, index);
-			}
-		}
-		return packageName;
-	}
-
 	public UnresolvedType[] getTypeParameters() {
 		return typeParameters == null ? UnresolvedType.NONE : typeParameters;
-	}
-
-	/**
-	 * Doesn't include the package
-	 */
-	public String getClassName() {
-		if (className == null) {
-			String name = getName();
-			int index = name.lastIndexOf('.');
-			if (index == -1) {
-				className = name;
-			} else {
-				className = name.substring(index + 1);
-			}
-		}
-		return className;
 	}
 
 	public TypeVariable[] getTypeVariables() {
@@ -972,5 +869,71 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	// OPTIMIZE methods like this just allow callers to be lazy and not ensure they are working with the right (resolved) subtype
 	public UnresolvedType parameterize(Map<String, UnresolvedType> typeBindings) {
 		throw new UnsupportedOperationException("unable to parameterize unresolved type: " + signature);
+	}
+
+	/**
+	 * @return the class name (does not include the package name)
+	 */
+	public String getClassName() {
+		if (className == null) {
+			String name = getName();
+			int index = name.lastIndexOf('.');
+			if (index == -1) {
+				className = name;
+			} else {
+				className = name.substring(index + 1);
+			}
+		}
+		return className;
+	}
+
+	/**
+	 * @return the package name (no class name included)
+	 */
+	public String getPackageName() {
+		if (packageName == null) {
+			String name = getName();
+			if (name.indexOf("<") != -1) {
+				name = name.substring(0, name.indexOf("<"));
+			}
+			int index = name.lastIndexOf('.');
+			if (index == -1) {
+				packageName = "";
+			} else {
+				packageName = name.substring(0, index);
+			}
+		}
+		return packageName;
+	}
+
+	// TODO these move to a TypeUtils class
+
+	public static void writeArray(UnresolvedType[] types, CompressingDataOutputStream stream) throws IOException {
+		int len = types.length;
+		stream.writeShort(len);
+		for (UnresolvedType type : types) {
+			type.write(stream);
+		}
+	}
+
+	public static UnresolvedType[] readArray(DataInputStream s) throws IOException {
+		int len = s.readShort();
+		if (len == 0) {
+			return UnresolvedType.NONE;
+		}
+		UnresolvedType[] types = new UnresolvedType[len];
+		for (int i = 0; i < len; i++) {
+			types[i] = UnresolvedType.read(s);
+		}
+		return types;
+	}
+
+	public static UnresolvedType makeArray(UnresolvedType base, int dims) {
+		StringBuffer sig = new StringBuffer();
+		for (int i = 0; i < dims; i++) {
+			sig.append("[");
+		}
+		sig.append(base.getSignature());
+		return UnresolvedType.forSignature(sig.toString());
 	}
 }

@@ -2499,7 +2499,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * @return true if assignable to java.lang.Exception
 	 */
 	public boolean isException() {
-		return (world.getCoreType(UnresolvedType.JAVA_LANG_EXCEPTION).isAssignableFrom(this));
+		return (world.getCoreType(UnresolvedType.JL_EXCEPTION).isAssignableFrom(this));
 	}
 
 	/**

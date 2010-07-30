@@ -128,7 +128,7 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 		return nftm;
 	}
 
-	public ResolvedTypeMunger parameterizeWith(Map m, World w) {
+	public ResolvedTypeMunger parameterizeWith(Map<String, UnresolvedType> m, World w) {
 		ResolvedMember parameterizedSignature = getSignature().parameterizedWith(m, w);
 		NewFieldTypeMunger nftm = new NewFieldTypeMunger(parameterizedSignature, getSuperMethodsCalled(), typeVariableAliases);
 		nftm.setDeclaredSignature(getSignature());

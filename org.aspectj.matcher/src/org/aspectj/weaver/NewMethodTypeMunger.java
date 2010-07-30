@@ -69,9 +69,9 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 	public static ResolvedTypeMunger readMethod(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		ISourceLocation sloc = null;
 		ResolvedMemberImpl rmImpl = ResolvedMemberImpl.readResolvedMember(s, context);
-		Set superMethodsCalled = readSuperMethodsCalled(s);
+		Set<ResolvedMember> superMethodsCalled = readSuperMethodsCalled(s);
 		sloc = readSourceLocation(s);
-		List typeVarAliases = readInTypeAliases(s);
+		List<String> typeVarAliases = readInTypeAliases(s);
 
 		ResolvedTypeMunger munger = new NewMethodTypeMunger(rmImpl, superMethodsCalled, typeVarAliases);
 		if (sloc != null) {
@@ -138,7 +138,7 @@ public class NewMethodTypeMunger extends ResolvedTypeMunger {
 		return result;
 	}
 
-	public ResolvedTypeMunger parameterizeWith(Map m, World w) {
+	public ResolvedTypeMunger parameterizeWith(Map<String, UnresolvedType> m, World w) {
 		ResolvedMember parameterizedSignature = getSignature().parameterizedWith(m, w);
 		NewMethodTypeMunger nmtm = new NewMethodTypeMunger(parameterizedSignature, getSuperMethodsCalled(), typeVariableAliases);
 		nmtm.setDeclaredSignature(getSignature());

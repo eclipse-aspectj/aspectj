@@ -181,7 +181,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 						} else {
 							throw new RuntimeException("Not implemented for " + t);
 						}
-					} else if (t.equals(ResolvedType.JAVA_LANG_STRING)) {
+					} else if (t.equals(ResolvedType.JL_STRING)) {
 						// nothing to do, it will be OK
 					} else {
 						throw new RuntimeException("Compiler limitation: annotation value support not implemented for type " + t);

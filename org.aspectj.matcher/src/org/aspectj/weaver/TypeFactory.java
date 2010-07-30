@@ -69,7 +69,7 @@ public class TypeFactory {
 	 * Creates a sensible unresolvedtype from some signature, for example: signature = LIGuard<TT;>; bound = toString=IGuard<T>
 	 * sig=PIGuard<TT;>; sigErasure=LIGuard; kind=parameterized
 	 */
-	private static UnresolvedType convertSigToType(String aSignature) {
+	static UnresolvedType convertSigToType(String aSignature) {
 		UnresolvedType bound = null;
 		int startOfParams = aSignature.indexOf('<');
 		if (startOfParams == -1) {
@@ -132,6 +132,15 @@ public class TypeFactory {
 					endOfParams = locateMatchingEndAngleBracket(lastType, startOfParams);
 					typeParams = createTypeParams(lastType.substring(startOfParams + 1, endOfParams));
 				}
+				StringBuilder s = new StringBuilder();
+				int firstAngleBracket = signature.indexOf('<');
+				s.append("P").append(signature.substring(1, firstAngleBracket));
+				s.append('<');
+				for (UnresolvedType typeParameter : typeParams) {
+					s.append(typeParameter.getSignature());
+				}
+				s.append(">;");
+				signature = s.toString();//'P' + signature.substring(1);
 				return new UnresolvedType(signature, signatureErasure, typeParams);
 			}
 			// can't replace above with convertSigToType - leads to stackoverflow
@@ -185,6 +194,54 @@ public class TypeFactory {
 		} else if (firstChar == '@') {
 			// missing type
 			return ResolvedType.MISSING;
+		} else if (firstChar == 'L') {
+			// only an issue if there is also an angle bracket
+			int leftAngleBracket = signature.indexOf('<');
+
+			if (leftAngleBracket == -1) {
+				return new UnresolvedType(signature);
+			} else {
+				int endOfParams = locateMatchingEndAngleBracket(signature, leftAngleBracket);
+				StringBuffer erasureSig = new StringBuffer(signature);
+				erasureSig.setCharAt(0, 'L');
+				while (leftAngleBracket != -1) {
+					erasureSig.delete(leftAngleBracket, endOfParams + 1);
+					leftAngleBracket = locateFirstBracket(erasureSig);
+					if (leftAngleBracket != -1) {
+						endOfParams = locateMatchingEndAngleBracket(erasureSig, leftAngleBracket);
+					}
+				}
+
+				String signatureErasure = erasureSig.toString();
+
+				// TODO should consider all the intermediate parameterizations as well!
+				// the type parameters of interest are only those that apply to the 'last type' in the signature
+				// if the signature is 'PMyInterface<String>$MyOtherType;' then there are none...
+				String lastType = null;
+				int nestedTypePosition = signature.indexOf("$", endOfParams); // don't look for $ INSIDE the parameters
+				if (nestedTypePosition != -1) {
+					lastType = signature.substring(nestedTypePosition + 1);
+				} else {
+					lastType = new String(signature);
+				}
+				leftAngleBracket = lastType.indexOf("<");
+				UnresolvedType[] typeParams = UnresolvedType.NONE;
+				if (leftAngleBracket != -1) {
+					endOfParams = locateMatchingEndAngleBracket(lastType, leftAngleBracket);
+					typeParams = createTypeParams(lastType.substring(leftAngleBracket + 1, endOfParams));
+				}
+				StringBuilder s = new StringBuilder();
+				int firstAngleBracket = signature.indexOf('<');
+				s.append("P").append(signature.substring(1, firstAngleBracket));
+				s.append('<');
+				for (UnresolvedType typeParameter : typeParams) {
+					s.append(typeParameter.getSignature());
+				}
+				s.append(">;");
+				signature = s.toString();//'P' + signature.substring(1);
+				return new UnresolvedType(signature, signatureErasure, typeParams);
+			}
+
 		}
 		return new UnresolvedType(signature);
 	}
@@ -224,16 +281,18 @@ public class TypeFactory {
 
 	private static UnresolvedType[] createTypeParams(String typeParameterSpecification) {
 		String remainingToProcess = typeParameterSpecification;
-		List types = new ArrayList();
+		List<UnresolvedType> types = new ArrayList<UnresolvedType>();
 		while (remainingToProcess.length() != 0) {
 			int endOfSig = 0;
 			int anglies = 0;
+			boolean hadAnglies = false;
 			boolean sigFound = false; // OPTIMIZE can this be done better?
 			for (endOfSig = 0; (endOfSig < remainingToProcess.length()) && !sigFound; endOfSig++) {
 				char thisChar = remainingToProcess.charAt(endOfSig);
 				switch (thisChar) {
 				case '<':
 					anglies++;
+					hadAnglies = true;
 					break;
 				case '>':
 					anglies--;
@@ -260,7 +319,11 @@ public class TypeFactory {
 					}
 				}
 			}
-			types.add(createTypeFromSignature(remainingToProcess.substring(0, endOfSig)));
+			String forProcessing = remainingToProcess.substring(0, endOfSig);
+			if (hadAnglies && forProcessing.charAt(0) == 'L') {
+				forProcessing = "P" + forProcessing.substring(1);
+			}
+			types.add(createTypeFromSignature(forProcessing));
 			remainingToProcess = remainingToProcess.substring(endOfSig);
 		}
 		UnresolvedType[] typeParams = new UnresolvedType[types.size()];

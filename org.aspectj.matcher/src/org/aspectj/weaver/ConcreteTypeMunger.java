@@ -69,14 +69,16 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
 	}
 
 	public ISourceLocation getSourceLocation() {
-		if (munger == null)
+		if (munger == null) {
 			return null;
+		}
 		return munger.getSourceLocation(); // XXX
 	}
 
 	public boolean matches(ResolvedType onType) {
-		if (munger == null)
+		if (munger == null) {
 			throw new RuntimeException("huh: " + this);
+		}
 		return munger.matches(onType, aspectType);
 	}
 
@@ -119,8 +121,9 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
 	 * </code>
 	 */
 	public boolean isTargetTypeParameterized() {
-		if (munger == null)
+		if (munger == null) {
 			return false;
+		}
 		return munger.sharesTypeVariablesWithGenericType();
 	}
 
@@ -131,12 +134,13 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
 	public abstract ConcreteTypeMunger parameterizedFor(ResolvedType targetType);
 
 	public boolean isLateMunger() {
-		if (munger == null)
+		if (munger == null) {
 			return false;
+		}
 		return munger.isLateMunger();
 	}
 
-	public abstract ConcreteTypeMunger parameterizeWith(Map parameterizationMap, World world);
+	public abstract ConcreteTypeMunger parameterizeWith(Map<String, UnresolvedType> parameterizationMap, World world);
 
 	/**
 	 * Some type mungers are created purely to help with the implementation of shadow mungers. For example to support the cflow()

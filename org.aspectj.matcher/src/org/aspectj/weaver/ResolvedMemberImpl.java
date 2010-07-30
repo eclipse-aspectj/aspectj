@@ -1039,17 +1039,13 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	 * getParam
 	 */
 	public String getParameterSignatureErased() {
-		if (myParameterSignatureErasure != null) {
-			return myParameterSignatureErasure;
+		if (myParameterSignatureErasure == null) {
+			StringBuilder sig = new StringBuilder();
+			for (UnresolvedType parameter : getParameterTypes()) {
+				sig.append(parameter.getErasureSignature());
+			}
+			myParameterSignatureErasure = sig.toString();
 		}
-		StringBuffer sig = new StringBuffer();
-		UnresolvedType[] myParameterTypes = getParameterTypes();
-		for (int i = 0; i < myParameterTypes.length; i++) {
-			UnresolvedType thisParameter = myParameterTypes[i];
-			// type vars will be erased to first bound
-			sig.append(thisParameter.getErasureSignature());
-		}
-		myParameterSignatureErasure = sig.toString();
 		return myParameterSignatureErasure;
 	}
 

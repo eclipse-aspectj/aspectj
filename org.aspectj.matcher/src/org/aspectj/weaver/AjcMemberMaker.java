@@ -109,7 +109,7 @@ public class AjcMemberMaker {
 		if (!isSerializableAspect(aspectType)) {
 			modifiers |= Modifier.TRANSIENT;
 		}
-		return new ResolvedMemberImpl(Member.FIELD, declaringType, modifiers, UnresolvedType.JAVA_LANG_STRING,
+		return new ResolvedMemberImpl(Member.FIELD, declaringType, modifiers, UnresolvedType.JL_STRING,
 				NameMangler.PERTYPEWITHIN_WITHINTYPEFIELD, UnresolvedType.NONE);
 	}
 
@@ -126,7 +126,7 @@ public class AjcMemberMaker {
 	public static ResolvedMember perTypeWithinGetInstance(UnresolvedType declaringType) {
 		// private static a.X ajc$getInstance(java.lang.Class)
 		ResolvedMemberImpl rm = new ResolvedMemberImpl(Member.METHOD, declaringType, PRIVATE_STATIC, declaringType, // return value
-				NameMangler.PERTYPEWITHIN_GETINSTANCE_METHOD, new UnresolvedType[] { UnresolvedType.JAVA_LANG_CLASS });
+				NameMangler.PERTYPEWITHIN_GETINSTANCE_METHOD, new UnresolvedType[] { UnresolvedType.JL_CLASS });
 		return rm;
 	}
 
@@ -134,7 +134,7 @@ public class AjcMemberMaker {
 	public static ResolvedMember perTypeWithinGetWithinTypeNameMethod(UnresolvedType declaringType, boolean inJava5Mode) {
 		// public String getWithinTypeName()
 		ResolvedMemberImpl rm = new ResolvedMemberImpl(Member.METHOD, declaringType, Modifier.PUBLIC,
-				UnresolvedType.JAVA_LANG_STRING, // return value
+				UnresolvedType.JL_STRING, // return value
 				NameMangler.PERTYPEWITHIN_GETWITHINTYPENAME_METHOD, UnresolvedType.NONE);
 		return rm;
 	}

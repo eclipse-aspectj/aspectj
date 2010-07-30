@@ -8,7 +8,6 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
-
 /**
  * @author Adrian Colyer
  * @author Andy Clement
@@ -23,13 +22,14 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType implemen
 	}
 
 	public UnresolvedTypeVariableReferenceType(TypeVariable aTypeVariable) {
-		super(aTypeVariable.getFirstBound().getSignature());
+		super("T" + aTypeVariable.getName() + ";", aTypeVariable.getFirstBound().getErasureSignature());//aTypeVariable.getFirstBound().getSignature());
 		this.typeVariable = aTypeVariable;
 	}
 
 	// only used when resolving circular refs...
 	public void setTypeVariable(TypeVariable aTypeVariable) {
 		this.signature = "T" + aTypeVariable.getName() + ";"; // aTypeVariable.getUpperBound().getSignature();
+		this.signatureErasure = aTypeVariable.getFirstBound().getErasureSignature();
 		this.typeVariable = aTypeVariable;
 		this.typeKind = TypeKind.TYPE_VARIABLE;
 	}

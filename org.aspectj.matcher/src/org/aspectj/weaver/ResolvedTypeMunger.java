@@ -488,7 +488,7 @@ public abstract class ResolvedTypeMunger {
 		return false;
 	}
 
-	public ResolvedTypeMunger parameterizeWith(Map m, World w) {
+	public ResolvedTypeMunger parameterizeWith(Map<String, UnresolvedType> m, World w) {
 		throw new BCException("Dont call parameterizeWith() on a type munger of this kind: " + this.getClass());
 	}
 

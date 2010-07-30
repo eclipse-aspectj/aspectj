@@ -33,6 +33,7 @@ public class MatcherModuleTests extends TestCase {
 		suite.addTestSuite(ReflectionWorldSpecificTest.class);
 		suite.addTestSuite(ReflectionWorldBasicTest.class);
 		suite.addTestSuite(ReflectionWorldPointcutExpressionTests.class);
+		suite.addTestSuite(TypeFactoryTests.class);
 		suite.addTest(PatternsTests.suite());
 		return suite;
 	}

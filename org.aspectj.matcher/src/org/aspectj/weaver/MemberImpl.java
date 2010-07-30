@@ -381,17 +381,13 @@ public class MemberImpl implements Member {
 	}
 
 	public String getParameterSignature() {
-		if (paramSignature != null) {
-			return paramSignature;
+		if (paramSignature == null) {
+			StringBuilder sb = new StringBuilder("(");
+			for (UnresolvedType parameterType : parameterTypes) {
+				sb.append(parameterType.getSignature());
+			}
+			paramSignature = sb.append(")").toString();
 		}
-		StringBuffer sb = new StringBuffer();
-		sb.append("(");
-		for (int i = 0; i < parameterTypes.length; i++) {
-			UnresolvedType tx = parameterTypes[i];
-			sb.append(tx.getSignature());
-		}
-		sb.append(")");
-		paramSignature = sb.toString();
 		return paramSignature;
 	}
 
