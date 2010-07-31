@@ -61,6 +61,9 @@ public interface ReferenceTypeDelegate {
 
 	public boolean isAnonymous();
 
+	/**
+	 * @return true if this class is nested (this includes: member classes, local classes, anonymous classes)
+	 */
 	public boolean isNested();
 
 	public boolean hasAnnotation(UnresolvedType ofType);
