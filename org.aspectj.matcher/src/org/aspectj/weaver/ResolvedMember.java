@@ -37,8 +37,6 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 
 	public boolean isCompatibleWith(Member am);
 
-	public boolean hasAnnotations();
-
 	public boolean hasAnnotation(UnresolvedType ofType);
 
 	public AnnotationAJ[] getAnnotations();
