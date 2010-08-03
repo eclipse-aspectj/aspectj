@@ -27,8 +27,7 @@ import org.aspectj.bridge.ISourceLocation;
  * @author PARC
  * @author Andy Clement
  */
-public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, AnnotatedElement, TypeVariableDeclaringElement,
-		ResolvedMember {
+public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, TypeVariableDeclaringElement, ResolvedMember {
 
 	private String[] parameterNames = null;
 	protected UnresolvedType[] checkedExceptions = UnresolvedType.NONE;
@@ -756,13 +755,13 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 			}
 		}
 
-		UnresolvedType parameterizedReturnType = parameterize(getGenericReturnType(), typeMap, isParameterized, newDeclaringType
-				.getWorld());
+		UnresolvedType parameterizedReturnType = parameterize(getGenericReturnType(), typeMap, isParameterized,
+				newDeclaringType.getWorld());
 		UnresolvedType[] parameterizedParameterTypes = new UnresolvedType[getGenericParameterTypes().length];
 		UnresolvedType[] genericParameterTypes = getGenericParameterTypes();
 		for (int i = 0; i < parameterizedParameterTypes.length; i++) {
-			parameterizedParameterTypes[i] = parameterize(genericParameterTypes[i], typeMap, isParameterized, newDeclaringType
-					.getWorld());
+			parameterizedParameterTypes[i] = parameterize(genericParameterTypes[i], typeMap, isParameterized,
+					newDeclaringType.getWorld());
 		}
 		ResolvedMemberImpl ret = new ResolvedMemberImpl(getKind(), newDeclaringType, getModifiers(), parameterizedReturnType,
 				getName(), parameterizedParameterTypes, getExceptions(), this);
@@ -930,7 +929,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Anno
 	// }
 	// return null;
 	// }
-	//	
+	//
 	// private ResolvedMember myErasure = null;
 	// private boolean calculatedMyErasure = false;
 	public boolean hasBackingGenericMember() {
