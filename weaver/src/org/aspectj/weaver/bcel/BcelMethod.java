@@ -31,8 +31,8 @@ import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.GenericSignature;
-import org.aspectj.util.GenericSignatureParser;
 import org.aspectj.util.GenericSignature.TypeVariableSignature;
+import org.aspectj.util.GenericSignatureParser;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.BCException;
@@ -126,7 +126,8 @@ class BcelMethod extends ResolvedMemberImpl {
 		int len = getArity();
 		if (varTable == null) {
 			// do we have an annotation with the argNames value specified...
-			if (hasAnnotations()) {
+			AnnotationAJ[] annos = getAnnotations();
+			if (annos != null && annos.length != 0) {
 				AnnotationAJ[] axs = getAnnotations();
 				for (int i = 0; i < axs.length; i++) {
 					AnnotationAJ annotationX = axs[i];
@@ -185,8 +186,8 @@ class BcelMethod extends ResolvedMemberImpl {
 				resolvedDeclaringType.getSourceContext(), world, bcelObjectType.getWeaverVersionAttribute(),
 				new BcelConstantPoolReader(method.getConstantPool()));
 		processAttributes(world, as);
-		as = AtAjAttributes.readAj5MethodAttributes(method, this, resolvedDeclaringType, preResolvedPointcut, resolvedDeclaringType
-				.getSourceContext(), world.getMessageHandler());
+		as = AtAjAttributes.readAj5MethodAttributes(method, this, resolvedDeclaringType, preResolvedPointcut,
+				resolvedDeclaringType.getSourceContext(), world.getMessageHandler());
 		processAttributes(world, as);
 	}
 
