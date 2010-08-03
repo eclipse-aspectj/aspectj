@@ -91,6 +91,7 @@ public class BcelWorld extends World implements Repository {
 	private final BcelWeavingSupport bcelWeavingSupport = new BcelWeavingSupport();
 	private boolean isXmlConfiguredWorld = false;
 	private WeavingXmlConfig xmlConfiguration;
+	private List<TypeDelegateResolver> typeDelegateResolvers;
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelWorld.class);
 
@@ -373,6 +374,15 @@ public class BcelWorld extends World implements Repository {
 		ensureAdvancedConfigurationProcessed();
 		JavaClass jc = lookupJavaClass(classPath, name);
 		if (jc == null) {
+			// Anyone else to ask?
+			if (typeDelegateResolvers != null) {
+				for (TypeDelegateResolver tdr : typeDelegateResolvers) {
+					ReferenceTypeDelegate delegate = tdr.getDelegate(ty);
+					if (delegate != null) {
+						return delegate;
+					}
+				}
+			}
 			return null;
 		} else {
 			return buildBcelDelegate(ty, jc, false, false);
@@ -1180,4 +1190,14 @@ public class BcelWorld extends World implements Repository {
 		return false;
 	}
 
+	public void addTypeDelegateResolver(TypeDelegateResolver typeDelegateResolver) {
+		if (typeDelegateResolvers == null) {
+			typeDelegateResolvers = new ArrayList<TypeDelegateResolver>();
+		}
+		typeDelegateResolvers.add(typeDelegateResolver);
+	}
+
+	public void classWriteEvent(char[] classname) {
+		typeMap.classWriteEvent(new String(classname));
+	}
 }
