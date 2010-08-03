@@ -44,6 +44,25 @@ public class BcelAnnotation extends AbstractAnnotationAJ {
 		this.bcelAnnotation = theBcelAnnotation;
 	}
 
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		List<NameValuePair> nvPairs = bcelAnnotation.getValues();
+		sb.append("Anno[" + getTypeSignature() + " " + (isRuntimeVisible() ? "rVis" : "rInvis"));
+		if (nvPairs.size() > 0) {
+			sb.append(" ");
+			int i = 0;
+			for (NameValuePair element : nvPairs) {
+				if (i > 0) {
+					sb.append(',');
+				}
+				sb.append(element.getNameString()).append("=").append(element.getValue().toString());
+				i++;
+			}
+		}
+		sb.append("]");
+		return sb.toString();
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
