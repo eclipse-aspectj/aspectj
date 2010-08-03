@@ -59,8 +59,9 @@ public class StandardAnnotation extends AbstractAnnotationAJ {
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("ANNOTATION [" + getTypeSignature() + "] [" + (isRuntimeVisible ? "runtimeVisible" : "runtimeInvisible") + "] [");
+		sb.append("Anno[" + getTypeSignature() + " " + (isRuntimeVisible ? "rVis" : "rInvis"));
 		if (nvPairs != null) {
+			sb.append(" ");
 			for (Iterator<AnnotationNameValuePair> iter = nvPairs.iterator(); iter.hasNext();) {
 				AnnotationNameValuePair element = iter.next();
 				sb.append(element.toString());
