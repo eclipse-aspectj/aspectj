@@ -32,8 +32,9 @@ public class EnumElementValue extends ElementValue {
 	 */
 	protected EnumElementValue(int typeIdx, int valueIdx, ConstantPool cpool) {
 		super(ElementValue.ENUM_CONSTANT, cpool);
-		if (type != ENUM_CONSTANT)
+		if (type != ENUM_CONSTANT) {
 			throw new RuntimeException("Only element values of type enum can be built with this ctor");
+		}
 		this.typeIdx = typeIdx;
 		this.valueIdx = valueIdx;
 	}
@@ -83,6 +84,12 @@ public class EnumElementValue extends ElementValue {
 		return sb.toString();
 	}
 
+/*	public String toString() {
+		StringBuilder s = new StringBuilder("E(");
+		s.append(getEnumTypeString()).append(" ").append(getEnumValueString()).append(")");
+		return s.toString();
+	}
+*/
 	// BCELBUG: Should we need to call utility.signatureToString() on the output here?
 	public String getEnumTypeString() {
 		// Constant cc = getConstantPool().getConstant(typeIdx);
