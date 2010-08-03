@@ -3895,8 +3895,4 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		return new File(projDir, "bin" + File.separator + filename);
 	}
 
-	private void assertNoErrors(String projectName) {
-		assertTrue("Should be no errors, but got " + getErrorMessages(projectName), getErrorMessages(projectName).size() == 0);
-	}
-
 }

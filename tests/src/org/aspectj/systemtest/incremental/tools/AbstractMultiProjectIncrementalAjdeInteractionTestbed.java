@@ -254,4 +254,8 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 		getModelFor(projectName).dumprels(pw);
 		pw.flush();
 	}
+
+	protected void assertNoErrors(String projectName) {
+		assertTrue("Should be no errors, but got " + getErrorMessages(projectName), getErrorMessages(projectName).size() == 0);
+	}
 }
