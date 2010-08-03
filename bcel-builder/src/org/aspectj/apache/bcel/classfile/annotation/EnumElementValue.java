@@ -84,12 +84,12 @@ public class EnumElementValue extends ElementValue {
 		return sb.toString();
 	}
 
-/*	public String toString() {
+	public String toString() {
 		StringBuilder s = new StringBuilder("E(");
 		s.append(getEnumTypeString()).append(" ").append(getEnumValueString()).append(")");
 		return s.toString();
 	}
-*/
+
 	// BCELBUG: Should we need to call utility.signatureToString() on the output here?
 	public String getEnumTypeString() {
 		// Constant cc = getConstantPool().getConstant(typeIdx);
