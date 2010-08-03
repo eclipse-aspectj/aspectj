@@ -75,10 +75,6 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.isAjSynthetic();
 	}
 
-	public boolean hasAnnotations() {
-		return realMember.hasAnnotations();
-	}
-
 	public boolean hasAnnotation(UnresolvedType ofType) {
 		return realMember.hasAnnotation(ofType);
 	}
