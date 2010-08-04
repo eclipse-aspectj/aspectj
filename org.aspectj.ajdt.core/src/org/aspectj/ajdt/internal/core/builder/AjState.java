@@ -34,6 +34,7 @@ import java.util.Set;
 import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
 import org.aspectj.ajdt.internal.compiler.InterimCompilationResult;
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig.BinarySourceFile;
+import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
@@ -54,15 +55,18 @@ import org.aspectj.org.eclipse.jdt.internal.core.builder.StringSet;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.CompressingDataOutputStream;
+import org.aspectj.weaver.ReferenceType;
+import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.weaver.bcel.TypeDelegateResolver;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
 
 /**
  * Maintains state needed for incremental compilation
  */
-public class AjState implements CompilerConfigurationChangeFlags {
+public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateResolver {
 
 	// SECRETAPI configures whether we use state instead of lastModTime - see pr245566
 	public static boolean CHECK_STATE_FIRST = true;
@@ -1935,6 +1939,7 @@ public class AjState implements CompilerConfigurationChangeFlags {
 
 	public void setWorld(BcelWorld bw) {
 		world = bw;
+		world.addTypeDelegateResolver(this);
 	}
 
 	public BcelWorld getBcelWorld() {
@@ -2132,5 +2137,23 @@ public class AjState implements CompilerConfigurationChangeFlags {
 		// world
 		// model
 		// local state
+	}
+
+	/**
+	 * See if we can create a delegate from a CompactTypeStructure - TODO better comment
+	 */
+	public ReferenceTypeDelegate getDelegate(ReferenceType referenceType) {
+		File f = classesFromName.get(referenceType.getName());
+		if (f == null) {
+			return null; // not heard of it
+		}
+		try {
+			ClassParser parser = new ClassParser(f.toString());
+			return world.buildBcelDelegate(referenceType, parser.parse(), true, false);
+		} catch (IOException e) {
+			System.err.println("Failed to recover "+referenceType);
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

@@ -1063,10 +1063,10 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				// this is either a jar file or a file in a directory
 				boolean hasErrors = unitResult.hasErrors();
 				if (!hasErrors || proceedOnError()) {
-					Collection classFiles = unitResult.compiledTypes.values();
+					Collection<ClassFile> classFiles = unitResult.compiledTypes.values();
 					boolean shouldAddAspectName = (buildConfig.getOutxmlName() != null);
-					for (Iterator iter = classFiles.iterator(); iter.hasNext();) {
-						ClassFile classFile = (ClassFile) iter.next();
+					for (Iterator<ClassFile> iter = classFiles.iterator(); iter.hasNext();) {
+						ClassFile classFile = iter.next();
 						String filename = new String(classFile.fileName());
 						String classname = filename.replace('/', '.');
 						filename = filename.replace('/', File.separatorChar) + ".class";
@@ -1074,6 +1074,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 						try {
 							if (buildConfig.getOutputJar() == null) {
 								String outfile = writeDirectoryEntry(unitResult, classFile, filename);
+								getWorld().classWriteEvent(classFile.getCompoundName());
 								if (environmentSupportsIncrementalCompilation) {
 									if (!classname.endsWith("$ajcMightHaveAspect")) {
 										ResolvedType type = getBcelWorld().resolve(classname);
