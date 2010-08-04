@@ -421,6 +421,10 @@ public abstract class World implements Dump.INode {
 		return ret;
 	}
 
+	public ReferenceType resolveToReferenceType(String name) {
+		return (ReferenceType) resolve(name);
+	}
+
 	public ResolvedType resolve(String name, boolean allowMissing) {
 		return resolve(UnresolvedType.forName(name), allowMissing);
 	}
@@ -981,17 +985,18 @@ public abstract class World implements Dump.INode {
 	 */
 	public static class TypeMap {
 
-		private static boolean debug = false;
-
-		private boolean demotionSystemActive;
-		private boolean debugDemotion = false;
-
 		// Strategy for entries in the expendable map
 		public final static int DONT_USE_REFS = 0; // Hang around forever
 		public final static int USE_WEAK_REFS = 1; // Collected asap
-		public final static int USE_SOFT_REFS = 2; // Collected when short on
-		// memory
-		List<String> addedSinceLastDemote;
+		public final static int USE_SOFT_REFS = 2; // Collected when short on memory
+
+		public List<String> addedSinceLastDemote;
+		public List<String> writtenClasses;
+
+		private static boolean debug = false;
+		public static boolean useExpendableMap = true; // configurable for reliable testing
+		private boolean demotionSystemActive;
+		private boolean debugDemotion = false;
 
 		public int policy = USE_WEAK_REFS;
 
@@ -1013,8 +1018,10 @@ public abstract class World implements Dump.INode {
 		// private static Trace trace = TraceFactory.getTraceFactory().getTrace(World.TypeMap.class);
 
 		TypeMap(World w) {
-			demotionSystemActive = w.isDemotionActive();
+			// Demotion activated when switched on and loadtime weaving or in AJDT
+			demotionSystemActive = w.isDemotionActive() && (w.isLoadtimeWeaving() || w.couldIncrementalCompileFollow());
 			addedSinceLastDemote = new ArrayList<String>();
+			writtenClasses = new ArrayList<String>();
 			this.w = w;
 			memoryProfiling = false;// !w.getMessageHandler().isIgnoring(Message.
 			// INFO);
@@ -1043,46 +1050,103 @@ public abstract class World implements Dump.INode {
 		 * @return number of types demoted
 		 */
 		public int demote(boolean atEndOfCompile) {
-			if (!demotionSystemActive || (!atEndOfCompile && !w.isLoadtimeWeaving())) {
+			if (!demotionSystemActive) {
 				return 0;
 			}
+			if (debugDemotion) {
+				System.out.println("Demotion running " + addedSinceLastDemote);
+			}
+			boolean isLtw = w.isLoadtimeWeaving();
 			int demotionCounter = 0;
-			boolean ctw = !w.isLoadtimeWeaving();
-			for (String key : addedSinceLastDemote) {
-				ResolvedType type = tMap.get(key);
-				if (type != null && !type.isAspect() && !type.equals(UnresolvedType.OBJECT) && !type.isPrimitiveType()) {
-					if (type.isParameterizedOrRawType()) {
-						type = type.getGenericType();
-					}
-					List<ConcreteTypeMunger> typeMungers = type.getInterTypeMungers();
-					if (typeMungers == null || typeMungers.size() == 0) {
-						ReferenceTypeDelegate delegate = ((ReferenceType) type).getDelegate();
-						boolean isWeavable = delegate == null ? false : delegate.isWeavable();
-						// boolean hasBeenWoven = delegate == null ? false : delegate.hasBeenWoven();
-						// System.out.println("Might demote " + key + " delegate?" + (delegate == null) + " isWeavable?" + isWeavable);
-						// + " hasBeenWoven?" + hasBeenWoven);
-
-						if (!ctw || !isWeavable) { // || hasBeenWoven) {
-							// System.out.println("Demoting " + key);
-							tMap.remove(key);
-							if (!expendableMap.containsKey(key)) {
-								if (policy == USE_SOFT_REFS) {
-									expendableMap.put(key, new SoftReference<ResolvedType>(type));
-								} else {
-									expendableMap.put(key, new WeakReference<ResolvedType>(type));
-								}
-							}
+			if (isLtw) {
+				// Loadtime weaving demotion strategy
+				for (String key : addedSinceLastDemote) {
+					ResolvedType type = tMap.get(key);
+					if (type != null && !type.isAspect() && !type.equals(UnresolvedType.OBJECT) && !type.isPrimitiveType()) {
+						if (type.isParameterizedOrRawType()) {
+							type = type.getGenericType();
 						}
-						// }
-						demotionCounter++;
+						List<ConcreteTypeMunger> typeMungers = type.getInterTypeMungers();
+						if (typeMungers == null || typeMungers.size() == 0) {
+							tMap.remove(key);
+							insertInExpendableMap(key, type);
+							demotionCounter++;
+						}
+					}
+				}
+				addedSinceLastDemote.clear();
+			} else {
+				// Compile time demotion strategy
+				List<String> forRemoval = new ArrayList<String>();
+				for (String key : addedSinceLastDemote) {
+					ResolvedType type = tMap.get(key);
+					if (!writtenClasses.contains(type.getName())) { // COSTLY
+						continue;
+					}
+					if (type != null && !type.isAspect() && !type.equals(UnresolvedType.OBJECT) && !type.isPrimitiveType()) {
+						if (type.isParameterizedOrRawType()) {
+							type = type.getGenericType();
+						}
+						List<ConcreteTypeMunger> typeMungers = type.getInterTypeMungers();
+						if (typeMungers == null || typeMungers.size() == 0) {
+							/*
+							 * if (type.isNested()) { try { ReferenceType rt = (ReferenceType) w.resolve(type.getOutermostType());
+							 * if (!rt.isMissing()) { ReferenceTypeDelegate delegate = ((ReferenceType) type).getDelegate(); boolean
+							 * isWeavable = delegate == null ? false : delegate.isExposedToWeaver(); boolean hasBeenWoven = delegate
+							 * == null ? false : delegate.hasBeenWoven(); if (isWeavable && !hasBeenWoven) { // skip demotion of
+							 * this inner type for now continue; } } } catch (ClassCastException cce) { cce.printStackTrace();
+							 * System.out.println("outer of " + key + " is not a reftype? " + type.getOutermostType()); // throw new
+							 * IllegalStateException(cce); } }
+							 */
+							ReferenceTypeDelegate delegate = ((ReferenceType) type).getDelegate();
+							boolean isWeavable = delegate == null ? false : delegate.isExposedToWeaver();
+							boolean hasBeenWoven = delegate == null ? false : delegate.hasBeenWoven();
+							if (!isWeavable || hasBeenWoven) {
+								if (debugDemotion) {
+									System.out.println("Demoting " + key);
+								}
+								forRemoval.add(key);
+								tMap.remove(key);
+								insertInExpendableMap(key, type);
+								demotionCounter++;
+							}
+						} else {
+							// no need to try this again, it will never be demoted
+							writtenClasses.remove(type.getName());
+							forRemoval.add(key);
+						}
+					} else {
+						writtenClasses.remove(type.getName());
+						// no need to try this again, it will never be demoted
+						forRemoval.add(key);
+					}
+				}
+				addedSinceLastDemote.removeAll(forRemoval);
+			}
+			if (debugDemotion) {
+				System.out.println("Demoted " + demotionCounter + " types.  Types remaining in fixed set #" + tMap.keySet().size()
+						+ ".  addedSinceLastDemote size is " + addedSinceLastDemote.size());
+				System.out.println("writtenClasses.size() = " + writtenClasses.size() + ": " + writtenClasses);
+			}
+			if (atEndOfCompile) {
+				if (debugDemotion) {
+					System.out.println("Clearing writtenClasses");
+				}
+				writtenClasses.clear();
+			}
+			return demotionCounter;
+		}
+
+		private void insertInExpendableMap(String key, ResolvedType type) {
+			if (useExpendableMap) {
+				if (!expendableMap.containsKey(key)) {
+					if (policy == USE_SOFT_REFS) {
+						expendableMap.put(key, new SoftReference<ResolvedType>(type));
+					} else {
+						expendableMap.put(key, new WeakReference<ResolvedType>(type));
 					}
 				}
 			}
-			if (debugDemotion) {
-				System.out.println("Demoted " + demotionCounter + " types.  Types remaining in fixed set #" + tMap.keySet().size());
-			}
-			addedSinceLastDemote.clear();
-			return demotionCounter;
 		}
 
 		/**
@@ -1138,21 +1202,23 @@ public abstract class World implements Dump.INode {
 			}
 
 			if (w.isExpendable(type)) {
-				// Dont use reference queue for tracking if not profiling...
-				if (policy == USE_WEAK_REFS) {
-					if (memoryProfiling) {
-						expendableMap.put(key, new WeakReference<ResolvedType>(type, rq));
-					} else {
-						expendableMap.put(key, new WeakReference<ResolvedType>(type));
+				if (useExpendableMap) {
+					// Dont use reference queue for tracking if not profiling...
+					if (policy == USE_WEAK_REFS) {
+						if (memoryProfiling) {
+							expendableMap.put(key, new WeakReference<ResolvedType>(type, rq));
+						} else {
+							expendableMap.put(key, new WeakReference<ResolvedType>(type));
+						}
+					} else if (policy == USE_SOFT_REFS) {
+						if (memoryProfiling) {
+							expendableMap.put(key, new SoftReference<ResolvedType>(type, rq));
+						} else {
+							expendableMap.put(key, new SoftReference<ResolvedType>(type));
+						}
+						// } else {
+						// expendableMap.put(key, type);
 					}
-				} else if (policy == USE_SOFT_REFS) {
-					if (memoryProfiling) {
-						expendableMap.put(key, new SoftReference<ResolvedType>(type, rq));
-					} else {
-						expendableMap.put(key, new SoftReference<ResolvedType>(type));
-					}
-					// } else {
-					// expendableMap.put(key, type);
 				}
 				if (memoryProfiling && expendableMap.size() > maxExpendableMapSize) {
 					maxExpendableMapSize = expendableMap.size();
@@ -1233,6 +1299,16 @@ public abstract class World implements Dump.INode {
 				}
 			}
 			return ret;
+		}
+
+		public void classWriteEvent(String classname) {
+			// that is a name com.Foo and not a signature Lcom/Foo; boooooooooo!
+			if (demotionSystemActive) {
+				writtenClasses.add(classname);
+			}
+			if (debugDemotion) {
+				System.out.println("Class write event for " + classname);
+			}
 		}
 
 		// public ResolvedType[] getAllTypes() {
@@ -1443,9 +1519,12 @@ public abstract class World implements Dump.INode {
 				}
 
 				s = p.getProperty(xsetTYPE_DEMOTION, "true"); // default is: ON (for ltw) OFF (for ctw)
-				if (s.equalsIgnoreCase("false")) {
+				boolean b = typeMap.demotionSystemActive;
+				if (b && s.equalsIgnoreCase("false")) {
+					System.out.println("typeDemotion=false: type demotion switched OFF");
 					typeMap.demotionSystemActive = false;
-				} else if (s.equalsIgnoreCase("true") && !typeMap.demotionSystemActive) {
+				} else if (!b && s.equalsIgnoreCase("true")) {
+					System.out.println("typeDemotion=true: type demotion switched ON");
 					typeMap.demotionSystemActive = true;
 				}
 
@@ -1505,6 +1584,16 @@ public abstract class World implements Dump.INode {
 				if (value.equalsIgnoreCase("true")) {
 					System.out.println("ASPECTJ: aspectj.overweaving=true: overweaving switched ON");
 					overWeaving = true;
+				}
+				value = System.getProperty("aspectj.typeDemotion", "false");
+				if (value.equalsIgnoreCase("true")) {
+					System.out.println("ASPECTJ: aspectj.typeDemotion=true: type demotion switched ON");
+					typeMap.demotionSystemActive = true;
+				}
+				value = System.getProperty("aspectj.minimalModel", "false");
+				if (value.equalsIgnoreCase("true")) {
+					System.out.println("ASPECTJ: aspectj.minmalModel=true: minimal model switched ON");
+					minimalModel = true;
 				}
 			} catch (Throwable t) {
 				System.err.println("ASPECTJ: Unable to read system properties");
@@ -1842,5 +1931,9 @@ public abstract class World implements Dump.INode {
 
 	// if not loadtime weaving then we are compile time weaving or post-compile time weaving
 	public abstract boolean isLoadtimeWeaving();
+
+	public void classWriteEvent(char[][] compoundName) {
+		// override if interested in write events
+	}
 
 }
