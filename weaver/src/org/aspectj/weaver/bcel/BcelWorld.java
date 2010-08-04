@@ -44,6 +44,7 @@ import org.aspectj.apache.bcel.util.NonCachingClassLoaderRepository;
 import org.aspectj.apache.bcel.util.Repository;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IRelationship;
+import org.aspectj.asm.internal.CharOperation;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
@@ -1197,7 +1198,7 @@ public class BcelWorld extends World implements Repository {
 		typeDelegateResolvers.add(typeDelegateResolver);
 	}
 
-	public void classWriteEvent(char[] classname) {
-		typeMap.classWriteEvent(new String(classname));
+	public void classWriteEvent(char[][] compoundName) {
+		typeMap.classWriteEvent(new String(CharOperation.concatWith(compoundName, '.')));
 	}
 }
