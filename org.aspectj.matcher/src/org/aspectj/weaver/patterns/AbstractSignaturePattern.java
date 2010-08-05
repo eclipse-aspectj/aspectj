@@ -50,7 +50,6 @@ public abstract class AbstractSignaturePattern implements ISignaturePattern {
 
 	public static void writeCompoundSignaturePattern(CompressingDataOutputStream s, ISignaturePattern sigPattern)
 			throws IOException {
-		System.out.println(sigPattern);
 		if (sigPattern instanceof SignaturePattern) {
 			s.writeByte(PATTERN);
 			((SignaturePattern) sigPattern).write(s);
