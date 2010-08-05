@@ -543,7 +543,7 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		configureNonStandardCompileOptions(p, "-Xset:minimalModel=true");
 		build(p);
 		checkWasFullBuild();
-		printModel(p);
+		//		printModel(p);
 		// Here is the model without deletion.
 		//		PR278496_4  [build configuration file]  hid:=PR278496_4
 		//		  foo  [package]  hid:=PR278496_4<foo
@@ -567,6 +567,153 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		AspectJElementHierarchy model = (AspectJElementHierarchy) getModelFor(p).getHierarchy();
 		IProgramElement ipe = model.findElementForHandleOrCreate(
 				"=PR278496_4<foo{MyOtherClass.java[MyOtherClass[MyInnerClass'MyInnerInnerAspect", false);
+		assertNotNull(ipe);
+	}
+
+	public void testDeletionAnonInnerType_278496_8() throws Exception {
+		String p = "PR278496_8";
+		initialiseProject(p);
+		configureNonStandardCompileOptions(p, "-Xset:minimalModel=true");
+		build(p);
+		checkWasFullBuild();
+		//		printModel(p);
+		// Here is the model without deletion.
+		//		PR278496_8  [build configuration file]  hid:=PR278496_8
+		//		  generics  [package]  hid:=PR278496_8<generics
+		//		    DeleteActionAspect.aj  [java source file] 1 hid:=PR278496_8<generics*DeleteActionAspect.aj
+		//		      generics  [package declaration] 1 hid:=PR278496_8<generics*DeleteActionAspect.aj%generics
+		//		        [import reference]  hid:=PR278496_8<generics*DeleteActionAspect.aj#
+		//		        java.util.List  [import reference] 3 hid:=PR278496_8<generics*DeleteActionAspect.aj#java.util.List
+		//		      DeleteActionAspect  [aspect] 6 hid:=PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect
+		//		        DeleteAction.delete()  [inter-type method] 8 hid:=PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect)DeleteAction.delete
+		//		        DeleteAction.delete2  [inter-type field] 14 hid:=PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect,DeleteAction.delete2
+		//		        DeleteAction.delete3  [inter-type field] 16 hid:=PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect,DeleteAction.delete3
+		//		        main(java.lang.String[])  [method] 19 hid:=PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect~main~\[QString;
+		//		          new DeleteAction<String>() {..}  [class] 20 hid:=PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect~main~\[QString;[
+		//		            getSelected()  [method] 21 hid:=PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect~main~\[QString;[~getSelected
+		//		    ActionExecutor.java  [java source file] 1 hid:=PR278496_8<generics{ActionExecutor.java
+		//		      generics  [package declaration] 1 hid:=PR278496_8<generics{ActionExecutor.java%generics
+		//		        [import reference]  hid:=PR278496_8<generics{ActionExecutor.java#
+		//		      ActionExecutor  [class] 3 hid:=PR278496_8<generics{ActionExecutor.java[ActionExecutor
+		//		        main(java.lang.String[])  [method] 4 hid:=PR278496_8<generics{ActionExecutor.java[ActionExecutor~main~\[QString;
+		//		          new DeleteAction<String>() {..}  [class] 5 hid:=PR278496_8<generics{ActionExecutor.java[ActionExecutor~main~\[QString;[
+		//		            getSelected()  [method] 6 hid:=PR278496_8<generics{ActionExecutor.java[ActionExecutor~main~\[QString;[~getSelected
+		//		        nothing2(generics.DeleteAction<java.lang.String>)  [method] 15 hid:=PR278496_8<generics{ActionExecutor.java[ActionExecutor~nothing2~QDeleteAction\<QString;>;
+		//		    DeleteAction.java  [java source file] 1 hid:=PR278496_8<generics{DeleteAction.java
+		//		      generics  [package declaration] 1 hid:=PR278496_8<generics{DeleteAction.java%generics
+		//		        [import reference]  hid:=PR278496_8<generics{DeleteAction.java#
+		//		        java.util.List  [import reference] 2 hid:=PR278496_8<generics{DeleteAction.java#java.util.List
+		//		      DeleteAction  [interface] 5 hid:=PR278496_8<generics{DeleteAction.java[DeleteAction
+		//		        delete()  [method] 7 hid:=PR278496_8<generics{DeleteAction.java[DeleteAction~delete
+		//		        getSelected()  [method] 9 hid:=PR278496_8<generics{DeleteAction.java[DeleteAction~getSelected
+		//		  test  [package]  hid:=PR278496_8<test
+		//		    MyAspect.aj  [java source file] 1 hid:=PR278496_8<test*MyAspect.aj
+		//		      test  [package declaration] 1 hid:=PR278496_8<test*MyAspect.aj%test
+		//		        [import reference]  hid:=PR278496_8<test*MyAspect.aj#
+		//		        java.util.List  [import reference] 2 hid:=PR278496_8<test*MyAspect.aj#java.util.List
+		//		      MyAspect  [aspect] 4 hid:=PR278496_8<test*MyAspect.aj'MyAspect
+		//		        MyAnnotation  [annotation] 47 hid:=PR278496_8<test*MyAspect.aj'MyAspect[MyAnnotation
+		//		        Abstract  [class] 60 hid:=PR278496_8<test*MyAspect.aj'MyAspect[Abstract
+		//		        Demo.version  [inter-type field] 7 hid:=PR278496_8<test*MyAspect.aj'MyAspect,Demo.version
+		//		        Demo.list  [inter-type field] 10 hid:=PR278496_8<test*MyAspect.aj'MyAspect,Demo.list
+		//		        Demo.x  [inter-type field] 11 hid:=PR278496_8<test*MyAspect.aj'MyAspect,Demo.x
+		//		        Demo.foo(java.util.List<java.lang.String>)  [inter-type method] 13 hid:=PR278496_8<test*MyAspect.aj'MyAspect)Demo.foo)QList\<QString;>;
+		//		        Demo.Demo(int)  [inter-type constructor] 17 hid:=PR278496_8<test*MyAspect.aj'MyAspect)Demo.Demo_new)I
+		//		        declare warning: "blah"  [declare warning] 21 hid:=PR278496_8<test*MyAspect.aj'MyAspect`declare warning
+		//		        declare error: "blah"  [declare error] 23 hid:=PR278496_8<test*MyAspect.aj'MyAspect`declare error!2
+		//		        declare soft: java.lang.Exception  [declare soft] 25 hid:=PR278496_8<test*MyAspect.aj'MyAspect`declare soft!3
+		//		        s()  [pointcut] 28 hid:=PR278496_8<test*MyAspect.aj'MyAspect"s
+		//		        before(): s..  [advice] 31 hid:=PR278496_8<test*MyAspect.aj'MyAspect&before
+		//		        after(): s..  [advice] 33 hid:=PR278496_8<test*MyAspect.aj'MyAspect&after
+		//		        around(): s..  [advice] 35 hid:=PR278496_8<test*MyAspect.aj'MyAspect&around
+		//		        afterReturning(): s..  [advice] 39 hid:=PR278496_8<test*MyAspect.aj'MyAspect&afterReturning
+		//		        afterThrowing(): s..  [advice] 41 hid:=PR278496_8<test*MyAspect.aj'MyAspect&afterThrowing
+		//		        declare @type: test.Demo : @MyAnnotation  [declare @type] 52 hid:=PR278496_8<test*MyAspect.aj'MyAspect`declare \@type
+		//		        declare @field: int test.Demo.x : @MyAnnotation  [declare @field] 53 hid:=PR278496_8<test*MyAspect.aj'MyAspect`declare \@field
+		//		        declare @method: void test.Demo.foo(..) : @MyAnnotation  [declare @method] 54 hid:=PR278496_8<test*MyAspect.aj'MyAspect`declare \@method
+		//		        declare @constructor: public test.Demo.new(int) : @MyAnnotation  [declare @constructor] 55 hid:=PR278496_8<test*MyAspect.aj'MyAspect`declare \@constructor
+		//		        Abstract.nothing()  [inter-type method] 58 hid:=PR278496_8<test*MyAspect.aj'MyAspect)Abstract.nothing
+		//		    Demo.aj  [java source file] 1 hid:=PR278496_8<test*Demo.aj
+		//		      test  [package declaration] 1 hid:=PR278496_8<test*Demo.aj%test
+		//		        [import reference]  hid:=PR278496_8<test*Demo.aj#
+		//		        test.MyAspect$MyAnnotation  [import reference] 1 hid:=PR278496_8<test*Demo.aj#test.MyAspect$MyAnnotation
+		//		        java.util.List  [import reference] 3 hid:=PR278496_8<test*Demo.aj#java.util.List
+		//		      Demo  [class] 5 hid:=PR278496_8<test*Demo.aj[Demo
+		//		        g()  [method] 7 hid:=PR278496_8<test*Demo.aj[Demo~g
+		//		    OtherClass.aj  [java source file] 1 hid:=PR278496_8<test*OtherClass.aj
+		//		      test  [package declaration] 1 hid:=PR278496_8<test*OtherClass.aj%test
+		//		        [import reference]  hid:=PR278496_8<test*OtherClass.aj#
+		//		      OtherClass  [class] 4 hid:=PR278496_8<test*OtherClass.aj[OtherClass
+		//		        x()  [method] 5 hid:=PR278496_8<test*OtherClass.aj[OtherClass~x
+		//		  test2  [package]  hid:=PR278496_8<test2
+		//		    MyAspect2.aj  [java source file] 1 hid:=PR278496_8<test2*MyAspect2.aj
+		//		      test2  [package declaration] 4 hid:=PR278496_8<test2*MyAspect2.aj%test2
+		//		        [import reference]  hid:=PR278496_8<test2*MyAspect2.aj#
+		//		        test.Demo  [import reference] 3 hid:=PR278496_8<test2*MyAspect2.aj#test.Demo
+		//		      MyAspect2  [aspect] 6 hid:=PR278496_8<test2*MyAspect2.aj'MyAspect2
+		//		        Bar  [interface] 8 hid:=PR278496_8<test2*MyAspect2.aj'MyAspect2[Bar
+		//		        Foo  [class] 18 hid:=PR278496_8<test2*MyAspect2.aj'MyAspect2[Foo
+		//		          Foo()  [constructor] 19 hid:=PR278496_8<test2*MyAspect2.aj'MyAspect2[Foo~Foo
+		//		        declare parents: implements MyAspect2$Bar,Cloneable  [declare parents] 11 hid:=PR278496_8<test2*MyAspect2.aj'MyAspect2`declare parents
+		//		        Bar.bar()  [inter-type method] 13 hid:=PR278496_8<test2*MyAspect2.aj'MyAspect2)Bar.bar
+		//		        declare parents: extends MyAspect2$Foo  [declare parents] 23 hid:=PR278496_8<test2*MyAspect2.aj'MyAspect2`declare parents!2
+		//		        Foo.baz()  [inter-type method] 25 hid:=PR278496_8<test2*MyAspect2.aj'MyAspect2)Foo.baz
+		//		    OtherClass2.aj  [java source file] 1 hid:=PR278496_8<test2*OtherClass2.aj
+		//		      test2  [package declaration] 1 hid:=PR278496_8<test2*OtherClass2.aj%test2
+		//		        [import reference]  hid:=PR278496_8<test2*OtherClass2.aj#
+		//		        test.Demo  [import reference] 3 hid:=PR278496_8<test2*OtherClass2.aj#test.Demo
+		//		      OtherClass2  [class] 5 hid:=PR278496_8<test2*OtherClass2.aj[OtherClass2
+		//		        x()  [method] 6 hid:=PR278496_8<test2*OtherClass2.aj[OtherClass2~x
+		//		Hid:1:(targets=1) =PR278496_8<test*MyAspect.aj'MyAspect,Demo.version (declared on) =PR278496_8<test*Demo.aj[Demo
+		//		Hid:2:(targets=1) =PR278496_8<test*MyAspect.aj'MyAspect)Abstract.nothing (declared on) =PR278496_8<test*MyAspect.aj'MyAspect[Abstract
+		//		Hid:3:(targets=1) =PR278496_8<test*Demo.aj[Demo (annotated by) =PR278496_8<test*MyAspect.aj'MyAspect`declare \@type
+		//		Hid:4:(targets=8) =PR278496_8<test*Demo.aj[Demo (aspect declarations) =PR278496_8<test2*MyAspect2.aj'MyAspect2`declare parents!2
+		//		Hid:5:(targets=8) =PR278496_8<test*Demo.aj[Demo (aspect declarations) =PR278496_8<test2*MyAspect2.aj'MyAspect2`declare parents
+		//		Hid:6:(targets=8) =PR278496_8<test*Demo.aj[Demo (aspect declarations) =PR278496_8<test2*MyAspect2.aj'MyAspect2)Bar.bar
+		//		Hid:7:(targets=8) =PR278496_8<test*Demo.aj[Demo (aspect declarations) =PR278496_8<test*MyAspect.aj'MyAspect,Demo.version
+		//		Hid:8:(targets=8) =PR278496_8<test*Demo.aj[Demo (aspect declarations) =PR278496_8<test*MyAspect.aj'MyAspect,Demo.list
+		//		Hid:9:(targets=8) =PR278496_8<test*Demo.aj[Demo (aspect declarations) =PR278496_8<test*MyAspect.aj'MyAspect,Demo.x
+		//		Hid:10:(targets=8) =PR278496_8<test*Demo.aj[Demo (aspect declarations) =PR278496_8<test*MyAspect.aj'MyAspect)Demo.foo)QList\<QString;>;
+		//		Hid:11:(targets=8) =PR278496_8<test*Demo.aj[Demo (aspect declarations) =PR278496_8<test*MyAspect.aj'MyAspect)Demo.Demo_new)I
+		//		Hid:12:(targets=1) =PR278496_8<test*MyAspect.aj'MyAspect`declare \@type (annotates) =PR278496_8<test*Demo.aj[Demo
+		//		Hid:13:(targets=1) =PR278496_8<test*MyAspect.aj'MyAspect,Demo.list (declared on) =PR278496_8<test*Demo.aj[Demo
+		//		Hid:14:(targets=1) =PR278496_8<test*MyAspect.aj'MyAspect)Demo.foo)QList\<QString;>; (declared on) =PR278496_8<test*Demo.aj[Demo
+		//		Hid:15:(targets=1) =PR278496_8<test2*MyAspect2.aj'MyAspect2`declare parents!2 (declared on) =PR278496_8<test*Demo.aj[Demo
+		//		Hid:16:(targets=3) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect,DeleteAction.delete2 (declared on) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect~main~\[QString;[
+		//		Hid:17:(targets=3) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect,DeleteAction.delete2 (declared on) =PR278496_8<generics{ActionExecutor.java[ActionExecutor~main~\[QString;[
+		//		Hid:18:(targets=3) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect,DeleteAction.delete2 (declared on) =PR278496_8<generics{DeleteAction.java[DeleteAction
+		//		Hid:19:(targets=1) =PR278496_8<test*MyAspect.aj'MyAspect`declare \@constructor (annotates) =PR278496_8<test*MyAspect.aj'MyAspect)Demo.Demo_new)I
+		//		Hid:20:(targets=3) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect,DeleteAction.delete3 (declared on) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect~main~\[QString;[
+		//		Hid:21:(targets=3) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect,DeleteAction.delete3 (declared on) =PR278496_8<generics{ActionExecutor.java[ActionExecutor~main~\[QString;[
+		//		Hid:22:(targets=3) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect,DeleteAction.delete3 (declared on) =PR278496_8<generics{DeleteAction.java[DeleteAction
+		//		Hid:23:(targets=1) =PR278496_8<test*MyAspect.aj'MyAspect[Abstract (aspect declarations) =PR278496_8<test*MyAspect.aj'MyAspect)Abstract.nothing
+		//		Hid:24:(targets=1) =PR278496_8<test2*MyAspect2.aj'MyAspect2`declare parents (declared on) =PR278496_8<test*Demo.aj[Demo
+		//		Hid:25:(targets=3) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect)DeleteAction.delete (declared on) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect~main~\[QString;[
+		//		Hid:26:(targets=3) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect)DeleteAction.delete (declared on) =PR278496_8<generics{ActionExecutor.java[ActionExecutor~main~\[QString;[
+		//		Hid:27:(targets=3) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect)DeleteAction.delete (declared on) =PR278496_8<generics{DeleteAction.java[DeleteAction
+		//		Hid:28:(targets=1) =PR278496_8<test*MyAspect.aj'MyAspect`declare \@field (annotates) =PR278496_8<test*MyAspect.aj'MyAspect,Demo.x
+		//		Hid:29:(targets=3) =PR278496_8<generics{ActionExecutor.java[ActionExecutor~main~\[QString;[ (aspect declarations) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect)DeleteAction.delete
+		//		Hid:30:(targets=3) =PR278496_8<generics{ActionExecutor.java[ActionExecutor~main~\[QString;[ (aspect declarations) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect,DeleteAction.delete2
+		//		Hid:31:(targets=3) =PR278496_8<generics{ActionExecutor.java[ActionExecutor~main~\[QString;[ (aspect declarations) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect,DeleteAction.delete3
+		//		Hid:32:(targets=3) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect~main~\[QString;[ (aspect declarations) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect)DeleteAction.delete
+		//		Hid:33:(targets=3) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect~main~\[QString;[ (aspect declarations) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect,DeleteAction.delete2
+		//		Hid:34:(targets=3) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect~main~\[QString;[ (aspect declarations) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect,DeleteAction.delete3
+		//		Hid:35:(targets=3) =PR278496_8<generics{DeleteAction.java[DeleteAction (aspect declarations) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect)DeleteAction.delete
+		//		Hid:36:(targets=3) =PR278496_8<generics{DeleteAction.java[DeleteAction (aspect declarations) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect,DeleteAction.delete2
+		//		Hid:37:(targets=3) =PR278496_8<generics{DeleteAction.java[DeleteAction (aspect declarations) =PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect,DeleteAction.delete3
+		//		Hid:38:(targets=1) =PR278496_8<test2*MyAspect2.aj'MyAspect2[Foo (aspect declarations) =PR278496_8<test2*MyAspect2.aj'MyAspect2)Foo.baz
+		//		Hid:39:(targets=1) =PR278496_8<test*MyAspect.aj'MyAspect)Demo.Demo_new)I (annotated by) =PR278496_8<test*MyAspect.aj'MyAspect`declare \@constructor
+		//		Hid:40:(targets=1) =PR278496_8<test*MyAspect.aj'MyAspect)Demo.Demo_new)I (declared on) =PR278496_8<test*Demo.aj[Demo
+		//		Hid:41:(targets=1) =PR278496_8<test*MyAspect.aj'MyAspect,Demo.x (annotated by) =PR278496_8<test*MyAspect.aj'MyAspect`declare \@field
+		//		Hid:42:(targets=1) =PR278496_8<test*MyAspect.aj'MyAspect,Demo.x (declared on) =PR278496_8<test*Demo.aj[Demo
+		//		Hid:43:(targets=2) =PR278496_8<test2*MyAspect2.aj'MyAspect2)Bar.bar (declared on) =PR278496_8<test2*MyAspect2.aj'MyAspect2[Bar
+		//		Hid:44:(targets=2) =PR278496_8<test2*MyAspect2.aj'MyAspect2)Bar.bar (declared on) =PR278496_8<test*Demo.aj[Demo
+		//		Hid:45:(targets=1) =PR278496_8<test2*MyAspect2.aj'MyAspect2[Bar (aspect declarations) =PR278496_8<test2*MyAspect2.aj'MyAspect2)Bar.bar
+		//		Hid:46:(targets=1) =PR278496_8<test2*MyAspect2.aj'MyAspect2)Foo.baz (declared on) =PR278496_8<test2*MyAspect2.aj'MyAspect2[Foo
+		AspectJElementHierarchy model = (AspectJElementHierarchy) getModelFor(p).getHierarchy();
+		// check handle to anonymous inner:
+		IProgramElement ipe = model.findElementForHandleOrCreate(
+				"=PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect~main~\\[QString;[", false);
 		assertNotNull(ipe);
 	}
 }
