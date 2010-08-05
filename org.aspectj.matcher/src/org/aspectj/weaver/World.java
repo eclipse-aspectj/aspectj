@@ -1068,12 +1068,12 @@ public abstract class World implements Dump.INode {
 						}
 						List<ConcreteTypeMunger> typeMungers = type.getInterTypeMungers();
 						if (typeMungers == null || typeMungers.size() == 0) {
-							tMap.remove(key);
-							insertInExpendableMap(key, type);
-							demotionCounter++;
+								tMap.remove(key);
+								insertInExpendableMap(key, type);
+								demotionCounter++;
+							}
 						}
 					}
-				}
 				addedSinceLastDemote.clear();
 			} else {
 				// Compile time demotion strategy
@@ -1518,14 +1518,16 @@ public abstract class World implements Dump.INode {
 							MessageUtil.info("[completeBinaryTypes=true] Completion of binary types activated"));
 				}
 
-				s = p.getProperty(xsetTYPE_DEMOTION, "true"); // default is: ON (for ltw) OFF (for ctw)
-				boolean b = typeMap.demotionSystemActive;
-				if (b && s.equalsIgnoreCase("false")) {
-					System.out.println("typeDemotion=false: type demotion switched OFF");
-					typeMap.demotionSystemActive = false;
-				} else if (!b && s.equalsIgnoreCase("true")) {
-					System.out.println("typeDemotion=true: type demotion switched ON");
-					typeMap.demotionSystemActive = true;
+				s = p.getProperty(xsetTYPE_DEMOTION); // default is: ON (for ltw) OFF (for ctw)
+				if (s != null) {
+					boolean b = typeMap.demotionSystemActive;
+					if (b && s.equalsIgnoreCase("false")) {
+						System.out.println("typeDemotion=false: type demotion switched OFF");
+						typeMap.demotionSystemActive = false;
+					} else if (!b && s.equalsIgnoreCase("true")) {
+						System.out.println("typeDemotion=true: type demotion switched ON");
+						typeMap.demotionSystemActive = true;
+					}
 				}
 
 				s = p.getProperty(xsetOVERWEAVING, "false");
