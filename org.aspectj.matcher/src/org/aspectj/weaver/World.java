@@ -313,6 +313,7 @@ public abstract class World implements Dump.INode {
 		// Pulling in the type may have already put the right entry in the map
 		ResolvedType result = typeMap.get(signature);
 		if (result == null && !ret.isMissing()) {
+			ret = ensureRawTypeIfNecessary(ret);
 			typeMap.put(signature, ret);
 			return ret;
 		}
@@ -391,11 +392,7 @@ public abstract class World implements Dump.INode {
 	 * @return a type suitable for putting into the world
 	 */
 	private ResolvedType ensureRawTypeIfNecessary(ResolvedType type) {
-		if (!isInJava5Mode()) {
-			// Don't care, not running in 1.5 mode
-			return type;
-		}
-		if (type.isRawType()) {
+		if (!isInJava5Mode() || type.isRawType()) {
 			return type;
 		}
 		// Key requirement here is if it is generic, create a RAW entry to be put in the map that points to it
@@ -1068,18 +1065,23 @@ public abstract class World implements Dump.INode {
 						}
 						List<ConcreteTypeMunger> typeMungers = type.getInterTypeMungers();
 						if (typeMungers == null || typeMungers.size() == 0) {
-								tMap.remove(key);
-								insertInExpendableMap(key, type);
-								demotionCounter++;
-							}
+							tMap.remove(key);
+							insertInExpendableMap(key, type);
+							demotionCounter++;
 						}
 					}
+				}
 				addedSinceLastDemote.clear();
 			} else {
 				// Compile time demotion strategy
 				List<String> forRemoval = new ArrayList<String>();
 				for (String key : addedSinceLastDemote) {
 					ResolvedType type = tMap.get(key);
+					if (type == null) {
+						// TODO not 100% sure why it is not there, where did it go?
+						forRemoval.add(key);
+						continue;
+					}
 					if (!writtenClasses.contains(type.getName())) { // COSTLY
 						continue;
 					}
@@ -1200,6 +1202,13 @@ public abstract class World implements Dump.INode {
 				}
 				return type;
 			}
+
+			// TODO should this be in as a permanent assertion?
+			/*
+			if ((type instanceof ReferenceType) && type.getWorld().isInJava5Mode()
+					&& (((ReferenceType) type).getDelegate() != null) && type.isGenericType()) {
+				throw new BCException("Attempt to add generic type to typemap " + type.toString() + " (should be raw)");
+			}*/
 
 			if (w.isExpendable(type)) {
 				if (useExpendableMap) {
