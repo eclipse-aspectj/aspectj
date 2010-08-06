@@ -85,7 +85,7 @@ public class SavedModelConsistencyTests extends AjdeCoreTestCase {
 		IHierarchy model = asm.getHierarchy();
 		assertTrue("model exists", model != null);
 
-		final List<IProgramElement.Kind> preBuildKinds = new ArrayList<IProgramElement.Kind>();
+		final List preBuildKinds = new ArrayList();
 		HierarchyWalker walker = new HierarchyWalker() {
 			public void preProcess(IProgramElement node) {
 				preBuildKinds.add(node.getKind());
@@ -97,7 +97,7 @@ public class SavedModelConsistencyTests extends AjdeCoreTestCase {
 		doBuild();
 		assertTrue("Expected no compiler errors but found " + handler.getErrors(), handler.getErrors().isEmpty());
 
-		final List<IProgramElement.Kind> postBuildKinds = new ArrayList<IProgramElement.Kind>();
+		final List postBuildKinds = new ArrayList();
 		HierarchyWalker walker2 = new HierarchyWalker() {
 			public void preProcess(IProgramElement node) {
 				postBuildKinds.add(node.getKind());
