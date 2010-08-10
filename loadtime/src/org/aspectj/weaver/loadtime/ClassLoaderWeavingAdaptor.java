@@ -33,10 +33,10 @@ import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.Constants;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.Lint;
+import org.aspectj.weaver.Lint.Kind;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.Lint.Kind;
 import org.aspectj.weaver.bcel.BcelWeakClassLoaderReference;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
@@ -731,7 +731,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		}
 
 		// still try to avoid ResolvedType if we have simple patterns
-		String fastClassName = className.replace('/', '.').replace('$', '.');
+		String fastClassName = className.replace('/', '.');
 		for (String excludeStartsWithString : excludeStartsWith) {
 			if (fastClassName.startsWith(excludeStartsWithString)) {
 				return false;
@@ -747,6 +747,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 				}
 			}
 		}
+		fastClassName = fastClassName.replace('$', '.');
 
 		if (!excludeEndsWith.isEmpty()) {
 			for (String lastPiece : excludeEndsWith) {

@@ -11,6 +11,7 @@
 package org.aspectj.weaver.loadtime;
 
 import java.io.File;
+import java.lang.ref.Reference;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -23,6 +24,7 @@ import junit.framework.TestCase;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.World.TypeMap;
 import org.aspectj.weaver.bcel.BcelWorld;
@@ -508,6 +510,10 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 		etime = System.currentTimeMillis();
 		System.out.println("Rejection " + (etime - stime) + "ms");
 
+		jc = getClassFrom("../loadtime/bin", "testdata.MessageService$$EnhancerByCGLIB$$6dd4e683");
+		byte[] bs3 = jc.getBytes();
+		boolean b = adaptor.accept("testdata.MessageService$$EnhancerByCGLIB$$6dd4e683", bs3);
+		assertFalse(b);
 	}
 
 	// TODO
@@ -624,19 +630,19 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void printMaps(TypeMap map) {
 		printExpendableMap(map.getExpendableMap());
 		printMainMap(map.getMainMap());
 	}
 
-	private void printExpendableMap(Map m) {
-		for (Object o : m.keySet()) {
-			String sig = (String) o;
+	private void printExpendableMap(Map<String, Reference<ResolvedType>> m) {
+		for (String sig : m.keySet()) {
 			System.out.println(sig + "=" + m.get(sig));
 		}
 	}
 
-	private void printMainMap(Map m) {
+	private void printMainMap(Map<String, ResolvedType> m) {
 		for (Object o : m.keySet()) {
 			String sig = (String) o;
 			System.out.println(sig + "=" + m.get(sig));
@@ -680,7 +686,7 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 
 	static class TestWeavingContext extends DefaultWeavingContext {
 
-		List testList = new ArrayList();
+		List<Definition> testList = new ArrayList<Definition>();
 
 		public TestWeavingContext(ClassLoader loader) {
 			super(loader);
@@ -691,7 +697,7 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 		}
 
 		@Override
-		public List getDefinitions(final ClassLoader loader, final WeavingAdaptor adaptor) {
+		public List<Definition> getDefinitions(final ClassLoader loader, final WeavingAdaptor adaptor) {
 			return testList;
 		}
 	}
