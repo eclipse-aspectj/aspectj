@@ -52,7 +52,9 @@ import org.aspectj.weaver.tools.TraceFactory;
 import org.aspectj.weaver.tools.WeavingAdaptor;
 
 /**
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur
+ * @author Andy Clement
+ * @author Abraham Nevado
  */
 public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
