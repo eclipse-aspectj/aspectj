@@ -1205,10 +1205,10 @@ public abstract class World implements Dump.INode {
 
 			// TODO should this be in as a permanent assertion?
 			/*
-			if ((type instanceof ReferenceType) && type.getWorld().isInJava5Mode()
-					&& (((ReferenceType) type).getDelegate() != null) && type.isGenericType()) {
-				throw new BCException("Attempt to add generic type to typemap " + type.toString() + " (should be raw)");
-			}*/
+			 * if ((type instanceof ReferenceType) && type.getWorld().isInJava5Mode() && (((ReferenceType) type).getDelegate() !=
+			 * null) && type.isGenericType()) { throw new BCException("Attempt to add generic type to typemap " + type.toString() +
+			 * " (should be raw)"); }
+			 */
 
 			if (w.isExpendable(type)) {
 				if (useExpendableMap) {
@@ -1603,7 +1603,7 @@ public abstract class World implements Dump.INode {
 				}
 				value = System.getProperty("aspectj.minimalModel", "false");
 				if (value.equalsIgnoreCase("true")) {
-					System.out.println("ASPECTJ: aspectj.minmalModel=true: minimal model switched ON");
+					System.out.println("ASPECTJ: aspectj.minimalModel=true: minimal model switched ON");
 					minimalModel = true;
 				}
 			} catch (Throwable t) {
