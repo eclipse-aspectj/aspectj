@@ -9,6 +9,8 @@
  * Contributors: 
  *     Matthew Webster, Adrian Colyer, 
  *     Martin Lippert     initial implementation 
+ *     Andy Clement
+ *     Abraham Nevado
  * ******************************************************************/
 
 package org.aspectj.weaver.loadtime;
@@ -121,7 +123,7 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 		if (trace.isTraceEnabled())
 			trace.enter("defineClass", this, new Object[] { name, b, cs });
 		// System.err.println("? WeavingURLClassLoader.defineClass(" + name + ", [" + b.length + "])");
-
+		byte orig[] = b;
 		/* Avoid recursion during adaptor initialization */
 		if (!initializingAdaptor) {
 
@@ -139,7 +141,15 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 				trace.error("defineClass", th);
 			}
 		}
-		Class clazz = super.defineClass(name, b, cs);
+		Class clazz;
+		
+		// On error, define the original form of the class and log the issue
+		try { 
+			clazz= super.defineClass(name, b, cs);
+		} catch (Throwable th) {
+			trace.error("Weaving class problem. Original class has been returned. The error was caused because of: " + th, th);
+			clazz= super.defineClass(name, orig, cs);
+		}
 		if (trace.isTraceEnabled())
 			trace.exit("defineClass", clazz);
 		return clazz;
