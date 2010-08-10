@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.ajdt.internal.compiler.ast;
 
 //import java.util.List;
@@ -47,19 +46,18 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 	 */
 	public DeclareDeclaration(CompilationResult result, Declare symbolicDeclare) {
 		super(result);
-		
+
 		this.declareDecl = symbolicDeclare;
 		if (declareDecl != null) {
 			// AMC added init of declarationSourceXXX fields which are used
-			// in AsmBuilder for processing of MethodDeclaration locations. 
+			// in AsmBuilder for processing of MethodDeclaration locations.
 			declarationSourceStart = sourceStart = declareDecl.getStart();
 			declarationSourceEnd = sourceEnd = declareDecl.getEnd();
 		}
-		//??? we might need to set parameters to be empty
-		this.returnType = TypeReference.baseTypeReference(T_void, 0);       
+		// ??? we might need to set parameters to be empty
+		this.returnType = TypeReference.baseTypeReference(T_void, 0);
 	}
 
-	
 	public void addAtAspectJAnnotations() {
 		Annotation annotation = null;
 		if (declareDecl instanceof DeclareAnnotation) {
@@ -67,87 +65,93 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 			String patternString = da.getPatternAsString();
 			String annString = da.getAnnotationString();
 			String kind = da.getKind().toString();
-			annotation = AtAspectJAnnotationFactory.createDeclareAnnAnnotation(
-							patternString,annString,kind,declarationSourceStart);
+			annotation = AtAspectJAnnotationFactory.createDeclareAnnAnnotation(patternString, annString, kind,
+					declarationSourceStart);
 		} else if (declareDecl instanceof DeclareErrorOrWarning) {
 			DeclareErrorOrWarning dd = (DeclareErrorOrWarning) declareDecl;
-			annotation = AtAspectJAnnotationFactory
-									.createDeclareErrorOrWarningAnnotation(dd.getPointcut().toString(),dd.getMessage(),dd.isError(),declarationSourceStart);
+			annotation = AtAspectJAnnotationFactory.createDeclareErrorOrWarningAnnotation(dd.getPointcut().toString(),
+					dd.getMessage(), dd.isError(), declarationSourceStart);
 		} else if (declareDecl instanceof DeclareParents) {
 			DeclareParents dp = (DeclareParents) declareDecl;
 			String childPattern = dp.getChild().toString();
 			Collection parentPatterns = dp.getParents().getExactTypes();
 			StringBuffer parents = new StringBuffer();
 			for (Iterator iter = parentPatterns.iterator(); iter.hasNext();) {
-				UnresolvedType  urt = ((UnresolvedType) iter.next());
+				UnresolvedType urt = ((UnresolvedType) iter.next());
 				parents.append(urt.getName());
-				if (iter.hasNext()) parents.append(", ");
-			}		
-			annotation = AtAspectJAnnotationFactory
-									.createDeclareParentsAnnotation(childPattern,parents.toString(),dp.isExtends(),declarationSourceStart);
+				if (iter.hasNext()) {
+					parents.append(", ");
+				}
+			}
+			annotation = AtAspectJAnnotationFactory.createDeclareParentsAnnotation(childPattern, parents.toString(),
+					dp.isExtends(), declarationSourceStart);
 		} else if (declareDecl instanceof DeclarePrecedence) {
 			DeclarePrecedence dp = (DeclarePrecedence) declareDecl;
 			String precedenceList = dp.getPatterns().toString();
-			annotation = AtAspectJAnnotationFactory.createDeclarePrecedenceAnnotation(precedenceList,declarationSourceStart);
+			annotation = AtAspectJAnnotationFactory.createDeclarePrecedenceAnnotation(precedenceList, declarationSourceStart);
 		} else if (declareDecl instanceof DeclareSoft) {
 			DeclareSoft ds = (DeclareSoft) declareDecl;
-			annotation = AtAspectJAnnotationFactory
-				.createDeclareSoftAnnotation(ds.getPointcut().toString(),ds.getException().getExactType().getName(),declarationSourceStart);			
+			annotation = AtAspectJAnnotationFactory.createDeclareSoftAnnotation(ds.getPointcut().toString(), ds.getException()
+					.getExactType().getName(), declarationSourceStart);
 		}
-		if (annotation != null) AtAspectJAnnotationFactory.addAnnotation(this,annotation,this.scope);
+		if (annotation != null) {
+			AtAspectJAnnotationFactory.addAnnotation(this, annotation, this.scope);
+		}
 	}
 
 	/**
-	 * A declare declaration exists in a classfile only as an attibute on the
-	 * class.  Unlike advice and inter-type declarations, it has no corresponding
-	 * method.
-	 * **AMC** changed the above policy in the case of declare annotation, which uses a 
-	 * corresponding method as the anchor for the declared annotation
+	 * A declare declaration exists in a classfile only as an attibute on the class. Unlike advice and inter-type declarations, it
+	 * has no corresponding method. **AMC** changed the above policy in the case of declare annotation, which uses a corresponding
+	 * method as the anchor for the declared annotation
 	 */
 	public void generateCode(ClassScope classScope, ClassFile classFile) {
-		this.binding.modifiers |= Flags.AccSynthetic;
+		if (shouldBeSynthetic()) {
+			this.binding.modifiers |= Flags.AccSynthetic;
+		}
 		classFile.extraAttributes.add(new EclipseAttributeAdapter(new AjAttribute.DeclareAttribute(declareDecl)));
 		if (shouldDelegateCodeGeneration()) {
-			super.generateCode(classScope,classFile);
+			super.generateCode(classScope, classFile);
 		}
 		return;
 	}
-	
+
 	protected boolean shouldDelegateCodeGeneration() {
 		return true;
 	}
 
-	public void parseStatements(
-		Parser parser,
-		CompilationUnitDeclaration unit) {
-			// do nothing
+	protected boolean shouldBeSynthetic() {
+		return true;
 	}
-	
+
+	public void parseStatements(Parser parser, CompilationUnitDeclaration unit) {
+		// do nothing
+	}
+
 	public void resolveStatements(ClassScope upperScope) {
-		// do nothing 
+		// do nothing
 	}
-	
-//	public boolean finishResolveTypes(SourceTypeBinding sourceTypeBinding) {
-//		// there's nothing for our super to resolve usefully
-//		//if (!super.finishResolveTypes(sourceTypeBinding)) return false;
-////		if (declare == null) return true;
-////        
-////        EclipseScope scope = new EclipseScope(new FormalBinding[0], this.scope);
-////
-////        declare.resolve(scope);
-////        return true;
-//	}
 
-	
+	// public boolean finishResolveTypes(SourceTypeBinding sourceTypeBinding) {
+	// // there's nothing for our super to resolve usefully
+	// //if (!super.finishResolveTypes(sourceTypeBinding)) return false;
+	// // if (declare == null) return true;
+	// //
+	// // EclipseScope scope = new EclipseScope(new FormalBinding[0], this.scope);
+	// //
+	// // declare.resolve(scope);
+	// // return true;
+	// }
+
 	public Declare build(ClassScope classScope) {
-		if (declareDecl == null) return null;
-        
-        EclipseScope scope = new EclipseScope(new FormalBinding[0], classScope);
+		if (declareDecl == null) {
+			return null;
+		}
 
-        declareDecl.resolve(scope);
-        return declareDecl;
+		EclipseScope scope = new EclipseScope(new FormalBinding[0], classScope);
+
+		declareDecl.resolve(scope);
+		return declareDecl;
 	}
-
 
 	public StringBuffer print(int tab, StringBuffer output) {
 		printIndent(tab, output);
@@ -158,32 +162,31 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 		}
 		return output;
 	}
-	
+
 	/**
-	 * We need the ajc$declare method that is created to represent this declare to
-	 * be marked as synthetic
+	 * We need the ajc$declare method that is created to represent this declare to be marked as synthetic
 	 */
 	protected int generateInfoAttributes(ClassFile classFile) {
-		return super.generateInfoAttributes(classFile,true);
+		return super.generateInfoAttributes(classFile, true);
 	}
 
 	public void postParse(TypeDeclaration typeDec) {
 		super.postParse(typeDec);
-		int declareSequenceNumberInType = ((AspectDeclaration)typeDec).declareCounter++;
-		//FIXME asc the name should perhaps include the hashcode of the pattern (type/sig) for binary compatibility reasons!
+		int declareSequenceNumberInType = ((AspectDeclaration) typeDec).declareCounter++;
+		// FIXME asc the name should perhaps include the hashcode of the pattern (type/sig) for binary compatibility reasons!
 		StringBuffer sb = new StringBuffer();
-	    sb.append("ajc$declare");
-        // Declares can choose to provide a piece of the name - to enable
-        // them to be easily distinguised at weave time (e.g. see declare annotation)
-        if (declareDecl!=null) {
-          String suffix = declareDecl.getNameSuffix();
-          if (suffix.length()!=0) {
-        	sb.append("_");
-        	sb.append(suffix);
-          }
-        }
-        sb.append("_");
-        sb.append(declareSequenceNumberInType);
-        this.selector = sb.toString().toCharArray();
+		sb.append("ajc$declare");
+		// Declares can choose to provide a piece of the name - to enable
+		// them to be easily distinguised at weave time (e.g. see declare annotation)
+		if (declareDecl != null) {
+			String suffix = declareDecl.getNameSuffix();
+			if (suffix.length() != 0) {
+				sb.append("_");
+				sb.append(suffix);
+			}
+		}
+		sb.append("_");
+		sb.append(declareSequenceNumberInType);
+		this.selector = sb.toString().toCharArray();
 	}
 }

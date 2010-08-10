@@ -232,7 +232,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		// - weaving that brings new types in for processing (see
 		// pendingTypesToWeave.add() calls) after we thought
 		// we had the full list.
-		// 
+		//
 		// but these aren't common cases (he bravely said...)
 		boolean typeProcessingOrderIsImportant = declareParents.size() > 0 || declareAnnotationOnTypes.size() > 0; // DECAT
 
@@ -588,7 +588,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			if (!pendingTypesToWeave.contains(sourceType)) {
 				pendingTypesToWeave.add(sourceType);
 
-// inner type ITD support - may need this for some incremental cases...
+				// inner type ITD support - may need this for some incremental cases...
 				// List<ConcreteTypeMunger> ctms = factory.getWorld().getCrosscuttingMembersSet().getTypeMungersOfKind(
 				// ResolvedTypeMunger.InnerClass);
 				// // List<ConcreteTypeMunger> innerTypeMungers = new ArrayList<ConcreteTypeMunger>();
@@ -633,8 +633,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 
 			}
 		} else {
-			weaveInterTypeDeclarations(sourceType, factory.getTypeMungers(), factory.getDeclareParents(), factory
-					.getDeclareAnnotationOnTypes(), true);
+			weaveInterTypeDeclarations(sourceType, factory.getTypeMungers(), factory.getDeclareParents(),
+					factory.getDeclareAnnotationOnTypes(), true);
 		}
 	}
 
@@ -775,7 +775,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 					needOldStyleWarning = false;
 				}
 				onType.addInterTypeMunger(munger, true);
-				if (munger.getMunger()!=null && munger.getMunger().getKind() == ResolvedTypeMunger.InnerClass) {
+				if (munger.getMunger() != null && munger.getMunger().getKind() == ResolvedTypeMunger.InnerClass) {
 					// Must do these right now, because if we do an ITD member afterwards it may attempt to reference the
 					// type being applied (the call above 'addInterTypeMunger' will fail for these ITDs if it needed
 					// it to be in place)
@@ -791,7 +791,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		onType.checkInterTypeMungers();
 		for (Iterator i = onType.getInterTypeMungers().iterator(); i.hasNext();) {
 			EclipseTypeMunger munger = (EclipseTypeMunger) i.next();
-			if (munger.getMunger()==null || munger.getMunger().getKind() != ResolvedTypeMunger.InnerClass) {
+			if (munger.getMunger() == null || munger.getMunger().getKind() != ResolvedTypeMunger.InnerClass) {
 				if (munger.munge(sourceType, onType)) {
 					if (factory.pushinCollector != null) {
 						factory.pushinCollector.tagAsMunged(sourceType, munger.getSourceMethod());
@@ -868,8 +868,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 							onType.getSourceLocation(), null);
 				}
 				if (Modifier.isFinal(parent.getModifiers())) {
-					factory.showMessage(IMessage.ERROR, "cannot extend final class " + parent.getClassName(), declareParents
-							.getSourceLocation(), null);
+					factory.showMessage(IMessage.ERROR, "cannot extend final class " + parent.getClassName(),
+							declareParents.getSourceLocation(), null);
 				} else {
 					// do not actually do it if the type isn't exposed - this
 					// will correctly reported as a problem elsewhere
@@ -980,44 +980,43 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		// Might have to retrieve the annotation through BCEL and construct an
 		// eclipse one for it.
 		if (stb instanceof BinaryTypeBinding) {
-			ReferenceType rt = (ReferenceType) factory.fromEclipse(stb);
-			ResolvedMember[] methods = rt.getDeclaredMethods();
-			ResolvedMember decaMethod = null;
-			String nameToLookFor = decA.getAnnotationMethod();
-			for (int i = 0; i < methods.length; i++) {
-				if (methods[i].getName().equals(nameToLookFor)) {
-					decaMethod = methods[i];
-					break;
-				}
-			}
-			if (decaMethod != null) { // could assert this ...
-				AnnotationAJ[] axs = decaMethod.getAnnotations();
-				if (axs != null) { // another error has occurred, dont crash here because of it
-					toAdd = new Annotation[1];
-					toAdd[0] = createAnnotationFromBcelAnnotation(axs[0], decaMethod.getSourceLocation().getOffset(), factory);
-					// BUG BUG BUG - We dont test these abits are correct, in fact
-					// we'll be very lucky if they are.
-					// What does that mean? It means on an incremental compile you
-					// might get away with an
-					// annotation that isn't allowed on a type being put on a type.
-					if (toAdd[0].resolvedType != null) {
-						abits = toAdd[0].resolvedType.getAnnotationTagBits();
-					}
-				}
+			toAdd = retrieveAnnotationFromBinaryTypeBinding(decA, stb);
+			if (toAdd != null && toAdd.length > 0 && toAdd[0].resolvedType != null) {
+				abits = toAdd[0].resolvedType.getAnnotationTagBits();
 			}
 		} else if (stb != null) {
 			// much nicer, its a real SourceTypeBinding so we can stay in
 			// eclipse land
 			// if (decA.getAnnotationMethod() != null) {
-			MethodBinding[] mbs = stb.getMethods(decA.getAnnotationMethod().toCharArray());
-			abits = mbs[0].getAnnotationTagBits(); // ensure resolved
-			TypeDeclaration typeDecl = ((SourceTypeBinding) mbs[0].declaringClass).scope.referenceContext;
-			methodDecl = typeDecl.declarationOf(mbs[0]);
-			toAdd = methodDecl.annotations; // this is what to add
-			toAdd[0] = createAnnotationCopy(toAdd[0]);
-			if (toAdd[0].resolvedType != null) {
-				abits = toAdd[0].resolvedType.getAnnotationTagBits();
-				// }
+			char[] declareSelector = decA.getAnnotationMethod().toCharArray();
+
+			ReferenceBinding rb = stb;
+			String declaringAspectName = decA.getDeclaringType().getRawName();
+			while (rb != null && !new String(CharOperation.concatWith(rb.compoundName, '.')).equals(declaringAspectName)) {
+				rb = rb.superclass();
+			}
+			MethodBinding[] mbs = rb.getMethods(declareSelector);
+
+			ReferenceBinding declaringBinding = mbs[0].declaringClass;
+			if (declaringBinding instanceof ParameterizedTypeBinding) {
+				// Unwrap - this means we don't allow the type of the annotation to be parameterized, may need to revisit that
+				declaringBinding = ((ParameterizedTypeBinding) declaringBinding).type;
+			}
+			if (declaringBinding instanceof BinaryTypeBinding) {
+				toAdd = retrieveAnnotationFromBinaryTypeBinding(decA, declaringBinding);
+				if (toAdd != null && toAdd.length > 0 && toAdd[0].resolvedType != null) {
+					abits = toAdd[0].resolvedType.getAnnotationTagBits();
+				}
+			} else {
+				abits = mbs[0].getAnnotationTagBits(); // ensure resolved
+				TypeDeclaration typeDecl = ((SourceTypeBinding) declaringBinding).scope.referenceContext;
+				methodDecl = typeDecl.declarationOf(mbs[0]);
+				toAdd = methodDecl.annotations; // this is what to add
+				toAdd[0] = createAnnotationCopy(toAdd[0]);
+				if (toAdd[0].resolvedType != null) {
+					abits = toAdd[0].resolvedType.getAnnotationTagBits();
+					// }
+				}
 			}
 		}
 
@@ -1163,6 +1162,36 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		return true;
 	}
 
+	private Annotation[] retrieveAnnotationFromBinaryTypeBinding(DeclareAnnotation decA, ReferenceBinding declaringBinding) {
+		ReferenceType rt = (ReferenceType) factory.fromEclipse(declaringBinding);
+		ResolvedMember[] methods = rt.getDeclaredMethods();
+		ResolvedMember decaMethod = null;
+		String nameToLookFor = decA.getAnnotationMethod();
+		for (int i = 0; i < methods.length; i++) {
+			if (methods[i].getName().equals(nameToLookFor)) {
+				decaMethod = methods[i];
+				break;
+			}
+		}
+		if (decaMethod != null) { // could assert this ...
+			AnnotationAJ[] axs = decaMethod.getAnnotations();
+			if (axs != null) { // another error has occurred, dont crash here because of it
+				Annotation[] toAdd = new Annotation[1];
+				toAdd[0] = createAnnotationFromBcelAnnotation(axs[0], decaMethod.getSourceLocation().getOffset(), factory);
+				// BUG BUG BUG - We dont test these abits are correct, in fact
+				// we'll be very lucky if they are.
+				// What does that mean? It means on an incremental compile you
+				// might get away with an
+				// annotation that isn't allowed on a type being put on a type.
+				// if (toAdd[0].resolvedType != null) {
+				// abits = toAdd[0].resolvedType.getAnnotationTagBits();
+				// }
+				return toAdd;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Transform an annotation from its AJ form to an eclipse form. We *DONT* care about the values of the annotation. that is
 	 * because it is only being stuck on a type during type completion to allow for other constructs (decps, decas) that might be
@@ -1244,9 +1273,13 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			}
 			filename = filename.substring(takefrom + 1);
 
-			factory.getWorld().getMessageHandler().handleMessage(
-					WeaveMessage.constructWeavingMessage(wmk, new String[] { CharOperation.toString(sourceType.compoundName),
-							filename, parent.getClassName(), getShortname(parent.getSourceLocation().getSourceFile().getPath()) }));
+			factory.getWorld()
+					.getMessageHandler()
+					.handleMessage(
+							WeaveMessage.constructWeavingMessage(wmk,
+									new String[] { CharOperation.toString(sourceType.compoundName), filename,
+											parent.getClassName(),
+											getShortname(parent.getSourceLocation().getSourceFile().getPath()) }));
 		}
 	}
 
@@ -1389,7 +1422,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 // System.err.println("Looking for anything that might match "+element+" on "+
 // sourceType.debugName()+"  "+getType(sourceType.
 // compoundName).debugName()+"  "+(sourceType instanceof BinaryTypeBinding));
-//		
+//
 // ReferenceBinding rbb = getType(sourceType.compoundName);
 // // fix me if we ever uncomment this code... should iterate the other way
 // round, over the methods then over the decas
@@ -1401,17 +1434,17 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 // ((SourceTypeBinding)rbb).getExactMethod(sourceMb.selector
 // ,sourceMb.parameters);
 // boolean isCtor = sourceMb.selector[0]=='<';
-//			
+//
 // if ((element.isDeclareAtConstuctor() ^ !isCtor)) {
 // System.err.println("Checking "+sourceMb+" ... declaringclass="+sourceMb.
 // declaringClass.debugName()+" rbb="+rbb.debugName()+"  "+
 // sourceMb.declaringClass.equals(rbb));
-//			
+//
 // ResolvedMember rm = null;
 // rm = EclipseFactory.makeResolvedMember(mbbbb);
 // if (element.matches(rm,factory.getWorld())) {
 // System.err.println("MATCH");
-//				
+//
 // // Determine the set of annotations that are currently on the method
 // ReferenceBinding rb = getType(sourceType.compoundName);
 // // TypeBinding tb = factory.makeTypeBinding(decA.getAspect());
@@ -1424,7 +1457,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 // AbstractMethodDeclaration methodDecl = typeDecl.declarationOf(sourceMb);
 // Annotation[] currentlyHas = methodDecl.annotations; // this is what to add
 // //abits = toAdd[0].resolvedType.getAnnotationTagBits();
-//				
+//
 // // Determine the annotations to add to that method
 // TypeBinding tb = factory.makeTypeBinding(element.getAspect());
 // MethodBinding[] aspectMbs =
@@ -1438,7 +1471,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 // Annotation[] toAdd = methodDecl2.annotations; // this is what to add
 // // abits = toAdd[0].resolvedType.getAnnotationTagBits();
 // System.err.println("Has: "+currentlyHas+"    toAdd: "+toAdd);
-//				
+//
 // // fix me? should check if it already has the annotation
 // //Annotation abefore[] = sourceType.scope.referenceContext.annotations;
 // Annotation[] newset = new
@@ -1473,7 +1506,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 // System.err.println("Processing deca "+element+" on "+sourceType.debugName()+
 // "  "+getType(sourceType.compoundName).debugName()+"  "
 // +(sourceType instanceof BinaryTypeBinding));
-//				
+//
 // ReferenceBinding rbb = getType(sourceType.compoundName);
 // // fix me? should iterate the other way round, over the methods then over the
 // decas
@@ -1484,15 +1517,15 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 // //FieldBinding fbbbb =
 // ((SourceTypeBinding)rbb).getgetExactMethod(sourceMb.selector
 // ,sourceMb.parameters);
-//					
+//
 // System.err.println("Checking "+sourceFb+" ... declaringclass="+sourceFb.
 // declaringClass.debugName()+" rbb="+rbb.debugName());
-//					
+//
 // ResolvedMember rm = null;
 // rm = EclipseFactory.makeResolvedMember(sourceFb);
 // if (element.matches(rm,factory.getWorld())) {
 // System.err.println("MATCH");
-//						
+//
 // // Determine the set of annotations that are currently on the field
 // ReferenceBinding rb = getType(sourceType.compoundName);
 // // TypeBinding tb = factory.makeTypeBinding(decA.getAspect());
@@ -1504,7 +1537,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 // //AbstractMethodDeclaration methodDecl = typeDecl.declarationOf(sourceMb);
 // Annotation[] currentlyHas = fd.annotations; // this is what to add
 // //abits = toAdd[0].resolvedType.getAnnotationTagBits();
-//						
+//
 // // Determine the annotations to add to that method
 // TypeBinding tb = factory.makeTypeBinding(element.getAspect());
 // MethodBinding[] aspectMbs =
@@ -1518,7 +1551,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 // Annotation[] toAdd = methodDecl2.annotations; // this is what to add
 // // abits = toAdd[0].resolvedType.getAnnotationTagBits();
 // System.err.println("Has: "+currentlyHas+"    toAdd: "+toAdd);
-//						
+//
 // // fix me? check if it already has the annotation
 //
 //
@@ -1535,6 +1568,6 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 // } else
 // System.err.println("NO MATCH");
 // }
-//			
+//
 // }
 // }
