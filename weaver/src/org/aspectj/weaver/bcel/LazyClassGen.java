@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002 Contributors
+ * Copyright (c) 2002-2010 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -9,6 +9,7 @@
  * Contributors: 
  *     PARC                 initial implementation 
  *     Andy Clement  6Jul05 generics - signature attribute
+ *     Abraham Nevado
  * ******************************************************************/
 
 package org.aspectj.weaver.bcel;
@@ -28,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.Vector;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
@@ -481,6 +483,7 @@ public final class LazyClassGen {
 
 		int len = methodGens.size();
 		myGen.setMethods(Method.NoMethods);
+
 		for (LazyMethodGen gen : methodGens) {
 			// we skip empty clinits
 			if (isEmptyClinit(gen)) {
@@ -934,6 +937,24 @@ public final class LazyClassGen {
 		return ajcPreClinit;
 	}
 
+	/**
+	 * factory method for building multiple extended clinit methods. Constructs a new clinit method that invokes the previous one
+	 * and then returns it. The index is used as a name suffix.
+	 * 
+	 * @param previousPreClinit
+	 * @param i
+	 */
+	public LazyMethodGen createExtendedAjcPreClinit(LazyMethodGen previousPreClinit, int i) {
+		LazyMethodGen ajcPreClinit = new LazyMethodGen(Modifier.PRIVATE | Modifier.STATIC, Type.VOID,
+				NameMangler.AJC_PRE_CLINIT_NAME + i, Type.NO_ARGS, NO_STRINGS, this);
+		ajcPreClinit.getBody().insert(InstructionConstants.RETURN);
+		methodGens.add(ajcPreClinit);
+		previousPreClinit.getBody().insert(Utility.createInvoke(fact, ajcPreClinit));
+		return ajcPreClinit;
+	}
+
+	//
+
 	// reflective thisJoinPoint support
 	private Map<BcelShadow, Field> tjpFields = new HashMap<BcelShadow, Field>();
 	Map<CacheKey, Field> annotationCachingFieldCache = new HashMap<CacheKey, Field>();
@@ -1088,7 +1109,7 @@ public final class LazyClassGen {
 		if (tjpFields.size() == 0 && !serialVersionUIDRequiresInitialization) {
 			return;
 		}
-		InstructionList il = null;
+		InstructionList[] il = null;
 
 		if (tjpFields.size() > 0) {
 			il = initializeAllTjps();
@@ -1096,19 +1117,29 @@ public final class LazyClassGen {
 
 		if (serialVersionUIDRequiresInitialization) {
 			if (il == null) {
-				il = new InstructionList();
+				il = new InstructionList[1];
 			}
-			il.append(InstructionFactory.PUSH(getConstantPool(), calculatedSerialVersionUID));
-			il.append(getFactory().createFieldAccess(getClassName(), "serialVersionUID", BasicType.LONG, Constants.PUTSTATIC));
+			il[0] = new InstructionList();
+			il[0].append(InstructionFactory.PUSH(getConstantPool(), calculatedSerialVersionUID));
+			il[0].append(getFactory().createFieldAccess(getClassName(), "serialVersionUID", BasicType.LONG, Constants.PUTSTATIC));
 		}
+		LazyMethodGen prevMethod;
+		LazyMethodGen nextMethod = null;
 		if (this.isInterface()) { // Cannot sneak stuff into another static method in an interface
-			getStaticInitializer().getBody().insert(il);
+			prevMethod = getStaticInitializer();
 		} else {
-			getAjcPreClinit().getBody().insert(il);
+			prevMethod = getAjcPreClinit();
+		}
+		for (int counter = 1; counter <= il.length; counter++) {
+			if (il.length > counter) {
+				nextMethod = createExtendedAjcPreClinit(prevMethod, counter);
+			}
+			prevMethod.getBody().insert(il[counter - 1]);
+			prevMethod = nextMethod;
 		}
 	}
 
-	private InstructionList initializeAllTjps() {
+	private InstructionList initInstructionList() {
 		InstructionList list = new InstructionList();
 		InstructionFactory fact = getFactory();
 
@@ -1130,6 +1161,14 @@ public final class LazyClassGen {
 				Constants.INVOKESPECIAL));
 
 		list.append(InstructionFactory.createStore(factoryType, 0));
+		return list;
+	}
+
+	private InstructionList[] initializeAllTjps() {
+		Vector<InstructionList> lists = new Vector<InstructionList>();
+
+		InstructionList list = initInstructionList();
+		lists.add(list);
 
 		List<Map.Entry<BcelShadow, Field>> entries = new ArrayList<Map.Entry<BcelShadow, Field>>(tjpFields.entrySet());
 		Collections.sort(entries, new Comparator<Map.Entry<BcelShadow, Field>>() {
@@ -1138,12 +1177,19 @@ public final class LazyClassGen {
 			}
 		});
 
+		long estimatedSize = 0;
 		for (Iterator<Map.Entry<BcelShadow, Field>> i = entries.iterator(); i.hasNext();) {
 			Map.Entry<BcelShadow, Field> entry = i.next();
+			if (estimatedSize > Constants.MAX_CODE_SIZE) {
+				estimatedSize = 0;
+				list = initInstructionList();
+				lists.add(list);
+			}
+			estimatedSize += entry.getValue().getSignature().getBytes().length;
 			initializeTjp(fact, list, entry.getValue(), entry.getKey());
 		}
-
-		return list;
+		InstructionList listArrayModel[] = new InstructionList[1];
+		return lists.toArray(listArrayModel);
 	}
 
 	private void initializeTjp(InstructionFactory fact, InstructionList list, Field field, BcelShadow shadow) {
