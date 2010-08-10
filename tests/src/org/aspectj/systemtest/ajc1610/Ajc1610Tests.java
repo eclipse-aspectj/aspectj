@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008 Contributors 
+ * Copyright (c) 2008 Contributors
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,7 +18,14 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc1610Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
-	// Interesting new behaviour on AspectJ 1.6.9 - probably due to initial inner type changes.  
+	public void testAbstractAspectAndDeclares_322272_2() {
+		runTest("abstract aspects and declares - 2");
+	}
+
+	public void testAbstractAspectAndDeclares_322272() {
+		runTest("abstract aspects and declares");
+	}
+	// Interesting new behaviour on AspectJ 1.6.9 - probably due to initial inner type changes.
 	// Looks a real error (creating two annotations the same on a type is a bad thing)
 	//	public void testDuplicateAnnotations() {
 	//		runTest("duplicate annotation");
