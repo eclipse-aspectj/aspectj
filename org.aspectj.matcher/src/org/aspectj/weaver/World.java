@@ -244,7 +244,7 @@ public abstract class World implements Dump.INode {
 	 */
 	public ResolvedType[] resolve(UnresolvedType[] types) {
 		if (types == null) {
-			return new ResolvedType[0];
+			return ResolvedType.NONE;
 		}
 
 		ResolvedType[] ret = new ResolvedType[types.length];
