@@ -38,8 +38,7 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
 		ResolvedTypeMunger otherTypeMunger = o.getMunger();
 		ResolvedTypeMunger thisTypeMunger = getMunger();
 		if (thisTypeMunger instanceof NewConstructorTypeMunger && otherTypeMunger instanceof NewConstructorTypeMunger) {
-			return ((otherTypeMunger == null) ? (thisTypeMunger == null) : ((NewConstructorTypeMunger) otherTypeMunger)
-					.equivalentTo(thisTypeMunger))
+			return (((NewConstructorTypeMunger) otherTypeMunger).equivalentTo(thisTypeMunger))
 					&& ((o.getAspectType() == null) ? (getAspectType() == null) : o.getAspectType().equals(getAspectType()));
 		} else {
 			return ((otherTypeMunger == null) ? (thisTypeMunger == null) : otherTypeMunger.equals(thisTypeMunger))

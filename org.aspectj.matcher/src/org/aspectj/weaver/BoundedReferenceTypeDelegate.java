@@ -6,6 +6,7 @@ package org.aspectj.weaver;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
 
 class BoundedReferenceTypeDelegate extends AbstractReferenceTypeDelegate {
@@ -102,16 +103,16 @@ class BoundedReferenceTypeDelegate extends AbstractReferenceTypeDelegate {
 		return resolvedTypeX.getPerClause();
 	}
 
-	public Collection getDeclares() {
+	public Collection<Declare> getDeclares() {
 		return resolvedTypeX.getDeclares();
 	}
 
-	public Collection getTypeMungers() {
+	public Collection<ConcreteTypeMunger> getTypeMungers() {
 		return resolvedTypeX.getTypeMungers();
 	}
 
-	public Collection getPrivilegedAccesses() {
-		return Collections.EMPTY_LIST;
+	public Collection<ResolvedMember> getPrivilegedAccesses() {
+		return Collections.emptyList();
 	}
 
 	public int getModifiers() {

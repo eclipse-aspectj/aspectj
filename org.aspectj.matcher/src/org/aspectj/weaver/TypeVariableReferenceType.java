@@ -47,8 +47,8 @@ public class TypeVariableReferenceType extends ReferenceType implements TypeVari
 	}
 
 	@Override
-	public UnresolvedType parameterize(Map typeBindings) {
-		UnresolvedType ut = (UnresolvedType) typeBindings.get(getName());
+	public UnresolvedType parameterize(Map<String, UnresolvedType> typeBindings) {
+		UnresolvedType ut = typeBindings.get(getName());
 		if (ut != null) {
 			return world.resolve(ut);
 		}

@@ -73,8 +73,8 @@ public class CrosscuttingMembers {
 		this.shouldConcretizeIfNeeded = shouldConcretizeIfNeeded;
 	}
 
-	private final Hashtable cflowFields = new Hashtable();
-	private final Hashtable cflowBelowFields = new Hashtable();
+	private final Hashtable<String, Object> cflowFields = new Hashtable<String, Object>();
+	private final Hashtable<String, Object> cflowBelowFields = new Hashtable<String, Object>();
 
 	// public void addConcreteShadowMungers(Collection c) {
 	// shadowMungers.addAll(c);
@@ -558,11 +558,11 @@ public class CrosscuttingMembers {
 		return declareTypeEow;
 	}
 
-	public Map getCflowBelowFields() {
+	public Map<String, Object> getCflowBelowFields() {
 		return cflowBelowFields;
 	}
 
-	public Map getCflowFields() {
+	public Map<String, Object> getCflowFields() {
 		return cflowFields;
 	}
 

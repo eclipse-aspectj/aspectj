@@ -11,6 +11,7 @@ package org.aspectj.weaver;
 
 import java.util.Collection;
 
+import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
 
 /**
@@ -115,15 +116,15 @@ public class GeneratedReferenceTypeDelegate extends AbstractReferenceTypeDelegat
 		throw new UnsupportedOperationException("Not supported for GeneratedReferenceTypeDelegate");
 	}
 
-	public Collection getDeclares() {
+	public Collection<Declare> getDeclares() {
 		throw new UnsupportedOperationException("Not supported for GeneratedReferenceTypeDelegate");
 	}
 
-	public Collection getTypeMungers() {
+	public Collection<ConcreteTypeMunger> getTypeMungers() {
 		throw new UnsupportedOperationException("Not supported for GeneratedReferenceTypeDelegate");
 	}
 
-	public Collection getPrivilegedAccesses() {
+	public Collection<ResolvedMember> getPrivilegedAccesses() {
 		throw new UnsupportedOperationException("Not supported for GeneratedReferenceTypeDelegate");
 	}
 

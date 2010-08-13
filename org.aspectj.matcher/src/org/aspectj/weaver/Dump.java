@@ -46,7 +46,7 @@ public class Dump {
 	public static final String DUMP_EXCLUDED = "Excluded";
 	public static final String NULL_OR_EMPTY = "Empty";
 
-	private static Class exceptionClass;
+	private static Class<?> exceptionClass;
 	private static IMessage.Kind conditionKind = IMessage.ABORT;
 	private static File directory = new File(".");
 

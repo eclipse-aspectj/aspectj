@@ -85,8 +85,9 @@ public abstract class Shadow {
 	 * @throws IllegalStateException if there is no this here
 	 */
 	public final UnresolvedType getThisType() {
-		if (!hasThis())
+		if (!hasThis()) {
 			throw new IllegalStateException("no this");
+		}
 		if (getKind().isEnclosingKind()) {
 			return getSignature().getDeclaringType();
 		} else {
@@ -120,8 +121,9 @@ public abstract class Shadow {
 	 * @throws IllegalStateException if there is no target here
 	 */
 	public final UnresolvedType getTargetType() {
-		if (!hasTarget())
+		if (!hasTarget()) {
 			throw new IllegalStateException("no target");
+		}
 		return getSignature().getDeclaringType();
 	}
 
@@ -133,8 +135,9 @@ public abstract class Shadow {
 	public abstract Var getTargetVar();
 
 	public UnresolvedType[] getArgTypes() {
-		if (getKind() == FieldSet)
+		if (getKind() == FieldSet) {
 			return new UnresolvedType[] { getSignature().getReturnType() };
+		}
 		return getSignature().getParameterTypes();
 	}
 
@@ -153,14 +156,17 @@ public abstract class Shadow {
 		int dims = 1;
 		while (pos < s.length()) {
 			pos++;
-			if (pos < s.length())
+			if (pos < s.length()) {
 				dims += (s.charAt(pos) == '[' ? 1 : 0);
+			}
 		}
-		if (dims == 1)
+		if (dims == 1) {
 			return new ResolvedType[] { ResolvedType.INT };
+		}
 		ResolvedType[] someInts = new ResolvedType[dims];
-		for (int i = 0; i < dims; i++)
+		for (int i = 0; i < dims; i++) {
 			someInts[i] = ResolvedType.INT;
+		}
 		return someInts;
 	}
 
@@ -171,20 +177,23 @@ public abstract class Shadow {
 		if (isShadowForMonitor()) {
 			return UnresolvedType.ARRAY_WITH_JUST_OBJECT;
 		}
-		if (getKind() == FieldSet)
+		if (getKind() == FieldSet) {
 			return new UnresolvedType[] { getResolvedSignature().getGenericReturnType() };
+		}
 		return getResolvedSignature().getGenericParameterTypes();
 	}
 
 	public UnresolvedType getArgType(int arg) {
-		if (getKind() == FieldSet)
+		if (getKind() == FieldSet) {
 			return getSignature().getReturnType();
+		}
 		return getSignature().getParameterTypes()[arg];
 	}
 
 	public int getArgCount() {
-		if (getKind() == FieldSet)
+		if (getKind() == FieldSet) {
 			return 1;
+		}
 		return getSignature().getParameterTypes().length;
 	}
 
@@ -263,12 +272,13 @@ public abstract class Shadow {
 	}
 
 	public UnresolvedType getReturnType() {
-		if (kind == ConstructorCall)
+		if (kind == ConstructorCall) {
 			return getSignature().getDeclaringType();
-		else if (kind == FieldSet)
+		} else if (kind == FieldSet) {
 			return ResolvedType.VOID;
-		else if (kind == SynchronizationLock || kind == SynchronizationUnlock)
+		} else if (kind == SynchronizationLock || kind == SynchronizationUnlock) {
 			return ResolvedType.VOID;
+		}
 		return getResolvedSignature().getGenericReturnType();
 	}
 
@@ -337,8 +347,9 @@ public abstract class Shadow {
 	public static int howMany(int i) {
 		int count = 0;
 		for (int j = 0; j < SHADOW_KINDS.length; j++) {
-			if ((i & SHADOW_KINDS[j].bit) != 0)
+			if ((i & SHADOW_KINDS[j].bit) != 0) {
 				count++;
+			}
 		}
 		return count;
 	}
@@ -423,10 +434,11 @@ public abstract class Shadow {
 
 		public String getSimpleName() {
 			int dash = getName().lastIndexOf('-');
-			if (dash == -1)
+			if (dash == -1) {
 				return getName();
-			else
+			} else {
 				return getName().substring(dash + 1);
+			}
 		}
 
 		public static Kind read(DataInputStream s) throws IOException {
@@ -471,9 +483,10 @@ public abstract class Shadow {
 	 */
 	protected boolean checkMunger(ShadowMunger munger) {
 		if (munger.mustCheckExceptions()) {
-			for (Iterator i = munger.getThrownExceptions().iterator(); i.hasNext();) {
-				if (!checkCanThrow(munger, (ResolvedType) i.next()))
+			for (Iterator<ResolvedType> i = munger.getThrownExceptions().iterator(); i.hasNext();) {
+				if (!checkCanThrow(munger, i.next())) {
 					return false;
+				}
 			}
 		}
 		return true;
@@ -506,24 +519,27 @@ public abstract class Shadow {
 	private boolean isDeclaredException(ResolvedType resolvedTypeX, Member member) {
 		ResolvedType[] excs = getIWorld().resolve(member.getExceptions(getIWorld()));
 		for (int i = 0, len = excs.length; i < len; i++) {
-			if (excs[i].isAssignableFrom(resolvedTypeX))
+			if (excs[i].isAssignableFrom(resolvedTypeX)) {
 				return true;
+			}
 		}
 		return false;
 	}
 
 	public void addMunger(ShadowMunger munger) {
 		if (checkMunger(munger)) {
-			if (mungers == Collections.EMPTY_LIST)
+			if (mungers == Collections.EMPTY_LIST) {
 				mungers = new ArrayList();
+			}
 			this.mungers.add(munger);
 		}
 	}
 
 	public final void implement() {
 		sortMungers();
-		if (mungers == null)
+		if (mungers == null) {
 			return;
+		}
 		prepareForMungers();
 		implementMungers();
 	}
@@ -537,8 +553,7 @@ public abstract class Shadow {
 
 		if (sorted == null) {
 			// this means that we have circular dependencies
-			for (Iterator i = mungers.iterator(); i.hasNext();) {
-				ShadowMunger m = (ShadowMunger) i.next();
+			for (ShadowMunger m : mungers) {
 				getIWorld().getMessageHandler().handleMessage(
 						MessageUtil.error(WeaverMessages.format(WeaverMessages.CIRCULAR_DEPENDENCY, this), m.getSourceLocation()));
 			}
@@ -552,7 +567,7 @@ public abstract class Shadow {
 
 			// Stores a set of strings of the form 'aspect1:aspect2' which indicates there is no
 			// precedence specified between the two aspects at this shadow.
-			Set clashingAspects = new HashSet();
+			Set<String> clashingAspects = new HashSet<String>();
 			int max = mungers.size();
 
 			// Compare every pair of advice mungers
@@ -580,20 +595,21 @@ public abstract class Shadow {
 								if (order != null && order.equals(new Integer(0))) {
 									String key = adviceA.getDeclaringAspect() + ":" + adviceB.getDeclaringAspect();
 									String possibleExistingKey = adviceB.getDeclaringAspect() + ":" + adviceA.getDeclaringAspect();
-									if (!clashingAspects.contains(possibleExistingKey))
+									if (!clashingAspects.contains(possibleExistingKey)) {
 										clashingAspects.add(key);
+									}
 								}
 							}
 						}
 					}
 				}
 			}
-			for (Iterator iter = clashingAspects.iterator(); iter.hasNext();) {
-				String element = (String) iter.next();
+			for (Iterator<String> iter = clashingAspects.iterator(); iter.hasNext();) {
+				String element = iter.next();
 				String aspect1 = element.substring(0, element.indexOf(":"));
 				String aspect2 = element.substring(element.indexOf(":") + 1);
-				getIWorld().getLint().unorderedAdviceAtShadow.signal(new String[] { this.toString(), aspect1, aspect2 }, this
-						.getSourceLocation(), null);
+				getIWorld().getLint().unorderedAdviceAtShadow.signal(new String[] { this.toString(), aspect1, aspect2 },
+						this.getSourceLocation(), null);
 			}
 		}
 	}
@@ -655,12 +671,13 @@ public abstract class Shadow {
 	 * Convert a bit array for the shadow kinds into a set of them... should only be used for testing - mainline code should do bit
 	 * manipulation!
 	 */
-	public static Set toSet(int i) {
-		Set results = new HashSet();
+	public static Set<Kind> toSet(int i) {
+		Set<Kind> results = new HashSet<Kind>();
 		for (int j = 0; j < Shadow.SHADOW_KINDS.length; j++) {
 			Kind k = Shadow.SHADOW_KINDS[j];
-			if (k.isSet(i))
+			if (k.isSet(i)) {
 				results.add(k);
+			}
 		}
 		return results;
 	}

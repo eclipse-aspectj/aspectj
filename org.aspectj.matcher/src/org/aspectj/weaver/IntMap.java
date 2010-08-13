@@ -24,7 +24,7 @@ public class IntMap {
 	// XXX begin hack to avoid a signature refactoring in Pointcut
 	private ResolvedType concreteAspect;
 	private ShadowMunger enclosingAdvice;
-	private List/* ResolvedPointcutDefinition */enclosingDefinition = new ArrayList();
+	private List<ResolvedPointcutDefinition> enclosingDefinition = new ArrayList<ResolvedPointcutDefinition>();
 
 	public void pushEnclosingDefinition(ResolvedPointcutDefinition def) {
 		enclosingDefinition.add(def);
@@ -35,9 +35,10 @@ public class IntMap {
 	}
 
 	public ResolvedPointcutDefinition peekEnclosingDefinition() {
-		if (enclosingDefinition.size() == 0)
+		if (enclosingDefinition.size() == 0) {
 			return null;
-		return (ResolvedPointcutDefinition) enclosingDefinition.get(enclosingDefinition.size() - 1);
+		}
+		return enclosingDefinition.get(enclosingDefinition.size() - 1);
 	}
 
 	public boolean directlyInAdvice() {
@@ -53,10 +54,11 @@ public class IntMap {
 	}
 
 	public Member getAdviceSignature() {
-		if (enclosingAdvice instanceof Advice)
+		if (enclosingAdvice instanceof Advice) {
 			return ((Advice) enclosingAdvice).getSignature();
-		else
+		} else {
 			return null;
+		}
 	}
 
 	public ResolvedType getConcreteAspect() {
@@ -99,8 +101,9 @@ public class IntMap {
 		if (key >= map.length) {
 			int[] tmp = new int[key * 2 + 1]; // ??? better expansion function
 			System.arraycopy(map, 0, tmp, 0, map.length);
-			for (int i = map.length, len = tmp.length; i < len; i++)
+			for (int i = map.length, len = tmp.length; i < len; i++) {
 				tmp[i] = MISSING;
+			}
 			map = tmp;
 		}
 		map[key] = val;

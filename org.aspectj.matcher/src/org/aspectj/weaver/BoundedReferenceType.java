@@ -96,7 +96,7 @@ public class BoundedReferenceType extends ReferenceType {
 	}
 
 	@Override
-	public UnresolvedType parameterize(Map typeBindings) {
+	public UnresolvedType parameterize(Map<String, UnresolvedType> typeBindings) {
 		if (this.kind == UNBOUND) {
 			return this;
 		}

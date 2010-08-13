@@ -27,7 +27,7 @@ import org.aspectj.bridge.ISourceLocation;
  * @author PARC
  * @author Andy Clement
  */
-public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, TypeVariableDeclaringElement, ResolvedMember {
+public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, ResolvedMember {
 
 	private String[] parameterNames = null;
 	protected UnresolvedType[] checkedExceptions = UnresolvedType.NONE;

@@ -139,19 +139,23 @@ public class Lint {
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(Lint.class);
 
 	public Lint(World world) {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("<init>", this, world);
+		}
 		this.world = world;
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("<init>");
+		}
 	}
 
 	public void setAll(String messageKind) {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("setAll", this, messageKind);
+		}
 		setAll(getMessageKind(messageKind));
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("setAll");
+		}
 	}
 
 	private void setAll(IMessage.Kind messageKind) {
@@ -161,15 +165,16 @@ public class Lint {
 	}
 
 	public void setFromProperties(File file) {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("setFromProperties", this, file);
+		}
 		InputStream s = null;
 		try {
 			s = new FileInputStream(file);
 			setFromProperties(s);
 		} catch (IOException ioe) {
-			MessageUtil.error(world.getMessageHandler(), WeaverMessages.format(WeaverMessages.XLINT_LOAD_ERROR, file.getPath(), ioe
-					.getMessage()));
+			MessageUtil.error(world.getMessageHandler(),
+					WeaverMessages.format(WeaverMessages.XLINT_LOAD_ERROR, file.getPath(), ioe.getMessage()));
 		} finally {
 			if (s != null) {
 				try {
@@ -180,8 +185,9 @@ public class Lint {
 			}
 		}
 
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("setFromProperties");
+		}
 	}
 
 	public void loadDefaultProperties() {
@@ -193,8 +199,8 @@ public class Lint {
 		try {
 			setFromProperties(s);
 		} catch (IOException ioe) {
-			MessageUtil.error(world.getMessageHandler(), WeaverMessages.format(WeaverMessages.XLINTDEFAULT_LOAD_PROBLEM, ioe
-					.getMessage()));
+			MessageUtil.error(world.getMessageHandler(),
+					WeaverMessages.format(WeaverMessages.XLINTDEFAULT_LOAD_PROBLEM, ioe.getMessage()));
 		} finally {
 			try {
 				s.close();
@@ -211,6 +217,7 @@ public class Lint {
 		setFromProperties(p);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void setFromProperties(Properties properties) {
 		for (Iterator i = properties.entrySet().iterator(); i.hasNext();) {
 			Map.Entry entry = (Map.Entry) i.next();
@@ -232,11 +239,11 @@ public class Lint {
 	}
 
 	// temporarily suppress the given lint messages
-	public void suppressKinds(Collection lintKind) {
-		if (lintKind.isEmpty())
+	public void suppressKinds(Collection<Kind> lintKind) {
+		if (lintKind.isEmpty()) {
 			return;
-		for (Iterator iter = lintKind.iterator(); iter.hasNext();) {
-			Kind k = (Kind) iter.next();
+		}
+		for (Kind k : lintKind) {
 			k.setSuppressed(true);
 		}
 	}
@@ -255,12 +262,13 @@ public class Lint {
 	}
 
 	private IMessage.Kind getMessageKind(String v) {
-		if (v.equals("ignore"))
+		if (v.equals("ignore")) {
 			return null;
-		else if (v.equals("warning"))
+		} else if (v.equals("warning")) {
 			return IMessage.WARNING;
-		else if (v.equals("error"))
+		} else if (v.equals("error")) {
 			return IMessage.ERROR;
+		}
 
 		MessageUtil.error(world.getMessageHandler(), WeaverMessages.format(WeaverMessages.XLINT_VALUE_ERROR, v));
 		return null;
@@ -308,8 +316,9 @@ public class Lint {
 		}
 
 		public void signal(String info, ISourceLocation location) {
-			if (kind == null)
+			if (kind == null) {
 				return;
+			}
 
 			String text = MessageFormat.format(message, new Object[] { info });
 			text += " [Xlint:" + name + "]";
@@ -317,8 +326,9 @@ public class Lint {
 		}
 
 		public void signal(String[] infos, ISourceLocation location, ISourceLocation[] extraLocations) {
-			if (kind == null)
+			if (kind == null) {
 				return;
+			}
 
 			String text = MessageFormat.format(message, (Object[]) infos);
 			text += " [Xlint:" + name + "]";

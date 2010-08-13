@@ -277,7 +277,7 @@ public class JoinPointSignature implements ResolvedMember {
 		return realMember.getAnnotations();
 	}
 
-	public Collection getDeclaringTypes(World world) {
+	public Collection<ResolvedType> getDeclaringTypes(World world) {
 		throw new UnsupportedOperationException("Adrian doesn't think you should be calling this...");
 	}
 

@@ -53,7 +53,7 @@ public class ReferenceType extends ResolvedType {
 	ResolvedMember[] parameterizedPointcuts = null;
 	WeakReference<ResolvedType[]> parameterizedInterfaces = new WeakReference<ResolvedType[]>(null);
 	Collection<Declare> parameterizedDeclares = null;
-	Collection parameterizedTypeMungers = null;
+	// Collection parameterizedTypeMungers = null;
 
 	// During matching it can be necessary to temporary mark types as annotated. For example
 	// a declare @type may trigger a separate declare parents to match, and so the annotation
