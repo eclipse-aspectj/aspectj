@@ -758,7 +758,7 @@ public class BcelWorld extends World implements Repository {
 				// BcelTypeMunger.mungeNewParent()
 				// classType.addParent(newParent);
 				onType.addParent(newParent);
-				ResolvedTypeMunger newParentMunger = new NewParentTypeMunger(newParent);
+				ResolvedTypeMunger newParentMunger = new NewParentTypeMunger(newParent, p.getDeclaringType());
 				newParentMunger.setSourceLocation(p.getSourceLocation());
 				onType.addInterTypeMunger(new BcelTypeMunger(newParentMunger, getCrosscuttingMembersSet()
 						.findAspectDeclaringParents(p)), false);

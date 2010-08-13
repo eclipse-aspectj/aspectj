@@ -498,8 +498,6 @@ public class BcelWeaver {
 			UnwovenClassFile jc = i.next();
 			String name = jc.getClassName();
 			ResolvedType type = world.resolve(name);
-			// System.err.println("added: " + type + " aspect? " +
-			// type.isAspect());
 			if (type.isAspect() && !world.isOverWeaving()) {
 				needToReweaveWorld |= xcutSet.addOrReplaceAspect(type);
 			}
@@ -541,10 +539,8 @@ public class BcelWeaver {
 		// this code may need
 		// a bit of alteration...
 
-		Collections.sort(shadowMungerList, new Comparator() {
-			public int compare(Object o1, Object o2) {
-				ShadowMunger sm1 = (ShadowMunger) o1;
-				ShadowMunger sm2 = (ShadowMunger) o2;
+		Collections.sort(shadowMungerList, new Comparator<ShadowMunger>() {
+			public int compare(ShadowMunger sm1, ShadowMunger sm2) {
 				if (sm1.getSourceLocation() == null) {
 					return (sm2.getSourceLocation() == null ? 0 : 1);
 				}
@@ -1592,7 +1588,7 @@ public class BcelWeaver {
 				// BcelTypeMunger.mungeNewParent()
 				// classType.addParent(newParent);
 				onType.addParent(newParent);
-				NewParentTypeMunger newParentMunger = new NewParentTypeMunger(newParent);
+				NewParentTypeMunger newParentMunger = new NewParentTypeMunger(newParent, p.getDeclaringType());
 				if (p.isMixin()) {
 					newParentMunger.setIsMixin(true);
 				}
