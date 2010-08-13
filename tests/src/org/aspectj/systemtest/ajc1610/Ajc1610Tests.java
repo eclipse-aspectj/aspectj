@@ -18,6 +18,9 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc1610Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testAbstractAspectDeclareParents_322446() {
+		runTest("declare parents abstract aspect");
+	}
 	public void testAbstractAspectAndDeclares_322272_2() {
 		runTest("abstract aspects and declares - 2");
 	}

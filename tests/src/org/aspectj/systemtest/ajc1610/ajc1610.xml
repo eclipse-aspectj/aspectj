@@ -2,6 +2,15 @@
 
 <suite>
 
+  <ajc-test dir="bugs1610/pr322446" title="declare parents abstract aspect">
+    <compile files="Super.java I.java" outjar="aspects.jar" options="-1.5"/>
+    <compile files="Code.java" classpath="aspects.jar" options="-1.5 -emacssym"/>
+    <run class="Code">
+    <stdout>
+    <line text="true"/>
+    </stdout></run>
+  </ajc-test>
+  
   <ajc-test dir="bugs1610/prx" title="duplicate annotation">
     <compile files="A.java" options="-1.5">
     </compile>
