@@ -16,11 +16,13 @@ import java.io.IOException;
 
 public class NewParentTypeMunger extends ResolvedTypeMunger {
 	ResolvedType newParent;
+	ResolvedType declaringType;
 	private boolean isMixin;
 
-	public NewParentTypeMunger(ResolvedType newParent) {
+	public NewParentTypeMunger(ResolvedType newParent, ResolvedType declaringType) {
 		super(Parent, null);
 		this.newParent = newParent;
+		this.declaringType = declaringType;
 		this.isMixin = false;
 	}
 
@@ -50,6 +52,10 @@ public class NewParentTypeMunger extends ResolvedTypeMunger {
 			hashCode = result;
 		}
 		return hashCode;
+	}
+
+	public ResolvedType getDeclaringType() {
+		return declaringType;
 	}
 
 	public void setIsMixin(boolean b) {
