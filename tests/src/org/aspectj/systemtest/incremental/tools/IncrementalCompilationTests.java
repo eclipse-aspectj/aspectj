@@ -714,6 +714,8 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		// check handle to anonymous inner:
 		IProgramElement ipe = model.findElementForHandleOrCreate(
 				"=PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect~main~\\[QString;[", false);
+		System.out.println("I am a marker");
+		printModel(p);
 		assertNotNull(ipe);
 	}
 }
