@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.aspectj.util.GenericSignature;
-import org.aspectj.util.GenericSignatureParser;
 import org.aspectj.util.GenericSignature.ClassSignature;
+import org.aspectj.util.GenericSignatureParser;
 import org.aspectj.weaver.tools.Traceable;
 
 /**
@@ -66,7 +66,8 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	public static final String MISSING_NAME = "@missing@";
 
 	// OPTIMIZE I dont think you can ask something unresolved what kind of type it is, how can it always know? Push down into
-	// resolvedtype that will force references to resolvedtypes to be correct rather than relying on unresolvedtypes to answer questions
+	// resolvedtype that will force references to resolvedtypes to be correct rather than relying on unresolvedtypes to answer
+	// questions
 	protected TypeKind typeKind = TypeKind.SIMPLE; // what kind of type am I?
 
 	protected String signature;
@@ -877,6 +878,9 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	public String getClassName() {
 		if (className == null) {
 			String name = getName();
+			if (name.indexOf("<") != -1) {
+				name = name.substring(0, name.indexOf("<"));
+			}
 			int index = name.lastIndexOf('.');
 			if (index == -1) {
 				className = name;
