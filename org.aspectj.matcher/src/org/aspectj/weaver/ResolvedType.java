@@ -998,13 +998,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	private ResolvedMember[] filterInJavaVisible(ResolvedMember[] ms) {
-		List l = new ArrayList();
+		List<ResolvedMember> l = new ArrayList<ResolvedMember>();
 		for (int i = 0, len = ms.length; i < len; i++) {
 			if (!ms[i].isAjSynthetic() && ms[i].getAssociatedShadowMunger() == null) {
 				l.add(ms[i]);
 			}
 		}
-		return (ResolvedMember[]) l.toArray(new ResolvedMember[l.size()]);
+		return l.toArray(new ResolvedMember[l.size()]);
 	}
 
 	public abstract ISourceContext getSourceContext();
@@ -1439,19 +1439,15 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 		boolean itdProblem = false;
 
-		for (Iterator iter = getInterTypeMungersIncludingSupers().iterator(); iter.hasNext();) {
-			ConcreteTypeMunger munger = (ConcreteTypeMunger) iter.next();
-			itdProblem = checkAbstractDeclaration(munger) || itdProblem; // Rule
-			// 2
-
+		for (ConcreteTypeMunger munger : getInterTypeMungersIncludingSupers()) {
+			itdProblem = checkAbstractDeclaration(munger) || itdProblem; // Rule 2
 		}
 
 		if (itdProblem) {
 			return; // If the rules above are broken, return right now
 		}
 
-		for (Iterator iter = getInterTypeMungersIncludingSupers().iterator(); iter.hasNext();) {
-			ConcreteTypeMunger munger = (ConcreteTypeMunger) iter.next();
+		for (ConcreteTypeMunger munger : getInterTypeMungersIncludingSupers()) {
 			if (munger.getSignature() != null && munger.getSignature().isAbstract()) { // Rule 1
 				if (munger.getMunger().getKind() == ResolvedTypeMunger.MethodDelegate2) {
 					// ignore for @AJ ITD as munger.getSignature() is the
@@ -1756,8 +1752,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 
 		// now compare to existingMungers
-		for (Iterator i = interTypeMungers.iterator(); i.hasNext();) {
-			ConcreteTypeMunger existingMunger = (ConcreteTypeMunger) i.next();
+		for (Iterator<ConcreteTypeMunger> i = interTypeMungers.iterator(); i.hasNext();) {
+			ConcreteTypeMunger existingMunger = i.next();
 			if (conflictingSignature(existingMunger.getSignature(), munger.getSignature())) {
 				// System.err.println("match " + munger + " with " +
 				// existingMunger);
@@ -1865,11 +1861,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 							ResolvedType declaringRt = existingMember.getDeclaringType().resolve(world);
 							WeaverStateInfo wsi = declaringRt.getWeaverState();
 							if (wsi != null) {
-								List mungersAffectingThisType = wsi.getTypeMungers(declaringRt);
+								List<ConcreteTypeMunger> mungersAffectingThisType = wsi.getTypeMungers(declaringRt);
 								if (mungersAffectingThisType != null) {
-									for (Iterator iterator = mungersAffectingThisType.iterator(); iterator.hasNext()
-											&& !isDuplicateOfPreviousITD;) {
-										ConcreteTypeMunger ctMunger = (ConcreteTypeMunger) iterator.next();
+									for (Iterator<ConcreteTypeMunger> iterator = mungersAffectingThisType.iterator(); iterator
+											.hasNext() && !isDuplicateOfPreviousITD;) {
+										ConcreteTypeMunger ctMunger = iterator.next();
 										// relatively crude check - is the ITD
 										// for the same as the existingmember
 										// and does it come
@@ -1888,7 +1884,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 									String aspectName = typeTransformer.getAspectType().getName();
 									ISourceLocation typeTransformerLocation = typeTransformer.getSourceLocation();
 									ISourceLocation existingMemberLocation = existingMember.getSourceLocation();
-									IMessage errorMessage = null;
 									String msg = WeaverMessages.format(WeaverMessages.ITD_MEMBER_CONFLICT, aspectName,
 											existingMember);
 
@@ -2273,7 +2268,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 		// interTypeMungers.clear();
 		// BUG? Why can't this be clear() instead: 293620 c6
-		interTypeMungers = new ArrayList();
+		interTypeMungers = new ArrayList<ConcreteTypeMunger>();
 	}
 
 	public boolean isTopmostImplementor(ResolvedType interfaceType) {
@@ -2309,7 +2304,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return this;
 	}
 
-	public List getExposedPointcuts() {
+	public List<ResolvedMember> getExposedPointcuts() {
 		List<ResolvedMember> ret = new ArrayList<ResolvedMember>();
 		if (getSuperclass() != null) {
 			ret.addAll(getSuperclass().getExposedPointcuts());

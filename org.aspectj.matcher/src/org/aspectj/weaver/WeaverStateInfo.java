@@ -238,9 +238,9 @@ public class WeaverStateInfo {
 		return "WeaverStateInfo(aspectsAffectingType=" + aspectsAffectingType + "," + typeMungers + ", " + oldStyle + ")";
 	}
 
-	public List getTypeMungers(ResolvedType onType) {
+	public List<ConcreteTypeMunger> getTypeMungers(ResolvedType onType) {
 		World world = onType.getWorld();
-		List ret = new ArrayList();
+		List<ConcreteTypeMunger> ret = new ArrayList<ConcreteTypeMunger>();
 		for (Entry entry : typeMungers) {
 			ResolvedType aspectType = world.resolve(entry.aspectType, true);
 			if (aspectType.isMissing()) {
