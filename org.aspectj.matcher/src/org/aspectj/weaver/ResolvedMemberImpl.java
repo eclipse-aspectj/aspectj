@@ -741,10 +741,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Type
 				typeMap.put(typeVariables[i].getName(), ut);
 			}
 		}
-		// For ITDs on generic types that use type variables from the target
-		// type, the aliases
-		// record the alternative names used throughout the ITD expression that
-		// must map to
+		// For ITDs on generic types that use type variables from the target type, the aliases
+		// record the alternative names used throughout the ITD expression that must map to
 		// the same value as the type variables real name.
 		if (aliases != null) {
 			int posn = 0;
