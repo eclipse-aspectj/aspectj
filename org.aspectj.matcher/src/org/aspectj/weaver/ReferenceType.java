@@ -1039,6 +1039,7 @@ public class ReferenceType extends ResolvedType {
 		annotationTypes = null;
 		newSuperclass = null;
 		newInterfaces = null;
+		typeVariables = null;
 		parameterizedInterfaces.clear();
 		superclassReference = new WeakReference<ResolvedType>(null);
 		if (getDelegate() != null) {
