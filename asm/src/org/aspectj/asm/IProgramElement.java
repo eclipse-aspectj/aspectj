@@ -16,6 +16,7 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
@@ -414,4 +415,8 @@ public interface IProgramElement extends Serializable {
 	 * @return the fully qualified annotation type, eg. p.q.r.Foo
 	 */
 	public String getAnnotationType();
+
+	public Map<String, List<String>> getDeclareParentsMap();
+
+	public void setDeclareParentsMap(Map<String, List<String>> newmap);
 }

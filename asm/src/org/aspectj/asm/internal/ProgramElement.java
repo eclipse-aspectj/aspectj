@@ -668,4 +668,13 @@ public class ProgramElement implements IProgramElement {
 			kvpairs.put("annotationStyleDeclaration", "true");
 		}
 	}
+
+	public Map<String, List<String>> getDeclareParentsMap() {
+		Map<String, List<String>> s = (Map<String, List<String>>) kvpairs.get("declareparentsmap");
+		return s;
+	}
+
+	public void setDeclareParentsMap(Map<String, List<String>> newmap) {
+		kvpairs.put("declareparentsmap", newmap);
+	}
 }
