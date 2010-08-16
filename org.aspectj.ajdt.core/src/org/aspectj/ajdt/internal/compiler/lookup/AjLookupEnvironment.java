@@ -237,7 +237,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		boolean typeProcessingOrderIsImportant = declareParents.size() > 0 || declareAnnotationOnTypes.size() > 0; // DECAT
 
 		if (typeProcessingOrderIsImportant) {
-			typesToProcess = new ArrayList();
+			typesToProcess = new ArrayList<SourceTypeBinding>();
 			for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 				CompilationUnitScope cus = units[i].scope;
 				SourceTypeBinding[] stbs = cus.topLevelTypes;
@@ -247,10 +247,17 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				}
 			}
 
+			List<SourceTypeBinding> stb2 = new ArrayList<SourceTypeBinding>();
+			stb2.addAll(typesToProcess);
+
 			while (typesToProcess.size() > 0) {
-				// A side effect of weaveIntertypes() is that the processed type
-				// is removed from the collection
-				weaveIntertypes(typesToProcess, typesToProcess.get(0), typeMungers, declareParents, declareAnnotationOnTypes);
+				// A side effect of weaveIntertypes() is that the processed type is removed from the collection
+				weaveIntertypes(typesToProcess, typesToProcess.get(0), typeMungers, declareParents, declareAnnotationOnTypes, 1);
+			}
+
+			while (stb2.size() > 0) {
+				// A side effect of weaveIntertypes() is that the processed type is removed from the collection
+				weaveIntertypes(stb2, stb2.get(0), typeMungers, declareParents, declareAnnotationOnTypes, 2);
 			}
 
 		} else {
@@ -383,16 +390,19 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	 * compile... it stops recursing the first time it hits a type we aren't going to process during this compile. This could cause
 	 * problems if you supply 'pieces' of a hierarchy, i.e. the bottom and the top, but not the middle - but what the hell are you
 	 * doing if you do that?
+	 * 
+	 * @param mode 0=do everything, 1=do declare parents, 2=do ITDs
 	 */
 	private void weaveIntertypes(List<SourceTypeBinding> typesToProcess, SourceTypeBinding typeToWeave,
 			List<ConcreteTypeMunger> typeMungers, List<DeclareParents> declareParents,
-			List<DeclareAnnotation> declareAnnotationOnTypes) {
+			List<DeclareAnnotation> declareAnnotationOnTypes, int mode) {
 		// Look at the supertype first
 		ReferenceBinding superType = typeToWeave.superclass();
 		if (typesToProcess.contains(superType) && superType instanceof SourceTypeBinding) {
 			// System.err.println("Recursing to supertype "+new
 			// String(superType.getFileName()));
-			weaveIntertypes(typesToProcess, (SourceTypeBinding) superType, typeMungers, declareParents, declareAnnotationOnTypes);
+			weaveIntertypes(typesToProcess, (SourceTypeBinding) superType, typeMungers, declareParents, declareAnnotationOnTypes,
+					mode);
 		}
 		// Then look at the superinterface list
 		ReferenceBinding[] interfaceTypes = typeToWeave.superInterfaces();
@@ -401,10 +411,11 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			if (typesToProcess.contains(binding) && binding instanceof SourceTypeBinding) {
 				// System.err.println("Recursing to superinterface "+new
 				// String(binding.getFileName()));
-				weaveIntertypes(typesToProcess, (SourceTypeBinding) binding, typeMungers, declareParents, declareAnnotationOnTypes);
+				weaveIntertypes(typesToProcess, (SourceTypeBinding) binding, typeMungers, declareParents, declareAnnotationOnTypes,
+						mode);
 			}
 		}
-		weaveInterTypeDeclarations(typeToWeave, typeMungers, declareParents, declareAnnotationOnTypes, false);
+		weaveInterTypeDeclarations(typeToWeave, typeMungers, declareParents, declareAnnotationOnTypes, false, mode);
 		typesToProcess.remove(typeToWeave);
 	}
 
@@ -579,7 +590,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	private void weaveInterTypeDeclarations(CompilationUnitScope unit, List<ConcreteTypeMunger> typeMungers,
 			List<DeclareParents> declareParents, List<DeclareAnnotation> declareAnnotationOnTypes) {
 		for (int i = 0, length = unit.topLevelTypes.length; i < length; i++) {
-			weaveInterTypeDeclarations(unit.topLevelTypes[i], typeMungers, declareParents, declareAnnotationOnTypes, false);
+			weaveInterTypeDeclarations(unit.topLevelTypes[i], typeMungers, declareParents, declareAnnotationOnTypes, false, 0);
 		}
 	}
 
@@ -634,12 +645,15 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			}
 		} else {
 			weaveInterTypeDeclarations(sourceType, factory.getTypeMungers(), factory.getDeclareParents(),
-					factory.getDeclareAnnotationOnTypes(), true);
+					factory.getDeclareAnnotationOnTypes(), true, 0);
 		}
 	}
 
+	/**
+	 * @param mode 0=do everything, 1=do declare parents, 2=do ITDs
+	 */
 	private void weaveInterTypeDeclarations(SourceTypeBinding sourceType, List<ConcreteTypeMunger> typeMungers,
-			List<DeclareParents> declareParents, List<DeclareAnnotation> declareAnnotationOnTypes, boolean skipInners) {
+			List<DeclareParents> declareParents, List<DeclareAnnotation> declareAnnotationOnTypes, boolean skipInners, int mode) {
 
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING_INTERTYPE_DECLARATIONS,
 				sourceType.sourceName);
@@ -653,148 +667,148 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 
 		WeaverStateInfo info = onType.getWeaverState();
 
-		// this test isnt quite right - there will be a case where we fail to
-		// flag a problem
-		// with a 'dangerous interface' because the type is reweavable when we
-		// should have
-		// because the type wasn't going to be rewoven... if that happens, we
-		// should perhaps
-		// move this test and dangerous interface processing to the end of this
-		// method and
-		// make it conditional on whether any of the typeMungers passed into
-		// here actually
-		// matched this type.
-		if (info != null && !info.isOldStyle() && !info.isReweavable()) {
-			processTypeMungersFromExistingWeaverState(sourceType, onType);
-			CompilationAndWeavingContext.leavingPhase(tok);
-			return;
-		}
-
-		// Check if the type we are looking at is the topMostImplementor of a
-		// dangerous interface -
-		// report a problem if it is.
-		for (Iterator i = dangerousInterfaces.entrySet().iterator(); i.hasNext();) {
-			Map.Entry entry = (Map.Entry) i.next();
-			ResolvedType interfaceType = (ResolvedType) entry.getKey();
-			if (onType.isTopmostImplementor(interfaceType)) {
-				factory.showMessage(IMessage.ERROR, onType + ": " + entry.getValue(), onType.getSourceLocation(), null);
+		if (mode < 2) {
+			// this test isnt quite right - there will be a case where we fail to
+			// flag a problem
+			// with a 'dangerous interface' because the type is reweavable when we
+			// should have
+			// because the type wasn't going to be rewoven... if that happens, we
+			// should perhaps
+			// move this test and dangerous interface processing to the end of this
+			// method and
+			// make it conditional on whether any of the typeMungers passed into
+			// here actually
+			// matched this type.
+			if (info != null && !info.isOldStyle() && !info.isReweavable()) {
+				processTypeMungersFromExistingWeaverState(sourceType, onType);
+				CompilationAndWeavingContext.leavingPhase(tok);
+				return;
 			}
-		}
 
-		boolean needOldStyleWarning = (info != null && info.isOldStyle());
-
-		onType.clearInterTypeMungers();
-		onType.ensureConsistent();
-
-		// FIXME asc perf Could optimize here, after processing the expected set
-		// of types we may bring
-		// binary types that are not exposed to the weaver, there is no need to
-		// attempt declare parents
-		// or declare annotation really - unless we want to report the
-		// not-exposed to weaver
-		// messages...
-
-		List decpToRepeat = new ArrayList();
-		List<DeclareAnnotation> decaToRepeat = new ArrayList<DeclareAnnotation>();
-		boolean anyNewParents = false;
-		boolean anyNewAnnotations = false;
-
-		// first pass
-		// try and apply all decps - if they match, then great. If they don't
-		// then
-		// check if they are starred-annotation patterns. If they are not
-		// starred
-		// annotation patterns then they might match later...remember that...
-		for (Iterator i = declareParents.iterator(); i.hasNext();) {
-			DeclareParents decp = (DeclareParents) i.next();
-			if (!decp.isMixin()) {
-				boolean didSomething = doDeclareParents(decp, sourceType);
-				if (didSomething) {
-					if (factory.pushinCollector != null) {
-						factory.pushinCollector.tagAsMunged(sourceType, decp.getParents().get(0));
-					}
-					anyNewParents = true;
-				} else {
-					if (!decp.getChild().isStarAnnotation()) {
-						decpToRepeat.add(decp);
-					}
+			// Check if the type we are looking at is the topMostImplementor of a
+			// dangerous interface -
+			// report a problem if it is.
+			for (Iterator i = dangerousInterfaces.entrySet().iterator(); i.hasNext();) {
+				Map.Entry entry = (Map.Entry) i.next();
+				ResolvedType interfaceType = (ResolvedType) entry.getKey();
+				if (onType.isTopmostImplementor(interfaceType)) {
+					factory.showMessage(IMessage.ERROR, onType + ": " + entry.getValue(), onType.getSourceLocation(), null);
 				}
 			}
-		}
 
-		for (Iterator<DeclareAnnotation> i = declareAnnotationOnTypes.iterator(); i.hasNext();) {
-			DeclareAnnotation deca = i.next();
-			boolean didSomething = doDeclareAnnotations(deca, sourceType, true);
-			if (didSomething) {
-				anyNewAnnotations = true;
-			} else {
-				if (!deca.getTypePattern().isStar()) {
-					decaToRepeat.add(deca);
-				}
-			}
-		}
+			boolean needOldStyleWarning = (info != null && info.isOldStyle());
 
-		// now lets loop over and over until we have done all we can
-		while ((anyNewAnnotations || anyNewParents) && (!decpToRepeat.isEmpty() || !decaToRepeat.isEmpty())) {
-			anyNewParents = anyNewAnnotations = false;
-			List forRemoval = new ArrayList();
-			for (Iterator i = decpToRepeat.iterator(); i.hasNext();) {
-				DeclareParents decp = (DeclareParents) i.next();
-				boolean didSomething = doDeclareParents(decp, sourceType);
-				if (didSomething) {
-					if (factory.pushinCollector != null) {
-						factory.pushinCollector.tagAsMunged(sourceType, decp.getParents().get(0));
-					}
-					anyNewParents = true;
-					forRemoval.add(decp);
-				}
-			}
-			decpToRepeat.removeAll(forRemoval);
+			onType.clearInterTypeMungers();
+			onType.ensureConsistent();
 
-			forRemoval.clear();
-			for (Iterator i = declareAnnotationOnTypes.iterator(); i.hasNext();) {
-				DeclareAnnotation deca = (DeclareAnnotation) i.next();
-				boolean didSomething = doDeclareAnnotations(deca, sourceType, false);
-				if (didSomething) {
-					if (factory.pushinCollector != null) {
-						factory.pushinCollector.tagAsMunged(sourceType, deca.getAnnotationString());
-					}
-					anyNewAnnotations = true;
-					forRemoval.add(deca);
-				}
-			}
-			decaToRepeat.removeAll(forRemoval);
-		}
+			// FIXME asc perf Could optimize here, after processing the expected set
+			// of types we may bring
+			// binary types that are not exposed to the weaver, there is no need to
+			// attempt declare parents
+			// or declare annotation really - unless we want to report the
+			// not-exposed to weaver
+			// messages...
 
-		for (Iterator<ConcreteTypeMunger> i = typeMungers.iterator(); i.hasNext();) {
-			EclipseTypeMunger munger = (EclipseTypeMunger) i.next();
-			if (munger.matches(onType)) {
-				if (needOldStyleWarning) {
-					factory.showMessage(IMessage.WARNING, "The class for " + onType
-							+ " should be recompiled with ajc-1.1.1 for best results", onType.getSourceLocation(), null);
-					needOldStyleWarning = false;
-				}
-				onType.addInterTypeMunger(munger, true);
-				if (munger.getMunger() != null && munger.getMunger().getKind() == ResolvedTypeMunger.InnerClass) {
-					// Must do these right now, because if we do an ITD member afterwards it may attempt to reference the
-					// type being applied (the call above 'addInterTypeMunger' will fail for these ITDs if it needed
-					// it to be in place)
-					if (munger.munge(sourceType, onType)) {
+			List<DeclareParents> decpToRepeat = new ArrayList<DeclareParents>();
+			List<DeclareAnnotation> decaToRepeat = new ArrayList<DeclareAnnotation>();
+			boolean anyNewParents = false;
+			boolean anyNewAnnotations = false;
+
+			// first pass
+			// try and apply all decps - if they match, then great. If they don't
+			// then
+			// check if they are starred-annotation patterns. If they are not
+			// starred
+			// annotation patterns then they might match later...remember that...
+			for (DeclareParents decp : declareParents) {
+				if (!decp.isMixin()) {
+					boolean didSomething = doDeclareParents(decp, sourceType);
+					if (didSomething) {
 						if (factory.pushinCollector != null) {
-							factory.pushinCollector.tagAsMunged(sourceType, munger.getSourceMethod());
+							factory.pushinCollector.tagAsMunged(sourceType, decp.getParents().get(0));
+						}
+						anyNewParents = true;
+					} else {
+						if (!decp.getChild().isStarAnnotation()) {
+							decpToRepeat.add(decp);
 						}
 					}
 				}
 			}
-		}
 
-		onType.checkInterTypeMungers();
-		for (Iterator i = onType.getInterTypeMungers().iterator(); i.hasNext();) {
-			EclipseTypeMunger munger = (EclipseTypeMunger) i.next();
-			if (munger.getMunger() == null || munger.getMunger().getKind() != ResolvedTypeMunger.InnerClass) {
-				if (munger.munge(sourceType, onType)) {
-					if (factory.pushinCollector != null) {
-						factory.pushinCollector.tagAsMunged(sourceType, munger.getSourceMethod());
+			for (DeclareAnnotation deca : declareAnnotationOnTypes) {
+				boolean didSomething = doDeclareAnnotations(deca, sourceType, true);
+				if (didSomething) {
+					anyNewAnnotations = true;
+				} else {
+					if (!deca.getTypePattern().isStar()) {
+						decaToRepeat.add(deca);
+					}
+				}
+			}
+
+			List forRemoval = new ArrayList();
+			// now lets loop over and over until we have done all we can
+			while ((anyNewAnnotations || anyNewParents) && (!decpToRepeat.isEmpty() || !decaToRepeat.isEmpty())) {
+				anyNewParents = anyNewAnnotations = false;
+				forRemoval.clear();
+				for (DeclareParents decp : decpToRepeat) {
+					boolean didSomething = doDeclareParents(decp, sourceType);
+					if (didSomething) {
+						if (factory.pushinCollector != null) {
+							factory.pushinCollector.tagAsMunged(sourceType, decp.getParents().get(0));
+						}
+						anyNewParents = true;
+						forRemoval.add(decp);
+					}
+				}
+				decpToRepeat.removeAll(forRemoval);
+
+				forRemoval.clear();
+				for (DeclareAnnotation deca : decaToRepeat) {
+					boolean didSomething = doDeclareAnnotations(deca, sourceType, false);
+					if (didSomething) {
+						if (factory.pushinCollector != null) {
+							factory.pushinCollector.tagAsMunged(sourceType, deca.getAnnotationString());
+						}
+						anyNewAnnotations = true;
+						forRemoval.add(deca);
+					}
+				}
+				decaToRepeat.removeAll(forRemoval);
+			}
+		}
+		if (mode == 0 || mode == 2) {
+			for (Iterator<ConcreteTypeMunger> i = typeMungers.iterator(); i.hasNext();) {
+				EclipseTypeMunger munger = (EclipseTypeMunger) i.next();
+				if (munger.matches(onType)) {
+					// if (needOldStyleWarning) {
+					// factory.showMessage(IMessage.WARNING, "The class for " + onType
+					// + " should be recompiled with ajc-1.1.1 for best results", onType.getSourceLocation(), null);
+					// needOldStyleWarning = false;
+					// }
+					onType.addInterTypeMunger(munger, true);
+					if (munger.getMunger() != null && munger.getMunger().getKind() == ResolvedTypeMunger.InnerClass) {
+						// Must do these right now, because if we do an ITD member afterwards it may attempt to reference the
+						// type being applied (the call above 'addInterTypeMunger' will fail for these ITDs if it needed
+						// it to be in place)
+						if (munger.munge(sourceType, onType)) {
+							if (factory.pushinCollector != null) {
+								factory.pushinCollector.tagAsMunged(sourceType, munger.getSourceMethod());
+							}
+						}
+					}
+				}
+			}
+
+			onType.checkInterTypeMungers();
+			for (Iterator i = onType.getInterTypeMungers().iterator(); i.hasNext();) {
+				EclipseTypeMunger munger = (EclipseTypeMunger) i.next();
+				if (munger.getMunger() == null || munger.getMunger().getKind() != ResolvedTypeMunger.InnerClass) {
+					if (munger.munge(sourceType, onType)) {
+						if (factory.pushinCollector != null) {
+							factory.pushinCollector.tagAsMunged(sourceType, munger.getSourceMethod());
+						}
 					}
 				}
 			}
@@ -824,7 +838,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		for (int i = 0, length = memberTypes.length; i < length; i++) {
 			if (memberTypes[i] instanceof SourceTypeBinding) {
 				weaveInterTypeDeclarations((SourceTypeBinding) memberTypes[i], typeMungers, declareParents,
-						declareAnnotationOnTypes, false);
+						declareAnnotationOnTypes, false, mode);
 			}
 		}
 		CompilationAndWeavingContext.leavingPhase(tok);
