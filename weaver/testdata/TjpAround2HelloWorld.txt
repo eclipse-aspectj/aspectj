@@ -272,8 +272,8 @@ public class HelloWorld extends java.lang.Object:
                     LDC "1"
                     LDC "println"
                     LDC "java.io.PrintStream"
-                    LDC "java.lang.String:"
-                    LDC "arg0:"
+                    LDC "java.lang.String"
+                    LDC "arg0"
                     LDC ""
                     LDC "void"
                     INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeMethodSig (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/aspectj/lang/reflect/MethodSignature;
@@ -286,8 +286,8 @@ public class HelloWorld extends java.lang.Object:
                     LDC "9"
                     LDC "main"
                     LDC "HelloWorld"
-                    LDC "[Ljava.lang.String;:"
-                    LDC "args:"
+                    LDC "[Ljava.lang.String;"
+                    LDC "args"
                     LDC ""
                     LDC "void"
                     INVOKEVIRTUAL org.aspectj.runtime.reflect.Factory.makeMethodSig (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/aspectj/lang/reflect/MethodSignature;

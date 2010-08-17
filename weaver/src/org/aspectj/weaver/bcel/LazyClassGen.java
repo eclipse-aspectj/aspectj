@@ -1389,10 +1389,12 @@ public final class LazyClassGen {
 		if (types == null) {
 			return "";
 		}
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (int i = 0, len = types.length; i < len; i++) {
+			if (i > 0) {
+				buf.append(':');
+			}
 			buf.append(makeString(types[i]));
-			buf.append(':');
 		}
 		return buf.toString();
 	}
@@ -1401,10 +1403,12 @@ public final class LazyClassGen {
 		if (names == null) {
 			return "";
 		}
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (int i = 0, len = names.length; i < len; i++) {
+			if (i > 0) {
+				buf.append(':');
+			}
 			buf.append(names[i]);
-			buf.append(':');
 		}
 		return buf.toString();
 	}
