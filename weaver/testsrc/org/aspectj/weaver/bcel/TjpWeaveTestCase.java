@@ -41,25 +41,25 @@ public class TjpWeaveTestCase extends WeaveTestCase {
 	}
 
 	public void testStaticTjp() throws IOException {
-		BcelAdvice munger = new BcelAdvice(AdviceKind.stringToKind("before"), makePointcutAll(), TestUtils
-				.methodFromString("static void Aspect.ajc_before(org.aspectj.lang.JoinPoint$StaticPart)"),
+		BcelAdvice munger = new BcelAdvice(AdviceKind.stringToKind("before"), makePointcutAll(),
+				TestUtils.methodFromString("static void Aspect.ajc_before(org.aspectj.lang.JoinPoint$StaticPart)"),
 				Advice.ThisJoinPointStaticPart, -1, -1, null, null);
 
 		weaveTest("HelloWorld", "StaticTjpBeforeHelloWorld", munger);
 	}
 
 	public void testEnclosingStaticTjp() throws IOException {
-		BcelAdvice munger = new BcelAdvice(AdviceKind.stringToKind("before"), makePointcutAll(), TestUtils
-				.methodFromString("static void Aspect.ajc_before(org.aspectj.lang.JoinPoint$StaticPart)"),
+		BcelAdvice munger = new BcelAdvice(AdviceKind.stringToKind("before"), makePointcutAll(),
+				TestUtils.methodFromString("static void Aspect.ajc_before(org.aspectj.lang.JoinPoint$StaticPart)"),
 				Advice.ThisEnclosingJoinPointStaticPart, -1, -1, null, null);
 
 		weaveTest("HelloWorld", "StaticEnclosingTjpBeforeHelloWorld", munger);
 	}
 
 	public void testTjp() throws IOException {
-		BcelAdvice munger = new BcelAdvice(AdviceKind.stringToKind("before"), makePointcutAll(), TestUtils
-				.methodFromString("static void Aspect.ajc_before(org.aspectj.lang.JoinPoint)"), Advice.ThisJoinPoint, -1, -1, null,
-				null);
+		BcelAdvice munger = new BcelAdvice(AdviceKind.stringToKind("before"), makePointcutAll(),
+				TestUtils.methodFromString("static void Aspect.ajc_before(org.aspectj.lang.JoinPoint)"), Advice.ThisJoinPoint, -1,
+				-1, null, null);
 
 		weaveTest("HelloWorld", "TjpBeforeHelloWorld", munger);
 	}
