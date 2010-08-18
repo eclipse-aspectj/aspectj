@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.aspectj.bridge.MessageUtil;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
@@ -28,7 +29,6 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 /**
  * Represents a declare annotation statement, one of atField, atMethod, atConstructor or atType.
@@ -52,6 +52,10 @@ public class DeclareAnnotation extends Declare {
 	private List<String> annotationStrings;
 	private AnnotationAJ annotation; // discovered when required
 	private ResolvedType annotationType; // discovered when required
+
+	// not serialized:
+	private int annotationStart;
+	private int annotationEnd;
 
 	/**
 	 * Constructor for declare atType.
@@ -158,6 +162,19 @@ public class DeclareAnnotation extends Declare {
 
 	public void setAnnotationString(String annotationString) {
 		this.annotationStrings.set(0, annotationString);
+	}
+
+	public void setAnnotationLocation(int start, int end) {
+		this.annotationStart = start;
+		this.annotationEnd = end;
+	}
+
+	public int getAnnotationSourceStart() {
+		return annotationStart;
+	}
+
+	public int getAnnotationSourceEnd() {
+		return annotationEnd;
 	}
 
 	public void setAnnotationMethod(String methodName) {
