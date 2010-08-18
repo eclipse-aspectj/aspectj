@@ -35,7 +35,7 @@ public class DeclareAnnotationDeclaration extends DeclareDeclaration {
 			return; // there is an error that will already be getting reported (e.g. incorrect pattern on decaf/decac)
 		}
 		symbolicDeclare.setAnnotationString(annotation.toString());
-
+		symbolicDeclare.setAnnotationLocation(annotation.sourceStart, annotation.sourceEnd);
 	}
 
 	public void analyseCode(ClassScope classScope, InitializationFlowContext initializationContext, FlowInfo flowInfo) {
