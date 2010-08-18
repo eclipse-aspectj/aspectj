@@ -419,4 +419,8 @@ public interface IProgramElement extends Serializable {
 	public Map<String, List<String>> getDeclareParentsMap();
 
 	public void setDeclareParentsMap(Map<String, List<String>> newmap);
+
+	public void addFullyQualifiedName(String fqname);
+
+	public String getFullyQualifiedName();
 }

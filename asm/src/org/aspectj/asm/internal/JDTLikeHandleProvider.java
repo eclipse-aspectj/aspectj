@@ -109,7 +109,12 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 						// escape the @ (pr249216c9)
 						handle.append("declare \\@").append(ipe.getName().substring(9)).append(getParameters(ipe));
 					} else {
-						handle.append(ipe.getName()).append(getParameters(ipe));
+						if (ipe.getFullyQualifiedName() != null) {
+							handle.append(ipe.getFullyQualifiedName());
+						} else {
+							handle.append(ipe.getName());
+						}
+						handle.append(getParameters(ipe));
 					}
 				}
 				// }

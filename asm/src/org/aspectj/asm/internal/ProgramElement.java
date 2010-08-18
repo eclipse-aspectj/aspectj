@@ -677,4 +677,13 @@ public class ProgramElement implements IProgramElement {
 	public void setDeclareParentsMap(Map<String, List<String>> newmap) {
 		kvpairs.put("declareparentsmap", newmap);
 	}
+
+	public void addFullyQualifiedName(String fqname) {
+		fixMap();
+		kvpairs.put("itdfqname", fqname);
+	}
+
+	public String getFullyQualifiedName() {
+		return (String) kvpairs.get("itdfqname");
+	}
 }
