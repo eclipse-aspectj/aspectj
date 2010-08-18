@@ -501,13 +501,23 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// Hid:6:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx (declared on) =pr280380<f{AClass.java[AClass
 	}
 
+	public void testFQItds_322039() throws Exception {
+		String p ="pr322039";
+		initialiseProject(p);
+		build(p);
+		printModel(p);
+		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
+		List<IRelationship> rels = irm.get("=pr322039<p{Azpect.java'Azpect)q2.Code.something2");
+		assertNotNull(rels);
+	}
+
 	public void testIncrementalCtorItdHandle_280383() throws Exception {
 		String p = "pr280383";
 		initialiseProject(p);
 		build(p);
 		printModel(p);
 		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
-		List rels = irm.get("=pr280383<f{AnAspect.java'AnAspect)f.AClass.f_AClass_new");
+		List<IRelationship> rels = irm.get("=pr280383<f{AnAspect.java'AnAspect)f.AClass.f_AClass_new");
 		assertNotNull(rels);
 	}
 
