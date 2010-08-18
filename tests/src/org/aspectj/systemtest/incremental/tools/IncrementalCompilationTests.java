@@ -571,7 +571,8 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 	}
 
 	public void testDeletionAnonInnerType_278496_8() throws Exception {
-		String p = "PR278496_8";
+		AjdeInteractionTestbed.VERBOSE=true;
+		String p = "pr278496_8";
 		initialiseProject(p);
 		configureNonStandardCompileOptions(p, "-Xset:minimalModel=true");
 		build(p);
@@ -713,9 +714,7 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		AspectJElementHierarchy model = (AspectJElementHierarchy) getModelFor(p).getHierarchy();
 		// check handle to anonymous inner:
 		IProgramElement ipe = model.findElementForHandleOrCreate(
-				"=PR278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect~main~\\[QString;[", false);
-		System.out.println("I am a marker");
-		printModel(p);
-		//		assertNotNull(ipe);
+				"=pr278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect~main~\\[QString;[", false);
+		assertNotNull(ipe);
 	}
 }
