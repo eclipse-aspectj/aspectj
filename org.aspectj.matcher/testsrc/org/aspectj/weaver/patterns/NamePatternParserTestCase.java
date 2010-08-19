@@ -10,59 +10,56 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver.patterns;
-
-import org.aspectj.weaver.patterns.BasicTokenSource;
-import org.aspectj.weaver.patterns.IToken;
-import org.aspectj.weaver.patterns.ITokenSource;
-import org.aspectj.weaver.patterns.NamePattern;
-import org.aspectj.weaver.patterns.NamePatternTestCase;
-import org.aspectj.weaver.patterns.PatternParser;
 
 import junit.framework.TestCase;
 
 /**
  * @author hugunin
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * 
+ *         To change this generated comment edit the template variable "typecomment": Window>Preferences>Java>Templates. To enable
+ *         and disable the creation of type comments go to Window>Preferences>Java>Code Generation.
  */
-public class NamePatternParserTestCase extends TestCase {		
+public class NamePatternParserTestCase extends TestCase {
 	/**
 	 * Constructor for PatternTestCase.
+	 * 
 	 * @param name
 	 */
 	public NamePatternParserTestCase(String name) {
 		super(name);
 	}
-	
+
 	public void testMatch() {
 		checkMatch(NamePatternTestCase.matchAll);
 		checkMatch(NamePatternTestCase.match1);
 		checkMatch(NamePatternTestCase.match2);
-		
-		
+
 		NamePattern p = new PatternParser("abc *").parseNamePattern();
 		assertEquals(new NamePattern("abc"), p);
 	}
 
+	// public void testTypePattern() {
+	// TypePattern tp = new PatternParser("  (@Ann *)   ").parseTypePattern();
+	// assertEquals(2, tp.start);
+	// assertEquals(9, tp.end);
+	// }
+
 	/**
 	 * Method checkMatch.
+	 * 
 	 * @param string
 	 * @param matchAll
 	 * @param b
 	 */
 	private void checkMatch(String[] patterns) {
-		for (int i=0, len=patterns.length; i < len; i++) {
+		for (int i = 0, len = patterns.length; i < len; i++) {
 			String pattern = patterns[i];
-			ITokenSource tokenSource = BasicTokenSource.makeTokenSource(pattern,null);
+			ITokenSource tokenSource = BasicTokenSource.makeTokenSource(pattern, null);
 			NamePattern p1 = new PatternParser(tokenSource).parseNamePattern();
 			NamePattern p2 = new NamePattern(pattern);
 			assertEquals("pattern: " + pattern, p2, p1);
-		    assertEquals("eof", IToken.EOF, tokenSource.next());
+			assertEquals("eof", IToken.EOF, tokenSource.next());
 		}
 	}
 }
