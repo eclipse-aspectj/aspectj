@@ -756,6 +756,7 @@ public class PatternParser {
 			return p;
 		}
 		if (maybeEat("(")) {
+			int openParenPos = tokenSource.peek(-1).getStart();
 			TypePattern p = parseTypePattern(insideTypeParameters, false);
 			if ((p instanceof NotTypePattern) && !(ap instanceof AnyAnnotationTypePattern)) {
 				// dont set the annotation on it, we don't want the annotation to be
@@ -766,6 +767,7 @@ public class PatternParser {
 				p = setAnnotationPatternForTypePattern(p, ap, parameterAnnotationsPossible);
 			}
 			eat(")");
+			int closeParenPos = tokenSource.peek(-1).getStart();
 			boolean isVarArgs = maybeEat("...");
 			if (isVarArgs) {
 				p.setIsVarArgs(isVarArgs);
@@ -774,9 +776,14 @@ public class PatternParser {
 			if (isIncludeSubtypes) {
 				p.includeSubtypes = true; // need the test because (A+) should not set subtypes to false!
 			}
+			p.start = openParenPos;
+			p.end = closeParenPos;
 			return p;
 		}
 		int startPos = tokenSource.peek().getStart();
+		if (ap.start!=-1) {
+			startPos = ap.start;
+		}
 		TypePattern p = parseSingleTypePattern(insideTypeParameters);
 		int endPos = tokenSource.peek(-1).getEnd();
 		p = setAnnotationPatternForTypePattern(p, ap, false);
@@ -857,6 +864,7 @@ public class PatternParser {
 				eat(")");
 				return ret;
 			} else {
+				int atPos = tokenSource.peek(-1).getStart();
 				TypePattern p = parseSingleTypePattern();
 				if (maybeEatAdjacent("(")) {
 					values = parseAnnotationValues();
@@ -865,6 +873,7 @@ public class PatternParser {
 				} else {
 					ret = new WildAnnotationTypePattern(p);
 				}
+				ret.start = atPos;
 				return ret;
 			}
 		} else {
