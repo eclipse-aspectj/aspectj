@@ -19,6 +19,7 @@ public class AllTestsAspectJ1610 {
 		TestSuite suite = new TestSuite("AspectJ 1.6.10 tests");
 		// $JUnit-BEGIN$
 		suite.addTest(Ajc1610Tests.suite());
+		suite.addTest(NewFeatures.suite());
 		// $JUnit-END$
 		return suite;
 	}
