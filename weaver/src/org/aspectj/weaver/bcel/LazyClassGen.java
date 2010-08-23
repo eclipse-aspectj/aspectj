@@ -1151,11 +1151,10 @@ public final class LazyClassGen {
 
 		// load the current Class object
 		// XXX check that this works correctly for inners/anonymous
-		list.append(InstructionFactory.PUSH(getConstantPool(), getClassName()));
+		list.append(fact.PUSHCLASS(cp, myGen.getClassName()));
 		// XXX do we need to worry about the fact the theorectically this could
 		// throw
 		// a ClassNotFoundException
-		list.append(fact.createInvoke("java.lang.Class", "forName", classType, new Type[] { Type.STRING }, Constants.INVOKESTATIC));
 
 		list.append(fact.createInvoke(factoryType.getClassName(), "<init>", Type.VOID, new Type[] { Type.STRING, classType },
 				Constants.INVOKESPECIAL));
@@ -1193,9 +1192,10 @@ public final class LazyClassGen {
 	}
 
 	private void initializeTjp(InstructionFactory fact, InstructionList list, Field field, BcelShadow shadow) {
+		boolean fastSJP = false;
+		boolean isFastSJPAvailable = shadow.getWorld().isTargettingRuntime1_6_10();
+
 		Member sig = shadow.getSignature();
-		// ResolvedMember mem =
-		// shadow.getSignature().resolve(shadow.getWorld());
 
 		// load the factory
 		list.append(InstructionFactory.createLoad(factoryType, 0));
@@ -1204,135 +1204,110 @@ public final class LazyClassGen {
 		list.append(InstructionFactory.PUSH(getConstantPool(), shadow.getKind().getName()));
 
 		// create the signature
-		list.append(InstructionFactory.createLoad(factoryType, 0));
+		if (!isFastSJPAvailable || !sig.getKind().equals(Member.METHOD)) {
+			list.append(InstructionFactory.createLoad(factoryType, 0));
+		}
 
 		String signatureMakerName = SignatureUtils.getSignatureMakerName(sig);
 		ObjectType signatureType = new ObjectType(SignatureUtils.getSignatureType(sig));
-
+		UnresolvedType[] exceptionTypes = null;
 		if (world.isTargettingAspectJRuntime12()) { // TAG:SUPPORTING12: We
 			// didn't have optimized
 			// factory methods in 1.2
-			list.append(InstructionFactory.PUSH(getConstantPool(), SignatureUtils.getSignatureString(sig, shadow.getWorld())));
+			list.append(InstructionFactory.PUSH(cp, SignatureUtils.getSignatureString(sig, shadow.getWorld())));
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY1,
 					Constants.INVOKEVIRTUAL));
 		} else if (sig.getKind().equals(Member.METHOD)) {
 			BcelWorld w = shadow.getWorld();
 
 			// For methods, push the parts of the signature on.
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getModifiers(w))));
-			list.append(InstructionFactory.PUSH(getConstantPool(), sig.getName()));
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getDeclaringType())));
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getParameterTypes())));
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getParameterNames(w))));
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getExceptions(w))));
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getReturnType())));
-			// And generate a call to the variant of makeMethodSig() that takes
-			// 7 strings
-			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY7,
-					Constants.INVOKEVIRTUAL));
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getModifiers(w))));
+			list.append(InstructionFactory.PUSH(cp, sig.getName()));
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getDeclaringType())));
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getParameterTypes())));
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getParameterNames(w))));
+			exceptionTypes = sig.getExceptions(w);
+			if (isFastSJPAvailable && exceptionTypes.length == 0) {
+				fastSJP = true;
+			} else {
+				list.append(InstructionFactory.PUSH(cp, makeString(exceptionTypes)));
+			}
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getReturnType())));
+			// And generate a call to the variant of makeMethodSig() that takes the strings
+			if (isFastSJPAvailable) {
+				fastSJP = true;
+			} else {
+				list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY7,
+						Constants.INVOKEVIRTUAL));
+			}
+
 		} else if (sig.getKind().equals(Member.MONITORENTER)) {
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getDeclaringType())));
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getDeclaringType())));
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY1,
 					Constants.INVOKEVIRTUAL));
 		} else if (sig.getKind().equals(Member.MONITOREXIT)) {
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getDeclaringType())));
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getDeclaringType())));
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY1,
 					Constants.INVOKEVIRTUAL));
 		} else if (sig.getKind().equals(Member.HANDLER)) {
 			BcelWorld w = shadow.getWorld();
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getDeclaringType())));
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getParameterTypes())));
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getParameterNames(w))));
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getDeclaringType())));
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getParameterTypes())));
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getParameterNames(w))));
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY3,
 					Constants.INVOKEVIRTUAL));
 		} else if (sig.getKind().equals(Member.CONSTRUCTOR)) {
 			BcelWorld w = shadow.getWorld();
 			if (w.isJoinpointArrayConstructionEnabled() && sig.getDeclaringType().isArray()) {
 				// its the magical new jp
-				list.append(InstructionFactory.PUSH(getConstantPool(), makeString(Modifier.PUBLIC)));
-				list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getDeclaringType())));
-				list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getParameterTypes())));
-				list.append(InstructionFactory.PUSH(getConstantPool(), ""));// makeString
-				// (
-				// ""
-				// )
-				// )
-				// )
-				// ;
-				// /
-				// /
-				// sig
-				// .
-				// getParameterNames
-				// (
-				// w
-				// )
-				// )
-				// )
-				// )
-				// ;
-				list.append(InstructionFactory.PUSH(getConstantPool(), ""));// makeString
-				// (
-				// ""
-				// )
-				// )
-				// )
-				// ;
-				// /
-				// /
-				// sig
-				// .
-				// getExceptions
-				// (
-				// w
-				// )
-				// )
-				// )
-				// )
-				// ;
+				list.append(InstructionFactory.PUSH(cp, makeString(Modifier.PUBLIC)));
+				list.append(InstructionFactory.PUSH(cp, makeString(sig.getDeclaringType())));
+				list.append(InstructionFactory.PUSH(cp, makeString(sig.getParameterTypes())));
+				list.append(InstructionFactory.PUSH(cp, "")); // sig.getParameterNames?
+				list.append(InstructionFactory.PUSH(cp, ""));// sig.getExceptions?
 				list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY5,
 						Constants.INVOKEVIRTUAL));
 			} else {
-				list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getModifiers(w))));
-				list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getDeclaringType())));
-				list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getParameterTypes())));
-				list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getParameterNames(w))));
-				list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getExceptions(w))));
+				list.append(InstructionFactory.PUSH(cp, makeString(sig.getModifiers(w))));
+				list.append(InstructionFactory.PUSH(cp, makeString(sig.getDeclaringType())));
+				list.append(InstructionFactory.PUSH(cp, makeString(sig.getParameterTypes())));
+				list.append(InstructionFactory.PUSH(cp, makeString(sig.getParameterNames(w))));
+				list.append(InstructionFactory.PUSH(cp, makeString(sig.getExceptions(w))));
 				list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY5,
 						Constants.INVOKEVIRTUAL));
 			}
 		} else if (sig.getKind().equals(Member.FIELD)) {
 			BcelWorld w = shadow.getWorld();
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getModifiers(w))));
-			list.append(InstructionFactory.PUSH(getConstantPool(), sig.getName()));
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getModifiers(w))));
+			list.append(InstructionFactory.PUSH(cp, sig.getName()));
 			// see pr227401
 			UnresolvedType dType = sig.getDeclaringType();
 			if (dType.getTypekind() == TypeKind.PARAMETERIZED || dType.getTypekind() == TypeKind.GENERIC) {
 				dType = sig.getDeclaringType().resolve(world).getGenericType();
 			}
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(dType)));
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getReturnType())));
+			list.append(InstructionFactory.PUSH(cp, makeString(dType)));
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getReturnType())));
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY4,
 					Constants.INVOKEVIRTUAL));
 		} else if (sig.getKind().equals(Member.ADVICE)) {
 			BcelWorld w = shadow.getWorld();
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getModifiers(w))));
-			list.append(InstructionFactory.PUSH(getConstantPool(), sig.getName()));
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getDeclaringType())));
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getParameterTypes())));
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getParameterNames(w))));
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getExceptions(w))));
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString((sig.getReturnType()))));
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getModifiers(w))));
+			list.append(InstructionFactory.PUSH(cp, sig.getName()));
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getDeclaringType())));
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getParameterTypes())));
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getParameterNames(w))));
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getExceptions(w))));
+			list.append(InstructionFactory.PUSH(cp, makeString((sig.getReturnType()))));
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, new Type[] { Type.STRING,
 					Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING }, Constants.INVOKEVIRTUAL));
 		} else if (sig.getKind().equals(Member.STATIC_INITIALIZATION)) {
 			BcelWorld w = shadow.getWorld();
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getModifiers(w))));
-			list.append(InstructionFactory.PUSH(getConstantPool(), makeString(sig.getDeclaringType())));
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getModifiers(w))));
+			list.append(InstructionFactory.PUSH(cp, makeString(sig.getDeclaringType())));
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY2,
 					Constants.INVOKEVIRTUAL));
 		} else {
-			list.append(InstructionFactory.PUSH(getConstantPool(), SignatureUtils.getSignatureString(sig, shadow.getWorld())));
+			list.append(InstructionFactory.PUSH(cp, SignatureUtils.getSignatureString(sig, shadow.getWorld())));
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY1,
 					Constants.INVOKEVIRTUAL));
 		}
@@ -1359,12 +1334,29 @@ public final class LazyClassGen {
 			} else {
 				throw new Error("should not happen");
 			}
-			list.append(fact.createInvoke(factoryType.getClassName(), factoryMethod, field.getType(), new Type[] { Type.STRING,
-					sigType, Type.INT }, Constants.INVOKEVIRTUAL));
+
+			if (fastSJP) {
+				if (exceptionTypes != null && exceptionTypes.length != 0) {
+					list.append(fact.createInvoke(factoryType.getClassName(), factoryMethod, field.getType(), ARRAY_8STRING_INT,
+							Constants.INVOKEVIRTUAL));
+				} else {
+					list.append(fact.createInvoke(factoryType.getClassName(), factoryMethod, field.getType(), ARRAY_7STRING_INT,
+							Constants.INVOKEVIRTUAL));
+				}
+			} else {
+				list.append(fact.createInvoke(factoryType.getClassName(), factoryMethod, field.getType(), new Type[] { Type.STRING,
+						sigType, Type.INT }, Constants.INVOKEVIRTUAL));
+			}
+
 			// put it in the field
 			list.append(fact.createFieldAccess(getClassName(), field.getName(), field.getType(), Constants.PUTSTATIC));
 		}
 	}
+
+	private static final Type[] ARRAY_7STRING_INT = new Type[] { Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING,
+			Type.STRING, Type.STRING, Type.INT };
+	private static final Type[] ARRAY_8STRING_INT = new Type[] { Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING,
+			Type.STRING, Type.STRING, Type.STRING, Type.INT };
 
 	protected String makeString(int i) {
 		return Integer.toString(i, 16); // ??? expensive
