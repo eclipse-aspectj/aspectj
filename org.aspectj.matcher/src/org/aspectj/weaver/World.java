@@ -9,7 +9,7 @@
  *  
  * Contributors: 
  *     PARC     initial implementation
- *     Adrian Colyer, Andy Clement, overhaul for generics 
+ *     Adrian Colyer, Andy Clement, overhaul for generics, Abraham Nevado 
  * ******************************************************************/
 
 package org.aspectj.weaver;
@@ -140,6 +140,7 @@ public abstract class World implements Dump.INode {
 
 	// Minimal Model controls whether model entities that are not involved in relationships are deleted post-build
 	private boolean minimalModel = false;
+	private boolean targettingRuntime1_6_10 = false;
 
 	private boolean completeBinaryTypes = false;
 	private boolean overWeaving = false;
@@ -810,6 +811,11 @@ public abstract class World implements Dump.INode {
 		return minimalModel;
 	}
 
+	public boolean isTargettingRuntime1_6_10() {
+		ensureAdvancedConfigurationProcessed();
+		return targettingRuntime1_6_10;
+	}
+
 	public void setBehaveInJava5Way(boolean b) {
 		behaveInJava5Way = b;
 	}
@@ -926,6 +932,7 @@ public abstract class World implements Dump.INode {
 	public final static String xsetITD_VERSION_2NDGEN = "2";
 	public final static String xsetITD_VERSION_DEFAULT = xsetITD_VERSION_2NDGEN;
 	public final static String xsetMINIMAL_MODEL = "minimalModel";
+	public final static String xsetTARGETING_RUNTIME_1610 = "targetRuntime1_6_10";
 
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;
@@ -1509,6 +1516,11 @@ public abstract class World implements Dump.INode {
 				s = p.getProperty(xsetMINIMAL_MODEL, "false");
 				if (s.equalsIgnoreCase("true")) {
 					minimalModel = true;
+				}
+
+				s = p.getProperty(xsetTARGETING_RUNTIME_1610, "false");
+				if (s.equalsIgnoreCase("true")) {
+					targettingRuntime1_6_10 = true;
 				}
 
 				s = p.getProperty(xsetFAST_PACK_METHODS, "true");
