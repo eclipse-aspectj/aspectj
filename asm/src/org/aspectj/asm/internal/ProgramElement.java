@@ -675,6 +675,7 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public void setDeclareParentsMap(Map<String, List<String>> newmap) {
+		fixMap();
 		kvpairs.put("declareparentsmap", newmap);
 	}
 
