@@ -1204,7 +1204,7 @@ public final class LazyClassGen {
 		list.append(InstructionFactory.PUSH(getConstantPool(), shadow.getKind().getName()));
 
 		// create the signature
-		if (!isFastSJPAvailable || !sig.getKind().equals(Member.METHOD)) {
+		if ( world.isTargettingAspectJRuntime12() || !isFastSJPAvailable || !sig.getKind().equals(Member.METHOD)) {
 			list.append(InstructionFactory.createLoad(factoryType, 0));
 		}
 
