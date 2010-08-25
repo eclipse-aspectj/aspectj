@@ -818,7 +818,7 @@ public class ReferenceType extends ResolvedType {
 	@Override
 	public PerClause getPerClause() {
 		PerClause pclause = getDelegate().getPerClause();
-		if (isParameterizedType()) { // could cache the result here...
+		if (pclause != null && isParameterizedType()) { // could cache the result here...
 			Map<String, UnresolvedType> parameterizationMap = getAjMemberParameterizationMap();
 			pclause = (PerClause) pclause.parameterizeWith(parameterizationMap, world);
 		}
