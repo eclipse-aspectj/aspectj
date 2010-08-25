@@ -34,6 +34,18 @@ public class NewFeatures extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
   }
   
+ 
+  
+  public void testMakeSJPOptimizationCollapsedSJPYes14() { 
+	  this.
+	  runTest("makeSJP optimization - Collapsed SJP - Yes 1.4");
+	  try {
+		JavaClass myClass = getMyClass("B");
+	} catch (Exception e) {
+		NewFeatures.fail(e.toString());
+	}
+  }
+  
   public void testMakeSJPOptimizationLDCYes() { 
 	  this.
 	  runTest("makeSJP optimization - LDC - Yes");

@@ -46,6 +46,19 @@
       </run>
     </ajc-test>  
  
+      <ajc-test dir="features1610/makeSJPOptimization" title="makeSJP optimization - Collapsed SJP - Yes 1.4">
+      <compile files="B.java Azpect.aj" options="-1.4 -Xset:targetRuntime1_6_10=true"/>
+      <run class="B">
+	   	<stdout>
+   		 <line text="execution(public static void B.main(java.lang.String[]))"/>
+   		 <line text="execution(public java.lang.Object B.method1(java.lang.String))"/>
+   		 <line text="execution(public java.lang.Object B.method2(java.lang.String, java.lang.Integer))"/>   		 
+   		 <line text="execution(private void B.method3())"/>
+   		 <line text="execution(public static void B.method4())"/>
+     	</stdout>
+      </run>
+    </ajc-test>  
+ 
     <ajc-test dir="features1610/makeSJPOptimization" title="makeSJP optimization - Collapsed SJP - No">
       <compile files="B.java Azpect.aj" options="-1.5 -Xset:targetRuntime1_6_10=false"/>
       <run class="B">
