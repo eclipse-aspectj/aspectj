@@ -1067,9 +1067,6 @@ public abstract class World implements Dump.INode {
 				for (String key : addedSinceLastDemote) {
 					ResolvedType type = tMap.get(key);
 					if (type != null && !type.isAspect() && !type.equals(UnresolvedType.OBJECT) && !type.isPrimitiveType()) {
-						if (type.isParameterizedOrRawType()) {
-							type = type.getGenericType();
-						}
 						List<ConcreteTypeMunger> typeMungers = type.getInterTypeMungers();
 						if (typeMungers == null || typeMungers.size() == 0) {
 							tMap.remove(key);
@@ -1093,9 +1090,6 @@ public abstract class World implements Dump.INode {
 						continue;
 					}
 					if (type != null && !type.isAspect() && !type.equals(UnresolvedType.OBJECT) && !type.isPrimitiveType()) {
-						if (type.isParameterizedOrRawType()) {
-							type = type.getGenericType();
-						}
 						List<ConcreteTypeMunger> typeMungers = type.getInterTypeMungers();
 						if (typeMungers == null || typeMungers.size() == 0) {
 							/*
