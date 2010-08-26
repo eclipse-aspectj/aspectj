@@ -26,6 +26,18 @@ public class ModifiersPattern extends PatternNode {
 
 	public static final ModifiersPattern ANY = new ModifiersPattern(0, 0);
 
+	private static Map<String, Integer> modifierFlags = null;
+
+	static {
+		modifierFlags = new HashMap<String, Integer>();
+		int flag = 1;
+		while (flag <= Modifier.STRICT) {
+			String flagName = Modifier.toString(flag);
+			modifierFlags.put(flagName, new Integer(flag));
+			flag = flag << 1;
+		}
+	}
+
 	public ModifiersPattern(int requiredModifiers, int forbiddenModifiers) {
 		this.requiredModifiers = requiredModifiers;
 		this.forbiddenModifiers = forbiddenModifiers;
@@ -78,19 +90,8 @@ public class ModifiersPattern extends PatternNode {
 		s.writeShort(forbiddenModifiers);
 	}
 
-	private static Map modifierFlags = null;
-
 	public static int getModifierFlag(String name) {
-		if (modifierFlags == null) {
-			modifierFlags = new HashMap();
-			int flag = 1;
-			while (flag <= Modifier.STRICT) {
-				String flagName = Modifier.toString(flag);
-				modifierFlags.put(flagName, new Integer(flag));
-				flag = flag << 1;
-			}
-		}
-		Integer flag = (Integer) modifierFlags.get(name);
+		Integer flag = modifierFlags.get(name);
 		if (flag == null) {
 			return -1;
 		}
