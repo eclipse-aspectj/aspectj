@@ -24,6 +24,7 @@ import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.ISourceLocation;
@@ -32,7 +33,6 @@ import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.ReflectionFactory;
 import org.aspectj.bridge.Version;
-import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
@@ -188,6 +188,14 @@ public class Main {
 		controller = new CommandController();
 		commandName = ReflectionFactory.ECLIPSE;
 		CompilationAndWeavingContext.setMultiThreaded(false);
+		try {
+			String value = System.getProperty("aspectj.multithreaded");
+			if (value != null && value.equalsIgnoreCase("true")) {
+				CompilationAndWeavingContext.setMultiThreaded(true);
+			}
+		} catch (Exception e) {
+			// silent
+		}
 		ourHandler = new MessageHandler(true);
 	}
 
@@ -655,7 +663,7 @@ public class Main {
 			super(verbose);
 			this.logStream = logStream;
 		}
- 
+
 		protected PrintStream getStreamFor(IMessage.Kind kind) {
 			if (IMessage.WARNING.isSameOrLessThan(kind)) {
 				return logStream;
