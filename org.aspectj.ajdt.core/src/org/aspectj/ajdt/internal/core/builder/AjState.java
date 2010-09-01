@@ -1762,6 +1762,9 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 		}
 		if (binaryNestedTypes != null) {
 			int bnLength = binaryNestedTypes.length;
+			if (existingBinaryNestedTypes.length != bnLength) {
+				return true;
+			}
 			for (int m = 0; m < bnLength; m++) {
 				IBinaryNestedType bnt = binaryNestedTypes[m];
 				IBinaryNestedType existingBnt = existingBinaryNestedTypes[m];
@@ -2151,7 +2154,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 			ClassParser parser = new ClassParser(f.toString());
 			return world.buildBcelDelegate(referenceType, parser.parse(), true, false);
 		} catch (IOException e) {
-			System.err.println("Failed to recover "+referenceType);
+			System.err.println("Failed to recover " + referenceType);
 			e.printStackTrace();
 		}
 		return null;
