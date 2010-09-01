@@ -147,8 +147,12 @@ public class ShadowMatchImpl implements ShadowMatch {
 			Object value = v.getBindingAtJoinPoint(thisObject, targetObject, args);
 			World world = v.getType().getWorld();
 			ResolvedType desiredType = instanceofTest.getType().resolve(world);
-			ResolvedType actualType = world.resolve(value.getClass().getName());
-			matches = desiredType.isAssignableFrom(actualType);
+			if (value == null) {
+				matches = false;
+			} else {
+				ResolvedType actualType = world.resolve(value.getClass().getName());
+				matches = desiredType.isAssignableFrom(actualType);
+			}
 		}
 
 		public void visit(MatchingContextBasedTest matchingContextTest) {

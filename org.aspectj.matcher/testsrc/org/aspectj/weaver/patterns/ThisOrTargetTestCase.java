@@ -38,8 +38,9 @@ public class ThisOrTargetTestCase extends TestCase {
 
 	/** this condition can occur on the build machine only, and is way too complex to fix right now... */
 	private boolean needToSkipPointcutParserTests() {
-		if (!LangUtil.is15VMOrGreater())
+		if (!LangUtil.is15VMOrGreater()) {
 			return false;
+		}
 		try {
 			Class.forName("org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate", false, this.getClass()
 					.getClassLoader());// ReflectionBasedReferenceTypeDelegate.class.getClassLoader());
@@ -64,8 +65,9 @@ public class ThisOrTargetTestCase extends TestCase {
 	}
 
 	public void testMatchJP() throws Exception {
-		if (needToSkip)
+		if (needToSkip) {
 			return;
+		}
 
 		PointcutParser parser = PointcutParser
 				.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
@@ -94,8 +96,9 @@ public class ThisOrTargetTestCase extends TestCase {
 	}
 
 	public void testBinding() throws Exception {
-		if (needToSkip)
+		if (needToSkip) {
 			return;
+		}
 		PointcutParser parser = PointcutParser
 				.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
 		PointcutParameter ex = parser.createPointcutParameter("ex", Exception.class);
@@ -111,7 +114,10 @@ public class ThisOrTargetTestCase extends TestCase {
 		ShadowMatch sMatch = thisEx.matchesMethodCall(toString, toString);
 		Exception exceptionParameter = new Exception();
 		IOException ioExceptionParameter = new IOException();
-		JoinPointMatch jpMatch = sMatch.matchesJoinPoint(exceptionParameter, null, null);
+		JoinPointMatch jpMatch = null;
+		jpMatch = sMatch.matchesJoinPoint(null, null, null);// 318899
+		assertFalse(jpMatch.matches());
+		jpMatch = sMatch.matchesJoinPoint(exceptionParameter, null, null);
 		assertTrue("should match", jpMatch.matches());
 		PointcutParameter[] bindings = jpMatch.getParameterBindings();
 		assertEquals("one binding", 1, bindings.length);
@@ -147,11 +153,11 @@ public class ThisOrTargetTestCase extends TestCase {
 	// DataOutputStream out = new DataOutputStream(bo);
 	// p.write(out);
 	// out.close();
-	//		
+	//
 	// ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
 	// DataInputStream in = new DataInputStream(bi);
 	// Pointcut newP = Pointcut.read(in, null);
-	//		
+	//
 	// assertEquals("write/read", p, newP);
 	// }
 }
