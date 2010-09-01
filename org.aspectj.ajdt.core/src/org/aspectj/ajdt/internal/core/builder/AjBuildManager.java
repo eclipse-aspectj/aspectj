@@ -721,17 +721,19 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				File outputDir = (File) iterator.next();
 				outputDirsToAspects.put(outputDir, new ArrayList<String>());
 			}
-			Set<Map.Entry<String, char[]>> entrySet = aspectNamesToFileNames.entrySet();
-			for (Iterator<Map.Entry<String, char[]>> iterator = entrySet.iterator(); iterator.hasNext();) {
-				Map.Entry<String, char[]> entry = iterator.next();
-				String aspectName = entry.getKey();
-				char[] fileName = entry.getValue();
-				File outputDir = buildConfig.getCompilationResultDestinationManager().getOutputLocationForClass(
-						new File(new String(fileName)));
-				if (!outputDirsToAspects.containsKey(outputDir)) {
-					outputDirsToAspects.put(outputDir, new ArrayList<String>());
+			if (aspectNamesToFileNames != null) {
+				Set<Map.Entry<String, char[]>> entrySet = aspectNamesToFileNames.entrySet();
+				for (Iterator<Map.Entry<String, char[]>> iterator = entrySet.iterator(); iterator.hasNext();) {
+					Map.Entry<String, char[]> entry = iterator.next();
+					String aspectName = entry.getKey();
+					char[] fileName = entry.getValue();
+					File outputDir = buildConfig.getCompilationResultDestinationManager().getOutputLocationForClass(
+							new File(new String(fileName)));
+					if (!outputDirsToAspects.containsKey(outputDir)) {
+						outputDirsToAspects.put(outputDir, new ArrayList<String>());
+					}
+					((List) outputDirsToAspects.get(outputDir)).add(aspectName);
 				}
-				((List) outputDirsToAspects.get(outputDir)).add(aspectName);
 			}
 		}
 		return outputDirsToAspects;
