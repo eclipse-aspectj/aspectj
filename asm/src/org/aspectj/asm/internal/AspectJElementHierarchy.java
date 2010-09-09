@@ -61,22 +61,22 @@ public class AspectJElementHierarchy implements IHierarchy {
 	public IProgramElement getRoot() {
 		return root;
 	}
-	
+
 	public String toSummaryString() {
 		StringBuilder s = new StringBuilder();
-		s.append("FileMap has "+fileMap.size()+" entries\n");
-		s.append("HandleMap has "+handleMap.size()+" entries\n");
-		s.append("TypeMap has "+handleMap.size()+" entries\n");
+		s.append("FileMap has " + fileMap.size() + " entries\n");
+		s.append("HandleMap has " + handleMap.size() + " entries\n");
+		s.append("TypeMap has " + handleMap.size() + " entries\n");
 		s.append("FileMap:\n");
-		for (Map.Entry<String,IProgramElement> fileMapEntry: fileMap.entrySet()) {
+		for (Map.Entry<String, IProgramElement> fileMapEntry : fileMap.entrySet()) {
 			s.append(fileMapEntry).append("\n");
 		}
 		s.append("TypeMap:\n");
-		for (Map.Entry<String,IProgramElement> typeMapEntry: typeMap.entrySet()) {
+		for (Map.Entry<String, IProgramElement> typeMapEntry : typeMap.entrySet()) {
 			s.append(typeMapEntry).append("\n");
 		}
 		s.append("HandleMap:\n");
-		for (Map.Entry<String,IProgramElement> handleMapEntry: handleMap.entrySet()) {
+		for (Map.Entry<String, IProgramElement> handleMapEntry : handleMap.entrySet()) {
 			s.append(handleMapEntry).append("\n");
 		}
 		return s.toString();
@@ -599,31 +599,32 @@ public class AspectJElementHierarchy implements IHierarchy {
 	public void flushFileMap() {
 		fileMap.clear();
 	}
-	
-	public void forget(IProgramElement compilationUnitNode,IProgramElement typeNode) {
+
+	public void forget(IProgramElement compilationUnitNode, IProgramElement typeNode) {
 		String k = null;
 		synchronized (this) {
 			// handle map
 			// type map
-			for (Map.Entry<String,IProgramElement> typeMapEntry: typeMap.entrySet()) {
-				if (typeMapEntry.getValue()==typeNode) {
+			for (Map.Entry<String, IProgramElement> typeMapEntry : typeMap.entrySet()) {
+				if (typeMapEntry.getValue() == typeNode) {
 					k = typeMapEntry.getKey();
 					break;
 				}
 			}
-			if (k!=null) {
+			if (k != null) {
 				typeMap.remove(k);
 			}
 		}
-		
-		if (compilationUnitNode!=null) {
+
+		if (compilationUnitNode != null) {
 			k = null;
-			for (Map.Entry<String,IProgramElement> entry: fileMap.entrySet()) {
-				if (entry.getValue()==compilationUnitNode) {
-					k = entry.getKey();break;
+			for (Map.Entry<String, IProgramElement> entry : fileMap.entrySet()) {
+				if (entry.getValue() == compilationUnitNode) {
+					k = entry.getKey();
+					break;
 				}
 			}
-			if (k!=null) {
+			if (k != null) {
 				fileMap.remove(k);
 			}
 		}
@@ -638,7 +639,10 @@ public class AspectJElementHierarchy implements IHierarchy {
 			k = handleMap.keySet();
 			for (String handle : k) {
 				IProgramElement ipe = handleMap.get(handle);
-				if (deletedFiles.contains(getCanonicalFilePath(ipe))) {
+				if (ipe == null) {
+					System.err.println("handleMap expectation not met, where is the IPE for " + handle);
+				}
+				if (ipe == null || deletedFiles.contains(getCanonicalFilePath(ipe))) {
 					forRemoval.add(handle);
 				}
 			}
