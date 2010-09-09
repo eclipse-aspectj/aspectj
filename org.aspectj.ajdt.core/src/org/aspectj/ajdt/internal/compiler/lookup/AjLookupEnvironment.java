@@ -543,8 +543,13 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		}
 
 		ReferenceBinding[] memberTypes = sourceType.memberTypes;
-		for (int i = 0, length = memberTypes.length; i < length; i++) {
-			buildInterTypeAndPerClause(((SourceTypeBinding) memberTypes[i]).scope);
+		if (memberTypes == null) {
+			System.err.println("Unexpectedly found null for memberTypes of " + sourceType.debugName());
+		}
+		if (memberTypes != null) {
+			for (int i = 0, length = memberTypes.length; i < length; i++) {
+				buildInterTypeAndPerClause(((SourceTypeBinding) memberTypes[i]).scope);
+			}
 		}
 	}
 
