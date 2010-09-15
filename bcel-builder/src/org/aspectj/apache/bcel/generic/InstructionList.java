@@ -76,8 +76,9 @@ import org.aspectj.apache.bcel.util.ByteSequence;
  * 
  * A list is finally dumped to a byte code array with <a href="#getByteCode()">getByteCode</a>.
  * 
- * @version $Id: InstructionList.java,v 1.10 2009/10/05 17:35:36 aclement Exp $
+ * @version $Id: InstructionList.java,v 1.11 2010/09/15 18:18:01 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author Abraham Nevado
  * @see Instruction
  * @see InstructionHandle
  * @see BranchHandle
@@ -886,20 +887,24 @@ public class InstructionList implements Serializable {
 
 		// OPTIMIZE positions will only move around if there have been expanding instructions
 		// if (max_additional_bytes==0...) {
-		//			
+		//
 		// }
 
 		/*
 		 * Pass 2: Expand the variable-length (Branch)Instructions depending on the target offset (short or int) and ensure that
 		 * branch targets are within this list.
 		 */
+		boolean nonZeroOffset = false;
 		int offset = 0;
 		for (InstructionHandle ih = start; ih != null; ih = ih.next) {
 			if (ih instanceof BranchHandle) {
 				offset += ((BranchHandle) ih).updatePosition(offset, maxAdditionalBytes);
+				if (offset != 0) {
+					nonZeroOffset = true;
+				}
 			}
 		}
-		if (offset != 0) {
+		if (nonZeroOffset) {
 			/*
 			 * Pass 3: Update position numbers (which may have changed due to the preceding expansions), like pass 1.
 			 */
