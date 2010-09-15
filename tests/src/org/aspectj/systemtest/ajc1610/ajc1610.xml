@@ -2,6 +2,25 @@
 
 <suite>
 
+  <ajc-test dir="bugs1610/pr324932" title="pr324932">
+    <compile files="A.java" options="-1.5"/>
+    <compile files="X.aj" options="-1.5 -Xlint:ignore" />
+    <run class="A" ltw="aop.xml">
+    <stdout>
+	    <line text="It WORKS"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs1610/pr324932_2" title="pr324932 - 2">
+    <compile files="A.java" options="-1.5"/>
+    <run class="A" ltw="aop.xml">
+    <stdout>
+	    <line text="It WORKS"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
   <ajc-test dir="bugs1610/pr322446" title="declare parents abstract aspect">
     <compile files="Super.java I.java" outjar="aspects.jar" options="-1.5"/>
     <compile files="Code.java" classpath="aspects.jar" options="-1.5 -emacssym"/>
