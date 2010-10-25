@@ -1915,6 +1915,21 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 		simpleStrings.add(typeName);
 	}
 
+	/**
+	 * Record some additional dependencies between types. When any of the types specified in fullyQualifiedTypeNames changes, we
+	 * need to recompile the file named in the CompilationResult. This method patches that information into the existing data
+	 * structures.
+	 */
+	public void recordDependencies(CompilationResult result, String[] typeNameDependencies) {
+		File sourceFile = new File(new String(result.fileName));
+		ReferenceCollection existingCollection = references.get(sourceFile);
+		if (existingCollection != null) {
+			existingCollection.addDependencies(typeNameDependencies);
+		} else {
+			references.put(sourceFile, new ReferenceCollection(result.qualifiedReferences, result.simpleNameReferences));
+		}
+	}
+
 	protected void addDependentsOf(File sourceFile) {
 		List<ClassFile> cfs = this.fullyQualifiedTypeNamesResultingFromCompilationUnit.get(sourceFile);
 		if (cfs != null) {
