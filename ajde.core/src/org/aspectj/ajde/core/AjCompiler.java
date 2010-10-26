@@ -10,13 +10,14 @@
  *******************************************************************/
 package org.aspectj.ajde.core;
 
+import java.io.File;
+
 import org.aspectj.ajde.core.internal.AjdeCoreBuildManager;
 import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
-import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 /**
@@ -110,9 +111,9 @@ public class AjCompiler {
 		buildManager.cleanupEnvironment();
 	}
 
-	public void addDependencies(CompilationResult result, String[] typeNameDependencies) {
+	public boolean addDependencies(File file, String[] typeNameDependencies) {
 		AjState state = IncrementalStateManager.retrieveStateFor(compilerId);
-		state.recordDependencies(result, typeNameDependencies);
+		return state.recordDependencies(file, typeNameDependencies);
 	}
 
 	/**
