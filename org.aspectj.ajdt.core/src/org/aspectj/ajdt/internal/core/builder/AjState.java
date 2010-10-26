@@ -1920,14 +1920,23 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 	 * need to recompile the file named in the CompilationResult. This method patches that information into the existing data
 	 * structures.
 	 */
-	public void recordDependencies(CompilationResult result, String[] typeNameDependencies) {
-		File sourceFile = new File(new String(result.fileName));
-		ReferenceCollection existingCollection = references.get(sourceFile);
-		if (existingCollection != null) {
-			existingCollection.addDependencies(typeNameDependencies);
-		} else {
-			references.put(sourceFile, new ReferenceCollection(result.qualifiedReferences, result.simpleNameReferences));
+	public boolean recordDependencies(File file, String[] typeNameDependencies) {
+		try {
+			File sourceFile = new File(new String(file.getCanonicalPath()));
+			ReferenceCollection existingCollection = references.get(sourceFile);
+			if (existingCollection != null) {
+				existingCollection.addDependencies(typeNameDependencies);
+				return true;
+			} else {
+				ReferenceCollection rc = new ReferenceCollection(null, null);
+				rc.addDependencies(typeNameDependencies);
+				references.put(sourceFile, rc);
+				return true;
+			}
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
 		}
+		return false;
 	}
 
 	protected void addDependentsOf(File sourceFile) {
