@@ -202,19 +202,34 @@ public class PatternParser {
 	}
 
 	public ISignaturePattern parseCompoundFieldSignaturePattern() {
-		ISignaturePattern atomicFieldSignaturePattern = parseMaybeParenthesizedFieldSignaturePattern();
+		int index = tokenSource.getIndex();
+		try {
+			ISignaturePattern atomicFieldSignaturePattern = parseMaybeParenthesizedFieldSignaturePattern();
 
-		while (isEitherAndOrOr()) {
-			if (maybeEat("&&")) {
-				atomicFieldSignaturePattern = new AndSignaturePattern(atomicFieldSignaturePattern,
-						parseMaybeParenthesizedFieldSignaturePattern());
+			while (isEitherAndOrOr()) {
+				if (maybeEat("&&")) {
+					atomicFieldSignaturePattern = new AndSignaturePattern(atomicFieldSignaturePattern,
+							parseMaybeParenthesizedFieldSignaturePattern());
+				}
+				if (maybeEat("||")) {
+					atomicFieldSignaturePattern = new OrSignaturePattern(atomicFieldSignaturePattern,
+							parseMaybeParenthesizedFieldSignaturePattern());
+				}
 			}
-			if (maybeEat("||")) {
-				atomicFieldSignaturePattern = new OrSignaturePattern(atomicFieldSignaturePattern,
-						parseMaybeParenthesizedFieldSignaturePattern());
+			return atomicFieldSignaturePattern;
+		} catch (ParserException e) {
+			// fallback in the case of a regular single field signature pattern that just happened to start with '('
+			int nowAt = tokenSource.getIndex();
+			tokenSource.setIndex(index);
+			try {
+				ISignaturePattern fsp = parseFieldSignaturePattern();
+				return fsp;
+			} catch (Exception e2) {
+				tokenSource.setIndex(nowAt);
+				// throw the original
+				throw e;
 			}
 		}
-		return atomicFieldSignaturePattern;
 	}
 
 	private boolean isEitherAndOrOr() {
@@ -781,7 +796,7 @@ public class PatternParser {
 			return p;
 		}
 		int startPos = tokenSource.peek().getStart();
-		if (ap.start!=-1) {
+		if (ap.start != -1) {
 			startPos = ap.start;
 		}
 		TypePattern p = parseSingleTypePattern(insideTypeParameters);
