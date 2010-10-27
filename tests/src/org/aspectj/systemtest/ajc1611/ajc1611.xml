@@ -1,0 +1,16 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+  <ajc-test dir="bugs1611/pr328840" title="pr328840">
+    <compile files="Wibble.aj" options="-1.5 -showWeaveInfo">
+    <message kind="weave" text="Join point 'field-get(XX Song.i)' in Type 'Song' (Wibble.aj:26) advised by before advice from 'Wibble' (Wibble.aj:9)"/>
+    <message kind="weave" text="'XX i' of type 'Song' (Wibble.aj) is annotated with @Foo field annotation from 'Wibble' (Wibble.aj:7)"/>
+    </compile>
+    <run class="Wibble">
+    <stdout>
+    <line text="@Foo()"/>
+    </stdout></run>
+  </ajc-test>
+  
+</suite>

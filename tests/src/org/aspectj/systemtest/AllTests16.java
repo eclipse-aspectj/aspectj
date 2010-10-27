@@ -9,6 +9,7 @@ import junit.framework.TestSuite;
 import org.aspectj.systemtest.ajc160.AllTestsAspectJ160;
 import org.aspectj.systemtest.ajc161.AllTestsAspectJ161;
 import org.aspectj.systemtest.ajc1610.AllTestsAspectJ1610;
+import org.aspectj.systemtest.ajc1611.AllTestsAspectJ1611;
 import org.aspectj.systemtest.ajc162.AllTestsAspectJ162;
 import org.aspectj.systemtest.ajc163.AllTestsAspectJ163;
 import org.aspectj.systemtest.ajc164.AllTestsAspectJ164;
@@ -33,6 +34,7 @@ public class AllTests16 {
 		suite.addTest(AllTestsAspectJ167.suite());
 		suite.addTest(AllTestsAspectJ169.suite());
 		suite.addTest(AllTestsAspectJ1610.suite());
+		suite.addTest(AllTestsAspectJ1611.suite());
 		suite.addTest(AllTests15.suite());
 		// $JUnit-END$
 		return suite;
