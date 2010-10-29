@@ -389,6 +389,10 @@ public interface IProgramElement extends Serializable {
 			return name.startsWith("declare parents");
 		}
 
+		public boolean isDeclareSoft() {
+			return name.startsWith("declare soft");
+		}
+
 		// The 4 declarations below are necessary for serialization
 		private static int nextOrdinal = 0;
 		private final int ordinal = nextOrdinal++;
@@ -400,6 +404,7 @@ public interface IProgramElement extends Serializable {
 		public boolean isPackageDeclaration() {
 			return this == PACKAGE_DECLARATION;
 		}
+
 	}
 
 	public void setAnnotationStyleDeclaration(boolean b);

@@ -187,26 +187,13 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 				return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
 			}
 		} else if (ipe.getKind().isDeclareAnnotation()) {
-			// look at peer declares
-			int count = 1;
-			for (IProgramElement object : ipe.getParent().getChildren()) {
-				if (object.equals(ipe)) {
-					break;
-				}
-				if (object.getKind() == ipe.getKind()) {
-					if (object.getKind().toString().equals(ipe.getKind().toString())) {
-						String existingHandle = object.getHandleIdentifier();
-						int suffixPosition = existingHandle.indexOf('!');
-						if (suffixPosition != -1) {
-							count = new Integer(existingHandle.substring(suffixPosition + 1)).intValue() + 1;
-						} else {
-							if (count == 1) {
-								count = 2;
-							}
-						}
-					}
-				}
+			int count = computeCountBasedOnPeers(ipe);
+			if (count > 1) {
+				return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
 			}
+		} else if (ipe.getKind().isDeclareSoft()) {
+			// look at peer declares
+			int count = computeCountBasedOnPeers(ipe);
 			if (count > 1) {
 				return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
 			}
@@ -222,22 +209,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 			String ipeSig = ipe.getBytecodeSignature();
 			// remove return type from the signature - it should not be included in the comparison
 			int idx = 0;
-			if (ipeSig != null && ((idx = ipeSig.indexOf(")")) != -1)) {
-				ipeSig = ipeSig.substring(0, idx);
-			}
-			if (ipeSig != null) {
-				if (ipeSig.indexOf("Lorg/aspectj/lang") != -1) {
-					if (ipeSig.endsWith("Lorg/aspectj/lang/JoinPoint$StaticPart;")) {
-						ipeSig = ipeSig.substring(0, ipeSig.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
-					}
-					if (ipeSig.endsWith("Lorg/aspectj/lang/JoinPoint;")) {
-						ipeSig = ipeSig.substring(0, ipeSig.lastIndexOf("Lorg/aspectj/lang/JoinPoint;"));
-					}
-					if (ipeSig.endsWith("Lorg/aspectj/lang/JoinPoint$StaticPart;")) {
-						ipeSig = ipeSig.substring(0, ipeSig.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
-					}
-				}
-			}
+			ipeSig = shortenIpeSig(ipeSig);
 			for (IProgramElement object : kids) {
 				if (object.equals(ipe)) {
 					break;
@@ -289,22 +261,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 			String ipeSig = ipe.getBytecodeSignature();
 			// remove return type from the signature - it should not be included in the comparison
 			int idx = 0;
-			if (ipeSig != null && ((idx = ipeSig.indexOf(")")) != -1)) {
-				ipeSig = ipeSig.substring(0, idx);
-			}
-			if (ipeSig != null) {
-				if (ipeSig.indexOf("Lorg/aspectj/lang") != -1) {
-					if (ipeSig.endsWith("Lorg/aspectj/lang/JoinPoint$StaticPart;")) {
-						ipeSig = ipeSig.substring(0, ipeSig.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
-					}
-					if (ipeSig.endsWith("Lorg/aspectj/lang/JoinPoint;")) {
-						ipeSig = ipeSig.substring(0, ipeSig.lastIndexOf("Lorg/aspectj/lang/JoinPoint;"));
-					}
-					if (ipeSig.endsWith("Lorg/aspectj/lang/JoinPoint$StaticPart;")) {
-						ipeSig = ipeSig.substring(0, ipeSig.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
-					}
-				}
-			}
+			ipeSig = shortenIpeSig(ipeSig);
 			for (IProgramElement object : kids) {
 				if (object.equals(ipe)) {
 					break;
@@ -405,6 +362,50 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 			}
 		}
 		return empty;
+	}
+
+	private String shortenIpeSig(String ipeSig) {
+		int idx;
+		if (ipeSig != null && ((idx = ipeSig.indexOf(")")) != -1)) {
+			ipeSig = ipeSig.substring(0, idx);
+		}
+		if (ipeSig != null) {
+			if (ipeSig.indexOf("Lorg/aspectj/lang") != -1) {
+				if (ipeSig.endsWith("Lorg/aspectj/lang/JoinPoint$StaticPart;")) {
+					ipeSig = ipeSig.substring(0, ipeSig.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
+				}
+				if (ipeSig.endsWith("Lorg/aspectj/lang/JoinPoint;")) {
+					ipeSig = ipeSig.substring(0, ipeSig.lastIndexOf("Lorg/aspectj/lang/JoinPoint;"));
+				}
+				if (ipeSig.endsWith("Lorg/aspectj/lang/JoinPoint$StaticPart;")) {
+					ipeSig = ipeSig.substring(0, ipeSig.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
+				}
+			}
+		}
+		return ipeSig;
+	}
+
+	private int computeCountBasedOnPeers(IProgramElement ipe) {
+		int count = 1;
+		for (IProgramElement object : ipe.getParent().getChildren()) {
+			if (object.equals(ipe)) {
+				break;
+			}
+			if (object.getKind() == ipe.getKind()) {
+				if (object.getKind().toString().equals(ipe.getKind().toString())) {
+					String existingHandle = object.getHandleIdentifier();
+					int suffixPosition = existingHandle.indexOf('!');
+					if (suffixPosition != -1) {
+						count = new Integer(existingHandle.substring(suffixPosition + 1)).intValue() + 1;
+					} else {
+						if (count == 1) {
+							count = 2;
+						}
+					}
+				}
+			}
+		}
+		return count;
 	}
 
 	/**
