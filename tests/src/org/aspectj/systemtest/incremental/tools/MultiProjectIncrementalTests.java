@@ -170,7 +170,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		String p = "pr284771";
 		initialiseProject(p);
 		build(p);
-		printModel(p);
 		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
 		List<IRelationship> rels = irm.get("=pr284771<test*AspectTrace.aj'AspectTrace&before");
 		assertNotNull(rels);
@@ -180,43 +179,62 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals(2, ((Relationship) rels.get(0)).getTargets().size());
 	}
 
+	public void testDeclareSoftHandles_329111() throws Exception {
+		String p = "pr329111";
+		initialiseProject(p);
+		build(p);
+		printModel(p);
+		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
+		List<IRelationship> rels = irm.get("=pr329111<{AJ.java'AJ`declare soft");
+		assertNotNull(rels);
+		rels = irm.get("=pr329111<{AJ2.java'AJ2`declare soft");
+		assertNotNull(rels);
+		rels = irm.get("=pr329111<{AJ2.java'AJ2`declare soft!2");
+		assertNotNull(rels);
+		rels = irm.get("=pr329111<{AJ2.java'AJ2`declare soft!3");
+		assertNotNull(rels);
+	}
+
 	/**
 	 * Test that the declare parents in the super aspect gets a relationship from the type declaring it.
 	 */
 	public void testAspectInheritance_322446() throws Exception {
-		String p ="pr322446";
+		String p = "pr322446";
 		initialiseProject(p);
 		build(p);
 		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
-		//		Hid:1:(targets=1) =pr322446<{Class.java[Class (aspect declarations) =pr322446<{AbstractAspect.java'AbstractAspect`declare parents
-		//		Hid:2:(targets=1) =pr322446<{AbstractAspect.java'AbstractAspect`declare parents (declared on) =pr322446<{Class.java[Class
+		// Hid:1:(targets=1) =pr322446<{Class.java[Class (aspect declarations) =pr322446<{AbstractAspect.java'AbstractAspect`declare
+		// parents
+		// Hid:2:(targets=1) =pr322446<{AbstractAspect.java'AbstractAspect`declare parents (declared on) =pr322446<{Class.java[Class
 		List<IRelationship> rels = irm.get("=pr322446<{AbstractAspect.java'AbstractAspect`declare parents");
 		assertNotNull(rels);
 	}
 
 	public void testAspectInheritance_322446_2() throws Exception {
-		String p ="pr322446_2";
+		String p = "pr322446_2";
 		initialiseProject(p);
 		build(p);
-		IProgramElement thisAspectNode = getModelFor(p).getHierarchy().findElementForType("","Sub");
-		assertEquals("{Code=[I]}",thisAspectNode.getDeclareParentsMap().toString());
+		IProgramElement thisAspectNode = getModelFor(p).getHierarchy().findElementForType("", "Sub");
+		assertEquals("{Code=[I]}", thisAspectNode.getDeclareParentsMap().toString());
 	}
 
 	// found whilst looking at 322446 hence that is the testdata name
 	public void testAspectInheritance_322664() throws Exception {
-		AjdeInteractionTestbed.VERBOSE=true;
-		String p ="pr322446_3";
+		AjdeInteractionTestbed.VERBOSE = true;
+		String p = "pr322446_3";
 		initialiseProject(p);
 		build(p);
 		assertNoErrors(p);
-		alter(p,"inc1");
+		alter(p, "inc1");
 		build(p);
 		// should be some errors:
-		//		error at N:\temp\ajcSandbox\aspectj16_1\ajcTest3209787521625191676.tmp\pr322446_3\src\AbstractAspect.java:5:0::0 can't bind type name 'T'
-		//		error at N:\temp\ajcSandbox\aspectj16_1\ajcTest3209787521625191676.tmp\pr322446_3\src\AbstractAspect.java:8:0::0 Incorrect number of arguments for type AbstractAspect<S>; it cannot be parameterized with arguments <X, Y>
+		// error at N:\temp\ajcSandbox\aspectj16_1\ajcTest3209787521625191676.tmp\pr322446_3\src\AbstractAspect.java:5:0::0 can't
+		// bind type name 'T'
+		// error at N:\temp\ajcSandbox\aspectj16_1\ajcTest3209787521625191676.tmp\pr322446_3\src\AbstractAspect.java:8:0::0
+		// Incorrect number of arguments for type AbstractAspect<S>; it cannot be parameterized with arguments <X, Y>
 		List<IMessage> errors = getErrorMessages(p);
-		assertTrue(errors!=null && errors.size()>0);
-		alter(p,"inc2");
+		assertTrue(errors != null && errors.size() > 0);
+		alter(p, "inc2");
 		build(p);
 		// that build would contain an exception if the bug were around
 		assertNoErrors(p);
@@ -262,7 +280,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p);
 		printModel(p);
 		IProgramElement decpPE = getModelFor(p).getHierarchy().findElementForHandle(
-		"=pr286539<p.q.r{Aspect.java'Asp`declare parents");
+				"=pr286539<p.q.r{Aspect.java'Asp`declare parents");
 		assertNotNull(decpPE);
 		String s = ((decpPE.getParentTypes()).get(0));
 		assertEquals("p.q.r.Int", s);
@@ -273,7 +291,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("p.q.r.Int", s);
 
 		IProgramElement decaPE = getModelFor(p).getHierarchy().findElementForHandle(
-		"=pr286539<p.q.r{Aspect.java'Asp`declare \\@type");
+				"=pr286539<p.q.r{Aspect.java'Asp`declare \\@type");
 		assertNotNull(decaPE);
 		assertEquals("p.q.r.Foo", decaPE.getAnnotationType());
 
@@ -306,12 +324,12 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("=pr269082<a{ClassUsingInner.java[ClassUsingInner~foo~QMyInner;~QObject;~QString;", ipe.getHandleIdentifier());
 
 		ipe = findElementAtLine(root, 9);
-		assertEquals("=pr269082<a{ClassUsingInner.java[ClassUsingInner~goo~QClassUsingInner.MyInner;~QObject;~QString;", ipe
-				.getHandleIdentifier());
+		assertEquals("=pr269082<a{ClassUsingInner.java[ClassUsingInner~goo~QClassUsingInner.MyInner;~QObject;~QString;",
+				ipe.getHandleIdentifier());
 
 		ipe = findElementAtLine(root, 11);
-		assertEquals("=pr269082<a{ClassUsingInner.java[ClassUsingInner~hoo~Qa.ClassUsingInner.MyInner;~QObject;~QString;", ipe
-				.getHandleIdentifier());
+		assertEquals("=pr269082<a{ClassUsingInner.java[ClassUsingInner~hoo~Qa.ClassUsingInner.MyInner;~QObject;~QString;",
+				ipe.getHandleIdentifier());
 	}
 
 	// just simple incremental build - no code change, just the aspect touched
@@ -502,7 +520,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	public void testFQItds_322039() throws Exception {
-		String p ="pr322039";
+		String p = "pr322039";
 		initialiseProject(p);
 		build(p);
 		printModel(p);
@@ -674,7 +692,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkWasFullBuild();
 		assertEquals(1, getErrorMessages(p).size());
 		assertTrue(((Message) getErrorMessages(p).get(0)).getMessage().indexOf(
-		"Syntax error on token \")\", \"name pattern\" expected") != -1);
+				"Syntax error on token \")\", \"name pattern\" expected") != -1);
 	}
 
 	public void testIncrementalMixin() {
@@ -905,11 +923,13 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 						String t = (String) iterator2.next();
 						IProgramElement link = getModelFor("P4").getHierarchy().findElementForHandle(t);
 						if (ipe.getKind().equals(IProgramElement.Kind.ADVICE)) {
-							assertEquals("expected target of relationship to be " + codeElement.toString() + " but found "
-									+ link.toString(), codeElement, link);
+							assertEquals(
+									"expected target of relationship to be " + codeElement.toString() + " but found "
+											+ link.toString(), codeElement, link);
 						} else if (ipe.getKind().equals(IProgramElement.Kind.CODE)) {
-							assertEquals("expected target of relationship to be " + advice.toString() + " but found "
-									+ link.toString(), advice, link);
+							assertEquals(
+									"expected target of relationship to be " + advice.toString() + " but found " + link.toString(),
+									advice, link);
 						} else {
 							fail("found unexpected relationship source " + ipe.getName() + " with kind " + ipe.getKind());
 						}
@@ -932,8 +952,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p);
 		checkWasntFullBuild();
 		List msgs = getErrorMessages(p);
-		assertEquals("error message should be 'The type C is already defined' ", "The type C is already defined", ((IMessage) msgs
-				.get(0)).getMessage());
+		assertEquals("error message should be 'The type C is already defined' ", "The type C is already defined",
+				((IMessage) msgs.get(0)).getMessage());
 		alter("PR148285_2", "inc2"); // type C in A.aj is commented out
 		build("PR148285_2");
 		checkWasntFullBuild();
@@ -1461,7 +1481,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("MultiSource");
 		IProgramElement srcOne = getModelFor("MultiSource").getHierarchy().findElementForHandle("=MultiSource/src1");
 		IProgramElement CodeOneClass = getModelFor("MultiSource").getHierarchy().findElementForHandle(
-		"=MultiSource/src1{CodeOne.java[CodeOne");
+				"=MultiSource/src1{CodeOne.java[CodeOne");
 		IProgramElement srcTwoPackage = getModelFor("MultiSource").getHierarchy().findElementForHandle("=MultiSource/src2<pkg");
 		IProgramElement srcThreePackage = getModelFor("MultiSource").getHierarchy().findElementForHandle("=MultiSource/src3<pkg");
 		assertNotNull(srcOne);
@@ -1470,7 +1490,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertNotNull(srcThreePackage);
 		if (srcTwoPackage.equals(srcThreePackage)) {
 			throw new RuntimeException(
-			"Should not have found these package nodes to be the same, they are in different source folders");
+					"Should not have found these package nodes to be the same, they are in different source folders");
 		}
 		// dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
 	}
@@ -1487,24 +1507,24 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		addSourceFolderForSourceFile("MultiSource", getProjectRelativePath("MultiSource", "src1/CodeOne.java"), "src/java/main");
 		addSourceFolderForSourceFile("MultiSource", getProjectRelativePath("MultiSource", "src2/CodeTwo.java"), "src/java/main");
 		addSourceFolderForSourceFile("MultiSource", getProjectRelativePath("MultiSource", "src3/pkg/CodeThree.java"),
-		"src/java/tests");
+				"src/java/tests");
 		build("MultiSource");
 
 		IProgramElement srcOne = getModelFor("MultiSource").getHierarchy().findElementForHandleOrCreate(
 				"=MultiSource/src\\/java\\/main", false);
 		IProgramElement CodeOneClass = getModelFor("MultiSource").getHierarchy().findElementForHandle(
-		"=MultiSource/src\\/java\\/main{CodeOne.java[CodeOne");
+				"=MultiSource/src\\/java\\/main{CodeOne.java[CodeOne");
 		IProgramElement srcTwoPackage = getModelFor("MultiSource").getHierarchy().findElementForHandle(
-		"=MultiSource/src\\/java\\/tests<pkg");
+				"=MultiSource/src\\/java\\/tests<pkg");
 		IProgramElement srcThreePackage = getModelFor("MultiSource").getHierarchy().findElementForHandle(
-		"=MultiSource/src\\/java\\/testssrc3<pkg");
+				"=MultiSource/src\\/java\\/testssrc3<pkg");
 		assertNotNull(srcOne);
 		assertNotNull(CodeOneClass);
 		assertNotNull(srcTwoPackage);
 		assertNotNull(srcThreePackage);
 		if (srcTwoPackage.equals(srcThreePackage)) {
 			throw new RuntimeException(
-			"Should not have found these package nodes to be the same, they are in different source folders");
+					"Should not have found these package nodes to be the same, they are in different source folders");
 		}
 		// dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
 	}
@@ -1827,7 +1847,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 		// Delete the erroneous type
 		String f = getWorkingDir().getAbsolutePath() + File.separatorChar + "pr240360" + File.separatorChar + "src"
-		+ File.separatorChar + "test" + File.separatorChar + "Error.java";
+				+ File.separatorChar + "test" + File.separatorChar + "Error.java";
 		(new File(f)).delete();
 		build("pr240360");
 		checkWasntFullBuild();
@@ -2214,8 +2234,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("P1"); // full build
 		AjState ajs = IncrementalStateManager.findStateManagingOutputLocation(binDirectoryForP1);
 		assertTrue("There should be a state object for project P1", ajs != null);
-		assertTrue("Should be no structural changes as it was a full build but found: "
-				+ ajs.getNumberOfStructuralChangesSinceLastFullBuild(), ajs.getNumberOfStructuralChangesSinceLastFullBuild() == 0);
+		assertTrue(
+				"Should be no structural changes as it was a full build but found: "
+						+ ajs.getNumberOfStructuralChangesSinceLastFullBuild(),
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild() == 0);
 
 		alter("P1", "inc3"); // adds a method to the class C.java
 		build("P1");
@@ -2223,8 +2245,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		ajs = IncrementalStateManager.findStateManagingOutputLocation(new File(getFile("P1", "bin")));
 		assertTrue("There should be state for project P1", ajs != null);
 		checkWasntFullBuild();
-		assertTrue("Should be one structural changes as it was a full build but found: "
-				+ ajs.getNumberOfStructuralChangesSinceLastFullBuild(), ajs.getNumberOfStructuralChangesSinceLastFullBuild() == 1);
+		assertTrue(
+				"Should be one structural changes as it was a full build but found: "
+						+ ajs.getNumberOfStructuralChangesSinceLastFullBuild(),
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild() == 1);
 
 	}
 
@@ -2243,8 +2267,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("P1"); // full build
 		AjState ajs = IncrementalStateManager.findStateManagingOutputLocation(binDirectoryForP1);
 		assertTrue("There should be state for project P1", ajs != null);
-		assertTrue("Should be no struc changes as its a full build: " + ajs.getNumberOfStructuralChangesSinceLastFullBuild(), ajs
-				.getNumberOfStructuralChangesSinceLastFullBuild() == 0);
+		assertTrue("Should be no struc changes as its a full build: " + ajs.getNumberOfStructuralChangesSinceLastFullBuild(),
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild() == 0);
 
 		alter("P1", "inc4"); // changes body of main() method but does *not*
 		// change the structure of C.java
@@ -2269,8 +2293,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("interprojectdeps1"); // full build
 		AjState ajs = IncrementalStateManager.findStateManagingOutputLocation(binDirForInterproject1);
 		assertTrue("There should be state for project P1", ajs != null);
-		assertTrue("Should be no struc changes as its a full build: " + ajs.getNumberOfStructuralChangesSinceLastFullBuild(), ajs
-				.getNumberOfStructuralChangesSinceLastFullBuild() == 0);
+		assertTrue("Should be no struc changes as its a full build: " + ajs.getNumberOfStructuralChangesSinceLastFullBuild(),
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild() == 0);
 
 		alter("interprojectdeps1", "inc1"); // adds a space to C.java
 		build("interprojectdeps1");
@@ -2294,8 +2318,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("interprojectdeps2"); // full build
 		AjState ajs = IncrementalStateManager.findStateManagingOutputLocation(binDirForInterproject2);
 		assertTrue("There should be state for project interprojectdeps2", ajs != null);
-		assertTrue("Should be no struc changes as its a full build: " + ajs.getNumberOfStructuralChangesSinceLastFullBuild(), ajs
-				.getNumberOfStructuralChangesSinceLastFullBuild() == 0);
+		assertTrue("Should be no struc changes as its a full build: " + ajs.getNumberOfStructuralChangesSinceLastFullBuild(),
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild() == 0);
 
 		alter("interprojectdeps2", "inc1"); // minor change to C.java
 		build("interprojectdeps2");
@@ -2319,8 +2343,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("interprojectdeps3"); // full build
 		AjState ajs = IncrementalStateManager.findStateManagingOutputLocation(binDirForInterproject3);
 		assertTrue("There should be state for project interprojectdeps3", ajs != null);
-		assertTrue("Should be no struc changes as its a full build: " + ajs.getNumberOfStructuralChangesSinceLastFullBuild(), ajs
-				.getNumberOfStructuralChangesSinceLastFullBuild() == 0);
+		assertTrue("Should be no struc changes as its a full build: " + ajs.getNumberOfStructuralChangesSinceLastFullBuild(),
+				ajs.getNumberOfStructuralChangesSinceLastFullBuild() == 0);
 
 		alter("interprojectdeps3", "inc1"); // minor change to C.java
 		build("interprojectdeps3");
@@ -2593,7 +2617,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("PR93310_1");
 		checkWasFullBuild();
 		String fileC2 = getWorkingDir().getAbsolutePath() + File.separatorChar + "PR93310_1" + File.separatorChar + "src"
-		+ File.separatorChar + "pack" + File.separatorChar + "C2.java";
+				+ File.separatorChar + "pack" + File.separatorChar + "C2.java";
 		(new File(fileC2)).delete();
 		alter("PR93310_1", "inc1");
 		build("PR93310_1");
@@ -2609,7 +2633,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("PR93310_2");
 		checkWasFullBuild();
 		String fileC2 = getWorkingDir().getAbsolutePath() + File.separatorChar + "PR93310_2" + File.separatorChar + "src"
-		+ File.separatorChar + "pack" + File.separatorChar + "C2.java";
+				+ File.separatorChar + "pack" + File.separatorChar + "C2.java";
 		(new File(fileC2)).delete();
 		alter("PR93310_2", "inc1");
 		build("PR93310_2");
@@ -2630,14 +2654,14 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertTrue("build should have compiled ok", getErrorMessages("PR113531").isEmpty());
 		alter("PR113531", "inc1");
 		build("PR113531");
-		assertEquals("error message should be 'foo cannot be resolved' ", "foo cannot be resolved", (getErrorMessages("PR113531")
-				.get(0)).getMessage());
+		assertEquals("error message should be 'foo cannot be resolved' ", "foo cannot be resolved",
+				(getErrorMessages("PR113531").get(0)).getMessage());
 		alter("PR113531", "inc2");
 		build("PR113531");
-		assertTrue("There should be no exceptions handled:\n" + getCompilerErrorMessages("PR113531"), getCompilerErrorMessages(
-		"PR113531").isEmpty());
-		assertEquals("error message should be 'foo cannot be resolved' ", "foo cannot be resolved", (getErrorMessages("PR113531")
-				.get(0)).getMessage());
+		assertTrue("There should be no exceptions handled:\n" + getCompilerErrorMessages("PR113531"),
+				getCompilerErrorMessages("PR113531").isEmpty());
+		assertEquals("error message should be 'foo cannot be resolved' ", "foo cannot be resolved",
+				(getErrorMessages("PR113531").get(0)).getMessage());
 	}
 
 	// Stage 1: Compile the 4 files, pack.A2 extends pack.A1 (aspects) where
@@ -2656,14 +2680,14 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// fullBuild("PR119882");
 		List errors = getErrorMessages("PR119882");
 		assertTrue("Should be at least one error, but got none", errors.size() == 1);
-		assertEquals("error message should be 'i cannot be resolved' ", "i cannot be resolved", ((IMessage) errors.get(0))
-				.getMessage());
+		assertEquals("error message should be 'i cannot be resolved' ", "i cannot be resolved",
+				((IMessage) errors.get(0)).getMessage());
 		alter("PR119882", "inc2");
 		build("PR119882");
-		assertTrue("There should be no exceptions handled:\n" + getCompilerErrorMessages("PR119882"), getCompilerErrorMessages(
-		"PR119882").isEmpty());
-		assertEquals("error message should be 'i cannot be resolved' ", "i cannot be resolved", ((IMessage) errors.get(0))
-				.getMessage());
+		assertTrue("There should be no exceptions handled:\n" + getCompilerErrorMessages("PR119882"),
+				getCompilerErrorMessages("PR119882").isEmpty());
+		assertEquals("error message should be 'i cannot be resolved' ", "i cannot be resolved",
+				((IMessage) errors.get(0)).getMessage());
 
 	}
 
@@ -2672,7 +2696,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("PR112736");
 		checkWasFullBuild();
 		String fileC2 = getWorkingDir().getAbsolutePath() + File.separatorChar + "PR112736" + File.separatorChar + "src"
-		+ File.separatorChar + "pack" + File.separatorChar + "A.java";
+				+ File.separatorChar + "pack" + File.separatorChar + "A.java";
 		(new File(fileC2)).delete();
 		alter("PR112736", "inc1");
 		build("PR112736");
@@ -2769,11 +2793,11 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("PR129613");
 		alter("PR129613", "inc1");
 		build("PR129613");
-		assertTrue("There should be no exceptions handled:\n" + getCompilerErrorMessages("PR129613"), getCompilerErrorMessages(
-		"PR129613").isEmpty());
+		assertTrue("There should be no exceptions handled:\n" + getCompilerErrorMessages("PR129613"),
+				getCompilerErrorMessages("PR129613").isEmpty());
 		assertEquals("warning message should be 'no match for this type name: File [Xlint:invalidAbsoluteTypeName]' ",
-				"no match for this type name: File [Xlint:invalidAbsoluteTypeName]", (getWarningMessages("PR129613").get(0))
-				.getMessage());
+				"no match for this type name: File [Xlint:invalidAbsoluteTypeName]",
+				(getWarningMessages("PR129613").get(0)).getMessage());
 	}
 
 	// test for comment #0 - adding a comment to a class file shouldn't
@@ -3024,8 +3048,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 				.isEmpty());
 		String decisions = AjdeInteractionTestbed.MyStateListener.getDecisions();
 		String expect = "Need to recompile 'A.aj'";
-		assertTrue("Couldn't find build decision: '" + expect + "' in the list of decisions made:\n" + decisions, decisions
-				.indexOf(expect) != -1);
+		assertTrue("Couldn't find build decision: '" + expect + "' in the list of decisions made:\n" + decisions,
+				decisions.indexOf(expect) != -1);
 	}
 
 	public void testPr133532_3() {
@@ -3067,8 +3091,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		IHierarchy top = getModelFor("JDTLikeHandleProvider").getHierarchy();
 		IProgramElement pe = top.findElementForType("pkg", "A");
 		String expectedHandle = "=JDTLikeHandleProvider<pkg*A.aj'A";
-		assertEquals("expected handle to be " + expectedHandle + ", but found " + pe.getHandleIdentifier(), expectedHandle, pe
-				.getHandleIdentifier());
+		assertEquals("expected handle to be " + expectedHandle + ", but found " + pe.getHandleIdentifier(), expectedHandle,
+				pe.getHandleIdentifier());
 		// } finally {
 		// AsmManager.getDefault().setHandleProvider(handleProvider);
 		// }
@@ -3091,11 +3115,12 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkWasntFullBuild();
 		IHierarchy top2 = getModelFor("JDTLikeHandleProvider").getHierarchy();
 		IProgramElement pe2 = top
-		.findElementForLabel(top2.getRoot(), IProgramElement.Kind.ADVICE, "before(): <anonymous pointcut>");
+				.findElementForLabel(top2.getRoot(), IProgramElement.Kind.ADVICE, "before(): <anonymous pointcut>");
 		assertEquals("expected advice to be on line " + pe.getSourceLocation().getLine() + 1 + " but was on "
 				+ pe2.getSourceLocation().getLine(), pe.getSourceLocation().getLine() + 1, pe2.getSourceLocation().getLine());
-		assertEquals("expected advice to have handle " + pe.getHandleIdentifier() + " but found handle "
-				+ pe2.getHandleIdentifier(), pe.getHandleIdentifier(), pe2.getHandleIdentifier());
+		assertEquals(
+				"expected advice to have handle " + pe.getHandleIdentifier() + " but found handle " + pe2.getHandleIdentifier(),
+				pe.getHandleIdentifier(), pe2.getHandleIdentifier());
 		// } finally {
 		// AsmManager.getDefault().setHandleProvider(handleProvider);
 		// }
@@ -3129,8 +3154,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 				+ newExec.getSourceLocation().getLine() + " but was on line " + call.getSourceLocation().getLine(), newExec
 				.getSourceLocation().getLine(), call.getSourceLocation().getLine());
 		assertEquals("after swapping places, expected 'after(): callPCD..' " + "to have handle " + exec.getHandleIdentifier()
-				+ " (because was full build) but had " + newCall.getHandleIdentifier(), exec.getHandleIdentifier(), newCall
-				.getHandleIdentifier());
+				+ " (because was full build) but had " + newCall.getHandleIdentifier(), exec.getHandleIdentifier(),
+				newCall.getHandleIdentifier());
 		// } finally {
 		// AsmManager.getDefault().setHandleProvider(handleProvider);
 		// }
@@ -3415,9 +3440,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("PR141556");
 		checkWasFullBuild();
 		String warningMessage = "can not build thisJoinPoint " + "lazily for this advice since it has no suitable guard "
-		+ "[Xlint:noGuardForLazyTjp]";
-		assertEquals("warning message should be '" + warningMessage + "'", warningMessage, (getWarningMessages("PR141556").get(0))
-				.getMessage());
+				+ "[Xlint:noGuardForLazyTjp]";
+		assertEquals("warning message should be '" + warningMessage + "'", warningMessage,
+				(getWarningMessages("PR141556").get(0)).getMessage());
 
 		// add a space to the Aspect but dont do a build
 		alter("PR141556", "inc1");
@@ -3427,8 +3452,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("PR141556");
 		checkWasntFullBuild();
 		assertTrue("there should still be a warning message ", !getWarningMessages("PR141556").isEmpty());
-		assertEquals("warning message should be '" + warningMessage + "'", warningMessage, (getWarningMessages("PR141556").get(0))
-				.getMessage());
+		assertEquals("warning message should be '" + warningMessage + "'", warningMessage,
+				(getWarningMessages("PR141556").get(0)).getMessage());
 	}
 
 	public void testAdviceDidNotMatch_pr152589() {
@@ -3489,7 +3514,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testPR164384_1() {
 		initialiseProject("PR164384");
 
-		Hashtable<String,String> javaOptions = new Hashtable<String,String>();
+		Hashtable<String, String> javaOptions = new Hashtable<String, String>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.6");
@@ -3521,7 +3546,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testPR164384_2() {
 		initialiseProject("PR164384");
 
-		Hashtable<String,String> javaOptions = new Hashtable<String,String>();
+		Hashtable<String, String> javaOptions = new Hashtable<String, String>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.5");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.5");
@@ -3551,7 +3576,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testPR164384_3() {
 		initialiseProject("PR164384");
 
-		Hashtable<String,String> javaOptions = new Hashtable<String,String>();
+		Hashtable<String, String> javaOptions = new Hashtable<String, String>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.5");
@@ -3669,7 +3694,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 		// This alteration removes B.java, the build should not damage phantom handle based relationships
 		String fileB = getWorkingDir().getAbsolutePath() + File.separatorChar + "inpathHandles" + File.separatorChar + "src"
-		+ File.separatorChar + "p" + File.separatorChar + "B.java";
+				+ File.separatorChar + "p" + File.separatorChar + "B.java";
 		(new File(fileB)).delete();
 		build(p);
 		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles/,<codep(Code.class[Code"));
@@ -3690,7 +3715,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		File f = new File(inpathDir);
 		Set<File> s = new HashSet<File>();
 		s.add(f);
-		Map<File,String> m = new HashMap<File,String>();
+		Map<File, String> m = new HashMap<File, String>();
 		m.put(f, "wibble");
 		configureOutputLocationManager(p, new TestOutputLocationManager(getProjectRelativePath(p, ".").toString(), m));
 
