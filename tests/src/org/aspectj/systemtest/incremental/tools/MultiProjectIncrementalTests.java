@@ -193,6 +193,14 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertNotNull(rels);
 		rels = irm.get("=pr329111<{AJ2.java'AJ2`declare soft!3");
 		assertNotNull(rels);
+		rels = irm.get("=pr329111<{AJ3.java'AJ3`declare warning");
+		assertNotNull(rels);
+		rels = irm.get("=pr329111<{AJ3.java'AJ3`declare warning!2");
+		assertNotNull(rels);
+		rels = irm.get("=pr329111<{AJ3.java'AJ3`declare error");
+		assertNotNull(rels);
+		rels = irm.get("=pr329111<{AJ3.java'AJ3`declare error!2");
+		assertNotNull(rels);
 	}
 
 	/**
@@ -1047,7 +1055,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		ipe = findElementAtLine(root, 5);
 		assertEquals("=BrokenHandles<p{GetInfo.java'GetInfo`declare warning!2", ipe.getHandleIdentifier());
 		ipe = findElementAtLine(root, 6);
-		assertEquals("=BrokenHandles<p{GetInfo.java'GetInfo`declare parents!3", ipe.getHandleIdentifier());
+		assertEquals("=BrokenHandles<p{GetInfo.java'GetInfo`declare parents", ipe.getHandleIdentifier());
 	}
 
 	public void testNPEIncremental_pr262218() {
