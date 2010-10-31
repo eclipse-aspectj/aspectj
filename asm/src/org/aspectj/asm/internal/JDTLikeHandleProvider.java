@@ -186,21 +186,11 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 			if (count > 1) {
 				return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
 			}
-		} else if (ipe.getKind().isDeclareAnnotation()) {
-			int count = computeCountBasedOnPeers(ipe);
-			if (count > 1) {
-				return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
-			}
-		} else if (ipe.getKind().isDeclareSoft()) {
-			// look at peer declares
-			int count = computeCountBasedOnPeers(ipe);
-			if (count > 1) {
-				return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
-			}
 		} else if (ipe.getKind().isDeclare()) {
-			int index = CharOperation.lastIndexOf('_', byteCodeName);
-			if (index != -1) {
-				return convertCount(CharOperation.subarray(byteCodeName, index + 1, byteCodeName.length));
+			// // look at peer declares
+			int count = computeCountBasedOnPeers(ipe);
+			if (count > 1) {
+				return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
 			}
 		} else if (ipe.getKind().equals(IProgramElement.Kind.ADVICE)) {
 			// Look at any peer advice

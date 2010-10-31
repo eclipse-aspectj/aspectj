@@ -393,6 +393,18 @@ public interface IProgramElement extends Serializable {
 			return name.startsWith("declare soft");
 		}
 
+		public boolean isDeclareWarning() {
+			return name.startsWith("declare warning");
+		}
+
+		public boolean isDeclareError() {
+			return name.startsWith("declare error");
+		}
+
+		public boolean isDeclarePrecedence() {
+			return name.startsWith("declare precedence");
+		}
+
 		// The 4 declarations below are necessary for serialization
 		private static int nextOrdinal = 0;
 		private final int ordinal = nextOrdinal++;
