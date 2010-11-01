@@ -8,11 +8,13 @@
  *
  * Contributors:
  *   Alexandre Vasseur         initial implementation
+ *   Abraham Nevado - Lucierna simple caching strategy
  *******************************************************************************/
 package org.aspectj.weaver.loadtime.definition;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Hashtable;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
@@ -29,10 +31,11 @@ import org.xml.sax.helpers.XMLReaderFactory;
 /**
  * FIXME AV - doc, concrete aspect
  * 
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur
+ * @author A. Nevado
+ * @author Andy Clement
  */
 public class DocumentParser extends DefaultHandler {
-
 	/**
 	 * The current DTD public id. The matching dtd will be searched as a resource.
 	 */
@@ -72,6 +75,19 @@ public class DocumentParser extends DefaultHandler {
 
 	private Definition.ConcreteAspect m_lastConcreteAspect;
 
+	private static Hashtable<String, Definition> parsedFiles = new Hashtable<String, Definition>();
+	private static final boolean CACHE;
+
+	static {
+		boolean value = false;
+		try {
+			value = System.getProperty("org.aspectj.weaver.loadtime.configuration.cache", "false").equalsIgnoreCase("true");
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
+		CACHE = value;
+	}
+
 	private DocumentParser() {
 		m_definition = new Definition();
 	}
@@ -79,6 +95,10 @@ public class DocumentParser extends DefaultHandler {
 	public static Definition parse(final URL url) throws Exception {
 		InputStream in = null;
 		try {
+			if (CACHE && parsedFiles.containsKey(url.toString())) {
+				return parsedFiles.get(url.toString());
+			}
+
 			DocumentParser parser = new DocumentParser();
 
 			XMLReader xmlReader = getXMLReader();
@@ -104,6 +124,11 @@ public class DocumentParser extends DefaultHandler {
 			xmlReader.setEntityResolver(parser);
 			in = url.openStream();
 			xmlReader.parse(new InputSource(in));
+
+			if (CACHE && parser.m_definition.getAspectClassNames().size() > 0) {
+				parsedFiles.put(url.toString(), parser.m_definition);
+			}
+
 			return parser.m_definition;
 		} finally {
 			try {
@@ -116,7 +141,6 @@ public class DocumentParser extends DefaultHandler {
 
 	private static XMLReader getXMLReader() throws SAXException, ParserConfigurationException {
 		XMLReader xmlReader = null;
-
 		/* Try this first for Java 5 */
 		try {
 			xmlReader = XMLReaderFactory.createXMLReader();
