@@ -622,30 +622,37 @@ public class AsmManager implements IStructureModel {
 	}
 
 	private String getTypeNameFromHandle(String handle, Map<String, String> cache) {
-		String typename = cache.get(handle);
-		if (typename != null) {
+		try {
+			String typename = cache.get(handle);
+			if (typename != null) {
+				return typename;
+			}
+			// inpath handle - but for which type?
+			// let's do it the slow way, we can optimize this with a cache perhaps
+			int hasPackage = handle.indexOf(HandleProviderDelimiter.PACKAGEFRAGMENT.getDelimiter());
+			int typeLocation = handle.indexOf(HandleProviderDelimiter.TYPE.getDelimiter());
+			if (typeLocation == -1) {
+				typeLocation = handle.indexOf(HandleProviderDelimiter.ASPECT_TYPE.getDelimiter());
+			}
+			if (typeLocation == -1) {
+				// unexpected - time to give up
+				return "";
+			}
+			StringBuffer qualifiedTypeNameFromHandle = new StringBuffer();
+			if (hasPackage != -1) {
+				qualifiedTypeNameFromHandle.append(handle.substring(hasPackage + 1, handle.indexOf(HandleProviderDelimiter.CLASSFILE.getDelimiter(), hasPackage)));
+				qualifiedTypeNameFromHandle.append('.');
+			}
+			qualifiedTypeNameFromHandle.append(handle.substring(typeLocation + 1));
+			typename = qualifiedTypeNameFromHandle.toString();
+			cache.put(handle, typename);
 			return typename;
-		}
-		// inpath handle - but for which type?
-		// let's do it the slow way, we can optimize this with a cache perhaps
-		int hasPackage = handle.indexOf('<');
-		int typeLocation = handle.indexOf('[');
-		if (typeLocation == -1) {
-			typeLocation = handle.indexOf('}');
-		}
-		if (typeLocation == -1) {
-			// unexpected - time to give up
+		} catch (StringIndexOutOfBoundsException sioobe) {
+			// debug for 330170
+			System.err.println("Handle processing problem, the handle is: "+handle);
+			sioobe.printStackTrace(System.err);
 			return "";
 		}
-		StringBuffer qualifiedTypeNameFromHandle = new StringBuffer();
-		if (hasPackage != -1) {
-			qualifiedTypeNameFromHandle.append(handle.substring(hasPackage + 1, handle.indexOf('(', hasPackage)));
-			qualifiedTypeNameFromHandle.append('.');
-		}
-		qualifiedTypeNameFromHandle.append(handle.substring(typeLocation + 1));
-		typename = qualifiedTypeNameFromHandle.toString();
-		cache.put(handle, typename);
-		return typename;
 	}
 
 	/**
