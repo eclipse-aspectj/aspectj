@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002, 2010 Palo Alto Research Center, Incorporated (PARC).
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -8,6 +8,7 @@
  *  
  * Contributors: 
  *     PARC     initial implementation 
+ *     Nieraj Singh
  * ******************************************************************/
 
 package org.aspectj.weaver.patterns;
@@ -25,6 +26,7 @@ import org.aspectj.weaver.World;
 
 public class BindingTypePattern extends ExactTypePattern implements BindingPattern {
 	private int formalIndex;
+	private String bindingName;
 
 	public BindingTypePattern(UnresolvedType type, int index, boolean isVarArgs) {
 		super(type, false, isVarArgs);
@@ -33,10 +35,15 @@ public class BindingTypePattern extends ExactTypePattern implements BindingPatte
 
 	public BindingTypePattern(FormalBinding binding, boolean isVarArgs) {
 		this(binding.getType(), binding.getIndex(), isVarArgs);
+		this.bindingName = binding.getName();
 	}
 
 	public int getFormalIndex() {
 		return formalIndex;
+	}
+	
+	public String getBindingName() {
+		return bindingName;
 	}
 
 	public boolean equals(Object other) {

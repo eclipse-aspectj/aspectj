@@ -5,6 +5,10 @@
  * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors:
+ *     Andy Clement
+ *     Nieraj Singh
  * ******************************************************************/
 
 package org.aspectj.weaver.patterns;
@@ -43,6 +47,10 @@ public class TypeCategoryTypePattern extends TypePattern {
 	public TypeCategoryTypePattern(int category) {
 		super(false);
 		this.category = category;
+	}
+	
+	public int getTypeCategory() {
+		return category;
 	}
 
 	@Override

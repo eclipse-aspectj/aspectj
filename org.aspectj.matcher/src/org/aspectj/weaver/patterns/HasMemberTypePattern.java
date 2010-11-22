@@ -8,6 +8,7 @@
  *  
  * Contributors: 
  *   Adrian Colyer			Initial implementation
+ *   Nieraj Singh
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
@@ -48,6 +49,10 @@ public class HasMemberTypePattern extends TypePattern {
 		} else {
 			return hasMethod(type);
 		}
+	}
+	
+	public ISignaturePattern getSignaturePattern() {
+		return signaturePattern;
 	}
 
 	private final static String declareAtPrefix = "ajc$declare_at";
