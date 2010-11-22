@@ -1,5 +1,5 @@
 /********************************************************************
- * Copyright (c) 2006 Contributors. All rights reserved. 
+ * Copyright (c) 2006, 2010 Contributors. All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
@@ -66,6 +66,62 @@ public class AjNaiveASTFlattenerTest extends TestCase {
 		check("public aspect A { declare parents: X extends Y; }",
 				"public aspect A {\n  declare parents: X extends Y;\n}\n");
 	}
+	
+	
+	/*
+	 * 
+	 * 
+	 * START: Test TypePattern nodes introduced in Bugzilla 329268.
+	 * 
+	 * 
+	 */
+	
+	public void testDeclareParentsDeclarationAny() throws Exception {
+		check("public aspect A { declare parents: * extends Y; }",
+				"public aspect A {\n  declare parents: * extends Y;\n}\n");
+	}
+	
+	public void testDeclareParentsAndDeclaration() throws Exception {
+		check("public aspect A { declare parents: W && X && Y extends Z; }",
+				"public aspect A {\n  declare parents: W && X && Y extends Z;\n}\n");
+	}
+	
+	public void testDeclareParentsOrDeclaration() throws Exception {
+		check("public aspect A { declare parents: W || X || Y extends Z; }",
+				"public aspect A {\n  declare parents: W || X || Y extends Z;\n}\n");
+	}
+	
+	public void testDeclareParentsNot() throws Exception {
+		check("public aspect A { declare parents: W && !X extends Z; }",
+				"public aspect A {\n  declare parents: W && !X extends Z;\n}\n");
+	}
+	
+	public void testDeclareParentsTypeCategory() throws Exception {
+		check("public aspect A { declare parents: B && is(AnonymousType) extends Z; }",
+		"public aspect A {\n  declare parents: B && is(AnonymousType) extends Z;\n}\n");
+		
+	}
+	
+	public void testDeclareParentsTypeCategoryNot() throws Exception {
+		check("public aspect A { declare parents: B && !is(InnerType) extends Z; }",
+		"public aspect A {\n  declare parents: B && !is(InnerType) extends Z;\n}\n");
+	}
+
+	
+	// TODO: commented until hasmethod is supported in AspectJ
+//	public void testDeclareParentsHasMember() {
+//		check("public aspect A { declare parents : A && hasmethod(void foo*(..)) extends D; }",
+//		"public aspect A {\n  declare parents : A && hasmethod(void foo*(..)) extends D;\n}\n");
+//	}
+
+	
+	/*
+	 * 
+	 * 
+	 * END: Test TypePattern nodes introduced in Bugzilla 329268.
+	 * 
+	 * 
+	 */
 	
 	public void testDeclareWarning() throws Exception {
 		check("public aspect A { declare warning: call(* *.*(..)) : \"warning!\"; }",

@@ -1,15 +1,16 @@
 /********************************************************************
- * Copyright (c) 2006 Contributors. All rights reserved. 
+ * Copyright (c) 2006, 2010 Contributors. All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: IBM Corporation - initial API and implementation 
- * 				 Helen Hawkins   - iniital version
+ * 				 Helen Hawkins   - initial version
  *******************************************************************/
 package org.aspectj.tools.ajc;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
 import org.aspectj.org.eclipse.jdt.core.dom.AST;
 import org.aspectj.org.eclipse.jdt.core.dom.ASTNode;
 import org.aspectj.org.eclipse.jdt.core.dom.ASTParser;
+import org.aspectj.org.eclipse.jdt.core.dom.AbstractBooleanTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterReturningAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterThrowingAdviceDeclaration;
@@ -24,6 +26,8 @@ import org.aspectj.org.eclipse.jdt.core.dom.AjAST;
 import org.aspectj.org.eclipse.jdt.core.dom.AjASTVisitor;
 import org.aspectj.org.eclipse.jdt.core.dom.AjTypeDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AndPointcut;
+import org.aspectj.org.eclipse.jdt.core.dom.AnyTypePattern;
+import org.aspectj.org.eclipse.jdt.core.dom.AnyWithAnnotationTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.AroundAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AspectDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.BeforeAdviceDeclaration;
@@ -43,11 +47,16 @@ import org.aspectj.org.eclipse.jdt.core.dom.DeclareSoftDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareWarningDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DefaultPointcut;
 import org.aspectj.org.eclipse.jdt.core.dom.DefaultTypePattern;
+import org.aspectj.org.eclipse.jdt.core.dom.EllipsisTypePattern;
+import org.aspectj.org.eclipse.jdt.core.dom.HasMemberTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.IExtendedModifier;
+import org.aspectj.org.eclipse.jdt.core.dom.IdentifierTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.InterTypeFieldDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.Javadoc;
+import org.aspectj.org.eclipse.jdt.core.dom.NoTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.NotPointcut;
+import org.aspectj.org.eclipse.jdt.core.dom.NotTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.OrPointcut;
 import org.aspectj.org.eclipse.jdt.core.dom.PerCflow;
 import org.aspectj.org.eclipse.jdt.core.dom.PerObject;
@@ -62,8 +71,10 @@ import org.aspectj.org.eclipse.jdt.core.dom.SimpleType;
 import org.aspectj.org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.StringLiteral;
 import org.aspectj.org.eclipse.jdt.core.dom.Type;
+import org.aspectj.org.eclipse.jdt.core.dom.TypeCategoryTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.TypePattern;
+import org.aspectj.org.eclipse.jdt.internal.core.SourceRange;
 
 /**
  * For each AspectJ ASTNode there is a test for:
@@ -1649,7 +1660,145 @@ public class AjASTTest extends AjASTTestCase {
 	public void testDeclareParents() {
 		checkJLS3("class A{}class B{}aspect C {declare parents : A extends B;}", 28, 29);
 	}
+	
+	
+	/*
+	 * 
+	 * 
+	 * START: Test TypePattern nodes introduced in Bugzilla 329268.
+	 * 
+	 * 
+	 */
+	
+	public void testDeclareParentsTypePatternNodeSource() {
+		checkTypePatternSourceRangesJLS3("class A{}class B{}aspect C {declare parents : A extends B;}", new int[][] {{46, 1} , {56, 1 }});
+	}
+	
+	public void testDeclareParentsAnySource() {
+		checkTypePatternSourceRangesJLS3("class A{}class B{}aspect C {declare parents : * extends B;}", new int[][] {{46, 1} , {56, 1 }});
+	}
+	
+	public void testDeclareParentsAndSource() {
 
+		checkTypePatternSourceRangesJLS3(
+				"class A{}class B{}class D{}class E{}aspect C {declare parents : A && B && D extends E;}",
+				new int[][] { { 64, 11 },// A && B && D,
+						{ 64, 1 }, // A
+						{ 69, 6 }, // B && D
+						{ 69, 1 }, // B
+						{ 74, 1 }, // D
+						{ 84, 1 } // E
+				});
+	}
+	
+	public void testDeclareParentsNotSource() {
+
+		checkTypePatternSourceRangesJLS3(
+				"class A{}class B{}class D{}class E{}aspect C {declare parents : A && !B extends E;}",
+				new int[][] { { 64, 7 },// A && !B
+						{ 64, 1 }, // A
+						{ 70, 1 }, // !B: the source location for a negated pattern is the start of the negated pattern excluding "!". Is this a bug?
+						{ 70, 1 }, // B
+						{ 80, 1 } // E
+				});
+	}
+	
+	public void testDeclareParentsOrSource() {
+		checkTypePatternSourceRangesJLS3(
+				"class A{}class B{}class D{}class E{}aspect C {declare parents : A || B || D extends E;}",
+				new int[][] { { 64, 11 },// A || B || D,
+						{ 64, 1 }, // A
+						{ 69, 6 }, // B || D
+						{ 69, 1 }, // B
+						{ 74, 1 }, // D
+						{ 84, 1 } // E
+				});
+	}
+	
+	public void testDeclareParentsAnyWithAnnotationSource() {
+		checkTypePatternSourceRangesJLS3(
+				"@interface AnnotationT {}class E{}aspect C {declare parents : (@AnnotationT *) extends E;}",
+				new int[][] { { 62, 16 },// (@AnnotationT *)
+						{ 87, 1 } // E
+				});
+		
+	}
+	
+	public void testDeclareParentsTypeCategorySource() {
+		checkTypePatternSourceRangesJLS3(
+				"class A{}class E{}aspect C {declare parents : A && is(ClassType) extends E;}",
+				new int[][] { { 46, 18 },// A && !is(InnerType)
+						{ 46, 1 }, // A
+						{ 51, 13}, // is(InnerType)
+						{ 73, 1 } // E
+				});
+	}
+
+	public void testDeclareParentsTypeCategoryNotSource() {
+		checkTypePatternSourceRangesJLS3(
+				"class A{}class E{}aspect C {declare parents : A && !is(InnerType) extends E;}",
+				new int[][] { { 46, 19 },// A && !is(InnerType)
+						{ 46, 1 }, // A
+						{ 52, 13}, // !is(InnerType): the source location for a negated pattern is the start of the negated pattern excluding "!". Is this a bug?
+						{ 52, 13}, // is(InnerType)
+						{ 74, 1 } // E
+				});
+	}
+
+	// // TODO: commenting out as there isn't proper support for hasmethod(..)
+	// yet. Uncomment and fix when hasmethod is supported
+	// public void testDeclareParentsHasMember() {
+	// // This is wrong. Call checkTypePatternJLS3 instead to check the source
+	// ranges for hasMethod...
+	// checkJLS3("class A{}class B{ public void fooB() {}}class D{}aspect C {declare parents : A && hasmethod(void foo*(..)) extends D;}",
+	// 37, 34);
+	// }
+
+	public void testDeclareParentsTypeCategoryInner() {
+		checkCategoryTypePatternJLS3(
+				"class A{class B{}}class E{}aspect C {declare parents : B && is(InnerType) extends E;}",
+				TypeCategoryTypePattern.INNER, "is(InnerType)");
+	}
+
+	public void testDeclareParentsTypeCategoryInterface() {
+		checkCategoryTypePatternJLS3(
+				"interface B{}interface E{}aspect C {declare parents : B && is(InterfaceType) extends E;}",
+				TypeCategoryTypePattern.INTERFACE, "is(InterfaceType)");
+	}
+
+	public void testDeclareParentsTypeCategoryClass() {
+		checkCategoryTypePatternJLS3(
+				"class B{}class E{}aspect C {declare parents : B && is(ClassType) extends E;}",
+				TypeCategoryTypePattern.CLASS, "is(ClassType)");
+	}
+
+	public void testDeclareParentsTypeCategoryAnnotation() {
+		checkCategoryTypePatternJLS3(
+				"@interface B{}class E{}aspect C {declare parents : B && is(AnnotationType) extends E;}",
+				TypeCategoryTypePattern.ANNOTATION, "is(AnnotationType)");
+	}
+
+	public void testDeclareParentsTypeCategoryAnonymous() {
+		checkCategoryTypePatternJLS3(
+				"class A{B annonymousB = new B() {};}class B{}class E{}aspect C {declare parents : B && is(AnonymousType) extends E;}",
+				TypeCategoryTypePattern.ANONYMOUS, "is(AnonymousType)");
+	}
+
+	public void testDeclareParentsTypeCategoryEnum() {
+		checkCategoryTypePatternJLS3(
+				"class B{}class E{}aspect C {declare parents : B && !is(EnumType) extends E;}",
+				TypeCategoryTypePattern.ENUM, "is(EnumType)");
+	}
+	
+	/*
+	 * 
+	 * 
+	 * END: Test TypePattern nodes introduced in Bugzilla 329268.
+	 * 
+	 * 
+	 */
+	
+	
 	public void testDeclareWarning() {
 		checkJLS3("aspect A {pointcut a();declare warning: a(): \"error\";}", 23, 30);
 	}
@@ -1680,7 +1829,95 @@ public class AjASTTest extends AjASTTestCase {
 		assertEquals("expected there to be one comment but found " + cu.getCommentList().size(), 1, cu.getCommentList().size());
 	}
 
+	
+	protected void assertExpression(String expectedExpression, TypePattern node) {
+		assertTrue("Expected: " + expectedExpression + ". Actual: " + node.getTypePatternExpression(), node.getTypePatternExpression().equals(expectedExpression));
+		
+	}
+	
+	protected void assertNodeType(Class<?> expected, TypePattern node) {
+		assertTrue("Expected " + expected.toString() + ". Actual: " + node.getClass().toString(), node.getClass().equals(expected));
+	}
 }
+
+
+
+class TypeCategoryTypeVisitor extends AjASTVisitor {
+	
+	private TypeCategoryTypePattern typeCategory = null;
+	
+	public boolean visit(TypeCategoryTypePattern node) {
+		typeCategory = node;
+		return false;
+	}
+	
+	public TypeCategoryTypePattern getTypeCategoryNode() {
+		return typeCategory;
+	}
+}
+
+class TypePatternSourceRangeVisitor extends AjASTVisitor {
+	private List<SourceRange> sourceRanges = new ArrayList<SourceRange>();
+
+	public List<SourceRange> getVisitedSourceRanges() {
+		return sourceRanges;
+	}
+
+	public boolean visit(AbstractBooleanTypePattern node) {
+		sourceRanges.add(new SourceRange(node.getStartPosition(), node
+				.getLength()));
+		return true;
+	}
+
+	public boolean visit(AnyTypePattern node) {
+		sourceRanges.add(new SourceRange(node.getStartPosition(), node
+				.getLength()));
+		return true;
+	}
+
+	public boolean visit(AnyWithAnnotationTypePattern node) {
+		sourceRanges.add(new SourceRange(node.getStartPosition(), node
+				.getLength()));
+		return true;
+	}
+
+	public boolean visit(EllipsisTypePattern node) {
+		sourceRanges.add(new SourceRange(node.getStartPosition(), node
+				.getLength()));
+		return true;
+	}
+
+	public boolean visit(HasMemberTypePattern node) {
+		sourceRanges.add(new SourceRange(node.getStartPosition(), node
+				.getLength()));
+		return true;
+	}
+
+	public boolean visit(IdentifierTypePattern node) {
+		sourceRanges.add(new SourceRange(node.getStartPosition(), node
+				.getLength()));
+		return true;
+	}
+
+	public boolean visit(NotTypePattern node) {
+		sourceRanges.add(new SourceRange(node.getStartPosition(), node
+				.getLength()));
+		return true;
+	}
+
+	public boolean visit(NoTypePattern node) {
+		sourceRanges.add(new SourceRange(node.getStartPosition(), node
+				.getLength()));
+		return true;
+	}
+
+	public boolean visit(TypeCategoryTypePattern node) {
+		sourceRanges.add(new SourceRange(node.getStartPosition(), node
+				.getLength()));
+		return true;
+	}
+}
+
 
 class SourceRangeVisitor extends AjASTVisitor {
 

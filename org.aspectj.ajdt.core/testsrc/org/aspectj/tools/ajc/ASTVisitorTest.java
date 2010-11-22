@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,15 +17,20 @@ import junit.framework.TestCase;
 
 import org.aspectj.org.eclipse.jdt.core.dom.AST;
 import org.aspectj.org.eclipse.jdt.core.dom.ASTParser;
+import org.aspectj.org.eclipse.jdt.core.dom.AbstractBooleanTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterReturningAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterThrowingAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AjASTVisitor;
 import org.aspectj.org.eclipse.jdt.core.dom.AjTypeDeclaration;
+import org.aspectj.org.eclipse.jdt.core.dom.AndTypePattern;
+import org.aspectj.org.eclipse.jdt.core.dom.AnyTypePattern;
+import org.aspectj.org.eclipse.jdt.core.dom.AnyWithAnnotationTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.AroundAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AspectDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.Assignment;
 import org.aspectj.org.eclipse.jdt.core.dom.BeforeAdviceDeclaration;
+import org.aspectj.org.eclipse.jdt.core.dom.BindingTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.Block;
 import org.aspectj.org.eclipse.jdt.core.dom.BlockComment;
 import org.aspectj.org.eclipse.jdt.core.dom.BodyDeclaration;
@@ -39,18 +44,21 @@ import org.aspectj.org.eclipse.jdt.core.dom.DeclareParentsDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclarePrecedenceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareSoftDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareWarningDeclaration;
-import org.aspectj.org.eclipse.jdt.core.dom.DefaultTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.EnumDeclaration;
+import org.aspectj.org.eclipse.jdt.core.dom.ExactTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.aspectj.org.eclipse.jdt.core.dom.FieldAccess;
 import org.aspectj.org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.aspectj.org.eclipse.jdt.core.dom.IdentifierTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.InfixExpression;
 import org.aspectj.org.eclipse.jdt.core.dom.Initializer;
 import org.aspectj.org.eclipse.jdt.core.dom.InterTypeFieldDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.MethodInvocation;
+import org.aspectj.org.eclipse.jdt.core.dom.NotTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.NumberLiteral;
+import org.aspectj.org.eclipse.jdt.core.dom.OrTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.PerCflow;
 import org.aspectj.org.eclipse.jdt.core.dom.PerObject;
 import org.aspectj.org.eclipse.jdt.core.dom.PerTypeWithin;
@@ -61,9 +69,11 @@ import org.aspectj.org.eclipse.jdt.core.dom.ReferencePointcut;
 import org.aspectj.org.eclipse.jdt.core.dom.SignaturePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.SimpleName;
 import org.aspectj.org.eclipse.jdt.core.dom.StringLiteral;
+import org.aspectj.org.eclipse.jdt.core.dom.TypeCategoryTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.aspectj.org.eclipse.jdt.core.dom.WildTypePattern;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 public class ASTVisitorTest extends TestCase {
@@ -280,10 +290,70 @@ public class ASTVisitorTest extends TestCase {
 				"(compilationUnit(class(simpleName)(method(primitiveType)(simpleName)(block(expressionStatement(methodInvocation(simpleName))))))(aspect(simpleName)(constructorITD(primitiveType)(simpleName)(block))))");
 	}
 	
-	public void testDeclareParents(){
+	/*
+	 * 
+	 * START: Test TypePattern nodes introduced in Bugzilla 329268.
+	 * 
+	 */
+	
+	public void testDeclareParents() {
 		check("class A{}class B{}aspect C {declare parents : A extends B;}",
-				"(compilationUnit(class(simpleName))(class(simpleName))(aspect(simpleName)(declareParents(defaultTypePattern)(defaultTypePattern))))");
+				"(compilationUnit(class(simpleName))(class(simpleName))(aspect(simpleName)(declareParents(wildTypePattern)(wildTypePattern))))");
 	}
+
+	public void testDeclareParentsAnyTypePattern() {
+		check("class A{}class B{}aspect C {declare parents : * extends B;}",
+				"(compilationUnit(class(simpleName))(class(simpleName))(aspect(simpleName)(declareParents(anyTypePattern)(wildTypePattern))))");
+	}
+
+	public void testDeclareParentsAndTypePattern() {
+		check("class A{}class B{}class D{}class E{}aspect C {declare parents : A && B && D extends E;}",
+				"(compilationUnit(class(simpleName))(class(simpleName))(class(simpleName))(class(simpleName))(aspect(simpleName)(declareParents((wildTypePattern)andTypePattern((wildTypePattern)andTypePattern(wildTypePattern)))(wildTypePattern))))");
+	}
+
+	public void testDeclareParentsOrTypePattern() {
+		check("class A{}class B{}class D{}class E{}aspect C {declare parents : A || B || D extends E;}",
+				"(compilationUnit(class(simpleName))(class(simpleName))(class(simpleName))(class(simpleName))(aspect(simpleName)(declareParents((wildTypePattern)orTypePattern((wildTypePattern)orTypePattern(wildTypePattern)))(wildTypePattern))))");
+	}
+
+	public void testDeclareParentsAndOrTypePattern() {
+		check("class A{}class B{}class D{}class E{}aspect C {declare parents : A && (B || D) extends E;}",
+				"(compilationUnit(class(simpleName))(class(simpleName))(class(simpleName))(class(simpleName))(aspect(simpleName)(declareParents((wildTypePattern)andTypePattern((wildTypePattern)orTypePattern(wildTypePattern)))(wildTypePattern))))");
+	}
+
+	public void testDeclareParentsOrAndTypePattern() {
+		check("class A{}class B{}class D{}class E{}aspect C {declare parents : A || B && D extends E;}",
+				"(compilationUnit(class(simpleName))(class(simpleName))(class(simpleName))(class(simpleName))(aspect(simpleName)(declareParents((wildTypePattern)orTypePattern((wildTypePattern)andTypePattern(wildTypePattern)))(wildTypePattern))))");
+	}
+
+	public void testDeclareParentsNotTypePattern() {
+		check("class A{}class B{}class D{}class E{}aspect C {declare parents : A && !B extends E;}",
+				"(compilationUnit(class(simpleName))(class(simpleName))(class(simpleName))(class(simpleName))(aspect(simpleName)(declareParents((wildTypePattern)andTypePattern(notTypePattern(wildTypePattern)))(wildTypePattern))))");
+	}
+
+	public void testDeclareParentsTypeCategoryTypePattern() {
+		check("class A{}class E{}aspect C {declare parents : A && is(ClassType) extends E;}",
+				"(compilationUnit(class(simpleName))(class(simpleName))(aspect(simpleName)(declareParents((wildTypePattern)andTypePattern(typeCategoryTypePattern))(wildTypePattern))))");
+	}
+
+	public void testDeclareParentsTypeCategoryTypePatternNot() {
+		check("class A{}class E{}aspect C {declare parents : A && !is(InnerType) extends E;}",
+				"(compilationUnit(class(simpleName))(class(simpleName))(aspect(simpleName)(declareParents((wildTypePattern)andTypePattern(notTypePattern(typeCategoryTypePattern)))(wildTypePattern))))");
+	}
+
+	public void testDeclareParentsAnyWithAnnotationTypePattern() {
+		check("class E{}aspect C {declare parents : (@AnnotationT *) extends E;}",
+				"(compilationUnit(class(simpleName))(aspect(simpleName)(declareParents(anyWithAnnotationTypePattern)(wildTypePattern))))");
+	}
+	
+	
+	/*
+	 * 
+	 * END: Test TypePattern nodes introduced in Bugzilla 329268.
+	 * 
+	 */
+	
+	
 	public void testDeclareWarning(){
 		check("aspect A {pointcut a();declare warning: a(): \"warning\";}",
 				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(declareWarning(referencePointcut(simpleName))(stringLiteral))))");
@@ -294,15 +364,15 @@ public class ASTVisitorTest extends TestCase {
 	}
 	public void testDeclareSoft(){
 		check("aspect A {pointcut a();declare soft: Exception+: a();}",
-				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(declareSoft(referencePointcut(simpleName))(defaultTypePattern))))");
+				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(declareSoft(referencePointcut(simpleName))(wildTypePattern))))");
 	}
 	public void testDeclarePrecedence(){
 		check("aspect A{}aspect B{declare precedence: B,A;}",
-				"(compilationUnit(aspect(simpleName))(aspect(simpleName)(declarePrecedence(defaultTypePattern)(defaultTypePattern))))");
+				"(compilationUnit(aspect(simpleName))(aspect(simpleName)(declarePrecedence(wildTypePattern)(wildTypePattern))))");
 	}
 	public void testDeclareAnnotationType(){
 		checkJLS3("@interface MyAnnotation{}class C{}aspect A{declare @type: C : @MyAnnotation;}",
-				"(compilationUnit(simpleName)(class(simpleName))(aspect(simpleName)(declareAtType(defaultTypePattern)(simpleName))))");
+				"(compilationUnit(simpleName)(class(simpleName))(aspect(simpleName)(declareAtType(wildTypePattern)(simpleName))))");
 	}
 	public void testDeclareAnnotationMethod(){
 		checkJLS3("@interface MyAnnotation{}class C{}aspect A{declare @method:public * C.*(..) : @MyAnnotation;}",
@@ -727,13 +797,85 @@ class TestVisitor extends AjASTVisitor {
 	public void endVisit(DeclareWarningDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
-	public boolean visit(DefaultTypePattern node) {
-		b.append("(defaultTypePattern");
-		return isVisitingChildren();		
+	
+	public boolean visit(AbstractBooleanTypePattern node) {
+		b.append("(");
+		node.getLeft().accept(this);
+		if (node instanceof AndTypePattern) {
+			b.append("andTypePattern");
+		} else if (node instanceof OrTypePattern) {
+			b.append("orTypePattern");
+		}
+		node.getRight().accept(this);
+		b.append(")");
+		
+		// Don't visit the children, as that is done above in order (left node first, boolean operator next, right node last
+		return false;
 	}
-	public void endVisit(DefaultTypePattern node) {
-		b.append(")"); //$NON-NLS-1$
+
+
+	public boolean visit(AnyTypePattern node) {
+		b.append("(anyTypePattern");
+		return isVisitingChildren();
 	}
+
+
+	public void endVisit(AnyTypePattern node) {
+		b.append(")"); 
+	}
+
+
+	public boolean visit(AnyWithAnnotationTypePattern node) {
+		b.append("(anyWithAnnotationTypePattern");
+		return isVisitingChildren();
+	}
+
+
+	public void endVisit(AnyWithAnnotationTypePattern node) {
+		b.append(")"); 
+	}
+
+	public boolean visit(IdentifierTypePattern node) {
+		if (node instanceof WildTypePattern) {
+			b.append("(wildTypePattern");
+		} else if (node instanceof ExactTypePattern) {
+			b.append("(exactTypePattern");
+		} else if (node instanceof BindingTypePattern) {
+			b.append("(bindingTypePattern");
+		}
+		return isVisitingChildren();
+	}
+
+
+	public void endVisit(IdentifierTypePattern node) {
+		b.append(")"); 
+	}
+
+
+	public boolean visit(NotTypePattern node) {
+		b.append("(notTypePattern");
+		return isVisitingChildren();
+	}
+
+
+	public void endVisit(NotTypePattern node) {
+		b.append(")"); 
+	}
+
+
+	public boolean visit(TypeCategoryTypePattern node) {
+		b.append("(typeCategoryTypePattern");
+		return isVisitingChildren();
+	}
+
+
+	public void endVisit(TypeCategoryTypePattern node) {
+		b.append(")"); 
+	}
+	
+	
+	// End of TypePattern additions for Bugzilla 329268
+
 	public boolean visit(SignaturePattern node) {
 		b.append("(signaturePattern");
 		return isVisitingChildren();		

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Nieraj Singh
  *******************************************************************************/
 package org.aspectj.org.eclipse.jdt.core.dom;
 
@@ -1720,11 +1721,63 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		return false;
 	}
 	
-	public boolean visit(DefaultTypePattern node) {
-		this.buffer.append(node.getDetail());
+	public boolean visit(AbstractBooleanTypePattern node) {
+		
+		// Flatten boolean expressions in order, meaning
+		// the left node needs to be appended first, followed by the
+		// boolean operator, followed by the right node.
+		node.getLeft().accept(this);
+		this.buffer.append(" ");
+		this.buffer.append(node.getTypePatternExpression());
+		this.buffer.append(" ");
+		node.getRight().accept(this);
+		
+		// No need to visit the childrena, as they were already visited above
 		return false;
 	}
-	
+
+	public boolean visit(AnyTypePattern node) {
+		this.buffer.append(node.getTypePatternExpression());
+		return false;
+	}
+
+	public boolean visit(AnyWithAnnotationTypePattern node) {
+		this.buffer.append(node.getTypePatternExpression());
+		return false;
+	}
+
+	public boolean visit(EllipsisTypePattern node) {
+		this.buffer.append(node.getTypePatternExpression());
+		return false;
+	}
+
+	public boolean visit(HasMemberTypePattern node) {
+		this.buffer.append(node.getTypePatternExpression());
+		return false;
+	}
+
+	public boolean visit(IdentifierTypePattern node) {
+		this.buffer.append(node.getTypePatternExpression());
+		return false;
+	}
+
+	public boolean visit(NotTypePattern node) {
+		this.buffer.append(node.getTypePatternExpression());
+		// Visit the children in this case, as the child of a not type pattern
+		// is the negated type pattern
+		return true;
+	}
+
+	public boolean visit(NoTypePattern node) {
+		this.buffer.append(node.getTypePatternExpression());
+		return false;
+	}
+
+	public boolean visit(TypeCategoryTypePattern node) {
+		this.buffer.append(node.getTypePatternExpression());
+		return false;
+	}
+
 	public boolean visit(DefaultPointcut node) {
 		this.buffer.append(node.getDetail());
 		return false;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Nieraj Singh
  *******************************************************************************/
 
 package org.aspectj.org.eclipse.jdt.core.dom;
@@ -243,5 +244,89 @@ public abstract class AjASTVisitor extends ASTVisitor {
 	}
 	
 	public void endVisit(SignaturePattern node) {
+	}
+	
+	/*
+	 * TODO: if necessary split this into the two specialised
+	 * boolean type patterns (AndTypePattern, OrTypePattern)
+	 */
+	public boolean visit(AbstractBooleanTypePattern node) {
+		return true;
+	}
+
+	public void endVisit(AbstractBooleanTypePattern node) {
+
+	}
+
+	public boolean visit(AnyTypePattern node) {
+		return true;
+	}
+
+	public void endVisit(AnyTypePattern node) {
+
+	}
+
+	public boolean visit(AnyWithAnnotationTypePattern node) {
+		return true;
+	}
+
+	public void endVisit(AnyWithAnnotationTypePattern node) {
+
+	}
+
+	public boolean visit(EllipsisTypePattern node) {
+		return true;
+	}
+
+	public void endVisit(EllipsisTypePattern node) {
+
+	}
+
+	public boolean visit(HasMemberTypePattern node) {
+		return true;
+	}
+
+	public void endVisit(HasMemberTypePattern node) {
+
+	}
+
+	public boolean visit(IdentifierTypePattern node) {
+		return true;
+	}
+
+	public void endVisit(IdentifierTypePattern node) {
+
+	}
+
+	public boolean visit(NotTypePattern node) {
+		return true;
+	}
+
+	public void endVisit(NotTypePattern node) {
+
+	}
+
+	public boolean visit(NoTypePattern node) {
+		return true;
+	}
+
+	public void endVisit(NoTypePattern node) {
+
+	}
+
+	public boolean visit(TypeCategoryTypePattern node) {
+		return true;
+	}
+
+	public void endVisit(TypeCategoryTypePattern node) {
+
+	}
+	
+	public boolean visit(Type node) {
+		return true;
+	}
+
+	public void endVisit(Type node) {
+	
 	}
 }

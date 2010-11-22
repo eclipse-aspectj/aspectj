@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Nieraj Singh
  *******************************************************************************/
 package org.aspectj.org.eclipse.jdt.core.dom;
 
@@ -257,5 +258,129 @@ public class AjASTMatcher extends ASTMatcher {
 			return false;
 		}
 		return node.getDetail().equals(((SignaturePattern) other).getDetail());
+	}
+
+	public boolean match(AndTypePattern node, Object other) {
+		if (node == other) {
+			return true;
+		}
+		if (!(other instanceof AndTypePattern)) {
+			return false;
+		}
+		AndTypePattern otherBoolean = (AndTypePattern) other;
+		return safeSubtreeMatch(node.getLeft(), otherBoolean.getLeft())
+				&& safeSubtreeMatch(node.getRight(), otherBoolean.getRight());
+	}
+
+	public boolean match(OrTypePattern node, Object other) {
+		if (node == other) {
+			return true;
+		}
+		if (!(other instanceof OrTypePattern)) {
+			return false;
+		}
+		OrTypePattern otherBoolean = (OrTypePattern) other;
+		return safeSubtreeMatch(node.getLeft(), otherBoolean.getLeft())
+				&& safeSubtreeMatch(node.getRight(), otherBoolean.getRight());
+	}
+
+	public boolean match(AnyTypePattern node, Object other) {
+		// AnyTypePattern nodes don't hold state aside from the AST, so just do a reference check
+		if (node == other) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean match(AnyWithAnnotationTypePattern node, Object other) {
+		if (node == other) {
+			return true;
+		}
+		if (!(other instanceof AnyWithAnnotationTypePattern)) {
+			return false;
+		}
+		// For now only do an expression matching. In future versions, when
+		// the node supports AnnotationTypes, this may have to be changed
+		return node.getTypePatternExpression().equals(
+				((AnyWithAnnotationTypePattern) other)
+						.getTypePatternExpression());
+	}
+
+	public boolean match(EllipsisTypePattern node, Object other) {
+		// Ellipsis nodes don't hold state aside from the AST, so just do a reference check
+		if (node == other) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean match(NotTypePattern node, Object other) {
+		if (node == other) {
+			return true;
+		}
+		if (!(other instanceof NotTypePattern)) {
+			return false;
+		}
+		return safeSubtreeMatch(node.getNegatedTypePattern(),
+				((NotTypePattern) other).getNegatedTypePattern());
+	}
+
+	public boolean match(NoTypePattern node, Object other) {
+		// NoTypePattern nodes don't hold state aside from the AST, so just do a reference check
+		if (node == other) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean match(HasMemberTypePattern node, Object other) {
+		if (node == other) {
+			return true;
+		}
+		if (!(other instanceof HasMemberTypePattern)) {
+			return false;
+		}
+		return safeSubtreeMatch(node.getSignaturePattern(),
+				((HasMemberTypePattern) other).getSignaturePattern());
+	}
+
+	public boolean match(IdentifierTypePattern node, Object other) {
+		if (node == other) {
+			return true;
+		}
+		if (!(other instanceof IdentifierTypePattern)) {
+			return false;
+		}
+		return safeSubtreeMatch(node.getType(),
+				((IdentifierTypePattern) other).getType());
+	}
+
+	public boolean match(TypeCategoryTypePattern node, Object other) {
+		if (node == other) {
+			return true;
+		}
+		if (!(other instanceof TypeCategoryTypePattern)) {
+			return false;
+		}
+		return node.getTypeCategory() == ((TypeCategoryTypePattern) other)
+				.getTypeCategory();
+	}
+
+	public boolean match(Type type, Object other) {
+		if (type == other) {
+			return true;
+		}
+		// For now only support simple type/simple name matching. Support for
+		// other types
+		// may have to be added here
+		if (type instanceof SimpleType && other instanceof SimpleType) {
+			Name name = ((SimpleType) type).getName();
+			Name otherName = ((SimpleType) other).getName();
+			if (name instanceof SimpleName && otherName instanceof SimpleName) {
+				return ((SimpleName) name).getIdentifier().equals(
+						((SimpleName) otherName).getIdentifier());
+			}
+		}
+		return false;
 	}
 }

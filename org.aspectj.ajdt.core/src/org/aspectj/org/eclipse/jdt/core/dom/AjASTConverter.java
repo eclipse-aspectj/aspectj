@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Nieraj Singh
  *******************************************************************************/
 
 package org.aspectj.org.eclipse.jdt.core.dom;
@@ -406,7 +407,7 @@ public class AjASTConverter extends ASTConverter {
 				((DeclareAtTypeDeclaration) declareDeclaration).setAnnotationName(annotationName);
 			} else if (da.getKind().equals(DeclareAnnotation.AT_CONSTRUCTOR)) {
 				declareDeclaration = new DeclareAtConstructorDeclaration(this.ast);
-				((DeclareAtConstructorDeclaration) declareDeclaration).setPatternNode(convert(da.getSignaturePattern()));
+				((DeclareAtConstructorDeclaration) declareDeclaration).setPatternNode(convertSignature(da.getSignaturePattern()));
 				SimpleName annotationName = new SimpleName(this.ast);
 				annotationName.setSourceRange(da.getAnnotationSourceStart(),
 						da.getAnnotationSourceEnd() - da.getAnnotationSourceStart());
@@ -414,7 +415,7 @@ public class AjASTConverter extends ASTConverter {
 				((DeclareAtConstructorDeclaration) declareDeclaration).setAnnotationName(annotationName);
 			} else if (da.getKind().equals(DeclareAnnotation.AT_FIELD)) {
 				declareDeclaration = new DeclareAtFieldDeclaration(this.ast);
-				((DeclareAtFieldDeclaration) declareDeclaration).setPatternNode(convert(da.getSignaturePattern()));
+				((DeclareAtFieldDeclaration) declareDeclaration).setPatternNode(convertSignature(da.getSignaturePattern()));
 				SimpleName annotationName = new SimpleName(this.ast);
 				annotationName.setSourceRange(da.getAnnotationSourceStart(),
 						da.getAnnotationSourceEnd() - da.getAnnotationSourceStart());
@@ -422,7 +423,7 @@ public class AjASTConverter extends ASTConverter {
 				((DeclareAtFieldDeclaration) declareDeclaration).setAnnotationName(annotationName);
 			} else if (da.getKind().equals(DeclareAnnotation.AT_METHOD)) {
 				declareDeclaration = new DeclareAtMethodDeclaration(this.ast);
-				((DeclareAtMethodDeclaration) declareDeclaration).setPatternNode(convert(da.getSignaturePattern()));
+				((DeclareAtMethodDeclaration) declareDeclaration).setPatternNode(convertSignature(da.getSignaturePattern()));
 				SimpleName annotationName = new SimpleName(this.ast);
 				annotationName.setSourceRange(da.getAnnotationSourceStart(),
 						da.getAnnotationSourceEnd() - da.getAnnotationSourceStart());
@@ -475,8 +476,11 @@ public class AjASTConverter extends ASTConverter {
 						.setTypePattern((org.aspectj.org.eclipse.jdt.core.dom.TypePattern) pNode);
 			}
 		}
-		declareDeclaration.setSourceRange(declareDecl.declarationSourceStart, declareDecl.declarationSourceEnd
-				- declareDecl.declarationSourceStart + 1);
+		
+		if (declareDeclaration != null) {
+			declareDeclaration.setSourceRange(declareDecl.declarationSourceStart, declareDecl.declarationSourceEnd
+					- declareDecl.declarationSourceStart + 1);
+		}
 		return declareDeclaration;
 	}
 
@@ -624,8 +628,8 @@ public class AjASTConverter extends ASTConverter {
 		return pointcutDesi;
 	}
 
-	public org.aspectj.org.eclipse.jdt.core.dom.PatternNode convert(ISignaturePattern patternNode) {
-		org.aspectj.org.eclipse.jdt.core.dom.PatternNode pNode = null;
+	public org.aspectj.org.eclipse.jdt.core.dom.SignaturePattern convertSignature(ISignaturePattern patternNode) {
+		org.aspectj.org.eclipse.jdt.core.dom.SignaturePattern pNode = null;
 		if (patternNode instanceof SignaturePattern) {
 			SignaturePattern sigPat = (SignaturePattern) patternNode;
 			pNode = new org.aspectj.org.eclipse.jdt.core.dom.SignaturePattern(this.ast, sigPat.toString());
@@ -636,14 +640,13 @@ public class AjASTConverter extends ASTConverter {
 		return pNode;
 	}
 
-	public org.aspectj.org.eclipse.jdt.core.dom.PatternNode convert(PatternNode patternNode) {
-		// this is a stub to be used until dom classes have been created for
-		// the different weaver TypePattern's
+	public org.aspectj.org.eclipse.jdt.core.dom.PatternNode convert(
+			PatternNode patternNode) {
 		org.aspectj.org.eclipse.jdt.core.dom.PatternNode pNode = null;
 		if (patternNode instanceof TypePattern) {
-			TypePattern typePat = (TypePattern) patternNode;
-			pNode = new DefaultTypePattern(this.ast, typePat.toString());
-			pNode.setSourceRange(typePat.getStart(), (typePat.getEnd() - typePat.getStart() + 1));
+			TypePattern weaverTypePattern = (TypePattern) patternNode;
+			return convert(weaverTypePattern);
+
 		} else if (patternNode instanceof SignaturePattern) {
 			SignaturePattern sigPat = (SignaturePattern) patternNode;
 			pNode = new org.aspectj.org.eclipse.jdt.core.dom.SignaturePattern(this.ast, sigPat.toString());
@@ -651,6 +654,123 @@ public class AjASTConverter extends ASTConverter {
 		}
 		return pNode;
 
+	}
+
+	public org.aspectj.org.eclipse.jdt.core.dom.TypePattern convert(
+			TypePattern weaverNode) {
+
+		// First check if the node is a Java type (WildType, ExactType,
+		// BindingType)
+		org.aspectj.org.eclipse.jdt.core.dom.TypePattern domNode = createIdentifierTypePattern(weaverNode);
+
+		if (domNode == null) {
+			if (weaverNode instanceof org.aspectj.weaver.patterns.EllipsisTypePattern) {
+				domNode = new org.aspectj.org.eclipse.jdt.core.dom.EllipsisTypePattern(
+						ast);
+			} else if (weaverNode instanceof org.aspectj.weaver.patterns.NoTypePattern) {
+				domNode = new org.aspectj.org.eclipse.jdt.core.dom.NoTypePattern(
+						ast);
+			} else if (weaverNode instanceof org.aspectj.weaver.patterns.AnyTypePattern) {
+				domNode = new org.aspectj.org.eclipse.jdt.core.dom.AnyTypePattern(
+						ast);
+			} else if (weaverNode instanceof org.aspectj.weaver.patterns.AnyWithAnnotationTypePattern) {
+				// For now construct the node with just the annotation
+				// expression
+				String annotationExpression = ((org.aspectj.weaver.patterns.AnyWithAnnotationTypePattern) weaverNode)
+						.toString();
+				domNode = new org.aspectj.org.eclipse.jdt.core.dom.AnyWithAnnotationTypePattern(
+						ast, annotationExpression);
+
+			} else if (weaverNode instanceof org.aspectj.weaver.patterns.OrTypePattern) {
+				org.aspectj.weaver.patterns.OrTypePattern compilerOrNode = (org.aspectj.weaver.patterns.OrTypePattern) weaverNode;
+				domNode = new OrTypePattern(this.ast,
+						convert(compilerOrNode.getLeft()),
+						convert(compilerOrNode.getRight()));
+			} else if (weaverNode instanceof org.aspectj.weaver.patterns.AndTypePattern) {
+				org.aspectj.weaver.patterns.AndTypePattern compilerAndType = (org.aspectj.weaver.patterns.AndTypePattern) weaverNode;
+				domNode = new org.aspectj.org.eclipse.jdt.core.dom.AndTypePattern(
+						this.ast, convert(compilerAndType.getLeft()),
+						convert(compilerAndType.getRight()));
+			} else if (weaverNode instanceof org.aspectj.weaver.patterns.NotTypePattern) {
+				//NOTE: the source range for not type patterns is the source range of the negated type pattern
+				// EXCLUDING the "!" character. Example: !A. If A starts at 1, the source starting point for the
+				// nottypepattern is 1, NOT 0.
+				TypePattern negatedTypePattern = ((org.aspectj.weaver.patterns.NotTypePattern) weaverNode)
+						.getNegatedPattern();
+				org.aspectj.org.eclipse.jdt.core.dom.TypePattern negatedDomTypePattern = convert(negatedTypePattern);
+				domNode = new org.aspectj.org.eclipse.jdt.core.dom.NotTypePattern(
+						ast, negatedDomTypePattern);
+			} else if (weaverNode instanceof org.aspectj.weaver.patterns.TypeCategoryTypePattern) {
+				org.aspectj.weaver.patterns.TypeCategoryTypePattern typeCategoryWeaverNode = (org.aspectj.weaver.patterns.TypeCategoryTypePattern) weaverNode;
+				domNode = new org.aspectj.org.eclipse.jdt.core.dom.TypeCategoryTypePattern(
+						ast, typeCategoryWeaverNode.getTypeCategory());
+
+			} else if (weaverNode instanceof org.aspectj.weaver.patterns.HasMemberTypePattern) {
+				ISignaturePattern weaverSignature = ((org.aspectj.weaver.patterns.HasMemberTypePattern) weaverNode)
+						.getSignaturePattern();
+				org.aspectj.org.eclipse.jdt.core.dom.SignaturePattern signature = convertSignature(weaverSignature);
+				domNode = new org.aspectj.org.eclipse.jdt.core.dom.HasMemberTypePattern(
+						ast, signature);
+			} else {
+				// Handle any cases that are not yet implemented. Create a
+				// default node for
+				// them.
+				domNode = new DefaultTypePattern(this.ast,
+						weaverNode.toString());
+			}
+		}
+
+		if (domNode != null) {
+			domNode.setSourceRange(weaverNode.getStart(), (weaverNode.getEnd()
+					- weaverNode.getStart() + 1));
+		}
+		return domNode;
+	}
+
+	/**
+	 * Creates an ExactType, WildType, or BindingType, or null if none of the
+	 * three can be created
+	 * 
+	 * @param weaverTypePattern
+	 *            to convert to a DOM equivalent
+	 * @return DOM node or null if it was not created
+	 */
+	protected org.aspectj.org.eclipse.jdt.core.dom.TypePattern createIdentifierTypePattern(
+			TypePattern weaverTypePattern) {
+		String typeExpression = weaverTypePattern.toString();
+
+		org.aspectj.org.eclipse.jdt.core.dom.TypePattern domTypePattern = null;
+		if (weaverTypePattern instanceof org.aspectj.weaver.patterns.WildTypePattern) {
+			// Use the expression for wild type patterns as a Name may not be
+			// constructed
+			// for a Type with a unresolved typeExpression
+			domTypePattern = new org.aspectj.org.eclipse.jdt.core.dom.WildTypePattern(
+					ast, typeExpression);
+		} else {
+			// TODO: At this point, the type pattern should be resolved. Type
+			// information
+			// may be able to be obtained from the exact type in the weaver
+			// pattern, therefore
+			// replace using the expression to construct the Type and use more
+			// appropriate
+			// information obtained from the exact type
+
+			if (weaverTypePattern instanceof org.aspectj.weaver.patterns.ExactTypePattern) {
+				Type type = this.ast.newSimpleType(this.ast
+						.newSimpleName(typeExpression));
+				domTypePattern = new ExactTypePattern(ast, type);
+			} else if (weaverTypePattern instanceof org.aspectj.weaver.patterns.BindingTypePattern) {
+				Type type = this.ast.newSimpleType(this.ast
+						.newSimpleName(typeExpression));
+				String binding = ((org.aspectj.weaver.patterns.BindingTypePattern) weaverTypePattern)
+						.getBindingName();
+				FormalBinding formalBinding = new FormalBinding(type, binding,
+						ast);
+				domTypePattern = new org.aspectj.org.eclipse.jdt.core.dom.BindingTypePattern(
+						ast, formalBinding);
+			}
+		}
+		return domTypePattern;
 	}
 
 	public ASTNode convert(
