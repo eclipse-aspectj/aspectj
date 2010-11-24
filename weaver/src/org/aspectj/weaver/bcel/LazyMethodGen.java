@@ -51,6 +51,7 @@ import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
@@ -61,7 +62,6 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
-import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.tools.Traceable;
 
 /**
@@ -88,6 +88,7 @@ public final class LazyMethodGen implements Traceable {
 	private InstructionList body;
 	private List<Attribute> attributes;
 	private List<AnnotationAJ> newAnnotations;
+	private List<ResolvedType> annotationsForRemoval;
 	private AnnotationAJ[][] newParameterAnnotations;
 	private final LazyClassGen enclosingClass;
 	private BcelMethod memberView;
@@ -264,6 +265,19 @@ public final class LazyMethodGen implements Traceable {
 		}
 	}
 
+	public void removeAnnotation(ResolvedType annotationType) {
+		initialize();
+		if (memberView == null) {
+			// If member view is null, we manage them in newAnnotations
+			if (annotationsForRemoval == null) {
+				annotationsForRemoval = new ArrayList<ResolvedType>();
+			}
+			annotationsForRemoval.add(annotationType);
+		} else {
+			memberView.removeAnnotation(annotationType);
+		}
+	}
+
 	public void addParameterAnnotation(int parameterNumber, AnnotationAJ anno) {
 		initialize();
 		if (memberView == null) {
@@ -294,6 +308,13 @@ public final class LazyMethodGen implements Traceable {
 	public boolean hasAnnotation(UnresolvedType annotationType) {
 		initialize();
 		if (memberView == null) {
+			if (annotationsForRemoval != null) {
+				for (ResolvedType at : annotationsForRemoval) {
+					if (at.equals(annotationType)) {
+						return false;
+					}
+				}
+			}
 			// Check local annotations first
 			if (newAnnotations != null) {
 				for (AnnotationAJ annotation : newAnnotations) {
@@ -442,10 +463,15 @@ public final class LazyMethodGen implements Traceable {
 			savedMethod = gen.getMethod();
 			return savedMethod;
 		} catch (ClassGenException e) {
-			enclosingClass.getBcelObjectType().getResolvedTypeX().getWorld().showMessage(
-					IMessage.ERROR,
-					WeaverMessages.format(WeaverMessages.PROBLEM_GENERATING_METHOD, this.getClassName(), this.getName(), e
-							.getMessage()), this.getMemberView() == null ? null : this.getMemberView().getSourceLocation(), null);
+			enclosingClass
+					.getBcelObjectType()
+					.getResolvedTypeX()
+					.getWorld()
+					.showMessage(
+							IMessage.ERROR,
+							WeaverMessages.format(WeaverMessages.PROBLEM_GENERATING_METHOD, this.getClassName(), this.getName(),
+									e.getMessage()),
+							this.getMemberView() == null ? null : this.getMemberView().getSourceLocation(), null);
 			// throw e; PR 70201.... let the normal problem reporting
 			// infrastructure deal with this rather than crashing.
 			body = null;
@@ -906,8 +932,8 @@ public final class LazyMethodGen implements Traceable {
 			for (int i = 0; i < newParameterAnnotations.length; i++) {
 				AnnotationAJ[] annos = newParameterAnnotations[i];
 				for (int j = 0; j < annos.length; j++) {
-					gen.addParameterAnnotation(i, new AnnotationGen(((BcelAnnotation) annos[j]).getBcelAnnotation(), gen
-							.getConstantPool(), true));
+					gen.addParameterAnnotation(i,
+							new AnnotationGen(((BcelAnnotation) annos[j]).getBcelAnnotation(), gen.getConstantPool(), true));
 				}
 			}
 		}
@@ -1164,8 +1190,8 @@ public final class LazyMethodGen implements Traceable {
 				continue;
 			}
 			gen.addExceptionHandler(jumpForward(r.getRealStart(), forDeletion), jumpForward(r.getRealEnd(), forDeletion),
-					jumpForward(r.getHandler(), forDeletion), (r.getCatchType() == null) ? null : (ObjectType) BcelWorld
-							.makeBcelType(r.getCatchType()));
+					jumpForward(r.getHandler(), forDeletion),
+					(r.getCatchType() == null) ? null : (ObjectType) BcelWorld.makeBcelType(r.getCatchType()));
 		}
 
 		for (InstructionHandle handle : forDeletion) {

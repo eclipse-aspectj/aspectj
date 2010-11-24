@@ -40,11 +40,11 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.ResolvedTypeMunger.Kind;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.ResolvedTypeMunger.Kind;
 import org.aspectj.weaver.bcel.BcelShadow;
 import org.aspectj.weaver.bcel.BcelTypeMunger;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
@@ -66,6 +66,9 @@ public class AsmRelationshipProvider {
 
 	public static final String ANNOTATES = "annotates";
 	public static final String ANNOTATED_BY = "annotated by";
+
+	// public static final String REMOVES_ANNOTATION = "removes annotation";
+	// public static final String ANNOTATION_REMOVED_BY = "annotated removed by";
 
 	/**
 	 * Add a relationship for a declare error or declare warning
@@ -321,7 +324,7 @@ public class AsmRelationshipProvider {
 				((sl.getColumn() == 0) ? ISourceLocation.NO_COLUMN : sl.getColumn()), sl.getContext(), sourceFileName);
 		return sLoc;
 	}
-	
+
 	private static ISourceLocation createSourceLocation(String sourcefilename, ResolvedType aspect, ISourceLocation sl) {
 		ISourceLocation sLoc = new SourceLocation(getBinaryFile(aspect), sl.getLine(), sl.getEndLine(),
 				((sl.getColumn() == 0) ? ISourceLocation.NO_COLUMN : sl.getColumn()), sl.getContext(), sourcefilename);
@@ -468,7 +471,7 @@ public class AsmRelationshipProvider {
 	 * this method if that is the case as they will look the entities up in the structure model.
 	 */
 	public static void addDeclareAnnotationRelationship(AsmManager model, ISourceLocation declareAnnotationLocation,
-			ISourceLocation annotatedLocation) {
+			ISourceLocation annotatedLocation, boolean isRemove) {
 		if (model == null) {
 			return;
 		}
@@ -486,6 +489,18 @@ public class AsmRelationshipProvider {
 		}
 
 		IRelationshipMap mapper = model.getRelationshipMap();
+		// if (isRemove) {
+		// IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, REMOVES_ANNOTATION, false,
+		// true);
+		// foreward.addTarget(targetHandle);
+		//
+		// IRelationship back = mapper
+		// .get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATION_REMOVED_BY, false, true);
+		// back.addTarget(sourceHandle);
+		// if (sourceNode.getSourceLocation() != null) {
+		// model.addAspectInEffectThisBuild(sourceNode.getSourceLocation().getSourceFile());
+		// }
+		// } else {
 		IRelationship foreward = mapper.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATES, false, true);
 		foreward.addTarget(targetHandle);
 
@@ -494,6 +509,7 @@ public class AsmRelationshipProvider {
 		if (sourceNode.getSourceLocation() != null) {
 			model.addAspectInEffectThisBuild(sourceNode.getSourceLocation().getSourceFile());
 		}
+		// }
 	}
 
 	/**
@@ -518,8 +534,8 @@ public class AsmRelationshipProvider {
 		ResolvedType aspect = munger.getDeclaringType();
 
 		// create the class file node
-		IProgramElement classFileNode = new ProgramElement(asm, sourceFileNode.getName(), IProgramElement.Kind.FILE, munger
-				.getBinarySourceLocation(aspect.getSourceLocation()), 0, null, null);
+		IProgramElement classFileNode = new ProgramElement(asm, sourceFileNode.getName(), IProgramElement.Kind.FILE,
+				munger.getBinarySourceLocation(aspect.getSourceLocation()), 0, null, null);
 
 		// create package ipe if one exists....
 		IProgramElement root = asm.getHierarchy().getRoot();
@@ -577,8 +593,8 @@ public class AsmRelationshipProvider {
 		// null));
 
 		// add and create aspect ipe
-		IProgramElement aspectNode = new ProgramElement(asm, aspect.getSimpleName(), IProgramElement.Kind.ASPECT, munger
-				.getBinarySourceLocation(aspect.getSourceLocation()), aspect.getModifiers(), null, null);
+		IProgramElement aspectNode = new ProgramElement(asm, aspect.getSimpleName(), IProgramElement.Kind.ASPECT,
+				munger.getBinarySourceLocation(aspect.getSourceLocation()), aspect.getModifiers(), null, null);
 		classFileNode.addChild(aspectNode);
 
 		String sourcefilename = getSourceFileName(aspect);
@@ -684,8 +700,8 @@ public class AsmRelationshipProvider {
 	}
 
 	private static IProgramElement createAdviceChild(AsmManager model, Advice advice) {
-		IProgramElement adviceNode = new ProgramElement(model, advice.getKind().getName(), IProgramElement.Kind.ADVICE, advice
-				.getBinarySourceLocation(advice.getSourceLocation()), advice.getSignature().getModifiers(), null,
+		IProgramElement adviceNode = new ProgramElement(model, advice.getKind().getName(), IProgramElement.Kind.ADVICE,
+				advice.getBinarySourceLocation(advice.getSourceLocation()), advice.getSignature().getModifiers(), null,
 				Collections.EMPTY_LIST);
 		adviceNode.setDetails(AsmRelationshipUtils.genPointcutDetails(advice.getPointcut()));
 		adviceNode.setBytecodeName(advice.getSignature().getName());
@@ -1061,7 +1077,7 @@ public class AsmRelationshipProvider {
 	 * number info for it, we have to dig through the structure model under the fields' type in order to locate it.
 	 */
 	public static void addDeclareAnnotationFieldRelationship(AsmManager model, ISourceLocation declareLocation,
-			String affectedTypeName, ResolvedMember affectedFieldName) {
+			String affectedTypeName, ResolvedMember affectedFieldName, boolean isRemove) {
 		if (model == null) {
 			return;
 		}
@@ -1079,8 +1095,8 @@ public class AsmRelationshipProvider {
 			return;
 		}
 
-		IProgramElement fieldElem = hierarchy.findElementForSignature(typeElem, IProgramElement.Kind.FIELD, affectedFieldName
-				.getName());
+		IProgramElement fieldElem = hierarchy.findElementForSignature(typeElem, IProgramElement.Kind.FIELD,
+				affectedFieldName.getName());
 		if (fieldElem == null) {
 			return;
 		}
@@ -1097,10 +1113,19 @@ public class AsmRelationshipProvider {
 		}
 
 		IRelationshipMap relmap = model.getRelationshipMap();
+		// if (isRemove) {
+		// IRelationship foreward = relmap.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, REMOVES_ANNOTATION, false,
+		// true);
+		// foreward.addTarget(targetHandle);
+		// IRelationship back = relmap
+		// .get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATION_REMOVED_BY, false, true);
+		// back.addTarget(sourceHandle);
+		// } else {
 		IRelationship foreward = relmap.get(sourceHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATES, false, true);
 		foreward.addTarget(targetHandle);
 		IRelationship back = relmap.get(targetHandle, IRelationship.Kind.DECLARE_INTER_TYPE, ANNOTATED_BY, false, true);
 		back.addTarget(sourceHandle);
+		// }
 	}
 
 }

@@ -1520,7 +1520,7 @@ public class BcelWeaver {
 
 			if (!problemReported) {
 				AsmRelationshipProvider.addDeclareAnnotationRelationship(world.getModelAsAsmManager(), decA.getSourceLocation(),
-						onType.getSourceLocation());
+						onType.getSourceLocation(), false);
 				// TAG: WeavingMessage
 				if (!getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
 					getWorld().getMessageHandler().handleMessage(

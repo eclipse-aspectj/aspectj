@@ -380,6 +380,39 @@ class BcelMethod extends ResolvedMemberImpl {
 		bitflags |= HAS_ANNOTATIONS;
 	}
 
+	public void removeAnnotation(ResolvedType annotationType) {
+		ensureAnnotationsRetrieved();
+		if ((bitflags & HAS_ANNOTATIONS) == 0) {
+			// nothing to do, why did we get called?
+		} else {
+			int len = annotations.length;
+			if (len == 1) {
+				bitflags &= ~HAS_ANNOTATIONS;
+				annotations = null;
+				annotationTypes = null;
+				return;
+			}
+			AnnotationAJ[] ret = new AnnotationAJ[len - 1];
+			int p = 0;
+			for (AnnotationAJ annotation : annotations) {
+				if (!annotation.getType().equals(annotationType)) {
+					ret[p++] = annotation;
+				}
+			}
+			annotations = ret;
+
+			ResolvedType[] newAnnotationTypes = new ResolvedType[len - 1];
+			p = 0;
+			for (AnnotationAJ annotation : annotations) {
+				if (!annotation.getType().equals(annotationType)) {
+					newAnnotationTypes[p++] = annotationType;
+				}
+			}
+			annotationTypes = newAnnotationTypes;
+		}
+		bitflags |= HAS_ANNOTATIONS;
+	}
+
 	public static final AnnotationAJ[] NO_PARAMETER_ANNOTATIONS = new AnnotationAJ[] {};
 
 	public void addParameterAnnotation(int param, AnnotationAJ anno) {

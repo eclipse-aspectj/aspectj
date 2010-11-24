@@ -23,16 +23,21 @@ import org.aspectj.apache.bcel.generic.FieldGen;
 import org.aspectj.util.GenericSignature;
 import org.aspectj.util.GenericSignatureParser;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.AnnotationAJ;
-import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSignatureFormatException;
 
+/**
+ * An AspectJ Field object that is backed by a Bcel Field object.
+ * 
+ * @author PARC
+ * @author Andy Clement
+ */
 final class BcelField extends ResolvedMemberImpl {
 
 	public static int AccSynthetic = 0x1000;
@@ -45,7 +50,7 @@ final class BcelField extends ResolvedMemberImpl {
 	private final BcelObjectType bcelObjectType;
 	private UnresolvedType genericFieldType = null;
 	private boolean unpackedGenericSignature = false;
-	private boolean annotationsAdded = false;
+	private boolean annotationsOnFieldObjectAreOutOfDate = false;
 
 	BcelField(BcelObjectType declaringType, Field field) {
 		super(FIELD, declaringType.getResolvedTypeX(), field.getModifiers(), field.getName(), field.getSignature());
@@ -69,8 +74,6 @@ final class BcelField extends ResolvedMemberImpl {
 		checkedExceptions = UnresolvedType.NONE;
 	}
 
-	// ----
-
 	private void unpackAttributes(World world) {
 		Attribute[] attrs = field.getAttributes();
 		if (attrs != null && attrs.length > 0) {
@@ -78,16 +81,17 @@ final class BcelField extends ResolvedMemberImpl {
 			List<AjAttribute> as = Utility.readAjAttributes(getDeclaringType().getClassName(), attrs, sourceContext, world,
 					(bcelObjectType != null ? bcelObjectType.getWeaverVersionAttribute() : WeaverVersionInfo.CURRENT),
 					new BcelConstantPoolReader(field.getConstantPool()));
-			as.addAll(AtAjAttributes.readAj5FieldAttributes(field, this, world.resolve(getDeclaringType()), sourceContext, world
-					.getMessageHandler()));
+			as.addAll(AtAjAttributes.readAj5FieldAttributes(field, this, world.resolve(getDeclaringType()), sourceContext,
+					world.getMessageHandler()));
 
-			for (AjAttribute a : as) {
-				if (a instanceof AjAttribute.AjSynthetic) {
-					isAjSynthetic = true;
-				} else {
-					throw new BCException("weird field attribute " + a);
-				}
-			}
+			// FIXME this code has no effect!!!??? it is set to false immediately after the block
+			// for (AjAttribute a : as) {
+			// if (a instanceof AjAttribute.AjSynthetic) {
+			// isAjSynthetic = true;
+			// } else {
+			// throw new BCException("weird field attribute " + a);
+			// }
+			// }
 		}
 		isAjSynthetic = false;
 
@@ -96,7 +100,6 @@ final class BcelField extends ResolvedMemberImpl {
 				isSynthetic = true;
 			}
 		}
-
 		// in 1.5, synthetic is a modifier, not an attribute
 		if ((field.getModifiers() & AccSynthetic) != 0) {
 			isSynthetic = true;
@@ -106,7 +109,7 @@ final class BcelField extends ResolvedMemberImpl {
 
 	@Override
 	public boolean isAjSynthetic() {
-		return isAjSynthetic; // || getName().startsWith(NameMangler.PREFIX);
+		return isAjSynthetic;
 	}
 
 	@Override
@@ -140,9 +143,9 @@ final class BcelField extends ResolvedMemberImpl {
 	@Override
 	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
 		ensureAnnotationTypesRetrieved();
-		for (int i = 0; i < annotations.length; i++) {
-			if (annotations[i].getTypeName().equals(ofType.getName())) {
-				return annotations[i];
+		for (AnnotationAJ annotation : annotations) {
+			if (annotation.getTypeName().equals(ofType.getName())) {
+				return annotation;
 			}
 		}
 		return null;
@@ -170,7 +173,6 @@ final class BcelField extends ResolvedMemberImpl {
 	@Override
 	public void addAnnotation(AnnotationAJ annotation) {
 		ensureAnnotationTypesRetrieved();
-
 		int len = annotations.length;
 		AnnotationAJ[] ret = new AnnotationAJ[len + 1];
 		System.arraycopy(annotations, 0, ret, 0, len);
@@ -182,7 +184,32 @@ final class BcelField extends ResolvedMemberImpl {
 		newAnnotationTypes[len] = annotation.getType();
 		annotationTypes = newAnnotationTypes;
 
-		annotationsAdded = true;
+		annotationsOnFieldObjectAreOutOfDate = true;
+	}
+
+	public void removeAnnotation(AnnotationAJ annotation) {
+		ensureAnnotationTypesRetrieved();
+
+		int len = annotations.length;
+		AnnotationAJ[] ret = new AnnotationAJ[len - 1];
+		int p = 0;
+		for (AnnotationAJ anno : annotations) {
+			if (!anno.getType().equals(annotation.getType())) {
+				ret[p++] = anno;
+			}
+		}
+		annotations = ret;
+
+		ResolvedType[] newAnnotationTypes = new ResolvedType[len - 1];
+		p = 0;
+		for (ResolvedType anno : annotationTypes) {
+			if (!anno.equals(annotation.getType())) {
+				newAnnotationTypes[p++] = anno;
+			}
+		}
+		annotationTypes = newAnnotationTypes;
+
+		annotationsOnFieldObjectAreOutOfDate = true;
 	}
 
 	/**
@@ -199,30 +226,34 @@ final class BcelField extends ResolvedMemberImpl {
 		return field;
 	}
 
-	// FIXME asc badly performing code ftw !
-	public Field getField(ConstantPool cpg) {
-		if (!annotationsAdded) {
+	public Field getField(ConstantPool cpool) {
+		if (!annotationsOnFieldObjectAreOutOfDate) {
 			return field;
 		}
-		FieldGen fg = new FieldGen(field, cpg);
-		List<AnnotationGen> alreadyHas = fg.getAnnotations();
-		if (annotations != null) {
-			for (int i = 0; i < annotations.length; i++) {
-				AnnotationAJ array_element = annotations[i];
-				boolean alreadyHasIt = false;
-				for (AnnotationGen gen : alreadyHas) {
-					if (gen.getTypeName().equals(array_element.getTypeName())) {
-						alreadyHasIt = true;
-						break;
-					}
-				}
-				if (!alreadyHasIt) {
-					fg.addAnnotation(new AnnotationGen(((BcelAnnotation) array_element).getBcelAnnotation(), cpg, true));
-				}
-			}
+		FieldGen newFieldGen = new FieldGen(field, cpool);
+		newFieldGen.removeAnnotations();
+		// List<AnnotationGen> alreadyHas = fg.getAnnotations();
+		// if (annotations != null) {
+		// fg.removeAnnotations();
+		for (AnnotationAJ annotation : annotations) {
+			newFieldGen.addAnnotation(new AnnotationGen(((BcelAnnotation) annotation).getBcelAnnotation(), cpool, true));
 		}
-		field = fg.getField();
-		annotationsAdded = false; // we are now correct again
+		// for (int i = 0; i < annotations.length; i++) {
+		// AnnotationAJ array_element = annotations[i];
+		// boolean alreadyHasIt = false;
+		// for (AnnotationGen gen : alreadyHas) {
+		// if (gen.getTypeName().equals(array_element.getTypeName())) {
+		// alreadyHasIt = true;
+		// break;
+		// }
+		// }
+		// if (!alreadyHasIt) {
+		// fg.addAnnotation(new AnnotationGen(((BcelAnnotation) array_element).getBcelAnnotation(), cpg, true));
+		// // }
+		// // }
+		// }
+		field = newFieldGen.getField();
+		annotationsOnFieldObjectAreOutOfDate = false; // we are now correct again
 		return field;
 	}
 

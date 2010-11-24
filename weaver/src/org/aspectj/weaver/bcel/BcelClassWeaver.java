@@ -19,6 +19,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -1121,28 +1122,41 @@ class BcelClassWeaver implements IClassWeaver {
 	 * will iterate over the fields repeatedly until everything has been applied.
 	 * 
 	 */
-	private boolean weaveAtFieldRepeatedly(List<DeclareAnnotation> decaFs, List itdFields, List<Integer> reportedErrors) {
+	private boolean weaveAtFieldRepeatedly(List<DeclareAnnotation> decaFs, List<ConcreteTypeMunger> itdFields,
+			List<Integer> reportedErrors) {
 		boolean isChanged = false;
-		for (Iterator iter = itdFields.iterator(); iter.hasNext();) {
+		for (Iterator<ConcreteTypeMunger> iter = itdFields.iterator(); iter.hasNext();) {
 			BcelTypeMunger fieldMunger = (BcelTypeMunger) iter.next();
 			ResolvedMember itdIsActually = fieldMunger.getSignature();
-			List<DeclareAnnotation> worthRetrying = new ArrayList<DeclareAnnotation>();
+			Set<DeclareAnnotation> worthRetrying = new LinkedHashSet<DeclareAnnotation>();
 			boolean modificationOccured = false;
 
 			for (Iterator<DeclareAnnotation> iter2 = decaFs.iterator(); iter2.hasNext();) {
 				DeclareAnnotation decaF = iter2.next();
-
 				if (decaF.matches(itdIsActually, world)) {
-					LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz, fieldMunger);
-					if (doesAlreadyHaveAnnotation(annotationHolder, itdIsActually, decaF, reportedErrors)) {
-						continue; // skip this one...
-					}
-					annotationHolder.addAnnotation(decaF.getAnnotation());
-					AsmRelationshipProvider.addDeclareAnnotationRelationship(world.getModelAsAsmManager(),
-							decaF.getSourceLocation(), itdIsActually.getSourceLocation());
-					isChanged = true;
-					modificationOccured = true;
+					if (decaF.isRemover()) {
+						LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz, fieldMunger);
+						if (annotationHolder.hasAnnotation(decaF.getAnnotationType())) {
+							isChanged = true;
+							// something to remove
+							annotationHolder.removeAnnotation(decaF.getAnnotationType());
+							AsmRelationshipProvider.addDeclareAnnotationRelationship(world.getModelAsAsmManager(),
+									decaF.getSourceLocation(), itdIsActually.getSourceLocation(), true);
+						} else {
+							worthRetrying.add(decaF);
+						}
+					} else {
 
+						LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz, fieldMunger);
+						if (doesAlreadyHaveAnnotation(annotationHolder, itdIsActually, decaF, reportedErrors)) {
+							continue; // skip this one...
+						}
+						annotationHolder.addAnnotation(decaF.getAnnotation());
+						AsmRelationshipProvider.addDeclareAnnotationRelationship(world.getModelAsAsmManager(),
+								decaF.getSourceLocation(), itdIsActually.getSourceLocation(), false);
+						isChanged = true;
+						modificationOccured = true;
+					}
 				} else {
 					if (!decaF.isStarredAnnotationPattern()) {
 						worthRetrying.add(decaF); // an annotation is specified
@@ -1158,16 +1172,28 @@ class BcelClassWeaver implements IClassWeaver {
 				for (Iterator<DeclareAnnotation> iter2 = worthRetrying.iterator(); iter2.hasNext();) {
 					DeclareAnnotation decaF = iter2.next();
 					if (decaF.matches(itdIsActually, world)) {
-						LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz, fieldMunger);
-						if (doesAlreadyHaveAnnotation(annotationHolder, itdIsActually, decaF, reportedErrors)) {
-							continue; // skip this one...
+						if (decaF.isRemover()) {
+							LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz, fieldMunger);
+							if (annotationHolder.hasAnnotation(decaF.getAnnotationType())) {
+								isChanged = true;
+								// something to remove
+								annotationHolder.removeAnnotation(decaF.getAnnotationType());
+								AsmRelationshipProvider.addDeclareAnnotationRelationship(world.getModelAsAsmManager(),
+										decaF.getSourceLocation(), itdIsActually.getSourceLocation(), true);
+								forRemoval.add(decaF);
+							}
+						} else {
+							LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz, fieldMunger);
+							if (doesAlreadyHaveAnnotation(annotationHolder, itdIsActually, decaF, reportedErrors)) {
+								continue; // skip this one...
+							}
+							annotationHolder.addAnnotation(decaF.getAnnotation());
+							AsmRelationshipProvider.addDeclareAnnotationRelationship(world.getModelAsAsmManager(),
+									decaF.getSourceLocation(), itdIsActually.getSourceLocation(), false);
+							isChanged = true;
+							modificationOccured = true;
+							forRemoval.add(decaF);
 						}
-						annotationHolder.addAnnotation(decaF.getAnnotation());
-						AsmRelationshipProvider.addDeclareAnnotationRelationship(world.getModelAsAsmManager(),
-								decaF.getSourceLocation(), itdIsActually.getSourceLocation());
-						isChanged = true;
-						modificationOccured = true;
-						forRemoval.add(decaF);
 					}
 				}
 				worthRetrying.removeAll(forRemoval);
@@ -1202,7 +1228,7 @@ class BcelClassWeaver implements IClassWeaver {
 					annotationHolder.addAnnotation(decaMC.getAnnotation());
 					isChanged = true;
 					AsmRelationshipProvider.addDeclareAnnotationRelationship(asmManager, decaMC.getSourceLocation(),
-							unMangledInterMethod.getSourceLocation());
+							unMangledInterMethod.getSourceLocation(), false);
 					reportMethodCtorWeavingMessage(clazz, unMangledInterMethod, decaMC, -1);
 					modificationOccured = true;
 				} else {
@@ -1226,7 +1252,7 @@ class BcelClassWeaver implements IClassWeaver {
 						annotationHolder.addAnnotation(decaMC.getAnnotation());
 						unMangledInterMethod.addAnnotation(decaMC.getAnnotation());
 						AsmRelationshipProvider.addDeclareAnnotationRelationship(asmManager, decaMC.getSourceLocation(),
-								unMangledInterMethod.getSourceLocation());
+								unMangledInterMethod.getSourceLocation(), false);
 						isChanged = true;
 						modificationOccured = true;
 						forRemoval.add(decaMC);
@@ -1239,19 +1265,21 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 
 	private boolean dontAddTwice(DeclareAnnotation decaF, AnnotationAJ[] dontAddMeTwice) {
-		for (int i = 0; i < dontAddMeTwice.length; i++) {
-			AnnotationAJ ann = dontAddMeTwice[i];
+		for (AnnotationAJ ann : dontAddMeTwice) {
 			if (ann != null && decaF.getAnnotation().getTypeName().equals(ann.getTypeName())) {
-				// dontAddMeTwice[i] = null; // incase it really has been added
-				// twice!
 				return true;
 			}
 		}
 		return false;
 	}
 
+	// BUGWARNING not getting enough warnings out on declare @field ? There is a potential problem here with warnings not
+	// coming out - this will occur if they are created on the second iteration round this loop.
+	// We currently deactivate error reporting for the second time round. A possible solution is to record what annotations
+	// were added by what decafs and check that to see if an error needs to be reported - this would be expensive so lets
+	// skip it for now
 	/**
-	 * Weave any declare @field statements into the fields of the supplied class
+	 * Weave any declare @field statements into the fields of the supplied class. This will attempt to apply them to the ITDs too.
 	 * 
 	 * Interesting case relating to public ITDd fields. The annotations are really stored against the interfieldinit method in the
 	 * aspect, but the public field is placed in the target type and then is processed in the 2nd pass over fields that occurs. I
@@ -1259,139 +1287,105 @@ class BcelClassWeaver implements IClassWeaver {
 	 * as well as on the interfieldinit method.
 	 */
 	private boolean weaveDeclareAtField(LazyClassGen clazz) {
-
-		// BUGWARNING not getting enough warnings out on declare @field ?
-		// There is a potential problem here with warnings not coming out - this
-		// will occur if they are created on the second iteration round this
-		// loop.
-		// We currently deactivate error reporting for the second time round.
-		// A possible solution is to record what annotations were added by what
-		// decafs and check that to see if an error needs to be reported - this
-		// would be expensive so lets skip it for now
-
 		List<Integer> reportedProblems = new ArrayList<Integer>();
-
 		List<DeclareAnnotation> allDecafs = world.getDeclareAnnotationOnFields();
 		if (allDecafs.isEmpty()) {
 			return false;
 		}
-
-		boolean isChanged = false;
-		List<ConcreteTypeMunger> itdFields = getITDSubset(clazz, ResolvedTypeMunger.Field);
-		if (itdFields != null) {
-			isChanged = weaveAtFieldRepeatedly(allDecafs, itdFields, reportedProblems);
+		boolean typeIsChanged = false;
+		List<ConcreteTypeMunger> relevantItdFields = getITDSubset(clazz, ResolvedTypeMunger.Field);
+		if (relevantItdFields != null) {
+			typeIsChanged = weaveAtFieldRepeatedly(allDecafs, relevantItdFields, reportedProblems);
 		}
 
-		List<DeclareAnnotation> decaFs = getMatchingSubset(allDecafs, clazz.getType());
-		if (decaFs.isEmpty()) {
-			return false; // nothing more to do
+		List<DeclareAnnotation> decafs = getMatchingSubset(allDecafs, clazz.getType());
+		if (decafs.isEmpty()) {
+			return typeIsChanged;
 		}
+
 		List<BcelField> fields = clazz.getFieldGens();
 		if (fields != null) {
 			Set<DeclareAnnotation> unusedDecafs = new HashSet<DeclareAnnotation>();
-			unusedDecafs.addAll(decaFs);
-			for (int fieldCounter = 0; fieldCounter < fields.size(); fieldCounter++) {
-				BcelField aBcelField = fields.get(fieldCounter);// new
-				// BcelField(clazz.getBcelObjectType(),fields[fieldCounter
-				// ]);
-				if (!aBcelField.getName().startsWith(NameMangler.PREFIX)) {
+			unusedDecafs.addAll(decafs);
+			for (BcelField field : fields) {
+				if (!field.getName().startsWith(NameMangler.PREFIX)) {
 					// Single first pass
-					List<DeclareAnnotation> worthRetrying = new ArrayList<DeclareAnnotation>();
+					Set<DeclareAnnotation> worthRetrying = new LinkedHashSet<DeclareAnnotation>();
 					boolean modificationOccured = false;
-
-					AnnotationAJ[] dontAddMeTwice = aBcelField.getAnnotations();
+					AnnotationAJ[] dontAddMeTwice = field.getAnnotations();
 
 					// go through all the declare @field statements
-					for (DeclareAnnotation decaF : decaFs) {
-						if (decaF.getAnnotation() == null) {
+					for (DeclareAnnotation decaf : decafs) {
+						if (decaf.getAnnotation() == null) {
 							return false;
 						}
-						if (decaF.matches(aBcelField, world)) {
-
-							if (!dontAddTwice(decaF, dontAddMeTwice)) {
-								if (doesAlreadyHaveAnnotation(aBcelField, decaF, reportedProblems)) {
-									// remove the declare @field since don't
-									// want an error when
-									// the annotation is already there
-									unusedDecafs.remove(decaF);
-									continue;
-								}
-
-								if (decaF.getAnnotation().isRuntimeVisible()) { // isAnnotationWithRuntimeRetention
-									// (
-									// clazz
-									// .
-									// getJavaClass(world))){
-									// if(decaF.getAnnotationTypeX().
-									// isAnnotationWithRuntimeRetention(world)){
-									// it should be runtime visible, so put it
-									// on the Field
-									// Annotation a =
-									// decaF.getAnnotationX().getBcelAnnotation
-									// ();
-									// AnnotationGen ag = new
-									// AnnotationGen(a,clazz
-									// .getConstantPoolGen(),true);
-									// FieldGen myGen = new
-									// FieldGen(fields[fieldCounter
-									// ],clazz.getConstantPoolGen());
-									// myGen.addAnnotation(ag);
-									// Field newField = myGen.getField();
-
-									aBcelField.addAnnotation(decaF.getAnnotation());
-									// clazz.replaceField(fields[fieldCounter],
-									// newField);
-									// fields[fieldCounter]=newField;
-
+						if (decaf.matches(field, world)) {
+							if (decaf.isRemover()) {
+								AnnotationAJ annotation = decaf.getAnnotation();
+								if (field.hasAnnotation(annotation.getType())) {
+									// something to remove
+									typeIsChanged = true;
+									field.removeAnnotation(annotation);
+									AsmRelationshipProvider.addDeclareAnnotationFieldRelationship(world.getModelAsAsmManager(),
+											decaf.getSourceLocation(), clazz.getName(), field, true);
+									reportFieldAnnotationWeavingMessage(clazz, field, decaf, true);
 								} else {
-									aBcelField.addAnnotation(decaF.getAnnotation());
+									worthRetrying.add(decaf);
 								}
+								unusedDecafs.remove(decaf);
+							} else {
+								if (!dontAddTwice(decaf, dontAddMeTwice)) {
+									if (doesAlreadyHaveAnnotation(field, decaf, reportedProblems)) {
+										// remove the declare @field since don't want an error when the annotation is already there
+										unusedDecafs.remove(decaf);
+										continue;
+									}
+									field.addAnnotation(decaf.getAnnotation());
+								}
+								AsmRelationshipProvider.addDeclareAnnotationFieldRelationship(world.getModelAsAsmManager(),
+										decaf.getSourceLocation(), clazz.getName(), field, false);
+								reportFieldAnnotationWeavingMessage(clazz, field, decaf, false);
+								typeIsChanged = true;
+								modificationOccured = true;
+								unusedDecafs.remove(decaf);
 							}
-
-							AsmRelationshipProvider.addDeclareAnnotationFieldRelationship(world.getModelAsAsmManager(),
-									decaF.getSourceLocation(), clazz.getName(), aBcelField);
-							reportFieldAnnotationWeavingMessage(clazz, fields, fieldCounter, decaF);
-							isChanged = true;
-							modificationOccured = true;
-							// remove the declare @field since have matched
-							// against it
-							unusedDecafs.remove(decaF);
-						} else {
-							if (!decaF.isStarredAnnotationPattern()) {
-								worthRetrying.add(decaF); // an annotation is
-								// specified that
-								// might be put on
-								// by a subsequent
-								// decaf
-							}
+						} else if (!decaf.isStarredAnnotationPattern() || decaf.isRemover()) {
+							worthRetrying.add(decaf); // an annotation is specified that might be put on by a subsequent decaf
 						}
 					}
 
 					// Multiple secondary passes
 					while (!worthRetrying.isEmpty() && modificationOccured) {
 						modificationOccured = false;
-						// lets have another go
+						// lets have another go with any remaining ones
 						List<DeclareAnnotation> forRemoval = new ArrayList<DeclareAnnotation>();
 						for (Iterator<DeclareAnnotation> iter = worthRetrying.iterator(); iter.hasNext();) {
 							DeclareAnnotation decaF = iter.next();
-							if (decaF.matches(aBcelField, world)) {
-								// below code is for recursive things
-								if (doesAlreadyHaveAnnotation(aBcelField, decaF, reportedProblems)) {
-									// remove the declare @field since don't
-									// want an error when
-									// the annotation is already there
+
+							if (decaF.matches(field, world)) {
+								if (decaF.isRemover()) {
+									AnnotationAJ annotation = decaF.getAnnotation();
+									if (field.hasAnnotation(annotation.getType())) {
+										// something to remove
+										typeIsChanged = modificationOccured = true;
+										forRemoval.add(decaF);
+										field.removeAnnotation(annotation);
+										AsmRelationshipProvider.addDeclareAnnotationFieldRelationship(world.getModelAsAsmManager(),
+												decaF.getSourceLocation(), clazz.getName(), field, true);
+										reportFieldAnnotationWeavingMessage(clazz, field, decaF, true);
+									}
+								} else {
+									// below code is for recursive things
 									unusedDecafs.remove(decaF);
-									continue; // skip this one...
+									if (doesAlreadyHaveAnnotation(field, decaF, reportedProblems)) {
+										continue;
+									}
+									field.addAnnotation(decaF.getAnnotation());
+									AsmRelationshipProvider.addDeclareAnnotationFieldRelationship(world.getModelAsAsmManager(),
+											decaF.getSourceLocation(), clazz.getName(), field, false);
+									typeIsChanged = modificationOccured = true;
+									forRemoval.add(decaF);
 								}
-								aBcelField.addAnnotation(decaF.getAnnotation());
-								AsmRelationshipProvider.addDeclareAnnotationFieldRelationship(world.getModelAsAsmManager(),
-										decaF.getSourceLocation(), clazz.getName(), aBcelField);
-								isChanged = true;
-								modificationOccured = true;
-								forRemoval.add(decaF);
-								// remove the declare @field since have matched
-								// against it
-								unusedDecafs.remove(decaF);
 							}
 						}
 						worthRetrying.removeAll(forRemoval);
@@ -1400,7 +1394,7 @@ class BcelClassWeaver implements IClassWeaver {
 			}
 			checkUnusedDeclareAts(unusedDecafs, true);
 		}
-		return isChanged;
+		return typeIsChanged;
 	}
 
 	// bug 99191 - put out an error message if the type doesn't exist
@@ -1413,13 +1407,10 @@ class BcelClassWeaver implements IClassWeaver {
 		for (DeclareAnnotation declA : unusedDecaTs) {
 
 			// Error if an exact type pattern was specified
-			boolean shouldCheck = declA.isExactPattern() || declA.getSignaturePattern().getExactDeclaringTypes().size() != 0;// !=
-																																// null;//
-																																// instanceof
-			// ExactTypePattern;
+			boolean shouldCheck = declA.isExactPattern() || declA.getSignaturePattern().getExactDeclaringTypes().size() != 0;
 
 			if (shouldCheck && declA.getKind() != DeclareAnnotation.AT_CONSTRUCTOR) {
-				if (declA.getSignaturePattern().isMatchOnAnyName()/* getName().isAny() */) {
+				if (declA.getSignaturePattern().isMatchOnAnyName()) {
 					shouldCheck = false;
 				} else {
 					List<ExactTypePattern> declaringTypePatterns = declA.getSignaturePattern().getExactDeclaringTypes();
@@ -1468,15 +1459,15 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 
 	// TAG: WeavingMessage
-	private void reportFieldAnnotationWeavingMessage(LazyClassGen clazz, List fields, int fieldCounter, DeclareAnnotation decaF) {
+	private void reportFieldAnnotationWeavingMessage(LazyClassGen clazz, BcelField theField, DeclareAnnotation decaf,
+			boolean isRemove) {
 		if (!getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
-			BcelField theField = (BcelField) fields.get(fieldCounter);
 			world.getMessageHandler().handleMessage(
 					WeaveMessage.constructWeavingMessage(
-							WeaveMessage.WEAVEMESSAGE_ANNOTATES,
+							isRemove ? WeaveMessage.WEAVEMESSAGE_REMOVES_ANNOTATION : WeaveMessage.WEAVEMESSAGE_ANNOTATES,
 							new String[] { theField.getFieldAsIs().toString() + "' of type '" + clazz.getName(),
-									clazz.getFileName(), decaF.getAnnotationString(), "field", decaF.getAspect().toString(),
-									Utility.beautifyLocation(decaF.getSourceLocation()) }));
+									clazz.getFileName(), decaf.getAnnotationString(), "field", decaf.getAspect().toString(),
+									Utility.beautifyLocation(decaf.getSourceLocation()) }));
 		}
 	}
 
