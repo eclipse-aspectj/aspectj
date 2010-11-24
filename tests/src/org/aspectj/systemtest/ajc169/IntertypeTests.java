@@ -43,6 +43,23 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class IntertypeTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	/**
+	 * This is testing that on a secondary compile we can work out what happened in the first compile (where an inner type was
+	 * intertyped onto another type). I think we need two conditions to be true for this to pass: <br>
+	 * 1) we need an innerclass attribute on the target type <br>
+	 * 2) we need the name of the innerclass to match its target rather than the declaring aspect<br>
+	 * Line 277 in ClassScope:<br>
+	 * 
+	 * memberTypeBindings[count++] = memberScope.buildType(sourceType, sourceType.fPackage, accessRestriction);<br>
+	 * which then: builds the name based on the containing aspect.
+	 * 
+	 * TypeDeclaration.generateCode()
+	 * 
+	 */
+	public void testSeparateCompilation() throws Exception {
+		runTest("separate compilation");
+	}
+
 	public void testErrorTargettingTypeThatAlreadyHasIt() {
 		runTest("already has it");
 	}

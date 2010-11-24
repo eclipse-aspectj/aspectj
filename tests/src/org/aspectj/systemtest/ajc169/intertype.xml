@@ -2,9 +2,20 @@
 
 <suite>
    
+    <ajc-test dir="features169/itdInnerTypes/separate" title="separate compilation">
+     <compile files="Basic.java" options="-1.5"/>
+     <compile files="Basic2.java"/>
+     <run class="Basic2">
+       <stdout>
+       <line text="done"/>
+       </stdout>
+     </run>
+   </ajc-test>
+
    <ajc-test dir="features169/itdInnerTypes/eleven" title="already has it">
      <compile files="Target.java Aspect1.java" options="-1.5">
-     <message kind="error" text="target type already declares a member type with the name 'Inner'"/>
+     <message kind="error" text="Duplicate nested type Inner"/>
+     <message kind="error" text="target type already declares a "/>
      </compile>
    </ajc-test>
    
@@ -49,7 +60,7 @@
      <run class="a.b.c.Runner">
        <stdout>
        <line text="wibble"/>
-       <line text="@a.b.c.RelatedType(value=class a.b.c.Underscorer$_$choice)"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_$choice)"/>
        </stdout>
      </run>
    </ajc-test>
@@ -59,7 +70,7 @@
      <run class="a.b.c.Runner">
        <stdout>
        <line text="wibble"/>
-       <line text="@a.b.c.RelatedType(value=class a.b.c.Underscorer$_$choice)"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_$choice)"/>
        </stdout>
      </run>
    </ajc-test>
@@ -69,7 +80,7 @@
      <run class="a.b.c.Runner">
        <stdout>
        <line text="wibble"/>
-       <line text="@a.b.c.RelatedType(value=class a.b.c.Underscorer$_$choice)"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_$choice)"/>
        </stdout>
      </run>
    </ajc-test>
@@ -79,7 +90,7 @@
      <run class="a.b.c.Runner">
        <stdout>
        <line text="wibble"/>
-       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote_Amender$_$choice)"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_$choice)"/>
        </stdout>
      </run>
    </ajc-test>
@@ -89,7 +100,7 @@
      <run class="a.b.c.Runner">
        <stdout>
        <line text="wibble"/>
-       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote_Amender$_$choice)"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_$choice)"/>
        </stdout>
      </run>
    </ajc-test>
@@ -99,7 +110,7 @@
      <run class="a.b.c.Runner">
        <stdout>
        <line text="wibble"/>
-       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote_Amender$_$choice)"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_$choice)"/>
        </stdout>
      </run>
    </ajc-test>
@@ -109,7 +120,7 @@
      <run class="a.b.c.Runner">
        <stdout>
        <line text="wibble"/>
-       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote_Amender$_)"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_)"/>
        </stdout>
      </run>
    </ajc-test>
