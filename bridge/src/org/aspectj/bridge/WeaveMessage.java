@@ -36,6 +36,9 @@ public class WeaveMessage extends Message {
 
 	public static WeaveMessageKind WEAVEMESSAGE_MIXIN = new WeaveMessageKind(7, "Mixing interface '%1' (%2) into type '%3' (%4)");
 
+	public static WeaveMessageKind WEAVEMESSAGE_REMOVES_ANNOTATION = new WeaveMessageKind(6,
+			"'%1' (%2) has had %3 %4 annotation removed by '%5' (%6)");
+
 	private String affectedtypename;
 	private String aspectname;
 
