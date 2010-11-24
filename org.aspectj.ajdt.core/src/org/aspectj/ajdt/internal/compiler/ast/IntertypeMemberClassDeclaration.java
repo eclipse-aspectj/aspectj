@@ -11,6 +11,7 @@
  * ******************************************************************/
 package org.aspectj.ajdt.internal.compiler.ast;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 
@@ -18,14 +19,18 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseSourceLocation;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeScope;
+import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.NestedTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.NewMemberClassTypeMunger;
 import org.aspectj.weaver.ResolvedType;
@@ -62,7 +67,28 @@ public class IntertypeMemberClassDeclaration extends TypeDeclaration {
 		ensureScopeSetup();
 		super.resolve(aspectScope);
 	}
-
+	/**
+	 * Bytecode generation for a member inner type
+	 */
+	/*
+	public void generateCode(ClassScope classScope, ClassFile enclosingClassFile) {
+		if ((this.bits & ASTNode.HasBeenGenerated) != 0) {
+			return;
+		}
+		try {
+			Field f = ReferenceBinding.class.getDeclaredField("constantPoolName");
+			char[] name = CharOperation.concat(onTypeResolvedBinding.constantPoolName(), binding.sourceName, '$');
+			f.setAccessible(true);
+			f.set(this.binding, name);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (this.binding != null) {
+			((NestedTypeBinding) this.binding).computeSyntheticArgumentSlotSizes();
+		}
+		generateCode(enclosingClassFile);
+	}
+*/
 	@Override
 	public void resolve() {
 		super.resolve();
@@ -207,6 +233,11 @@ public class IntertypeMemberClassDeclaration extends TypeDeclaration {
 		if (!onTypeResolvedBinding.isValidBinding()) {
 			cuScope.problemReporter().invalidType(onType, onTypeResolvedBinding);
 			ignoreFurtherInvestigation = true;
+		} else {
+			// fix up the ITD'd type?
+			((NestedTypeBinding) this.binding).enclosingType = (SourceTypeBinding) onTypeResolvedBinding;
+			// this done at build type for the nested type now:
+			// ((NestedTypeBinding) this.binding).compoundName = CharOperation.splitOn('.', "Basic$_".toCharArray());
 		}
 	}
 
@@ -249,5 +280,9 @@ public class IntertypeMemberClassDeclaration extends TypeDeclaration {
 		newMemberClassTypeMunger.setSourceLocation(new EclipseSourceLocation(compilationResult, sourceStart, sourceEnd));
 		ResolvedType aspectType = world.fromEclipse(classScope.referenceContext.binding);
 		return new EclipseTypeMunger(world, newMemberClassTypeMunger, aspectType, null);
+	}
+
+	public char[] alternativeName() {
+		return onType.getLastToken();
 	}
 }
