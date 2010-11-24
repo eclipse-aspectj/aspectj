@@ -41,6 +41,7 @@ public class DeclareAnnotation extends Declare {
 	public static final Kind AT_FIELD = new Kind(2, "field");
 	public static final Kind AT_METHOD = new Kind(3, "method");
 	public static final Kind AT_CONSTRUCTOR = new Kind(4, "constructor");
+	public static final Kind AT_REMOVE_FROM_FIELD = new Kind(5, "removeFromField");
 
 	private Kind kind;
 	// for declare @type
@@ -227,7 +228,11 @@ public class DeclareAnnotation extends Declare {
 	@Override
 	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(Declare.ANNOTATION);
-		s.writeInt(kind.id);
+		if (kind.id == AT_FIELD.id && isRemover) {
+			s.writeInt(AT_REMOVE_FROM_FIELD.id);
+		} else {
+			s.writeInt(kind.id);
+		}
 		int max = 0;
 		s.writeByte(max = annotationStrings.size());
 		for (int i = 0; i < max; i++) {
@@ -248,7 +253,12 @@ public class DeclareAnnotation extends Declare {
 
 	public static Declare read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		DeclareAnnotation ret = null;
+		boolean isRemover = false;
 		int kind = s.readInt();
+		if (kind == AT_REMOVE_FROM_FIELD.id) {
+			kind = AT_FIELD.id;
+			isRemover = true;
+		}
 		// old format was just a single string and method
 		if (s.getMajorVersion() >= WeaverVersionInfo.WEAVER_VERSION_AJ169) {
 			// int numAnnotationStrings =
@@ -273,6 +283,9 @@ public class DeclareAnnotation extends Declare {
 			} else {
 				sp = SignaturePattern.read(s, context);
 				ret = new DeclareAnnotation(AT_FIELD, sp);
+			}
+			if (isRemover) {
+				ret.setRemover(true);
 			}
 			break;
 		case 3:
@@ -510,5 +523,15 @@ public class DeclareAnnotation extends Declare {
 		public String toString() {
 			return "at_" + s;
 		}
+	}
+
+	boolean isRemover = false;
+
+	public void setRemover(boolean b) {
+		isRemover = b;
+	}
+
+	public boolean isRemover() {
+		return isRemover;
 	}
 }

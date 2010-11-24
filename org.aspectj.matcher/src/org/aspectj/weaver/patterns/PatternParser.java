@@ -198,7 +198,8 @@ public class PatternParser {
 
 	public DeclareAnnotation parseDeclareAtField() {
 		ISignaturePattern compoundFieldSignaturePattern = parseCompoundFieldSignaturePattern();
-		return new DeclareAnnotation(DeclareAnnotation.AT_FIELD, compoundFieldSignaturePattern);
+		DeclareAnnotation da = new DeclareAnnotation(DeclareAnnotation.AT_FIELD, compoundFieldSignaturePattern);
+		return da;
 	}
 
 	public ISignaturePattern parseCompoundFieldSignaturePattern() {
