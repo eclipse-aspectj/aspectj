@@ -144,8 +144,11 @@ public class DeclarationFactory implements IDeclarationFactory {
 	}
 
 	public MethodDeclaration createDeclareAnnotationDeclaration(CompilationResult result, ASTNode pseudoTokens,
-			Annotation annotation, Parser parser) {
+			Annotation annotation, Parser parser, char kind) {
 		DeclareAnnotation declare = (DeclareAnnotation) ((PseudoTokens) pseudoTokens).parseAnnotationDeclare(parser);
+		if (kind == '-') {
+			declare.setRemover(true);
+		}
 		DeclareAnnotationDeclaration decl = new DeclareAnnotationDeclaration(result, declare, annotation);
 		return decl;
 	}
@@ -178,7 +181,6 @@ public class DeclarationFactory implements IDeclarationFactory {
 		((InterTypeDeclaration) interTypeDecl).setOnType(onType);
 	}
 
-
 	public ASTNode createPseudoToken(Parser parser, String value, boolean isIdentifier) {
 		return new PseudoToken(parser, value, isIdentifier);
 	}
@@ -198,7 +200,7 @@ public class DeclarationFactory implements IDeclarationFactory {
 	public TypeDeclaration createIntertypeMemberClassDeclaration(CompilationResult compilationResult) {
 		return new IntertypeMemberClassDeclaration(compilationResult);
 	}
-	
+
 	public void setOnType(TypeDeclaration interTypeDecl, TypeReference onType) {
 		((IntertypeMemberClassDeclaration) interTypeDecl).setOnType(onType);
 	}
