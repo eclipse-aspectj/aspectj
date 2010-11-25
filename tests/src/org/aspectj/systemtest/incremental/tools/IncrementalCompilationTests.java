@@ -82,6 +82,27 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		assertContains("B.java:4:0::0 Unhandled exception type IOException", getErrorMessages(p).get(0));
 	}
 
+	public void testDeclareFieldMinus() throws Exception {
+		String p = "annoRemoval";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		AspectJElementHierarchy model = (AspectJElementHierarchy) getModelFor(p).getHierarchy();
+		IProgramElement ipe = null;
+		ipe = model.findElementForHandleOrCreate("=annoRemoval<a{Code.java'Remover`declare \\@field", false);
+		System.out.println(ipe);
+		assertTrue(ipe.isAnnotationRemover());
+		String[] annos = ipe.getRemovedAnnotationTypes();
+		assertEquals(1, annos.length);
+		assertEquals("a.Anno", annos[0]);
+		assertNull(ipe.getAnnotationType());
+		ipe = model.findElementForHandleOrCreate("=annoRemoval<a{Code.java'Remover`declare \\@field!2", false);
+		System.out.println(ipe);
+		assertFalse(ipe.isAnnotationRemover());
+		assertEquals("a.Anno", ipe.getAnnotationType());
+		assertNull(ipe.getRemovedAnnotationTypes());
+	}
+
 	/**
 	 * Build a pair of files, then change the throws clause in the first one (change the type of the thrown exception). The second
 	 * file should now have a 'unhandled exception' error on it.
