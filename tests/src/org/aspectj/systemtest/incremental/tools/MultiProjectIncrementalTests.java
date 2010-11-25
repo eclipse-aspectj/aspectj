@@ -103,15 +103,15 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkWasntFullBuild();
 	}
 
-	// public void testIncrementalITDInners() throws Exception {
-	// String p = "prInner";
-	// initialiseProject(p);
-	// build(p);
-	// checkWasFullBuild();
-	// alter(p, "inc1");
-	// build(p);
-	// checkWasntFullBuild();
-	// }
+	public void testIncrementalITDInners() throws Exception {
+		String p = "prInner";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+	}
 
 	/*
 	 * public void testIncrementalAspectWhitespace() throws Exception { AjdeInteractionTestbed.VERBOSE = true; String p = "xxx";
@@ -3668,7 +3668,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			pw.flush();
 		} catch (Exception e) {
 		}
-		List l = getModelFor(p).getRelationshipMap().get("=inpathHandles/,<codep(Code.class[Code");
+		List l = getModelFor(p).getRelationshipMap().get("=inpathHandles/;<codep(Code.class[Code");
 		assertNotNull(l);
 	}
 
@@ -3689,7 +3689,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 		// This build will weave a declare parents into the inpath class codep.Code
 		build(p);
-		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles/,<codep(Code.class[Code"));
+		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles/;<codep(Code.class[Code"));
 
 		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
 
@@ -3697,7 +3697,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// damage phantom handle based relationships
 		alter(p, "inc1");
 		build(p);
-		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles/,<codep(Code.class[Code"));
+		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles/;<codep(Code.class[Code"));
 		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles<p{B.java[B"));
 
 		// This alteration removes B.java, the build should not damage phantom handle based relationships
@@ -3705,7 +3705,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 				+ File.separatorChar + "p" + File.separatorChar + "B.java";
 		(new File(fileB)).delete();
 		build(p);
-		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles/,<codep(Code.class[Code"));
+		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles/;<codep(Code.class[Code"));
 		assertNull(getModelFor(p).getRelationshipMap().get("=inpathHandles<p{B.java[B"));
 	}
 
@@ -3741,7 +3741,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			pw.flush();
 		} catch (Exception e) {
 		}
-		List<IRelationship> l = getModelFor(p).getRelationshipMap().get("=inpathHandles/,wibble<codep(Code.class[Code");
+		List<IRelationship> l = getModelFor(p).getRelationshipMap().get("=inpathHandles/;wibble<codep(Code.class[Code");
 		assertNotNull(l);
 	}
 
@@ -3770,7 +3770,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 		// This build will weave a declare parents into the inpath class codep.A and codep.B
 		build(p);
-		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles2/,<codep(A.class[A"));
+		assertNotNull(getModelFor(p).getRelationshipMap().get("=inpathHandles2/;<codep(A.class[A"));
 
 		// Not let us delete one of the inpath .class files
 		assertTrue(new File(inpathDir, "codep" + File.separator + "A.class").delete());

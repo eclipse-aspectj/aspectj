@@ -23,10 +23,10 @@
       NewClass  [class] TEST_SANDBOX\NewClass.java:3:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
-(targets=1) <bar*MyBar.aj'MyBar`declare parents (declared on) /,<foo(MyFoo.class[MyFoo
 (targets=1) <bar*MyBar.aj'MyBar`declare \@type (annotates) {MyFoo.java
 (targets=1) {MyFoo.java (annotated by) <bar*MyBar.aj'MyBar`declare \@type
-(targets=1) /,<foo(MyFoo.class[MyFoo (aspect declarations) <bar*MyBar.aj'MyBar`declare parents
+(targets=1) <bar*MyBar.aj'MyBar`declare parents (declared on) /;<foo(MyFoo.class[MyFoo
+(targets=1) /;<foo(MyFoo.class[MyFoo (aspect declarations) <bar*MyBar.aj'MyBar`declare parents
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 import reference=4
