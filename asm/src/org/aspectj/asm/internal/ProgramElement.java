@@ -344,11 +344,39 @@ public class ProgramElement implements IProgramElement {
 		kvpairs.put("annotationType", fullyQualifiedAnnotationType);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	public void setAnnotationRemover(boolean isRemover) {
+		fixMap();
+		kvpairs.put("annotationRemover", isRemover);
+	}
+
 	public String getAnnotationType() {
+		if (isAnnotationRemover()) {
+			return null;
+		}
 		return (String) (kvpairs == null ? null : kvpairs.get("annotationType"));
+	}
+
+	public boolean isAnnotationRemover() {
+		if (kvpairs == null) {
+			return false;
+		}
+		Boolean b = (Boolean) kvpairs.get("annotationRemover");
+		if (b == null) {
+			return false;
+		}
+		return b.booleanValue();
+	}
+
+	public String[] getRemovedAnnotationTypes() {
+		if (!isAnnotationRemover()) {
+			return null;
+		}
+		String annotype = (String) (kvpairs == null ? null : kvpairs.get("annotationType"));
+		if (annotype == null) {
+			return null;
+		} else {
+			return new String[] { annotype };
+		}
 	}
 
 	public String getCorrespondingType() {

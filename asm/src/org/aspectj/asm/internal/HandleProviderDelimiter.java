@@ -29,11 +29,10 @@ public class HandleProviderDelimiter {
 	public static final HandleProviderDelimiter IMPORTDECLARATION = new HandleProviderDelimiter('#');
 	public static final HandleProviderDelimiter COUNT = new HandleProviderDelimiter('!');
 	public static final HandleProviderDelimiter ESCAPE = new HandleProviderDelimiter('\\');
+	public static final HandleProviderDelimiter PACKAGEDECLARATION = new HandleProviderDelimiter('%');
+	public static final HandleProviderDelimiter PACKAGEFRAGMENTROOT = new HandleProviderDelimiter('/');
 	// these below are not currently used because no iprogramelement.kind
 	// equivalent
-	public static final HandleProviderDelimiter PACKAGEFRAGMENTROOT = new HandleProviderDelimiter('/');
-	public static final HandleProviderDelimiter PACKAGEDECLARATION = new HandleProviderDelimiter('%'); // now
-	// used
 	public static final HandleProviderDelimiter LOCALVARIABLE = new HandleProviderDelimiter('@');
 	public static final HandleProviderDelimiter TYPE_PARAMETER = new HandleProviderDelimiter(']');
 
@@ -47,7 +46,7 @@ public class HandleProviderDelimiter {
 	public static final HandleProviderDelimiter DECLARE = new HandleProviderDelimiter('`');
 	public static final HandleProviderDelimiter POINTCUT = new HandleProviderDelimiter('"');
 
-	public static final HandleProviderDelimiter PHANTOM = new HandleProviderDelimiter(',');
+	public static final HandleProviderDelimiter PHANTOM = new HandleProviderDelimiter(';');
 
 	private static char empty = ' ';
 	private final char delim;

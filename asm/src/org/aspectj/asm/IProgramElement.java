@@ -433,6 +433,8 @@ public interface IProgramElement extends Serializable {
 	 */
 	public String getAnnotationType();
 
+	public String[] getRemovedAnnotationTypes();
+
 	public Map<String, List<String>> getDeclareParentsMap();
 
 	public void setDeclareParentsMap(Map<String, List<String>> newmap);
@@ -440,4 +442,8 @@ public interface IProgramElement extends Serializable {
 	public void addFullyQualifiedName(String fqname);
 
 	public String getFullyQualifiedName();
+
+	public void setAnnotationRemover(boolean isRemover);
+
+	public boolean isAnnotationRemover();
 }
