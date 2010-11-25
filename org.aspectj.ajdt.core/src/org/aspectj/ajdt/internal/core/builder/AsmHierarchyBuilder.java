@@ -547,7 +547,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				peNode.setParentTypes(parents);
 			}
 			if (decl instanceof DeclareAnnotation) {
-				ResolvedType annotationType = ((DeclareAnnotation) decl).getAnnotationType();
+				DeclareAnnotation da = (DeclareAnnotation) decl;
+				ResolvedType annotationType = da.getAnnotationType();
 				if (annotationType == null) {
 					String s = ((DeclareAnnotation) decl).getAnnotationString();
 					if (s != null && s.length() > 0) {
@@ -556,6 +557,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 					peNode.setAnnotationType(s);
 				} else {
 					peNode.setAnnotationType(annotationType.getName());
+				}
+				if (da.isRemover()) {
+					peNode.setAnnotationRemover(true);
 				}
 			}
 		}
