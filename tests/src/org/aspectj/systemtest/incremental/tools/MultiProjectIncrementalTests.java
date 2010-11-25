@@ -103,15 +103,15 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkWasntFullBuild();
 	}
 
-	public void testIncrementalITDInners() throws Exception {
-		String p = "prInner";
-		initialiseProject(p);
-		build(p);
-		checkWasFullBuild();
-		alter(p, "inc1");
-		build(p);
-		checkWasntFullBuild();
-	}
+	// public void testIncrementalITDInners() throws Exception {
+	// String p = "prInner";
+	// initialiseProject(p);
+	// build(p);
+	// checkWasFullBuild();
+	// alter(p, "inc1");
+	// build(p);
+	// checkWasntFullBuild();
+	// }
 
 	/*
 	 * public void testIncrementalAspectWhitespace() throws Exception { AjdeInteractionTestbed.VERBOSE = true; String p = "xxx";
