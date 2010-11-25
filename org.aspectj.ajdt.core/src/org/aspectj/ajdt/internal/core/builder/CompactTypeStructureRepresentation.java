@@ -69,7 +69,7 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 		if (binMethods == null) {
 			binMethods = NoMethod;
 		}
-		this.memberTypes = cfr.getMemberTypes();
+		this.memberTypes = cfr.getMemberTypes(true);
 		this.annotations = cfr.getAnnotations();
 		this.sourceName = cfr.getSourceName();
 		this.className = cfr.getName(); // slashes...
