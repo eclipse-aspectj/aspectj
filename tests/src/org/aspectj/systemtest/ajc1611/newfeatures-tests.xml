@@ -108,15 +108,17 @@
     <compile files="WithValues.java" options="-1.5"/>
     <run class="WithValues">
     <stdout>
-    <line text="not there"/>
+    <line text="i does not have Anno"/>
+    <line text="j has Banno:@Banno(hoo=abc)"/>
+    <line text="j does not have Anno"/>
     </stdout></run>
   </ajc-test>
   
   <ajc-test dir="features1611/declareMinus" title="declare minus - unsupported">
     <compile files="Unsupported.java" options="-1.5">
-        <message kind="error" line="13" text="Annotation removal only supported for declare @field (compiler limitation)"/>
-        <message kind="error" line="14" text="Annotation removal only supported for declare @field (compiler limitation)"/>
-        <message kind="error" line="15" text="Annotation removal does not allow values to be specified for the annotation (compiler limitation)"/>
+        <message kind="error" line="19" text="Annotation removal only supported for declare @field (compiler limitation)"/>
+        <message kind="error" line="20" text="Annotation removal only supported for declare @field (compiler limitation)"/>
+        <message kind="error" line="21" text="Annotation removal does not allow values to be specified for the annotation (compiler limitation)"/>
     </compile>
   </ajc-test>
   
