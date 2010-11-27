@@ -15,6 +15,7 @@ package org.aspectj.ajdt.internal.compiler.ast;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.flow.FlowInfo;
 import org.aspectj.org.eclipse.jdt.internal.compiler.flow.InitializationFlowContext;
@@ -25,6 +26,7 @@ import org.aspectj.weaver.patterns.DeclareAnnotation;
 public class DeclareAnnotationDeclaration extends DeclareDeclaration {
 
 	private Annotation annotation;
+	private boolean isRemover = false;
 
 	public DeclareAnnotationDeclaration(CompilationResult result, DeclareAnnotation symbolicDeclare, Annotation annotation) {
 		super(result, symbolicDeclare);
@@ -34,6 +36,7 @@ public class DeclareAnnotationDeclaration extends DeclareDeclaration {
 		if (symbolicDeclare == null) {
 			return; // there is an error that will already be getting reported (e.g. incorrect pattern on decaf/decac)
 		}
+		this.isRemover = symbolicDeclare.isRemover();
 		symbolicDeclare.setAnnotationString(annotation.toString());
 		symbolicDeclare.setAnnotationLocation(annotation.sourceStart, annotation.sourceEnd);
 	}
@@ -41,6 +44,16 @@ public class DeclareAnnotationDeclaration extends DeclareDeclaration {
 	public void analyseCode(ClassScope classScope, InitializationFlowContext initializationContext, FlowInfo flowInfo) {
 		super.analyseCode(classScope, initializationContext, flowInfo);
 
+		if (isRemover) {
+			if (((DeclareAnnotation) declareDecl).getKind() != DeclareAnnotation.AT_FIELD) {
+				classScope.problemReporter().signalError(this.sourceStart(), this.sourceEnd,
+						"Annotation removal only supported for declare @field (compiler limitation)");
+			}
+			else if (isRemover && !(annotation instanceof MarkerAnnotation)) {
+				classScope.problemReporter().signalError(this.sourceStart(), this.sourceEnd,
+						"Annotation removal does not allow values to be specified for the annotation (compiler limitation)");
+			}
+		}
 		long bits = annotation.resolvedType.getAnnotationTagBits();
 
 		if ((bits & TagBits.AnnotationTarget) != 0) {
@@ -78,7 +91,8 @@ public class DeclareAnnotationDeclaration extends DeclareDeclaration {
 	private void addAnnotation(Annotation ann) {
 		if (this.annotations == null) {
 			this.annotations = new Annotation[1];
-		} else {
+		}
+		else {
 			Annotation[] old = this.annotations;
 			this.annotations = new Annotation[old.length + 1];
 			System.arraycopy(old, 0, this.annotations, 1, old.length);
@@ -93,4 +107,7 @@ public class DeclareAnnotationDeclaration extends DeclareDeclaration {
 		}
 	}
 
+	public boolean isRemover() {
+		return isRemover;
+	}
 }

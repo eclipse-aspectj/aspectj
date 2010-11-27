@@ -146,8 +146,10 @@ public class DeclarationFactory implements IDeclarationFactory {
 	public MethodDeclaration createDeclareAnnotationDeclaration(CompilationResult result, ASTNode pseudoTokens,
 			Annotation annotation, Parser parser, char kind) {
 		DeclareAnnotation declare = (DeclareAnnotation) ((PseudoTokens) pseudoTokens).parseAnnotationDeclare(parser);
-		if (kind == '-') {
-			declare.setRemover(true);
+		if (declare != null) {
+			if (kind == '-') {
+				declare.setRemover(true);
+			}
 		}
 		DeclareAnnotationDeclaration decl = new DeclareAnnotationDeclaration(result, declare, annotation);
 		return decl;

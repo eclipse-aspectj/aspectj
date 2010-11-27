@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.DeclareAnnotationDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.Proceed;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
@@ -683,6 +684,16 @@ public class AjProblemReporter extends ProblemReporter {
 		} else {
 			super.parseErrorInsertAfterToken(start, end, currentKind, errorTokenSource, errorTokenName, expectedToken);
 		}
+	}
+	
+	public void missingValueForAnnotationMember(Annotation annotation, char[] memberName) {
+		if (referenceContext instanceof DeclareAnnotationDeclaration)  {
+			// If a remover then the values are not necessary
+			if (((DeclareAnnotationDeclaration)referenceContext).isRemover()) {
+				return;
+			}
+		}
+		super.missingValueForAnnotationMember(annotation, memberName);
 	}
 
 }
