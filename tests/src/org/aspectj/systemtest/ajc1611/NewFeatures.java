@@ -54,6 +54,14 @@ public class NewFeatures extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("declare minus - multifiles - 3");
 	}
 
+	public void testDeclareMinusWithValues() {
+		runTest("declare minus - with values");
+	}
+
+	public void testDeclareMinusUnsupported() {
+		runTest("declare minus - unsupported");
+	}
+
 	public void testBinaryWeaving() {
 		runTest("binary weaving");
 	}

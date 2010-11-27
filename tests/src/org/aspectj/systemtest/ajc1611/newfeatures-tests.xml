@@ -104,6 +104,22 @@
   	</stdout></run>
   </ajc-test>
   
+  <ajc-test dir="features1611/declareMinus" title="declare minus - with values">
+    <compile files="WithValues.java" options="-1.5"/>
+    <run class="WithValues">
+    <stdout>
+    <line text="not there"/>
+    </stdout></run>
+  </ajc-test>
+  
+  <ajc-test dir="features1611/declareMinus" title="declare minus - unsupported">
+    <compile files="Unsupported.java" options="-1.5">
+        <message kind="error" line="13" text="Annotation removal only supported for declare @field (compiler limitation)"/>
+        <message kind="error" line="14" text="Annotation removal only supported for declare @field (compiler limitation)"/>
+        <message kind="error" line="15" text="Annotation removal does not allow values to be specified for the annotation (compiler limitation)"/>
+    </compile>
+  </ajc-test>
+  
   <ajc-test dir="features1611/declareMinus" title="binary weaving">
     <compile files="aspectjtest/AnnotationA.java aspectjtest/AnnotationB.java aspectjtest/MyEntity.java aspectjtest/HelloTest.java" outjar="code.jar" options="-1.5"/>
     <compile files="aspectjtest/ExampleItd.aj" inpath="code.jar" options="-1.5 -showWeaveInfo">
