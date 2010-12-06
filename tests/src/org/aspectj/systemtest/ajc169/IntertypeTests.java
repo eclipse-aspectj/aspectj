@@ -60,6 +60,14 @@ public class IntertypeTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("separate compilation");
 	}
 
+	/**
+	 * Interestingly this test makes no reference in the type Basic to the new ITD'd inner type, this causes the Basic type to be
+	 * missing the innertype attribute!
+	 */
+	public void testSeparateCompilation2() throws Exception {
+		runTest("separate compilation - 2");
+	}
+
 	public void testErrorTargettingTypeThatAlreadyHasIt() {
 		runTest("already has it");
 	}

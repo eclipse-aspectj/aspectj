@@ -11,6 +11,16 @@
        </stdout>
      </run>
    </ajc-test>
+   
+    <ajc-test dir="features169/itdInnerTypes/separate2" title="separate compilation - 2">
+     <compile files="Basic.java" options="-1.5"/>
+     <compile files="Basic2.java"/>
+     <run class="Basic2">
+       <stdout>
+       <line text="done"/>
+       </stdout>
+     </run>
+   </ajc-test>
 
    <ajc-test dir="features169/itdInnerTypes/eleven" title="already has it">
      <compile files="Target.java Aspect1.java" options="-1.5">
