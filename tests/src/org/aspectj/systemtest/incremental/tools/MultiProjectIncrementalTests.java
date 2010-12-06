@@ -63,6 +63,19 @@ import org.aspectj.weaver.World;
  */
 public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
 
+	public void testIncrementalITDInners4() throws Exception {
+		String p = "prInner4";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		assertNoErrors(p);
+		// touch the aspect making the ITD member type
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+		assertNoErrors(p);
+	}
+
 	public void testIncrementalITDInners3() throws Exception {
 		AjdeInteractionTestbed.VERBOSE = true;
 		String p = "prInner3";
