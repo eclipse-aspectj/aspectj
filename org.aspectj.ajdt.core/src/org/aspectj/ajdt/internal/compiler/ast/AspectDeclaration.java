@@ -712,8 +712,7 @@ public class AspectDeclaration extends TypeDeclaration {
 				AjcMemberMaker.perTypeWithinGetWithinTypeNameMethod(world.fromBinding(binding), world.getWorld().isInJava5Mode()),
 				new BodyGenerator() {
 					public void generate(CodeStream codeStream) {
-						ExceptionLabel exc = new ExceptionLabel(codeStream, world
-								.makeTypeBinding(UnresolvedType.JL_EXCEPTION));
+						ExceptionLabel exc = new ExceptionLabel(codeStream, world.makeTypeBinding(UnresolvedType.JL_EXCEPTION));
 						exc.placeStart();
 						codeStream.aload_0();
 						codeStream.getfield(world.makeFieldBinding(AjcMemberMaker.perTypeWithinWithinTypeField(typeX, typeX)));
@@ -1146,23 +1145,26 @@ public class AspectDeclaration extends TypeDeclaration {
 		// TODO deal with itd of it onto an interface
 
 		SourceTypeBinding targetSourceTypeBinding = (SourceTypeBinding) world.makeTypeBinding(munger.getTargetType());
-		ReferenceBinding[] existingMemberTypes = targetSourceTypeBinding.memberTypes();
-		for (int i = 0; i < existingMemberTypes.length; i++) {
-			char[] compounded = CharOperation.concatWith(existingMemberTypes[i].compoundName, '.');
-			if (CharOperation.endsWith(compounded, mungerMemberTypeName)) {
-				scope.problemReporter().signalError(sourceStart(), sourceEnd(),
-						"target type already declares a member type with the name '" + munger.getMemberTypeName() + "'");
-				return;
+
+		// if it is a binary type binding it is likely to be something we ITD'd on before
+		// TODO should probably avoid putting it onto BTBs at all (since already there)
+		if (!(targetSourceTypeBinding instanceof BinaryTypeBinding)) {
+			ReferenceBinding[] existingMemberTypes = targetSourceTypeBinding.memberTypes();
+			for (int i = 0; i < existingMemberTypes.length; i++) {
+				char[] compounded = CharOperation.concatWith(existingMemberTypes[i].compoundName, '.');
+				if (CharOperation.endsWith(compounded, mungerMemberTypeName)) {
+					scope.problemReporter().signalError(sourceStart(), sourceEnd(),
+							"target type already declares a member type with the name '" + munger.getMemberTypeName() + "'");
+					return;
+				}
 			}
 		}
 		/*
-		char[][] className = CharOperation.deepCopy(targetSourceTypeBinding.compoundName);
-		className[className.length - 1] = CharOperation.concat(className[className.length - 1], munger.getMemberTypeName()
-				.toCharArray(), '$');
-		// ReferenceBinding existingType = packageBinding.getType0(className[className.length - 1]);
-		innerTypeBinding.compoundName = className;
-		innerTypeBinding.fPackage = targetSourceTypeBinding.fPackage;
-		*/
+		 * char[][] className = CharOperation.deepCopy(targetSourceTypeBinding.compoundName); className[className.length - 1] =
+		 * CharOperation.concat(className[className.length - 1], munger.getMemberTypeName() .toCharArray(), '$'); //
+		 * ReferenceBinding existingType = packageBinding.getType0(className[className.length - 1]); innerTypeBinding.compoundName =
+		 * className; innerTypeBinding.fPackage = targetSourceTypeBinding.fPackage;
+		 */
 		findOrCreateInterTypeMemberClassFinder(targetSourceTypeBinding).addInterTypeMemberType(innerTypeBinding);
 	}
 
