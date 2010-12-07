@@ -1228,21 +1228,15 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 		// Looking for 'package p.q'
 		IProgramElement ipe = findFile(root, "Example.aj");// findElementAtLine(root, 1);
-		ipe = ipe.getChildren().get(0); // type decl is first thing inside file
 		ipe = ipe.getChildren().get(0); // package decl is first entry in the type
-		System.out.println(ipe.getHandleIdentifier() + "  " + ipe.getKind());
 		assertEquals(IProgramElement.Kind.PACKAGE_DECLARATION, ipe.getKind());
 		assertEquals("=Imports<p.q*Example.aj%p.q", ipe.getHandleIdentifier());
 		assertEquals("package p.q;", ipe.getSourceSignature());
-		assertEquals(ipe.getSourceLocation().getOffset(), 8); // "package p.q" -
-		// location of
-		// p.q
+		assertEquals(ipe.getSourceLocation().getOffset(), 8); // "package p.q" - location of p.q
 
 		// Looking for import containing containing string and integer
 		ipe = findElementAtLine(root, 3); // first import
 		ipe = ipe.getParent(); // imports container
-		System.out.println(ipe.getHandleIdentifier() + "  " + ipe.getKind());
-		dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
 		assertEquals("=Imports<p.q*Example.aj#", ipe.getHandleIdentifier());
 	}
 
@@ -1450,22 +1444,20 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// }
 
 	private IProgramElement findFile(IProgramElement whereToLook, String filesubstring) {
-		if (whereToLook.getSourceLocation() != null
-				&& (whereToLook.getKind().equals(IProgramElement.Kind.FILE_ASPECTJ) || whereToLook.getKind().equals(
-						IProgramElement.Kind.FILE_JAVA))
+		if (whereToLook.getSourceLocation() != null && whereToLook.getKind().isSourceFile()
 				&& whereToLook.getSourceLocation().getSourceFile().toString().indexOf(filesubstring) != -1) {
 			return whereToLook;
 		}
-		List kids = whereToLook.getChildren();
-		for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
-			IProgramElement object = (IProgramElement) iterator.next();
-			Kind k = object.getKind();
-			ISourceLocation sloc = object.getSourceLocation();
-			if (sloc != null && (k == IProgramElement.Kind.FILE_ASPECTJ || k == IProgramElement.Kind.FILE_JAVA)
-					&& sloc.getSourceFile().toString().indexOf(filesubstring) != -1) {
-				return whereToLook;
+		for (IProgramElement element : whereToLook.getChildren()) {
+			Kind k = element.getKind();
+			ISourceLocation sloc = element.getSourceLocation();
+			if (sloc != null && k.isSourceFile() && sloc.getSourceFile().toString().indexOf(filesubstring) != -1) {
+				return element;
 			}
-			IProgramElement gotSomething = findFile(object, filesubstring);
+			if (k.isSourceFile()) {
+				continue; // no need to look further down
+			}
+			IProgramElement gotSomething = findFile(element, filesubstring);
 			if (gotSomething != null) {
 				return gotSomething;
 			}
