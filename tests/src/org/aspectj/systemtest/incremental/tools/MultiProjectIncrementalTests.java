@@ -844,9 +844,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		addXmlConfigFile(p, getProjectRelativePath(p, "p/aop.xml").toString());
 		build(p);
 		checkWasFullBuild();
-		List weaveMessages = getWeavingMessages(p);
+		List<IMessage> weaveMessages = getWeavingMessages(p);
 		if (weaveMessages.size() != 1) {
-			for (Iterator iterator = weaveMessages.iterator(); iterator.hasNext();) {
+			for (Iterator<IMessage> iterator = weaveMessages.iterator(); iterator.hasNext();) {
 				Object object = iterator.next();
 				System.out.println(object);
 			}
@@ -1286,28 +1286,28 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// incomplete
 	}
 
-	private void checkIfContainsFile(Set s, String filename, boolean shouldBeFound) {
-		StringBuffer sb = new StringBuffer("Set of files\n");
-		for (Iterator iterator = s.iterator(); iterator.hasNext();) {
-			Object object = iterator.next();
-			sb.append(object).append("\n");
-		}
-		for (Iterator iterator = s.iterator(); iterator.hasNext();) {
-			File fname = (File) iterator.next();
-			if (fname.getName().endsWith(filename)) {
-				if (!shouldBeFound) {
-					System.out.println(sb.toString());
-					fail("Unexpectedly found file " + filename);
-				} else {
-					return;
-				}
-			}
-		}
-		if (shouldBeFound) {
-			System.out.println(sb.toString());
-			fail("Did not find filename " + filename);
-		}
-	}
+//	private void checkIfContainsFile(Set s, String filename, boolean shouldBeFound) {
+//		StringBuffer sb = new StringBuffer("Set of files\n");
+//		for (Iterator iterator = s.iterator(); iterator.hasNext();) {
+//			Object object = iterator.next();
+//			sb.append(object).append("\n");
+//		}
+//		for (Iterator iterator = s.iterator(); iterator.hasNext();) {
+//			File fname = (File) iterator.next();
+//			if (fname.getName().endsWith(filename)) {
+//				if (!shouldBeFound) {
+//					System.out.println(sb.toString());
+//					fail("Unexpectedly found file " + filename);
+//				} else {
+//					return;
+//				}
+//			}
+//		}
+//		if (shouldBeFound) {
+//			System.out.println(sb.toString());
+//			fail("Did not find filename " + filename);
+//		}
+//	}
 
 	// /**
 	// * Checking return values of the AsmManager API calls that can be invoked
@@ -1472,9 +1472,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		if (whereToLook.getSourceLocation() != null && whereToLook.getSourceLocation().getLine() == line) {
 			return whereToLook;
 		}
-		List kids = whereToLook.getChildren();
-		for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
-			IProgramElement object = (IProgramElement) iterator.next();
+		for (IProgramElement object: whereToLook.getChildren()) {
 			if (object.getSourceLocation() != null && object.getSourceLocation().getLine() == line) {
 				return object;
 			}
@@ -1569,7 +1567,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testInvalidAspectpath_pr121395() {
 		initialiseProject("P1");
 		File f = new File("foo.jar");
-		Set s = new HashSet();
+		Set<File> s = new HashSet<File>();
 		s.add(f);
 		configureAspectPath("P1", s);
 		build("P1"); // This first build will be batch
@@ -1647,7 +1645,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		if (start.getName().equals(name)) {
 			return start;
 		}
-		List kids = start.getChildren();
+		List<IProgramElement> kids = start.getChildren();
 		if (kids != null) {
 			for (int i = 0; i < kids.size(); i++) {
 				IProgramElement found = getChild((IProgramElement) kids.get(i), name);
@@ -2008,35 +2006,35 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// speedCheck(w);
 	}
 
-	private void checkRtJar(World w) {
-		System.out.println("Processing everything in rt.jar: ~16000 classes");
-		try {
-			ZipFile zf = new ZipFile("c:/jvms/jdk1.6.0_06/jre/lib/rt.jar");
-			Enumeration e = zf.entries();
-			int count = 1;
-			while (e.hasMoreElements()) {
-				ZipEntry ze = (ZipEntry) e.nextElement();
-				String n = ze.getName();
-				if (n.endsWith(".class")) {
-					n = n.replace('/', '.');
-					n = n.substring(0, n.length() - 6);
-					if ((count % 100) == 0) {
-						System.out.print(count + " ");
-					}
-					if ((count % 1000) == 0) {
-						System.out.println();
-					}
-					checkType(w, n);
-					count++;
-				}
-			}
-			zf.close();
-		} catch (IOException t) {
-			t.printStackTrace();
-			fail(t.toString());
-		}
-		System.out.println();
-	}
+//	private void checkRtJar(World w) {
+//		System.out.println("Processing everything in rt.jar: ~16000 classes");
+//		try {
+//			ZipFile zf = new ZipFile("c:/jvms/jdk1.6.0_06/jre/lib/rt.jar");
+//			Enumeration e = zf.entries();
+//			int count = 1;
+//			while (e.hasMoreElements()) {
+//				ZipEntry ze = (ZipEntry) e.nextElement();
+//				String n = ze.getName();
+//				if (n.endsWith(".class")) {
+//					n = n.replace('/', '.');
+//					n = n.substring(0, n.length() - 6);
+//					if ((count % 100) == 0) {
+//						System.out.print(count + " ");
+//					}
+//					if ((count % 1000) == 0) {
+//						System.out.println();
+//					}
+//					checkType(w, n);
+//					count++;
+//				}
+//			}
+//			zf.close();
+//		} catch (IOException t) {
+//			t.printStackTrace();
+//			fail(t.toString());
+//		}
+//		System.out.println();
+//	}
 
 	/**
 	 * Compare time taken to grab them all and look at them and iterator through them all.
@@ -3662,7 +3660,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// set up the inpath to have the directory on it's path
 		System.out.println(inpathDir);
 		File f = new File(inpathDir);
-		Set s = new HashSet();
+		Set<File> s = new HashSet<File>();
 		s.add(f);
 		configureInPath(p, s);
 		build(p);
@@ -3678,7 +3676,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			pw.flush();
 		} catch (Exception e) {
 		}
-		List l = getModelFor(p).getRelationshipMap().get("=inpathHandles/;<codep(Code.class[Code");
+		List<IRelationship> l = getModelFor(p).getRelationshipMap().get("=inpathHandles/;<codep(Code.class[Code");
 		assertNotNull(l);
 	}
 
@@ -3825,11 +3823,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	 * @param expected the number of expected related elements
 	 */
 	private List/* IProgramElement */getRelatedElements(AsmManager model, IProgramElement programElement, int expected) {
-		List relatedElements = getRelatedElements(model, programElement);
+		List<String> relatedElements = getRelatedElements(model, programElement);
 		StringBuffer debugString = new StringBuffer();
 		if (relatedElements != null) {
-			for (Iterator iter = relatedElements.iterator(); iter.hasNext();) {
-				String element = (String) iter.next();
+			for (String element: relatedElements) {
 				debugString.append(model.getHierarchy().findElementForHandle(element).toLabelString()).append("\n");
 			}
 		}
