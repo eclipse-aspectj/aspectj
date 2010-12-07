@@ -38,11 +38,13 @@ import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IProgramElement.Kind;
 import org.aspectj.asm.IRelationship;
 import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.asm.internal.Relationship;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.tools.ajc.Ajc;
 import org.aspectj.util.FileUtil;
@@ -1225,10 +1227,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
 
 		// Looking for 'package p.q'
-		IProgramElement ipe = findElementAtLine(root, 1);
-		ipe = ipe.getChildren().get(0); // package decl is
-		// first entry in
-		// the type
+		IProgramElement ipe = findFile(root, "Example.aj");// findElementAtLine(root, 1);
+		ipe = ipe.getChildren().get(0); // type decl is first thing inside file
+		ipe = ipe.getChildren().get(0); // package decl is first entry in the type
 		System.out.println(ipe.getHandleIdentifier() + "  " + ipe.getKind());
 		assertEquals(IProgramElement.Kind.PACKAGE_DECLARATION, ipe.getKind());
 		assertEquals("=Imports<p.q*Example.aj%p.q", ipe.getHandleIdentifier());
@@ -1449,15 +1450,19 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// }
 
 	private IProgramElement findFile(IProgramElement whereToLook, String filesubstring) {
-		if (whereToLook.getSourceLocation() != null && whereToLook.getKind().equals(IProgramElement.Kind.FILE_ASPECTJ)
+		if (whereToLook.getSourceLocation() != null
+				&& (whereToLook.getKind().equals(IProgramElement.Kind.FILE_ASPECTJ) || whereToLook.getKind().equals(
+						IProgramElement.Kind.FILE_JAVA))
 				&& whereToLook.getSourceLocation().getSourceFile().toString().indexOf(filesubstring) != -1) {
 			return whereToLook;
 		}
 		List kids = whereToLook.getChildren();
 		for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
 			IProgramElement object = (IProgramElement) iterator.next();
-			if (object.getSourceLocation() != null && object.getKind().equals(IProgramElement.Kind.FILE_ASPECTJ)
-					&& object.getSourceLocation().getSourceFile().toString().indexOf(filesubstring) != -1) {
+			Kind k = object.getKind();
+			ISourceLocation sloc = object.getSourceLocation();
+			if (sloc != null && (k == IProgramElement.Kind.FILE_ASPECTJ || k == IProgramElement.Kind.FILE_JAVA)
+					&& sloc.getSourceFile().toString().indexOf(filesubstring) != -1) {
 				return whereToLook;
 			}
 			IProgramElement gotSomething = findFile(object, filesubstring);
