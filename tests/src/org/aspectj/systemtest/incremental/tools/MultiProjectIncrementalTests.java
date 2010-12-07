@@ -1510,7 +1510,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		}
 		// dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
 	}
-
+ 
 	// Now the source folders are more complex 'src/java/main' and
 	// 'src/java/tests'
 	public void testModelWithMultipleSourceFolders2() {
