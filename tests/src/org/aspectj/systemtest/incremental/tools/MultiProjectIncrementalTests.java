@@ -1619,7 +1619,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(depending);
 		printModel(depending);
 		IProgramElement root = getModelFor(depending).getHierarchy().getRoot();
-		assertEquals("=bug274558base/binaries<r(DeclaresITD.class'DeclaresITD,InterfaceForITD.x", findElementAtLine(root, 4)
+		assertEquals("=bug274558base/binaries<r(DeclaresITD.class'DeclaresITD,InterfaceForITD.x", findElementAtLine(root, 5)
 				.getHandleIdentifier());
 		// assertEquals("=AspectPathTwo/binaries<(Asp2.class}Asp2&before", findElementAtLine(root, 16).getHandleIdentifier());
 	}
