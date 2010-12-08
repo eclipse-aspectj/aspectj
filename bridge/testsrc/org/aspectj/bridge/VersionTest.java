@@ -26,28 +26,30 @@ import junit.textui.TestRunner;
  */
 public class VersionTest extends TestCase {
 
-   private static final String ME 
-        = "org.aspectj.bridge.VersionTest";
+	private static final String ME = "org.aspectj.bridge.VersionTest";
 
-    /** @param args ignored */
-    public static void main(String[] args) {
-        TestRunner.main(new String[] {ME});
-    }
+	/** @param args ignored */
+	public static void main(String[] args) {
+		TestRunner.main(new String[] { ME });
+	}
 
 	/**
 	 * Constructor for MessageTest.
+	 * 
 	 * @param name
 	 */
 	public VersionTest(String name) {
 		super(name);
 	}
-        
-    public void testVersion() {
-    	if (Version.time_text.equals("")) return;  // dev build, we can only test this on the build server.
-        Date date = new Date(Version.getTime());
-        SimpleDateFormat format = new SimpleDateFormat(Version.SIMPLE_DATE_FORMAT, Locale.getDefault());
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
-        String timeString = format.format(date);
-        assertEquals(Version.time_text, timeString);
-    }
+
+	public void testVersion() {
+		if (Version.time_text.equals("")) {
+			return; // dev build, we can only test this on the build server.
+		}
+		Date date = new Date(Version.getTime());
+		SimpleDateFormat format = new SimpleDateFormat(Version.SIMPLE_DATE_FORMAT, Locale.getDefault());
+		format.setTimeZone(TimeZone.getTimeZone("GMT"));
+		String timeString = format.format(date);
+		assertEquals(Version.time_text, timeString);
+	}
 }
