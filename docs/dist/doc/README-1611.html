@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.6.11 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2010 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 1.6.11 Readme</h1>
+
+<h4>1.6.11 milestone 1 available 10-Dec-2010</h4>
+<p>The full list of resolved issues in 1.6.11 is available 
+<a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.6.11;">here</a></h2>.</p>
+<h2>Changes</h2>
+<p>1.6.11 includes a couple of interesting changes, in addition to a few bug fixes.
+
+<h3>Annotation removal</h3>
+<p>Traditionally AspectJ has taken an additive approach, where methods/fields/supertypes/annotations can only be added to types.
+Now, chaos would likely ensue if we allowed removal of supertypes, methods, etc, but we are seeing an increasing number of 
+requirements to do more with annotations.  What kinds of thing? Basically remove existing annotations, or modify existing
+annotations by changing their values.
+1.6.11 includes a new piece of syntax that we are thinking might be appropriate for one of these scenarios.  1.6.11 supports this:
+<pre><code>declare @field: int Foo.i: -@Anno;
+</code></pre>
+<p>Notice the '-' in front of the annotation, meaning 'removal'.  The whole construct means 'remove the @Anno annotation from the
+int field called i in type Foo'.  It is not yet supported on the other forms of declare @.
+
+<h3>Intertype innertypes</h3>
+<p>More work has gone into this feature.  It was originally added in 1.6.9 but the inability to use it with binary weaving
+greatly reduced the usefulness.  Fixes have gone into 1.6.11 to support binary weaving.  What do we mean by intertype innertypes?
+Here is an example:
+
+<pre><code>class Foo {
+  public void m() {
+    System.out.println(Inner.i);
+  }
+}
+
+aspect X {
+  public static class Foo.Inner {
+    static int i = 34;
+  }
+}
+</code></pre>
+<p>Only static inner types are supported.
+
+<h3>What's next before 1.6.11 final?</h3>
+<p>
+Hopefully by the time AspectJ 1.6.11 finally ships we will have addressed the state persistence problem which has always meant
+that on restarting eclipse you need to build all your projects.
+<p>
+And if we can get enough feedback on the AJDT reduced memory 
+settings (covered http://andrewclement.blogspot.com/2010/07/ajdt-memory-usage-reduction.html), we will look to enable it by default. 
+<h4>
+<!-- ============================== -->  
+</body>
+</html>
