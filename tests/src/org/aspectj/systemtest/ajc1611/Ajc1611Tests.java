@@ -25,6 +25,10 @@ public class Ajc1611Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("pr332388");
 	}
 
+	public void testMissingType_332388_2() {
+		runTest("pr332388 - 2");
+	}
+
 	public void testDeclareField_328840() {
 		runTest("pr328840");
 	}

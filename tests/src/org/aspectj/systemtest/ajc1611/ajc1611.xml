@@ -22,4 +22,13 @@
      </compile>
   </ajc-test>
   
+  <ajc-test dir="bugs1611/pr332388_2" title="pr332388 - 2">
+     <compile files="M.java" outjar="M.jar" options="-1.5"/>
+     <compile files="A.java" classpath="M.jar" outjar="A.jar" options="-1.5"/>
+     <compile files="MyAspect.java" outjar="aspects.jar" options="-1.5"/>
+     <compile files="" aspectpath="aspects.jar" inpath="A.jar" options="-1.5">
+     <message kind="error" text="Unable to find type (for bound): M"/>
+     </compile>
+  </ajc-test>
+  
 </suite>
