@@ -13,4 +13,13 @@
     </stdout></run>
   </ajc-test>
   
+  <ajc-test dir="bugs1611/pr332388" title="pr332388">
+     <compile files="M.java" outjar="M.jar" options="-1.5"/>
+     <compile files="A.java B.java" classpath="M.jar" outjar="AB.jar" options="-1.5"/>
+     <compile files="MyAspect.java" outjar="aspects.jar" options="-1.5"/>
+     <compile files="" aspectpath="aspects.jar" inpath="AB.jar" options="-1.5">
+     <message kind="error" text="Unable to find type for generic bound.  Missing type is M"/>
+     </compile>
+  </ajc-test>
+  
 </suite>
