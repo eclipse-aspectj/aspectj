@@ -14,6 +14,7 @@ package org.aspectj.weaver.bcel;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.aspectj.bridge.Message;
 import org.aspectj.util.GenericSignature;
 import org.aspectj.util.GenericSignature.SimpleClassTypeSignature;
 import org.aspectj.weaver.BoundedReferenceType;
@@ -161,12 +162,24 @@ public class BcelGenericSignatureToTypeXConverter {
 		if (aTypeArgument.isMinus) {
 			UnresolvedType bound = fieldTypeSignature2TypeX(aTypeArgument.signature, typeParams, world,
 					inProgressTypeVariableResolutions);
-			ReferenceType rBound = (ReferenceType) world.resolve(bound);
+			ResolvedType resolvedBound = world.resolve(bound);
+			if (resolvedBound.isMissing()) {
+				world.getMessageHandler().handleMessage(
+						new Message("Unable to find type (for bound): " + resolvedBound.getName(), null, true));
+				resolvedBound = world.resolve(UnresolvedType.OBJECT);
+			}
+			ReferenceType rBound = (ReferenceType) resolvedBound;
 			return new BoundedReferenceType(rBound, false, world);
 		} else if (aTypeArgument.isPlus) {
 			UnresolvedType bound = fieldTypeSignature2TypeX(aTypeArgument.signature, typeParams, world,
 					inProgressTypeVariableResolutions);
-			ReferenceType rBound = (ReferenceType) world.resolve(bound);
+			ResolvedType resolvedBound = world.resolve(bound);
+			if (resolvedBound.isMissing()) {
+				world.getMessageHandler().handleMessage(
+						new Message("Unable to find type (for bound): " + resolvedBound.getName(), null, true));
+				resolvedBound = world.resolve(UnresolvedType.OBJECT);
+			}
+			ReferenceType rBound = (ReferenceType) resolvedBound;
 			return new BoundedReferenceType(rBound, true, world);
 		} else {
 			return fieldTypeSignature2TypeX(aTypeArgument.signature, typeParams, world, inProgressTypeVariableResolutions);
