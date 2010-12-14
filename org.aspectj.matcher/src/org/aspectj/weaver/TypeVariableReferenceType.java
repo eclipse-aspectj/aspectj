@@ -9,7 +9,6 @@
 package org.aspectj.weaver;
 
 import java.util.Map;
-import org.aspectj.bridge.Message;
 
 /**
  * ReferenceType representing a type variable. The delegate for this reference type is the upperbound on the type variable (so
@@ -47,9 +46,9 @@ public class TypeVariableReferenceType extends ReferenceType implements TypeVari
 			if (resolvedFirstBound.isMissing()) {
 				brtd = new BoundedReferenceTypeDelegate((ReferenceType) world.resolve(UnresolvedType.OBJECT));
 				setDelegate(brtd); // set now because getSourceLocation() below will cause a recursive step to discover the delegate
-				world.getMessageHandler().handleMessage(
-						new Message("Unable to find type for generic bound.  Missing type is " + resolvedFirstBound.getName(),
-								getSourceLocation(), true));
+				world.getLint().cantFindType.signal(
+						"Unable to find type for generic bound.  Missing type is " + resolvedFirstBound.getName(),
+						getSourceLocation());
 			} else {
 				brtd = new BoundedReferenceTypeDelegate((ReferenceType) resolvedFirstBound);
 				setDelegate(brtd);
