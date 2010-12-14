@@ -18,7 +18,7 @@
      <compile files="A.java B.java" classpath="M.jar" outjar="AB.jar" options="-1.5"/>
      <compile files="MyAspect.java" outjar="aspects.jar" options="-1.5"/>
      <compile files="" aspectpath="aspects.jar" inpath="AB.jar" options="-1.5">
-     <message kind="error" text="Unable to find type for generic bound.  Missing type is M"/>
+     <message kind="error" text="Unable to find type for generic bound.  Missing type is M [Xlint:cantFindType]"/>
      </compile>
   </ajc-test>
   
@@ -27,7 +27,7 @@
      <compile files="A.java" classpath="M.jar" outjar="A.jar" options="-1.5"/>
      <compile files="MyAspect.java" outjar="aspects.jar" options="-1.5"/>
      <compile files="" aspectpath="aspects.jar" inpath="A.jar" options="-1.5">
-     <message kind="error" text="Unable to find type (for bound): M"/>
+     <message kind="error" text="Unable to find type (for bound): M [Xlint:cantFindType]"/>
      </compile>
   </ajc-test>
   
