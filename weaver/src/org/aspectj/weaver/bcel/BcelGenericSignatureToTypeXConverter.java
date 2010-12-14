@@ -14,7 +14,6 @@ package org.aspectj.weaver.bcel;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.aspectj.bridge.Message;
 import org.aspectj.util.GenericSignature;
 import org.aspectj.util.GenericSignature.SimpleClassTypeSignature;
 import org.aspectj.weaver.BoundedReferenceType;
@@ -164,8 +163,7 @@ public class BcelGenericSignatureToTypeXConverter {
 					inProgressTypeVariableResolutions);
 			ResolvedType resolvedBound = world.resolve(bound);
 			if (resolvedBound.isMissing()) {
-				world.getMessageHandler().handleMessage(
-						new Message("Unable to find type (for bound): " + resolvedBound.getName(), null, true));
+				world.getLint().cantFindType.signal("Unable to find type (for bound): " + resolvedBound.getName(), null);
 				resolvedBound = world.resolve(UnresolvedType.OBJECT);
 			}
 			ReferenceType rBound = (ReferenceType) resolvedBound;
@@ -175,8 +173,7 @@ public class BcelGenericSignatureToTypeXConverter {
 					inProgressTypeVariableResolutions);
 			ResolvedType resolvedBound = world.resolve(bound);
 			if (resolvedBound.isMissing()) {
-				world.getMessageHandler().handleMessage(
-						new Message("Unable to find type (for bound): " + resolvedBound.getName(), null, true));
+				world.getLint().cantFindType.signal("Unable to find type (for bound): " + resolvedBound.getName(), null);
 				resolvedBound = world.resolve(UnresolvedType.OBJECT);
 			}
 			ReferenceType rBound = (ReferenceType) resolvedBound;
