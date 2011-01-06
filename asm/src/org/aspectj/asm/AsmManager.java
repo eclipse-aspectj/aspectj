@@ -640,7 +640,8 @@ public class AsmManager implements IStructureModel {
 			}
 			StringBuffer qualifiedTypeNameFromHandle = new StringBuffer();
 			if (hasPackage != -1) {
-				qualifiedTypeNameFromHandle.append(handle.substring(hasPackage + 1, handle.indexOf(HandleProviderDelimiter.CLASSFILE.getDelimiter(), hasPackage)));
+				int classfileLoc = handle.indexOf(HandleProviderDelimiter.CLASSFILE.getDelimiter(), hasPackage);
+				qualifiedTypeNameFromHandle.append(handle.substring(hasPackage + 1, classfileLoc));
 				qualifiedTypeNameFromHandle.append('.');
 			}
 			qualifiedTypeNameFromHandle.append(handle.substring(typeLocation + 1));
@@ -649,7 +650,7 @@ public class AsmManager implements IStructureModel {
 			return typename;
 		} catch (StringIndexOutOfBoundsException sioobe) {
 			// debug for 330170
-			System.err.println("Handle processing problem, the handle is: "+handle);
+			System.err.println("Handle processing problem, the handle is: " + handle);
 			sioobe.printStackTrace(System.err);
 			return "";
 		}
@@ -904,7 +905,9 @@ public class AsmManager implements IStructureModel {
 	 * @return true if the handle contains ';' - the char indicating that it is a phantom handle
 	 */
 	private boolean isPhantomHandle(String handle) {
-		return handle.indexOf(HandleProviderDelimiter.PHANTOM.getDelimiter()) != -1;
+		int phantomMarker = handle.indexOf(HandleProviderDelimiter.PHANTOM.getDelimiter());
+		return phantomMarker != -1
+				&& handle.charAt(phantomMarker - 1) == HandleProviderDelimiter.PACKAGEFRAGMENTROOT.getDelimiter();
 	}
 
 	/**
