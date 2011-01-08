@@ -209,9 +209,25 @@ public class CrosscuttingMembers {
 			// Looking it up ensures we get the annotations - the accessedMembers are just retrieved from the attribute and
 			// don't have that information
 			ResolvedMember resolvedMember = world.resolve(member);
+
+			// pr333469
+			// If the member is for an ITD (e.g. serialVersionUID) then during resolution we may resolve it on
+			// a supertype because it doesn't yet exist on the target.
+			// For example: MyList extends ArrayList<String> and the ITD is on MyList - after resolution it may be:
+			// ArrayList<String>.serialVersionUID, we need to avoid that happening
+
 			if (resolvedMember == null) {
 				// can happen for ITDs - are there many privileged access ITDs??
 				resolvedMember = member;
+				if (resolvedMember.hasBackingGenericMember()) {
+					resolvedMember = resolvedMember.getBackingGenericMember();
+				}
+			} else {
+				UnresolvedType unresolvedDeclaringType = member.getDeclaringType().getRawType();
+				UnresolvedType resolvedDeclaringType = resolvedMember.getDeclaringType().getRawType();
+				if (!unresolvedDeclaringType.equals(resolvedDeclaringType)) {
+					resolvedMember = member;
+				}
 			}
 			PrivilegedAccessMunger privilegedAccessMunger = new PrivilegedAccessMunger(resolvedMember,
 					version >= WeaverVersionInfo.WEAVER_VERSION_AJ169);
