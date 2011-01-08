@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc1611Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testGenericsAndItds_333469() {
+		runTest("pr333469");
+	}
+
 	public void testMissingType_332388() {
 		runTest("pr332388");
 	}
