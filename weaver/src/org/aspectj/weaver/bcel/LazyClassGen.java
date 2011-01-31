@@ -1041,7 +1041,8 @@ public final class LazyClassGen {
 	 * Create a field in the type containing the shadow where the annotation retrieved during binding can be stored - for later fast
 	 * access.
 	 * 
-	 * @param shadow the shadow at which the @annotation result is being cached
+	 * @param shadow
+	 *            the shadow at which the @annotation result is being cached
 	 * @return a field
 	 */
 	public Field getAnnotationCachingField(BcelShadow shadow, ResolvedType toType) {
@@ -1116,13 +1117,21 @@ public final class LazyClassGen {
 		}
 
 		if (serialVersionUIDRequiresInitialization) {
+			InstructionList[] ilSVUID = new InstructionList[1];
+			ilSVUID[0] = new InstructionList();
+			ilSVUID[0].append(InstructionFactory.PUSH(getConstantPool(), calculatedSerialVersionUID));
+			ilSVUID[0].append(getFactory().createFieldAccess(getClassName(), "serialVersionUID", BasicType.LONG,
+					Constants.PUTSTATIC));
 			if (il == null) {
-				il = new InstructionList[1];
+				il = ilSVUID;
+			} else {
+				InstructionList[] newIl = new InstructionList[il.length + ilSVUID.length];
+				System.arraycopy(il, 0, newIl, 0, il.length);
+				System.arraycopy(ilSVUID, 0, newIl, il.length, ilSVUID.length);
+				il = newIl;
 			}
-			il[0] = new InstructionList();
-			il[0].append(InstructionFactory.PUSH(getConstantPool(), calculatedSerialVersionUID));
-			il[0].append(getFactory().createFieldAccess(getClassName(), "serialVersionUID", BasicType.LONG, Constants.PUTSTATIC));
 		}
+
 		LazyMethodGen prevMethod;
 		LazyMethodGen nextMethod = null;
 		if (this.isInterface()) { // Cannot sneak stuff into another static method in an interface
@@ -1204,7 +1213,7 @@ public final class LazyClassGen {
 		list.append(InstructionFactory.PUSH(getConstantPool(), shadow.getKind().getName()));
 
 		// create the signature
-		if ( world.isTargettingAspectJRuntime12() || !isFastSJPAvailable || !sig.getKind().equals(Member.METHOD)) {
+		if (world.isTargettingAspectJRuntime12() || !isFastSJPAvailable || !sig.getKind().equals(Member.METHOD)) {
 			list.append(InstructionFactory.createLoad(factoryType, 0));
 		}
 
