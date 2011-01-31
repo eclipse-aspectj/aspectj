@@ -39,7 +39,6 @@ import java.util.zip.ZipOutputStream;
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.asm.AsmManager;
-import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.internal.AspectJElementHierarchy;
 import org.aspectj.bridge.IMessage;
@@ -228,7 +227,8 @@ public class BcelWeaver {
 
 	/**
 	 * 
-	 * @param inFile directory containing classes or zip/jar class archive
+	 * @param inFile
+	 *            directory containing classes or zip/jar class archive
 	 */
 	public void addLibraryJarFile(File inFile) throws IOException {
 		List<ResolvedType> addedAspects = null;
@@ -281,7 +281,8 @@ public class BcelWeaver {
 	/**
 	 * Look for .class files that represent aspects in the supplied directory - return the list of accumulated aspects.
 	 * 
-	 * @param directory the directory in which to look for Aspect .class files
+	 * @param directory
+	 *            the directory in which to look for Aspect .class files
 	 * @return the list of discovered aspects
 	 * @throws FileNotFoundException
 	 * @throws IOException
@@ -309,9 +310,12 @@ public class BcelWeaver {
 	 * Determine if the supplied bytes represent an aspect, if they do then create a ResolvedType instance for the aspect and return
 	 * it, otherwise return null
 	 * 
-	 * @param classbytes the classbytes that might represent an aspect
-	 * @param name the name of the class
-	 * @param directory directory which contained the class file
+	 * @param classbytes
+	 *            the classbytes that might represent an aspect
+	 * @param name
+	 *            the name of the class
+	 * @param directory
+	 *            directory which contained the class file
 	 * @return a ResolvedType if the classbytes represent an aspect, otherwise null
 	 */
 	private ResolvedType isAspect(byte[] classbytes, String name, File dir) throws IOException {
@@ -1004,6 +1008,8 @@ public class BcelWeaver {
 		return c;
 	}
 
+	private Set<IProgramElement> candidatesForRemoval = null;
+
 	// variation of "weave" that sources class files from an external source.
 	public Collection<String> weave(IClassFileProvider input) throws IOException {
 		if (trace.isTraceEnabled()) {
@@ -1013,11 +1019,16 @@ public class BcelWeaver {
 		Collection<String> wovenClassNames = new ArrayList<String>();
 		IWeaveRequestor requestor = input.getRequestor();
 
-		for (Iterator<UnwovenClassFile> i = input.getClassFileIterator(); i.hasNext();) {
-			UnwovenClassFile classFile = i.next();
-			if (world.getModel() != null /* AsmManager.isCreatingModel() */&& !isBatchWeave) {
-				// remove all relationships where this file being woven is the target of the relationship
-				world.getModelAsAsmManager().removeRelationshipsTargettingThisType(classFile.getClassName());
+		if (world.getModel() != null && world.isMinimalModel()) {
+			candidatesForRemoval = new HashSet<IProgramElement>();
+		}
+		if (world.getModel() != null && !isBatchWeave) {
+			AsmManager manager = world.getModelAsAsmManager();
+			for (Iterator<UnwovenClassFile> i = input.getClassFileIterator(); i.hasNext();) {
+				UnwovenClassFile classFile = i.next();
+				// remove all relationships where this file being woven is
+				// the target of the relationship
+				manager.removeRelationshipsTargettingThisType(classFile.getClassName());
 			}
 		}
 
@@ -1183,6 +1194,9 @@ public class BcelWeaver {
 		CompilationAndWeavingContext.leavingPhase(weaveToken);
 		if (trace.isTraceEnabled()) {
 			trace.exit("weave", wovenClassNames);
+		}
+		if (world.getModel() != null && world.isMinimalModel()) {
+			candidatesForRemoval.clear();
 		}
 		return wovenClassNames;
 	}
@@ -1716,45 +1730,37 @@ public class BcelWeaver {
 			// can we remove it from the model now? we know it contains no relationship endpoints...
 			AsmManager model = world.getModelAsAsmManager();
 			if (world.isMinimalModel() && model != null && !classType.isAspect()) {
-				IHierarchy hierarchy = model.getHierarchy();
+				AspectJElementHierarchy hierarchy = (AspectJElementHierarchy) model.getHierarchy();
 				String pkgname = classType.getResolvedTypeX().getPackageName();
 				String tname = classType.getResolvedTypeX().getSimpleBaseName();
 				IProgramElement typeElement = hierarchy.findElementForType(pkgname, tname);
+				if (typeElement != null && hasInnerType(typeElement)) {
+					// Cannot remove it right now (has inner type), schedule it
+					// for possible deletion later if all inner types are
+					// removed
+					candidatesForRemoval.add(typeElement);
+				}
 				if (typeElement != null && !hasInnerType(typeElement)) {
-
-					// Set<String> deleted = new HashSet<String>();
-					// deleted.add(model.getCanonicalFilePath(typeElement.getSourceLocation().getSourceFile()));
-					// hierarchy.updateHandleMap(deleted);
 					IProgramElement parent = typeElement.getParent();
 					// parent may have children: PACKAGE DECL, IMPORT-REFERENCE, TYPE_DECL
 					if (parent != null) {
-						// if it was the only type we should probably remove the others too.
+						// if it was the only type we should probably remove
+						// the others too.
 						parent.removeChild(typeElement);
 						if (parent.getKind().isSourceFile()) {
-							IProgramElement compilationUnit = parent;
-							boolean anyOtherTypeDeclarations = false;
-							for (IProgramElement child : compilationUnit.getChildren()) {
-								IProgramElement.Kind k = child.getKind();
-								if (k.isType()) {
-									anyOtherTypeDeclarations = true;
-									break;
-								}
-							}
-							// If the compilation unit node contained no other types, there is no need to keep it
-							if (!anyOtherTypeDeclarations) {
-								IProgramElement cuParent = compilationUnit.getParent();
-								if (cuParent != null) {
-									compilationUnit.setParent(null);
-									cuParent.removeChild(compilationUnit);
-								}
-								// need to update some caches and structures too?
-								((AspectJElementHierarchy) model.getHierarchy()).forget(parent, typeElement);
-							} else {
-								((AspectJElementHierarchy) model.getHierarchy()).forget(null, typeElement);
-							}
+							removeSourceFileIfNoMoreTypeDeclarationsInside(hierarchy, typeElement, parent);
 						} else {
-							((AspectJElementHierarchy) model.getHierarchy()).forget(null, typeElement);
+							hierarchy.forget(null, typeElement);
+							// At this point, the child has been removed. We
+							// should now check if the parent is in our
+							// 'candidatesForRemoval' set. If it is then that
+							// means we were going to remove it but it had a
+							// child. Now we can check if it still has a child -
+							// if it doesn't it can also be removed!
+
+							walkUpRemovingEmptyTypesAndPossiblyEmptySourceFile(hierarchy, tname, parent);
 						}
+
 					}
 				}
 			}
@@ -1776,6 +1782,64 @@ public class BcelWeaver {
 			}
 		} finally {
 			world.demote();
+		}
+	}
+
+	private void walkUpRemovingEmptyTypesAndPossiblyEmptySourceFile(AspectJElementHierarchy hierarchy, String tname,
+			IProgramElement typeThatHasChildRemoved) {
+		// typeThatHasChildRemoved might be a source file, type or a method/ctor
+		// - for a method/ctor find the type/sourcefile
+		while (typeThatHasChildRemoved != null
+				&& !(typeThatHasChildRemoved.getKind().isType() || typeThatHasChildRemoved.getKind().isSourceFile())) {
+			// this will take us 'up' through methods that contain anonymous
+			// inner classes
+			typeThatHasChildRemoved = typeThatHasChildRemoved.getParent();
+		}
+		// now typeThatHasChildRemoved points to the type or sourcefile that has
+		// had something removed
+		if (candidatesForRemoval.contains(typeThatHasChildRemoved) && !hasInnerType(typeThatHasChildRemoved)) {
+			// now we can get rid of it
+			IProgramElement parent = typeThatHasChildRemoved.getParent();
+			if (parent != null) {
+				parent.removeChild(typeThatHasChildRemoved);
+				candidatesForRemoval.remove(typeThatHasChildRemoved);
+				if (parent.getKind().isSourceFile()) {
+					removeSourceFileIfNoMoreTypeDeclarationsInside(hierarchy, typeThatHasChildRemoved, parent);
+					// System.out.println("Removed on second pass: " +
+					// typeThatHasChildRemoved.getName());
+				} else {
+					// System.out.println("On later pass, parent of type " +
+					// typeThatHasChildRemoved.getName()
+					// + " was found not to be a sourcefile, recursing up...");
+					walkUpRemovingEmptyTypesAndPossiblyEmptySourceFile(hierarchy, tname, parent);
+				}
+			}
+		}
+	}
+
+	private void removeSourceFileIfNoMoreTypeDeclarationsInside(AspectJElementHierarchy hierarchy, IProgramElement typeElement,
+			IProgramElement sourceFileNode) {
+		IProgramElement compilationUnit = sourceFileNode;
+		boolean anyOtherTypeDeclarations = false;
+		for (IProgramElement child : compilationUnit.getChildren()) {
+			IProgramElement.Kind k = child.getKind();
+			if (k.isType()) {
+				anyOtherTypeDeclarations = true;
+				break;
+			}
+		}
+		// If the compilation unit node contained no
+		// other types, there is no need to keep it
+		if (!anyOtherTypeDeclarations) {
+			IProgramElement cuParent = compilationUnit.getParent();
+			if (cuParent != null) {
+				compilationUnit.setParent(null);
+				cuParent.removeChild(compilationUnit);
+			}
+			// need to update some caches and structures too?
+			hierarchy.forget(sourceFileNode, typeElement);
+		} else {
+			hierarchy.forget(null, typeElement);
 		}
 	}
 
@@ -1858,8 +1922,10 @@ public class BcelWeaver {
 	 * Perform a fast match of the specified list of shadowmungers against the specified type. A subset of those that might match is
 	 * returned.
 	 * 
-	 * @param list list of all shadow mungers that might match
-	 * @param type the target type
+	 * @param list
+	 *            list of all shadow mungers that might match
+	 * @param type
+	 *            the target type
 	 * @return a list of shadow mungers that might match with those that cannot (according to fast match rules) removed
 	 */
 	private List<ShadowMunger> fastMatch(List<ShadowMunger> list, ResolvedType type) {
