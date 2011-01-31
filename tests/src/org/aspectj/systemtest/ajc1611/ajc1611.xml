@@ -1,6 +1,56 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 
 <suite>
+  <ajc-test dir="bugs1611/pr333274" title="anno style advice chain">
+  <compile files="ma/Annotation1.java  ma/aspect1/Aspect1.java  ma/aspect3/Aspect3.java ma/Main.java ma/Precedence.java" options="-1.5"/>
+  <run class="ma.Main">
+  <stdout>
+  <line text="&gt;In Aspect1"/>
+  <line text="&gt;In Aspect3"/>
+  <line text="Method call"/>
+  <line text="&lt;In Aspect3"/>
+  <line text="=In Aspect1"/>
+  <line text="&gt;In Aspect3"/>
+  <line text="Method call"/>
+  <line text="&lt;In Aspect3"/>
+  <line text="&lt;In Aspect1"/>
+  </stdout>
+  </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs1611/pr333274" title="code style advice chain - no inline">
+  <compile files="ma2/Annotation1.java  ma2/aspect1/Aspect1.java  ma2/aspect3/Aspect3.java ma2/Main.java ma2/Precedence.java" options="-1.5 -XnoInline"/>
+  <run class="ma2.Main">
+  <stdout>
+  <line text="&gt;In Aspect1"/>
+  <line text="&gt;In Aspect3"/>
+  <line text="Method call"/>
+  <line text="&lt;In Aspect3"/>
+  <line text="=In Aspect1"/>
+  <line text="&gt;In Aspect3"/>
+  <line text="Method call"/>
+  <line text="&lt;In Aspect3"/>
+  <line text="&lt;In Aspect1"/>
+  </stdout>
+  </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs1611/pr333274" title="code style advice chain">
+  <compile files="ma2/Annotation1.java  ma2/aspect1/Aspect1.java  ma2/aspect3/Aspect3.java ma2/Main.java ma2/Precedence.java" options="-1.5 "/>
+  <run class="ma2.Main">
+  <stdout>
+  <line text="&gt;In Aspect1"/>
+  <line text="&gt;In Aspect3"/>
+  <line text="Method call"/>
+  <line text="&lt;In Aspect3"/>
+  <line text="=In Aspect1"/>
+  <line text="&gt;In Aspect3"/>
+  <line text="Method call"/>
+  <line text="&lt;In Aspect3"/>
+  <line text="&lt;In Aspect1"/>
+  </stdout>
+  </run>
+  </ajc-test>
 
   <ajc-test dir="bugs1611/pr328840" title="pr328840">
     <compile files="Wibble.aj" options="-1.5 -showWeaveInfo">

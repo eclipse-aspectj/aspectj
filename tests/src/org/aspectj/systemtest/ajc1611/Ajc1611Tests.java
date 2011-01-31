@@ -36,6 +36,18 @@ public class Ajc1611Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testDeclareField_328840() {
 		runTest("pr328840");
 	}
+	
+//	public void testAnnoStyleAdviceChain_333274() {
+//			runTest("anno style advice chain");
+//	}
+//
+//	public void testAnnoStyleAdviceChain_333274_2() {
+//			runTest("code style advice chain");
+//	}
+//	
+//	public void testAnnoStyleAdviceChain_333274_3() {
+//		runTest("code style advice chain - no inline");
+//	}
 
 	// ---
 

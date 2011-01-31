@@ -276,6 +276,21 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		IProgramElement ipe = model.findElementForHandleOrCreate("=PR278496_1<a.b.c{Code.java", false);
 		assertNull(ipe);
 	}
+	
+	// inner classes
+	public void testDeletion_278496_9() throws Exception {
+		String p = "PR278496_9";
+		initialiseProject(p);
+		configureNonStandardCompileOptions(p, "-Xset:minimalModel=true");
+		build(p);
+		checkWasFullBuild();
+		printModel(p);
+
+		AspectJElementHierarchy model = (AspectJElementHierarchy) getModelFor(p).getHierarchy();
+		// Node for "Code.java" should not be there:
+		IProgramElement ipe = model.findElementForHandleOrCreate("=PR278496_9<a.b.c{Code.java", false);
+		assertNull(ipe);
+	}
 
 	// deleting unaffected model entries
 	public void testDeletion_278496_2() throws Exception {
