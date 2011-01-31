@@ -1,0 +1,10 @@
+<aspectj>
+	<aspects>
+		<aspect name="X"/>
+	</aspects>
+
+	<weaver options="-XaddSerialVersionUID -Xset:targetRuntime1_6_10=true,fastWeaving=true,weaveJavaxPackages=true -XhasMember -XlazyTjp -Xreweavable">
+		<include within="*"/>
+	</weaver>
+	
+</aspectj>
