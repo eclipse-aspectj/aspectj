@@ -117,7 +117,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	 * 
 	 * @param cuDeclaration
 	 * @param buildConfig
-	 * @param structureModel hiearchy to add this unit's declarations to
+	 * @param structureModel
+	 *            hiearchy to add this unit's declarations to
 	 */
 	public void buildStructureForCompilationUnit(CompilationUnitDeclaration cuDeclaration, AsmManager structureModel,
 			AjBuildConfig buildConfig) {
@@ -667,7 +668,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 
 	/**
 	 * @param left
-	 * @param pointcuts accumulator for named pointcuts
+	 * @param pointcuts
+	 *            accumulator for named pointcuts
 	 */
 	private void addAllNamed(Pointcut pointcut, List pointcuts) {
 		if (pointcut == null) {
@@ -834,10 +836,19 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		} else {
 			peNode = new ProgramElement(activeStructureModel, new String(fieldDeclaration.name), IProgramElement.Kind.FIELD,
 					makeLocation(fieldDeclaration), fieldDeclaration.modifiers, null, null);
-			peNode.setCorrespondingType(fieldDeclaration.type.toString());
+
+			if (fieldDeclaration.type.resolvedType != null) {
+				char[] cs = fieldDeclaration.type.resolvedType.readableName();
+				// fieldDeclaration.type.resolvedType.genericTypeSignature()
+				peNode.setCorrespondingType(new String(cs));
+			} else {
+				// peNode.setCorrespondingType(null);
+				peNode.setCorrespondingType(fieldDeclaration.type.toString());
+			}
 		}
 		peNode.setSourceSignature(genSourceSignature(fieldDeclaration));
 		peNode.setFormalComment(generateJavadocComment(fieldDeclaration));
+		// peNode.setBytecodeSignature(new String(fieldDeclaration.binding.type.signature()));
 
 		((IProgramElement) stack.peek()).addChild(peNode);
 		stack.push(peNode);
