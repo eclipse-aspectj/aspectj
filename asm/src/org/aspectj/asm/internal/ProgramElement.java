@@ -383,6 +383,108 @@ public class ProgramElement implements IProgramElement {
 		return getCorrespondingType(false);
 	}
 
+	public String getCorrespondingTypeSignature() {
+		String typename = (String) kvpairs.get("returnType");
+		if (typename == null) {
+			return null;
+		}
+		return nameToSignature(typename);
+	}
+
+	public static String nameToSignature(String name) {
+		int len = name.length();
+		if (len < 8) {
+			if (name.equals("byte")) {
+				return "B";
+			}
+			if (name.equals("char")) {
+				return "C";
+			}
+			if (name.equals("double")) {
+				return "D";
+			}
+			if (name.equals("float")) {
+				return "F";
+			}
+			if (name.equals("int")) {
+				return "I";
+			}
+			if (name.equals("long")) {
+				return "J";
+			}
+			if (name.equals("short")) {
+				return "S";
+			}
+			if (name.equals("boolean")) {
+				return "Z";
+			}
+			if (name.equals("void")) {
+				return "V";
+			}
+			if (name.equals("?")) {
+				return name;
+			}
+		}
+		if (name.endsWith("[]")) {
+			return "[" + nameToSignature(name.substring(0, name.length() - 2));
+		}
+		if (len != 0) {
+			// check if someone is calling us with something that is a signature already
+			assert name.charAt(0) != '[';
+
+			if (name.indexOf("<") == -1) {
+				// not parameterized
+				return new StringBuilder("L").append(name.replace('.', '/')).append(';').toString();
+			} else {
+				StringBuffer nameBuff = new StringBuffer();
+				int nestLevel = 0;
+				nameBuff.append("L");
+				for (int i = 0; i < name.length(); i++) {
+					char c = name.charAt(i);
+					switch (c) {
+					case '.':
+						nameBuff.append('/');
+						break;
+					case '<':
+						nameBuff.append("<");
+						nestLevel++;
+						StringBuffer innerBuff = new StringBuffer();
+						while (nestLevel > 0) {
+							c = name.charAt(++i);
+							if (c == '<') {
+								nestLevel++;
+							}
+							if (c == '>') {
+								nestLevel--;
+							}
+							if (c == ',' && nestLevel == 1) {
+								nameBuff.append(nameToSignature(innerBuff.toString()));
+								innerBuff = new StringBuffer();
+							} else {
+								if (nestLevel > 0) {
+									innerBuff.append(c);
+								}
+							}
+						}
+						nameBuff.append(nameToSignature(innerBuff.toString()));
+						nameBuff.append('>');
+						break;
+					case '>':
+						throw new IllegalStateException("Should by matched by <");
+					case ',':
+						throw new IllegalStateException("Should only happen inside <...>");
+					default:
+						nameBuff.append(c);
+					}
+				}
+				nameBuff.append(";");
+				return nameBuff.toString();
+			}
+		} else {
+			throw new IllegalArgumentException("Bad type name: " + name);
+		}
+	}
+
 	public String getCorrespondingType(boolean getFullyQualifiedType) {
 		String returnType = (String) kvpairs.get("returnType");
 		if (returnType == null) {

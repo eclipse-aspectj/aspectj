@@ -95,7 +95,8 @@ public interface IProgramElement extends Serializable {
 	public String getPackageName();
 
 	/**
-	 * @param method return types or field types
+	 * @param method
+	 *            return types or field types
 	 */
 	public void setCorrespondingType(String returnType);
 
@@ -424,7 +425,8 @@ public interface IProgramElement extends Serializable {
 	public boolean isAnnotationStyleDeclaration();
 
 	/**
-	 * @param fullyQualifiedannotationType the annotation type, eg. p.q.r.Foo
+	 * @param fullyQualifiedannotationType
+	 *            the annotation type, eg. p.q.r.Foo
 	 */
 	public void setAnnotationType(String fullyQualifiedannotationType);
 
@@ -446,4 +448,9 @@ public interface IProgramElement extends Serializable {
 	public void setAnnotationRemover(boolean isRemover);
 
 	public boolean isAnnotationRemover();
+
+	/**
+	 * @return the return type of a method or type of a field in signature form (e.g. Ljava/lang/String;)
+	 */
+	public String getCorrespondingTypeSignature();
 }
