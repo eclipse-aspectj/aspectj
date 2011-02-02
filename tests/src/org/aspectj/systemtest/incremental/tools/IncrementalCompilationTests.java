@@ -11,6 +11,7 @@
 package org.aspectj.systemtest.incremental.tools;
 
 import java.io.File;
+import java.util.List;
 import java.util.Set;
 
 import org.aspectj.ajde.core.AjCompiler;
@@ -118,6 +119,65 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		checkWasntFullBuild();
 		assertEquals(1, getErrorMessages(p).size());
 		assertContains("B.java:4:0::0 Unhandled exception type Exception", getErrorMessages(p).get(0));
+	}
+
+	/**
+	 * Checking if we have the right information on the member nodes.
+	 */
+	public void testModelStructure_333123() throws Exception {
+		String p = "pr333123";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		printModel(p);
+
+		AspectJElementHierarchy model = (AspectJElementHierarchy) getModelFor(p).getHierarchy();
+
+		IProgramElement ipe = null;
+		// fieldInt [field] 10 hid:=pr333123<a.b{Code.java[Code^fieldInt
+		// fieldString [field] 12 hid:=pr333123<a.b{Code.java[Code^fieldString
+		// fieldCode [field] 14 hid:=pr333123<a.b{Code.java[Code^fieldCode
+		ipe = model.findElementForHandle("=pr333123<a.b{Code.java[Code^fieldInt");
+		assertEquals("I", ipe.getCorrespondingTypeSignature());
+		assertEquals("int", ipe.getCorrespondingType(true));
+		ipe = model.findElementForHandle("=pr333123<a.b{Code.java[Code^fieldString");
+		assertEquals("Ljava/lang/String;", ipe.getCorrespondingTypeSignature());
+		assertEquals("java.lang.String", ipe.getCorrespondingType(true));
+		// assertEquals("Ljava/lang/String;", ipe.getBytecodeSignature());
+		ipe = model.findElementForHandle("=pr333123<a.b{Code.java[Code^fieldCode");
+		assertEquals("La/b/Code;", ipe.getCorrespondingTypeSignature());
+		assertEquals("a.b.Code", ipe.getCorrespondingType(true));
+		ipe = model.findElementForHandle("=pr333123<a.b{Code.java[Code^fieldList");
+		// assertEquals("La/b/Code;", ipe.getBytecodeSignature());
+		assertEquals("Ljava/util/List<La/b/Code;>;", ipe.getCorrespondingTypeSignature());
+		assertEquals("java.util.List<a.b.Code>", ipe.getCorrespondingType(true));
+
+		// method(java.lang.String) [method] 4 hid:=pr333123<a.b{Code.java[Code~method~QString;
+		// getInt() [method] 6 hid:=pr333123<a.b{Code.java[Code~getInt
+		// transform(a.b.Code,java.lang.String,long) [method] 8 hid:=pr333123<a.b{Code.java[Code~transform~QCode;~QString;~J
+		ipe = model.findElementForHandle("=pr333123<a.b{Code.java[Code~method~QString;");
+		assertEquals("(Ljava/lang/String;)V", ipe.getBytecodeSignature());
+		ipe = model.findElementForHandle("=pr333123<a.b{Code.java[Code~getInt");
+		assertEquals("()I", ipe.getBytecodeSignature());
+
+		ipe = model.findElementForHandle("=pr333123<a.b{Code.java[Code~transform~QCode;~QString;~J");
+		assertEquals("(La/b/Code;Ljava/lang/String;J)La/b/Code;", ipe.getBytecodeSignature());
+
+		List<char[]> paramSigs = ipe.getParameterSignatures();
+		assertEquals("La/b/Code;", new String(paramSigs.get(0)));
+		assertEquals("Ljava/lang/String;", new String(paramSigs.get(1)));
+		assertEquals("J", new String(paramSigs.get(2)));
+
+		assertEquals("a.b.Code", ipe.getCorrespondingType(true));
+		assertEquals("La/b/Code;", ipe.getCorrespondingTypeSignature());
+
+		ipe = model.findElementForHandle("=pr333123<a.b{Code.java[Code~transform2~QList\\<QString;>;");
+		assertEquals("(Ljava/util/List;)Ljava/util/List;", ipe.getBytecodeSignature());
+		paramSigs = ipe.getParameterSignatures();
+		assertEquals("Ljava/util/List<Ljava/lang/String;>;", new String(paramSigs.get(0)));
+		assertEquals("java.util.List<a.b.Code>", ipe.getCorrespondingType(true));
+		assertEquals("Ljava/util/List<La/b/Code;>;", ipe.getCorrespondingTypeSignature());
+
 	}
 
 	// changing method return type parameterization
@@ -276,7 +336,7 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		IProgramElement ipe = model.findElementForHandleOrCreate("=PR278496_1<a.b.c{Code.java", false);
 		assertNull(ipe);
 	}
-	
+
 	// inner classes
 	public void testDeletion_278496_9() throws Exception {
 		String p = "PR278496_9";

@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc1611Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testDeserialization_335682() {
+		runTest("pr335682");
+	}
+
 	public void testNPEAddSerialVersionUID_bug335783() {
 		runTest("pr335783");
 	}
