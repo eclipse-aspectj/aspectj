@@ -2,9 +2,22 @@
 
 <suite>
 
-<ajc-test dir="bugs1611/pr335682" title="pr335682">
-  <compile inpath="foo.jar" outjar="bar.jar"/>
-</ajc-test>
+  <ajc-test dir="bugs1611/pr335682" title="pr335682">
+    <compile inpath="foo.jar" outjar="bar.jar"/>
+  </ajc-test>
+
+  <ajc-test dir="bugs1611/pr335682" title="pr335682 - 2">
+    <compile inpath="case2.jar" outjar="bar.jar"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs1611/pr335682" title="pr335682 - 3">
+    <compile inpath="case3.jar" outjar="bar.jar"/>
+  </ajc-test>  
+  
+  <ajc-test dir="bugs1611/pr335682" title="pr335682 - 5">
+    <compile inpath="case5.jar" outjar="bar.jar"/>
+  </ajc-test>  
+
   <ajc-test dir="bugs1611/pr335783" title="pr335783">
     <compile files="A.java" options="-1.5"/>
     <compile files="X.aj" options="-1.5 -Xlint:ignore" />
