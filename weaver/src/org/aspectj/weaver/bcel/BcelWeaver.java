@@ -53,6 +53,7 @@ import org.aspectj.util.FileUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationOnTypeMunger;
 import org.aspectj.weaver.BCException;
@@ -1377,7 +1378,9 @@ public class BcelWeaver {
 			// new: reweavable default with clever diff
 			if (!world.isOverWeaving()) {
 				byte[] bytes = wsi.getUnwovenClassFileData(classType.getJavaClass().getBytes());
-				classType.setJavaClass(Utility.makeJavaClass(classType.getJavaClass().getFileName(), bytes), true);
+				WeaverVersionInfo wvi = classType.getWeaverVersionAttribute();
+				JavaClass newJavaClass = Utility.makeJavaClass(classType.getJavaClass().getFileName(), bytes);
+				classType.setJavaClass(newJavaClass, true);
 				classType.getResolvedTypeX().ensureConsistent();
 			}
 			// } else {

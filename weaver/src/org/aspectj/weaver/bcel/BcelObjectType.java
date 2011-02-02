@@ -37,6 +37,7 @@ import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.classfile.annotation.EnumElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
+import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.GenericSignature;
@@ -386,8 +387,10 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		typeMungers = new ArrayList<ConcreteTypeMunger>();
 		declares = new ArrayList<Declare>();
 		processAttributes(l, pointcuts, false);
-		l = AtAjAttributes.readAj5ClassAttributes(((BcelWorld) getResolvedTypeX().getWorld()).getModelAsAsmManager(), javaClass,
-				getResolvedTypeX(), getResolvedTypeX().getSourceContext(), msgHandler, isCodeStyleAspect);
+		ReferenceType type = getResolvedTypeX();
+		AsmManager asmManager = ((BcelWorld) type.getWorld()).getModelAsAsmManager();
+		l = AtAjAttributes.readAj5ClassAttributes(asmManager, javaClass, type, type.getSourceContext(), msgHandler,
+				isCodeStyleAspect);
 		AjAttribute.Aspect deferredAspectAttribute = processAttributes(l, pointcuts, true);
 
 		if (pointcuts.size() == 0) {
@@ -440,9 +443,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 					setSourcefilename(sca.getSourceFileName());
 				}
 			} else if (a instanceof AjAttribute.WeaverVersionInfo) {
-				wvInfo = (AjAttribute.WeaverVersionInfo) a; // Set the weaver
-				// version used to
-				// build this type
+				// Set the weaver version used to build this type
+				wvInfo = (AjAttribute.WeaverVersionInfo) a;
 			} else {
 				throw new BCException("bad attribute " + a);
 			}

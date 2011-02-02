@@ -11,6 +11,8 @@
  *******************************************************************************/
 package org.aspectj.weaver.bcel;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +31,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.classfile.annotation.ArrayElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.ClassElementValue;
@@ -48,16 +51,19 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.BindingScope;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.MethodDelegateTypeMunger;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ReferenceType;
+import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.Bindings;
@@ -225,6 +231,7 @@ public class AtAjAttributes {
 		boolean hasAtAspectAnnotation = false;
 		boolean hasAtPrecedenceAnnotation = false;
 
+		boolean versionProcessed = false;
 		for (int i = 0; i < attributes.length; i++) {
 			Attribute attribute = attributes[i];
 			if (acceptAttribute(attribute)) {
@@ -239,6 +246,39 @@ public class AtAjAttributes {
 				}
 				// there can only be one RuntimeVisible bytecode attribute
 				break;
+			}
+		}
+		for (int i = attributes.length - 1; i >= 0; i--) {
+			Attribute attribute = attributes[i];
+			if (attribute.getName().equals(WeaverVersionInfo.AttributeName)) {
+				try {
+					VersionedDataInputStream s = new VersionedDataInputStream(new ByteArrayInputStream(
+							((Unknown) attribute).getBytes()), null);
+					WeaverVersionInfo wvi = WeaverVersionInfo.read(s);
+					struct.ajAttributes.add(0, wvi);
+					versionProcessed = true;
+				} catch (IOException ioe) {
+					ioe.printStackTrace();
+				}
+			}
+		}
+		if (!versionProcessed) {
+			// If we are in here due to a resetState() call (presumably because of reweavable state processing), the
+			// original type delegate will have been set with a version but that version will be missing from
+			// the new set of attributes (looks like a bug where the version attribute was not included in the
+			// data compressed into the attribute). So rather than 'defaulting' to current, we should use one
+			// if it set on the delegate for the type.
+			ReferenceTypeDelegate delegate = type.getDelegate();
+			if (delegate instanceof BcelObjectType) {
+				WeaverVersionInfo wvi = ((BcelObjectType) delegate).getWeaverVersionAttribute();
+				if (wvi != null && wvi.getMajorVersion() != WeaverVersionInfo.WEAVER_VERSION_MAJOR_UNKNOWN) {
+					// use this one
+					struct.ajAttributes.add(0, wvi);
+					versionProcessed = true;
+				}
+			}
+			if (!versionProcessed) {
+				struct.ajAttributes.add(0, new AjAttribute.WeaverVersionInfo());
 			}
 		}
 
@@ -520,8 +560,8 @@ public class AtAjAttributes {
 				perClause.setLocation(struct.context, -1, -1);// struct.context.getOffset(),
 				// struct.context.getOffset()+1);//FIXME
 				// AVASM
-				// FIXME asc see related comment way about about the version...
-				struct.ajAttributes.add(new AjAttribute.WeaverVersionInfo());
+				// Not setting version here
+				//struct.ajAttributes.add(new AjAttribute.WeaverVersionInfo());
 				AjAttribute.Aspect aspectAttribute = new AjAttribute.Aspect(perClause);
 				struct.ajAttributes.add(aspectAttribute);
 				FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];

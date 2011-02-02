@@ -91,12 +91,25 @@ class BcelMethod extends ResolvedMemberImpl {
 		unpackAjAttributes(bcelObjectType.getWorld());
 	}
 
+	/**
+	 * This constructor expects to be passed the attributes, rather than deserializing them.
+	 */
+	BcelMethod(BcelObjectType declaringType, Method method, List<AjAttribute> attributes) {
+		super(method.getName().equals("<init>") ? CONSTRUCTOR : (method.getName().equals("<clinit>") ? STATIC_INITIALIZATION
+				: METHOD), declaringType.getResolvedTypeX(), declaringType.isInterface() ? method.getModifiers()
+				| Modifier.INTERFACE : method.getModifiers(), method.getName(), method.getSignature());
+		this.method = method;
+		sourceContext = declaringType.getResolvedTypeX().getSourceContext();
+		bcelObjectType = declaringType;
+		unpackJavaAttributes();
+		processAttributes(bcelObjectType.getWorld(), attributes);
+	}
+
 	// ----
 
 	private void unpackJavaAttributes() {
 		ExceptionTable exnTable = method.getExceptionTable();
 		checkedExceptions = (exnTable == null) ? UnresolvedType.NONE : UnresolvedType.forNames(exnTable.getExceptionNames());
-
 	}
 
 	@Override
