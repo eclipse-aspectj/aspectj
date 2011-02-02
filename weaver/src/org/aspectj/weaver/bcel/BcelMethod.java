@@ -34,6 +34,7 @@ import org.aspectj.util.GenericSignature;
 import org.aspectj.util.GenericSignature.TypeVariableSignature;
 import org.aspectj.util.GenericSignatureParser;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ISourceContext;
@@ -195,9 +196,9 @@ class BcelMethod extends ResolvedMemberImpl {
 	private void unpackAjAttributes(World world) {
 		associatedShadowMunger = null;
 		ResolvedType resolvedDeclaringType = getDeclaringType().resolve(world);
+		WeaverVersionInfo wvinfo = bcelObjectType.getWeaverVersionAttribute();
 		List<AjAttribute> as = Utility.readAjAttributes(resolvedDeclaringType.getClassName(), method.getAttributes(),
-				resolvedDeclaringType.getSourceContext(), world, bcelObjectType.getWeaverVersionAttribute(),
-				new BcelConstantPoolReader(method.getConstantPool()));
+				resolvedDeclaringType.getSourceContext(), world, wvinfo, new BcelConstantPoolReader(method.getConstantPool()));
 		processAttributes(world, as);
 		as = AtAjAttributes.readAj5MethodAttributes(method, this, resolvedDeclaringType, preResolvedPointcut,
 				resolvedDeclaringType.getSourceContext(), world.getMessageHandler());

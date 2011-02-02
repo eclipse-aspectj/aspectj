@@ -231,7 +231,7 @@ public class AtAjAttributes {
 		boolean hasAtAspectAnnotation = false;
 		boolean hasAtPrecedenceAnnotation = false;
 
-		boolean versionProcessed = false;
+		WeaverVersionInfo wvinfo = null;
 		for (int i = 0; i < attributes.length; i++) {
 			Attribute attribute = attributes[i];
 			if (acceptAttribute(attribute)) {
@@ -254,15 +254,14 @@ public class AtAjAttributes {
 				try {
 					VersionedDataInputStream s = new VersionedDataInputStream(new ByteArrayInputStream(
 							((Unknown) attribute).getBytes()), null);
-					WeaverVersionInfo wvi = WeaverVersionInfo.read(s);
-					struct.ajAttributes.add(0, wvi);
-					versionProcessed = true;
+					wvinfo = WeaverVersionInfo.read(s);
+					struct.ajAttributes.add(0, wvinfo);
 				} catch (IOException ioe) {
 					ioe.printStackTrace();
 				}
 			}
 		}
-		if (!versionProcessed) {
+		if (wvinfo == null) {
 			// If we are in here due to a resetState() call (presumably because of reweavable state processing), the
 			// original type delegate will have been set with a version but that version will be missing from
 			// the new set of attributes (looks like a bug where the version attribute was not included in the
@@ -270,15 +269,18 @@ public class AtAjAttributes {
 			// if it set on the delegate for the type.
 			ReferenceTypeDelegate delegate = type.getDelegate();
 			if (delegate instanceof BcelObjectType) {
-				WeaverVersionInfo wvi = ((BcelObjectType) delegate).getWeaverVersionAttribute();
-				if (wvi != null && wvi.getMajorVersion() != WeaverVersionInfo.WEAVER_VERSION_MAJOR_UNKNOWN) {
-					// use this one
-					struct.ajAttributes.add(0, wvi);
-					versionProcessed = true;
+				wvinfo = ((BcelObjectType) delegate).getWeaverVersionAttribute();
+				if (wvinfo != null) {
+					if (wvinfo.getMajorVersion() != WeaverVersionInfo.WEAVER_VERSION_MAJOR_UNKNOWN) {
+						// use this one
+						struct.ajAttributes.add(0, wvinfo);
+					} else {
+						wvinfo = null;
+					}
 				}
 			}
-			if (!versionProcessed) {
-				struct.ajAttributes.add(0, new AjAttribute.WeaverVersionInfo());
+			if (wvinfo == null) {
+				struct.ajAttributes.add(0, wvinfo = new AjAttribute.WeaverVersionInfo());
 			}
 		}
 
@@ -358,9 +360,6 @@ public class AtAjAttributes {
 				}
 			}
 			if (processedPointcut) {
-				// FIXME asc should check we aren't adding multiple versions...
-				// will do once I get the tests passing again...
-				struct.ajAttributes.add(new AjAttribute.WeaverVersionInfo());
 				struct.ajAttributes.addAll(mstruct.ajAttributes);
 			}
 		}
@@ -561,7 +560,7 @@ public class AtAjAttributes {
 				// struct.context.getOffset()+1);//FIXME
 				// AVASM
 				// Not setting version here
-				//struct.ajAttributes.add(new AjAttribute.WeaverVersionInfo());
+				// struct.ajAttributes.add(new AjAttribute.WeaverVersionInfo());
 				AjAttribute.Aspect aspectAttribute = new AjAttribute.Aspect(perClause);
 				struct.ajAttributes.add(aspectAttribute);
 				FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
