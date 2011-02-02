@@ -565,8 +565,8 @@ public abstract class AjAttribute {
 		public static AdviceAttribute read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 			AdviceKind kind = AdviceKind.read(s);
 			if (kind == AdviceKind.Around) {
-				return new AdviceAttribute(kind, Pointcut.read(s, context), s.readByte(), s.readInt(), s.readInt(), context, s
-						.readBoolean(), ResolvedMemberImpl.readResolvedMemberArray(s, context), FileUtil.readBooleanArray(s),
+				return new AdviceAttribute(kind, Pointcut.read(s, context), s.readByte(), s.readInt(), s.readInt(), context,
+						s.readBoolean(), ResolvedMemberImpl.readResolvedMemberArray(s, context), FileUtil.readBooleanArray(s),
 						UnresolvedType.readArray(s));
 			} else {
 				return new AdviceAttribute(kind, Pointcut.read(s, context), s.readByte(), s.readInt(), s.readInt(), context);
@@ -731,8 +731,8 @@ public abstract class AjAttribute {
 		}
 
 		public static EffectiveSignatureAttribute read(VersionedDataInputStream s, ISourceContext context) throws IOException {
-			return new EffectiveSignatureAttribute(ResolvedMemberImpl.readResolvedMember(s, context), Shadow.Kind.read(s), s
-					.readBoolean());
+			ResolvedMember member = ResolvedMemberImpl.readResolvedMember(s, context);
+			return new EffectiveSignatureAttribute(member, Shadow.Kind.read(s), s.readBoolean());
 		}
 
 		public ResolvedMember getEffectiveSignature() {

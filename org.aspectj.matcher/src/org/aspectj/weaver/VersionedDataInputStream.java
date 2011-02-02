@@ -80,4 +80,8 @@ public class VersionedDataInputStream extends DataInputStream {
 	public UnresolvedType readSignatureAsUnresolvedType() throws IOException {
 		return UnresolvedType.forSignature(readUtf8(readShort()));
 	}
+
+	public String toString() {
+		return "VersionedDataInputStream: version=" + version + " constantPoolReader?" + (constantPoolReader != null);
+	}
 }
