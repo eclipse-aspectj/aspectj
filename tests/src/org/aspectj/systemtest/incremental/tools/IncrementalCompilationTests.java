@@ -83,6 +83,44 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		assertContains("B.java:4:0::0 Unhandled exception type IOException", getErrorMessages(p).get(0));
 	}
 
+	public void testITIT_336147() throws Exception {
+		String p = "pr336147";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		assertNoErrors(p);
+		checkCompileWeaveCount(p, 1, 3);
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+		assertNoErrors(p);
+		checkCompileWeaveCount(p, 1, 1);
+	}
+
+	public void testITIT_336147_2() throws Exception {
+		String p = "pr336147_2";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		assertNoErrors(p);
+		checkCompileWeaveCount(p, 2, 3);
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+		assertNoErrors(p);
+		checkCompileWeaveCount(p, 1, 1);
+	}
+
+	public void testITIT_336147_3() throws Exception {
+		AjdeInteractionTestbed.VERBOSE = true;
+		String p = "pr336147_3";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		assertNoErrors(p);
+		checkCompileWeaveCount(p, 3, 4);
+	}
+
 	public void testDeclareFieldMinus() throws Exception {
 		String p = "annoRemoval";
 		initialiseProject(p);
