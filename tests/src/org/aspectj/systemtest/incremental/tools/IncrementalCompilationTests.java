@@ -83,6 +83,15 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		assertContains("B.java:4:0::0 Unhandled exception type IOException", getErrorMessages(p).get(0));
 	}
 
+	public void testITIT_336158() throws Exception {
+		String p = "pr336158";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		assertNoErrors(p);
+		checkCompileWeaveCount(p, 3, 4);
+	}
+
 	public void testITIT_336147() throws Exception {
 		String p = "pr336147";
 		initialiseProject(p);
