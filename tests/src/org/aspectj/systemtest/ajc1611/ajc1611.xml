@@ -2,6 +2,35 @@
 
 <suite>
 
+  <ajc-test dir="bugs1611/pr336136" title="itit">
+    <compile files="Country_Roo_Op4j.java">
+    <message kind="error" text="The import com.foo cannot be resolved" line="1"/>
+    <message kind="error" text="The import org.javaruntype cannot be resolved" line="3"/>
+    <message kind="error" text="The import org.op4j cannot be resolved" line="4"/>
+    <message kind="error" text="The import org.op4j cannot be resolved" line="5"/>
+    <message kind="error" text="Country cannot be resolved to a type" line="9"/>
+    <message kind="error" text="Function cannot be resolved to a type" line="11"/>
+    <message kind="error" text="can't determine modifiers of missing type Country_Roo_Op4j$Keys"/>
+    </compile>"
+  </ajc-test>
+  
+  
+  <ajc-test dir="bugs1611/pr336136" title="itit - 2">
+    <compile files="Country_Roo_Op4j2.java" options="-1.5">
+    <message kind="error" text="The import com.foo cannot be resolved" line="1"/>
+    <message kind="error" text="The import org.javaruntype cannot be resolved" line="3"/>
+    <message kind="error" text="The import org.op4j cannot be resolved" line="4"/>
+    <message kind="error" text="The import org.op4j cannot be resolved" line="5"/>
+    <message kind="error" text="Country cannot be resolved to a type" line="9"/>
+    <message kind="error" text="Country cannot be resolved to a type" line="11"/>
+    <message kind="error" text="Function cannot be resolved to a type" line="11"/>
+    <message kind="error" text="Get cannot be resolved" line="11"/>
+    <message kind="error" text="Types cannot be resolved" line="11"/>
+    <message kind="error" text="can't determine modifiers of missing type Country_Roo_Op4j2$Keys"/>
+    </compile>"
+  </ajc-test>
+  
+
   <ajc-test dir="bugs1611/pr335682" title="pr335682">
     <compile inpath="foo.jar" outjar="bar.jar"/>
   </ajc-test>
