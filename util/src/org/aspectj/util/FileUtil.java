@@ -34,6 +34,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,7 +46,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
- * 
+ * @author Andy Clement
+ * @author Kris De Volder
  */
 public class FileUtil {
 	/** default parent directory File when a file has a null parent */
@@ -1387,10 +1389,22 @@ public class FileUtil {
 		List<String> ret = new LinkedList<String>();
 		if (urls != null) {
 			for (int i = 0; i < urls.length; i++) {
-				ret.add(urls[i].getPath());
+				ret.add(toPathString(urls[i]));
 			}
 		}
 		return ret;
+	}
+
+	private static String toPathString(URL url) {
+		try {
+			return url.toURI().getPath();
+		} catch (URISyntaxException e) {
+			System.err.println("Warning!! Malformed URL may cause problems: "+url); // TODO: Better way to report this?
+			// In this case it was likely not using properly escaped 
+			// characters so we just use the 'bad' method that doesn't decode
+			// special chars
+			return url.getPath();
+		}
 	}
 
 	/**
