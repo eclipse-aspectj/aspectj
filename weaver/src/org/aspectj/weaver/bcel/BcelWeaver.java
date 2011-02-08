@@ -120,7 +120,7 @@ public class BcelWeaver {
 	private transient List<ShadowMunger> shadowMungerList = null;
 	private transient List<ConcreteTypeMunger> typeMungerList = null;
 	private transient List<ConcreteTypeMunger> lateTypeMungerList = null;
-	private transient List declareParentsList = null;
+	private transient List<DeclareParents> declareParentsList = null;
 
 	private Manifest manifest = null;
 	private boolean needToReweaveWorld = false;
@@ -228,8 +228,7 @@ public class BcelWeaver {
 
 	/**
 	 * 
-	 * @param inFile
-	 *            directory containing classes or zip/jar class archive
+	 * @param inFile directory containing classes or zip/jar class archive
 	 */
 	public void addLibraryJarFile(File inFile) throws IOException {
 		List<ResolvedType> addedAspects = null;
@@ -282,8 +281,7 @@ public class BcelWeaver {
 	/**
 	 * Look for .class files that represent aspects in the supplied directory - return the list of accumulated aspects.
 	 * 
-	 * @param directory
-	 *            the directory in which to look for Aspect .class files
+	 * @param directory the directory in which to look for Aspect .class files
 	 * @return the list of discovered aspects
 	 * @throws FileNotFoundException
 	 * @throws IOException
@@ -311,12 +309,9 @@ public class BcelWeaver {
 	 * Determine if the supplied bytes represent an aspect, if they do then create a ResolvedType instance for the aspect and return
 	 * it, otherwise return null
 	 * 
-	 * @param classbytes
-	 *            the classbytes that might represent an aspect
-	 * @param name
-	 *            the name of the class
-	 * @param directory
-	 *            directory which contained the class file
+	 * @param classbytes the classbytes that might represent an aspect
+	 * @param name the name of the class
+	 * @param directory directory which contained the class file
 	 * @return a ResolvedType if the classbytes represent an aspect, otherwise null
 	 */
 	private ResolvedType isAspect(byte[] classbytes, String name, File dir) throws IOException {
@@ -1301,8 +1296,11 @@ public class BcelWeaver {
 		ResolvedType superclassType = resolvedTypeToWeave.getSuperclass();
 		String superclassTypename = (superclassType == null ? null : superclassType.getName());
 
-		if (superclassType != null && !superclassType.isTypeHierarchyComplete() && superclassType.isExposedToWeaver()) { // typesForWeaving.contains(superclassTypename))
-			// // {
+		// PR336654 added the 'typesForWeaving.contains(superclassTypename)' clause.
+		// Without it we can delete all type mungers on the parents and yet we only
+		// add back in the declare parents related ones, not the regular ITDs.
+		if (superclassType != null && !superclassType.isTypeHierarchyComplete() && superclassType.isExposedToWeaver()
+				&& typesForWeaving.contains(superclassTypename)) {
 			weaveParentsFor(typesForWeaving, superclassTypename, superclassType);
 		}
 
@@ -1464,8 +1462,7 @@ public class BcelWeaver {
 		boolean aParentChangeOccurred = false;
 		boolean anAnnotationChangeOccurred = false;
 		// First pass - apply all decp mungers
-		for (Iterator i = declareParentsList.iterator(); i.hasNext();) {
-			DeclareParents decp = (DeclareParents) i.next();
+		for (DeclareParents decp : declareParentsList) {
 			boolean typeChanged = applyDeclareParents(decp, onType);
 			if (typeChanged) {
 				aParentChangeOccurred = true;
@@ -1475,8 +1472,7 @@ public class BcelWeaver {
 		}
 
 		// Still first pass - apply all dec @type mungers
-		for (Iterator i = xcutSet.getDeclareAnnotationOnTypes().iterator(); i.hasNext();) {
-			DeclareAnnotation decA = (DeclareAnnotation) i.next();
+		for (DeclareAnnotation decA : xcutSet.getDeclareAnnotationOnTypes()) {
 			boolean typeChanged = applyDeclareAtType(decA, onType, true);
 			if (typeChanged) {
 				anAnnotationChangeOccurred = true;
@@ -1925,10 +1921,8 @@ public class BcelWeaver {
 	 * Perform a fast match of the specified list of shadowmungers against the specified type. A subset of those that might match is
 	 * returned.
 	 * 
-	 * @param list
-	 *            list of all shadow mungers that might match
-	 * @param type
-	 *            the target type
+	 * @param list list of all shadow mungers that might match
+	 * @param type the target type
 	 * @return a list of shadow mungers that might match with those that cannot (according to fast match rules) removed
 	 */
 	private List<ShadowMunger> fastMatch(List<ShadowMunger> list, ResolvedType type) {
