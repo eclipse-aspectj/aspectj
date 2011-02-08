@@ -2,6 +2,17 @@
 
 <suite>
 
+  <ajc-test dir="bugs1611/pr336471" title="esjp">
+  	<compile files="Tester.aj" options="-1.5 -Xset:targetRuntime1_6_10=true"/>
+  	<run class="Tester">
+	  	<stdout>
+		  	<line text="execution(void Tester.main(String[]))"/>
+		  	<line text="execution(void Foo.run())"/>
+		  	<line text="hello"/>
+	  	</stdout>
+  	</run>
+  </ajc-test>
+  
   <ajc-test dir="bugs1611/pr336136" title="itit">
     <compile files="Country_Roo_Op4j.java">
     <message kind="error" text="The import com.foo cannot be resolved" line="1"/>

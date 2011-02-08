@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc1611Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testESJP_336471() {
+		runTest("esjp");
+	}
+
 	public void testITIT_336136() {
 		runTest("itit");
 	}
