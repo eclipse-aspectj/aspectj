@@ -1041,8 +1041,7 @@ public final class LazyClassGen {
 	 * Create a field in the type containing the shadow where the annotation retrieved during binding can be stored - for later fast
 	 * access.
 	 * 
-	 * @param shadow
-	 *            the shadow at which the @annotation result is being cached
+	 * @param shadow the shadow at which the @annotation result is being cached
 	 * @return a field
 	 */
 	public Field getAnnotationCachingField(BcelShadow shadow, ResolvedType toType) {
@@ -1202,7 +1201,9 @@ public final class LazyClassGen {
 
 	private void initializeTjp(InstructionFactory fact, InstructionList list, Field field, BcelShadow shadow) {
 		boolean fastSJP = false;
-		boolean isFastSJPAvailable = shadow.getWorld().isTargettingRuntime1_6_10();
+		// avoid fast SJP if it is for an enclosing joinpoint
+		boolean isFastSJPAvailable = shadow.getWorld().isTargettingRuntime1_6_10()
+				&& !enclosingStaticTjpType.equals(field.getType());
 
 		Member sig = shadow.getSignature();
 
@@ -1326,9 +1327,8 @@ public final class LazyClassGen {
 
 		final String factoryMethod;
 
-		if (world.isTargettingAspectJRuntime12()) { // TAG:SUPPORTING12: We
-			// didn't have makeESJP() in
-			// 1.2
+		// TAG:SUPPORTING12: We didn't have makeESJP() in 1.2
+		if (world.isTargettingAspectJRuntime12()) {
 			list.append(fact.createInvoke(factoryType.getClassName(), "makeSJP", staticTjpType, new Type[] { Type.STRING, sigType,
 					Type.INT }, Constants.INVOKEVIRTUAL));
 
