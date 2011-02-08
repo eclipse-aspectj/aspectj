@@ -172,8 +172,9 @@ public class AjProblemReporter extends ProblemReporter {
 			ConcreteTypeMunger m = (ConcreteTypeMunger) i.next();
 			ResolvedMember sig = m.getSignature();
 			if (!Modifier.isAbstract(sig.getModifiers())) {
-				if (ResolvedType.matches(AjcMemberMaker.interMethod(sig, m.getAspectType(), sig.getDeclaringType().resolve(
-						factory.getWorld()).isInterface()), factory.makeResolvedMember(concreteMethod))) {
+				if (ResolvedType.matches(
+						AjcMemberMaker.interMethod(sig, m.getAspectType(), sig.getDeclaringType().resolve(factory.getWorld())
+								.isInterface()), factory.makeResolvedMember(concreteMethod))) {
 					return;
 				}
 			}
@@ -221,8 +222,8 @@ public class AjProblemReporter extends ProblemReporter {
 		if (onTypeX.isRawType())
 			onTypeX = onTypeX.getGenericType();
 
-		for (Iterator i = onTypeX.getInterTypeMungersIncludingSupers().iterator(); i.hasNext();) {
-			ConcreteTypeMunger m = (ConcreteTypeMunger) i.next();
+		List<ConcreteTypeMunger> mungers = onTypeX.getInterTypeMungersIncludingSupers();
+		for (ConcreteTypeMunger m : mungers) {
 			ResolvedMember sig = m.getSignature();
 			if (sig != null && !Modifier.isAbstract(sig.getModifiers())) {
 				ResolvedMember abstractMember = factory.makeResolvedMember(abstractMethod);
@@ -346,8 +347,8 @@ public class AjProblemReporter extends ProblemReporter {
 	public void itdMethodMustOverride(AbstractMethodDeclaration method, MethodBinding binding) {
 		this.handle(IProblem.MethodMustOverride,
 				new String[] { new String(binding.selector), typesAsString(binding.isVarargs(), binding.parameters, false),
-						new String(binding.declaringClass.readableName()), }, new String[] { new String(binding.selector),
-						typesAsString(binding.isVarargs(), binding.parameters, true),
+						new String(binding.declaringClass.readableName()), },
+				new String[] { new String(binding.selector), typesAsString(binding.isVarargs(), binding.parameters, true),
 						new String(binding.declaringClass.shortReadableName()), }, method.sourceStart, method.sourceEnd,
 				this.referenceContext, this.referenceContext == null ? null : this.referenceContext.compilationResult());
 	}
@@ -685,11 +686,11 @@ public class AjProblemReporter extends ProblemReporter {
 			super.parseErrorInsertAfterToken(start, end, currentKind, errorTokenSource, errorTokenName, expectedToken);
 		}
 	}
-	
+
 	public void missingValueForAnnotationMember(Annotation annotation, char[] memberName) {
-		if (referenceContext instanceof DeclareAnnotationDeclaration)  {
+		if (referenceContext instanceof DeclareAnnotationDeclaration) {
 			// If a remover then the values are not necessary
-			if (((DeclareAnnotationDeclaration)referenceContext).isRemover()) {
+			if (((DeclareAnnotationDeclaration) referenceContext).isRemover()) {
 				return;
 			}
 		}
