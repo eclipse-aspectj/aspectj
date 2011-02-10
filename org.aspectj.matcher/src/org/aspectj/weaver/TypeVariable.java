@@ -272,7 +272,9 @@ public class TypeVariable {
 		StringBuffer sb = new StringBuffer();
 		sb.append(name);
 		sb.append(":");
-		sb.append(((ResolvedType) superclass).getSignatureForAttribute());
+		if (superInterfaces.length == 0) {
+			sb.append(((ResolvedType) superclass).getSignatureForAttribute());
+		}
 		if (superInterfaces.length != 0) {
 			sb.append(":");
 			for (int i = 0; i < superInterfaces.length; i++) {

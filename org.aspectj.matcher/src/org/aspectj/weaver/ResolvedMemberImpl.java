@@ -523,6 +523,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 				for (int i = 0; i < tvcount; i++) {
 					m.typeVariables[i] = TypeVariable.read(s);
 					m.typeVariables[i].setDeclaringElement(m);
+					m.typeVariables[i].setRank(i);
 				}
 			}
 			if (s.getMajorVersion() >= AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150M4) {
