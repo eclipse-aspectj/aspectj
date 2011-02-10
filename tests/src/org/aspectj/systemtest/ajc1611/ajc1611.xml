@@ -2,6 +2,20 @@
 
 <suite>
 
+  <ajc-test dir="bugs1611/pr336880" title="bounds check confusion">
+  	<compile files="First.java" options="-1.5"/>
+  	<compile files="Second.java" aspectpath="." options="-1.5"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs1611/pr336774" title="clashing itds">
+  	<compile files="First.java" options="-1.5"/>
+  	<compile files="Test.java" aspectpath="." options="-1.5"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs1611/pr336745" title="incorrect signature">
+  	<compile files="Foo.aj" options="-1.5"/>
+  </ajc-test>
+  
   <ajc-test dir="bugs1611/pr336471" title="esjp">
   	<compile files="Tester.aj" options="-1.5 -Xset:targetRuntime1_6_10=true"/>
   	<run class="Tester">
