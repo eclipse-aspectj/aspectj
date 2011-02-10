@@ -24,8 +24,8 @@ import java.util.Map;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.AstUtil;
 import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
-import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.IMessage.Kind;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.org.eclipse.jdt.core.Flags;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
@@ -73,10 +73,10 @@ import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.TypeVariableDeclaringElement;
 import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.UnresolvedType.TypeKind;
 import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
 import org.aspectj.weaver.WildcardedUnresolvedType;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.UnresolvedType.TypeKind;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
 
@@ -286,7 +286,7 @@ public class EclipseFactory {
 			}
 			// StringBuffer parameterizedSig = new StringBuffer();
 			// parameterizedSig.append(ResolvedType.PARAMETERIZED_TYPE_IDENTIFIER);
-			//			
+			//
 			// // String parameterizedSig = new
 			// StringBuffer().append(ResolvedType.PARAMETERIZED_TYPE_IDENTIFIER).append(CharOperation
 			// .charToString(binding.genericTypeSignature()).substring(1)).toString();
@@ -309,8 +309,8 @@ public class EclipseFactory {
 			if (!(binding instanceof SourceTypeBinding)) {
 				throw new RuntimeException("Cant get the generic sig for " + binding.debugName());
 			}
-			return UnresolvedType.forGenericType(getName(binding), tVars, CharOperation.charToString(((SourceTypeBinding) binding)
-					.genericSignature()));
+			return UnresolvedType.forGenericType(getName(binding), tVars,
+					CharOperation.charToString(((SourceTypeBinding) binding).genericSignature()));
 		}
 
 		// LocalTypeBinding have a name $Local$, we can get the real name by using the signature....
@@ -583,8 +583,8 @@ public class EclipseFactory {
 		if (realDeclaringType.isRawType()) {
 			realDeclaringType = realDeclaringType.getGenericType();
 		}
-		ResolvedMemberImpl ret = new EclipseResolvedMember(binding, Member.FIELD, realDeclaringType, binding.modifiers, world
-				.resolve(fromBinding(binding.type)), new String(binding.name), UnresolvedType.NONE);
+		ResolvedMemberImpl ret = new EclipseResolvedMember(binding, Member.FIELD, realDeclaringType, binding.modifiers,
+				world.resolve(fromBinding(binding.type)), new String(binding.name), UnresolvedType.NONE);
 		return ret;
 	}
 
@@ -800,8 +800,9 @@ public class EclipseFactory {
 	 * Build a new Eclipse SyntheticFieldBinding for an AspectJ ResolvedMember.
 	 */
 	public SyntheticFieldBinding createSyntheticFieldBinding(SourceTypeBinding owningType, ResolvedMember member) {
-		SyntheticFieldBinding sfb = new SyntheticFieldBinding(member.getName().toCharArray(), makeTypeBinding(member
-				.getReturnType()), member.getModifiers() | Flags.AccSynthetic, owningType, Constant.NotAConstant, -1); // index
+		SyntheticFieldBinding sfb = new SyntheticFieldBinding(member.getName().toCharArray(),
+				makeTypeBinding(member.getReturnType()), member.getModifiers() | Flags.AccSynthetic, owningType,
+				Constant.NotAConstant, -1); // index
 		// filled in
 		// later
 		owningType.addSyntheticField(sfb);
@@ -832,9 +833,8 @@ public class EclipseFactory {
 
 		FieldBinding fb = null;
 		if (member.getName().startsWith(NameMangler.PREFIX)) {
-			fb = new SyntheticFieldBinding(member.getName().toCharArray(), makeTypeBinding(member.getReturnType()), member
-					.getModifiers()
-					| Flags.AccSynthetic, currentType, Constant.NotAConstant, -1); // index filled in later
+			fb = new SyntheticFieldBinding(member.getName().toCharArray(), makeTypeBinding(member.getReturnType()),
+					member.getModifiers() | Flags.AccSynthetic, currentType, Constant.NotAConstant, -1); // index filled in later
 		} else {
 			fb = new FieldBinding(member.getName().toCharArray(), makeTypeBinding(member.getReturnType()), member.getModifiers(),
 					currentType, Constant.NotAConstant);
@@ -917,9 +917,9 @@ public class EclipseFactory {
 		}
 
 		currentType = declaringType;
-		MethodBinding mb = new MethodBinding(member.getModifiers(), member.getName().toCharArray(), makeTypeBinding(member
-				.getReturnType()), makeTypeBindings(member.getParameterTypes()), makeReferenceBindings(member.getExceptions()),
-				declaringType);
+		MethodBinding mb = new MethodBinding(member.getModifiers(), member.getName().toCharArray(),
+				makeTypeBinding(member.getReturnType()), makeTypeBindings(member.getParameterTypes()),
+				makeReferenceBindings(member.getExceptions()), declaringType);
 
 		if (tvbs != null) {
 			mb.typeVariables = tvbs;
@@ -980,9 +980,9 @@ public class EclipseFactory {
 	// // } else {
 	// // declaringElement = makeTypeBinding((UnresolvedType)tVar.getDeclaringElement());
 	// // }
-	//		  
+	//
 	// tvBinding = new TypeVariableBinding(tv.getName().toCharArray(),null,tv.getRank());
-	//		  
+	//
 	// typeVariableToTypeBinding.put(tv.getName(),tvBinding);
 	// tvBinding.superclass=(ReferenceBinding)makeTypeBinding(tv.getUpperBound());
 	// tvBinding.firstBound=makeTypeBinding(tv.getFirstBound());
@@ -1018,7 +1018,9 @@ public class EclipseFactory {
 			// }
 			tvBinding = new TypeVariableBinding(tv.getName().toCharArray(), declaringElement, tv.getRank());
 			typeVariableToTypeBinding.put(tv.getName(), tvBinding);
-			if (tv.getSuperclass() != null) {
+
+			if (tv.getSuperclass() != null
+					&& (!tv.getSuperclass().getSignature().equals("Ljava/lang/Object;") || tv.getSuperInterfaces() != null)) {
 				tvBinding.superclass = (ReferenceBinding) makeTypeBinding(tv.getSuperclass());
 			}
 			tvBinding.firstBound = makeTypeBinding(tv.getFirstBound());

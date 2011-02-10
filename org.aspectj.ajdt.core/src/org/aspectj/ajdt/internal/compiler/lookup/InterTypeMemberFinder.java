@@ -32,6 +32,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 
 /**
  * The member finder looks after intertype declared members on a type, there is one member finder per type that was hit by an ITD.
@@ -84,7 +85,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	// System.err.println("odd that we're ecomparing the same: " + m1);
 	// return;
 	// }
-	//		
+	//
 	// if (!m1.areParametersEqual(m2)) return;
 
 	// if (m1 instanceof InterTypeMethodBinding) {
@@ -114,29 +115,29 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	// MethodBinding m2)
 	// {
 	// //System.err.println("compare: " + m1 + " with " + m2);
-	//		
+	//
 	// if (m1 == m2) {
 	// System.err.println("odd that we're ecomparing the same: " + m1);
 	// return;
 	// }
-	//		
+	//
 	// if (!m1.areParametersEqual(m2)) return;
-	//		
+	//
 	// //System.err.println("t1: " + getTargetType(m1) + ", " + getTargetType(m2));
-	//		
+	//
 	// if (getTargetType(m1) != getTargetType(m2)) return;
-	//		
+	//
 	// if (m1.declaringClass == m2.declaringClass) {
 	// duplicateMethodBinding(m1, m2);
 	// return;
 	// }
-	//		
-	//		
+	//
+	//
 	// if (m1.isPublic() || m2.isPublic()) {
 	// duplicateMethodBinding(m1, m2);
 	// return;
 	// }
-	//		
+	//
 	// // handle the wierd case where the aspect is a subtype of the target
 	// if (m2.isProtected()) {
 	// if (m2.declaringClass.isSuperclassOf(m1.declaringClass)) {
@@ -144,7 +145,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	// }
 	// // don't return because we also want to do the package test
 	// }
-	//		
+	//
 	// if (!m1.isPrivate() || !m2.isPrivate()) {
 	// // at least package visible
 	// if (m1.declaringClass.getPackage() == m2.declaringClass.getPackage()) {
@@ -152,7 +153,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	// }
 	// return;
 	// }
-	//		
+	//
 	// //XXX think about inner types some day
 	// }
 	// //
@@ -180,16 +181,16 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	// private void duplicateMethodBinding(MethodBinding m1, MethodBinding m2) {
 	// ReferenceBinding t1 = m1.declaringClass;
 	// ReferenceBinding t2 = m2.declaringClass;
-	//		
-	//		
-	//		
-	//		
-	//		
-	//		
+	//
+	//
+	//
+	//
+	//
+	//
 	// if (!(t1 instanceof SourceTypeBinding) || !(t2 instanceof SourceTypeBinding)) {
 	// throw new RuntimeException("unimplemented");
 	// }
-	//		
+	//
 	// SourceTypeBinding s1 = (SourceTypeBinding)t1;
 	// SourceTypeBinding s2 = (SourceTypeBinding)t2;
 	//
@@ -213,7 +214,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	// //.declaringClass;
 	// ReferenceBinding t2 = getDeclaringClass(m2);
 	// //.declaringClass;
-	//		
+	//
 	// if (t1 == t2) {
 	// AbstractMethodDeclaration methodDecl = m2.sourceMethod(); // cannot be retrieved after binding is lost
 	// System.err.println("duplicate: " + t1 + ", " + t2);
@@ -222,15 +223,15 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	// //methods[m] = null; //XXX duplicate problem reports
 	// return;
 	// }
-	//		
+	//
 	// if (!(t1 instanceof SourceTypeBinding) || !(t2 instanceof SourceTypeBinding)) {
 	// throw new RuntimeException("unimplemented");
 	// }
-	//		
+	//
 	// SourceTypeBinding s1 = (SourceTypeBinding)t1;
 	// SourceTypeBinding s2 = (SourceTypeBinding)t2;
-	//		
-	//		
+	//
+	//
 	// if (m1.canBeSeenBy(s1, null, s2.scope) || m2.canBeSeenBy(s2, null, s1.scope)) {
 	// s1.scope.problemReporter().duplicateMethodInType(s2, m1.sourceMethod());
 	// s2.scope.problemReporter().duplicateMethodInType(s1, m2.sourceMethod());
@@ -241,7 +242,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	// if (m2 instanceof InterTypeMethodBinding) {
 	// return ((InterTypeMethodBinding)m2).getTargetType();
 	// }
-	//		
+	//
 	// return m2.declaringClass;
 	// }
 
@@ -364,8 +365,8 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	// //XXX also need a test for completely matching sigs
 	// if (m1.isAbstract()) return m2;
 	// else if (m2.isAbstract()) return m1;
-	//			
-	//			
+	//
+	//
 	// if (m1 instanceof InterTypeMethodBinding) {
 	// //XXX need to handle dominates here
 	// EclipseWorld world = EclipseWorld.fromScopeLookupEnvironment(sourceTypeBinding.scope);
@@ -374,7 +375,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	// if (cmp < 0) return m2;
 	// else if (cmp > 0) return m1;
 	// }
-	//			
+	//
 	// duplicateMethodBinding(m1, m2);
 	// return null;
 	// }
@@ -384,7 +385,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	// if (t2.isSuperclassOf(t1)) {
 	// return m1;
 	// }
-	//		
+	//
 	// duplicateMethodBinding(m1, m2);
 	// return null;
 	// }
@@ -406,6 +407,58 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		// (isVisible(m1, m2.declaringClass) || isVisible(m2, m1.declaringClass));
 	}
 
+	public static boolean matches2(MethodBinding newBinding, MethodBinding existingBinding) {
+		if (!CharOperation.equals(existingBinding.selector, newBinding.selector)) {
+			return false;
+		}
+		int argCount = existingBinding.parameters.length;
+		if (newBinding.parameters.length != argCount) {
+			return false;
+		}
+		TypeBinding[] toMatch = newBinding.parameters;
+		boolean matches = true;
+		for (int p = 0; p < argCount; p++) {
+			if (toMatch[p] != existingBinding.parameters[p]) {
+				matches = false;
+				break;
+			}
+		}
+		if (!matches) {
+			// could be due to generics differences. For example:
+			// existingBinding is <T extends Foo> T bar(T t)
+			// newBinding is <T extends Foo> T bar(T t)
+			// the '==' check isn't going to pass, we need to do a deeper check
+			TypeVariableBinding[] existingTVBs = existingBinding.typeVariables;
+			TypeVariableBinding[] newTVBs = newBinding.typeVariables;
+			if (existingTVBs.length != 0 && existingTVBs.length == newTVBs.length) {
+				// Check them
+				boolean genericsMatch = true;
+				for (int t = 0, max = existingTVBs.length; t < max; t++) {
+					char[] existingSig = existingTVBs[t].genericSignature();
+					char[] newSig = newTVBs[t].genericSignature();
+					if (!CharOperation.equals(existingSig, newSig)) {
+						genericsMatch = false;
+						break;
+					}
+				}
+				if (genericsMatch) {
+					for (int a = 0; a < argCount; a++) {
+						char[] existingSig = existingBinding.parameters[a].genericTypeSignature();
+						char[] newSig = toMatch[a].genericTypeSignature();
+						if (!CharOperation.equals(existingSig, newSig)) {
+							genericsMatch = false;
+							break;
+						}
+					}
+				}
+				if (genericsMatch) {
+					matches = true;
+				}
+			}
+		}
+		return matches;
+	}
+
 	private static boolean matches(MethodBinding method, char[] selector, TypeBinding[] argumentTypes) {
 		if (!CharOperation.equals(selector, method.selector)) {
 			return false;
@@ -414,7 +467,6 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		if (method.parameters.length != argCount) {
 			return false;
 		}
-
 		TypeBinding[] toMatch = method.parameters;
 		for (int p = 0; p < argCount; p++) {
 			if (toMatch[p] != argumentTypes[p]) {
@@ -438,7 +490,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 			for (int i = 0, len = baseMethods.length; i < len; i++) {
 				MethodBinding b = baseMethods[i];
 				sourceTypeBinding.resolveTypesFor(b); // this will return fast if its already been done.
-				if (matches(binding, b)) {
+				if (matches2(binding, b)) {
 					// this always means we should remove the existing method
 					if (b.sourceMethod() != null) {
 						b.sourceMethod().binding = null;
