@@ -41,7 +41,7 @@ public class TypeVariable {
 	private int declaringElementKind = UNKNOWN;
 	private TypeVariableDeclaringElement declaringElement;
 	// whether or not the bounds of this type variable have been resolved
-	private boolean isResolved = false;
+	public boolean isResolved = false;
 	// Is this type variable in the process of being resolved (allows for something self-referential like Enum)
 	private boolean beingResolved = false;
 
@@ -212,9 +212,9 @@ public class TypeVariable {
 
 	// only used when resolving
 	public void setAdditionalInterfaceBounds(UnresolvedType[] superInterfaces) {
-		if (isResolved) {
-			throw new IllegalStateException("Why set this late?");
-		}
+		// if (isResolved) {
+		// throw new IllegalStateException("Why set this late?");
+		// }
 		this.firstbound = null;
 		this.superInterfaces = superInterfaces;
 	}

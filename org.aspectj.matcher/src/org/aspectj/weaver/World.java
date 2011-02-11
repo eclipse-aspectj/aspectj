@@ -264,7 +264,11 @@ public abstract class World implements Dump.INode {
 		if (ty instanceof ResolvedType) {
 			ResolvedType rty = (ResolvedType) ty;
 			rty = resolve(rty);
-			return rty;
+			// A TypeVariableReferenceType may look like it is resolved (it extends ResolvedType) but the internal
+			// type variable may not yet have been resolved
+			if (!rty.isTypeVariableReference() || ((TypeVariableReferenceType) rty).isTypeVariableResolved()) {
+				return rty;
+			}
 		}
 
 		// dispatch back to the type variable reference to resolve its

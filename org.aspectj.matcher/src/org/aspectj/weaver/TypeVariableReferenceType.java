@@ -68,7 +68,8 @@ public class TypeVariableReferenceType extends ReferenceType implements TypeVari
 	}
 
 	public TypeVariable getTypeVariable() {
-		// if (!fixedUp) throw new BCException("ARGH"); // fix it up now?
+		// if (!fixedUp)
+		// throw new BCException("ARGH"); // fix it up now?
 		return typeVariable;
 	}
 
@@ -130,6 +131,22 @@ public class TypeVariableReferenceType extends ReferenceType implements TypeVari
 
 	public ReferenceType getUpperBound() {
 		return (ReferenceType) typeVariable.resolve(world).getUpperBound();
+	}
+
+	/**
+	 * resolve the type variable we are managing and then return this object. 'this' is already a ResolvedType but the type variable
+	 * may transition from a not-resolved to a resolved state.
+	 */
+	public ResolvedType resolve(World world) {
+		typeVariable.resolve(world);
+		return this;
+	}
+
+	/**
+	 * @return true if the type variable this reference is managing is resolved
+	 */
+	public boolean isTypeVariableResolved() {
+		return typeVariable.isResolved;
 	}
 
 }
