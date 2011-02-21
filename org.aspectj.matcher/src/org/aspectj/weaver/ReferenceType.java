@@ -111,7 +111,7 @@ public class ReferenceType extends ResolvedType {
 	// this.delegate = genericReferenceType.getDelegate();
 	// genericReferenceType.addDependentType(this);
 	// }
-	private void addDependentType(ReferenceType dependent) {
+	private synchronized void addDependentType(ReferenceType dependent) {
 		this.derivativeTypes.add(dependent);
 	}
 

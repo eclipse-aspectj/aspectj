@@ -272,8 +272,8 @@ public abstract class World implements Dump.INode {
 		}
 
 		// dispatch back to the type variable reference to resolve its
-		// constituent parts
-		// don't do this for other unresolved types otherwise you'll end up in a
+		// constituent parts don't do this for other unresolved types otherwise
+		// you'll end up in a
 		// loop
 		if (ty.isTypeVariableReference()) {
 			return ty.resolve(this);
@@ -300,18 +300,18 @@ public abstract class World implements Dump.INode {
 		}
 
 		// no existing resolved type, create one
-		if (ty.isArray()) {
-			ResolvedType componentType = resolve(ty.getComponentType(), allowMissing);
-			// String brackets =
-			// signature.substring(0,signature.lastIndexOf("[")+1);
-			ret = new ArrayReferenceType(signature, "[" + componentType.getErasureSignature(), this, componentType);
-		} else {
-			ret = resolveToReferenceType(ty, allowMissing);
-			if (!allowMissing && ret.isMissing()) {
-				ret = handleRequiredMissingTypeDuringResolution(ty);
-			}
-			if (completeBinaryTypes) {
-				completeBinaryType(ret);
+		synchronized (buildingTypeLock) {
+			if (ty.isArray()) {
+				ResolvedType componentType = resolve(ty.getComponentType(), allowMissing);
+				ret = new ArrayReferenceType(signature, "[" + componentType.getErasureSignature(), this, componentType);
+			} else {
+				ret = resolveToReferenceType(ty, allowMissing);
+				if (!allowMissing && ret.isMissing()) {
+					ret = handleRequiredMissingTypeDuringResolution(ty);
+				}
+				if (completeBinaryTypes) {
+					completeBinaryType(ret);
+				}
 			}
 		}
 
@@ -328,6 +328,8 @@ public abstract class World implements Dump.INode {
 			return result;
 		}
 	}
+
+	private Object buildingTypeLock = new Object();
 
 	// Only need one representation of '?' in a world - can be shared
 	private BoundedReferenceType wildcard;
