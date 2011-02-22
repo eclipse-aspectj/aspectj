@@ -20,13 +20,34 @@ All rights reserved.
 
 <h1>AspectJ 1.6.11 Readme</h1>
 
-<h4>1.6.11 milestone 1 available 10-Dec-2010</h4>
 <p>The full list of resolved issues in 1.6.11 is available 
 <a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.6.11;">here</a></h2>.</p>
-<h2>Changes</h2>
-<p>1.6.11 includes a couple of interesting changes, in addition to a few bug fixes.
 
-<h3>Annotation removal</h3>
+<h4>1.6.11 milestone 2 available 22-Feb-2011</h4>
+<h4>1.6.11 milestone 1 available 10-Dec-2010</h4>
+<h2>Notable Changes</h2>
+<h3>M2 - Multithreaded world access</h3>
+<p>The weaver is backed by a representation of types called a world.  Traditionally the worlds have supported single threads - and that
+is how they are used when doing compile time weaving or load time weaving.  However in some configurations, e.g. pointcut
+matching under Spring, a single world instance may be getting accessed by multiple threads at the same time.  Under 
+<a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=337855">bug337855</a> some changes have been made to better support this kind
+of configuration.</p>
+
+<h3>M2 - various attribute deserialization issues</h3>
+<p>In 1.6.9 we made some radical changes to the serialized form.  It turns out some of the
+deserialization code wasn't handling these new forms quite right.  This would manifest as an IllegalStateException or
+IndexOutOfBoundsException or similar, during attribute unpacking.  These issues have now all been sorted out in 1.6.11.M2.</p>
+
+<h3>M2 - further optimizations in model for AJDT</h3>
+<p>More changes have been made for users trying out the <tt>-Xset:minimalModel=true</tt> option to try and reduce the memory used in
+their Eclipse/AJDT configurations. This option is discussed in detail <a href="http://andrewclement.blogspot.com/2010/07/ajdt-memory-usage-reduction.html">here</a>.
+It now saves even more memory.  Also, previously the amount of memory it recovered depended on compilation order (which the user has no control over), but now
+it is insensitive to ordering and should always recover the same amount across builds of the same project.  With a bit more positive feedback on this option,
+it will become the default under AJDT.
+
+<hr>
+
+<h3>M1 - Annotation removal</h3>
 <p>Traditionally AspectJ has taken an additive approach, where methods/fields/supertypes/annotations can only be added to types.
 Now, chaos would likely ensue if we allowed removal of supertypes, methods, etc, but we are seeing an increasing number of 
 requirements to do more with annotations.  What kinds of thing? Basically remove existing annotations, or modify existing
@@ -37,7 +58,7 @@ annotations by changing their values.
 <p>Notice the '-' in front of the annotation, meaning 'removal'.  The whole construct means 'remove the @Anno annotation from the
 int field called i in type Foo'.  It is not yet supported on the other forms of declare @.
 
-<h3>Intertype innertypes</h3>
+<h3>M1 - Intertype innertypes</h3>
 <p>More work has gone into this feature.  It was originally added in 1.6.9 but the inability to use it with binary weaving
 greatly reduced the usefulness.  Fixes have gone into 1.6.11 to support binary weaving.  What do we mean by intertype innertypes?
 Here is an example:
