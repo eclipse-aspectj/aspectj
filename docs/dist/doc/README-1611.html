@@ -43,7 +43,11 @@ IndexOutOfBoundsException or similar, during attribute unpacking.  These issues 
 their Eclipse/AJDT configurations. This option is discussed in detail <a href="http://andrewclement.blogspot.com/2010/07/ajdt-memory-usage-reduction.html">here</a>.
 It now saves even more memory.  Also, previously the amount of memory it recovered depended on compilation order (which the user has no control over), but now
 it is insensitive to ordering and should always recover the same amount across builds of the same project.  With a bit more positive feedback on this option,
-it will become the default under AJDT.
+it will become the default under AJDT.</p>
+
+<h3>M2 - spaces in path names can cause problems</h3>
+<p>AspectJ had problems if the paths it was being passed (e.g. aspectpath) included spaces.  
+This is bug <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=282379">282379</a> and has now been fixed.</p>
 
 <hr>
 
