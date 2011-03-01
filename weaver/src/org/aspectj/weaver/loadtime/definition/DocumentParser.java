@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime.definition;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Hashtable;
@@ -77,15 +78,25 @@ public class DocumentParser extends DefaultHandler {
 
 	private static Hashtable<String, Definition> parsedFiles = new Hashtable<String, Definition>();
 	private static final boolean CACHE;
+	private static final boolean LIGHTPARSER;
+
 
 	static {
 		boolean value = false;
 		try {
-			value = System.getProperty("org.aspectj.weaver.loadtime.configuration.cache", "false").equalsIgnoreCase("true");
+			value = System.getProperty("org.aspectj.weaver.loadtime.configuration.cache", "true").equalsIgnoreCase("true");
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
 		CACHE = value;
+		
+		value = false;
+		try {
+			value = System.getProperty("org.aspectj.weaver.loadtime.configuration.lightxmlparser", "false").equalsIgnoreCase("true");
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
+		LIGHTPARSER = value;
 	}
 
 	private DocumentParser() {
@@ -98,38 +109,19 @@ public class DocumentParser extends DefaultHandler {
 			if (CACHE && parsedFiles.containsKey(url.toString())) {
 				return parsedFiles.get(url.toString());
 			}
-
-			DocumentParser parser = new DocumentParser();
-
-			XMLReader xmlReader = getXMLReader();
-			xmlReader.setContentHandler(parser);
-			xmlReader.setErrorHandler(parser);
-
-			try {
-				xmlReader.setFeature("http://xml.org/sax/features/validation", false);
-			} catch (SAXException e) {
-				// fine, the parser don't do validation
+			Definition def=null;
+			
+			if(LIGHTPARSER){	
+				def = SimpleAOPParser.parse(url);
+			}else{
+				def = saxParsing(url);
 			}
-			try {
-				xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
-			} catch (SAXException e) {
-				// fine, the parser don't do validation
-			}
-			try {
-				xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-			} catch (SAXException e) {
-				// fine, the parser don't do validation
+		
+			if (CACHE && def.getAspectClassNames().size() > 0) {
+				parsedFiles.put(url.toString(), def);
 			}
 
-			xmlReader.setEntityResolver(parser);
-			in = url.openStream();
-			xmlReader.parse(new InputSource(in));
-
-			if (CACHE && parser.m_definition.getAspectClassNames().size() > 0) {
-				parsedFiles.put(url.toString(), parser.m_definition);
-			}
-
-			return parser.m_definition;
+			return def;
 		} finally {
 			try {
 				in.close();
@@ -137,6 +129,35 @@ public class DocumentParser extends DefaultHandler {
 
 			}
 		}
+	}
+
+	private static Definition saxParsing(URL url) throws SAXException, ParserConfigurationException, IOException {
+		DocumentParser parser = new DocumentParser();
+
+		XMLReader xmlReader = getXMLReader();
+		xmlReader.setContentHandler(parser);
+		xmlReader.setErrorHandler(parser);
+
+		try {
+			xmlReader.setFeature("http://xml.org/sax/features/validation", false);
+		} catch (SAXException e) {
+			// fine, the parser don't do validation
+		}
+		try {
+			xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+		} catch (SAXException e) {
+			// fine, the parser don't do validation
+		}
+		try {
+			xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+		} catch (SAXException e) {
+			// fine, the parser don't do validation
+		}
+
+		xmlReader.setEntityResolver(parser);
+		InputStream in = url.openStream();
+		xmlReader.parse(new InputSource(in));
+		return parser.m_definition;
 	}
 
 	private static XMLReader getXMLReader() throws SAXException, ParserConfigurationException {
