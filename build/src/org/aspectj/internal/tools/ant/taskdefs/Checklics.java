@@ -337,7 +337,8 @@ public class Checklics extends MatchingTask {
 	public static class License {
 		/** acceptable years for copyright prefix to company - append " " */
 		static final String[] YEARS = // remove older after license xfer?
-		new String[] { "2002 ", "2003 ", "2004 ", "2005", "2006", "2007", "2008", "2009", "2010", "2001 ", "2000 ", "1999 " };
+		new String[] { "2002 ", "2003 ", "2004 ", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2001 ", "2000 ",
+				"1999 " };
 		public final String tag;
 		public final String license;
 		private final String[] copyright;
