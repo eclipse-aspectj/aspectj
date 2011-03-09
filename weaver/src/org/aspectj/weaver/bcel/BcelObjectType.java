@@ -28,6 +28,7 @@ import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.AttributeUtils;
 import org.aspectj.apache.bcel.classfile.ConstantClass;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.EnclosingMethod;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.InnerClass;
 import org.aspectj.apache.bcel.classfile.InnerClasses;
@@ -842,7 +843,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 	public ResolvedType getOuterClass() {
 		if (!isNested()) {
-			throw new IllegalStateException("Can't get the outer class of a non-nested type");
+			throw new IllegalStateException("Can't get the outer class of non-nested type: " + className);
 		}
 
 		// try finding outer class name from InnerClasses attribute assigned to this class
@@ -874,6 +875,19 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 						UnresolvedType outer = UnresolvedType.forName(outerClsName);
 						return outer.resolve(getResolvedTypeX().getWorld());
 					}
+				}
+			}
+		}
+
+		for (Attribute attr : javaClass.getAttributes()) { // bug339300
+			ConstantPool cpool = javaClass.getConstantPool();
+			if (attr instanceof EnclosingMethod) {
+				EnclosingMethod enclosingMethodAttribute = (EnclosingMethod) attr;
+				if (enclosingMethodAttribute.getEnclosingClassIndex() != 0) {
+					ConstantClass outerClassInfo = enclosingMethodAttribute.getEnclosingClass();
+					String outerClassName = cpool.getConstantUtf8(outerClassInfo.getNameIndex()).getValue().replace('/', '.');
+					UnresolvedType outer = UnresolvedType.forName(outerClassName);
+					return outer.resolve(getResolvedTypeX().getWorld());
 				}
 			}
 		}
