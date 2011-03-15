@@ -23,9 +23,18 @@ All rights reserved.
 <p>The full list of resolved issues in 1.6.11 is available 
 <a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.6.11;">here</a></h2>.</p>
 
-<h4>1.6.11 milestone 2 available 22-Feb-2011</h4>
-<h4>1.6.11 milestone 1 available 10-Dec-2010</h4>
+<h4>1.6.11 available 15-03-2011</h4>
+
+
 <h2>Notable Changes</h2>
+<h3>RC1 - Our own XML parser</h3>
+<p>Due to the way AspectJ loads one of the standard XML parsers (for processing aop.xml) it was possible to get into a deadlock situation.
+To avoid this completely we now have our own XML parser inside for processing this files.  It is basic but should support all the
+known syntax we have for aop files.  To use it instead of the default (if you are encountering the deadlock) you need to specify 
+this system property: <tt>org.aspectj.weaver.loadtime.configuration.lightxmlparser=true</tt>.
+</p>
+<hr>
+
 <h3>M2 - Multithreaded world access</h3>
 <p>The weaver is backed by a representation of types called a world.  Traditionally the worlds have supported single threads - and that
 is how they are used when doing compile time weaving or load time weaving.  However in some configurations, e.g. pointcut
@@ -81,13 +90,6 @@ aspect X {
 </code></pre>
 <p>Only static inner types are supported.
 
-<h3>What's next before 1.6.11 final?</h3>
-<p>
-Hopefully by the time AspectJ 1.6.11 finally ships we will have addressed the state persistence problem which has always meant
-that on restarting eclipse you need to build all your projects.
-<p>
-And if we can get enough feedback on the AJDT reduced memory 
-settings (covered http://andrewclement.blogspot.com/2010/07/ajdt-memory-usage-reduction.html), we will look to enable it by default. 
 <h4>
 <!-- ============================== -->  
 </body>
