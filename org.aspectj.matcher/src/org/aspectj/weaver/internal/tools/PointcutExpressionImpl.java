@@ -47,6 +47,8 @@ import org.aspectj.weaver.tools.ShadowMatch;
  */
 public class PointcutExpressionImpl implements PointcutExpression {
 
+	private final static boolean MATCH_INFO = false;
+
 	private World world;
 	private Pointcut pointcut;
 	private String expression;
@@ -79,7 +81,12 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	public boolean couldMatchJoinPointsInType(Class aClass) {
 		ResolvedType matchType = world.resolve(aClass.getName());
 		ReflectionFastMatchInfo info = new ReflectionFastMatchInfo(matchType, null, this.matchContext, world);
-		return pointcut.fastMatch(info).maybeTrue();
+		boolean couldMatch = pointcut.fastMatch(info).maybeTrue();
+		if (MATCH_INFO) {
+			System.out.println("MATCHINFO: fast match for '" + this.expression + "' against '" + aClass.getName() + "': "
+					+ couldMatch);
+		}
+		return couldMatch;
 	}
 
 	public boolean mayNeedDynamicTest() {
@@ -93,11 +100,21 @@ public class PointcutExpressionImpl implements PointcutExpression {
 	}
 
 	public ShadowMatch matchesMethodExecution(Method aMethod) {
-		return matchesExecution(aMethod);
+		ShadowMatch match = matchesExecution(aMethod);
+		if (MATCH_INFO && match.maybeMatches()) {
+			System.out.println("MATCHINFO: method execution match on '" + aMethod + "' for '" + this.expression + "': "
+					+ (match.alwaysMatches() ? "YES" : "MAYBE"));
+		}
+		return match;
 	}
 
 	public ShadowMatch matchesConstructorExecution(Constructor aConstructor) {
-		return matchesExecution(aConstructor);
+		ShadowMatch match = matchesExecution(aConstructor);
+		if (MATCH_INFO && match.maybeMatches()) {
+			System.out.println("MATCHINFO: constructor execution match on '" + aConstructor + "' for '" + this.expression + "': "
+					+ (match.alwaysMatches() ? "YES" : "MAYBE"));
+		}
+		return match;
 	}
 
 	private ShadowMatch matchesExecution(Member aMember) {
@@ -115,6 +132,10 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		sm.setSubject(null);
 		sm.setWithinCode(null);
 		sm.setWithinType(aClass);
+		if (MATCH_INFO && sm.maybeMatches()) {
+			System.out.println("MATCHINFO: static initialization match on '" + aClass.getName() + "' for '" + this.expression
+					+ "': " + (sm.alwaysMatches() ? "YES" : "MAYBE"));
+		}
 		return sm;
 	}
 
@@ -124,6 +145,10 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		sm.setSubject(aMethod);
 		sm.setWithinCode(null);
 		sm.setWithinType(aMethod.getDeclaringClass());
+		if (MATCH_INFO && sm.maybeMatches()) {
+			System.out.println("MATCHINFO: advice execution match on '" + aMethod + "' for '" + this.expression + "': "
+					+ (sm.alwaysMatches() ? "YES" : "MAYBE"));
+		}
 		return sm;
 	}
 
@@ -133,6 +158,10 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		sm.setSubject(aConstructor);
 		sm.setWithinCode(null);
 		sm.setWithinType(aConstructor.getDeclaringClass());
+		if (MATCH_INFO && sm.maybeMatches()) {
+			System.out.println("MATCHINFO: initialization match on '" + aConstructor + "' for '" + this.expression + "': "
+					+ (sm.alwaysMatches() ? "YES" : "MAYBE"));
+		}
 		return sm;
 	}
 
@@ -142,6 +171,10 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		sm.setSubject(aConstructor);
 		sm.setWithinCode(null);
 		sm.setWithinType(aConstructor.getDeclaringClass());
+		if (MATCH_INFO && sm.maybeMatches()) {
+			System.out.println("MATCHINFO: preinitialization match on '" + aConstructor + "' for '" + this.expression + "': "
+					+ (sm.alwaysMatches() ? "YES" : "MAYBE"));
+		}
 		return sm;
 	}
 
@@ -151,6 +184,10 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		sm.setSubject(aMethod);
 		sm.setWithinCode(withinCode);
 		sm.setWithinType(withinCode.getDeclaringClass());
+		if (MATCH_INFO && sm.maybeMatches()) {
+			System.out.println("MATCHINFO: method call match on '" + aMethod + "' withinCode='" + withinCode + "' for '"
+					+ this.expression + "': " + (sm.alwaysMatches() ? "YES" : "MAYBE"));
+		}
 		return sm;
 	}
 
@@ -160,6 +197,10 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		sm.setSubject(aMethod);
 		sm.setWithinCode(null);
 		sm.setWithinType(callerType);
+		if (MATCH_INFO && sm.maybeMatches()) {
+			System.out.println("MATCHINFO: method call match on '" + aMethod + "' callerType='" + callerType.getName() + "' for '"
+					+ this.expression + "': " + (sm.alwaysMatches() ? "YES" : "MAYBE"));
+		}
 		return sm;
 	}
 
@@ -169,6 +210,10 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		sm.setSubject(aConstructor);
 		sm.setWithinCode(null);
 		sm.setWithinType(callerType);
+		if (MATCH_INFO && sm.maybeMatches()) {
+			System.out.println("MATCHINFO: constructor call match on '" + aConstructor + "' callerType='" + callerType.getName()
+					+ "' for '" + this.expression + "': " + (sm.alwaysMatches() ? "YES" : "MAYBE"));
+		}
 		return sm;
 	}
 
@@ -178,6 +223,10 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		sm.setSubject(aConstructor);
 		sm.setWithinCode(withinCode);
 		sm.setWithinType(withinCode.getDeclaringClass());
+		if (MATCH_INFO && sm.maybeMatches()) {
+			System.out.println("MATCHINFO: constructor call match on '" + aConstructor + "' withinCode='" + withinCode + "' for '"
+					+ this.expression + "': " + (sm.alwaysMatches() ? "YES" : "MAYBE"));
+		}
 		return sm;
 	}
 
@@ -187,6 +236,10 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		sm.setSubject(null);
 		sm.setWithinCode(null);
 		sm.setWithinType(handlingType);
+		if (MATCH_INFO && sm.maybeMatches()) {
+			System.out.println("MATCHINFO: handler match on '" + exceptionType.getName() + "' handlingType='" + handlingType
+					+ "' for '" + this.expression + "': " + (sm.alwaysMatches() ? "YES" : "MAYBE"));
+		}
 		return sm;
 	}
 
@@ -196,6 +249,10 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		sm.setSubject(null);
 		sm.setWithinCode(withinCode);
 		sm.setWithinType(withinCode.getDeclaringClass());
+		if (MATCH_INFO && sm.maybeMatches()) {
+			System.out.println("MATCHINFO: handler match on '" + exceptionType.getName() + "' withinCode='" + withinCode
+					+ "' for '" + this.expression + "': " + (sm.alwaysMatches() ? "YES" : "MAYBE"));
+		}
 		return sm;
 	}
 
@@ -205,6 +262,10 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		sm.setSubject(aField);
 		sm.setWithinCode(null);
 		sm.setWithinType(withinType);
+		if (MATCH_INFO && sm.maybeMatches()) {
+			System.out.println("MATCHINFO: field get match on '" + aField + "' withinType='" + withinType.getName() + "' for '"
+					+ this.expression + "': " + (sm.alwaysMatches() ? "YES" : "MAYBE"));
+		}
 		return sm;
 	}
 
@@ -214,6 +275,10 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		sm.setSubject(aField);
 		sm.setWithinCode(withinCode);
 		sm.setWithinType(withinCode.getDeclaringClass());
+		if (MATCH_INFO && sm.maybeMatches()) {
+			System.out.println("MATCHINFO: field get match on '" + aField + "' withinCode='" + withinCode + "' for '"
+					+ this.expression + "': " + (sm.alwaysMatches() ? "YES" : "MAYBE"));
+		}
 		return sm;
 	}
 
@@ -223,6 +288,10 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		sm.setSubject(aField);
 		sm.setWithinCode(null);
 		sm.setWithinType(withinType);
+		if (MATCH_INFO && sm.maybeMatches()) {
+			System.out.println("MATCHINFO: field set match on '" + aField + "' withinType='" + withinType.getName() + "' for '"
+					+ this.expression + "': " + (sm.alwaysMatches() ? "YES" : "MAYBE"));
+		}
 		return sm;
 	}
 
@@ -232,6 +301,10 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		sm.setSubject(aField);
 		sm.setWithinCode(withinCode);
 		sm.setWithinType(withinCode.getDeclaringClass());
+		if (MATCH_INFO && sm.maybeMatches()) {
+			System.out.println("MATCHINFO: field set match on '" + aField + "' withinCode='" + withinCode + "' for '"
+					+ this.expression + "': " + (sm.alwaysMatches() ? "YES" : "MAYBE"));
+		}
 		return sm;
 	}
 
