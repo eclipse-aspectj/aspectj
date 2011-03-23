@@ -1,0 +1,46 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+  <ajc-test dir="bugs1612/pr292239" title="throws clause">
+  	<compile files="Code.java" options="-1.5 -showWeaveInfo">
+  	  <message kind="weave" text="Join point 'method-execution(void mypackage.Code.n())' in Type 'mypackage.Code' (Code.java:19) advised by afterThrowing advice from 'mypackage.Azpect' (Code.java:9)"/>
+  	</compile>
+  	<run class="mypackage.Code">
+  	<stdout>
+  	<line text="caught it"/>
+  	<line text="done"/>
+  	</stdout>
+  	</run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs1612/pr292239" title="throws clause - 2">
+  	<compile files="Code2.java" options="-1.5 -showWeaveInfo">
+  	  <message kind="weave" text="Join point 'method-execution(void mypackage.Code2.n2())' in Type 'mypackage.Code2' (Code2.java:17) advised by afterThrowing advice from 'mypackage.Azpect' (Code2.java:7)"/>
+  	</compile>
+  	<run class="mypackage.Code2">
+  	<stdout>
+  	<line text="caught it: execution(void mypackage.Code2.n2())"/>
+  	<line text="done"/>
+  	</stdout>
+  	</run>
+  </ajc-test>
+<!--  
+
+  
+  <ajc-test dir="bugs1611/pr336136" title="itit">
+    <compile files="Country_Roo_Op4j.java">
+    <message kind="error" text="The import com.foo cannot be resolved" line="1"/>
+    <message kind="error" text="The import org.javaruntype cannot be resolved" line="3"/>
+    <message kind="error" text="The import org.op4j cannot be resolved" line="4"/>
+    <message kind="error" text="The import org.op4j cannot be resolved" line="5"/>
+    <message kind="error" text="Country cannot be resolved to a type" line="9"/>
+    <message kind="error" text="Function cannot be resolved to a type" line="11"/>
+    <message kind="error" text="can't determine modifiers of missing type Country_Roo_Op4j$Keys"/>
+    </compile>"
+  </ajc-test>
+  
+  -->
+  
+  
+</suite>
