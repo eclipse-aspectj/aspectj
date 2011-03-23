@@ -137,7 +137,7 @@ public abstract class Advice extends ShadowMunger {
 				return matches;
 			} else if (hasExtraParameter() && kind == AdviceKind.AfterThrowing) { // pr119749
 				ResolvedType exceptionType = getExtraParameterType().resolve(world);
-				if (!exceptionType.isCheckedException()) {
+				if (!exceptionType.isCheckedException() || exceptionType.getName().equals("java.lang.Exception")) { // pr292239
 					return true;
 				}
 				UnresolvedType[] shadowThrows = shadow.getSignature().getExceptions(world);
