@@ -1246,18 +1246,20 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 		// Step2
 		if (!alreadyDone) {
-			// Use the iterator form of 'getMethods()' so we do as little work
-			// as necessary
-			for (Iterator<ResolvedMember> iter = onType.getSuperclass().getMethods(true, true); iter.hasNext() && !quitRightNow;) {
-				ResolvedMember aMethod = iter.next();
-				if (aMethod.getName().equals(localMethodName) && aMethod.getParameterSignature().equals(localParameterSig)) {
-					// check the return types, if they are different we need a
-					// bridging method.
-					if (!aMethod.getReturnType().getErasureSignature().equals(localReturnTypeESig)
-							&& !Modifier.isPrivate(aMethod.getModifiers())) {
-						// Step3
-						createBridgeMethod(weaver.getWorld(), munger, unMangledInterMethod, gen, paramTypes, aMethod);
-						quitRightNow = true;
+			// Use the iterator form of 'getMethods()' so we do as little work as necessary
+			ResolvedType supertype = onType.getSuperclass();
+			if (supertype != null) {
+				for (Iterator<ResolvedMember> iter = supertype.getMethods(true, true); iter.hasNext() && !quitRightNow;) {
+					ResolvedMember aMethod = iter.next();
+					if (aMethod.getName().equals(localMethodName) && aMethod.getParameterSignature().equals(localParameterSig)) {
+						// check the return types, if they are different we need a
+						// bridging method.
+						if (!aMethod.getReturnType().getErasureSignature().equals(localReturnTypeESig)
+								&& !Modifier.isPrivate(aMethod.getModifiers())) {
+							// Step3
+							createBridgeMethod(weaver.getWorld(), munger, unMangledInterMethod, gen, paramTypes, aMethod);
+							quitRightNow = true;
+						}
 					}
 				}
 			}
