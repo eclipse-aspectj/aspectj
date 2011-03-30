@@ -2,6 +2,13 @@
 
 <suite>
 
+<ajc-test dir="bugs1612/pr338175" title="itit">
+<compile files="pack1/Aspect.java pack2/Java.java pack2/Java2.java" options="-1.5">
+	<message kind="error" text="Duplicate nested type ITIT"/>
+	<message kind="error" text="can't determine modifiers"/>
+</compile>
+</ajc-test>
+
   <ajc-test dir="bugs1612/pr292239" title="throws clause">
   	<compile files="Code.java" options="-1.5 -showWeaveInfo">
   	  <message kind="weave" text="Join point 'method-execution(void mypackage.Code.n())' in Type 'mypackage.Code' (Code.java:19) advised by afterThrowing advice from 'mypackage.Azpect' (Code.java:9)"/>

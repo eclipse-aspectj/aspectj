@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testITIT_338175() {
+		runTest("itit");
+	}
+
 	public void testThrowsClause_292239() {
 		runTest("throws clause");
 	}
