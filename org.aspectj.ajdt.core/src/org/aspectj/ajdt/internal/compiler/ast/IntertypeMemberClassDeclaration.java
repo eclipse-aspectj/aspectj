@@ -11,7 +11,6 @@
  * ******************************************************************/
 package org.aspectj.ajdt.internal.compiler.ast;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 
@@ -19,10 +18,8 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseSourceLocation;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseTypeMunger;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeScope;
-import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
@@ -67,28 +64,17 @@ public class IntertypeMemberClassDeclaration extends TypeDeclaration {
 		ensureScopeSetup();
 		super.resolve(aspectScope);
 	}
+
 	/**
 	 * Bytecode generation for a member inner type
 	 */
 	/*
-	public void generateCode(ClassScope classScope, ClassFile enclosingClassFile) {
-		if ((this.bits & ASTNode.HasBeenGenerated) != 0) {
-			return;
-		}
-		try {
-			Field f = ReferenceBinding.class.getDeclaredField("constantPoolName");
-			char[] name = CharOperation.concat(onTypeResolvedBinding.constantPoolName(), binding.sourceName, '$');
-			f.setAccessible(true);
-			f.set(this.binding, name);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		if (this.binding != null) {
-			((NestedTypeBinding) this.binding).computeSyntheticArgumentSlotSizes();
-		}
-		generateCode(enclosingClassFile);
-	}
-*/
+	 * public void generateCode(ClassScope classScope, ClassFile enclosingClassFile) { if ((this.bits & ASTNode.HasBeenGenerated) !=
+	 * 0) { return; } try { Field f = ReferenceBinding.class.getDeclaredField("constantPoolName"); char[] name =
+	 * CharOperation.concat(onTypeResolvedBinding.constantPoolName(), binding.sourceName, '$'); f.setAccessible(true);
+	 * f.set(this.binding, name); } catch (Exception e) { e.printStackTrace(); } if (this.binding != null) { ((NestedTypeBinding)
+	 * this.binding).computeSyntheticArgumentSlotSizes(); } generateCode(enclosingClassFile); }
+	 */
 	@Override
 	public void resolve() {
 		super.resolve();
@@ -205,18 +191,19 @@ public class IntertypeMemberClassDeclaration extends TypeDeclaration {
 		// if (rb instanceof ProblemReferenceBinding) {
 		// return;
 		// }
-
-		interTypeScope = new InterTypeScope(scope.parent, onTypeResolvedBinding, Collections.emptyList());
-		// FIXME asc verify the choice of lines here...
-		// Two versions of this next line.
-		// First one tricks the JDT variable processing code so that it won't complain if
-		// you refer to a type variable from a static ITD - it *is* a problem and it *will* be caught, but later and
-		// by the AJDT code so we can put out a much nicer message.
-		// scope.isStatic = (typeVariableAliases != null ? false : Modifier.isStatic(declaredModifiers));
-		// this is the original version in case tricking the JDT causes grief (if you reinstate this variant, you
-		// will need to change the expected messages output for some of the generic ITD tests)
-		// scope.isStatic = Modifier.isStatic(declaredModifiers);
-		scope.parent = interTypeScope;
+		if (scope != null) {
+			interTypeScope = new InterTypeScope(scope.parent, onTypeResolvedBinding, Collections.emptyList());
+			// FIXME asc verify the choice of lines here...
+			// Two versions of this next line.
+			// First one tricks the JDT variable processing code so that it won't complain if
+			// you refer to a type variable from a static ITD - it *is* a problem and it *will* be caught, but later and
+			// by the AJDT code so we can put out a much nicer message.
+			// scope.isStatic = (typeVariableAliases != null ? false : Modifier.isStatic(declaredModifiers));
+			// this is the original version in case tricking the JDT causes grief (if you reinstate this variant, you
+			// will need to change the expected messages output for some of the generic ITD tests)
+			// scope.isStatic = Modifier.isStatic(declaredModifiers);
+			scope.parent = interTypeScope;
+		}
 		scopeSetup = true;
 	}
 
@@ -235,7 +222,9 @@ public class IntertypeMemberClassDeclaration extends TypeDeclaration {
 			ignoreFurtherInvestigation = true;
 		} else {
 			// fix up the ITD'd type?
-			((NestedTypeBinding) this.binding).enclosingType = (SourceTypeBinding) onTypeResolvedBinding;
+			if (this.binding != null) {
+				((NestedTypeBinding) this.binding).enclosingType = (SourceTypeBinding) onTypeResolvedBinding;
+			}
 			// this done at build type for the nested type now:
 			// ((NestedTypeBinding) this.binding).compoundName = CharOperation.splitOn('.', "Basic$_".toCharArray());
 		}
