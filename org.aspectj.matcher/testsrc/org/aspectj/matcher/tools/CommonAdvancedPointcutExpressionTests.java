@@ -25,14 +25,6 @@ import org.aspectj.weaver.tools.StandardPointcutParser;
  * 
  * This is based on the Reflection oriented PointcutExpressionTest in the weaver project.
  * 
- * TESTDATA. The testdata for these tests is kept in org.aspectj.matcher/testdata. It is a series of .java files that need to be
- * compiled and available at runtime. Since they are java5 (they include annotations) they cannot be in a source folder for the
- * project, so they are compiled separately and then jar'd into a testdata.jar file in that folder. This folder is defined to be on
- * the classpath for org.aspectj.matcher, this enables them to be seen by a simple world that uses the classpath of the matcher
- * project as the definition of what it can see. Other worlds, for example JDT World, will need to have those types defined in a
- * project that is accessible in the JDT World instance. Because these tests exercise Java5 matching, the concrete ReflectionWorld
- * subtype is not defined in here, it is defined in weaver5 (messy, but works well).
- * 
  * @author Andy Clement
  */
 public abstract class CommonAdvancedPointcutExpressionTests extends TestCase {
