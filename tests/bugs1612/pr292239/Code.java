@@ -1,6 +1,6 @@
 package mypackage;
 
-import javax.management.MXBean;
+
 
 aspect Azpect {
 
