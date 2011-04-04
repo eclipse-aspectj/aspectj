@@ -111,4 +111,9 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 	public List getProjectXmlConfigFiles() {
 		return Collections.EMPTY_LIST;
 	}
+
+	public String getProjectEncoding() {
+		return null;
+	}
+
 }
