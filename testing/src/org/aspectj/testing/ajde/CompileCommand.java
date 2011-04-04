@@ -35,9 +35,9 @@ import org.aspectj.ajde.core.JavaOptions;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageHandler;
-import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.testing.harness.bridge.Globals;
 import org.aspectj.util.FileUtil;
 
@@ -366,6 +366,10 @@ class MyCompilerConfig implements ICompilerConfiguration {
 		return null;
 	}
 
+	public String getProjectEncoding() {
+		return null;
+	}
+
 }
 
 class MyOutputLocationManager implements IOutputLocationManager {
@@ -389,11 +393,10 @@ class MyOutputLocationManager implements IOutputLocationManager {
 	public String getUniqueIdentifier() {
 		return null;
 	}
-	
+
 	public Map getInpathMap() {
 		return Collections.EMPTY_MAP;
 	}
-
 
 	public String getSourceFolderForFile(File sourceFile) {
 		return null;
@@ -408,6 +411,10 @@ class MyOutputLocationManager implements IOutputLocationManager {
 	public int discoverChangesSince(File dir, long buildtime) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	public String getProjectEncoding() {
+		return null;
 	}
 
 }
