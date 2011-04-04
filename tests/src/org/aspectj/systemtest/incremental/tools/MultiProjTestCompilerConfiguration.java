@@ -36,6 +36,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 	private List dependants;
 	private Map javaOptionsMap;
 	private Set inpath;
+	private String encoding = null;
 	private String outjar;
 	private String nonstandardoptions;
 	private List modifiedFiles;
@@ -229,6 +230,14 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 
 	public List getClasspathElementsWithModifiedContents() {
 		return modifiedDirs;
+	}
+
+	public void setProjectEncoding(String encoding) {
+		this.encoding = encoding;
+	}
+
+	public String getProjectEncoding() {
+		return this.encoding;
 	}
 
 }

@@ -66,6 +66,11 @@ public class AjdeInteractionTestbed extends TestCase {
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).changed = flags;
 	}
 
+	public void setProjectEncoding(String projName, String encoding) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projName);
+		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setProjectEncoding(encoding);
+	}
+
 	public void addProjectSourceFileChanged(String projectName, File changedFile) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).addProjectSourceFileChanged(changedFile);

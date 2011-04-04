@@ -14,6 +14,8 @@ package org.aspectj.systemtest.incremental.tools;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -64,6 +66,23 @@ import org.aspectj.weaver.World;
  * as expected.
  */
 public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
+
+	public void testEncoding_pr290741() throws Exception {
+		String p = "pr290741";
+		initialiseProject(p);
+		setProjectEncoding(p, "UTF-8");
+		build(p);
+		checkWasFullBuild();
+		assertNoErrors(p);
+		runMethod(p, "demo.ConverterTest", "run");
+	}
+
+	private void runMethod(String projectName, String classname, String methodname) throws Exception {
+		File f = getProjectOutputRelativePath(projectName, "");
+		ClassLoader cl = new URLClassLoader(new URL[] { f.toURI().toURL() });
+		Class<?> clazz = Class.forName(classname, false, cl);
+		clazz.getDeclaredMethod(methodname).invoke(null);
+	}
 
 	public void testIncrementalITDInners4() throws Exception {
 		String p = "prInner4";
@@ -1286,28 +1305,28 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// incomplete
 	}
 
-//	private void checkIfContainsFile(Set s, String filename, boolean shouldBeFound) {
-//		StringBuffer sb = new StringBuffer("Set of files\n");
-//		for (Iterator iterator = s.iterator(); iterator.hasNext();) {
-//			Object object = iterator.next();
-//			sb.append(object).append("\n");
-//		}
-//		for (Iterator iterator = s.iterator(); iterator.hasNext();) {
-//			File fname = (File) iterator.next();
-//			if (fname.getName().endsWith(filename)) {
-//				if (!shouldBeFound) {
-//					System.out.println(sb.toString());
-//					fail("Unexpectedly found file " + filename);
-//				} else {
-//					return;
-//				}
-//			}
-//		}
-//		if (shouldBeFound) {
-//			System.out.println(sb.toString());
-//			fail("Did not find filename " + filename);
-//		}
-//	}
+	// private void checkIfContainsFile(Set s, String filename, boolean shouldBeFound) {
+	// StringBuffer sb = new StringBuffer("Set of files\n");
+	// for (Iterator iterator = s.iterator(); iterator.hasNext();) {
+	// Object object = iterator.next();
+	// sb.append(object).append("\n");
+	// }
+	// for (Iterator iterator = s.iterator(); iterator.hasNext();) {
+	// File fname = (File) iterator.next();
+	// if (fname.getName().endsWith(filename)) {
+	// if (!shouldBeFound) {
+	// System.out.println(sb.toString());
+	// fail("Unexpectedly found file " + filename);
+	// } else {
+	// return;
+	// }
+	// }
+	// }
+	// if (shouldBeFound) {
+	// System.out.println(sb.toString());
+	// fail("Did not find filename " + filename);
+	// }
+	// }
 
 	// /**
 	// * Checking return values of the AsmManager API calls that can be invoked
@@ -1472,7 +1491,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		if (whereToLook.getSourceLocation() != null && whereToLook.getSourceLocation().getLine() == line) {
 			return whereToLook;
 		}
-		for (IProgramElement object: whereToLook.getChildren()) {
+		for (IProgramElement object : whereToLook.getChildren()) {
 			if (object.getSourceLocation() != null && object.getSourceLocation().getLine() == line) {
 				return object;
 			}
@@ -1510,7 +1529,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		}
 		// dumptree(AsmManager.getDefault().getHierarchy().getRoot(), 0);
 	}
- 
+
 	// Now the source folders are more complex 'src/java/main' and
 	// 'src/java/tests'
 	public void testModelWithMultipleSourceFolders2() {
@@ -2006,35 +2025,35 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// speedCheck(w);
 	}
 
-//	private void checkRtJar(World w) {
-//		System.out.println("Processing everything in rt.jar: ~16000 classes");
-//		try {
-//			ZipFile zf = new ZipFile("c:/jvms/jdk1.6.0_06/jre/lib/rt.jar");
-//			Enumeration e = zf.entries();
-//			int count = 1;
-//			while (e.hasMoreElements()) {
-//				ZipEntry ze = (ZipEntry) e.nextElement();
-//				String n = ze.getName();
-//				if (n.endsWith(".class")) {
-//					n = n.replace('/', '.');
-//					n = n.substring(0, n.length() - 6);
-//					if ((count % 100) == 0) {
-//						System.out.print(count + " ");
-//					}
-//					if ((count % 1000) == 0) {
-//						System.out.println();
-//					}
-//					checkType(w, n);
-//					count++;
-//				}
-//			}
-//			zf.close();
-//		} catch (IOException t) {
-//			t.printStackTrace();
-//			fail(t.toString());
-//		}
-//		System.out.println();
-//	}
+	// private void checkRtJar(World w) {
+	// System.out.println("Processing everything in rt.jar: ~16000 classes");
+	// try {
+	// ZipFile zf = new ZipFile("c:/jvms/jdk1.6.0_06/jre/lib/rt.jar");
+	// Enumeration e = zf.entries();
+	// int count = 1;
+	// while (e.hasMoreElements()) {
+	// ZipEntry ze = (ZipEntry) e.nextElement();
+	// String n = ze.getName();
+	// if (n.endsWith(".class")) {
+	// n = n.replace('/', '.');
+	// n = n.substring(0, n.length() - 6);
+	// if ((count % 100) == 0) {
+	// System.out.print(count + " ");
+	// }
+	// if ((count % 1000) == 0) {
+	// System.out.println();
+	// }
+	// checkType(w, n);
+	// count++;
+	// }
+	// }
+	// zf.close();
+	// } catch (IOException t) {
+	// t.printStackTrace();
+	// fail(t.toString());
+	// }
+	// System.out.println();
+	// }
 
 	/**
 	 * Compare time taken to grab them all and look at them and iterator through them all.
@@ -3826,7 +3845,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		List<String> relatedElements = getRelatedElements(model, programElement);
 		StringBuffer debugString = new StringBuffer();
 		if (relatedElements != null) {
-			for (String element: relatedElements) {
+			for (String element : relatedElements) {
 				debugString.append(model.getHierarchy().findElementForHandle(element).toLabelString()).append("\n");
 			}
 		}
@@ -3950,7 +3969,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		return new File(projDir, filename);
 	}
 
-	private File getProjectOutputRelativePath(String p, String filename) {
+	protected File getProjectOutputRelativePath(String p, String filename) {
 		File projDir = new File(getWorkingDir(), p);
 		return new File(projDir, "bin" + File.separator + filename);
 	}
