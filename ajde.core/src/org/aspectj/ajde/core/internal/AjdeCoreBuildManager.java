@@ -329,6 +329,8 @@ public class AjdeCoreBuildManager {
 		config.setIncrementalMode(true);
 		// always force proceedOnError in AJDE
 		config.setProceedOnError(true);
+
+		config.setProjectEncoding(compilerConfig.getProjectEncoding());
 		return config;
 	}
 

@@ -122,10 +122,16 @@ public interface ICompilerConfiguration extends CompilerConfigurationChangeFlags
 	 *         classpath element will be checked)
 	 */
 	public List getClasspathElementsWithModifiedContents();
+
 	//
 	// /**
 	// * @return the location where the state can be persisted across eclipse restarts. eg. f:/foo/bar/goo
 	// */
 	// public String getLocationForPersistingProjectState();
+
+	/**
+	 * Return the encoding to use for this project. Return null if the platform default should be used. Example return value "UTF-8"
+	 */
+	public String getProjectEncoding();
 
 }
