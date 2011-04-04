@@ -690,4 +690,8 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	public List<String> getClasspathElementsWithModifiedContents() {
 		return this.cpElementsWithModifiedContents;
 	}
+
+	public void setProjectEncoding(String projectEncoding) {
+		options.defaultEncoding = projectEncoding;
+	}
 }
