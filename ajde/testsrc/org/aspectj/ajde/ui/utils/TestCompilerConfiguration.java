@@ -170,4 +170,8 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 		return null;
 	}
 
+	public String getProjectEncoding() {
+		return null;
+	}
+
 }
