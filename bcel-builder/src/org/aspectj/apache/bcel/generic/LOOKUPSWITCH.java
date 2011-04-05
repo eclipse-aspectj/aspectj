@@ -59,14 +59,11 @@ import java.io.IOException;
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.util.ByteSequence;
 
-import com.sun.org.apache.bcel.internal.generic.SWITCH;
-
 /**
  * LOOKUPSWITCH - Switch with unordered set of values
  * 
- * @version $Id: LOOKUPSWITCH.java,v 1.4 2008/08/28 00:05:29 aclement Exp $
+ * @version $Id: LOOKUPSWITCH.java,v 1.5 2011/04/05 15:15:33 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
- * @see SWITCH
  */
 public class LOOKUPSWITCH extends InstructionSelect {
 

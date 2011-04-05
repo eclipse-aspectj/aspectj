@@ -62,12 +62,10 @@ import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.util.ByteSequence;
 
-import com.sun.org.apache.bcel.internal.generic.BranchInstruction;
-
 /**
  * Abstract super class for all Java byte codes.
  * 
- * @version $Id: Instruction.java,v 1.9 2009/10/05 17:35:36 aclement Exp $
+ * @version $Id: Instruction.java,v 1.10 2011/04/05 15:15:33 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class Instruction implements Cloneable, Serializable, Constants {
@@ -86,10 +84,9 @@ public class Instruction implements Cloneable, Serializable, Constants {
 	}
 
 	/**
-	 * Use with caution, since `BranchInstruction's have a `target' reference which is not copied correctly (only basic types are).
-	 * This also applies for `Select' instructions with their multiple branch targets.
+	 * Use with caution, since 'BranchInstruction's have a 'target' reference which is not copied correctly (only basic types are).
+	 * This also applies for 'Select' instructions with their multiple branch targets.
 	 * 
-	 * @see BranchInstruction
 	 * @return (shallow) copy of an instruction
 	 */
 	// GET RID OF THIS - make it throw an exception and track the callers
@@ -158,8 +155,8 @@ public class Instruction implements Cloneable, Serializable, Constants {
 				obj = new InstructionLV(opcode, wide ? bytes.readUnsignedShort() : bytes.readUnsignedByte());
 				break;
 			case Constants.IINC:
-				obj = new IINC(wide ? bytes.readUnsignedShort() : bytes.readUnsignedByte(), wide ? bytes.readShort() : bytes
-						.readByte(), wide);
+				obj = new IINC(wide ? bytes.readUnsignedShort() : bytes.readUnsignedByte(), wide ? bytes.readShort()
+						: bytes.readByte(), wide);
 				break;
 			case Constants.IFNULL:
 			case Constants.IFNONNULL:
