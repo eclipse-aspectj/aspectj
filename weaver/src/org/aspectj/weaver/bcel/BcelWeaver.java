@@ -1704,7 +1704,8 @@ public class BcelWeaver {
 					String classDebugInfo = null;
 					try {
 						classDebugInfo = clazz.toLongString();
-					} catch (Exception e) {
+					} catch (Throwable e) {
+						new RuntimeException("Crashed whilst crashing with this exception: " + e, e).printStackTrace();
 						// recover from crash whilst producing debug string
 						classDebugInfo = clazz.getClassName();
 					}
