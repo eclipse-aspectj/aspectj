@@ -1210,4 +1210,8 @@ public class AspectDeclaration extends TypeDeclaration {
 	public int getDeclaredModifiers() {
 		return declaredModifiers;
 	}
+	
+	public char[] getLocalTypeNameSuffix() {
+		return name;
+	}
 }
