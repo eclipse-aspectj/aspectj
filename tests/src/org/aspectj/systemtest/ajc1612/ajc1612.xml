@@ -2,6 +2,19 @@
 
 <suite>
 
+
+  <ajc-test dir="bugs1612/pr342323" title="clashing local types">
+  	<compile files="Runner.java Bean.java Azpect.java" options="-1.5"/>
+  	<run class="ppp.Runner">
+  	<stdout>
+	  	<line text="Calling regular method"/>
+	  	<line text="class"/>
+	  	<line text="Calling itd method"/>
+	  	<line text="aspect foo"/>
+  	</stdout>
+  	</run>
+  </ajc-test>
+
 <ajc-test dir="bugs1612/pr338175" title="itit">
 <compile files="pack1/Aspect.java pack2/Java.java pack2/Java2.java" options="-1.5">
 	<message kind="error" text="Duplicate nested type ITIT"/>
