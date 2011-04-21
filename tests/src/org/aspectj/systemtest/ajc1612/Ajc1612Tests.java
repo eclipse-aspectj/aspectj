@@ -21,6 +21,14 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testItitNpe_339974() {
+		runTest("itit npe");
+	}
+	
+//	public void testNoImportError_342605() {
+//		runTest("noimporterror");
+//	}
+	
 	public void testClashingLocalTypes_342323() {
 		runTest("clashing local types");
 	}
