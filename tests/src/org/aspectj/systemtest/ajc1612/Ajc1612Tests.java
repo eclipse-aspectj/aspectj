@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testIllegalAccessError_343051() {
+		runTest("illegalaccesserror");
+	}
+	
 	public void testItitNpe_339974() {
 		runTest("itit npe");
 	}
