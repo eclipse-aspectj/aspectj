@@ -260,6 +260,31 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("{Code=[I]}", thisAspectNode.getDeclareParentsMap().toString());
 	}
 
+	public void testBinaryAspectsAndTheModel_343001() throws Exception {
+		String lib = "pr343001_lib";
+		initialiseProject(lib);
+		build(lib);
+		
+		// Check the 'standard build' - the library also has a type affected by the decp so we can check what happens on an 'all source' build
+		IProgramElement theAspect = getModelFor(lib).getHierarchy().findElementForHandleOrCreate("=pr343001_lib<{Super.java'Super",false);
+		assertNotNull(theAspect);
+		IProgramElement sourcelevelDecp = getModelFor(lib).getHierarchy().findElementForHandleOrCreate("=pr343001_lib<{Super.java'Super`declare parents",false);
+		assertNotNull(sourcelevelDecp);
+		assertEquals("[java.io.Serializable]",sourcelevelDecp.getParentTypes().toString());
+		
+		String p = "pr343001";
+		initialiseProject(p);
+		configureAspectPath(p, getProjectRelativePath(lib, "bin"));
+		build(p);
+		
+		IProgramElement theBinaryAspect = getModelFor(p).getHierarchy().findElementForHandleOrCreate("=pr343001/binaries<(Super.class'Super",false);
+		assertNotNull(theBinaryAspect);
+		IProgramElement binaryDecp = getModelFor(p).getHierarchy().findElementForHandleOrCreate("=pr343001/binaries<(Super.class'Super`declare parents",false);
+		assertNotNull(binaryDecp);
+		assertEquals("[java.io.Serializable]",(binaryDecp.getParentTypes()==null?"":binaryDecp.getParentTypes().toString()));
+	}
+
+
 	// found whilst looking at 322446 hence that is the testdata name
 	public void testAspectInheritance_322664() throws Exception {
 		AjdeInteractionTestbed.VERBOSE = true;
