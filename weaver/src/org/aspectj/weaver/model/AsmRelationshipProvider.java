@@ -50,6 +50,7 @@ import org.aspectj.weaver.bcel.BcelTypeMunger;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.TypePatternList;
 
 public class AsmRelationshipProvider {
 
@@ -786,7 +787,17 @@ public class AsmRelationshipProvider {
 		IProgramElement decpElement = new ProgramElement(model, "declare parents", IProgramElement.Kind.DECLARE_PARENTS,
 				getBinarySourceLocation(decp.getDeclaringType(), decp.getSourceLocation()), Modifier.PUBLIC, null,
 				Collections.EMPTY_LIST);
+		setParentTypesOnDeclareParentsNode(decp, decpElement);
 		return decpElement;
+	}
+
+	private static void setParentTypesOnDeclareParentsNode(DeclareParents decp, IProgramElement decpElement) {
+		TypePatternList tpl = decp.getParents();
+		List<String> parents = new ArrayList<String>();
+		for (int i = 0; i < tpl.size(); i++) {
+			parents.add(tpl.get(i).getExactType().getName().replaceAll("\\$", "."));
+		}
+		decpElement.setParentTypes(parents);
 	}
 
 	public static String getHandle(AsmManager asm, Advice advice) {
