@@ -12,12 +12,14 @@
 
 package org.aspectj.ajdt.internal.compiler.ast;
 
+import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeMethodBinding;
+import org.aspectj.asm.internal.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MessageSend;
@@ -26,6 +28,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedMethodBinding;
@@ -51,8 +54,24 @@ public class SuperFixerVisitor extends ASTVisitor {
 		this.method = method;
 		this.targetClass = targetClass;
 	}
+	
+	private static final char[] ctor = "<init>".toCharArray();
 
 	public boolean visit(TypeDeclaration localTypeDeclaration, BlockScope scope) {
+		if (localTypeDeclaration.binding instanceof LocalTypeBinding) {
+			if (((LocalTypeBinding)localTypeDeclaration.binding).isAnonymousType()) {
+				localTypeDeclaration.binding.modifiers |=Modifier.PUBLIC;
+				MethodBinding[] bindings = localTypeDeclaration.binding.methods;
+				if (bindings!=null) {
+					for (int i=0,max=bindings.length;i<max;i++) {
+						if (CharOperation.equals(bindings[i].selector,ctor)) {
+							bindings[i].modifiers|=Modifier.PUBLIC;
+						}
+					}
+				}
+//				localTypeDeclaration.modifiers|=Modifier.PUBLIC;
+			}
+		}
 		depthCounter++;
 		return super.visit(localTypeDeclaration, scope);
 	}
