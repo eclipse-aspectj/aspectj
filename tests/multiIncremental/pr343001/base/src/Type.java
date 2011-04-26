@@ -1,0 +1,3 @@
+@Anno
+class Type  {
+}
