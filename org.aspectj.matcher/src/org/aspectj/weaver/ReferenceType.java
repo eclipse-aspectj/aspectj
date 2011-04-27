@@ -15,8 +15,10 @@ package org.aspectj.weaver;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.patterns.Declare;
@@ -36,7 +38,7 @@ public class ReferenceType extends ResolvedType {
 	 * For generic types, this list holds references to all the derived raw and parameterized versions. We need this so that if the
 	 * generic delegate is swapped during incremental compilation, the delegate of the derivatives is swapped also.
 	 */
-	private final List<ReferenceType> derivativeTypes = new ArrayList<ReferenceType>();
+	private final Set<ReferenceType> derivativeTypes = new HashSet<ReferenceType>();
 
 	/**
 	 * For parameterized types (or the raw type) - this field points to the actual reference type from which they are derived.
@@ -111,7 +113,7 @@ public class ReferenceType extends ResolvedType {
 	// this.delegate = genericReferenceType.getDelegate();
 	// genericReferenceType.addDependentType(this);
 	// }
-	private synchronized void addDependentType(ReferenceType dependent) {
+	synchronized void addDependentType(ReferenceType dependent) {
 		this.derivativeTypes.add(dependent);
 	}
 
@@ -622,11 +624,23 @@ public class ReferenceType extends ResolvedType {
 			return interfaces;
 		}
 		ResolvedType[] delegateInterfaces = getDelegate().getDeclaredInterfaces();
-		if (newInterfaces != null) {
+		if (isRawType()) {			
+			if (newInterfaces!=null) {
+				throw new IllegalStateException("The raw type should never be accumulating new interfaces, they should be on the generic type.  Type is "+this.getName());
+			}
+			ResolvedType[] newInterfacesFromGenericType = genericType.newInterfaces;
+			if (newInterfacesFromGenericType!=null) {
+				ResolvedType[] extraInterfaces = new ResolvedType[delegateInterfaces.length + newInterfacesFromGenericType.length];
+				System.arraycopy(delegateInterfaces, 0, extraInterfaces, 0, delegateInterfaces.length);
+				System.arraycopy(newInterfacesFromGenericType, 0, extraInterfaces, delegateInterfaces.length, newInterfacesFromGenericType.length);
+				delegateInterfaces = extraInterfaces;
+			}
+		} else if (newInterfaces != null) {
 			// OPTIMIZE does this part of the method trigger often?
 			ResolvedType[] extraInterfaces = new ResolvedType[delegateInterfaces.length + newInterfaces.length];
 			System.arraycopy(delegateInterfaces, 0, extraInterfaces, 0, delegateInterfaces.length);
 			System.arraycopy(newInterfaces, 0, extraInterfaces, delegateInterfaces.length, newInterfaces.length);
+			
 			delegateInterfaces = extraInterfaces;
 		}
 		if (isParameterizedType()) {
@@ -951,6 +965,7 @@ public class ReferenceType extends ResolvedType {
 		parameterizedPointcuts = null;
 		superclassReference = new WeakReference<ResolvedType>(null);
 	}
+	
 
 	public int getEndPos() {
 		return endPos;
@@ -984,6 +999,13 @@ public class ReferenceType extends ResolvedType {
 		if (typeKind == TypeKind.SIMPLE) {
 			typeKind = TypeKind.RAW;
 			signatureErasure = signature;
+		}
+		if (typeKind==TypeKind.RAW){
+			genericType.addDependentType(this);
+		}
+		if (this.isRawType() && rt.isRawType()) {
+			new RuntimeException("PR341926 diagnostics: Incorrect setup for a generic type, raw type should not point to raw: "
+					+ this.getName()).printStackTrace();
 		}
 	}
 
@@ -1069,6 +1091,11 @@ public class ReferenceType extends ResolvedType {
 				System.arraycopy(newInterfaces, 0, newNewInterfaces, 1, newInterfaces.length);
 				newNewInterfaces[0] = newParent;
 				newInterfaces = newNewInterfaces;
+			}
+			if (this.isGenericType()) {
+				for (ReferenceType derivativeType:derivativeTypes) {
+					derivativeType.parameterizedInterfaces.clear();
+				}
 			}
 			parameterizedInterfaces.clear();
 		}
