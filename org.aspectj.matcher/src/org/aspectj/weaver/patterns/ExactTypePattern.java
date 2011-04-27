@@ -196,7 +196,8 @@ public class ExactTypePattern extends TypePattern {
 			return FuzzyBoolean.YES.and(annotationPattern.matches(matchType));
 		}
 
-		if (type.resolve(matchType.getWorld()).isAssignableFrom(matchType)) {
+		ResolvedType resolvedType = type.resolve(matchType.getWorld());
+		if (resolvedType.isAssignableFrom(matchType)) {
 			return FuzzyBoolean.YES.and(annotationPattern.matches(matchType));
 		}
 
