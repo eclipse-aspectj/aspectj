@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+//	public void testDecpGenerics_344005() {
+//		runTest("decp generics");
+//	}
+	
 	public void testIllegalAccessError_343051() {
 		runTest("illegalaccesserror");
 	}

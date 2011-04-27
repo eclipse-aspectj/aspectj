@@ -2,6 +2,12 @@
 
 <suite>
 
+<ajc-test dir="bugs1612/pr344005" title="decp generics">
+<compile files="Anno.java Types.java Azpect.java" options="-1.5 -showWeaveInfo">
+<message kind="weave" text="XX"/>
+</compile>
+</ajc-test>
+
 <ajc-test dir="bugs1612/pr343051" title="illegalaccesserror">
 <compile files="Code.java Code2.java Azpect.java" options="-1.5"/>
 <run class="p.Code">
