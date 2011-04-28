@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testRawTypeWarning_335810() {
+		runTest("rawtype warning");
+	}
+	
 //	public void testDecpGenerics_344005() {
 //		runTest("decp generics");
 //	}
