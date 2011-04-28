@@ -2,6 +2,17 @@
 
 <suite>
 
+<ajc-test dir="bugs1612/pr315398" title="verifyerror">
+<compile files="Code.java" options="-1.5">
+</compile>
+<run class="Code">
+<stdout>
+<line text="1"/>
+<line text="advice"/>
+<line text="2"/>
+</stdout></run>
+</ajc-test>
+
 <ajc-test dir="bugs1612/pr335810" title="rawtype warning">
 <compile files="One.java" options="-1.5 -warn:+raw -warn:+warningToken">
 </compile>
