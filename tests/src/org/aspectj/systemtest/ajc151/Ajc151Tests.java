@@ -11,14 +11,18 @@
 package org.aspectj.systemtest.ajc151;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 import junit.framework.Test;
 
+import org.aspectj.ajdt.internal.core.builder.AsmHierarchyBuilder;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.systemtest.ajc150.GenericsTests;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.weaver.UnresolvedType.TypeKind;
 
 public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
@@ -177,11 +181,12 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		GenericsTests.verifyClassSignature(ajc, "ConcreteAspect", "LAbstractAspect<LStudent;>;");
 	}
 
-	public void testIProgramElementMethods_pr125295() {
+	public void testIProgramElementMethods_pr125295() throws IOException {
 		runTest("new IProgramElement methods");
 		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 
-		IProgramElement pe = top.findElementForType("pkg", "foo");
+		IProgramElement typeC = top.findElementForType("pkg", "C");
+		IProgramElement pe = top.findElementForSignature(typeC, IProgramElement.Kind.METHOD, "foo(int,java.lang.Object)");
 		assertNotNull("Couldn't find 'foo' element in the tree", pe);
 		// check that the defaults return the fully qualified arg
 		assertEquals("foo(int,java.lang.Object)", pe.toLabelString());
@@ -192,7 +197,8 @@ public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		assertEquals("C.foo(int,Object)", pe.toLinkLabelString(false));
 		assertEquals("foo(int,Object)", pe.toSignatureString(false));
 
-		IProgramElement pe2 = top.findElementForType("pkg", "printParameters");
+		IProgramElement typeA = top.findElementForType("pkg", "A");
+		IProgramElement pe2 = top.findElementForSignature(typeA,IProgramElement.Kind.METHOD,"printParameters(org.aspectj.lang.JoinPoint)");
 		assertNotNull("Couldn't find 'printParameters' element in the tree", pe2);
 		// the argument is org.aspectj.lang.JoinPoint, check that this is added
 		assertFalse("printParameters method should have arguments", pe2.getParameterSignatures().isEmpty());
