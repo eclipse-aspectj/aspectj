@@ -7,6 +7,11 @@
 </compile>
 </ajc-test>
 
+<ajc-test dir="bugs1612/pr327134" title="rawtype pointcut">
+<compile files="Code.java" options="-1.5 -warn:+raw -warn:+warningToken">
+</compile>
+</ajc-test>
+
 <ajc-test dir="bugs1612/pr344005" title="decp generics">
 <compile files="Anno.java Types.java Azpect.java" options="-1.5 -showWeaveInfo">
 <message kind="weave" text="XX"/>

@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testRawTypePointcut_327134() {
+		runTest("rawtype pointcut");
+	}
+	
 	public void testRawTypeWarning_335810() {
 		runTest("rawtype warning");
 	}
