@@ -625,8 +625,7 @@ public abstract class Shadow {
 	/** Actually implement the (non-empty) mungers associated with this shadow */
 	private void implementMungers() {
 		World world = getIWorld();
-		for (Iterator iter = mungers.iterator(); iter.hasNext();) {
-			ShadowMunger munger = (ShadowMunger) iter.next();
+		for (ShadowMunger munger: mungers) {
 			if (munger.implementOn(this)) {
 				world.reportMatch(munger, this);
 			}
