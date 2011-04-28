@@ -184,40 +184,41 @@ public class BcelShadow extends Shadow {
 				if (depth == 0) {
 					break;
 				}
-			} else if (inst.opcode == Constants.DUP_X2) {
-				// This code seen in the wild (by Brad):
-				// 40: new #12; //class java/lang/StringBuffer
-				// STACK: STRINGBUFFER
-				// 43: dup
-				// STACK: STRINGBUFFER/STRINGBUFFER
-				// 44: aload_0
-				// STACK: STRINGBUFFER/STRINGBUFFER/THIS
-				// 45: dup_x2
-				// STACK: THIS/STRINGBUFFER/STRINGBUFFER/THIS
-				// 46: getfield #36; //Field value:Ljava/lang/String;
-				// STACK: THIS/STRINGBUFFER/STRINGBUFFER/STRING<value>
-				// 49: invokestatic #37; //Method java/lang/String.valueOf:(Ljava/lang/Object;)Ljava/lang/String;
-				// STACK: THIS/STRINGBUFFER/STRINGBUFFER/STRING
-				// 52: invokespecial #19; //Method java/lang/StringBuffer."<init>":(Ljava/lang/String;)V
-				// STACK: THIS/STRINGBUFFER
-				// 55: aload_1
-				// STACK: THIS/STRINGBUFFER/LOCAL1
-				// 56: invokevirtual #22; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
-				// STACK: THIS/STRINGBUFFER
-				// 59: invokevirtual #34; //Method java/lang/StringBuffer.toString:()Ljava/lang/String;
-				// STACK: THIS/STRING
-				// 62: putfield #36; //Field value:Ljava/lang/String;
-				// STACK: <empty>
-				// 65: return
-
-				// if we attempt to match on the ctor call to StringBuffer.<init> then we get into trouble.
-				// if we simply delete the new/dup pair without fixing up the dup_x2 then the dup_x2 will fail due to there
-				// not being 3 elements on the stack for it to work with. The fix *in this situation* is to change it to
-				// a simple 'dup'
-
-				// this fix is *not* very clean - but a general purpose decent solution will take much longer and this
-				// bytecode sequence has only been seen once in the wild.
-				ih.setInstruction(InstructionConstants.DUP);
+				// need a testcase to show this can really happen in a modern compiler - removed due to 315398
+//			} else if (inst.opcode == Constants.DUP_X2) {
+//				// This code seen in the wild (by Brad):
+//				// 40: new #12; //class java/lang/StringBuffer
+//				// STACK: STRINGBUFFER
+//				// 43: dup
+//				// STACK: STRINGBUFFER/STRINGBUFFER
+//				// 44: aload_0
+//				// STACK: STRINGBUFFER/STRINGBUFFER/THIS
+//				// 45: dup_x2
+//				// STACK: THIS/STRINGBUFFER/STRINGBUFFER/THIS
+//				// 46: getfield #36; //Field value:Ljava/lang/String;
+//				// STACK: THIS/STRINGBUFFER/STRINGBUFFER/STRING<value>
+//				// 49: invokestatic #37; //Method java/lang/String.valueOf:(Ljava/lang/Object;)Ljava/lang/String;
+//				// STACK: THIS/STRINGBUFFER/STRINGBUFFER/STRING
+//				// 52: invokespecial #19; //Method java/lang/StringBuffer."<init>":(Ljava/lang/String;)V
+//				// STACK: THIS/STRINGBUFFER
+//				// 55: aload_1
+//				// STACK: THIS/STRINGBUFFER/LOCAL1
+//				// 56: invokevirtual #22; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+//				// STACK: THIS/STRINGBUFFER
+//				// 59: invokevirtual #34; //Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+//				// STACK: THIS/STRING
+//				// 62: putfield #36; //Field value:Ljava/lang/String;
+//				// STACK: <empty>
+//				// 65: return
+//
+//				// if we attempt to match on the ctor call to StringBuffer.<init> then we get into trouble.
+//				// if we simply delete the new/dup pair without fixing up the dup_x2 then the dup_x2 will fail due to there
+//				// not being 3 elements on the stack for it to work with. The fix *in this situation* is to change it to
+//				// a simple 'dup'
+//
+//				// this fix is *not* very clean - but a general purpose decent solution will take much longer and this
+//				// bytecode sequence has only been seen once in the wild.
+//				ih.setInstruction(InstructionConstants.DUP);
 			}
 			ih = ih.getPrev();
 		}
@@ -289,8 +290,7 @@ public class BcelShadow extends Shadow {
 	@Override
 	protected void prepareForMungers() {
 		// if we're a constructor call, we need to remove the new:dup or the new:dup_x1:swap,
-		// and store all our
-		// arguments on the frame.
+		// and store all our arguments on the frame.
 
 		// ??? This is a bit of a hack (for the Java langauge). We do this because
 		// we sometime add code "outsideBefore" when dealing with weaving join points. We only
