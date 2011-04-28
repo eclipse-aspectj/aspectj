@@ -67,6 +67,17 @@ import org.aspectj.weaver.World;
  */
 public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
 
+	public void testMissingRel_328121() throws Exception {
+		String p = "pr328121";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		assertNoErrors(p);
+		// Check the annotations:
+		runMethod(p,"TestRequirements.TestRequirements","foo");
+		assertEquals(4,getRelationshipCount(p));
+	}
+	
 	public void testEncoding_pr290741() throws Exception {
 		String p = "pr290741";
 		initialiseProject(p);
