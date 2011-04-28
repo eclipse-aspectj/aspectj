@@ -1049,7 +1049,12 @@ public class ReferenceType extends ResolvedType {
 		ret.append(rawSig.substring(0, rawSig.length() - 1));
 		ret.append("<");
 		for (int i = 0; i < someParameters.length; i++) {
-			ret.append(((ReferenceType) someParameters[i]).getSignatureForAttribute());
+			try {
+				ret.append(((ReferenceType) someParameters[i]).getSignatureForAttribute());
+			} catch (ClassCastException cce) {
+				throw new IllegalStateException("DebugFor325731: expected a ReferenceType but was "+someParameters[i]+
+						" of type "+someParameters[i].getClass().getName(),cce);
+			}
 		}
 		ret.append(">;");
 		return ret.toString();
