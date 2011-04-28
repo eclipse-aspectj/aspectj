@@ -404,7 +404,7 @@ public class AsmRelationshipProvider {
 		IProgramElement root = model.getHierarchy().getRoot();
 		IProgramElement binaries = model.getHierarchy().findElementForLabel(root, IProgramElement.Kind.SOURCE_FOLDER, "binaries");
 		if (binaries == null) {
-			binaries = new ProgramElement(model, "binaries", IProgramElement.Kind.SOURCE_FOLDER, new ArrayList());
+			binaries = new ProgramElement(model, "binaries", IProgramElement.Kind.SOURCE_FOLDER, new ArrayList<IProgramElement>());
 			root.addChild(binaries);
 		}
 		// if (aspect.getPackageName() != null) {
@@ -413,7 +413,7 @@ public class AsmRelationshipProvider {
 		IProgramElement pkgNode = model.getHierarchy().findElementForLabel(binaries, IProgramElement.Kind.PACKAGE, packagename);
 		// note packages themselves have no source location
 		if (pkgNode == null) {
-			pkgNode = new ProgramElement(model, packagename, IProgramElement.Kind.PACKAGE, new ArrayList());
+			pkgNode = new ProgramElement(model, packagename, IProgramElement.Kind.PACKAGE, new ArrayList<IProgramElement>());
 			binaries.addChild(pkgNode);
 			pkgNode.addChild(classFileNode);
 		} else {
@@ -421,8 +421,7 @@ public class AsmRelationshipProvider {
 			// may not be generated correctly if it uses information from
 			// it's parent node
 			pkgNode.addChild(classFileNode);
-			for (Iterator iter = pkgNode.getChildren().iterator(); iter.hasNext();) {
-				IProgramElement element = (IProgramElement) iter.next();
+			for (IProgramElement element: pkgNode.getChildren()) {
 				if (!element.equals(classFileNode) && element.getHandleIdentifier().equals(classFileNode.getHandleIdentifier())) {
 					// already added the classfile so have already
 					// added the structure for this aspect
@@ -523,9 +522,7 @@ public class AsmRelationshipProvider {
 
 		IProgramElement sourceFileNode = asm.getHierarchy().findElementForSourceLine(munger.getSourceLocation());
 		// the call to findElementForSourceLine(ISourceLocation) returns a file
-		// node
-		// if it can't find a node in the hierarchy for the given
-		// sourcelocation.
+		// node if it can't find a node in the hierarchy for the given sourcelocation.
 		// Therefore, if this is returned, we know we can't find one and have to
 		// continue to fault in the model.
 		if (!sourceFileNode.getKind().equals(IProgramElement.Kind.FILE_JAVA)) {
@@ -542,7 +539,7 @@ public class AsmRelationshipProvider {
 		IProgramElement root = asm.getHierarchy().getRoot();
 		IProgramElement binaries = asm.getHierarchy().findElementForLabel(root, IProgramElement.Kind.SOURCE_FOLDER, "binaries");
 		if (binaries == null) {
-			binaries = new ProgramElement(asm, "binaries", IProgramElement.Kind.SOURCE_FOLDER, new ArrayList());
+			binaries = new ProgramElement(asm, "binaries", IProgramElement.Kind.SOURCE_FOLDER, new ArrayList<IProgramElement>());
 			root.addChild(binaries);
 		}
 		// if (aspect.getPackageName() != null) {
@@ -551,7 +548,7 @@ public class AsmRelationshipProvider {
 		IProgramElement pkgNode = asm.getHierarchy().findElementForLabel(binaries, IProgramElement.Kind.PACKAGE, packagename);
 		// note packages themselves have no source location
 		if (pkgNode == null) {
-			pkgNode = new ProgramElement(asm, packagename, IProgramElement.Kind.PACKAGE, new ArrayList());
+			pkgNode = new ProgramElement(asm, packagename, IProgramElement.Kind.PACKAGE, new ArrayList<IProgramElement>());
 			binaries.addChild(pkgNode);
 			pkgNode.addChild(classFileNode);
 		} else {
@@ -559,8 +556,7 @@ public class AsmRelationshipProvider {
 			// may not be generated correctly if it uses information from
 			// it's parent node
 			pkgNode.addChild(classFileNode);
-			for (Iterator iter = pkgNode.getChildren().iterator(); iter.hasNext();) {
-				IProgramElement element = (IProgramElement) iter.next();
+			for (IProgramElement element: pkgNode.getChildren()) {
 				if (!element.equals(classFileNode) && element.getHandleIdentifier().equals(classFileNode.getHandleIdentifier())) {
 					// already added the classfile so have already
 					// added the structure for this aspect
@@ -619,7 +615,7 @@ public class AsmRelationshipProvider {
 				}
 				ISourceLocation pointcutLocation = (sLoc == null ? null : createSourceLocation(sourcefilename, aspect, sLoc));
 				ProgramElement pointcutElement = new ProgramElement(model, pointcut.getName(), IProgramElement.Kind.POINTCUT,
-						pointcutLocation, pointcut.getModifiers(), NO_COMMENT, Collections.EMPTY_LIST);
+						pointcutLocation, pointcut.getModifiers(), NO_COMMENT, Collections.<IProgramElement>emptyList());
 				containingAspect.addChild(pointcutElement);
 			}
 		}
@@ -638,16 +634,15 @@ public class AsmRelationshipProvider {
 					sLoc = rpcd.getSourceLocation();
 				}
 				parent.addChild(new ProgramElement(asm, pcd.getName(), IProgramElement.Kind.POINTCUT, getBinarySourceLocation(
-						aspect, sLoc), pcd.getModifiers(), null, Collections.EMPTY_LIST));
+						aspect, sLoc), pcd.getModifiers(), null, Collections.<IProgramElement>emptyList()));
 			}
 		}
 	}
 
-	private static void addChildNodes(AsmManager asm, ResolvedType aspect, IProgramElement parent, Collection children) {
+	private static void addChildNodes(AsmManager asm, ResolvedType aspect, IProgramElement parent, Collection<?> children) {
 		int deCtr = 1;
 		int dwCtr = 1;
-		for (Iterator iter = children.iterator(); iter.hasNext();) {
-			Object element = iter.next();
+		for (Object element: children) {
 			if (element instanceof DeclareErrorOrWarning) {
 				DeclareErrorOrWarning decl = (DeclareErrorOrWarning) element;
 				int counter = 0;
@@ -703,7 +698,7 @@ public class AsmRelationshipProvider {
 	private static IProgramElement createAdviceChild(AsmManager model, Advice advice) {
 		IProgramElement adviceNode = new ProgramElement(model, advice.getKind().getName(), IProgramElement.Kind.ADVICE,
 				advice.getBinarySourceLocation(advice.getSourceLocation()), advice.getSignature().getModifiers(), null,
-				Collections.EMPTY_LIST);
+				Collections.<IProgramElement>emptyList());
 		adviceNode.setDetails(AsmRelationshipUtils.genPointcutDetails(advice.getPointcut()));
 		adviceNode.setBytecodeName(advice.getSignature().getName());
 		return adviceNode;
@@ -726,7 +721,7 @@ public class AsmRelationshipProvider {
 				name = name.substring(name.indexOf("$") + 1);
 			}
 			IProgramElement pe = new ProgramElement(model, name, IProgramElement.Kind.INTER_TYPE_FIELD, getBinarySourceLocation(
-					aspect, itd.getSourceLocation()), rtMunger.getSignature().getModifiers(), null, Collections.EMPTY_LIST);
+					aspect, itd.getSourceLocation()), rtMunger.getSignature().getModifiers(), null, Collections.<IProgramElement>emptyList());
 			pe.setCorrespondingType(sig.getReturnType().getName());
 			return pe;
 		} else if (kind == ResolvedTypeMunger.Method) { // ITD
@@ -736,7 +731,7 @@ public class AsmRelationshipProvider {
 				name = name.substring(name.indexOf("$") + 1);
 			}
 			IProgramElement pe = new ProgramElement(model, name, IProgramElement.Kind.INTER_TYPE_METHOD, getBinarySourceLocation(
-					aspect, itd.getSourceLocation()), rtMunger.getSignature().getModifiers(), null, Collections.EMPTY_LIST);
+					aspect, itd.getSourceLocation()), rtMunger.getSignature().getModifiers(), null, Collections.<IProgramElement>emptyList());
 			setParams(pe, sig);
 			return pe;
 		} else if (kind == ResolvedTypeMunger.Constructor) {
@@ -746,7 +741,7 @@ public class AsmRelationshipProvider {
 			}
 			IProgramElement pe = new ProgramElement(model, name, IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR,
 					getBinarySourceLocation(aspect, itd.getSourceLocation()), rtMunger.getSignature().getModifiers(), null,
-					Collections.EMPTY_LIST);
+					Collections.<IProgramElement>emptyList());
 			setParams(pe, sig);
 			return pe;
 			// } else if (kind == ResolvedTypeMunger.MethodDelegate2) {
@@ -766,19 +761,16 @@ public class AsmRelationshipProvider {
 	private static void setParams(IProgramElement pe, ResolvedMember sig) {
 		// do it for itds too
 		UnresolvedType[] ts = sig.getParameterTypes();
-		pe.setParameterNames(Collections.EMPTY_LIST);
-		// String[] pnames = sig.getParameterNames();
+		pe.setParameterNames(Collections.<String>emptyList());
+		// TODO should be doing param names?
 		if (ts == null) {
-			pe.setParameterSignatures(Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+			pe.setParameterSignatures(Collections.<char[]>emptyList(), Collections.<String>emptyList());
 		} else {
-			List paramSigs = new ArrayList();
-			// List paramNames = new ArrayList();
+			List<char[]> paramSigs = new ArrayList<char[]>();
 			for (int i = 0; i < ts.length; i++) {
 				paramSigs.add(ts[i].getSignature().toCharArray());
-				// paramNames.add(pnames[i]);
 			}
-			pe.setParameterSignatures(paramSigs, Collections.EMPTY_LIST);
-			// pe.setParameterNames(paramNames);
+			pe.setParameterSignatures(paramSigs, Collections.<String>emptyList());
 		}
 		pe.setCorrespondingType(sig.getReturnType().getName());
 	}
@@ -786,7 +778,7 @@ public class AsmRelationshipProvider {
 	private static IProgramElement createDeclareParentsChild(AsmManager model, DeclareParents decp) {
 		IProgramElement decpElement = new ProgramElement(model, "declare parents", IProgramElement.Kind.DECLARE_PARENTS,
 				getBinarySourceLocation(decp.getDeclaringType(), decp.getSourceLocation()), Modifier.PUBLIC, null,
-				Collections.EMPTY_LIST);
+				Collections.<IProgramElement>emptyList());
 		setParentTypesOnDeclareParentsNode(decp, decpElement);
 		return decpElement;
 	}
@@ -976,8 +968,7 @@ public class AsmRelationshipProvider {
 		// otherwise
 		// we wont get unique handles
 		int numberOfChildrenWithThisName = 0;
-		for (Iterator it = enclosingNode.getChildren().iterator(); it.hasNext();) {
-			IProgramElement child = (IProgramElement) it.next();
+		for (IProgramElement child: enclosingNode.getChildren()) {
 			if (child.getName().equals(shadow.toString())) {
 				numberOfChildrenWithThisName++;
 			}
@@ -1027,14 +1018,14 @@ public class AsmRelationshipProvider {
 		if (typeElem == null) {
 			return;
 		}
+		if (!typeElem.getKind().isType()) {
+			throw new IllegalStateException("Did not find a type element, found a "+typeElem.getKind()+" element");
+		}
 
-		StringBuffer parmString = new StringBuffer("(");
+		StringBuilder parmString = new StringBuilder("(");
 		UnresolvedType[] args = affectedMethod.getParameterTypes();
-		// Type[] args = method.getArgumentTypes();
 		for (int i = 0; i < args.length; i++) {
-			String s = args[i].getName();// Utility.signatureToString(args[i].
-			// getName()getSignature(), false);
-			parmString.append(s);
+			parmString.append(args[i].getName());
 			if ((i + 1) < args.length) {
 				parmString.append(",");
 			}
