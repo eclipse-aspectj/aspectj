@@ -256,9 +256,14 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	}
 
 	private boolean mungeNewAnnotationOnType(BcelClassWeaver weaver, AnnotationOnTypeMunger munger) {
-		// FIXME asc this has already been done up front, need to do it here
-		// too?
-		weaver.getLazyClassGen().addAnnotation(((BcelAnnotation) munger.getNewAnnotation()).getBcelAnnotation());
+		// FIXME asc this has already been done up front, need to do it here too?
+		try {
+			BcelAnnotation anno = (BcelAnnotation) munger.getNewAnnotation();
+			weaver.getLazyClassGen().addAnnotation(anno.getBcelAnnotation());
+		} catch (ClassCastException cce) {
+			throw new IllegalStateException("DiagnosticsFor318237: The typemunger "+munger+" contains an annotation of type "+
+					munger.getNewAnnotation().getClass().getName()+" when it should be a BcelAnnotation",cce);
+		}
 		return true;
 	}
 
