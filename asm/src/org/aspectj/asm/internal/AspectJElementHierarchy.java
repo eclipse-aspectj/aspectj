@@ -158,7 +158,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 
 		synchronized (this) {
 			// Build a cache key and check the cache
-			StringBuffer keyb = (packageName == null) ? new StringBuffer() : new StringBuffer(packageName);
+			StringBuilder keyb = (packageName == null) ? new StringBuilder() : new StringBuilder(packageName);
 			keyb.append(".").append(typeName);
 			String key = keyb.toString();
 			IProgramElement cachedValue = typeMap.get(key);
@@ -290,6 +290,15 @@ public class AspectJElementHierarchy implements IHierarchy {
 		}
 
 		for (IProgramElement classNode : nodes) {
+			if (!classNode.getKind().isType()) {
+				List<IProgramElement> kids = classNode.getChildren();
+				if (kids != null && !kids.isEmpty()) {
+					IProgramElement node = findClassInNodes(kids, name, typeName);
+					if (node != null) {
+						return node;
+					}
+				}
+			} else {
 			if (baseName.equals(classNode.getName())) {
 				if (innerName == null) {
 					return classNode;
@@ -305,6 +314,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 				if (node != null) {
 					return node;
 				}
+			}
 			}
 		}
 		return null;
