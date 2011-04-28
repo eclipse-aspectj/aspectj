@@ -13,6 +13,12 @@
 </stdout></run>
 </ajc-test>
 
+<ajc-test dir="bugs1612/pr315398" title="verifyerror - 2">
+<compile files="Code2.java" options="-1.5">
+</compile>
+<run class="Code2"></run>
+</ajc-test>
+
 <ajc-test dir="bugs1612/pr335810" title="rawtype warning">
 <compile files="One.java" options="-1.5 -warn:+raw -warn:+warningToken">
 </compile>

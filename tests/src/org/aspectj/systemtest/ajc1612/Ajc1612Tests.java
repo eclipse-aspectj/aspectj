@@ -25,6 +25,10 @@ public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("verifyerror");
 	}
 	
+	public void testVerifyError_315398_2() {
+		runTest("verifyerror - 2");
+	}
+	
 	public void testRawTypePointcut_327134() {
 		runTest("rawtype pointcut");
 	}
