@@ -2,6 +2,15 @@
 
 <suite>
 
+<ajc-test dir="bugs1612/pr328099" title="signed jar ltw">
+<compile files="X.java" classpath="code.jar"/>
+<run class="foo.bar.FooLaunch" ltw="aop.xml" classpath="$sandbox/code.jar">
+<stdout>
+<line text="pre...Foo.bar()...post"/>
+</stdout>
+</run>
+</ajc-test>
+
 <ajc-test dir="bugs1612/pr315398" title="verifyerror">
 <compile files="Code.java" options="-1.5">
 </compile>

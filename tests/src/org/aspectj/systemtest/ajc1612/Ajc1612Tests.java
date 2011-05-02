@@ -21,38 +21,42 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	// public void testSignedJarLtw_328099() {
+	// runTest("signed jar ltw");
+	// }
+
 	public void testVerifyError_315398() {
 		runTest("verifyerror");
 	}
-	
+
 	public void testVerifyError_315398_2() {
 		runTest("verifyerror - 2");
 	}
-	
+
 	public void testRawTypePointcut_327134() {
 		runTest("rawtype pointcut");
 	}
-	
+
 	public void testRawTypeWarning_335810() {
 		runTest("rawtype warning");
 	}
-	
-//	public void testDecpGenerics_344005() {
-//		runTest("decp generics");
-//	}
-	
+
+	// public void testDecpGenerics_344005() {
+	// runTest("decp generics");
+	// }
+
 	public void testIllegalAccessError_343051() {
 		runTest("illegalaccesserror");
 	}
-	
+
 	public void testItitNpe_339974() {
 		runTest("itit npe");
 	}
-	
-//	public void testNoImportError_342605() {
-//		runTest("noimporterror");
-//	}
-	
+
+	// public void testNoImportError_342605() {
+	// runTest("noimporterror");
+	// }
+
 	public void testClashingLocalTypes_342323() {
 		runTest("clashing local types");
 	}
