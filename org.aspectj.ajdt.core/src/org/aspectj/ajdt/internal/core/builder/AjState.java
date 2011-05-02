@@ -1471,8 +1471,12 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 			if (!rType.isMissing()) {
 				try {
 					ClassFileReader reader = new ClassFileReader(thisTime.getBytes(), null);
+					boolean isAspect = false;
+					if (rType instanceof ReferenceType && ((ReferenceType) rType).getDelegate() != null) {
+						isAspect = ((ReferenceType) rType).isAspect();
+					}
 					this.resolvedTypeStructuresFromLastBuild.put(thisTime.getClassName(), new CompactTypeStructureRepresentation(
-							reader));
+							reader, isAspect));
 				} catch (ClassFormatException cfe) {
 					throw new BCException("Unexpected problem processing class", cfe);
 				}
@@ -1486,8 +1490,12 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 		if (!newResolvedType.isMissing()) {
 			try {
 				ClassFileReader reader = new ClassFileReader(thisTime.getBytes(), null);
-				this.resolvedTypeStructuresFromLastBuild.put(thisTime.getClassName(),
-						new CompactTypeStructureRepresentation(reader));
+				boolean isAspect = false;
+				if (newResolvedType instanceof ReferenceType && ((ReferenceType) newResolvedType).getDelegate() != null) {
+					isAspect = ((ReferenceType) newResolvedType).isAspect();
+				}
+				this.resolvedTypeStructuresFromLastBuild.put(thisTime.getClassName(), new CompactTypeStructureRepresentation(
+						reader, isAspect));
 			} catch (ClassFormatException cfe) {
 				throw new BCException("Unexpected problem processing class", cfe);
 			}
