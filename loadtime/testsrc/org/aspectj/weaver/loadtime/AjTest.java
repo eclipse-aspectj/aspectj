@@ -37,7 +37,7 @@ public class AjTest extends TestCase {
 	public void testPreProcess() {
 		ClassLoader loader = new URLClassLoader(new URL[] {}, null);
 		Aj aj = new Aj();
-		aj.preProcess("Junk", new byte[] {}, loader);
+		aj.preProcess("Junk", new byte[] {}, loader, null);
 	}
 
 	public void testGetNamespace() {
