@@ -37,21 +37,20 @@ public class ClassPreProcessorAgentAdapter implements ClassFileTransformer {
 	}
 
 	/**
-	 * Weaving delegation
+	 * Invokes the weaver to modify some set of input bytes.
 	 * 
 	 * @param loader the defining class loader
-	 * @param className the name of class beeing loaded
-	 * @param classBeingRedefined when hotswap is called
-	 * @param protectionDomain
-	 * @param bytes the bytecode before weaving
-	 * @return the weaved bytecode
+	 * @param className the name of class being loaded
+	 * @param classBeingRedefined is set when hotswap is being attempted
+	 * @param protectionDomain the protection domain for the class being loaded
+	 * @param bytes the incoming bytes (before weaving)
+	 * @return the woven bytes
 	 */
 	public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain,
 			byte[] bytes) throws IllegalClassFormatException {
 		if (classBeingRedefined != null) {
-			System.err.println("INFO: (Enh120375):  AspectJ attempting reweave of '"+className+"'");
+			System.err.println("INFO: (Enh120375):  AspectJ attempting reweave of '" + className + "'");
 		}
-		return s_preProcessor.preProcess(className, bytes, loader);
+		return s_preProcessor.preProcess(className, bytes, loader, protectionDomain);
 	}
-
 }
