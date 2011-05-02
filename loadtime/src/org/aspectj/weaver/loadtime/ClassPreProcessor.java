@@ -15,7 +15,7 @@ package org.aspectj.weaver.loadtime;
  * Generic class pre processor interface that allows to separate the AspectJ 5 load time weaving
  * from Java 5 JVMTI interfaces for further use on Java 1.3 / 1.4
  *
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur
  */
 public interface ClassPreProcessor {
 
