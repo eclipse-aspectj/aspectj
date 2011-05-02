@@ -12,7 +12,6 @@
 package org.aspectj.testing;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.tools.ajc.AjcTestCase;
@@ -44,7 +43,7 @@ public class AjcTest {
 		}
 	}
 
-	private List testSteps = new ArrayList();
+	private List<ITestStep> testSteps = new ArrayList<ITestStep>();
 	
 	private String dir;
 	private String pr;
@@ -65,8 +64,7 @@ public class AjcTest {
 		if (!canRunOnThisVM()) return false;
 		try {
 			System.out.print("TEST: " + getTitle() + "\t");			
-			for (Iterator iter = testSteps.iterator(); iter.hasNext();) {
-				ITestStep step = (ITestStep) iter.next();
+			for (ITestStep step: testSteps) {
 				step.setBaseDir(getDir());
 				System.out.print(".");
 				step.execute(testCase);
