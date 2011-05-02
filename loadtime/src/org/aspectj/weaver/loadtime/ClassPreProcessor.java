@@ -11,26 +11,29 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
+import java.security.ProtectionDomain;
+
 /**
- * Generic class pre processor interface that allows to separate the AspectJ 5 load time weaving
- * from Java 5 JVMTI interfaces for further use on Java 1.3 / 1.4
- *
+ * Generic class pre processor interface that allows to separate the AspectJ 5 load time weaving from Java 5 JVMTI interfaces for
+ * further use on Java 1.3 / 1.4
+ * 
  * @author Alexandre Vasseur
  */
 public interface ClassPreProcessor {
 
-    /**
-     * Post constructor initialization, usually empty
-     */
-    void initialize();
+	/**
+	 * Post constructor initialization, usually empty
+	 */
+	void initialize();
 
-    /**
-     * Weave
-     *
-     * @param className
-     * @param bytes
-     * @param classLoader
-     * @return
-     */
-    byte[] preProcess(String className, byte[] bytes, ClassLoader classLoader);
+	/**
+	 * Weave
+	 * 
+	 * @param className
+	 * @param bytes
+	 * @param classLoader
+	 * @param a protection domain that may be used for defining extraneous classes generated as part of modifying the one passed in
+	 * @return
+	 */
+	byte[] preProcess(String className, byte[] bytes, ClassLoader classLoader, ProtectionDomain protectionDomain);
 }

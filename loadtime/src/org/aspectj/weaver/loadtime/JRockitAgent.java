@@ -16,66 +16,66 @@ import com.bea.jvm.ClassLibrary;
 import com.bea.jvm.JVMFactory;
 
 /**
- * BEA JRocket JMAPI agent. 
+ * BEA JRocket JMAPI agent.
  * 
  * Use "-Xmanagement:class=org.aspectj.weaver.loadtime.JRockitAgent"
  */
 public class JRockitAgent implements com.bea.jvm.ClassPreProcessor {
 
 	private ClassPreProcessor preProcessor;
-	
+
 	/*
-	 * This is used to implement the recursion protection offered by JVMTI
-	 * but not by JRockit JMAPI. I we are called to preProcess a class while
-	 * already preProcessing another we will return immediately
+	 * This is used to implement the recursion protection offered by JVMTI but not by JRockit JMAPI. I we are called to preProcess a
+	 * class while already preProcessing another we will return immediately
 	 */
 	private static ThreadLocalStack stack = new ThreadLocalStack();
-	
-	
-	public JRockitAgent () {
+
+	public JRockitAgent() {
 		this.preProcessor = new Aj();
-		
-	    ClassLibrary cl = JVMFactory.getJVM().getClassLibrary();
-        cl.setClassPreProcessor(this);
+
+		ClassLibrary cl = JVMFactory.getJVM().getClassLibrary();
+		cl.setClassPreProcessor(this);
 	}
-	
+
 	public byte[] preProcess(ClassLoader loader, String className, byte[] bytes) {
 		byte[] newBytes = bytes;
 
 		if (stack.empty()) {
 			stack.push(className);
-			newBytes =  preProcessor.preProcess(className, bytes, loader);
+			newBytes = preProcessor.preProcess(className, bytes, loader, null);
 			stack.pop();
 		}
-		
+
 		return newBytes;
 	}
 
 	private static class ThreadLocalStack extends ThreadLocal {
 
-		public boolean empty () {
-			Stack stack = (Stack)get();
+		public boolean empty() {
+			Stack stack = (Stack) get();
 			return stack.empty();
 		}
 
-		public Object peek () {
+		public Object peek() {
 			Object obj = null;
-			Stack stack = (Stack)get();
-			if (!stack.empty()) obj = stack.peek();
+			Stack stack = (Stack) get();
+			if (!stack.empty())
+				obj = stack.peek();
 			return obj;
 		}
-		
-		public void push (Object obj) {
-			Stack stack = (Stack)get();
-			if (!stack.empty() && obj == stack.peek()) throw new RuntimeException(obj.toString());
+
+		public void push(Object obj) {
+			Stack stack = (Stack) get();
+			if (!stack.empty() && obj == stack.peek())
+				throw new RuntimeException(obj.toString());
 			stack.push(obj);
 		}
-		
-		public Object pop () {
-			Stack stack = (Stack)get();
+
+		public Object pop() {
+			Stack stack = (Stack) get();
 			return stack.pop();
 		}
-		
+
 		protected Object initialValue() {
 			return new Stack();
 		}

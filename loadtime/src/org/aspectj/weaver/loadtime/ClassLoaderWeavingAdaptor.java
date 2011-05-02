@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -137,8 +138,12 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			} catch (Throwable throwable) {
 				throwable.printStackTrace();
 			}
+			if (activeProtectionDomain != null) {
+				defineClass(loaderRef.getClassLoader(), name, bytes, activeProtectionDomain);
+			} else {
+				defineClass(loaderRef.getClassLoader(), name, bytes); // could be done lazily using the hook
 
-			defineClass(loaderRef.getClassLoader(), name, bytes); // could be done lazily using the hook
+			}
 		}
 	}
 
@@ -977,6 +982,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		generatedClasses = new HashMap();
 	}
 
+	private Method defineClassMethod;
+	private Method defineClassWithProtectionDomainMethod;
+
 	private void defineClass(ClassLoader loader, String name, byte[] bytes) {
 		if (trace.isTraceEnabled()) {
 			trace.enter("defineClass", this, new Object[] { loader, name, bytes });
@@ -985,11 +993,45 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		debug("generating class '" + name + "'");
 
 		try {
-			// TODO av protection domain, and optimize
-			Method defineClass = ClassLoader.class.getDeclaredMethod("defineClass", new Class[] { String.class, bytes.getClass(),
-					int.class, int.class });
-			defineClass.setAccessible(true);
-			clazz = defineClass.invoke(loader, new Object[] { name, bytes, new Integer(0), new Integer(bytes.length) });
+			if (defineClassMethod == null) {
+				defineClassMethod = ClassLoader.class.getDeclaredMethod("defineClass", new Class[] { String.class,
+						bytes.getClass(), int.class, int.class });
+			}
+			defineClassMethod.setAccessible(true);
+			clazz = defineClassMethod.invoke(loader, new Object[] { name, bytes, new Integer(0), new Integer(bytes.length) });
+		} catch (InvocationTargetException e) {
+			if (e.getTargetException() instanceof LinkageError) {
+				warn("define generated class failed", e.getTargetException());
+				// is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
+				// TODO maw I don't think this is OK and
+			} else {
+				warn("define generated class failed", e.getTargetException());
+			}
+		} catch (Exception e) {
+			warn("define generated class failed", e);
+		}
+
+		if (trace.isTraceEnabled()) {
+			trace.exit("defineClass", clazz);
+		}
+	}
+
+	private void defineClass(ClassLoader loader, String name, byte[] bytes, ProtectionDomain protectionDomain) {
+		if (trace.isTraceEnabled()) {
+			trace.enter("defineClass", this, new Object[] { loader, name, bytes, protectionDomain });
+		}
+		Object clazz = null;
+		debug("generating class '" + name + "'");
+
+		try {
+			// System.out.println(">> Defining with protection domain " + name + " pd=" + protectionDomain);
+			if (defineClassWithProtectionDomainMethod == null) {
+				defineClassWithProtectionDomainMethod = ClassLoader.class.getDeclaredMethod("defineClass", new Class[] {
+						String.class, bytes.getClass(), int.class, int.class, ProtectionDomain.class });
+			}
+			defineClassWithProtectionDomainMethod.setAccessible(true);
+			clazz = defineClassWithProtectionDomainMethod.invoke(loader, new Object[] { name, bytes, new Integer(0),
+					new Integer(bytes.length), protectionDomain });
 		} catch (InvocationTargetException e) {
 			if (e.getTargetException() instanceof LinkageError) {
 				warn("define generated class failed", e.getTargetException());

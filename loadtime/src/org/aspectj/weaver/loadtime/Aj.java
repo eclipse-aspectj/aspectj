@@ -13,6 +13,7 @@ package org.aspectj.weaver.loadtime;
 
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
+import java.security.ProtectionDomain;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -73,7 +74,7 @@ public class Aj implements ClassPreProcessor {
 	 * @param loader
 	 * @return weaved bytes
 	 */
-	public byte[] preProcess(String className, byte[] bytes, ClassLoader loader) {
+	public byte[] preProcess(String className, byte[] bytes, ClassLoader loader, ProtectionDomain protectionDomain) {
 		// TODO AV needs to doc that
 		if (loader == null || className == null || loader.getClass().getName().equals(deleLoader)) {
 			// skip boot loader, null classes (hibernate), or those from a reflection loader
@@ -93,11 +94,16 @@ public class Aj implements ClassPreProcessor {
 						trace.exit("preProcess");
 					return bytes;
 				}
-				byte[] newBytes = weavingAdaptor.weaveClass(className, bytes, false);
-				Dump.dumpOnExit(weavingAdaptor.getMessageHolder(), true);
-				if (trace.isTraceEnabled())
-					trace.exit("preProcess", newBytes);
-				return newBytes;
+				try {
+					weavingAdaptor.setActiveProtectionDomain(protectionDomain);
+					byte[] newBytes = weavingAdaptor.weaveClass(className, bytes, false);
+					Dump.dumpOnExit(weavingAdaptor.getMessageHolder(), true);
+					if (trace.isTraceEnabled())
+						trace.exit("preProcess", newBytes);
+					return newBytes;
+				} finally {
+					weavingAdaptor.setActiveProtectionDomain(null);
+				}
 			}
 
 			/* Don't like to do this but JVMTI swallows all exceptions */
