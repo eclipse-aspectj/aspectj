@@ -13,18 +13,24 @@ package org.aspectj.tools.ajc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FilePermission;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ReflectPermission;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.Permission;
+import java.security.Policy;
+import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.PropertyPermission;
 import java.util.StringTokenizer;
 
 import junit.framework.TestCase;
@@ -622,7 +628,14 @@ public class AjcTestCase extends TestCase {
 			command.append(" ");
 			command.append(args[i]);
 		}
-
+//		try {
+//			// Enable the security manager
+//			Policy.setPolicy(new MyPolicy());
+//			SecurityManager sm = new SecurityManager();
+//			System.setSecurityManager(sm);
+//		} catch (SecurityException se) {
+//			// SecurityManager already set
+//		}
 		ByteArrayOutputStream baosOut = new ByteArrayOutputStream();
 		ByteArrayOutputStream baosErr = new ByteArrayOutputStream();
 		ClassLoader contexClassLoader = Thread.currentThread().getContextClassLoader();
@@ -654,12 +667,51 @@ public class AjcTestCase extends TestCase {
 			// the main method threw an exception...
 			fail("Exception thrown by " + className + ".main(String[]) :" + invTgt.getTargetException());
 		} finally {
+
+//			try {
+//				// Enable the security manager
+//				SecurityManager sm = new SecurityManager();
+//				System.setSecurityManager(null);
+//			} catch (SecurityException se) {
+//				se.printStackTrace();
+//				// SecurityManager already set
+//			}
 			Thread.currentThread().setContextClassLoader(contexClassLoader);
 			stopCapture(baosErr, baosOut);
 			lastRunResult = new RunResult(command.toString(), new String(baosOut.toByteArray()), new String(baosErr.toByteArray()));
 		}
 		return lastRunResult;
 	}
+
+//	static class MyPolicy extends Policy {
+//
+//		@Override
+//		public boolean implies(ProtectionDomain domain, Permission permission) {
+//			// if (permission != SecurityConstants.GET_POLICY_PERMISSION) {
+//			// // System.out.println(domain + " " + permission.getName());
+//			// System.out.println(permission.getName());
+//			// }
+//			// if (true) {
+//			// return true;
+//			// }
+//			if (permission instanceof PropertyPermission) {
+//				return true;
+//			}
+//			if (permission instanceof RuntimePermission) {
+//				return true;
+//			}
+//			if (permission instanceof FilePermission) {
+//				// System.out.println(permission);
+//				return true;
+//			}
+//			if (permission instanceof ReflectPermission) {
+//				return true;
+//			}
+//			// System.out.println(permission);
+//			return super.implies(domain, permission);
+//			// return true;
+//		}
+//	}
 
 	/*
 	 * Must create weaving class loader reflectively using new parent so we don't have a reference to a World loaded from CLASSPATH
