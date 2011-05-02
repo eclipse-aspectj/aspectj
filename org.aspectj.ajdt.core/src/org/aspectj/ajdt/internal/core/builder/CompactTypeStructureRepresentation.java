@@ -51,7 +51,7 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 	IBinaryNestedType[] memberTypes;
 	IBinaryAnnotation[] annotations;
 
-	public CompactTypeStructureRepresentation(ClassFileReader cfr) {
+	public CompactTypeStructureRepresentation(ClassFileReader cfr, boolean isAspect) {
 
 		this.enclosingTypeName = cfr.getEnclosingTypeName();
 		this.isLocal = cfr.isLocal();
@@ -69,7 +69,11 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 		if (binMethods == null) {
 			binMethods = NoMethod;
 		}
-		this.memberTypes = cfr.getMemberTypes(true);
+		// If we are an aspect we (for now) need to grab even the malformed inner type info as it
+		// may be there because it refers to an ITD'd innertype. This needs to be improved - perhaps
+		// using a real attribute against which memberTypes can be compared to see which are just
+		// references and which were real declarations
+		this.memberTypes = cfr.getMemberTypes(isAspect);
 		this.annotations = cfr.getAnnotations();
 		this.sourceName = cfr.getSourceName();
 		this.className = cfr.getName(); // slashes...
