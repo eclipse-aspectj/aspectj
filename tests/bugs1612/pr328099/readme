@@ -1,0 +1,9 @@
+Build the src contents into a jar which will then contain class files and our manifest.  Jar typically code.jar
+
+Then sign the jar with
+ jarsigner -keystore ../cert/key.store -storepass foobar code.jar foo
+
+as per: http://introcs.cs.princeton.edu/85application/jar/sign.html
+
+then you can run it:
+java -javaagent:XXX -classpath code.jar foo.bar.Foo

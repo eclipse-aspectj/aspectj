@@ -1,0 +1,10 @@
+<!DOCTYPE aspectj PUBLIC
+        "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
+<aspectj>
+  <weaver options="-debug">
+    <include within="foo.bar..*" />
+  </weaver>
+  <aspects>
+    <aspect name="foo.bar.BarAspect"/>
+  </aspects>
+</aspectj>
