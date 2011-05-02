@@ -2,6 +2,15 @@
 
 <suite>
 
+<ajc-test dir="bugs1612/pr327867" title="synthetic methods">
+<compile files="Foo.java" options="-1.5 -showWeaveInfo">
+<message kind="weave" text="Join point 'method-execution(void Foo.main(java.lang.String[]))' in Type 'Foo' (Foo.java:3) advised by before advice from 'X' (Foo.java:17)"/>
+<message kind="weave" text="Join point 'method-execution(void Foo.m())' in Type 'Foo' (Foo.java:7) advised by before advice from 'X' (Foo.java:17)"/>
+</compile>
+<run class="Foo"/>
+</ajc-test>
+
+
 <ajc-test dir="bugs1612/pr328099" title="signed jar ltw">
 <compile files="X.java" classpath="code.jar"/>
 <run class="foo.bar.FooLaunch" ltw="aop.xml" classpath="$sandbox/code.jar">

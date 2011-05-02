@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testSyntheticMethods_327867() {
+		runTest("synthetic methods");
+	}
+
 	// public void testSignedJarLtw_328099() {
 	// runTest("signed jar ltw");
 	// }
