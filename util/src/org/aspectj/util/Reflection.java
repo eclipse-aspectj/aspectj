@@ -21,25 +21,25 @@ import java.util.ArrayList;
 //import java.util.StringTokenizer;
 
 public class Reflection {
-    public static final Class[] MAIN_PARM_TYPES = new Class[] {String[].class};    
+    public static final Class<?>[] MAIN_PARM_TYPES = new Class[] {String[].class};    
 
 	private Reflection() {
 	}
 	
-	public static Object invokestaticN(Class class_, String name, Object[] args) {
+	public static Object invokestaticN(Class<?> class_, String name, Object[] args) {
 		return invokeN(class_, name, null, args);
 	}
 
-	public static Object invoke(Class class_, Object target, String name, Object arg1, Object arg2) {
+	public static Object invoke(Class<?> class_, Object target, String name, Object arg1, Object arg2) {
 		return invokeN(class_, name, target, new Object[] { arg1, arg2 });
 	}
 	
-	public static Object invoke(Class class_, Object target, String name, Object arg1, Object arg2, Object arg3) {
+	public static Object invoke(Class<?> class_, Object target, String name, Object arg1, Object arg2, Object arg3) {
 		return invokeN(class_, name, target, new Object[] { arg1, arg2, arg3 });
 	}
 	
 	
-	public static Object invokeN(Class class_, String name, Object target, Object[] args) {
+	public static Object invokeN(Class<?> class_, String name, Object target, Object[] args) {
 		Method meth = getMatchingMethod(class_, name, args);
 		try {
 			return meth.invoke(target, args);
@@ -55,7 +55,7 @@ public class Reflection {
 	}
 
 
-	public static Method getMatchingMethod(Class class_, String name, Object[] args) {
+	public static Method getMatchingMethod(Class<?> class_, String name, Object[] args) {
 		Method[] meths = class_.getMethods();
 		for (int i=0; i < meths.length; i++) {
 			Method meth = meths[i];
@@ -74,7 +74,7 @@ public class Reflection {
 
 	
 
-	public static Object getStaticField(Class class_, String name) {
+	public static Object getStaticField(Class<?> class_, String name) {
 		try {
 			return class_.getField(name).get(null);
 		} catch (IllegalAccessException e) {
@@ -93,13 +93,13 @@ public class Reflection {
             InvocationTargetException, ClassNotFoundException {
         LangUtil.throwIaxIfNull(className, "class name");
         if (LangUtil.isEmpty(classpath)) {
-            Class mainClass = Class.forName(className);
+            Class<?> mainClass = Class.forName(className);
             runMainInSameVM(mainClass, args);
             return;            
         }
-        ArrayList dirs = new ArrayList();
-        ArrayList libs = new ArrayList();
-        ArrayList urls = new ArrayList();
+        ArrayList<File> dirs = new ArrayList<File>();
+        ArrayList<File> libs = new ArrayList<File>();
+        ArrayList<URL> urls = new ArrayList<URL>();
         String[] entries = LangUtil.splitClasspath(classpath);
         for (int i = 0; i < entries.length; i++) {
             String entry = entries[i];
@@ -150,7 +150,7 @@ public class Reflection {
             }
         }
         UtilClassLoader loader = new UtilClassLoader(urls, dirs);
-        Class targetClass = null;
+        Class<?> targetClass = null;
         try {
             targetClass = loader.loadClass(className);
         } catch (ClassNotFoundException e) {
@@ -162,7 +162,7 @@ public class Reflection {
         main.invoke(null, new Object[] { args });
     }
     
-    public static void runMainInSameVM(Class mainClass, String[] args) throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+    public static void runMainInSameVM(Class<?> mainClass, String[] args) throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         LangUtil.throwIaxIfNull(mainClass, "main class");
         Method main = mainClass.getMethod("main", MAIN_PARM_TYPES);
         main.invoke(null, new Object[] { args });
