@@ -124,7 +124,7 @@ public class LangUtil {
 	 * @param c the Class to check - use null to ignore type check
 	 * @throws IllegalArgumentException "null {name}" if o is null
 	 */
-	public static final void throwIaxIfNotAssignable(final Object ra[], final Class c, final String name) {
+	public static final void throwIaxIfNotAssignable(final Object ra[], final Class<?> c, final String name) {
 		throwIaxIfNull(ra, name);
 		String label = (null == name ? "input" : name);
 		for (int i = 0; i < ra.length; i++) {
@@ -132,7 +132,7 @@ public class LangUtil {
 				String m = " null " + label + "[" + i + "]";
 				throw new IllegalArgumentException(m);
 			} else if (null != c) {
-				Class actualClass = ra[i].getClass();
+				Class<?> actualClass = ra[i].getClass();
 				if (!c.isAssignableFrom(actualClass)) {
 					String message = label + " not assignable to " + c.getName();
 					throw new IllegalArgumentException(message);
@@ -146,10 +146,10 @@ public class LangUtil {
 	 * 
 	 * @throws IllegalArgumentException "null {name}" if o is null
 	 */
-	public static final void throwIaxIfNotAssignable(final Object o, final Class c, final String name) {
+	public static final void throwIaxIfNotAssignable(final Object o, final Class<?> c, final String name) {
 		throwIaxIfNull(o, name);
 		if (null != c) {
-			Class actualClass = o.getClass();
+			Class<?> actualClass = o.getClass();
 			if (!c.isAssignableFrom(actualClass)) {
 				String message = name + " not assignable to " + c.getName();
 				throw new IllegalArgumentException(message);
@@ -201,7 +201,7 @@ public class LangUtil {
 	}
 
 	/** @return ((null == collection) || (0 == collection.size())) */
-	public static boolean isEmpty(Collection collection) {
+	public static boolean isEmpty(Collection<?> collection) {
 		return ((null == collection) || (0 == collection.size()));
 	}
 
@@ -220,7 +220,7 @@ public class LangUtil {
 	 * @param input <code>String</code> to split.
 	 * @return List of String of elements.
 	 */
-	public static List commaSplit(String input) {
+	public static List<String> commaSplit(String input) {
 		return anySplit(input, ",");
 	}
 
@@ -235,7 +235,7 @@ public class LangUtil {
 			return new String[0];
 		}
 		StringTokenizer st = new StringTokenizer(classpath, File.pathSeparator);
-		ArrayList result = new ArrayList(st.countTokens());
+		ArrayList<String> result = new ArrayList<String>(st.countTokens());
 		while (st.hasMoreTokens()) {
 			String entry = st.nextToken();
 			if (!LangUtil.isEmpty(entry)) {
@@ -273,11 +273,11 @@ public class LangUtil {
 	 * @param delim <code>String</code> separators for input.
 	 * @return List of String of elements.
 	 */
-	public static List anySplit(String input, String delim) {
+	public static List<String> anySplit(String input, String delim) {
 		if (null == input) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
-		ArrayList result = new ArrayList();
+		ArrayList<String> result = new ArrayList<String>();
 
 		if (LangUtil.isEmpty(delim) || (-1 == input.indexOf(delim))) {
 			result.add(input.trim());
@@ -295,11 +295,11 @@ public class LangUtil {
 	 * 
 	 * @param text <code>String</code> to split.
 	 */
-	public static List strings(String text) {
+	public static List<String> strings(String text) {
 		if (LangUtil.isEmpty(text)) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
-		List strings = new ArrayList();
+		List<String> strings = new ArrayList<String>();
 		StringTokenizer tok = new StringTokenizer(text);
 		while (tok.hasMoreTokens()) {
 			strings.add(tok.nextToken());
@@ -308,8 +308,8 @@ public class LangUtil {
 	}
 
 	/** @return a non-null unmodifiable List */
-	public static List safeList(List list) {
-		return (null == list ? Collections.EMPTY_LIST : Collections.unmodifiableList(list));
+	public static <T> List<T> safeList(List<T> list) {
+		return (null == list ? Collections.<T>emptyList() : Collections.unmodifiableList(list));
 	}
 
 	// /**
@@ -654,16 +654,16 @@ public class LangUtil {
 	 * @throws IllegalArgumentException if either is null
 	 */
 	public static Object[] safeCopy(Object[] source, Object[] sink) {
-		final Class sinkType = (null == sink ? Object.class : sink.getClass().getComponentType());
+		final Class<?> sinkType = (null == sink ? Object.class : sink.getClass().getComponentType());
 		final int sourceLength = (null == source ? 0 : source.length);
 		final int sinkLength = (null == sink ? 0 : sink.length);
 
 		final int resultSize;
-		ArrayList result = null;
+		ArrayList<Object> result = null;
 		if (0 == sourceLength) {
 			resultSize = 0;
 		} else {
-			result = new ArrayList(sourceLength);
+			result = new ArrayList<Object>(sourceLength);
 			for (int i = 0; i < sourceLength; i++) {
 				if ((null != source[i]) && (sinkType.isAssignableFrom(source[i].getClass()))) {
 					result.add(source[i]);
@@ -683,7 +683,7 @@ public class LangUtil {
 	/**
 	 * @return a String with the unqualified class name of the class (or "null")
 	 */
-	public static String unqualifiedClassName(Class c) {
+	public static String unqualifiedClassName(Class<?> c) {
 		if (null == c) {
 			return "null";
 		}
@@ -820,7 +820,7 @@ public class LangUtil {
 		if (null == checker || (null == stack) || (0 == stack.length())) {
 			return;
 		}
-		final LinkedList lines = new LinkedList();
+		final LinkedList<String> lines = new LinkedList<String>();
 		StringTokenizer st = new StringTokenizer(stack.toString(), "\n\r");
 		while (st.hasMoreTokens() && (0 < --maxLines)) {
 			lines.add(st.nextToken());
@@ -914,11 +914,11 @@ public class LangUtil {
 	 * @param array the Object[] to convert (may be null)
 	 * @return the List corresponding to array (never null)
 	 */
-	public static List arrayAsList(Object[] array) {
+	public static List<Object> arrayAsList(Object[] array) {
 		if ((null == array) || (1 > array.length)) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
-		ArrayList list = new ArrayList();
+		ArrayList<Object> list = new ArrayList<Object>();
 		list.addAll(Arrays.asList(array));
 		return list;
 	}
@@ -996,7 +996,7 @@ public class LangUtil {
 	 */
 	public static ProcessController makeProcess(ProcessController controller, String classpath, String mainClass, String[] args) {
 		File java = LangUtil.getJavaExecutable();
-		ArrayList cmd = new ArrayList();
+		ArrayList<String> cmd = new ArrayList<String>();
 		cmd.add(java.getAbsolutePath());
 		cmd.add("-classpath");
 		cmd.add(classpath);
@@ -1185,7 +1185,7 @@ public class LangUtil {
 			LangUtil.throwIaxIfNull(java, "java");
 			LangUtil.throwIaxIfNull(mainClass, "mainClass");
 			LangUtil.throwIaxIfNull(args, "args");
-			ArrayList cmd = new ArrayList();
+			ArrayList<String> cmd = new ArrayList<String>();
 			cmd.add(java.getAbsolutePath());
 			cmd.add("-classpath");
 			cmd.add(classpath);

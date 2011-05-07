@@ -31,7 +31,7 @@ import java.util.List;
 public class UtilClassLoader extends URLClassLoader {
 
     /** seek classes in dirs first */
-    List /*File*/ dirs;
+    List<File> dirs;
 
     /** save URL[] only for toString */
     private URL[] urlsForDebugString;
@@ -40,7 +40,7 @@ public class UtilClassLoader extends URLClassLoader {
         super(urls);
         LangUtil.throwIaxIfNotAssignable(dirs, File.class, "dirs");
         this.urlsForDebugString = urls;
-        ArrayList dcopy = new ArrayList();
+        ArrayList<File> dcopy = new ArrayList<File>();
         
         if (!LangUtil.isEmpty(dirs)) {
             dcopy.addAll(Arrays.asList(dirs));
@@ -57,13 +57,13 @@ public class UtilClassLoader extends URLClassLoader {
         return ClassLoader.getSystemResourceAsStream(name);
     } 
     
-    public synchronized Class loadClass(String name, boolean resolve)
+    public synchronized Class<?> loadClass(String name, boolean resolve)
         throws ClassNotFoundException {
         // search the cache, our dirs (if maybe test), 
         // the system, the superclass (URL[]),
         // and our dirs again (if not maybe test)
         ClassNotFoundException thrown = null;
-        Class result =  findLoadedClass(name);
+        Class<?> result =  findLoadedClass(name);
         if (null != result) {
             resolve = false;
         } else {
@@ -102,8 +102,8 @@ public class UtilClassLoader extends URLClassLoader {
     /** @return null if class not found or byte[] of class otherwise */
     private byte[] readClass(String className) throws ClassNotFoundException {
         final String fileName = className.replace('.', '/')+".class";
-        for (Iterator iter = dirs.iterator(); iter.hasNext();) {
-            File file = new File((File) iter.next(), fileName);
+        for (Iterator<File> iter = dirs.iterator(); iter.hasNext();) {
+            File file = new File(iter.next(), fileName);
             if (file.canRead()) { 
                 return getClassData(file);
             }

@@ -868,6 +868,7 @@ public class FileUtil {
 	}
 
 	/** do line-based copying */
+	@SuppressWarnings("deprecation")
 	public static void copyStream(DataInputStream in, PrintStream out) throws IOException {
 		LangUtil.throwIaxIfNull(in, "in");
 		LangUtil.throwIaxIfNull(in, "out");
@@ -965,6 +966,7 @@ public class FileUtil {
 	 * 
 	 * @param file the File to convert to URL (not null)
 	 */
+	@SuppressWarnings("deprecation")
 	public static URL getFileURL(File file) {
 		LangUtil.throwIaxIfNull(file, "file");
 		URL result = null;
