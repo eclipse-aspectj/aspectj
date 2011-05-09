@@ -10,6 +10,30 @@
 <run class="Foo"/>
 </ajc-test>
 
+<ajc-test dir="bugs1612/pr345172" title="incorrect annos">
+<compile files="InterType.java" options="-1.5 -showWeaveInfo">
+<message kind="weave" text="Join point 'method-execution(void InterType$InterTypeIfc.m1(int))' in Type 'InterType' (InterType.java:21) advised by around advice from 'InterType$AroundMethod' (InterType.java:12)"/>
+<!-- 
+<message kind="weave" text="Join point 'method-execution(void InterType$InterTypeIfc.m1(int, int))' in Type 'InterType' (InterType.java:24) advised by around advice from 'InterType$AroundMethod' (InterType.java:12)"/>
+<message kind="weave" text="Join point 'method-execution(void InterType.m1(int))' in Type 'InterType' (InterType.java:28) advised by around advice from 'InterType$AroundMethod' (InterType.java:12)"/>
+-->
+<message kind="weave" text="Type 'InterType$InterTypeIfc' (InterType.java) has intertyped method from 'InterType' (InterType.java:'void InterType$InterTypeIfc.m1(int)')"/>
+<message kind="weave" text="Type 'InterType$InterTypeIfc' (InterType.java) has intertyped method from 'InterType' (InterType.java:'void InterType$InterTypeIfc.m1(int, int)')"/>
+</compile>
+<run class="InterType"/>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr345172" title="incorrect annos 2">
+<compile files="InterType2.java" options="-1.5">
+</compile>
+<run class="InterType2">
+<stdout>
+<line text="execution(void InterType2.InterTypeIfc.m1(int))"/>
+</stdout></run>
+</ajc-test>
+
+
+
 
 <ajc-test dir="bugs1612/pr328099" title="signed jar ltw">
 <compile files="X.java" classpath="code.jar"/>
