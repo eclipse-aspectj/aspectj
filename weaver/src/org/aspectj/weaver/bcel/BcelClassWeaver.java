@@ -2898,6 +2898,37 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 
 	/**
+	 * Find the specified member in the specified type.
+	 * 
+	 * @param type the type to search for the member
+	 * @param methodName the name of the method to find
+	 * @param Class[] the method parameters that the discovered method should have
+	 */
+	private ResolvedMember findResolvedMemberNamed(ResolvedType type, String methodName, UnresolvedType[] params) {
+		ResolvedMember[] allMethods = type.getDeclaredMethods();
+		for (int i = 0; i < allMethods.length; i++) {
+			ResolvedMember candidate = allMethods[i];
+			if (candidate.getName().equals(methodName)) {
+				UnresolvedType[] candidateParams = candidate.getParameterTypes();
+				if (candidateParams.length == params.length) {
+					// boolean allOK = true; // this checking all breaks down with generics in the mix, unfortunately, dont have
+					// time to fix it up right now
+					// for (int p = 0; p < candidateParams.length; p++) {
+					// if (!candidateParams[p].getErasureSignature().equals(params[p].getErasureSignature())) {
+					// allOK = false;
+					// break;
+					// }
+					// }
+					// if (allOK) {
+					return candidate;
+					// }
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * For a given resolvedmember, this will discover the real annotations for it. <b>Should only be used when the resolvedmember is
 	 * the contents of an effective signature attribute, as thats the only time when the annotations aren't stored directly in the
 	 * resolvedMember</b>
@@ -2963,10 +2994,8 @@ class BcelClassWeaver implements IClassWeaver {
 					} else {
 						ResolvedMember realthing = AjcMemberMaker.interMethodDispatcher(rm.resolve(world), memberHostType).resolve(
 								world);
-						// ResolvedMember resolvedDooberry =
-						// world.resolve(realthing);
-						ResolvedMember theRealMember = findResolvedMemberNamed(memberHostType.resolve(world), realthing.getName());
-						// AMC temp guard for M4
+						ResolvedMember theRealMember = findResolvedMemberNamed(memberHostType.resolve(world), realthing.getName(),
+								realthing.getParameterTypes());
 						if (theRealMember == null) {
 							throw new UnsupportedOperationException(
 									"Known limitation in M4 - can't find ITD members when type variable is used as an argument and has upper bound specified");
