@@ -21,12 +21,20 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	// public void testAnnoCopying_345515() {
+	// runTest("anno copying");
+	// }
+
 	public void testIncorrectAnnos_345172() {
 		runTest("incorrect annos");
 	}
 
 	public void testIncorrectAnnos_345172_2() {
 		runTest("incorrect annos 2");
+	}
+
+	public void testIncorrectAnnos_345172_3() {
+		runTest("incorrect annos 3");
 	}
 
 	public void testSyntheticMethods_327867() {

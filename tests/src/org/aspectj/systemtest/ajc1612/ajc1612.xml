@@ -2,6 +2,11 @@
 
 <suite>
 
+<ajc-test dir="bugs1612/pr345515" title="anno copying">
+<compile files="Code.java" options="-1.5"/>
+<run class="Code"></run>
+</ajc-test>
+
 <ajc-test dir="bugs1612/pr327867" title="synthetic methods">
 <compile files="Foo.java" options="-1.5 -showWeaveInfo">
 <message kind="weave" text="Join point 'method-execution(void Foo.main(java.lang.String[]))' in Type 'Foo' (Foo.java:3) advised by before advice from 'X' (Foo.java:17)"/>
@@ -29,6 +34,15 @@
 <run class="InterType2">
 <stdout>
 <line text="execution(void InterType2.InterTypeIfc.m1(int))"/>
+</stdout></run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr345172" title="incorrect annos 3">
+<compile files="InterType3.java" options="-1.5">
+</compile>
+<run class="InterType3">
+<stdout>
+<line text="execution(void InterType3.InterTypeIfc.m1(int, String))"/>
 </stdout></run>
 </ajc-test>
 
