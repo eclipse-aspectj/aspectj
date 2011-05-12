@@ -2902,26 +2902,39 @@ class BcelClassWeaver implements IClassWeaver {
 	 * 
 	 * @param type the type to search for the member
 	 * @param methodName the name of the method to find
-	 * @param Class[] the method parameters that the discovered method should have
+	 * @param params the method parameters that the discovered method should have
 	 */
 	private ResolvedMember findResolvedMemberNamed(ResolvedType type, String methodName, UnresolvedType[] params) {
 		ResolvedMember[] allMethods = type.getDeclaredMethods();
+		List<ResolvedMember> candidates = new ArrayList<ResolvedMember>();
 		for (int i = 0; i < allMethods.length; i++) {
 			ResolvedMember candidate = allMethods[i];
 			if (candidate.getName().equals(methodName)) {
+				if (candidate.getArity() == params.length) {
+					candidates.add(candidate);
+				}
+			}
+		}
+
+		if (candidates.size() == 0) {
+			return null;
+		} else if (candidates.size() == 1) {
+			return candidates.get(0);
+		} else {
+			// multiple candidates
+			for (ResolvedMember candidate : candidates) {
+				// These checks will break down with generics... but that would need two ITDs with the same name, same arity and
+				// generics
+				boolean allOK = true;
 				UnresolvedType[] candidateParams = candidate.getParameterTypes();
-				if (candidateParams.length == params.length) {
-					// boolean allOK = true; // this checking all breaks down with generics in the mix, unfortunately, dont have
-					// time to fix it up right now
-					// for (int p = 0; p < candidateParams.length; p++) {
-					// if (!candidateParams[p].getErasureSignature().equals(params[p].getErasureSignature())) {
-					// allOK = false;
-					// break;
-					// }
-					// }
-					// if (allOK) {
+				for (int p = 0; p < candidateParams.length; p++) {
+					if (!candidateParams[p].getErasureSignature().equals(params[p].getErasureSignature())) {
+						allOK = false;
+						break;
+					}
+				}
+				if (allOK) {
 					return candidate;
-					// }
 				}
 			}
 		}
