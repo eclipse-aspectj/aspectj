@@ -95,7 +95,8 @@ public class Aj implements ClassPreProcessor {
 					return bytes;
 				}
 				try {
-					weavingAdaptor.setActiveProtectionDomain(protectionDomain);
+					// custard
+					// weavingAdaptor.setActiveProtectionDomain(protectionDomain);
 					byte[] newBytes = weavingAdaptor.weaveClass(className, bytes, false);
 					Dump.dumpOnExit(weavingAdaptor.getMessageHolder(), true);
 					if (trace.isTraceEnabled())
