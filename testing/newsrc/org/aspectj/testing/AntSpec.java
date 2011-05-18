@@ -11,7 +11,9 @@
  *******************************************************************************/
 package org.aspectj.testing;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.StringTokenizer;
 
 import org.apache.tools.ant.BuildEvent;
@@ -58,7 +60,7 @@ public class AntSpec implements ITestStep {
 	private String m_antFile;
 	private String m_antTarget;
 
-	public void execute(AjcTestCase inTestCase) {
+	public void execute(final AjcTestCase inTestCase) {
 		final String failMessage = "test \"" + m_ajcTest.getTitle() + "\" failed: ";
 
 		File buildFile = new File(m_ajcTest.getDir() + File.separatorChar + m_antFile);
@@ -97,6 +99,43 @@ public class AntSpec implements ITestStep {
 				public void buildFinished(BuildEvent event) {
 					super.buildFinished(event);
 					if (event.getException() != null) {
+
+						try {
+							File antout = new File(inTestCase.getSandboxDirectory().getAbsolutePath(), "antout");
+							if (antout.exists()) {
+								stdout.append("Forked java command stdout:\n");
+								System.out.println("Forked java command stdout:");
+								FileReader fr = new FileReader(antout);
+								BufferedReader br = new BufferedReader(fr);
+								String line = br.readLine();
+								while (line != null) {
+									stdout.append(line).append("\n");
+									System.out.println(stdout);
+									line = br.readLine();
+								}
+								fr.close();
+							}
+
+							File anterr = new File(inTestCase.getSandboxDirectory().getAbsolutePath(), "anterr");
+							if (anterr.exists()) {
+								stdout.append("Forked java command stderr:\n");
+								System.out.println("Forked java command stderr:");
+								FileReader fr = new FileReader(anterr);
+								BufferedReader br = new BufferedReader(fr);
+								String line = br.readLine();
+								while (line != null) {
+									stdout.append(line).append("\n");
+									System.out.println(stdout);
+									line = br.readLine();
+								}
+								fr.close();
+							}
+						} catch (Exception e) {
+							System.out.println("Exception whilst loading forked java task output " + e.getMessage() + "\n");
+							e.printStackTrace();
+							stdout.append("Exception whilst loading forked java task output " + e.getMessage() + "\n");
+						}
+
 						StringBuffer message = new StringBuffer();
 						message.append(event.getException().toString()).append("\n");
 						message.append(verboseLog);
