@@ -84,7 +84,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeParamAnnos;
  * While generating code it may be necessary to insert NOP operations. You can use the `removeNOPs' method to get rid off them. The
  * resulting method object can be obtained via the `getMethod()' method.
  * 
- * @version $Id: MethodGen.java,v 1.16 2009/10/05 17:35:36 aclement Exp $
+ * @version $Id: MethodGen.java,v 1.17 2011/05/19 23:23:46 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author <A HREF="http://www.vmeng.com/beard">Patrick C. Beard</A> [setMaxStack()]
  * @see InstructionList
@@ -693,7 +693,12 @@ public class MethodGen extends FieldGenOrMethodGen {
 		byte[] byte_code = null;
 
 		if (il != null) {
-			byte_code = il.getByteCode();
+			try {
+				byte_code = il.getByteCode();
+			} catch (Exception e) {
+				throw new IllegalStateException("Unexpected problem whilst preparing bytecode for " + this.getClassName() + "."
+						+ this.getName() + this.getSignature(), e);
+			}
 		}
 
 		LineNumberTable lnt = null;
