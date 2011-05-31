@@ -198,10 +198,12 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		if (annotationTypePattern instanceof BindingAnnotationFieldTypePattern) {
 			if (shadow.getKind() != Shadow.MethodExecution) {
-				shadow.getIWorld().getMessageHandler().handleMessage(
-						MessageUtil.error(
-								"Annotation field binding is only supported at method-execution join points (compiler limitation)",
-								getSourceLocation()));
+				shadow.getIWorld()
+						.getMessageHandler()
+						.handleMessage(
+								MessageUtil
+										.error("Annotation field binding is only supported at method-execution join points (compiler limitation)",
+												getSourceLocation()));
 				return Literal.TRUE; // exit quickly, error will prevent weaving
 			}
 			BindingAnnotationFieldTypePattern btp = (BindingAnnotationFieldTypePattern) annotationTypePattern;
@@ -213,7 +215,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 			if (var == null) {
 				throw new BCException("Unexpected problem locating annotation at join point '" + shadow + "'");
 			}
-			state.set(btp.getFormalIndex(), var.getAccessorForValue(formalType));
+			state.set(btp.getFormalIndex(), var.getAccessorForValue(formalType, btp.formalName));
 		} else if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
 			BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern) annotationTypePattern;
 			UnresolvedType annotationType = btp.getAnnotationType();
