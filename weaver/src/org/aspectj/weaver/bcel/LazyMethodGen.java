@@ -477,6 +477,24 @@ public final class LazyMethodGen implements Traceable {
 			body = null;
 			MethodGen gen = pack();
 			return gen.getMethod();
+		} catch (RuntimeException re) {
+			if (re.getCause() instanceof ClassGenException) {
+				enclosingClass
+						.getBcelObjectType()
+						.getResolvedTypeX()
+						.getWorld()
+						.showMessage(
+								IMessage.ERROR,
+								WeaverMessages.format(WeaverMessages.PROBLEM_GENERATING_METHOD, this.getClassName(),
+										this.getName(), re.getCause().getMessage()),
+								this.getMemberView() == null ? null : this.getMemberView().getSourceLocation(), null);
+				// throw e; PR 70201.... let the normal problem reporting
+				// infrastructure deal with this rather than crashing.
+				body = null;
+				MethodGen gen = pack();
+				return gen.getMethod();
+			}
+			throw re;
 		}
 	}
 

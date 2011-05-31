@@ -25,8 +25,8 @@ import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.Shadow.Kind;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.ast.Var;
 
 /**
@@ -123,8 +123,7 @@ public class AnnotationAccessVar extends BcelVar {
 				Field annotationCachingField = shadow.getEnclosingClass().getAnnotationCachingField(shadow, toType);
 
 				// Basic idea here is to check if the cached field is null, if it is then initialize it, otherwise use it
-				il.append(fact
-						.createGetStatic(shadow.getEnclosingClass().getName(), annotationCachingField.getName(), jlAnnotation));
+				il.append(fact.createGetStatic(shadow.getEnclosingClass().getName(), annotationCachingField.getName(), jlAnnotation));
 				il.append(InstructionConstants.DUP);
 				InstructionBranch ifNonNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
 				il.append(ifNonNull);
@@ -140,8 +139,7 @@ public class AnnotationAccessVar extends BcelVar {
 				il.append(fact.createInvoke("java/lang/reflect/Method", "getAnnotation", jlaAnnotation, new Type[] { jlClass },
 						Constants.INVOKEVIRTUAL));
 				il.append(InstructionConstants.DUP);
-				il.append(fact
-						.createPutStatic(shadow.getEnclosingClass().getName(), annotationCachingField.getName(), jlAnnotation));
+				il.append(fact.createPutStatic(shadow.getEnclosingClass().getName(), annotationCachingField.getName(), jlAnnotation));
 				InstructionHandle ifNullElse = il.append(InstructionConstants.NOP);
 				ifNonNull.setTarget(ifNullElse);
 
@@ -231,10 +229,11 @@ public class AnnotationAccessVar extends BcelVar {
 	 * Return an object that can access a particular value of this annotation.
 	 * 
 	 * @param valueType The type from the annotation that is of interest
+	 * @param the formal name expressed in the pointcut, can be used to disambiguate
 	 * @return a variable that represents access to that annotation value
 	 */
 	@Override
-	public Var getAccessorForValue(ResolvedType valueType) {
-		return new AnnotationAccessFieldVar(this, valueType);
+	public Var getAccessorForValue(ResolvedType valueType, String formalName) {
+		return new AnnotationAccessFieldVar(this, valueType, formalName);
 	}
 }
