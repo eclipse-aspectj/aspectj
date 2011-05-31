@@ -73,6 +73,7 @@ public abstract class AnnotationTypePattern extends PatternNode {
 	public static final byte WILD = 8;
 	public static final byte EXACTFIELD = 9;
 	public static final byte BINDINGFIELD = 10;
+	public static final byte BINDINGFIELD2 = 11;
 
 	public static AnnotationTypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		byte key = s.readByte();
@@ -93,6 +94,8 @@ public abstract class AnnotationTypePattern extends PatternNode {
 			return ExactAnnotationFieldTypePattern.read(s, context);
 		case BINDINGFIELD:
 			return BindingAnnotationFieldTypePattern.read(s, context);
+		case BINDINGFIELD2:
+			return BindingAnnotationFieldTypePattern.read2(s, context);
 		case ELLIPSIS_KEY:
 			return ELLIPSIS;
 		case ANY_KEY:

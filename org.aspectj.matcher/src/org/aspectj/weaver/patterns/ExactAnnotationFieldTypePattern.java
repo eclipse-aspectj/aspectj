@@ -93,9 +93,11 @@ public class ExactAnnotationFieldTypePattern extends ExactAnnotationTypePattern 
 
 		ResolvedType formalBindingType = formalBinding.getType().resolve(scope.getWorld());
 
-		if (!(formalBindingType.isEnum() || formalBindingType.getSignature().equals("Ljava/lang/String;"))) {
-			scope.message(IMessage.ERROR, this, "The field within the annotation must be an enum or string. '"
-					+ formalBinding.getType() + "' is not (compiler limitation)");
+		String bindingTypeSignature = formalBindingType.getSignature();
+		if (!(formalBindingType.isEnum() || bindingTypeSignature.equals("Ljava/lang/String;") || bindingTypeSignature.equals("I"))) {
+			scope.message(IMessage.ERROR, this,
+					"The field within the annotation must be an enum, string or int. '" + formalBinding.getType()
+							+ "' is not (compiler limitation)");
 		}
 		bindingPattern = true;
 
@@ -103,14 +105,34 @@ public class ExactAnnotationFieldTypePattern extends ExactAnnotationTypePattern 
 		ReferenceType theAnnotationType = (ReferenceType) annotationType;
 		ResolvedMember[] annotationFields = theAnnotationType.getDeclaredMethods();
 		field = null;
+		boolean looksAmbiguous = false;
 		for (int i = 0; i < annotationFields.length; i++) {
 			ResolvedMember resolvedMember = annotationFields[i];
 			if (resolvedMember.getReturnType().equals(formalBinding.getType())) {
 				if (field != null) {
-					scope.message(IMessage.ERROR, this, "The field type '" + formalBinding.getType()
-							+ "' is ambiguous for annotation type '" + theAnnotationType.getName() + "'");
+					boolean haveProblem = true;
+					// use the name to differentiate
+					if (field.getName().equals(formalName)) {
+						// don't use this new field
+						haveProblem = false;
+					} else if (resolvedMember.getName().equals(formalName)) {
+						// ok, let's use this one
+						field = resolvedMember;
+						haveProblem = false;
+					}
+					if (haveProblem) {
+						looksAmbiguous = true;
+					}
+				} else {
+					field = resolvedMember;
 				}
-				field = resolvedMember;
+			}
+		}
+		if (looksAmbiguous) {
+			// did we find something that does match by name?
+			if (field == null || !field.getName().equals(formalName)) {
+				scope.message(IMessage.ERROR, this, "The field type '" + formalBinding.getType()
+						+ "' is ambiguous for annotation type '" + theAnnotationType.getName() + "'");
 			}
 		}
 		if (field == null) {
@@ -118,9 +140,10 @@ public class ExactAnnotationFieldTypePattern extends ExactAnnotationTypePattern 
 					+ theAnnotationType.getName() + "'");
 		}
 
-		BindingAnnotationFieldTypePattern binding = new BindingAnnotationFieldTypePattern(formalBinding.getType(), formalBinding
-				.getIndex(), theAnnotationType);
+		BindingAnnotationFieldTypePattern binding = new BindingAnnotationFieldTypePattern(formalBinding.getType(),
+				formalBinding.getIndex(), theAnnotationType);
 		binding.copyLocationFrom(this);
+		binding.formalName = this.formalName;
 		bindings.register(binding, scope);
 		binding.resolveBinding(scope.getWorld());
 		return binding;
