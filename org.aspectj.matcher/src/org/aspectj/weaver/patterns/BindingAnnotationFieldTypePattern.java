@@ -57,8 +57,9 @@ public class BindingAnnotationFieldTypePattern extends ExactAnnotationTypePatter
 		annotationType = world.resolve(annotationType);
 		ResolvedType annoType = (ResolvedType) annotationType;
 		if (!annoType.isAnnotation()) {
-			IMessage m = MessageUtil.error(WeaverMessages.format(WeaverMessages.REFERENCE_TO_NON_ANNOTATION_TYPE, annoType
-					.getName()), getSourceLocation());
+			IMessage m = MessageUtil
+					.error(WeaverMessages.format(WeaverMessages.REFERENCE_TO_NON_ANNOTATION_TYPE, annoType.getName()),
+							getSourceLocation());
 			world.getMessageHandler().handleMessage(m);
 			resolved = false;
 		}
@@ -109,21 +110,33 @@ public class BindingAnnotationFieldTypePattern extends ExactAnnotationTypePatter
 			// null);
 		} else {
 			int newFormalIndex = bindings.get(formalIndex);
-			return new BindingAnnotationFieldTypePattern(formalType, newFormalIndex, annotationType);
+			BindingAnnotationFieldTypePattern baftp = new BindingAnnotationFieldTypePattern(formalType, newFormalIndex,
+					annotationType);
+			baftp.formalName = formalName;
+			return baftp;
 		}
 	}
 
 	public void write(CompressingDataOutputStream s) throws IOException {
-		s.writeByte(AnnotationTypePattern.BINDINGFIELD);
+		s.writeByte(AnnotationTypePattern.BINDINGFIELD2);
 		formalType.write(s); // the type of the field within the annotation
 		s.writeShort((short) formalIndex);
 		annotationType.write(s); // the annotation type
+		s.writeUTF(formalName);
 		writeLocation(s);
 	}
 
 	public static AnnotationTypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
-		AnnotationTypePattern ret = new BindingAnnotationFieldTypePattern(UnresolvedType.read(s), s.readShort(), UnresolvedType
-				.read(s));
+		AnnotationTypePattern ret = new BindingAnnotationFieldTypePattern(UnresolvedType.read(s), s.readShort(),
+				UnresolvedType.read(s));
+		ret.readLocation(context, s);
+		return ret;
+	}
+
+	public static AnnotationTypePattern read2(VersionedDataInputStream s, ISourceContext context) throws IOException {
+		BindingAnnotationFieldTypePattern ret = new BindingAnnotationFieldTypePattern(UnresolvedType.read(s), s.readShort(),
+				UnresolvedType.read(s));
+		ret.formalName = s.readUTF();
 		ret.readLocation(context, s);
 		return ret;
 	}
@@ -141,9 +154,11 @@ public class BindingAnnotationFieldTypePattern extends ExactAnnotationTypePatter
 			if (annotationType instanceof ReferenceType) {
 				ReferenceType rt = (ReferenceType) annotationType;
 				if (rt.getRetentionPolicy() != null && rt.getRetentionPolicy().equals("SOURCE")) {
-					rt.getWorld().getMessageHandler().handleMessage(
-							MessageUtil.warn(WeaverMessages.format(WeaverMessages.NO_MATCH_BECAUSE_SOURCE_RETENTION,
-									annotationType, annotated), getSourceLocation()));
+					rt.getWorld()
+							.getMessageHandler()
+							.handleMessage(
+									MessageUtil.warn(WeaverMessages.format(WeaverMessages.NO_MATCH_BECAUSE_SOURCE_RETENTION,
+											annotationType, annotated), getSourceLocation()));
 					return FuzzyBoolean.NO;
 				}
 				ResolvedMember[] methods = rt.getDeclaredMethods();
