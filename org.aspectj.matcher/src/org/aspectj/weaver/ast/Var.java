@@ -40,9 +40,10 @@ public class Var extends Expr {
 	 * what kind of behaviour happens for two annotation fields of the same type?
 	 * 
 	 * @param formalType
+	 * @param formalName
 	 * @return
 	 */
-	public Var getAccessorForValue(ResolvedType formalType) {
+	public Var getAccessorForValue(ResolvedType formalType, String formalName) {
 		throw new IllegalStateException("Only makes sense for annotation variables");
 	}
 }
