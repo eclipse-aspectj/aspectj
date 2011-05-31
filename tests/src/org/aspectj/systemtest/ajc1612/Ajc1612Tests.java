@@ -25,6 +25,30 @@ public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// runTest("anno copying");
 	// }
 
+	public void testBindingInts_347684() {
+		runTest("binding ints");
+	}
+
+	public void testBindingInts_347684_2() {
+		runTest("binding ints - 2");
+	}
+
+	public void testBindingInts_347684_3() {
+		runTest("binding ints - 3");
+	}
+
+	public void testBindingInts_347684_4() {
+		runTest("binding ints - 4");
+	}
+
+	public void testBindingInts_347684_5() {
+		runTest("binding ints - 5");
+	}
+
+	public void testBindingInts_347684_6() {
+		runTest("binding ints - 6");
+	}
+
 	public void testIncorrectAnnos_345172() {
 		runTest("incorrect annos");
 	}

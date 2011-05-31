@@ -2,6 +2,61 @@
 
 <suite>
 
+<ajc-test dir="bugs1612/pr347684" title="binding ints">
+<compile files="BindingInts.java" options="-1.5"/>
+<run class="BindingInts">
+  <stdout>
+  <line text="execution(void BindingInts.a()) 37"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr347684" title="binding ints - 2">
+<compile files="BindingInts2.java" options="-1.5"/>
+<run class="BindingInts2">
+  <stdout>
+  <line text="execution(void BindingInts2.a()) 99"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr347684" title="binding ints - 3">
+<compile files="BindingInts3.java" options="-1.5"/>
+<run class="BindingInts3">
+  <stdout>
+  <line text="execution(void BindingInts3.a()) abc"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr347684" title="binding ints - 4">
+<compile files="BindingInts4.java" options="-1.5"/>
+<run class="BindingInts4">
+  <stdout>
+  <line text="execution(void BindingInts4.a()) 37 48"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr347684" title="binding ints - 5">
+<compile files="BindingInts5.java" options="-1.5"/>
+<run class="BindingInts5">
+  <stdout>
+  <line text="execution(void BindingInts5.a()) 37"/>
+  </stdout>
+</run>
+</ajc-test>
+
+
+<ajc-test dir="bugs1612/pr347684" title="binding ints - 6">
+<compile files="BindingInts6.java" options="-1.5"/>
+<run class="BindingInts6">
+  <stdout>
+  <line text="execution(void BindingInts6.a()) 37 1 99"/>
+  </stdout>
+</run>
+</ajc-test>
+
 <ajc-test dir="bugs1612/pr345515" title="anno copying">
 <compile files="Code.java" options="-1.5"/>
 <run class="Code"></run>
