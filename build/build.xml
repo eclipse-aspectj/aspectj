@@ -793,7 +793,7 @@ To use testing client jar in tests,
 ant -propertyfile XXX publishtomaven
 -->
   <target name="publishtomaven" depends="maven.init">
-    <property name="build.root" value="n:/workspaces/aspectj16_1/aj-build"/>
+    <property name="build.root" value="/Users/aclement/workspaces/aspectj1/aj-build"/>
 
     <property name="adjusted.release.type" value="snapshot"/>
     <property name="maven.central.repository" value="s3://maven.springframework.org/${adjusted.release.type}"/>
@@ -831,10 +831,14 @@ ant -propertyfile XXX publishtomaven
 
   </target>
 
-  <target name="publishtomaven_milestone" depends="maven.init">
-    <property name="suffix" value="1.6.9.RC3"/>
 
-    <property name="build.root" value="n:/workspaces/aspectj16_1/aj-build"/>
+
+
+
+  <target name="publishtomaven_milestone" depends="maven.init">
+    <property name="suffix" value="1.6.11.M2"/>
+
+    <property name="build.root" value="/Users/aclement/workspaces/aspectj1/aj-build"/>
     <property name="adjusted.release.type" value="milestone"/>
     <property name="maven.central.repository" value="s3://maven.springframework.org/${adjusted.release.type}"/>
     <property name="bin.jars.folder" value="${build.root}/dist/tools/lib"/>
@@ -864,6 +868,43 @@ ant -propertyfile XXX publishtomaven
         <authentication username="${accessKey}" passphrase="${secretKey}"/>
       </remoteRepository>
       <pom file="usedForMavenUpload_milestone/aspectjweaver.pom"/>
+      <attach file="${src.jars.folder}/aspectjweaver${suffix}-src.jar" classifier="sources"/>
+    </maven:deploy>
+  </target>
+
+  <target name="publishtomaven_release" depends="maven.init">
+    <property name="suffix" value="1.6.11"/>
+
+    <property name="build.root" value="/Users/aclement/workspaces/aspectj1/aj-build"/>
+    <property name="adjusted.release.type" value="release"/>
+    <property name="maven.central.repository" value="s3://maven.springframework.org/${adjusted.release.type}"/>
+    <property name="bin.jars.folder" value="${build.root}/dist/tools/lib"/>
+    <property name="src.jars.folder" value="${build.root}/src"/>
+
+    <!-- ASPECTJRT -->
+    <maven:deploy file="${bin.jars.folder}/aspectjrt.jar">
+      <remoteRepository url="${maven.central.repository}">
+        <authentication username="${accessKey}" passphrase="${secretKey}"/>
+      </remoteRepository>
+      <pom file="usedForMavenUpload_${adjusted.release.type}/aspectjrt.pom"/>
+      <attach file="${src.jars.folder}/aspectjrt${suffix}-src.jar" classifier="sources"/>
+    </maven:deploy>
+
+    <!-- ASPECTJTOOLS -->
+    <maven:deploy file="${bin.jars.folder}/aspectjtools.jar">
+      <remoteRepository url="${maven.central.repository}">
+        <authentication username="${accessKey}" passphrase="${secretKey}"/>
+      </remoteRepository>
+      <pom file="usedForMavenUpload_${adjusted.release.type}/aspectjtools.pom"/>
+      <attach file="${src.jars.folder}/aspectjtools${suffix}-src.jar" classifier="sources"/>
+    </maven:deploy>
+
+    <!-- ASPECTJWEAVER -->
+    <maven:deploy file="${bin.jars.folder}/aspectjweaver.jar">
+      <remoteRepository url="${maven.central.repository}">
+        <authentication username="${accessKey}" passphrase="${secretKey}"/>
+      </remoteRepository>
+      <pom file="usedForMavenUpload_${adjusted.release.type}/aspectjweaver.pom"/>
       <attach file="${src.jars.folder}/aspectjweaver${suffix}-src.jar" classifier="sources"/>
     </maven:deploy>
   </target>
