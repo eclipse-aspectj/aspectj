@@ -131,7 +131,8 @@ public class EclipseAnnotationConvertor {
 				}
 			} else {
 				if (constant != null && constant != Constant.NotAConstant) {
-					if (constant instanceof IntConstant || constant instanceof BooleanConstant) {
+					if (constant instanceof IntConstant || constant instanceof BooleanConstant
+							|| constant instanceof StringConstant) {
 						AnnotationValue av = generateElementValueForConstantExpression(defaultValue, defaultValueBinding);
 						return av;
 					}
