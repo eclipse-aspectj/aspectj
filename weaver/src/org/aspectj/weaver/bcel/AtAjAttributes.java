@@ -1757,10 +1757,16 @@ public class AtAjAttributes {
 			LocalVariable[] lvt = lt.getLocalVariableTable();
 			for (int j = 0; j < lvt.length; j++) {
 				LocalVariable localVariable = lvt[j];
-				if (localVariable.getStartPC() == 0) {
-					if (localVariable.getIndex() >= startAtStackIndex) {
-						arguments.add(new MethodArgument(localVariable.getName(), localVariable.getIndex()));
+				if (localVariable != null) { // pr348488
+					if (localVariable.getStartPC() == 0) {
+						if (localVariable.getIndex() >= startAtStackIndex) {
+							arguments.add(new MethodArgument(localVariable.getName(), localVariable.getIndex()));
+						}
 					}
+				} else {
+					String typename = (methodStruct.enclosingType != null ? methodStruct.enclosingType.getName() : "");
+					System.err.println("AspectJ: 348488 debug: unusual local variable table for method " + typename + "."
+							+ method.getName());
 				}
 			}
 			if (arguments.size() == 0) {
@@ -1771,12 +1777,14 @@ public class AtAjAttributes {
 				// LocalVariable(start_pc = 6, length = 40, index = 2:int __cobertura__line__number__)
 				// LocalVariable(start_pc = 6, length = 40, index = 3:int __cobertura__branch__number__)
 				LocalVariable localVariable = lvt[0];
-				if (localVariable.getStartPC() != 0) {
-					// looks suspicious so let's use this information
-					for (int j = 0; j < lvt.length && arguments.size() < method.getArgumentTypes().length; j++) {
-						localVariable = lvt[j];
-						if (localVariable.getIndex() >= startAtStackIndex) {
-							arguments.add(new MethodArgument(localVariable.getName(), localVariable.getIndex()));
+				if (localVariable != null) { // pr348488
+					if (localVariable.getStartPC() != 0) {
+						// looks suspicious so let's use this information
+						for (int j = 0; j < lvt.length && arguments.size() < method.getArgumentTypes().length; j++) {
+							localVariable = lvt[j];
+							if (localVariable.getIndex() >= startAtStackIndex) {
+								arguments.add(new MethodArgument(localVariable.getName(), localVariable.getIndex()));
+							}
 						}
 					}
 				}
