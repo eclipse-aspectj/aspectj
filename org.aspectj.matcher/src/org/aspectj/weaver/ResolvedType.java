@@ -2264,7 +2264,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	public void clearInterTypeMungers() {
 		if (isRawType()) {
-			getGenericType().clearInterTypeMungers();
+			ResolvedType genericType = getGenericType();
+			if (genericType.isRawType()) { // ERROR SITUATION: PR341926
+				// For some reason the raw type is pointing to another raw form (possibly itself)
+				System.err.println("DebugFor341926: Type " + this.getName() + " has an incorrect generic form");
+			} else {
+				genericType.clearInterTypeMungers();
+			}
 		}
 		// interTypeMungers.clear();
 		// BUG? Why can't this be clear() instead: 293620 c6
