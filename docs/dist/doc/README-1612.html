@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.6.12 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2010-2011 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 1.6.12 Readme</h1>
+
+<p>The full list of resolved issues in 1.6.12 is available 
+<a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.6.12;">here</a></h2>.</p>
+
+<h4>1.6.12.M1 available 7-Jun-2011</h4>
+
+
+<h2>Notable Changes</h2>
+<hr>
+<h3>M1 - synthetic is supported in pointcut modifiers <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=327867">327867</a></h3>
+<p>It is now possible to specify synthetic in pointcuts:
+</p>
+<pre><code>pointcut p(): execution(!synthetic * *(..));
+</code></pre>
+
+<h3>M1 - respect protection domain when generating types during weaving <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=328099">328099</a></h3>
+<p>This enables us to weave signed jars correctly.  AspectJ sometimes generates closure classes during weaving and
+these must be defined with the same protection domain as the jar that gave rise to them.  In 1.6.12.M1 this should
+now work correctly.
+</p>
+
+<h3>M1 - Suppressions inline with the JDT compiler <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=335810">335810</a></h3>
+<p>Starting with Eclipse 3.6, the Eclipse compiler no longer suppresses raw type 
+warnings with @SuppressWarnings("unchecked"). You need to use 
+@SuppressWarnings("rawtypes") for that.  AspectJ has now been updated with this rule too.
+</p>
+
+<h3>M1 - Optimized annotation value binding for ints <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=347684">347684</a></h3>
+<p>The optimized annotation value binding now supports ints - this is for use when you want to match upon the existence of an annotation but
+you don't need the annotation, you just need a value from it. This code snippet shows an example:</p>
+<pre><code>@interface SomeAnnotation {
+  int i();
+}
+
+before(int i): execution(* *(..)) && @annotation(SomeAnnotation(i)) {
+</code></pre>
+<p>
+Binding values in this way will result in code that runs *much* faster than using pointcuts that 
+bind the annotation itself then pull out the value.
+</p>
+
+<p>Under that same bug some changes were made to match values by name when binding too.  Suppose the annotation
+had multiple int values, how would we select which int to bind?  AspectJ will now use the name (if it can) to select
+the right value:
+<pre><code>@interface SomeAnnotation {
+  int mods();
+  int flags();
+}
+
+before(int flags): execution(* *(..)) && @annotation(SomeAnnotation(flags)) {
+</code></pre>
+<p>Here the use of 'flags' as the name of the value being bound will ensure the 'flags' value from any SomeAnnotation is
+bound and not the 'mods' value.</p>
+
+
+<h4>
+<!-- ============================== -->  
+</body>
+</html>
