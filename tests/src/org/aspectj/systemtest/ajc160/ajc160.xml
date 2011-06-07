@@ -93,6 +93,12 @@
        <message kind="weave" text="Extending interface set for type 'B' (Z.java) to include 'java.io.Serializable' (Z.java)"/>
      </compile>
    </ajc-test>
+   
+   <ajc-test dir="bugs160/various" title="hasmethod anno value - S">
+     <compile options="-1.5 -XhasMember -showWeaveInfo" files="S.java">
+       <message kind="weave" text="Extending interface set for type 'B' (S.java) to include 'java.io.Serializable' (S.java)"/>
+     </compile>
+   </ajc-test>
 
    <ajc-test dir="bugs160/various" title="hasmethod semantics">
      <compile options="-1.5 -XhasMember -Xlint:ignore" files="HasMethodSemantics.java"/>
