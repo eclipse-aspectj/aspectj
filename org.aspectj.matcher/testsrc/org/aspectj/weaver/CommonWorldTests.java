@@ -45,11 +45,11 @@ public abstract class CommonWorldTests extends TestCase {
 		world = getWorld();
 	}
 
-	private final UnresolvedType[] primitiveTypeXs = UnresolvedType.forSignatures(new String[] { "B", "S", "C", "I", "J", "F", "D",
+	private final UnresolvedType[] primitiveTypes = UnresolvedType.forSignatures(new String[] { "B", "S", "C", "I", "J", "F", "D",
 			"V" });
 
 	public void testPrimitiveTypes() {
-		ResolvedType[] primitives = world.resolve(primitiveTypeXs);
+		ResolvedType[] primitives = world.resolve(primitiveTypes);
 		for (int i = 0, len = primitives.length; i < len; i++) {
 			ResolvedType ty = primitives[i];
 			modifiersTest(ty, Modifier.PUBLIC | Modifier.FINAL);
@@ -90,7 +90,7 @@ public abstract class CommonWorldTests extends TestCase {
 	}
 
 	private void primAssignTest(String sig, String[] lowers) {
-		ResolvedType[] primitives = getWorld().resolve(primitiveTypeXs);
+		ResolvedType[] primitives = getWorld().resolve(primitiveTypes);
 		UnresolvedType tx = UnresolvedType.forSignature(sig);
 		ResolvedType ty = getWorld().resolve(tx, true);
 		assertTrue("Couldnt find type " + tx, !ty.isMissing());
@@ -112,7 +112,7 @@ public abstract class CommonWorldTests extends TestCase {
 	}
 
 	public void testPrimitiveArrays() {
-		ResolvedType[] primitives = world.resolve(primitiveTypeXs);
+		ResolvedType[] primitives = world.resolve(primitiveTypes);
 		for (int i = 0, len = primitives.length; i < len; i++) {
 			ResolvedType ty = primitives[i];
 			UnresolvedType tx = UnresolvedType.forSignature("[" + ty.getSignature());
@@ -121,8 +121,10 @@ public abstract class CommonWorldTests extends TestCase {
 			modifiersTest(aty, Modifier.PUBLIC | Modifier.FINAL);
 			fieldsTest(aty, ResolvedMember.NONE);
 			methodsTest(aty, ResolvedMember.NONE);
-			interfaceTest(aty, new ResolvedType[] { world.getCoreType(UnresolvedType.CLONEABLE),
-					world.getCoreType(UnresolvedType.SERIALIZABLE) });
+			interfaceTest(
+					aty,
+					new ResolvedType[] { world.getCoreType(UnresolvedType.CLONEABLE),
+							world.getCoreType(UnresolvedType.SERIALIZABLE) });
 			superclassTest(aty, UnresolvedType.OBJECT);
 
 			pointcutsTest(aty, ResolvedMember.NONE);
@@ -133,6 +135,40 @@ public abstract class CommonWorldTests extends TestCase {
 				ResolvedType ty1 = primitives[j];
 				isCoerceableFromTest(aty, ty1, false);
 				tx = UnresolvedType.forSignature("[" + ty1.getSignature());
+				ResolvedType aty1 = getWorld().resolve(tx, true);
+				assertTrue("Couldnt find type " + tx, !aty1.isMissing());
+				if (ty.equals(ty1)) {
+					isCoerceableFromTest(aty, aty1, true);
+					isAssignableFromTest(aty, aty1, true);
+				} else {
+					isCoerceableFromTest(aty, aty1, false);
+					isAssignableFromTest(aty, aty1, false);
+				}
+			}
+		}
+		// double dimension arrays
+		for (int i = 0, len = primitives.length; i < len; i++) {
+			ResolvedType ty = primitives[i];
+			UnresolvedType tx = UnresolvedType.forSignature("[[" + ty.getSignature());
+			ResolvedType aty = getWorld().resolve(tx, true);
+			assertTrue("Couldnt find type " + tx, !aty.isMissing());
+			modifiersTest(aty, Modifier.PUBLIC | Modifier.FINAL);
+			fieldsTest(aty, ResolvedMember.NONE);
+			methodsTest(aty, ResolvedMember.NONE);
+			interfaceTest(
+					aty,
+					new ResolvedType[] { world.getCoreType(UnresolvedType.CLONEABLE),
+							world.getCoreType(UnresolvedType.SERIALIZABLE) });
+			superclassTest(aty, UnresolvedType.OBJECT);
+
+			pointcutsTest(aty, ResolvedMember.NONE);
+			isInterfaceTest(aty, false);
+			isClassTest(aty, false);
+			isAspectTest(aty, false);
+			for (int j = 0; j < len; j++) {
+				ResolvedType ty1 = primitives[j];
+				isCoerceableFromTest(aty, ty1, false);
+				tx = UnresolvedType.forSignature("[[" + ty1.getSignature());
 				ResolvedType aty1 = getWorld().resolve(tx, true);
 				assertTrue("Couldnt find type " + tx, !aty1.isMissing());
 				if (ty.equals(ty1)) {
