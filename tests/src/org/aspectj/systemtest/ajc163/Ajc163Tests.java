@@ -27,9 +27,9 @@ import org.aspectj.testing.Utils;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
-	// public void testGenericMethodBridging_pr251326() {
-	// runTest("itd anonymous inner class in wrong package");
-	// }
+	public void testGenericMethodBridging_pr251326() {
+		runTest("itd anonymous inner class in wrong package");
+	}
 
 	public void testOrderingRepetitive_pr259279() {
 		runTest("ordering repetitive method");
