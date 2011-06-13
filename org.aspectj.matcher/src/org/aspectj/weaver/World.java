@@ -140,6 +140,7 @@ public abstract class World implements Dump.INode {
 
 	// Minimal Model controls whether model entities that are not involved in relationships are deleted post-build
 	private boolean minimalModel = false;
+	private boolean useFinal = true;
 	private boolean targettingRuntime1_6_10 = false;
 
 	private boolean completeBinaryTypes = false;
@@ -529,7 +530,7 @@ public abstract class World implements Dump.INode {
 
 		if (genericType != null) {
 			genericType.world = this;
-			((ReferenceType)genericType).addDependentType((ReferenceType)rawType);
+			((ReferenceType) genericType).addDependentType((ReferenceType) rawType);
 			return genericType;
 		} else {
 			// Fault in the generic that underpins the raw type ;)
@@ -813,6 +814,10 @@ public abstract class World implements Dump.INode {
 		Xpinpoint = b;
 	}
 
+	public boolean useFinal() {
+		return useFinal;
+	}
+
 	public boolean isMinimalModel() {
 		ensureAdvancedConfigurationProcessed();
 		return minimalModel;
@@ -900,6 +905,8 @@ public abstract class World implements Dump.INode {
 	public Properties getExtraConfiguration() {
 		return extraConfiguration;
 	}
+
+	public final static String xsetAVOID_FINAL = "avoidFinal"; // default true
 
 	public final static String xsetWEAVE_JAVA_PACKAGES = "weaveJavaPackages"; // default
 	// false
@@ -1328,6 +1335,15 @@ public abstract class World implements Dump.INode {
 			}
 		}
 
+		public void demote(ResolvedType type) {
+			String key = type.getSignature();
+			if (debugDemotion) {
+				addedSinceLastDemote.remove(key);
+			}
+			tMap.remove(key);
+			insertInExpendableMap(key, type);
+		}
+
 		// public ResolvedType[] getAllTypes() {
 		// List/* ResolvedType */results = new ArrayList();
 		//
@@ -1512,6 +1528,11 @@ public abstract class World implements Dump.INode {
 				s = p.getProperty(xsetITD_VERSION, xsetITD_VERSION_DEFAULT);
 				if (s.equals(xsetITD_VERSION_ORIGINAL)) {
 					itdVersion = 1;
+				}
+
+				s = p.getProperty(xsetAVOID_FINAL, "false");
+				if (s.equalsIgnoreCase("true")) {
+					useFinal = false; // if avoidFinal=true, then set useFinal to false
 				}
 
 				s = p.getProperty(xsetMINIMAL_MODEL, "false");
@@ -1760,7 +1781,8 @@ public abstract class World implements Dump.INode {
 	 * Reference types we don't intend to weave may be ejected from the cache if we need the space.
 	 */
 	protected boolean isExpendable(ResolvedType type) {
-		return (!type.equals(UnresolvedType.OBJECT) && (!type.isExposedToWeaver()) && (!type.isPrimitiveType()));
+		return !type.equals(UnresolvedType.OBJECT) && !type.isExposedToWeaver() && !type.isPrimitiveType()
+				&& !type.isPrimitiveArray();
 	}
 
 	// map from aspect > excluded types

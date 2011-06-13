@@ -182,6 +182,11 @@ public class ArrayReferenceType extends ReferenceType {
 		return false;
 	}
 
+	@Override
+	public boolean isExposedToWeaver() {
+		return false;
+	}
+
 	public boolean canAnnotationTargetType() {
 		return false;
 	}
@@ -192,5 +197,15 @@ public class ArrayReferenceType extends ReferenceType {
 
 	public boolean isAnnotationWithRuntimeRetention() {
 		return false;
+	}
+
+	public boolean isPrimitiveArray() {
+		if (componentType.isPrimitiveType()) {
+			return true;
+		} else if (componentType.isArray()) {
+			return componentType.isPrimitiveArray();
+		} else {
+			return false;
+		}
 	}
 }

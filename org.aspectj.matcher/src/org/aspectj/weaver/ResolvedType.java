@@ -2773,4 +2773,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public int getCompilerVersion() {
 		return WeaverVersionInfo.getCurrentWeaverMajorVersion();
 	}
+
+	public boolean isPrimitiveArray() {
+		return false;
+	}
 }
