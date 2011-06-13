@@ -1201,4 +1201,11 @@ public class BcelWorld extends World implements Repository {
 	public void classWriteEvent(char[][] compoundName) {
 		typeMap.classWriteEvent(new String(CharOperation.concatWith(compoundName, '.')));
 	}
+
+	/**
+	 * Force demote a type.
+	 */
+	public void demote(ResolvedType type) {
+		typeMap.demote(type);
+	}
 }

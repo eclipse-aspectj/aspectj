@@ -185,40 +185,40 @@ public class BcelShadow extends Shadow {
 					break;
 				}
 				// need a testcase to show this can really happen in a modern compiler - removed due to 315398
-//			} else if (inst.opcode == Constants.DUP_X2) {
-//				// This code seen in the wild (by Brad):
-//				// 40: new #12; //class java/lang/StringBuffer
-//				// STACK: STRINGBUFFER
-//				// 43: dup
-//				// STACK: STRINGBUFFER/STRINGBUFFER
-//				// 44: aload_0
-//				// STACK: STRINGBUFFER/STRINGBUFFER/THIS
-//				// 45: dup_x2
-//				// STACK: THIS/STRINGBUFFER/STRINGBUFFER/THIS
-//				// 46: getfield #36; //Field value:Ljava/lang/String;
-//				// STACK: THIS/STRINGBUFFER/STRINGBUFFER/STRING<value>
-//				// 49: invokestatic #37; //Method java/lang/String.valueOf:(Ljava/lang/Object;)Ljava/lang/String;
-//				// STACK: THIS/STRINGBUFFER/STRINGBUFFER/STRING
-//				// 52: invokespecial #19; //Method java/lang/StringBuffer."<init>":(Ljava/lang/String;)V
-//				// STACK: THIS/STRINGBUFFER
-//				// 55: aload_1
-//				// STACK: THIS/STRINGBUFFER/LOCAL1
-//				// 56: invokevirtual #22; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
-//				// STACK: THIS/STRINGBUFFER
-//				// 59: invokevirtual #34; //Method java/lang/StringBuffer.toString:()Ljava/lang/String;
-//				// STACK: THIS/STRING
-//				// 62: putfield #36; //Field value:Ljava/lang/String;
-//				// STACK: <empty>
-//				// 65: return
-//
-//				// if we attempt to match on the ctor call to StringBuffer.<init> then we get into trouble.
-//				// if we simply delete the new/dup pair without fixing up the dup_x2 then the dup_x2 will fail due to there
-//				// not being 3 elements on the stack for it to work with. The fix *in this situation* is to change it to
-//				// a simple 'dup'
-//
-//				// this fix is *not* very clean - but a general purpose decent solution will take much longer and this
-//				// bytecode sequence has only been seen once in the wild.
-//				ih.setInstruction(InstructionConstants.DUP);
+				// } else if (inst.opcode == Constants.DUP_X2) {
+				// // This code seen in the wild (by Brad):
+				// // 40: new #12; //class java/lang/StringBuffer
+				// // STACK: STRINGBUFFER
+				// // 43: dup
+				// // STACK: STRINGBUFFER/STRINGBUFFER
+				// // 44: aload_0
+				// // STACK: STRINGBUFFER/STRINGBUFFER/THIS
+				// // 45: dup_x2
+				// // STACK: THIS/STRINGBUFFER/STRINGBUFFER/THIS
+				// // 46: getfield #36; //Field value:Ljava/lang/String;
+				// // STACK: THIS/STRINGBUFFER/STRINGBUFFER/STRING<value>
+				// // 49: invokestatic #37; //Method java/lang/String.valueOf:(Ljava/lang/Object;)Ljava/lang/String;
+				// // STACK: THIS/STRINGBUFFER/STRINGBUFFER/STRING
+				// // 52: invokespecial #19; //Method java/lang/StringBuffer."<init>":(Ljava/lang/String;)V
+				// // STACK: THIS/STRINGBUFFER
+				// // 55: aload_1
+				// // STACK: THIS/STRINGBUFFER/LOCAL1
+				// // 56: invokevirtual #22; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+				// // STACK: THIS/STRINGBUFFER
+				// // 59: invokevirtual #34; //Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+				// // STACK: THIS/STRING
+				// // 62: putfield #36; //Field value:Ljava/lang/String;
+				// // STACK: <empty>
+				// // 65: return
+				//
+				// // if we attempt to match on the ctor call to StringBuffer.<init> then we get into trouble.
+				// // if we simply delete the new/dup pair without fixing up the dup_x2 then the dup_x2 will fail due to there
+				// // not being 3 elements on the stack for it to work with. The fix *in this situation* is to change it to
+				// // a simple 'dup'
+				//
+				// // this fix is *not* very clean - but a general purpose decent solution will take much longer and this
+				// // bytecode sequence has only been seen once in the wild.
+				// ih.setInstruction(InstructionConstants.DUP);
 			}
 			ih = ih.getPrev();
 		}
@@ -565,7 +565,7 @@ public class BcelShadow extends Shadow {
 		// r.associateWithShadow(s);
 		// InstructionHandle start = Range.genStart(body, handle);
 		// InstructionHandle end = Range.genEnd(body, handle);
-		//        
+		//
 		// r.associateWithTargets(start, end);
 		return s;
 	}
@@ -603,7 +603,7 @@ public class BcelShadow extends Shadow {
 	// //InstructionHandle end = Range.genEnd(body, body.append(start, fact.NOP));
 	// InstructionHandle end = Range.genStart(body, next);
 	// //body.append(start, fact.NOP);
-	//        
+	//
 	// r.associateWithTargets(start, end);
 	// return s;
 	// }
@@ -669,8 +669,8 @@ public class BcelShadow extends Shadow {
 
 	public static BcelShadow makeAdviceExecution(BcelWorld world, LazyMethodGen enclosingMethod) {
 		final InstructionList body = enclosingMethod.getBody();
-		BcelShadow s = new BcelShadow(world, AdviceExecution, world
-				.makeJoinPointSignatureFromMethod(enclosingMethod, Member.ADVICE), enclosingMethod, null);
+		BcelShadow s = new BcelShadow(world, AdviceExecution,
+				world.makeJoinPointSignatureFromMethod(enclosingMethod, Member.ADVICE), enclosingMethod, null);
 		ShadowRange r = new ShadowRange(body);
 		r.associateWithShadow(s);
 		r.associateWithTargets(Range.genStart(body), Range.genEnd(body));
@@ -760,8 +760,9 @@ public class BcelShadow extends Shadow {
 	public static BcelShadow makeMethodCall(BcelWorld world, LazyMethodGen enclosingMethod, InstructionHandle callHandle,
 			BcelShadow enclosingShadow) {
 		final InstructionList body = enclosingMethod.getBody();
-		BcelShadow s = new BcelShadow(world, MethodCall, world.makeJoinPointSignatureForMethodInvocation(enclosingMethod
-				.getEnclosingClass(), (InvokeInstruction) callHandle.getInstruction()), enclosingMethod, enclosingShadow);
+		BcelShadow s = new BcelShadow(world, MethodCall, world.makeJoinPointSignatureForMethodInvocation(
+				enclosingMethod.getEnclosingClass(), (InvokeInstruction) callHandle.getInstruction()), enclosingMethod,
+				enclosingShadow);
 		ShadowRange r = new ShadowRange(body);
 		r.associateWithShadow(s);
 		r.associateWithTargets(Range.genStart(body, callHandle), Range.genEnd(body, callHandle));
@@ -785,8 +786,8 @@ public class BcelShadow extends Shadow {
 		final InstructionList body = enclosingMethod.getBody();
 		BcelShadow s = new BcelShadow(world, FieldGet, field,
 		// BcelWorld.makeFieldSignature(
-				// enclosingMethod.getEnclosingClass(),
-				// (FieldInstruction) getHandle.getInstruction()),
+		// enclosingMethod.getEnclosingClass(),
+		// (FieldInstruction) getHandle.getInstruction()),
 				enclosingMethod, enclosingShadow);
 		ShadowRange r = new ShadowRange(body);
 		r.associateWithShadow(s);
@@ -800,8 +801,8 @@ public class BcelShadow extends Shadow {
 		final InstructionList body = enclosingMethod.getBody();
 		BcelShadow s = new BcelShadow(world, FieldSet, field,
 		// BcelWorld.makeFieldJoinPointSignature(
-				// enclosingMethod.getEnclosingClass(),
-				// (FieldInstruction) setHandle.getInstruction()),
+		// enclosingMethod.getEnclosingClass(),
+		// (FieldInstruction) setHandle.getInstruction()),
 				enclosingMethod, enclosingShadow);
 		ShadowRange r = new ShadowRange(body);
 		r.associateWithShadow(s);
@@ -1498,9 +1499,9 @@ public class BcelShadow extends Shadow {
 					// if (fakerm.hasAnnotations())
 
 					ResolvedMember ajcMethod = (getSignature().getKind() == ResolvedMember.CONSTRUCTOR ? AjcMemberMaker
-							.postIntroducedConstructor(typeMunger.getAspectType(), fakerm.getDeclaringType(), fakerm
-									.getParameterTypes()) : AjcMemberMaker
-							.interMethodDispatcher(fakerm, typeMunger.getAspectType()));
+							.postIntroducedConstructor(typeMunger.getAspectType(), fakerm.getDeclaringType(),
+									fakerm.getParameterTypes()) : AjcMemberMaker.interMethodDispatcher(fakerm,
+							typeMunger.getAspectType()));
 					// AjcMemberMaker.interMethodBody(fakerm,typeMunger.getAspectType()));
 					ResolvedMember rmm = findMethod(typeMunger.getAspectType(), ajcMethod);
 					if (fakerm.getName().equals(getSignature().getName())
@@ -1962,8 +1963,8 @@ public class BcelShadow extends Shadow {
 		entrySuccessInstructions
 				.append(Utility.createInvoke(fact, world, AjcMemberMaker.perObjectBind(munger.getConcreteAspect())));
 
-		InstructionList testInstructions = munger.getTestInstructions(this, entrySuccessInstructions.getStart(), range
-				.getRealStart(), entrySuccessInstructions.getStart());
+		InstructionList testInstructions = munger.getTestInstructions(this, entrySuccessInstructions.getStart(),
+				range.getRealStart(), entrySuccessInstructions.getStart());
 
 		entryInstructions.append(testInstructions);
 		entryInstructions.append(entrySuccessInstructions);
@@ -2055,8 +2056,8 @@ public class BcelShadow extends Shadow {
 				}
 			}
 
-			InstructionList testInstructions = munger.getTestInstructions(this, entrySuccessInstructions.getStart(), range
-					.getRealStart(), entrySuccessInstructions.getStart());
+			InstructionList testInstructions = munger.getTestInstructions(this, entrySuccessInstructions.getStart(),
+					range.getRealStart(), entrySuccessInstructions.getStart());
 			entryInstructions.append(testInstructions);
 			entryInstructions.append(entrySuccessInstructions);
 		}
@@ -2122,8 +2123,9 @@ public class BcelShadow extends Shadow {
 		}
 		ResolvedType declaringAspectType = world.resolve(mungerSig.getDeclaringType(), true);
 		if (declaringAspectType.isMissing()) {
-			world.getLint().cantFindType.signal(new String[] { WeaverMessages.format(
-					WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE, declaringAspectType.getClassName()) }, getSourceLocation(),
+			world.getLint().cantFindType.signal(
+					new String[] { WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE,
+							declaringAspectType.getClassName()) }, getSourceLocation(),
 					new ISourceLocation[] { munger.getSourceLocation() });
 		}
 
@@ -2215,8 +2217,9 @@ public class BcelShadow extends Shadow {
 		// Extract the advice into a new method. This will go in the same type as the shadow
 		// name will be something like foo_aroundBody1$advice
 		String localAdviceMethodName = NameMangler.aroundAdviceMethodName(getSignature(), shadowClass.getNewGeneratedNameTag());
-		LazyMethodGen localAdviceMethod = new LazyMethodGen(Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC, BcelWorld
-				.makeBcelType(mungerSig.getReturnType()), localAdviceMethodName, parameterTypes, NoDeclaredExceptions, shadowClass);
+		LazyMethodGen localAdviceMethod = new LazyMethodGen(Modifier.PRIVATE | (world.useFinal() ? Modifier.FINAL : 0)
+				| Modifier.STATIC, BcelWorld.makeBcelType(mungerSig.getReturnType()), localAdviceMethodName, parameterTypes,
+				NoDeclaredExceptions, shadowClass);
 
 		// Doesnt work properly, so leave it out:
 		// String aspectFilename = adviceMethod.getEnclosingClass().getInternalFileName();
@@ -2457,8 +2460,8 @@ public class BcelShadow extends Shadow {
 		}
 
 		ret.append(Utility.createInvoke(fact, callbackMethod));
-		ret.append(Utility.createConversion(fact, callbackMethod.getReturnType(), BcelWorld.makeBcelType(munger.getSignature()
-				.getReturnType())));
+		ret.append(Utility.createConversion(fact, callbackMethod.getReturnType(),
+				BcelWorld.makeBcelType(munger.getSignature().getReturnType())));
 		return ret;
 	}
 
@@ -2627,8 +2630,8 @@ public class BcelShadow extends Shadow {
 		if (!UnresolvedType.OBJECT.equals(munger.getSignature().getReturnType())) {
 			ret.append(Utility.createConversion(fact, callbackMethod.getReturnType(), Type.OBJECT));
 		}
-		ret.append(Utility.createConversion(fact, callbackMethod.getReturnType(), BcelWorld.makeBcelType(munger.getSignature()
-				.getReturnType())));
+		ret.append(Utility.createConversion(fact, callbackMethod.getReturnType(),
+				BcelWorld.makeBcelType(munger.getSignature().getReturnType())));
 
 		return ret;
 
@@ -2805,8 +2808,9 @@ public class BcelShadow extends Shadow {
 
 		int linenumber = getSourceLine();
 		// MOVE OUT ALL THE INSTRUCTIONS IN MY SHADOW INTO ANOTHER METHOD!
-		LazyMethodGen callbackMethod = extractShadowInstructionsIntoNewMethod(NameMangler.aroundShadowMethodName(getSignature(),
-				getEnclosingClass().getNewGeneratedNameTag()), 0, munger.getSourceLocation(), new ArrayList<String>());
+		LazyMethodGen callbackMethod = extractShadowInstructionsIntoNewMethod(
+				NameMangler.aroundShadowMethodName(getSignature(), getEnclosingClass().getNewGeneratedNameTag()), 0,
+				munger.getSourceLocation(), new ArrayList<String>());
 
 		BcelVar[] adviceVars = munger.getExposedStateAsBcelVars(true);
 
@@ -2846,9 +2850,10 @@ public class BcelShadow extends Shadow {
 				UnresolvedType bcelTX = BcelWorld.fromBcel(stateTypes[i]);
 				ResolvedType stateRTX = world.resolve(bcelTX, true);
 				if (stateRTX.isMissing()) {
-					world.getLint().cantFindType.signal(new String[] { WeaverMessages.format(
-							WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE_PREINIT, bcelTX.getClassName()) },
-							getSourceLocation(), new ISourceLocation[] { munger.getSourceLocation() });
+					world.getLint().cantFindType.signal(
+							new String[] { WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE_PREINIT,
+									bcelTX.getClassName()) }, getSourceLocation(),
+							new ISourceLocation[] { munger.getSourceLocation() });
 					// IMessage msg = new Message(
 					// WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_DURING_AROUND_WEAVE_PREINIT,bcelTX.getClassName()),
 					// "",IMessage.ERROR,getSourceLocation(),null,
@@ -2866,8 +2871,8 @@ public class BcelShadow extends Shadow {
 				}
 			}
 			UnresolvedType returnType = mungerSignature.getReturnType();
-			returnConversionCode = Utility.createConversion(getFactory(), BcelWorld.makeBcelType(returnType), callbackMethod
-					.getReturnType(), world.isInJava5Mode());
+			returnConversionCode = Utility.createConversion(getFactory(), BcelWorld.makeBcelType(returnType),
+					callbackMethod.getReturnType(), world.isInJava5Mode());
 			if (!isFallsThrough()) {
 				returnConversionCode.append(InstructionFactory.createReturn(callbackMethod.getReturnType()));
 			}
@@ -2896,9 +2901,9 @@ public class BcelShadow extends Shadow {
 				&& munger.getDeclaringAspect() != null && munger.getDeclaringAspect().resolve(world).isAnnotationStyleAspect()) {
 			// stick the bitflags on the stack and call the variant of linkClosureAndJoinPoint that takes an int
 			closureInstantiation.append(fact.createConstant(Integer.valueOf(bitflags)));
-			closureInstantiation.append(Utility.createInvoke(getFactory(), getWorld(), new MemberImpl(Member.METHOD, UnresolvedType
-					.forName("org.aspectj.runtime.internal.AroundClosure"), Modifier.PUBLIC, "linkClosureAndJoinPoint",
-					"(I)Lorg/aspectj/lang/ProceedingJoinPoint;")));
+			closureInstantiation.append(Utility.createInvoke(getFactory(), getWorld(),
+					new MemberImpl(Member.METHOD, UnresolvedType.forName("org.aspectj.runtime.internal.AroundClosure"),
+							Modifier.PUBLIC, "linkClosureAndJoinPoint", "(I)Lorg/aspectj/lang/ProceedingJoinPoint;")));
 		}
 
 		InstructionList advice = new InstructionList();
@@ -2919,8 +2924,8 @@ public class BcelShadow extends Shadow {
 			if (terminatesWithReturn()) {
 				callback.append(InstructionFactory.createReturn(callbackMethod.getReturnType()));
 			} else {
-				advice.append(InstructionFactory.createBranchInstruction(Constants.GOTO, postCallback
-						.append(InstructionConstants.NOP)));
+				advice.append(InstructionFactory.createBranchInstruction(Constants.GOTO,
+						postCallback.append(InstructionConstants.NOP)));
 			}
 			range.append(munger.getTestInstructions(this, advice.getStart(), callback.getStart(), advice.getStart()));
 			range.append(advice);
@@ -3202,7 +3207,7 @@ public class BcelShadow extends Shadow {
 	 */
 	private LazyMethodGen createShadowMethodGen(String newMethodName, int visibilityModifier, List<String> parameterNames) {
 		Type[] shadowParameterTypes = BcelWorld.makeBcelTypes(getArgTypes());
-		int modifiers = Modifier.FINAL | Modifier.STATIC | visibilityModifier;
+		int modifiers = (world.useFinal() ? Modifier.FINAL : 0) | Modifier.STATIC | visibilityModifier;
 		if (targetVar != null && targetVar != thisVar) {
 			UnresolvedType targetType = getTargetType();
 			targetType = ensureTargetTypeIsCorrect(targetType);

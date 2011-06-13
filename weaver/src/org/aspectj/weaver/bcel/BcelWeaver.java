@@ -269,6 +269,8 @@ public class BcelWeaver {
 				type.setBinaryPath(inFile.getAbsolutePath());
 				if (type.isAspect()) {
 					addedAspects.add(type);
+				} else {
+					world.demote(type);
 				}
 
 			}
@@ -330,7 +332,15 @@ public class BcelWeaver {
 			binaryPath = name.substring(0, end - 1);
 		}
 		type.setBinaryPath(binaryPath);
-		return (type.isAspect() ? type : null);
+		if (type.isAspect()) {
+			return type;
+		} else {
+			// immediately demote the type we just added since it will have
+			// have been stuffed into the permanent map (assumed to be
+			// an aspect)
+			world.demote(type);
+			return null;
+		}
 	}
 
 	// // The ANT copy task should be used to copy resources across.
