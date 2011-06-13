@@ -10,7 +10,6 @@
  *******************************************************************/
 package org.aspectj.systemtest.incremental.tools;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.aspectj.ajde.core.ICompilerConfiguration;
@@ -168,8 +167,4 @@ public class IncrementalPerformanceTests extends AbstractMultiProjectIncremental
 		testdataSrcDir = "../tests/multiIncremental";
 	}
 
-	private File getProjectRelativePath(String p, String filename) {
-		File projDir = new File(getWorkingDir(), p);
-		return new File(projDir, filename);
-	}
 }

@@ -67,6 +67,19 @@ import org.aspectj.weaver.World;
  */
 public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
 
+	public void testIncremental_344326() throws Exception {
+		AjdeInteractionTestbed.VERBOSE = true;
+		String p = "pr344326";
+		initialiseProject(p);
+		build(p);
+		checkWasFullBuild();
+		checkCompileWeaveCount(p, 3, 4);
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+		checkCompileWeaveCount(p, 1, 1);
+	}
+
 	public void testMissingRel_328121() throws Exception {
 		String p = "pr328121";
 		initialiseProject(p);
@@ -74,10 +87,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkWasFullBuild();
 		assertNoErrors(p);
 		// Check the annotations:
-		runMethod(p,"TestRequirements.TestRequirements","foo");
-		assertEquals(4,getRelationshipCount(p));
+		runMethod(p, "TestRequirements.TestRequirements", "foo");
+		assertEquals(4, getRelationshipCount(p));
 	}
-	
+
 	public void testEncoding_pr290741() throws Exception {
 		String p = "pr290741";
 		initialiseProject(p);
@@ -275,26 +288,30 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		String lib = "pr343001_lib";
 		initialiseProject(lib);
 		build(lib);
-		
-		// Check the 'standard build' - the library also has a type affected by the decp so we can check what happens on an 'all source' build
-		IProgramElement theAspect = getModelFor(lib).getHierarchy().findElementForHandleOrCreate("=pr343001_lib<{Super.java'Super",false);
+
+		// Check the 'standard build' - the library also has a type affected by the decp so we can check what happens on an 'all
+		// source' build
+		IProgramElement theAspect = getModelFor(lib).getHierarchy().findElementForHandleOrCreate("=pr343001_lib<{Super.java'Super",
+				false);
 		assertNotNull(theAspect);
-		IProgramElement sourcelevelDecp = getModelFor(lib).getHierarchy().findElementForHandleOrCreate("=pr343001_lib<{Super.java'Super`declare parents",false);
+		IProgramElement sourcelevelDecp = getModelFor(lib).getHierarchy().findElementForHandleOrCreate(
+				"=pr343001_lib<{Super.java'Super`declare parents", false);
 		assertNotNull(sourcelevelDecp);
-		assertEquals("[java.io.Serializable]",sourcelevelDecp.getParentTypes().toString());
-		
+		assertEquals("[java.io.Serializable]", sourcelevelDecp.getParentTypes().toString());
+
 		String p = "pr343001";
 		initialiseProject(p);
 		configureAspectPath(p, getProjectRelativePath(lib, "bin"));
 		build(p);
-		
-		IProgramElement theBinaryAspect = getModelFor(p).getHierarchy().findElementForHandleOrCreate("=pr343001/binaries<(Super.class'Super",false);
-		assertNotNull(theBinaryAspect);
-		IProgramElement binaryDecp = getModelFor(p).getHierarchy().findElementForHandleOrCreate("=pr343001/binaries<(Super.class'Super`declare parents",false);
-		assertNotNull(binaryDecp);
-		assertEquals("[java.io.Serializable]",(binaryDecp.getParentTypes()==null?"":binaryDecp.getParentTypes().toString()));
-	}
 
+		IProgramElement theBinaryAspect = getModelFor(p).getHierarchy().findElementForHandleOrCreate(
+				"=pr343001/binaries<(Super.class'Super", false);
+		assertNotNull(theBinaryAspect);
+		IProgramElement binaryDecp = getModelFor(p).getHierarchy().findElementForHandleOrCreate(
+				"=pr343001/binaries<(Super.class'Super`declare parents", false);
+		assertNotNull(binaryDecp);
+		assertEquals("[java.io.Serializable]", (binaryDecp.getParentTypes() == null ? "" : binaryDecp.getParentTypes().toString()));
+	}
 
 	// found whilst looking at 322446 hence that is the testdata name
 	public void testAspectInheritance_322664() throws Exception {
@@ -3998,11 +4015,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		if (VERBOSE) {
 			System.out.println(msg);
 		}
-	}
-
-	private File getProjectRelativePath(String p, String filename) {
-		File projDir = new File(getWorkingDir(), p);
-		return new File(projDir, filename);
 	}
 
 	protected File getProjectOutputRelativePath(String p, String filename) {

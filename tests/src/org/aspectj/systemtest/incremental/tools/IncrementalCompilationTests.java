@@ -36,6 +36,12 @@ import org.aspectj.weaver.World.TypeMap;
  */
 public class IncrementalCompilationTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
 
+	@Override
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		TypeMap.useExpendableMap = true;
+	}
+
 	public void testAdditionalDependencies328649_1() throws Exception {
 		String p = "pr328649_1";
 		initialiseProject(p);
@@ -464,6 +470,51 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		assertEquals("Pjava/util/List<Ljava/lang/Integer;>;", fields[3].getGenericReturnType().getSignature());
 	}
 
+	/**
+	 * This test is verifying the treatment of array types (here, String[]). These should be expendable but because the
+	 * ArrayReferenceType wasnt overriding isExposedToWeaver() an array had an apparent null delegate - this caused the isExpendable
+	 * check to fail when choosing whether to put something in the permanent or expendable map. Leaving something in the permanent
+	 * map that would never be cleared out.
+	 */
+	public void testWorldDemotion_278496_10() throws Exception {
+		String p = "PR278496_10";
+		TypeMap.useExpendableMap = false;
+		initialiseProject(p);
+		configureNonStandardCompileOptions(p, "-Xset:typeDemotion=true,typeDemotionDebug=true");
+		build(p);
+		checkWasFullBuild();
+		AjdeCoreBuildManager buildManager = getCompilerForProjectWithName(p).getBuildManager();
+		AjBuildManager ajBuildManager = buildManager.getAjBuildManager();
+		World w = ajBuildManager.getWorld();
+
+		assertNotInTypeMap(w, "Lcom/Foo;");
+		assertNotInTypeMap(w, "[Ljava/lang/String;");
+		assertInTypeMap(w, "Lcom/Asp;");
+		assertInTypeMap(w, "[I");
+		assertInTypeMap(w, "[[F");
+	}
+
+	public void testWorldDemotion_278496_11() throws Exception {
+		String asp = "PR278496_11_a";
+		initialiseProject(asp);
+		build(asp);
+
+		String p = "PR278496_11";
+		TypeMap.useExpendableMap = false;
+		initialiseProject(p);
+		configureNonStandardCompileOptions(p, "-Xset:typeDemotion=true,typeDemotionDebug=true");
+		configureAspectPath(p, getProjectRelativePath(asp, "bin"));
+		build(p);
+		checkWasFullBuild();
+		AjdeCoreBuildManager buildManager = getCompilerForProjectWithName(p).getBuildManager();
+		AjBuildManager ajBuildManager = buildManager.getAjBuildManager();
+		World w = ajBuildManager.getWorld();
+
+		assertNotInTypeMap(w, "Lcom/Foo;");
+		assertInTypeMap(w, "Lcom/Asp;");
+		assertNotInTypeMap(w, "Lcom/Dibble;");
+	}
+
 	public void testWorldDemotion_278496_6() throws Exception {
 		String p = "PR278496_6";
 		initialiseProject(p);
@@ -527,12 +578,6 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 	// AjBuildManager ajBuildManager = buildManager.getAjBuildManager();
 	// World w = ajBuildManager.getWorld();
 	// }
-
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
-		TypeMap.useExpendableMap = true;
-	}
 
 	public void testWorldDemotion_278496_4() throws Exception {
 		String p = "PR278496_4";
@@ -703,6 +748,10 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 
 	private void assertNotInTypeMap(World w, String string) {
 		assertNull(w.getTypeMap().get(string));
+	}
+
+	private void assertInTypeMap(World w, String string) {
+		assertNotNull(w.getTypeMap().get(string));
 	}
 
 	private String stringify(Object[] arr) {

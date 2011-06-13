@@ -255,6 +255,11 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 		pw.flush();
 	}
 
+	protected File getProjectRelativePath(String p, String filename) {
+		File projDir = new File(getWorkingDir(), p);
+		return new File(projDir, filename);
+	}
+
 	protected void assertNoErrors(String projectName) {
 		assertTrue("Should be no errors, but got " + getErrorMessages(projectName), getErrorMessages(projectName).size() == 0);
 	}
