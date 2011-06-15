@@ -25,6 +25,10 @@ public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// runTest("anno copying");
 	// }
 
+	public void testDuplicateMethods_349398() {
+		runTest("duplicate methods");
+	}
+
 	public void testBindingInts_347684() {
 		runTest("binding ints");
 	}
