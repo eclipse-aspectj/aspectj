@@ -14,6 +14,9 @@ package org.aspectj.ajdt.internal.compiler.ast;
 
 //import java.util.Arrays;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.lookup.InlineAccessFieldBinding;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeFieldBinding;
@@ -60,6 +63,7 @@ public class AccessForInlineVisitor extends ASTVisitor {
 	PrivilegedHandler handler;
 	AspectDeclaration inAspect;
 	EclipseFactory world; // alias for inAspect.world
+	private Map<TypeBinding, Map<FieldBinding, ResolvedMember>> alreadyProcessedReceivers = new HashMap<TypeBinding, Map<FieldBinding, ResolvedMember>>();
 
 	// set to true for ClassLiteralAccess and AssertStatement
 	// ??? A better answer would be to transform these into inlinable forms
@@ -159,13 +163,22 @@ public class AccessForInlineVisitor extends ASTVisitor {
 			binding.modifiers = AstUtil.makePackageVisible(binding.modifiers);
 		}
 
-		ResolvedMember m = world.makeResolvedMember(binding, receiverType);
-		if (inAspect.accessForInline.containsKey(m))
+		// Avoid repeatedly building ResolvedMembers by using info on any done previously in this visitor
+		Map<FieldBinding, ResolvedMember> alreadyResolvedMembers = alreadyProcessedReceivers.get(receiverType);
+		if (alreadyResolvedMembers == null) {
+			alreadyResolvedMembers = new HashMap<FieldBinding, ResolvedMember>();
+			alreadyProcessedReceivers.put(receiverType, alreadyResolvedMembers);
+		}
+		ResolvedMember m = alreadyResolvedMembers.get(binding);
+		if (m == null) {
+			m = world.makeResolvedMember(binding, receiverType);
+			alreadyResolvedMembers.put(binding, m);
+		}
+
+		if (inAspect.accessForInline.containsKey(m)) {
 			return (FieldBinding) inAspect.accessForInline.get(m);
+		}
 		FieldBinding ret = new InlineAccessFieldBinding(inAspect, binding, m);
-
-		// System.err.println("   made accessor: " + ret);
-
 		inAspect.accessForInline.put(m, ret);
 		return ret;
 	}
