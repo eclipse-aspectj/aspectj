@@ -144,7 +144,6 @@ public class Utility {
 				BcelWorld.makeBcelType(signature.getReturnType()), BcelWorld.makeBcelTypes(signature.getParameterTypes()), kind);
 	}
 
-	// XXX don't need the world now
 	public static Instruction createInvoke(InstructionFactory fact, BcelWorld world, Member signature) {
 		short kind;
 		int signatureModifiers = signature.getModifiers();
@@ -267,9 +266,13 @@ public class Utility {
 		if (!toType.isConvertableFrom(fromType) && !fromType.isConvertableFrom(toType)) {
 			throw new BCException("can't convert from " + fromType + " to " + toType);
 		}
-		// XXX I'm sure this test can be simpler but my brain hurts and this
-		// works
-		if (!toType.getWorld().isInJava5Mode()) {
+		// XXX I'm sure this test can be simpler but my brain hurts and this works
+		World w = toType.getWorld();
+		if (w == null) { // dbg349636
+			throw new IllegalStateException("Debug349636: Unexpectedly found world null for type " + toType.getName());
+		}
+
+		if (!w.isInJava5Mode()) {
 			if (toType.needsNoConversionFrom(fromType)) {
 				return;
 			}
