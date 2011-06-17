@@ -537,9 +537,9 @@ public class BcelShadow extends Shadow {
 		if (startOfHandler.getInstruction().isStoreInstruction() && startOfHandler.getNext() != null) {
 			int slot = startOfHandler.getInstruction().getIndex();
 			// System.out.println("got store: " + startOfHandler.getInstruction() + ", " + index);
-			Iterator tIter = startOfHandler.getNext().getTargeters().iterator();
+			Iterator<InstructionTargeter> tIter = startOfHandler.getNext().getTargeters().iterator();
 			while (tIter.hasNext()) {
-				InstructionTargeter targeter = (InstructionTargeter) tIter.next();
+				InstructionTargeter targeter = tIter.next();
 				if (targeter instanceof LocalVariableTag) {
 					LocalVariableTag t = (LocalVariableTag) targeter;
 					if (t.getSlot() == slot) {
@@ -856,12 +856,12 @@ public class BcelShadow extends Shadow {
 	private BcelVar thisVar = null;
 	private BcelVar targetVar = null;
 	private BcelVar[] argVars = null;
-	private Map/* <UnresolvedType,BcelVar> */<ResolvedType, AnnotationAccessVar> kindedAnnotationVars = null;
-	private Map/* <UnresolvedType,BcelVar> */<ResolvedType, TypeAnnotationAccessVar> thisAnnotationVars = null;
-	private Map/* <UnresolvedType,BcelVar> */<ResolvedType, TypeAnnotationAccessVar> targetAnnotationVars = null;
-	private Map/* <UnresolvedType,BcelVar> */[] argAnnotationVars = null;
-	private Map/* <UnresolvedType,BcelVar> */<ResolvedType, AnnotationAccessVar> withinAnnotationVars = null;
-	private Map/* <UnresolvedType,BcelVar> */<ResolvedType, AnnotationAccessVar> withincodeAnnotationVars = null;
+	private Map<ResolvedType, AnnotationAccessVar> kindedAnnotationVars = null;
+	private Map<ResolvedType, TypeAnnotationAccessVar> thisAnnotationVars = null;
+	private Map<ResolvedType, TypeAnnotationAccessVar> targetAnnotationVars = null;
+	// private Map/* <UnresolvedType,BcelVar> */[] argAnnotationVars = null;
+	private Map<ResolvedType, AnnotationAccessVar> withinAnnotationVars = null;
+	private Map<ResolvedType, AnnotationAccessVar> withincodeAnnotationVars = null;
 	private boolean allArgVarsInitialized = false;
 
 	@Override
@@ -918,13 +918,14 @@ public class BcelShadow extends Shadow {
 
 	@Override
 	public Var getArgAnnotationVar(int i, UnresolvedType forAnnotationType) {
-		initializeArgAnnotationVars();
-
-		Var v = (Var) argAnnotationVars[i].get(forAnnotationType);
-		if (v == null) {
-			v = new TypeAnnotationAccessVar(forAnnotationType.resolve(world), (BcelVar) getArgVar(i));
-		}
-		return v;
+		return new TypeAnnotationAccessVar(forAnnotationType.resolve(world), (BcelVar) getArgVar(i));
+		// initializeArgAnnotationVars();
+		//
+		// Var v = (Var) argAnnotationVars[i].get(forAnnotationType);
+		// if (v == null) {
+		// v = new TypeAnnotationAccessVar(forAnnotationType.resolve(world), (BcelVar) getArgVar(i));
+		// }
+		// return v;
 	}
 
 	@Override
@@ -1435,18 +1436,18 @@ public class BcelShadow extends Shadow {
 		}
 	}
 
-	public void initializeArgAnnotationVars() {
-		if (argAnnotationVars != null) {
-			return;
-		}
-		int numArgs = getArgCount();
-		argAnnotationVars = new Map[numArgs];
-		for (int i = 0; i < argAnnotationVars.length; i++) {
-			argAnnotationVars[i] = new HashMap();
-			// FIXME asc just delete this logic - we always build the Var on demand, as we don't know at weave time
-			// what the full set of annotations could be (due to static/dynamic type differences...)
-		}
-	}
+	// public void initializeArgAnnotationVars() {
+	// if (argAnnotationVars != null) {
+	// return;
+	// }
+	// int numArgs = getArgCount();
+	// argAnnotationVars = new Map[numArgs];
+	// for (int i = 0; i < argAnnotationVars.length; i++) {
+	// argAnnotationVars[i] = new HashMap();
+	// // FIXME asc just delete this logic - we always build the Var on demand, as we don't know at weave time
+	// // what the full set of annotations could be (due to static/dynamic type differences...)
+	// }
+	// }
 
 	protected ResolvedMember getRelevantMember(ResolvedMember foundMember, Member relevantMember, ResolvedType relevantType) {
 		if (foundMember != null) {
