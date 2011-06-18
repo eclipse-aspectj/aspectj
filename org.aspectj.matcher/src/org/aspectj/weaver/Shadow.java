@@ -550,7 +550,7 @@ public abstract class Shadow {
 
 		// Bunch of code to work out whether to report xlints for advice that isn't ordered at this Joinpoint
 		possiblyReportUnorderedAdvice(sorted);
-
+ 
 		if (sorted == null) {
 			// this means that we have circular dependencies
 			for (ShadowMunger m : mungers) {
