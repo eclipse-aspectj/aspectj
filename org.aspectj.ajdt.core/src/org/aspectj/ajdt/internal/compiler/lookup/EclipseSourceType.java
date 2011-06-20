@@ -335,8 +335,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		FormalBinding[] bindings = buildFormalAdviceBindingsFrom(md);
 
 		ResolvedPointcutDefinition rpd = new LazyResolvedPointcutDefinition(factory.fromBinding(md.binding.declaringClass),
-				md.modifiers, new String(md.selector), factory.fromBindings(md.binding.parameters), factory
-						.fromBinding(md.binding.returnType), pc, new EclipseScope(bindings, md.scope));
+				md.modifiers, new String(md.selector), factory.fromBindings(md.binding.parameters),
+				factory.fromBinding(md.binding.returnType), pc, new EclipseScope(bindings, md.scope));
 
 		rpd.setPosition(md.sourceStart, md.sourceEnd);
 		rpd.setSourceContext(eSourceContext);
@@ -822,7 +822,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 				// if (defaultValue instanceof FalseLiteral) {
 				// new AnnotationValue
 				// } else if (defaultValue instanceof TrueLiteral) {
-				//					
+				//
 				// } else {
 				// throw new MissingImplementationException(
 				// "Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value ["
@@ -897,7 +897,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		Annotation[] annotations = typeDeclaration.annotations;
 		for (int i = 0; i < annotations.length; i++) {
 			Annotation annotation = annotations[i];
-			if (CharOperation.equals(aspectSig, annotation.resolvedType.signature())) {
+			if (annotation != null && annotation.resolvedType != null
+					&& CharOperation.equals(aspectSig, annotation.resolvedType.signature())) {
 				// found @Aspect(...)
 				if (annotation.memberValuePairs() == null || annotation.memberValuePairs().length == 0) {
 					// it is an @Aspect or @Aspect()
