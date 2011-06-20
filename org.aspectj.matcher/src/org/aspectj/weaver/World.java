@@ -145,6 +145,7 @@ public abstract class World implements Dump.INode {
 
 	private boolean completeBinaryTypes = false;
 	private boolean overWeaving = false;
+	private static boolean systemPropertyOverWeaving = false;
 	public boolean forDEBUG_structuralChangesCode = false;
 	public boolean forDEBUG_bridgingCode = false;
 	public boolean optimizedMatching = true;
@@ -162,6 +163,19 @@ public abstract class World implements Dump.INode {
 	 * A list of RuntimeExceptions containing full stack information for every type we couldn't find.
 	 */
 	private List<RuntimeException> dumpState_cantFindTypeExceptions = null;
+
+	static {
+		try {
+		String value = System.getProperty("aspectj.overweaving", "false");
+		if (value.equalsIgnoreCase("true")) {
+			System.out.println("ASPECTJ: aspectj.overweaving=true: overweaving switched ON");
+			systemPropertyOverWeaving = true;
+		}
+		} catch (Throwable t) {
+			System.err.println("ASPECTJ: Unable to read system properties");
+			t.printStackTrace();
+		}
+	}
 
 	/**
 	 * Play God. On the first day, God created the primitive types and put them in the type map.
@@ -1625,11 +1639,10 @@ public abstract class World implements Dump.INode {
 
 			}
 			try {
-				String value = System.getProperty("aspectj.overweaving", "false");
-				if (value.equalsIgnoreCase("true")) {
-					System.out.println("ASPECTJ: aspectj.overweaving=true: overweaving switched ON");
+				if (systemPropertyOverWeaving) {
 					overWeaving = true;
 				}
+				String value = null;
 				value = System.getProperty("aspectj.typeDemotion", "false");
 				if (value.equalsIgnoreCase("true")) {
 					System.out.println("ASPECTJ: aspectj.typeDemotion=true: type demotion switched ON");
