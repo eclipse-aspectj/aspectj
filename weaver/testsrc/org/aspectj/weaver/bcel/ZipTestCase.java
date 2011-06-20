@@ -55,7 +55,7 @@ public class ZipTestCase extends TestCase {
 		long startTime = System.currentTimeMillis();
 		// ensure that a fast cpu doesn't complete file write within 1000ms of start
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
