@@ -56,6 +56,7 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 	private String[] argumentNames;
 	private World w;
 	private ResolvedType[] cachedAnnotationTypes;
+	private ResolvedType[][] cachedParameterAnnotationTypes;
 	private EclipseFactory eclipseFactory;
 
 	public EclipseResolvedMember(MethodBinding binding, MemberKind memberKind, ResolvedType realDeclaringType, int modifiers,
@@ -245,6 +246,40 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 		return cachedAnnotationTypes;
 	}
 
+	private static final ResolvedType[][] NO_PARAM_ANNOS = new ResolvedType[0][];
+
+	@Override
+	public ResolvedType[][] getParameterAnnotationTypes() {
+		if (cachedParameterAnnotationTypes == null) {
+			realBinding.getAnnotationTagBits();
+			Annotation[][] pannos = getEclipseParameterAnnotations();
+			if (pannos == null) {
+				cachedParameterAnnotationTypes = NO_PARAM_ANNOS;
+			} else {
+				cachedParameterAnnotationTypes = new ResolvedType[pannos.length][];
+				for (int i = 0; i < pannos.length; i++) {
+					cachedParameterAnnotationTypes[i] = new ResolvedType[pannos[i].length];
+					for (int j = 0; j < pannos[i].length; j++) {
+						TypeBinding typebinding = pannos[i][j].resolvedType;
+						// If there was a problem resolving the annotation (the import couldn't be found) then that can manifest
+						// here as typebinding == null. Normally errors are reported prior to weaving (so weaving is avoided and
+						// the null is not encountered) but the use of hasfield/hasmethod can cause early attempts to look at
+						// annotations and if we NPE here then the real error will not get reported.
+						if (typebinding == null) {
+							// Give up now - expect proper error to be reported
+							cachedParameterAnnotationTypes = NO_PARAM_ANNOS;
+							return cachedParameterAnnotationTypes;
+						}
+						cachedParameterAnnotationTypes[i][j] = w.resolve(UnresolvedType.forSignature(new String(typebinding
+								.signature())));
+					}
+				}
+
+			}
+		}
+		return cachedParameterAnnotationTypes;
+	}
+
 	public String[] getParameterNames() {
 		if (argumentNames != null) {
 			return argumentNames;
@@ -321,6 +356,44 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 		}
 		return null;
 	}
+
+	private Annotation[][] getEclipseParameterAnnotations() {
+		TypeDeclaration tDecl = getTypeDeclaration();
+		// two possible reasons for it being null:
+		// 1. code is broken
+		// 2. this resolvedmember is an EclipseResolvedMember created up front to represent a privileged'd accessed member
+		if (tDecl != null) {
+			if (realBinding instanceof MethodBinding) {
+				MethodBinding methodBinding = (MethodBinding) realBinding;
+				AbstractMethodDeclaration methodDecl = tDecl.declarationOf(methodBinding);
+				boolean foundsome = false;
+				if (methodDecl != null) {
+					Argument[] args = methodDecl.arguments;
+					if (args != null) {
+						int pcount = args.length;
+						Annotation[][] pannos = new Annotation[pcount][];
+						for (int i = 0; i < pcount; i++) {
+							pannos[i] = args[i].annotations;
+							if (pannos[i] == null) {
+								pannos[i] = NO_ANNOTATIONS;
+							} else {
+								for (int j = 0; j < pannos[i].length; j++) {
+									pannos[i][j].resolveType(methodDecl.scope);
+								}
+							}
+							foundsome = foundsome || pannos[i].length != 0;
+						}
+						if (foundsome) {
+							return pannos;
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	private final static Annotation[] NO_ANNOTATIONS = new Annotation[0];
 
 	private boolean isTypeDeclarationAvailable() {
 		return getTypeDeclaration() != null;
