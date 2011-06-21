@@ -2,6 +2,24 @@
 
 <suite>
 
+<ajc-test dir="bugs1612/pr349961" title="ordering">
+<compile files="MyParameterAnnotation.java MyAspect.java MyAspectTest.java A.java ABean.java" options="-1.5"/>
+<run class="com.example.MyAspectTest">
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr349961" title="ordering - 2">
+<compile files="MyParameterAnnotation.java MyAspect.java MyAspectTest.java ABean.java A.java" options="-1.5"/>
+<run class="com.example.MyAspectTest">
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr347395" title="verifyerror - inline">
+<compile files="Target.java Task.java TaskHistoryAspect.aj TaskModification.java" options="-1.5"/>
+<run class="xxx.util.Target">
+</run>
+</ajc-test>
+
 <ajc-test dir="bugs1612/pr349398" title="duplicate methods">
 <compile files="DataGenerator.java CacheAspect.java DataGeneratorCacheAspect.java DataGeneratorTest.java" options="-1.5"/>
 <run class="DataGeneratorTest">
