@@ -25,6 +25,18 @@ public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// runTest("anno copying");
 	// }
 
+	public void testGenericsNpe_pr350800() {
+		runTest("generics npe");
+	}
+
+	public void testGenericsNpe_pr350800_code() {
+		runTest("generics npe - code");
+	}
+
+	public void testGenericsNpe_pr350800_3() {
+		runTest("generics npe - 3");
+	}
+
 	public void testOrdering_pr349961() {
 		runTest("ordering");
 	}
@@ -32,11 +44,10 @@ public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testOrdering_pr349961_2() {
 		runTest("ordering - 2");
 	}
-/*
-	public void testVerifyError_pr347395() {
-		runTest("verifyerror - inline");
-	}
-	*/
+
+	/*
+	 * public void testVerifyError_pr347395() { runTest("verifyerror - inline"); }
+	 */
 
 	public void testDuplicateMethods_349398() {
 		runTest("duplicate methods");

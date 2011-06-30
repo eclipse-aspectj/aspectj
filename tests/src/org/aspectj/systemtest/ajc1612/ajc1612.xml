@@ -2,6 +2,25 @@
 
 <suite>
 
+<ajc-test dir="bugs1612/pr350800" title="generics npe">
+<compile files="AbstractAdapter.java AbstractProbingAspect.java Adapter.java ProbingAspect.java" options="-1.5"/>
+<!--  run class="com.example.MyAspectTest" -->
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr350800_2" title="generics npe - code">
+<compile files="AbstractAdapter.java AbstractProbingAspect.java Adapter.java ProbingAspect.java" options="-1.5"/>
+<!--  run class="com.example.MyAspectTest" -->
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr350800_3" title="generics npe - 3">
+<compile files="AbstractAdapter.java AbstractProbingAspect.java Adapter.java ProbingAspect.java" options="-1.5"/>
+<run class="test.aop.Adapter">
+<stdout>
+<line text="&gt;hello"/>
+</stdout>
+</run>
+</ajc-test>
+
 <ajc-test dir="bugs1612/pr349961" title="ordering">
 <compile files="MyParameterAnnotation.java MyAspect.java MyAspectTest.java A.java ABean.java" options="-1.5"/>
 <run class="com.example.MyAspectTest">
