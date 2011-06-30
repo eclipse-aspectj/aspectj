@@ -237,9 +237,6 @@ public class BcelWeaver {
 		} else {
 			addedAspects = addAspectsFromJarFile(inFile);
 		}
-		if (world.isOverWeaving()) {
-			return;
-		}
 		for (ResolvedType addedAspect : addedAspects) {
 			xcutSet.addOrReplaceAspect(addedAspect);
 		}
