@@ -1597,7 +1597,7 @@ public class AtAjAttributes {
 					|| AjcMemberMaker.TYPEX_PROCEEDINGJOINPOINT.equals(argumentType)
 					|| AjcMemberMaker.TYPEX_STATICJOINPOINT.equals(argumentType)
 					|| AjcMemberMaker.TYPEX_ENCLOSINGSTATICJOINPOINT.equals(argumentType) || AjcMemberMaker.AROUND_CLOSURE_TYPE
-					.equals(argumentType))) {
+						.equals(argumentType))) {
 				// continue;// skip
 				bindings.add(new FormalBinding.ImplicitFormalBinding(argumentType, argumentName, i));
 			} else {
@@ -1873,7 +1873,7 @@ public class AtAjAttributes {
 
 		public LazyResolvedPointcutDefinition(UnresolvedType declaringType, int modifiers, String name,
 				UnresolvedType[] parameterTypes, UnresolvedType returnType, Pointcut pointcut, IScope binding) {
-			super(declaringType, modifiers, name, parameterTypes, returnType, null);
+			super(declaringType, modifiers, name, parameterTypes, returnType, Pointcut.makeMatchesNothing(Pointcut.RESOLVED));
 			m_pointcutUnresolved = pointcut;
 			m_binding = binding;
 		}
