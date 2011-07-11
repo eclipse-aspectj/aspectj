@@ -2462,7 +2462,7 @@ public class BcelShadow extends Shadow {
 
 		ret.append(Utility.createInvoke(fact, callbackMethod));
 		ret.append(Utility.createConversion(fact, callbackMethod.getReturnType(),
-				BcelWorld.makeBcelType(munger.getSignature().getReturnType())));
+				BcelWorld.makeBcelType(munger.getSignature().getReturnType()), world.isInJava5Mode()));
 		return ret;
 	}
 
@@ -2632,7 +2632,7 @@ public class BcelShadow extends Shadow {
 			ret.append(Utility.createConversion(fact, callbackMethod.getReturnType(), Type.OBJECT));
 		}
 		ret.append(Utility.createConversion(fact, callbackMethod.getReturnType(),
-				BcelWorld.makeBcelType(munger.getSignature().getReturnType())));
+				BcelWorld.makeBcelType(munger.getSignature().getReturnType()), world.isInJava5Mode()));
 
 		return ret;
 
