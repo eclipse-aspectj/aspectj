@@ -2,6 +2,16 @@
 
 <suite>
 
+<ajc-test dir="bugs1612/pr351592" title="generics issue">
+<compile files="Test.java Fib.java FibCaching.aj Caching.aj" options="-1.5"/>
+<run class="caching.Test"/>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr351592" title="generics issue - 2">
+<compile files="Test.java Fib.java FibCaching.aj Caching.aj" options="-1.5"/>
+<run class="caching.Test"/>
+</ajc-test>
+
 <ajc-test dir="bugs1612/pr350800" title="generics npe">
 <compile files="AbstractAdapter.java AbstractProbingAspect.java Adapter.java ProbingAspect.java" options="-1.5"/>
 <!--  run class="com.example.MyAspectTest" -->

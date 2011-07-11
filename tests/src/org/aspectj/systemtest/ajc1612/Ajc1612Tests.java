@@ -25,6 +25,14 @@ public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// runTest("anno copying");
 	// }
 
+	public void testGenericsIssue_pr351592() {
+		runTest("generics issue");
+	}
+
+	public void testGenericsIssue_pr351592_2() {
+		runTest("generics issue - 2");
+	}
+
 	public void testGenericsNpe_pr350800() {
 		runTest("generics npe");
 	}
