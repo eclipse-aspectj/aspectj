@@ -2,6 +2,13 @@
 
 <suite>
 
+<ajc-test dir="bugs1612/pr352363" title="empty pattern">
+<compile files="Code.java" options="-1.5">
+  <message line="12" kind="warning" text="name is empty1"/>
+  <message line="13" kind="warning" text="name is empty2"/>
+</compile>
+</ajc-test>
+
 <ajc-test dir="bugs1612/pr351592" title="generics issue">
 <compile files="Test.java Fib.java FibCaching.aj Caching.aj" options="-1.5"/>
 <run class="caching.Test"/>
