@@ -1343,11 +1343,7 @@ public class PatternParser {
 			tokenSource.next();
 			dotOK = true;
 		}
-		if (buf.length() == 0) {
-			return null;
-		} else {
-			return buf.toString();
-		}
+		return buf.toString();
 	}
 
 	public NamePattern parseNamePattern() {
