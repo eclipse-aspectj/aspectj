@@ -53,6 +53,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.AjAttribute.WeaverState;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
@@ -459,8 +460,11 @@ public final class LazyClassGen {
 			myGen.addAttribute(Utility.bcelAttribute(new AjAttribute.WeaverVersionInfo(), getConstantPool()));
 		}
 
-		if (myType != null && myType.getWeaverState() != null) {
-			myGen.addAttribute(Utility.bcelAttribute(new AjAttribute.WeaverState(myType.getWeaverState()), getConstantPool()));
+		// 352389: don't add another one (there will already be one there and this new one won't deserialize correctly)
+		if (!world.isOverWeaving() || !myGen.hasAttribute(WeaverState.AttributeName)) {
+			if (myType != null && myType.getWeaverState() != null) {
+				myGen.addAttribute(Utility.bcelAttribute(new AjAttribute.WeaverState(myType.getWeaverState()), getConstantPool()));
+			}
 		}
 
 		// FIXME ATAJ needed only for slow Aspects.aspectOf() - keep or remove
