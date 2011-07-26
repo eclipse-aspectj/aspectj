@@ -89,7 +89,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	private StringBuffer namespace;
 	private IWeavingContext weavingContext;
 
-	private List concreteAspects = new ArrayList();
+	private List<ConcreteAspectCodeGen> concreteAspects = new ArrayList<ConcreteAspectCodeGen>();
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(ClassLoaderWeavingAdaptor.class);
 
@@ -263,7 +263,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 							definitions.add(DocumentParser.parse(xml));
 							seenBefore.add(xml);
 						} else {
-							warn("ignoring duplicate definition: " + xml);
+							debug("ignoring duplicate definition: " + xml);
 						}
 					}
 				}
@@ -319,10 +319,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * @param loader
 	 * @param definitions
 	 */
-	private void registerOptions(final BcelWeaver weaver, final ClassLoader loader, final List definitions) {
+	private void registerOptions(final BcelWeaver weaver, final ClassLoader loader, final List<Definition> definitions) {
 		StringBuffer allOptions = new StringBuffer();
-		for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
-			Definition definition = (Definition) iterator.next();
+		for (Definition definition : definitions) {
 			allOptions.append(definition.getWeaverOptions()).append(' ');
 		}
 
@@ -537,8 +536,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		}
 		boolean success = true;
 
-		for (Iterator iterator = concreteAspects.iterator(); iterator.hasNext();) {
-			ConcreteAspectCodeGen gen = (ConcreteAspectCodeGen) iterator.next();
+		for (ConcreteAspectCodeGen gen : concreteAspects) {
 			String name = gen.getClassName();
 			byte[] bytes = gen.getBytes();
 
@@ -565,13 +563,12 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * @param loader
 	 * @param definitions
 	 */
-	private void registerIncludeExclude(final BcelWeaver weaver, final ClassLoader loader, final List definitions) {
+	private void registerIncludeExclude(final BcelWeaver weaver, final ClassLoader loader, final List<Definition> definitions) {
 		String fastMatchInfo = null;
-		for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
-			Definition definition = (Definition) iterator.next();
-			for (Iterator iterator1 = definition.getIncludePatterns().iterator(); iterator1.hasNext();) {
+		for (Definition definition : definitions) {
+			for (Iterator<String> iterator1 = definition.getIncludePatterns().iterator(); iterator1.hasNext();) {
 				hasIncludes = true;
-				String include = (String) iterator1.next();
+				String include = iterator1.next();
 				fastMatchInfo = looksLikeStartsWith(include);
 				if (fastMatchInfo != null) {
 					m_includeStartsWith.add(fastMatchInfo);
@@ -584,9 +581,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 					includeTypePattern.add(includePattern);
 				}
 			}
-			for (Iterator iterator1 = definition.getExcludePatterns().iterator(); iterator1.hasNext();) {
+			for (Iterator<String> iterator1 = definition.getExcludePatterns().iterator(); iterator1.hasNext();) {
 				hasExcludes = true;
-				String exclude = (String) iterator1.next();
+				String exclude = iterator1.next();
 				fastMatchInfo = looksLikeStartsWith(exclude);
 				if (fastMatchInfo != null) {
 					excludeStartsWith.add(fastMatchInfo);
@@ -706,11 +703,10 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * @param loader
 	 * @param definitions
 	 */
-	private void registerDump(final BcelWeaver weaver, final ClassLoader loader, final List definitions) {
-		for (Iterator iterator = definitions.iterator(); iterator.hasNext();) {
-			Definition definition = (Definition) iterator.next();
-			for (Iterator iterator1 = definition.getDumpPatterns().iterator(); iterator1.hasNext();) {
-				String dump = (String) iterator1.next();
+	private void registerDump(final BcelWeaver weaver, final ClassLoader loader, final List<Definition> definitions) {
+		for (Definition definition : definitions) {
+			for (Iterator<String> iterator1 = definition.getDumpPatterns().iterator(); iterator1.hasNext();) {
+				String dump = iterator1.next();
 				TypePattern pattern = new PatternParser(dump).parseTypePattern();
 				m_dumpTypePattern.add(pattern);
 			}
