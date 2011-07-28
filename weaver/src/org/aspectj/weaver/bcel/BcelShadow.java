@@ -169,58 +169,72 @@ public class BcelShadow extends Shadow {
 		return world;
 	}
 
-	private void deleteNewAndDup() {
-		final ConstantPool cpg = getEnclosingClass().getConstantPool();
+	// see comment in deleteNewAndDup
+	// } else if (inst.opcode == Constants.DUP_X2) {
+	// // This code seen in the wild (by Brad):
+	// // 40: new #12; //class java/lang/StringBuffer
+	// // STACK: STRINGBUFFER
+	// // 43: dup
+	// // STACK: STRINGBUFFER/STRINGBUFFER
+	// // 44: aload_0
+	// // STACK: STRINGBUFFER/STRINGBUFFER/THIS
+	// // 45: dup_x2
+	// // STACK: THIS/STRINGBUFFER/STRINGBUFFER/THIS
+	// // 46: getfield #36; //Field value:Ljava/lang/String;
+	// // STACK: THIS/STRINGBUFFER/STRINGBUFFER/STRING<value>
+	// // 49: invokestatic #37; //Method java/lang/String.valueOf:(Ljava/lang/Object;)Ljava/lang/String;
+	// // STACK: THIS/STRINGBUFFER/STRINGBUFFER/STRING
+	// // 52: invokespecial #19; //Method java/lang/StringBuffer."<init>":(Ljava/lang/String;)V
+	// // STACK: THIS/STRINGBUFFER
+	// // 55: aload_1
+	// // STACK: THIS/STRINGBUFFER/LOCAL1
+	// // 56: invokevirtual #22; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+	// // STACK: THIS/STRINGBUFFER
+	// // 59: invokevirtual #34; //Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+	// // STACK: THIS/STRING
+	// // 62: putfield #36; //Field value:Ljava/lang/String;
+	// // STACK: <empty>
+	// // 65: return
+	//
+	// // if we attempt to match on the ctor call to StringBuffer.<init> then we get into trouble.
+	// // if we simply delete the new/dup pair without fixing up the dup_x2 then the dup_x2 will fail due to there
+	// // not being 3 elements on the stack for it to work with. The fix *in this situation* is to change it to
+	// // a simple 'dup'
+	//
+	// // this fix is *not* very clean - but a general purpose decent solution will take much longer and this
+	// // bytecode sequence has only been seen once in the wild.
+	// ih.setInstruction(InstructionConstants.DUP);
+
+	/**
+	 * The new/dup (or new/dup_x1/swap) are removed and will be readded later (after the advice call) by the caller of this method.
+	 * The groovy compiler produces unusual code where the new/dup isn't visible (when making a this() call from an existing ctor),
+	 * an aload_0 is used to load the uninitialized object (as an example see the ctors in grails.util.BuildSettings).
+	 * 
+	 * @return true if managed to remove them
+	 */
+	private boolean deleteNewAndDup() {
+		final ConstantPool cpool = getEnclosingClass().getConstantPool();
 		int depth = 1;
 		InstructionHandle ih = range.getStart();
 
 		// Go back from where we are looking for 'NEW' that takes us to a stack depth of 0. INVOKESPECIAL <init>
-		while (true) {
+		while (ih != null) {
 			Instruction inst = ih.getInstruction();
-			if (inst.opcode == Constants.INVOKESPECIAL && ((InvokeInstruction) inst).getName(cpg).equals("<init>")) {
+			if (inst.opcode == Constants.INVOKESPECIAL && ((InvokeInstruction) inst).getName(cpool).equals("<init>")) {
 				depth++;
 			} else if (inst.opcode == Constants.NEW) {
 				depth--;
 				if (depth == 0) {
 					break;
 				}
-				// need a testcase to show this can really happen in a modern compiler - removed due to 315398
-				// } else if (inst.opcode == Constants.DUP_X2) {
-				// // This code seen in the wild (by Brad):
-				// // 40: new #12; //class java/lang/StringBuffer
-				// // STACK: STRINGBUFFER
-				// // 43: dup
-				// // STACK: STRINGBUFFER/STRINGBUFFER
-				// // 44: aload_0
-				// // STACK: STRINGBUFFER/STRINGBUFFER/THIS
-				// // 45: dup_x2
-				// // STACK: THIS/STRINGBUFFER/STRINGBUFFER/THIS
-				// // 46: getfield #36; //Field value:Ljava/lang/String;
-				// // STACK: THIS/STRINGBUFFER/STRINGBUFFER/STRING<value>
-				// // 49: invokestatic #37; //Method java/lang/String.valueOf:(Ljava/lang/Object;)Ljava/lang/String;
-				// // STACK: THIS/STRINGBUFFER/STRINGBUFFER/STRING
-				// // 52: invokespecial #19; //Method java/lang/StringBuffer."<init>":(Ljava/lang/String;)V
-				// // STACK: THIS/STRINGBUFFER
-				// // 55: aload_1
-				// // STACK: THIS/STRINGBUFFER/LOCAL1
-				// // 56: invokevirtual #22; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
-				// // STACK: THIS/STRINGBUFFER
-				// // 59: invokevirtual #34; //Method java/lang/StringBuffer.toString:()Ljava/lang/String;
-				// // STACK: THIS/STRING
-				// // 62: putfield #36; //Field value:Ljava/lang/String;
-				// // STACK: <empty>
-				// // 65: return
-				//
-				// // if we attempt to match on the ctor call to StringBuffer.<init> then we get into trouble.
-				// // if we simply delete the new/dup pair without fixing up the dup_x2 then the dup_x2 will fail due to there
-				// // not being 3 elements on the stack for it to work with. The fix *in this situation* is to change it to
-				// // a simple 'dup'
-				//
-				// // this fix is *not* very clean - but a general purpose decent solution will take much longer and this
-				// // bytecode sequence has only been seen once in the wild.
-				// ih.setInstruction(InstructionConstants.DUP);
+				// need a testcase to show this can really happen in a modern compiler - removed due to 315398 - moved this out to
+				// comment proceeding this method:
+
 			}
 			ih = ih.getPrev();
+		}
+		if (ih == null) {
+			return false;
 		}
 		// now IH points to the NEW. We're followed by the DUP, and that is followed
 		// by the actual instruction we care about.
@@ -264,6 +278,7 @@ public class BcelShadow extends Shadow {
 		} catch (TargetLostException e) {
 			throw new BCException("shouldn't happen");
 		}
+		return true;
 	}
 
 	private void retargetFrom(InstructionHandle old, InstructionHandle fresh) {
@@ -298,9 +313,10 @@ public class BcelShadow extends Shadow {
 		// everything except for constructor calls and exception handlers. If we were to clean
 		// this up, every ShadowRange would have three instructionHandle points, the start of
 		// the arg-setup code, the start of the running code, and the end of the running code.
+		boolean deletedNewAndDup = true;
 		if (getKind() == ConstructorCall) {
 			if (!world.isJoinpointArrayConstructionEnabled() || !this.getSignature().getDeclaringType().isArray()) {
-				deleteNewAndDup(); // no new/dup for new array construction
+				deletedNewAndDup = deleteNewAndDup(); // no new/dup for new array construction
 			}
 			initializeArgVars();
 		} else if (getKind() == PreInitialization) { // pr74952
@@ -401,9 +417,11 @@ public class BcelShadow extends Shadow {
 				}
 				if (getKind() == ConstructorCall) {
 					if (!world.isJoinpointArrayConstructionEnabled() || !this.getSignature().getDeclaringType().isArray()) {
-						range.insert(InstructionFactory.createDup(1), Range.InsideBefore);
-						range.insert(fact.createNew((ObjectType) BcelWorld.makeBcelType(getSignature().getDeclaringType())),
-								Range.InsideBefore);
+						if (deletedNewAndDup) { // if didnt delete them, dont insert any!
+							range.insert(InstructionFactory.createDup(1), Range.InsideBefore);
+							range.insert(fact.createNew((ObjectType) BcelWorld.makeBcelType(getSignature().getDeclaringType())),
+									Range.InsideBefore);
+						}
 					}
 				}
 			}
