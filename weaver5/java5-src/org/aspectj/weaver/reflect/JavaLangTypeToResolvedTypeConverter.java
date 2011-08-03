@@ -69,26 +69,18 @@ public class JavaLangTypeToResolvedTypeConverter {
 			ResolvedType baseType = fromType(pt.getRawType());
 			Type[] args = pt.getActualTypeArguments();
 			ResolvedType[] resolvedArgs = fromTypes(args);
-/*			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < resolvedArgs.length; i++) {
-				sb.append(resolvedArgs[i]).append(" ");
-			}
-			for (int i = 0; i < resolvedArgs.length; i++) {
-				if (resolvedArgs[i] == null) {
-					String ss = "";
-					try {
-						ss = aType.toString();
-					} catch (Exception e) {
-					}
-					throw new IllegalStateException("Parameterized type problem.  basetype=" + baseType + " arguments="
-							+ sb.toString() + " ss=" + ss);
-				}
-			}
-*/
+			/*
+			 * StringBuilder sb = new StringBuilder(); for (int i = 0; i < resolvedArgs.length; i++) {
+			 * sb.append(resolvedArgs[i]).append(" "); } for (int i = 0; i < resolvedArgs.length; i++) { if (resolvedArgs[i] ==
+			 * null) { String ss = ""; try { ss = aType.toString(); } catch (Exception e) { } throw new
+			 * IllegalStateException("Parameterized type problem.  basetype=" + baseType + " arguments=" + sb.toString() + " ss=" +
+			 * ss); } }
+			 */
 			return TypeFactory.createParameterizedType(baseType, resolvedArgs, getWorld());
 		} else if (aType instanceof java.lang.reflect.TypeVariable) {
-			if (typeVariablesInProgress.get(aType) != null) {
-				return typeVariablesInProgress.get(aType);
+			TypeVariableReferenceType inprogressVar = typeVariablesInProgress.get(aType);
+			if (inprogressVar != null) {
+				return inprogressVar;
 			}
 
 			java.lang.reflect.TypeVariable tv = (java.lang.reflect.TypeVariable) aType;
