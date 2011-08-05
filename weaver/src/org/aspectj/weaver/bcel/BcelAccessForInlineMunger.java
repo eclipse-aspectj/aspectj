@@ -47,23 +47,17 @@ import org.aspectj.weaver.UnresolvedType;
  * Specific state and logic is kept in the munger ala ITD so that call/get/set pointcuts can still be matched on the wrapped member
  * thanks to the EffectiveSignature attribute.
  * 
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur
+ * @author Andy Clement
  */
 public class BcelAccessForInlineMunger extends BcelTypeMunger {
 
-	/**
-	 * Wrapper member cache, key is wrapper name. This structure is queried when regular shadow matching in the advice body
-	 * (call/get/set) occurs
-	 */
-	private Map<String, ResolvedMember> m_inlineAccessorBcelMethods;
+	private Map<String, ResolvedMember> inlineAccessors;
+
+	private LazyClassGen aspectGen;
 
 	/**
-	 * The aspect we act for
-	 */
-	private LazyClassGen m_aspectGen;
-
-	/**
-	 * The wrapper method we need to add. Those are added at the end of the munging
+	 * The wrapper methods representing any created inlineAccessors
 	 */
 	private Set<LazyMethodGen> inlineAccessorMethodGens;
 
@@ -76,12 +70,12 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 
 	@Override
 	public boolean munge(BcelClassWeaver weaver) {
-		m_aspectGen = weaver.getLazyClassGen();
-		m_inlineAccessorBcelMethods = new HashMap<String, ResolvedMember>(0);
+		aspectGen = weaver.getLazyClassGen();
+		inlineAccessors = new HashMap<String, ResolvedMember>(0);
 		inlineAccessorMethodGens = new HashSet<LazyMethodGen>();
 
 		// look for all @Around advices
-		for (LazyMethodGen methodGen : m_aspectGen.getMethodGens()) {
+		for (LazyMethodGen methodGen : aspectGen.getMethodGens()) {
 			if (methodGen.hasAnnotation(UnresolvedType.forName("org/aspectj/lang/annotation/Around"))) {
 				openAroundAdvice(methodGen);
 			}
@@ -89,7 +83,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 
 		// add the accessors
 		for (LazyMethodGen lazyMethodGen : inlineAccessorMethodGens) {
-			m_aspectGen.addMethodGen(lazyMethodGen);
+			aspectGen.addMethodGen(lazyMethodGen);
 		}
 
 		// flush some
@@ -101,13 +95,13 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 
 	/**
 	 * Looks in the wrapper we have added so that we can find their effective signature if needed
-	 * 
-	 * @param member
-	 * @return
 	 */
 	@Override
 	public ResolvedMember getMatchingSyntheticMember(Member member) {
-		return m_inlineAccessorBcelMethods.get(member.getName());
+		ResolvedMember rm = inlineAccessors.get(member.getName());// + member.getSignature());
+//		System.err.println("lookup for " + member.getName() + ":" + member.getSignature() + " = "
+//				+ (rm == null ? "" : rm.getName()));
+		return rm;
 	}
 
 	@Override
@@ -117,9 +111,6 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 
 	/**
 	 * Match only the aspect for which we act
-	 * 
-	 * @param onType
-	 * @return
 	 */
 	@Override
 	public boolean matches(ResolvedType onType) {
@@ -128,8 +119,6 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 
 	/**
 	 * Prepare the around advice, flag it as cannot be inlined if it can't be
-	 * 
-	 * @param aroundAdvice
 	 */
 	private void openAroundAdvice(LazyMethodGen aroundAdvice) {
 		InstructionHandle curr = aroundAdvice.getBody().getStart();
@@ -149,7 +138,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 			// open-up method call
 			if ((inst instanceof InvokeInstruction)) {
 				InvokeInstruction invoke = (InvokeInstruction) inst;
-				ResolvedType callee = m_aspectGen.getWorld().resolve(UnresolvedType.forName(invoke.getClassName(cpg)));
+				ResolvedType callee = aspectGen.getWorld().resolve(UnresolvedType.forName(invoke.getClassName(cpg)));
 
 				// look in the whole method list and not just declared for super calls and alike
 				List<ResolvedMember> methods = callee.getMethodsWithoutIterator(false, true, false);
@@ -164,7 +153,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 							realizedCannotInline = true;
 						} else {
 							// specific handling for super.foo() calls, where foo is non public
-							ResolvedType memberType = m_aspectGen.getWorld().resolve(resolvedMember.getDeclaringType());
+							ResolvedType memberType = aspectGen.getWorld().resolve(resolvedMember.getDeclaringType());
 							if (!aspectType.equals(memberType) && memberType.isAssignableFrom(aspectType)) {
 								// old test was...
 								// if (aspectType.getSuperclass() != null
@@ -188,7 +177,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 				}
 			} else if (inst instanceof FieldInstruction) {
 				FieldInstruction invoke = (FieldInstruction) inst;
-				ResolvedType callee = m_aspectGen.getWorld().resolve(UnresolvedType.forName(invoke.getClassName(cpg)));
+				ResolvedType callee = aspectGen.getWorld().resolve(UnresolvedType.forName(invoke.getClassName(cpg)));
 				for (int i = 0; i < callee.getDeclaredJavaFields().length; i++) {
 					ResolvedMember resolvedMember = callee.getDeclaredJavaFields()[i];
 					if (invoke.getName(cpg).equals(resolvedMember.getName())
@@ -221,38 +210,36 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 	}
 
 	/**
-	 * Add an inline wrapper for a non public method call
-	 * 
-	 * @param resolvedMember
-	 * @return
+	 * Find (or add if not yet created) an inline wrapper for a non public method call
 	 */
 	private ResolvedMember createOrGetInlineAccessorForMethod(ResolvedMember resolvedMember) {
-		String accessor = NameMangler.inlineAccessMethodForMethod(resolvedMember.getName(), resolvedMember.getDeclaringType(),
+		String accessorName = NameMangler.inlineAccessMethodForMethod(resolvedMember.getName(), resolvedMember.getDeclaringType(),
 				aspectType);
-		ResolvedMember inlineAccessor = m_inlineAccessorBcelMethods.get(accessor);
+		String key = accessorName;// new StringBuilder(accessorName).append(resolvedMember.getSignature()).toString();
+		ResolvedMember inlineAccessor = inlineAccessors.get(key);
+//		System.err.println(key + " accessor=" + inlineAccessor);
 		if (inlineAccessor == null) {
 			// add static method to aspect
 			inlineAccessor = AjcMemberMaker.inlineAccessMethodForMethod(aspectType, resolvedMember);
 
 			// add new accessor method to aspect bytecode
-			InstructionFactory factory = m_aspectGen.getFactory();
-			LazyMethodGen method = makeMethodGen(m_aspectGen, inlineAccessor);
-			// flag it synthetic, AjSynthetic
+			InstructionFactory factory = aspectGen.getFactory();
+			LazyMethodGen method = makeMethodGen(aspectGen, inlineAccessor);
 			method.makeSynthetic();
 			List<AjAttribute> methodAttributes = new ArrayList<AjAttribute>();
 			methodAttributes.add(new AjAttribute.AjSynthetic());
 			methodAttributes.add(new AjAttribute.EffectiveSignatureAttribute(resolvedMember, Shadow.MethodCall, false));
-			method.addAttribute(Utility.bcelAttribute(methodAttributes.get(0), m_aspectGen.getConstantPool()));
+			method.addAttribute(Utility.bcelAttribute(methodAttributes.get(0), aspectGen.getConstantPool()));
 			// flag the effective signature, so that we can deobfuscate the signature to apply method call pointcut
-			method.addAttribute(Utility.bcelAttribute(methodAttributes.get(1), m_aspectGen.getConstantPool()));
+			method.addAttribute(Utility.bcelAttribute(methodAttributes.get(1), aspectGen.getConstantPool()));
 
 			inlineAccessorMethodGens.add(method);
 
 			InstructionList il = method.getBody();
 			int register = 0;
-			for (int i = 0; i < inlineAccessor.getParameterTypes().length; i++) {
-				UnresolvedType typeX = inlineAccessor.getParameterTypes()[i];
-				Type type = BcelWorld.makeBcelType(typeX);
+			for (int i = 0, max = inlineAccessor.getParameterTypes().length; i < max; i++) {
+				UnresolvedType ptype = inlineAccessor.getParameterTypes()[i];
+				Type type = BcelWorld.makeBcelType(ptype);
 				il.append(InstructionFactory.createLoad(type, register));
 				register += type.getSize();
 			}
@@ -260,36 +247,35 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 					: Constants.INVOKEVIRTUAL, resolvedMember));
 			il.append(InstructionFactory.createReturn(BcelWorld.makeBcelType(inlineAccessor.getReturnType())));
 
-			m_inlineAccessorBcelMethods.put(accessor, new BcelMethod(m_aspectGen.getBcelObjectType(), method.getMethod(),
-					methodAttributes));
+			inlineAccessors.put(key, new BcelMethod(aspectGen.getBcelObjectType(), method.getMethod(), methodAttributes));
 		}
 		return inlineAccessor;
 	}
 
 	/**
 	 * Add an inline wrapper for a non public super.method call
-	 * 
-	 * @param resolvedMember
-	 * @return
 	 */
 	private ResolvedMember createOrGetInlineAccessorForSuperDispatch(ResolvedMember resolvedMember) {
 		String accessor = NameMangler.superDispatchMethod(aspectType, resolvedMember.getName());
-		ResolvedMember inlineAccessor = m_inlineAccessorBcelMethods.get(accessor);
+
+		String key = accessor;
+		ResolvedMember inlineAccessor = inlineAccessors.get(key);
+
 		if (inlineAccessor == null) {
 			// add super accessor method to class:
 			inlineAccessor = AjcMemberMaker.superAccessMethod(aspectType, resolvedMember);
 
 			// add new accessor method to aspect bytecode
-			InstructionFactory factory = m_aspectGen.getFactory();
-			LazyMethodGen method = makeMethodGen(m_aspectGen, inlineAccessor);
+			InstructionFactory factory = aspectGen.getFactory();
+			LazyMethodGen method = makeMethodGen(aspectGen, inlineAccessor);
 			// flag it synthetic, AjSynthetic
 			method.makeSynthetic();
 			List<AjAttribute> methodAttributes = new ArrayList<AjAttribute>();
 			methodAttributes.add(new AjAttribute.AjSynthetic());
 			methodAttributes.add(new AjAttribute.EffectiveSignatureAttribute(resolvedMember, Shadow.MethodCall, false));
-			method.addAttribute(Utility.bcelAttribute(methodAttributes.get(0), m_aspectGen.getConstantPool()));
+			method.addAttribute(Utility.bcelAttribute(methodAttributes.get(0), aspectGen.getConstantPool()));
 			// flag the effective signature, so that we can deobfuscate the signature to apply method call pointcut
-			method.addAttribute(Utility.bcelAttribute(methodAttributes.get(1), m_aspectGen.getConstantPool()));
+			method.addAttribute(Utility.bcelAttribute(methodAttributes.get(1), aspectGen.getConstantPool()));
 
 			inlineAccessorMethodGens.add(method);
 
@@ -305,37 +291,35 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 			il.append(Utility.createInvoke(factory, Constants.INVOKESPECIAL, resolvedMember));
 			il.append(InstructionFactory.createReturn(BcelWorld.makeBcelType(inlineAccessor.getReturnType())));
 
-			m_inlineAccessorBcelMethods.put(accessor, new BcelMethod(m_aspectGen.getBcelObjectType(), method.getMethod(),
-					methodAttributes));
+			inlineAccessors.put(key, new BcelMethod(aspectGen.getBcelObjectType(), method.getMethod(), methodAttributes));
 		}
 		return inlineAccessor;
 	}
 
 	/**
 	 * Add an inline wrapper for a non public field get
-	 * 
-	 * @param resolvedMember
-	 * @return
 	 */
 	private ResolvedMember createOrGetInlineAccessorForFieldGet(ResolvedMember resolvedMember) {
 		String accessor = NameMangler.inlineAccessMethodForFieldGet(resolvedMember.getName(), resolvedMember.getDeclaringType(),
 				aspectType);
-		ResolvedMember inlineAccessor = m_inlineAccessorBcelMethods.get(accessor);
+		String key = accessor;
+		ResolvedMember inlineAccessor = inlineAccessors.get(key);
+
 		if (inlineAccessor == null) {
 			// add static method to aspect
 			inlineAccessor = AjcMemberMaker.inlineAccessMethodForFieldGet(aspectType, resolvedMember);
 
 			// add new accessor method to aspect bytecode
-			InstructionFactory factory = m_aspectGen.getFactory();
-			LazyMethodGen method = makeMethodGen(m_aspectGen, inlineAccessor);
+			InstructionFactory factory = aspectGen.getFactory();
+			LazyMethodGen method = makeMethodGen(aspectGen, inlineAccessor);
 			// flag it synthetic, AjSynthetic
 			method.makeSynthetic();
 			List<AjAttribute> methodAttributes = new ArrayList<AjAttribute>();
 			methodAttributes.add(new AjAttribute.AjSynthetic());
 			methodAttributes.add(new AjAttribute.EffectiveSignatureAttribute(resolvedMember, Shadow.FieldGet, false));
 			// flag the effective signature, so that we can deobfuscate the signature to apply method call pointcut
-			method.addAttribute(Utility.bcelAttribute(methodAttributes.get(0), m_aspectGen.getConstantPool()));
-			method.addAttribute(Utility.bcelAttribute(methodAttributes.get(1), m_aspectGen.getConstantPool()));
+			method.addAttribute(Utility.bcelAttribute(methodAttributes.get(0), aspectGen.getConstantPool()));
+			method.addAttribute(Utility.bcelAttribute(methodAttributes.get(1), aspectGen.getConstantPool()));
 
 			inlineAccessorMethodGens.add(method);
 
@@ -348,37 +332,35 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 			il.append(Utility.createGet(factory, resolvedMember));
 			il.append(InstructionFactory.createReturn(BcelWorld.makeBcelType(inlineAccessor.getReturnType())));
 
-			m_inlineAccessorBcelMethods.put(accessor, new BcelMethod(m_aspectGen.getBcelObjectType(), method.getMethod(),
-					methodAttributes));
+			inlineAccessors.put(key, new BcelMethod(aspectGen.getBcelObjectType(), method.getMethod(), methodAttributes));
 		}
 		return inlineAccessor;
 	}
 
 	/**
 	 * Add an inline wrapper for a non public field set
-	 * 
-	 * @param resolvedMember
-	 * @return
 	 */
 	private ResolvedMember createOrGetInlineAccessorForFieldSet(ResolvedMember resolvedMember) {
 		String accessor = NameMangler.inlineAccessMethodForFieldSet(resolvedMember.getName(), resolvedMember.getDeclaringType(),
 				aspectType);
-		ResolvedMember inlineAccessor = m_inlineAccessorBcelMethods.get(accessor);
+		String key = accessor;
+		ResolvedMember inlineAccessor = inlineAccessors.get(key);
+
 		if (inlineAccessor == null) {
 			// add static method to aspect
 			inlineAccessor = AjcMemberMaker.inlineAccessMethodForFieldSet(aspectType, resolvedMember);
 
 			// add new accessor method to aspect bytecode
-			InstructionFactory factory = m_aspectGen.getFactory();
-			LazyMethodGen method = makeMethodGen(m_aspectGen, inlineAccessor);
+			InstructionFactory factory = aspectGen.getFactory();
+			LazyMethodGen method = makeMethodGen(aspectGen, inlineAccessor);
 			// flag it synthetic, AjSynthetic
 			method.makeSynthetic();
 			List<AjAttribute> methodAttributes = new ArrayList<AjAttribute>();
 			methodAttributes.add(new AjAttribute.AjSynthetic());
 			methodAttributes.add(new AjAttribute.EffectiveSignatureAttribute(resolvedMember, Shadow.FieldSet, false));
-			method.addAttribute(Utility.bcelAttribute(methodAttributes.get(0), m_aspectGen.getConstantPool()));
+			method.addAttribute(Utility.bcelAttribute(methodAttributes.get(0), aspectGen.getConstantPool()));
 			// flag the effective signature, so that we can deobfuscate the signature to apply method call pointcut
-			method.addAttribute(Utility.bcelAttribute(methodAttributes.get(1), m_aspectGen.getConstantPool()));
+			method.addAttribute(Utility.bcelAttribute(methodAttributes.get(1), aspectGen.getConstantPool()));
 
 			inlineAccessorMethodGens.add(method);
 
@@ -392,8 +374,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 			}
 			il.append(Utility.createSet(factory, resolvedMember));
 			il.append(InstructionConstants.RETURN);
-			m_inlineAccessorBcelMethods.put(accessor, new BcelMethod(m_aspectGen.getBcelObjectType(), method.getMethod(),
-					methodAttributes));
+			inlineAccessors.put(key, new BcelMethod(aspectGen.getBcelObjectType(), method.getMethod(), methodAttributes));
 		}
 		return inlineAccessor;
 	}
