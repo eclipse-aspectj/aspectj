@@ -23,5 +23,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/ajde.core"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.aspectj.matcher"/>
+	<classpathentry kind="lib" path="/lib/bcel/bcel.jar" sourcepath="/lib/bcel/bcel-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
