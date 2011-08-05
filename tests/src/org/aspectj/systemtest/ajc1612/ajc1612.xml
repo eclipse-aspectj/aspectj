@@ -2,6 +2,10 @@
 
 <suite>
 
+<ajc-test dir="bugs1612/pr353936" title="local variable tables">
+<compile files="Code.java" options="-1.5"/>
+</ajc-test>
+
 <ajc-test dir="bugs1612/pr352363" title="empty pattern">
 <compile files="Code.java" options="-1.5">
   <message line="12" kind="warning" text="name is empty1"/>

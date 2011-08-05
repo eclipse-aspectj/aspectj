@@ -14,6 +14,8 @@ import java.io.File;
 
 import junit.framework.Test;
 
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
@@ -24,6 +26,27 @@ public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// public void testAnnoCopying_345515() {
 	// runTest("anno copying");
 	// }
+
+	public void testRangeForLocalVariables_353936() throws ClassNotFoundException {
+		runTest("local variable tables");
+		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "X");
+		Method[] meths = jc.getMethods();
+		boolean checked = false;
+		for (int i = 0; i < meths.length; i++) {
+			Method method = meths[i];
+			if (method.getName().equals("ajc$before$X$2$3444dde4")) {
+				System.out.println(method.getName());
+				System.out.println(stringify(method.getLocalVariableTable()));
+				System.out.println(method.getCode().getLength());
+				checked = true;
+				assertEquals("LX; this(0) start=0 len=48", stringify(method.getLocalVariableTable(), 0));
+				assertEquals("Lorg/aspectj/lang/JoinPoint; thisJoinPoint(1) start=0 len=48",
+						stringify(method.getLocalVariableTable(), 1));
+				assertEquals("I i(2) start=8 len=22", stringify(method.getLocalVariableTable(), 2));
+			}
+		}
+		assertTrue(checked);
+	}
 
 	public void testEmptyPattern_pr352363() {
 		runTest("empty pattern");
