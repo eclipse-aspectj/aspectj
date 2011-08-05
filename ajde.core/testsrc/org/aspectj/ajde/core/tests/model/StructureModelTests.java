@@ -42,6 +42,7 @@ public class StructureModelTests extends AjdeCoreTestCase {
 		initialiseProject("figures-coverage");
 		compilerConfig = (TestCompilerConfiguration) getCompiler().getCompilerConfiguration();
 		compilerConfig.setProjectSourceFiles(getSourceFileList(files));
+		compilerConfig.setNonStandardOptions("-Xset:minimalModel=false");
 		doBuild();
 		manager = AsmManager.lastActiveStructureModel;
 	}
@@ -65,7 +66,7 @@ public class StructureModelTests extends AjdeCoreTestCase {
 		IProgramElement node = manager.getHierarchy().findElementForSourceFile(testFile.getAbsolutePath());
 		assertTrue("find result", node != null);
 		IProgramElement pNode = (IProgramElement) (node).getChildren().get(3);
-		assertEquals(IProgramElement.Kind.ASPECT,pNode.getKind());
+		assertEquals(IProgramElement.Kind.ASPECT, pNode.getKind());
 		IProgramElement pointcut = (IProgramElement) pNode.getChildren().get(0);
 		assertTrue("kind", pointcut.getKind().equals(IProgramElement.Kind.POINTCUT));
 		assertTrue("found node: " + pointcut.getName(), pointcut.toLabelString().equals("testptct()"));
@@ -115,7 +116,7 @@ public class StructureModelTests extends AjdeCoreTestCase {
 	}
 
 	private void testModelIntegrityHelper(IProgramElement node) throws Exception {
-		for (Iterator it = node.getChildren().iterator(); it.hasNext();) {
+		for (Iterator<IProgramElement> it = node.getChildren().iterator(); it.hasNext();) {
 			IProgramElement child = (IProgramElement) it.next();
 			if (node == child.getParent()) {
 				testModelIntegrityHelper(child);
@@ -130,7 +131,7 @@ public class StructureModelTests extends AjdeCoreTestCase {
 			public void preProcess(IProgramElement node) {
 				if (node.getChildren() == null)
 					return;
-				for (Iterator it = node.getChildren().iterator(); it.hasNext();) {
+				for (Iterator<IProgramElement> it = node.getChildren().iterator(); it.hasNext();) {
 					if (it.next() == null)
 						throw new NullPointerException("null child on node: " + node.getName());
 				}

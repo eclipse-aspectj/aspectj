@@ -31,6 +31,7 @@ public class AsmDeclarationsTests extends AjdeCoreTestCase {
 		initialiseProject("coverage");
 		compilerConfig = (TestCompilerConfiguration) getCompiler().getCompilerConfiguration();
 		compilerConfig.setProjectSourceFiles(getSourceFileList(files));
+		compilerConfig.setNonStandardOptions("-Xset:minimalModel=false");
 		doBuild();
 		manager = AsmManager.lastActiveStructureModel;
 		model = AsmManager.lastActiveStructureModel.getHierarchy();
@@ -52,8 +53,8 @@ public class AsmDeclarationsTests extends AjdeCoreTestCase {
 		IProgramElement packageAspect = model.findElementForType(null, "AdviceNamingCoverage");
 		assertNotNull(packageAspect);
 		assertEquals(IProgramElement.Accessibility.PACKAGE, packageAspect.getAccessibility());
-		assertEquals("aspect should not have public in it's signature", "aspect AdviceNamingCoverage", packageAspect
-				.getSourceSignature());
+		assertEquals("aspect should not have public in it's signature", "aspect AdviceNamingCoverage",
+				packageAspect.getSourceSignature());
 	}
 
 	public void testStaticModifiers() {
