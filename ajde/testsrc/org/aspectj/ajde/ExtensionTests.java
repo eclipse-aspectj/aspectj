@@ -49,12 +49,12 @@ public class ExtensionTests extends AjcTestCase {
 		CompilationResult result = ajc(baseDir, args);
 		List l = result.getWarningMessages();
 		IMessage m = ((IMessage) l.get(0));
-		assertTrue("Expected ID of message to be " + IProblem.UnusedImport + " (UnusedImport) but found an ID of " + m.getID(), m
-				.getID() == IProblem.UnusedImport);
+		assertTrue("Expected ID of message to be " + IProblem.UnusedImport + " (UnusedImport) but found an ID of " + m.getID(),
+				m.getID() == IProblem.UnusedImport);
 	}
 
 	public void testInnerClassesInASM() {
-		String[] args = new String[] { "InnerClasses.java", "-emacssym" };
+		String[] args = new String[] { "InnerClasses.java", "-emacssym", "-Xset:minimalModel=false" };
 		CompilationResult result = ajc(baseDir, args);
 		/* List l = */result.getWarningMessages();
 		/* Properties p = */AsmManager.lastActiveStructureModel.summarizeModel().getProperties();
@@ -77,8 +77,8 @@ public class ExtensionTests extends AjcTestCase {
 	}
 
 	private IProgramElement getChild(IProgramElement parent, String s) {
-		List kids = parent.getChildren();
-		for (Iterator iter = kids.iterator(); iter.hasNext();) {
+		List<IProgramElement> kids = parent.getChildren();
+		for (Iterator<IProgramElement> iter = kids.iterator(); iter.hasNext();) {
 			IProgramElement element = (IProgramElement) iter.next();
 			if (element.getName().indexOf(s) != -1)
 				return element;
