@@ -75,7 +75,7 @@
     <ajc-test dir="incremental/model/sourcefiles_updating" 
     	title="Testing incremental structure model: Updating files"
     	keywords="incremental-test,model-test" >
-        <compile staging="true" options="-incremental,-emacssym" sourceroots="src"/>
+        <compile staging="true" options="-incremental,-emacssym,-Xset:minimalModel=false" sourceroots="src"/>
         <!-- On first compile, 5 source files in model, 'root','Alpha','Beta','Gamma','Delta' -->
         <inc-compile tag="20" checkModel="java source file=5,method=4,class=3,FileMapSize=4"/> <!-- Beta changed, method added -->
         <inc-compile tag="30" checkModel="java source file=5,method=4,class=4,advice=1"/> <!-- Delta changed, class added -->
@@ -87,7 +87,7 @@
 	<ajc-test dir="incremental/model/sourcefiles_addremove" 
     	title="Testing incremental structure model: Adding and removing files" 
     	keywords="incremental-test,model-test" >
-        <compile staging="true" options="-incremental,-emacssym, -XnotReweavable" sourceroots="src"/>
+        <compile staging="true" options="-incremental,-emacssym, -XnotReweavable,-Xset:minimalModel=false" sourceroots="src"/>
         <!-- On first compile, two source files in model, 'root' and 'Alpha' -->
         <inc-compile tag="20" checkModel="java source file=3,FileMapSize=2"/> <!-- Adds primary.Beta class -->   
         <inc-compile tag="30" checkModel="java source file=4"/> <!-- Adds secondary.Gamma aspect -->

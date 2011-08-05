@@ -180,6 +180,7 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 	public void testModelStructure_333123() throws Exception {
 		String p = "pr333123";
 		initialiseProject(p);
+		configureNonStandardCompileOptions(p, "-Xset:minimalModel=false");
 		build(p);
 		checkWasFullBuild();
 		printModel(p);

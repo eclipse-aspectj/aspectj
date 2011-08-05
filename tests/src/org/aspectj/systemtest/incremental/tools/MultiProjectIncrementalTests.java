@@ -410,6 +410,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testQualifiedInnerTypeRefs_269082() throws Exception {
 		String p = "pr269082";
 		initialiseProject(p);
+		configureNonStandardCompileOptions(p, "-Xset:minimalModel=false");
+
 		build(p);
 		printModel(p);
 
@@ -1294,6 +1296,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testImportHandles() {
 		String p = "Imports";
 		initialiseProject(p);
+		configureNonStandardCompileOptions(p, "-Xset:minimalModel=false");
 		build(p);
 
 		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
@@ -1732,6 +1735,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testHandleQualification_pr265993() throws IOException {
 		String p = "pr265993";
 		initialiseProject(p);
+		configureNonStandardCompileOptions(p, "-Xset:minimalModel=false");
 		build(p);
 		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
 		// dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
@@ -2276,6 +2280,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testBuildingTwoProjectsAndVerifyingModel() {
 		initialiseProject("P1");
 		initialiseProject("P2");
+		configureNonStandardCompileOptions("P1", "-Xset:minimalModel=false");
+		configureNonStandardCompileOptions("P2", "-Xset:minimalModel=false");
 
 		build("P1");
 		checkForNode(getModelFor("P1"), "pkg", "C", true);
@@ -2295,6 +2301,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testBuildingTwoProjectsAndVerifyingStuff() {
 		initialiseProject("P1");
 		initialiseProject("P2");
+		configureNonStandardCompileOptions("P1", "-Xset:minimalModel=false");
+		configureNonStandardCompileOptions("P2", "-Xset:minimalModel=false");
 
 		build("P1");
 		checkForNode(getModelFor("P1"), "pkg", "C", true);

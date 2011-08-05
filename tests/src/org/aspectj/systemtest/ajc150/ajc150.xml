@@ -1070,7 +1070,7 @@
     </ajc-test>
     
     <ajc-test dir="bugs150" title="bad asm for enums" vm="1.5">
-        <compile files="Rainbow.java" options="-emacssym,-1.5"/>
+        <compile files="Rainbow.java" options="-emacssym,-1.5,-Xset:minimalModel=false"/>
     </ajc-test>
     
     <ajc-test dir="bugs150" pr="10461" title="missing name pattern">

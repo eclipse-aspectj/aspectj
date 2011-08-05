@@ -16,7 +16,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs153/pr164340" title="formal comments are set for constructor ipes">
-      <compile files="C.java" options="-emacssym -XjavadocsInModel"/>
+      <compile files="C.java" options="-emacssym -XjavadocsInModel -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="bugs153/pr162135" title="bcexception in annotation style around advice">
@@ -98,7 +98,7 @@
     </ajc-test>
     
 	<ajc-test dir="bugs153/pr148908" title="ensure getSourceSignature correct with static field">
-      <compile files="BadInterface.java" options="-1.5 -emacssym"/>
+      <compile files="BadInterface.java" options="-1.5 -emacssym -Xset:minimalModel=false"/>
     </ajc-test> 
     
 	<ajc-test dir="bugs153/pr161502" title="generics in pointcuts">
@@ -835,7 +835,7 @@
     </ajc-test> 
 
     <ajc-test dir="bugs153/pr164356" title="javadoc comments are set if have normal comments">
-      <compile files="C.java" options="-emacssym -XjavadocsInModel"/>
+      <compile files="C.java" options="-emacssym -XjavadocsInModel -Xset:minimalModel=false"/>
     </ajc-test>
     
    <ajc-test dir="bugs153/pr164384" title="compliance java 6 throws usage error">
@@ -869,11 +869,11 @@
     </ajc-test>
 
 	<ajc-test dir="bugs153/StaticImport" title="ensure static import reference have static modifier set">
-      <compile files="StaticImport.java,C.java" options="-1.5 -emacssym"/>
+      <compile files="StaticImport.java,C.java" options="-1.5 -emacssym -Xset:minimalModel=false"/>
     </ajc-test> 
     
     <ajc-test dir="bugs153/GenericMethod" title="ensure getSourceSignature correct with generic method">
-      <compile files="C.java" options="-1.5 -emacssym"/>
+      <compile files="C.java" options="-1.5 -emacssym -Xset:minimalModel=false"/>
     </ajc-test> 
     
     <ajc-test dir="bugs153/Annotation" title="ensure Annotations are added to import list">

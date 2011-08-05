@@ -766,10 +766,10 @@
 
 
    <ajc-test dir="bugs152" title="new iprogramelement method getParameterSignatures">
-      <compile files="pr141730a.java" options="-emacssym"/>
+      <compile files="pr141730a.java" options="-emacssym -Xset:minimalModel=false"/>
     </ajc-test>
 
    <ajc-test dir="bugs152" title="new iprogramelement method getParameterSignatures with generics">
-      <compile files="pr141730b.java" options="-1.5 -emacssym"/>
+      <compile files="pr141730b.java" options="-1.5 -emacssym -Xset:minimalModel=false"/>
     </ajc-test>
 </suite>

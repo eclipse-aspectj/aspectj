@@ -117,23 +117,23 @@
     <!-- tests to ensure handle provider produces same as the jdt -->
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="compilation unit same as jdt">
-      <compile files="Demo.java" options="-emacssym"/>
+      <compile files="Demo.java" options="-emacssym -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="class same as jdt">
-      <compile files="C.java" options="-emacssym"/>
+      <compile files="C.java" options="-emacssym -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="interface same as jdt">
-      <compile files="C.java" options="-emacssym"/>
+      <compile files="C.java" options="-emacssym -Xset:minimalModel=false"/>
     </ajc-test>
 
    <ajc-test dir="features153/jdtlikehandleprovider" title="constructor same as jdt">
-      <compile files="C.java" options="-emacssym"/>
+      <compile files="C.java" options="-emacssym -Xset:minimalModel=false"/>
     </ajc-test>
 
    <ajc-test dir="features153/jdtlikehandleprovider" title="constructor with args same as jdt">
-      <compile files="C.java" options="-emacssym"/>
+      <compile files="C.java" options="-emacssym -Xset:minimalModel=false"/>
     </ajc-test>
 
 <!--    <ajc-test dir="features153/jdtlikehandleprovider" title="package declaration same as jdt">
@@ -141,71 +141,71 @@
     </ajc-test>
 -->
     <ajc-test dir="features153/jdtlikehandleprovider" title="import declaration same as jdt">
-      <compile files="Demo.java" options="-emacssym"/>
+      <compile files="Demo.java" options="-emacssym -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="type same as jdt">
-      <compile files="Demo.java" options="-emacssym"/>
+      <compile files="Demo.java" options="-emacssym -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="field same as jdt">
-      <compile files="Demo.java" options="-emacssym"/>
+      <compile files="Demo.java" options="-emacssym -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="initialization same as jdt">
-      <compile files="Demo.java" options="-emacssym"/>
+      <compile files="Demo.java" options="-emacssym -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="method with string array as argument same as jdt">
-      <compile files="Demo.java" options="-emacssym"/>
+      <compile files="Demo.java" options="-emacssym -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="method with int array as argument same as jdt">
-      <compile files="Demo.java" options="-emacssym"/>
+      <compile files="Demo.java" options="-emacssym -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="method with no args same as jdt">
-      <compile files="Demo.java" options="-emacssym"/>
+      <compile files="Demo.java" options="-emacssym -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="method with two args same as jdt">
-      <compile files="Demo.java" options="-emacssym"/>
+      <compile files="Demo.java" options="-emacssym -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="method with two string args same as jdt">
-      <compile files="Demo.java" options="-emacssym"/>
+      <compile files="Demo.java" options="-emacssym -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="enum same as jdt">
-      <compile files="E.java" options="-emacssym -1.5"/>
+      <compile files="E.java" options="-emacssym -1.5 -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="enum value same as jdt">
-      <compile files="E.java" options="-emacssym -1.5"/>
+      <compile files="E.java" options="-emacssym -1.5 -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="annotation same as jdt">
-      <compile files="MyAnnotation.java" options="-emacssym -1.5"/>
+      <compile files="MyAnnotation.java" options="-emacssym -1.5 -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="method with list arg same as jdt">
-      <compile files="Java5Class.java" options="-emacssym -1.5"/>
+      <compile files="Java5Class.java" options="-emacssym -1.5 -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="method with generic arg same as jdt">
-      <compile files="Java5Class.java" options="-emacssym -1.5"/>
+      <compile files="Java5Class.java" options="-emacssym -1.5 -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="method with two generic args same as jdt">
-      <compile files="Java5Class.java" options="-emacssym -1.5"/>
+      <compile files="Java5Class.java" options="-emacssym -1.5 -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="method with two type parameters same as jdt">
-      <compile files="Java5Class.java" options="-emacssym -1.5"/>
+      <compile files="Java5Class.java" options="-emacssym -1.5 -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="method with two args one of which is generic same as jdt">
-      <compile files="Java5Class.java" options="-emacssym -1.5"/>
+      <compile files="Java5Class.java" options="-emacssym -1.5 -Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="ipes with same name have unique handles - method-call">

@@ -133,9 +133,9 @@ public abstract class ModelTestCase extends XMLBasedAjcTestCase {
 	private void compareModel(File expectedF) {
 		if (debugTest)
 			System.out.println("comparing with model in file " + expectedF.getAbsolutePath());
-		List fileContents = new ArrayList();
+		List<String> fileContents = new ArrayList<String>();
 		try {
-			String sandboxDir = ajc.getSandboxDirectory().getAbsolutePath();
+			// String sandboxDir = ajc.getSandboxDirectory().getAbsolutePath();
 			String modelOutput = modelFilename;
 			// Load the file with the expected output
 			BufferedReader expect = new BufferedReader(new FileReader(expectedF));
@@ -144,13 +144,13 @@ public abstract class ModelTestCase extends XMLBasedAjcTestCase {
 			while ((expectedLine = expect.readLine()) != null) {
 				fileContents.add(expectedLine);
 			}
-			List expectedFileContents = new ArrayList();
+			List<String> expectedFileContents = new ArrayList<String>();
 			expectedFileContents.addAll(fileContents);
 
 			// Load the file with the output from this test run
 			BufferedReader found = new BufferedReader(new FileReader(new File(modelOutput)));
 			String foundLine = null;
-			List foundFileContents = new ArrayList();
+			List<String> foundFileContents = new ArrayList<String>();
 			while ((foundLine = found.readLine()) != null) {
 				// int i = foundLine.indexOf(sandboxDir);
 				// if (i == -1) {
@@ -168,7 +168,7 @@ public abstract class ModelTestCase extends XMLBasedAjcTestCase {
 			}
 
 			// iterate over what we found
-			for (Iterator iter = foundFileContents.iterator(); iter.hasNext();) {
+			for (Iterator<String> iter = foundFileContents.iterator(); iter.hasNext();) {
 				String line = (String) iter.next();
 				if (debugTest)
 					System.err.println("looking at model entry: " + line);
@@ -177,7 +177,7 @@ public abstract class ModelTestCase extends XMLBasedAjcTestCase {
 
 					if (debugTest) {
 						System.err.println("couldn't find: " + line);
-						for (Iterator iterator = fileContents.iterator(); iterator.hasNext();) {
+						for (Iterator<String> iterator = fileContents.iterator(); iterator.hasNext();) {
 							String element = (String) iterator.next();
 							System.err.println("compared with: " + element);
 						}
@@ -192,7 +192,7 @@ public abstract class ModelTestCase extends XMLBasedAjcTestCase {
 			}
 
 			if (debugTest && !fileContents.isEmpty()) {
-				for (Iterator iter = fileContents.iterator(); iter.hasNext();) {
+				for (Iterator<String> iter = fileContents.iterator(); iter.hasNext();) {
 					String element = (String) iter.next();
 					System.err.println("remaining: " + element);
 				}
