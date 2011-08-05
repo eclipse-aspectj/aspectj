@@ -139,7 +139,7 @@ public abstract class World implements Dump.INode {
 	private int itdVersion = 2; // defaults to 2nd generation itds
 
 	// Minimal Model controls whether model entities that are not involved in relationships are deleted post-build
-	private boolean minimalModel = false;
+	private boolean minimalModel = true;
 	private boolean useFinal = true;
 	private boolean targettingRuntime1_6_10 = false;
 
@@ -166,11 +166,11 @@ public abstract class World implements Dump.INode {
 
 	static {
 		try {
-		String value = System.getProperty("aspectj.overweaving", "false");
-		if (value.equalsIgnoreCase("true")) {
-			System.out.println("ASPECTJ: aspectj.overweaving=true: overweaving switched ON");
-			systemPropertyOverWeaving = true;
-		}
+			String value = System.getProperty("aspectj.overweaving", "false");
+			if (value.equalsIgnoreCase("true")) {
+				System.out.println("ASPECTJ: aspectj.overweaving=true: overweaving switched ON");
+				systemPropertyOverWeaving = true;
+			}
 		} catch (Throwable t) {
 			System.err.println("ASPECTJ: Unable to read system properties");
 			t.printStackTrace();
@@ -1486,7 +1486,7 @@ public abstract class World implements Dump.INode {
 	// resolving types (*cough* java.lang.Enum) ---
 
 	public boolean isDemotionActive() {
-		return false;
+		return true;
 	}
 
 	// --- this first map is for java15 delegates which may try and recursively
@@ -1549,9 +1549,9 @@ public abstract class World implements Dump.INode {
 					useFinal = false; // if avoidFinal=true, then set useFinal to false
 				}
 
-				s = p.getProperty(xsetMINIMAL_MODEL, "false");
-				if (s.equalsIgnoreCase("true")) {
-					minimalModel = true;
+				s = p.getProperty(xsetMINIMAL_MODEL, "true");
+				if (s.equalsIgnoreCase("false")) {
+					minimalModel = false;
 				}
 
 				s = p.getProperty(xsetTARGETING_RUNTIME_1610, "false");
@@ -1575,7 +1575,7 @@ public abstract class World implements Dump.INode {
 							MessageUtil.info("[completeBinaryTypes=true] Completion of binary types activated"));
 				}
 
-				s = p.getProperty(xsetTYPE_DEMOTION); // default is: ON (for ltw) OFF (for ctw)
+				s = p.getProperty(xsetTYPE_DEMOTION); // default is: ON
 				if (s != null) {
 					boolean b = typeMap.demotionSystemActive;
 					if (b && s.equalsIgnoreCase("false")) {
