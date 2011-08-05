@@ -792,7 +792,7 @@ To use testing client jar in tests,
 <!--
 ant -propertyfile XXX publishtomaven
 -->
-  <target name="publishtomaven" depends="maven.init">
+  <target name="publishtomaven_snapshot" depends="maven.init">
     <property name="build.root" value="/Users/aclement/workspaces/aspectj1/aj-build"/>
 
     <property name="adjusted.release.type" value="snapshot"/>
