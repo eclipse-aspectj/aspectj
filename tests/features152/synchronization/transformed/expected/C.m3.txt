@@ -1,6 +1,6 @@
-  public void m3()    org.aspectj.weaver.MethodDeclarationLineNumber: 20:747
+  public void m3()    org.aspectj.weaver.MethodDeclarationLineNumber: 20:728
 :
-                    ALOAD_0
+                    ALOAD_0     // LC; this
                     DUP
                     ASTORE_1
                     MONITORENTER

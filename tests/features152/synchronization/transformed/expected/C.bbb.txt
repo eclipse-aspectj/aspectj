@@ -1,4 +1,4 @@
-  public static void bbb()    org.aspectj.weaver.MethodDeclarationLineNumber: 15:316
+  public static void bbb()    org.aspectj.weaver.MethodDeclarationLineNumber: 15:302
 :
                     GETSTATIC C.class$1 Ljava/lang/Class;
                     DUP

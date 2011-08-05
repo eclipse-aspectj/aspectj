@@ -1,6 +1,6 @@
   public void e()    org.aspectj.weaver.MethodDeclarationLineNumber: 28:584
 :
-                    ALOAD_0
+                    ALOAD_0     // LOne; this
                     DUP
                     ASTORE_2
                     MONITORENTER

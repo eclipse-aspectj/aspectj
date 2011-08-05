@@ -1,4 +1,4 @@
-  public static void b()    org.aspectj.weaver.MethodDeclarationLineNumber: 17:340
+  public static void b()    org.aspectj.weaver.MethodDeclarationLineNumber: 17:324
 :
                     LDC C
                     DUP

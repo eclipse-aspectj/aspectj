@@ -1,7 +1,7 @@
-  public void m2()    org.aspectj.weaver.MethodDeclarationLineNumber: 20:571
+  public void m2()    org.aspectj.weaver.MethodDeclarationLineNumber: 20:552
 :
     catch java.lang.Throwable -> E2
-    |               ALOAD_0
+    |               ALOAD_0     // LC; this
     |               DUP
     |               ASTORE_1
     |               MONITORENTER

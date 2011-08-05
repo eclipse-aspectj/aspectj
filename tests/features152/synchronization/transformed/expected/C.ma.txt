@@ -1,4 +1,4 @@
-  public void ma()    org.aspectj.weaver.MethodDeclarationLineNumber: 14:307
+  public void ma()    org.aspectj.weaver.MethodDeclarationLineNumber: 14:294
 :
                     INVOKESTATIC Two.aspectOf ()LTwo;   (line 15)
                     INVOKEVIRTUAL Two.ajc$before$Two$1$8d8821ee ()V

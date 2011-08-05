@@ -1,4 +1,4 @@
-  public void m34()    org.aspectj.weaver.MethodDeclarationLineNumber: 35:1018
+  public void m34()    org.aspectj.weaver.MethodDeclarationLineNumber: 35:984
 :
     catch java.lang.Throwable -> E1
     |               ALOAD_0     // LC; this   (line 36)
