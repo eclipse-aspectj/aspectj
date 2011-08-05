@@ -15,7 +15,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -24,6 +28,11 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.commons.digester.Digester;
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.LocalVariable;
+import org.aspectj.apache.bcel.classfile.LocalVariableTable;
+import org.aspectj.apache.bcel.util.ClassPath;
+import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.tools.ajc.CompilationResult;
 import org.aspectj.util.FileUtil;
@@ -298,6 +307,63 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		assertTrue("File " + file + " should have been updated", f.lastModified() > sinceTime);
 	}
 
+	public SyntheticRepository createRepos(File cpentry) {
+		ClassPath cp = new ClassPath(cpentry + File.pathSeparator + System.getProperty("java.class.path"));
+		return SyntheticRepository.getInstance(cp);
+	}
+
+	public JavaClass getClassFrom(File where, String clazzname) throws ClassNotFoundException {
+		SyntheticRepository repos = createRepos(where);
+		return repos.loadClass(clazzname);
+	}
+
+	/**
+	 * Sort it by name then start position
+	 */
+	public List<LocalVariable> sortedLocalVariables(LocalVariableTable lvt) {
+		List<LocalVariable> l = new ArrayList<LocalVariable>();
+		LocalVariable lv[] = lvt.getLocalVariableTable();
+		for (int i = 0; i < lv.length; i++) {
+			LocalVariable lvEntry = lv[i];
+			l.add(lvEntry);
+		}
+		Collections.sort(l, new MyComparator());
+		return l;
+	}
+
+	public String stringify(LocalVariableTable lvt, int slotIndex) {
+		LocalVariable lv[] = lvt.getLocalVariableTable();
+		LocalVariable lvEntry = lv[slotIndex];
+		StringBuffer sb = new StringBuffer();
+		sb.append(lvEntry.getSignature()).append(" ").append(lvEntry.getName()).append("(").append(lvEntry.getIndex())
+				.append(") start=").append(lvEntry.getStartPC()).append(" len=").append(lvEntry.getLength());
+		return sb.toString();
+	}
+
+	public String stringify(List<LocalVariable> l, int slotIndex) {
+		LocalVariable lvEntry = (LocalVariable) l.get(slotIndex);
+		StringBuffer sb = new StringBuffer();
+		sb.append(lvEntry.getSignature()).append(" ").append(lvEntry.getName()).append("(").append(lvEntry.getIndex())
+				.append(") start=").append(lvEntry.getStartPC()).append(" len=").append(lvEntry.getLength());
+		return sb.toString();
+	}
+
+	public String stringify(LocalVariableTable lvt) {
+		if (lvt == null) {
+			return "";
+		}
+		StringBuffer sb = new StringBuffer();
+		sb.append("LocalVariableTable.  Entries=#" + lvt.getTableLength()).append("\n");
+		LocalVariable lv[] = lvt.getLocalVariableTable();
+		for (int i = 0; i < lv.length; i++) {
+			LocalVariable lvEntry = lv[i];
+			sb.append(lvEntry.getSignature()).append(" ").append(lvEntry.getName()).append("(").append(lvEntry.getIndex())
+					.append(") start=").append(lvEntry.getStartPC()).append(" len=").append(lvEntry.getLength()).append("\n");
+		}
+
+		return sb.toString();
+	}
+
 	public static class CountingFilenameFilter implements FilenameFilter {
 
 		private String suffix;
@@ -317,5 +383,18 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		public int getCount() {
 			return count;
 		}
+	}
+
+	public static class MyComparator implements Comparator<LocalVariable> {
+		public int compare(LocalVariable o1, LocalVariable o2) {
+			LocalVariable l1 = (LocalVariable) o1;
+			LocalVariable l2 = (LocalVariable) o2;
+			if (l1.getName().equals(l2.getName())) {
+				return l1.getStartPC() - l2.getStartPC();
+			} else {
+				return l1.getName().compareTo(l2.getName());
+			}
+		}
+
 	}
 }
