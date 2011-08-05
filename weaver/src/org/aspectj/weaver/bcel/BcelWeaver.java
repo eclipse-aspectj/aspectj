@@ -2013,7 +2013,7 @@ public class BcelWeaver {
 	}
 
 	// only called for testing
-	public void setShadowMungers(List shadowMungers) {
+	public void setShadowMungers(List<ShadowMunger> shadowMungers) {
 		shadowMungerList = shadowMungers;
 	}
 }
