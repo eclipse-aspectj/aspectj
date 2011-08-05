@@ -475,7 +475,7 @@ public class Main implements Config {
 			}
 		}
 		List vargs = new LinkedList(Arrays.asList(args));
-
+		vargs.add("-Xset:minimalModel=false");
 		parseArgs(vargs, new File(".")); // !!!
 
 		if (filenames.size() == 0) {
