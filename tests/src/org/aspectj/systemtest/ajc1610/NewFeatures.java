@@ -16,8 +16,6 @@ import junit.framework.Test;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.util.ClassPath;
-import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class NewFeatures extends org.aspectj.testing.XMLBasedAjcTestCase {
@@ -144,16 +142,6 @@ public class NewFeatures extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	private JavaClass getMyClass(String className) throws ClassNotFoundException {
 		return getClassFrom(ajc.getSandboxDirectory(), className);
-	}
-
-	public SyntheticRepository createRepos(File cpentry) {
-		ClassPath cp = new ClassPath(cpentry + File.pathSeparator + System.getProperty("java.class.path"));
-		return SyntheticRepository.getInstance(cp);
-	}
-
-	protected JavaClass getClassFrom(File where, String clazzname) throws ClassNotFoundException {
-		SyntheticRepository repos = createRepos(where);
-		return repos.loadClass(clazzname);
 	}
 
 	protected File getSpecFile() {

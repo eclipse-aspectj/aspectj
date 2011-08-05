@@ -21,8 +21,6 @@ import org.aspectj.apache.bcel.classfile.LineNumber;
 import org.aspectj.apache.bcel.classfile.LineNumberTable;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.generic.MethodGen;
-import org.aspectj.apache.bcel.util.ClassPath;
-import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.weaver.tools.ContextBasedMatcher;
 import org.aspectj.weaver.tools.FuzzyBoolean;
@@ -357,16 +355,6 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	protected File getSpecFile() {
 		return new File("../tests/src/org/aspectj/systemtest/ajc154/ajc154.xml");
-	}
-
-	public SyntheticRepository createRepos(File cpentry) {
-		ClassPath cp = new ClassPath(cpentry + File.pathSeparator + System.getProperty("java.class.path"));
-		return SyntheticRepository.getInstance(cp);
-	}
-
-	protected JavaClass getClassFrom(File where, String clazzname) throws ClassNotFoundException {
-		SyntheticRepository repos = createRepos(where);
-		return repos.loadClass(clazzname);
 	}
 
 	// ---
