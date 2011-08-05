@@ -12,9 +12,6 @@ package org.aspectj.systemtest.ajc164;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -24,8 +21,6 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.util.ClassPath;
-import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
@@ -241,7 +236,7 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("anno decprecedence");
 	}
 
-	// 
+	//
 	public void testBrokenLVT_pr194314_1() throws Exception {
 		runTest("broken lvt - 1");
 		Method m = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "Service"), "method_aroundBody1$advice");
@@ -280,8 +275,8 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		assertEquals("J l(1) start=0 len=68", stringify(m.getLocalVariableTable(), 1));
 		assertEquals("Lorg/aspectj/lang/JoinPoint; thisJoinPoint(3) start=0 len=68", stringify(m.getLocalVariableTable(), 2));
 		assertEquals("LServiceInterceptorCodeStyle; ajc$aspectInstance(4) start=0 len=68", stringify(m.getLocalVariableTable(), 3));
-		assertEquals("Lorg/aspectj/runtime/internal/AroundClosure; ajc$aroundClosure(5) start=0 len=68", stringify(m
-				.getLocalVariableTable(), 4));
+		assertEquals("Lorg/aspectj/runtime/internal/AroundClosure; ajc$aroundClosure(5) start=0 len=68",
+				stringify(m.getLocalVariableTable(), 4));
 		assertEquals("Lorg/aspectj/lang/JoinPoint; thisJoinPoint(6) start=0 len=68", stringify(m.getLocalVariableTable(), 5));
 		assertEquals("[Ljava/lang/Object; args(7) start=9 len=59", stringify(m.getLocalVariableTable(), 6));
 		assertEquals("J id(8) start=21 len=47", stringify(m.getLocalVariableTable(), 7));
@@ -346,7 +341,7 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	// Single piece of advice on before execution of a method with a this and a
 	// parameter
-	public void testDebuggingBeforeAdvice_pr262509() {
+	public void testDebuggingBeforeAdvice_pr262509() throws Exception {
 		runTest("debugging before advice");
 		Method method = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "Foo"), "foo");
 		assertEquals("LFoo; this(0) start=0 len=13", stringify(method.getLocalVariableTable(), 0));
@@ -355,7 +350,7 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	// Single piece of advice on before execution of a method with a this and a
 	// parameter and other various locals within it
-	public void testDebuggingBeforeAdvice_pr262509_2() {
+	public void testDebuggingBeforeAdvice_pr262509_2() throws Exception {
 		// Compile with -preserveAllLocals
 		runTest("debugging before advice - 2");
 		Method method = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "Foo2"), "foo");
@@ -368,37 +363,9 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		assertEquals("Ljava/lang/String; s2(3) start=18 len=10", stringify(l, 3));
 	}
 
-	/**
-	 * Sort it by name then start position
-	 */
-	private List sortedLocalVariables(LocalVariableTable lvt) {
-		List l = new ArrayList();
-		StringBuffer sb = new StringBuffer();
-		LocalVariable lv[] = lvt.getLocalVariableTable();
-		for (int i = 0; i < lv.length; i++) {
-			LocalVariable lvEntry = lv[i];
-			l.add(lvEntry);
-		}
-		Collections.sort(l, new MyComparator());
-		return l;
-	}
-
-	private static class MyComparator implements Comparator {
-		public int compare(Object o1, Object o2) {
-			LocalVariable l1 = (LocalVariable) o1;
-			LocalVariable l2 = (LocalVariable) o2;
-			if (l1.getName().equals(l2.getName())) {
-				return l1.getStartPC() - l2.getStartPC();
-			} else {
-				return l1.getName().compareTo(l2.getName());
-			}
-		}
-
-	}
-
 	// Two pieces of advice on before execution of a method with a this and a
 	// parameter and another local within it
-	public void testDebuggingBeforeAdvice_pr262509_3() {
+	public void testDebuggingBeforeAdvice_pr262509_3() throws Exception {
 		// Compile with -preserveAllLocals
 		runTest("debugging before advice - 3");
 		Method method = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "Foo3"), "foo");
@@ -451,20 +418,6 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return new File("../tests/src/org/aspectj/systemtest/ajc164/ajc164.xml");
 	}
 
-	private SyntheticRepository createRepos(File cpentry) {
-		ClassPath cp = new ClassPath(cpentry + File.pathSeparator + System.getProperty("java.class.path"));
-		return SyntheticRepository.getInstance(cp);
-	}
-
-	private JavaClass getClassFrom(File where, String clazzname) {
-		try {
-			SyntheticRepository repos = createRepos(where);
-			return repos.loadClass(clazzname);
-		} catch (ClassNotFoundException cnfe) {
-			throw new RuntimeException("Failed to find class " + clazzname + " at " + where.toString());
-		}
-	}
-
 	private Method getMethodFromClass(JavaClass clazz, String methodName) {
 		Method[] meths = clazz.getMethods();
 		for (int i = 0; i < meths.length; i++) {
@@ -474,36 +427,6 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 			}
 		}
 		return null;
-	}
-
-	private String stringify(LocalVariableTable lvt, int slotIndex) {
-		LocalVariable lv[] = lvt.getLocalVariableTable();
-		LocalVariable lvEntry = lv[slotIndex];
-		StringBuffer sb = new StringBuffer();
-		sb.append(lvEntry.getSignature()).append(" ").append(lvEntry.getName()).append("(").append(lvEntry.getIndex()).append(
-				") start=").append(lvEntry.getStartPC()).append(" len=").append(lvEntry.getLength());
-		return sb.toString();
-	}
-
-	private String stringify(List l, int slotIndex) {
-		LocalVariable lvEntry = (LocalVariable) l.get(slotIndex);
-		StringBuffer sb = new StringBuffer();
-		sb.append(lvEntry.getSignature()).append(" ").append(lvEntry.getName()).append("(").append(lvEntry.getIndex()).append(
-				") start=").append(lvEntry.getStartPC()).append(" len=").append(lvEntry.getLength());
-		return sb.toString();
-	}
-
-	private String stringify(LocalVariableTable lvt) {
-		StringBuffer sb = new StringBuffer();
-		sb.append("LocalVariableTable.  Entries=#" + lvt.getTableLength()).append("\n");
-		LocalVariable lv[] = lvt.getLocalVariableTable();
-		for (int i = 0; i < lv.length; i++) {
-			LocalVariable lvEntry = lv[i];
-			sb.append(lvEntry.getSignature()).append(" ").append(lvEntry.getName()).append("(").append(lvEntry.getIndex()).append(
-					") start=").append(lvEntry.getStartPC()).append(" len=").append(lvEntry.getLength()).append("\n");
-		}
-
-		return sb.toString();
 	}
 
 	private IProgramElement findElementAtLine(IProgramElement whereToLook, int line) {
