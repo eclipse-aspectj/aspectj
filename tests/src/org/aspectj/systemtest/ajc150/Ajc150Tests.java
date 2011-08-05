@@ -20,8 +20,6 @@ import junit.framework.Test;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
-import org.aspectj.apache.bcel.util.ClassPath;
-import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.util.LangUtil;
@@ -366,8 +364,8 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 			if (f)
 				System.err.println("Line number table for " + method.getName() + method.getSignature() + " = "
 						+ method.getLineNumberTable());
-			assertTrue("Didn't find a line number table for method " + method.getName() + method.getSignature(), method
-					.getLineNumberTable() != null);
+			assertTrue("Didn't find a line number table for method " + method.getName() + method.getSignature(),
+					method.getLineNumberTable() != null);
 		}
 
 		// This test would determine the info isn't there if you pass -g:none ...
@@ -1027,18 +1025,6 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	public void testNPEInBcelAdviceWithConcreteAspect_pr121385() {
 		runTest("override protected pointcut in aop.xml concrete aspect");
-	}
-
-	// helper methods.....
-
-	public SyntheticRepository createRepos(File cpentry) {
-		ClassPath cp = new ClassPath(cpentry + File.pathSeparator + System.getProperty("java.class.path"));
-		return SyntheticRepository.getInstance(cp);
-	}
-
-	protected JavaClass getClassFrom(File where, String clazzname) throws ClassNotFoundException {
-		SyntheticRepository repos = createRepos(where);
-		return repos.loadClass(clazzname);
 	}
 
 }

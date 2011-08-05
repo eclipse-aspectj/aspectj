@@ -16,8 +16,6 @@ import junit.framework.Test;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.util.ClassPath;
-import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Annotations extends XMLBasedAjcTestCase {
@@ -169,14 +167,5 @@ public class Annotations extends XMLBasedAjcTestCase {
   }
   
   // helper methods.....
-  
-  public SyntheticRepository createRepos(File cpentry) {
-	ClassPath cp = new ClassPath(cpentry+File.pathSeparator+System.getProperty("java.class.path"));
-	return SyntheticRepository.getInstance(cp);
-  }
-  
-  protected JavaClass getClassFrom(File where,String clazzname) throws ClassNotFoundException {
-	SyntheticRepository repos = createRepos(where);
-	return repos.loadClass(clazzname);
-  }
+
 }
