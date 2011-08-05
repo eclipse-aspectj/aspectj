@@ -495,7 +495,8 @@ class BcelClassWeaver implements IClassWeaver {
 			// Repeat next step until nothing left to inline...cant go on
 			// infinetly as compiler will have detected and reported
 			// "Recursive constructor invocation"
-			while (inlineSelfConstructors(methodGens)) {
+			List<LazyMethodGen> recursiveCtors = new ArrayList<LazyMethodGen>();
+			while (inlineSelfConstructors(methodGens, recursiveCtors)) {
 			}
 			positionAndImplement(initializationShadows);
 		}
@@ -1526,8 +1527,9 @@ class BcelClassWeaver implements IClassWeaver {
 		return aspectsAffectingType;
 	}
 
-	private boolean inlineSelfConstructors(List<LazyMethodGen> methodGens) {
+	private boolean inlineSelfConstructors(List<LazyMethodGen> methodGens, List<LazyMethodGen> recursiveCtors) {
 		boolean inlinedSomething = false;
+		List<LazyMethodGen> newRecursiveCtors = new ArrayList<LazyMethodGen>();
 		for (LazyMethodGen methodGen : methodGens) {
 			if (!methodGen.getName().equals("<init>")) {
 				continue;
@@ -1535,10 +1537,17 @@ class BcelClassWeaver implements IClassWeaver {
 			InstructionHandle ih = findSuperOrThisCall(methodGen);
 			if (ih != null && isThisCall(ih)) {
 				LazyMethodGen donor = getCalledMethod(ih);
-				inlineMethod(donor, methodGen, ih);
-				inlinedSomething = true;
+				if (donor.equals(methodGen)) {
+					newRecursiveCtors.add(donor);
+				} else {
+					if (!recursiveCtors.contains(donor)) {
+						inlineMethod(donor, methodGen, ih);
+						inlinedSomething = true;
+					}
+				}
 			}
 		}
+		recursiveCtors.addAll(newRecursiveCtors);
 		return inlinedSomething;
 	}
 
@@ -3094,7 +3103,7 @@ class BcelClassWeaver implements IClassWeaver {
 							&& s.charAt(4) == 'a'
 							&& (s.equals("org.aspectj.runtime.internal.CFlowCounter")
 									|| s.equals("org.aspectj.runtime.internal.CFlowStack") || s
-									.equals("org.aspectj.runtime.reflect.Factory"))) {
+										.equals("org.aspectj.runtime.reflect.Factory"))) {
 						proceed = false;
 					} else {
 						if (methodName.equals("aspectOf")) {
