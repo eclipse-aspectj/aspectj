@@ -67,10 +67,6 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 		}
 	}
 
-	public boolean isDemotionActive() {
-		return true;
-	}
-
 	/**
 	 * Build a World from a ClassLoader, for LTW support
 	 */
