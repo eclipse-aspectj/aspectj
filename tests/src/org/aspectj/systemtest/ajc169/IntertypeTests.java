@@ -13,9 +13,6 @@ import java.io.PrintWriter;
 
 import junit.framework.Test;
 
-import org.aspectj.apache.bcel.classfile.JavaClass;
-import org.aspectj.apache.bcel.util.ClassPath;
-import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.testing.XMLBasedAjcTestCase;
@@ -204,16 +201,6 @@ public class IntertypeTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// runTest("simplest 3");
 	// }
 	// --
-
-	public SyntheticRepository createRepos(File cpentry) {
-		ClassPath cp = new ClassPath(cpentry + File.pathSeparator + System.getProperty("java.class.path"));
-		return SyntheticRepository.getInstance(cp);
-	}
-
-	protected JavaClass getClassFrom(File where, String clazzname) throws ClassNotFoundException {
-		SyntheticRepository repos = createRepos(where);
-		return repos.loadClass(clazzname);
-	}
 
 	public static Test suite() {
 		return XMLBasedAjcTestCase.loadSuite(IntertypeTests.class);
