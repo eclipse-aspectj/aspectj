@@ -1026,7 +1026,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 						String.class, bytes.getClass(), int.class, int.class, ProtectionDomain.class });
 			}
 			defineClassWithProtectionDomainMethod.setAccessible(true);
-			clazz = defineClassWithProtectionDomainMethod.invoke(loader, new Object[] { name, bytes, new Integer(0),
+			clazz = defineClassWithProtectionDomainMethod.invoke(loader, new Object[] { name, bytes, Integer.valueOf(0),
 					new Integer(bytes.length), protectionDomain });
 		} catch (InvocationTargetException e) {
 			if (e.getTargetException() instanceof LinkageError) {
