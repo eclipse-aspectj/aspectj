@@ -678,12 +678,12 @@ public final class LazyClassGen {
 		writeBack(world);
 		byte[] wovenClassFileData = myGen.getJavaClass().getBytes();
 		// if is java 6 class file
-		if (myGen.getMajor() >= Constants.MAJOR_1_6 && world.shouldGenerateStackMaps() && AsmDetector.isAsmAround) {
+		if (((myGen.getMajor() == Constants.MAJOR_1_6 && world.shouldGenerateStackMaps()) || myGen.getMajor() > Constants.MAJOR_1_6)
+				&& AsmDetector.isAsmAround) {
 			wovenClassFileData = StackMapAdder.addStackMaps(world, wovenClassFileData);
 		}
 
-		WeaverStateInfo wsi = myType.getWeaverState();// getOrCreateWeaverStateInfo
-		// ();
+		WeaverStateInfo wsi = myType.getWeaverState();// getOrCreateWeaverStateInfo();
 		if (wsi != null && wsi.isReweavable()) { // && !reweavableDataInserted
 			// reweavableDataInserted = true;
 			return wsi.replaceKeyWithDiff(wovenClassFileData);

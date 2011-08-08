@@ -14,8 +14,9 @@ package org.aspectj.weaver.bcel.asm;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
+
+import aj.org.objectweb.asm.ClassReader;
+import aj.org.objectweb.asm.ClassWriter;
 
 /**
  * Uses asm to add the stack map attribute to methods in a class. The class is passed in as pure byte data and then a reader/writer

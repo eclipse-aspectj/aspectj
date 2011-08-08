@@ -24,8 +24,8 @@ public class AsmDetector {
 
 	static {
 		try {
-			Class reader = Class.forName("org.objectweb.asm.ClassReader");
-			Class visitor = Class.forName("org.objectweb.asm.ClassVisitor");
+			Class<?> reader = Class.forName("aj.org.objectweb.asm.ClassReader");
+			Class<?> visitor = Class.forName("aj.org.objectweb.asm.ClassVisitor");
 			Method m = reader.getMethod("accept", new Class[] { visitor, Integer.TYPE });
 			isAsmAround = m != null;
 		} catch (Exception e) {
