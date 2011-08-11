@@ -39,7 +39,7 @@ public class IncrementalStateManager {
 	// SECRETAPI will consume more memory, so turn on at your own risk ;) Set to 'true' when memory usage is understood
 	public static boolean recordIncrementalStates = false;
 	public static boolean debugIncrementalStates = false;
-	private static Hashtable incrementalStates = new Hashtable();
+	private static Hashtable<String, AjState> incrementalStates = new Hashtable<String, AjState>();
 
 	public static void recordSuccessfulBuild(String buildConfig, AjState state) {
 		if (!recordIncrementalStates) {
@@ -54,9 +54,9 @@ public class IncrementalStateManager {
 	 */
 	public static void persist() {
 		// check serialization works
-		Set entries = incrementalStates.entrySet();
-		for (Iterator iterator = entries.iterator(); iterator.hasNext();) {
-			Map.Entry entry = (Map.Entry) iterator.next();
+		Set<Map.Entry<String, AjState>> entries = incrementalStates.entrySet();
+		for (Iterator<Map.Entry<String, AjState>> iterator = entries.iterator(); iterator.hasNext();) {
+			Map.Entry<String, AjState> entry = iterator.next();
 			System.out.println("Name " + entry.getKey());
 			File f = new File("n:/temp/foo.ajstate");
 			try {
@@ -96,13 +96,13 @@ public class IncrementalStateManager {
 	// now, managing changes to entries on a classpath
 
 	public static AjState findStateManagingOutputLocation(File location) {
-		Collection allStates = incrementalStates.values();
+		Collection<AjState> allStates = incrementalStates.values();
 		if (debugIncrementalStates) {
 			System.err.println("> findStateManagingOutputLocation(" + location + ") has " + allStates.size()
 					+ " states to look through");
 		}
-		for (Iterator iter = allStates.iterator(); iter.hasNext();) {
-			AjState element = (AjState) iter.next();
+		for (Iterator<AjState> iter = allStates.iterator(); iter.hasNext();) {
+			AjState element = iter.next();
 			AjBuildConfig ajbc = element.getBuildConfig();
 			if (ajbc == null) {
 				// FIXME asc why can it ever be null?
