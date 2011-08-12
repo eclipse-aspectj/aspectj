@@ -88,7 +88,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 	protected final ArrayList<String> options;
 	protected final ArrayList<String> paths;
 	// XXXXXunused protected final ArrayList /*ISourceLocation*/ sourceLocations; // XXX remove?
-	protected final ArrayList /* IRunSpec */children;
+	protected final ArrayList<IRunSpec> children;
 	protected final ArrayList /* DirChanges.Spec */dirChanges;
 	protected XMLNames xmlNames;
 	protected String comment;
@@ -112,8 +112,8 @@ abstract public class AbstractRunSpec implements IRunSpec {
 		options = new ArrayList<String>();
 		paths = new ArrayList<String>();
 		// XXXXXunused sourceLocations = new ArrayList();
-		keywords = new ArrayList();
-		children = new ArrayList();
+		keywords = new ArrayList<String>();
+		children = new ArrayList<IRunSpec>();
 		dirChanges = new ArrayList();
 		xmlNames = XMLNames.DEFAULT;
 		runtime = new RT();
@@ -197,14 +197,14 @@ abstract public class AbstractRunSpec implements IRunSpec {
 		}
 	}
 
-	public ArrayList getKeywordsList() {
+	public ArrayList<String> getKeywordsList() {
 		return makeList(keywords);
 	}
 
 	// ------- options - String args
 
 	/** @return ArrayList of String options */
-	public ArrayList getOptionsList() {
+	public ArrayList<String> getOptionsList() {
 		return makeList(options);
 	}
 
@@ -365,22 +365,22 @@ abstract public class AbstractRunSpec implements IRunSpec {
 	}
 
 	/** @return copy of children list */
-	public ArrayList getChildren() {
+	public ArrayList<IRunSpec> getChildren() {
 		return makeList(children);
 	}
 
 	/** @return copy of children list without children to skip */
-	public ArrayList getWorkingChildren() {
+	public ArrayList<IRunSpec> getWorkingChildren() {
 		if (skipAll) {
-			return new ArrayList();
+			return new ArrayList<IRunSpec>();
 		}
 		if (null == skipSet) {
 			return getChildren();
 		}
-		ArrayList result = new ArrayList();
+		ArrayList<IRunSpec> result = new ArrayList<IRunSpec>();
 		int i = 0;
-		for (Iterator iter = children.listIterator(); iter.hasNext(); i++) {
-			Object child = iter.next();
+		for (Iterator<IRunSpec> iter = children.listIterator(); iter.hasNext(); i++) {
+			IRunSpec child = iter.next();
 			if (!skipSet.get(i)) {
 				result.add(child);
 			}
@@ -646,9 +646,9 @@ abstract public class AbstractRunSpec implements IRunSpec {
 		 */
 		spec.badInput = badInput;
 		spec.children.clear();
-		for (Iterator iter = children.iterator(); iter.hasNext();) {
+		for (Iterator<IRunSpec> iter = children.iterator(); iter.hasNext();) {
 			// clone these...
-			IRunSpec child = (IRunSpec) iter.next();
+			IRunSpec child = iter.next();
 			// require all child classes to support clone?
 			if (child instanceof AbstractRunSpec) {
 				spec.addChild((AbstractRunSpec) ((AbstractRunSpec) child).clone());
@@ -700,8 +700,8 @@ abstract public class AbstractRunSpec implements IRunSpec {
 		}
 	}
 
-	private ArrayList makeList(List list) {
-		ArrayList result = new ArrayList();
+	private <T> ArrayList<T> makeList(List<T> list) {
+		ArrayList<T> result = new ArrayList<T>();
 		if (null != list) {
 			result.addAll(list);
 		}
