@@ -141,8 +141,8 @@ public class AjdeCoreTestCase extends TestCase {
 		}
 	}
 
-	public List getSourceFileList(String[] files) {
-		List sourceFiles = new ArrayList();
+	public List<String> getSourceFileList(String[] files) {
+		List<String> sourceFiles = new ArrayList<String>();
 		for (int i = 0; i < files.length; i++) {
 			sourceFiles.add(getAbsoluteProjectDir() + File.separator + files[i]);
 		}

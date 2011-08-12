@@ -26,7 +26,7 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 	private String testProjectOutputPath;
 	private File classOutputLoc;
 	private File resourceOutputLoc;
-	private List allOutputLocations;
+	private List<File> allOutputLocations;
 	private Map inpathMap = Collections.EMPTY_MAP;
 
 	public TestOutputLocationManager(String testProjectPath) {
@@ -47,11 +47,10 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 		initLocations();
 		return resourceOutputLoc;
 	}
-	
+
 	public Map getInpathMap() {
 		return inpathMap;
 	}
-
 
 	// -------------- setter methods useful for testing -------------
 	public void setOutputLocForClass(File f) {
