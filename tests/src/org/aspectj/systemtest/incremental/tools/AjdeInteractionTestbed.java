@@ -252,8 +252,8 @@ public class AjdeInteractionTestbed extends TestCase {
 	private void addXmlConfigFilesToBuild(String pname, AjCompiler compiler) {
 		File projectBase = new File(sandboxDir, pname);
 		ICompilerConfiguration icc = compiler.getCompilerConfiguration();
-		List currentXmlFiles = icc.getProjectXmlConfigFiles();
-		List collector = new ArrayList();
+		List<String> currentXmlFiles = icc.getProjectXmlConfigFiles();
+		List<String> collector = new ArrayList<String>();
 		collectUpXmlFiles(projectBase, projectBase, collector);
 		boolean changed = false;
 		for (int i = 0; i < collector.size(); i++) {
@@ -271,7 +271,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		}
 	}
 
-	private void collectUpFiles(File location, File base, List collectionPoint) {
+	private void collectUpFiles(File location, File base, List<String> collectionPoint) {
 		String contents[] = location.list();
 		if (contents == null) {
 			return;
@@ -296,7 +296,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		}
 	}
 
-	private void collectUpXmlFiles(File location, File base, List collectionPoint) {
+	private void collectUpXmlFiles(File location, File base, List<String> collectionPoint) {
 		String contents[] = location.list();
 		if (contents == null) {
 			return;
@@ -400,14 +400,14 @@ public class AjdeInteractionTestbed extends TestCase {
 	public void printBuildReport(String projectName) {
 		System.out.println("\n====== BUILD REPORT (Project " + projectName + ") ===========");
 		System.out.println("Build took: " + getTimeTakenForBuild(projectName) + "ms");
-		List compiled = getCompiledFiles(projectName);
+		List<String> compiled = getCompiledFiles(projectName);
 		System.out.println("Compiled: " + compiled.size() + " files");
-		for (Iterator iter = compiled.iterator(); iter.hasNext();) {
+		for (Iterator<String> iter = compiled.iterator(); iter.hasNext();) {
 			System.out.println("        :" + iter.next());
 		}
-		List woven = getWovenClasses(projectName);
+		List<String> woven = getWovenClasses(projectName);
 		System.out.println("Wove: " + woven.size() + " files");
-		for (Iterator iter = woven.iterator(); iter.hasNext();) {
+		for (Iterator<String> iter = woven.iterator(); iter.hasNext();) {
 			System.out.println("    :" + iter.next());
 		}
 		if (wasFullBuild()) {
@@ -497,7 +497,7 @@ public class AjdeInteractionTestbed extends TestCase {
 
 		public static boolean informedAboutKindOfBuild;
 		public static boolean fullBuildOccurred;
-		public static List detectedDeletions = new ArrayList();
+		public static List<String> detectedDeletions = new ArrayList<String>();
 		public static StringBuffer decisions = new StringBuffer();
 
 		public static void reset() {

@@ -35,7 +35,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 	private IOutputLocationManager outputLocationManager = null;
 	private List dependants;
 	private Map javaOptionsMap;
-	private Set inpath;
+	private Set<File> inpath;
 	private String encoding = null;
 	private String outjar;
 	private String nonstandardoptions;
@@ -83,17 +83,17 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		return cp;
 	}
 
-	public Set getInpath() {
+	public Set<File> getInpath() {
 		log("ICompilerConfiguration.getInPath()");
 		return inpath;
 	}
 
-	public Map getJavaOptionsMap() {
+	public Map<String, String> getJavaOptionsMap() {
 		log("ICompilerConfiguration.getJavaOptionsMap()");
 		if (javaOptionsMap != null && !javaOptionsMap.isEmpty())
 			return javaOptionsMap;
 
-		Hashtable ht = new Hashtable();
+		Hashtable<String, String> ht = new Hashtable<String, String>();
 		ht.put("org.eclipse.jdt.core.compiler.compliance", "1.5");
 		ht.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.5");
 		ht.put("org.eclipse.jdt.core.compiler.source", "1.5");
@@ -155,7 +155,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		this.changed |= ICompilerConfiguration.ASPECTPATH_CHANGED;
 	}
 
-	public void setInpath(Set inpath) {
+	public void setInpath(Set<File> inpath) {
 		this.inpath = inpath;
 		this.changed |= ICompilerConfiguration.INPATH_CHANGED;
 	}

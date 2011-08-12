@@ -112,7 +112,7 @@ public class MultiProjTestMessageHandler implements IBuildMessageHandler {
 		return weavingMessages;
 	}
 
-	public List/* IMessage */getCompilerErrors() {
+	public List<IMessage> getCompilerErrors() {
 		return compilerErrors;
 	}
 
