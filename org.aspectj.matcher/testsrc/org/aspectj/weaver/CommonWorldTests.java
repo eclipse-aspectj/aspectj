@@ -17,7 +17,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -65,8 +64,8 @@ public abstract class CommonWorldTests extends TestCase {
 				ResolvedType ty1 = primitives[j];
 				if (ty.equals(ty1)) {
 					isCoerceableFromTest(ty, ty1, true);
-				} else if (ty == ResolvedType.BOOLEAN || ty1 == ResolvedType.BOOLEAN || ty == ResolvedType.VOID
-						|| ty1 == ResolvedType.VOID) {
+				} else if (ty.equals(UnresolvedType.BOOLEAN) || ty1.equals(UnresolvedType.BOOLEAN)
+						|| ty.equals(UnresolvedType.VOID) || ty1.equals(UnresolvedType.VOID)) {
 					isCoerceableFromTest(ty, ty1, false);
 				} else {
 					isCoerceableFromTest(ty, ty1, true);
@@ -90,23 +89,21 @@ public abstract class CommonWorldTests extends TestCase {
 	}
 
 	private void primAssignTest(String sig, String[] lowers) {
-		ResolvedType[] primitives = getWorld().resolve(primitiveTypes);
+		ResolvedType[] primitives = world.resolve(primitiveTypes);
 		UnresolvedType tx = UnresolvedType.forSignature(sig);
-		ResolvedType ty = getWorld().resolve(tx, true);
+		ResolvedType ty = world.resolve(tx, true);
 		assertTrue("Couldnt find type " + tx, !ty.isMissing());
-		ResolvedType[] lowerTyArray = getWorld().resolve(UnresolvedType.forSignatures(lowers));
-		List lowerTys = new ArrayList(Arrays.asList(lowerTyArray));
+		ResolvedType[] lowerTyArray = world.resolve(UnresolvedType.forSignatures(lowers));
+		List<ResolvedType> lowerTys = new ArrayList<ResolvedType>(Arrays.asList(lowerTyArray));
 		lowerTys.add(ty);
-		Set allLowerTys = new HashSet(lowerTys);
-		Set allUpperTys = new HashSet(Arrays.asList(primitives));
+		Set<ResolvedType> allLowerTys = new HashSet<ResolvedType>(lowerTys);
+		Set<ResolvedType> allUpperTys = new HashSet<ResolvedType>(Arrays.asList(primitives));
 		allUpperTys.removeAll(allLowerTys);
 
-		for (Iterator i = allLowerTys.iterator(); i.hasNext();) {
-			ResolvedType other = (ResolvedType) i.next();
+		for (ResolvedType other : allLowerTys) {
 			isAssignableFromTest(ty, other, true);
 		}
-		for (Iterator i = allUpperTys.iterator(); i.hasNext();) {
-			ResolvedType other = (ResolvedType) i.next();
+		for (ResolvedType other : allUpperTys) {
 			isAssignableFromTest(ty, other, false);
 		}
 	}
@@ -116,7 +113,7 @@ public abstract class CommonWorldTests extends TestCase {
 		for (int i = 0, len = primitives.length; i < len; i++) {
 			ResolvedType ty = primitives[i];
 			UnresolvedType tx = UnresolvedType.forSignature("[" + ty.getSignature());
-			ResolvedType aty = getWorld().resolve(tx, true);
+			ResolvedType aty = world.resolve(tx, true);
 			assertTrue("Couldnt find type " + tx, !aty.isMissing());
 			modifiersTest(aty, Modifier.PUBLIC | Modifier.FINAL);
 			fieldsTest(aty, ResolvedMember.NONE);
@@ -150,7 +147,7 @@ public abstract class CommonWorldTests extends TestCase {
 		for (int i = 0, len = primitives.length; i < len; i++) {
 			ResolvedType ty = primitives[i];
 			UnresolvedType tx = UnresolvedType.forSignature("[[" + ty.getSignature());
-			ResolvedType aty = getWorld().resolve(tx, true);
+			ResolvedType aty = world.resolve(tx, true);
 			assertTrue("Couldnt find type " + tx, !aty.isMissing());
 			modifiersTest(aty, Modifier.PUBLIC | Modifier.FINAL);
 			fieldsTest(aty, ResolvedMember.NONE);
@@ -243,12 +240,15 @@ public abstract class CommonWorldTests extends TestCase {
 	}
 
 	protected void isCoerceableFromTest(UnresolvedType ty0, UnresolvedType ty1, boolean x) {
-		assertEquals(ty0 + " is coerceable from " + ty1, x, ty0.resolve(world).isCoerceableFrom(ty1.resolve(world)));
-		assertEquals(ty1 + " is coerceable from " + ty0, x, ty1.resolve(world).isCoerceableFrom(ty0.resolve(world)));
+		assertEquals(ty0 + " is coerceable from " + ty1, ty0.resolve(world).isCoerceableFrom(ty1.resolve(world)), x);
+		assertEquals(ty1 + " is coerceable from " + ty0, ty1.resolve(world).isCoerceableFrom(ty0.resolve(world)), x);
 	}
 
 	protected void isAssignableFromTest(UnresolvedType ty0, UnresolvedType ty1, boolean x) {
-		assertEquals(ty0 + " is assignable from " + ty1, x, ty0.resolve(world).isAssignableFrom(ty1.resolve(world)));
+		ResolvedType rty0 = ty0.resolve(world);
+		ResolvedType rty1 = ty1.resolve(world);
+		boolean result = rty0.isAssignableFrom(rty1);
+		assertEquals(ty0 + " is assignable from " + ty1, result, x);
 	}
 
 	// ---- tests for parts of ResolvedMethod objects

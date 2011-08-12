@@ -14,6 +14,7 @@ package org.aspectj.weaver.reflect;
 import junit.framework.TestCase;
 
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
 public class ReflectionWorldSpecificTest extends TestCase {
@@ -34,8 +35,8 @@ public class ReflectionWorldSpecificTest extends TestCase {
 
 	public void testPrimitiveTypes() {
 		IReflectionWorld world = new ReflectionWorld(true, getClass().getClassLoader());
-		assertEquals("int", ResolvedType.INT, world.resolve(int.class));
-		assertEquals("void", ResolvedType.VOID, world.resolve(void.class));
+		assertEquals("int", UnresolvedType.INT, world.resolve(int.class));
+		assertEquals("void", UnresolvedType.VOID, world.resolve(void.class));
 	}
 
 }
