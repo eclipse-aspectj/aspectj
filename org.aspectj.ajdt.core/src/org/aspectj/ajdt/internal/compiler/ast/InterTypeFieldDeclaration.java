@@ -109,8 +109,8 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		ResolvedMember sig = munger.getSignature();
 		UnresolvedType aspectType = world.fromBinding(upperScope.referenceContext.binding);
 
-		if (sig.getReturnType() == ResolvedType.VOID
-				|| (sig.getReturnType().isArray() && (sig.getReturnType().getComponentType() == ResolvedType.VOID))) {
+		if (sig.getReturnType().equals(UnresolvedType.VOID)
+				|| (sig.getReturnType().isArray() && (sig.getReturnType().getComponentType().equals(UnresolvedType.VOID)))) {
 			upperScope.problemReporter().signalError(sourceStart, sourceEnd, "field type can not be void");
 		}
 
@@ -166,28 +166,29 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		if (initialization == null) {
 			this.statements = new Statement[] { new ReturnStatement(null, 0, 0), };
 		} else if (!onTypeBinding.isInterface()) {
-			MethodBinding writeMethod = world.makeMethodBinding(AjcMemberMaker.interFieldSetDispatcher(sig, aspectType), munger
-					.getTypeVariableAliases());
+			MethodBinding writeMethod = world.makeMethodBinding(AjcMemberMaker.interFieldSetDispatcher(sig, aspectType),
+					munger.getTypeVariableAliases());
 			// For the body of an intertype field initalizer, generate a call to the inter field set dispatcher
 			// method as that casts the shadow of a field set join point.
 			if (Modifier.isStatic(declaredModifiers)) {
-				this.statements = new Statement[] { new KnownMessageSend(writeMethod, AstUtil
-						.makeNameReference(writeMethod.declaringClass), new Expression[] { initialization }), };
+				this.statements = new Statement[] { new KnownMessageSend(writeMethod,
+						AstUtil.makeNameReference(writeMethod.declaringClass), new Expression[] { initialization }), };
 			} else {
-				this.statements = new Statement[] { new KnownMessageSend(writeMethod, AstUtil
-						.makeNameReference(writeMethod.declaringClass), new Expression[] {
-						AstUtil.makeLocalVariableReference(arguments[0].binding), initialization }), };
+				this.statements = new Statement[] { new KnownMessageSend(writeMethod,
+						AstUtil.makeNameReference(writeMethod.declaringClass), new Expression[] {
+								AstUtil.makeLocalVariableReference(arguments[0].binding), initialization }), };
 			}
 		} else {
 			// XXX something is broken about this logic. Can we write to static interface fields?
-			MethodBinding writeMethod = world.makeMethodBinding(AjcMemberMaker.interFieldInterfaceSetter(sig, sig
-					.getDeclaringType().resolve(world.getWorld()), aspectType), munger.getTypeVariableAliases());
+			MethodBinding writeMethod = world.makeMethodBinding(
+					AjcMemberMaker.interFieldInterfaceSetter(sig, sig.getDeclaringType().resolve(world.getWorld()), aspectType),
+					munger.getTypeVariableAliases());
 			if (Modifier.isStatic(declaredModifiers)) {
-				this.statements = new Statement[] { new KnownMessageSend(writeMethod, AstUtil
-						.makeNameReference(writeMethod.declaringClass), new Expression[] { initialization }), };
+				this.statements = new Statement[] { new KnownMessageSend(writeMethod,
+						AstUtil.makeNameReference(writeMethod.declaringClass), new Expression[] { initialization }), };
 			} else {
-				this.statements = new Statement[] { new KnownMessageSend(writeMethod, AstUtil
-						.makeLocalVariableReference(arguments[0].binding), new Expression[] { initialization }), };
+				this.statements = new Statement[] { new KnownMessageSend(writeMethod,
+						AstUtil.makeLocalVariableReference(arguments[0].binding), new Expression[] { initialization }), };
 			}
 		}
 
@@ -314,16 +315,16 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 			ClassFile classFile, boolean isGetter) {
 		MethodBinding binding;
 		if (isGetter) {
-			binding = world.makeMethodBinding(AjcMemberMaker.interFieldGetDispatcher(sig, aspectType), munger
-					.getTypeVariableAliases(), munger.getSignature().getDeclaringType());
+			binding = world.makeMethodBinding(AjcMemberMaker.interFieldGetDispatcher(sig, aspectType),
+					munger.getTypeVariableAliases(), munger.getSignature().getDeclaringType());
 		} else {
-			binding = world.makeMethodBinding(AjcMemberMaker.interFieldSetDispatcher(sig, aspectType), munger
-					.getTypeVariableAliases(), munger.getSignature().getDeclaringType());
+			binding = world.makeMethodBinding(AjcMemberMaker.interFieldSetDispatcher(sig, aspectType),
+					munger.getTypeVariableAliases(), munger.getSignature().getDeclaringType());
 		}
 		classFile.generateMethodInfoHeader(binding);
 		int methodAttributeOffset = classFile.contentsOffset;
-		int attributeNumber = classFile.generateMethodInfoAttribute(binding, false, makeEffectiveSignatureAttribute(sig,
-				isGetter ? Shadow.FieldGet : Shadow.FieldSet, false));
+		int attributeNumber = classFile.generateMethodInfoAttribute(binding, false,
+				makeEffectiveSignatureAttribute(sig, isGetter ? Shadow.FieldGet : Shadow.FieldSet, false));
 		int codeAttributeOffset = classFile.contentsOffset;
 		classFile.generateCodeAttributeHeader();
 		CodeStream codeStream = classFile.codeStream;
@@ -331,7 +332,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 
 		NewFieldTypeMunger fieldMunger = (NewFieldTypeMunger) munger;
 
-        // Force use of version 1 if there is a field with that name on the type already
+		// Force use of version 1 if there is a field with that name on the type already
 		if (world.getItdVersion() == 1) {
 			fieldMunger.version = NewFieldTypeMunger.VersionOne;
 		} else {
@@ -346,24 +347,27 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 			}
 		}
 
-		FieldBinding classField = world.makeFieldBinding(AjcMemberMaker.interFieldClassField(sig, aspectType,
-				fieldMunger.version == NewFieldTypeMunger.VersionTwo), munger.getTypeVariableAliases());
+		FieldBinding classField = world.makeFieldBinding(
+				AjcMemberMaker.interFieldClassField(sig, aspectType, fieldMunger.version == NewFieldTypeMunger.VersionTwo),
+				munger.getTypeVariableAliases());
 
 		codeStream.initializeMaxLocals(binding);
 		if (isGetter) {
 			if (onTypeBinding.isInterface()) {
 				UnresolvedType declaringTX = sig.getDeclaringType();
 				ResolvedType declaringRTX = world.getWorld().resolve(declaringTX, munger.getSourceLocation());
-				MethodBinding readMethod = world.makeMethodBinding(AjcMemberMaker.interFieldInterfaceGetter(sig, declaringRTX,
-						aspectType), munger.getTypeVariableAliases());
+				MethodBinding readMethod = world.makeMethodBinding(
+						AjcMemberMaker.interFieldInterfaceGetter(sig, declaringRTX, aspectType), munger.getTypeVariableAliases());
 				generateInterfaceReadBody(binding, readMethod, codeStream);
 			} else {
 				generateClassReadBody(binding, classField, codeStream);
 			}
 		} else {
 			if (onTypeBinding.isInterface()) {
-				MethodBinding writeMethod = world.makeMethodBinding(AjcMemberMaker.interFieldInterfaceSetter(sig, world.getWorld()
-						.resolve(sig.getDeclaringType(), munger.getSourceLocation()), aspectType), munger.getTypeVariableAliases());
+				MethodBinding writeMethod = world.makeMethodBinding(
+						AjcMemberMaker.interFieldInterfaceSetter(sig,
+								world.getWorld().resolve(sig.getDeclaringType(), munger.getSourceLocation()), aspectType),
+						munger.getTypeVariableAliases());
 				generateInterfaceWriteBody(binding, writeMethod, codeStream);
 			} else {
 				generateClassWriteBody(binding, classField, codeStream);

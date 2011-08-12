@@ -40,6 +40,7 @@ public class ThisJoinPointVisitor extends ASTVisitor {
 	boolean needsDynamic = false;
 	boolean needsStatic = false;
 	boolean needsStaticEnclosing = false;
+	boolean needsThisAspectInstance = false;
 	boolean hasEffectivelyStaticRef = false;
 	boolean hasConstantReference = false;
 	boolean constantReferenceValue = false; // only has valid value when hasConstantReference is true
@@ -47,18 +48,25 @@ public class ThisJoinPointVisitor extends ASTVisitor {
 	LocalVariableBinding thisJoinPointDec;
 	LocalVariableBinding thisJoinPointStaticPartDec;
 	LocalVariableBinding thisEnclosingJoinPointStaticPartDec;
+	LocalVariableBinding thisAspectInstanceDec;
 
 	LocalVariableBinding thisJoinPointDecLocal;
 	LocalVariableBinding thisJoinPointStaticPartDecLocal;
 	LocalVariableBinding thisEnclosingJoinPointStaticPartDecLocal;
+	LocalVariableBinding thisAspectInstanceDecLocal;
 
 	boolean replaceEffectivelyStaticRefs = false;
+
+	boolean isIf = true;
 
 	AbstractMethodDeclaration method;
 
 	ThisJoinPointVisitor(AbstractMethodDeclaration method) {
 		this.method = method;
-		int index = method.arguments.length - 3;
+		if (method instanceof AdviceDeclaration) {
+			isIf = false;
+		}
+		int index = method.arguments.length - 3 - (isIf ? 1 : 0);
 
 		thisJoinPointStaticPartDecLocal = method.scope.locals[index];
 		thisJoinPointStaticPartDec = method.arguments[index++].binding;
@@ -66,6 +74,10 @@ public class ThisJoinPointVisitor extends ASTVisitor {
 		thisJoinPointDec = method.arguments[index++].binding;
 		thisEnclosingJoinPointStaticPartDecLocal = method.scope.locals[index];
 		thisEnclosingJoinPointStaticPartDec = method.arguments[index++].binding;
+		if (isIf) {
+			thisAspectInstanceDecLocal = method.scope.locals[index];
+			thisAspectInstanceDec = method.arguments[index++].binding;
+		}
 	}
 
 	public void computeJoinPointParams() {
@@ -100,6 +112,8 @@ public class ThisJoinPointVisitor extends ASTVisitor {
 			needsStatic = true;
 		} else if (isRef(ref, thisEnclosingJoinPointStaticPartDec)) {
 			needsStaticEnclosing = true;
+		} else if (isIf && isRef(ref, thisAspectInstanceDec)) {
+			needsThisAspectInstance = true;
 		} else if (ref.constant != null && ref.constant != Constant.NotAConstant) {
 			if (ref.constant instanceof BooleanConstant) {
 				hasConstantReference = true;
@@ -196,7 +210,16 @@ public class ThisJoinPointVisitor extends ASTVisitor {
 		this.computeJoinPointParams();
 		MethodBinding binding = method.binding;
 
-		int index = binding.parameters.length - 3;
+		int index = binding.parameters.length - 3 - (isIf ? 1 : 0);
+
+		if (isIf) {
+			if (needsThisAspectInstance) {
+				extraArgumentFlags |= Advice.ThisAspectInstance;
+			} else {
+				removeParameter(index + 3);
+			}
+		}
+
 		if (needsStaticEnclosing) {
 			extraArgumentFlags |= Advice.ThisEnclosingJoinPointStaticPart;
 		} else {
@@ -216,6 +239,10 @@ public class ThisJoinPointVisitor extends ASTVisitor {
 		}
 
 		return extraArgumentFlags;
+	}
+
+	public boolean usedThisAspectInstance() {
+		return needsThisAspectInstance;
 	}
 
 	private void removeParameter(int indexToRemove) {

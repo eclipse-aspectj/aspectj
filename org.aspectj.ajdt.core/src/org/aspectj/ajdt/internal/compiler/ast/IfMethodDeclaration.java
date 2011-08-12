@@ -17,11 +17,13 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMemberImpl;
-import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.patterns.IfPointcut;
+import org.aspectj.weaver.patterns.PerClause;
 
 public class IfMethodDeclaration extends AjMethodDeclaration {
 	IfPointcut ifPointcut;
@@ -39,7 +41,6 @@ public class IfMethodDeclaration extends AjMethodDeclaration {
 		return classFile.generateMethodInfoAttribute(binding, false, AstUtil.getAjSyntheticAttribute());
 	}
 
-	// private static class TrueFalseVisitor extends astvi
 	public void resolveStatements() {
 		super.resolveStatements();
 		if (binding != null) {
@@ -61,7 +62,21 @@ public class IfMethodDeclaration extends AjMethodDeclaration {
 			// XXX this is where we should remove unavailable args if we're in a cflow
 			EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(scope);
 			ifPointcut.testMethod = new ResolvedMemberImpl(Member.METHOD, factory.fromBinding(binding.declaringClass),
-					this.modifiers, ResolvedType.BOOLEAN, new String(this.selector), factory.fromBindings(this.binding.parameters));
+					this.modifiers, UnresolvedType.BOOLEAN, new String(this.selector),
+					factory.fromBindings(this.binding.parameters));
+			if (tjp.needsThisAspectInstance && scope.parent instanceof ClassScope) { // really should be
+				ClassScope o = (ClassScope) scope.parent;
+				if (o.referenceContext instanceof AspectDeclaration) { // really should be
+					AspectDeclaration aspectDecl = (AspectDeclaration) o.referenceContext;
+					if (aspectDecl.perClause != null && aspectDecl.perClause.getKind() != PerClause.SINGLETON) {
+						scope.problemReporter()
+								.signalError(sourceStart, sourceEnd,
+										"thisAspectInstance can only be used inside an if() clause for singleton aspects (compiler limitation)");
+						ignoreFurtherInvestigation = true;
+						return;
+					}
+				}
+			}
 		}
 	}
 }

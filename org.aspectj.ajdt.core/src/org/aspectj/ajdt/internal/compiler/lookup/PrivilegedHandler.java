@@ -115,7 +115,7 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 
 	public void notePrivilegedTypeAccess(ReferenceBinding type, ASTNode location) {
 		ResolvedMember key = new ResolvedMemberImpl(Member.STATIC_INITIALIZATION, inAspect.factory.fromEclipse(type), 0,
-				ResolvedType.VOID, "", UnresolvedType.NONE);
+				UnresolvedType.VOID, "", UnresolvedType.NONE);
 
 		checkWeaveAccess(key.getDeclaringType(), location);
 		accessors.put(key, key);

@@ -324,7 +324,7 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 			((NewConstructorTypeMunger) munger).setExplicitConstructor(world.makeResolvedMember(explicitConstructor));
 		} else {
 			((NewConstructorTypeMunger) munger).setExplicitConstructor(new ResolvedMemberImpl(Member.CONSTRUCTOR, world
-					.fromBinding(onTypeBinding.superclass()), 0, ResolvedType.VOID, "<init>", UnresolvedType.NONE));
+					.fromBinding(onTypeBinding.superclass()), 0, UnresolvedType.VOID, "<init>", UnresolvedType.NONE));
 		}
 		return new AjAttribute.TypeMunger(munger);
 	}

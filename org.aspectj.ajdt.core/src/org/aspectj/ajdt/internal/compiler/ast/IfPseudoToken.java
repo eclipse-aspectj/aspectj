@@ -77,12 +77,13 @@ public class IfPseudoToken extends PseudoToken {
 		if (pointcut == null)
 			return;
 
-		testMethod = makeMethod(enclosingDec.compilationResult, enclosingDec);
+		testMethod = makeIfMethod(enclosingDec.compilationResult, enclosingDec, typeDec);
 		AstUtil.addMethodDeclaration(typeDec, testMethod);
 	}
 
 	// XXX todo: make sure that errors in Arguments only get displayed once
-	private MethodDeclaration makeMethod(CompilationResult result, MethodDeclaration enclosingDec) {
+	private MethodDeclaration makeIfMethod(CompilationResult result, MethodDeclaration enclosingDec,
+			TypeDeclaration containingTypeDec) {
 		MethodDeclaration ret = new IfMethodDeclaration(result, pointcut);
 		ret.modifiers = ClassFileConstants.AccStatic | ClassFileConstants.AccFinal | ClassFileConstants.AccPublic;
 		ret.returnType = AstUtil.makeTypeReference(TypeBinding.BOOLEAN);
@@ -107,12 +108,12 @@ public class IfPseudoToken extends PseudoToken {
 		// }
 		// hashcode of expression
 		ret.selector = ifSelector.toString().toCharArray();
-		ret.arguments = makeArguments(enclosingDec);
+		ret.arguments = makeArguments(enclosingDec, containingTypeDec);
 		ret.statements = new Statement[] { new ReturnStatement(expr, expr.sourceStart, expr.sourceEnd) };
 		return ret;
 	}
 
-	private Argument[] makeArguments(MethodDeclaration enclosingDec) {
+	private Argument[] makeArguments(MethodDeclaration enclosingDec, TypeDeclaration containingTypeDec) {
 		Argument[] baseArguments = enclosingDec.arguments;
 		int len = baseArguments.length;
 		if (enclosingDec instanceof AdviceDeclaration) {
@@ -124,7 +125,7 @@ public class IfPseudoToken extends PseudoToken {
 			Argument a = baseArguments[i];
 			ret[i] = new Argument(a.name, AstUtil.makeLongPos(a.sourceStart, a.sourceEnd), a.type, Modifier.FINAL);
 		}
-		ret = AdviceDeclaration.addTjpArguments(ret);
+		ret = AdviceDeclaration.addTjpArguments(ret, containingTypeDec);
 
 		return ret;
 	}

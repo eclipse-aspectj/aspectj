@@ -639,31 +639,31 @@ public class EclipseFactory {
 
 	private TypeBinding makeTypeBinding1(UnresolvedType typeX) {
 		if (typeX.isPrimitiveType()) {
-			if (typeX == ResolvedType.BOOLEAN) {
+			if (typeX.equals(UnresolvedType.BOOLEAN)) {
 				return TypeBinding.BOOLEAN;
 			}
-			if (typeX == ResolvedType.BYTE) {
+			if (typeX.equals(UnresolvedType.BYTE)) {
 				return TypeBinding.BYTE;
 			}
-			if (typeX == ResolvedType.CHAR) {
+			if (typeX.equals(UnresolvedType.CHAR)) {
 				return TypeBinding.CHAR;
 			}
-			if (typeX == ResolvedType.DOUBLE) {
+			if (typeX.equals(UnresolvedType.DOUBLE)) {
 				return TypeBinding.DOUBLE;
 			}
-			if (typeX == ResolvedType.FLOAT) {
+			if (typeX.equals(UnresolvedType.FLOAT)) {
 				return TypeBinding.FLOAT;
 			}
-			if (typeX == ResolvedType.INT) {
+			if (typeX.equals(UnresolvedType.INT)) {
 				return TypeBinding.INT;
 			}
-			if (typeX == ResolvedType.LONG) {
+			if (typeX.equals(UnresolvedType.LONG)) {
 				return TypeBinding.LONG;
 			}
-			if (typeX == ResolvedType.SHORT) {
+			if (typeX.equals(UnresolvedType.SHORT)) {
 				return TypeBinding.SHORT;
 			}
-			if (typeX == ResolvedType.VOID) {
+			if (typeX.equals(UnresolvedType.VOID)) {
 				return TypeBinding.VOID;
 			}
 			throw new RuntimeException("weird primitive type " + typeX);

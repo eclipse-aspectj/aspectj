@@ -27,6 +27,8 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
@@ -370,15 +372,25 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 	}
 
 	// called by IfPseudoToken
-	public static Argument[] addTjpArguments(Argument[] arguments) {
+	public static Argument[] addTjpArguments(Argument[] arguments, TypeDeclaration containingTypeDec) {
 		int index = arguments.length;
-		arguments = extendArgumentsLength(arguments, 3);
+		arguments = extendArgumentsLength(arguments, 4);
 
 		arguments[index++] = makeFinalArgument("thisJoinPointStaticPart", AjTypeConstants.getJoinPointStaticPartType());
 		arguments[index++] = makeFinalArgument("thisJoinPoint", AjTypeConstants.getJoinPointType());
 		arguments[index++] = makeFinalArgument("thisEnclosingJoinPointStaticPart", AjTypeConstants.getJoinPointStaticPartType());
+		arguments[index++] = makeFinalArgument("thisAspectInstance", toReference(containingTypeDec.name));
 
 		return arguments;
+	}
+
+	private static TypeReference toReference(char[] typename) {
+		if (CharOperation.contains('.', typename)) {
+			char[][] compoundName = CharOperation.splitOn('.', typename);
+			return new QualifiedTypeReference(compoundName, new long[compoundName.length]);
+		} else {
+			return new SingleTypeReference(typename, 0);
+		}
 	}
 
 	private static Argument makeFinalArgument(String name, TypeReference typeRef) {
@@ -415,13 +427,13 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 	// };
 	// };
 	//		s += ")"; //$NON-NLS-1$
-	//		
+	//
 	// if (extraArgument != null) {
 	// s += "(" + extraArgument.toString(0) + ")";
 	// }
-	//		
-	//		
-	//		
+	//
+	//
+	//
 	// if (thrownExceptions != null) {
 	//			s += " throws "; //$NON-NLS-1$
 	// for (int i = 0; i < thrownExceptions.length; i++) {
@@ -430,7 +442,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 	//					s = s + ", "; //$NON-NLS-1$
 	// };
 	// };
-	//		
+	//
 	// s += ": ";
 	// if (pointcutDesignator != null) {
 	// s += pointcutDesignator.toString(0);
