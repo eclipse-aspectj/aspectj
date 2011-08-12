@@ -301,7 +301,9 @@ public class AjdeCoreBuildManager {
 		Map jom = compilerConfig.getJavaOptionsMap();
 		if (jom != null) {
 			String version = (String) jom.get(CompilerOptions.OPTION_Compliance);
-			if (version != null && (version.equals(CompilerOptions.VERSION_1_5) || version.equals(CompilerOptions.VERSION_1_6))) {
+			if (version != null
+					&& (version.equals(CompilerOptions.VERSION_1_5) || version.equals(CompilerOptions.VERSION_1_6) || version
+							.equals(CompilerOptions.VERSION_1_7))) {
 				config.setBehaveInJava5Way(true);
 			}
 			config.getOptions().set(jom);
