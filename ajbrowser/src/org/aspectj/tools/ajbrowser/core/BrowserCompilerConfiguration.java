@@ -82,7 +82,7 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 		return null;
 	}
 
-	public Set getAspectPath() {
+	public Set<File> getAspectPath() {
 		// unimplemented in AjBrowser
 		return null;
 	}
