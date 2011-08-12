@@ -61,7 +61,7 @@ public class BrowserManager {
 	private UserPreferencesAdapter preferencesAdapter;
 	private static TopFrame topFrame = null;
 
-	private List configFiles = new ArrayList();
+	private List<String> configFiles = new ArrayList<String>();
 	private JavaBuildOptions javaBuildOptions;
 
 	public static BrowserManager getDefault() {
@@ -138,8 +138,11 @@ public class BrowserManager {
 	}
 
 	public void resetEditor() {
-		BrowserManager.getDefault().getRootFrame().setSize(BrowserManager.getDefault().getRootFrame().getWidth() + 1,
-				BrowserManager.getDefault().getRootFrame().getHeight() + 1);
+		BrowserManager
+				.getDefault()
+				.getRootFrame()
+				.setSize(BrowserManager.getDefault().getRootFrame().getWidth() + 1,
+						BrowserManager.getDefault().getRootFrame().getHeight() + 1);
 		BrowserManager.getDefault().getRootFrame().doLayout();
 		BrowserManager.getDefault().getRootFrame().repaint();
 	}
@@ -178,8 +181,8 @@ public class BrowserManager {
 		}
 	}
 
-	private List getConfigFilesList(String[] configFiles) {
-		List configs = new ArrayList();
+	private List<String> getConfigFilesList(String[] configFiles) {
+		List<String> configs = new ArrayList<String>();
 		for (int i = 0; i < configFiles.length; i++) {
 			if (configFiles[i].endsWith(BuildConfigManager.CONFIG_FILE_SUFFIX)) {
 				configs.add(configFiles[i]);
