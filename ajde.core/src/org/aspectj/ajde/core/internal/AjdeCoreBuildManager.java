@@ -167,7 +167,7 @@ public class AjdeCoreBuildManager {
 				+ compilerConfig.getNonStandardOptions() + "\n-> javaoptions:" + formatMap(compilerConfig.getJavaOptionsMap());
 	}
 
-	private String formatCollection(Collection options) {
+	private String formatCollection(Collection<?> options) {
 		if (options == null) {
 			return "<default>";
 		}
@@ -176,7 +176,7 @@ public class AjdeCoreBuildManager {
 		}
 
 		StringBuffer formattedOptions = new StringBuffer();
-		Iterator it = options.iterator();
+		Iterator<?> it = options.iterator();
 		while (it.hasNext()) {
 			String o = it.next().toString();
 			if (formattedOptions.length() > 0) {
@@ -222,11 +222,11 @@ public class AjdeCoreBuildManager {
 		if (configFile.exists() && configFile.isFile()) {
 			args = new String[] { "@" + configFile.getAbsolutePath() };
 		} else {
-			List l = compilerConfig.getProjectSourceFiles();
+			List<String> l = compilerConfig.getProjectSourceFiles();
 			if (l == null) {
 				return null;
 			}
-			List xmlfiles = compilerConfig.getProjectXmlConfigFiles();
+			List<String> xmlfiles = compilerConfig.getProjectXmlConfigFiles();
 			if (xmlfiles != null && !xmlfiles.isEmpty()) {
 				args = new String[l.size() + xmlfiles.size() + 1];
 				// TODO speedup
@@ -253,8 +253,8 @@ public class AjdeCoreBuildManager {
 		String propcp = compilerConfig.getClasspath();
 		if (propcp != null && propcp.length() != 0) {
 			StringTokenizer st = new StringTokenizer(propcp, File.pathSeparator);
-			List configClasspath = config.getClasspath();
-			ArrayList toAdd = new ArrayList();
+			List<String> configClasspath = config.getClasspath();
+			ArrayList<String> toAdd = new ArrayList<String>();
 			while (st.hasMoreTokens()) {
 				String entry = st.nextToken();
 				if (!configClasspath.contains(entry)) {
@@ -262,7 +262,7 @@ public class AjdeCoreBuildManager {
 				}
 			}
 			if (0 < toAdd.size()) {
-				ArrayList both = new ArrayList(configClasspath.size() + toAdd.size());
+				ArrayList<String> both = new ArrayList<String>(configClasspath.size() + toAdd.size());
 				both.addAll(configClasspath);
 				both.addAll(toAdd);
 				config.setClasspath(both);
@@ -360,7 +360,7 @@ public class AjdeCoreBuildManager {
 		// Break a string into a string array of non-standard options.
 		// Allows for one option to include a ' '. i.e. assuming it has been quoted, it
 		// won't accidentally get treated as a pair of options (can be needed for xlint props file option)
-		List tokens = new ArrayList();
+		List<String> tokens = new ArrayList<String>();
 		int ind = nonStdOptions.indexOf('\"');
 		int ind2 = nonStdOptions.indexOf('\"', ind + 1);
 		if ((ind > -1) && (ind2 > -1)) { // dont tokenize within double quotes
@@ -387,8 +387,8 @@ public class AjdeCoreBuildManager {
 	}
 
 	/** Local helper method for splitting option strings */
-	private List tokenizeString(String str) {
-		List tokens = new ArrayList();
+	private List<String> tokenizeString(String str) {
+		List<String> tokens = new ArrayList<String>();
 		StringTokenizer tok = new StringTokenizer(str);
 		while (tok.hasMoreTokens()) {
 			tokens.add(tok.nextToken());

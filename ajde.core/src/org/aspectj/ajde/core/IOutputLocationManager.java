@@ -52,7 +52,7 @@ public interface IOutputLocationManager {
 	/**
 	 * Return a list of all output locations handled by this OutputLocationManager
 	 */
-	List /* File */getAllOutputLocations();
+	List<File> getAllOutputLocations();
 
 	/**
 	 * Return the default output location (for example, <my_project>/bin). This is where classes which are on the inpath will be
@@ -72,8 +72,8 @@ public interface IOutputLocationManager {
 	/**
 	 * @return a Map<File,String> from inpath absolute paths to handle components
 	 */
-	Map getInpathMap();
-	
+	Map<File, String> getInpathMap();
+
 	/**
 	 * Callback from the compiler to indicate that a file has been removed from disk, the type of the file (if known) is also
 	 * supplied.

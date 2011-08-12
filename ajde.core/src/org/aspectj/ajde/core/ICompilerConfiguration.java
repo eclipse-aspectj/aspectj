@@ -10,6 +10,7 @@
  *******************************************************************/
 package org.aspectj.ajde.core;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,12 +44,12 @@ public interface ICompilerConfiguration extends CompilerConfigurationChangeFlags
 	/**
 	 * @return a list of those files to include in the build
 	 */
-	public List /* String */getProjectSourceFiles();
+	public List<String> getProjectSourceFiles();
 
 	/**
 	 * @return a list of those files that should be used to configure a build
 	 */
-	public List /* String */getProjectXmlConfigFiles();
+	public List<String> getProjectXmlConfigFiles();
 
 	/**
 	 * Return a subset of those files we'd get on getProjectSourceFiles() - the subset that have changed since the last build. If
@@ -74,7 +75,7 @@ public interface ICompilerConfiguration extends CompilerConfigurationChangeFlags
 	 * @return the set of input path elements for this compilation. Set members should be of the type java.io.File. An empty set or
 	 *         null is acceptable for this option. From -inpath
 	 */
-	public Set /* java.io.File */getInpath();
+	public Set<File> getInpath();
 
 	/**
 	 * @return the output jar file for the compilation results. Return null to leave classfiles unjar'd in output directory From
@@ -86,7 +87,7 @@ public interface ICompilerConfiguration extends CompilerConfigurationChangeFlags
 	 * @return the set of aspect jar files to be used for the compilation. Returning null or an empty set disables this option. Set
 	 *         members should be of type java.io.File. From -aspectpath
 	 */
-	public Set /* java.io.File */getAspectPath();
+	public Set<File> getAspectPath();
 
 	/**
 	 * Get the set of non-Java resources for this compilation. Set members should be of type java.io.File. An empty set or null is
