@@ -111,7 +111,7 @@ public class StandardShadow extends Shadow {
 		Kind kind = Shadow.StaticInitialization;
 		if (clinit == -1) {
 			Member clinitMember = new ResolvedMemberImpl(org.aspectj.weaver.Member.STATIC_INITIALIZATION, forType, Modifier.STATIC,
-					ResolvedType.VOID, "<clinit>", new UnresolvedType[0], new UnresolvedType[0]);
+					UnresolvedType.VOID, "<clinit>", new UnresolvedType[0], new UnresolvedType[0]);
 			return new StandardShadow(inWorld, kind, clinitMember, null, forType, null, withContext);
 		} else {
 			return new StandardShadow(inWorld, kind, members[clinit], null, forType, null, withContext);
@@ -145,8 +145,8 @@ public class StandardShadow extends Shadow {
 			MatchingContext withContext) {
 		Kind kind = Shadow.ExceptionHandler;
 		Shadow enclosingShadow = makeExecutionShadow(inWorld, withinCode, withContext);
-		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createHandlerMember(exceptionType, withinCode
-				.getDeclaringClass(), inWorld);
+		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createHandlerMember(exceptionType,
+				withinCode.getDeclaringClass(), inWorld);
 		ResolvedMember enclosingMember = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(withinCode, inWorld);
 		ResolvedType enclosingType = enclosingMember.getDeclaringType().resolve(inWorld);
 		return new StandardShadow(inWorld, kind, signature, enclosingShadow, enclosingType, enclosingMember, withContext);
@@ -273,31 +273,18 @@ public class StandardShadow extends Shadow {
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.Shadow#getThisJoinPointStaticPartVar()
-	 */
 	public Var getThisJoinPointStaticPartVar() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.Shadow#getThisEnclosingJoinPointStaticPartVar()
-	 */
 	public Var getThisEnclosingJoinPointStaticPartVar() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.Shadow#getKindedAnnotationVar(org.aspectj.weaver.UnresolvedType)
-	 */
+	public Var getThisAspectInstanceVar(ResolvedType aspectType) {
+		return null;
+	}
+
 	public Var getKindedAnnotationVar(UnresolvedType forAnnotationType) {
 		ResolvedType annType = forAnnotationType.resolve(world);
 		if (annotationVar.get(annType) == null) {

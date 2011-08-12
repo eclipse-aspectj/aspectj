@@ -17,7 +17,7 @@ package org.aspectj.weaver;
 public class ExposeTypeMunger extends PrivilegedAccessMunger {
 
 	public ExposeTypeMunger(UnresolvedType typeToExpose) {
-		super(new ResolvedMemberImpl(Member.STATIC_INITIALIZATION, typeToExpose, 0, ResolvedType.VOID, "<clinit>",
+		super(new ResolvedMemberImpl(Member.STATIC_INITIALIZATION, typeToExpose, 0, UnresolvedType.VOID, "<clinit>",
 				UnresolvedType.NONE), false);
 	}
 

@@ -140,7 +140,7 @@ public class TypeFactory {
 					s.append(typeParameter.getSignature());
 				}
 				s.append(">;");
-				signature = s.toString();//'P' + signature.substring(1);
+				signature = s.toString();// 'P' + signature.substring(1);
 				return new UnresolvedType(signature, signatureErasure, typeParams);
 			}
 			// can't replace above with convertSigToType - leads to stackoverflow
@@ -173,23 +173,23 @@ public class TypeFactory {
 			switch (firstChar) {
 
 			case 'V':
-				return ResolvedType.VOID;
+				return UnresolvedType.VOID;
 			case 'Z':
-				return ResolvedType.BOOLEAN;
+				return UnresolvedType.BOOLEAN;
 			case 'B':
-				return ResolvedType.BYTE;
+				return UnresolvedType.BYTE;
 			case 'C':
-				return ResolvedType.CHAR;
+				return UnresolvedType.CHAR;
 			case 'D':
-				return ResolvedType.DOUBLE;
+				return UnresolvedType.DOUBLE;
 			case 'F':
-				return ResolvedType.FLOAT;
+				return UnresolvedType.FLOAT;
 			case 'I':
-				return ResolvedType.INT;
+				return UnresolvedType.INT;
 			case 'J':
-				return ResolvedType.LONG;
+				return UnresolvedType.LONG;
 			case 'S':
-				return ResolvedType.SHORT;
+				return UnresolvedType.SHORT;
 			}
 		} else if (firstChar == '@') {
 			// missing type
@@ -238,7 +238,7 @@ public class TypeFactory {
 					s.append(typeParameter.getSignature());
 				}
 				s.append(">;");
-				signature = s.toString();//'P' + signature.substring(1);
+				signature = s.toString();// 'P' + signature.substring(1);
 				return new UnresolvedType(signature, signatureErasure, typeParams);
 			}
 

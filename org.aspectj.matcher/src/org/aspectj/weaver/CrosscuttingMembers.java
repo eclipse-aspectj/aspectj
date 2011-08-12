@@ -197,7 +197,7 @@ public class CrosscuttingMembers {
 		}
 		addTypeMunger(world.getWeavingSupport().concreteTypeMunger(new ExposeTypeMunger(typeToExpose), inAspect));
 		// ResolvedMember member = new ResolvedMemberImpl(
-		// Member.STATIC_INITIALIZATION, typeToExpose, 0, ResolvedType.VOID,
+		// Member.STATIC_INITIALIZATION, typeToExpose, 0, UnresolvedType.VOID,
 		// "<clinit>", UnresolvedType.NONE);
 		// addTypeMunger(world.concreteTypeMunger(
 		// new PrivilegedAccessMunger(member), inAspect));

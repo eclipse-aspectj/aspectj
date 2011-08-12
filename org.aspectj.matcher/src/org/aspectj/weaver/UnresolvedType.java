@@ -62,6 +62,16 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	public static final UnresolvedType JOINPOINT_STATICPART = forSignature("Lorg/aspectj/lang/JoinPoint$StaticPart;");
 	public static final UnresolvedType JOINPOINT_ENCLOSINGSTATICPART = forSignature("Lorg/aspectj/lang/JoinPoint$EnclosingStaticPart;");
 
+	public static final UnresolvedType BOOLEAN = forPrimitiveType("Z");
+	public static final UnresolvedType BYTE = forPrimitiveType("B");
+	public static final UnresolvedType CHAR = forPrimitiveType("C");
+	public static final UnresolvedType DOUBLE = forPrimitiveType("D");
+	public static final UnresolvedType FLOAT = forPrimitiveType("F");
+	public static final UnresolvedType INT = forPrimitiveType("I");
+	public static final UnresolvedType LONG = forPrimitiveType("J");
+	public static final UnresolvedType SHORT = forPrimitiveType("S");
+	public static final UnresolvedType VOID = forPrimitiveType("V");
+
 	// A type is considered missing if we have a signature for it but cannot find the delegate
 	public static final String MISSING_NAME = "@missing@";
 
@@ -196,8 +206,10 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	 * This is the size of this type as used in JVM.
 	 */
 	public int getSize() {
-		return 1;
+		return size;
 	}
+
+	private int size = 1;
 
 	/**
 	 * NOTE: Use forSignature() if you can, it'll be cheaper ! Constructs a UnresolvedType for a java language type name. For
@@ -301,6 +313,17 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		return ret;
 	}
 
+	public static UnresolvedType forPrimitiveType(String signature) {
+		UnresolvedType ret = new UnresolvedType(signature);
+		ret.typeKind = TypeKind.PRIMITIVE;
+		if (signature.equals("J") || signature.equals("D")) {
+			ret.size = 2;
+		} else if (signature.equals("V")) {
+			ret.size = 0;
+		}
+		return ret;
+	}
+
 	/**
 	 * Creates a new type array with a fresh type appended to the end.
 	 * 
@@ -360,27 +383,27 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		assert !(signature.startsWith("L") && signature.indexOf("<") != -1);
 		switch (signature.charAt(0)) {
 		case 'B':
-			return ResolvedType.BYTE;
+			return UnresolvedType.BYTE;
 		case 'C':
-			return ResolvedType.CHAR;
+			return UnresolvedType.CHAR;
 		case 'D':
-			return ResolvedType.DOUBLE;
+			return UnresolvedType.DOUBLE;
 		case 'F':
-			return ResolvedType.FLOAT;
+			return UnresolvedType.FLOAT;
 		case 'I':
-			return ResolvedType.INT;
+			return UnresolvedType.INT;
 		case 'J':
-			return ResolvedType.LONG;
+			return UnresolvedType.LONG;
 		case 'L':
 			return TypeFactory.createTypeFromSignature(signature);
 		case 'P':
 			return TypeFactory.createTypeFromSignature(signature);
 		case 'S':
-			return ResolvedType.SHORT;
+			return UnresolvedType.SHORT;
 		case 'V':
-			return ResolvedType.VOID;
+			return UnresolvedType.VOID;
 		case 'Z':
-			return ResolvedType.BOOLEAN;
+			return UnresolvedType.BOOLEAN;
 		case '[':
 			return TypeFactory.createTypeFromSignature(signature);
 		case '+':

@@ -26,6 +26,7 @@ public class ExposedState {
 	private boolean[] erroneousVars;
 	private Expr aspectInstance;
 	private UnresolvedType[] expectedVarTypes; // enables us to check that binding is occurring with the *right* types
+	private ResolvedType concreteAspect;
 
 	public ExposedState(int size) {
 		super();
@@ -104,5 +105,13 @@ public class ExposedState {
 
 	public boolean isErroneousVar(int formalIndex) {
 		return erroneousVars[formalIndex];
+	}
+
+	public void setConcreteAspect(ResolvedType concreteAspect) {
+		this.concreteAspect = concreteAspect;
+	}
+
+	public ResolvedType getConcreteAspect() {
+		return this.concreteAspect;
 	}
 }

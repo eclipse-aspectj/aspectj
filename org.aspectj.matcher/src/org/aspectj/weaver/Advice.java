@@ -152,6 +152,16 @@ public abstract class Advice extends ShadowMunger {
 			} else if (kind == AdviceKind.PerTargetEntry) {
 				return shadow.hasTarget();
 			} else if (kind == AdviceKind.PerThisEntry) {
+				// Groovy Constructors have a strange switch statement in them - this switch statement can leave us in places where
+				// the
+				// instance is not initialized (a super ctor hasn't been called yet).
+				// In these situations it isn't safe to do a perObjectBind, the instance is not initialized and cannot be passed
+				// over.
+				if (shadow.getEnclosingCodeSignature().getName().equals("<init>")) {
+					if (world.resolve(shadow.getEnclosingType()).isGroovyObject()) {
+						return false;
+					}
+				}
 				return shadow.hasThis();
 			} else if (kind == AdviceKind.Around) {
 				if (shadow.getKind() == Shadow.PreInitialization) {
@@ -170,8 +180,8 @@ public abstract class Advice extends ShadowMunger {
 				} else {
 					// System.err.println(getSignature().getReturnType() +
 					// " from " + shadow.getReturnType());
-					if (getSignature().getReturnType() == ResolvedType.VOID) {
-						if (shadow.getReturnType() != ResolvedType.VOID) {
+					if (getSignature().getReturnType().equals(UnresolvedType.VOID)) {
+						if (!shadow.getReturnType().equals(UnresolvedType.VOID)) {
 							world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.NON_VOID_RETURN, shadow),
 									getSourceLocation(), shadow.getSourceLocation());
 							return false;
@@ -351,7 +361,7 @@ public abstract class Advice extends ShadowMunger {
 				while ((baseParmCnt + 1 < parameterTypes.length)
 						&& (parameterTypes[baseParmCnt].equals(AjcMemberMaker.TYPEX_JOINPOINT)
 								|| parameterTypes[baseParmCnt].equals(AjcMemberMaker.TYPEX_STATICJOINPOINT) || parameterTypes[baseParmCnt]
-								.equals(AjcMemberMaker.TYPEX_ENCLOSINGSTATICJOINPOINT))) {
+									.equals(AjcMemberMaker.TYPEX_ENCLOSINGSTATICJOINPOINT))) {
 					baseParmCnt++;
 				}
 				return parameterTypes[baseParmCnt];
@@ -473,7 +483,10 @@ public abstract class Advice extends ShadowMunger {
 	public static final int ConstantReference = 0x10;
 	// When the above flag is set, this indicates whether it is true or false
 	public static final int ConstantValue = 0x20;
-	public static final int CanInline = 0x40;
+	// public static final int CanInline = 0x40; // didnt appear to be getting used
+	public static final int ThisAspectInstance = 0x40;
+
+	// cant use 0x80 ! the value is written out as a byte and -1 has special meaning (-1 is 0x80...)
 
 	// for testing only
 	public void setLexicalPosition(int lexicalPosition) {

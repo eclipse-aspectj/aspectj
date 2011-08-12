@@ -127,8 +127,8 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 	public static ResolvedMember createResolvedMethod(Method aMethod, World inWorld) {
 		ReflectionBasedResolvedMemberImpl ret = new ReflectionBasedResolvedMemberImpl(org.aspectj.weaver.Member.METHOD,
 				toResolvedType(aMethod.getDeclaringClass(), (IReflectionWorld) inWorld), aMethod.getModifiers(), toResolvedType(
-						aMethod.getReturnType(), (IReflectionWorld) inWorld), aMethod.getName(), toResolvedTypeArray(aMethod
-						.getParameterTypes(), inWorld), toResolvedTypeArray(aMethod.getExceptionTypes(), inWorld), aMethod);
+						aMethod.getReturnType(), (IReflectionWorld) inWorld), aMethod.getName(), toResolvedTypeArray(
+						aMethod.getParameterTypes(), inWorld), toResolvedTypeArray(aMethod.getExceptionTypes(), inWorld), aMethod);
 		if (inWorld instanceof IReflectionWorld) {
 			ret.setAnnotationFinder(((IReflectionWorld) inWorld).getAnnotationFinder());
 		}
@@ -139,8 +139,8 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 	public static ResolvedMember createResolvedAdviceMember(Method aMethod, World inWorld) {
 		ReflectionBasedResolvedMemberImpl ret = new ReflectionBasedResolvedMemberImpl(org.aspectj.weaver.Member.ADVICE,
 				toResolvedType(aMethod.getDeclaringClass(), (IReflectionWorld) inWorld), aMethod.getModifiers(), toResolvedType(
-						aMethod.getReturnType(), (IReflectionWorld) inWorld), aMethod.getName(), toResolvedTypeArray(aMethod
-						.getParameterTypes(), inWorld), toResolvedTypeArray(aMethod.getExceptionTypes(), inWorld), aMethod);
+						aMethod.getReturnType(), (IReflectionWorld) inWorld), aMethod.getName(), toResolvedTypeArray(
+						aMethod.getParameterTypes(), inWorld), toResolvedTypeArray(aMethod.getExceptionTypes(), inWorld), aMethod);
 		if (inWorld instanceof IReflectionWorld) {
 			ret.setAnnotationFinder(((IReflectionWorld) inWorld).getAnnotationFinder());
 		}
@@ -150,7 +150,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 
 	public static ResolvedMember createStaticInitMember(Class forType, World inWorld) {
 		return new ResolvedMemberImpl(org.aspectj.weaver.Member.STATIC_INITIALIZATION, toResolvedType(forType,
-				(IReflectionWorld) inWorld), Modifier.STATIC, ResolvedType.VOID, "<clinit>", new UnresolvedType[0],
+				(IReflectionWorld) inWorld), Modifier.STATIC, UnresolvedType.VOID, "<clinit>", new UnresolvedType[0],
 				new UnresolvedType[0]);
 	}
 
@@ -158,9 +158,9 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 		ReflectionBasedResolvedMemberImpl ret = new ReflectionBasedResolvedMemberImpl(org.aspectj.weaver.Member.CONSTRUCTOR,
 				toResolvedType(aConstructor.getDeclaringClass(), (IReflectionWorld) inWorld), aConstructor.getModifiers(),
 				// to return what BCEL returns, the return type for ctor is void
-				ResolvedType.VOID,// toResolvedType(aConstructor.getDeclaringClass(),(IReflectionWorld)inWorld),
-				"<init>", toResolvedTypeArray(aConstructor.getParameterTypes(), inWorld), toResolvedTypeArray(aConstructor
-						.getExceptionTypes(), inWorld), aConstructor);
+				UnresolvedType.VOID,// toResolvedType(aConstructor.getDeclaringClass(),(IReflectionWorld)inWorld),
+				"<init>", toResolvedTypeArray(aConstructor.getParameterTypes(), inWorld), toResolvedTypeArray(
+						aConstructor.getExceptionTypes(), inWorld), aConstructor);
 		if (inWorld instanceof IReflectionWorld) {
 			ret.setAnnotationFinder(((IReflectionWorld) inWorld).getAnnotationFinder());
 		}

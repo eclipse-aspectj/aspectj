@@ -160,12 +160,13 @@ public abstract class Shadow {
 				dims += (s.charAt(pos) == '[' ? 1 : 0);
 			}
 		}
+		ResolvedType intType = UnresolvedType.INT.resolve(this.getIWorld());
 		if (dims == 1) {
-			return new ResolvedType[] { ResolvedType.INT };
+			return new ResolvedType[] { intType };
 		}
 		ResolvedType[] someInts = new ResolvedType[dims];
 		for (int i = 0; i < dims; i++) {
-			someInts[i] = ResolvedType.INT;
+			someInts[i] = intType;
 		}
 		return someInts;
 	}
@@ -219,6 +220,8 @@ public abstract class Shadow {
 	public abstract Var getThisJoinPointStaticPartVar();
 
 	public abstract Var getThisEnclosingJoinPointStaticPartVar();
+
+	public abstract Var getThisAspectInstanceVar(ResolvedType aspectType);
 
 	// annotation variables
 	public abstract Var getKindedAnnotationVar(UnresolvedType forAnnotationType);
@@ -275,9 +278,9 @@ public abstract class Shadow {
 		if (kind == ConstructorCall) {
 			return getSignature().getDeclaringType();
 		} else if (kind == FieldSet) {
-			return ResolvedType.VOID;
+			return UnresolvedType.VOID;
 		} else if (kind == SynchronizationLock || kind == SynchronizationUnlock) {
-			return ResolvedType.VOID;
+			return UnresolvedType.VOID;
 		}
 		return getResolvedSignature().getGenericReturnType();
 	}
@@ -550,7 +553,7 @@ public abstract class Shadow {
 
 		// Bunch of code to work out whether to report xlints for advice that isn't ordered at this Joinpoint
 		possiblyReportUnorderedAdvice(sorted);
- 
+
 		if (sorted == null) {
 			// this means that we have circular dependencies
 			for (ShadowMunger m : mungers) {
@@ -625,7 +628,7 @@ public abstract class Shadow {
 	/** Actually implement the (non-empty) mungers associated with this shadow */
 	private void implementMungers() {
 		World world = getIWorld();
-		for (ShadowMunger munger: mungers) {
+		for (ShadowMunger munger : mungers) {
 			if (munger.implementOn(this)) {
 				world.reportMatch(munger, this);
 			}

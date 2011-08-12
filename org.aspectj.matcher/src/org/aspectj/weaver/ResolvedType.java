@@ -57,6 +57,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	private static int MungersAnalyzed = 0x0004;
 	private static int HasParentMunger = 0x0008;
 	private static int TypeHierarchyCompleteBit = 0x0010;
+	private static int GroovyObjectInitialized = 0x0020;
+	private static int IsGroovyObject = 0x0040;
 
 	protected ResolvedType(String signature, World world) {
 		super(signature);
@@ -66,6 +68,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	protected ResolvedType(String signature, String signatureErasure, World world) {
 		super(signature, signatureErasure);
 		this.world = world;
+	}
+
+	public int getSize() {
+		return 1;
 	}
 
 	/**
@@ -1014,32 +1020,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public static final ResolvedType[] NONE = new ResolvedType[0];
 	public static final ResolvedType[] EMPTY_ARRAY = NONE;
 
-	public static final Primitive BYTE = new Primitive("B", 1, 0);
-	public static final Primitive CHAR = new Primitive("C", 1, 1);
-	public static final Primitive DOUBLE = new Primitive("D", 2, 2);
-	public static final Primitive FLOAT = new Primitive("F", 1, 3);
-	public static final Primitive INT = new Primitive("I", 1, 4);
-	public static final Primitive LONG = new Primitive("J", 2, 5);
-	public static final Primitive SHORT = new Primitive("S", 1, 6);
-	public static final Primitive VOID = new Primitive("V", 0, 8);
-	public static final Primitive BOOLEAN = new Primitive("Z", 1, 7);
 	public static final Missing MISSING = new Missing();
-
-	/** Reset the static state in the primitive types */
-	// OPTIMIZE I think we have a bug here because primitives are static and the
-	// world they use may vary (or may even be
-	// null)
-	public static void resetPrimitives() {
-		BYTE.world = null;
-		CHAR.world = null;
-		DOUBLE.world = null;
-		FLOAT.world = null;
-		INT.world = null;
-		LONG.world = null;
-		SHORT.world = null;
-		VOID.world = null;
-		BOOLEAN.world = null;
-	}
 
 	// ---- types
 	public static ResolvedType makeArray(ResolvedType type, int dim) {
@@ -1113,6 +1094,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 		@Override
 		public ResolvedType resolve(World world) {
+			if (this.world != world) {
+				throw new IllegalStateException();
+			}
 			this.world = world;
 			return super.resolve(world);
 		}
@@ -2136,12 +2120,16 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	private void interTypeConflictError(ConcreteTypeMunger m1, ConcreteTypeMunger m2) {
 		// XXX this works only if we ignore separate compilation issues
 		// XXX dual errors possible if (this instanceof BcelObjectType) return;
-
+		/*
+		 * if (m1.getMunger().getKind() == ResolvedTypeMunger.Field && m2.getMunger().getKind() == ResolvedTypeMunger.Field) { // if
+		 * *exactly* the same, it's ok return true; }
+		 */
 		// System.err.println("conflict at " + m2.getSourceLocation());
 		getWorld().showMessage(
 				IMessage.ERROR,
 				WeaverMessages.format(WeaverMessages.ITD_CONFLICT, m1.getAspectType().getName(), m2.getSignature(), m2
 						.getAspectType().getName()), m2.getSourceLocation(), getSourceLocation());
+		// return false;
 	}
 
 	public ResolvedMember lookupSyntheticMember(Member member) {
@@ -2159,7 +2147,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// Handling members for the new array join point
 		if (world.isJoinpointArrayConstructionEnabled() && this.isArray()) {
 			if (member.getKind() == Member.CONSTRUCTOR) {
-				ResolvedMemberImpl ret = new ResolvedMemberImpl(Member.CONSTRUCTOR, this, Modifier.PUBLIC, ResolvedType.VOID,
+				ResolvedMemberImpl ret = new ResolvedMemberImpl(Member.CONSTRUCTOR, this, Modifier.PUBLIC, UnresolvedType.VOID,
 						"<init>", world.resolve(member.getParameterTypes()));
 				// Give the parameters names - they are going to be the dimensions uses to build the array (dim0 > dimN)
 				int count = ret.getParameterTypes().length;
@@ -2776,5 +2764,32 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	public boolean isPrimitiveArray() {
 		return false;
+	}
+
+	public boolean isGroovyObject() {
+		if ((bits & GroovyObjectInitialized) == 0) {
+			ResolvedType[] intfaces = getDeclaredInterfaces();
+			boolean done = false;
+			// TODO do we need to walk more of these? (i.e. the interfaces interfaces and supertypes supertype). Check what groovy
+			// does in the case where a hierarchy is involved and there are types in between GroovyObject/GroovyObjectSupport and
+			// the type
+			if (intfaces != null) {
+				for (ResolvedType intface : intfaces) {
+					if (intface.getName().equals("groovy.lang.GroovyObject")) {
+						bits |= IsGroovyObject;
+						done = true;
+						break;
+					}
+				}
+			}
+			if (!done) {
+				// take a look at the supertype
+				if (getSuperclass().getName().equals("groovy.lang.GroovyObjectSupport")) {
+					bits |= IsGroovyObject;
+				}
+			}
+			bits |= GroovyObjectInitialized;
+		}
+		return (bits & IsGroovyObject) != 0;
 	}
 }

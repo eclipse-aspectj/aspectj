@@ -23,7 +23,7 @@ public class ResolvedPointcutDefinition extends ResolvedMemberImpl {
 
 	public ResolvedPointcutDefinition(UnresolvedType declaringType, int modifiers, String name, UnresolvedType[] parameterTypes,
 			Pointcut pointcut) {
-		this(declaringType, modifiers, name, parameterTypes, ResolvedType.VOID, pointcut);
+		this(declaringType, modifiers, name, parameterTypes, UnresolvedType.VOID, pointcut);
 	}
 
 	/**
@@ -111,16 +111,16 @@ public class ResolvedPointcutDefinition extends ResolvedMemberImpl {
 				typeMap.put(typeVariables[i].getName(), ut);
 			}
 		}
-		UnresolvedType parameterizedReturnType = parameterize(getGenericReturnType(), typeMap, isParameterized, newDeclaringType
-				.getWorld());
+		UnresolvedType parameterizedReturnType = parameterize(getGenericReturnType(), typeMap, isParameterized,
+				newDeclaringType.getWorld());
 		UnresolvedType[] parameterizedParameterTypes = new UnresolvedType[getGenericParameterTypes().length];
 		for (int i = 0; i < parameterizedParameterTypes.length; i++) {
-			parameterizedParameterTypes[i] = parameterize(getGenericParameterTypes()[i], typeMap, isParameterized, newDeclaringType
-					.getWorld());
+			parameterizedParameterTypes[i] = parameterize(getGenericParameterTypes()[i], typeMap, isParameterized,
+					newDeclaringType.getWorld());
 		}
 		ResolvedPointcutDefinition ret = new ResolvedPointcutDefinition(newDeclaringType, getModifiers(), getName(),
-				parameterizedParameterTypes, parameterizedReturnType, pointcut.parameterizeWith(typeMap, newDeclaringType
-						.getWorld()));
+				parameterizedParameterTypes, parameterizedReturnType, pointcut.parameterizeWith(typeMap,
+						newDeclaringType.getWorld()));
 		ret.setTypeVariables(getTypeVariables());
 		ret.setSourceContext(getSourceContext());
 		ret.setPosition(getStart(), getEnd());

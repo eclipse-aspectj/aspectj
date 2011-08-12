@@ -191,7 +191,7 @@ public class IfPointcut extends Pointcut {
 			}
 
 			Test ret = Literal.TRUE;
-			List args = new ArrayList();
+			List<Var> args = new ArrayList<Var>();
 
 			// code style
 			if (extraParameterFlags >= 0) {
@@ -214,6 +214,7 @@ public class IfPointcut extends Pointcut {
 				// If there are no args to sort out, don't bother with the recursive call
 				if (baseArgsCount > 0) {
 					ExposedState myState = new ExposedState(baseArgsCount);
+					myState.setConcreteAspect(state.getConcreteAspect());
 					// ??? we throw out the test that comes from this walk. All we want here
 					// is bindings for the arguments
 					residueSource.findResidue(shadow, myState);
@@ -251,6 +252,10 @@ public class IfPointcut extends Pointcut {
 				if ((extraParameterFlags & Advice.ThisEnclosingJoinPointStaticPart) != 0) {
 					args.add(shadow.getThisEnclosingJoinPointStaticPartVar());
 				}
+
+				if ((extraParameterFlags & Advice.ThisAspectInstance) != 0) {
+					args.add(shadow.getThisAspectInstanceVar(state.getConcreteAspect()));
+				}
 			} else {
 				// @style is slightly different
 				int currentStateIndex = 0;
@@ -272,16 +277,20 @@ public class IfPointcut extends Pointcut {
 							if (paramNames != null) {
 								errorParameter.append(testMethod.getParameterTypes()[i].getName()).append(" ");
 								errorParameter.append(paramNames[i]);
-								shadow.getIWorld().getMessageHandler().handleMessage(
-										MessageUtil.error("Missing binding for if() pointcut method.  Parameter " + (i + 1) + "("
-												+ errorParameter.toString()
-												+ ") must be bound - even in reference pointcuts  (compiler limitation)",
-												testMethod.getSourceLocation()));
+								shadow.getIWorld()
+										.getMessageHandler()
+										.handleMessage(
+												MessageUtil.error("Missing binding for if() pointcut method.  Parameter " + (i + 1)
+														+ "(" + errorParameter.toString()
+														+ ") must be bound - even in reference pointcuts  (compiler limitation)",
+														testMethod.getSourceLocation()));
 							} else {
-								shadow.getIWorld().getMessageHandler().handleMessage(
-										MessageUtil.error("Missing binding for if() pointcut method.  Parameter " + (i + 1)
-												+ " must be bound - even in reference pointcuts (compiler limitation)", testMethod
-												.getSourceLocation()));
+								shadow.getIWorld()
+										.getMessageHandler()
+										.handleMessage(
+												MessageUtil.error("Missing binding for if() pointcut method.  Parameter " + (i + 1)
+														+ " must be bound - even in reference pointcuts (compiler limitation)",
+														testMethod.getSourceLocation()));
 							}
 							return Literal.TRUE; // exit quickly
 						}
@@ -293,8 +302,8 @@ public class IfPointcut extends Pointcut {
 						}
 						args.add(v);
 
-						ret = Test.makeAnd(ret, Test.makeInstanceof(v, testMethod.getParameterTypes()[i]
-								.resolve(shadow.getIWorld())));
+						ret = Test.makeAnd(ret,
+								Test.makeInstanceof(v, testMethod.getParameterTypes()[i].resolve(shadow.getIWorld())));
 					}
 				}
 			}

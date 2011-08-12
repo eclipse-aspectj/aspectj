@@ -37,6 +37,7 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.context.PinpointingMessageHandler;
 import org.aspectj.util.IStructureModel;
+import org.aspectj.weaver.ResolvedType.Primitive;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
@@ -177,28 +178,32 @@ public abstract class World implements Dump.INode {
 		}
 	}
 
+	public final Primitive BYTE = new Primitive("B", 1, 0);
+	public final Primitive CHAR = new Primitive("C", 1, 1);
+	public final Primitive DOUBLE = new Primitive("D", 2, 2);
+	public final Primitive FLOAT = new Primitive("F", 1, 3);
+	public final Primitive INT = new Primitive("I", 1, 4);
+	public final Primitive LONG = new Primitive("J", 2, 5);
+	public final Primitive SHORT = new Primitive("S", 1, 6);
+	public final Primitive BOOLEAN = new Primitive("Z", 1, 7);
+	public final Primitive VOID = new Primitive("V", 0, 8);
+
 	/**
-	 * Play God. On the first day, God created the primitive types and put them in the type map.
+	 * Insert the primitives
 	 */
 	protected World() {
 		super();
-		if (trace.isTraceEnabled()) {
-			trace.enter("<init>", this);
-		}
 		// Dump.registerNode(this.getClass(), this);
-		typeMap.put("B", ResolvedType.BYTE);
-		typeMap.put("S", ResolvedType.SHORT);
-		typeMap.put("I", ResolvedType.INT);
-		typeMap.put("J", ResolvedType.LONG);
-		typeMap.put("F", ResolvedType.FLOAT);
-		typeMap.put("D", ResolvedType.DOUBLE);
-		typeMap.put("C", ResolvedType.CHAR);
-		typeMap.put("Z", ResolvedType.BOOLEAN);
-		typeMap.put("V", ResolvedType.VOID);
+		typeMap.put("B", BYTE);
+		typeMap.put("S", SHORT);
+		typeMap.put("I", INT);
+		typeMap.put("J", LONG);
+		typeMap.put("F", FLOAT);
+		typeMap.put("D", DOUBLE);
+		typeMap.put("C", CHAR);
+		typeMap.put("Z", BOOLEAN);
+		typeMap.put("V", VOID);
 		precedenceCalculator = new AspectPrecedenceCalculator(this);
-		if (trace.isTraceEnabled()) {
-			trace.exit("<init>");
-		}
 	}
 
 	/**
@@ -221,10 +226,8 @@ public abstract class World implements Dump.INode {
 	}
 
 	// ==========================================================================
-	// ===
 	// T Y P E R E S O L U T I O N
 	// ==========================================================================
-	// ===
 
 	/**
 	 * Resolve a type that we require to be present in the world
@@ -1975,7 +1978,7 @@ public abstract class World implements Dump.INode {
 	}
 
 	public static void reset() {
-		ResolvedType.resetPrimitives();
+		// ResolvedType.resetPrimitives();
 	}
 
 	/**

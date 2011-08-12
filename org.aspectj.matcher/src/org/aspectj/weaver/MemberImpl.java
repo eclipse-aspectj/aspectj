@@ -233,12 +233,12 @@ public class MemberImpl implements Member {
 	}
 
 	public static MemberImpl monitorEnter() {
-		return new MemberImpl(MONITORENTER, UnresolvedType.OBJECT, Modifier.STATIC, ResolvedType.VOID, "<lock>",
+		return new MemberImpl(MONITORENTER, UnresolvedType.OBJECT, Modifier.STATIC, UnresolvedType.VOID, "<lock>",
 				UnresolvedType.ARRAY_WITH_JUST_OBJECT);
 	}
 
 	public static MemberImpl monitorExit() {
-		return new MemberImpl(MONITOREXIT, UnresolvedType.OBJECT, Modifier.STATIC, ResolvedType.VOID, "<unlock>",
+		return new MemberImpl(MONITOREXIT, UnresolvedType.OBJECT, Modifier.STATIC, UnresolvedType.VOID, "<unlock>",
 				UnresolvedType.ARRAY_WITH_JUST_OBJECT);
 	}
 

@@ -279,14 +279,14 @@ public class KindedPointcut extends Pointcut {
 			return;
 		}
 
-		SignaturePattern nonConfusingPattern = new SignaturePattern(signature.getKind(), signature.getModifiers(), signature
-				.getReturnType(), TypePattern.ANY, signature.getName(), signature.getParameterTypes(),
+		SignaturePattern nonConfusingPattern = new SignaturePattern(signature.getKind(), signature.getModifiers(),
+				signature.getReturnType(), TypePattern.ANY, signature.getName(), signature.getParameterTypes(),
 				signature.getThrowsPattern(), signature.getAnnotationPattern());
 
 		if (nonConfusingPattern.matches(shadow.getSignature(), shadow.getIWorld(), true)) {
 			shadow.getIWorld().getLint().unmatchedSuperTypeInCall.signal(new String[] {
-					shadow.getSignature().getDeclaringType().toString(), signature.getDeclaringType().toString() }, this
-					.getSourceLocation(), new ISourceLocation[] { shadow.getSourceLocation() });
+					shadow.getSignature().getDeclaringType().toString(), signature.getDeclaringType().toString() },
+					this.getSourceLocation(), new ISourceLocation[] { shadow.getSourceLocation() });
 		}
 	}
 
@@ -384,7 +384,7 @@ public class KindedPointcut extends Pointcut {
 
 			// fields can't have a void type!
 			UnresolvedType returnType = signature.getReturnType().getExactType();
-			if (returnType == ResolvedType.VOID) {
+			if (returnType.equals(UnresolvedType.VOID)) {
 				scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.FIELDS_CANT_HAVE_VOID_TYPE),
 						getSourceLocation()));
 			}
@@ -413,8 +413,9 @@ public class KindedPointcut extends Pointcut {
 			HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
 			signature.getDeclaringType().traverse(visitor, null);
 			if (visitor.wellHasItThen/* ? */()) {
-				scope.message(MessageUtil.error(WeaverMessages
-						.format(WeaverMessages.EXECUTION_DOESNT_SUPPORT_PARAMETERIZED_DECLARING_TYPES), getSourceLocation()));
+				scope.message(MessageUtil.error(
+						WeaverMessages.format(WeaverMessages.EXECUTION_DOESNT_SUPPORT_PARAMETERIZED_DECLARING_TYPES),
+						getSourceLocation()));
 			}
 
 			visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
@@ -430,8 +431,9 @@ public class KindedPointcut extends Pointcut {
 			HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();
 			signature.getDeclaringType().traverse(visitor, null);
 			if (visitor.wellHasItThen/* ? */()) {
-				scope.message(MessageUtil.error(WeaverMessages
-						.format(WeaverMessages.CALL_DOESNT_SUPPORT_PARAMETERIZED_DECLARING_TYPES), getSourceLocation()));
+				scope.message(MessageUtil.error(
+						WeaverMessages.format(WeaverMessages.CALL_DOESNT_SUPPORT_PARAMETERIZED_DECLARING_TYPES),
+						getSourceLocation()));
 			}
 
 			visitor = new HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatternMatchingStuffAnywhereVisitor();

@@ -129,8 +129,8 @@ public class ConcreteCflowPointcut extends Pointcut {
 				for (Iterator i = slots.iterator(); i.hasNext();) {
 					Slot slot = (Slot) i.next();
 					// System.out.println("slot: " + slot.formalIndex);
-					state.set(slot.formalIndex, aspect.getWorld().getWeavingSupport().makeCflowAccessVar(slot.formalType,
-							cflowField, slot.arrayIndex));
+					state.set(slot.formalIndex,
+							aspect.getWorld().getWeavingSupport().makeCflowAccessVar(slot.formalType, cflowField, slot.arrayIndex));
 				}
 			}
 			return Test.makeFieldGetCall(cflowField, cflowStackIsValidMethod, Expr.NONE);
@@ -138,10 +138,10 @@ public class ConcreteCflowPointcut extends Pointcut {
 	}
 
 	private static final Member cflowStackIsValidMethod = MemberImpl.method(NameMangler.CFLOW_STACK_UNRESOLVEDTYPE, 0,
-			ResolvedType.BOOLEAN, "isValid", UnresolvedType.NONE);
+			UnresolvedType.BOOLEAN, "isValid", UnresolvedType.NONE);
 
 	private static final Member cflowCounterIsValidMethod = MemberImpl.method(NameMangler.CFLOW_COUNTER_UNRESOLVEDTYPE, 0,
-			ResolvedType.BOOLEAN, "isValid", UnresolvedType.NONE);
+			UnresolvedType.BOOLEAN, "isValid", UnresolvedType.NONE);
 
 	public Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
 		throw new RuntimeException("unimplemented");

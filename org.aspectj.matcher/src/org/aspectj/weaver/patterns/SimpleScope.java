@@ -55,31 +55,31 @@ public class SimpleScope implements IScope {
 			int len = name.length();
 			if (len == 3) {
 				if (name.equals("int")) {
-					return ResolvedType.INT;
+					return UnresolvedType.INT;
 				}
 			} else if (len == 4) {
 				if (name.equals("void")) {
-					return ResolvedType.VOID;
+					return UnresolvedType.VOID;
 				} else if (name.equals("byte")) {
-					return ResolvedType.BYTE;
+					return UnresolvedType.BYTE;
 				} else if (name.equals("char")) {
-					return ResolvedType.CHAR;
+					return UnresolvedType.CHAR;
 				} else if (name.equals("long")) {
-					return ResolvedType.LONG;
+					return UnresolvedType.LONG;
 				}
 			} else if (len == 5) {
 				if (name.equals("float")) {
-					return ResolvedType.FLOAT;
+					return UnresolvedType.FLOAT;
 				} else if (name.equals("short")) {
-					return ResolvedType.SHORT;
+					return UnresolvedType.SHORT;
 				}
 			} else if (len == 6) {
 				if (name.equals("double")) {
-					return ResolvedType.DOUBLE;
+					return UnresolvedType.DOUBLE;
 				}
 			} else if (len == 7) {
 				if (name.equals("boolean")) {
-					return ResolvedType.BOOLEAN;
+					return UnresolvedType.BOOLEAN;
 				}
 			}
 		}
