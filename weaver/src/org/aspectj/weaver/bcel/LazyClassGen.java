@@ -268,7 +268,7 @@ public final class LazyClassGen {
 			// for (int i = 0; i < fields.length; i++) {
 			// ResolvedMember field = fields[i];
 			// if (field.getName().equals("serialVersionUID")
-			// && field.isStatic() && field.getType().equals(ResolvedType.LONG))
+			// && field.isStatic() && field.getType().equals(UnresolvedType.LONG))
 			// {
 			// hasSerialVersionUIDField = true;
 			// }
@@ -324,7 +324,7 @@ public final class LazyClassGen {
 		for (int i = 0; i < fields.length; i++) {
 			ResolvedMember field = fields[i];
 			if (field.getName().equals("serialVersionUID") && Modifier.isStatic(field.getModifiers())
-					&& field.getType().equals(ResolvedType.LONG)) {
+					&& field.getType().equals(UnresolvedType.LONG)) {
 				return true;
 			}
 		}

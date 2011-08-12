@@ -333,7 +333,6 @@ public final class LazyMethodGen implements Traceable {
 		if (returnType != null) {
 			return;
 		}
-
 		MethodGen gen = new MethodGen(savedMethod, enclosingClass.getName(), enclosingClass.getConstantPool(), true);
 
 		this.returnType = gen.getReturnType();
@@ -1260,7 +1259,7 @@ public final class LazyMethodGen implements Traceable {
 		// due to insertion of advice like cflow entry)
 		int paramSlots = gen.isStatic() ? 0 : 1;
 		Type[] argTypes = gen.getArgumentTypes();
-		if (argTypes!=null) {
+		if (argTypes != null) {
 			for (int i = 0; i < argTypes.length; i++) {
 				if (argTypes[i].getSize() == 2) {
 					paramSlots += 2;

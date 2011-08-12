@@ -577,7 +577,7 @@ public class BcelWorld extends World implements Repository {
 			Type ot = i.getType(cpg);
 			UnresolvedType ut = fromBcel(ot);
 			ut = UnresolvedType.makeArray(ut, 1);
-			retval = MemberImpl.method(ut, Modifier.PUBLIC, ResolvedType.VOID, "<init>", new ResolvedType[] { ResolvedType.INT });
+			retval = MemberImpl.method(ut, Modifier.PUBLIC, UnresolvedType.VOID, "<init>", new ResolvedType[] { INT });
 		} else if (i instanceof MULTIANEWARRAY) {
 			MULTIANEWARRAY arrayInstruction = (MULTIANEWARRAY) i;
 			UnresolvedType ut = null;
@@ -592,15 +592,15 @@ public class BcelWorld extends World implements Repository {
 			}
 			ResolvedType[] parms = new ResolvedType[dimensions];
 			for (int ii = 0; ii < dimensions; ii++) {
-				parms[ii] = ResolvedType.INT;
+				parms[ii] = INT;
 			}
-			retval = MemberImpl.method(ut, Modifier.PUBLIC, ResolvedType.VOID, "<init>", parms);
+			retval = MemberImpl.method(ut, Modifier.PUBLIC, UnresolvedType.VOID, "<init>", parms);
 
 		} else if (i.opcode == Constants.NEWARRAY) {
 			// NEWARRAY arrayInstruction = (NEWARRAY)i;
 			Type ot = i.getType();
 			UnresolvedType ut = fromBcel(ot);
-			retval = MemberImpl.method(ut, Modifier.PUBLIC, ResolvedType.VOID, "<init>", new ResolvedType[] { ResolvedType.INT });
+			retval = MemberImpl.method(ut, Modifier.PUBLIC, UnresolvedType.VOID, "<init>", new ResolvedType[] { INT });
 		} else {
 			throw new BCException("Cannot create array construction signature for this non-array instruction:" + i);
 		}
@@ -682,7 +682,7 @@ public class BcelWorld extends World implements Repository {
 		classPath.closeArchives();
 		typeMap.report();
 		typeMap.demote(true);
-		ResolvedType.resetPrimitives();
+		// ResolvedType.resetPrimitives();
 	}
 
 	// / The repository interface methods

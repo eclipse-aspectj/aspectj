@@ -48,7 +48,6 @@ import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IUnwovenClassFile;
 import org.aspectj.weaver.IWeaveRequestor;
-import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.bcel.BcelWeaver;
@@ -844,11 +843,11 @@ public class WeavingAdaptor implements IMessageContext {
 				}
 
 				public void weaveCompleted() {
-					ResolvedType.resetPrimitives();
+					// ResolvedType.resetPrimitives();
 					if (delegateForCurrentClass != null) {
 						delegateForCurrentClass.weavingCompleted();
 					}
-					ResolvedType.resetPrimitives();
+					// ResolvedType.resetPrimitives();
 					// bcelWorld.discardType(typeBeingProcessed.getResolvedTypeX()); // work in progress
 				}
 			};

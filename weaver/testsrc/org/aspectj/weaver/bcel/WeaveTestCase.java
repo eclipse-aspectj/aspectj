@@ -81,7 +81,7 @@ public abstract class WeaveTestCase extends TestCase {
 	}
 
 	public void weaveTest(String name, String outName, ShadowMunger planner) throws IOException {
-		List l = new ArrayList(1);
+		List<ShadowMunger> l = new ArrayList<ShadowMunger>(1);
 		l.add(planner);
 		weaveTest(name, outName, l);
 	}
@@ -89,7 +89,7 @@ public abstract class WeaveTestCase extends TestCase {
 	// static String classDir = "../weaver/bin";
 	static String classDir = BcweaverTests.TESTDATA_PATH + File.separator + "bin";
 
-	public void weaveTest(String name, String outName, List planners) throws IOException {
+	public void weaveTest(String name, String outName, List<ShadowMunger> planners) throws IOException {
 		BcelWeaver weaver = new BcelWeaver(world);
 		try {
 			if (behave15)
@@ -97,7 +97,7 @@ public abstract class WeaveTestCase extends TestCase {
 
 			UnwovenClassFile classFile = makeUnwovenClassFile(classDir, name, outDirPath);
 
-			weaver.addClassFile(classFile,false);
+			weaver.addClassFile(classFile, false);
 			weaver.setShadowMungers(planners);
 			weaveTestInner(weaver, classFile, name, outName);
 		} finally {
@@ -170,8 +170,8 @@ public abstract class WeaveTestCase extends TestCase {
 	}
 
 	void realCheckClass(LazyClassGen gen, String outDir, String expectedFile) throws IOException {
-		TestUtil.assertMultiLineStringEquals(expectedFile/* "classes" */, FileUtil
-				.readAsString(new File(TESTDATA_DIR, expectedFile)), gen.toLongString());
+		TestUtil.assertMultiLineStringEquals(expectedFile/* "classes" */,
+				FileUtil.readAsString(new File(TESTDATA_DIR, expectedFile)), gen.toLongString());
 	}
 
 	// ----
@@ -197,18 +197,14 @@ public abstract class WeaveTestCase extends TestCase {
 		return makeConcreteAdvice(kind + "(): get(* *.*) -> static void Aspect.ajc_" + kind + "_field_get(" + extraArgType + ")", 1);
 	}
 
-	public List makeAdviceAll(String kind, boolean matchOnlyPrintln) {
-		List ret = new ArrayList();
+	public List<ShadowMunger> makeAdviceAll(String kind, boolean matchOnlyPrintln) {
+		List<ShadowMunger> ret = new ArrayList<ShadowMunger>();
 		if (matchOnlyPrintln) {
-			ret
-					.add(makeConcreteAdvice(kind + "(): call(* *.println(..)) -> static void Aspect.ajc_" + kind
-							+ "_method_execution()"));
+			ret.add(makeConcreteAdvice(kind + "(): call(* *.println(..)) -> static void Aspect.ajc_" + kind + "_method_execution()"));
 		} else {
 			ret.add(makeConcreteAdvice(kind + "(): call(* *.*(..)) -> static void Aspect.ajc_" + kind + "_method_call()"));
 			ret.add(makeConcreteAdvice(kind + "(): call(*.new(..)) -> static void Aspect.ajc_" + kind + "_constructor_call()"));
-			ret
-					.add(makeConcreteAdvice(kind + "(): execution(* *.*(..)) -> static void Aspect.ajc_" + kind
-							+ "_method_execution()"));
+			ret.add(makeConcreteAdvice(kind + "(): execution(* *.*(..)) -> static void Aspect.ajc_" + kind + "_method_execution()"));
 			ret.add(makeConcreteAdvice(kind + "(): execution(*.new(..)) -> static void Aspect.ajc_" + kind
 					+ "_constructor_execution()"));
 			// ret.add(
@@ -226,7 +222,7 @@ public abstract class WeaveTestCase extends TestCase {
 		return ret;
 	}
 
-	public List makeAdviceAll(final String kind) {
+	public List<ShadowMunger> makeAdviceAll(final String kind) {
 		return makeAdviceAll(kind, false);
 	}
 
@@ -270,7 +266,7 @@ public abstract class WeaveTestCase extends TestCase {
 		}
 	}
 
-	protected void weaveTest(String[] inClassNames, String outKind, List patternMungers) throws IOException {
+	protected void weaveTest(String[] inClassNames, String outKind, List<ShadowMunger> patternMungers) throws IOException {
 		for (int i = 0; i < inClassNames.length; i++) {
 			String inFileName = inClassNames[i];
 			weaveTest(inFileName, outKind + inFileName, patternMungers);

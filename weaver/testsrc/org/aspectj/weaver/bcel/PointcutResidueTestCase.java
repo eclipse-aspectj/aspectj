@@ -145,8 +145,9 @@ public class PointcutResidueTestCase extends WeaveTestCase {
 				formalNames)));
 
 		ShadowMunger pp = new BcelAdvice(AdviceKind.Before, rp, MemberImpl.method(UnresolvedType.forName("Aspect"),
-				Modifier.STATIC, "ajc_before_0", MemberImpl.typesToSignature(ResolvedType.VOID, UnresolvedType
-						.forNames(formalTypes), false)), 0, -1, -1, null, null);
+				Modifier.STATIC, "ajc_before_0",
+				MemberImpl.typesToSignature(UnresolvedType.VOID, UnresolvedType.forNames(formalTypes), false)), 0, -1, -1, null,
+				null);
 
 		ResolvedType inAspect = world.resolve("Aspect");
 		CrosscuttingMembers xcut = new CrosscuttingMembers(inAspect, true);

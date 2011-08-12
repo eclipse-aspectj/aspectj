@@ -10,7 +10,6 @@
  *     PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.weaver;
 
 import org.aspectj.bridge.ISourceLocation;
@@ -21,40 +20,45 @@ public class TestShadow extends Shadow {
 	private final World world;
 	private final UnresolvedType thisType;
 
-    public TestShadow(Kind kind, Member signature, UnresolvedType thisType, World world) {
-        super(kind, signature, null);
-        this.world = world;
-        this.thisType = thisType;
-    }
+	public TestShadow(Kind kind, Member signature, UnresolvedType thisType, World world) {
+		super(kind, signature, null);
+		this.world = world;
+		this.thisType = thisType;
+	}
 
-    public World getIWorld() {
-        return world;
-    }
+	public World getIWorld() {
+		return world;
+	}
 
-	/** this is subtly wrong.  ha ha */
-    public UnresolvedType getEnclosingType() {
-        return thisType;
-    }
+	/** this is subtly wrong. ha ha */
+	public UnresolvedType getEnclosingType() {
+		return thisType;
+	}
 
-    public Var getThisVar() {
-    	// we should thorw if we don't have a this
-        return new Var(getThisType().resolve(world));
-    }
+	public Var getThisVar() {
+		// we should thorw if we don't have a this
+		return new Var(getThisType().resolve(world));
+	}
 
-    public Var getTargetVar() {
-    	if (! hasTarget()) throw new RuntimeException("bad");
-        return new Var(getTargetType().resolve(world));
-    }
+	public Var getTargetVar() {
+		if (!hasTarget())
+			throw new RuntimeException("bad");
+		return new Var(getTargetType().resolve(world));
+	}
 
-    public Var getArgVar(int i) {
-        return new Var(getArgType(i).resolve(world));
-    }
+	public Var getArgVar(int i) {
+		return new Var(getArgType(i).resolve(world));
+	}
 
 	public Var getThisEnclosingJoinPointStaticPartVar() {
 		throw new RuntimeException("unimplemented");
 	}
 
 	public Var getThisJoinPointStaticPartVar() {
+		throw new RuntimeException("unimplemented");
+	}
+
+	public Var getThisAspectInstanceVar(ResolvedType aspectType) {
 		throw new RuntimeException("unimplemented");
 	}
 
@@ -70,45 +74,57 @@ public class TestShadow extends Shadow {
 		throw new RuntimeException("unimplemented");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.Shadow#getKindedAnnotationVar()
 	 */
 	public Var getKindedAnnotationVar(UnresolvedType annotationType) {
 		throw new RuntimeException("unimplemented");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.Shadow#getWithinAnnotationVar()
 	 */
 	public Var getWithinAnnotationVar(UnresolvedType annotationType) {
 		throw new RuntimeException("unimplemented");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.Shadow#getWithinCodeAnnotationVar()
 	 */
 	public Var getWithinCodeAnnotationVar(UnresolvedType annotationType) {
 		throw new RuntimeException("unimplemented");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.Shadow#getThisAnnotationVar()
 	 */
 	public Var getThisAnnotationVar(UnresolvedType annotationType) {
 		throw new RuntimeException("unimplemented");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.Shadow#getTargetAnnotationVar()
 	 */
 	public Var getTargetAnnotationVar(UnresolvedType annotationType) {
 		throw new RuntimeException("unimplemented");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.aspectj.weaver.Shadow#getArgAnnotationVar(int)
 	 */
-	public Var getArgAnnotationVar(int i,UnresolvedType annotationType) {
+	public Var getArgAnnotationVar(int i, UnresolvedType annotationType) {
 		throw new RuntimeException("unimplemented");
 	}
 

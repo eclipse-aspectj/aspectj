@@ -1125,13 +1125,12 @@ public class BcelShadow extends Shadow {
 		return il;
 	}
 
-	/**
-	 * Get the Var for the jpStaticPart
-	 * 
-	 * @return
-	 */
 	public BcelVar getThisJoinPointStaticPartBcelVar() {
 		return getThisJoinPointStaticPartBcelVar(false);
+	}
+
+	public BcelVar getThisAspectInstanceVar(ResolvedType aspectType) {
+		return new AspectInstanceVar(aspectType);
 	}
 
 	/**
@@ -1406,7 +1405,7 @@ public class BcelShadow extends Shadow {
 					argVars[i] = tmp;
 					tmp.setPositionInAroundState(i + positionOffset);
 				}
-				index += type.getSize();
+				index += type.resolve(world).getSize();
 			}
 		}
 		allArgVarsInitialized = true;
@@ -1790,7 +1789,7 @@ public class BcelShadow extends Shadow {
 	 * @return true, iff this shadow returns a value
 	 */
 	private boolean hasANonVoidReturnType() {
-		return this.getReturnType() != ResolvedType.VOID;
+		return !this.getReturnType().equals(UnresolvedType.VOID);
 	}
 
 	/**
@@ -1821,7 +1820,7 @@ public class BcelShadow extends Shadow {
 	private BcelVar insertAdviceInstructionsForBindingReturningParameter(InstructionList advice) {
 		BcelVar tempVar;
 		UnresolvedType tempVarType = getReturnType();
-		if (tempVarType.equals(ResolvedType.VOID)) {
+		if (tempVarType.equals(UnresolvedType.VOID)) {
 			tempVar = genTempVar(UnresolvedType.OBJECT);
 			advice.append(InstructionConstants.ACONST_NULL);
 			tempVar.appendStore(advice, getFactory());
@@ -2026,7 +2025,7 @@ public class BcelShadow extends Shadow {
 		final Type objectArrayType = new ArrayType(Type.OBJECT, 1);
 		final InstructionFactory fact = getFactory();
 
-		final BcelVar testResult = genTempVar(ResolvedType.BOOLEAN);
+		final BcelVar testResult = genTempVar(UnresolvedType.BOOLEAN);
 
 		InstructionList entryInstructions = new InstructionList();
 		{
@@ -3297,7 +3296,7 @@ public class BcelShadow extends Shadow {
 			if (getKind() == ConstructorCall) {
 				returnType = getSignature().getDeclaringType();
 			} else if (getKind() == FieldSet) {
-				returnType = ResolvedType.VOID;
+				returnType = UnresolvedType.VOID;
 			} else {
 				returnType = getSignature().getReturnType().resolve(world);
 				// returnType = getReturnType(); // for this and above lines, see pr137496
@@ -3333,8 +3332,9 @@ public class BcelShadow extends Shadow {
 		return ret;
 	}
 
-	public BcelVar genTempVar(UnresolvedType typeX) {
-		return new BcelVar(typeX.resolve(world), genTempVarIndex(typeX.getSize()));
+	public BcelVar genTempVar(UnresolvedType utype) {
+		ResolvedType rtype = utype.resolve(world);
+		return new BcelVar(rtype, genTempVarIndex(rtype.getSize()));
 	}
 
 	// public static final boolean CREATE_TEMP_NAMES = true;

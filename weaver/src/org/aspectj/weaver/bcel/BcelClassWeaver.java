@@ -3063,7 +3063,7 @@ class BcelClassWeaver implements IClassWeaver {
 
 			if (declaredSig.getKind() == Member.FIELD) {
 				Shadow.Kind kind;
-				if (jpSig.getReturnType().equals(ResolvedType.VOID)) {
+				if (jpSig.getReturnType().equals(UnresolvedType.VOID)) {
 					kind = Shadow.FieldSet;
 				} else {
 					kind = Shadow.FieldGet;

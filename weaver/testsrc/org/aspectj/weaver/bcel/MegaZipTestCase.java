@@ -23,6 +23,7 @@ import org.aspectj.weaver.BcweaverTests;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberImpl;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 
 public class MegaZipTestCase extends WeaveTestCase {
@@ -58,8 +59,8 @@ public class MegaZipTestCase extends WeaveTestCase {
 		};
 	}
 
-	public List getShadowMungers() {
-		List ret = new ArrayList();
+	public List<ShadowMunger> getShadowMungers() {
+		List<ShadowMunger> ret = new ArrayList<ShadowMunger>();
 		ret.add(makeConcreteAdvice("before" + "(): call(* *.println(..)) -> static void fluffy.Aspect.before_method_call()"));
 		ret.add(makeConcreteAdvice("afterReturning"
 				+ "(): call(* *.println(..)) -> static void fluffy.Aspect.afterReturning_method_call()"));

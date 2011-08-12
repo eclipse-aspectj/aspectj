@@ -281,10 +281,10 @@ public class Utility {
 				return;
 			}
 		}
-		if (toType.equals(ResolvedType.VOID)) {
+		if (toType.equals(UnresolvedType.VOID)) {
 			// assert fromType.equals(UnresolvedType.OBJECT)
 			il.append(InstructionFactory.createPop(fromType.getSize()));
-		} else if (fromType.equals(ResolvedType.VOID)) {
+		} else if (fromType.equals(UnresolvedType.VOID)) {
 			// assert toType.equals(UnresolvedType.OBJECT)
 			il.append(InstructionFactory.createNull(Type.OBJECT));
 			return;

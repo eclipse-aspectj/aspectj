@@ -178,6 +178,7 @@ class BcelAdvice extends Advice {
 		if (!world.areAllLintIgnored()) {
 			suppressLintWarnings(world);
 		}
+		exposedState.setConcreteAspect(concreteAspect);
 		runtimeTest = getPointcut().findResidue(shadow, exposedState);
 		if (!world.areAllLintIgnored()) {
 			clearLintSuppressions(world, this.suppressedLintKinds);

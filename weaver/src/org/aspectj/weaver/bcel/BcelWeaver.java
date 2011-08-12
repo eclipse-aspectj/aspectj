@@ -1722,7 +1722,12 @@ public class BcelWeaver {
 					String classDebugInfo = null;
 					try {
 						classDebugInfo = clazz.toLongString();
-					} catch (Exception e) {
+					} catch (OutOfMemoryError oome) {
+						System.err.println("Ran out of memory creating debug info for an error");
+						re.printStackTrace(System.err);
+						// recover from crash whilst producing debug string
+						classDebugInfo = clazz.getClassName();
+					} catch (Throwable e) {
 						// recover from crash whilst producing debug string
 						classDebugInfo = clazz.getClassName();
 					}

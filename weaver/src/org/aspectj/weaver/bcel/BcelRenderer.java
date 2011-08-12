@@ -12,6 +12,8 @@
 
 package org.aspectj.weaver.bcel;
 
+import java.lang.reflect.Modifier;
+
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
@@ -22,7 +24,6 @@ import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberImpl;
-import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.ast.And;
 import org.aspectj.weaver.ast.Call;
@@ -155,15 +156,14 @@ public final class BcelRenderer implements ITestVisitor, IExprVisitor {
 		// Load up the var again
 		il.append(((BcelVar) hasAnnotation.getVar()).createLoad(fact));
 
-		Member getClass = MemberImpl.method(UnresolvedType.OBJECT, 0, UnresolvedType.JL_CLASS, "getClass",
-				UnresolvedType.NONE);
+		Member getClass = MemberImpl.method(UnresolvedType.OBJECT, 0, UnresolvedType.JL_CLASS, "getClass", UnresolvedType.NONE);
 		il.append(Utility.createInvoke(fact, world, getClass));
 		// aload annotationClass
 		il.append(fact.createConstant(new ObjectType(hasAnnotation.getAnnotationType().getName())));
 		// int annClassIndex = fact.getConstantPool().addClass(hasAnnotation.getAnnotationType().getSignature());
 		// il.append(new LDC_W(annClassIndex));
-		Member isAnnotationPresent = MemberImpl.method(UnresolvedType.JL_CLASS, 0, ResolvedType.BOOLEAN,
-				"isAnnotationPresent", new UnresolvedType[] { UnresolvedType.JL_CLASS });
+		Member isAnnotationPresent = MemberImpl.method(UnresolvedType.JL_CLASS, 0, UnresolvedType.BOOLEAN, "isAnnotationPresent",
+				new UnresolvedType[] { UnresolvedType.JL_CLASS });
 		il.append(Utility.createInvoke(fact, world, isAnnotationPresent));
 		il.append(createJumpBasedOnBooleanOnStack());
 		instructions.insert(il);
@@ -210,7 +210,6 @@ public final class BcelRenderer implements ITestVisitor, IExprVisitor {
 		Member method = call.getMethod();
 		// assert method.isStatic()
 		Expr[] args = call.getArgs();
-		// System.out.println("args: " + Arrays.asList(args));
 		InstructionList callIl = new InstructionList();
 		for (int i = 0, len = args.length; i < len; i++) {
 			// XXX only correct for static method calls

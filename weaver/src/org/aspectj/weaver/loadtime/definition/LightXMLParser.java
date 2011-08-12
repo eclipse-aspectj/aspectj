@@ -11,24 +11,23 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime.definition;
 
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.io.Reader;
 
 public class LightXMLParser {
 
 	private final static char NULL_CHAR = '\0';
-	private Map attributes;
+	private Map<String, Object> attributes;
 	private ArrayList children;
 	private String name;
 	private char pushedBackChar;
 	private Reader reader;
 
-	private static Map entities = new HashMap();
+	private static Map<String, char[]> entities = new HashMap<String, char[]>();
 
-
-	static{
+	static {
 		entities.put("amp", new char[] { '&' });
 		entities.put("quot", new char[] { '"' });
 		entities.put("apos", new char[] { '\'' });
@@ -38,7 +37,7 @@ public class LightXMLParser {
 
 	public LightXMLParser() {
 		this.name = null;
-		this.attributes = new HashMap();
+		this.attributes = new HashMap<String, Object>();
 		this.children = new ArrayList();
 	}
 
@@ -52,7 +51,7 @@ public class LightXMLParser {
 
 	public void parseFromReader(Reader reader) throws Exception {
 		this.pushedBackChar = NULL_CHAR;
-		this.attributes = new HashMap();
+		this.attributes = new HashMap<String, Object>();
 		this.name = null;
 		this.children = new ArrayList();
 		this.reader = reader;
@@ -64,8 +63,7 @@ public class LightXMLParser {
 			// All xml should start by <xml, a <!-- or <nodeName, if not throw
 			// exception
 			if (c != '<') {
-				throw new Exception(
-						"LightParser Exception: Expected < but got: " + c);
+				throw new Exception("LightParser Exception: Expected < but got: " + c);
 			}
 
 			// read next character
@@ -122,8 +120,7 @@ public class LightXMLParser {
 			// Iterate while next character is not [a-z] [A-Z] [0-9] [ .:_-] not
 			// null
 			c = this.getNextChar();
-			if (((c < 'a') || (c > 'z')) && ((c > 'Z') || (c < 'A'))
-					&& ((c > '9') || (c < '0')) && (c != '_') && (c != '-')
+			if (((c < 'a') || (c > 'z')) && ((c > 'Z') || (c < 'A')) && ((c > '9') || (c < '0')) && (c != '_') && (c != '-')
 					&& (c != '.') && (c != ':')) {
 				this.pushBackChar(c);
 				return;
@@ -135,11 +132,9 @@ public class LightXMLParser {
 	private void getString(StringBuffer string) throws Exception {
 		char delimiter = this.getNextChar();
 		if ((delimiter != '\'') && (delimiter != '"')) {
-			throw new Exception("Parsing error. Expected ' or \"  but got: "
-					+ delimiter);
+			throw new Exception("Parsing error. Expected ' or \"  but got: " + delimiter);
 
 		}
-
 
 		while (true) {
 			char c = this.getNextChar();
@@ -339,8 +334,7 @@ public class LightXMLParser {
 					for (int i = 0; i < 2; i++) {
 						c = this.getNextChar();
 						if (c != '-') {
-							throw new Exception(
-							"Parsing error. Expected element or comment");
+							throw new Exception("Parsing error. Expected element or comment");
 						}
 					}
 					this.skipComment();
@@ -353,8 +347,7 @@ public class LightXMLParser {
 				}
 				c = this.skipBlanks();
 				if (c != '<') {
-					throw new Exception("Parsing error. Expected <, but got: "
-							+ c);
+					throw new Exception("Parsing error. Expected <, but got: " + c);
 				}
 				c = this.getNextChar();
 			}
@@ -387,8 +380,7 @@ public class LightXMLParser {
 
 		char nextChar = this.getNextChar();
 		if (nextChar != '>') {
-			throw new Exception("Parsing error. Expected > but got: "
-					+ nextChar);
+			throw new Exception("Parsing error. Expected > but got: " + nextChar);
 		}
 	}
 
@@ -417,10 +409,7 @@ public class LightXMLParser {
 		}
 	}
 
-
-	private void mapEntity(StringBuffer buf)
-	throws Exception
-	{
+	private void mapEntity(StringBuffer buf) throws Exception {
 		char c = this.NULL_CHAR;
 		StringBuffer keyBuf = new StringBuffer();
 		while (true) {
@@ -450,6 +439,7 @@ public class LightXMLParser {
 			buf.append(value);
 		}
 	}
+
 	private void pushBackChar(char c) {
 		this.pushedBackChar = c;
 	}
@@ -462,7 +452,7 @@ public class LightXMLParser {
 		this.attributes.put(name, value.toString());
 	}
 
-	public Map getAttributes() {
+	public Map<String, Object> getAttributes() {
 		return this.attributes;
 	}
 

@@ -18,6 +18,7 @@ import java.util.Arrays;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.TestUtils;
 import org.aspectj.weaver.UnresolvedType;
 
@@ -92,7 +93,7 @@ public class TjpWeaveTestCase extends WeaveTestCase {
 						.methodFromString("static java.lang.Object Aspect.ajc_around(org.aspectj.runtime.internal.AroundClosure, org.aspectj.lang.JoinPoint)"),
 				Advice.ThisJoinPoint | Advice.ExtraArgument, -1, -1, null, rtx);
 
-		weaveTest("HelloWorld", "TjpAround2HelloWorld", Arrays.asList(new BcelAdvice[] { munger1, munger2 }));
+		weaveTest("HelloWorld", "TjpAround2HelloWorld", Arrays.asList(new ShadowMunger[] { munger1, munger2 }));
 	}
 
 }
