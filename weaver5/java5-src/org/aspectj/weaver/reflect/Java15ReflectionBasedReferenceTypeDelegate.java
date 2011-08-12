@@ -218,8 +218,8 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 
 	private ResolvedMember createGenericMethodMember(Method forMethod) {
 		ReflectionBasedResolvedMemberImpl ret = new ReflectionBasedResolvedMemberImpl(org.aspectj.weaver.Member.METHOD,
-				getGenericResolvedType(), forMethod.getModifiers(), typeConverter.fromType(forMethod.getReturnType()), forMethod
-						.getName(), typeConverter.fromTypes(forMethod.getParameterTypes()), typeConverter.fromTypes(forMethod
+				getGenericResolvedType(), forMethod.getModifiers(), typeConverter.fromType(forMethod.getReturnType()),
+				forMethod.getName(), typeConverter.fromTypes(forMethod.getParameterTypes()), typeConverter.fromTypes(forMethod
 						.getExceptionTypes()), forMethod);
 		ret.setAnnotationFinder(this.annotationFinder);
 		ret.setGenericSignatureInformationProvider(new Java15GenericSignatureInformationProvider(this.getWorld()));
@@ -230,7 +230,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 		ReflectionBasedResolvedMemberImpl ret = new ReflectionBasedResolvedMemberImpl(org.aspectj.weaver.Member.METHOD,
 				getGenericResolvedType(), forConstructor.getModifiers(),
 				// to return what BCEL returns the return type is void
-				ResolvedType.VOID,// getGenericResolvedType(),
+				UnresolvedType.VOID,// getGenericResolvedType(),
 				"<init>", typeConverter.fromTypes(forConstructor.getParameterTypes()), typeConverter.fromTypes(forConstructor
 						.getExceptionTypes()), forConstructor);
 		ret.setAnnotationFinder(this.annotationFinder);

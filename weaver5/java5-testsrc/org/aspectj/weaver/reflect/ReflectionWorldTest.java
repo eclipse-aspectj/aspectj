@@ -14,6 +14,7 @@ package org.aspectj.weaver.reflect;
 import junit.framework.TestCase;
 
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
 public class ReflectionWorldTest extends TestCase {
@@ -22,20 +23,20 @@ public class ReflectionWorldTest extends TestCase {
 		World world = new ReflectionWorld(getClass().getClassLoader());
 		ResolvedType rt = world.resolve("java.lang.Object");
 		assertNotNull(rt);
-		assertEquals("Ljava/lang/Object;",rt.getSignature());
+		assertEquals("Ljava/lang/Object;", rt.getSignature());
 	}
-	
+
 	public void testArrayTypes() {
 		IReflectionWorld world = new ReflectionWorld(getClass().getClassLoader());
 		String[] strArray = new String[1];
 		ResolvedType rt = world.resolve(strArray.getClass());
 		assertTrue(rt.isArray());
 	}
-	
+
 	public void testPrimitiveTypes() {
 		IReflectionWorld world = new ReflectionWorld(getClass().getClassLoader());
-		assertEquals("int",ResolvedType.INT,world.resolve(int.class));
-		assertEquals("void",ResolvedType.VOID,world.resolve(void.class));
+		assertEquals("int", UnresolvedType.INT, world.resolve(int.class));
+		assertEquals("void", UnresolvedType.VOID, world.resolve(void.class));
 	}
-	
+
 }
