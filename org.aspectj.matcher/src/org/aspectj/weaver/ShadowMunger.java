@@ -191,14 +191,29 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	}
 
 	/**
-	 * Returns the File with pathname to the class file, for example either C:\temp
-	 * \ajcSandbox\workspace\ajcTest16957.tmp\simple.jar!pkg\BinaryAspect.class if the class file is in a jar file, or
+	 * Returns the File with pathname to the class file, for example either:<br>
+	 * C:\temp \ajcSandbox\workspace\ajcTest16957.tmp\simple.jar!pkg\BinaryAspect.class if the class file is in a jar file, or <br>
 	 * C:\temp\ajcSandbox\workspace\ajcTest16957.tmp!pkg\BinaryAspect.class if the class file is in a directory
 	 */
 	private File getBinaryFile() {
 		if (binaryFile == null) {
-			String s = getDeclaringType().getBinaryPath();
-			if (s.indexOf("!") == -1) {
+			String binaryPath = getDeclaringType().getBinaryPath();
+			if (binaryPath == null) {
+				// Looks like an aspect that has been picked up from the classpath (likely an abstract one
+				// being extended). As it didn't come in via inpath or aspectpath the binarypath has not
+				// yet been constructed.
+
+				// We can't discover where the file came from now, that info has been lost. So just
+				// use "classpath" for now - until we discover we need to get this right.
+
+				binaryPath = "classpath";
+				getDeclaringType().setBinaryPath(binaryPath);
+				// ReferenceTypeDelegate delegate = ((ReferenceType) getDeclaringType()).getDelegate();
+				// if (delegate instanceof BcelObjectType) {
+				// grab javaclass... but it doesnt know the originating file
+				// }
+			}
+			if (binaryPath.indexOf("!") == -1) {
 				File f = getDeclaringType().getSourceLocation().getSourceFile();
 				// Replace the source file suffix with .class
 				int i = f.getPath().lastIndexOf('.');
@@ -208,9 +223,9 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 				} else {
 					path = f.getPath() + ".class";
 				}
-				binaryFile = new File(s + "!" + path);
+				binaryFile = new File(binaryPath + "!" + path);
 			} else {
-				binaryFile = new File(s);
+				binaryFile = new File(binaryPath);
 			}
 		}
 		return binaryFile;
