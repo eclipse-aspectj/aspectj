@@ -11,7 +11,6 @@
  *     Xerox/PARC     initial implementation 
  * ******************************************************************/
 
-
 package org.aspectj.ajde.internal;
 
 import java.io.File;
@@ -25,37 +24,34 @@ import org.aspectj.ajdt.ajc.ConfigParser;
  */
 public class LstBuildConfigFileParser extends ConfigParser {
 
-	private List importedFiles = new ArrayList();
-	private List problemEntries = new ArrayList();
+	private List<File> importedFiles = new ArrayList<File>();
+	private List<String> problemEntries = new ArrayList<String>();
 
-//	private String currFilePath;
+	// private String currFilePath;
 
 	public LstBuildConfigFileParser(String currFilePath) {
-//		this.currFilePath = currFilePath;		
-	}  
+		// this.currFilePath = currFilePath;
+	}
 
-    protected void showWarning(String message) {
-    	problemEntries.add(message);
-    }
-    
+	protected void showWarning(String message) {
+		problemEntries.add(message);
+	}
+
 	protected void parseImportedConfigFile(String relativeFilePath) {
 		importedFiles.add(makeFile(relativeFilePath));
 		super.files.add(new File(relativeFilePath));
-		super.parseImportedConfigFile(relativeFilePath);	
-	} 
-	
-    protected void showError(String message) {
-        problemEntries.add(message);
-    }
-	
-	public List getImportedFiles() {
+		super.parseImportedConfigFile(relativeFilePath);
+	}
+
+	protected void showError(String message) {
+		problemEntries.add(message);
+	}
+
+	public List<File> getImportedFiles() {
 		return importedFiles;
 	}
-	
-	public List getProblemEntries() {
-		return problemEntries;	
+
+	public List<String> getProblemEntries() {
+		return problemEntries;
 	}
 }
-
-
-
