@@ -336,12 +336,11 @@ public class AjdeCoreBuildManager {
 		return config;
 	}
 
-	private void mergeInto(Collection target, Collection source) {
+	private <T> void mergeInto(Collection<T> target, Collection<T> source) {
 		if ((null == target) || (null == source)) {
 			return;
 		}
-		for (Iterator iter = source.iterator(); iter.hasNext();) {
-			Object next = iter.next();
+		for (T next : source) {
 			if (!target.contains(next)) {
 				target.add(next);
 			}

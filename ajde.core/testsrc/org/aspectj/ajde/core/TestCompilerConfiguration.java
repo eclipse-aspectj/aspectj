@@ -33,13 +33,13 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 
 	private String projectPath;
 
-	private Set aspectpath;
-	private Set inpath;
+	private Set<File> aspectpath;
+	private Set<File> inpath;
 	private String outjar;
-	private Map javaOptions;
+	private Map<String, String> javaOptions;
 	private String nonStandardOptions;
-	private List projectSourceFiles = new ArrayList();
-	private Map sourcePathResources;
+	private List<String> projectSourceFiles = new ArrayList<String>();
+	private Map<String, File> sourcePathResources;
 
 	private String srcDirName = "src";
 
@@ -49,12 +49,12 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 		this.projectPath = projectPath;
 	}
 
-	public Set getAspectPath() {
+	public Set<File> getAspectPath() {
 		return aspectpath;
 	}
 
-	public List getProjectXmlConfigFiles() {
-		return Collections.EMPTY_LIST;
+	public List<String> getProjectXmlConfigFiles() {
+		return Collections.emptyList();
 	}
 
 	public String getClasspath() {
@@ -62,13 +62,13 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 				+ AjcTests.aspectjrtClasspath();
 	}
 
-	public Set getInpath() {
+	public Set<File> getInpath() {
 		return inpath;
 	}
 
-	public Map getJavaOptionsMap() {
+	public Map<String, String> getJavaOptionsMap() {
 		if (javaOptions == null) {
-			javaOptions = new Hashtable();
+			javaOptions = new Hashtable<String, String>();
 			javaOptions.put(JavaOptions.COMPLIANCE_LEVEL, JavaOptions.VERSION_13);
 			javaOptions.put(JavaOptions.SOURCE_COMPATIBILITY_LEVEL, JavaOptions.VERSION_13);
 		}
@@ -90,7 +90,7 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 		return outputLoc;
 	}
 
-	public List getProjectSourceFiles() {
+	public List<String> getProjectSourceFiles() {
 		return projectSourceFiles;
 	}
 
@@ -101,9 +101,9 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 	public void configurationRead() {
 	}
 
-	public Map getSourcePathResources() {
+	public Map<String, File> getSourcePathResources() {
 		if (sourcePathResources == null) {
-			sourcePathResources = new HashMap();
+			sourcePathResources = new HashMap<String, File>();
 
 			/* Allow the user to override the testProjectPath by using sourceRoots */
 			File[] srcBase = new File[] { new File(projectPath + File.separator + srcDirName) };
@@ -127,11 +127,11 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 	}
 
 	// -------------------- setter methods useful for testing ---------------
-	public void setAspectPath(Set aspectPath) {
+	public void setAspectPath(Set<File> aspectPath) {
 		this.aspectpath = aspectPath;
 	}
 
-	public void setInpath(Set inpath) {
+	public void setInpath(Set<File> inpath) {
 		this.inpath = inpath;
 	}
 
@@ -147,11 +147,11 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 		this.nonStandardOptions = options;
 	}
 
-	public void setProjectSourceFiles(List projectSourceFiles) {
+	public void setProjectSourceFiles(List<String> projectSourceFiles) {
 		this.projectSourceFiles = projectSourceFiles;
 	}
 
-	public void setSourcePathResources(Map sourcePathResources) {
+	public void setSourcePathResources(Map<String, File> sourcePathResources) {
 		this.sourcePathResources = sourcePathResources;
 	}
 

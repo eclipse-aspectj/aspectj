@@ -46,12 +46,12 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 	// // see pr148027
 	// public void testUsesPointcut() {
 	// if (!AsmHierarchyBuilder.shouldAddUsesPointcut) return;
-	//		
+	//
 	// IProgramElement ptUsage = AsmManager.getDefault().getHierarchy().findElementForType(null, "PointcutUsage");
 	// assertNotNull(ptUsage);
 	// IProgramElement pts = AsmManager.getDefault().getHierarchy().findElementForType(null, "Pointcuts");
 	// assertNotNull(pts);
-	//	    
+	//
 	// IProgramElement pUsesA = manager.getHierarchy().findElementForLabel(
 	// ptUsage,
 	// IProgramElement.Kind.POINTCUT,
@@ -63,7 +63,7 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 	// IProgramElement.Kind.POINTCUT,
 	// "a()"/*Point"*/);
 	// assertNotNull(ptsA);
-	//		
+	//
 	// assertTrue(AsmManager.getDefault().getRelationshipMap().get(pUsesA).size()>0);
 	// assertTrue(AsmManager.getDefault().getRelationshipMap().get(ptsA).size()>0);
 	// }
@@ -81,7 +81,7 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 		assertTrue(rels.size() > 0);
 
 		// assertTrue(rel.getTargets().size() > 0);
-		//		
+		//
 		// checkDeclareMapping("DeclareCoverage", "Point", ,
 		// "Point", "matched by", "matches declare",
 		// IProgramElement.Kind.DECLARE_PARENTS);
@@ -137,7 +137,7 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 				.findElementForLabel(aspect, IProgramElement.Kind.ADVICE, beforeExec);
 		assertNotNull(beforeExecNode);
 		IRelationship rel = manager.getRelationshipMap().get(beforeExecNode, IRelationship.Kind.ADVICE, relName);
-		for (Iterator it = rel.getTargets().iterator(); it.hasNext();) {
+		for (Iterator<String> it = rel.getTargets().iterator(); it.hasNext();) {
 			String currHandle = (String) it.next();
 			if (manager.getHierarchy().findElementForHandle(currHandle).toLabelString().equals(to))
 				return;
@@ -184,7 +184,7 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 		// String set = to;
 		IRelationship rel2 = manager.getRelationshipMap().get(clazz, IRelationship.Kind.DECLARE_INTER_TYPE, backRelName);
 		// String handle2 = (String)rel2.getTargets().get(0);
-		for (Iterator it = rel2.getTargets().iterator(); it.hasNext();) {
+		for (Iterator<String> it = rel2.getTargets().iterator(); it.hasNext();) {
 			String currHandle = (String) it.next();
 			if (manager.getHierarchy().findElementForHandle(currHandle).toLabelString().equals(from))
 				return;
