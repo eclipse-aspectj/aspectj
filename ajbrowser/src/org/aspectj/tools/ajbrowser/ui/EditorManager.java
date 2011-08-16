@@ -17,7 +17,6 @@ import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.Box;
@@ -71,8 +70,8 @@ public class EditorManager {
 	}
 
 	public void notifyCurrentFileChanged(String filePath) {
-		for (Iterator it = editorListeners.iterator(); it.hasNext();) {
-			((EditorListener) it.next()).currentFileChanged(filePath);
+		for (EditorListener editorListener : editorListeners) {
+			editorListener.currentFileChanged(filePath);
 		}
 	}
 
@@ -149,8 +148,8 @@ public class EditorManager {
 
 	public void saveContents() {
 		try {
-			for (Iterator it = editors.iterator(); it.hasNext();) {
-				((EditorAdapter) it.next()).saveContents();
+			for (EditorAdapter editorAdapter : editors) {
+				editorAdapter.saveContents();
 			}
 		} catch (IOException ioe) {
 			BrowserErrorHandler.handleError("Editor could not save the current file.", ioe);

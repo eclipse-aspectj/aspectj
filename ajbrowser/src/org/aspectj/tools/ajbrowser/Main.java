@@ -49,7 +49,7 @@ public class Main {
 		}
 		if (numConfigFiles != args.length) {
 			try {
-				Class ajc = Class.forName("org.aspectj.tools.ajc.Main");
+				Class<?> ajc = Class.forName("org.aspectj.tools.ajc.Main");
 				Method main = ajc.getMethod("main", new Class[] { String[].class });
 				main.invoke(null, new Object[] { args });
 				return true;

@@ -46,8 +46,8 @@ public class BrowserOutputLocationManager implements IOutputLocationManager {
 		return outputPath;
 	}
 
-	public List getAllOutputLocations() {
-		List outputDirs = new ArrayList();
+	public List<File> getAllOutputLocations() {
+		List<File> outputDirs = new ArrayList<File>();
 		outputDirs.add(new File(getCommonOutputDir()));
 		return outputDirs;
 	}
@@ -67,12 +67,11 @@ public class BrowserOutputLocationManager implements IOutputLocationManager {
 	}
 
 	public int discoverChangesSince(File dir, long buildtime) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	public Map getInpathMap() {
-		return Collections.EMPTY_MAP;
+	public Map<File, String> getInpathMap() {
+		return Collections.emptyMap();
 	}
 
 }

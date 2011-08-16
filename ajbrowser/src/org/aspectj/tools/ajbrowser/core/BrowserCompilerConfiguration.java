@@ -42,8 +42,8 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 		if (userPath != null && userPath.trim().length() != 0) {
 			classpath.append(userPath);
 		}
-		List outputDirs = getOutputLocationManager().getAllOutputLocations();
-		for (Iterator iterator = outputDirs.iterator(); iterator.hasNext();) {
+		List<File> outputDirs = getOutputLocationManager().getAllOutputLocations();
+		for (Iterator<File> iterator = outputDirs.iterator(); iterator.hasNext();) {
 			File dir = (File) iterator.next();
 			classpath.append(File.pathSeparator + dir.getAbsolutePath() + File.pathSeparator);
 		}
@@ -67,7 +67,7 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 		return locationManager;
 	}
 
-	public List getProjectSourceFiles() {
+	public List<String> getProjectSourceFiles() {
 		// unimplemented in AjBrowser (uses BuildConfigManager instead)
 		return null;
 	}
@@ -87,7 +87,7 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 		return null;
 	}
 
-	public Set getInpath() {
+	public Set<File> getInpath() {
 		// unimplemented in AjBrowser
 		return null;
 	}
@@ -108,8 +108,8 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 		return null;
 	}
 
-	public List getProjectXmlConfigFiles() {
-		return Collections.EMPTY_LIST;
+	public List<String> getProjectXmlConfigFiles() {
+		return Collections.emptyList();
 	}
 
 	public String getProjectEncoding() {
