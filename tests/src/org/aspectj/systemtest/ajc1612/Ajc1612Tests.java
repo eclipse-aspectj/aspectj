@@ -31,9 +31,9 @@ public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// runTest("double itdf");
 	// }
 
-	public void testItdSplitCompilation_354683() throws Exception {
-		runTest("itd split compilation");
-	}
+	// public void testItdSplitCompilation_354683() throws Exception {
+	// runTest("itd split compilation");
+	// }
 
 	public void testThisAspectInstance_239649_1() throws Exception {
 		// simple case
