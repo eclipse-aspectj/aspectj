@@ -80,7 +80,6 @@ public class DocumentParser extends DefaultHandler {
 	private static final boolean CACHE;
 	private static final boolean LIGHTPARSER;
 
-
 	static {
 		boolean value = false;
 		try {
@@ -89,10 +88,11 @@ public class DocumentParser extends DefaultHandler {
 			t.printStackTrace();
 		}
 		CACHE = value;
-		
+
 		value = false;
 		try {
-			value = System.getProperty("org.aspectj.weaver.loadtime.configuration.lightxmlparser", "false").equalsIgnoreCase("true");
+			value = System.getProperty("org.aspectj.weaver.loadtime.configuration.lightxmlparser", "false")
+					.equalsIgnoreCase("true");
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
@@ -104,31 +104,22 @@ public class DocumentParser extends DefaultHandler {
 	}
 
 	public static Definition parse(final URL url) throws Exception {
-		InputStream in = null;
-		try {
-			if (CACHE && parsedFiles.containsKey(url.toString())) {
-				return parsedFiles.get(url.toString());
-			}
-			Definition def=null;
-			
-			if(LIGHTPARSER){	
-				def = SimpleAOPParser.parse(url);
-			}else{
-				def = saxParsing(url);
-			}
-		
-			if (CACHE && def.getAspectClassNames().size() > 0) {
-				parsedFiles.put(url.toString(), def);
-			}
-
-			return def;
-		} finally {
-			try {
-				in.close();
-			} catch (Throwable t) {
-
-			}
+		if (CACHE && parsedFiles.containsKey(url.toString())) {
+			return parsedFiles.get(url.toString());
 		}
+		Definition def = null;
+
+		if (LIGHTPARSER) {
+			def = SimpleAOPParser.parse(url);
+		} else {
+			def = saxParsing(url);
+		}
+
+		if (CACHE && def.getAspectClassNames().size() > 0) {
+			parsedFiles.put(url.toString(), def);
+		}
+
+		return def;
 	}
 
 	private static Definition saxParsing(URL url) throws SAXException, ParserConfigurationException, IOException {
