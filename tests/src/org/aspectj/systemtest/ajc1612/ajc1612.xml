@@ -2,6 +2,11 @@
 
 <suite>
 
+<ajc-test dir="bugs1612/pr354683" title="itd split compilation">
+<compile files="util/CommonData.java util/CommonDataImpl.java util/CommonDataImplementation.aj util/DerivedCommonDataInterface.java util/DerivedCommonDataInterfaceImpl.java util/DerivedCommonDataInterfaceImplementation.aj" options="-1.5" outjar="code.jar"/>
+<compile files="main/AbstractBaseClass.java main/DerivedClass.java main/Whatever.java " options="-1.5 -showWeaveInfo" aspectpath="code.jar"/>
+</ajc-test>
+
 <ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 1">
 <compile files="One.java" options="-1.5"/>
 <run class="One">
