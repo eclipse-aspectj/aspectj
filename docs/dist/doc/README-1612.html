@@ -23,10 +23,77 @@ All rights reserved.
 <p>The full list of resolved issues in 1.6.12 is available 
 <a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.6.12;">here</a></h2>.</p>
 
+
+<h4>1.6.12.M2 available 18-Aug-2011</h4>
 <h4>1.6.12.M1 available 7-Jun-2011</h4>
 
 
 <h2>Notable Changes</h2>
+
+<hr>
+<h3>M2 - thisAspectInstance (<a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=239649">bug239649</a>)</h3>
+<p>
+There is now a new well known name that you can use in the if clauses in your aspects.  <tt>thisAspectInstance</tt> provides access to the aspect instance.
+
+Here is an example:
+
+<code><pre>aspect X {
+  boolean doit() {
+    System.out.println("In instance check method doit()");
+    return true;
+  }
+
+  before():execution(* m(..)) && if(thisAspectInstance.doit()){
+    System.out.println(thisJoinPoint);
+  }
+}</pre></code>
+
+<p>Now why not just use <tt>X.aspectOf()</tt> instead of <tt>thisAspectInstance</tt>?  Well <tt>thisAspectInstance</tt> is quite useful 
+when working with abstract/concrete aspects:
+
+<code><pre>
+abstract aspect X {
+abstract pointcut p();
+
+boolean doit() {
+    return true;
+  }
+
+  before():p()  && if(thisAspectInstance.doit()){
+    System.out.println(thisJoinPoint);
+  }
+}
+
+aspect Y extends X {
+
+  pointcut p(): execution(* m(..));
+
+}</pre></code>
+
+<p>Now <tt>thisAspectInstance</tt> will be an instance of the Y, not X.
+
+It enables the aspect instance to be used in some kind of check/guard that will avoid the costly creation of a thisJoinPoint object if
+the advice isn't going to run.
+
+<b>Note:</b> right now this only works for singleton aspects.  If you have need of it with other instantiation models, please comment on
+<a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=239649">https://bugs.eclipse.org/bugs/show_bug.cgi?id=239649</a>
+</p>
+<h3>M2 - weaving groovy</h3>
+<p>
+Although we have been successfully weaving groovy for a long time, it is becoming more popular and a few issues have been uncovered
+when using non-singleton aspects with groovy code.  These have been fixed.
+</p>
+
+<h3>M2 - AJDT memory</h3>
+<p>
+The release notes for the last few versions of AspectJ have mentioned two options (minimalModel and typeDemotion) which can be
+switched on to reduce memory consumption.  They have had enough field testing now and from 1.6.12.M2 onwards they are on by default.
+Users should see a reduction in memory consumed by AspectJ projects in AJDT.  It won't affect load time weaving.  It may also help
+command line (or Ant) compile time weaving.  If these options cause a problem then please raise a bugzilla but in the interim you could
+work around the problem by actively turning them off by 
+specifying <tt>-Xset:minimalModel=false,typeDemotion=false</tt> in the project properties for your AspectJ project.
+</p>
+
 <hr>
 <h3>M1 - synthetic is supported in pointcut modifiers <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=327867">327867</a></h3>
 <p>It is now possible to specify synthetic in pointcuts:
