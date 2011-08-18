@@ -94,6 +94,14 @@ work around the problem by actively turning them off by
 specifying <tt>-Xset:minimalModel=false,typeDemotion=false</tt> in the project properties for your AspectJ project.
 </p>
 
+<h3>M2 - Java7 weaving support</h3>
+<p>Some preliminary work has been done to support Java7.  Java7 class files must contain the necessary extra verifier support attributes 
+in order to load successfully on a Java7 VM - the attributes were only optional in Java6.  It is possible to force loading of classes missing 
+the attributes but that requires use of a -XX option.  AspectJ 1.6.12.M2 should create these for you if you weave Java7 level class
+files.  Nothing has been done yet to rebase AspectJ on a version of the Eclipse compiler that supports Java7 language constructs - 
+that will happen after Eclipse 3.7.1 is out.
+</p>
+
 <hr>
 <h3>M1 - synthetic is supported in pointcut modifiers <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=327867">327867</a></h3>
 <p>It is now possible to specify synthetic in pointcuts:
