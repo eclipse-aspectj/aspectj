@@ -2,6 +2,24 @@
 
 <suite>
 
+<ajc-test dir="bugs1612/pr356612" title="annotation field binding optimization">
+<compile files="AnnoBinding.java" options="-1.5"/>
+<run class="AnnoBinding">
+</run>
+</ajc-test>
+
+
+<ajc-test dir="bugs1612/pr356612" title="annotation field binding optimization - 2">
+<compile files="AnnoBinding2.java" options="-1.5"/>
+<run class="AnnoBinding2">
+<stdout>
+<line text="get(int AnnoBinding2.field1) @Marker(message=foo)"/>
+<line text="get(int AnnoBinding2.field2) @Marker(message=bar)"/>
+<line text="2 ajc$anno$NNN fields"/>
+</stdout>
+</run>
+</ajc-test>
+
 <ajc-test dir="bugs1612/pr354683" title="itd split compilation">
 <compile files="util/CommonData.java util/CommonDataImpl.java util/CommonDataImplementation.aj util/DerivedCommonDataInterface.java util/DerivedCommonDataInterfaceImpl.java util/DerivedCommonDataInterfaceImplementation.aj" options="-1.5" outjar="code.jar"/>
 <compile files="main/AbstractBaseClass.java main/DerivedClass.java main/Whatever.java " options="-1.5" aspectpath="code.jar"/>

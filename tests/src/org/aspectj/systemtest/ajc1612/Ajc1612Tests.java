@@ -35,6 +35,14 @@ public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// runTest("itd split compilation");
 	// }
 
+	public void testAnnotationFieldBindingOptimization_356612() throws Exception {
+		runTest("annotation field binding optimization");
+	}
+
+	public void testAnnotationFieldBindingOptimization_356612_2() throws Exception {
+		runTest("annotation field binding optimization - 2");
+	}
+
 	public void testThisAspectInstance_239649_1() throws Exception {
 		// simple case
 		runTest("thisAspectInstance - 1");
