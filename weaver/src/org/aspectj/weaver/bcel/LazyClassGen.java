@@ -1048,10 +1048,11 @@ public final class LazyClassGen {
 	 * @param shadow the shadow at which the @annotation result is being cached
 	 * @return a field
 	 */
-	public Field getAnnotationCachingField(BcelShadow shadow, ResolvedType toType) {
+	public Field getAnnotationCachingField(BcelShadow shadow, ResolvedType toType, boolean isWithin) {
 		// Multiple annotation types at a shadow. A different field would be required for each
-		CacheKey cacheKey = new CacheKey(shadow, toType);
+		CacheKey cacheKey = new CacheKey(shadow, toType, isWithin);
 		Field field = annotationCachingFieldCache.get(cacheKey);
+		// System.out.println(field + " for shadow " + shadow);
 		if (field == null) {
 			// private static Annotation ajc$anno$<nnn>
 			StringBuilder sb = new StringBuilder();
@@ -1066,17 +1067,20 @@ public final class LazyClassGen {
 	}
 
 	static class CacheKey {
-		private BcelShadow shadow;
+		private Object key;
 		private ResolvedType annotationType;
 
-		CacheKey(BcelShadow shadow, ResolvedType annotationType) {
-			this.shadow = shadow;
+		// If the annotation is being accessed via @annotation on a shadow then we can use the shadows toString() (so two shadows
+		// the same share a variable), but if it is @withincode() or @within() we can't share them (as the shadows may look the same
+		// but be occurring 'within' different things). In the within cases we continue to use the shadow itself as the key.
+		CacheKey(BcelShadow shadow, ResolvedType annotationType, boolean isWithin) {
+			this.key = isWithin ? shadow : shadow.toString();
 			this.annotationType = annotationType;
 		}
 
 		@Override
 		public int hashCode() {
-			return shadow.hashCode() * 37 + annotationType.hashCode();
+			return key.hashCode() * 37 + annotationType.hashCode();
 		}
 
 		@Override
@@ -1085,7 +1089,7 @@ public final class LazyClassGen {
 				return false;
 			}
 			CacheKey oCacheKey = (CacheKey) other;
-			return shadow.equals(oCacheKey.shadow) && annotationType.equals(oCacheKey.annotationType);
+			return key.equals(oCacheKey.key) && annotationType.equals(oCacheKey.annotationType);
 		}
 	}
 

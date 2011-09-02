@@ -39,14 +39,16 @@ public class AnnotationAccessVar extends BcelVar {
 	private Kind kind; // What kind of shadow are we at?
 	private UnresolvedType containingType; // The type upon which we want to ask for 'member'
 	private Member member; // Holds the member that has the annotations (for method/field join points)
+	private boolean isWithin; // implies @within() or @withincode(). If false, that implies @annotation()
 
 	public AnnotationAccessVar(BcelShadow shadow, Kind kind, ResolvedType annotationType, UnresolvedType theTargetIsStoredHere,
-			Member sig) {
+			Member sig, boolean isWithin) {
 		super(annotationType, 0);
 		this.shadow = shadow;
 		this.kind = kind;
 		this.containingType = theTargetIsStoredHere;
 		this.member = sig;
+		this.isWithin = isWithin;
 	}
 
 	public Kind getKind() {
@@ -120,7 +122,7 @@ public class AnnotationAccessVar extends BcelVar {
 					|| ((kind == Shadow.ConstructorCall || kind == Shadow.ConstructorExecution) && member.getKind() == Member.METHOD)) {
 
 				// Need to look at the cached annotation before going to fetch it again
-				Field annotationCachingField = shadow.getEnclosingClass().getAnnotationCachingField(shadow, toType);
+				Field annotationCachingField = shadow.getEnclosingClass().getAnnotationCachingField(shadow, toType, isWithin);
 
 				// Basic idea here is to check if the cached field is null, if it is then initialize it, otherwise use it
 				il.append(fact.createGetStatic(shadow.getEnclosingClass().getName(), annotationCachingField.getName(), jlAnnotation));
@@ -156,14 +158,7 @@ public class AnnotationAccessVar extends BcelVar {
 						new Type[] { jlClass }, Constants.INVOKEVIRTUAL));
 			}
 		} else if (kind == Shadow.FieldSet || kind == Shadow.FieldGet) {
-			Type jlrField = BcelWorld.makeBcelType(UnresolvedType.JAVA_LANG_REFLECT_FIELD);
-			il.append(fact.createConstant(BcelWorld.makeBcelType(containingType))); // Stick the target on the stack
-			il.append(fact.createConstant(member.getName())); // Stick what we are after on the stack
-			il.append(fact.createInvoke("java/lang/Class", "getDeclaredField", jlrField, new Type[] { jlString },
-					Constants.INVOKEVIRTUAL));
-			il.append(pushConstant);
-			il.append(fact.createInvoke("java/lang/reflect/Field", "getAnnotation", jlaAnnotation, new Type[] { jlClass },
-					Constants.INVOKEVIRTUAL));
+			generateBytecodeToAccessAnnotationAtFieldGetSetShadow(toType, fact, il, pushConstant);
 		} else if (kind == Shadow.StaticInitialization || kind == Shadow.ExceptionHandler) {
 			il.append(fact.createConstant(BcelWorld.makeBcelType(containingType)));
 			il.append(pushConstant);
@@ -174,6 +169,44 @@ public class AnnotationAccessVar extends BcelVar {
 		}
 		il.append(Utility.createConversion(fact, jlaAnnotation, BcelWorld.makeBcelType(toType)));
 		return il;
+	}
+
+	/**
+	 * At a FieldGet or FieldSet shadow, generate the bytecode to access the annotation for that field. The annotation is cached so
+	 * the code checks that cached value before proceeding.
+	 */
+	private void generateBytecodeToAccessAnnotationAtFieldGetSetShadow(ResolvedType toType, InstructionFactory fact,
+			InstructionList il, Instruction pushConstantAnnotationType) {
+		Type jlClass = BcelWorld.makeBcelType(UnresolvedType.JL_CLASS);
+		Type jlString = BcelWorld.makeBcelType(UnresolvedType.JL_STRING);
+		Type jlaAnnotation = BcelWorld.makeBcelType(UnresolvedType.JAVA_LANG_ANNOTATION);
+		Type jlrField = BcelWorld.makeBcelType(UnresolvedType.JAVA_LANG_REFLECT_FIELD);
+
+		LazyClassGen shadowEnclosingClass = shadow.getEnclosingClass();
+
+		// The annotation for the field of interest is cached, check cached value before fetching it
+		Field annotationCachingField = shadowEnclosingClass.getAnnotationCachingField(shadow, toType, isWithin);
+		String annotationCachingFieldName = annotationCachingField.getName();
+
+		// Basic idea here is to check if the cached field is null, if it is then initialize it, otherwise use it
+		il.append(fact.createGetStatic(shadowEnclosingClass.getName(), annotationCachingFieldName, jlaAnnotation));
+		il.appendDUP();
+		InstructionBranch ifNonNull = new InstructionBranch(Constants.IFNONNULL, null);
+		il.append(ifNonNull);
+		il.appendPOP();
+
+		// get the field of interest
+		il.append(fact.createConstant(BcelWorld.makeBcelType(containingType)));
+		il.append(fact.createConstant(member.getName()));
+		il.append(fact.createInvoke("java/lang/Class", "getDeclaredField", jlrField, new Type[] { jlString },
+				Constants.INVOKEVIRTUAL));
+		il.append(pushConstantAnnotationType);
+		il.append(fact.createInvoke("java/lang/reflect/Field", "getAnnotation", jlaAnnotation, new Type[] { jlClass },
+				Constants.INVOKEVIRTUAL));
+		il.appendDUP();
+		il.append(fact.createPutStatic(shadowEnclosingClass.getName(), annotationCachingFieldName, jlaAnnotation));
+		InstructionHandle ifNullElse = il.appendNOP();
+		ifNonNull.setTarget(ifNullElse);
 	}
 
 	private void buildArray(InstructionList il, InstructionFactory fact, Type arrayElementType, Type[] arrayEntries, int dim) {
