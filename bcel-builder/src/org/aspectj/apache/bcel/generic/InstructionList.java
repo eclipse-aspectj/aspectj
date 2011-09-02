@@ -76,7 +76,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
  * 
  * A list is finally dumped to a byte code array with <a href="#getByteCode()">getByteCode</a>.
  * 
- * @version $Id: InstructionList.java,v 1.11 2010/09/15 18:18:01 aclement Exp $
+ * @version $Id: InstructionList.java,v 1.12 2011/09/02 22:33:04 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author Abraham Nevado
  * @see Instruction
@@ -352,6 +352,24 @@ public class InstructionList implements Serializable {
 		InstructionHandle ih = InstructionHandle.getInstructionHandle(i);
 		append(ih);
 
+		return ih;
+	}
+
+	public InstructionHandle appendDUP() {
+		InstructionHandle ih = InstructionHandle.getInstructionHandle(InstructionConstants.DUP);
+		append(ih);
+		return ih;
+	}
+
+	public InstructionHandle appendNOP() {
+		InstructionHandle ih = InstructionHandle.getInstructionHandle(InstructionConstants.NOP);
+		append(ih);
+		return ih;
+	}
+
+	public InstructionHandle appendPOP() {
+		InstructionHandle ih = InstructionHandle.getInstructionHandle(InstructionConstants.POP);
+		append(ih);
 		return ih;
 	}
 
