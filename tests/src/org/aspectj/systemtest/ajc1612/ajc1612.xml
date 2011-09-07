@@ -3,15 +3,44 @@
 <suite>
 
 <ajc-test dir="bugs1612/prx" title="class reference in annotation value">
-<compile files="C.java" options="-1.5"/>
+<compile files="C.java" options="-1.5 -showWeaveInfo">
+<message kind="weave" text="Join point 'field-get(int C.i)' in Type 'C' (C.java:17) advised by before advice from 'X' (C.java:22)"/>
+</compile>
 <run class="C">
 </run>
 </ajc-test>
 
-<ajc-test dir="bugs1612/prx" title="class reference in annotation value 2">
-<compile files="D.java" options="-1.5"/>
+<ajc-test dir="bugs1612/prx" title="annotation values not equal">
+<compile files="D.java" options="-1.5 -showWeaveInfo">
+<message kind="weave" text="Join point 'field-get(int D.i)' in Type 'D' (D.java:20) advised by before advice from 'X' (D.java:26)"/>
+<message kind="weave" text="Join point 'field-get(int D.j)' in Type 'D' (D.java:21) advised by before advice from 'X' (D.java:26)"/>
+</compile>
 <run class="D">
 </run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/prx" title="class reference in annotation value 3">
+<compile files="E.java" options="-1.5 -showWeaveInfo">
+<message kind="weave" text="Join point 'field-get(int E.i)' in Type 'E' (E.java:17) advised by before advice from 'X' (E.java:22)"/>
+</compile>
+<run class="E">
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/prx" title="annotation values not equal 2">
+<compile files="F.java" options="-1.5 -showWeaveInfo">
+<message kind="weave" text="Join point 'field-get(int F.i)' in Type 'F' (F.java:20) advised by before advice from 'X' (F.java:26)"/>
+<message kind="weave" text="Join point 'field-get(int F.j)' in Type 'F' (F.java:21) advised by before advice from 'X' (F.java:26)"/>
+</compile>
+<run class="F">
+</run>
+</ajc-test>
+
+
+<ajc-test dir="bugs1612/prx" title="class reference in annotation value - invalid typename">
+<compile files="G.java" options="-1.5 -showWeaveInfo">
+<message kind="weave" text="Join point 'field-get(int C.i)' in Type 'C' (C.java:17) advised by before advice from 'X' (C.java:22)"/>
+</compile>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr356612" title="annotation field binding optimization">

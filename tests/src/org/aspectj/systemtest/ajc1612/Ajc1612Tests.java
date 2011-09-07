@@ -35,12 +35,24 @@ public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// runTest("itd split compilation");
 	// }
 
-	public void testClassRef() throws Exception {
+	public void testNotEqualWithAnnotationValues_357013() throws Exception {
+		runTest("annotation values not equal");
+	}
+
+	public void testNotEqualWithAnnotationValues_357013_2() throws Exception {
+		runTest("annotation values not equal 2");
+	}
+
+	public void testClassRef_357012() throws Exception {
 		runTest("class reference in annotation value");
 	}
 
-	public void testClassRef2() throws Exception {
-		runTest("class reference in annotation value 2");
+	public void testClassRefInvalidName_357012_2() throws Exception {
+		runTest("class reference in annotation value - invalid typename");
+	}
+
+	public void testClassRef_357012_3() throws Exception {
+		runTest("class reference in annotation value 3");
 	}
 
 	public void testAnnotationFieldBindingOptimization_356612() throws Exception {

@@ -2,20 +2,20 @@ import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
 @interface Anno {
-  Class value();
+  Class value() default String.class;
 }
 
-public class C {
+public class E {
 
-  @Anno(String.class)
+  @Anno
   public int i;
 
   @Anno(Integer.class)
   public int j;
 
   public static void main(String []argv) {
-    System.out.println(new C().i);
-    System.out.println(new C().j);
+    System.out.println(new E().i);
+    System.out.println(new E().j);
   }
 }
 aspect X {
