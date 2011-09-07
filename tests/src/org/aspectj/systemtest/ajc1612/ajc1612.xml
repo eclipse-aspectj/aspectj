@@ -38,8 +38,8 @@
 
 
 <ajc-test dir="bugs1612/prx" title="class reference in annotation value - invalid typename">
-<compile files="G.java" options="-1.5 -showWeaveInfo">
-<message kind="weave" text="Join point 'field-get(int C.i)' in Type 'C' (C.java:17) advised by before advice from 'X' (C.java:22)"/>
+<compile files="G.java" options="-1.5">
+<message kind="error" text="Unable to resolve type 'Foo.class' specified for value 'value'"/>
 </compile>
 </ajc-test>
 

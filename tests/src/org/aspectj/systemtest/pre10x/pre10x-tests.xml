@@ -558,6 +558,9 @@
       title="Compiler should suggest using aspect when advice, pointcuts, or introduction is in a class"
       keywords="from-errors,poorErrorMessages">
         <compile files="RecognizeAspectCE.java">
+            <message kind="error" line="2"  
+            	file="RecognizeAspectCE.java"
+            	text="Syntax error"/>
             <message kind="error" line="3"  
             	file="RecognizeAspectCE.java"
             	text="Syntax error"/>
