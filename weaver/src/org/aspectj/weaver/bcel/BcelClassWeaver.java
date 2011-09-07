@@ -80,7 +80,6 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
-import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.model.AsmRelationshipProvider;
@@ -402,8 +401,15 @@ class BcelClassWeaver implements IClassWeaver {
 	 */
 	public boolean weave() {
 		if (clazz.isWoven() && !clazz.isReweavable()) {
-			world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.ALREADY_WOVEN, clazz.getType().getName()),
-					ty.getSourceLocation(), null);
+			if (world.getLint().nonReweavableTypeEncountered.isEnabled()) {
+				world.getLint().nonReweavableTypeEncountered.signal(clazz.getType().getName(), ty.getSourceLocation());
+			}
+			// Integer uniqueID = new Integer(rm.hashCode() * deca.hashCode());
+			// if (!reportedProblems.contains(uniqueID)) {
+			// reportedProblems.add(uniqueID);
+			// world.getLint().elementAlreadyAnnotated.signal(new String[] { rm.toString(),
+			// world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.ALREADY_WOVEN, clazz.getType().getName()),
+			// ty.getSourceLocation(), null);
 			return false;
 		}
 
@@ -3103,7 +3109,7 @@ class BcelClassWeaver implements IClassWeaver {
 							&& s.charAt(4) == 'a'
 							&& (s.equals("org.aspectj.runtime.internal.CFlowCounter")
 									|| s.equals("org.aspectj.runtime.internal.CFlowStack") || s
-										.equals("org.aspectj.runtime.reflect.Factory"))) {
+									.equals("org.aspectj.runtime.reflect.Factory"))) {
 						proceed = false;
 					} else {
 						if (methodName.equals("aspectOf")) {
