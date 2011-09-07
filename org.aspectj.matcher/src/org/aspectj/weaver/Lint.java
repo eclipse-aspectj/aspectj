@@ -113,6 +113,9 @@ public class Lint {
 	public final Kind calculatingSerialVersionUID = new Kind("calculatingSerialVersionUID",
 			"calculated SerialVersionUID for type {0} to be {1}");
 
+	public final Kind nonReweavableTypeEncountered = new Kind("nonReweavableTypeEncountered",
+			"class '{0}' is already woven and has not been built in reweavable mode");
+
 	// there are a lot of messages in the cant find type family - I'm defining an umbrella lint warning that
 	// allows a user to control their severity (for e.g. ltw or binary weaving)
 	public final Kind cantFindType = new Kind("cantFindType", "{0}");
