@@ -900,7 +900,7 @@ public class PatternParser {
 
 	// Parse annotation values. In an expression in @A(a=b,c=d) this method will be
 	// parsing the a=b,c=d.)
-	public Map/* String,String */<String, String> parseAnnotationValues() {
+	public Map<String, String> parseAnnotationValues() {
 		Map<String, String> values = new HashMap<String, String>();
 		boolean seenDefaultValue = false;
 		do {
@@ -916,6 +916,14 @@ public class PatternParser {
 					throw new ParserException("expecting simple literal ", tokenSource.peek(-1));
 				}
 				values.put(possibleKeyString, valueString);
+			} else if (maybeEat("!=")) {
+				// it was a key, with a !=
+				String valueString = parseAnnotationNameValuePattern();
+				if (valueString == null) {
+					throw new ParserException("expecting simple literal ", tokenSource.peek(-1));
+				}
+				// negation is captured by adding a trailing ! to the key name
+				values.put(possibleKeyString + "!", valueString);
 			} else {
 				if (seenDefaultValue) {
 					throw new ParserException("cannot specify two default values", tokenSource.peek(-1));
@@ -1313,6 +1321,9 @@ public class PatternParser {
 			tok = tokenSource.peek();
 			// keep going until we hit ')' or '=' or ','
 			if (tok.getString() == ")" && depth == 0) {
+				break;
+			}
+			if (tok.getString() == "!=" && depth == 0) {
 				break;
 			}
 			if (tok.getString() == "=" && depth == 0) {

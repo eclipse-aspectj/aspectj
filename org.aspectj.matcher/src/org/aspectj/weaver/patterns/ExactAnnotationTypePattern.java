@@ -110,9 +110,11 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 				if (annotationType instanceof ReferenceType) {
 					ReferenceType rt = (ReferenceType) annotationType;
 					if (rt.getRetentionPolicy() != null && rt.getRetentionPolicy().equals("SOURCE")) {
-						rt.getWorld().getMessageHandler().handleMessage(
-								MessageUtil.warn(WeaverMessages.format(WeaverMessages.NO_MATCH_BECAUSE_SOURCE_RETENTION,
-										annotationType, annotated), getSourceLocation()));
+						rt.getWorld()
+								.getMessageHandler()
+								.handleMessage(
+										MessageUtil.warn(WeaverMessages.format(WeaverMessages.NO_MATCH_BECAUSE_SOURCE_RETENTION,
+												annotationType, annotated), getSourceLocation()));
 						return FuzzyBoolean.NO;
 					}
 				}
@@ -124,12 +126,25 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 					// Check each one
 					Set<String> keys = annotationValues.keySet();
 					for (String k : keys) {
+						boolean notEqual = false;
 						String v = annotationValues.get(k);
+						// if the key has a trailing '!' then it means the source expressed k!=v - so we are looking for
+						// something other than the value specified
+						if (k.endsWith("!")) {
+							notEqual = true;
+							k = k.substring(0, k.length() - 1);
+						}
 						if (theAnnotation.hasNamedValue(k)) {
 							// Simple case, value is 'name=value' and the
 							// annotation specified the same thing
-							if (!theAnnotation.hasNameValuePair(k, v)) {
-								return FuzzyBoolean.NO;
+							if (notEqual) {
+								if (theAnnotation.hasNameValuePair(k, v)) {
+									return FuzzyBoolean.NO;
+								}
+							} else {
+								if (!theAnnotation.hasNameValuePair(k, v)) {
+									return FuzzyBoolean.NO;
+								}
 							}
 						} else {
 							// Complex case, look at the default value
@@ -144,8 +159,14 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 									}
 								}
 							}
-							if (!foundMatch) {
-								return FuzzyBoolean.NO;
+							if (notEqual) {
+								if (foundMatch) {
+									return FuzzyBoolean.NO;
+								}
+							} else {
+								if (!foundMatch) {
+									return FuzzyBoolean.NO;
+								}
 							}
 						}
 					}

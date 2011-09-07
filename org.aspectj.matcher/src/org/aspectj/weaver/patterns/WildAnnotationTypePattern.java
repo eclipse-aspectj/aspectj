@@ -86,19 +86,24 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		ResolvedMember[] ms = annotationType.getDeclaredMethods();
 		for (Iterator<String> kIter = keys.iterator(); kIter.hasNext();) {
 			String k = kIter.next();
+			String key = k;
+			// a trailing ! indicates the the user expressed key!=value rather than key=value as a match constraint
+			if (k.endsWith("!")) {
+				key = key.substring(0, k.length() - 1);
+			}
 			String v = annotationValues.get(k);
 			boolean validKey = false;
 			for (int i = 0; i < ms.length; i++) {
 				ResolvedMember resolvedMember = ms[i];
-				if (resolvedMember.getName().equals(k) && resolvedMember.isAbstract()) {
+				if (resolvedMember.getName().equals(key) && resolvedMember.isAbstract()) {
 					validKey = true;
 					ResolvedType t = resolvedMember.getReturnType().resolve(scope.getWorld());
 					if (t.isEnum()) {
 						// value must be an enum reference X.Y
 						int pos = v.lastIndexOf(".");
 						if (pos == -1) {
-							IMessage m = MessageUtil.error(WeaverMessages
-									.format(WeaverMessages.INVALID_ANNOTATION_VALUE, v, "enum"), getSourceLocation());
+							IMessage m = MessageUtil.error(
+									WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE, v, "enum"), getSourceLocation());
 							scope.getWorld().getMessageHandler().handleMessage(m);
 						} else {
 							String typename = v.substring(0, pos);
@@ -112,8 +117,9 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 								int value = Integer.parseInt(v);
 								annotationValues.put(k, Integer.toString(value));
 							} catch (NumberFormatException nfe) {
-								IMessage m = MessageUtil.error(WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE, v,
-										"int"), getSourceLocation());
+								IMessage m = MessageUtil.error(
+										WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE, v, "int"),
+										getSourceLocation());
 								scope.getWorld().getMessageHandler().handleMessage(m);
 							}
 						} else if (t.getSignature() == "F") {
@@ -121,8 +127,9 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 								float value = Float.parseFloat(v);
 								annotationValues.put(k, Float.toString(value));
 							} catch (NumberFormatException nfe) {
-								IMessage m = MessageUtil.error(WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE, v,
-										"float"), getSourceLocation());
+								IMessage m = MessageUtil.error(
+										WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE, v, "float"),
+										getSourceLocation());
 								scope.getWorld().getMessageHandler().handleMessage(m);
 							}
 
@@ -130,8 +137,9 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 							if (v.equalsIgnoreCase("true") || v.equalsIgnoreCase("false")) {
 								// is it ok !
 							} else {
-								IMessage m = MessageUtil.error(WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE, v,
-										"boolean"), getSourceLocation());
+								IMessage m = MessageUtil.error(
+										WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE, v, "boolean"),
+										getSourceLocation());
 								scope.getWorld().getMessageHandler().handleMessage(m);
 							}
 						} else if (t.getSignature() == "S") {
@@ -139,8 +147,9 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 								short value = Short.parseShort(v);
 								annotationValues.put(k, Short.toString(value));
 							} catch (NumberFormatException nfe) {
-								IMessage m = MessageUtil.error(WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE, v,
-										"short"), getSourceLocation());
+								IMessage m = MessageUtil.error(
+										WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE, v, "short"),
+										getSourceLocation());
 								scope.getWorld().getMessageHandler().handleMessage(m);
 							}
 						} else if (t.getSignature() == "J") {
@@ -148,8 +157,9 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 								long value = Long.parseLong(v);
 								annotationValues.put(k, Long.toString(value));
 							} catch (NumberFormatException nfe) {
-								IMessage m = MessageUtil.error(WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE, v,
-										"long"), getSourceLocation());
+								IMessage m = MessageUtil.error(
+										WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE, v, "long"),
+										getSourceLocation());
 								scope.getWorld().getMessageHandler().handleMessage(m);
 							}
 						} else if (t.getSignature() == "D") {
@@ -157,8 +167,9 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 								double value = Double.parseDouble(v);
 								annotationValues.put(k, Double.toString(value));
 							} catch (NumberFormatException nfe) {
-								IMessage m = MessageUtil.error(WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE, v,
-										"double"), getSourceLocation());
+								IMessage m = MessageUtil.error(
+										WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE, v, "double"),
+										getSourceLocation());
 								scope.getWorld().getMessageHandler().handleMessage(m);
 							}
 						} else if (t.getSignature() == "B") {
@@ -166,14 +177,16 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 								byte value = Byte.parseByte(v);
 								annotationValues.put(k, Byte.toString(value));
 							} catch (NumberFormatException nfe) {
-								IMessage m = MessageUtil.error(WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE, v,
-										"byte"), getSourceLocation());
+								IMessage m = MessageUtil.error(
+										WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE, v, "byte"),
+										getSourceLocation());
 								scope.getWorld().getMessageHandler().handleMessage(m);
 							}
 						} else if (t.getSignature() == "C") {
 							if (v.length() != 3) { // '?'
-								IMessage m = MessageUtil.error(WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE, v,
-										"char"), getSourceLocation());
+								IMessage m = MessageUtil.error(
+										WeaverMessages.format(WeaverMessages.INVALID_ANNOTATION_VALUE, v, "char"),
+										getSourceLocation());
 								scope.getWorld().getMessageHandler().handleMessage(m);
 							} else {
 								annotationValues.put(k, v.substring(1, 2));
@@ -183,6 +196,15 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 						}
 					} else if (t.equals(ResolvedType.JL_STRING)) {
 						// nothing to do, it will be OK
+					} else if (t.equals(ResolvedType.JL_CLASS)) {
+						String typename = v.substring(0, v.lastIndexOf('.')); // strip off '.class'
+						ResolvedType rt = scope.lookupType(typename, this).resolve(scope.getWorld());
+						if (rt.isMissing()) {
+							IMessage m = MessageUtil.error("Unable to resolve type '" + v + "' specified for value '" + k + "'",
+									getSourceLocation());
+							scope.getWorld().getMessageHandler().handleMessage(m);
+						}
+						annotationValues.put(k, rt.getSignature());
 					} else {
 						throw new RuntimeException("Compiler limitation: annotation value support not implemented for type " + t);
 					}
@@ -192,6 +214,8 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 				IMessage m = MessageUtil.error(WeaverMessages.format(WeaverMessages.UNKNOWN_ANNOTATION_VALUE, annotationType, k),
 						getSourceLocation());
 				scope.getWorld().getMessageHandler().handleMessage(m);
+			} else {
+				break;
 			}
 		}
 	}
@@ -268,8 +292,9 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		if (typePattern instanceof ExactTypePattern) {
 			ExactTypePattern et = (ExactTypePattern) typePattern;
 			if (!et.getExactType().resolve(scope.getWorld()).isAnnotation()) {
-				IMessage m = MessageUtil.error(WeaverMessages.format(WeaverMessages.REFERENCE_TO_NON_ANNOTATION_TYPE, et
-						.getExactType().getName()), getSourceLocation());
+				IMessage m = MessageUtil.error(
+						WeaverMessages.format(WeaverMessages.REFERENCE_TO_NON_ANNOTATION_TYPE, et.getExactType().getName()),
+						getSourceLocation());
 				scope.getWorld().getMessageHandler().handleMessage(m);
 				resolved = false;
 			}
@@ -296,11 +321,6 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 
 	private static final byte VERSION = 1; // rev if ser. form changes
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)
-	 */
 	@Override
 	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(AnnotationTypePattern.WILD);
