@@ -2,12 +2,23 @@
 
 <suite>
 
+<ajc-test dir="bugs1612/prx" title="class reference in annotation value">
+<compile files="C.java" options="-1.5"/>
+<run class="C">
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/prx" title="class reference in annotation value 2">
+<compile files="D.java" options="-1.5"/>
+<run class="D">
+</run>
+</ajc-test>
+
 <ajc-test dir="bugs1612/pr356612" title="annotation field binding optimization">
 <compile files="AnnoBinding.java" options="-1.5"/>
 <run class="AnnoBinding">
 </run>
 </ajc-test>
-
 
 <ajc-test dir="bugs1612/pr356612" title="annotation field binding optimization - 2">
 <compile files="AnnoBinding2.java" options="-1.5"/>
