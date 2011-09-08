@@ -1332,6 +1332,9 @@ public class PatternParser {
 			if (tok.getString() == "," && depth == 0) {
 				break;
 			}
+			if (tok == IToken.EOF) {
+				throw new ParserException("eof", tokenSource.peek());
+			}
 
 			// keep track of nested brackets
 			if (tok.getString() == "(") {
