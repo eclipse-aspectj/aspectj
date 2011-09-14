@@ -24,6 +24,7 @@ import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
@@ -50,7 +51,7 @@ public class HasMemberTypePattern extends TypePattern {
 			return hasMethod(type);
 		}
 	}
-	
+
 	public ISignaturePattern getSignaturePattern() {
 		return signaturePattern;
 	}
@@ -77,10 +78,10 @@ public class HasMemberTypePattern extends TypePattern {
 		return false;
 	}
 
-	private boolean hasMethod(ResolvedType type) {
+	protected boolean hasMethod(ResolvedType type) {
 		// TODO what about ITDs
 		World world = type.getWorld();
-		for (Iterator iter = type.getMethods(true, true); iter.hasNext();) {
+		for (Iterator<ResolvedMember> iter = type.getMethods(true, true); iter.hasNext();) {
 			Member method = (Member) iter.next();
 			if (method.getName().startsWith(declareAtPrefix)) {
 				continue;
@@ -94,7 +95,7 @@ public class HasMemberTypePattern extends TypePattern {
 				return true;
 			}
 		}
-		// try itds before we give up
+		// try itds before we give up (this doesnt find annotations - the signature returned may not include them)
 		List<ConcreteTypeMunger> mungers = type.getInterTypeMungersIncludingSupers();
 		for (Iterator<ConcreteTypeMunger> iter = mungers.iterator(); iter.hasNext();) {
 			ConcreteTypeMunger munger = iter.next();

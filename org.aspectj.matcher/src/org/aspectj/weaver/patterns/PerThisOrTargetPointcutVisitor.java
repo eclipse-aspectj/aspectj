@@ -90,7 +90,17 @@ public class PerThisOrTargetPointcutVisitor extends AbstractPatternNodeVisitor {
 		} else if (node.getKind().equals(Shadow.ConstructorExecution) || node.getKind().equals(Shadow.Initialization)
 				|| node.getKind().equals(Shadow.MethodExecution) || node.getKind().equals(Shadow.PreInitialization)
 				|| node.getKind().equals(Shadow.StaticInitialization)) {
-			return node.getSignature().getDeclaringType();
+			SignaturePattern signaturePattern = node.getSignature();
+			boolean isStarAnnotation = signaturePattern.isStarAnnotation();
+			// For a method execution joinpoint, we check for an annotation pattern. If there is one we know it will be matched
+			// against the 'primary' joinpoint (the one in the type) - 'super'joinpoints can't match it. If this situation occurs
+			// we can re-use the HasMemberTypePattern to guard on whether the perthis/target should match. pr354470
+			if (!m_isTarget && node.getKind().equals(Shadow.MethodExecution)) {
+				if (!isStarAnnotation) {
+					return new HasMemberTypePatternForPerThisMatching(signaturePattern);
+				}
+			}
+			return signaturePattern.getDeclaringType();
 		} else if (node.getKind().equals(Shadow.ConstructorCall) || node.getKind().equals(Shadow.FieldGet)
 				|| node.getKind().equals(Shadow.FieldSet) || node.getKind().equals(Shadow.MethodCall)) {
 			if (m_isTarget) {
