@@ -2,6 +2,34 @@
 
 <suite>
 
+<ajc-test dir="bugs1612/pr354470" title="perthis too pervasive">
+<compile files="Code.java" options="-1.5"/>
+<run class="Code">
+<stdout>
+	<line text="AAA"/>
+	<line text="BBB"/>
+	<line text="CCC"/>
+	<line text="interface Code$ajcMightHaveAspect"/>
+	<line text="private transient Code CCC.ajc$Code$perObjectField"/>
+</stdout></run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr354470" title="perthis too pervasive 2">
+<compile files="Code2.java" options="-1.5"/>
+<run class="Code2">
+<stdout>
+	<line text="execution(void CCC.m())"/>
+</stdout></run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr354470" title="perthis too pervasive 3">
+<compile files="Code3.java" options="-1.5"/>
+<run class="Code3">
+<stdout>
+	<line text="execution(void CCC.m())"/>
+</stdout></run>
+</ajc-test>
+
 <ajc-test dir="bugs1612/prx" title="class reference in annotation value">
 <compile files="C.java" options="-1.5 -showWeaveInfo">
 <message kind="weave" text="Join point 'field-get(int C.i)' in Type 'C' (C.java:17) advised by before advice from 'X' (C.java:22)"/>

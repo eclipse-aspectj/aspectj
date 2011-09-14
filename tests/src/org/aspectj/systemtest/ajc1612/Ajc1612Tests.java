@@ -35,6 +35,18 @@ public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// runTest("itd split compilation");
 	// }
 
+	public void testPervasivePerthis_354470() throws Exception {
+		runTest("perthis too pervasive");
+	}
+
+	public void testPervasivePerthis_354470_2() throws Exception {
+		runTest("perthis too pervasive 2");
+	}
+
+	public void testPervasivePerthis_354470_3() throws Exception {
+		runTest("perthis too pervasive 3");
+	}
+
 	public void testNotEqualWithAnnotationValues_357013() throws Exception {
 		runTest("annotation values not equal");
 	}
