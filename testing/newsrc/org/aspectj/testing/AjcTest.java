@@ -28,6 +28,7 @@ public class AjcTest {
 	private static boolean is14VMOrGreater = true;
 	private static boolean is15VMOrGreater = false;
 	private static boolean is16VMOrGreater = false;
+	private static boolean is17VMOrGreater = false;
 	
 	static { // matching logic is also in org.aspectj.util.LangUtil
         String vm = System.getProperty("java.version"); // JLS 20.18.7
@@ -40,6 +41,10 @@ public class AjcTest {
 		} else if (vm.startsWith("1.6")) {
 			is15VMOrGreater = true;
 			is16VMOrGreater = true;
+		} else if (vm.startsWith("1.7")) {
+			is15VMOrGreater = true;
+			is16VMOrGreater = true;
+			is17VMOrGreater=true;
 		}
 	}
 
@@ -81,6 +86,7 @@ public class AjcTest {
 		if (vmLevel.equals("1.4")) canRun = is14VMOrGreater;
 		if (vmLevel.equals("1.5")) canRun = is15VMOrGreater;
 		if (vmLevel.equals("1.6")) canRun = is16VMOrGreater;
+		if (vmLevel.equals("1.7")) canRun = is17VMOrGreater;
 		if (!canRun) {
 			System.out.println("***SKIPPING TEST***" + getTitle()+ " needs " + getVmLevel() 
 					+ ", currently running on " + System.getProperty("java.vm.version"));
