@@ -493,11 +493,42 @@ public class ProgramElement implements IProgramElement {
 		if (getFullyQualifiedType) {
 			return returnType;
 		}
-		int index = returnType.lastIndexOf(".");
-		if (index != -1) {
-			return returnType.substring(index + 1);
+		return trim(returnType);
+	}
+
+	/**
+	 * Trim down fully qualified types to their short form (e.g. a.b.c.D<e.f.G> becomes D<G>)
+	 */
+	public static String trim(String fqname) {
+		int i = fqname.indexOf("<");
+		if (i == -1) {
+			int lastdot = fqname.lastIndexOf('.');
+			if (lastdot == -1) {
+				return fqname;
+			} else {
+				return fqname.substring(lastdot + 1);
+			}
 		}
-		return returnType;
+		char[] charArray = fqname.toCharArray();
+		StringBuilder candidate = new StringBuilder(charArray.length);
+		StringBuilder complete = new StringBuilder(charArray.length);
+		for (char c : charArray) {
+			switch (c) {
+			case '.':
+				candidate.setLength(0);
+				break;
+			case '<':
+			case ',':
+			case '>':
+				complete.append(candidate).append(c);
+				candidate.setLength(0);
+				break;
+			default:
+				candidate.append(c);
+			}
+		}
+		complete.append(candidate);
+		return complete.toString();
 	}
 
 	public String getName() {
