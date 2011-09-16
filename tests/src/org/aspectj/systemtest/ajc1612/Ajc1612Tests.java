@@ -16,6 +16,7 @@ import junit.framework.Test;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.asm.internal.ProgramElement;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
@@ -34,6 +35,37 @@ public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// public void testItdSplitCompilation_354683() throws Exception {
 	// runTest("itd split compilation");
 	// }
+
+	public void testCorrespondingType_357582() {
+		for (int i = 0; i < 100000; i++) {
+			assertEquals("AAA", convert("AAA"));
+			assertEquals("AAA", convert("a.b.c.AAA"));
+			assertEquals("A", convert("aa.ba.ca.A"));
+			assertEquals("AAA<>", convert("a.b.c.AAA<>"));
+			assertEquals("AAA<A>", convert("a.b.c.AAA<A>"));
+			assertEquals("AAA<A>", convert("a.b.c.AAA<aa.A>"));
+			assertEquals("AAA<A,B>", convert("a.b.c.AAA<aa.A,bb.B>"));
+			assertEquals("AAA<A<B>>", convert("a.b.c.AAA<aa.A<bb.B>>"));
+			assertEquals("AAA<A<B>,AA<GG<KK>>>", convert("a.b.c.AAA<aa.A<bb.B>,a.b.c.AA<GG<KK>>>"));
+		}
+		long time = System.currentTimeMillis();
+		for (int i = 0; i < 1000000; i++) {
+			assertEquals("AAA", convert("AAA"));
+			assertEquals("AAA", convert("a.b.c.AAA"));
+			assertEquals("A", convert("aa.ba.ca.A"));
+			assertEquals("AAA<>", convert("a.b.c.AAA<>"));
+			assertEquals("AAA<A>", convert("a.b.c.AAA<A>"));
+			assertEquals("AAA<A>", convert("a.b.c.AAA<aa.A>"));
+			assertEquals("AAA<A,B>", convert("a.b.c.AAA<aa.A,bb.B>"));
+			assertEquals("AAA<A<B>>", convert("a.b.c.AAA<aa.A<bb.B>>"));
+			assertEquals("AAA<A<B>,AA<GG<KK>>>", convert("a.b.c.AAA<aa.A<bb.B>,a.b.c.AA<GG<KK>>>"));
+		}
+		System.out.println(System.currentTimeMillis() - time);
+	}
+
+	private String convert(String totrim) {
+		return ProgramElement.trim(totrim);
+	}
 
 	public void testPervasivePerthis_354470() throws Exception {
 		runTest("perthis too pervasive");
