@@ -127,7 +127,7 @@ public class WeavingAdaptor implements IMessageContext {
 		init(FileUtil.makeClasspath(classURLs), FileUtil.makeClasspath(aspectURLs));
 	}
 
-	private List getFullClassPath(ClassLoader loader) {
+	private List<String> getFullClassPath(ClassLoader loader) {
 		List<String> list = new LinkedList<String>();
 		for (; loader != null; loader = loader.getParent()) {
 			if (loader instanceof URLClassLoader) {
@@ -143,7 +143,7 @@ public class WeavingAdaptor implements IMessageContext {
 		return list;
 	}
 
-	private List getFullAspectPath(ClassLoader loader) {
+	private List<String> getFullAspectPath(ClassLoader loader) {
 		List<String> list = new LinkedList<String>();
 		for (; loader != null; loader = loader.getParent()) {
 			if (loader instanceof WeavingClassLoader) {
@@ -151,15 +151,19 @@ public class WeavingAdaptor implements IMessageContext {
 				list.addAll(0, FileUtil.makeClasspath(urls));
 			}
 		}
-
 		return list;
 	}
 
 	private static boolean getVerbose() {
-		return Boolean.getBoolean(WEAVING_ADAPTOR_VERBOSE);
+		try {
+			return Boolean.getBoolean(WEAVING_ADAPTOR_VERBOSE);
+		} catch (Throwable t) {
+			// security exception
+			return false;
+		}
 	}
 
-	private void init(List classPath, List aspectPath) {
+	private void init(List<String> classPath, List<String> aspectPath) {
 		abortOnError = true;
 		createMessageHandler();
 
