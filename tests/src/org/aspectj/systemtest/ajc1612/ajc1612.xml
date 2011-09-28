@@ -2,6 +2,173 @@
 
 <suite>
 
+ <ajc-test dir="bugs1612/xmldefs" title="xml defined advice">
+     <compile files="Hello.java JavaHelper.java"/>
+     <run class="Hello" ltw="aop.xml">
+       <stdout>
+           <line text="Hello"/>
+           <line text="in advice"/>
+           <line text="World"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+ <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 2">
+     <compile files="Hello.java JavaHelper.java"/>
+     <run class="Hello" ltw="aop2.xml">
+       <stdout>
+           <line text="Hello"/>
+           <line text="World"/>
+       </stdout>
+       <stderr>
+       <line text="info AspectJ Weaver"/>
+       <line text="info register classloader"/>
+       <line text="info using config"/>
+       <line text="info define aspect"/>
+       <line text="error Class to invoke cannot be found: 'com.DoesNotExist'"/>
+       <line text="info weaver operating"/>
+       </stderr>
+     </run>
+   </ajc-test>
+   
+ <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 3">
+     <compile files="Hello.java JavaHelper.java"/>
+     <run class="Hello" ltw="aop3.xml">
+       <stdout>
+           <line text="Hello"/>
+           <line text="World"/>
+       </stdout>
+       <stderr>
+       <line text="info AspectJ Weaver"/>
+       <line text="info register classloader"/>
+       <line text="info using config"/>
+       <line text="info define aspect"/>
+       <line text="error Cannot find type specified as parameter: 'String' from signature '(String)'"/>
+       <line text="info weaver operating"/>
+       </stderr>
+     </run>
+   </ajc-test>
+   
+ <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 4">
+     <compile files="Hello.java JavaHelper.java"/>
+     <run class="Hello" ltw="aop4.xml">
+       <stdout>
+           <line text="Hello"/>
+           <line text="World"/>
+       </stdout>
+       <stderr>
+       <line text="info AspectJ Weaver"/>
+       <line text="info register classloader"/>
+       <line text="info using config"/>
+       <line text="info define aspect"/>
+       <line text="error Cannot find type specified as parameter: 'java.lang.String:List' from signature '(java.lang.String:List)'"/>
+       <line text="info weaver operating"/>
+       </stderr>
+     </run>
+   </ajc-test>
+   
+   
+ <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 5">
+     <compile files="Hello2.java JavaHelper.java"/>
+     <run class="Hello2" ltw="aop5.xml">
+       <stdout>
+           <line text="hello"/>
+           <line text="in advice: s=world"/>
+           <line text="world"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   
+ <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 6">
+     <compile files="Hello2.java JavaHelper.java"/>
+     <run class="Hello2" ltw="aop6.xml">
+       <stdout>
+           <line text="hello"/>
+           <line text="in advice: s=world"/>
+           <line text="world"/>
+           <line text="in advice3: s=world"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+ <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 7">
+     <compile files="Hello2.java JavaHelper.java"/>
+     <run class="Hello2" ltw="aop7.xml">
+       <stdout>
+           <line text="hello"/>
+           <line text="in advice4: s=world at execution(int Hello2.say2(String))"/>
+           <line text="world"/>
+           <line text="in advice5: s=world at execution(int Hello2.say2(String))"/>
+       </stdout>
+     </run>
+   </ajc-test>
+
+ <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 8">
+     <compile files="Hello2.java JavaHelper.java"/>
+     <run class="Hello2" ltw="aop8.xml">
+       <stdout>
+           <line text="hello"/>
+           <line text="in advice6: s=world at execution(int Hello2.say2(String))"/>
+           <line text="world"/>
+           <line text="in advice7: s=world at execution(int Hello2.say2(String))"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+ <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 9">
+     <compile files="Hello2.java JavaHelper.java"/>
+     <run class="Hello2" ltw="aop9.xml">
+       <stdout>
+           <line text="in around advice: s=hello at execution(void Hello2.say1(String))"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+ <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 10">
+     <compile files="Hello2.java JavaHelper.java"/>
+     <run class="Hello2" ltw="aop10.xml">
+       <stdout>
+           <line text="hello"/>
+           <line text="in around2 advice: s=world at execution(int Hello2.say2(String))"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+ <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 11">
+     <compile files="Hello2.java JavaHelper.java"/>
+     <run class="Hello2" ltw="aop11.xml">
+       <stdout>
+           <line text="hello"/>
+           <line text="abcde"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+ <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 12">
+     <compile files="Hello3.java JavaHelper.java"/>
+     <run class="Hello3" ltw="aop12.xml">
+       <stdout>
+           <line text="hello"/>
+           <line text="around4 running"/>
+           <line text="abcde"/>
+           <line text="from say2=xyz"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+ <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 13">
+     <compile files="Hello2.java JavaHelper2.java"/>
+     <run class="Hello2" ltw="aop13.xml">
+       <stdout>
+           <line text="in advice"/>
+           <line text="hello"/>
+           <line text="in advice"/>
+           <line text="world"/>
+       </stdout>
+     </run>
+   </ajc-test>
+
 <ajc-test dir="bugs1612/pr354470" title="perthis too pervasive">
 <compile files="Code.java" options="-1.5"/>
 <run class="Code">

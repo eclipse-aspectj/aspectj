@@ -36,6 +36,69 @@ public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// runTest("itd split compilation");
 	// }
 
+	public void testXmlDefs() {
+		runTest("xml defined advice");
+	}
+
+	public void testXmlDefs2() {
+		runTest("xml defined advice 2");
+	}
+
+	// using a parameter
+	public void testXmlDefs3() {
+		runTest("xml defined advice 3");
+	}
+
+	// using bad parameters
+	public void testXmlDefs4() {
+		runTest("xml defined advice 4");
+	}
+
+	// binding
+	public void testXmlDefs5() {
+		runTest("xml defined advice 5");
+	}
+
+	// before and after advice
+	public void testXmlDefs6() {
+		runTest("xml defined advice 6");
+	}
+
+	// thisJoinPoint
+	public void testXmlDefs7() {
+		runTest("xml defined advice 7");
+	}
+
+	// thisJoinPointStaticPart
+	public void testXmlDefs8() {
+		runTest("xml defined advice 8");
+	}
+
+	// void around advice
+	public void testXmlDefs9() {
+		runTest("xml defined advice 9");
+	}
+
+	// non-void around advice
+	public void testXmlDefs10() {
+		runTest("xml defined advice 10");
+	}
+
+	// non-void around advice with proceed
+	public void testXmlDefs11() {
+		runTest("xml defined advice 11");
+	}
+
+	// non primitive return (that is actually used) and proceed
+	public void testXmlDefs12() {
+		runTest("xml defined advice 12");
+	}
+
+	// delegate type in package
+	public void testXmlDefs13() {
+		runTest("xml defined advice 13");
+	}
+
 	public void testCorrespondingType_357582() {
 		for (int i = 0; i < 100000; i++) {
 			assertEquals("AAA", convert("AAA"));

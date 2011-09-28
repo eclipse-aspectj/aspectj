@@ -51,8 +51,8 @@
 	  	    	<line text="warning aspect ExcludedAspect exluded"/>
 	  	    	<line text="warning aspect ExcludedAspect exluded"/>
 	  	    	<line text="info define aspect IncludedMissingAspect"/>
-	  	    	<line text="error Cannot find m_parent aspect"/>
-	  	    	<line text="error Cannot find m_parent aspect"/>
+	  	    	<line text="error Cannot find parent aspect"/>
+	  	    	<line text="error Cannot find parent aspect"/>
 	  	    	<line text="error Concrete-aspect 'IncludedMissingAspect' could not be registered"/>
 	  	    	<line text="error Concrete-aspect 'IncludedMissingAspect' could not be registered"/>
 	  	    	<line text="warning failure(s) registering aspects. Disabling weaver for class loader"/>
