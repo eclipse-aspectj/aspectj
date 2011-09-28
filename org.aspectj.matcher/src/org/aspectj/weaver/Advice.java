@@ -182,8 +182,9 @@ public abstract class Advice extends ShadowMunger {
 					// " from " + shadow.getReturnType());
 					if (getSignature().getReturnType().equals(UnresolvedType.VOID)) {
 						if (!shadow.getReturnType().equals(UnresolvedType.VOID)) {
-							world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.NON_VOID_RETURN, shadow),
-									getSourceLocation(), shadow.getSourceLocation());
+							String s = shadow.toString();
+							String s2 = WeaverMessages.format(WeaverMessages.NON_VOID_RETURN, s);
+							world.showMessage(IMessage.ERROR, s2, getSourceLocation(), shadow.getSourceLocation());
 							return false;
 						}
 					} else if (getSignature().getReturnType().equals(UnresolvedType.OBJECT)) {
