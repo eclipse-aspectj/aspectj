@@ -57,9 +57,9 @@ import org.aspectj.weaver.patterns.PerSingleton;
 /**
  * Generates bytecode for concrete-aspect.
  * <p>
- * The concrete aspect is @AspectJ code generated. As it is build during aop.xml definitions registration we perform the type
- * munging for perclause, ie. aspectOf() artifact directly, instead of waiting for it to go thru the weaver (that we are in the
- * middle of configuring).
+ * The concrete aspect is generated annotation style aspect (so traditional Java constructs annotated with our AspectJ annotations).
+ * As it is built during aop.xml definitions registration we perform the type munging for perclause, ie. aspectOf() artifact
+ * directly, instead of waiting for it to go thru the weaver (that we are in the middle of configuring).
  * 
  * @author Alexandre Vasseur
  * @author Andy Clement
@@ -100,10 +100,10 @@ public class ConcreteAspectCodeGen {
 	private byte[] bytes;
 
 	/**
-	 * Create a new compiler for a concrete aspect
+	 * Create a new generator for a concrete aspect
 	 * 
-	 * @param concreteAspect
-	 * @param world
+	 * @param concreteAspect the aspect definition
+	 * @param world the related world (for type resolution, etc)
 	 */
 	ConcreteAspectCodeGen(Definition.ConcreteAspect concreteAspect, World world) {
 		this.concreteAspect = concreteAspect;
@@ -111,7 +111,7 @@ public class ConcreteAspectCodeGen {
 	}
 
 	/**
-	 * Checks that concrete aspect is valid
+	 * Checks that concrete aspect is valid.
 	 * 
 	 * @return true if ok, false otherwise
 	 */
@@ -208,8 +208,6 @@ public class ConcreteAspectCodeGen {
 		List<String> elligibleAbstractions = new ArrayList<String>();
 
 		Collection<ResolvedMember> abstractMethods = getOutstandingAbstractMethods(parent);
-		// for (Iterator iter = abstractMethods.iterator(); iter.hasNext();) {
-		// ResolvedMember method = (ResolvedMember) iter.next();
 		for (ResolvedMember method : abstractMethods) {
 			if ("()V".equals(method.getSignature())) {
 				String n = method.getName();
@@ -229,8 +227,7 @@ public class ConcreteAspectCodeGen {
 				}
 			} else {
 				if (method.getName().startsWith("ajc$pointcut") || hasPointcutAnnotation(method)) {
-					// it may be a pointcut but it doesn't meet the requirements
-					// for XML concretization
+					// it may be a pointcut but it doesn't meet the requirements for XML concretization
 					reportError("Abstract method '"
 							+ method.toString()
 							+ "' cannot be concretized as a pointcut (illegal signature, must have no arguments, must return void): "
@@ -320,6 +317,7 @@ public class ConcreteAspectCodeGen {
 		sb.append("' perclause='");
 		sb.append(concreteAspect.perclause);
 		sb.append("'/> in aop.xml");
+		// TODO needs the extra state from the definition (concretized pointcuts and advice definitions)
 		return sb.toString();
 	}
 
@@ -376,7 +374,6 @@ public class ConcreteAspectCodeGen {
 			}
 		}
 
-		// TODO AV - abstract away from BCEL...
 		// @Aspect //inherit clause from m_parent
 		// @DeclarePrecedence("....") // if any
 		// public class xxxName [extends xxxExtends] {
@@ -392,8 +389,7 @@ public class ConcreteAspectCodeGen {
 			}
 		}
 		// @Aspect public class ...
-		// TODO AV - we could point to the aop.xml that defines it and use
-		// JSR-45
+		// TODO AV - we could point to the aop.xml that defines it and use JSR-45
 		LazyClassGen cg = new LazyClassGen(concreteAspect.name.replace('.', '/'), parentName, null, Modifier.PUBLIC
 				+ Constants.ACC_SUPER, EMPTY_STRINGS, world);
 		if (parent != null && parent.isParameterizedType()) {
@@ -447,13 +443,11 @@ public class ConcreteAspectCodeGen {
 			cg.addMethodGen(mg);
 		}
 
+		// Construct any defined declare error/warnings
 		if (concreteAspect.deows.size() > 0) {
-
 			int counter = 1;
 			for (Definition.DeclareErrorOrWarning deow : concreteAspect.deows) {
-
 				// Building this:
-
 				// @DeclareWarning("call(* javax.sql..*(..)) && !within(org.xyz.daos..*)")
 				// static final String aMessage = "Only DAOs should be calling JDBC.";
 
@@ -467,7 +461,6 @@ public class ConcreteAspectCodeGen {
 
 				field.setValue(deow.message);
 				cg.addField(field, null);
-
 			}
 		}
 
