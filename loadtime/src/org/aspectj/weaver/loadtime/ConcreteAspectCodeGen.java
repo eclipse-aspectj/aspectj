@@ -11,7 +11,6 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
-import java.io.FileOutputStream;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -496,14 +495,6 @@ public class ConcreteAspectCodeGen {
 		((BcelWorld) world).addSourceObjectType(jc, true);
 
 		bytes = jc.getBytes();
-		try {
-			FileOutputStream fos = new FileOutputStream("/Users/aclement/foo.class");
-			fos.write(bytes);
-			fos.flush();
-			fos.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		return bytes;
 	}
 
