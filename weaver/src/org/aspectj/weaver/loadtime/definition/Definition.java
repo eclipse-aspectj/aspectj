@@ -112,6 +112,7 @@ public class Definition {
 		public final String extend;
 		public final String precedence;
 		public final List<Definition.Pointcut> pointcuts;
+		public final List<Definition.PointcutAndAdvice> pointcutsAndAdvice;
 		public final String perclause;
 		public List<Definition.DeclareErrorOrWarning> deows;
 
@@ -125,13 +126,16 @@ public class Definition {
 			if (extend == null || extend.length() == 0) {
 				this.extend = null;
 				if (precedence == null || precedence.length() == 0) {
-					throw new RuntimeException("Not allowed");
+					// if (pointcutsAndAdvice.size() == 0) {
+					// throw new RuntimeException("Not allowed");
+					// }
 				}
 			} else {
 				this.extend = extend;
 			}
 			this.precedence = precedence;
 			this.pointcuts = new ArrayList<Definition.Pointcut>();
+			this.pointcutsAndAdvice = new ArrayList<Definition.PointcutAndAdvice>();
 			this.deows = new ArrayList<Definition.DeclareErrorOrWarning>();
 			this.perclause = perclause;
 		}
@@ -144,6 +148,24 @@ public class Definition {
 		public Pointcut(String name, String expression) {
 			this.name = name;
 			this.expression = expression;
+		}
+	}
+
+	public enum AdviceKind {
+		Before, After, AfterReturning, AfterThrowing, Around;
+	}
+
+	public static class PointcutAndAdvice {
+		public final AdviceKind adviceKind;
+		public final String pointcut;
+		public final String adviceClass; // com.foo.Bar
+		public final String adviceMethod; // foo(java.lang.String,org.aspectj.lang.JoinPoint)
+
+		public PointcutAndAdvice(AdviceKind adviceKind, String pointcut, String adviceClass, String adviceMethod) {
+			this.adviceKind = adviceKind;
+			this.pointcut = pointcut;
+			this.adviceClass = adviceClass;
+			this.adviceMethod = adviceMethod;
 		}
 	}
 

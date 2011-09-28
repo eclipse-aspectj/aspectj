@@ -21,6 +21,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.loadtime.definition.Definition.AdviceKind;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -30,7 +31,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
- * FIXME AV - doc, concrete aspect
  * 
  * @author Alexandre Vasseur
  * @author A. Nevado
@@ -65,16 +65,21 @@ public class DocumentParser extends DefaultHandler {
 	private final static String PRECEDENCE_ATTRIBUTE = "precedence";
 	private final static String PERCLAUSE_ATTRIBUTE = "perclause";
 	private final static String POINTCUT_ELEMENT = "pointcut";
+	private final static String BEFORE_ELEMENT = "before";
+	private final static String AFTER_ELEMENT = "after";
+	private final static String AFTER_RETURNING_ELEMENT = "after-returning";
+	private final static String AFTER_THROWING_ELEMENT = "after-throwing";
+	private final static String AROUND_ELEMENT = "around";
 	private final static String WITHIN_ATTRIBUTE = "within";
 	private final static String EXPRESSION_ATTRIBUTE = "expression";
 
-	private final Definition m_definition;
+	private final Definition definition;
 
-	private boolean m_inAspectJ;
-	private boolean m_inWeaver;
-	private boolean m_inAspects;
+	private boolean inAspectJ;
+	private boolean inWeaver;
+	private boolean inAspects;
 
-	private Definition.ConcreteAspect m_lastConcreteAspect;
+	private Definition.ConcreteAspect activeConcreteAspectDefinition;
 
 	private static Hashtable<String, Definition> parsedFiles = new Hashtable<String, Definition>();
 	private static final boolean CACHE;
@@ -100,7 +105,7 @@ public class DocumentParser extends DefaultHandler {
 	}
 
 	private DocumentParser() {
-		m_definition = new Definition();
+		definition = new Definition();
 	}
 
 	public static Definition parse(final URL url) throws Exception {
@@ -148,7 +153,7 @@ public class DocumentParser extends DefaultHandler {
 		xmlReader.setEntityResolver(parser);
 		InputStream in = url.openStream();
 		xmlReader.parse(new InputSource(in));
-		return parser.m_definition;
+		return parser.definition;
 	}
 
 	private static XMLReader getXMLReader() throws SAXException, ParserConfigurationException {
@@ -186,80 +191,110 @@ public class DocumentParser extends DefaultHandler {
 			String scopePattern = replaceXmlAnd(attributes.getValue(SCOPE_ATTRIBUTE));
 			String requiredType = attributes.getValue(REQUIRES_ATTRIBUTE);
 			if (!isNull(name)) {
-				m_definition.getAspectClassNames().add(name);
+				definition.getAspectClassNames().add(name);
 				if (scopePattern != null) {
-					m_definition.addScopedAspect(name, scopePattern);
+					definition.addScopedAspect(name, scopePattern);
 				}
 				if (requiredType != null) {
-					m_definition.setAspectRequires(name, requiredType);
+					definition.setAspectRequires(name, requiredType);
 				}
 			}
 		} else if (WEAVER_ELEMENT.equals(qName)) {
 			String options = attributes.getValue(OPTIONS_ATTRIBUTE);
 			if (!isNull(options)) {
-				m_definition.appendWeaverOptions(options);
+				definition.appendWeaverOptions(options);
 			}
-			m_inWeaver = true;
+			inWeaver = true;
 		} else if (CONCRETE_ASPECT_ELEMENT.equals(qName)) {
 			String name = attributes.getValue(NAME_ATTRIBUTE);
 			String extend = attributes.getValue(EXTEND_ATTRIBUTE);
 			String precedence = attributes.getValue(PRECEDENCE_ATTRIBUTE);
 			String perclause = attributes.getValue(PERCLAUSE_ATTRIBUTE);
 			if (!isNull(name)) {
-				m_lastConcreteAspect = new Definition.ConcreteAspect(name, extend, precedence, perclause);
+				activeConcreteAspectDefinition = new Definition.ConcreteAspect(name, extend, precedence, perclause);
 				// if (isNull(precedence) && !isNull(extend)) {// if no precedence, then extends must be there
 				// m_lastConcreteAspect = new Definition.ConcreteAspect(name, extend);
 				// } else if (!isNull(precedence)) {
 				// // wether a pure precedence def, or an extendsANDprecedence def.
 				// m_lastConcreteAspect = new Definition.ConcreteAspect(name, extend, precedence, perclause);
 				// }
-				m_definition.getConcreteAspects().add(m_lastConcreteAspect);
+				definition.getConcreteAspects().add(activeConcreteAspectDefinition);
 			}
-		} else if (POINTCUT_ELEMENT.equals(qName) && m_lastConcreteAspect != null) {
+		} else if (POINTCUT_ELEMENT.equals(qName) && activeConcreteAspectDefinition != null) {
 			String name = attributes.getValue(NAME_ATTRIBUTE);
 			String expression = attributes.getValue(EXPRESSION_ATTRIBUTE);
 			if (!isNull(name) && !isNull(expression)) {
-				m_lastConcreteAspect.pointcuts.add(new Definition.Pointcut(name, replaceXmlAnd(expression)));
+				activeConcreteAspectDefinition.pointcuts.add(new Definition.Pointcut(name, replaceXmlAnd(expression)));
+			}
+		} else if (BEFORE_ELEMENT.equals(qName) && activeConcreteAspectDefinition != null) {
+			String pointcut = attributes.getValue(POINTCUT_ELEMENT);
+			String adviceClass = attributes.getValue("invokeClass");
+			String adviceMethod = attributes.getValue("invokeMethod");
+			if (!isNull(pointcut) && !isNull(adviceClass) && !isNull(adviceMethod)) {
+				activeConcreteAspectDefinition.pointcutsAndAdvice.add(new Definition.PointcutAndAdvice(AdviceKind.Before,
+						replaceXmlAnd(pointcut), adviceClass, adviceMethod));
+			} else {
+				throw new SAXException("Badly formed <before> element");
+			}
+		} else if (AFTER_ELEMENT.equals(qName) && activeConcreteAspectDefinition != null) {
+			String pointcut = attributes.getValue(POINTCUT_ELEMENT);
+			String adviceClass = attributes.getValue("invokeClass");
+			String adviceMethod = attributes.getValue("invokeMethod");
+			if (!isNull(pointcut) && !isNull(adviceClass) && !isNull(adviceMethod)) {
+				activeConcreteAspectDefinition.pointcutsAndAdvice.add(new Definition.PointcutAndAdvice(AdviceKind.After,
+						replaceXmlAnd(pointcut), adviceClass, adviceMethod));
+			} else {
+				throw new SAXException("Badly formed <after> element");
+			}
+		} else if (AROUND_ELEMENT.equals(qName) && activeConcreteAspectDefinition != null) {
+			String pointcut = attributes.getValue(POINTCUT_ELEMENT);
+			String adviceClass = attributes.getValue("invokeClass");
+			String adviceMethod = attributes.getValue("invokeMethod");
+			if (!isNull(pointcut) && !isNull(adviceClass) && !isNull(adviceMethod)) {
+				activeConcreteAspectDefinition.pointcutsAndAdvice.add(new Definition.PointcutAndAdvice(AdviceKind.Around,
+						replaceXmlAnd(pointcut), adviceClass, adviceMethod));
+			} else {
+				throw new SAXException("Badly formed <before> element");
 			}
 		} else if (ASPECTJ_ELEMENT.equals(qName)) {
-			if (m_inAspectJ) {
+			if (inAspectJ) {
 				throw new SAXException("Found nested <aspectj> element");
 			}
-			m_inAspectJ = true;
+			inAspectJ = true;
 		} else if (ASPECTS_ELEMENT.equals(qName)) {
-			m_inAspects = true;
-		} else if (INCLUDE_ELEMENT.equals(qName) && m_inWeaver) {
+			inAspects = true;
+		} else if (INCLUDE_ELEMENT.equals(qName) && inWeaver) {
 			String typePattern = getWithinAttribute(attributes);
 			if (!isNull(typePattern)) {
-				m_definition.getIncludePatterns().add(typePattern);
+				definition.getIncludePatterns().add(typePattern);
 			}
-		} else if (EXCLUDE_ELEMENT.equals(qName) && m_inWeaver) {
+		} else if (EXCLUDE_ELEMENT.equals(qName) && inWeaver) {
 			String typePattern = getWithinAttribute(attributes);
 			if (!isNull(typePattern)) {
-				m_definition.getExcludePatterns().add(typePattern);
+				definition.getExcludePatterns().add(typePattern);
 			}
-		} else if (DUMP_ELEMENT.equals(qName) && m_inWeaver) {
+		} else if (DUMP_ELEMENT.equals(qName) && inWeaver) {
 			String typePattern = getWithinAttribute(attributes);
 			if (!isNull(typePattern)) {
-				m_definition.getDumpPatterns().add(typePattern);
+				definition.getDumpPatterns().add(typePattern);
 			}
 			String beforeAndAfter = attributes.getValue(DUMP_BEFOREANDAFTER_ATTRIBUTE);
 			if (isTrue(beforeAndAfter)) {
-				m_definition.setDumpBefore(true);
+				definition.setDumpBefore(true);
 			}
 			String perWeaverDumpDir = attributes.getValue(DUMP_PERCLASSLOADERDIR_ATTRIBUTE);
 			if (isTrue(perWeaverDumpDir)) {
-				m_definition.setCreateDumpDirPerClassloader(true);
+				definition.setCreateDumpDirPerClassloader(true);
 			}
-		} else if (EXCLUDE_ELEMENT.equals(qName) && m_inAspects) {
+		} else if (EXCLUDE_ELEMENT.equals(qName) && inAspects) {
 			String typePattern = getWithinAttribute(attributes);
 			if (!isNull(typePattern)) {
-				m_definition.getAspectExcludePatterns().add(typePattern);
+				definition.getAspectExcludePatterns().add(typePattern);
 			}
-		} else if (INCLUDE_ELEMENT.equals(qName) && m_inAspects) {
+		} else if (INCLUDE_ELEMENT.equals(qName) && inAspects) {
 			String typePattern = getWithinAttribute(attributes);
 			if (!isNull(typePattern)) {
-				m_definition.getAspectIncludePatterns().add(typePattern);
+				definition.getAspectIncludePatterns().add(typePattern);
 			}
 		} else {
 			throw new SAXException("Unknown element while parsing <aspectj> element: " + qName);
@@ -273,13 +308,13 @@ public class DocumentParser extends DefaultHandler {
 
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		if (CONCRETE_ASPECT_ELEMENT.equals(qName)) {
-			m_lastConcreteAspect = null;
+			activeConcreteAspectDefinition = null;
 		} else if (ASPECTJ_ELEMENT.equals(qName)) {
-			m_inAspectJ = false;
+			inAspectJ = false;
 		} else if (WEAVER_ELEMENT.equals(qName)) {
-			m_inWeaver = false;
+			inWeaver = false;
 		} else if (ASPECTS_ELEMENT.equals(qName)) {
-			m_inAspects = false;
+			inAspects = false;
 		}
 		super.endElement(uri, localName, qName);
 	}
