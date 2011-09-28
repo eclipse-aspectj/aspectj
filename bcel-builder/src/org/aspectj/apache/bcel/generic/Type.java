@@ -60,6 +60,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.ConstantsInitializer;
 import org.aspectj.apache.bcel.classfile.ClassFormatException;
 import org.aspectj.apache.bcel.classfile.Utility;
 
@@ -67,7 +68,7 @@ import org.aspectj.apache.bcel.classfile.Utility;
  * Abstract super class for all possible java types, namely basic types such as int, object types like String and array types, e.g.
  * int[]
  * 
- * @version $Id: Type.java,v 1.13 2009/10/05 17:35:36 aclement Exp $
+ * @version $Id: Type.java,v 1.14 2011/09/28 01:14:54 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * 
  *         modified: AndyClement 2-mar-05: Removed unnecessary static and optimized
@@ -135,7 +136,7 @@ public abstract class Type {
 		commonTypes.put(STRINGBUILDER.getSignature(), STRINGBUILDER);
 		commonTypes.put(LIST.getSignature(), LIST);
 		commonTypes.put(ITERATOR.getSignature(), ITERATOR);
-
+		ConstantsInitializer.initialize(); // needs calling because it will not have run properly the first time
 	}
 
 	protected Type(byte t, String s) {
