@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
+import java.io.FileOutputStream;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +29,10 @@ import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
 import org.aspectj.apache.bcel.generic.FieldGen;
 import org.aspectj.apache.bcel.generic.InstructionConstants;
+import org.aspectj.apache.bcel.generic.InstructionFactory;
+import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
+import org.aspectj.apache.bcel.generic.LocalVariableTag;
 import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
@@ -46,9 +50,10 @@ import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.LazyClassGen;
 import org.aspectj.weaver.bcel.LazyMethodGen;
 import org.aspectj.weaver.loadtime.definition.Definition;
+import org.aspectj.weaver.loadtime.definition.Definition.AdviceKind;
+import org.aspectj.weaver.loadtime.definition.Definition.PointcutAndAdvice;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.PerSingleton;
-
 
 /**
  * Generates bytecode for concrete-aspect.
@@ -91,6 +96,11 @@ public class ConcreteAspectCodeGen {
 	private PerClause perclause;
 
 	/**
+	 * Bytecode for the generated class
+	 */
+	private byte[] bytes;
+
+	/**
 	 * Create a new compiler for a concrete aspect
 	 * 
 	 * @param concreteAspect
@@ -113,13 +123,17 @@ public class ConcreteAspectCodeGen {
 		}
 
 		// name must be undefined so far
-		// TODO only convert the name to signature once, probably earlier than
-		// this
+		// TODO only convert the name to signature once, probably earlier than this
 		ResolvedType current = world.lookupBySignature(UnresolvedType.forName(concreteAspect.name).getSignature());
 
 		if (current != null && !current.isMissing()) {
 			reportError("Attempt to concretize but chosen aspect name already defined: " + stringify());
 			return false;
+		}
+
+		if (concreteAspect.pointcutsAndAdvice.size() != 0) {
+			isValid = true;
+			return true;
 		}
 
 		// it can happen that extends is null, for precedence only declaration
@@ -136,6 +150,7 @@ public class ConcreteAspectCodeGen {
 		}
 
 		String parentAspectName = concreteAspect.extend;
+
 		if (parentAspectName.indexOf("<") != -1) {
 			// yikes, generic parent
 			parent = world.resolve(UnresolvedType.forName(parentAspectName), true);
@@ -174,7 +189,7 @@ public class ConcreteAspectCodeGen {
 		}
 
 		if (parent.isMissing()) {
-			reportError("Cannot find m_parent aspect for: " + stringify());
+			reportError("Cannot find parent aspect for: " + stringify());
 			return false;
 		}
 
@@ -191,11 +206,12 @@ public class ConcreteAspectCodeGen {
 		}
 
 		// must have all abstractions defined
-		List elligibleAbstractions = new ArrayList();
+		List<String> elligibleAbstractions = new ArrayList<String>();
 
-		Collection abstractMethods = getOutstandingAbstractMethods(parent);
-		for (Iterator iter = abstractMethods.iterator(); iter.hasNext();) {
-			ResolvedMember method = (ResolvedMember) iter.next();
+		Collection<ResolvedMember> abstractMethods = getOutstandingAbstractMethods(parent);
+		// for (Iterator iter = abstractMethods.iterator(); iter.hasNext();) {
+		// ResolvedMember method = (ResolvedMember) iter.next();
+		for (ResolvedMember method : abstractMethods) {
 			if ("()V".equals(method.getSignature())) {
 				String n = method.getName();
 				// Allow for the abstract pointcut being from a code style
@@ -229,13 +245,11 @@ public class ConcreteAspectCodeGen {
 				}
 			}
 		}
-		List pointcutNames = new ArrayList();
-		for (Iterator it = concreteAspect.pointcuts.iterator(); it.hasNext();) {
-			Definition.Pointcut abstractPc = (Definition.Pointcut) it.next();
+		List<String> pointcutNames = new ArrayList<String>();
+		for (Definition.Pointcut abstractPc : concreteAspect.pointcuts) {
 			pointcutNames.add(abstractPc.name);
 		}
-		for (Iterator it = elligibleAbstractions.iterator(); it.hasNext();) {
-			String elligiblePc = (String) it.next();
+		for (String elligiblePc : elligibleAbstractions) {
 			if (!pointcutNames.contains(elligiblePc)) {
 				reportError("Abstract pointcut '" + elligiblePc + "' not configured: " + stringify());
 				return false;
@@ -259,8 +273,8 @@ public class ConcreteAspectCodeGen {
 		return isValid;
 	}
 
-	private Collection getOutstandingAbstractMethods(ResolvedType type) {
-		Map collector = new HashMap();
+	private Collection<ResolvedMember> getOutstandingAbstractMethods(ResolvedType type) {
+		Map<String, ResolvedMember> collector = new HashMap<String, ResolvedMember>();
 		// let's get to the top of the hierarchy and then walk down ...
 		// recording abstract methods then removing
 		// them if they get defined further down the hierarchy
@@ -269,9 +283,8 @@ public class ConcreteAspectCodeGen {
 	}
 
 	// We are trying to determine abstract methods left over at the bottom of a
-	// hierarchy that have not been
-	// concretized.
-	private void getOutstandingAbstractMethodsHelper(ResolvedType type, Map collector) {
+	// hierarchy that have not been concretized.
+	private void getOutstandingAbstractMethodsHelper(ResolvedType type, Map<String, ResolvedMember> collector) {
 		if (type == null) {
 			return;
 		}
@@ -337,6 +350,9 @@ public class ConcreteAspectCodeGen {
 		if (!isValid) {
 			throw new RuntimeException("Must validate first");
 		}
+		if (bytes != null) {
+			return bytes;
+		}
 		PerClause parentPerClause = (parent != null ? parent.getPerClause() : null);
 		if (parentPerClause == null) {
 			parentPerClause = new PerSingleton();
@@ -385,21 +401,21 @@ public class ConcreteAspectCodeGen {
 			cg.setSuperClass(parent);
 		}
 		if (perclauseString == null) {
-			AnnotationGen ag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/Aspect"), Collections.EMPTY_LIST,
-					true, cg.getConstantPool());
+			AnnotationGen ag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/Aspect"),
+					Collections.<NameValuePair> emptyList(), true, cg.getConstantPool());
 			cg.addAnnotation(ag);
 		} else {
 			// List elems = new ArrayList();
-			List elems = new ArrayList();
+			List<NameValuePair> elems = new ArrayList<NameValuePair>();
 			elems.add(new NameValuePair("value",
 					new SimpleElementValue(ElementValue.STRING, cg.getConstantPool(), perclauseString), cg.getConstantPool()));
-			AnnotationGen ag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/Aspect"), elems, true, cg
-					.getConstantPool());
+			AnnotationGen ag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/Aspect"), elems, true,
+					cg.getConstantPool());
 			cg.addAnnotation(ag);
 		}
 		if (concreteAspect.precedence != null) {
 			SimpleElementValue svg = new SimpleElementValue(ElementValue.STRING, cg.getConstantPool(), concreteAspect.precedence);
-			List elems = new ArrayList();
+			List<NameValuePair> elems = new ArrayList<NameValuePair>();
 			elems.add(new NameValuePair("value", svg, cg.getConstantPool()));
 			AnnotationGen agprec = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/DeclarePrecedence"), elems, true,
 					cg.getConstantPool());
@@ -415,15 +431,15 @@ public class ConcreteAspectCodeGen {
 		cbody.append(InstructionConstants.RETURN);
 		cg.addMethodGen(init);
 
-		for (Iterator it = concreteAspect.pointcuts.iterator(); it.hasNext();) {
+		for (Iterator<Definition.Pointcut> it = concreteAspect.pointcuts.iterator(); it.hasNext();) {
 			Definition.Pointcut abstractPc = (Definition.Pointcut) it.next();
 			// TODO AV - respect visibility instead of opening up as public?
 			LazyMethodGen mg = new LazyMethodGen(Modifier.PUBLIC, Type.VOID, abstractPc.name, EMPTY_TYPES, EMPTY_STRINGS, cg);
 			SimpleElementValue svg = new SimpleElementValue(ElementValue.STRING, cg.getConstantPool(), abstractPc.expression);
-			List elems = new ArrayList();
+			List<NameValuePair> elems = new ArrayList<NameValuePair>();
 			elems.add(new NameValuePair("value", svg, cg.getConstantPool()));
-			AnnotationGen mag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/Pointcut"), elems, true, cg
-					.getConstantPool());
+			AnnotationGen mag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/Pointcut"), elems, true,
+					cg.getConstantPool());
 			AnnotationAJ max = new BcelAnnotation(mag, world);
 			mg.addAnnotation(max);
 
@@ -444,7 +460,7 @@ public class ConcreteAspectCodeGen {
 
 				FieldGen field = new FieldGen(Modifier.FINAL, ObjectType.STRING, "rule" + (counter++), cg.getConstantPool());
 				SimpleElementValue svg = new SimpleElementValue(ElementValue.STRING, cg.getConstantPool(), deow.pointcut);
-				List elems = new ArrayList();
+				List<NameValuePair> elems = new ArrayList<NameValuePair>();
 				elems.add(new NameValuePair("value", svg, cg.getConstantPool()));
 				AnnotationGen mag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/Declare"
 						+ (deow.isError ? "Error" : "Warning")), elems, true, cg.getConstantPool());
@@ -453,7 +469,14 @@ public class ConcreteAspectCodeGen {
 				field.setValue(deow.message);
 				cg.addField(field, null);
 
+			}
+		}
 
+		if (concreteAspect.pointcutsAndAdvice.size() > 0) {
+			int adviceCounter = 1;
+			for (PointcutAndAdvice paa : concreteAspect.pointcutsAndAdvice) {
+				generateAdviceMethod(paa, adviceCounter, cg);
+				adviceCounter++;
 			}
 		}
 
@@ -472,7 +495,208 @@ public class ConcreteAspectCodeGen {
 		JavaClass jc = cg.getJavaClass((BcelWorld) world);
 		((BcelWorld) world).addSourceObjectType(jc, true);
 
-		return jc.getBytes();
+		bytes = jc.getBytes();
+		try {
+			FileOutputStream fos = new FileOutputStream("/Users/aclement/foo.class");
+			fos.write(bytes);
+			fos.flush();
+			fos.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return bytes;
+	}
+
+	/**
+	 * The PointcutAndAdvice object encapsulates an advice kind, a pointcut and names a Java method in a particular class. Generate
+	 * an annotation style advice that has that pointcut whose implementation delegates to the Java method.
+	 */
+	private void generateAdviceMethod(PointcutAndAdvice paa, int adviceCounter, LazyClassGen cg) {
+
+		// Check: Verify the class to be called does exist:
+		ResolvedType delegateClass = world.resolve(UnresolvedType.forName(paa.adviceClass));
+		if (delegateClass.isMissing()) {
+			reportError("Class to invoke cannot be found: '" + paa.adviceClass + "'");
+			return;
+		}
+
+		// Generate a name for this advice, includes advice kind plus a counter
+		String adviceName = new StringBuilder("generated$").append(paa.adviceKind.toString().toLowerCase()).append("$advice$")
+				.append(adviceCounter).toString();
+
+		// Build the annotation that encapsulates the pointcut
+		AnnotationAJ aaj = buildAdviceAnnotation(cg, paa);
+
+		// Chop up the supplied advice method string into its pieces.
+		// Example: foo(JoinPoint jp, java.lang.String string)
+		// JoinPoint and friends are recognized (so dont need fq package)
+		String method = paa.adviceMethod;
+
+		int paren = method.indexOf("(");
+		String methodName = method.substring(0, paren);
+		String signature = method.substring(paren);
+
+		// Check: signature looks ok
+		if (signature.charAt(0) != '(' || !signature.endsWith(")")) {
+			reportError("Badly formatted parameter signature: '" + method + "'");
+			return;
+		}
+
+		// Extract parameter types and names
+		List<Type> paramTypes = new ArrayList<Type>();
+		List<String> paramNames = new ArrayList<String>();
+		if (signature.charAt(1) != ')') {
+			// there are parameters to convert into a signature
+			StringBuilder convertedSignature = new StringBuilder("(");
+			boolean paramsBroken = false;
+			int pos = 1;
+			while (pos < signature.length() && signature.charAt(pos) != ')' && !paramsBroken) {
+				int nextChunkEndPos = signature.indexOf(',', pos);
+				if (nextChunkEndPos == -1) {
+					nextChunkEndPos = signature.indexOf(')', pos);
+				}
+				// chunk will be a type plus a space plus a name
+				String nextChunk = signature.substring(pos, nextChunkEndPos).trim();
+				int space = nextChunk.indexOf(" ");
+				ResolvedType resolvedParamType = null;
+				if (space == -1) {
+					// There is no parameter name, hopefully not needed!
+					if (nextChunk.equals("JoinPoint")) {
+						nextChunk = "org.aspectj.lang.JoinPoint";
+					} else if (nextChunk.equals("JoinPoint.StaticPart")) {
+						nextChunk = "org.aspectj.lang.JoinPoint$StaticPart";
+					} else if (nextChunk.equals("ProceedingJoinPoint")) {
+						nextChunk = "org.aspectj.lang.ProceedingJoinPoint";
+					}
+					UnresolvedType unresolvedParamType = UnresolvedType.forName(nextChunk);
+					resolvedParamType = world.resolve(unresolvedParamType);
+				} else {
+					String typename = nextChunk.substring(0, space);
+					if (typename.equals("JoinPoint")) {
+						typename = "org.aspectj.lang.JoinPoint";
+					} else if (typename.equals("JoinPoint.StaticPart")) {
+						typename = "org.aspectj.lang.JoinPoint$StaticPart";
+					} else if (typename.equals("ProceedingJoinPoint")) {
+						typename = "org.aspectj.lang.ProceedingJoinPoint";
+					}
+					UnresolvedType unresolvedParamType = UnresolvedType.forName(typename);
+					resolvedParamType = world.resolve(unresolvedParamType);
+					String paramname = nextChunk.substring(space).trim();
+					paramNames.add(paramname);
+				}
+				if (resolvedParamType.isMissing()) {
+					reportError("Cannot find type specified as parameter: '" + nextChunk + "' from signature '" + signature + "'");
+					paramsBroken = true;
+				}
+				paramTypes.add(Type.getType(resolvedParamType.getSignature()));
+				convertedSignature.append(resolvedParamType.getSignature());
+				pos = nextChunkEndPos + 1;
+			}
+			convertedSignature.append(")");
+			signature = convertedSignature.toString();
+			if (paramsBroken) {
+				return;
+			}
+		}
+
+		Type returnType = Type.VOID;
+
+		// If around advice we must find the actual delegate method and use its return type
+		if (paa.adviceKind == AdviceKind.Around) {
+			ResolvedMember[] methods = delegateClass.getDeclaredMethods();
+			ResolvedMember found = null;
+			for (ResolvedMember candidate : methods) {
+				if (candidate.getName().equals(methodName)) {
+					UnresolvedType[] cparms = candidate.getParameterTypes();
+					if (cparms.length == paramTypes.size()) {
+						boolean paramsMatch = true;
+						for (int i = 0; i < cparms.length; i++) {
+							if (!cparms[i].getSignature().equals(paramTypes.get(i).getSignature())) {
+								paramsMatch = false;
+								break;
+							}
+						}
+						if (paramsMatch) {
+							found = candidate;
+							break;
+						}
+					}
+				}
+			}
+			if (found != null) {
+				returnType = Type.getType(found.getReturnType().getSignature());
+			} else {
+				reportError("Unable to find method to invoke.  In class: " + delegateClass.getName() + " cant find "
+						+ paa.adviceMethod);
+				return;
+			}
+		}
+
+		// Time to construct the method itself:
+		LazyMethodGen advice = new LazyMethodGen(Modifier.PUBLIC, returnType, adviceName, paramTypes.toArray(new Type[paramTypes
+				.size()]), EMPTY_STRINGS, cg);
+
+		InstructionList adviceBody = advice.getBody();
+
+		// Generate code to load the parameters
+		int pos = 1; // first slot after 'this'
+		for (int i = 0; i < paramTypes.size(); i++) {
+			adviceBody.append(InstructionFactory.createLoad(paramTypes.get(i), pos));
+			pos += paramTypes.get(i).getSize();
+		}
+
+		// Generate the delegate call
+		adviceBody.append(cg.getFactory().createInvoke(paa.adviceClass, methodName, signature + returnType.getSignature(),
+				Constants.INVOKESTATIC));
+
+		// Generate the right return
+		if (returnType == Type.VOID) {
+			adviceBody.append(InstructionConstants.RETURN);
+		} else {
+			if (returnType.getSignature().length() < 2) {
+				String sig = returnType.getSignature();
+				if (sig.equals("F")) {
+					adviceBody.append(InstructionConstants.FRETURN);
+				} else if (sig.equals("D")) {
+					adviceBody.append(InstructionConstants.DRETURN);
+				} else if (sig.equals("J")) {
+					adviceBody.append(InstructionConstants.LRETURN);
+				} else {
+					adviceBody.append(InstructionConstants.IRETURN);
+				}
+			} else {
+				adviceBody.append(InstructionConstants.ARETURN);
+			}
+		}
+		// Add the annotation
+		advice.addAnnotation(aaj);
+		InstructionHandle start = adviceBody.getStart();
+
+		// Setup the local variable targeters so that the binding will work
+		String sig = concreteAspect.name.replace('.', '/');
+		start.addTargeter(new LocalVariableTag("L" + sig + ";", "this", 0, start.getPosition()));
+		if (paramNames.size() > 0) {
+			for (int i = 0; i < paramNames.size(); i++) {
+				start.addTargeter(new LocalVariableTag(paramTypes.get(i).getSignature(), paramNames.get(i), i + 1, start
+						.getPosition()));
+			}
+		}
+
+		// Record the new method in the class
+		cg.addMethodGen(advice);
+	}
+
+	/**
+	 * For the given PointcutAndAdvice build the correct advice annotation.
+	 */
+	private AnnotationAJ buildAdviceAnnotation(LazyClassGen cg, PointcutAndAdvice paa) {
+		SimpleElementValue svg = new SimpleElementValue(ElementValue.STRING, cg.getConstantPool(), paa.pointcut);
+		List<NameValuePair> elems = new ArrayList<NameValuePair>();
+		elems.add(new NameValuePair("value", svg, cg.getConstantPool()));
+		AnnotationGen mag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/" + paa.adviceKind.toString()), elems,
+				true, cg.getConstantPool());
+		AnnotationAJ aaj = new BcelAnnotation(mag, world);
+		return aaj;
 	}
 
 	/**
