@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aspectj>
+  <aspects>
+    <concrete-aspect name="ConjuredUp">
+      <around pointcut="execution(* Hello2.say2(..)) AND args(w) " invokeClass="JavaHelper" invokeMethod="around3(ProceedingJoinPoint pjp, java.lang.String w)"/>
+    </concrete-aspect>
+  </aspects>
+
+  <weaver options="-Xreweavable -verbose -XlazyTjp -showWeaveInfo">
+    <include within="Hello2"/>
+    <dump within="*"/>
+  </weaver>
+</aspectj>
+

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aspectj>
+  <aspects>
+    <concrete-aspect name="ConjuredUp">
+      <before pointcut="execution(* Hello.sayWorld(..))" invokeClass="com.DoesNotExist" invokeMethod="advice1()"/>
+    </concrete-aspect>
+  </aspects>
+
+  <weaver options="-Xreweavable -verbose -XlazyTjp -showWeaveInfo">
+    <include within="Hello"/>
+  </weaver>
+</aspectj>
+
