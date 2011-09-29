@@ -530,6 +530,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			// String relativePath = files[i].getPath();
 
 			writeResource(filename, bytes, src);
+		} catch (FileNotFoundException fnfe) {
+			// pr359332: looks like the file moved (refactoring?) just as this copy was starting
+			// that is OK
 		} finally {
 			if (fis != null) {
 				fis.close();
