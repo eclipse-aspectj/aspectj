@@ -60,6 +60,10 @@ import java.util.List;
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Constant;
+import org.aspectj.apache.bcel.classfile.ConstantDouble;
+import org.aspectj.apache.bcel.classfile.ConstantFloat;
+import org.aspectj.apache.bcel.classfile.ConstantInteger;
+import org.aspectj.apache.bcel.classfile.ConstantLong;
 import org.aspectj.apache.bcel.classfile.ConstantObject;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.ConstantValue;
@@ -72,7 +76,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnos;
  * Template class for building up a field. The only extraordinary thing one can do is to add a constant value attribute to a field
  * (which must of course be compatible with the declared type).
  * 
- * @version $Id: FieldGen.java,v 1.10 2010/01/29 20:28:37 aclement Exp $
+ * @version $Id: FieldGen.java,v 1.11 2011/10/03 22:41:24 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Field
  */
@@ -122,11 +126,21 @@ public class FieldGen extends FieldGenOrMethodGen {
 		}
 	}
 
-// TODO setting the constant value is a mess...
+	// TODO setting the constant value is a mess...
 	public void setValue(int index) {
 		ConstantPool cp = this.cp;
 		Constant c = cp.getConstant(index);
-		value = ((ConstantObject) c).getConstantValue(cp);
+		if (c instanceof ConstantInteger) {
+			value = ((ConstantInteger) c).getIntValue();
+		} else if (c instanceof ConstantFloat) {
+			value = ((ConstantFloat) c).getValue();
+		} else if (c instanceof ConstantDouble) {
+			value = ((ConstantDouble) c).getValue();
+		} else if (c instanceof ConstantLong) {
+			value = ((ConstantLong) c).getValue();
+		} else {
+			value = ((ConstantObject) c).getConstantValue(cp);
+		}
 	}
 
 	public void setValue(String constantString) {
