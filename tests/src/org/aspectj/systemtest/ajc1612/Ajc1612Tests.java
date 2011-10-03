@@ -36,6 +36,10 @@ public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// runTest("itd split compilation");
 	// }
 
+	public void testClassCast_327141() {
+		runTest("classcast");
+	}
+
 	public void testXmlDefs() {
 		runTest("xml defined advice");
 	}

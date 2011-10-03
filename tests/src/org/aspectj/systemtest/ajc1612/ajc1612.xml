@@ -2,6 +2,15 @@
 
 <suite>
 
+ <ajc-test dir="bugs1612/pr327141" title="classcast">
+     <compile files="AspectWithConstant.aj" options="-1.5"/>
+     <run class="AspectWithConstant">
+     <stdout>
+     <line text="MAX=9"/>
+     <line text="@AspectWithConstant$Loggable()"/>
+     </stdout></run>
+   </ajc-test>
+   
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice">
      <compile files="Hello.java JavaHelper.java"/>
      <run class="Hello" ltw="aop.xml">
