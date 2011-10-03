@@ -23,13 +23,71 @@ All rights reserved.
 <p>The full list of resolved issues in 1.6.12 is available 
 <a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.6.12;">here</a></h2>.</p>
 
-
+<h4>1.6.12.RC1 available 3-Oct-2011</h4>
 <h4>1.6.12.M2 available 18-Aug-2011</h4>
 <h4>1.6.12.M1 available 7-Jun-2011</h4>
 
-
 <h2>Notable Changes</h2>
 
+<h3>RC1 - annotation value matching and !=</h3>
+<p>
+Prior to this change it was only possible to specify an annotation match like this:<br><br>
+<tt>get(@Anno(someValue=1) * *) || get(@Anno(someValue=3) * *)</tt><br>
+<p>Now it is possible to use != and write this:<br><br>
+<tt>get(@Anno(someValue!=2) * *)</tt><br>
+<p>This can enable a group of annotated elements to be more easily identified.<br>
+<br>
+
+
+<h3>RC1 - More flexible pointcut/code wiring in aop.xml</h3>
+<p>
+Prior to this version the wiring was quite limited.  In order to wire a pointcut to a piece of code the user
+needed to write an abstract aspect that included an abstract pointcut and some advice attached to that
+abstract pointcut.  Then compile this aspect and finally write the XML to concretize the abstract pointcut.  With 1.6.12
+more flexibility has been added and for some cases there can be no need for that abstract aspect.
+<p>This is a work in progress but now you can write this in the aop.xml:
+<pre><code>
+&lt;concrete-aspect name="MyAspect"&gt;
+  &lt;before pointcut="execution(* Hello.say2(..)) AND args(message)"
+   invokeClass="SomeRegularJavaClass" 
+   invokeMethod="someMethod(JoinPoint tjp, java.lang.String message)"/&gt;
+  &lt;after pointcut="execution(* Hello.say2(..)) AND args(message)"
+   invokeClass="SomeRegularJavaClass" 
+   invokeMethod="someOtherMethod(JoinPoint tjp, java.lang.String message)"/&gt;
+&lt;/concrete-aspect&gt;
+
+public class SomeRegularJavaClass {
+
+  public static void someMethod(org.aspectj.lang.JoinPoint tjp, String s) {
+    System.out.println("in advice4: s="+s+" at "+tjp);
+  }
+  
+  public static void someOtherMethod(org.aspectj.lang.JoinPoint tjp, String s) {
+    System.out.println("in advice5: s="+s+" at "+tjp);
+  }
+}
+</code></pre>
+<p>In this example there is a simple regular java class containing some static methods.  In the XML these
+can be joined to pointcuts, kind as if they were advice.  Notice in the XML it specifies:
+<ul>
+<li>The pointcut
+<li>The <tt>invokeClass</tt> - the fully qualified name of the class containing the Java method
+<li>The <tt>invokeMethod</tt> - the method, including signature in the specified class.
+</ul>
+<p>
+Due to the method specification being in XML the parameter types must be fully specified.  The only
+exception to this rule is that the AspectJ core types JoinPoint (and JoinPoint.StaticPart) do not
+have to be fully qualified (see the example above).
+<b>Important:</b> notice that in the case above which does argument binding, the names are
+bound according to the XML specification, not according to the parameter names in the Java code.
+<p>Around advice is also supported (the return type of the method must match the joinpoint return
+type).  The example shows after advice, currently there is no way to specify either after returning
+or after finally, there is only after.
+<p>Expanding this further would enable support for all the code style features in the XML.  Some
+of the language features like declare annotation cannot be done in annotation style aspects but the
+XML doesn't have the same kind of restrictions.  If anyone wants to help out by fleshing this area
+of the weaver out, let me know and I'll help you get started!
+  
 <hr>
 <h3>M2 - thisAspectInstance (<a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=239649">bug239649</a>)</h3>
 <p>
