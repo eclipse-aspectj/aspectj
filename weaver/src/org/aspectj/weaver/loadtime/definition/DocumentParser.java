@@ -82,7 +82,7 @@ public class DocumentParser extends DefaultHandler {
 	private Definition.ConcreteAspect activeConcreteAspectDefinition;
 
 	private static Hashtable<String, Definition> parsedFiles = new Hashtable<String, Definition>();
-	private static final boolean CACHE;
+	private static boolean CACHE;
 	private static final boolean LIGHTPARSER;
 
 	static {
@@ -343,6 +343,13 @@ public class DocumentParser extends DefaultHandler {
 
 	private boolean isTrue(String s) {
 		return (s != null && s.equals("true"));
+	}
+
+	/**
+	 * Turn off caching
+	 */
+	public static void deactivateCaching() {
+		CACHE = false;
 	}
 
 }
