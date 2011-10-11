@@ -170,6 +170,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 	public void environmentSupportsIncrementalCompilation(boolean itDoes) {
 		this.environmentSupportsIncrementalCompilation = itDoes;
+		if (itDoes) {
+			org.aspectj.weaver.loadtime.definition.DocumentParser.deactivateCaching();
+		}
 	}
 
 	/** @return true if we should generate a model as a side-effect */
