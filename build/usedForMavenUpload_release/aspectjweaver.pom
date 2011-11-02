@@ -5,7 +5,7 @@
   <groupId>org.aspectj</groupId>
   <artifactId>aspectjweaver</artifactId>
   <packaging>jar</packaging>
-  <version>1.6.11.RELEASE</version>
+  <version>1.6.12</version>
   <name>AspectJ weaver</name>
   <description>The AspectJ weaver introduces advices to java classes</description>
   <url>http://www.aspectj.org</url>
@@ -18,6 +18,14 @@
     </license>
   </licenses>
 
+  <developers>
+    <developer>
+      <id>aclement</id>
+      <name>Andy Clement</name>
+      <email>aclement@vmware.com</email>
+    </developer>
+  </developers>
+  
   <scm>
     <url>http://dev.eclipse.org/viewcvs/index.cgi/org.aspectj/?root=Tools_Project</url>
   </scm>
