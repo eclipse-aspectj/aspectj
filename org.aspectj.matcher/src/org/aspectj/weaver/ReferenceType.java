@@ -16,7 +16,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -224,20 +223,19 @@ public class ReferenceType extends ResolvedType {
 	@Override
 	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
 		AnnotationAJ[] axs = getDelegate().getAnnotations();
-		if (axs == null) {
-			if (annotations != null) {
-				String searchSig = ofType.getSignature();
-				for (int i = 0; i < annotations.length; i++) {
-					if (annotations[i].getTypeSignature().equals(searchSig)) {
-						return annotations[i];
-					}
+		if (axs != null) {
+			for (int i = 0; i < axs.length; i++) {
+				if (axs[i].getTypeSignature().equals(ofType.getSignature())) {
+					return axs[i];
 				}
 			}
-			return null;
 		}
-		for (int i = 0; i < axs.length; i++) {
-			if (axs[i].getTypeSignature().equals(ofType.getSignature())) {
-				return axs[i];
+		if (annotations != null) {
+			String searchSig = ofType.getSignature();
+			for (int i = 0; i < annotations.length; i++) {
+				if (annotations[i].getTypeSignature().equals(searchSig)) {
+					return annotations[i];
+				}
 			}
 		}
 		return null;
@@ -624,15 +622,18 @@ public class ReferenceType extends ResolvedType {
 			return interfaces;
 		}
 		ResolvedType[] delegateInterfaces = getDelegate().getDeclaredInterfaces();
-		if (isRawType()) {			
-			if (newInterfaces!=null) {
-				throw new IllegalStateException("The raw type should never be accumulating new interfaces, they should be on the generic type.  Type is "+this.getName());
+		if (isRawType()) {
+			if (newInterfaces != null) {
+				throw new IllegalStateException(
+						"The raw type should never be accumulating new interfaces, they should be on the generic type.  Type is "
+								+ this.getName());
 			}
 			ResolvedType[] newInterfacesFromGenericType = genericType.newInterfaces;
-			if (newInterfacesFromGenericType!=null) {
+			if (newInterfacesFromGenericType != null) {
 				ResolvedType[] extraInterfaces = new ResolvedType[delegateInterfaces.length + newInterfacesFromGenericType.length];
 				System.arraycopy(delegateInterfaces, 0, extraInterfaces, 0, delegateInterfaces.length);
-				System.arraycopy(newInterfacesFromGenericType, 0, extraInterfaces, delegateInterfaces.length, newInterfacesFromGenericType.length);
+				System.arraycopy(newInterfacesFromGenericType, 0, extraInterfaces, delegateInterfaces.length,
+						newInterfacesFromGenericType.length);
 				delegateInterfaces = extraInterfaces;
 			}
 		} else if (newInterfaces != null) {
@@ -640,7 +641,7 @@ public class ReferenceType extends ResolvedType {
 			ResolvedType[] extraInterfaces = new ResolvedType[delegateInterfaces.length + newInterfaces.length];
 			System.arraycopy(delegateInterfaces, 0, extraInterfaces, 0, delegateInterfaces.length);
 			System.arraycopy(newInterfaces, 0, extraInterfaces, delegateInterfaces.length, newInterfaces.length);
-			
+
 			delegateInterfaces = extraInterfaces;
 		}
 		if (isParameterizedType()) {
@@ -965,7 +966,6 @@ public class ReferenceType extends ResolvedType {
 		parameterizedPointcuts = null;
 		superclassReference = new WeakReference<ResolvedType>(null);
 	}
-	
 
 	public int getEndPos() {
 		return endPos;
@@ -1000,7 +1000,7 @@ public class ReferenceType extends ResolvedType {
 			typeKind = TypeKind.RAW;
 			signatureErasure = signature;
 		}
-		if (typeKind==TypeKind.RAW){
+		if (typeKind == TypeKind.RAW) {
 			genericType.addDependentType(this);
 		}
 		if (this.isRawType() && rt.isRawType()) {
@@ -1052,8 +1052,8 @@ public class ReferenceType extends ResolvedType {
 			try {
 				ret.append(((ReferenceType) someParameters[i]).getSignatureForAttribute());
 			} catch (ClassCastException cce) {
-				throw new IllegalStateException("DebugFor325731: expected a ReferenceType but was "+someParameters[i]+
-						" of type "+someParameters[i].getClass().getName(),cce);
+				throw new IllegalStateException("DebugFor325731: expected a ReferenceType but was " + someParameters[i]
+						+ " of type " + someParameters[i].getClass().getName(), cce);
 			}
 		}
 		ret.append(">;");
@@ -1098,7 +1098,7 @@ public class ReferenceType extends ResolvedType {
 				newInterfaces = newNewInterfaces;
 			}
 			if (this.isGenericType()) {
-				for (ReferenceType derivativeType:derivativeTypes) {
+				for (ReferenceType derivativeType : derivativeTypes) {
 					derivativeType.parameterizedInterfaces.clear();
 				}
 			}
