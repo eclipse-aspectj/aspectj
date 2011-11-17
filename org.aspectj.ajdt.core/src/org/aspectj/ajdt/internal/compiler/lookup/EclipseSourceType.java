@@ -45,6 +45,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.AnnotationBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
@@ -56,6 +57,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.weaver.AbstractReferenceTypeDelegate;
 import org.aspectj.weaver.AnnotationAJ;
+import org.aspectj.weaver.AnnotationAnnotationValue;
 import org.aspectj.weaver.AnnotationNameValuePair;
 import org.aspectj.weaver.AnnotationTargetKind;
 import org.aspectj.weaver.AnnotationValue;
@@ -673,7 +675,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		// long bs = (eclipseAnnotation.bits & TagBits.AnnotationRetentionMASK);
 		boolean isRuntimeVisible = (eclipseAnnotation.bits & TagBits.AnnotationRetentionMASK) == TagBits.AnnotationRuntimeRetention;
 		StandardAnnotation annotationAJ = new StandardAnnotation(annotationType, isRuntimeVisible);
-		generateAnnotation(eclipseAnnotation, annotationAJ);
+		generateAnnotation(eclipseAnnotation, annotationAJ, w);
 		return annotationAJ;
 	}
 
@@ -689,7 +691,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	 * @param annotation eclipse based annotation representation
 	 * @param annotationAJ AspectJ based annotation representation
 	 */
-	private void generateAnnotation(Annotation annotation, StandardAnnotation annotationAJ) {
+	private void generateAnnotation(Annotation annotation, StandardAnnotation annotationAJ, World w) {
 		if (annotation instanceof NormalAnnotation) {
 			NormalAnnotation normalAnnotation = (NormalAnnotation) annotation;
 			MemberValuePair[] memberValuePairs = normalAnnotation.memberValuePairs;
@@ -700,9 +702,22 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 					MethodBinding methodBinding = memberValuePair.binding;
 					if (methodBinding == null) {
 						// is this just a marker annotation?
-						throw new MissingImplementationException(
-								"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation [" + annotation
-										+ "]");
+						if (memberValuePair.value instanceof MarkerAnnotation) {
+							MarkerAnnotation eMarkerAnnotation = (MarkerAnnotation) memberValuePair.value;
+							AnnotationBinding eMarkerAnnotationBinding = eMarkerAnnotation.getCompilerAnnotation();
+							ReferenceBinding eAnnotationType = eMarkerAnnotationBinding.getAnnotationType();
+							ResolvedType ajAnnotationType = factory.fromTypeBindingToRTX(eAnnotationType);
+							boolean isRuntimeVisible = (eMarkerAnnotation.bits & TagBits.AnnotationRetentionMASK) == TagBits.AnnotationRuntimeRetention;
+							StandardAnnotation ajAnnotation = new StandardAnnotation(ajAnnotationType, isRuntimeVisible);
+							AnnotationValue av = new AnnotationAnnotationValue(ajAnnotation);
+							AnnotationNameValuePair anvp = new AnnotationNameValuePair(new String(memberValuePair.name), av);
+							annotationAJ.addNameValuePair(anvp);
+						} else {
+
+							throw new MissingImplementationException(
+									"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation ["
+											+ annotation + "]");
+						}
 					} else {
 						AnnotationValue av = generateElementValue(memberValuePair.value, methodBinding.returnType);
 						AnnotationNameValuePair anvp = new AnnotationNameValuePair(new String(memberValuePair.name), av);
@@ -793,12 +808,17 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 						"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value [" + defaultValue
 								+ "]");
 			} else if (defaultValueBinding.isAnnotationType()) {
-				throw new MissingImplementationException(
-						"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value [" + defaultValue
-								+ "]");
-				// contents[contentsOffset++] = (byte) '@';
-				// generateAnnotation((Annotation) defaultValue,
-				// attributeOffset);
+				if (defaultValue instanceof MarkerAnnotation) {
+					ResolvedType ajAnnotationType = factory.fromTypeBindingToRTX(defaultValueBinding);
+					StandardAnnotation ajAnnotation = new StandardAnnotation(ajAnnotationType,
+							ajAnnotationType.isAnnotationWithRuntimeRetention());
+					AnnotationValue av = new AnnotationAnnotationValue(ajAnnotation);
+					return av;
+				} else {
+					throw new MissingImplementationException(
+							"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value ["
+									+ defaultValue + "]");
+				}
 			} else if (defaultValueBinding.isArrayType()) {
 				// array type
 				if (defaultValue instanceof ArrayInitializer) {
