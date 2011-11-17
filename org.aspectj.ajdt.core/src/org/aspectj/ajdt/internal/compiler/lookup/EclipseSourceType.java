@@ -34,6 +34,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Literal;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MemberValuePair;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.NameReference;
@@ -46,6 +47,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.AnnotationBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
@@ -712,8 +714,42 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 							AnnotationValue av = new AnnotationAnnotationValue(ajAnnotation);
 							AnnotationNameValuePair anvp = new AnnotationNameValuePair(new String(memberValuePair.name), av);
 							annotationAJ.addNameValuePair(anvp);
+							// } else if (memberValuePair.value instanceof NormalAnnotation) {
+							// NormalAnnotation eNormalAnnotation = (NormalAnnotation) memberValuePair.value;
+							// AnnotationBinding eMarkerAnnotationBinding = eNormalAnnotation.getCompilerAnnotation();
+							// ReferenceBinding eAnnotationType = eMarkerAnnotationBinding.getAnnotationType();
+							// ResolvedType ajAnnotationType = factory.fromTypeBindingToRTX(eAnnotationType);
+							// boolean isRuntimeVisible = (eNormalAnnotation.bits & TagBits.AnnotationRetentionMASK) ==
+							// TagBits.AnnotationRuntimeRetention;
+							// StandardAnnotation ajAnnotation = new StandardAnnotation(ajAnnotationType, isRuntimeVisible);
+							// MemberValuePair[] pairs = eNormalAnnotation.memberValuePairs;
+							// if (pairs != null) {
+							// for (int p = 0; p < pairs.length; p++) {
+							// MemberValuePair pair = pairs[p];
+							// throw new IllegalStateException("nyi");
+							//
+							// }
+							// }
+							// AnnotationValue av = new AnnotationAnnotationValue(ajAnnotation);
+							// AnnotationNameValuePair anvp = new AnnotationNameValuePair(new String(memberValuePair.name), av);
+							// annotationAJ.addNameValuePair(anvp);
+						} else if (memberValuePair.value instanceof Literal) {
+							AnnotationValue av = generateElementValue(memberValuePair.value,
+									((Literal) memberValuePair.value).resolvedType);
+							AnnotationNameValuePair anvp = new AnnotationNameValuePair(new String(memberValuePair.name), av);
+							annotationAJ.addNameValuePair(anvp);
+						} else if (memberValuePair.value instanceof ArrayInitializer) {
+							ArrayInitializer arrayInitializer = (ArrayInitializer) memberValuePair.value;
+							Expression[] expressions = arrayInitializer.expressions;
+							AnnotationValue[] arrayValues = new AnnotationValue[expressions.length];
+							for (int e = 0; e < expressions.length; e++) {
+								arrayValues[e] = generateElementValue(expressions[e],
+										((ArrayBinding) arrayInitializer.resolvedType).leafComponentType);
+							}
+							AnnotationValue array = new ArrayAnnotationValue(arrayValues);
+							AnnotationNameValuePair anvp = new AnnotationNameValuePair(new String(memberValuePair.name), array);
+							annotationAJ.addNameValuePair(anvp);
 						} else {
-
 							throw new MissingImplementationException(
 									"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation ["
 											+ annotation + "]");
@@ -812,6 +848,27 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 					ResolvedType ajAnnotationType = factory.fromTypeBindingToRTX(defaultValueBinding);
 					StandardAnnotation ajAnnotation = new StandardAnnotation(ajAnnotationType,
 							ajAnnotationType.isAnnotationWithRuntimeRetention());
+					AnnotationValue av = new AnnotationAnnotationValue(ajAnnotation);
+					return av;
+				} else if (defaultValue instanceof NormalAnnotation) {
+					NormalAnnotation normalAnnotation = (NormalAnnotation) defaultValue;
+					ResolvedType ajAnnotationType = factory.fromTypeBindingToRTX(defaultValueBinding);
+					StandardAnnotation ajAnnotation = new StandardAnnotation(ajAnnotationType,
+							ajAnnotationType.isAnnotationWithRuntimeRetention());
+					MemberValuePair[] pairs = normalAnnotation.memberValuePairs;
+					if (pairs != null) {
+						for (int p = 0; p < pairs.length; p++) {
+							MemberValuePair pair = pairs[p];
+							Expression valueEx = pair.value;
+							AnnotationValue pairValue = null;
+							if (valueEx instanceof Literal) {
+								pairValue = generateElementValue(valueEx, ((Literal) valueEx).resolvedType);
+							} else {
+								pairValue = generateElementValue(pair.value, pair.binding.returnType);
+							}
+							ajAnnotation.addNameValuePair(new AnnotationNameValuePair(new String(pair.name), pairValue));
+						}
+					}
 					AnnotationValue av = new AnnotationAnnotationValue(ajAnnotation);
 					return av;
 				} else {
