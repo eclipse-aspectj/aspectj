@@ -18,6 +18,7 @@ import java.util.Set;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.CompressingDataOutputStream;
@@ -28,7 +29,6 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 /**
  * @author colyer
@@ -206,7 +206,24 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 						}
 						annotationValues.put(k, rt.getSignature());
 					} else {
-						throw new RuntimeException("Compiler limitation: annotation value support not implemented for type " + t);
+						if (t.isAnnotation()) {
+							if (v.indexOf("(") != -1) {
+								throw new RuntimeException(
+										"Compiler limitation: annotation values can only currently be marker annotations (no values): "
+												+ v);
+							}
+							String typename = v.substring(1);
+							ResolvedType rt = scope.lookupType(typename, this).resolve(scope.getWorld());
+							if (rt.isMissing()) {
+								IMessage m = MessageUtil.error(
+										"Unable to resolve type '" + v + "' specified for value '" + k + "'", getSourceLocation());
+								scope.getWorld().getMessageHandler().handleMessage(m);
+							}
+							annotationValues.put(k, rt.getSignature());
+						} else {
+							throw new RuntimeException("Compiler limitation: annotation value support not implemented for type "
+									+ t);
+						}
 					}
 				}
 			}
