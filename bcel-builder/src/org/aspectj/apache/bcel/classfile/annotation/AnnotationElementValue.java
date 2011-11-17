@@ -14,8 +14,11 @@ package org.aspectj.apache.bcel.classfile.annotation;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.List;
 
+import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 
 public class AnnotationElementValue extends ElementValue {
 
@@ -45,7 +48,22 @@ public class AnnotationElementValue extends ElementValue {
 
 	@Override
 	public String stringifyValue() {
-		throw new RuntimeException("Not implemented yet");
+		StringBuffer sb = new StringBuffer();
+		ConstantUtf8 cu8 = (ConstantUtf8) cpool.getConstant(a.getTypeIndex(), Constants.CONSTANT_Utf8);
+		sb.append(cu8.getValue());
+		// haven't really tested this values section:
+		List<NameValuePair> pairs = a.getValues();
+		if (pairs != null && pairs.size() > 0) {
+			sb.append("(");
+			for (int p = 0; p < pairs.size(); p++) {
+				if (p > 0) {
+					sb.append(",");
+				}
+				sb.append(pairs.get(p).getNameString()).append("=").append(pairs.get(p).getValue().stringifyValue());
+			}
+			sb.append(")");
+		}
+		return sb.toString();
 	}
 
 	public AnnotationGen getAnnotation() {
