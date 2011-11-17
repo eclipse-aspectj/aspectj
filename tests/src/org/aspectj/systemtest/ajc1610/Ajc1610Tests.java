@@ -18,6 +18,11 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc1610Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	
+	public void testNPE_pr363962() {
+		runTest("pr363962");
+	}
+	
 	public void testOffset0_bug324932() {
 		runTest("pr324932");
 	}

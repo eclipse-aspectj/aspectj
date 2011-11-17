@@ -2,6 +2,17 @@
 
 <suite>
 
+
+  <ajc-test dir="bugs1610/pr363962" title="pr363962">
+    <compile files="Code.java" options="-1.5"/>
+    <run class="Code">
+    <stdout>
+	    <line text="OK"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  
   <ajc-test dir="bugs1610/pr324932" title="pr324932">
     <compile files="A.java" options="-1.5"/>
     <compile files="X.aj" options="-1.5 -Xlint:ignore" />
