@@ -2,15 +2,15 @@
 import java.lang.annotation.*;
 
 aspect X {
-declare parents: 
-  @SomeAnnotation(a = @Foo(value="123")) * implements java.io.Serializable;
+  declare parents: @Bar(value = "123") * implements java.io.Serializable;
 }
 
-  @SomeAnnotation(a = @Foo(value="123"))
-  public class Example { 
+@Bar(value="123")
+@NamedQuery(name = "Department.findAll",query = "select d from Department d order by d.name ASC",hints = {@QueryHint(name = "org.hibernate.cacheable",value = "true")})
+public class Example2 { 
 
   public static void main(String []argv) {
-    Example e = new Example();
+    Example2 e = new Example2();
     if (e instanceof java.io.Serializable) {
       System.out.println("yes");
     } else {
@@ -21,12 +21,21 @@ declare parents:
 }
 
 @Retention(RetentionPolicy.RUNTIME)
-@interface Foo {
+@interface QueryHint {
+  String name();
   String value();
 }
 
 @Retention(RetentionPolicy.RUNTIME)
-@interface SomeAnnotation {
-  Foo a();
+@interface NamedQuery {
+  String name();
+  String query();
+  QueryHint[] hints();
 }
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface Bar {
+  String value();
+}
+
 

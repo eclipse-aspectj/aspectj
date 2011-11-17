@@ -25,9 +25,9 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("missing impl");
 	}
 
-	// public void testMissingImpl_363979_2() {
-	// runTest("missing impl 2");
-	// }
+	public void testMissingImpl_363979_2() {
+		runTest("missing impl 2");
+	}
 
 	// ---
 
