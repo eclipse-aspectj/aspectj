@@ -37,7 +37,6 @@ public class AllTests16 {
 		suite.addTest(AllTestsAspectJ1610.suite());
 		suite.addTest(AllTestsAspectJ1611.suite());
 		suite.addTest(AllTestsAspectJ1612.suite());
-		suite.addTest(AllTests15.suite());
 		// $JUnit-END$
 		return suite;
 	}

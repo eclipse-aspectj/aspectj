@@ -1,0 +1,24 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+   <ajc-test dir="bugs170/pr363979" title="missing impl">
+     <compile files="Example.java" options="-1.5"/>
+     <run class="Example">
+	     <stdout>
+	    	 <line text="yes"/>
+	     </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/pr363979" title="missing impl 2">
+     <compile files="Example2.java" options="-1.5"/>
+     <run class="Example2">
+	     <stdout>
+	    	 <line text="yes"/>
+	     </stdout>
+     </run>
+   </ajc-test>
+   
+  
+</suite>
