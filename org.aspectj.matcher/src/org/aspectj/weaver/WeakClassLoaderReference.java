@@ -30,9 +30,9 @@ import java.lang.ref.WeakReference;
  * be using this weaver if its associated ClassLoader has been collected. See https://bugs.eclipse.org/bugs/show_bug.cgi?id=210470
  * 
  * 
- * @author Andy Clement
+ * @author Andy Clement, Abraham Nevado
  */
-public class WeakClassLoaderReference {
+public class WeakClassLoaderReference{
 
 	protected final int hashcode;
 
@@ -40,7 +40,13 @@ public class WeakClassLoaderReference {
 
 	public WeakClassLoaderReference(ClassLoader loader) {
 		loaderRef = new WeakReference(loader);
-		hashcode = loader.hashCode() * 37;
+		if(loader == null){
+			// Bug: 363962 
+			// Check that ClassLoader is not null, for instance when loaded from BootStrapClassLoader
+			hashcode = System.identityHashCode(this);
+		}else{
+			hashcode = loader.hashCode() * 37;
+		}
 	}
 
 	public ClassLoader getClassLoader() {
