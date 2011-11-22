@@ -673,8 +673,15 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 	}
 
 	public boolean isVisible(ResolvedType fromType) {
-		World world = fromType.getWorld();
-		return ResolvedType.isVisible(getModifiers(), getDeclaringType().resolve(world), fromType);
+		UnresolvedType declaringType = getDeclaringType();
+		ResolvedType type = null;
+		if (fromType.equals(declaringType)) {
+			type = fromType;
+		} else {
+			World world = fromType.getWorld();
+			type = declaringType.resolve(world);
+		}
+		return ResolvedType.isVisible(getModifiers(), type, fromType);
 	}
 
 	public void setCheckedExceptions(UnresolvedType[] checkedExceptions) {
