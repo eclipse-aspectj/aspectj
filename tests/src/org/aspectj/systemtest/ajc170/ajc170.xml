@@ -20,5 +20,11 @@
      </run>
    </ajc-test>
    
-  
+   <ajc-test dir="bugs170/pr364380" title="stackoverflow">
+     <compile files="X.aj" options="-1.5" outjar="foo.jar"/>
+     <compile files="C.java" options="-1.5" inpath="foo.jar">
+     <message kind="warning" text="An advice already exists for setting an owner"/>
+     </compile>
+   </ajc-test>
+   
 </suite>

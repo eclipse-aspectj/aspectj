@@ -29,6 +29,10 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("missing impl 2");
 	}
 
+	public void testStackOverflow_364380() {
+		runTest("stackoverflow");
+	}
+
 	// ---
 
 	public static Test suite() {
