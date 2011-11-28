@@ -1601,10 +1601,8 @@ public class BcelWeaver {
 			// System.err.println("need to do declare parents for: " + onType);
 			for (ResolvedType newParent : newParents) {
 				// We set it here so that the imminent matching for ITDs can
-				// succeed - we
-				// still haven't done the necessary changes to the class file
-				// itself
-				// (like transform super calls) - that is done in
+				// succeed - we still haven't done the necessary changes to the class file
+				// itself (like transform super calls) - that is done in
 				// BcelTypeMunger.mungeNewParent()
 				// classType.addParent(newParent);
 				onType.addParent(newParent);
