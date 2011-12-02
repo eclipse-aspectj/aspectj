@@ -324,7 +324,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		}
 		addDeclarationStartLineAttribute(l,classFile);
 
-		return classFile.generateMethodInfoAttribute(binding, false, l);
+		return classFile.generateMethodInfoAttributes(binding, l);
 	}
 
 	protected abstract Shadow.Kind getShadowKindForBody();

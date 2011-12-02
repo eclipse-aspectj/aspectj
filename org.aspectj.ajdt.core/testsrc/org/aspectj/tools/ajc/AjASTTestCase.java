@@ -21,7 +21,7 @@ import org.aspectj.org.eclipse.jdt.core.dom.ASTParser;
 import org.aspectj.org.eclipse.jdt.core.dom.AjAST;
 import org.aspectj.org.eclipse.jdt.core.dom.AjASTVisitor;
 import org.aspectj.org.eclipse.jdt.core.dom.CompilationUnit;
-import org.aspectj.org.eclipse.jdt.internal.core.SourceRange;
+import org.aspectj.org.eclipse.jdt.core.SourceRange;
 
 public abstract class AjASTTestCase extends TestCase {
 

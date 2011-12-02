@@ -32,6 +32,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
+import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.Opcodes;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
@@ -81,7 +82,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		l.add(new EclipseAttributeAdapter(makeAttribute()));
 		addDeclarationStartLineAttribute(l, classFile);
 
-		return classFile.generateMethodInfoAttribute(binding, false, l);
+		return classFile.generateMethodInfoAttributes(binding, l);
 	}
 
 	private AjAttribute makeAttribute() {
@@ -109,7 +110,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 			TypeBinding argTb = extraArgument.binding.type;
 			TypeBinding expectedTb = upperScope.getJavaLangThrowable();
 			if (!argTb.isCompatibleWith(expectedTb)) {
-				scope.problemReporter().typeMismatchError(argTb, expectedTb, extraArgument);
+				scope.problemReporter().typeMismatchError(argTb, expectedTb, extraArgument,null);
 				ignoreFurtherInvestigation = true;
 				return;
 			}
@@ -190,7 +191,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 
 		classFile.generateMethodInfoHeader(binding);
 		int methodAttributeOffset = classFile.contentsOffset;
-		int attributeNumber = classFile.generateMethodInfoAttribute(binding, false, AstUtil.getAjSyntheticAttribute());
+		int attributeNumber = classFile.generateMethodInfoAttributes(binding, AstUtil.getAjSyntheticAttribute());
 		int codeAttributeOffset = classFile.contentsOffset;
 		classFile.generateCodeAttributeHeader();
 		CodeStream codeStream = classFile.codeStream;
@@ -219,7 +220,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 			codeStream.load(type, index);
 			index += AstUtil.slotsNeeded(type);
 			if (type.isBaseType()) {
-				codeStream.invokestatic(AjTypeConstants.getConversionMethodToObject(classScope, type));
+				codeStream.invoke(Opcodes.OPC_invokestatic, AjTypeConstants.getConversionMethodToObject(classScope, type), null);
 			}
 
 			codeStream.aastore();
@@ -228,11 +229,11 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		// call run
 		ReferenceBinding closureType = (ReferenceBinding) binding.parameters[nargs - 1];
 		MethodBinding runMethod = closureType.getMethods("run".toCharArray())[0];
-		codeStream.invokevirtual(runMethod);
+		codeStream.invoke(Opcodes.OPC_invokevirtual, runMethod, null);
 
 		TypeBinding returnType = binding.returnType;
 		if (returnType.isBaseType()) {
-			codeStream.invokestatic(AjTypeConstants.getConversionMethodFromObject(classScope, returnType));
+			codeStream.invoke(Opcodes.OPC_invokestatic, AjTypeConstants.getConversionMethodFromObject(classScope, returnType), null);
 		} else {
 			codeStream.checkcast(returnType);
 		}
@@ -240,7 +241,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		codeStream.recordPositionsFrom(0, 1);
 		classFile.completeCodeAttribute(codeAttributeOffset);
 		attributeNumber++;
-		classFile.completeMethodInfo(methodAttributeOffset, attributeNumber);
+		classFile.completeMethodInfo(binding,methodAttributeOffset, attributeNumber);
 	}
 
 	// override

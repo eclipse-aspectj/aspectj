@@ -188,7 +188,7 @@ public class ThisJoinPointVisitor extends ASTVisitor {
 
 		// System.err.println("replace static ref: " + receiver + " is " + System.identityHashCode(receiver));
 		receiver.binding = thisJoinPointStaticPartDecLocal; // thisJoinPointStaticPartDec;
-		receiver.codegenBinding = thisJoinPointStaticPartDecLocal;
+//		receiver.codegenBinding = thisJoinPointStaticPartDecLocal;
 
 		ReferenceBinding thisJoinPointStaticPartType = (ReferenceBinding) thisJoinPointStaticPartDec.type;
 

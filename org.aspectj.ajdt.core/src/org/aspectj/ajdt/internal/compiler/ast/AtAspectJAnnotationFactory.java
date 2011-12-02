@@ -251,7 +251,7 @@ public class AtAspectJAnnotationFactory {
 		NormalAnnotation ann = new NormalAnnotation(annType,pos);
 		Expression targetExpr = new StringLiteral(targetTypeName,pos,pos,1);
 		Expression nameExpr = new StringLiteral(name,pos,pos,1);
-		Expression modsExpr = new IntLiteral(Integer.toString(modifiers).toCharArray(),pos,pos);
+		Expression modsExpr = IntLiteral.buildIntLiteral(Integer.toString(modifiers).toCharArray(),pos,pos);
 		MemberValuePair[] mvps = new MemberValuePair[3];
 		mvps[0] = new MemberValuePair("targetType".toCharArray(),pos,pos,targetExpr);
 		mvps[1] = new MemberValuePair("name".toCharArray(),pos,pos,nameExpr);

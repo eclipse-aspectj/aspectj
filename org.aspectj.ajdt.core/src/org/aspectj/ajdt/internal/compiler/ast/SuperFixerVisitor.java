@@ -83,10 +83,10 @@ public class SuperFixerVisitor extends ASTVisitor {
 	public void endVisit(MessageSend call, BlockScope scope) {
 		// System.out.println("endVisit: " + call);
 		// an error has already occurred
-		if (call.codegenBinding == null)
+		if (call.binding/*codegenBinding*/ == null)
 			return;
 
-		MethodBinding superBinding = call.codegenBinding;
+		MethodBinding superBinding = call.binding/*codegenBinding*/;
 		if (superBinding instanceof ProblemMethodBinding) {
 			return;
 		}

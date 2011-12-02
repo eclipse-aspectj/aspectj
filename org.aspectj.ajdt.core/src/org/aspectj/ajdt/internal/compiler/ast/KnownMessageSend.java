@@ -9,8 +9,6 @@
  * Contributors: 
  *     PARC     initial implementation 
  * ******************************************************************/
-
-
 package org.aspectj.ajdt.internal.compiler.ast;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
@@ -25,9 +23,10 @@ public class KnownMessageSend extends MessageSend {
 
 	public KnownMessageSend(MethodBinding binding, Expression receiver, Expression[] arguments) {
 		super();
-		this.binding = this.codegenBinding = binding;
+		this.binding = binding;
 		this.arguments = arguments;
 		this.receiver = receiver;
+		this.actualReceiverType = binding.declaringClass;
 		this.selector = binding.selector;
 		constant = Constant.NotAConstant;
 	}
@@ -40,6 +39,7 @@ public class KnownMessageSend extends MessageSend {
 		BlockScope scope,
 		TypeBinding[] argumentTypes) {
 			// we've already resolved this
+		
 	}
 	
 	public String toStringExpression() {
@@ -51,6 +51,7 @@ public class KnownMessageSend extends MessageSend {
 		CodeStream codeStream,
 		boolean valueRequired) {
 		//System.out.println("about to generate: "  +this + " args: " + Arrays.asList(arguments));
+//		this.actualReceiverType = this.receiver.resolveType(currentScope);
 		super.generateCode(currentScope, codeStream, valueRequired);
 	}
 

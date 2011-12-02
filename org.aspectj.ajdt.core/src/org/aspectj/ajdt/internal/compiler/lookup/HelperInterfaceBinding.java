@@ -102,8 +102,8 @@ public class HelperInterfaceBinding extends SourceTypeBinding {
 	private void generateMethod(ClassFile classFile, MethodBinding binding) {
 		classFile.generateMethodInfoHeader(binding);
 		int methodAttributeOffset = classFile.contentsOffset;
-		int attributeNumber = classFile.generateMethodInfoAttribute(binding);
-		classFile.completeMethodInfo(methodAttributeOffset, attributeNumber);
+		int attributeNumber = classFile.generateMethodInfoAttributes(binding);
+		classFile.completeMethodInfo(binding,methodAttributeOffset, attributeNumber);
 	}
 	
 	

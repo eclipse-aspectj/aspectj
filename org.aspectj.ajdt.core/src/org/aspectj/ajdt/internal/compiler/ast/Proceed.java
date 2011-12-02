@@ -46,7 +46,7 @@ public class Proceed extends MessageSend {
 		this.selector  = parent.selector;
 		this.arguments  = parent.arguments;
 		this.binding  = parent.binding;
-		this.codegenBinding = parent.codegenBinding;
+		//this.codegenBinding = parent.codegenBinding;
 		this.syntheticAccessor = parent.syntheticAccessor;
 		this.expectedType = parent.expectedType;
 
@@ -72,7 +72,7 @@ public class Proceed extends MessageSend {
 		}
 		
 		constant = Constant.NotAConstant;
-		binding = codegenBinding = aroundDecl.proceedMethodBinding;
+		binding =/* codegenBinding = */aroundDecl.proceedMethodBinding;
 		
 		this.actualReceiverType = binding.declaringClass;
 		
@@ -163,7 +163,7 @@ public class Proceed extends MessageSend {
 			if (argType != null) {
 				TypeBinding paramType = binding.parameters[i];
 				if (!argType.isCompatibleWith(paramType)) {
-					scope.problemReporter().typeMismatchError(argType, paramType, arg);
+					scope.problemReporter().typeMismatchError(argType, paramType, arg,null);
 				}
 			}
 		}

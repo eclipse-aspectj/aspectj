@@ -53,7 +53,7 @@ public class AjMethodDeclaration extends MethodDeclaration {
 		if (addAjSynthetic) {
 			extras.add(new EclipseAttributeAdapter(new AjAttribute.AjSynthetic()));
 		}
-		return classFile.generateMethodInfoAttribute(binding,false,extras);
+		return classFile.generateMethodInfoAttributes(binding,extras);
 	}
 	
 	protected int generateInfoAttributes(ClassFile classFile) {

@@ -87,7 +87,7 @@ public class InterTypeScope extends ClassScope {
 		int aliased = (aliases == null ? -1 : aliases.indexOf(variableName));
 		if (aliased != -1) {
 			if (aliased > sourceType.typeVariables.length || sourceType.typeVariables.length == 0) {
-				TypeVariableBinding tvb = new TypeVariableBinding("fake".toCharArray(), null, 0);
+				TypeVariableBinding tvb = new TypeVariableBinding("fake".toCharArray(), null, 0,this.environment());
 				tvb.superclass = getJavaLangObject();
 				tvb.fPackage = new PackageBinding(environment());
 				return tvb;

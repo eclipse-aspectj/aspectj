@@ -108,7 +108,7 @@ public class AccessForInlineVisitor extends ASTVisitor {
 	}
 
 	public void endVisit(FieldReference ref, BlockScope scope) {
-		ref.binding = getAccessibleField(ref.binding, ref.receiverType);
+		ref.binding = getAccessibleField(ref.binding, ref.actualReceiverType);
 	}
 
 	public void endVisit(MessageSend send, BlockScope scope) {

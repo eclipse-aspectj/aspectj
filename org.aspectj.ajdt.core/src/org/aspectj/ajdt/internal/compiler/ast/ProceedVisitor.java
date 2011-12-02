@@ -168,7 +168,7 @@ public class ProceedVisitor extends ASTVisitor {
 		//System.err.println("replace static ref");
 		NameReference receiver = (NameReference) call.receiver;
 		receiver.binding = thisJoinPointStaticPartDecLocal; //thisJoinPointStaticPartDec;
-		receiver.codegenBinding = thisJoinPointStaticPartDecLocal;
+//		receiver.codegenBinding = thisJoinPointStaticPartDecLocal;
 
 		call.binding.declaringClass =
 			(ReferenceBinding) thisJoinPointStaticPartDec.type;

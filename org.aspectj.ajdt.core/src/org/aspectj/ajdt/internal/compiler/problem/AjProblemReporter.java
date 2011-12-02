@@ -305,7 +305,9 @@ public class AjProblemReporter extends ProblemReporter {
 		if (severity != ProblemSeverities.Ignore && DUMP_STACK) {
 			Thread.dumpStack();
 		}
-		super.handle(problemId, problemArguments, messageArguments, severity, problemStartPosition, problemEndPosition,
+		super.handle(problemId, problemArguments, 
+				0, // no message elaboration
+				messageArguments, severity, problemStartPosition, problemEndPosition,
 				referenceContext, unitResult);
 	}
 
@@ -357,7 +359,7 @@ public class AjProblemReporter extends ProblemReporter {
 	 * Overrides the implementation in ProblemReporter and is ITD aware. To report a *real* problem with an ITD marked @override,
 	 * the other methodMustOverride() method is used.
 	 */
-	public void methodMustOverride(AbstractMethodDeclaration method) {
+	public void methodMustOverride(AbstractMethodDeclaration method, int complianceLevel) {
 
 		// ignore ajc$ methods
 		if (new String(method.selector).startsWith("ajc$"))
@@ -389,7 +391,7 @@ public class AjProblemReporter extends ProblemReporter {
 			supertypeToLookAt = supertypeToLookAt.getSuperclass();
 		}
 		// report the error...
-		super.methodMustOverride(method);
+		super.methodMustOverride(method,complianceLevel);
 	}
 
 	private String typesAsString(boolean isVarargs, TypeBinding[] types, boolean makeShort) {
@@ -668,12 +670,12 @@ public class AjProblemReporter extends ProblemReporter {
 		}
 	}
 
-	public void duplicateMethodInType(SourceTypeBinding type, AbstractMethodDeclaration methodDecl) {
+	public void duplicateMethodInType(SourceTypeBinding type, AbstractMethodDeclaration methodDecl, boolean equalParameters, int severity) {
 		if (new String(methodDecl.selector).startsWith("ajc$interMethod")) {
 			// this is an ITD clash and will be reported in another way by AspectJ (173602)
 			return;
 		}
-		super.duplicateMethodInType(type, methodDecl);
+		super.duplicateMethodInType(type, methodDecl, equalParameters, severity);
 	}
 
 	// pr246393 - if we are going to complain about privileged, we clearly don't know what is going on, so don't

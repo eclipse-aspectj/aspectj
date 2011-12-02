@@ -38,6 +38,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.BranchLabel;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.ExceptionLabel;
+import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.Opcodes;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
@@ -66,6 +67,8 @@ import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.PerFromSuper;
 import org.aspectj.weaver.patterns.PerSingleton;
 import org.aspectj.weaver.patterns.TypePattern;
+
+import com.sun.org.apache.xpath.internal.compiler.OpCodes;
 
 /**
  * Represents an aspect declaration.
@@ -428,9 +431,9 @@ public class AspectDeclaration extends TypeDeclaration {
 			List attrs = new ArrayList();
 			attrs.addAll(AstUtil.getAjSyntheticAttribute());
 			attrs.addAll(additionalAttributes);
-			attributeNumber = classFile.generateMethodInfoAttribute(methodBinding, false, attrs);
+			attributeNumber = classFile.generateMethodInfoAttributes(methodBinding, attrs);
 		} else {
-			attributeNumber = classFile.generateMethodInfoAttribute(methodBinding, false, AstUtil.getAjSyntheticAttribute());
+			attributeNumber = classFile.generateMethodInfoAttributes(methodBinding, AstUtil.getAjSyntheticAttribute());
 		}
 
 		int codeAttributeOffset = classFile.contentsOffset;
@@ -460,7 +463,7 @@ public class AspectDeclaration extends TypeDeclaration {
 		}
 
 		attributeNumber++;
-		classFile.completeMethodInfo(methodAttributeOffset, attributeNumber);
+		classFile.completeMethodInfo(methodBinding,methodAttributeOffset, attributeNumber);
 	}
 
 	private void generatePerCflowAspectOfMethod(ClassFile classFile) {
@@ -468,8 +471,9 @@ public class AspectDeclaration extends TypeDeclaration {
 		generateMethod(classFile, aspectOfMethod, new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here
-				codeStream.getstatic(world.makeFieldBinding(AjcMemberMaker.perCflowField(typeX)));
-				codeStream.invokevirtual(world.makeMethodBindingForCall(AjcMemberMaker.cflowStackPeekInstance()));
+				codeStream.fieldAccess(Opcodes.OPC_getstatic,world.makeFieldBinding(AjcMemberMaker.perCflowField(typeX)),null);
+
+				codeStream.invoke(Opcodes.OPC_invokevirtual,world.makeMethodBindingForCall(AjcMemberMaker.cflowStackPeekInstance()),null);
 				codeStream.checkcast(binding);
 				codeStream.areturn();
 				// body ends here
@@ -483,8 +487,8 @@ public class AspectDeclaration extends TypeDeclaration {
 		generateMethod(classFile, hasAspectMethod, new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here
-				codeStream.getstatic(world.makeFieldBinding(AjcMemberMaker.perCflowField(typeX)));
-				codeStream.invokevirtual(world.makeMethodBindingForCall(AjcMemberMaker.cflowStackIsValid()));
+				codeStream.fieldAccess(Opcodes.OPC_getstatic,world.makeFieldBinding(AjcMemberMaker.perCflowField(typeX)),null);
+				codeStream.invoke(Opcodes.OPC_invokevirtual,world.makeMethodBindingForCall(AjcMemberMaker.cflowStackIsValid()),null);
 				codeStream.ireturn();
 				// body ends here
 			}
@@ -497,13 +501,13 @@ public class AspectDeclaration extends TypeDeclaration {
 				new BodyGenerator() {
 					public void generate(CodeStream codeStream) {
 						// body starts here
-						codeStream.getstatic(world.makeFieldBinding(AjcMemberMaker.perCflowField(typeX)));
+						codeStream.fieldAccess(Opcodes.OPC_getstatic,world.makeFieldBinding(AjcMemberMaker.perCflowField(typeX)),null);
 						codeStream.new_(binding);
 						codeStream.dup();
-						codeStream.invokespecial(new MethodBinding(0, "<init>".toCharArray(), TypeBinding.VOID, new TypeBinding[0],
-								new ReferenceBinding[0], binding));
+						codeStream.invoke(Opcodes.OPC_invokespecial,new MethodBinding(0, "<init>".toCharArray(), TypeBinding.VOID, new TypeBinding[0],
+								new ReferenceBinding[0], binding),null);
 
-						codeStream.invokevirtual(world.makeMethodBindingForCall(AjcMemberMaker.cflowStackPushInstance()));
+						codeStream.invoke(Opcodes.OPC_invokevirtual, world.makeMethodBindingForCall(AjcMemberMaker.cflowStackPushInstance()), null);
 						codeStream.return_();
 						// body ends here
 					}
@@ -519,8 +523,8 @@ public class AspectDeclaration extends TypeDeclaration {
 						// body starts here
 						codeStream.new_(world.makeTypeBinding(AjcMemberMaker.CFLOW_STACK_TYPE));
 						codeStream.dup();
-						codeStream.invokespecial(world.makeMethodBindingForCall(AjcMemberMaker.cflowStackInit()));
-						codeStream.putstatic(world.makeFieldBinding(AjcMemberMaker.perCflowField(typeX)));
+						codeStream.invoke(Opcodes.OPC_invokespecial,world.makeMethodBindingForCall(AjcMemberMaker.cflowStackInit()),null);
+						codeStream.fieldAccess(Opcodes.OPC_putstatic,world.makeFieldBinding(AjcMemberMaker.perCflowField(typeX)),null);
 						codeStream.return_();
 						// body ends here
 					}
@@ -558,7 +562,7 @@ public class AspectDeclaration extends TypeDeclaration {
 						.makeTypeBinding(UnresolvedType.JL_EXCEPTION));
 				anythingGoesWrong.placeStart();
 				codeStream.aload_0();
-				codeStream.invokestatic(world.makeMethodBindingForCall(AjcMemberMaker.perTypeWithinGetInstance(typeX)));
+				codeStream.invoke(Opcodes.OPC_invokestatic,world.makeMethodBindingForCall(AjcMemberMaker.perTypeWithinGetInstance(typeX)),null);
 				codeStream.astore_1();
 				codeStream.aload_1();
 				codeStream.ifnonnull(instanceFound);
@@ -568,7 +572,7 @@ public class AspectDeclaration extends TypeDeclaration {
 				codeStream.ldc(typeX.getName());
 				codeStream.aconst_null();
 
-				codeStream.invokespecial(world.makeMethodBindingForCall(AjcMemberMaker.noAspectBoundExceptionInit2()));
+				codeStream.invoke(Opcodes.OPC_invokespecial,world.makeMethodBindingForCall(AjcMemberMaker.noAspectBoundExceptionInit2()),null);
 				codeStream.athrow();
 				instanceFound.place();
 				codeStream.aload_1();
@@ -583,7 +587,7 @@ public class AspectDeclaration extends TypeDeclaration {
 				codeStream.dup();
 
 				// Run the simple ctor for NABE
-				codeStream.invokespecial(world.makeMethodBindingForCall(AjcMemberMaker.noAspectBoundExceptionInit()));
+				codeStream.invoke(Opcodes.OPC_invokespecial,world.makeMethodBindingForCall(AjcMemberMaker.noAspectBoundExceptionInit()),null);
 				codeStream.athrow();
 			}
 		});
@@ -601,7 +605,7 @@ public class AspectDeclaration extends TypeDeclaration {
 				codeStream.ifeq(wrongType);
 				codeStream.aload_0();
 				codeStream.checkcast(interfaceType);
-				codeStream.invokeinterface(world.makeMethodBindingForCall(AjcMemberMaker.perObjectInterfaceGet(typeX)));
+				codeStream.invoke(Opcodes.OPC_invokeinterface,world.makeMethodBindingForCall(AjcMemberMaker.perObjectInterfaceGet(typeX)),null);
 
 				codeStream.dup();
 				codeStream.ifnull(popWrongType);
@@ -613,7 +617,7 @@ public class AspectDeclaration extends TypeDeclaration {
 				wrongType.place();
 				codeStream.new_(world.makeTypeBinding(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION));
 				codeStream.dup();
-				codeStream.invokespecial(world.makeMethodBindingForCall(AjcMemberMaker.noAspectBoundExceptionInit()));
+				codeStream.invoke(Opcodes.OPC_invokespecial,world.makeMethodBindingForCall(AjcMemberMaker.noAspectBoundExceptionInit()),null);
 				codeStream.athrow();
 				// body ends here
 			}
@@ -632,7 +636,7 @@ public class AspectDeclaration extends TypeDeclaration {
 				codeStream.ifeq(wrongType);
 				codeStream.aload_0();
 				codeStream.checkcast(interfaceType);
-				codeStream.invokeinterface(world.makeMethodBindingForCall(AjcMemberMaker.perObjectInterfaceGet(typeX)));
+				codeStream.invoke(Opcodes.OPC_invokeinterface,world.makeMethodBindingForCall(AjcMemberMaker.perObjectInterfaceGet(typeX)),null);
 				codeStream.ifnull(wrongType);
 				codeStream.iconst_1();
 				codeStream.ireturn();
@@ -655,7 +659,7 @@ public class AspectDeclaration extends TypeDeclaration {
 				BranchLabel leave = new BranchLabel(codeStream);
 				goneBang.placeStart();
 				codeStream.aload_0();
-				codeStream.invokestatic(world.makeMethodBinding(AjcMemberMaker.perTypeWithinGetInstance(typeX)));
+				codeStream.invoke(Opcodes.OPC_invokestatic,world.makeMethodBinding(AjcMemberMaker.perTypeWithinGetInstance(typeX)),null);
 				codeStream.ifnull(noInstanceExists);
 				codeStream.iconst_1();
 				codeStream.goto_(leave);
@@ -683,7 +687,7 @@ public class AspectDeclaration extends TypeDeclaration {
 				codeStream.ifeq(wrongType); // XXX this case might call for screaming
 				codeStream.aload_0();
 				codeStream.checkcast(interfaceType);
-				codeStream.invokeinterface(world.makeMethodBindingForCall(AjcMemberMaker.perObjectInterfaceGet(typeX)));
+				codeStream.invoke(Opcodes.OPC_invokeinterface,world.makeMethodBindingForCall(AjcMemberMaker.perObjectInterfaceGet(typeX)),null);
 				// XXX should do a check for null here and throw a NoAspectBound
 				codeStream.ifnonnull(wrongType);
 
@@ -691,9 +695,9 @@ public class AspectDeclaration extends TypeDeclaration {
 				codeStream.checkcast(interfaceType);
 				codeStream.new_(binding);
 				codeStream.dup();
-				codeStream.invokespecial(new MethodBinding(0, "<init>".toCharArray(), TypeBinding.VOID, new TypeBinding[0],
-						new ReferenceBinding[0], binding));
-				codeStream.invokeinterface(world.makeMethodBindingForCall(AjcMemberMaker.perObjectInterfaceSet(typeX)));
+				codeStream.invoke(Opcodes.OPC_invokespecial,new MethodBinding(0, "<init>".toCharArray(), TypeBinding.VOID, new TypeBinding[0],
+						new ReferenceBinding[0], binding),null);
+				codeStream.invoke(Opcodes.OPC_invokeinterface,world.makeMethodBindingForCall(AjcMemberMaker.perObjectInterfaceSet(typeX)),null);
 
 				wrongType.place();
 				codeStream.return_();
@@ -715,7 +719,7 @@ public class AspectDeclaration extends TypeDeclaration {
 						ExceptionLabel exc = new ExceptionLabel(codeStream, world.makeTypeBinding(UnresolvedType.JL_EXCEPTION));
 						exc.placeStart();
 						codeStream.aload_0();
-						codeStream.getfield(world.makeFieldBinding(AjcMemberMaker.perTypeWithinWithinTypeField(typeX, typeX)));
+						codeStream.fieldAccess(Opcodes.OPC_getfield,world.makeFieldBinding(AjcMemberMaker.perTypeWithinWithinTypeField(typeX, typeX)),null);
 						codeStream.areturn();
 					}
 				});
@@ -731,19 +735,19 @@ public class AspectDeclaration extends TypeDeclaration {
 				codeStream.aload_0();
 				codeStream.ldc(NameMangler.perTypeWithinLocalAspectOf(typeX));
 				codeStream.aconst_null();
-				codeStream.invokevirtual(new MethodBinding(0, "getDeclaredMethod".toCharArray(),
+				codeStream.invoke(Opcodes.OPC_invokevirtual,new MethodBinding(0, "getDeclaredMethod".toCharArray(),
 						world.makeTypeBinding(UnresolvedType.forSignature("Ljava/lang/reflect/Method;")), // return type
 						new TypeBinding[] { world.makeTypeBinding(UnresolvedType.forSignature("Ljava/lang/String;")),
 								world.makeTypeBinding(UnresolvedType.forSignature("[Ljava/lang/Class;")) },
-						new ReferenceBinding[0], (ReferenceBinding) world.makeTypeBinding(UnresolvedType.JL_CLASS)));
+						new ReferenceBinding[0], (ReferenceBinding) world.makeTypeBinding(UnresolvedType.JL_CLASS)),null);
 				codeStream.astore_1();
 				codeStream.aload_1();
 				codeStream.aconst_null();
 				codeStream.aconst_null();
-				codeStream.invokevirtual(new MethodBinding(0, "invoke".toCharArray(), world.makeTypeBinding(UnresolvedType.OBJECT),
+				codeStream.invoke(Opcodes.OPC_invokevirtual,new MethodBinding(0, "invoke".toCharArray(), world.makeTypeBinding(UnresolvedType.OBJECT),
 						new TypeBinding[] { world.makeTypeBinding(UnresolvedType.OBJECT),
 								world.makeTypeBinding(UnresolvedType.forSignature("[Ljava/lang/Object;")) },
-						new ReferenceBinding[0], (ReferenceBinding) world.makeTypeBinding(UnresolvedType.JAVA_LANG_REFLECT_METHOD)));
+						new ReferenceBinding[0], (ReferenceBinding) world.makeTypeBinding(UnresolvedType.JAVA_LANG_REFLECT_METHOD)),null);
 				codeStream.checkcast(world.makeTypeBinding(typeX));
 				codeStream.astore_2();
 				codeStream.aload_2();
@@ -766,12 +770,12 @@ public class AspectDeclaration extends TypeDeclaration {
 
 						codeStream.new_(world.makeTypeBinding(typeX));
 						codeStream.dup();
-						codeStream.invokespecial(new MethodBinding(0, "<init>".toCharArray(), TypeBinding.VOID, new TypeBinding[0],
-								new ReferenceBinding[0], binding));
+						codeStream.invoke(Opcodes.OPC_invokespecial,new MethodBinding(0, "<init>".toCharArray(), TypeBinding.VOID, new TypeBinding[0],
+								new ReferenceBinding[0], binding),null);
 						codeStream.astore_1();
 						codeStream.aload_1();
 						codeStream.aload_0();
-						codeStream.putfield(world.makeFieldBinding(AjcMemberMaker.perTypeWithinWithinTypeField(typeX, typeX)));
+						codeStream.fieldAccess(Opcodes.OPC_putfield,world.makeFieldBinding(AjcMemberMaker.perTypeWithinWithinTypeField(typeX, typeX)),null);
 						codeStream.aload_1();
 						codeStream.areturn();
 					}
@@ -810,17 +814,17 @@ public class AspectDeclaration extends TypeDeclaration {
 				 */
 				// body starts here (see end of each line for what it is doing!)
 				FieldBinding fb = world.makeFieldBinding(AjcMemberMaker.perSingletonField(typeX));
-				codeStream.getstatic(fb); // GETSTATIC
+				codeStream.fieldAccess(Opcodes.OPC_getstatic, fb, null);
 				BranchLabel isNonNull = new BranchLabel(codeStream);
 				codeStream.ifnonnull(isNonNull); // IFNONNULL
 				codeStream.new_(world.makeTypeBinding(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION)); // NEW
 				codeStream.dup(); // DUP
 				codeStream.ldc(typeX.getNameAsIdentifier()); // LDC
-				codeStream.getstatic(initFailureField); // GETSTATIC
-				codeStream.invokespecial(world.makeMethodBindingForCall(AjcMemberMaker.noAspectBoundExceptionInitWithCause())); // INVOKESPECIAL
+				codeStream.fieldAccess(Opcodes.OPC_getstatic,initFailureField,null);
+				codeStream.invoke(Opcodes.OPC_invokespecial,world.makeMethodBindingForCall(AjcMemberMaker.noAspectBoundExceptionInitWithCause()),null); // INVOKESPECIAL
 				codeStream.athrow(); // ATHROW
 				isNonNull.place();
-				codeStream.getstatic(fb); // GETSTATIC
+				codeStream.fieldAccess(Opcodes.OPC_getstatic,fb,null);
 				codeStream.areturn(); // ARETURN
 				// body ends here
 			}
@@ -832,7 +836,7 @@ public class AspectDeclaration extends TypeDeclaration {
 		generateMethod(classFile, hasAspectMethod, new BodyGenerator() {
 			public void generate(CodeStream codeStream) {
 				// body starts here
-				codeStream.getstatic(world.makeFieldBinding(AjcMemberMaker.perSingletonField(typeX)));
+				codeStream.fieldAccess(Opcodes.OPC_getstatic,world.makeFieldBinding(AjcMemberMaker.perSingletonField(typeX)),null);
 				BranchLabel isNull = new BranchLabel(codeStream);
 				codeStream.ifnull(isNull);
 				codeStream.iconst_1();
@@ -853,10 +857,10 @@ public class AspectDeclaration extends TypeDeclaration {
 						// body starts here
 						codeStream.new_(binding);
 						codeStream.dup();
-						codeStream.invokespecial(new MethodBinding(0, "<init>".toCharArray(), TypeBinding.VOID, new TypeBinding[0],
-								new ReferenceBinding[0], binding));
+						codeStream.invoke(Opcodes.OPC_invokespecial,new MethodBinding(0, "<init>".toCharArray(), TypeBinding.VOID, new TypeBinding[0],
+								new ReferenceBinding[0], binding),null);
 
-						codeStream.putstatic(world.makeFieldBinding(AjcMemberMaker.perSingletonField(typeX)));
+						codeStream.fieldAccess(Opcodes.OPC_putstatic, world.makeFieldBinding(AjcMemberMaker.perSingletonField(typeX)), null);
 						codeStream.return_();
 						// body ends here
 					}
@@ -870,7 +874,7 @@ public class AspectDeclaration extends TypeDeclaration {
 				// body starts here
 				codeStream.aload_0();
 				AstUtil.generateParameterLoads(accessMethod.parameters, codeStream, 1);
-				codeStream.invokespecial(factory.makeMethodBinding(method));
+				codeStream.invoke(Opcodes.OPC_invokespecial,factory.makeMethodBinding(method),null);
 				AstUtil.generateReturn(accessMethod.returnType, codeStream);
 				// body ends here
 			}
@@ -894,10 +898,10 @@ public class AspectDeclaration extends TypeDeclaration {
 					public void generate(CodeStream codeStream) {
 						// body starts here
 						if (Modifier.isStatic(field.getModifiers())) {
-							codeStream.getstatic(fieldBinding);
+							codeStream.fieldAccess(Opcodes.OPC_getstatic,fieldBinding,null);
 						} else {
 							codeStream.aload_0();
-							codeStream.getfield(fieldBinding);
+							codeStream.fieldAccess(Opcodes.OPC_getfield,fieldBinding,null);
 						}
 
 						AstUtil.generateReturn(accessField.reader.returnType, codeStream);
@@ -911,11 +915,11 @@ public class AspectDeclaration extends TypeDeclaration {
 						// body starts here
 						if (Modifier.isStatic(field.getModifiers())) {
 							codeStream.load(fieldBinding.type, 0);
-							codeStream.putstatic(fieldBinding);
+							codeStream.fieldAccess(Opcodes.OPC_putstatic,fieldBinding,null);
 						} else {
 							codeStream.aload_0();
 							codeStream.load(fieldBinding.type, 1);
-							codeStream.putfield(fieldBinding);
+							codeStream.fieldAccess(Opcodes.OPC_putfield,fieldBinding,null);
 						}
 
 						codeStream.return_();
@@ -934,9 +938,9 @@ public class AspectDeclaration extends TypeDeclaration {
 						AstUtil.generateParameterLoads(accessMethod.parameters, codeStream);
 
 						if (Modifier.isStatic(method.getModifiers())) {
-							codeStream.invokestatic(factory.makeMethodBinding(method));
+							codeStream.invoke(Opcodes.OPC_invokestatic,factory.makeMethodBinding(method),null);
 						} else {
-							codeStream.invokevirtual(factory.makeMethodBinding(method));
+							codeStream.invoke(Opcodes.OPC_invokevirtual,factory.makeMethodBinding(method),null);
 						}
 
 						AstUtil.generateReturn(accessMethod.returnType, codeStream);
@@ -1135,7 +1139,7 @@ public class AspectDeclaration extends TypeDeclaration {
 		}
 		// may be unresolved if the aspect type binding was a BinaryTypeBinding
 		if (innerTypeBinding instanceof UnresolvedReferenceBinding) {
-			innerTypeBinding = BinaryTypeBinding.resolveType(innerTypeBinding, world.getLookupEnvironment(), true);
+			innerTypeBinding = (ReferenceBinding)BinaryTypeBinding.resolveType(innerTypeBinding, world.getLookupEnvironment(), true);
 		}
 		if (innerTypeBinding == null) {
 			throw new IllegalStateException("Could not find inner type binding for '" + munger.getMemberTypeName() + "'");

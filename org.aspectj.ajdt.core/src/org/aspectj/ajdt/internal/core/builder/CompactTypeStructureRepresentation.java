@@ -37,6 +37,10 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 	char[] genericSignature;
 	char[] superclassName;
 	char[][] interfaces;
+	
+	char[] enclosingMethod;
+	
+	char[][][] missingTypeNames;
 
 	// this is the extra state that enables us to be an IBinaryType
 	char[] enclosingTypeName;
@@ -50,6 +54,7 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 	IBinaryMethod[] binMethods;
 	IBinaryNestedType[] memberTypes;
 	IBinaryAnnotation[] annotations;
+	
 
 	public CompactTypeStructureRepresentation(ClassFileReader cfr, boolean isAspect) {
 
@@ -59,7 +64,9 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 		this.isMember = cfr.isMember();
 		this.sourceFileName = cfr.sourceFileName();
 		this.fileName = cfr.getFileName();
+		this.missingTypeNames = cfr.getMissingTypeNames();
 		this.tagBits = cfr.getTagBits();
+		this.enclosingMethod = cfr.getEnclosingMethod();
 		this.isBinaryType = cfr.isBinaryType();
 		this.binFields = cfr.getFields();
 		if (binFields == null) {
@@ -87,6 +94,10 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 
 	}
 
+	public char[][][] getMissingTypeNames() {
+		return missingTypeNames;
+	}
+	
 	public char[] getEnclosingTypeName() {
 		return enclosingTypeName;
 	}
@@ -97,6 +108,10 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 
 	public char[] getGenericSignature() {
 		return genericSignature;
+	}
+	
+	public char[] getEnclosingMethod() {
+		return enclosingMethod;
 	}
 
 	public char[][] getInterfaceNames() {

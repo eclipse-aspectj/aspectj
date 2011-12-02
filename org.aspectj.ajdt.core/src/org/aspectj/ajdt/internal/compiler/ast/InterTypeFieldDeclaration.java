@@ -30,6 +30,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
+import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.Opcodes;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
@@ -323,8 +324,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		}
 		classFile.generateMethodInfoHeader(binding);
 		int methodAttributeOffset = classFile.contentsOffset;
-		int attributeNumber = classFile.generateMethodInfoAttribute(binding, false,
-				makeEffectiveSignatureAttribute(sig, isGetter ? Shadow.FieldGet : Shadow.FieldSet, false));
+		int attributeNumber = classFile.generateMethodInfoAttributes(binding, makeEffectiveSignatureAttribute(sig, isGetter ? Shadow.FieldGet : Shadow.FieldSet, false));
 		int codeAttributeOffset = classFile.contentsOffset;
 		classFile.generateCodeAttributeHeader();
 		CodeStream codeStream = classFile.codeStream;
@@ -377,18 +377,18 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 
 		classFile.completeCodeAttribute(codeAttributeOffset);
 		attributeNumber++;
-		classFile.completeMethodInfo(methodAttributeOffset, attributeNumber);
+		classFile.completeMethodInfo(binding,methodAttributeOffset, attributeNumber);
 	}
 
 	private void generateInterfaceReadBody(MethodBinding binding, MethodBinding readMethod, CodeStream codeStream) {
 		codeStream.aload_0();
-		codeStream.invokeinterface(readMethod);
+		codeStream.invoke(Opcodes.OPC_invokeinterface,readMethod,null);
 	}
 
 	private void generateInterfaceWriteBody(MethodBinding binding, MethodBinding writeMethod, CodeStream codeStream) {
 		codeStream.aload_0();
 		codeStream.load(writeMethod.parameters[0], 1);
-		codeStream.invokeinterface(writeMethod);
+		codeStream.invoke(Opcodes.OPC_invokeinterface, writeMethod, null);
 	}
 
 	private void generateClassReadBody(MethodBinding binding, FieldBinding field, CodeStream codeStream) {
@@ -407,18 +407,18 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 			PrivilegedFieldBinding fBinding = (PrivilegedFieldBinding) handler.getPrivilegedAccessField(field, null);
 
 			if (field.isStatic()) {
-				codeStream.invokestatic(fBinding.reader);
+				codeStream.invoke(Opcodes.OPC_invokestatic,fBinding.reader,null);
 			} else {
 				codeStream.aload_0();
-				codeStream.invokestatic(fBinding.reader);
+				codeStream.invoke(Opcodes.OPC_invokestatic,fBinding.reader,null);
 			}
 			return;
 		}
 		if (field.isStatic()) {
-			codeStream.getstatic(field);
+			codeStream.fieldAccess(Opcodes.OPC_getstatic,field,null);
 		} else {
 			codeStream.aload_0();
-			codeStream.getfield(field);
+			codeStream.fieldAccess(Opcodes.OPC_getfield,field,null);
 		}
 	}
 
@@ -426,24 +426,23 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		if (field.isPrivate() || !field.canBeSeenBy(binding.declaringClass.fPackage)) {
 			PrivilegedFieldBinding fBinding = (PrivilegedFieldBinding) Scope.findPrivilegedHandler(binding.declaringClass)
 					.getPrivilegedAccessField(field, null);
-
 			if (field.isStatic()) {
 				codeStream.load(field.type, 0);
-				codeStream.invokestatic(fBinding.writer);
+				codeStream.invoke(Opcodes.OPC_invokestatic,fBinding.writer,null);
 			} else {
 				codeStream.aload_0();
 				codeStream.load(field.type, 1);
-				codeStream.invokestatic(fBinding.writer);
+				codeStream.invoke(Opcodes.OPC_invokestatic,fBinding.writer,null);
 			}
 			return;
 		}
 		if (field.isStatic()) {
 			codeStream.load(field.type, 0);
-			codeStream.putstatic(field);
+			codeStream.fieldAccess(Opcodes.OPC_putstatic,field,null);
 		} else {
 			codeStream.aload_0();
 			codeStream.load(field.type, 1);
-			codeStream.putfield(field);
+			codeStream.fieldAccess(Opcodes.OPC_putfield,field,null);
 		}
 	}
 

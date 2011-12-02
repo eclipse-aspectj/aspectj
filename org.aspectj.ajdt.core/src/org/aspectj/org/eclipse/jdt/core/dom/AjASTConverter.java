@@ -2352,7 +2352,7 @@ public class AjASTConverter extends ASTConverter {
 				}
 			}
 		}
-		buildBodyDeclarations(typeDeclaration, typeDecl);
+		buildBodyDeclarations(typeDeclaration, typeDecl,org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration.kind(typeDeclaration.modifiers) == org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration.INTERFACE_DECL);
 		if (this.resolveBindings) {
 			recordNodes(typeDecl, typeDeclaration);
 			recordNodes(typeName, typeDeclaration);

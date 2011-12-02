@@ -50,7 +50,7 @@ public class BuildArgParser extends Main {
 	private static boolean LOADED_BUNDLE = false;
 
 	static {
-		Main.bundleName = BUNDLE_NAME;
+//		Main.bundleName = BUNDLE_NAME;
 		ResourceBundleFactory.getBundle(Locale.getDefault());
 		if (!LOADED_BUNDLE) {
 			LOADED_BUNDLE = true;
@@ -237,12 +237,12 @@ public class BuildArgParser extends Main {
 
 			setDebugOptions();
 			buildConfig.getOptions().set(options);
-		} catch (InvalidInputException iie) {
+		} catch (IllegalArgumentException iae) {
 			ISourceLocation location = null;
 			if (buildConfig.getConfigFile() != null) {
 				location = new SourceLocation(buildConfig.getConfigFile(), 0);
 			}
-			IMessage m = new Message(iie.getMessage(), IMessage.ERROR, null, location);
+			IMessage m = new Message(iae.getMessage(), IMessage.ERROR, null, location);
 			handler.handleMessage(m);
 		}
 		return buildConfig;

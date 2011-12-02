@@ -89,7 +89,7 @@ public class AjAST extends AST {
 		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
 		BindingResolver resolver = null;
 		if (isResolved) {
-			resolver = new DefaultBindingResolver(compilationUnitDeclaration.scope, workingCopy.owner, new DefaultBindingResolver.BindingTables(), false);
+			resolver = new DefaultBindingResolver(compilationUnitDeclaration.scope, workingCopy.owner, new DefaultBindingResolver.BindingTables(), false,true);
 			ast.setFlag(AST.RESOLVED_BINDINGS);
 		} else {
 			resolver = new BindingResolver();

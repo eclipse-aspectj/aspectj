@@ -1016,7 +1016,7 @@ public class EclipseFactory {
 			// } else {
 			// declaringElement = makeTypeBinding((UnresolvedType)tVar.getDeclaringElement());
 			// }
-			tvBinding = new TypeVariableBinding(tv.getName().toCharArray(), declaringElement, tv.getRank());
+			tvBinding = new TypeVariableBinding(tv.getName().toCharArray(), declaringElement, tv.getRank(),this.lookupEnvironment);
 			typeVariableToTypeBinding.put(tv.getName(), tvBinding);
 
 			if (tv.getSuperclass() != null

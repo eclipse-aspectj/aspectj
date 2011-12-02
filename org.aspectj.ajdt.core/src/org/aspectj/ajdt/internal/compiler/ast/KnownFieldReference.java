@@ -25,7 +25,7 @@ public class KnownFieldReference extends QualifiedNameReference {
 
 	public KnownFieldReference(FieldBinding binding, int startPos,int endPos) {
 		super(new char[][] {binding.name},new long[1], startPos, endPos);
-		this.binding = this.codegenBinding = binding;
+		this.binding = /*this.codegenBinding = */binding;
 		this.constant = Constant.NotAConstant;
 		this.actualReceiverType = binding.declaringClass;
 		
@@ -36,7 +36,7 @@ public class KnownFieldReference extends QualifiedNameReference {
 	//XXX handle source locations
 	public KnownFieldReference(FieldBinding binding, long pos) {
 		super(new char[][] {binding.name},new long[1],  0, 0);
-		this.binding = this.codegenBinding = binding;
+		this.binding = /*this.codegenBinding = */binding;
 		this.constant = Constant.NotAConstant;
 		this.actualReceiverType = binding.declaringClass;
 		

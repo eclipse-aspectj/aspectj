@@ -74,7 +74,7 @@ import org.aspectj.org.eclipse.jdt.core.dom.Type;
 import org.aspectj.org.eclipse.jdt.core.dom.TypeCategoryTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.TypePattern;
-import org.aspectj.org.eclipse.jdt.internal.core.SourceRange;
+import org.aspectj.org.eclipse.jdt.core.SourceRange;
 
 /**
  * For each AspectJ ASTNode there is a test for:

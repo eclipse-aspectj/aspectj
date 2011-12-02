@@ -182,7 +182,7 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 		}
 		// may be unresolved if the aspect type binding was a BinaryTypeBinding
 		if (innerTypeBinding instanceof UnresolvedReferenceBinding) {
-			innerTypeBinding = BinaryTypeBinding.resolveType(innerTypeBinding, world.getLookupEnvironment(), true);
+			innerTypeBinding = (ReferenceBinding)BinaryTypeBinding.resolveType(innerTypeBinding, world.getLookupEnvironment(), true);
 		}
 		// rb = new InterTypeMemberClassBinding(world, munger, aspectType, aspectTypeBinding, onType, munger.getMemberTypeName(),
 		// sourceType);

@@ -24,6 +24,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclarat
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
+import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.Opcodes;
 import org.aspectj.org.eclipse.jdt.internal.compiler.flow.FlowInfo;
 import org.aspectj.org.eclipse.jdt.internal.compiler.flow.InitializationFlowContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
@@ -253,7 +254,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		// the dispatch binding attributes will include the annotations from the 'binding'.
 		// There is a chance that something else on the binding (e.g. throws clause) might
 		// damage the attributes generated for the dispatch binding.
-		int attributeNumber = classFile.generateMethodInfoAttribute(binding, false, makeEffectiveSignatureAttribute(signature,
+		int attributeNumber = classFile.generateMethodInfoAttributes(binding, makeEffectiveSignatureAttribute(signature,
 				Shadow.MethodCall, false));
 		int codeAttributeOffset = classFile.contentsOffset;
 		classFile.generateCodeAttributeHeader();
@@ -291,12 +292,12 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		}
 		// TypeBinding type;
 		if (methodBinding.isStatic())
-			codeStream.invokestatic(methodBinding);
+			codeStream.invoke(Opcodes.OPC_invokestatic,methodBinding,null);
 		else {
 			if (methodBinding.declaringClass.isInterface()) {
-				codeStream.invokeinterface(methodBinding);
+				codeStream.invoke(Opcodes.OPC_invokeinterface, methodBinding, null);
 			} else {
-				codeStream.invokevirtual(methodBinding);
+				codeStream.invoke(Opcodes.OPC_invokevirtual, methodBinding, null);
 			}
 		}
 		AstUtil.generateReturn(dispatchBinding.returnType, codeStream);
@@ -311,7 +312,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		}
 		classFile.completeCodeAttribute(codeAttributeOffset);
 		attributeNumber++;
-		classFile.completeMethodInfo(methodAttributeOffset, attributeNumber);
+		classFile.completeMethodInfo(binding,methodAttributeOffset, attributeNumber);
 	}
 
 	protected Shadow.Kind getShadowKindForBody() {

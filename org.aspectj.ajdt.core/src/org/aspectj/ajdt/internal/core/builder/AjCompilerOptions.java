@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.IrritantSet;
 import org.aspectj.weaver.Constants;
 
 /**
@@ -49,16 +50,17 @@ public class AjCompilerOptions extends CompilerOptions {
 	public static final String OPTION_GenerateJavaDocsInModel = "org.aspectj.ajdt.core.compiler.model.GenerateJavaDocsInModel";
 	public static final String OPTION_Emacssym = "org.aspectj.ajdt.core.compiler.model.Emacssym";
 
+
 	// constants for irritant levels
-	public static final long InvalidAbsoluteTypeName = ASTNode.Bit47L;
-	public static final long InvalidWildCardTypeName = ASTNode.Bit48L;
-	public static final long UnresolvableMember = ASTNode.Bit49L;
-	public static final long TypeNotExposedToWeaver = ASTNode.Bit50L;
-	public static final long ShadowNotInStructure = ASTNode.Bit51L;
-	public static final long UnmatchedSuperTypeInCall = ASTNode.Bit52L;
-	public static final long CannotImplementLazyTJP = ASTNode.Bit53L;
-	public static final long NeedSerialVersionUIDField = ASTNode.Bit54L;
-	public static final long IncompatibleSerialVersion = ASTNode.Bit55L;
+	public static final int InvalidAbsoluteTypeName = IrritantSet.GROUP2 | ASTNode.Bit8;
+	public static final int InvalidWildCardTypeName = IrritantSet.GROUP2 | ASTNode.Bit9;
+	public static final int UnresolvableMember = IrritantSet.GROUP2 | ASTNode.Bit10;
+	public static final int TypeNotExposedToWeaver = IrritantSet.GROUP2 | ASTNode.Bit11;
+	public static final int ShadowNotInStructure = IrritantSet.GROUP2 | ASTNode.Bit12;
+	public static final int UnmatchedSuperTypeInCall = IrritantSet.GROUP2 | ASTNode.Bit13;
+	public static final int CannotImplementLazyTJP = IrritantSet.GROUP2 | ASTNode.Bit14;
+	public static final int NeedSerialVersionUIDField = IrritantSet.GROUP2 | ASTNode.Bit15;
+	public static final int IncompatibleSerialVersion = IrritantSet.GROUP2 | ASTNode.Bit16;
 
 	public boolean terminateAfterCompilation = false;
 	public boolean xSerializableAspects = false;
@@ -128,7 +130,7 @@ public class AjCompilerOptions extends CompilerOptions {
 	 */
 	public Map getMap() {
 		Map map = super.getMap();
-		// now add AspectJ additional options
+		// now add AspectJ additional options		
 		map.put(OPTION_ReportInvalidAbsoluteTypeName, getSeverityString(InvalidAbsoluteTypeName));
 		map.put(OPTION_ReportInvalidWildcardTypeName, getSeverityString(InvalidWildCardTypeName));
 		map.put(OPTION_ReportUnresolvableMember, getSeverityString(UnresolvableMember));
@@ -290,8 +292,9 @@ public class AjCompilerOptions extends CompilerOptions {
 	 * Add these warnings to the default set...
 	 */
 	private void setAspectJWarningDefaults() {
-		super.warningThreshold = super.warningThreshold | InvalidAbsoluteTypeName | UnresolvableMember | TypeNotExposedToWeaver
-				| UnmatchedSuperTypeInCall | CannotImplementLazyTJP | CompilerOptions.SwallowedExceptionInCatchBlock;
+		super.warningThreshold = new IrritantSet(super.warningThreshold);
+		super.warningThreshold.set(InvalidAbsoluteTypeName | UnresolvableMember | TypeNotExposedToWeaver
+				| UnmatchedSuperTypeInCall | CannotImplementLazyTJP | CompilerOptions.SwallowedExceptionInCatchBlock);
 	}
 
 	/*

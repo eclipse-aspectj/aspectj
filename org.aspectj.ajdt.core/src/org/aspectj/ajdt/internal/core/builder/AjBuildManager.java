@@ -80,6 +80,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.aspectj.org.eclipse.jdt.internal.compiler.impl.IrritantSet;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
@@ -845,7 +846,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		bcelWorld.setXlazyTjp(buildConfig.isXlazyTjp());
 		bcelWorld.setXHasMemberSupportEnabled(buildConfig.isXHasMemberEnabled());
 		bcelWorld.setPinpointMode(buildConfig.isXdevPinpoint());
-		bcelWorld.setErrorAndWarningThreshold(buildConfig.getOptions().errorThreshold, buildConfig.getOptions().warningThreshold);
+		bcelWorld.setErrorAndWarningThreshold(buildConfig.getOptions().errorThreshold.isSet(24), buildConfig.getOptions().warningThreshold.isSet(24));
 		BcelWeaver bcelWeaver = new BcelWeaver(bcelWorld);
 		bcelWeaver.setCustomMungerFactory(customMungerFactory);
 		state.setWorld(bcelWorld);

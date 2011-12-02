@@ -20,6 +20,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.BranchLabel;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.ExceptionLabel;
+import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.Opcodes;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
@@ -57,11 +58,10 @@ public class AspectClinit extends Clinit {
 		
 		if (hasPre) {
 			final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
-
-			codeStream.invokestatic(world.makeMethodBindingForCall(
+			codeStream.invoke(Opcodes.OPC_invokestatic,world.makeMethodBindingForCall(
 				AjcMemberMaker.ajcPreClinitMethod(
 					world.fromBinding(classScope.referenceContext.binding)
-				)));
+				)),null);
 		}
 		super.generateSyntheticCode(classScope, codeStream);
 	}
@@ -73,11 +73,10 @@ public class AspectClinit extends Clinit {
 		super.generatePostSyntheticCode(classScope, codeStream);
 		if (hasPost) {
 			final EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
-
-			codeStream.invokestatic(world.makeMethodBindingForCall(
+			codeStream.invoke(Opcodes.OPC_invokestatic,world.makeMethodBindingForCall(
 				AjcMemberMaker.ajcPostClinitMethod(
 					world.fromBinding(classScope.referenceContext.binding)
-				)));
+				)),null);
 		}
 		
 		if (initFailureField != null) {
@@ -91,7 +90,7 @@ public class AspectClinit extends Clinit {
 			// CHECK THIS...
 			codeStream.addVariable(new LocalVariableBinding("caughtException".toCharArray(),initFailureField.type,ClassFileConstants.AccPrivate,false));
 		    codeStream.aload_0();
-			codeStream.putstatic(initFailureField);
+		    codeStream.fieldAccess(Opcodes.OPC_putstatic, initFailureField, null);
 			endLabel.place();
 		}
 		

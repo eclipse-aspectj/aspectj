@@ -116,7 +116,7 @@ public class AstUtil {
 	public static SingleNameReference makeLocalVariableReference(LocalVariableBinding binding) {
 		SingleNameReference ret = new SingleNameReference(binding.name, 0);
 		ret.binding = binding;
-		ret.codegenBinding = binding;
+//		ret.codegenBinding = binding;
 		ret.constant = Constant.NotAConstant;
 		ret.bits &= ~ASTNode.RestrictiveFlagMASK; // clear bits
 		ret.bits |= Binding.VARIABLE;
@@ -126,7 +126,7 @@ public class AstUtil {
 	public static SingleNameReference makeResolvedLocalVariableReference(LocalVariableBinding binding) {
 		SingleNameReference ret = new SingleNameReference(binding.name, 0);
 		ret.binding = binding;
-		ret.codegenBinding = binding;
+//		ret.codegenBinding = binding;
 		ret.constant = Constant.NotAConstant;
 		ret.bits &= ~ASTNode.RestrictiveFlagMASK; // clear bits
 		ret.bits |= Binding.LOCAL;
@@ -300,7 +300,7 @@ public class AstUtil {
 	}
 
 	public static void replaceMethodBinding(MessageSend send, MethodBinding newBinding) {
-		send.binding = send.codegenBinding = newBinding;
+		send.binding =/* send.codegenBinding =*/ newBinding;
 		send.setActualReceiverType(newBinding.declaringClass);
 
 	}

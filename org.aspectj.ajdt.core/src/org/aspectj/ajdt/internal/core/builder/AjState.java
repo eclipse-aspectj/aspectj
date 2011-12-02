@@ -1314,7 +1314,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 		File sourceFile = new File(result.fileName());
 		CompilationResult cr = result.result();
 
-		references.put(sourceFile, new ReferenceCollection(cr.qualifiedReferences, cr.simpleNameReferences));
+		references.put(sourceFile, new ReferenceCollection(cr.qualifiedReferences, cr.simpleNameReferences,cr.rootReferences));
 
 		UnwovenClassFile[] unwovenClassFiles = result.unwovenClassFiles();
 		for (int i = 0; i < unwovenClassFiles.length; i++) {
@@ -1936,7 +1936,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 				existingCollection.addDependencies(typeNameDependencies);
 				return true;
 			} else {
-				ReferenceCollection rc = new ReferenceCollection(null, null);
+				ReferenceCollection rc = new ReferenceCollection(null, null, null);
 				rc.addDependencies(typeNameDependencies);
 				references.put(sourceFile, rc);
 				return true;
