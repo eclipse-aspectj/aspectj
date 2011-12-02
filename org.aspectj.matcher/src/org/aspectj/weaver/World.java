@@ -157,8 +157,8 @@ public abstract class World implements Dump.INode {
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(World.class);
 
-	private long errorThreshold;
-	private long warningThreshold;
+	private boolean errorThreshold;
+	private boolean warningThreshold;
 
 	/**
 	 * A list of RuntimeExceptions containing full stack information for every type we couldn't find.
@@ -864,7 +864,7 @@ public abstract class World implements Dump.INode {
 	 * @param errorThreshold
 	 * @param warningThreshold
 	 */
-	public void setErrorAndWarningThreshold(long errorThreshold, long warningThreshold) {
+	public void setErrorAndWarningThreshold(boolean errorThreshold, boolean warningThreshold) {
 		this.errorThreshold = errorThreshold;
 		this.warningThreshold = warningThreshold;
 	}
@@ -875,10 +875,11 @@ public abstract class World implements Dump.INode {
 	public boolean isIgnoringUnusedDeclaredThrownException() {
 		// the 0x800000 is CompilerOptions.UnusedDeclaredThrownException
 		// which is ASTNode.bit24
-		if ((errorThreshold & 0x800000) != 0 || (warningThreshold & 0x800000) != 0) {
-			return false;
-		}
-		return true;
+		return errorThreshold||warningThreshold;
+//		if ((errorThreshold & 0x800000) != 0 || (warningThreshold & 0x800000) != 0) {
+//			return false;
+//		}
+//		return true;
 	}
 
 	public void performExtraConfiguration(String config) {
