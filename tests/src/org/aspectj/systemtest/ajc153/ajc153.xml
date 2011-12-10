@@ -285,6 +285,8 @@
       <compile files="Ann.java,Base.java,BaseImpl.java,I1.java,Mixin.java,Runner.java,X.aj" options="-1.5">
         <message kind="error" line="1" text="The import java.lang.retention cannot be resolved"/>
         <message kind="error" line="3" text="Retention cannot be resolved to a type"/>
+        <message kind="error" line="3" text="RetentionPolicy cannot be resolved to a variable"/>
+        <message kind="error" line="3" text="The attribute value is undefined for the annotation type Retention"/>
       </compile>
     </ajc-test>
     
