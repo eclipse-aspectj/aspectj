@@ -194,7 +194,7 @@
     
     <ajc-test dir="bugs151/pr123901" title="inlinevisitor NPE">
         <compile files="A.java,B.java" options="-1.5">
-          <message kind="error" line="5" text="a.A cannot be resolved or is not a field"/>
+          <message kind="error" line="5" text="A cannot be resolved or is not a field"/>
         </compile>
     </ajc-test>
     
