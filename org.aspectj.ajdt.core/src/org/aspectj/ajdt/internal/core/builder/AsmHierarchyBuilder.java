@@ -102,7 +102,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	/**
 	 * Reset for every compilation unit.
 	 */
-	protected Stack stack;
+	protected Stack<IProgramElement> stack;
 
 	protected ImportReference packageDecl = null;
 
@@ -207,8 +207,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		IProgramElement root = structureModel.getHierarchy().getRoot();
 		// Check if already there
 		IProgramElement sourceFolderNode = null;
-		List kids = root.getChildren();
-		for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
+		List<IProgramElement> kids = root.getChildren();
+		for (Iterator<IProgramElement> iterator = kids.iterator(); iterator.hasNext();) {
 			IProgramElement child = (IProgramElement) iterator.next();
 			if (child.getKind() == IProgramElement.Kind.SOURCE_FOLDER && child.getName().equals(sourceFolder)) {
 				sourceFolderNode = child;
@@ -265,7 +265,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 
 			IProgramElement pkgNode = null;
 			if (structureModel != null && structureModel.getHierarchy().getRoot() != null && rootForSource.getChildren() != null) {
-				for (Iterator it = rootForSource.getChildren().iterator(); it.hasNext();) {
+				for (Iterator<IProgramElement> it = rootForSource.getChildren().iterator(); it.hasNext();) {
 					IProgramElement currNode = (IProgramElement) it.next();
 					if (pkgName.equals(currNode.getName())) {
 						pkgNode = currNode;
@@ -348,7 +348,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		peNode.setFormalComment(generateJavadocComment(typeDeclaration));
 		peNode.setAnnotationStyleDeclaration(isAnnotationStyleAspect);
 
-		((IProgramElement) stack.peek()).addChild(peNode);
+		stack.peek().addChild(peNode);
 		stack.push(peNode);
 		return true;
 	}
@@ -358,9 +358,6 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		if (packageDecl != null) {
 			int dotIndex = packageDecl.toString().lastIndexOf('.');
 			String packageString = packageDecl.toString();
-			if (dotIndex != -1) {
-				packageString = packageDecl.toString().substring(0, dotIndex);
-			}
 			ProgramElement packageDeclaration = new ProgramElement(activeStructureModel, packageString,
 					IProgramElement.Kind.PACKAGE_DECLARATION, makeLocation(packageDecl), 0, null, null);
 			StringBuffer packageSourceDeclaration = new StringBuffer();
@@ -771,12 +768,11 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	}
 
 	public boolean visit(ImportReference importRef, CompilationUnitScope scope) {
-		int dotIndex = importRef.toString().lastIndexOf('.');
-		String currPackageImport = "";
-		if (dotIndex != -1) {
-			currPackageImport = importRef.toString().substring(0, dotIndex);
-		}
-		if (((IProgramElement) stack.peek()).getPackageName().equals(currPackageImport)) {
+		// 3.3 compiler used to represent the package statement in such a way that toString() would return 'foo.*' for 'package foo;'
+		// 3.7 compiler doesn't create an 'ondemand' import reference so it is purely toString()'d as 'foo'
+		String currPackageImport = importRef.toString();
+		String stackPackageName = stack.peek().getPackageName();
+		if (stackPackageName.equals(currPackageImport)) {
 			packageDecl = importRef;
 		} else {
 
@@ -807,12 +803,10 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	}
 
 	public void endVisit(ImportReference importRef, CompilationUnitScope scope) {
-		int dotIndex = importRef.toString().lastIndexOf('.');
-		String currPackageImport = "";
-		if (dotIndex != -1) {
-			currPackageImport = importRef.toString().substring(0, dotIndex);
-		}
-		if (!((IProgramElement) stack.peek()).getPackageName().equals(currPackageImport)) {
+		// 3.3 compiler used to represent the package statement in such a way that toString() would return 'foo.*' for 'package foo;'
+		// 3.7 compiler doesn't create an 'ondemand' import reference so it is purely toString()'d as 'foo'
+		String currPackageImport = importRef.toString();
+		if (!stack.peek().getPackageName().equals(currPackageImport)) {
 			stack.pop();
 		}
 	}
