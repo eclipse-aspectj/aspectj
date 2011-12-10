@@ -818,16 +818,16 @@
         <message kind="error" line="7" text="the @target pointcut expression is only supported at Java 5 compliance level or above"/>
         <message kind="error" line="9" text="the @args pointcut expression is only supported at Java 5 compliance level or above"/>
         <message kind="error" line="15" text="declare @type is only supported at Java 5 compliance level or above"/>
-        <message kind="error" line="15" text="annotations are only available if source level is 5.0"/>
+        <message kind="error" line="15" text="annotations are only available if source level is 1.5 or greater"/>
         <message kind="error" line="15" text="cannot convert from Foo to Annotation"/>     
         <message kind="error" line="17" text="declare @method is only supported at Java 5 compliance level or above"/>
-        <message kind="error" line="17" text="annotations are only available if source level is 5.0"/>
+        <message kind="error" line="17" text="annotations are only available if source level is 1.5 or greater"/>
         <message kind="error" line="17" text="cannot convert from Foo to Annotation"/>
         <message kind="error" line="19" text="declare @field is only supported at Java 5 compliance level or above"/>
-        <message kind="error" line="19" text="annotations are only available if source level is 5.0"/>
+        <message kind="error" line="19" text="annotations are only available if source level is 1.5 or greater"/>
         <message kind="error" line="19" text="cannot convert from Foo to Annotation"/>
         <message kind="error" line="21" text="declare @constructor is only supported at Java 5 compliance level or above"/>       
-        <message kind="error" line="21" text="annotations are only available if source level is 5.0"/>
+        <message kind="error" line="21" text="annotations are only available if source level is 1.5 or greater"/>
         <message kind="error" line="21" text="cannot convert from Foo to Annotation"/>
         <message kind="error" line="25" text="annotation type patterns are only supported at Java 5 compliance level or above"/>
         <message kind="error" line="27" text="annotation type patterns are only supported at Java 5 compliance level or above"/>
@@ -944,6 +944,8 @@
    <ajc-test dir="bugs150" pr="103266" title="NPE on syntax error">
      <compile files="pr103266.aj">
           <message kind="error" line="41" text="ConnectionRequestContext cannot be resolved to a type"/>
+          <!-- this next message is new in e37 -->
+          <message kind="error" line="41" text="Type mismatch: cannot convert from new ConnectionRequestContext(){} to WorkerExample.RequestContext"/>
      </compile>
    </ajc-test>
    
@@ -5359,7 +5361,9 @@
     
    <ajc-test dir="java5/generics/pointcuts" title="call with bridge methods">
      <compile files="CallWithBridgeMethods.aj" options="-1.5">
+     <!-- see testcode
          <message kind="warning" line="23" text="should match call to bridge method on L23, this is a real call!"/>
+         -->
      </compile>
    </ajc-test>
     
