@@ -359,7 +359,7 @@ public class AjProblemReporter extends ProblemReporter {
 	 * Overrides the implementation in ProblemReporter and is ITD aware. To report a *real* problem with an ITD marked @override,
 	 * the other methodMustOverride() method is used.
 	 */
-	public void methodMustOverride(AbstractMethodDeclaration method, int complianceLevel) {
+	public void methodMustOverride(AbstractMethodDeclaration method, long complianceLevel) {
 
 		// ignore ajc$ methods
 		if (new String(method.selector).startsWith("ajc$"))
@@ -447,10 +447,18 @@ public class AjProblemReporter extends ProblemReporter {
 		}
 		super.unusedPrivateType(typeDecl);
 	}
+	
+	public void abstractMethodInConcreteClass(SourceTypeBinding type) {
+		if (type.scope!=null && type.scope.referenceContext instanceof AspectDeclaration) {
+			// TODO could put out an Aspect specific message here
+			return;
+		} 
+		super.abstractMethodInConcreteClass(type);
+	}
 
 	// Don't warn if there is an ITD method/ctor from a privileged aspect
 	public void unusedPrivateField(FieldDeclaration fieldDecl) {
-		if (fieldDecl.binding != null && fieldDecl.binding.declaringClass != null) {
+		if (fieldDecl!=null && fieldDecl.binding != null && fieldDecl.binding.declaringClass != null) {
 			ReferenceBinding type = fieldDecl.binding.declaringClass;
 
 			ResolvedType weaverType = null;
