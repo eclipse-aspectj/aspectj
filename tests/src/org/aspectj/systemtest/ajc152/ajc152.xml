@@ -257,6 +257,8 @@
       <compile files="AspectClass.java" options="-1.5">
         <message kind="error" line="7" text="Duplicate method incomingMessage() in type AspectClass"/>
         <message kind="error" line="12" text="Duplicate method incomingMessage() in type AspectClass"/>
+        <!-- in e37 the TypeDeclaration.traverse(ASTVisitor,CompilationUnitScope) no longer checks 'ignoreFurtherInvestigation' so gets further -->
+        <message kind="warning" line="11" text="no match for this type name: Incoming [Xlint:invalidAbsoluteTypeName]"/>
       </compile>
     </ajc-test>
     
