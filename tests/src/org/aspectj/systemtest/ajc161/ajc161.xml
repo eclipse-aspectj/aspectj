@@ -108,7 +108,7 @@
     	  <message kind="weave" text="Join point 'method-call(void test.aspects.C1.aMethod())' in Type 'test.aspects.C1' (C1.java:12) "/>
     	  
     	  <!-- first of these through accessor - so line number wrong and target wrong -->
-    	  <message kind="weave" text="Join point 'method-call(void test.aspects.C1.aMethod())' in Type 'test.aspects2.C2' (C2.java:1) "/><!-- was line 18 -->
+    	  <message kind="weave" text="Join point 'method-call(void test.aspects2.C2.aMethod())' in Type 'test.aspects2.C2' (C2.java:1) "/><!-- was line 18 -->
     	  <message kind="weave" text="Join point 'method-call(void test.aspects2.C2.aMethod())' in Type 'test.aspects2.C2' (C2.java:8) "/>
     	  <message kind="weave" text="Join point 'method-call(void test.aspects2.C2.aMethod())' in Type 'test.aspects2.C2' (C2.java:29) "/>
 
