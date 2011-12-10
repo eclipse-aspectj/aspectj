@@ -15,6 +15,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.aspectj.org.eclipse.jdt.core.JavaCore;
 import org.aspectj.org.eclipse.jdt.core.dom.AST;
 import org.aspectj.org.eclipse.jdt.core.dom.ASTParser;
 import org.aspectj.org.eclipse.jdt.core.dom.AbstractBooleanTypePattern;
@@ -420,7 +421,9 @@ public class ASTVisitorTest extends TestCase {
 	
 	private void checkJLS3(String source, String expectedOutput) {
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
-		parser.setCompilerOptions(new HashMap());
+		HashMap<String,String> options = new HashMap<String,String>();
+		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_5);
+		parser.setCompilerOptions(options);
 		parser.setSource(source.toCharArray());
 		CompilationUnit cu2 = (CompilationUnit) parser.createAST(null);
 		TestVisitor visitor = new TestVisitor();
