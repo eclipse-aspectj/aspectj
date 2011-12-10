@@ -50,7 +50,7 @@ public class BuildArgParser extends Main {
 	private static boolean LOADED_BUNDLE = false;
 
 	static {
-//		Main.bundleName = BUNDLE_NAME;
+		Main.bundleName = BUNDLE_NAME; 
 		ResourceBundleFactory.getBundle(Locale.getDefault());
 		if (!LOADED_BUNDLE) {
 			LOADED_BUNDLE = true;
@@ -258,7 +258,7 @@ public class BuildArgParser extends Main {
 	}
 
 	public void printUsage() {
-		System.out.println(bind("misc.usage")); //$NON-NLS-1$
+		System.out.println(getUsage());
 		System.out.flush();
 	}
 
