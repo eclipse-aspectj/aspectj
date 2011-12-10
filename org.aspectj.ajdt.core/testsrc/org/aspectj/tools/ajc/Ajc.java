@@ -25,6 +25,7 @@ import junit.framework.AssertionFailedError;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationship;
 import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.asm.internal.Relationship;
 import org.aspectj.bridge.AbortException;
@@ -189,11 +190,11 @@ public class Ajc {
 		System.setOut(pout);
 		System.setErr(perr);
 
-		List fails = new ArrayList();
-		List errors = new ArrayList();
-		List warnings = new ArrayList();
-		List infos = new ArrayList();
-		List weaves = new ArrayList();
+		List<IMessage> fails = new ArrayList<IMessage>();
+		List<IMessage> errors = new ArrayList<IMessage>();
+		List<IMessage> warnings = new ArrayList<IMessage>();
+		List<IMessage> infos = new ArrayList<IMessage>();
+		List<IMessage> weaves = new ArrayList<IMessage>();
 
 		try {
 			if (!isIncremental && shouldEmptySandbox) {
@@ -292,7 +293,7 @@ public class Ajc {
 		baseDir = dir;
 	}
 
-	private void addMessagesTo(List aList, IMessage[] messages) {
+	private void addMessagesTo(List<IMessage> aList, IMessage[] messages) {
 		for (int i = 0; i < messages.length; i++) {
 			aList.add(messages[i]);
 		}
@@ -472,10 +473,10 @@ public class Ajc {
 		System.out.println("start of AJDE structure model:" + prefix); //$NON-NLS-1$
 
 		IRelationshipMap asmRelMap = model.getRelationshipMap();
-		for (Iterator iter = asmRelMap.getEntries().iterator(); iter.hasNext();) {
-			String sourceOfRelationship = (String) iter.next();
+		for (Iterator<String> iter = asmRelMap.getEntries().iterator(); iter.hasNext();) {
+			String sourceOfRelationship =  iter.next();
 			System.err.println("Examining source relationship handle: " + sourceOfRelationship);
-			List relationships = null;
+			List<IRelationship> relationships = null;
 			if (useHandles) {
 				relationships = asmRelMap.get(sourceOfRelationship);
 			} else {
@@ -483,10 +484,10 @@ public class Ajc {
 				relationships = asmRelMap.get(ipe);
 			}
 			if (relationships != null) {
-				for (Iterator iterator = relationships.iterator(); iterator.hasNext();) {
+				for (Iterator<IRelationship> iterator = relationships.iterator(); iterator.hasNext();) {
 					Relationship rel = (Relationship) iterator.next();
-					List targets = rel.getTargets();
-					for (Iterator iterator2 = targets.iterator(); iterator2.hasNext();) {
+					List<String> targets = rel.getTargets();
+					for (Iterator<String> iterator2 = targets.iterator(); iterator2.hasNext();) {
 						String t = (String) iterator2.next();
 						IProgramElement link = model.getHierarchy().findElementForHandle(t);
 						System.out.println(""); //$NON-NLS-1$
