@@ -808,7 +808,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		String p = "pr266420";
 		initialiseProject(p);
 
-		Hashtable javaOptions = new Hashtable();
+		Hashtable<String,String> javaOptions = new Hashtable<String,String>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.6");
@@ -817,7 +817,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 		build(p);
 		checkWasFullBuild();
-		List warnings = getWarningMessages(p);
+		List<IMessage> warnings = getWarningMessages(p);
 		assertEquals(0, warnings.size());
 		alter(p, "inc1");
 		build(p);
@@ -1011,7 +1011,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 					fail("found unexpected relationship source " + ipe + " with kind " + ipe.getKind()
 							+ " when looking up handle: " + sourceOfRelationship);
 				}
-				List relationships = asmRelMap.get(ipe);
+				List<IRelationship> relationships = asmRelMap.get(ipe);
 				assertNotNull("expected " + ipe.getName() + " to have some " + "relationships", relationships);
 				for (Iterator iterator = relationships.iterator(); iterator.hasNext();) {
 					Relationship rel = (Relationship) iterator.next();
@@ -1216,7 +1216,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// "src/q/Asp.java"));
 		build(p);
 		checkWasntFullBuild();
-		List l = getCompilerErrorMessages(p);
+		List<IMessage> l = getCompilerErrorMessages(p);
 		assertEquals("Unexpected compiler error", 0, l.size());
 	}
 
@@ -1251,7 +1251,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		alter(p, "inc1");
 		build(p);
 		checkWasntFullBuild();
-		List l = getCompilerErrorMessages(p);
+		List<IMessage> l = getCompilerErrorMessages(p);
 		assertEquals("Unexpected compiler error", 0, l.size());
 	}
 
@@ -1269,7 +1269,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkWasFullBuild();
 		alter(p, "inc1");
 		build(p);
-		List l = getCompilerErrorMessages(p);
+		List<IMessage> l = getCompilerErrorMessages(p);
 		assertEquals("Unexpected compiler error", 0, l.size());
 	}
 
@@ -1305,8 +1305,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		IProgramElement ipe = findFile(root, "Example.aj");// findElementAtLine(root, 1);
 		ipe = ipe.getChildren().get(0); // package decl is first entry in the type
 		assertEquals(IProgramElement.Kind.PACKAGE_DECLARATION, ipe.getKind());
-		assertEquals("=Imports<p.q*Example.aj%p.q", ipe.getHandleIdentifier());
 		assertEquals("package p.q;", ipe.getSourceSignature());
+		assertEquals("=Imports<p.q*Example.aj%p.q", ipe.getHandleIdentifier());
 		assertEquals(ipe.getSourceLocation().getOffset(), 8); // "package p.q" - location of p.q
 
 		// Looking for import containing containing string and integer
@@ -2750,13 +2750,13 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertTrue("build should have compiled ok", getErrorMessages("PR113531").isEmpty());
 		alter("PR113531", "inc1");
 		build("PR113531");
-		assertEquals("error message should be 'foo cannot be resolved' ", "foo cannot be resolved",
+		assertEquals("error message should be 'foo cannot be resolved to a variable' ", "foo cannot be resolved to a variable",
 				(getErrorMessages("PR113531").get(0)).getMessage());
 		alter("PR113531", "inc2");
 		build("PR113531");
 		assertTrue("There should be no exceptions handled:\n" + getCompilerErrorMessages("PR113531"),
 				getCompilerErrorMessages("PR113531").isEmpty());
-		assertEquals("error message should be 'foo cannot be resolved' ", "foo cannot be resolved",
+		assertEquals("error message should be 'foo cannot be resolved to a variable' ", "foo cannot be resolved to a variable",
 				(getErrorMessages("PR113531").get(0)).getMessage());
 	}
 
@@ -2766,7 +2766,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	// Stage 2: make the field private in class C1 ==> compile errors in C2
 	// Stage 3: make the field private in aspect A1 whilst there's the compile
 	// error.
-	// There shouldn't be a BCExcpetion saying can't find delegate for pack.C2
+	// There shouldn't be a BCException saying can't find delegate for pack.C2
 	public void testPr119882() {
 		initialiseProject("PR119882");
 		build("PR119882");
@@ -2774,15 +2774,15 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		alter("PR119882", "inc1");
 		build("PR119882");
 		// fullBuild("PR119882");
-		List errors = getErrorMessages("PR119882");
+		List<IMessage> errors = getErrorMessages("PR119882");
 		assertTrue("Should be at least one error, but got none", errors.size() == 1);
-		assertEquals("error message should be 'i cannot be resolved' ", "i cannot be resolved",
+		assertEquals("error message should be 'i cannot be resolved to a variable' ", "i cannot be resolved to a variable",
 				((IMessage) errors.get(0)).getMessage());
 		alter("PR119882", "inc2");
 		build("PR119882");
 		assertTrue("There should be no exceptions handled:\n" + getCompilerErrorMessages("PR119882"),
 				getCompilerErrorMessages("PR119882").isEmpty());
-		assertEquals("error message should be 'i cannot be resolved' ", "i cannot be resolved",
+		assertEquals("error message should be 'i cannot be resolved to a variable' ", "i cannot be resolved to a variable",
 				((IMessage) errors.get(0)).getMessage());
 
 	}
