@@ -670,9 +670,9 @@
     
     <ajc-test dir="bugs" pr="39460"
    	 title="Missing import crashes compiler">
-        <compile files="MissingImport.java">
-            <message kind="error" line="13"/> 
-            <message kind="error" line="14"/>      
+        <compile files="MissingImport.java">      
+            <message kind="error" line="13" text="InvocationTargetException cannot be resolved to a type"/> 
+<!-- this error has 'gone' in e37 upgrade            <message kind="error" line="14" text="e cannot be resolved"/> -->
         </compile>
     </ajc-test>
     
@@ -727,6 +727,7 @@
 	<ajc-test dir="errors"
 		title="compile error expected for abstract pointcut outside abstract aspect">
 		<compile files="AbstractPointcutCE.java">
+			<message kind="error" line="4" text="The type C must be an abstract class to define abstract methods"/>
 			<message kind="error" line="5"/>
 			<message kind="error" line="10"/>
 		</compile>
@@ -753,6 +754,7 @@
 		pr="40814"
 		title="compile error expected for interface pointcuts">
 		<compile files="AbstractPointcutCE.java">
+			<message kind="error" line="14" text="The type Concrete must be an abstract class to define abstract methods"/>
 			<message kind="error" line="7"/>
 			<message kind="error" line="11"/>		
 			<message kind="error" line="15"/>
