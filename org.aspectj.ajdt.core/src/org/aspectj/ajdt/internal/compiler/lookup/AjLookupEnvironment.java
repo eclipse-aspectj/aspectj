@@ -49,6 +49,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -165,6 +166,11 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			SourceTypeBinding[] b = units[i].scope.topLevelTypes;
 			for (int j = 0; j < b.length; j++) {
 				factory.addSourceTypeBinding(b[j], units[i]);
+				if (b[j].superclass instanceof MissingTypeBinding) {
+					// e37: Undoing the work in ClassScope.connectSuperClass() as it will lead to cascade errors
+					// TODO allow MissingTypeBinding through here and cope with it in all situations later?
+					b[j].superclass = units[i].scope.getJavaLangObject();
+				}
 			}
 		}
 
@@ -877,7 +883,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_DECLARE_PARENTS,
 				sourceType.sourceName);
 		ResolvedType resolvedSourceType = factory.fromEclipse(sourceType);
-		List newParents = declareParents.findMatchingNewParents(resolvedSourceType, false);
+		List<ResolvedType> newParents = declareParents.findMatchingNewParents(resolvedSourceType, false);
 		if (!newParents.isEmpty()) {
 			for (Iterator i = newParents.iterator(); i.hasNext();) {
 				ResolvedType parent = (ResolvedType) i.next();
@@ -1314,6 +1320,12 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		ReferenceBinding parentBinding = (ReferenceBinding) factory.makeTypeBinding(parent);
 		if (parentBinding == null) {
 			return; // The parent is missing, it will be reported elsewhere.
+		}
+		// Due to e37 switching to MethodVerifier15 for everything, it is important added types are correctly
+		// raw or not.  For example, if Comparable is used in generic form compareTo(T) will be used to check
+		// methods against in the verifier rather than compareTo(Object)
+		if (!factory.getWorld().isInJava5Mode()) {
+			parentBinding = (ReferenceBinding)convertToRawType(parentBinding, false /*do not force conversion of enclosing types*/);
 		}
 		sourceType.rememberTypeHierarchy();
 		if (parentBinding.isClass()) {
