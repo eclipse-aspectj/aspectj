@@ -14,6 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aspectj.bridge.IMessage;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.tools.ajc.CompilationResult;
 
@@ -36,9 +37,9 @@ public class JavadocTest extends AjcTestCase {
 	public void testMissingJavadoc() {
 		String[] args = new String[] { "World.java", "-warn:allJavadoc" };
 
-		List warningMessages = new ArrayList();
+		List<Message> warningMessages = new ArrayList<Message>();
 		// These warnings are against public textX() methods declared in the World.java
-		// type. These test methods are spread between AJ constructuts, meaning
+		// type. These test methods are spread between AJ constructs, meaning
 		// if someone messes up and the javadoc is not associated with the aspectj
 		// construct then it will associated by accident with one of the testX() methods.
 		// By checking we get a warning against every testX() method, we are verifying
@@ -51,6 +52,10 @@ public class JavadocTest extends AjcTestCase {
 		warningMessages.add(new Message(53, "Missing comment for public declaration"));
 		warningMessages.add(new Message(61, "Missing comment for public declaration"));
 		warningMessages.add(new Message(69, "Missing comment for public declaration"));
+		// TODO why don't see these for the other ones that have the same problem?
+		// Basically that the javadoc on a public member refers to something that is not public
+		warningMessages.add(new Message(6,"'public' visibility for malformed doc comments hides this 'default' reference"));
+		warningMessages.add(new Message(32,"'public' visibility for malformed doc comments hides this 'default' reference"));
 		MessageSpec spec = new MessageSpec(warningMessages, null);
 
 		CompilationResult result = ajc(baseDir, args);
