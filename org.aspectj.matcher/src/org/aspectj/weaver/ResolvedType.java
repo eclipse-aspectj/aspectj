@@ -2673,8 +2673,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		if (isParameterizedType()) {
 			return true;
 		}
-		if (getSuperclass() != null) {
-			return getSuperclass().ajMembersNeedParameterization();
+		ResolvedType superclass = getSuperclass();
+		if (superclass != null && !superclass.isMissing()) {
+			return superclass.ajMembersNeedParameterization();
 		}
 		return false;
 	}
