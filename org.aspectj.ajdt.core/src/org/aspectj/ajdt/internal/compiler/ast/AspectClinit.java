@@ -24,6 +24,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.Opcodes;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.weaver.AjcMemberMaker;
 
 public class AspectClinit extends Clinit {
@@ -79,17 +80,34 @@ public class AspectClinit extends Clinit {
 				)),null);
 		}
 		
+		
+		boolean creatingStackMap = (codeStream.generateAttributes & (
+				ClassFileConstants.ATTR_STACK_MAP_TABLE
+				| ClassFileConstants.ATTR_STACK_MAP))!=0;
+		
 		if (initFailureField != null) {
 			// Changes to this exception handling code may require changes to
 			// BcelClassWeaver.isInitFailureHandler()
 			handlerLabel.placeEnd();
 			BranchLabel endLabel = new BranchLabel(codeStream);
 			codeStream.goto_(endLabel);
+			// In order to keep stack map computation happy, need to give it more information, about the exception type
+			// here and the local variable being used to track the exception (in the catch block)
+			codeStream.pushExceptionOnStack(this.scope.getJavaLangThrowable());
 			handlerLabel.place();
+			LocalVariableBinding localVariableBinding = null;
+			if (creatingStackMap) {
+				localVariableBinding = new LocalVariableBinding("throwable".toCharArray(), this.scope.getJavaLangThrowable(), 0, false); //$NON-NLS-1$
+				codeStream.addVariable(localVariableBinding);
+				localVariableBinding.recordInitializationStartPC(codeStream.position);
+			}
 			codeStream.astore_0(); // Bug #52394
 			// CHECK THIS...
 			codeStream.addVariable(new LocalVariableBinding("caughtException".toCharArray(),initFailureField.type,ClassFileConstants.AccPrivate,false));
 		    codeStream.aload_0();
+		    if (creatingStackMap) {
+				localVariableBinding.recordInitializationEndPC(codeStream.position);
+		    }
 		    codeStream.fieldAccess(Opcodes.OPC_putstatic, initFailureField, null);
 			endLabel.place();
 		}
