@@ -21,6 +21,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
@@ -267,6 +268,8 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 			for (int a = 0; a < itdArgs.length; a++) {
 				LocalVariableBinding lvb = itdArgs[a].binding;
 				LocalVariableBinding lvbCopy = new LocalVariableBinding(lvb.name, lvb.type, lvb.modifiers, true);
+				// e37: have to create a declaration so that the check in ClassFile (line 2538) won't skip it
+				lvbCopy.declaration = new LocalDeclaration(itdArgs[a].name,0,0);
 				codeStream.record(lvbCopy);
 				lvbCopy.recordInitializationStartPC(0);
 				lvbCopy.resolvedPosition = lvb.resolvedPosition;
