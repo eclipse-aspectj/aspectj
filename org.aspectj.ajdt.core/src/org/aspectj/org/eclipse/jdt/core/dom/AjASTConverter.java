@@ -208,188 +208,399 @@ public class AjASTConverter extends ASTConverter {
 		return adviceDecl;
 	}
 
-	public ASTNode convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration methodDeclaration) {
-		checkCanceled();
-		if (methodDeclaration instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration) {
-			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration) methodDeclaration);
-		}
-		MethodDeclaration methodDecl = new MethodDeclaration(this.ast);
-		boolean isConstructor = methodDeclaration.isConstructor();
-		methodDecl.setConstructor(isConstructor);
-
-		// //////////////// ajh02: added. ugh, polymorphism! Where are you!
-		if (methodDeclaration instanceof DeclareDeclaration) {
-			return convert((DeclareDeclaration) methodDeclaration);
-		} else if (methodDeclaration instanceof InterTypeFieldDeclaration) {
-			return convert((InterTypeFieldDeclaration) methodDeclaration);
-		} else if (methodDeclaration instanceof InterTypeMethodDeclaration) {
-			methodDecl = new org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration(this.ast);
-			((org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration) methodDecl)
-					.setOnType(((InterTypeMethodDeclaration) methodDeclaration).getOnType().toString());
-		} else if (methodDeclaration instanceof InterTypeConstructorDeclaration) {
-			methodDecl = new org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration(this.ast);
-			((org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration) methodDecl)
-					.setOnType(((InterTypeConstructorDeclaration) methodDeclaration).getOnType().toString());
-			methodDecl.setConstructor(true);
-		} else if (methodDeclaration instanceof PointcutDeclaration) {
-			return convert((PointcutDeclaration) methodDeclaration);
-		} else if (methodDeclaration instanceof AdviceDeclaration) {
-			return convert((AdviceDeclaration) methodDeclaration);
-		}
-		// ///////////////////////
-
-		// set modifiers after checking whether we're an itd, otherwise
-		// the modifiers are not set on the correct object.
-		setModifiers(methodDecl, methodDeclaration);
-
-		// for ITD's use the declaredSelector
-		final SimpleName methodName = new SimpleName(this.ast);
-		if (methodDeclaration instanceof InterTypeDeclaration) {
-			InterTypeDeclaration itd = (InterTypeDeclaration) methodDeclaration;
-			methodName.internalSetIdentifier(new String(itd.getDeclaredSelector()));
-		} else {
-			methodName.internalSetIdentifier(new String(methodDeclaration.selector));
-		}
-		int start = methodDeclaration.sourceStart;
-		int end = retrieveIdentifierEndPosition(start, methodDeclaration.sourceEnd);
-		methodName.setSourceRange(start, end - start + 1);
-		methodDecl.setName(methodName);
-
-		org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference[] thrownExceptions = methodDeclaration.thrownExceptions;
-		if (thrownExceptions != null) {
-			int thrownExceptionsLength = thrownExceptions.length;
-			for (int i = 0; i < thrownExceptionsLength; i++) {
-				methodDecl.thrownExceptions().add(convert(thrownExceptions[i]));
+	//public ASTNode convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration methodDeclaration) {
+		public ASTNode convert(boolean isInterface, org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration methodDeclaration) {
+			checkCanceled();
+			if (methodDeclaration instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration) {
+				return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration) methodDeclaration);
 			}
-		}
-		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument[] parameters = methodDeclaration.arguments;
-		if (parameters != null) {
-			int parametersLength = parameters.length;
-			for (int i = 0; i < parametersLength; i++) {
-				methodDecl.parameters().add(convert(parameters[i]));
-			}
-		}
-		org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall explicitConstructorCall = null;
-		if (isConstructor) {
-			org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration constructorDeclaration = (org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration) methodDeclaration;
-			explicitConstructorCall = constructorDeclaration.constructorCall;
-			switch (this.ast.apiLevel) {
-			case AST.JLS2_INTERNAL:
-				// set the return type to VOID
-				PrimitiveType returnType = new PrimitiveType(this.ast);
-				returnType.setPrimitiveTypeCode(PrimitiveType.VOID);
-				returnType.setSourceRange(methodDeclaration.sourceStart, 0);
-				methodDecl.internalSetReturnType(returnType);
-				break;
-			case AST.JLS3:
-				methodDecl.setReturnType2(null);
-			}
-		} else if (methodDeclaration instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration) {
-			org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration method = (org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration) methodDeclaration;
-			org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference typeReference = method.returnType;
-			if (typeReference != null) {
-				Type returnType = convertType(typeReference);
-				// get the positions of the right parenthesis
-				int rightParenthesisPosition = retrieveEndOfRightParenthesisPosition(end, method.bodyEnd);
-				int extraDimensions = retrieveExtraDimension(rightParenthesisPosition, method.bodyEnd);
-				methodDecl.setExtraDimensions(extraDimensions);
-				setTypeForMethodDeclaration(methodDecl, returnType, extraDimensions);
-			}
-		}
-		int declarationSourceStart = methodDeclaration.declarationSourceStart;
-		int declarationSourceEnd = methodDeclaration.bodyEnd;
-		methodDecl.setSourceRange(declarationSourceStart, declarationSourceEnd - declarationSourceStart + 1);
-		int closingPosition = retrieveRightBraceOrSemiColonPosition(methodDeclaration.bodyEnd + 1,
-				methodDeclaration.declarationSourceEnd);
-		if (closingPosition != -1) {
-			int startPosition = methodDecl.getStartPosition();
-			methodDecl.setSourceRange(startPosition, closingPosition - startPosition + 1);
+			MethodDeclaration methodDecl = new MethodDeclaration(this.ast);
+			boolean isConstructor = methodDeclaration.isConstructor();
+			methodDecl.setConstructor(isConstructor);
 
-			org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement[] statements = methodDeclaration.statements;
-
-			start = retrieveStartBlockPosition(methodDeclaration.sourceStart, declarationSourceEnd);
-			end = retrieveEndBlockPosition(methodDeclaration.sourceStart, methodDeclaration.declarationSourceEnd);
-			Block block = null;
-			if (start != -1 && end != -1) {
-				/*
-				 * start or end can be equal to -1 if we have an interface's method.
-				 */
-				block = new Block(this.ast);
-				block.setSourceRange(start, end - start + 1);
-				methodDecl.setBody(block);
+			// //////////////// ajh02: added. ugh, polymorphism! Where are you!
+			if (methodDeclaration instanceof DeclareDeclaration) {
+				return convert((DeclareDeclaration) methodDeclaration);
+			} else if (methodDeclaration instanceof InterTypeFieldDeclaration) {
+				return convert((InterTypeFieldDeclaration) methodDeclaration);
+			} else if (methodDeclaration instanceof InterTypeMethodDeclaration) {
+				methodDecl = new org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration(this.ast);
+				((org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration) methodDecl)
+						.setOnType(((InterTypeMethodDeclaration) methodDeclaration).getOnType().toString());
+			} else if (methodDeclaration instanceof InterTypeConstructorDeclaration) {
+				methodDecl = new org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration(this.ast);
+				((org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration) methodDecl)
+						.setOnType(((InterTypeConstructorDeclaration) methodDeclaration).getOnType().toString());
+				methodDecl.setConstructor(true);
+			} else if (methodDeclaration instanceof PointcutDeclaration) {
+				return convert((PointcutDeclaration) methodDeclaration);
+			} else if (methodDeclaration instanceof AdviceDeclaration) {
+				return convert((AdviceDeclaration) methodDeclaration);
 			}
-			if (block != null && (statements != null || explicitConstructorCall != null)) {
-				if (explicitConstructorCall != null
-						&& explicitConstructorCall.accessMode != org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall.ImplicitSuper) {
-					block.statements().add(super.convert(explicitConstructorCall));
-				}
-				int statementsLength = statements == null ? 0 : statements.length;
-				for (int i = 0; i < statementsLength; i++) {
-					if (statements[i] instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.LocalDeclaration) {
-						checkAndAddMultipleLocalDeclaration(statements, i, block.statements());
-					} else {
-						block.statements().add(convert(statements[i]));
-					}
+			// ///////////////////////
+
+			// set modifiers after checking whether we're an itd, otherwise
+			// the modifiers are not set on the correct object.
+			setModifiers(methodDecl, methodDeclaration);
+			final SimpleName methodName = new SimpleName(this.ast);
+			// AspectJ Extension - for ITD's use the declaredSelector
+			if (methodDeclaration instanceof InterTypeDeclaration) {
+				InterTypeDeclaration itd = (InterTypeDeclaration) methodDeclaration;
+				methodName.internalSetIdentifier(new String(itd.getDeclaredSelector()));
+			} else {
+				methodName.internalSetIdentifier(new String(methodDeclaration.selector));
+			}
+			// AspectJ Extension end
+			int start = methodDeclaration.sourceStart;
+			int end = retrieveIdentifierEndPosition(start, methodDeclaration.sourceEnd);
+			methodName.setSourceRange(start, end - start + 1);
+			methodDecl.setName(methodName);
+			org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference[] thrownExceptions = methodDeclaration.thrownExceptions;
+			int methodHeaderEnd = methodDeclaration.sourceEnd;
+			int thrownExceptionsLength = thrownExceptions == null ? 0 : thrownExceptions.length;
+			if (thrownExceptionsLength > 0) {
+				Name thrownException;
+				int i = 0;
+				do {
+					thrownException = convert(thrownExceptions[i++]);
+					methodDecl.thrownExceptions().add(thrownException);
+				} while (i < thrownExceptionsLength);
+				methodHeaderEnd = thrownException.getStartPosition() + thrownException.getLength();
+			}
+			org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument[] parameters = methodDeclaration.arguments;
+			int parametersLength = parameters == null ? 0 : parameters.length;
+			if (parametersLength > 0) {
+				SingleVariableDeclaration parameter;
+				int i = 0;
+				do {
+					parameter = convert(parameters[i++]);
+					methodDecl.parameters().add(parameter);
+				} while (i < parametersLength);
+				if (thrownExceptionsLength == 0) {
+					methodHeaderEnd = parameter.getStartPosition() + parameter.getLength();
 				}
 			}
-			if (block != null && (Modifier.isAbstract(methodDecl.getModifiers()) || Modifier.isNative(methodDecl.getModifiers()))) {
-				methodDecl.setFlags(methodDecl.getFlags() | ASTNode.MALFORMED);
-			}
-		} else {
-			// syntax error in this method declaration
-			if (!methodDeclaration.isNative() && !methodDeclaration.isAbstract()) {
-				start = retrieveStartBlockPosition(methodDeclaration.sourceStart, declarationSourceEnd);
-				end = methodDeclaration.bodyEnd;
-				// try to get the best end position
-				IProblem[] problems = methodDeclaration.compilationResult().problems;
-				if (problems != null) {
-					for (int i = 0, max = methodDeclaration.compilationResult().problemCount; i < max; i++) {
-						IProblem currentProblem = problems[i];
-						if (currentProblem.getSourceStart() == start
-								&& currentProblem.getID() == IProblem.ParsingErrorInsertToComplete) {
-							end = currentProblem.getSourceEnd();
+			org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall explicitConstructorCall = null;
+			if (isConstructor) {
+				if (isInterface) {
+					// interface cannot have a constructor
+					methodDecl.setFlags(methodDecl.getFlags() | ASTNode.MALFORMED);
+				}
+				org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration constructorDeclaration = (org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration) methodDeclaration;
+				explicitConstructorCall = constructorDeclaration.constructorCall;
+				switch(this.ast.apiLevel) {
+					case AST.JLS2_INTERNAL :
+						// set the return type to VOID
+						PrimitiveType returnType = new PrimitiveType(this.ast);
+						returnType.setPrimitiveTypeCode(PrimitiveType.VOID);
+						returnType.setSourceRange(methodDeclaration.sourceStart, 0);
+						methodDecl.internalSetReturnType(returnType);
+						break;
+					default :
+						methodDecl.setReturnType2(null);
+				}
+			} else if (methodDeclaration instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration) {
+				org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration method = (org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration) methodDeclaration;
+				org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference typeReference = method.returnType;
+				if (typeReference != null) {
+					Type returnType = convertType(typeReference);
+					// get the positions of the right parenthesis
+					int rightParenthesisPosition = retrieveEndOfRightParenthesisPosition(end, method.bodyEnd);
+					int extraDimensions = retrieveExtraDimension(rightParenthesisPosition, method.bodyEnd);
+					methodDecl.setExtraDimensions(extraDimensions);
+					setTypeForMethodDeclaration(methodDecl, returnType, extraDimensions);
+				} else {
+					// no return type for a method that is not a constructor
+					methodDecl.setFlags(methodDecl.getFlags() | ASTNode.MALFORMED);
+					switch(this.ast.apiLevel) {
+						case AST.JLS2_INTERNAL :
 							break;
-						}
+						default :
+							methodDecl.setReturnType2(null);
 					}
 				}
+			}
+			int declarationSourceStart = methodDeclaration.declarationSourceStart;
+			int bodyEnd = methodDeclaration.bodyEnd;
+			methodDecl.setSourceRange(declarationSourceStart, bodyEnd - declarationSourceStart + 1);
+			int declarationSourceEnd = methodDeclaration.declarationSourceEnd;
+			int rightBraceOrSemiColonPositionStart = bodyEnd == declarationSourceEnd ? bodyEnd : bodyEnd + 1;
+			int closingPosition = retrieveRightBraceOrSemiColonPosition(rightBraceOrSemiColonPositionStart, declarationSourceEnd);
+			if (closingPosition != -1) {
 				int startPosition = methodDecl.getStartPosition();
-				methodDecl.setSourceRange(startPosition, end - startPosition + 1);
+				methodDecl.setSourceRange(startPosition, closingPosition - startPosition + 1);
+
+				org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement[] statements = methodDeclaration.statements;
+
+				start = retrieveStartBlockPosition(methodHeaderEnd, methodDeclaration.bodyStart);
+				if (start == -1) start = methodDeclaration.bodyStart; // use recovery position for body start
+				end = retrieveRightBrace(methodDeclaration.bodyEnd, declarationSourceEnd);
+				Block block = null;
 				if (start != -1 && end != -1) {
 					/*
 					 * start or end can be equal to -1 if we have an interface's method.
 					 */
-					Block block = new Block(this.ast);
-					block.setSourceRange(start, end - start + 1);
+					block = new Block(this.ast);
+					block.setSourceRange(start, closingPosition - start + 1);
 					methodDecl.setBody(block);
 				}
-			}
-		}
-
-		org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter[] typeParameters = methodDeclaration.typeParameters();
-		if (typeParameters != null) {
-			switch (this.ast.apiLevel) {
-			case AST.JLS2_INTERNAL:
+				if (block != null && (statements != null || explicitConstructorCall != null)) {
+					if (explicitConstructorCall != null && explicitConstructorCall.accessMode != org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall.ImplicitSuper) {
+						block.statements().add(convert(explicitConstructorCall));
+					}
+					int statementsLength = statements == null ? 0 : statements.length;
+					for (int i = 0; i < statementsLength; i++) {
+						if (statements[i] instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.LocalDeclaration) {
+							checkAndAddMultipleLocalDeclaration(statements, i, block.statements());
+						} else {
+							final Statement statement = convert(statements[i]);
+							if (statement != null) {
+								block.statements().add(statement);
+							}
+						}
+					}
+				}
+				if (block != null
+						&& (Modifier.isAbstract(methodDecl.getModifiers())
+								|| Modifier.isNative(methodDecl.getModifiers())
+								|| isInterface)) {
+					methodDecl.setFlags(methodDecl.getFlags() | ASTNode.MALFORMED);
+				}
+			} else {
+				// syntax error in this method declaration
 				methodDecl.setFlags(methodDecl.getFlags() | ASTNode.MALFORMED);
-				break;
-			case AST.JLS3:
-				for (int i = 0, max = typeParameters.length; i < max; i++) {
-					methodDecl.typeParameters().add(convert(typeParameters[i]));
+				if (!methodDeclaration.isNative() && !methodDeclaration.isAbstract()) {
+					start = retrieveStartBlockPosition(methodHeaderEnd, bodyEnd);
+					if (start == -1) start = methodDeclaration.bodyStart; // use recovery position for body start
+					end = methodDeclaration.bodyEnd;
+					// try to get the best end position
+					CategorizedProblem[] problems = methodDeclaration.compilationResult().problems;
+					if (problems != null) {
+						for (int i = 0, max = methodDeclaration.compilationResult().problemCount; i < max; i++) {
+							CategorizedProblem currentProblem = problems[i];
+							if (currentProblem.getSourceStart() == start && currentProblem.getID() == IProblem.ParsingErrorInsertToComplete) {
+								end = currentProblem.getSourceEnd();
+								break;
+							}
+						}
+					}
+					int startPosition = methodDecl.getStartPosition();
+					methodDecl.setSourceRange(startPosition, end - startPosition + 1);
+					if (start != -1 && end != -1) {
+						/*
+						 * start or end can be equal to -1 if we have an interface's method.
+						 */
+						Block block = new Block(this.ast);
+						block.setSourceRange(start, end - start + 1);
+						methodDecl.setBody(block);
+					}
 				}
 			}
-		}
 
-		// The javadoc comment is now got from list store in compilation unit declaration
-		if (this.resolveBindings) {
-			recordNodes(methodDecl, methodDeclaration);
-			recordNodes(methodName, methodDeclaration);
-			if (methodDecl.resolveBinding() != null) {
-				convert(methodDeclaration.javadoc, methodDecl);
+			org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter[] typeParameters = methodDeclaration.typeParameters();
+			if (typeParameters != null) {
+				switch(this.ast.apiLevel) {
+					case AST.JLS2_INTERNAL :
+						methodDecl.setFlags(methodDecl.getFlags() | ASTNode.MALFORMED);
+						break;
+					default :
+						for (int i = 0, max = typeParameters.length; i < max; i++) {
+							methodDecl.typeParameters().add(convert(typeParameters[i]));
+						}
+				}
 			}
-		} else {
+
+			// The javadoc comment is now got from list store in compilation unit declaration
 			convert(methodDeclaration.javadoc, methodDecl);
+			if (this.resolveBindings) {
+				recordNodes(methodDecl, methodDeclaration);
+				recordNodes(methodName, methodDeclaration);
+				methodDecl.resolveBinding();
+			}
+			return methodDecl;
 		}
-		return methodDecl;
-	}
+	
+//		checkCanceled();
+//		if (methodDeclaration instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration) {
+//			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration) methodDeclaration);
+//		}
+//		MethodDeclaration methodDecl = new MethodDeclaration(this.ast);
+//		boolean isConstructor = methodDeclaration.isConstructor();
+//		methodDecl.setConstructor(isConstructor);
+//
+//		// //////////////// ajh02: added. ugh, polymorphism! Where are you!
+//		if (methodDeclaration instanceof DeclareDeclaration) {
+//			return convert((DeclareDeclaration) methodDeclaration);
+//		} else if (methodDeclaration instanceof InterTypeFieldDeclaration) {
+//			return convert((InterTypeFieldDeclaration) methodDeclaration);
+//		} else if (methodDeclaration instanceof InterTypeMethodDeclaration) {
+//			methodDecl = new org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration(this.ast);
+//			((org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration) methodDecl)
+//					.setOnType(((InterTypeMethodDeclaration) methodDeclaration).getOnType().toString());
+//		} else if (methodDeclaration instanceof InterTypeConstructorDeclaration) {
+//			methodDecl = new org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration(this.ast);
+//			((org.aspectj.org.eclipse.jdt.core.dom.InterTypeMethodDeclaration) methodDecl)
+//					.setOnType(((InterTypeConstructorDeclaration) methodDeclaration).getOnType().toString());
+//			methodDecl.setConstructor(true);
+//		} else if (methodDeclaration instanceof PointcutDeclaration) {
+//			return convert((PointcutDeclaration) methodDeclaration);
+//		} else if (methodDeclaration instanceof AdviceDeclaration) {
+//			return convert((AdviceDeclaration) methodDeclaration);
+//		}
+//		// ///////////////////////
+//
+//		// set modifiers after checking whether we're an itd, otherwise
+//		// the modifiers are not set on the correct object.
+//		setModifiers(methodDecl, methodDeclaration);
+//
+//		// for ITD's use the declaredSelector
+//		final SimpleName methodName = new SimpleName(this.ast);
+//		if (methodDeclaration instanceof InterTypeDeclaration) {
+//			InterTypeDeclaration itd = (InterTypeDeclaration) methodDeclaration;
+//			methodName.internalSetIdentifier(new String(itd.getDeclaredSelector()));
+//		} else {
+//			methodName.internalSetIdentifier(new String(methodDeclaration.selector));
+//		}
+//		int start = methodDeclaration.sourceStart;
+//		int end = retrieveIdentifierEndPosition(start, methodDeclaration.sourceEnd);
+//		methodName.setSourceRange(start, end - start + 1);
+//		methodDecl.setName(methodName);
+//
+//		org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference[] thrownExceptions = methodDeclaration.thrownExceptions;
+//		if (thrownExceptions != null) {
+//			int thrownExceptionsLength = thrownExceptions.length;
+//			for (int i = 0; i < thrownExceptionsLength; i++) {
+//				methodDecl.thrownExceptions().add(convert(thrownExceptions[i]));
+//			}
+//		}
+//		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument[] parameters = methodDeclaration.arguments;
+//		if (parameters != null) {
+//			int parametersLength = parameters.length;
+//			for (int i = 0; i < parametersLength; i++) {
+//				methodDecl.parameters().add(convert(parameters[i]));
+//			}
+//		}
+//		org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall explicitConstructorCall = null;
+//		if (isConstructor) {
+//			org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration constructorDeclaration = (org.aspectj.org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration) methodDeclaration;
+//			explicitConstructorCall = constructorDeclaration.constructorCall;
+//			switch (this.ast.apiLevel) {
+//			case AST.JLS2_INTERNAL:
+//				// set the return type to VOID
+//				PrimitiveType returnType = new PrimitiveType(this.ast);
+//				returnType.setPrimitiveTypeCode(PrimitiveType.VOID);
+//				returnType.setSourceRange(methodDeclaration.sourceStart, 0);
+//				methodDecl.internalSetReturnType(returnType);
+//				break;
+//			case AST.JLS3:
+//				methodDecl.setReturnType2(null);
+//			}
+//		} else if (methodDeclaration instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration) {
+//			org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration method = (org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration) methodDeclaration;
+//			org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference typeReference = method.returnType;
+//			if (typeReference != null) {
+//				Type returnType = convertType(typeReference);
+//				// get the positions of the right parenthesis
+//				int rightParenthesisPosition = retrieveEndOfRightParenthesisPosition(end, method.bodyEnd);
+//				int extraDimensions = retrieveExtraDimension(rightParenthesisPosition, method.bodyEnd);
+//				methodDecl.setExtraDimensions(extraDimensions);
+//				setTypeForMethodDeclaration(methodDecl, returnType, extraDimensions);
+//			}
+//		}
+//		int declarationSourceStart = methodDeclaration.declarationSourceStart;
+//		int declarationSourceEnd = methodDeclaration.bodyEnd;
+//		methodDecl.setSourceRange(declarationSourceStart, declarationSourceEnd - declarationSourceStart + 1);
+//		int closingPosition = retrieveRightBraceOrSemiColonPosition(methodDeclaration.bodyEnd + 1,
+//				methodDeclaration.declarationSourceEnd);
+//		if (closingPosition != -1) {
+//			int startPosition = methodDecl.getStartPosition();
+//			methodDecl.setSourceRange(startPosition, closingPosition - startPosition + 1);
+//
+//			org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement[] statements = methodDeclaration.statements;
+//
+//			start = retrieveStartBlockPosition(methodDeclaration.sourceStart, declarationSourceEnd);
+//			end = retrieveEndBlockPosition(methodDeclaration.sourceStart, methodDeclaration.declarationSourceEnd);
+//			Block block = null;
+//			if (start != -1 && end != -1) {
+//				/*
+//				 * start or end can be equal to -1 if we have an interface's method.
+//				 */
+//				block = new Block(this.ast);
+//				block.setSourceRange(start, end - start + 1);
+//				methodDecl.setBody(block);
+//			}
+//			if (block != null && (statements != null || explicitConstructorCall != null)) {
+//				if (explicitConstructorCall != null
+//						&& explicitConstructorCall.accessMode != org.aspectj.org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall.ImplicitSuper) {
+//					block.statements().add(super.convert(explicitConstructorCall));
+//				}
+//				int statementsLength = statements == null ? 0 : statements.length;
+//				for (int i = 0; i < statementsLength; i++) {
+//					if (statements[i] instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.LocalDeclaration) {
+//						checkAndAddMultipleLocalDeclaration(statements, i, block.statements());
+//					} else {
+//						block.statements().add(convert(statements[i]));
+//					}
+//				}
+//			}
+//			if (block != null && (Modifier.isAbstract(methodDecl.getModifiers()) || Modifier.isNative(methodDecl.getModifiers()))) {
+//				methodDecl.setFlags(methodDecl.getFlags() | ASTNode.MALFORMED);
+//			}
+//		} else {
+//			// syntax error in this method declaration
+//			if (!methodDeclaration.isNative() && !methodDeclaration.isAbstract()) {
+//				start = retrieveStartBlockPosition(methodDeclaration.sourceStart, declarationSourceEnd);
+//				end = methodDeclaration.bodyEnd;
+//				// try to get the best end position
+//				IProblem[] problems = methodDeclaration.compilationResult().problems;
+//				if (problems != null) {
+//					for (int i = 0, max = methodDeclaration.compilationResult().problemCount; i < max; i++) {
+//						IProblem currentProblem = problems[i];
+//						if (currentProblem.getSourceStart() == start
+//								&& currentProblem.getID() == IProblem.ParsingErrorInsertToComplete) {
+//							end = currentProblem.getSourceEnd();
+//							break;
+//						}
+//					}
+//				}
+//				int startPosition = methodDecl.getStartPosition();
+//				methodDecl.setSourceRange(startPosition, end - startPosition + 1);
+//				if (start != -1 && end != -1) {
+//					/*
+//					 * start or end can be equal to -1 if we have an interface's method.
+//					 */
+//					Block block = new Block(this.ast);
+//					block.setSourceRange(start, end - start + 1);
+//					methodDecl.setBody(block);
+//				}
+//			}
+//		}
+//
+//		org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter[] typeParameters = methodDeclaration.typeParameters();
+//		if (typeParameters != null) {
+//			switch (this.ast.apiLevel) {
+//			case AST.JLS2_INTERNAL:
+//				methodDecl.setFlags(methodDecl.getFlags() | ASTNode.MALFORMED);
+//				break;
+//			case AST.JLS3:
+//				for (int i = 0, max = typeParameters.length; i < max; i++) {
+//					methodDecl.typeParameters().add(convert(typeParameters[i]));
+//				}
+//			}
+//		}
+//
+//		// The javadoc comment is now got from list store in compilation unit declaration
+//		if (this.resolveBindings) {
+//			recordNodes(methodDecl, methodDeclaration);
+//			recordNodes(methodName, methodDeclaration);
+//			if (methodDecl.resolveBinding() != null) {
+//				convert(methodDeclaration.javadoc, methodDecl);
+//			}
+//		} else {
+//			convert(methodDeclaration.javadoc, methodDecl);
+//		}
+//		return methodDecl;
+//	}
 
 	public ASTNode convert(DeclareDeclaration declareDecl) {
 		checkCanceled(); // is this line needed?
@@ -984,54 +1195,54 @@ public class AjASTConverter extends ASTConverter {
 	/*
 	 * Internal use only Used to convert class body declarations
 	 */
-	public TypeDeclaration convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode[] nodes) {
-		final TypeDeclaration typeDecl = TypeDeclaration.getTypeDeclaration(this.ast);
-		typeDecl.setInterface(false);
-		int nodesLength = nodes.length;
-		for (int i = 0; i < nodesLength; i++) {
-			org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode node = nodes[i];
-			if (node instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.Initializer) {
-				org.aspectj.org.eclipse.jdt.internal.compiler.ast.Initializer oldInitializer = (org.aspectj.org.eclipse.jdt.internal.compiler.ast.Initializer) node;
-				Initializer initializer = new Initializer(this.ast);
-				initializer.setBody(convert(oldInitializer.block));
-				setModifiers(initializer, oldInitializer);
-				initializer.setSourceRange(oldInitializer.declarationSourceStart, oldInitializer.sourceEnd
-						- oldInitializer.declarationSourceStart + 1);
-				// setJavaDocComment(initializer);
-				// initializer.setJavadoc(convert(oldInitializer.javadoc));
-				convert(oldInitializer.javadoc, initializer);
-				typeDecl.bodyDeclarations().add(initializer);
-			} else if (node instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration) {
-				org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration fieldDeclaration = (org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration) node;
-				if (i > 0
-						&& (nodes[i - 1] instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration)
-						&& ((org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration) nodes[i - 1]).declarationSourceStart == fieldDeclaration.declarationSourceStart) {
-					// we have a multiple field declaration
-					// We retrieve the existing fieldDeclaration to add the new VariableDeclarationFragment
-					FieldDeclaration currentFieldDeclaration = (FieldDeclaration) typeDecl.bodyDeclarations().get(
-							typeDecl.bodyDeclarations().size() - 1);
-					currentFieldDeclaration.fragments().add(convertToVariableDeclarationFragment(fieldDeclaration));
-				} else {
-					// we can create a new FieldDeclaration
-					typeDecl.bodyDeclarations().add(convertToFieldDeclaration(fieldDeclaration));
-				}
-			} else if (node instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration) {
-				AbstractMethodDeclaration nextMethodDeclaration = (AbstractMethodDeclaration) node;
-				if (!nextMethodDeclaration.isDefaultConstructor() && !nextMethodDeclaration.isClinit()) {
-					typeDecl.bodyDeclarations().add(convert(nextMethodDeclaration));
-				}
-			} else if (node instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration) {
-				org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration nextMemberDeclaration = (org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration) node;
-				ASTNode nextMemberDeclarationNode = convert(nextMemberDeclaration);
-				if (nextMemberDeclarationNode == null) {
-					typeDecl.setFlags(typeDecl.getFlags() | ASTNode.MALFORMED);
-				} else {
-					typeDecl.bodyDeclarations().add(nextMemberDeclarationNode);
-				}
-			}
-		}
-		return typeDecl;
-	}
+//	public TypeDeclaration convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode[] nodes) {
+//		final TypeDeclaration typeDecl = TypeDeclaration.getTypeDeclaration(this.ast);
+//		typeDecl.setInterface(false);
+//		int nodesLength = nodes.length;
+//		for (int i = 0; i < nodesLength; i++) {
+//			org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode node = nodes[i];
+//			if (node instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.Initializer) {
+//				org.aspectj.org.eclipse.jdt.internal.compiler.ast.Initializer oldInitializer = (org.aspectj.org.eclipse.jdt.internal.compiler.ast.Initializer) node;
+//				Initializer initializer = new Initializer(this.ast);
+//				initializer.setBody(convert(oldInitializer.block));
+//				setModifiers(initializer, oldInitializer);
+//				initializer.setSourceRange(oldInitializer.declarationSourceStart, oldInitializer.sourceEnd
+//						- oldInitializer.declarationSourceStart + 1);
+//				// setJavaDocComment(initializer);
+//				// initializer.setJavadoc(convert(oldInitializer.javadoc));
+//				convert(oldInitializer.javadoc, initializer);
+//				typeDecl.bodyDeclarations().add(initializer);
+//			} else if (node instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration) {
+//				org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration fieldDeclaration = (org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration) node;
+//				if (i > 0
+//						&& (nodes[i - 1] instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration)
+//						&& ((org.aspectj.org.eclipse.jdt.internal.compiler.ast.FieldDeclaration) nodes[i - 1]).declarationSourceStart == fieldDeclaration.declarationSourceStart) {
+//					// we have a multiple field declaration
+//					// We retrieve the existing fieldDeclaration to add the new VariableDeclarationFragment
+//					FieldDeclaration currentFieldDeclaration = (FieldDeclaration) typeDecl.bodyDeclarations().get(
+//							typeDecl.bodyDeclarations().size() - 1);
+//					currentFieldDeclaration.fragments().add(convertToVariableDeclarationFragment(fieldDeclaration));
+//				} else {
+//					// we can create a new FieldDeclaration
+//					typeDecl.bodyDeclarations().add(convertToFieldDeclaration(fieldDeclaration));
+//				}
+//			} else if (node instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration) {
+//				AbstractMethodDeclaration nextMethodDeclaration = (AbstractMethodDeclaration) node;
+//				if (!nextMethodDeclaration.isDefaultConstructor() && !nextMethodDeclaration.isClinit()) {
+//					typeDecl.bodyDeclarations().add(convert(nextMethodDeclaration));
+//				}
+//			} else if (node instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration) {
+//				org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration nextMemberDeclaration = (org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration) node;
+//				ASTNode nextMemberDeclarationNode = convert(nextMemberDeclaration);
+//				if (nextMemberDeclarationNode == null) {
+//					typeDecl.setFlags(typeDecl.getFlags() | ASTNode.MALFORMED);
+//				} else {
+//					typeDecl.bodyDeclarations().add(nextMemberDeclarationNode);
+//				}
+//			}
+//		}
+//		return typeDecl;
+//	}
 
 	// public Expression convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.BinaryExpression expression) {
 	// InfixExpression infixExpression = new InfixExpression(this.ast);
@@ -2272,19 +2483,20 @@ public class AjASTConverter extends ASTConverter {
 	}
 
 	public ASTNode convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration typeDeclaration) {
-		switch (org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration.kind(typeDeclaration.modifiers)) {
-		case org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration.ENUM_DECL:
-			if (this.ast.apiLevel == AST.JLS2_INTERNAL) {
-				return null;
-			} else {
-				return convertToEnumDeclaration(typeDeclaration);
-			}
-		case org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration.ANNOTATION_TYPE_DECL:
-			if (this.ast.apiLevel == AST.JLS2_INTERNAL) {
-				return null;
-			} else {
-				return convertToAnnotationDeclaration(typeDeclaration);
-			}
+		int kind = org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration.kind(typeDeclaration.modifiers);
+		switch (kind) {
+			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration.ENUM_DECL :
+				if (this.ast.apiLevel == AST.JLS2_INTERNAL) {
+					return null;
+				} else {
+					return convertToEnumDeclaration(typeDeclaration);
+				}
+			case org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration.ANNOTATION_TYPE_DECL :
+				if (this.ast.apiLevel == AST.JLS2_INTERNAL) {
+					return null;
+				} else {
+					return convertToAnnotationDeclaration(typeDeclaration);
+				}
 		}
 
 		checkCanceled();
@@ -2301,58 +2513,57 @@ public class AjASTConverter extends ASTConverter {
 			}
 		}
 		// /////////////////////////////
-
 		if (typeDeclaration.modifiersSourceStart != -1) {
 			setModifiers(typeDecl, typeDeclaration);
 		}
-		typeDecl.setInterface(org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration.kind(typeDeclaration.modifiers) == org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration.INTERFACE_DECL);
+		boolean isInterface = kind == org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration.INTERFACE_DECL;
+		typeDecl.setInterface(isInterface);
 		final SimpleName typeName = new SimpleName(this.ast);
 		typeName.internalSetIdentifier(new String(typeDeclaration.name));
 		typeName.setSourceRange(typeDeclaration.sourceStart, typeDeclaration.sourceEnd - typeDeclaration.sourceStart + 1);
 		typeDecl.setName(typeName);
-		typeDecl.setSourceRange(typeDeclaration.declarationSourceStart, typeDeclaration.bodyEnd
-				- typeDeclaration.declarationSourceStart + 1);
+		typeDecl.setSourceRange(typeDeclaration.declarationSourceStart, typeDeclaration.bodyEnd - typeDeclaration.declarationSourceStart + 1);
 
 		// need to set the superclass and super interfaces here since we cannot distinguish them at
 		// the type references level.
 		if (typeDeclaration.superclass != null) {
-			switch (this.ast.apiLevel) {
-			case AST.JLS2_INTERNAL:
-				typeDecl.internalSetSuperclass(convert(typeDeclaration.superclass));
-				break;
-			case AST.JLS3:
-				typeDecl.setSuperclassType(convertType(typeDeclaration.superclass));
-				break;
+			switch(this.ast.apiLevel) {
+				case AST.JLS2_INTERNAL :
+					typeDecl.internalSetSuperclass(convert(typeDeclaration.superclass));
+					break;
+				default :
+					typeDecl.setSuperclassType(convertType(typeDeclaration.superclass));
+					break;
 			}
 		}
 
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference[] superInterfaces = typeDeclaration.superInterfaces;
 		if (superInterfaces != null) {
-			switch (this.ast.apiLevel) {
-			case AST.JLS2_INTERNAL:
-				for (int index = 0, length = superInterfaces.length; index < length; index++) {
-					typeDecl.internalSuperInterfaces().add(convert(superInterfaces[index]));
-				}
-				break;
-			case AST.JLS3:
-				for (int index = 0, length = superInterfaces.length; index < length; index++) {
-					typeDecl.superInterfaceTypes().add(convertType(superInterfaces[index]));
-				}
+			switch(this.ast.apiLevel) {
+				case AST.JLS2_INTERNAL :
+					for (int index = 0, length = superInterfaces.length; index < length; index++) {
+						typeDecl.internalSuperInterfaces().add(convert(superInterfaces[index]));
+					}
+					break;
+				default :
+					for (int index = 0, length = superInterfaces.length; index < length; index++) {
+						typeDecl.superInterfaceTypes().add(convertType(superInterfaces[index]));
+					}
 			}
 		}
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter[] typeParameters = typeDeclaration.typeParameters;
 		if (typeParameters != null) {
-			switch (this.ast.apiLevel) {
-			case AST.JLS2_INTERNAL:
-				typeDecl.setFlags(typeDecl.getFlags() | ASTNode.MALFORMED);
-				break;
-			case AST.JLS3:
-				for (int index = 0, length = typeParameters.length; index < length; index++) {
-					typeDecl.typeParameters().add(convert(typeParameters[index]));
-				}
+			switch(this.ast.apiLevel) {
+				case AST.JLS2_INTERNAL :
+					typeDecl.setFlags(typeDecl.getFlags() | ASTNode.MALFORMED);
+					break;
+				default :
+					for (int index = 0, length = typeParameters.length; index < length; index++) {
+						typeDecl.typeParameters().add(convert(typeParameters[index]));
+					}
 			}
 		}
-		buildBodyDeclarations(typeDeclaration, typeDecl,org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration.kind(typeDeclaration.modifiers) == org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration.INTERFACE_DECL);
+		buildBodyDeclarations(typeDeclaration, typeDecl, isInterface);
 		if (this.resolveBindings) {
 			recordNodes(typeDecl, typeDeclaration);
 			recordNodes(typeName, typeDeclaration);
