@@ -206,6 +206,11 @@ public class AspectDeclaration extends TypeDeclaration {
 	 * this hook to add in the @AspectJ annotations.
 	 */
 	public void addAtAspectJAnnotations() {
+		if (ignoreFurtherInvestigation) {
+			// perClause likely to be null.  This flag used to be checked before we got called (at e33 level, in traverse(ASTVisitor visitor, CompilationUnitScope unitScope))
+			// For e37 moved the check down to this level
+			return;
+		}
 		Annotation atAspectAnnotation = AtAspectJAnnotationFactory.createAspectAnnotation(perClause.toDeclarationString(),
 				declarationSourceStart);
 		Annotation privilegedAnnotation = null;
