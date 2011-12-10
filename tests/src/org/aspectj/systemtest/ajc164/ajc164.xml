@@ -36,13 +36,13 @@
    
    <ajc-test dir="bugs164/pr266420" title="unused private warning - 2">
      <compile files="B.java" options="-1.5 -warn:unusedPrivate">
-       <message kind="warning" text="The field B.i is never read locally"/>
+       <message kind="warning" text="The value of the field B.i is not used"/>
      </compile>
    </ajc-test>
    
    <ajc-test dir="bugs164/pr266420" title="unused private warning - 3">
      <compile files="C.java" options="-1.5 -warn:unusedPrivate">
-       <message kind="warning" text="The field C.j is never read locally"/>
+       <message kind="warning" text="The value of the field C.j is not used"/>
      </compile>
    </ajc-test>
    
