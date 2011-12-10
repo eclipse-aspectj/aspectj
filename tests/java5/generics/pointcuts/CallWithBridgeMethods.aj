@@ -20,15 +20,16 @@ public aspect CallWithBridgeMethods {
 		Generic rawVariableOfSuperType = rawType;
 		rawVariableOfSuperType.foo("hi");  // this call we go to the bridge method..., but
 		                                   // appears in the bytecode as Generic.foo(Object)
-		rawType.foo("hi");				   // this call will go to the bridge method, and
-		                                   // appears in the bytecode as SubGeneric.foo(Object)
+		// removed next line - was possible before e37 upgrade, but now can't call it if compiler knows it is wrong
+//		rawType.foo((Object)3);			   // this call will go to the bridge method, and
+//		                                   // appears in the bytecode as SubGeneric.foo(Object)
 	}
 	
 	declare warning : call(* SubGeneric.foo(..)) && within(SubGeneric) 
 	                  : "should not match call in bridge method";
 	
-	declare warning : call(* SubGeneric.foo(Object)) 
-	                  : "should match call to bridge method on L23, this is a real call!";
+//	declare warning : call(* SubGeneric.foo(Object)) 
+//	                  : "should match call to bridge method on L23, this is a real call!";
 	
 	declare warning : execution(* SubGeneric.foo(Object)) && within(SubGeneric)
 	                  : "but whilst you can call it, it doesn't execute!";
