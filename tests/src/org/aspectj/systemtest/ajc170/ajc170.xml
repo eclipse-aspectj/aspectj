@@ -2,6 +2,11 @@
 
 <suite>
 
+   <ajc-test dir="bugs170/sanity" title="sanity 1">
+   	<compile files="DeclareAtType.java" options="-1.5">
+   	</compile>
+   </ajc-test>
+   
    <ajc-test dir="bugs170/pr363979" title="missing impl">
      <compile files="Example.java" options="-1.5"/>
      <run class="Example">

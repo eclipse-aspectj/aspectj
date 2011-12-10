@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testSanity1() {
+		runTest("sanity 1");
+	}
+	
 	public void testMissingImpl_363979() {
 		runTest("missing impl");
 	}
