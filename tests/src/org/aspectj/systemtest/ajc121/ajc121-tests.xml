@@ -412,13 +412,14 @@
     <ajc-test dir="bugs" pr="72699"
 	   title="Bogus error message: The abstract method ajc$pointcut$$tracingScope$a2 in type Tracing can only be defined by an abstract class (1)">
 	   <compile files="BogusMessage.java">
-	     <message kind="error" line="2" text="The abstract pointcut tracingScope can only be defined in an abstract aspect"/>
-	   </compile>
+	      <message kind="error" line="2" text="The abstract pointcut tracingScope can only be defined in an abstract aspect"/>
+       </compile>
     </ajc-test>
     
     <ajc-test dir="bugs" pr="72699"
 	   title="Bogus error message: The abstract method ajc$pointcut$$tracingScope$a2 in type Tracing can only be defined by an abstract class (2)">
 	   <compile files="BogusMessage2.java">
+	     <message kind="error" line="1" text="The type BogusMessage2 must be an abstract class to define abstract methods"/>
 	     <message kind="error" line="2" text="The abstract pointcut tracingScope can only be defined in an aspect"/>
 	   </compile>
     </ajc-test>
