@@ -406,8 +406,10 @@
       title="Should issue an error for using 'class' instead of 'aspect'"
       keywords="from-errors">
         <compile files="NoAspect.java">
-            <message kind="error" line="1"/>
-            <message kind="error" line="12"/>
+            <message kind="error" line="1" text="Syntax error on token &quot;{&quot;, ; expected"/>
+            <message kind="error" line="12" text="Syntax error on token &quot;{&quot;, pointcut expected after this token"/>
+            <message kind="error" line="12" text="Syntax error, insert &quot;;&quot; to complete ClassBodyDeclarations"/>
+            <message kind="error" line="12" text="Syntax error on token &quot;{&quot;, delete this token"/>
         </compile>
     </ajc-test>
 
@@ -558,10 +560,10 @@
       title="Compiler should suggest using aspect when advice, pointcuts, or introduction is in a class"
       keywords="from-errors,poorErrorMessages">
         <compile files="RecognizeAspectCE.java">
-            <message kind="error" line="2"  
-            	file="RecognizeAspectCE.java"
-            	text="Syntax error"/>
             <message kind="error" line="3"  
+            	file="RecognizeAspectCE.java"
+            	text="Syntax error on token &quot;}&quot;, pointcut expected after this token"/>
+            <message kind="error" line="2"  
             	file="RecognizeAspectCE.java"
             	text="Syntax error"/>
             <message kind="error" line="6"  
