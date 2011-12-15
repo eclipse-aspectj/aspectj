@@ -2,6 +2,71 @@
 
 <suite>
 
+   <ajc-test dir="bugs170/language" title="diamond 1">
+   	<compile files="Diamond.java" options="-1.5">
+   		<message kind="error" line="11" text="'&lt;&gt;' operator is not allowed for source level below 1.7"/>
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="diamond 2">
+   	<compile files="Diamond.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="diamond itd 1">
+   	<compile files="DiamondITD.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="literals 1">
+   	<compile files="Literals.java" options="-1.5">
+   		<message kind="error" line="8" text="Underscores can only be used with source level 1.7 or greater"/>
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="literals 2">
+   	<compile files="Literals.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="literals itd 1">
+   	<compile files="LiteralsITD.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="string switch 1">
+   	<compile files="StringSwitch.java" options="-1.5">
+   	<message kind="error" line="9" text="Cannot switch on a value of type String for source level below 1.7. Only convertible int values or enum constants are permitted"/>
+   	</compile>
+   </ajc-test>
+
+   <ajc-test dir="bugs170/language" title="string switch 2">
+   	<compile files="StringSwitch.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="multi catch 1">
+   	<compile files="MultiCatch.java" options="-1.5">
+   		<message kind="error" line="6" text="Multi-catch parameters are not allowed for source level below 1.7"/>
+   	</compile>
+   </ajc-test>
+
+   <ajc-test dir="bugs170/language" title="multi catch 2">
+   	<compile files="MultiCatch.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="multi catch with handler 1">
+   	<compile files="MultiCatchWithHandler.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="multi catch with handler 2">
+   	<compile files="MultiCatchWithHandler2.java" options="-1.7">
+   	</compile>
+   	<run class="MultiCatchWithHandler2"></run>
+   </ajc-test>
+   
    <ajc-test dir="bugs170/sanity" title="sanity 1">
    	<compile files="DeclareAtType.java" options="-1.5">
    	</compile>
