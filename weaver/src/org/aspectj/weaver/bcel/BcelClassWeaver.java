@@ -2682,6 +2682,7 @@ class BcelClassWeaver implements IClassWeaver {
 		// Exception handlers (pr230817)
 		if (canMatch(Shadow.ExceptionHandler) && !Range.isRangeHandle(ih)) {
 			Set<InstructionTargeter> targeters = ih.getTargetersCopy();
+			// If in Java7 there may be overlapping exception ranges for multi catch - we should recognize that
 			for (InstructionTargeter t : targeters) {
 				if (t instanceof ExceptionRange) {
 					// assert t.getHandler() == ih
@@ -2692,18 +2693,14 @@ class BcelClassWeaver implements IClassWeaver {
 					if (isInitFailureHandler(ih)) {
 						return;
 					}
-
 					if (!ih.getInstruction().isStoreInstruction() && ih.getInstruction().getOpcode() != Constants.NOP) {
 						// If using cobertura, the catch block stats with
-						// INVOKESTATIC rather than ASTORE, in order that
-						// the
-						// ranges
+						// INVOKESTATIC rather than ASTORE, in order that the ranges
 						// for the methodcall and exceptionhandler shadows
 						// that occur at this same
 						// line, we need to modify the instruction list to
 						// split them - adding a
-						// NOP before the invokestatic that gets all the
-						// targeters
+						// NOP before the invokestatic that gets all the targeters
 						// that were aimed at the INVOKESTATIC
 						mg.getBody().insert(ih, InstructionConstants.NOP);
 						InstructionHandle newNOP = ih.getPrev();
@@ -3109,7 +3106,7 @@ class BcelClassWeaver implements IClassWeaver {
 							&& s.charAt(4) == 'a'
 							&& (s.equals("org.aspectj.runtime.internal.CFlowCounter")
 									|| s.equals("org.aspectj.runtime.internal.CFlowStack") || s
-									.equals("org.aspectj.runtime.reflect.Factory"))) {
+										.equals("org.aspectj.runtime.reflect.Factory"))) {
 						proceed = false;
 					} else {
 						if (methodName.equals("aspectOf")) {
