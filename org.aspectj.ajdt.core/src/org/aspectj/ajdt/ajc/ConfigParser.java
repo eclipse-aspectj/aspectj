@@ -40,7 +40,7 @@ public class ConfigParser {
 
 	public void parseCommandLine(String[] argsArray) throws ParseException {
 		location = new CommandLineLocation();
-		LinkedList args = new LinkedList();
+		LinkedList<Arg> args = new LinkedList<Arg>();
 		for (int i = 0; i < argsArray.length; i++) {
 			args.add(new Arg(argsArray[i], location));
 		}
@@ -64,7 +64,7 @@ public class ConfigParser {
 			return;
 		}
 
-		LinkedList args = new LinkedList();
+		LinkedList<Arg> args = new LinkedList<Arg>();
 		int lineNum = 0;
 
 		try {
