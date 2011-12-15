@@ -34,7 +34,6 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.bridge.Version;
-import org.aspectj.org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.Main;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.util.FileUtil;
@@ -50,7 +49,7 @@ public class BuildArgParser extends Main {
 	private static boolean LOADED_BUNDLE = false;
 
 	static {
-		Main.bundleName = BUNDLE_NAME; 
+		Main.bundleName = BUNDLE_NAME;
 		ResourceBundleFactory.getBundle(Locale.getDefault());
 		if (!LOADED_BUNDLE) {
 			LOADED_BUNDLE = true;
@@ -690,10 +689,14 @@ public class BuildArgParser extends Main {
 			} else if (arg.equals("-1.6")) {
 				buildConfig.setBehaveInJava5Way(true);
 				unparsedArgs.add("-1.6");
+			} else if (arg.equals("-1.7")) {
+				buildConfig.setBehaveInJava5Way(true);
+				unparsedArgs.add("-1.7");
 			} else if (arg.equals("-source")) {
 				if (args.size() > nextArgIndex) {
 					String level = ((ConfigParser.Arg) args.get(nextArgIndex)).getValue();
-					if (level.equals("1.5") || level.equals("5") || level.equals("1.6") || level.equals("6")) {
+					if (level.equals("1.5") || level.equals("5") || level.equals("1.6") || level.equals("6") || level.equals("1.7")
+							|| level.equals("7")) {
 						buildConfig.setBehaveInJava5Way(true);
 					}
 					unparsedArgs.add("-source");
