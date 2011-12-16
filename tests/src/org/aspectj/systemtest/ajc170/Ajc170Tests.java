@@ -21,6 +21,22 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testPerThis() {
+		runTest("perthis");
+	}
+
+	public void testPerTarget() {
+		runTest("pertarget");
+	}
+
+	public void testPerCflow() {
+		runTest("percflow");
+	}
+
+	public void testPerTypeWithin() {
+		runTest("pertypewithin");
+	}
+
 	// not specifying -1.7
 	public void testDiamond1() {
 		runTest("diamond 1");

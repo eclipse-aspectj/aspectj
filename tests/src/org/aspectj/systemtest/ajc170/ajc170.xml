@@ -2,6 +2,26 @@
 
 <suite>
 
+   <ajc-test dir="bugs170/language" title="perthis">
+   	<compile files="PerThis.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="pertarget">
+   	<compile files="PerTarget.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="percflow">
+   	<compile files="PerCflow.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="pertypewithin">
+   	<compile files="PerTypeWithin.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
    <ajc-test dir="bugs170/language" title="diamond 1">
    	<compile files="Diamond.java" options="-1.5">
    		<message kind="error" line="11" text="'&lt;&gt;' operator is not allowed for source level below 1.7"/>
