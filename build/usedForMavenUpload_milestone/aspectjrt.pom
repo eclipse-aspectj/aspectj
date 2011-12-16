@@ -5,7 +5,7 @@
   <groupId>org.aspectj</groupId>
   <artifactId>aspectjrt</artifactId>
   <packaging>jar</packaging>
-  <version>1.6.12.M1</version>
+  <version>1.7.0.M1</version>
   <name>AspectJ runtime</name>
   <description>The runtime needed to execute a program using AspectJ</description>
   <url>http://www.aspectj.org</url>
@@ -20,6 +20,5 @@
 
   <scm>
     <url>http://dev.eclipse.org/viewcvs/index.cgi/org.aspectj/?root=Tools_Project</url>
-  </scm>
-
+  </scm> 
 </project>
