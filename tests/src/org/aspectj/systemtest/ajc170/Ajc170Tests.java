@@ -82,6 +82,10 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("multi catch with handler 1");
 	}
 
+	public void testMultiCatchAspect1() {
+		runTest("multi catch aspect 1");
+	}
+
 	// public void testMultiCatchWithHandler2() {
 	// runTest("multi catch with handler 2");
 	// }
@@ -101,6 +105,14 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testStackOverflow_364380() {
 		runTest("stackoverflow");
 	}
+
+	// public void testTryResources1() {
+	// runTest("try resources 1");
+	// }
+	//
+	// public void testTryResources2() {
+	// runTest("try resources 2");
+	// }
 
 	// ---
 

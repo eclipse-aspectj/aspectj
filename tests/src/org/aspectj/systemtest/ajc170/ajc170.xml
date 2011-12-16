@@ -81,6 +81,21 @@
    	</compile>
    </ajc-test>
    
+   <ajc-test dir="bugs170/language" title="multi catch aspect 1">
+   	<compile files="MultiCatchAspect.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+
+   <ajc-test dir="bugs170/language" title="try resources 1">
+   	<compile files="TryResources.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="try resources 2">
+   	<compile files="TryResourcesAspect.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
    <ajc-test dir="bugs170/language" title="multi catch with handler 2">
    	<compile files="MultiCatchWithHandler2.java" options="-1.7">
    	</compile>
