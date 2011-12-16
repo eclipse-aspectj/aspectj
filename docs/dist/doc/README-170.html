@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.7.0.M1 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2011 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 1.7.0.M1 Readme</h1>
+
+<p>The full list of resolved issues in 1.7.0 is available 
+<a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.7.0;">here</a></h2>.</p>
+
+<h4>1.7.0.M1 available 16-Dec-2011</h4>
+
+<h2>Notable Changes</h2>
+
+<h3>M1 - upgrade to Java 7</h3>
+<p>
+This milestone is the first after the upgrade to the Eclipse Java 7 compiler.
+AspectJ moved from Eclipse JDT Core 0.785_R33x (Eclipse 3.3) to Eclipse JDT Core 0.B79_R37x (Eclipse 3.7).
+This is a big change where AspectJ is picking up four years of change from the Eclipse compiler.
+</p>
+<p>
+It means that you can now use the new Java 7 language constructs in your programs:</p>
+<p>
+- Diamond operator in advice:
+<code><pre>
+aspect Foo {
+  before(): execution(* *(..)) {
+    List<String> ls = new ArrayList<>();
+  }
+}
+</pre></code>
+<p>
+- Diamond operator in ITD:
+<code><pre>
+public List<String> DiamondITD.ls = new ArrayList<>();
+</pre></code>
+<p>
+- Underscore literals and binary literals in advice:
+<code><pre>
+  before(): execution(* *(..)) {
+    int onemill = 1_000_000;
+    int four =0b100;
+  }
+</pre></code>
+<p>
+- Multi-catch:<code><pre>
+before(): execution(* main(..)) {
+    try {
+      foo("abc");
+    } catch (ExceptionA | ExceptionB ex) {
+      bar(ex);
+    }
+}
+</pre></code>
+<p>
+- String switch:<code><pre>
+ before(String s): execution(* *(..)) && args(s) {
+   switch(s) {
+     case "quux":
+       foo();
+       break;
+     case "bar":
+       foo();
+       break;
+     default:
+       foo();
+       break;
+   }
+ }
+</pre></code>
+<p>
+- Try with resources:<code><pre>
+   try (
+     InputStream in = new FileInputStream(src);
+     OutputStream out = new FileOutputStream(dest))
+   {
+     // code
+   }
+</pre></code>
+</p>
+<p><b>Note:</b> there is still more to be done for full Java7 support.  invokedynamic handling is not in place yet (AspectJ may have trouble if it encounters that bytecode instruction).  Also interplay between
+the new language constructs and the existing pointcuts needs some work - for example handler() pointcut and multicatch has a known issue right now.
+<h4>
+<!-- ============================== -->  
+</body>
+</html>
