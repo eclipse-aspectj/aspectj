@@ -323,14 +323,14 @@ class BcelAdvice extends Advice {
 		} else if (getKind() == AdviceKind.After) {
 			shadow.weaveAfter(this);
 		} else if (getKind() == AdviceKind.Around) {
-			// Note: under regular LTW the aspect is usually loaded after the first use of any class affecteted by it
+			// Note: under regular LTW the aspect is usually loaded after the first use of any class affected by it.
 			// This means that as long as the aspect has not been thru the LTW, it's woven state is unknown
 			// and thus canInline(s) will return false.
 			// To force inlining (test), ones can do Class aspect = FQNAspect.class in the clinit of the target class
 			// FIXME AV : for AJC compiled @AJ aspect (or any code style aspect), the woven state can never be known
 			// if the aspect belongs to a parent classloader. In that case the aspect will never be inlined.
 			// It might be dangerous to change that especially for @AJ aspect non compiled with AJC since if those
-			// are not weaved (f.e. use of some limiteed LTW etc) then they cannot be prepared for inlining.
+			// are not weaved (f.e. use of some limited LTW etc) then they cannot be prepared for inlining.
 			// One solution would be to flag @AJ aspect with an annotation as "prepared" and query that one.
 			LazyClassGen enclosingClass = shadow.getEnclosingClass();
 			if (enclosingClass != null && enclosingClass.isInterface() && shadow.getEnclosingMethod().getName().charAt(0) == '<') {
