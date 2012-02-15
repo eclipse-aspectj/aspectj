@@ -11,16 +11,55 @@
 package org.aspectj.systemtest.ajc170;
 
 import java.io.File;
+import java.util.List;
 
 import junit.framework.Test;
 
+import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.weaver.CrosscuttingMembers;
+import org.aspectj.weaver.ReferenceType;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.TypeFactory;
+import org.aspectj.weaver.TypeVariable;
+import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.BcelWorld;
 
 /**
  * @author Andy Clement
  */
 public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testGenericsWithTwoTypeParamsOneWildcard() {
+		UnresolvedType ut;
+		
+		ut = TypeFactory.createTypeFromSignature("LFoo<**>;");
+		assertEquals(2,ut.getTypeParameters().length);
+		
+		ut = TypeFactory.createTypeFromSignature("LFoo<***>;");
+		assertEquals(3,ut.getTypeParameters().length);
+		
+		ut = TypeFactory.createTypeFromSignature("LFoo<TP;*+Ljava/lang/String;>;");
+		assertEquals(2,ut.getTypeParameters().length);
+
+		ut = TypeFactory.createTypeFromSignature("LFoo<*+Ljava/lang/String;TP;>;");
+		assertEquals(2,ut.getTypeParameters().length);
+		
+		ut = TypeFactory.createTypeFromSignature("LFoo<*+Ljava/lang/String;TP;>;");
+		assertEquals(2,ut.getTypeParameters().length);
+		
+		ut = TypeFactory.createTypeFromSignature("LFoo<*TT;>;");
+		assertEquals(2,ut.getTypeParameters().length);
+
+		ut = TypeFactory.createTypeFromSignature("LFoo<[I>;");
+		assertEquals(1,ut.getTypeParameters().length);
+		
+		ut = TypeFactory.createTypeFromSignature("LFoo<[I[Z>;");
+		assertEquals(2,ut.getTypeParameters().length);
+	}
+	
 	public void testPerThis() {
 		runTest("perthis");
 	}

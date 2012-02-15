@@ -144,7 +144,7 @@ public class TypeFactory {
 				return new UnresolvedType(signature, signatureErasure, typeParams);
 			}
 			// can't replace above with convertSigToType - leads to stackoverflow
-		} else if ((firstChar == '?' || firstChar == '*') && signature.length() == 1) {
+		} else if ((firstChar == '?' || firstChar == '*') && signature.length()==1) {
 			return WildcardedUnresolvedType.QUESTIONMARK;
 		} else if (firstChar == '+') {
 			// ? extends ...
@@ -296,6 +296,21 @@ public class TypeFactory {
 					break;
 				case '>':
 					anglies--;
+					break;
+				case '*':
+					if (anglies==0) {
+						int nextCharPos = endOfSig+1;
+						if (nextCharPos>=remainingToProcess.length()) {
+							sigFound=true;
+						} else {
+							char nextChar = remainingToProcess.charAt(nextCharPos);
+							if (!(nextChar=='+' || nextChar=='-')) {
+								// dont need to set endOfSig as the loop will increment 
+								// it to the right place before it exits
+								sigFound=true;
+							}
+						}
+					}
 					break;
 				case '[':
 					if (anglies == 0) {
