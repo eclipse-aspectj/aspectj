@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Matthew Webster, Adrian Colyer, 
+ *     Matthew Webster, Adrian Colyer, John Kew (caching)
  *     Martin Lippert     initial implementation 
  * ******************************************************************/
 
@@ -20,16 +20,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
@@ -53,6 +44,9 @@ import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.UnwovenClassFile;
+import org.aspectj.weaver.tools.cache.CachedClassEntry;
+import org.aspectj.weaver.tools.cache.CachedClassReference;
+import org.aspectj.weaver.tools.cache.WeavedClassCache;
 
 // OPTIMIZE add guards for all the debug/info/etc
 /**
@@ -88,6 +82,7 @@ public class WeavingAdaptor implements IMessageContext {
 	protected ProtectionDomain activeProtectionDomain;
 
 	private boolean haveWarnedOnJavax = false;
+    protected WeavedClassCache cache;
 
 	private int weavingSpecialTypes = 0;
 	private static final int INITIALIZED = 0x1;
@@ -102,18 +97,18 @@ public class WeavingAdaptor implements IMessageContext {
 	/**
 	 * Construct a WeavingAdaptor with a reference to a weaving class loader. The adaptor will automatically search the class loader
 	 * hierarchy to resolve classes. The adaptor will also search the hierarchy for WeavingClassLoader instances to determine the
-	 * set of aspects to be used ofr weaving.
+	 * set of aspects to be used for weaving.
 	 * 
 	 * @param loader instance of <code>ClassLoader</code>
 	 */
 	public WeavingAdaptor(WeavingClassLoader loader) {
 		// System.err.println("? WeavingAdaptor.<init>(" + loader +"," + aspectURLs.length + ")");
 		generatedClassHandler = loader;
-		init(getFullClassPath((ClassLoader) loader), getFullAspectPath((ClassLoader) loader/* ,aspectURLs */));
+		init((ClassLoader)loader, getFullClassPath((ClassLoader) loader), getFullAspectPath((ClassLoader) loader/* ,aspectURLs */));
 	}
 
 	/**
-	 * Construct a WeavingAdator with a reference to a <code>GeneratedClassHandler</code>, a full search path for resolving classes
+	 * Construct a WeavingAdaptor with a reference to a <code>GeneratedClassHandler</code>, a full search path for resolving classes
 	 * and a complete set of aspects. The search path must include classes loaded by the class loader constructing the
 	 * WeavingAdaptor and all its parents in the hierarchy.
 	 * 
@@ -124,10 +119,10 @@ public class WeavingAdaptor implements IMessageContext {
 	public WeavingAdaptor(GeneratedClassHandler handler, URL[] classURLs, URL[] aspectURLs) {
 		// System.err.println("? WeavingAdaptor.<init>()");
 		generatedClassHandler = handler;
-		init(FileUtil.makeClasspath(classURLs), FileUtil.makeClasspath(aspectURLs));
+		init(null, FileUtil.makeClasspath(classURLs), FileUtil.makeClasspath(aspectURLs));
 	}
 
-	private List<String> getFullClassPath(ClassLoader loader) {
+	protected List<String> getFullClassPath(ClassLoader loader) {
 		List<String> list = new LinkedList<String>();
 		for (; loader != null; loader = loader.getParent()) {
 			if (loader instanceof URLClassLoader) {
@@ -163,7 +158,13 @@ public class WeavingAdaptor implements IMessageContext {
 		}
 	}
 
-	private void init(List<String> classPath, List<String> aspectPath) {
+	/**
+	 * Initialize the WeavingAdapter
+	 * @param loader ClassLoader used by this adapter; which can be null
+	 * @param classPath classpath of this adapter
+	 * @param aspectPath list of aspect paths
+	 */
+	private void init(ClassLoader loader, List<String> classPath, List<String> aspectPath) {
 		abortOnError = true;
 		createMessageHandler();
 
@@ -179,9 +180,29 @@ public class WeavingAdaptor implements IMessageContext {
 
 		weaver = new BcelWeaver(bcelWorld);
 		registerAspectLibraries(aspectPath);
-
+		initializeCache(loader, aspectPath, null, getMessageHandler());
 		enabled = true;
 	}
+
+	/**
+	 * If the cache is enabled, initialize it and swap out the existing classhandler
+	 * for the caching one -
+	 *
+	 * @param loader			   classloader for this adapter, may be null
+	 * @param aspects			  List of strings representing aspects managed by the adapter; these could be urls or classnames
+	 * @param existingClassHandler current class handler
+	 * @param myMessageHandler	 current message handler
+	 */
+	protected void initializeCache(ClassLoader loader, List<String> aspects, GeneratedClassHandler existingClassHandler, IMessageHandler myMessageHandler) {
+		if (WeavedClassCache.isEnabled()) {
+			cache = WeavedClassCache.createCache(loader, aspects, existingClassHandler, myMessageHandler);
+			// Wrap the existing class handler so that any generated classes are also cached
+			if (cache != null) {
+				this.generatedClassHandler = cache.getCachingClassHandler();
+			}
+		}
+	}
+
 
 	protected void createMessageHandler() {
 		messageHolder = new WeavingAdaptorMessageHolder(new PrintWriter(System.err));
@@ -312,6 +333,23 @@ public class WeavingAdaptor implements IMessageContext {
 				name = name.replace('/', '.');
 				if (couldWeave(name, bytes)) {
 					if (accept(name, bytes)) {
+
+						// Determine if we have the weaved class cached
+						CachedClassReference cacheKey = null;
+						byte[] original_bytes = bytes;
+						if (cache != null && !mustWeave) {
+							cacheKey = cache.createCacheKey(name, bytes);
+							CachedClassEntry entry = cache.get(cacheKey);
+							if (entry != null) {
+								// If the entry has been explicitly ignored
+								// return the original bytes
+								if (entry.isIgnored()) {
+									return bytes;
+								}
+								return entry.getBytes();
+							}
+						}
+
 						// TODO @AspectJ problem
 						// Annotation style aspects need to be included regardless in order to get
 						// a valid aspectOf()/hasAspect() generated in them. However - if they are excluded
@@ -334,6 +372,21 @@ public class WeavingAdaptor implements IMessageContext {
 						// debug("weaving '" + name + "'");
 						// }
 						// bytes = getAtAspectJAspectBytes(name, bytes);
+
+						// Add the weaved class to the cache only if there
+						// has been an actual change
+						// JVK: Is there a better way to check if the class has
+						// been transformed without carrying up some value
+						// from the depths?
+						if (cacheKey != null) {
+							// If no transform has been applied, mark the class
+							// as ignored.
+							if (Arrays.equals(original_bytes, bytes)) {
+								cache.ignore(cacheKey);
+							} else {
+								cache.put(cacheKey, bytes);
+							}
+						}
 					} else if (debugOn) {
 						debug("not weaving '" + name + "'");
 					}

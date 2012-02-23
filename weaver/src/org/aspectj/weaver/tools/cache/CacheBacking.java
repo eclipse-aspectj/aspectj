@@ -1,0 +1,58 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Contributors.
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   John Kew (vmware)         initial implementation
+ *******************************************************************************/
+package org.aspectj.weaver.tools.cache;
+
+/**
+ * Interface for the backing to the cache; usually a file,
+ * but could be an in-memory backing for testing.
+ * <p/>
+ * aspectj and jvmti provide no suitable guarantees
+ * on locking for class redefinitions, so every implementation
+ * must have a some locking mechanism to prevent invalid reads.
+ */
+public interface CacheBacking {
+	/**
+	 * Return a list of keys which match the given
+	 * regex.
+	 *
+	 * @param regex
+	 * @return
+	 */
+	public String[] getKeys(String regex);
+
+	/**
+	 * Remove an entry from the cache
+	 *
+	 * @param ref
+	 */
+	public void remove(CachedClassReference ref);
+
+	/**
+	 * Clear the entire cache
+	 */
+	public void clear();
+
+	/**
+	 * Get a cache entry
+	 *
+	 * @param ref entry to retrieve
+	 * @return the cached bytes or null, if the entry does not exist
+	 */
+	public CachedClassEntry get(CachedClassReference ref);
+
+	/**
+	 * Put an entry in the cache
+	 *
+	 * @param entry key of the entry
+	 */
+	public void put(CachedClassEntry entry);
+}

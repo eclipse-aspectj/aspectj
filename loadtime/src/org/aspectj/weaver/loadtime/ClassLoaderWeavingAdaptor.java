@@ -9,26 +9,17 @@
  * Contributors:
  *   Alexandre Vasseur         initial implementation
  *   David Knibb		       weaving context enhancments
+ *   John Kew (vmware)         caching hook
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.ProtectionDomain;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.Constants;
@@ -47,10 +38,8 @@ import org.aspectj.weaver.loadtime.definition.DocumentParser;
 import org.aspectj.weaver.ltw.LTWWorld;
 import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.patterns.TypePattern;
-import org.aspectj.weaver.tools.GeneratedClassHandler;
-import org.aspectj.weaver.tools.Trace;
-import org.aspectj.weaver.tools.TraceFactory;
-import org.aspectj.weaver.tools.WeavingAdaptor;
+import org.aspectj.weaver.tools.*;
+import org.aspectj.weaver.tools.cache.WeavedClassCache;
 
 /**
  * @author Alexandre Vasseur
@@ -195,6 +184,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			bcelWorld = null;
 			weaver = null;
 		}
+		if (WeavedClassCache.isEnabled()) {
+			initializeCache(classLoader, getAspectClassNames(definitions), generatedClassHandler, getMessageHandler());
+		}
 
 		initialized = true;
 		if (trace.isTraceEnabled()) {
@@ -203,9 +195,25 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	}
 
 	/**
+	 * Get the list of all aspects from the defintion list
+	 * @param definitions
+	 * @return
+	 */
+	List<String> getAspectClassNames(List<Definition> definitions) {
+		List<String> aspects = new LinkedList<String>();
+		for (Iterator<Definition> it = definitions.iterator(); it.hasNext(); ) {
+			Definition def = it.next();
+			List<String> defAspects = def.getAspectClassNames();
+			if (defAspects != null) {
+				aspects.addAll(defAspects);
+			}
+		}
+		return aspects;
+	}
+
+	/**
 	 * Load and cache the aop.xml/properties according to the classloader visibility rules
 	 * 
-	 * @param weaver
 	 * @param loader
 	 */
 	List<Definition> parseDefinitions(final ClassLoader loader) {
