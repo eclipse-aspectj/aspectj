@@ -50,6 +50,7 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 	private boolean isThis;
 	private TypePattern typePattern;
 	private String declarationText;
+	private boolean optional = false;
 
 	private static final int thisKindSet;
 	private static final int targetKindSet;
@@ -74,10 +75,11 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		return (typePattern instanceof BindingTypePattern);
 	}
 
-	public ThisOrTargetPointcut(boolean isThis, TypePattern type) {
+	public ThisOrTargetPointcut(boolean isThis, TypePattern type, boolean optional) {
 		this.isThis = isThis;
 		this.typePattern = type;
 		this.pointcutKind = THIS_OR_TARGET;
+		this.optional = optional;
 		this.declarationText = (isThis ? "this(" : "target(") + type + ")";
 	}
 
@@ -91,10 +93,11 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 
 	@Override
 	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
-		ThisOrTargetPointcut ret = new ThisOrTargetPointcut(isThis, typePattern.parameterizeWith(typeVariableMap, w));
+		ThisOrTargetPointcut ret = new ThisOrTargetPointcut(isThis, typePattern.parameterizeWith(typeVariableMap, w),optional);
 		ret.copyLocationFrom(this);
 		return ret;
 	}
+
 
 	@Override
 	public int couldMatchKinds() {
@@ -107,7 +110,7 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 	}
 
 	private boolean couldMatch(Shadow shadow) {
-		return isThis ? shadow.hasThis() : shadow.hasTarget();
+		return optional || (isThis ? shadow.hasThis() : shadow.hasTarget()) ;
 	}
 
 	@Override
@@ -115,27 +118,35 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 		if (!couldMatch(shadow)) {
 			return FuzzyBoolean.NO;
 		}
-		UnresolvedType typeToMatch = isThis ? shadow.getThisType() : shadow.getTargetType();
-		// optimization for case of this(Object) or target(Object)
-		// works for an ExactTypePattern (and we know there are no annotations to match here of course)
-		if (typePattern.getExactType().equals(ResolvedType.OBJECT)) {
+		if (isThis?shadow.hasThis():shadow.hasTarget()) {
+			UnresolvedType typeToMatch = isThis ? shadow.getThisType() : shadow.getTargetType();
+			// optimization for case of this(Object) or target(Object)
+			// works for an ExactTypePattern (and we know there are no annotations to match here of course)
+			if (typePattern.getExactType().equals(ResolvedType.OBJECT)) {
+				return FuzzyBoolean.YES;
+			}
+			return typePattern.matches(typeToMatch.resolve(shadow.getIWorld()), TypePattern.DYNAMIC);
+		} else { // assert optional
 			return FuzzyBoolean.YES;
 		}
-		return typePattern.matches(typeToMatch.resolve(shadow.getIWorld()), TypePattern.DYNAMIC);
 	}
 
 	@Override
 	public void write(CompressingDataOutputStream s) throws IOException {
-		s.writeByte(Pointcut.THIS_OR_TARGET);
+		if (optional) {
+			s.writeByte(Pointcut.THIS_OR_TARGET_WITH_OPTIONAL);
+		} else {
+			s.writeByte(Pointcut.THIS_OR_TARGET);
+		}
 		s.writeBoolean(isThis);
 		typePattern.write(s);
 		writeLocation(s);
 	}
 
-	public static Pointcut read(VersionedDataInputStream s, ISourceContext context) throws IOException {
+	public static Pointcut read(VersionedDataInputStream s, ISourceContext context, boolean optional) throws IOException {
 		boolean isThis = s.readBoolean();
 		TypePattern type = TypePattern.read(s, context);
-		ThisOrTargetPointcut ret = new ThisOrTargetPointcut(isThis, type);
+		ThisOrTargetPointcut ret = new ThisOrTargetPointcut(isThis, type, optional);
 		ret.readLocation(context, s);
 		return ret;
 	}
@@ -165,8 +176,8 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingAnnotationTypePatterns()
 	 */
 	@Override
-	public List getBindingAnnotationTypePatterns() {
-		return Collections.EMPTY_LIST;
+	public List<BindingAnnotationTypePattern> getBindingAnnotationTypePatterns() {
+		return Collections.emptyList();
 	}
 
 	/*
@@ -175,13 +186,13 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingTypePatterns()
 	 */
 	@Override
-	public List getBindingTypePatterns() {
+	public List<BindingTypePattern> getBindingTypePatterns() {
 		if (typePattern instanceof BindingTypePattern) {
-			List l = new ArrayList();
-			l.add(typePattern);
+			List<BindingTypePattern> l = new ArrayList<BindingTypePattern>();
+			l.add((BindingTypePattern)typePattern);
 			return l;
 		} else {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 	}
 
@@ -222,9 +233,36 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 			return Literal.TRUE;
 		}
 
-		Var var = isThis ? shadow.getThisVar() : shadow.getTargetVar();
+		if (isThis?shadow.hasThis():shadow.hasTarget()) {
+			Var var = isThis ? shadow.getThisVar() : shadow.getTargetVar();
+	
+			return exposeStateForVar(var, typePattern, state, shadow.getIWorld());
+		} else { // assert optional	
 
-		return exposeStateForVar(var, typePattern, state, shadow.getIWorld());
+			Var v = new NullVar(typePattern.getExactType().resolve(shadow.getIWorld()));
+//			return exposeStateForVar(var, typePattern, state, shadow.getIWorld());
+			if (typePattern instanceof BindingTypePattern) {
+				BindingTypePattern b = (BindingTypePattern)typePattern;
+				state.set(b.getFormalIndex(), v);
+			}
+//			ResolvedType myType = typePattern.getExactType().resolve(world);
+//			if (myType.isParameterizedType()) {
+//				// unchecked warning already issued...
+//				myType = (ResolvedType) myType.getRawType();
+//			}
+//			return Test.makeInstanceof(var, myType.resolve(world));
+			return Literal.TRUE;
+//			return exposeStateForVar(null, typePattern, state, shadow.getIWorld());
+		}
+	}
+	
+	public static class NullVar extends Var {
+
+		public NullVar(ResolvedType variableType) {
+			super(variableType);
+			// TODO Auto-generated constructor stub
+		}
+		
 	}
 
 	@Override
@@ -242,7 +280,7 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 			inAspect.crosscuttingMembers.exposeType(newType.getExactType());
 		}
 
-		Pointcut ret = new ThisOrTargetPointcut(isThis, newType);
+		Pointcut ret = new ThisOrTargetPointcut(isThis, newType, optional);
 		ret.copyLocationFrom(this);
 		return ret;
 	}

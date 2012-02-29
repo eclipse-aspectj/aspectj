@@ -168,6 +168,7 @@ public abstract class Pointcut extends PatternNode {
 
 	public static final byte ATARGS = 21;
 	public static final byte USER_EXTENSION = 22;
+	public static final byte THIS_OR_TARGET_WITH_OPTIONAL = 23;
 
 	public byte getPointcutKind() {
 		return pointcutKind;
@@ -282,7 +283,7 @@ public abstract class Pointcut extends PatternNode {
 			ret = WithinPointcut.read(s, context);
 			break;
 		case THIS_OR_TARGET:
-			ret = ThisOrTargetPointcut.read(s, context);
+			ret = ThisOrTargetPointcut.read(s, context, false);
 			break;
 		case ARGS:
 			ret = ArgsPointcut.read(s, context);
@@ -334,6 +335,9 @@ public abstract class Pointcut extends PatternNode {
 			break;
 		case NONE:
 			ret = makeMatchesNothing(RESOLVED);
+			break;
+		case THIS_OR_TARGET_WITH_OPTIONAL:
+			ret = ThisOrTargetPointcut.read(s,context,true);
 			break;
 		default:
 			throw new BCException("unknown kind: " + kind);

@@ -562,10 +562,14 @@ public class PatternParser {
 	 * @return Pointcut
 	 */
 	private Pointcut parseThisOrTargetPointcut(String kind) {
+		boolean optional = false;
+		if (maybeEat("?")) {
+			optional = true;
+		}
 		eat("(");
 		TypePattern type = parseTypePattern();
 		eat(")");
-		return new ThisOrTargetPointcut(kind.equals("this"), type);
+		return new ThisOrTargetPointcut(kind.equals("this"), type,optional);
 	}
 
 	private Pointcut parseThisOrTargetAnnotationPointcut() {

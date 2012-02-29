@@ -25,6 +25,7 @@ import org.aspectj.weaver.ast.Var;
  * 
  * @author Erik Hilsdale
  * @author Jim Hugunin
+ * @author Andy Clement
  */
 public abstract class NameBindingPointcut extends Pointcut {
 
@@ -45,8 +46,7 @@ public abstract class NameBindingPointcut extends Pointcut {
 		return Test.makeInstanceof(var, myType.resolve(world));
 	}
 	
-	public abstract List/*<BindingTypePattern>*/ getBindingTypePatterns();
-	public abstract List/*<BindingAnnotationTypePattern>*/ getBindingAnnotationTypePatterns();
-
+	public abstract List<BindingTypePattern> getBindingTypePatterns();
+	public abstract List<BindingAnnotationTypePattern> getBindingAnnotationTypePatterns();
 
 }

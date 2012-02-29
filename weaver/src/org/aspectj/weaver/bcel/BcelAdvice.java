@@ -49,10 +49,12 @@ import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
+import org.aspectj.weaver.ast.Var;
 import org.aspectj.weaver.patterns.ExactTypePattern;
 import org.aspectj.weaver.patterns.ExposedState;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.ThisOrTargetPointcut.NullVar;
 
 /**
  * Advice implemented for BCEL
@@ -538,8 +540,12 @@ class BcelAdvice extends Advice {
 			if (exposedState.isErroneousVar(i)) {
 				continue; // Erroneous vars have already had error msgs reported!
 			}
-			BcelVar v = (BcelVar) exposedState.get(i);
-
+			
+			Var var = exposedState.get(i);
+			if (var instanceof NullVar) {
+				il.append(InstructionConstants.ACONST_NULL);	
+			} else {
+			BcelVar v = (BcelVar) var;
 			if (v == null) {
 				// if not @AJ aspect, go on with the regular binding handling
 				if (!isAnnotationStyleAspect) {
@@ -604,6 +610,7 @@ class BcelAdvice extends Advice {
 			} else {
 				UnresolvedType desiredTy = getBindingParameterTypes()[i];
 				v.appendLoadAndConvert(il, fact, desiredTy.resolve(world));
+			}
 			}
 		}
 
