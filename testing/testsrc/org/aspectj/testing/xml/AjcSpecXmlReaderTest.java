@@ -35,7 +35,7 @@ import org.aspectj.util.LangUtil;
  */
 public class AjcSpecXmlReaderTest extends TestCase {
 
-	ArrayList tempFiles = new ArrayList();
+	ArrayList<File> tempFiles = new ArrayList<File>();
 	/**
 	 * Constructor for AjcSpecXmlReaderTest.
 	 * @param name
@@ -51,7 +51,7 @@ public class AjcSpecXmlReaderTest extends TestCase {
 
     public void tearDown() {
     	if (!LangUtil.isEmpty(tempFiles)) {
-	    	for (Iterator iter = tempFiles.iterator(); iter.hasNext();) {
+	    	for (Iterator<File> iter = tempFiles.iterator(); iter.hasNext();) {
 				File file = (File) iter.next();
 				if (file.canRead()) {
 					file.delete();
@@ -67,7 +67,7 @@ public class AjcSpecXmlReaderTest extends TestCase {
             = AjcSpecXmlReader.expectedProperties();
         PropertyDescriptor[] des;
         for (int i = 0; i < expected.length; i++) {
-            Class clazz = expected[i].cl;
+            Class<?> clazz = expected[i].cl;
             BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
             assertTrue(null != beanInfo);
             des = beanInfo.getPropertyDescriptors();
@@ -112,7 +112,7 @@ public class AjcSpecXmlReaderTest extends TestCase {
         String xml2Path = path + ".tmp.xml";
 
         final File file1 = new File(xmlPath);
-        final ArrayList toDelete = new ArrayList();
+        final ArrayList<File> toDelete = new ArrayList<File>();
         final AjcSpecXmlReader writer = AjcSpecXmlReader.getReader();
 
         assertTrue("" + file1, file1.canRead());
@@ -140,8 +140,8 @@ public class AjcSpecXmlReaderTest extends TestCase {
             assertTrue("CloneNotSupportedException: " + e.getMessage(), false);
         }
 
-        for (Iterator iter = toDelete.iterator(); iter.hasNext();) {
-          ((File) iter.next()).delete();          
+        for (Iterator<File> iter = toDelete.iterator(); iter.hasNext();) {
+          iter.next().delete();          
       }
     }
 
@@ -155,7 +155,7 @@ public class AjcSpecXmlReaderTest extends TestCase {
         AjcSpecXmlReader writer = AjcSpecXmlReader.getReader();
         File file0 = new File(txtPath);
         File file1 = new File(xmlPath);
-        ArrayList toDelete = new ArrayList();
+        ArrayList<File> toDelete = new ArrayList<File>();
         AjcTest.Suite.Spec suite0 = null;
         if (file0.canRead()) {
             System.out.println("reading " + file0);
@@ -200,8 +200,8 @@ public class AjcSpecXmlReaderTest extends TestCase {
         AjcSpecTest.sameAjcSuiteSpec(suite1, suite2, this);
         AjcSpecTest.sameAjcSuiteSpec(suite0, suite2, this);
         
-        for (Iterator iter = toDelete.iterator(); iter.hasNext();) {
-			((File) iter.next()).delete();			
+        for (Iterator<File> iter = toDelete.iterator(); iter.hasNext();) {
+			iter.next().delete();			
 		}
     }
 }
