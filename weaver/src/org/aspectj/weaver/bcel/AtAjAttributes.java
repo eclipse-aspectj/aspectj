@@ -66,7 +66,6 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.patterns.Bindings;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.DeclareParentsMixin;
@@ -735,15 +734,13 @@ public class AtAjAttributes {
 					List<TypePattern> parents = new ArrayList<TypePattern>(1);
 					parents.add(parent);
 					DeclareParents dp = new DeclareParents(typePattern, parents, false);
-					dp.resolve(binding); // resolves the parent and child parts
-					// of the decp
+					dp.resolve(binding); // resolves the parent and child parts of the decp
 
 					// resolve this so that we can use it for the
 					// MethodDelegateMungers below.
 					// eg. '@Coloured *' will change from a WildTypePattern to
-					// an 'AnyWithAnnotationTypePattern' after this
-					// resolution
-					typePattern = typePattern.resolveBindings(binding, Bindings.NONE, false, false);
+					// an 'AnyWithAnnotationTypePattern' after this resolution
+					typePattern = dp.getChild(); // this retrieves the resolved version
 					// TODO kick ISourceLocation sl =
 					// struct.bField.getSourceLocation(); ??
 					// dp.setLocation(dp.getDeclaringType().getSourceContext(),

@@ -2,6 +2,16 @@
 
 <suite>
 
+   <ajc-test dir="bugs170/pr371998" title="BCException anno decp">
+     <compile files="AspectTest.java" options="-1.5 -showWeaveInfo">
+   	   <message kind="weave" text="Extending interface set for type 'Foo' (AspectTest.java) to include 'X' (AspectTest.java)"/>
+   	   <message kind="weave" text="Type 'Foo' (AspectTest.java) has intertyped method from 'AspectTest' (AspectTest.java:'void X.xxx()')"/>
+   	   <message kind="weave" text="Extending interface set for type 'Bar' (AspectTest.java) to include 'X' (AspectTest.java)"/>
+   	   <message kind="weave" text="Type 'Bar' (AspectTest.java) has intertyped method from 'AspectTest' (AspectTest.java:'void X.xxx()')"/>
+   	 </compile>
+   	 <run class="AspectTest"/>
+   </ajc-test>
+   
    <ajc-test dir="bugs170/language" title="perthis">
    	<compile files="PerThis.java" options="-1.7">
    	</compile>
