@@ -89,7 +89,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 	protected final ArrayList<String> paths;
 	// XXXXXunused protected final ArrayList /*ISourceLocation*/ sourceLocations; // XXX remove?
 	protected final ArrayList<IRunSpec> children;
-	protected final ArrayList /* DirChanges.Spec */dirChanges;
+	protected final ArrayList<DirChanges.Spec> dirChanges;
 	protected XMLNames xmlNames;
 	protected String comment;
 
@@ -775,10 +775,10 @@ abstract public class AbstractRunSpec implements IRunSpec {
 		private boolean verbose;
 
 		/** null unless parent set options for children to consider */
-		final private ArrayList /* String */parentOptions;
+		final private ArrayList<String> parentOptions;
 
 		public RT() {
-			parentOptions = new ArrayList();
+			parentOptions = new ArrayList<String>();
 		}
 
 		public boolean isVerbose() {
@@ -878,15 +878,15 @@ abstract public class AbstractRunSpec implements IRunSpec {
 			if (LangUtil.isEmpty(validOptions) || LangUtil.isEmpty(parentOptions)) {
 				return new String[0];
 			}
-			ArrayList result = new ArrayList();
+			ArrayList<String> result = new ArrayList<String>();
 			// boolean haveOption = false;
 			for (int i = 0; i < validOptions.length; i++) {
 				String option = validOptions[i];
 				if (LangUtil.isEmpty(option)) {
 					continue;
 				}
-				for (ListIterator iter = parentOptions.listIterator(); iter.hasNext();) {
-					String parentOption = (String) iter.next();
+				for (ListIterator<String> iter = parentOptions.listIterator(); iter.hasNext();) {
+					String parentOption = iter.next();
 					if (parentOption.startsWith(option)) {
 						result.add(parentOption);
 						if (absorb) {
@@ -899,7 +899,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 		}
 
 		/** Get ListIterator that permits removals */
-		ListIterator getListIterator() {
+		ListIterator<String> getListIterator() {
 			return parentOptions.listIterator();
 		}
 

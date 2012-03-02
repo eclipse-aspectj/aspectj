@@ -61,8 +61,8 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 			// System.out.println("kvp: " + object + " = " + m.get(object));
 			// }
 			// }
-			for (Iterator i = node.getChildren().iterator(); i.hasNext();) {
-				dumptree((IProgramElement) i.next(), indent + 2);
+			for (Iterator<IProgramElement> i = node.getChildren().iterator(); i.hasNext();) {
+				dumptree( i.next(), indent + 2);
 			}
 		}
 	}
@@ -88,17 +88,12 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 	public int getRelationshipCount(String project) {
 		IRelationshipMap relmap = getModelFor(project).getRelationshipMap();
 		int ctr = 0;
-		Set entries = relmap.getEntries();
-		for (Iterator iter = entries.iterator(); iter.hasNext();) {
+		Set<String> entries = relmap.getEntries();
+		for (Iterator<String> iter = entries.iterator(); iter.hasNext();) {
 			String hid = (String) iter.next();
-			List rels = relmap.get(hid);
-			for (Iterator iterator = rels.iterator(); iterator.hasNext();) {
-				IRelationship ir = (IRelationship) iterator.next();
-				List targets = ir.getTargets();
-				for (Iterator iterator2 = targets.iterator(); iterator2.hasNext();) {
-					String thid = (String) iterator2.next();
-					ctr++;
-				}
+			List<IRelationship> rels = relmap.get(hid);
+			for (Iterator<IRelationship> iterator = rels.iterator(); iterator.hasNext();) {
+				ctr+=iterator.next().getTargets().size();
 			}
 		}
 		return ctr;
@@ -114,14 +109,13 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 	private void constructUpToDateLstFile(String pname, String configname) {
 		File projectBase = new File(sandboxDir, pname);
 		File toConstruct = new File(projectBase, configname);
-		List filesForCompilation = new ArrayList();
+		List<String> filesForCompilation = new ArrayList<String>();
 		collectUpFiles(projectBase, projectBase, filesForCompilation);
 
 		try {
 			FileOutputStream fos = new FileOutputStream(toConstruct);
 			DataOutputStream dos = new DataOutputStream(fos);
-			for (Iterator iter = filesForCompilation.iterator(); iter.hasNext();) {
-				String file = (String) iter.next();
+			for (String file: filesForCompilation) {
 				dos.writeBytes(file + "\n");
 			}
 			dos.close();
@@ -130,7 +124,7 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 		}
 	}
 
-	private void collectUpFiles(File location, File base, List collectionPoint) {
+	private void collectUpFiles(File location, File base, List<String> collectionPoint) {
 		String contents[] = location.list();
 		if (contents == null)
 			return;
