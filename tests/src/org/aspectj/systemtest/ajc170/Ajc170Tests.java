@@ -14,17 +14,32 @@ import java.io.File;
 
 import junit.framework.Test;
 
+import org.aspectj.apache.bcel.classfile.Field;
+import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.weaver.TypeFactory;
 import org.aspectj.weaver.UnresolvedType;
 
 /**
  * @author Andy Clement
- */
+ */ 
 public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	public void testBCExceptionAnnoDecp_371998() {
 		runTest("BCException anno decp");
+    }
+
+	public void testTransientTjpFields()throws Exception {
+		runTest("transient tjp fields");
+		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "Code");
+		Field[] fs = jc.getFields();
+		//private static final org.aspectj.lang.JoinPoint$StaticPart ajc$tjp_0 [Synthetic]
+		//private static final org.aspectj.lang.JoinPoint$StaticPart ajc$tjp_1 [Synthetic]
+		for (Field f: fs) {
+			if (!f.isTransient()) {
+				fail("Field should be transient: "+f);
+			}
+		}
 	}
 	
 	public void testGenericsWithTwoTypeParamsOneWildcard() {

@@ -12,6 +12,11 @@
    	 <run class="AspectTest"/>
    </ajc-test>
    
+   <ajc-test dir="bugs170/transientTjpFields" title="transient tjp fields">
+      <compile files="Code.java" options="-Xset:makeTjpFieldsTransient=true">
+      </compile>
+   </ajc-test>
+
    <ajc-test dir="bugs170/language" title="perthis">
    	<compile files="PerThis.java" options="-1.7">
    	</compile>

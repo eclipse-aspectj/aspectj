@@ -132,6 +132,7 @@ public abstract class World implements Dump.INode {
 	private boolean synchronizationPointcutsInUse = false;
 	// Xset'table options
 	private boolean runMinimalMemory = false;
+	private boolean transientTjpFields = false;
 	private boolean runMinimalMemorySet = false;
 	private boolean shouldPipelineCompilation = true;
 	private boolean shouldGenerateStackMaps = false;
@@ -944,6 +945,7 @@ public abstract class World implements Dump.INode {
 	// false
 	public final static String xsetDEBUG_BRIDGING = "debugBridging"; // default
 	// false
+	public final static String xsetTRANSIENT_TJP_FIELDS = "makeTjpFieldsTransient"; // default false
 	public final static String xsetBCEL_REPOSITORY_CACHING = "bcelRepositoryCaching";
 	public final static String xsetPIPELINE_COMPILATION = "pipelineCompilation";
 	public final static String xsetGENERATE_STACKMAPS = "generateStackMaps";
@@ -1615,6 +1617,9 @@ public abstract class World implements Dump.INode {
 
 				s = p.getProperty(xsetDEBUG_STRUCTURAL_CHANGES_CODE, "false");
 				forDEBUG_structuralChangesCode = s.equalsIgnoreCase("true");
+				
+				s = p.getProperty(xsetTRANSIENT_TJP_FIELDS,"false");
+				transientTjpFields = s.equalsIgnoreCase("true");
 
 				s = p.getProperty(xsetDEBUG_BRIDGING, "false");
 				forDEBUG_bridgingCode = s.equalsIgnoreCase("true");
@@ -1668,6 +1673,11 @@ public abstract class World implements Dump.INode {
 	public boolean isRunMinimalMemory() {
 		ensureAdvancedConfigurationProcessed();
 		return runMinimalMemory;
+	}
+	
+	public boolean isTransientTjpFields() {
+		ensureAdvancedConfigurationProcessed();
+		return transientTjpFields;
 	}
 
 	public boolean isRunMinimalMemorySet() {

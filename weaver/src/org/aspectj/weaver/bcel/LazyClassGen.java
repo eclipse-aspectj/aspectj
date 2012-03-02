@@ -981,7 +981,7 @@ public final class LazyClassGen {
 			return tjpField;
 		}
 
-		int modifiers = Modifier.STATIC | Modifier.FINAL;
+		int modifiers = Modifier.STATIC | Modifier.FINAL ;
 
 		// XXX - Do we ever inline before or after advice? If we do, then we
 		// better include them in the check below. (or just change it to
@@ -1033,6 +1033,9 @@ public final class LazyClassGen {
 					}
 				}
 			}
+		}
+		if (!isInterface() && world.isTransientTjpFields()) {
+			modifiers|=Modifier.TRANSIENT;
 		}
 		FieldGen fGen = new FieldGen(modifiers, jpType, "ajc$tjp_" + tjpFieldsCounter++, getConstantPool());
 		addField(fGen);
