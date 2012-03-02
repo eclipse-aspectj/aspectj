@@ -77,7 +77,7 @@ public class AjdeInteractionTestbed extends TestCase {
 	}
 
 	public void addXmlConfigFile(String projectName, String xmlfile) {
-		List l = new ArrayList();
+		List<String> l = new ArrayList<String>();
 		l.add(xmlfile);
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setProjectXmlConfigFiles(l);
@@ -106,7 +106,7 @@ public class AjdeInteractionTestbed extends TestCase {
 
 	public void configureAspectPath(String projectName, File aspectpath) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
-		Set s = new HashSet();
+		Set<File> s = new HashSet<File>();
 		s.add(aspectpath);
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setAspectPath(s);
 	}
@@ -121,7 +121,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setJavaOptions(options);
 	}
 
-	public static void configureInPath(String projectName, Set inpath) {
+	public static void configureInPath(String projectName, Set<File> inpath) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setInpath(inpath);
 	}

@@ -18,16 +18,15 @@ import java.util.MissingResourceException;
 import junit.framework.TestCase;
 
 /**
- * @author colyer
- *
+ * @author Adrian Colyer
  */
 public class WeaverMessagesTestCase extends TestCase {
 	
 	public void testAllMessagesDefined() {
 		
-		Class wmClass = WeaverMessages.class;
+		Class<?> wmClass = WeaverMessages.class;
 		Field[] fields = wmClass.getDeclaredFields();
-		List fieldList = new ArrayList();
+		List<String> fieldList = new ArrayList<String>();
 		for (int i = 0; i < fields.length; i++) {
 			Field f = fields[i];
 			if (f.getType() == String.class) {

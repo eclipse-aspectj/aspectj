@@ -107,22 +107,22 @@ public class AjcTest extends RunSpecIterator {
         private static final String REQUIRE_KEYWORDS = "RequireKeywords=";
         private static final String SKIP_KEYWORDS = "SkipKeywords=";
         private static final String PICK_PR = "PR=";
-        private static final List VALID_SUFFIXES 
+        private static final List<String> VALID_SUFFIXES 
             = Collections.unmodifiableList(Arrays.asList(new String[] 
             { TITLE_LIST, TITLE_FAIL_LIST, TITLE_CONTAINS, 
                 REQUIRE_KEYWORDS, SKIP_KEYWORDS, PICK_PR }));
         
         /** Map String titlesName to List (String) of titles to accept */
-        private static final Map TITLES = new HashMap();
+        private static final Map<String,List<String>> TITLES = new HashMap<String,List<String>>();
         
-        private static List getTitles(String titlesName) {
+        private static List<String> getTitles(String titlesName) {
             return getTitles(titlesName, false);
         }
-        private static List getTitles(String titlesName, boolean fail) {
+        private static List<String> getTitles(String titlesName, boolean fail) {
             if (LangUtil.isEmpty(titlesName)) {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
-            List result = (List) TITLES.get(titlesName);
+            List<String> result = (List<String>) TITLES.get(titlesName);
             if (null == result) {
                 result = makeTitlesList(titlesName, fail);
                 TITLES.put(titlesName, result);
@@ -140,7 +140,7 @@ public class AjcTest extends RunSpecIterator {
          * @param fail if true, only read titles prefixed "FAIL" from files
          * @return the unmodifiable List of titles (maybe empty, never null)
          */
-        private static List makeTitlesList(String titlesKey, boolean fail) {
+        private static List<String> makeTitlesList(String titlesKey, boolean fail) {
             File file = new File(titlesKey);
             return file.canRead() 
                 ? readTitlesFile(file, fail)
@@ -154,8 +154,8 @@ public class AjcTest extends RunSpecIterator {
          * @param titlesList a comma-delimited String of titles
          * @return the unmodifiable List of titles (maybe empty, never null)
          */
-        private static List parseTitlesList(String titlesList) {
-            ArrayList result = new ArrayList();
+        private static List<String> parseTitlesList(String titlesList) {
+            ArrayList<String> result = new ArrayList<String>();
             String last = null;
             StringTokenizer st = new StringTokenizer(titlesList, ",");
             while (st.hasMoreTokens()) {
@@ -199,8 +199,8 @@ public class AjcTest extends RunSpecIterator {
          * @param fail if true, only select titles prefixed "FAIL"
          * @return the unmodifiable List of titles (maybe empty, never null)
          */
-        private static List readTitlesFile(File titlesFile, boolean fail) {
-            ArrayList result = new ArrayList();
+        private static List<String> readTitlesFile(File titlesFile, boolean fail) {
+            ArrayList<String> result = new ArrayList<String>();
             Reader reader = null;
             try {
                 reader = new FileReader(titlesFile);
@@ -376,8 +376,8 @@ public class AjcTest extends RunSpecIterator {
                 }
                 option = option.substring(OPTION_PREFIX.length());
                 boolean keywordMustExist = false;
-                List permittedTitles = null;
-                List permittedTitleStrings = null;
+                List<String> permittedTitles = null;
+                List<String> permittedTitleStrings = null;
                 String havePr = null;
                 if (option.startsWith(REQUIRE_KEYWORDS)) {
                     option = option.substring(REQUIRE_KEYWORDS.length());
@@ -407,7 +407,7 @@ public class AjcTest extends RunSpecIterator {
                 }
                 if (null != permittedTitleStrings) {
                     boolean gotHit = false;
-                    for (Iterator iter = permittedTitleStrings.iterator();
+                    for (Iterator<String> iter = permittedTitleStrings.iterator();
                         !gotHit && iter.hasNext();
                         ) {
                         String substring = (String) iter.next();
@@ -434,9 +434,9 @@ public class AjcTest extends RunSpecIterator {
                     }                    
                 } else {
                     // all other options handled as comma-delimited lists
-                    List specs = LangUtil.commaSplit(option);
+                    List<String> specs = LangUtil.commaSplit(option);
                     // XXX also throw Error on empty specs...
-                    for (Iterator iter = specs.iterator(); iter.hasNext();) {
+                    for (Iterator<String> iter = specs.iterator(); iter.hasNext();) {
                         String spec = (String) iter.next();
                         if (null != havePr) {
                             if (havePr.equals(spec)) { // String.equals()

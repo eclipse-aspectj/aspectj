@@ -18,8 +18,6 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.tools.GeneratedClassHandler;
 
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;

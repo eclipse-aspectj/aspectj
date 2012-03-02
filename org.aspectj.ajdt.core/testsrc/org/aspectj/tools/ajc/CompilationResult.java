@@ -15,6 +15,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.aspectj.bridge.IMessage;
+
 /**
  * Utility class that makes the results of a compiler run available.
  * <p>
@@ -35,11 +37,11 @@ public class CompilationResult {
 	private String[] args;
 	private String stdOut;
 	private String stdErr;
-	private List /*IMessage*/ infoMessages;
-	private List /*IMessage*/ errorMessages;
-	private List /*IMessage*/ warningMessages;
-	private List /*IMessage*/ failMessages;
-	private List /*IMessage*/ weaveMessages;
+	private List<IMessage> infoMessages;
+	private List<IMessage>  errorMessages;
+	private List<IMessage>  warningMessages;
+	private List<IMessage>  failMessages;
+	private List<IMessage> weaveMessages;
 
 	/**
 	 * Build a compilation result - called by the Ajc.compile and
@@ -50,19 +52,19 @@ public class CompilationResult {
 			String[] args,
 			String stdOut,
 			String stdErr,
-			List infoMessages,
-			List errorMessages,
-			List warningMessages,
-			List failMessages,
-			List weaveMessages) {
+			List<IMessage> infoMessages,
+			List<IMessage> errorMessages,
+			List<IMessage> warningMessages,
+			List<IMessage> failMessages,
+			List<IMessage> weaveMessages) {
 		this.args = args;
 		this.stdOut = stdOut;
 		this.stdErr = stdErr;
-		this.infoMessages = (infoMessages == null) ? Collections.EMPTY_LIST : infoMessages;
-		this.errorMessages = (errorMessages == null) ? Collections.EMPTY_LIST : errorMessages;
-		this.warningMessages = (warningMessages == null) ? Collections.EMPTY_LIST : warningMessages;		
-		this.failMessages = (failMessages == null) ? Collections.EMPTY_LIST : failMessages;		
-		this.weaveMessages = (weaveMessages == null) ? Collections.EMPTY_LIST : weaveMessages;		
+		this.infoMessages = (infoMessages == null) ? Collections.<IMessage>emptyList() : infoMessages;
+		this.errorMessages = (errorMessages == null) ? Collections.<IMessage>emptyList() : errorMessages;
+		this.warningMessages = (warningMessages == null) ? Collections.<IMessage>emptyList() : warningMessages;		
+		this.failMessages = (failMessages == null) ? Collections.<IMessage>emptyList() : failMessages;		
+		this.weaveMessages = (weaveMessages == null) ? Collections.<IMessage>emptyList() : weaveMessages;		
 	}
 	
 	/**
@@ -122,7 +124,7 @@ public class CompilationResult {
 	 * though.
 	 * @see org.aspectj.tools.ajc.AjcTestCase
 	 */
-	public List /*IMessage*/ getErrorMessages() { return errorMessages; }
+	public List<IMessage> getErrorMessages() { return errorMessages; }
 	/**
 	 * The warning messages produced by the compiler. The list
 	 * entries are the <code>IMessage</code> objects created during the
@@ -132,7 +134,7 @@ public class CompilationResult {
 	 * though.
 	 * @see org.aspectj.tools.ajc.AjcTestCase
 	 */
-	public List /*IMessage*/ getWarningMessages() { return warningMessages; }
+	public List<IMessage> getWarningMessages() { return warningMessages; }
 	/**
 	 * The fail or abort messages produced by the compiler. The list
 	 * entries are the <code>IMessage</code> objects created during the
@@ -142,9 +144,9 @@ public class CompilationResult {
 	 * though.
 	 * @see org.aspectj.tools.ajc.AjcTestCase
 	 */
-	public List /*IMessage*/ getFailMessages() { return failMessages; }
+	public List<IMessage>  getFailMessages() { return failMessages; }
 	
-	public List /*IMessage*/ getWeaveMessages() { return weaveMessages; }
+	public List<IMessage> getWeaveMessages() { return weaveMessages; }
 	
 	/**
 	 * Returns string containing message count summary, list of messages

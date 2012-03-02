@@ -430,11 +430,11 @@ public class AjcTestCase extends TestCase {
 		List missingWarnings = copyAll(expected.warnings);
 		List missingErrors = copyAll(expected.errors);
 		List missingWeaves = copyAll(expected.weaves);
-		List extraFails = copyAll(result.getFailMessages());
-		List extraInfos = copyAll(result.getInfoMessages());
-		List extraWarnings = copyAll(result.getWarningMessages());
-		List extraErrors = copyAll(result.getErrorMessages());
-		List extraWeaves = copyAll(result.getWeaveMessages());
+		List<IMessage> extraFails = copyAll(result.getFailMessages());
+		List<IMessage> extraInfos = copyAll(result.getInfoMessages());
+		List<IMessage> extraWarnings = copyAll(result.getWarningMessages());
+		List<IMessage> extraErrors = copyAll(result.getErrorMessages());
+		List<IMessage> extraWeaves = copyAll(result.getWeaveMessages());
 		compare(expected.fails, result.getFailMessages(), missingFails, extraFails);
 		compare(expected.warnings, result.getWarningMessages(), missingWarnings, extraWarnings);
 		compare(expected.errors, result.getErrorMessages(), missingErrors, extraErrors);
@@ -477,8 +477,8 @@ public class AjcTestCase extends TestCase {
 	/**
 	 * Helper method to build a new message list for passing to a MessageSpec.
 	 */
-	protected List newMessageList(Message m1) {
-		List ret = new ArrayList();
+	protected List<Message> newMessageList(Message m1) {
+		List<Message> ret = new ArrayList<Message>();
 		ret.add(m1);
 		return ret;
 	}
@@ -486,8 +486,8 @@ public class AjcTestCase extends TestCase {
 	/**
 	 * Helper method to build a new message list for passing to a MessageSpec.
 	 */
-	protected List newMessageList(Message m1, Message m2) {
-		List ret = new ArrayList();
+	protected List<Message> newMessageList(Message m1, Message m2) {
+		List<Message> ret = new ArrayList<Message>();
 		ret.add(m1);
 		ret.add(m2);
 		return ret;
@@ -496,8 +496,8 @@ public class AjcTestCase extends TestCase {
 	/**
 	 * Helper method to build a new message list for passing to a MessageSpec.
 	 */
-	protected List newMessageList(Message m1, Message m2, Message m3) {
-		List ret = new ArrayList();
+	protected List<Message> newMessageList(Message m1, Message m2, Message m3) {
+		List<Message> ret = new ArrayList<Message>();
 		ret.add(m1);
 		ret.add(m2);
 		ret.add(m3);

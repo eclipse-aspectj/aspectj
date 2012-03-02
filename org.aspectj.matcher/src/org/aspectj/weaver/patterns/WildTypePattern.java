@@ -109,23 +109,23 @@ public class WildTypePattern extends TypePattern {
 		setLocation(namePatterns[0].getSourceContext(), namePatterns[0].getStart(), namePatterns[namePatterns.length - 1].getEnd());
 	}
 
-	public WildTypePattern(List names, boolean includeSubtypes, int dim) {
+	public WildTypePattern(List<NamePattern> names, boolean includeSubtypes, int dim) {
 		this((NamePattern[]) names.toArray(new NamePattern[names.size()]), includeSubtypes, dim, false, TypePatternList.EMPTY);
 
 	}
 
-	public WildTypePattern(List names, boolean includeSubtypes, int dim, int endPos) {
+	public WildTypePattern(List<NamePattern> names, boolean includeSubtypes, int dim, int endPos) {
 		this(names, includeSubtypes, dim);
 		this.end = endPos;
 	}
 
-	public WildTypePattern(List names, boolean includeSubtypes, int dim, int endPos, boolean isVarArg) {
+	public WildTypePattern(List<NamePattern> names, boolean includeSubtypes, int dim, int endPos, boolean isVarArg) {
 		this(names, includeSubtypes, dim);
 		this.end = endPos;
 		this.isVarArgs = isVarArg;
 	}
 
-	public WildTypePattern(List names, boolean includeSubtypes, int dim, int endPos, boolean isVarArg, TypePatternList typeParams,
+	public WildTypePattern(List<NamePattern> names, boolean includeSubtypes, int dim, int endPos, boolean isVarArg, TypePatternList typeParams,
 			TypePattern upperBound, TypePattern[] additionalInterfaceBounds, TypePattern lowerBound) {
 		this((NamePattern[]) names.toArray(new NamePattern[names.size()]), includeSubtypes, dim, isVarArg, typeParams);
 		this.end = endPos;
@@ -134,7 +134,7 @@ public class WildTypePattern extends TypePattern {
 		this.additionalInterfaceBounds = additionalInterfaceBounds;
 	}
 
-	public WildTypePattern(List names, boolean includeSubtypes, int dim, int endPos, boolean isVarArg, TypePatternList typeParams) {
+	public WildTypePattern(List<NamePattern> names, boolean includeSubtypes, int dim, int endPos, boolean isVarArg, TypePatternList typeParams) {
 		this((NamePattern[]) names.toArray(new NamePattern[names.size()]), includeSubtypes, dim, isVarArg, typeParams);
 		this.end = endPos;
 	}
@@ -588,7 +588,7 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	@Override
-	public TypePattern parameterizeWith(Map typeVariableMap, World w) {
+	public TypePattern parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		NamePattern[] newNamePatterns = new NamePattern[namePatterns.length];
 		for (int i = 0; i < namePatterns.length; i++) {
 			newNamePatterns[i] = namePatterns[i];
