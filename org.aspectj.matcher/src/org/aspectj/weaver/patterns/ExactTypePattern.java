@@ -310,14 +310,13 @@ public class ExactTypePattern extends TypePattern {
 	@Override
 	public TypePattern resolveBindings(IScope scope, Bindings bindings, boolean allowBinding, boolean requireExactType) {
 		throw new BCException("trying to re-resolve");
-
 	}
 
 	/**
 	 * return a version of this type pattern with all type variables references replaced by the corresponding entry in the map.
 	 */
 	@Override
-	public TypePattern parameterizeWith(Map typeVariableMap, World w) {
+	public TypePattern parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		UnresolvedType newType = type;
 		if (type.isTypeVariableReference()) {
 			TypeVariableReference t = (TypeVariableReference) type;

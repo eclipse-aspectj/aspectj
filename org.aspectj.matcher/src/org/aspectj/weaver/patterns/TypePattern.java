@@ -166,7 +166,7 @@ public abstract class TypePattern extends PatternNode {
 		}
 
 		// pr124808
-		Iterator typesIterator = null;
+		Iterator<ResolvedType> typesIterator = null;
 		if (type.isTypeVariableReference()) {
 			typesIterator = ((TypeVariableReference) type).getTypeVariable().getFirstBound().resolve(type.getWorld())
 					.getDirectSupertypes();
@@ -178,8 +178,8 @@ public abstract class TypePattern extends PatternNode {
 			typesIterator = type.getDirectSupertypes();
 		}
 
-		for (Iterator i = typesIterator; i.hasNext();) {
-			ResolvedType superType = (ResolvedType) i.next();
+		for (Iterator<ResolvedType> i = typesIterator; i.hasNext();) {
+			ResolvedType superType = i.next();
 			if (matchesSubtypes(superType, type)) {
 				return true;
 			}
@@ -198,7 +198,7 @@ public abstract class TypePattern extends PatternNode {
 			superType = superType.getGenericType();
 		}
 		// FuzzyBoolean ret = FuzzyBoolean.NO; // ??? -eh
-		for (Iterator i = superType.getDirectSupertypes(); i.hasNext();) {
+		for (Iterator<ResolvedType> i = superType.getDirectSupertypes(); i.hasNext();) {
 			ResolvedType superSuperType = (ResolvedType) i.next();
 			if (matchesSubtypes(superSuperType, annotatedType)) {
 				return true;
@@ -253,7 +253,7 @@ public abstract class TypePattern extends PatternNode {
 	 * return a version of this type pattern in which all type variable references have been replaced by their corresponding entry
 	 * in the map.
 	 */
-	public abstract TypePattern parameterizeWith(Map typeVariableMap, World w);
+	public abstract TypePattern parameterizeWith(Map<String, UnresolvedType> typeVariableMap, World w);
 
 	public void postRead(ResolvedType enclosingType) {
 	}
