@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2005 Contributors.
+ * Copyright (c) 2005-2012 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -8,23 +8,22 @@
  *  
  * Contributors: 
  *   Adrian Colyer			Initial implementation
+ *   Andy Clement			various fixes
+ *   Trask Stanalker		#373195
  * ******************************************************************/
 package org.aspectj.bridge.context;
 
 import java.lang.ref.WeakReference;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
 /**
- * @author colyer This class is responsible for tracking progress through the various phases of compilation and weaving. When an
- *         exception occurs (or a message is issued, if desired), you can ask this class for a "stack trace" that gives information
- *         about what the compiler was doing at the time. The trace will say something like:
- * 
- *         when matching pointcut xyz when matching shadow sss when weaving type ABC when weaving shadow mungers
- * 
- *         Since we can't use ThreadLocal (have to work on 1.3), we use a map from Thread -> ContextStack.
+ * This class is responsible for tracking progress through the various phases of compilation and weaving. 
+ * When an exception occurs (or a message is issued, if desired), you can ask this class for a 
+ * "stack trace" that gives information about what the compiler was doing at the time. 
+ * The trace will say something like: 
+ * "when matching pointcut xyz when matching shadow sss when weaving type ABC when weaving shadow mungers"
  */
 public class CompilationAndWeavingContext {
 
@@ -88,8 +87,7 @@ public class CompilationAndWeavingContext {
 			"type munging for @AspectJ aspectOf" };
 
 	// context stacks, one per thread
-	private static Map<Thread, Stack<ContextStackEntry>> contextMap = Collections
-			.synchronizedMap(new HashMap<Thread, Stack<ContextStackEntry>>());
+	private static ThreadLocal<Stack<ContextStackEntry>> contextMap = new ThreadLocal<Stack<ContextStackEntry>>();
 
 	// single thread mode stack
 	private static Stack<ContextStackEntry> contextStack = new Stack<ContextStackEntry>();
@@ -109,12 +107,12 @@ public class CompilationAndWeavingContext {
 
 	public static void reset() {
 		if (!multiThreaded) {
-			contextMap.clear();
+			contextMap.remove();
 			contextStack.clear();
 			formatterMap.clear();
 			nextTokenId = 1;
 		} else {
-			contextMap.remove(Thread.currentThread());
+			contextMap.remove();
 			// TODO what about formatterMap?
 			// TODO what about nextTokenId?
 		}
@@ -160,9 +158,9 @@ public class CompilationAndWeavingContext {
 	 * Exit a phase, all stack entries from the one with the given token down will be removed.
 	 */
 	public static void leavingPhase(ContextToken aToken) {
-		Stack contextStack = getContextStack();
+		Stack<ContextStackEntry> contextStack = getContextStack();
 		while (!contextStack.isEmpty()) {
-			ContextStackEntry entry = (ContextStackEntry) contextStack.pop();
+			ContextStackEntry entry = contextStack.pop();
 			if (entry.contextToken == aToken) {
 				break;
 			}
@@ -176,17 +174,17 @@ public class CompilationAndWeavingContext {
 		if (!multiThreaded) {
 			return;
 		}
-		contextMap.remove(Thread.currentThread());
+		contextMap.remove();
 	}
 
 	private static Stack<ContextStackEntry> getContextStack() {
 		if (!multiThreaded) {
 			return contextStack;
 		} else {
-			Stack<ContextStackEntry> contextStack = contextMap.get(Thread.currentThread());
+			Stack<ContextStackEntry> contextStack = contextMap.get();
 			if (contextStack == null) {
 				contextStack = new Stack<ContextStackEntry>();
-				contextMap.put(Thread.currentThread(), contextStack);
+				contextMap.set(contextStack);
 			}
 			return contextStack;
 		}
