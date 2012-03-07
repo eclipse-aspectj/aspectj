@@ -744,60 +744,56 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		if (name.endsWith("[]")) {
 			return "[" + nameToSignature(name.substring(0, name.length() - 2));
 		}
-		if (len != 0) {
-			// check if someone is calling us with something that is a signature already
-			assert name.charAt(0) != '[';
-
-			if (name.indexOf("<") == -1) {
-				// not parameterized
-				return new StringBuilder("L").append(name.replace('.', '/')).append(';').toString();
-			} else {
-				StringBuffer nameBuff = new StringBuffer();
-				int nestLevel = 0;
-				nameBuff.append("P");
-				for (int i = 0; i < name.length(); i++) {
-					char c = name.charAt(i);
-					switch (c) {
-					case '.':
-						nameBuff.append('/');
-						break;
-					case '<':
-						nameBuff.append("<");
-						nestLevel++;
-						StringBuffer innerBuff = new StringBuffer();
-						while (nestLevel > 0) {
-							c = name.charAt(++i);
-							if (c == '<') {
-								nestLevel++;
-							}
-							if (c == '>') {
-								nestLevel--;
-							}
-							if (c == ',' && nestLevel == 1) {
-								nameBuff.append(nameToSignature(innerBuff.toString()));
-								innerBuff = new StringBuffer();
-							} else {
-								if (nestLevel > 0) {
-									innerBuff.append(c);
-								}
+		if (len == 0) {
+			throw new BCException("Bad type name: " + name);
+		}
+			
+		if (name.indexOf("<") == -1) {
+			// not parameterized
+			return new StringBuilder("L").append(name.replace('.', '/')).append(';').toString();
+		} else {
+			StringBuffer nameBuff = new StringBuffer();
+			int nestLevel = 0;
+			nameBuff.append("P");
+			for (int i = 0; i < len; i++) {
+				char c = name.charAt(i);
+				switch (c) {
+				case '.':
+					nameBuff.append('/');
+					break;
+				case '<':
+					nameBuff.append("<");
+					nestLevel++;
+					StringBuffer innerBuff = new StringBuffer();
+					while (nestLevel > 0) {
+						c = name.charAt(++i);
+						if (c == '<') {
+							nestLevel++;
+						} else if (c == '>') {
+							nestLevel--;
+						}
+						if (c == ',' && nestLevel == 1) {
+							nameBuff.append(nameToSignature(innerBuff.toString()));
+							innerBuff = new StringBuffer();
+						} else {
+							if (nestLevel > 0) {
+								innerBuff.append(c);
 							}
 						}
-						nameBuff.append(nameToSignature(innerBuff.toString()));
-						nameBuff.append('>');
-						break;
-					case '>':
-						throw new IllegalStateException("Should by matched by <");
-					case ',':
-						throw new IllegalStateException("Should only happen inside <...>");
-					default:
-						nameBuff.append(c);
 					}
+					nameBuff.append(nameToSignature(innerBuff.toString()));
+					nameBuff.append('>');
+					break;
+//				case '>':
+//					throw new IllegalStateException("Should by matched by <");
+//				case ',':
+//					throw new IllegalStateException("Should only happen inside <...>");
+				default:
+					nameBuff.append(c);
 				}
-				nameBuff.append(";");
-				return nameBuff.toString();
 			}
-		} else {
-			throw new BCException("Bad type name: " + name);
+			nameBuff.append(";");
+			return nameBuff.toString();
 		}
 	}
 
