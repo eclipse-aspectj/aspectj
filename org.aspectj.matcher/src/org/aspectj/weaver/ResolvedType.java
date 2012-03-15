@@ -674,8 +674,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			return false;
 		}
 
-		if (m1.getKind() == Member.FIELD) {
-			return m1.getDeclaringType().equals(m2.getDeclaringType());
+		if (m1.getKind() == Member.FIELD && m1.getDeclaringType().equals(m2.getDeclaringType())) {
+			return true ;
 		} else if (m1.getKind() == Member.POINTCUT) {
 			return true;
 		}
@@ -1735,12 +1735,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			}
 		}
 
+		boolean needsAdding = true;
+		boolean needsToBeAddedEarlier = false;
 		// now compare to existingMungers
 		for (Iterator<ConcreteTypeMunger> i = interTypeMungers.iterator(); i.hasNext();) {
 			ConcreteTypeMunger existingMunger = i.next();
 			if (conflictingSignature(existingMunger.getSignature(), munger.getSignature())) {
-				// System.err.println("match " + munger + " with " +
-				// existingMunger);
+				// System.err.println("match " + munger + " with " + existingMunger);
 				if (isVisible(munger.getSignature().getModifiers(), munger.getAspectType(), existingMunger.getAspectType())) {
 					// System.err.println("    is visible");
 					int c = compareMemberPrecedence(sig, existingMunger.getSignature());
@@ -1751,11 +1752,22 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 					if (c < 0) {
 						// the existing munger dominates the new munger
 						checkLegalOverride(munger.getSignature(), existingMunger.getSignature(), 0x11, null);
-						return;
+						needsAdding = false;
+//						return;
+						if (munger.getSignature().getKind()==Member.FIELD && 
+								munger.getSignature().getDeclaringType().resolve(world).isInterface()) {
+							needsAdding=true;
+						}
+						break;
 					} else if (c > 0) {
 						// the new munger dominates the existing one
 						checkLegalOverride(existingMunger.getSignature(), munger.getSignature(), 0x11, null);
-						i.remove();
+						if (munger.getSignature().getKind()==Member.FIELD && 
+								munger.getSignature().getDeclaringType().resolve(world).isInterface()) {
+							needsToBeAddedEarlier = true;
+						} else {
+							i.remove();
+						}
 						break;
 					} else {
 						interTypeConflictError(munger, existingMunger);
@@ -1769,7 +1781,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// we are adding the parameterized form of the ITD to the list of
 		// mungers. Within it, the munger knows the original declared
 		// signature for the ITD so it can be retrieved.
-		interTypeMungers.add(munger);
+		if (needsAdding) {
+			if (!needsToBeAddedEarlier) {
+				interTypeMungers.add(munger);				
+			} else {
+				interTypeMungers.add(0,munger);
+			}
+		}
 	}
 
 	/**

@@ -717,13 +717,8 @@ class BcelClassWeaver implements IClassWeaver {
 
 		ResolvedMember[] methods = typeToCheck.getDeclaredMethods();
 		for (int ii = 0; ii < methods.length; ii++) {
-			ResolvedMember methodThatMightBeGettingOverridden = methods[ii]; // the
-			// method
-			// we
-			// are
-			// going
-			// to
-			// check
+			// the method we are going to check
+			ResolvedMember methodThatMightBeGettingOverridden = methods[ii]; 
 			ResolvedMember isOverriding = isOverriding(typeToCheck, methodThatMightBeGettingOverridden, mname, mrettype, mmods,
 					inSamePackage, methodParamsArray);
 			if (isOverriding != null) {

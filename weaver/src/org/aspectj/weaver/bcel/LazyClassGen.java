@@ -433,6 +433,24 @@ public final class LazyClassGen {
 	public List<BcelField> getFieldGens() {
 		return fields;
 	}
+	
+	public boolean fieldExists(String name) {
+//		Field[] allFields = myGen.getFields();
+//		if (allFields!=null) { 
+//			for (int i=0;i<allFields.length;i++) {
+//				Field f = allFields[i];
+//				if (f.getName().equals(name)) {
+//					return f;
+//				}
+//			}
+//		}
+		for (BcelField f: fields) {
+			if (f.getName().equals(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	private void writeBack(BcelWorld world) {
 		if (getConstantPool().getSize() > Short.MAX_VALUE) {

@@ -486,9 +486,12 @@ public class AjcMemberMaker {
 	 * This field goes on top-most implementers of the interface the field is declared onto
 	 */
 	public static ResolvedMember interFieldInterfaceField(ResolvedMember field, UnresolvedType onClass, UnresolvedType aspectType) {
-		return new ResolvedMemberImpl(Member.FIELD, onClass, makePublicNonFinal(field.getModifiers()), field.getReturnType(),
-				NameMangler.interFieldInterfaceField(aspectType, field.getDeclaringType(), field.getName()), UnresolvedType.NONE,
-				UnresolvedType.NONE);
+//		return new ResolvedMemberImpl(Member.FIELD, onClass, makePublicNonFinal(field.getModifiers()), field.getReturnType(),
+//				NameMangler.interFieldInterfaceField(aspectType, field.getDeclaringType(), field.getName()), UnresolvedType.NONE,
+//				UnresolvedType.NONE);
+
+		// TODO what about non public fields, can you have those?
+		return interFieldClassField(field,aspectType,true);
 	}
 
 	/**

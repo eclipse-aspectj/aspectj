@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.generic.FieldGen;
@@ -1880,6 +1881,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				LazyMethodGen mg1 = makeMethodGen(gen, AjcMemberMaker.interFieldInterfaceSetter(field, onType, aspectType));
 				gen.addMethodGen(mg1);
 			} else {
+				if (gen.fieldExists(field.getName())) return false;
+				
 				weaver.addInitializer(this);
 				ResolvedMember newField = AjcMemberMaker.interFieldClassField(field, aspectType,
 						munger.version == NewFieldTypeMunger.VersionTwo);
@@ -1909,29 +1912,33 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			}
 			return true;
 		} else if (onInterface && gen.getType().isTopmostImplementor(onType)) {
-			// wew know that we can't be static since we don't allow statics on
-			// interfaces
+			// we know that we can't be static since we don't allow statics on interfaces
 			if (Modifier.isStatic(field.getModifiers())) {
 				throw new RuntimeException("unimplemented");
 			}
-			weaver.addInitializer(this);
-			// System.err.println("impl body on " + gen.getType() + " for " +
-			// munger);
-
+			
+			
 			Type fieldType = BcelWorld.makeBcelType(field.getType());
-
-			FieldGen fg = makeFieldGen(gen, AjcMemberMaker.interFieldInterfaceField(field, onType, aspectType));
-
-			if (annotationsOnRealMember != null) {
-				for (int i = 0; i < annotationsOnRealMember.length; i++) {
-					AnnotationAJ annotationX = annotationsOnRealMember[i];
-					AnnotationGen a = ((BcelAnnotation) annotationX).getBcelAnnotation();
-					AnnotationGen ag = new AnnotationGen(a, weaver.getLazyClassGen().getConstantPool(), true);
-					fg.addAnnotation(ag);
+			String fieldname = field.getName();
+			if (!gen.fieldExists(fieldname)) {
+				weaver.addInitializer(this);
+				// System.err.println("impl body on " + gen.getType() + " for " +
+				// munger);
+	
+	
+				FieldGen fg = makeFieldGen(gen, AjcMemberMaker.interFieldInterfaceField(field, onType, aspectType));
+	
+				if (annotationsOnRealMember != null) {
+					for (int i = 0; i < annotationsOnRealMember.length; i++) {
+						AnnotationAJ annotationX = annotationsOnRealMember[i];
+						AnnotationGen a = ((BcelAnnotation) annotationX).getBcelAnnotation();
+						AnnotationGen ag = new AnnotationGen(a, weaver.getLazyClassGen().getConstantPool(), true);
+						fg.addAnnotation(ag);
+					}
 				}
+				fieldname = fg.getName();
+				gen.addField(fg, getSourceLocation());
 			}
-
-			gen.addField(fg, getSourceLocation());
 			// this uses a shadow munger to add init method to constructors
 			// weaver.getShadowMungers().add(makeInitCallShadowMunger(initMethod)
 			// );
@@ -1941,10 +1948,10 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			InstructionList il = new InstructionList();
 			InstructionFactory fact = gen.getFactory();
 			if (Modifier.isStatic(field.getModifiers())) {
-				il.append(fact.createFieldAccess(gen.getClassName(), fg.getName(), fieldType, Constants.GETSTATIC));
+				il.append(fact.createFieldAccess(gen.getClassName(), fieldname, fieldType, Constants.GETSTATIC));
 			} else {
 				il.append(InstructionConstants.ALOAD_0);
-				il.append(fact.createFieldAccess(gen.getClassName(), fg.getName(), fieldType, Constants.GETFIELD));
+				il.append(fact.createFieldAccess(gen.getClassName(), fieldname, fieldType, Constants.GETFIELD));
 			}
 			il.append(InstructionFactory.createReturn(fieldType));
 			mg.getBody().insert(il);
@@ -1974,11 +1981,11 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			InstructionList il1 = new InstructionList();
 			if (Modifier.isStatic(field.getModifiers())) {
 				il1.append(InstructionFactory.createLoad(fieldType, 0));
-				il1.append(fact.createFieldAccess(gen.getClassName(), fg.getName(), fieldType, Constants.PUTSTATIC));
+				il1.append(fact.createFieldAccess(gen.getClassName(), fieldname, fieldType, Constants.PUTSTATIC));
 			} else {
 				il1.append(InstructionConstants.ALOAD_0);
 				il1.append(InstructionFactory.createLoad(fieldType, 1));
-				il1.append(fact.createFieldAccess(gen.getClassName(), fg.getName(), fieldType, Constants.PUTFIELD));
+				il1.append(fact.createFieldAccess(gen.getClassName(), fieldname, fieldType, Constants.PUTFIELD));
 			}
 			il1.append(InstructionFactory.createReturn(Type.VOID));
 			mg1.getBody().insert(il1);
