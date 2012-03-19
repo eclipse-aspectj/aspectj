@@ -24,5 +24,18 @@
       </stdout>
       </run>
     </ajc-test>
+    
+    <ajc-test dir="indy/three" title="indy - 3">
+      <compile files="Code1.java,Asp.java" inpath="indy.jar" options="-1.7"/>
+      <run class="Invoker">
+      <stdout>
+      <line text="call(MethodHandles.Lookup java.lang.invoke.MethodHandles.lookup())"/>
+      <line text="call(Class java.lang.invoke.MethodHandles.Lookup.lookupClass())"/>
+      <line text="call(MethodHandle java.lang.invoke.MethodHandles.Lookup.findStatic(Class, String, MethodType))"/>
+      <line text="call(void java.io.PrintStream.println(String))"/>
+      <line text="foo() is running"/>
+      </stdout>
+      </run>
+    </ajc-test>
    
 </suite>

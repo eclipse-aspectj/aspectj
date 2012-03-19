@@ -58,6 +58,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.ConstantCP;
 import org.aspectj.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.aspectj.apache.bcel.classfile.ConstantNameAndType;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
@@ -108,9 +109,23 @@ public final class InvokeDynamic extends InvokeInstruction {
 		if (signature == null) {
 			ConstantInvokeDynamic cid = (ConstantInvokeDynamic)cp.getConstant(index);
 			ConstantNameAndType cnat = (ConstantNameAndType) cp.getConstant(cid.getNameAndTypeIndex());
-			signature = ((ConstantUtf8) cp.getConstant(cnat.getSignatureIndex())).getValue();
+			signature = cp.getConstantUtf8(cnat.getSignatureIndex()).getValue();
 		}
 		return signature;
+	}
+	
+	@Override
+	public String getName(ConstantPool cp) {
+		if (name == null) {
+			ConstantInvokeDynamic cid = (ConstantInvokeDynamic) cp.getConstant(index);
+			ConstantNameAndType cnat = (ConstantNameAndType) cp.getConstant(cid.getNameAndTypeIndex());
+			name = cp.getConstantUtf8(cnat.getNameIndex()).getValue();
+		}
+		return name;
+	}
+	
+	public String getClassName(ConstantPool cp) {
+		throw new IllegalStateException("nyi");
 	}
 
 }

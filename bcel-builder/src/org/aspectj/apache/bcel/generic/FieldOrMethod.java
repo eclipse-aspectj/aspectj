@@ -68,7 +68,7 @@ import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 public abstract class FieldOrMethod extends InstructionCP {
 
 	protected String signature;
-	private String name;
+	protected String name;
 	private String classname;
 
 	protected FieldOrMethod(short opcode, int index) {

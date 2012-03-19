@@ -15,12 +15,7 @@ import java.io.IOException;
 
 import junit.framework.Test;
 
-import org.aspectj.apache.bcel.classfile.ClassParser;
-import org.aspectj.apache.bcel.classfile.Field;
-import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.weaver.TypeFactory;
-import org.aspectj.weaver.UnresolvedType;
 
 /**
  * @author Andy Clement
@@ -35,6 +30,11 @@ public class IndyTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// execution pointcuts on same bytecode
 	public void testInvokeDynamic_execution() throws IOException {
 		runTest("indy - 2");
+	}
+	
+	// call pointcuts on same bytecode
+	public void testInvokeDynamic_call() throws IOException {
+		runTest("indy - 3");
 	}
 
 	// ---
