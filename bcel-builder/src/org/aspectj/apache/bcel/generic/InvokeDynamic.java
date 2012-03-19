@@ -58,11 +58,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.classfile.ConstantCP;
 import org.aspectj.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.aspectj.apache.bcel.classfile.ConstantNameAndType;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
-import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 
 /**
  * INVOKEDYNAMIC
@@ -125,7 +123,7 @@ public final class InvokeDynamic extends InvokeInstruction {
 	}
 	
 	public String getClassName(ConstantPool cp) {
-		throw new IllegalStateException("nyi");
+		throw new IllegalStateException("there is no classname for invokedynamic");
 	}
 
 }

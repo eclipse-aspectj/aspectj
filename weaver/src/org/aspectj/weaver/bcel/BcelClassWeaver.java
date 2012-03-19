@@ -2769,7 +2769,9 @@ class BcelClassWeaver implements IClassWeaver {
 					// AspectJ-1.{0,1}
 				}
 			} else {
-				matchInvokeInstruction(mg, ih, ii, enclosingShadow, shadowAccumulator);
+				if (ii.getOpcode()!=Constants.INVOKEDYNAMIC) {
+					matchInvokeInstruction(mg, ih, ii, enclosingShadow, shadowAccumulator);
+				}
 			}
 		} else if (world.isJoinpointArrayConstructionEnabled() && i.isArrayCreationInstruction()) {
 			if (canMatch(Shadow.ConstructorCall)) {

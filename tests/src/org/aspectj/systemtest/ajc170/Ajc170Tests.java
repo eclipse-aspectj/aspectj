@@ -25,7 +25,7 @@ import org.aspectj.weaver.UnresolvedType;
  */ 
 public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
-
+/*
 	public void testPublicITDFs_pr73507_1() {
 		runTest("public ITDfs - 1");
 	}
@@ -41,6 +41,7 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testPublicITDFs_pr73507_4() {
 		runTest("public ITDfs - 4");
 	}
+*/
 
 	public void testBCExceptionAnnoDecp_371998() {
 		runTest("BCException anno decp");
