@@ -36,6 +36,11 @@ public class IndyTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testInvokeDynamic_call() throws IOException {
 		runTest("indy - 3");
 	}
+	
+	// within(Code1) on same bytecode
+	public void testInvokeDynamic_target() throws IOException {
+		runTest("indy - 4");
+	}
 
 	// ---
 
