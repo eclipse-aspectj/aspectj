@@ -127,10 +127,14 @@ public interface Constants {
 	public final static byte CONSTANT_Methodref = 10;
 	public final static byte CONSTANT_InterfaceMethodref = 11;
 	public final static byte CONSTANT_NameAndType = 12;
+	
+	public final static byte CONSTANT_MethodHandle = 15;
+	public final static byte CONSTANT_MethodType = 16;
+	public final static byte CONSTANT_InvokeDynamic = 18;
 
 	public final static String[] CONSTANT_NAMES = { "", "CONSTANT_Utf8", "", "CONSTANT_Integer", "CONSTANT_Float", "CONSTANT_Long",
 			"CONSTANT_Double", "CONSTANT_Class", "CONSTANT_String", "CONSTANT_Fieldref", "CONSTANT_Methodref",
-			"CONSTANT_InterfaceMethodref", "CONSTANT_NameAndType" };
+			"CONSTANT_InterfaceMethodref", "CONSTANT_NameAndType","","","CONSTANT_MethodHandle","CONSTANT_MethodType","","CONSTANT_InvokeDynamic" };
 
 	/**
 	 * The name of the static initializer, also called &quot;class initialization method&quot; or &quot;interface initialization
@@ -346,6 +350,7 @@ public interface Constants {
 	public static final short INVOKENONVIRTUAL = 183; // Old name in JDK 1.0
 	public static final short INVOKESTATIC = 184;
 	public static final short INVOKEINTERFACE = 185;
+	public static final short INVOKEDYNAMIC = 186;
 	public static final short NEW = 187;
 	public static final short NEWARRAY = 188;
 	public static final short ANEWARRAY = 189;
@@ -533,7 +538,7 @@ public interface Constants {
 			"dcmpg", "ifeq", "ifne", "iflt", "ifge", "ifgt", "ifle", "if_icmpeq", "if_icmpne", "if_icmplt", "if_icmpge",
 			"if_icmpgt", "if_icmple", "if_acmpeq", "if_acmpne", "goto", "jsr", "ret", "tableswitch", "lookupswitch", "ireturn",
 			"lreturn", "freturn", "dreturn", "areturn", "return", "getstatic", "putstatic", "getfield", "putfield",
-			"invokevirtual", "invokespecial", "invokestatic", "invokeinterface", ILLEGAL_OPCODE, "new", "newarray", "anewarray",
+			"invokevirtual", "invokespecial", "invokestatic", "invokeinterface", "invokedynamic", "new", "newarray", "anewarray",
 			"arraylength", "athrow", "checkcast", "instanceof", "monitorenter", "monitorexit", "wide", "multianewarray", "ifnull",
 			"ifnonnull", "goto_w", "jsr_w", "breakpoint", ILLEGAL_OPCODE, ILLEGAL_OPCODE, ILLEGAL_OPCODE, ILLEGAL_OPCODE,
 			ILLEGAL_OPCODE, ILLEGAL_OPCODE, ILLEGAL_OPCODE, ILLEGAL_OPCODE, ILLEGAL_OPCODE, ILLEGAL_OPCODE, ILLEGAL_OPCODE,
@@ -603,13 +608,14 @@ public interface Constants {
 	public static final byte ATTR_LOCAL_VARIABLE_TYPE_TABLE = 16;
 	public static final byte ATTR_ENCLOSING_METHOD = 17;
 	public static final byte ATTR_ANNOTATION_DEFAULT = 18;
+	public static final byte ATTR_BOOTSTRAPMETHODS = 19;
 
-	public static final short KNOWN_ATTRIBUTES = 19;
+	public static final short KNOWN_ATTRIBUTES = 20;
 
 	public static final String[] ATTRIBUTE_NAMES = { "SourceFile", "ConstantValue", "Code", "Exceptions", "LineNumberTable",
 			"LocalVariableTable", "InnerClasses", "Synthetic", "Deprecated", "PMGClass", "Signature", "StackMap",
 			"RuntimeVisibleAnnotations", "RuntimeInvisibleAnnotations", "RuntimeVisibleParameterAnnotations",
-			"RuntimeInvisibleParameterAnnotations", "LocalVariableTypeTable", "EnclosingMethod", "AnnotationDefault" };
+			"RuntimeInvisibleParameterAnnotations", "LocalVariableTypeTable", "EnclosingMethod", "AnnotationDefault","BootstrapMethods" };
 
 	/**
 	 * Constants used in the StackMap attribute.

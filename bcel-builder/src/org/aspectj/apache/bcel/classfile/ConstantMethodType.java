@@ -1,5 +1,3 @@
-package org.aspectj.apache.bcel.classfile;
-
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -53,6 +51,8 @@ package org.aspectj.apache.bcel.classfile;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.aspectj.apache.bcel.classfile;
+
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -61,83 +61,61 @@ import java.io.IOException;
 import org.aspectj.apache.bcel.Constants;
 
 /**
- * Abstract superclass for classes to represent the different constant types in the constant pool of a class file. The classes keep
- * closely to the JVM specification.
+ * This class is derived from the abstract <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class and
+ * represents a reference to the name and signature of a field or method.
  * 
- * @version $Id: Constant.java,v 1.5 2009/09/10 15:35:04 aclement Exp $
- * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * http://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.4.9
+ * 
+ * @author Andy Clement
+ * @see Constant
  */
-public abstract class Constant implements Cloneable, Node {
+public final class ConstantMethodType extends Constant {
+	private int descriptorIndex;
 
-	protected byte tag;
-
-	Constant(byte tag) {
-		this.tag = tag;
+	ConstantMethodType(DataInputStream file) throws IOException {
+		this(file.readUnsignedShort());
 	}
 
-	public final byte getTag() {
-		return tag;
-	}
-
-	@Override
-	public String toString() {
-		return Constants.CONSTANT_NAMES[tag] + "[" + tag + "]";
-	}
-
-	public abstract void accept(ClassVisitor v);
-
-	public abstract void dump(DataOutputStream dataOutputStream) throws IOException;
-
-	public abstract Object getValue();
-
-	public Constant copy() {
-		try {
-			return (Constant) super.clone();
-		} catch (CloneNotSupportedException e) {
-		}
-
-		return null;
+	public ConstantMethodType(int descriptorIndex) {
+		super(Constants.CONSTANT_MethodType);
+		this.descriptorIndex = descriptorIndex;
 	}
 
 	@Override
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
+	public final void dump(DataOutputStream file) throws IOException {
+		file.writeByte(tag);
+		file.writeShort(descriptorIndex);
 	}
 
-	static final Constant readConstant(DataInputStream dis) throws IOException, ClassFormatException {
-		byte b = dis.readByte();
-		switch (b) {
-		case Constants.CONSTANT_Class:
-			return new ConstantClass(dis);
-		case Constants.CONSTANT_NameAndType:
-			return new ConstantNameAndType(dis);
-		case Constants.CONSTANT_Utf8:
-			return new ConstantUtf8(dis);
-		case Constants.CONSTANT_Fieldref:
-			return new ConstantFieldref(dis);
-		case Constants.CONSTANT_Methodref:
-			return new ConstantMethodref(dis);
-		case Constants.CONSTANT_InterfaceMethodref:
-			return new ConstantInterfaceMethodref(dis);
-		case Constants.CONSTANT_String:
-			return new ConstantString(dis);
-		case Constants.CONSTANT_Integer:
-			return new ConstantInteger(dis);
-		case Constants.CONSTANT_Float:
-			return new ConstantFloat(dis);
-		case Constants.CONSTANT_Long:
-			return new ConstantLong(dis);
-		case Constants.CONSTANT_Double:
-			return new ConstantDouble(dis);
-		case Constants.CONSTANT_MethodHandle:
-			return new ConstantMethodHandle(dis);
-		case Constants.CONSTANT_MethodType:
-			return new ConstantMethodType(dis);
-		case Constants.CONSTANT_InvokeDynamic:
-			return new ConstantInvokeDynamic(dis);
-		default:
-			throw new ClassFormatException("Invalid byte tag in constant pool: " + b);
-		}
+	public final int getDescriptorIndex() {
+		return descriptorIndex;
+	}
+
+//	public final String getName(ConstantPool cp) {
+//		return cp.constantToString(getNameIndex(), Constants.CONSTANT_Utf8);
+//	}
+//
+//	public final int getSignatureIndex() {
+//		return referenceIndex;
+//	}
+//	
+//	public final String getSignature(ConstantPool cp) {
+//		return cp.constantToString(getSignatureIndex(), Constants.CONSTANT_Utf8);
+//	}
+
+	@Override
+	public final String toString() {
+		return super.toString() + "(descriptorIndex=" + descriptorIndex + ")";
+	}
+
+	@Override
+	public String getValue() {
+		return toString();
+	}
+
+	@Override
+	public void accept(ClassVisitor v) {
+		v.visitConstantMethodType(this);
 	}
 
 }

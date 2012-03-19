@@ -55,6 +55,7 @@ package org.aspectj.apache.bcel.verifier;
  */
 
 import org.aspectj.apache.bcel.classfile.AnnotationDefault;
+import org.aspectj.apache.bcel.classfile.BootstrapMethods;
 import org.aspectj.apache.bcel.classfile.Code;
 import org.aspectj.apache.bcel.classfile.CodeException;
 import org.aspectj.apache.bcel.classfile.ConstantClass;
@@ -63,7 +64,10 @@ import org.aspectj.apache.bcel.classfile.ConstantFieldref;
 import org.aspectj.apache.bcel.classfile.ConstantFloat;
 import org.aspectj.apache.bcel.classfile.ConstantInteger;
 import org.aspectj.apache.bcel.classfile.ConstantInterfaceMethodref;
+import org.aspectj.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.aspectj.apache.bcel.classfile.ConstantLong;
+import org.aspectj.apache.bcel.classfile.ConstantMethodHandle;
+import org.aspectj.apache.bcel.classfile.ConstantMethodType;
 import org.aspectj.apache.bcel.classfile.ConstantMethodref;
 import org.aspectj.apache.bcel.classfile.ConstantNameAndType;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
@@ -118,6 +122,9 @@ public class EmptyClassVisitor implements ClassVisitor {
   public void visitConstantInterfaceMethodref(ConstantInterfaceMethodref obj) {}
   public void visitConstantLong(ConstantLong obj) {}
   public void visitConstantMethodref(ConstantMethodref obj) {}
+  public void visitConstantMethodHandle(ConstantMethodHandle obj) {}
+  public void visitConstantMethodType(ConstantMethodType obj) {}
+  public void visitConstantInvokeDynamic(ConstantInvokeDynamic obj) {}
   public void visitConstantNameAndType(ConstantNameAndType obj) {}
   public void visitConstantPool(ConstantPool obj) {}
   public void visitConstantString(ConstantString obj) {}
@@ -130,6 +137,7 @@ public class EmptyClassVisitor implements ClassVisitor {
   public void visitInnerClasses(InnerClasses obj) {}
   public void visitJavaClass(JavaClass obj) {}
   public void visitLineNumber(LineNumber obj) {}
+  public void visitBootstrapMethods(BootstrapMethods obj) {}
   public void visitLineNumberTable(LineNumberTable obj) {}
   public void visitLocalVariable(LocalVariable obj) {}
   public void visitLocalVariableTable(LocalVariableTable obj) {}

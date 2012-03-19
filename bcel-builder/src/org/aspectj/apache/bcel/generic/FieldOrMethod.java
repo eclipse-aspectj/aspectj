@@ -53,6 +53,7 @@ package org.aspectj.apache.bcel.generic;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+import org.aspectj.apache.bcel.classfile.Constant;
 import org.aspectj.apache.bcel.classfile.ConstantCP;
 import org.aspectj.apache.bcel.classfile.ConstantNameAndType;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
@@ -66,7 +67,7 @@ import org.aspectj.apache.bcel.classfile.ConstantUtf8;
  */
 public abstract class FieldOrMethod extends InstructionCP {
 
-	private String signature;
+	protected String signature;
 	private String name;
 	private String classname;
 
@@ -79,7 +80,8 @@ public abstract class FieldOrMethod extends InstructionCP {
 	 */
 	public String getSignature(ConstantPool cp) {
 		if (signature == null) {
-			ConstantCP cmr = (ConstantCP) cp.getConstant(index);
+			Constant c = cp.getConstant(index);
+			ConstantCP cmr = (ConstantCP) c;
 			ConstantNameAndType cnat = (ConstantNameAndType) cp.getConstant(cmr.getNameAndTypeIndex());
 			signature = ((ConstantUtf8) cp.getConstant(cnat.getSignatureIndex())).getValue();
 		}

@@ -208,6 +208,9 @@ public class Instruction implements Cloneable, Serializable, Constants {
 			case Constants.INVOKEINTERFACE:
 				obj = new INVOKEINTERFACE(bytes.readUnsignedShort(), bytes.readUnsignedByte(), bytes.readByte());
 				break;
+			case Constants.INVOKEDYNAMIC:
+				obj = new InvokeDynamic(bytes.readUnsignedShort(),bytes.readUnsignedShort());
+				break;
 			case Constants.NEWARRAY:
 				obj = new InstructionByte(Constants.NEWARRAY, bytes.readByte());
 				break;

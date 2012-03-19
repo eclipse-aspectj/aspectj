@@ -58,6 +58,7 @@ import java.util.Stack;
 import org.aspectj.apache.bcel.classfile.AnnotationDefault;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.AttributeUtils;
+import org.aspectj.apache.bcel.classfile.BootstrapMethods;
 import org.aspectj.apache.bcel.classfile.Code;
 import org.aspectj.apache.bcel.classfile.CodeException;
 import org.aspectj.apache.bcel.classfile.Constant;
@@ -67,7 +68,10 @@ import org.aspectj.apache.bcel.classfile.ConstantFieldref;
 import org.aspectj.apache.bcel.classfile.ConstantFloat;
 import org.aspectj.apache.bcel.classfile.ConstantInteger;
 import org.aspectj.apache.bcel.classfile.ConstantInterfaceMethodref;
+import org.aspectj.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.aspectj.apache.bcel.classfile.ConstantLong;
+import org.aspectj.apache.bcel.classfile.ConstantMethodHandle;
+import org.aspectj.apache.bcel.classfile.ConstantMethodType;
 import org.aspectj.apache.bcel.classfile.ConstantMethodref;
 import org.aspectj.apache.bcel.classfile.ConstantNameAndType;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
@@ -325,6 +329,22 @@ public class DescendingVisitor implements ClassVisitor {
     stack.push(constant);
     constant.accept(visitor); 
     stack.pop();
+  }
+  
+  public void visitConstantMethodHandle(ConstantMethodHandle constant) {
+	  throw new IllegalStateException("nyi");
+  }
+
+  public void visitConstantMethodType(ConstantMethodType obj) {
+	  throw new IllegalStateException("nyi");
+  }
+  
+  public void visitConstantInvokeDynamic(ConstantInvokeDynamic obj) {
+	  throw new IllegalStateException("nyi");
+  }
+
+  public void visitBootstrapMethods(BootstrapMethods obj) {
+	  throw new IllegalStateException("nyi");
   }
 
   public void visitConstantNameAndType(ConstantNameAndType constant) {

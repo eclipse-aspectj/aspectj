@@ -157,6 +157,8 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
 			return new LocalVariableTypeTable(idx, len, file, cpool);
 		case Constants.ATTR_ENCLOSING_METHOD:
 			return new EnclosingMethod(idx, len, file, cpool);
+		case Constants.ATTR_BOOTSTRAPMETHODS:
+			return new BootstrapMethods(idx,len,file,cpool);
 		default:
 			throw new IllegalStateException();
 		}

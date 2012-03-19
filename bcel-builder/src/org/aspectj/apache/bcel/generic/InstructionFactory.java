@@ -99,6 +99,8 @@ public class InstructionFactory implements InstructionConstants {
 		int index;
 		if (kind == Constants.INVOKEINTERFACE) {
 			index = cp.addInterfaceMethodref(class_name, name, signature);
+		} else if (kind == Constants.INVOKEDYNAMIC){
+			throw new IllegalStateException("NYI");
 		} else {
 			index = cp.addMethodref(class_name, name, signature);
 		}
@@ -125,6 +127,8 @@ public class InstructionFactory implements InstructionConstants {
 		int index;
 		if (kind == Constants.INVOKEINTERFACE) {
 			index = cp.addInterfaceMethodref(class_name, name, signature);
+		} else if (kind == Constants.INVOKEDYNAMIC){
+			throw new IllegalStateException("NYI");
 		} else {
 			index = cp.addMethodref(class_name, name, signature);
 		}

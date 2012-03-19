@@ -1,5 +1,3 @@
-package org.aspectj.apache.bcel.classfile;
-
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -54,90 +52,65 @@ package org.aspectj.apache.bcel.classfile;
  * <http://www.apache.org/>.
  */
 
-import java.io.DataInputStream;
+package org.aspectj.apache.bcel.generic;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.ConstantInvokeDynamic;
+import org.aspectj.apache.bcel.classfile.ConstantNameAndType;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 
 /**
- * Abstract superclass for classes to represent the different constant types in the constant pool of a class file. The classes keep
- * closely to the JVM specification.
+ * INVOKEDYNAMIC
  * 
- * @version $Id: Constant.java,v 1.5 2009/09/10 15:35:04 aclement Exp $
- * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author Andy Clement
  */
-public abstract class Constant implements Cloneable, Node {
+public final class InvokeDynamic extends InvokeInstruction {
 
-	protected byte tag;
-
-	Constant(byte tag) {
-		this.tag = tag;
+	public InvokeDynamic(int index, int zeroes) {
+		super(Constants.INVOKEDYNAMIC, index);
 	}
 
-	public final byte getTag() {
-		return tag;
+	public void dump(DataOutputStream out) throws IOException {
+		out.writeByte(opcode);
+		out.writeShort(index);
+		out.writeShort(0);
+	}
+	
+	public String toString(ConstantPool cp) {
+		return super.toString(cp) + " " + index;
 	}
 
-	@Override
-	public String toString() {
-		return Constants.CONSTANT_NAMES[tag] + "[" + tag + "]";
-	}
-
-	public abstract void accept(ClassVisitor v);
-
-	public abstract void dump(DataOutputStream dataOutputStream) throws IOException;
-
-	public abstract Object getValue();
-
-	public Constant copy() {
-		try {
-			return (Constant) super.clone();
-		} catch (CloneNotSupportedException e) {
+	public boolean equals(Object other) {
+		if (!(other instanceof InvokeDynamic)) {
+			return false;
 		}
-
-		return null;
+		InvokeDynamic o = (InvokeDynamic) other;
+		return o.opcode == opcode && o.index == index;
 	}
 
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
+	public int hashCode() {
+		return opcode * 37 + index;
+	}
+	
+	public Type getReturnType(ConstantPool cp) {
+		return Type.getReturnType(getSignature(cp));
 	}
 
-	static final Constant readConstant(DataInputStream dis) throws IOException, ClassFormatException {
-		byte b = dis.readByte();
-		switch (b) {
-		case Constants.CONSTANT_Class:
-			return new ConstantClass(dis);
-		case Constants.CONSTANT_NameAndType:
-			return new ConstantNameAndType(dis);
-		case Constants.CONSTANT_Utf8:
-			return new ConstantUtf8(dis);
-		case Constants.CONSTANT_Fieldref:
-			return new ConstantFieldref(dis);
-		case Constants.CONSTANT_Methodref:
-			return new ConstantMethodref(dis);
-		case Constants.CONSTANT_InterfaceMethodref:
-			return new ConstantInterfaceMethodref(dis);
-		case Constants.CONSTANT_String:
-			return new ConstantString(dis);
-		case Constants.CONSTANT_Integer:
-			return new ConstantInteger(dis);
-		case Constants.CONSTANT_Float:
-			return new ConstantFloat(dis);
-		case Constants.CONSTANT_Long:
-			return new ConstantLong(dis);
-		case Constants.CONSTANT_Double:
-			return new ConstantDouble(dis);
-		case Constants.CONSTANT_MethodHandle:
-			return new ConstantMethodHandle(dis);
-		case Constants.CONSTANT_MethodType:
-			return new ConstantMethodType(dis);
-		case Constants.CONSTANT_InvokeDynamic:
-			return new ConstantInvokeDynamic(dis);
-		default:
-			throw new ClassFormatException("Invalid byte tag in constant pool: " + b);
+	public Type[] getArgumentTypes(ConstantPool cp) {
+		return Type.getArgumentTypes(getSignature(cp));
+	}
+	
+	public String getSignature(ConstantPool cp) {
+		if (signature == null) {
+			ConstantInvokeDynamic cid = (ConstantInvokeDynamic)cp.getConstant(index);
+			ConstantNameAndType cnat = (ConstantNameAndType) cp.getConstant(cid.getNameAndTypeIndex());
+			signature = ((ConstantUtf8) cp.getConstant(cnat.getSignatureIndex())).getValue();
 		}
+		return signature;
 	}
 
 }

@@ -995,7 +995,13 @@ public abstract class Utility {
 					+ bytes.readUnsignedByte()); // Last byte is a reserved
 			// space
 			break;
-
+			
+		case Constants.INVOKEDYNAMIC://http://docs.oracle.com/javase/specs/jvms/se7/html/jvms-6.html#jvms-6.5.invokedynamic
+			index = bytes.readUnsignedShort();
+			bytes.readUnsignedShort(); // zeroes
+			buf.append("\t" + constant_pool.constantToString(index) + (verbose ? " (" + index + ")" : ""));
+			break;
+			
 		// Operands are references to items in constant pool
 		case Constants.LDC_W:
 		case Constants.LDC2_W:

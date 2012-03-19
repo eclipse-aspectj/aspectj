@@ -88,8 +88,14 @@ public interface ClassVisitor {
 	public void visitConstantLong(ConstantLong obj);
 
 	public void visitConstantMethodref(ConstantMethodref obj);
+	
+	public void visitConstantMethodHandle(ConstantMethodHandle obj);
 
 	public void visitConstantNameAndType(ConstantNameAndType obj);
+	
+	public void visitConstantMethodType(ConstantMethodType obj);
+	
+	public void visitConstantInvokeDynamic(ConstantInvokeDynamic obj);
 
 	public void visitConstantPool(ConstantPool obj);
 
@@ -126,6 +132,8 @@ public interface ClassVisitor {
 	public void visitSourceFile(SourceFile obj);
 
 	public void visitSynthetic(Synthetic obj);
+	
+	public void visitBootstrapMethods(BootstrapMethods obj);
 
 	public void visitUnknown(Unknown obj);
 
