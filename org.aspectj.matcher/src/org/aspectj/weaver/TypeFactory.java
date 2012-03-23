@@ -40,7 +40,16 @@ public class TypeFactory {
 			} // else if someTypeParameters is null, then the base type is allowed to be non-generic, it's an inner
 		}
 		ResolvedType[] resolvedParameters = inAWorld.resolve(someTypeParameters);
-		ReferenceType pType = new ReferenceType(baseType, resolvedParameters, inAWorld);
+		
+		ReferenceType existingType = ((ReferenceType)baseType).findDerivativeType(resolvedParameters);
+		
+		ReferenceType pType = null;
+		
+		if (existingType!=null) {
+			pType = existingType;
+		} else {
+			pType =new ReferenceType(baseType, resolvedParameters, inAWorld);
+		}
 		// pType.setSourceContext(aBaseType.getSourceContext());
 		return (ReferenceType) pType.resolve(inAWorld);
 	}

@@ -172,7 +172,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	// ---- things from object
 
 	@Override
-	public final boolean equals(Object other) {
+	public boolean equals(Object other) {
 		if (other instanceof ResolvedType) {
 			return this == other;
 		} else {
@@ -2793,4 +2793,5 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 		return (bits & IsGroovyObject) != 0;
 	}
+
 }

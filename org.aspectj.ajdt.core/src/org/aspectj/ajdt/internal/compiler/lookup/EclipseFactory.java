@@ -1073,55 +1073,55 @@ public class EclipseFactory {
 		TypeDeclaration decl = binding.scope.referenceContext;
 
 		// Deal with the raw/basic type to give us an entry in the world type map
-		UnresolvedType simpleTx = null;
+		UnresolvedType unresolvedRawType = null;
 		if (binding.isGenericType()) {
-			simpleTx = UnresolvedType.forRawTypeName(getName(binding));
+			unresolvedRawType = UnresolvedType.forRawTypeName(getName(binding));
 		} else if (binding.isLocalType()) {
 			LocalTypeBinding ltb = (LocalTypeBinding) binding;
 			if (ltb.constantPoolName() != null && ltb.constantPoolName().length > 0) {
-				simpleTx = UnresolvedType.forSignature(new String(binding.signature()));
+				unresolvedRawType = UnresolvedType.forSignature(new String(binding.signature()));
 			} else {
-				simpleTx = UnresolvedType.forName(getName(binding));
+				unresolvedRawType = UnresolvedType.forName(getName(binding));
 			}
 		} else {
-			simpleTx = UnresolvedType.forName(getName(binding));
+			unresolvedRawType = UnresolvedType.forName(getName(binding));
 		}
 
-		ReferenceType name = getWorld().lookupOrCreateName(simpleTx);
+		ReferenceType resolvedRawType = getWorld().lookupOrCreateName(unresolvedRawType);
 
 		// A type can change from simple > generic > simple across a set of compiles. We need
 		// to ensure the entry in the typemap is promoted and demoted correctly. The call
 		// to setGenericType() below promotes a simple to a raw. This call demotes it back
 		// to simple
 		// pr125405
-		if (!binding.isRawType() && !binding.isGenericType() && name.getTypekind() == TypeKind.RAW) {
-			name.demoteToSimpleType();
+		if (!binding.isRawType() && !binding.isGenericType() && resolvedRawType.getTypekind() == TypeKind.RAW) {
+			resolvedRawType.demoteToSimpleType();
 		}
 
-		EclipseSourceType t = new EclipseSourceType(name, this, binding, decl, unit);
+		EclipseSourceType t = new EclipseSourceType(resolvedRawType, this, binding, decl, unit);
 
 		// For generics, go a bit further - build a typex for the generic type
 		// give it the same delegate and link it to the raw type
 		if (binding.isGenericType()) {
-			UnresolvedType complexTx = fromBinding(binding); // fully aware of any generics info
-			ResolvedType cName = world.resolve(complexTx, true);
+			UnresolvedType unresolvedGenericType = fromBinding(binding); // fully aware of any generics info
+			ResolvedType resolvedGenericType = world.resolve(unresolvedGenericType, true);
 			ReferenceType complexName = null;
-			if (!cName.isMissing()) {
-				complexName = (ReferenceType) cName;
+			if (!resolvedGenericType.isMissing()) {
+				complexName = (ReferenceType) resolvedGenericType;
 				complexName = (ReferenceType) complexName.getGenericType();
 				if (complexName == null) {
-					complexName = new ReferenceType(complexTx, world);
+					complexName = new ReferenceType(unresolvedGenericType, world);
 				}
 			} else {
-				complexName = new ReferenceType(complexTx, world);
+				complexName = new ReferenceType(unresolvedGenericType, world);
 			}
-			name.setGenericType(complexName);
+			resolvedRawType.setGenericType(complexName);
 			complexName.setDelegate(t);
 		}
 
-		name.setDelegate(t);
+		resolvedRawType.setDelegate(t);
 		if (decl instanceof AspectDeclaration) {
-			((AspectDeclaration) decl).typeX = name;
+			((AspectDeclaration) decl).typeX = resolvedRawType;
 			((AspectDeclaration) decl).concreteName = t;
 		}
 

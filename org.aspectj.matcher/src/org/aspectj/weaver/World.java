@@ -548,7 +548,6 @@ public abstract class World implements Dump.INode {
 
 		if (genericType != null) {
 			genericType.world = this;
-			((ReferenceType) genericType).addDependentType((ReferenceType) rawType);
 			return genericType;
 		} else {
 			// Fault in the generic that underpins the raw type ;)
@@ -1302,7 +1301,7 @@ public abstract class World implements Dump.INode {
 
 		/**
 		 * Lookup a type by its signature, always look in the real map before the expendable map
-		 */
+		 */ 
 		public ResolvedType get(String key) {
 			checkq();
 			ResolvedType ret = tMap.get(key);

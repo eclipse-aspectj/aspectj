@@ -15,11 +15,11 @@ package org.aspectj.weaver;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.weaver.World.TypeMap;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
 
@@ -37,7 +37,7 @@ public class ReferenceType extends ResolvedType {
 	 * For generic types, this list holds references to all the derived raw and parameterized versions. We need this so that if the
 	 * generic delegate is swapped during incremental compilation, the delegate of the derivatives is swapped also.
 	 */
-	private final Set<ReferenceType> derivativeTypes = new HashSet<ReferenceType>();
+	private final List<WeakReference<ReferenceType>> derivativeTypes = new ArrayList<WeakReference<ReferenceType>>();
 
 	/**
 	 * For parameterized types (or the raw type) - this field points to the actual reference type from which they are derived.
@@ -68,7 +68,6 @@ public class ReferenceType extends ResolvedType {
 	private ResolvedType newSuperclass;
 	private ResolvedType[] newInterfaces;
 
-	// ??? should set delegate before any use
 	public ReferenceType(String signature, World world) {
 		super(signature, world);
 	}
@@ -96,24 +95,42 @@ public class ReferenceType extends ResolvedType {
 		genericReferenceType.addDependentType(this);
 	}
 
-	/**
-	 * Constructor used when creating a raw type.
-	 */
-	// public ReferenceType(
-	// ResolvedType theGenericType,
-	// World aWorld) {
-	// super(theGenericType.getErasureSignature(),
-	// theGenericType.getErasureSignature(),
-	// aWorld);
-	// ReferenceType genericReferenceType = (ReferenceType) theGenericType;
-	// this.typeParameters = null;
-	// this.genericType = genericReferenceType;
-	// this.typeKind = TypeKind.RAW;
-	// this.delegate = genericReferenceType.getDelegate();
-	// genericReferenceType.addDependentType(this);
-	// }
 	synchronized void addDependentType(ReferenceType dependent) {
-		this.derivativeTypes.add(dependent);
+//		checkDuplicates(dependent);
+		this.derivativeTypes.add(new WeakReference<ReferenceType>(dependent));
+	}
+			
+	public void checkDuplicates(ReferenceType newRt) {
+	  List<WeakReference<ReferenceType>> forRemoval = new ArrayList<WeakReference<ReferenceType>>();
+	  for (WeakReference<ReferenceType> derivativeTypeReference: derivativeTypes) {
+		  ReferenceType derivativeType = derivativeTypeReference.get();
+		  if (derivativeType==null) {
+			  forRemoval.add(derivativeTypeReference);
+		  } else {
+			  if (derivativeType.getTypekind()!=newRt.getTypekind()) {
+				  continue; // cannot be this one
+			  }
+			  if (equal2(newRt.getTypeParameters(),derivativeType.getTypeParameters())) {
+				  if (TypeMap.useExpendableMap) {
+					  throw new IllegalStateException();
+				  }
+			  }
+		  }
+	  }
+	  derivativeTypes.removeAll(forRemoval);
+	}
+	
+	private boolean equal2(UnresolvedType[] typeParameters, UnresolvedType[] resolvedParameters) {
+		if (typeParameters.length!=resolvedParameters.length)  {
+			return false;
+		}
+		int len = typeParameters.length;
+		for (int p=0;p<len;p++) {
+			if (!typeParameters[p].equals(resolvedParameters[p])) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -160,8 +177,7 @@ public class ReferenceType extends ResolvedType {
 	@Override
 	public void addAnnotation(AnnotationAJ annotationX) {
 		if (annotations == null) {
-			annotations = new AnnotationAJ[1];
-			annotations[0] = annotationX;
+			annotations = new AnnotationAJ[]{annotationX};
 		} else {
 			AnnotationAJ[] newAnnotations = new AnnotationAJ[annotations.length + 1];
 			System.arraycopy(annotations, 0, newAnnotations, 1, annotations.length);
@@ -686,31 +702,6 @@ public class ReferenceType extends ResolvedType {
 		return delegateInterfaces;
 	}
 
-	// private String toString(ResolvedType[] delegateInterfaces) {
-	// StringBuffer sb = new StringBuffer();
-	// if (delegateInterfaces != null) {
-	// for (ResolvedType rt : delegateInterfaces) {
-	// sb.append(rt).append(" ");
-	// }
-	// }
-	// return sb.toString();
-	// }
-
-	/**
-	 * Locates the named type variable in the list of those on this generic type and returns the type parameter from the second list
-	 * supplied. Returns null if it can't be found
-	 */
-	// private UnresolvedType findTypeParameterInList(String name,
-	// TypeVariable[] tvarsOnThisGenericType, UnresolvedType[]
-	// paramTypes) {
-	// int position = -1;
-	// for (int i = 0; i < tvarsOnThisGenericType.length; i++) {
-	// TypeVariable tv = tvarsOnThisGenericType[i];
-	// if (tv.getName().equals(name)) position = i;
-	// }
-	// if (position == -1 ) return null;
-	// return paramTypes[position];
-	// }
 	/**
 	 * It is possible this type has multiple type variables but the interface we are about to parameterize only uses a subset - this
 	 * method determines the subset to use by looking at the type variable names used. For example: <code>
@@ -821,13 +812,13 @@ public class ReferenceType extends ResolvedType {
 
 	@Override
 	public TypeVariable[] getTypeVariables() {
-		if (this.typeVariables == null) {
-			this.typeVariables = getDelegate().getTypeVariables();
+		if (typeVariables == null) {
+			typeVariables = getDelegate().getTypeVariables();
 			for (int i = 0; i < this.typeVariables.length; i++) {
-				this.typeVariables[i].resolve(world);
+				typeVariables[i].resolve(world);
 			}
 		}
-		return this.typeVariables;
+		return typeVariables;
 	}
 
 	@Override
@@ -867,27 +858,6 @@ public class ReferenceType extends ResolvedType {
 	public Collection<ConcreteTypeMunger> getTypeMungers() {
 		return getDelegate().getTypeMungers();
 	}
-
-	// GENERICITDFIX
-	// // Map parameterizationMap = getAjMemberParameterizationMap();
-	//
-	// // if (parameterizedTypeMungers != null) return parameterizedTypeMungers;
-	// Collection ret = null;
-	// if (ajMembersNeedParameterization()) {
-	// Collection genericDeclares = delegate.getTypeMungers();
-	// parameterizedTypeMungers = new ArrayList();
-	// Map parameterizationMap = getAjMemberParameterizationMap();
-	// for (Iterator iter = genericDeclares.iterator(); iter.hasNext();) {
-	// ConcreteTypeMunger munger = (ConcreteTypeMunger)iter.next();
-	// parameterizedTypeMungers.add(munger.parameterizeWith(parameterizationMap,
-	// world));
-	// }
-	// ret = parameterizedTypeMungers;
-	// } else {
-	// ret = delegate.getTypeMungers();
-	// }
-	// return ret;
-	// }
 
 	@Override
 	public Collection<ResolvedMember> getPrivilegedAccesses() {
@@ -943,9 +913,16 @@ public class ReferenceType extends ResolvedType {
 			((AbstractReferenceTypeDelegate) delegate).setSourceContext(this.delegate.getSourceContext());
 		}
 		this.delegate = delegate;
-		for (ReferenceType dependent : derivativeTypes) {
-			dependent.setDelegate(delegate);
+		List<WeakReference<ReferenceType>> forRemoval = new ArrayList<WeakReference<ReferenceType>>();
+		for (WeakReference<ReferenceType> derivativeRef : derivativeTypes) {
+			ReferenceType derivative = derivativeRef.get();
+			if (derivative!=null) {
+				derivative.setDelegate(delegate);
+			} else {
+				forRemoval.add(derivativeRef);
+			}
 		}
+		derivativeTypes.removeAll(forRemoval);
 
 		// If we are raw, we have a generic type - we should ensure it uses the
 		// same delegate
@@ -1098,11 +1075,55 @@ public class ReferenceType extends ResolvedType {
 				newInterfaces = newNewInterfaces;
 			}
 			if (this.isGenericType()) {
-				for (ReferenceType derivativeType : derivativeTypes) {
-					derivativeType.parameterizedInterfaces.clear();
+				for (WeakReference<ReferenceType> derivativeTypeRef : derivativeTypes) {
+					ReferenceType derivativeType = derivativeTypeRef.get();
+					if (derivativeType!=null) {
+						derivativeType.parameterizedInterfaces.clear();
+					}
 				}
 			}
 			parameterizedInterfaces.clear();
 		}
 	}
+
+	private boolean equal(UnresolvedType[] typeParameters, ResolvedType[] resolvedParameters) {
+		if (typeParameters.length!=resolvedParameters.length)  {
+			return false;
+		}
+		int len = typeParameters.length;
+		for (int p=0;p<len;p++) {
+			if (!typeParameters[p].equals(resolvedParameters[p])) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Look for a derivative type with the specified type parameters.  This can avoid creating an
+	 * unnecessary new (duplicate) with the same information in it.  This method also cleans up
+	 * any reference entries that have been null'd by a GC.
+	 * 
+	 * @param typeParameters the type parameters to use when searching for the derivative type.
+	 * @return an existing derivative type or null if there isn't one
+	 */
+	public ReferenceType findDerivativeType(ResolvedType[] typeParameters) {
+		List<WeakReference<ReferenceType>> forRemoval = new ArrayList<WeakReference<ReferenceType>>();
+		for (WeakReference<ReferenceType> derivativeTypeRef: derivativeTypes) {
+			ReferenceType derivativeType = derivativeTypeRef.get();
+			if (derivativeType==null) {
+				forRemoval.add(derivativeTypeRef);
+			} else {
+				if (derivativeType.isRawType()) {
+					continue;
+				}
+				if (equal(derivativeType.typeParameters,typeParameters)) {
+					return derivativeType; // this escape route wont remove the empty refs
+				}
+			}
+		}
+		derivativeTypes.removeAll(forRemoval);
+		return null;
+	}
+
 }

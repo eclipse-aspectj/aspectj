@@ -54,7 +54,6 @@ public class UnresolvedTypeVariableReferenceType extends UnresolvedType implemen
 				foundOK = true;
 			}
 			tvrt = new TypeVariableReferenceType(resolvedTypeVariable, world);
-			tvrt.fixedUp = foundOK;
 		}
 
 		return tvrt;

@@ -176,7 +176,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	 * signature string.
 	 */
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		return signature.hashCode();
 	}
 

@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2005-2010 Contributors.
+ * Copyright (c) 2005-2012 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -11,7 +11,7 @@ package org.aspectj.weaver;
 import java.util.Map;
 
 /**
- * ReferenceType representing a type variable. The delegate for this reference type is the upperbound on the type variable (so
+ * ReferenceType pointing to a type variable. The delegate for this reference type is the upperbound on the type variable (so
  * Object if not otherwise specified).
  * 
  * @author Adrian Colyer
@@ -21,18 +21,22 @@ public class TypeVariableReferenceType extends ReferenceType implements TypeVari
 
 	private TypeVariable typeVariable;
 
-	// If 'fixedUp' then the type variable in here is a reference to the real one that may
-	// exist either on a member or a type. Not fixedUp means that we unpacked a generic
-	// signature and weren't able to fix it up during resolution (didn't quite know enough
-	// at the right time). Wonder if we can fix it up late?
-	boolean fixedUp = false;
-
 	public TypeVariableReferenceType(TypeVariable typeVariable, World world) {
 		super(typeVariable.getGenericSignature(), typeVariable.getErasureSignature(), world);
 		this.typeVariable = typeVariable;
-		// setDelegate(new BoundedReferenceTypeDelegate(backing));
-		// this.isExtends = false;
-		// this.isSuper = false;
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof TypeVariableReferenceType) {
+			return typeVariable==((TypeVariableReferenceType)other).typeVariable;
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return typeVariable.hashCode();
 	}
 
 	/**
@@ -68,8 +72,6 @@ public class TypeVariableReferenceType extends ReferenceType implements TypeVari
 	}
 
 	public TypeVariable getTypeVariable() {
-		// if (!fixedUp)
-		// throw new BCException("ARGH"); // fix it up now?
 		return typeVariable;
 	}
 
