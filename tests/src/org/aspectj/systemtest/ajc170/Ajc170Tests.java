@@ -17,14 +17,51 @@ import junit.framework.Test;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.TypeFactory;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.World;
+import org.aspectj.weaver.internal.tools.StandardPointcutExpressionImpl;
+import org.aspectj.weaver.patterns.BasicTokenSource;
+import org.aspectj.weaver.patterns.ITokenSource;
+import org.aspectj.weaver.patterns.PatternParser;
+import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.patterns.PointcutEvaluationExpenseComparator;
+import org.aspectj.weaver.patterns.PointcutRewriter;
+import org.aspectj.weaver.reflect.ReflectionWorld;
+import org.aspectj.weaver.tools.StandardPointcutExpression;
+import org.aspectj.weaver.tools.StandardPointcutParser;
 
 /**
  * @author Andy Clement
  */ 
 public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testPointcutExpense_374964() {
+		// check a declaring type being specified causes the call() to be considered cheaper than this()
+		
+		World world = new ReflectionWorld(true, getClass().getClassLoader());
+		StandardPointcutParser pointcutParser = StandardPointcutParser.getPointcutParserSupportingAllPrimitives(world);
+		StandardPointcutExpressionImpl pointcutExpression = (StandardPointcutExpressionImpl)pointcutParser.parsePointcutExpression("call(* *(..)) && this(Object)");
+		Pointcut pc = pointcutExpression.getUnderlyingPointcut();
+		Pointcut newp = new PointcutRewriter().rewrite(pc);
+		// no declaring type so this() is considered cheaper
+		assertEquals("(this(java.lang.Object) && call(* *(..)))",newp.toString());
+		
+		pointcutExpression = (StandardPointcutExpressionImpl)pointcutParser.parsePointcutExpression("call(* String.*(..)) && this(Object)");
+		pc = pointcutExpression.getUnderlyingPointcut();
+		newp = new PointcutRewriter().rewrite(pc);
+		// declaring type, so call() is cheaper
+		assertEquals("(call(* java.lang.String.*(..)) && this(java.lang.Object))",newp.toString());
+
+		pointcutExpression = (StandardPointcutExpressionImpl)pointcutParser.parsePointcutExpression("this(Object) && call(* *(..)) && call(* String.*(..))");
+		pc = pointcutExpression.getUnderlyingPointcut();
+		newp = new PointcutRewriter().rewrite(pc);
+		// more complex example, mix of them
+		assertEquals("((call(* java.lang.String.*(..)) && this(java.lang.Object)) && call(* *(..)))",newp.toString());
+	}
+	
 /*
 	public void testPublicITDFs_pr73507_1() {
 		runTest("public ITDfs - 1");

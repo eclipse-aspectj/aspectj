@@ -25,14 +25,15 @@ public class PointcutEvaluationExpenseComparator implements Comparator<Pointcut>
 	private static final int WITHINCODE = 7;
 	private static final int ATWITHINCODE = 8;
 	private static final int EXE_INIT_PREINIT = 9;
-	private static final int THIS_OR_TARGET = 10;
-	private static final int CALL = 11;
-	private static final int ANNOTATION = 12;
-	private static final int AT_THIS_OR_TARGET = 13;
-	private static final int ARGS = 14;
-	private static final int AT_ARGS = 15;
-	private static final int CFLOW = 16;
-	private static final int IF = 17;
+	private static final int CALL_WITH_DECLARING_TYPE = 10;
+	private static final int THIS_OR_TARGET = 11;
+	private static final int CALL_WITHOUT_DECLARING_TYPE = 12;
+	private static final int ANNOTATION = 13;
+	private static final int AT_THIS_OR_TARGET = 14;
+	private static final int ARGS = 15;
+	private static final int AT_ARGS = 16;
+	private static final int CFLOW = 17;
+	private static final int IF = 18;
 	private static final int OTHER = 20;
 
 	/**
@@ -85,7 +86,12 @@ public class PointcutEvaluationExpenseComparator implements Comparator<Pointcut>
 			if (kind == Shadow.AdviceExecution) {
 				return ADVICEEXECUTION;
 			} else if ((kind == Shadow.ConstructorCall) || (kind == Shadow.MethodCall)) {
-				return CALL;
+				TypePattern declaringTypePattern = kp.getSignature().getDeclaringType();
+				if (declaringTypePattern instanceof AnyTypePattern) {
+					return CALL_WITHOUT_DECLARING_TYPE;
+				} else {
+					return CALL_WITH_DECLARING_TYPE;					
+				}
 			} else if ((kind == Shadow.ConstructorExecution) || (kind == Shadow.MethodExecution) || (kind == Shadow.Initialization)
 					|| (kind == Shadow.PreInitialization)) {
 				return EXE_INIT_PREINIT;
