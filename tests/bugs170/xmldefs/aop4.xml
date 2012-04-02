@@ -2,11 +2,11 @@
 <aspectj>
   <aspects>
     <concrete-aspect name="ConjuredUp">
-      <declare-annotation field="* field1(..)" annotation="@AnnoString(&quot;set from xml&quot;)"/>
-      <declare-annotation field="* field1(..)" annotation="@AnnoLong(999)"/>
-      <declare-annotation field="* field1(..)" annotation="@AnnoBoolean(true)"/>
-      <declare-annotation field="* field1(..)" annotation="@AnnoClass(Integer.class)"/>
-      <declare-annotation field="* field2(..)" annotation="@AnnoClass()"/> <!-- testing empty paren -->
+      <declare-annotation field="* field1" annotation="@AnnoString(&quot;set from xml&quot;)"/>
+      <declare-annotation field="* field1" annotation="@AnnoLong(999)"/>
+      <declare-annotation field="* field1" annotation="@AnnoBoolean(true)"/>
+      <declare-annotation field="* field1" annotation="@AnnoClass(Integer.class)"/>
+      <declare-annotation field="* field2" annotation="@AnnoClass()"/> <!-- testing empty paren -->
     </concrete-aspect>
   </aspects>
 
