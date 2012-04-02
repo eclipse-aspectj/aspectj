@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aspectj>
+  <aspects>
+    <concrete-aspect name="ConjuredUp">
+      <declare-annotation method="* Hello.sayHello(..)" annotation="@Anno"/>
+    </concrete-aspect>
+  </aspects>
+
+  <weaver options="-Xreweavable -verbose -XlazyTjp -showWeaveInfo">
+    <include within="Hello"/>
+  </weaver> 
+</aspectj>
+

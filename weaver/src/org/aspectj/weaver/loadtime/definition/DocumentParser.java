@@ -22,6 +22,8 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.loadtime.definition.Definition.AdviceKind;
+import org.aspectj.weaver.loadtime.definition.Definition.DeclareAnnotation;
+import org.aspectj.weaver.loadtime.definition.Definition.DeclareAnnotationKind;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -72,6 +74,7 @@ public class DocumentParser extends DefaultHandler {
 	private final static String AROUND_ELEMENT = "around";
 	private final static String WITHIN_ATTRIBUTE = "within";
 	private final static String EXPRESSION_ATTRIBUTE = "expression";
+	private final static String DECLARE_ANNOTATION_ELEMENT = "declare-annotation";
 
 	private final Definition definition;
 
@@ -225,6 +228,30 @@ public class DocumentParser extends DefaultHandler {
 			String expression = attributes.getValue(EXPRESSION_ATTRIBUTE);
 			if (!isNull(name) && !isNull(expression)) {
 				activeConcreteAspectDefinition.pointcuts.add(new Definition.Pointcut(name, replaceXmlAnd(expression)));
+			}
+		} else if (DECLARE_ANNOTATION_ELEMENT.equals(qName) && activeConcreteAspectDefinition!=null) {
+			String methodSig = attributes.getValue("method");
+			String fieldSig = attributes.getValue("field");
+			String typePat = attributes.getValue("type");
+			String anno = attributes.getValue("annotation");
+			if (isNull(anno)) {
+				throw new SAXException("Badly formed <declare-annotation> element, 'annotation' value is missing");
+			}
+			if (isNull(methodSig) && isNull(fieldSig) && isNull(typePat)) {
+				throw new SAXException("Badly formed <declare-annotation> element, need one of 'method'/'field'/'type' specified");
+			}
+			if (!isNull(methodSig)) {
+				// declare @method
+				activeConcreteAspectDefinition.declareAnnotations.add(new Definition.DeclareAnnotation(DeclareAnnotationKind.Method,
+						methodSig, anno));
+			} else if (!isNull(fieldSig)) {
+				// declare @field
+				activeConcreteAspectDefinition.declareAnnotations.add(new Definition.DeclareAnnotation(DeclareAnnotationKind.Field,
+						fieldSig, anno));
+			} else if (!isNull(typePat)) {
+				// declare @type
+				activeConcreteAspectDefinition.declareAnnotations.add(new Definition.DeclareAnnotation(DeclareAnnotationKind.Type,
+						typePat, anno));
 			}
 		} else if (BEFORE_ELEMENT.equals(qName) && activeConcreteAspectDefinition != null) {
 			String pointcut = attributes.getValue(POINTCUT_ELEMENT);

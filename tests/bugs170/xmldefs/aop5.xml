@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aspectj>
+  <aspects>
+    <concrete-aspect name="ConjuredUp">
+      <declare-annotation field="* field1(..)" annotation="@AnnoShort(8)"/>
+      <declare-annotation field="* field1(..)" annotation="@AnnoChar('z')"/>
+      <declare-annotation field="* field1(..)" annotation="@AnnoDouble(99.0d)"/>
+      <declare-annotation field="* field1(..)" annotation="@AnnoFloat(6.0f)"/>
+      <declare-annotation field="* field2(..)" annotation="@AnnoByte(88)"/> 
+      <declare-annotation field="* field2(..)" annotation="@AnnoInt(99)"/> 
+    </concrete-aspect>
+  </aspects>
+
+  <weaver options="-Xreweavable -verbose -XlazyTjp -showWeaveInfo">
+    <include within="Hello5"/>
+  </weaver> 
+</aspectj>
+

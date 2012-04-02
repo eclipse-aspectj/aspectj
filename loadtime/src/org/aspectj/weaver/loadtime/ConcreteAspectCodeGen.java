@@ -21,8 +21,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
+import org.aspectj.apache.bcel.classfile.annotation.ClassElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
 import org.aspectj.apache.bcel.classfile.annotation.NameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
@@ -36,6 +38,7 @@ import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
+import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.GeneratedReferenceTypeDelegate;
 import org.aspectj.weaver.ReferenceType;
@@ -50,7 +53,14 @@ import org.aspectj.weaver.bcel.LazyClassGen;
 import org.aspectj.weaver.bcel.LazyMethodGen;
 import org.aspectj.weaver.loadtime.definition.Definition;
 import org.aspectj.weaver.loadtime.definition.Definition.AdviceKind;
+import org.aspectj.weaver.loadtime.definition.Definition.DeclareAnnotationKind;
 import org.aspectj.weaver.loadtime.definition.Definition.PointcutAndAdvice;
+import org.aspectj.weaver.patterns.BasicTokenSource;
+import org.aspectj.weaver.patterns.DeclareAnnotation;
+import org.aspectj.weaver.patterns.ISignaturePattern;
+import org.aspectj.weaver.patterns.ITokenSource;
+import org.aspectj.weaver.patterns.NamePattern;
+import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.PerSingleton;
 
@@ -131,6 +141,11 @@ public class ConcreteAspectCodeGen {
 		}
 
 		if (concreteAspect.pointcutsAndAdvice.size() != 0) {
+			isValid = true;
+			return true;
+		}
+		
+		if (concreteAspect.declareAnnotations.size()!=0) {
 			isValid = true;
 			return true;
 		}
@@ -471,6 +486,13 @@ public class ConcreteAspectCodeGen {
 				adviceCounter++;
 			}
 		}
+		
+		if (concreteAspect.declareAnnotations.size()>0) {
+			int decCounter = 1;
+			for (Definition.DeclareAnnotation da: concreteAspect.declareAnnotations) {
+				generateDeclareAnnotation(da,decCounter++,cg);
+			}
+		}
 
 		// handle the perClause
 		ReferenceType rt = new ReferenceType(ResolvedType.forName(concreteAspect.name).getSignature(), world);
@@ -491,6 +513,275 @@ public class ConcreteAspectCodeGen {
 		return bytes;
 	}
 
+	/**
+	 * The DeclareAnnotation object encapsulates an method/field/type descriptor and an annotation. This uses a DeclareAnnotation object 
+	 * captured from the XML (something like '<declare-annotation field="* field1(..)" annotation="@Annot(a='a',fred=false,'abc')"/>') 
+	 * and builds the same construct that would have existed if the code style variant was used.  This involves creating a member upon
+	 * which to hang the real annotation and then creating a classfile level attribute indicating a declare annotation is present
+	 * (that includes the signature pattern and a pointer to the real member holding the annotation).
+	 * 
+	 */
+	private void generateDeclareAnnotation(Definition.DeclareAnnotation da, int decCounter, LazyClassGen cg) {
+		
+		// Here is an example member from a code style declare annotation:
+		//void ajc$declare_at_method_1();
+		//  RuntimeInvisibleAnnotations: length = 0x6
+		//   00 01 00 1B 00 00 
+		//  RuntimeVisibleAnnotations: length = 0x15
+		//   00 01 00 1D 00 03 00 1E 73 00 1F 00 20 73 00 21
+		//   00 22 73 00 23 
+		//  org.aspectj.weaver.MethodDeclarationLineNumber: length = 0x8
+		//   00 00 00 02 00 00 00 16 
+		//  org.aspectj.weaver.AjSynthetic: length = 0x
+		//   
+		//  Code:
+		//   Stack=0, Locals=1, Args_size=1
+		//   0:	return
+		
+		// and at the class level a Declare attribute:
+		//		  org.aspectj.weaver.Declare: length = 0x51
+		//		   05 00 00 00 03 01 00 05 40 41 6E 6E 6F 01 00 17
+		//		   61 6A 63 24 64 65 63 6C 61 72 65 5F 61 74 5F 6D
+		//		   65 74 68 6F 64 5F 31 01 01 00 00 00 00 05 05 00
+		//		   08 73 61 79 48 65 6C 6C 6F 00 01 04 00 00 00 00
+		//		   07 00 00 00 27 00 00 00 34 00 00 00 16 00 00 00
+		//		   3C 
+		
+		AnnotationAJ constructedAnnotation = buildDeclareAnnotation_actualAnnotation(cg, da);
+		if (constructedAnnotation==null) {
+			return; // error occurred (and was reported), do not continue
+		}
+		if (da.declareAnnotationKind==DeclareAnnotationKind.Method || da.declareAnnotationKind==DeclareAnnotationKind.Field) {	
+			String declareName = new StringBuilder("ajc$declare_at_").append(da.declareAnnotationKind==DeclareAnnotationKind.Method?"method":"field").append("_").append(decCounter).toString();			
+			LazyMethodGen declareMethod = new LazyMethodGen(Modifier.PUBLIC, Type.VOID, declareName, Type.NO_ARGS, EMPTY_STRINGS, cg);
+			InstructionList declareMethodBody = declareMethod.getBody();
+			declareMethodBody.append(InstructionFactory.RETURN);
+			declareMethod.addAnnotation(constructedAnnotation);
+
+			ITokenSource tokenSource = BasicTokenSource.makeTokenSource(da.pattern,null);
+			PatternParser pp = new PatternParser(tokenSource);
+			ISignaturePattern isp = (da.declareAnnotationKind==DeclareAnnotationKind.Method?pp.parseCompoundMethodOrConstructorSignaturePattern(true):pp.parseCompoundFieldSignaturePattern());
+			DeclareAnnotation deca = new DeclareAnnotation(da.declareAnnotationKind==DeclareAnnotationKind.Method?DeclareAnnotation.AT_METHOD:DeclareAnnotation.AT_FIELD, isp);
+			deca.setAnnotationMethod(declareName);
+			deca.setAnnotationString(da.annotation);
+			AjAttribute attribute = new AjAttribute.DeclareAttribute(deca);
+			cg.addAttribute(attribute);
+			cg.addMethodGen(declareMethod);
+		}
+	}
+
+	/**
+	 * Construct the annotation that the declare wants to add to the target.
+	 */
+	private AnnotationAJ buildDeclareAnnotation_actualAnnotation(LazyClassGen cg, Definition.DeclareAnnotation da) {
+		AnnotationGen anno = buildAnnotationFromString(cg.getConstantPool(),cg.getWorld(),da.annotation);
+		if (anno==null) {
+			return null;
+		} else {
+			AnnotationAJ bcelAnnotation = new BcelAnnotation(anno, world);
+			return bcelAnnotation;
+		}
+	}
+	
+	// TODO support array values
+	// TODO support annotation values
+	/**
+	 * Build an AnnotationGen object based on a string, for example "@Foo(35,message='string')".  Notice single quotes are fine for
+	 * strings as they don't need special handling in the XML.
+	 */
+	private AnnotationGen buildAnnotationFromString(ConstantPool cp, World w, String annotationString) {
+		int paren = annotationString.indexOf('(');
+		if (paren==-1) {
+			// the easy case, no values
+			AnnotationGen aaj = buildBaseAnnotationType(cp,world,annotationString);
+			return aaj;
+		} else {
+			// Discover the name and name/value pairs
+			String name = annotationString.substring(0,paren);
+			// break the rest into pieces based on the commas
+			List<String> values = new ArrayList<String>();
+			int pos = paren+1;
+			int depth = 0;
+			int len = annotationString.length();
+			int start = pos;
+			while (pos<len) {
+				char ch = annotationString.charAt(pos);
+				if (ch==')' && depth==0) {
+					break; // reached the end
+				}
+				if (ch=='(' || ch=='[') {
+					depth++;
+				} else if (ch==')' || ch==']') {
+					depth--;
+				}
+				if (ch==',' && depth==0) {
+					// found a comma at the right level to end a name/value pair
+					values.add(annotationString.substring(start,pos).trim());
+					start=pos+1;
+				}
+				pos++;
+			}
+			if (start != pos) {
+				// there is a last bit to add
+				values.add(annotationString.substring(start,pos).trim());
+			}
+			AnnotationGen aaj = buildBaseAnnotationType(cp,world,name);
+			if (aaj==null) {
+				return null; // a check failed
+			}
+			String typename = aaj.getTypeName();
+			ResolvedType type = UnresolvedType.forName(typename).resolve(world); // shame it isn't retrievable from the anno
+			ResolvedMember[] rms = type.getDeclaredMethods();
+			// Add the values
+			for (String value: values) {
+				int equalsIndex = value.indexOf("=");
+				String key = "value";
+				if (value.charAt(0)!='\"' && equalsIndex!=-1) {
+					key = value.substring(0,equalsIndex).trim();
+					value = value.substring(equalsIndex+1).trim();
+				}
+				boolean keyIsOk = false;
+				for (int m=0;m<rms.length;m++) {
+					NameValuePair nvp = null;
+					if (rms[m].getName().equals(key)) {
+						// found it!
+						keyIsOk=true;
+						UnresolvedType rt = rms[m].getReturnType();
+						if (rt.isPrimitiveType()) {
+							switch (rt.getSignature().charAt(0)) {
+							case 'J': // long
+								try {
+									long longValue = Long.parseLong(value);
+									nvp = new NameValuePair(key,new SimpleElementValue(ElementValue.PRIMITIVE_LONG,cp,longValue),cp);
+								} catch (NumberFormatException nfe) {
+									reportError("unable to interpret annotation value '"+value+"' as a long");
+									return null;
+								}
+								break;
+							case 'S': // short
+								try {
+									short shortValue = Short.parseShort(value);
+									nvp = new NameValuePair(key,new SimpleElementValue(ElementValue.PRIMITIVE_SHORT,cp,shortValue),cp);
+								} catch (NumberFormatException nfe) {
+									reportError("unable to interpret annotation value '"+value+"' as a short");
+									return null;
+								}
+								break;
+							case 'F': // float
+								try {
+									float floatValue = Float.parseFloat(value);
+									nvp = new NameValuePair(key,new SimpleElementValue(ElementValue.PRIMITIVE_FLOAT,cp,floatValue),cp);
+								} catch (NumberFormatException nfe) {
+									reportError("unable to interpret annotation value '"+value+"' as a float");
+									return null;
+								}
+								break;
+							case 'D': // double
+								try {
+									double doubleValue = Double.parseDouble(value);
+									nvp = new NameValuePair(key,new SimpleElementValue(ElementValue.PRIMITIVE_DOUBLE,cp,doubleValue),cp);
+								} catch (NumberFormatException nfe) {
+									reportError("unable to interpret annotation value '"+value+"' as a double");
+									return null;
+								}
+								break;
+							case 'I': // integer
+								try {
+									int intValue = Integer.parseInt(value);
+									nvp = new NameValuePair(key,new SimpleElementValue(ElementValue.PRIMITIVE_INT,cp,intValue),cp);
+								} catch (NumberFormatException nfe) {
+									reportError("unable to interpret annotation value '"+value+"' as an integer");
+									return null;
+								}
+								break;
+							case 'B': // byte
+								try {
+									byte byteValue = Byte.parseByte(value);
+									nvp = new NameValuePair(key,new SimpleElementValue(ElementValue.PRIMITIVE_BYTE,cp,byteValue),cp);
+								} catch (NumberFormatException nfe) {
+									reportError("unable to interpret annotation value '"+value+"' as a byte");
+									return null;
+								}
+								break;
+							case 'C': // char
+								if (value.length()<2) {
+									reportError("unable to interpret annotation value '"+value+"' as a char");
+									return null;
+								}
+								nvp = new NameValuePair(key,new SimpleElementValue(ElementValue.PRIMITIVE_CHAR,cp,value.charAt(1)),cp);
+								break;
+							case 'Z': // boolean
+								try {
+									boolean booleanValue = Boolean.parseBoolean(value);
+									nvp = new NameValuePair(key,new SimpleElementValue(ElementValue.PRIMITIVE_BOOLEAN,cp,booleanValue),cp);
+								} catch (NumberFormatException nfe) {
+									reportError("unable to interpret annotation value '"+value+"' as a boolean");
+									return null;
+								}
+								break;
+								default:
+									reportError("not yet supporting XML setting of annotation values of type "+rt.getName());
+									return null;
+							}
+						} else if (UnresolvedType.JL_STRING.equals(rt)) {
+							if (value.length()<2) {
+								reportError("Invalid string value specified in annotation string: "+annotationString);
+								return null;
+							}
+							value = value.substring(1,value.length()-1); // trim the quotes off
+							nvp = new NameValuePair(key,new SimpleElementValue(ElementValue.STRING,cp,value),cp);
+						} else if (UnresolvedType.JL_CLASS.equals(rt)) {
+							// format of class string:
+							// Foo.class
+							// java.lang.Foo.class
+							if (value.length()<6) {
+								reportError("Not a well formed class value for an annotation '"+value+"'");
+								return null;
+							}
+							String clazz = value.substring(0,value.length()-6);
+							boolean qualified = clazz.indexOf(".")!=-1;
+							if (!qualified) {
+								// if not qualified, have to assume java.lang
+								clazz = "java.lang."+clazz;
+							}
+							nvp = new NameValuePair(key,new ClassElementValue(new ObjectType(clazz),cp),cp);
+						}
+					}
+					if (nvp!=null) {
+						aaj.addElementNameValuePair(nvp);
+					}
+				}
+				if (!keyIsOk) {
+					reportError("annotation @"+typename+" does not have a value named "+key);
+					return null;
+				}
+			}
+			return aaj;
+		}
+	}
+	
+	private AnnotationGen buildBaseAnnotationType(ConstantPool cp,World world, String typename) {
+		String annoname = typename;
+		if (annoname.startsWith("@")) {
+			annoname= annoname.substring(1);
+		}
+		ResolvedType annotationType = UnresolvedType.forName(annoname).resolve(world);
+		if (!annotationType.isAnnotation()) {
+			reportError("declare is not specifying an annotation type :"+typename);
+			return null;
+		}
+		if (!annotationType.isAnnotationWithRuntimeRetention()) {
+			reportError("declare is using an annotation type that does not have runtime retention: "+typename);
+			return null;
+		}
+		List<NameValuePair> elems = new ArrayList<NameValuePair>();
+		return new AnnotationGen(new ObjectType(annoname), elems, true, cp);
+	}
+	
+	/**
+	 * Construct the annotation that indicates this is a declare 
+	 */
+	
 	/**
 	 * The PointcutAndAdvice object encapsulates an advice kind, a pointcut and names a Java method in a particular class. Generate
 	 * an annotation style advice that has that pointcut whose implementation delegates to the Java method.

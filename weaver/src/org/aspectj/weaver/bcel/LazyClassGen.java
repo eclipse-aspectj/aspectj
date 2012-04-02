@@ -1578,6 +1578,10 @@ public final class LazyClassGen {
 			annotations.add(new AnnotationGen(a, getConstantPool(), true));
 		}
 	}
+	
+	public void addAttribute(AjAttribute attribute) {
+		myGen.addAttribute(Utility.bcelAttribute(attribute, getConstantPool()));
+	}
 
 	// this test is like asking:
 	// if

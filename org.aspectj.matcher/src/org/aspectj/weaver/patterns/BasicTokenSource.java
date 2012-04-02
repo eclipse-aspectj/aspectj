@@ -80,7 +80,7 @@ public class BasicTokenSource implements ITokenSource {
 	
 	//////////////////////////////////////////////////////
 	// Convenience, maybe just for testing
-	static ITokenSource makeTokenSource(String input, ISourceContext context) {
+	public static ITokenSource makeTokenSource(String input, ISourceContext context) {
 		char[] chars = input.toCharArray();
 		
 		int i = 0;

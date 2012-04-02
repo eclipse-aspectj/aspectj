@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008 Contributors
+ * Copyright (c) 2008-2012 Contributors
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,20 +17,13 @@ import junit.framework.Test;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.TypeFactory;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.internal.tools.StandardPointcutExpressionImpl;
-import org.aspectj.weaver.patterns.BasicTokenSource;
-import org.aspectj.weaver.patterns.ITokenSource;
-import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.patterns.Pointcut;
-import org.aspectj.weaver.patterns.PointcutEvaluationExpenseComparator;
 import org.aspectj.weaver.patterns.PointcutRewriter;
 import org.aspectj.weaver.reflect.ReflectionWorld;
-import org.aspectj.weaver.tools.StandardPointcutExpression;
 import org.aspectj.weaver.tools.StandardPointcutParser;
 
 /**
@@ -38,6 +31,35 @@ import org.aspectj.weaver.tools.StandardPointcutParser;
  */ 
 public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testXmlDefsDeclareAnnoMethod() {
+		runTest("xml defined dec at method");
+	}
+
+	// anno not runtime vis
+	public void testXmlDefsDeclareAnnoMethod2() {
+		runTest("xml defined dec at method 2");
+	}
+
+	public void testXmlDefsDeclareAnnoField() {
+		runTest("xml defined dec at field");
+	}
+	
+	public void testXmlDefsDeclareAnnoFieldVariants1() {
+		runTest("xml defined dec anno - variants 1");
+	}
+
+	public void testXmlDefsDeclareAnnoFieldVariants2() {
+		runTest("xml defined dec anno - variants 2");
+	}
+
+	public void testXmlDefsDeclareAnnoFieldMultipleValues() {
+		runTest("xml defined dec anno - multiple values");
+	}
+
+	public void testXmlDefsDeclareAnnoFieldMultipleValuesAndSpaces() {
+		runTest("xml defined dec anno - multiple values and spaces");
+	}
+	
 	public void testPointcutExpense_374964() {
 		// check a declaring type being specified causes the call() to be considered cheaper than this()
 		

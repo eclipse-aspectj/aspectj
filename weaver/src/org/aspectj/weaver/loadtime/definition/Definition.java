@@ -112,6 +112,7 @@ public class Definition {
 		public final String extend;
 		public final String precedence;
 		public final List<Definition.Pointcut> pointcuts;
+		public final List<Definition.DeclareAnnotation> declareAnnotations;
 		public final List<Definition.PointcutAndAdvice> pointcutsAndAdvice;
 		public final String perclause;
 		public List<Definition.DeclareErrorOrWarning> deows;
@@ -135,6 +136,7 @@ public class Definition {
 			}
 			this.precedence = precedence;
 			this.pointcuts = new ArrayList<Definition.Pointcut>();
+			this.declareAnnotations = new ArrayList<Definition.DeclareAnnotation>();
 			this.pointcutsAndAdvice = new ArrayList<Definition.PointcutAndAdvice>();
 			this.deows = new ArrayList<Definition.DeclareErrorOrWarning>();
 			this.perclause = perclause;
@@ -153,6 +155,22 @@ public class Definition {
 
 	public enum AdviceKind {
 		Before, After, AfterReturning, AfterThrowing, Around;
+	}
+	
+	public enum DeclareAnnotationKind {
+		Method, Field, Type;
+	}
+	
+	public static class DeclareAnnotation {
+		public final DeclareAnnotationKind declareAnnotationKind;
+		public final String pattern;
+		public final String annotation;
+		
+		public DeclareAnnotation(DeclareAnnotationKind kind, String pattern, String annotation) {
+			this.declareAnnotationKind = kind;
+			this.pattern = pattern;
+			this.annotation = annotation;
+		}
 	}
 
 	public static class PointcutAndAdvice {

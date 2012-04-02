@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aspectj>
+  <aspects>
+    <concrete-aspect name="ConjuredUp">
+      <declare-annotation field="* field1(..)" annotation="@Annot(a='a',fred=false,'abc')"/>
+    </concrete-aspect>
+  </aspects>
+
+  <weaver options="-Xreweavable -verbose -XlazyTjp -showWeaveInfo">
+    <include within="Hello6"/>
+  </weaver> 
+</aspectj>
+

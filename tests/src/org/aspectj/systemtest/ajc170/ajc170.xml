@@ -2,6 +2,106 @@
 
 <suite>
 
+
+ 	<ajc-test dir="bugs170/xmldefs" title="xml defined dec at method">
+     <compile files="Hello.java Anno.java" options="-1.5"/>
+     <run class="Hello" ltw="aop.xml">
+       <stdout>
+           <line text="Hello"/>
+           <line text="World"/>
+           <line text="Annotations on sayHello? true"/>
+           <line text="Annotation count is 1"/>
+           <line text="@Anno"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+ 	<ajc-test dir="bugs170/xmldefs" title="xml defined dec at method 2">
+     <compile files="Hello.java Anno2.java" options="-1.5"/>
+     <run class="Hello" ltw="aop2.xml">
+       <stdout>
+           <line text="Hello"/>
+           <line text="World"/>
+           <line text="Annotations on sayHello? false"/>
+       </stdout>
+       <stderr>
+       	<line text="info AspectJ Weaver"/>
+       	<line text="info register"/>
+       	<line text="info using configuration"/>
+       	<line text="info define aspect ConjuredUp"/>
+       	<line text="error declare is using an annotation type that does not have runtime retention: @Anno2"/>
+       	<line text="info weaver"/>
+       </stderr>
+     </run>
+   </ajc-test>
+   
+ 	<ajc-test dir="bugs170/xmldefs" title="xml defined dec at field">
+     <compile files="Hello2.java Anno.java" options="-1.5"/>
+     <run class="Hello2" ltw="aop3.xml">
+       <stdout>
+           <line text="Annotations on i? true"/>
+           <line text="Annotation count is 1"/>
+           <line text="@Anno"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/xmldefs" title="xml defined dec anno - variants 1">
+     <compile files="Hello4.java Anno4.java" options="-1.5"/>
+     <run class="Hello4" ltw="aop4.xml">
+       <stdout>
+           <line text="Annotations on field1? true"/>
+           <line text="Annotation count is 4"/>
+           <line text="@AnnoBoolean(zzz=false, value=true)"/>
+           <line text="@AnnoClass(value=class java.lang.Integer, ccc=class java.lang.String)"/>
+           <line text="@AnnoLong(jjj=111, value=999)"/>
+           <line text="@AnnoString(sss=xyz, value=set from xml)"/>
+           <line text="Annotations on field2? true"/>
+           <line text="Annotation count is 1"/>
+           <line text="@AnnoClass(value=class java.lang.String, ccc=class java.lang.String)"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/xmldefs" title="xml defined dec anno - variants 2">
+     <compile files="Hello5.java Anno5.java" options="-1.5"/>
+     <run class="Hello5" ltw="aop5.xml">
+       <stdout>
+           <line text="Annotations on field1? true"/>
+           <line text="Annotation count is 4"/>
+           <line text="@AnnoChar(value=z, ccc=a)"/>
+           <line text="@AnnoDouble(ddd=3.0, value=99.0)"/>
+           <line text="@AnnoFloat(fff=4.0, value=6.0)"/>
+           <line text="@AnnoShort(sss=3, value=8)"/>
+           <line text="Annotations on field2? true"/>
+           <line text="Annotation count is 2"/>
+           <line text="@AnnoByte(value=88, bbb=66)"/>
+           <line text="@AnnoInt(value=99, iii=111)"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/xmldefs" title="xml defined dec anno - multiple values">
+     <compile files="Hello6.java Anno6.java" options="-1.5"/>
+     <run class="Hello6" ltw="aop6.xml">
+       <stdout>
+           <line text="Annotations on field1? true"/>
+           <line text="Annotation count is 1"/>
+           <line text="@Annot(a=a, fred=false, value=abc)"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/xmldefs" title="xml defined dec anno - multiple values and spaces">
+     <compile files="Hello6.java Anno6.java" options="-1.5"/>
+     <run class="Hello6" ltw="aop6a.xml">
+       <stdout>
+           <line text="Annotations on field1? true"/>
+           <line text="Annotation count is 1"/>
+           <line text="@Annot(a=a, fred=false, value=abc)"/>
+       </stdout>
+     </run>
+   </ajc-test>
  
     <ajc-test dir="bugs170/pr73507" title="public ITDfs - 1">
       <compile files="Case1.java" options="-1.5"/>
