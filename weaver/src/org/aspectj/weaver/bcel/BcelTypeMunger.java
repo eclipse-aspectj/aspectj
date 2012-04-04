@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.ClassFormatException;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
@@ -739,13 +740,19 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	}
 
 	protected LazyMethodGen makeMethodGen(LazyClassGen gen, ResolvedMember member) {
-		LazyMethodGen ret = new LazyMethodGen(member.getModifiers(), BcelWorld.makeBcelType(member.getReturnType()),
-				member.getName(), BcelWorld.makeBcelTypes(member.getParameterTypes()), UnresolvedType.getNames(member
-						.getExceptions()), gen);
-
-		// 43972 : Static crosscutting makes interfaces unusable for javac
-		// ret.makeSynthetic();
-		return ret;
+		try {
+			Type returnType = BcelWorld.makeBcelType(member.getReturnType());
+			Type[] parameterTypes = BcelWorld.makeBcelTypes(member.getParameterTypes());
+			LazyMethodGen ret = new LazyMethodGen(member.getModifiers(), returnType,
+					member.getName(), parameterTypes, UnresolvedType.getNames(member
+							.getExceptions()), gen);
+	
+			// 43972 : Static crosscutting makes interfaces unusable for javac
+			// ret.makeSynthetic();
+			return ret;
+		} catch (ClassFormatException cfe) {
+			throw new RuntimeException("Problem with makeMethodGen for method "+member.getName()+" in type "+gen.getName()+"  ret="+member.getReturnType(),cfe);
+		}
 	}
 
 	protected FieldGen makeFieldGen(LazyClassGen gen, ResolvedMember member) {

@@ -3,6 +3,37 @@
 <suite>
 
 
+ 	<ajc-test dir="bugs170/ltw" title="dec at field ordering 1">
+     <compile files="Anno.java TriggerAll.java MyObject.java Main.java" options="-1.5"/>
+     <run class="ch.tests.Main">
+       <stdout>
+           <line text="Triggered"/>
+           <line text="Triggered"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+ 	<ajc-test dir="bugs170/ltw" title="dec at field ordering 2">
+     <compile files="Anno.java Main.java TriggerAll.java  MyObject.java" options="-1.5"/>
+     <run class="ch.tests.Main">
+       <stdout>
+           <line text="Triggered"/>
+           <line text="Triggered"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/ltw" title="dec at field ordering ltw 1">
+     <compile files="Anno.java Main.java MyObject.java" options="-1.5"/>
+     <compile files="TriggerAll.java" options="-Xlint:ignore -1.5 "/>
+     <run class="ch.tests.Main" ltw="aop.xml">
+       <stdout>
+           <line text="Triggered"/>
+           <line text="Triggered"/>
+       </stdout>
+     </run>
+   </ajc-test>
+
  	<ajc-test dir="bugs170/xmldefs" title="xml defined dec at method">
      <compile files="Hello.java Anno.java" options="-1.5"/>
      <run class="Hello" ltw="aop.xml">

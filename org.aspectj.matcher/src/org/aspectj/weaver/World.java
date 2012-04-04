@@ -55,21 +55,18 @@ import org.aspectj.weaver.tools.TraceFactory;
  * A World is a collection of known types and crosscutting members.
  */
 public abstract class World implements Dump.INode {
+	
 	/** handler for any messages produced during resolution etc. */
 	private IMessageHandler messageHandler = IMessageHandler.SYSTEM_ERR;
 
-	/**
-	 * handler for cross-reference information produced during the weaving process
-	 */
+	/** handler for cross-reference information produced during the weaving process */
 	private ICrossReferenceHandler xrefHandler = null;
 
-	/**
-	 * Currently 'active' scope in which to lookup (resolve) typevariable references
-	 */
+	/** Currently 'active' scope in which to lookup (resolve) typevariable references */
 	private TypeVariableDeclaringElement typeVariableLookupScope;
 
 	/** The heart of the world, a map from type signatures to resolved types */
-	protected TypeMap typeMap = new TypeMap(this); // Signature to ResolvedType
+	protected TypeMap typeMap = new TypeMap(this);
 
 	/** New pointcut designators this world supports */
 	private Set<PointcutDesignatorHandler> pointcutDesignators;
@@ -99,9 +96,7 @@ public abstract class World implements Dump.INode {
 	/** XhasMember option setting passed down to weaver */
 	private boolean XhasMember = false;
 
-	/**
-	 * Xpinpoint controls whether we put out developer info showing the source of messages
-	 */
+	/** Xpinpoint controls whether we put out developer info showing the source of messages */
 	private boolean Xpinpoint = false;
 
 	/** When behaving in a Java 5 way autoboxing is considered */
@@ -117,13 +112,9 @@ public abstract class World implements Dump.INode {
 	/** The level of the aspectjrt.jar the code we generate needs to run on */
 	private String targetAspectjRuntimeLevel = Constants.RUNTIME_LEVEL_DEFAULT;
 
-	/** Flags for the new joinpoints that are 'optional' */
-	private boolean optionalJoinpoint_ArrayConstruction = false; // Command line
-	// flag:
-	// "-Xjoinpoints:arrayconstruction"
-	private boolean optionalJoinpoint_Synchronization = false; // Command line
-	// flag:
-	// "-Xjoinpoints:synchronization"
+	/** Flags for the new joinpoints that are 'optional': -Xjoinpoints:arrayconstruction -Xjoinpoints:synchronization */
+	private boolean optionalJoinpoint_ArrayConstruction = false; 
+	private boolean optionalJoinpoint_Synchronization = false; 
 
 	private boolean addSerialVerUID = false;
 

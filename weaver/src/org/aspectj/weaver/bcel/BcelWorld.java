@@ -791,7 +791,28 @@ public class BcelWorld extends World implements Repository {
 		}
 		return didSomething;
 	}
-
+	
+	/**
+	 * Apply the specified declare @field construct to any matching fields in the specified type.
+	 * @param deca the declare annotation targeting fields
+	 * @param type the type to check for members matching the declare annotation
+	 * @return true if something matched and the type was modified
+	 */
+	private boolean applyDeclareAtField(DeclareAnnotation deca, ResolvedType type) {
+		boolean changedType = false;
+		ResolvedMember[] fields = type.getDeclaredFields();
+		for (ResolvedMember field: fields) {
+			if (deca.matches(field, this)) {
+				AnnotationAJ anno = deca.getAnnotation();
+				if (!field.hasAnnotation(anno.getType())) {
+					field.addAnnotation(anno);
+					changedType=true;
+				}
+			}
+		}
+		return changedType;
+	}
+	
 	/**
 	 * Checks for an @target() on the annotation and if found ensures it allows the annotation to be attached to the target type
 	 * that matched.
@@ -842,29 +863,39 @@ public class BcelWorld extends World implements Repository {
 				anAnnotationChangeOccurred = true;
 			}
 		}
+		
+		// apply declare @field
+		for (DeclareAnnotation deca: getCrosscuttingMembersSet().getDeclareAnnotationOnFields()) {
+			if (applyDeclareAtField(deca,onType)) {
+				anAnnotationChangeOccurred = true;
+			}
+		}
 
 		while ((aParentChangeOccurred || anAnnotationChangeOccurred) && !decpToRepeat.isEmpty()) {
 			anAnnotationChangeOccurred = aParentChangeOccurred = false;
 			List<DeclareParents> decpToRepeatNextTime = new ArrayList<DeclareParents>();
-			for (Iterator<DeclareParents> iter = decpToRepeat.iterator(); iter.hasNext();) {
-				DeclareParents decp = iter.next();
-				boolean typeChanged = applyDeclareParents(decp, onType);
-				if (typeChanged) {
+			for (DeclareParents decp: decpToRepeat) {
+				if (applyDeclareParents(decp, onType)) {
 					aParentChangeOccurred = true;
 				} else {
 					decpToRepeatNextTime.add(decp);
 				}
 			}
 
-			for (Iterator iter = getCrosscuttingMembersSet().getDeclareAnnotationOnTypes().iterator(); iter.hasNext();) {
-				DeclareAnnotation decA = (DeclareAnnotation) iter.next();
-				boolean typeChanged = applyDeclareAtType(decA, onType, false);
-				if (typeChanged) {
+			for (DeclareAnnotation deca: getCrosscuttingMembersSet().getDeclareAnnotationOnTypes()) {
+				if (applyDeclareAtType(deca, onType, false)) {
+					anAnnotationChangeOccurred = true;
+				}
+			}
+			
+			for (DeclareAnnotation deca: getCrosscuttingMembersSet().getDeclareAnnotationOnFields()) {
+				if (applyDeclareAtField(deca, onType)) {
 					anAnnotationChangeOccurred = true;
 				}
 			}
 			decpToRepeat = decpToRepeatNextTime;
 		}
+		
 	}
 
 	@Override

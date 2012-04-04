@@ -31,6 +31,19 @@ import org.aspectj.weaver.tools.StandardPointcutParser;
  */ 
 public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+
+	public void testDecAtFieldOrderingLTW1() {
+		runTest("dec at field ordering ltw 1");
+	}
+	
+	public void testDecAtFieldOrdering1() {
+		runTest("dec at field ordering 1");
+	}
+	
+//	public void testDecAtFieldOrdering2() {
+//		runTest("dec at field ordering 2");
+//	}
+	
 	public void testXmlDefsDeclareAnnoMethod() {
 		runTest("xml defined dec at method");
 	}

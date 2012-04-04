@@ -1,0 +1,153 @@
+Compiled from "Main.java"
+public class ch.tests.Main extends java.lang.Object
+  SourceFile: "Main.java"
+  org.aspectj.weaver.WeaverVersion: length = 0xC
+   00 07 00 00 00 00 01 34 47 FFFFFFCD 60 28 
+  org.aspectj.weaver.WeaverState: length = 0xED
+   53 00 00 00 00 01 00 17 4C 63 68 2F 61 73 70 65
+   63 74 73 2F 54 72 69 67 67 65 72 41 6C 6C 3B 00
+   00 00 FFFFFFCA 00 22 00 00 01 79 00 21 00 01 00 03 00
+   00 00 00 00 02 00 01 00 05 00 06 00 01 00 07 00
+   00 00 2F 00 01 00 01 00 00 00 05 2A FFFFFFB7 00 08 FFFFFFB1
+   00 00 00 02 00 0A 00 00 00 06 00 01 00 00 00 03
+   00 0B 00 00 00 0C 00 01 00 00 00 05 00 0C 00 0D
+   00 00 00 09 00 0E 00 0F 00 02 00 10 00 00 00 08
+   00 00 00 05 00 00 00 43 00 07 00 00 00 55 00 02
+   00 02 00 00 00 15 FFFFFFBB 00 11 59 FFFFFFB7 00 13 4C 2B 10
+   0D FFFFFFB5 00 14 2B 10 0D FFFFFFB6 00 18 FFFFFFB1 00 00 00 02 00
+   0A 00 00 00 12 00 04 00 00 00 06 00 08 00 07 00
+   0E 00 08 00 14 00 09 00 0B 00 00 00 16 00 02 00
+   00 00 15 00 1C 00 1D 00 00 00 08 00 0D 00 1E 00
+   1F 00 01 00 01 00 20 00 00 00 02 00 21 
+  minor version: 0
+  major version: 49
+  Constant pool:
+const #1 = class	#2;	//  ch/tests/Main
+const #2 = Asciz	ch/tests/Main;
+const #3 = class	#4;	//  java/lang/Object
+const #4 = Asciz	java/lang/Object;
+const #5 = Asciz	<init>;
+const #6 = Asciz	()V;
+const #7 = Asciz	Code;
+const #8 = Method	#3.#9;	//  java/lang/Object."<init>":()V
+const #9 = NameAndType	#5:#6;//  "<init>":()V
+const #10 = Asciz	LineNumberTable;
+const #11 = Asciz	LocalVariableTable;
+const #12 = Asciz	this;
+const #13 = Asciz	Lch/tests/Main;;
+const #14 = Asciz	main;
+const #15 = Asciz	([Ljava/lang/String;)V;
+const #16 = Asciz	org.aspectj.weaver.MethodDeclarationLineNumber;
+const #17 = class	#18;	//  ch/tests/MyObject
+const #18 = Asciz	ch/tests/MyObject;
+const #19 = Method	#17.#9;	//  ch/tests/MyObject."<init>":()V
+const #20 = Field	#17.#21;	//  ch/tests/MyObject.myInt:I
+const #21 = NameAndType	#22:#23;//  myInt:I
+const #22 = Asciz	myInt;
+const #23 = Asciz	I;
+const #24 = Method	#17.#25;	//  ch/tests/MyObject.setMyInt:(I)V
+const #25 = NameAndType	#26:#27;//  setMyInt:(I)V
+const #26 = Asciz	setMyInt;
+const #27 = Asciz	(I)V;
+const #28 = Asciz	args;
+const #29 = Asciz	[Ljava/lang/String;;
+const #30 = Asciz	mo;
+const #31 = Asciz	Lch/tests/MyObject;;
+const #32 = Asciz	SourceFile;
+const #33 = Asciz	Main.java;
+const #34 = Asciz	aspectOf;
+const #35 = Asciz	()Lch/aspects/TriggerAll;;
+const #36 = NameAndType	#34:#35;//  aspectOf:()Lch/aspects/TriggerAll;
+const #37 = Asciz	ch/aspects/TriggerAll;
+const #38 = class	#37;	//  ch/aspects/TriggerAll
+const #39 = Method	#38.#36;	//  ch/aspects/TriggerAll.aspectOf:()Lch/aspects/TriggerAll;
+const #40 = Asciz	ch/annotation/Anno;
+const #41 = class	#40;	//  ch/annotation/Anno
+const #42 = Asciz	Synthetic;
+const #43 = Asciz	ajc$anno$0;
+const #44 = Asciz	Ljava/lang/annotation/Annotation;;
+const #45 = NameAndType	#43:#44;//  ajc$anno$0:Ljava/lang/annotation/Annotation;
+const #46 = Field	#1.#45;	//  ch/tests/Main.ajc$anno$0:Ljava/lang/annotation/Annotation;
+const #47 = String	#22;	//  myInt
+const #48 = Asciz	getDeclaredField;
+const #49 = Asciz	(Ljava/lang/String;)Ljava/lang/reflect/Field;;
+const #50 = NameAndType	#48:#49;//  getDeclaredField:(Ljava/lang/String;)Ljava/lang/reflect/Field;
+const #51 = Asciz	java/lang/Class;
+const #52 = class	#51;	//  java/lang/Class
+const #53 = Method	#52.#50;	//  java/lang/Class.getDeclaredField:(Ljava/lang/String;)Ljava/lang/reflect/Field;
+const #54 = Asciz	getAnnotation;
+const #55 = Asciz	(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;;
+const #56 = NameAndType	#54:#55;//  getAnnotation:(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;
+const #57 = Asciz	java/lang/reflect/Field;
+const #58 = class	#57;	//  java/lang/reflect/Field
+const #59 = Method	#58.#56;	//  java/lang/reflect/Field.getAnnotation:(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;
+const #60 = Asciz	ajc$before$ch_aspects_TriggerAll$1$daa92a69;
+const #61 = Asciz	(Lch/annotation/Anno;)V;
+const #62 = NameAndType	#60:#61;//  ajc$before$ch_aspects_TriggerAll$1$daa92a69:(Lch/annotation/Anno;)V
+const #63 = Method	#38.#62;	//  ch/aspects/TriggerAll.ajc$before$ch_aspects_TriggerAll$1$daa92a69:(Lch/annotation/Anno;)V
+const #64 = Asciz	org.aspectj.weaver.WeaverVersion;
+const #65 = Asciz	org.aspectj.weaver.WeaverState;
+
+{
+private static java.lang.annotation.Annotation ajc$anno$0;
+  Synthetic: true
+
+public ch.tests.Main();
+  Code:
+   Stack=1, Locals=1, Args_size=1
+   0:	aload_0
+   1:	invokespecial	#8; //Method java/lang/Object."<init>":()V
+   4:	return
+  LocalVariableTable: 
+   Start  Length  Slot  Name   Signature
+   0      5      0    this       Lch/tests/Main;
+
+  LineNumberTable: 
+   line 3: 0
+
+
+public static void main(java.lang.String[]);
+  org.aspectj.weaver.MethodDeclarationLineNumber: length = 0x8
+   00 00 00 05 00 00 00 43 
+  Code:
+   Stack=5, Locals=2, Args_size=1
+   0:	new	#17; //class ch/tests/MyObject
+   3:	dup
+   4:	invokespecial	#19; //Method ch/tests/MyObject."<init>":()V
+   7:	astore_1
+   8:	aload_1
+   9:	bipush	13
+   11:	invokestatic	#39; //Method ch/aspects/TriggerAll.aspectOf:()Lch/aspects/TriggerAll;
+   14:	getstatic	#46; //Field ajc$anno$0:Ljava/lang/annotation/Annotation;
+   17:	dup
+   18:	ifnonnull	38
+   21:	pop
+   22:	ldc	#17; //class ch/tests/MyObject
+   24:	ldc	#47; //String myInt
+   26:	invokevirtual	#53; //Method java/lang/Class.getDeclaredField:(Ljava/lang/String;)Ljava/lang/reflect/Field;
+   29:	ldc	#41; //class ch/annotation/Anno
+   31:	invokevirtual	#59; //Method java/lang/reflect/Field.getAnnotation:(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;
+   34:	dup
+   35:	putstatic	#46; //Field ajc$anno$0:Ljava/lang/annotation/Annotation;
+   38:	nop
+   39:	checkcast	#41; //class ch/annotation/Anno
+   42:	invokevirtual	#63; //Method ch/aspects/TriggerAll.ajc$before$ch_aspects_TriggerAll$1$daa92a69:(Lch/annotation/Anno;)V
+   45:	putfield	#20; //Field ch/tests/MyObject.myInt:I
+   48:	aload_1
+   49:	bipush	13
+   51:	invokevirtual	#24; //Method ch/tests/MyObject.setMyInt:(I)V
+   54:	return
+  LocalVariableTable: 
+   Start  Length  Slot  Name   Signature
+   0      55      0    args       [Ljava/lang/String;
+   8      47      1    mo       Lch/tests/MyObject;
+
+  LineNumberTable: 
+   line 6: 0
+   line 7: 8
+   line 8: 48
+   line 9: 54
+
+
+}
+
