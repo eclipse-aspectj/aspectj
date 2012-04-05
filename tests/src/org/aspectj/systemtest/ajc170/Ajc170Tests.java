@@ -31,6 +31,9 @@ import org.aspectj.weaver.tools.StandardPointcutParser;
  */ 
 public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testSwitchOnEnum() {
+		runTest("switch on enum");
+	}
 
 	public void testDecAtFieldOrderingLTW1() {
 		runTest("dec at field ordering ltw 1");

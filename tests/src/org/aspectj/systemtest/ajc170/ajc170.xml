@@ -3,6 +3,11 @@
 <suite>
 
 
+ 	<ajc-test dir="bugs170/pr376139" title="switch on enum">
+     <compile files="Code.java" options="-1.5"/>
+     <run class="Code"/>
+   </ajc-test>
+
  	<ajc-test dir="bugs170/ltw" title="dec at field ordering 1">
      <compile files="Anno.java TriggerAll.java MyObject.java Main.java" options="-1.5"/>
      <run class="ch.tests.Main">
