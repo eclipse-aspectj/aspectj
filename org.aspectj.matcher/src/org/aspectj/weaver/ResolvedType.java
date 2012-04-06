@@ -2383,7 +2383,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * 
 	 * @return
 	 */
-	public ResolvedType getGenericType() {
+	public ReferenceType getGenericType() {
 		// if (!(isParameterizedType() || isRawType()))
 		// throw new BCException("The type " + getBaseName() + " is not parameterized or raw - it has no generic type");
 		return null;

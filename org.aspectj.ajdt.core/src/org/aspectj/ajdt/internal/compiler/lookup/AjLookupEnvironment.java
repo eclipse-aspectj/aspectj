@@ -1371,6 +1371,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			ReferenceType rt = (ReferenceType) onType;
 			ReferenceTypeDelegate rtd = rt.getDelegate();
 			if (rtd instanceof BcelObjectType) {
+				if (rt.isRawType()) {
+					rt = (ReferenceType)rt.getGenericType();
+				}
 				rt.addParent(parent);
 				// ((BcelObjectType) rtd).addParent(parent);
 			}

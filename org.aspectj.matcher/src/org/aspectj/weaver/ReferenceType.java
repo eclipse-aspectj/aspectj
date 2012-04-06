@@ -993,7 +993,7 @@ public class ReferenceType extends ResolvedType {
 	}
 
 	@Override
-	public ResolvedType getGenericType() {
+	public ReferenceType getGenericType() {
 		if (isGenericType()) {
 			return this;
 		}
@@ -1053,6 +1053,11 @@ public class ReferenceType extends ResolvedType {
 
 	@Override
 	public void addParent(ResolvedType newParent) {
+		if (this.isRawType()) {
+			throw new IllegalStateException(
+					"The raw type should never be accumulating new interfaces, they should be on the generic type.  Type is "
+							+ this.getName());
+		}
 		if (newParent.isClass()) {
 			newSuperclass = newParent;
 			superclassReference = new WeakReference<ResolvedType>(null);
