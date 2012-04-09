@@ -30,7 +30,7 @@ public class StackMapAdder {
 	public static byte[] addStackMaps(World world, byte[] data) {
 		try {
 			ClassReader cr = new ClassReader(data);
-			ClassWriter cw = new AspectJConnectClassWriter(world);
+			ClassWriter cw = new AspectJConnectClassWriter(cr, world);
 			cr.accept(cw, 0);
 			return cw.toByteArray();
 		} catch (Throwable t) {
@@ -43,8 +43,8 @@ public class StackMapAdder {
 	private static class AspectJConnectClassWriter extends ClassWriter {
 		private final World world;
 
-		public AspectJConnectClassWriter(World w) {
-			super(ClassWriter.COMPUTE_FRAMES);
+		public AspectJConnectClassWriter(ClassReader cr, World w) {
+			super(cr, ClassWriter.COMPUTE_FRAMES); // passing in cr is necessary so cpool isnt modified (see 2.2.4 of asm doc)
 			this.world = w;
 		}
 

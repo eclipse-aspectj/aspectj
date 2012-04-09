@@ -31,6 +31,10 @@ import org.aspectj.weaver.tools.StandardPointcutParser;
  */ 
 public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testAttributeErrorJ7() {
+		runTest("attribute issue with J7");
+	}
+	
 	public void testSwitchOnEnum() {
 		runTest("switch on enum");
 	}

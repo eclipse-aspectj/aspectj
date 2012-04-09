@@ -2,6 +2,24 @@
 
 <suite>
 
+ 	<ajc-test dir="bugs170/pr376351" title="attribute issue with J7">
+     <compile files="R.java R1.java" outjar="code.jar" options="-1.5"/>
+     <compile files="RAj.java" options="-1.7 -Xlint:ignore" outjar="aspects.jar" classpath="code.jar"/>
+     <compile inpath="code.jar" aspectpath="aspects.jar" options="-showWeaveInfo">
+     <message kind="weave" text="Join point 'constructor-call(void R.&lt;init&gt;())'"/>
+     </compile>
+     <!-- 
+     if we had a 1.7 vm we could use this:
+     <compile files="RAj.java" options="-1.7 -Xlint:ignore"/>
+     <run class="R" ltw="aop.xml">
+     <stderr>
+     <line text="org.aspectj.weaver.tools.Jdk14Trace error"/>
+     <line text="Unsupported major.minor version 51.0"/>
+     <line text="java.lang.UnsupportedClassVersionError: RAj :"/>
+     </stderr>
+     </run>
+     -->
+   </ajc-test>
 
  	<ajc-test dir="bugs170/pr376139" title="switch on enum">
      <compile files="Code.java" options="-1.5"/>
