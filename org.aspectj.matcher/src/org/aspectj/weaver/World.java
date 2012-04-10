@@ -567,14 +567,19 @@ public abstract class World implements Dump.INode {
 	 */
 	private ReferenceType resolveGenericWildcardFor(WildcardedUnresolvedType aType) {
 		BoundedReferenceType ret = null;
-		// FIXME asc doesnt take account of additional interface bounds (e.g. ?
-		// super R & Serializable - can you do that?)
+		// FIXME asc doesnt take account of additional interface bounds (e.g. ? super R & Serializable - can you do that?)
 		if (aType.isExtends()) {
-			ReferenceType upperBound = (ReferenceType) resolve(aType.getUpperBound());
-			ret = new BoundedReferenceType(upperBound, true, this);
+			ResolvedType resolvedUpperBound = resolve(aType.getUpperBound());
+			if (resolvedUpperBound.isMissing()) {
+				return getWildcard();
+			}
+			ret = new BoundedReferenceType((ReferenceType)resolvedUpperBound, true, this);
 		} else if (aType.isSuper()) {
-			ReferenceType lowerBound = (ReferenceType) resolve(aType.getLowerBound());
-			ret = new BoundedReferenceType(lowerBound, false, this);
+			ResolvedType resolvedLowerBound = resolve(aType.getLowerBound());
+			if (resolvedLowerBound.isMissing()) {
+				return getWildcard();
+			}
+			ret = new BoundedReferenceType((ReferenceType)resolvedLowerBound, false, this);
 		} else {
 			// must be ? on its own!
 			ret = getWildcard();
