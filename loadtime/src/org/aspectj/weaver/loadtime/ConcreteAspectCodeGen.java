@@ -63,6 +63,7 @@ import org.aspectj.weaver.patterns.NamePattern;
 import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.PerSingleton;
+import org.aspectj.weaver.patterns.TypePattern;
 
 /**
  * Generates bytecode for concrete-aspect.
@@ -551,23 +552,31 @@ public class ConcreteAspectCodeGen {
 		if (constructedAnnotation==null) {
 			return; // error occurred (and was reported), do not continue
 		}
-		if (da.declareAnnotationKind==DeclareAnnotationKind.Method || da.declareAnnotationKind==DeclareAnnotationKind.Field) {	
-			String declareName = new StringBuilder("ajc$declare_at_").append(da.declareAnnotationKind==DeclareAnnotationKind.Method?"method":"field").append("_").append(decCounter).toString();			
-			LazyMethodGen declareMethod = new LazyMethodGen(Modifier.PUBLIC, Type.VOID, declareName, Type.NO_ARGS, EMPTY_STRINGS, cg);
-			InstructionList declareMethodBody = declareMethod.getBody();
-			declareMethodBody.append(InstructionFactory.RETURN);
-			declareMethod.addAnnotation(constructedAnnotation);
 
-			ITokenSource tokenSource = BasicTokenSource.makeTokenSource(da.pattern,null);
-			PatternParser pp = new PatternParser(tokenSource);
+		String nameComponent = da.declareAnnotationKind.name().toLowerCase();		
+		String declareName = new StringBuilder("ajc$declare_at_").append(nameComponent).append("_").append(decCounter).toString();			
+		LazyMethodGen declareMethod = new LazyMethodGen(Modifier.PUBLIC, Type.VOID, declareName, Type.NO_ARGS, EMPTY_STRINGS, cg);
+		InstructionList declareMethodBody = declareMethod.getBody();
+		declareMethodBody.append(InstructionFactory.RETURN);
+		declareMethod.addAnnotation(constructedAnnotation);
+
+		DeclareAnnotation deca = null;
+		ITokenSource tokenSource = BasicTokenSource.makeTokenSource(da.pattern,null);
+		PatternParser pp = new PatternParser(tokenSource);
+
+		if (da.declareAnnotationKind==DeclareAnnotationKind.Method || da.declareAnnotationKind==DeclareAnnotationKind.Field) {	
 			ISignaturePattern isp = (da.declareAnnotationKind==DeclareAnnotationKind.Method?pp.parseCompoundMethodOrConstructorSignaturePattern(true):pp.parseCompoundFieldSignaturePattern());
-			DeclareAnnotation deca = new DeclareAnnotation(da.declareAnnotationKind==DeclareAnnotationKind.Method?DeclareAnnotation.AT_METHOD:DeclareAnnotation.AT_FIELD, isp);
-			deca.setAnnotationMethod(declareName);
-			deca.setAnnotationString(da.annotation);
-			AjAttribute attribute = new AjAttribute.DeclareAttribute(deca);
-			cg.addAttribute(attribute);
-			cg.addMethodGen(declareMethod);
+			deca = new DeclareAnnotation(da.declareAnnotationKind==DeclareAnnotationKind.Method?DeclareAnnotation.AT_METHOD:DeclareAnnotation.AT_FIELD, isp);
+		} else if (da.declareAnnotationKind==DeclareAnnotationKind.Type) {			
+			TypePattern tp = pp.parseTypePattern();
+			deca = new DeclareAnnotation(DeclareAnnotation.AT_TYPE,tp);
 		}
+		
+		deca.setAnnotationMethod(declareName);
+		deca.setAnnotationString(da.annotation);
+		AjAttribute attribute = new AjAttribute.DeclareAttribute(deca);
+		cg.addAttribute(attribute);
+		cg.addMethodGen(declareMethod);
 	}
 
 	/**
