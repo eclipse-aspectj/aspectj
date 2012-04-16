@@ -20,7 +20,7 @@ public aspect EnsureOverriding pertarget(mustExtend()) {
         execution(void Base+.lockResource(..)) && !within(Base);
  
     after () returning: mustExtend() {
-        assert(calledSuper);
+//        assert(calledSuper);
         if (!calledSuper) { throw new RuntimeException("need super call"); }
     }
  
