@@ -702,8 +702,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			}
 			output.append("> ");
 		}
+		String methodName = methodDeclaration.selector==null?"null":new String(methodDeclaration.selector);
 
-		methodDeclaration.printReturnType(0, output).append(methodDeclaration.selector).append('(');
+		methodDeclaration.printReturnType(0, output).append(methodName).append('(');
 		if (methodDeclaration.arguments != null) {
 			for (int i = 0; i < methodDeclaration.arguments.length; i++) {
 				if (i > 0) {
