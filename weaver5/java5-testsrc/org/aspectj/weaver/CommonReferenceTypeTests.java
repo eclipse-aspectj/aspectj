@@ -33,6 +33,28 @@ public abstract class CommonReferenceTypeTests extends TestCase {
 		assertEquals("Signatures not equal ", "[Pjava/util/List<Pjava/util/List<Ljava/lang/String;>;>;", ut.getSignature());
 		assertEquals("Names not equal ", "java.util.List<java.util.List<java.lang.String>>[]", ut.getName());
 	}
+	
+	public void testArrays() {
+		world.setBehaveInJava5Way(true);
+		UnresolvedType ut = null;
+		ut = UnresolvedType.forName("[Ljava.lang.String;");
+		assertEquals("[Ljava/lang/String;",ut.getSignature());
+		UnresolvedType reified = UnresolvedType.forSignature(ut.getSignature());
+		ResolvedType rt = world.resolve(reified);
+		assertEquals("[Ljava/lang/String;",rt.getSignature());
+		assertEquals("java.lang.String[]",rt.getName());
+		assertFalse(rt.isMissing());
+		
+		ut = UnresolvedType.forName("[[[[Ljava.lang.String;");
+		assertEquals("[[[[Ljava/lang/String;",ut.getSignature());
+		reified = UnresolvedType.forSignature(ut.getSignature());
+		rt = world.resolve(reified);
+		assertEquals("[[[[Ljava/lang/String;",rt.getSignature());
+		assertEquals("java.lang.String[][][][]",rt.getName());
+		assertTrue(rt.isArray());
+		assertTrue(rt.getComponentType().isArray());
+		assertFalse(rt.isMissing());
+	}
 
 	public void testIsRawTrue() {
 		world.setBehaveInJava5Way(true);

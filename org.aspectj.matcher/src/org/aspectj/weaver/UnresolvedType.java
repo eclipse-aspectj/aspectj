@@ -710,11 +710,17 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	private static String nameToSignature(String name) {
 		int len = name.length();
 		if (len < 8) {
-			if (name.equals("byte")) {
-				return "B";
+			if (name.equals("int")) {
+				return "I";
 			}
-			if (name.equals("char")) {
-				return "C";
+			if (name.equals("void")) {
+				return "V";
+			}
+			if (name.equals("long")) {
+				return "J";
+			}
+			if (name.equals("boolean")) {
+				return "Z";
 			}
 			if (name.equals("double")) {
 				return "D";
@@ -722,32 +728,31 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 			if (name.equals("float")) {
 				return "F";
 			}
-			if (name.equals("int")) {
-				return "I";
-			}
-			if (name.equals("long")) {
-				return "J";
+			if (name.equals("byte")) {
+				return "B";
 			}
 			if (name.equals("short")) {
 				return "S";
 			}
-			if (name.equals("boolean")) {
-				return "Z";
-			}
-			if (name.equals("void")) {
-				return "V";
+			if (name.equals("char")) {
+				return "C";
 			}
 			if (name.equals("?")) {
 				return name;
 			}
 		}
-		if (name.endsWith("[]")) {
-			return "[" + nameToSignature(name.substring(0, name.length() - 2));
-		}
 		if (len == 0) {
 			throw new BCException("Bad type name: " + name);
 		}
-			
+		if (name.endsWith("[]")) {
+			return "[" + nameToSignature(name.substring(0, name.length() - 2));
+		}
+		
+		// Sometimes the 'name' for an array is of the form: [Ljava.lang.String;
+		if (name.charAt(0)=='[') {
+			return name.replace('.','/');
+		}
+
 		if (name.indexOf("<") == -1) {
 			// not parameterized
 			return new StringBuilder("L").append(name.replace('.', '/')).append(';').toString();
