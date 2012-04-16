@@ -51,6 +51,10 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //		runTest("dec at field ordering 2");
 //	}
 	
+	public void testXmlDefsDeclareAnnoType() {
+		runTest("xml defined dec anno - type");
+	}
+	
 	public void testXmlDefsDeclareAnnoMethod() {
 		runTest("xml defined dec at method");
 	}

@@ -156,6 +156,17 @@
        </stdout>
      </run>
    </ajc-test>
+   
+   <ajc-test dir="bugs170/xmldefs" title="xml defined dec anno - type">
+     <compile files="Hello7.java Anno7.java" options="-1.5"/>
+     <run class="Hello7" ltw="aop7.xml">
+       <stdout>
+           <line text="Annotations on Hello7? true"/>
+           <line text="Annotation count is 1"/>
+           <line text="@Anno"/>
+       </stdout>
+     </run>
+   </ajc-test>
  
     <ajc-test dir="bugs170/pr73507" title="public ITDfs - 1">
       <compile files="Case1.java" options="-1.5"/>
