@@ -641,9 +641,8 @@ public class BcelWeaver {
 		// across the set of pointcuts....
 		// Use a map from key based on pc equality, to value based on
 		// pc identity.
-		Map/* <Pointcut,Pointcut> */<Pointcut, Pointcut> pcMap = new HashMap<Pointcut, Pointcut>();
-		for (Iterator iter = shadowMungers.iterator(); iter.hasNext();) {
-			ShadowMunger munger = (ShadowMunger) iter.next();
+		Map<Pointcut, Pointcut> pcMap = new HashMap<Pointcut, Pointcut>();
+		for (ShadowMunger munger: shadowMungers) {
 			Pointcut p = munger.getPointcut();
 			Pointcut newP = shareEntriesFromMap(p, pcMap);
 			newP.m_ignoreUnboundBindingForNames = p.m_ignoreUnboundBindingForNames;

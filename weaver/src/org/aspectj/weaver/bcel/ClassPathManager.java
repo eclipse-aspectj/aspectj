@@ -34,13 +34,13 @@ import org.aspectj.weaver.tools.TraceFactory;
 
 public class ClassPathManager {
 
-	private List entries;
+	private List<Entry> entries;
 
 	// In order to control how many open files we have, we maintain a list.
 	// The max number is configured through the property:
 	// org.aspectj.weaver.openarchives
 	// and it defaults to 1000
-	private List openArchives = new ArrayList();
+	private List<ZipFile> openArchives = new ArrayList<ZipFile>();
 	private static int maxOpenArchives = -1;
 	private static final int MAXOPEN_DEFAULT = 1000;
 
@@ -54,11 +54,11 @@ public class ClassPathManager {
 			maxOpenArchives = 1000;
 	}
 
-	public ClassPathManager(List classpath, IMessageHandler handler) {
+	public ClassPathManager(List<String> classpath, IMessageHandler handler) {
 		if (trace.isTraceEnabled())
 			trace.enter("<init>", this, new Object[] { classpath, handler });
-		entries = new ArrayList();
-		for (Iterator i = classpath.iterator(); i.hasNext();) {
+		entries = new ArrayList<Entry>();
+		for (Iterator<String> i = classpath.iterator(); i.hasNext();) {
 			String name = (String) i.next();
 			addPath(name, handler);
 		}
@@ -95,8 +95,8 @@ public class ClassPathManager {
 
 	public ClassFile find(UnresolvedType type) {
 		String name = type.getName();
-		for (Iterator i = entries.iterator(); i.hasNext();) {
-			Entry entry = (Entry) i.next();
+		for (Iterator<Entry> i = entries.iterator(); i.hasNext();) {
+			Entry entry = i.next();
 			try {
 				ClassFile ret = entry.find(name);
 				if (ret != null)
@@ -113,7 +113,7 @@ public class ClassPathManager {
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		boolean start = true;
-		for (Iterator i = entries.iterator(); i.hasNext();) {
+		for (Iterator<Entry> i = entries.iterator(); i.hasNext();) {
 			if (start) {
 				start = false;
 			} else {
@@ -270,11 +270,11 @@ public class ClassPathManager {
 				return null; // This zip will be closed when necessary...
 		}
 
-		public List getAllClassFiles() throws IOException {
+		public List<ZipEntryClassFile> getAllClassFiles() throws IOException {
 			ensureOpen();
-			List ret = new ArrayList();
-			for (Enumeration e = zipFile.entries(); e.hasMoreElements();) {
-				ZipEntry entry = (ZipEntry) e.nextElement();
+			List<ZipEntryClassFile> ret = new ArrayList<ZipEntryClassFile>();
+			for (Enumeration<? extends ZipEntry> e = zipFile.entries(); e.hasMoreElements();) {
+				ZipEntry entry = e.nextElement();
 				String name = entry.getName();
 				if (hasClassExtension(name))
 					ret.add(new ZipEntryClassFile(this, entry));
@@ -345,8 +345,7 @@ public class ClassPathManager {
 	}
 
 	public void closeArchives() {
-		for (Iterator i = entries.iterator(); i.hasNext();) {
-			Entry entry = (Entry) i.next();
+		for (Entry entry: entries) {
 			if (entry instanceof ZipFileEntry) {
 				((ZipFileEntry) entry).close();
 			}
