@@ -487,6 +487,11 @@ public abstract class World implements Dump.INode {
 			if (delegate.isGeneric() && behaveInJava5Way) {
 				// ======== raw type ===========
 				simpleOrRawType.typeKind = TypeKind.RAW;
+				if (simpleOrRawType.hasNewInterfaces()) { // debug 375777
+					throw new IllegalStateException(
+							"Simple type promoted forced to raw, but it had new interfaces/superclass.  Type is "
+									+ simpleOrRawType.getName());
+				}
 				ReferenceType genericType = makeGenericTypeFrom(delegate, simpleOrRawType);
 				// name =
 				// ReferenceType.fromTypeX(UnresolvedType.forRawTypeNames(

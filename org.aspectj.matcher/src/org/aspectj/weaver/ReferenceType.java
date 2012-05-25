@@ -639,7 +639,7 @@ public class ReferenceType extends ResolvedType {
 		}
 		ResolvedType[] delegateInterfaces = getDelegate().getDeclaredInterfaces();
 		if (isRawType()) {
-			if (newInterfaces != null) {
+			if (newInterfaces != null) {// debug 375777
 				throw new IllegalStateException(
 						"The raw type should never be accumulating new interfaces, they should be on the generic type.  Type is "
 								+ this.getName());
@@ -976,6 +976,11 @@ public class ReferenceType extends ResolvedType {
 		if (typeKind == TypeKind.SIMPLE) {
 			typeKind = TypeKind.RAW;
 			signatureErasure = signature;
+			if (newInterfaces != null) { // debug 375777
+				throw new IllegalStateException(
+						"Simple type promoted to raw, but simple type had new interfaces/superclass.  Type is "
+								+ this.getName());
+			}
 		}
 		if (typeKind == TypeKind.RAW) {
 			genericType.addDependentType(this);
@@ -1129,6 +1134,10 @@ public class ReferenceType extends ResolvedType {
 		}
 		derivativeTypes.removeAll(forRemoval);
 		return null;
+	}
+
+	public boolean hasNewInterfaces() {
+		return newInterfaces!=null;
 	}
 
 }
