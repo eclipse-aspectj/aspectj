@@ -31,6 +31,14 @@ import org.aspectj.weaver.tools.StandardPointcutParser;
  */ 
 public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+//	public void testLostAnnos_377130() {
+//		runTest("missing annos on priv aspects");
+//	}
+//
+//	public void testLostAnnos_377130_2() {
+//		runTest("missing annos on priv aspects - 2");
+//	}
+
 	public void testAttributeErrorJ7() {
 		runTest("attribute issue with J7");
 	}

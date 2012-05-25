@@ -2,6 +2,22 @@
 
 <suite>
 
+	<ajc-test dir="bugs170/pr377130" title="missing annos on priv aspects">
+	<compile files="Foo.java" options="-1.5"/>
+	<run class="Foo">
+	<stdout>
+	<line text="@Anno()"/></stdout>
+	</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs170/pr377130" title="missing annos on priv aspects - 2">
+	<compile files="Foo2.java" options="-1.5"/>
+	<run class="Foo2">
+	<stdout>
+	<line text="@Anno()"/></stdout>
+	</run>
+	</ajc-test>
+
  	<ajc-test dir="bugs170/pr376351" title="attribute issue with J7">
      <compile files="R.java R1.java" outjar="code.jar" options="-1.5"/>
      <compile files="RAj.java" options="-1.7 -Xlint:ignore" outjar="aspects.jar" classpath="code.jar"/>
