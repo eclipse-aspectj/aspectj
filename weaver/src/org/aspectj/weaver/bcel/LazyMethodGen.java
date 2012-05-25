@@ -582,7 +582,7 @@ public final class LazyMethodGen implements Traceable {
 		if (enclosingClass != null && enclosingClass.getType() != null) {
 			context = enclosingClass.getType().getSourceContext();
 		}
-		List as = Utility.readAjAttributes(getClassName(), attributes.toArray(new Attribute[] {}), context, null, weaverVersion,
+		List<AjAttribute> as = Utility.readAjAttributes(getClassName(), attributes.toArray(new Attribute[] {}), context, null, weaverVersion,
 				new BcelConstantPoolReader(this.enclosingClass.getConstantPool()));
 		if (!as.isEmpty()) {
 			out.println("    " + as.get(0)); // XXX assuming exactly one
@@ -1549,98 +1549,98 @@ public final class LazyMethodGen implements Traceable {
 		if (true) {
 			return; // only to be enabled for debugging
 		}
-		if (il == null) {
-			return;
-		}
-		Set body = new HashSet();
-		Stack<Range> ranges = new Stack<Range>();
-		for (InstructionHandle ih = il.getStart(); ih != null; ih = ih.getNext()) {
-			body.add(ih);
-			if (ih.getInstruction() instanceof InstructionBranch) {
-				body.add(ih.getInstruction());
-			}
-		}
-
-		for (InstructionHandle ih = il.getStart(); ih != null; ih = ih.getNext()) {
-			assertGoodHandle(ih, body, ranges, from);
-			Iterator<InstructionTargeter> tIter = ih.getTargeters().iterator();
-			while (tIter.hasNext()) {
-				assertGoodTargeter(tIter.next(), ih, body, from);
-			}
-		}
+//		if (il == null) {
+//			return;
+//		}
+//		Set body = new HashSet();
+//		Stack<Range> ranges = new Stack<Range>();
+//		for (InstructionHandle ih = il.getStart(); ih != null; ih = ih.getNext()) {
+//			body.add(ih);
+//			if (ih.getInstruction() instanceof InstructionBranch) {
+//				body.add(ih.getInstruction());
+//			}
+//		}
+//
+//		for (InstructionHandle ih = il.getStart(); ih != null; ih = ih.getNext()) {
+//			assertGoodHandle(ih, body, ranges, from);
+//			Iterator<InstructionTargeter> tIter = ih.getTargeters().iterator();
+//			while (tIter.hasNext()) {
+//				assertGoodTargeter(tIter.next(), ih, body, from);
+//			}
+//		}
 	}
 
-	private static void assertGoodHandle(InstructionHandle ih, Set body, Stack<Range> ranges, String from) {
-		Instruction inst = ih.getInstruction();
-		if ((inst instanceof InstructionBranch) ^ (ih instanceof BranchHandle)) {
-			throw new BCException("bad instruction/handle pair in " + from);
-		}
-		if (Range.isRangeHandle(ih)) {
-			assertGoodRangeHandle(ih, body, ranges, from);
-		} else if (inst instanceof InstructionBranch) {
-			assertGoodBranchInstruction((BranchHandle) ih, (InstructionBranch) inst, body, ranges, from);
-		}
-	}
+//	private static void assertGoodHandle(InstructionHandle ih, Set body, Stack<Range> ranges, String from) {
+//		Instruction inst = ih.getInstruction();
+//		if ((inst instanceof InstructionBranch) ^ (ih instanceof BranchHandle)) {
+//			throw new BCException("bad instruction/handle pair in " + from);
+//		}
+//		if (Range.isRangeHandle(ih)) {
+//			assertGoodRangeHandle(ih, body, ranges, from);
+//		} else if (inst instanceof InstructionBranch) {
+//			assertGoodBranchInstruction((BranchHandle) ih, (InstructionBranch) inst, body, ranges, from);
+//		}
+//	}
 
-	private static void assertGoodBranchInstruction(BranchHandle ih, InstructionBranch inst, Set body, Stack<Range> ranges,
-			String from) {
-		if (ih.getTarget() != inst.getTarget()) {
-			throw new BCException("bad branch instruction/handle pair in " + from);
-		}
-		InstructionHandle target = ih.getTarget();
-		assertInBody(target, body, from);
-		assertTargetedBy(target, inst, from);
-		if (inst instanceof InstructionSelect) {
-			InstructionSelect sel = (InstructionSelect) inst;
-			InstructionHandle[] itargets = sel.getTargets();
-			for (int k = itargets.length - 1; k >= 0; k--) {
-				assertInBody(itargets[k], body, from);
-				assertTargetedBy(itargets[k], inst, from);
-			}
-		}
-	}
+//	private static void assertGoodBranchInstruction(BranchHandle ih, InstructionBranch inst, Set body, Stack<Range> ranges,
+//			String from) {
+//		if (ih.getTarget() != inst.getTarget()) {
+//			throw new BCException("bad branch instruction/handle pair in " + from);
+//		}
+//		InstructionHandle target = ih.getTarget();
+//		assertInBody(target, body, from);
+//		assertTargetedBy(target, inst, from);
+//		if (inst instanceof InstructionSelect) {
+//			InstructionSelect sel = (InstructionSelect) inst;
+//			InstructionHandle[] itargets = sel.getTargets();
+//			for (int k = itargets.length - 1; k >= 0; k--) {
+//				assertInBody(itargets[k], body, from);
+//				assertTargetedBy(itargets[k], inst, from);
+//			}
+//		}
+//	}
 
 	/** ih is an InstructionHandle or a BranchInstruction */
-	private static void assertInBody(Object ih, Set body, String from) {
-		if (!body.contains(ih)) {
-			throw new BCException("thing not in body in " + from);
-		}
-	}
+//	private static void assertInBody(Object ih, Set body, String from) {
+//		if (!body.contains(ih)) {
+//			throw new BCException("thing not in body in " + from);
+//		}
+//	}
 
-	private static void assertGoodRangeHandle(InstructionHandle ih, Set body, Stack ranges, String from) {
-		Range r = getRangeAndAssertExactlyOne(ih, from);
-		assertGoodRange(r, body, from);
-		if (r.getStart() == ih) {
-			ranges.push(r);
-		} else if (r.getEnd() == ih) {
-			if (ranges.peek() != r) {
-				throw new BCException("bad range inclusion in " + from);
-			}
-			ranges.pop();
-		}
-	}
+//	private static void assertGoodRangeHandle(InstructionHandle ih, Set body, Stack ranges, String from) {
+//		Range r = getRangeAndAssertExactlyOne(ih, from);
+//		assertGoodRange(r, body, from);
+//		if (r.getStart() == ih) {
+//			ranges.push(r);
+//		} else if (r.getEnd() == ih) {
+//			if (ranges.peek() != r) {
+//				throw new BCException("bad range inclusion in " + from);
+//			}
+//			ranges.pop();
+//		}
+//	}
 
-	private static void assertGoodRange(Range r, Set body, String from) {
-		assertInBody(r.getStart(), body, from);
-		assertRangeHandle(r.getStart(), from);
-		assertTargetedBy(r.getStart(), r, from);
+//	private static void assertGoodRange(Range r, Set body, String from) {
+//		assertInBody(r.getStart(), body, from);
+//		assertRangeHandle(r.getStart(), from);
+//		assertTargetedBy(r.getStart(), r, from);
+//
+//		assertInBody(r.getEnd(), body, from);
+//		assertRangeHandle(r.getEnd(), from);
+//		assertTargetedBy(r.getEnd(), r, from);
+//
+//		if (r instanceof ExceptionRange) {
+//			ExceptionRange er = (ExceptionRange) r;
+//			assertInBody(er.getHandler(), body, from);
+//			assertTargetedBy(er.getHandler(), r, from);
+//		}
+//	}
 
-		assertInBody(r.getEnd(), body, from);
-		assertRangeHandle(r.getEnd(), from);
-		assertTargetedBy(r.getEnd(), r, from);
-
-		if (r instanceof ExceptionRange) {
-			ExceptionRange er = (ExceptionRange) r;
-			assertInBody(er.getHandler(), body, from);
-			assertTargetedBy(er.getHandler(), r, from);
-		}
-	}
-
-	private static void assertRangeHandle(InstructionHandle ih, String from) {
-		if (!Range.isRangeHandle(ih)) {
-			throw new BCException("bad range handle " + ih + " in " + from);
-		}
-	}
+//	private static void assertRangeHandle(InstructionHandle ih, String from) {
+//		if (!Range.isRangeHandle(ih)) {
+//			throw new BCException("bad range handle " + ih + " in " + from);
+//		}
+//	}
 
 	private static void assertTargetedBy(InstructionHandle target, InstructionTargeter targeter, String from) {
 		Iterator tIter = target.getTargeters().iterator();
@@ -1704,14 +1704,14 @@ public final class LazyMethodGen implements Traceable {
 		return ret;
 	}
 
-	private static void assertGoodTargeter(InstructionTargeter t, InstructionHandle ih, Set body, String from) {
-		assertTargets(t, ih, from);
-		if (t instanceof Range) {
-			assertGoodRange((Range) t, body, from);
-		} else if (t instanceof InstructionBranch) {
-			assertInBody(t, body, from);
-		}
-	}
+//	private static void assertGoodTargeter(InstructionTargeter t, InstructionHandle ih, Set body, String from) {
+//		assertTargets(t, ih, from);
+//		if (t instanceof Range) {
+//			assertGoodRange((Range) t, body, from);
+//		} else if (t instanceof InstructionBranch) {
+//			assertInBody(t, body, from);
+//		}
+//	}
 
 	// ----
 
