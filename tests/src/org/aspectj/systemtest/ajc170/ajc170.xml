@@ -2,6 +2,39 @@
 
 <suite>
 
+	<ajc-test dir="bugs170/pr382723" title="generic aspect">
+		<compile files="FooAspect.java" options="-1.5"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs170/pr382723" title="generic aspect 2">
+		<compile files="FooAspect2.java" options="-1.5"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs170/pr382723" title="generic aspect 3">
+		<compile files="FooAspect3.java" options="-1.5"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs170/pr382723" title="generic aspect 4">
+		<compile files="Foo.java" options="-1.5 -showWeaveInfo">
+			<message kind="weave" text="Join point 'constructor-call(void java.util.LinkedList.&lt;init&gt;())' in Type 'Foo' (Foo.java:41) advised by around advice from 'Bar' (Foo.java:14)"/>
+		</compile>
+		<run class="Foo">
+			<stdout>
+				<line text="superaspect getNumber returns -2"/>
+				<line text="Bar.method() running"/>
+				<line text="abstract method returns []"/>
+			</stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs170/pr382189" title="covariant generics">
+	<compile files="covbug/A.java covbug/A_ITD.aj covbug/B.java covbug/SuperA.java covbug/SuperB.java" options="-1.5"/>
+	<!-- <run class="Foo">
+	<stdout>
+	<line text="@Anno()"/></stdout>
+	</run> -->
+	</ajc-test>
+	
 	<ajc-test dir="bugs170/pr377130" title="missing annos on priv aspects">
 	<compile files="Foo.java" options="-1.5"/>
 	<run class="Foo">

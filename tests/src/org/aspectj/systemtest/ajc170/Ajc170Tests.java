@@ -38,6 +38,26 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //	public void testLostAnnos_377130_2() {
 //		runTest("missing annos on priv aspects - 2");
 //	}
+	
+	public void testGenericAspectAround382723() {
+		runTest("generic aspect");
+	}
+
+	public void testGenericAspectAround382723_2() {
+		runTest("generic aspect 2");
+	}
+
+	public void testGenericAspectAround382723_3() {
+		runTest("generic aspect 3");
+	}
+	
+	public void testGenericAspectAround382723_4() {
+		runTest("generic aspect 4");
+	}
+	
+//	public void testCovariantGenericsItd382189() {
+//		runTest("covariant generics");
+//	}
 
 	public void testAttributeErrorJ7() {
 		runTest("attribute issue with J7");

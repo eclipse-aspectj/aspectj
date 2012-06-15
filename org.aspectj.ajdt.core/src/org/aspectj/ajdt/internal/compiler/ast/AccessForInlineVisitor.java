@@ -40,6 +40,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedMethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ProblemFieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
@@ -259,8 +260,16 @@ public class AccessForInlineVisitor extends ASTVisitor {
 			return; // has already produced an error
 		if (binding instanceof ReferenceBinding) {
 			ReferenceBinding rb = (ReferenceBinding) binding;
-			if (!rb.isPublic())
+			if (!rb.isPublic()) {
+				try {
+					if (rb instanceof ParameterizedTypeBinding) {
+						rb = (ReferenceBinding) rb.erasure();
+					}
+				} catch (Throwable t) { // TODO remove post 1.7.0
+					t.printStackTrace();
+				}
 				handler.notePrivilegedTypeAccess(rb, null); // ???
+			}
 		} else if (binding instanceof ArrayBinding) {
 			makePublic(((ArrayBinding) binding).leafComponentType);
 		} else {
