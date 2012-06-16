@@ -39,6 +39,30 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //		runTest("missing annos on priv aspects - 2");
 //	}
 	
+	public void testCovariantGenerics382435_1() {
+		runTest("covariant generic itds 1");
+	}
+	
+	public void testCovariantGenerics382435_2() {
+		runTest("covariant generic itds 2");
+	}
+
+	public void testCovariantGenericsItd382189_1() {
+		runTest("covariant generics 1");
+	}
+	
+	public void testCovariantGenericsItd382189_2() {
+		runTest("covariant generics 2");
+	}
+
+	public void testCovariantGenericsItd382189_3() {
+		runTest("covariant generics 3");
+	}
+	
+	public void testCovariantGenericsItd382189() {
+		runTest("covariant generics");
+	}
+	
 	public void testGenericAspectAround382723() {
 		runTest("generic aspect");
 	}
@@ -55,9 +79,6 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("generic aspect 4");
 	}
 	
-//	public void testCovariantGenericsItd382189() {
-//		runTest("covariant generics");
-//	}
 
 	public void testAttributeErrorJ7() {
 		runTest("attribute issue with J7");

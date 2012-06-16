@@ -1240,7 +1240,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		boolean quitRightNow = false;
 
 		String localMethodName = unMangledInterMethod.getName();
-		String localParameterSig = unMangledInterMethod.getParameterSignature();
+		String erasedSig = unMangledInterMethod.getSignatureErased(); // will be something like (LSuperB;)LFoo;
+		String localParameterSig = erasedSig.substring(0,erasedSig.lastIndexOf(')')+1);//unMangledInterMethod.getParameterSignature();
+		// getParameterSignatureErased() does not include parens, which we do need.
 		String localReturnTypeESig = unMangledInterMethod.getReturnType().getErasureSignature();
 
 		// Step1
@@ -1295,28 +1297,10 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		InstructionFactory fact;
 		int pos = 0;
 
-		LazyMethodGen bridgeMethod = makeMethodGen(clazz, theBridgeMethod); // The
-		// bridge
-		// method
-		// in
-		// this
-		// type
-		// will
-		// have
-		// the
-		// same
-		// signature
-		// as
-		// the
-		// one
-		// in
-		// the
-		// supertype
-		bridgeMethod.setAccessFlags(bridgeMethod.getAccessFlags() | 0x00000040 /*
-																				 * BRIDGE = 0x00000040
-																				 */);
-		// UnresolvedType[] newParams =
-		// munger.getSignature().getParameterTypes();
+		// The bridge method in this type will have the same signature as the one in the supertype
+		LazyMethodGen bridgeMethod = makeMethodGen(clazz, theBridgeMethod); 
+		bridgeMethod.setAccessFlags(bridgeMethod.getAccessFlags() | 0x00000040 /* BRIDGE = 0x00000040 */);
+		// UnresolvedType[] newParams = munger.getSignature().getParameterTypes();
 		Type returnType = BcelWorld.makeBcelType(theBridgeMethod.getReturnType());
 		body = bridgeMethod.getBody();
 		fact = clazz.getFactory();

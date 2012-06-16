@@ -27,6 +27,32 @@
 		</run>
 	</ajc-test>
 	
+	
+	<!-- no declare parents, only ITD -->
+	<ajc-test dir="bugs170/pr382189/one" title="covariant generics 1">
+		<compile files="A.java A_ITD.aj B.java SuperA.java SuperB.java" options="-1.5"/>
+	</ajc-test>
+	
+	<!-- now declare parents and ITD -->
+	<ajc-test dir="bugs170/pr382189/two" title="covariant generics 2">
+		<compile files="A.java A_ITD.aj B.java SuperA.java SuperB.java" options="-1.5"/>
+	</ajc-test>
+	
+	<!-- now run it -->
+	<ajc-test dir="bugs170/pr382189/three" title="covariant generics 3">
+		<compile files="A.java A_ITD.aj B.java SuperA.java SuperB.java" options="-1.5"/>
+		<run class="A"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs170/pr382435/one" title="covariant generic itds 1">
+		<compile files="bug/A.java" options="-1.5"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs170/pr382435/two" title="covariant generic itds 2">
+		<compile files="bug/A.java" options="-1.5"/>
+		<run class="bug.A"/>
+	</ajc-test>
+	
 	<ajc-test dir="bugs170/pr382189" title="covariant generics">
 	<compile files="covbug/A.java covbug/A_ITD.aj covbug/B.java covbug/SuperA.java covbug/SuperB.java" options="-1.5"/>
 	<!-- <run class="Foo">

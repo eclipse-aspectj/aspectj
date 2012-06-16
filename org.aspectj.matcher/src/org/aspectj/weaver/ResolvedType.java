@@ -2402,19 +2402,18 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	/**
-	 * Iff I am a parameterized type, and any of my parameters are type variable references, return a version with those type
-	 * parameters replaced in accordance with the passed bindings.
+	 * Iff I am a parameterized type, and any of my parameters are type variable references (or nested parameterized types), 
+	 * return a version with those type parameters replaced in accordance with the passed bindings.
 	 */
 	@Override
 	public UnresolvedType parameterize(Map<String, UnresolvedType> typeBindings) {
 		if (!isParameterizedType()) {
-			return this;// throw new IllegalStateException(
+			// throw new IllegalStateException("Can't parameterize a type that is not a parameterized type");
+			return this;
 		}
-		// "Can't parameterize a type that is not a parameterized type"
-		// );
 		boolean workToDo = false;
 		for (int i = 0; i < typeParameters.length; i++) {
-			if (typeParameters[i].isTypeVariableReference() || (typeParameters[i] instanceof BoundedReferenceType)) {
+			if (typeParameters[i].isTypeVariableReference() || (typeParameters[i] instanceof BoundedReferenceType) || typeParameters[i].isParameterizedType()) {
 				workToDo = true;
 			}
 		}
@@ -2434,6 +2433,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 					BoundedReferenceType brType = (BoundedReferenceType) newTypeParams[i];
 					newTypeParams[i] = brType.parameterize(typeBindings);
 					// brType.parameterize(typeBindings)
+				} else if (newTypeParams[i].isParameterizedType()) {
+					newTypeParams[i] = newTypeParams[i].parameterize(typeBindings);
 				}
 			}
 			return TypeFactory.createParameterizedType(getGenericType(), newTypeParams, getWorld());
