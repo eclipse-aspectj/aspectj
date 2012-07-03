@@ -106,6 +106,9 @@ public class Dump {
 	}
 
 	public static String dumpWithException(IMessageHolder messageHolder, Throwable th) {
+		if (!getDumpOnException()) {
+			return null;
+		}
 		if (trace.isTraceEnabled()) {
 			trace.enter("dumpWithException", null, new Object[] { messageHolder, th });
 		}
@@ -133,6 +136,9 @@ public class Dump {
 	}
 
 	public static String dumpOnExit(IMessageHolder messageHolder, boolean reset) {
+		if (!getDumpOnException()) {
+			return null;
+		}
 		if (trace.isTraceEnabled()) {
 			trace.enter("dumpOnExit", null, messageHolder);
 		}
