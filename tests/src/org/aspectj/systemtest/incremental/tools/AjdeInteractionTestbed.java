@@ -348,7 +348,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		return ((MultiProjTestMessageHandler) compiler.getMessageHandler()).getWeavingMessages();
 	}
 
-	public List getCompilerErrorMessages(String projectName) {
+	public List<IMessage> getCompilerErrorMessages(String projectName) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		return ((MultiProjTestMessageHandler) compiler.getMessageHandler()).getCompilerErrors();
 	}

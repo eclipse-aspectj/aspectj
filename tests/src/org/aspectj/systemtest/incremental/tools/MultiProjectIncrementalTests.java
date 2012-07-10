@@ -209,7 +209,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertNoErrors(p);
 		alter(p, "inc1"); // remove type variables from target type
 		build(p);
-		List errors = getErrorMessages(p);
+		List<IMessage> errors = getErrorMessages(p);
 		// Build errors:
 		// error at N:\temp\ajcSandbox\aspectj16_3\ajcTest60379.tmp\pr280676_2\src\p\A.java:8:0::0 a.ls cannot be resolved or is not
 		// a field
@@ -712,7 +712,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testOutputLocationCallbacks2() {
 		String p = "pr268827_ol_res";
 		initialiseProject(p);
-		Map m = new HashMap();
+		Map<String,File> m = new HashMap<String,File>();
 		m.put("a.txt", new File(getFile(p, "src/a.txt")));
 		configureResourceMap(p, m);
 		CustomOLM olm = new CustomOLM(getProjectRelativePath(p, ".").toString());
@@ -895,7 +895,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertNotNull(binaryITDM);
 
 		// @see AsmRelationshipProvider.createIntertypeDeclaredChild()
-		List ptypes = binaryITDM.getParameterTypes();
+		List<char[]> ptypes = binaryITDM.getParameterTypes();
 		assertEquals("int", new String((char[]) ptypes.get(0)));
 		assertEquals("java.util.List", new String((char[]) ptypes.get(1)));
 		assertEquals("java.io.Serializable", new String((char[]) ptypes.get(2)));
@@ -956,7 +956,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p);
 		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
 		IRelationship ir = irm.get("=261380<test{C.java'X&before").get(0);
-		List targets = ir.getTargets();
+		List<String> targets = ir.getTargets();
 		assertEquals(1, targets.size());
 		System.out.println(targets.get(0));
 		String handle = (String) targets.get(0);
@@ -996,7 +996,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			IRelationshipMap asmRelMap = getModelFor("P4").getRelationshipMap();
 			assertEquals("There should be two relationships in the relationship map", 2, asmRelMap.getEntries().size());
 
-			for (Iterator iter = asmRelMap.getEntries().iterator(); iter.hasNext();) {
+			for (Iterator<String> iter = asmRelMap.getEntries().iterator(); iter.hasNext();) {
 				String sourceOfRelationship = (String) iter.next();
 				IProgramElement ipe = getModelFor("P4").getHierarchy().findElementForHandle(sourceOfRelationship);
 				assertNotNull("expected to find IProgramElement with handle " + sourceOfRelationship + " but didn't", ipe);
@@ -1013,10 +1013,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 				}
 				List<IRelationship> relationships = asmRelMap.get(ipe);
 				assertNotNull("expected " + ipe.getName() + " to have some " + "relationships", relationships);
-				for (Iterator iterator = relationships.iterator(); iterator.hasNext();) {
+				for (Iterator<IRelationship> iterator = relationships.iterator(); iterator.hasNext();) {
 					Relationship rel = (Relationship) iterator.next();
-					List targets = rel.getTargets();
-					for (Iterator iterator2 = targets.iterator(); iterator2.hasNext();) {
+					List<String> targets = rel.getTargets();
+					for (Iterator<String> iterator2 = targets.iterator(); iterator2.hasNext();) {
 						String t = (String) iterator2.next();
 						IProgramElement link = getModelFor("P4").getHierarchy().findElementForHandle(t);
 						if (ipe.getKind().equals(IProgramElement.Kind.ADVICE)) {
@@ -2511,10 +2511,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 		build("PR128618_1");
 		build("PR128618_2");
-		List l = getWarningMessages("PR128618_2");
+		List<IMessage> l = getWarningMessages("PR128618_2");
 
 		// there should be one warning against "PR128618_2"
-		List warnings = getWarningMessages("PR128618_2");
+		List<IMessage> warnings = getWarningMessages("PR128618_2");
 		assertTrue("Should be one warning, but there are #" + warnings.size(), warnings.size() == 1);
 		IMessage msg = (getWarningMessages("PR128618_2").get(0));
 		assertEquals("warning should be against the FFDC.aj resource", "FFDC.aj", msg.getSourceLocation().getSourceFile().getName());
@@ -2841,12 +2841,12 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		configureNonStandardCompileOptions("pr128655", "-showWeaveInfo");
 		configureShowWeaveInfoMessages("pr128655", true);
 		build("pr128655");
-		List firstBuildMessages = getWeavingMessages("pr128655");
+		List<IMessage> firstBuildMessages = getWeavingMessages("pr128655");
 		assertTrue("Should be at least one message about the dec @type, but there were none", firstBuildMessages.size() > 0);
 		alter("pr128655", "inc1");
 		build("pr128655");
 		checkWasntFullBuild(); // back to the source
-		List secondBuildMessages = getWeavingMessages("pr128655");
+		List<IMessage> secondBuildMessages = getWeavingMessages("pr128655");
 		// check they are the same
 		for (int i = 0; i < firstBuildMessages.size(); i++) {
 			IMessage m1 = (IMessage) firstBuildMessages.get(i);
@@ -2865,12 +2865,12 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		configureNonStandardCompileOptions("pr128655_2", "-showWeaveInfo");
 		configureShowWeaveInfoMessages("pr128655_2", true);
 		build("pr128655_2");
-		List firstBuildMessages = getWeavingMessages("pr128655_2");
+		List<IMessage> firstBuildMessages = getWeavingMessages("pr128655_2");
 		assertTrue("Should be at least one message about the dec @type, but there were none", firstBuildMessages.size() > 0);
 		alter("pr128655_2", "inc1");
 		build("pr128655_2");
 		checkWasntFullBuild(); // back to the source
-		List secondBuildMessages = getWeavingMessages("pr128655_2");
+		List<IMessage> secondBuildMessages = getWeavingMessages("pr128655_2");
 		// check they are the same
 		for (int i = 0; i < firstBuildMessages.size(); i++) {
 			IMessage m1 = (IMessage) firstBuildMessages.get(i);
@@ -3400,7 +3400,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			// Step4. Quick check that the advice points to something...
 			IProgramElement nodeForTypeA = checkForNode(model, "pkg", "A", true);
 			IProgramElement nodeForAdvice = findAdvice(nodeForTypeA);
-			List relatedElements = getRelatedElements(model, nodeForAdvice, 1);
+			List<String> relatedElements = getRelatedElements(model, nodeForAdvice, 1);
 
 			// Step5. No change to the file C but it should still be advised
 			// afterwards
@@ -3649,7 +3649,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		configureJavaOptionsMap("PR164384", javaOptions);
 
 		build("PR164384");
-		List errors = getErrorMessages("PR164384");
+		List<IMessage> errors = getErrorMessages("PR164384");
 		if (getCompilerForProjectWithName("PR164384").isJava6Compatible()) {
 			assertTrue("There should be no errors:\n" + errors, errors.isEmpty());
 		} else {
@@ -3902,7 +3902,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	 * @param programElement Program element whose related elements are to be found
 	 * @param expected the number of expected related elements
 	 */
-	private List/* IProgramElement */getRelatedElements(AsmManager model, IProgramElement programElement, int expected) {
+	private List<String> getRelatedElements(AsmManager model, IProgramElement programElement, int expected) {
 		List<String> relatedElements = getRelatedElements(model, programElement);
 		StringBuffer debugString = new StringBuffer();
 		if (relatedElements != null) {
@@ -3916,7 +3916,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	private IProgramElement getFirstRelatedElement(AsmManager model, IProgramElement programElement) {
-		List rels = getRelatedElements(model, programElement, 1);
+		List<String> rels = getRelatedElements(model, programElement, 1);
 		return model.getHierarchy().findElementForHandle((String) rels.get(0));
 	}
 
