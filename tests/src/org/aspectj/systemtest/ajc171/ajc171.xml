@@ -1,0 +1,37 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+	
+	<ajc-test dir="bugs171/pr384398" title="generics itds">
+		<compile files="A.java B.java BAspect.aj" options="-1.5">
+		<!-- 
+			<message kind="weave" text="Join point 'constructor-call(void java.util.LinkedList.&lt;init&gt;())' in Type 'Foo' (Foo.java:41) advised by around advice from 'Bar' (Foo.java:14)"/>
+		-->
+		</compile>
+		<!-- 
+		<run class="Foo">
+			<stdout>
+				<line text="superaspect getNumber returns -2"/>
+				<line text="Bar.method() running"/>
+				<line text="abstract method returns []"/>
+			</stdout>
+		</run> -->
+	</ajc-test>
+	
+	<ajc-test dir="bugs171/pr384398_2" title="generics itds 2">
+		<compile files="A.java B.java BAspect.aj" options="-1.5">
+		<!-- 
+			<message kind="weave" text="Join point 'constructor-call(void java.util.LinkedList.&lt;init&gt;())' in Type 'Foo' (Foo.java:41) advised by around advice from 'Bar' (Foo.java:14)"/>
+		-->
+		</compile>
+		<!-- 
+		<run class="Foo">
+			<stdout>
+				<line text="superaspect getNumber returns -2"/>
+				<line text="Bar.method() running"/>
+				<line text="abstract method returns []"/>
+			</stdout>
+		</run> -->
+	</ajc-test>
+   
+</suite>

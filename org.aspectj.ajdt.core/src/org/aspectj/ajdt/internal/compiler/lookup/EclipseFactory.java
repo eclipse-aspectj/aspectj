@@ -273,7 +273,17 @@ public class EclipseFactory {
 				// pr168044 - sometimes (whilst resolving types) we are working with 'half finished' types and so (for example) the
 				// underlying generic type for a raw type hasnt been set yet
 				// if (!baseType.isGenericType() && arguments!=null) baseType = baseType.getGenericType();
-				baseTypeSignature = baseType.getErasureSignature();
+// pr384398 - secondary testcase in 1.7.1 tests - this needs work as this code
+// currently discards the parameterization on the outer type, which is important info
+//				ReferenceBinding enclosingTypeBinding = ptb.enclosingType();
+//				if (enclosingTypeBinding!=null) {
+//					UnresolvedType ttt = fromBinding(enclosingTypeBinding);
+//					baseTypeSignature = ttt.getSignature();
+//					baseTypeSignature= baseTypeSignature.substring(0,baseTypeSignature.length()-1);
+//					baseTypeSignature = baseTypeSignature + "."+new String(ptb.sourceName)+";";
+//				} else {			
+					baseTypeSignature = baseType.getErasureSignature();
+//				}
 			} else {
 				baseTypeSignature = UnresolvedType.forName(getName(binding)).getSignature();
 			}
@@ -283,6 +293,10 @@ public class EclipseFactory {
 			// be type variables that we haven't fixed up yet.
 			if (arguments == null) {
 				arguments = new UnresolvedType[0];
+				// for pr384398
+				if (!hasAnyArguments(ptb)) {
+					return UnresolvedType.forRawTypeName(getName(binding));
+				}
 			}
 			// StringBuffer parameterizedSig = new StringBuffer();
 			// parameterizedSig.append(ResolvedType.PARAMETERIZED_TYPE_IDENTIFIER);
@@ -328,6 +342,21 @@ public class EclipseFactory {
 		// was: UnresolvedType.forName(getName(binding));
 		UnresolvedType ut = UnresolvedType.forSignature(new String(binding.signature()));
 		return ut;
+	}
+
+	/**
+	 * Search up a parameterized type binding for any arguments at any level.
+	 */
+	private boolean hasAnyArguments(ParameterizedTypeBinding ptb) {
+		if (ptb.arguments!=null && ptb.arguments.length>0) {
+			return true;
+		}
+		ReferenceBinding enclosingType = ptb.enclosingType();
+		if (enclosingType instanceof ParameterizedTypeBinding) {
+			return hasAnyArguments((ParameterizedTypeBinding)enclosingType);
+		} else {
+			return false;
+		}
 	}
 
 	/**
