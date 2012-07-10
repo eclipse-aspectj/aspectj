@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html> <head>
-<title>AspectJ 1.7.0.M1 Readme</title>
+<title>AspectJ 1.7.0 Readme</title>
 <style type="text/css">
 <!--
   P   { margin-left:  20px; }
@@ -18,19 +18,42 @@
 All rights reserved.
 </small></div>
 
-<h1>AspectJ 1.7.0.M1 Readme</h1>
+<h1>AspectJ 1.7.0 Readme</h1>
 
 <p>The full list of resolved issues in 1.7.0 is available 
 <a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.7.0;">here</a></h2>.</p>
 
-<h4>1.7.0.M1 available 16-Dec-2011</h4>
+<ul>
+<li>1.7.0 available 2-Jul-2012
+<li>1.7.0.RC1 available 25-May-2012
+<li>1.7.0.M1 available 16-Dec-2011
+</ul>
 
 <h2>Notable Changes</h2>
 
-<h3>M1 - upgrade to Java 7</h3>
+<h3>Java 7 bytecode weaving</h3>
+<p>The first milestone of 1.7.0 upgraded the compiler but this still left the weaver with some issues 
+if it had to weave into bytecode containing some of the new features that were allowed by Java 1.7.
+In particular this meant any bytecode containing the INVOKEDYNAMIC (new instruction for 1.7) and 
+the related new constant pool entry types that support it.  RC1 now supports weaving into bytecode
+containing these features.  However, the new INVOKEDYNAMIC instruction does not surface as a join
+point yet so you cannot write a pointcut to match on it. If you use execution() pointcuts
+as opposed to call() then you will still be able to advise what the invokedynamic actually calls.
+</p>
+<h3>Bytecode caching for loadtime weaving</h3>
+<p>Under <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=367673">bug 367673</a> we have had
+a contribution (thanks John Kew!) that enables a bytecode cache for loadtime weaving.  The
+details and some rudimentary benchmark numbers are in the bug.  Basically it caches woven 
+bytecode on first start of a system
+using LTW and then reuses that woven bytecode on subsequent starts - this saves weaving time
+and also memory consumption.  To activate it, use the following system properties:</p>
+<pre><code>-Daj.weaving.cache.enabled=true
+-Daj.weaving.cache.dir=/tmp/aspectj-cache/
+</code></pre>
+
+<h3>Upgrade to Java 7</h3>
 <p>
-This milestone is the first after the upgrade to the Eclipse Java 7 compiler.
-AspectJ moved from Eclipse JDT Core 0.785_R33x (Eclipse 3.3) to Eclipse JDT Core 0.B79_R37x (Eclipse 3.7).
+For AspectJ 1.7.0, AspectJ moved from Eclipse JDT Core 0.785_R33x (Eclipse 3.3) to Eclipse JDT Core 0.B79_R37x (Eclipse 3.7).
 This is a big change where AspectJ is picking up four years of change from the Eclipse compiler.
 </p>
 <p>
@@ -93,8 +116,6 @@ before(): execution(* main(..)) {
    }
 </pre></code>
 </p>
-<p><b>Note:</b> there is still more to be done for full Java7 support.  invokedynamic handling is not in place yet (AspectJ may have trouble if it encounters that bytecode instruction).  Also interplay between
-the new language constructs and the existing pointcuts needs some work - for example handler() pointcut and multicatch has a known issue right now.
 <h4>
 <!-- ============================== -->  
 </body>
