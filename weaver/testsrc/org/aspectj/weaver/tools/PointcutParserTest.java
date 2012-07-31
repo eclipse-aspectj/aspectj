@@ -56,7 +56,7 @@ public class PointcutParserTest extends TestCase {
 			return;
 		}
 
-		Set s = PointcutParser.getAllSupportedPointcutPrimitives();
+		Set<PointcutPrimitive> s = PointcutParser.getAllSupportedPointcutPrimitives();
 		assertEquals("Should be 21 elements in the set", 21, s.size());
 		assertFalse("Should not contain if pcd", s.contains(PointcutPrimitive.IF));
 		assertFalse("Should not contain cflow pcd", s.contains(PointcutPrimitive.CFLOW));
@@ -70,7 +70,7 @@ public class PointcutParserTest extends TestCase {
 
 		PointcutParser parser = PointcutParser
 				.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(this.getClass().getClassLoader());
-		Set s = parser.getSupportedPrimitives();
+		Set<PointcutPrimitive> s = parser.getSupportedPrimitives();
 		assertEquals("Should be 21 elements in the set", 21, s.size());
 		assertFalse("Should not contain if pcd", s.contains(PointcutPrimitive.IF));
 		assertFalse("Should not contain cflow pcd", s.contains(PointcutPrimitive.CFLOW));
@@ -82,12 +82,12 @@ public class PointcutParserTest extends TestCase {
 			return;
 		}
 
-		Set p = PointcutParser.getAllSupportedPointcutPrimitives();
+		Set<PointcutPrimitive> p = PointcutParser.getAllSupportedPointcutPrimitives();
 		PointcutParser parser = PointcutParser
 				.getPointcutParserSupportingSpecifiedPrimitivesAndUsingSpecifiedClassLoaderForResolution(p, this.getClass()
 						.getClassLoader());
 		assertEquals("Should use the set we pass in", p, parser.getSupportedPrimitives());
-		Set q = new HashSet();
+		Set<PointcutPrimitive> q = new HashSet<PointcutPrimitive>();
 		q.add(PointcutPrimitive.ARGS);
 		parser = PointcutParser.getPointcutParserSupportingSpecifiedPrimitivesAndUsingSpecifiedClassLoaderForResolution(q, this
 				.getClass().getClassLoader());
