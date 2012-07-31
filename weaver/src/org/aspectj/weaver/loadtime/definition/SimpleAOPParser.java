@@ -17,8 +17,10 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.loadtime.definition.Definition.DeclareAnnotationKind;
 
 /**
  * This class has been created to avoid deadlocks when instrumenting SAXParser.
@@ -48,6 +50,11 @@ public class SimpleAOPParser {
 	private final static String POINTCUT_ELEMENT = "pointcut";
 	private final static String WITHIN_ATTRIBUTE = "within";
 	private final static String EXPRESSION_ATTRIBUTE = "expression";
+	private static final String DECLARE_ANNOTATION = "declare-annotation";
+	private static final String ANNONATION_TAG = "annotation";
+	private static final String ANNO_KIND_TYPE = "type";
+	private static final String ANNO_KIND_METHOD = "method";
+	private static final String ANNO_KIND_FIELD = "field";
 	private final Definition m_definition;
 	private boolean m_inAspectJ;
 	private boolean m_inWeaver;
@@ -150,7 +157,32 @@ public class SimpleAOPParser {
 			if (!isNull(typePattern)) {
 				m_definition.getAspectIncludePatterns().add(typePattern);
 			}
-		} else {
+		}else if (DECLARE_ANNOTATION.equals(qName) && m_inAspects) {
+			String anno = (String) attrMap.get(ANNONATION_TAG);
+			if (!isNull(anno)){
+				String pattern = (String) attrMap.get(ANNO_KIND_FIELD);
+				if (pattern != null){
+					m_lastConcreteAspect.declareAnnotations.add(new Definition.DeclareAnnotation(
+							DeclareAnnotationKind.Field, pattern, anno));
+				}
+				else{
+					pattern = (String) attrMap.get(ANNO_KIND_METHOD);
+					if (pattern != null){
+						m_lastConcreteAspect.declareAnnotations.add(new Definition.DeclareAnnotation(
+								DeclareAnnotationKind.Method, pattern, anno));
+					}
+					else{
+						pattern = (String) attrMap.get(ANNO_KIND_TYPE);
+						if (pattern != null){
+							m_lastConcreteAspect.declareAnnotations.add(new Definition.DeclareAnnotation(
+									DeclareAnnotationKind.Type, pattern, anno));
+						}
+					}
+				}
+			
+			}
+		}
+		else {
 			throw new Exception(
 					"Unknown element while parsing <aspectj> element: " + qName);
 		}
