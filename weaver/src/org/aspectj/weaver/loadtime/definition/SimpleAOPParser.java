@@ -20,7 +20,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.loadtime.definition.Definition.AdviceKind;
 import org.aspectj.weaver.loadtime.definition.Definition.DeclareAnnotationKind;
+import org.xml.sax.SAXException;
 
 /**
  * This class has been created to avoid deadlocks when instrumenting SAXParser.
@@ -55,6 +57,9 @@ public class SimpleAOPParser {
 	private static final String ANNO_KIND_TYPE = "type";
 	private static final String ANNO_KIND_METHOD = "method";
 	private static final String ANNO_KIND_FIELD = "field";
+	private final static String BEFORE_ELEMENT = "before";
+	private final static String AFTER_ELEMENT = "after";
+	private final static String AROUND_ELEMENT = "around";
 	private final Definition m_definition;
 	private boolean m_inAspectJ;
 	private boolean m_inWeaver;
@@ -180,6 +185,35 @@ public class SimpleAOPParser {
 					}
 				}
 			
+			}
+		}
+		else if (BEFORE_ELEMENT.equals(qName) && m_inAspects ) {
+			String pointcut = (String) attrMap.get(POINTCUT_ELEMENT);
+			String adviceClass = (String) attrMap.get("invokeClass");
+			String adviceMethod = (String) attrMap.get("invokeMethod");
+			if (!isNull(pointcut) && !isNull(adviceClass) && !isNull(adviceMethod)) {
+				m_lastConcreteAspect.pointcutsAndAdvice.add(new Definition.PointcutAndAdvice(AdviceKind.Before,
+						replaceXmlAnd(pointcut), adviceClass, adviceMethod));
+			} else {
+				throw new SAXException("Badly formed <before> element");
+			}
+		} else if (AFTER_ELEMENT.equals(qName) && m_inAspects) {
+			String pointcut = (String) attrMap.get(POINTCUT_ELEMENT);
+			String adviceClass = (String) attrMap.get("invokeClass");
+			String adviceMethod = (String) attrMap.get("invokeMethod");
+			if (!isNull(pointcut) && !isNull(adviceClass) && !isNull(adviceMethod)) {
+				m_lastConcreteAspect.pointcutsAndAdvice.add(new Definition.PointcutAndAdvice(AdviceKind.After,
+						replaceXmlAnd(pointcut), adviceClass, adviceMethod));
+			} else {
+				throw new SAXException("Badly formed <after> element");
+			}
+		} else if (AROUND_ELEMENT.equals(qName) && m_inAspects) {
+			String pointcut = (String) attrMap.get(POINTCUT_ELEMENT);
+			String adviceClass = (String) attrMap.get("invokeClass");
+			String adviceMethod = (String) attrMap.get("invokeMethod");
+			if (!isNull(pointcut) && !isNull(adviceClass) && !isNull(adviceMethod)) {
+				m_lastConcreteAspect.pointcutsAndAdvice.add(new Definition.PointcutAndAdvice(AdviceKind.Around,
+						replaceXmlAnd(pointcut), adviceClass, adviceMethod));
 			}
 		}
 		else {
