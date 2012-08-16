@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="bugs171/pr356594" title="multiple annos 1">
+		<compile files="Code.aj" options="-1.5 -showWeaveInfo">
+			<message kind="weave" text="'C' (Code.aj:8) is annotated with @Bar type annotation from 'X' (Code.aj:12)"/>
+			<message kind="weave" text="'C' (Code.aj:8) is annotated with @Foo type annotation from 'X' (Code.aj:12)"/>
+		</compile>
+	</ajc-test>
+   
+</suite>
