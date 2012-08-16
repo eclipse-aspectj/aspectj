@@ -51,8 +51,8 @@ public class DeclareAnnotation extends Declare {
 	private ResolvedType containingAspect;
 	private List<String> annotationMethods;
 	private List<String> annotationStrings;
-	private AnnotationAJ annotation; // discovered when required
-	private ResolvedType annotationType; // discovered when required
+	private AnnotationAJ[] annotations; // discovered when required
+	private ResolvedType[] annotationTypes; // discovered when required
 
 	// not serialized:
 	private int annotationStart;
@@ -150,7 +150,7 @@ public class DeclareAnnotation extends Declare {
 		}
 		ret.annotationMethods = this.annotationMethods;
 		ret.annotationStrings = this.annotationStrings;
-		ret.annotation = this.annotation;
+		ret.annotations = this.annotations;
 		ret.containingAspect = this.containingAspect;
 		ret.copyLocationFrom(this);
 		return ret;
@@ -365,7 +365,7 @@ public class DeclareAnnotation extends Declare {
 	 * finds that method and retrieves the annotation
 	 */
 	private void ensureAnnotationDiscovered() {
-		if (annotation != null) {
+		if (annotations != null) {
 			return;
 		}
 		String annotationMethod = annotationMethods.get(0);
@@ -427,9 +427,10 @@ public class DeclareAnnotation extends Declare {
 	/**
 	 * @return the type of the annotation
 	 */
-	public ResolvedType getAnnotationType() {
-		if (annotationType == null) {
+	public ResolvedType[] getAnnotationTypes() {
+		if (annotationTypes == null) {
 			String annotationMethod = annotationMethods.get(0);
+			List<ResolvedType> annoTypesToStore = new ArrayList<ResolvedType>();
 			for (Iterator<ResolvedMember> iter = containingAspect.getMethods(true, true); iter.hasNext();) {
 				ResolvedMember member = iter.next();
 				if (member.getName().equals(annotationMethod)) {
@@ -439,23 +440,20 @@ public class DeclareAnnotation extends Declare {
 						return null;
 					}
 					int idx = 0;
-					if (annoTypes[0].getSignature().equals("Lorg/aspectj/internal/lang/annotation/ajcDeclareAnnotation;")) {
-						idx = 1;
+					for (int i=0;i<annoTypes.length;i++) {
+						if (!annoTypes[0].getSignature().equals("Lorg/aspectj/internal/lang/annotation/ajcDeclareAnnotation;")) {
+							annoTypesToStore.add(annoTypes[i]);
+						}
 					}
-					annotationType = annoTypes[idx];
+//					if (annoTypes[0].getSignature().equals("Lorg/aspectj/internal/lang/annotation/ajcDeclareAnnotation;")) {
+//						idx = 1;
+//					}
+					annotationTypes = annoTypesToStore.toArray(new ResolvedType[annoTypesToStore.size()]);//annoTypes[idx];
 					break;
 				}
 			}
 		}
-		return annotationType;
-	}
-
-	/**
-	 * @return true if the annotation specified is allowed on a field
-	 */
-	public boolean isAnnotationAllowedOnField() {
-		ensureAnnotationDiscovered();
-		return annotation.allowedOnField();
+		return annotationTypes;
 	}
 
 	public String getPatternAsString() {

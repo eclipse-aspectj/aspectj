@@ -21,9 +21,9 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */ 
 public class Ajc171Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
-//	public void testMultipleAnnos_356594() {
-//		runTest("multiple annos 1");
-//	}
+	public void testMultipleAnnos_356594() {
+		runTest("multiple annos 1");
+	}
 	
 	// ---
 

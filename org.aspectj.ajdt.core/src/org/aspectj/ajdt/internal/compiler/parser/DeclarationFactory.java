@@ -144,16 +144,17 @@ public class DeclarationFactory implements IDeclarationFactory {
 	}
 
 	public MethodDeclaration createDeclareAnnotationDeclaration(CompilationResult result, ASTNode pseudoTokens,
-			Annotation annotation, Parser parser, char kind) {
+			Annotation[] annotations, Parser parser, char kind) {
 		DeclareAnnotation declare = (DeclareAnnotation) ((PseudoTokens) pseudoTokens).parseAnnotationDeclare(parser);
 		if (declare != null) {
 			if (kind == '-') {
 				declare.setRemover(true);
 			}
 		}
-		DeclareAnnotationDeclaration decl = new DeclareAnnotationDeclaration(result, declare, annotation);
+		DeclareAnnotationDeclaration decl = new DeclareAnnotationDeclaration(result, declare, annotations);
 		return decl;
 	}
+	
 
 	public MethodDeclaration createInterTypeFieldDeclaration(CompilationResult result, TypeReference onType) {
 		return new InterTypeFieldDeclaration(result, onType);
