@@ -12,7 +12,7 @@ import org.aspectj.systemtest.ajc171.AllTestsAspectJ171;
 public class AllTests17 {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite("AspectJ System Test Suite - JDK 1.7");
+		TestSuite suite = new TestSuite("AspectJ System Test Suite - 1.7");
 		// $JUnit-BEGIN$
 		suite.addTest(AllTestsAspectJ171.suite());
 		suite.addTest(AllTestsAspectJ170.suite());

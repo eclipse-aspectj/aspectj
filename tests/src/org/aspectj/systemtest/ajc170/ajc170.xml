@@ -242,40 +242,6 @@
        </stdout>
      </run>
    </ajc-test>
- 
-    <ajc-test dir="bugs170/pr73507" title="public ITDfs - 1">
-      <compile files="Case1.java" options="-1.5"/>
-      <run class="Case1">
-        <stdout>
-          <line text="Found a field called i"/>
-        </stdout>
-      </run>
-    </ajc-test>
-    
-    <ajc-test dir="bugs170/pr73507" title="public ITDfs - 2">
-      <compile files="Case2.java" options="-1.5"/>
-      <run class="Case2">
-        <stdout>
-          <line text="Value of C.i is 1"/>
-        </stdout>
-      </run>
-    </ajc-test>
-    
-     <ajc-test dir="bugs170/pr73507" title="public ITDfs - 3">
-      <compile files="Case3.java" options="-1.5"/>
-      <run class="Case3">
-        <stdout>
-          <line text="Value of C.i is 1"/>
-          <line text="Value of C.j is 1"/>
-        </stdout>
-      </run>
-    </ajc-test>
-    
-     <ajc-test dir="bugs170/pr73507" title="public ITDfs - 4">
-      <compile files="Case4.java" options="-1.5">
-        <message kind="error" line="13" text="can't override java.lang.String I.i with int C.i return types don't match"/>
-      </compile>
-    </ajc-test>
 
    <ajc-test dir="bugs170/pr371998" title="BCException anno decp">
      <compile files="AspectTest.java" options="-1.5 -showWeaveInfo">

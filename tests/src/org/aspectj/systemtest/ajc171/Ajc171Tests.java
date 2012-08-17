@@ -21,6 +21,26 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */ 
 public class Ajc171Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testPublicITDFs_pr73507_1() {
+		runTest("public ITDfs - 1");
+	}
+
+	public void testPublicITDFs_pr73507_2() {
+		runTest("public ITDfs - 2");
+	}
+
+	public void testPublicITDFs_pr73507_3() {
+		runTest("public ITDfs - 3");
+	}
+
+	public void testPublicITDFs_pr73507_4() {
+		runTest("public ITDfs - 4");
+	}
+	
+	public void testPublicITDFs_pr73507_5() {
+		runTest("public ITDfs - 5");
+	}
+	
 	public void testGenerics_384398() {
 		runTest("generics itds");
 	}

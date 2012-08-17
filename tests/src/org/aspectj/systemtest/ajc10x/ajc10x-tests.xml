@@ -1083,7 +1083,15 @@
 
     <ajc-test dir="design/intro" title="interfaces as mixins with introduction"
       keywords="from-resolved_10x">
-        <compile files="Interfaces.java"/>
+        <compile files="Interfaces.java">
+        <message kind="error" text="can't override java.lang.String SubI.instanceField with java.lang.String SubC.instanceField visibility is reduced"/>
+        <message kind="error" text="can't override java.lang.String I.instanceField with java.lang.String C.instanceField visibility is reduced"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="design/intro" title="interfaces as mixins with introduction b"
+      keywords="from-resolved_10x">
+        <compile files="Interfaces.java" options="-Xset:itdVersion=1"/>
         <run class="Interfaces"/>
     </ajc-test>
 

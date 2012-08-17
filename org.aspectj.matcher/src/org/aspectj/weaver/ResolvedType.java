@@ -661,21 +661,34 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 		return false;
 	}
-
 	public static boolean conflictingSignature(Member m1, Member m2) {
+		return conflictingSignature(m1,m2,true);
+	}
+
+	/**
+	 * Do the two members conflict?  Due to the change in 1.7.1, field itds on interfaces now act like 'default' fields - so types implementing
+	 * those fields get the field if they don't have it already, otherwise they keep what they have.  The conflict detection below had to be
+	 * altered.  Previously (<1.7.1) it is not a conflict if the declaring types are different.  With v2itds it may still be a conflict if the
+	 * declaring types are different.
+	 */
+	public static boolean conflictingSignature(Member m1, Member m2, boolean v2itds) {
 		if (m1 == null || m2 == null) {
 			return false;
 		}
-
 		if (!m1.getName().equals(m2.getName())) {
 			return false;
 		}
 		if (m1.getKind() != m2.getKind()) {
 			return false;
 		}
-
 		if (m1.getKind() == Member.FIELD) {
-			return m1.getDeclaringType().equals(m2.getDeclaringType());
+			if (v2itds) {
+				if (m1.getDeclaringType().equals(m2.getDeclaringType())) {
+					return true;
+				}
+			} else {
+				return m1.getDeclaringType().equals(m2.getDeclaringType());
+			}
 		} else if (m1.getKind() == Member.POINTCUT) {
 			return true;
 		}
@@ -1735,12 +1748,15 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			}
 		}
 
+		boolean needsAdding =true;
+		boolean needsToBeAddedEarlier =false;
 		// now compare to existingMungers
 		for (Iterator<ConcreteTypeMunger> i = interTypeMungers.iterator(); i.hasNext();) {
 			ConcreteTypeMunger existingMunger = i.next();
-			if (conflictingSignature(existingMunger.getSignature(), munger.getSignature())) {
-				// System.err.println("match " + munger + " with " +
-				// existingMunger);
+			boolean v2itds = munger.getSignature().getKind()== Member.FIELD && (munger.getMunger() instanceof NewFieldTypeMunger) && ((NewFieldTypeMunger)munger.getMunger()).version==NewFieldTypeMunger.VersionTwo;
+
+			if (conflictingSignature(existingMunger.getSignature(), munger.getSignature(),v2itds)) {
+				// System.err.println("match " + munger + " with " + existingMunger);
 				if (isVisible(munger.getSignature().getModifiers(), munger.getAspectType(), existingMunger.getAspectType())) {
 					// System.err.println("    is visible");
 					int c = compareMemberPrecedence(sig, existingMunger.getSignature());
@@ -1751,11 +1767,23 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 					if (c < 0) {
 						// the existing munger dominates the new munger
 						checkLegalOverride(munger.getSignature(), existingMunger.getSignature(), 0x11, null);
-						return;
+						needsAdding = false;
+						if (munger.getSignature().getKind()== Member.FIELD && munger.getSignature().getDeclaringType().resolve(world).isInterface() && ((NewFieldTypeMunger)munger.getMunger()).version==NewFieldTypeMunger.VersionTwo) {
+							// still need to add it
+							needsAdding=true;
+						}
+						break;
 					} else if (c > 0) {
 						// the new munger dominates the existing one
 						checkLegalOverride(existingMunger.getSignature(), munger.getSignature(), 0x11, null);
-						i.remove();
+//						i.remove();
+						if (existingMunger.getSignature().getKind()==Member.FIELD &&
+								existingMunger.getSignature().getDeclaringType().resolve(world).isInterface()
+								&& ((NewFieldTypeMunger)existingMunger.getMunger()).version==NewFieldTypeMunger.VersionTwo) {
+							needsToBeAddedEarlier=true;
+						} else {
+							i.remove();
+						}
 						break;
 					} else {
 						interTypeConflictError(munger, existingMunger);
@@ -1769,7 +1797,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// we are adding the parameterized form of the ITD to the list of
 		// mungers. Within it, the munger knows the original declared
 		// signature for the ITD so it can be retrieved.
-		interTypeMungers.add(munger);
+		if (needsAdding) {
+			if (!needsToBeAddedEarlier) {
+				interTypeMungers.add(munger);
+			} else {
+				interTypeMungers.add(0,munger);
+			}
+		}
 	}
 
 	/**
@@ -1802,13 +1836,18 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		// sig = ctm.getSignature(); // possible sig change when type parameters
 		// filled in
 		// }
+		ResolvedTypeMunger rtm = typeTransformer.getMunger();
+		boolean v2itds = true;
+		if (rtm instanceof NewFieldTypeMunger && ((NewFieldTypeMunger)rtm).version==NewFieldTypeMunger.VersionOne) {
+			v2itds = false;
+		}
 		while (existingMembers.hasNext()) {
 			ResolvedMember existingMember = existingMembers.next();
 			// don't worry about clashing with bridge methods
 			if (existingMember.isBridgeMethod()) {
 				continue;
 			}
-			if (conflictingSignature(existingMember, typeTransformerSignature)) {
+			if (conflictingSignature(existingMember, typeTransformerSignature,v2itds)) {
 				// System.err.println("conflict: existingMember=" +
 				// existingMember + "   typeMunger=" + munger);
 				// System.err.println(munger.getSourceLocation() + ", " +

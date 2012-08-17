@@ -277,6 +277,9 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		sig.setTypeVariables(sigtemp.getTypeVariables());
 
 		NewFieldTypeMunger myMunger = new NewFieldTypeMunger(sig, null, typeVariableAliases);
+		if (world.getItdVersion() == 1) {
+			myMunger.version = NewFieldTypeMunger.VersionOne;
+		}
 		setMunger(myMunger);
 		ResolvedType aspectType = world.fromEclipse(classScope.referenceContext.binding);
 		ResolvedMember me = myMunger.getInitMethod(aspectType);

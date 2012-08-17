@@ -84,7 +84,7 @@
       <run class="Declaration1">
         <stdout>
           <line text="public java.lang.String Test.firstProperty has annotation:true"/>
-          <line text="public java.lang.String Test.ajc$interField$Declaration1$TestInterface$secondProperty has annotation:true"/>
+          <line text="public java.lang.String Test.secondProperty has annotation:true"/>
         </stdout>
       </run>
     </ajc-test>
@@ -117,7 +117,7 @@
       <run class="Declaration2">
         <stdout>
           <line text="public java.lang.String Test.firstProperty has annotation:true"/>
-          <line text="public java.lang.String Test.ajc$interField$Declaration2$TestInterface$secondProperty has annotation:true"/>
+          <line text="public java.lang.String Test.secondProperty has annotation:true"/>
         </stdout>
       </run>
     </ajc-test>
@@ -4636,7 +4636,11 @@
      <run class="GenericAspectZ"/>
    </ajc-test>
       
-   
+   <ajc-test dir="java5/generics/binaryBridging" title="binary bridge methods - two">
+     <compile files="TwoA.java" outjar="twoa.jar" options="-1.5"/>
+     <compile files="TwoB.java" outjar="twob.jar" options="-1.5"/>
+     <compile files="TwoX.java" inpath="twoa.jar;twob.jar" options="-1.5"/>
+   </ajc-test>
    
    <ajc-test dir="java5/generics/itds/sharing" title="method itd sharing type variable with generic type">
      <compile files="Simple.aj" options="-1.5"/>

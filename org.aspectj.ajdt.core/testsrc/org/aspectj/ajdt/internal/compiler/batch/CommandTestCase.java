@@ -56,6 +56,10 @@ public abstract class CommandTestCase extends TestCase {
 	protected void runMain(String className) {
 		TestUtil.runMain(getSandboxName(), className);
 	}
+	
+	public void checkCompile(String source, String[] extraArgs, int[] expectedErrors) {
+		checkCompile(source,extraArgs,expectedErrors,getSandboxName());
+	}
 
 	public static void checkCompile(String source, String[] extraArgs, int[] expectedErrors, String sandboxName) {
 		List<String> args = new ArrayList<String>();

@@ -676,6 +676,10 @@ public class Ajc10xTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("interfaces as mixins with introduction");
 	}
 
+	public void test161b() {
+		runTest("interfaces as mixins with introduction b");
+	}
+
 	public void test162() {
 		runTest("functional modifiers work correctly with introduced members");
 	}

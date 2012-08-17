@@ -27,8 +27,14 @@ public class CompileAndRunTestCase extends CommandTestCase {
 	}
 	
 	public void testInterType() throws IOException {
-		checkCompile("src1/InterType.java", NO_ERRORS);
+		checkCompile("src1/InterType.java",new String[]{"-Xset:itdVersion=1"}, NO_ERRORS);
 		runMain("InterType");
+	}
+
+	// new style itds where itdfs on interfaces are not mangled
+	public void testInterType2() throws IOException {
+		checkCompile("src1/InterType2.java", NO_ERRORS);
+		runMain("InterType2");
 	}
 	
 	public void testInterTypeMethods() throws IOException {
