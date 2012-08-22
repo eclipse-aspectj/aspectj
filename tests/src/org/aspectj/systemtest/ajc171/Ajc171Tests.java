@@ -21,6 +21,14 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */ 
 public class Ajc171Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+//	public void testUnresolvableEnum_pr387568() {
+//		runTest("unresolvable enum");
+//	}
+	
+	public void testAbstractItds_pr386049() {
+		runTest("itd abstract");
+	}
+	
 	public void testPublicITDFs_pr73507_1() {
 		runTest("public ITDfs - 1");
 	}

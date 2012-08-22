@@ -1445,7 +1445,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 
 		for (ConcreteTypeMunger munger : getInterTypeMungersIncludingSupers()) {
-			if (munger.getSignature() != null && munger.getSignature().isAbstract()) { // Rule 1
+			if (munger.getSignature() != null && munger.getSignature().isAbstract() && munger.getMunger().getKind()!=ResolvedTypeMunger.PrivilegedAccess) { // Rule 1
 				if (munger.getMunger().getKind() == ResolvedTypeMunger.MethodDelegate2) {
 					// ignore for @AJ ITD as munger.getSignature() is the
 					// interface method hence abstract

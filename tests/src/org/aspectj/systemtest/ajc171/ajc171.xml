@@ -2,6 +2,28 @@
 
 <suite>
 
+	<ajc-test dir="bugs171/pr387568" title="unresolvable enum">
+      <compile files="Code.java" options="-1.5"/>
+      <!-- 
+      <run class="de.scrum_master.galileo.filter.JsoupFilter">
+        <stdout>
+          <line text="JsoupFilter.getLogMessage()"/>
+          <line text="run()"/>
+        </stdout>
+      </run>
+      -->
+    </ajc-test>
+
+    <ajc-test dir="bugs171/pr386049" title="itd abstract">
+      <compile files="de/scrum_master/galileo/filter/BasicFilter.java de/scrum_master/galileo/filter/JsoupFilter.java de/scrum_master/galileo/LoggingAspect.aj" options="-1.5"/>
+      <run class="de.scrum_master.galileo.filter.JsoupFilter">
+        <stdout>
+          <line text="JsoupFilter.getLogMessage()"/>
+          <line text="run()"/>
+        </stdout>
+      </run>
+    </ajc-test>
+
     <ajc-test dir="bugs171/pr73507" title="public ITDfs - 1">
       <compile files="Case1.java" options="-1.5"/>
       <run class="Case1">

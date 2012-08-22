@@ -717,7 +717,6 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		LazyMethodGen mg = makeMethodGen(gen, accessMethod);
 		InstructionList il = new InstructionList();
 		InstructionFactory fact = gen.getFactory();
-		// Type fieldType = BcelWorld.makeBcelType(field.getType());
 		Type[] paramTypes = BcelWorld.makeBcelTypes(method.getParameterTypes());
 
 		int pos = 0;
