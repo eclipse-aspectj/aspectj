@@ -62,6 +62,7 @@ import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
@@ -372,9 +373,12 @@ public class AjProblemReporter extends ProblemReporter {
 		// affects other code in the problem reporter that looks through ITDs...
 		ResolvedType supertypeToLookAt = onTypeX.getSuperclass();
 		while (supertypeToLookAt != null) {
-			List itMungers = supertypeToLookAt.getInterTypeMungers();
-			for (Iterator i = itMungers.iterator(); i.hasNext();) {
+			List<ConcreteTypeMunger> itMungers = supertypeToLookAt.getInterTypeMungers();
+			for (Iterator<ConcreteTypeMunger> i = itMungers.iterator(); i.hasNext();) {
 				ConcreteTypeMunger m = (ConcreteTypeMunger) i.next();
+				if (m.getMunger()!=null && m.getMunger().getKind()== ResolvedTypeMunger.PrivilegedAccess) {
+					continue;
+				}
 				ResolvedMember sig = m.getSignature();
 				if (sig == null)
 					continue; // we aren't interested in other kinds of munger
