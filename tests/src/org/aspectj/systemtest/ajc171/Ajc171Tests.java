@@ -20,7 +20,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  * @author Andy Clement
  */ 
 public class Ajc171Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
-
+	
 	public void testUnresolvableEnum_pr387568() {
 		runTest("unresolvable enum");
 	}

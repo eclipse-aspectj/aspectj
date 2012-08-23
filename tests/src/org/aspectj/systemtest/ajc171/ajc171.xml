@@ -2,16 +2,21 @@
 
 <suite>
 
-	<ajc-test dir="bugs171/pr387568" title="unresolvable enum">
-      <compile files="Color.java Code.java" options="-1.5"/>
-      <!-- 
-      <run class="de.scrum_master.galileo.filter.JsoupFilter">
+	<ajc-test dir="bugs171/pr387444" title="soft 17">
+      <compile files="Code.java" options="-1.7"/>
+    </ajc-test>
+
+	<ajc-test dir="bugs171/pr387444" title="soft 17 2">
+      <compile files="Code2.java" options="-1.7"/>
+      <run class="Code2">
         <stdout>
-          <line text="JsoupFilter.getLogMessage()"/>
-          <line text="run()"/>
+          <line text="foo"/>
         </stdout>
       </run>
-      -->
+    </ajc-test>
+
+	<ajc-test dir="bugs171/pr387568" title="unresolvable enum">
+      <compile files="Color.java Code.java" options="-1.5"/>
     </ajc-test>
 
     <ajc-test dir="bugs171/pr386049" title="itd abstract">

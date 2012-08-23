@@ -100,8 +100,9 @@ public class AjProblemReporter extends ProblemReporter {
 			// System.err.println("about to show error for unhandled exception: " + new String(exceptionType.sourceName()) +
 			// " at " + location + " in " + referenceContext);
 
-			for (Iterator i = factory.getWorld().getDeclareSoft().iterator(); i.hasNext();) {
-				DeclareSoft d = (DeclareSoft) i.next();
+			for (DeclareSoft d: factory.getWorld().getDeclareSoft()) {
+//			for (Iterator<DeclareSoft> i = factory.getWorld().getDeclareSoft().iterator(); i.hasNext();) {
+//				DeclareSoft d = (DeclareSoft) i.next();
 				// We need the exceptionType to match the type in the declare soft statement
 				// This means it must either be the same type or a subtype
 				ResolvedType throwException = factory.fromEclipse((ReferenceBinding) exceptionType);
@@ -138,6 +139,60 @@ public class AjProblemReporter extends ProblemReporter {
 		}
 
 		super.unhandledException(exceptionType, location);
+	}
+	
+	public void unhandledExceptionFromAutoClose(TypeBinding exceptionType, ASTNode location) {
+		if (!factory.getWorld().getDeclareSoft().isEmpty()) {
+			Shadow callSite = factory.makeShadow(location, referenceContext);
+			Shadow enclosingExec = factory.makeShadow(referenceContext);
+			// PR 72157 - calls to super / this within a constructor are not part of the cons join point.
+			if ((callSite == null) && (enclosingExec.getKind() == Shadow.ConstructorExecution)
+					&& (location instanceof ExplicitConstructorCall)) {
+				super.unhandledException(exceptionType, location);
+				return;
+			}
+			// System.err.println("about to show error for unhandled exception: " + new String(exceptionType.sourceName()) +
+			// " at " + location + " in " + referenceContext);
+
+			for (DeclareSoft d: factory.getWorld().getDeclareSoft()) {
+//			for (Iterator<DeclareSoft> i = factory.getWorld().getDeclareSoft().iterator(); i.hasNext();) {
+//				DeclareSoft d = (DeclareSoft) i.next();
+				// We need the exceptionType to match the type in the declare soft statement
+				// This means it must either be the same type or a subtype
+				ResolvedType throwException = factory.fromEclipse((ReferenceBinding) exceptionType);
+				FuzzyBoolean isExceptionTypeOrSubtype = d.getException().matchesInstanceof(throwException);
+				if (!isExceptionTypeOrSubtype.alwaysTrue())
+					continue;
+
+				if (callSite != null) {
+					FuzzyBoolean match = d.getPointcut().match(callSite);
+					if (match.alwaysTrue()) {
+						// System.err.println("matched callSite: " + callSite + " with " + d);
+						return;
+					} else if (!match.alwaysFalse()) {
+						// !!! need this check to happen much sooner
+						// throw new RuntimeException("unimplemented, shouldn't have fuzzy match here");
+					}
+				}
+				if (enclosingExec != null) {
+					FuzzyBoolean match = d.getPointcut().match(enclosingExec);
+					if (match.alwaysTrue()) {
+						// System.err.println("matched enclosingExec: " + enclosingExec + " with " + d);
+						return;
+					} else if (!match.alwaysFalse()) {
+						// !!! need this check to happen much sooner
+						// throw new RuntimeException("unimplemented, shouldn't have fuzzy match here");
+					}
+				}
+			}
+		}
+
+		// ??? is this always correct
+		if (location instanceof Proceed) {
+			return;
+		}
+
+		super.unhandledExceptionFromAutoClose(exceptionType, location);
 	}
 
 	private boolean isPointcutDeclaration(MethodBinding binding) {
