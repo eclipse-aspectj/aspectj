@@ -2,6 +2,12 @@
 
 <suite>
 
+	<ajc-test dir="bugs171/pr384401" title="npe">
+      <compile files="X.java" options="-1.5">
+      	<message kind="error" line="9" text="the advice annotation must specify a pointcut value"/>
+      </compile>
+    </ajc-test>
+
 	<ajc-test dir="bugs171/pr387444" title="soft 17">
       <compile files="Code.java" options="-1.7"/>
     </ajc-test>

@@ -385,6 +385,11 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 		try {
 			// +1 to give first char of pointcut string
 			ISourceContext context = new EclipseSourceContext(unit.compilationResult, pcLocation[0] + 1);
+			if (pointcutExpression == null) {
+				methodDeclaration.scope.problemReporter().signalError(methodDeclaration.sourceStart,
+						methodDeclaration.sourceEnd, "the advice annotation must specify a pointcut value");
+				return;
+			}
 			PatternParser pp = new PatternParser(pointcutExpression, context);
 			Pointcut pc = pp.parsePointcut();
 			pp.checkEof();
