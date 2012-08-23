@@ -1,12 +1,13 @@
 import java.lang.annotation.*;
 
-
 class AAA {
   public void m() {
     Color[] cs = Color.values();
+    Color c = Color.valueOf("R");
   }
 }
 
+@Anno
 aspect Foo {
   after(): @annotation(Anno) {}
 }
@@ -14,4 +15,3 @@ aspect Foo {
 @Retention(RetentionPolicy.RUNTIME)
 @interface Anno {}
 
-enum Color {R,G,B;}

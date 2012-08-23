@@ -55,6 +55,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SyntheticMethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.weaver.AbstractReferenceTypeDelegate;
@@ -68,6 +69,7 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.EnumAnnotationValue;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.StandardAnnotation;
@@ -245,7 +247,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		List<ResolvedMember> declaredMethods = new ArrayList<ResolvedMember>();
 		List<ResolvedMember> declaredFields = new ArrayList<ResolvedMember>();
 
-		binding.methods(); // the important side-effect of this call is to make
+		MethodBinding[] ms = binding.methods(); // the important side-effect of this call is to make
 		// sure bindings are completed
 		AbstractMethodDeclaration[] methods = declaration.methods;
 		if (methods != null) {
@@ -306,6 +308,28 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 				}
 			}
 		}
+		
+		if (isEnum()) {
+			// The bindings for the eclipse binding will include values/valueof
+			for (int m=0,len=ms.length;m<len;m++) {
+				MethodBinding mb = ms[m];
+				if ((mb instanceof SyntheticMethodBinding) && mb.isStatic()) { // cannot use .isSynthetic() because it isn't truly synthetic
+					if (CharOperation.equals(mb.selector,valuesCharArray) && mb.parameters.length==0 && mb.returnType.isArrayType() && ((ArrayBinding)mb.returnType).leafComponentType()==binding) {
+						// static <EnumType>[] values()
+						ResolvedMember valuesMember = factory.makeResolvedMember(mb);
+						valuesMember.setSourceContext(new EclipseSourceContext(unit.compilationResult, 0));
+						valuesMember.setPosition(0, 0);
+						declaredMethods.add(valuesMember);
+					} else if (CharOperation.equals(mb.selector,valueOfCharArray) && mb.parameters.length==1 && CharOperation.equals(mb.parameters[0].signature(),jlString) && mb.returnType==binding) {
+						// static <EnumType> valueOf(String)
+						ResolvedMember valueOfMember = factory.makeResolvedMember(mb);
+						valueOfMember.setSourceContext(new EclipseSourceContext(unit.compilationResult, 0));
+						valueOfMember.setPosition(0, 0);
+						declaredMethods.add(valueOfMember);
+					}
+				}
+			}
+		}
 
 		FieldBinding[] fields = binding.fields();
 		for (int i = 0, len = fields.length; i < len; i++) {
@@ -317,6 +341,11 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		this.declaredMethods = declaredMethods.toArray(new ResolvedMember[declaredMethods.size()]);
 		this.declaredFields = declaredFields.toArray(new ResolvedMember[declaredFields.size()]);
 	}
+	
+	private final static char[] valuesCharArray = "values".toCharArray();
+	private final static char[] valueOfCharArray = "valueOf".toCharArray();
+	private final static char[] jlString = "Ljava/lang/String;".toCharArray();
+	
 
 	private ResolvedPointcutDefinition makeResolvedPointcutDefinition(AbstractMethodDeclaration md) {
 		if (md.binding == null) {

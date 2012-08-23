@@ -3,7 +3,7 @@
 <suite>
 
 	<ajc-test dir="bugs171/pr387568" title="unresolvable enum">
-      <compile files="Code.java" options="-1.5"/>
+      <compile files="Color.java Code.java" options="-1.5"/>
       <!-- 
       <run class="de.scrum_master.galileo.filter.JsoupFilter">
         <stdout>
