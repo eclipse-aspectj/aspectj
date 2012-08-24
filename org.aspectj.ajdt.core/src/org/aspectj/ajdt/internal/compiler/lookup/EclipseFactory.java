@@ -482,6 +482,12 @@ public class EclipseFactory {
 				}
 			}
 		}
+		for (ConcreteTypeMunger ctm: ret) {
+			ResolvedMember rm = ctm.getSignature();
+			if (rm!=null) {
+				rm.resolve(this.getWorld());
+			}
+		}
 		finishedTypeMungers = ret;
 	}
 

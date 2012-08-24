@@ -30,6 +30,7 @@ import org.aspectj.bridge.ISourceLocation;
 public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, ResolvedMember {
 
 	private String[] parameterNames = null;
+	private boolean isResolved = false;
 	protected UnresolvedType[] checkedExceptions = UnresolvedType.NONE;
 
 	/**
@@ -568,6 +569,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 	// something different to world.resolve(member)
 	@Override
 	public ResolvedMember resolve(World world) {
+		if (isResolved) {
+			return this;
+		}
 		// make sure all the pieces of a resolvedmember really are resolved
 		try {
 			if (typeVariables != null && typeVariables.length > 0) {
@@ -601,6 +605,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 		} finally {
 			world.setTypeVariableLookupScope(null);
 		}
+		isResolved = true;
 		return this;
 	}
 
