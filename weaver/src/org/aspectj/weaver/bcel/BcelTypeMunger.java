@@ -1931,6 +1931,17 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 						fg.addAnnotation(ag);
 					}
 				}
+
+				if (weaver.getWorld().isInJava5Mode()) {
+					String basicSignature = field.getSignature();
+					String genericSignature = field.getReturnType().resolve(weaver.getWorld()).getSignatureForAttribute();
+					// String genericSignature =
+					// ((ResolvedMemberImpl)field).getSignatureForAttribute();
+					if (!basicSignature.equals(genericSignature)) {
+						// Add a signature attribute to it
+						fg.addAttribute(createSignatureAttribute(gen.getConstantPool(), genericSignature));
+					}
+				}
 				gen.addField(fg, getSourceLocation());
 			}
 			// this uses a shadow munger to add init method to constructors
