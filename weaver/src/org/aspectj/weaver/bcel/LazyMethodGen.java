@@ -967,11 +967,12 @@ public final class LazyMethodGen implements Traceable {
 			if (enclosingClass.getWorld().isInJava5Mode()) {
 				gen.setModifiers(gen.getModifiers() | ACC_SYNTHETIC);
 			}
-			// belt and braces, do the attribute even on Java 5 in addition to
-			// the modifier flag
-			ConstantPool cpg = gen.getConstantPool();
-			int index = cpg.addUtf8("Synthetic");
-			gen.addAttribute(new Synthetic(index, 0, new byte[0], cpg));
+			if (!hasAttribute("Synthetic")) {
+				// belt and braces, do the attribute even on Java 5 in addition to the modifier flag
+				ConstantPool cpg = gen.getConstantPool();
+				int index = cpg.addUtf8("Synthetic");
+				gen.addAttribute(new Synthetic(index, 0, new byte[0], cpg));
+			}
 		}
 
 		if (hasBody()) {
@@ -990,6 +991,15 @@ public final class LazyMethodGen implements Traceable {
 			gen.setInstructionList(null);
 		}
 		return gen;
+	}
+	
+	private boolean hasAttribute(String attributeName) {
+		for (Attribute attr: attributes) {
+			if (attr.getName().equals(attributeName)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void forceSyntheticForAjcMagicMembers() {
