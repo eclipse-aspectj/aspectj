@@ -1977,8 +1977,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 *         an additional source location.
 	 */
 	public boolean checkLegalOverride(ResolvedMember parent, ResolvedMember child, int transformerPosition, ResolvedType aspectType) {
-		// System.err.println("check: " + child.getDeclaringType() +
-		// " overrides " + parent.getDeclaringType());
+		// System.err.println("check: " + child.getDeclaringType() + " overrides " + parent.getDeclaringType());
 		if (Modifier.isFinal(parent.getModifiers())) {
 			// If the ITD matching is occurring due to pulling in a BinaryTypeBinding then this check can incorrectly
 			// signal an error because the ITD transformer being examined here will exactly match the member it added
@@ -1993,10 +1992,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 					List<ConcreteTypeMunger> transformersOnThisType = wsi.getTypeMungers(nonItdDeclaringType);
 					if (transformersOnThisType != null) {
 						for (ConcreteTypeMunger transformer : transformersOnThisType) {
-							// relatively crude check - is the ITD
-							// for the same as the existingmember
-							// and does it come
-							// from the same aspect
+							// relatively crude check - is the ITD for the same as the existingmember
+							// and does it come from the same aspect
 							if (transformer.aspectType.equals(aspectType)) {
 								if (parent.equalsApartFromDeclaringType(transformer.getSignature())) {
 									return true;
@@ -2027,7 +2024,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			// !rtParentReturnType.isAssignableFrom(rtChildReturnType);
 			// }
 		} else {
-			incompatibleReturnTypes = !parent.getReturnType().equals(child.getReturnType());
+			ResolvedType rtParentReturnType = parent.resolve(world).getGenericReturnType().resolve(world);
+			ResolvedType rtChildReturnType = child.resolve(world).getGenericReturnType().resolve(world);
+			
+			incompatibleReturnTypes = !rtParentReturnType.equals(rtChildReturnType);
 		}
 
 		if (incompatibleReturnTypes) {

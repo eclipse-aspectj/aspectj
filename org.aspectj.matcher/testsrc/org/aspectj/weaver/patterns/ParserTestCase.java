@@ -698,13 +698,13 @@ public class ParserTestCase extends PatternsTestCase {
 			fail("Expected WildAnnotationTypePattern but was " + atp.getClass());
 		}
 		WildAnnotationTypePattern watp = (WildAnnotationTypePattern) atp;
-		Map m = watp.annotationValues;
-		Set keys = m.keySet();
-		List orderedKeys = new ArrayList();
+		Map<String,String> m = watp.annotationValues;
+		Set<String> keys = m.keySet();
+		List<String> orderedKeys = new ArrayList<String>();
 		orderedKeys.addAll(keys);
 		Collections.sort(orderedKeys);
 		StringBuffer sb = new StringBuffer();
-		for (Iterator iterator = orderedKeys.iterator(); iterator.hasNext();) {
+		for (Iterator<String> iterator = orderedKeys.iterator(); iterator.hasNext();) {
 			String object = (String) iterator.next();
 			sb.append(object).append("=").append(m.get(object));
 			if (iterator.hasNext()) {

@@ -46,12 +46,12 @@ public class MessageTest extends TestCase {
 		super(name);
 	}
     
-    void checkListOrder(List list, Comparator c) { // XXX util
+    <T> void checkListOrder(List<T> list, Comparator<T> c) { // XXX util
         assertNotNull(list);
         assertNotNull(c);
-        ListIterator it = list.listIterator();
-        Object last = null;
-        Object current = null;
+        ListIterator<T> it = list.listIterator();
+        T last = null;
+        T current = null;
         while (it.hasNext()) {
             current = it.next();
             if (null != last) {
@@ -74,9 +74,9 @@ public class MessageTest extends TestCase {
     public void testKind_isSameOrLessThan() {
         IMessage.Kind last;
         IMessage.Kind next = null;
-        for (Iterator iter = IMessage.KINDS.iterator(); iter.hasNext();) {
+        for (Iterator<IMessage.Kind> iter = IMessage.KINDS.iterator(); iter.hasNext();) {
             last = next;
-            next = (IMessage.Kind) iter.next();
+            next = iter.next();
             if (null == last) {
                 continue;
             }
@@ -147,7 +147,7 @@ public class MessageTest extends TestCase {
         String input = "input";
         Throwable thrown = null;
         ISourceLocation sl = null;
-        Class exClass = null;
+        Class<?> exClass = null;
         String descriptor = "Message"; // for make(...)
         IMessage.Kind kind = IMessage.INFO;
 
@@ -203,7 +203,7 @@ public class MessageTest extends TestCase {
      */
     protected void roundTrip(String input, IMessage.Kind kind,
         Throwable thrown, ISourceLocation sourceLocation, 
-        String descriptor, Class exClass) {
+        String descriptor, Class<?> exClass) {
         try {
             IMessage m = make(input, kind, thrown, sourceLocation, descriptor);
             if ((null == input) && (null != thrown)) {
@@ -251,7 +251,7 @@ class KindTest {
             {  IMessage.ABORT, IMessage.DEBUG, IMessage.ERROR, 
                 IMessage.INFO, IMessage.WARNING, IMessage.FAIL };
 
-    static final List KINDLIST = Arrays.asList(KINDS);
+    static final List<IMessage.Kind> KINDLIST = Arrays.asList(KINDS);
 
     /** used to clear instance BitSet */
     static final BitSet UNSET = new BitSet(KINDS.length);

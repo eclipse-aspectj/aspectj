@@ -426,8 +426,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	}
 
 	private void doPendingWeaves() {
-		for (Iterator i = pendingTypesToWeave.iterator(); i.hasNext();) {
-			SourceTypeBinding t = (SourceTypeBinding) i.next();
+		for (SourceTypeBinding t: pendingTypesToWeave) {
 			ContextToken tok = CompilationAndWeavingContext.enteringPhase(
 					CompilationAndWeavingContext.WEAVING_INTERTYPE_DECLARATIONS, t.sourceName);
 			weaveInterTypeDeclarations(t);
@@ -862,10 +861,10 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	 * sourceType and onType are the 'same type' - the former is the 'Eclipse' version and the latter is the 'Weaver' version.
 	 */
 	private void processTypeMungersFromExistingWeaverState(SourceTypeBinding sourceType, ResolvedType onType) {
-		Collection previouslyAppliedMungers = onType.getWeaverState().getTypeMungers(onType);
+		List<ConcreteTypeMunger> previouslyAppliedMungers = onType.getWeaverState().getTypeMungers(onType);
 
-		for (Iterator i = previouslyAppliedMungers.iterator(); i.hasNext();) {
-			ConcreteTypeMunger m = (ConcreteTypeMunger) i.next();
+		for (Iterator<ConcreteTypeMunger> i = previouslyAppliedMungers.iterator(); i.hasNext();) {
+			ConcreteTypeMunger m = i.next();
 			EclipseTypeMunger munger = factory.makeEclipseTypeMunger(m);
 			if (munger.munge(sourceType, onType)) {
 				if (onType.isInterface() && munger.getMunger().needsAccessToTopmostImplementor()) {
@@ -885,8 +884,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		ResolvedType resolvedSourceType = factory.fromEclipse(sourceType);
 		List<ResolvedType> newParents = declareParents.findMatchingNewParents(resolvedSourceType, false);
 		if (!newParents.isEmpty()) {
-			for (Iterator i = newParents.iterator(); i.hasNext();) {
-				ResolvedType parent = (ResolvedType) i.next();
+			for (Iterator<ResolvedType> i = newParents.iterator(); i.hasNext();) {
+				ResolvedType parent = i.next();
 				if (dangerousInterfaces.containsKey(parent)) {
 					ResolvedType onType = factory.fromEclipse(sourceType);
 					factory.showMessage(IMessage.ERROR, onType + ": " + dangerousInterfaces.get(parent),
@@ -919,7 +918,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		if ((bits & TagBits.AnnotationTargetMASK) == 0) {
 			return "";
 		}
-		Set s = new HashSet();
+		Set<String> s = new HashSet<String>();
 		if ((bits & TagBits.AnnotationForAnnotationType) != 0) {
 			s.add("ANNOTATION_TYPE");
 		}
@@ -946,8 +945,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		}
 		StringBuffer sb = new StringBuffer();
 		sb.append("{");
-		for (Iterator iter = s.iterator(); iter.hasNext();) {
-			String element = (String) iter.next();
+		for (Iterator<String> iter = s.iterator(); iter.hasNext();) {
+			String element = iter.next();
 			sb.append(element);
 			if (iter.hasNext()) {
 				sb.append(",");
@@ -1288,33 +1287,33 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		return (abits & (TagBits.AnnotationForAnnotationType | TagBits.AnnotationForType)) == 0;
 	}
 
-	private void reportDeclareParentsMessage(WeaveMessage.WeaveMessageKind wmk, SourceTypeBinding sourceType, ResolvedType parent) {
-		if (!factory.getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
-			String filename = new String(sourceType.getFileName());
+//	private void reportDeclareParentsMessage(WeaveMessage.WeaveMessageKind wmk, SourceTypeBinding sourceType, ResolvedType parent) {
+//		if (!factory.getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
+//			String filename = new String(sourceType.getFileName());
+//
+//			int takefrom = filename.lastIndexOf('/');
+//			if (takefrom == -1) {
+//				takefrom = filename.lastIndexOf('\\');
+//			}
+//			filename = filename.substring(takefrom + 1);
+//
+//			factory.getWorld()
+//					.getMessageHandler()
+//					.handleMessage(
+//							WeaveMessage.constructWeavingMessage(wmk,
+//									new String[] { CharOperation.toString(sourceType.compoundName), filename,
+//											parent.getClassName(),
+//											getShortname(parent.getSourceLocation().getSourceFile().getPath()) }));
+//		}
+//	}
 
-			int takefrom = filename.lastIndexOf('/');
-			if (takefrom == -1) {
-				takefrom = filename.lastIndexOf('\\');
-			}
-			filename = filename.substring(takefrom + 1);
-
-			factory.getWorld()
-					.getMessageHandler()
-					.handleMessage(
-							WeaveMessage.constructWeavingMessage(wmk,
-									new String[] { CharOperation.toString(sourceType.compoundName), filename,
-											parent.getClassName(),
-											getShortname(parent.getSourceLocation().getSourceFile().getPath()) }));
-		}
-	}
-
-	private String getShortname(String path) {
-		int takefrom = path.lastIndexOf('/');
-		if (takefrom == -1) {
-			takefrom = path.lastIndexOf('\\');
-		}
-		return path.substring(takefrom + 1);
-	}
+//	private String getShortname(String path) {
+//		int takefrom = path.lastIndexOf('/');
+//		if (takefrom == -1) {
+//			takefrom = path.lastIndexOf('\\');
+//		}
+//		return path.substring(takefrom + 1);
+//	}
 
 	private void addParent(SourceTypeBinding sourceType, ResolvedType parent) {
 		ReferenceBinding parentBinding = (ReferenceBinding) factory.makeTypeBinding(parent);
