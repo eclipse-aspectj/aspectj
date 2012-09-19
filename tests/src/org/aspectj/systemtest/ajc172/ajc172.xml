@@ -1,0 +1,29 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="bugs172/pr389750" title="inconsistent class file">
+      <compile files="Code.aj" options="-1.5">
+      </compile>
+      <compile files="Clazz.java" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr389750" title="inconsistent class file 2">
+      <compile files="Code2.aj" outjar="azpect.jar" options="-1.5">
+      </compile>
+      <compile files="Clazz2.java" aspectpath="azpect.jar" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr389750" title="inconsistent class file 3">
+      <compile files="Code3.aj" outjar="azpect.jar" options="-1.5">
+      </compile>
+      <compile files="Clazz3.java" aspectpath="azpect.jar" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr389750" title="inconsistent class file 4">
+      <compile files="Code4.aj" outjar="azpect.jar" options="-1.5">
+      </compile>
+      <compile files="Clazz4.java" aspectpath="azpect.jar" options="-1.5"/>
+    </ajc-test>
+
+</suite>

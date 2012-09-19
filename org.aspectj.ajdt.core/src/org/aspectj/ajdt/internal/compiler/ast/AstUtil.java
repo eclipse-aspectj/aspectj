@@ -30,6 +30,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
@@ -43,6 +44,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeIds;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.patterns.WildTypePattern;
 
@@ -249,6 +251,41 @@ public class AstUtil {
 		Argument[] ret = new Argument[len + 1];
 		ret[0] = first;
 		System.arraycopy(rest, 0, ret, 1, len);
+		return ret;
+	}
+	
+	public static TypeParameter[] insert(TypeParameter first, TypeParameter[] rest) {
+		if (rest == null) {
+			return new TypeParameter[]{first};
+		}
+		int len = rest.length;
+		TypeParameter[] ret = new TypeParameter[len + 1];
+		ret[0] = first;
+		System.arraycopy(rest, 0, ret, 1, len);
+		return ret;
+	}
+	
+	public static TypeVariableBinding[] insert(TypeVariableBinding first, TypeVariableBinding[] rest) {
+		if (rest == null) {
+			return new TypeVariableBinding[]{first};
+		}
+		int len = rest.length;
+		TypeVariableBinding[] ret = new TypeVariableBinding[len + 1];
+		ret[0] = first;
+		System.arraycopy(rest, 0, ret, 1, len);
+		return ret;
+	}
+	
+	public static TypeVariableBinding[] insert(TypeVariableBinding[] first, TypeVariableBinding[] rest) {
+		if (rest == null) {
+			TypeVariableBinding[] ret = new TypeVariableBinding[first.length];
+			System.arraycopy(first, 0, ret, 0, first.length);
+			return ret;
+		}
+		int len = rest.length;
+		TypeVariableBinding[] ret = new TypeVariableBinding[first.length+len];
+		System.arraycopy(first,0,ret,0,first.length);
+		System.arraycopy(rest,0,ret,first.length,len);
 		return ret;
 	}
 

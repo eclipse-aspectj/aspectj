@@ -22,6 +22,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
@@ -36,6 +37,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilationUnit;
 import org.aspectj.weaver.AjAttribute;
@@ -93,6 +95,18 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		if (!Modifier.isStatic(declaredModifiers)) {
 			this.arguments = AstUtil.insert(AstUtil.makeFinalArgument("ajc$this_".toCharArray(), onTypeBinding), this.arguments);
 			binding.parameters = AstUtil.insert(onTypeBinding, binding.parameters);
+			
+			// If the inserted argument is a generic type, we should include the associated type variables to ensure
+			// the generated signature is correct (it will be checked by eclipse when this type is consumed in binary form).
+			TypeVariableBinding onTypeTVBs[] = onTypeBinding.typeVariables();
+			if (onTypeTVBs!=null && onTypeTVBs.length!=0) {
+				// The type parameters don't seem to need to be correct
+	//			TypeParameter tp = new TypeParameter();
+	//			tp.binding = tvb[0];
+	//			tp.name = tvb[0].sourceName;
+	//			this.typeParameters = AstUtil.insert(tp,this.typeParameters);
+				binding.typeVariables = AstUtil.insert(onTypeBinding.typeVariables(), binding.typeVariables);
+			}
 		}
 
 		super.resolve(upperScope);
