@@ -27,6 +27,10 @@ public class EnumAnnotationValue extends AnnotationValue {
 	}
 
 	public String stringify() {
+		return typeSignature+value;
+	}
+	
+	public String getValue() {
 		return value;
 	}
 

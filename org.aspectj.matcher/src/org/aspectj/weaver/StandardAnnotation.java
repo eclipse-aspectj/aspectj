@@ -120,8 +120,8 @@ public class StandardAnnotation extends AbstractAnnotationAJ {
 		AnnotationValue[] avs = aav.getValues();
 		Set<String> targets = new HashSet<String>();
 		for (int i = 0; i < avs.length; i++) {
-			AnnotationValue value = avs[i];
-			targets.add(value.stringify());
+			EnumAnnotationValue value = (EnumAnnotationValue)avs[i];
+			targets.add(value.getValue());
 		}
 		return targets;
 	}

@@ -37,6 +37,21 @@ public class Ajc172Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("inconsistent class file 4");
 	}
 
+	public void testAnnotationValueError_pr389752_1() {
+		runTest("annotation value error 1");
+	}
+
+	public void testAnnotationValueError_pr389752_2() {
+		runTest("annotation value error 2");
+	}
+	
+	// this needs some cleverness to fix... the annotation value is parsed as a string and then not checked
+	// to see if the user is accidentally supplying, for example, an enum value. Due to the use of strings, it
+	// is hard to check.  The verification code might go here: WildAnnotationTypePattern, line 205 (the string case)
+//	public void testAnnotationValueError_pr389752_3() {
+//		runTest("annotation value error 3");
+//	}
+
 	// ---
 
 	public static Test suite() {

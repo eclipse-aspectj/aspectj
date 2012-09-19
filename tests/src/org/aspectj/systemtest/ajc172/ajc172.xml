@@ -25,5 +25,23 @@
       </compile>
       <compile files="Clazz4.java" aspectpath="azpect.jar" options="-1.5"/>
     </ajc-test>
+    
+	<ajc-test dir="bugs172/pr389752" title="annotation value error 1">
+      <compile files="Code.java" options="-1.5">
+      	<message kind="error" text="Invalid annotation value 'AA', expected enum value"/>
+      </compile>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr389752" title="annotation value error 2">
+      <compile files="Code2.java" options="-1.5">
+      	<message kind="error" text="Invalid annotation value 'AA', expected enum value"/>
+      </compile>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr389752" title="annotation value error 3">
+      <compile files="Code3.java" options="-1.5">
+      	<message kind="error" text="Invalid annotation value 'AA', expected enum value"/>
+      </compile>
+    </ajc-test>
 
 </suite>
