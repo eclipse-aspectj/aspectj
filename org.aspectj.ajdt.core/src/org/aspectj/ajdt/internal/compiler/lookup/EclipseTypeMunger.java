@@ -19,6 +19,7 @@ import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -140,9 +141,16 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 				if (onType == existingMember.getDeclaringType() && Modifier.isFinal(munger.getSignature().getModifiers())) {
 					// final modifier on default implementation is taken to mean that
 					// no-one else can provide an implementation
-					MethodBinding offendingBinding = sourceType.getExactMethod(binding.selector, binding.parameters,
-							sourceType.scope.compilationUnitScope());
-					sourceType.scope.problemReporter().finalMethodCannotBeOverridden(offendingBinding, binding);
+					if (!(sourceType instanceof BinaryTypeBinding)) {
+						// If sourceType is a BinaryTypeBinding, this can indicate we are re-applying the ITDs to the target
+						// as we 'pull it in' to resolve something.  This means the clash here is with itself !  So if the ITD
+						// was final when initially added to the target this error logic will trigger.  We can't easily
+						// identify it was added via ITD, so I'm going to make this quick change to say avoid this error for 
+						// BinaryTypeBindings
+						CompilationUnitScope cuScope = sourceType.scope.compilationUnitScope();
+						MethodBinding offendingBinding = sourceType.getExactMethod(binding.selector, binding.parameters, cuScope);
+						sourceType.scope.problemReporter().finalMethodCannotBeOverridden(offendingBinding, binding);
+					}
 				}
 				// so that we find methods from our superinterfaces later on...
 				findOrCreateInterTypeMemberFinder(sourceType);
