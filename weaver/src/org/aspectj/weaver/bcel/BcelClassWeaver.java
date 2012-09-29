@@ -14,6 +14,7 @@ package org.aspectj.weaver.bcel;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -345,8 +346,7 @@ class BcelClassWeaver implements IClassWeaver {
 	/**
 	 * Create a single bridge method called 'theBridgeMethod' that bridges to 'whatToBridgeTo'
 	 */
-	private static void createBridgeMethod(BcelWorld world, LazyMethodGen whatToBridgeToMethodGen, LazyClassGen clazz,
-			ResolvedMember theBridgeMethod) {
+	private static void createBridgeMethod(BcelWorld world, LazyMethodGen whatToBridgeToMethodGen, LazyClassGen clazz, ResolvedMember theBridgeMethod) {
 		InstructionList body;
 		InstructionFactory fact;
 		int pos = 0;
@@ -563,6 +563,7 @@ class BcelClassWeaver implements IClassWeaver {
 	// FIXASC refactor into ResolvedType or even ResolvedMember?
 	/**
 	 * Check if a particular method is overriding another - refactored into this helper so it can be used from multiple places.
+	 * @return method that is overriding if it 
 	 */
 	private static ResolvedMember isOverriding(ResolvedType typeToCheck, ResolvedMember methodThatMightBeGettingOverridden,
 			String mname, String mrettype, int mmods, boolean inSamePackage, UnresolvedType[] methodParamsArray) {
@@ -693,15 +694,16 @@ class BcelClassWeaver implements IClassWeaver {
 	 * 
 	 * @return the method being overridden or null if none is found
 	 */
-	public static ResolvedMember checkForOverride(ResolvedType typeToCheck, String mname, String mparams, String mrettype,
-			int mmods, String mpkg, UnresolvedType[] methodParamsArray) {
+	public static void checkForOverride(ResolvedType typeToCheck, String mname, String mparams, String mrettype,
+			int mmods, String mpkg, UnresolvedType[] methodParamsArray, List<ResolvedMember> overriddenMethodsCollector) {
 
 		if (typeToCheck == null) {
-			return null;
+			return;
 		}
 		if (typeToCheck instanceof MissingResolvedTypeWithKnownSignature) {
-			return null; // we just can't tell !
+			return; // we just can't tell !
 		}
+		
 
 		if (typeToCheck.getWorld().forDEBUG_bridgingCode) {
 			System.err.println("  Bridging:checking for override of " + mname + " in " + typeToCheck);
@@ -711,9 +713,8 @@ class BcelClassWeaver implements IClassWeaver {
 		if (packageName == null) {
 			packageName = "";
 		}
-		boolean inSamePackage = packageName.equals(mpkg); // used when looking
-		// at visibility
-		// rules
+		// used when looking at visibility rules
+		boolean inSamePackage = packageName.equals(mpkg); 
 
 		ResolvedMember[] methods = typeToCheck.getDeclaredMethods();
 		for (int ii = 0; ii < methods.length; ii++) {
@@ -722,7 +723,7 @@ class BcelClassWeaver implements IClassWeaver {
 			ResolvedMember isOverriding = isOverriding(typeToCheck, methodThatMightBeGettingOverridden, mname, mrettype, mmods,
 					inSamePackage, methodParamsArray);
 			if (isOverriding != null) {
-				return isOverriding;
+				overriddenMethodsCollector.add(isOverriding);
 			}
 		}
 		// was: List l = typeToCheck.getInterTypeMungers();
@@ -742,31 +743,24 @@ class BcelClassWeaver implements IClassWeaver {
 					ResolvedMember isOverriding = isOverriding(typeToCheck, aMethod, mname, mrettype, mmods, inSamePackage,
 							methodParamsArray);
 					if (isOverriding != null) {
-						return isOverriding;
+						overriddenMethodsCollector.add(isOverriding);
 					}
 				}
 			}
 		}
 
 		if (typeToCheck.equals(UnresolvedType.OBJECT)) {
-			return null;
+			return;
 		}
 
 		ResolvedType superclass = typeToCheck.getSuperclass();
-		ResolvedMember overriddenMethod = checkForOverride(superclass, mname, mparams, mrettype, mmods, mpkg, methodParamsArray);
-		if (overriddenMethod != null) {
-			return overriddenMethod;
-		}
-
+		checkForOverride(superclass, mname, mparams, mrettype, mmods, mpkg, methodParamsArray,overriddenMethodsCollector);
+		
 		ResolvedType[] interfaces = typeToCheck.getDeclaredInterfaces();
 		for (int i = 0; i < interfaces.length; i++) {
 			ResolvedType anInterface = interfaces[i];
-			overriddenMethod = checkForOverride(anInterface, mname, mparams, mrettype, mmods, mpkg, methodParamsArray);
-			if (overriddenMethod != null) {
-				return overriddenMethod;
-			}
+			checkForOverride(anInterface, mname, mparams, mrettype, mmods, mpkg, methodParamsArray,overriddenMethodsCollector);
 		}
-		return null;
 	}
 
 	/**
@@ -778,31 +772,30 @@ class BcelClassWeaver implements IClassWeaver {
 	 */
 	public static boolean calculateAnyRequiredBridgeMethods(BcelWorld world, LazyClassGen clazz) {
 		world.ensureAdvancedConfigurationProcessed();
+		
 		if (!world.isInJava5Mode()) {
 			return false; // just double check... the caller should have already
 		}
-		// verified this
 		if (clazz.isInterface()) {
-			return false; // dont bother if we're an interface
+			return false; // dont bother if we are an interface
 		}
+		
 		boolean didSomething = false; // set if we build any bridge methods
-
 		// So what methods do we have right now in this class?
 		List<LazyMethodGen> methods = clazz.getMethodGens();
 
-		// Keep a set of all methods from this type - it'll help us to check if
-		// bridge methods
+		// Keep a set of all methods from this type - it'll help us to check if bridge methods
 		// have already been created, we don't want to do it twice!
 		Set<String> methodsSet = new HashSet<String>();
 		for (int i = 0; i < methods.size(); i++) {
 			LazyMethodGen aMethod = methods.get(i);
-			methodsSet.add(aMethod.getName() + aMethod.getSignature()); // e.g.
-			// "foo(Ljava/lang/String;)V"
+			StringBuilder sb = new StringBuilder(aMethod.getName());
+			sb.append(aMethod.getSignature());
+			methodsSet.add(sb.toString()); // e.g. "foo(Ljava/lang/String;)V"
 		}
 
 		// Now go through all the methods in this type
 		for (int i = 0; i < methods.size(); i++) {
-
 			// This is the local method that we *might* have to bridge to
 			LazyMethodGen bridgeToCandidate = methods.get(i);
 			if (bridgeToCandidate.isBridgeMethod()) {
@@ -821,8 +814,7 @@ class BcelClassWeaver implements IClassWeaver {
 			}
 
 			if (world.forDEBUG_bridgingCode) {
-				System.err.println("Bridging: Determining if we have to bridge to " + clazz.getName() + "." + name + ""
-						+ bridgeToCandidate.getSignature());
+				System.err.println("Bridging: Determining if we have to bridge to " + clazz.getName() + "." + name + "" + bridgeToCandidate.getSignature());
 			}
 
 			// Let's take a look at the superclass
@@ -832,20 +824,20 @@ class BcelClassWeaver implements IClassWeaver {
 			}
 			String pkgName = clazz.getPackageName();
 			UnresolvedType[] bm = BcelWorld.fromBcel(bridgeToCandidate.getArgumentTypes());
-			ResolvedMember overriddenMethod = checkForOverride(theSuperclass, name, psig, rsig, bridgeToCandidate.getAccessFlags(),
-					pkgName, bm);
-			if (overriddenMethod != null) {
-				String key = new StringBuffer().append(overriddenMethod.getName()).append(overriddenMethod.getSignatureErased())
-						.toString(); // pr237419
-				boolean alreadyHaveABridgeMethod = methodsSet.contains(key);
-				if (!alreadyHaveABridgeMethod) {
-					if (world.forDEBUG_bridgingCode) {
-						System.err.println("Bridging:bridging to '" + overriddenMethod + "'");
+			List<ResolvedMember> overriddenMethodsCollector = new ArrayList<ResolvedMember>();
+			checkForOverride(theSuperclass, name, psig, rsig, bridgeToCandidate.getAccessFlags(), pkgName, bm, overriddenMethodsCollector);
+			if (overriddenMethodsCollector.size() != 0) {
+				for (ResolvedMember overriddenMethod: overriddenMethodsCollector) {
+					String key = new StringBuilder(overriddenMethod.getName()).append(overriddenMethod.getSignatureErased()).toString(); // pr237419
+					boolean alreadyHaveABridgeMethod = methodsSet.contains(key);
+					if (!alreadyHaveABridgeMethod) {
+						if (world.forDEBUG_bridgingCode) {
+							System.err.println("Bridging:bridging to '" + overriddenMethod + "'");
+						}
+						createBridgeMethod(world, bridgeToCandidate, clazz, overriddenMethod);
+						methodsSet.add(key);
+						didSomething = true;
 					}
-					createBridgeMethod(world, bridgeToCandidate, clazz, overriddenMethod);
-					methodsSet.add(key);
-					didSomething = true;
-					continue; // look at the next method
 				}
 			}
 
@@ -856,12 +848,11 @@ class BcelClassWeaver implements IClassWeaver {
 					System.err.println("Bridging:checking superinterface " + interfaces[j]);
 				}
 				ResolvedType interfaceType = world.resolve(interfaces[j]);
-				overriddenMethod = checkForOverride(interfaceType, name, psig, rsig, bridgeToCandidate.getAccessFlags(),
-						clazz.getPackageName(), bm);
-				if (overriddenMethod != null) {
-					String key = new StringBuffer().append(overriddenMethod.getName())
-							.append(overriddenMethod.getSignatureErased()).toString(); // pr
-					// 237419
+				overriddenMethodsCollector.clear();
+				checkForOverride(interfaceType, name, psig, rsig, bridgeToCandidate.getAccessFlags(),
+						clazz.getPackageName(), bm, overriddenMethodsCollector);
+				for (ResolvedMember overriddenMethod: overriddenMethodsCollector) {
+					String key = new StringBuffer().append(overriddenMethod.getName()).append(overriddenMethod.getSignatureErased()).toString(); // pr237419
 					boolean alreadyHaveABridgeMethod = methodsSet.contains(key);
 					if (!alreadyHaveABridgeMethod) {
 						createBridgeMethod(world, bridgeToCandidate, clazz, overriddenMethod);
@@ -870,7 +861,6 @@ class BcelClassWeaver implements IClassWeaver {
 						if (world.forDEBUG_bridgingCode) {
 							System.err.println("Bridging:bridging to " + overriddenMethod);
 						}
-						continue; // look at the next method
 					}
 				}
 			}
@@ -879,8 +869,7 @@ class BcelClassWeaver implements IClassWeaver {
 		return didSomething;
 	}
 
-	// **************************** end of bridge method creation code
-	// *****************
+	// **************************** end of bridge method creation code *****************
 
 	/**
 	 * Weave any declare @method/@ctor statements into the members of the supplied class
