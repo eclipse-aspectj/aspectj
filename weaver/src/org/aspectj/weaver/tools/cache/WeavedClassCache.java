@@ -7,7 +7,8 @@
  * http://eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   John Kew (vmware)         initial implementation
+ *   John Kew (vmware)         	initial implementation
+ *   Lyor Goldstein (vmware)	add support for weaved class being re-defined
  *******************************************************************************/
 
 package org.aspectj.weaver.tools.cache;
@@ -87,7 +88,6 @@ public class WeavedClassCache {
 		this.name = name;
 		this.backing = backing;
 		this.messageHandler = messageHandler;
-		initializeGenerated(existingClassHandler);
 		// wrap the existing class handler with a caching version
 		cachingClassHandler = new GeneratedCachedClassHandler(this, existingClassHandler);
 		this.stats = new CacheStatistics();
@@ -178,14 +178,15 @@ public class WeavedClassCache {
 	 * Put a class in the cache
 	 *
 	 * @param ref		 reference to the entry, as created through createCacheKey
+	 * @param classBytes pre-weaving class bytes
 	 * @param weavedBytes bytes to cache
 	 */
-	public void put(CachedClassReference ref, byte[] weavedBytes) {
+	public void put(CachedClassReference ref, byte[] classBytes, byte[] weavedBytes) {
 		CachedClassEntry.EntryType type = CachedClassEntry.EntryType.WEAVED;
 		if (ref.getKey().matches(resolver.getGeneratedRegex())) {
 			type = CachedClassEntry.EntryType.GENERATED;
 		}
-		backing.put(new CachedClassEntry(ref, weavedBytes, type));
+		backing.put(new CachedClassEntry(ref, weavedBytes, type), classBytes);
 		stats.put();
 	}
 
@@ -193,10 +194,12 @@ public class WeavedClassCache {
 	 * Get a cache value
 	 *
 	 * @param ref reference to the cache entry, created through createCacheKey
+	 * @param classBytes Pre-weaving class bytes - required to ensure that
+	 * cached aspects refer to an unchanged original class
 	 * @return the CacheEntry, or null if no entry exists in the cache
 	 */
-	public CachedClassEntry get(CachedClassReference ref) {
-		CachedClassEntry entry = backing.get(ref);
+	public CachedClassEntry get(CachedClassReference ref, byte[] classBytes) {
+		CachedClassEntry entry = backing.get(ref, classBytes);
 		if (entry == null) {
 			stats.miss();
 		} else {
@@ -212,11 +215,12 @@ public class WeavedClassCache {
 	 * Put a cache entry to indicate that the class should not be
 	 * weaved; the original bytes of the class should be used.
 	 *
-	 * @param ref
+	 * @param ref The cache reference
+	 * @param classBytes The un-weaved class bytes
 	 */
-	public void ignore(CachedClassReference ref) {
+	public void ignore(CachedClassReference ref, byte[] classBytes) {
 		stats.putIgnored();
-		backing.put(new CachedClassEntry(ref, ZERO_BYTES, CachedClassEntry.EntryType.IGNORED));
+		backing.put(new CachedClassEntry(ref, ZERO_BYTES, CachedClassEntry.EntryType.IGNORED), classBytes);
 	}
 
 	/**
@@ -254,61 +258,6 @@ public class WeavedClassCache {
 		synchronized (cacheRegistry) {
 			return new LinkedList<WeavedClassCache>(cacheRegistry);
 		}
-	}
-
-	/**
-	 * Get all generated classes which have been cached
-	 *
-	 * @return
-	 */
-	protected CachedClassEntry[] getGeneratedClasses() {
-		return getEntries(resolver.getGeneratedRegex());
-	}
-
-	/**
-	 * Get all weaved classes which have been cached
-	 *
-	 * @return
-	 */
-	protected CachedClassEntry[] getWeavedClasses() {
-		return getEntries(resolver.getWeavedRegex());
-	}
-
-	/**
-	 * For each cached, generated class, pass that class through the given
-	 * GeneratedClassHandler, typically which defines that handler within the
-	 * current ClassLoader.
-	 *
-	 * @param handler class handler
-	 */
-	private void initializeGenerated(GeneratedClassHandler handler) {
-		if (handler == null)
-			return;
-		CachedClassEntry[] classes = getGeneratedClasses();
-		for (CachedClassEntry entry : classes) {
-
-			handler.acceptClass(entry.getClassName(), entry.getBytes());
-		}
-	}
-
-	/**
-	 * Gets an array of CacheClassEntries with the given regex
-	 *
-	 * @param regex filter
-	 * @return array of entries
-	 */
-	protected CachedClassEntry[] getEntries(String regex) {
-		String[] keys = backing.getKeys(regex);
-		List<CachedClassEntry> entries = new LinkedList<CachedClassEntry>();
-		for (int i = 0; i < keys.length; i++) {
-			String key = keys[i];
-			CachedClassReference ref = new CachedClassReference(key, resolver);
-			CachedClassEntry entry = backing.get(ref);
-			if (entry != null) {
-				entries.add(entry);
-			}
-		}
-		return entries.toArray(new CachedClassEntry[entries.size()]);
 	}
 
 	protected void error(String message, Throwable th) {

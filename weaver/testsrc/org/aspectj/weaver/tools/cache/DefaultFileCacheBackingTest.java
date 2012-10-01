@@ -8,26 +8,36 @@
  *
  * Contributors:
  *   John Kew (vmware)         initial implementation
+ *   Lyor Goldstein (vmware)	add support for weaved class being re-defined
  *******************************************************************************/
 
 package org.aspectj.weaver.tools.cache;
 
-import junit.framework.TestCase;
-import org.aspectj.util.FileUtil;
-
 import java.io.File;
 import java.util.zip.CRC32;
+
+import junit.framework.TestCase;
+
+import org.aspectj.util.FileUtil;
+import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.tools.cache.AbstractIndexedFileCacheBacking.IndexEntry;
 
 /**
  */
 public class DefaultFileCacheBackingTest extends TestCase {
-	File root = null;
-	byte[] FAKE_BYTES = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-	String FAKE_CLASS = "com.example.foo.Bar";
-	CacheKeyResolver resolver = new DefaultCacheKeyResolver();
-	CachedClassReference fakeRef = resolver.weavedKey(FAKE_CLASS, FAKE_BYTES);
+	private final byte[] FAKE_BYTES = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private final String FAKE_CLASS = "com.example.foo.Bar";
+	private final CacheKeyResolver resolver = new DefaultCacheKeyResolver();
+	private final CachedClassReference fakeRef = resolver.weavedKey(FAKE_CLASS, FAKE_BYTES);
+	private final String	fakeKey=fakeRef.getKey();
 
+	private File root;
 
+	public DefaultFileCacheBackingTest () {
+		super();
+	}
+
+	@Override
 	public void setUp() throws Exception {
 		if (root == null) {
 			File tempFile = File.createTempFile("aspectj", "test");
@@ -36,24 +46,25 @@ public class DefaultFileCacheBackingTest extends TestCase {
 		}
 	}
 
+	@Override
 	public void tearDown() throws Exception {
 		FileUtil.deleteContents(root);
 		root = null;
 	}
 
 	public void testCreateBacking() throws Exception {
-		CacheBacking backing = DefaultFileCacheBacking.createBacking(root, resolver);
+		CacheBacking backing = DefaultFileCacheBacking.createBacking(root);
 		assertNotNull(backing);
-		assertTrue(root.exists());
-		assertTrue(root.isDirectory());
+		assertTrue("Root folder not created: " + root, root.exists());
+		assertTrue("Root folder not a directory: " + root, root.isDirectory());
 	}
 
 	public void testClear() {
-		CacheBacking backing = DefaultFileCacheBacking.createBacking(root, resolver);
-		backing.put(new CachedClassEntry(fakeRef, FAKE_BYTES, CachedClassEntry.EntryType.WEAVED));
-		assertNotNull(backing.get(fakeRef));
+		CacheBacking backing = DefaultFileCacheBacking.createBacking(root);
+		backing.put(new CachedClassEntry(fakeRef, FAKE_BYTES, CachedClassEntry.EntryType.WEAVED), FAKE_BYTES);
+		assertNotNull(backing.get(fakeRef, FAKE_BYTES));
 		backing.clear();
-		assertNull(backing.get(fakeRef));
+		assertNull(backing.get(fakeRef, FAKE_BYTES));
 	}
 
 	private CachedClassEntry createTestEntry(String key) {
@@ -61,10 +72,10 @@ public class DefaultFileCacheBackingTest extends TestCase {
 	}
 
 	public void testGetKeys() throws Exception {
-		CacheBacking backing = DefaultFileCacheBacking.createBacking(root, resolver);
-		backing.put(createTestEntry("apple"));
-		backing.put(createTestEntry("apply"));
-		backing.put(createTestEntry("orange"));
+		CacheBacking backing = DefaultFileCacheBacking.createBacking(root);
+		backing.put(createTestEntry("apple"), FAKE_BYTES);
+		backing.put(createTestEntry("apply"), FAKE_BYTES);
+		backing.put(createTestEntry("orange"), FAKE_BYTES);
 		String[] matches = backing.getKeys("app.*");
 		assertEquals(2, matches.length);
 		matches = backing.getKeys("orange");
@@ -73,23 +84,110 @@ public class DefaultFileCacheBackingTest extends TestCase {
 	}
 
 	public void testPut() throws Exception {
-		CacheBacking backing = DefaultFileCacheBacking.createBacking(root, resolver);
-		backing.put(new CachedClassEntry(fakeRef, FAKE_BYTES, CachedClassEntry.EntryType.WEAVED));
-		File cachedFile = new File(root, fakeRef.getKey());
+		CacheBacking backing = DefaultFileCacheBacking.createBacking(root);
+		backing.put(new CachedClassEntry(fakeRef, FAKE_BYTES, CachedClassEntry.EntryType.WEAVED), FAKE_BYTES);
+		File cachedFile = new File(root, fakeKey);
 		assertTrue(cachedFile.exists());
 		assertTrue(cachedFile.isFile());
 		assertEquals(FAKE_BYTES.length, cachedFile.length());
 	}
 
-	private boolean indexEntryExists(String key, long expectedCRC) throws Exception {
-		long storedCRC = 0;
-		DefaultFileCacheBacking.IndexEntry[] index = DefaultFileCacheBacking.readIndex(new File(root, DefaultFileCacheBacking.INDEX_FILE));
-		if (index == null) {
-			throw new NullPointerException("No index at " + root.getAbsolutePath());
+	public void testGet() throws Exception {
+		DefaultFileCacheBacking backing = DefaultFileCacheBacking.createBacking(root);
+		assertNull(backing.get(fakeRef, FAKE_BYTES));
+		backing.put(new CachedClassEntry(fakeRef, FAKE_BYTES, CachedClassEntry.EntryType.WEAVED), FAKE_BYTES);
+		File cachedFile = new File(root, fakeKey);
+		assertTrue(cachedFile.isFile());
+		assertEquals(FAKE_BYTES.length, cachedFile.length());
+		CRC32 expectedCRC = new CRC32();
+		expectedCRC.update(FAKE_BYTES);
+		assertTrue(indexEntryExists(backing, fakeKey, expectedCRC.getValue()));
+		CachedClassEntry entry = backing.get(fakeRef, FAKE_BYTES);
+		assertEquals(FAKE_BYTES.length, entry.getBytes().length);
+	}
+
+	public void testRemove() throws Exception {
+		DefaultFileCacheBacking backing = DefaultFileCacheBacking.createBacking(root);
+		backing.put(new CachedClassEntry(fakeRef, FAKE_BYTES, CachedClassEntry.EntryType.WEAVED), FAKE_BYTES);
+		File cachedFile = new File(root, fakeKey);
+		assertTrue("Cached file not found: " + cachedFile, cachedFile.exists());
+		assertTrue("Cached file not a file: " + cachedFile, cachedFile.isFile());
+		CRC32 expectedCRC = new CRC32();
+		expectedCRC.update(FAKE_BYTES);
+		assertTrue("Cached entry index not found", indexEntryExists(backing, fakeKey, expectedCRC.getValue()));
+		backing.remove(fakeRef);
+
+		assertFalse("CacheFile Still exists: " + cachedFile, cachedFile.exists());
+		assertFalse("Cached file is a file: " + cachedFile, cachedFile.isFile());
+		assertFalse("Cached entry index not removed", indexEntryExists(backing, fakeKey, expectedCRC.getValue()));
+	}
+
+	public void testMultiFile() throws Exception {
+		CachedClassEntry entry;
+		File cachedFile;
+		CRC32 expectedCRC = new CRC32();
+		expectedCRC.update(FAKE_BYTES);
+		DefaultFileCacheBacking backing = DefaultFileCacheBacking.createBacking(root);
+		// add weaved
+		CachedClassReference wref = resolver.weavedKey(FAKE_CLASS + "WEAVED", FAKE_BYTES);
+		entry = new CachedClassEntry(wref, FAKE_BYTES, CachedClassEntry.EntryType.WEAVED);
+		backing.put(entry, FAKE_BYTES);
+		cachedFile = new File(root, wref.getKey());
+		assertTrue(cachedFile.exists());
+		assertTrue(cachedFile.isFile());
+		assertTrue(indexEntryExists(backing, wref.getKey(), expectedCRC.getValue()));
+
+		// add generated
+		CachedClassReference gref = resolver.generatedKey(FAKE_CLASS + "GENERATED");
+		entry = new CachedClassEntry(gref, FAKE_BYTES, CachedClassEntry.EntryType.GENERATED);
+		backing.put(entry, FAKE_BYTES);
+		cachedFile = new File(root, gref.getKey());
+		assertTrue(cachedFile.exists());
+		assertTrue(cachedFile.isFile());
+		assertTrue(indexEntryExists(backing, gref.getKey(), expectedCRC.getValue()));
+
+		// add ignored
+		CachedClassReference iref = resolver.generatedKey(FAKE_CLASS + "IGNORED");
+		entry = new CachedClassEntry(iref, FAKE_BYTES, CachedClassEntry.EntryType.IGNORED);
+		backing.put(entry, FAKE_BYTES);
+		cachedFile = new File(root, iref.getKey());
+		assertFalse(cachedFile.exists());
+		assertTrue(indexEntryExists(backing, iref.getKey(), expectedCRC.getValue()));
+
+		backing.remove(wref);
+		backing.remove(gref);
+		backing.remove(iref);
+	}
+
+	public void testOriginalClassBytesChanged () {
+		DefaultFileCacheBacking backing = DefaultFileCacheBacking.createBacking(root);
+		backing.put(new CachedClassEntry(fakeRef, FAKE_BYTES, CachedClassEntry.EntryType.WEAVED), FAKE_BYTES);
+		
+		CachedClassEntry entry = backing.get(fakeRef, FAKE_BYTES);
+		assertNotNull("No initial entry", entry);
+
+		byte[]	newBytes=new byte[FAKE_BYTES.length];
+		for (int index=0; index < FAKE_BYTES.length; index++) {
+			newBytes[index] = (byte) (0 - FAKE_BYTES[index]);
 		}
-		for (DefaultFileCacheBacking.IndexEntry ie : index) {
+
+		entry = backing.get(fakeRef, newBytes);
+		assertNull("Unexpected modified bytes entry: " + entry, entry);
+		
+		File cachedFile = new File(root, fakeKey);
+		assertFalse("Cache file not removed", cachedFile.exists());
+	}
+
+	private boolean indexEntryExists(AbstractIndexedFileCacheBacking cache, String key, long expectedCRC) throws Exception {
+		long storedCRC = 0L;
+		IndexEntry[] index = cache.readIndex(new File(root, AbstractIndexedFileCacheBacking.INDEX_FILE));
+		if (LangUtil.isEmpty(index)) {
+			return false;
+		}
+
+		for (IndexEntry ie : index) {
 			if (ie.key.equals(key)) {
-				storedCRC = ie.crc;
+				storedCRC = ie.crcWeaved;
 				if (!ie.ignored) {
 					assertEquals(expectedCRC, storedCRC);
 				}
@@ -98,74 +196,4 @@ public class DefaultFileCacheBackingTest extends TestCase {
 		}
 		return false;
 	}
-
-	public void testGet() throws Exception {
-		CacheBacking backing = DefaultFileCacheBacking.createBacking(root, resolver);
-		assertNull(backing.get(fakeRef));
-		backing.put(new CachedClassEntry(fakeRef, FAKE_BYTES, CachedClassEntry.EntryType.WEAVED));
-		File cachedFile = new File(root, fakeRef.getKey());
-		assertTrue(cachedFile.isFile());
-		assertEquals(FAKE_BYTES.length, cachedFile.length());
-		CRC32 expectedCRC = new CRC32();
-		expectedCRC.update(FAKE_BYTES);
-		assertTrue(indexEntryExists(fakeRef.getKey(), expectedCRC.getValue()));
-		CachedClassEntry entry = backing.get(fakeRef);
-		assertEquals(FAKE_BYTES.length, entry.getBytes().length);
-
-	}
-
-	public void testRemove() throws Exception {
-		CacheBacking backing = DefaultFileCacheBacking.createBacking(root, resolver);
-		backing.put(new CachedClassEntry(fakeRef, FAKE_BYTES, CachedClassEntry.EntryType.WEAVED));
-		File cachedFile = new File(root, fakeRef.getKey());
-		assertTrue(cachedFile.exists());
-		assertTrue(cachedFile.isFile());
-		CRC32 expectedCRC = new CRC32();
-		expectedCRC.update(FAKE_BYTES);
-		assertTrue(indexEntryExists(fakeRef.getKey(), expectedCRC.getValue()));
-		backing.remove(fakeRef);
-		cachedFile = new File(root, fakeRef.getKey());
-		assertFalse("CacheFile Still exists!" + cachedFile.getAbsolutePath(), cachedFile.exists());
-		assertFalse(cachedFile.isFile());
-		assertFalse(indexEntryExists(fakeRef.getKey(), expectedCRC.getValue()));
-	}
-
-
-	public void testMultiFile() throws Exception {
-		CachedClassEntry entry;
-		File cachedFile;
-		CRC32 expectedCRC = new CRC32();
-		expectedCRC.update(FAKE_BYTES);
-		CacheBacking backing = DefaultFileCacheBacking.createBacking(root, resolver);
-		// add weaved
-		CachedClassReference wref = resolver.weavedKey(FAKE_CLASS + "WEAVED", FAKE_BYTES);
-		entry = new CachedClassEntry(wref, FAKE_BYTES, CachedClassEntry.EntryType.WEAVED);
-		backing.put(entry);
-		cachedFile = new File(root, wref.getKey());
-		assertTrue(cachedFile.exists());
-		assertTrue(cachedFile.isFile());
-		assertTrue(indexEntryExists(wref.getKey(), expectedCRC.getValue()));
-
-		// add generated
-		CachedClassReference gref = resolver.generatedKey(FAKE_CLASS + "GENERATED");
-		entry = new CachedClassEntry(gref, FAKE_BYTES, CachedClassEntry.EntryType.GENERATED);
-		backing.put(entry);
-		cachedFile = new File(root, gref.getKey());
-		assertTrue(cachedFile.exists());
-		assertTrue(cachedFile.isFile());
-		assertTrue(indexEntryExists(gref.getKey(), expectedCRC.getValue()));
-
-		// add ignored
-		CachedClassReference iref = resolver.generatedKey(FAKE_CLASS + "IGNORED");
-		entry = new CachedClassEntry(iref, FAKE_BYTES, CachedClassEntry.EntryType.IGNORED);
-		backing.put(entry);
-		cachedFile = new File(root, iref.getKey());
-		assertFalse(cachedFile.exists());
-		assertTrue(indexEntryExists(iref.getKey(), expectedCRC.getValue()));
-
-		backing.remove(wref);
-		backing.remove(gref);
-		backing.remove(iref);
-	}
-
 }

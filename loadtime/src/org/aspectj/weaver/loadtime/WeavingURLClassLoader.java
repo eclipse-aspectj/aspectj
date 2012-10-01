@@ -194,8 +194,8 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 		return aspectURLs;
 	}
 
-	public void acceptClass(String name, byte[] bytes) {
-		generatedClasses.put(name, bytes);
+	public void acceptClass (String name, byte[] classBytes, byte[] weavedBytes) {
+		generatedClasses.put(name, weavedBytes);
 	}
 
 	// protected synchronized Class loadClass(String name, boolean resolve) throws ClassNotFoundException {

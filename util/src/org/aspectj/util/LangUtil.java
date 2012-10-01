@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 /**
@@ -203,6 +204,11 @@ public class LangUtil {
 	/** @return ((null == collection) || (0 == collection.size())) */
 	public static boolean isEmpty(Collection<?> collection) {
 		return ((null == collection) || (0 == collection.size()));
+	}
+
+	/** @return ((null == map) || (0 == map.size())) */
+	public static boolean isEmpty(Map<?,?> map) {
+		return ((null == map) || (0 == map.size()));
 	}
 
 	/**

@@ -92,6 +92,7 @@ public class CacheStatistics {
 		puts_ignored = 0;
 	}
 
+	@Override
 	public String toString() {
 		return "CacheStatistics{" +
 				"hits=" + hits +

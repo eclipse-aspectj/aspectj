@@ -12,11 +12,8 @@
 
 package org.aspectj.weaver.tools.cache;
 
-import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;

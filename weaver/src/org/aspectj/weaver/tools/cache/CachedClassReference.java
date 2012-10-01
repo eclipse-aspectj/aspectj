@@ -7,7 +7,8 @@
  * http://eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   John Kew (vmware)         initial implementation
+ *   John Kew (vmware)         	initial implementation
+ *   Lyor Goldstein (vmware)	add support for weaved class being re-defined
  *******************************************************************************/
 
 package org.aspectj.weaver.tools.cache;
@@ -22,7 +23,7 @@ package org.aspectj.weaver.tools.cache;
  * objects manually.
  */
 public class CachedClassReference {
-	enum EntryType {
+	static enum EntryType {
 		GENERATED,
 		WEAVED,
 		IGNORED,
@@ -32,8 +33,7 @@ public class CachedClassReference {
 	private final String className;
 
 	protected CachedClassReference(String key, CacheKeyResolver resolver) {
-		this.key = key;
-		this.className = resolver.keyToClass(key);
+		this(key, resolver.keyToClass(key));
 	}
 
 	/**
@@ -53,5 +53,33 @@ public class CachedClassReference {
 
 	public String getClassName() {
 		return className;
+	}
+
+	@Override
+	public int hashCode() {
+		return getKey().hashCode() + getClassName().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
+        if (getClass() != obj.getClass())
+            return false;
+
+        CachedClassReference	other=(CachedClassReference) obj;
+		if (getKey().equals(other.getKey())
+		 && getClassName().equals(other.getClassName())) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public String toString() {
+		return getClassName() + "[" + getKey() + "]";
 	}
 }

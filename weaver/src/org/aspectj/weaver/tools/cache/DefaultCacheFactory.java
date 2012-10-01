@@ -21,6 +21,6 @@ public class DefaultCacheFactory implements CacheFactory {
 	}
 
 	public CacheBacking createBacking(String scope) {
-		return DefaultFileCacheBacking.createBacking(scope, createResolver());
+		return DefaultFileCacheBacking.createBacking(scope);
 	}
 }

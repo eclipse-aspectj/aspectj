@@ -7,7 +7,8 @@
  * http://eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   John Kew (vmware)         initial implementation
+ *   John Kew (vmware)         	initial implementation
+ *   Lyor Goldstein (vmware)	add support for weaved class being re-defined
  *******************************************************************************/
 package org.aspectj.weaver.tools.cache;
 
@@ -45,14 +46,18 @@ public interface CacheBacking {
 	 * Get a cache entry
 	 *
 	 * @param ref entry to retrieve
+	 * @param originalBytes Pre-weaving class bytes - required in order to
+	 * ensure that the cached entry refers to the same original class 
 	 * @return the cached bytes or null, if the entry does not exist
 	 */
-	public CachedClassEntry get(CachedClassReference ref);
+	public CachedClassEntry get(CachedClassReference ref, byte[] originalBytes);
 
 	/**
 	 * Put an entry in the cache
 	 *
 	 * @param entry key of the entry
+	 * @param originalBytes Pre-weaving class bytes - required in order to
+	 * ensure that the cached entry refers to the same original class 
 	 */
-	public void put(CachedClassEntry entry);
+	public void put(CachedClassEntry entry, byte[] originalBytes);
 }

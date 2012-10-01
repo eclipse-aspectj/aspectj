@@ -119,18 +119,18 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		 * Callback when we need to define a Closure in the JVM
 		 * 
 		 */
-		public void acceptClass(String name, byte[] bytes) {
+		public void acceptClass (String name, byte[] originalBytes, byte[] wovenBytes) {
 			try {
 				if (shouldDump(name.replace('/', '.'), false)) {
-					dump(name, bytes, false);
+					dump(name, wovenBytes, false);
 				}
 			} catch (Throwable throwable) {
 				throwable.printStackTrace();
 			}
 			if (activeProtectionDomain != null) {
-				defineClass(loaderRef.getClassLoader(), name, bytes, activeProtectionDomain);
+				defineClass(loaderRef.getClassLoader(), name, wovenBytes, activeProtectionDomain);
 			} else {
-				defineClass(loaderRef.getClassLoader(), name, bytes); // could be done lazily using the hook
+				defineClass(loaderRef.getClassLoader(), name, wovenBytes); // could be done lazily using the hook
 
 			}
 		}
@@ -550,7 +550,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 			try {
 				byte[] newBytes = weaveClass(name, bytes, true);
-				this.generatedClassHandler.acceptClass(name, newBytes);
+				this.generatedClassHandler.acceptClass(name, bytes, newBytes);
 			} catch (IOException ex) {
 				trace.error("weaveAndDefineConceteAspects", ex);
 				error("exception weaving aspect '" + name + "'", ex);

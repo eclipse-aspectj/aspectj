@@ -7,17 +7,22 @@
  * http://eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   John Kew (vmware)         initial implementation
+ *   John Kew (vmware)         	initial implementation
+ *   Lyor Goldstein (vmware)	add support for weaved class being re-defined
  *******************************************************************************/
 
 package org.aspectj.weaver.tools.cache;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.OutputStream;
+import java.util.Map;
+
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FileUtil;
-
-import java.io.*;
-import java.util.HashMap;
-import java.util.zip.CRC32;
+import org.aspectj.util.LangUtil;
 
 
 /**
@@ -38,95 +43,48 @@ import java.util.zip.CRC32;
  * a first pass however it is somewhat useful to view these files
  * in expanded form for debugging.
  */
-public class DefaultFileCacheBacking implements CacheBacking {
-	public static final String WEAVED_CLASS_CACHE_DIR = "aj.weaving.cache.dir";
-	public static final String INDEX_FILE = "cache.idx";
-
-	public static class IndexEntry implements Serializable {
-		public String key;
-		public boolean generated;
-		public boolean ignored;
-		public long crc;
-	}
-
-	private final File cacheDirectory;
-	private final CacheKeyResolver resolver;
-	private final HashMap<String, IndexEntry> index = new HashMap<String, IndexEntry>();
+public class DefaultFileCacheBacking extends AbstractIndexedFileCacheBacking {
+	private final Map<String, IndexEntry> index;
 
 	private static final Object LOCK = new Object();
 
-	protected DefaultFileCacheBacking(File cacheDirectory, CacheKeyResolver resolver) {
-		this.cacheDirectory = cacheDirectory;
-		this.resolver = resolver;
-		readIndex();
+	protected DefaultFileCacheBacking(File cacheDir) {
+		super(cacheDir);
+		index = readIndex();
 	}
 
-	public static CacheBacking createBacking(File cacheDir, CacheKeyResolver resolver) {
+	public static final DefaultFileCacheBacking createBacking(File cacheDir) {
 		if (!cacheDir.exists()) {
 			if (!cacheDir.mkdirs()) {
 				MessageUtil.error("Unable to create cache directory at " + cacheDir.getName());
 				return null;
 			}
+		} else if (!cacheDir.isDirectory()) {
+			MessageUtil.error("Not a cache directory at " + cacheDir.getName());
+			return null;
 		}
+
 		if (!cacheDir.canWrite()) {
 			MessageUtil.error("Cache directory is not writable at " + cacheDir.getName());
 			return null;
 		}
-		return new DefaultFileCacheBacking(cacheDir, resolver);
+		return new DefaultFileCacheBacking(cacheDir);
 	}
 
-	public static IndexEntry[] readIndex(File indexFile) {
-		IndexEntry[] iea = new IndexEntry[0];
-		FileInputStream fis = null;
-		ObjectInputStream ois = null;
-		try {
-			if (!indexFile.canRead()) {
-				return iea;
-			}
-			fis = new FileInputStream(indexFile);
-			ois = new ObjectInputStream(fis);
-			iea = (IndexEntry[]) ois.readObject();
-		} catch (Exception e) {
-			delete(indexFile);
-		} finally {
-			close(fis, indexFile);
-			close(ois, indexFile);
-		}
-		return iea;
+    @Override
+	protected Map<String, IndexEntry> getIndex() {
+		return index;
 	}
 
-	private void readIndex() {
-		synchronized (LOCK) {
-			IndexEntry[] idx = readIndex(new File(cacheDirectory, INDEX_FILE));
-			for (IndexEntry ie : idx) {
-				File cacheFile = new File(cacheDirectory, ie.key);
-				if (cacheFile.canRead() || ie.ignored) {
-					index.put(ie.key, ie);
-				}
-			}
-		}
-	}
-
-	private void writeIndex() {
-		synchronized (LOCK) {
-			if (!cacheDirectory.exists())
-				cacheDirectory.mkdirs();
-			File indexFile = new File(cacheDirectory, INDEX_FILE);
-			FileOutputStream fos = null;
-			ObjectOutputStream oos = null;
-			try {
-				delete(indexFile);
-				fos = new FileOutputStream(indexFile);
-				oos = new ObjectOutputStream(fos);
-				oos.writeObject(index.values().toArray(new IndexEntry[0]));
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			} finally {
-				close(fos, indexFile);
-				close(oos, indexFile);
-			}
-		}
-	}
+	@Override
+    protected IndexEntry resolveIndexMapEntry (File cacheDir, IndexEntry ie) {
+        File cacheEntry = new File(cacheDir, ie.key);
+        if (ie.ignored || cacheEntry.canRead()) {
+            return ie;
+        } else {
+            return null;
+        }
+    }
 
 	private void removeIndexEntry(String key) {
 		synchronized (LOCK) {
@@ -142,33 +100,55 @@ public class DefaultFileCacheBacking implements CacheBacking {
 		}
 	}
 
-	public void clear() {
+    @Override
+	protected Map<String, IndexEntry> readIndex() {
 		synchronized (LOCK) {
-			FileUtil.deleteContents(cacheDirectory);
+			return super.readIndex();
 		}
 	}
 
-	public static CacheBacking createBacking(String scope, CacheKeyResolver resolver) {
+	@Override
+	protected void writeIndex() {
+		synchronized (LOCK) {
+			super.writeIndex();
+		}
+	}
+
+	public void clear() {
+		File	cacheDir=getCacheDirectory();
+		int		numDeleted=0;
+		synchronized (LOCK) {
+			numDeleted = FileUtil.deleteContents(cacheDir);
+		}
+
+		if ((numDeleted > 0) && (logger != null) && logger.isTraceEnabled()) {
+			logger.info("clear(" + cacheDir + ") deleted");
+		}
+	}
+
+	public static CacheBacking createBacking(String scope) {
 		String cache = System.getProperty(WEAVED_CLASS_CACHE_DIR);
 		if (cache == null) {
 			return null;
 		}
 
 		File cacheDir = new File(cache, scope);
-		return createBacking(cacheDir, resolver);
+		return createBacking(cacheDir);
 	}
 
+	@Override
 	public String[] getKeys(final String regex) {
+		File	cacheDirectory = getCacheDirectory();
 		File[] files = cacheDirectory.listFiles(new FilenameFilter() {
-			public boolean accept(File file, String s) {
-				if (s.matches(regex)) {
-					return true;
+				public boolean accept(File file, String s) {
+					if (s.matches(regex)) {
+						return true;
+					}
+					return false;
 				}
-				return false;
-			}
-		});
-		if (files == null) {
-			return new String[0];
+			});
+		if (LangUtil.isEmpty(files)) {
+			return EMPTY_KEYS;
 		}
 		String[] keys = new String[files.length];
 		for (int i = 0; i < files.length; i++) {
@@ -177,19 +157,29 @@ public class DefaultFileCacheBacking implements CacheBacking {
 		return keys;
 	}
 
-	public CachedClassEntry get(CachedClassReference ref) {
-		IndexEntry ie = index.get(ref.getKey());
-		if (ie != null && ie.ignored) {
+	public CachedClassEntry get(CachedClassReference ref, byte[] originalBytes) {
+		File cacheDirectory = getCacheDirectory();
+		String	refKey=ref.getKey();
+		File cacheFile = new File(cacheDirectory, refKey);
+		IndexEntry ie = index.get(refKey);
+		if (ie == null) {
+			// no index, delete
+			delete(cacheFile);
+			return null;
+		}
+
+		// check if original file changed
+		if (crc(originalBytes) != ie.crcClass) {
+			delete(cacheFile);
+			return null;
+		}
+		
+		if (ie.ignored) {
 			return new CachedClassEntry(ref, WeavedClassCache.ZERO_BYTES, CachedClassEntry.EntryType.IGNORED);
 		}
-		File cacheFile = new File(cacheDirectory, ref.getKey());
+
 		if (cacheFile.canRead()) {
-			if (ie == null) {
-				// no index, delete
-				delete(cacheFile);
-				return null;
-			}
-			byte[] bytes = read(cacheFile, ie.crc);
+			byte[] bytes = read(cacheFile, ie.crcWeaved);
 			if (bytes != null) {
 				if (!ie.generated) {
 					return new CachedClassEntry(ref, bytes, CachedClassEntry.EntryType.WEAVED);
@@ -198,112 +188,106 @@ public class DefaultFileCacheBacking implements CacheBacking {
 				}
 			}
 		}
+
 		return null;
 	}
 
-	public void put(CachedClassEntry entry) {
-		File cacheFile = new File(cacheDirectory, entry.getKey());
-		if (!cacheFile.exists()) {
-			IndexEntry ie = new IndexEntry();
+	public void put(CachedClassEntry entry, byte[] originalBytes) {
+		File	cacheDirectory = getCacheDirectory();
+		String	refKey = entry.getKey();
+		IndexEntry ie = index.get(refKey);
+		File 	cacheFile = new File(cacheDirectory, refKey);
+		final boolean	writeEntryBytes;
+		// check if original bytes changed or the ignored/generated flags
+		if ((ie != null)
+		 && ((ie.ignored != entry.isIgnored()) || (ie.generated != entry.isGenerated()) || (crc(originalBytes) != ie.crcClass))) {
+			delete(cacheFile);
+			writeEntryBytes = true;
+		} else {
+			writeEntryBytes = !cacheFile.exists();
+		}
+
+		if (writeEntryBytes) {
+			ie = new IndexEntry();
 			ie.key = entry.getKey();
 			ie.generated = entry.isGenerated();
 			ie.ignored = entry.isIgnored();
 			if (!entry.isIgnored()) {
-				ie.crc = write(cacheFile, entry.getBytes());
+				ie.crcClass = crc(originalBytes);
+				ie.crcWeaved = write(cacheFile, entry.getBytes());
 			}
 			addIndexEntry(ie);
 		}
 	}
 
 	public void remove(CachedClassReference ref) {
+		File	cacheDirectory = getCacheDirectory();
+		String	refKey = ref.getKey();
+		File	cacheFile = new File(cacheDirectory, refKey);
 		synchronized (LOCK) {
-			File cacheFile = new File(cacheDirectory, ref.getKey());
-			removeIndexEntry(ref.getKey());
+			removeIndexEntry(refKey);
 			delete(cacheFile);
 		}
 	}
 
+	@Override
+	protected void delete(File file) {
+		synchronized (LOCK) {
+			super.delete(file);
+		}
+	}
+
 	protected byte[] read(File file, long expectedCRC) {
-		CRC32 checksum = new CRC32();
+		byte[]	bytes=null;
 		synchronized (LOCK) {
 			FileInputStream fis = null;
 			try {
 				fis = new FileInputStream(file);
-				byte[] bytes = FileUtil.readAsByteArray(fis);
-				checksum.update(bytes);
-				if (checksum.getValue() == expectedCRC) {
-					return bytes;
+				bytes = FileUtil.readAsByteArray(fis);
+			} catch (Exception e) {
+				if ((logger != null) && logger.isTraceEnabled()) {
+					logger.warn("read(" + file.getAbsolutePath() + ")"
+							+ " failed (" + e.getClass().getSimpleName() + ")"
+							+ " to read contents: " + e.getMessage(), e);
 				}
-			} catch (FileNotFoundException e) {
-				// file disappeared
-				MessageUtil.error("File not found " + file.getName());
-			} catch (IOException e) {
-				MessageUtil.error("Error reading cached class " + e.getLocalizedMessage());
 			} finally {
 				close(fis, file);
 			}
-			// delete the file if there was an exception reading it
-			// or the expected checksum does not match
-			delete(file);
+
+			// delete the file if there was an exception reading it or mismatched crc
+			if ((bytes == null) || (crc(bytes) != expectedCRC)) {
+				delete(file);
+				return null;
+			}
 		}
-		return null;
+
+		return bytes;
 	}
 
 	protected long write(File file, byte[] bytes) {
-		if (file.exists()) {
-			return -1;
-		}
 		synchronized (LOCK) {
 			if (file.exists()) {
-				return -1;
+				return -1L;
 			}
 			OutputStream out = null;
-			ObjectOutputStream crcOut = null;
-			CRC32 checksum = new CRC32();
 			try {
 				out = new FileOutputStream(file);
 				out.write(bytes);
-				checksum.update(bytes);
-				return checksum.getValue();
-			} catch (FileNotFoundException e) {
-				MessageUtil.error("Error writing (File Not Found) " + file.getName() + ": " + e.getLocalizedMessage());
-			} catch (IOException e) {
-				MessageUtil.error("Error writing " + file.getName());
-
+			} catch (Exception e) {
+				if ((logger != null) && logger.isTraceEnabled()) {
+					logger.warn("write(" + file.getAbsolutePath() + ")"
+							+ " failed (" + e.getClass().getSimpleName() + ")"
+							+ " to write contents: " + e.getMessage(), e);
+				}
+				// delete the file if there was an exception writing it
+				delete(file);
+				return -1L;
 			} finally {
 				close(out, file);
 			}
-			// delete the file if there was an exception writing it
-			delete(file);
-		}
-		return -1;
-	}
 
-	protected static void delete(File file) {
-		if (file.exists()) {
-			file.delete();
+			return crc(bytes);
 		}
 	}
 
-	protected static void close(OutputStream out, File file) {
-		if (out != null) {
-			try {
-				out.close();
-			} catch (IOException e) {
-				// error
-				MessageUtil.error("Error closing write file " + file.getName());
-			}
-		}
-	}
-
-	protected static void close(InputStream in, File file) {
-		if (in != null) {
-			try {
-				in.close();
-			} catch (IOException e) {
-				// error
-				MessageUtil.error("Error closing read file " + file.getName());
-			}
-		}
-	}
 }

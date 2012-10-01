@@ -7,7 +7,8 @@
  * http://eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   John Kew (vmware)         initial implementation
+ *   John Kew (vmware)         	initial implementation
+ *   Lyor Goldstein (vmware)	add support for weaved class being re-defined
  *******************************************************************************/
 
 package org.aspectj.weaver.tools.cache;
@@ -27,12 +28,12 @@ public class GeneratedCachedClassHandler implements GeneratedClassHandler {
 		this.nextGeneratedClassHandler = nextHandler;
 	}
 
-	public void acceptClass(String name, byte[] bytes) {
+	public void acceptClass (String name, byte[] originalBytes, byte[] wovenBytes) {
 		// The cache expects classNames in dot form
 		CachedClassReference ref = cache.createGeneratedCacheKey(name.replace('/', '.'));
-		cache.put(ref, bytes);
+		cache.put(ref, originalBytes, wovenBytes);
 		if (nextGeneratedClassHandler != null) {
-			nextGeneratedClassHandler.acceptClass(name, bytes);
+			nextGeneratedClassHandler.acceptClass(name, originalBytes, wovenBytes);
 		}
 	}
 }
