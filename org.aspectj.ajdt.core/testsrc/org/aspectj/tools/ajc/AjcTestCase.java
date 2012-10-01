@@ -7,30 +7,27 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Adrian Colyer, 
+ *     Adrian Colyer, Abraham Nevado (lucierna)
  * ******************************************************************/
 package org.aspectj.tools.ajc;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FilePermission;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.ReflectPermission;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.security.Permission;
-import java.security.Policy;
-import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.PropertyPermission;
 import java.util.StringTokenizer;
 
 import junit.framework.TestCase;
@@ -125,6 +122,8 @@ public class AjcTestCase extends TestCase {
 	public final static boolean DEFAULT_VERBOSE = getBoolean("org.aspectj.tools.ajc.AjcTestCase.verbose", true);
 	public final static boolean DEFAULT_ERR_VERBOSE = getBoolean("org.aspectj.tools.ajc.AjcTestCase.verbose.err", DEFAULT_VERBOSE);
 	public final static boolean DEFAULT_OUT_VERBOSE = getBoolean("org.aspectj.tools.ajc.AjcTestCase.verbose.out", DEFAULT_VERBOSE);
+
+	private Process exec;
 
 	/**
 	 * Helper class that represents the specification of an individual message expected to be produced during a compilation run.
@@ -564,7 +563,7 @@ public class AjcTestCase extends TestCase {
 	}
 
 	public RunResult run(String className, String[] args, String classpath) {
-		return run(className, args, null, false);
+		return run(className, args, "", null, false,false);
 	}
 
 	/**
@@ -574,8 +573,10 @@ public class AjcTestCase extends TestCase {
 	 * @param args the arguments to pass to the program.
 	 * @param classpath the execution classpath, the sandbox directory, runtime, testing-client, bridge, and util projects will all
 	 *        be appended to the classpath, as will any jars in the sandbox.
+	 * @param runSpec 
 	 */
-	public RunResult run(String className, String[] args, final String classpath, boolean useLTW) {
+	public RunResult run(String className, String[] args, String vmargs, final String classpath, boolean useLTW, boolean useFullLTW) {
+
 		if (args != null) {
 			for (int i = 0; i < args.length; i++) {
 				args[i] = substituteSandbox(args[i]);
@@ -595,9 +596,10 @@ public class AjcTestCase extends TestCase {
 		URLClassLoader testLoader = (URLClassLoader) getClass().getClassLoader();
 		ClassLoader parentLoader = testLoader.getParent();
 
+	
+		
 		/* Sandbox -> AspectJ -> Extension -> Bootstrap */
-		if (useLTW) {
-
+		if ( !useFullLTW && useLTW) {
 			/*
 			 * Create a new AspectJ class loader using the existing test CLASSPATH and any missing Java 5 projects
 			 */
@@ -611,14 +613,41 @@ public class AjcTestCase extends TestCase {
 			URL[] sandboxUrls = getURLs(cp.toString());
 			sandboxLoader = createWeavingClassLoader(sandboxUrls, aspectjLoader);
 			// sandboxLoader = createWeavingClassLoader(sandboxUrls,testLoader);
-		}
+		}else if(useFullLTW  && useLTW) {			
+			if(vmargs == null){
+				vmargs ="";
+			}
+			
+			File directory = new File (".");
+			String absPath = directory.getAbsolutePath();
+			String javaagent= absPath+File.separator+".."+File.separator+"aj-build"+File.separator+"dist"+File.separator+"tools"+File.separator+"lib"+File.separator+"aspectjweaver.jar";
+			try {
 
-		/* Sandbox + AspectJ -> Extension -> Bootstrap */
-		else {
+				String command ="java " +vmargs+ " -classpath " + cp +" -javaagent:"+javaagent + " " + className ;
+				
+				// Command is executed using ProcessBuilder to allow setting CWD for ajc sandbox compliance
+				ProcessBuilder pb = new ProcessBuilder(tokenizeCommand(command));
+				pb.directory( new File(ajc.getSandboxDirectory().getAbsolutePath()));
+				exec = pb.start();
+		        BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
+		        BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
+				exec.waitFor();
+				lastRunResult = createResultFromBufferReaders(command,stdInput, stdError); 
+			} catch (Exception e) {
+				System.out.println("Error executing full LTW test: " + e);
+				e.printStackTrace();
+			}
+
+			return lastRunResult;
+		
+		}else{
 			cp.append(DEFAULT_CLASSPATH_ENTRIES);
 			URL[] urls = getURLs(cp.toString());
 			sandboxLoader = new URLClassLoader(urls, parentLoader);
 		}
+		ByteArrayOutputStream baosOut = new ByteArrayOutputStream();
+		ByteArrayOutputStream baosErr = new ByteArrayOutputStream();
+		
 
 		StringBuffer command = new StringBuffer("java -classpath ");
 		command.append(cp.toString());
@@ -636,8 +665,7 @@ public class AjcTestCase extends TestCase {
 //		} catch (SecurityException se) {
 //			// SecurityManager already set
 //		}
-		ByteArrayOutputStream baosOut = new ByteArrayOutputStream();
-		ByteArrayOutputStream baosErr = new ByteArrayOutputStream();
+
 		ClassLoader contexClassLoader = Thread.currentThread().getContextClassLoader();
 		try {
 			try {
@@ -681,6 +709,44 @@ public class AjcTestCase extends TestCase {
 			lastRunResult = new RunResult(command.toString(), new String(baosOut.toByteArray()), new String(baosErr.toByteArray()));
 		}
 		return lastRunResult;
+	}
+
+	private List<String >tokenizeCommand(String command) {
+		StringTokenizer st = new StringTokenizer(command," ", false);
+		ArrayList<String> arguments = new ArrayList<String>();
+		while(st.hasMoreElements()){
+			String nextToken =st.nextToken();
+			arguments.add(nextToken);
+		}
+		
+		return arguments;
+	}
+
+	private RunResult createResultFromBufferReaders(String command,
+			BufferedReader stdInput, BufferedReader stdError) throws IOException {
+		String line = "";
+		ByteArrayOutputStream baosOut = new ByteArrayOutputStream();
+		ByteArrayOutputStream baosErr = new ByteArrayOutputStream();
+		
+		PrintWriter stdOutWriter = new PrintWriter(baosOut);
+		PrintWriter stdErrWriter = new PrintWriter(baosErr);
+
+			while ((line = stdInput.readLine()) != null) {
+				stdOutWriter.println(line);
+				System.out.println(line);
+			}
+			stdOutWriter.flush();
+			while ((line = stdError.readLine()) != null) {
+				stdErrWriter.println(line);
+				System.err.println(line);
+
+			}
+			stdErrWriter.flush();
+			
+			baosOut.close();
+			baosErr.close();
+				
+			return new RunResult(command.toString(), new String(baosOut.toByteArray()), new String(baosErr.toByteArray()));
 	}
 
 //	static class MyPolicy extends Policy {
@@ -928,4 +994,6 @@ public class AjcTestCase extends TestCase {
 		delegatingOut = new DelegatingOutputStream(out);
 		System.setOut(new PrintStream(delegatingOut));
 	}
+
+
 }

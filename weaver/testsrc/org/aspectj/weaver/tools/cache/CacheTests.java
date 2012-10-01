@@ -20,6 +20,7 @@ import junit.framework.TestSuite;
 public class CacheTests {
 	public static Test suite() {
 		TestSuite suite = new TestSuite(CacheTests.class.getName());
+		suite.addTestSuite(SimpleClassCacheTest.class);
 		suite.addTestSuite(WeavedClassCacheTest.class);
 		suite.addTestSuite(DefaultCacheKeyResolverTest.class);
 		suite.addTestSuite(DefaultFileCacheBackingTest.class);

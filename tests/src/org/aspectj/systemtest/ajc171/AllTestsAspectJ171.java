@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc171;
 
+import org.aspectj.systemtest.ajc1610.NewFeatures;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -19,6 +21,7 @@ public class AllTestsAspectJ171 {
 		TestSuite suite = new TestSuite("AspectJ 1.7.1 tests");
 		// $JUnit-BEGIN$
 		suite.addTest(Ajc171Tests.suite());
+		suite.addTest(NewFeatures.suite());
 		// $JUnit-END$
 		return suite;
 	}

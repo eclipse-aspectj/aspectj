@@ -44,6 +44,7 @@
    <!ATTLIST run aspectpath CDATA #IMPLIED >
    <!ATTLIST run classpath CDATA #IMPLIED >
    <!ATTLIST run LTW CDATA #IMPLIED >
+   <!ATTLIST run usefullltw CDATA #IMPLIED >
    <!ATTLIST run exception CDATA #IMPLIED >
 
    <!ELEMENT message (source*)>

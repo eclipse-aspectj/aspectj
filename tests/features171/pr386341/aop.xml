@@ -1,0 +1,10 @@
+<aspectj>
+	<aspects>
+		<aspect name="X"/>
+	</aspects>
+
+	<weaver options="">
+		<include within="*"/>
+	</weaver>
+	
+</aspectj>

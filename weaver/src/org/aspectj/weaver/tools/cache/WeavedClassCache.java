@@ -68,6 +68,7 @@ import java.util.List;
  */
 public class WeavedClassCache {
 	public static final String WEAVED_CLASS_CACHE_ENABLED = "aj.weaving.cache.enabled";
+	public static final String CACHE_IMPL = SimpleCacheFactory.CACHE_IMPL;
 	private static CacheFactory DEFAULT_FACTORY = new DefaultCacheFactory();
 	public static final byte[] ZERO_BYTES = new byte[0];
 	private final IMessageHandler messageHandler;
@@ -171,7 +172,9 @@ public class WeavedClassCache {
 	 * @return true if caching is enabled
 	 */
 	public static boolean isEnabled() {
-		return System.getProperty(WEAVED_CLASS_CACHE_ENABLED) != null;
+		String enabled = System.getProperty(WEAVED_CLASS_CACHE_ENABLED);
+		String impl = System.getProperty(CACHE_IMPL);
+		return (enabled != null && (impl == null || !SimpleCache.IMPL_NAME.equalsIgnoreCase(impl) ) );
 	}
 
 	/**

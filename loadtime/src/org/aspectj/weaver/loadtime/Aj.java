@@ -17,6 +17,7 @@ import java.security.ProtectionDomain;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,6 +26,8 @@ import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 import org.aspectj.weaver.tools.WeavingAdaptor;
+import org.aspectj.weaver.tools.cache.SimpleCache;
+import org.aspectj.weaver.tools.cache.SimpleCacheFactory;
 
 /**
  * Adapter between the generic class pre processor interface and the AspectJ weaver Load time weaving consistency relies on
@@ -35,6 +38,7 @@ import org.aspectj.weaver.tools.WeavingAdaptor;
 public class Aj implements ClassPreProcessor {
 
 	private IWeavingContext weavingContext;
+	public static SimpleCache laCache=SimpleCacheFactory.createSimpleCache();
 
 	/**
 	 * References are added to this queue when their associated classloader is removed, and once on here that indicates that we
@@ -88,6 +92,14 @@ public class Aj implements ClassPreProcessor {
 
 		try {
 			synchronized (loader) {
+
+				if (SimpleCacheFactory.isEnabled()) {
+					byte[] cacheBytes= laCache.getAndInitialize(className, bytes,loader,protectionDomain);
+					if (cacheBytes!=null){
+							return cacheBytes;
+					}
+				}
+
 				WeavingAdaptor weavingAdaptor = WeaverContainer.getWeaver(loader, weavingContext);
 				if (weavingAdaptor == null) {
 					if (trace.isTraceEnabled())
@@ -100,6 +112,9 @@ public class Aj implements ClassPreProcessor {
 					Dump.dumpOnExit(weavingAdaptor.getMessageHolder(), true);
 					if (trace.isTraceEnabled())
 						trace.exit("preProcess", newBytes);
+					if (SimpleCacheFactory.isEnabled()) {
+						laCache.put(className, bytes, newBytes);
+					}
 					return newBytes;
 				} finally {
 					weavingAdaptor.setActiveProtectionDomain(null);
@@ -247,20 +262,34 @@ public class Aj implements ClassPreProcessor {
 
 			synchronized (weavingAdaptors) {
 				checkQ();
-				adaptor = (ExplicitlyInitializedClassLoaderWeavingAdaptor) weavingAdaptors.get(adaptorKey);
+                if(loader.equals(myClassLoader)){
+                    adaptor = myClassLoaderAdpator;
+                }
+                else{
+                	adaptor = (ExplicitlyInitializedClassLoaderWeavingAdaptor) weavingAdaptors.get(adaptorKey);
+                }
 				if (adaptor == null) {
 					// create it and put it back in the weavingAdaptors map but avoid any kind of instantiation
 					// within the synchronized block
 					ClassLoaderWeavingAdaptor weavingAdaptor = new ClassLoaderWeavingAdaptor();
 					adaptor = new ExplicitlyInitializedClassLoaderWeavingAdaptor(weavingAdaptor);
-					weavingAdaptors.put(adaptorKey, adaptor);
+					  if(myClassLoaderAdpator == null){
+	                        myClassLoaderAdpator = adaptor;
+					  }
+	                    else{
+	                    	weavingAdaptors.put(adaptorKey, adaptor);
+	                    }
 				}
 			}
 			// perform the initialization
 			return adaptor.getWeavingAdaptor(loader, weavingContext);
+		
 
 		}
+		private static final ClassLoader myClassLoader = WeavingAdaptor.class.getClassLoader();
+		private static ExplicitlyInitializedClassLoaderWeavingAdaptor myClassLoaderAdpator;
 	}
+
 
 	static class ExplicitlyInitializedClassLoaderWeavingAdaptor {
 		private final ClassLoaderWeavingAdaptor weavingAdaptor;

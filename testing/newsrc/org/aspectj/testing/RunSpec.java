@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Adrian Colyer, 
+ *     Adrian Colyer,  Abraham Nevado (lucierna)
  * ******************************************************************/
 package org.aspectj.testing;
 
@@ -39,6 +39,7 @@ public class RunSpec implements ITestStep {
 	private String ltwFile;
 	private String xlintFile;
 	private String vmargs;
+	private String usefullltw;
 
 	public RunSpec() {
 	}
@@ -50,11 +51,12 @@ public class RunSpec implements ITestStep {
 		String[] args = buildArgs();
 		// System.err.println("? execute() inTestCase='" + inTestCase + "', ltwFile=" + ltwFile);
 		boolean useLtw = copyLtwFile(inTestCase.getSandboxDirectory());
+		
 		copyXlintFile(inTestCase.getSandboxDirectory());
 		try {
 			setSystemProperty("test.base.dir", inTestCase.getSandboxDirectory().getAbsolutePath());
 
-			AjcTestCase.RunResult rr = inTestCase.run(getClassToRun(), args, getClasspath(), useLtw);
+			AjcTestCase.RunResult rr = inTestCase.run(getClassToRun(), args, vmargs, getClasspath(), useLtw, "true".equalsIgnoreCase(usefullltw));
 
 			if (stdErrSpec != null) {
 				stdErrSpec.matchAgainst(rr.getStdErr(), orderedStderr);
@@ -210,6 +212,16 @@ public class RunSpec implements ITestStep {
 	public String getVmargs() {
 		return vmargs;
 	}
+
+
+	public String getUsefullltw() {
+		return usefullltw;
+	}
+
+	public void setUsefullltw(String usefullltw) {
+		this.usefullltw = usefullltw;
+	}
+
 
 	private void copyXlintFile(File sandboxDirectory) {
 		if (xlintFile != null) {
