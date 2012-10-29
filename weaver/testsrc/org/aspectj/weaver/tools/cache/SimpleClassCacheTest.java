@@ -12,17 +12,9 @@
 
 package org.aspectj.weaver.tools.cache;
 
-import junit.framework.TestCase;
-import org.aspectj.bridge.AbortException;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.weaver.tools.GeneratedClassHandler;
-
 import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+
+import junit.framework.TestCase;
 
 /**
  */

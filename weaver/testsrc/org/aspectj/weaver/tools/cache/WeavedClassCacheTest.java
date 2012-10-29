@@ -12,22 +12,25 @@
 
 package org.aspectj.weaver.tools.cache;
 
-import junit.framework.TestCase;
-import org.aspectj.bridge.AbortException;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.weaver.tools.GeneratedClassHandler;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.weaver.tools.GeneratedClassHandler;
+
 /**
  */
-public class WeavedClassCacheTest extends TestCase {
+public class WeavedClassCacheTest extends AbstractCacheBackingTestSupport {
 	String FAKE_CLASS = "com.example.foo.Bar";
 	byte[] FAKE_BYTES = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+	public WeavedClassCacheTest () {
+		super();
+	}
 
 	public class MemoryCacheBacking implements CacheBacking {
 		HashMap<String, CachedClassEntry> cache = new HashMap<String, CachedClassEntry>();
@@ -73,9 +76,11 @@ public class WeavedClassCacheTest extends TestCase {
 		}
 
 		public void dontIgnore(IMessage.Kind kind) {
+			// do nothing
 		}
 
 		public void ignore(IMessage.Kind kind) {
+			// do nothing
 		}
 	};
 
@@ -83,7 +88,6 @@ public class WeavedClassCacheTest extends TestCase {
 		public int accepts = 0;
 		public List<String> classesISaw = new LinkedList<String>();
 
-		@Override
 		public void acceptClass (String name, byte[] originalBytes, byte[] wovenBytes) {
 			accepts++;
 			classesISaw.add(name);
@@ -110,20 +114,6 @@ public class WeavedClassCacheTest extends TestCase {
 		assertTrue(generatedClassHandler != newHandle);
 		assertTrue(newHandle instanceof GeneratedCachedClassHandler);
 	}
-
-
-//	public void testExistingGeneratedClassesPassedThroughHandler() throws Exception {
-//		String classA = "com.generated.A";
-//		String classB = "com.generated.B";
-//		reset();
-//		memoryBacking.put(new CachedClassEntry(resolver.generatedKey(classA), FAKE_BYTES, CachedClassEntry.EntryType.GENERATED), FAKE_BYTES);
-//		memoryBacking.put(new CachedClassEntry(resolver.generatedKey(classB), FAKE_BYTES, CachedClassEntry.EntryType.GENERATED), FAKE_BYTES);
-//		createCache();
-//		assertEquals(2, generatedClassHandler.accepts);
-//		for (String cName : generatedClassHandler.classesISaw) {
-//			assertTrue("Got: " + cName, cName.equals(classA) || cName.equals(classB));
-//		}
-//	}
 
 	public void testCache() throws Exception {
 		reset();

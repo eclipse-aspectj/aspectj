@@ -51,7 +51,7 @@ public class Checklics extends MatchingTask {
 	public static final String PARC_COPYRIGHT_TAG = "parc-copy";
 	public static final String CPL_IBM_PARC_XEROX_TAG = "cpl-ibm|parc|xerox";
 	public static final String CPL_IBM_PARC_XEROX_OTHERS_TAG = "cpl-ibm|parc|xerox|others";
-	public static final String EPL_CPL_IBM_PARC_XEROX_OTHERS_TAG = "epl-cpl-ibm|parc|xerox|others";
+	public static final String EPL_CPL_IBM_PARC_XEROX_OTHERS_TAG = "epl-cpl-ibm|parc|xerox|vmware|others";
 	public static final String DEFAULT = EPL_CPL_IBM_PARC_XEROX_OTHERS_TAG;
 
 	static final Map LICENSES; // unmodifiable Map
@@ -62,6 +62,7 @@ public class Checklics extends MatchingTask {
 		final String PARC = "Palo Alto Research Center";
 		final String APACHE = "The Apache Software Foundation";
 		final String IBM = "IBM";
+		final String VMWARE = "VMware";
 		final String IBM_LONG = "International Business Machines";
 		final String LIC_APL = "Apache Software Foundation (http://www.apache.org/)";
 		final String LIC_MPL = "http://aspectj.org/MPL/";
@@ -76,7 +77,7 @@ public class Checklics extends MatchingTask {
 		License CPL_IBM_PARC_XEROX_OTHERS = new License(CPL_IBM_PARC_XEROX_OTHERS_TAG, LIC_CPL, new String[] { IBM_LONG, IBM, PARC,
 				XEROX, CONTRIBUTORS });
 		License EPL_CPL_IBM_PARC_XEROX_OTHERS = new License(EPL_CPL_IBM_PARC_XEROX_OTHERS_TAG, LIC_ECPL, new String[] { IBM_LONG,
-				IBM, PARC, XEROX, CONTRIBUTORS });
+				IBM, PARC, XEROX, VMWARE, CONTRIBUTORS });
 		License CPL_IBM = new License(CPL_IBM_TAG, LIC_CPL, IBM, IBM_LONG);
 		License MPL_ONLY = new License(MPL_ONLY_TAG, LIC_MPL);
 		License MPL_PARC = new License(MPL_PARC_TAG, LIC_MPL, PARC);

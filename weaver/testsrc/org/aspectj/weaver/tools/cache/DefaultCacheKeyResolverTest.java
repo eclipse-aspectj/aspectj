@@ -28,6 +28,9 @@ public class DefaultCacheKeyResolverTest extends TestCase {
 	DefaultCacheKeyResolver resolver = new DefaultCacheKeyResolver();
 
 	class BasicTestCL extends ClassLoader {
+		public BasicTestCL () {
+			super();
+		}
 	}
 
 	class URLTestCL extends URLClassLoader {

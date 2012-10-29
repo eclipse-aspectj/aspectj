@@ -24,6 +24,8 @@ public class CacheTests {
 		suite.addTestSuite(WeavedClassCacheTest.class);
 		suite.addTestSuite(DefaultCacheKeyResolverTest.class);
 		suite.addTestSuite(DefaultFileCacheBackingTest.class);
+		suite.addTestSuite(FlatFileCacheBackingTest.class);
+		suite.addTestSuite(ZippedFileCacheBackingTest.class);
 		return suite;
 	}
 }

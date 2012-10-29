@@ -201,6 +201,11 @@ public class LangUtil {
 		return ((null == ra) || (0 == ra.length));
 	}
 
+	/** @return ((null == ra) || (0 == ra.length)) */
+	public static boolean isEmpty(byte[] ra) {
+		return ((null == ra) || (0 == ra.length));
+	}
+
 	/** @return ((null == collection) || (0 == collection.size())) */
 	public static boolean isEmpty(Collection<?> collection) {
 		return ((null == collection) || (0 == collection.size()));

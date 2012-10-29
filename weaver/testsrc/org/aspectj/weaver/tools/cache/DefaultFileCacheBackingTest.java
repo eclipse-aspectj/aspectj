@@ -16,40 +16,20 @@ package org.aspectj.weaver.tools.cache;
 import java.io.File;
 import java.util.zip.CRC32;
 
-import junit.framework.TestCase;
-
-import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.tools.cache.AbstractIndexedFileCacheBacking.IndexEntry;
 
 /**
  */
-public class DefaultFileCacheBackingTest extends TestCase {
+public class DefaultFileCacheBackingTest extends AbstractCacheBackingTestSupport {
 	private final byte[] FAKE_BYTES = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	private final String FAKE_CLASS = "com.example.foo.Bar";
 	private final CacheKeyResolver resolver = new DefaultCacheKeyResolver();
 	private final CachedClassReference fakeRef = resolver.weavedKey(FAKE_CLASS, FAKE_BYTES);
 	private final String	fakeKey=fakeRef.getKey();
 
-	private File root;
-
 	public DefaultFileCacheBackingTest () {
 		super();
-	}
-
-	@Override
-	public void setUp() throws Exception {
-		if (root == null) {
-			File tempFile = File.createTempFile("aspectj", "test");
-			File tempDir = tempFile.getParentFile();
-			root = new File(tempDir, "aspectj-test-cache");
-		}
-	}
-
-	@Override
-	public void tearDown() throws Exception {
-		FileUtil.deleteContents(root);
-		root = null;
 	}
 
 	public void testCreateBacking() throws Exception {

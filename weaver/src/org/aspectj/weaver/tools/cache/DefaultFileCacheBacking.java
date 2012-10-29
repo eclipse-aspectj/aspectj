@@ -208,12 +208,8 @@ public class DefaultFileCacheBacking extends AbstractIndexedFileCacheBacking {
 		}
 
 		if (writeEntryBytes) {
-			ie = new IndexEntry();
-			ie.key = entry.getKey();
-			ie.generated = entry.isGenerated();
-			ie.ignored = entry.isIgnored();
+			ie = createIndexEntry(entry, originalBytes);
 			if (!entry.isIgnored()) {
-				ie.crcClass = crc(originalBytes);
 				ie.crcWeaved = write(cacheFile, entry.getBytes());
 			}
 			addIndexEntry(ie);

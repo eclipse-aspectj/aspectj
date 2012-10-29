@@ -58,6 +58,7 @@ public abstract class AbstractIndexedFileCacheBacking extends AbstractFileCacheB
     	if ((index == null) || index.isEmpty()) {
     		return EMPTY_KEYS;
     	}
+
         Collection<String>  matches=new LinkedList<String>();
         synchronized(index) {
             for (String key : index.keySet()) {
@@ -174,6 +175,23 @@ public abstract class AbstractIndexedFileCacheBacking extends AbstractFileCacheB
         } finally {
             close(oos, indexFile);
         }
+    }
+
+    public static final IndexEntry createIndexEntry (CachedClassEntry classEntry, byte[] originalBytes) {
+        if (classEntry == null) {
+            return null;
+        }
+
+        IndexEntry  indexEntry = new IndexEntry();
+        indexEntry.key = classEntry.getKey();
+        indexEntry.generated = classEntry.isGenerated();
+        indexEntry.ignored = classEntry.isIgnored();
+        if (!classEntry.isIgnored()) {
+        	indexEntry.crcClass = crc(originalBytes);
+            indexEntry.crcWeaved = crc(classEntry.getBytes());
+        }
+
+        return indexEntry;
     }
 
 	/**
