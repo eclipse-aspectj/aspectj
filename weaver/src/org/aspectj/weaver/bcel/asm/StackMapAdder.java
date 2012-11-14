@@ -98,7 +98,7 @@ public class StackMapAdder {
 				do {
 					resolvedType1 = resolvedType1.getSuperclass();
 				} while (!resolvedType1.isAssignableFrom(resolvedType2));
-				return resolvedType1.getName().replace('.', '/');
+				return resolvedType1.getRawName().replace('.', '/');
 			}
 		}
 	}
