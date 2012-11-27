@@ -100,12 +100,14 @@ public class AndPointcut extends Pointcut {
 		AndPointcut ret = new AndPointcut(left.concretize(inAspect, declaringType, bindings), right.concretize(inAspect,
 				declaringType, bindings));
 		ret.copyLocationFrom(this);
+		ret.m_ignoreUnboundBindingForNames = m_ignoreUnboundBindingForNames;
 		return ret;
 	}
 
 	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
 		AndPointcut ret = new AndPointcut(left.parameterizeWith(typeVariableMap, w), right.parameterizeWith(typeVariableMap, w));
 		ret.copyLocationFrom(this);
+		ret.m_ignoreUnboundBindingForNames = m_ignoreUnboundBindingForNames;
 		return ret;
 	}
 
