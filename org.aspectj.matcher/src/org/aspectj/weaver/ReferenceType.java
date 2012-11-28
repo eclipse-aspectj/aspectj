@@ -1031,11 +1031,13 @@ public class ReferenceType extends ResolvedType {
 		ret.append(rawSig.substring(0, rawSig.length() - 1));
 		ret.append("<");
 		for (int i = 0; i < someParameters.length; i++) {
-			try {
-				ret.append(((ReferenceType) someParameters[i]).getSignatureForAttribute());
-			} catch (ClassCastException cce) {
-				throw new IllegalStateException("DebugFor325731: expected a ReferenceType but was " + someParameters[i]
-						+ " of type " + someParameters[i].getClass().getName(), cce);
+			if (someParameters[i] instanceof ReferenceType) {
+				ret.append(((ReferenceType)someParameters[i]).getSignatureForAttribute());
+			} else if (someParameters[i] instanceof Primitive) {
+				ret.append(((Primitive)someParameters[i]).getSignatureForAttribute());
+			} else {
+				throw new IllegalStateException("DebugFor325731: expected a ReferenceType or Primitive but was " + someParameters[i]
+						+ " of type " + someParameters[i].getClass().getName());
 			}
 		}
 		ret.append(">;");
