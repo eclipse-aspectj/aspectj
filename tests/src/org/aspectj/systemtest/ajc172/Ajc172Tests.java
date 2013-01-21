@@ -18,13 +18,17 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
  * @author Andy Clement
- */ 
+ */
 public class Ajc172Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
-	
+
+	public void testOptionalAspects_pr398588() {
+		runTest("optional aspects");
+	}
+
 	public void testInconsistentClassFile_pr389750() {
 		runTest("inconsistent class file");
 	}
-	
+
 	public void testInconsistentClassFile_pr389750_2() {
 		runTest("inconsistent class file 2");
 	}
@@ -44,13 +48,16 @@ public class Ajc172Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testAnnotationValueError_pr389752_2() {
 		runTest("annotation value error 2");
 	}
-	
-	// this needs some cleverness to fix... the annotation value is parsed as a string and then not checked
-	// to see if the user is accidentally supplying, for example, an enum value. Due to the use of strings, it
-	// is hard to check.  The verification code might go here: WildAnnotationTypePattern, line 205 (the string case)
-//	public void testAnnotationValueError_pr389752_3() {
-//		runTest("annotation value error 3");
-//	}
+
+	// this needs some cleverness to fix... the annotation value is parsed as a
+	// string and then not checked
+	// to see if the user is accidentally supplying, for example, an enum value.
+	// Due to the use of strings, it
+	// is hard to check. The verification code might go here:
+	// WildAnnotationTypePattern, line 205 (the string case)
+	// public void testAnnotationValueError_pr389752_3() {
+	// runTest("annotation value error 3");
+	// }
 
 	// ---
 

@@ -1000,41 +1000,44 @@ public class BcelWorld extends World implements Repository {
 
 	@Override
 	public boolean hasUnsatisfiedDependency(ResolvedType aspectType) {
-		if (!aspectRequiredTypesProcessed) {
-			if (aspectRequiredTypes != null) {
-				List<String> forRemoval = new ArrayList<String>();
-				for (Map.Entry<String, String> entry : aspectRequiredTypes.entrySet()) {
-					ResolvedType rt = this.resolve(UnresolvedType.forName(entry.getValue()));
-					if (!rt.isMissing()) {
-						forRemoval.add(entry.getKey());
-					} else {
-						if (!getMessageHandler().isIgnoring(IMessage.INFO)) {
-							getMessageHandler().handleMessage(
-									MessageUtil.info("deactivating aspect '" + aspectType.getName() + "' as it requires type '"
-											+ rt.getName() + "' which cannot be found on the classpath"));
-						}
-					}
-				}
-				for (String key : forRemoval) {
-					aspectRequiredTypes.remove(key);
-				}
-			}
-			aspectRequiredTypesProcessed = true;
-		}
 		if (aspectRequiredTypes == null) {
+			// no aspects require anything, so there can be no unsatisfied dependencies
 			return false;
 		}
-		return aspectRequiredTypes.containsKey(aspectType.getName());
+		String aspectName = aspectType.getName();
+		if (!aspectRequiredTypesProcessed.contains(aspectName)) {
+			String requiredTypeName = aspectRequiredTypes.get(aspectName);
+			if (requiredTypeName==null) {
+				aspectRequiredTypesProcessed.add(aspectName);
+				return false;
+			} else {
+				ResolvedType rt = resolve(UnresolvedType.forName(requiredTypeName));
+				if (!rt.isMissing()) {
+					aspectRequiredTypesProcessed.add(aspectName);
+					aspectRequiredTypes.remove(aspectName);
+					return false;
+				} else {
+					if (!getMessageHandler().isIgnoring(IMessage.INFO)) {
+						getMessageHandler().handleMessage(
+								MessageUtil.info("deactivating aspect '" + aspectName + "' as it requires type '"
+										+ requiredTypeName + "' which cannot be found on the classpath"));
+					}
+					aspectRequiredTypesProcessed.add(aspectName);
+					return true;
+				}
+			}
+		}
+		return aspectRequiredTypes.containsKey(aspectName);
 	}
 
-	private boolean aspectRequiredTypesProcessed = false;
+	private List<String> aspectRequiredTypesProcessed = new ArrayList<String>();
 	private Map<String, String> aspectRequiredTypes = null;
 
-	public void addAspectRequires(String name, String requiredType) {
+	public void addAspectRequires(String aspectClassName, String requiredType) {
 		if (aspectRequiredTypes == null) {
 			aspectRequiredTypes = new HashMap<String, String>();
 		}
-		aspectRequiredTypes.put(name, requiredType);
+		aspectRequiredTypes.put(aspectClassName, requiredType);
 	}
 
 	/**

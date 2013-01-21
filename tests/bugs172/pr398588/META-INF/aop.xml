@@ -1,0 +1,9 @@
+<aspectj>
+  <aspects>
+    <aspect name="AspectA" requires="a.b.c.Anno"/>
+    <aspect name="AspectB"/>
+    <aspect name="AspectC" requires="a.b.c.Blah"/>
+    <aspect name="AspectD" requires="a.b.c.Anno2"/>
+  </aspects>
+  <weaver options="-showWeaveInfo -verbose"/>
+</aspectj>

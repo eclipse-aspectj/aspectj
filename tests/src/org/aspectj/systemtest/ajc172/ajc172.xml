@@ -1,7 +1,39 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 
 <suite>
-
+	<ajc-test dir="bugs172/pr398588" title="optional aspects">
+	     <compile files="Anno.java Anno2.java" outjar="anno.jar" options="-1.5"/>
+	     <compile files="AspectA.java" classpath="anno.jar" outjar="aspect.jar" options="-Xlint:ignore -1.5"/>
+	     <compile files="AspectB.java" outjar="aspect2.jar" options="-Xlint:ignore -1.5"/>
+	     <compile files="Code.java Blah.java" classpath="code.jar;aspect.jar;aspect2.jar" options="-1.5"/>
+		 <compile files="AspectC.java" classpath="$sandbox" outjar="aspect3.jar" options="-Xlint:ignore -1.5"/>	     
+	     <compile files="AspectD.java" classpath="anno.jar" outjar="aspect4.jar" options="-Xlint:ignore -1.5"/>
+	     
+	     <file deletefile="anno.jar"/>
+	     <run class="Code" ltw="META-INF/aop.xml" classpath=".;aspect.jar;aspect2.jar;aspectj3.jar;aspect4.jar">
+	     <stderr>
+	     <line text="AspectJ Weaver Version"/>
+	     <line text="register classloader"/>
+	     <line text="using configuration"/>
+	     <line text="register aspect AspectA"/>
+	     <line text="deactivating aspect"/>
+	     <line text="register aspect AspectB"/>     
+	     <line text="register aspect AspectC"/>   
+	     <line text="register aspect AspectD"/>
+	     <line text="deactivating aspect 'AspectD' as it requires type 'a.b.c.Anno2' which cannot be found on the classpath"/>
+	     <line text="Join point 'method-execution(void Code.main(java.lang.String[]))' in Type 'Code' (Code.java:7) advised by before advice from 'AspectC'"/>
+	     <line text="Join point 'staticinitialization(void Code.&lt;clinit&gt;())' in Type 'Code' (Code.java) advised by before advice from 'AspectB'"/>  
+	     <line text="processing reweavable"/>
+	     <line text="processing reweavable"/>
+	     </stderr>
+	     <stdout>
+	     <line text="staticinitialization"/>
+	     <line text="C"/>
+	     <line text="abcde"/>
+	     </stdout>
+	     </run>
+	</ajc-test>
+  
 	<ajc-test dir="bugs172/pr389750" title="inconsistent class file">
       <compile files="Code.aj" options="-1.5">
       </compile>
