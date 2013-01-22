@@ -14,15 +14,23 @@ package org.aspectj.ajdt.internal.compiler.ast;
 
 import java.lang.reflect.Modifier;
 
+import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MemberValuePair;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TrueLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
@@ -35,15 +43,18 @@ import org.aspectj.weaver.patterns.Pointcut;
 /**
  * (formals*): ... if(expr) ...
  * 
- * generates the following: public static final boolean ajc$if_N(formals*, [thisJoinPoints as needed]) { return expr; }
+ * generates the following: public static final boolean ajc$if_N(formals*,
+ * [thisJoinPoints as needed]) { return expr; }
  * 
- * Here's the complicated bit, it deals with cflow: (a): ... this(a) && cflow(if (a == foo)) is an error. The way we capture this
- * is: We generate the ajc$if method with an (a) parameter, we let eclipse do the proper name binding. We then, as a post pass (that
- * we need to do anyway) look for the used parameters. If a is used, we signal an error because a was not one of the cflow
- * variables. XXX we'll do this part after we do cflow
+ * Here's the complicated bit, it deals with cflow: (a): ... this(a) && cflow(if
+ * (a == foo)) is an error. The way we capture this is: We generate the ajc$if
+ * method with an (a) parameter, we let eclipse do the proper name binding. We
+ * then, as a post pass (that we need to do anyway) look for the used
+ * parameters. If a is used, we signal an error because a was not one of the
+ * cflow variables. XXX we'll do this part after we do cflow
  * 
- * The IfPointcut pcd then generates itself always as a dynamic test, it has to get the right parameters through any named pointcut
- * references...
+ * The IfPointcut pcd then generates itself always as a dynamic test, it has to
+ * get the right parameters through any named pointcut references...
  */
 public class IfPseudoToken extends PseudoToken {
 	public Expression expr;
@@ -61,7 +72,8 @@ public class IfPseudoToken extends PseudoToken {
 		} else if (expr instanceof TrueLiteral) {
 			return IfPointcut.makeIfTruePointcut(Pointcut.SYMBOLIC);
 		} else {
-			pointcut = new IfPointcut(new ResolvedMemberImpl(Member.METHOD, UnresolvedType.OBJECT, 0, "if_", "()V"), 0);
+			pointcut = new IfPointcut(new ResolvedMemberImpl(Member.METHOD,
+					UnresolvedType.OBJECT, 0, "if_", "()V"), 0);
 		}
 		return pointcut;
 
@@ -70,33 +82,80 @@ public class IfPseudoToken extends PseudoToken {
 	/**
 	 * enclosingDec is either AdviceDeclaration or PointcutDeclaration
 	 */
-	public void postParse(TypeDeclaration typeDec, MethodDeclaration enclosingDec) {
+	public void postParse(TypeDeclaration typeDec,
+			MethodDeclaration enclosingDec) {
 		// typeDec.scope.problemReporter().signalError(sourceStart, sourceEnd,
 		// "if pcd is not implemented in 1.1alpha1");
 		// XXX need to implement correctly
 		if (pointcut == null)
 			return;
 
-		testMethod = makeIfMethod(enclosingDec.compilationResult, enclosingDec, typeDec);
+		testMethod = makeIfMethod(enclosingDec.compilationResult, enclosingDec,
+				typeDec);
 		AstUtil.addMethodDeclaration(typeDec, testMethod);
 	}
 
+	private final static char[] CodeGenerationHint = "CodeGenerationHint".toCharArray();
+	private final static char[] FullyQualifiedCodeGenerationHint = "org.aspectj.lang.annotation.control.CodeGenerationHint".toCharArray();
+	private final static char[] IfNameSuffix = "ifNameSuffix".toCharArray();
+	
 	// XXX todo: make sure that errors in Arguments only get displayed once
-	private MethodDeclaration makeIfMethod(CompilationResult result, MethodDeclaration enclosingDec,
-			TypeDeclaration containingTypeDec) {
+	private MethodDeclaration makeIfMethod(CompilationResult result,
+			MethodDeclaration enclosingDec, TypeDeclaration containingTypeDec) {
 		MethodDeclaration ret = new IfMethodDeclaration(result, pointcut);
-		ret.modifiers = ClassFileConstants.AccStatic | ClassFileConstants.AccFinal | ClassFileConstants.AccPublic;
+		ret.modifiers = ClassFileConstants.AccStatic
+				| ClassFileConstants.AccFinal | ClassFileConstants.AccPublic;
 		ret.returnType = AstUtil.makeTypeReference(TypeBinding.BOOLEAN);
+		
+		String nameSuffix = null;
+		
+		if (enclosingDec!=null && enclosingDec.annotations!=null) {
+			NormalAnnotation interestingAnnotation = null;
+			Annotation[] as = enclosingDec.annotations;
+			if (as!=null) {
+				for (int a = 0; a < as.length && interestingAnnotation == null; a++) {
+					if (as[a] instanceof NormalAnnotation) {
+						TypeReference tr = as[a].type;
+						if (tr instanceof SingleTypeReference) {
+							if (CharOperation.equals(CodeGenerationHint,((SingleTypeReference)tr).token)) {
+								interestingAnnotation = (NormalAnnotation)as[a];
+							}
+						} else if (tr instanceof QualifiedTypeReference) {
+							char[] qualifiedName = CharOperation.concatWith(((QualifiedTypeReference)tr).tokens,'.');
+							if (CharOperation.equals(FullyQualifiedCodeGenerationHint,qualifiedName)) {
+								interestingAnnotation = (NormalAnnotation)as[a];
+							}
+						}
+					}
+				}
+			}
+			if (interestingAnnotation!=null) {
+				MemberValuePair[] memberValuePairs = interestingAnnotation.memberValuePairs;
+				for (MemberValuePair memberValuePair: memberValuePairs) {
+					if (CharOperation.equals(IfNameSuffix,memberValuePair.name) && (memberValuePair.value instanceof StringLiteral)) {
+						nameSuffix = new String(((StringLiteral)memberValuePair.value).source());
+					}
+				}
+			}
+		}
+		
+		
 		// create a more stable name 277508
 		StringBuffer ifSelector = new StringBuffer();
 		ifSelector.append("ajc$if$");
-		ifSelector.append(Integer.toHexString(expr.sourceStart));
+		if (nameSuffix == null || nameSuffix.length()==0) {
+			ifSelector.append(Integer.toHexString(expr.sourceStart));
+		} else {
+			ifSelector.append(nameSuffix);
+		}
 
 		// possibly even better logic for more reliable name:
 		// if (enclosingDec instanceof AdviceDeclaration) {
-		// // name is ajc$if$<adviceSequenceNumber>$<hashcodeOfIfExpressionInHex>
+		// // name is
+		// ajc$if$<adviceSequenceNumber>$<hashcodeOfIfExpressionInHex>
 		// ifSelector.append("ajc$if$");
-		// ifSelector.append(((AdviceDeclaration) enclosingDec).adviceSequenceNumberInType);
+		// ifSelector.append(((AdviceDeclaration)
+		// enclosingDec).adviceSequenceNumberInType);
 		// ifSelector.append("$").append(Integer.toHexString(expr.toString().hashCode()));
 		// } else if (enclosingDec instanceof PointcutDeclaration) {
 		// // name is pointcut selector then $if$<hashcodeOfIfExpressionInHex>
@@ -104,16 +163,19 @@ public class IfPseudoToken extends PseudoToken {
 		// ifSelector.append("$if$");
 		// ifSelector.append(Integer.toHexString(expr.toString().hashCode()));
 		// } else {
-		// throw new BCException("Unexpected enclosing declaration of " + enclosingDec + " for if pointcut designator");
+		// throw new BCException("Unexpected enclosing declaration of " +
+		// enclosingDec + " for if pointcut designator");
 		// }
 		// hashcode of expression
 		ret.selector = ifSelector.toString().toCharArray();
 		ret.arguments = makeArguments(enclosingDec, containingTypeDec);
-		ret.statements = new Statement[] { new ReturnStatement(expr, expr.sourceStart, expr.sourceEnd) };
+		ret.statements = new Statement[] { new ReturnStatement(expr,
+				expr.sourceStart, expr.sourceEnd) };
 		return ret;
 	}
 
-	private Argument[] makeArguments(MethodDeclaration enclosingDec, TypeDeclaration containingTypeDec) {
+	private Argument[] makeArguments(MethodDeclaration enclosingDec,
+			TypeDeclaration containingTypeDec) {
 		Argument[] baseArguments = enclosingDec.arguments;
 		int len = baseArguments.length;
 		if (enclosingDec instanceof AdviceDeclaration) {
@@ -123,7 +185,8 @@ public class IfPseudoToken extends PseudoToken {
 		Argument[] ret = new Argument[len];
 		for (int i = 0; i < len; i++) {
 			Argument a = baseArguments[i];
-			ret[i] = new Argument(a.name, AstUtil.makeLongPos(a.sourceStart, a.sourceEnd), a.type, Modifier.FINAL);
+			ret[i] = new Argument(a.name, AstUtil.makeLongPos(a.sourceStart,
+					a.sourceEnd), a.type, Modifier.FINAL);
 		}
 		ret = AdviceDeclaration.addTjpArguments(ret, containingTypeDec);
 

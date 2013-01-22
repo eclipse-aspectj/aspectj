@@ -14,6 +14,8 @@ import java.io.File;
 
 import junit.framework.Test;
 
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
@@ -21,6 +23,36 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc172Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testIfPointcutNames_pr398246() throws Exception{
+		runTest("if pointcut names");
+		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(),"X");
+		Method m = getMethodStartsWith(jc,"ajc$if");
+		assertEquals("ajc$if$andy",m.getName());
+	}
+	
+	public void testIfPointcutNames_pr398246_2() throws Exception {
+		runTest("if pointcut names 2");
+		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(),"X");
+		Method m = getMethodStartsWith(jc,"ajc$if");
+		assertEquals("ajc$if$fred",m.getName());
+	}
+	
+	// fully qualified annotation name is used
+	public void testIfPointcutNames_pr398246_3() throws Exception {
+		runTest("if pointcut names 3");
+		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(),"X");
+		Method m = getMethodStartsWith(jc,"ajc$if");
+		assertEquals("ajc$if$barney",m.getName());
+	}
+	
+	// compiling a class later than the initial build - does it pick up the right if clause name?
+	public void testIfPointcutNames_pr398246_4() throws Exception{
+		runTest("if pointcut names 4");
+		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(),"X");
+		Method m = getMethodStartsWith(jc,"ajc$if");
+		assertEquals("ajc$if$sid",m.getName());
+	}
+	
 	public void testOptionalAspects_pr398588() {
 		runTest("optional aspects");
 	}

@@ -31,6 +31,7 @@ import org.apache.commons.digester.Digester;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
+import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.tools.ajc.AjcTestCase;
@@ -54,7 +55,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 
 	public XMLBasedAjcTestCase() {
 	}
-
+	
 	/**
 	 * You must define a suite() method in subclasses, and return the result of calling this method. (Don't you hate static methods
 	 * in programming models). For example:
@@ -315,6 +316,18 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	public JavaClass getClassFrom(File where, String clazzname) throws ClassNotFoundException {
 		SyntheticRepository repos = createRepos(where);
 		return repos.loadClass(clazzname);
+	}
+
+	protected Method getMethodStartsWith(JavaClass jc, String prefix) {
+		Method[] meths = jc.getMethods();
+		for (int i = 0; i < meths.length; i++) {
+			Method method = meths[i];
+			System.out.println(method);
+			if (method.getName().startsWith(prefix)) {
+				return method;
+			}
+		}
+		return null;
 	}
 
 	/**
