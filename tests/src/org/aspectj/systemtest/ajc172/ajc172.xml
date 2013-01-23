@@ -84,6 +84,41 @@
       	</stdout>
       </run>
     </ajc-test>
+    
+    <ajc-test dir="bugs172/pr398246" title="if pointcut names 5">
+      <compile files="Code5.java Code5a.java" options="-1.5">
+      </compile>
+      <run class="Code5" options="-1.5">
+      	<stdout>
+      	<line text="advice"/>
+      	<line text="advice"/>
+      	<line text="advice"/>
+      	<line text="advice"/>
+      	</stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs172/pr398246" title="if pointcut names 6">
+      <compile files="Code6.java" options="-1.5">
+      </compile>
+      <run class="Code6" options="-1.5">
+      	<stdout>      	
+      	<line text="advice"/>
+      	<line text="advice"/>
+      	</stdout>
+      </run>
+    </ajc-test>
+    
+     <ajc-test dir="bugs172/pr398246" title="if pointcut names 7">
+      <compile files="Code7.java" options="-1.5">
+      </compile>
+      <run class="Code7" options="-1.5">
+      	<stdout>
+      	<line text="advice"/>
+      	<line text="advice"/>
+      	</stdout>
+      </run>
+    </ajc-test>
   
 	<ajc-test dir="bugs172/pr389750" title="inconsistent class file">
       <compile files="Code.aj" options="-1.5">

@@ -146,7 +146,7 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 		generateSyntheticPointcutMethod = true;
 	}
 
-	private String getPointcutText() {
+	public String getPointcutText() {
 		String text = getPointcut().toString();
 		if (text.indexOf("BindingTypePattern") == -1)
 			return text;

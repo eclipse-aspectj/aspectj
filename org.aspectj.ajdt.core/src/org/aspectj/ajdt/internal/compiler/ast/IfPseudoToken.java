@@ -34,6 +34,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
+import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.UnresolvedType;
@@ -82,17 +83,17 @@ public class IfPseudoToken extends PseudoToken {
 	/**
 	 * enclosingDec is either AdviceDeclaration or PointcutDeclaration
 	 */
-	public void postParse(TypeDeclaration typeDec,
-			MethodDeclaration enclosingDec) {
+	public int postParse(TypeDeclaration typeDec,
+			MethodDeclaration enclosingDec, int counter) {
 		// typeDec.scope.problemReporter().signalError(sourceStart, sourceEnd,
 		// "if pcd is not implemented in 1.1alpha1");
 		// XXX need to implement correctly
 		if (pointcut == null)
-			return;
+			return 0;
 
-		testMethod = makeIfMethod(enclosingDec.compilationResult, enclosingDec,
-				typeDec);
+		testMethod = makeIfMethod(enclosingDec.compilationResult, enclosingDec, typeDec, counter);
 		AstUtil.addMethodDeclaration(typeDec, testMethod);
+		return 1;
 	}
 
 	private final static char[] CodeGenerationHint = "CodeGenerationHint".toCharArray();
@@ -100,11 +101,9 @@ public class IfPseudoToken extends PseudoToken {
 	private final static char[] IfNameSuffix = "ifNameSuffix".toCharArray();
 	
 	// XXX todo: make sure that errors in Arguments only get displayed once
-	private MethodDeclaration makeIfMethod(CompilationResult result,
-			MethodDeclaration enclosingDec, TypeDeclaration containingTypeDec) {
+	private MethodDeclaration makeIfMethod(CompilationResult result, MethodDeclaration enclosingDec, TypeDeclaration containingTypeDec, int counter) {
 		MethodDeclaration ret = new IfMethodDeclaration(result, pointcut);
-		ret.modifiers = ClassFileConstants.AccStatic
-				| ClassFileConstants.AccFinal | ClassFileConstants.AccPublic;
+		ret.modifiers = ClassFileConstants.AccStatic | ClassFileConstants.AccFinal | ClassFileConstants.AccPublic;
 		ret.returnType = AstUtil.makeTypeReference(TypeBinding.BOOLEAN);
 		
 		String nameSuffix = null;
@@ -144,29 +143,41 @@ public class IfPseudoToken extends PseudoToken {
 		StringBuffer ifSelector = new StringBuffer();
 		ifSelector.append("ajc$if$");
 		if (nameSuffix == null || nameSuffix.length()==0) {
-			ifSelector.append(Integer.toHexString(expr.sourceStart));
+			boolean computedName = false;
+			try {
+				// possibly even better logic for more reliable name:
+				if (enclosingDec instanceof AdviceDeclaration) {
+					// name is ajc$if$<adviceSequenceNumber>[$<ifnumberinPcd>]$<hashcodeOfIfExpressionInHex>
+					ifSelector.append(((AdviceDeclaration)enclosingDec).adviceSequenceNumberInType).append("$");
+					if (counter!=0) {
+						ifSelector.append(counter);
+						ifSelector.append("$");
+					}
+					ifSelector.append(Integer.toHexString(expr.toString().hashCode()));
+					computedName = true;
+				} else if (enclosingDec instanceof PointcutDeclaration) {
+					if (counter!=0) {
+						ifSelector.append(counter);
+						ifSelector.append("$");
+					}
+					StringBuilder toHash = new StringBuilder(((PointcutDeclaration) enclosingDec).getPointcutText());
+					toHash.append(expr.toString());
+					// name is pointcut selector then $if[$<ifnumberinpcd>]$<hashcodeofpointcuttextandexpressiontext>
+					ifSelector.append(Integer.toHexString(toHash.toString().hashCode()));
+					computedName = true;
+				}
+			} catch (Throwable t) {
+				throw new IllegalStateException(t);
+				// let it build a name the 'old way'
+			}
+			if (!computedName) {
+				ifSelector.append(Integer.toHexString(expr.sourceStart));
+			}
 		} else {
 			ifSelector.append(nameSuffix);
 		}
 
-		// possibly even better logic for more reliable name:
-		// if (enclosingDec instanceof AdviceDeclaration) {
-		// // name is
-		// ajc$if$<adviceSequenceNumber>$<hashcodeOfIfExpressionInHex>
-		// ifSelector.append("ajc$if$");
-		// ifSelector.append(((AdviceDeclaration)
-		// enclosingDec).adviceSequenceNumberInType);
-		// ifSelector.append("$").append(Integer.toHexString(expr.toString().hashCode()));
-		// } else if (enclosingDec instanceof PointcutDeclaration) {
-		// // name is pointcut selector then $if$<hashcodeOfIfExpressionInHex>
-		// ifSelector.append(((PointcutDeclaration) enclosingDec).selector);
-		// ifSelector.append("$if$");
-		// ifSelector.append(Integer.toHexString(expr.toString().hashCode()));
-		// } else {
-		// throw new BCException("Unexpected enclosing declaration of " +
-		// enclosingDec + " for if pointcut designator");
-		// }
-		// hashcode of expression
+		
 		ret.selector = ifSelector.toString().toCharArray();
 		ret.arguments = makeArguments(enclosingDec, containingTypeDec);
 		ret.statements = new Statement[] { new ReturnStatement(expr,

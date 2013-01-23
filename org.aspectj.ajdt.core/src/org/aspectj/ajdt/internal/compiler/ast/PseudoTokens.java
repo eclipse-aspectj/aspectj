@@ -152,8 +152,9 @@ public class PseudoTokens extends ASTNode {
 	
 	
 	public void postParse(TypeDeclaration typeDec, MethodDeclaration enclosingDec) {
+		int counter = 0; // Counter can be used by postParse as a value to compute uniqueness (if required)
 		for (int i=0, len=tokens.length; i < len; i++) {
-			tokens[i].postParse(typeDec, enclosingDec);
+			counter+=tokens[i].postParse(typeDec, enclosingDec, counter);
 		}
 	}
 	

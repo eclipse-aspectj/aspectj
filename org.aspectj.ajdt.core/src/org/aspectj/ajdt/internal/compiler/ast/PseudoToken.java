@@ -80,8 +80,9 @@ public class PseudoToken extends ASTNode implements IToken {
 		return "unknown";
 	}
 	
-	public void postParse(TypeDeclaration typeDec, MethodDeclaration enclosingDec) {
+	public int postParse(TypeDeclaration typeDec, MethodDeclaration enclosingDec, int tokenNumber) {
 		// nothing to do typically
+		return 0;
 	}
 
 	/* (non-Javadoc)

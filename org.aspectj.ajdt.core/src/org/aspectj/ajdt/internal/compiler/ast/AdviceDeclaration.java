@@ -61,6 +61,8 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 
 	public AdviceKind kind; // set during parsing, referenced by Proceed and AsmElementFormatter
 	private int extraArgumentFlags = 0;
+	
+	public int adviceSequenceNumberInType;
 
 	public MethodBinding proceedMethodBinding; // set during this.resolveStaments, referenced by Proceed
 	public List proceedCalls = new ArrayList(2); // populated during Proceed.findEnclosingAround
@@ -323,7 +325,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 	// override, Called by ClassScope.postParse
 	public void postParse(TypeDeclaration typeDec) {
 		AspectDeclaration aspectDecl = (AspectDeclaration) typeDec;
-		int adviceSequenceNumberInType = aspectDecl.adviceCounter++;
+		adviceSequenceNumberInType = aspectDecl.adviceCounter++;
 
 		StringBuffer stringifiedPointcut = new StringBuffer(30);
 		pointcutDesignator.print(0, stringifiedPointcut);
