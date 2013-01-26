@@ -475,13 +475,9 @@ public abstract class World implements Dump.INode {
 				simpleOrRawType.setNeedsModifiableDelegate(true);
 			}
 			ReferenceTypeDelegate delegate = resolveDelegate(simpleOrRawType);
-			// 117854
-			// if (delegate == null) return ResolvedType.MISSING;
+
 			if (delegate == null) {
-				return new MissingResolvedTypeWithKnownSignature(ty.getSignature(), erasedSignature, this);// ResolvedType
-				// .
-				// MISSING
-				// ;
+				return new MissingResolvedTypeWithKnownSignature(ty.getSignature(), erasedSignature, this);
 			}
 
 			if (delegate.isGeneric() && behaveInJava5Way) {
@@ -493,14 +489,10 @@ public abstract class World implements Dump.INode {
 									+ simpleOrRawType.getName());
 				}
 				ReferenceType genericType = makeGenericTypeFrom(delegate, simpleOrRawType);
-				// name =
-				// ReferenceType.fromTypeX(UnresolvedType.forRawTypeNames(
-				// ty.getName()),this);
 				simpleOrRawType.setDelegate(delegate);
 				genericType.setDelegate(delegate);
 				simpleOrRawType.setGenericType(genericType);
 				return simpleOrRawType;
-
 			} else {
 				// ======== simple type =========
 				simpleOrRawType.setDelegate(delegate);
@@ -1020,6 +1012,7 @@ public abstract class World implements Dump.INode {
 	/*
 	 * Map of types in the world, can have 'references' to expendable ones which can be garbage collected to recover memory. An
 	 * expendable type is a reference type that is not exposed to the weaver (ie just pulled in for type resolution purposes).
+	 * Generic types have their raw form added to the map, which has a pointer to the underlying generic.
 	 */
 	public static class TypeMap {
 
@@ -1269,7 +1262,6 @@ public abstract class World implements Dump.INode {
 				}
 				return type;
 			} else {
-
 				if (demotionSystemActive) {
 					// System.out.println("Added since last demote " + key);
 					addedSinceLastDemote.add(key);
@@ -1295,7 +1287,8 @@ public abstract class World implements Dump.INode {
 			if (!memoryProfiling) {
 				return;
 			}
-			while (rq.poll() != null) {
+			Reference r = null;
+			while ((r=rq.poll()) != null) {
 				collectedTypes++;
 			}
 		}
@@ -1311,11 +1304,17 @@ public abstract class World implements Dump.INode {
 					WeakReference<ResolvedType> ref = (WeakReference<ResolvedType>) expendableMap.get(key);
 					if (ref != null) {
 						ret = ref.get();
+//						if (ret==null) {
+//							expendableMap.remove(key);
+//						}
 					}
 				} else if (policy == USE_SOFT_REFS) {
 					SoftReference<ResolvedType> ref = (SoftReference<ResolvedType>) expendableMap.get(key);
 					if (ref != null) {
 						ret = ref.get();
+//						if (ret==null) {
+//							expendableMap.remove(key);
+//						}
 					}
 					// } else {
 					// return (ResolvedType) expendableMap.get(key);

@@ -461,14 +461,14 @@ public class BcelWorld extends World implements Repository {
 
 		if (nameTypeX == null) {
 			if (jc.isGeneric() && isInJava5Mode()) {
-				nameTypeX = ReferenceType.fromTypeX(UnresolvedType.forRawTypeName(jc.getClassName()), this);
-				ret = buildBcelDelegate(nameTypeX, jc, artificial, true);
+				ReferenceType rawType = ReferenceType.fromTypeX(UnresolvedType.forRawTypeName(jc.getClassName()), this);
+				ret = buildBcelDelegate(rawType, jc, artificial, true);
 				ReferenceType genericRefType = new ReferenceType(UnresolvedType.forGenericTypeSignature(signature,
 						ret.getDeclaredGenericSignature()), this);
-				nameTypeX.setDelegate(ret);
+				rawType.setDelegate(ret);
 				genericRefType.setDelegate(ret);
-				nameTypeX.setGenericType(genericRefType);
-				typeMap.put(signature, nameTypeX);
+				rawType.setGenericType(genericRefType);
+				typeMap.put(signature, rawType);
 			} else {
 				nameTypeX = new ReferenceType(signature, this);
 				ret = buildBcelDelegate(nameTypeX, jc, artificial, true);

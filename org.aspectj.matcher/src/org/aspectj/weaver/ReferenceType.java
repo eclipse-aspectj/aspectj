@@ -43,6 +43,8 @@ public class ReferenceType extends ResolvedType {
 	 * For parameterized types (or the raw type) - this field points to the actual reference type from which they are derived.
 	 */
 	ReferenceType genericType = null;
+	
+	ReferenceType rawType = null; // generic types have a pointer back to their raw variant (prevents GC of the raw from the typemap!)
 
 	ReferenceTypeDelegate delegate = null;
 	int startPos = 0;
@@ -147,6 +149,7 @@ public class ReferenceType extends ResolvedType {
 	public ReferenceType(UnresolvedType genericType, World world) {
 		super(genericType.getSignature(), world);
 		typeKind = TypeKind.GENERIC;
+		this.typeVariables=genericType.typeVariables;
 	}
 
 	@Override
@@ -428,7 +431,6 @@ public class ReferenceType extends ResolvedType {
 				return true;
 			}
 		}
-
 		if (this == other) {
 			return true;
 		}
@@ -984,6 +986,9 @@ public class ReferenceType extends ResolvedType {
 		}
 		if (typeKind == TypeKind.RAW) {
 			genericType.addDependentType(this);
+		}
+		if (isRawType()) {
+			genericType.rawType = this;
 		}
 		if (this.isRawType() && rt.isRawType()) {
 			new RuntimeException("PR341926 diagnostics: Incorrect setup for a generic type, raw type should not point to raw: "
