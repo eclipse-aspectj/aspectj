@@ -256,7 +256,7 @@ public class Main {
 		} catch (OutOfMemoryError outOfMemory) {
 			IMessage outOfMemoryMessage = new Message(OUT_OF_MEMORY_MSG, null, true);
 			holder.handleMessage(outOfMemoryMessage);
-			systemExit(holder); // we can't reasonably continue from this point.
+			System.exit(-1); // we can't reasonably continue from this point.
 		} finally {
 			CompilationAndWeavingContext.reset();
 			Dump.reset();
@@ -466,6 +466,7 @@ public class Main {
 		}
 		System.exit(0);
 	}
+	
 
 	/** Messages to the user */
 	protected void outMessage(String message) { // XXX coordinate with MessagePrinter
