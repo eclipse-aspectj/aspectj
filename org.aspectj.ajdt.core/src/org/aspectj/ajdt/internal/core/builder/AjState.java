@@ -13,7 +13,9 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.ref.ReferenceQueue;
@@ -1497,6 +1499,22 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 				this.resolvedTypeStructuresFromLastBuild.put(thisTime.getClassName(), new CompactTypeStructureRepresentation(
 						reader, isAspect));
 			} catch (ClassFormatException cfe) {
+				try {
+					String s = System.getProperty("aspectj.debug377906","false");
+					if (s.equalsIgnoreCase("true")) {
+						String location = System.getProperty("java.io.tmpdir","/tmp");
+						String name = thisTime.getClassName();
+						File f = File.createTempFile(location+File.separator+name, ".class");
+						StringBuilder debug = new StringBuilder();
+						debug.append("Debug377906: Dumping class called "+name+" to "+f.getName()+" size:"+thisTime.getBytes().length);
+						DataOutputStream dos = new DataOutputStream(new FileOutputStream(f));
+						dos.write(thisTime.getBytes());
+						dos.close();
+						throw new BCException(debug.toString(), cfe);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				throw new BCException("Unexpected problem processing class", cfe);
 			}
 		}
