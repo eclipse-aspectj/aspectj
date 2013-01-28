@@ -1500,13 +1500,13 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 						reader, isAspect));
 			} catch (ClassFormatException cfe) {
 				try {
-					String s = System.getProperty("aspectj.debug377906","false");
+					String s = System.getProperty("aspectj.debug377096","false");
 					if (s.equalsIgnoreCase("true")) {
 						String location = System.getProperty("java.io.tmpdir","/tmp");
 						String name = thisTime.getClassName();
 						File f = File.createTempFile(location+File.separator+name, ".class");
 						StringBuilder debug = new StringBuilder();
-						debug.append("Debug377906: Dumping class called "+name+" to "+f.getName()+" size:"+thisTime.getBytes().length);
+						debug.append("Debug377096: Dumping class called "+name+" to "+f.getName()+" size:"+thisTime.getBytes().length);
 						DataOutputStream dos = new DataOutputStream(new FileOutputStream(f));
 						dos.write(thisTime.getBytes());
 						dos.close();
