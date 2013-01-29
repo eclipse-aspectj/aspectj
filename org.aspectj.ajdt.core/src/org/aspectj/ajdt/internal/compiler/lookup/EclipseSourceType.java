@@ -673,10 +673,11 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	 * (RetentionPolicy, Target).
 	 */
 	public AnnotationAJ[] getAnnotations() {
-		if (annotations != null) {
+		int declarationAnnoCount = (declaration.annotations == null ? 0 : declaration.annotations.length);
+		if (annotations != null && annotations.length==declarationAnnoCount) {
 			return annotations; // only do this once
 		}
-		if (!annotationsFullyResolved) {
+		if (!annotationsFullyResolved || annotations.length!=declarationAnnoCount) {
 			TypeDeclaration.resolveAnnotations(declaration.staticInitializerScope, declaration.annotations, binding);
 			annotationsFullyResolved = true;
 		}
