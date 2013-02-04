@@ -115,6 +115,28 @@ public class BoundedReferenceType extends ReferenceType {
 		}
 	}
 
+	@Override
+	public String getSignatureForAttribute() {
+		StringBuilder ret = new StringBuilder();
+		if (kind==SUPER){
+			ret.append("-");
+			ret.append(lowerBound.getSignatureForAttribute());
+			for (int i=0;i<additionalInterfaceBounds.length;i++) {
+				ret.append(additionalInterfaceBounds[i].getSignatureForAttribute());
+			}
+		} else if (kind==EXTENDS) {
+			ret.append("+");
+			ret.append(upperBound.getSignatureForAttribute());
+			for (int i=0;i<additionalInterfaceBounds.length;i++) {
+				ret.append(additionalInterfaceBounds[i].getSignatureForAttribute());
+			}
+		} else if (kind==UNBOUND) {
+			ret.append("*");
+		}
+		return ret.toString();
+	}
+
+
 	public boolean hasLowerBound() {
 		return lowerBound != null;
 	}

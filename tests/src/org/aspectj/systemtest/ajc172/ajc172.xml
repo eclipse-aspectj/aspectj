@@ -1,6 +1,32 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 
 <suite>
+
+	<ajc-test dir="bugs172/pr399590" title="p signatures 1">
+      <compile files="Cage.java" options="-1.5"/>
+      <compile files="Cage2.java" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr399590/two" title="p signatures 2">
+      <compile files="Cage.java" options="-1.5"/>
+      <compile files="Cage2.java" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr399590/three" title="p signatures 3">
+      <compile files="Cage.java" options="-1.5"/>
+      <compile files="Cage2.java" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr399590/four" title="p signatures 4">
+      <compile files="Cage.java" options="-1.5"/>
+      <compile files="Cage2.java" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr399590/five" title="p signatures 5">
+      <compile files="Cage.java" options="-1.5"/>
+      <compile files="Cage2.java" options="-1.5"/>
+    </ajc-test>
+    
 	<ajc-test dir="bugs172/pr398588" title="optional aspects">
 	     <compile files="Anno.java Anno2.java" outjar="anno.jar" options="-1.5"/>
 	     <compile files="AspectA.java" classpath="anno.jar" outjar="aspect.jar" options="-Xlint:ignore -1.5"/>

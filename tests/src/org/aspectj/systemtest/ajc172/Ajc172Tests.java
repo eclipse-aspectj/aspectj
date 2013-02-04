@@ -23,6 +23,66 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc172Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	// extends
+	public void testPSignatures_pr399590() throws Exception {
+		runTest("p signatures 1");
+		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(),"Cage");
+		String sss = jc.getSignatureAttribute().getSignature();
+		assertEquals("<T:LAnimal<+LCage<TT;>;>;>LBar;", sss);
+		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
+		sss = jc.getSignatureAttribute().getSignature();
+		assertEquals("<T:LAnimal2<+LCage2<TT;>;>;>LBar2;Ljava/io/Serializable;", sss);
+		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
+	}
+	
+	// extends two classes
+	public void testPSignatures_pr399590_2() throws Exception {
+		runTest("p signatures 2");
+		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(),"Cage");
+		String sss = jc.getSignatureAttribute().getSignature();
+		assertEquals("<T:LAnimal<+LCage<TT;LIntf;>;LIntf;>;Q:Ljava/lang/Object;>LBar;", sss);
+		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
+		sss = jc.getSignatureAttribute().getSignature();
+		assertEquals("<T:LAnimal2<+LCage2<TT;LIntf2;>;LIntf2;>;Q:Ljava/lang/Object;>LBar2;Ljava/io/Serializable;", sss);
+		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
+	}
+	
+	// super
+	public void testPSignatures_pr399590_3() throws Exception {
+		runTest("p signatures 3");
+		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(),"Cage");
+		String sss = jc.getSignatureAttribute().getSignature();
+		assertEquals("<T:LAnimal<-LXXX<TT;>;>;>LBar;", sss);
+		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
+		sss = jc.getSignatureAttribute().getSignature();
+		assertEquals("<T:LAnimal2<-LXXX2<TT;>;>;>LBar2;Ljava/io/Serializable;", sss);
+		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
+	}
+
+	// super
+	public void testPSignatures_pr399590_4() throws Exception {
+		runTest("p signatures 4");
+		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(),"Cage");
+		String sss = jc.getSignatureAttribute().getSignature();
+		assertEquals("<T:LAnimal<-LXXX<TT;>;LYYY;>;>LBar;", sss);
+		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
+		sss = jc.getSignatureAttribute().getSignature();
+		assertEquals("<T:LAnimal2<-LXXX2<TT;>;LYYY2;>;>LBar2;Ljava/io/Serializable;", sss);
+		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
+	}
+
+	// unbound
+	public void testPSignatures_pr399590_5() throws Exception {
+		runTest("p signatures 5");
+		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(),"Cage");
+		String sss = jc.getSignatureAttribute().getSignature();
+		assertEquals("<T:LAnimal<*>;>LBar;", sss);
+		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
+		sss = jc.getSignatureAttribute().getSignature();
+		assertEquals("<T:LAnimal2<*>;>LBar2;Ljava/io/Serializable;", sss);
+		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
+	}
+
 	public void testIfPointcutNames_pr398246() throws Exception {
 		runTest("if pointcut names");
 		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "X");
