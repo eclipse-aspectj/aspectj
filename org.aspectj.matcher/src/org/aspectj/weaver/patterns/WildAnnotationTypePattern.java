@@ -228,8 +228,8 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 							replacementValues.put(k, rt.getSignature());
 							break;
 						} else {
-							throw new RuntimeException("Compiler limitation: annotation value support not implemented for type "
-									+ t);
+							scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.UNSUPPORTED_ANNOTATION_VALUE_TYPE,t), getSourceLocation()));
+							replacementValues.put(k,"");
 						}
 					}
 				}

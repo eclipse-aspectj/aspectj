@@ -23,6 +23,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc172Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testUnsupportedShouldBeNormalError_pr391384() {
+		runTest("unsupported should be normal error");
+	}
+	
 	// if the test is failing because the classes won't run, remove the run blocks from the ajc172.xml entry and re-run to check signatures.
 	public void testSignatures_pr394535() throws Exception {
 		runTest("signatures");

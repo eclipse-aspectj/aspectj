@@ -2,6 +2,12 @@
 
 <suite>
 
+	<ajc-test dir="bugs172/pr391384" title="unsupported should be normal error">
+      <compile files="Code.java" options="-1.5">
+      	<message kind="error" text="Compiler limitation: annotation value support not implemented for type java.lang.String[]"/>
+      </compile>
+    </ajc-test>
+    
 	<ajc-test dir="bugs172/pr394535" title="signatures">
       <compile files="Bug.java" options="-1.5"/>
       <compile files="Bug2.java" options="-1.5"/>
