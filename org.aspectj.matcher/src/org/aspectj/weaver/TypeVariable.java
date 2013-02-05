@@ -256,8 +256,8 @@ public class TypeVariable {
 		sb.append(":");
 		sb.append(superclass.getSignature());
 		if (superInterfaces.length != 0) {
-			sb.append(":");
 			for (int i = 0; i < superInterfaces.length; i++) {
+				sb.append(":");
 				UnresolvedType iBound = superInterfaces[i];
 				sb.append(iBound.getSignature());
 			}
@@ -276,8 +276,8 @@ public class TypeVariable {
 			sb.append(((ResolvedType) superclass).getSignatureForAttribute());
 		}
 		if (superInterfaces.length != 0) {
-			sb.append(":");
 			for (int i = 0; i < superInterfaces.length; i++) {
+				sb.append(":");
 				ResolvedType iBound = (ResolvedType) superInterfaces[i];
 				sb.append(iBound.getSignatureForAttribute());
 			}

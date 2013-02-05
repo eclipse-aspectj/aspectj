@@ -23,6 +23,19 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc172Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	// if the test is failing because the classes won't run, remove the run blocks from the ajc172.xml entry and re-run to check signatures.
+	public void testSignatures_pr394535() throws Exception {
+		runTest("signatures");
+		
+		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(),"Bug2$ClassA2"); // the working one
+		String sss = jc.getSignatureAttribute().getSignature();
+		assertEquals("<T::LBug2$Interface12;:LBug2$Interface22;>Ljava/lang/Object;Ljava/io/Serializable;", sss);
+		
+		jc = getClassFrom(ajc.getSandboxDirectory(),"Bug$ClassA");
+		sss = jc.getSignatureAttribute().getSignature();
+		assertEquals("<T::LBug$Interface1;:LBug$Interface2;>Ljava/lang/Object;Ljava/io/Serializable;", sss);
+	}
+	
 	// extends
 	public void testPSignatures_pr399590() throws Exception {
 		runTest("p signatures 1");
@@ -32,7 +45,6 @@ public class Ajc172Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
 		sss = jc.getSignatureAttribute().getSignature();
 		assertEquals("<T:LAnimal2<+LCage2<TT;>;>;>LBar2;Ljava/io/Serializable;", sss);
-		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
 	}
 	
 	// extends two classes
@@ -44,7 +56,6 @@ public class Ajc172Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
 		sss = jc.getSignatureAttribute().getSignature();
 		assertEquals("<T:LAnimal2<+LCage2<TT;LIntf2;>;LIntf2;>;Q:Ljava/lang/Object;>LBar2;Ljava/io/Serializable;", sss);
-		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
 	}
 	
 	// super
@@ -56,7 +67,6 @@ public class Ajc172Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
 		sss = jc.getSignatureAttribute().getSignature();
 		assertEquals("<T:LAnimal2<-LXXX2<TT;>;>;>LBar2;Ljava/io/Serializable;", sss);
-		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
 	}
 
 	// super
@@ -68,7 +78,6 @@ public class Ajc172Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
 		sss = jc.getSignatureAttribute().getSignature();
 		assertEquals("<T:LAnimal2<-LXXX2<TT;>;LYYY2;>;>LBar2;Ljava/io/Serializable;", sss);
-		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
 	}
 
 	// unbound
@@ -80,7 +89,6 @@ public class Ajc172Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
 		sss = jc.getSignatureAttribute().getSignature();
 		assertEquals("<T:LAnimal2<*>;>LBar2;Ljava/io/Serializable;", sss);
-		jc = getClassFrom(ajc.getSandboxDirectory(),"Cage2");
 	}
 
 	public void testIfPointcutNames_pr398246() throws Exception {

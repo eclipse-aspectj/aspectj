@@ -2,6 +2,13 @@
 
 <suite>
 
+	<ajc-test dir="bugs172/pr394535" title="signatures">
+      <compile files="Bug.java" options="-1.5"/>
+      <compile files="Bug2.java" options="-1.5"/>
+      <run class="Bug2"/>
+      <run class="Bug"/>
+    </ajc-test>
+    
 	<ajc-test dir="bugs172/pr399590" title="p signatures 1">
       <compile files="Cage.java" options="-1.5"/>
       <compile files="Cage2.java" options="-1.5"/>
