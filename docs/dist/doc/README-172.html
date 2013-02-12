@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.7.2 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2011 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 1.7.2 Readme</h1>
+
+<p>The full list of resolved issues in 1.7.2 is available 
+<a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.7.2;">here</a></h2>.</p>
+
+<ul>
+<li>1.7.2 available 13-Feb-2013
+</ul>
+
+<h3>Fixes:</h3>
+<ul>
+<li>Incorrect signature attributes generated into some class files for complex generics declarations.
+<li>Generics information incorrectly being placed in the stackmap verification attributes.
+<li>Problems with generic ITDs not being picked up correctly, resulting in 'method must be implemented' errors.
+<li>Problems with multiple usages of 'requires' clause in aop.xml for conditional aspects.
+<li>Generated if() pointcut representations in class files change on only a source whitespace change.
+<li>Intermittent problem with generic ITDs due to weak references being collected too soon.
+</ul>
+
+<!-- ============================== -->  
+</body>
+</html>
