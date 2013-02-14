@@ -49,7 +49,7 @@ public class Aj implements ClassPreProcessor {
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(Aj.class);
 
-	public Aj() {
+	public Aj() { 
 		this(null);
 	}
 
@@ -144,11 +144,15 @@ public class Aj implements ClassPreProcessor {
 	 */
 	private static class AdaptorKey extends WeakReference {
 
-		private int hashcode = -1;
+		private final int loaderHashCode, sysHashCode, hashValue;
+		private final String loaderClass;
 
 		public AdaptorKey(ClassLoader loader) {
 			super(loader, adaptorQueue);
-			hashcode = loader.hashCode() * 37;
+			loaderHashCode = loader.hashCode();
+			sysHashCode = System.identityHashCode(loader);
+			loaderClass = loader.getClass().getName();
+			hashValue = loaderHashCode + sysHashCode + loaderClass.hashCode();
 		}
 
 		public ClassLoader getClassLoader() {
@@ -158,14 +162,17 @@ public class Aj implements ClassPreProcessor {
 		}
 
 		public boolean equals(Object obj) {
-			if (!(obj instanceof AdaptorKey))
+			if (!(obj instanceof AdaptorKey)) {
 				return false;
+			}
 			AdaptorKey other = (AdaptorKey) obj;
-			return other.hashcode == hashcode;
+			return (other.loaderHashCode == loaderHashCode)
+					&&  (other.sysHashCode == sysHashCode)
+					&& loaderClass.equals(other.loaderClass);
 		}
 
 		public int hashCode() {
-			return hashcode;
+			return hashValue;
 		}
 
 	}
