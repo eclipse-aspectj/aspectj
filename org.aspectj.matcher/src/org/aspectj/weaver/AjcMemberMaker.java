@@ -118,7 +118,7 @@ public class AjcMemberMaker {
 	}
 
 	public static ResolvedMember perObjectBind(UnresolvedType declaringType) {
-		return new ResolvedMemberImpl(Member.METHOD, declaringType, PUBLIC_STATIC, NameMangler.PEROBJECT_BIND_METHOD,
+		return new ResolvedMemberImpl(Member.METHOD, declaringType, PUBLIC_STATIC | Modifier.SYNCHRONIZED, NameMangler.PEROBJECT_BIND_METHOD,
 				"(Ljava/lang/Object;)V");
 	}
 
