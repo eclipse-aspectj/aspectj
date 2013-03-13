@@ -827,7 +827,30 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			// value
 			peNode = new ProgramElement(activeStructureModel, new String(fieldDeclaration.name), IProgramElement.Kind.ENUM_VALUE,
 					makeLocation(fieldDeclaration), fieldDeclaration.modifiers, null, null);
-			peNode.setCorrespondingType(fieldDeclaration.binding.type.debugName());
+			String type =  null;
+			boolean isOk = true;
+			if (fieldDeclaration.binding == null) {
+				type="fieldDeclaration_binding_is_null";
+				System.err.println("DebugFor402832: null fieldDeclaration.binding for "+fieldDeclaration);
+				isOk=false;
+			} else {
+				if (fieldDeclaration.binding.type==null) {
+					System.err.println("DebugFor402832: null fieldDeclaration.binding.type for "+fieldDeclaration);
+					type="fieldDeclaration_binding_type_is_null";
+					isOk=false;				
+				} else {
+					type=fieldDeclaration.binding.type.debugName();
+				}
+			}
+			if (!isOk) {
+				if (fieldDeclaration.type!=null && fieldDeclaration.type.resolvedType!=null) {
+					type = fieldDeclaration.type.resolvedType.debugName();
+					System.err.println("DebugFor402832: used secondary route to compute name for "+fieldDeclaration+", set to "+type);
+					isOk=true;
+				}
+			}
+			peNode.setCorrespondingType(type);
+//			peNode.setCorrespondingType(fieldDeclaration.binding.type.debugName());
 		} else {
 			peNode = new ProgramElement(activeStructureModel, new String(fieldDeclaration.name), IProgramElement.Kind.FIELD,
 					makeLocation(fieldDeclaration), fieldDeclaration.modifiers, null, null);
