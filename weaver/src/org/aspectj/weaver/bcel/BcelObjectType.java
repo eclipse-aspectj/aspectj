@@ -286,10 +286,11 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		ensureGenericSignatureUnpacked();
 		if (methods == null) {
 			Method[] ms = javaClass.getMethods();
-			methods = new ResolvedMember[ms.length];
+			ResolvedMember[] newMethods = new ResolvedMember[ms.length];
 			for (int i = ms.length - 1; i >= 0; i--) {
-				methods[i] = new BcelMethod(this, ms[i]);
+				newMethods[i] = new BcelMethod(this, ms[i]);
 			}
+			methods = newMethods;
 		}
 		return methods;
 	}
@@ -298,10 +299,11 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		ensureGenericSignatureUnpacked();
 		if (fields == null) {
 			Field[] fs = javaClass.getFields();
-			fields = new ResolvedMember[fs.length];
+			ResolvedMember[] newfields = new ResolvedMember[fs.length];
 			for (int i = 0, len = fs.length; i < len; i++) {
-				fields[i] = new BcelField(this, fs[i]);
+				newfields[i] = new BcelField(this, fs[i]);
 			}
+			fields = newfields;
 		}
 		return fields;
 	}
