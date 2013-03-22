@@ -81,7 +81,11 @@ public class CFlowStack {
     }
 
     public void pop() {
-        getThreadStack().pop();
+        Stack s = getThreadStack();
+        s.pop();
+        if (s.isEmpty()) {
+        	stackProxy.removeThreadStack();
+        }
     }
 
     public Object peek() {

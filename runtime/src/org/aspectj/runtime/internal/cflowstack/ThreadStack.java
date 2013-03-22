@@ -18,5 +18,6 @@ import java.util.Stack;
 public interface ThreadStack {
 
 	public Stack getThreadStack();
+	public void removeThreadStack();
 
 }

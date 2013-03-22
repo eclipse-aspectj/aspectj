@@ -39,6 +39,9 @@ public class CFlowCounter {
 
     public void dec() {
     	flowHeightHandler.dec();
+    	if (!flowHeightHandler.isNotZero()) {
+    		flowHeightHandler.removeThreadCounter();
+    	}
     }
     
     public boolean isValid() {

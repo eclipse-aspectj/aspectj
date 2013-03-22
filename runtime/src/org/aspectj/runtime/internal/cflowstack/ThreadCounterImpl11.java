@@ -71,4 +71,8 @@ public class ThreadCounterImpl11 implements ThreadCounter {
 		return getThreadCounter().value!=0;
 	}
 
+	public void removeThreadCounter() {
+		// TODO 
+	}
+
 }

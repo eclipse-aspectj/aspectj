@@ -52,4 +52,8 @@ public class ThreadStackImpl11 implements ThreadStack {
 		return cached_stack;
 	}
 
+	public void removeThreadStack() {
+		// TODO
+	}
+
 }
