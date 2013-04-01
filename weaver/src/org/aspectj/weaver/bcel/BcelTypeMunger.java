@@ -944,8 +944,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				}
 			}
 
-			// If it doesn't target an interface and there is a body (i.e. it
-			// isnt abstract)
+			// If it doesn't target an interface and there is a body (i.e. it isnt abstract)
 			if (!onInterface && !Modifier.isAbstract(mangledInterMethod.getModifiers())) {
 				InstructionList body = newMethod.getBody();
 				InstructionFactory fact = classGen.getFactory();

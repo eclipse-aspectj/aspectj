@@ -1,0 +1,31 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="bugs173/pr404601" title="abstract method error">
+		<compile files="user/IUser.java user/Test.java user/UserTrait.java user/Youser.java" options="-1.5">
+			<message kind="error" text="private intertype declaration 'void UserTrait$I.testSetUsername(java.lang.String)' clashes with public member 'void Youser.testSetUsername(java.lang.String)'"/>
+		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs173/lyor" title="declare anno on itd">
+      <compile files="Code.java" options="-1.5 -showWeaveInfo">
+      	<message kind="weave" text="'public void Intface.getName()' (Code.java) is annotated with @Foo method annotation from 'A' (Code.java:7)"/>
+		<message kind="weave" text="Type 'C' (Code.java) has intertyped method from 'A' (Code.java:'void Intface.getName()')"/>
+		<message kind="weave" text="Type 'Intface' (Code.java) has intertyped method from 'A' (Code.java:'void Intface.getName()')"/>
+      </compile>
+    </ajc-test>
+    
+	<ajc-test dir="bugs173/lyor/2" title="declare anno on itd 2">
+		<compile files="A1.java" outjar="aspects1.jar" options="-1.5 -Xlint:ignore"/>
+		<compile files="Intface.java A2.java" aspectpath="aspects1.jar" outjar="aspects2.jar" options="-1.5"/>
+		<compile files="Code.java" aspectpath="aspects1.jar;aspects2.jar" options="-1.5"/>
+		
+      <!-- 
+      	<message kind="weave" text="'public void Intface.getName()' (A2.java) is annotated with @Foo method annotation from 'A1' (A1.java:7)"/>
+		<message kind="weave" text="Type 'C' (Code.java) has intertyped method from 'A2' (A2.java:'void Intface.getName()')"/>
+		<message kind="weave" text="Type 'Intface' (Code.java) has intertyped method from 'A2' (A2.java:'void Intface.getName()')"/>
+		-->
+    </ajc-test>
+
+</suite>

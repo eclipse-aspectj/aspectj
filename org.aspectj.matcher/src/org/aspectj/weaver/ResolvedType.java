@@ -1858,6 +1858,17 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 					int c = compareMemberPrecedence(typeTransformerSignature, existingMember);
 					// System.err.println("   c: " + c);
 					if (c < 0) {
+						ResolvedType typeTransformerTargetType = typeTransformerSignature.getDeclaringType().resolve(world);
+						if (typeTransformerTargetType.isInterface()) {
+							ResolvedType existingMemberType = existingMember.getDeclaringType().resolve(world);
+							if ((rtm instanceof NewMethodTypeMunger) && !typeTransformerTargetType.equals(existingMemberType)) {
+								// Might be pr404601. ITD is on an interface with a different visibility to the real member
+								if (Modifier.isPrivate(typeTransformerSignature.getModifiers()) &&
+									Modifier.isPublic(existingMember.getModifiers())) {
+									world.getMessageHandler().handleMessage(new Message("private intertype declaration '"+typeTransformerSignature.toString()+"' clashes with public member '"+existingMember.toString()+"'",existingMember.getSourceLocation(),true));
+								}	
+							}
+						}
 						// existingMember dominates munger
 						checkLegalOverride(typeTransformerSignature, existingMember, 0x10, typeTransformer.getAspectType());
 						return true;
