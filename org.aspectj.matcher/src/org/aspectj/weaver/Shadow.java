@@ -532,7 +532,7 @@ public abstract class Shadow {
 	public void addMunger(ShadowMunger munger) {
 		if (checkMunger(munger)) {
 			if (mungers == Collections.EMPTY_LIST) {
-				mungers = new ArrayList();
+				mungers = new ArrayList<ShadowMunger>();
 			}
 			this.mungers.add(munger);
 		}
@@ -627,7 +627,7 @@ public abstract class Shadow {
 
 	/** Actually implement the (non-empty) mungers associated with this shadow */
 	private void implementMungers() {
-		World world = getIWorld();
+		World world = getIWorld(); 
 		for (ShadowMunger munger : mungers) {
 			if (munger.implementOn(this)) {
 				world.reportMatch(munger, this);
