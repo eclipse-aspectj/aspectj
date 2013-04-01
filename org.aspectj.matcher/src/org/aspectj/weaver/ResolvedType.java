@@ -610,7 +610,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		if ((aMember.getKind() == Member.METHOD) || (aMember.getKind() == Member.CONSTRUCTOR)) {
 			// toSearch = getMethodsWithoutIterator(true, allowMissing, !eraseGenerics).iterator();
 			toSearch = getMethodsIncludingIntertypeDeclarations(!eraseGenerics, true);
-		} else {
+		} else if (aMember.getKind()==Member.ADVICE) {
+			return null;
+		} else { 
 			assert aMember.getKind() == Member.FIELD;
 			toSearch = getFields();
 		}
