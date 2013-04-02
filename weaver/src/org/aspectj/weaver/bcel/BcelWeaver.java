@@ -1458,7 +1458,7 @@ public class BcelWeaver {
 	 * algorithm is optimal ??
 	 */
 	public void weaveParentTypeMungers(ResolvedType onType) {
-		if (onType.isRawType()) {
+		if (onType.isRawType() || onType.isParameterizedType()) {
 			onType = onType.getGenericType();
 		}
 		onType.clearInterTypeMungers();
