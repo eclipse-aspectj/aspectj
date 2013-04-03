@@ -321,7 +321,27 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 		if (backingGenericMember != null) {
 			return backingGenericMember.getAnnotations();
 		}
+		if (annotations!=null) {
+			return annotations;
+		}
 		return super.getAnnotations();
+	}
+
+	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
+		if (annotations!=null) {
+			// this means they have been set (we are likely a placeholder for an ITD, so a fake member)
+			for (AnnotationAJ annotation: annotations) {
+				if (annotation.getType().equals(ofType)) {
+					return annotation;
+				}
+			}
+			return null;
+		}
+		throw new UnsupportedOperationException("You should resolve this member and call getAnnotationOfType() on the result...");
+	}
+	
+	public void setAnnotations(AnnotationAJ[] annotations) {
+		this.annotations = annotations;
 	}
 
 	public void setAnnotationTypes(ResolvedType[] annotationTypes) {
@@ -1235,9 +1255,6 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 	public void evictWeavingState() {
 	}
 
-	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
-		throw new UnsupportedOperationException("You should resolve this member and call getAnnotationOfType() on the result...");
-	}
 
 	public boolean isEquivalentTo(Object other) {
 		return this.equals(other);

@@ -126,7 +126,7 @@ class BcelClassWeaver implements IClassWeaver {
 	private final List<ConcreteTypeMunger> addedThisInitializers = new ArrayList<ConcreteTypeMunger>();
 	private final List<ConcreteTypeMunger> addedClassInitializers = new ArrayList<ConcreteTypeMunger>();
 
-	private final Map<ResolvedMember, ResolvedType[]> mapToAnnotations = new HashMap<ResolvedMember, ResolvedType[]>();
+	private final Map<ResolvedMember, ResolvedMember> mapToAnnotationHolder = new HashMap<ResolvedMember, ResolvedMember>();
 
 	// private BcelShadow clinitShadow = null;
 
@@ -2985,51 +2985,56 @@ class BcelClassWeaver implements IClassWeaver {
 	private void fixAnnotationsForResolvedMember(ResolvedMember rm, ResolvedMember declaredSig) {
 		try {
 			UnresolvedType memberHostType = declaredSig.getDeclaringType();
-			ResolvedType[] annotations = mapToAnnotations.get(rm);
+			boolean containsKey = mapToAnnotationHolder.containsKey(rm);
+			ResolvedMember realAnnotationHolder = mapToAnnotationHolder.get(rm);
 			String methodName = declaredSig.getName();
 			// FIXME asc shouldnt really rely on string names !
-			if (annotations == null) {
+			if (!containsKey) {
 				if (rm.getKind() == Member.FIELD) {
 					if (methodName.startsWith("ajc$inlineAccessField")) {
-						ResolvedMember resolvedDooberry = world.resolve(rm);
-						annotations = resolvedDooberry.getAnnotationTypes();
+						realAnnotationHolder = world.resolve(rm);
 					} else {
 						ResolvedMember realthing = AjcMemberMaker.interFieldInitializer(rm, memberHostType);
-						ResolvedMember resolvedDooberry = world.resolve(realthing);
-						annotations = resolvedDooberry.getAnnotationTypes();
+						realAnnotationHolder = world.resolve(realthing);
 					}
 				} else if (rm.getKind() == Member.METHOD && !rm.isAbstract()) {
 					if (methodName.startsWith("ajc$inlineAccessMethod") || methodName.startsWith("ajc$superDispatch")) {
-						ResolvedMember resolvedDooberry = world.resolve(declaredSig);
-						annotations = resolvedDooberry.getAnnotationTypes();
+						realAnnotationHolder = world.resolve(declaredSig);
 					} else {
-						ResolvedMember realthing = AjcMemberMaker.interMethodDispatcher(rm.resolve(world), memberHostType).resolve(
-								world);
-						ResolvedMember theRealMember = findResolvedMemberNamed(memberHostType.resolve(world), realthing.getName(),
-								realthing.getParameterTypes());
-						if (theRealMember == null) {
+						ResolvedMember realthing = AjcMemberMaker.interMethodDispatcher(rm.resolve(world), memberHostType).resolve(world);
+						realAnnotationHolder = findResolvedMemberNamed(memberHostType.resolve(world), realthing.getName(),realthing.getParameterTypes());
+						if (realAnnotationHolder == null) {
 							throw new UnsupportedOperationException(
 									"Known limitation in M4 - can't find ITD members when type variable is used as an argument and has upper bound specified");
 						}
-						annotations = theRealMember.getAnnotationTypes();
 					}
 				} else if (rm.getKind() == Member.CONSTRUCTOR) {
-					ResolvedMember realThing = AjcMemberMaker.postIntroducedConstructor(memberHostType.resolve(world),
-							rm.getDeclaringType(), rm.getParameterTypes());
-					ResolvedMember resolvedDooberry = world.resolve(realThing);
+					ResolvedMember realThing = AjcMemberMaker.postIntroducedConstructor(memberHostType.resolve(world),rm.getDeclaringType(), rm.getParameterTypes());
+					realAnnotationHolder = world.resolve(realThing);
 					// AMC temp guard for M4
-					if (resolvedDooberry == null) {
-						throw new UnsupportedOperationException(
-								"Known limitation in M4 - can't find ITD members when type variable is used as an argument and has upper bound specified");
+					if (realAnnotationHolder == null) {
+						throw new UnsupportedOperationException("Known limitation in M4 - can't find ITD members when type variable is used as an argument and has upper bound specified");
 					}
-					annotations = resolvedDooberry.getAnnotationTypes();
 				}
-				if (annotations == null) {
-					annotations = new ResolvedType[0];
-				}
-				mapToAnnotations.put(rm, annotations);
+				mapToAnnotationHolder.put(rm, realAnnotationHolder);
 			}
-			rm.setAnnotationTypes(annotations);
+			ResolvedType[] annotationTypes;
+			AnnotationAJ[] annotations;
+			if (realAnnotationHolder!=null) {
+				annotationTypes = realAnnotationHolder.getAnnotationTypes();
+				annotations = realAnnotationHolder.getAnnotations();
+				if (annotationTypes==null) {
+					annotationTypes = ResolvedType.EMPTY_ARRAY;
+				}
+				if (annotations==null) {
+					annotations = AnnotationAJ.EMPTY_ARRAY;
+				}
+			} else {
+				annotations = AnnotationAJ.EMPTY_ARRAY;
+				annotationTypes = ResolvedType.EMPTY_ARRAY;
+			}
+			rm.setAnnotations(annotations);
+			rm.setAnnotationTypes(annotationTypes);
 		} catch (UnsupportedOperationException ex) {
 			throw ex;
 		} catch (Throwable t) {

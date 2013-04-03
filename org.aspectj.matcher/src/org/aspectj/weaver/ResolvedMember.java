@@ -153,4 +153,6 @@ public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDe
 
 	public boolean isDefaultConstructor();
 
+	public void setAnnotations(AnnotationAJ[] annotations);
+
 }
