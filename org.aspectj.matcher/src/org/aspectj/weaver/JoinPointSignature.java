@@ -90,6 +90,10 @@ public class JoinPointSignature implements ResolvedMember {
 	public void setAnnotationTypes(ResolvedType[] annotationtypes) {
 		realMember.setAnnotationTypes(annotationtypes);
 	}
+	
+	public void setAnnotations(AnnotationAJ[] annotations) {
+		realMember.setAnnotations(annotations);
+	}
 
 	public void addAnnotation(AnnotationAJ annotation) {
 		realMember.addAnnotation(annotation);
