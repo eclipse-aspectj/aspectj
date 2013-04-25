@@ -793,7 +793,7 @@ To use testing client jar in tests,
 ant -propertyfile XXX publishtomaven
 -->
   <target name="publishtomaven_snapshot" depends="maven.init">
-    <property name="build.root" value="/Users/aclement/workspaces/aspectj1/aj-build"/>
+    <property name="build.root" value="/Users/aclement/gits/org.aspectj/aj-build"/>
 
     <property name="adjusted.release.type" value="snapshot"/>
     <property name="maven.central.repository" value="s3://maven.springframework.org/${adjusted.release.type}"/>
@@ -873,9 +873,9 @@ ant -propertyfile XXX publishtomaven
   </target>
 
   <target name="publishtomaven_release" depends="maven.init">
-    <property name="suffix" value="1.6.11"/>
+    <property name="suffix" value="1.7.2"/>
 
-    <property name="build.root" value="/Users/aclement/workspaces/aspectj1/aj-build"/>
+    <property name="build.root" value="/Users/aclement/gits/org.aspectj/aj-build"/>
     <property name="adjusted.release.type" value="release"/>
     <property name="maven.central.repository" value="s3://maven.springframework.org/${adjusted.release.type}"/>
     <property name="bin.jars.folder" value="${build.root}/dist/tools/lib"/>
