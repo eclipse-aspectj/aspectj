@@ -24,6 +24,15 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc173Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testClassAnnoValue_405016_1() throws Exception {
+		// test that class literals allowed
+		runTest("class anno value 1");
+	}
+
+//	public void testClassAnnoValue_405016() throws Exception {
+//		runTest("class anno value");
+//	}
+
 	public void testAbstractMethodError_404601() throws Exception {
 		runTest("abstract method error");
 	}

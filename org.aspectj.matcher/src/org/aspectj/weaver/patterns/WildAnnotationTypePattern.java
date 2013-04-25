@@ -201,7 +201,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 						}
 					} else if (t.equals(ResolvedType.JL_STRING)) {
 						// nothing to do, it will be OK
-					} else if (t.equals(ResolvedType.JL_CLASS)) {
+					} else if (t.equals(ResolvedType.JL_CLASS) || (t.isParameterizedOrGenericType() && t.getRawType().equals(ResolvedType.JL_CLASS))) {
 						String typename = v.substring(0, v.lastIndexOf('.')); // strip off '.class'
 						ResolvedType rt = scope.lookupType(typename, this).resolve(scope.getWorld());
 						if (rt.isMissing()) {
@@ -227,6 +227,17 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 							}
 							replacementValues.put(k, rt.getSignature());
 							break;
+//						} else if (t.isArray()) {
+							// Looks like {} aren't pseudotokens in the parser so they don't get through for our pointcut parser
+//							// @Foo(value=[Foo.class])
+//							String typename = v.substring(0, v.lastIndexOf('.')); // strip off '.class'
+//							ResolvedType rt = scope.lookupType(typename, this).resolve(scope.getWorld());
+//							if (rt.isMissing()) {
+//								IMessage m = MessageUtil.error("Unable to resolve type '" + v + "' specified for value '" + k + "'",
+//										getSourceLocation());
+//								scope.getWorld().getMessageHandler().handleMessage(m);
+//							}
+//							replacementValues.put(k, rt.getSignature());
 						} else {
 							scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.UNSUPPORTED_ANNOTATION_VALUE_TYPE,t), getSourceLocation()));
 							replacementValues.put(k,"");

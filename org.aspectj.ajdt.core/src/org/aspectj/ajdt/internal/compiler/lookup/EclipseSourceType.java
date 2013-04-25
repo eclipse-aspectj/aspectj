@@ -32,6 +32,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclarati
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ClassLiteralAccess;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Literal;
@@ -66,6 +67,7 @@ import org.aspectj.weaver.AnnotationTargetKind;
 import org.aspectj.weaver.AnnotationValue;
 import org.aspectj.weaver.ArrayAnnotationValue;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ClassAnnotationValue;
 import org.aspectj.weaver.EnumAnnotationValue;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
@@ -794,14 +796,28 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		} else if (annotation instanceof SingleMemberAnnotation) {
 			// this is a single member annotation (one member value)
 			SingleMemberAnnotation singleMemberAnnotation = (SingleMemberAnnotation) annotation;
-			MethodBinding methodBinding = singleMemberAnnotation.memberValuePairs()[0].binding;
-			if (methodBinding == null) {
-				throw new MissingImplementationException(
-						"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation [" + annotation + "]");
+			MemberValuePair mvp = singleMemberAnnotation.memberValuePairs()[0];
+			if (mvp.value instanceof ArrayInitializer) {
+				ArrayInitializer arrayInitializer = (ArrayInitializer) mvp.value;
+				Expression[] expressions = arrayInitializer.expressions;
+				AnnotationValue[] arrayValues = new AnnotationValue[expressions.length];
+				for (int e = 0; e < expressions.length; e++) {
+					arrayValues[e] = generateElementValue(expressions[e],
+							((ArrayBinding) arrayInitializer.resolvedType).leafComponentType);
+				}
+				AnnotationValue array = new ArrayAnnotationValue(arrayValues);
+				AnnotationNameValuePair anvp = new AnnotationNameValuePair(new String(mvp.name), array);
+				annotationAJ.addNameValuePair(anvp);
 			} else {
-				AnnotationValue av = generateElementValue(singleMemberAnnotation.memberValue, methodBinding.returnType);
-				annotationAJ.addNameValuePair(new AnnotationNameValuePair(new String(
-						singleMemberAnnotation.memberValuePairs()[0].name), av));
+				MethodBinding methodBinding = mvp.binding;
+				if (methodBinding == null) {
+					throw new MissingImplementationException(
+							"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation [" + annotation + "]");
+				} else {
+					AnnotationValue av = generateElementValue(singleMemberAnnotation.memberValue, methodBinding.returnType);
+					annotationAJ.addNameValuePair(new AnnotationNameValuePair(new String(
+							singleMemberAnnotation.memberValuePairs()[0].name), av));
+				}
 			}
 		} else if (annotation instanceof MarkerAnnotation) {
 			return;
@@ -873,6 +889,13 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 				throw new MissingImplementationException(
 						"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value [" + defaultValue
 								+ "]");
+			} else if (defaultValue instanceof ClassLiteralAccess) {
+				ClassLiteralAccess cla = (ClassLiteralAccess)defaultValue;
+				TypeBinding claTargetType = cla.targetType;
+//				ResolvedType classLiteralType = factory.fromTypeBindingToRTX(defaultValueBinding);
+				String classLiteralSig = new String(claTargetType.signature());
+				AnnotationValue classValue = new ClassAnnotationValue(classLiteralSig);
+				return classValue;
 			} else if (defaultValueBinding.isAnnotationType()) {
 				if (defaultValue instanceof MarkerAnnotation) {
 					ResolvedType ajAnnotationType = factory.fromTypeBindingToRTX(defaultValueBinding);

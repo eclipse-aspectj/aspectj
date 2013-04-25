@@ -2,6 +2,28 @@
 
 <suite>
 
+	<ajc-test dir="bugs173/pr405016/one" title="class anno value 1">
+		<compile files="Gimme.java Thingy.java" options="-1.5 -showWeaveInfo">
+			<message kind="weave" text="Extending interface set for type 'Thingy' (Thingy.java) to include 'java.io.Serializable' (Thingy.java)"/>
+		</compile>
+		<run class="Thingy">
+			<stdout>
+				<line text="I am serializable? true"/>
+			</stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs173/pr405016" title="class anno value">
+		<compile files="Gimme.java Thingy.java" options="-1.5 -showWeaveInfo">
+			<message kind="weave" text="Extending interface set for type 'Thingy' (Thingy.java) to include 'java.io.Serializable' (Thingy.java)"/>
+		</compile>
+		<run class="Thingy">
+			<stdout>
+				<line text="I am serializable? true"/>
+			</stdout>
+		</run>
+	</ajc-test>
+	
 	<ajc-test dir="bugs173/pr404601" title="abstract method error">
 		<compile files="user/IUser.java user/Test.java user/UserTrait.java user/Youser.java" options="-1.5">
 			<message kind="error" text="private intertype declaration 'void UserTrait$I.testSetUsername(java.lang.String)' clashes with public member 'void Youser.testSetUsername(java.lang.String)'"/>
