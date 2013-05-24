@@ -91,6 +91,7 @@ import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTypeTable;
 import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.MethodParameters;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.SourceFile;
 import org.aspectj.apache.bcel.classfile.StackMap;
@@ -100,8 +101,10 @@ import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.classfile.ClassVisitor;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisParamAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisTypeAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisParamAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisTypeAnnos;
 
 /**
  * Traverses a JavaClass with another Visitor object 'piggy-backed'
@@ -419,6 +422,24 @@ public class DescendingVisitor implements ClassVisitor {
   }
   
   public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisParamAnnos attribute) {
+  	stack.push(attribute);
+  	attribute.accept(visitor);
+  	stack.pop();
+  }
+  
+  public void visitRuntimeVisibleTypeAnnotations(RuntimeVisTypeAnnos attribute) {
+  	stack.push(attribute);
+  	attribute.accept(visitor);
+  	stack.pop();
+  }
+  
+  public void visitMethodParameters(MethodParameters attribute) {
+	  stack.push(attribute);
+	  attribute.accept(visitor);
+	  stack.pop();
+  }
+  
+  public void visitRuntimeInvisibleTypeAnnotations(RuntimeInvisTypeAnnos attribute) {
   	stack.push(attribute);
   	attribute.accept(visitor);
   	stack.pop();

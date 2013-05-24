@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2004 IBM Corporation
+ * Copyright (c) 2004, 2013 IBM Corporation
  * 
  * All rights reserved. 
  * This program and the accompanying materials are made available 
@@ -127,13 +127,16 @@ public class AnnotationGen {
 
 	public String toShortString() {
 		StringBuffer s = new StringBuffer();
-		s.append("@" + getTypeName() + "(");
-		for (int i = 0; i < pairs.size(); i++) {
-			s.append(pairs.get(i));
-			if (i + 1 < pairs.size())
-				s.append(",");
+		s.append("@").append(getTypeName());
+		if (pairs.size()!=0) {
+			s.append("(");
+			for (int i = 0; i < pairs.size(); i++) {
+				s.append(pairs.get(i));
+				if (i + 1 < pairs.size())
+					s.append(",");
+			}
+			s.append(")");
 		}
-		s.append(")");
 		return s.toString();
 	}
 

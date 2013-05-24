@@ -59,8 +59,8 @@ import org.aspectj.apache.bcel.generic.Type;
 /**
  * Constants for the project, mostly defined in the JVM specification.
  * 
- * @version $Id: Constants.java,v 1.7 2011/09/28 01:14:54 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author Andy Clement
  */
 public interface Constants {
 	// Major and minor version of the code
@@ -76,6 +76,10 @@ public interface Constants {
 	public final static short MINOR_1_5 = 0;
 	public final static short MAJOR_1_6 = 50;
 	public final static short MINOR_1_6 = 0;
+	public final static short MAJOR_1_7 = 51;
+	public final static short MINOR_1_7 = 0;
+	public final static short MAJOR_1_8 = 52;
+	public final static short MINOR_1_8 = 0;
 	// Defaults
 	public final static short MAJOR = MAJOR_1_1;
 	public final static short MINOR = MINOR_1_1;
@@ -609,13 +613,20 @@ public interface Constants {
 	public static final byte ATTR_ENCLOSING_METHOD = 17;
 	public static final byte ATTR_ANNOTATION_DEFAULT = 18;
 	public static final byte ATTR_BOOTSTRAPMETHODS = 19;
+	public static final byte ATTR_RUNTIME_VISIBLE_TYPE_ANNOTATIONS = 20;
+	public static final byte ATTR_RUNTIME_INVISIBLE_TYPE_ANNOTATIONS = 21;
+	public static final byte ATTR_METHOD_PARAMETERS = 22;
 
-	public static final short KNOWN_ATTRIBUTES = 20;
+	public static final short KNOWN_ATTRIBUTES = 23;
 
-	public static final String[] ATTRIBUTE_NAMES = { "SourceFile", "ConstantValue", "Code", "Exceptions", "LineNumberTable",
-			"LocalVariableTable", "InnerClasses", "Synthetic", "Deprecated", "PMGClass", "Signature", "StackMap",
-			"RuntimeVisibleAnnotations", "RuntimeInvisibleAnnotations", "RuntimeVisibleParameterAnnotations",
-			"RuntimeInvisibleParameterAnnotations", "LocalVariableTypeTable", "EnclosingMethod", "AnnotationDefault","BootstrapMethods" };
+	public static final String[] ATTRIBUTE_NAMES = { 
+		"SourceFile", "ConstantValue", "Code", "Exceptions", "LineNumberTable", "LocalVariableTable",
+		"InnerClasses", "Synthetic", "Deprecated", "PMGClass", "Signature", "StackMap",
+		"RuntimeVisibleAnnotations", "RuntimeInvisibleAnnotations", "RuntimeVisibleParameterAnnotations",
+		"RuntimeInvisibleParameterAnnotations", "LocalVariableTypeTable", "EnclosingMethod", 
+		"AnnotationDefault","BootstrapMethods", "RuntimeVisibleTypeAnnotations", "RuntimeInvisibleTypeAnnotations",
+		"MethodParameters"
+		};
 
 	/**
 	 * Constants used in the StackMap attribute.

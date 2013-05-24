@@ -1,5 +1,3 @@
-package org.aspectj.apache.bcel.classfile;
-
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -53,6 +51,8 @@ package org.aspectj.apache.bcel.classfile;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.aspectj.apache.bcel.classfile;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;

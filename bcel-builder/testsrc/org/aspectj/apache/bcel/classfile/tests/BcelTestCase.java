@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2004 IBM
+ * Copyright (c) 2004, 2013 IBM, VMware
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -20,6 +20,7 @@ import junit.framework.TestCase;
 
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
@@ -47,12 +48,28 @@ public class BcelTestCase extends TestCase {
 		return repos.loadClass(clazzname);
 	}
 
+	protected JavaClass getClassFromJava8Jar(String clazzname) throws ClassNotFoundException {
+		SyntheticRepository repos = createRepos("java8testcode.jar");
+		return repos.loadClass(clazzname);
+	}
+
 	protected Method getMethod(JavaClass cl, String methodname) {
 		Method[] methods = cl.getMethods();
 		for (int i = 0; i < methods.length; i++) {
 			Method m = methods[i];
 			if (m.getName().equals(methodname)) {
 				return m;
+			}
+		}
+		return null;
+	}
+
+	protected Field getField(JavaClass cl, String fieldname) {
+		Field[] fields = cl.getFields();
+		for (int i = 0; i < fields.length; i++) {
+			Field f = fields[i];
+			if (f.getName().equals(fieldname)) {
+				return f;
 			}
 		}
 		return null;
@@ -147,6 +164,15 @@ public class BcelTestCase extends TestCase {
 		List<NameValuePair> elements = new ArrayList<NameValuePair>();
 		elements.add(nvGen);
 		return new AnnotationGen(t, elements, visibility, cp);
+	}
+	
+	public Attribute getAttribute(Attribute[] attrs, byte tag) {
+		for (Attribute attr: attrs) {
+			if (attr.getTag() == tag) {
+				return attr;
+			}
+		}
+		return null;
 	}
 
 }

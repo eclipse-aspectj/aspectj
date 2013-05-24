@@ -64,6 +64,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisParamAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisParamAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisTypeAnnos;
 
 /**
  * Abstract super class for <em>Attribute</em> objects. Currently the <em>ConstantValue</em>, <em>SourceFile</em>, <em>Code</em>,
@@ -159,6 +160,10 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
 			return new EnclosingMethod(idx, len, file, cpool);
 		case Constants.ATTR_BOOTSTRAPMETHODS:
 			return new BootstrapMethods(idx,len,file,cpool);
+		case Constants.ATTR_RUNTIME_VISIBLE_TYPE_ANNOTATIONS:
+			return new RuntimeVisTypeAnnos(idx, len, file, cpool);
+		case Constants.ATTR_METHOD_PARAMETERS:
+			return new MethodParameters(idx, len, file, cpool);
 		default:
 			throw new IllegalStateException();
 		}

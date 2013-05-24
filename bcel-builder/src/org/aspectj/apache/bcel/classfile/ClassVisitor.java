@@ -2,8 +2,10 @@ package org.aspectj.apache.bcel.classfile;
 
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisParamAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisTypeAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisParamAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisTypeAnnos;
 
 /* ====================================================================
  * The Apache Software License, Version 1.1
@@ -151,7 +153,13 @@ public interface ClassVisitor {
 
 	public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisParamAnnos obj);
 
+	public void visitRuntimeVisibleTypeAnnotations(RuntimeVisTypeAnnos obj);
+
+	public void visitRuntimeInvisibleTypeAnnotations(RuntimeInvisTypeAnnos obj);
+
 	public void visitAnnotationDefault(AnnotationDefault obj);
 
 	public void visitLocalVariableTypeTable(LocalVariableTypeTable obj);
+
+	public void visitMethodParameters(MethodParameters methodParameters);
 }

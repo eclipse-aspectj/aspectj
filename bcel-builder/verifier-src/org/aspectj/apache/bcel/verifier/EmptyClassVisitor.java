@@ -1,5 +1,3 @@
-package org.aspectj.apache.bcel.verifier;
-
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -53,6 +51,7 @@ package org.aspectj.apache.bcel.verifier;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.aspectj.apache.bcel.verifier;
 
 import org.aspectj.apache.bcel.classfile.AnnotationDefault;
 import org.aspectj.apache.bcel.classfile.BootstrapMethods;
@@ -87,6 +86,7 @@ import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTypeTable;
 import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.apache.bcel.classfile.MethodParameters;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.SourceFile;
 import org.aspectj.apache.bcel.classfile.StackMap;
@@ -96,8 +96,10 @@ import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.classfile.ClassVisitor;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisParamAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisTypeAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisParamAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisTypeAnnos;
 
 /**
  * Visitor with empty method bodies, can be extended and used in conjunction with the
@@ -158,5 +160,9 @@ public class EmptyClassVisitor implements ClassVisitor {
   public void visitAnnotationDefault(AnnotationDefault attribute) {}
   public void visitLocalVariableTypeTable(LocalVariableTypeTable obj) {}
   	 
+  // J8SUPPORT:
+  public void visitRuntimeVisibleTypeAnnotations(RuntimeVisTypeAnnos attribute) {}
+  public void visitRuntimeInvisibleTypeAnnotations(RuntimeInvisTypeAnnos attribute) {}
+  public void visitMethodParameters(MethodParameters attribute) {}
 
 }
