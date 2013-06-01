@@ -1,0 +1,44 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="features180" title="weave java8 class">
+		<compile aspectpath="aspects001.jar" options="-1.7 -showWeaveInfo" inpath="java8code/code001.jar">
+			<message kind="weave" text="Extending interface set for type 'Thingy' (Thingy.java) to include 'java.io.Serializable' (Thingy.java)"/>
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="features180" title="weave java8 class - default method">
+		<compile aspectpath="aspects002.jar" options="-1.7 -showWeaveInfo" inpath="java8code/code002.jar">
+			<message kind="weave" text="Join point 'method-execution(void Code002.one())' in Type 'Code002' (Code002.java:12) advised by before advice from 'SimpleAspect002' (aspects002.jar!SimpleAspect002.class:4(from SimpleAspect002.java))"/>
+			<message kind="weave" text="Join point 'method-execution(void Code002.main(java.lang.String[]))' in Type 'Code002' (Code002.java:16) advised by before advice from 'SimpleAspect002' (aspects002.jar!SimpleAspect002.class:4(from SimpleAspect002.java))"/>
+			<message kind="weave" text="Join point 'method-execution(void I002.two())' in Type 'I002' (Code002.java:5) advised by before advice from 'SimpleAspect002' (aspects002.jar!SimpleAspect002.class:4(from SimpleAspect002.java))"/>
+		</compile>
+		<run class="Code002" classpath="aspects002.jar">
+		<stdout>
+			<line text="advice running Code002.java:16"/>
+			<line text="advice running Code002.java:12"/>
+			<line text="one running"/>
+			<line text="advice running Code002.java:5"/>
+			<line text="two running"/>
+		</stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="features180" title="annotated superinterface">
+		<compile aspectpath="aspects003.jar" options="-1.7" inpath="java8code/code003.jar">
+		<!-- 
+			<message kind="weave" text="Join point 'method-execution(void Code003.run())' in Type 'Code003' (Code003.java:12) advised by before advice from 'Aspect003' (aspects003.jar!Aspect003.class:2(from Aspect003.java))"/>
+			<message kind="weave" text="Join point 'method-execution(void Code003.main(java.lang.String[]))' in Type 'Code003' (Code003.java:19) advised by before advice from 'Aspect003' (aspects003.jar!Aspect003.class:2(from Aspect003.java))"/>
+		-->
+		</compile>
+		<run class="Code003" classpath="aspects003.jar">
+		<stdout>
+			<line text="advice running staticinitialization(Code003.&lt;clinit&gt;)"/>
+			<line text="advice running staticinitialization(Foo.&lt;clinit&gt;)"/>
+			<line text="@Foo(value=2)"/>
+		</stdout>
+		</run>
+	</ajc-test>
+
+</suite>

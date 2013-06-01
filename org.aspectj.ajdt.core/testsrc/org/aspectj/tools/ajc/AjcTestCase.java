@@ -684,12 +684,14 @@ public class AjcTestCase extends TestCase {
 
 			Class toRun = sandboxLoader.loadClass(className);
 			Method mainMethod = toRun.getMethod("main", new Class[] { String[].class });
+//			mainMethod.setAccessible(true); // I need to do this for Java8 for some reason...
 			mainMethod.invoke(null, new Object[] { args });
 		} catch (ClassNotFoundException cnf) {
 			fail("Can't find class: " + className);
 		} catch (NoSuchMethodException nsm) {
 			fail(className + " does not have a main method");
 		} catch (IllegalAccessException illEx) {
+			illEx.printStackTrace();
 			fail("main method in class " + className + " is not public");
 		} catch (InvocationTargetException invTgt) {
 			// the main method threw an exception...

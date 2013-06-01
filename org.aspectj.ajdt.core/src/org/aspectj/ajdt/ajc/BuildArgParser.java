@@ -686,17 +686,14 @@ public class BuildArgParser extends Main {
 				unparsedArgs.add("-1.5");
 				// this would enable the '-source 1.5' to do the same as '-1.5' but doesnt sound quite right as
 				// as an option right now as it doesnt mean we support 1.5 source code - people will get confused...
-			} else if (arg.equals("-1.6")) {
+			} else if (arg.equals("-1.6") || arg.equals("-1.7") || arg.equals("-1.8")) {
 				buildConfig.setBehaveInJava5Way(true);
-				unparsedArgs.add("-1.6");
-			} else if (arg.equals("-1.7")) {
-				buildConfig.setBehaveInJava5Way(true);
-				unparsedArgs.add("-1.7");
+				unparsedArgs.add(arg);
 			} else if (arg.equals("-source")) {
 				if (args.size() > nextArgIndex) {
 					String level = ((ConfigParser.Arg) args.get(nextArgIndex)).getValue();
 					if (level.equals("1.5") || level.equals("5") || level.equals("1.6") || level.equals("6") || level.equals("1.7")
-							|| level.equals("7")) {
+							|| level.equals("7") || level.equals("8") || level.equals("1.8")) {
 						buildConfig.setBehaveInJava5Way(true);
 					}
 					unparsedArgs.add("-source");

@@ -91,7 +91,10 @@ public class Ajc {
 			+ File.separator + "asm.jar" + File.pathSeparator + ".." + File.separator + "lib" + File.separator + "test"
 			+ File.separator + "testing-client.jar"
 			// hmmm, this next one should perhaps point to an aj-build jar...
-			+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "test" + File.separator + "aspectjrt.jar";
+			+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "test" + File.separator + "aspectjrt.jar" +
+//			File.pathSeparator+".."+File.separator+"lib"+File.separator+"asm"+File.separator+"asm-5.0_ALPHA.renamed.jar";
+//	File.pathSeparator+".."+File.separator+"lib"+File.separator+"asm"+File.separator+"asm-debug-all-5.0_ALPHA.renamed.jar";
+	File.pathSeparator+"/Users/aclement/asm5.zip";
 
 	private CompilationResult result;
 	private File sandbox;
