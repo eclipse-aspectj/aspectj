@@ -2,6 +2,20 @@
 
 <suite>
 
+	<ajc-test dir="bugs173/pr407494" title="inner names">
+		<compile files="A.java" options="-1.5 -showWeaveInfo">		
+			<message kind="weave" text="Join point 'staticinitialization(void a.b.c.A$B.&lt;clinit&gt;())' in Type 'a.b.c.A$B' (A.java:4) advised by before advice from 'a.b.c.X' (A.java:13)"/>
+			<message kind="weave" text="Join point 'staticinitialization(void a.b.c.A.&lt;clinit&gt;())' in Type 'a.b.c.A' (A.java:3) advised by before advice from 'a.b.c.X' (A.java:13)"/>
+			<message kind="weave" text="Join point 'staticinitialization(void a.b.c.A$$C.&lt;clinit&gt;())' in Type 'a.b.c.A$$C' (A.java:6) advised by before advice from 'a.b.c.X' (A.java:13)"/>
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs173/pr407494" title="inner names 2">
+		<compile files="A2.java" options="-1.5 -showWeaveInfo">		
+			<message kind="weave" text="Join point 'staticinitialization(void a.b.c.A$$B$$C.&lt;clinit&gt;())' in Type 'a.b.c.A$$B$$C' (A2.java:10) advised by before advice from 'a.b.c.X' (A2.java:14)"/>
+		</compile>
+	</ajc-test>
+	
 	<ajc-test dir="bugs173/pr405016/one" title="class anno value 1">
 		<compile files="Gimme.java Thingy.java" options="-1.5 -showWeaveInfo">
 			<message kind="weave" text="Extending interface set for type 'Thingy' (Thingy.java) to include 'java.io.Serializable' (Thingy.java)"/>

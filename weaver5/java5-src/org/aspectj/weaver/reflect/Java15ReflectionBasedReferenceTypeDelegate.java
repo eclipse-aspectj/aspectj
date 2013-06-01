@@ -364,5 +364,16 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 	public boolean isAnonymous() {
 		return this.myClass.isAnonymousClass();
 	}
+	
+	@Override
+	public boolean isNested() {
+		return this.myClass.isMemberClass();
+	}
+
+	@Override
+	public ResolvedType getOuterClass() {
+		 return ReflectionBasedReferenceTypeDelegateFactory.resolveTypeInWorld(
+				 	myClass.getEnclosingClass(),world); 
+	}
 
 }

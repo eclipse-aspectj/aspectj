@@ -155,6 +155,12 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	}
 
 	public ResolvedType getOuterClass() {
+		if (declaration.binding != null) {
+			ReferenceBinding enclosingType = declaration.binding.enclosingType();
+			return enclosingType==null?null:eclipseWorld().fromEclipse(enclosingType);
+		}
+		// TODO are we going to make a mistake here if the binding is null?
+		// Do we ever get asked when the binding is null
 		if (declaration.enclosingType == null) {
 			return null;
 		}

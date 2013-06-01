@@ -914,6 +914,10 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return false;
 	}
 
+	public ResolvedType getOuterClass() {
+		return null;
+	}
+
 	public void addAnnotation(AnnotationAJ annotationX) {
 		throw new RuntimeException("ResolvedType.addAnnotation() should never be called");
 	}
@@ -1503,20 +1507,14 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * given in JLS 13.1, where it guarantees that if you call getDeclaringType() repeatedly, you will eventually get the top-level
 	 * class, but it does not say anything about classes in between.
 	 * 
-	 * @return the declaring UnresolvedType object, or null.
+	 * @return the declaring type, or null if it is not an nested type.
 	 */
 	public ResolvedType getDeclaringType() {
 		if (isArray()) {
 			return null;
 		}
-		String name = getName();
-		int lastDollar = name.lastIndexOf('$');
-		while (lastDollar > 0) { // allow for classes starting '$' (pr120474)
-			ResolvedType ret = world.resolve(UnresolvedType.forName(name.substring(0, lastDollar)), true);
-			if (!ResolvedType.isMissing(ret)) {
-				return ret;
-			}
-			lastDollar = name.lastIndexOf('$', lastDollar - 1);
+		if (isNested() || isAnonymous()) {
+			return getOuterClass();
 		}
 		return null;
 	}

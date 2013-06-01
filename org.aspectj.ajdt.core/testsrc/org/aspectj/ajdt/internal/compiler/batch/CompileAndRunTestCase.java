@@ -32,10 +32,10 @@ public class CompileAndRunTestCase extends CommandTestCase {
 	}
 
 	// new style itds where itdfs on interfaces are not mangled
-	public void testInterType2() throws IOException {
-		checkCompile("src1/InterType2.java", NO_ERRORS);
-		runMain("InterType2");
-	}
+//	public void testInterType2() throws IOException {
+//		checkCompile("src1/InterType2.java", NO_ERRORS);
+//		runMain("InterType2");
+//	}
 	
 	public void testInterTypeMethods() throws IOException {
 		checkCompile("src1/InterTypeMethods.java", NO_ERRORS);

@@ -48,7 +48,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 
 	protected Class myClass = null;
 	protected WeakClassLoaderReference classLoaderReference = null;
-	private World world;
+	protected World world;
 	private ReferenceType resolvedType;
 	private ResolvedMember[] fields = null;
 	private ResolvedMember[] methods = null;
@@ -150,23 +150,19 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	}
 
 	public boolean isAnonymous() {
-		return false;
+		// this isn't in < Java 1.5 but I think we are moving beyond the need to support those levels
+		return this.myClass.isAnonymousClass();
 	}
 
 	public boolean isNested() {
-		// FIXME this is *wrong* but isMemberClass() doesnt exist in pre-1.5...
-		// (same deal as isAnonymous above...)
-		return true;
-		// boolean member = this.myClass.isMemberClass();
-		// return member;
+		// this isn't in < Java 1.5 but I think we are moving beyond the need to support those levels
+		return this.myClass.isMemberClass();
 	}
 
 	public ResolvedType getOuterClass() {
-		// FIXME getEnclosingClass() is Java5 ... dammit
-		// return
-		// ReflectionBasedReferenceTypeDelegateFactory.resolveTypeInWorld(
-		// myClass.getEnclosingClass(),world);
-		return null;
+		// this isn't in < Java 1.5 but I think we are moving beyond the need to support those levels
+		return ReflectionBasedReferenceTypeDelegateFactory.resolveTypeInWorld(
+				 	myClass.getEnclosingClass(),world);
 	}
 
 	/*
@@ -308,9 +304,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 		return Collections.EMPTY_SET;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/* 
 	 * @see org.aspectj.weaver.ReferenceTypeDelegate#getTypeMungers()
 	 */
 	public Collection getTypeMungers() {

@@ -28,6 +28,14 @@ public class Ajc173Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		// test that class literals allowed
 		runTest("class anno value 1");
 	}
+	
+	public void testInnerNames_407494() throws Exception {
+		runTest("inner names");
+	}
+	
+	public void testInnerNames_407494_2() throws Exception {
+		runTest("inner names 2");
+	}
 
 //	public void testClassAnnoValue_405016() throws Exception {
 //		runTest("class anno value");

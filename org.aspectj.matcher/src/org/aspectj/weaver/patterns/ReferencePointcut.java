@@ -124,7 +124,7 @@ public class ReferencePointcut extends Pointcut {
 	public void resolveBindings(IScope scope, Bindings bindings) {
 		if (onTypeSymbolic != null) {
 			onType = onTypeSymbolic.resolveExactType(scope, bindings);
-			// in this case we've already signalled an error
+			// in this case we've already signaled an error
 			if (ResolvedType.isMissing(onType)) {
 				return;
 			}
