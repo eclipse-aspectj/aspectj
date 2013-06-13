@@ -2,6 +2,28 @@
 
 <suite>
 
+	<ajc-test dir="bugs173/pr407739" title="add remove annos">
+		<compile files="MyAnnotation.java Hello.java Aspect.java" options="-1.5 -showWeaveInfo">
+			<message kind="weave" text="'private String dummy [RuntimeVisibleAnnotations]' of type 'Hello' (Hello.java) has had @MyAnnotation field annotation removed by 'Aspect' (Aspect.java:3)"/>
+			<message kind="weave" text="'private String dummy [RuntimeVisibleAnnotations]' of type 'Hello' (Hello.java) is annotated with @MyAnnotation(dummy2 = &quot;korte&quot;) field annotation from 'Aspect' (Aspect.java:4)"/>		
+		</compile>
+		<run class="Hello">
+		<stdout>
+		<line text="@MyAnnotation(dummy2=korte, dummy1=)"/>
+		</stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs173/pr408014" title="inner interface mixin">
+		<compile files="IdentifiableMixin.java" options="-1.5 -showWeaveInfo">		
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs173/pr407966" title="ordering">
+		<compile files="Aspect.aj Use.java Def.java" options="-1.5 -showWeaveInfo">
+		</compile>
+	</ajc-test>
+
 	<ajc-test dir="bugs173/pr407494" title="inner names">
 		<compile files="A.java" options="-1.5 -showWeaveInfo">		
 			<message kind="weave" text="Join point 'staticinitialization(void a.b.c.A$B.&lt;clinit&gt;())' in Type 'a.b.c.A$B' (A.java:4) advised by before advice from 'a.b.c.X' (A.java:13)"/>

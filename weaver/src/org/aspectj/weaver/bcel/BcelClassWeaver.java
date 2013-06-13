@@ -1264,6 +1264,26 @@ class BcelClassWeaver implements IClassWeaver {
 		return false;
 	}
 
+	/**
+	 * Remove an annotation from the supplied array, if it is in there.
+	 */
+	private AnnotationAJ[] removeFromAnnotationsArray(AnnotationAJ[] annotations,AnnotationAJ annotation) {
+		for (int i=0;i<annotations.length;i++) {
+			if (annotations[i] != null && annotation.getTypeName().equals(annotations[i].getTypeName())) {
+				// Remove it!
+				AnnotationAJ[] newArray = new AnnotationAJ[annotations.length-1];
+				int index=0;
+				for (int j=0;j<annotations.length;j++) {
+					if (j!=i) {
+						newArray[index++]=annotations[j];
+					}
+				}
+				return newArray;
+			}
+		}
+		return annotations;
+	}
+
 	// BUGWARNING not getting enough warnings out on declare @field ? There is a potential problem here with warnings not
 	// coming out - this will occur if they are created on the second iteration round this loop.
 	// We currently deactivate error reporting for the second time round. A possible solution is to record what annotations
@@ -1320,6 +1340,7 @@ class BcelClassWeaver implements IClassWeaver {
 									AsmRelationshipProvider.addDeclareAnnotationFieldRelationship(world.getModelAsAsmManager(),
 											decaf.getSourceLocation(), clazz.getName(), field, true);
 									reportFieldAnnotationWeavingMessage(clazz, field, decaf, true);
+									dontAddMeTwice = removeFromAnnotationsArray(dontAddMeTwice, annotation);
 								} else {
 									worthRetrying.add(decaf);
 								}

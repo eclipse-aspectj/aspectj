@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -286,10 +287,12 @@ public class CrosscuttingMembersSet {
 		return declareParents;
 	}
 
-	// DECAT Merge multiple together
+	/**
+	 * @return an amalgamation of the declare @type statements.
+	 */
 	public List<DeclareAnnotation> getDeclareAnnotationOnTypes() {
 		if (declareAnnotationOnTypes == null) {
-			Set<DeclareAnnotation> ret = new HashSet<DeclareAnnotation>();
+			Set<DeclareAnnotation> ret = new LinkedHashSet<DeclareAnnotation>();
 			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
 				ret.addAll(i.next().getDeclareAnnotationOnTypes());
 			}
@@ -299,9 +302,12 @@ public class CrosscuttingMembersSet {
 		return declareAnnotationOnTypes;
 	}
 
+	/**
+	 * @return an amalgamation of the declare @field statements.
+	 */
 	public List<DeclareAnnotation> getDeclareAnnotationOnFields() {
 		if (declareAnnotationOnFields == null) {
-			Set<DeclareAnnotation> ret = new HashSet<DeclareAnnotation>();
+			Set<DeclareAnnotation> ret = new LinkedHashSet<DeclareAnnotation>();
 			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
 				ret.addAll(i.next().getDeclareAnnotationOnFields());
 			}
@@ -312,11 +318,11 @@ public class CrosscuttingMembersSet {
 	}
 
 	/**
-	 * Return an amalgamation of the declare @method/@constructor statements.
+	 * @return an amalgamation of the declare @method/@constructor statements.
 	 */
 	public List<DeclareAnnotation> getDeclareAnnotationOnMethods() {
 		if (declareAnnotationOnMethods == null) {
-			Set<DeclareAnnotation> ret = new HashSet<DeclareAnnotation>();
+			Set<DeclareAnnotation> ret = new LinkedHashSet<DeclareAnnotation>();
 			for (Iterator<CrosscuttingMembers> i = members.values().iterator(); i.hasNext();) {
 				ret.addAll(i.next().getDeclareAnnotationOnMethods());
 			}

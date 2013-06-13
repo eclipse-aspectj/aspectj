@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,9 +59,9 @@ public class CrosscuttingMembers {
 	private List<Declare> declareDominates = new ArrayList<Declare>(4);
 
 	// These are like declare parents type mungers
-	private Set<DeclareAnnotation> declareAnnotationsOnType = new HashSet<DeclareAnnotation>();
-	private Set<DeclareAnnotation> declareAnnotationsOnField = new HashSet<DeclareAnnotation>();
-	private Set<DeclareAnnotation> declareAnnotationsOnMethods = new HashSet<DeclareAnnotation>();
+	private Set<DeclareAnnotation> declareAnnotationsOnType = new LinkedHashSet<DeclareAnnotation>();
+	private Set<DeclareAnnotation> declareAnnotationsOnField = new LinkedHashSet<DeclareAnnotation>();
+	private Set<DeclareAnnotation> declareAnnotationsOnMethods = new LinkedHashSet<DeclareAnnotation>();
 	// declareAnnotationsOnMethods includes constructors too
 
 	private Set<DeclareTypeErrorOrWarning> declareTypeEow = new HashSet<DeclareTypeErrorOrWarning>();

@@ -1,0 +1,5 @@
+interface IIdentifiable {
+    UUID getPlatformId();
+    void setPlatformId(UUID id);
+}
+
