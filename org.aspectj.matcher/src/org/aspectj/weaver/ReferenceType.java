@@ -99,27 +99,31 @@ public class ReferenceType extends ResolvedType {
 
 	synchronized void addDependentType(ReferenceType dependent) {
 //		checkDuplicates(dependent);
-		this.derivativeTypes.add(new WeakReference<ReferenceType>(dependent));
+		synchronized (derivativeTypes) {
+			this.derivativeTypes.add(new WeakReference<ReferenceType>(dependent));
+		}
 	}
 			
 	public void checkDuplicates(ReferenceType newRt) {
-	  List<WeakReference<ReferenceType>> forRemoval = new ArrayList<WeakReference<ReferenceType>>();
-	  for (WeakReference<ReferenceType> derivativeTypeReference: derivativeTypes) {
-		  ReferenceType derivativeType = derivativeTypeReference.get();
-		  if (derivativeType==null) {
-			  forRemoval.add(derivativeTypeReference);
-		  } else {
-			  if (derivativeType.getTypekind()!=newRt.getTypekind()) {
-				  continue; // cannot be this one
-			  }
-			  if (equal2(newRt.getTypeParameters(),derivativeType.getTypeParameters())) {
-				  if (TypeMap.useExpendableMap) {
-					  throw new IllegalStateException();
+		synchronized (derivativeTypes) {
+			  List<WeakReference<ReferenceType>> forRemoval = new ArrayList<WeakReference<ReferenceType>>();
+			  for (WeakReference<ReferenceType> derivativeTypeReference: derivativeTypes) {
+				  ReferenceType derivativeType = derivativeTypeReference.get();
+				  if (derivativeType==null) {
+					  forRemoval.add(derivativeTypeReference);
+				  } else {
+					  if (derivativeType.getTypekind()!=newRt.getTypekind()) {
+						  continue; // cannot be this one
+					  }
+					  if (equal2(newRt.getTypeParameters(),derivativeType.getTypeParameters())) {
+						  if (TypeMap.useExpendableMap) {
+							  throw new IllegalStateException();
+						  }
+					  }
 				  }
 			  }
-		  }
-	  }
-	  derivativeTypes.removeAll(forRemoval);
+			  derivativeTypes.removeAll(forRemoval);
+		}
 	}
 	
 	private boolean equal2(UnresolvedType[] typeParameters, UnresolvedType[] resolvedParameters) {
@@ -915,16 +919,18 @@ public class ReferenceType extends ResolvedType {
 			((AbstractReferenceTypeDelegate) delegate).setSourceContext(this.delegate.getSourceContext());
 		}
 		this.delegate = delegate;
-		List<WeakReference<ReferenceType>> forRemoval = new ArrayList<WeakReference<ReferenceType>>();
-		for (WeakReference<ReferenceType> derivativeRef : derivativeTypes) {
-			ReferenceType derivative = derivativeRef.get();
-			if (derivative!=null) {
-				derivative.setDelegate(delegate);
-			} else {
-				forRemoval.add(derivativeRef);
+		synchronized (derivativeTypes) {
+			List<WeakReference<ReferenceType>> forRemoval = new ArrayList<WeakReference<ReferenceType>>();
+			for (WeakReference<ReferenceType> derivativeRef : derivativeTypes) {
+				ReferenceType derivative = derivativeRef.get();
+				if (derivative!=null) {
+					derivative.setDelegate(delegate);
+				} else {
+					forRemoval.add(derivativeRef);
+				}
 			}
+			derivativeTypes.removeAll(forRemoval);
 		}
-		derivativeTypes.removeAll(forRemoval);
 
 		// If we are raw, we have a generic type - we should ensure it uses the
 		// same delegate
@@ -1092,10 +1098,12 @@ public class ReferenceType extends ResolvedType {
 				newInterfaces = newNewInterfaces;
 			}
 			if (this.isGenericType()) {
-				for (WeakReference<ReferenceType> derivativeTypeRef : derivativeTypes) {
-					ReferenceType derivativeType = derivativeTypeRef.get();
-					if (derivativeType!=null) {
-						derivativeType.parameterizedInterfaces.clear();
+				synchronized (derivativeTypes) {
+					for (WeakReference<ReferenceType> derivativeTypeRef : derivativeTypes) {
+						ReferenceType derivativeType = derivativeTypeRef.get();
+						if (derivativeType!=null) {
+							derivativeType.parameterizedInterfaces.clear();
+						}
 					}
 				}
 			}
@@ -1125,21 +1133,23 @@ public class ReferenceType extends ResolvedType {
 	 * @return an existing derivative type or null if there isn't one
 	 */
 	public ReferenceType findDerivativeType(ResolvedType[] typeParameters) {
-		List<WeakReference<ReferenceType>> forRemoval = new ArrayList<WeakReference<ReferenceType>>();
-		for (WeakReference<ReferenceType> derivativeTypeRef: derivativeTypes) {
-			ReferenceType derivativeType = derivativeTypeRef.get();
-			if (derivativeType==null) {
-				forRemoval.add(derivativeTypeRef);
-			} else {
-				if (derivativeType.isRawType()) {
-					continue;
-				}
-				if (equal(derivativeType.typeParameters,typeParameters)) {
-					return derivativeType; // this escape route wont remove the empty refs
+		synchronized (derivativeTypes) {
+			List<WeakReference<ReferenceType>> forRemoval = new ArrayList<WeakReference<ReferenceType>>();
+			for (WeakReference<ReferenceType> derivativeTypeRef: derivativeTypes) {
+				ReferenceType derivativeType = derivativeTypeRef.get();
+				if (derivativeType==null) {
+					forRemoval.add(derivativeTypeRef);
+				} else {
+					if (derivativeType.isRawType()) {
+						continue;
+					}
+					if (equal(derivativeType.typeParameters,typeParameters)) {
+						return derivativeType; // this escape route wont remove the empty refs
+					}
 				}
 			}
+			derivativeTypes.removeAll(forRemoval);
 		}
-		derivativeTypes.removeAll(forRemoval);
 		return null;
 	}
 
