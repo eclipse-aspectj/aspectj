@@ -2204,8 +2204,8 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 			ClassParser parser = new ClassParser(f.toString());
 			return world.buildBcelDelegate(referenceType, parser.parse(), true, false);
 		} catch (IOException e) {
-			System.err.println("Failed to recover " + referenceType);
-			e.printStackTrace();
+			IMessage msg = new Message("Failed to recover " + referenceType, referenceType.getSourceLocation(), false);
+			buildManager.handler.handleMessage(msg);
 		}
 		return null;
 	}
