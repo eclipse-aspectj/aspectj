@@ -1,0 +1,17 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="bugs174/pr413378" title="super itd ctor">
+		<compile files="Code.java" options="-1.5 -showWeaveInfo">
+			<message kind="weave" text="Type 'Child' (Code.java) has intertyped constructor from 'MyTest' (Code.java:'void Child.&lt;init&gt;(java.lang.String, int)')"/>
+		</compile>
+		<run class="Code">
+		<stdout>
+		<line text="Get Age:50"/>
+		<line text="Child Name:Andy"/>
+		</stdout>
+		</run>
+	</ajc-test>
+
+</suite>

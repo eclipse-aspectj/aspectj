@@ -1594,12 +1594,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 	private void addNeededSuperCallMethods(BcelClassWeaver weaver, ResolvedType onType, Set<ResolvedMember> neededSuperCalls) {
 		LazyClassGen gen = weaver.getLazyClassGen();
-
-		for (Iterator<ResolvedMember> iter = neededSuperCalls.iterator(); iter.hasNext();) {
-			ResolvedMember superMethod = iter.next();
+		for (ResolvedMember superMethod: neededSuperCalls) {
 			if (weaver.addDispatchTarget(superMethod)) {
-				// System.err.println("super type: " +
-				// superMethod.getDeclaringType() + ", " + gen.getType());
+				// System.err.println("super type: " + superMethod.getDeclaringType() + ", " + gen.getType());
 				boolean isSuper = !superMethod.getDeclaringType().equals(gen.getType());
 				String dispatchName;
 				if (isSuper) {
@@ -1609,7 +1606,6 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				}
 				superMethod = superMethod.resolve(weaver.getWorld());
 				LazyMethodGen dispatcher = makeDispatcher(gen, dispatchName, superMethod, weaver.getWorld(), isSuper);
-
 				weaver.addLazyMethodGen(dispatcher);
 			}
 		}
@@ -1773,6 +1769,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		// don't forget to return!!
 		body.append(InstructionConstants.RETURN);
 
+		addNeededSuperCallMethods(weaver, onType, munger.getSuperMethodsCalled());
+		
 		return true;
 	}
 
