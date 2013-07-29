@@ -575,8 +575,8 @@ public class AspectDeclaration extends TypeDeclaration {
 
 				BranchLabel instanceFound = new BranchLabel(codeStream);
 
-				ExceptionLabel anythingGoesWrong = new ExceptionLabel(codeStream, world
-						.makeTypeBinding(UnresolvedType.JL_EXCEPTION));
+				TypeBinding exceptionTypeBinding = world.makeTypeBinding(UnresolvedType.JL_EXCEPTION);
+				ExceptionLabel anythingGoesWrong = new ExceptionLabel(codeStream, exceptionTypeBinding);
 				anythingGoesWrong.placeStart();
 				codeStream.aload_0();
 				codeStream.invoke(Opcodes.OPC_invokestatic,
@@ -604,7 +604,7 @@ public class AspectDeclaration extends TypeDeclaration {
 				codeStream.areturn();
 				anythingGoesWrong.placeEnd();
 				anythingGoesWrong.place();
-
+				codeStream.pushExceptionOnStack(exceptionTypeBinding); // For stackmap computation to behave
 				codeStream.astore_1();
 				codeStream.new_(world.makeTypeBinding(AjcMemberMaker.NO_ASPECT_BOUND_EXCEPTION));
 
@@ -790,7 +790,8 @@ public class AspectDeclaration extends TypeDeclaration {
 						.makeTypeBinding(UnresolvedType.JL_CLASS), Modifier.PUBLIC, true);
 				codeStream.record(theTypeVar);
 				theTypeVar.recordInitializationStartPC(0);
-				ExceptionLabel exc = new ExceptionLabel(codeStream, world.makeTypeBinding(UnresolvedType.JL_EXCEPTION));
+				TypeBinding exceptionTypeBinding = world.makeTypeBinding(UnresolvedType.JL_EXCEPTION);
+				ExceptionLabel exc = new ExceptionLabel(codeStream, exceptionTypeBinding);
 				exc.placeStart();
 				codeStream.aload_0();
 				codeStream.ldc(NameMangler.perTypeWithinLocalAspectOf(typeX));
@@ -830,6 +831,7 @@ public class AspectDeclaration extends TypeDeclaration {
 				exc.placeEnd();
 				codeStream.areturn();
 				exc.place();
+				codeStream.pushExceptionOnStack(exceptionTypeBinding); // For stackmap computation to behave
 				codeStream.astore_1();
 				// this just returns null now - the old version used to throw the caught exception!
 				codeStream.aconst_null();

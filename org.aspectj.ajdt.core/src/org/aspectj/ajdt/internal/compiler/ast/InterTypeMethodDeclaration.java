@@ -27,6 +27,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.Opcodes;
+import org.aspectj.org.eclipse.jdt.internal.compiler.flow.FlowContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.flow.FlowInfo;
 import org.aspectj.org.eclipse.jdt.internal.compiler.flow.InitializationFlowContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
@@ -77,11 +78,17 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		return (declaredModifiers & ClassFileConstants.AccFinal) != 0;
 	}
 
-	public void analyseCode(ClassScope currentScope, InitializationFlowContext flowContext, FlowInfo flowInfo) {
+//	public boolean isAbstract() {
+//		boolean b = (declaredModifiers & ClassFileConstants.AccAbstract) != 0;
+//		return b;//super.isAbstract();
+//	}
+
+	@Override
+	public void analyseCode(ClassScope classScope, FlowContext flowContext, FlowInfo flowInfo) {
 		if (Modifier.isAbstract(declaredModifiers))
 			return;
 
-		super.analyseCode(currentScope, flowContext, flowInfo);
+		super.analyseCode(classScope, flowContext, flowInfo);
 	}
 
 	public void resolve(ClassScope upperScope) {

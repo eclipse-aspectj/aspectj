@@ -55,6 +55,10 @@ public class AsmBuilderTest extends TestCase {
 			public char[] getFileName() { 
 				return null;
 			}
+
+			public boolean ignoreOptionalProblems() {
+				return false;
+			}
 			
 		};
 		TypeDeclaration local = new TypeDeclaration(new CompilationResult(cu, 0, 0, 0));

@@ -1,0 +1,25 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="bugs180/firstprogram" title="first advised java 8 code">
+		<compile files="C.java" options="-1.8">
+		</compile>
+		<run class="C">
+		<stdout>
+		<line text="Clazz staticinitialization(I.&lt;clinit&gt;)"/>
+		<line text="Clazz staticinitialization(C.&lt;clinit&gt;)"/>
+		<line text="I.foo running"/>
+		<line text="ABC"/>
+		<line text="hello world!"/>
+		<line text="Clazz staticinitialization(MyClass.&lt;clinit&gt;)"/>
+		<line text="Clazz staticinitialization(Utils.&lt;clinit&gt;)"/>
+		<line text="1"/>
+		<line text="22"/>
+		<line text="333"/>
+		<line text="4444"/>
+		</stdout>
+		</run>
+	</ajc-test>
+
+</suite>

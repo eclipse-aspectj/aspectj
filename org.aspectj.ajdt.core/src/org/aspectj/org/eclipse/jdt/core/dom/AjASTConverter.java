@@ -2189,7 +2189,7 @@ public class AjASTConverter extends ASTConverter {
 			if (this.resolveBindings) {
 				recordNodes(classInstanceCreation, allocation);
 			}
-			removeTrailingCommentFromExpressionEndingWithAParen(classInstanceCreation);
+//			removeTrailingCommentFromExpressionEndingWithAParen(classInstanceCreation);
 			return classInstanceCreation;
 		}
 	}
@@ -2868,7 +2868,7 @@ public class AjASTConverter extends ASTConverter {
 			length = typeReference.sourceEnd - typeReference.sourceStart + 1;
 			// need to find out if this is an array type of primitive types or not
 			if (isPrimitiveType(name)) {
-				int end = retrieveEndOfElementTypeNamePosition(sourceStart, sourceStart + length);
+				int end = retrieveEndOfElementTypeNamePosition(sourceStart, sourceStart + length)[1];
 				if (end == -1) {
 					end = sourceStart + length - 1;
 				}
@@ -2880,7 +2880,7 @@ public class AjASTConverter extends ASTConverter {
 				ParameterizedSingleTypeReference parameterizedSingleTypeReference = (ParameterizedSingleTypeReference) typeReference;
 				final SimpleName simpleName = new SimpleName(this.ast);
 				simpleName.internalSetIdentifier(new String(name));
-				int end = retrieveEndOfElementTypeNamePosition(sourceStart, sourceStart + length);
+				int end = retrieveEndOfElementTypeNamePosition(sourceStart, sourceStart + length)[1];
 				if (end == -1) {
 					end = sourceStart + length - 1;
 				}
@@ -2926,7 +2926,7 @@ public class AjASTConverter extends ASTConverter {
 				simpleName.internalSetIdentifier(new String(name));
 				// we need to search for the starting position of the first brace in order to set the proper length
 				// PR http://dev.eclipse.org/bugs/show_bug.cgi?id=10759
-				int end = retrieveEndOfElementTypeNamePosition(sourceStart, sourceStart + length);
+				int end = retrieveEndOfElementTypeNamePosition(sourceStart, sourceStart + length)[1];
 				if (end == -1) {
 					end = sourceStart + length - 1;
 				}
@@ -3620,32 +3620,41 @@ public class AjASTConverter extends ASTConverter {
 	}
 
 	/**
-	 * This method is used to retrieve the position just before the left bracket.
+	 * This method is used to retrieve the start and end position of a name or primitive type token.
 	 * 
-	 * @return int the dimension found, -1 if none
+	 * @return int[] a single dimensional array, with two elements, for the start and end positions of the name respectively
 	 */
-	protected int retrieveEndOfElementTypeNamePosition(int start, int end) {
+	protected int[] retrieveEndOfElementTypeNamePosition(int start, int end) {
 		this.scanner.resetTo(start, end);
+		boolean isAnnotation = false;
 		try {
 			int token;
 			while ((token = this.scanner.getNextToken()) != TerminalTokens.TokenNameEOF) {
-				switch (token) {
-				case TerminalTokens.TokenNameIdentifier:
-				case TerminalTokens.TokenNamebyte:
-				case TerminalTokens.TokenNamechar:
-				case TerminalTokens.TokenNamedouble:
-				case TerminalTokens.TokenNamefloat:
-				case TerminalTokens.TokenNameint:
-				case TerminalTokens.TokenNamelong:
-				case TerminalTokens.TokenNameshort:
-				case TerminalTokens.TokenNameboolean:
-					return this.scanner.currentPosition - 1;
+				switch(token) {
+					case TerminalTokens.TokenNameAT:
+						isAnnotation = true;
+						break;
+					case TerminalTokens.TokenNameIdentifier:
+						if (isAnnotation) {
+							isAnnotation = false;
+							break;
+						}
+						//$FALL-THROUGH$
+					case TerminalTokens.TokenNamebyte:
+					case TerminalTokens.TokenNamechar:
+					case TerminalTokens.TokenNamedouble:
+					case TerminalTokens.TokenNamefloat:
+					case TerminalTokens.TokenNameint:
+					case TerminalTokens.TokenNamelong:
+					case TerminalTokens.TokenNameshort:
+					case TerminalTokens.TokenNameboolean:
+						return new int[]{this.scanner.startPosition, this.scanner.currentPosition - 1};
 				}
 			}
-		} catch (InvalidInputException e) {
+		} catch(InvalidInputException e) {
 			// ignore
 		}
-		return -1;
+		return new int[]{-1, -1};
 	}
 
 	/**

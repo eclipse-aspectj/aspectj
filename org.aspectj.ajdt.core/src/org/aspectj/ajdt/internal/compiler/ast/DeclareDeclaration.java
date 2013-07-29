@@ -55,7 +55,7 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 			declarationSourceEnd = sourceEnd = declareDecl.getEnd();
 		}
 		// ??? we might need to set parameters to be empty
-		this.returnType = TypeReference.baseTypeReference(T_void, 0);
+		this.returnType = TypeReference.baseTypeReference(T_void, 0, null);
 	}
 
 	public void addAtAspectJAnnotations() {

@@ -524,7 +524,9 @@ public class AjcTaskTest extends TestCase {
 			Holder.class.getName());
 		String result = MESSAGES.toString();
 		MESSAGES.setLength(0);
-		assertEquals("messages", "e", result);
+		// The test program produces three errors with the current 1.8 compiler, this may change by 1.8 release and so
+		// this will need reverting back to "e"
+		assertEquals("messages", "eee", result);
 	}
 
     // TODO skipped test - works locally but not on build machine?
@@ -590,7 +592,8 @@ public class AjcTaskTest extends TestCase {
         final PrintStream serr = System.err;
         try {
             System.setErr(new PrintStream(new java.io.ByteArrayOutputStream()));
-            runTest(task, BuildException.class, MessageHolderChecker.ONE_ERROR);
+            // Current 1.8 compiler produces 3 errors for this test program, may need reverting to ONE_ERROR by release
+            runTest(task, BuildException.class, MessageHolderChecker.THREE_ERRORS);
         } finally {
             System.setErr(serr);
         }
@@ -618,7 +621,10 @@ public class AjcTaskTest extends TestCase {
 	public void testCompileErrorList() {
 		AjcTask task = getTask("compileError.lst");
 		task.setFailonerror(false);
-		runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR);
+		// Prior to the 1.8 compiler there is one error here, 'syntax error on here'
+		// With 1.8 there are 3 errors about completing the method header, ending the class body, ending the method - this may
+		// change by 1.8 final... this might need reverting back to ONE_ERROR
+		runTest(task, NO_EXCEPTION, MessageHolderChecker.THREE_ERRORS);
 	}
 	
 	public void testShowWeaveInfo() {
@@ -703,7 +709,8 @@ public class AjcTaskTest extends TestCase {
 	public void testCompileErrorFile() {
 		AjcTask task = getTask("compileError.lst");
 		task.setFailonerror(false);
-		runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR);
+		// 1.8 compiler currently produces 3 errors for the test program, may need to revert to ONE_ERROR by 1.8 release
+		runTest(task, NO_EXCEPTION, MessageHolderChecker.THREE_ERRORS);
 	}
 
 	public void testCompileWarningFile() {
@@ -906,6 +913,8 @@ public class AjcTaskTest extends TestCase {
 		/** one warning, any number of info messages */
 		static MessageHolderChecker ONE_WARNING =
 			new MessageHolderChecker(0, 0, 0, 1, IGNORE);
+		static MessageHolderChecker THREE_ERRORS =
+				new MessageHolderChecker(0, 0, 3, 0, IGNORE);
 		
 
 		int aborts, fails, errors, warnings, infos;

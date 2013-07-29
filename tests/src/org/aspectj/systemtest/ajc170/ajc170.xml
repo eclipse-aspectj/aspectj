@@ -312,7 +312,7 @@
    
    <ajc-test dir="bugs170/language" title="string switch 1">
    	<compile files="StringSwitch.java" options="-1.5">
-   	<message kind="error" line="9" text="Cannot switch on a value of type String for source level below 1.7. Only convertible int values or enum constants are permitted"/>
+   	<message kind="error" line="9" text="Cannot switch on a value of type String for source level below 1.7. Only convertible int values or enum variables are permitted"/>
    	</compile>
    </ajc-test>
 

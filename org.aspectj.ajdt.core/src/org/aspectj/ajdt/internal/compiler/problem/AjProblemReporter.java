@@ -749,7 +749,7 @@ public class AjProblemReporter extends ProblemReporter {
 	// confuse the user
 	public void parseErrorInsertAfterToken(int start, int end, int currentKind, char[] errorTokenSource, String errorTokenName,
 			String expectedToken) {
-		if (expectedToken.equals("privileged")) {
+		if (expectedToken.equals("privileged") || expectedToken.equals("around")) {
 			super.parseErrorNoSuggestion(start, end, currentKind, errorTokenSource, errorTokenName);
 		} else {
 			super.parseErrorInsertAfterToken(start, end, currentKind, errorTokenSource, errorTokenName, expectedToken);

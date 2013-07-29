@@ -1,13 +1,10 @@
 /* *******************************************************************
- * Copyright (c) 2004 IBM Corporation
+ * Copyright (c) 2004,2013 IBM Corporation, contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Adrian Colyer, 
  * ******************************************************************/
 package org.aspectj.testing;
 
@@ -17,18 +14,17 @@ import java.util.List;
 import org.aspectj.tools.ajc.AjcTestCase;
 
 /**
- * @author colyer
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * @author Adrian Colyer
+ * @author Andy Clement
  */
 public class AjcTest {
 	
-	private static boolean is13VMOrGreater = true;
+//	private static boolean is13VMOrGreater = true;
 	private static boolean is14VMOrGreater = true;
 	private static boolean is15VMOrGreater = false;
 	private static boolean is16VMOrGreater = false;
 	private static boolean is17VMOrGreater = false;
+	private static boolean is18VMOrGreater = false;
 	
 	static { // matching logic is also in org.aspectj.util.LangUtil
         String vm = System.getProperty("java.version"); // JLS 20.18.7
@@ -44,7 +40,12 @@ public class AjcTest {
 		} else if (vm.startsWith("1.7")) {
 			is15VMOrGreater = true;
 			is16VMOrGreater = true;
-			is17VMOrGreater=true;
+			is17VMOrGreater = true;
+		} else if (vm.startsWith("1.8")) {
+			is15VMOrGreater = true;
+			is16VMOrGreater = true;
+			is17VMOrGreater = true;
+			is18VMOrGreater = true;
 		}
 	}
 
@@ -87,6 +88,7 @@ public class AjcTest {
 		if (vmLevel.equals("1.5")) canRun = is15VMOrGreater;
 		if (vmLevel.equals("1.6")) canRun = is16VMOrGreater;
 		if (vmLevel.equals("1.7")) canRun = is17VMOrGreater;
+		if (vmLevel.equals("1.8")) canRun = is18VMOrGreater;
 		if (!canRun) {
 			System.out.println("***SKIPPING TEST***" + getTitle()+ " needs " + getVmLevel() 
 					+ ", currently running on " + System.getProperty("java.vm.version"));

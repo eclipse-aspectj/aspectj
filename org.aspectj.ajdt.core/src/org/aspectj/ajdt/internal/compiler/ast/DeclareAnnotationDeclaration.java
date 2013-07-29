@@ -17,6 +17,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.flow.FlowContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.flow.FlowInfo;
 import org.aspectj.org.eclipse.jdt.internal.compiler.flow.InitializationFlowContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
@@ -41,8 +42,9 @@ public class DeclareAnnotationDeclaration extends DeclareDeclaration {
 		symbolicDeclare.setAnnotationLocation(annotation.sourceStart, annotation.sourceEnd);
 	}
 
-	public void analyseCode(ClassScope classScope, InitializationFlowContext initializationContext, FlowInfo flowInfo) {
-		super.analyseCode(classScope, initializationContext, flowInfo);
+	@Override
+	public void analyseCode(ClassScope classScope, FlowContext flowContext, FlowInfo flowInfo) {
+		super.analyseCode(classScope, flowContext, flowInfo);
 
 		if (isRemover) {
 			if (((DeclareAnnotation) declareDecl).getKind() != DeclareAnnotation.AT_FIELD) {

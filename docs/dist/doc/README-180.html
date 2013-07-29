@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.8.0 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2013 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 1.8.0 Readme</h1>
+
+<p>The full list of resolved issues in 1.8.0 is available 
+<a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.8.0;">here</a></h2>.</p>
+
+<ul>
+<li>1.8.0.M1 available 29-Jul-2013
+</ul>
+
+<h2>Overview</h2>
+
+<p>In previous AspectJ major releases the first milestone normally tolerates weaving bytecode for the
+comparable Java level whilst the ability to compile source code for that Java level comes later.
+However, AspectJ 1.8.0.M1 is a Java 8 compiler. So why change the approach this time?  Some 
+consumers of AspectJ are choosing to exploit Java8 library features even though they are not 
+using Java8 language constructs in their source. The Eclipse JDT compiler (in eclipse 4.3) actually
+includes a number of changes to facilitate this (basically compiling with -source 1.7 but on top
+of a 1.8 JRE). The changes are necessary because the 1.8 classes include metadata that the 1.7
+compiler just isn't expecting. For example default method implementations in interfaces. In order
+to support this mode of working AspectJ would need to update to the Eclipse 4.3 compiler. However,
+performing upgrades of the compiler inside AspectJ is non trivial and to avoid doing the
+upgrade to 4.3 and then doing a further upgrade to the Java8 compiler, we decided to jump straight
+to the Java8 compiler which already includes these changes.
+</p>
+
+<h2>Notable changes</h2>
+
+<h3>Java 8 compilation</h3>
+
+<p>AspectJ has been updated to the latest available BETA_JAVA8 support level in the Eclipse Java
+compiler. The BETA_JAVA8 tag chosen was commit #3D6E745.</p>
+<p><b>NOTE:</b>The Java8 libraries are still in flux and changing regularly. If you are going to
+use AspectJ 1.8.0.M1 you must run with a compatible level of Java8. We have been testing with
+beta 97. Code compiled with this compiler is not guaranteed to run on a later JDK level.
+</p>
+<p>AspectJ 1.8.0.M1 will now compile Java 8 code, here is a sample:</p>
+
+<pre><code>
+=== 8< ==== C.java ==== 8< ===
+import java.util.Arrays;
+
+interface I {
+    // Default method
+    default void foo() {
+        System.out.println("ABC");
+    }
+}
+
+public class C implements I{
+    public static void main(String[] args) {
+        new C().foo();
+        // Lambda
+        Runnable r = () -> { System.out.println("hello world!"); };
+        r.run();
+        // Used Java8 b97
+        Arrays.asList(MyClass.doSomething()).forEach((p) -> System.out.println(p));
+    }
+}
+
+aspect X {
+	before(): execution(* I.foo()) {
+   		System.out.println("I.foo running");
+	}
+	before(): staticinitialization(!X) {
+		System.out.println("Clazz "+thisJoinPointStaticPart);
+	}
+}
+
+
+class Utils {
+    public static int compareByLength(String in, String out) {
+        return in.length() - out.length();
+    }
+}
+
+class MyClass {
+    public static String[] doSomething() {
+        String []args = new String[]{"4444","333","22","1"};
+        // Method reference
+        Arrays.sort(args,Utils::compareByLength);
+        return args;
+    }
+}
+=== 8< ==== C.java ==== 8< ===
+</code></pre>
+
+<h4>
+<!-- ============================== -->  
+</body>
+</html>

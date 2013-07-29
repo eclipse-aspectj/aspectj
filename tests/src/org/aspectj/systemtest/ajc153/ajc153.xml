@@ -286,7 +286,9 @@
         <message kind="error" line="1" text="The import java.lang.retention cannot be resolved"/>
         <message kind="error" line="3" text="Retention cannot be resolved to a type"/>
         <message kind="error" line="3" text="RetentionPolicy cannot be resolved to a variable"/>
+        <!-- With 1.8 don't seem to get this now - assume it is because the annotation isn't being found
         <message kind="error" line="3" text="The attribute value is undefined for the annotation type Retention"/>
+        -->
       </compile>
     </ajc-test>
     

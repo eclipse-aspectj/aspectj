@@ -17,8 +17,8 @@
     | |             INVOKESPECIAL java.io.FileInputStream.<init> (Ljava/io/File;)V
     | |             POP
     | catch java.io.IOException -> E0
-    |               GOTO L0
-    |           E0: POP   (line 22)
+    |               GOTO L0   (line 22)
+    |           E0: POP
     |               GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 23)
     |               LDC "bang"
     |               INVOKESTATIC One.aspectOf ()LOne;
