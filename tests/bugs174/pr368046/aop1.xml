@@ -1,0 +1,6 @@
+<aspectj>
+ <aspects>
+  <aspect name="Azpect"/>
+ </aspects>
+ <weaver options="-verbose"/>
+</aspectj>

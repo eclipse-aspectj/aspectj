@@ -23,6 +23,7 @@ import java.util.*;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.Constants;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.Lint.Kind;
@@ -345,6 +346,12 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		world.setOptionalJoinpoints(weaverOption.optionalJoinpoints);
 		world.setPinpointMode(weaverOption.pinpoint);
 		weaver.setReweavableMode(weaverOption.notReWeavable);
+		if (weaverOption.loadersToSkip != null && weaverOption.loadersToSkip.length() > 0) {
+			Aj.loadersToSkip = LangUtil.anySplit(weaverOption.loadersToSkip, ",");
+		}
+		if (Aj.loadersToSkip != null) {
+			MessageUtil.info(world.getMessageHandler(),"no longer creating weavers for these classloaders: "+Aj.loadersToSkip);
+		}
 		world.performExtraConfiguration(weaverOption.xSet);
 		world.setXnoInline(weaverOption.noInline);
 		// AMC - autodetect as per line below, needed for AtAjLTWTests.testLTWUnweavable
