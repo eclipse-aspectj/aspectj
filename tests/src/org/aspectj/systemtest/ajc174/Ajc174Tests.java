@@ -25,6 +25,33 @@ public class Ajc174Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("super itd ctor");
 	}
 	
+	// no exclusion, this is how it should work
+	public void testCLExclusion_pr368046_1_noskippedloaders() {
+		runTest("classloader exclusion - 1");
+	}
+
+	public void testCLExclusion_pr368046_1_syspropset() {
+		try {
+			System.setProperty("aj.weaving.loadersToSkip", "foo");
+			runTest("classloader exclusion - 2");
+		} finally {
+			System.setProperty("aj.weaving.loadersToSkip", "");
+		}
+	}
+
+	// final repeat this test, to confirm no lingering static
+	public void testCLExclusion_pr368046_1_again_noskippedloaders() {
+		runTest("classloader exclusion - 3");
+	}
+	
+	public void testCLExclusion_pr368046_2_usingaopxml() {
+		runTest("classloader exclusion - 4");
+	}
+
+	public void testCLExclusion_pr368046_2_usingaopxmlReal() {
+		runTest("classloader exclusion - 5");
+	}
+	
 	// ---
 
 	public static Test suite() {

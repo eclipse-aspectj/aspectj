@@ -47,6 +47,7 @@ public class Options {
 	private static final String OPTIONVALUED_joinpoints = "-Xjoinpoints:";
 	private static final String OPTIONVALUED_Xset = "-Xset:";
 	private static final String OPTION_timers = "-timers";
+	private static final String OPTIONVALUED_loadersToSkip = "-loadersToSkip:";
 
 	public static WeaverOption parse(String options, ClassLoader laoder, IMessageHandler imh) {
 		WeaverOption weaverOption = new WeaverOption(imh);
@@ -55,12 +56,12 @@ public class Options {
 			return weaverOption;
 		}
 		// the first option wins
-		List flags = LangUtil.anySplit(options, " ");
+		List<String> flags = LangUtil.anySplit(options, " ");
 		Collections.reverse(flags);
 
 		// do a first round on the message handler since it will report the options themselves
-		for (Iterator iterator = flags.iterator(); iterator.hasNext();) {
-			String arg = (String) iterator.next();
+		for (Iterator<String> iterator = flags.iterator(); iterator.hasNext();) {
+			String arg = iterator.next();
 			if (arg.startsWith(OPTIONVALUED_messageHandler)) {
 				if (arg.length() > OPTIONVALUED_messageHandler.length()) {
 					String handlerClass = arg.substring(OPTIONVALUED_messageHandler.length()).trim();
@@ -76,7 +77,7 @@ public class Options {
 		}
 
 		// configure the other options
-		for (Iterator iterator = flags.iterator(); iterator.hasNext();) {
+		for (Iterator<String> iterator = flags.iterator(); iterator.hasNext();) {
 			String arg = (String) iterator.next();
 			if (arg.equals(OPTION_15)) {
 				weaverOption.java5 = true;
@@ -122,6 +123,11 @@ public class Options {
 				}
 			} else if (arg.equalsIgnoreCase(OPTION_timers)) {
 				weaverOption.timers = true;
+			} else if (arg.startsWith(OPTIONVALUED_loadersToSkip)) {
+				if (arg.length() > OPTIONVALUED_loadersToSkip.length()) {
+					String value = arg.substring(OPTIONVALUED_loadersToSkip.length()).trim();
+					weaverOption.loadersToSkip = value;
+				}
 			} else {
 				weaverOption.messageHandler.handleMessage(new Message("Cannot configure weaver with option '" + arg
 						+ "': unknown option", IMessage.WARNING, null, null));
@@ -164,6 +170,7 @@ public class Options {
 		String lint;
 		String lintFile;
 		String xSet;
+		String loadersToSkip;
 
 		public WeaverOption(IMessageHandler imh) {
 			// messageHandler = new DefaultMessageHandler();//default

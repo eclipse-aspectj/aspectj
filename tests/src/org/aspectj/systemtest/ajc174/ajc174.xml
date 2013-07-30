@@ -13,5 +13,98 @@
 		</stdout>
 		</run>
 	</ajc-test>
+	
+	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 1">
+	  <compile files="Azpect.java" outjar="foo.jar"/>
+      <compile files="Code.java" classpath="$sandbox/foo.jar"/>
+      <run class="Code" classpath="$sandbox/foo.jar" ltw="aop1.xml">
+        <stdout>
+          <line text="advice"/>
+          <line text="running"/>
+ 	    </stdout>
+ 	    <stderr>
+ 	    <line text="AspectJ Weaver"/>
+ 	    <line text="register classloader"/>
+ 	    <line text="using configuration"/>
+ 	    <line text="register aspect"/>
+ 	    <line text="processing reweavable"/>
+ 	    </stderr>
+      </run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 2">
+	  <compile files="Azpect.java" outjar="foo.jar"/>
+      <compile files="Code.java" classpath="$sandbox/foo.jar"/>
+      <run class="Code" classpath="$sandbox/foo.jar" ltw="aop1.xml">
+        <stdout>
+          <line text="advice"/>
+          <line text="running"/>
+ 	    </stdout>
+ 	    <stderr>
+ 	    <line text="AspectJ Weaver"/>
+ 	    <line text="register classloader"/>
+ 	    <line text="using configuration"/>
+ 	    <line text="no longer creating weavers for these classloaders: [foo]"/>
+ 	    <line text="register aspect"/>
+ 	    <line text="processing reweavable"/>
+ 	    </stderr>
+      </run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 3">
+	  <compile files="Azpect.java" outjar="foo.jar"/>
+      <compile files="Code.java" classpath="$sandbox/foo.jar"/>
+      <run class="Code" classpath="$sandbox/foo.jar" ltw="aop1.xml">
+        <stdout>
+          <line text="advice"/>
+          <line text="running"/>
+ 	    </stdout>
+ 	    <stderr>
+ 	    <line text="AspectJ Weaver"/>
+ 	    <line text="register classloader"/>
+ 	    <line text="using configuration"/>
+ 	    <line text="register aspect"/>
+ 	    <line text="processing reweavable"/>
+ 	    </stderr>
+      </run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 4">
+	  <compile files="Azpect.java" outjar="foo.jar"/>
+      <compile files="Code.java" classpath="$sandbox/foo.jar"/>
+      <run class="Code" classpath="$sandbox/foo.jar" ltw="aop2.xml">
+        <stdout>
+          <line text="advice"/>
+          <line text="running"/>
+ 	    </stdout>
+ 	    <stderr>
+ 	    <line text="AspectJ Weaver"/>
+ 	    <line text="register classloader"/>
+ 	    <line text="using configuration"/>
+ 	    <line text="no longer creating weavers for these classloaders: [com.foo.Bar]"/>
+ 	    <line text="register aspect"/>
+ 	    <line text="processing reweavable"/>
+ 	    </stderr>
+      </run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 5">
+	  <compile files="Azpect.java" outjar="foo.jar"/>
+      <compile files="Code.java" classpath="$sandbox/foo.jar"/>
+      <run class="Code" classpath="$sandbox/foo.jar" ltw="aop3.xml">
+        <stdout>
+          <line text="advice"/>
+          <line text="running"/>
+ 	    </stdout>
+ 	    <stderr>
+ 	    <line text="AspectJ Weaver"/>
+ 	    <line text="register classloader"/>
+ 	    <line text="using configuration"/>
+ 	    <line text="no longer creating weavers for these classloaders: [org.aspectj.weaver.loadtime.WeavingURLClassLoader]"/>
+ 	    <line text="register aspect"/>
+ 	    <line text="processing reweavable"/>
+ 	    </stderr>
+      </run>
+	</ajc-test>
 
 </suite>
