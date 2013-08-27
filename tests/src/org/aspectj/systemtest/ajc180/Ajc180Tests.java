@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc180Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
+	public void testAnnosWith18Flags_415957() {
+		runTest("annotations with 1.8 flags");
+	}
+	
 	public void testJava8Code() throws Exception {
 		runTest("first advised java 8 code");
 	}

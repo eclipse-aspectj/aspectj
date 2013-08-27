@@ -2,6 +2,12 @@
 
 <suite>
 
+	<ajc-test dir="bugs180/415957" title="annotations with 1.8 flags">
+		<compile files="MyAspect.aj MyClass.java" options="-1.8 -showWeaveInfo">
+			<message kind="weave" text="Join point 'method-execution(void MyClass.method())' in Type 'MyClass' (MyClass.java:3) advised by before advice from 'MyAspect' (MyAspect.aj:5)"/>
+		</compile>
+	</ajc-test>
+
 	<ajc-test dir="bugs180/firstprogram" title="first advised java 8 code">
 		<compile files="C.java" options="-1.8">
 		</compile>
