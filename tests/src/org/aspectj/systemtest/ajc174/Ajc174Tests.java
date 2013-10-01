@@ -21,6 +21,22 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc174Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
+	public void testAnnotatedItd_418129() throws Exception {
+		runTest("annotated itd");
+	}
+	
+	public void testAnnotatedItd_418129_2() throws Exception {
+		runTest("annotated itd 2");
+	}
+	
+	public void testAnnotatedItd_418129_3() throws Exception {
+		runTest("annotated itd 3");
+	}
+	
+	public void testAnnotatedItd_418129_4() throws Exception {
+		runTest("annotated itd 4");
+	}
+
 	public void testSuperItdCtor_413378() throws Exception {
 		runTest("super itd ctor");
 	}

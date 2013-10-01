@@ -345,6 +345,22 @@ public class BcelWorld extends World implements Repository {
 		return ret;
 	}
 
+	public static Type[] makeBcelTypes(String[] types) {
+		if (types == null || types.length==0 ) {
+			return null;
+		}
+		Type[] ret = new Type[types.length];
+		for (int i=0, len=types.length; i<len; i++) {
+			ret[i] = makeBcelType(types[i]);
+		}
+		return ret;
+	}
+	
+	public static Type makeBcelType(String type) {
+		return Type.getType(type);
+	}
+
+
 	static String[] makeBcelTypesAsClassNames(UnresolvedType[] types) {
 		String[] ret = new String[types.length];
 		for (int i = 0, len = types.length; i < len; i++) {
@@ -1239,4 +1255,5 @@ public class BcelWorld extends World implements Repository {
 	public void demote(ResolvedType type) {
 		typeMap.demote(type);
 	}
+
 }
