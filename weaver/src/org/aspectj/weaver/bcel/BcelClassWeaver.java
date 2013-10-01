@@ -68,6 +68,7 @@ import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.IClassWeaver;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.MissingResolvedTypeWithKnownSignature;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.NewConstructorTypeMunger;
@@ -532,8 +533,7 @@ class BcelClassWeaver implements IClassWeaver {
 		// finally, if we changed, we add in the introduced methods.
 		if (isChanged) {
 			clazz.getOrCreateWeaverStateInfo(inReweavableMode);
-			weaveInAddedMethods(); // FIXME asc are these potentially affected
-			// by declare annotation?
+			weaveInAddedMethods();
 		}
 
 		if (inReweavableMode) {
@@ -893,15 +893,91 @@ class BcelClassWeaver implements IClassWeaver {
 			isChanged = weaveAtMethodOnITDSRepeatedly(allDecams, itdMethodsCtors, reportedProblems);
 		}
 
-		// deal with all the other methods...
-		List<LazyMethodGen> members = clazz.getMethodGens();
 		List<DeclareAnnotation> decaMs = getMatchingSubset(allDecams, clazz.getType());
 		if (decaMs.isEmpty()) {
 			return false; // nothing to do
 		}
+		
+		Set<DeclareAnnotation> unusedDecams = new HashSet<DeclareAnnotation>();
+		unusedDecams.addAll(decaMs);
+
+		// These methods may have been targeted with declare annotation.  Example: ITD on an interface
+		// where the top most implementor gets a real method.  The top most implementor method
+		// is an 'addedLazyMethodGen'
+		if (addedLazyMethodGens!=null) {
+			for (LazyMethodGen method: addedLazyMethodGens) {
+				// They have no resolvedmember of their own, conjure one up for matching purposes
+				ResolvedMember resolvedmember = 
+					new ResolvedMemberImpl(ResolvedMember.METHOD,method.getEnclosingClass().getType(),method.getAccessFlags(),
+							BcelWorld.fromBcel(method.getReturnType()),method.getName(),
+							BcelWorld.fromBcel(method.getArgumentTypes()),UnresolvedType.forNames(method.getDeclaredExceptions()));
+				resolvedmember.setAnnotationTypes(method.getAnnotationTypes());
+				resolvedmember.setAnnotations(method.getAnnotations());
+
+				List<DeclareAnnotation> worthRetrying = new ArrayList<DeclareAnnotation>();
+				boolean modificationOccured = false;
+				for (DeclareAnnotation decam: decaMs) {
+					if (decam.matches(resolvedmember, world)) {
+						if (doesAlreadyHaveAnnotation(resolvedmember, decam, reportedProblems,false)) {
+							// remove the declare @method since don't want an error when the annotation is already there
+							unusedDecams.remove(decam);
+							continue;
+						}
+
+						AnnotationGen a = ((BcelAnnotation) decam.getAnnotation()).getBcelAnnotation();
+						// create copy to get the annotation type into the right constant pool
+						AnnotationAJ aj = new BcelAnnotation(new AnnotationGen(a, clazz.getConstantPool(), true),world);
+						method.addAnnotation(aj);
+						resolvedmember.addAnnotation(decam.getAnnotation());
+
+						AsmRelationshipProvider.addDeclareAnnotationMethodRelationship(decam.getSourceLocation(),
+								clazz.getName(), resolvedmember, world.getModelAsAsmManager());
+						reportMethodCtorWeavingMessage(clazz, resolvedmember, decam, method.getDeclarationLineNumber());
+						isChanged = true;
+						modificationOccured = true;
+						unusedDecams.remove(decam);
+					} else if (!decam.isStarredAnnotationPattern()) {
+						// an annotation is specified that might be put on by a subsequent decaf
+						worthRetrying.add(decam); 
+					}
+				}
+
+				// Multiple secondary passes
+				while (!worthRetrying.isEmpty() && modificationOccured) {
+					modificationOccured = false;
+					// lets have another go
+					List<DeclareAnnotation> forRemoval = new ArrayList<DeclareAnnotation>();
+					for (DeclareAnnotation decam : worthRetrying) {
+						if (decam.matches(resolvedmember, world)) {
+							if (doesAlreadyHaveAnnotation(resolvedmember, decam, reportedProblems,false)) {
+								// remove the declare @method since don't
+								// want an error when
+								// the annotation is already there
+								unusedDecams.remove(decam);
+								continue; // skip this one...
+							}
+							AnnotationGen a = ((BcelAnnotation) decam.getAnnotation()).getBcelAnnotation();
+							// create copy to get the annotation type into the right constant pool
+							AnnotationAJ aj = new BcelAnnotation(new AnnotationGen(a, clazz.getConstantPool(), true),world);
+							method.addAnnotation(aj);
+							resolvedmember.addAnnotation(decam.getAnnotation());
+							AsmRelationshipProvider.addDeclareAnnotationMethodRelationship(decam.getSourceLocation(),
+									clazz.getName(), resolvedmember, world.getModelAsAsmManager());// getMethod());
+							isChanged = true;
+							modificationOccured = true;
+							forRemoval.add(decam);
+							unusedDecams.remove(decam);
+						}
+					}
+					worthRetrying.removeAll(forRemoval);
+				}
+			}
+		}
+		
+		
+		// deal with all the other methods...
+		List<LazyMethodGen> members = clazz.getMethodGens();
 		if (!members.isEmpty()) {
-			Set<DeclareAnnotation> unusedDecams = new HashSet<DeclareAnnotation>();
-			unusedDecams.addAll(decaMs);
 			for (int memberCounter = 0; memberCounter < members.size(); memberCounter++) {
 				LazyMethodGen mg = members.get(memberCounter);
 				if (!mg.getName().startsWith(NameMangler.PREFIX)) {
@@ -913,7 +989,7 @@ class BcelClassWeaver implements IClassWeaver {
 					for (DeclareAnnotation decaM : decaMs) {
 
 						if (decaM.matches(mg.getMemberView(), world)) {
-							if (doesAlreadyHaveAnnotation(mg.getMemberView(), decaM, reportedProblems)) {
+							if (doesAlreadyHaveAnnotation(mg.getMemberView(), decaM, reportedProblems,true)) {
 								// remove the declare @method since don't want
 								// an error when the annotation is already there
 								unusedDecams.remove(decaM);
@@ -954,7 +1030,7 @@ class BcelClassWeaver implements IClassWeaver {
 						List<DeclareAnnotation> forRemoval = new ArrayList<DeclareAnnotation>();
 						for (DeclareAnnotation decaM : worthRetrying) {
 							if (decaM.matches(mg.getMemberView(), world)) {
-								if (doesAlreadyHaveAnnotation(mg.getMemberView(), decaM, reportedProblems)) {
+								if (doesAlreadyHaveAnnotation(mg.getMemberView(), decaM, reportedProblems,true)) {
 									// remove the declare @method since don't
 									// want an error when
 									// the annotation is already there
@@ -1347,7 +1423,7 @@ class BcelClassWeaver implements IClassWeaver {
 								unusedDecafs.remove(decaf);
 							} else {
 								if (!dontAddTwice(decaf, dontAddMeTwice)) {
-									if (doesAlreadyHaveAnnotation(field, decaf, reportedProblems)) {
+									if (doesAlreadyHaveAnnotation(field, decaf, reportedProblems,true )) {
 										// remove the declare @field since don't want an error when the annotation is already there
 										unusedDecafs.remove(decaf);
 										continue;
@@ -1389,7 +1465,7 @@ class BcelClassWeaver implements IClassWeaver {
 								} else {
 									// below code is for recursive things
 									unusedDecafs.remove(decaF);
-									if (doesAlreadyHaveAnnotation(field, decaF, reportedProblems)) {
+									if (doesAlreadyHaveAnnotation(field, decaF, reportedProblems,true)) {
 										continue;
 									}
 									field.addAnnotation(decaF.getAnnotation());
@@ -1486,9 +1562,9 @@ class BcelClassWeaver implements IClassWeaver {
 	/**
 	 * Check if a resolved member (field/method/ctor) already has an annotation, if it does then put out a warning and return true
 	 */
-	private boolean doesAlreadyHaveAnnotation(ResolvedMember rm, DeclareAnnotation deca, List<Integer> reportedProblems) {
+	private boolean doesAlreadyHaveAnnotation(ResolvedMember rm, DeclareAnnotation deca, List<Integer> reportedProblems, boolean reportError) {
 		if (rm.hasAnnotation(deca.getAnnotationType())) {
-			if (world.getLint().elementAlreadyAnnotated.isEnabled()) {
+			if (reportError && world.getLint().elementAlreadyAnnotated.isEnabled()) {
 				Integer uniqueID = new Integer(rm.hashCode() * deca.hashCode());
 				if (!reportedProblems.contains(uniqueID)) {
 					reportedProblems.add(uniqueID);

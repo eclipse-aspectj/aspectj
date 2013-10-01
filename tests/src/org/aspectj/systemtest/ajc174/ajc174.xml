@@ -2,6 +2,67 @@
 
 <suite>
 
+	<ajc-test dir="bugs174/pr418129" title="annotated itd">
+		<compile files="Target.java" options="-1.5 -showWeaveInfo">
+			<message kind="weave" text="Type 'Behavior' (Target.java) has intertyped method from 'Trait' (Target.java:'java.lang.String Behavior.hello()')"/>
+			<message kind="weave" text="Type 'Target' (Target.java) has intertyped method from 'Trait' (Target.java:'java.lang.String Behavior.hello()')"/>
+			<message kind="weave" text="'public java.lang.String Target.hello()' (Target.java) is annotated with @Tagged method annotation from 'Target$A' (Target.java:18)"/>
+		</compile>
+		<run class="Target">
+		<stdout>
+		<line text="@Tagged()"/>
+		</stdout>
+		</run>
+	</ajc-test>
+	
+	<!-- declared with throws exception -->
+	<ajc-test dir="bugs174/pr418129" title="annotated itd 2">
+		<compile files="Target2.java" options="-1.5 -showWeaveInfo">
+			<message kind="weave" text="Type 'Behavior' (Target2.java) has intertyped method from 'Trait' (Target2.java:'java.lang.String Behavior.hello()')"/>
+			<message kind="weave" text="Type 'Target2' (Target2.java) has intertyped method from 'Trait' (Target2.java:'java.lang.String Behavior.hello()')"/>
+			<message kind="weave" text="'public java.lang.String Target2.hello()' (Target2.java) is annotated with @Tagged method annotation from 'Target2$A' (Target2.java:18)"/>
+		</compile>
+		<run class="Target2">
+		<stdout>
+		<line text="@Tagged()"/>
+		</stdout>
+		</run>
+	</ajc-test>
+	
+	<!-- already annotated with another annotation -->
+	<ajc-test dir="bugs174/pr418129" title="annotated itd 3">
+		<compile files="Target3.java" options="-1.5 -showWeaveInfo">
+			<message kind="weave" text="Type 'Behavior' (Target3.java) has intertyped method from 'Trait' (Target3.java:'java.lang.String Behavior.hello()')"/>
+			<message kind="weave" text="Type 'Target3' (Target3.java) has intertyped method from 'Trait' (Target3.java:'java.lang.String Behavior.hello()')"/>
+			<message kind="weave" text="'public java.lang.String Target3.hello()' (Target3.java) is annotated with @Tagged method annotation from 'Target3$A' (Target3.java:16)"/>
+		</compile>
+		<run class="Target3">
+		<stdout>
+		<line text="2"/>
+		<line text="@Wibble()"/>
+		<line text="@Tagged()"/>
+		</stdout>
+		</run>
+	</ajc-test>
+	
+	<!-- already annotated with the same annotation -->
+	<ajc-test dir="bugs174/pr418129" title="annotated itd 4">
+		<compile files="Target4.java" options="-1.5 -showWeaveInfo">
+			<message kind="weave" text="Type 'Behavior' (Target4.java) has intertyped method from 'Trait' (Target4.java:'java.lang.String Behavior.hello()')"/>
+			<message kind="weave" text="Type 'Target4' (Target4.java) has intertyped method from 'Trait' (Target4.java:'java.lang.String Behavior.hello()')"/>
+			<!--  warning turned off as it gets confusing - when the itd on the interface is hit by a deca -->
+			<!-- 
+			<message kind="warning" text="java.lang.String Target4.hello() - already has an annotation of type Tagged, cannot add a second instance [Xlint:elementAlreadyAnnotated]"/>
+			-->
+		</compile>
+		<run class="Target4">
+		<stdout>
+		<line text="1"/>
+		<line text="@Tagged(value=31)"/>
+		</stdout>
+		</run>
+	</ajc-test>
+	
 	<ajc-test dir="bugs174/pr413378" title="super itd ctor">
 		<compile files="Code.java" options="-1.5 -showWeaveInfo">
 			<message kind="weave" text="Type 'Child' (Code.java) has intertyped constructor from 'MyTest' (Code.java:'void Child.&lt;init&gt;(java.lang.String, int)')"/>

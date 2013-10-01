@@ -124,6 +124,15 @@ public final class LazyMethodGen implements Traceable {
 	List<BcelShadow> matchedShadows;
 	// Used for interface introduction - this is the type of the interface the method is technically on
 	public ResolvedType definingType = null;
+	
+	static class LightweightBcelMethod extends BcelMethod {
+
+		LightweightBcelMethod(BcelObjectType declaringType, Method method) {
+			super(declaringType, method);
+			// TODO Auto-generated constructor stub
+		}
+		
+	}
 
 	public LazyMethodGen(int modifiers, Type returnType, String name, Type[] paramTypes, String[] declaredExceptions,
 			LazyClassGen enclosingClass) {
@@ -303,6 +312,27 @@ public final class LazyMethodGen implements Traceable {
 		} else {
 			memberView.addParameterAnnotation(parameterNumber, anno);
 		}
+	}
+	
+	public ResolvedType[] getAnnotationTypes() {
+		initialize();
+		if (memberView == null && newAnnotations!=null && newAnnotations.size()!=0) {
+			// TODO Ignoring removed annotations for now
+			ResolvedType[] annotationTypes = new ResolvedType[newAnnotations.size()];
+			for (int a=0,len=newAnnotations.size();a<len;a++) {
+				annotationTypes[a] = newAnnotations.get(a).getType();
+			}
+			return annotationTypes;
+		}
+		return null;
+	}
+	
+	public AnnotationAJ[] getAnnotations() {
+		initialize();
+		if (memberView == null && newAnnotations!=null && newAnnotations.size()!=0) {
+			return newAnnotations.toArray(new AnnotationAJ[newAnnotations.size()]);
+		}
+		return null;
 	}
 
 	public boolean hasAnnotation(UnresolvedType annotationType) {
