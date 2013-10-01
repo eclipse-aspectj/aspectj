@@ -297,10 +297,9 @@ public class Aj implements ClassPreProcessor {
 
 			synchronized (weavingAdaptors) {
 				checkQ();
-                if(loader.equals(myClassLoader)){
-                    adaptor = myClassLoaderAdpator;
-                }
-                else{
+                if (loader.equals(myClassLoader)){
+                    adaptor = myClassLoaderAdaptor;
+                } else {
                 	adaptor = (ExplicitlyInitializedClassLoaderWeavingAdaptor) weavingAdaptors.get(adaptorKey);
                 }
 				if (adaptor == null) {
@@ -308,12 +307,11 @@ public class Aj implements ClassPreProcessor {
 					// within the synchronized block
 					ClassLoaderWeavingAdaptor weavingAdaptor = new ClassLoaderWeavingAdaptor();
 					adaptor = new ExplicitlyInitializedClassLoaderWeavingAdaptor(weavingAdaptor);
-					  if(myClassLoaderAdpator == null){
-	                        myClassLoaderAdpator = adaptor;
-					  }
-	                    else{
+					  if(myClassLoaderAdaptor == null && loader.equals(myClassLoader)){
+	                        myClassLoaderAdaptor = adaptor;
+					  } else {
 	                    	weavingAdaptors.put(adaptorKey, adaptor);
-	                    }
+	                  }
 				}
 			}
 			// perform the initialization
@@ -322,7 +320,7 @@ public class Aj implements ClassPreProcessor {
 
 		}
 		private static final ClassLoader myClassLoader = WeavingAdaptor.class.getClassLoader();
-		private static ExplicitlyInitializedClassLoaderWeavingAdaptor myClassLoaderAdpator;
+		private static ExplicitlyInitializedClassLoaderWeavingAdaptor myClassLoaderAdaptor;
 	}
 
 
