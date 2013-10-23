@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
 import org.aspectj.util.FileUtil;
@@ -59,6 +60,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 
 	private File configFile;
 	private String lintMode = AJLINT_DEFAULT;
+	private Map<String,String> lintOptionsMap = null;
 	private File lintSpecFile = null;
 
 	private int changes = EVERYTHING; // bitflags, see CompilerConfigurationChangeFlags
@@ -443,32 +445,68 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	public String getLintMode() {
 		return lintMode;
 	}
+	
+	public Map<String,String> getLintOptionsMap() {
+		return lintOptionsMap;
+	}
 
 	// options...
 
 	public void setLintMode(String lintMode) {
-		this.lintMode = lintMode;
 		String lintValue = null;
+		this.lintMode = lintMode;
 		if (AJLINT_IGNORE.equals(lintMode)) {
 			lintValue = AjCompilerOptions.IGNORE;
 		} else if (AJLINT_WARN.equals(lintMode)) {
 			lintValue = AjCompilerOptions.WARNING;
 		} else if (AJLINT_ERROR.equals(lintMode)) {
 			lintValue = AjCompilerOptions.ERROR;
+		} else {
+			// Possibly a name=value comma separated list of configurations
+			if (lintMode.indexOf("=")!=-1) {
+				this.lintMode = AJLINT_DEFAULT;
+				lintOptionsMap = new HashMap<String,String>();
+				StringTokenizer tokenizer = new StringTokenizer(lintMode,",");
+				while (tokenizer.hasMoreElements()) {
+					String option = tokenizer.nextToken();
+					int equals = option.indexOf("=");
+					if (equals!=-1) {
+						String key = option.substring(0,equals);
+						String value = option.substring(equals+1);
+						lintOptionsMap.put(key,value);
+					}
+				}
+			}
 		}
 
-		if (lintValue != null) {
+		if (lintValue != null || lintOptionsMap != null ) {
 			Map<String, String> lintOptions = new HashMap<String, String>();
-			lintOptions.put(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName, lintValue);
-			lintOptions.put(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName, lintValue);
-			lintOptions.put(AjCompilerOptions.OPTION_ReportUnresolvableMember, lintValue);
-			lintOptions.put(AjCompilerOptions.OPTION_ReportTypeNotExposedToWeaver, lintValue);
-			lintOptions.put(AjCompilerOptions.OPTION_ReportShadowNotInStructure, lintValue);
-			lintOptions.put(AjCompilerOptions.OPTION_ReportUnmatchedSuperTypeInCall, lintValue);
-			lintOptions.put(AjCompilerOptions.OPTION_ReportCannotImplementLazyTJP, lintValue);
-			lintOptions.put(AjCompilerOptions.OPTION_ReportNeedSerialVersionUIDField, lintValue);
-			lintOptions.put(AjCompilerOptions.OPTION_ReportIncompatibleSerialVersion, lintValue);
+			setOption(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName, lintValue, lintOptions);
+			setOption(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName, lintValue, lintOptions);
+			setOption(AjCompilerOptions.OPTION_ReportUnresolvableMember, lintValue, lintOptions);
+			setOption(AjCompilerOptions.OPTION_ReportTypeNotExposedToWeaver, lintValue, lintOptions);
+			setOption(AjCompilerOptions.OPTION_ReportShadowNotInStructure, lintValue, lintOptions);
+			setOption(AjCompilerOptions.OPTION_ReportUnmatchedSuperTypeInCall, lintValue, lintOptions);
+			setOption(AjCompilerOptions.OPTION_ReportCannotImplementLazyTJP, lintValue, lintOptions);
+			setOption(AjCompilerOptions.OPTION_ReportNeedSerialVersionUIDField, lintValue, lintOptions);
+			setOption(AjCompilerOptions.OPTION_ReportIncompatibleSerialVersion, lintValue, lintOptions);
 			options.set(lintOptions);
+		}
+	}
+
+	private void setOption(String optionKey, String lintValue, Map<String,String> lintOptionsAccumulator) {
+		if (lintOptionsMap!=null && lintOptionsMap.containsKey(optionKey)) {
+			String v = lintOptionsMap.get(lintOptionsMap);
+			if (AJLINT_IGNORE.equals(v)) {
+				lintValue = AjCompilerOptions.IGNORE;
+			} else if (AJLINT_WARN.equals(v)) {
+				lintValue = AjCompilerOptions.WARNING;
+			} else if (AJLINT_ERROR.equals(v)) {
+				lintValue = AjCompilerOptions.ERROR;
+			}
+		}
+		if (lintValue != null) {
+			lintOptionsAccumulator.put(optionKey,lintValue);
 		}
 	}
 

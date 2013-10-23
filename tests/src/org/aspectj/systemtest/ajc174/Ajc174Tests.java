@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc174Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
+	public void testMoreConfigurableLint_419279() throws Exception {
+		runTest("more configurable lint");
+	}
+	
 	public void testAnnotatedItd_418129() throws Exception {
 		runTest("annotated itd");
 	}

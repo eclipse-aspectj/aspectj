@@ -234,7 +234,8 @@ public class CompileSpec implements ITestStep {
 		if (getOptions() != null) {
 			StringTokenizer strTok = new StringTokenizer(getOptions(),",");
 			while (strTok.hasMoreTokens()) {
-				args.append(strTok.nextToken());
+				// For an option containing a comma, pass in a { in its place
+				args.append(strTok.nextToken().replace('{', ','));
 				args.append(" ");
 			}
 		}

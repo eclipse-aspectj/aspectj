@@ -2,6 +2,30 @@
 
 <suite>
 
+	<ajc-test dir="bugs174/pr419279" title="more configurable lint">
+		<compile files="Code.java" options="-1.5">
+			<message kind="warning" text="advice defined in Code has not been applied [Xlint:adviceDidNotMatch]"/>
+		</compile>
+		<compile files="Code.java" options="-1.5 -Xlint:adviceDidNotMatch=ignore">
+		</compile>
+		<compile files="Code.java" options="-1.5 -Xlint:adviceDidNotMatch=error">
+			<message kind="error" text="advice defined in Code has not been applied [Xlint:adviceDidNotMatch]"/>
+		</compile>
+		<compile files="Code.java" options="-1.5 -Xlint:foo=bar">
+			<message kind="error" text="invalid Xlint key: foo"/>
+		</compile>
+		<compile files="Code.java" options="-1.5 -Xlint:adviceDidNotMatch=wibble">
+			<message kind="error" text="invalid Xlint message kind (must be one of ignore, warning, error): wibble"/>
+		</compile>
+		<compile files="Code.java" options="-1.5 -Xlint:adviceDidNotMatch=ignore{adviceDidNotMatch=error">
+			<message kind="error" text="advice defined in Code has not been applied [Xlint:adviceDidNotMatch]"/>
+		</compile>
+		<compile files="Code.java" options="-1.5 -Xlint:adviceDidNotMatch=error{noGuardForLazyTjp=error">
+			<message kind="error" text="advice defined in Code has not been applied [Xlint:adviceDidNotMatch]"/>
+			<message kind="error" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard [Xlint:noGuardForLazyTjp]"/>
+		</compile>
+	</ajc-test>
+
 	<ajc-test dir="bugs174/pr418129" title="annotated itd">
 		<compile files="Target.java" options="-1.5 -showWeaveInfo">
 			<message kind="weave" text="Type 'Behavior' (Target.java) has intertyped method from 'Trait' (Target.java:'java.lang.String Behavior.hello()')"/>
