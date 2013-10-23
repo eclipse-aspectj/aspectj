@@ -222,6 +222,22 @@ public class Checker extends ShadowMunger {
 			return shadow.toString();
 		} else if (key.equalsIgnoreCase("joinpoint.kind")) {
 			return shadow.getKind().getName();
+		} else if (key.equalsIgnoreCase("joinpoint.enclosingclass")) {
+			return shadow.getEnclosingType().getName();
+		} else if (key.equalsIgnoreCase("joinpoint.enclosingmember.name")) {
+			Member member = shadow.getEnclosingCodeSignature();
+			if (member==null) {
+				return "";
+			} else {
+				return member.getName();
+			}
+		} else if (key.equalsIgnoreCase("joinpoint.enclosingmember")) {
+			Member member = shadow.getEnclosingCodeSignature();
+			if (member==null) {
+				return "";
+			} else {
+				return member.toString();
+			}
 		} else if (key.equalsIgnoreCase("joinpoint.signature")) {
 			return shadow.getSignature().toString();
 		} else if (key.equalsIgnoreCase("joinpoint.signature.declaringtype")) {

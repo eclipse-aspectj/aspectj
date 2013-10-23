@@ -2,6 +2,17 @@
 
 <suite>
 
+	<ajc-test dir="bugs174/extra_inserts" title="extra inserts">
+		<compile files="Code.java" options="-1.5">
+			<message kind="warning" line="8"  text="Call to foo made inside class Bar"/>
+			<message kind="warning" line="15" text="Call to foo made inside class Boo"/>
+			<message kind="warning" line="8"  text="Call to foo made inside member booble"/>
+			<message kind="warning" line="15" text="Call to foo made inside member m"/>
+			<message kind="warning" line="8"  text="Call to foo made inside member void Bar.booble()"/>
+			<message kind="warning" line="15" text="Call to foo made inside member void Boo.m()"/>
+		</compile>
+	</ajc-test>
+
 	<ajc-test dir="bugs174/pr419279" title="more configurable lint">
 		<compile files="Code.java" options="-1.5">
 			<message kind="warning" text="advice defined in Code has not been applied [Xlint:adviceDidNotMatch]"/>
