@@ -2,6 +2,12 @@
 
 <suite>
 
+	<ajc-test dir="bugs174/ajdt_markers" title="ajdt markers">
+		<compile files="Code.java" options="-1.5 -showWeaveInfo">
+		</compile>
+	</ajc-test>
+
+
 	<ajc-test dir="bugs174/extra_inserts" title="extra inserts">
 		<compile files="Code.java" options="-1.5">
 			<message kind="warning" line="8"  text="Call to foo made inside class Bar"/>

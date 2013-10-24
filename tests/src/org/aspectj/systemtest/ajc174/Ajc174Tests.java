@@ -21,6 +21,12 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc174Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
+/* wip
+	public void testAjdtMarkers() throws Exception {
+		runTest("ajdt markers");
+	}
+*/
+	
 	public void testExtraInserts() throws Exception {
 		runTest("extra inserts");
 	}
