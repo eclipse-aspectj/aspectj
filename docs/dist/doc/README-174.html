@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.7.4 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2013 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 1.7.4 Readme</h1>
+
+<p>Available 24-Oct-2013</p>
+
+<p>The list of resolved issues in 1.7.4 is available 
+<a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.7.4;">here</a></h2>.</p>
+
+<b>Notes</b>
+<ul>
+<li>This release includes an important fix for using loadtime weaving in a JVM where JMX is turned on (<a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=415266">415266</a>)
+<p>
+<li>There are some new message insert keys usable in declare error/warning (<a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=420210">420210</a>)
+The new keys are:
+<tt>
+<pre>
+joinpoint.enclosingclass // Bar
+joinpoint.enclosingmember // void Bar.foo(String)
+joinpoint.enclosingmember.name // foo
+</pre>
+</tt>
+All keys are case insensitive.
+<p>
+<li>It is now possible to specify individual xlint settings without needing to supply a file (<a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=419279">419279</a>)
+<tt><pre>ajc -Xlint:adviceDidNotMatch=error,noGuardForLazyTjp=ignore Foo.java</pre></tt> 
+</ul>
+
+
+<!-- ============================== -->  
+</body>
+</html>
