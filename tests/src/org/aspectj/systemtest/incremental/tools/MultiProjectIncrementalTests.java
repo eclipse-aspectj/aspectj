@@ -1048,7 +1048,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		alter(p, "inc1"); // Second source introduced C.java, defines C
 		build(p);
 		checkWasntFullBuild();
-		List msgs = getErrorMessages(p);
+		List<IMessage> msgs = getErrorMessages(p);
 		assertEquals("error message should be 'The type C is already defined' ", "The type C is already defined",
 				((IMessage) msgs.get(0)).getMessage());
 		alter("PR148285_2", "inc2"); // type C in A.aj is commented out
@@ -1831,7 +1831,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p1); // Modify the aspect Asp2 to include staticinitialization()
 		// advice
 		checkWasFullBuild();
-		Set s = getModelFor(p1).getModelChangesOnLastBuild();
+		Set<File> s = getModelFor(p1).getModelChangesOnLastBuild();
 		assertTrue("Should be empty as was full build:" + s, s.isEmpty());
 
 		// prod the build of the second project with some extra info to tell it
@@ -3555,7 +3555,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testAdviceDidNotMatch_pr152589() {
 		initialiseProject("PR152589");
 		build("PR152589");
-		List warnings = getWarningMessages("PR152589");
+		List<IMessage> warnings = getWarningMessages("PR152589");
 		assertTrue("There should be no warnings:\n" + warnings, warnings.isEmpty());
 		alter("PR152589", "inc1");
 		build("PR152589");
