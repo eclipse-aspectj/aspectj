@@ -1826,13 +1826,13 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 
 		// generic signature
 		if (!CharOperation.equals(reader.getGenericSignature(), existingType.genericSignature)) {
-			logAnalysis(filename,"generic signature changed. old="+new String(existingType.genericSignature)+" new="+new String(reader.getGenericSignature()));
+			logAnalysis(filename,"generic signature changed. old="+stringify(existingType.genericSignature)+" new="+stringify(reader.getGenericSignature()));
 			return true;
 		}
 
 		// superclass name
 		if (!CharOperation.equals(reader.getSuperclassName(), existingType.superclassName)) {
-			logAnalysis(filename,"superclass name changed. old="+new String(existingType.superclassName)+" new="+new String(reader.getSuperclassName()));
+			logAnalysis(filename,"superclass name changed. old="+stringify(existingType.superclassName)+" new="+stringify(reader.getSuperclassName()));
 			return true;
 		}
 
@@ -2052,7 +2052,8 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 				}
 				// TODO missing a return true here? Meaning we have a field in the new that we can't find in the old!
 			}
-			
+
+			logAnalysis(filename,"method changed. New method detected '"+stringify(method)+"' (might be a rename)");
 			return true; // (no match found)
 		}
 
@@ -2081,6 +2082,13 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 			}
 		}
 		return false;
+	}
+
+	private String stringify(char[] chars) {
+		if (chars == null) {
+			return "null";
+		}
+		return new String(chars);
 	}
 
 	private String stringify(IBinaryNestedType[] binaryNestedTypes) {
