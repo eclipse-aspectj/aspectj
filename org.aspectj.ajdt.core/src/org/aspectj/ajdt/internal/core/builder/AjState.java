@@ -35,6 +35,7 @@ import java.util.Set;
 
 import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
 import org.aspectj.ajdt.internal.compiler.InterimCompilationResult;
+import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig.BinarySourceFile;
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.asm.AsmManager;
@@ -451,7 +452,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 			if (state != null) {
 				recordDecision("ClassFileChangeChecking: found state instance managing output location : " + dir);
 			} else {
-				recordDecision("ClassFileChangeChecking: failed to find a state instance managing output location : " + dir);
+				recordDecision("ClassFileChangeChecking: failed to find a state instance managing output location : " + dir + " (could be getting managed by JDT)");
 			}
 		}
 
@@ -1534,8 +1535,10 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 			// ignore local types since they're only visible inside a single method
 			if (!(reader.isLocal() || reader.isAnonymous())) {
 				if (hasStructuralChanges(reader, existingStructure)) {
-					if (world.forDEBUG_structuralChangesCode) {
-						System.err.println("Detected a structural change in " + thisTime.getFilename());
+					if (listenerDefined()) {
+//					if (world.forDEBUG_structuralChangesCode) {
+//						System.err.println("Detected a structural change in " + thisTime.getFilename());
+						printStructuralChanges(thisTime.getFilename(),reader, existingStructure);
 					}
 					structuralChangesSinceLastFullBuild.put(thisTime.getFilename(), new Long(currentBuildTime));
 					recordTypeChanged(new String(reader.getName()).replace('/', '.'));
@@ -1800,6 +1803,340 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 			}
 		}
 		return false;
+	}
+
+	private void logAnalysis(String filename, String info) {
+		if (listenerDefined()) {
+			getListener().recordDecision("StructuralAnalysis["+filename+"]: "+info);
+		}
+	}
+	
+	private boolean printStructuralChanges(String filename, ClassFileReader reader, CompactTypeStructureRepresentation existingType) {
+		logAnalysis(filename,"appears to have structurally changed, printing changes:");
+		if (existingType == null) {
+			logAnalysis(filename,"have not seen this type before");
+			return true;
+		}
+
+		// modifiers
+		if (!modifiersEqual(reader.getModifiers(), existingType.modifiers)) {
+			logAnalysis(filename,"modifiers changed.  old=0x"+Integer.toHexString(existingType.getModifiers())+" new=0x"+Integer.toHexString(reader.getModifiers()));
+			return true;
+		}
+
+		// generic signature
+		if (!CharOperation.equals(reader.getGenericSignature(), existingType.genericSignature)) {
+			logAnalysis(filename,"generic signature changed. old="+new String(existingType.genericSignature)+" new="+new String(reader.getGenericSignature()));
+			return true;
+		}
+
+		// superclass name
+		if (!CharOperation.equals(reader.getSuperclassName(), existingType.superclassName)) {
+			logAnalysis(filename,"superclass name changed. old="+new String(existingType.superclassName)+" new="+new String(reader.getSuperclassName()));
+			return true;
+		}
+
+		// have annotations changed on the type?
+		IBinaryAnnotation[] newAnnos = reader.getAnnotations();
+		if (newAnnos == null || newAnnos.length == 0) {
+			if (existingType.annotations != null && existingType.annotations.length != 0) {
+				logAnalysis(filename,"type used to have annotations and now does not: "+stringify(existingType.annotations));
+				return true;
+			}
+		} else {
+			IBinaryAnnotation[] existingAnnos = existingType.annotations;
+			if (existingAnnos == null || existingAnnos.length != newAnnos.length) {
+				logAnalysis(filename,"type now has annotations which it did not used to have: "+stringify(newAnnos));
+				return true;
+			}
+			// Does not allow for an order switch
+			// Does not cope with a change in values set on the annotation (hard to create a testcase where this is a problem tho)
+			for (int i = 0; i < newAnnos.length; i++) {
+				if (!CharOperation.equals(newAnnos[i].getTypeName(), existingAnnos[i].getTypeName())) {
+					logAnalysis(filename,"type annotation change at position "+i+" old="+new String(existingAnnos[i].getTypeName())+" new="+new String(newAnnos[i].getTypeName()));
+					return true;
+				}
+			}
+
+		}
+
+		// interfaces
+		char[][] existingIfs = existingType.interfaces;
+		char[][] newIfsAsChars = reader.getInterfaceNames();
+		if (newIfsAsChars == null) {
+			newIfsAsChars = EMPTY_CHAR_ARRAY;
+		} // damn I'm lazy...
+		if (existingIfs == null) {
+			existingIfs = EMPTY_CHAR_ARRAY;
+		}
+		if (existingIfs.length != newIfsAsChars.length) {
+			return true;
+		}
+		new_interface_loop: for (int i = 0; i < newIfsAsChars.length; i++) {
+			for (int j = 0; j < existingIfs.length; j++) {
+				if (CharOperation.equals(existingIfs[j], newIfsAsChars[i])) {
+					continue new_interface_loop;
+				}
+			}
+			logAnalysis(filename,"set of interfaces changed. old="+stringify(existingIfs)+" new="+stringify(newIfsAsChars));
+			return true;
+		}
+
+		// fields
+		// CompactMemberStructureRepresentation[] existingFields = existingType.fields;
+		IBinaryField[] newFields = reader.getFields();
+		if (newFields == null) {
+			newFields = CompactTypeStructureRepresentation.NoField;
+		}
+
+		// all redundant for now ... could be an optimization at some point...
+		// remove any ajc$XXX fields from those we compare with
+		// the existing fields - bug 129163
+		// List nonGenFields = new ArrayList();
+		// for (int i = 0; i < newFields.length; i++) {
+		// IBinaryField field = newFields[i];
+		// //if (!CharOperation.prefixEquals(NameMangler.AJC_DOLLAR_PREFIX,field.getName())) { // this would skip ajc$ fields
+		// //if ((field.getModifiers()&0x1000)==0) // 0x1000 => synthetic - this will skip synthetic fields (eg. this$0)
+		// nonGenFields.add(field);
+		// //}
+		// }
+		IBinaryField[] existingFs = existingType.binFields;
+		if (newFields.length != existingFs.length) {
+			logAnalysis(filename,"number of fields changed. old="+stringify(existingFs)+" new="+stringify(newFields));
+			return true;
+		}
+		new_field_loop: for (int i = 0; i < newFields.length; i++) {
+			IBinaryField field = newFields[i];
+			char[] fieldName = field.getName();
+			for (int j = 0; j < existingFs.length; j++) {
+				if (CharOperation.equals(existingFs[j].getName(), fieldName)) {
+					IBinaryField existing = existingFs[j];
+					if (!modifiersEqual(field.getModifiers(), existing.getModifiers())) {
+						logAnalysis(filename,"field modifiers changed '"+existing+"' old=0x"+Integer.toHexString(existing.getModifiers())+" new=0x"+Integer.toHexString(field.getModifiers()));
+						return true;
+					}
+					if (!CharOperation.equals(existing.getTypeName(), field.getTypeName())) {
+						logAnalysis(filename,"field type changed '"+existing+"' old="+new String(existing.getTypeName())+" new="+new String(field.getTypeName()));
+						return true;
+					}
+
+					char[] existingGSig = existing.getGenericSignature();
+					char[] fieldGSig = field.getGenericSignature();
+					if ((existingGSig == null && fieldGSig != null) || (existingGSig != null && fieldGSig == null)) {
+						logAnalysis(filename,"field generic sig changed '"+existing+"' old="+
+								(existingGSig==null?"null":new String(existingGSig))+" new="+(fieldGSig==null?"null":new String(fieldGSig)));
+						return true;
+					}
+					if (existingGSig != null) {
+						if (!CharOperation.equals(existingGSig, fieldGSig)) {
+							logAnalysis(filename,"field generic sig changed '"+existing+"' old="+
+									(existingGSig==null?"null":new String(existingGSig))+" new="+(fieldGSig==null?"null":new String(fieldGSig)));
+							return true;
+						}
+					}
+
+					continue new_field_loop;
+				}
+			}
+			logAnalysis(filename,"field changed. New field detected '"+field+"'");
+			return true;
+		}
+
+		// methods
+		// CompactMemberStructureRepresentation[] existingMethods = existingType.methods;
+		IBinaryMethod[] newMethods = reader.getMethods();
+		if (newMethods == null) {
+			newMethods = CompactTypeStructureRepresentation.NoMethod;
+		}
+
+		// all redundant for now ... could be an optimization at some point...
+
+		// Ctors in a non-static inner type have an 'extra parameter' of the enclosing type.
+		// If skippableDescriptorPrefix gets set here then it is set to the descriptor portion
+		// for this 'extra parameter'. For an inner class of pkg.Foo the skippable descriptor
+		// prefix will be '(Lpkg/Foo;' - so later when comparing <init> methods we know what to
+		// compare.
+		// IF THIS CODE NEEDS TO GET MORE COMPLICATED, I THINK ITS WORTH RIPPING IT ALL OUT AND
+		// CREATING THE STRUCTURAL CHANGES OBJECT BASED ON CLASSREADER OUTPUT RATHER THAN
+		// THE RESOLVEDTYPE - THEN THERE WOULD BE NO NEED TO TREAT SOME METHODS IN A PECULIAR
+		// WAY.
+		// char[] skippableDescriptorPrefix = null;
+		// char[] enclosingTypeName = reader.getEnclosingTypeName();
+		// boolean isStaticType = Modifier.isStatic(reader.getModifiers());
+		// if (!isStaticType && enclosingTypeName!=null) {
+		// StringBuffer sb = new StringBuffer();
+		// sb.append("(L").append(new String(enclosingTypeName)).append(";");
+		// skippableDescriptorPrefix = sb.toString().toCharArray();
+		// }
+		//
+		//
+		// // remove the aspectOf, hasAspect, clinit and ajc$XXX methods
+		// // from those we compare with the existing methods - bug 129163
+		// List nonGenMethods = new ArrayList();
+		// for (int i = 0; i < newMethods.length; i++) {
+		// IBinaryMethod method = newMethods[i];
+		// // if ((method.getModifiers() & 0x1000)!=0) continue; // 0x1000 => synthetic - will cause us to skip access$0 - is this
+		// always safe?
+		// char[] methodName = method.getSelector();
+		// // if (!CharOperation.equals(methodName,NameMangler.METHOD_ASPECTOF) &&
+		// // !CharOperation.equals(methodName,NameMangler.METHOD_HASASPECT) &&
+		// // !CharOperation.equals(methodName,NameMangler.STATIC_INITIALIZER) &&
+		// // !CharOperation.prefixEquals(NameMangler.AJC_DOLLAR_PREFIX,methodName) &&
+		// // !CharOperation.prefixEquals(NameMangler.CLINIT,methodName)) {
+		// nonGenMethods.add(method);
+		// // }
+		// }
+		IBinaryMethod[] existingMs = existingType.binMethods;
+		if (newMethods.length != existingMs.length) {
+			logAnalysis(filename,"number of methods changed. old="+stringify(existingMs)+" new="+stringify(newMethods));
+			return true;
+		}
+		new_method_loop: for (int i = 0; i < newMethods.length; i++) {
+			IBinaryMethod method = newMethods[i];
+			char[] methodName = method.getSelector();
+			for (int j = 0; j < existingMs.length; j++) {
+				if (CharOperation.equals(existingMs[j].getSelector(), methodName)) {
+					// candidate match
+					if (!CharOperation.equals(method.getMethodDescriptor(), existingMs[j].getMethodDescriptor())) {
+						// ok, the descriptors don't match, but is this a funky ctor on a non-static inner
+						// type?
+						// boolean mightBeOK =
+						// skippableDescriptorPrefix!=null && // set for inner types
+						// CharOperation.equals(methodName,NameMangler.INIT) && // ctor
+						// CharOperation.prefixEquals(skippableDescriptorPrefix,method.getMethodDescriptor()); // checking for
+						// prefix on the descriptor
+						// if (mightBeOK) {
+						// // OK, so the descriptor starts something like '(Lpkg/Foo;' - we now may need to look at the rest of the
+						// // descriptor if it takes >1 parameter.
+						// // eg. could be (Lpkg/C;Ljava/lang/String;) where the skippablePrefix is (Lpkg/C;
+						// char [] md = method.getMethodDescriptor();
+						// char[] remainder = CharOperation.subarray(md, skippableDescriptorPrefix.length, md.length);
+						// if (CharOperation.equals(remainder,BRACKET_V)) continue new_method_loop; // no other parameters to worry
+						// about
+						// char[] comparableSig = CharOperation.subarray(existingMethods[j].signature, 1,
+						// existingMethods[j].signature.length);
+						// boolean match = CharOperation.equals(comparableSig, remainder);
+						// if (match) continue new_method_loop;
+						// }
+						continue; // might be overloading
+					} else {
+						// matching sigs
+						IBinaryMethod existing = existingMs[j];
+						if (!modifiersEqual(method.getModifiers(), existing.getModifiers())) {
+							logAnalysis(filename,"method modifiers changed '"+existing+"' old=0x"+Integer.toHexString(existing.getModifiers())+" new=0x"+Integer.toHexString(method.getModifiers()));
+							return true;
+						}
+
+						if (exceptionClausesDiffer(existing, method)) {
+							logAnalysis(filename,"method exception clauses changed '"+existing+"' old="+existing+" new="+method);
+							return true;
+						}
+
+						char[] existingGSig = existing.getGenericSignature();
+						char[] methodGSig = method.getGenericSignature();
+						if ((existingGSig == null && methodGSig != null) || (existingGSig != null && methodGSig == null)) {
+							logAnalysis(filename,"method generic sig changed '"+existing+"' old="+
+									(existingGSig==null?"null":new String(existingGSig))+" new="+(methodGSig==null?"null":new String(methodGSig)));
+							return true;
+						}
+						if (existingGSig != null) {
+							if (!CharOperation.equals(existingGSig, methodGSig)) {
+								logAnalysis(filename,"method generic sig changed '"+existing+"' old="+
+										(existingGSig==null?"null":new String(existingGSig))+" new="+(methodGSig==null?"null":new String(methodGSig)));
+								return true;
+							}
+						}
+
+						continue new_method_loop;
+					}
+				}
+				// TODO missing a return true here? Meaning we have a field in the new that we can't find in the old!
+			}
+			
+			return true; // (no match found)
+		}
+
+		// check for differences in inner types
+		// TODO could make order insensitive
+		IBinaryNestedType[] binaryNestedTypes = reader.getMemberTypes();
+		IBinaryNestedType[] existingBinaryNestedTypes = existingType.getMemberTypes();
+		if ((binaryNestedTypes == null && existingBinaryNestedTypes != null)
+				|| (binaryNestedTypes != null && existingBinaryNestedTypes == null)) {
+			logAnalysis(filename,"nested types changed");
+			return true;
+		}
+		if (binaryNestedTypes != null) {
+			int bnLength = binaryNestedTypes.length;
+			if (existingBinaryNestedTypes.length != bnLength) {
+				logAnalysis(filename,"nested types changed. old="+stringify(existingBinaryNestedTypes)+" new="+stringify(binaryNestedTypes));
+				return true;
+			}
+			for (int m = 0; m < bnLength; m++) {
+				IBinaryNestedType bnt = binaryNestedTypes[m];
+				IBinaryNestedType existingBnt = existingBinaryNestedTypes[m];
+				if (!CharOperation.equals(bnt.getName(), existingBnt.getName())) {
+					logAnalysis(filename,"nested type changed name at position "+m+" old="+stringify(existingBinaryNestedTypes)+" new="+stringify(binaryNestedTypes));
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private String stringify(IBinaryNestedType[] binaryNestedTypes) {
+		StringBuilder buf = new StringBuilder();
+		for (IBinaryNestedType binaryNestedType: binaryNestedTypes) {
+			buf.append(binaryNestedType).append(" ");
+		}
+		return buf.toString().trim();
+	}
+
+	private String stringify(IBinaryMethod[] methods) {
+		StringBuilder buf = new StringBuilder();
+		for (IBinaryMethod method: methods) {
+			buf.append(stringify(method)).append(" ");
+		}
+		return "["+buf.toString().trim()+"]";
+	}
+
+	private String stringify(IBinaryMethod m) {
+		StringBuilder buf = new StringBuilder();
+		buf.append("0x").append(Integer.toHexString(m.getModifiers())).append(" ");
+		buf.append(m.getSelector()).append(m.getMethodDescriptor());
+		// IBinaryAnnotation[] annos = m.getAnnotations();
+		// TODO include annotations, generic sig, etc
+		return buf.toString().trim();
+	}
+
+	private String stringify(IBinaryField[] fields) {
+		StringBuilder buf = new StringBuilder();
+		for (IBinaryField field: fields) {
+			buf.append(stringify(field)).append(" ");
+		}
+		return "["+buf.toString().trim()+"]";
+	}
+
+	private Object stringify(IBinaryField f) {
+		StringBuilder buf = new StringBuilder();
+		buf.append("0x").append(Integer.toHexString(f.getModifiers())).append(" ");
+		buf.append(f.getTypeName()).append(f.getName());
+		return buf.toString().trim();
+	}
+
+	private String stringify(char[][] arrayOfCharArrays) {
+		StringBuilder buf = new StringBuilder();
+		for (char[] charArray: arrayOfCharArrays) {
+			buf.append(charArray).append(" ");
+		}
+		return buf.toString().trim();
+	}
+
+	private String stringify(IBinaryAnnotation[] annotations) {
+		StringBuilder buf = new StringBuilder();
+		for (IBinaryAnnotation anno: annotations) {
+			buf.append(anno).append(" ");
+		}
+		return buf.toString().trim();
 	}
 
 	/**
