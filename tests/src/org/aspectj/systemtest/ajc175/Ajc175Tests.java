@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc175Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
+//	public void testIllegalAccessError_430243() throws Exception {
+//		runTest("illegalaccesserror");
+//	}
+	
 	public void testVertxVerifyError_423257() throws Exception {
 		runTest("vertx verify error");
 	}
@@ -31,7 +35,6 @@ public class Ajc175Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(Ajc175Tests.class);
 	}
 
-	@Override
 	protected File getSpecFile() {
 		return new File("../tests/src/org/aspectj/systemtest/ajc175/ajc175.xml");
 	}
