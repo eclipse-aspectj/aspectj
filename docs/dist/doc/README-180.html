@@ -24,36 +24,18 @@ All rights reserved.
 <a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.8.0;">here</a></h2>.</p>
 
 <ul>
+<li>1.8.0.RC1 available 18-Mar-2014
 <li>1.8.0.M1 available 29-Jul-2013
 </ul>
-
-<h2>Overview</h2>
-
-<p>In previous AspectJ major releases the first milestone normally tolerates weaving bytecode for the
-comparable Java level whilst the ability to compile source code for that Java level comes later.
-However, AspectJ 1.8.0.M1 is a Java 8 compiler. So why change the approach this time?  Some 
-consumers of AspectJ are choosing to exploit Java8 library features even though they are not 
-using Java8 language constructs in their source. The Eclipse JDT compiler (in eclipse 4.3) actually
-includes a number of changes to facilitate this (basically compiling with -source 1.7 but on top
-of a 1.8 JRE). The changes are necessary because the 1.8 classes include metadata that the 1.7
-compiler just isn't expecting. For example default method implementations in interfaces. In order
-to support this mode of working AspectJ would need to update to the Eclipse 4.3 compiler. However,
-performing upgrades of the compiler inside AspectJ is non trivial and to avoid doing the
-upgrade to 4.3 and then doing a further upgrade to the Java8 compiler, we decided to jump straight
-to the Java8 compiler which already includes these changes.
-</p>
 
 <h2>Notable changes</h2>
 
 <h3>Java 8 compilation</h3>
 
-<p>AspectJ has been updated to the latest available BETA_JAVA8 support level in the Eclipse Java
-compiler. The BETA_JAVA8 tag chosen was commit #3D6E745.</p>
-<p><b>NOTE:</b>The Java8 libraries are still in flux and changing regularly. If you are going to
-use AspectJ 1.8.0.M1 you must run with a compatible level of Java8. We have been testing with
-beta 97. Code compiled with this compiler is not guaranteed to run on a later JDK level.
+<p>AspectJ has been updated to the latest available Eclipse Java
+compiler version that compiles Java8 code.</p>
 </p>
-<p>AspectJ 1.8.0.M1 will now compile Java 8 code, here is a sample:</p>
+<p>Here is a sample AspectJ8 program:</p>
 
 <pre><code>
 === 8< ==== C.java ==== 8< ===
@@ -105,6 +87,9 @@ class MyClass {
 </code></pre>
 
 <h4>
+<h3>Other</h3>
+<p>The fixes in the 1.7 branch which have occurred since this 1.8 branch was created
+have been merged into the 1.8 release.</p>
 <!-- ============================== -->  
 </body>
 </html>

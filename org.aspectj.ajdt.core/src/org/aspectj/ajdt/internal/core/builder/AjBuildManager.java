@@ -858,6 +858,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		} else {
 			bcelWorld.getLint().setAll(buildConfig.getLintMode());
 		}
+		if (buildConfig.getLintOptionsMap() != null) {
+			bcelWorld.getLint().setFromMap(buildConfig.getLintOptionsMap());
+		}
 		if (buildConfig.getLintSpecFile() != null) {
 			bcelWorld.getLint().setFromProperties(buildConfig.getLintSpecFile());
 		}

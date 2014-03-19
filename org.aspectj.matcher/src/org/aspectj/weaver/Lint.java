@@ -166,6 +166,18 @@ public class Lint {
 			kind.setKind(messageKind);
 		}
 	}
+	
+	public void setFromMap(Map<String,String> lintOptionsMap) {
+		for (String key: lintOptionsMap.keySet()) {
+			String value = lintOptionsMap.get(key);
+			Kind kind = kinds.get(key);
+			if (kind == null) {
+				MessageUtil.error(world.getMessageHandler(), WeaverMessages.format(WeaverMessages.XLINT_KEY_ERROR, key));
+			} else {
+				kind.setKind(getMessageKind(value));
+			}
+		}
+	}
 
 	public void setFromProperties(File file) {
 		if (trace.isTraceEnabled()) {
