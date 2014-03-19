@@ -4,9 +4,9 @@
 		<aspect name="ataspectj.EmptyAspect"/>
 	</aspects>
     <weaver>
-<!--    
         <dump within="*..*Proxy*" beforeandafter="true"/> 
--->        
+<!--    
         <dump within="*Proxy*" beforeandafter="true"/> 
+-->        
     </weaver>
 </aspectj>

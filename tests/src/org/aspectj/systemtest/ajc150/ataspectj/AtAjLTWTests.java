@@ -132,11 +132,11 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
 
 		// The working directory is different because this test must be forked
 		File dir = new File("../tests/java5/ataspectj");
-		File f = new File(dir, "_ajdump/_before");
+		File f = new File(dir, "_ajdump/_before/com/sun/proxy");
 		CountingFilenameFilter cff = new CountingFilenameFilter(".class");
 		f.listFiles(cff);
 		assertEquals("Expected dump file in " + f.getAbsolutePath(), 1, cff.getCount());
-		f = new File(dir, "_ajdump");
+		f = new File(dir, "_ajdump/com/sun/proxy");
 		cff = new CountingFilenameFilter(".class");
 		f.listFiles(cff);
 		assertEquals(1, cff.getCount());

@@ -18,6 +18,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryField;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryMethod;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryNestedType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryTypeAnnotation;
 
 /**
  * Used to determine if a type has structurally changed during incremental compilation. At the end of compilation we create one of
@@ -54,6 +55,7 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 	IBinaryMethod[] binMethods;
 	IBinaryNestedType[] memberTypes;
 	IBinaryAnnotation[] annotations;
+	IBinaryTypeAnnotation[] typeAnnotations;
 	
 
 	public CompactTypeStructureRepresentation(ClassFileReader cfr, boolean isAspect) {
@@ -82,6 +84,7 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 		// references and which were real declarations
 		this.memberTypes = cfr.getMemberTypes(isAspect);
 		this.annotations = cfr.getAnnotations();
+		this.typeAnnotations = cfr.getTypeAnnotations();
 		this.sourceName = cfr.getSourceName();
 		this.className = cfr.getName(); // slashes...
 		this.modifiers = cfr.getModifiers();
@@ -172,6 +175,10 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 
 	public char[] getSourceName() {
 		return sourceName;
+	}
+
+	public IBinaryTypeAnnotation[] getTypeAnnotations() {
+		return typeAnnotations;
 	}
 
 }

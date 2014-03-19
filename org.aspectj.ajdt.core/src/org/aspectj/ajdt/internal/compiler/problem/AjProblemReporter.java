@@ -737,12 +737,12 @@ public class AjProblemReporter extends ProblemReporter {
 		}
 	}
 
-	public void duplicateMethodInType(SourceTypeBinding type, AbstractMethodDeclaration methodDecl, boolean equalParameters, int severity) {
+	public void duplicateMethodInType(AbstractMethodDeclaration methodDecl, boolean equalParameters, int severity) {
 		if (new String(methodDecl.selector).startsWith("ajc$interMethod")) {
 			// this is an ITD clash and will be reported in another way by AspectJ (173602)
 			return;
 		}
-		super.duplicateMethodInType(type, methodDecl, equalParameters, severity);
+		super.duplicateMethodInType(methodDecl, equalParameters, severity);
 	}
 
 	// pr246393 - if we are going to complain about privileged, we clearly don't know what is going on, so don't
