@@ -24,6 +24,8 @@ import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Test;
+import org.aspectj.weaver.UnresolvedType;
+
 
 public class OrPointcut extends Pointcut {
 	Pointcut left, right;
@@ -43,7 +45,11 @@ public class OrPointcut extends Pointcut {
 	}
 
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
-		return left.fastMatch(type).or(right.fastMatch(type));
+		FuzzyBoolean leftMatch = left.fastMatch(type);
+		if (leftMatch.alwaysTrue()) {
+			return leftMatch;
+		}
+		return leftMatch.or(right.fastMatch(type));
 	}
 
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
@@ -112,7 +118,8 @@ public class OrPointcut extends Pointcut {
 		return ret;
 	}
 
-	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+	@Override
+	public Pointcut parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		Pointcut ret = new OrPointcut(left.parameterizeWith(typeVariableMap, w), right.parameterizeWith(typeVariableMap, w));
 		ret.copyLocationFrom(this);
 		return ret;
