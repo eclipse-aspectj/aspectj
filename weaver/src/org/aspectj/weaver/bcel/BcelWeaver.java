@@ -162,8 +162,7 @@ public class BcelWeaver {
 			String fixedName = aspectName;
 			int hasDot = fixedName.lastIndexOf('.');
 			while (hasDot > 0) {
-				// System.out.println("BcelWeaver.addLibraryAspect " +
-				// fixedName);
+				// System.out.println("BcelWeaver.addLibraryAspect " + fixedName);
 				char[] fixedNameChars = fixedName.toCharArray();
 				fixedNameChars[hasDot] = '$';
 				fixedName = new String(fixedNameChars);
@@ -179,7 +178,6 @@ public class BcelWeaver {
 
 		// System.out.println("type: " + type + " for " + aspectName);
 		if (type.isAspect()) {
-
 			// Bug 119657 ensure we use the unwoven aspect
 			WeaverStateInfo wsi = type.getWeaverState();
 			if (wsi != null && wsi.isReweavable()) {

@@ -259,7 +259,6 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	}
 
 	public static UnresolvedType forGenericType(String name, TypeVariable[] tvbs, String genericSig) {
-		// TODO asc generics needs a declared sig
 		String sig = nameToSignature(name);
 		UnresolvedType ret = UnresolvedType.forSignature(sig);
 		ret.typeKind = TypeKind.GENERIC;
@@ -921,8 +920,9 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	public String getPackageName() {
 		if (packageName == null) {
 			String name = getName();
-			if (name.indexOf("<") != -1) {
-				name = name.substring(0, name.indexOf("<"));
+			int angly = name.indexOf('<');
+			if (angly != -1) {
+				name = name.substring(0, angly);
 			}
 			int index = name.lastIndexOf('.');
 			if (index == -1) {
@@ -933,8 +933,6 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		}
 		return packageName;
 	}
-
-	// TODO these move to a TypeUtils class
 
 	public static void writeArray(UnresolvedType[] types, CompressingDataOutputStream stream) throws IOException {
 		int len = types.length;
