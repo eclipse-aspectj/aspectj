@@ -1,6 +1,6 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- *               2004 contributors
+ * Copyright (c) 2002-2014 Palo Alto Research Center, Incorporated (PARC) 
+ *               and Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -169,7 +169,8 @@ public class Proceed extends MessageSend {
 		}
 		checkInvocationArguments(scope,null,this.actualReceiverType,binding,
 				this.arguments,binding.parameters,argsContainCast,this);
-		
+
+		this.resolvedType = binding.returnType;
 		return binding.returnType;
 	}
 

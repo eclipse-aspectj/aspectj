@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Contributors
+ * Copyright (c) 2013-2014 Contributors
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  * @author Andy Clement
  */
 public class Ajc180Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
+	
+	public void testNullAnnotationMatching_431541() {
+		runTest("NullAnnotationMatching exception");
+	}
 	
 	public void testAnnosWith18Flags_415957() {
 		runTest("annotations with 1.8 flags");
