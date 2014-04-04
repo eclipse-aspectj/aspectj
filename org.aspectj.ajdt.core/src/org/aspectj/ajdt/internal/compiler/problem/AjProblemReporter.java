@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.DeclareAnnotationDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
@@ -48,6 +49,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.IPrivilegedHandler;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedMethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -505,6 +507,17 @@ public class AjProblemReporter extends ProblemReporter {
 			}
 		}
 		super.unusedPrivateType(typeDecl);
+	}
+	private final static char[] thisJoinPointName = "thisJoinPoint".toCharArray();
+	
+	public void uninitializedLocalVariable(LocalVariableBinding binding, ASTNode location) {
+		if (CharOperation.equals(binding.name,thisJoinPointName)) {
+			// If in advice, this is not a problem
+			if (binding.declaringScope!=null && binding.declaringScope.referenceContext() instanceof AdviceDeclaration) {
+				return;
+			}
+		}
+		super.uninitializedLocalVariable(binding, location);
 	}
 	
 	public void abstractMethodInConcreteClass(SourceTypeBinding type) {

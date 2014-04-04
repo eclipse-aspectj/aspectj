@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc180Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	
+	public void testThisJoinPointNotInitialized_431976() {
+		runTest("thisJoinPoint not initialized");
+	}
+	
 	public void testNullAnnotationMatching_431541() {
 		runTest("NullAnnotationMatching exception");
 	}

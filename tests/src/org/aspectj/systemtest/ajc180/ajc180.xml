@@ -2,6 +2,10 @@
 
 <suite>
 
+	<ajc-test dir="bugs180/pr431976" title="thisJoinPoint not initialized">
+		<compile options="-1.8" files="Code.java"/>
+	</ajc-test>
+
 	<ajc-test dir="bugs180/pr431541" title="NullAnnotationMatching exception">
 		<compile options="-1.8" files="Test.aj"/>
 	</ajc-test>
