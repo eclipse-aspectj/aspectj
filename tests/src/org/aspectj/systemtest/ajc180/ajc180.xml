@@ -2,6 +2,15 @@
 
 <suite>
 
+	<ajc-test dir="bugs180/pr432714" title="stackmapframe">
+		<compile options="-1.8" files="Code.java"/>
+		<run class="Code"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs180/pr432608" title="stackoverflow">
+		<compile options="-1.8" files="AbstractControlPoint.java"/>
+	</ajc-test>
+
 	<ajc-test dir="bugs180/pr431976" title="thisJoinPoint not initialized">
 		<compile options="-1.8" files="Code.java"/>
 	</ajc-test>
