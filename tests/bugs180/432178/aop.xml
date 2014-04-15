@@ -1,0 +1,9 @@
+<aspectj>
+  <aspects>
+    <concrete-aspect name="PerCFlowBugImpl" extends="PerCFlowBug">
+      <pointcut name="pointexp" expression="(call (void *.met(..)))"/>
+    </concrete-aspect>
+  </aspects>
+  <weaver options="-verbose -debug -showWeaveInfo" >
+  </weaver>
+</aspectj>

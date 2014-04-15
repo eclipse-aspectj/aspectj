@@ -2,6 +2,17 @@
 
 <suite>
 
+	<ajc-test dir="bugs180/432178" title="percflow ltw">
+		<compile options="-1.8" files="A.java B.java"/>
+		<compile options="-1.8" files="PerCFlowBug.java"/>
+		<run class="A" ltw="aop.xml">
+		<stdout>
+		  <line text="foo"/>
+		  <line text="bar"/>
+		</stdout>
+		</run>
+	</ajc-test>
+	
 	<ajc-test dir="bugs180/pr432714" title="stackmapframe">
 		<compile options="-1.8" files="Code.java"/>
 		<run class="Code"/>

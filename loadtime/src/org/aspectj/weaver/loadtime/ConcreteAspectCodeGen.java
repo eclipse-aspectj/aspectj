@@ -366,11 +366,11 @@ public class ConcreteAspectCodeGen {
 		if (bytes != null) {
 			return bytes;
 		}
+		PerClause.Kind perclauseKind = PerClause.SINGLETON;		
 		PerClause parentPerClause = (parent != null ? parent.getPerClause() : null);
-		if (parentPerClause == null) {
-			parentPerClause = new PerSingleton();
+		if (parentPerClause != null) {
+			perclauseKind = parentPerClause.getKind();
 		}
-		PerClause.Kind perclauseKind = PerClause.SINGLETON;
 		String perclauseString = null;
 
 		if (concreteAspect.perclause != null) {

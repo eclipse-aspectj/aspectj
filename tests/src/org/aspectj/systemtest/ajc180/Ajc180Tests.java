@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc180Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testPercflowLtw_432178() {
+		runTest("percflow ltw");
+	}
+	
 	public void testStackmapframe_431976() {
 		runTest("stackmapframe");
 	}
