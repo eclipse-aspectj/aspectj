@@ -29,10 +29,6 @@ public class Ajc180Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("stackmapframe");
 	}
 	
-	public void testStackOverflow_432608() {
-		runTest("stackoverflow");
-	}
-	
 	public void testThisJoinPointNotInitialized_431976() {
 		runTest("thisJoinPoint not initialized");
 	}
