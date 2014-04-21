@@ -836,9 +836,9 @@ ant -propertyfile XXX publishtomaven
 
 
   <target name="publishtomaven_milestone" depends="maven.init">
-    <property name="suffix" value="1.6.12.M1"/>
+    <property name="suffix" value="1.8.0.M1"/>
 
-    <property name="build.root" value="/Users/aclement/workspaces/aspectj1/aj-build"/>
+    <property name="build.root" value="/Users/aclement/gits/org.aspectj/aj-build"/>
     <property name="adjusted.release.type" value="milestone"/>
     <property name="maven.central.repository" value="s3://maven.springframework.org/${adjusted.release.type}"/>
     <property name="bin.jars.folder" value="${build.root}/dist/tools/lib"/>

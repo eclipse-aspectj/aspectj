@@ -1046,8 +1046,6 @@ public abstract class World implements Dump.INode {
 		private int collectedTypes = 0;
 		private final ReferenceQueue<ResolvedType> rq = new ReferenceQueue<ResolvedType>();
 
-		// private static Trace trace = TraceFactory.getTraceFactory().getTrace(World.TypeMap.class);
-
 		TypeMap(World w) {
 			// Demotion activated when switched on and loadtime weaving or in AJDT
 			demotionSystemActive = w.isDemotionActive() && (w.isLoadtimeWeaving() || w.couldIncrementalCompileFollow());

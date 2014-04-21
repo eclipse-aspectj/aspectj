@@ -53,7 +53,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 	private boolean initialized;
 
-	private List m_dumpTypePattern = new ArrayList();
+	private List<TypePattern> m_dumpTypePattern = new ArrayList<TypePattern>();
 	private boolean m_dumpBefore = false;
 	private boolean dumpDirPerClassloader = false;
 
@@ -931,8 +931,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		// TODO AV - optimize for className.startWith only
 		ResolvedType classInfo = weaver.getWorld().resolve(UnresolvedType.forName(className), true);
 		// dump
-		for (Iterator iterator = m_dumpTypePattern.iterator(); iterator.hasNext();) {
-			TypePattern typePattern = (TypePattern) iterator.next();
+		for (Iterator<TypePattern> iterator = m_dumpTypePattern.iterator(); iterator.hasNext();) {
+			TypePattern typePattern = iterator.next();
 			if (typePattern.matchesStatically(classInfo)) {
 				// dump match
 				return true;

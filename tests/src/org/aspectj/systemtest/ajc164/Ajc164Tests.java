@@ -355,12 +355,14 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("debugging before advice - 2");
 		Method method = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "Foo2"), "foo");
 		// System.out.println(stringify(method.getLocalVariableTable()));
-		List l = sortedLocalVariables(method.getLocalVariableTable());
+		List<LocalVariable> l = sortedLocalVariables(method.getLocalVariableTable());
 		assertEquals("LBar; bar(1) start=0 len=34", stringify(l, 0));
 		assertEquals("Ljava/lang/Exception; e(3) start=29 len=4", stringify(l, 1));
 		assertEquals("LFoo2; this(0) start=0 len=34", stringify(l, 4));
 		assertEquals("Ljava/lang/String; s(2) start=15 len=19", stringify(l, 2));
-		assertEquals("Ljava/lang/String; s2(3) start=18 len=10", stringify(l, 3));
+		// With the 1.8 compiler looks like len=7 and not len=10 here, the goto to jump to the return is no longer included 
+		// in the variable range
+		assertEquals("Ljava/lang/String; s2(3) start=18 len=7", stringify(l, 3));
 	}
 
 	// Two pieces of advice on before execution of a method with a this and a

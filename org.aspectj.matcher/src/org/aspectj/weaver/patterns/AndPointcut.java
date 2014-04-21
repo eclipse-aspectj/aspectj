@@ -21,6 +21,7 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Test;
@@ -44,7 +45,11 @@ public class AndPointcut extends Pointcut {
 	}
 
 	public FuzzyBoolean fastMatch(FastMatchInfo type) {
-		return left.fastMatch(type).and(right.fastMatch(type));
+		FuzzyBoolean leftMatch = left.fastMatch(type);
+		if (leftMatch.alwaysFalse()) {
+			return leftMatch;
+		}
+		return leftMatch.and(right.fastMatch(type));
 	}
 
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
@@ -104,7 +109,8 @@ public class AndPointcut extends Pointcut {
 		return ret;
 	}
 
-	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+	@Override
+	public Pointcut parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		AndPointcut ret = new AndPointcut(left.parameterizeWith(typeVariableMap, w), right.parameterizeWith(typeVariableMap, w));
 		ret.copyLocationFrom(this);
 		ret.m_ignoreUnboundBindingForNames = m_ignoreUnboundBindingForNames;

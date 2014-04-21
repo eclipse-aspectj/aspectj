@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.DeclareAnnotationDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
@@ -48,6 +49,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.IPrivilegedHandler;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedMethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -506,6 +508,17 @@ public class AjProblemReporter extends ProblemReporter {
 		}
 		super.unusedPrivateType(typeDecl);
 	}
+	private final static char[] thisJoinPointName = "thisJoinPoint".toCharArray();
+	
+	public void uninitializedLocalVariable(LocalVariableBinding binding, ASTNode location) {
+		if (CharOperation.equals(binding.name,thisJoinPointName)) {
+			// If in advice, this is not a problem
+			if (binding.declaringScope!=null && binding.declaringScope.referenceContext() instanceof AdviceDeclaration) {
+				return;
+			}
+		}
+		super.uninitializedLocalVariable(binding, location);
+	}
 	
 	public void abstractMethodInConcreteClass(SourceTypeBinding type) {
 		if (type.scope!=null && type.scope.referenceContext instanceof AspectDeclaration) {
@@ -737,19 +750,19 @@ public class AjProblemReporter extends ProblemReporter {
 		}
 	}
 
-	public void duplicateMethodInType(SourceTypeBinding type, AbstractMethodDeclaration methodDecl, boolean equalParameters, int severity) {
+	public void duplicateMethodInType(AbstractMethodDeclaration methodDecl, boolean equalParameters, int severity) {
 		if (new String(methodDecl.selector).startsWith("ajc$interMethod")) {
 			// this is an ITD clash and will be reported in another way by AspectJ (173602)
 			return;
 		}
-		super.duplicateMethodInType(type, methodDecl, equalParameters, severity);
+		super.duplicateMethodInType(methodDecl, equalParameters, severity);
 	}
 
 	// pr246393 - if we are going to complain about privileged, we clearly don't know what is going on, so don't
 	// confuse the user
 	public void parseErrorInsertAfterToken(int start, int end, int currentKind, char[] errorTokenSource, String errorTokenName,
 			String expectedToken) {
-		if (expectedToken.equals("privileged")) {
+		if (expectedToken.equals("privileged") || expectedToken.equals("around")) {
 			super.parseErrorNoSuggestion(start, end, currentKind, errorTokenSource, errorTokenName);
 		} else {
 			super.parseErrorInsertAfterToken(start, end, currentKind, errorTokenSource, errorTokenName, expectedToken);

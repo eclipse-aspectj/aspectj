@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.8.0 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2014 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 1.8.0 Readme</h1>
+
+<p>The full list of resolved issues in 1.8.0 is available 
+<a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.8.0.M1;target_milestone=1.8.0;">here</a></h2>.</p>
+
+<ul>
+<li>1.8.0 available 17-Apr-2014
+<li>1.8.0.RC1 available 18-Mar-2014
+<li>1.8.0.M1 available 29-Jul-2013
+</ul>
+
+<h2>Notable changes</h2>
+
+<h3>Java 8 compilation</h3>
+
+<p>AspectJ has been updated to the latest available Eclipse Java
+compiler version that compiles Java8 code (the version available as a feature patch on top of Eclipse 4.3.2).</p>
+</p>
+<p>Here is a sample AspectJ8 program:</p>
+
+<pre><code>
+=== 8< ==== C.java ==== 8< ===
+import java.util.Arrays;
+
+interface I {
+    // Default method
+    default void foo() {
+        System.out.println("ABC");
+    }
+}
+
+public class C implements I{
+    public static void main(String[] args) {
+        new C().foo();
+        // Lambda
+        Runnable r = () -> { System.out.println("hello world!"); };
+        r.run();
+        // Used Java8 b97
+        Arrays.asList(MyClass.doSomething()).forEach((p) -> System.out.println(p));
+    }
+}
+
+aspect X {
+	before(): execution(* I.foo()) {
+   		System.out.println("I.foo running");
+	}
+	before(): staticinitialization(!X) {
+		System.out.println("Clazz "+thisJoinPointStaticPart);
+	}
+}
+
+
+class Utils {
+    public static int compareByLength(String in, String out) {
+        return in.length() - out.length();
+    }
+}
+
+class MyClass {
+    public static String[] doSomething() {
+        String []args = new String[]{"4444","333","22","1"};
+        // Method reference
+        Arrays.sort(args,Utils::compareByLength);
+        return args;
+    }
+}
+=== 8< ==== C.java ==== 8< ===
+</code></pre>
+
+<!-- ============================== -->  
+</body>
+</html>

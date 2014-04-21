@@ -18,6 +18,7 @@ import junit.framework.Test;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationship;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class DeclareAnnotationTests extends XMLBasedAjcTestCase {
@@ -299,7 +300,7 @@ public class DeclareAnnotationTests extends XMLBasedAjcTestCase {
 					"declare @type: p.q.DeathByAnnotations : @Colored(\"red\")");
 			assertTrue("Couldn't find 'declare @type' element in the tree", ipe != null);
 
-			List l = AsmManager.lastActiveStructureModel.getRelationshipMap().get(ipe);
+			List<IRelationship> l = AsmManager.lastActiveStructureModel.getRelationshipMap().get(ipe);
 			assertTrue("Should have a relationship but does not ", l != null && l.size() > 0);
 
 			ipe = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.DECLARE_ANNOTATION_AT_METHOD,

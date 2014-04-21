@@ -3,9 +3,9 @@
 	<!-- if you need this defining, use the jarjar-1.0.jar in this project -->
     <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"/>
 
-	<target name="package" description="Jarjar asm-4.2.jar and prefix package name with aj">
-	        <jarjar destfile="asm-4.2.renamed.jar">
-	          <zipfileset src="asm-4.2.jar"/>
+	<target name="package" description="Jarjar asm-5.0.1.jar and prefix package name with aj">
+	        <jarjar destfile="asm-5.0.1.renamed.jar">
+	          <zipfileset src="asm-5.0.1.jar"/>
 	          <rule pattern="org.objectweb.asm.**" result="aj.org.objectweb.asm.@1"/>
 	        </jarjar>
 	</target> 

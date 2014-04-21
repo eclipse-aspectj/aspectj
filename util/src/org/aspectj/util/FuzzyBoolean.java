@@ -34,7 +34,6 @@ public abstract class FuzzyBoolean {
             return true;
         }
 
-
         public boolean maybeFalse() {
             return false;
         }

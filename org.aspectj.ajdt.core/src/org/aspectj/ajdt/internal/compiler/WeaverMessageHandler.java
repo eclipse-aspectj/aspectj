@@ -129,7 +129,7 @@ public class WeaverMessageHandler implements IMessageHandler {
 		if (details.length() != 0) {
 			problem.setSupplementaryMessageInfo(details.toString());
 		}
-		compiler.problemReporter.record(problem, problemSource, referenceContext);
+		compiler.problemReporter.record(problem, problemSource, referenceContext, message.isError());
 		return true;
 	}
 

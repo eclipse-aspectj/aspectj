@@ -60,7 +60,7 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 
 	public PointcutDeclaration(CompilationResult compilationResult) {
 		super(compilationResult);
-		this.returnType = TypeReference.baseTypeReference(T_void, 0);
+		this.returnType = TypeReference.baseTypeReference(T_void, 0, null);
 	}
 
 	private Pointcut getPointcut() {

@@ -25,6 +25,7 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Literal;
 import org.aspectj.weaver.ast.Test;
@@ -55,7 +56,8 @@ public class WithinPointcut extends Pointcut {
 		return Shadow.ALL_SHADOW_KINDS_BITS;
 	}
 
-	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+	@Override
+	public Pointcut parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		WithinPointcut ret = new WithinPointcut(this.typePattern.parameterizeWith(typeVariableMap, w));
 		ret.copyLocationFrom(this);
 		return ret;
@@ -65,7 +67,10 @@ public class WithinPointcut extends Pointcut {
 		if (typePattern.annotationPattern instanceof AnyAnnotationTypePattern) {
 			return isWithinType(info.getType());
 		}
-		return FuzzyBoolean.MAYBE;
+        return FuzzyBoolean.MAYBE;
+        // Possible alternative implementation that fast matches even annotation patterns: '@Foo *'
+//		typePattern.resolve(info.world);
+//		return isWithinType(info.getType());
 	}
 
 	protected FuzzyBoolean matchInternal(Shadow shadow) {

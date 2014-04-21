@@ -17,8 +17,8 @@
     | |             INVOKESPECIAL java.io.FileInputStream.<init> (Ljava/io/File;)V
     | |             POP
     | catch java.io.IOException -> E0
-    |               GOTO L0
-    |           E0: POP   (line 31)
+    |               GOTO L0   (line 31)
+    |           E0: POP
     |               GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 32)
     |               LDC "bang"
     |               INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V

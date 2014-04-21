@@ -60,11 +60,6 @@ public class KindedPointcut extends Pointcut {
 		return signature;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.patterns.Pointcut#couldMatchKinds()
-	 */
 	@Override
 	public int couldMatchKinds() {
 		return matchKinds;

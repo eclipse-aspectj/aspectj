@@ -50,7 +50,7 @@ public class StackMapAdder {
 	private static class AspectJClassVisitor extends ClassVisitor {
 
 		public AspectJClassVisitor(ClassVisitor classwriter) {
-			super(Opcodes.ASM4, classwriter);
+			super(Opcodes.ASM5, classwriter);
 		}
 
 		@Override
@@ -63,7 +63,7 @@ public class StackMapAdder {
 		// created by a ClassWriter (see top level class comment)
 		static class AJMethodVisitor extends MethodVisitor {
 			public AJMethodVisitor(MethodVisitor mv) {
-				super(Opcodes.ASM4,mv);
+				super(Opcodes.ASM5,mv);
 			}
 		}
 		
@@ -96,7 +96,10 @@ public class StackMapAdder {
 				return "java/lang/Object";
 			} else {
 				do {
-					resolvedType1 = resolvedType1.getSuperclass().getRawType();
+					resolvedType1 = resolvedType1.getSuperclass();
+					if (resolvedType1.isParameterizedOrGenericType()) {
+						resolvedType1 = resolvedType1.getRawType();
+					}
 				} while (!resolvedType1.isAssignableFrom(resolvedType2));
 				return resolvedType1.getRawName().replace('.', '/');
 			}
