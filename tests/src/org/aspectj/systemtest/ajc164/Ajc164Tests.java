@@ -420,17 +420,6 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return new File("../tests/src/org/aspectj/systemtest/ajc164/ajc164.xml");
 	}
 
-	private Method getMethodFromClass(JavaClass clazz, String methodName) {
-		Method[] meths = clazz.getMethods();
-		for (int i = 0; i < meths.length; i++) {
-			Method method = meths[i];
-			if (method.getName().equals(methodName)) {
-				return meths[i];
-			}
-		}
-		return null;
-	}
-
 	private IProgramElement findElementAtLine(IProgramElement whereToLook, int line) {
 		if (whereToLook == null) {
 			return null;

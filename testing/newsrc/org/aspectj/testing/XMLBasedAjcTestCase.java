@@ -417,4 +417,17 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		}
 
 	}
+
+	protected Method getMethodFromClass(JavaClass clazz, String methodName) {
+		Method[] meths = clazz.getMethods();
+		for (int i = 0; i < meths.length; i++) {
+			Method method = meths[i];
+			if (method.getName().equals(methodName)) {
+				return meths[i];
+			}
+		}
+		return null;
+	}
+
+	
 }
