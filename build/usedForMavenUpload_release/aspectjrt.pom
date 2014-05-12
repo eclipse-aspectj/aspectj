@@ -5,7 +5,7 @@
   <groupId>org.aspectj</groupId>
   <artifactId>aspectjrt</artifactId>
   <packaging>jar</packaging>
-  <version>1.7.2.RELEASE</version>
+  <version>1.8.0.RELEASE</version>
   <name>AspectJ runtime</name>
   <description>The runtime needed to execute a program using AspectJ</description>
   <url>http://www.aspectj.org</url>

@@ -5,7 +5,7 @@
   <groupId>org.aspectj</groupId>
   <artifactId>aspectjweaver</artifactId>
   <packaging>jar</packaging>
-  <version>1.7.2.RELEASE</version>
+  <version>1.8.0.RELEASE</version>
   <name>AspectJ weaver</name>
   <description>The AspectJ weaver introduces advices to java classes</description>
   <url>http://www.aspectj.org</url>
