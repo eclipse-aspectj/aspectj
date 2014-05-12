@@ -14,6 +14,7 @@ import java.io.File;
 
 import junit.framework.Test;
 
+import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
@@ -21,6 +22,12 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc181Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testBrokenAnnotations_377096() throws Exception {
+		runTest("broken annotations");
+		Method method = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "C"), "xxx");
+		method.getAnnotations();
+	}
+	
 	public void testDefaultMethods_433744() {
 		runTest("default methods");
 	}

@@ -2,6 +2,12 @@
 
 <suite>
 
+	<ajc-test dir="bugs181/377096" title="broken annotations">
+		<compile options="-1.5 -proceedOnError" files="A.java">
+		<message kind="error" text="The attribute wibble is undefined for the annotation type A"/>
+		</compile>
+	</ajc-test>
+
 	<ajc-test dir="bugs181/433744" title="default methods">
 		<compile options="-1.8" files="AnIterator.java"/>
 	</ajc-test>
