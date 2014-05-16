@@ -631,7 +631,7 @@ public class AjProblemReporter extends ProblemReporter {
 	 * implementation if the target type doesn't supply one. This test may not be complete - it is possible that it should read if
 	 * *either* is an ITD...but I dont have a testcase that shows that is required. yet. (pr115788)
 	 */
-	public void duplicateInheritedMethods(SourceTypeBinding type, MethodBinding inheritedMethod1, MethodBinding inheritedMethod2) {
+	public void duplicateInheritedMethods(SourceTypeBinding type, MethodBinding inheritedMethod1, MethodBinding inheritedMethod2, boolean isJava8) {
 		if (inheritedMethod1 instanceof InterTypeMethodBinding || inheritedMethod2 instanceof InterTypeMethodBinding)
 			return;
 		if ((inheritedMethod1 instanceof ParameterizedMethodBinding)
@@ -640,7 +640,7 @@ public class AjProblemReporter extends ProblemReporter {
 		if ((inheritedMethod2 instanceof ParameterizedMethodBinding)
 				&& ((ParameterizedMethodBinding) inheritedMethod2).original() instanceof InterTypeMethodBinding)
 			return;
-		super.duplicateInheritedMethods(type, inheritedMethod1, inheritedMethod2);
+		super.duplicateInheritedMethods(type, inheritedMethod1, inheritedMethod2, isJava8);
 	}
 
 	/**
