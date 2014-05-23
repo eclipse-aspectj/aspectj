@@ -22,6 +22,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc181Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testLvarTable_435446() throws Exception {
+		runTest("lvartable");
+	}
+	
 	public void testBrokenAnnotations_377096() throws Exception {
 		runTest("broken annotations");
 		Method method = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "C"), "xxx");

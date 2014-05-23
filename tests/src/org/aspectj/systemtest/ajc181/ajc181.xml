@@ -2,6 +2,13 @@
 
 <suite>
 
+	<ajc-test dir="bugs181/435446" title="lvartable">
+		<compile options="-1.8" files="Application.java MyAspect.java">
+		</compile>
+		<run class="de.scrum_master.app.Application">
+		</run>
+	</ajc-test>
+	
 	<ajc-test dir="bugs181/377096" title="broken annotations">
 		<compile options="-1.5 -proceedOnError" files="A.java">
 		<message kind="error" text="The attribute wibble is undefined for the annotation type A"/>

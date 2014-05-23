@@ -337,20 +337,22 @@ public class ConstantsInitializer {
 				| Constants.INDEXED;
 		Constants.instExcs[Constants.INVOKEVIRTUAL] = ExceptionConstants.EXCS_INTERFACE_METHOD_RESOLUTION_INVOKESPECIAL_INVOKEVIRTUAL;
 
+		//@formatter:off
 		char[] lengths = // . = varies in length, / = undefined
 		("1111111111111111" + // nop > dconst_1
-				"2323322222111111" + // bipush > lload_1
-				"1111111111111111" + // lload_2 > laload
-				"1111112222211111" + // faload > lstore_0
-				"1111111111111111" + // lstore_1 > iastore
-				"1111111111111111" + // lastore > swap
-				"1111111111111111" + // iadd > ddiv
-				"1111111111111111" + // irem > land
-				"1111311111111111" + // ior > d2l
-				"1111111113333333" + // d2f > if_icmpeq
-				"3333333332..1111" + // if_icmpne > dreturn
-				"1133333335/32311" + // areturn > athrow
-				"3311.433551/////").toCharArray(); // checkcast >
+		 "2323322222111111" + // bipush > lload_1
+		 "1111111111111111" + // lload_2 > laload
+		 "1111112222211111" + // faload > lstore_0
+		 "1111111111111111" + // lstore_1 > iastore
+		 "1111111111111111" + // lastore > swap
+		 "1111111111111111" + // iadd > ddiv
+		 "1111111111111111" + // irem > land
+		 "1111311111111111" + // ior > d2l
+		 "1111111113333333" + // d2f > if_icmpeq
+		 "3333333332..1111" + // if_icmpne > dreturn
+		 "1133333335532311" + // areturn > athrow
+		 "3311.433551/////").toCharArray(); // checkcast >
+		//@formatter:on
 		int count = 0;
 		for (; count < lengths.length; count++) {
 			Constants.iLen[count] = (byte) (lengths[count] - 48);
@@ -374,7 +376,7 @@ public class ConstantsInitializer {
 				"1212021211212212" + // ior > d2l
 				"1111111110000000" + // d2f > if_icmpeq
 				"0000000010000000" + // if_icmpne > dreturn
-				"00.0.0..../11111" + // areturn > athrow
+				"00.0.0.....11111" + // areturn > athrow
 				"11000100010/").toCharArray(); // checkcast >
 		count = 0;
 		for (; count < producesOnStack.length; count++) {
