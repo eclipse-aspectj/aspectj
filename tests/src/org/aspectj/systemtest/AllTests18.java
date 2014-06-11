@@ -24,8 +24,8 @@ public class AllTests18 {
 		suite.addTest(AllTestsAspectJ181.suite()); 
 		suite.addTest(AllTestsAspectJ180.suite()); 
 		suite.addTest(AllTests17.suite());
-		suite.addTest(AllTests16.suite());
-		suite.addTest(AllTests15.suite());
+//		suite.addTest(AllTests16.suite());
+//		suite.addTest(AllTests15.suite());
 		// $JUnit-END$
 		return suite;
 	}

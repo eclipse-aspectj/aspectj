@@ -21,7 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  * @author Andy Clement
  */
 public class Ajc181Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
-
+	
+	public void testVariableNotInitialized_431976() {
+		runTest("variable not initialized");
+	}
 
 	public void testThisEnclosingJoinPointStaticPartNotInitialized_431976() {
 		runTest("thisEnclosingJoinPointStaticPart not initialized");

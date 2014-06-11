@@ -24,6 +24,7 @@ import java.util.Set;
 import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.DeclareAnnotationDeclaration;
+import org.aspectj.ajdt.internal.compiler.ast.IfMethodDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.Proceed;
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
@@ -518,7 +519,8 @@ public class AjProblemReporter extends ProblemReporter {
 			CharOperation.equals(binding.name, thisJoinPointStaticPartName) ||
 			CharOperation.equals(binding.name, thisEnclosingJoinPointStaticPartName)) {
 			// If in advice, this is not a problem
-			if (binding.declaringScope!=null && binding.declaringScope.referenceContext() instanceof AdviceDeclaration) {
+			if (binding.declaringScope!=null && (binding.declaringScope.referenceContext() instanceof AdviceDeclaration ||
+												 binding.declaringScope.referenceContext() instanceof IfMethodDeclaration)) {
 				return;
 			}
 		}			
