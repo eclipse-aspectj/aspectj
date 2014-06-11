@@ -21,7 +21,6 @@ public class AllTestsAspectJ180 {
 		TestSuite suite = new TestSuite("AspectJ 1.8.0 tests");
 		// $JUnit-BEGIN$
 		suite.addTest(Ajc180Tests.suite());
-		suite.addTest(Ajc181Tests.suite());
 		// $JUnit-END$
 		return suite;
 	}

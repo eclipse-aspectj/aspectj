@@ -22,6 +22,11 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc181Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+
+	public void testThisEnclosingJoinPointStaticPartNotInitialized_431976() {
+		runTest("thisEnclosingJoinPointStaticPart not initialized");
+	}
+	
 	public void testLvarTable_435446() throws Exception {
 		runTest("lvartable");
 	}

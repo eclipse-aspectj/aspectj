@@ -508,15 +508,20 @@ public class AjProblemReporter extends ProblemReporter {
 		}
 		super.unusedPrivateType(typeDecl);
 	}
+	
 	private final static char[] thisJoinPointName = "thisJoinPoint".toCharArray();
+	private final static char[] thisJoinPointStaticPartName = "thisJoinPointStaticPart".toCharArray();
+	private final static char[] thisEnclosingJoinPointStaticPartName = "thisEnclosingJoinPointStaticPart".toCharArray();
 	
 	public void uninitializedLocalVariable(LocalVariableBinding binding, ASTNode location) {
-		if (CharOperation.equals(binding.name,thisJoinPointName)) {
+		if (CharOperation.equals(binding.name, thisJoinPointName) ||
+			CharOperation.equals(binding.name, thisJoinPointStaticPartName) ||
+			CharOperation.equals(binding.name, thisEnclosingJoinPointStaticPartName)) {
 			// If in advice, this is not a problem
 			if (binding.declaringScope!=null && binding.declaringScope.referenceContext() instanceof AdviceDeclaration) {
 				return;
 			}
-		}
+		}			
 		super.uninitializedLocalVariable(binding, location);
 	}
 	

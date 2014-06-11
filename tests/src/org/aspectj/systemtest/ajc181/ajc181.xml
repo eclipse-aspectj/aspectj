@@ -2,6 +2,10 @@
 
 <suite>
 
+	<ajc-test dir="bugs181/431976" title="thisEnclosingJoinPointStaticPart not initialized">
+		<compile options="-1.8" files="Code.java"/>
+	</ajc-test>
+	
 	<ajc-test dir="bugs181/435446" title="lvartable">
 		<compile options="-1.8" files="Application.java MyAspect.java">
 		</compile>
