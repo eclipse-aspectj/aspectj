@@ -2,6 +2,10 @@
 
 <suite>
 
+	<ajc-test dir="bugs181/436531" title="parameter names attribute">
+		<compile options="-1.8" files="Azpect.java" inpath="code.jar"/>
+	</ajc-test>
+
 	<ajc-test dir="bugs181/431976" title="variable not initialized">
 		<compile options="-1.8" files="AbstractDependencyInjectionAspect.aj"/>
 	</ajc-test>

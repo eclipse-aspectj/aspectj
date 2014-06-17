@@ -29,6 +29,8 @@ public class MethodParameters extends Attribute {
 	public final static int ACCESS_FLAGS_SYNTHETIC = 0x1000;
 	public final static int ACCESS_FLAGS_MANDATED  = 0x8000;
 	
+	// if 'isInPackedState' then this data needs unpacking
+	private boolean isInPackedState = false;
 	private byte[] data;
 	private int[] names;
 	private int[] accessFlags;
@@ -37,6 +39,7 @@ public class MethodParameters extends Attribute {
 		super(Constants.ATTR_METHOD_PARAMETERS,index,length,cpool);
 		data = new byte[length];
 		dis.read(data,0,length);
+		isInPackedState = true;
 	}
 	
 	private void ensureInflated() {
@@ -55,6 +58,7 @@ public class MethodParameters extends Attribute {
 					accessFlags[i] = dis.readUnsignedShort();
 				}
 			}
+			isInPackedState = false;
 		} catch (IOException ioe) {
 			throw new RuntimeException("Unabled to inflate type annotation data, badly formed?");
 		}
@@ -62,10 +66,14 @@ public class MethodParameters extends Attribute {
 	
 	public void dump(DataOutputStream dos) throws IOException {
 		super.dump(dos);
-		dos.writeByte(names.length);
-		for (int i=0;i<names.length;i++) {
-			dos.writeShort(names[i]);
-			dos.writeShort(accessFlags[i]);
+		if (isInPackedState) {
+			dos.write(data);
+		} else {
+			dos.writeByte(names.length);
+			for (int i=0;i<names.length;i++) {
+				dos.writeShort(names[i]);
+				dos.writeShort(accessFlags[i]);
+			}
 		}
 	}
 	

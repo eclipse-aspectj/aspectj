@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  * @author Andy Clement
  */
 public class Ajc181Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
+
+	public void testParameterNamesAttribute_436531() {
+		runTest("parameter names attribute");
+	}
 	
 	public void testVariableNotInitialized_431976() {
 		runTest("variable not initialized");
