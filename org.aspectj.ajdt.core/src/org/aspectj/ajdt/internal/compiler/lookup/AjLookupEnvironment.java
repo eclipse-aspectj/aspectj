@@ -420,6 +420,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				weaveIntertypes(typesToProcess, (SourceTypeBinding) binding, typeMungers, declareParents, declareAnnotationOnTypes,
 						mode);
 			}
+			else if (binding instanceof ParameterizedTypeBinding && (((ParameterizedTypeBinding)binding).type instanceof SourceTypeBinding) && typesToProcess.contains(((ParameterizedTypeBinding)binding).type)) {
+				weaveIntertypes(typesToProcess, (SourceTypeBinding) ((ParameterizedTypeBinding)binding).type, typeMungers, declareParents, declareAnnotationOnTypes, mode);
+			}
 		}
 		weaveInterTypeDeclarations(typeToWeave, typeMungers, declareParents, declareAnnotationOnTypes, false, mode);
 		typesToProcess.remove(typeToWeave);
