@@ -1297,6 +1297,10 @@ public class BcelWeaver {
 			// resolve it if the caller could not pass in the resolved type
 			resolvedTypeToWeave = world.resolve(typeToWeave);
 		}
+//		if (resolvedTypeToWeave.isTypeHierarchyComplete()) {
+//			typesForWeaving.remove(typeToWeave);
+//			return;
+//		}
 		ResolvedType superclassType = resolvedTypeToWeave.getSuperclass();
 		String superclassTypename = (superclassType == null ? null : superclassType.getName());
 
@@ -1319,7 +1323,11 @@ public class BcelWeaver {
 		}
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_DECLARE_PARENTS,
 				resolvedTypeToWeave.getName());
-		weaveParentTypeMungers(resolvedTypeToWeave);
+		// If A was processed before B (and was declared 'class A implements B') then there is no need to complete B again, it 
+		// will have been done whilst processing A.
+		if (!resolvedTypeToWeave.isTypeHierarchyComplete()) {
+			weaveParentTypeMungers(resolvedTypeToWeave);
+		}
 		CompilationAndWeavingContext.leavingPhase(tok);
 		typesForWeaving.remove(typeToWeave);
 		resolvedTypeToWeave.tagAsTypeHierarchyComplete();

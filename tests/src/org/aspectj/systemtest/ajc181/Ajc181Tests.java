@@ -22,6 +22,18 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc181Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testJarWeaving_433351_4() {
+		runTest("jar weaving 4");
+	}
+
+	public void testJarWeaving_433351_3() {
+		runTest("jar weaving 3");
+	}
+
+	public void testJarWeaving_433351_2() {
+		runTest("jar weaving 2");
+	}
+
 	public void testJarWeaving_433351() {
 		runTest("jar weaving");
 	}

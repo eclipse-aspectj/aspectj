@@ -50,7 +50,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	protected World world;
 
-	private int bits;
+	protected int bits;
 
 	private static int AnnotationBitsInitialized = 0x0001;
 	private static int AnnotationMarkedInherited = 0x0002;
@@ -2798,10 +2798,19 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	public void tagAsTypeHierarchyComplete() {
+		if (isParameterizedOrRawType()) {
+			ReferenceType genericType = this.getGenericType();
+			genericType.tagAsTypeHierarchyComplete();
+			return;
+		}
 		bits |= TypeHierarchyCompleteBit;
 	}
 
 	public boolean isTypeHierarchyComplete() {
+		if (isParameterizedOrRawType()) {
+			ReferenceType genericType = this.getGenericType();
+			return genericType.isTypeHierarchyComplete();
+		}
 		return (bits & TypeHierarchyCompleteBit) != 0;
 	}
 
