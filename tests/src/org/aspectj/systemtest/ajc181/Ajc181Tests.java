@@ -22,6 +22,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc181Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testJarWeaving_433351() {
+		runTest("jar weaving");
+	}
+	
 	public void testParameterNamesAttribute_436531() {
 		runTest("parameter names attribute");
 	}

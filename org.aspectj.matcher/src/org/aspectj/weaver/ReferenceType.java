@@ -1163,6 +1163,12 @@ public class ReferenceType extends ResolvedType {
 		if (getDelegate() != null) {
 			delegate.ensureConsistent();
 		}
+		if (isRawType()) {
+			ReferenceType genericType = getGenericType();
+			if (genericType != null) {
+				genericType.ensureConsistent();
+			}
+		}
 	}
 
 	@Override
