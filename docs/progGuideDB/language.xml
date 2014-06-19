@@ -235,7 +235,7 @@ void setX(int x) { this.x = x; }
 ]]></programlisting>
 
     <para>
-      This piece of program says that that when method named
+      This piece of program says that when method named
       <literal>setX</literal> with an <literal>int</literal> argument
       called on an object of type <literal>Point</literal>, then the method
       body <literal>{ this.x = x; }</literal> is executed. Similarly, the
