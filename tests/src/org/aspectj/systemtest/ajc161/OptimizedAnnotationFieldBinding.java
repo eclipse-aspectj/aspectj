@@ -67,6 +67,6 @@ public class OptimizedAnnotationFieldBinding extends XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-	    return new File("../tests/src/org/aspectj/systemtest/ajc161/annotationFieldBinding.xml");
+	    return getClassResource("annotationFieldBinding.xml");
 	}
 }

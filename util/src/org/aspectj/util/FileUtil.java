@@ -245,7 +245,7 @@ public class FileUtil {
 	/**
 	 * Extract the name of a class from the path to its file. If the basedir is null, then the class is assumed to be in the default
 	 * package unless the classFile has one of the top-level suffixes { com, org, java, javax } as a parent directory.
-	 * 
+	 *
 	 * @param basedir the File of the base directory (prefix of classFile)
 	 * @param classFile the File of the class to extract the name for
 	 * @throws IllegalArgumentException if classFile is null or does not end with ".class" or a non-null basedir is not a prefix of
@@ -288,7 +288,7 @@ public class FileUtil {
 
 	/**
 	 * Normalize path for comparisons by rendering absolute, clipping basedir prefix, trimming and changing '\\' to '/'
-	 * 
+	 *
 	 * @param file the File with the path to normalize
 	 * @param basedir the File for the prefix of the file to normalize - ignored if null
 	 * @return "" if null or normalized path otherwise
@@ -310,7 +310,7 @@ public class FileUtil {
 
 	/**
 	 * Render a set of files to String as a path by getting absolute paths of each and delimiting with infix.
-	 * 
+	 *
 	 * @param files the File[] to flatten - may be null or empty
 	 * @param infix the String delimiter internally between entries (if null, then use File.pathSeparator). (alias to
 	 *        <code>flatten(getAbsolutePaths(files), infix)</code>
@@ -325,7 +325,7 @@ public class FileUtil {
 
 	/**
 	 * Flatten File[] to String.
-	 * 
+	 *
 	 * @param files the File[] of paths to flatten - null ignored
 	 * @param infix the String infix to use - null treated as File.pathSeparator
 	 */
@@ -352,7 +352,7 @@ public class FileUtil {
 
 	/**
 	 * Normalize path for comparisons by rendering absolute trimming and changing '\\' to '/'
-	 * 
+	 *
 	 * @return "" if null or normalized path otherwise
 	 */
 	public static String normalizedPath(File file) {
@@ -372,7 +372,7 @@ public class FileUtil {
 	/**
 	 * Get best File for the first-readable path in input paths, treating entries prefixed "sp:" as system property keys. Safe to
 	 * call in static initializers.
-	 * 
+	 *
 	 * @param paths the String[] of paths to check.
 	 * @return null if not found, or valid File otherwise
 	 */
@@ -410,7 +410,7 @@ public class FileUtil {
 
 	/**
 	 * Render as best file, canonical or absolute.
-	 * 
+	 *
 	 * @param file the File to get the best File for (not null)
 	 * @return File of the best-available path
 	 * @throws IllegalArgumentException if file is null
@@ -430,7 +430,7 @@ public class FileUtil {
 
 	/**
 	 * Render as best path, canonical or absolute.
-	 * 
+	 *
 	 * @param file the File to get the path for (not null)
 	 * @return String of the best-available path
 	 * @throws IllegalArgumentException if file is null
@@ -464,7 +464,7 @@ public class FileUtil {
 
 	/**
 	 * Recursively delete the contents of dir, but not the dir itself
-	 * 
+	 *
 	 * @return the total number of files deleted
 	 */
 	public static int deleteContents(File dir) {
@@ -474,7 +474,7 @@ public class FileUtil {
 	/**
 	 * Recursively delete some contents of dir, but not the dir itself. This deletes any subdirectory which is empty after its files
 	 * are deleted.
-	 * 
+	 *
 	 * @return the total number of files deleted
 	 */
 	public static int deleteContents(File dir, FileFilter filter) {
@@ -484,7 +484,7 @@ public class FileUtil {
 	/**
 	 * Recursively delete some contents of dir, but not the dir itself. If deleteEmptyDirs is true, this deletes any subdirectory
 	 * which is empty after its files are deleted.
-	 * 
+	 *
 	 * @param dir the File directory (if a file, the the file is deleted)
 	 * @return the total number of files deleted
 	 */
@@ -499,21 +499,28 @@ public class FileUtil {
 			dir.delete();
 			return 1;
 		}
-		String[] fromFiles = dir.list();
-		int result = 0;
-		for (int i = 0; i < fromFiles.length; i++) {
-			String string = fromFiles[i];
-			File file = new File(dir, string);
-			if ((null == filter) || filter.accept(file)) {
-				if (file.isDirectory()) {
-					result += deleteContents(file, filter, deleteEmptyDirs);
-					if (deleteEmptyDirs && (0 == file.list().length)) {
-						file.delete();
-					}
-				} else {
-					/* boolean ret = */file.delete();
-					result++;
-				}
+    String[] fromFiles = dir.list();
+    if (fromFiles == null) {
+      return 0;
+    }
+    int result = 0;
+    for (int i = 0; i < fromFiles.length; i++) {
+      String string = fromFiles[i];
+      File file = new File(dir, string);
+      if ((null == filter) || filter.accept(file)) {
+        if (file.isDirectory()) {
+          result += deleteContents(file, filter, deleteEmptyDirs);
+          String[] fileContent = file.list();
+          if (deleteEmptyDirs &&
+                  fileContent != null &&
+                  0 == fileContent.length) {
+            file.delete();
+          }
+        } else {
+          /* boolean ret = */
+          file.delete();
+          result++;
+        }
 			}
 		}
 		return result;
@@ -521,7 +528,7 @@ public class FileUtil {
 
 	/**
 	 * Copy contents of fromDir into toDir
-	 * 
+	 *
 	 * @param fromDir must exist and be readable
 	 * @param toDir must exist or be creatable and be writable
 	 * @return the total number of files copied
@@ -534,7 +541,7 @@ public class FileUtil {
 	 * Recursively copy files in fromDir (with any fromSuffix) to toDir, replacing fromSuffix with toSuffix if any. This silently
 	 * ignores dirs and files that are not readable but throw IOException for directories that are not writable. This does not clean
 	 * out the original contents of toDir. (subdirectories are not renamed per directory rules)
-	 * 
+	 *
 	 * @param fromSuffix select files with this suffix - select all if null or empty
 	 * @param toSuffix replace fromSuffix with toSuffix in the destination file name - ignored if null or empty, appended to name if
 	 *        fromSuffix is null or empty
@@ -584,7 +591,7 @@ public class FileUtil {
 	 * ignores dirs and files that are not readable but throw IOException for directories that are not writable. This does not clean
 	 * out the original contents of toDir. (subdirectories are not renamed per directory rules) This calls any delegate
 	 * FilenameFilter to collect any selected file.
-	 * 
+	 *
 	 * @param fromSuffix select files with this suffix - select all if null or empty
 	 * @param toSuffix replace fromSuffix with toSuffix in the destination file name - ignored if null or empty, appended to name if
 	 *        fromSuffix is null or empty
@@ -641,7 +648,7 @@ public class FileUtil {
 
 	/**
 	 * Recursively list files in srcDir.
-	 * 
+	 *
 	 * @return ArrayList with String paths of File under srcDir (relative to srcDir)
 	 */
 	public static String[] listFiles(File srcDir) {
@@ -661,7 +668,7 @@ public class FileUtil {
 
 	/**
 	 * Recursively list files in srcDir.
-	 * 
+	 *
 	 * @return ArrayList with String paths of File under srcDir (relative to srcDir)
 	 */
 	public static File[] listFiles(File srcDir, FileFilter fileFilter) {
@@ -674,7 +681,7 @@ public class FileUtil {
 
 	/**
 	 * Recursively list .class files in specified directory
-	 * 
+	 *
 	 * @return List of File objects
 	 */
 	public static List<File> listClassFiles(File dir) {
@@ -687,7 +694,7 @@ public class FileUtil {
 
 	/**
 	 * Convert String[] paths to File[] as offset of base directory
-	 * 
+	 *
 	 * @param basedir the non-null File base directory for File to create with paths
 	 * @param paths the String[] of paths to create
 	 * @return File[] with same length as paths
@@ -698,7 +705,7 @@ public class FileUtil {
 
 	/**
 	 * Convert String[] paths to File[] as offset of base directory
-	 * 
+	 *
 	 * @param basedir the non-null File base directory for File to create with paths
 	 * @param paths the String[] of paths to create
 	 * @param suffixes the String[] of suffixes to limit sources to - ignored if null
@@ -731,7 +738,7 @@ public class FileUtil {
 
 	/**
 	 * Create a new File, resolving paths ".." and "." specially.
-	 * 
+	 *
 	 * @param dir the File for the parent directory of the file
 	 * @param path the path in the parent directory (filename only?)
 	 * @return File for the new file.
@@ -755,7 +762,7 @@ public class FileUtil {
 	 * Copy files from source dir into destination directory, creating any needed directories. This differs from copyDir in not
 	 * being recursive; each input with the source dir creates a full path. However, if the source is a directory, it is copied as
 	 * such.
-	 * 
+	 *
 	 * @param srcDir an existing, readable directory containing relativePaths files
 	 * @param relativePaths a set of paths relative to srcDir to readable File to copy
 	 * @param destDir an existing, writable directory to copy files to
@@ -785,7 +792,7 @@ public class FileUtil {
 
 	/**
 	 * Copy fromFile to toFile, handling file-file, dir-dir, and file-dir copies.
-	 * 
+	 *
 	 * @param fromFile the File path of the file or directory to copy - must be readable
 	 * @param toFile the File path of the target file or directory - must be writable (will be created if it does not exist)
 	 */
@@ -825,7 +832,7 @@ public class FileUtil {
 	/**
 	 * Ensure that the parent directory to path can be written. If the path has a null parent, DEFAULT_PARENT is tested. If the path
 	 * parent does not exist, this tries to create it.
-	 * 
+	 *
 	 * @param path the File path whose parent should be writable
 	 * @return the File path of the writable parent directory
 	 * @throws IllegalArgumentException if parent cannot be written or path is null.
@@ -845,7 +852,7 @@ public class FileUtil {
 
 	/**
 	 * Copy file to file.
-	 * 
+	 *
 	 * @param fromFile the File to copy (readable, non-null file)
 	 * @param toFile the File to copy to (non-null, parent dir exists)
 	 * @throws IOException
@@ -896,7 +903,7 @@ public class FileUtil {
 
 	/**
 	 * Make a new child directory of parent
-	 * 
+	 *
 	 * @param parent a File for the parent (writable)
 	 * @param child a prefix for the child directory
 	 * @return a File dir that exists with parentDir as the parent file or null
@@ -924,7 +931,7 @@ public class FileUtil {
 	/**
 	 * Make a new temporary directory in the same directory that the system uses for temporary files, or if that files, in the
 	 * current directory.
-	 * 
+	 *
 	 * @param name the preferred (simple) name of the directory - may be null.
 	 * @return File of an existing new temp dir, or null if unable to create
 	 */
@@ -963,7 +970,7 @@ public class FileUtil {
 
 	/**
 	 * Get URL for a File. This appends "/" for directories. prints errors to System.err
-	 * 
+	 *
 	 * @param file the File to convert to URL (not null)
 	 */
 	@SuppressWarnings("deprecation")
@@ -988,7 +995,7 @@ public class FileUtil {
 	/**
 	 * Write contents to file, returning null on success or error message otherwise. This tries to make any necessary parent
 	 * directories first.
-	 * 
+	 *
 	 * @param file the File to write (not null)
 	 * @param contents the String to write (use "" if null)
 	 * @return String null on no error, error otherwise
@@ -1221,7 +1228,7 @@ public class FileUtil {
 
 	/**
 	 * Do line-based search for literal text in source files, returning file:line where found.
-	 * 
+	 *
 	 * @param sought the String text to seek in the file
 	 * @param sources the List of String paths to the source files
 	 * @param listAll if false, only list first match in file
@@ -1248,7 +1255,7 @@ public class FileUtil {
 	 * Do line-based search for literal text in source file, returning line where found as a String in the form
 	 * {sourcePath}:line:column submitted to the collecting parameter sink. Any error is rendered to String and returned as the
 	 * result.
-	 * 
+	 *
 	 * @param sought the String text to seek in the file
 	 * @param sources the List of String paths to the source files
 	 * @param listAll if false, only list first match in file
@@ -1305,7 +1312,7 @@ public class FileUtil {
 
 	/**
 	 * Sleep until after the last last-modified stamp from the files.
-	 * 
+	 *
 	 * @param files the File[] of files to inspect for last modified times (this ignores null or empty files array and null or
 	 *        non-existing components of files array)
 	 * @return true if succeeded without 100 interrupts
@@ -1402,7 +1409,7 @@ public class FileUtil {
 			return url.toURI().getPath();
 		} catch (URISyntaxException e) {
 			System.err.println("Warning!! Malformed URL may cause problems: "+url); // TODO: Better way to report this?
-			// In this case it was likely not using properly escaped 
+			// In this case it was likely not using properly escaped
 			// characters so we just use the 'bad' method that doesn't decode
 			// special chars
 			return url.getPath();
@@ -1411,7 +1418,7 @@ public class FileUtil {
 
 	/**
 	 * A pipe when run reads from an input stream to an output stream, optionally sleeping between reads.
-	 * 
+	 *
 	 * @see #copyStream(InputStream, OutputStream)
 	 */
 	public static class Pipe implements Runnable {
@@ -1437,7 +1444,7 @@ public class FileUtil {
 
 		/**
 		 * alias for <code>Pipe(in, out, 100l, false, false)</code>
-		 * 
+		 *
 		 * @param in the InputStream source to read
 		 * @param out the OutputStream sink to write
 		 */
@@ -1523,7 +1530,7 @@ public class FileUtil {
 
 		/**
 		 * Tell the pipe to halt the next time it gains control.
-		 * 
+		 *
 		 * @param wait if true, this waits synchronously until pipe is done
 		 * @param finishStream if true, then continue until a read from the input stream returns no bytes, then halt.
 		 * @return true if <code>run()</code> will return the next time it gains control

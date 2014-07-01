@@ -27,7 +27,7 @@ public class MigrationTests extends XMLBasedAjcTestCase {
 	  }
 
 	  protected File getSpecFile() {
-	    return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
+	    return getClassResource("ajc150.xml");
 	  }
   /**
    * Compile a simple java class with an aspect library built with aspectj 1.2.1 - this

@@ -20,7 +20,7 @@ public class AjcPre10xTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   }
 
   protected File getSpecFile() {
-    return new File("../tests/src/org/aspectj/systemtest/pre10x/pre10x.xml");
+    return getClassResource("pre10x.xml");
   }
 
 

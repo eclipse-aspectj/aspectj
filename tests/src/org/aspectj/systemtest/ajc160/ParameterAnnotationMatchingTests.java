@@ -93,6 +93,6 @@ public class ParameterAnnotationMatchingTests extends XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-	    return new File("../tests/src/org/aspectj/systemtest/ajc160/parameterAnnotations.xml");
+	    return getClassResource("parameterAnnotations.xml");
 	}
 }

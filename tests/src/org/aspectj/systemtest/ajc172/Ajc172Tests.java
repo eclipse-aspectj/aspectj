@@ -204,7 +204,7 @@ public class Ajc172Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	@Override
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc172/ajc172.xml");
+		return getClassResource("ajc172.xml");
 	}
 
 }

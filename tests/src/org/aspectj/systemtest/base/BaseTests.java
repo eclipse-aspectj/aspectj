@@ -20,7 +20,7 @@ public class BaseTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   }
 
   protected File getSpecFile() {
-    return new File("../tests/src/org/aspectj/systemtest/base/baseTests.xml");
+    return getClassResource("baseTests.xml");
   }
 
 

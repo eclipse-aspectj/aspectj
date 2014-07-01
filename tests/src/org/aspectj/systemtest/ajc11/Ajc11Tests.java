@@ -22,7 +22,7 @@ public class Ajc11Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc11/ajc11.xml");
+		return getClassResource("ajc11.xml");
 	}
 
 	public void test001() {

@@ -50,6 +50,6 @@ public class AnnotationValueMatchingTests extends XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-	    return new File("../tests/src/org/aspectj/systemtest/ajc160/annotationValueMatching.xml");
+	    return getClassResource("annotationValueMatching.xml");
 	}
 }

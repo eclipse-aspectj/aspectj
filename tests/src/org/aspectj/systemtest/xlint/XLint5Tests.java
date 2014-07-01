@@ -23,7 +23,7 @@ public class XLint5Tests  extends XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/xlint/xlint.xml");
+		return getClassResource("xlint.xml");
 	}
 	  
 	public void testBug99136(){

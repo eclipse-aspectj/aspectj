@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
- * initial development             Jonas Bonér, Alexandre Vasseur 
+ * initial development             Jonas Bonï¿½r, Alexandre Vasseur 
  *******************************************************************************/
 package org.aspectj.systemtest.ajc150.ataspectj;
 
@@ -28,7 +28,7 @@ public class AtAjAnnotationGenTests extends XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-	  return new File("../tests/src/org/aspectj/systemtest/ajc150/ataspectj/annotationgen.xml");
+	  return getClassResource("annotationgen.xml");
 	}
 	
 	public void testSimpleAspect() {

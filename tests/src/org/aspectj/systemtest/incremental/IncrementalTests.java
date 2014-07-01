@@ -25,7 +25,7 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   }
 
   protected File getSpecFile() {
-    return new File("../tests/src/org/aspectj/systemtest/incremental/incremental.xml");
+    return getClassResource("incremental.xml");
   }
 
 

@@ -255,7 +255,7 @@ public class SynchronizationTests extends XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc152/synchronization.xml");
+		return getClassResource("synchronization.xml");
 	}
 
 }

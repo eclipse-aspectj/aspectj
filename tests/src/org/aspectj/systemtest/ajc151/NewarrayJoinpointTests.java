@@ -119,7 +119,7 @@ public class NewarrayJoinpointTests extends XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc151/newarray_joinpoint.xml");
+		return getClassResource("newarray_joinpoint.xml");
 	}
 
 }

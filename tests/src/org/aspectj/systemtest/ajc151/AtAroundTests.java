@@ -83,7 +83,7 @@ public class AtAroundTests extends XMLBasedAjcTestCase {
   }
 
   protected File getSpecFile() {
-    return new File("../tests/src/org/aspectj/systemtest/ajc151/ataround.xml");
+    return getClassResource("ataround.xml");
   }
 	
 }

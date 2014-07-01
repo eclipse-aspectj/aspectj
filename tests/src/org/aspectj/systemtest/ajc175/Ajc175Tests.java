@@ -36,7 +36,7 @@ public class Ajc175Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc175/ajc175.xml");
+		return getClassResource("ajc175.xml");
 	}
 
 	public static void main(String[] args) {

@@ -417,7 +417,7 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc164/ajc164.xml");
+		return getClassResource("ajc164.xml");
 	}
 
 	private IProgramElement findElementAtLine(IProgramElement whereToLook, int line) {

@@ -31,7 +31,7 @@ public class SerialVersionUIDTests extends XMLBasedAjcTestCase {
   }
 
   protected File getSpecFile() {
-    return new File("../tests/src/org/aspectj/systemtest/ajc151/serialversionuid.xml");
+    return getClassResource("serialversionuid.xml");
   }
 	
 }

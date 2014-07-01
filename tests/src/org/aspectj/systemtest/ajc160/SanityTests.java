@@ -156,7 +156,7 @@ public class SanityTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc160/sanity-tests.xml");
+		return getClassResource("sanity-tests.xml");
 	}
 
 }

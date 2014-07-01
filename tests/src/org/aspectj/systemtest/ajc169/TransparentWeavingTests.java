@@ -238,7 +238,7 @@ public class TransparentWeavingTests extends org.aspectj.testing.XMLBasedAjcTest
 
 	@Override
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc169/transparentweaving.xml");
+		return getClassResource("transparentweaving.xml");
 	}
 
 }

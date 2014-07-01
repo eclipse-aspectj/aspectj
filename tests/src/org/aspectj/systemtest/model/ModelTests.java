@@ -108,7 +108,7 @@ public class ModelTests extends ModelTestCase {
 	}
 
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/model/model.xml");
+		return getClassResource("model.xml");
 	}
 
 }

@@ -24,7 +24,7 @@ public class IncrementalModelTests extends org.aspectj.testing.XMLBasedAjcTestCa
 	}
 
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/incremental/model/incremental-model.xml");
+		return getClassResource("incremental-model.xml");
 	}
 
 	// This first test doesnt do a lot currently, but is ready too...

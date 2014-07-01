@@ -429,5 +429,9 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		return null;
 	}
 
+  protected File getClassResource(String resourceName) {
+    return new File(getClass().getResource(resourceName).getFile());
+  }
+
 	
 }

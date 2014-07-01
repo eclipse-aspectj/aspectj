@@ -84,6 +84,6 @@ public class PipeliningTests extends org.aspectj.testing.XMLBasedAjcTestCase {
     return XMLBasedAjcTestCase.loadSuite(PipeliningTests.class);
   }
   protected File getSpecFile() {
-    return new File("../tests/src/org/aspectj/systemtest/ajc153/pipelining.xml");
+    return getClassResource("pipelining.xml");
   }
 }

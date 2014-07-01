@@ -33,7 +33,7 @@ public class JointpointIdTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc164/joinpointid.xml");
+		return getClassResource("joinpointid.xml");
 	}
 
 }

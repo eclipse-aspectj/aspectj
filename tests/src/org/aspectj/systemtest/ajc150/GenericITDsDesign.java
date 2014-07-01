@@ -36,7 +36,7 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 
 	@Override
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc150/ajc150.xml");
+		return getClassResource("ajc150.xml");
 	}
 
 	private void verifyDebugString(ResolvedMember theMember, String string) {

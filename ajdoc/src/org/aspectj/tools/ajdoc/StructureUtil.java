@@ -148,7 +148,7 @@ public class StructureUtil {
 		if (node.getParameterTypes() != null) {
 			sb.append('(');
 			for (int i = 0; i < node.getParameterTypes().size(); i++) {
-				sb.append((String) node.getParameterTypes().get(i));
+				sb.append(String.valueOf(node.getParameterTypes().get(i)));
 				sb.append(' ');
 				sb.append((String) node.getParameterNames().get(i));
 				if (i < node.getParameterTypes().size() - 1) {

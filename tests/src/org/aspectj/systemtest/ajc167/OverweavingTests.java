@@ -78,7 +78,7 @@ public class OverweavingTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc167/overweaving.xml");
+		return getClassResource("overweaving.xml");
 	}
 
 }

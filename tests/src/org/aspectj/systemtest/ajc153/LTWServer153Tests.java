@@ -13,7 +13,7 @@ public class LTWServer153Tests extends XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-	    return new File("../tests/src/org/aspectj/systemtest/ajc153/ajc153.xml");
+	    return getClassResource("ajc153.xml");
 	}
     
   	public void testHandleDuplicateConfiguration_pr157474 () {

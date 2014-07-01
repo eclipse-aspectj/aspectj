@@ -217,7 +217,7 @@ public class Ajc162Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc162/ajc162.xml");
+		return getClassResource("ajc162.xml");
 	}
 
 }

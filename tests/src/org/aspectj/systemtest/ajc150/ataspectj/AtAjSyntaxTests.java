@@ -29,7 +29,7 @@ public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc150/ataspectj/syntax.xml");
+		return getClassResource("syntax.xml");
 	}
 
 	public void testSimpleBefore() {

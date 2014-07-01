@@ -28,7 +28,7 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc150/ataspectj/ltw.xml");
+    return getClassResource("ltw.xml");
 	}
 
 	public void testRunThemAllWithJavacCompiledAndLTW() {

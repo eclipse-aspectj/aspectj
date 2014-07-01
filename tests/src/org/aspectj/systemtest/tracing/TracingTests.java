@@ -23,7 +23,7 @@ public class TracingTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/tracing/tracing.xml");
+		return getClassResource("tracing.xml");
 	}
 	
 	public void testTracing () {

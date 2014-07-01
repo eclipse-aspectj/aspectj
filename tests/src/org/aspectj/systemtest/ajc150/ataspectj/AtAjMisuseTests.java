@@ -22,7 +22,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 public class AtAjMisuseTests extends XMLBasedAjcTestCase {
 
     protected File getSpecFile() {
-        return new File("../tests/src/org/aspectj/systemtest/ajc150/ataspectj/misuse.xml");
+        return getClassResource("misuse.xml");
     }
 
     public static Test suite() {

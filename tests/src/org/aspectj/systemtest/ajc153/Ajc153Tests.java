@@ -502,7 +502,7 @@ public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc153/ajc153.xml");
+		return getClassResource("ajc153.xml");
 	}
 
 }
