@@ -31,13 +31,7 @@ import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.*;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.AccessRestriction;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
@@ -1432,6 +1426,29 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	public void anonymousTypeBindingCreated(LocalTypeBinding aBinding) {
 		factory.addSourceTypeBinding(aBinding, null);
 	}
+
+  @Override
+  public void buildTypeBindings(CompilationUnitDeclaration unit, AccessRestriction accessRestriction) {
+    if (this.isProcessingAnnotations && hasAspectDeclarations(unit)) {
+      throw new SourceTypeCollisionException();
+    }
+    super.buildTypeBindings(unit, accessRestriction);
+  }
+
+  private static boolean hasAspectDeclarations(CompilationUnitDeclaration unit) {
+    for (int j = 0; j < unit.types.length; j++) {
+      if (unit.types[j] instanceof AspectDeclaration) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public void reset() {
+    this.factory.cleanup();
+    super.reset();
+  }
 }
 
 // commented out, supplied as info on how to manipulate annotations in an
