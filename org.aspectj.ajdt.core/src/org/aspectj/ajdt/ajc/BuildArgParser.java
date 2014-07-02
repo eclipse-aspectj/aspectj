@@ -694,17 +694,6 @@ public class BuildArgParser extends Main {
 				addPairToUnparsed(args, arg, nextArgIndex, "-s requires directory");
 			} else if (arg.equals("-classNames")) { // -classNames <className1[,className2,...]>
 				addPairToUnparsed(args, arg, nextArgIndex, "-classNames requires list of classes");
-			} else
-			// if you want to run ajc compiler in Intellij Idea you have to add jvm arg "-XXproc:ignore" for getting atp to work
-			if (arg.equals("-XXproc:ignore")) { // TODO(yshkvoskiy): remove it when IDEA will support correct 'proc' parameters
-				for (final Iterator<Arg> i = args.iterator(); i.hasNext(); ) {
-					if (i.next().getValue().startsWith("-proc:"))
-						i.remove();
-				}
-				for (final Iterator<String> i = unparsedArgs.iterator(); i.hasNext(); ) {
-					if (i.next().startsWith("-proc:"))
-						i.remove();
-				}
 			} else if (new File(arg).isDirectory()) {
 				showError("dir arg not permitted: " + arg);
 			} else if (arg.startsWith("-Xajruntimetarget")) {
