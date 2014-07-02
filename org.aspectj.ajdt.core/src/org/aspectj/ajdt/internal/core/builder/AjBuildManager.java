@@ -37,6 +37,7 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
+import org.aspectj.ajdt.ajc.BuildArgParser;
 import org.aspectj.ajdt.internal.compiler.AjCompilerAdapter;
 import org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter;
 import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
@@ -80,7 +81,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
-import org.aspectj.org.eclipse.jdt.internal.compiler.impl.IrritantSet;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
@@ -134,7 +134,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	private boolean batchCompile = true;
 	private INameEnvironment environment;
 
-	private Map /* String -> List<UCF> */binarySourcesForTheNextCompile = new HashMap();
+	private Map<String, List<UnwovenClassFile>> /* String -> List<UCF> */binarySourcesForTheNextCompile = new HashMap<String, List<UnwovenClassFile>>();
 
 	// FIXME asc should this really be in here?
 	// private AsmManager structureModel;
@@ -146,8 +146,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 	/**
 	 * Enable check for runtime version, used only by Ant/command-line Main.
-	 * 
-	 * @param main Main unused except to limit to non-null clients.
+	 *
+	 * @param caller Main unused except to limit to non-null clients.
 	 */
 	public static void enableRuntimeVersionCheck(Main caller) {
 		DO_RUNTIME_VERSION_CHECK = null != caller;
@@ -191,7 +191,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 	/**
 	 * Perform a build.
-	 * 
+	 *
 	 * @return true if the build was successful (ie. no errors)
 	 */
 	private boolean performBuild(AjBuildConfig buildConfig, IMessageHandler baseHandler, boolean isFullBuild) throws IOException,
@@ -203,8 +203,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			((ILifecycleAware) baseHandler).buildStarting(!isFullBuild);
 		}
 		CompilationAndWeavingContext.reset();
-		int phase = isFullBuild ? CompilationAndWeavingContext.BATCH_BUILD : CompilationAndWeavingContext.INCREMENTAL_BUILD;
-		ContextToken ct = CompilationAndWeavingContext.enteringPhase(phase, buildConfig);
+		final int phase = isFullBuild ? CompilationAndWeavingContext.BATCH_BUILD : CompilationAndWeavingContext.INCREMENTAL_BUILD;
+		final ContextToken ct = CompilationAndWeavingContext.enteringPhase(phase, buildConfig);
 		try {
 			if (isFullBuild) {
 				this.state = new AjState(this);
@@ -212,7 +212,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 			this.state.setCouldBeSubsequentIncrementalBuild(this.environmentSupportsIncrementalCompilation);
 
-			boolean canIncremental = state.prepareForNextBuild(buildConfig);
+			final boolean canIncremental = state.prepareForNextBuild(buildConfig);
 			if (!canIncremental && !isFullBuild) { // retry as batch?
 				CompilationAndWeavingContext.leavingPhase(ct);
 				if (state.listenerDefined()) {
@@ -224,7 +224,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 			if (buildConfig == null || buildConfig.isCheckRuntimeVersion()) {
 				if (DO_RUNTIME_VERSION_CHECK) {
-					String check = checkRtJar(buildConfig);
+					final String check = checkRtJar(buildConfig);
 					if (check != null) {
 						if (FAIL_IF_RUNTIME_NOT_FOUND) {
 							MessageUtil.error(handler, check);
@@ -353,7 +353,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 			// for bug 113554: support ajsym file generation for command line builds
 			if (buildConfig.isGenerateCrossRefsMode()) {
-				File configFileProxy = new File(buildConfig.getOutputDir(), CROSSREFS_FILE_NAME);
+				final File configFileProxy = new File(buildConfig.getOutputDir(), CROSSREFS_FILE_NAME);
 				state.getStructureModel().writeStructureModel(configFileProxy.getAbsolutePath());
 			}
 
@@ -389,7 +389,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			}
 			ret = !handler.hasErrors();
 			if (getBcelWorld() != null) {
-				BcelWorld bcelWorld = getBcelWorld();
+				final BcelWorld bcelWorld = getBcelWorld();
 				bcelWorld.reportTimers();
 				bcelWorld.tidyUp();
 			}
@@ -404,7 +404,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 	/**
 	 * Open an output jar file in which to write the compiler output.
-	 * 
+	 *
 	 * @param outJar the jar file to open
 	 * @return true if successful
 	 */
@@ -547,7 +547,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	/**
 	 * Add a directory entry to the output zip file. Don't do anything if not writing out to a zip file. A directory entry is one
 	 * whose filename ends with '/'
-	 * 
+	 *
 	 * @param directory the directory path
 	 * @param srcloc the src of the directory entry, for use when creating a warning message
 	 * @throws IOException if something goes wrong creating the new zip entry
@@ -769,7 +769,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	/**
 	 * Responsible for managing the ASM model between builds. Contains the policy for maintaining the persistance of elements in the
 	 * model.
-	 * 
+	 *
 	 * This code is driven before each 'fresh' (batch) build to create a new model.
 	 */
 	private void setupModel(AjBuildConfig config) {
@@ -1021,10 +1021,15 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		}
 
 		org.aspectj.ajdt.internal.compiler.CompilerAdapter.setCompilerAdapterFactory(this);
-		org.aspectj.org.eclipse.jdt.internal.compiler.Compiler compiler = new org.aspectj.org.eclipse.jdt.internal.compiler.Compiler(
-				environment, DefaultErrorHandlingPolicies.proceedWithAllProblems(), buildConfig.getOptions().getMap(),
-				getBatchRequestor(), getProblemFactory());
+		final Map<?, ?> settings = buildConfig.getOptions().getMap();
+		final BuildArgParser bMain = buildConfig.getBuildArgParser();
 
+		final org.aspectj.org.eclipse.jdt.internal.compiler.Compiler compiler = new org.aspectj.org.eclipse.jdt.internal.compiler.Compiler(
+			environment, DefaultErrorHandlingPolicies.proceedWithAllProblems(), settings,
+			getBatchRequestor(), getProblemFactory());
+		bMain.compilerOptions = compiler.options;
+		bMain.batchCompiler = compiler;
+		bMain.initializeAnnotationProcessorManager();
 		compiler.options.produceReferenceInfo = true; // TODO turn off when not needed
 
 		try {
@@ -1069,7 +1074,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 	public ICompilerRequestor getBatchRequestor() {
 		return new ICompilerRequestor() {
-
+      @Override
 			public void acceptResult(CompilationResult unitResult) {
 				// end of compile, must now write the results to the output destination
 				// this is either a jar file or a file in a directory
@@ -1343,7 +1348,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.ajdt.internal.compiler.AjCompiler.IOutputClassFileNameProvider#getOutputClassFileName(char[])
 	 */
 	public String getOutputClassFileName(char[] eclipseClassFileName, CompilationResult result) {
@@ -1366,7 +1371,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.jdt.internal.compiler.ICompilerAdapterFactory#getAdapter(org.eclipse.jdt.internal.compiler.Compiler)
 	 */
 	public ICompilerAdapter getAdapter(org.aspectj.org.eclipse.jdt.internal.compiler.Compiler forCompiler) {
@@ -1406,7 +1411,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 	/**
 	 * Some AspectJ lint options need to be known about in the compiler. This is how we pass them over...
-	 * 
+	 *
 	 * @param forCompiler
 	 */
 	private void populateCompilerOptionsFromLintSettings(org.aspectj.org.eclipse.jdt.internal.compiler.Compiler forCompiler) {
@@ -1420,10 +1425,10 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.ajdt.internal.compiler.IBinarySourceProvider#getBinarySourcesForThisWeave()
 	 */
-	public Map getBinarySourcesForThisWeave() {
+	public Map<String, List<UnwovenClassFile>> getBinarySourcesForThisWeave() {
 		return binarySourcesForTheNextCompile;
 	}
 

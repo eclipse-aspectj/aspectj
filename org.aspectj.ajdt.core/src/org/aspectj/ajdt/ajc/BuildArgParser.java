@@ -12,35 +12,25 @@
 
 package org.aspectj.ajdt.ajc;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.StringTokenizer;
-
+import org.aspectj.ajdt.internal.compiler.lookup.EclipseSourceLocation;
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
-import org.aspectj.bridge.CountingMessageHandler;
-import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.Message;
-import org.aspectj.bridge.MessageUtil;
-import org.aspectj.bridge.SourceLocation;
-import org.aspectj.bridge.Version;
+import org.aspectj.bridge.*;
+import org.aspectj.org.eclipse.jdt.core.compiler.CategorizedProblem;
+import org.aspectj.org.eclipse.jdt.internal.compiler.apt.dispatch.AptProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.Main;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.Constants;
 import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.WeaverMessages;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.*;
 
 @SuppressWarnings("unchecked")
 public class BuildArgParser extends Main {
@@ -88,7 +78,7 @@ public class BuildArgParser extends Main {
 	 * Overrides super's bundle.
 	 */
 	public BuildArgParser(PrintWriter writer, IMessageHandler handler) {
-		super(writer, writer, false);
+		super(writer, writer, false, null, null);
 
 		if (writer instanceof StringPrintWriter) {
 			errorSink = ((StringPrintWriter) writer).stringWriter.getBuffer();
@@ -105,19 +95,19 @@ public class BuildArgParser extends Main {
 
 	/**
 	 * Generate build configuration for the input args, passing to handler any error messages.
-	 * 
+	 *
 	 * @param args the String[] arguments for the build configuration
 	 * @return AjBuildConfig per args, which will be invalid unless there are no handler errors.
 	 */
 	public AjBuildConfig genBuildConfig(String[] args) {
-		AjBuildConfig config = new AjBuildConfig();
+		final AjBuildConfig config = new AjBuildConfig(this);
 		populateBuildConfig(config, args, true, null);
 		return config;
 	}
 
 	/**
 	 * Generate build configuration for the input arguments, passing to handler any error messages.
-	 * 
+	 *
 	 * @param args the String[] arguments for the build configuration
 	 * @param setClasspath determines if the classpath should be parsed and set on the build configuration
 	 * @param configFile can be null
@@ -166,9 +156,9 @@ public class BuildArgParser extends Main {
 			// without these it will go searching for reasonable values from properties
 			// TODO fix org.eclipse.jdt.internal.compiler.batch.Main so this hack isn't needed
 			javaArgList.add("-classpath");
-			javaArgList.add(System.getProperty("user.dir"));
+			javaArgList.add(parser.classpath == null ? System.getProperty("user.dir") : parser.classpath);
 			javaArgList.add("-bootclasspath");
-			javaArgList.add(System.getProperty("user.dir"));
+			javaArgList.add(parser.bootclasspath == null ? System.getProperty("user.dir") : parser.bootclasspath);
 			javaArgList.addAll(parser.getUnparsedArgs());
 			super.configure(javaArgList.toArray(new String[javaArgList.size()]));
 
@@ -256,6 +246,34 @@ public class BuildArgParser extends Main {
 		System.out.println(version);
 	}
 
+	@Override
+	public void addExtraProblems(CategorizedProblem problem) {
+		super.addExtraProblems(problem);
+		if (problem instanceof AptProblem) {
+			handler.handleMessage(newAptMessage((AptProblem)problem));
+		}
+	}
+
+	private IMessage newAptMessage(AptProblem problem) {
+		String message = problem.getMessage();
+		boolean isError = problem.isError();
+		if (problem._referenceContext != null) {
+			return new Message(message,
+					new EclipseSourceLocation(problem._referenceContext.compilationResult(), problem.getSourceStart(), problem.getSourceEnd()),
+					isError);
+		} else {
+			return new Message(message, null, isError);
+		}
+	}
+
+	@Override
+	public void initializeAnnotationProcessorManager() {
+		if (this.compilerOptions.complianceLevel < ClassFileConstants.JDK1_6 || !this.compilerOptions.processAnnotations)
+			return;
+		super.initializeAnnotationProcessorManager();
+	}
+
+	@Override
 	public void printUsage() {
 		System.out.println(getUsage());
 		System.out.flush();
@@ -263,7 +281,7 @@ public class BuildArgParser extends Main {
 
 	/**
 	 * Get messages not dumped to handler or any PrintWriter.
-	 * 
+	 *
 	 * @param flush if true, empty errors
 	 * @return null if none, String otherwise
 	 * @see BuildArgParser()
@@ -668,6 +686,25 @@ public class BuildArgParser extends Main {
 				// dirLookahead(arg, args, nextArgIndex);
 			} else if (arg.equals("-proceedOnError")) {
 				buildConfig.setProceedOnError(true);
+			} else if (arg.equals("-processorpath")) { // -processorpath <directories and ZIP archives separated by pathseporator
+				addPairToUnparsed(args, arg, nextArgIndex, "-processorpath requires list of external directories or zip archives");
+			} else if (arg.equals("-processor")) { // -processor <class1[,class2,...]>
+				addPairToUnparsed(args, arg, nextArgIndex, "-processor requires list of processors' classes");
+			} else if (arg.equals("-s")) { // -s <dir> destination directory for generated source files
+				addPairToUnparsed(args, arg, nextArgIndex, "-s requires directory");
+			} else if (arg.equals("-classNames")) { // -classNames <className1[,className2,...]>
+				addPairToUnparsed(args, arg, nextArgIndex, "-classNames requires list of classes");
+			} else
+			// if you want to run ajc compiler in Intellij Idea you have to add jvm arg "-XXproc:ignore" for getting atp to work
+			if (arg.equals("-XXproc:ignore")) { // TODO(yshkvoskiy): remove it when IDEA will support correct 'proc' parameters
+				for (final Iterator<Arg> i = args.iterator(); i.hasNext(); ) {
+					if (i.next().getValue().startsWith("-proc:"))
+						i.remove();
+				}
+				for (final Iterator<String> i = unparsedArgs.iterator(); i.hasNext(); ) {
+					if (i.next().startsWith("-proc:"))
+						i.remove();
+				}
 			} else if (new File(arg).isDirectory()) {
 				showError("dir arg not permitted: " + arg);
 			} else if (arg.startsWith("-Xajruntimetarget")) {
@@ -764,6 +801,28 @@ public class BuildArgParser extends Main {
 			} catch (IOException ioe) {
 			}
 			return new File(dir, name);
+		}
+
+		private void addPairToUnparsed(LinkedList<Arg> args, String arg, int nextArgIndex, String errorMessage) {
+			if (args.size() <= nextArgIndex) {
+				showError(errorMessage);
+				return;
+			}
+			final Arg nextArg = args.get(nextArgIndex);
+			args.remove(nextArg);
+			unparsedArgs.add(arg);
+			unparsedArgs.add(nextArg.getValue());
+		}
+
+		private int indexOf(LinkedList<Arg> args, String arg) {
+			int index = 0;
+			for (Arg argument : args) {
+				if (arg.equals(argument.getValue())) {
+					return index;
+				}
+				index++;
+			}
+			return -1;
 		}
 
 	}

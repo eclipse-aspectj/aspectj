@@ -4,17 +4,21 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.aspectj.ajdt.internal.core.builder;
 
+import junit.framework.TestCase;
+import org.aspectj.ajdt.ajc.BuildArgParser;
+import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import junit.framework.TestCase;
 
 public class AjStateTest extends TestCase {
 
@@ -94,8 +98,27 @@ public class AjStateTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		aRightState = new AjState(null);
-		oldConfig = new AjBuildConfig();
-		newConfig = new AjBuildConfig();
+		final BuildArgParser parser = new BuildArgParser(new IMessageHandler() {
+			@Override
+			public boolean handleMessage(IMessage message) throws AbortException {
+				return true;
+			}
+
+			@Override
+			public boolean isIgnoring(IMessage.Kind kind) {
+				return false;
+			}
+
+			@Override
+			public void dontIgnore(IMessage.Kind kind) {
+			}
+
+			@Override
+			public void ignore(IMessage.Kind kind) {
+			}
+		});
+		oldConfig = new AjBuildConfig(parser);
+		newConfig = new AjBuildConfig(parser);
 		List<String> cp = new ArrayList<String>();
 		cp.add("adir");
 		cp.add("ajar.jar");

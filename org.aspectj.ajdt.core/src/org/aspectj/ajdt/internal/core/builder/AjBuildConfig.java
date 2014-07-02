@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import org.aspectj.ajdt.ajc.BuildArgParser;
 
 import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
 import org.aspectj.util.FileUtil;
@@ -65,7 +66,9 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 
 	private int changes = EVERYTHING; // bitflags, see CompilerConfigurationChangeFlags
 
-	private AjCompilerOptions options;
+	private final AjCompilerOptions options;
+
+	private final BuildArgParser buildArgParser;
 
 	// incremental variants handled by the compiler client, but parsed here
 	private boolean incrementalMode;
@@ -105,8 +108,13 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	 * and enh. 29769. The settings here are duplicated from those set in org.eclipse.jdt.internal.compiler.batch.Main, but I've
 	 * elected to copy them rather than refactor the JDT class since this keeps integration with future JDT releases easier (?).
 	 */
-	public AjBuildConfig() {
+	public AjBuildConfig(BuildArgParser buildArgParser) {
+		this.buildArgParser = buildArgParser;
 		options = new AjCompilerOptions();
+	}
+
+	public BuildArgParser getBuildArgParser() {
+		return buildArgParser;
 	}
 
 	/**
@@ -116,7 +124,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	 * <li>files listed by reference in argument list files</li>
 	 * <li>files contained in sourceRootDir if that exists</li>
 	 * </ul>
-	 * 
+	 *
 	 * @return all source files that should be compiled.
 	 */
 	public List<File> getFiles() {
@@ -334,7 +342,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	 * <li>this only sets one of outputDir and outputJar as needed</li>
 	 * <ul>
 	 * This also configures super if javaOptions change.
-	 * 
+	 *
 	 * @param global the AjBuildConfig to read globals from
 	 */
 	public void installGlobals(AjBuildConfig global) { // XXX relies on default values
@@ -445,7 +453,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	public String getLintMode() {
 		return lintMode;
 	}
-	
+
 	public Map<String,String> getLintOptionsMap() {
 		return lintOptionsMap;
 	}
@@ -697,7 +705,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	/**
 	 * Indicates what has changed in this configuration compared to the last time it was used, allowing the state management logic
 	 * to make intelligent optimizations and skip unnecessary work.
-	 * 
+	 *
 	 * @param changes set of bitflags, see {@link CompilerConfigurationChangeFlags} for flags
 	 */
 	public void setChanged(int changes) {
@@ -706,7 +714,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 
 	/**
 	 * Return the bit flags indicating what has changed since the last time this config was used.
-	 * 
+	 *
 	 * @return the bitflags according too {@link CompilerConfigurationChangeFlags}
 	 */
 	public int getChanged() {

@@ -245,7 +245,7 @@ public class AjdeCoreBuildManager {
 
 		BuildArgParser parser = new BuildArgParser(handler);
 
-		AjBuildConfig config = new AjBuildConfig();
+		AjBuildConfig config = new AjBuildConfig(parser);
 
 		parser.populateBuildConfig(config, args, false, configFile);
 

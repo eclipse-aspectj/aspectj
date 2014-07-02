@@ -43,19 +43,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ITypeRequestor;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.ConcreteTypeMunger;
@@ -77,13 +65,13 @@ import org.aspectj.weaver.patterns.DeclareParents;
 
 /**
  * Overrides the default eclipse LookupEnvironment for two purposes.
- * 
+ *
  * 1. To provide some additional phases to <code>completeTypeBindings</code> that weave declare parents and inter-type declarations
  * at the correct time.
- * 
+ *
  * 2. To intercept the loading of new binary types to ensure the they will have declare parents and inter-type declarations woven
  * when appropriate.
- * 
+ *
  * @author Jim Hugunin
  */
 public class AjLookupEnvironment extends LookupEnvironment implements AnonymousClassCreationListener {
@@ -211,10 +199,10 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		factory.finishTypeMungers();
 
 		// now do weaving
-		List<ConcreteTypeMunger> typeMungers = factory.getTypeMungers();
+		final List<ConcreteTypeMunger> typeMungers = factory.getTypeMungers();
 
-		List<DeclareParents> declareParents = factory.getDeclareParents();
-		List<DeclareAnnotation> declareAnnotationOnTypes = factory.getDeclareAnnotationOnTypes();
+		final List<DeclareParents> declareParents = factory.getDeclareParents();
+		final List<DeclareAnnotation> declareAnnotationOnTypes = factory.getDeclareAnnotationOnTypes();
 
 		doPendingWeaves();
 
@@ -306,6 +294,10 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		AsmManager.setCompletingTypeBindings(false);
 		factory.getWorld().getCrosscuttingMembersSet().verify();
 		CompilationAndWeavingContext.leavingPhase(completeTypeBindingsToken);
+
+		if (isProcessingAnnotations) {
+			throw new SourceTypeCollisionException(); // TODO(yushkovskiy): temporary solution; forcing to recompile units to insert mungers into types
+		}
 	}
 
 	// /**
@@ -347,7 +339,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	// }
 	// }
 
-	public void doSupertypesFirst(ReferenceBinding rb, Collection yetToProcess) {
+	public void doSupertypesFirst(ReferenceBinding rb, Collection<? extends ReferenceBinding> yetToProcess) {
 		if (rb instanceof SourceTypeBinding) {
 			if (yetToProcess.contains(rb)) {
 				collectAllITDsAndDeclares((SourceTypeBinding) rb, yetToProcess);
@@ -363,11 +355,11 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 
 	/**
 	 * Find all the ITDs and Declares, but it is important we do this from the supertypes down to the subtypes.
-	 * 
+	 *
 	 * @param sourceType
 	 * @param yetToProcess
 	 */
-	private void collectAllITDsAndDeclares(SourceTypeBinding sourceType, Collection yetToProcess) {
+	private void collectAllITDsAndDeclares(SourceTypeBinding sourceType, Collection<? extends ReferenceBinding> yetToProcess) {
 		// Look at the supertype first
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.COLLECTING_ITDS_AND_DECLARES,
 				sourceType.sourceName);
@@ -396,7 +388,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	 * compile... it stops recursing the first time it hits a type we aren't going to process during this compile. This could cause
 	 * problems if you supply 'pieces' of a hierarchy, i.e. the bottom and the top, but not the middle - but what the hell are you
 	 * doing if you do that?
-	 * 
+	 *
 	 * @param mode 0=do everything, 1=do declare parents, 2=do ITDs
 	 */
 	private void weaveIntertypes(List<SourceTypeBinding> typesToProcess, SourceTypeBinding typeToWeave,
@@ -760,7 +752,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				}
 			}
 
-			List forRemoval = new ArrayList();
+			List<Object> forRemoval = new ArrayList<Object>();
 			// now lets loop over and over until we have done all we can
 			while ((anyNewAnnotations || anyNewParents) && (!decpToRepeat.isEmpty() || !decaToRepeat.isEmpty())) {
 				anyNewParents = anyNewAnnotations = false;
@@ -860,7 +852,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	/**
 	 * Called when we discover we are weaving intertype declarations on some type that has an existing 'WeaverStateInfo' object -
 	 * this is typically some previously woven type that has been passed on the inpath.
-	 * 
+	 *
 	 * sourceType and onType are the 'same type' - the former is the 'Eclipse' version and the latter is the 'Weaver' version.
 	 */
 	private void processTypeMungersFromExistingWeaverState(SourceTypeBinding sourceType, ResolvedType onType) {
@@ -1174,8 +1166,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 
 		// AsmRelationshipProvider.getDefault().addDeclareAnnotationRelationship(
 		// decA.getSourceLocation(), rtx.getSourceLocation());
-		Annotation abefore[] = sourceType.scope.referenceContext.annotations;
-		Annotation[] newset = new Annotation[toAdd.length + (abefore == null ? 0 : abefore.length)];
+		final Annotation[] abefore = sourceType.scope.referenceContext.annotations;
+		final Annotation[] newset = new Annotation[toAdd.length + (abefore == null ? 0 : abefore.length)];
 		System.arraycopy(toAdd, 0, newset, 0, toAdd.length);
 		if (abefore != null) {
 			System.arraycopy(abefore, 0, newset, toAdd.length, abefore.length);
@@ -1434,7 +1426,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	/**
 	 * Callback driven when the compiler detects an anonymous type during block resolution. We need to add it to the weaver so that
 	 * we don't trip up later.
-	 * 
+	 *
 	 * @param aBinding
 	 */
 	public void anonymousTypeBindingCreated(LocalTypeBinding aBinding) {
