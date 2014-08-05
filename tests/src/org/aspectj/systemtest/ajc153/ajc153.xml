@@ -240,10 +240,10 @@
     </ajc-test>
 
     <ajc-test dir="bugs153/pr152848" title="mixing generics">
-      <compile files="PairGeneric.java" options="-1.5" outjar="pair.jar"/>
-      <compile files="BaseType.java" options="-1.5" outjar="basetype.jar" classpath="pair.jar"/>
-      <compile files="PairNormal.java" outjar="pair.jar"/>
-      <compile files="AnAspect.java" options="-1.5 -Xset:runMinimalMemory=true" inpath="basetype.jar;pair.jar"/>
+      <compile files="PairGeneric.java" options="-1.5" outjar="pair1.jar"/>
+      <compile files="BaseType.java" options="-1.5" outjar="basetype.jar" classpath="pair1.jar"/>
+      <compile files="PairNormal.java" outjar="pair2.jar"/>
+      <compile files="AnAspect.java" options="-1.5 -Xset:runMinimalMemory=true" inpath="basetype.jar;pair2.jar"/>
     </ajc-test>
 
     <ajc-test dir="bugs153/pr152871" title="parsing bytecode less">

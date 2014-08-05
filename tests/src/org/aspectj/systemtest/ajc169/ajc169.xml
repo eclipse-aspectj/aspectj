@@ -65,7 +65,7 @@
      <compile files="Anno.java" outjar="anno.jar" options="-1.5"/>
      <compile files="AspectA.java" classpath="anno.jar" outjar="aspect.jar" options="-Xlint:ignore -1.5"/>
      <compile files="AspectB.java" outjar="aspect2.jar" options="-Xlint:ignore -1.5"/>
-     <compile files="Code.java" classpath="code.jar;aspect.jar;aspect2.jar" options="-1.5"/>
+     <compile files="Code.java" classpath="aspect.jar;aspect2.jar" options="-1.5"/>
      <file deletefile="anno.jar"/>
      <run class="Code" ltw="META-INF/aop.xml" classpath=".;aspect.jar;aspect2.jar">
      <stderr>
@@ -88,7 +88,7 @@
      <compile files="Anno.java" outjar="anno.jar" options="-1.5"/>
      <compile files="AspectA.java" classpath="anno.jar" outjar="aspect.jar" options="-Xlint:ignore -1.5"/>
      <compile files="AspectB.java" outjar="aspect2.jar" options="-Xlint:ignore -1.5"/>
-     <compile files="Code.java Code2.java" classpath="anno.jar;code.jar;aspect.jar;aspect2.jar" options="-1.5"/>
+     <compile files="Code.java Code2.java" classpath="anno.jar;aspect.jar;aspect2.jar" options="-1.5"/>
      <run class="Code2" ltw="META-INF/aop.xml" classpath=".;aspect.jar;aspect2.jar">
      <stderr>
      <line text="AspectJ Weaver Version"/>

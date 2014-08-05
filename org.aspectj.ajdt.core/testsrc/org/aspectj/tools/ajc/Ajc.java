@@ -55,8 +55,8 @@ public class Ajc {
 	private static final String TESTER_PATH = ".." + File.separator + "testing-client" + File.separator + "bin"
 			+ File.pathSeparator + ".." + File.separator + "runtime" + File.separator + "bin" + File.pathSeparator + ".."
 			+ File.separator + "aspectj5rt" + File.separator + "bin" + File.pathSeparator + ".." + File.separator + "lib"
-			+ File.separator + "junit" + File.separator + "junit.jar" + File.pathSeparator + "lib" + File.separator + "bcel"
-			+ File.separator + "bcel.jar" + File.pathSeparator + "lib" + File.separator + "bcel" + File.separator
+			+ File.separator + "junit" + File.separator + "junit.jar" + File.pathSeparator + ".." + File.separator + "lib" + File.separator + "bcel"
+			+ File.separator + "bcel.jar" + File.pathSeparator + ".." + File.separator + "lib" + File.separator + "bcel" + File.separator
 			+ "bcel-verifier.jar" +
 
 			File.pathSeparator + ".." + File.separator + "bridge" + File.separator + "bin" + File.pathSeparator + ".."
@@ -289,7 +289,7 @@ public class Ajc {
 	 */
 	public void setBaseDir(File dir) {
 		if ((dir != null) && !dir.isDirectory())
-			throw new IllegalArgumentException(dir.getPath() + " is not a directory");
+			throw new IllegalArgumentException(dir.getPath() + " is not a directory: "+dir.getAbsolutePath());
 		baseDir = dir;
 	}
 

@@ -67,10 +67,10 @@ public class PerTypeWithinTests extends XMLBasedAjcTestCase {
    * infrastructure is properly hidden in ajc$ or synthetic members)
    */
   public void testPervasivenessOfWeaving() {
-  	CompilationResult cR = ajc(new File("tests/java5/pertypewithin"),new String[]{"U.java","-showWeaveInfo"});
+  	CompilationResult cR = ajc(new File("../tests/java5/pertypewithin"),new String[]{"U.java","-showWeaveInfo"});
   	int weavingMessagesFromNormalDeploymentModel = cR.getWeaveMessages().size();
 
-    cR = ajc(new File("tests/java5/pertypewithin"),new String[]{"V.java","-showWeaveInfo"});
+    cR = ajc(new File("../tests/java5/pertypewithin"),new String[]{"V.java","-showWeaveInfo"});
   	int weavingMessagesFromPerTypeWithin = cR.getWeaveMessages().size();
 
   	assertEquals("Expected same number of messages regardless of perclause",

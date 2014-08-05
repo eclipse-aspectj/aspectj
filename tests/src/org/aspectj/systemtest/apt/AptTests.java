@@ -15,7 +15,6 @@ import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 import java.io.File;
-import java.nio.file.Files;
 
 /**
  * Annotation processing tool tests.

@@ -1074,7 +1074,6 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 	public ICompilerRequestor getBatchRequestor() {
 		return new ICompilerRequestor() {
-      @Override
 			public void acceptResult(CompilationResult unitResult) {
 				// end of compile, must now write the results to the output destination
 				// this is either a jar file or a file in a directory

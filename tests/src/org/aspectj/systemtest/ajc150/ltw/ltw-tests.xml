@@ -211,8 +211,8 @@
 			outjar="main.jar"
         >
         </compile>	
+<!-- was in next section        	classpath="main1.jar" -->
         <compile
-        	classpath="main1.jar"
         	files="AbstractSuperAspect.aj"
         	outjar="aspect.jar"
         >

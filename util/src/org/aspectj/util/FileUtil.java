@@ -488,7 +488,8 @@ public class FileUtil {
 	 * @param dir the File directory (if a file, the the file is deleted)
 	 * @return the total number of files deleted
 	 */
-	public static int deleteContents(File dir, FileFilter filter, boolean deleteEmptyDirs) {
+	public static int deleteContents(File dir, FileFilter filter,
+			boolean deleteEmptyDirs) {
 		if (null == dir) {
 			throw new IllegalArgumentException("null dir");
 		}
@@ -499,28 +500,27 @@ public class FileUtil {
 			dir.delete();
 			return 1;
 		}
-    String[] fromFiles = dir.list();
-    if (fromFiles == null) {
-      return 0;
-    }
-    int result = 0;
-    for (int i = 0; i < fromFiles.length; i++) {
-      String string = fromFiles[i];
-      File file = new File(dir, string);
-      if ((null == filter) || filter.accept(file)) {
-        if (file.isDirectory()) {
-          result += deleteContents(file, filter, deleteEmptyDirs);
-          String[] fileContent = file.list();
-          if (deleteEmptyDirs &&
-                  fileContent != null &&
-                  0 == fileContent.length) {
-            file.delete();
-          }
-        } else {
-          /* boolean ret = */
-          file.delete();
-          result++;
-        }
+		String[] fromFiles = dir.list();
+		if (fromFiles == null) {
+			return 0;
+		}
+		int result = 0;
+		for (int i = 0; i < fromFiles.length; i++) {
+			String string = fromFiles[i];
+			File file = new File(dir, string);
+			if ((null == filter) || filter.accept(file)) {
+				if (file.isDirectory()) {
+					result += deleteContents(file, filter, deleteEmptyDirs);
+					String[] fileContent = file.list();
+					if (deleteEmptyDirs && fileContent != null
+							&& 0 == fileContent.length) {
+						file.delete();
+					}
+				} else {
+					/* boolean ret = */
+					file.delete();
+					result++;
+				}
 			}
 		}
 		return result;

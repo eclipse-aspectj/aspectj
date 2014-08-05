@@ -99,21 +99,17 @@ public class AjStateTest extends TestCase {
 		super.setUp();
 		aRightState = new AjState(null);
 		final BuildArgParser parser = new BuildArgParser(new IMessageHandler() {
-			@Override
 			public boolean handleMessage(IMessage message) throws AbortException {
 				return true;
 			}
 
-			@Override
 			public boolean isIgnoring(IMessage.Kind kind) {
 				return false;
 			}
 
-			@Override
 			public void dontIgnore(IMessage.Kind kind) {
 			}
 
-			@Override
 			public void ignore(IMessage.Kind kind) {
 			}
 		});

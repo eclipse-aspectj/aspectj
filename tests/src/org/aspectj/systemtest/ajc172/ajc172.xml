@@ -44,7 +44,7 @@
 	     <compile files="Anno.java Anno2.java" outjar="anno.jar" options="-1.5"/>
 	     <compile files="AspectA.java" classpath="anno.jar" outjar="aspect.jar" options="-Xlint:ignore -1.5"/>
 	     <compile files="AspectB.java" outjar="aspect2.jar" options="-Xlint:ignore -1.5"/>
-	     <compile files="Code.java Blah.java" classpath="code.jar;aspect.jar;aspect2.jar" options="-1.5"/>
+	     <compile files="Code.java Blah.java" classpath="aspect.jar;aspect2.jar" options="-1.5"/>
 		 <compile files="AspectC.java" classpath="$sandbox" outjar="aspect3.jar" options="-Xlint:ignore -1.5"/>	     
 	     <compile files="AspectD.java" classpath="anno.jar" outjar="aspect4.jar" options="-Xlint:ignore -1.5"/>
 	     
