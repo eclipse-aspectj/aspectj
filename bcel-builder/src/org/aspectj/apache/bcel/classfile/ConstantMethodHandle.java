@@ -93,18 +93,10 @@ public final class ConstantMethodHandle extends Constant {
 	public final byte getReferenceKind() {
 		return referenceKind;
 	}
-
-//	public final String getName(ConstantPool cp) {
-//		return cp.constantToString(getNameIndex(), Constants.CONSTANT_Utf8);
-//	}
-//
-//	public final int getSignatureIndex() {
-//		return referenceIndex;
-//	}
-//	
-//	public final String getSignature(ConstantPool cp) {
-//		return cp.constantToString(getSignatureIndex(), Constants.CONSTANT_Utf8);
-//	}
+	
+	public final int getReferenceIndex() {
+		return referenceIndex;
+	}
 
 	@Override
 	public final String toString() {
@@ -119,6 +111,22 @@ public final class ConstantMethodHandle extends Constant {
 	@Override
 	public void accept(ClassVisitor v) {
 		v.visitConstantMethodHandle(this);
+	}
+
+	public static String kindToString(byte kind) {
+		switch (kind) {
+		case 1: return "getfield";
+		case 2: return "getstatic";
+		case 3: return "putfield";
+		case 4: return "putstatic";
+		case 5: return "invokevirtual";
+		case 6: return "invokestatic";
+		case 7: return "invokespecial";
+		case 8: return "newinvokespecial";
+		case 9: return "invokeinterface";
+			default:
+				return "nyi";
+		}
 	}
 
 }

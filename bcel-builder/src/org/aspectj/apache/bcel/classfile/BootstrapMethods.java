@@ -120,6 +120,14 @@ public final class BootstrapMethods extends Attribute {
 			this.bootstrapMethodRef = bootstrapMethodRef;
 			this.bootstrapArguments = bootstrapArguments;
 		}
+		
+		public int getBootstrapMethodRef() {
+			return bootstrapMethodRef;
+		}
+		
+		public int[] getBootstrapArguments() {
+			return bootstrapArguments;
+		}
 
 		public final void dump(DataOutputStream file) throws IOException {
 			file.writeShort(bootstrapMethodRef);
@@ -129,6 +137,7 @@ public final class BootstrapMethods extends Attribute {
 				file.writeShort(bootstrapArguments[i]);
 			}
 		}
+		
 	}
 	
 	// Unpacks the byte array into the table
@@ -137,9 +146,9 @@ public final class BootstrapMethods extends Attribute {
 			try {
 				ByteArrayInputStream bs = new ByteArrayInputStream(data);
 				DataInputStream dis = new DataInputStream(bs);
-				int bootstrapMethodCount = dis.readUnsignedShort();
-				bootstrapMethods = new BootstrapMethod[bootstrapMethodCount];
-				for (int i = 0; i < bootstrapMethodCount; i++) {
+				numBootstrapMethods = dis.readUnsignedShort();
+				bootstrapMethods = new BootstrapMethod[numBootstrapMethods];
+				for (int i = 0; i < numBootstrapMethods; i++) {
 					bootstrapMethods[i] = new BootstrapMethod(dis);
 				}
 				dis.close();
@@ -194,28 +203,41 @@ public final class BootstrapMethods extends Attribute {
 	 */
 	@Override
 	public final String toString() {
-		throw new IllegalStateException("nyi");
-//		unpack();
-//		StringBuffer buf = new StringBuffer();
-//		StringBuffer line = new StringBuffer();
-//
-//		for (int i = 0; i < bootstrapMethodCount; i++) {
-//			line.append(table[i].toString());
-//
-//			if (i < bootstrapMethodCount - 1) {
-//				line.append(", ");
-//			}
-//
-//			if (line.length() > 72) {
-//				line.append('\n');
-//				buf.append(line);
-//				line.setLength(0);
-//			}
-//		}
-//
-//		buf.append(line);
-//
-//		return buf.toString();
+		unpack();
+		StringBuffer buf = new StringBuffer();
+		StringBuffer line = new StringBuffer();
+
+		for (int i = 0; i < numBootstrapMethods; i++) {
+			BootstrapMethod bm = bootstrapMethods[i];
+			line.append("BootstrapMethod[").append(i).append("]:");
+			int ref = bm.getBootstrapMethodRef();
+			ConstantMethodHandle mh = (ConstantMethodHandle)getConstantPool().getConstant(ref);
+			line.append("#"+ref+":");
+			line.append(ConstantMethodHandle.kindToString(mh.getReferenceKind()));
+			line.append(" ").append(getConstantPool().getConstant(mh.getReferenceIndex()));
+			int [] args = bm.getBootstrapArguments();
+			line.append(" argcount:").append(args==null?0:args.length).append(" ");
+			if (args!=null) {
+				for (int a=0;a<args.length;a++) {
+					line.append(args[a]).append("(").append(getConstantPool().getConstant(args[a])).append(") ");
+				}
+			}
+			
+			
+			if (i < numBootstrapMethods - 1) {
+				line.append(", ");
+			}
+
+			if (line.length() > 72) {
+				line.append('\n');
+				buf.append(line);
+				line.setLength(0);
+			}
+		}
+
+		buf.append(line);
+
+		return buf.toString();
 	}
 
 
