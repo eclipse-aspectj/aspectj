@@ -15,7 +15,6 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.ClassVisitor;
 
@@ -30,15 +29,8 @@ public class RuntimeVisTypeAnnos extends RuntimeTypeAnnos {
 	    super(Constants.ATTR_RUNTIME_VISIBLE_TYPE_ANNOTATIONS, true, nameIdx, len, cpool);
 	  }
    
-//	  public RuntimeVisTypeAnnos(int nameIndex, int len, byte[] rvaData,ConstantPool cpool) {
-//		super(Constants.ATTR_RUNTIME_VISIBLE_TYPE_ANNOTATIONS,true,nameIndex,len,rvaData,cpool);
-//	  }
-
 	  public void accept(ClassVisitor v) {
 	  	v.visitRuntimeVisibleTypeAnnotations(this);
 	  }
 
-//	  public Attribute copy(ConstantPool constant_pool) {
-//	  	throw new RuntimeException("Not implemented yet!");
-//	  }
 }

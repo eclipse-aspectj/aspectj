@@ -62,6 +62,7 @@ import java.io.Serializable;
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisParamAnnos;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisTypeAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisParamAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisTypeAnnos;
@@ -162,6 +163,8 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
 			return new BootstrapMethods(idx,len,file,cpool);
 		case Constants.ATTR_RUNTIME_VISIBLE_TYPE_ANNOTATIONS:
 			return new RuntimeVisTypeAnnos(idx, len, file, cpool);
+		case Constants.ATTR_RUNTIME_INVISIBLE_TYPE_ANNOTATIONS:
+			return new RuntimeInvisTypeAnnos(idx, len, file, cpool);
 		case Constants.ATTR_METHOD_PARAMETERS:
 			return new MethodParameters(idx, len, file, cpool);
 		default:

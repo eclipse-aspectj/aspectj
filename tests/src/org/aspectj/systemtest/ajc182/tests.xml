@@ -1,0 +1,18 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="bugs182/440983" title="invis type annos">
+		<compile options="-1.8" files="Code.java"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs182/440983" title="invis type annos 2">
+		<compile options="-1.8" files="X.java" inpath="code.jar"/>
+		<run class="Code">
+		<stdout>
+			<line text="works"/>
+		</stdout>
+		</run>
+	</ajc-test>
+
+</suite>

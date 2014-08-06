@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Contributors 
+ * Copyright (c) 2014 Contributors
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,26 +8,19 @@
  * Contributors:
  *    Andy Clement - initial API and implementation
  *******************************************************************************/
-package org.aspectj.systemtest;
+package org.aspectj.systemtest.ajc182;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.aspectj.systemtest.apt.AptTests;
 
-import org.aspectj.systemtest.ajc180.AllTestsAspectJ180;
-import org.aspectj.systemtest.ajc181.AllTestsAspectJ181;
-import org.aspectj.systemtest.ajc182.AllTestsAspectJ182; 
-
-public class AllTests18 {
+public class AllTestsAspectJ182 {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite("AspectJ System Test Suite - 1.8");
-		// $JUnit-BEGIN$ 
-		suite.addTest(AllTestsAspectJ182.suite()); 
-		suite.addTest(AllTestsAspectJ181.suite()); 
-		suite.addTest(AllTestsAspectJ180.suite()); 
-		suite.addTest(AllTests17.suite());
-//		suite.addTest(AllTests16.suite());
-//		suite.addTest(AllTests15.suite());
+		TestSuite suite = new TestSuite("AspectJ 1.8.2 tests");
+		// $JUnit-BEGIN$
+		suite.addTest(Ajc182Tests.suite());
+		suite.addTest(AptTests.suite());
 		// $JUnit-END$
 		return suite;
 	}
