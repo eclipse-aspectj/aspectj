@@ -194,7 +194,11 @@ public class AntSpec implements ITestStep {
 			m_stdOutSpec.matchAgainst(stdout.toString());
 		}
 		if (m_stdErrSpec != null) {
-			m_stdErrSpec.matchAgainst(stderr.toString());
+			String stderr2 = stderr.toString();
+			if (stderr2.indexOf("Class JavaLaunchHelper is implemented in both")!=-1 && stderr2.indexOf('\n')!=-1) {
+				stderr2 = stderr2.substring(stderr2.indexOf('\n')+1);
+			}
+			m_stdErrSpec.matchAgainst(stderr2);
 		}
 	}
 

@@ -28,6 +28,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.commons.digester.Digester;
+import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
@@ -320,6 +321,18 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 
 	protected Method getMethodStartsWith(JavaClass jc, String prefix) {
 		return getMethodStartsWith(jc,prefix,1);
+	}
+	
+	protected Attribute getAttributeStartsWith(Attribute[] attributes, String prefix) {
+		StringBuilder buf = new StringBuilder();
+		for (Attribute a: attributes) {
+			if (a.getName().startsWith(prefix)) {
+				return a;
+			}
+			buf.append(a.toString()).append("\n");
+		}
+		fail("Failed to find '"+prefix+"' in attributes:\n"+buf.toString());
+		return null;
 	}
 	
 	protected Method getMethodStartsWith(JavaClass jc, String prefix, int whichone) {
