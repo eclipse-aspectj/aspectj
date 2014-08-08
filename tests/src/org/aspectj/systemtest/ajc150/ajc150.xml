@@ -809,7 +809,7 @@
         </run>
     </ajc-test>
     
-        <ajc-test dir="java5/compliance" title="java 5 pointcuts and declares at pre-java 5 compliance levels">
+    <ajc-test dir="java5/compliance" title="java 5 pointcuts and declares at pre-java 5 compliance levels">
       <compile files="AJ5FeaturesAtJ14.aj" options="-1.4">
         <message kind="error" line="3" text="the @annotation pointcut expression is only supported at Java 5 compliance level or above"/>
         <message kind="error" line="11" text="the @within pointcut expression is only supported at Java 5 compliance level or above"/>
@@ -829,6 +829,31 @@
         <message kind="error" line="21" text="declare @constructor is only supported at Java 5 compliance level or above"/>       
         <message kind="error" line="21" text="annotations are only available if source level is 1.5 or greater"/>
         <message kind="error" line="21" text="cannot convert from Foo to Annotation"/>
+        <message kind="error" line="25" text="annotation type patterns are only supported at Java 5 compliance level or above"/>
+        <message kind="error" line="27" text="annotation type patterns are only supported at Java 5 compliance level or above"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/compliance" title="java 5 pointcuts and declares at pre-java 5 compliance levels - 1.7">
+      <compile files="AJ5FeaturesAtJ14.aj" options="-1.4">
+        <message kind="error" line="3" text="the @annotation pointcut expression is only supported at Java 5 compliance level or above"/>
+        <message kind="error" line="11" text="the @within pointcut expression is only supported at Java 5 compliance level or above"/>
+        <message kind="error" line="13" text="the @withincode pointcut expression is only supported at Java 5 compliance level or above"/>
+        <message kind="error" line="5" text="the @this pointcut expression is only supported at Java 5 compliance level or above"/>
+        <message kind="error" line="7" text="the @target pointcut expression is only supported at Java 5 compliance level or above"/>
+        <message kind="error" line="9" text="the @args pointcut expression is only supported at Java 5 compliance level or above"/>
+        <message kind="error" line="15" text="declare @type is only supported at Java 5 compliance level or above"/>
+        <message kind="error" line="15" text="annotations are only available if source level is 1.5 or greater"/>
+        <message kind="error" line="15" text="Foo is not an annotation type"/>     
+        <message kind="error" line="17" text="declare @method is only supported at Java 5 compliance level or above"/>
+        <message kind="error" line="17" text="annotations are only available if source level is 1.5 or greater"/>
+        <message kind="error" line="17" text="Foo is not an annotation type"/>
+        <message kind="error" line="19" text="declare @field is only supported at Java 5 compliance level or above"/>
+        <message kind="error" line="19" text="annotations are only available if source level is 1.5 or greater"/>
+        <message kind="error" line="19" text="Foo is not an annotation type"/>
+        <message kind="error" line="21" text="declare @constructor is only supported at Java 5 compliance level or above"/>       
+        <message kind="error" line="21" text="annotations are only available if source level is 1.5 or greater"/>
+        <message kind="error" line="21" text="Foo is not an annotation type"/>
         <message kind="error" line="25" text="annotation type patterns are only supported at Java 5 compliance level or above"/>
         <message kind="error" line="27" text="annotation type patterns are only supported at Java 5 compliance level or above"/>
       </compile>

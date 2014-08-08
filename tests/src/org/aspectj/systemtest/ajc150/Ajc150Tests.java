@@ -842,7 +842,11 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	public void testJava5SpecificFeaturesUsedAtJava14OrLower() {
-		runTest("java 5 pointcuts and declares at pre-java 5 compliance levels");
+		if (LangUtil.is17VMOrGreater()) {
+			runTest("java 5 pointcuts and declares at pre-java 5 compliance levels - 1.7");
+		} else {
+			runTest("java 5 pointcuts and declares at pre-java 5 compliance levels");	
+		}
 	}
 
 	public void testAnonymousTypes() {

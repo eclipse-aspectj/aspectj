@@ -195,8 +195,9 @@ public class AntSpec implements ITestStep {
 		}
 		if (m_stdErrSpec != null) {
 			String stderr2 = stderr.toString();
+			// Working around this rediculous message that still comes out of Java7 builds:
 			if (stderr2.indexOf("Class JavaLaunchHelper is implemented in both")!=-1 && stderr2.indexOf('\n')!=-1) {
-				stderr2 = stderr2.substring(stderr2.indexOf('\n')+1);
+				stderr2 = stderr2.replaceAll("objc\\[[0-9]*\\]: Class JavaLaunchHelper is implemented in both [^\n]*\n","");
 			}
 			m_stdErrSpec.matchAgainst(stderr2);
 		}
