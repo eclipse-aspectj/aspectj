@@ -14,6 +14,8 @@
 import java.io.File;
 import java.util.List;
 
+import org.aspectj.util.LangUtil;
+
 
 /**
  * A long way to go until full coverage, but this is the place to add more.
@@ -253,7 +255,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		}
         
 		String[] strings = {
-				"setX(int)",
+				toName("setX(int)"),
 				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): methodExecutionP..\""};
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== METHOD DETAIL",
@@ -284,7 +286,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		}
         
 		String[] strings = {
-				"Point()",
+				toName("Point()"),
 				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): constructorExecutionP..\""};
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== CONSTRUCTOR DETAIL",
@@ -315,7 +317,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		}
         
 		String[] strings = {
-				"changeX(int)",
+				toName("changeX(int)"),
 				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): callMethodP..\""};
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== METHOD DETAIL",
@@ -346,7 +348,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		}
         
 		String[] strings = {
-				"doIt()",
+				toName("doIt()"),
 				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): callConstructorP..\""};
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== METHOD DETAIL",
@@ -377,7 +379,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		}
         
 		String[] strings = {
-				"getX()",
+				toName("getX()"),
 				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): getP..\""};
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== METHOD DETAIL",
@@ -410,28 +412,28 @@ public class CoverageTestCase extends AjdocTestCase {
 		String href = "HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): setP..\"";
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== METHOD DETAIL",
-				"setX(int)",
+				toName("setX(int)"),
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 				href);
 		assertTrue("the Method Detail should have setX(int) advised by " + href,b);
 		
 		b = AjdocOutputChecker.summarySectionContainsRel(
 				htmlFile,"=== METHOD SUMMARY",
-				"setX(int)",
+				toName("setX(int)"),
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 				href);
 		assertTrue("the Method Summary should have setX(int) advised by " + href,b);
 
 		b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== CONSTRUCTOR DETAIL",
-				"Point()",
+				toName("Point()"),
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 				href);
 		assertTrue("the Constructor Detail should have advised by " + href,b);
 		
 		b = AjdocOutputChecker.summarySectionContainsRel(
 				htmlFile,"=== CONSTRUCTOR SUMMARY",
-				"Point()",
+				toName("Point()"),
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 				href);
 		assertTrue("the Constructor Summary should have advised by " + href,b);
@@ -457,7 +459,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		}
         
 		String[] strings = {
-				"Point()",
+				toName("Point()"),
 				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): initializationP..\""};
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== CONSTRUCTOR DETAIL",strings[0],
@@ -506,7 +508,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		}
         
 		String[] strings = {
-				"doIt()",
+				toName("doIt()"),
 				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): handlerP..\""};
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== METHOD DETAIL",
@@ -523,6 +525,13 @@ public class CoverageTestCase extends AjdocTestCase {
 		assertTrue("the Method Summary should have " + strings[0]+" advised by " + strings[1],b);
     }
 
+	private String toName(String name) {
+		if (LangUtil.is18VMOrGreater()) {
+			name = name.replace('(','-');
+			name = name.replace(')','-');
+		}
+		return name;
+	}
     /**
      * Test that if have two before advice blocks from the same
      * aspect affect the same method, then both appear in the ajdoc 
@@ -537,7 +546,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		}
         
 		String[] strings = {
-				"amethod()",
+				toName("amethod()"),
 				"HREF=\"../pkg/A2.html#before(): p..\"",
 				"HREF=\"../pkg/A2.html#before(): p2..\""};
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
@@ -746,7 +755,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		
 		b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== METHOD DETAIL",
-				"amethod()",
+				toName("amethod()"),
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 				"HREF=\"../pkg/ClassWithNestedAspect.NestedAspect.html#before(): p..\"");
 		assertTrue("Should have 'amethod() advised by " +
@@ -755,7 +764,7 @@ public class CoverageTestCase extends AjdocTestCase {
 
 		b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== METHOD DETAIL",
-				"amethod()",
+				toName("amethod()"),
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 				"pkg.ClassWithNestedAspect.NestedAspect.NestedAspect.before(): p..");
 		assertFalse("Should not have the label " +
@@ -764,7 +773,7 @@ public class CoverageTestCase extends AjdocTestCase {
 
 		b = AjdocOutputChecker.summarySectionContainsRel(
 					htmlFile,"=== METHOD SUMMARY",
-					"amethod()",
+					toName("amethod()"),
 					HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 					"HREF=\"../pkg/ClassWithNestedAspect.NestedAspect.html#before(): p..\"");
 		assertTrue("Should have 'amethod() advised by " +
@@ -773,7 +782,7 @@ public class CoverageTestCase extends AjdocTestCase {
 
 		b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== METHOD SUMMARY",
-				"amethod()",
+				toName("amethod()"),
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 		"pkg.ClassWithNestedAspect.NestedAspect.NestedAspect.before(): p..");
 		assertFalse("Should not have the label " +

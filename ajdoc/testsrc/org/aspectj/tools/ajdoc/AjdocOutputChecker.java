@@ -207,12 +207,12 @@ public class AjdocOutputChecker {
 				// found the required main section
 				String nextLine = reader.readLine();
 				while (nextLine != null && (nextLine.indexOf("========") == -1)) {
-					if (nextLine.indexOf("NAME=\""+source+"\"") != -1) {
+					if (nextLine.indexOf("NAME=\""+source+"\"") != -1 || nextLine.indexOf("name=\""+source+"\"") != -1) {
 						// found the required subsection
 						String subLine = reader.readLine();
 						while(subLine != null 
 								&& (subLine.indexOf("========") == -1)
-								&& (subLine.indexOf("NAME") == -1)) {
+								&& (subLine.indexOf("NAME") == -1 && subLine.indexOf("name") == -1)) {
 							int relIndex = subLine.indexOf(relationship.toString());
 							int targetIndex = subLine.indexOf(target);
 							if ((relIndex != -1) && (targetIndex != -1)) {

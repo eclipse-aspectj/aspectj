@@ -15,6 +15,8 @@ package org.aspectj.tools.ajdoc;
 import java.io.File;
 import java.util.List;
 
+import org.aspectj.util.LangUtil;
+
 /**
  * @author Mik Kersten
  */
@@ -124,14 +126,15 @@ public class DeclareFormsTest extends AjdocTestCase {
 		
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== METHOD DETAIL",
-				doIt,
+				LangUtil.is18VMOrGreater()?"doIt--":doIt,
+//				doIt,
 				HtmlDecorator.HtmlRelationshipKind.MATCHES_DECLARE,
 				declareWarningQuotes);
 		assertTrue("Should have '" + doIt + " matches declare " + 
 				declareWarningQuotes + "' in the Declare Detail section", b);
         b = AjdocOutputChecker.summarySectionContainsRel(
 					htmlFile,"=== METHOD SUMMARY",
-					doIt,
+					LangUtil.is18VMOrGreater()?"doIt--":doIt,
 					HtmlDecorator.HtmlRelationshipKind.MATCHES_DECLARE,
 					declareWarningQuotes);
 		assertTrue("Should have '" + doIt + " matches declare " + 
@@ -156,14 +159,14 @@ public class DeclareFormsTest extends AjdocTestCase {
 		
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== METHOD DETAIL",
-				"setX(int)",
+				LangUtil.is18VMOrGreater()?"setX-int-":"setX(int)",
 				HtmlDecorator.HtmlRelationshipKind.MATCHES_DECLARE,
 				"declare warning: quot;blahquot;");
 		assertTrue("Should have 'setX(int) matches declare declare warning: quot;blahquot;" + 
 				"' in the Method Detail section", b);
         b = AjdocOutputChecker.summarySectionContainsRel(
 					htmlFile,"=== METHOD SUMMARY",
-					"setX(int)",
+					LangUtil.is18VMOrGreater()?"setX-int-":"setX(int)",
 					HtmlDecorator.HtmlRelationshipKind.MATCHES_DECLARE,
 					"declare warning: quot;blahquot;");
 		assertTrue("Should have 'setX(int) matches declare declare warning: quot;blahquot;" + 
@@ -272,18 +275,26 @@ public class DeclareFormsTest extends AjdocTestCase {
 		
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== METHOD DETAIL",
-				doIt,
+				toName(doIt),
 				HtmlDecorator.HtmlRelationshipKind.SOFTENED_BY,
 				declareSoft);
 		assertTrue("Should have '" + doIt + " softened by " + declareSoft + 
 				"' in the Method Detail section", b);
         b = AjdocOutputChecker.summarySectionContainsRel(
 					htmlFile,"=== METHOD SUMMARY",
-					doIt,
+					toName(doIt),
 					HtmlDecorator.HtmlRelationshipKind.SOFTENED_BY,
 					declareSoft);
 		assertTrue("Should have '" + doIt + " softened by " + declareSoft + 
 				"' in the Method Summary section", b);
+	}
+	
+	private String toName(String name) {
+		if (LangUtil.is18VMOrGreater()) {
+			name = name.replace('(','-');
+			name = name.replace(')','-');
+		}
+		return name;
 	}
 	
 	/**
@@ -348,7 +359,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 		
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== METHOD DETAIL",
-				"amethod()",
+				toName("amethod()"),
 				HtmlDecorator.HtmlRelationshipKind.ANNOTATED_BY,
 				"declare @method: public * foo.C.*(..) : @MyAnnotation");
 		assertTrue("Should have 'amethod() annotated by " +
@@ -356,7 +367,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 				"' in the Method Detail section", b);
         b = AjdocOutputChecker.summarySectionContainsRel(
 				htmlFile,"=== METHOD SUMMARY",
-				"amethod()",
+				toName("amethod()"),
 				HtmlDecorator.HtmlRelationshipKind.ANNOTATED_BY,
 				"declare @method: public * foo.C.*(..) : @MyAnnotation");
 		assertTrue("Should have 'amethod() annotated by " +
@@ -382,7 +393,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 		
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== CONSTRUCTOR DETAIL",
-				"C(java.lang.String)",
+				toName("C(java.lang.String)"),
 				HtmlDecorator.HtmlRelationshipKind.ANNOTATED_BY,
 				"declare @constructor: foo.C.new(..) : @MyAnnotation");
 		assertTrue("Should have '" + doIt + " annotated by " + 
@@ -390,7 +401,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 				"' in the Method Detail section", b);
         b = AjdocOutputChecker.summarySectionContainsRel(
 				htmlFile,"=== CONSTRUCTOR SUMMARY",
-				"C(java.lang.String)",
+				toName("C(java.lang.String)"),
 				HtmlDecorator.HtmlRelationshipKind.ANNOTATED_BY,
 				"declare @constructor: foo.C.new(..) : @MyAnnotation");
 		assertTrue("Should have '" + doIt + " annotated by " + 
@@ -473,14 +484,14 @@ public class DeclareFormsTest extends AjdocTestCase {
 		
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== METHOD DETAIL",
-				"amethod()",
+				toName("amethod()"),
 				HtmlDecorator.HtmlRelationshipKind.MATCHES_DECLARE,
 				"declare warning: quot;warningquot;");
 		assertTrue("Should have 'amethod() matches declare declare warning: " +
 				"quot;warningquot;' in the Method Detail section", b);
         b = AjdocOutputChecker.summarySectionContainsRel(
 					htmlFile,"=== METHOD SUMMARY",
-					"amethod()",
+					toName("amethod()"),
 					HtmlDecorator.HtmlRelationshipKind.MATCHES_DECLARE,
 					"declare warning: quot;warningquot;");
 		assertTrue("Should have 'amethod() matches declare declare warning: " +
@@ -488,14 +499,14 @@ public class DeclareFormsTest extends AjdocTestCase {
 		
 		b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== METHOD DETAIL",
-				"amethod()",
+				toName("amethod()"),
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 				"before(): p..");
 		assertTrue("the Method Detail should have amethod() advised by before(): p..",b);
 		
 		b = AjdocOutputChecker.summarySectionContainsRel(
 				htmlFile,"=== METHOD SUMMARY",
-				"amethod()",
+				toName("amethod()"),
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 				"before(): p..");
 		assertTrue("the Method Summary should have amethod() advised by before(): p..",b);	
