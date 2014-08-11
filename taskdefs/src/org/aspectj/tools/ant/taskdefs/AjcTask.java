@@ -461,6 +461,48 @@ public class AjcTask extends MatchingTask {
 		return (0 == result.length() ? null : result.toString());
 	}
 
+  /**
+   * Controls whether annotation processing and/or compilation is done.
+   * -proc:none means that compilation takes place without annotation processing.
+   * -proc:only means that only annotation processing is done, without any subsequent compilation.
+   */
+  public void setProc(String proc) {
+    if (proc.equals("none")) {
+      cmd.addFlag("-proc:none", true);
+    } else if (proc.equals("only")) {
+      cmd.addFlag("-proc:only", true);
+    }
+  }
+
+  /**
+   * -processor class1[,class2,class3...]
+   *  Names of the annotation processors to run. This bypasses the default discovery process.
+   */
+  public void setProcessor(String processors) {
+    cmd.addFlagged("-processor", processors);
+  }
+
+  /**
+   * -processorpath path
+   * Specify where to find annotation processors; if this option is not used, the class path will be searched for processors.
+   */
+  public void setProcessorpath(String processorpath) {
+    cmd.addFlagged("-processorpath", processorpath);
+  }
+
+  /**
+   * -s dir
+   * Specify the directory where to place generated source files. The directory must already exist; javac will not create it.
+   * If a class is part of a package, the compiler puts the source file in a subdirectory reflecting the package name,
+   * creating directories as needed.
+   *
+   * For example, if you specify -s C:\mysrc and the class is called com.mypackage.MyClass,
+   * then the source file will be placed in C:\mysrc\com\mypackage\MyClass.java.
+   */
+  public void setS(String s) {
+    cmd.addFlagged("-s", s);
+  }
+
 	public void setIncremental(boolean incremental) {
 		cmd.addFlag("-incremental", incremental);
 		inIncrementalMode = incremental;

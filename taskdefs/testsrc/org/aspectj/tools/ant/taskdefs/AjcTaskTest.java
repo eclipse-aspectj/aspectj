@@ -784,6 +784,35 @@ public class AjcTaskTest extends TestCase {
 		}
 		
 	}
+
+  public void testAptProc() {
+    AjcTask task = getTask(NOFILE);
+    task.setProc("none");
+    checkContains(task.makeCommand(), "-proc:none", true);
+    task.setProc("only");
+    checkContains(task.makeCommand(), "-proc:only", true);
+  }
+
+  public void testAptProcessor() {
+    AjcTask task = getTask(NOFILE);
+    task.setProcessor("some.SomeClass");
+    checkContains(task.makeCommand(), "-processor", true);
+    checkContains(task.makeCommand(), "some.SomeClass", true);
+  }
+
+  public void testAptProcessorpath() {
+    AjcTask task = getTask(NOFILE);
+    task.setProcessorpath("some/path");
+    checkContains(task.makeCommand(), "-processorpath", true);
+    checkContains(task.makeCommand(), "some/path", true);
+  }
+
+  public void testAptGeneratedDirectory() {
+    AjcTask task = getTask(NOFILE);
+    task.setS("some/path");
+    checkContains(task.makeCommand(), "-s", true);
+    checkContains(task.makeCommand(), "some/path", true);
+  }
 	
 	public void testOutxml () {
         File destDir = getTempDir();
