@@ -23,28 +23,32 @@ import java.io.File;
  */
 public class AptTests extends XMLBasedAjcTestCase {
 
-	public void testAptWithSpecifiedProcessor() {
-		runTest("annotation processing with specified processor");
-	}
+  public void testAptWithSpecifiedProcessor() {
+    runTest("annotation processing with specified processor");
+  }
 
-    /**
-     * SPI - http://docs.oracle.com/javase/tutorial/sound/SPI-intro.html
-     */
-    public void testAptUsingSPI() {
-        runTest("annotation processing in action using SPI");
-    }
+  /**
+   * SPI - http://docs.oracle.com/javase/tutorial/sound/SPI-intro.html
+   */
+  public void testAptUsingSPI() {
+    runTest("annotation processing in action using SPI");
+  }
 
-    public void testDisabledApt() {
-        runTest("disabled annotation processing");
-    }
+  public void testDisabledApt() {
+    runTest("disabled annotation processing");
+  }
 
-	public static Test suite() {
-		return XMLBasedAjcTestCase.loadSuite(AptTests.class);
-	}
+  public void testAptWithJavaFilesAsAspects() {
+    runTest("annotation processing generating java files with aspects");
+  }
 
-	@Override
-	protected File getSpecFile() {
-        return getClassResource("apt-spec.xml");
-	}
+  public static Test suite() {
+    return XMLBasedAjcTestCase.loadSuite(AptTests.class);
+  }
+
+  @Override
+  protected File getSpecFile() {
+    return getClassResource("apt-spec.xml");
+  }
 
 }

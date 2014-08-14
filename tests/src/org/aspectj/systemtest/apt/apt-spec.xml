@@ -2,8 +2,8 @@
 
 <suite>
 
-    <ajc-test dir="apt" title="annotation processing with specified processor">
-        <compile options="-1.8" files="processor/Event.java processor/SimpleProcessor.java"
+    <ajc-test dir="apt/test1" title="annotation processing with specified processor">
+        <compile options="-1.8" files="Event.java SimpleProcessor.java"
                  outjar="annotation_processor.jar"/>
         <!--
                 SimpleProcessor should generate 2 files for each java class that utilizes @Event annotation:
@@ -15,7 +15,7 @@
                                 }
                             }
          -->
-        <compile options="-1.8 -processor test.SimpleProcessor -s generated -showWeaveInfo" files="src/Some.java"
+        <compile options="-1.8 -processor test.SimpleProcessor -s generated -showWeaveInfo" files="Some.java"
                  classpath="annotation_processor.jar" outjar="code.jar">
             <message kind="weave"
                      text="Type 'test.Some' (Some.java) has intertyped field from 'test.SomeEventsAspect' (SomeEventsAspect.aj:'test.SomeEventsAspect$SomeOnMethod1Event test.Some.OnMethod1Event')"/>
@@ -30,12 +30,12 @@
         </run>
     </ajc-test>
 
-    <ajc-test dir="apt" title="annotation processing in action using SPI">
+    <ajc-test dir="apt/test1" title="annotation processing in action using SPI">
         <!--
         what is SPI is described here - http://docs.oracle.com/javase/tutorial/sound/SPI-intro.html
         -->
-        <!--<compile options="-1.8" files="processor/Event.java processor/SimpleProcessor.java" outjar="annotation_processors_with_spi.jar"/>-->
-        <compile options="-1.8 -sourceroots processor" inpath="processor/" outjar="annotation_processor.jar"/>
+        <!--<compile options="-1.8" files="Event.java SimpleProcessor.java" outjar="annotation_processors_with_spi.jar"/>-->
+        <compile options="-1.8" files="Event.java SimpleProcessor.java" outjar="annotation_processor.jar"/>
         <!--
                 SimpleProcessor should generate 2 files for each java class that utilizes @Event annotation:
                     - {className}EventsAspect.aj - this file describes aspect with advices to weaving method annotated with @Event.
@@ -48,7 +48,7 @@
          -->
 
         <!--apt_service_description.jar contains only SPI descrition file - META-INF/services/javax.annotation.processing.Processor-->
-        <compile options="-1.8 -s generated -showWeaveInfo" files="src/Some.java"
+        <compile options="-1.8 -s generated -showWeaveInfo" files="Some.java"
                  classpath="annotation_processor.jar;apt_service_description.jar" outjar="code.jar">
             <message kind="weave"
                      text="Type 'test.Some' (Some.java) has intertyped field from 'test.SomeEventsAspect' (SomeEventsAspect.aj:'test.SomeEventsAspect$SomeOnMethod1Event test.Some.OnMethod1Event')"/>
@@ -64,8 +64,8 @@
         </run>
     </ajc-test>
 
-    <ajc-test dir="apt" title="disabled annotation processing">
-        <compile options="-1.8" files="processor/Event.java processor/SimpleProcessor.java"
+    <ajc-test dir="apt/test1" title="disabled annotation processing">
+        <compile options="-1.8" files="Event.java SimpleProcessor.java"
                  outjar="annotation_processor.jar"/>
         <!--
                 SimpleProcessor should generate 2 files for each java class that utilizes @Event annotation:
@@ -78,10 +78,22 @@
                             }
          -->
 
-        <compile options="-1.8 -s generated -showWeaveInfo -proc:none" files="src/Some.java"
+        <compile options="-1.8 -s generated -showWeaveInfo -proc:none" files="Some.java"
                  classpath="annotation_processor.jar" outjar="code.jar">
             <!--field was not injected, so error should occur-->
             <message kind="error" text="OnMethod1Event cannot be resolved or is not a field"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="apt/test2" title="annotation processing generating java files with aspects">
+        <compile options="-1.6" files="DemoProcessor.java Marker.java" />
+        <compile options="-1.6 -showWeaveInfo -processor DemoProcessor -s generated" files="Code.java">
+            <message kind="warning" text="Generated aspect to advise too"/>
+            <message kind="warning" text="Generated aspect to advise boo"/>
+            <message kind="weave"
+                     text="Join point 'method-execution(void Code.boo())' in Type 'Code' (Code.java:6) advised by before advice from 'Advise_boo' (Advise_boo.java:2)"/>
+            <message kind="weave"
+                     text="Join point 'method-execution(void Code.too())' in Type 'Code' (Code.java:9) advised by before advice from 'Advise_too' (Advise_too.java:2)"/>
         </compile>
     </ajc-test>
 
