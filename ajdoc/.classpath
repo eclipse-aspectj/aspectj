@@ -7,6 +7,7 @@
 	<classpathentry kind="src" path="/util"/>
 	<classpathentry kind="src" path="testsrc"/>
 	<classpathentry kind="lib" path="/lib/junit/junit.jar" sourcepath="/lib/junit/junit-src.jar"/>
+	<classpathentry kind="var" path="JAVA_HOME/lib/tools.jar"/>
 	<classpathentry kind="var" path="JRE15_LIB"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
