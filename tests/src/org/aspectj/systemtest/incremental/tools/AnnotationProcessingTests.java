@@ -17,6 +17,16 @@ import java.util.List;
 
 public class AnnotationProcessingTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
 	
+	
+	@Override
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		new File("Advise_aaa.java").delete();
+		new File("Advise_ccc.java").delete();
+		new File("AroundAdvise_aaa.java").delete();
+		new File("AroundAdvise_ccc.java").delete();
+	}
+	
 	// Basic test: turns on annotation processing and tries to run the DemoProcessor
 	public void testAnnotationProcessing1() throws Exception {
 		createAndBuildAnnotationProcessorProject("ProcessorProject");
