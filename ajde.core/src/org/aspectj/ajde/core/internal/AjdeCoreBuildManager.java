@@ -226,6 +226,17 @@ public class AjdeCoreBuildManager {
 			if (l == null) {
 				return null;
 			}
+			// If the processor options are specified build the command line options for the JDT compiler to see
+			String processor = compilerConfig.getProcessor();
+			if (processor != null && processor.length() != 0) {
+				l.add("-processor");
+				l.add(processor);
+			}
+			String processorPath = compilerConfig.getProcessorPath();
+			if (processorPath != null && processorPath.length() != 0) {
+				l.add("-processorpath");
+				l.add(processorPath);
+			}
 			List<String> xmlfiles = compilerConfig.getProjectXmlConfigFiles();
 			if (xmlfiles != null && !xmlfiles.isEmpty()) {
 				args = new String[l.size() + xmlfiles.size() + 1];
@@ -331,6 +342,8 @@ public class AjdeCoreBuildManager {
 		config.setProceedOnError(true);
 
 		config.setProjectEncoding(compilerConfig.getProjectEncoding());
+		config.setProcessor(compilerConfig.getProcessor());
+		config.setProcessorPath(compilerConfig.getProcessorPath());
 		return config;
 	}
 

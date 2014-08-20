@@ -38,6 +38,8 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 	private Set<File> inpath;
 	private String encoding = null;
 	private String outjar;
+	private String processor;
+	private String processorPath;
 	private String nonstandardoptions;
 	private List modifiedFiles;
 	private List modifiedDirs;
@@ -164,6 +166,16 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		this.outjar = outjar;
 		this.changed |= ICompilerConfiguration.OUTJAR_CHANGED;
 	}
+	
+	public void setProcessor(String processor) {
+		this.processor = processor;
+		this.changed |= ICompilerConfiguration.PROCESSOR_CHANGED;
+	}
+
+	public void setProcessorPath(String processorPath) {
+		this.processorPath = processorPath;
+		this.changed |= ICompilerConfiguration.PROCESSOR_CHANGED;
+	}
 
 	public void setJavaOptions(Map javaOptions) {
 		this.javaOptionsMap = javaOptions;
@@ -238,6 +250,14 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 
 	public String getProjectEncoding() {
 		return this.encoding;
+	}
+
+	public String getProcessor() {
+		return this.processor;
+	}
+
+	public String getProcessorPath() {
+		return this.processorPath;
 	}
 
 }

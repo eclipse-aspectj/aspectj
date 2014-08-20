@@ -18,6 +18,7 @@ import org.aspectj.systemtest.ajc165.AllTestsAspectJ165;
 import org.aspectj.systemtest.ajc166.AllTestsAspectJ166;
 import org.aspectj.systemtest.ajc167.AllTestsAspectJ167;
 import org.aspectj.systemtest.ajc169.AllTestsAspectJ169;
+import org.aspectj.systemtest.incremental.tools.AnnotationProcessingTests;
 
 public class AllTests16 {
 
@@ -37,6 +38,7 @@ public class AllTests16 {
 		suite.addTest(AllTestsAspectJ1610.suite());
 		suite.addTest(AllTestsAspectJ1611.suite());
 		suite.addTest(AllTestsAspectJ1612.suite());
+		suite.addTestSuite(AnnotationProcessingTests.class);
 		// $JUnit-END$
 		return suite;
 	}

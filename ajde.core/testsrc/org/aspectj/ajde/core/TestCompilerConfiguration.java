@@ -171,4 +171,12 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 		return null;
 	}
 
+	public String getProcessor() {
+		return null;
+	}
+
+	public String getProcessorPath() {
+		return null;
+	}
+
 }

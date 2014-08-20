@@ -12,12 +12,16 @@
 package org.aspectj.systemtest.incremental.tools;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -78,6 +82,26 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 		AjState.FORCE_INCREMENTAL_DURING_TESTING = false;
 	}
 
+	protected String runMethod(String projectName, String classname, String methodname) throws Exception {
+		File f = getProjectOutputRelativePath(projectName, "");
+		ClassLoader cl = new URLClassLoader(new URL[] { f.toURI().toURL() });
+		Class<?> clazz = Class.forName(classname, false, cl);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream realOut = System.out;
+		try {
+			System.setOut(new PrintStream(baos));
+			clazz.getDeclaredMethod(methodname).invoke(null);
+		} finally {
+			System.setOut(realOut);
+		}
+		return new String(baos.toByteArray());
+	}
+
+	protected File getProjectOutputRelativePath(String p, String filename) {
+		File projDir = new File(getWorkingDir(), p);
+		return new File(projDir, "bin" + File.separator + filename);
+	}
+	
 	public void build(String projectName) {
 		constructUpToDateLstFile(projectName, "build.lst");
 		doBuild(projectName);

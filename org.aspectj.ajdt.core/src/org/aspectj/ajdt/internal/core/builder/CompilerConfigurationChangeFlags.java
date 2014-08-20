@@ -26,6 +26,7 @@ public interface CompilerConfigurationChangeFlags {
 	int OUTPUTDESTINATIONS_CHANGED = 0x0100;
 	int INJARS_CHANGED = 0x0200; // deprecated, not in use any more
 	int XMLCONFIG_CHANGED = 0x0400;
+	int PROCESSOR_CHANGED = 0x0800;
 	int EVERYTHING = 0xffff;
 
 }

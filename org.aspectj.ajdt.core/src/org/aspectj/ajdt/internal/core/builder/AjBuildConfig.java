@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002 - 2014 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -11,6 +11,7 @@
  *     Adrian Colyer  added constructor to populate javaOptions with
  * 					  default settings - 01.20.2003
  * 					  Bugzilla #29768, 29769
+ *      Andy Clement 
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.core.builder;
@@ -24,8 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import org.aspectj.ajdt.ajc.BuildArgParser;
 
+import org.aspectj.ajdt.ajc.BuildArgParser;
 import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
 import org.aspectj.util.FileUtil;
 
@@ -50,6 +51,8 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	private List<File> changedFiles;
 	private List<File> files = new ArrayList<File>();
 	private List<File> xmlfiles = new ArrayList<File>();
+	private String processor;
+	private String processorPath;
 	private List<BinarySourceFile> binaryFiles = new ArrayList<BinarySourceFile>(); // .class files in indirs...
 	private List<File> inJars = new ArrayList<File>();
 	private List<File> inPath = new ArrayList<File>();
@@ -133,6 +136,28 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 
 	public List<File> getXmlFiles() {
 		return xmlfiles;
+	}
+	
+	public void setProcessor(String processor) {
+		this.processor = processor;
+	}
+	
+	/**
+	 * @return the list of processor classes to execute
+	 */
+	public String getProcessor() {
+		return this.processor;
+	}
+	
+	public void setProcessorPath(String processorPath) {
+		this.processorPath = processorPath;
+	}
+	
+	/**
+	 * @return the processor path which can be searched for processors (via META-INF/services)
+	 */
+	public String getProcessorPath() {
+		return this.processorPath;
 	}
 
 	/**

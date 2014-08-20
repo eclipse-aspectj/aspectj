@@ -135,4 +135,14 @@ public interface ICompilerConfiguration extends CompilerConfigurationChangeFlags
 	 */
 	public String getProjectEncoding();
 
+	/**
+	 * @return the list of processor classes to execute
+	 */
+	public String getProcessor();
+	
+	/**
+	 * @return the processor path where the specified processor(s) can be found
+	 */
+	public String getProcessorPath();
+
 }

@@ -116,4 +116,12 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 		return null;
 	}
 
+	public String getProcessor() {
+		return null;
+	}
+
+	public String getProcessorPath() {
+		return null;
+	}
+
 }

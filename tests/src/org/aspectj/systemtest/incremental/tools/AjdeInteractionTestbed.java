@@ -104,6 +104,16 @@ public class AjdeInteractionTestbed extends TestCase {
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setAspectPath(aspectpath);
 	}
 
+	public void configureProcessor(String projectName, String processor) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setProcessor(processor);
+	}
+
+	public void configureProcessorPath(String projectName, String processorPath) {
+		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
+		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setProcessorPath(processorPath);
+	}
+
 	public void configureAspectPath(String projectName, File aspectpath) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		Set<File> s = new HashSet<File>();
