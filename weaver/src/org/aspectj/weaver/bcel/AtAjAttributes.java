@@ -726,6 +726,9 @@ public class AtAjAttributes {
 				TypePattern typePattern = parseTypePattern(decpPattern, struct);
 				ResolvedType fieldType = UnresolvedType.forSignature(struct.field.getSignature()).resolve(
 						struct.enclosingType.getWorld());
+				if (fieldType.isParameterizedOrRawType()) {
+					fieldType = fieldType.getGenericType();
+				}
 				if (fieldType.isInterface()) {
 					TypePattern parent = parseTypePattern(fieldType.getName(), struct);
 					FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
@@ -772,9 +775,7 @@ public class AtAjAttributes {
 									hasNoCtorOrANoArgOne = false;
 
 									if (resolvedMember.getParameterTypes().length == 0) {
-										if (defaultVisibilityImpl) { // default
-											// visibility
-											// implementation
+										if (defaultVisibilityImpl) { // default visibility implementation
 											if (resolvedMember.isPublic() || resolvedMember.isDefault()) {
 												hasNoCtorOrANoArgOne = true;
 											} else {
@@ -819,11 +820,6 @@ public class AtAjAttributes {
 					Iterator<ResolvedMember> methodIterator = fieldType.getMethodsIncludingIntertypeDeclarations(false, true);
 					while (methodIterator.hasNext()) {
 						ResolvedMember method = methodIterator.next();
-
-						// ResolvedMember[] methods = fieldType.getMethodsWithoutIterator(true, false, false).toArray(
-						// new ResolvedMember[0]);
-						// for (int i = 0; i < methods.length; i++) {
-						// ResolvedMember method = methods[i];
 						if (method.isAbstract()) {
 							// moved to be detected at weave time if the target
 							// doesnt implement the methods
@@ -849,22 +845,19 @@ public class AtAjAttributes {
 							// So here we create a modified method with an
 							// alternative declaring type so that we lookup
 							// the right field. See pr164016.
-							MethodDelegateTypeMunger mdtm = new MethodDelegateTypeMunger(method, struct.enclosingType,
-									defaultImplClassName, typePattern);
+							MethodDelegateTypeMunger mdtm = new MethodDelegateTypeMunger(method, struct.enclosingType, defaultImplClassName, typePattern);
 							mdtm.setFieldType(fieldType);
 							mdtm.setSourceLocation(struct.enclosingType.getSourceLocation());
 							struct.ajAttributes.add(new AjAttribute.TypeMunger(mdtm));
 						}
 					}
-					// successfull so far, we thus need a bcel type munger to
-					// have
+					// successful so far, we thus need a bcel type munger to have
 					// a field hosting the mixin in the target type
 					if (hasAtLeastOneMethod && defaultImplClassName != null) {
 						ResolvedMember fieldHost = AjcMemberMaker.itdAtDeclareParentsField(null, fieldType, struct.enclosingType);
 						struct.ajAttributes.add(new AjAttribute.TypeMunger(new MethodDelegateTypeMunger.FieldHostTypeMunger(
 								fieldHost, struct.enclosingType, typePattern)));
 					}
-
 					return true;
 				} else {
 					reportError("@DeclareParents: can only be used on a field whose type is an interface", struct);
@@ -915,7 +908,6 @@ public class AtAjAttributes {
 			// No annotation found
 			return false;
 		}
-
 		Method annotatedMethod = struct.method;
 		World world = struct.enclosingType.getWorld();
 		NameValuePair declareMixinPatternNameValuePair = getAnnotationElement(declareMixinAnnotation, VALUE);
@@ -926,7 +918,9 @@ public class AtAjAttributes {
 
 		// Return value of the annotated method is the interface or class that the mixin delegate should have
 		ResolvedType methodReturnType = UnresolvedType.forSignature(annotatedMethod.getReturnType().getSignature()).resolve(world);
-
+		if (methodReturnType.isParameterizedOrRawType()) {
+			methodReturnType = methodReturnType.getGenericType();
+		}
 		if (methodReturnType.isPrimitiveType()) {
 			reportError(getMethodForMessage(struct) + ":  factory methods for a mixin cannot return void or a primitive type",
 					struct);
@@ -942,7 +936,7 @@ public class AtAjAttributes {
 		// supplied as a list in the 'Class[] interfaces' value in the annotation value
 		// supplied as just the interface return value of the annotated method
 		// supplied as just the class return value of the annotated method
-		NameValuePair interfaceListSpecified = getAnnotationElement(declareMixinAnnotation, "interfaces");
+		NameValuePair interfaceListSpecified = getAnnotationElement(declareMixinAnnotation, "interfaces"); 
 
 		List<TypePattern> newParents = new ArrayList<TypePattern>(1);
 		List<ResolvedType> newInterfaceTypes = new ArrayList<ResolvedType>(1);
