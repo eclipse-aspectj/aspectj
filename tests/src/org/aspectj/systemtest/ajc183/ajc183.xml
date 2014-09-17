@@ -2,6 +2,11 @@
 
 <suite>
 
+	<ajc-test dir="bugs183/444398" title="abstract aspect npe">
+		<compile options="-1.8" files="Bottom.java Middle.java Top.java">
+		</compile>
+	</ajc-test>
+	
 	<ajc-test dir="bugs183/442425" title="anno style decp">
 		<compile options="-1.8" files="EntityController.java IEntityController.java MyAnnotatedController.java EntityControllerAspect.java EntityMongoController.java">
 			<message kind="error" line="23" text="Type mismatch: cannot convert from MyAnnotatedController&lt;String&gt; to IEntityController&lt;String&gt;"/>
@@ -20,6 +25,11 @@
 		</stdout>
 		</run>
 		-->
+	</ajc-test>
+	
+	<ajc-test dir="bugs183/443477" title="verifyerror">
+	  <compile options="-1.7" files="Coo.java"/>
+	  <run class="Coo"/>
 	</ajc-test>
 	
 </suite>

@@ -1031,6 +1031,10 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 
 	PerClause.Kind getPerClauseForTypeDeclaration(TypeDeclaration typeDeclaration) {
 		Annotation[] annotations = typeDeclaration.annotations;
+		if (annotations == null) {
+			// Can happen if an aspect is extending a regular class
+			return null;
+		}
 		for (int i = 0; i < annotations.length; i++) {
 			Annotation annotation = annotations[i];
 			if (annotation != null && annotation.resolvedType != null
@@ -1055,15 +1059,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 					// safe
 					// ?
 					return determinePerClause(typeDeclaration, clause);
-				} else if (annotation instanceof NormalAnnotation) { // this
-					// kind
-					// if it
-					// was
-					// added
-					// by
-					// the
-					// visitor
-					// !
+				} else if (annotation instanceof NormalAnnotation) { 
+					// this kind if it was added by the visitor!
 					// it is an @Aspect(...something...)
 					NormalAnnotation theAnnotation = (NormalAnnotation) annotation;
 					if (theAnnotation.memberValuePairs == null || theAnnotation.memberValuePairs.length < 1) {
@@ -1080,8 +1077,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 							"@Aspect annotation is expected to be SingleMemberAnnotation with 'String value()' as unique element",
 							new EclipseSourceLocation(typeDeclaration.compilationResult, typeDeclaration.sourceStart,
 									typeDeclaration.sourceEnd), null);
-					return PerClause.SINGLETON;// fallback strategy just to
-					// avoid NPE
+					return PerClause.SINGLETON;// fallback strategy just to avoid NPE
 				}
 			}
 		}

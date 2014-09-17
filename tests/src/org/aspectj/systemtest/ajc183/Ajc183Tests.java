@@ -21,9 +21,17 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc183Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
-	public void testAnnoStyleDecp_442425() {
-		runTest("anno style decp");
+	public void testAbstractAspectNPE_444398() {
+		runTest("abstract aspect npe");
 	}
+	
+//	public void testVerifyError_443447() {
+//		runTest("verifyerror");
+//	}
+//	
+//	public void testAnnoStyleDecp_442425() {
+//		runTest("anno style decp");
+//	}
 
 	// ---
 
