@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -1581,6 +1582,14 @@ public final class LazyClassGen {
 	
 	public void addAttribute(AjAttribute attribute) {
 		myGen.addAttribute(Utility.bcelAttribute(attribute, getConstantPool()));
+	}
+	
+	public void addAttribute(Attribute attribute) {
+		myGen.addAttribute(attribute);
+	}
+	
+	public Collection<Attribute> getAttributes() {
+		return myGen.getAttributes();
 	}
 
 	// this test is like asking:

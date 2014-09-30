@@ -21,6 +21,14 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc183Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testConstantPool_445395_0() {
+		runTest("constant pool 0");
+	}
+
+	public void testConstantPool_445395() {
+		runTest("constant pool");
+	}
+	
 	public void testAbstractAspectNPE_444398() {
 		runTest("abstract aspect npe");
 	}

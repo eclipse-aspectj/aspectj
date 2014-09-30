@@ -27,6 +27,11 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.Attribute;
+import org.aspectj.apache.bcel.classfile.BootstrapMethods;
+import org.aspectj.apache.bcel.classfile.ConstantInvokeDynamic;
+import org.aspectj.apache.bcel.classfile.ConstantMethodHandle;
+import org.aspectj.apache.bcel.classfile.ConstantMethodref;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
@@ -42,6 +47,7 @@ import org.aspectj.apache.bcel.generic.InstructionLV;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.InstructionSelect;
 import org.aspectj.apache.bcel.generic.InstructionTargeter;
+import org.aspectj.apache.bcel.generic.InvokeDynamic;
 import org.aspectj.apache.bcel.generic.InvokeInstruction;
 import org.aspectj.apache.bcel.generic.LineNumberTag;
 import org.aspectj.apache.bcel.generic.LocalVariableTag;
@@ -2204,7 +2210,7 @@ class BcelClassWeaver implements IClassWeaver {
 		ConstantPool recipientCpg = recipient.getEnclosingClass().getConstantPool();
 
 		boolean isAcrossClass = donorCpg != recipientCpg;
-
+		BootstrapMethods bootstrapMethods = null;
 		// first pass: copy the instructions directly, populate the srcToDest
 		// map,
 		// fix frame instructions
@@ -2214,13 +2220,60 @@ class BcelClassWeaver implements IClassWeaver {
 
 			// OPTIMIZE optimize this stuff?
 			if (fresh.isConstantPoolInstruction()) {
-				// need to reset index to go to new constant pool. This is
-				// totally
+				// need to reset index to go to new constant pool. This is totally
 				// a computation leak... we're testing this LOTS of times. Sigh.
 				if (isAcrossClass) {
 					InstructionCP cpi = (InstructionCP) fresh;
 					cpi.setIndex(recipientCpg.addConstant(donorCpg.getConstant(cpi.getIndex()), donorCpg));
 				}
+				// May need to copy bootstrapmethods across too.
+//				if (fresh instanceof InvokeDynamic) {
+//					InvokeDynamic id = (InvokeDynamic)fresh;
+//					ConstantInvokeDynamic cid = (ConstantInvokeDynamic)donorCpg.getConstant(src.getInstruction().getIndex());
+//					int bmaIndex = cid.getBootstrapMethodAttrIndex();
+//					if (bootstrapMethods == null) {
+//						Collection<Attribute> attributes = donor.getEnclosingClass().getAttributes();
+//						if (attributes != null) {
+//							for (Attribute attribute: attributes) {
+//								if (attribute instanceof BootstrapMethods) {
+//									bootstrapMethods = (BootstrapMethods)attribute;
+//								}
+//							}
+//						}
+//						BootstrapMethods.BootstrapMethod bootstrapMethod = 
+//								bootstrapMethods.getBootstrapMethods()[bmaIndex];
+//						ConstantMethodHandle methodhandle = (ConstantMethodHandle)donorCpg.getConstant(bootstrapMethod.getBootstrapMethodRef());
+//						int bootstrapMethodArguments[] = bootstrapMethod.getBootstrapArguments();
+//						
+//						// Finally have all we need to build the new one...
+//						
+//						int newMethodHandleIndex = recipientCpg.addConstant(methodhandle, donorCpg);
+//						int[] newMethodArguments = new int[bootstrapMethodArguments.length];
+//						for (int a=0; a<bootstrapMethodArguments.length; a++) {
+//							newMethodArguments[a] = recipientCpg.addConstant(donorCpg.getConstant(bootstrapMethodArguments[a]),donorCpg);
+//						}
+//						BootstrapMethods.BootstrapMethod newBootstrapMethod = 
+//								new BootstrapMethods.BootstrapMethod(newMethodHandleIndex,newMethodArguments);
+//						
+//						Collection<Attribute> newAttributes = recipient.getEnclosingClass().getAttributes();
+//						BootstrapMethods newBootstrapMethods = null;
+//						for (Attribute attr: newAttributes) {
+//							if (attr instanceof BootstrapMethods) {
+//								newBootstrapMethods = (BootstrapMethods)newBootstrapMethods;
+//							}
+//						}
+//						if (newBootstrapMethods == null) {
+//							newBootstrapMethods = 
+//									new BootstrapMethods(recipientCpg.addUtf8("BootstrapMethods"),
+//											2+newBootstrapMethod.getLength(),
+//											new BootstrapMethods.BootstrapMethod[] {newBootstrapMethod},
+//											recipientCpg);
+//							recipient.getEnclosingClass().addAttribute(newBootstrapMethods);
+//						}
+// TODO need to copy over lambda$0 support methods too...
+//					}
+//					
+//				}
 			}
 			if (src.getInstruction() == Range.RANGEINSTRUCTION) {
 				dest = ret.append(Range.RANGEINSTRUCTION);

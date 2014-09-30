@@ -2,6 +2,23 @@
 
 <suite>
 
+	<ajc-test dir="bugs183/445395" title="constant pool 0">
+		<compile options="-1.8" files="Code.java">
+		</compile>
+		<run class="Code">
+		<stdout>
+		<line text="4"/>
+		<line text="5"/>
+		<line text="6"/>
+		</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs183/445395" title="constant pool">
+		<compile options="-1.8" files="ControlFlow.java ForReplacer.java ControlFlowCommand.java ControlFlowDriver.java">
+		</compile>
+	</ajc-test>
+	
 	<ajc-test dir="bugs183/444398" title="abstract aspect npe">
 		<compile options="-1.8" files="Bottom.java Middle.java Top.java">
 		</compile>
