@@ -99,7 +99,7 @@ public final class BootstrapMethods extends Attribute {
 		isInPackedState = true;
 	}
 	
-	static class BootstrapMethod {
+	public static class BootstrapMethod {
 		private int bootstrapMethodRef;
 		private int[] bootstrapArguments;
 
@@ -116,7 +116,7 @@ public final class BootstrapMethods extends Attribute {
 			return bootstrapArguments;
 		}
 		
-		BootstrapMethod(int bootstrapMethodRef, int[] bootstrapArguments) {
+		public BootstrapMethod(int bootstrapMethodRef, int[] bootstrapArguments) {
 			this.bootstrapMethodRef = bootstrapMethodRef;
 			this.bootstrapArguments = bootstrapArguments;
 		}
@@ -136,6 +136,12 @@ public final class BootstrapMethods extends Attribute {
 			for (int i=0;i<len;i++) {
 				file.writeShort(bootstrapArguments[i]);
 			}
+		}
+		
+		public final int getLength() {
+			return 2 /*bootstrapMethodRef*/+
+					2 /*number of arguments*/+
+					2 * bootstrapArguments.length;
 		}
 		
 	}

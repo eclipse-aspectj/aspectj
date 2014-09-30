@@ -337,6 +337,11 @@ public class ConstantsInitializer {
 				| Constants.INDEXED;
 		Constants.instExcs[Constants.INVOKEVIRTUAL] = ExceptionConstants.EXCS_INTERFACE_METHOD_RESOLUTION_INVOKESPECIAL_INVOKEVIRTUAL;
 
+		Constants.instFlags[Constants.INVOKEDYNAMIC] = Constants.EXCEPTION_THROWER | Constants.CP_INST | Constants.LOADCLASS_INST
+				| Constants.INDEXED;
+		// TBD
+		// Constants.instExcs[Constants.INVOKEDYNAMIC] = ExceptionConstants.EXCS_INTERFACE_METHOD_RESOLUTION_INVOKESPECIAL_INVOKEVIRTUAL;
+
 		//@formatter:off
 		char[] lengths = // . = varies in length, / = undefined
 		("1111111111111111" + // nop > dconst_1

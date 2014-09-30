@@ -109,6 +109,10 @@ public final class ConstantInvokeDynamic extends Constant {
 	public final int getNameAndTypeIndex() {
 		return nameAndTypeIndex;
 	}
+	
+	public final int getBootstrapMethodAttrIndex() {
+		return bootstrapMethodAttrIndex;
+	}
 
 	@Override
 	public final String toString() {

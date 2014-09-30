@@ -586,6 +586,20 @@ public class ConstantPool implements Node {
 
 			return addNameAndType(u8.getValue(), u8_2.getValue());
 		}
+		
+		case Constants.CONSTANT_InvokeDynamic: {
+			ConstantInvokeDynamic cid = (ConstantInvokeDynamic)c;
+			int index1 = cid.getBootstrapMethodAttrIndex();
+			ConstantNameAndType cnat = (ConstantNameAndType)constants[cid.getNameAndTypeIndex()];
+			ConstantUtf8 name = (ConstantUtf8) constants[cnat.getNameIndex()];
+			ConstantUtf8 signature = (ConstantUtf8) constants[cnat.getSignatureIndex()];
+			int index2 = addNameAndType(name.getValue(), signature.getValue());
+			return addInvokeDynamic(index1,index2);
+		}
+		
+		case Constants.CONSTANT_MethodHandle:
+			ConstantMethodHandle cmh = (ConstantMethodHandle)c;
+			return addMethodHandle(cmh.getReferenceKind(),addConstant(constants[cmh.getReferenceIndex()],cp));
 
 		case Constants.CONSTANT_Utf8:
 			return addUtf8(((ConstantUtf8) c).getValue());
@@ -601,6 +615,10 @@ public class ConstantPool implements Node {
 
 		case Constants.CONSTANT_Integer:
 			return addInteger(((ConstantInteger) c).getValue());
+			
+		case Constants.CONSTANT_MethodType:
+			ConstantMethodType cmt = (ConstantMethodType)c;
+			return addMethodType(addConstant(constants[cmt.getDescriptorIndex()],cp));
 
 		case Constants.CONSTANT_InterfaceMethodref:
 		case Constants.CONSTANT_Methodref:
@@ -636,6 +654,20 @@ public class ConstantPool implements Node {
 			throw new RuntimeException("Unknown constant type " + c);
 		}
 	}
+	
+	public int addMethodHandle(byte referenceKind, int referenceIndex) {
+		adjustSize();
+		int ret = poolSize;
+		pool[poolSize++] = new ConstantMethodHandle(referenceKind, referenceIndex);
+		return ret;
+	}
+	
+	public int addMethodType(int descriptorIndex) {
+		adjustSize();
+		int ret = poolSize;
+		pool[poolSize++] = new ConstantMethodType(descriptorIndex);
+		return ret;
+	}
 
 	// OPTIMIZE should put it in the cache now
 	public int addMethodref(String class_name, String method_name, String signature) {
@@ -649,6 +681,13 @@ public class ConstantPool implements Node {
 		class_index = addClass(class_name);
 		ret = poolSize;
 		pool[poolSize++] = new ConstantMethodref(class_index, name_and_type_index);
+		return ret;
+	}
+	
+	public int addInvokeDynamic(int bootstrapMethodIndex, int constantNameAndTypeIndex) {
+		adjustSize();
+		int ret = poolSize;
+		pool[poolSize++] = new ConstantInvokeDynamic(bootstrapMethodIndex, constantNameAndTypeIndex);
 		return ret;
 	}
 

@@ -1150,7 +1150,6 @@ public class InstructionList implements Serializable {
 	public void replaceConstantPool(ConstantPool old_cp, ConstantPool new_cp) {
 		for (InstructionHandle ih = start; ih != null; ih = ih.next) {
 			Instruction i = ih.instruction;
-
 			if (i.isConstantPoolInstruction()) {
 				InstructionCP ci = (InstructionCP) i;
 				Constant c = old_cp.getConstant(ci.getIndex());
@@ -1165,7 +1164,7 @@ public class InstructionList implements Serializable {
 	}
 
 	/**
-	 * Delete contents of list. Provides besser memory utilization, because the system then may reuse the instruction handles. This
+	 * Delete contents of list. Provides better memory utilization, because the system then may reuse the instruction handles. This
 	 * method is typically called right after <href="MethodGen.html#getMethod()">MethodGen.getMethod()</a>.
 	 */
 	public void dispose() {
