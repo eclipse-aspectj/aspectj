@@ -830,6 +830,7 @@ public class ProgramElement implements IProgramElement {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public Map<String, List<String>> getDeclareParentsMap() {
 		Map<String, List<String>> s = (Map<String, List<String>>) kvpairs.get("declareparentsmap");
 		return s;

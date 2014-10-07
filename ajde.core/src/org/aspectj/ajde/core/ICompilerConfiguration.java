@@ -33,7 +33,7 @@ public interface ICompilerConfiguration extends CompilerConfigurationChangeFlags
 	 * @see org.aspectj.ajde.core.JavaOptions#getDefaultJavaOptions or
 	 *      org.aspectj.org.eclipse.jdt.core.IJavaProject#getOptions(boolean)
 	 */
-	public Map /* String --> String */getJavaOptionsMap();
+	public Map<String,String> getJavaOptionsMap();
 
 	/**
 	 * The non-standard options, typically prefaced with -X when used with a command line compiler. The default is no non-standard
@@ -59,7 +59,7 @@ public interface ICompilerConfiguration extends CompilerConfigurationChangeFlags
 	 * 
 	 * @return a subset of those files that would be returned on getProjectSourceFiles() that have actually *changed*
 	 */
-	public List /* File */getProjectSourceFilesChanged();
+	public List<File> getProjectSourceFilesChanged();
 
 	/**
 	 * @return the classpath to use
@@ -95,7 +95,7 @@ public interface ICompilerConfiguration extends CompilerConfigurationChangeFlags
 	 * 
 	 * @return map from unique resource name to absolute path to source resource (String to File)
 	 */
-	public Map /* String --> java.io.File */getSourcePathResources();
+	public Map<String,File> getSourcePathResources();
 
 	/**
 	 * Returns a set of bit flags indicating what has changed in the configuration since it was previously read. This allows the
@@ -122,7 +122,7 @@ public interface ICompilerConfiguration extends CompilerConfigurationChangeFlags
 	 * @return a list of modified elements that should be checked (can be empty) or null if unknown (and in which case every
 	 *         classpath element will be checked)
 	 */
-	public List getClasspathElementsWithModifiedContents();
+	public List<String> getClasspathElementsWithModifiedContents();
 
 	//
 	// /**

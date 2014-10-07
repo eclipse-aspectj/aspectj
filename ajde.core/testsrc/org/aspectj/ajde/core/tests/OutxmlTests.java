@@ -22,6 +22,7 @@ import java.util.jar.JarFile;
 import org.aspectj.ajde.core.AjdeCoreTestCase;
 import org.aspectj.ajde.core.TestCompilerConfiguration;
 import org.aspectj.ajde.core.TestMessageHandler;
+import org.aspectj.ajde.core.TestMessageHandler.TestMessage;
 import org.aspectj.bridge.Constants;
 
 public class OutxmlTests extends AjdeCoreTestCase {
@@ -111,7 +112,7 @@ public class OutxmlTests extends AjdeCoreTestCase {
 	 */
 	public void testOutxmlToOutjarWithAop_xml () {
 		File f = new File( getAbsoluteProjectDir() + File.separator + "src-resources" + File.separator + "testjar.jar");
-		Set roots = new HashSet();
+		Set<File> roots = new HashSet<File>();
 		roots.add(f);
 		compilerConfig.setInpath(roots);
 		
@@ -122,7 +123,7 @@ public class OutxmlTests extends AjdeCoreTestCase {
 		assertFalse("Expected compiler errors or warnings but didn't find any "
 				+ handler.getMessages(), handler.getMessages().isEmpty());
 		
-		List msgs = handler.getMessages();
+		List<TestMessage> msgs = handler.getMessages();
 		String msg = ((TestMessageHandler.TestMessage)msgs.get(0)).getContainedMessage().getMessage();
 		String exp = "-outxml/-outxmlfile option ignored because resource already exists:";
 		assertTrue("Expected message to start with : " + exp + " but found message " + msg,msg.startsWith(exp));

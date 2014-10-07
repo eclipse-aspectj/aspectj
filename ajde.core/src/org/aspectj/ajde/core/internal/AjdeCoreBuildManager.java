@@ -187,7 +187,7 @@ public class AjdeCoreBuildManager {
 		return formattedOptions.toString();
 	}
 
-	private String formatMap(Map options) {
+	private String formatMap(Map<String,? extends Object> options) {
 		if (options == null) {
 			return "<default>";
 		}
@@ -309,7 +309,7 @@ public class AjdeCoreBuildManager {
 		mergeInto(config.getAspectpath(), compilerConfig.getAspectPath());
 
 		// Process the JAVA OPTIONS MAP
-		Map jom = compilerConfig.getJavaOptionsMap();
+		Map<String,String> jom = compilerConfig.getJavaOptionsMap();
 		if (jom != null) {
 			String version = (String) jom.get(CompilerOptions.OPTION_Compliance);
 			if (version != null && !version.equals(CompilerOptions.VERSION_1_4)) {

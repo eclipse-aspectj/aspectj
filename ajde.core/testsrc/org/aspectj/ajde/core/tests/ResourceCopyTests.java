@@ -108,7 +108,7 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 	}
 
 	public void testInjarsToBin() {
-		Set injars = new HashSet();
+		Set<File> injars = new HashSet<File>();
 		File injar1 = openFile(injar1Name);
 		injars.add(injar1);
 		compilerConfig.setInpath(injars);

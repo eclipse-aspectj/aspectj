@@ -19,6 +19,7 @@ import java.util.List;
 import org.aspectj.ajde.core.AjdeCoreTestCase;
 import org.aspectj.ajde.core.TestCompilerConfiguration;
 import org.aspectj.ajde.core.TestMessageHandler;
+import org.aspectj.ajde.core.TestMessageHandler.TestMessage;
 import org.aspectj.bridge.IMessage;
 
 public class CompilerMessagesTests extends AjdeCoreTestCase {
@@ -47,7 +48,7 @@ public class CompilerMessagesTests extends AjdeCoreTestCase {
 		// bug 33474
 		// The build has happened, what messages did the compiler give, and do they
 		// contain the information we expect?
-		List msgs = handler.getMessages();
+		List<TestMessage> msgs = handler.getMessages();
         if (2 != msgs.size()) {
             assertTrue("not two messages: " + msgs, false);
         }
@@ -69,7 +70,7 @@ public class CompilerMessagesTests extends AjdeCoreTestCase {
 	}
 	
 	public void testDeclareMessageContents() {
-		List msgs = handler.getMessages();
+		List<TestMessage> msgs = handler.getMessages();
 		IMessage msg = ((TestMessageHandler.TestMessage)msgs.get(1)).getContainedMessage();
 		assertEquals( "Please don't call setters" , msg.getMessage());
 		assertEquals("field-set(int apackage.SomeClass.x)", msg.getDetails());

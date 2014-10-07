@@ -49,7 +49,7 @@ public class AjConfigTests extends AjdeCoreTestCase {
 	}
 
 	public void testJavaOptionsMap() {
-		Map options = JavaOptions.getDefaultJavaOptions();
+		Map<String,String> options = JavaOptions.getDefaultJavaOptions();
 		options.put(JavaOptions.WARN_DEPRECATION, JavaOptions.WARNING);
 		compilerConfig.setJavaOptions(options);
 		Map found = genAjBuildConfig().getOptions().getMap();

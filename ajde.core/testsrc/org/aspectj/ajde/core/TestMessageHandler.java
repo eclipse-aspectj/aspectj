@@ -25,13 +25,13 @@ import org.aspectj.bridge.IMessage.Kind;
 public class TestMessageHandler implements IBuildMessageHandler {
 
 	private List<Kind> ignoring;
-	private List messages;
-	private List errors;
+	private List<TestMessage> messages;
+	private List<TestMessage> errors;
 
 	public TestMessageHandler() {
 		ignoring = new ArrayList<Kind>();
-		messages = new ArrayList();
-		errors = new ArrayList();
+		messages = new ArrayList<TestMessage>();
+		errors = new ArrayList<TestMessage>();
 		ignore(IMessage.INFO);
 		ignore(IMessage.WEAVEINFO);
 	}
@@ -70,11 +70,11 @@ public class TestMessageHandler implements IBuildMessageHandler {
 		}
 	}
 
-	public List getMessages() {
+	public List<TestMessage> getMessages() {
 		return messages;
 	}
 
-	public List getErrors() {
+	public List<TestMessage> getErrors() {
 		return errors;
 	}
 

@@ -13,12 +13,12 @@ package org.aspectj.ajde.core;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
+import org.aspectj.ajde.core.TestMessageHandler.TestMessage;
 import org.aspectj.tools.ajc.Ajc;
 
 /**
@@ -124,9 +124,8 @@ public class AjdeCoreTestCase extends TestCase {
 	}
 
 	public boolean checkFor(String what) {
-		List ll = ((TestMessageHandler) compiler.getMessageHandler()).getMessages();
-		for (Iterator iter = ll.iterator(); iter.hasNext();) {
-			Object element = iter.next();
+		List<TestMessage> ll = ((TestMessageHandler) compiler.getMessageHandler()).getMessages();
+		for (TestMessage element: ll) {
 			if (element.toString().indexOf(what) != -1)
 				return true;
 		}
@@ -134,9 +133,8 @@ public class AjdeCoreTestCase extends TestCase {
 	}
 
 	public void dumpTaskData() {
-		List ll = ((TestMessageHandler) compiler.getMessageHandler()).getMessages();
-		for (Iterator iter = ll.iterator(); iter.hasNext();) {
-			Object element = iter.next();
+		List<TestMessage> ll = ((TestMessageHandler) compiler.getMessageHandler()).getMessages();
+		for (TestMessage element: ll) {
 			System.out.println("RecordedMessage>" + element);
 		}
 	}

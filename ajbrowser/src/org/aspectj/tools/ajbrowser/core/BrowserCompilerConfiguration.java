@@ -52,7 +52,7 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 		return classpath.toString();
 	}
 
-	public Map getJavaOptionsMap() {
+	public Map<String,String> getJavaOptionsMap() {
 		return BrowserManager.getDefault().getJavaBuildOptions().getJavaBuildOptionsMap();
 	}
 

@@ -60,15 +60,15 @@ public final class JavaOptions {
 	public static final String GENERATE = CompilerOptions.GENERATE;
 	public static final String DO_NOT_GENERATE = CompilerOptions.DO_NOT_GENERATE;
 	
-	private static Map defaultOptionsMap;
+	private static Map<String,String> defaultOptionsMap;
 	
 	/**
 	 * @return the java options map with the default settings
 	 */
-	public static Map getDefaultJavaOptions() {
+	public static Map<String,String> getDefaultJavaOptions() {
 		if (defaultOptionsMap != null) return defaultOptionsMap;
 		
-		defaultOptionsMap = new HashMap();
+		defaultOptionsMap = new HashMap<String,String>();
 		defaultOptionsMap.put(COMPLIANCE_LEVEL, VERSION_14);
 		defaultOptionsMap.put(SOURCE_COMPATIBILITY_LEVEL, VERSION_13);
 		defaultOptionsMap.put(PRESERVE_ALL_LOCALS, OPTIMIZE);

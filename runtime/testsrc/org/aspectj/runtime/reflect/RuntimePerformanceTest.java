@@ -24,7 +24,7 @@ public class RuntimePerformanceTest extends TestCase {
 	private static final long TIMEOUT = 10000;
 	private static final long ITERATIONS = 1000000;
 	private static final long WARMUP_ITERATIONS = 10000;
-	private static final long EXPECTED_RATIO = 10;
+	private static final long EXPECTED_RATIO = 8;
 	private static final Factory factory = new Factory("RutimePerformanceTest.java",RuntimePerformanceTest.class);
 
 	private boolean savedUseCaches;

@@ -256,6 +256,7 @@ public class AsmManager implements IStructureModel {
 				((AspectJElementHierarchy) hierarchy).setAsmManager(this);
 				hierarchyReadOK = true;
 				mapper = (RelationshipMap) s.readObject();
+				s.close();
 			}
 		} catch (FileNotFoundException fnfe) {
 			// That is OK
@@ -931,13 +932,13 @@ public class AsmManager implements IStructureModel {
 			Set<String> sourcesToRemove = new HashSet<String>();
 			Set<String> nonExistingHandles = new HashSet<String>(); // Cache of handles that we
 			// *know* are invalid
-			int srchandlecounter = 0;
-			int tgthandlecounter = 0;
+//			int srchandlecounter = 0;
+//			int tgthandlecounter = 0;
 
 			// Iterate over the source handles in the relationships map
 			Set<String> keyset = mapper.getEntries(); // These are source handles
 			for (String hid : keyset) {
-				srchandlecounter++;
+//				srchandlecounter++;
 
 				// Do we already know this handle points to nowhere?
 				if (nonExistingHandles.contains(hid)) {
@@ -967,7 +968,7 @@ public class AsmManager implements IStructureModel {
 							// Iterate through the targets for this relationship
 							for (Iterator<String> targetIter = targets.iterator(); targetIter.hasNext();) {
 								String targethid = targetIter.next();
-								tgthandlecounter++;
+//								tgthandlecounter++;
 								// Do we already know it doesn't exist?
 								if (nonExistingHandles.contains(targethid)) {
 									if (dumpDeltaProcessing) {
