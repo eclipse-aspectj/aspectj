@@ -2021,7 +2021,9 @@ public class BcelShadow extends Shadow {
 
 	public void weaveCflowEntry(final BcelAdvice munger, final Member cflowField) {
 		final boolean isPer = munger.getKind() == AdviceKind.PerCflowBelowEntry || munger.getKind() == AdviceKind.PerCflowEntry;
-
+		if (!isPer && getKind() == PreInitialization) {
+			return;
+		}
 		final Type objectArrayType = new ArrayType(Type.OBJECT, 1);
 		final InstructionFactory fact = getFactory();
 
@@ -2080,8 +2082,7 @@ public class BcelShadow extends Shadow {
 			entryInstructions.append(entrySuccessInstructions);
 		}
 
-		// this is the same for both per and non-per
-		weaveAfter(new BcelAdvice(null, null, null, 0, 0, 0, null, munger.getConcreteAspect()) {
+		BcelAdvice exitAdvice = new BcelAdvice(null, null, null, 0, 0, 0, null, munger.getConcreteAspect()) {
 			@Override
 			public InstructionList getAdviceInstructions(BcelShadow s, BcelVar extraArgVar, InstructionHandle ifNoAdvice) {
 				InstructionList exitInstructions = new InstructionList();
@@ -2100,7 +2101,13 @@ public class BcelShadow extends Shadow {
 				}
 				return exitInstructions;
 			}
-		});
+		};
+//		if (getKind() == PreInitialization) {
+//			weaveAfterReturning(exitAdvice);
+//		}
+//		else {
+			weaveAfter(exitAdvice);
+//		}
 
 		range.insert(entryInstructions, Range.InsideBefore);
 	}
