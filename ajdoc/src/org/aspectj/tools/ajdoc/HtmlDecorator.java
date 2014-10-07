@@ -224,7 +224,20 @@ class HtmlDecorator {
 					classStartIndex = fileContents.toString().indexOf("<H2>\nClass ");
 					br = false;
 				}
-				if (classStartIndex != -1) {
+				if (classStartIndex == -1) {
+					// Java8 looks more like this:
+					// <h2 title="Class A" class="title">Class A</h2>
+					classStartIndex = fileContents.toString().indexOf("<h2 title=\"Class ");
+					int classEndIndex = fileContents.toString().indexOf("</h2>", classStartIndex);
+					if (classEndIndex != -1) {
+						// Convert it to "<h2 title="Aspect A" class="title">Aspect A</h2>"
+						String classLine = fileContents.toString().substring(classStartIndex, classEndIndex);
+						String aspectLine = classLine.replaceAll("Class ","Aspect ");
+						fileContents.delete(classStartIndex, classEndIndex);
+						fileContents.insert(classStartIndex, aspectLine);
+					}
+				}
+				else if (classStartIndex != -1) {
 					int classEndIndex = fileContents.toString().indexOf("</H2>", classStartIndex);
 					if (classStartIndex != -1 && classEndIndex != -1) {
 						String classLine = fileContents.toString().substring(classStartIndex, classEndIndex);
@@ -247,6 +260,19 @@ class HtmlDecorator {
 						sb.replace(0, 5, "aspect");
 						fileContents.delete(secondClassStartIndex, classEndIndex);
 						fileContents.insert(secondClassStartIndex, sb.toString());
+					}
+				}
+				else {
+					// Java8:
+					// <pre>static class <span class="typeNameLabel">ClassA.InnerAspect</span>
+					classStartIndex = fileContents.toString().indexOf("class <span class=\"typeNameLabel\">");
+					int classEndIndex = fileContents.toString().indexOf("</span>", classStartIndex);
+					if (classEndIndex != -1) {
+						// Convert it to "aspect <span class="typeNameLabel">ClassA.InnerAspect</span>"
+						String classLine = fileContents.toString().substring(classStartIndex, classEndIndex);
+						String aspectLine = "aspect"+fileContents.substring(classStartIndex+5,classEndIndex);
+						fileContents.delete(classStartIndex, classEndIndex);
+						fileContents.insert(classStartIndex, aspectLine);
 					}
 				}
 			}

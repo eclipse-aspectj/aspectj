@@ -16,12 +16,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.aspectj.weaver.CompressingDataOutputStream;
-import org.aspectj.weaver.ConstantPoolReader;
-import org.aspectj.weaver.ConstantPoolWriter;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.reflect.ReflectionWorld;

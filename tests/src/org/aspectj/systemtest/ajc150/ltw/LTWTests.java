@@ -119,9 +119,9 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("JDK14 LTW with XML");  		
   	}
   	
-  	public void testJ14LTWWithASPECTPATH() {  	
-		runTest("JDK14 LTW with ASPECTPATH");  		
-  	}
+//  	public void testJ14LTWWithASPECTPATH() {  	
+//		runTest("JDK14 LTW with ASPECTPATH");  		
+//  	}
   	
 
     //public void testDiscardingWovenTypes() { 

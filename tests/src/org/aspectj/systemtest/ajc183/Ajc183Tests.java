@@ -21,6 +21,38 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc183Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testSuppressTypeNotFound_436653() {
+		runTest("suppress type not found");
+	}
+
+	public void testSuppressTypeNotFound_436653_2() {
+		runTest("suppress type not found 2");
+	}
+
+	public void testSuppressTypeNotFound_436653_3() {
+		runTest("suppress type not found 3");
+	}
+	
+	public void testSuppressTypeNotFound_436653_4() {
+		runTest("suppress type not found 4");
+	}
+
+	public void testSuppressTypeNotFound_436653_5() {
+		runTest("suppress type not found 5");
+	}
+
+	public void testSuppressTypeNotFound_436653_6() {
+		runTest("suppress type not found 6");
+	}
+
+	public void testSuppressTypeNotFound_436653_7() {
+		runTest("suppress type not found 7");
+	}
+	
+	public void testSuppressTypeNotFound_436653_8() {
+		runTest("suppress type not found 8");
+	}
+	
 	public void testConstantPool_445395_0() {
 		runTest("constant pool 0");
 	}

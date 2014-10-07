@@ -133,11 +133,11 @@ public class ArgsPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingTypePatterns()
 	 */
 	public List getBindingTypePatterns() {
-		List l = new ArrayList();
+		List<BindingTypePattern> l = new ArrayList<BindingTypePattern>();
 		TypePattern[] pats = arguments.getTypePatterns();
 		for (int i = 0; i < pats.length; i++) {
 			if (pats[i] instanceof BindingTypePattern) {
-				l.add(pats[i]);
+				l.add((BindingTypePattern)pats[i]);
 			}
 		}
 		return l;

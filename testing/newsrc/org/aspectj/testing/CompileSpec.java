@@ -293,16 +293,16 @@ public class CompileSpec implements ITestStep {
 	}
 	
 	protected AjcTestCase.MessageSpec buildMessageSpec() {
-		List infos = null;
-		List warnings = new ArrayList();
-		List errors = new ArrayList();
-		List fails = new ArrayList();
-		List weaveInfos = new ArrayList();
+		List<AjcTestCase.Message> infos = null;
+		List<AjcTestCase.Message> warnings = new ArrayList<AjcTestCase.Message>();
+		List<AjcTestCase.Message> errors = new ArrayList<AjcTestCase.Message>();
+		List<AjcTestCase.Message> fails = new ArrayList<AjcTestCase.Message>();
+		List<AjcTestCase.Message> weaveInfos = new ArrayList<AjcTestCase.Message>();
 		for (Iterator iter = expected.iterator(); iter.hasNext();) {
 			ExpectedMessageSpec exMsg = (ExpectedMessageSpec) iter.next();
 			String kind = exMsg.getKind();
 			if (kind.equals("info")) {
-				if (infos == null) infos = new ArrayList();
+				if (infos == null) infos = new ArrayList<AjcTestCase.Message>();
 				infos.add(exMsg.toMessage());
 			} else if (kind.equals("warning")) {
 				warnings.add(exMsg.toMessage());

@@ -925,6 +925,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public AnnotationAJ[] getAnnotations() {
 		throw new RuntimeException("ResolvedType.getAnnotations() should never be called");
 	}
+	
+	public boolean hasAnnotations() {
+		throw new RuntimeException("ResolvedType.getAnnotations() should never be called");
+	}
+
 
 	/**
 	 * Note: Only overridden by ReferenceType subtype

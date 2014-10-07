@@ -9,7 +9,7 @@
 		</compile>
 		<run class="Hello">
 		<stdout>
-		<line text="@MyAnnotation(dummy2=korte, dummy1=)"/>
+		<line text="@MyAnnotation(dummy1=, dummy2=korte)"/>
 		</stdout>
 		</run>
 	</ajc-test>

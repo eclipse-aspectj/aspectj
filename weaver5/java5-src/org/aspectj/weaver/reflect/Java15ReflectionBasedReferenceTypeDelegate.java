@@ -92,6 +92,14 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 		}
 		return annotations;
 	}
+	
+	@Override
+	public boolean hasAnnotations() {
+		if (annotations == null) {
+			annotations = annotationFinder.getAnnotations(getBaseClass(), getWorld());
+		}
+		return annotations.length != 0;
+	}
 
 	@Override
 	public boolean hasAnnotation(UnresolvedType ofType) {

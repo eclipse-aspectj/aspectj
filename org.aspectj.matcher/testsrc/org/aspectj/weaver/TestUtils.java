@@ -287,7 +287,7 @@ public class TestUtils {
 	public static String[] parseIds(String str) {
 		if (str.length() == 0)
 			return ZERO_STRINGS;
-		List l = new ArrayList();
+		List<String> l = new ArrayList<String>();
 		int start = 0;
 		while (true) {
 			int i = str.indexOf(',', start);

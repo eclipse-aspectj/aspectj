@@ -664,6 +664,7 @@ public abstract class CommonAdvancedPointcutExpressionTests extends TestCase {
 		return null;
 	}
 
+	@SuppressWarnings("unused")
 	private void checkAlwaysMatches(String pointcutExpression, String type, String methodName, String methodSignature) {
 		StandardPointcutExpression ex = pointcutParser.parsePointcutExpression(pointcutExpression);
 		assertNotNull(ex);
@@ -674,6 +675,7 @@ public abstract class CommonAdvancedPointcutExpressionTests extends TestCase {
 		assertTrue(b);
 	}
 
+	@SuppressWarnings("unused")
 	private void checkNeverMatches(String pointcutExpression, String type, String methodName, String methodSignature) {
 		StandardPointcutExpression ex = pointcutParser.parsePointcutExpression(pointcutExpression);
 		assertNotNull(ex);

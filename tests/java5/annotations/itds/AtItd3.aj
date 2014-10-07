@@ -22,7 +22,8 @@ public class AtItd3 {
       Annotation aa = m.getAnnotation(Ann.class);
       System.err.println("Ann.class retrieved is: "+aa);
 
-      if (!aa.toString().equals("@Ann(id=goodbye, anInt=4)")) 
+      if (!aa.toString().equals("@Ann(id=goodbye, anInt=4)")) // < Java8 order
+          if (!aa.toString().equals("@Ann(anInt=4, id=goodbye)")) // Java8 order
         throw new RuntimeException("Incorrect output, expected:"+
           "@Ann(id=goodbye, anInt=4) but got "+aa.toString());
  

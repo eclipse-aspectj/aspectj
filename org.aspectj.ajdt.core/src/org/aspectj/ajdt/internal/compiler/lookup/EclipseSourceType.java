@@ -682,7 +682,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	 */
 	public AnnotationAJ[] getAnnotations() {
 		int declarationAnnoCount = (declaration.annotations == null ? 0 : declaration.annotations.length);
-		if (annotations != null && annotations.length==declarationAnnoCount) {
+		if (annotations != null && annotations.length == declarationAnnoCount) {
 			return annotations; // only do this once
 		}
 		if (!annotationsFullyResolved || annotations.length!=declarationAnnoCount) {
@@ -699,6 +699,10 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 			}
 		}
 		return annotations;
+	}
+	
+	public boolean hasAnnotations() {
+		return (declaration.annotations != null && declaration.annotations.length != 0);
 	}
 
 	/**

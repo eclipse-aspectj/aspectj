@@ -181,10 +181,10 @@
        <stdout>
            <line text="Annotations on field1? true"/>
            <line text="Annotation count is 4"/>
-           <line text="@AnnoBoolean(zzz=false, value=true)"/>
+           <line text="@AnnoBoolean(value=true, zzz=false)"/>
            <line text="@AnnoClass(value=class java.lang.Integer, ccc=class java.lang.String)"/>
-           <line text="@AnnoLong(jjj=111, value=999)"/>
-           <line text="@AnnoString(sss=xyz, value=set from xml)"/>
+           <line text="@AnnoLong(value=999, jjj=111)"/>
+           <line text="@AnnoString(value=set from xml, sss=xyz)"/>
            <line text="Annotations on field2? true"/>
            <line text="Annotation count is 1"/>
            <line text="@AnnoClass(value=class java.lang.String, ccc=class java.lang.String)"/>
@@ -199,13 +199,13 @@
            <line text="Annotations on field1? true"/>
            <line text="Annotation count is 4"/>
            <line text="@AnnoChar(value=z, ccc=a)"/>
-           <line text="@AnnoDouble(ddd=3.0, value=99.0)"/>
-           <line text="@AnnoFloat(fff=4.0, value=6.0)"/>
-           <line text="@AnnoShort(sss=3, value=8)"/>
+           <line text="@AnnoDouble(value=99.0, ddd=3.0)"/>
+           <line text="@AnnoFloat(value=6.0, fff=4.0)"/>
+           <line text="@AnnoShort(value=8, sss=3)"/>
            <line text="Annotations on field2? true"/>
            <line text="Annotation count is 2"/>
            <line text="@AnnoByte(value=88, bbb=66)"/>
-           <line text="@AnnoInt(value=99, iii=111)"/>
+           <line text="@AnnoInt(iii=111, value=99)"/>
        </stdout>
      </run>
    </ajc-test>

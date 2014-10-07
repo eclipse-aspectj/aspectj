@@ -141,6 +141,7 @@ public class ArgsTestCase extends TestCase {
 		assertFalse("no match expected", sMatch.matchesJoinPoint(thisOjb, targetObj, args).matches());
 	}
 
+	@SuppressWarnings("unused")
 	private static class A {
 		public void anInt(int i) {
 		}
@@ -150,6 +151,7 @@ public class ArgsTestCase extends TestCase {
 
 	}
 
+	@SuppressWarnings("unused")
 	private static class B extends A {
 		public void x(A a) {
 		}
@@ -158,6 +160,7 @@ public class ArgsTestCase extends TestCase {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private static class C {
 		public void z(A a, C c) {
 		}

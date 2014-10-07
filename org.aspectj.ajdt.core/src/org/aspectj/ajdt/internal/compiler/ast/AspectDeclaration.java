@@ -211,6 +211,10 @@ public class AspectDeclaration extends TypeDeclaration {
 			// For e37 moved the check down to this level
 			return;
 		}
+		if ((binding.tagBits & TagBits.AnnotationResolved) != 0) {
+			// possibly resolution occurred during hasUnsatisfiedDependency()...
+			binding.tagBits = (binding.tagBits & ~TagBits.AnnotationResolved);			
+		}
 		Annotation atAspectAnnotation = AtAspectJAnnotationFactory.createAspectAnnotation(perClause.toDeclarationString(),
 				declarationSourceStart);
 		Annotation privilegedAnnotation = null;
@@ -230,6 +234,7 @@ public class AspectDeclaration extends TypeDeclaration {
 			System.arraycopy(old, 0, annotations, 0, old.length);
 			System.arraycopy(toAdd, 0, annotations, old.length, toAdd.length);
 		}
+		TypeDeclaration.resolveAnnotations(staticInitializerScope, annotations, binding);
 	}
 
 	public void generateCode(ClassFile enclosingClassFile) {

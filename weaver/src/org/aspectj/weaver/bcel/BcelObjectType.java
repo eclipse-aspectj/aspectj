@@ -587,6 +587,11 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		ensureAnnotationsUnpacked();
 		return annotations;
 	}
+	
+	public boolean hasAnnotations() {
+		ensureAnnotationsUnpacked();
+		return annotations.length != 0;
+	}
 
 	public boolean hasAnnotation(UnresolvedType ofType) {
 		// Due to re-entrancy we may be in the middle of unpacking the annotations already... in which case use this slow

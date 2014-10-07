@@ -2,6 +2,93 @@
 
 <suite>
 
+	<ajc-test dir="bugs183/436653" title="suppress type not found 4">
+		<compile options="-1.8 -Xlint:ignore" files="X.java" outjar="aspects.jar"/>
+		<compile options="-1.8" files="Runner.java"/>
+		<run class="Runner" ltw="aop.xml">
+	        <stdout>
+	        <line text="Code.m() running"/>
+	        </stdout>
+	    </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs183/436653" title="suppress type not found 5">
+		<compile options="-1.8 -Xlint:ignore" files="X.java" outjar="aspects.jar"/>
+		<compile class="-1.8" files="A.java"/>
+		<compile options="-1.8" files="Runner.java"/>
+		<run class="Runner" ltw="aop.xml">
+	        <stdout>
+	        <line text="x"/>
+	        <line text="Code.m() running"/>
+	        </stdout>
+	    </run>
+    </ajc-test>
+    
+    <!-- annotation style aspect, missing type so deactivated -->
+   	<ajc-test dir="bugs183/436653" title="suppress type not found 6">
+		<compile options="-1.8 -Xlint:ignore" files="AnnoX.java" outjar="aspects.jar"/>
+		<compile options="-1.8" files="Runner.java"/>
+		<run class="Runner" ltw="aop2.xml">
+	        <stdout>
+	        <line text="Code.m() running"/>
+	        </stdout>
+	    </run>
+    </ajc-test>
+    
+    <!-- annotation style aspect, type not missing so not deactivated -->
+    <ajc-test dir="bugs183/436653" title="suppress type not found 7">
+		<compile options="-1.8 -Xlint:ignore" files="AnnoX.java A.java" outjar="aspects.jar"/>
+		<compile options="-1.8" files="Runner.java"/>
+		<run class="Runner" ltw="aop2.xml">
+	        <stdout>
+	        <line text="x"/>
+	        <line text="Code.m() running"/>
+	        </stdout>
+	    </run>
+    </ajc-test>
+    
+    <!-- annotation style aspect, type not missing so not deactivated -->
+    <ajc-test dir="bugs183/436653" title="suppress type not found 8">
+		<compile options="-1.8 -Xlint:ignore" files="AnnoX.java A.java" outjar="aspects.jar"/>
+		<compile options="-1.8 -showWeaveInfo" files="Runner.java" aspectpath="aspects.jar">
+			<message kind="weave" text="Join point 'method-execution(void Code.m())' in Type 'Code' (Runner.java:8) advised by before advice from 'X' (aspects.jar!AnnoX.class(from AnnoX.java))"/>
+		</compile>
+		<run class="Runner">
+	        <stdout>
+	        <line text="x"/>
+	        <line text="Code.m() running"/>
+	        </stdout>
+	    </run>
+    </ajc-test>
+
+	<ajc-test dir="bugs183/436653" title="suppress type not found 3">
+		<compile options="-1.8" files="A.java" outjar="typeA.jar"/>
+		<compile options="-1.8" files="B.java" outjar="typeB.jar"/>
+		<!-- adviceDidNotMatch messages are suppressed here -->
+		<compile options="-1.8" files="XA3.java XCode.java" outjar="aspects.jar" classpath="typeA.jar"/>
+		<compile options="-1.8 -verbose" files="Code.java" classpath="typeA.jar" aspectpath="aspects.jar">
+			<!-- '*' is a hint that we care about only this message, not other messages. avoids needing to list them all -->
+			<message kind="info" text="*deactivating aspect 'XA2' as it requires type 'B' which cannot be found on the classpath"/>
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs183/436653" title="suppress type not found 2">
+		<compile options="-1.8" files="A.java" outjar="typeA.jar"/>
+		<!-- adviceDidNotMatch messages are suppressed here -->
+		<compile options="-1.8" files="XA2.java XCode.java" outjar="aspects.jar" classpath="typeA.jar"/>
+		<compile options="-1.8" files="Code.java" aspectpath="aspects.jar">
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs183/436653" title="suppress type not found">
+		<compile options="-1.8" files="A.java" outjar="typeA.jar"/>
+		<!-- adviceDidNotMatch messages are suppressed here -->
+		<compile options="-1.8" files="XA.java XCode.java" outjar="aspects.jar" classpath="typeA.jar"/>
+		<compile options="-1.8" files="Code.java" aspectpath="aspects.jar">
+		  <message kind="error" text="can't determine modifiers of missing type A"/>
+		</compile>
+	</ajc-test>
+
 	<ajc-test dir="bugs183/445395" title="constant pool 0">
 		<compile options="-1.8" files="Code.java">
 		</compile>

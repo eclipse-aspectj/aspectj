@@ -78,6 +78,10 @@ class BoundedReferenceTypeDelegate extends AbstractReferenceTypeDelegate {
 	public AnnotationAJ[] getAnnotations() {
 		return resolvedTypeX.getAnnotations();
 	}
+	
+	public boolean hasAnnotations() {
+		return resolvedTypeX.hasAnnotations();
+	}
 
 	public ResolvedType[] getAnnotationTypes() {
 		return resolvedTypeX.getAnnotationTypes();

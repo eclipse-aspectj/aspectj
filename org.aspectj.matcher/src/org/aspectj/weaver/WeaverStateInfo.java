@@ -137,7 +137,7 @@ public class WeaverStateInfo {
 		case UNTOUCHED:
 			throw new RuntimeException("unexpected UNWOVEN");
 		case WOVEN:
-			return new WeaverStateInfo(Collections.EMPTY_LIST, true, isReweavable, isReweavableCompressed, isReweavableDiff);
+			return new WeaverStateInfo(Collections.<Entry>emptyList(), true, isReweavable, isReweavableCompressed, isReweavableDiff);
 		case EXTENDED:
 			boolean isCompressed = false;
 			if (s.isAtLeast169()) {
@@ -145,7 +145,7 @@ public class WeaverStateInfo {
 			}
 
 			int n = s.readShort();
-			List l = new ArrayList();
+			List<Entry> l = new ArrayList<Entry>();
 			for (int i = 0; i < n; i++) {
 				// conditional on version
 				UnresolvedType aspectType = null;

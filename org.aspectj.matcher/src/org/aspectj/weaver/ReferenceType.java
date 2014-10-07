@@ -201,6 +201,11 @@ public class ReferenceType extends ResolvedType {
 	}
 
 	@Override
+	public boolean hasAnnotations() {
+		return getDelegate().hasAnnotations();
+	}
+
+	@Override
 	public void addAnnotation(AnnotationAJ annotationX) {
 		if (annotations == null) {
 			annotations = new AnnotationAJ[] { annotationX };

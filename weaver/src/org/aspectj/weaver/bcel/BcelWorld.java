@@ -1016,11 +1016,52 @@ public class BcelWorld extends World implements Repository {
 
 	@Override
 	public boolean hasUnsatisfiedDependency(ResolvedType aspectType) {
+		String aspectName = aspectType.getName();
+
+		if (aspectType.hasAnnotations()) {
+			AnnotationAJ[] annos = aspectType.getAnnotations();
+			for (AnnotationAJ anno: annos) {
+				if (anno.getTypeName().equals("org.aspectj.lang.annotation.RequiredTypes")) {
+					String values = anno.getStringFormOfValue("value"); // Example: "[A,org.foo.Bar]"
+					if (values != null && values.length() > 2) {
+						values = values.substring(1,values.length()-1);
+						StringTokenizer tokenizer = new StringTokenizer(values,",");
+						boolean anythingMissing = false;
+						while (tokenizer.hasMoreElements()) {
+							String requiredTypeName = tokenizer.nextToken();
+							ResolvedType rt = resolve(UnresolvedType.forName(requiredTypeName));
+							if (rt.isMissing()) {
+								if (!getMessageHandler().isIgnoring(IMessage.INFO)) {
+									getMessageHandler().handleMessage(
+											MessageUtil.info("deactivating aspect '" + aspectName + "' as it requires type '"
+													+ requiredTypeName + "' which cannot be found on the classpath"));
+								}
+								anythingMissing = true;
+								if (aspectRequiredTypes == null) {
+									aspectRequiredTypes = new HashMap<String,String>();
+								}
+								// Record that it has an invalid type reference
+								aspectRequiredTypes.put(aspectName,requiredTypeName);
+							}
+						}				
+						if (anythingMissing) {
+							return true;
+						}
+						else {
+							return false;
+						}
+					}
+					else {
+						// no value specified for annotation
+						return false;
+					}
+				}
+			}
+		}
 		if (aspectRequiredTypes == null) {
 			// no aspects require anything, so there can be no unsatisfied dependencies
 			return false;
 		}
-		String aspectName = aspectType.getName();
 		if (!aspectRequiredTypesProcessed.contains(aspectName)) {
 			String requiredTypeName = aspectRequiredTypes.get(aspectName);
 			if (requiredTypeName==null) {
@@ -1053,7 +1094,7 @@ public class BcelWorld extends World implements Repository {
 		if (aspectRequiredTypes == null) {
 			aspectRequiredTypes = new HashMap<String, String>();
 		}
-		aspectRequiredTypes.put(aspectClassName, requiredType);
+		aspectRequiredTypes.put(aspectClassName,requiredType);
 	}
 
 	/**

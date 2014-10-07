@@ -84,7 +84,7 @@ public class BasicTokenSource implements ITokenSource {
 		char[] chars = input.toCharArray();
 		
 		int i = 0;
-		List tokens = new ArrayList();
+		List<BasicToken> tokens = new ArrayList<BasicToken>();
 		
 		while (i < chars.length) {
 			char ch = chars[i++];			

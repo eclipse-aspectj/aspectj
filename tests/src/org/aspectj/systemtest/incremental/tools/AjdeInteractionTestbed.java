@@ -241,7 +241,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		File projectBase = new File(sandboxDir, pname);
 		ICompilerConfiguration icc = compiler.getCompilerConfiguration();
 		List currentFiles = icc.getProjectSourceFiles();
-		List filesForCompilation = new ArrayList();
+		List<String> filesForCompilation = new ArrayList<String>();
 		collectUpFiles(projectBase, projectBase, filesForCompilation);
 		boolean changed = false;
 		for (int i = 0; i < filesForCompilation.size(); i++) {
