@@ -186,8 +186,8 @@ public abstract class AbstractIndexedFileCacheBacking extends AbstractFileCacheB
         indexEntry.key = classEntry.getKey();
         indexEntry.generated = classEntry.isGenerated();
         indexEntry.ignored = classEntry.isIgnored();
+    	indexEntry.crcClass = crc(originalBytes);
         if (!classEntry.isIgnored()) {
-        	indexEntry.crcClass = crc(originalBytes);
             indexEntry.crcWeaved = crc(classEntry.getBytes());
         }
 
