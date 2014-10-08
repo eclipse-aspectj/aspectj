@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc183Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testSuperCalls_443355() {
+		runTest("super calls");
+	}
+
 	public void testSuppressTypeNotFound_436653() {
 		runTest("suppress type not found");
 	}

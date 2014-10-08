@@ -2,6 +2,15 @@
 
 <suite>
 
+	<ajc-test dir="bugs183/443355" title="super calls">
+		<compile options="-1.8" files="Demo.java"/>
+		<run class="Demo">
+	        <stdout>
+	        <line text="HW"/>
+	        </stdout>
+	    </run>
+    </ajc-test>
+    
 	<ajc-test dir="bugs183/436653" title="suppress type not found 4">
 		<compile options="-1.8 -Xlint:ignore" files="X.java" outjar="aspects.jar"/>
 		<compile options="-1.8" files="Runner.java"/>
