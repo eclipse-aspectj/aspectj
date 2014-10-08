@@ -24,6 +24,7 @@ import org.aspectj.weaver.PerObjectInterfaceTypeMunger;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Expr;
@@ -87,7 +88,7 @@ public class PerObject extends PerClause {
 		entry.resolve(scope);
 	}
 
-	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+	public Pointcut parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		PerObject ret = new PerObject(entry.parameterizeWith(typeVariableMap, w), isThis);
 		ret.copyLocationFrom(this);
 		return ret;

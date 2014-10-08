@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 
@@ -99,7 +100,7 @@ public class DeclareErrorOrWarning extends Declare {
 		pointcut = pointcut.resolve(scope);
 	}
 
-	public Declare parameterizeWith(Map typeVariableBindingMap, World w) {
+	public Declare parameterizeWith(Map<String,UnresolvedType> typeVariableBindingMap, World w) {
 		Declare ret = new DeclareErrorOrWarning(isError, pointcut.parameterizeWith(typeVariableBindingMap, w), message);
 		ret.copyLocationFrom(this);
 		return ret;

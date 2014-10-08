@@ -89,7 +89,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	}
 
 	@Override
-	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+	public Pointcut parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		ExactAnnotationTypePattern newPattern = (ExactAnnotationTypePattern) this.annotationTypePattern.parameterizeWith(
 				typeVariableMap, w);
 		if (newPattern.getAnnotationType() instanceof ResolvedType) {
@@ -246,13 +246,13 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingAnnotationTypePatterns()
 	 */
 	@Override
-	public List getBindingAnnotationTypePatterns() {
+	public List<BindingPattern> getBindingAnnotationTypePatterns() {
 		if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
-			List l = new ArrayList();
-			l.add(annotationTypePattern);
+			List<BindingPattern> l = new ArrayList<BindingPattern>();
+			l.add((BindingPattern)annotationTypePattern);
 			return l;
 		} else {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 	}
 
@@ -262,8 +262,8 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingTypePatterns()
 	 */
 	@Override
-	public List getBindingTypePatterns() {
-		return Collections.EMPTY_LIST;
+	public List<BindingTypePattern> getBindingTypePatterns() {
+		return Collections.emptyList();
 	}
 
 	/*

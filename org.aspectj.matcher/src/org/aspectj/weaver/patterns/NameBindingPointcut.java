@@ -45,8 +45,8 @@ public abstract class NameBindingPointcut extends Pointcut {
 		return Test.makeInstanceof(var, myType.resolve(world));
 	}
 	
-	public abstract List/*<BindingTypePattern>*/ getBindingTypePatterns();
-	public abstract List/*<BindingAnnotationTypePattern>*/ getBindingAnnotationTypePatterns();
+	public abstract List<BindingTypePattern> getBindingTypePatterns();
+	public abstract List<BindingPattern> getBindingAnnotationTypePatterns();
 
 
 }

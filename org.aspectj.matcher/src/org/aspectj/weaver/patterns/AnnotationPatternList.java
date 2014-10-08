@@ -18,14 +18,12 @@ import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 
 /**
- * @author colyer
- * 
- *         TODO To change the template for this generated type comment go to Window - Preferences - Java - Code Style - Code
- *         Templates
+ * @author Adrian Colyer
  */
 public class AnnotationPatternList extends PatternNode {
 
@@ -38,7 +36,7 @@ public class AnnotationPatternList extends PatternNode {
 			new AnnotationTypePattern[] { AnnotationTypePattern.ELLIPSIS });
 
 	public AnnotationPatternList() {
-		typePatterns = new AnnotationTypePattern[0];
+		typePatterns = new AnnotationTypePattern[0]; 
 		ellipsisCount = 0;
 	}
 
@@ -51,7 +49,7 @@ public class AnnotationPatternList extends PatternNode {
 		}
 	}
 
-	public AnnotationPatternList(List l) {
+	public AnnotationPatternList(List<AnnotationTypePattern> l) {
 		this((AnnotationTypePattern[]) l.toArray(new AnnotationTypePattern[l.size()]));
 	}
 
@@ -59,7 +57,7 @@ public class AnnotationPatternList extends PatternNode {
 		return typePatterns;
 	}
 
-	public AnnotationPatternList parameterizeWith(Map typeVariableMap, World w) {
+	public AnnotationPatternList parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		AnnotationTypePattern[] parameterizedPatterns = new AnnotationTypePattern[this.typePatterns.length];
 		for (int i = 0; i < parameterizedPatterns.length; i++) {
 			parameterizedPatterns[i] = this.typePatterns[i].parameterizeWith(typeVariableMap, w);

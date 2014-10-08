@@ -13,7 +13,6 @@
 package org.aspectj.weaver.patterns;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -35,12 +34,12 @@ import org.aspectj.weaver.ast.Test;
 
 public class ConcreteCflowPointcut extends Pointcut {
 	private final Member cflowField;
-	List/* Slot */slots; // exposed for testing
+	List<Slot> slots; // exposed for testing
 	boolean usesCounter;
 	ResolvedType aspect;
 
 	// Can either use a counter or a stack to implement cflow.
-	public ConcreteCflowPointcut(ResolvedType aspect, Member cflowField, List slots, boolean usesCounter) {
+	public ConcreteCflowPointcut(ResolvedType aspect, Member cflowField, List<Slot> slots, boolean usesCounter) {
 		this.aspect = aspect;
 		this.cflowField = cflowField;
 		this.slots = slots;
@@ -63,8 +62,7 @@ public class ConcreteCflowPointcut extends Pointcut {
 		// this bit is for pr145693 - we cannot match at all if one of the types is missing, we will be unable
 		// to create the residue
 		if (slots != null) {
-			for (Iterator i = slots.iterator(); i.hasNext();) {
-				Slot slot = (Slot) i.next();
+			for (Slot slot: slots) {
 				ResolvedType rt = slot.formalType;
 				if (rt.isMissing()) {
 					ISourceLocation[] locs = new ISourceLocation[] { getSourceLocation() };
@@ -98,7 +96,7 @@ public class ConcreteCflowPointcut extends Pointcut {
 		throw new RuntimeException("unimplemented");
 	}
 
-	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+	public Pointcut parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		throw new RuntimeException("unimplemented");
 	}
 
@@ -126,8 +124,7 @@ public class ConcreteCflowPointcut extends Pointcut {
 			return Test.makeFieldGetCall(cflowField, cflowCounterIsValidMethod, Expr.NONE);
 		} else {
 			if (slots != null) { // null for cflows managed by counters
-				for (Iterator i = slots.iterator(); i.hasNext();) {
-					Slot slot = (Slot) i.next();
+				for (Slot slot: slots) {
 					// System.out.println("slot: " + slot.formalIndex);
 					state.set(slot.formalIndex,
 							aspect.getWorld().getWeavingSupport().makeCflowAccessVar(slot.formalType, cflowField, slot.arrayIndex));

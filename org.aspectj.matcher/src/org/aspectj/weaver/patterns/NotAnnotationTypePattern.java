@@ -17,6 +17,7 @@ import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
@@ -63,7 +64,7 @@ public class NotAnnotationTypePattern extends AnnotationTypePattern {
 		return this;
 	}
 
-	public AnnotationTypePattern parameterizeWith(Map typeVariableMap, World w) {
+	public AnnotationTypePattern parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		AnnotationTypePattern newNegatedPattern = negatedPattern.parameterizeWith(typeVariableMap, w);
 		NotAnnotationTypePattern ret = new NotAnnotationTypePattern(newNegatedPattern);
 		ret.copyLocationFrom(this);

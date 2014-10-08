@@ -200,9 +200,9 @@ public class Aj implements ClassPreProcessor {
 		synchronized (WeaverContainer.weavingAdaptors) {
 			if (displayProgress) {
 				System.err.println("Weaver adaptors before queue processing:");
-				Map m = WeaverContainer.weavingAdaptors;
-				Set keys = m.keySet();
-				for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+				Map<AdaptorKey,ExplicitlyInitializedClassLoaderWeavingAdaptor> m = WeaverContainer.weavingAdaptors;
+				Set<AdaptorKey> keys = m.keySet();
+				for (Iterator<AdaptorKey> iterator = keys.iterator(); iterator.hasNext();) {
 					Object object = iterator.next();
 					System.err.println(object + " = " + WeaverContainer.weavingAdaptors.get(object));
 				}
@@ -224,9 +224,9 @@ public class Aj implements ClassPreProcessor {
 			}
 			if (displayProgress) {
 				System.err.println("Weaver adaptors after queue processing:");
-				Map m = WeaverContainer.weavingAdaptors;
-				Set keys = m.keySet();
-				for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+				Map<AdaptorKey,ExplicitlyInitializedClassLoaderWeavingAdaptor> m = WeaverContainer.weavingAdaptors;
+				Set<AdaptorKey> keys = m.keySet();
+				for (Iterator<AdaptorKey> iterator = keys.iterator(); iterator.hasNext();) {
 					Object object = iterator.next();
 					System.err.println(object + " = " + WeaverContainer.weavingAdaptors.get(object));
 				}
@@ -287,7 +287,8 @@ public class Aj implements ClassPreProcessor {
 	 */
 	static class WeaverContainer {
 
-		final static Map weavingAdaptors = Collections.synchronizedMap(new HashMap());
+		final static Map<AdaptorKey,ExplicitlyInitializedClassLoaderWeavingAdaptor> weavingAdaptors = 
+				Collections.synchronizedMap(new HashMap<AdaptorKey,ExplicitlyInitializedClassLoaderWeavingAdaptor>());
 
 		static WeavingAdaptor getWeaver(ClassLoader loader, IWeavingContext weavingContext) {
 			ExplicitlyInitializedClassLoaderWeavingAdaptor adaptor = null;

@@ -78,7 +78,7 @@ public class ThrowsPattern extends PatternNode {
 		return this;
 	}
 
-	public ThrowsPattern parameterizeWith(Map/* name -> resolved type */typeVariableMap, World w) {
+	public ThrowsPattern parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		ThrowsPattern ret = new ThrowsPattern(required.parameterizeWith(typeVariableMap, w), forbidden.parameterizeWith(
 				typeVariableMap, w));
 		ret.copyLocationFrom(this);

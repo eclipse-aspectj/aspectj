@@ -58,7 +58,7 @@ public class TypePatternList extends PatternNode {
 		}
 	}
 
-	public TypePatternList(List l) {
+	public TypePatternList(List<TypePattern> l) {
 		this((TypePattern[]) l.toArray(new TypePattern[l.size()]));
 	}
 
@@ -424,7 +424,7 @@ public class TypePatternList extends PatternNode {
 	 * @param typeVariableMap
 	 * @return
 	 */
-	public TypePatternList parameterizeWith(Map typeVariableMap, World w) {
+	public TypePatternList parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		TypePattern[] parameterizedPatterns = new TypePattern[typePatterns.length];
 		for (int i = 0; i < parameterizedPatterns.length; i++) {
 			parameterizedPatterns[i] = typePatterns[i].parameterizeWith(typeVariableMap, w);

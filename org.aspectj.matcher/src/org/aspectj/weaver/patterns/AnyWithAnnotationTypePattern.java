@@ -20,6 +20,7 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
@@ -82,7 +83,7 @@ public class AnyWithAnnotationTypePattern extends TypePattern {
 	}
 
 	@Override
-	public TypePattern parameterizeWith(Map typeVariableMap, World w) {
+	public TypePattern parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		AnyWithAnnotationTypePattern ret = new AnyWithAnnotationTypePattern(this.annotationPattern.parameterizeWith(
 				typeVariableMap, w));
 		ret.copyLocationFrom(this);

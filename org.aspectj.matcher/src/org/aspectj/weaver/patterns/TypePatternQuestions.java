@@ -22,7 +22,7 @@ import org.aspectj.weaver.ResolvedType;
 
 
 public class TypePatternQuestions {
-	private Map questionsAndAnswers = new HashMap();
+	private Map<Question,FuzzyBoolean> questionsAndAnswers = new HashMap<Question,FuzzyBoolean>();
 	
 	public FuzzyBoolean askQuestion(TypePattern pattern, ResolvedType type,
 									TypePattern.MatchKind kind)
@@ -37,8 +37,8 @@ public class TypePatternQuestions {
 	}
 	
 	public Question anyChanges() {
-		for (Iterator i = questionsAndAnswers.entrySet().iterator(); i.hasNext(); ) {
-			Map.Entry entry = (Map.Entry)i.next();
+		for (Iterator<Map.Entry<Question,FuzzyBoolean>> i = questionsAndAnswers.entrySet().iterator(); i.hasNext(); ) {
+			Map.Entry<Question,FuzzyBoolean> entry = i.next();
 			Question question = (Question)entry.getKey();
 			FuzzyBoolean expectedAnswer = (FuzzyBoolean)entry.getValue();
 			
@@ -55,8 +55,7 @@ public class TypePatternQuestions {
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("TypePatternQuestions{");
-		for (Iterator i = questionsAndAnswers.entrySet().iterator(); i.hasNext(); ) {
-			Map.Entry entry = (Map.Entry)i.next();
+		for (Map.Entry<Question,FuzzyBoolean> entry: questionsAndAnswers.entrySet()) {
 			Question question = (Question)entry.getKey();
 			FuzzyBoolean expectedAnswer = (FuzzyBoolean)entry.getValue();
 			buf.append(question);

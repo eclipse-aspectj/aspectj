@@ -60,6 +60,7 @@ package org.aspectj.apache.bcel;
  * @version $Id: ExceptionConstants.java,v 1.5 2009/09/14 20:29:10 aclement Exp $
  * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase">E. Haase</A>
  */
+@SuppressWarnings("rawtypes")
 public interface ExceptionConstants {
 	/**
 	 * The mother of all exceptions
@@ -84,7 +85,7 @@ public interface ExceptionConstants {
 	public static final Class<ExceptionInInitializerError> EXCEPTION_IN_INITIALIZER_ERROR = ExceptionInInitializerError.class;
 	public static final Class<IncompatibleClassChangeError> INCOMPATIBLE_CLASS_CHANGE_ERROR = IncompatibleClassChangeError.class;
 	public static final Class<AbstractMethodError> ABSTRACT_METHOD_ERROR = AbstractMethodError.class;
-	public static final Class ILLEGAL_ACCESS_ERROR = IllegalAccessError.class;
+	public static final Class<IllegalAccessError> ILLEGAL_ACCESS_ERROR = IllegalAccessError.class;
 	public static final Class<InstantiationError> INSTANTIATION_ERROR = InstantiationError.class;
 	public static final Class<NoSuchFieldError> NO_SUCH_FIELD_ERROR = NoSuchFieldError.class;
 	public static final Class<NoSuchMethodError> NO_SUCH_METHOD_ERROR = NoSuchMethodError.class;
@@ -100,7 +101,7 @@ public interface ExceptionConstants {
 	public static final Class<NullPointerException> NULL_POINTER_EXCEPTION = NullPointerException.class;
 	public static final Class<ArrayIndexOutOfBoundsException> ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION = ArrayIndexOutOfBoundsException.class;
 	public static final Class<ArithmeticException> ARITHMETIC_EXCEPTION = ArithmeticException.class;
-	public static final Class NEGATIVE_ARRAY_SIZE_EXCEPTION = NegativeArraySizeException.class;
+	public static final Class<NegativeArraySizeException> NEGATIVE_ARRAY_SIZE_EXCEPTION = NegativeArraySizeException.class;
 	public static final Class<ClassCastException> CLASS_CAST_EXCEPTION = ClassCastException.class;
 	public static final Class<IllegalMonitorStateException> ILLEGAL_MONITOR_STATE = IllegalMonitorStateException.class;
 

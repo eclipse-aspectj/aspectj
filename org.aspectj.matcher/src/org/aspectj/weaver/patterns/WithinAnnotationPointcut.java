@@ -69,7 +69,7 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 	}
 
 	@Override
-	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+	public Pointcut parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		WithinAnnotationPointcut ret = new WithinAnnotationPointcut(this.annotationTypePattern.parameterizeWith(typeVariableMap, w));
 		ret.copyLocationFrom(this);
 		return ret;
@@ -161,37 +161,22 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 		return match(shadow).alwaysTrue() ? Literal.TRUE : Literal.FALSE;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingAnnotationTypePatterns()
-	 */
 	@Override
-	public List getBindingAnnotationTypePatterns() {
+	public List<BindingPattern> getBindingAnnotationTypePatterns() {
 		if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
-			List l = new ArrayList();
-			l.add(annotationTypePattern);
+			List<BindingPattern> l = new ArrayList<BindingPattern>();
+			l.add((BindingPattern)annotationTypePattern);
 			return l;
 		} else {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingTypePatterns()
-	 */
 	@Override
-	public List getBindingTypePatterns() {
-		return Collections.EMPTY_LIST;
+	public List<BindingTypePattern> getBindingTypePatterns() {
+		return Collections.emptyList();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)
-	 */
 	@Override
 	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.ATWITHIN);

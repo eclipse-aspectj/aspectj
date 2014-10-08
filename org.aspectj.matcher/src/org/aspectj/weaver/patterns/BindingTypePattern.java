@@ -96,7 +96,7 @@ public class BindingTypePattern extends ExactTypePattern implements BindingPatte
 		}
 	}
 
-	public TypePattern parameterizeWith(Map typeVariableMap, World w) {
+	public TypePattern parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		ExactTypePattern superParameterized = (ExactTypePattern) super.parameterizeWith(typeVariableMap, w);
 		BindingTypePattern ret = new BindingTypePattern(superParameterized.getExactType(), this.formalIndex, this.isVarArgs);
 		ret.copyLocationFrom(this);

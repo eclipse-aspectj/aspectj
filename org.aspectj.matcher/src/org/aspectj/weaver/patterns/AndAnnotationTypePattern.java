@@ -17,6 +17,7 @@ import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
@@ -63,7 +64,7 @@ public class AndAnnotationTypePattern extends AnnotationTypePattern {
 		return this;
 	}
 
-	public AnnotationTypePattern parameterizeWith(Map typeVariableMap, World w) {
+	public AnnotationTypePattern parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		AnnotationTypePattern newLeft = left.parameterizeWith(typeVariableMap, w);
 		AnnotationTypePattern newRight = right.parameterizeWith(typeVariableMap, w);
 		AndAnnotationTypePattern ret = new AndAnnotationTypePattern(newLeft, newRight);

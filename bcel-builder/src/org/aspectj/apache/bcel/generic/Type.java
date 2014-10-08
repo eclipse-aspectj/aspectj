@@ -473,9 +473,9 @@ public abstract class Type {
 		return sb.toString();
 	}
 
-	public static String getSignature(java.lang.reflect.Constructor cons) {
+	public static String getSignature(java.lang.reflect.Constructor<?> cons) {
 		StringBuffer sb = new StringBuffer("(");
-		Class[] params = cons.getParameterTypes(); // avoid clone
+		Class<?>[] params = cons.getParameterTypes(); // avoid clone
 
 		for (int j = 0; j < params.length; j++) {
 			sb.append(getType(params[j]).getSignature());

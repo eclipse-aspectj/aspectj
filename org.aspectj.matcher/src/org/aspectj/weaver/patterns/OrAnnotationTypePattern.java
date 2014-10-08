@@ -17,6 +17,7 @@ import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
@@ -45,19 +46,13 @@ public class OrAnnotationTypePattern extends AnnotationTypePattern {
 		right.resolve(world);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.patterns.AnnotationTypePattern#resolveBindings(org.aspectj.weaver.patterns.IScope,
-	 * org.aspectj.weaver.patterns.Bindings, boolean)
-	 */
 	public AnnotationTypePattern resolveBindings(IScope scope, Bindings bindings, boolean allowBinding) {
 		left = left.resolveBindings(scope, bindings, allowBinding);
 		right = right.resolveBindings(scope, bindings, allowBinding);
 		return this;
 	}
 
-	public AnnotationTypePattern parameterizeWith(Map typeVariableMap, World w) {
+	public AnnotationTypePattern parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		AnnotationTypePattern newLeft = left.parameterizeWith(typeVariableMap, w);
 		AnnotationTypePattern newRight = right.parameterizeWith(typeVariableMap, w);
 		OrAnnotationTypePattern ret = new OrAnnotationTypePattern(newLeft, newRight);

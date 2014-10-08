@@ -58,23 +58,23 @@ public class Ajdoc extends MatchingTask {
     protected Commandline vmcmd;
     private Path sourcepath;
     private File destdir;
-    private Collection sourcefiles;
-    private Collection packagenames;
+    private Collection<String> sourcefiles;
+    private Collection<String> packagenames;
     private File packageList;
     private Path bootclasspath;
     private Path extdirs;
     private Path classpath;
     private Path internalclasspath;
-    private List argfiles;
+    private List<File> argfiles;
     private Path docletpath;
-    private Collection links;
-    private Collection groups;
+    private Collection<Link> links;
+    private Collection<Group> groups;
     private Doclet doclet;
     private boolean failonerror;
     private boolean fork;
 	private String source;
 	private Html bottom;
-    private Vector fileSets = new Vector();
+    private Vector<FileSet> fileSets = new Vector<FileSet>();
     /** reset all to initial values - permit gc if Ajdoc is held */
     public Ajdoc() {
         reset();
@@ -94,8 +94,8 @@ public class Ajdoc extends MatchingTask {
         internalclasspath  = null;
         argfiles  = null;
         docletpath  = null;
-        links = new ArrayList();
-        groups = new ArrayList();
+        links = new ArrayList<Link>();
+        groups = new ArrayList<Group>();
         doclet  = null;
         failonerror  = false;
         fork = false;
@@ -165,9 +165,9 @@ public class Ajdoc extends MatchingTask {
     
     private void addFileSets() {
     	if(sourcefiles == null)
-    		sourcefiles = new ArrayList();
+    		sourcefiles = new ArrayList<String>();
     	
-        Enumeration e = fileSets.elements();
+        Enumeration<FileSet> e = fileSets.elements();
         while (e.hasMoreElements()) {
             FileSet fs = (FileSet) e.nextElement();
             if (!fs.hasPatterns() && !fs.hasSelectors()) {
@@ -186,7 +186,7 @@ public class Ajdoc extends MatchingTask {
     
     public void setPackagenames(String list) {
         (packagenames == null ?
-         packagenames = new ArrayList() :
+         packagenames = new ArrayList<String>() :
          packagenames).addAll(strings(list, true));
     }
     
@@ -262,9 +262,9 @@ public class Ajdoc extends MatchingTask {
         }
     }
 
-    public List createArgfiles() {
+    public List<File> createArgfiles() {
         return (argfiles == null ?
-                argfiles = new ArrayList() :
+                argfiles = new ArrayList<File>() :
                 argfiles);
     }
 
@@ -388,7 +388,7 @@ public class Ajdoc extends MatchingTask {
 
     public class Group {
         private String title;
-        private List packages;
+        private List<String> packages;
         public Group() {}
         public void setTitle(String title) {
             this.title = title;
@@ -480,7 +480,7 @@ public class Ajdoc extends MatchingTask {
     public class Doclet {
         protected String name;
         protected Path path;
-        protected List params = new ArrayList();
+        protected List<Param> params = new ArrayList<Param>();
         public Doclet() {}
         public void setName(String name) {
             this.name = name;
@@ -583,8 +583,7 @@ public class Ajdoc extends MatchingTask {
         	cmd.createArgument().setValue(getProject().replaceProperties(bottom.getText()));
         }
         
-        for (Iterator i = links.iterator(); i.hasNext();) {
-            Link link = (Link)i.next();
+        for (Link link: links) {
             if (link.href == null) {
                 throw new BuildException("Link href cannot be null!", getLocation());
             }
@@ -619,9 +618,8 @@ public class Ajdoc extends MatchingTask {
                 }
             }
         }
-        Map groupMap = new HashMap();
-        for (Iterator i = groups.iterator(); i.hasNext();) {
-            Group group = (Group)i.next();
+        Map<String,List<String>> groupMap = new HashMap<String,List<String>>();
+        for (Group group: groups) {
             if (group.title == null) {
                 throw new BuildException("Group names cannot be null!",
                                          getLocation());
@@ -630,18 +628,17 @@ public class Ajdoc extends MatchingTask {
                 throw new BuildException("Group packages cannot be null!",
                                          getLocation());
             }
-            List packages = (List)groupMap.get(group.title);
+            List<String> packages = groupMap.get(group.title);
             if (packages == null) {
-                packages = new ArrayList();
+                packages = new ArrayList<String>();
             }
             packages.addAll(group.packages);
             groupMap.put(group.title, packages);
         }
-        for (Iterator i = groupMap.keySet().iterator(); i.hasNext();) {
-            String title = (String)i.next();
-            List packages = (List)groupMap.get(title);
+        for (String title: groupMap.keySet()) {
+            List<String> packages = groupMap.get(title);
             String pkgstr = "";
-            for (Iterator j = packages.iterator(); j.hasNext();) {
+            for (Iterator<String> j = packages.iterator(); j.hasNext();) {
                 pkgstr += j.next();
                 if (j.hasNext()) pkgstr += ",";
             }
@@ -663,7 +660,7 @@ public class Ajdoc extends MatchingTask {
             cmd.createArgument().setValue("@" + packageList);
         }
         if (null != packagenames) {
-            for (Iterator i = packagenames.iterator(); i.hasNext();) {
+            for (Iterator<String> i = packagenames.iterator(); i.hasNext();) {
                 cmd.createArgument().setValue((String)i.next());
             }
         }
@@ -688,9 +685,9 @@ public class Ajdoc extends MatchingTask {
 
     	addFileSets();
         if (sourcefiles != null) {
-            for (Iterator i = sourcefiles.iterator(); i.hasNext();) {
+            for (Iterator<String> i = sourcefiles.iterator(); i.hasNext();) {
                 // let ajdoc resolve sourcefiles relative to sourcepath,
-                cmd.createArgument().setValue((String)i.next());
+                cmd.createArgument().setValue(i.next());
             }
         }
         // XXX PR682 weak way to report errors - need to refactor
@@ -717,13 +714,13 @@ public class Ajdoc extends MatchingTask {
         }
     }
 
-    protected interface Mapper {
-        public Object map(String str);
+    protected interface Mapper<T> {
+        public T map(String str);
     }
 
-    protected final List list(String str, Mapper mapper) {
-        if (str == null) return Collections.EMPTY_LIST;
-        List list = new ArrayList();
+    protected final <T> List<T> list(String str, Mapper<T> mapper) {
+        if (str == null) return Collections.emptyList();
+        List<T> list = new ArrayList<T>();
         for (StringTokenizer t = new StringTokenizer(str, ",", false);
              t.hasMoreTokens();) {
             list.add(mapper.map(t.nextToken().trim()));
@@ -731,21 +728,21 @@ public class Ajdoc extends MatchingTask {
         return list;
     }
 
-    protected final List files(String str) {
-        return list(str, new Mapper() {
-                public Object map(String s) {
+    protected final List<File> files(String str) {
+        return list(str, new Mapper<File>() {
+                public File map(String s) {
                     return getProject().resolveFile(s);
                 }
             });
     }
 
-    protected final List strings(String str) {
+    protected final List<String> strings(String str) {
         return strings(str, false);
     }
 
-    protected final List strings(String str, final boolean filterSlashes) {
-        return list(str, new Mapper() {
-                public Object map(String s) {
+    protected final List<String> strings(String str, final boolean filterSlashes) {
+        return list(str, new Mapper<String>() {
+                public String map(String s) {
                     return filterSlashes ? filterSlashes(s) : s;
                 }
             });

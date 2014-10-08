@@ -28,6 +28,7 @@ import org.aspectj.weaver.PerTypeWithinTargetTypeMunger;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.ast.Expr;
@@ -58,7 +59,7 @@ public class PerTypeWithin extends PerClause {
 		return kindSet;
 	}
 
-	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+	public Pointcut parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		PerTypeWithin ret = new PerTypeWithin(typePattern.parameterizeWith(typeVariableMap, w));
 		ret.copyLocationFrom(this);
 		return ret;
