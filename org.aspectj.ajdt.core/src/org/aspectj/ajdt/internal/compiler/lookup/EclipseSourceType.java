@@ -818,6 +818,11 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 				AnnotationValue array = new ArrayAnnotationValue(arrayValues);
 				AnnotationNameValuePair anvp = new AnnotationNameValuePair(new String(mvp.name), array);
 				annotationAJ.addNameValuePair(anvp);
+			} else if (mvp.value instanceof Literal) {
+				AnnotationValue av = generateElementValue(mvp.value,
+						((Literal) mvp.value).resolvedType);
+				AnnotationNameValuePair anvp = new AnnotationNameValuePair(new String(mvp.name), av);
+				annotationAJ.addNameValuePair(anvp);
 			} else {
 				MethodBinding methodBinding = mvp.binding;
 				if (methodBinding == null) {

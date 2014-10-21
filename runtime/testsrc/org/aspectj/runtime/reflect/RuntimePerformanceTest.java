@@ -78,7 +78,7 @@ public class RuntimePerformanceTest extends TestCase {
 
 		long ratio = (EXPECTED_RATIO*noCache/cache);
 		System.out.println("ratio=" + ratio);
-		assertTrue("Using cache should be " + EXPECTED_RATIO + " times faster: " + ratio,(ratio > EXPECTED_RATIO));
+		assertTrue("Using cache should be " + EXPECTED_RATIO + " times faster: " + ratio,(ratio >= EXPECTED_RATIO));
 	}
 	
 	private long invokeSignatureToString (Signature sig, long iterations) {

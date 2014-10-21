@@ -23,14 +23,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.DeclareSoft;
 import org.aspectj.weaver.patterns.DeclareTypeErrorOrWarning;
 import org.aspectj.weaver.patterns.IVerificationRequired;
-import org.aspectj.weaver.tools.Trace;
-import org.aspectj.weaver.tools.TraceFactory;
 
 /**
  * This holds on to all CrosscuttingMembers for a world. It handles management of change.
@@ -40,15 +40,13 @@ import org.aspectj.weaver.tools.TraceFactory;
  */
 public class CrosscuttingMembersSet {
 
-	private static Trace trace = TraceFactory.getTraceFactory().getTrace(CrosscuttingMembersSet.class);
-
 	private transient World world;
 
 	// FIXME AV - ? we may need a sequencedHashMap there to ensure source based precedence for @AJ advice
-	private final Map /* ResolvedType (the aspect) > CrosscuttingMembers */<ResolvedType, CrosscuttingMembers> members = new HashMap<ResolvedType, CrosscuttingMembers>();
+	private final Map<ResolvedType, CrosscuttingMembers> members = new HashMap<ResolvedType, CrosscuttingMembers>();
 
 	// List of things to be verified once the type system is 'complete'
-	private transient List /* IVerificationRequired */<IVerificationRequired> verificationList = null;
+	private transient List<IVerificationRequired> verificationList = null;
 
 	private List<ShadowMunger> shadowMungers = null;
 	private List<ConcreteTypeMunger> typeMungers = null;
@@ -69,17 +67,46 @@ public class CrosscuttingMembersSet {
 	public boolean addOrReplaceAspect(ResolvedType aspectType) {
 		return addOrReplaceAspect(aspectType, true);
 	}
+	
+	/**
+	 * Check if any parent aspects of the supplied aspect have unresolved dependencies (and so
+	 * should cause this aspect to be turned off).
+	 * @param aspectType the aspect whose parents should be checked
+	 * @return true if this aspect should be excluded because of a parents' missing dependencies
+	 */
+	private boolean excludeDueToParentAspectHavingUnresolvedDependency(ResolvedType aspectType) {
+		ResolvedType parent = aspectType.getSuperclass();
+		boolean excludeDueToParent = false;
+		while (parent != null) {
+			if (parent.isAspect() && parent.isAbstract() && world.hasUnsatisfiedDependency(parent)) {
+				if (!world.getMessageHandler().isIgnoring(IMessage.INFO)) {
+					world.getMessageHandler().handleMessage(
+							MessageUtil.info("deactivating aspect '" + aspectType.getName() + "' as the parent aspect '"+parent.getName()+
+									"' has unsatisfied dependencies"));
+				}
+				excludeDueToParent = true;
+			}
+			parent = parent.getSuperclass();
+		}
+		return excludeDueToParent;
+	}
 
 	/**
 	 * @return whether or not that was a change to the global signature XXX for efficiency we will need a richer representation than
 	 *         this
 	 */
 	public boolean addOrReplaceAspect(ResolvedType aspectType, boolean inWeavingPhase) {
-
-		if (!world.isAspectIncluded(aspectType) || world.hasUnsatisfiedDependency(aspectType)) {
+		if (!world.isAspectIncluded(aspectType)) {
 			return false;
 		}
-
+		if (world.hasUnsatisfiedDependency(aspectType)) {
+			return false;				
+		}
+		// Abstract super aspects might have unsatisfied dependencies
+		if (excludeDueToParentAspectHavingUnresolvedDependency(aspectType)) {
+			return false;
+		}
+		
 		boolean change = false;
 		CrosscuttingMembers xcut = members.get(aspectType);
 		if (xcut == null) {
@@ -108,14 +135,15 @@ public class CrosscuttingMembersSet {
 
 		return change;
 	}
-
+	
 	private boolean addOrReplaceDescendantsOf(ResolvedType aspectType, boolean inWeavePhase) {
 		// System.err.println("Looking at descendants of "+aspectType.getName());
 		Set<ResolvedType> knownAspects = members.keySet();
 		Set<ResolvedType> toBeReplaced = new HashSet<ResolvedType>();
 		for (Iterator<ResolvedType> it = knownAspects.iterator(); it.hasNext();) {
 			ResolvedType candidateDescendant = it.next();
-			if ((candidateDescendant != aspectType) && (aspectType.isAssignableFrom(candidateDescendant))) {
+			// allowMissing = true - if something is missing, it really probably is not a descendant
+			if ((candidateDescendant != aspectType) && (aspectType.isAssignableFrom(candidateDescendant, true))) {
 				toBeReplaced.add(candidateDescendant);
 			}
 		}

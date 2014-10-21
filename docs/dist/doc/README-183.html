@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.8.3 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2014 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 1.8.3 Readme</h1>
+
+<p>The full list of resolved issues in 1.8.3 is available 
+<a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.8.3;">here</a></h2>.</p>
+
+<ul>
+<li>1.8.3 available 22-Oct-2014
+</ul>
+
+<h2>Notable changes</h2>
+
+<h3>Conditional aspect activation with <tt>@RequiredTypes</tt> - <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=436653">Issue 436653</a></h3>
+
+<p>AspectJ is sometimes used to create aspect libraries. These libraries contain a number of aspects often covering
+a variety of domains. The library might typically be available as a jar and contains a single aop.xml file that
+names all the aspects. The library is then consumed by some application. 
+However, the application may not need to use all those aspects
+but because they are listed in the aop.xml they will be 'active'. Now the pointcuts in those unused aspects
+may not match anything in the application and could be considered harmless but the pointcuts and the aspects
+themselves may have references to types in other libraries that the application does not have around. This can lead
+to unhelpful <tt>"can't find type"</tt> messages and currently requires the user to add unnecessary entries to their
+build dependencies just to keep the unused aspects happy.
+</p>
+<p>With AspectJ 1.8.3 it is now possible to express a constraint on an aspect. The <tt>@RequiredTypes</tt>
+annotation specifies one or more fully qualified types that must be discoverable on the classpath in
+order for the aspect to activate. Using this there is no need to add those extraneous dependencies to
+an applications build classpath.
+</p>
+<p>Example:</p>
+<pre><code>import org.aspectj.lang.annotation.*;
+
+@RequiredTypes("com.foo.Bar")
+public aspect Foo {
+  before(): execution(@com.foo.Bar * *(..)) {}
+}
+</code></pre>
+
+<p>
+If the above aspect is listed in an aop.xml for loadtime weaving or passed on the aspectpath for
+compile time weaving, if the type <tt>'com.foo.Bar'</tt> is not accessible on the classpath then the
+aspect will be turned off and the pointcut will have no effect. There will be no attempt made to
+match it and so no unhelpful <tt>"can't find type"</tt> messages.
+</p>
+
+<h3>cflow and the pre-initialization joinpoint changes due to Java 7 verifier modifications - <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=443477">Issue 443477</a></h3>
+
+<p>There has been a change in the Java7 verifier in a recent patch release of Java7 (update 67) that causes
+a verify error for usage of a particular AspectJ construct. The problem occurs if you are using
+cflow and it hits the preinitialization join point. The pattern of code generated in that case causes
+the verifyerror. In this release of AspectJ we have taken the 'quick' approach to solving this, namely
+to avoid advising preinitialization with the cflow construct. This problem appears to come up
+when the aspect is non-optimal anyway and hitting preinitialization was never really intended by the 
+pointcut writer. For example:
+
+<pre><code>execution(* foo(..)) && cflow(within(Bar))</code></pre>
+
+<p>The use of cflow and within there will actually hit *a lot* of joinpoints, many of which the user probably didn't mean to.
+It feels like we actually need a warning to indicate the pointcut is probably suboptimal. What the user probably
+meant was something more like this:</p>
+
+<pre><code>execution(* foo(..)) && cflow(execution(* Bar.*(..))</code></pre>
+<p>or</p>
+<pre><code>execution(* foo(..)) && cflow(within(Bar) && execution(* *(..)))</code></pre>
+
+<p>
+But even if they did want the less optimal form of cflow there still seems little use in applying it to
+pre-initialization - that is your cue to raise an AspectJ bug with a realistic use case inside that proves this
+an invalid assumption :)</p>
+
+<h3>around advice and lambdas - <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=445395">Issue 445395</a></h3>
+
+<p>For optimal performance, where possible, AspectJ tries to inline around advice when it applies
+at a joinpoint. There are few characteristics of a joinpoint match that can prevent this but we
+do try to inline where we can (the inlining can be manually turned off via <tt>-XnoInline</tt>).</p>
+
+<p>Inlining of around advice basically means copying the advice instructions into the target class. This causes
+a problem when the advice uses lambdas. Lambda usage is currently implemented in java compilers by generating
+invokedynamic bytecode instructions that reference bootstrap methods created in the class and a helper method
+generated in the class containing the lambda code. When the invokedynamic is encountered at runtime, some magic
+happens and the bootstrap method is used to generate a class on the fly that calls the particular lambda method.
+All this 'extra stuff' breaks the basic inlining algorithm that simply copies the advice bytecode into the target.
+Effectively the inlining process needs to become much more sophisticated and copy the bootstrap methods and
+the lambda helper methods, avoiding clashes with existing bootstrap/helpers in the target.</p>
+
+<p>
+Prior to AspectJ 1.8.3 when the inlining failed you would get a horrible class cast exception that mentions
+constant pool entries (because the bootstrap method hadn't been copied over to the target). Temporarily in
+1.8.3 we are turning off inlining of around advice containing lambdas, which will at least avoid the failure,
+with the longer term goal of improving the inlining process to do all the necessary extra work.
+</p>
+
+<!-- ============================== -->  
+</body>
+</html>

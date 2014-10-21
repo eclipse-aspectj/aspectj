@@ -176,8 +176,8 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 		if (concurrentMapClass != null) {
 			try {
 				return (Map) concurrentMapClass.newInstance();
-			} catch (InstantiationException _) {
-			} catch (IllegalAccessException _) {
+			} catch (InstantiationException ie) {
+			} catch (IllegalAccessException iae) {
 			}
 			// fall through if exceptions
 		}
@@ -191,9 +191,9 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 		for (int i = 0; i < betterChoices.length; i++) {
 			try {
 				return Class.forName(betterChoices[i]);
-			} catch (ClassNotFoundException _) {
+			} catch (ClassNotFoundException cnfe) {
 				// try the next one
-			} catch (SecurityException _) {
+			} catch (SecurityException se) {
 				// you get one of these if you dare to try to load an undefined class in a
 				// package starting with java like java.util.concurrent
 			}

@@ -10,6 +10,40 @@
 	        </stdout>
 	    </run>
     </ajc-test>
+
+	<ajc-test dir="bugs183/436653/abstract" title="suppress type not found - abstract 2">
+		<compile options="-1.8 -Xlint:ignore" files="A.java" outjar="codeA.jar"/>
+		<compile options="-1.8" files="X.java AA.java" classpath="codeA.jar" outjar="aspects.jar"/>
+		<compile options="-1.8" files="Code.java" aspectpath="aspects.jar"/>
+		<run class="Code">
+		<stdout>
+		<!--
+		 These don't come out because AA is missing required type A in the last compile step
+		<line text="X.before"/>
+		<line text="X.before"/>
+		-->
+		<line text="Code.m()"/>
+		</stdout>
+		</run>
+    </ajc-test>
+    
+	<ajc-test dir="bugs183/436653/abstract" title="suppress type not found - abstract 1">
+		<compile options="-1.8 -Xlint:ignore" files="A.java" outjar="codeA.jar"/>
+		<compile options="-1.8" files="AA.java X.java" classpath="codeA.jar" outjar="aspects.jar"/>
+		<compile options="-1.8" files="Code.java" aspectpath="aspects.jar"/>
+		<run class="Code">
+		<stdout>
+		<!--
+		 These don't come out because AA is missing required type A in the last compile step.
+		 Difference between this test and the previous one is that this is a different order
+		 of aspects (addOrReplaceAspects called with the abstract aspect first here).
+		<line text="X.before"/>
+		<line text="X.before"/>
+		-->
+		<line text="Code.m()"/>
+		</stdout>
+		</run>
+    </ajc-test>
     
 	<ajc-test dir="bugs183/436653" title="suppress type not found 4">
 		<compile options="-1.8 -Xlint:ignore" files="X.java" outjar="aspects.jar"/>
