@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.aspectj.util.FileUtil;
+
 public class AnnotationProcessingTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
 	
 	
@@ -23,8 +25,14 @@ public class AnnotationProcessingTests extends AbstractMultiProjectIncrementalAj
 		super.tearDown();
 		new File("Advise_aaa.java").delete();
 		new File("Advise_ccc.java").delete();
+		new File("Advise_boo.java").delete();
+		new File("Advise_too.java").delete();
 		new File("AroundAdvise_aaa.java").delete();
 		new File("AroundAdvise_ccc.java").delete();
+		if (new File("../run-all-junit-tests/generated/test/SomeCallbacks.java").exists()) {
+			FileUtil.deleteContents(new File("../run-all-junit-tests/generated"));
+			new File("../run-all-junit-tests/generated").delete();
+		}
 	}
 	
 	// Basic test: turns on annotation processing and tries to run the DemoProcessor

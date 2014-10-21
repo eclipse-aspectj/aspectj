@@ -61,6 +61,7 @@ public class Util {
 
 		if (command.equals("-read")) {
 			Object obj = read(name);
+			try {new File(name).delete();} catch (IOException ioe) {}
 		}
 		else if (command.equals("-fail")) {
 			fail(name);
