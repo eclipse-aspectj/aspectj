@@ -45,8 +45,8 @@
         (For a discussion of what affected types might be required,
          see <ulink url="../progguide/implementation.html">The AspectJ
          Programming Guide, Implementation Appendix</ulink>.)
-    <para>
     </para>
+    <para>
         To specify sources, you can list source files as arguments or use the 
         options <parameter>-sourceroots</parameter> or <parameter>-inpath</parameter>.
         If there are multiple sources for any type, the result is undefined
