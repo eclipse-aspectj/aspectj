@@ -9,5 +9,6 @@
 	<classpathentry exported="true" kind="src" path="/org.eclipse.jdt.core"/>
 	<classpathentry kind="lib" path="/lib/junit/junit.jar" sourcepath="/lib/junit/junit-src.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/weaver"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
