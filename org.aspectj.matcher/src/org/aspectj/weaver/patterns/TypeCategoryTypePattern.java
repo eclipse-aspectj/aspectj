@@ -14,6 +14,7 @@
 package org.aspectj.weaver.patterns;
 
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 
 import org.aspectj.util.FuzzyBoolean;
@@ -40,6 +41,7 @@ public class TypeCategoryTypePattern extends TypePattern {
 	public static final int ANONYMOUS = 5;
 	public static final int ENUM = 6;
 	public static final int ANNOTATION = 7;
+	public static final int FINAL = 8;
 
 	private int category;
 
@@ -104,6 +106,7 @@ public class TypeCategoryTypePattern extends TypePattern {
 		writeLocation(s);
 	}
 
+	@SuppressWarnings("unused")
 	public static TypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		int version = s.readInt();
 		int category = s.readInt();
@@ -131,6 +134,8 @@ public class TypeCategoryTypePattern extends TypePattern {
 			return type.isEnum();
 		case ANNOTATION:
 			return type.isAnnotation();
+		case FINAL:
+			return Modifier.isFinal(type.getModifiers());
 		}
 		return false;
 	}

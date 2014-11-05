@@ -97,6 +97,15 @@ public class Ajc184Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		// abstract aspects
 		runTest("thisAspectInstance - 15");
 	}
+	
+	public void testIsFinal_449739() {
+		runTest("is final");
+	}
+
+	public void testIsFinal_449739_2() {
+		runTest("is final - 2");
+	}
+	
 	// ---
 
 	public static Test suite() {
