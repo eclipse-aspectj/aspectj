@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.8.4 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2014 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 1.8.4 Readme</h1>
+
+<p>The full list of resolved issues in 1.8.4 is available 
+<a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.8.4;">here</a></h2>.</p>
+
+<ul>
+<li>1.8.4 available 6-Nov-2014
+</ul>
+
+<h2>Notable changes</h2>
+
+<h3>Support for is(FinalType)</h3>
+
+<p>AspectJ has had type category type patterns since version 1.6.9, see the <a href="https://www.eclipse.org/aspectj/doc/released/README-169.html">README</a>. This enabled
+pointcuts to include is(..) clauses to specify which kinds of type they were or were not interested in matching, e.g. <tt>!within(* && is(InnerType))</tt> means not within innertypes.
+In 1.8.4 it is now possible to recognize (for inclusion or exclusion) final types with <tt>is(FinalType)</tt>.
+
+<h3>thisAspectInstance correctly handled with -1.8</h3>
+
+<p>This is the key fix in this release. Some products based on AspectJ were using the thisAspectInstance feature 
+(see <a href="https://www.eclipse.org/aspectj/doc/released/README-1612.html">README 1.6.12</a> for more info on the feature). Unfortunately if specifying -1.8 compliance
+and using the feature an error would be reported at compile time of the aspect. This is now fixed.</p>
+
+<!-- ============================== -->  
+</body>
+</html>
