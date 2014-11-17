@@ -5,12 +5,7 @@
 
 <ajc-test dir="bugs185/451966" title="itd interface">
 <compile files="Code.java" options="-1.8"/>
-<run class="One">
-  <stdout>
-  <line text="In instance check method doit()"/>
-  <line text="In advice()"/>
-  <line text="Method m() running"/>
-  </stdout>
+<run class="Code">
 </run>
 </ajc-test>
 

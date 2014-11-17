@@ -1,7 +1,17 @@
 
+public class Code {
+  public static void main(String []argv) {
+    new Bar().foo();
+  }
+}
 interface Common { }
 
-interface Allergies extends Common { }
+interface Allergies extends Common { 
+  default public void foo() {
+  }
+}
+
+class Bar implements Allergies { }
 
 aspect Y {
   private boolean Common.instancesInvariant() {

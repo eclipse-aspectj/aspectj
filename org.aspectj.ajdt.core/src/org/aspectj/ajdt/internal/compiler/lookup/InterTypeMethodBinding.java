@@ -14,6 +14,7 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 
 import org.aspectj.ajdt.internal.compiler.ast.InterTypeMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.IPrivilegedHandler;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -99,10 +100,10 @@ public class InterTypeMethodBinding extends MethodBinding {
 		if (invocationType == declaringClass)
 			return true;
 
-		// if (invocationType.isPrivileged) {
-		// System.out.println("privileged access to: " + this);
-		// return true;
-		// }
+		if (invocationType.privilegedHandler != null) {
+			// it is a privileged aspect
+			return true;
+		}
 
 		if (isProtected()) {
 			throw new RuntimeException("unimplemented");
