@@ -2,10 +2,15 @@
 
 <suite>
 
-
 <ajc-test dir="bugs185/451966" title="itd interface">
 <compile files="Code.java" options="-1.8"/>
 <run class="Code">
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs185/451966" title="itd interface - 2">
+<compile files="Code2.java" options="-1.8"/>
+<run class="Code2">
 </run>
 </ajc-test>
 

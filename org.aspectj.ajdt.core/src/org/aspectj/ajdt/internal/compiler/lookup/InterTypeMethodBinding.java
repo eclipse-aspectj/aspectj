@@ -104,13 +104,25 @@ public class InterTypeMethodBinding extends MethodBinding {
 			// it is a privileged aspect
 			return true;
 		}
-
+		
 		if (isProtected()) {
 			throw new RuntimeException("unimplemented");
 		}
 
 		// XXX make sure this walks correctly
 		if (isPrivate()) {
+			// Possibly the call is made from an inner type within the privileged aspect
+			// TODO should check the first outer aspect we come across and stop at that point?
+			if (invocationType.isNestedType()) {
+				TypeBinding enclosingType = invocationType.enclosingType();
+				while (enclosingType != null) {
+					if ((enclosingType instanceof SourceTypeBinding) && ((SourceTypeBinding)enclosingType).privilegedHandler != null) {
+						return true;
+					}
+					enclosingType = enclosingType.enclosingType();
+				}
+			}
+
 			// answer true if the receiverType is the declaringClass
 			// AND the invocationType and the declaringClass have a common enclosingType
 			// if (receiverType != declaringClass) return false;

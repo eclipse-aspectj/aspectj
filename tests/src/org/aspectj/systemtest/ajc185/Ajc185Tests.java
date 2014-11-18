@@ -24,7 +24,12 @@ public class Ajc185Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testITDInterface_451966() throws Exception {
 		runTest("itd interface");
 	}
-	
+
+	public void testITDInterface_451966_2() throws Exception {
+		// call made from inner type
+		runTest("itd interface - 2");
+	}
+
 	// ---
 
 	public static Test suite() {
