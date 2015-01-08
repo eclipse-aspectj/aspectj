@@ -105,14 +105,14 @@ public class MemberImpl implements Member {
 		StringBuilder buf = new StringBuilder();
 		buf.append("(");
 		for (UnresolvedType paramType : paramTypes) {
-			if (eraseGenerics && (paramType.isParameterizedType() || paramType.isTypeVariableReference())) {
+			if (eraseGenerics) {
 				buf.append(paramType.getErasureSignature());
 			} else {
 				buf.append(paramType.getSignature());
 			}
 		}
 		buf.append(")");
-		if (eraseGenerics && (returnType.isParameterizedType() || returnType.isTypeVariableReference())) {
+		if (eraseGenerics) {
 			buf.append(returnType.getErasureSignature());
 		} else {
 			buf.append(returnType.getSignature());

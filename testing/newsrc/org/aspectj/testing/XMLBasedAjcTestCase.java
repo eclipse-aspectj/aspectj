@@ -11,6 +11,7 @@
  * ******************************************************************/
 package org.aspectj.testing;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
@@ -312,6 +313,22 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	public SyntheticRepository createRepos(File cpentry) {
 		ClassPath cp = new ClassPath(cpentry + File.pathSeparator + System.getProperty("java.class.path"));
 		return SyntheticRepository.getInstance(cp);
+	}
+	
+	protected byte[] loadFileAsByteArray(File f) {
+		try {
+			byte[] bs = new byte[100000];
+			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(f));
+			int pos = 0;
+			int len = 0;
+			while ((len=bis.read(bs, pos, 100000-pos))!=-1) {
+				pos+=len;
+			}
+			bis.close();
+			return bs;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	public JavaClass getClassFrom(File where, String clazzname) throws ClassNotFoundException {

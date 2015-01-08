@@ -10,10 +10,15 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc185;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 
 import junit.framework.Test;
 
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
@@ -21,6 +26,30 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc185Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testUnresolvableMember_456357() throws Exception {
+		runTest("unresolvable member");
+	}
+	
+	// Waiting on JDT fix. Second test is a 'variant' that is also causing me issues but not JDT it seems. Let's
+	// see what happens when we pick up the real fixes.
+//	public void testBadAnnos_455608() throws Exception {
+//		runTest("bad annos");
+//		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "Code2");
+//		File f = new File(ajc.getSandboxDirectory(), "Code2.class");
+//		byte[] data = loadFileAsByteArray(f);
+//		// Will throw ClassFormatException if there is a problem
+//		new ClassFileReader(data, null);
+//	}
+//	
+//	public void testBadAnnos_455608_2() throws Exception {
+//		runTest("bad annos 2");
+//		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "Code3");
+//		File f = new File(ajc.getSandboxDirectory(), "Code3.class");
+//		byte[] data = loadFileAsByteArray(f);
+//		// Will throw ClassFormatException if there is a problem
+//		new ClassFileReader(data, null);
+//	}
+	
 	public void testITDInterface_451966() throws Exception {
 		runTest("itd interface");
 	}

@@ -3570,6 +3570,19 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("PR154054");
 		checkWasntFullBuild();
 	}
+	
+	public void testIncrementalBuildAdviceChange_456801() throws Exception {
+		initialiseProject("456801");
+		build("456801");
+		String output = runMethod("456801", "Code", "run");
+		assertEquals("advice runnning\nrun() running\n",output);
+		alter("456801", "inc1");
+		build("456801");
+		output = runMethod("456801", "Code", "run");
+		assertEquals("advice running\nrun() running\n",output);
+		checkCompileWeaveCount("456801", 1, 1);
+		checkWasntFullBuild();
+	}
 
 	// change exception type in around advice, does it notice?
 	public void testShouldFullBuildOnExceptionChange_pr154054() {
