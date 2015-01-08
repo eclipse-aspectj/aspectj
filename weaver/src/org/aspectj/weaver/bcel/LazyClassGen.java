@@ -790,7 +790,7 @@ public final class LazyClassGen {
 
 	public String toShortString() {
 		String s = org.aspectj.apache.bcel.classfile.Utility.accessToString(myGen.getModifiers(), true);
-		if (s != "") {
+		if (!s.equals("")) {
 			s += " ";
 		}
 		s += org.aspectj.apache.bcel.classfile.Utility.classOrInterface(myGen.getModifiers());
