@@ -7,6 +7,7 @@ import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Unknown;
+import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnos;
 
 
 public class Play {
@@ -65,13 +66,17 @@ public class Play {
 //		}
 	}
 
-	private static void printUsefulAttributes(Attribute[] attributes) {
+	private static void printUsefulAttributes(Attribute[] attributes) throws Exception {
 		for (Attribute attribute: attributes) {
 			String n = attribute.getName();
-			if (n.equals("RuntimeInvisibleTypeAnnotations") ||
-				n.equals("RuntimeVisibleTypeAnnotations")) {
-				Unknown unknown = (Unknown)attribute;
-				byte[] bs = unknown.getBytes();
+			if (n.equals("RuntimeInvisibleAnnotations") ||
+				n.equals("RuntimeVisibleAnnotations")) {
+				RuntimeAnnos ra = (RuntimeAnnos)attribute;
+				// private byte[] annotation_data;
+				java.lang.reflect.Field f = RuntimeAnnos.class.getDeclaredField("annotation_data");
+				f.setAccessible(true);
+				byte[] bs = (byte[])f.get(ra);
+//				byte[] bs = unknown.getBytes();
 				printBytes(bs);
 			}
 		}

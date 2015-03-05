@@ -12,11 +12,19 @@
 
 package org.aspectj.weaver.bcel;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -59,7 +67,7 @@ public class ClassPathManager {
 			trace.enter("<init>", this, new Object[] { classpath, handler });
 		entries = new ArrayList<Entry>();
 		for (Iterator<String> i = classpath.iterator(); i.hasNext();) {
-			String name = (String) i.next();
+			String name = i.next();
 			addPath(name, handler);
 		}
 		if (trace.isTraceEnabled())
@@ -69,6 +77,10 @@ public class ClassPathManager {
 	protected ClassPathManager() {
 	}
 
+	private static URI JRT_URI = URI.create("jrt:/"); //$NON-NLS-1$
+
+	private static String JAVA_BASE_PATH = "java.base"; //$NON-NLS-1$
+	
 	public void addPath(String name, IMessageHandler handler) {
 		File f = new File(name);
 		String lc = name.toLowerCase();
@@ -83,7 +95,12 @@ public class ClassPathManager {
 				return;
 			}
 			try {
-				entries.add(new ZipFileEntry(f));
+				if (lc.endsWith(".jimage")) {
+					// Java9
+					entries.add(new JImageEntry(f));
+				} else {
+					entries.add(new ZipFileEntry(f));
+				}
 			} catch (IOException ioe) {
 				MessageUtil.warn(handler, WeaverMessages.format(WeaverMessages.ZIPFILE_ENTRY_INVALID, name, ioe.getMessage()));
 				return;
@@ -103,6 +120,7 @@ public class ClassPathManager {
 					return ret;
 			} catch (IOException ioe) {
 				// this is NOT an error: it's valid to have missing classpath entries
+				ioe.printStackTrace();
 				i.remove();
 			}
 
@@ -153,6 +171,41 @@ public class ClassPathManager {
 		public abstract ClassFile find(String name) throws IOException;
 
 		// public abstract List getAllClassFiles() throws IOException;
+	}
+	
+	private static class ByteBasedClassFile extends ClassFile {
+
+		private byte[] bytes;
+		private ByteArrayInputStream bais;
+		private String path;
+		
+		public ByteBasedClassFile(byte[] bytes, String path) {
+			this.bytes = bytes;			
+			this.path = path;
+		}
+		
+		@Override
+		public InputStream getInputStream() throws IOException {
+			this.bais = new ByteArrayInputStream(bytes);
+			return this.bais;
+		}
+
+		@Override
+		public String getPath() {
+			return this.path;
+		}
+
+		@Override
+		public void close() {
+			if (this.bais!=null) {
+				try {
+					this.bais.close();
+				} catch (IOException e) {
+				}
+				this.bais = null;
+			}
+		}
+		
 	}
 
 	private static class FileClassFile extends ClassFile {
@@ -240,6 +293,77 @@ public class ClassPathManager {
 
 		public String getPath() {
 			return entry.getName();
+		}
+
+	}
+	
+	public class JImageEntry extends Entry {
+		private FileSystem fs;
+		
+		public JImageEntry(File file) {
+			fs = FileSystems.getFileSystem(JRT_URI);
+//			Iterable<java.nio.file.Path> roots = fs.getRootDirectories();
+//			java.nio.file.Path basePath = null;
+//			try {
+//				System.err.println("Find on javax.naming.Context: "+find("javax.naming.Context"));
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			roots: for (java.nio.file.Path path : roots) {
+//				System.err.println(">>"+path);
+//				try (DirectoryStream<java.nio.file.Path> stream = Files.newDirectoryStream(path)) {
+//					for (java.nio.file.Path subdir: stream) {
+//						System.err.println(">>>"+subdir);
+////						if (subdir.toString().indexOf(JAVA_BASE_PATH) != -1) {
+////							basePath = subdir;
+////							break roots;
+////						}
+//				    }
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+		}
+		
+		@Override
+		public ClassFile find(String name) throws IOException {
+			String fileName = name.replace('.', '/') + ".class";
+			try {
+				Path p = fs.getPath(JAVA_BASE_PATH,fileName);
+				byte[] bs = Files.readAllBytes(p);
+				return new ByteBasedClassFile(bs, fileName);
+			} catch (NoSuchFileException nsfe) {
+				// try other modules!
+				Iterable<java.nio.file.Path> roots = fs.getRootDirectories();
+				for (java.nio.file.Path path : roots) {
+					DirectoryStream<java.nio.file.Path> stream = Files.newDirectoryStream(path);
+					try {
+						for (java.nio.file.Path module: stream) {
+						try {
+								Path p = fs.getPath(module.toString(),fileName);
+								byte[] bs = Files.readAllBytes(p);
+								return new ByteBasedClassFile(bs, fileName);
+						} catch (NoSuchFileException nsfe2) {
+						}
+						}
+					} finally {
+						stream.close();
+					}
+				}
+				return null;			
+			}
+		}
+		
+		public ClassFile find(String module, String name) throws IOException {
+			String fileName = name.replace('.', '/') + ".class";
+			try {
+				Path p = fs.getPath(module,fileName);
+				byte[] bs = Files.readAllBytes(p);
+				return new ByteBasedClassFile(bs, fileName);
+			} catch (NoSuchFileException nsfe) {
+				return null;			
+			}
 		}
 
 	}
