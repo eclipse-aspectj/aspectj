@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+<ajc-test dir="bugs186/462821" title="missing method">
+<compile files="FooService.java AbstractLoggerAspect.java FooServiceLoggerAspect.java" options="-1.8">
+</compile>
+</ajc-test>
+
+</suite>
