@@ -762,6 +762,10 @@ public class AjcTask extends MatchingTask {
 			ignore(ignore);
 		}
 	}
+	
+	public void setParameters(boolean b) {
+		cmd.addFlag("-parameters",b);
+	}
 
 	/**
 	 * Flag to copy all non-.class contents of injars to outjar after compile completes. Requires both injars and outjar.
