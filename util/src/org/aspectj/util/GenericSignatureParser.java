@@ -187,18 +187,10 @@ public class GenericSignatureParser {
 		// now we have either a "." indicating the start of a nested type,
 		// or a "<" indication type arguments, or ";" and we are done.
 		while (!maybeEat(";")) {
-			if (maybeEat(".")) {
+			if (tokenStream[tokenIndex].equals(".")) {
 				// outer type completed
 				outerType = new SimpleClassTypeSignature(identifier);
-				List<SimpleClassTypeSignature> nestedTypeList = new ArrayList<SimpleClassTypeSignature>();
-				do {
-					ret.append(".");
-					SimpleClassTypeSignature sig = parseSimpleClassTypeSignature();
-					ret.append(sig.toString());
-					nestedTypeList.add(sig);
-				} while (maybeEat("."));
-				nestedTypes = new SimpleClassTypeSignature[nestedTypeList.size()];
-				nestedTypeList.toArray(nestedTypes);
+				nestedTypes = parseNestedTypesHelper(ret);
 			} else if (tokenStream[tokenIndex].equals("<")) {
 				ret.append("<");
 				TypeArgument[] tArgs = maybeParseTypeArguments();
@@ -207,16 +199,7 @@ public class GenericSignatureParser {
 				}
 				ret.append(">");
 				outerType = new SimpleClassTypeSignature(identifier, tArgs);
-				// now parse possible nesteds...
-				List<SimpleClassTypeSignature> nestedTypeList = new ArrayList<SimpleClassTypeSignature>();
-				while (maybeEat(".")) {
-					ret.append(".");
-					SimpleClassTypeSignature sig = parseSimpleClassTypeSignature();
-					ret.append(sig.toString());
-					nestedTypeList.add(sig);
-				}
-				nestedTypes = new SimpleClassTypeSignature[nestedTypeList.size()];
-				nestedTypeList.toArray(nestedTypes);
+				nestedTypes = parseNestedTypesHelper(ret);
 			} else {
 				throw new IllegalStateException("Expecting .,<, or ;, but found " + tokenStream[tokenIndex] + " while unpacking "
 						+ inputString);
@@ -226,6 +209,39 @@ public class GenericSignatureParser {
 		if (outerType == null)
 			outerType = new SimpleClassTypeSignature(ret.toString());
 		return new ClassTypeSignature(ret.toString(), outerType, nestedTypes);
+	}
+
+	/**
+	 * Helper method to digest nested types, slightly more complex than necessary to cope with some android related
+	 * incorrect classes (see bug 406167)
+	 */
+	private SimpleClassTypeSignature[] parseNestedTypesHelper(StringBuffer ret) {
+		boolean brokenSignature = false;
+		SimpleClassTypeSignature[] nestedTypes;
+		List<SimpleClassTypeSignature> nestedTypeList = new ArrayList<SimpleClassTypeSignature>();
+		while (maybeEat(".")) {
+			ret.append(".");
+			SimpleClassTypeSignature sig = parseSimpleClassTypeSignature();
+			if (tokenStream[tokenIndex].equals("/")) {
+				if (!brokenSignature) {
+					System.err.println("[See bug 406167] Bad class file signature encountered, nested types appear package qualified, ignoring those incorrect pieces. Signature: "+inputString);
+				}
+				brokenSignature = true;
+				// hit something like: Lcom/a/a/b/t<TK;TV;>.com/a/a/b/af.com/a/a/b/ag;
+				// and we are looking at the '/' after the com
+				tokenIndex++; // pointing at the next identifier
+				while (tokenStream[tokenIndex+1].equals("/")) {
+					tokenIndex+=2; // jump over an 'identifier' '/' pair
+				}
+				// now tokenIndex is the final bit of the name (which we'll treat as the inner type name)
+				sig = parseSimpleClassTypeSignature();
+			}
+			ret.append(sig.toString());
+			nestedTypeList.add(sig);
+		};
+		nestedTypes = new SimpleClassTypeSignature[nestedTypeList.size()];
+		nestedTypeList.toArray(nestedTypes);
+		return nestedTypes;
 	}
 
 	private SimpleClassTypeSignature parseSimpleClassTypeSignature() {
