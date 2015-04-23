@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc186Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testMissingExtends() throws Exception {
+		runTest("missing extends on generic target");
+	}
+	
 	public void testMissingMethod_462821() throws Exception {
 		runTest("missing method");
 	}
