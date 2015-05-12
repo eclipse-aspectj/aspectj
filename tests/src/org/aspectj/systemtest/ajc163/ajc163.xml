@@ -42,13 +42,13 @@
    	  <run class="CallTest">
    	    <stdout>
    	      <line text="public abstract boolean Authorization.mayPerform(java.lang.String,java.lang.String)"/>
-   	      <line text="public abstract interface boolean AuthorizationAdmin.mayPerform(java.lang.String, java.lang.String)"/>
+   	      <line text="public abstract boolean AuthorizationAdmin.mayPerform(java.lang.String, java.lang.String)"/>
    	      <line text="mayPerform() executing"/>
    	      <line text="public abstract boolean AuthorizationAdmin.mayPerform2(java.lang.String,java.lang.String)"/>
-   	      <line text="public abstract interface boolean AuthorizationAdmin.mayPerform2(java.lang.String, java.lang.String)"/>
+   	      <line text="public abstract boolean AuthorizationAdmin.mayPerform2(java.lang.String, java.lang.String)"/>
    	      <line text="mayPerform2() executing"/>
    	      <line text="public abstract boolean Authorization.mayPerform(java.lang.String,java.lang.String)"/>
-   	      <line text="public abstract interface boolean Authorization.mayPerform(java.lang.String, java.lang.String)"/>
+   	      <line text="public abstract boolean Authorization.mayPerform(java.lang.String, java.lang.String)"/>
    	      <line text="mayPerform() executing"/>
    	    </stdout>
    	  </run>

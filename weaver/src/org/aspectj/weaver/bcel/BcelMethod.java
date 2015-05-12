@@ -83,8 +83,7 @@ class BcelMethod extends ResolvedMemberImpl {
 
 	BcelMethod(BcelObjectType declaringType, Method method) {
 		super(method.getName().equals("<init>") ? CONSTRUCTOR : (method.getName().equals("<clinit>") ? STATIC_INITIALIZATION
-				: METHOD), declaringType.getResolvedTypeX(), declaringType.isInterface() ? method.getModifiers()
-				| Modifier.INTERFACE : method.getModifiers(), method.getName(), method.getSignature());
+				: METHOD), declaringType.getResolvedTypeX(), method.getModifiers(), method.getName(), method.getSignature());
 		this.method = method;
 		sourceContext = declaringType.getResolvedTypeX().getSourceContext();
 		bcelObjectType = declaringType;
@@ -97,8 +96,7 @@ class BcelMethod extends ResolvedMemberImpl {
 	 */
 	BcelMethod(BcelObjectType declaringType, Method method, List<AjAttribute> attributes) {
 		super(method.getName().equals("<init>") ? CONSTRUCTOR : (method.getName().equals("<clinit>") ? STATIC_INITIALIZATION
-				: METHOD), declaringType.getResolvedTypeX(), declaringType.isInterface() ? method.getModifiers()
-				| Modifier.INTERFACE : method.getModifiers(), method.getName(), method.getSignature());
+				: METHOD), declaringType.getResolvedTypeX(), method.getModifiers(), method.getName(), method.getSignature());
 		this.method = method;
 		sourceContext = declaringType.getResolvedTypeX().getSourceContext();
 		bcelObjectType = declaringType;
