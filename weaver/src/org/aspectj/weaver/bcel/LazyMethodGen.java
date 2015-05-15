@@ -77,7 +77,6 @@ import org.aspectj.weaver.tools.Traceable;
  * We stay away from targeters for rangey things like Shadows and Exceptions.
  */
 public final class LazyMethodGen implements Traceable {
-	private static final int ACC_SYNTHETIC = 0x1000;
 
 	private int modifiers;
 	private Type returnType;
@@ -995,7 +994,7 @@ public final class LazyMethodGen implements Traceable {
 
 		if (isSynthetic) {
 			if (enclosingClass.getWorld().isInJava5Mode()) {
-				gen.setModifiers(gen.getModifiers() | ACC_SYNTHETIC);
+				gen.setModifiers(gen.getModifiers() | Constants.ACC_SYNTHETIC);
 			}
 			if (!hasAttribute("Synthetic")) {
 				// belt and braces, do the attribute even on Java 5 in addition to the modifier flag

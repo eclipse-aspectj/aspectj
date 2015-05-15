@@ -360,7 +360,7 @@ class BcelClassWeaver implements IClassWeaver {
 		}
 		// The bridge method in this type will have the same signature as the one in the supertype
 		LazyMethodGen bridgeMethod = makeBridgeMethod(clazz, theBridgeMethod);
-		int newflags = bridgeMethod.getAccessFlags() | 0x00000040;// BRIDGE = 0x00000040
+		int newflags = bridgeMethod.getAccessFlags() | Constants.ACC_BRIDGE | Constants.ACC_SYNTHETIC ;// BRIDGE = 0x00000040
 
 		if ((newflags & 0x00000100) != 0) {
 			newflags = newflags - 0x100;// NATIVE = 0x00000100 - need to clear it

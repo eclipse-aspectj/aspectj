@@ -106,6 +106,7 @@ public interface Constants {
 	public final static short ACC_ABSTRACT = 0x0400;
 	public final static short ACC_STRICT = 0x0800;
 
+	public final static short ACC_SYNTHETIC = 0x1000;
 	public final static short ACC_ANNOTATION = 0x2000;
 	public final static short ACC_ENUM = 0x4000;
 	public final static short ACC_BRIDGE = 0x0040;
