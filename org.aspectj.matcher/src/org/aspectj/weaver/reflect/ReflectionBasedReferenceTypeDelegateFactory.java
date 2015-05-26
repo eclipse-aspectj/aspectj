@@ -47,6 +47,17 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 			return null;
 		}
 	}
+	
+	public static ReflectionBasedReferenceTypeDelegate createDelegate(ReferenceType forReferenceType, World inWorld,
+			Class<?> clazz) {
+		if (LangUtil.is15VMOrGreater()) {
+			ReflectionBasedReferenceTypeDelegate rbrtd = create15Delegate(forReferenceType, clazz, clazz.getClassLoader(), inWorld);
+			if (rbrtd != null) {
+				return rbrtd; // can be null if we didn't find the class the delegate logic loads
+			}
+		}
+		return new ReflectionBasedReferenceTypeDelegate(clazz, clazz.getClassLoader(), inWorld, forReferenceType);
+	}
 
 	public static ReflectionBasedReferenceTypeDelegate create14Delegate(ReferenceType forReferenceType, World inWorld,
 			ClassLoader usingClassLoader) {

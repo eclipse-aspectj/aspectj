@@ -17,6 +17,8 @@ import java.util.Map;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.ReferenceType;
+import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.World;
@@ -28,6 +30,7 @@ import org.aspectj.weaver.patterns.FastMatchInfo;
 import org.aspectj.weaver.patterns.IScope;
 import org.aspectj.weaver.patterns.PatternNodeVisitor;
 import org.aspectj.weaver.patterns.Pointcut;
+import org.aspectj.weaver.reflect.ReflectionBasedReferenceTypeDelegate;
 import org.aspectj.weaver.reflect.ReflectionFastMatchInfo;
 import org.aspectj.weaver.reflect.ReflectionShadow;
 import org.aspectj.weaver.reflect.ReflectionWorld;
@@ -64,16 +67,25 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut {
 	 */
 	public FuzzyBoolean fastMatch(FastMatchInfo info) {
 		if (info instanceof ReflectionFastMatchInfo) {
+			// Really need a reflectionworld here...
+			if (!(world instanceof ReflectionWorld)) {
+				throw new IllegalStateException("Can only match user-extension pcds with a ReflectionWorld");
+			}
+			Class<?> clazz = null;
 			try {
-				// Really need a reflectionworld here...
-				if (!(world instanceof ReflectionWorld)) {
-					throw new IllegalStateException("Can only match user-extension pcds with a ReflectionWorld");
-				}
-				return FuzzyBoolean.fromBoolean(this.matcher.couldMatchJoinPointsInType(Class.forName(info.getType().getName(),
-						false, ((ReflectionWorld) world).getClassLoader()), ((ReflectionFastMatchInfo) info).getMatchingContext()));
-			} catch (ClassNotFoundException cnfEx) {
+				clazz = Class.forName(info.getType().getName(), false, ((ReflectionWorld) world).getClassLoader());
+			} catch (ClassNotFoundException cnfe) {
+				if (info.getType() instanceof ReferenceType) {
+					ReferenceTypeDelegate rtd = ((ReferenceType)info.getType()).getDelegate();
+					if (rtd instanceof ReflectionBasedReferenceTypeDelegate) {
+						clazz = ((ReflectionBasedReferenceTypeDelegate)rtd).getClazz();
+					}
+				}					
+			}
+			if (clazz == null) {
 				return FuzzyBoolean.MAYBE;
 			}
+			return FuzzyBoolean.fromBoolean(this.matcher.couldMatchJoinPointsInType(clazz, ((ReflectionFastMatchInfo) info).getMatchingContext()));
 		}
 		throw new IllegalStateException("Can only match user-extension pcds against Reflection FastMatchInfo objects");
 	}

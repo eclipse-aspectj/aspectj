@@ -11,6 +11,9 @@
  * ******************************************************************/
 package org.aspectj.weaver.reflect;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
@@ -34,6 +37,7 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 	private WeakClassLoaderReference classLoaderReference;
 	private AnnotationFinder annotationFinder;
 	private boolean mustUseOneFourDelegates = false; // for testing
+	private Map<String,Class<?>> inProgressResolutionClasses = new HashMap<String,Class<?>>();
 
 	private ReflectionWorld() {
 		// super();
@@ -105,13 +109,52 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 			return world.resolve(className);
 		}
 	}
+	
+	/**
+	 * Resolve a type using the specified class. Normal resolution in a reflection
+	 * world uses Class.forName() via the classloader (attached to this world)
+	 * in order to find a named type then builds a reference type and a reference
+	 * type delegate based on that. For some classes generated at runtime (e.g.
+	 * proxy or lambda representation) the forName() call will not work. In those
+	 * situations we should just use the clazz we have.
+	 * 
+	 * Should the whole thing switch from using forName() to using the clazz objects?
+	 * Possibly but that introduces a lot of change and we don't have a lot
+	 * of test coverage for this scenario (reflection world). What we are doing
+	 * right now is that this can optionally be used if the regular resolution
+	 * scheme did not work.
+	 * 
+	 * Although AspectJ is *not* multi threaded or re-entrant, Spring doesn't
+	 * always respect that. There might be an issue here if two attempts are
+	 * made to resolve the same thing at the same time via this method.
+	 * 
+	 * @param clazz the class to use as the delegate for the resolved type
+	 */
+	public ResolvedType resolveUsingClass(Class<?> clazz) {
+		String signature = UnresolvedType.forName(clazz.getName()).getSignature();
+		try {
+			inProgressResolutionClasses.put(signature, clazz);
+			return resolve(clazz.getName());
+		} finally {
+			inProgressResolutionClasses.remove(signature);
+		}
+	}
 
 	protected ReferenceTypeDelegate resolveDelegate(ReferenceType ty) {
+		ReferenceTypeDelegate result;
 		if (mustUseOneFourDelegates) {
-			return ReflectionBasedReferenceTypeDelegateFactory.create14Delegate(ty, this, classLoaderReference.getClassLoader());
+			result = ReflectionBasedReferenceTypeDelegateFactory.create14Delegate(ty, this, classLoaderReference.getClassLoader());
 		} else {
-			return ReflectionBasedReferenceTypeDelegateFactory.createDelegate(ty, this, classLoaderReference.getClassLoader());
+			result = ReflectionBasedReferenceTypeDelegateFactory.createDelegate(ty, this, classLoaderReference.getClassLoader());
 		}
+		if (result == null && inProgressResolutionClasses.size() != 0) {
+			// Is it a class that cannot be loaded (i.e. it was generated) but we already know about?
+			Class<?> clazz = inProgressResolutionClasses.get(ty.getSignature());
+			if (clazz != null) {
+				result = ReflectionBasedReferenceTypeDelegateFactory.createDelegate(ty,this,clazz);
+			}
+		}
+		return result;
 	}
 
 	public static class ReflectionWorldException extends RuntimeException {

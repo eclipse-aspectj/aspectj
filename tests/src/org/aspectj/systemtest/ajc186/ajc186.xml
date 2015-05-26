@@ -2,6 +2,11 @@
 
 <suite>
 
+<ajc-test dir="bugs186/lambdaBeans" title="lambda beans">
+<compile files="Foo.java Application.java" options="-1.8">
+</compile>
+</ajc-test>
+
 <ajc-test dir="bugs186/462821" title="missing method">
 <compile files="FooService.java AbstractLoggerAspect.java FooServiceLoggerAspect.java" options="-1.8">
 </compile>
