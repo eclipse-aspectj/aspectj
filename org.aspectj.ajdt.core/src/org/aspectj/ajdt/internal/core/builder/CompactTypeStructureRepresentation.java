@@ -19,6 +19,8 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryMethod;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryNestedType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryTypeAnnotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.ITypeAnnotationWalker;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 
 /**
  * Used to determine if a type has structurally changed during incremental compilation. At the end of compilation we create one of
@@ -179,6 +181,12 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 
 	public IBinaryTypeAnnotation[] getTypeAnnotations() {
 		return typeAnnotations;
+	}
+
+	public ITypeAnnotationWalker enrichWithExternalAnnotationsFor(ITypeAnnotationWalker walker, Object member,
+			LookupEnvironment environment) {
+		// TODO[1.8.7] more to do here? In what contexts?
+		return walker;
 	}
 
 }

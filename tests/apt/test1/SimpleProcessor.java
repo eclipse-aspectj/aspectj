@@ -203,6 +203,9 @@ public final class SimpleProcessor extends AbstractProcessor {
             final TypeElement classElement = entry.getKey();
             final PackageElement packageElement = (PackageElement) classElement.getEnclosingElement();
             try {
+//            	if (processingEnv.getFiler().getResource(StandardLocation.SOURCE_OUTPUT, packageElement.getQualifiedName(), classElement.getSimpleName()+"EventsAspect.aj")!= null) {
+//            		continue;
+//            	}
                 final FileObject jfo = processingEnv.getFiler().createResource(
                         StandardLocation.SOURCE_OUTPUT,
                         packageElement.getQualifiedName(),
@@ -236,7 +239,8 @@ public final class SimpleProcessor extends AbstractProcessor {
                     bw.newLine();
                 }
             } catch (final Throwable e) {
-                processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
+            	
+//                processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, e.getMessage());
             }
         }
     }

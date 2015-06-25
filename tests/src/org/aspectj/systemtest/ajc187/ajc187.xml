@@ -1,0 +1,22 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+<ajc-test dir="bugs187/469889" title="broken java">
+<!-- 
+<compile files="A.java B.java AbstractA.java BImpl.java Main.java" options="-1.8"/>
+-->
+<compile files="Code.java" options="-1.8"/>
+<run class="Code">
+<stdout>
+<line text="B"/>
+</stdout>
+</run>
+</ajc-test>
+
+
+<ajc-test dir="bugs187/470633" title="lambda">
+<compile files="Maps.java" options="-1.8"/>
+</ajc-test>
+
+</suite>
