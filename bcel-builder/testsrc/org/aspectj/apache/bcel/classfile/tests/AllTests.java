@@ -12,6 +12,8 @@
 
 package org.aspectj.apache.bcel.classfile.tests;
 
+import org.aspectj.apache.bcel.util.ClassPathTests;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -34,6 +36,7 @@ public class AllTests {
 		suite.addTestSuite(AnnotationAccessFlagTest.class);
 		suite.addTestSuite(ElementValueGenTest.class);
 		suite.addTestSuite(FieldAnnotationsTest.class);
+		suite.addTestSuite(ClassPathTests.class);
 		suite.addTestSuite(AnnotationGenTest.class);
 		suite.addTestSuite(ParameterAnnotationsTest.class);
 		suite.addTestSuite(GeneratingAnnotatedClassesTest.class);

@@ -20,11 +20,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.DirectoryStream;
+import java.nio.file.FileStore;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -79,6 +83,7 @@ public class ClassPathManager {
 
 	private static URI JRT_URI = URI.create("jrt:/"); //$NON-NLS-1$
 
+	private static String MODULES_PATH = "modules"; //$NON-NLS-1$
 	private static String JAVA_BASE_PATH = "java.base"; //$NON-NLS-1$
 	
 	public void addPath(String name, IMessageHandler handler) {
@@ -330,7 +335,8 @@ public class ClassPathManager {
 		public ClassFile find(String name) throws IOException {
 			String fileName = name.replace('.', '/') + ".class";
 			try {
-				Path p = fs.getPath(JAVA_BASE_PATH,fileName);
+				// /modules/java.base/java/lang/Object.class (jdk9 b74)
+				Path p = fs.getPath(MODULES_PATH,JAVA_BASE_PATH,fileName);
 				byte[] bs = Files.readAllBytes(p);
 				return new ByteBasedClassFile(bs, fileName);
 			} catch (NoSuchFileException nsfe) {
@@ -340,12 +346,16 @@ public class ClassPathManager {
 					DirectoryStream<java.nio.file.Path> stream = Files.newDirectoryStream(path);
 					try {
 						for (java.nio.file.Path module: stream) {
-						try {
-								Path p = fs.getPath(module.toString(),fileName);
-								byte[] bs = Files.readAllBytes(p);
-								return new ByteBasedClassFile(bs, fileName);
-						} catch (NoSuchFileException nsfe2) {
-						}
+							// module will be something like /packages or /modules
+							for (java.nio.file.Path submodule: Files.newDirectoryStream(module)) {
+								// submodule will be /modules/java.base or somesuch
+								try {
+									Path p = fs.getPath(submodule.toString(), fileName);
+									byte[] bs = Files.readAllBytes(p);
+									return new ByteBasedClassFile(bs, fileName);
+								} catch (NoSuchFileException nsfe2) {
+								}
+							}
 						}
 					} finally {
 						stream.close();
