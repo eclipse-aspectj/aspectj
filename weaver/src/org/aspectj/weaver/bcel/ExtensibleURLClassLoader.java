@@ -9,6 +9,8 @@
  * Contributors: 
  *     Matthew Webster, Adrian Colyer, 
  *     Martin Lippert     initial implementation 
+ *     Andy Clement
+ *     Roy Varghese - Bug 473555
  * ******************************************************************/
 
 package org.aspectj.weaver.bcel;
@@ -100,6 +102,12 @@ public abstract class ExtensibleURLClassLoader extends URLClassLoader {
 	private String getPackageName(String className) {
 		int offset = className.lastIndexOf('.');
 		return (offset == -1) ? null : className.substring(0, offset);
+	}
+	
+	@Override
+	public void close() throws IOException {
+		super.close();
+		classPath.closeArchives();
 	}
 
 }
