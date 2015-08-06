@@ -19,4 +19,11 @@
 <compile files="Maps.java" options="-1.8"/>
 </ajc-test>
 
+<ajc-test dir="bugs187/474165" title="anno conversion">
+<compile files="B.java" options="-XhasMember -1.8 -showWeaveInfo">
+<message kind="weave" text="Extending interface set for type 'B' (B.java) to include 'java.io.Serializable' (B.java)"/>
+</compile>
+<run class="B"></run>
+</ajc-test>
+
 </suite>

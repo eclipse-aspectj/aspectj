@@ -24,6 +24,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc187Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testAnnoConversion_474165() throws Exception {
+		runTest("anno conversion");
+	}
+	
 	public void testLambda_470633() throws Exception {
 		runTest("lambda");
 	}
