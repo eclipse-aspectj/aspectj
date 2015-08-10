@@ -62,6 +62,7 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.World;
 import org.aspectj.weaver.tools.Traceable;
 
 /**
@@ -77,6 +78,8 @@ import org.aspectj.weaver.tools.Traceable;
  * We stay away from targeters for rangey things like Shadows and Exceptions.
  */
 public final class LazyMethodGen implements Traceable {
+
+	private static final AnnotationAJ[] NO_ANNOTATIONAJ = new AnnotationAJ[] {};
 
 	private int modifiers;
 	private Type returnType;
@@ -95,7 +98,11 @@ public final class LazyMethodGen implements Traceable {
 	int highestLineNumber = 0;
 	boolean wasPackedOptimally = false;
 	private Method savedMethod = null;
-	private static final AnnotationAJ[] NO_ANNOTATIONAJ = new AnnotationAJ[] {};
+	
+	// Some tools that may post process the output bytecode do not long local variable tables
+	// to be generated as one reason the tables may be missing in the first place is because
+	// the bytecode is odd. See https://bugs.eclipse.org/bugs/show_bug.cgi?id=470658
+	private final boolean originalMethodHasLocalVariableTable;
 
 	/*
 	 * We use LineNumberTags and not Gens.
@@ -152,6 +159,7 @@ public final class LazyMethodGen implements Traceable {
 		this.attributes = new ArrayList<Attribute>();
 		this.enclosingClass = enclosingClass;
 		assertGoodBody();
+		this.originalMethodHasLocalVariableTable = true; // it is a new method, we want an lvar table
 
 		// @AJ advice are not inlined by default since requires further analysis and weaving ordering control
 		// TODO AV - improve - note: no room for improvement as long as aspects are reweavable
@@ -186,7 +194,7 @@ public final class LazyMethodGen implements Traceable {
 			throw new RuntimeException("bad abstract method with code: " + m + " on " + enclosingClass);
 		}
 		this.memberView = new BcelMethod(enclosingClass.getBcelObjectType(), m);
-
+		this.originalMethodHasLocalVariableTable = savedMethod.getLocalVariableTable()!=null;
 		this.modifiers = m.getModifiers();
 		this.name = m.getName();
 
@@ -223,7 +231,7 @@ public final class LazyMethodGen implements Traceable {
 		this.memberView = m;
 		this.modifiers = savedMethod.getModifiers();
 		this.name = m.getName();
-
+		this.originalMethodHasLocalVariableTable = savedMethod.getLocalVariableTable() != null;
 		// @AJ advice are not inlined by default since requires further analysis
 		// and weaving ordering control
 		// TODO AV - improve - note: no room for improvement as long as aspects
@@ -1121,14 +1129,19 @@ public final class LazyMethodGen implements Traceable {
 		}
 
 		addExceptionHandlers(gen, map, exceptionList);
-		if (localVariables.size() == 0) {
-			// Might be a case of 173978 where around advice on an execution join point
-			// has caused everything to be extracted from the method and thus we
-			// are left with no local variables, not even the ones for 'this' and
-			// parameters passed to the method
-			createNewLocalVariables(gen);
-		} else {
-			addLocalVariables(gen, localVariables);
+		if (originalMethodHasLocalVariableTable || enclosingClass
+				.getBcelObjectType()
+				.getResolvedTypeX()
+				.getWorld().generateNewLvts) {
+			if (localVariables.size() == 0) {
+				// Might be a case of 173978 where around advice on an execution join point
+				// has caused everything to be extracted from the method and thus we
+				// are left with no local variables, not even the ones for 'this' and
+				// parameters passed to the method
+				createNewLocalVariables(gen);
+			} else {
+				addLocalVariables(gen, localVariables);
+			}
 		}
 
 		// JAVAC adds line number tables (with just one entry) to generated
@@ -1174,6 +1187,9 @@ public final class LazyMethodGen implements Traceable {
 		}
 	}
 
+	private World getWorld() {
+		return enclosingClass.getBcelObjectType().getResolvedTypeX().getWorld();
+	}
 	/*
 	 * Optimized packing that does a 'local packing' of the code rather than building a brand new method and packing into it. Only
 	 * usable when the packing is going to be done just once.
@@ -1258,16 +1274,17 @@ public final class LazyMethodGen implements Traceable {
 			}
 		}
 		gen.setInstructionList(theBody);
-		if (localVariables.size() == 0) {
-			// Might be a case of 173978 where around advice on an execution join point
-			// has caused everything to be extracted from the method and thus we
-			// are left with no local variables, not even the ones for 'this' and
-			// parameters passed to the method
-			createNewLocalVariables(gen);
-		} else {
-			addLocalVariables(gen, localVariables);
+		if (originalMethodHasLocalVariableTable || getWorld().generateNewLvts) {
+			if (localVariables.size() == 0) {
+				// Might be a case of 173978 where around advice on an execution join point
+				// has caused everything to be extracted from the method and thus we
+				// are left with no local variables, not even the ones for 'this' and
+				// parameters passed to the method
+				createNewLocalVariables(gen);
+			} else {
+				addLocalVariables(gen, localVariables);
+			}
 		}
-
 		// JAVAC adds line number tables (with just one entry) to generated
 		// accessor methods - this
 		// keeps some tools that rely on finding at least some form of
