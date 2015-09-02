@@ -2,6 +2,10 @@
 
 <suite>
 
+<ajc-test dir="bugs187/475152" title="infinite loop">
+<compile files="AbstractAspect.aj, BaseAspect.aj, TestClass.java, AjTarget.java, TestAspect.aj" options="-1.8"/>
+</ajc-test>
+
 <ajc-test dir="bugs187/469889" title="broken java">
 <!-- 
 <compile files="A.java B.java AbstractA.java BImpl.java Main.java" options="-1.8"/>

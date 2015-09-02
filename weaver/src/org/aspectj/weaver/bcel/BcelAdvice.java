@@ -243,10 +243,11 @@ class BcelAdvice extends Advice {
 				containsInvokedynamic = 1;
 				LazyMethodGen lmg = boType.getLazyClassGen().getLazyMethodGen(this.signature.getName(), this.signature.getSignature(), true);
 				// Check Java8 supertypes
+				ResolvedType searchType = concreteAspect;
 				while (lmg == null) {
-					ResolvedType superType = boType.getSuperclass();
-					if (superType == null) break;
-					ReferenceTypeDelegate rtd = ((ReferenceType)superType).getDelegate();
+					searchType = searchType.getSuperclass();
+					if (searchType == null) break;
+					ReferenceTypeDelegate rtd = ((ReferenceType)searchType).getDelegate();
 					if (rtd instanceof BcelObjectType) {
 						BcelObjectType bot = (BcelObjectType)rtd;
 						if (bot.javaClass.getMajor() < Constants.MAJOR_1_8) {

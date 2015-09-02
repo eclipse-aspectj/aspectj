@@ -24,6 +24,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc187Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testInfiniteLoop_475152() throws Exception {
+		runTest("infinite loop");
+	}
+	
 	public void testAnnoConversion_474165() throws Exception {
 		runTest("anno conversion");
 	}
