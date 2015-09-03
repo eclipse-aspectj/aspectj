@@ -630,6 +630,32 @@ public class BcelWorld extends World implements Repository {
 		UnresolvedType declaringType = null;
 
 		String signature = ii.getSignature(cpg);
+		
+		// 307147
+		if (name.startsWith("ajc$privMethod$")) {
+			// The invoke is on a privileged accessor. These may be created for different
+			// kinds of target, not necessarily just private methods. In bug 307147 it is
+			// for a private method. This code is identifying the particular case in 307147
+			try {
+				declaringType = UnresolvedType.forName(declaring);
+				String typeNameAsFoundInAccessorName = declaringType.getName().replace('.', '_');
+				int indexInAccessorName = name.lastIndexOf(typeNameAsFoundInAccessorName);
+				if (indexInAccessorName != -1) {
+					String methodName = name.substring(indexInAccessorName+typeNameAsFoundInAccessorName.length()+1);
+					ResolvedType resolvedDeclaringType = declaringType.resolve(this);
+					ResolvedMember[] methods = resolvedDeclaringType.getDeclaredMethods();
+					for (ResolvedMember method: methods) {
+						if (method.getName().equals(methodName) && method.getSignature().equals(signature) && Modifier.isPrivate(method.getModifiers())) {
+							return method;
+						}
+					}
+				}
+			} catch (Exception e) {
+				// Remove this once confident above code isn't having unexpected side effects
+				// Added 1.8.7
+				e.printStackTrace();
+			}
+		}
 
 		int modifier = (ii instanceof INVOKEINTERFACE) ? Modifier.INTERFACE
 				: (ii.opcode == Constants.INVOKESTATIC) ? Modifier.STATIC : (ii.opcode == Constants.INVOKESPECIAL && !name

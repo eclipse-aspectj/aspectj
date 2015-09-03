@@ -2,6 +2,36 @@
 
 <suite>
 
+<ajc-test dir="bugs187/307147" title="missing joinpoint">
+<compile files="Test.java TestAspect.aj ITDAspect.aj" options="-1.8"/>
+<run class="test.Test">
+<stdout>
+<line text="Around call(void test.Test.function())"/>
+<line text="Normal function"/>
+<line text="Around call(void test.Test.privateMethod())"/>
+<line text="private method"/>
+<line text="Around call(void test.Test.publicMethod())"/>
+<line text="public method"/>
+<line text="Around call(void test.Test.itdFunction())"/>
+<line text="ITD function"/>
+<line text="Around call(void test.Test.privateMethod())"/>
+<line text="private method"/>
+<line text="Around call(void test.Test.publicMethod())"/>
+<line text="public method"/>
+</stdout></run>
+</ajc-test>
+
+<ajc-test dir="bugs187/307147_2" title="missing joinpoint 2">
+<compile files="Test.java TestAspect.aj ITDAspect.aj" options="-1.8"/>
+<run class="test.Test">
+<stdout>
+<line text="ITD function"/>
+<line text="Around call(void test.Test.privateMethod(String))"/>
+<line text="Captured Foo"/>
+<line text="hello FOO"/>
+</stdout></run>
+</ajc-test>
+
 <ajc-test dir="bugs187/475152" title="infinite loop">
 <compile files="AbstractAspect.aj, BaseAspect.aj, TestClass.java, AjTarget.java, TestAspect.aj" options="-1.8"/>
 </ajc-test>

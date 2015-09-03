@@ -3209,6 +3209,13 @@ class BcelClassWeaver implements IClassWeaver {
 				if (canMatch(Shadow.FieldGet) || canMatch(Shadow.FieldSet)) {
 					match(BcelShadow.makeShadowForMethodCall(world, mg, ih, enclosingShadow, kind, declaredSig), shadowAccumulator);
 				}
+			} else if (!declaredSig.getName().startsWith(NameMangler.PREFIX)) {
+				// 307147 - resolution above may have found the real method directly rather
+				// than needing to go through the effective signature attribute
+				if (canMatch(Shadow.MethodCall)) {
+					match(BcelShadow.makeShadowForMethodCall(world, mg, ih, enclosingShadow, Shadow.MethodCall, declaredSig),
+							shadowAccumulator);
+				}
 			} else {
 				AjAttribute.EffectiveSignatureAttribute effectiveSig = declaredSig.getEffectiveSignature();
 				if (effectiveSig == null) {
