@@ -266,6 +266,11 @@ class HtmlDecorator {
 					// Java8:
 					// <pre>static class <span class="typeNameLabel">ClassA.InnerAspect</span>
 					classStartIndex = fileContents.toString().indexOf("class <span class=\"typeNameLabel\">");
+					if (classStartIndex == -1) {
+						// Java7: 464604
+						// <pre>public class <span class="strong">Azpect</span>
+						classStartIndex = fileContents.toString().indexOf("class <span class=\"strong\">");
+					}
 					int classEndIndex = fileContents.toString().indexOf("</span>", classStartIndex);
 					if (classEndIndex != -1) {
 						// Convert it to "aspect <span class="typeNameLabel">ClassA.InnerAspect</span>"
