@@ -2,6 +2,10 @@
 
 <suite>
 
+<ajc-test dir="bugs187/476245" title="compile error">
+<compile files="Testing.java" options="-1.8"/>
+</ajc-test>
+
 <ajc-test dir="bugs187/307147" title="missing joinpoint">
 <compile files="Test.java TestAspect.aj ITDAspect.aj" options="-1.8"/>
 <run class="test.Test">

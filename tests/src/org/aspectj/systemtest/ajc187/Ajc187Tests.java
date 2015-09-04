@@ -24,6 +24,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc187Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testCompileError_476245() throws Exception {
+		runTest("compile error");
+	}
+
 	public void testMissingJoinpoint_307147() throws Exception {
 		runTest("missing joinpoint");
 	}
