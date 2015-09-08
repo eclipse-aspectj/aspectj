@@ -18,7 +18,8 @@ import java.lang.instrument.ClassFileTransformer;
  * Java 1.5 preMain agent to hook in the class pre processor
  * Can be used with -javaagent:aspectjweaver.jar
  *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur
+ * @author Alexander Kriegisch
  */
 public class Agent { 
 
@@ -47,12 +48,18 @@ public class Agent {
         s_instrumentation.addTransformer(s_transformer);
     }
 
+    public static void agentmain(String options, Instrumentation instrumentation) {
+        premain(options, instrumentation);
+    }
+
     /**
      * Returns the Instrumentation system level instance
      */
     public static Instrumentation getInstrumentation() {
         if (s_instrumentation == null) {
-            throw new UnsupportedOperationException("Java 5 was not started with preMain -javaagent for AspectJ");
+            throw new UnsupportedOperationException(
+                "AspectJ weaving agent was neither started via '-javaagent' (preMain) " +
+                "nor attached via 'VirtualMachine.loadAgent' (agentMain)");
         }
         return s_instrumentation;
     }
