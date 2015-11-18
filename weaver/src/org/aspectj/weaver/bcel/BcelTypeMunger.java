@@ -375,7 +375,12 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 								// for that type
 								if (m.isTargetTypeParameterized()) {
 									ResolvedType genericOnType = getWorld().resolve(sig.getDeclaringType()).getGenericType();
-									m = m.parameterizedFor(newParent.discoverActualOccurrenceOfTypeInHierarchy(genericOnType));
+									ResolvedType actualOccurrence = newParent.discoverActualOccurrenceOfTypeInHierarchy(genericOnType);
+									if (actualOccurrence == null) {
+									    // Handle the case where the ITD is onto the type targeted by the declare parents (PR478003)
+										actualOccurrence = newParentTarget.getType().discoverActualOccurrenceOfTypeInHierarchy(genericOnType);
+									}
+									m = m.parameterizedFor(actualOccurrence);
 									// possible sig change when type parameters filled in
 									sig = m.getSignature();
 								}

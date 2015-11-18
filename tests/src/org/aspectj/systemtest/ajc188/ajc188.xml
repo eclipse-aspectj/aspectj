@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+<ajc-test dir="bugs188/478003" title="compile error">
+<compile files="OrientDBKeyIO.java" options="-1.8"/>
+</ajc-test>
+
+</suite>
