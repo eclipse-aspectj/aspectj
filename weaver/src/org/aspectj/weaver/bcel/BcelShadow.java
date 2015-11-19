@@ -1039,8 +1039,8 @@ public class BcelShadow extends Shadow {
 
 	private boolean checkLazyTjp() {
 		// check for around advice
-		for (Iterator i = mungers.iterator(); i.hasNext();) {
-			ShadowMunger munger = (ShadowMunger) i.next();
+		for (Iterator<ShadowMunger> i = mungers.iterator(); i.hasNext();) {
+			ShadowMunger munger = i.next();
 			if (munger instanceof Advice) {
 				if (((Advice) munger).getKind() == AdviceKind.Around) {
 					if (munger.getSourceLocation() != null) { // do we know enough to bother reporting?
@@ -2183,8 +2183,10 @@ public class BcelShadow extends Shadow {
 		// at the shadow, then tjp
 		String extractedShadowMethodName = NameMangler.aroundShadowMethodName(getSignature(), shadowClass.getNewGeneratedNameTag());
 		List<String> parameterNames = new ArrayList<String>();
-		LazyMethodGen extractedShadowMethod = extractShadowInstructionsIntoNewMethod(extractedShadowMethodName, Modifier.PRIVATE,
-				munger.getSourceLocation(), parameterNames);
+		boolean shadowClassIsInterface = shadowClass.isInterface();
+		LazyMethodGen extractedShadowMethod = extractShadowInstructionsIntoNewMethod(extractedShadowMethodName, 
+				shadowClassIsInterface?Modifier.PUBLIC:Modifier.PRIVATE,
+				munger.getSourceLocation(), parameterNames,shadowClassIsInterface);
 
 		List<BcelVar> argsToCallLocalAdviceMethodWith = new ArrayList<BcelVar>();
 		List<BcelVar> proceedVarList = new ArrayList<BcelVar>();
@@ -2205,7 +2207,6 @@ public class BcelShadow extends Shadow {
 			proceedVarList.add(new BcelVar(targetVar.getType(), extraParamOffset));
 			extraParamOffset += targetVar.getType().getSize();
 		}
-		int idx = 0;
 		for (int i = 0, len = getArgCount(); i < len; i++) {
 			argsToCallLocalAdviceMethodWith.add(argVars[i]);
 			proceedVarList.add(new BcelVar(argVars[i].getType(), extraParamOffset));
@@ -2242,8 +2243,8 @@ public class BcelShadow extends Shadow {
 		// Extract the advice into a new method. This will go in the same type as the shadow
 		// name will be something like foo_aroundBody1$advice
 		String localAdviceMethodName = NameMangler.aroundAdviceMethodName(getSignature(), shadowClass.getNewGeneratedNameTag());
-		LazyMethodGen localAdviceMethod = new LazyMethodGen(Modifier.PRIVATE | (world.useFinal() ? Modifier.FINAL : 0)
-				| Modifier.STATIC, BcelWorld.makeBcelType(mungerSig.getReturnType()), localAdviceMethodName, parameterTypes,
+		int localAdviceMethodModifiers = Modifier.PRIVATE | (world.useFinal() & !shadowClassIsInterface ? Modifier.FINAL : 0) | Modifier.STATIC;
+		LazyMethodGen localAdviceMethod = new LazyMethodGen(localAdviceMethodModifiers, BcelWorld.makeBcelType(mungerSig.getReturnType()), localAdviceMethodName, parameterTypes,
 				NoDeclaredExceptions, shadowClass);
 
 		// Doesnt work properly, so leave it out:
@@ -2833,9 +2834,12 @@ public class BcelShadow extends Shadow {
 
 		int linenumber = getSourceLine();
 		// MOVE OUT ALL THE INSTRUCTIONS IN MY SHADOW INTO ANOTHER METHOD!
+		
+		// callbackMethod will be something like: "static final void m_aroundBody0(I)"
+		boolean shadowClassIsInterface = getEnclosingClass().isInterface();
 		LazyMethodGen callbackMethod = extractShadowInstructionsIntoNewMethod(
-				NameMangler.aroundShadowMethodName(getSignature(), getEnclosingClass().getNewGeneratedNameTag()), 0,
-				munger.getSourceLocation(), new ArrayList<String>());
+				NameMangler.aroundShadowMethodName(getSignature(), getEnclosingClass().getNewGeneratedNameTag()), shadowClassIsInterface?Modifier.PUBLIC:0,
+				munger.getSourceLocation(), new ArrayList<String>(),shadowClassIsInterface);
 
 		BcelVar[] adviceVars = munger.getExposedStateAsBcelVars(true);
 
@@ -3123,15 +3127,16 @@ public class BcelShadow extends Shadow {
 	 * @param extractedMethodName name for the new method
 	 * @param extractedMethodVisibilityModifier visibility modifiers for the new method
 	 * @param adviceSourceLocation source location of the advice affecting the shadow
+	 * @param beingPlacedInInterface is this new method going into an interface
 	 */
 	LazyMethodGen extractShadowInstructionsIntoNewMethod(String extractedMethodName, int extractedMethodVisibilityModifier,
-			ISourceLocation adviceSourceLocation, List<String> parameterNames) {
+			ISourceLocation adviceSourceLocation, List<String> parameterNames, boolean beingPlacedInInterface) {
 		// LazyMethodGen.assertGoodBody(range.getBody(), extractedMethodName);
 		if (!getKind().allowsExtraction()) {
 			throw new BCException("Attempt to extract method from a shadow kind (" + getKind()
 					+ ") that does not support this operation");
 		}
-		LazyMethodGen newMethod = createShadowMethodGen(extractedMethodName, extractedMethodVisibilityModifier, parameterNames);
+		LazyMethodGen newMethod = createShadowMethodGen(extractedMethodName, extractedMethodVisibilityModifier, parameterNames, beingPlacedInInterface);
 		IntMap remapper = makeRemap();
 		range.extractInstructionsInto(newMethod, remapper, (getKind() != PreInitialization) && isFallsThrough());
 		if (getKind() == PreInitialization) {
@@ -3230,9 +3235,9 @@ public class BcelShadow extends Shadow {
 	 * The new method always static. It may take some extra arguments: this, target. If it's argsOnStack, then it must take both
 	 * this/target If it's argsOnFrame, it shares this and target. ??? rewrite this to do less array munging, please
 	 */
-	private LazyMethodGen createShadowMethodGen(String newMethodName, int visibilityModifier, List<String> parameterNames) {
+	private LazyMethodGen createShadowMethodGen(String newMethodName, int visibilityModifier, List<String> parameterNames, boolean beingPlacedInInterface) {
 		Type[] shadowParameterTypes = BcelWorld.makeBcelTypes(getArgTypes());
-		int modifiers = (world.useFinal() ? Modifier.FINAL : 0) | Modifier.STATIC | visibilityModifier;
+		int modifiers = (world.useFinal() && !beingPlacedInInterface ? Modifier.FINAL : 0) | Modifier.STATIC | visibilityModifier;
 		if (targetVar != null && targetVar != thisVar) {
 			UnresolvedType targetType = getTargetType();
 			targetType = ensureTargetTypeIsCorrect(targetType);

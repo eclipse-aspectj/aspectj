@@ -198,7 +198,12 @@ public class Utility {
 	public static Instruction createInvoke(InstructionFactory fact, LazyMethodGen m) {
 		short kind;
 		if (m.getEnclosingClass().isInterface()) {
-			kind = Constants.INVOKEINTERFACE;
+			if (m.isStatic()) {
+				// For static methods on interfaces
+				kind = Constants.INVOKESTATIC;				
+			} else {
+				kind = Constants.INVOKEINTERFACE;
+			}
 		} else if (m.isStatic()) {
 			kind = Constants.INVOKESTATIC;
 		} else if (m.isPrivate() || m.getName().equals("<init>")) {
