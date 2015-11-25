@@ -696,9 +696,12 @@ public final class LazyClassGen {
 	public byte[] getJavaClassBytesIncludingReweavable(BcelWorld world) {
 		writeBack(world);
 		byte[] wovenClassFileData = myGen.getJavaClass().getBytes();
-		// if is java 6 class file
-		if (((myGen.getMajor() == Constants.MAJOR_1_6 && world.shouldGenerateStackMaps()) || myGen.getMajor() > Constants.MAJOR_1_6)
-				&& AsmDetector.isAsmAround) {
+		// At 1.6 stackmaps are optional
+		// At 1.7 or later stackmaps are required (if not turning off the verifier)
+		if ((myGen.getMajor() == Constants.MAJOR_1_6 && world.shouldGenerateStackMaps()) || myGen.getMajor() > Constants.MAJOR_1_6) {
+			if (!AsmDetector.isAsmAround) {
+				throw new BCException("Unable to find Asm for stackmap generation (Looking for 'aj.org.objectweb.asm.ClassReader'). Stackmap generation for woven code is required to avoid verify errors on a Java 1.7 or higher runtime");
+			};
 			wovenClassFileData = StackMapAdder.addStackMaps(world, wovenClassFileData);
 		}
 
