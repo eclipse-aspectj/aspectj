@@ -21,12 +21,14 @@ import org.aspectj.systemtest.ajc184.AllTestsAspectJ184;
 import org.aspectj.systemtest.ajc185.AllTestsAspectJ185;
 import org.aspectj.systemtest.ajc186.AllTestsAspectJ186;
 import org.aspectj.systemtest.ajc187.AllTestsAspectJ187;
+import org.aspectj.systemtest.ajc188.AllTestsAspectJ188;
 
 public class AllTests18 {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ System Test Suite - 1.8");
 		// $JUnit-BEGIN$ 
+		suite.addTest(AllTestsAspectJ188.suite()); 
 		suite.addTest(AllTestsAspectJ187.suite()); 
 		suite.addTest(AllTestsAspectJ186.suite()); 
 		suite.addTest(AllTestsAspectJ185.suite()); 
