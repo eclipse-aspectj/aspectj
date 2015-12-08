@@ -107,9 +107,13 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 		List<GenericSignature.FormalTypeParameter> typeParameters = new ArrayList<GenericSignature.FormalTypeParameter>();
 		ResolvedType outerClassType = getOuterClass();
 		if (!(outerClassType instanceof ReferenceType)) {
-			throw new BCException("Whilst processing type '" + this.resolvedTypeX.getSignature()
-					+ "' - cannot cast the outer type to a reference type.  Signature=" + outerClassType.getSignature()
-					+ " toString()=" + outerClassType.toString());
+			if (outerClassType == null) {
+				return GenericSignature.FormalTypeParameter.NONE;
+			} else {
+				throw new BCException("Whilst processing type '" + this.resolvedTypeX.getSignature()
+						+ "' - cannot cast the outer type to a reference type.  Signature=" + outerClassType.getSignature()
+						+ " toString()=" + outerClassType.toString());
+			}
 		}
 		ReferenceType outer = (ReferenceType) outerClassType;
 		ReferenceTypeDelegate outerDelegate = outer.getDelegate();
