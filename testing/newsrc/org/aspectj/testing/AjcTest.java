@@ -47,7 +47,7 @@ public class AjcTest {
 			is16VMOrGreater = true;
 			is17VMOrGreater = true;
 			is18VMOrGreater = true;
-		} else if (vm.startsWith("1.9")) {
+		} else if (vm.startsWith("1.9") || vm.startsWith("9")) {
 			is15VMOrGreater = true;
 			is16VMOrGreater = true;
 			is17VMOrGreater = true;
