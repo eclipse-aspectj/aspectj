@@ -2,6 +2,16 @@
 
 <suite>
 
+
+   <ajc-test dir="bugs188/485055" title="classcast">
+     <compile files="AspectWithConstant.aj" options="-1.5"/>
+     <run class="AspectWithConstant">
+     <stdout>
+     <line text="MAXS=hello"/>
+     <line text="@AspectWithConstant$Loggable()"/>
+     </stdout></run>
+   </ajc-test>
+   
 <ajc-test dir="bugs188/484941" title="annotation discovery npe">
 <compile files="Test2.java" options="-1.8 -XnoInline"/>
 </ajc-test>
