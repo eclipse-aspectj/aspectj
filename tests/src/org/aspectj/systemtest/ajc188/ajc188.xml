@@ -2,6 +2,10 @@
 
 <suite>
 
+<ajc-test dir="bugs188/484941" title="annotation discovery npe">
+<compile files="Test2.java" options="-1.8 -XnoInline"/>
+</ajc-test>
+
 <ajc-test dir="bugs188/defaultmethods" title="default methods 1">
 <compile files="Code.java" options="-1.8 -XnoInline"/>
 <run class="Code">

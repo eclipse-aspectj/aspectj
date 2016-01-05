@@ -646,10 +646,8 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 			return true; // code style
 		} else if (declaration.annotations != null) { // check for annotation style
 			for (int index = 0; index < declaration.annotations.length; index++) {
-				TypeDeclaration
-						.resolveAnnotations(declaration.staticInitializerScope, declaration.annotations, declaration.binding); // force
-				// annotation
-				// resolution
+				// Cause annotation resolution
+				declaration.binding.getAnnotationTagBits();
 				Annotation a = declaration.annotations[index];
 				if (a.resolvedType == null) {
 					continue; // another problem is being reported, so don't crash here

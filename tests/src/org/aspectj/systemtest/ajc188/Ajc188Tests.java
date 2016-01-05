@@ -21,6 +21,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc188Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testAnnotationDiscoveryNpe() throws Exception {
+		runTest("annotation discovery npe");
+	}
+	
 	public void testDefaultMethodsWithXnoInline() throws Exception {
 		runTest("default methods 1");
 	}
