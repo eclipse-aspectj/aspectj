@@ -1324,6 +1324,16 @@ public final class LazyMethodGen implements Traceable {
 				}
 			}
 		}
+		if (!this.enclosingClass.getWorld().generateNewLvts) {
+			// Here the generateNewLvts option is used to control "Do not damage unusually positioned local
+			// variables that represent method parameters". Strictly speaking local variables that represent
+			// method parameters effectively have a bytecode range from 0..end_of_method - however some
+			// tools generate bytecode that specifies a compressed range. The code below would normally
+			// extend the parameter local variables to cover the full method but by setting paramSlots to -1
+			// here we cause the code below to avoid modifying any local vars that represent method
+			// parameters.
+			paramSlots = -1;
+		}
 
 		Map<InstructionHandle, Set<Integer>> duplicatedLocalMap = new HashMap<InstructionHandle, Set<Integer>>();
 		for (LocalVariableTag tag : localVariables.keySet()) {
