@@ -1167,6 +1167,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			System.arraycopy(abefore, 0, newset, toAdd.length, abefore.length);
 		}
 		sourceType.scope.referenceContext.annotations = newset;
+		if ((sourceType.tagBits & TagBits.AnnotationResolved)!=0) {
+			sourceType.tagBits = sourceType.tagBits - TagBits.AnnotationResolved;
+		}
 		CompilationAndWeavingContext.leavingPhase(tok);
 		if (factory.pushinCollector != null) {
 			factory.pushinCollector.tagAsMunged(sourceType, new CommonPrinter((methodDecl == null ? null : methodDecl.scope))
