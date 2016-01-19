@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+<ajc-test dir="bugs189/486203" title="while npe">
+<compile files="While.java" options="-1.8"/>
+</ajc-test>
+
+</suite>
