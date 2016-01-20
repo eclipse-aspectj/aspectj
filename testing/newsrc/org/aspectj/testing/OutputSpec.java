@@ -19,7 +19,7 @@ import org.aspectj.tools.ajc.AjcTestCase;
 
 public class OutputSpec {
 	
-	private List expectedOutputLines = new ArrayList();
+	private List<String> expectedOutputLines = new ArrayList<String>();
 
 	public void addLine(OutputLine line) {
 		expectedOutputLines.add(line.getText());
@@ -39,8 +39,7 @@ public class OutputSpec {
 		StringTokenizer strTok = new StringTokenizer(output,"\n");
 		if (strTok.countTokens() == expectedOutputLines.size()) {
 			matches = true;
-			for (Iterator iter = expectedOutputLines.iterator(); iter.hasNext();) {
-				String line = (String) iter.next();
+			for (String line: expectedOutputLines) {
 				lineNo++;
 				String outputLine = strTok.nextToken().trim();
 				/* Avoid trying to match on ajSandbox source names that appear in messages */
@@ -56,18 +55,18 @@ public class OutputSpec {
 	}
 	
 	public void unorderedMatchAgainst(String output) {
-		List outputFound = getOutputFound(output);
+		List<String> outputFound = getOutputFound(output);
 		if(outputFound.size() != expectedOutputLines.size()) {
 			createFailureMessage(output, -1, outputFound.size());
 			return;
 		} 
-		List expected = new ArrayList();
+		List<String> expected = new ArrayList<String>();
 		expected.addAll(expectedOutputLines);
-		List found = new ArrayList();
+		List<String> found = new ArrayList<String>();
 		found.addAll(outputFound);
-		for (Iterator iterator = outputFound.iterator(); iterator.hasNext();) {
+		for (Iterator<String> iterator = outputFound.iterator(); iterator.hasNext();) {
 			String lineFound = (String) iterator.next();
-			for (Iterator iterator2 = expectedOutputLines.iterator(); iterator2.hasNext();) {
+			for (Iterator<String> iterator2 = expectedOutputLines.iterator(); iterator2.hasNext();) {
 				String lineExpected = (String) iterator2.next();
 				if (lineFound.indexOf(lineExpected)!= -1) {
 					found.remove(lineFound);
@@ -84,9 +83,7 @@ public class OutputSpec {
 	private void createFailureMessage(String output, int lineNo, int sizeFound) {
 		StringBuffer failMessage = new StringBuffer();
 		failMessage.append("\n  expecting output:\n");
-		int l = 0;
-		for (Iterator iter = expectedOutputLines.iterator(); iter.hasNext();) {
-			String line = (String) iter.next();
+		for (String line: expectedOutputLines) {
 			failMessage.append(line);
 			failMessage.append("\n");
 		}
@@ -102,8 +99,8 @@ public class OutputSpec {
 		AjcTestCase.fail(failMessage.toString());		
 	}
 	
-	private List getOutputFound(String output) {
-		List found = new ArrayList();
+	private List<String> getOutputFound(String output) {
+		List<String> found = new ArrayList<String>();
 		StringTokenizer strTok = new StringTokenizer(output,"\n");
 		while(strTok.hasMoreTokens()) {
 			String outputLine = strTok.nextToken().trim();

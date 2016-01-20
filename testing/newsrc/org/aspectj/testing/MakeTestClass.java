@@ -1,8 +1,6 @@
 /*
  * Created on 02-Aug-2004
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 package org.aspectj.testing;
 
@@ -12,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.digester.Digester;
@@ -63,7 +60,7 @@ public class MakeTestClass {
 	private static final String FOOTER =
 		"}\n";
 	
-	private List tests = new ArrayList();
+	private List<AjcTest> tests = new ArrayList<AjcTest>();
 	private String className;
 	private String suiteFile;
 	
@@ -97,8 +94,7 @@ public class MakeTestClass {
 		int testNo = 1;
 		NumberFormat nf = NumberFormat.getInstance();
 		nf.setMinimumIntegerDigits(3);
-		for (Iterator iter = tests.iterator(); iter.hasNext();) {
-			AjcTest test = (AjcTest) iter.next();
+		for (AjcTest test: tests) {
 			out.println();
 			out.print("  public void test");
 			out.print(nf.format(testNo++));

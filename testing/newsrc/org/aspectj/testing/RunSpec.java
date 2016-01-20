@@ -41,6 +41,9 @@ public class RunSpec implements ITestStep {
 	private String vmargs;
 	private String usefullltw;
 
+	public String toString() {
+		return "RunSpec: Running '"+classToRun+"' in directory '"+baseDir+"'.  Classpath of '"+cpath+"'";
+	}
 	public RunSpec() {
 	}
 
