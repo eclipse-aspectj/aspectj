@@ -25,6 +25,10 @@ public class Ajc189Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("while npe");
 	}
 	
+	public void testOverweaving_352389() throws Exception {
+		runTest("overweaving");
+	}
+	
 	// ---
 
 	public static Test suite() {

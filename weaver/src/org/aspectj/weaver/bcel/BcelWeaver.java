@@ -503,7 +503,11 @@ public class BcelWeaver {
 			UnwovenClassFile jc = i.next();
 			String name = jc.getClassName();
 			ResolvedType type = world.resolve(name);
-			if (type.isAspect() && !world.isOverWeaving()) {
+			// No overweaving guard. If you have one then when overweaving is on the
+			// addOrReplaceAspect will not be called when the aspect delegate changes from
+			// EclipseSourceType to BcelObjectType. This will mean the mungers
+			// are not picked up.
+			if (type.isAspect()) {
 				needToReweaveWorld |= xcutSet.addOrReplaceAspect(type);
 			}
 		}
