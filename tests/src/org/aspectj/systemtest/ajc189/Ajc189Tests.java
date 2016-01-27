@@ -14,6 +14,7 @@ import java.io.File;
 
 import junit.framework.Test;
 
+import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
@@ -21,13 +22,22 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc189Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testLostBounds() throws Exception {
+		runTest("lost bounds");
+		// This type has I added via declare parents
+		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "B");
+		assertEquals("<T:LSomeClass;:LSomeInterface;>LC<TT;>;Ljava/io/Serializable;LI;",jc.getGenericSignature());
+		jc = getClassFrom(ajc.getSandboxDirectory(), "D");
+		assertEquals("<T::LSomeInterface;:LSomeOtherInterface;>Ljava/lang/Object;LI;",jc.getGenericSignature());
+	}
+	
 	public void testWhileNPE_486203() throws Exception {
 		runTest("while npe");
 	}
 	
-	public void testOverweaving_352389() throws Exception {
-		runTest("overweaving");
-	}
+//	public void testOverweaving_352389() throws Exception {
+//		runTest("overweaving");
+//	}
 	
 	// ---
 

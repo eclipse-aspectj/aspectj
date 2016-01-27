@@ -2,6 +2,11 @@
 
 <suite>
 
+<ajc-test dir="bugs189/486612" title="lost bounds">
+  <compile files="Code.java Azpect.java" options="-1.8"/>
+</ajc-test>
+
+
 <ajc-test dir="bugs189/486203" title="while npe">
 <compile files="While.java" options="-1.8"/>
 </ajc-test>
