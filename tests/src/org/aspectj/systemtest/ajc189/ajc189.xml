@@ -2,6 +2,12 @@
 
 <suite>
 
+<ajc-test dir="bugs189/485583" title="NPE at aspectj">
+  <compile files="Foo.aj Bar.aj" options="-1.8">
+  <message kind="error" text="The abstract pointcut deprecatedCode can only be defined in an aspect"/>
+  </compile>
+</ajc-test>
+
 <ajc-test dir="bugs189/486612" title="lost bounds">
   <compile files="Code.java Azpect.java" options="-1.8"/>
 </ajc-test>

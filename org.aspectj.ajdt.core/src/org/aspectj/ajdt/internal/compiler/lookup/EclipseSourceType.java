@@ -465,11 +465,11 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 			}
 			if (pointcuts[i].isAbstract()) {
 				if (!this.isAspect()) {
-					eclipseWorld().showMessage(IMessage.ERROR, "abstract pointcut only allowed in aspect" + pointcuts[i].getName(),
+					eclipseWorld().showMessage(IMessage.ERROR, "The abstract pointcut " + pointcuts[i].getName()+ " can only be defined in an aspect",
 							pointcuts[i].getSourceLocation(), null);
 					sawError = true;
 				} else if (!binding.isAbstract()) {
-					eclipseWorld().showMessage(IMessage.ERROR, "abstract pointcut in concrete aspect" + pointcuts[i],
+					eclipseWorld().showMessage(IMessage.ERROR, "abstract pointcut in concrete aspect: " + pointcuts[i],
 							pointcuts[i].getSourceLocation(), null);
 					sawError = true;
 				}

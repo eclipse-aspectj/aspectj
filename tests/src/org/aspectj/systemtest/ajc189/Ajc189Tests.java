@@ -22,6 +22,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc189Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testNPEAtAspectJ() throws Exception {
+		runTest("NPE at aspectj");
+	}
+	
 	public void testLostBounds() throws Exception {
 		runTest("lost bounds");
 		// This type has I added via declare parents
