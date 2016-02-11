@@ -87,13 +87,21 @@ public abstract class RuntimeParamAnnos extends Attribute {
 		try {
 			DataInputStream dis = new DataInputStream(new ByteArrayInputStream(annotation_data));
 			int numParameters = dis.readUnsignedByte();
-			for (int i=0; i<numParameters; i++) {
-				int numAnnotations = dis.readUnsignedShort();
-				AnnotationGen[] annotations = new AnnotationGen[numAnnotations];
-				for (int j=0; j<numAnnotations; j++) {
-					annotations[j] = AnnotationGen.read(dis,getConstantPool(),visible);
+			if (numParameters > 0) {
+				List<AnnotationGen[]> inflatedParameterAnnotations = new ArrayList<AnnotationGen[]>();
+				for (int i=0; i<numParameters; i++) {
+					int numAnnotations = dis.readUnsignedShort();
+					if (numAnnotations == 0 ) {
+						inflatedParameterAnnotations.add(AnnotationGen.NO_ANNOTATIONS);
+					} else {
+						AnnotationGen[] annotations = new AnnotationGen[numAnnotations];
+						for (int j=0; j<numAnnotations; j++) {
+							annotations[j] = AnnotationGen.read(dis,getConstantPool(),visible);
+						}
+						inflatedParameterAnnotations.add(annotations);
+					}
 				}
-				parameterAnnotations.add(annotations);
+				parameterAnnotations = inflatedParameterAnnotations;
 			}
 			inflated = true;
 		} catch (IOException ioe) {
