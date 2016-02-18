@@ -2,13 +2,6 @@
 
 <suite>
 
-	<ajc-test dir="bugs181/433351" title="jar weaving">
-		<compile options="-1.5" files="InterfaceProj1.java" outjar="code.jar"/>
-		<compile options="-1.5 -showWeaveInfo" inpath="code.jar" files="Extender.aj InterfaceProj2.java">
-		<message kind="weave" text="Extending interface set for type 'test.InterfaceProj1' (InterfaceProj1.java) to include 'test.extender.InterfaceProj2' (Extender.aj)"/>
-		</compile>
-	</ajc-test>
-
 	<ajc-test dir="bugs181/436531" title="parameter names attribute">
 		<compile options="-1.8" files="Azpect.java" inpath="code.jar"/>
 	</ajc-test>
