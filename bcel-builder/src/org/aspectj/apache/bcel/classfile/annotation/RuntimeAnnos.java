@@ -56,7 +56,7 @@ public abstract class RuntimeAnnos extends Attribute {
 
 	protected void readAnnotations(DataInputStream dis, ConstantPool cpool) throws IOException {
 		annotation_data = new byte[length];
-		dis.read(annotation_data, 0, length);
+		dis.readFully(annotation_data, 0, length);
 	}
 
 	protected void writeAnnotations(DataOutputStream dos) throws IOException {

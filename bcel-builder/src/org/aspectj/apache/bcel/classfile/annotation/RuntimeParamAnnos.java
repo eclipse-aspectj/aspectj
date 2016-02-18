@@ -80,7 +80,7 @@ public abstract class RuntimeParamAnnos extends Attribute {
 
 	protected void readParameterAnnotations(DataInputStream dis,ConstantPool cpool) throws IOException {
 		annotation_data = new byte[length];
-		dis.read(annotation_data,0,length);
+		dis.readFully(annotation_data,0,length);
 	}
 
 	private void inflate() {

@@ -104,7 +104,7 @@ public final class LineNumberTable extends Attribute {
 	LineNumberTable(int name_index, int length, DataInputStream file, ConstantPool constant_pool) throws IOException {
 		this(name_index, length, (LineNumber[]) null, constant_pool);
 		data = new byte[length];
-		file.read(data);
+		file.readFully(data);
 		isInPackedState = true;
 		// assert(bytesRead==length)
 	}

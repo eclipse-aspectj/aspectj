@@ -109,7 +109,7 @@ public class LocalVariableTable extends Attribute {
 	LocalVariableTable(int name_index, int length, DataInputStream file, ConstantPool constant_pool) throws IOException {
 		super(Constants.ATTR_LOCAL_VARIABLE_TABLE, name_index, length, constant_pool);
 		data = new byte[length];
-		file.read(data);
+		file.readFully(data);
 		isInPackedState = true;
 		// assert(bytesRead==length)
 	}
