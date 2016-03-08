@@ -16,12 +16,15 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 import org.aspectj.bridge.IMessage.Kind;
 
 public abstract class AbstractTrace implements Trace {
 
-	protected Class tracedClass;
+	private static final Pattern packagePrefixPattern = Pattern.compile("([^.])[^.]*(\\.)");
+
+	protected Class<?> tracedClass;
 
 	private static SimpleDateFormat timeFormat;
 	
@@ -85,11 +88,19 @@ public abstract class AbstractTrace implements Trace {
 		message.append(formatDate(now)).append(" ");
 		message.append(Thread.currentThread().getName()).append(" ");
 		message.append(kind).append(" ");
-		message.append(className);
+		message.append(formatClassName(className));
 		message.append(".").append(methodName);
 		if (thiz != null) message.append(" ").append(formatObj(thiz));
 		if (args != null) message.append(" ").append(formatArgs(args));
 		return message.toString();
+	}
+	
+	/**
+	 * @param className full dotted class name
+	 * @return short version of class name with package collapse to initials
+	 */
+	private String formatClassName(String className) {
+		return packagePrefixPattern.matcher(className).replaceAll("$1.");
 	}
 	
 	protected String formatMessage(String kind, String text, Throwable th) {
@@ -116,7 +127,7 @@ public abstract class AbstractTrace implements Trace {
 	 * NullPointerExceptions or highly verbose results.
 	 *  
 	 * @param obj parameter to be formatted
-	 * @return the formated parameter
+	 * @return the formatted parameter
 	 */
 	protected Object formatObj(Object obj) {
 		
@@ -141,14 +152,13 @@ public abstract class AbstractTrace implements Trace {
 		}
 		else try {
 			
-			/* Classes can provide an alternative implementation of toString() */
+			// Classes can provide an alternative implementation of toString()
 			if (obj instanceof Traceable) {
-				Traceable t = (Traceable)obj;
-				return t.toTraceString();
+				return ((Traceable)obj).toTraceString();
 			}
 			
-			/* Use classname@hashcode */
-			else return obj.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(obj));
+			// classname@hashcode
+			else return formatClassName(obj.getClass().getName()) + "@" + Integer.toHexString(System.identityHashCode(obj));
 		
 		/* Object.hashCode() can be override and may thow an exception */	
 		} catch (Exception ex) {

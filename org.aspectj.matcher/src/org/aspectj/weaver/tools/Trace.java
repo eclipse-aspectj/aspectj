@@ -12,51 +12,47 @@ package org.aspectj.weaver.tools;
 
 public interface Trace {
 
-	public void enter (String methodName, Object thiz, Object[] args);
+	public void enter(String methodName, Object thiz, Object[] args);
 
-	public void enter (String methodName, Object thiz);
+	public void enter(String methodName, Object thiz);
 
-	public void exit (String methodName, Object ret);
+	public void exit(String methodName, Object ret);
 
-	public void exit (String methodName, Throwable th);
+	public void exit(String methodName, Throwable th);
 
-	public void exit (String methodName);
+	public void exit(String methodName);
 
-	public void event (String methodName);
+	public void event(String methodName);
 
-	public void event (String methodName, Object thiz, Object[] args);
-	
-	public void debug (String message);
-	
-	public void info (String message);
+	public void event(String methodName, Object thiz, Object[] args);
 
-	public void warn (String message);
+	public void debug(String message);
 
-	public void warn (String message, Throwable th);
+	public void info(String message);
 
-	public void error (String message);
+	public void warn(String message);
 
-	public void error (String message, Throwable th);
+	public void warn(String message, Throwable th);
 
-	public void fatal (String message);
+	public void error(String message);
 
-	public void fatal (String message, Throwable th);
-	
-	
-	/*
-	 * Convenience methods
-	 */
-	public void enter (String methodName, Object thiz, Object arg);
+	public void error(String message, Throwable th);
 
-	public void enter (String methodName, Object thiz, boolean z);
+	public void fatal(String message);
 
-	public void exit (String methodName, boolean b);
+	public void fatal(String message, Throwable th);
 
-	public void exit (String methodName, int i);
+	public void enter(String methodName, Object thiz, Object arg);
 
-	public void event (String methodName, Object thiz, Object arg);
-	
-	public boolean isTraceEnabled ();
+	public void enter(String methodName, Object thiz, boolean z);
 
-	public void setTraceEnabled (boolean b);
+	public void exit(String methodName, boolean b);
+
+	public void exit(String methodName, int i);
+
+	public void event(String methodName, Object thiz, Object arg);
+
+	public boolean isTraceEnabled();
+
+	public void setTraceEnabled(boolean b);
 }

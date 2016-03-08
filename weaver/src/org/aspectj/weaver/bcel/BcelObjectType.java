@@ -484,6 +484,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		return javaClass;
 	}
 
+	/**
+	 * @return true if built from bytes obtained from somewhere. False if built from bytes retrieved from disk.
+	 */
 	public boolean isArtificial() {
 		return artificial;
 	}
