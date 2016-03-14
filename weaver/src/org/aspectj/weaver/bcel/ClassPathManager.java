@@ -34,6 +34,8 @@ import org.aspectj.weaver.tools.TraceFactory;
 
 public class ClassPathManager {
 
+	private static Trace trace = TraceFactory.getTraceFactory().getTrace(ClassPathManager.class);
+
 	private List<Entry> entries;
 
 	// In order to control how many open files we have, we maintain a list.
@@ -41,29 +43,31 @@ public class ClassPathManager {
 	// org.aspectj.weaver.openarchives
 	// and it defaults to 1000
 	private List<ZipFile> openArchives = new ArrayList<ZipFile>();
+
 	private static int maxOpenArchives = -1;
+	
 	private static final int MAXOPEN_DEFAULT = 1000;
 
-	private static Trace trace = TraceFactory.getTraceFactory().getTrace(ClassPathManager.class);
-
 	static {
-		String openzipsString = getSystemPropertyWithoutSecurityException("org.aspectj.weaver.openarchives", Integer
-				.toString(MAXOPEN_DEFAULT));
+		String openzipsString = getSystemPropertyWithoutSecurityException("org.aspectj.weaver.openarchives",
+				Integer.toString(MAXOPEN_DEFAULT));
 		maxOpenArchives = Integer.parseInt(openzipsString);
-		if (maxOpenArchives < 20)
+		if (maxOpenArchives < 20) {
 			maxOpenArchives = 1000;
+		}
 	}
 
 	public ClassPathManager(List<String> classpath, IMessageHandler handler) {
-		if (trace.isTraceEnabled())
-			trace.enter("<init>", this, new Object[] { classpath, handler });
-		entries = new ArrayList<Entry>();
-		for (Iterator<String> i = classpath.iterator(); i.hasNext();) {
-			String name = (String) i.next();
-			addPath(name, handler);
+		if (trace.isTraceEnabled()) {
+			trace.enter("<init>", this, new Object[] { classpath==null?"null":classpath.toString(), handler });
 		}
-		if (trace.isTraceEnabled())
+		entries = new ArrayList<Entry>();
+		for (String classpathEntry: classpath) {
+			addPath(classpathEntry,handler);
+		}
+		if (trace.isTraceEnabled()) {
 			trace.exit("<init>");
+		}
 	}
 
 	protected ClassPathManager() {
@@ -75,7 +79,8 @@ public class ClassPathManager {
 		if (!f.isDirectory()) {
 			if (!f.isFile()) {
 				if (!lc.endsWith(".jar") || lc.endsWith(".zip")) {
-					// heuristic-only: ending with .jar or .zip means probably a zip file
+					// heuristic-only: ending with .jar or .zip means probably a
+					// zip file
 					MessageUtil.info(handler, WeaverMessages.format(WeaverMessages.ZIPFILE_ENTRY_MISSING, name));
 				} else {
 					MessageUtil.info(handler, WeaverMessages.format(WeaverMessages.DIRECTORY_ENTRY_MISSING, name));
@@ -85,7 +90,8 @@ public class ClassPathManager {
 			try {
 				entries.add(new ZipFileEntry(f));
 			} catch (IOException ioe) {
-				MessageUtil.warn(handler, WeaverMessages.format(WeaverMessages.ZIPFILE_ENTRY_INVALID, name, ioe.getMessage()));
+				MessageUtil.warn(handler,
+						WeaverMessages.format(WeaverMessages.ZIPFILE_ENTRY_INVALID, name, ioe.getMessage()));
 				return;
 			}
 		} else {
@@ -94,18 +100,33 @@ public class ClassPathManager {
 	}
 
 	public ClassFile find(UnresolvedType type) {
+		if (trace.isTraceEnabled()) {
+			trace.enter("find", this, type);
+		}
 		String name = type.getName();
 		for (Iterator<Entry> i = entries.iterator(); i.hasNext();) {
 			Entry entry = i.next();
 			try {
 				ClassFile ret = entry.find(name);
-				if (ret != null)
+				if (trace.isTraceEnabled()) {
+					trace.event("searching for "+type+" in "+entry.toString());
+				}
+				if (ret != null) {
+					if (trace.isTraceEnabled()) {
+						trace.exit("find", ret);
+					}
 					return ret;
+				}
 			} catch (IOException ioe) {
 				// this is NOT an error: it's valid to have missing classpath entries
+				if (trace.isTraceEnabled()) {
+					trace.error("Removing classpath entry for "+entry,ioe);
+				}
 				i.remove();
 			}
-
+		}
+		if (trace.isTraceEnabled()) {
+			trace.exit("find", null);
 		}
 		return null;
 	}
@@ -124,35 +145,14 @@ public class ClassPathManager {
 		return buf.toString();
 	}
 
-	// /**
-	// * This method is extremely expensive and should only be called rarely
-	// */
-	// public List getAllClassFiles() {
-	// List ret = new ArrayList();
-	// for (Iterator i = entries.iterator(); i.hasNext(); ) {
-	// Entry entry = (Entry)i.next();
-	// try {
-	// ret.addAll(entry.getAllClassFiles());
-	// } catch (IOException e) {
-	// i.remove();
-	// }
-	// }
-	// return ret;
-	// }
-	//	
-
 	public abstract static class ClassFile {
 		public abstract InputStream getInputStream() throws IOException;
-
 		public abstract String getPath();
-
 		public abstract void close();
 	}
 
 	public abstract static class Entry {
 		public abstract ClassFile find(String name) throws IOException;
-
-		// public abstract List getAllClassFiles() throws IOException;
 	}
 
 	private static class FileClassFile extends ClassFile {
@@ -201,10 +201,6 @@ public class ClassPathManager {
 				return new FileClassFile(f);
 			else
 				return null;
-		}
-
-		public List getAllClassFiles() {
-			throw new RuntimeException("unimplemented");
 		}
 
 		public String toString() {
@@ -289,7 +285,8 @@ public class ClassPathManager {
 					return;
 			}
 			if (openArchives.size() >= maxOpenArchives) {
-				closeSomeArchives(openArchives.size() / 10); // Close 10% of those open
+				closeSomeArchives(openArchives.size() / 10); // Close 10% of
+																// those open
 			}
 			zipFile = new ZipFile(file);
 			if (!isReallyOpen()) {
@@ -300,7 +297,8 @@ public class ClassPathManager {
 
 		private boolean isReallyOpen() {
 			try {
-				zipFile.size(); // this will fail if the file has been closed for
+				zipFile.size(); // this will fail if the file has been closed
+								// for
 				// some reason;
 				return true;
 			} catch (IllegalStateException ex) {
@@ -345,7 +343,7 @@ public class ClassPathManager {
 	}
 
 	public void closeArchives() {
-		for (Entry entry: entries) {
+		for (Entry entry : entries) {
 			if (entry instanceof ZipFileEntry) {
 				((ZipFileEntry) entry).close();
 			}
