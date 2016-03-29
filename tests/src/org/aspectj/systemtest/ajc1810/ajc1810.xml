@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="bugs1810/490315" title="indy">
+		<compile options="-1.8" files="FailingAspect.java SomeAnno.java SomeContext.java SomeCriteria.java SomeDTO.java SomeEnum.java SomePiece.java SomePropertyDTO.java SomeService.java SomeServiceImpl.java"/>
+	</ajc-test>
+
+</suite>

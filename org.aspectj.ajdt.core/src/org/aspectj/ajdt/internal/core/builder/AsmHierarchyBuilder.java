@@ -485,7 +485,12 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			}
 		}
 
-		((IProgramElement) stack.peek()).addChild(peNode);
+		IProgramElement ipe = (IProgramElement)stack.peek();
+		if (ipe!=null) {
+			// With AspectJ 1.8.9 the type structure must be slightly different as the guard
+			// is required (the null is due to a default constructor).
+			((IProgramElement) stack.peek()).addChild(peNode);
+		}
 		stack.push(peNode);
 		return true;
 	}
