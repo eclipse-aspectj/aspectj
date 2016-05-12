@@ -9,12 +9,9 @@
  * Contributors: 
  *     PARC     initial implementation 
  * ******************************************************************/
-
- 
- package org.aspectj.ajdt.internal.compiler.lookup;
+package org.aspectj.ajdt.internal.compiler.lookup;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
@@ -33,28 +30,26 @@ import org.aspectj.weaver.UnresolvedType;
 public class HelperInterfaceBinding extends SourceTypeBinding {
 	private UnresolvedType typeX;
 	SourceTypeBinding enclosingType;
-	List methods = new ArrayList();
-	
+	List<MethodBinding> methods = new ArrayList<MethodBinding>();
+
 	public HelperInterfaceBinding(SourceTypeBinding enclosingType, UnresolvedType typeX) {
 		super();
 		this.fPackage = enclosingType.fPackage;
-		//this.fileName = scope.referenceCompilationUnit().getFileName();
-		this.modifiers = ClassFileConstants.AccPublic | ClassFileConstants.AccInterface | ClassFileConstants.AccAbstract;
+		// this.fileName = scope.referenceCompilationUnit().getFileName();
+		this.modifiers = ClassFileConstants.AccPublic | ClassFileConstants.AccInterface
+				| ClassFileConstants.AccAbstract;
 		this.sourceName = enclosingType.scope.referenceContext.name;
 		this.enclosingType = enclosingType;
 		this.typeX = typeX;
 		this.typeVariables = Binding.NO_TYPE_VARIABLES;
-		this.scope =enclosingType.scope;
+		this.scope = enclosingType.scope;
 		this.superInterfaces = new ReferenceBinding[0];
 	}
 
-	public HelperInterfaceBinding(
-		char[][] compoundName,
-		PackageBinding fPackage,
-		ClassScope scope) {
+	public HelperInterfaceBinding(char[][] compoundName, PackageBinding fPackage, ClassScope scope) {
 		super(compoundName, fPackage, scope);
 	}
-	
+
 	public char[] getFileName() {
 		return enclosingType.getFileName();
 	}
@@ -62,51 +57,46 @@ public class HelperInterfaceBinding extends SourceTypeBinding {
 	public UnresolvedType getTypeX() {
 		return typeX;
 	}
-	
-	public void addMethod(EclipseFactory world , ResolvedMember member) {
+
+	public void addMethod(EclipseFactory world, ResolvedMember member) {
 		MethodBinding binding = world.makeMethodBinding(member);
 		this.methods.add(binding);
 	}
-	
-	public FieldBinding[] fields() { return new FieldBinding[0]; }
-	
-	public MethodBinding[] methods() { return new MethodBinding[0]; }
-	
+
+	public FieldBinding[] fields() {
+		return new FieldBinding[0];
+	}
+
+	public MethodBinding[] methods() {
+		return new MethodBinding[0];
+	}
 
 	public char[] constantPoolName() {
 		String sig = typeX.getSignature();
-		return sig.substring(1, sig.length()-1).toCharArray();
+		return sig.substring(1, sig.length() - 1).toCharArray();
 	}
 
 	public void generateClass(CompilationResult result, ClassFile enclosingClassFile) {
 		ClassFile classFile = new ClassFile(this);
 		classFile.initialize(this, enclosingClassFile, false);
-		classFile.recordInnerClasses(this);
-
-		//classFile.addFieldInfos();
+//		classFile.recordInnerClasses(this);
+		// classFile.addFieldInfos();
 		classFile.contents[classFile.contentsOffset++] = (byte) 0;
 		classFile.contents[classFile.contentsOffset++] = (byte) 0;
-		
 		classFile.setForMethodInfos();
-		for (Iterator i = methods.iterator(); i.hasNext(); ) {
-			MethodBinding b = (MethodBinding)i.next();
+		for (MethodBinding b: methods) {
 			generateMethod(classFile, b);
 		}
-
 		classFile.addAttributes();
-			
 		result.record(this.constantPoolName(), classFile);
 	}
-	
-	
+
 	private void generateMethod(ClassFile classFile, MethodBinding binding) {
 		classFile.generateMethodInfoHeader(binding);
 		int methodAttributeOffset = classFile.contentsOffset;
 		int attributeNumber = classFile.generateMethodInfoAttributes(binding);
-		classFile.completeMethodInfo(binding,methodAttributeOffset, attributeNumber);
+		classFile.completeMethodInfo(binding, methodAttributeOffset, attributeNumber);
 	}
-	
-	
 
 	public ReferenceBinding[] superInterfaces() {
 		return new ReferenceBinding[0];

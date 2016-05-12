@@ -6,4 +6,10 @@
 		<compile options="-1.8" files="FailingAspect.java SomeAnno.java SomeContext.java SomeCriteria.java SomeDTO.java SomeEnum.java SomePiece.java SomePropertyDTO.java SomeService.java SomeServiceImpl.java"/>
 	</ajc-test>
 
+	<ajc-test dir="bugs1810/493554" title="pertarget">
+		<compile options="-1.8" files="Dep.java FooAspect.aj Cmd.java"/>
+		<run class="example.kusedep.Cmd"></run>
+	</ajc-test>
+
+
 </suite>
