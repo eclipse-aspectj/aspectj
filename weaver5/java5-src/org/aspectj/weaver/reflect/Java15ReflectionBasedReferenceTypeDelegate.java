@@ -37,8 +37,11 @@ import org.aspectj.weaver.tools.PointcutDesignatorHandler;
 import org.aspectj.weaver.tools.PointcutParameter;
 
 /**
- * @author colyer Provides Java 5 behaviour in reflection based delegates (overriding 1.4 behaviour from superclass where
- *         appropriate)
+ * Provides Java 5 behaviour in reflection based delegates (overriding 1.4 behaviour from superclass where
+ * appropriate)
+ * 
+ * @author Adrian Colyer
+ * @author Andy Clement
  */
 public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedReferenceTypeDelegate {
 
@@ -145,17 +148,16 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 		return superInterfaces;
 	}
 
-	// If the superclass is null, return Object - same as bcel does
 	@Override
 	public ResolvedType getSuperclass() {
-		if (superclass == null && getBaseClass() != Object.class) {// superclass
-			// of Object
-			// is null
+		// Superclass of object is null
+		if (superclass == null && getBaseClass() != Object.class) {
 			Type t = this.getBaseClass().getGenericSuperclass();
 			if (t != null) {
 				superclass = typeConverter.fromType(t);
 			}
 			if (t == null) {
+				// If the superclass is null, return Object - same as bcel does
 				superclass = getWorld().resolve(UnresolvedType.OBJECT);
 			}
 		}

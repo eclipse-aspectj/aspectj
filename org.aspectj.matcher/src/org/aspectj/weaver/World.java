@@ -1237,11 +1237,12 @@ public abstract class World implements Dump.INode {
 			}
 
 			// TODO should this be in as a permanent assertion?
-			/*
-			 * if ((type instanceof ReferenceType) && type.getWorld().isInJava5Mode() && (((ReferenceType) type).getDelegate() !=
-			 * null) && type.isGenericType()) { throw new BCException("Attempt to add generic type to typemap " + type.toString() +
-			 * " (should be raw)"); }
-			 */
+			
+			if ((type instanceof ReferenceType) && type.getWorld().isInJava5Mode()
+					&& (((ReferenceType) type).getDelegate() != null) && type.isGenericType()) {
+				throw new BCException("Attempt to add generic type to typemap " + type.toString() + " (should be raw)");
+			}
+			
 
 			if (w.isExpendable(type)) {
 				if (useExpendableMap) {

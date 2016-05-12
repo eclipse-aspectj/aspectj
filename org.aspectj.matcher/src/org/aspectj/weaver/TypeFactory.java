@@ -28,10 +28,9 @@ public class TypeFactory {
 	public static ReferenceType createParameterizedType(ResolvedType aBaseType, UnresolvedType[] someTypeParameters, World inAWorld) {
 		ResolvedType baseType = aBaseType;
 		if (!aBaseType.isGenericType()) {
-			// try and find the generic type...
 			if (someTypeParameters != null && someTypeParameters.length > 0) {
 				if (!aBaseType.isRawType()) {
-					throw new IllegalStateException("Expecting raw type, not: " + aBaseType);
+					throw new IllegalStateException("Expecting raw type, but " + aBaseType+" is of type "+aBaseType.getTypekind());
 				}
 				baseType = baseType.getGenericType();
 				if (baseType == null) {
