@@ -80,6 +80,8 @@ public interface Constants {
 	public final static short MINOR_1_7 = 0;
 	public final static short MAJOR_1_8 = 52;
 	public final static short MINOR_1_8 = 0;
+	public final static short MAJOR_1_9 = 53;
+	public final static short MINOR_1_9 = 0;
 	// Defaults
 	public final static short MAJOR = MAJOR_1_1;
 	public final static short MINOR = MINOR_1_1;
@@ -105,12 +107,18 @@ public interface Constants {
 	public final static short ACC_INTERFACE = 0x0200;
 	public final static short ACC_ABSTRACT = 0x0400;
 	public final static short ACC_STRICT = 0x0800;
-
+	
 	public final static short ACC_ANNOTATION = 0x2000;
 	public final static short ACC_ENUM = 0x4000;
+	public final static int ACC_MODULE = 0x8000;
 	public final static short ACC_BRIDGE = 0x0040;
 	public final static short ACC_VARARGS = 0x0080;
 
+	// module related
+	public final static int MODULE_ACC_PUBLIC    = 0x0020;
+	public final static int MODULE_ACC_SYNTHETIC = 0x1000;
+	public final static int MODULE_ACC_MANDATED  = 0x8000;
+	
 	// Applies to classes compiled by new compilers only
 	public final static short ACC_SUPER = 0x0020;
 

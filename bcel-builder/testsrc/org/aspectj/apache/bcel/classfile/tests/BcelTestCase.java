@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2004, 2013 IBM, VMware
+ * Copyright (c) 2004 - 2016 IBM, VMware, Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -34,8 +34,7 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
 /**
  * Super class for the Java5 tests, includes various helper methods.
  */
-
-public class BcelTestCase extends TestCase {
+public abstract class BcelTestCase extends TestCase {
 
 	private boolean verbose = false;
 
@@ -169,6 +168,15 @@ public class BcelTestCase extends TestCase {
 	public Attribute getAttribute(Attribute[] attrs, byte tag) {
 		for (Attribute attr: attrs) {
 			if (attr.getTag() == tag) {
+				return attr;
+			}
+		}
+		return null;
+	}
+
+	public Attribute getAttribute(Attribute[] attrs, String name) {
+		for (Attribute attr: attrs) {
+			if (attr.getName().equals(name)) {
 				return attr;
 			}
 		}
