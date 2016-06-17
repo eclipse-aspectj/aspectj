@@ -721,11 +721,14 @@ public class BuildArgParser extends Main {
 			} else if (arg.equals("-1.8")) {
 				buildConfig.setBehaveInJava5Way(true);
 				unparsedArgs.add("-1.8");
+			} else if (arg.equals("-1.9")) {
+				buildConfig.setBehaveInJava5Way(true);
+				unparsedArgs.add("-1.9");
 			} else if (arg.equals("-source")) {
 				if (args.size() > nextArgIndex) {
 					String level = ((ConfigParser.Arg) args.get(nextArgIndex)).getValue();
 					if (level.equals("1.5") || level.equals("5") || level.equals("1.6") || level.equals("6") || level.equals("1.7")
-							|| level.equals("7") || level.equals("8") || level.equals("1.8")) {
+							|| level.equals("7") || level.equals("8") || level.equals("1.8") || level.equals("9") || level.equals("1.9")) {
 						buildConfig.setBehaveInJava5Way(true);
 					}
 					unparsedArgs.add("-source");

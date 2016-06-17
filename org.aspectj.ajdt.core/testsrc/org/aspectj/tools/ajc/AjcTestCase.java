@@ -231,7 +231,7 @@ public class AjcTestCase extends TestCase {
 				}
 			}
 			if (seeAlsos != null) {
-				List extraLocations = message.getExtraSourceLocations();
+				List<ISourceLocation> extraLocations = message.getExtraSourceLocations();
 				if (extraLocations.size() != seeAlsos.length) {
 					return false;
 				}

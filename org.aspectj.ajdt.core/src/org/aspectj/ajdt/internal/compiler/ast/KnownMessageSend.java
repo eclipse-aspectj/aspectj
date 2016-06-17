@@ -28,7 +28,7 @@ public class KnownMessageSend extends MessageSend {
 		this.receiver = receiver;
 		this.actualReceiverType = binding.declaringClass;
 		this.selector = binding.selector;
-		constant = Constant.NotAConstant;
+		// constant = Constant.NotAConstant;
 	}
 
 	public void manageSyntheticAccessIfNecessary(BlockScope currentScope) {

@@ -61,7 +61,8 @@ public class EclipseClassPathManager extends ClassPathManager {
 			name = name.substring(0,name.length() - ".class".length());
 		}
 		char[][] cname = CharOperation.splitOn('.',name.toCharArray());
-		NameEnvironmentAnswer answer = nameEnv.findType(cname);
+		// TODO [j9] passing null client/module here...
+		NameEnvironmentAnswer answer = nameEnv.findType(cname,(char[])null);
 		if (answer == null || !answer.isBinaryType()) {
 			return null;
 		} else {

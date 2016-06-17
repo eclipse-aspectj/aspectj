@@ -87,6 +87,7 @@ import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTypeTable;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.MethodParameters;
+import org.aspectj.apache.bcel.classfile.Module;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.SourceFile;
 import org.aspectj.apache.bcel.classfile.StackMap;
@@ -150,6 +151,7 @@ public class EmptyClassVisitor implements ClassVisitor {
   public void visitUnknown(Unknown obj) {}
   public void visitStackMap(StackMap obj) {}
   public void visitStackMapEntry(StackMapEntry obj) {}
+  public void visitModule(Module obj) {}
   
   // J5SUPPORT:
   public void visitEnclosingMethod(EnclosingMethod obj) {}

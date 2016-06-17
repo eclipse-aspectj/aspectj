@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002 IBM and other contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -7,18 +7,17 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     PARC     initial implementation 
+ *     Palo Alto Research Center, Incorporated (PARC)
+ *     Andy Clement
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.core.builder;
 
-//import java.util.HashMap;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,29 +25,28 @@ import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatException;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IModule;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IModuleLocation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
 import org.aspectj.util.FileUtil;
 
 public class StatefulNameEnvironment implements INameEnvironment {
-	private Map classesFromName;
-	private Map inflatedClassFilesCache;
-	private Set packageNames;
+	private Map<String,File> classesFromName;
+	private Map<String,NameEnvironmentAnswer> inflatedClassFilesCache;
+	private Set<String> packageNames;
 	private AjState state;
 	private INameEnvironment baseEnvironment;
 
-	public StatefulNameEnvironment(INameEnvironment baseEnvironment, Map classesFromName, AjState state) {
+	public StatefulNameEnvironment(INameEnvironment baseEnvironment, Map<String,File> classesFromName, AjState state) {
 		this.classesFromName = classesFromName;
-		this.inflatedClassFilesCache = new HashMap();
+		this.inflatedClassFilesCache = new HashMap<String,NameEnvironmentAnswer>();
 		this.baseEnvironment = baseEnvironment;
 		this.state = state;
-
-		packageNames = new HashSet();
-		for (Iterator i = classesFromName.keySet().iterator(); i.hasNext();) {
-			String className = (String) i.next();
+		packageNames = new HashSet<String>();
+		for (String className: classesFromName.keySet()) {
 			addAllPackageNames(className);
 		}
-		// System.err.println(packageNames);
 	}
 
 	private void addAllPackageNames(String className) {
@@ -57,12 +55,6 @@ public class StatefulNameEnvironment implements INameEnvironment {
 			packageNames.add(className.substring(0, dot));
 			dot = className.indexOf('.', dot + 1);
 		}
-	}
-
-	public void cleanup() {
-		baseEnvironment.cleanup();
-		this.classesFromName = Collections.EMPTY_MAP;
-		this.packageNames.clear();// = Collections.EMPTY_SET;
 	}
 
 	private NameEnvironmentAnswer findType(String name) {
@@ -76,10 +68,9 @@ public class StatefulNameEnvironment implements INameEnvironment {
 		} else {
 			File fileOnDisk = (File) classesFromName.get(name);
 			// System.err.println("find: " + name + " found: " + cf);
-
-			if (fileOnDisk == null)
+			if (fileOnDisk == null) {
 				return null;
-
+			}
 			try {
 				// System.out.println("from cache: " + name);
 				byte[] bytes = FileUtil.readAsByteArray(fileOnDisk);
@@ -95,24 +86,36 @@ public class StatefulNameEnvironment implements INameEnvironment {
 		}
 	}
 
-	public NameEnvironmentAnswer findType(char[] typeName, char[][] packageName) {
+	@Override
+	public void cleanup() {
+		baseEnvironment.cleanup();
+		this.classesFromName = Collections.emptyMap();
+		this.packageNames.clear();
+	}
+	
+	@Override
+	public NameEnvironmentAnswer findType(char[] typeName, char[][] packageName, char[] client) {
 		NameEnvironmentAnswer ret = findType(new String(CharOperation.concatWith(packageName, typeName, '.')));
-		if (ret != null)
+		if (ret != null) {
 			return ret;
-		return baseEnvironment.findType(typeName, packageName);
+		}
+		return baseEnvironment.findType(typeName, packageName, client);
 	}
 
-	public NameEnvironmentAnswer findType(char[][] compoundName) {
+	@Override
+	public NameEnvironmentAnswer findType(char[][] compoundName, char[] client) {
 		NameEnvironmentAnswer ret = findType(new String(CharOperation.concatWith(compoundName, '.')));
-		if (ret != null)
+		if (ret != null) {
 			return ret;
-		return baseEnvironment.findType(compoundName);
+		}
+		return baseEnvironment.findType(compoundName, client);
 	}
 
-	public boolean isPackage(char[][] parentPackageName, char[] packageName) {
-		if (baseEnvironment.isPackage(parentPackageName, packageName))
+	@Override
+	public boolean isPackage(char[][] parentPackageName, char[] packageName, char[] client) {
+		if (baseEnvironment.isPackage(parentPackageName, packageName, client)) {
 			return true;
-
+		}
 		String fullPackageName = new String(CharOperation.concatWith(parentPackageName, packageName, '.'));
 		return packageNames.contains(fullPackageName);
 	}
@@ -121,12 +124,35 @@ public class StatefulNameEnvironment implements INameEnvironment {
 	 * Needs to be told about changes. The 'added' set is a subset of classNameToFileMap consisting of just those names added during
 	 * this build - to reduce any impact on incremental compilation times.
 	 */
-	public void update(Map classNameToFileMap, Set added) {
-		for (Iterator i = added.iterator(); i.hasNext();) {
-			String className = (String) i.next();
+	public void update(Map<String,File> classNameToFileMap, Set<String> added) {
+		for (String className: added) {
 			addAllPackageNames(className);
 		}
 		this.classesFromName = classNameToFileMap;
+	}
+
+	@Override
+	public void acceptModule(IModule module, IModuleLocation location) {
+		// TODO [j9]
+		baseEnvironment.acceptModule(module, location);
+	}
+
+	@Override
+	public boolean isPackageVisible(char[] pack, char[] source, char[] client) {
+		// TODO [j9]
+		return baseEnvironment.isPackageVisible(pack, source, client);
+	}
+
+	@Override
+	public IModule getModule(char[] name) {
+		// TODO [j9]
+		return baseEnvironment.getModule(name);
+	}
+
+	@Override
+	public IModule getModule(IModuleLocation location) {
+		// TODO [j9]
+		return baseEnvironment.getModule(location);
 	}
 
 }

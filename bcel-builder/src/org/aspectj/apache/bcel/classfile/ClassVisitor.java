@@ -162,4 +162,6 @@ public interface ClassVisitor {
 	public void visitLocalVariableTypeTable(LocalVariableTypeTable obj);
 
 	public void visitMethodParameters(MethodParameters methodParameters);
+	
+	public void visitModule(Module m);
 }

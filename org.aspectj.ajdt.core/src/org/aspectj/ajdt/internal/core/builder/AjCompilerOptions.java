@@ -52,15 +52,15 @@ public class AjCompilerOptions extends CompilerOptions {
 
 
 	// constants for irritant levels
-	public static final int InvalidAbsoluteTypeName = IrritantSet.GROUP2 | ASTNode.Bit20;
-	public static final int InvalidWildCardTypeName = IrritantSet.GROUP2 | ASTNode.Bit21;
-	public static final int UnresolvableMember = IrritantSet.GROUP2 | ASTNode.Bit22;
-	public static final int TypeNotExposedToWeaver = IrritantSet.GROUP2 | ASTNode.Bit23;
-	public static final int ShadowNotInStructure = IrritantSet.GROUP2 | ASTNode.Bit24;
-	public static final int UnmatchedSuperTypeInCall = IrritantSet.GROUP2 | ASTNode.Bit25;
-	public static final int CannotImplementLazyTJP = IrritantSet.GROUP2 | ASTNode.Bit26;
-	public static final int NeedSerialVersionUIDField = IrritantSet.GROUP2 | ASTNode.Bit27;
-	public static final int IncompatibleSerialVersion = IrritantSet.GROUP2 | ASTNode.Bit28;
+	public static final int InvalidAbsoluteTypeName = IrritantSet.GROUP3 | ASTNode.Bit1;
+	public static final int InvalidWildCardTypeName = IrritantSet.GROUP3 | ASTNode.Bit2;
+	public static final int UnresolvableMember = IrritantSet.GROUP3 | ASTNode.Bit3;
+	public static final int TypeNotExposedToWeaver = IrritantSet.GROUP3 | ASTNode.Bit4;
+	public static final int ShadowNotInStructure = IrritantSet.GROUP3 | ASTNode.Bit5;
+	public static final int UnmatchedSuperTypeInCall = IrritantSet.GROUP3 | ASTNode.Bit6;
+	public static final int CannotImplementLazyTJP = IrritantSet.GROUP3 | ASTNode.Bit7;
+	public static final int NeedSerialVersionUIDField = IrritantSet.GROUP3 | ASTNode.Bit8;
+	public static final int IncompatibleSerialVersion = IrritantSet.GROUP3 | ASTNode.Bit9;
 
 	public boolean terminateAfterCompilation = false;
 	public boolean xSerializableAspects = false;
@@ -128,7 +128,7 @@ public class AjCompilerOptions extends CompilerOptions {
 	 * 
 	 * @see org.eclipse.jdt.internal.compiler.impl.CompilerOptions#getMap()
 	 */
-	public Map getMap() {
+	public Map<String,String> getMap() {
 		Map<String,String> map = super.getMap();
 		// now add AspectJ additional options		
 		map.put(OPTION_ReportInvalidAbsoluteTypeName, getSeverityString(InvalidAbsoluteTypeName));

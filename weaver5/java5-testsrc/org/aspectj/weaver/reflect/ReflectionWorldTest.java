@@ -13,9 +13,12 @@ package org.aspectj.weaver.reflect;
 
 import junit.framework.TestCase;
 
+import java.util.List;
+
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.patterns.ConcreteCflowPointcut;
 
 public class ReflectionWorldTest extends TestCase {
 
@@ -37,6 +40,28 @@ public class ReflectionWorldTest extends TestCase {
 		IReflectionWorld world = new ReflectionWorld(getClass().getClassLoader());
 		assertEquals("int", UnresolvedType.INT, world.resolve(int.class));
 		assertEquals("void", UnresolvedType.VOID, world.resolve(void.class));
+	}
+	
+	static class AbstractSuperClass<A,B> {}
+	static interface InterfaceOne {}
+	static interface InterfaceTwo<A> {}
+	static class ID {}
+	static abstract class AbstractTestClass<T> extends AbstractSuperClass<T,ID> implements InterfaceOne, InterfaceTwo<T> {
+
+	}
+	static class TestType {}
+//	static class ConcreteClass extends AbstractTestClass<TestType> {
+	static class ConcreteClass extends AbstractTestClass<List<TestType>> {
+	}
+	
+	static class Bar extends ConcreteClass {}
+	
+	public void testGenerics() {
+		ReflectionWorld world = new ReflectionWorld(getClass().getClassLoader());
+//		world.lookupOrCreateName(UnresolvedType.forName(AbstractTestClass.class.getName()));
+//		ResolvedType resolvedType = world.resolve(AbstractTestClass.class);
+		JavaLangTypeToResolvedTypeConverter converter = new JavaLangTypeToResolvedTypeConverter(world);
+		ResolvedType resolvedType2 = converter.fromType(ConcreteClass.class);
 	}
 
 }

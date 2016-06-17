@@ -11,8 +11,6 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
-import java.util.List;
-
 import org.aspectj.weaver.bcel.BcelWorld;
 
 import junit.framework.TestCase;

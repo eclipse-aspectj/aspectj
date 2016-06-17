@@ -388,13 +388,14 @@ public final class Module extends Attribute {
 	/**
 	 * @return deep copy of this attribute //
 	 */
-	// @Override
-	// public Attribute copy(ConstantPool constant_pool) {
-	// return (SourceFile) clone();
-	// }
+//	 @Override
+//	 public Attribute copy(ConstantPool constant_pool) {
+//		 return (Module) clone();
+//	 }
+	
 	@Override
 	public void accept(ClassVisitor v) {
-		v.visitSourceFile(this);
+		v.visitModule(this);
 	}
 	
 	public Require[] getRequires() {

@@ -92,7 +92,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 		checkCompile("src1/Xlint.java", NO_ERRORS);
 	}
 	public void testXlintError() {
-		List args = new ArrayList();
+		List<String> args = new ArrayList<>();
 
 		args.add("-d");
 		args.add(getSandboxName());
@@ -105,7 +105,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 		runCompiler(args, new int[] {2});
 	}
 	public void testMissingJarError() {
-		List args = new ArrayList();
+		List<String> args = new ArrayList<>();
 
 		args.add("-d");
 		args.add(getSandboxName());
@@ -125,7 +125,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 
 	}
 	public void testMissingRuntimeError() {
-		List args = new ArrayList();
+		List<String> args = new ArrayList<>();
 
 		args.add("-d");
 		args.add(getSandboxName());
@@ -176,7 +176,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 	public void testSizeChanges() {
 		File f1 = new File(getSandboxName(),"SizeIssues.class");
 		
-		List args = new ArrayList();
+		List<String> args = new ArrayList<>();
 
 		args.add("-d");
 		args.add(getSandboxName());

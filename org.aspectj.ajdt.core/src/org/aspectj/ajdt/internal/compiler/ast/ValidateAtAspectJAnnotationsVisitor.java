@@ -476,7 +476,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			} else if (sma.memberValue instanceof NameReference
 					&& (((NameReference) sma.memberValue).binding instanceof FieldBinding)) {
 				Binding b = ((NameReference) sma.memberValue).binding;
-				Constant c = ((FieldBinding) b).constant;
+				Constant c = ((FieldBinding) b).constant();
 				return c.stringValue();
 			}
 		}
