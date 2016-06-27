@@ -38,6 +38,8 @@ public class LangUtil {
 
 	public static final String EOL;
 
+	public static final String JRT_FS = "jrt-fs.jar";
+
 	private static double vmVersion;
 
 	static {
@@ -1455,6 +1457,14 @@ public class LangUtil {
 				}
 			}
 		} // class Thrown
+	}
+	
+	public static String getJrtFsFilePath() {
+		return getJavaHome()+File.separator+JRT_FS;
+	}
+		
+	public static String getJavaHome() {
+	    return System.getProperty("java.home");
 	}
 
 }
