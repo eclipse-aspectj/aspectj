@@ -80,7 +80,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 
 	// override
 	protected int generateInfoAttributes(ClassFile classFile) {
-		List<EclipseAttributeAdapter> l = new ArrayList<>(1);
+		List<EclipseAttributeAdapter> l = new ArrayList<EclipseAttributeAdapter>(1);
 		l.add(new EclipseAttributeAdapter(makeAttribute()));
 		addDeclarationStartLineAttribute(l, classFile);
 		return classFile.generateMethodInfoAttributes(binding, l);
