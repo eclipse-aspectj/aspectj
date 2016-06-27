@@ -35,6 +35,7 @@ import junit.framework.TestCase;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.testing.util.TestUtil;
+import org.aspectj.util.LangUtil;
 
 /**
  * A TestCase class that acts as the superclass for all test cases wishing to drive the ajc compiler.
@@ -610,13 +611,11 @@ public class AjcTestCase extends TestCase {
 		getAnyJars(ajc.getSandboxDirectory(), cp);
 
 		URLClassLoader sandboxLoader;
-		URLClassLoader testLoader = (URLClassLoader) getClass().getClassLoader();
-		ClassLoader parentLoader = testLoader.getParent();
-
-	
+		ClassLoader parentLoader = getClass().getClassLoader().getParent();
 		
 		/* Sandbox -> AspectJ -> Extension -> Bootstrap */
 		if ( !useFullLTW && useLTW) {
+			URLClassLoader testLoader = (URLClassLoader) getClass().getClassLoader();
 			/*
 			 * Create a new AspectJ class loader using the existing test CLASSPATH and any missing Java 5 projects
 			 */
@@ -851,38 +850,46 @@ public class AjcTestCase extends TestCase {
 	 * @param args the String[] args to fix up
 	 * @return the String[] args to use
 	 */
-	protected String[] fixupArgs(String[] args) {
-		if (null == args) {
-			return null;
-		}
-		int cpIndex = -1;
-		boolean hasruntime = false;
-		for (int i = 0; i < args.length - 1; i++) {
-			args[i] = adaptToPlatform(args[i]);
-			if ("-classpath".equals(args[i])) {
-				cpIndex = i;
-				args[i + 1] = substituteSandbox(args[i + 1]);
-				String next = args[i + 1];
-				hasruntime = ((null != next) && (-1 != next.indexOf("aspectjrt.jar")));
-			}
-		}
-		if (-1 == cpIndex) {
-			String[] newargs = new String[args.length + 2];
-			newargs[0] = "-classpath";
-			newargs[1] = TestUtil.aspectjrtPath().getPath();
-			System.arraycopy(args, 0, newargs, 2, args.length);
-			args = newargs;
-		} else {
-			if (!hasruntime) {
-				cpIndex++;
-				String[] newargs = new String[args.length];
-				System.arraycopy(args, 0, newargs, 0, args.length);
-				newargs[cpIndex] = args[cpIndex] + File.pathSeparator + TestUtil.aspectjrtPath().getPath();
-				args = newargs;
-			}
-		}
-		return args;
-	}
+    protected String[] fixupArgs(String[] args) {
+        if (null == args) {
+                return null;
+        }
+        int cpIndex = -1;
+        boolean hasruntime = false;
+        for (int i = 0; i < args.length - 1; i++) {
+                args[i] = adaptToPlatform(args[i]);
+                if ("-classpath".equals(args[i])) {
+                        cpIndex = i;
+                        args[i + 1] = substituteSandbox(args[i + 1]);
+                        String next = args[i + 1];
+                        hasruntime = ((null != next) && (-1 != next.indexOf("aspectjrt.jar")));
+                }
+        }
+        if (-1 == cpIndex) {
+                String[] newargs = new String[args.length + 2];
+                newargs[0] = "-classpath";
+                newargs[1] = TestUtil.aspectjrtPath().getPath();
+                System.arraycopy(args, 0, newargs, 2, args.length);
+                args = newargs;
+                cpIndex = 1;
+        } else {
+                if (!hasruntime) {
+                        cpIndex++;
+                        String[] newargs = new String[args.length];
+                        System.arraycopy(args, 0, newargs, 0, args.length);
+                        newargs[cpIndex] = args[cpIndex] + File.pathSeparator + TestUtil.aspectjrtPath().getPath();
+                        args = newargs;
+                }
+        }
+        boolean needsJRTFS = LangUtil.is19VMOrGreater();
+        if (needsJRTFS) {
+                if (args[cpIndex].indexOf(LangUtil.JRT_FS) == -1) {
+                        String jrtfsPath = LangUtil.getJrtFsFilePath();
+                        args[cpIndex] = jrtfsPath + File.pathSeparator + args[cpIndex];
+                }
+        }
+        return args;
+}
 
 	private String adaptToPlatform(String s) {
 		String ret = s.replace(';', File.pathSeparatorChar);

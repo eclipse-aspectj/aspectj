@@ -18,6 +18,7 @@ import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.testing.harness.bridge.AbstractRunSpec;
 import org.aspectj.testing.harness.bridge.AjcTest;
+import org.aspectj.testing.harness.bridge.IRunSpec;
 import org.aspectj.testing.run.IRunStatus;
 import org.aspectj.testing.run.RunValidator;
 import org.aspectj.testing.util.BridgeUtil;
@@ -298,7 +299,7 @@ public class HarnessSelectionTest extends TestCase {
         runtime.setOptions(options);
         AjcTest.Suite.Spec spec = getSpec(suiteFile);
         assertNotNull(spec);
-        ArrayList kids = spec.getChildren();
+        ArrayList<IRunSpec> kids = spec.getChildren();
         assertNotNull(kids);
         if ((suiteFile == SELECT) && (17 != kids.size())) {
             assertTrue("expected 17 kids, got " + kids.size(), false);

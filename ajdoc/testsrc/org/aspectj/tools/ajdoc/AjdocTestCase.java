@@ -19,6 +19,7 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.aspectj.tools.ajc.Ajc;
+import org.aspectj.util.LangUtil;
 
 /**
  * This class is the super class of all Ajdoc tests. It creates a sandbox directory and provides utility methods for copying over
@@ -202,7 +203,12 @@ public class AjdocTestCase extends TestCase {
 		args[1] = "-source";
 		args[2] = sourceLevel;
 		args[3] = "-classpath";
-		args[4] = AjdocTests.ASPECTJRT_PATH.getPath();
+		StringBuilder classpath = new StringBuilder();
+		if (LangUtil.is19VMOrGreater()) {
+			classpath.append(LangUtil.getJrtFsFilePath()).append(File.pathSeparator);
+		}
+		classpath.append(AjdocTests.ASPECTJRT_PATH.getPath());
+		args[4] = classpath.toString();
 		args[5] = "-d";
 		args[6] = getAbsolutePathOutdir();
 		// args[7] = "-Xset:minimalModel=false";

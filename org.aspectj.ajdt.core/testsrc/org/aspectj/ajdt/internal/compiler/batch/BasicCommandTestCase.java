@@ -22,6 +22,7 @@ import org.aspectj.ajdt.ajc.AjdtCommand;
 import org.aspectj.bridge.ICommand;
 //import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageHandler;
+import org.aspectj.util.LangUtil;
 
 /**
  * @author hugunin
@@ -71,6 +72,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 	public void testThisAndModifiers() {
 		checkCompile("src1/ThisAndModifiers.java", NO_ERRORS);
 	}
+	
 	public void testDeclares() {
 		checkCompile("src1/Declares.java", new int[] {2});
 	}	
@@ -98,7 +100,10 @@ public class BasicCommandTestCase extends CommandTestCase {
 		args.add(getSandboxName());
 		
 		args.add("-classpath");
-		args.add(getRuntimeClasspath() + File.pathSeparator +			"../lib/junit/junit.jar;../testing-client/bin");
+		StringBuilder classpath = new StringBuilder();
+		classpath.append(getRuntimeClasspath());
+		classpath.append(File.pathSeparator).append("../lib/junit/junit.jar;../testing-client/bin");
+		args.add(classpath.toString());
 		args.add("-Xlint:error");
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/Xlint.java");
 		

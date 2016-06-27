@@ -44,7 +44,12 @@ public class AjcTaskCompileCommandTest extends TestCase {
         list.add("-d");
         list.add(getClassesDir().getAbsolutePath());
         list.add("-classpath");
-        list.add(Globals.F_aspectjrt_jar.getAbsolutePath());
+        StringBuilder classpath = new StringBuilder();
+        classpath.append(Globals.F_aspectjrt_jar.getAbsolutePath());
+        if (LangUtil.is19VMOrGreater()) {
+        	classpath.append(File.pathSeparator).append(LangUtil.getJrtFsFilePath());
+        }
+        list.add(classpath.toString());
     }
 
     static boolean doWait(IMessageHolder holder, int seconds, int timeout) {
