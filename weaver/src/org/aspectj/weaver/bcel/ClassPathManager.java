@@ -38,6 +38,7 @@ import java.util.zip.ZipFile;
 
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
+import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
@@ -100,9 +101,9 @@ public class ClassPathManager {
 				return;
 			}
 			try {
-				if (lc.endsWith(".jimage")) {
+				if (lc.endsWith(LangUtil.JRT_FS)) {
 					// Java9
-					entries.add(new JImageEntry(f));
+					entries.add(new JImageEntry(new File(f.getParentFile()+File.separator+"lib"+File.separator+"modules")));
 				} else {
 					entries.add(new ZipFileEntry(f));
 				}
