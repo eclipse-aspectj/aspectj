@@ -315,7 +315,11 @@ public class BuildArgParser extends Main {
 		List<String> ret = new ArrayList<String>();
 
 		if (parser.bootclasspath == null) {
-			addClasspath(System.getProperty("sun.boot.class.path", ""), ret);
+			if (LangUtil.is19VMOrGreater()) {
+				addClasspath(LangUtil.getJrtFsFilePath(),ret);
+			} else {
+				addClasspath(System.getProperty("sun.boot.class.path", ""), ret);
+			}
 		} else {
 			addClasspath(parser.bootclasspath, ret);
 		}
