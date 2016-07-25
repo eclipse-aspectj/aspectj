@@ -12,15 +12,14 @@ package org.aspectj.systemtest.ajc190;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.aspectj.systemtest.apt.AptTests;
 
 public class AllTestsAspectJ190 {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite("AspectJ 1.8.5 tests");
+		TestSuite suite = new TestSuite("AspectJ 1.9.0 tests");
 		// $JUnit-BEGIN$
 		suite.addTest(Ajc190Tests.suite());
-		suite.addTest(AptTests.suite());
+		suite.addTest(SanityTests19.suite());
 		// $JUnit-END$
 		return suite;
 	}
