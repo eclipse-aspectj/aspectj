@@ -11,5 +11,12 @@
 		<run class="example.kusedep.Cmd"></run>
 	</ajc-test>
 
+	<ajc-test dir="bugs1810/ambig" title="ambiguous message - 18">
+		<compile options="-1.8" files="X.java"/>
+	</ajc-test>
 
+	<ajc-test dir="bugs1810/ambig" title="ambiguous message - 17">
+		<compile options="-1.7" files="X.java"/>
+	</ajc-test>
+	
 </suite>

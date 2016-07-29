@@ -16,8 +16,10 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.core.compiler.IProblem;
@@ -298,7 +300,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 			return orig;
 		}
 
-		List ret = new ArrayList(Arrays.asList(orig));
+		Set<MethodBinding> ret = new HashSet<MethodBinding>(Arrays.asList(orig));
 		// System.err.println("declared method: " + ret + " inters = " + interTypeMethods);
 
 		for (int i = 0, len = interTypeMethods.size(); i < len; i++) {
