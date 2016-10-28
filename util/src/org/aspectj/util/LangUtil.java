@@ -929,11 +929,11 @@ public class LangUtil {
 	 * @param array the Object[] to convert (may be null)
 	 * @return the List corresponding to array (never null)
 	 */
-	public static List<Object> arrayAsList(Object[] array) {
+	public static <T> List<T> arrayAsList(T[] array) {
 		if ((null == array) || (1 > array.length)) {
 			return Collections.emptyList();
 		}
-		ArrayList<Object> list = new ArrayList<Object>();
+		ArrayList<T> list = new ArrayList<>();
 		list.addAll(Arrays.asList(array));
 		return list;
 	}

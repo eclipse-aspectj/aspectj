@@ -1293,7 +1293,7 @@ public abstract class World implements Dump.INode {
 			if (!memoryProfiling) {
 				return;
 			}
-			Reference r = null;
+			Reference<? extends ResolvedType> r = null;
 			while ((r=rq.poll()) != null) {
 				collectedTypes++;
 			}

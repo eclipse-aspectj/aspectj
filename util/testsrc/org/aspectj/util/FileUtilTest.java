@@ -62,7 +62,7 @@ public class FileUtilTest extends TestCase {
 	 * @throws AssertionFailedError if any names are not in dir
 	 */
 	public static String[] dirContains(File dir, final String[] filenames) {
-		final ArrayList sought = new ArrayList(LangUtil.arrayAsList(filenames));
+		final ArrayList<String> sought = new ArrayList<>(LangUtil.arrayAsList(filenames));
 		FilenameFilter filter = new FilenameFilter() {
 			public boolean accept(File d, String name) {
 				return !sought.remove(name);
@@ -129,11 +129,11 @@ public class FileUtilTest extends TestCase {
 	 * @return sorted String[] of all paths to all files under dir ending with one of the listed suffixes but not starting with "."
 	 */
 	public static String[] dirPaths(File dir, String[] suffixes) {
-		ArrayList result = new ArrayList();
+		ArrayList<String> result = new ArrayList<String>();
 		doDirPaths(dir, result);
 		// if suffixes required, remove those without suffixes
 		if (!LangUtil.isEmpty(suffixes)) {
-			for (ListIterator iter = result.listIterator(); iter.hasNext();) {
+			for (ListIterator<String> iter = result.listIterator(); iter.hasNext();) {
 				String path = iter.next().toString();
 				boolean hasSuffix = false;
 				for (int i = 0; !hasSuffix && (i < suffixes.length); i++) {
@@ -161,7 +161,7 @@ public class FileUtilTest extends TestCase {
 	 * @param dir the File to read - ignored if null, not a directory, or has "CVS" in its path
 	 * @param useSuffix if true, then use dir as suffix to path
 	 */
-	private static void doDirPaths(File dir, ArrayList paths) {
+	private static void doDirPaths(File dir, ArrayList<String> paths) {
 		if ((null == dir) || !dir.canRead() || (-1 != dir.getPath().indexOf("CVS"))) {
 			return;
 		}
@@ -188,15 +188,15 @@ public class FileUtilTest extends TestCase {
 	}
 
 	/** List of File files or directories to delete when exiting */
-	final ArrayList tempFiles;
+	final ArrayList<File> tempFiles;
 
 	public FileUtilTest(String s) {
 		super(s);
-		tempFiles = new ArrayList();
+		tempFiles = new ArrayList<File>();
 	}
 
 	public void tearDown() {
-		for (ListIterator iter = tempFiles.listIterator(); iter.hasNext();) {
+		for (ListIterator<File> iter = tempFiles.listIterator(); iter.hasNext();) {
 			File dir = (File) iter.next();
 			log("removing " + dir);
 			FileUtil.deleteContents(dir);
@@ -236,7 +236,7 @@ public class FileUtilTest extends TestCase {
 
 	public void testCopyFiles() {
 		// bad input
-		Class iaxClass = IllegalArgumentException.class;
+		Class<?> iaxClass = IllegalArgumentException.class;
 
 		checkCopyFiles(null, null, iaxClass, false);
 
@@ -388,7 +388,7 @@ public class FileUtilTest extends TestCase {
 	}
 
 	public void testRandomFileString() {
-		ArrayList results = new ArrayList();
+		ArrayList<String> results = new ArrayList<>();
 		for (int i = 0; i < 1000; i++) {
 			String s = FileUtil.randomFileString();
 			if (results.contains(s)) {
@@ -469,7 +469,7 @@ public class FileUtilTest extends TestCase {
 			}
 		};
 		for (int i = 0; i < 10; i++) {
-			List result = FileUtil.lineSeek("" + i, sourceList, true, errorSink);
+			List<String> result = FileUtil.lineSeek("" + i, sourceList, true, errorSink);
 			assertEquals(2, result.size());
 			assertEquals(path + ":1:" + i, result.get(0));
 			assertEquals(path + ":2:" + i, result.get(1));
@@ -502,19 +502,19 @@ public class FileUtilTest extends TestCase {
 			tempFiles.add(file);
 		}
 		// now test
-		final ArrayList errors = new ArrayList();
+		final ArrayList<String> errors = new ArrayList<>();
 		final PrintStream errorSink = new PrintStream(System.err, true) {
 			public void println(String error) {
 				errors.add(error);
 			}
 		};
-		List sourceList = new ArrayList();
+		List<String> sourceList = new ArrayList<>();
 		sourceList.addAll(Arrays.asList(sources));
 		sourceList = Collections.unmodifiableList(sourceList);
 		for (int k = 0; k < sources.length; k++) {
-			List result = FileUtil.lineSeek("" + k, sourceList, true, errorSink);
+			List<String> result = FileUtil.lineSeek("" + k, sourceList, true, errorSink);
 			// number k found in every other line of every file at index k
-			Iterator iter = result.iterator();
+			Iterator<String> iter = result.iterator();
 			for (int i = 0; i < MAX; i++) { // for each file
 				for (int j = 1; j < (MAX + 1); j++) { // for every other line
 					assertTrue(iter.hasNext());
