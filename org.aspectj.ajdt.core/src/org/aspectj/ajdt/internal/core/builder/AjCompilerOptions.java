@@ -128,7 +128,7 @@ public class AjCompilerOptions extends CompilerOptions {
 	 * 
 	 * @see org.eclipse.jdt.internal.compiler.impl.CompilerOptions#getMap()
 	 */
-	public Map getMap() {
+	public Map<String,String> getMap() {
 		Map<String,String> map = super.getMap();
 		// now add AspectJ additional options		
 		map.put(OPTION_ReportInvalidAbsoluteTypeName, getSeverityString(InvalidAbsoluteTypeName));

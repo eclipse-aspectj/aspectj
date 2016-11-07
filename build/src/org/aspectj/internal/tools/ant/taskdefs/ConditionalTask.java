@@ -25,9 +25,9 @@ public abstract class ConditionalTask extends Task {
 
     public final static String TRUE = "true";
 
-    private   List ifs;
-    protected List ifs() {
-        return ifs != null ? ifs : (ifs = new Vector());
+    private   List<If> ifs;
+    protected List<If> ifs() {
+        return ifs != null ? ifs : (ifs = new Vector<If>());
     }
 
     public If createIf() {
@@ -166,9 +166,9 @@ public abstract class ConditionalTask extends Task {
         return getFalses().size() == 0;
     }
 
-    protected List getFalses() {
-        Iterator iter = ifs().iterator();
-        List result = new Vector();
+    protected List<String> getFalses() {
+        Iterator<If> iter = ifs().iterator();
+        List<String> result = new Vector<>();
         while (iter.hasNext()) {
             If next = (If) iter.next();
             String name = next.getName();

@@ -84,7 +84,7 @@ public class AntBuilder extends Builder {
 	/**
 	 * Ensure targets exist for this module and all antecedants, so topoSort can work.
 	 */
-	private static void makeTargetsForResult(final Result result, final Hashtable targets) {
+	private static void makeTargetsForResult(final Result result, final Hashtable<String,Target> targets) {
 		final String resultTargetName = resultToTargetName(result);
 		Target target = (Target) targets.get(resultTargetName);
 		if (null == target) {
@@ -196,7 +196,7 @@ public class AntBuilder extends Builder {
 		return copy;
 	}
 
-	protected void dumpMinFile(Result result, File classesDir, List errors) {
+	protected void dumpMinFile(Result result, File classesDir, List<String> errors) {
 		String name = result.getName() + "-empty";
 		File minFile = new File(classesDir, name);
 		FileWriter fw = null;
@@ -211,8 +211,8 @@ public class AntBuilder extends Builder {
 
 	}
 
-	protected boolean compile(Result result, File classesDir, boolean useExistingClasses, List errors) {
-
+	@Override
+	protected boolean compile(Result result, File classesDir, boolean useExistingClasses, List<String> errors) {
 		if (!classesDir.exists() && !classesDir.mkdirs()) {
 			errors.add("compile - unable to create " + classesDir);
 			return false;
@@ -224,8 +224,9 @@ public class AntBuilder extends Builder {
 		Path path = new Path(project);
 		boolean hasSourceDirectories = false;
 		boolean isJava5Compile = false;
-		for (Iterator iter = result.getSrcDirs().iterator(); iter.hasNext();) {
-			File file = (File) iter.next();
+		for (File file: result.getSrcDirs()) {
+//		for (Iterator iter = result.getSrcDirs().iterator(); iter.hasNext();) {
+//			File file = (File) iter.next();
 			path.createPathElement().setLocation(file);
 			if (!isJava5Compile
 					&& (Util.Constants.JAVA5_SRC.equals(file.getName()) || Util.Constants.JAVA5_TESTSRC.equals(file.getName()) || new File(
@@ -268,8 +269,8 @@ public class AntBuilder extends Builder {
 			javac.setTarget("1.1"); // 1.1 class files - Javac in 1.4 uses 1.4
 			javac.setSource("1.3");
 		} else {
-			javac.setSource("1.5");
-			javac.setTarget("1.5");
+			javac.setSource("1.8");
+			javac.setTarget("1.8");
 		}
 		// compile
 		boolean passed = false;
@@ -330,7 +331,8 @@ public class AntBuilder extends Builder {
 	 * Merge classes directory and any merge jars into module jar with any specified manifest file. META-INF directories are
 	 * excluded.
 	 */
-	protected boolean assemble(Result result, File classesDir, List errors) {
+	@Override
+	protected boolean assemble(Result result, File classesDir, List<String> errors) {
 		if (!buildingEnabled) {
 			return false;
 		}
@@ -400,18 +402,18 @@ public class AntBuilder extends Builder {
 	 * @see org.aspectj.internal.tools.build.Builder#buildAntecedants(Module)
 	 */
 	protected Result[] getAntecedantResults(Result moduleResult) {
-		Hashtable targets = new Hashtable();
+		Hashtable<String,Target> targets = new Hashtable<>();
 		makeTargetsForResult(moduleResult, targets);
 		String targetName = resultToTargetName(moduleResult);
 		// bug: doc says topoSort returns String, but returns Target
-		Collection result = project.topoSort(targetName, targets);
+		Collection<Target> result = project.topoSort(targetName, targets);
 		// fyi, we don't rely on topoSort to detect cycles - see buildAll
 		int size = result.size();
 		if (0 == result.size()) {
 			return new Result[0];
 		}
-		ArrayList toReturn = new ArrayList();
-		for (Iterator iter = result.iterator(); iter.hasNext();) {
+		ArrayList<String> toReturn = new ArrayList<>();
+		for (Iterator<Target> iter = result.iterator(); iter.hasNext();) {
 			Target target = (Target) iter.next();
 			String name = target.getName();
 			if (null == name) {
@@ -450,11 +452,10 @@ public class AntBuilder extends Builder {
 		zip.setDestFile(result.getOutputFile());
 		ZipFileSet zipfileset = null;
 		final Module module = result.getModule();
-		List known = result.findJarRequirements();
+		List<File> known = result.findJarRequirements();
 		removeLibraryFilesToSkip(module, known);
 		// -- merge any antecedents, less any manifest
-		for (Iterator iter = known.iterator(); iter.hasNext();) {
-			File jarFile = (File) iter.next();
+		for (File jarFile: known) {
 			zipfileset = new ZipFileSet();
 			zipfileset.setProject(project);
 			zipfileset.setSrc(jarFile);
@@ -541,8 +542,7 @@ public class AntBuilder extends Builder {
 
 		/** @return true if aspectjrt.jar is on classpath */
 		private static boolean runtimeJarOnClasspath(Result result) {
-			for (Iterator iter = result.getLibJars().iterator(); iter.hasNext();) {
-				File file = (File) iter.next();
+			for (File file: result.getLibJars()) {
 				if ("aspectjrt.jar".equals(file.getName())) {
 					return true;
 				}
@@ -582,6 +582,7 @@ public class AntBuilder extends Builder {
 		 * @param runtimeJar the Path to the aspectjrt.jar
 		 * @return javac or another Task invoking the AspectJ compiler
 		 */
+		@SuppressWarnings("unchecked")
 		static Task aspectJTask(Javac javac, Path toolsJar, Path runtimeJar) {
 			Object task = null;
 			String url = null;

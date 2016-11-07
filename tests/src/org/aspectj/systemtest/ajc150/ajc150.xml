@@ -4545,8 +4545,8 @@
    </ajc-test>
    <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - M">
      <compile files="GenericAspectM.aj" options="-1.5">
-       <message kind="error" line="23" text="The method m0(Integer) in the type GenericAspect&lt;A,B&gt;.SimpleI&lt;Integer&gt; is not applicable for the arguments (String)"/>
-       <message kind="error" line="24" text="The method m1(List&lt;Integer&gt;) in the type GenericAspect&lt;A,B&gt;.SimpleI&lt;Integer&gt; is not applicable for the arguments (List&lt;String&gt;)"/>
+       <message kind="error" line="23" text="The method m0(Integer) in the type GenericAspect.SimpleI&lt;Integer&gt; is not applicable for the arguments (String)"/>
+       <message kind="error" line="24" text="The method m1(List&lt;Integer&gt;) in the type GenericAspect.SimpleI&lt;Integer&gt; is not applicable for the arguments (List&lt;String&gt;)"/>
        <message kind="error" line="25" text="Type mismatch: cannot convert from String to Integer"/>
        <message kind="error" line="26" text="Type mismatch: cannot convert from List&lt;String&gt; to List&lt;Integer&gt;"/>
      </compile>

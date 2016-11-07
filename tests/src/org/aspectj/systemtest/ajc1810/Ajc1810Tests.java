@@ -30,6 +30,10 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Ajc1810Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testAIOOBE_502807() {
+		runTest("unexpected aioobe");
+	}
+	
 	public void testInvokeDynamic_490315() {
 		runTest("indy");
 	}

@@ -54,7 +54,7 @@ public class Checklics extends MatchingTask {
 	public static final String EPL_CPL_IBM_PARC_XEROX_OTHERS_TAG = "epl-cpl-ibm|parc|xerox|vmware|others";
 	public static final String DEFAULT = EPL_CPL_IBM_PARC_XEROX_OTHERS_TAG;
 
-	static final Map LICENSES; // unmodifiable Map
+	static final Map<String,License> LICENSES; // unmodifiable Map
 
 	static {
 		final String CONTRIBUTORS = "Contributors";
@@ -82,7 +82,7 @@ public class Checklics extends MatchingTask {
 		License MPL_ONLY = new License(MPL_ONLY_TAG, LIC_MPL);
 		License MPL_PARC = new License(MPL_PARC_TAG, LIC_MPL, PARC);
 		License PARC_COPYRIGHT = new License(PARC_COPYRIGHT_TAG, null, PARC);
-		LICENSES = new Hashtable();
+		LICENSES = new Hashtable<>();
 		LICENSES.put(APL.tag, APL);
 		LICENSES.put(MPL.tag, MPL);
 		LICENSES.put(MPL_PARC.tag, MPL_PARC);
@@ -458,11 +458,11 @@ class HeaderInfo {
 	/** last line of license */
 	public final boolean hasLicense;
 
-	public HeaderInfo(File file, int lastLine, List years, boolean hasLicense) {
+	public HeaderInfo(File file, int lastLine, List<String> years, boolean hasLicense) {
 		this.lastLine = lastLine;
 		this.file = file;
 		this.hasLicense = hasLicense;
-		List newYears = new ArrayList();
+		List<String> newYears = new ArrayList<>();
 		newYears.addAll(years);
 		Collections.sort(newYears);
 		this.years = Collections.unmodifiableList(newYears);
@@ -610,7 +610,7 @@ class Header {
 	}
 
 	public static HeaderInfo checkFile(final File file) {
-		ArrayList years = new ArrayList();
+		ArrayList<String> years = new ArrayList<>();
 		int endLine = 0;
 		BufferedReader input = null;
 		int lineNum = 0;
@@ -647,7 +647,7 @@ class Header {
 	 * 
 	 * @return true if this line has end-of-comment
 	 */
-	private static boolean checkLine(String line, ArrayList years) {
+	private static boolean checkLine(String line, ArrayList<String> years) {
 		if ((null == line) || (0 == line.length())) {
 			return false;
 		}

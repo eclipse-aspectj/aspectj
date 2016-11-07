@@ -41,7 +41,7 @@ import org.aspectj.internal.tools.build.Result.Kind;
  * 
  */
 public class ModulesTest extends TestCase {
-    public static final List /*String*/ MODULE_NAMES;
+    public static final List<String> MODULE_NAMES;
     private static final File BASE_DIR = new File("..");
     static {
         String[] names = {
@@ -49,7 +49,7 @@ public class ModulesTest extends TestCase {
         "bridge", "loadtime", "loadtime5", "org.aspectj.ajdt.core",
         "runtime", "taskdefs", "testing-client", "testing-util",
         "tests", "util", "weaver"};
-        List list = Arrays.asList(names);
+        List<String> list = Arrays.asList(names);
         MODULE_NAMES = Collections.unmodifiableList(list);
     }
 
@@ -80,7 +80,7 @@ public class ModulesTest extends TestCase {
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
-        for (Iterator iter = tempFiles.iterator(); iter.hasNext();) {
+        for (Iterator<File> iter = tempFiles.iterator(); iter.hasNext();) {
 			File file = (File) iter.next();
             if (!ModulesTest.delete(file)) {
                 System.err.println("warning: ModulesTest unable to delete " + file);
@@ -101,9 +101,8 @@ public class ModulesTest extends TestCase {
     }
       
     public void testAllModulesCreation() {
-        ArrayList badModules = new ArrayList();
-        for (Iterator iter = MODULE_NAMES.iterator(); iter.hasNext();) {
-            String name = (String) iter.next();
+        ArrayList<Module> badModules = new ArrayList<>();
+        for (String name: MODULE_NAMES) {
             File dir = new File(BASE_DIR, name);
             if (dir.isDirectory()) {
                 File classpath = new File(dir, ".classpath");
@@ -118,8 +117,7 @@ public class ModulesTest extends TestCase {
         }
         if (!badModules.isEmpty()) {
             StringBuffer sb = new StringBuffer();
-            for (Iterator iter = badModules.iterator(); iter.hasNext();) {
-                Module module = (Module) iter.next();
+            for (Module module: badModules) {
                 System.err.println(module.toLongString());
                 sb.append("\n");
                 sb.append(module);

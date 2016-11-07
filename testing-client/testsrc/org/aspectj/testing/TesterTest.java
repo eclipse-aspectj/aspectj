@@ -167,8 +167,8 @@ public class TesterTest extends TestCase {
      * @author isberg
      */
     public static class MyTestReporter implements IMessageHandler {
-        public ArrayList failures = new ArrayList();
-        public ArrayList passes = new ArrayList();
+        public ArrayList<IMessage> failures = new ArrayList<>();
+        public ArrayList<IMessage> passes = new ArrayList<>();
 
         public void clear() {
             failures.clear();
@@ -188,9 +188,8 @@ public class TesterTest extends TestCase {
             return gotItem(failures, substring);
         }
         
-        boolean gotItem(List list, String substring) {
-            for (Iterator iterator = list.iterator(); iterator.hasNext(); ) {
-				IMessage element = (IMessage) iterator.next();
+        boolean gotItem(List<IMessage> list, String substring) {
+        	for (IMessage element: list) {
                 String s = element.getMessage();
 				if ((null != s) && (-1 != s.indexOf(substring))) {
                     return true;

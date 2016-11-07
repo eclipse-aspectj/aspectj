@@ -1021,7 +1021,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		}
 
 		org.aspectj.ajdt.internal.compiler.CompilerAdapter.setCompilerAdapterFactory(this);
-		final Map<?, ?> settings = buildConfig.getOptions().getMap();
+		final Map<String, String> settings = buildConfig.getOptions().getMap();
 		final BuildArgParser bMain = buildConfig.getBuildArgParser();
 
 		final org.aspectj.org.eclipse.jdt.internal.compiler.Compiler compiler = new org.aspectj.org.eclipse.jdt.internal.compiler.Compiler(

@@ -68,13 +68,13 @@ public class Module {
     }
 
     /** @return all source files under srcDir */
-    private static Iterator sourceFiles(File srcDir) {
-        ArrayList result = new ArrayList();
+    private static Iterator<File> sourceFiles(File srcDir) {
+        ArrayList<File> result = new ArrayList<>();
         sourceFiles(srcDir, result);
         return result.iterator();
     }
 
-    private static void sourceFiles(File srcDir, List result) {
+    private static void sourceFiles(File srcDir, List<File> result) {
         if ((null == srcDir) || !srcDir.canRead() || !srcDir.isDirectory()) {
             return;
         }
@@ -88,9 +88,8 @@ public class Module {
         }
     }
 
-    private static void addIfNew(List source, List sink) {
-        for (Iterator iter = source.iterator(); iter.hasNext();) {
-            Object item = iter.next();
+    private static void addIfNew(List<File> source, List<File> sink) {
+    		for (File item: source) {
             if (!sink.contains(item)) {
                 sink.add(item);
             }
@@ -102,7 +101,7 @@ public class Module {
      * 
      * @see findKnownJarAntecedants()
      */
-     static void doFindJarRequirements(Result result, List known) {
+     static void doFindJarRequirements(Result result, List<File> known) {
         Util.iaxIfNull(result, "result");
         Util.iaxIfNull(known, "known");
         addIfNew(result.getLibJars(), known);
@@ -170,25 +169,25 @@ public class Module {
     private final File moduleJar;
 
     /** File list of library jars */
-    private final List libJars;
+    private final List<File> libJars;
 
-    /** String list of classpath variables */
-    private final List classpathVariables;
+    /** List of classpath variables */
+    private final List<String> classpathVariables;
 
     /**
-     * File list of library jars exported to clients (duplicates some libJars
+     * List of library jars exported to clients (duplicates some libJars
      * entries)
      */
-    private final List exportedLibJars;
+    private final List<File> exportedLibJars;
 
     /** File list of source directories */
-    private final List srcDirs;
+    private final List<File> srcDirs;
 
     /** properties from the modules {name}.properties file */
     private final Properties properties;
 
-    /** Module list of required modules */
-    private final List requiredModules;
+    /** List of required modules */
+    private final List<Module> requiredModules;
 
     /** logger */
     private final Messager messager;
@@ -200,11 +199,11 @@ public class Module {
         Util.iaxIfNull(name, "name");
         Util.iaxIfNull(modules, "modules");
         this.moduleDir = moduleDir;
-        this.libJars = new ArrayList();
-        this.exportedLibJars = new ArrayList();
-        this.requiredModules = new ArrayList();
-        this.srcDirs = new ArrayList();
-        this.classpathVariables = new ArrayList();
+        this.libJars = new ArrayList<>();
+        this.exportedLibJars = new ArrayList<>();
+        this.requiredModules = new ArrayList<>();
+        this.srcDirs = new ArrayList<>();
+        this.classpathVariables = new ArrayList<>();
         this.properties = new Properties();
         this.name = name;
         this.modules = modules;
@@ -239,10 +238,10 @@ public class Module {
         }
         final long time = outputFile.lastModified();
         File file;
-        for (Iterator iter = result.getSrcDirs().iterator(); iter.hasNext();) {
-            File srcDir = (File) iter.next();
-            for (Iterator srcFiles = sourceFiles(srcDir); srcFiles.hasNext();) {
-                file = (File) srcFiles.next();
+        for (Iterator<File> iter = result.getSrcDirs().iterator(); iter.hasNext();) {
+            File srcDir = iter.next();
+            for (Iterator<File> srcFiles = sourceFiles(srcDir); srcFiles.hasNext();) {
+                file = srcFiles.next();
                 if (outOfDate(time, file)) {
                     return true;
                 }
@@ -284,23 +283,27 @@ public class Module {
                 : (kind.normal ? release : test);
     }
     
-    List srcDirs(Result result) {
+    List<File> srcDirs(Result result) {
         myResult(result);
         return srcDirs;
     }
-    List libJars(Result result) {
+    
+    List<File> libJars(Result result) {
         myResult(result);
         return libJars;
     }
-    List classpathVariables(Result result) {
+    
+    List<String> classpathVariables(Result result) {
         myResult(result);
         return classpathVariables;
     }
-    List exportedLibJars(Result result) {
+    
+    List<File> exportedLibJars(Result result) {
         myResult(result);
         return exportedLibJars;
     }
-    List requiredModules(Result result) {
+    
+    List<Module> requiredModules(Result result) {
         myResult(result);
         return requiredModules;
     }
@@ -610,7 +613,7 @@ public class Module {
         String[] tokenize(String line) {
             final String DELIM = " \n\t\\<>\"=";
             StringTokenizer st = new StringTokenizer(line, DELIM, true);
-            ArrayList result = new ArrayList();
+            ArrayList<String> result = new ArrayList<>();
             StringBuffer quote = new StringBuffer();
             boolean inQuote = false;
             while (st.hasMoreTokens()) {

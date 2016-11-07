@@ -757,6 +757,11 @@ public class AjProblemReporter extends ProblemReporter {
 		public String getSupplementaryMessageInfo() {
 			return delegate.getSupplementaryMessageInfo();
 		}
+
+		@Override
+		public boolean isInfo() {
+			return delegate.isInfo();
+		}
 	}
 
 	public void duplicateMethodInType(AbstractMethodDeclaration methodDecl, boolean equalParameters, int severity) {

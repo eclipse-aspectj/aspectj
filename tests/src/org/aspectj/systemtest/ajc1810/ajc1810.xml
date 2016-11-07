@@ -18,5 +18,11 @@
 	<ajc-test dir="bugs1810/ambig" title="ambiguous message - 17">
 		<compile options="-1.7" files="X.java"/>
 	</ajc-test>
+
+	<ajc-test dir="bugs1810/502807" title="unexpected aioobe">
+		<compile options="-1.8" files="TestCollectors.java">
+		  <message kind="error" text="The method toList() in the type Collectors is not applicable for the arguments (Inner::getId)"/>
+		</compile>
+	</ajc-test>
 	
 </suite>

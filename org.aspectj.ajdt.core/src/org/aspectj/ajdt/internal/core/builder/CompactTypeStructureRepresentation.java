@@ -20,6 +20,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryNestedType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryTypeAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ITypeAnnotationWalker;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding.ExternalAnnotationStatus;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 
 /**
@@ -189,4 +190,7 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 		return walker;
 	}
 
+	public ExternalAnnotationStatus getExternalAnnotationStatus() {
+		return ExternalAnnotationStatus.NOT_EEA_CONFIGURED;
+	}
 }

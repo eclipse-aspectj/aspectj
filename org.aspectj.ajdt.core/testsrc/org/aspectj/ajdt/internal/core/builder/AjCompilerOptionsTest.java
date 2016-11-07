@@ -46,9 +46,9 @@ public class AjCompilerOptionsTest extends TestCase {
 		assertFalse(options.generateEmacsSymFiles);
 		assertFalse(options.noAtAspectJProcessing);
 		
-		Map map = options.getMap();
+		Map<String,String> map = options.getMap();
 		assertEquals(CompilerOptions.WARNING,map.get(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName));
-		assertEquals(CompilerOptions.IGNORE,map.get(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName));
+		assertEquals(CompilerOptions.WARNING,map.get(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName));
 		assertEquals(CompilerOptions.WARNING,map.get(AjCompilerOptions.OPTION_ReportUnresolvableMember));
 		assertEquals(CompilerOptions.WARNING,map.get(AjCompilerOptions.OPTION_ReportTypeNotExposedToWeaver));
 		assertEquals(CompilerOptions.IGNORE,map.get(AjCompilerOptions.OPTION_ReportShadowNotInStructure));

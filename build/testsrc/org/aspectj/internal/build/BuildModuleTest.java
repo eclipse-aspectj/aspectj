@@ -80,7 +80,7 @@ public class BuildModuleTest extends TestCase {
         }
     }
         
-    ArrayList tempFiles = new ArrayList();
+    ArrayList<File> tempFiles = new ArrayList<>();
     private File jarDir;
     private boolean deleteJars;
     boolean building;  // must be enabled for tests to run

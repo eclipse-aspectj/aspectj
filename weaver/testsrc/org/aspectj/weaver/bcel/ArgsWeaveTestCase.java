@@ -22,6 +22,7 @@ import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.Type;
+import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.MemberImpl;
 import org.aspectj.weaver.ResolvedType;
@@ -54,8 +55,7 @@ public class ArgsWeaveTestCase extends WeaveTestCase {
     }  
 
     public void testLots() throws IOException {
-        List l = new ArrayList();
-        
+        List<Advice> l = new ArrayList();
         
         BcelAdvice p1 = 
             makeArgsMunger("before");
@@ -69,7 +69,6 @@ public class ArgsWeaveTestCase extends WeaveTestCase {
         l.add(p1);        
         l.add(p2);
         l.add(p3);
-
 
         weaveTest("HelloWorld", "ArgsBeforeAfterHelloWorld", addLexicalOrder(l));        
     }    

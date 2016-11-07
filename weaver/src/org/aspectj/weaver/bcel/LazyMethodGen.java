@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
@@ -688,8 +687,7 @@ public final class LazyMethodGen implements Traceable {
 				}
 			}
 			int ecounter = 0;
-			for (Iterator i = exnTable.iterator(); i.hasNext();) {
-				ExceptionRange er = (ExceptionRange) i.next();
+			for (ExceptionRange er: exnTable) {
 				String exceptionLabel = "E" + ecounter++;
 				labelMap.put(Range.getRealStart(er.getHandler()), exceptionLabel);
 				labelMap.put(er.getHandler(), exceptionLabel);

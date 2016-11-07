@@ -27,7 +27,6 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -62,7 +61,7 @@ public class BuildModuleTests extends TestCase {
         return null; // use permissive default
     }
 
-    final static List SOURCE_NAMES = Collections.unmodifiableList(
+    final static List<String> SOURCE_NAMES = Collections.unmodifiableList(
             Arrays.asList(new String[]{"src", "testsrc", "java5-src", "java5-testsrc", "aspectj-src"}));
 
     /**
@@ -70,9 +69,8 @@ public class BuildModuleTests extends TestCase {
      * @return
      */
     private static File[] findSourceRoots(File moduleDir) {
-        ArrayList result = new ArrayList();
-        for (Iterator iter = SOURCE_NAMES.iterator(); iter.hasNext();) {
-            String name = (String) iter.next();
+        ArrayList<File> result = new ArrayList<>();
+        for (String name: SOURCE_NAMES) {
             File srcDir = new File(moduleDir, name);
             if (srcDir.canRead() && srcDir.isDirectory()) {
                 result.add(srcDir);
@@ -219,12 +217,12 @@ public class BuildModuleTests extends TestCase {
      */
     static class UnknownFileCheck implements FileFilter {
         private static final UnknownFileCheck SINGLETON = new UnknownFileCheck();
-        private static final ArrayList STATIC_ERRORS = new ArrayList();
+        private static final ArrayList<String> STATIC_ERRORS = new ArrayList<>();
         // Builder.BINARY_SOURCE_PATTERN and Builder.RESOURCE_PATTERN
-        public static final List KNOWN_SUFFIXES;
+        public static final List<String> KNOWN_SUFFIXES;
 
         static {
-            List suffixes = new ArrayList();
+            List<String> suffixes = new ArrayList<>();
             // sources from org.aspectj.util.FileUtil.SOURCE_SUFFIXES
             suffixes.add(".aj");
             suffixes.add(".java");
@@ -278,8 +276,7 @@ public class BuildModuleTests extends TestCase {
                 return false;
             }
             // to do not accepting uppercase suffixes...
-            for (Iterator iter = KNOWN_SUFFIXES.iterator(); iter.hasNext();) {
-                String suffix = (String) iter.next();
+            for (String suffix: KNOWN_SUFFIXES) {
                 if (name.endsWith(suffix)) {
                     return false;
                 }
@@ -287,7 +284,7 @@ public class BuildModuleTests extends TestCase {
             return true;
             
         }
-        void unknownFiles(File dir, ArrayList results) {
+        void unknownFiles(File dir, ArrayList<File> results) {
             File[] files = dir.listFiles(this);
             for (int j = 0; j < files.length; j++) {
                 File file = files[j];
